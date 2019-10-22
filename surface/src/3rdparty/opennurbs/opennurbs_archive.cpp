@@ -592,7 +592,7 @@ ON_BinaryArchive::WriteMode() const
 
 bool
 ON_BinaryArchive::ReadChar(    // Read an array of 8 bit chars
-		size_t count,       // number of chars to read
+		std::size_t count,       // number of chars to read
 		char*  p  
 		)
 {
@@ -601,7 +601,7 @@ ON_BinaryArchive::ReadChar(    // Read an array of 8 bit chars
 
 bool
 ON_BinaryArchive::ReadChar(    // Read an array of 8 bit unsigned chars
-		size_t count,       // number of unsigned chars to read
+		std::size_t count,       // number of unsigned chars to read
 		unsigned char* p   
 		)
 {
@@ -626,7 +626,7 @@ ON_BinaryArchive::ReadChar(    // Read a single 8 bit unsigned char
 
 bool
 ON_BinaryArchive::ReadInt16( // Read an array of 16 bit integers
-		size_t count,            // number of unsigned integers to read
+		std::size_t count,            // number of unsigned integers to read
 		ON__INT16* p
 		)
 {
@@ -646,7 +646,7 @@ ON_BinaryArchive::ReadInt16( // Read an array of 16 bit integers
 
 bool
 ON_BinaryArchive::ReadShort(   // Read an array of 16 bit shorts
-		size_t count,       // number of unsigned chars to read
+		std::size_t count,       // number of unsigned chars to read
 		short* p
 		)
 {
@@ -683,7 +683,7 @@ ON_BinaryArchive::ReadShort(   // Read an array of 16 bit shorts
 
 bool
 ON_BinaryArchive::ReadShort(   // Read an array of 16 bit unsigned shorts
-		size_t count,       // number of unsigned chars to read
+		std::size_t count,       // number of unsigned chars to read
 		unsigned short* p
 		)
 {
@@ -708,7 +708,7 @@ ON_BinaryArchive::ReadShort(   // Read a single 16 bit unsigned short
 
 bool
 ON_BinaryArchive::ReadInt32( // Read an array of 32 bit integers
-		size_t count,            // number of 32 bit integers to read
+		std::size_t count,            // number of 32 bit integers to read
 		ON__INT32* p
 		)
 {
@@ -728,7 +728,7 @@ ON_BinaryArchive::ReadInt32( // Read an array of 32 bit integers
 
 bool
 ON_BinaryArchive::ReadInt( // Read an array of integers
-		size_t count,          // number of unsigned chars to read
+		std::size_t count,          // number of unsigned chars to read
 		int* p
 		)
 {
@@ -766,7 +766,7 @@ ON_BinaryArchive::ReadInt( // Read an array of integers
 
 bool
 ON_BinaryArchive::ReadInt( // Read an array of 32 bit integers
-		size_t count,       // number of unsigned chars to read
+		std::size_t count,       // number of unsigned chars to read
 		unsigned int* p
 		)
 {
@@ -790,7 +790,7 @@ ON_BinaryArchive::ReadInt( // Read a single 32 bit unsigned integer
 }
 
 bool ON_BinaryArchive::ReadBigInt( // Read an array of 64 bit integers
-		size_t,
+		std::size_t,
 		ON__INT64* p 
 		)
 {
@@ -798,7 +798,7 @@ bool ON_BinaryArchive::ReadBigInt( // Read an array of 64 bit integers
 }
 
 bool ON_BinaryArchive::ReadBigInt( // Read an array of 64 bit integers
-		size_t,
+		std::size_t,
 		ON__UINT64* p
 		)
 {
@@ -823,7 +823,7 @@ bool ON_BinaryArchive::ReadBigInt( // Read a single 64 bit unsigned integer
 
 bool
 ON_BinaryArchive::ReadLong( // Read an array of 32 bit integers
-		size_t count,       // number of unsigned chars to read
+		std::size_t count,       // number of unsigned chars to read
 		long* p
 		)
 {
@@ -861,7 +861,7 @@ ON_BinaryArchive::ReadLong( // Read an array of 32 bit integers
 
 bool
 ON_BinaryArchive::ReadLong( // Read an array of 32 bit integers
-		size_t count,       // number of unsigned chars to read
+		std::size_t count,       // number of unsigned chars to read
 		unsigned long* p
 		)
 {
@@ -886,7 +886,7 @@ ON_BinaryArchive::ReadLong( // Read a single 32 bit unsigned integer
 
 bool
 ON_BinaryArchive::ReadFloat(   // Read an array of floats
-		size_t count,       // number of unsigned chars to read
+		std::size_t count,       // number of unsigned chars to read
 		float* p
 		)
 {
@@ -904,7 +904,7 @@ ON_BinaryArchive::ReadFloat(   // Read a single float
 
 bool
 ON_BinaryArchive::ReadDouble(  // Read an array of IEEE 64 bit doubles
-		size_t count,       // number of unsigned chars to read
+		std::size_t count,       // number of unsigned chars to read
 		double* p
 		)
 {
@@ -2341,7 +2341,7 @@ bool ON_BinaryArchive::ReadBool( bool *b )
 
 bool
 ON_BinaryArchive::WriteChar(    // Write an array of 8 bit chars
-		size_t count,       // number of chars to write
+		std::size_t count,       // number of chars to write
 		const char* p   
 		)
 {
@@ -2350,7 +2350,7 @@ ON_BinaryArchive::WriteChar(    // Write an array of 8 bit chars
 
 bool
 ON_BinaryArchive::WriteChar(    // Write an array of 8 bit unsigned chars
-		size_t count,       // number of unsigned chars to write
+		std::size_t count,       // number of unsigned chars to write
 		const unsigned char* p
 		)
 {
@@ -2375,7 +2375,7 @@ ON_BinaryArchive::WriteChar(    // Write a single 8 bit unsigned char
 
 bool
 ON_BinaryArchive::WriteInt16(   // Write an array of 16 bit shorts
-		size_t count,               // number of shorts to write
+		std::size_t count,               // number of shorts to write
 		const ON__INT16* p
 		)
 {
@@ -2404,7 +2404,7 @@ ON_BinaryArchive::WriteInt16(   // Write an array of 16 bit shorts
 
 bool
 ON_BinaryArchive::WriteShort(   // Write an array of 16 bit shorts
-		size_t count,       // number of shorts to write
+		std::size_t count,       // number of shorts to write
 		const short* p
 		)
 {
@@ -2441,7 +2441,7 @@ ON_BinaryArchive::WriteShort(   // Write an array of 16 bit shorts
 
 bool
 ON_BinaryArchive::WriteShort(   // Write an array of 16 bit unsigned shorts
-		size_t count,       // number of shorts to write
+		std::size_t count,       // number of shorts to write
 		const unsigned short* p
 		)
 {
@@ -2466,7 +2466,7 @@ ON_BinaryArchive::WriteShort(   // Write a single 16 bit unsigned short
 
 bool
 ON_BinaryArchive::WriteInt32( // Write an array of 32 bit integers
-		size_t count,	            // number of ints to write
+		std::size_t count,	            // number of ints to write
 		const ON__INT32* p    
 		)
 {
@@ -2495,7 +2495,7 @@ ON_BinaryArchive::WriteInt32( // Write an array of 32 bit integers
 
 bool
 ON_BinaryArchive::ReadInt64( // Read an array of 64 bit integers
-		size_t count,            // number of 64 bit integers to read
+		std::size_t count,            // number of 64 bit integers to read
 		ON__INT64* p
 		)
 {
@@ -2517,7 +2517,7 @@ ON_BinaryArchive::ReadInt64( // Read an array of 64 bit integers
 
 bool
 ON_BinaryArchive::WriteInt64( // Write an array of 64 bit integers
-		size_t count,	            // number of ints to write
+		std::size_t count,	            // number of ints to write
 		const ON__INT64* p    
 		)
 {
@@ -2550,7 +2550,7 @@ ON_BinaryArchive::WriteInt64( // Write an array of 64 bit integers
 
 bool
 ON_BinaryArchive::WriteInt( // Write an array of integers
-		size_t count,	          // number of ints to write
+		std::size_t count,	          // number of ints to write
 		const int* p    
 		)
 {
@@ -2635,7 +2635,7 @@ bool ON_BinaryArchive::ReadBigTime( time_t* t )
 
 bool
 ON_BinaryArchive::WriteInt( // Write an array of 32 bit integers
-		size_t count,	      // number of ints to write
+		std::size_t count,	      // number of ints to write
 		const unsigned int* p
 		)
 {
@@ -2659,7 +2659,7 @@ ON_BinaryArchive::WriteInt( // Write a single 32 bit integer
 }
 
 bool ON_BinaryArchive::WriteBigInt( // Write an array of 64 bit integers
-		size_t count,
+		std::size_t count,
 		const ON__INT64* p      
 		)
 {
@@ -2667,7 +2667,7 @@ bool ON_BinaryArchive::WriteBigInt( // Write an array of 64 bit integers
 }
 
 bool ON_BinaryArchive::WriteBigInt( // Write an array of 64 bit integers
-		size_t count,
+		std::size_t count,
 		const ON__UINT64* p     
 		)
 {
@@ -2692,7 +2692,7 @@ bool ON_BinaryArchive::WriteBigInt( // Write a single 64 bit unsigned integer
 
 bool
 ON_BinaryArchive::WriteLong( // Write an array of longs
-		size_t count,	      // number of longs to write
+		std::size_t count,	      // number of longs to write
 		const long* p    
 		)
 {
@@ -2729,7 +2729,7 @@ ON_BinaryArchive::WriteLong( // Write an array of longs
 
 bool
 ON_BinaryArchive::WriteLong( // Write an array of longs
-		size_t count,	      // number of longs to write
+		std::size_t count,	      // number of longs to write
 		const unsigned long* p
 		)
 {
@@ -2755,7 +2755,7 @@ ON_BinaryArchive::WriteLong( // Write a single unsigned long
 
 bool
 ON_BinaryArchive::WriteFloat(   // Write a number of IEEE floats
-		size_t count,       // number of doubles
+		std::size_t count,       // number of doubles
 		const float* p
 		)
 {
@@ -2773,7 +2773,7 @@ ON_BinaryArchive::WriteFloat(   // Write a single float
 
 bool
 ON_BinaryArchive::WriteDouble(  // Write a single double
-		size_t count,       // number of doubles
+		std::size_t count,       // number of doubles
 		const double* p
 		)
 {
@@ -4520,7 +4520,7 @@ int ON_BinaryArchive::ArchiveOpenNURBSVersion() const
   return m_3dm_opennurbs_version;
 }
 
-size_t ON_BinaryArchive::ArchiveStartOffset() const
+std::size_t ON_BinaryArchive::ArchiveStartOffset() const
 {
   return m_3dm_start_section_offset;
 }
@@ -5658,7 +5658,7 @@ bool ON_BinaryArchive::ReadChunkValue( ON__UINT32 typecode, ON__INT64* value64 )
   return rc;
 }
 
-size_t ON_BinaryArchive::SizeofChunkLength() const
+std::size_t ON_BinaryArchive::SizeofChunkLength() const
 {
   // Version 1 - 4 and early version 5 files had
   // 4 byte chunk lengths.  In October of 2009,
@@ -13196,12 +13196,12 @@ ON_BinaryFile::EnableMemoryBuffer(
 }
 
 
-size_t ON_BinaryFile::Read( std::size_t count, void* p )
+std::size_t ON_BinaryFile::Read( std::size_t count, void* p )
 {
   return (m_fp) ? fread( p, 1, count, m_fp ) : 0;
 }
 
-size_t ON_BinaryFile::Write( std::size_t count, const void* p )
+std::size_t ON_BinaryFile::Write( std::size_t count, const void* p )
 {
   std::size_t rc = 0;
   if ( m_fp ) 
@@ -13257,7 +13257,7 @@ bool ON_BinaryFile::Flush()
   return rc;
 }
 
-size_t ON_BinaryFile::CurrentPosition() const
+std::size_t ON_BinaryFile::CurrentPosition() const
 {
   std::size_t offset = 0;
 
@@ -13304,7 +13304,7 @@ bool ON_BinaryFile::AtEnd() const
       else 
       {
         int buffer;
-        size_t res = fread( &buffer, 1, 1, m_fp );
+        std::size_t res = fread( &buffer, 1, 1, m_fp );
         (void) res;
         if ( feof( m_fp ) ) 
         {
@@ -14725,7 +14725,7 @@ ON_Read3dmBufferArchive::~ON_Read3dmBufferArchive()
 }
 
 // ON_BinaryArchive overrides
-size_t ON_Read3dmBufferArchive::CurrentPosition() const
+std::size_t ON_Read3dmBufferArchive::CurrentPosition() const
 {
   return m_buffer_position;
 }
@@ -14768,7 +14768,7 @@ bool ON_Read3dmBufferArchive::AtEnd() const
   return (m_buffer_position >= m_sizeof_buffer) ? true : false;
 }
 
-size_t ON_Read3dmBufferArchive::Read( std::size_t count, void* buffer )
+std::size_t ON_Read3dmBufferArchive::Read( std::size_t count, void* buffer )
 {
   if ( count <= 0 || 0 == buffer )
     return 0;
@@ -14788,7 +14788,7 @@ size_t ON_Read3dmBufferArchive::Read( std::size_t count, void* buffer )
   return count;
 }
 
-size_t ON_Read3dmBufferArchive::Write( std::size_t, const void* )
+std::size_t ON_Read3dmBufferArchive::Write( std::size_t, const void* )
 {
   // ON_Read3dmBufferArchive does not support Write() and Flush()
   return 0;
@@ -14801,7 +14801,7 @@ bool ON_Read3dmBufferArchive::Flush()
 }
 
 
-size_t ON_Read3dmBufferArchive::SizeOfBuffer() const
+std::size_t ON_Read3dmBufferArchive::SizeOfBuffer() const
 {
   return m_sizeof_buffer;
 }
@@ -14877,7 +14877,7 @@ void ON_Write3dmBufferArchive::AllocBuffer( std::size_t sz )
 }
 
 // ON_BinaryArchive overrides
-size_t ON_Write3dmBufferArchive::CurrentPosition() const
+std::size_t ON_Write3dmBufferArchive::CurrentPosition() const
 {
   return m_buffer_position;
 }
@@ -14920,7 +14920,7 @@ bool ON_Write3dmBufferArchive::AtEnd() const
   return (m_buffer_position >= m_sizeof_buffer) ? true : false;
 }
 
-size_t ON_Write3dmBufferArchive::Read( std::size_t count, void* buffer )
+std::size_t ON_Write3dmBufferArchive::Read( std::size_t count, void* buffer )
 {
   if ( count <= 0 || 0 == buffer )
     return 0;
@@ -14940,7 +14940,7 @@ size_t ON_Write3dmBufferArchive::Read( std::size_t count, void* buffer )
   return count;
 }
 
-size_t ON_Write3dmBufferArchive::Write( std::size_t sz, const void* buffer )
+std::size_t ON_Write3dmBufferArchive::Write( std::size_t sz, const void* buffer )
 {
   if ( sz <= 0 || 0 == buffer )
     return 0;
@@ -14968,7 +14968,7 @@ bool ON_Write3dmBufferArchive::Flush()
 }
 
 
-size_t ON_Write3dmBufferArchive::SizeOfBuffer() const
+std::size_t ON_Write3dmBufferArchive::SizeOfBuffer() const
 {
   return m_sizeof_buffer;
 }
@@ -14991,7 +14991,7 @@ void* ON_Write3dmBufferArchive::HarvestBuffer()
   return buffer;
 }
 
-size_t ON_Write3dmBufferArchive::SizeOfArchive() const
+std::size_t ON_Write3dmBufferArchive::SizeOfArchive() const
 {
   return m_sizeof_archive;
 }
@@ -15026,7 +15026,7 @@ ON_Buffer* ON_BinaryArchiveBuffer::Buffer() const
   return m_buffer;
 }
 
-size_t ON_BinaryArchiveBuffer::CurrentPosition() const
+std::size_t ON_BinaryArchiveBuffer::CurrentPosition() const
 {
   if ( 0 != m_buffer )
     return (std::size_t)m_buffer->CurrentPosition();
@@ -15066,7 +15066,7 @@ bool ON_BinaryArchiveBuffer::SeekFromEnd( ON__INT64 offset )
   return false;
 }
 
-size_t ON_BinaryArchiveBuffer::Read( std::size_t count, void* a )
+std::size_t ON_BinaryArchiveBuffer::Read( std::size_t count, void* a )
 {
   if ( 0 != m_buffer )
     return (std::size_t)m_buffer->Read(count,a);
@@ -15074,7 +15074,7 @@ size_t ON_BinaryArchiveBuffer::Read( std::size_t count, void* a )
   return 0;
 }
 
-size_t ON_BinaryArchiveBuffer::Write( std::size_t count, const void* a )
+std::size_t ON_BinaryArchiveBuffer::Write( std::size_t count, const void* a )
 {
   if ( 0 != m_buffer )
     return (std::size_t)m_buffer->Write(count,a);

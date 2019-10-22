@@ -365,7 +365,7 @@ FittingCurve2dPDM::initCPsNurbsCurve2D (int order, const vector_vec2d &cps)
 {
   int cp_red = order - 2;
   ON_NurbsCurve nurbs;
-  if (cps.size () < 3 || cps.size () < (2 * static_cast<size_t>(cp_red) + 1))
+  if (cps.size () < 3 || cps.size () < (2 * static_cast<std::size_t>(cp_red) + 1))
   {
     printf ("[FittingCurve2dPDM::initCPsNurbsCurve2D] Warning, number of control points too low.\n");
     return nurbs;

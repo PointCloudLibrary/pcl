@@ -406,7 +406,7 @@ ON_UnknownUserDataArchive::~ON_UnknownUserDataArchive()
 {
 }
 
-size_t ON_UnknownUserDataArchive::CurrentPosition() const
+std::size_t ON_UnknownUserDataArchive::CurrentPosition() const
 {
   return m_buffer_position;
 }
@@ -445,7 +445,7 @@ bool ON_UnknownUserDataArchive::AtEnd() const
   return (m_buffer_position >= m_sizeof_buffer) ? true : false;
 }
 
-size_t ON_UnknownUserDataArchive::Read( std::size_t count, void* buffer )
+std::size_t ON_UnknownUserDataArchive::Read( std::size_t count, void* buffer )
 {
   std::size_t maxcount = 0;
 
@@ -468,7 +468,7 @@ size_t ON_UnknownUserDataArchive::Read( std::size_t count, void* buffer )
   return count;
 }
 
-size_t ON_UnknownUserDataArchive::Write( std::size_t, const void* )
+std::size_t ON_UnknownUserDataArchive::Write( std::size_t, const void* )
 {
   // ON_UnknownUserDataArchive does not support Write() and Flush()
   return 0;

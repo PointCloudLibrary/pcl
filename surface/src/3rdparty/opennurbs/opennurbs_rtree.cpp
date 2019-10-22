@@ -78,7 +78,7 @@ static bool SearchHelper(const ON_RTreeNode* a_node, struct ON_RTreeCapsule* a_c
 // ON_RTreeMemPool
 //
 
-size_t ON_MemoryPageSize()
+std::size_t ON_MemoryPageSize()
 {
 #if defined(ON_COMPILER_MSC)
   static std::size_t pagesize = 0;
@@ -290,12 +290,12 @@ void ON_RTreeMemPool::FreeListNode(struct ON_RTreeListNode* list_node)
   }
 }
 
-size_t ON_RTreeMemPool::SizeOf() const
+std::size_t ON_RTreeMemPool::SizeOf() const
 {
   return m_sizeof_heap;
 }
 
-size_t ON_RTreeMemPool::SizeOfUnusedBuffer() const
+std::size_t ON_RTreeMemPool::SizeOfUnusedBuffer() const
 {
   const struct Blk* blk;
   std::size_t sz = m_buffer_capacity;
@@ -1466,7 +1466,7 @@ static void CountRec(ON_RTreeNode* a_node, int& a_count)
   }
 }
 
-size_t ON_RTree::SizeOf() const
+std::size_t ON_RTree::SizeOf() const
 {
   return m_mem_pool.SizeOf();
 }
