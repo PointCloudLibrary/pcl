@@ -10,7 +10,7 @@ ON_FixedSizePool::~ON_FixedSizePool()
   Destroy();
 }
 
-size_t ON_FixedSizePool::SizeofElement() const
+std::size_t ON_FixedSizePool::SizeofElement() const
 {
   return m_sizeof_element;
 }
@@ -130,12 +130,12 @@ ON_MEMORY_POOL* ON_FixedSizePool::Heap()
   return m_heap;
 }
 
-size_t ON_FixedSizePool::ActiveElementCount() const
+std::size_t ON_FixedSizePool::ActiveElementCount() const
 {
   return m_active_element_count;
 }
 
-size_t ON_FixedSizePool::TotalElementCount() const
+std::size_t ON_FixedSizePool::TotalElementCount() const
 {
   return m_total_element_count;
 }
@@ -404,7 +404,7 @@ void* ON_FixedSizePoolIterator::FirstElement(std::size_t element_index)
   return m_it_element;
 }
 
-size_t ON_FixedSizePool::BlockElementCapacity( const void* block ) const
+std::size_t ON_FixedSizePool::BlockElementCapacity( const void* block ) const
 {
   // returns number of items that can be allocated from block
   if ( 0 == block || m_sizeof_element <= 0 )
@@ -413,7 +413,7 @@ size_t ON_FixedSizePool::BlockElementCapacity( const void* block ) const
   return (block_end - ((char*)block))/m_sizeof_element;
 }
 
-size_t ON_FixedSizePool::BlockElementCount( const void* block ) const
+std::size_t ON_FixedSizePool::BlockElementCount( const void* block ) const
 {
   // returns number of items allocated from block
   if ( 0 == block || m_sizeof_element <= 0 )

@@ -38,7 +38,7 @@ bool ON_SimpleFixedSizePool<T>::Create(
 }
 
 template <class T>
-size_t ON_SimpleFixedSizePool<T>::SizeofElement() const
+std::size_t ON_SimpleFixedSizePool<T>::SizeofElement() const
 {
   return ON_FixedSizePool::SizeofElement();
 }
@@ -68,13 +68,13 @@ void ON_SimpleFixedSizePool<T>::Destroy()
 }
 
 template <class T>
-size_t ON_SimpleFixedSizePool<T>::ActiveElementCount() const
+std::size_t ON_SimpleFixedSizePool<T>::ActiveElementCount() const
 {
   return ON_FixedSizePool::ActiveElementCount();
 }
 
 template <class T>
-size_t ON_SimpleFixedSizePool<T>::TotalElementCount() const
+std::size_t ON_SimpleFixedSizePool<T>::TotalElementCount() const
 {
   return ON_FixedSizePool::TotalElementCount();
 }

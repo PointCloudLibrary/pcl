@@ -191,7 +191,7 @@ bool ON_BinaryArchive::ReadCompressedBuffer( // read and uncompress
   return rc;
 }
 
-size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
+std::size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
         std::size_t sizeof___inbuffer,  // sizeof uncompressed input data ( > 0 )
         const void* in___buffer     // uncompressed input data ( != NULL )
         )
@@ -820,7 +820,7 @@ bool ON_CompressedBuffer::Compress(
 {
   Destroy();
 
-  //size_t compressed_size = 0;
+  //std::size_t compressed_size = 0;
   bool rc = false;
 
   if ( sizeof__inbuffer > 0 && 0 == inbuffer )
@@ -1047,7 +1047,7 @@ bool ON_CompressedBuffer::WriteChar(
 }
 
 
-size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes written
+std::size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes written
         ON_CompressedBufferHelper* helper,
         std::size_t sizeof___inbuffer,  // sizeof uncompressed input data ( > 0 )
         const void* in___buffer     // uncompressed input data ( != NULL )

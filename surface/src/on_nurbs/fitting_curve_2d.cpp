@@ -246,7 +246,7 @@ ON_NurbsCurve
 FittingCurve2d::initNurbsCPS (int order, const vector_vec2d &cps)
 {
   ON_NurbsCurve nurbs;
-  if (cps.size () < static_cast<size_t>(order))
+  if (cps.size () < static_cast<std::size_t>(order))
   {
     printf ("[FittingCurve2d::initCPsNurbsCurve2D] Warning, number of control points too low.\n");
     return nurbs;

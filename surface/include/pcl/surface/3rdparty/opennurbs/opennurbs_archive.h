@@ -890,11 +890,11 @@ public:
   bool ReadBool( bool* );
 
 	bool ReadChar(    // Read an array of 8 bit chars
-			size_t,       // number of chars to read
+			std::size_t,       // number of chars to read
 			char*    
 			);  
 	bool ReadChar(    // Read an array of 8 bit unsigned chars
-			size_t,       // number of unsigned chars to read
+			std::size_t,       // number of unsigned chars to read
 			unsigned char*    
 			);  
 	bool ReadChar(    // Read a single 8 bit char
@@ -905,11 +905,11 @@ public:
 			);  
 
 	bool ReadShort(   // Read an array of 16 bit shorts
-			size_t,       // number of shorts to read
+			std::size_t,       // number of shorts to read
 			short*    
 			);  
 	bool ReadShort(   // Read an array of 16 bit unsigned shorts
-			size_t,       // number of shorts to read
+			std::size_t,       // number of shorts to read
 			unsigned short*    
 			);  
 	bool ReadShort(   // Read a single 16 bit short
@@ -920,11 +920,11 @@ public:
 			);  
 
 	bool ReadInt( // Read an array of 32 bit integers
-			size_t,	      // number of ints to read
+			std::size_t,	      // number of ints to read
 			int*      
 			); 
 	bool ReadInt( // Read an array of 32 bit integers
-			size_t,	      // number of ints to read
+			std::size_t,	      // number of ints to read
 			unsigned int*      
 			); 
 	bool ReadInt( // Read a single 32 bit integer
@@ -935,11 +935,11 @@ public:
 			); 
 
 	bool ReadBigInt( // Read an array of 64 bit integers
-			size_t,	      // number of ints to read
+			std::size_t,	      // number of ints to read
 			ON__INT64*      
 			); 
 	bool ReadBigInt( // Read an array of 64 bit integers
-			size_t,	      // number of ints to read
+			std::size_t,	      // number of ints to read
 			ON__UINT64*      
 			); 
 	bool ReadBigInt( // Read a single 64 bit integer
@@ -950,11 +950,11 @@ public:
 			); 
 
 	bool ReadLong( // Read an array of 32 bit integers
-			size_t,	      // number of ints to read
+			std::size_t,	      // number of ints to read
 			long*      
 			); 
 	bool ReadLong( // Read an array of 32 bit integers
-			size_t,	      // number of ints to read
+			std::size_t,	      // number of ints to read
 			unsigned long*      
 			); 
 	bool ReadLong( // Read a single 32 bit integer
@@ -964,7 +964,7 @@ public:
 			unsigned long*      
 			); 
 	bool ReadSize( // Read a single std::size_t
-			size_t*
+			std::size_t*
 			); 
 
   bool ReadBigSize( std::size_t* ); // 64 bits
@@ -973,14 +973,14 @@ public:
 
 
 	bool ReadFloat(   // Read an array of floats
-			size_t,       // number of floats
+			std::size_t,       // number of floats
 			float*
 			);
 	bool ReadFloat(   // Read a single float
 			float*
 			);
 	bool ReadDouble(  // Read an array of IEEE doubles
-			size_t,       // number of doubles
+			std::size_t,       // number of doubles
 			double*
 			);
 	bool ReadDouble(  // Read a single double
@@ -1173,11 +1173,11 @@ public:
   bool WriteBool( bool );
 
   bool WriteChar(    // Write an array of 8 bit chars
-			size_t,       // number of chars to write
+			std::size_t,       // number of chars to write
 			const char*    
 			);  
 	bool WriteChar(    // Write an array of 8 bit unsigned chars
-			size_t,       // number of unsigned chars to write
+			std::size_t,       // number of unsigned chars to write
 			const unsigned char*    
 			);  
 	bool WriteChar(    // Write a single 8 bit char
@@ -1188,11 +1188,11 @@ public:
 			);  
 
 	bool WriteShort(   // Write an array of 16 bit shorts
-			size_t,       // number of shorts to write
+			std::size_t,       // number of shorts to write
 			const short*    
 			);  
 	bool WriteShort(   // Write an array of 16 bit unsigned shorts
-			size_t,       // number of shorts to write
+			std::size_t,       // number of shorts to write
 			const unsigned short*    
 			);  
 	bool WriteShort(   // Write a single 16 bit short
@@ -1203,11 +1203,11 @@ public:
 			);  
 
 	bool WriteInt( // Write an array of 32 bit integers
-			size_t,	      // number of ints to write
+			std::size_t,	      // number of ints to write
 			const int*      
 			); 
 	bool WriteInt( // Write an array of 32 bit integers
-			size_t,	      // number of ints to write
+			std::size_t,	      // number of ints to write
 			const unsigned int*      
 			); 
 	bool WriteInt( // Write a single 32 bit integer
@@ -1218,11 +1218,11 @@ public:
 			); 
 
 	bool WriteBigInt( // Write an array of 64 bit integers
-			size_t,	      // number of ints to write
+			std::size_t,	      // number of ints to write
 			const ON__INT64*      
 			); 
 	bool WriteBigInt( // Write an array of 64 bit integers
-			size_t,	      // number of ints to write
+			std::size_t,	      // number of ints to write
 			const ON__UINT64*      
 			); 
 	bool WriteBigInt( // Write a single 64 bit integer
@@ -1233,11 +1233,11 @@ public:
 			); 
 
 	bool WriteLong( // Write an array of 32 bit integers
-			size_t,	      // number of ints to write
+			std::size_t,	      // number of ints to write
 			const long*      
 			); 
 	bool WriteLong( // Write an array of 32 bit integers
-			size_t,	      // number of ints to write
+			std::size_t,	      // number of ints to write
 			const unsigned long*      
 			); 
 	bool WriteLong( // Write a single 32 bit integer
@@ -1247,7 +1247,7 @@ public:
 			unsigned long
 			); 
 	bool WriteSize( // Write a single std::size_t
-			size_t
+			std::size_t
 			); 
 
   bool WriteBigSize( std::size_t ); // 64 bits 
@@ -1255,7 +1255,7 @@ public:
   bool WriteBigTime( time_t ); // UCT seconds since 1 January 1970 (64 bits)
 
 	bool WriteFloat(   // Write a number of IEEE floats
-			size_t,       // number of doubles
+			std::size_t,       // number of doubles
 			const float*
 			);
 	bool WriteFloat(   // Write a single float
