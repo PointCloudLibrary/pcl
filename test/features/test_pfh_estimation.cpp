@@ -50,6 +50,7 @@
 #include <pcl/features/vfh.h>
 #include <pcl/features/gfpfh.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/test/pcl_macros.h>
 
 using PointT = pcl::PointNormal;
 using KdTreePtr = pcl::search::KdTree<PointT>::Ptr;
@@ -294,7 +295,7 @@ struct FPFHTest<FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >
 using FPFHEstimatorTypes = ::testing::Types
         <FPFHEstimation<PointT, PointT, FPFHSignature33>,
          FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >;
-PCL_TYPED_TEST_SUITE (FPFHTest, FPFHEstimatorTypes);
+TYPED_TEST_SUITE (FPFHTest, FPFHEstimatorTypes);
 
 // This is a copy of the old FPFHEstimation test which will now
 // be applied to both FPFHEstimation and FPFHEstimationOMP

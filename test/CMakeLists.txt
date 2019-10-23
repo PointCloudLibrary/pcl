@@ -19,6 +19,8 @@ enable_testing()
 add_custom_target(tests "${CMAKE_CTEST_COMMAND}" "-V" VERBATIM)
 set_target_properties(tests PROPERTIES FOLDER "Tests")
 
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+
 add_subdirectory(2d)
 add_subdirectory(common)
 add_subdirectory(features)

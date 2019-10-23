@@ -46,6 +46,7 @@
 #include "pcl/features/shot_lrf.h"
 #include <pcl/features/3dsc.h>
 #include <pcl/features/usc.h>
+#include <pcl/test/pcl_macros.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -371,7 +372,7 @@ struct SHOTShapeTest<SHOTEstimationOMP<PointXYZ, Normal, SHOT352> >
 using SHOTEstimatorTypes = ::testing::Types
         <SHOTEstimation<PointXYZ, Normal, SHOT352>,
          SHOTEstimationOMP<PointXYZ, Normal, SHOT352> >;
-PCL_TYPED_TEST_SUITE (SHOTShapeTest, SHOTEstimatorTypes);
+TYPED_TEST_SUITE (SHOTShapeTest, SHOTEstimatorTypes);
 
 // This is a copy of the old SHOTShapeEstimation test which will now
 // be applied to both SHOTEstimation and SHOTEstimationOMP
@@ -560,7 +561,7 @@ struct SHOTShapeAndColorTest<SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT13
 using SHOTColorEstimatorTypes= ::testing::Types
         <SHOTColorEstimation<PointXYZRGBA, Normal, SHOT1344>,
          SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> >;
-PCL_TYPED_TEST_SUITE (SHOTShapeAndColorTest, SHOTColorEstimatorTypes);
+TYPED_TEST_SUITE (SHOTShapeAndColorTest, SHOTColorEstimatorTypes);
 
 // This is a copy of the old SHOTShapeAndColorEstimation test which will now
 // be applied to both SHOTColorEstimation and SHOTColorEstimationOMP

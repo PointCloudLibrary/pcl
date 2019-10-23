@@ -32,46 +32,31 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id$
- *
  */
 
-#include <gtest/gtest.h>
-#include <pcl/common/geometry.h>
-#include <pcl/point_types.h>
-#include <pcl/test/pcl_macros.h>
+#pragma once
 
-using namespace pcl;
+/**
+ * \file pcl/test/pcl_macros.h
+ *
+ * \brief Defines all the PCL test macros used
+ * \ingroup test
+ */
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename T> class XYZPointTypesTest : public ::testing::Test { };
-using XYZPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_XYZ_POINT_TYPES)>;
-TYPED_TEST_SUITE(XYZPointTypesTest, XYZPointTypes);
+/**
+ * \brief Macro choose between TYPED_TEST_CASE and TYPED_TEST_SUITE depending on the GTest version
+ *
+ * \ingroup test
+ */
+#if !defined(TYPED_TEST_SUITE)
+  #define TYPED_TEST_SUITE TYPED_TEST_CASE
+#endif
 
-TYPED_TEST(XYZPointTypesTest, Distance)
-{
-  TypeParam p1, p2;
-  p1.x = 3; p1.y = 4; p1.z = 5;
-  p2.y = 1; p2.x = 1; p2.z = 1.5;
-  double distance = geometry::distance (p1, p2);
-  EXPECT_NEAR (distance, 5.024938, 1e-4);
-}
-
-TYPED_TEST(XYZPointTypesTest, SquaredDistance)
-{
-  TypeParam p1, p2;
-  p1.x = 3; p1.y = 4; p1.z = 5;
-  p2.y = 1; p2.x = 1; p2.z = 1.5;
-  double distance = geometry::squaredDistance (p1, p2);
-  EXPECT_NEAR (distance, 25.25, 1e-4);
-}
-
-/* ---[ */
-int
-main (int argc, char** argv)
-{
-  testing::InitGoogleTest (&argc, argv);
-  return (RUN_ALL_TESTS ());
-}
-/* ]--- */
+/**
+ * \brief Macro choose between INSTANTIATE_TEST_CASE_P and INSTANTIATE_TEST_SUITE_P depending on the GTest version
+ *
+ * \ingroup test
+ */
+#if !defined(INSTANTIATE_TEST_SUITE_P)
+  #define INSTANTIATE_TEST_SUITE_P INSTANTIATE_TEST_CASE_P
+#endif

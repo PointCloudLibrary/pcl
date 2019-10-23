@@ -45,6 +45,7 @@
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/rransac.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
+#include <pcl/test/pcl_macros.h>
 
 #include <chrono>
 #include <condition_variable>
@@ -92,7 +93,7 @@ using sacTypes = ::testing::Types<
   RandomizedMEstimatorSampleConsensus<PointXYZ>,
   MaximumLikelihoodSampleConsensus<PointXYZ>
 >;
-PCL_TYPED_TEST_SUITE(SacTest, sacTypes);
+TYPED_TEST_SUITE(SacTest, sacTypes);
 
 TYPED_TEST(SacTest, InfiniteLoop)
 {

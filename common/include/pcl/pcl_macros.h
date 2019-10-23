@@ -370,29 +370,3 @@ aligned_free (void* ptr)
 #else
   #define PCL_NODISCARD
 #endif
-
-/**
- * \brief Macro choose between TYPED_TEST_CASE and PCL_TYPED_TEST_SUITE depending on the GTest version
- *
- * \ingroup common
- */
-#if defined(TYPED_TEST_SUITE)
-  #define PCL_TYPED_TEST_SUITE TYPED_TEST_SUITE
-#elif defined(TYPED_TEST_CASE)
-  #define PCL_TYPED_TEST_SUITE TYPED_TEST_CASE
-#else
-  #define PCL_TYPED_TEST_SUITE PLEASE_INCLUDE_GTEST_H_BEFORE_PCL_MACROS_H
-#endif
-
-/**
- * \brief Macro choose between INSTANTIATE_TEST_CASE_P and INSTANTIATE_TEST_SUITE_P depending on the GTest version
- *
- * \ingroup common
- */
-#if defined(INSTANTIATE_TEST_SUITE_P)
-  #define PCL_INSTANTIATE_TEST_SUITE_P INSTANTIATE_TEST_SUITE_P
-#elif defined(INSTANTIATE_TEST_CASE_P)
-  #define PCL_INSTANTIATE_TEST_SUITE_P INSTANTIATE_TEST_CASE_P
-#else
-  #define PCL_INSTANTIATE_TEST_SUITE_P PLEASE_INCLUDE_GTEST_H_BEFORE_PCL_MACROS_H
-#endif

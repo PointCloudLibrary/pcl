@@ -35,10 +35,12 @@
  *
  */
 
-#include <gtest/gtest.h>
+
 #include <pcl/point_traits.h>
 #include <pcl/point_types.h>
-#include <pcl/pcl_macros.h>
+
+#include <gtest/gtest.h>
+#include <pcl/test/pcl_macros.h>
 
 TEST (TypeTraits, HasCustomAllocatorTrait)
 {

@@ -42,6 +42,7 @@
 
 #include <pcl/geometry/polygon_mesh.h>
 #include <pcl/geometry/get_boundary.h>
+#include <pcl/test/pcl_macros.h>
 #include "test_mesh_common_functions.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -68,7 +69,7 @@ class TestGetBoundary : public testing::Test
     using Mesh = MeshT;
 };
 
-PCL_TYPED_TEST_SUITE (TestGetBoundary, MeshTypes);
+TYPED_TEST_SUITE (TestGetBoundary, MeshTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 

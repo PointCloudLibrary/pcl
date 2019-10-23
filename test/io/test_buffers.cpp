@@ -41,6 +41,7 @@
 #include <cstdint>
 
 #include <pcl/io/buffers.h>
+#include <pcl/test/pcl_macros.h>
 
 using namespace pcl::io;
 
@@ -84,7 +85,7 @@ class BuffersTest : public ::testing::Test
 };
 
 using DataTypes = ::testing::Types<std::int8_t, std::int32_t, float>;
-PCL_TYPED_TEST_SUITE (BuffersTest, DataTypes);
+TYPED_TEST_SUITE (BuffersTest, DataTypes);
 
 TYPED_TEST (BuffersTest, SingleBuffer)
 {

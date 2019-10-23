@@ -47,6 +47,7 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <pcl/test/pcl_macros.h>
 
 #include "test_mesh_common_functions.h"
 
@@ -152,7 +153,7 @@ using NonManifoldMeshTraits = MeshTraits<false>;
 
 using MeshTraitsTypes = testing::Types <ManifoldMeshTraits, NonManifoldMeshTraits>;
 
-PCL_TYPED_TEST_SUITE (TestMeshConversion, MeshTraitsTypes);
+TYPED_TEST_SUITE (TestMeshConversion, MeshTraitsTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 

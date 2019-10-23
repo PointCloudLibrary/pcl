@@ -44,6 +44,7 @@
 #include <gtest/gtest.h>
 
 #include <pcl/geometry/quad_mesh.h>
+#include <pcl/test/pcl_macros.h>
 
 #include "test_mesh_common_functions.h"
 
@@ -80,7 +81,7 @@ class TestQuadMesh : public testing::Test
     using Mesh = MeshT;
 };
 
-PCL_TYPED_TEST_SUITE (TestQuadMesh, QuadMeshTypes);
+TYPED_TEST_SUITE (TestQuadMesh, QuadMeshTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 

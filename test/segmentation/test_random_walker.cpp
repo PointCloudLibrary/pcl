@@ -48,7 +48,7 @@
 #include <gtest/gtest.h>
 
 #include <pcl/segmentation/random_walker.h>
-#include <pcl/pcl_macros.h>
+#include <pcl/test/pcl_macros.h>
 
 std::string TEST_DATA_DIR;
 
@@ -236,7 +236,7 @@ TEST_P (RandomWalkerTest, GetPotentials)
       }
 }
 
-PCL_INSTANTIATE_TEST_SUITE_P (VariousGraphs,
+INSTANTIATE_TEST_SUITE_P (VariousGraphs,
                          RandomWalkerTest,
                          ::testing::Values ("graph0.info",
                                             "graph1.info",

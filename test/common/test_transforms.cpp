@@ -46,6 +46,7 @@
 #include <pcl/common/io.h>
 
 #include <pcl/pcl_tests.h>
+#include <pcl/test/pcl_macros.h>
 
 using namespace pcl;
 
@@ -107,7 +108,7 @@ class Transforms : public ::testing::Test
   PCL_MAKE_ALIGNED_OPERATOR_NEW;
 };
 
-PCL_TYPED_TEST_SUITE (Transforms, TransformTypes);
+TYPED_TEST_SUITE (Transforms, TransformTypes);
 
 TYPED_TEST (Transforms, PointCloudXYZDense)
 {

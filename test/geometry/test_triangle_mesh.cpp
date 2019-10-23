@@ -44,6 +44,7 @@
 #include <gtest/gtest.h>
 
 #include <pcl/geometry/triangle_mesh.h>
+#include <pcl/test/pcl_macros.h>
 
 #include "test_mesh_common_functions.h"
 
@@ -80,7 +81,7 @@ class TestTriangleMesh : public testing::Test
     using Mesh = MeshT;
 };
 
-PCL_TYPED_TEST_SUITE (TestTriangleMesh, TriangleMeshTypes);
+TYPED_TEST_SUITE (TestTriangleMesh, TriangleMeshTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 
