@@ -74,8 +74,6 @@ struct pcl::gpu::PseudoConvexHull3D::Impl
 
 pcl::gpu::PseudoConvexHull3D::PseudoConvexHull3D(std::size_t bsize)
 {
-  pcl::gpu::Static<sizeof(pcl::device::std::uint64_type) == 8>::check();
-
   impl_.reset( new Impl(bsize) );
 }
 pcl::gpu::PseudoConvexHull3D::~PseudoConvexHull3D() {}

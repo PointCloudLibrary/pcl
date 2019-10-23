@@ -37,19 +37,19 @@
 
 #pragma once
 
-#include <pcl/gpu/containers/device_array.h>
+#include <cstdint>
 #include <cuda_runtime.h>
+
+#include <pcl/gpu/containers/device_array.h>
 
 namespace pcl
 {
   namespace device
   {
-	  using std::uint64_type = unsigned long long;
-
 	  using PointType = float4;
 	  using Cloud = pcl::gpu::DeviceArray<PointType>;
 
-	  using FacetsDists = DeviceArray<std::uint64_type>;
+	  using FacetsDists = DeviceArray<std::uint64_t>;
 	  using Perm = DeviceArray<int>;
 
 	  struct InitalSimplex
