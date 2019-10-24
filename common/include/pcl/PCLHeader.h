@@ -14,16 +14,13 @@ namespace pcl
 {
   struct PCLHeader
   {
-    PCLHeader (): seq (0), stamp ()
-    {}
-
     /** \brief Sequence number */
-    std::uint32_t seq;
+    std::uint32_t seq = 0;
     /** \brief A timestamp associated with the time when the data was acquired
       *
       * The value represents microseconds since 1970-01-01 00:00:00 (the UNIX epoch).
       */
-    std::uint64_t stamp;
+    std::uint64_t stamp = 0;
     /** \brief Coordinate frame ID */
     std::string frame_id;
 

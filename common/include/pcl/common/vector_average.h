@@ -53,11 +53,14 @@ namespace pcl
   class VectorAverage
   {
      public:
+         using VectorType = Eigen::Matrix<real, dimension, 1>;
+         using MatrixType = Eigen::Matrix<real, dimension, dimension>;
         //-----CONSTRUCTOR&DESTRUCTOR-----
         /** Constructor - dimension gives the size of the vectors to work with. */
         VectorAverage ();
         /** Destructor */
-        ~VectorAverage () {}
+        ~VectorAverage () = default;
+        //TODO: check if copy/move constructors/assignment operators are needed
         
         //-----METHODS-----
         /** Reset the object to work with a new data set */
@@ -66,11 +69,11 @@ namespace pcl
         
         /** Get the mean of the added vectors */
         inline const
-        Eigen::Matrix<real, dimension, 1>& getMean () const { return mean_;}
+        VectorType& getMean () const { return mean_;}
         
         /** Get the covariance matrix of the added vectors */
         inline const
-        Eigen::Matrix<real, dimension, dimension>& getCovariance () const { return covariance_;}
+        MatrixType& getCovariance () const { return covariance_;}
         
         /** Get the summed up weight of all added vectors */
         inline real
@@ -82,20 +85,20 @@ namespace pcl
         
         /** Add a new sample */
         inline void
-        add (const Eigen::Matrix<real, dimension, 1>& sample, real weight=1.0);
+        add (const VectorType& sample, real weight=1.0);
 
         /** Do Principal component analysis */
         inline void
-        doPCA (Eigen::Matrix<real, dimension, 1>& eigen_values, Eigen::Matrix<real, dimension, 1>& eigen_vector1,
-               Eigen::Matrix<real, dimension, 1>& eigen_vector2, Eigen::Matrix<real, dimension, 1>& eigen_vector3) const;
+        doPCA (VectorType& eigen_values, VectorType& eigen_vector1,
+               VectorType& eigen_vector2, VectorType& eigen_vector3) const;
         
         /** Do Principal component analysis */
         inline void
-        doPCA (Eigen::Matrix<real, dimension, 1>& eigen_values) const;
+        doPCA (VectorType& eigen_values) const;
         
         /** Get the eigenvector corresponding to the smallest eigenvalue */
         inline void
-        getEigenVector1 (Eigen::Matrix<real, dimension, 1>& eigen_vector1) const;
+        getEigenVector1 (VectorType& eigen_vector1) const;
 
         PCL_MAKE_ALIGNED_OPERATOR_NEW
         
@@ -105,10 +108,10 @@ namespace pcl
      protected:
         //-----METHODS-----
         //-----VARIABLES-----
-        unsigned int noOfSamples_;
-        real accumulatedWeight_;
-        Eigen::Matrix<real, dimension, 1> mean_;
-        Eigen::Matrix<real, dimension, dimension> covariance_;
+        unsigned int noOfSamples_ = 0;
+        real accumulatedWeight_ = 0;
+        VectorType mean_ = VectorType::Identity ();
+        MatrixType covariance_ = MatrixType::Identity ();
   };
 
   using VectorAverage2f = VectorAverage<float, 2>;

@@ -59,22 +59,20 @@ namespace pcl
   struct Correspondence
   {
     /** \brief Index of the query (source) point. */
-    int index_query;
+    int index_query = 0;
     /** \brief Index of the matching (target) point. Set to -1 if no correspondence found. */
-    int index_match;
+    int index_match = -1;
     /** \brief Distance between the corresponding points, or the weight denoting the confidence in correspondence estimation */
     union
     {
-      float distance;
+      float distance = std::numeric_limits<float>::max();
       float weight;
     };
     
     /** \brief Standard constructor. 
       * Sets \ref index_query to 0, \ref index_match to -1, and \ref distance to FLT_MAX.
       */
-    inline Correspondence () : index_query (0), index_match (-1), 
-                               distance (std::numeric_limits<float>::max ())
-    {}
+    inline Correspondence () = default;
 
     /** \brief Constructor. */
     inline Correspondence (int _index_query, int _index_match, float _distance) : 
@@ -82,7 +80,8 @@ namespace pcl
     {}
 
     /** \brief Empty destructor. */
-    virtual ~Correspondence () {}
+    virtual ~Correspondence () = default;
+    //TODO: check if copy/move constructors/assignment operators are needed
 
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -123,11 +122,9 @@ namespace pcl
     Eigen::Vector3f point1;  //!< The 3D position of the point in the first coordinate frame
     Eigen::Vector3f point2;  //!< The 3D position of the point in the second coordinate frame
 
-    /** \brief Empty constructor. */
-    PointCorrespondence3D () : point1 (), point2 () {}
-
     /** \brief Empty destructor. */
-    virtual ~PointCorrespondence3D () {}
+    virtual ~PointCorrespondence3D () = default;
+    //TODO: check if copy/move constructors/assignment operators are needed
     
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -143,7 +140,8 @@ namespace pcl
     Eigen::Affine3f transformation;  //!< The transformation to go from the coordinate system
                                         //!< of point2 to the coordinate system of point1
     /** \brief Empty destructor. */
-    virtual ~PointCorrespondence6D () {}
+    virtual ~PointCorrespondence6D () = default;
+    //TODO: check if copy/move constructors/assignment operators are needed
 
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };

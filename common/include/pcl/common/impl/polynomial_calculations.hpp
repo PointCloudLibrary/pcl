@@ -41,20 +41,6 @@
 ////////////////////////////////////
 
 template <typename real>
-pcl::PolynomialCalculationsT<real>::PolynomialCalculationsT ()
-{
-}
-
-////////////////////////////////////
-
-template <typename real>
-pcl::PolynomialCalculationsT<real>:: ~PolynomialCalculationsT ()
-{
-}
-
-////////////////////////////////////
-
-template <typename real>
 inline void
   pcl::PolynomialCalculationsT<real>::Parameters::setZeroValue (real new_zero_value)
 {

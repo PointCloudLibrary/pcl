@@ -62,10 +62,8 @@ namespace pcl
     using CallbackFunction = std::function<void(T1, T2, unsigned long, unsigned long)>;
 
     std::map<int, CallbackFunction> cb_;
-    int callback_counter;
+    int callback_counter = 0;
   public:
-
-    Synchronizer () : queueT1 (), queueT2 (), cb_ (), callback_counter (0) { };
 
     int
     addCallback (const CallbackFunction& callback)
