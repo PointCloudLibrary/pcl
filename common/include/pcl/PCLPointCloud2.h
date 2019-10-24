@@ -18,33 +18,21 @@ namespace pcl
 
   struct PCL_EXPORTS PCLPointCloud2
   {
-    PCLPointCloud2 () : height (0), width (0), 
-                     is_bigendian (false), point_step (0), row_step (0),
-                     is_dense (false)
-    {
-#if BOOST_ENDIAN_BIG_BYTE
-      is_bigendian = true;
-#elif BOOST_ENDIAN_LITTLE_BYTE
-      is_bigendian = false;
-#else
-#error "unable to determine system endianness"
-#endif
-    }
-
     ::pcl::PCLHeader header;
 
-    std::uint32_t height;
-    std::uint32_t width;
+    std::uint32_t height = 0;
+    std::uint32_t width = 0;
 
-    std::vector< ::pcl::PCLPointField>  fields;
+    std::vector<::pcl::PCLPointField>  fields;
 
-    std::uint8_t is_bigendian;
-    std::uint32_t point_step;
-    std::uint32_t row_step;
+    static_assert(BOOST_ENDIAN_BIG_BYTE || BOOST_ENDIAN_LITTLE_BYTE, "unable to determine system endianness");
+    std::uint8_t is_bigendian = BOOST_ENDIAN_BIG_BYTE;
+    std::uint32_t point_step = 0;
+    std::uint32_t row_step = 0;
 
     std::vector<std::uint8_t> data;
 
-    std::uint8_t is_dense;
+    std::uint8_t is_dense = 0;
 
   public:
     using Ptr = boost::shared_ptr< ::pcl::PCLPointCloud2>;

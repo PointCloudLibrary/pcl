@@ -180,33 +180,7 @@ namespace pcl
         * and \ref height to 0, and the \ref sensor_origin_ and \ref
         * sensor_orientation_ to identity.
         */
-      PointCloud () :
-        header (), points (), width (0), height (0), is_dense (true),
-        sensor_origin_ (Eigen::Vector4f::Zero ()), sensor_orientation_ (Eigen::Quaternionf::Identity ()),
-        mapping_ ()
-      {}
-
-      /** \brief Copy constructor (needed by compilers such as Intel C++)
-        * \param[in] pc the cloud to copy into this
-        */
-      PointCloud (PointCloud<PointT> &pc) :
-        header (), points (), width (0), height (0), is_dense (true),
-        sensor_origin_ (Eigen::Vector4f::Zero ()), sensor_orientation_ (Eigen::Quaternionf::Identity ()),
-        mapping_ ()
-      {
-        *this = pc;
-      }
-
-      /** \brief Copy constructor (needed by compilers such as Intel C++)
-        * \param[in] pc the cloud to copy into this
-        */
-      PointCloud (const PointCloud<PointT> &pc) :
-        header (), points (), width (0), height (0), is_dense (true),
-        sensor_origin_ (Eigen::Vector4f::Zero ()), sensor_orientation_ (Eigen::Quaternionf::Identity ()),
-        mapping_ ()
-      {
-        *this = pc;
-      }
+      PointCloud () = default;
 
       /** \brief Copy constructor from point cloud subset
         * \param[in] pc the cloud to copy into this
@@ -215,8 +189,7 @@ namespace pcl
       PointCloud (const PointCloud<PointT> &pc,
                   const std::vector<int> &indices) :
         header (pc.header), points (indices.size ()), width (indices.size ()), height (1), is_dense (pc.is_dense),
-        sensor_origin_ (pc.sensor_origin_), sensor_orientation_ (pc.sensor_orientation_),
-        mapping_ ()
+        sensor_origin_ (pc.sensor_origin_), sensor_orientation_ (pc.sensor_orientation_)
       {
         // Copy the obvious
         assert (indices.size () <= pc.size ());
@@ -230,18 +203,14 @@ namespace pcl
         * \param[in] value_ default value
         */
       PointCloud (std::uint32_t width_, std::uint32_t height_, const PointT& value_ = PointT ())
-        : header ()
-        , points (width_ * height_, value_)
+        : points (width_ * height_, value_)
         , width (width_)
         , height (height_)
-        , is_dense (true)
-        , sensor_origin_ (Eigen::Vector4f::Zero ())
-        , sensor_orientation_ (Eigen::Quaternionf::Identity ())
-        , mapping_ ()
       {}
 
       /** \brief Destructor. */
-      virtual ~PointCloud () {}
+      virtual ~PointCloud () = default;
+      //TODO: check if copy/move contructors/assignment operators are needed
 
       /** \brief Add a point cloud to the current cloud.
         * \param[in] rhs the cloud to add to the current cloud
@@ -426,17 +395,17 @@ namespace pcl
       std::vector<PointT, Eigen::aligned_allocator<PointT> > points;
 
       /** \brief The point cloud width (if organized as an image-structure). */
-      std::uint32_t width;
+      std::uint32_t width = 0;
       /** \brief The point cloud height (if organized as an image-structure). */
-      std::uint32_t height;
+      std::uint32_t height = 0;
 
       /** \brief True if no points are invalid (e.g., have NaN or Inf values in any of their floating point fields). */
-      bool is_dense;
+      bool is_dense = true;
 
       /** \brief Sensor acquisition pose (origin/translation). */
-      Eigen::Vector4f    sensor_origin_;
+      Eigen::Vector4f    sensor_origin_ = Eigen::Vector4f::Zero ();
       /** \brief Sensor acquisition pose (rotation). */
-      Eigen::Quaternionf sensor_orientation_;
+      Eigen::Quaternionf sensor_orientation_ = Eigen::Quaternionf::Identity ();
 
       using PointType = PointT;  // Make the template class available from the outside
       using VectorType = std::vector<PointT, Eigen::aligned_allocator<PointT> >;

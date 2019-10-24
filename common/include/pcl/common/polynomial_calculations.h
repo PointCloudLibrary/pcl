@@ -49,21 +49,17 @@ namespace pcl
   class PolynomialCalculationsT 
   {
     public:
-      // =====CONSTRUCTOR & DESTRUCTOR=====
-      PolynomialCalculationsT ();
-      ~PolynomialCalculationsT ();
-      
       // =====PUBLIC STRUCTS=====
       //! Parameters used in this class
       struct Parameters
       {
-        Parameters () : zero_value (), sqr_zero_value () { setZeroValue (1e-6);}
+        Parameters () { setZeroValue (1e-6);}
         //! Set zero_value
         void
         setZeroValue (real new_zero_value);
 
-        real zero_value;       //!< Every value below this is considered to be zero
-        real sqr_zero_value;   //!< sqr of the above
+        real zero_value = {};       //!< Every value below this is considered to be zero
+        real sqr_zero_value = {};   //!< sqr of the above
       };
       
       // =====PUBLIC METHODS=====

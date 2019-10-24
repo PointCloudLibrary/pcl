@@ -41,10 +41,7 @@
 namespace pcl
 {
   template <typename real, int dimension>
-  VectorAverage<real, dimension>::VectorAverage () :
-    noOfSamples_ (0), accumulatedWeight_ (0), 
-    mean_ (Eigen::Matrix<real, dimension, 1>::Identity ()),
-    covariance_ (Eigen::Matrix<real, dimension, dimension>::Identity ())
+  VectorAverage<real, dimension>::VectorAverage ()
   {
     reset();
   }

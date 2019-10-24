@@ -14,14 +14,11 @@ namespace pcl
 {
   struct PCLPointField
   {
-    PCLPointField () : offset (0), datatype (0), count (0)
-    {}
-
     std::string name;
 
-    std::uint32_t offset;
-    std::uint8_t datatype;
-    std::uint32_t count;
+    std::uint32_t offset = 0;
+    std::uint8_t datatype = 0;
+    std::uint32_t count = 0;
 
     enum PointFieldTypes { INT8 = 1,
                            UINT8 = 2,

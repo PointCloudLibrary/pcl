@@ -71,9 +71,7 @@ namespace pcl
       using IsCompatible = pcl::traits::has_xyz<boost::mpl::_1>;
 
       // Storage
-      Eigen::Vector3f xyz;
-
-      AccumulatorXYZ () : xyz (Eigen::Vector3f::Zero ()) { }
+      Eigen::Vector3f xyz = Eigen::Vector3f::Zero ();
 
       template <typename PointT> void
       add (const PointT& t) { xyz += t.getVector3fMap (); }
@@ -92,9 +90,7 @@ namespace pcl
       using IsCompatible = pcl::traits::has_normal<boost::mpl::_1>;
 
       // Storage
-      Eigen::Vector4f normal;
-
-      AccumulatorNormal () : normal (Eigen::Vector4f::Zero ()) { }
+      Eigen::Vector4f normal = Eigen::Vector4f::Zero ();
 
       // Requires that the normal of the given point is normalized, otherwise it
       // does not make sense to sum it up with the accumulated value.
@@ -125,9 +121,7 @@ namespace pcl
       using IsCompatible = pcl::traits::has_curvature<boost::mpl::_1>;
 
       // Storage
-      float curvature;
-
-      AccumulatorCurvature () : curvature (0) { }
+      float curvature = 0;
 
       template <typename PointT> void
       add (const PointT& t) { curvature += t.curvature; }
@@ -144,9 +138,7 @@ namespace pcl
       using IsCompatible = pcl::traits::has_color<boost::mpl::_1>;
 
       // Storage
-      float r, g, b, a;
-
-      AccumulatorRGBA () : r (0), g (0), b (0), a (0) { }
+      float r = 0, g = 0, b = 0, a = 0;
 
       template <typename PointT> void
       add (const PointT& t)
@@ -175,9 +167,7 @@ namespace pcl
       using IsCompatible = pcl::traits::has_intensity<boost::mpl::_1>;
 
       // Storage
-      float intensity;
-
-      AccumulatorIntensity () : intensity (0) { }
+      float intensity = 0;
 
       template <typename PointT> void
       add (const PointT& t) { intensity += t.intensity; }
@@ -196,8 +186,6 @@ namespace pcl
       // Storage
       // A better performance may be achieved with a heap structure
       std::map<std::uint32_t, std::size_t> labels;
-
-      AccumulatorLabel () { }
 
       template <typename PointT> void
       add (const PointT& t)

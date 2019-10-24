@@ -15,18 +15,14 @@ namespace pcl
 {
   struct PCLImage
   {
-    PCLImage () : height (0), width (0),
-               is_bigendian (0), step (0)
-    {}
-
      ::pcl::PCLHeader  header;
 
-    std::uint32_t height;
-    std::uint32_t width;
+    std::uint32_t height = 0;
+    std::uint32_t width = 0;
     std::string encoding;
 
-    std::uint8_t is_bigendian;
-    std::uint32_t step;
+    std::uint8_t is_bigendian = 0;
+    std::uint32_t step = 0;
 
     std::vector<std::uint8_t> data;
 

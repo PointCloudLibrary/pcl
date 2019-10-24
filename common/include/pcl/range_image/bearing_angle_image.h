@@ -59,8 +59,6 @@ namespace pcl
       // =====CONSTRUCTOR & DESTRUCTOR=====
       /** Constructor */
       BearingAngleImage ();
-      /** Destructor */
-      ~BearingAngleImage ();
 
     public:
       /** \brief Reset all values to an empty Bearing Angle image */

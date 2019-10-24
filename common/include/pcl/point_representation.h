@@ -58,7 +58,7 @@ namespace pcl
   {
     protected:
       /** \brief The number of dimensions in this point's vector (i.e. the "k" in "k-D") */
-      int nr_dimensions_;
+      int nr_dimensions_ = 0;
       /** \brief A vector containing the rescale factor to apply to each dimension. */
       std::vector<float> alpha_;
       /** \brief Indicates whether this point representation is trivial. It is trivial if and only if the following
@@ -70,17 +70,15 @@ namespace pcl
        *  the point was reinterpret_casted to a float array of length nr_dimensions_ . This value says that this
        *  representation can be trivial; it is only trivial if setRescaleValues() has not been set.
        */
-      bool trivial_;
+      bool trivial_ = false;
 
     public:
       using Ptr = boost::shared_ptr<PointRepresentation<PointT> >;
       using ConstPtr = boost::shared_ptr<const PointRepresentation<PointT> >;
 
-      /** \brief Empty constructor */
-      PointRepresentation () : nr_dimensions_ (0), alpha_ (0), trivial_ (false) {}
-
       /** \brief Empty destructor */
-      virtual ~PointRepresentation () {}
+      virtual ~PointRepresentation () = default;
+      //TODO: check if copy and move constructors / assignment operators are needed
 
       /** \brief Copy point data from input point to a float array. This method must be overridden in all subclasses.
        *  \param[in] p The input point
