@@ -39,6 +39,7 @@
 #ifndef PCL_COMMON_EIGEN_IMPL_HPP_
 #define PCL_COMMON_EIGEN_IMPL_HPP_
 
+#include <array>
 #include <algorithm>
 
 #include <pcl/console/print.h>
@@ -248,6 +249,33 @@ pcl::computeCorrespondingEigenVector (const Matrix& mat, const typename Matrix::
     eigenvector = vec3 / std::sqrt (len3);
 }
 
+namespace pcl {
+namespace detail{
+template <typename Matrix, typename Scalar>
+struct EigenVector {
+  Matrix vector;
+  Scalar length;
+};
+
+template <typename Vector, typename Matrix> static EigenVector<Matrix, typename Matrix::Scalar>
+get_largest_3x3_eigenvector (const Matrix scaledMatrix)
+{
+  std::array<Vector, 3> vector {scaledMatrix.row (0).cross (scaledMatrix.row (1)),
+                                scaledMatrix.row (0).cross (scaledMatrix.row (2)),
+                                scaledMatrix.row (1).cross (scaledMatrix.row (2))};
+  std::array<Scalar, 3> len;
+  std::transform (vector.cbegin(), vector.cend (), len.begin (),
+      [](const auto& vec) { return vec.squaredNorm (); });
+
+  const auto index = std::distance (len.cbegin (),
+      std::max_element (len.cbegin (), len.cend ()));
+
+  const auto eigenvector = vector[index] / std::sqrt(len[index]);
+  return EigenVector{eigenvector, len[index]};
+}
+}
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 template <typename Matrix, typename Vector> inline void
 pcl::eigen33 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
@@ -269,20 +297,7 @@ pcl::eigen33 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& ei
 
   scaledMat.diagonal ().array () -= eigenvalues (0);
 
-  Vector vec1 = scaledMat.row (0).cross (scaledMat.row (1));
-  Vector vec2 = scaledMat.row (0).cross (scaledMat.row (2));
-  Vector vec3 = scaledMat.row (1).cross (scaledMat.row (2));
-
-  Scalar len1 = vec1.squaredNorm ();
-  Scalar len2 = vec2.squaredNorm ();
-  Scalar len3 = vec3.squaredNorm ();
-
-  if (len1 >= len2 && len1 >= len3)
-    eigenvector = vec1 / std::sqrt (len1);
-  else if (len2 >= len1 && len2 >= len3)
-    eigenvector = vec2 / std::sqrt (len2);
-  else
-    eigenvector = vec3 / std::sqrt (len3);
+  eigenvector = detail::get_largest_3x3_eigenvector<Vector> (scaledMat).vector;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -328,21 +343,7 @@ pcl::eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
     tmp = scaledMat;
     tmp.diagonal ().array () -= evals (2);
 
-    Vector vec1 = tmp.row (0).cross (tmp.row (1));
-    Vector vec2 = tmp.row (0).cross (tmp.row (2));
-    Vector vec3 = tmp.row (1).cross (tmp.row (2));
-
-    Scalar len1 = vec1.squaredNorm ();
-    Scalar len2 = vec2.squaredNorm ();
-    Scalar len3 = vec3.squaredNorm ();
-
-    if (len1 >= len2 && len1 >= len3)
-      evecs.col (2) = vec1 / std::sqrt (len1);
-    else if (len2 >= len1 && len2 >= len3)
-      evecs.col (2) = vec2 / std::sqrt (len2);
-    else
-      evecs.col (2) = vec3 / std::sqrt (len3);
-
+    evecs.col (2) = detail::get_largest_3x3_eigenvector<Vector> (tmp).vector;
     evecs.col (1) = evecs.col (2).unitOrthogonal ();
     evecs.col (0) = evecs.col (1).cross (evecs.col (2));
   }
@@ -353,130 +354,30 @@ pcl::eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
     tmp = scaledMat;
     tmp.diagonal ().array () -= evals (0);
 
-    Vector vec1 = tmp.row (0).cross (tmp.row (1));
-    Vector vec2 = tmp.row (0).cross (tmp.row (2));
-    Vector vec3 = tmp.row (1).cross (tmp.row (2));
-
-    Scalar len1 = vec1.squaredNorm ();
-    Scalar len2 = vec2.squaredNorm ();
-    Scalar len3 = vec3.squaredNorm ();
-
-    if (len1 >= len2 && len1 >= len3)
-      evecs.col (0) = vec1 / std::sqrt (len1);
-    else if (len2 >= len1 && len2 >= len3)
-      evecs.col (0) = vec2 / std::sqrt (len2);
-    else
-      evecs.col (0) = vec3 / std::sqrt (len3);
-
+    evecs.col (0) = detail::get_largest_3x3_eigenvector<Vector> (tmp).vector;
     evecs.col (1) = evecs.col (0).unitOrthogonal ();
     evecs.col (2) = evecs.col (0).cross (evecs.col (1));
   }
   else
   {
-    Matrix tmp;
-    tmp = scaledMat;
-    tmp.diagonal ().array () -= evals (2);
+    std::array<Scalar, 3> eigenVecLen;
 
-    Vector vec1 = tmp.row (0).cross (tmp.row (1));
-    Vector vec2 = tmp.row (0).cross (tmp.row (2));
-    Vector vec3 = tmp.row (1).cross (tmp.row (2));
-
-    Scalar len1 = vec1.squaredNorm ();
-    Scalar len2 = vec2.squaredNorm ();
-    Scalar len3 = vec3.squaredNorm ();
-#ifdef _WIN32
-    Scalar *mmax = new Scalar[3];
-#else
-    Scalar mmax[3];
-#endif
-    unsigned int min_el = 2;
-    unsigned int max_el = 2;
-    if (len1 >= len2 && len1 >= len3)
+    for (int i = 0; i < 3; ++i)
     {
-      mmax[2] = len1;
-      evecs.col (2) = vec1 / std::sqrt (len1);
-    }
-    else if (len2 >= len1 && len2 >= len3)
-    {
-      mmax[2] = len2;
-      evecs.col (2) = vec2 / std::sqrt (len2);
-    }
-    else
-    {
-      mmax[2] = len3;
-      evecs.col (2) = vec3 / std::sqrt (len3);
+      Matrix tmp = scaledMat;
+      tmp.diagonal ().array () -= evals (i);
+      const auto vec_len = detail::get_largest_3x3_eigenvector<Vector> (tmp);
+      evecs.col (i) = vec_len.vector;
+      eigenVecLen[i] = vec_len.length;
     }
 
-    tmp = scaledMat;
-    tmp.diagonal ().array () -= evals (1);
+    minmax_it = std::minmax_element (eigenVecLen.cbegin (), eigenVecLen.cend ());
+    int min_idx = std::distance (eigenVecLen.cbegin (), minmax_it.first);
+    int max_idx = std::distance (eigenVecLen.cbegin (), minmax_it.second);
+    int mid_el = 3 - min_el - max_el;
 
-    vec1 = tmp.row (0).cross (tmp.row (1));
-    vec2 = tmp.row (0).cross (tmp.row (2));
-    vec3 = tmp.row (1).cross (tmp.row (2));
-
-    len1 = vec1.squaredNorm ();
-    len2 = vec2.squaredNorm ();
-    len3 = vec3.squaredNorm ();
-    if (len1 >= len2 && len1 >= len3)
-    {
-      mmax[1] = len1;
-      evecs.col (1) = vec1 / std::sqrt (len1);
-      min_el = len1 <= mmax[min_el] ? 1 : min_el;
-      max_el = len1 > mmax[max_el] ? 1 : max_el;
-    }
-    else if (len2 >= len1 && len2 >= len3)
-    {
-      mmax[1] = len2;
-      evecs.col (1) = vec2 / std::sqrt (len2);
-      min_el = len2 <= mmax[min_el] ? 1 : min_el;
-      max_el = len2 > mmax[max_el] ? 1 : max_el;
-    }
-    else
-    {
-      mmax[1] = len3;
-      evecs.col (1) = vec3 / std::sqrt (len3);
-      min_el = len3 <= mmax[min_el] ? 1 : min_el;
-      max_el = len3 > mmax[max_el] ? 1 : max_el;
-    }
-
-    tmp = scaledMat;
-    tmp.diagonal ().array () -= evals (0);
-
-    vec1 = tmp.row (0).cross (tmp.row (1));
-    vec2 = tmp.row (0).cross (tmp.row (2));
-    vec3 = tmp.row (1).cross (tmp.row (2));
-
-    len1 = vec1.squaredNorm ();
-    len2 = vec2.squaredNorm ();
-    len3 = vec3.squaredNorm ();
-    if (len1 >= len2 && len1 >= len3)
-    {
-      mmax[0] = len1;
-      evecs.col (0) = vec1 / std::sqrt (len1);
-      min_el = len3 <= mmax[min_el] ? 0 : min_el;
-      max_el = len3 > mmax[max_el] ? 0 : max_el;
-    }
-    else if (len2 >= len1 && len2 >= len3)
-    {
-      mmax[0] = len2;
-      evecs.col (0) = vec2 / std::sqrt (len2);
-      min_el = len3 <= mmax[min_el] ? 0 : min_el;
-      max_el = len3 > mmax[max_el] ? 0 : max_el;
-    }
-    else
-    {
-      mmax[0] = len3;
-      evecs.col (0) = vec3 / std::sqrt (len3);
-      min_el = len3 <= mmax[min_el] ? 0 : min_el;
-      max_el = len3 > mmax[max_el] ? 0 : max_el;
-    }
-
-    unsigned mid_el = 3 - min_el - max_el;
     evecs.col (min_el) = evecs.col ( (min_el + 1) % 3).cross (evecs.col ( (min_el + 2) % 3)).normalized ();
     evecs.col (mid_el) = evecs.col ( (mid_el + 1) % 3).cross (evecs.col ( (mid_el + 2) % 3)).normalized ();
-#ifdef _WIN32
-    delete [] mmax;
-#endif
   }
   // Rescale back to the original size.
   evals *= scale;
