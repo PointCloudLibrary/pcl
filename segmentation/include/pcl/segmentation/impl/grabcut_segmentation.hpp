@@ -87,8 +87,8 @@ pcl::GrabCut<PointT>::initCompute ()
   }
 
   std::vector<pcl::PCLPointField> in_fields_;
-  if ((pcl::getFieldIndex<PointT> (*input_, "rgb", in_fields_) == -1) &&
-      (pcl::getFieldIndex<PointT> (*input_, "rgba", in_fields_) == -1))
+  if ((pcl::getFieldIndex<PointT> ("rgb", in_fields_) == -1) &&
+      (pcl::getFieldIndex<PointT> ("rgba", in_fields_) == -1))
   {
     PCL_ERROR ("[pcl::GrabCut::initCompute ()] No RGB data available, aborting!");
     return (false);
