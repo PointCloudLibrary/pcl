@@ -12,7 +12,7 @@ jobs:
     container: env1604
     variables:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'
-      CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi -O2'
+      CMAKE_CXX_FLAGS: '-Wall -Wextra -O2'
     steps:
       - script: |
           mkdir $BUILD_DIR && cd $BUILD_DIR

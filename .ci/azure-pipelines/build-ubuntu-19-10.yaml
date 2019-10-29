@@ -1,0 +1,53 @@
+resources:
+  containers:
+    - container: env1910
+      image: pointcloudlibrary/env:19.10
+
+jobs:
+  - job: ubuntu1910
+    displayName: Ubuntu 19.10
+    timeoutInMinutes: 0
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    container: env1910
+    variables:
+      BUILD_DIR: '$(Agent.BuildDirectory)/build'
+      CMAKE_CXX_FLAGS: '-Wall -Wextra -O2'
+    steps:
+      - script: |
+          mkdir $BUILD_DIR && cd $BUILD_DIR
+          cmake $(Build.SourcesDirectory) \
+            -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+            -DPCL_ONLY_CORE_POINT_TYPES=ON \
+            -DBUILD_simulation=ON \
+            -DBUILD_surface_on_nurbs=ON \
+            -DBUILD_global_tests=ON \
+            -DBUILD_examples=ON \
+            -DBUILD_tools=ON \
+            -DBUILD_apps=ON \
+            -DBUILD_apps_3d_rec_framework=ON \
+            -DBUILD_apps_cloud_composer=ON \
+            -DBUILD_apps_in_hand_scanner=ON \
+            -DBUILD_apps_modeler=ON \
+            -DBUILD_apps_point_cloud_editor=ON
+        displayName: 'CMake Configuration'
+      - script: |
+          cd $BUILD_DIR
+          # Compiling some of the test targets with -j2 option leads to pipeline failures
+          # (presumably out of memory error). Thus we make them separately in a single
+          # thread mode. Their corresponding modules are built before with the -j2 mode
+          # to make the process faster.
+          cmake --build . -- -j2 pcl_filters pcl_registration
+          cmake --build . -- test_filters test_registration test_registration_api
+          cmake --build . -- -j2
+        displayName: 'Build Library'
+      - script: |
+          cd $BUILD_DIR/test
+          ctest -V -T Test
+        displayName: 'Run Unit Tests'
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: 'CTest'
+          testResultsFiles: '**/Test*.xml'
+          searchFolder: '$(Agent.BuildDirectory)/build'
+        condition: succeededOrFailed()
