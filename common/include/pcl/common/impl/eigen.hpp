@@ -251,30 +251,40 @@ pcl::computeCorrespondingEigenVector (const Matrix& mat, const typename Matrix::
 
 namespace pcl {
 namespace detail{
-template <typename Matrix, typename Scalar>
+template <typename Vector, typename Scalar>
 struct EigenVector {
-  Matrix vector;
+  Vector vector;
   Scalar length;
-};
+};  // struct EigenVector
 
-template <typename Vector, typename Matrix> static EigenVector<Matrix, typename Matrix::Scalar>
-get_largest_3x3_eigenvector (const Matrix scaledMatrix)
+/**
+ * @brief returns the unit vector along the largest eigen value as well as the
+ *        length of the largest eigenvector
+ * @tparam Vector Requested result type, needs to be explicitly provided and has
+ *                to be implicitly constructible from ConstRowExpr
+ * @tparam Matrix deduced input type providing similar in API as Eigen::Matrix
+ */
+template <typename Vector, typename Matrix> static EigenVector<Vector, typename Matrix::Scalar>
+getLargest3x3Eigenvector (const Matrix scaledMatrix)
 {
-  std::array<Vector, 3> vector {scaledMatrix.row (0).cross (scaledMatrix.row (1)),
-                                scaledMatrix.row (0).cross (scaledMatrix.row (2)),
-                                scaledMatrix.row (1).cross (scaledMatrix.row (2))};
-  std::array<Scalar, 3> len;
-  std::transform (vector.cbegin(), vector.cend (), len.begin (),
-      [](const auto& vec) { return vec.squaredNorm (); });
+  using Scalar = typename Matrix::Scalar;
+  using Index = typename Matrix::Index;
 
-  const auto index = std::distance (len.cbegin (),
-      std::max_element (len.cbegin (), len.cend ()));
+  Matrix crossProduct;
+  crossProduct << scaledMatrix.row (0).cross (scaledMatrix.row (1)),
+                  scaledMatrix.row (0).cross (scaledMatrix.row (2)),
+                  scaledMatrix.row (1).cross (scaledMatrix.row (2));
 
-  const auto eigenvector = vector[index] / std::sqrt(len[index]);
-  return EigenVector{eigenvector, len[index]};
+  // expression template, no evaluation here
+  const auto len = crossProduct.rowwise ().norm ();
+
+  Index index;
+  const Scalar length = len.maxCoeff (&index);  // <- first evaluation
+  return EigenVector<Vector, Scalar> {crossProduct.row (index) / length,
+                                      length};
 }
-}
-}
+}  // namespace detail
+}  // namespace pcl
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template <typename Matrix, typename Vector> inline void
@@ -297,7 +307,7 @@ pcl::eigen33 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& ei
 
   scaledMat.diagonal ().array () -= eigenvalues (0);
 
-  eigenvector = detail::get_largest_3x3_eigenvector<Vector> (scaledMat).vector;
+  eigenvector = detail::getLargest3x3Eigenvector<Vector> (scaledMat).vector;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -343,7 +353,7 @@ pcl::eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
     tmp = scaledMat;
     tmp.diagonal ().array () -= evals (2);
 
-    evecs.col (2) = detail::get_largest_3x3_eigenvector<Vector> (tmp).vector;
+    evecs.col (2) = detail::getLargest3x3Eigenvector<Vector> (tmp).vector;
     evecs.col (1) = evecs.col (2).unitOrthogonal ();
     evecs.col (0) = evecs.col (1).cross (evecs.col (2));
   }
@@ -354,7 +364,7 @@ pcl::eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
     tmp = scaledMat;
     tmp.diagonal ().array () -= evals (0);
 
-    evecs.col (0) = detail::get_largest_3x3_eigenvector<Vector> (tmp).vector;
+    evecs.col (0) = detail::getLargest3x3Eigenvector<Vector> (tmp).vector;
     evecs.col (1) = evecs.col (0).unitOrthogonal ();
     evecs.col (2) = evecs.col (0).cross (evecs.col (1));
   }
@@ -366,18 +376,18 @@ pcl::eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
     {
       Matrix tmp = scaledMat;
       tmp.diagonal ().array () -= evals (i);
-      const auto vec_len = detail::get_largest_3x3_eigenvector<Vector> (tmp);
+      const auto vec_len = detail::getLargest3x3Eigenvector<Vector> (tmp);
       evecs.col (i) = vec_len.vector;
       eigenVecLen[i] = vec_len.length;
     }
 
-    minmax_it = std::minmax_element (eigenVecLen.cbegin (), eigenVecLen.cend ());
+    const auto minmax_it = std::minmax_element (eigenVecLen.cbegin (), eigenVecLen.cend ());
     int min_idx = std::distance (eigenVecLen.cbegin (), minmax_it.first);
     int max_idx = std::distance (eigenVecLen.cbegin (), minmax_it.second);
-    int mid_el = 3 - min_el - max_el;
+    int mid_idx = 3 - min_idx - max_idx;
 
-    evecs.col (min_el) = evecs.col ( (min_el + 1) % 3).cross (evecs.col ( (min_el + 2) % 3)).normalized ();
-    evecs.col (mid_el) = evecs.col ( (mid_el + 1) % 3).cross (evecs.col ( (mid_el + 2) % 3)).normalized ();
+    evecs.col (min_idx) = evecs.col ( (min_idx + 1) % 3).cross (evecs.col ( (min_idx + 2) % 3)).normalized ();
+    evecs.col (mid_idx) = evecs.col ( (mid_idx + 1) % 3).cross (evecs.col ( (mid_idx + 2) % 3)).normalized ();
   }
   // Rescale back to the original size.
   evals *= scale;
