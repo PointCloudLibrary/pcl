@@ -136,11 +136,11 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
    * Test criterion 2: expect high precision/recall. The true positives are the unscrambled correspondences
    * where the query/match index are equal.
    */
-  size_t true_positives = 0;
+  std::size_t true_positives = 0;
   for (auto &i : result)
     if (i.index_query == i.index_match)
       ++true_positives;
-  const size_t false_positives = result.size() - true_positives;
+  const std::size_t false_positives = result.size() - true_positives;
 
   const double precision = double(true_positives) / double(true_positives+false_positives);
   const double recall = double(true_positives) / double(size-last);

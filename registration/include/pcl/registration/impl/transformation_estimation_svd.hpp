@@ -49,7 +49,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     Matrix4 &transformation_matrix) const
 {
-  size_t nr_points = cloud_src.points.size ();
+  std::size_t nr_points = cloud_src.points.size ();
   if (cloud_tgt.points.size () != nr_points)
   {
     PCL_ERROR ("[pcl::TransformationEstimationSVD::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", nr_points, cloud_tgt.points.size ());

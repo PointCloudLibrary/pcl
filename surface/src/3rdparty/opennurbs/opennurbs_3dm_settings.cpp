@@ -724,7 +724,7 @@ ON_3dmAnnotationSettings& ON_3dmAnnotationSettings::operator=(const ON_3dmAnnota
   return *this;
 }
 
-void ON_3dmAnnotationSettings::Dump( ON_TextLog& text_log ) const
+void ON_3dmAnnotationSettings::Dump( ON_TextLog& ) const
 {
   // TODO
 }
@@ -966,7 +966,7 @@ ON_3dmConstructionPlane& ON_3dmConstructionPlane::operator=(const ON_3dmConstruc
 }
 */
 
-void ON_3dmConstructionPlane::Dump( ON_TextLog& text_log ) const
+void ON_3dmConstructionPlane::Dump( ON_TextLog& ) const
 {
   // TODO
 }
@@ -1056,7 +1056,7 @@ ON_3dmConstructionPlaneGridDefaults& ON_3dmConstructionPlaneGridDefaults::operat
   return *this;
 }
 
-void ON_3dmConstructionPlaneGridDefaults::Dump(ON_TextLog& text_log) const
+void ON_3dmConstructionPlaneGridDefaults::Dump(ON_TextLog&) const
 {
   // TODO
 }
@@ -3152,7 +3152,7 @@ bool ON_3dmSettings::Read_v1( ON_BinaryArchive& file )
   bool bGotSomething = false;
   bool rc = false;
   // read settings from old version 1 file
-  size_t pos0 = file.CurrentPosition();
+  std::size_t pos0 = file.CurrentPosition();
 
   // need to start at the beginning of the file
   ON__UINT32 tcode;

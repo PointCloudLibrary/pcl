@@ -102,7 +102,7 @@ namespace pcl
       initCompute ();
 
       void
-      geodesicFixedRadiusSearch (size_t &query_index,
+      geodesicFixedRadiusSearch (std::size_t &query_index,
                                  float &radius,
                                  std::vector<int> &result_indices);
 

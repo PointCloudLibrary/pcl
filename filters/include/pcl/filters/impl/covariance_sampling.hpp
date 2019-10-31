@@ -62,19 +62,19 @@ pcl::CovarianceSampling<PointT, PointNT>::initCompute ()
   // Prepare the point cloud by centering at the origin and then scaling the points such that the average distance from
   // the origin is 1.0 => rotations and translations will have the same magnitude
   Eigen::Vector3f centroid (0.f, 0.f, 0.f);
-  for (size_t p_i = 0; p_i < indices_->size (); ++p_i)
+  for (std::size_t p_i = 0; p_i < indices_->size (); ++p_i)
     centroid += (*input_)[(*indices_)[p_i]].getVector3fMap ();
   centroid /= float (indices_->size ());
 
   scaled_points_.resize (indices_->size ());
   double average_norm = 0.0;
-  for (size_t p_i = 0; p_i < indices_->size (); ++p_i)
+  for (std::size_t p_i = 0; p_i < indices_->size (); ++p_i)
   {
     scaled_points_[p_i] = (*input_)[(*indices_)[p_i]].getVector3fMap () - centroid;
     average_norm += scaled_points_[p_i].norm ();
   }
   average_norm /= double (scaled_points_.size ());
-  for (size_t p_i = 0; p_i < scaled_points_.size (); ++p_i)
+  for (std::size_t p_i = 0; p_i < scaled_points_.size (); ++p_i)
     scaled_points_[p_i] /= float (average_norm);
 
   return (true);
@@ -113,7 +113,7 @@ pcl::CovarianceSampling<PointT, PointNT>::computeCovarianceMatrix (Eigen::Matrix
   //--- Part A from the paper
   // Set up matrix F
   Eigen::Matrix<double, 6, Eigen::Dynamic> f_mat = Eigen::Matrix<double, 6, Eigen::Dynamic> (6, indices_->size ());
-  for (size_t p_i = 0; p_i < scaled_points_.size (); ++p_i)
+  for (std::size_t p_i = 0; p_i < scaled_points_.size (); ++p_i)
   {
     f_mat.block<3, 1> (0, p_i) = scaled_points_[p_i].cross (
                                      (*input_normals_)[(*indices_)[p_i]].getNormalVector3fMap ()).template cast<double> ();
@@ -139,16 +139,16 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled
 
   //--- Part B from the paper
   /// TODO figure out how to fill the candidate_indices - see subsequent paper paragraphs
-  std::vector<size_t> candidate_indices;
+  std::vector<std::size_t> candidate_indices;
   candidate_indices.resize (indices_->size ());
-  for (size_t p_i = 0; p_i < candidate_indices.size (); ++p_i)
+  for (std::size_t p_i = 0; p_i < candidate_indices.size (); ++p_i)
     candidate_indices[p_i] = p_i;
 
   // Compute the v 6-vectors
   using Vector6d = Eigen::Matrix<double, 6, 1>;
   std::vector<Vector6d, Eigen::aligned_allocator<Vector6d> > v;
   v.resize (candidate_indices.size ());
-  for (size_t p_i = 0; p_i < candidate_indices.size (); ++p_i)
+  for (std::size_t p_i = 0; p_i < candidate_indices.size (); ++p_i)
   {
     v[p_i].block<3, 1> (0, 0) = scaled_points_[p_i].cross (
                                   (*input_normals_)[(*indices_)[candidate_indices[p_i]]].getNormalVector3fMap ()).template cast<double> ();
@@ -160,9 +160,9 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled
   std::vector<std::list<std::pair<int, double> > > L;
   L.resize (6);
 
-  for (size_t i = 0; i < 6; ++i)
+  for (std::size_t i = 0; i < 6; ++i)
   {
-    for (size_t p_i = 0; p_i < candidate_indices.size (); ++p_i)
+    for (std::size_t p_i = 0; p_i < candidate_indices.size (); ++p_i)
       L[i].push_back (std::make_pair (p_i, std::abs (v[p_i].dot (x.block<6, 1> (0, i)))));
 
     // Sort in decreasing order
@@ -175,11 +175,11 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled
   sampled_indices.resize (num_samples_);
   std::vector<bool> point_sampled (candidate_indices.size (), false);
   // Now select the actual points
-  for (size_t sample_i = 0; sample_i < num_samples_; ++sample_i)
+  for (std::size_t sample_i = 0; sample_i < num_samples_; ++sample_i)
   {
     // Find the most unconstrained dimension, i.e., the minimum t
-    size_t min_t_i = 0;
-    for (size_t i = 0; i < 6; ++i)
+    std::size_t min_t_i = 0;
+    for (std::size_t i = 0; i < 6; ++i)
     {
       if (t[min_t_i] > t[i])
         min_t_i = i;
@@ -194,7 +194,7 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled
     L[min_t_i].pop_front ();
 
     // Update the running totals
-    for (size_t i = 0; i < 6; ++i)
+    for (std::size_t i = 0; i < 6; ++i)
     {
       double val = v[sampled_indices[sample_i]].dot (x.block<6, 1> (0, i));
       t[i] += val * val;
@@ -217,9 +217,9 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (Cloud &output)
   output.resize (sampled_indices.size ());
   output.header = input_->header;
   output.height = 1;
-  output.width = uint32_t (output.size ());
+  output.width = std::uint32_t (output.size ());
   output.is_dense = true;
-  for (size_t i = 0; i < sampled_indices.size (); ++i)
+  for (std::size_t i = 0; i < sampled_indices.size (); ++i)
     output[i] = (*input_)[sampled_indices[i]];
 }
 

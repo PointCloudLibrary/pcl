@@ -80,9 +80,9 @@ pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& c
 
   // Create a height map with the projection of cluster points onto the ground plane:
   if (!vertical_)    // camera horizontal
-    buckets_.resize(size_t((cluster.getMax()(0) - cluster.getMin()(0)) / bin_size_) + 1, 0);
+    buckets_.resize(std::size_t((cluster.getMax()(0) - cluster.getMin()(0)) / bin_size_) + 1, 0);
   else        // camera vertical
-    buckets_.resize(size_t((cluster.getMax()(1) - cluster.getMin()(1)) / bin_size_) + 1, 0);
+    buckets_.resize(std::size_t((cluster.getMax()(1) - cluster.getMin()(1)) / bin_size_) + 1, 0);
   buckets_cloud_indices_.resize(buckets_.size(), 0);
 
   for(std::vector<int>::const_iterator pit = cluster.getIndices().indices.begin(); pit != cluster.getIndices().indices.end(); pit++)
@@ -123,8 +123,8 @@ pcl::people::HeightMap2D<PointT>::searchLocalMaxima ()
   int left = buckets_[0];         // current left element
   int right = 0;              // current right element
   float offset = 0;           // used to center the maximum to the right place
-  maxima_indices_.resize(size_t(buckets_.size()), 0);
-  maxima_cloud_indices_.resize(size_t(buckets_.size()), 0);
+  maxima_indices_.resize(std::size_t(buckets_.size()), 0);
+  maxima_cloud_indices_.resize(std::size_t(buckets_.size()), 0);
 
   // Handle first element:
   if (buckets_[0] > buckets_[1])

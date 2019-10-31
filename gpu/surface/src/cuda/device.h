@@ -71,7 +71,7 @@ namespace pcl
     struct LessThanByFacet
     {
       __device__ __forceinline__
-      bool operator()(const uint64_type& e1, const int& e2) const
+      bool operator()(const std::uint64_t& e1, const int& e2) const
       {
         int i1 = (int)(e1 >> 32);
         return i1 < e2;

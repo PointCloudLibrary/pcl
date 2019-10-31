@@ -84,17 +84,17 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (
         continue;
 
     // Normalize the f1, f2, f3 features and push them in the histogram
-    int h_index = static_cast<int> (floor (nr_bins_f1 * ((pfh_tuple[0] + M_PI) * d_pi_)));
+    int h_index = static_cast<int> (std::floor (nr_bins_f1 * ((pfh_tuple[0] + M_PI) * d_pi_)));
     if (h_index < 0)           h_index = 0;
     if (h_index >= nr_bins_f1) h_index = nr_bins_f1 - 1;
     hist_f1 (row, h_index) += hist_incr;
 
-    h_index = static_cast<int> (floor (nr_bins_f2 * ((pfh_tuple[1] + 1.0) * 0.5)));
+    h_index = static_cast<int> (std::floor (nr_bins_f2 * ((pfh_tuple[1] + 1.0) * 0.5)));
     if (h_index < 0)           h_index = 0;
     if (h_index >= nr_bins_f2) h_index = nr_bins_f2 - 1;
     hist_f2 (row, h_index) += hist_incr;
 
-    h_index = static_cast<int> (floor (nr_bins_f3 * ((pfh_tuple[2] + 1.0) * 0.5)));
+    h_index = static_cast<int> (std::floor (nr_bins_f3 * ((pfh_tuple[2] + 1.0) * 0.5)));
     if (h_index < 0)           h_index = 0;
     if (h_index >= nr_bins_f3) h_index = nr_bins_f3 - 1;
     hist_f3 (row, h_index) += hist_incr;
@@ -121,7 +121,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::weightPointSPFHSignature (
   fpfh_histogram.setZero (nr_bins_f1 + nr_bins_f2 + nr_bins_f3);
 
   // Use the entire patch
-  for (size_t idx = 0, data_size = indices.size (); idx < data_size; ++idx)
+  for (std::size_t idx = 0, data_size = indices.size (); idx < data_size; ++idx)
   {
     // Minus the query point itself
     if (dists[idx] == 0)
@@ -187,7 +187,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeSPFHSignatures (std::v
   if (surface_ != input_ ||
       indices_->size () != surface_->points.size ())
   { 
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
     {
       int p_idx = (*indices_)[idx];
       if (this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists) == 0)
@@ -199,12 +199,12 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeSPFHSignatures (std::v
   else
   {
     // Special case: When a feature must be computed at every point, there is no need for a neighborhood search
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
       spfh_indices.insert (static_cast<int> (idx));
   }
 
   // Initialize the arrays that will store the SPFH signatures
-  size_t data_size = spfh_indices.size ();
+  std::size_t data_size = spfh_indices.size ();
   hist_f1.setZero (data_size, nr_bins_f1_);
   hist_f2.setZero (data_size, nr_bins_f2_);
   hist_f3.setZero (data_size, nr_bins_f3_);
@@ -246,7 +246,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   if (input_->is_dense)
   {
     // Iterate over the entire index vector
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
     {
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
@@ -273,7 +273,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   else
   {
     // Iterate over the entire index vector
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
     {
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)

@@ -256,7 +256,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
   
   k_indices.resize (results.size ());
   k_sqr_distances.resize (results.size ());
-  size_t idx = results.size () - 1;
+  std::size_t idx = results.size () - 1;
   while (!results.empty ())
   {
     k_indices [idx] = results.top ().index;

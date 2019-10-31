@@ -306,7 +306,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
   response->reserve (surface_->size ());
 
   // Check if the output has a "label" field
-  label_idx_ = pcl::getFieldIndex<PointOutT> (output, "label", out_fields_);
+  label_idx_ = pcl::getFieldIndex<PointOutT> ("label", out_fields_);
 
   const int input_size = static_cast<int> (input_->size ());
 //#ifdef _OPENMP
@@ -358,9 +358,9 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
         if (label_idx_ != -1)
         {
           // save the index in the cloud
-          uint32_t label = static_cast<uint32_t> (point_index);
+          std::uint32_t label = static_cast<std::uint32_t> (point_index);
           memcpy (reinterpret_cast<char*> (&point_out) + out_fields_[label_idx_].offset,
-                  &label, sizeof (uint32_t));
+                  &label, sizeof (std::uint32_t));
         }
 //#ifdef _OPENMP
 //#pragma omp critical
@@ -394,9 +394,9 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
             if (label_idx_ != -1)
             {
               // save the index in the cloud
-              uint32_t label = static_cast<uint32_t> (point_index);
+              std::uint32_t label = static_cast<std::uint32_t> (point_index);
               memcpy (reinterpret_cast<char*> (&point_out) + out_fields_[label_idx_].offset,
-                      &label, sizeof (uint32_t));
+                      &label, sizeof (std::uint32_t));
             }
 //#ifdef _OPENMP
 //#pragma omp critical
@@ -409,12 +409,12 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
   }
   
   response->height = 1;
-  response->width = static_cast<uint32_t> (response->size ());
+  response->width = static_cast<std::uint32_t> (response->size ());
   
   if (!nonmax_)
   {
     output = *response;
-    for (size_t i = 0; i < response->size (); ++i)
+    for (std::size_t i = 0; i < response->size (); ++i)
       keypoints_indices_->indices.push_back (i);
     // we don not change the denseness
     output.is_dense = input_->is_dense;
@@ -459,7 +459,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
     }
     
     output.height = 1;
-    output.width = static_cast<uint32_t> (output.points.size());
+    output.width = static_cast<std::uint32_t> (output.points.size());
     output.is_dense = true;
   }
 }

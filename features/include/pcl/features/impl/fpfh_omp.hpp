@@ -73,7 +73,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     std::vector<float> nn_dists (k_); 
 
     std::set<int> spfh_indices_set;
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
     {
       int p_idx = (*indices_)[idx];
       if (!isFinite ((*input_)[p_idx]) ||
@@ -94,7 +94,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   }
 
   // Initialize the arrays that will store the SPFH signatures
-  size_t data_size = spfh_indices_vec.size ();
+  std::size_t data_size = spfh_indices_vec.size ();
   hist_f1_.setZero (data_size, nr_bins_f1_);
   hist_f2_.setZero (data_size, nr_bins_f2_);
   hist_f3_.setZero (data_size, nr_bins_f3_);

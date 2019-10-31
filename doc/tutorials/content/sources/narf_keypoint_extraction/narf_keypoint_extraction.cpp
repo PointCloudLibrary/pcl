@@ -66,18 +66,18 @@ main (int argc, char** argv)
   if (pcl::console::find_argument (argc, argv, "-m") >= 0)
   {
     setUnseenToMaxRange = true;
-    cout << "Setting unseen values in range image to maximum range readings.\n";
+    std::cout << "Setting unseen values in range image to maximum range readings.\n";
   }
   int tmp_coordinate_frame;
   if (pcl::console::parse (argc, argv, "-c", tmp_coordinate_frame) >= 0)
   {
     coordinate_frame = pcl::RangeImage::CoordinateFrame (tmp_coordinate_frame);
-    cout << "Using coordinate frame "<< (int)coordinate_frame<<".\n";
+    std::cout << "Using coordinate frame "<< (int)coordinate_frame<<".\n";
   }
   if (pcl::console::parse (argc, argv, "-s", support_size) >= 0)
-    cout << "Setting support size to "<<support_size<<".\n";
+    std::cout << "Setting support size to "<<support_size<<".\n";
   if (pcl::console::parse (argc, argv, "-r", angular_resolution) >= 0)
-    cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
+    std::cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
   angular_resolution = pcl::deg2rad (angular_resolution);
   
   // ------------------------------------------------------------------
@@ -93,7 +93,7 @@ main (int argc, char** argv)
     std::string filename = argv[pcd_filename_indices[0]];
     if (pcl::io::loadPCDFile (filename, point_cloud) == -1)
     {
-      cerr << "Was not able to open file \""<<filename<<"\".\n";
+      std::cerr << "Was not able to open file \""<<filename<<"\".\n";
       printUsage (argv[0]);
       return 0;
     }
@@ -108,7 +108,7 @@ main (int argc, char** argv)
   else
   {
     setUnseenToMaxRange = true;
-    cout << "\nNo *.pcd file given => Generating example point cloud.\n\n";
+    std::cout << "\nNo *.pcd file given => Generating example point cloud.\n\n";
     for (float x=-0.5f; x<=0.5f; x+=0.01f)
     {
       for (float y=-0.5f; y<=0.5f; y+=0.01f)
@@ -171,7 +171,7 @@ main (int argc, char** argv)
   // ----------------------------------------------
   // -----Show keypoints in range image widget-----
   // ----------------------------------------------
-  //for (size_t i=0; i<keypoint_indices.points.size (); ++i)
+  //for (std::size_t i=0; i<keypoint_indices.points.size (); ++i)
     //range_image_widget.markPoint (keypoint_indices.points[i]%range_image.width,
                                   //keypoint_indices.points[i]/range_image.width);
   
@@ -181,7 +181,7 @@ main (int argc, char** argv)
   pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints_ptr (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>& keypoints = *keypoints_ptr;
   keypoints.points.resize (keypoint_indices.points.size ());
-  for (size_t i=0; i<keypoint_indices.points.size (); ++i)
+  for (std::size_t i=0; i<keypoint_indices.points.size (); ++i)
     keypoints.points[i].getVector3fMap () = range_image.points[keypoint_indices.points[i]].getVector3fMap ();
 
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> keypoints_color_handler (keypoints_ptr, 0, 255, 0);

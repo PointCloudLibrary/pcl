@@ -1309,11 +1309,11 @@ void ON_2dexMap::Create(int count, int i0, int j)
 }
 
 
-const ON_2dex* ON_BinarySearch2dexArray( int key_i, const ON_2dex* base, size_t nel )
+const ON_2dex* ON_BinarySearch2dexArray( int key_i, const ON_2dex* base, std::size_t nel )
 {
   if (nel > 0 && base )
   {
-    size_t i;
+    std::size_t i;
     int base_i;
 
     // The end tests are not necessary, but they

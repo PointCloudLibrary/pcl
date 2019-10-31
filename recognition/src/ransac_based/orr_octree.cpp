@@ -137,10 +137,10 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size
          "[%f, %f]\n", min.x, max.x, min.y, max.y, min.z, max.z);
 #endif
 
-  size_t num_points = points.size ();
+  std::size_t num_points = points.size ();
 
   // Fill the leaves with the points
-  for (size_t i = 0 ; i < num_points ; ++i )
+  for (std::size_t i = 0 ; i < num_points ; ++i )
   {
     // Create a leaf which contains the i-th point.
     ORROctree::Node* node = this->createLeaf (points[i].x, points[i].y, points[i].z);
@@ -172,7 +172,7 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size
 
       // We are suppose to use normals. However, it could be that all normals in this leaf are "illegal", because,
       // e.g., they were not available in the data set. In this case, remove the leaf from the octree.
-      if ( normal_length <= numeric_limits<float>::epsilon () )
+      if ( normal_length <= std::numeric_limits<float>::epsilon () )
       {
         this->deleteBranch (*it);
         it = full_leaves_.erase (it);
@@ -333,7 +333,7 @@ pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float ra
   std::vector<int> tmp_ids;
   tmp_ids.reserve (8);
 
-  pcl::common::UniformGenerator<int> randgen (0, 1, static_cast<uint32_t> (time (nullptr)));
+  pcl::common::UniformGenerator<int> randgen (0, 1, static_cast<std::uint32_t> (time (nullptr)));
 
   list<ORROctree::Node*> nodes;
   nodes.push_back (root_);
@@ -415,7 +415,7 @@ void
 pcl::recognition::ORROctree::getFullLeavesPoints (PointCloudOut& out) const
 {
   out.resize(full_leaves_.size ());
-  size_t i = 0;
+  std::size_t i = 0;
 
   // Now iterate over all full leaves and compute the normals and average points
   for ( std::vector<ORROctree::Node*>::const_iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it, ++i )
@@ -432,7 +432,7 @@ void
 pcl::recognition::ORROctree::getNormalsOfFullLeaves (PointCloudN& out) const
 {
   out.resize(full_leaves_.size ());
-  size_t i = 0;
+  std::size_t i = 0;
 
   // Now iterate over all full leaves and compute the normals and average points
   for ( std::vector<ORROctree::Node*>::const_iterator it = full_leaves_.begin() ; it != full_leaves_.end() ; ++it, ++i )

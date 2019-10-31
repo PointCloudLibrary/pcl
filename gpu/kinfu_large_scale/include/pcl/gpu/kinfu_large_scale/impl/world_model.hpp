@@ -260,7 +260,7 @@ pcl::kinfuLS::WorldModel<PointT>::setIndicesAsNans (PointCloudPtr cloud, Indices
   
   for (int rii = 0; rii < static_cast<int> (indices->size ()); ++rii)  // rii = removed indices iterator
   {
-    uint8_t* pt_data = reinterpret_cast<uint8_t*> (&cloud->points[(*indices)[rii]]);
+    std::uint8_t* pt_data = reinterpret_cast<std::uint8_t*> (&cloud->points[(*indices)[rii]]);
     for (const auto &field : fields)
       memcpy (pt_data + field.offset, &my_nan, sizeof (float));
   }

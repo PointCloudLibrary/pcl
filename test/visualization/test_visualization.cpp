@@ -81,8 +81,8 @@ TEST (PCL, PCLVisualizer_camera)
   visualizer.setCameraParameters (given_intrinsics, given_extrinsics);
   Eigen::Matrix4f viewer_pose = visualizer.getViewerPose ().matrix ();
 
-  for (size_t i = 0; i < 4; ++i)
-    for (size_t j = 0; j < 4; ++j)
+  for (std::size_t i = 0; i < 4; ++i)
+    for (std::size_t j = 0; j < 4; ++j)
       EXPECT_NEAR (given_extrinsics (i, j), viewer_pose (i, j), 1e-6);
 
 
@@ -92,10 +92,10 @@ TEST (PCL, PCLVisualizer_camera)
   visualizer.setCameraPosition (trans[0], trans[1], trans[2], trans[0] + 1., trans[1], trans[2], 0., 1., 0.);
   viewer_pose = visualizer.getViewerPose ().matrix ();
   Eigen::Matrix3f expected_rotation = Eigen::AngleAxisf (M_PIf / 2.0f, Eigen::Vector3f (0.f, 1.f, 0.f)).matrix ();
-  for (size_t i = 0; i < 3; ++i)
-    for (size_t j = 0; j < 3; ++j)
+  for (std::size_t i = 0; i < 3; ++i)
+    for (std::size_t j = 0; j < 3; ++j)
       EXPECT_NEAR (viewer_pose (i, j), expected_rotation (i, j), 1e-6);
-  for (size_t i = 0; i < 3; ++i)
+  for (std::size_t i = 0; i < 3; ++i)
     EXPECT_NEAR (viewer_pose (i, 3), trans[i], 1e-6);
 
 
@@ -107,7 +107,7 @@ TEST (PCL, PCLVisualizer_camera)
 //  visualizer.spinOnce ();
 //  viewer_pose = visualizer.getViewerPose ().matrix ();
 
-//  cerr << "reset camera viewer pose:" << endl << viewer_pose << endl;
+//  std::cerr << "reset camera viewer pose:" << std::endl << viewer_pose << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

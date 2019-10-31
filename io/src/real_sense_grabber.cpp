@@ -213,7 +213,7 @@ pcl::RealSenseGrabber::setConfidenceThreshold (unsigned int threshold)
 }
 
 void
-pcl::RealSenseGrabber::enableTemporalFiltering (TemporalFilteringType type, size_t window_size)
+pcl::RealSenseGrabber::enableTemporalFiltering (TemporalFilteringType type, std::size_t window_size)
 {
   if (temporal_filtering_type_ != type ||
      (type != RealSense_None && temporal_filtering_window_size_ != window_size))
@@ -261,7 +261,7 @@ pcl::RealSenseGrabber::getAvailableModes (bool only_depth) const
       mode.color_width = profiles.color.imageInfo.width;
       mode.color_height = profiles.color.imageInfo.height;
       bool duplicate = false;
-      for (size_t i = 0; i < modes.size (); ++i)
+      for (std::size_t i = 0; i < modes.size (); ++i)
         duplicate |= modes[i] == mode;
       if (!duplicate)
         modes.push_back (mode);
@@ -311,7 +311,7 @@ pcl::RealSenseGrabber::run ()
     else
       status = device_->getPXCDevice ().ReadStreams (PXCCapture::STREAM_TYPE_DEPTH, &sample);
 
-    uint64_t timestamp = pcl::getTime () * 1.0e+6;
+    std::uint64_t timestamp = pcl::getTime () * 1.0e+6;
 
     switch (status)
     {
@@ -347,7 +347,7 @@ pcl::RealSenseGrabber::run ()
 
         sample.depth->AcquireAccess (PXCImage::ACCESS_WRITE, &data);
         unsigned short* d = reinterpret_cast<unsigned short*> (data.planes[0]);
-        for (size_t i = 0; i < SIZE; i++)
+        for (std::size_t i = 0; i < SIZE; i++)
           d[i] = (*depth_buffer_)[i];
         sample.depth->ReleaseAccess (&data);
       }
@@ -368,7 +368,7 @@ pcl::RealSenseGrabber::run ()
         PXCImage::ImageData data;
         PXCImage* mapped = projection->CreateColorImageMappedToDepth (sample.depth, sample.color);
         mapped->AcquireAccess (PXCImage::ACCESS_READ, &data);
-        uint32_t* d = reinterpret_cast<uint32_t*> (data.planes[0]);
+        std::uint32_t* d = reinterpret_cast<std::uint32_t*> (data.planes[0]);
         if (need_xyz_)
         {
           // We can fill XYZ coordinates more efficiently using pcl::copyPointCloud,
@@ -378,9 +378,9 @@ pcl::RealSenseGrabber::run ()
           for (int i = 0; i < HEIGHT; i++)
           {
             pcl::PointXYZRGBA* cloud_row = &xyzrgba_cloud->points[i * WIDTH];
-            uint32_t* color_row = &d[i * data.pitches[0] / sizeof (uint32_t)];
+            std::uint32_t* color_row = &d[i * data.pitches[0] / sizeof (std::uint32_t)];
             for (int j = 0; j < WIDTH; j++)
-              memcpy (&cloud_row[j].rgba, &color_row[j], sizeof (uint32_t));
+              memcpy (&cloud_row[j].rgba, &color_row[j], sizeof (std::uint32_t));
           }
         }
         else
@@ -392,11 +392,11 @@ pcl::RealSenseGrabber::run ()
           {
             PXCPoint3DF32* vertices_row = &vertices[i * WIDTH];
             pcl::PointXYZRGBA* cloud_row = &xyzrgba_cloud->points[i * WIDTH];
-            uint32_t* color_row = &d[i * data.pitches[0] / sizeof (uint32_t)];
+            std::uint32_t* color_row = &d[i * data.pitches[0] / sizeof (std::uint32_t)];
             for (int j = 0; j < WIDTH; j++)
             {
               convertPoint (vertices_row[j], cloud_row[j]);
-              memcpy (&cloud_row[j].rgba, &color_row[j], sizeof (uint32_t));
+              memcpy (&cloud_row[j].rgba, &color_row[j], sizeof (std::uint32_t));
             }
           }
         }
@@ -448,7 +448,7 @@ pcl::RealSenseGrabber::selectMode ()
     mode_requested_ = Mode (30, 640, 480, 640, 480);
   float best_score = std::numeric_limits<float>::max ();
   std::vector<Mode> modes = getAvailableModes (!need_xyzrgba_);
-  for (size_t i = 0; i < modes.size (); ++i)
+  for (std::size_t i = 0; i < modes.size (); ++i)
   {
     Mode mode = modes[i];
     float score = computeModeScore (mode);
@@ -465,7 +465,7 @@ pcl::RealSenseGrabber::selectMode ()
 void
 pcl::RealSenseGrabber::createDepthBuffer ()
 {
-  size_t size = mode_selected_.depth_width * mode_selected_.depth_height;
+  std::size_t size = mode_selected_.depth_width * mode_selected_.depth_height;
   switch (temporal_filtering_type_)
   {
   case RealSense_None:

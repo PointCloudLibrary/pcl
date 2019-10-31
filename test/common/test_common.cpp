@@ -56,14 +56,14 @@ TEST (PCL, PointXYZRGB)
 {
   PointXYZRGB p;
 
-  uint8_t r = 127, g = 64, b = 254;
+  std::uint8_t r = 127, g = 64, b = 254;
   p.r = r;
   p.g = g;
   p.b = b;
 
-  uint8_t rr = (p.rgba >> 16) & 0x0000ff;
-  uint8_t gg = (p.rgba >> 8)  & 0x0000ff;
-  uint8_t bb = (p.rgba)       & 0x0000ff;
+  std::uint8_t rr = (p.rgba >> 16) & 0x0000ff;
+  std::uint8_t gg = (p.rgba >> 8)  & 0x0000ff;
+  std::uint8_t bb = (p.rgba)       & 0x0000ff;
 
   EXPECT_EQ (r, rr);
   EXPECT_EQ (g, gg);
@@ -73,7 +73,7 @@ TEST (PCL, PointXYZRGB)
   EXPECT_EQ (bb, 254);
 
   p.r = 0; p.g = 127; p.b = 0;
-  uint32_t rgb = p.rgba;
+  std::uint32_t rgb = p.rgba;
   rr = (rgb >> 16) & 0x0000ff;
   gg = (rgb >> 8)  & 0x0000ff;
   bb = (rgb)       & 0x0000ff;
@@ -88,15 +88,15 @@ TEST (PCL, PointXYZRGBNormal)
 {
   PointXYZRGBNormal p;
 
-  uint8_t r = 127, g = 64, b = 254;
-  uint32_t rgb = (static_cast<uint32_t> (r) << 16 |
-                  static_cast<uint32_t> (g) << 8 |
-                  static_cast<uint32_t> (b));
+  std::uint8_t r = 127, g = 64, b = 254;
+  std::uint32_t rgb = (static_cast<std::uint32_t> (r) << 16 |
+                  static_cast<std::uint32_t> (g) << 8 |
+                  static_cast<std::uint32_t> (b));
   p.rgba = rgb;
 
-  uint8_t rr = (p.rgba >> 16) & 0x0000ff;
-  uint8_t gg = (p.rgba >> 8)  & 0x0000ff;
-  uint8_t bb = (p.rgba)       & 0x0000ff;
+  std::uint8_t rr = (p.rgba >> 16) & 0x0000ff;
+  std::uint8_t gg = (p.rgba >> 8)  & 0x0000ff;
+  std::uint8_t bb = (p.rgba)       & 0x0000ff;
 
   EXPECT_EQ (r, rr);
   EXPECT_EQ (g, gg);
@@ -184,7 +184,7 @@ TEST (PCL, PointCloud)
   EXPECT_EQ (cloud.isOrganized (), false);
 
   cloud.width = 10;
-  for (uint32_t i = 0; i < cloud.width*cloud.height; ++i)
+  for (std::uint32_t i = 0; i < cloud.width*cloud.height; ++i)
   {
     float j = static_cast<float> (i);
     cloud.points.emplace_back(3.0f * j + 0.0f, 3.0f * j + 1.0f, 3.0f * j + 2.0f);
@@ -226,8 +226,8 @@ TEST (PCL, PointCloud)
     EXPECT_EQ (mat_yz.rows (), cloud.width);
     EXPECT_EQ (mat_yz (0, 0), 1);
     EXPECT_EQ (mat_yz (cloud.width - 1, 1), 3 * cloud.width - 1);
-    uint32_t j = 1;
-    for (uint32_t i = 1; i < cloud.width*cloud.height; i+=4, j+=3)
+    std::uint32_t j = 1;
+    for (std::uint32_t i = 1; i < cloud.width*cloud.height; i+=4, j+=3)
     {
       Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, i);
       EXPECT_EQ (mat_yz.cols (), 2);
@@ -242,8 +242,8 @@ TEST (PCL, PointCloud)
     EXPECT_EQ (mat_yz.rows (), 2);
     EXPECT_EQ (mat_yz (0, 0), 1);
     EXPECT_EQ (mat_yz (1, cloud.width - 1), 3 * cloud.width - 1);
-    uint32_t j = 1;
-    for (uint32_t i = 1; i < cloud.width*cloud.height; i+=4, j+=3)
+    std::uint32_t j = 1;
+    for (std::uint32_t i = 1; i < cloud.width*cloud.height; i+=4, j+=3)
     {
       Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, i);
       EXPECT_EQ (mat_yz.cols (), cloud.width);
@@ -312,18 +312,18 @@ TYPED_TEST_CASE(XYZPointTypesTest, XYZPointTypes);
 TYPED_TEST(XYZPointTypesTest, GetVectorXfMap)
 {
   TypeParam pt;
-  for (size_t i = 0; i < 3; ++i)
+  for (std::size_t i = 0; i < 3; ++i)
     EXPECT_EQ (&pt.data[i], &pt.getVector3fMap () (i));
-  for (size_t i = 0; i < 4; ++i)
+  for (std::size_t i = 0; i < 4; ++i)
     EXPECT_EQ (&pt.data[i], &pt.getVector4fMap () (i));
 }
 
 TYPED_TEST(XYZPointTypesTest, GetArrayXfMap)
 {
   TypeParam pt;
-  for (size_t i = 0; i < 3; ++i)
+  for (std::size_t i = 0; i < 3; ++i)
     EXPECT_EQ (&pt.data[i], &pt.getArray3fMap () (i));
-  for (size_t i = 0; i < 4; ++i)
+  for (std::size_t i = 0; i < 4; ++i)
     EXPECT_EQ (&pt.data[i], &pt.getArray4fMap () (i));
 }
 
@@ -333,9 +333,9 @@ TYPED_TEST_CASE(NormalPointTypesTest, NormalPointTypes);
 TYPED_TEST(NormalPointTypesTest, GetNormalVectorXfMap)
 {
   TypeParam pt;
-  for (size_t i = 0; i < 3; ++i)
+  for (std::size_t i = 0; i < 3; ++i)
     EXPECT_EQ (&pt.data_n[i], &pt.getNormalVector3fMap () (i));
-  for (size_t i = 0; i < 4; ++i)
+  for (std::size_t i = 0; i < 4; ++i)
     EXPECT_EQ (&pt.data_n[i], &pt.getNormalVector4fMap () (i));
 }
 
@@ -419,7 +419,7 @@ TEST (PCL, CopyIfFieldExists)
   EXPECT_EQ (z_val, 3.0);
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "rgb", is_rgb, rgb_val));
   EXPECT_EQ (is_rgb, true);
-  uint32_t rgb;
+  std::uint32_t rgb;
   std::memcpy (&rgb, &rgb_val, sizeof(rgb_val));
   EXPECT_EQ (rgb, 0xff7f40fe);      // alpha is 255
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_x", is_normal_x, normal_x_val));

@@ -73,7 +73,7 @@ pcl::GridProjection<PointNT>::~GridProjection ()
 template <typename PointNT> void
 pcl::GridProjection<PointNT>::scaleInputDataPoint (double scale_factor)
 {
-  for (size_t i = 0; i < data_->points.size(); ++i)
+  for (std::size_t i = 0; i < data_->points.size(); ++i)
   {
     data_->points[i].x /= static_cast<float> (scale_factor);
     data_->points[i].y /= static_cast<float> (scale_factor);
@@ -99,7 +99,7 @@ pcl::GridProjection<PointNT>::getBoundingBox ()
   // Round the max_p_, min_p_ so that they are aligned with the cells vertices
   int upper_right_index[3];
   int lower_left_index[3];
-  for (size_t i = 0; i < 3; ++i)
+  for (std::size_t i = 0; i < 3; ++i)
   {
     upper_right_index[i] = static_cast<int> (max_p_(i) / leaf_size_ + 5);
     lower_left_index[i] = static_cast<int> (min_p_(i) / leaf_size_ - 5);
@@ -196,7 +196,7 @@ pcl::GridProjection<PointNT>::createSurfaceForCell (const Eigen::Vector3i &index
   indices[3] = Eigen::Vector3i (index[0] + 1, index[1], index[2]);
 
   // Get the coordinate of the 4 end points, and the corresponding vectors
-  for (size_t i = 0; i < 4; ++i)
+  for (std::size_t i = 0; i < 4; ++i)
   {
     pts[i] = vertices[I_SHIFT_PT[i]];
     unsigned int index_1d = getIndexIn1D (indices[i]);
@@ -207,11 +207,11 @@ pcl::GridProjection<PointNT>::createSurfaceForCell (const Eigen::Vector3i &index
   }
 
   // Go through the 3 edges, test whether they are intersected by the surface
-  for (size_t i = 0; i < 3; ++i)
+  for (std::size_t i = 0; i < 3; ++i)
   {
     std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> > end_pts (2);
     std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > vect_at_end_pts (2);
-    for (size_t j = 0; j < 2; ++j)
+    for (std::size_t j = 0; j < 2; ++j)
     {
       end_pts[j] = pts[I_SHIFT_EDGE[i][j]];
       vect_at_end_pts[j] = vector_at_pts[I_SHIFT_EDGE[i][j]];
@@ -248,7 +248,7 @@ pcl::GridProjection<PointNT>::createSurfaceForCell (const Eigen::Vector3i &index
         default:
           break;
       }
-      for (size_t k = 0; k < 4; k++)
+      for (std::size_t k = 0; k < 4; k++)
       {
         polygon_indices_1d[k] = getIndexIn1D (polygon[k]);
         if (!occupied_cell_list_[polygon_indices_1d[k]])
@@ -259,7 +259,7 @@ pcl::GridProjection<PointNT>::createSurfaceForCell (const Eigen::Vector3i &index
       }
       if (is_all_in_hash_map)
       {
-        for (size_t k = 0; k < 4; k++)
+        for (std::size_t k = 0; k < 4; k++)
         {
           polygon_pts[k] = cell_hash_map_.at (polygon_indices_1d[k]).pt_on_surface;
           surface_.push_back (polygon_pts[k]);
@@ -355,7 +355,7 @@ pcl::GridProjection<PointNT>::getVectorAtPoint (const Eigen::Vector4f &p,
   double sum = 0.0;
   double mag = 0.0;
 
-  for (size_t i = 0; i < pt_union_indices.size (); ++i)
+  for (std::size_t i = 0; i < pt_union_indices.size (); ++i)
   {
     Eigen::Vector4f pp (data_->points[pt_union_indices[i]].x, data_->points[pt_union_indices[i]].y, data_->points[pt_union_indices[i]].z, 0);
     pt_union_dist[i] = (pp - p).squaredNorm ();
@@ -371,7 +371,7 @@ pcl::GridProjection<PointNT>::getVectorAtPoint (const Eigen::Vector4f &p,
       data_->points[pt_union_indices[0]].normal[1],
       data_->points[pt_union_indices[0]].normal[2]);
 
-  for (size_t i = 0; i < pt_union_weight.size (); ++i)
+  for (std::size_t i = 0; i < pt_union_weight.size (); ++i)
   {
     pt_union_weight[i] /= sum;
     Eigen::Vector3f vec (data_->points[pt_union_indices[i]].normal[0],
@@ -432,7 +432,7 @@ pcl::GridProjection<PointNT>::getMagAtPoint (const Eigen::Vector4f &p,
   std::vector <double> pt_union_dist (pt_union_indices.size ());
   std::vector <double> pt_union_weight (pt_union_indices.size ());
   double sum = 0.0;
-  for (size_t i = 0; i < pt_union_indices.size (); ++i)
+  for (std::size_t i = 0; i < pt_union_indices.size (); ++i)
   {
     Eigen::Vector4f pp (data_->points[pt_union_indices[i]].x, data_->points[pt_union_indices[i]].y, data_->points[pt_union_indices[i]].z, 0);
     pt_union_dist[i] = (pp - p).norm ();
@@ -477,7 +477,7 @@ pcl::GridProjection<PointNT>::isIntersected (const std::vector<Eigen::Vector4f, 
   assert (vect_at_end_pts.size () == 2);
 
   double length[2];
-  for (size_t i = 0; i < 2; ++i)
+  for (std::size_t i = 0; i < 2; ++i)
   {
     length[i] = vect_at_end_pts[i].norm ();
     vect_at_end_pts[i].normalize ();
@@ -676,7 +676,7 @@ pcl::GridProjection<PointNT>::reconstructPolygons (std::vector<pcl::Vertices> &p
   }
 
   // Update the hashtable and store the vector and point
-  BOOST_FOREACH (typename HashMap::value_type entry, cell_hash_map_)
+  for (const auto &entry : cell_hash_map_)
   {
     getIndexIn3D (entry.first, index);
     std::vector <int> pt_union_indices;
@@ -693,7 +693,7 @@ pcl::GridProjection<PointNT>::reconstructPolygons (std::vector<pcl::Vertices> &p
   }
 
   // Go through the hash table another time to extract surface
-  BOOST_FOREACH (typename HashMap::value_type entry, cell_hash_map_)
+  for (const auto &entry : cell_hash_map_)
   {
     getIndexIn3D (entry.first, index);
     std::vector <int> pt_union_indices;
@@ -729,13 +729,13 @@ pcl::GridProjection<PointNT>::performReconstruction (pcl::PolygonMesh &output)
   output.header = input_->header;
 
   pcl::PointCloud<pcl::PointXYZ> cloud;
-  cloud.width = static_cast<uint32_t> (surface_.size ());
+  cloud.width = static_cast<std::uint32_t> (surface_.size ());
   cloud.height = 1;
   cloud.is_dense = true;
 
   cloud.points.resize (surface_.size ());
   // Copy the data from surface_ to cloud
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud.points.size (); ++i)
   {
     cloud.points[i].x = surface_[i].x ();
     cloud.points[i].y = surface_[i].y ();
@@ -754,13 +754,13 @@ pcl::GridProjection<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &p
 
   // The mesh surface is held in surface_. Copy it to the output format
   points.header = input_->header;
-  points.width = static_cast<uint32_t> (surface_.size ());
+  points.width = static_cast<std::uint32_t> (surface_.size ());
   points.height = 1;
   points.is_dense = true;
 
   points.resize (surface_.size ());
   // Copy the data from surface_ to cloud
-  for (size_t i = 0; i < points.size (); ++i)
+  for (std::size_t i = 0; i < points.size (); ++i)
   {
     points[i].x = surface_[i].x ();
     points[i].y = surface_[i].y ();

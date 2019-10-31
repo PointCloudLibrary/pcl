@@ -34,88 +34,93 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-  
+
 #pragma once
 
 #include <pcl/common/common.h>
 
-#include <pcl/ml/ferns/fern.h>
 #include <pcl/ml/feature_handler.h>
+#include <pcl/ml/ferns/fern.h>
 #include <pcl/ml/stats_estimator.h>
 
 #include <vector>
 
-namespace pcl
-{
+namespace pcl {
 
-  /** \brief Utility class for evaluating a fern. */
-  template <
-    class FeatureType,
-    class DataSet,
-    class LabelType,
-    class ExampleIndex,
-    class NodeType >
-  class FernEvaluator
-  {
-  
-  public:
+/** Utility class for evaluating a fern. */
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
+class FernEvaluator {
 
-    /** \brief Constructor. */
-    FernEvaluator();
-    /** \brief Destructor. */
-    virtual 
-    ~FernEvaluator();
+public:
+  /** Constructor. */
+  FernEvaluator();
 
-    /** \brief Evaluates the specified examples using the supplied tree. 
-      * \param[in] fern The decision tree.
-      * \param[in] feature_handler The feature handler used to train the tree.
-      * \param[in] stats_estimator The statistics estimation instance used while training the tree.
-      * \param[in] data_set The data set used for evaluation.
-      * \param[in] examples The examples that have to be evaluated.
-      * \param[out] label_data The destination for the resulting label data.
-      */
-    void
-    evaluate (pcl::Fern<FeatureType, NodeType> & fern,
-              pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler,
-              pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator,
-              DataSet & data_set,
-              std::vector<ExampleIndex> & examples,
-              std::vector<LabelType> & label_data);
-    
-    /** \brief Evaluates the specified examples using the supplied tree and adds the results to the supplied results array. 
-      * \param[in] fern The decision tree.
-      * \param[in] feature_handler The feature handler used to train the tree.
-      * \param[in] stats_estimator The statistics estimation instance used while training the tree.
-      * \param[in] data_set The data set used for evaluation.
-      * \param[in] examples The examples that have to be evaluated.
-      * \param[out] label_data The destination where the resulting label data is added to.
-      */
-    void
-    evaluateAndAdd (pcl::Fern<FeatureType, NodeType> & fern,
-                    pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler,
-                    pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator,
-                    DataSet & data_set,
-                    std::vector<ExampleIndex> & examples,
-                    std::vector<LabelType> & label_data);
-    
-    /** \brief Evaluates the specified examples using the supplied tree. 
-      * \param[in] fern The decision tree.
-      * \param[in] feature_handler The feature handler used to train the tree.
-      * \param[in] stats_estimator The statistics estimation instance used while training the tree.
-      * \param[in] data_set The data set used for evaluation.
-      * \param[in] examples The examples that have to be evaluated.
-      * \param[out] nodes The leaf-nodes reached while evaluation.
-      */
-    void
-    getNodes (pcl::Fern<FeatureType, NodeType> & fern,
-              pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler,
-              pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator,
-              DataSet & data_set,
-              std::vector<ExampleIndex> & examples,
-              std::vector<NodeType*> & nodes);
+  /** Destructor. */
+  virtual ~FernEvaluator();
 
-  };
+  /** Evaluates the specified examples using the supplied tree.
+   *
+   * \param[in] fern the decision tree
+   * \param[in] feature_handler the feature handler used to train the tree
+   * \param[in] stats_estimator the statistics estimation instance used while training
+   *            the tree
+   * \param[in] data_set the data set used for evaluation
+   * \param[in] examples the examples that have to be evaluated
+   * \param[out] label_data the destination for the resulting label data
+   */
+  void
+  evaluate(
+      pcl::Fern<FeatureType, NodeType>& fern,
+      pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
+      pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator,
+      DataSet& data_set,
+      std::vector<ExampleIndex>& examples,
+      std::vector<LabelType>& label_data);
 
-}
+  /** Evaluates the specified examples using the supplied tree and adds the
+   *  results to the supplied results array.
+   *
+   * \param[in] fern the decision tree
+   * \param[in] feature_handler the feature handler used to train the tree
+   * \param[in] stats_estimator the statistics estimation instance used while training
+   *            the tree
+   * \param[in] data_set the data set used for evaluation
+   * \param[in] examples the examples that have to be evaluated
+   * \param[out] label_data the destination where the resulting label data is added to
+   */
+  void
+  evaluateAndAdd(
+      pcl::Fern<FeatureType, NodeType>& fern,
+      pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
+      pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator,
+      DataSet& data_set,
+      std::vector<ExampleIndex>& examples,
+      std::vector<LabelType>& label_data);
+
+  /** Evaluates the specified examples using the supplied tree.
+   *
+   * \param[in] fern the decision tree
+   * \param[in] feature_handler the feature handler used to train the tree
+   * \param[in] stats_estimator the statistics estimation instance used while training
+   *            the tree
+   * \param[in] data_set the data set used for evaluation
+   * \param[in] examples the examples that have to be evaluated
+   * \param[out] nodes the leaf-nodes reached while evaluation
+   */
+  void
+  getNodes(
+      pcl::Fern<FeatureType, NodeType>& fern,
+      pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
+      pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator,
+      DataSet& data_set,
+      std::vector<ExampleIndex>& examples,
+      std::vector<NodeType*>& nodes);
+};
+
+} // namespace pcl
 
 #include <pcl/ml/impl/ferns/fern_evaluator.hpp>

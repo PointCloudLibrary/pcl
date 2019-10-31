@@ -101,12 +101,12 @@ TEST (PCL, ConvexHull_bunny)
 
   // compare the face vertices (polygons2) to the output from the original test --- they should be identical
   ASSERT_EQ (polygons.size (), polygons2.size ());
-  for (size_t i = 0; i < polygons.size (); ++i)
+  for (std::size_t i = 0; i < polygons.size (); ++i)
   {
     const pcl::Vertices & face1 = polygons[i];
     const pcl::Vertices & face2 = polygons2[i];
     ASSERT_EQ (face1.vertices.size (), face2.vertices.size ());
-    for (size_t j = 0; j < face1.vertices.size (); ++j)
+    for (std::size_t j = 0; j < face1.vertices.size (); ++j)
     {
       ASSERT_EQ (face1.vertices[j], face2.vertices[j]);
     }
@@ -127,7 +127,7 @@ TEST (PCL, ConvexHull_bunny)
 
   // compare the PointCloud (hull2) to the output from the original test --- they should be identical
   ASSERT_EQ (hull.points.size (), hull2.points.size ());
-  for (size_t i = 0; i < hull.points.size (); ++i)
+  for (std::size_t i = 0; i < hull.points.size (); ++i)
   {
     const PointXYZ & p1 = hull.points[i];
     const PointXYZ & p2 = hull2.points[i];
@@ -138,12 +138,12 @@ TEST (PCL, ConvexHull_bunny)
 
   // compare the face vertices (mesh.polygons) to the output from the original test --- they should be identical
   ASSERT_EQ (polygons.size (), mesh.polygons.size ());
-  for (size_t i = 0; i < polygons.size (); ++i)
+  for (std::size_t i = 0; i < polygons.size (); ++i)
   {
     const pcl::Vertices & face1 = polygons[i];
     const pcl::Vertices & face2 = mesh.polygons[i];
     ASSERT_EQ (face1.vertices.size (), face2.vertices.size ());
-    for (size_t j = 0; j < face1.vertices.size (); ++j)
+    for (std::size_t j = 0; j < face1.vertices.size (); ++j)
     {
       ASSERT_EQ (face1.vertices[j], face2.vertices[j]);
     }
@@ -192,9 +192,9 @@ TEST (PCL, ConvexHull_LTable)
   cloud_out_ltable.points.resize (100);
 
   int npoints = 0;
-  for (size_t i = 0; i < 8; i++)
+  for (std::size_t i = 0; i < 8; i++)
   {
-    for (size_t j = 0; j <= 2; j++)
+    for (std::size_t j = 0; j <= 2; j++)
     {
       cloud_out_ltable.points[npoints].x = float (i) * 0.5f;
       cloud_out_ltable.points[npoints].y = -float (j) * 0.5f;
@@ -203,9 +203,9 @@ TEST (PCL, ConvexHull_LTable)
     }
   }
 
-  for (size_t i = 0; i <= 2; i++)
+  for (std::size_t i = 0; i <= 2; i++)
   {
-    for (size_t j = 3; j < 8; j++)
+    for (std::size_t j = 3; j < 8; j++)
     {
       cloud_out_ltable.points[npoints].x = float (i) * 0.5f;
       cloud_out_ltable.points[npoints].y = -float (j) * 0.5f;
@@ -263,12 +263,12 @@ TEST (PCL, ConvexHull_LTable)
 
   // compare the face vertices (polygons2) to the output from the original test --- they should be identical
   ASSERT_EQ (polygons.size (), polygons2.size ());
-  for (size_t i = 0; i < polygons.size (); ++i)
+  for (std::size_t i = 0; i < polygons.size (); ++i)
   {
     const pcl::Vertices & face1 = polygons[i];
     const pcl::Vertices & face2 = polygons2[i];
     ASSERT_EQ (face1.vertices.size (), face2.vertices.size ());
-    for (size_t j = 0; j < face1.vertices.size (); ++j)
+    for (std::size_t j = 0; j < face1.vertices.size (); ++j)
     {
       ASSERT_EQ (face1.vertices[j], face2.vertices[j]);
     }
@@ -289,7 +289,7 @@ TEST (PCL, ConvexHull_LTable)
 
   // compare the PointCloud (hull2) to the output from the original test --- they should be identical
   ASSERT_EQ (hull.points.size (), hull2.points.size ());
-  for (size_t i = 0; i < hull.points.size (); ++i)
+  for (std::size_t i = 0; i < hull.points.size (); ++i)
   {
     const PointXYZ & p1 = hull.points[i];
     const PointXYZ & p2 = hull2.points[i];
@@ -300,12 +300,12 @@ TEST (PCL, ConvexHull_LTable)
 
   // compare the face vertices (mesh.polygons) to the output from the original test --- they should be identical
   ASSERT_EQ (polygons.size (), mesh.polygons.size ());
-  for (size_t i = 0; i < polygons.size (); ++i)
+  for (std::size_t i = 0; i < polygons.size (); ++i)
   {
     const pcl::Vertices & face1 = polygons[i];
     const pcl::Vertices & face2 = mesh.polygons[i];
     ASSERT_EQ (face1.vertices.size (), face2.vertices.size ());
-    for (size_t j = 0; j < face1.vertices.size (); ++j)
+    for (std::size_t j = 0; j < face1.vertices.size (); ++j)
     {
       ASSERT_EQ (face1.vertices[j], face2.vertices[j]);
     }
@@ -449,7 +449,7 @@ TEST (PCL, ConvexHull_4points)
   cloud_4->push_back (p);
 
   cloud_4->height = 1;
-  cloud_4->width = uint32_t (cloud_4->size ());
+  cloud_4->width = std::uint32_t (cloud_4->size ());
 
   ConvexHull<PointXYZ> convex_hull;
   convex_hull.setComputeAreaVolume (true);

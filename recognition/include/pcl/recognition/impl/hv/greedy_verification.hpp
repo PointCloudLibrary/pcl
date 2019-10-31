@@ -47,14 +47,14 @@ template<typename ModelT, typename SceneT>
 
     // initialize mask...
     mask_.resize (visible_models_.size ());
-    for (size_t i = 0; i < visible_models_.size (); i++)
+    for (std::size_t i = 0; i < visible_models_.size (); i++)
       mask_[i] = false;
 
     // initialize explained_by_RM
     points_explained_by_rm_.resize (scene_cloud_downsampled_->points.size ());
 
     // initialize model
-    for (size_t m = 0; m < visible_models_.size (); m++)
+    for (std::size_t m = 0; m < visible_models_.size (); m++)
     {
       RecognitionModelPtr recog_model (new RecognitionModel);
       // voxelize model cloud
@@ -71,7 +71,7 @@ template<typename ModelT, typename SceneT>
       std::vector<int> nn_indices;
       std::vector<float> nn_distances;
 
-      for (size_t i = 0; i < recog_model->cloud_->points.size (); i++)
+      for (std::size_t i = 0; i < recog_model->cloud_->points.size (); i++)
       {
         if (!scene_downsampled_tree_->radiusSearch (recog_model->cloud_->points[i], inliers_threshold_, nn_indices, nn_distances,
                                                     std::numeric_limits<int>::max ()))
@@ -80,7 +80,7 @@ template<typename ModelT, typename SceneT>
         }
         else
         {
-          for (size_t k = 0; k < nn_distances.size (); k++)
+          for (std::size_t k = 0; k < nn_distances.size (); k++)
           {
             explained_indices.push_back (nn_indices[k]); //nn_indices[k] points to the scene
           }
@@ -115,7 +115,7 @@ template<typename ModelT, typename SceneT>
     std::vector<bool> best_solution_;
     best_solution_.resize (recognition_models_.size ());
 
-    for (size_t i = 0; i < recognition_models_.size (); i++)
+    for (std::size_t i = 0; i < recognition_models_.size (); i++)
     {
       if (static_cast<float> (recognition_models_[i]->good_information_) > (regularizer_
           * static_cast<float> (recognition_models_[i]->bad_information_)))
@@ -127,7 +127,7 @@ template<typename ModelT, typename SceneT>
         best_solution_[i] = false;
     }
 
-    for (size_t i = 0; i < best_solution_.size (); i++)
+    for (std::size_t i = 0; i < best_solution_.size (); i++)
     {
       if (best_solution_[i])
       {

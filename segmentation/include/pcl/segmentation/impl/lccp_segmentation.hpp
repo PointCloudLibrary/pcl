@@ -142,20 +142,20 @@ pcl::LCCPSegmentation<PointT>::computeSegmentAdjacency ()
   std::pair<VertexIterator, VertexIterator> vertex_iterator_range;
   vertex_iterator_range = boost::vertices (sv_adjacency_list_);
 
-  uint32_t current_segLabel;
-  uint32_t neigh_segLabel;
+  std::uint32_t current_segLabel;
+  std::uint32_t neigh_segLabel;
 
   // For every Supervoxel..
   for (VertexIterator sv_itr = vertex_iterator_range.first; sv_itr != vertex_iterator_range.second; ++sv_itr)  // For all supervoxels
   {
-    const uint32_t& sv_label = sv_adjacency_list_[*sv_itr];
+    const std::uint32_t& sv_label = sv_adjacency_list_[*sv_itr];
     current_segLabel = sv_label_to_seg_label_map_[sv_label];
 
     // ..look at all neighbors and insert their labels into the neighbor set
     std::pair<AdjacencyIterator, AdjacencyIterator> neighbors = boost::adjacent_vertices (*sv_itr, sv_adjacency_list_);
     for (AdjacencyIterator itr_neighbor = neighbors.first; itr_neighbor != neighbors.second; ++itr_neighbor)
     {
-      const uint32_t& neigh_label = sv_adjacency_list_[*itr_neighbor];
+      const std::uint32_t& neigh_label = sv_adjacency_list_[*itr_neighbor];
       neigh_segLabel = sv_label_to_seg_label_map_[neigh_label];
 
       if (current_segLabel != neigh_segLabel)
@@ -174,11 +174,11 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
 
   computeSegmentAdjacency ();
 
-  std::set<uint32_t> filteredSegLabels;
+  std::set<std::uint32_t> filteredSegLabels;
 
-  uint32_t largest_neigh_size = 0;
-  uint32_t largest_neigh_seg_label = 0;
-  uint32_t current_seg_label;
+  std::uint32_t largest_neigh_size = 0;
+  std::uint32_t largest_neigh_seg_label = 0;
+  std::uint32_t current_seg_label;
 
   std::pair<VertexIterator, VertexIterator> vertex_iterator_range;
   vertex_iterator_range = boost::vertices (sv_adjacency_list_);
@@ -193,12 +193,12 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
     // Iterate through all supervoxels, check if they are in a "small" segment -> change label to largest neighborID
     for (VertexIterator sv_itr = vertex_iterator_range.first; sv_itr != vertex_iterator_range.second; ++sv_itr)  // For all supervoxels
     {
-      const uint32_t& sv_label = sv_adjacency_list_[*sv_itr];
+      const std::uint32_t& sv_label = sv_adjacency_list_[*sv_itr];
       current_seg_label = sv_label_to_seg_label_map_[sv_label];
       largest_neigh_seg_label = current_seg_label;
       largest_neigh_size = seg_label_to_sv_list_map_[current_seg_label].size ();
 
-      const uint32_t& nr_neighbors = seg_label_to_neighbor_set_map_[current_seg_label].size ();
+      const std::uint32_t& nr_neighbors = seg_label_to_neighbor_set_map_[current_seg_label].size ();
       if (nr_neighbors == 0)
         continue;
 
@@ -249,8 +249,8 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
 }
 
 template <typename PointT> void
-pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<uint32_t, typename pcl::Supervoxel<PointT>::Ptr>& supervoxel_clusters_arg,
-                                                    const std::multimap<uint32_t, uint32_t>& label_adjaceny_arg)
+pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr>& supervoxel_clusters_arg,
+                                                    const std::multimap<std::uint32_t, std::uint32_t>& label_adjaceny_arg)
 {
   // Clear internal data
   reset ();
@@ -259,13 +259,13 @@ pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<uint32_t, typ
   sv_label_to_supervoxel_map_ = supervoxel_clusters_arg;
 
   //    Build a boost adjacency list from the adjacency multimap
-  std::map<uint32_t, VertexID> label_ID_map;
+  std::map<std::uint32_t, VertexID> label_ID_map;
 
   // Add all supervoxel labels as vertices
-  for (typename std::map<uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
+  for (typename std::map<std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
       svlabel_itr != sv_label_to_supervoxel_map_.end (); ++svlabel_itr)
   {
-    const uint32_t& sv_label = svlabel_itr->first;
+    const std::uint32_t& sv_label = svlabel_itr->first;
     VertexID node_id = boost::add_vertex (sv_adjacency_list_);
     sv_adjacency_list_[node_id] = sv_label;
     label_ID_map[sv_label] = node_id;
@@ -274,8 +274,8 @@ pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<uint32_t, typ
   // Add all edges
   for (const auto &sv_neighbors_itr : label_adjaceny_arg)
   {
-    const uint32_t& sv_label = sv_neighbors_itr.first;
-    const uint32_t& neighbor_label = sv_neighbors_itr.second;
+    const std::uint32_t& sv_label = sv_neighbors_itr.first;
+    const std::uint32_t& neighbor_label = sv_neighbors_itr.second;
 
     VertexID u = label_ID_map[sv_label];
     VertexID v = label_ID_map[neighbor_label];
@@ -286,10 +286,10 @@ pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<uint32_t, typ
   // Initialization
   // clear the processed_ map
   seg_label_to_sv_list_map_.clear ();
-  for (typename std::map<uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
+  for (typename std::map<std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
       svlabel_itr != sv_label_to_supervoxel_map_.end (); ++svlabel_itr)
   {
-    const uint32_t& sv_label = svlabel_itr->first;
+    const std::uint32_t& sv_label = svlabel_itr->first;
     processed_[sv_label] = false;
     sv_label_to_seg_label_map_[sv_label] = 0;
   }
@@ -303,10 +303,10 @@ pcl::LCCPSegmentation<PointT>::doGrouping ()
 {
   // clear the processed_ map
   seg_label_to_sv_list_map_.clear ();
-  for (typename std::map<uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
+  for (typename std::map<std::uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
       svlabel_itr != sv_label_to_supervoxel_map_.end (); ++svlabel_itr)
   {
-    const uint32_t& sv_label = svlabel_itr->first;
+    const std::uint32_t& sv_label = svlabel_itr->first;
     processed_[sv_label] = false;
     sv_label_to_seg_label_map_[sv_label] = 0;
   }
@@ -316,12 +316,12 @@ pcl::LCCPSegmentation<PointT>::doGrouping ()
   std::pair< VertexIterator, VertexIterator> vertex_iterator_range;
   vertex_iterator_range = boost::vertices (sv_adjacency_list_);
 
-  // Note: *sv_itr is of type " boost::graph_traits<VoxelAdjacencyList>::vertex_descriptor " which it nothing but a typedef of size_t..
+  // Note: *sv_itr is of type " boost::graph_traits<VoxelAdjacencyList>::vertex_descriptor " which it nothing but a typedef of std::size_t..
   unsigned int segment_label = 1;  // This starts at 1, because 0 is reserved for errors
   for (VertexIterator sv_itr = vertex_iterator_range.first; sv_itr != vertex_iterator_range.second; ++sv_itr)  // For all supervoxels
   {
     const VertexID sv_vertex_id = *sv_itr;
-    const uint32_t& sv_label = sv_adjacency_list_[sv_vertex_id];
+    const std::uint32_t& sv_label = sv_adjacency_list_[sv_vertex_id];
     if (!processed_[sv_label])
     {
       // Add neighbors (and their neighbors etc.) to group if similarity constraint is met
@@ -335,7 +335,7 @@ template <typename PointT> void
 pcl::LCCPSegmentation<PointT>::recursiveSegmentGrowing (const VertexID &query_point_id,
                                                         const unsigned int segment_label)
 {
-  const uint32_t& sv_label = sv_adjacency_list_[query_point_id];
+  const std::uint32_t& sv_label = sv_adjacency_list_[query_point_id];
 
   processed_[sv_label] = true;
 
@@ -349,7 +349,7 @@ pcl::LCCPSegmentation<PointT>::recursiveSegmentGrowing (const VertexID &query_po
   for (OutEdgeIterator out_Edge_itr = out_edge_iterator_range.first; out_Edge_itr != out_edge_iterator_range.second; ++out_Edge_itr)
   {
     const VertexID neighbor_ID = boost::target (*out_Edge_itr, sv_adjacency_list_);
-    const uint32_t& neighbor_label = sv_adjacency_list_[neighbor_ID];
+    const std::uint32_t& neighbor_label = sv_adjacency_list_[neighbor_ID];
 
     if (!processed_[neighbor_label])  // If neighbor was not already processed
     {
@@ -439,8 +439,8 @@ pcl::LCCPSegmentation<PointT>::calculateConvexConnections (SupervoxelAdjacencyLi
   {
     next_edge++;  // next_edge iterator is necessary, because removing an edge invalidates the iterator to the current edge
 
-    uint32_t source_sv_label = adjacency_list_arg[boost::source (*edge_itr, adjacency_list_arg)];
-    uint32_t target_sv_label = adjacency_list_arg[boost::target (*edge_itr, adjacency_list_arg)];
+    std::uint32_t source_sv_label = adjacency_list_arg[boost::source (*edge_itr, adjacency_list_arg)];
+    std::uint32_t target_sv_label = adjacency_list_arg[boost::target (*edge_itr, adjacency_list_arg)];
 
     float normal_difference;
     is_convex = connIsConvex (source_sv_label, target_sv_label, normal_difference);
@@ -451,8 +451,8 @@ pcl::LCCPSegmentation<PointT>::calculateConvexConnections (SupervoxelAdjacencyLi
 }
 
 template <typename PointT> bool
-pcl::LCCPSegmentation<PointT>::connIsConvex (const uint32_t source_label_arg,
-                                             const uint32_t target_label_arg,
+pcl::LCCPSegmentation<PointT>::connIsConvex (const std::uint32_t source_label_arg,
+                                             const std::uint32_t target_label_arg,
                                              float &normal_angle)
 {
   typename pcl::Supervoxel<PointT>::Ptr& sv_source = sv_label_to_supervoxel_map_[source_label_arg];

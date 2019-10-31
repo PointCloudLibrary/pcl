@@ -27,28 +27,27 @@ void
 getScenesInDirectory (bf::path & dir, std::string & rel_path_so_far, std::vector<std::string> & relative_paths)
 {
   //list models in MODEL_FILES_DIR_ and return list
-  bf::directory_iterator end_itr;
-  for (bf::directory_iterator itr (dir); itr != end_itr; ++itr)
+  for (const auto& dir_entry : bf::directory_iterator(dir))
   {
     //check if its a directory, then get models in it
-    if (bf::is_directory (*itr))
+    if (bf::is_directory (dir_entry))
     {
-      std::string so_far = rel_path_so_far + (itr->path ().filename ()).string() + "/";
-      bf::path curr_path = itr->path ();
+      std::string so_far = rel_path_so_far + (dir_entry.path ().filename ()).string() + "/";
+      bf::path curr_path = dir_entry.path ();
       getScenesInDirectory (curr_path, so_far, relative_paths);
     }
     else
     {
       //check that it is a ply file and then add, otherwise ignore..
       std::vector < std::string > strs;
-      std::string file = (itr->path ().filename ()).string();
+      std::string file = (dir_entry.path ().filename ()).string();
 
       boost::split (strs, file, boost::is_any_of ("."));
       std::string extension = strs[strs.size () - 1];
 
       if (extension == "pcd")
       {
-        std::string path = rel_path_so_far + (itr->path ().filename ()).string();
+        std::string path = rel_path_so_far + (dir_entry.path ().filename ()).string();
         relative_paths.push_back (path);
       }
     }
@@ -67,8 +66,8 @@ sortFiles (const std::string & file1, const std::string & file2)
   std::string id_1 = strs1[strs1.size () - 1];
   std::string id_2 = strs2[strs2.size () - 1];
 
-  size_t pos1 = id_1.find (".ply.pcd");
-  size_t pos2 = id_2.find (".ply.pcd");
+  std::size_t pos1 = id_1.find (".ply.pcd");
+  std::size_t pos2 = id_2.find (".ply.pcd");
 
   id_1 = id_1.substr (0, pos1);
   id_2 = id_2.substr (0, pos2);
@@ -101,11 +100,11 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
     {
       pcl::visualization::PCLVisualizer vis ("Mians dataset");
 
-      for (size_t i = 0; i < files.size (); i++)
+      for (std::size_t i = 0; i < files.size (); i++)
       {
         std::cout << files[i] << std::endl;
         if (scene != -1)
-          if ((size_t) scene != i)
+          if ((std::size_t) scene != i)
             continue;
 
         std::stringstream file;
@@ -130,7 +129,7 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
         boost::shared_ptr < std::vector<ModelT> > models = local.getModels ();
         boost::shared_ptr < std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms = local.getTransforms ();
 
-        for (size_t j = 0; j < models->size (); j++)
+        for (std::size_t j = 0; j < models->size (); j++)
         {
           std::stringstream name;
           name << "cloud_" << j;
@@ -176,7 +175,7 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
 
         vis.removePointCloud ("scene_cloud");
         vis.removeShape ("scene_text");
-        for (size_t j = 0; j < models->size (); j++)
+        for (std::size_t j = 0; j < models->size (); j++)
         {
           std::stringstream name;
           name << "cloud_" << j;
@@ -193,7 +192,7 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
       local.setSearchModel (id);
       local.initialize ();
 
-      for (size_t i = 0; i < files.size (); i++)
+      for (std::size_t i = 0; i < files.size (); i++)
       {
         std::stringstream file;
         file << ply_files_dir.string () << files[i];
@@ -213,7 +212,7 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
         boost::shared_ptr < std::vector<ModelT> > models = local.getModels ();
         boost::shared_ptr < std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms = local.getTransforms ();
 
-        for (size_t j = 0; j < models->size (); j++)
+        for (std::size_t j = 0; j < models->size (); j++)
         {
           std::stringstream name;
           name << "cloud_" << j;
@@ -230,7 +229,7 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
 
         vis.removePointCloud ("scene_cloud");
         vis.removeShape ("scene_text");
-        for (size_t j = 0; j < models->size (); j++)
+        for (std::size_t j = 0; j < models->size (); j++)
         {
           std::stringstream name;
           name << "cloud_" << j;
@@ -243,29 +242,28 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
 void
 getModelsInDirectory (bf::path & dir, std::string & rel_path_so_far, std::vector<std::string> & relative_paths, std::string & ext)
 {
-  bf::directory_iterator end_itr;
-  for (bf::directory_iterator itr (dir); itr != end_itr; ++itr)
+  for (const auto& dir_entry : bf::directory_iterator(dir))
   {
     //check if its a directory, then get models in it
-    if (bf::is_directory (*itr))
+    if (bf::is_directory (dir_entry))
     {
-      std::string so_far = rel_path_so_far + (itr->path ().filename ()).string() + "/";
+      std::string so_far = rel_path_so_far + (dir_entry.path ().filename ()).string() + "/";
 
-      bf::path curr_path = itr->path ();
+      bf::path curr_path = dir_entry.path ();
       getModelsInDirectory (curr_path, so_far, relative_paths, ext);
     }
     else
     {
       //check that it is a ply file and then add, otherwise ignore..
       std::vector < std::string > strs;
-      std::string file = (itr->path ().filename ()).string();
+      std::string file = (dir_entry.path ().filename ()).string();
 
       boost::split (strs, file, boost::is_any_of ("."));
       std::string extension = strs[strs.size () - 1];
 
       if (extension == ext)
       {
-        std::string path = rel_path_so_far + (itr->path ().filename ()).string();
+        std::string path = rel_path_so_far + (dir_entry.path ().filename ()).string();
 
         relative_paths.push_back (path);
       }

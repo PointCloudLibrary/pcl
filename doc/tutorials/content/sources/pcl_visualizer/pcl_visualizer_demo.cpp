@@ -286,7 +286,7 @@ main (int argc, char** argv)
   std::cout << "Generating example point clouds.\n\n";
   // We're going to make an ellipse extruded along the z-axis. The colour for
   // the XYZRGB cloud will gradually go from red to green to blue.
-  uint8_t r(255), g(15), b(15);
+  std::uint8_t r(255), g(15), b(15);
   for (float z(-1.0); z <= 1.0; z += 0.05)
   {
     for (float angle(0.0); angle <= 360.0; angle += 5.0)
@@ -301,8 +301,8 @@ main (int argc, char** argv)
       point.x = basic_point.x;
       point.y = basic_point.y;
       point.z = basic_point.z;
-      uint32_t rgb = (static_cast<uint32_t>(r) << 16 |
-              static_cast<uint32_t>(g) << 8 | static_cast<uint32_t>(b));
+      std::uint32_t rgb = (static_cast<std::uint32_t>(r) << 16 |
+              static_cast<std::uint32_t>(g) << 8 | static_cast<std::uint32_t>(b));
       point.rgb = *reinterpret_cast<float*>(&rgb);
       point_cloud_ptr->points.push_back (point);
     }

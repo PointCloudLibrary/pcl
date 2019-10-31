@@ -14,7 +14,7 @@ else()
 endif()
 
 set(Boost_ADDITIONAL_VERSIONS
-  "1.70.0" "1.70"
+  "1.71.0" "1.71" "1.70.0" "1.70"
   "1.69.0" "1.69" "1.68.0" "1.68" "1.67.0" "1.67" "1.66.0" "1.66" "1.65.1" "1.65.0" "1.65"
   "1.64.0" "1.64" "1.63.0" "1.63" "1.62.0" "1.62" "1.61.0" "1.61" "1.60.0" "1.60"
   "1.59.0" "1.59" "1.58.0" "1.58" "1.57.0" "1.57" "1.56.0" "1.56" "1.55.0" "1.55")
@@ -29,13 +29,8 @@ if(Boost_SERIALIZATION_FOUND)
 endif()
 
 # Required boost modules
-if(WITH_OPENNI2)
-set(BOOST_REQUIRED_MODULES filesystem date_time iostreams chrono system)
-find_package(Boost 1.55.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
-else()
 set(BOOST_REQUIRED_MODULES filesystem date_time iostreams system)
 find_package(Boost 1.55.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
-endif()
 
 if(Boost_FOUND)
   set(BOOST_FOUND TRUE)

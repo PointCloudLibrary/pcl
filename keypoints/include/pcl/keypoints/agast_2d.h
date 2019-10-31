@@ -72,8 +72,8 @@ namespace pcl
             * \param[in] threshold the corner detection threshold
             * \param[in] bmax the max image value (default: 255)
             */
-          AbstractAgastDetector (const size_t width, 
-                                 const size_t height, 
+          AbstractAgastDetector (const std::size_t width, 
+                                 const std::size_t height, 
                                  const double threshold,
                                  const double bmax) 
             : width_ (width)
@@ -240,9 +240,9 @@ namespace pcl
                                std::vector<ScoreIndex> & scores);
 
           /** \brief Width of the image to process. */
-          size_t width_;
+          std::size_t width_;
           /** \brief Height of the image to process. */
-          size_t height_;
+          std::size_t height_;
 
           /** \brief Threshold for corner detection. */
           double threshold_;
@@ -274,8 +274,8 @@ namespace pcl
             * \param[in] threshold the corner detection threshold
             * \param[in] bmax the max image value (default: 255)
             */
-          AgastDetector7_12s (const size_t width, 
-                              const size_t height, 
+          AgastDetector7_12s (const std::size_t width, 
+                              const std::size_t height, 
                               const double threshold,
                               const double bmax = 255) 
             : AbstractAgastDetector (width, height, threshold, bmax)
@@ -322,7 +322,7 @@ namespace pcl
           static const int border_width_ = 2;
 
           // offsets defining the sample pattern
-          std::array<int_fast16_t, 12> offset_;
+          std::array<std::int_fast16_t, 12> offset_;
       };
 
       /** \brief Detector class for AGAST corner point detector (5_8). 
@@ -345,8 +345,8 @@ namespace pcl
             * \param[in] threshold the corner detection threshold
             * \param[in] bmax the max image value (default: 255)
             */
-          AgastDetector5_8 (const size_t width, 
-                            const size_t height, 
+          AgastDetector5_8 (const std::size_t width, 
+                            const std::size_t height, 
                             const double threshold,
                             const double bmax = 255) 
             : AbstractAgastDetector (width, height, threshold, bmax)
@@ -393,7 +393,7 @@ namespace pcl
           static const int border_width_ = 1;
 
           // offsets defining the sample pattern
-          std::array<int_fast16_t, 8> offset_;
+          std::array<std::int_fast16_t, 8> offset_;
       };
 
       /** \brief Detector class for AGAST corner point detector (OAST 9_16). 
@@ -416,8 +416,8 @@ namespace pcl
             * \param[in] threshold the corner detection threshold
             * \param[in] bmax the max image value (default: 255)
             */
-          OastDetector9_16 (const size_t width, 
-                            const size_t height, 
+          OastDetector9_16 (const std::size_t width, 
+                            const std::size_t height, 
                             const double threshold,
                             const double bmax = 255) 
             : AbstractAgastDetector (width, height, threshold, bmax)
@@ -464,7 +464,7 @@ namespace pcl
           static const int border_width_ = 3;
 
           // offsets defining the sample pattern
-          std::array<int_fast16_t, 16> offset_;
+          std::array<std::int_fast16_t, 16> offset_;
       };
     } // namespace agast
   } // namespace keypoints
@@ -488,7 +488,7 @@ namespace pcl
         {
           pcl::PointCloud<pcl::PointUV> output_temp;
           detector->applyNonMaxSuppression (image_data, tmp_cloud, output_temp);
-          pcl::copyPointCloud<pcl::PointUV, Out> (output_temp, output);
+          pcl::copyPointCloud (output_temp, output);
         }
       };
 
@@ -516,7 +516,7 @@ namespace pcl
         {
           pcl::PointCloud<pcl::PointUV> output_temp;
           detector->detectKeypoints (image_data, output_temp);
-          pcl::copyPointCloud<pcl::PointUV, Out> (output_temp, output);
+          pcl::copyPointCloud (output_temp, output);
         }
       };
 

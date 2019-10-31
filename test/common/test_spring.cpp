@@ -44,7 +44,7 @@ using namespace pcl;
 using namespace pcl::test;
 
 PointCloud<PointXYZ>::Ptr cloud_ptr (new PointCloud<PointXYZ> (4, 5));
-const size_t size = 5 * 4;
+const std::size_t size = 5 * 4;
 const int amount = 2;
 
 // TEST (PointCloudSpring, vertical)
@@ -177,8 +177,8 @@ TEST (PointCloudSpring, deleteRows)
   pcl::common::deleteRows (*output, *output, amount);
   EXPECT_EQ (output->height, cloud_ptr->height);
 
-  for (uint32_t i = 0; i < cloud_ptr->width; i++)
-    for (uint32_t j = 0; j < cloud_ptr->height; j++)
+  for (std::uint32_t i = 0; i < cloud_ptr->width; i++)
+    for (std::uint32_t j = 0; j < cloud_ptr->height; j++)
     {
       EXPECT_EQ_VECTORS ((*output) (i, j).getVector3fMap (),
                          (*cloud_ptr) (i, j).getVector3fMap ());
@@ -193,8 +193,8 @@ TEST (PointCloudSpring, deleteCols)
   pcl::common::deleteCols (*output, *output, amount);
   EXPECT_EQ (output->width, cloud_ptr->width);
 
-  for (uint32_t i = 0; i < cloud_ptr->width; i++)
-    for (uint32_t j = 0; j < cloud_ptr->height; j++)
+  for (std::uint32_t i = 0; i < cloud_ptr->width; i++)
+    for (std::uint32_t j = 0; j < cloud_ptr->height; j++)
     {
       EXPECT_EQ_VECTORS ((*output) (i, j).getVector3fMap (),
                          (*cloud_ptr) (i, j).getVector3fMap ());
@@ -204,7 +204,7 @@ TEST (PointCloudSpring, deleteCols)
 int
 main (int argc, char** argv)
 {
-  for (uint32_t i = 0; i < size; ++i)
+  for (std::uint32_t i = 0; i < size; ++i)
     (*cloud_ptr)[i]  = PointXYZ (3*i+0, 3*i+1, 3*i+2);
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

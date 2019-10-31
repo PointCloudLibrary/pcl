@@ -34,159 +34,193 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-  
-#ifndef PCL_ML_FERNS_FERN_EVALUATOR_HPP_
-#define PCL_ML_FERNS_FERN_EVALUATOR_HPP_
+
+#pragma once
 
 #include <pcl/common/common.h>
 
-#include <pcl/ml/ferns/fern.h>
 #include <pcl/ml/feature_handler.h>
+#include <pcl/ml/ferns/fern.h>
 #include <pcl/ml/stats_estimator.h>
 
 #include <vector>
 
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
+pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+    FernEvaluator()
+{}
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
-pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::FernEvaluator ()
-{
-}
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
+pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+    ~FernEvaluator()
+{}
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
-pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::~FernEvaluator ()
-{
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
 void
-pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::evaluate (
-  pcl::Fern<FeatureType, NodeType> & fern,
-  pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler,
-  pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator,
-  DataSet & data_set,
-  std::vector<ExampleIndex> & examples,
-  std::vector<LabelType> & label_data)
+pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::evaluate(
+    pcl::Fern<FeatureType, NodeType>& fern,
+    pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
+    pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator,
+    DataSet& data_set,
+    std::vector<ExampleIndex>& examples,
+    std::vector<LabelType>& label_data)
 {
-  const size_t num_of_examples = examples.size ();
-  const size_t num_of_branches = stats_estimator.getNumOfBranches ();
-  const size_t num_of_features = fern.getNumOfFeatures ();
+  const std::size_t num_of_examples = examples.size();
+  const std::size_t num_of_branches = stats_estimator.getNumOfBranches();
+  const std::size_t num_of_features = fern.getNumOfFeatures();
 
-  label_data.resize (num_of_examples);
+  label_data.resize(num_of_examples);
 
-  std::vector<std::vector<float> > results (num_of_features);
-  std::vector<std::vector<unsigned char> > flags (num_of_features);
-  std::vector<std::vector<unsigned char> > branch_indices (num_of_features);
+  std::vector<std::vector<float>> results(num_of_features);
+  std::vector<std::vector<unsigned char>> flags(num_of_features);
+  std::vector<std::vector<unsigned char>> branch_indices(num_of_features);
 
-  for (size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
-  {
-    results[feature_index].reserve (num_of_examples);
-    flags[feature_index].reserve (num_of_examples);
-    branch_indices[feature_index].reserve (num_of_examples);
+  for (std::size_t feature_index = 0; feature_index < num_of_features;
+       ++feature_index) {
+    results[feature_index].reserve(num_of_examples);
+    flags[feature_index].reserve(num_of_examples);
+    branch_indices[feature_index].reserve(num_of_examples);
 
-    feature_handler.evaluateFeature (fern.accessFeature (feature_index), data_set, examples, results[feature_index], flags[feature_index]);
-    stats_estimator.computeBranchIndices (results[feature_index], flags[feature_index], fern.accessThreshold (feature_index), branch_indices[feature_index]);
+    feature_handler.evaluateFeature(fern.accessFeature(feature_index),
+                                    data_set,
+                                    examples,
+                                    results[feature_index],
+                                    flags[feature_index]);
+    stats_estimator.computeBranchIndices(results[feature_index],
+                                         flags[feature_index],
+                                         fern.accessThreshold(feature_index),
+                                         branch_indices[feature_index]);
   }
 
-  for (size_t example_index = 0; example_index < num_of_examples; ++example_index)
-  {
-    size_t node_index = 0;
-    for (size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
-    {
+  for (std::size_t example_index = 0; example_index < num_of_examples;
+       ++example_index) {
+    std::size_t node_index = 0;
+    for (std::size_t feature_index = 0; feature_index < num_of_features;
+         ++feature_index) {
       node_index *= num_of_branches;
       node_index += branch_indices[feature_index][example_index];
     }
 
-    label_data[example_index] = stats_estimator.getLabelOfNode (fern[node_index]);
+    label_data[example_index] = stats_estimator.getLabelOfNode(fern[node_index]);
   }
 }
-  
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
+
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
 void
-pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::evaluateAndAdd (
-  pcl::Fern<FeatureType, NodeType> & fern,
-  pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler,
-  pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator,
-  DataSet & data_set,
-  std::vector<ExampleIndex> & examples,
-  std::vector<LabelType> & label_data)
+pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+    evaluateAndAdd(
+        pcl::Fern<FeatureType, NodeType>& fern,
+        pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
+        pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>&
+            stats_estimator,
+        DataSet& data_set,
+        std::vector<ExampleIndex>& examples,
+        std::vector<LabelType>& label_data)
 {
-  const size_t num_of_examples = examples.size ();
-  const size_t num_of_branches = stats_estimator.getNumOfBranches ();
-  const size_t num_of_features = fern.getNumOfFeatures ();
+  const std::size_t num_of_examples = examples.size();
+  const std::size_t num_of_branches = stats_estimator.getNumOfBranches();
+  const std::size_t num_of_features = fern.getNumOfFeatures();
 
-  std::vector<std::vector<float> > results (num_of_features);
-  std::vector<std::vector<unsigned char> > flags (num_of_features);
-  std::vector<std::vector<unsigned char> > branch_indices (num_of_features);
+  std::vector<std::vector<float>> results(num_of_features);
+  std::vector<std::vector<unsigned char>> flags(num_of_features);
+  std::vector<std::vector<unsigned char>> branch_indices(num_of_features);
 
-  for (size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
-  {
-    results[feature_index].reserve (num_of_examples);
-    flags[feature_index].reserve (num_of_examples);
-    branch_indices[feature_index].reserve (num_of_examples);
+  for (std::size_t feature_index = 0; feature_index < num_of_features;
+       ++feature_index) {
+    results[feature_index].reserve(num_of_examples);
+    flags[feature_index].reserve(num_of_examples);
+    branch_indices[feature_index].reserve(num_of_examples);
 
-    feature_handler.evaluateFeature (fern.accessFeature (feature_index), data_set, examples, results[feature_index], flags[feature_index]);
-    stats_estimator.computeBranchIndices (results[feature_index], flags[feature_index], fern.accessThreshold (feature_index), branch_indices[feature_index]);
+    feature_handler.evaluateFeature(fern.accessFeature(feature_index),
+                                    data_set,
+                                    examples,
+                                    results[feature_index],
+                                    flags[feature_index]);
+    stats_estimator.computeBranchIndices(results[feature_index],
+                                         flags[feature_index],
+                                         fern.accessThreshold(feature_index),
+                                         branch_indices[feature_index]);
   }
 
-  for (size_t example_index = 0; example_index < num_of_examples; ++example_index)
-  {
-    size_t node_index = 0;
-    for (size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
-    {
+  for (std::size_t example_index = 0; example_index < num_of_examples;
+       ++example_index) {
+    std::size_t node_index = 0;
+    for (std::size_t feature_index = 0; feature_index < num_of_features;
+         ++feature_index) {
       node_index *= num_of_branches;
       node_index += branch_indices[feature_index][example_index];
     }
 
-    label_data[example_index] = stats_estimator.getLabelOfNode (fern[node_index]);
+    label_data[example_index] = stats_estimator.getLabelOfNode(fern[node_index]);
   }
 }
-  
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
+
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
 void
-pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::getNodes (
-  pcl::Fern<FeatureType, NodeType> & fern,
-  pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler,
-  pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator,
-  DataSet & data_set,
-  std::vector<ExampleIndex> & examples,
-  std::vector<NodeType*> & nodes)
+pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::getNodes(
+    pcl::Fern<FeatureType, NodeType>& fern,
+    pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
+    pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator,
+    DataSet& data_set,
+    std::vector<ExampleIndex>& examples,
+    std::vector<NodeType*>& nodes)
 {
-  const size_t num_of_examples = examples.size ();
-  const size_t num_of_branches = stats_estimator.getNumOfBranches ();
-  const size_t num_of_features = fern.getNumOfFeatures ();
+  const std::size_t num_of_examples = examples.size();
+  const std::size_t num_of_branches = stats_estimator.getNumOfBranches();
+  const std::size_t num_of_features = fern.getNumOfFeatures();
 
-  nodes.reserve (num_of_examples);
+  nodes.reserve(num_of_examples);
 
-  std::vector<std::vector<float> > results (num_of_features);
-  std::vector<std::vector<unsigned char> > flags (num_of_features);
-  std::vector<std::vector<unsigned char> > branch_indices (num_of_features);
+  std::vector<std::vector<float>> results(num_of_features);
+  std::vector<std::vector<unsigned char>> flags(num_of_features);
+  std::vector<std::vector<unsigned char>> branch_indices(num_of_features);
 
-  for (size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
-  {
-    results[feature_index].reserve (num_of_examples);
-    flags[feature_index].reserve (num_of_examples);
-    branch_indices[feature_index].reserve (num_of_examples);
+  for (std::size_t feature_index = 0; feature_index < num_of_features;
+       ++feature_index) {
+    results[feature_index].reserve(num_of_examples);
+    flags[feature_index].reserve(num_of_examples);
+    branch_indices[feature_index].reserve(num_of_examples);
 
-    feature_handler.evaluateFeature (fern.accessFeature (feature_index), data_set, examples, results[feature_index], flags[feature_index]);
-    stats_estimator.computeBranchIndices (results[feature_index], flags[feature_index], fern.accessThreshold (feature_index), branch_indices[feature_index]);
+    feature_handler.evaluateFeature(fern.accessFeature(feature_index),
+                                    data_set,
+                                    examples,
+                                    results[feature_index],
+                                    flags[feature_index]);
+    stats_estimator.computeBranchIndices(results[feature_index],
+                                         flags[feature_index],
+                                         fern.accessThreshold(feature_index),
+                                         branch_indices[feature_index]);
   }
 
-  for (size_t example_index = 0; example_index < num_of_examples; ++example_index)
-  {
-    size_t node_index = 0;
-    for (size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
-    {
+  for (std::size_t example_index = 0; example_index < num_of_examples;
+       ++example_index) {
+    std::size_t node_index = 0;
+    for (std::size_t feature_index = 0; feature_index < num_of_features;
+         ++feature_index) {
       node_index *= num_of_branches;
       node_index += branch_indices[feature_index][example_index];
     }
 
-    nodes.push_back (&(fern[node_index]));
+    nodes.push_back(&(fern[node_index]));
   }
 }
-
-#endif

@@ -36,7 +36,7 @@
 #include "pcl/io/io_exception.h"
 
 #include <boost/shared_ptr.hpp>
-#include <boost/cstdint.hpp>
+#include <cstdint>
 #include <functional>
 #include <string>
 #include <vector>
@@ -89,9 +89,9 @@ namespace pcl
           getVendor () const;
           const std::string
           getName () const;
-          uint16_t
+          std::uint16_t
           getUsbVendorId () const;
-          uint16_t
+          std::uint16_t
           getUsbProductId () const;
 
           const std::string
@@ -192,7 +192,7 @@ namespace pcl
           getBaseline();
 
           // Value of pixels in shadow or that have no valid measurement
-          uint64_t
+          std::uint64_t
           getShadowValue();
 
           void
@@ -293,7 +293,7 @@ namespace pcl
             const OpenNI2VideoMode& output_mode, OpenNI2VideoMode& mode) const;
 
           bool
-          resizingSupported (size_t input_width, size_t input_height, size_t output_width, size_t output_height) const;
+          resizingSupported (std::size_t input_width, std::size_t input_height, std::size_t output_width, std::size_t output_height) const;
 
           // Members
 
@@ -319,9 +319,9 @@ namespace pcl
           /** \brief distance between the projector and the IR camera in meters*/
           float baseline_;
           /** the value for shadow (occluded pixels) */
-          uint64_t shadow_value_;
+          std::uint64_t shadow_value_;
           /** the value for pixels without a valid disparity measurement */
-          uint64_t no_sample_value_;
+          std::uint64_t no_sample_value_;
       };
 
       PCL_EXPORTS std::ostream& operator<< (std::ostream& stream, const OpenNI2Device& device);

@@ -209,7 +209,7 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   // If the input width or height are not set, set output width as size
   if (indices_->size () != input_->points.size () || input_->width * input_->height == 0)
   {
-    output.width = static_cast<uint32_t> (indices_->size ());
+    output.width = static_cast<std::uint32_t> (indices_->size ());
     output.height = 1;
   }
   else
@@ -293,7 +293,7 @@ pcl::FeatureFromLabels<PointInT, PointLT, PointOutT>::initCompute ()
 //////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointRFT> bool
-pcl::FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFrames (const size_t& indices_size,
+pcl::FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFrames (const std::size_t& indices_size,
                                                                                     const LRFEstimationPtr& lrf_estimation)
 {
   if (frames_never_defined_)

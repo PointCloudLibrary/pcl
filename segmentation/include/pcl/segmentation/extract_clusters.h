@@ -119,7 +119,7 @@ namespace pcl
     std::vector<int> nn_indices;
     std::vector<float> nn_distances;
     // Process all points in the indices vector
-    for (size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.points.size (); ++i)
     {
       if (processed[i])
         continue;
@@ -139,7 +139,7 @@ namespace pcl
           continue;
         }
 
-        for (size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
+        for (std::size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
         {
           if (processed[nn_indices[j]])                         // Has this point been processed before ?
             continue;
@@ -164,7 +164,7 @@ namespace pcl
       {
         pcl::PointIndices r;
         r.indices.resize (seed_queue.size ());
-        for (size_t j = 0; j < seed_queue.size (); ++j)
+        for (std::size_t j = 0; j < seed_queue.size (); ++j)
           r.indices[j] = seed_queue[j];
 
         // These two lines should not be needed: (can anyone confirm?) -FF
@@ -224,7 +224,7 @@ namespace pcl
     std::vector<int> nn_indices;
     std::vector<float> nn_distances;
     // Process all points in the indices vector
-    for (size_t i = 0; i < indices.size (); ++i)
+    for (std::size_t i = 0; i < indices.size (); ++i)
     {
       if (processed[indices[i]])
         continue;
@@ -244,7 +244,7 @@ namespace pcl
           continue;
         }
 
-        for (size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
+        for (std::size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
         {
           if (processed[nn_indices[j]])                             // Has this point been processed before ?
             continue;
@@ -270,7 +270,7 @@ namespace pcl
       {
         pcl::PointIndices r;
         r.indices.resize (seed_queue.size ());
-        for (size_t j = 0; j < seed_queue.size (); ++j)
+        for (std::size_t j = 0; j < seed_queue.size (); ++j)
           r.indices[j] = seed_queue[j];
 
         // These two lines should not be needed: (can anyone confirm?) -FF

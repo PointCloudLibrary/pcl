@@ -44,7 +44,7 @@
 //#include <pcl/CameraInfo.h>
 //#include <pcl/PCLImage.h>
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 namespace pcl
 {
@@ -114,7 +114,7 @@ namespace cuda
                bool downsample = false, int stride = 2, int smoothing_nr_iterations = 0, int smoothing_filter_size = 2);
 
       template <template <typename> class Storage> void
-      compute (const boost::uint16_t* depth_image,
+      compute (const std::uint16_t* depth_image,
                const OpenNIRGB* rgb_image,
                int width, int height,
                float constant,

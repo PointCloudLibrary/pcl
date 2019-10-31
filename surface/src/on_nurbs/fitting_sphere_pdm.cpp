@@ -409,6 +409,7 @@ FittingSphere::addCageBoundaryRegularisation (double weight, int side, unsigned 
   {
     case EAST:
       i = m_nurbs.m_cv_count[0] - 1;
+      PCL_FALLTHROUGH
     case WEST:
       for (j = 1; j < (m_nurbs.m_cv_count[1] - 2 * cp_red) + 1; j++)
       {
@@ -511,9 +512,9 @@ FittingSphere::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const V
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   double d_shortest = std::numeric_limits<double>::max ();
-  for (size_t i = 0; i < elementsU.size () - 1; i++)
+  for (std::size_t i = 0; i < elementsU.size () - 1; i++)
   {
-    for (size_t j = 0; j < elementsV.size () - 1; j++)
+    for (std::size_t j = 0; j < elementsV.size () - 1; j++)
     {
       double points[3];
 

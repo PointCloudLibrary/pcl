@@ -33,7 +33,6 @@
 #include <PS1080.h> // For XN_STREAM_PROPERTY_EMITTER_DCMOS_DISTANCE property
 
 #include <boost/algorithm/string/replace.hpp>
-#include <boost/chrono.hpp>
 
 #include "pcl/io/openni2/openni2_device.h"
 #include "pcl/io/openni2/openni2_convert.h"
@@ -48,8 +47,6 @@ using namespace pcl::io::openni2;
 
 using openni::VideoMode;
 using std::vector;
-
-using hr_clock = boost::chrono::high_resolution_clock;
 
 pcl::io::openni2::OpenNI2Device::OpenNI2Device (const std::string& device_URI) :
   ir_video_started_(false),
@@ -139,13 +136,13 @@ pcl::io::openni2::OpenNI2Device::getName () const
   return (std::string (device_info_->getName ()));
 }
 
-uint16_t
+std::uint16_t
 pcl::io::openni2::OpenNI2Device::getUsbVendorId () const
 {
   return (device_info_->getUsbVendorId ());
 }
 
-uint16_t
+std::uint16_t
 pcl::io::openni2::OpenNI2Device::getUsbProductId () const
 {
   return (device_info_->getUsbProductId ());
@@ -208,7 +205,7 @@ pcl::io::openni2::OpenNI2Device::getBaseline()
   return (baseline_);
 }
 
-uint64_t
+std::uint64_t
 pcl::io::openni2::OpenNI2Device::getShadowValue()
 {
   return (shadow_value_);
@@ -643,7 +640,7 @@ pcl::io::openni2::OpenNI2Device::findCompatibleVideoMode (const std::vector<Open
 }
 
 bool
-pcl::io::openni2::OpenNI2Device::resizingSupported (size_t input_width, size_t input_height, size_t output_width, size_t output_height) const
+pcl::io::openni2::OpenNI2Device::resizingSupported (std::size_t input_width, std::size_t input_height, std::size_t output_width, std::size_t output_height) const
 {
   return (output_width <= input_width && output_height <= input_height && input_width % output_width == 0 && input_height % output_height == 0 );
 }

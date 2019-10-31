@@ -65,15 +65,14 @@ namespace pcl
         getViewsFilenames (bf::path & path_with_views, std::vector<std::string> & view_filenames)
         {
           int number_of_views = 0;
-          bf::directory_iterator end_itr;
-          for (bf::directory_iterator itr (path_with_views); itr != end_itr; ++itr)
+          for (const auto& dir_entry : bf::directory_iterator(path_with_views))
           {
-            if (!(bf::is_directory (*itr)))
+            if (!(bf::is_directory (dir_entry)))
             {
               std::vector < std::string > strs;
               std::vector < std::string > strs_;
 
-              std::string file = (itr->path ().filename ()).string();
+              std::string file = (dir_entry.path ().filename ()).string();
 
               boost::split (strs, file, boost::is_any_of ("."));
               boost::split (strs_, file, boost::is_any_of ("_"));
@@ -82,7 +81,7 @@ namespace pcl
 
               if (extension == "pcd" && (strs_[0].compare (view_prefix_) == 0))
               {
-                view_filenames.push_back ((itr->path ().filename ()).string());
+                view_filenames.push_back ((dir_entry.path ().filename ()).string());
 
                 number_of_views++;
               }
@@ -92,7 +91,7 @@ namespace pcl
 
         void
         assembleModelFromViewsAndPoses(ModelT & model, std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > & poses) {
-          for(size_t i=0; i < model.views_->size(); i++) {
+          for(std::size_t i=0; i < model.views_->size(); i++) {
             Eigen::Matrix4f inv = poses[i];
             typename pcl::PointCloud<PointInT>::Ptr global_cloud(new pcl::PointCloud<PointInT>);
             pcl::transformPointCloud(*(model.views_->at(i)),*global_cloud, inv);
@@ -116,8 +115,7 @@ namespace pcl
             //load views and poses
             std::vector < std::string > view_filenames;
             int number_of_views = 0;
-            bf::directory_iterator end_itr;
-            for (bf::directory_iterator itr (trained_dir); itr != end_itr; ++itr)
+            for (const auto& dir_entry : bf::directory_iterator(trained_dir))
             {
               //check if its a directory, then get models in it
               if (!(bf::is_directory (*itr)))
@@ -126,7 +124,7 @@ namespace pcl
                 std::vector < std::string > strs;
                 std::vector < std::string > strs_;
 
-                std::string file = (itr->path ().filename ()).string();
+                std::string file = (dir_entry.path ().filename ()).string();
 
                 boost::split (strs, file, boost::is_any_of ("."));
                 boost::split (strs_, file, boost::is_any_of ("_"));
@@ -135,7 +133,7 @@ namespace pcl
 
                 if (extension == "pcd" && strs_[0] == "view")
                 {
-                  view_filenames.push_back ((itr->path ().filename ()).string());
+                  view_filenames.push_back ((dir_entry.path ().filename ()).string());
                   number_of_views++;
                 }
               }
@@ -143,7 +141,7 @@ namespace pcl
 
             std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > poses_to_assemble_;
 
-            for (size_t i = 0; i < view_filenames.size (); i++)
+            for (std::size_t i = 0; i < view_filenames.size (); i++)
             {
               std::stringstream view_file;
               view_file << pathmodel.str () << "/" << view_filenames[i];
@@ -214,7 +212,7 @@ namespace pcl
             getViewsFilenames (model_dir, view_filenames);
             std::cout << view_filenames.size () << std::endl;
 
-            for (size_t i = 0; i < view_filenames.size (); i++)
+            for (std::size_t i = 0; i < view_filenames.size (); i++)
             {
               std::stringstream view_file;
               view_file << model_path << "/" << view_filenames[i];
@@ -256,11 +254,10 @@ namespace pcl
         bool
         isleafDirectory (bf::path & path)
         {
-          bf::directory_iterator end_itr;
           bool no_dirs_inside = true;
-          for (bf::directory_iterator itr (path); itr != end_itr; ++itr)
+          for (const auto& dir_entry : bf::directory_iterator(path))
           {
-            if (bf::is_directory (*itr))
+            if (bf::is_directory (dir_entry))
             {
               no_dirs_inside = false;
             }
@@ -272,18 +269,17 @@ namespace pcl
         void
         getModelsInDirectory (bf::path & dir, std::string & rel_path_so_far, std::vector<std::string> & relative_paths)
         {
-          bf::directory_iterator end_itr;
-          for (bf::directory_iterator itr (dir); itr != end_itr; ++itr)
+          for (const auto& dir_entry : bf::directory_iterator(dir))
           {
             //check if its a directory, then get models in it
-            if (bf::is_directory (*itr))
+            if (bf::is_directory (dir_entry))
             {
-              std::string so_far = rel_path_so_far + (itr->path ().filename ()).string() + "/";
-              bf::path curr_path = itr->path ();
+              std::string so_far = rel_path_so_far + (dir_entry.path ().filename ()).string() + "/";
+              bf::path curr_path = dir_entry.path ();
 
               if (isleafDirectory (curr_path))
               {
-                std::string path = rel_path_so_far + (itr->path ().filename ()).string();
+                std::string path = rel_path_so_far + (dir_entry.path ().filename ()).string();
                 relative_paths.push_back (path);
               }
               else
@@ -312,7 +308,7 @@ namespace pcl
 
           models_.reset (new std::vector<ModelT>);
 
-          for (size_t i = 0; i < files.size (); i++)
+          for (std::size_t i = 0; i < files.size (); i++)
           {
             ModelT m;
 

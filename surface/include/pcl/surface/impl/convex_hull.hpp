@@ -153,7 +153,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   int j = 0;
   if (xy_proj_safe)
   {
-    for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
+    for (std::size_t i = 0; i < indices_->size (); ++i, j+=dimension)
     {
       points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].x);
       points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].y);
@@ -161,7 +161,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   } 
   else if (yz_proj_safe)
   {
-    for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
+    for (std::size_t i = 0; i < indices_->size (); ++i, j+=dimension)
     {
       points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].y);
       points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].z);
@@ -169,7 +169,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   }
   else if (xz_proj_safe)
   {
-    for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
+    for (std::size_t i = 0; i < indices_->size (); ++i, j+=dimension)
     {
       points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].x);
       points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].z);
@@ -236,7 +236,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   pcl::compute3DCentroid (hull, centroid);
   if (xy_proj_safe)
   {
-    for (size_t j = 0; j < hull.points.size (); j++)
+    for (std::size_t j = 0; j < hull.points.size (); j++)
     {
       idx_points[j].second[0] = hull.points[j].x - centroid[0];
       idx_points[j].second[1] = hull.points[j].y - centroid[1];
@@ -244,7 +244,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   }
   else if (yz_proj_safe)
   {
-    for (size_t j = 0; j < hull.points.size (); j++)
+    for (std::size_t j = 0; j < hull.points.size (); j++)
     {
       idx_points[j].second[0] = hull.points[j].y - centroid[1];
       idx_points[j].second[1] = hull.points[j].z - centroid[2];
@@ -252,7 +252,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   }
   else if (xz_proj_safe)
   {
-    for (size_t j = 0; j < hull.points.size (); j++)
+    for (std::size_t j = 0; j < hull.points.size (); j++)
     {
       idx_points[j].second[0] = hull.points[j].x - centroid[0];
       idx_points[j].second[1] = hull.points[j].z - centroid[2];
@@ -278,7 +278,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   int curlong, totlong;
   qh_memfreeshort (&curlong, &totlong);
 
-  hull.width = static_cast<uint32_t> (hull.points.size ());
+  hull.width = static_cast<std::uint32_t> (hull.points.size ());
   hull.height = 1;
   hull.is_dense = false;
   return;
@@ -313,7 +313,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   coordT *points = reinterpret_cast<coordT*> (calloc (indices_->size () * dimension, sizeof (coordT)));
 
   int j = 0;
-  for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
+  for (std::size_t i = 0; i < indices_->size (); ++i, j+=dimension)
   {
     points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].x);
     points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].y);
@@ -408,7 +408,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   int curlong, totlong;
   qh_memfreeshort (&curlong, &totlong);
 
-  hull.width = static_cast<uint32_t> (hull.points.size ());
+  hull.width = static_cast<std::uint32_t> (hull.points.size ());
   hull.height = 1;
   hull.is_dense = false;
 }
@@ -446,7 +446,7 @@ pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points)
   std::vector<pcl::Vertices> polygons;
   performReconstruction (points, polygons, false);
 
-  points.width = static_cast<uint32_t> (points.points.size ());
+  points.width = static_cast<std::uint32_t> (points.points.size ());
   points.height = 1;
   points.is_dense = true;
 
@@ -488,7 +488,7 @@ pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points, std::vector<pcl::Ver
   // Perform the actual surface reconstruction
   performReconstruction (points, polygons, true);
 
-  points.width = static_cast<uint32_t> (points.points.size ());
+  points.width = static_cast<std::uint32_t> (points.points.size ());
   points.height = 1;
   points.is_dense = true;
 

@@ -96,7 +96,7 @@ computeRmsE (const PointCloud<PointType>::ConstPtr &model, const PointCloud<Poin
   if (found_points > 0)
     return sqrt (sqr_norm_sum / double (transformed_model.size ()));
 
-  return numeric_limits<double>::max ();
+  return std::numeric_limits<double>::max ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,19 +166,19 @@ main (int argc, char** argv)
 {
   if (argc < 3)
   {
-    cerr << "No test file given. Please download `milk.pcd` and `milk_cartoon_all_small_clorox.pcd` and pass their paths to the test." << endl;
+    std::cerr << "No test file given. Please download `milk.pcd` and `milk_cartoon_all_small_clorox.pcd` and pass their paths to the test." << std::endl;
     return (-1);
   }
 
   if (loadPCDFile (argv[1], *model_) < 0)
   {
-    cerr << "Failed to read test file. Please download `milk.pcd` and pass its path to the test." << endl;
+    std::cerr << "Failed to read test file. Please download `milk.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
 
   if (loadPCDFile (argv[2], *scene_) < 0)
   {
-    cerr << "Failed to read test file. Please download `milk_cartoon_all_small_clorox.pcd` and pass its path to the test." << endl;
+    std::cerr << "Failed to read test file. Please download `milk_cartoon_all_small_clorox.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
 
@@ -218,7 +218,7 @@ main (int argc, char** argv)
   KdTreeFLANN<DescriptorType> match_search;
   match_search.setInputCloud (model_descriptors_);
 
-  for (size_t i = 0; i < scene_descriptors_->size (); ++i)
+  for (std::size_t i = 0; i < scene_descriptors_->size (); ++i)
   {
     if ( std::isfinite( scene_descriptors_->at (i).descriptor[0] ) )
     {

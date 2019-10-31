@@ -48,8 +48,8 @@ template<typename PointT> void
 pcl::SamplingSurfaceNormal<PointT>::applyFilter (PointCloud &output)
 {
   std::vector <int> indices;
-  size_t npts = input_->points.size ();
-  for (size_t i = 0; i < npts; i++)
+  std::size_t npts = input_->points.size ();
+  for (std::size_t i = 0; i < npts; i++)
     indices.push_back (i);
 
   Vector max_vec (3, 1);
@@ -58,7 +58,7 @@ pcl::SamplingSurfaceNormal<PointT>::applyFilter (PointCloud &output)
   PointCloud data = *input_;
   partition (data, 0, npts, min_vec, max_vec, indices, output);
   output.width = 1;
-  output.height = uint32_t (output.points.size ());
+  output.height = std::uint32_t (output.points.size ());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ pcl::SamplingSurfaceNormal<PointT>::findXYZMaxMin (const PointCloud& cloud, Vect
   float maxval = cloud.points[0].x;
   float minval = cloud.points[0].x;
 
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.points.size (); i++)
   {
     if (cloud.points[i].x > maxval)
     {
@@ -85,7 +85,7 @@ pcl::SamplingSurfaceNormal<PointT>::findXYZMaxMin (const PointCloud& cloud, Vect
   maxval = cloud.points[0].y;
   minval = cloud.points[0].y;
 
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.points.size (); i++)
   {
     if (cloud.points[i].y > maxval)
     {
@@ -102,7 +102,7 @@ pcl::SamplingSurfaceNormal<PointT>::findXYZMaxMin (const PointCloud& cloud, Vect
   maxval = cloud.points[0].z;
   minval = cloud.points[0].z;
 
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.points.size (); i++)
   {
     if (cloud.points[i].z > maxval)
     {
@@ -173,7 +173,7 @@ pcl::SamplingSurfaceNormal<PointT>::samplePartition (
     cloud.points.push_back (pt);
   }
   cloud.width = 1;
-  cloud.height = uint32_t (cloud.points.size ());
+  cloud.height = std::uint32_t (cloud.points.size ());
 
   Eigen::Vector4f normal;
   float curvature = 0;
@@ -181,7 +181,7 @@ pcl::SamplingSurfaceNormal<PointT>::samplePartition (
 
   computeNormal (cloud, normal, curvature);
 
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.points.size (); i++)
   {
     // TODO: change to Boost random number generators!
     const float r = float (std::rand ()) / float (RAND_MAX);
@@ -234,8 +234,8 @@ pcl::SamplingSurfaceNormal<PointT>::computeMeanAndCovarianceMatrix (const pcl::P
 {
   // create the buffer on the stack which is much faster than using cloud.points[indices[i]] and centroid as a buffer
   Eigen::Matrix<float, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<float, 1, 9, Eigen::RowMajor>::Zero ();
-  size_t point_count = 0;
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  std::size_t point_count = 0;
+  for (std::size_t i = 0; i < cloud.points.size (); i++)
   {
     if (!isFinite (cloud[i]))
     {

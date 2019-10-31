@@ -170,7 +170,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldMono)
   cloud.height = 2;
   cloud.is_dense = true;
   cloud.points.resize (cloud.width * cloud.height);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.points.size (); i++)
     cloud.points[i].label = i;
 
   pcl::PCLImage image;
@@ -184,7 +184,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldMono)
   EXPECT_EQ (cloud.width, image.width);
   EXPECT_EQ (cloud.height, image.height);
 
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.points.size (); i++)
     EXPECT_EQ (i, data[i]);
 }
 
@@ -197,7 +197,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldRGB)
   cloud.height = 2;
   cloud.is_dense = true;
   cloud.points.resize (cloud.width * cloud.height);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.points.size (); i++)
     cloud.points[i].label = i % 2;
 
   pcl::PCLImage image;
@@ -211,12 +211,12 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldRGB)
   EXPECT_EQ (cloud.height, image.height);
 
   // Make sure same labels got the same random color
-  uint8_t r0 = image.data[0 * 3 + 0];
-  uint8_t g0 = image.data[0 * 3 + 1];
-  uint8_t b0 = image.data[0 * 3 + 2];
-  uint8_t r1 = image.data[1 * 3 + 0];
-  uint8_t g1 = image.data[1 * 3 + 1];
-  uint8_t b1 = image.data[1 * 3 + 2];
+  std::uint8_t r0 = image.data[0 * 3 + 0];
+  std::uint8_t g0 = image.data[0 * 3 + 1];
+  std::uint8_t b0 = image.data[0 * 3 + 2];
+  std::uint8_t r1 = image.data[1 * 3 + 0];
+  std::uint8_t g1 = image.data[1 * 3 + 1];
+  std::uint8_t b1 = image.data[1 * 3 + 2];
 
   EXPECT_EQ (r0, image.data[2 * 3 + 0]);
   EXPECT_EQ (g0, image.data[2 * 3 + 1]);
@@ -235,7 +235,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldGlasbey)
   cloud.height = 2;
   cloud.is_dense = true;
   cloud.points.resize (cloud.width * cloud.height);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.points.size (); i++)
     cloud.points[i].label = i % 2;
 
   pcl::PCLImage image;
@@ -249,7 +249,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldGlasbey)
   EXPECT_EQ (cloud.height, image.height);
 
   // Fill in different labels and extract another image
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.points.size (); i++)
     cloud.points[i].label = i % 2 + 10;
   pcl::PCLImage image2;
   ASSERT_TRUE (pcie.extract (cloud, image2));
@@ -259,7 +259,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldGlasbey)
   EXPECT_EQ (GlasbeyLUT::data ()[1], image.data[1]);
   EXPECT_EQ (GlasbeyLUT::data ()[2], image.data[2]);
   // Make sure the colors are the same
-  for (size_t i = 0; i < 2 * 2 * 3; ++i)
+  for (std::size_t i = 0; i < 2 * 2 * 3; ++i)
     EXPECT_EQ (image2.data[i], image.data[i]);
 }
 
@@ -272,7 +272,7 @@ TEST (PCL, PointCloudImageExtractorFromZField)
   cloud.height = 2;
   cloud.is_dense = true;
   cloud.points.resize (cloud.width * cloud.height);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.points.size (); i++)
     cloud.points[i].z = 1.0 + i;
 
   pcl::PCLImage image;
@@ -286,7 +286,7 @@ TEST (PCL, PointCloudImageExtractorFromZField)
   EXPECT_EQ (cloud.height, image.height);
 
   // by default Z field extractor scales with factor 10000
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.points.size (); i++)
     EXPECT_EQ (10000 * (i + 1), data[i]);
 }
 
@@ -348,7 +348,7 @@ TEST (PCL, PointCloudImageExtractorFromIntensityField)
   EXPECT_EQ (cloud.height, image.height);
 
   // by default Intensity field extractor does not apply scaling
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.points.size (); i++)
     EXPECT_EQ (static_cast<unsigned short> (cloud.points[i].intensity), data[i]);
 }
 

@@ -50,7 +50,7 @@ const float Evaluation::cy = 239.5f;
 
 struct Evaluation::Impl {};
 
-Evaluation::Evaluation(const std::string&) { cout << "Evaluation requires OpenCV. Please enable it in cmake-file" << endl; exit(0); }
+Evaluation::Evaluation(const std::string&) { std::cout << "Evaluation requires OpenCV. Please enable it in cmake-file" << std::endl; exit(0); }
 void Evaluation::setMatchFile(const std::string&) { }
 bool Evaluation::grab (double stamp, pcl::gpu::PtrStepSz<const RGB>& rgb24) { return false; }
 bool Evaluation::grab (double stamp, pcl::gpu::PtrStepSz<const unsigned short>& depth) { return false; }
@@ -80,7 +80,7 @@ Evaluation::Evaluation(const std::string& folder) : folder_(folder), visualizati
   if (folder_[folder_.size() - 1] != '\\' && folder_[folder_.size() - 1] != '/')
       folder_.push_back('/');
 
-  cout << "Initializing evaluation from folder: " << folder_ << endl;
+  std::cout << "Initializing evaluation from folder: " << folder_ << std::endl;
   string depth_file = folder_ + "depth.txt";
   string rgb_file = folder_ + "rgb.txt";
   
@@ -94,7 +94,7 @@ void Evaluation::setMatchFile(const std::string& file)
   ifstream iff(full.c_str());  
   if(!iff)
   {
-    cout << "Can't read " << file << endl;
+    std::cout << "Can't read " << file << std::endl;
     exit(1);
   }
 
@@ -115,7 +115,7 @@ void Evaluation::readFile(const string& file, std::vector< pair<double,string> >
   ifstream iff(file.c_str());
   if(!iff)
   {
-    cout << "Can't read " << file << endl;
+    std::cout << "Can't read " << file << std::endl;
     exit(1);
   }
 
@@ -136,8 +136,8 @@ void Evaluation::readFile(const string& file, std::vector< pair<double,string> >
   
 bool Evaluation::grab (double stamp, PtrStepSz<const RGB>& rgb24)
 {  
-  size_t i = static_cast<size_t>(stamp); // temporary solution, now it expects only index
-  size_t total = accociations_.empty() ? rgb_stamps_and_filenames_.size() : accociations_.size();
+  std::size_t i = static_cast<std::size_t>(stamp); // temporary solution, now it expects only index
+  std::size_t total = accociations_.empty() ? rgb_stamps_and_filenames_.size() : accociations_.size();
   
   if ( i>= total)
       return false;
@@ -165,8 +165,8 @@ bool Evaluation::grab (double stamp, PtrStepSz<const RGB>& rgb24)
 
 bool Evaluation::grab (double stamp, PtrStepSz<const unsigned short>& depth)
 {  
-  size_t i = static_cast<size_t>(stamp); // temporary solution, now it expects only index
-  size_t total = accociations_.empty() ? depth_stamps_and_filenames_.size() : accociations_.size();
+  std::size_t i = static_cast<std::size_t>(stamp); // temporary solution, now it expects only index
+  std::size_t total = accociations_.empty() ? depth_stamps_and_filenames_.size() : accociations_.size();
 
   if ( i>= total)
       return false;
@@ -179,7 +179,7 @@ bool Evaluation::grab (double stamp, PtrStepSz<const unsigned short>& depth)
    
   if (d_img.elemSize() != sizeof(unsigned short))
   {
-    cout << "Image was not opend in 16-bit format. Please use OpenCV 2.3.1 or higher" << endl;
+    std::cout << "Image was not opend in 16-bit format. Please use OpenCV 2.3.1 or higher" << std::endl;
     exit(1);
   }
 
@@ -205,11 +205,11 @@ bool Evaluation::grab (double stamp, PtrStepSz<const unsigned short>& depth, Ptr
 {
   if (accociations_.empty())
   {
-    cout << "Please set match file" << endl;
+    std::cout << "Please set match file" << std::endl;
     exit(0);
   }
 
-  size_t i = static_cast<size_t>(stamp); // temporary solution, now it expects only index
+  std::size_t i = static_cast<std::size_t>(stamp); // temporary solution, now it expects only index
 
   if ( i>= accociations_.size())
       return false;
@@ -223,7 +223,7 @@ bool Evaluation::grab (double stamp, PtrStepSz<const unsigned short>& depth, Ptr
    
   if (d_img.elemSize() != sizeof(unsigned short))
   {
-    cout << "Image was not opend in 16-bit format. Please use OpenCV 2.3.1 or higher" << endl;
+    std::cout << "Image was not opend in 16-bit format. Please use OpenCV 2.3.1 or higher" << std::endl;
     exit(1);
   }
 
@@ -252,14 +252,14 @@ bool Evaluation::grab (double stamp, PtrStepSz<const unsigned short>& depth, Ptr
 
 void Evaluation::saveAllPoses(const pcl::gpu::KinfuTracker& kinfu, int frame_number, const std::string& logfile) const
 {   
-  size_t total = accociations_.empty() ? depth_stamps_and_filenames_.size() : accociations_.size();
+  std::size_t total = accociations_.empty() ? depth_stamps_and_filenames_.size() : accociations_.size();
 
   if (frame_number < 0)
       frame_number = (int)total;
 
   frame_number = std::min(frame_number, (int)kinfu.getNumberOfPoses());
 
-  cout << "Writing " << frame_number << " poses to " << logfile << endl;
+  std::cout << "Writing " << frame_number << " poses to " << logfile << std::endl;
   
   ofstream path_file_stream(logfile.c_str());
   path_file_stream.setf(ios::fixed,ios::floatfield);
@@ -274,7 +274,7 @@ void Evaluation::saveAllPoses(const pcl::gpu::KinfuTracker& kinfu, int frame_num
 
     path_file_stream << stamp << " ";
     path_file_stream << t[0] << " " << t[1] << " " << t[2] << " ";
-    path_file_stream << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
+    path_file_stream << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << std::endl;
   }
 }
 

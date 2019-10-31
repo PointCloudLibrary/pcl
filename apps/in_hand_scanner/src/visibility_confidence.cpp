@@ -103,7 +103,7 @@ namespace pcl
 void
 pcl::ihs::addDirection (const Eigen::Vector4f& normal,
                         const Eigen::Vector4f& direction,
-                        uint32_t&              directions)
+                        std::uint32_t&         directions)
 {
   // Find the rotation that aligns the normal with [0; 0; 1]
   const float dot = normal.z ();
@@ -147,7 +147,7 @@ pcl::ihs::addDirection (const Eigen::Vector4f& normal,
 ////////////////////////////////////////////////////////////////////////////////
 
 unsigned int
-pcl::ihs::countDirections (const uint32_t directions)
+pcl::ihs::countDirections (const std::uint32_t directions)
 {
   // http://stackoverflow.com/questions/109023/best-algorithm-to-count-the-number-of-set-bits-in-a-32-bit-integer/109025#109025
   unsigned int i = directions - ((directions >> 1) & 0x55555555);

@@ -16,7 +16,7 @@ namespace pcl
     Vertices ()
     {}
 
-    std::vector<uint32_t> vertices;
+    std::vector<std::uint32_t> vertices;
 
   public:
     using Ptr = boost::shared_ptr<Vertices>;
@@ -30,7 +30,7 @@ namespace pcl
   inline std::ostream& operator<<(std::ostream& s, const  ::pcl::Vertices & v)
   {
     s << "vertices[]" << std::endl;
-    for (size_t i = 0; i < v.vertices.size (); ++i)
+    for (std::size_t i = 0; i < v.vertices.size (); ++i)
     {
       s << "  vertices[" << i << "]: ";
       s << "  " << v.vertices[i] << std::endl;

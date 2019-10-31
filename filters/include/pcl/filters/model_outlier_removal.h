@@ -95,7 +95,7 @@ namespace pcl
       setModelCoefficients (const pcl::ModelCoefficients model_coefficients)
       {
         model_coefficients_.resize (model_coefficients.values.size ());
-        for (size_t i = 0; i < model_coefficients.values.size (); i++)
+        for (std::size_t i = 0; i < model_coefficients.values.size (); i++)
         {
           model_coefficients_[i] = model_coefficients.values[i];
         }
@@ -108,7 +108,7 @@ namespace pcl
       {
         pcl::ModelCoefficients mc;
         mc.values.resize (model_coefficients_.size ());
-        for (size_t i = 0; i < mc.values.size (); i++)
+        for (std::size_t i = 0; i < mc.values.size (); i++)
           mc.values[i] = model_coefficients_[i];
         return (mc);
       }

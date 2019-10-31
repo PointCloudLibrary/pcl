@@ -75,23 +75,23 @@ namespace pcl
   {
     // Metafunction to return enum value representing a type
     template<typename T> struct asEnum {};
-    template<> struct asEnum<int8_t>   { static const uint8_t value = pcl::PCLPointField::INT8;    };
-    template<> struct asEnum<uint8_t>  { static const uint8_t value = pcl::PCLPointField::UINT8;   };
-    template<> struct asEnum<int16_t>  { static const uint8_t value = pcl::PCLPointField::INT16;   };
-    template<> struct asEnum<uint16_t> { static const uint8_t value = pcl::PCLPointField::UINT16;  };
-    template<> struct asEnum<int32_t>  { static const uint8_t value = pcl::PCLPointField::INT32;   };
-    template<> struct asEnum<uint32_t> { static const uint8_t value = pcl::PCLPointField::UINT32;  };
-    template<> struct asEnum<float>    { static const uint8_t value = pcl::PCLPointField::FLOAT32; };
-    template<> struct asEnum<double>   { static const uint8_t value = pcl::PCLPointField::FLOAT64; };
+    template<> struct asEnum<std::int8_t>   { static const std::uint8_t value = pcl::PCLPointField::INT8;    };
+    template<> struct asEnum<std::uint8_t>  { static const std::uint8_t value = pcl::PCLPointField::UINT8;   };
+    template<> struct asEnum<std::int16_t>  { static const std::uint8_t value = pcl::PCLPointField::INT16;   };
+    template<> struct asEnum<std::uint16_t> { static const std::uint8_t value = pcl::PCLPointField::UINT16;  };
+    template<> struct asEnum<std::int32_t>  { static const std::uint8_t value = pcl::PCLPointField::INT32;   };
+    template<> struct asEnum<std::uint32_t> { static const std::uint8_t value = pcl::PCLPointField::UINT32;  };
+    template<> struct asEnum<float>    { static const std::uint8_t value = pcl::PCLPointField::FLOAT32; };
+    template<> struct asEnum<double>   { static const std::uint8_t value = pcl::PCLPointField::FLOAT64; };
 
     // Metafunction to return type of enum value
     template<int> struct asType {};
-    template<> struct asType<pcl::PCLPointField::INT8>    { using type = int8_t; };
-    template<> struct asType<pcl::PCLPointField::UINT8>   { using type = uint8_t; };
-    template<> struct asType<pcl::PCLPointField::INT16>   { using type = int16_t; };
-    template<> struct asType<pcl::PCLPointField::UINT16>  { using type = uint16_t; };
-    template<> struct asType<pcl::PCLPointField::INT32>   { using type = int32_t; };
-    template<> struct asType<pcl::PCLPointField::UINT32>  { using type = uint32_t; };
+    template<> struct asType<pcl::PCLPointField::INT8>    { using type = std::int8_t; };
+    template<> struct asType<pcl::PCLPointField::UINT8>   { using type = std::uint8_t; };
+    template<> struct asType<pcl::PCLPointField::INT16>   { using type = std::int16_t; };
+    template<> struct asType<pcl::PCLPointField::UINT16>  { using type = std::uint16_t; };
+    template<> struct asType<pcl::PCLPointField::INT32>   { using type = std::int32_t; };
+    template<> struct asType<pcl::PCLPointField::UINT32>  { using type = std::uint32_t; };
     template<> struct asType<pcl::PCLPointField::FLOAT32> { using type = float; };
     template<> struct asType<pcl::PCLPointField::FLOAT64> { using type = double; };
 
@@ -100,7 +100,7 @@ namespace pcl
     template<typename T> struct decomposeArray
     {
       using type = std::remove_all_extents_t<T>;
-      static const uint32_t value = sizeof (T) / sizeof (type);
+      static const std::uint32_t value = sizeof (T) / sizeof (type);
     };
 
     // For non-POD point types, this is specialized to return the corresponding POD type.
@@ -154,7 +154,7 @@ namespace pcl
     struct offset : offset<typename POD<PointT>::type, Tag>
     {
       // Contents of specialization:
-      // static const size_t value;
+      // static const std::size_t value;
 
       // Avoid infinite compile-time recursion
       BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
@@ -167,8 +167,8 @@ namespace pcl
     {
       // Contents of specialization:
       // using type = ...;
-      // static const uint8_t value;
-      // static const uint32_t size;
+      // static const std::uint8_t value;
+      // static const std::uint32_t size;
 
       // Avoid infinite compile-time recursion
       BOOST_MPL_ASSERT_MSG((!std::is_same<PointT, typename POD<PointT>::type>::value),
@@ -259,7 +259,7 @@ namespace pcl
       {
         exists_ = true;
         using T = typename pcl::traits::datatype<PointInT, Key>::type;
-        const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&pt_) + pcl::traits::offset<PointInT, Key>::value;
+        const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*>(&pt_) + pcl::traits::offset<PointInT, Key>::value;
         value_ = static_cast<OutT> (*reinterpret_cast<const T*>(data_ptr));
       }
     }
@@ -308,7 +308,7 @@ namespace pcl
       if (name_ == pcl::traits::name<PointOutT, Key>::value)
       {
         using T = typename pcl::traits::datatype<PointOutT, Key>::type;
-        uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&pt_) + pcl::traits::offset<PointOutT, Key>::value;
+        std::uint8_t* data_ptr = reinterpret_cast<std::uint8_t*>(&pt_) + pcl::traits::offset<PointOutT, Key>::value;
         *reinterpret_cast<T*>(data_ptr) = static_cast<T> (value_);
       }
     }
@@ -325,9 +325,9 @@ namespace pcl
     * \param[in] value the value to set
     */
   template <typename PointT, typename ValT> inline void
-  setFieldValue (PointT &pt, size_t field_offset, const ValT &value)
+  setFieldValue (PointT &pt, std::size_t field_offset, const ValT &value)
   {
-    uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&pt) + field_offset;
+    std::uint8_t* data_ptr = reinterpret_cast<std::uint8_t*>(&pt) + field_offset;
     *reinterpret_cast<ValT*>(data_ptr) = value;
   }
 
@@ -337,9 +337,9 @@ namespace pcl
     * \param[out] value the value to retrieve
     */
   template <typename PointT, typename ValT> inline void
-  getFieldValue (const PointT &pt, size_t field_offset, ValT &value)
+  getFieldValue (const PointT &pt, std::size_t field_offset, ValT &value)
   {
-    const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&pt) + field_offset;
+    const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*>(&pt) + field_offset;
     value = *reinterpret_cast<const ValT*>(data_ptr);
   }
 

@@ -54,9 +54,9 @@ namespace pcl
           return false;
         }
 
-        for (size_t i = 0; i < 4; i++)
+        for (std::size_t i = 0; i < 4; i++)
         {
-          for (size_t j = 0; j < 4; j++)
+          for (std::size_t j = 0; j < 4; j++)
           {
             out << matrix (i, j);
             if (!(i == 3 && j == 3))
@@ -107,7 +107,7 @@ namespace pcl
         boost::split (strs, file, boost::is_any_of ("/"));
 
         std::string str;
-        for (size_t i = 0; i < (strs.size () - 1); i++)
+        for (std::size_t i = 0; i < (strs.size () - 1); i++)
         {
           str += strs[i] + "/";
         }
@@ -149,7 +149,7 @@ namespace pcl
 
         std::string dname = path[path.size () - 1];
         std::string file_replaced;
-        for (size_t i = 0; i < (path.size () - 1); i++)
+        for (std::size_t i = 0; i < (path.size () - 1); i++)
         {
           file_replaced += path[i] + "/";
         }
@@ -157,7 +157,7 @@ namespace pcl
         boost::split (path, file, boost::is_any_of ("/"));
         std::string id;
 
-        for (size_t i = 0; i < (path.size () - 1); i++)
+        for (std::size_t i = 0; i < (path.size () - 1); i++)
         {
           id += path[i];
           if (i < (path.size () - 1))
@@ -244,7 +244,7 @@ namespace pcl
 
           std::string dname = path[path.size () - 1];
           std::string file_replaced;
-          for (size_t i = 0; i < (path.size () - 1); i++)
+          for (std::size_t i = 0; i < (path.size () - 1); i++)
           {
             file_replaced += path[i] + "/";
           }
@@ -252,7 +252,7 @@ namespace pcl
           boost::split (path, file, boost::is_any_of ("/"));
           std::string id;
 
-          for (size_t i = 0; i < (path.size () - 1); i++)
+          for (std::size_t i = 0; i < (path.size () - 1); i++)
           {
             id += path[i];
             if (i < (path.size () - 1))

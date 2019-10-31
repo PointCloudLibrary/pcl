@@ -46,7 +46,7 @@ using namespace pcl;
 using namespace pcl::test;
 
 PointCloud<PointXYZ> cloud;
-const size_t size = 10 * 480;
+const std::size_t size = 10 * 480;
 
 TEST (PointCloud, size)
 {
@@ -55,14 +55,14 @@ TEST (PointCloud, size)
 
 TEST (PointCloud, sq_brackets_wrapper)
 {
-  for (uint32_t i = 0; i < size; ++i)
+  for (std::uint32_t i = 0; i < size; ++i)
     EXPECT_EQ_VECTORS (cloud.points[i].getVector3fMap (),
                        cloud[i].getVector3fMap ());
 }
 
 TEST (PointCloud, at)
 {
-  for (uint32_t i = 0; i < size; ++i)
+  for (std::uint32_t i = 0; i < size; ++i)
     EXPECT_EQ_VECTORS (cloud.points.at (i).getVector3fMap (),
                        cloud.at (i).getVector3fMap ());
 }
@@ -117,10 +117,10 @@ TEST (PointCloud, iterators)
 TEST (PointCloud, insert_range)
 {
   PointCloud<PointXYZ> cloud2 (10, 1);
-  for (uint32_t i = 0; i < 10; ++i)
+  for (std::uint32_t i = 0; i < 10; ++i)
     cloud2[i] = PointXYZ (5.0f * static_cast<float>(i) + 0, 5.0f * static_cast<float> (i) + 1, 5.0f * static_cast<float> (i) + 2);
 
-  uint32_t old_size = static_cast<uint32_t> (cloud.size ());
+  std::uint32_t old_size = static_cast<std::uint32_t> (cloud.size ());
   cloud.insert (cloud.begin (), cloud2.begin (), cloud2.end ());
   EXPECT_EQ (cloud.width, cloud.size ());
   EXPECT_EQ (cloud.height, 1);
@@ -136,7 +136,7 @@ main (int argc, char** argv)
 {
   cloud.width = 10;
   cloud.height = 480;
-  for (uint32_t i = 0; i < size; ++i)
+  for (std::uint32_t i = 0; i < size; ++i)
     cloud.points.emplace_back(3.0f * static_cast<float>(i) + 0, 3.0f * static_cast<float> (i) + 1, 3.0f * static_cast<float> (i) + 2);
 
   testing::InitGoogleTest (&argc, argv);

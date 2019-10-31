@@ -210,8 +210,8 @@ class SimpleVLPViewer
 void
 usage (char ** argv)
 {
-  cout << "usage: " << argv[0] << " [-pcapFile <path-to-pcap-file>] [-h | --help]" << endl;
-  cout << argv[0] << " -h | --help : shows this help" << endl;
+  std::cout << "usage: " << argv[0] << " [-pcapFile <path-to-pcap-file>] [-h | --help]" << std::endl;
+  std::cout << argv[0] << " -h | --help : shows this help" << std::endl;
   return;
 }
 

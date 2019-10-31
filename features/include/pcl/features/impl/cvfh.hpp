@@ -118,7 +118,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSmoot
         continue;
       }
 
-      for (size_t j = 1; j < nn_indices.size (); ++j) // nn_indices[0] should be sq_idx
+      for (std::size_t j = 1; j < nn_indices.size (); ++j) // nn_indices[0] should be sq_idx
       {
         if (processed[nn_indices[j]]) // Has this point been processed before ?
           continue;
@@ -145,7 +145,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSmoot
     {
       pcl::PointIndices r;
       r.indices.resize (seed_queue.size ());
-      for (size_t j = 0; j < seed_queue.size (); ++j)
+      for (std::size_t j = 0; j < seed_queue.size (); ++j)
         r.indices[j] = seed_queue[j];
 
       std::sort (r.indices.begin (), r.indices.end ());
@@ -169,7 +169,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::filterNormalsWithHighCurvatur
   indices_out.resize (cloud.points.size ());
   indices_in.resize (cloud.points.size ());
 
-  size_t in, out;
+  std::size_t in, out;
   in = out = 0;
 
   for (const int &index : indices_to_use)
@@ -218,11 +218,11 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   filterNormalsWithHighCurvature (*normals_, *indices_, indices_out, indices_in, curv_threshold_);
 
   pcl::PointCloud<pcl::PointNormal>::Ptr normals_filtered_cloud (new pcl::PointCloud<pcl::PointNormal> ());
-  normals_filtered_cloud->width = static_cast<uint32_t> (indices_in.size ());
+  normals_filtered_cloud->width = static_cast<std::uint32_t> (indices_in.size ());
   normals_filtered_cloud->height = 1;
   normals_filtered_cloud->points.resize (normals_filtered_cloud->width);
 
-  for (size_t i = 0; i < indices_in.size (); ++i)
+  for (std::size_t i = 0; i < indices_in.size (); ++i)
   {
     normals_filtered_cloud->points[i].x = surface_->points[indices_in[i]].x;
     normals_filtered_cloud->points[i].y = surface_->points[indices_in[i]].y;
@@ -301,9 +301,9 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 
     //compute modified VFH for all dominant clusters and add them to the list!
     output.points.resize (dominant_normals_.size ());
-    output.width = static_cast<uint32_t> (dominant_normals_.size ());
+    output.width = static_cast<std::uint32_t> (dominant_normals_.size ());
 
-    for (size_t i = 0; i < dominant_normals_.size (); ++i)
+    for (std::size_t i = 0; i < dominant_normals_.size (); ++i)
     {
       //configure VFH computation for CVFH
       vfh.setNormalToUse (dominant_normals_[i]);

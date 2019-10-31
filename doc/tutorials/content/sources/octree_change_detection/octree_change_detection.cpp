@@ -23,7 +23,7 @@ main (int argc, char** argv)
   cloudA->height = 1;
   cloudA->points.resize (cloudA->width * cloudA->height);
 
-  for (size_t i = 0; i < cloudA->points.size (); ++i)
+  for (std::size_t i = 0; i < cloudA->points.size (); ++i)
   {
     cloudA->points[i].x = 64.0f * rand () / (RAND_MAX + 1.0f);
     cloudA->points[i].y = 64.0f * rand () / (RAND_MAX + 1.0f);
@@ -44,7 +44,7 @@ main (int argc, char** argv)
   cloudB->height = 1;
   cloudB->points.resize (cloudB->width * cloudB->height);
 
-  for (size_t i = 0; i < cloudB->points.size (); ++i)
+  for (std::size_t i = 0; i < cloudB->points.size (); ++i)
   {
     cloudB->points[i].x = 64.0f * rand () / (RAND_MAX + 1.0f);
     cloudB->points[i].y = 64.0f * rand () / (RAND_MAX + 1.0f);
@@ -62,7 +62,7 @@ main (int argc, char** argv)
 
   // Output points
   std::cout << "Output from getPointIndicesFromNewVoxels:" << std::endl;
-  for (size_t i = 0; i < newPointIdxVector.size (); ++i)
+  for (std::size_t i = 0; i < newPointIdxVector.size (); ++i)
     std::cout << i << "# Index:" << newPointIdxVector[i]
               << "  Point:" << cloudB->points[newPointIdxVector[i]].x << " "
               << cloudB->points[newPointIdxVector[i]].y << " "

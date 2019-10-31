@@ -302,10 +302,10 @@ main (int argc, char** argv)
       up[2] /= up_len;
     
       // Output resulting vectors
-      cerr << "Viewray Right Up:" << endl;
-      cerr << viewray[0] << " " << viewray[1] << " " << viewray[2] << " " << endl;
-      cerr << right[0] << " " << right[1] << " " << right[2] << " " << endl;
-      cerr << up[0] << " " << up[1] << " " << up[2] << " " << endl;
+      std::cerr << "Viewray Right Up:" << std::endl;
+      std::cerr << viewray[0] << " " << viewray[1] << " " << viewray[2] << " " << std::endl;
+      std::cerr << right[0] << " " << right[1] << " " << right[2] << " " << std::endl;
+      std::cerr << up[0] << " " << up[1] << " " << up[2] << " " << std::endl;
     }
 
     // Create a transformation
@@ -420,12 +420,12 @@ main (int argc, char** argv)
 
     if (organized)
     {
-      cloud.height = 1 + static_cast<uint32_t> ((vert_end - vert_start) / sp.vert_res);
-      cloud.width = 1 + static_cast<uint32_t> ((hor_end - hor_start) / sp.hor_res);
+      cloud.height = 1 + static_cast<std::uint32_t> ((vert_end - vert_start) / sp.vert_res);
+      cloud.width = 1 + static_cast<std::uint32_t> ((hor_end - hor_start) / sp.hor_res);
     }
     else
     {
-      cloud.width = static_cast<uint32_t> (cloud.points.size ());
+      cloud.width = static_cast<std::uint32_t> (cloud.points.size ());
       cloud.height = 1;
     }
 

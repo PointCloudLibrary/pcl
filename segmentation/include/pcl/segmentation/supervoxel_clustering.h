@@ -139,6 +139,8 @@ namespace pcl
             rgb_ (0.0f, 0.0f, 0.0f),
             normal_ (0.0f, 0.0f, 0.0f, 0.0f),
             curvature_ (0.0f),
+            distance_(0),
+            idx_(0),
             owner_ (nullptr)
             {}
 
@@ -180,7 +182,7 @@ namespace pcl
       using PCLBase <PointT>::deinitCompute;
       using PCLBase <PointT>::input_;
 
-      using VoxelAdjacencyList = boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, uint32_t, float>;
+      using VoxelAdjacencyList = boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, std::uint32_t, float>;
       using VoxelID = VoxelAdjacencyList::vertex_descriptor;
       using EdgeID = VoxelAdjacencyList::edge_descriptor;
 
@@ -247,7 +249,7 @@ namespace pcl
        * \param[out] supervoxel_clusters A map of labels to pointers to supervoxel structures
        */
       virtual void
-      extract (std::map<uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters);
+      extract (std::map<std::uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters);
 
       /** \brief This method sets the cloud to be supervoxelized
        * \param[in] cloud The cloud to be supervoxelize
@@ -266,7 +268,7 @@ namespace pcl
        * \param[out] supervoxel_clusters The resulting refined supervoxels
        */
       virtual void
-      refineSupervoxels (int num_itr, std::map<uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters);
+      refineSupervoxels (int num_itr, std::map<std::uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters);
 
       ////////////////////////////////////////////////////////////
       /** \brief Returns an RGB colorized cloud showing superpixels
@@ -325,7 +327,7 @@ namespace pcl
        *  \param[out] label_adjacency Multi-Map which maps a supervoxel label to all adjacent supervoxel labels
        */
       void
-      getSupervoxelAdjacency (std::multimap<uint32_t, uint32_t> &label_adjacency) const;
+      getSupervoxelAdjacency (std::multimap<std::uint32_t, std::uint32_t> &label_adjacency) const;
 
       /** \brief Static helper function which returns a pointcloud of normals for the input supervoxels
        *  \param[in] supervoxel_clusters Supervoxel cluster map coming from this class
@@ -333,7 +335,7 @@ namespace pcl
        *
        */
       static pcl::PointCloud<pcl::PointNormal>::Ptr
-      makeSupervoxelNormalCloud (std::map<uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters);
+      makeSupervoxelNormalCloud (std::map<std::uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters);
 
       /** \brief Returns the current maximum (highest) label */
       int
@@ -372,7 +374,7 @@ namespace pcl
 
       /** \brief Constructs the map of supervoxel clusters from the internal supervoxel helpers */
       void
-      makeSupervoxels (std::map<uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters);
+      makeSupervoxels (std::map<std::uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters);
 
       /** \brief Stores the resolution used in the octree */
       float resolution_;
@@ -438,7 +440,7 @@ namespace pcl
           using iterator = typename LeafSetT::iterator;
           using const_iterator = typename LeafSetT::const_iterator;
 
-          SupervoxelHelper (uint32_t label, SupervoxelClustering* parent_arg):
+          SupervoxelHelper (std::uint32_t label, SupervoxelClustering* parent_arg):
             label_ (label),
             parent_ (parent_arg)
           { }
@@ -469,7 +471,7 @@ namespace pcl
 
           using DistFuncPtr = float (SupervoxelClustering<PointT>::*)(const VoxelData &, const VoxelData &);
 
-          uint32_t
+          std::uint32_t
           getLabel () const
           { return label_; }
 
@@ -490,11 +492,11 @@ namespace pcl
           { x=centroid_.xyz_[0]; y=centroid_.xyz_[1]; z=centroid_.xyz_[2]; }
 
           void
-          getRGB (uint32_t &rgba) const
+          getRGB (std::uint32_t &rgba) const
           {
-            rgba = static_cast<uint32_t>(centroid_.rgb_[0]) << 16 |
-                   static_cast<uint32_t>(centroid_.rgb_[1]) << 8 |
-                   static_cast<uint32_t>(centroid_.rgb_[2]);
+            rgba = static_cast<std::uint32_t>(centroid_.rgb_[0]) << 16 |
+                   static_cast<std::uint32_t>(centroid_.rgb_[1]) << 8 |
+                   static_cast<std::uint32_t>(centroid_.rgb_[2]);
           }
 
           void
@@ -507,18 +509,18 @@ namespace pcl
           }
 
           void
-          getNeighborLabels (std::set<uint32_t> &neighbor_labels) const;
+          getNeighborLabels (std::set<std::uint32_t> &neighbor_labels) const;
 
           VoxelData
           getCentroid () const
           { return centroid_; }
 
-          size_t
+          std::size_t
           size () const { return leaves_.size (); }
         private:
           //Stores leaves
           LeafSetT leaves_;
-          uint32_t label_;
+          std::uint32_t label_;
           VoxelData centroid_;
           SupervoxelClustering* parent_;
         public:

@@ -39,100 +39,101 @@
 #include <pcl/point_types.h>
 #include <pcl/stereo/disparity_map_converter.h>
 
-namespace pcl
-{ 
-  /** \brief Build a Digital Elevation Map in the column-disparity space from a disparity map and a color image of the scene.
-    *
-    * Example of usage:
-    * 
-    * \code
-    *  pcl::PointCloud<pcl::PointDEM>::Ptr cloud (new
-    *      pcl::PointCloud<pcl::PointDEM>);
-    *  pcl::PointCloud<pcl::RGB>::Ptr left_image (new 
-    *    pcl::PointCloud<pcl::RGB>);
-    *  // Fill left image cloud.
-    *  
-    *  pcl::DigitalElevationMapBuilder demb;
-    *  demb.setBaseline (0.8387445f);
-    *  demb.setFocalLength (368.534700f);
-    *  demb.setImageCenterX (318.112200f);
-    *  demb.setImageCenterY (224.334900f);
-    *  demb.setDisparityThresholdMin (15.0f);
-    *  demb.setDisparityThresholdMax (80.0f);
-    *  demb.setResolution (64, 32);
-    *
-    *  // Left view of the scene.
-    *  demb.loadImage (left_image);
-    *  // Disparity map of the scene.
-    *  demb.loadDisparityMap ("disparity_map.txt", 640, 480);
-    *
-    *  demb.compute(*cloud);
-    * \endcode
-    *
-    * \author Timur Ibadov (ibadov.timur@gmail.com)
-    * \ingroup stereo
-    */
-  class PCL_EXPORTS DigitalElevationMapBuilder : public DisparityMapConverter <PointDEM>
-  {
-    public:
-      using DisparityMapConverter<PointDEM>::baseline_;
-      using DisparityMapConverter<PointDEM>::translateCoordinates;
-      using DisparityMapConverter<PointDEM>::image_;
-      using DisparityMapConverter<PointDEM>::disparity_map_;
-      using DisparityMapConverter<PointDEM>::disparity_map_width_;
-      using DisparityMapConverter<PointDEM>::disparity_map_height_;
-      using DisparityMapConverter<PointDEM>::disparity_threshold_min_;
-      using DisparityMapConverter<PointDEM>::disparity_threshold_max_;
-    
-      /** \brief DigitalElevationMapBuilder constructor. */
-      DigitalElevationMapBuilder ();
-      /** \brief Empty destructor. */
-      ~DigitalElevationMapBuilder ();
+namespace pcl {
 
-      /** \brief Set resolution of the DEM.
-        * \param[in] resolution_column the column resolution.
-        * \param[in] resolution_disparity the disparity resolution.
-        */
-      void
-      setResolution (size_t resolution_column, size_t resolution_disparity);
+/** \brief Build a Digital Elevation Map in the column-disparity space from a disparity
+ * map and a color image of the scene.
+ *
+ * Example of usage:
+ *
+ * \code
+ *  pcl::PointCloud<pcl::PointDEM>::Ptr cloud (new
+ *      pcl::PointCloud<pcl::PointDEM>);
+ *  pcl::PointCloud<pcl::RGB>::Ptr left_image (new
+ *    pcl::PointCloud<pcl::RGB>);
+ *  // Fill left image cloud.
+ *
+ *  pcl::DigitalElevationMapBuilder demb;
+ *  demb.setBaseline (0.8387445f);
+ *  demb.setFocalLength (368.534700f);
+ *  demb.setImageCenterX (318.112200f);
+ *  demb.setImageCenterY (224.334900f);
+ *  demb.setDisparityThresholdMin (15.0f);
+ *  demb.setDisparityThresholdMax (80.0f);
+ *  demb.setResolution (64, 32);
+ *
+ *  // Left view of the scene.
+ *  demb.loadImage (left_image);
+ *  // Disparity map of the scene.
+ *  demb.loadDisparityMap ("disparity_map.txt", 640, 480);
+ *
+ *  demb.compute(*cloud);
+ * \endcode
+ *
+ * \author Timur Ibadov (ibadov.timur@gmail.com)
+ * \ingroup stereo
+ */
+class PCL_EXPORTS DigitalElevationMapBuilder : public DisparityMapConverter<PointDEM> {
+public:
+  using DisparityMapConverter<PointDEM>::baseline_;
+  using DisparityMapConverter<PointDEM>::translateCoordinates;
+  using DisparityMapConverter<PointDEM>::image_;
+  using DisparityMapConverter<PointDEM>::disparity_map_;
+  using DisparityMapConverter<PointDEM>::disparity_map_width_;
+  using DisparityMapConverter<PointDEM>::disparity_map_height_;
+  using DisparityMapConverter<PointDEM>::disparity_threshold_min_;
+  using DisparityMapConverter<PointDEM>::disparity_threshold_max_;
 
-      /** \brief Get column resolution of the DEM.
-        * \return column resolution of the DEM.
-        */
-      size_t
-      getColumnResolution () const;
+  /** \brief DigitalElevationMapBuilder constructor. */
+  DigitalElevationMapBuilder();
 
-      /** \brief Get disparity resolution of the DEM.
-        * \return disparity resolution of the DEM.
-        */
-      size_t
-      getDisparityResolution () const;
+  /** \brief Empty destructor. */
+  ~DigitalElevationMapBuilder();
 
-      /** \brief Set minimum amount of points in a DEM's cell.
-        * \param[in] min_points_in_cell minimum amount of points in a DEM's cell.
-        */
-      void
-      setMinPointsInCell (size_t min_points_in_cell);
+  /** \brief Set resolution of the DEM.
+   * \param[in] resolution_column the column resolution.
+   * \param[in] resolution_disparity the disparity resolution.
+   */
+  void
+  setResolution(std::size_t resolution_column, std::size_t resolution_disparity);
 
-      /** \brief Get minimum amount of points in a DEM's cell.
-        * \return minimum amount of points in a DEM's cell.
-        */
-      size_t
-      getMinPointsInCell () const;
+  /** \brief Get column resolution of the DEM.
+   * \return column resolution of the DEM.
+   */
+  std::size_t
+  getColumnResolution() const;
 
-      /** \brief Compute the Digital Elevation Map.
-        * \param[out] out_cloud the variable to return the resulting cloud.
-        */
-      void 
-      compute (pcl::PointCloud<PointDEM> &out_cloud) override;
+  /** \brief Get disparity resolution of the DEM.
+   * \return disparity resolution of the DEM.
+   */
+  std::size_t
+  getDisparityResolution() const;
 
-    protected:
-      /** \brief Column resolution of the DEM. */
-      size_t resolution_column_;
-      /** \brief disparity resolution of the DEM. */
-      size_t resolution_disparity_;
+  /** \brief Set minimum amount of points in a DEM's cell.
+   * \param[in] min_points_in_cell minimum amount of points in a DEM's cell.
+   */
+  void
+  setMinPointsInCell(std::size_t min_points_in_cell);
 
-      /** \brief Minimum amount of points in a DEM's cell. */
-      size_t min_points_in_cell_;
-  };
-}
+  /** \brief Get minimum amount of points in a DEM's cell.
+   * \return minimum amount of points in a DEM's cell.
+   */
+  std::size_t
+  getMinPointsInCell() const;
+
+  /** \brief Compute the Digital Elevation Map.
+   * \param[out] out_cloud the variable to return the resulting cloud.
+   */
+  void
+  compute(pcl::PointCloud<PointDEM>& out_cloud) override;
+
+protected:
+  /** \brief Column resolution of the DEM. */
+  std::size_t resolution_column_;
+  /** \brief disparity resolution of the DEM. */
+  std::size_t resolution_disparity_;
+  /** \brief Minimum amount of points in a DEM's cell. */
+  std::size_t min_points_in_cell_;
+};
+
+} // namespace pcl

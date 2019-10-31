@@ -85,9 +85,9 @@ using OctreeDepthFirstIterator = OutofcoreDepthFirstIterator<>;
 using AlignedPointT = Eigen::aligned_allocator<PointT>;
 
 void
-printDepth(size_t depth)
+printDepth(std::size_t depth)
 {
-  for (size_t i = 0; i < depth; i++)
+  for (std::size_t i = 0; i < depth; i++)
     PCL_INFO ("  ");
 }
 
@@ -98,7 +98,7 @@ printNode(OctreeDiskNode *)
 }
 
 int
-outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool bounding_box=false, bool pcd=false, 
+outofcorePrint (boost::filesystem::path tree_root, std::size_t print_depth, bool bounding_box=false, bool pcd=false, 
 		bool point_count=false, bool breadth_first=false)
 {
   std::cout << boost::filesystem::absolute (tree_root) << std::endl;
@@ -113,15 +113,15 @@ outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool boun
   PCL_INFO (" Bounding Box: <%lf, %lf, %lf> - <%lf, %lf, %lf>\n", min[0], min[1], min[2], max[0], max[1], max[2]);
 
   // Cloud depth
-  uint64_t depth = octree->getTreeDepth ();
+  std::uint64_t depth = octree->getTreeDepth ();
   PCL_INFO (" Depth: %ld\n", depth);
   if (print_depth > depth)
     print_depth = depth;
 
   // Cloud point counts at each level
-  std::vector<boost::uint64_t> lodPoints = octree->getNumPointsVector ();
+  std::vector<std::uint64_t> lodPoints = octree->getNumPointsVector ();
   PCL_INFO (" Points:\n");
-  for (boost::uint64_t i = 0; i < lodPoints.size (); i++)
+  for (std::uint64_t i = 0; i < lodPoints.size (); i++)
     PCL_INFO ("   %d: %d\n", i, lodPoints[i]);
 
   // Cloud voxel side length
@@ -133,8 +133,8 @@ outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool boun
   PCL_INFO(" Voxel Count: %d\n", voxel_centers.size ());
 
   // Point data for statistics
-  std::vector<boost::uint64_t> pointsPerVoxel;
-	ba::accumulator_set<boost::uint64_t, ba::features< ba::tag::min,  ba::tag::max, ba::tag::mean,  ba::tag::variance> > acc;
+  std::vector<std::uint64_t> pointsPerVoxel;
+	ba::accumulator_set<std::uint64_t, ba::features< ba::tag::min,  ba::tag::max, ba::tag::mean,  ba::tag::variance> > acc;
 
   if (!breadth_first)
   {
@@ -143,7 +143,7 @@ outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool boun
     while ( *depth_first_it !=nullptr )
     {
       OctreeDiskNode *node = *depth_first_it;
-      size_t node_depth = node->getDepth();
+      std::size_t node_depth = node->getDepth();
 
       printDepth(node_depth);
       std::string metadata_relative_file = node->getMetadataFilename ().string ();
@@ -186,7 +186,7 @@ outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool boun
     while ( *breadth_first_it !=nullptr )
     {
       OctreeDiskNode *node = *breadth_first_it;
-      size_t node_depth = node->getDepth();
+      std::size_t node_depth = node->getDepth();
 
       printDepth(node_depth);
       std::string metadata_relative_file = node->getMetadataFilename ().string ();

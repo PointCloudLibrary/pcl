@@ -69,7 +69,7 @@ hasFaces (const MeshT& mesh, const std::vector <typename MeshT::VertexIndices> &
   }
 
   VertexIndices vi;
-  for (size_t i = 0; i < mesh.sizeFaces (); ++i)
+  for (std::size_t i = 0; i < mesh.sizeFaces (); ++i)
   {
     if (verbose) std::cerr << "Face " << std::setw (2) << i << ": ";
     VAFC       circ     = mesh.getVertexAroundFaceCirculator (FaceIndex (i));
@@ -95,7 +95,7 @@ hasFaces (const MeshT& mesh, const std::vector <typename MeshT::VertexIndices> &
       return (false);
     }
     if (verbose) std::cerr << "\texpected: ";
-    for (size_t j = 0; j < vi.size (); ++j)
+    for (std::size_t j = 0; j < vi.size (); ++j)
     {
       if (verbose) std::cerr << std::setw (2) << faces [i][j] << " ";
       if (vi [j] != faces [i][j])
@@ -131,7 +131,7 @@ hasFaces (const MeshT& mesh, const std::vector <std::vector <int> > &faces, cons
 
   const VertexDataCloud& vdc = mesh.getVertexDataCloud ();
   std::vector <int> vv;
-  for (size_t i = 0; i < mesh.sizeFaces (); ++i)
+  for (std::size_t i = 0; i < mesh.sizeFaces (); ++i)
   {
     if (verbose) std::cerr << "Face " << std::setw (2) << i << ": ";
     VAFC       circ     = mesh.getVertexAroundFaceCirculator (FaceIndex (i));
@@ -157,7 +157,7 @@ hasFaces (const MeshT& mesh, const std::vector <std::vector <int> > &faces, cons
       return (false);
     }
     if (verbose) std::cerr << "\texpected: ";
-    for (size_t j=0; j<vv.size (); ++j)
+    for (std::size_t j=0; j<vv.size (); ++j)
     {
       if (verbose) std::cerr << std::setw (2) << faces [i][j] << " ";
       if (vv [j] != faces [i][j])

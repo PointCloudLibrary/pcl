@@ -20,14 +20,14 @@ for holding **nD** (n dimensional) data.
 The 1.x API includes the following data members:
  * :pcl:`PCLHeader <pcl::PCLHeader>` (coming from ROS)
 
-   * **uint32_t** :pcl:`seq <pcl::PCLHeader::seq>` - a sequence number
-   * **uint64_t** :pcl:`stamp <pcl::PCLHeader::stamp>` - a timestamp associated with the time when the data was acquired
+   * **std::uint32_t** :pcl:`seq <pcl::PCLHeader::seq>` - a sequence number
+   * **std::uint64_t** :pcl:`stamp <pcl::PCLHeader::stamp>` - a timestamp associated with the time when the data was acquired
    * **std::string** :pcl:`frame_id <pcl::PCLHeader::frame_id>` - a TF frame ID
 
  * **std::vector<T>** :pcl:`points <pcl::PointCloud::points>` - a std C++ vector of T data. T can be a structure of any of the types defined in `point_types.h`.
 
- * **uint32_t** :pcl:`width <pcl::PointCloud::width>` - the width (for organized datasets) of the data. Set to the number of points for unorganized data.
- * **uint32_t** :pcl:`height <pcl::PointCloud::height>` - the height (for organized datasets) of the data. Set to 1 for unorganized data.
+ * **std::uint32_t** :pcl:`width <pcl::PointCloud::width>` - the width (for organized datasets) of the data. Set to the number of points for unorganized data.
+ * **std::uint32_t** :pcl:`height <pcl::PointCloud::height>` - the height (for organized datasets) of the data. Set to 1 for unorganized data.
  * **bool** :pcl:`is_dense <pcl::PointCloud::is_dense>` - true if the data contains only valid numbers (e.g., no NaN or -/+Inf, etc). False otherwise.
 
  * **Eigen::Vector4f** :pcl:`sensor_origin_ <pcl::PointCloud::sensor_origin_>` - the origin (pose) of the acquisition sensor in the current data coordinate system.
@@ -108,7 +108,7 @@ Proposals for the 2.x API:
 
 1.5 Data slices
 ^^^^^^^^^^^^^^^
-Anything involving a slice of data should use size_t for indices and not int. E.g the indices of the inliers in RANSAC, the focused points in RANSAC ...
+Anything involving a slice of data should use std::size_t for indices and not int. E.g the indices of the inliers in RANSAC, the focused points in RANSAC ...
 
 1.6 RANSAC
 ^^^^^^^^^^

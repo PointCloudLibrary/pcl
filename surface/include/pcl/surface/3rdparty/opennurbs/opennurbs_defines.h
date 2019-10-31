@@ -434,14 +434,14 @@ public:
   */
   static
   bool GetFileStats( const wchar_t* filename,
-                     size_t* filesize,
+                     std::size_t* filesize,
                      time_t* create_time,
                      time_t* lastmodify_time
                     );
 
   static
   bool GetFileStats( FILE* fp,
-                     size_t* filesize,
+                     std::size_t* filesize,
                      time_t* create_time,
                      time_t* lastmodify_time
                     );

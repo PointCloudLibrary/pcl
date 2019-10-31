@@ -122,7 +122,7 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::findSimila
   std::vector<float> nn_distances (k_correspondences_);
   
   // Loop over the sampled features
-  for (size_t i = 0; i < sample_indices.size (); ++i)
+  for (std::size_t i = 0; i < sample_indices.size (); ++i)
   {
     // Current feature index
     const int idx = sample_indices[i];
@@ -307,7 +307,7 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness
   transformPointCloud (*input_, input_transformed, final_transformation_);
   
   // For each point in the source dataset
-  for (size_t i = 0; i < input_transformed.points.size (); ++i)
+  for (std::size_t i = 0; i < input_transformed.points.size (); ++i)
   {
     // Find its nearest neighbor in the target
     std::vector<int> nn_indices (1);

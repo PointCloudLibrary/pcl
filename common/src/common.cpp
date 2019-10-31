@@ -36,6 +36,9 @@
  * $Id: distances.cpp 527 2011-04-17 23:57:26Z rusu $
  *
  */
+
+#include <limits>
+
 #include <pcl/common/common.h>
 #include <pcl/console/print.h>
 
@@ -44,19 +47,17 @@ void
 pcl::getMinMax (const pcl::PCLPointCloud2 &cloud, int,
                 const std::string &field_name, float &min_p, float &max_p)
 {
-  min_p = FLT_MAX;
-  max_p = -FLT_MAX;
+  min_p = std::numeric_limits<float>::max();
+  max_p = -std::numeric_limits<float>::max();
 
-  int field_idx = -1;
-  for (size_t d = 0; d < cloud.fields.size (); ++d)
-    if (cloud.fields[d].name == field_name)
-      field_idx = static_cast<int>(d);
-
-  if (field_idx == -1)
+  const auto result = std::find_if(cloud.fields.begin (), cloud.fields.end (),
+      [&field_name](const auto& field) { return field.name == field_name; });
+  if (result == cloud.fields.end ())
   {
     PCL_ERROR ("[getMinMax] Invalid field (%s) given!\n", field_name.c_str ());
     return;
   }
+  const auto field_idx = std::distance(cloud.fields.begin (), result);
 
   for (unsigned int i = 0; i < cloud.fields[field_idx].count; ++i)
   {

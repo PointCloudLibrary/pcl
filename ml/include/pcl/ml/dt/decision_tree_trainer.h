@@ -34,210 +34,237 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-  
+
 #pragma once
 
 #include <pcl/common/common.h>
 
 #include <pcl/ml/dt/decision_tree.h>
+#include <pcl/ml/dt/decision_tree_data_provider.h>
 #include <pcl/ml/feature_handler.h>
 #include <pcl/ml/stats_estimator.h>
-#include <pcl/ml/dt/decision_tree_data_provider.h>
 
 #include <vector>
 
-namespace pcl
-{
+namespace pcl {
 
-  /** \brief Trainer for decision trees. */
-  template <
-    class FeatureType,
-    class DataSet,
-    class LabelType,
-    class ExampleIndex,
-    class NodeType >
-  class PCL_EXPORTS DecisionTreeTrainer
+/** Trainer for decision trees. */
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
+class PCL_EXPORTS DecisionTreeTrainer {
+
+public:
+  /** Constructor. */
+  DecisionTreeTrainer();
+
+  /** Destructor. */
+  virtual ~DecisionTreeTrainer();
+
+  /** Sets the feature handler used to create and evaluate features.
+   *
+   * \param[in] feature_handler the feature handler
+   */
+  inline void
+  setFeatureHandler(
+      pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler)
   {
-  
-    public:
+    feature_handler_ = &feature_handler;
+  }
 
-      /** \brief Constructor. */
-      DecisionTreeTrainer ();
-      /** \brief Destructor. */
-      virtual 
-      ~DecisionTreeTrainer ();
+  /** Sets the object for estimating the statistics for tree nodes.
+   *
+   * \param[in] stats_estimator the statistics estimator
+   */
+  inline void
+  setStatsEstimator(
+      pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator)
+  {
+    stats_estimator_ = &stats_estimator;
+  }
 
-      /** \brief Sets the feature handler used to create and evaluate features. 
-        * \param[in] feature_handler The feature handler.
-        */
-      inline void
-      setFeatureHandler (pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler)
-      {
-        feature_handler_ = &feature_handler;
-      }
+  /** Sets the maximum depth of the learned tree.
+   *
+   * \param[in] max_tree_depth maximum depth of the learned tree
+   */
+  inline void
+  setMaxTreeDepth(const std::size_t max_tree_depth)
+  {
+    max_tree_depth_ = max_tree_depth;
+  }
 
-      /** \brief Sets the object for estimating the statistics for tree nodes.
-        * \param[in] stats_estimator The statistics estimator.
-        */
-      inline void
-      setStatsEstimator (pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator)
-      {
-        stats_estimator_ = &stats_estimator;
-      }
+  /** Sets the number of features used to find optimal decision features.
+   *
+   * \param[in] num_of_features the number of features
+   */
+  inline void
+  setNumOfFeatures(const std::size_t num_of_features)
+  {
+    num_of_features_ = num_of_features;
+  }
 
-      /** \brief Sets the maximum depth of the learned tree.
-        * \param[in] max_tree_depth Maximum depth of the learned tree.
-        */
-      inline void
-      setMaxTreeDepth (const size_t max_tree_depth)
-      {
-        max_tree_depth_ = max_tree_depth;
-      }
+  /** Sets the number of thresholds tested for finding the optimal decision
+   *  threshold on the feature responses.
+   *
+   * \param[in] num_of_threshold the number of thresholds
+   */
+  inline void
+  setNumOfThresholds(const std::size_t num_of_threshold)
+  {
+    num_of_thresholds_ = num_of_threshold;
+  }
 
-      /** \brief Sets the number of features used to find optimal decision features.
-        * \param[in] num_of_features The number of features.
-        */
-      inline void
-      setNumOfFeatures (const size_t num_of_features)
-      {
-        num_of_features_ = num_of_features;
-      }
+  /** Sets the input data set used for training.
+   *
+   * \param[in] data_set the data set used for training
+   */
+  inline void
+  setTrainingDataSet(DataSet& data_set)
+  {
+    data_set_ = data_set;
+  }
 
-      /** \brief Sets the number of thresholds tested for finding the optimal decision threshold on the feature responses.
-        * \param[in] num_of_threshold The number of thresholds.
-        */
-      inline void
-      setNumOfThresholds (const size_t num_of_threshold)
-      {
-        num_of_thresholds_ = num_of_threshold;
-      }
+  /** Example indices that specify the data used for training.
+   *
+   * \param[in] examples the examples
+   */
+  inline void
+  setExamples(std::vector<ExampleIndex>& examples)
+  {
+    examples_ = examples;
+  }
 
-      /** \brief Sets the input data set used for training.
-        * \param[in] data_set The data set used for training.
-        */
-      inline void
-      setTrainingDataSet (DataSet & data_set)
-      {
-        data_set_ = data_set;
-      }
+  /** Sets the label data corresponding to the example data.
+   *
+   * \param[in] label_data the label data
+   */
+  inline void
+  setLabelData(std::vector<LabelType>& label_data)
+  {
+    label_data_ = label_data;
+  }
 
-      /** \brief Example indices that specify the data used for training.
-        * \param[in] examples The examples.
-        */
-      inline void
-      setExamples (std::vector<ExampleIndex> & examples)
-      {
-        examples_ = examples;
-      }
+  /** Sets the minimum number of examples to continue growing a tree.
+   *
+   * \param[in] n number of examples
+   */
+  inline void
+  setMinExamplesForSplit(std::size_t n)
+  {
+    min_examples_for_split_ = n;
+  }
 
-      /** \brief Sets the label data corresponding to the example data.
-        * \param[in] label_data The label data.
-        */
-      inline void
-      setLabelData (std::vector<LabelType> & label_data)
-      {
-        label_data_ = label_data;
-      }
+  /** Specify the thresholds to be used when evaluating features.
+   *
+   * \param[in] thres the threshold values
+   */
+  void
+  setThresholds(std::vector<float>& thres)
+  {
+    thresholds_ = thres;
+  }
 
-      /** \brief Sets the minimum number of examples to continue growing a tree.
-        * \param[in] n Number of examples
-        */
-      inline void
-      setMinExamplesForSplit (size_t n)
-      {
-        min_examples_for_split_ = n;
-      }
+  /** Specify the data provider.
+   *
+   * \param[in] dtdp the data provider that should implement getDatasetAndLabels()
+   *            function
+   */
+  void
+  setDecisionTreeDataProvider(
+      typename pcl::DecisionTreeTrainerDataProvider<FeatureType,
+                                                    DataSet,
+                                                    LabelType,
+                                                    ExampleIndex,
+                                                    NodeType>::Ptr& dtdp)
+  {
+    decision_tree_trainer_data_provider_ = dtdp;
+  }
 
-      /** \brief Specify the thresholds to be used when evaluating features.
-        * \param[in] thres The threshold values.
-        */
-      void
-      setThresholds (std::vector<float> & thres)
-      {
-        thresholds_ = thres;
-      }
+  /** Specify if the features are randomly generated at each split node.
+   *
+   * \param[in] b do it or not
+   */
+  void
+  setRandomFeaturesAtSplitNode(bool b)
+  {
+    random_features_at_split_node_ = b;
+  }
 
-      /** \brief Specify the data provider.
-        * \param[in] dtdp The data provider that should implement getDatasetAndLabels(...) function
-        */
-      void
-      setDecisionTreeDataProvider (typename pcl::DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::Ptr& dtdp)
-      {
-        decision_tree_trainer_data_provider_ = dtdp;
-      }
+  /** Trains a decision tree using the set training data and settings.
+   *
+   * \param[out] tree destination for the trained tree
+   */
+  void
+  train(DecisionTree<NodeType>& tree);
 
-      /** \brief Specify if the features are randomly generated at each split node.
-        * \param[in] b Do it or not.
-        */
-      void
-      setRandomFeaturesAtSplitNode (bool b)
-      {
-        random_features_at_split_node_ = b;
-      }
+protected:
+  /** Trains a decision tree node from the specified features, label data, and
+   *  examples.
+   *
+   * \param[in] features the feature pool used for training
+   * \param[in] examples the examples used for training
+   * \param[in] label_data the label data corresponding to the examples
+   * \param[in] max_depth the maximum depth of the remaining tree
+   * \param[out] node the resulting node
+   */
+  void
+  trainDecisionTreeNode(std::vector<FeatureType>& features,
+                        std::vector<ExampleIndex>& examples,
+                        std::vector<LabelType>& label_data,
+                        std::size_t max_depth,
+                        NodeType& node);
 
-      /** \brief Trains a decision tree using the set training data and settings.
-        * \param[out] tree Destination for the trained tree.
-        */
-      void
-      train (DecisionTree<NodeType> & tree);
+  /** Creates uniformely distrebuted thresholds over the range of the supplied
+   *  values.
+   *
+   * \param[in] num_of_thresholds the number of thresholds to create
+   * \param[in] values the values for estimating the expected value range
+   * \param[out] thresholds the resulting thresholds
+   */
+  static void
+  createThresholdsUniform(const std::size_t num_of_thresholds,
+                          std::vector<float>& values,
+                          std::vector<float>& thresholds);
 
-    protected:
+private:
+  /** Maximum depth of the learned tree. */
+  std::size_t max_tree_depth_;
+  /** Number of features used to find optimal decision features. */
+  std::size_t num_of_features_;
+  /** Number of thresholds. */
+  std::size_t num_of_thresholds_;
 
-      /** \brief Trains a decision tree node from the specified features, label data, and examples.
-        * \param[in] features The feature pool used for training.
-        * \param[in] examples The examples used for training.
-        * \param[in] label_data The label data corresponding to the examples.
-        * \param[in] max_depth The maximum depth of the remaining tree.
-        * \param[out] node The resulting node.
-        */
-      void
-      trainDecisionTreeNode (std::vector<FeatureType> & features,
-                             std::vector<ExampleIndex> & examples,
-                             std::vector<LabelType> & label_data,
-                             size_t max_depth,
-                             NodeType & node);
+  /** FeatureHandler instance, responsible for creating and evaluating features. */
+  pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>* feature_handler_;
+  /** StatsEstimator instance, responsible for gathering stats about a node. */
+  pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>* stats_estimator_;
 
-      /** \brief Creates uniformely distrebuted thresholds over the range of the supplied values.
-        * \param[in] num_of_thresholds The number of thresholds to create.
-        * \param[in] values The values for estimating the expected value range.
-        * \param[out] thresholds The resulting thresholds.
-        */
-      static void
-      createThresholdsUniform (const size_t num_of_thresholds,
-                               std::vector<float> & values,
-                               std::vector<float> & thresholds);
+  /** The training data set. */
+  DataSet data_set_;
+  /** The label data. */
+  std::vector<LabelType> label_data_;
+  /** The example data. */
+  std::vector<ExampleIndex> examples_;
 
-    private:
+  /** Minimum number of examples to split a node. */
+  std::size_t min_examples_for_split_;
+  /** Thresholds to be used instead of generating uniform distributed thresholds. */
+  std::vector<float> thresholds_;
+  /** The data provider which is called before training a specific tree, if pointer is
+   *   NULL, then data_set_ is used. */
+  typename pcl::DecisionTreeTrainerDataProvider<FeatureType,
+                                                DataSet,
+                                                LabelType,
+                                                ExampleIndex,
+                                                NodeType>::Ptr
+      decision_tree_trainer_data_provider_;
+  /** If true, random features are generated at each node, otherwise, at start of
+   *  training the tree */
+  bool random_features_at_split_node_;
+};
 
-      /** \brief Maximum depth of the learned tree. */
-      size_t max_tree_depth_;
-      /** \brief Number of features used to find optimal decision features. */
-      size_t num_of_features_;
-      /** \brief Number of thresholds. */
-      size_t num_of_thresholds_;
-
-      /** \brief FeatureHandler instance, responsible for creating and evaluating features. */
-      pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> * feature_handler_;
-      /** \brief StatsEstimator instance, responsible for gathering stats about a node. */
-      pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> * stats_estimator_;
-
-      /** \brief The training data set. */
-      DataSet data_set_;
-      /** \brief The label data. */
-      std::vector<LabelType> label_data_;
-      /** \brief The example data. */
-      std::vector<ExampleIndex> examples_;
-  
-      /** \brief Minimum number of examples to split a node. */
-      size_t min_examples_for_split_;
-      /** \brief Thresholds to be used instead of generating uniform distributed thresholds. */
-      std::vector<float> thresholds_;
-      /** \brief The data provider which is called before training a specific tree, if pointer is NULL, then data_set_ is used. */
-      typename pcl::DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::Ptr decision_tree_trainer_data_provider_;
-      /** \brief If true, random features are generated at each node, otherwise, at start of training the tree */
-      bool random_features_at_split_node_;
-  };
-
-}
+} // namespace pcl
 
 #include <pcl/ml/impl/dt/decision_tree_trainer.hpp>

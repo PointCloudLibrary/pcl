@@ -151,13 +151,13 @@ public:
   keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
   {
     if (event.getKeyCode ())
-      cout << "the key \'" << event.getKeyCode () << "\' (" << event.getKeyCode () << ") was";
+      std::cout << "the key \'" << event.getKeyCode () << "\' (" << event.getKeyCode () << ") was";
     else
-      cout << "the special key \'" << event.getKeySym () << "\' was";
+      std::cout << "the special key \'" << event.getKeySym () << "\' was";
     if (event.keyDown ())
-      cout << " pressed" << endl;
+      std::cout << " pressed" << std::endl;
     else
-      cout << " released" << endl;
+      std::cout << " released" << std::endl;
   }
 
   void
@@ -165,7 +165,7 @@ public:
   {
     if (mouse_event.getType () == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton () == pcl::visualization::MouseEvent::LeftButton)
     {
-      cout << "left button pressed @ " << mouse_event.getX () << " , " << mouse_event.getY () << endl;
+      std::cout << "left button pressed @ " << mouse_event.getX () << " , " << mouse_event.getY () << std::endl;
     }
   }
 
@@ -304,24 +304,24 @@ main (int argc, char** argv)
       {
         pcl::io::OpenNI2Grabber grabber (argv[2]);
         auto device = grabber.getDevice ();
-        cout << *device;		// Prints out all sensor data, including supported video modes
+        std::cout << *device;		// Prints out all sensor data, including supported video modes
       }
       else
       {
         auto deviceManager = pcl::io::openni2::OpenNI2DeviceManager::getInstance ();
         if (deviceManager->getNumOfConnectedDevices () > 0)
         {
-          for (size_t deviceIdx = 0; deviceIdx < deviceManager->getNumOfConnectedDevices (); ++deviceIdx)
+          for (std::size_t deviceIdx = 0; deviceIdx < deviceManager->getNumOfConnectedDevices (); ++deviceIdx)
           {
             auto device = deviceManager->getDeviceByIndex (deviceIdx);
-            cout << "Device " << device->getStringID () << "connected." << endl;
+            std::cout << "Device " << device->getStringID () << "connected." << std::endl;
           }
 
         }
         else
-          cout << "No devices connected." << endl;
+          std::cout << "No devices connected." << std::endl;
 
-        cout <<"Virtual Devices available: ONI player" << endl;
+        std::cout <<"Virtual Devices available: ONI player" << std::endl;
       }
       return 0;
     }
@@ -332,7 +332,7 @@ main (int argc, char** argv)
     if (deviceManager->getNumOfConnectedDevices () > 0)
     {
       auto device = deviceManager->getAnyDevice ();
-      cout << "Device ID not set, using default device: " << device->getStringID () << endl;
+      std::cout << "Device ID not set, using default device: " << device->getStringID () << std::endl;
     }
   }
 

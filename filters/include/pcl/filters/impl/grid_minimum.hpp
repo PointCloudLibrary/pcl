@@ -87,10 +87,10 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
   getMinMax3D<PointT> (*input_, *indices_, min_p, max_p);
 
   // Check that the resolution is not too small, given the size of the data
-  int64_t dx = static_cast<int64_t> ((max_p[0] - min_p[0]) * inverse_resolution_)+1;
-  int64_t dy = static_cast<int64_t> ((max_p[1] - min_p[1]) * inverse_resolution_)+1;
+  std::int64_t dx = static_cast<std::int64_t> ((max_p[0] - min_p[0]) * inverse_resolution_)+1;
+  std::int64_t dy = static_cast<std::int64_t> ((max_p[1] - min_p[1]) * inverse_resolution_)+1;
 
-  if ((dx*dy) > static_cast<int64_t> (std::numeric_limits<int32_t>::max ()))
+  if ((dx*dy) > static_cast<std::int64_t> (std::numeric_limits<std::int32_t>::max ()))
   {
     PCL_WARN ("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.", getClassName ().c_str ());
     return;
@@ -99,10 +99,10 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
   Eigen::Vector4i min_b, max_b, div_b, divb_mul;
 
   // Compute the minimum and maximum bounding box values
-  min_b[0] = static_cast<int> (floor (min_p[0] * inverse_resolution_));
-  max_b[0] = static_cast<int> (floor (max_p[0] * inverse_resolution_));
-  min_b[1] = static_cast<int> (floor (min_p[1] * inverse_resolution_));
-  max_b[1] = static_cast<int> (floor (max_p[1] * inverse_resolution_));
+  min_b[0] = static_cast<int> (std::floor (min_p[0] * inverse_resolution_));
+  max_b[0] = static_cast<int> (std::floor (max_p[0] * inverse_resolution_));
+  min_b[1] = static_cast<int> (std::floor (min_p[1] * inverse_resolution_));
+  max_b[1] = static_cast<int> (std::floor (max_p[1] * inverse_resolution_));
 
   // Compute the number of divisions needed along all axis
   div_b = max_b - min_b + Eigen::Vector4i::Ones ();
@@ -126,8 +126,8 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
           !std::isfinite (input_->points[*it].z))
         continue;
 
-    int ijk0 = static_cast<int> (floor (input_->points[*it].x * inverse_resolution_) - static_cast<float> (min_b[0]));
-    int ijk1 = static_cast<int> (floor (input_->points[*it].y * inverse_resolution_) - static_cast<float> (min_b[1]));
+    int ijk0 = static_cast<int> (std::floor (input_->points[*it].x * inverse_resolution_) - static_cast<float> (min_b[0]));
+    int ijk1 = static_cast<int> (std::floor (input_->points[*it].y * inverse_resolution_) - static_cast<float> (min_b[1]));
 
     // Compute the grid cell index
     int idx = ijk0 * divb_mul[0] + ijk1 * divb_mul[1];

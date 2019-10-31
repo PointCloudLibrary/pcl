@@ -48,7 +48,10 @@
 #include <pcl/exceptions.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_traits.h>
+
+#include <algorithm>
 #include <utility>
+#include <vector>
 
 namespace pcl
 {
@@ -137,7 +140,7 @@ namespace pcl
     {
       //boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
       using T = typename pcl::traits::datatype<PointOutT, Key>::type;
-      uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointOutT, Key>::value;
+      std::uint8_t* data_ptr = reinterpret_cast<std::uint8_t*>(&p2_) + pcl::traits::offset<PointOutT, Key>::value;
       *reinterpret_cast<T*>(data_ptr) = static_cast<T> (p1_[f_idx_++]);
     }
 
@@ -168,7 +171,7 @@ namespace pcl
     {
       //p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
       using T = typename pcl::traits::datatype<PointInT, Key>::type;
-      const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointInT, Key>::value;
+      const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*>(&p1_) + pcl::traits::offset<PointInT, Key>::value;
       p2_[f_idx_++] = static_cast<float> (*reinterpret_cast<const T*>(data_ptr));
     }
 
@@ -267,7 +270,7 @@ namespace pcl
       {
         // Copy the obvious
         assert (indices.size () <= pc.size ());
-        for (size_t i = 0; i < indices.size (); i++)
+        for (std::size_t i = 0; i < indices.size (); i++)
           points[i] = pc.points[indices[i]];
       }
 
@@ -276,7 +279,7 @@ namespace pcl
         * \param[in] height_ the cloud height
         * \param[in] value_ default value
         */
-      PointCloud (uint32_t width_, uint32_t height_, const PointT& value_ = PointT ())
+      PointCloud (std::uint32_t width_, std::uint32_t height_, const PointT& value_ = PointT ())
         : header ()
         , points (width_ * height_, value_)
         , width (width_)
@@ -297,21 +300,7 @@ namespace pcl
       inline PointCloud&
       operator += (const PointCloud& rhs)
       {
-        // Make the resultant point cloud take the newest stamp
-        if (rhs.header.stamp > header.stamp)
-          header.stamp = rhs.header.stamp;
-
-        size_t nr_points = points.size ();
-        points.resize (nr_points + rhs.points.size ());
-        for (size_t i = nr_points; i < points.size (); ++i)
-          points[i] = rhs.points[i - nr_points];
-
-        width    = static_cast<uint32_t>(points.size ());
-        height   = 1;
-        if (rhs.is_dense && is_dense)
-          is_dense = true;
-        else
-          is_dense = false;
+        concatenate((*this), rhs);
         return (*this);
       }
 
@@ -319,10 +308,36 @@ namespace pcl
         * \param[in] rhs the cloud to add to the current cloud
         * \return the new cloud as a concatenation of the current cloud and the new given cloud
         */
-      inline const PointCloud
+      inline PointCloud
       operator + (const PointCloud& rhs)
       {
         return (PointCloud (*this) += rhs);
+      }
+
+      inline static bool
+      concatenate(pcl::PointCloud<PointT> &cloud1,
+                  const pcl::PointCloud<PointT> &cloud2)
+      {
+        // Make the resultant point cloud take the newest stamp
+        cloud1.header.stamp = std::max (cloud1.header.stamp, cloud2.header.stamp);
+
+        // libstdc++ (GCC) on calling reserve allocates new memory, copies and deallocates old vector
+        // This causes a drastic performance hit. Prefer not to use reserve with libstdc++ (default on clang)
+        cloud1.points.insert (cloud1.points.end (), cloud2.points.begin (), cloud2.points.end ());
+
+        cloud1.width    = static_cast<std::uint32_t>(cloud1.points.size ());
+        cloud1.height   = 1;
+        cloud1.is_dense = cloud1.is_dense && cloud2.is_dense;
+        return true;
+      }
+
+      inline static bool
+      concatenate(const pcl::PointCloud<PointT> &cloud1,
+               const pcl::PointCloud<PointT> &cloud2,
+               pcl::PointCloud<PointT> &cloud_out)
+      {
+        cloud_out = cloud1;
+        return concatenate(cloud_out, cloud2);
       }
 
       /** \brief Obtain the point given by the (column, row) coordinates. Only works on organized
@@ -359,7 +374,7 @@ namespace pcl
         * \param[in] row the row coordinate
         */
       inline const PointT&
-      operator () (size_t column, size_t row) const
+      operator () (std::size_t column, std::size_t row) const
       {
         return (points[row * this->width + column]);
       }
@@ -370,7 +385,7 @@ namespace pcl
         * \param[in] row the row coordinate
         */
       inline PointT&
-      operator () (size_t column, size_t row)
+      operator () (std::size_t column, std::size_t row)
       {
         return (points[row * this->width + column]);
       }
@@ -461,9 +476,9 @@ namespace pcl
       std::vector<PointT, Eigen::aligned_allocator<PointT> > points;
 
       /** \brief The point cloud width (if organized as an image-structure). */
-      uint32_t width;
+      std::uint32_t width;
       /** \brief The point cloud height (if organized as an image-structure). */
-      uint32_t height;
+      std::uint32_t height;
 
       /** \brief True if no points are invalid (e.g., have NaN or Inf values in any of their floating point fields). */
       bool is_dense;
@@ -496,28 +511,28 @@ namespace pcl
       inline const_iterator end () const  { return (points.end ()); }
 
       //capacity
-      inline size_t size () const { return (points.size ()); }
-      inline void reserve (size_t n) { points.reserve (n); }
+      inline std::size_t size () const { return (points.size ()); }
+      inline void reserve (std::size_t n) { points.reserve (n); }
       inline bool empty () const { return points.empty (); }
 
       /** \brief Resize the cloud
         * \param[in] n the new cloud size
         */
-      inline void resize (size_t n)
+      inline void resize (std::size_t n)
       {
         points.resize (n);
         if (width * height != n)
         {
-          width = static_cast<uint32_t> (n);
+          width = static_cast<std::uint32_t> (n);
           height = 1;
         }
       }
 
       //element access
-      inline const PointT& operator[] (size_t n) const { return (points[n]); }
-      inline PointT& operator[] (size_t n) { return (points[n]); }
-      inline const PointT& at (size_t n) const { return (points.at (n)); }
-      inline PointT& at (size_t n) { return (points.at (n)); }
+      inline const PointT& operator[] (std::size_t n) const { return (points[n]); }
+      inline PointT& operator[] (std::size_t n) { return (points[n]); }
+      inline const PointT& at (std::size_t n) const { return (points.at (n)); }
+      inline PointT& at (std::size_t n) { return (points.at (n)); }
       inline const PointT& front () const { return (points.front ()); }
       inline PointT& front () { return (points.front ()); }
       inline const PointT& back () const { return (points.back ()); }
@@ -531,7 +546,7 @@ namespace pcl
       push_back (const PointT& pt)
       {
         points.push_back (pt);
-        width = static_cast<uint32_t> (points.size ());
+        width = static_cast<std::uint32_t> (points.size ());
         height = 1;
       }
 
@@ -544,7 +559,7 @@ namespace pcl
       emplace_back (Args&& ...args)
       {
         points.emplace_back (std::forward<Args> (args)...);
-        width = static_cast<uint32_t> (points.size ());
+        width = static_cast<std::uint32_t> (points.size ());
         height = 1;
         return points.back();
       }
@@ -559,7 +574,7 @@ namespace pcl
       insert (iterator position, const PointT& pt)
       {
         iterator it = points.insert (position, pt);
-        width = static_cast<uint32_t> (points.size ());
+        width = static_cast<std::uint32_t> (points.size ());
         height = 1;
         return (it);
       }
@@ -571,10 +586,10 @@ namespace pcl
         * \param[in] pt the point to insert
         */
       inline void
-      insert (iterator position, size_t n, const PointT& pt)
+      insert (iterator position, std::size_t n, const PointT& pt)
       {
         points.insert (position, n, pt);
-        width = static_cast<uint32_t> (points.size ());
+        width = static_cast<std::uint32_t> (points.size ());
         height = 1;
       }
 
@@ -588,7 +603,7 @@ namespace pcl
       insert (iterator position, InputIterator first, InputIterator last)
       {
         points.insert (position, first, last);
-        width = static_cast<uint32_t> (points.size ());
+        width = static_cast<std::uint32_t> (points.size ());
         height = 1;
       }
 
@@ -602,7 +617,7 @@ namespace pcl
       emplace (iterator position, Args&& ...args)
       {
         iterator it = points.emplace (position, std::forward<Args> (args)...);
-        width = static_cast<uint32_t> (points.size ());
+        width = static_cast<std::uint32_t> (points.size ());
         height = 1;
         return (it);
       }
@@ -616,7 +631,7 @@ namespace pcl
       erase (iterator position)
       {
         iterator it = points.erase (position);
-        width = static_cast<uint32_t> (points.size ());
+        width = static_cast<std::uint32_t> (points.size ());
         height = 1;
         return (it);
       }
@@ -631,7 +646,7 @@ namespace pcl
       erase (iterator first, iterator last)
       {
         iterator it = points.erase (first, last);
-        width = static_cast<uint32_t> (points.size ());
+        width = static_cast<std::uint32_t> (points.size ());
         height = 1;
         return (it);
       }

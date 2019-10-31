@@ -50,16 +50,16 @@ public:
     True if successful and the pool can be used.
   */
   bool Create( 
-    size_t sizeof_element,
-    size_t element_count_estimate,
-    size_t block_element_capacity
+    std::size_t sizeof_element,
+    std::size_t element_count_estimate,
+    std::size_t block_element_capacity
     );
 
   /*
   Returns:
     Size of the elements in this pool.
   */
-  size_t SizeofElement() const;
+  std::size_t SizeofElement() const;
 
   /*
   Returns:
@@ -122,13 +122,13 @@ public:
   Returns:
     Number of active elements. (Elements that have been returned are not active.)
   */
-  size_t ActiveElementCount() const;
+  std::size_t ActiveElementCount() const;
 
   /*
   Returns:
     Total number of elements = number of active elements + number of returned elements.
   */
-  size_t TotalElementCount() const;
+  std::size_t TotalElementCount() const;
 
   /*
   Description:
@@ -175,7 +175,7 @@ public:
     fixed size pool, then use ON_FixedSizePoolIterator.
   */
   void* FirstElement();
-  void* FirstElement( size_t element_index );
+  void* FirstElement( std::size_t element_index );
 
   /*
   Description:
@@ -214,14 +214,14 @@ public:
     The loop will iteratate through all the blocks.
 
           // iterate through all blocks in the pool
-          size_t block_element_count = 0;
+          std::size_t block_element_count = 0;
           for ( void* p = FirstBlock(&block_element_count); 
                 0 != p; 
                 p = NextBlock(&block_element_count) 
               )
           {
             ElementType* e = (ElementType*)p;
-            for ( size_t i = 0; 
+            for ( std::size_t i = 0; 
                   i < block_element_count; 
                   i++, e = ((const char*)e) + SizeofElement() 
                 )
@@ -246,7 +246,7 @@ public:
     if you have multiple concurrent threads iterating the same 
     fixed size pool, then use ON_FixedSizePoolIterator.
   */
-  void* FirstBlock( size_t* block_element_count );
+  void* FirstBlock( std::size_t* block_element_count );
 
   /*
   Description:
@@ -271,7 +271,7 @@ public:
     if you have multiple concurrent threads iterating the same 
     fixed size pool, then use ON_FixedSizePoolIterator.
   */
-  void* NextBlock( size_t* block_element_count );
+  void* NextBlock( std::size_t* block_element_count );
 
   /*
   Description:
@@ -295,7 +295,7 @@ public:
     element is the one returned by the (i+1)-th call to 
     AllocateElement().
   */
-  void* Element(size_t element_index) const;
+  void* Element(std::size_t element_index) const;
 
 public:
   // Expert user functions below for situations where you
@@ -341,19 +341,19 @@ private:
   void* m_al_block; // current element allocation block.
   // m_al_element_array[] is in m_al_block and has length m_al_count.
   void* m_al_element_array;
-  size_t m_al_count;
-  size_t m_sizeof_element;
-  size_t m_block_element_count;  // block element count
-  size_t m_active_element_count; // number of active elements
-  size_t m_total_element_count;  // total number of elements (active + returned)
+  std::size_t m_al_count;
+  std::size_t m_sizeof_element;
+  std::size_t m_block_element_count;  // block element count
+  std::size_t m_active_element_count; // number of active elements
+  std::size_t m_total_element_count;  // total number of elements (active + returned)
   ON_MEMORY_POOL* m_heap;
   
 private:
   // returns capacity of elements in existing block
-  size_t BlockElementCapacity( const void* block ) const;
+  std::size_t BlockElementCapacity( const void* block ) const;
 
   // returns number of allocated of elements in existing block
-  size_t BlockElementCount( const void* block ) const;
+  std::size_t BlockElementCount( const void* block ) const;
 private:
   // prohibit copy construction and operator=.
   ON_FixedSizePool(const ON_FixedSizePool&);
@@ -406,7 +406,7 @@ public:
     FirstElement() and NextElement() to iteratate through elements.
   */
   void* FirstElement();
-  void* FirstElement( size_t element_index );
+  void* FirstElement( std::size_t element_index );
 
   /*
   Description:
@@ -439,14 +439,14 @@ public:
     The loop will iteratate through all the blocks.
 
           // iterate through all blocks in the pool
-          size_t block_element_count = 0;
+          std::size_t block_element_count = 0;
           for ( void* p = FirstBlock(&block_element_count); 
                 0 != p; 
                 p = NextBlock(&block_element_count) 
               )
           {
             ElementType* e = (ElementType*)p;
-            for ( size_t i = 0; 
+            for ( std::size_t i = 0; 
                   i < block_element_count; 
                   i++, e = ((const char*)e) + SizeofElement() 
                 )
@@ -465,7 +465,7 @@ public:
     Do not make any calls to FirstElement() or NextElement() when using
     FirstBlock() and NextBlock() to iteratate through blocks.
   */
-  void* FirstBlock( size_t* block_element_count );
+  void* FirstBlock( std::size_t* block_element_count );
 
   /*
   Description:
@@ -484,7 +484,7 @@ public:
     Do not make any calls to FirstElement() or NextElement() when using
     FirstBlock() and NextBlock() to iteratate through blocks.
   */
-  void* NextBlock( size_t* block_element_count );
+  void* NextBlock( std::size_t* block_element_count );
 
 private:
   void* m_it_block;
@@ -526,15 +526,15 @@ public:
     True if successful and the pool can be used.
   */
   bool Create( 
-    size_t element_count_estimate,
-    size_t block_element_count
+    std::size_t element_count_estimate,
+    std::size_t block_element_count
     );
 
   /*
   Returns:
     Size of the elements in this pool.
   */
-  size_t SizeofElement() const;
+  std::size_t SizeofElement() const;
 
   /*
   Returns:
@@ -597,13 +597,13 @@ public:
   Returns:
     Number of active elements. (Elements that have been returned are not active.)
   */
-  size_t ActiveElementCount() const;
+  std::size_t ActiveElementCount() const;
 
   /*
   Returns:
     Total number of elements = number of active elements + number of returned elements.
   */
-  size_t TotalElementCount() const;
+  std::size_t TotalElementCount() const;
 
   /*
   Description:
@@ -656,7 +656,7 @@ public:
     The loop will iteratate through all the blocks.
 
           // iterate through all blocks in the pool
-          size_t block_element_count = 0;
+          std::size_t block_element_count = 0;
           for ( T* p = FirstBlock(&block_element_count); 
                 0 != p; 
                 p = NextBlock(&block_element_count) 
@@ -671,7 +671,7 @@ public:
     Do not make any calls to FirstElement() or NextElement() when using
     FirstBlock() and NextBlock() to iteratate through blocks.
   */
-  T* FirstBlock( size_t* block_element_count );
+  T* FirstBlock( std::size_t* block_element_count );
 
   /*
   Description:
@@ -684,7 +684,7 @@ public:
     Do not make any calls to FirstElement() or NextElement() when using
     FirstBlock() and NextBlock() to iteratate through blocks.
   */
-  T* NextBlock( size_t* block_element_count );
+  T* NextBlock( std::size_t* block_element_count );
 
 
   /*
@@ -709,7 +709,7 @@ public:
     element is the one returned by the (i+1)-th call to 
     AllocateElement().
   */
-  T* Element(size_t element_index) const;
+  T* Element(std::size_t element_index) const;
 
 public:
   // Expert user functions below for situations where you

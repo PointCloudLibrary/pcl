@@ -56,7 +56,7 @@ ON_LineCurve::ON_LineCurve( const ON_Line& L, double t0, double t1 ) : m_line(L)
 {
 }
 
-ON_LineCurve::ON_LineCurve( const ON_LineCurve& src )
+ON_LineCurve::ON_LineCurve( const ON_LineCurve& src ) : ON_Curve(src)
 {
   *this = src;
 }
@@ -155,7 +155,7 @@ ON_LineCurve::SwapCoordinates( int i, int j )
   return rc;
 }
 
-ON_BOOL32 ON_LineCurve::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_LineCurve::IsValid( ON_TextLog* ) const
 {
   return ( m_t[0] < m_t[1] && m_line.Length() > 0.0 ) ? true : false;
 }
@@ -275,7 +275,7 @@ int ON_LineCurve::Degree() const
 
 ON_BOOL32
 ON_LineCurve::IsLinear(  // true if curve locus is a line segment
-      double tolerance   // tolerance to use when checking linearity
+      double   // tolerance to use when checking linearity
       ) const
 {
   return IsValid();
@@ -313,10 +313,10 @@ int ON_LineCurve::IsPolyline(
 
 ON_BOOL32
 ON_LineCurve::IsArc( // true if curve locus in an arc or circle
-      const ON_Plane* plane, // if not NULL, test is performed in this plane
-      ON_Arc* arc,         // if not NULL and true is returned, then arc
+      const ON_Plane*, // if not NULL, test is performed in this plane
+      ON_Arc*,         // if not NULL and true is returned, then arc
                               // arc parameters are filled in
-      double tolerance // tolerance to use when checking linearity
+      double // tolerance to use when checking linearity
       ) const
 {
   return false;
@@ -384,11 +384,11 @@ ON_BOOL32 ON_LineCurve::Evaluate( // returns false if unable to evaluate
        int der_count,  // number of derivatives (>=0)
        int v_stride,   // v[] array stride (>=Dimension())
        double* v,      // v[] array of length stride*(ndir+1)
-       int side,       // optional - determines which side to evaluate from
+       int,            // optional - determines which side to evaluate from
                        //         0 = default
                        //      <  0 to evaluate from below, 
                        //      >  0 to evaluate from above
-       int* hint       // optional - evaluation hint (int) used to speed
+       int*            // optional - evaluation hint (int) used to speed
                        //            repeated evaluations
        ) const
 {
@@ -439,7 +439,7 @@ ON_BOOL32 ON_LineCurve::SetEndPoint(ON_3dPoint end_point)
 
 int ON_LineCurve::GetNurbForm(
       ON_NurbsCurve& c,
-      double tolerance,
+      double,
       const ON_Interval* subdomain
       ) const
 {

@@ -96,7 +96,7 @@ pcl::PCLBase<PointT>::setIndices (const PointIndicesConstPtr &indices)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::PCLBase<PointT>::setIndices (size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols)
+pcl::PCLBase<PointT>::setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols)
 {
   if ((nb_rows > input_->height) || (row_start > input_->height))
   {
@@ -110,14 +110,14 @@ pcl::PCLBase<PointT>::setIndices (size_t row_start, size_t col_start, size_t nb_
     return;
   }
 
-  size_t row_end = row_start + nb_rows;
+  std::size_t row_end = row_start + nb_rows;
   if (row_end > input_->height)
   {
     PCL_ERROR ("[PCLBase::setIndices] %d is out of rows range %d", row_end, input_->height);
     return;
   }
 
-  size_t col_end = col_start + nb_cols;
+  std::size_t col_end = col_start + nb_cols;
   if (col_end > input_->width)
   {
     PCL_ERROR ("[PCLBase::setIndices] %d is out of columns range %d", col_end, input_->width);
@@ -126,8 +126,8 @@ pcl::PCLBase<PointT>::setIndices (size_t row_start, size_t col_start, size_t nb_
 
   indices_.reset (new std::vector<int>);
   indices_->reserve (nb_cols * nb_rows);
-  for(size_t i = row_start; i < row_end; i++)
-    for(size_t j = col_start; j < col_end; j++)
+  for(std::size_t i = row_start; i < row_end; i++)
+    for(std::size_t j = col_start; j < col_end; j++)
       indices_->push_back (static_cast<int> ((i * input_->width) + j));
   fake_indices_ = false;
   use_indices_  = true;
@@ -146,6 +146,12 @@ pcl::PCLBase<PointT>::initCompute ()
   {
     fake_indices_ = true;
     indices_.reset (new std::vector<int>);
+  }
+
+  // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
+  if (fake_indices_ && indices_->size () != input_->points.size ())
+  {
+    const auto indices_size = indices_->size ();
     try
     {
       indices_->resize (input_->points.size ());
@@ -154,15 +160,7 @@ pcl::PCLBase<PointT>::initCompute ()
     {
       PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", input_->points.size ());
     }
-    for (size_t i = 0; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
-  }
-
-  // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
-  if (fake_indices_ && indices_->size () != input_->points.size ())
-  {
-    size_t indices_size = indices_->size ();
-    indices_->resize (input_->points.size ());
-    for (size_t i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
+    for (auto i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
   }
 
   return (true);

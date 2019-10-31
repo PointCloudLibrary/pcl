@@ -117,8 +117,8 @@ main (int argc, char** argv)
 
   printf ("The following parameter values will be used:\n");
   for ( int i = 0 ; i < num_params ; ++i )
-    cout << "  " << parameter_names[i] << " = " << parameters[i] << endl;
-  cout << endl;
+    std::cout << "  " << parameter_names[i] << " = " << parameters[i] << std::endl;
+  std::cout << std::endl;
 
   run (parameters[0], parameters[1], parameters[2]);
 
@@ -144,7 +144,7 @@ void update (CallbackParameters* params)
 
   // Build the vtk objects visualizing the lines between the opps
   const list<ObjRecRANSAC::OrientedPointPair>& opps = params->objrec_.getSampledOrientedPointPairs ();
-  cout << "There is (are) " << opps.size () << " oriented point pair(s).\n";
+  std::cout << "There is (are) " << opps.size () << " oriented point pair(s).\n";
   // The opps points
   vtkSmartPointer<vtkPolyData> vtk_opps = vtkSmartPointer<vtkPolyData>::New ();
   vtkSmartPointer<vtkPoints> vtk_opps_points = vtkSmartPointer<vtkPoints>::New ();
@@ -250,7 +250,7 @@ void run (float pair_width, float voxel_size, float max_coplanarity_angle)
 
 bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals)
 {
-  size_t len = strlen (file_name);
+  std::size_t len = strlen (file_name);
   if ( file_name[len-3] != 'v' || file_name[len-2] != 't' || file_name[len-1] != 'k' )
   {
     fprintf (stderr, "ERROR: we need a .vtk object!\n");

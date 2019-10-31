@@ -123,7 +123,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::getDistancesToModel (const Eigen::Vec
   distances.resize (indices_->size ());
 
   // Iterate through the 3d points and calculate the distances from them to the sphere
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   // Calculate the distance from the point to the circle:
   // 1.   calculate intersection point of the plane in which the circle lies and the
   //      line from the sample point with the direction of the plane normal (projected point)
@@ -173,7 +173,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::selectWithinDistance (
   inliers.resize (indices_->size ());
 
   // Iterate through the 3d points and calculate the distances from them to the sphere
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     // what i have:
     // P : Sample Point
@@ -217,7 +217,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::countWithinDistance (
   int nr_p = 0;
 
   // Iterate through the 3d points and calculate the distances from them to the sphere
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     // what i have:
     // P : Sample Point
@@ -309,12 +309,12 @@ pcl::SampleConsensusModelCircle3D<PointT>::projectPoints (
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
-    for (size_t i = 0; i < projected_points.points.size (); ++i)
+    for (std::size_t i = 0; i < projected_points.points.size (); ++i)
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the plane
-    for (size_t i = 0; i < inliers.size (); ++i)
+    for (std::size_t i = 0; i < inliers.size (); ++i)
     {
       // what i have:
       // P : Sample Point
@@ -346,17 +346,17 @@ pcl::SampleConsensusModelCircle3D<PointT>::projectPoints (
   {
     // Allocate enough space and copy the basics
     projected_points.points.resize (inliers.size ());
-    projected_points.width    = uint32_t (inliers.size ());
+    projected_points.width    = std::uint32_t (inliers.size ());
     projected_points.height   = 1;
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
-    for (size_t i = 0; i < inliers.size (); ++i)
+    for (std::size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the plane
-    for (size_t i = 0; i < inliers.size (); ++i)
+    for (std::size_t i = 0; i < inliers.size (); ++i)
     {
       // what i have:
       // P : Sample Point

@@ -60,13 +60,13 @@ pcl::PPFRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
   // Initialize output container - overwrite the sizes done by Feature::initCompute ()
   output.points.resize (indices_->size () * input_->points.size ());
   output.height = 1;
-  output.width = static_cast<uint32_t> (output.points.size ());
+  output.width = static_cast<std::uint32_t> (output.points.size ());
 
   // Compute point pair features for every pair of points in the cloud
-  for (size_t index_i = 0; index_i < indices_->size (); ++index_i)
+  for (std::size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {
-    size_t i = (*indices_)[index_i];
-    for (size_t j = 0 ; j < input_->points.size (); ++j)
+    std::size_t i = (*indices_)[index_i];
+    for (std::size_t j = 0 ; j < input_->points.size (); ++j)
     {
       PointOutT p;
       if (i != j)
@@ -123,7 +123,7 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
 {
   PCL_INFO ("before computing output size: %u\n", output.size ());
   output.resize (indices_->size ());
-  for (size_t index_i = 0; index_i < indices_->size (); ++index_i)
+  for (std::size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {
     int i = (*indices_)[index_i];
     std::vector<int> nn_indices;

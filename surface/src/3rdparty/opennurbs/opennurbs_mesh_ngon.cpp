@@ -236,7 +236,7 @@ ON_MeshNgonUserData& ON_MeshNgonUserData::operator=(const ON_MeshNgonUserData& s
   return *this;
 }
 
-ON_BOOL32 ON_MeshNgonUserData::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_MeshNgonUserData::IsValid( ON_TextLog* ) const
 {
   return true;
 }

@@ -66,7 +66,7 @@ TEST (PCL, IntensityGradientEstimation)
       cloud_xyzi.points.push_back (p);
     }
   }
-  cloud_xyzi.width = static_cast<uint32_t> (cloud_xyzi.points.size ());
+  cloud_xyzi.width = static_cast<std::uint32_t> (cloud_xyzi.points.size ());
   PointCloud<PointXYZI>::ConstPtr cloud_ptr = cloud_xyzi.makeShared ();
 
   // Estimate surface normals
@@ -89,7 +89,7 @@ TEST (PCL, IntensityGradientEstimation)
   grad_est.compute (gradient);
 
   // Compare to gradient estimates to actual values
-  for (size_t i = 0; i < cloud_ptr->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud_ptr->points.size (); ++i)
   {
     const PointXYZI &p = cloud_ptr->points[i];
 

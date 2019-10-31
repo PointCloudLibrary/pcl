@@ -105,7 +105,7 @@ Narf::reset ()
 void 
 Narf::deepCopy (const Narf& other)
 {
-  //cout << __PRETTY_FUNCTION__<<" called.\n";
+  //std::cout << __PRETTY_FUNCTION__<<" called.\n";
   if (&other == this)
     return;
   
@@ -147,7 +147,7 @@ Narf::extractDescriptor (int descriptor_size)
     descriptor_ = new float[descriptor_size_];
   }
   float angle_step_size = deg2rad (360.0f) / static_cast<float> (descriptor_size_);
-  //cout << PVARN(no_of_beam_points)<<PVARN(surface_patch_pixel_size_);
+  //std::cout << PVARN(no_of_beam_points)<<PVARN(surface_patch_pixel_size_);
 
   float cell_size = surface_patch_world_size_/float(surface_patch_pixel_size_),
         cell_factor = 1.0f/cell_size,
@@ -261,7 +261,7 @@ Narf::extractFromRangeImageWithBestRotation (const RangeImage& range_image, cons
   if (rotations.empty())
     return false;
   float best_rotation=rotations[0], best_strength=strengths[0];
-  for (size_t i = 1; i < rotations.size(); ++i)
+  for (std::size_t i = 1; i < rotations.size(); ++i)
   {
     if (strengths[i] > best_strength)
     {
@@ -305,7 +305,7 @@ Narf::getBlurredSurfacePatch (int new_pixel_size, int blur_radius) const
         top_value = integral_image[(y-1)*new_pixel_size+x];
       
       integral_pixel += left_value + top_value - top_left_value;
-      //cout << PVARC(x)<<PVARC(y)<<PVARC(left_value)<<PVARC(top_value)<<PVARC(top_left_value)<<PVARN(integral_pixel)<<PVARN(integral_image[y*new_pixel_size+x-1]);
+      //std::cout << PVARC(x)<<PVARC(y)<<PVARC(left_value)<<PVARC(top_value)<<PVARC(top_left_value)<<PVARN(integral_pixel)<<PVARN(integral_image[y*new_pixel_size+x-1]);
     }
   }
   
@@ -468,14 +468,14 @@ Narf::getRotations (std::vector<float>& rotations, std::vector<float>& strengths
   }
   
   //for (std::multimap<float, float>::const_iterator it=scored_orientations.begin(); it!=scored_orientations.end(); ++it)
-    //cout << "Score "<<it->first<<" for angle "<<rad2deg(it->second)<<".\n";
+    //std::cout << "Score "<<it->first<<" for angle "<<rad2deg(it->second)<<".\n";
   
   float min_score = scored_orientations.begin()->first,
         max_score = scored_orientations.rbegin()->first;
   
   float min_score_for_remaining_rotations = max_score - 0.2f*(max_score-min_score);
   scored_orientations.erase(scored_orientations.begin(), scored_orientations.upper_bound(min_score_for_remaining_rotations));
-  //cout << "There are "<<scored_orientations.size()<<" potential orientations left after filtering out bad scores.\n";
+  //std::cout << "There are "<<scored_orientations.size()<<" potential orientations left after filtering out bad scores.\n";
   
   while (!scored_orientations.empty())
   {
@@ -548,7 +548,7 @@ Narf::saveBinary (const std::string& filename) const
 int 
 Narf::loadHeader(std::istream& file) const
 {
-  size_t pos_in_file = static_cast<size_t> (file.tellg ());
+  std::size_t pos_in_file = static_cast<std::size_t> (file.tellg ());
   file.width (getHeaderKeyword ().size()+10); // limit maximum number of bytes to read
   std::string header;
   file >> header;
@@ -587,7 +587,7 @@ Narf::loadBinary (std::istream& file)
   file.read(reinterpret_cast<char*>(&descriptor_size_), sizeof(descriptor_size_));
   descriptor_ = new float[descriptor_size_];
   if (file.eof())
-    cout << ":-(\n";
+    std::cout << ":-(\n";
   file.read (reinterpret_cast<char*>(descriptor_), descriptor_size_*sizeof(*descriptor_));
 }
 
@@ -655,7 +655,7 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
   std::vector<Narf*> feature_list;
   if (indices_)
   {
-    for (size_t indices_idx=0; indices_idx<indices_->size(); ++indices_idx)
+    for (std::size_t indices_idx=0; indices_idx<indices_->size(); ++indices_idx)
     {
       int point_index = (*indices_)[indices_idx];
       int y=point_index/range_image_->width, x=point_index - y*range_image_->width;
@@ -677,7 +677,7 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
   
   // Copy to NARF36 struct
   output.points.resize(feature_list.size());
-  for (size_t i = 0; i < feature_list.size(); ++i)
+  for (std::size_t i = 0; i < feature_list.size(); ++i)
   {
     feature_list[i]->copyToNarf36(output.points[i]);
   }

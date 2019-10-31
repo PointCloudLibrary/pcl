@@ -46,7 +46,6 @@
 #include <boost/version.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/cstdint.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/mpl/fold.hpp>
@@ -56,7 +55,6 @@
 #include <boost/mpl/transform.hpp>
 #include <boost/mpl/vector.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/chrono.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/foreach.hpp>
 #include <boost/shared_array.hpp>

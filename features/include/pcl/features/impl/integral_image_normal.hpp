@@ -140,7 +140,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCovarianceMatrixMet
 template <typename PointInT, typename PointOutT> void
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverage3DGradientMethod ()
 {
-  size_t data_size = (input_->points.size () << 2);
+  std::size_t data_size = (input_->points.size () << 2);
   diff_x_ = new float[data_size];
   diff_y_ = new float[data_size];
 
@@ -158,7 +158,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverage3DGradientMe
   float* diff_y_ptr = diff_y_ + ((input_->width + 1) << 2);
   unsigned diff_skip = 8; // skip last element in row and the first in the next row
 
-  for (size_t ri = 1; ri < input_->height - 1; ++ri
+  for (std::size_t ri = 1; ri < input_->height - 1; ++ri
                                              , point_up += input_->width
                                              , point_dn += input_->width
                                              , point_lf += input_->width
@@ -166,7 +166,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverage3DGradientMe
                                              , diff_x_ptr += diff_skip
                                              , diff_y_ptr += diff_skip)
   {
-    for (size_t ci = 0; ci < input_->width - 2; ++ci, diff_x_ptr += 4, diff_y_ptr += 4)
+    for (std::size_t ci = 0; ci < input_->width - 2; ++ci, diff_x_ptr += 4, diff_y_ptr += 4)
     {
       diff_x_ptr[0] = point_rg[ci].x - point_lf[ci].x;
       diff_x_ptr[1] = point_rg[ci].y - point_lf[ci].y;
@@ -773,7 +773,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   delete[] distance_map_;
   distance_map_ = new float[input_->points.size ()];
   float *distanceMap = distance_map_;
-  for (size_t index = 0; index < input_->points.size (); ++index)
+  for (std::size_t index = 0; index < input_->points.size (); ++index)
   {
     if (depthChangeMap[index] == 0)
       distanceMap[index] = 0.0f;
@@ -784,9 +784,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   // first pass
   float* previous_row = distanceMap;
   float* current_row = previous_row + input_->width;
-  for (size_t ri = 1; ri < input_->height; ++ri)
+  for (std::size_t ri = 1; ri < input_->height; ++ri)
   {
-    for (size_t ci = 1; ci < input_->width; ++ci)
+    for (std::size_t ci = 1; ci < input_->width; ++ci)
     {
       const float upLeft  = previous_row [ci - 1] + 1.4f; //distanceMap[(ri-1)*input_->width + ci-1] + 1.4f;
       const float up      = previous_row [ci] + 1.0f;     //distanceMap[(ri-1)*input_->width + ci] + 1.0f;
@@ -851,8 +851,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     PointOutT* vec1 = &output [0];
     PointOutT* vec2 = vec1 + input_->width * (input_->height - border);
 
-    size_t count = border * input_->width;
-    for (size_t idx = 0; idx < count; ++idx)
+    std::size_t count = border * input_->width;
+    for (std::size_t idx = 0; idx < count; ++idx)
     {
       vec1 [idx].getNormalVector3fMap ().setConstant (bad_point);
       vec1 [idx].curvature = bad_point;
@@ -863,9 +863,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     // left and right borders actually columns
     vec1 = &output [border * input_->width];
     vec2 = vec1 + input_->width - border;
-    for (size_t ri = border; ri < input_->height - border; ++ri, vec1 += input_->width, vec2 += input_->width)
+    for (std::size_t ri = border; ri < input_->height - border; ++ri, vec1 += input_->width, vec2 += input_->width)
     {
-      for (size_t ci = 0; ci < border; ++ci)
+      for (std::size_t ci = 0; ci < border; ++ci)
       {
         vec1 [ci].getNormalVector3fMap ().setConstant (bad_point);
         vec1 [ci].curvature = bad_point;
@@ -1157,7 +1157,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
     else
     {
       float smoothing_constant = normal_smoothing_size_;
-      for (size_t idx = 0; idx < indices_->size (); ++idx)
+      for (std::size_t idx = 0; idx < indices_->size (); ++idx)
       {
         unsigned pt_index = (*indices_)[idx];
         unsigned u = pt_index % input_->width;

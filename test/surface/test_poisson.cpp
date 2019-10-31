@@ -74,7 +74,7 @@ TEST (PCL, Poisson)
 
   ASSERT_EQ (mesh.polygons.size (), 1051);
   // All polygons should be triangles
-  for (size_t i = 0; i < mesh.polygons.size (); ++i)
+  for (std::size_t i = 0; i < mesh.polygons.size (); ++i)
     EXPECT_EQ (mesh.polygons[i].vertices.size (), 3);
 
   EXPECT_EQ (mesh.polygons[10].vertices[0], 121);

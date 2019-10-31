@@ -79,7 +79,7 @@ namespace pcl
           signatures->height = 1;
 
           int size_feat = 33;
-          for (size_t k = 0; k < fpfhs->points.size (); k++)
+          for (std::size_t k = 0; k < fpfhs->points.size (); k++)
             for (int i = 0; i < size_feat; i++)
               signatures->points[k].histogram[i] = fpfhs->points[k].histogram[i];
 

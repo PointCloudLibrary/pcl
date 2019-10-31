@@ -39,7 +39,7 @@ main(int argc, char** argv)
   cloud->height   = 1;
   cloud->is_dense = false;
   cloud->points.resize (cloud->width * cloud->height);
-  for (size_t i = 0; i < cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud->points.size (); ++i)
   {
     if (pcl::console::find_argument (argc, argv, "-s") >= 0 || pcl::console::find_argument (argc, argv, "-sf") >= 0)
     {
@@ -88,7 +88,7 @@ main(int argc, char** argv)
   }
 
   // copies all inliers of the model computed to another PointCloud
-  pcl::copyPointCloud<pcl::PointXYZ>(*cloud, inliers, *final);
+  pcl::copyPointCloud (*cloud, inliers, *final);
 
   // creates the visualization object and adds either our original cloud or all of the inliers
   // depending on the command line arguments specified.

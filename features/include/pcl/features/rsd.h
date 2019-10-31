@@ -64,7 +64,7 @@ namespace pcl
     const int cols = histograms2D.at(0).cols();
 
     typename PointCloud<Histogram<N> >::VectorType::iterator it = histogramsPC.points.begin ();
-    BOOST_FOREACH (Eigen::MatrixXf h, histograms2D)
+    for (const Eigen::MatrixXf& h : histograms2D)
     {
       Eigen::Map<Eigen::MatrixXf> histogram (&(it->histogram[0]), rows, cols);
       histogram = h;

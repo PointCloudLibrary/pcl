@@ -113,7 +113,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::getDistancesToModel (const Eigen::Vec
   distances.resize (indices_->size ());
 
   // Iterate through the 3d points and calculate the distances from them to the circle
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
     // Calculate the distance from the point to the circle as the difference between
     // dist(point,circle_origin) and circle_radius
     distances[i] = std::abs (std::sqrt (
@@ -142,7 +142,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
   error_sqr_dists_.resize (indices_->size ());
 
   // Iterate through the 3d points and calculate the distances from them to the circle
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     // Calculate the distance from the point to the circle as the difference between
     // dist(point,circle_origin) and circle_radius
@@ -176,7 +176,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistance (
   int nr_p = 0;
 
   // Iterate through the 3d points and calculate the distances from them to the circle
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     // Calculate the distance from the point to the circle as the difference between
     // dist(point,circle_origin) and circle_radius
@@ -250,7 +250,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
-    for (size_t i = 0; i < projected_points.points.size (); ++i)
+    for (std::size_t i = 0; i < projected_points.points.size (); ++i)
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
 
@@ -269,17 +269,17 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
   {
     // Allocate enough space and copy the basics
     projected_points.points.resize (inliers.size ());
-    projected_points.width    = static_cast<uint32_t> (inliers.size ());
+    projected_points.width    = static_cast<std::uint32_t> (inliers.size ());
     projected_points.height   = 1;
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
-    for (size_t i = 0; i < inliers.size (); ++i)
+    for (std::size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
 
     // Iterate through the points and project them to the circle
-    for (size_t i = 0; i < inliers.size (); ++i)
+    for (std::size_t i = 0; i < inliers.size (); ++i)
     {
       float dx = input_->points[inliers[i]].x - model_coefficients[0];
       float dy = input_->points[inliers[i]].y - model_coefficients[1];

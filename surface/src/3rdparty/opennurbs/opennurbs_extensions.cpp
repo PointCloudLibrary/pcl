@@ -50,7 +50,7 @@
 
 // ONX_Model_UserData new/delete
 
-void* ONX_Model_UserData::operator new(size_t sz)
+void* ONX_Model_UserData::operator new(std::size_t sz)
 {
   // ONX_Model_UserData new
   return onmalloc(sz);
@@ -62,7 +62,7 @@ void ONX_Model_UserData::operator delete(void* p)
   onfree(p);
 }
 
-void* ONX_Model_UserData::operator new[] (size_t sz)
+void* ONX_Model_UserData::operator new[] (std::size_t sz)
 {
   // ONX_Model_UserData array new
   return onmalloc(sz);
@@ -74,7 +74,7 @@ void ONX_Model_UserData::operator delete[] (void* p)
   onfree(p);
 }
 
-void* ONX_Model_UserData::operator new(size_t, void* p)
+void* ONX_Model_UserData::operator new(std::size_t, void* p)
 {
   // ONX_Model_UserData placement new
   return p;
@@ -89,7 +89,7 @@ void ONX_Model_UserData::operator delete(void*, void*)
 
 // ONX_Model_Object new/delete
 
-void* ONX_Model_Object::operator new(size_t sz)
+void* ONX_Model_Object::operator new(std::size_t sz)
 {
   // ONX_Model_Object new
   return onmalloc(sz);
@@ -101,7 +101,7 @@ void ONX_Model_Object::operator delete(void* p)
   onfree(p);
 }
 
-void* ONX_Model_Object::operator new[] (size_t sz)
+void* ONX_Model_Object::operator new[] (std::size_t sz)
 {
   // ONX_Model_Object array new
   return onmalloc(sz);
@@ -113,7 +113,7 @@ void ONX_Model_Object::operator delete[] (void* p)
   onfree(p);
 }
 
-void* ONX_Model_Object::operator new(size_t, void* p)
+void* ONX_Model_Object::operator new(std::size_t, void* p)
 {
   // ONX_Model_Object placement new
   return p;
@@ -128,7 +128,7 @@ void ONX_Model_Object::operator delete(void*, void*)
 
 // ONX_Model_RenderLight new/delete
 
-void* ONX_Model_RenderLight::operator new(size_t sz)
+void* ONX_Model_RenderLight::operator new(std::size_t sz)
 {
   // ONX_Model_RenderLight new
   return onmalloc(sz);
@@ -140,7 +140,7 @@ void ONX_Model_RenderLight::operator delete(void* p)
   onfree(p);
 }
 
-void* ONX_Model_RenderLight::operator new[] (size_t sz)
+void* ONX_Model_RenderLight::operator new[] (std::size_t sz)
 {
   // ONX_Model_RenderLight array new
   return onmalloc(sz);
@@ -152,7 +152,7 @@ void ONX_Model_RenderLight::operator delete[] (void* p)
   onfree(p);
 }
 
-void* ONX_Model_RenderLight::operator new(size_t, void* p)
+void* ONX_Model_RenderLight::operator new(std::size_t, void* p)
 {
   // ONX_Model_RenderLight placement new
   return p;
@@ -167,7 +167,7 @@ void ONX_Model_RenderLight::operator delete(void*, void*)
 
 // ONX_Model new/delete
 
-void* ONX_Model::operator new(size_t sz)
+void* ONX_Model::operator new(std::size_t sz)
 {
   // ONX_Model new
   return onmalloc(sz);
@@ -179,7 +179,7 @@ void ONX_Model::operator delete(void* p)
   onfree(p);
 }
 
-void* ONX_Model::operator new[] (size_t sz)
+void* ONX_Model::operator new[] (std::size_t sz)
 {
   // ONX_Model array new
   return onmalloc(sz);
@@ -191,7 +191,7 @@ void ONX_Model::operator delete[] (void* p)
   onfree(p);
 }
 
-void* ONX_Model::operator new(size_t, void* p)
+void* ONX_Model::operator new(std::size_t, void* p)
 {
   // ONX_Model placement new
   return p;
@@ -3034,7 +3034,7 @@ bool ONX_Model::Write(
 bool ONX_Model::Write( 
        ON_BinaryArchive& archive,
        int version,
-       const char* sStartSectionComment,
+       const char*,
        ON_TextLog* error_log
        )
 {
@@ -5139,10 +5139,10 @@ static int AuditObjectTableHelper(
 }
 
 static int AuditHistoryRecordTableHelper( 
-      ONX_Model& model,
-      bool bAttemptRepair,
-      int* repair_count,
-      ON_TextLog* text_log 
+      ONX_Model&,
+      bool,
+      int*,
+      ON_TextLog*
       )
 {
   // TODO - make sure object id's exist

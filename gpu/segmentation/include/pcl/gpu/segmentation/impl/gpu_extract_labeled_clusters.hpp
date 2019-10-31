@@ -65,7 +65,7 @@ pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointClo
   pcl::PointIndices r;
 
   // Process all points in the cloud
-  for (size_t i = 0; i < host_cloud_->points.size (); ++i)
+  for (std::size_t i = 0; i < host_cloud_->points.size (); ++i)
   {
     // if we already processed this point continue with the next one
     if (processed[i])
@@ -113,7 +113,7 @@ pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointClo
       result_device.sizes.download (sizes);
       result_device.data.download (data);
 
-      for(size_t qp = 0; qp < sizes.size (); qp++)
+      for(std::size_t qp = 0; qp < sizes.size (); qp++)
       {
         for(int qp_r = 0; qp_r < sizes[qp]; qp_r++)
         {

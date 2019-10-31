@@ -94,7 +94,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     std::map < std::string, boost::shared_ptr<std::vector<int> > > single_categories;
     if (use_single_categories_)
     {
-      for (size_t i = 0; i < models->size (); i++)
+      for (std::size_t i = 0; i < models->size (); i++)
       {
         std::map<std::string, boost::shared_ptr<std::vector<int> > >::iterator it;
         std::string cat_model = models->at (i).class_;
@@ -107,15 +107,13 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
       }
     }
 
-    for (size_t i = 0; i < models->size (); i++)
+    for (std::size_t i = 0; i < models->size (); i++)
     {
       std::string path = source_->getModelDescriptorDir (models->at (i), training_dir_, descr_name_);
-      bf::path inside = path;
-      bf::directory_iterator end_itr;
 
-      for (bf::directory_iterator itr_in (inside); itr_in != end_itr; ++itr_in)
+      for (const auto& dir_entry : bf::directory_iterator(path))
       {
-        std::string file_name = (itr_in->path ().filename ()).string();
+        std::string file_name = (dir_entry.path ().filename ()).string();
 
         std::vector < std::string > strs;
         boost::split (strs, file_name, boost::is_any_of ("_"));
@@ -128,7 +126,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           boost::split (strs1, strs[2], boost::is_any_of ("."));
           int descriptor_id = atoi (strs1[0].c_str ());
 
-          std::string full_file_name = itr_in->path ().string ();
+          std::string full_file_name = dir_entry.path ().string ();
           typename pcl::PointCloud<FeatureT>::Ptr signature (new pcl::PointCloud<FeatureT>);
           pcl::io::loadPCDFile (full_file_name, *signature);
 
@@ -252,10 +250,10 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         {
 
           //perform search of the different signatures in the categories_to_be_searched_
-          for (size_t c = 0; c < categories_to_be_searched_.size (); c++)
+          for (std::size_t c = 0; c < categories_to_be_searched_.size (); c++)
           {
             std::cout << "Using category:" << categories_to_be_searched_[c] << std::endl;
-            for (size_t idx = 0; idx < signatures.size (); idx++)
+            for (std::size_t idx = 0; idx < signatures.size (); idx++)
             {
               /*float* hist = signatures[idx].points[0].histogram;
                std::vector<float> std_hist (hist, hist + getHistogramLength (dummy));
@@ -286,7 +284,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
               nearestKSearch (single_categories_index_[it->second], histogram, NN_, indices, distances);
               //gather NN-search results
               double score = 0;
-              for (size_t i = 0; i < (size_t) NN_; ++i)
+              for (std::size_t i = 0; i < (std::size_t) NN_; ++i)
               {
                 score = distances[0][i];
                 index_score is;
@@ -304,7 +302,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         }
         else
         {
-          for (size_t idx = 0; idx < signatures.size (); idx++)
+          for (std::size_t idx = 0; idx < signatures.size (); idx++)
           {
 
             float* hist = signatures[idx].points[0].histogram;
@@ -344,7 +342,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
         typename std::map<flann_model, bool> found;
         typename std::map<flann_model, bool>::iterator it_map;
-        for (size_t i = 0; i < indices_scores.size (); i++)
+        for (std::size_t i = 0; i < indices_scores.size (); i++)
         {
           flann_model m = flann_models_[indices_scores[i].idx_models_];
           it_map = found.find (m);
@@ -558,7 +556,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         std::vector<typename pcl::PointCloud<PointInT>::ConstPtr> aligned_models;
         aligned_models.resize (models_->size ());
 
-        for (size_t i = 0; i < models_->size (); i++)
+        for (std::size_t i = 0; i < models_->size (); i++)
         {
           ConstPointInTPtr model_cloud;
           PointInTPtr model_aligned (new pcl::PointCloud<PointInT>);
@@ -597,7 +595,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         models_temp.reset (new std::vector<ModelT>);
         transforms_temp.reset (new std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> >);
 
-        for (size_t i = 0; i < models_->size (); i++)
+        for (std::size_t i = 0; i < models_->size (); i++)
         {
           if (!mask_hv[i])
             continue;
@@ -625,17 +623,17 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
     if (force_retrain)
     {
-      for (size_t i = 0; i < models->size (); i++)
+      for (std::size_t i = 0; i < models->size (); i++)
       {
         source_->removeDescDirectory (models->at (i), training_dir_, descr_name_);
       }
     }
 
-    for (size_t i = 0; i < models->size (); i++)
+    for (std::size_t i = 0; i < models->size (); i++)
     {
       if (!source_->modelAlreadyTrained (models->at (i), training_dir_, descr_name_))
       {
-        for (size_t v = 0; v < models->at (i).views_->size (); v++)
+        for (std::size_t v = 0; v < models->at (i).views_->size (); v++)
         {
           PointInTPtr processed (new pcl::PointCloud<PointInT>);
           PointInTPtr view = models->at (i).views_->at (v);
@@ -649,7 +647,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
             std::mt19937 rng(rd());
             std::normal_distribution<float> nd (0.0f, noise_);
             // Noisify each point in the dataset
-            for (size_t cp = 0; cp < view->points.size (); ++cp)
+            for (std::size_t cp = 0; cp < view->points.size (); ++cp)
               view->points[cp].z += nd (rng);
           }
 
@@ -683,7 +681,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           PersistenceUtils::writeFloatToFile (path_entropy.str (), models->at (i).self_occlusions_->at (v));
 
           //save signatures and centroids to disk
-          for (size_t j = 0; j < signatures.size (); j++)
+          for (std::size_t j = 0; j < signatures.size (); j++)
           {
             if (valid_trans[j])
             {

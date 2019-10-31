@@ -70,7 +70,7 @@ class SimpleKinectTool
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (new pcl::PointCloud<pcl::PointXYZRGB>);
       PointCloudAOS<Host> data_host;
       data_host.points.resize (cloud->points.size());
-      for (size_t i = 0; i < cloud->points.size (); ++i)
+      for (std::size_t i = 0; i < cloud->points.size (); ++i)
       {
         PointXYZRGB pt;
         pt.x = cloud->points[i].x;

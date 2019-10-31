@@ -43,8 +43,11 @@
 #  pragma GCC system_header
 #endif
 
-#include <Eigen/Core>
+#include <algorithm>
 #include <ostream>
+
+#include <Eigen/Core>
+
 #include <pcl/pcl_macros.h>
 
 // Define all PCL point types
@@ -170,10 +173,10 @@ namespace pcl
   using Vector4fMap = Eigen::Map<Eigen::Vector4f, Eigen::Aligned>;
   using Vector4fMapConst = const Eigen::Map<const Eigen::Vector4f, Eigen::Aligned>;
 
-  using Vector3c = Eigen::Matrix<uint8_t, 3, 1>;
+  using Vector3c = Eigen::Matrix<std::uint8_t, 3, 1>;
   using Vector3cMap = Eigen::Map<Vector3c>;
   using Vector3cMapConst = const Eigen::Map<const Vector3c>;
-  using Vector4c = Eigen::Matrix<uint8_t, 4, 1>;
+  using Vector4c = Eigen::Matrix<std::uint8_t, 4, 1>;
   using Vector4cMap = Eigen::Map<Vector4c, Eigen::Aligned>;
   using Vector4cMapConst = const Eigen::Map<const Vector4c, Eigen::Aligned>;
 
@@ -229,14 +232,14 @@ namespace pcl
     { \
       struct \
       { \
-        uint8_t b; \
-        uint8_t g; \
-        uint8_t r; \
-        uint8_t a; \
+        std::uint8_t b; \
+        std::uint8_t g; \
+        std::uint8_t r; \
+        std::uint8_t a; \
       }; \
       float rgb; \
     }; \
-    uint32_t rgba; \
+    std::uint32_t rgba; \
   };
 
 #define PCL_ADD_EIGEN_MAPS_RGB \
@@ -246,10 +249,10 @@ namespace pcl
   inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); } \
   inline Eigen::Vector4i getRGBAVector4i () { return (Eigen::Vector4i (r, g, b, a)); } \
   inline const Eigen::Vector4i getRGBAVector4i () const { return (Eigen::Vector4i (r, g, b, a)); } \
-  inline pcl::Vector3cMap getBGRVector3cMap () { return (pcl::Vector3cMap (reinterpret_cast<uint8_t*> (&rgba))); } \
-  inline pcl::Vector3cMapConst getBGRVector3cMap () const { return (pcl::Vector3cMapConst (reinterpret_cast<const uint8_t*> (&rgba))); } \
-  inline pcl::Vector4cMap getBGRAVector4cMap () { return (pcl::Vector4cMap (reinterpret_cast<uint8_t*> (&rgba))); } \
-  inline pcl::Vector4cMapConst getBGRAVector4cMap () const { return (pcl::Vector4cMapConst (reinterpret_cast<const uint8_t*> (&rgba))); }
+  inline pcl::Vector3cMap getBGRVector3cMap () { return (pcl::Vector3cMap (reinterpret_cast<std::uint8_t*> (&rgba))); } \
+  inline pcl::Vector3cMapConst getBGRVector3cMap () const { return (pcl::Vector3cMapConst (reinterpret_cast<const std::uint8_t*> (&rgba))); } \
+  inline pcl::Vector4cMap getBGRAVector4cMap () { return (pcl::Vector4cMap (reinterpret_cast<std::uint8_t*> (&rgba))); } \
+  inline pcl::Vector4cMapConst getBGRAVector4cMap () const { return (pcl::Vector4cMapConst (reinterpret_cast<const std::uint8_t*> (&rgba))); }
 
 #define PCL_ADD_RGB \
   PCL_ADD_UNION_RGB \
@@ -264,13 +267,13 @@ namespace pcl
 #define PCL_ADD_INTENSITY_8U \
     struct \
     { \
-      uint8_t intensity; \
+      std::uint8_t intensity; \
     }; \
 
 #define PCL_ADD_INTENSITY_32U \
     struct \
     { \
-        uint32_t intensity; \
+        std::uint32_t intensity; \
     }; \
 
 
@@ -321,7 +324,7 @@ namespace pcl
   /** \brief A structure representing RGB color information.
     *
     * The RGBA information is available either as separate r, g, b, or as a
-    * packed uint32_t rgba value. To pack it, use:
+    * packed std::uint32_t rgba value. To pack it, use:
     *
     * \code
     * int rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);
@@ -331,9 +334,9 @@ namespace pcl
     *
     * \code
     * int rgb = ...;
-    * uint8_t r = (rgb >> 16) & 0x0000ff;
-    * uint8_t g = (rgb >> 8)  & 0x0000ff;
-    * uint8_t b = (rgb)     & 0x0000ff;
+    * std::uint8_t r = (rgb >> 16) & 0x0000ff;
+    * std::uint8_t g = (rgb >> 8)  & 0x0000ff;
+    * std::uint8_t b = (rgb)     & 0x0000ff;
     * \endcode
     *
     */
@@ -350,7 +353,7 @@ namespace pcl
       a = 255;
     }
 
-    inline RGB (uint8_t _r, uint8_t _g, uint8_t _b)
+    inline RGB (std::uint8_t _r, std::uint8_t _g, std::uint8_t _b)
     {
       r = _r;
       g = _g;
@@ -394,7 +397,7 @@ namespace pcl
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Intensity8u& p);
   /** \brief A point structure representing the grayscale intensity in single-channel images.
-    * Intensity is represented as a uint8_t value.
+    * Intensity is represented as a std::uint8_t value.
     * \ingroup common
     */
   struct Intensity8u: public _Intensity8u
@@ -426,7 +429,7 @@ namespace pcl
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Intensity32u& p);
   /** \brief A point structure representing the grayscale intensity in single-channel images.
-    * Intensity is represented as a uint32_t value.
+    * Intensity is represented as a std::uint32_t value.
     * \ingroup common
     */
   struct Intensity32u: public _Intensity32u
@@ -489,7 +492,7 @@ namespace pcl
   struct EIGEN_ALIGN16 _PointXYZL
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-    uint32_t label;
+    std::uint32_t label;
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -516,7 +519,7 @@ namespace pcl
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Label& p);
   struct Label
   {
-    uint32_t label;
+    std::uint32_t label;
   
     friend std::ostream& operator << (std::ostream& os, const Label& p);
   };
@@ -533,7 +536,7 @@ namespace pcl
   /** \brief A point structure representing Euclidean xyz coordinates, and the RGBA color.
     *
     * The RGBA information is available either as separate r, g, b, or as a
-    * packed uint32_t rgba value. To pack it, use:
+    * packed std::uint32_t rgba value. To pack it, use:
     *
     * \code
     * int rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);
@@ -543,9 +546,9 @@ namespace pcl
     *
     * \code
     * int rgb = ...;
-    * uint8_t r = (rgb >> 16) & 0x0000ff;
-    * uint8_t g = (rgb >> 8)  & 0x0000ff;
-    * uint8_t b = (rgb)     & 0x0000ff;
+    * std::uint8_t r = (rgb >> 16) & 0x0000ff;
+    * std::uint8_t g = (rgb >> 8)  & 0x0000ff;
+    * std::uint8_t b = (rgb)     & 0x0000ff;
     * \endcode
     *
     * \ingroup common
@@ -581,7 +584,7 @@ namespace pcl
   {
     PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     PCL_ADD_RGB;
-    uint32_t label;
+    std::uint32_t label;
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -596,8 +599,8 @@ namespace pcl
     *
     * \code
     * // pack r/g/b into rgb
-    * uint8_t r = 255, g = 0, b = 0;    // Example: Red color
-    * uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
+    * std::uint8_t r = 255, g = 0, b = 0;    // Example: Red color
+    * std::uint32_t rgb = ((std::uint32_t)r << 16 | (std::uint32_t)g << 8 | (std::uint32_t)b);
     * p.rgb = *reinterpret_cast<float*>(&rgb);
     * \endcode
     *
@@ -606,10 +609,10 @@ namespace pcl
     * \code
     * PointXYZRGB p;
     * // unpack rgb into r/g/b
-    * uint32_t rgb = *reinterpret_cast<int*>(&p.rgb);
-    * uint8_t r = (rgb >> 16) & 0x0000ff;
-    * uint8_t g = (rgb >> 8)  & 0x0000ff;
-    * uint8_t b = (rgb)       & 0x0000ff;
+    * std::uint32_t rgb = *reinterpret_cast<int*>(&p.rgb);
+    * std::uint8_t r = (rgb >> 16) & 0x0000ff;
+    * std::uint8_t g = (rgb >> 8)  & 0x0000ff;
+    * std::uint8_t b = (rgb)       & 0x0000ff;
     * \endcode
     *
     *
@@ -632,7 +635,7 @@ namespace pcl
       r = g = b = 0;
       a = 255;
     }
-    inline PointXYZRGB (uint8_t _r, uint8_t _g, uint8_t _b)
+    inline PointXYZRGB (std::uint8_t _r, std::uint8_t _g, std::uint8_t _b)
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
@@ -665,7 +668,7 @@ namespace pcl
       a = 255;
       label = 0;
     }
-    inline PointXYZRGBL (uint8_t _r, uint8_t _g, uint8_t _b, uint32_t _label)
+    inline PointXYZRGBL (std::uint8_t _r, std::uint8_t _g, std::uint8_t _b, std::uint32_t _label)
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
@@ -917,8 +920,8 @@ namespace pcl
     *
     * \code
     * // pack r/g/b into rgb
-    * uint8_t r = 255, g = 0, b = 0;    // Example: Red color
-    * uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
+    * std::uint8_t r = 255, g = 0, b = 0;    // Example: Red color
+    * std::uint32_t rgb = ((std::uint32_t)r << 16 | (std::uint32_t)g << 8 | (std::uint32_t)b);
     * p.rgb = *reinterpret_cast<float*>(&rgb);
     * \endcode
     *
@@ -927,10 +930,10 @@ namespace pcl
     * \code
     * PointXYZRGB p;
     * // unpack rgb into r/g/b
-    * uint32_t rgb = *reinterpret_cast<int*>(&p.rgb);
-    * uint8_t r = (rgb >> 16) & 0x0000ff;
-    * uint8_t g = (rgb >> 8)  & 0x0000ff;
-    * uint8_t b = (rgb)       & 0x0000ff;
+    * std::uint32_t rgb = *reinterpret_cast<int*>(&p.rgb);
+    * std::uint8_t r = (rgb >> 16) & 0x0000ff;
+    * std::uint8_t g = (rgb >> 8)  & 0x0000ff;
+    * std::uint8_t b = (rgb)       & 0x0000ff;
     * \endcode
     *
     *
@@ -1011,7 +1014,7 @@ namespace pcl
     {
       struct
       {
-        uint32_t label;
+        std::uint32_t label;
         float curvature;
       };
       float data_c[4];
@@ -1152,7 +1155,7 @@ namespace pcl
     */
   struct Boundary
   {
-    uint8_t boundary_point;
+    std::uint8_t boundary_point;
 
 #if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION <= 1101
     operator unsigned char() const
@@ -1346,14 +1349,14 @@ namespace pcl
   {
     inline ReferenceFrame (const _ReferenceFrame &p)
     {
-      for (int d = 0; d < 9; ++d)
-        rf[d] = p.rf[d];
+      std::copy_n(p.rf, 9, rf);
     }
 
     inline ReferenceFrame ()
     {
-      for (int d = 0; d < 3; ++d)
-        x_axis[d] = y_axis[d] = z_axis[d] = 0;
+      std::fill_n(x_axis, 3, 0);
+      std::fill_n(y_axis, 3, 0);
+      std::fill_n(z_axis, 3, 0);
     }
 
     friend std::ostream& operator << (std::ostream& os, const ReferenceFrame& p);
@@ -1685,13 +1688,16 @@ namespace pcl
   template <int N> std::ostream& 
   operator << (std::ostream& os, const Histogram<N>& p)
   {
-    for (int i = 0; i < N; ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < N-1 ? ", " : ")");
+    // make constexpr
+    if (N > 0)
+    {
+        os << "(" << p.histogram[0];
+        std::for_each(p.histogram + 1, std::end(p.histogram),
+            [&os](const auto& hist) { os << ", " << hist; });
+        os << ")";
+    }
     return (os);
   }
 } // End namespace
-
-// Preserve API for PCL users < 1.4
-#include <pcl/common/point_tests.h>
 
 #endif

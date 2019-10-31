@@ -48,7 +48,7 @@ template <typename PointT> bool
 pcl::io::LZFDepth16ImageReader::read (
     const std::string &filename, pcl::PointCloud<PointT> &cloud)
 {
-  uint32_t uncompressed_size;
+  std::uint32_t uncompressed_size;
   std::vector<char> compressed_data;
   if (!loadImageBlob (filename, compressed_data, uncompressed_size))
   {
@@ -79,9 +79,9 @@ pcl::io::LZFDepth16ImageReader::read (
   int depth_idx = 0, point_idx = 0;
   double constant_x = 1.0 / parameters_.focal_length_x,
          constant_y = 1.0 / parameters_.focal_length_y;
-  for (uint32_t v = 0; v < cloud.height; ++v)
+  for (std::uint32_t v = 0; v < cloud.height; ++v)
   {
-    for (uint32_t u = 0; u < cloud.width; ++u, ++point_idx, depth_idx += 2)
+    for (std::uint32_t u = 0; u < cloud.width; ++u, ++point_idx, depth_idx += 2)
     {
       PointT &pt = cloud.points[point_idx];
       unsigned short val;
@@ -114,7 +114,7 @@ pcl::io::LZFDepth16ImageReader::readOMP (const std::string &filename,
                                          pcl::PointCloud<PointT> &cloud, 
                                          unsigned int num_threads)
 {
-  uint32_t uncompressed_size;
+  std::uint32_t uncompressed_size;
   std::vector<char> compressed_data;
   if (!loadImageBlob (filename, compressed_data, uncompressed_size))
   {
@@ -194,7 +194,7 @@ template <typename PointT> bool
 pcl::io::LZFRGB24ImageReader::read (
     const std::string &filename, pcl::PointCloud<PointT> &cloud)
 {
-  uint32_t uncompressed_size;
+  std::uint32_t uncompressed_size;
   std::vector<char> compressed_data;
   if (!loadImageBlob (filename, compressed_data, uncompressed_size))
   {
@@ -227,7 +227,7 @@ pcl::io::LZFRGB24ImageReader::read (
   unsigned char *color_g = reinterpret_cast<unsigned char*> (&uncompressed_data[getWidth () * getHeight ()]);
   unsigned char *color_b = reinterpret_cast<unsigned char*> (&uncompressed_data[2 * getWidth () * getHeight ()]);
 
-  for (size_t i = 0; i < cloud.size (); ++i, ++rgb_idx)
+  for (std::size_t i = 0; i < cloud.size (); ++i, ++rgb_idx)
   {
     PointT &pt = cloud.points[i];
 
@@ -243,7 +243,7 @@ template <typename PointT> bool
 pcl::io::LZFRGB24ImageReader::readOMP (
     const std::string &filename, pcl::PointCloud<PointT> &cloud, unsigned int num_threads)
 {
-  uint32_t uncompressed_size;
+  std::uint32_t uncompressed_size;
   std::vector<char> compressed_data;
   if (!loadImageBlob (filename, compressed_data, uncompressed_size))
   {
@@ -296,7 +296,7 @@ template <typename PointT> bool
 pcl::io::LZFYUV422ImageReader::read (
     const std::string &filename, pcl::PointCloud<PointT> &cloud)
 {
-  uint32_t uncompressed_size;
+  std::uint32_t uncompressed_size;
   std::vector<char> compressed_data;
   if (!loadImageBlob (filename, compressed_data, uncompressed_size))
   {
@@ -354,7 +354,7 @@ template <typename PointT> bool
 pcl::io::LZFYUV422ImageReader::readOMP (
     const std::string &filename, pcl::PointCloud<PointT> &cloud, unsigned int num_threads)
 {
-  uint32_t uncompressed_size;
+  std::uint32_t uncompressed_size;
   std::vector<char> compressed_data;
   if (!loadImageBlob (filename, compressed_data, uncompressed_size))
   {
@@ -417,7 +417,7 @@ template <typename PointT> bool
 pcl::io::LZFBayer8ImageReader::read (
     const std::string &filename, pcl::PointCloud<PointT> &cloud)
 {
-  uint32_t uncompressed_size;
+  std::uint32_t uncompressed_size;
   std::vector<char> compressed_data;
   if (!loadImageBlob (filename, compressed_data, uncompressed_size))
   {
@@ -451,7 +451,7 @@ pcl::io::LZFBayer8ImageReader::read (
   cloud.height = getHeight ();
   cloud.resize (getWidth () * getHeight ());
   int rgb_idx = 0;
-  for (size_t i = 0; i < cloud.size (); ++i, rgb_idx += 3)
+  for (std::size_t i = 0; i < cloud.size (); ++i, rgb_idx += 3)
   {
     PointT &pt = cloud.points[i];
 
@@ -467,7 +467,7 @@ template <typename PointT> bool
 pcl::io::LZFBayer8ImageReader::readOMP (
     const std::string &filename, pcl::PointCloud<PointT> &cloud, unsigned int num_threads)
 {
-  uint32_t uncompressed_size;
+  std::uint32_t uncompressed_size;
   std::vector<char> compressed_data;
   if (!loadImageBlob (filename, compressed_data, uncompressed_size))
   {

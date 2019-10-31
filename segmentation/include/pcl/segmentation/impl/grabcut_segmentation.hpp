@@ -64,9 +64,9 @@ template <typename PointT>
 pcl::segmentation::grabcut::Color::operator PointT () const
 {
   PointT p;
-  p.r = static_cast<uint32_t> (r * 255);
-  p.g = static_cast<uint32_t> (g * 255);
-  p.b = static_cast<uint32_t> (b * 255);
+  p.r = static_cast<std::uint32_t> (r * 255);
+  p.g = static_cast<std::uint32_t> (g * 255);
+  p.b = static_cast<std::uint32_t> (b * 255);
   return (p);
 }
 
@@ -87,8 +87,8 @@ pcl::GrabCut<PointT>::initCompute ()
   }
 
   std::vector<pcl::PCLPointField> in_fields_;
-  if ((pcl::getFieldIndex<PointT> (*input_, "rgb", in_fields_) == -1) &&
-      (pcl::getFieldIndex<PointT> (*input_, "rgba", in_fields_) == -1))
+  if ((pcl::getFieldIndex<PointT> ("rgb", in_fields_) == -1) &&
+      (pcl::getFieldIndex<PointT> ("rgba", in_fields_) == -1))
   {
     PCL_ERROR ("[pcl::GrabCut::initCompute ()] No RGB data available, aborting!");
     return (false);
@@ -268,7 +268,7 @@ pcl::GrabCut<PointT>::initGraph ()
   graph_nodes_.clear ();
   graph_nodes_.resize (indices_->size ());
   int start = graph_.addNodes (indices_->size ());
-  for (size_t idx = 0; idx < indices_->size (); ++idx)
+  for (std::size_t idx = 0; idx < indices_->size (); ++idx)
   {
     graph_nodes_[idx] = start;
     ++start;

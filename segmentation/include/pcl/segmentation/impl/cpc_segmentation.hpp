@@ -83,9 +83,9 @@ pcl::CPCSegmentation<PointT>::segment ()
 }
 
 template <typename PointT> void
-pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
+pcl::CPCSegmentation<PointT>::applyCuttingPlane (std::uint32_t depth_levels_left)
 {
-  using SegLabel2ClusterMap = std::map<uint32_t, pcl::PointCloud<WeightSACPointType>::Ptr>;
+  using SegLabel2ClusterMap = std::map<std::uint32_t, pcl::PointCloud<WeightSACPointType>::Ptr>;
   
   pcl::console::print_info ("Cutting at level %d (maximum %d)\n", max_cuts_ - depth_levels_left + 1, max_cuts_);
   // stop if we reached the 0 level
@@ -94,17 +94,17 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
 
   pcl::IndicesPtr support_indices (new pcl::Indices);
   SegLabel2ClusterMap seg_to_edge_points_map;
-  std::map<uint32_t, std::vector<EdgeID> > seg_to_edgeIDs_map;
+  std::map<std::uint32_t, std::vector<EdgeID> > seg_to_edgeIDs_map;
   EdgeIterator edge_itr, edge_itr_end, next_edge;
   boost::tie (edge_itr, edge_itr_end) = boost::edges (sv_adjacency_list_);
   for (next_edge = edge_itr; edge_itr != edge_itr_end; edge_itr = next_edge)
   {
     next_edge++;  // next_edge iterator is necessary, because removing an edge invalidates the iterator to the current edge
-    uint32_t source_sv_label = sv_adjacency_list_[boost::source (*edge_itr, sv_adjacency_list_)];
-    uint32_t target_sv_label = sv_adjacency_list_[boost::target (*edge_itr, sv_adjacency_list_)];
+    std::uint32_t source_sv_label = sv_adjacency_list_[boost::source (*edge_itr, sv_adjacency_list_)];
+    std::uint32_t target_sv_label = sv_adjacency_list_[boost::target (*edge_itr, sv_adjacency_list_)];
 
-    uint32_t source_segment_label = sv_label_to_seg_label_map_[source_sv_label];
-    uint32_t target_segment_label = sv_label_to_seg_label_map_[target_sv_label];
+    std::uint32_t source_segment_label = sv_label_to_seg_label_map_[source_sv_label];
+    std::uint32_t target_segment_label = sv_label_to_seg_label_map_[target_sv_label];
 
     // do not process edges which already split two segments
     if (source_segment_label != target_segment_label)
@@ -244,8 +244,8 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (uint32_t depth_levels_left)
       if (use_clean_cutting_)
       {
         // skip edges where both centroids are on one side of the cutting plane
-        uint32_t source_sv_label = sv_adjacency_list_[boost::source (seg_to_edgeIDs_map[seg_to_edge_points.first][point_index], sv_adjacency_list_)];
-        uint32_t target_sv_label = sv_adjacency_list_[boost::target (seg_to_edgeIDs_map[seg_to_edge_points.first][point_index], sv_adjacency_list_)];
+        std::uint32_t source_sv_label = sv_adjacency_list_[boost::source (seg_to_edgeIDs_map[seg_to_edge_points.first][point_index], sv_adjacency_list_)];
+        std::uint32_t target_sv_label = sv_adjacency_list_[boost::target (seg_to_edgeIDs_map[seg_to_edge_points.first][point_index], sv_adjacency_list_)];
         // get centroids of vertices
         const pcl::PointXYZRGBA source_centroid = sv_label_to_supervoxel_map_[source_sv_label]->centroid_;
         const pcl::PointXYZRGBA target_centroid = sv_label_to_supervoxel_map_[target_sv_label]->centroid_;

@@ -328,18 +328,18 @@ int ON_UuidIndex::CompareIndex( const ON_UuidIndex* a, const ON_UuidIndex* b )
 ////{
 ////  RPC_STATUS rpc_status = 0;
 ////  ON_UUID a,b;
-////  size_t sz = sizeof(a);
+////  std::size_t sz = sizeof(a);
 ////  unsigned char* pa = (unsigned char*)&a;
 ////  unsigned char* pb = (unsigned char*)&b;
 ////  unsigned char u[10] = {0,1,3,63,64,65,127,128,129,255};
 ////  int x,y,z;
 ////  for ( int aa = 0; aa < 10; aa++ ) for ( int bb = 0; bb < 10; bb++ )
 ////  {
-////    for ( size_t i = 0; i < sz; i++ )
+////    for ( std::size_t i = 0; i < sz; i++ )
 ////    {
 ////      memset(pa,0,sz);
 ////      pa[i] = u[aa];
-////      for ( size_t j = 0; j < sz; j++ )
+////      for ( std::size_t j = 0; j < sz; j++ )
 ////      {
 ////        memset(pb,0,sz);
 ////        pb[j] = u[bb];

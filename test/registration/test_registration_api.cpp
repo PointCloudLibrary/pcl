@@ -58,6 +58,7 @@
 #include <pcl/registration/transformation_estimation_dual_quaternion.h>
 #include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
 #include <pcl/registration/transformation_estimation_point_to_plane.h>
+#include <pcl/registration/transformation_estimation_symmetric_point_to_plane_lls.h>
 #include <pcl/features/normal_3d.h>
 
 #include "test_registration_api_data.h"
@@ -401,7 +402,7 @@ TEST (PCL, TransformationEstimationSVD)
   // Check if the estimation with correspondences gives the same results
   Eigen::Matrix4f T_SVD_2;
   pcl::Correspondences corr; corr.reserve (source->size ());
-  for (size_t i=0; i<source->size (); ++i) corr.push_back (pcl::Correspondence (i, i, 0.f));
+  for (std::size_t i=0; i<source->size (); ++i) corr.push_back (pcl::Correspondence (i, i, 0.f));
   trans_est_svd.estimateRigidTransformation(*source, *target, corr, T_SVD_2);
 
   const Eigen::Quaternionf   R_SVD_2 (T_SVD_2.topLeftCorner  <3, 3> ());
@@ -444,7 +445,7 @@ TEST (PCL, TransformationEstimationDualQuaternion)
   // Check if the estimation with correspondences gives the same results
   Eigen::Matrix4f T_DQ_2;
   pcl::Correspondences corr; corr.reserve (source->size ());
-  for (size_t i=0; i<source->size (); ++i) corr.push_back (pcl::Correspondence (i, i, 0.f));
+  for (std::size_t i=0; i<source->size (); ++i) corr.push_back (pcl::Correspondence (i, i, 0.f));
   trans_est_dual_quaternion.estimateRigidTransformation(*source, *target, corr, T_DQ_2);
 
   const Eigen::Quaternionf   R_DQ_2 (T_DQ_2.topLeftCorner  <3, 3> ());
@@ -490,7 +491,7 @@ TEST (PCL, TransformationEstimationPointToPlaneLLS)
 
       src->points.push_back (p);
     }
-  src->width = static_cast<uint32_t> (src->points.size ());
+  src->width = static_cast<std::uint32_t> (src->points.size ());
 
   // Create a test matrix
   Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
@@ -539,7 +540,7 @@ TEST (PCL, TransformationEstimationLM)
   Eigen::Matrix4f T_LM_2_float;
   pcl::Correspondences corr;
   corr.reserve (source->size ());
-  for (size_t i = 0; i < source->size (); ++i)
+  for (std::size_t i = 0; i < source->size (); ++i)
     corr.push_back (pcl::Correspondence (i, i, 0.f));
   trans_est_lm_float.estimateRigidTransformation (*source, *target, corr, T_LM_2_float);
 
@@ -577,7 +578,7 @@ TEST (PCL, TransformationEstimationLM)
   Eigen::Matrix4d T_LM_2_double;
   corr.clear ();
   corr.reserve (source->size ());
-  for (size_t i = 0; i < source->size (); ++i)
+  for (std::size_t i = 0; i < source->size (); ++i)
     corr.push_back (pcl::Correspondence (i, i, 0.f));
   trans_est_lm_double.estimateRigidTransformation (*source, *target, corr, T_LM_2_double);
 
@@ -624,7 +625,7 @@ TEST (PCL, TransformationEstimationPointToPlane)
 
       src->points.push_back (p);
     }
-  src->width = static_cast<uint32_t> (src->points.size ());
+  src->width = static_cast<std::uint32_t> (src->points.size ());
 
   // Create a test matrix
   Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
@@ -655,6 +656,57 @@ TEST (PCL, TransformationEstimationPointToPlane)
       EXPECT_NEAR (estimated_transform_double (i, j), ground_truth_tform (i, j), 1e-3);
 }
 
+TEST (PCL, TransformationEstimationSymmetricPointToPlaneLLS)
+{
+  pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<pcl::PointNormal, pcl::PointNormal> transform_estimator;
+
+  // Create a test cloud
+  pcl::PointCloud<pcl::PointNormal>::Ptr src (new pcl::PointCloud<pcl::PointNormal>);
+  src->height = 1;
+  src->is_dense = true;
+  for (float x = -5.0f; x <= 5.0f; x += 0.5f)
+    for (float y = -5.0f; y <= 5.0f; y += 0.5f)
+    {
+      pcl::PointNormal p;
+      p.x = x;
+      p.y = y;
+      p.z = 0.1f * powf (x, 2.0f) + 0.2f * p.x * p.y - 0.3f * y + 1.0f;
+      float & nx = p.normal[0];
+      float & ny = p.normal[1];
+      float & nz = p.normal[2];
+      nx = -0.2f * p.x - 0.2f;
+      ny = 0.6f * p.y - 0.2f;
+      nz = 1.0f;
+
+      float magnitude = std::sqrt (nx * nx + ny * ny + nz * nz);
+      nx /= magnitude;
+      ny /= magnitude;
+      nz /= magnitude;
+
+      src->points.push_back (p);
+    }
+  src->width = static_cast<std::uint32_t> (src->points.size ());
+
+  // Create a test matrix
+  // (alpha, beta, gamma) = (-0.0180524, 0.0525268, -0.0999635)
+  // (tx, ty, tz) = (0.0911343, -0.207119, 0.294305)
+  Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
+  ground_truth_tform.row (0) <<  0.9938f,  0.0988f,  0.0517f,  0.1000f;
+  ground_truth_tform.row (1) << -0.0997f,  0.9949f,  0.0149f, -0.2000f;
+  ground_truth_tform.row (2) << -0.0500f, -0.0200f,  0.9986f,  0.3000f;
+  ground_truth_tform.row (3) <<  0.0000f,  0.0000f,  0.0000f,  1.0000f;
+
+  pcl::PointCloud<pcl::PointNormal>::Ptr tgt (new pcl::PointCloud<pcl::PointNormal>);
+
+  pcl::transformPointCloudWithNormals (*src, *tgt, ground_truth_tform);
+
+  Eigen::Matrix4f estimated_transform;
+  transform_estimator.estimateRigidTransformation (*src, *tgt, estimated_transform);
+
+  for (int i = 0; i < 4; ++i)
+    for (int j = 0; j < 4; ++j)
+      EXPECT_NEAR (estimated_transform (i, j), ground_truth_tform (i, j), 1e-2);
+}
 
 
 /* ---[ */
@@ -683,7 +735,7 @@ main (int argc, char** argv)
   return (RUN_ALL_TESTS ());
 
   // Tranpose the cloud_model
-  /*for (size_t i = 0; i < cloud_model.points.size (); ++i)
+  /*for (std::size_t i = 0; i < cloud_model.points.size (); ++i)
   {
   //  cloud_model.points[i].z += 1;
   }*/

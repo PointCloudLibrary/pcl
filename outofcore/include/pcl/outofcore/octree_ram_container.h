@@ -75,14 +75,14 @@ namespace pcl
           * \param[in] count - the maximum offset from start of points inserted 
           */
         void
-        insertRange (const PointT* start, const uint64_t count);
+        insertRange (const PointT* start, const std::uint64_t count);
 
         /** \brief inserts count points into container 
           * \param[in] start - address of first point in array
           * \param[in] count - the maximum offset from start of points inserted 
           */
         void
-        insertRange (const PointT* const * start, const uint64_t count);
+        insertRange (const PointT* const * start, const std::uint64_t count);
 
         void
         insertRange (AlignedPointTVector& /*p*/)
@@ -103,7 +103,7 @@ namespace pcl
           * \param[out] v Array of points read from the input range
           */
         void
-        readRange (const uint64_t start, const uint64_t count, AlignedPointTVector &v);
+        readRange (const std::uint64_t start, const std::uint64_t count, AlignedPointTVector &v);
 
         /** \brief grab percent*count random points. points are NOT
           *   guaranteed to be unique (could have multiple identical points!)
@@ -115,10 +115,10 @@ namespace pcl
           * points from given input rangerange
           */
         void
-        readRangeSubSample (const uint64_t start, const uint64_t count, const double percent, AlignedPointTVector &v);
+        readRangeSubSample (const std::uint64_t start, const std::uint64_t count, const double percent, AlignedPointTVector &v);
 
         /** \brief returns the size of the vector of points stored in this class */
-        inline uint64_t
+        inline std::uint64_t
         size () const
         {
           return container_.size ();
@@ -146,7 +146,7 @@ namespace pcl
         convertToXYZ (const boost::filesystem::path &path);
 
         inline PointT
-        operator[] (uint64_t index) const
+        operator[] (std::uint64_t index) const
         {
           assert ( index < container_.size () );
           return ( container_[index] );

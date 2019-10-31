@@ -214,10 +214,10 @@ namespace pcl
       inline float
       round (float d)
       {
-        return static_cast<float> (floor (d + 0.5f));
+        return static_cast<float> (std::floor (d + 0.5f));
       }
 
-      // We use round here instead of floor due to some numerical issues.
+      // We use round here instead of std::floor due to some numerical issues.
       /** \brief Returns the corresponding (i,j,k) coordinates in the grid of point (x,y,z). 
         * \param[in] x the X point coordinate to get the (i, j, k) index at
         * \param[in] y the Y point coordinate to get the (i, j, k) index at

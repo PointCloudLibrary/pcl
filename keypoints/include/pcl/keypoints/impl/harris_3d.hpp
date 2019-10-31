@@ -268,7 +268,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     output = *response;
     // we do not change the denseness in this case
     output.is_dense = input_->is_dense;
-    for (size_t i = 0; i < response->size (); ++i)
+    for (std::size_t i = 0; i < response->size (); ++i)
       keypoints_indices_->indices.push_back (i);
   }
   else
@@ -312,7 +312,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
       refineCorners (output);
 
     output.height = 1;
-    output.width = static_cast<uint32_t> (output.points.size());
+    output.width = static_cast<std::uint32_t> (output.points.size());
     output.is_dense = true;
   }
 }
@@ -437,7 +437,7 @@ template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseCurvature (PointCloudOut &output) const
 {
   PointOutT point;
-  for (size_t idx = 0; idx < input_->points.size(); ++idx)
+  for (std::size_t idx = 0; idx < input_->points.size(); ++idx)
   {
     point.x = input_->points[idx].x;
     point.y = input_->points[idx].y;

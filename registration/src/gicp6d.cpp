@@ -115,7 +115,7 @@ namespace pcl
   {
     out.resize (in.size ());
 
-    for (size_t i = 0; i < in.size (); ++i)
+    for (std::size_t i = 0; i < in.size (); ++i)
     {
       out[i].x = in[i].x;
       out[i].y = in[i].y;
@@ -185,7 +185,7 @@ namespace pcl
     // Difference between consecutive transforms
     double delta = 0;
     // Get the size of the target
-    const size_t N = indices_->size ();
+    const std::size_t N = indices_->size ();
 
     // Set the mahalanobis matrices to identity
     mahalanobis_.resize (N, Eigen::Matrix3d::Identity ());
@@ -213,21 +213,21 @@ namespace pcl
 
     while (!converged_)
     {
-      size_t cnt = 0;
+      std::size_t cnt = 0;
       std::vector<int> source_indices (indices_->size ());
       std::vector<int> target_indices (indices_->size ());
 
       // guess corresponds to base_t and transformation_ to t
       Eigen::Matrix4d transform_R = Eigen::Matrix4d::Zero ();
-      for (size_t i = 0; i < 4; i++)
-        for (size_t j = 0; j < 4; j++)
-          for (size_t k = 0; k < 4; k++)
+      for (std::size_t i = 0; i < 4; i++)
+        for (std::size_t j = 0; j < 4; j++)
+          for (std::size_t k = 0; k < 4; k++)
             transform_R (i, j) += double (transformation_ (i, k))
                 * double (guess (k, j));
 
       Eigen::Matrix3d R = transform_R.topLeftCorner<3, 3> ();
 
-      for (size_t i = 0; i < N; i++)
+      for (std::size_t i = 0; i < N; i++)
       {
         // MODIFICATION: take point from the CIELAB cloud instead
         PointXYZLAB query = (*cloud_lab_)[i];

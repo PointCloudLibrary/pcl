@@ -135,13 +135,13 @@ namespace pcl
   
       /** \brief Get cloud (in ROS form) at a particular location */
       bool
-      getCloudAt (size_t idx, 
+      getCloudAt (std::size_t idx, 
                   pcl::PCLPointCloud2 &blob,
                   Eigen::Vector4f &origin, 
                   Eigen::Quaternionf &orientation) const;
 
       /** \brief Returns the size */
-      size_t
+      std::size_t
       numFrames () const;
 
     private:
@@ -171,10 +171,10 @@ namespace pcl
     
       // Inherited from FileGrabber
       const typename pcl::PointCloud<PointT>::ConstPtr
-      operator[] (size_t idx) const override;
+      operator[] (std::size_t idx) const override;
 
       // Inherited from FileGrabber
-      size_t
+      std::size_t
       size () const override;
     protected:
 
@@ -221,7 +221,7 @@ namespace pcl
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename PointT> const typename pcl::PointCloud<PointT>::ConstPtr
-  PCDGrabber<PointT>::operator[] (size_t idx) const
+  PCDGrabber<PointT>::operator[] (std::size_t idx) const
   {
     pcl::PCLPointCloud2 blob;
     Eigen::Vector4f origin;
@@ -235,7 +235,7 @@ namespace pcl
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename PointT> size_t
+  template <typename PointT> std::size_t
   PCDGrabber<PointT>::size () const
   {
     return (numFrames ());
@@ -262,9 +262,9 @@ namespace pcl
     boost::shared_ptr<xn::DepthMetaData> depth_meta_data (new xn::DepthMetaData);
     depth_meta_data->AllocateData (cloud->width, cloud->height);
     XnDepthPixel* depth_map = depth_meta_data->WritableData ();
-    uint32_t k = 0;
-    for (uint32_t i = 0; i < cloud->height; ++i)
-      for (uint32_t j = 0; j < cloud->width; ++j)
+    std::uint32_t k = 0;
+    for (std::uint32_t i = 0; i < cloud->height; ++i)
+      for (std::uint32_t j = 0; j < cloud->width; ++j)
       {
         depth_map[k] = static_cast<XnDepthPixel> ((*cloud)[k].z * 1000);
         ++k;
@@ -276,9 +276,9 @@ namespace pcl
 
     // ---[ RGB special case
     std::vector<pcl::PCLPointField> fields;
-    int rgba_index = pcl::getFieldIndex (*cloud, "rgb", fields);
+    int rgba_index = pcl::getFieldIndex<PointT> ("rgb", fields);
     if (rgba_index == -1)
-      rgba_index = pcl::getFieldIndex (*cloud, "rgba", fields);
+      rgba_index = pcl::getFieldIndex<PointT> ("rgba", fields);
     if (rgba_index >= 0)
     {
       rgba_index = fields[rgba_index].offset;
@@ -287,9 +287,9 @@ namespace pcl
       image_meta_data->AllocateData (cloud->width, cloud->height, XN_PIXEL_FORMAT_RGB24);
       XnRGB24Pixel* image_map = image_meta_data->WritableRGB24Data ();
       k = 0;
-      for (uint32_t i = 0; i < cloud->height; ++i)
+      for (std::uint32_t i = 0; i < cloud->height; ++i)
       {
-        for (uint32_t j = 0; j < cloud->width; ++j)
+        for (std::uint32_t j = 0; j < cloud->width; ++j)
         {
           // Fill r/g/b data, assuming that the order is BGRA
           pcl::RGB rgb;

@@ -56,9 +56,8 @@ pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
     extract_removed_indices_ = temp;
     copyPointCloud (*input_, output);
     // Get X, Y, Z fields
-    std::vector<pcl::PCLPointField> fields;
-    pcl::getFields (*input_, fields);
-    std::vector<size_t> offsets;
+    const auto fields = pcl::getFields<PointT> ();
+    std::vector<std::size_t> offsets;
     for (const auto &field : fields)
     {
       if (field.name == "x" ||
@@ -68,9 +67,9 @@ pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
     }
     // For every "removed" point, set the x,y,z fields to user_filter_value_
     const static float user_filter_value = user_filter_value_;
-    for (size_t rii = 0; rii < removed_indices_->size (); ++rii)
+    for (std::size_t rii = 0; rii < removed_indices_->size (); ++rii)
     {
-      uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output[(*removed_indices_)[rii]]);
+      std::uint8_t* pt_data = reinterpret_cast<std::uint8_t*> (&output[(*removed_indices_)[rii]]);
       for (const unsigned long &offset : offsets)
       {
         memcpy (pt_data + offset, &user_filter_value, sizeof (float));
@@ -92,8 +91,8 @@ template<typename PointT>
 void
 pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
 {
-  size_t N = indices_->size ();  
-  size_t sample_size = negative_ ? N - sample_ : sample_;
+  std::size_t N = indices_->size ();  
+  std::size_t sample_size = negative_ ? N - sample_ : sample_;
   // If sample size is 0 or if the sample size is greater then input cloud size
   //   then return all indices
   if (sample_size >= N)
@@ -112,12 +111,12 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
     std::srand (seed_);
 
     // Algorithm S
-    size_t i = 0;
-    size_t index = 0;
+    std::size_t i = 0;
+    std::size_t index = 0;
     std::vector<bool> added;
     if (extract_removed_indices_)
       added.resize (indices_->size (), false);
-    size_t n = sample_size;
+    std::size_t n = sample_size;
     while (n > 0)
     {
       // Step 1: [Generate U.] Generate a random variate U that is uniformly distributed between 0 and 1.
@@ -141,8 +140,8 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
     // Now populate removed_indices_ appropriately
     if (extract_removed_indices_)
     {
-      size_t ri = 0;
-      for (size_t i = 0; i < added.size (); i++)
+      std::size_t ri = 0;
+      for (std::size_t i = 0; i < added.size (); i++)
       {
         if (!added[i])
         {

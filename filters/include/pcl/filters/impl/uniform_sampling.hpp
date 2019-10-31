@@ -62,12 +62,12 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
   pcl::getMinMax3D<PointT>(*input_, min_p, max_p);
 
   // Compute the minimum and maximum bounding box values
-  min_b_[0] = static_cast<int> (floor (min_p[0] * inverse_leaf_size_[0]));
-  max_b_[0] = static_cast<int> (floor (max_p[0] * inverse_leaf_size_[0]));
-  min_b_[1] = static_cast<int> (floor (min_p[1] * inverse_leaf_size_[1]));
-  max_b_[1] = static_cast<int> (floor (max_p[1] * inverse_leaf_size_[1]));
-  min_b_[2] = static_cast<int> (floor (min_p[2] * inverse_leaf_size_[2]));
-  max_b_[2] = static_cast<int> (floor (max_p[2] * inverse_leaf_size_[2]));
+  min_b_[0] = static_cast<int> (std::floor (min_p[0] * inverse_leaf_size_[0]));
+  max_b_[0] = static_cast<int> (std::floor (max_p[0] * inverse_leaf_size_[0]));
+  min_b_[1] = static_cast<int> (std::floor (min_p[1] * inverse_leaf_size_[1]));
+  max_b_[1] = static_cast<int> (std::floor (max_p[1] * inverse_leaf_size_[1]));
+  min_b_[2] = static_cast<int> (std::floor (min_p[2] * inverse_leaf_size_[2]));
+  max_b_[2] = static_cast<int> (std::floor (max_p[2] * inverse_leaf_size_[2]));
 
   // Compute the number of divisions needed along all axis
   div_b_ = max_b_ - min_b_ + Eigen::Vector4i::Ones ();
@@ -79,9 +79,9 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
   // Set up the division multiplier
   divb_mul_ = Eigen::Vector4i (1, div_b_[0], div_b_[0] * div_b_[1], 0);
 
-  Filter<PointT>::removed_indices_->clear();
+  removed_indices_->clear();
   // First pass: build a set of leaves with the point index closest to the leaf center
-  for (size_t cp = 0; cp < indices_->size (); ++cp)
+  for (std::size_t cp = 0; cp < indices_->size (); ++cp)
   {
     if (!input_->is_dense)
     {
@@ -90,18 +90,16 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
           !std::isfinite (input_->points[(*indices_)[cp]].y) || 
           !std::isfinite (input_->points[(*indices_)[cp]].z))
       {
-        if (Filter<PointT>::extract_removed_indices_)
-        {
-          Filter<PointT>::removed_indices_->push_back ((*indices_)[cp]);
-        }
+        if (extract_removed_indices_)
+          removed_indices_->push_back ((*indices_)[cp]);
         continue;
       }
     }
 
     Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
-    ijk[0] = static_cast<int> (floor (input_->points[(*indices_)[cp]].x * inverse_leaf_size_[0]));
-    ijk[1] = static_cast<int> (floor (input_->points[(*indices_)[cp]].y * inverse_leaf_size_[1]));
-    ijk[2] = static_cast<int> (floor (input_->points[(*indices_)[cp]].z * inverse_leaf_size_[2]));
+    ijk[0] = static_cast<int> (std::floor (input_->points[(*indices_)[cp]].x * inverse_leaf_size_[0]));
+    ijk[1] = static_cast<int> (std::floor (input_->points[(*indices_)[cp]].y * inverse_leaf_size_[1]));
+    ijk[2] = static_cast<int> (std::floor (input_->points[(*indices_)[cp]].z * inverse_leaf_size_[2]));
 
     // Compute the leaf index
     int idx = (ijk - min_b_).dot (divb_mul_);
@@ -120,12 +118,14 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
     // If current point is closer, copy its index instead
     if (diff_cur < diff_prev)
     {
-      if (Filter<PointT>::extract_removed_indices_)
-      {
-        Filter<PointT>::removed_indices_->push_back (leaf.idx);
-      }
-
+      if (extract_removed_indices_)
+        removed_indices_->push_back (leaf.idx);
       leaf.idx = (*indices_)[cp];
+    }
+    else
+    {
+      if (extract_removed_indices_)
+        removed_indices_->push_back ((*indices_)[cp]);
     }
   }
 
@@ -135,7 +135,7 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
 
   for (const auto& leaf : leaves_)
     output.points[cp++] = input_->points[leaf.second.idx];
-  output.width = static_cast<uint32_t> (output.points.size ());
+  output.width = static_cast<std::uint32_t> (output.points.size ());
 }
 
 #define PCL_INSTANTIATE_UniformSampling(T) template class PCL_EXPORTS pcl::UniformSampling<T>;

@@ -57,7 +57,7 @@ pcl::NormalEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &outpu
   if (input_->is_dense)
   {
     // Iterating over the entire index vector
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
     {
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0 ||
           !computePointNormal (*surface_, nn_indices, output.points[idx].normal[0], output.points[idx].normal[1], output.points[idx].normal[2], output.points[idx].curvature))
@@ -76,7 +76,7 @@ pcl::NormalEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &outpu
   else
   {
     // Iterating over the entire index vector
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
     {
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0 ||

@@ -144,7 +144,7 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
  
   output.is_dense = true;
   // Iterating over the entire index vector
-  for (size_t idx = 0; idx < indices_->size (); ++idx)
+  for (std::size_t idx = 0; idx < indices_->size (); ++idx)
   {
     // Find neighbors within the search radius
     // TODO: do we want to use searchForNeigbors instead?
@@ -161,7 +161,7 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
     computeIntensitySpinImage (*surface_, static_cast<float> (search_radius_), sigma_, k, nn_indices, nn_dist_sqr, intensity_spin_image);
 
     // Copy into the resultant cloud
-    size_t bin = 0;
+    std::size_t bin = 0;
     for (Eigen::Index bin_j = 0; bin_j < intensity_spin_image.cols (); ++bin_j)
       for (Eigen::Index bin_i = 0; bin_i < intensity_spin_image.rows (); ++bin_i)
         output.points[idx].histogram[bin++] = intensity_spin_image (bin_i, bin_j);

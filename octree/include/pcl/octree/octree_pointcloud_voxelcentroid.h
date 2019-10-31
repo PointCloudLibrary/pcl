@@ -210,7 +210,7 @@ namespace pcl
           * \param[out] voxel_centroid_list_arg results are written to this vector of PointT elements
           * \return number of occupied voxels
           */
-        size_t
+        std::size_t
         getVoxelCentroids (typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::AlignedPointTVector &voxel_centroid_list_arg) const;
 
         /** \brief Recursively explore the octree and output a PointT vector of centroids for all occupied voxels.

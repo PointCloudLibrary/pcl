@@ -25,7 +25,7 @@ ON_CurveOnSurface::ON_CurveOnSurface( ON_Curve* c2, ON_Curve* c3, ON_Surface* s 
                  : m_c2(c2), m_c3(c3), m_s(s)
 {}
 
-ON_CurveOnSurface::ON_CurveOnSurface( const ON_CurveOnSurface& src ) : m_c2(0), m_c3(0), m_s(0)
+ON_CurveOnSurface::ON_CurveOnSurface( const ON_CurveOnSurface& src ) : ON_Curve(src), m_c2(0), m_c3(0), m_s(0)
 {
   *this = src;
 }
@@ -89,7 +89,7 @@ ON_CurveOnSurface::~ON_CurveOnSurface()
 }
 
 ON_BOOL32
-ON_CurveOnSurface::IsValid( ON_TextLog* text_log ) const
+ON_CurveOnSurface::IsValid( ON_TextLog* ) const
 {
   if ( !m_c2 )
     return false;
@@ -280,9 +280,9 @@ ON_CurveOnSurface::IsArc( // true if curve locus in an arc or circle
 
 ON_BOOL32
 ON_CurveOnSurface::IsPlanar(
-      ON_Plane* plane, // if not NULL and true is returned, then plane parameters
+      ON_Plane*, // plane if not NULL and true is returned, then plane parameters
                          // are filled in
-      double tolerance // tolerance to use when checking linearity
+      double // tolerance to use when checking linearity
       ) const
 {
   return ( ON_PlaneSurface::Cast(m_s) ) ? true : false;
@@ -290,8 +290,8 @@ ON_CurveOnSurface::IsPlanar(
 
 ON_BOOL32
 ON_CurveOnSurface::IsInPlane(
-      const ON_Plane& plane, // plane to test
-      double tolerance // tolerance to use when checking linearity
+      const ON_Plane&, // plane to test
+      double // tolerance to use when checking linearity
       ) const
 {
   return false;
@@ -428,9 +428,9 @@ ON_CurveOnSurface::GetNurbForm( // returns 0: unable to create NURBS representat
                  //            curve's parameterization and the NURBS
                  //            parameterization may not match to the 
                  //            desired accuracy.
-      ON_NurbsCurve& nurbs,
-      double tolerance,  // (>=0)
-      const ON_Interval* subdomain  // OPTIONAL subdomain of 2d curve
+      ON_NurbsCurve&,  // nurbs
+      double,  // tolerance (>=0)
+      const ON_Interval*  // OPTIONAL subdomain of 2d curve
       ) const
 {
   ON_ERROR("TODO - finish ON_CurveOnSurface::GetNurbForm().");

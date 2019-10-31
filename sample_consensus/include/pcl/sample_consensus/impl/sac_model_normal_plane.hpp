@@ -71,7 +71,7 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::selectWithinDistance (
   error_sqr_dists_.resize (indices_->size ());
 
   // Iterate through the 3d points and calculate the distances from them to the plane
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     const PointT  &pt = input_->points[(*indices_)[i]];
     const PointNT &nt = normals_->points[(*indices_)[i]];
@@ -123,7 +123,7 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::countWithinDistance (
   int nr_p = 0;
 
   // Iterate through the 3d points and calculate the distances from them to the plane
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     const PointT  &pt = input_->points[(*indices_)[i]];
     const PointNT &nt = normals_->points[(*indices_)[i]];
@@ -171,7 +171,7 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::getDistancesToModel (
   distances.resize (indices_->size ());
 
   // Iterate through the 3d points and calculate the distances from them to the plane
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     const PointT  &pt = input_->points[(*indices_)[i]];
     const PointNT &nt = normals_->points[(*indices_)[i]];

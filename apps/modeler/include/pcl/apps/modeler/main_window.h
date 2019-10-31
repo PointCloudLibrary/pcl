@@ -137,7 +137,7 @@ namespace pcl
         // shortcuts for recent point clouds/projects
         QStringList                       recent_files_;
         QStringList                       recent_projects_;
-        static const size_t               MAX_RECENT_NUMBER = 8;
+        static const std::size_t               MAX_RECENT_NUMBER = 8;
         std::vector<boost::shared_ptr<QAction> >  recent_pointcloud_actions_;
         std::vector<boost::shared_ptr<QAction> >  recent_project_actions_;
     };

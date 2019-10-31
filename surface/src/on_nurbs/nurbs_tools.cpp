@@ -89,9 +89,9 @@ NurbsTools::getClosestPoint (const Eigen::Vector2d &p, const vector_vec2d &data)
   if (data.empty ())
     throw std::runtime_error ("[NurbsTools::getClosestPoint(2d)] Data empty.\n");
 
-  size_t idx = 0;
+  std::size_t idx = 0;
   double dist2 (DBL_MAX);
-  for (size_t i = 0; i < data.size (); i++)
+  for (std::size_t i = 0; i < data.size (); i++)
   {
     double d2 = (data[i] - p).squaredNorm ();
     if (d2 < dist2)
@@ -109,9 +109,9 @@ NurbsTools::getClosestPoint (const Eigen::Vector3d &p, const vector_vec3d &data)
   if (data.empty ())
     throw std::runtime_error ("[NurbsTools::getClosestPoint(2d)] Data empty.\n");
 
-  size_t idx = 0;
+  std::size_t idx = 0;
   double dist2 (DBL_MAX);
-  for (size_t i = 0; i < data.size (); i++)
+  for (std::size_t i = 0; i < data.size (); i++)
   {
     double d2 = (data[i] - p).squaredNorm ();
     if (d2 < dist2)
@@ -130,11 +130,11 @@ NurbsTools::getClosestPoint (const Eigen::Vector2d &p, const Eigen::Vector2d &di
   if (data.empty ())
     throw std::runtime_error ("[NurbsTools::getClosestPoint(2d)] Data empty.\n");
 
-  size_t idx = 0;
+  std::size_t idx = 0;
   idxcp = 0;
   double dist2 (0.0);
   double dist2cp (DBL_MAX);
-  for (size_t i = 0; i < data.size (); i++)
+  for (std::size_t i = 0; i < data.size (); i++)
   {
     Eigen::Vector2d v = (data[i] - p);
     double d2 = v.squaredNorm ();
@@ -179,10 +179,10 @@ NurbsTools::computeMean (const vector_vec2d &data)
 {
   Eigen::Vector2d u (0.0, 0.0);
 
-  size_t s = data.size ();
+  std::size_t s = data.size ();
   double ds = 1.0 / double (s);
 
-  for (size_t i = 0; i < s; i++)
+  for (std::size_t i = 0; i < s; i++)
     u += (data[i] * ds);
 
   return u;
@@ -193,10 +193,10 @@ NurbsTools::computeVariance (const Eigen::Vector3d &mean, const vector_vec3d &da
 {
   Eigen::Vector3d var (0.0, 0.0, 0.0);
 
-  size_t s = data.size ();
+  std::size_t s = data.size ();
   double ds = 1.0 / double (s);
 
-  for (size_t i = 0; i < s; i++)
+  for (std::size_t i = 0; i < s; i++)
   {
     Eigen::Vector3d v = data[i] - mean;
     var += Eigen::Vector3d (v (0) * v (0) * ds, v (1) * v (1) * ds, v (2) * v (2) * ds);
@@ -210,10 +210,10 @@ NurbsTools::computeVariance (const Eigen::Vector2d &mean, const vector_vec2d &da
 {
   Eigen::Vector2d var (0.0, 0.0);
 
-  size_t s = data.size ();
+  std::size_t s = data.size ();
   double ds = 1.0 / double (s);
 
-  for (size_t i = 0; i < s; i++)
+  for (std::size_t i = 0; i < s; i++)
   {
     Eigen::Vector2d v = data[i] - mean;
     var += Eigen::Vector2d (v (0) * v (0) * ds, v (1) * v (1) * ds);

@@ -75,7 +75,7 @@ void ON_TextExtra::SetDefaults()
   m_border_offset = 0.1;
 }
 
-void ON_TextExtra::Dump( ON_TextLog& text_log ) const
+void ON_TextExtra::Dump( ON_TextLog& ) const
 {
   // do nothing
 }
@@ -278,7 +278,7 @@ void ON_DimensionExtra::SetDefaults()
   m_modelspace_basepoint = ON_origin;
 }
 
-void ON_DimensionExtra::Dump( ON_TextLog& text_log ) const
+void ON_DimensionExtra::Dump( ON_TextLog& ) const
 {
   // do nothing
 }
@@ -3081,7 +3081,7 @@ ON_AngularDimension2Extra::~ON_AngularDimension2Extra()
 {
 }
 
-void ON_AngularDimension2Extra::Dump( ON_TextLog& text_log ) const
+void ON_AngularDimension2Extra::Dump( ON_TextLog& ) const
 {
   // do nothing
 }
@@ -5820,13 +5820,14 @@ void ON_Annotation2Text::SetText(const wchar_t* s)
 
 // SDKBREAK Oct 30, 07 - LW
 // This function should not be used any longer
+[[deprecated("Use the version that takes a model transform argument")]]
 bool ON_Annotation2::GetTextXform( 
-      ON_RECT gdi_text_rect,
-      const ON_Font& font,
-      const ON_DimStyle& dimstyle,
-      double dimscale,
-      const ON_Viewport* vp,
-      ON_Xform& xform
+      ON_RECT /*gdi_text_rect*/,
+      const ON_Font& /*font*/,
+      const ON_DimStyle& /*dimstyle*/,
+      double /*dimscale*/,
+      const ON_Viewport* /*vp*/,
+      ON_Xform& /*xform*/
       ) const
 {
   ON_ERROR("This function should not be used. Use the version that takes a model transform argument.");
@@ -5859,6 +5860,7 @@ bool ON_Annotation2::GetTextXform(
 // New function added Oct 30, 07 - LW 
 // To use model xform to draw annotation in blocks correctly
 #if 0
+[[deprecated("Use the version that takes a dimstyle pointer")]]
 bool ON_Annotation2::GetTextXform( 
       ON_RECT gdi_text_rect,
       const ON_Font& font,
@@ -5987,16 +5989,17 @@ static bool GetLeaderEndAndDirection( const ON_Annotation2* pAnn,
 
 // SDKBREAK Oct 30, 07 - LW
 // This function should not be used any longer
+[[deprecated("Use the version that takes a model transform argument")]]
 bool ON_Annotation2::GetTextXform( 
-      ON_RECT gdi_text_rect,
-      int gdi_height_of_I,
-      double dimstyle_textheight,
-      double dimstyle_textgap,
-      ON::eTextDisplayMode dimstyle_textalignment,
-      double dimscale,
-      ON_3dVector cameraX,
-      ON_3dVector cameraY,
-      ON_Xform& xform
+      ON_RECT /*gdi_text_rect*/,
+      int /*gdi_height_of_I*/,
+      double /*dimstyle_textheight*/,
+      double /*dimstyle_textgap*/,
+      ON::eTextDisplayMode /*dimstyle_textalignment*/,
+      double /*dimscale*/,
+      ON_3dVector /*cameraX*/,
+      ON_3dVector /*cameraY*/,
+      ON_Xform& /*xform*/
       ) const
 {
   ON_ERROR("This function should not be used. Use the version that takes a model transform argument.");

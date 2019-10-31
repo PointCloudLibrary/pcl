@@ -145,11 +145,11 @@ namespace pcl
 
     /** \brief Get the depth filename at a particular index */
     std::string
-    getDepthFileNameAtIndex (size_t idx) const;
+    getDepthFileNameAtIndex (std::size_t idx) const;
 
     /** \brief Query only the timestamp of an index, if it exists */
     bool
-    getTimestampAtIndex (size_t idx, pcl::uint64_t &timestamp) const;
+    getTimestampAtIndex (std::size_t idx, std::uint64_t &timestamp) const;
 
     /** \brief Manually set RGB image files.
      * \param[in] rgb_image_files A vector of [tiff/png/jpg/ppm] files to use as input. There must be a 1-to-1 correspondence between these and the depth images you set
@@ -194,12 +194,12 @@ namespace pcl
     protected:
     /** \brief Convenience function to see how many frames this consists of
       */
-    size_t
+    std::size_t
     numFrames () const;
     
     /** \brief Gets the cloud in ROS form at location idx */
     bool
-    getCloudAt (size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) const;
+    getCloudAt (std::size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) const;
 
 
     private:
@@ -238,10 +238,10 @@ namespace pcl
     
     // Inherited from FileGrabber
     const typename pcl::PointCloud<PointT>::ConstPtr
-    operator[] (size_t idx) const override;
+    operator[] (std::size_t idx) const override;
 
     // Inherited from FileGrabber
-    size_t
+    std::size_t
     size () const override;
 
     protected:
@@ -286,7 +286,7 @@ namespace pcl
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename PointT> const typename pcl::PointCloud<PointT>::ConstPtr
-  ImageGrabber<PointT>::operator[] (size_t idx) const
+  ImageGrabber<PointT>::operator[] (std::size_t idx) const
   {
     pcl::PCLPointCloud2 blob;
     Eigen::Vector4f origin;
@@ -300,7 +300,7 @@ namespace pcl
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename PointT> size_t
+  template <typename PointT> std::size_t
   ImageGrabber<PointT>::size () const
   {
     return (numFrames ());

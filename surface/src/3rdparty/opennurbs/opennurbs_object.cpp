@@ -1702,11 +1702,11 @@ ON_BOOL32 ON_Object::Read(
 
 }
 
-void ON_Object::DestroyRuntimeCache( bool bDelete )
+void ON_Object::DestroyRuntimeCache( bool )
 {
 }
 
-void ON_Curve::DestroyRuntimeCache( bool bDelete )
+void ON_Curve::DestroyRuntimeCache( bool )
 {
 }
 
@@ -1722,7 +1722,7 @@ void ON_CurveProxy::DestroyRuntimeCache( bool bDelete )
   }
 }
 
-void ON_Surface::DestroyRuntimeCache( bool bDelete )
+void ON_Surface::DestroyRuntimeCache( bool )
 {
 }
 

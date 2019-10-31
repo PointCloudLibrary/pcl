@@ -443,7 +443,7 @@ namespace pcl
         * list property.
         */
       template<typename Scalar> void
-      appendScalarProperty (const std::string& name, const size_t& count = 1);
+      appendScalarProperty (const std::string& name, const std::size_t& count = 1);
 
       /** Amend property from cloud fields identified by \a old_name renaming
         * it \a new_name.
@@ -451,7 +451,7 @@ namespace pcl
         * param[in] new_name property new name
         */
       void
-      amendProperty (const std::string& old_name, const std::string& new_name, uint8_t datatype = 0);
+      amendProperty (const std::string& old_name, const std::string& new_name, std::uint8_t datatype = 0);
 
       /** Callback function for the begin of vertex line */
       void
@@ -521,11 +521,11 @@ namespace pcl
 
       //vertex element artifacts
       pcl::PCLPointCloud2 *cloud_;
-      size_t vertex_count_;
+      std::size_t vertex_count_;
       int vertex_offset_before_;
       //range element artifacts
       std::vector<std::vector <int> > *range_grid_;
-      size_t rgb_offset_before_;
+      std::size_t rgb_offset_before_;
       bool do_resize_;
       //face element artifact
       std::vector<pcl::Vertices> *polygons_;
@@ -534,9 +534,9 @@ namespace pcl
       
     private:
       // RGB values stored by vertexColorCallback()
-      int32_t r_, g_, b_;
+      std::int32_t r_, g_, b_;
       // Color values stored by vertexAlphaCallback()
-      uint32_t a_, rgba_;
+      std::uint32_t a_, rgba_;
   };
 
   /** \brief Point Cloud Data (PLY) file format writer.

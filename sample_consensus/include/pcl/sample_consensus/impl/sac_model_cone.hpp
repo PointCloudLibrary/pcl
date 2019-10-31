@@ -153,7 +153,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::getDistancesToModel (
   float apexdotdir = apex.dot (axis_dir);
   float dirdotdir = 1.0f / axis_dir.dot (axis_dir);
   // Iterate through the 3d points and calculate the distances from them to the cone
-  for (size_t i = 0; i  < indices_->size (); ++i)
+  for (std::size_t i = 0; i  < indices_->size (); ++i)
   {
     Eigen::Vector4f pt (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0);
     Eigen::Vector4f n  (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0);
@@ -207,7 +207,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::selectWithinDistance (
   float apexdotdir = apex.dot (axis_dir);
   float dirdotdir = 1.0f / axis_dir.dot (axis_dir);
   // Iterate through the 3d points and calculate the distances from them to the cone
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     Eigen::Vector4f pt (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0);
     Eigen::Vector4f n  (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0);
@@ -269,7 +269,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::countWithinDistance (
   float apexdotdir = apex.dot (axis_dir);
   float dirdotdir = 1.0f / axis_dir.dot (axis_dir);
   // Iterate through the 3d points and calculate the distances from them to the cone
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     Eigen::Vector4f pt (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0);
     Eigen::Vector4f n  (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0);
@@ -373,7 +373,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
-    for (size_t i = 0; i < projected_points.points.size (); ++i)
+    for (std::size_t i = 0; i < projected_points.points.size (); ++i)
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
 
@@ -405,17 +405,17 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
   {
     // Allocate enough space and copy the basics
     projected_points.points.resize (inliers.size ());
-    projected_points.width    = static_cast<uint32_t> (inliers.size ());
+    projected_points.width    = static_cast<std::uint32_t> (inliers.size ());
     projected_points.height   = 1;
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
-    for (size_t i = 0; i < inliers.size (); ++i)
+    for (std::size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the cone
-    for (size_t i = 0; i < inliers.size (); ++i)
+    for (std::size_t i = 0; i < inliers.size (); ++i)
     {
       pcl::Vector4fMap pp = projected_points.points[i].getVector4fMap ();
       pcl::Vector4fMapConst pt = input_->points[inliers[i]].getVector4fMap ();

@@ -60,10 +60,10 @@ estimateNormals (const PointCloud<PointXYZ>::Ptr &src,
   // For debugging purposes only: uncomment the lines below and use pcl_viewer to view the results, i.e.:
   // pcl_viewer normals_src.pcd
   PointCloud<PointNormal> s, t;
-  copyPointCloud<PointXYZ, PointNormal> (*src, s);
-  copyPointCloud<Normal, PointNormal> (normals_src, s);
-  copyPointCloud<PointXYZ, PointNormal> (*tgt, t);
-  copyPointCloud<Normal, PointNormal> (normals_tgt, t);
+  copyPointCloud (*src, s);
+  copyPointCloud (normals_src, s);
+  copyPointCloud (*tgt, t);
+  copyPointCloud (normals_tgt, t);
   savePCDFileBinary ("normals_src.pcd", s);
   savePCDFileBinary ("normals_tgt.pcd", t);
 }
@@ -154,10 +154,10 @@ computeTransformation (const PointCloud<PointXYZ>::Ptr &src,
 
   // Copy the data and save it to disk
 /*  PointCloud<PointNormal> s, t;
-  copyPointCloud<PointXYZ, PointNormal> (*keypoints_src, s);
-  copyPointCloud<Normal, PointNormal> (normals_src, s);
-  copyPointCloud<PointXYZ, PointNormal> (*keypoints_tgt, t);
-  copyPointCloud<Normal, PointNormal> (normals_tgt, t);*/
+  copyPointCloud (*keypoints_src, s);
+  copyPointCloud (normals_src, s);
+  copyPointCloud (*keypoints_tgt, t);
+  copyPointCloud (normals_tgt, t);*/
 
   // Find correspondences between keypoints in FPFH space
   CorrespondencesPtr all_correspondences (new Correspondences), 

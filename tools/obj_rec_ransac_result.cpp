@@ -127,8 +127,8 @@ main (int argc, char** argv)
 
   printf ("The following parameter values will be used:\n");
   for ( int i = 0 ; i < num_params ; ++i )
-    cout << "  " << parameter_names[i] << " = " << parameters[i] << endl;
-  cout << endl;
+    std::cout << "  " << parameter_names[i] << " = " << parameters[i] << std::endl;
+  std::cout << std::endl;
 
   run (parameters[0], parameters[1], parameters[2]);
 }
@@ -260,7 +260,7 @@ update (CallbackParameters* params)
   // Show the hypotheses
   for ( list<ObjRecRANSAC::Output>::iterator it = rec_output.begin () ; it != rec_output.end () ; ++it, ++i )
   {
-    cout << it->object_name_ << " has a confidence value of " << it->match_confidence_ << endl;
+    std::cout << it->object_name_ << " has a confidence value of " << it->match_confidence_ << std::endl;
 
     // Make a copy of the VTK model
     vtkSmartPointer<vtkPolyData> vtk_model = vtkSmartPointer<vtkPolyData>::New ();
@@ -350,8 +350,8 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
 
   // Make sure that the ids are sorted
   sort (inliers->indices.begin (), inliers->indices.end ());
-  size_t j = 0;
-  for ( size_t i = 0, id = 0 ; i < inliers->indices.size () ; )
+  std::size_t j = 0;
+  for ( std::size_t i = 0, id = 0 ; i < inliers->indices.size () ; )
   {
     if ( static_cast<int> (id) == inliers->indices[i] )
     {
@@ -368,7 +368,7 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
   }
 
   // Just copy the rest of the non-plane points
-  for ( size_t id = inliers->indices.size (); id < all_points->size () ; ++id, ++j )
+  for ( std::size_t id = inliers->indices.size (); id < all_points->size () ; ++id, ++j )
   {
     non_plane_points.points[j] = all_points->points[id];
     non_plane_normals.points[j] = all_normals->points[id];
@@ -382,7 +382,7 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
 bool
 vtk2PointCloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals, vtkPolyData* vtk_data)
 {
-  size_t len = strlen (file_name);
+  std::size_t len = strlen (file_name);
   if ( file_name[len-3] != 'v' || file_name[len-2] != 't' || file_name[len-1] != 'k' )
   {
     fprintf (stderr, "ERROR: we need a .vtk object!\n");

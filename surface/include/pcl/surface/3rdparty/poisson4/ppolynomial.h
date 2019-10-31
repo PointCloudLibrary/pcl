@@ -58,7 +58,7 @@ namespace pcl
     class PPolynomial
     {
       public:
-        size_t polyCount;
+        std::size_t polyCount;
         StartingPolynomial<Degree>* polys;
 
         PPolynomial(void);
@@ -69,10 +69,10 @@ namespace pcl
 
         int size(void) const;
 
-        void set( size_t size );
+        void set( std::size_t size );
         // Note: this method will sort the elements in sps
         void set( StartingPolynomial<Degree>* sps , int count );
-        void reset( size_t newSize );
+        void reset( std::size_t newSize );
 
 
         double operator()( double t ) const;

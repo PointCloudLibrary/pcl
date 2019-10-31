@@ -142,7 +142,7 @@ namespace pcl
           for ( typename std::vector<Node*>::iterator nit = nodes_.begin () ; nit != nodes_.end () ; ++nit )
             delete *nit;
 
-          nodes_.resize (static_cast<size_t> (n));
+          nodes_.resize (static_cast<std::size_t> (n));
 
           for ( int i = 0 ; i < n ; ++i )
             nodes_[i] = new Node (i);

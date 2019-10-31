@@ -68,7 +68,7 @@ loadCloud (const std::string &filename, PointCloud<PointNormal> &cloud)
 
   // Check if the dataset has normals
   std::vector<pcl::PCLPointField> fields;
-  if (getFieldIndex (cloud, "normal_x", fields) == -1)
+  if (getFieldIndex<PointNormal> ("normal_x", fields) == -1)
   {
     print_error ("The input dataset does not contain normal information!\n");
     return (false);

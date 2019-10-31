@@ -132,7 +132,7 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
   {
     int level1 = 0;     // For debug output only
     /// LEVEL1 (opencv_storage)
-    BOOST_FOREACH(const ptree::value_type &top_node, pt)
+    for (const ptree::value_type &top_node : pt)
     {
       if(!strcmp(top_node.first.c_str(), "opencv_storage"))      // Else NCV_HAAR_XML_LOADING_EXCEPTION
       {
@@ -142,7 +142,7 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
         boost::property_tree::ptree pt2 = top_node.second;
 
         /// LEVEL2 (haarcascade)
-        BOOST_FOREACH(const ptree::value_type &w, pt2)
+        for (const ptree::value_type &w : pt2)
         {
           if(!strcmp(w.second.get("<xmlattr>.type_id","").c_str(), "opencv-haar-classifier"))                      // Else NCV_HAAR_XML_LOADING_EXCEPTION
           {
@@ -162,7 +162,7 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
 
             int level3 = 0;
             /// LEVEL3 (Stages)
-            BOOST_FOREACH(const ptree::value_type &stage, w.second.get_child("stages"))
+            for (const ptree::value_type &stage : w.second.get_child("stages"))
             {
               PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 3, XMLnode %d, first : %s\n", level3, stage.first.c_str());
 
@@ -180,7 +180,7 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
 
               int level4 = 0;
               /// LEVEL4 (Trees)
-              BOOST_FOREACH(const ptree::value_type &tree, stage.second.get_child("trees"))
+              for (const ptree::value_type &tree : stage.second.get_child("trees"))
               {
                 PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 4, XMLnode %d, first : %s\n", level4, tree.first.c_str());
                 Ncv32u node_identifier = 0;
@@ -189,7 +189,7 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
                 ptree root = tree.second;
 
                 /// LEVEL5 (Root_node)
-                BOOST_FOREACH(const ptree::value_type &root_node, root)
+                for (const ptree::value_type &root_node : root)
                 {
                   PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 5, node %d, first : %s\n", level5, root_node.first.c_str());
 
@@ -220,7 +220,7 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
                     Ncv32u feature_identifier = 0;
 
                     /// LEVEL6 (Rects)
-                    BOOST_FOREACH(const ptree::value_type &rect, root_node.second.get_child("feature.rects"))
+                    for (const ptree::value_type &rect : root_node.second.get_child("feature.rects"))
                     {
                       PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 6, first : %s\n", rect.first.c_str());
 
@@ -378,7 +378,7 @@ pcl::gpu::people::FaceDetector::loadFromNVBIN(const std::string &filename,
                                std::vector<HaarClassifierNode128> &haarClassifierNodes,
                                std::vector<HaarFeature64> &haar_features)
 {
-    size_t readCount;
+    std::size_t readCount;
     FILE *fp = fopen(filename.c_str(), "rbe");
     ncvAssertReturn(fp != nullptr, NCV_FILE_ERROR);
     Ncv32u fileVersion;
@@ -503,7 +503,7 @@ pcl::gpu::people::FaceDetector::ncvHaarGetClassifierSize(const std::string &file
         FILE *fp = fopen(filename.c_str(), "rbe");
         PCL_ASSERT_ERROR_PRINT_RETURN(fp != nullptr, "Return NCV_FILE_ERROR", NCV_FILE_ERROR);
         Ncv32u fileVersion;
-        size_t readCount = fread(&fileVersion, sizeof(Ncv32u), 1, fp);
+        std::size_t readCount = fread(&fileVersion, sizeof(Ncv32u), 1, fp);
         PCL_ASSERT_ERROR_PRINT_RETURN(1 == readCount, "Return NCV_FILE_ERROR", NCV_FILE_ERROR);
         PCL_ASSERT_ERROR_PRINT_RETURN(fileVersion == NVBIN_HAAR_VERSION, "Return NCV_FILE_ERROR", NCV_FILE_ERROR);
         fseek(fp, NVBIN_HAAR_SIZERESERVED, SEEK_SET);

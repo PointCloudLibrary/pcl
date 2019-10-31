@@ -106,7 +106,7 @@ namespace pcl
           filtered_keypoints.points.resize (keypoints_cloud->points.size ());
           int good = 0;
 
-          for (size_t i = 0; i < keypoints_cloud->points.size (); i++)
+          for (std::size_t i = 0; i < keypoints_cloud->points.size (); i++)
           {
 
             if (tree->radiusSearch (keypoints_cloud->points[i], radius_, (*neighborhood_indices_)[good], (*neighborhood_dist_)[good]))
@@ -232,7 +232,7 @@ namespace pcl
           input_cloud->width = input_->width;
           input_cloud->height = input_->height;
           input_cloud->points.resize (input_->width * input_->height);
-          for (size_t i = 0; i < input_->points.size (); i++)
+          for (std::size_t i = 0; i < input_->points.size (); i++)
           {
             input_cloud->points[i].getVector3fMap () = input_->points[i].getVector3fMap ();
             input_cloud->points[i].getNormalVector3fMap () = normals_->points[i].getNormalVector3fMap ();
@@ -398,7 +398,7 @@ namespace pcl
         computeKeypoints (PointInTPtr & cloud, PointInTPtr & keypoints, pcl::PointCloud<pcl::Normal>::Ptr & normals)
         {
           keypoints.reset (new pcl::PointCloud<PointInT>);
-          for (size_t i = 0; i < keypoint_extractor_.size (); i++)
+          for (std::size_t i = 0; i < keypoint_extractor_.size (); i++)
           {
             keypoint_extractor_[i]->setInputCloud (cloud);
             if (keypoint_extractor_[i]->needNormals ())

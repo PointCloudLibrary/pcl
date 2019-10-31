@@ -39,6 +39,8 @@
 #ifndef PCL_GPU_KINFU_CUDA_UTILS_HPP_
 #define PCL_GPU_KINFU_CUDA_UTILS_HPP_
 
+#include <limits>
+
 #include <cuda.h>
 
 namespace pcl
@@ -52,27 +54,6 @@ namespace pcl
       {
         T c(a); a=b; b=c;
       }
-          
-      template<typename T> struct numeric_limits;
-
-      template<> struct numeric_limits<float>
-      {
-        __device__ __forceinline__ static float 
-        quiet_NaN() { return __int_as_float(0x7fffffff); /*CUDART_NAN_F*/ };
-        __device__ __forceinline__ static float 
-        epsilon() { return 1.192092896e-07f/*FLT_EPSILON*/; };
-
-        __device__ __forceinline__ static float 
-        min() { return 1.175494351e-38f/*FLT_MIN*/; };
-        __device__ __forceinline__ static float 
-        max() { return 3.402823466e+38f/*FLT_MAX*/; };
-      };
-
-      template<> struct numeric_limits<short>
-      {
-        __device__ __forceinline__ static short 
-        max() { return SHRT_MAX; };
-      };
         
       __device__ __forceinline__ float
       dot(const float3& v1, const float3& v2)
@@ -144,7 +125,7 @@ namespace pcl
       __device__ __forceinline__ void 
       computeRoots3(float c0, float c1, float c2, float3& roots)
       {
-        if ( std::abs(c0) < numeric_limits<float>::epsilon())// one root is 0 -> quadratic equation
+        if ( std::abs(c0) < std::numeric_limits<float>::epsilon())// one root is 0 -> quadratic equation
         {
           computeRoots2 (c2, c1, roots);
         }
@@ -251,7 +232,7 @@ namespace pcl
           float m0123 = fmaxf( max01, max23);
           float scale = fmaxf( max45, m0123);
 
-          if (scale <= numeric_limits<float>::min())
+          if (scale <= std::numeric_limits<float>::min())
             scale = 1.f;
 
           mat_pkg[0] /= scale;
@@ -279,13 +260,13 @@ namespace pcl
 
           computeRoots3(c0, c1, c2, evals);
 
-          if(evals.z - evals.x <= numeric_limits<float>::epsilon())
+          if(evals.z - evals.x <= std::numeric_limits<float>::epsilon())
           {                                   
             evecs[0] = make_float3(1.f, 0.f, 0.f);
             evecs[1] = make_float3(0.f, 1.f, 0.f);
             evecs[2] = make_float3(0.f, 0.f, 1.f);
           }
-          else if (evals.y - evals.x <= numeric_limits<float>::epsilon() )
+          else if (evals.y - evals.x <= std::numeric_limits<float>::epsilon() )
           {
             // first and second equal                
             tmp[0] = row0();  tmp[1] = row1();  tmp[2] = row2();
@@ -315,7 +296,7 @@ namespace pcl
             evecs[1] = unitOrthogonal(evecs[2]);
             evecs[0] = cross(evecs[1], evecs[2]);
           }
-          else if (evals.z - evals.y <= numeric_limits<float>::epsilon() )
+          else if (evals.z - evals.y <= std::numeric_limits<float>::epsilon() )
           {
             // second and third equal                                    
             tmp[0] = row0();  tmp[1] = row1();  tmp[2] = row2();
@@ -473,7 +454,7 @@ namespace pcl
         __device__  __forceinline__ static bool isMuchSmallerThan (float x, float y)
         {
             // copied from <eigen>/include/Eigen/src/Core/NumTraits.h
-            const float prec_sqr = numeric_limits<float>::epsilon() * numeric_limits<float>::epsilon(); 
+            constexpr float prec_sqr = std::numeric_limits<float>::epsilon() * std::numeric_limits<float>::epsilon(); 
             return x * x <= prec_sqr * y * y;
         }
       };   

@@ -56,20 +56,20 @@ main (int, char **argv)
   PCDReader reader;
   reader.read (argv[1], *cloud);
   PCL_INFO ("Cloud read: %s\n", argv[1]);
-  cerr << "cloud has #points: " << cloud->points.size () << endl;
+  std::cerr << "cloud has #points: " << cloud->points.size () << std::endl;
 
   PointCloud<PointXYZ>::Ptr cloud_subsampled (new PointCloud<PointXYZ> ());
   VoxelGrid<PointXYZ> subsampling_filter;
   subsampling_filter.setInputCloud (cloud);
   subsampling_filter.setLeafSize (subsampling_leaf_size, subsampling_leaf_size, subsampling_leaf_size);
   subsampling_filter.filter (*cloud_subsampled);
-  cerr << "subsampled cloud has #points: " << cloud_subsampled->points.size () << endl;
+  std::cerr << "subsampled cloud has #points: " << cloud_subsampled->points.size () << std::endl;
 
   StatisticalMultiscaleInterestRegionExtraction<PointXYZ> region_extraction;
   std::vector<float> scale_vector;
   PCL_INFO ("Scale values that will be used: ");
   float base_scale_aux = base_scale;
-  for (size_t scales = 0; scales < 7; ++scales)
+  for (std::size_t scales = 0; scales < 7; ++scales)
   {
     PCL_INFO ("%f ", base_scale_aux);
     scale_vector.push_back (base_scale_aux);

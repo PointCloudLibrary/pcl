@@ -35,7 +35,7 @@ class GrabCutHelper : public pcl::GrabCut<pcl::PointXYZRGB>
   using Ptr = boost::shared_ptr<GrabCutHelper>;
   using ConstPtr = boost::shared_ptr<const GrabCutHelper>;
 
-  GrabCutHelper (uint32_t K = 5, float lambda = 50.f)
+  GrabCutHelper (std::uint32_t K = 5, float lambda = 50.f)
     : pcl::GrabCut<pcl::PointXYZRGB> (K, lambda)
   {}
 
@@ -264,7 +264,7 @@ int xstart, ystart, xend, yend;
 bool box = false;
 bool left = false, right = false;
 bool refining_ = false;
-uint32_t width, height;
+std::uint32_t width, height;
 GrabCutHelper grabcut;
 pcl::segmentation::grabcut::Image::Ptr display_image;
 
@@ -512,7 +512,7 @@ int main (int argc, char** argv)
 
   if (scene->isOrganized ())
   {
-    pcl::uint32_t height_1 = scene->height -1;
+    std::uint32_t height_1 = scene->height -1;
     for (std::size_t i = 0; i < scene->height; ++i)
     {
       for (std::size_t j = 0; j < scene->width; ++j)

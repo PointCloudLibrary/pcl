@@ -26,7 +26,7 @@ jobs:
         displayName: 'Update System PATH'
       - script: |
           vcpkg.exe install eigen3 flann gtest qhull --triplet %PLATFORM%-windows && vcpkg.exe list
-        displayName: 'Install Dependencies'
+        displayName: 'Install c++ dependencies via vcpkg'
       - script: |
           rmdir %VCPKG_ROOT%\downloads /S /Q
           rmdir %VCPKG_ROOT%\packages /S /Q
@@ -37,7 +37,7 @@ jobs:
         displayName: 'CMake Configuration'
       - script: cd %BUILD_DIR% && cmake --build . --config %CONFIGURATION%
         displayName: 'Build Library'
-      - script: cd %BUILD_DIR% && ctest -C %CONFIGURATION% -V -T Test
+      - script: cd %BUILD_DIR%/test && ctest -C %CONFIGURATION% -V -T Test
         displayName: 'Run Unit Tests'
       - task: PublishTestResults@2
         inputs:

@@ -416,7 +416,7 @@ Cloud::getDisplaySpacePoint (unsigned int index) const
 void
 Cloud::getDisplaySpacePoints (Point3DVector& pts) const
 {
-  for(size_t i = 0; i < cloud_.size(); ++i)
+  for(std::size_t i = 0; i < cloud_.size(); ++i)
     pts.push_back(getDisplaySpacePoint(i));
 }
 
@@ -462,7 +462,7 @@ Cloud::updateCloudMembers ()
   float *pt = &(cloud_.points[0].data[X]);
   std::copy(pt, pt+XYZ_SIZE, max_xyz_);
   std::copy(max_xyz_, max_xyz_+XYZ_SIZE, min_xyz_);
-  for (size_t i = 1; i < cloud_.size(); ++i)
+  for (std::size_t i = 1; i < cloud_.size(); ++i)
   {
     for (unsigned int j = 0; j < XYZ_SIZE; ++j)
     {

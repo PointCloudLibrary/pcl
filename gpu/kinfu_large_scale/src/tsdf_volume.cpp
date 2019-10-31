@@ -163,7 +163,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, boo
   cloud.points.clear ();
   cloud.points.reserve (10000);
 
-  const int DIVISOR = pcl::device::kinfuLS::DIVISOR; // SHRT_MAX;
+  constexpr int DIVISOR = pcl::device::kinfuLS::DIVISOR; // SHRT_MAX;
 
 #define FETCH(x, y, z) volume_host[(x) + (y) * volume_x + (z) * volume_y * volume_x]
 
@@ -283,7 +283,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloud (DeviceArray<PointType>& cloud_buffer)
     cloud_buffer.create (DEFAULT_CLOUD_BUFFER_SIZE);
 
   float3 device_volume_size = device_cast<const float3> (size_);
-  size_t size = pcl::device::kinfuLS::extractCloud (volume_, device_volume_size, cloud_buffer);
+  std::size_t size = pcl::device::kinfuLS::extractCloud (volume_, device_volume_size, cloud_buffer);
   return (DeviceArray<PointType> (cloud_buffer.ptr (), size));
 }
 
@@ -302,7 +302,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchNormals (const DeviceArray<PointType>& cloud
 void 
 pcl::gpu::kinfuLS::TsdfVolume::pushSlice (PointCloud<PointXYZI>::Ptr existing_data_cloud, const pcl::gpu::kinfuLS::tsdf_buffer* buffer) const
 {
-  size_t gpu_array_size = existing_data_cloud->points.size ();
+  std::size_t gpu_array_size = existing_data_cloud->points.size ();
 
   if(gpu_array_size == 0)
   {
@@ -334,7 +334,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchSliceAsCloud (DeviceArray<PointType>& cloud_
 
   float3 device_volume_size = device_cast<const float3> (size_);
   
-  size_t size = pcl::device::kinfuLS::extractSliceAsCloud (volume_, device_volume_size, buffer, shiftX, shiftY, shiftZ, cloud_buffer_xyz, cloud_buffer_intensity);
+  std::size_t size = pcl::device::kinfuLS::extractSliceAsCloud (volume_, device_volume_size, buffer, shiftX, shiftY, shiftZ, cloud_buffer_xyz, cloud_buffer_intensity);
   
   std::cout << " SIZE IS " << size << std::endl;
   

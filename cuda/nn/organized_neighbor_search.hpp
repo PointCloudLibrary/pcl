@@ -115,10 +115,10 @@ namespace pcl
     x2 = (x_times_z + sqrt_term_x) * norm;
 
     // determine 2-D search window
-    minX_arg  = (int)floor((double)input_->width / 2 + (x1 / focalLength_));
+    minX_arg  = (int)std::floor((double)input_->width / 2 + (x1 / focalLength_));
     maxX_arg = (int)std::ceil((double)input_->width / 2 + (x2 / focalLength_));
 
-    minY_arg  = (int)floor((double)input_->height / 2 + (y1 / focalLength_));
+    minY_arg  = (int)std::floor((double)input_->height / 2 + (y1 / focalLength_));
     maxY_arg = (int)std::ceil((double)input_->height / 2 + (y2 / focalLength_));
 
     // make sure the coordinates fit to point cloud resolution
@@ -329,7 +329,7 @@ namespace pcl
 
           std::cout << k_radius_indices.size () <<std::endl;
 
-          for (size_t i = 0; i < k_radius_indices.size (); i++)
+          for (std::size_t i = 0; i < k_radius_indices.size (); i++)
           {
             nearestNeighborCandidate newCandidate;
             newCandidate.index_ = k_radius_indices[i];
@@ -342,7 +342,7 @@ namespace pcl
         std::sort (nearestNeighbors.begin (), nearestNeighbors.end ());
 
         // truncate sorted nearest neighbor vector if we found more than k_arg candidates
-        if (nearestNeighbors.size () > (size_t)k_arg)
+        if (nearestNeighbors.size () > (std::size_t)k_arg)
         {
           nearestNeighbors.resize (k_arg);
         }
@@ -353,7 +353,7 @@ namespace pcl
       k_indices_arg.resize (nearestNeighbors.size ());
       k_sqr_distances_arg.resize (nearestNeighbors.size ());
 
-      for (size_t i = 0; i < nearestNeighbors.size (); i++)
+      for (std::size_t i = 0; i < nearestNeighbors.size (); i++)
       {
         k_indices_arg[i] = nearestNeighbors[i].index_;
         k_sqr_distances_arg[i] = nearestNeighbors[i].squared_distance_;
@@ -370,11 +370,11 @@ namespace pcl
     {
       focalLength_ = 0;
 
-      size_t count = 0;
+      std::size_t count = 0;
       for (int y = 0; y < (int)input_->height; y++)
         for (int x = 0; x < (int)input_->width; x++)
         {
-          size_t i = y * input_->width + x;
+          std::size_t i = y * input_->width + x;
           if ((input_->points[i].x == input_->points[i].x) && // check for NaNs
               (input_->points[i].y == input_->points[i].y) && (input_->points[i].z == input_->points[i].z))
           {

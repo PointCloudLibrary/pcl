@@ -78,10 +78,10 @@ namespace pcl
     PCL_EXPORTS void
     addDirection (const Eigen::Vector4f& normal,
                   const Eigen::Vector4f& direction,
-                  uint32_t&              directions);
+                  std::uint32_t&         directions);
 
     PCL_EXPORTS unsigned int
-    countDirections (const uint32_t directions);
+    countDirections (const std::uint32_t directions);
 
   } // End namespace ihs
 } // End namespace pcl

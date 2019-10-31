@@ -233,9 +233,9 @@ public:
   // terminator, an end of line character, or any other character
   // that could not be part of the base 64 encoded information.
   const char* Decode(const char* base64str);
-  const char* Decode(const char* base64str, size_t base64str_count);
+  const char* Decode(const char* base64str, std::size_t base64str_count);
   const wchar_t* Decode(const wchar_t* base64str);
-  const wchar_t* Decode(const wchar_t* base64str, size_t base64str_count);
+  const wchar_t* Decode(const wchar_t* base64str, std::size_t base64str_count);
 
   // You must call End() when Decode() returns 0 or when you have
   // reached the end of your encoded information.  End() may
@@ -266,7 +266,7 @@ public:
 
   // Returns true if an error occured during decoding because
   // invalid input was passed to Decode().
-  const bool Error() const;
+  bool Error() const;
 
 private:
   int m_status; // 1: error - decoding stopped
@@ -300,7 +300,7 @@ public:
   // sizeof_buffer/57 and at most (sizeof_buffer+56)/57
   // calls to Output().  Every callback to Output() will
   // have m_output_count = 76.
-  void Encode(const void* buffer, size_t sizeof_buffer);
+  void Encode(const void* buffer, std::size_t sizeof_buffer);
 
   // Calling End may generate a single call to Output()
   // If it does generate a single call to Output(),

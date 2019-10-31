@@ -35,38 +35,40 @@
  *
  */
 
-#ifndef PCL_ML_DT_DECISION_FOREST_TRAINER_HPP_
-#define PCL_ML_DT_DECISION_FOREST_TRAINER_HPP_
-  
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
-pcl::DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::DecisionForestTrainer ()
-  : num_of_trees_to_train_ (1)
-  , decision_tree_trainer_ ()
-{
-  
-}
+#pragma once
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
-pcl::DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::~DecisionForestTrainer ()
-{
-  
-}
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
+pcl::DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+    DecisionForestTrainer()
+: num_of_trees_to_train_(1), decision_tree_trainer_()
+{}
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
+pcl::DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+    ~DecisionForestTrainer()
+{}
+
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
 void
-pcl::DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train (
-  pcl::DecisionForest<NodeType> & forest)
+pcl::DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+    train(pcl::DecisionForest<NodeType>& forest)
 {
-  for (size_t tree_index = 0; tree_index < num_of_trees_to_train_; ++tree_index)
-  {
+  for (std::size_t tree_index = 0; tree_index < num_of_trees_to_train_; ++tree_index) {
     pcl::DecisionTree<NodeType> tree;
-    decision_tree_trainer_.train (tree);
+    decision_tree_trainer_.train(tree);
 
-    forest.push_back (tree);
+    forest.push_back(tree);
   }
 }
-
-#endif

@@ -38,26 +38,25 @@ namespace pcl
 
         void getFilesInDirectory(bf::path & dir, std::string & rel_path_so_far, std::vector<std::string> & relative_paths, std::string & ext)
         {
-          bf::directory_iterator end_itr;
-          for (bf::directory_iterator itr (dir); itr != end_itr; ++itr)
+          for (const auto& dir_entry : bf::directory_iterator(dir))
           {
             //check if its a directory, then get models in it
-            if (bf::is_directory (*itr))
+            if (bf::is_directory (dir_entry))
             {
-              std::string so_far = rel_path_so_far + (itr->path ().filename ()).string () + "/";
-              bf::path curr_path = itr->path ();
+              std::string so_far = rel_path_so_far + (dir_entry.path ().filename ()).string () + "/";
+              bf::path curr_path = dir_entry.path ();
               getFilesInDirectory (curr_path, so_far, relative_paths, ext);
             } else
             {
               //check that it is a ply file and then add, otherwise ignore..
               std::vector < std::string > strs;
-              std::string file = (itr->path ().filename ()).string ();
+              std::string file = (dir_entry.path ().filename ()).string ();
               boost::split (strs, file, boost::is_any_of ("."));
               std::string extension = strs[strs.size () - 1];
 
               if (extension == ext)
               {
-                std::string path = rel_path_so_far + (itr->path ().filename ()).string ();
+                std::string path = rel_path_so_far + (dir_entry.path ().filename ()).string ();
                 relative_paths.push_back (path);
               }
             }

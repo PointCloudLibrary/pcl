@@ -42,6 +42,10 @@ mark_as_advanced(PCL_NO_PRECOMPILE)
 option(PCL_ENABLE_SSE "Enable or Disable SSE optimizations." ON)
 mark_as_advanced(PCL_ENABLE_SSE)
 
+# Allow the user to disable ccache if ccache is available
+option(PCL_ENABLE_CCACHE "Enable using compiler cache for compilation" OFF)
+mark_as_advanced(PCL_ENABLE_CCACHE)
+
 # Display timing information for each compiler instance on screen
 option(CMAKE_TIMING_VERBOSE "Enable the display of timing information for each compiler instance." OFF)
 mark_as_advanced(CMAKE_TIMING_VERBOSE)

@@ -74,11 +74,11 @@
 
 
 bool ON_BinaryArchive::WriteCompressedBuffer(
-        size_t sizeof__inbuffer,  // sizeof uncompressed input data
+        std::size_t sizeof__inbuffer,  // sizeof uncompressed input data
         const void* inbuffer  // uncompressed input data
         )
 {
-  size_t compressed_size = 0;
+  std::size_t compressed_size = 0;
   bool rc = false;
 
   if ( !WriteMode() )
@@ -130,13 +130,13 @@ bool ON_BinaryArchive::WriteCompressedBuffer(
   return rc;
 }
 
-bool ON_BinaryArchive::ReadCompressedBufferSize( size_t* sizeof__outbuffer )
+bool ON_BinaryArchive::ReadCompressedBufferSize( std::size_t* sizeof__outbuffer )
 {
   return ReadSize(sizeof__outbuffer);
 }
 
 bool ON_BinaryArchive::ReadCompressedBuffer( // read and uncompress
-  size_t sizeof__outbuffer,  // sizeof of uncompressed buffer to read
+  std::size_t sizeof__outbuffer,  // sizeof of uncompressed buffer to read
   void* outbuffer,           // uncompressed output data returned here
   int* bFailedCRC
   )
@@ -191,8 +191,8 @@ bool ON_BinaryArchive::ReadCompressedBuffer( // read and uncompress
   return rc;
 }
 
-size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
-        size_t sizeof___inbuffer,  // sizeof uncompressed input data ( > 0 )
+std::size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
+        std::size_t sizeof___inbuffer,  // sizeof uncompressed input data ( > 0 )
         const void* in___buffer     // uncompressed input data ( != NULL )
         )
 {
@@ -202,7 +202,7 @@ size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
       sizeof(int)     = 4 bytes, 
       sizeof(long)    = 4 bytes,
       sizeof(pointer) = 4 bytes, and
-      sizeof(size_t)  = 4 bytes.
+      sizeof(std::size_t)  = 4 bytes.
 
     Theoretically I don't need to use multiple input buffer
     chunks in case.  But I'm paranoid and I will use multiple 
@@ -215,7 +215,7 @@ size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
       sizeof(int)     >= 4 bytes, (it's 4 on MS VS2005) 
       sizeof(long)    >= 4 bytes, (it's 4 on MS VS2005)
       sizeof(pointer)  = 8 bytes, and
-      sizeof(size_t)   = 8 bytes.
+      sizeof(std::size_t)   = 8 bytes.
 
     So, I'm going to assume the ints and longs in the zlib code 
     are 4 bytes, but I could have sizeof_inbuffer > 4GB.
@@ -227,7 +227,7 @@ size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
 
     So, I set
     
-       const size_t max_avail = (largest signed 4 byte integer - 15)
+       const std::size_t max_avail = (largest signed 4 byte integer - 15)
     
     and feed inflate and deflate buffers with size <= max_avail.
 
@@ -253,20 +253,20 @@ size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
         type is 64 bits, then the limit is 16 exabytes.
   */
 
-  const size_t max_avail = 0x7FFFFFF0;
+  const std::size_t max_avail = 0x7FFFFFF0;
 
   //  Compressed information is saved in a chunk.
   bool rc = BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK,0);
   if ( !rc )
     return false;
 
-  size_t out__count = 0;
+  std::size_t out__count = 0;
   int zrc = Z_OK;
 
-  size_t my_avail_in = sizeof___inbuffer;
+  std::size_t my_avail_in = sizeof___inbuffer;
   unsigned char* my_next_in = (unsigned char*)in___buffer;
 
-  size_t d = my_avail_in;
+  std::size_t d = my_avail_in;
   if ( d > max_avail )
     d = max_avail;
   m_zlib.strm.next_in = my_next_in;
@@ -281,7 +281,7 @@ size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
   int counter = 512; 
   int flush = Z_NO_FLUSH;
 
-  size_t deflate_output_count = 0;
+  std::size_t deflate_output_count = 0;
 
   while( rc && counter > 0 ) 
   {
@@ -378,13 +378,13 @@ size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
 
 
 bool ON_BinaryArchive::ReadInflate(
-        size_t sizeof___outbuffer,  // sizeof uncompressed data
+        std::size_t sizeof___outbuffer,  // sizeof uncompressed data
         void* out___buffer          // buffer for uncompressed data
         )
 {
-  const size_t max_avail = 0x7FFFFFF0; // See max_avail comment in ON_BinaryArchive::WriteInflate
+  const std::size_t max_avail = 0x7FFFFFF0; // See max_avail comment in ON_BinaryArchive::WriteInflate
 
-  size_t sizeof__inbuffer = 0;
+  std::size_t sizeof__inbuffer = 0;
   void* in___buffer = 0;
   bool rc = false;
 
@@ -406,7 +406,7 @@ bool ON_BinaryArchive::ReadInflate(
         && 0 != out___buffer )
     {
       // read compressed buffer from the archive
-      sizeof__inbuffer = (size_t)(big_value-4); // the last 4 bytes in this chunk are a 32 bit crc
+      sizeof__inbuffer = (std::size_t)(big_value-4); // the last 4 bytes in this chunk are a 32 bit crc
       in___buffer = onmalloc(sizeof__inbuffer);
       if ( !in___buffer )
       {
@@ -454,9 +454,9 @@ bool ON_BinaryArchive::ReadInflate(
 
   // set up zlib in buffer
   unsigned char* my_next_in = (unsigned char*)in___buffer;
-  size_t my_avail_in = sizeof__inbuffer;
+  std::size_t my_avail_in = sizeof__inbuffer;
 
-  size_t d = my_avail_in;
+  std::size_t d = my_avail_in;
   if ( d > max_avail )
     d = max_avail;
   m_zlib.strm.next_in  = my_next_in;
@@ -466,7 +466,7 @@ bool ON_BinaryArchive::ReadInflate(
 
   // set up zlib out buffer
   unsigned char* my_next_out = (unsigned char*)out___buffer;
-  size_t my_avail_out = sizeof___outbuffer;
+  std::size_t my_avail_out = sizeof___outbuffer;
 
   d = my_avail_out;
   if ( d > max_avail )
@@ -642,7 +642,7 @@ struct ON_CompressedBufferHelper
   };
   unsigned char    buffer[sizeof_x_buffer];
   z_stream         strm;
-  size_t           m_buffer_compressed_capacity;
+  std::size_t           m_buffer_compressed_capacity;
 };
 
 ON_CompressedBuffer::ON_CompressedBuffer()
@@ -813,14 +813,14 @@ void ON_CompressedBuffer::Destroy()
 }
 
 bool ON_CompressedBuffer::Compress(
-        size_t sizeof__inbuffer,  // sizeof uncompressed input data
+        std::size_t sizeof__inbuffer,  // sizeof uncompressed input data
         const void* inbuffer,     // uncompressed input data
         int sizeof_element
         )
 {
   Destroy();
 
-  //size_t compressed_size = 0;
+  //std::size_t compressed_size = 0;
   bool rc = false;
 
   if ( sizeof__inbuffer > 0 && 0 == inbuffer )
@@ -871,7 +871,7 @@ bool ON_CompressedBuffer::Compress(
     else
     {
       m_buffer_compressed = onmalloc(sizeof__inbuffer/4);
-      size_t sizeof_compressed = DeflateHelper( &helper, sizeof__inbuffer, inbuffer );
+      std::size_t sizeof_compressed = DeflateHelper( &helper, sizeof__inbuffer, inbuffer );
       CompressionEnd(&helper);
       if ( sizeof_compressed > 0 && sizeof_compressed == m_sizeof_compressed )
       {
@@ -1014,7 +1014,7 @@ bool ON_CompressedBuffer::Uncompress(
 }
 
 bool ON_CompressedBuffer::WriteChar( 
-        size_t count, const void* buffer         
+        std::size_t count, const void* buffer         
         )
 {
   bool rc = true;
@@ -1022,7 +1022,7 @@ bool ON_CompressedBuffer::WriteChar(
   {
     if ( count + m_sizeof_compressed > m_buffer_compressed_capacity )
     {
-      size_t delta = count + m_sizeof_compressed - m_buffer_compressed_capacity;
+      std::size_t delta = count + m_sizeof_compressed - m_buffer_compressed_capacity;
       if ( delta < 2048 )
         delta = 2048;
       if ( delta < m_buffer_compressed_capacity/4 )
@@ -1047,9 +1047,9 @@ bool ON_CompressedBuffer::WriteChar(
 }
 
 
-size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes written
+std::size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes written
         ON_CompressedBufferHelper* helper,
-        size_t sizeof___inbuffer,  // sizeof uncompressed input data ( > 0 )
+        std::size_t sizeof___inbuffer,  // sizeof uncompressed input data ( > 0 )
         const void* in___buffer     // uncompressed input data ( != NULL )
         )
 {
@@ -1059,7 +1059,7 @@ size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes written
       sizeof(int)     = 4 bytes, 
       sizeof(long)    = 4 bytes,
       sizeof(pointer) = 4 bytes, and
-      sizeof(size_t)  = 4 bytes.
+      sizeof(std::size_t)  = 4 bytes.
 
     Theoretically I don't need to use multiple input buffer
     chunks in case.  But I'm paranoid and I will use multiple 
@@ -1072,7 +1072,7 @@ size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes written
       sizeof(int)     >= 4 bytes, (it's 4 on MS VS2005) 
       sizeof(long)    >= 4 bytes, (it's 4 on MS VS2005)
       sizeof(pointer)  = 8 bytes, and
-      sizeof(size_t)   = 8 bytes.
+      sizeof(std::size_t)   = 8 bytes.
 
     So, I'm going to assume the ints and longs in the zlib code 
     are 4 bytes, but I could have sizeof_inbuffer > 4GB.
@@ -1084,7 +1084,7 @@ size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes written
 
     So, I set
     
-       const size_t max_avail = (largest signed 4 byte integer - 15)
+       const std::size_t max_avail = (largest signed 4 byte integer - 15)
     
     and feed inflate and deflate buffers with size <= max_avail.
 
@@ -1110,18 +1110,18 @@ size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes written
         type is 64 bits, then the limit is 16 exabytes.
   */
 
-  const size_t max_avail = 0x7FFFFFF0;
+  const std::size_t max_avail = 0x7FFFFFF0;
 
   //  Compressed information is saved in a chunk.
   bool rc = true;
 
-  size_t out__count = 0;
+  std::size_t out__count = 0;
   int zrc = Z_OK;
 
-  size_t my_avail_in = sizeof___inbuffer;
+  std::size_t my_avail_in = sizeof___inbuffer;
   unsigned char* my_next_in = (unsigned char*)in___buffer;
 
-  size_t d = my_avail_in;
+  std::size_t d = my_avail_in;
   if ( d > max_avail )
     d = max_avail;
 
@@ -1139,7 +1139,7 @@ size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes written
   int counter = 512; 
   int flush = Z_NO_FLUSH;
 
-  size_t deflate_output_count = 0;
+  std::size_t deflate_output_count = 0;
 
   while( rc && counter > 0 ) 
   {
@@ -1232,11 +1232,11 @@ size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes written
 
 bool ON_CompressedBuffer::InflateHelper(
         ON_CompressedBufferHelper* helper,
-        size_t sizeof___outbuffer,  // sizeof uncompressed data
+        std::size_t sizeof___outbuffer,  // sizeof uncompressed data
         void* out___buffer          // buffer for uncompressed data
         ) const
 {
-  const size_t max_avail = 0x7FFFFFF0; // See max_avail comment in ON_CompressedBuffer::InflateHelper
+  const std::size_t max_avail = 0x7FFFFFF0; // See max_avail comment in ON_CompressedBuffer::InflateHelper
 
   bool rc = true;
 
@@ -1244,9 +1244,9 @@ bool ON_CompressedBuffer::InflateHelper(
 
   // set up zlib in buffer
   unsigned char* my_next_in = (unsigned char*)m_buffer_compressed;
-  size_t my_avail_in = m_sizeof_compressed;
+  std::size_t my_avail_in = m_sizeof_compressed;
 
-  size_t d = my_avail_in;
+  std::size_t d = my_avail_in;
   if ( d > max_avail )
     d = max_avail;
 
@@ -1259,7 +1259,7 @@ bool ON_CompressedBuffer::InflateHelper(
 
   // set up zlib out buffer
   unsigned char* my_next_out = (unsigned char*)out___buffer;
-  size_t my_avail_out = sizeof___outbuffer;
+  std::size_t my_avail_out = sizeof___outbuffer;
 
   d = my_avail_out;
   if ( d > max_avail )

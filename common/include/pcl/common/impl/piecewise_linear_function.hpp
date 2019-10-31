@@ -45,10 +45,10 @@ PiecewiseLinearFunction::PiecewiseLinearFunction(float factor, float offset) : f
 inline float PiecewiseLinearFunction::getValue(float point) const
 {
   float vector_pos = factor_*point + offset_;
-  float floored_vector_pos = floor(vector_pos);
+  float floored_vector_pos = std::floor(vector_pos);
   float interpolation_size = vector_pos-floored_vector_pos;
   int data_point_before = (std::max)(0, (std::min)(int(data_points_.size())-2, int(lrint(floored_vector_pos))));
-  //cout << "Interpolating between "<<data_point_before<<" and "<<data_point_before+1<<" with value "
+  //std::cout << "Interpolating between "<<data_point_before<<" and "<<data_point_before+1<<" with value "
        //<< interpolation_size<<" (vector size is "<<data_points_.size()<<").\n";
   return data_points_[data_point_before]+interpolation_size*(data_points_[data_point_before+1]-data_points_[data_point_before]);
 }

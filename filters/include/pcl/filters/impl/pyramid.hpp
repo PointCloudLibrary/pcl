@@ -55,9 +55,9 @@ pcl::filters::Pyramid<PointT>::initCompute ()
     return (false);
   }
 
-  // size_t ratio (std::pow (2, levels_));
-  // size_t last_width = input_->width / ratio;
-  // size_t last_height = input_->height / ratio;
+  // std::size_t ratio (std::pow (2, levels_));
+  // std::size_t last_width = input_->width / ratio;
+  // std::size_t last_height = input_->height / ratio;
   
   if (levels_ > 4)
   {
@@ -250,9 +250,9 @@ namespace pcl
                   r += previous.at (jj,ii).r * kernel_ (mm,nn);
                 }
               }
-              next.at (j,i).b = static_cast<pcl::uint8_t> (b);
-              next.at (j,i).g = static_cast<pcl::uint8_t> (g);
-              next.at (j,i).r = static_cast<pcl::uint8_t> (r);
+              next.at (j,i).b = static_cast<std::uint8_t> (b);
+              next.at (j,i).g = static_cast<std::uint8_t> (g);
+              next.at (j,i).r = static_cast<std::uint8_t> (r);
             }
           }
         }
@@ -306,9 +306,9 @@ namespace pcl
                 weight = 1.f/weight;
                 r*= weight; g*= weight; b*= weight;
                 next.at (j,i).x*= weight; next.at (j,i).y*= weight; next.at (j,i).z*= weight;
-                next.at (j,i).b = static_cast<pcl::uint8_t> (b);
-                next.at (j,i).g = static_cast<pcl::uint8_t> (g);
-                next.at (j,i).r = static_cast<pcl::uint8_t> (r);
+                next.at (j,i).b = static_cast<std::uint8_t> (b);
+                next.at (j,i).g = static_cast<std::uint8_t> (g);
+                next.at (j,i).r = static_cast<std::uint8_t> (r);
               }
             }
           }
@@ -374,10 +374,10 @@ namespace pcl
                   a += previous.at (jj,ii).a * kernel_ (mm,nn);
                 }
               }
-              next.at (j,i).b = static_cast<pcl::uint8_t> (b);
-              next.at (j,i).g = static_cast<pcl::uint8_t> (g);
-              next.at (j,i).r = static_cast<pcl::uint8_t> (r);
-              next.at (j,i).a = static_cast<pcl::uint8_t> (a);
+              next.at (j,i).b = static_cast<std::uint8_t> (b);
+              next.at (j,i).g = static_cast<std::uint8_t> (g);
+              next.at (j,i).r = static_cast<std::uint8_t> (r);
+              next.at (j,i).a = static_cast<std::uint8_t> (a);
             }
           }
         }
@@ -432,10 +432,10 @@ namespace pcl
                 weight = 1.f/weight;
                 r*= weight; g*= weight; b*= weight; a*= weight;
                 next.at (j,i).x*= weight; next.at (j,i).y*= weight; next.at (j,i).z*= weight;
-                next.at (j,i).b = static_cast<pcl::uint8_t> (b);
-                next.at (j,i).g = static_cast<pcl::uint8_t> (g);
-                next.at (j,i).r = static_cast<pcl::uint8_t> (r);
-                next.at (j,i).a = static_cast<pcl::uint8_t> (a);
+                next.at (j,i).b = static_cast<std::uint8_t> (b);
+                next.at (j,i).g = static_cast<std::uint8_t> (g);
+                next.at (j,i).r = static_cast<std::uint8_t> (r);
+                next.at (j,i).a = static_cast<std::uint8_t> (a);
               }
             }
           }
@@ -500,9 +500,9 @@ namespace pcl
                   r += previous.at (jj,ii).r * kernel_ (mm,nn);
                 }
               }
-              next.at (j,i).b = static_cast<pcl::uint8_t> (b);
-              next.at (j,i).g = static_cast<pcl::uint8_t> (g);
-              next.at (j,i).r = static_cast<pcl::uint8_t> (r);
+              next.at (j,i).b = static_cast<std::uint8_t> (b);
+              next.at (j,i).g = static_cast<std::uint8_t> (g);
+              next.at (j,i).r = static_cast<std::uint8_t> (r);
             }
           }
         }
@@ -552,9 +552,9 @@ namespace pcl
               {
                 weight = 1.f/weight;
                 r*= weight; g*= weight; b*= weight;
-                next.at (j,i).b = static_cast<pcl::uint8_t> (b);
-                next.at (j,i).g = static_cast<pcl::uint8_t> (g);
-                next.at (j,i).r = static_cast<pcl::uint8_t> (r);
+                next.at (j,i).b = static_cast<std::uint8_t> (b);
+                next.at (j,i).g = static_cast<std::uint8_t> (g);
+                next.at (j,i).r = static_cast<std::uint8_t> (r);
               }
             }
           }

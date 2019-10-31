@@ -69,7 +69,7 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
   queries_device_buffer.create(max_answers);
 
   // Process all points in the cloud
-  for (size_t i = 0; i < host_cloud_->points.size (); ++i)
+  for (std::size_t i = 0; i < host_cloud_->points.size (); ++i)
   {
     // if we already processed this point continue with the next one
     if (processed[i])
@@ -103,7 +103,7 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
       if(queries_host.size () <= 10) ///@todo: adjust this to a variable number settable with method
       {
         std::cout << " CPU: ";
-        for(size_t p = 0; p < queries_host.size (); p++)
+        for(std::size_t p = 0; p < queries_host.size (); p++)
         {
           // Execute the radiusSearch on the host
           tree->radiusSearchHost(queries_host[p], tolerance, data, max_answers);
@@ -118,7 +118,7 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
           continue;
 
         // Process the results
-        for(size_t i = 0; i < data.size (); i++)
+        for(std::size_t i = 0; i < data.size (); i++)
         {
           if(processed[data[i]])
             continue;
@@ -146,7 +146,7 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
         previous_found_points = found_points;
         // Clear queries list
         queries_host.clear();
-        for(size_t qp = 0; qp < sizes.size (); qp++)
+        for(std::size_t qp = 0; qp < sizes.size (); qp++)
         {
           for(int qp_r = 0; qp_r < sizes[qp]; qp_r++)
           {

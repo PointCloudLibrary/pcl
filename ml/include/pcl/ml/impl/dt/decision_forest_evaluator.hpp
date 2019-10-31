@@ -34,76 +34,94 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-  
-#ifndef PCL_ML_DT_DECISION_FOREST_EVALUATOR_HPP_
-#define PCL_ML_DT_DECISION_FOREST_EVALUATOR_HPP_
+
+#pragma once
 
 #include <pcl/common/common.h>
 
-#include <pcl/ml/dt/decision_forest_evaluator.h>
 #include <pcl/ml/dt/decision_forest.h>
+#include <pcl/ml/dt/decision_forest_evaluator.h>
 #include <pcl/ml/feature_handler.h>
 #include <pcl/ml/stats_estimator.h>
 
 #include <vector>
 
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
+pcl::DecisionForestEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+    DecisionForestEvaluator()
+: tree_evaluator_()
+{}
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
-pcl::DecisionForestEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::DecisionForestEvaluator ()
-  : tree_evaluator_ ()
-{
-}
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
+pcl::DecisionForestEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+    ~DecisionForestEvaluator()
+{}
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
-pcl::DecisionForestEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::~DecisionForestEvaluator ()
-{
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
 void
-pcl::DecisionForestEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::evaluate (
-  pcl::DecisionForest<NodeType> & forest,
-  pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler,
-  pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator,
-  DataSet & data_set,
-  std::vector<ExampleIndex> & examples,
-  std::vector<LabelType> & label_data)
+pcl::DecisionForestEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+    evaluate(pcl::DecisionForest<NodeType>& forest,
+             pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
+             pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>&
+                 stats_estimator,
+             DataSet& data_set,
+             std::vector<ExampleIndex>& examples,
+             std::vector<LabelType>& label_data)
 {
-  const size_t num_of_examples = examples.size ();
-  label_data.resize (num_of_examples, 0);
+  const std::size_t num_of_examples = examples.size();
+  label_data.resize(num_of_examples, 0);
 
-  for (size_t forest_index = 0; forest_index < forest.size (); ++forest_index)
-  {
-    tree_evaluator_.evaluateAndAdd (forest[forest_index], feature_handler, stats_estimator, data_set, examples, label_data);
+  for (std::size_t forest_index = 0; forest_index < forest.size(); ++forest_index) {
+    tree_evaluator_.evaluateAndAdd(forest[forest_index],
+                                   feature_handler,
+                                   stats_estimator,
+                                   data_set,
+                                   examples,
+                                   label_data);
   }
 
-  const float inv_num_of_trees = 1.0f / static_cast<float> (forest.size ());
-  for (size_t label_index = 0; label_index < label_data.size (); ++label_index)
-  {
+  const float inv_num_of_trees = 1.0f / static_cast<float>(forest.size());
+  for (std::size_t label_index = 0; label_index < label_data.size(); ++label_index) {
     label_data[label_index] *= inv_num_of_trees;
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
-void pcl::DecisionForestEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::evaluate (
-    pcl::DecisionForest<NodeType> & forest,
-    pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler,
-    pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator,
-    DataSet & data_set,
-    ExampleIndex example,
-    std::vector<NodeType> & leaves)
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
+void
+pcl::DecisionForestEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+    evaluate(pcl::DecisionForest<NodeType>& forest,
+             pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
+             pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>&
+                 stats_estimator,
+             DataSet& data_set,
+             ExampleIndex example,
+             std::vector<NodeType>& leaves)
 {
-  leaves.resize (forest.size ());
-  for (size_t forest_index = 0; forest_index < forest.size (); ++forest_index)
-  {
+  leaves.resize(forest.size());
+  for (std::size_t forest_index = 0; forest_index < forest.size(); ++forest_index) {
     NodeType leave;
-    tree_evaluator_.evaluate (forest[forest_index], feature_handler, stats_estimator, data_set, example, leave);
+    tree_evaluator_.evaluate(forest[forest_index],
+                             feature_handler,
+                             stats_estimator,
+                             data_set,
+                             example,
+                             leave);
     leaves[forest_index] = leave;
   }
 }
-  
-#endif

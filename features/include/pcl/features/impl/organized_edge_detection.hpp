@@ -69,7 +69,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::assignLabelIndices (pcl::PointCloud<Poi
 {
   const unsigned invalid_label = unsigned (0);
   label_indices.resize (num_of_edgetype_);
-  for (size_t idx = 0; idx < input_->points.size (); idx++)
+  for (std::size_t idx = 0; idx < input_->points.size (); idx++)
   {
     if (labels[idx].label != invalid_label)
     {
@@ -249,7 +249,7 @@ pcl::OrganizedEdgeFromRGB<PointT, PointLT>::extractEdges (pcl::PointCloud<PointL
     gray->height = input_->height;
     gray->resize (input_->height*input_->width);
 
-    for (size_t i = 0; i < input_->size (); ++i)
+    for (std::size_t i = 0; i < input_->size (); ++i)
       (*gray)[i].intensity = float (((*input_)[i].r + (*input_)[i].g + (*input_)[i].b) / 3);
 
     pcl::PointCloud<pcl::PointXYZIEdge> img_edge_rgb;
@@ -259,9 +259,9 @@ pcl::OrganizedEdgeFromRGB<PointT, PointLT>::extractEdges (pcl::PointCloud<PointL
     edge.setHysteresisThresholdHigh (th_rgb_canny_high_);
     edge.detectEdgeCanny (img_edge_rgb);
     
-    for (uint32_t row=0; row<labels.height; row++)
+    for (std::uint32_t row=0; row<labels.height; row++)
     {
-      for (uint32_t col=0; col<labels.width; col++)
+      for (std::uint32_t col=0; col<labels.width; col++)
       {
         if (img_edge_rgb (col, row).magnitude == 255.f)
           labels[row * labels.width + col].label |= EDGELABEL_RGB_CANNY;
@@ -302,9 +302,9 @@ pcl::OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::extractEdges (pcl::Poin
     ny.height = normals_->height;
     ny.resize (normals_->height*normals_->width);
 
-    for (uint32_t row=0; row<normals_->height; row++)
+    for (std::uint32_t row=0; row<normals_->height; row++)
     {
-      for (uint32_t col=0; col<normals_->width; col++)
+      for (std::uint32_t col=0; col<normals_->width; col++)
       {
         nx (col, row).intensity = normals_->points[row*normals_->width + col].normal_x;
         ny (col, row).intensity = normals_->points[row*normals_->width + col].normal_y;
@@ -317,9 +317,9 @@ pcl::OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::extractEdges (pcl::Poin
     edge.setHysteresisThresholdHigh (th_hc_canny_high_);
     edge.canny (nx, ny, img_edge);
 
-    for (uint32_t row=0; row<labels.height; row++)
+    for (std::uint32_t row=0; row<labels.height; row++)
     {
-      for (uint32_t col=0; col<labels.width; col++)
+      for (std::uint32_t col=0; col<labels.width; col++)
       {
         if (img_edge (col, row).magnitude == 255.f)
           labels[row * labels.width + col].label |= EDGELABEL_HIGH_CURVATURE;

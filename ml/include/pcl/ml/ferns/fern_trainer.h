@@ -34,146 +34,158 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-  
+
 #pragma once
 
 #include <pcl/common/common.h>
 
-#include <pcl/ml/ferns/fern.h>
 #include <pcl/ml/feature_handler.h>
+#include <pcl/ml/ferns/fern.h>
 #include <pcl/ml/stats_estimator.h>
 
 #include <vector>
 
-namespace pcl
-{
+namespace pcl {
 
-  /** \brief Trainer for a Fern. */
-  template <class FeatureType, class DataSet, class LabelType, class ExampleIndex, class NodeType>
-  class PCL_EXPORTS FernTrainer
+/** Trainer for a Fern. */
+template <class FeatureType,
+          class DataSet,
+          class LabelType,
+          class ExampleIndex,
+          class NodeType>
+class PCL_EXPORTS FernTrainer {
+
+public:
+  /** Constructor. */
+  FernTrainer();
+
+  /** Destructor. */
+  virtual ~FernTrainer();
+
+  /** Sets the feature handler used to create and evaluate features.
+   *
+   * \param[in] feature_handler the feature handler
+   */
+  inline void
+  setFeatureHandler(
+      pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler)
   {
-  
-    public:
+    feature_handler_ = &feature_handler;
+  }
 
-      /** \brief Constructor. */
-      FernTrainer ();
-      /** \brief Destructor. */
-      virtual 
-      ~FernTrainer ();
+  /** Sets the object for estimating the statistics for tree nodes.
+   *
+   * \param[in] stats_estimator the statistics estimator
+   */
+  inline void
+  setStatsEstimator(
+      pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator)
+  {
+    stats_estimator_ = &stats_estimator;
+  }
 
-      /** \brief Sets the feature handler used to create and evaluate features. 
-        * \param[in] feature_handler The feature handler.
-        */
-      inline void
-      setFeatureHandler (pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> & feature_handler)
-      {
-        feature_handler_ = &feature_handler;
-      }
+  /** Sets the maximum depth of the learned tree.
+   *
+   * \param[in] fern_depth maximum depth of the learned tree
+   */
+  inline void
+  setFernDepth(const std::size_t fern_depth)
+  {
+    fern_depth_ = fern_depth;
+  }
 
-      /** \brief Sets the object for estimating the statistics for tree nodes.
-        * \param[in] stats_estimator The statistics estimator.
-        */
-      inline void
-      setStatsEstimator (pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> & stats_estimator)
-      {
-        stats_estimator_ = &stats_estimator;
-      }
+  /** Sets the number of features used to find optimal decision features.
+   *
+   * \param[in] num_of_features the number of features
+   */
+  inline void
+  setNumOfFeatures(const std::size_t num_of_features)
+  {
+    num_of_features_ = num_of_features;
+  }
 
-      /** \brief Sets the maximum depth of the learned tree.
-        * \param[in] fern_depth Maximum depth of the learned tree.
-        */
-      inline void
-      setFernDepth (const size_t fern_depth)
-      {
-        fern_depth_ = fern_depth;
-      }
+  /** Sets the number of thresholds tested for finding the optimal decision
+   *  threshold on the feature responses.
+   *
+   * \param[in] num_of_threshold the number of thresholds
+   */
+  inline void
+  setNumOfThresholds(const std::size_t num_of_threshold)
+  {
+    num_of_thresholds_ = num_of_threshold;
+  }
 
-      /** \brief Sets the number of features used to find optimal decision features.
-        * \param[in] num_of_features The number of features.
-        */
-      inline void
-      setNumOfFeatures (const size_t num_of_features)
-      {
-        num_of_features_ = num_of_features;
-      }
+  /** Sets the input data set used for training.
+   *
+   * \param[in] data_set the data set used for training
+   */
+  inline void
+  setTrainingDataSet(DataSet& data_set)
+  {
+    data_set_ = data_set;
+  }
 
-      /** \brief Sets the number of thresholds tested for finding the optimal decision threshold on the feature responses.
-        * \param[in] num_of_threshold The number of thresholds.
-        */
-      inline void
-      setNumOfThresholds (const size_t num_of_threshold)
-      {
-        num_of_thresholds_ = num_of_threshold;
-      }
+  /** Example indices that specify the data used for training.
+   *
+   * \param[in] examples the examples
+   */
+  inline void
+  setExamples(std::vector<ExampleIndex>& examples)
+  {
+    examples_ = examples;
+  }
 
-      /** \brief Sets the input data set used for training.
-        * \param[in] data_set The data set used for training.
-        */
-      inline void
-      setTrainingDataSet (DataSet & data_set)
-      {
-        data_set_ = data_set;
-      }
+  /** Sets the label data corresponding to the example data.
+   *
+   * \param[in] label_data the label data
+   */
+  inline void
+  setLabelData(std::vector<LabelType>& label_data)
+  {
+    label_data_ = label_data;
+  }
 
-      /** \brief Example indices that specify the data used for training.
-        * \param[in] examples The examples.
-        */
-      inline void
-      setExamples (std::vector<ExampleIndex> & examples)
-      {
-        examples_ = examples;
-      }
+  /** Trains a decision tree using the set training data and settings.
+   *
+   * \param[out] fern destination for the trained tree
+   */
+  void
+  train(Fern<FeatureType, NodeType>& fern);
 
-      /** \brief Sets the label data corresponding to the example data.
-        * \param[in] label_data The label data.
-        */
-      inline void
-      setLabelData (std::vector<LabelType> & label_data)
-      {
-        label_data_ = label_data;
-      }
+protected:
+  /** Creates uniformely distrebuted thresholds over the range of the supplied
+   *  values.
+   *
+   * \param[in] num_of_thresholds the number of thresholds to create
+   * \param[in] values the values for estimating the expected value range
+   * \param[out] thresholds the resulting thresholds
+   */
+  static void
+  createThresholdsUniform(const std::size_t num_of_thresholds,
+                          std::vector<float>& values,
+                          std::vector<float>& thresholds);
 
-      /** \brief Trains a decision tree using the set training data and settings.
-        * \param[out] fern Destination for the trained tree.
-        */
-      void
-      train (Fern<FeatureType, NodeType> & fern);
+private:
+  /** Desired depth of the learned fern. */
+  std::size_t fern_depth_;
+  /** Number of features used to find optimal decision features. */
+  std::size_t num_of_features_;
+  /** Number of thresholds. */
+  std::size_t num_of_thresholds_;
 
-    protected:
+  /** FeatureHandler instance, responsible for creating and evaluating features. */
+  pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>* feature_handler_;
+  /** StatsEstimator instance, responsible for gathering stats about a node. */
+  pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>* stats_estimator_;
 
-      /** \brief Creates uniformely distrebuted thresholds over the range of the supplied values.
-        * \param[in] num_of_thresholds The number of thresholds to create.
-        * \param[in] values The values for estimating the expected value range.
-        * \param[out] thresholds The resulting thresholds.
-        */
-      static void
-      createThresholdsUniform (const size_t num_of_thresholds,
-                               std::vector<float> & values,
-                               std::vector<float> & thresholds);
+  /** The training data set. */
+  DataSet data_set_;
+  /** The label data. */
+  std::vector<LabelType> label_data_;
+  /** The example data. */
+  std::vector<ExampleIndex> examples_;
+};
 
-    private:
-
-      /** \brief Desired depth of the learned fern. */
-      size_t fern_depth_;
-      /** \brief Number of features used to find optimal decision features. */
-      size_t num_of_features_;
-      /** \brief Number of thresholds. */
-      size_t num_of_thresholds_;
-
-      /** \brief FeatureHandler instance, responsible for creating and evaluating features. */
-      pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex> * feature_handler_;
-      /** \brief StatsEstimator instance, responsible for gathering stats about a node. */
-      pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex> * stats_estimator_;
-
-      /** \brief The training data set. */
-      DataSet data_set_;
-      /** \brief The label data. */
-      std::vector<LabelType> label_data_;
-      /** \brief The example data. */
-      std::vector<ExampleIndex> examples_;
-  
-  };
-
-}
+} // namespace pcl
 
 #include <pcl/ml/impl/ferns/fern_trainer.hpp>

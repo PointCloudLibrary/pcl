@@ -209,9 +209,9 @@ pcl::PlaneClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cl
 
 #endif
 
-    //cout << "points   : " << points.rows () << " x " << points.cols () << " * " << plane_params_.transpose ().rows () << " x " << plane_params_.transpose ().cols () << endl;
+    //std::cout << "points   : " << points.rows () << " x " << points.cols () << " * " << plane_params_.transpose ().rows () << " x " << plane_params_.transpose ().cols () << std::endl;
 
-    //cout << "distances: " << distances.rows () << " x " << distances.cols () << endl;
+    //std::cout << "distances: " << distances.rows () << " x " << distances.cols () << std::endl;
     /*/
     for (unsigned pIdx = 0; pIdx < cloud_in.size (); ++pIdx)
       if (clipPoint3D (cloud_in[pIdx]))

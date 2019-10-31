@@ -99,7 +99,7 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     //prepare output buffers on host
     std::vector< std::vector<int> > host_search1(data.tests_num);
     std::vector< std::vector<int> > host_search2(data.tests_num);
-    for(size_t i = 0; i < data.tests_num; ++i)
+    for(std::size_t i = 0; i < data.tests_num; ++i)
     {
         host_search1[i].reserve(max_answers);
         host_search2[i].reserve(max_answers);
@@ -118,7 +118,7 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
 
     //search CPU
     octree_device.internalDownload();
-    for(size_t i = 0; i < data.tests_num; ++i)
+    for(std::size_t i = 0; i < data.tests_num; ++i)
     {
         octree_device.radiusSearchHost(data.queries[i], data.shared_radius, host_search1[i], max_answers);
         octree_device.radiusSearchHost(data.queries[i], data.radiuses[i],   host_search2[i], max_answers);
@@ -140,7 +140,7 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     //data.bruteForceSearch();
 
     //verify results    
-    for(size_t i = 0; i < data.tests_num; ++i)
+    for(std::size_t i = 0; i < data.tests_num; ++i)
     {        
         std::vector<int>& results_host = host_search1[i];        
         
@@ -164,12 +164,12 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
 
     float avg_size1 = std::accumulate(sizes1.begin(), sizes1.end(), 0) * (1.f/sizes1.size());
 
-    cout << "avg_result_size1 = " << avg_size1 << endl;
+    std::cout << "avg_result_size1 = " << avg_size1 << std::endl;
     ASSERT_GT(avg_size1, 5);    
 
 
     //verify results    
-    for(size_t i = 0; i < data.tests_num; ++i)
+    for(std::size_t i = 0; i < data.tests_num; ++i)
     {        
         std::vector<int>& results_host = host_search2[i];        
         
@@ -193,12 +193,12 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
 
     float avg_size2 = std::accumulate(sizes2.begin(), sizes2.end(), 0) * (1.f/sizes2.size());
 
-    cout << "avg_result_size2 = " << avg_size2 << endl;
+    std::cout << "avg_result_size2 = " << avg_size2 << std::endl;
     ASSERT_GT(avg_size2, 5);
 
 
     //verify results    
-    for(size_t i = 0; i < data.tests_num; i+=2)
+    for(std::size_t i = 0; i < data.tests_num; i+=2)
     {                
         std::vector<int>& results_host = host_search1[i];        
         
@@ -222,7 +222,7 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
 
     float avg_size3 = std::accumulate(sizes3.begin(), sizes3.end(), 0) * (1.f/sizes3.size());
 
-    cout << "avg_result_size3 = " << avg_size3 << endl;
+    std::cout << "avg_result_size3 = " << avg_size3 << std::endl;
     ASSERT_GT(avg_size3, 5);
 }
 

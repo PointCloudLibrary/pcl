@@ -49,9 +49,9 @@ loadHist (const boost::filesystem::path &path, vfh_model &vfh)
   vfh.second.resize (308);
 
   std::vector <pcl::PCLPointField> fields;
-  getFieldIndex (point, "vfh", fields);
+  pcl::getFieldIndex<pcl::VFHSignature308> ("vfh", fields);
 
-  for (size_t i = 0; i < fields[vfh_idx].count; ++i)
+  for (std::size_t i = 0; i < fields[vfh_idx].count; ++i)
   {
     vfh.second[i] = point.points[0].histogram[i];
   }
@@ -186,7 +186,7 @@ main (int argc, char** argv)
 
   // Load the results
   pcl::visualization::PCLVisualizer p (argc, argv, "VFH Cluster Classifier");
-  int y_s = (int)floor (sqrt ((double)k));
+  int y_s = (int)std::floor (sqrt ((double)k));
   int x_s = y_s + (int)std::ceil ((k / (double)y_s) - y_s);
   double x_step = (double)(1 / (double)x_s);
   double y_step = (double)(1 / (double)y_s);

@@ -292,7 +292,7 @@ pcl::device::extractCloud (const PtrStep<short2>& volume, const float3& volume_s
 
   int size;
   cudaSafeCall ( cudaMemcpyFromSymbol (&size, output_count, sizeof(size)) );
-  return (size_t)size;
+  return (std::size_t)size;
 }
 
 
@@ -346,7 +346,7 @@ namespace pcl
 
         if (idx >= points.size)
           return;
-        const float qnan = numeric_limits<float>::quiet_NaN ();
+        constexpr float qnan = std::numeric_limits<float>::quiet_NaN ();
         float3 n = make_float3 (qnan, qnan, qnan);
 
         float3 point = fetchPoint (idx);

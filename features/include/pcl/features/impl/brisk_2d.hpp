@@ -129,7 +129,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKern
 
     // generate the pattern points look-up
     double alpha, theta;
-    for (size_t rot = 0; rot < n_rot_; ++rot)
+    for (std::size_t rot = 0; rot < n_rot_; ++rot)
     {
       // this is the rotation of the feature
       theta = double (rot) * 2 * M_PI / double (n_rot_); 
@@ -460,11 +460,11 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   // destination for intensity data; will be forwarded to BRISK
   std::vector<unsigned char> image_data (width*height);
 
-  for (size_t i = 0; i < image_data.size (); ++i)
+  for (std::size_t i = 0; i < image_data.size (); ++i)
     image_data[i] = static_cast<unsigned char> (intensity_ ((*input_cloud_)[i]));
 
   // Remove keypoints very close to the border
-  size_t ksize = keypoints_->points.size ();
+  std::size_t ksize = keypoints_->points.size ();
   std::vector<int> kscales; // remember the scale per keypoint
   kscales.resize (ksize);
  
@@ -480,7 +480,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   if (!scale_invariance_enabled_)
     basicscale = std::max (static_cast<int> (float (scales_) / lb_scalerange * (std::log2 (1.45f * basic_size_ / (basic_size_06))) + 0.5f), 0);
 
-  for (size_t k = 0; k < ksize; k++)
+  for (std::size_t k = 0; k < ksize; k++)
   {
     unsigned int scale;
     if (scale_invariance_enabled_)
@@ -515,19 +515,19 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     }
   }
 
-  keypoints_->width = uint32_t (keypoints_->size ());
+  keypoints_->width = std::uint32_t (keypoints_->size ());
   keypoints_->height = 1;
 
   // first, calculate the integral image over the whole image:
   // current integral image
   std::vector<int> integral ((width+1)*(height+1), 0);    // the integral image
 
-  for (size_t row_index = 1; row_index < height; ++row_index)
+  for (std::size_t row_index = 1; row_index < height; ++row_index)
   {
-    for (size_t col_index = 1; col_index < width; ++col_index)
+    for (std::size_t col_index = 1; col_index < width; ++col_index)
     {
-      const size_t index = row_index*width+col_index;
-      const size_t index2 = (row_index)*(width+1)+(col_index);
+      const std::size_t index = row_index*width+col_index;
+      const std::size_t index2 = (row_index)*(width+1)+(col_index);
 
       integral[index2] = static_cast<int> (image_data[index])
         - integral[index2-1-(width+1)]
@@ -554,7 +554,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   output.resize (ksize);
   //output.width = ksize;
   //output.height = 1;
-  for (size_t k = 0; k < ksize; k++)
+  for (std::size_t k = 0; k < ksize; k++)
   {
     unsigned char* ptr = &output.points[k].descriptor[0];
 
@@ -628,12 +628,12 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
       *(pvalues++) = smoothedIntensity (image_data, width, height, integral, x, y, scale, theta, i);
 
 #ifdef __GNUC__
-      using UINT32_ALIAS = uint32_t;
+      using UINT32_ALIAS = std::uint32_t;
 #endif
 #ifdef _MSC_VER
       // Todo: find the equivalent to may_alias
-      #define UCHAR_ALIAS uint32_t //__declspec(noalias)
-      #define UINT32_ALIAS uint32_t //__declspec(noalias)
+      #define UCHAR_ALIAS std::uint32_t //__declspec(noalias)
+      #define UINT32_ALIAS std::uint32_t //__declspec(noalias)
 #endif
 
     // now iterate through all the pairings

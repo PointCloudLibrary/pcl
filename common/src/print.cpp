@@ -38,10 +38,13 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cctype> // for toupper
+#include <map>
 #include <string>
+#include <boost/optional.hpp>
 
 #if defined WIN32
 # include <windows.h>
+# include <io.h>
 
 #ifndef _MSC_VER
 # define COMMON_LVB_UNDERSCORE    0
@@ -81,17 +84,49 @@ convertAttributesColor (int attribute, int fg, int bg=0)
   return wAttributes[attribute] | wFgColors[fg] | wBgColors[bg];
 }
 
+#else
+#  include <unistd.h>
+#  include <cstdio>
 #endif
+
+// Map to store, for each output stream, whether to use colored output
+static std::map<FILE *, boost::optional<bool> > colored_output;
+
+////////////////////////////////////////////////////////////////////////////////
+inline bool
+useColoredOutput (FILE *stream)
+{
+  auto &colored = colored_output[stream];
+  if (!colored)
+  {
+    // Use colored output if PCL_CLICOLOR_FORCE is set or if the output is an interactive terminal
+#ifdef WIN32
+    colored = getenv ("PCL_CLICOLOR_FORCE") || _isatty (_fileno (stream));
+#else
+    colored = getenv ("PCL_CLICOLOR_FORCE") || isatty (fileno (stream));
+#endif
+  }
+  return colored.get ();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void
+pcl::console::enableColoredOutput (FILE *stream, bool enable)
+{
+  colored_output[stream] = enable;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 void
 pcl::console::change_text_color (FILE *stream, int attribute, int fg, int bg)
 {
+  if (!useColoredOutput (stream)) return;
+
 #ifdef WIN32
   HANDLE h = GetStdHandle ((stream == stdout) ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE);
   SetConsoleTextAttribute (h, convertAttributesColor (attribute, fg, bg));
 #else
-  char command[13];
+  char command[40];
   // Command is the control command to the terminal
   sprintf (command, "%c[%d;%d;%dm", 0x1B, attribute, fg + 30, bg + 40);
   fprintf (stream, "%s", command);
@@ -102,11 +137,13 @@ pcl::console::change_text_color (FILE *stream, int attribute, int fg, int bg)
 void
 pcl::console::change_text_color (FILE *stream, int attribute, int fg)
 {
+  if (!useColoredOutput (stream)) return;
+
 #ifdef WIN32
   HANDLE h = GetStdHandle ((stream == stdout) ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE);
   SetConsoleTextAttribute (h, convertAttributesColor (attribute, fg));
 #else
-  char command[13];
+  char command[17];
   // Command is the control command to the terminal
   sprintf (command, "%c[%d;%dm", 0x1B, attribute, fg + 30);
   fprintf (stream, "%s", command);
@@ -117,6 +154,8 @@ pcl::console::change_text_color (FILE *stream, int attribute, int fg)
 void
 pcl::console::reset_text_color (FILE *stream)
 {
+  if (!useColoredOutput (stream)) return;
+
 #ifdef WIN32
   HANDLE h = GetStdHandle ((stream == stdout) ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE);
   SetConsoleTextAttribute (h, convertAttributesColor (0, TT_WHITE, TT_BLACK));

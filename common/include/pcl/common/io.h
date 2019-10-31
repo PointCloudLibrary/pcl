@@ -40,11 +40,14 @@
 
 #pragma once
 
+#include <numeric>
 #include <string>
+
 #include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>
 #include <pcl/conversions.h>
 #include <pcl/exceptions.h>
+#include <pcl/PolygonMesh.h>
 #include <locale>
 
 namespace pcl
@@ -58,10 +61,11 @@ namespace pcl
   getFieldIndex (const pcl::PCLPointCloud2 &cloud, const std::string &field_name)
   {
     // Get the index we need
-    for (size_t d = 0; d < cloud.fields.size (); ++d)
-      if (cloud.fields[d].name == field_name)
-        return (static_cast<int>(d));
-    return (-1);
+    const auto result = std::find_if(cloud.fields.begin (), cloud.fields.end (),
+        [&field_name](const auto field) { return field.name == field_name; });
+    if (result == cloud.fields.end ())
+      return -1;
+    return std::distance(cloud.fields.begin (), result);
   }
 
   /** \brief Get the index of a specified field (i.e., dimension/channel)
@@ -70,11 +74,14 @@ namespace pcl
     * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
     * \ingroup common
     */
-  template <typename PointT> inline int 
+  template <typename PointT>
+  [[deprecated("use getFieldIndex<PointT> (field_name, fields) instead")]]
+  inline int
   getFieldIndex (const pcl::PointCloud<PointT> &cloud, const std::string &field_name, 
                  std::vector<pcl::PCLPointField> &fields);
 
   /** \brief Get the index of a specified field (i.e., dimension/channel)
+    * \tparam PointT datatype for which fields is being queries
     * \param[in] field_name the string defining the field name
     * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
     * \ingroup common
@@ -82,21 +89,42 @@ namespace pcl
   template <typename PointT> inline int 
   getFieldIndex (const std::string &field_name, 
                  std::vector<pcl::PCLPointField> &fields);
+  /** \brief Get the index of a specified field (i.e., dimension/channel)
+    * \tparam PointT datatype for which fields is being queries
+    * \param[in] field_name the string defining the field name
+    * \param[in] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
+    * \ingroup common
+    */
+  template <typename PointT> inline int
+  getFieldIndex (const std::string &field_name,
+                 const std::vector<pcl::PCLPointField> &fields);
 
   /** \brief Get the list of available fields (i.e., dimension/channel)
     * \param[in] cloud the point cloud message
     * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
     * \ingroup common
     */
-  template <typename PointT> inline void 
+  template <typename PointT>
+  [[deprecated("use getFields<PointT> () with return value instead")]]
+  inline void
   getFields (const pcl::PointCloud<PointT> &cloud, std::vector<pcl::PCLPointField> &fields);
 
   /** \brief Get the list of available fields (i.e., dimension/channel)
+    * \tparam PointT datatype whose details are requested
     * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
     * \ingroup common
     */
-  template <typename PointT> inline void 
+  template <typename PointT>
+  [[deprecated("use getFields<PointT> () with return value instead")]]
+  inline void 
   getFields (std::vector<pcl::PCLPointField> &fields);
+
+  /** \brief Get the list of available fields (i.e., dimension/channel)
+    * \tparam PointT datatype whose details are requested
+    * \ingroup common
+    */
+  template <typename PointT> inline std::vector<pcl::PCLPointField>
+  getFields ();
 
   /** \brief Get the list of all fields available in a given cloud
     * \param[in] cloud the point cloud message
@@ -112,11 +140,8 @@ namespace pcl
   inline std::string
   getFieldsList (const pcl::PCLPointCloud2 &cloud)
   {
-    std::string result;
-    for (size_t i = 0; i < cloud.fields.size () - 1; ++i)
-      result += cloud.fields[i].name + " ";
-    result += cloud.fields[cloud.fields.size () - 1].name;
-    return (result);
+    return std::accumulate(std::next (cloud.fields.begin ()), cloud.fields.end (), cloud.fields[0].name,
+        [](const auto& acc, const auto& field) { return acc + " " + field.name; });
   }
 
   /** \brief Obtains the size of a specific field data type in bytes
@@ -244,13 +269,65 @@ namespace pcl
   PCL_EXPORTS int
   interpolatePointIndex (int p, int length, InterpolationType type);
 
-  /** \brief Concatenate two pcl::PCLPointCloud2.
+  /** \brief Concatenate two pcl::PointCloud<PointT>
     * \param[in] cloud1 the first input point cloud dataset
     * \param[in] cloud2 the second input point cloud dataset
     * \param[out] cloud_out the resultant output point cloud dataset
-    * \return true if successful, false if failed (e.g., name/number of fields differs)
+    * \return true if successful, false otherwise
     * \ingroup common
     */
+  template <typename PointT>
+  PCL_EXPORTS bool
+  concatenate (const pcl::PointCloud<PointT> &cloud1,
+               const pcl::PointCloud<PointT> &cloud2,
+               pcl::PointCloud<PointT> &cloud_out)
+  {
+    return pcl::PointCloud<PointT>::concatenate(cloud1, cloud2, cloud_out);
+  }
+
+  /** \brief Concatenate two pcl::PCLPointCloud2
+    *
+    * \warn This function subtly differs from the deprecated `concatenatePointloud`
+    * The difference is thatthis function will concatenate IFF the non-skip fields
+    * are in the correct order and same in number. The deprecated function skipped
+    * fields even if both clouds didn't agree on the number of output fields
+    * \param[in] cloud1 the first input point cloud dataset
+    * \param[in] cloud2 the second input point cloud dataset
+    * \param[out] cloud_out the resultant output point cloud dataset
+    * \return true if successful, false otherwise
+    * \ingroup common
+    */
+  PCL_EXPORTS inline bool
+  concatenate (const pcl::PCLPointCloud2 &cloud1,
+               const pcl::PCLPointCloud2 &cloud2,
+               pcl::PCLPointCloud2 &cloud_out)
+  {
+    return pcl::PCLPointCloud2::concatenate(cloud1, cloud2, cloud_out);
+  }
+
+  /** \brief Concatenate two pcl::PolygonMesh
+    * \param[in] mesh1 the first input mesh
+    * \param[in] mesh2 the second input mesh
+    * \param[out] mesh_out the resultant output mesh
+    * \return true if successful, false otherwise
+    * \ingroup common
+    */
+  PCL_EXPORTS inline bool
+  concatenate (const pcl::PolygonMesh &mesh1,
+               const pcl::PolygonMesh &mesh2,
+               pcl::PolygonMesh &mesh_out)
+  {
+    return pcl::PolygonMesh::concatenate(mesh1, mesh2, mesh_out);
+  }
+
+  /** \brief Concatenate two pcl::PCLPointCloud2
+    * \param[in] cloud1 the first input point cloud dataset
+    * \param[in] cloud2 the second input point cloud dataset
+    * \param[out] cloud_out the resultant output point cloud dataset
+    * \return true if successful, false otherwise (e.g., name/number of fields differs)
+    * \ingroup common
+    */
+  [[deprecated("use pcl::concatenate() instead, but beware of subtle difference in behavior (see documentation)")]]
   PCL_EXPORTS bool 
   concatenatePointCloud (const pcl::PCLPointCloud2 &cloud1,
                          const pcl::PCLPointCloud2 &cloud2,
@@ -303,21 +380,9 @@ namespace pcl
     * \note Assumes unique indices.
     * \ingroup common
     */
-  template <typename PointT> void 
+  template <typename PointT, typename IndicesVectorAllocator = std::allocator<int>> void
   copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                  const std::vector<int> &indices, 
-                  pcl::PointCloud<PointT> &cloud_out);
- 
-  /** \brief Extract the indices of a given point cloud as a new point cloud
-    * \param[in] cloud_in the input point cloud dataset
-    * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
-    * \param[out] cloud_out the resultant output point cloud dataset
-    * \note Assumes unique indices.
-    * \ingroup common
-    */
-  template <typename PointT> void 
-  copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                  const std::vector<int, Eigen::aligned_allocator<int> > &indices, 
+                  const std::vector<int, IndicesVectorAllocator> &indices,
                   pcl::PointCloud<PointT> &cloud_out);
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
@@ -360,21 +425,9 @@ namespace pcl
     * \note Assumes unique indices.
     * \ingroup common
     */
-  template <typename PointInT, typename PointOutT> void 
+  template <typename PointInT, typename PointOutT, typename IndicesVectorAllocator = std::allocator<int>> void
   copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
-                  const std::vector<int> &indices, 
-                  pcl::PointCloud<PointOutT> &cloud_out);
-
-  /** \brief Extract the indices of a given point cloud as a new point cloud
-    * \param[in] cloud_in the input point cloud dataset
-    * \param[in] indices the vector of indices representing the points to be copied from \a cloud_in
-    * \param[out] cloud_out the resultant output point cloud dataset
-    * \note Assumes unique indices.
-    * \ingroup common
-    */
-  template <typename PointInT, typename PointOutT> void 
-  copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in, 
-                  const std::vector<int, Eigen::aligned_allocator<int> > &indices, 
+                  const std::vector<int, IndicesVectorAllocator> &indices,
                   pcl::PointCloud<PointOutT> &cloud_out);
 
   /** \brief Extract the indices of a given point cloud as a new point cloud

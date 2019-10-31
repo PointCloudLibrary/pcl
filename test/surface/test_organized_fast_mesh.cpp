@@ -71,9 +71,9 @@ TEST (PCL, Organized)
   cloud_organized->points.resize (cloud_organized->width * cloud_organized->height);
 
   int npoints = 0;
-  for (size_t i = 0; i < cloud_organized->height; i++)
+  for (std::size_t i = 0; i < cloud_organized->height; i++)
   {
-    for (size_t j = 0; j < cloud_organized->width; j++)
+    for (std::size_t j = 0; j < cloud_organized->width; j++)
     {
       cloud_organized->points[npoints].x = static_cast<float> (i);
       cloud_organized->points[npoints].y = static_cast<float> (j);
@@ -82,9 +82,9 @@ TEST (PCL, Organized)
     }
   }
   int nan_idx = cloud_organized->width*cloud_organized->height - 2*cloud_organized->width + 1;
-  cloud_organized->points[nan_idx].x = numeric_limits<float>::quiet_NaN ();
-  cloud_organized->points[nan_idx].y = numeric_limits<float>::quiet_NaN ();
-  cloud_organized->points[nan_idx].z = numeric_limits<float>::quiet_NaN ();
+  cloud_organized->points[nan_idx].x = std::numeric_limits<float>::quiet_NaN ();
+  cloud_organized->points[nan_idx].y = std::numeric_limits<float>::quiet_NaN ();
+  cloud_organized->points[nan_idx].z = std::numeric_limits<float>::quiet_NaN ();
   
   // Init objects
   PolygonMesh triangles;

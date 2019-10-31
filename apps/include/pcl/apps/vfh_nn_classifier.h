@@ -153,8 +153,10 @@ namespace pcl
           if (pcl::io::savePCDFile (file_name.c_str (), *training_features_) != 0)
             return false;
           std::ofstream f (labels_file_name.c_str ());
-          BOOST_FOREACH (std::string s, labels_)
+          for (const auto& s : labels_)
+          {
             f << s << "\n";
+          }
           return true;
         }
         return false;
@@ -174,7 +176,7 @@ namespace pcl
           training_features_->points.insert (training_features_->points.end (), training_features->points.begin (), training_features->points.end ());
           training_features_->header = training_features->header;
           training_features_->height = 1;
-          training_features_->width  = static_cast<uint32_t> (training_features_->points.size ());
+          training_features_->width  = static_cast<std::uint32_t> (training_features_->points.size ());
           training_features_->is_dense &= training_features->is_dense;
           training_features_->sensor_origin_ = training_features->sensor_origin_;
           training_features_->sensor_orientation_ = training_features->sensor_orientation_;

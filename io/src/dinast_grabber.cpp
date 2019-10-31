@@ -367,15 +367,15 @@ pcl::DinastGrabber::USBRxControlData (const unsigned char req_code,
   // The direction of the transfer is inferred from the requesttype field of the setup packet.
   unsigned char requesttype = (LIBUSB_RECIPIENT_DEVICE | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_IN);
   // The value field for the setup packet
-  uint16_t value = 0x02;
+  std::uint16_t value = 0x02;
   // The index field for the setup packet
-  uint16_t index = 0x08;
+  std::uint16_t index = 0x08;
   // timeout (in ms) that this function should wait before giving up due to no response being received
   // For an unlimited timeout, use value 0.
-  uint16_t timeout = 1000;
+  std::uint16_t timeout = 1000;
   
   int nr_read = libusb_control_transfer (device_handle_, requesttype,
-                                         req_code, value, index, buffer, static_cast<uint16_t> (length), timeout);
+                                         req_code, value, index, buffer, static_cast<std::uint16_t> (length), timeout);
   if (nr_read != int(length))
     PCL_THROW_EXCEPTION (pcl::IOException, "[pcl::DinastGrabber::USBRxControlData] Control data error");
 
@@ -391,15 +391,15 @@ pcl::DinastGrabber::USBTxControlData (const unsigned char req_code,
   // The direction of the transfer is inferred from the requesttype field of the setup packet.
   unsigned char requesttype = (LIBUSB_RECIPIENT_DEVICE | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_OUT);
   // The value field for the setup packet
-  uint16_t value = 0x01;
+  std::uint16_t value = 0x01;
   // The index field for the setup packet
-  uint16_t index = 0x00;
+  std::uint16_t index = 0x00;
   // timeout (in ms) that this function should wait before giving up due to no response being received
   // For an unlimited timeout, use value 0.
-  uint16_t timeout = 1000;
+  std::uint16_t timeout = 1000;
   
   int nr_read = libusb_control_transfer (device_handle_, requesttype,
-                                         req_code, value, index, buffer, static_cast<uint16_t> (length), timeout);
+                                         req_code, value, index, buffer, static_cast<std::uint16_t> (length), timeout);
   if (nr_read != int(length))
   {
     std::stringstream sstream;
@@ -421,7 +421,7 @@ pcl::DinastGrabber::checkHeader ()
 
   int data_ptr = -1;
 
-  for (size_t i = 0; i < g_buffer_.size (); ++i)
+  for (std::size_t i = 0; i < g_buffer_.size (); ++i)
   {
     if ((g_buffer_[i + 0] == 0xAA) && (g_buffer_[i + 1] == 0xAA) &&
         (g_buffer_[i + 2] == 0x44) && (g_buffer_[i + 3] == 0x44) &&

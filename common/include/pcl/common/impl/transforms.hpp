@@ -99,7 +99,7 @@ namespace pcl
 
       Transformer(const Eigen::Matrix4f& tf)
       {
-        for (size_t i = 0; i < 4; ++i)
+        for (std::size_t i = 0; i < 4; ++i)
           c[i] = _mm_load_ps (tf.col (i).data ());
       }
 
@@ -131,7 +131,7 @@ namespace pcl
 
       Transformer(const Eigen::Matrix4d& tf)
       {
-        for (size_t i = 0; i < 4; ++i)
+        for (std::size_t i = 0; i < 4; ++i)
         {
           c[i][0] = _mm_load_pd (tf.col (i).data () + 0);
           c[i][1] = _mm_load_pd (tf.col (i).data () + 2);
@@ -144,7 +144,7 @@ namespace pcl
         __m128d p0 = _mm_mul_pd (xx, c[0][0]);
         __m128d p1 = _mm_mul_pd (xx, c[0][1]);
 
-        for (size_t i = 1; i < 3; ++i)
+        for (std::size_t i = 1; i < 3; ++i)
         {
           __m128d vv = _mm_cvtps_pd (_mm_load_ps1 (&src[i]));
           p0 = _mm_add_pd (_mm_mul_pd (vv, c[i][0]), p0);
@@ -159,7 +159,7 @@ namespace pcl
         __m128d p0 = c[3][0];
         __m128d p1 = c[3][1];
 
-        for (size_t i = 0; i < 3; ++i)
+        for (std::size_t i = 0; i < 3; ++i)
         {
           __m128d vv = _mm_cvtps_pd (_mm_load_ps1 (&src[i]));
           p0 = _mm_add_pd (_mm_mul_pd (vv, c[i][0]), p0);
@@ -181,7 +181,7 @@ namespace pcl
 
     Transformer(const Eigen::Matrix4d& tf)
     {
-      for (size_t i = 0; i < 4; ++i)
+      for (std::size_t i = 0; i < 4; ++i)
         c[i] = _mm256_load_pd (tf.col (i).data ());
     }
 
@@ -236,14 +236,14 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   if (cloud_in.is_dense)
   {
     // If the dataset is dense, simply transform it!
-    for (size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
       tf.se3 (cloud_in[i].data, cloud_out[i].data);
   }
   else
   {
     // Dataset might contain NaNs and Infs, so check for them first,
     // otherwise we get errors during the multiplication (?)
-    for (size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
     {
       if (!std::isfinite (cloud_in.points[i].x) || 
           !std::isfinite (cloud_in.points[i].y) || 
@@ -262,7 +262,7 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                           const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
                           bool copy_all_fields)
 {
-  size_t npts = indices.size ();
+  std::size_t npts = indices.size ();
   // In order to transform the data, we need to remove NaNs
   cloud_out.is_dense = cloud_in.is_dense;
   cloud_out.header   = cloud_in.header;
@@ -276,7 +276,7 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   if (cloud_in.is_dense)
   {
     // If the dataset is dense, simply transform it!
-    for (size_t i = 0; i < npts; ++i)
+    for (std::size_t i = 0; i < npts; ++i)
     {
       // Copy fields first, then transform xyz data
       if (copy_all_fields)
@@ -288,7 +288,7 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   {
     // Dataset might contain NaNs and Infs, so check for them first,
     // otherwise we get errors during the multiplication (?)
-    for (size_t i = 0; i < npts; ++i)
+    for (std::size_t i = 0; i < npts; ++i)
     {
       if (copy_all_fields)
         cloud_out.points[i] = cloud_in.points[indices[i]];
@@ -328,7 +328,7 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   // If the data is dense, we don't need to check for NaN
   if (cloud_in.is_dense)
   {
-    for (size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
     {
       tf.se3 (cloud_in[i].data, cloud_out[i].data);
       tf.so3 (cloud_in[i].data_n, cloud_out[i].data_n);
@@ -337,7 +337,7 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   // Dataset might contain NaNs and Infs, so check for them first.
   else
   {
-    for (size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
     {
       if (!std::isfinite (cloud_in.points[i].x) || 
           !std::isfinite (cloud_in.points[i].y) || 
@@ -357,7 +357,7 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
                                      const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
                                      bool copy_all_fields)
 {
-  size_t npts = indices.size ();
+  std::size_t npts = indices.size ();
   // In order to transform the data, we need to remove NaNs
   cloud_out.is_dense = cloud_in.is_dense;
   cloud_out.header   = cloud_in.header;
@@ -371,7 +371,7 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   // If the data is dense, we don't need to check for NaN
   if (cloud_in.is_dense)
   {
-    for (size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
     {
       // Copy fields first, then transform
       if (copy_all_fields)
@@ -383,7 +383,7 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   // Dataset might contain NaNs and Infs, so check for them first.
   else
   {
-    for (size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
     {
       // Copy fields first, then transform
       if (copy_all_fields)

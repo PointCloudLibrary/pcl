@@ -71,15 +71,15 @@ enum { COLS = 640, ROWS = 480 };
 
 int print_help()
 {
-  cout << "*******************************************************" << std::endl;
-  cout << "Ground based people detection app options:" << std::endl;
-  cout << "   --help    <show_this_help>" << std::endl;
-  cout << "   --svm     <path_to_svm_file>" << std::endl;
-  cout << "   --conf    <minimum_HOG_confidence (default = -1.5)>" << std::endl;
-  cout << "   --min_h   <minimum_person_height (default = 1.3)>" << std::endl;
-  cout << "   --max_h   <maximum_person_height (default = 2.3)>" << std::endl;
-  cout << "   --sample  <sampling_factor (default = 1)>" << std::endl;
-  cout << "*******************************************************" << std::endl;
+  std::cout << "*******************************************************" << std::endl;
+  std::cout << "Ground based people detection app options:" << std::endl;
+  std::cout << "   --help    <show_this_help>" << std::endl;
+  std::cout << "   --svm     <path_to_svm_file>" << std::endl;
+  std::cout << "   --conf    <minimum_HOG_confidence (default = -1.5)>" << std::endl;
+  std::cout << "   --min_h   <minimum_person_height (default = 1.3)>" << std::endl;
+  std::cout << "   --max_h   <maximum_person_height (default = 2.3)>" << std::endl;
+  std::cout << "   --sample  <sampling_factor (default = 1)>" << std::endl;
+  std::cout << "*******************************************************" << std::endl;
   return 0;
 }
 
@@ -180,7 +180,7 @@ int main (int argc, char** argv)
   Eigen::VectorXf ground_coeffs;
   ground_coeffs.resize(4);
   std::vector<int> clicked_points_indices;
-  for (size_t i = 0; i < clicked_points_3d->points.size(); i++)
+  for (std::size_t i = 0; i < clicked_points_3d->points.size(); i++)
     clicked_points_indices.push_back(i);
   pcl::SampleConsensusModelPlane<PointT> model_plane(clicked_points_3d);
   model_plane.computeModelCoefficients(clicked_points_indices,ground_coeffs);

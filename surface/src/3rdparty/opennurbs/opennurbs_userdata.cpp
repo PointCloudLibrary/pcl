@@ -200,7 +200,7 @@ ON_BOOL32 ON_UserData::IsUnknownUserData() const
   return (ClassId() == &ON_UnknownUserData::m_ON_UnknownUserData_class_id)?true:false;
 }
 
-ON_BOOL32 ON_UserData::GetDescription( ON_wString& description )
+ON_BOOL32 ON_UserData::GetDescription( ON_wString& )
 {
   return true;
 }
@@ -371,27 +371,27 @@ public:
   ~ON_UnknownUserDataArchive();
 
   // ON_BinaryArchive overrides
-  size_t CurrentPosition( // current offset (in bytes) into archive ( like ftell() )
+  std::size_t CurrentPosition( // current offset (in bytes) into archive ( like ftell() )
                 ) const; 
   bool SeekFromCurrentPosition( // seek from current position ( like fseek( ,SEEK_CUR) )
                 int // byte offset ( >= -CurrentPostion() )
                 ); 
   bool SeekFromStart(  // seek from current position ( like fseek( ,SEEK_SET) )
-                size_t // byte offset ( >= 0 )
+                std::size_t // byte offset ( >= 0 )
                 );
   bool AtEnd() const; // true if at end of file
 
 protected:
-  size_t Read( size_t, void* ); // return actual number of bytes read (like fread())
-  size_t Write( size_t, const void* );
+  std::size_t Read( std::size_t, void* ); // return actual number of bytes read (like fread())
+  std::size_t Write( std::size_t, const void* );
   bool Flush();
 
 private:
   ON_UnknownUserDataArchive();
 
-  size_t m_sizeof_buffer;
+  std::size_t m_sizeof_buffer;
   const unsigned char* m_buffer;
-  size_t m_buffer_position;
+  std::size_t m_buffer_position;
 };
 
 ON_UnknownUserDataArchive::ON_UnknownUserDataArchive( const ON_UnknownUserData& ud ) : ON_BinaryArchive( ON::read3dm )
@@ -406,7 +406,7 @@ ON_UnknownUserDataArchive::~ON_UnknownUserDataArchive()
 {
 }
 
-size_t ON_UnknownUserDataArchive::CurrentPosition() const
+std::size_t ON_UnknownUserDataArchive::CurrentPosition() const
 {
   return m_buffer_position;
 }
@@ -414,9 +414,9 @@ size_t ON_UnknownUserDataArchive::CurrentPosition() const
 bool ON_UnknownUserDataArchive::SeekFromCurrentPosition( int offset )
 {
   bool rc = false;
-  if ( offset >= 0 || m_buffer_position >= ((size_t)(-offset)) )
+  if ( offset >= 0 || m_buffer_position >= ((std::size_t)(-offset)) )
   {
-    size_t newpos = m_buffer_position + offset;
+    std::size_t newpos = m_buffer_position + offset;
     if ( newpos < m_sizeof_buffer ) 
     {
       m_buffer_position = newpos;
@@ -426,7 +426,7 @@ bool ON_UnknownUserDataArchive::SeekFromCurrentPosition( int offset )
   return rc;
 }
 
-bool ON_UnknownUserDataArchive::SeekFromStart( size_t offset )
+bool ON_UnknownUserDataArchive::SeekFromStart( std::size_t offset )
 {
   bool rc = false;
   if ( offset < m_sizeof_buffer ) 
@@ -445,9 +445,9 @@ bool ON_UnknownUserDataArchive::AtEnd() const
   return (m_buffer_position >= m_sizeof_buffer) ? true : false;
 }
 
-size_t ON_UnknownUserDataArchive::Read( size_t count, void* buffer )
+std::size_t ON_UnknownUserDataArchive::Read( std::size_t count, void* buffer )
 {
-  size_t maxcount = 0;
+  std::size_t maxcount = 0;
 
   if ( m_sizeof_buffer > m_buffer_position ) 
   {
@@ -468,7 +468,7 @@ size_t ON_UnknownUserDataArchive::Read( size_t count, void* buffer )
   return count;
 }
 
-size_t ON_UnknownUserDataArchive::Write( size_t, const void* )
+std::size_t ON_UnknownUserDataArchive::Write( std::size_t, const void* )
 {
   // ON_UnknownUserDataArchive does not support Write() and Flush()
   return 0;
@@ -529,7 +529,7 @@ bool ON_UserDataHolder::MoveUserDataTo(  const ON_Object& source_object, bool bA
   return (0 != source_object.FirstUserData());
 }
 
-ON_BOOL32 ON_UserDataHolder::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_UserDataHolder::IsValid( ON_TextLog* ) const
 {
   return true;
 }
@@ -854,9 +854,9 @@ int ON_UserStringList::SetUserStrings( int count, const ON_UserString* us, bool 
     return added_count;
   }
 
-  size_t k0, k1;
+  std::size_t k0, k1;
   int count0 = m_e.Count();
-  size_t count0_plus_count = (size_t)(count0 + count);
+  std::size_t count0_plus_count = (std::size_t)(count0 + count);
   ON_2dex* hash = (ON_2dex*)onmalloc( (count0_plus_count + count)*sizeof(hash[0]) );
   ON_2dex* hash1 =  hash + (count0_plus_count);
   const ON_2dex* h;
@@ -1104,7 +1104,7 @@ ON_DocumentUserStringList::~ON_DocumentUserStringList()
 {
 }
 
-ON_BOOL32 ON_DocumentUserStringList::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_DocumentUserStringList::IsValid( ON_TextLog* ) const
 {
   return true;
 }

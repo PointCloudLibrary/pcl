@@ -79,7 +79,7 @@ void ON_DecodeBase64::SetError()
   m_status = 1;
 }
 
-const bool ON_DecodeBase64::Error() const
+bool ON_DecodeBase64::Error() const
 {
   return (1 == m_status);
 }
@@ -306,7 +306,7 @@ const char* ON_DecodeBase64::Decode(const char* base64str)
   //return 0;
 }
 
-const char* ON_DecodeBase64::Decode(const char* base64str, size_t base64str_count)
+const char* ON_DecodeBase64::Decode(const char* base64str, std::size_t base64str_count)
 {
   char* sEnd;
   const char* p;
@@ -356,12 +356,12 @@ const wchar_t* ON_DecodeBase64::Decode(const wchar_t* base64str)
   return Decode(base64str,p-base64str);
 }
 
-const wchar_t* ON_DecodeBase64::Decode(const wchar_t* base64str, size_t base64str_count)
+const wchar_t* ON_DecodeBase64::Decode(const wchar_t* base64str, std::size_t base64str_count)
 {
   char* sEnd;
   const char* p;
   char s[1025];
-  size_t i;
+  std::size_t i;
   wchar_t w;
   if ( 0 == base64str )
     return 0;
@@ -582,7 +582,7 @@ void ON_EncodeBase64::EncodeHelper57(const unsigned char* inbuf )
   m_encode_count += 57;
 }
 
-void ON_EncodeBase64::Encode( const void* buffer, size_t sizeof_buffer )
+void ON_EncodeBase64::Encode( const void* buffer, std::size_t sizeof_buffer )
 {
   // code is designed for speed
   unsigned int sz;
@@ -976,7 +976,7 @@ bool ON_Base64EncodeStream::In(
   if ( in_buffer_size > 0 )
   {
     // store what's left of the input in imp->m_in_buffer[]
-    memcpy(imp->m_in_buffer,in_buffer,(size_t)in_buffer_size);
+    memcpy(imp->m_in_buffer,in_buffer,(std::size_t)in_buffer_size);
   }
   imp->m_in_buffer_size = (ON__UINT32)in_buffer_size; // safe cast - sizeof_buffer < 57
 

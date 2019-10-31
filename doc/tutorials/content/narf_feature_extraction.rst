@@ -48,7 +48,7 @@ Here we copy the indices to the vector used as input for the feature.
   narf_descriptor.getParameters().rotation_invariant = rotation_invariant;
   pcl::PointCloud<pcl::Narf36> narf_descriptors;
   narf_descriptor.compute(narf_descriptors);
-  cout << "Extracted "<<narf_descriptors.size()<<" descriptors for "<<keypoint_indices.points.size()<< " keypoints.\n";
+  std::cout << "Extracted "<<narf_descriptors.size()<<" descriptors for "<<keypoint_indices.points.size()<< " keypoints.\n";
   ...
 
 This code does the actual calculation of the descriptors. It first creates the

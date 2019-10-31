@@ -239,7 +239,7 @@ namespace pcl
           * \param newsize the new size
           */
         void
-        resize (size_t newsize)
+        resize (std::size_t newsize)
         {
           assert (sane ());
           points_x.resize (newsize);

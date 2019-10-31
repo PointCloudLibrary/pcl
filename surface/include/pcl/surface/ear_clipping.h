@@ -87,7 +87,7 @@ namespace pcl
         * \param[in] vertices the vertices representing the polygon 
         */
       float
-      area (const std::vector<uint32_t>& vertices);
+      area (const std::vector<std::uint32_t>& vertices);
 
       /** \brief Check if the triangle (u,v,w) is an ear. 
         * \param[in] u the first triangle vertex 
@@ -96,7 +96,7 @@ namespace pcl
         * \param[in] vertices a set of input vertices
         */
       bool
-      isEar (int u, int v, int w, const std::vector<uint32_t>& vertices);
+      isEar (int u, int v, int w, const std::vector<std::uint32_t>& vertices);
 
       /** \brief Check if p is inside the triangle (u,v,w). 
         * \param[in] u the first triangle vertex 

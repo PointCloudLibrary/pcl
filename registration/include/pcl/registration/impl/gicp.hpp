@@ -311,7 +311,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFun
   f = 0;
   g.setZero ();
   Eigen::Matrix3d R = Eigen::Matrix3d::Zero ();
-  const int m = static_cast<const int> (gicp_->tmp_idx_src_->size ());
+  const int m = static_cast<int> (gicp_->tmp_idx_src_->size ());
   for (int i = 0; i < m; ++i)
   {
     // The last coordinate, p_src[3] is guaranteed to be set to 1.0 in registration.hpp
@@ -348,7 +348,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
   // Difference between consecutive transforms
   double delta = 0;
   // Get the size of the target
-  const size_t N = indices_->size ();
+  const std::size_t N = indices_->size ();
   // Set the mahalanobis matrices to identity
   mahalanobis_.resize (N, Eigen::Matrix3d::Identity ());
   // Compute target cloud covariance matrices
@@ -375,20 +375,20 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
 
   while(!converged_)
   {
-    size_t cnt = 0;
+    std::size_t cnt = 0;
     std::vector<int> source_indices (indices_->size ());
     std::vector<int> target_indices (indices_->size ());
 
     // guess corresponds to base_t and transformation_ to t
     Eigen::Matrix4d transform_R = Eigen::Matrix4d::Zero ();
-    for(size_t i = 0; i < 4; i++)
-      for(size_t j = 0; j < 4; j++)
-        for(size_t k = 0; k < 4; k++)
+    for(std::size_t i = 0; i < 4; i++)
+      for(std::size_t j = 0; j < 4; j++)
+        for(std::size_t k = 0; k < 4; k++)
           transform_R(i,j)+= double(transformation_(i,k)) * double(guess(k,j));
 
     Eigen::Matrix3d R = transform_R.topLeftCorner<3,3> ();
 
-    for (size_t i = 0; i < N; i++)
+    for (std::size_t i = 0; i < N; i++)
     {
       PointSource query = output[i];
       query.getVector4fMap () = transformation_ * query.getVector4fMap ();
@@ -450,9 +450,9 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
     if (nr_iterations_ >= max_iterations_ || delta < 1)
     {
       converged_ = true;
-      previous_transformation_ = transformation_;
       PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence reached. Number of iterations: %d out of %d. Transformation difference: %f\n",
                  getClassName ().c_str (), nr_iterations_, max_iterations_, (transformation_ - previous_transformation_).array ().abs ().sum ());
+      previous_transformation_ = transformation_;
     }
     else
       PCL_DEBUG ("[pcl::%s::computeTransformation] Convergence failed\n", getClassName ().c_str ());

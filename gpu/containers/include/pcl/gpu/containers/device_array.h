@@ -68,13 +68,13 @@ namespace pcl
             /** \brief Allocates internal buffer in GPU memory
               * \param size number of elements to allocate
               * */
-            DeviceArray(size_t size);
+            DeviceArray(std::size_t size);
             
             /** \brief Initializes with user allocated buffer. Reference counting is disabled in this case.
               * \param ptr pointer to buffer
               * \param size elements number
               * */
-            DeviceArray(T *ptr, size_t size);
+            DeviceArray(T *ptr, std::size_t size);
 
             /** \brief Copy constructor. Just increments reference counter. */
             DeviceArray(const DeviceArray& other);
@@ -85,7 +85,7 @@ namespace pcl
             /** \brief Allocates internal buffer in GPU memory. If internal buffer was created before the function recreates it with new size. If new and old sizes are equal it does nothing.               
               * \param size elements number
               * */
-            void create(size_t size);
+            void create(std::size_t size);
 
             /** \brief Decrements reference counter and releases internal buffer if needed. */
             void release();  
@@ -99,7 +99,7 @@ namespace pcl
               * \param host_ptr pointer to buffer to upload               
               * \param size elements number
               * */
-            void upload(const T *host_ptr, size_t size);
+            void upload(const T *host_ptr, std::size_t size);
 
             /** \brief Downloads data from internal buffer to CPU memory
               * \param host_ptr pointer to buffer to download               
@@ -138,7 +138,7 @@ namespace pcl
             operator const T*() const;
 
             /** \brief Returns size in elements. */
-            size_t size() const;            
+            std::size_t size() const;            
         };
         
         
@@ -174,7 +174,7 @@ namespace pcl
               * \param data pointer to buffer
               * \param stepBytes stride between two consecutive rows in bytes
               * */
-            DeviceArray2D(int rows, int cols, void *data, size_t stepBytes);
+            DeviceArray2D(int rows, int cols, void *data, std::size_t stepBytes);
 
             /** \brief Copy constructor. Just increments reference counter. */
             DeviceArray2D(const DeviceArray2D& other);
@@ -202,13 +202,13 @@ namespace pcl
               * \param rows number of rows to upload
               * \param cols number of elements in each row
               * */
-            void upload(const void *host_ptr, size_t host_step, int rows, int cols);
+            void upload(const void *host_ptr, std::size_t host_step, int rows, int cols);
 
             /** \brief Downloads data from internal buffer to CPU memory. User is responsible for correct host buffer size.
               * \param host_ptr pointer to host buffer to download               
               * \param host_step stride between two consecutive rows in bytes for host buffer             
               * */
-            void download(void *host_ptr, size_t host_step) const;
+            void download(void *host_ptr, std::size_t host_step) const;
 
             /** \brief Performs swap of data pointed with another device array. 
               * \param other_arg device array to swap with   
@@ -254,7 +254,7 @@ namespace pcl
             int rows() const;
 
             /** \brief Returns step in elements. */
-            size_t elem_step() const;
+            std::size_t elem_step() const;
         };        
     }
 

@@ -89,7 +89,7 @@ namespace pcl
             return (metadata_.getFrameIndex ());
           }
 
-          inline uint64_t
+          inline std::uint64_t
           getTimestamp () const override
           {
             return (metadata_.getTimestamp ());

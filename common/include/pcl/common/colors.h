@@ -67,13 +67,13 @@ namespace pcl
       /** Get a color from the lookup table with a given id.
         *
         * The id should be less than the size of the LUT (see size()). */
-      static RGB at (size_t color_id);
+      static RGB at (std::size_t color_id);
 
       /** Get the number of colors in the lookup table.
         *
         * Note: the number of colors is different from the number of elements
         * in the lookup table (each color is defined by three bytes). */
-      static size_t size ();
+      static std::size_t size ();
 
       /** Get a raw pointer to the lookup table. */
       static const unsigned char* data ();

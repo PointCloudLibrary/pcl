@@ -139,14 +139,14 @@ ON__UINT64 ON_FileStream::Read( FILE* fp, ON__UINT64 count, void* buffer )
 
   if ( count <= ON_MAX_SIZE_T )
   {
-    rc = (ON__UINT64)fread(buffer,1,(size_t)count,fp);
+    rc = (ON__UINT64)fread(buffer,1,(std::size_t)count,fp);
   }
   else
   {
-    size_t sz, szread;
+    std::size_t sz, szread;
     while ( count > 0 )
     {
-      sz = ( count > ON_MAX_SIZE_T ) ? ON_MAX_SIZE_T : ((size_t)count);
+      sz = ( count > ON_MAX_SIZE_T ) ? ON_MAX_SIZE_T : ((std::size_t)count);
       szread = fread(buffer,1,sz,fp);
       rc += szread;
       if ( szread != sz )
@@ -167,14 +167,14 @@ ON__UINT64 ON_FileStream::Write( FILE* fp, ON__UINT64 count, const void* buffer 
 
   if ( count <= ON_MAX_SIZE_T )
   {
-    rc = fwrite(buffer,1,(size_t)count,fp);
+    rc = fwrite(buffer,1,(std::size_t)count,fp);
   }
   else
   {
-    size_t sz, szwrite;
+    std::size_t sz, szwrite;
     while ( count > 0 )
     {
-      sz = ( count > ON_MAX_SIZE_T ) ? ON_MAX_SIZE_T : ((size_t)count);
+      sz = ( count > ON_MAX_SIZE_T ) ? ON_MAX_SIZE_T : ((std::size_t)count);
       szwrite = fwrite(buffer,1,sz,fp);
       rc += szwrite;
       if ( szwrite != sz )
@@ -223,7 +223,7 @@ bool ON_FileStream::GetFileInformation(
 #if (_MSC_VER >= 1400)
     // VC 8 (2005) 
     // works for file sizes > 4GB 
-    // when size_t is a 64 bit integer
+    // when std::size_t is a 64 bit integer
     struct _stat64 sb;
     memset(&sb,0,sizeof(sb));
     int fstat_rc = _fstat64(fd, &sb);
@@ -517,7 +517,7 @@ bool ON_BinaryArchive::BigSeekFromStart( ON__UINT64 offset )
   // this worst case situation.
   return ( offset > 2147483632 )
     ? ( SeekFromStart(2147483632) && BigSeekForward(offset - 2147483632) )
-    : SeekFromStart((size_t)offset);
+    : SeekFromStart((std::size_t)offset);
 }
 
 
@@ -592,7 +592,7 @@ ON_BinaryArchive::WriteMode() const
 
 bool
 ON_BinaryArchive::ReadChar(    // Read an array of 8 bit chars
-		size_t count,       // number of chars to read
+		std::size_t count,       // number of chars to read
 		char*  p  
 		)
 {
@@ -601,7 +601,7 @@ ON_BinaryArchive::ReadChar(    // Read an array of 8 bit chars
 
 bool
 ON_BinaryArchive::ReadChar(    // Read an array of 8 bit unsigned chars
-		size_t count,       // number of unsigned chars to read
+		std::size_t count,       // number of unsigned chars to read
 		unsigned char* p   
 		)
 {
@@ -626,7 +626,7 @@ ON_BinaryArchive::ReadChar(    // Read a single 8 bit unsigned char
 
 bool
 ON_BinaryArchive::ReadInt16( // Read an array of 16 bit integers
-		size_t count,            // number of unsigned integers to read
+		std::size_t count,            // number of unsigned integers to read
 		ON__INT16* p
 		)
 {
@@ -646,7 +646,7 @@ ON_BinaryArchive::ReadInt16( // Read an array of 16 bit integers
 
 bool
 ON_BinaryArchive::ReadShort(   // Read an array of 16 bit shorts
-		size_t count,       // number of unsigned chars to read
+		std::size_t count,       // number of unsigned chars to read
 		short* p
 		)
 {
@@ -666,7 +666,7 @@ ON_BinaryArchive::ReadShort(   // Read an array of 16 bit shorts
   }
   else
   {
-    size_t j;
+    std::size_t j;
     ON__INT16 i16;
     for ( j = 0; j < count && rc; j++ )
     {
@@ -683,7 +683,7 @@ ON_BinaryArchive::ReadShort(   // Read an array of 16 bit shorts
 
 bool
 ON_BinaryArchive::ReadShort(   // Read an array of 16 bit unsigned shorts
-		size_t count,       // number of unsigned chars to read
+		std::size_t count,       // number of unsigned chars to read
 		unsigned short* p
 		)
 {
@@ -708,7 +708,7 @@ ON_BinaryArchive::ReadShort(   // Read a single 16 bit unsigned short
 
 bool
 ON_BinaryArchive::ReadInt32( // Read an array of 32 bit integers
-		size_t count,            // number of 32 bit integers to read
+		std::size_t count,            // number of 32 bit integers to read
 		ON__INT32* p
 		)
 {
@@ -728,7 +728,7 @@ ON_BinaryArchive::ReadInt32( // Read an array of 32 bit integers
 
 bool
 ON_BinaryArchive::ReadInt( // Read an array of integers
-		size_t count,          // number of unsigned chars to read
+		std::size_t count,          // number of unsigned chars to read
 		int* p
 		)
 {
@@ -749,7 +749,7 @@ ON_BinaryArchive::ReadInt( // Read an array of integers
   {
     rc = true;
     ON__INT32 i32;
-    size_t j;
+    std::size_t j;
     for ( j = 0; j < count && rc; j++ )
     {
       rc = ReadInt32(1,&i32);
@@ -766,7 +766,7 @@ ON_BinaryArchive::ReadInt( // Read an array of integers
 
 bool
 ON_BinaryArchive::ReadInt( // Read an array of 32 bit integers
-		size_t count,       // number of unsigned chars to read
+		std::size_t count,       // number of unsigned chars to read
 		unsigned int* p
 		)
 {
@@ -790,7 +790,7 @@ ON_BinaryArchive::ReadInt( // Read a single 32 bit unsigned integer
 }
 
 bool ON_BinaryArchive::ReadBigInt( // Read an array of 64 bit integers
-		size_t count,
+		std::size_t,
 		ON__INT64* p 
 		)
 {
@@ -798,7 +798,7 @@ bool ON_BinaryArchive::ReadBigInt( // Read an array of 64 bit integers
 }
 
 bool ON_BinaryArchive::ReadBigInt( // Read an array of 64 bit integers
-		size_t count,
+		std::size_t,
 		ON__UINT64* p
 		)
 {
@@ -823,7 +823,7 @@ bool ON_BinaryArchive::ReadBigInt( // Read a single 64 bit unsigned integer
 
 bool
 ON_BinaryArchive::ReadLong( // Read an array of 32 bit integers
-		size_t count,       // number of unsigned chars to read
+		std::size_t count,       // number of unsigned chars to read
 		long* p
 		)
 {
@@ -844,7 +844,7 @@ ON_BinaryArchive::ReadLong( // Read an array of 32 bit integers
   {
     rc = true;
     ON__INT32 i32;
-    size_t j;
+    std::size_t j;
     for ( j = 0; j < count && rc; j++ )
     {
       rc = ReadInt32(1,&i32);
@@ -861,7 +861,7 @@ ON_BinaryArchive::ReadLong( // Read an array of 32 bit integers
 
 bool
 ON_BinaryArchive::ReadLong( // Read an array of 32 bit integers
-		size_t count,       // number of unsigned chars to read
+		std::size_t count,       // number of unsigned chars to read
 		unsigned long* p
 		)
 {
@@ -886,7 +886,7 @@ ON_BinaryArchive::ReadLong( // Read a single 32 bit unsigned integer
 
 bool
 ON_BinaryArchive::ReadFloat(   // Read an array of floats
-		size_t count,       // number of unsigned chars to read
+		std::size_t count,       // number of unsigned chars to read
 		float* p
 		)
 {
@@ -904,7 +904,7 @@ ON_BinaryArchive::ReadFloat(   // Read a single float
 
 bool
 ON_BinaryArchive::ReadDouble(  // Read an array of IEEE 64 bit doubles
-		size_t count,       // number of unsigned chars to read
+		std::size_t count,       // number of unsigned chars to read
 		double* p
 		)
 {
@@ -1201,7 +1201,7 @@ ON_BinaryArchive::ReadTime( struct tm& utc )
 
 bool
 ON_BinaryArchive::ReadStringSize( // Read size of NULL terminated string
-    size_t* sizeof_string          // (returned size includes NULL terminator)
+    std::size_t* sizeof_string          // (returned size includes NULL terminator)
     )
 {
   ON__UINT32 ui32 = 0;
@@ -1242,7 +1242,7 @@ ON_BinaryArchive::ReadStringSize( // Read size of NULL terminated string
 
     if (rc)
     {
-      *sizeof_string = (size_t)ui32;
+      *sizeof_string = (std::size_t)ui32;
     }
   }
   return rc;
@@ -1251,7 +1251,7 @@ ON_BinaryArchive::ReadStringSize( // Read size of NULL terminated string
 
 bool
 ON_BinaryArchive::ReadStringUTF8ElementCount(
-    size_t* string_utf8_element_count
+    std::size_t* string_utf8_element_count
     )
 {
   ON__UINT32 ui32 = 0;
@@ -1293,14 +1293,14 @@ ON_BinaryArchive::ReadStringUTF8ElementCount(
   if (!rc)
     ui32 = 0;
   if ( string_utf8_element_count )
-    *string_utf8_element_count = (size_t)ui32;
+    *string_utf8_element_count = (std::size_t)ui32;
   return rc;
 }
 
 
 bool
 ON_BinaryArchive::ReadStringUTF16ElementCount(
-    size_t* string_utf16_element_count
+    std::size_t* string_utf16_element_count
     )
 {
   ON__UINT32 ui32 = 0;
@@ -1341,13 +1341,13 @@ ON_BinaryArchive::ReadStringUTF16ElementCount(
   if (!rc)
     ui32 = 0;
   if ( string_utf16_element_count )
-    *string_utf16_element_count = (size_t)ui32;
+    *string_utf16_element_count = (std::size_t)ui32;
   return rc;
 }
 
 bool
 ON_BinaryArchive::ReadString(         // Read NULL terminated string
-    size_t string_utf8_element_count, // = value from ReadStringUTF8ElementCount()
+    std::size_t string_utf8_element_count, // = value from ReadStringUTF8ElementCount()
     char* p                           // array[string_utf8_element_count]
     )
 {
@@ -1356,7 +1356,7 @@ ON_BinaryArchive::ReadString(         // Read NULL terminated string
 
 bool
 ON_BinaryArchive::ReadString(         // Read NULL terminated string
-    size_t string_utf8_element_count, // = value from ReadStringUTF8ElementCount()
+    std::size_t string_utf8_element_count, // = value from ReadStringUTF8ElementCount()
     unsigned char* p                  // array[string_utf8_element_count]
     )
 {
@@ -1365,7 +1365,7 @@ ON_BinaryArchive::ReadString(         // Read NULL terminated string
 
 bool
 ON_BinaryArchive::ReadString(          // Read NULL terminated unicode string
-    size_t string_utf16_element_count, // length = value ReadStringUTF16ElementCount ReadStringSize()
+    std::size_t string_utf16_element_count, // length = value ReadStringUTF16ElementCount ReadStringSize()
     unsigned short* p                  // array[string_utf16_element_count]
     )
 {
@@ -1376,11 +1376,11 @@ bool
 ON_BinaryArchive::ReadString( ON_String& s )
 {
   s.Destroy();
-  size_t string_utf8_element_count = 0;
+  std::size_t string_utf8_element_count = 0;
   bool rc = ReadStringUTF8ElementCount( &string_utf8_element_count );
   if ( rc && string_utf8_element_count > 0 ) 
   {
-    const int istring_utf8_element_count = (int)string_utf8_element_count; // (int) converts 64 bits size_t
+    const int istring_utf8_element_count = (int)string_utf8_element_count; // (int) converts 64 bits std::size_t
     s.ReserveArray(istring_utf8_element_count);
     ReadString( string_utf8_element_count, s.Array() );
     s.SetLength( istring_utf8_element_count-1 );
@@ -1400,7 +1400,7 @@ ON_BinaryArchive::ReadString( ON_wString& s )
 #endif
 
   s.Destroy();
-  size_t string_utf16_element_count = 0;
+  std::size_t string_utf16_element_count = 0;
   bool rc = ReadStringUTF16ElementCount( &string_utf16_element_count );
   if ( rc && string_utf16_element_count > 0 ) 
   {
@@ -2341,7 +2341,7 @@ bool ON_BinaryArchive::ReadBool( bool *b )
 
 bool
 ON_BinaryArchive::WriteChar(    // Write an array of 8 bit chars
-		size_t count,       // number of chars to write
+		std::size_t count,       // number of chars to write
 		const char* p   
 		)
 {
@@ -2350,7 +2350,7 @@ ON_BinaryArchive::WriteChar(    // Write an array of 8 bit chars
 
 bool
 ON_BinaryArchive::WriteChar(    // Write an array of 8 bit unsigned chars
-		size_t count,       // number of unsigned chars to write
+		std::size_t count,       // number of unsigned chars to write
 		const unsigned char* p
 		)
 {
@@ -2375,7 +2375,7 @@ ON_BinaryArchive::WriteChar(    // Write a single 8 bit unsigned char
 
 bool
 ON_BinaryArchive::WriteInt16(   // Write an array of 16 bit shorts
-		size_t count,               // number of shorts to write
+		std::size_t count,               // number of shorts to write
 		const ON__INT16* p
 		)
 {
@@ -2404,7 +2404,7 @@ ON_BinaryArchive::WriteInt16(   // Write an array of 16 bit shorts
 
 bool
 ON_BinaryArchive::WriteShort(   // Write an array of 16 bit shorts
-		size_t count,       // number of shorts to write
+		std::size_t count,       // number of shorts to write
 		const short* p
 		)
 {
@@ -2425,7 +2425,7 @@ ON_BinaryArchive::WriteShort(   // Write an array of 16 bit shorts
   {
     rc = true;
     ON__INT16 i16;
-    size_t j;
+    std::size_t j;
     for ( j = 0; j < count; j++ )
     {
       i16 = (ON__INT16)(*p++);
@@ -2441,7 +2441,7 @@ ON_BinaryArchive::WriteShort(   // Write an array of 16 bit shorts
 
 bool
 ON_BinaryArchive::WriteShort(   // Write an array of 16 bit unsigned shorts
-		size_t count,       // number of shorts to write
+		std::size_t count,       // number of shorts to write
 		const unsigned short* p
 		)
 {
@@ -2466,7 +2466,7 @@ ON_BinaryArchive::WriteShort(   // Write a single 16 bit unsigned short
 
 bool
 ON_BinaryArchive::WriteInt32( // Write an array of 32 bit integers
-		size_t count,	            // number of ints to write
+		std::size_t count,	            // number of ints to write
 		const ON__INT32* p    
 		)
 {
@@ -2495,7 +2495,7 @@ ON_BinaryArchive::WriteInt32( // Write an array of 32 bit integers
 
 bool
 ON_BinaryArchive::ReadInt64( // Read an array of 64 bit integers
-		size_t count,            // number of 64 bit integers to read
+		std::size_t count,            // number of 64 bit integers to read
 		ON__INT64* p
 		)
 {
@@ -2517,7 +2517,7 @@ ON_BinaryArchive::ReadInt64( // Read an array of 64 bit integers
 
 bool
 ON_BinaryArchive::WriteInt64( // Write an array of 64 bit integers
-		size_t count,	            // number of ints to write
+		std::size_t count,	            // number of ints to write
 		const ON__INT64* p    
 		)
 {
@@ -2550,7 +2550,7 @@ ON_BinaryArchive::WriteInt64( // Write an array of 64 bit integers
 
 bool
 ON_BinaryArchive::WriteInt( // Write an array of integers
-		size_t count,	          // number of ints to write
+		std::size_t count,	          // number of ints to write
 		const int* p    
 		)
 {
@@ -2570,7 +2570,7 @@ ON_BinaryArchive::WriteInt( // Write an array of integers
   else
   {
     ON__INT32 i32;
-    size_t j;
+    std::size_t j;
     rc = true;
     for ( j = 0; j < count && rc; j++ )
     {
@@ -2586,14 +2586,14 @@ ON_BinaryArchive::WriteInt( // Write an array of integers
 }
 
 bool
-ON_BinaryArchive::WriteSize(size_t sz)
+ON_BinaryArchive::WriteSize(std::size_t sz)
 {
   unsigned int u = (unsigned int)sz;
   return WriteInt(u);
 }
 
 bool
-ON_BinaryArchive::ReadSize(size_t* sz)
+ON_BinaryArchive::ReadSize(std::size_t* sz)
 {
   unsigned int u = 0;
   bool rc = ReadInt(&u);
@@ -2602,18 +2602,18 @@ ON_BinaryArchive::ReadSize(size_t* sz)
   return rc;
 }
 
-bool ON_BinaryArchive::WriteBigSize(size_t sz)
+bool ON_BinaryArchive::WriteBigSize(std::size_t sz)
 {
   ON__UINT64 u = (ON__UINT64)sz;
   return WriteInt64(1,(ON__INT64*)&u);;
 }
 
-bool ON_BinaryArchive::ReadBigSize( size_t* sz )
+bool ON_BinaryArchive::ReadBigSize( std::size_t* sz )
 {
   ON__UINT64 u;
   bool rc = ReadInt64(1,(ON__INT64*)&u);
   if (rc)
-    *sz = (size_t)u;
+    *sz = (std::size_t)u;
   return rc;
 }
 
@@ -2635,7 +2635,7 @@ bool ON_BinaryArchive::ReadBigTime( time_t* t )
 
 bool
 ON_BinaryArchive::WriteInt( // Write an array of 32 bit integers
-		size_t count,	      // number of ints to write
+		std::size_t count,	      // number of ints to write
 		const unsigned int* p
 		)
 {
@@ -2659,7 +2659,7 @@ ON_BinaryArchive::WriteInt( // Write a single 32 bit integer
 }
 
 bool ON_BinaryArchive::WriteBigInt( // Write an array of 64 bit integers
-		size_t count,
+		std::size_t count,
 		const ON__INT64* p      
 		)
 {
@@ -2667,7 +2667,7 @@ bool ON_BinaryArchive::WriteBigInt( // Write an array of 64 bit integers
 }
 
 bool ON_BinaryArchive::WriteBigInt( // Write an array of 64 bit integers
-		size_t count,
+		std::size_t count,
 		const ON__UINT64* p     
 		)
 {
@@ -2692,7 +2692,7 @@ bool ON_BinaryArchive::WriteBigInt( // Write a single 64 bit unsigned integer
 
 bool
 ON_BinaryArchive::WriteLong( // Write an array of longs
-		size_t count,	      // number of longs to write
+		std::size_t count,	      // number of longs to write
 		const long* p    
 		)
 {
@@ -2712,7 +2712,7 @@ ON_BinaryArchive::WriteLong( // Write an array of longs
   else
   {
     ON__INT32 i32;
-    size_t j;
+    std::size_t j;
     rc = true;
     for ( j = 0; j < count && rc; j++ )
     {
@@ -2729,7 +2729,7 @@ ON_BinaryArchive::WriteLong( // Write an array of longs
 
 bool
 ON_BinaryArchive::WriteLong( // Write an array of longs
-		size_t count,	      // number of longs to write
+		std::size_t count,	      // number of longs to write
 		const unsigned long* p
 		)
 {
@@ -2755,7 +2755,7 @@ ON_BinaryArchive::WriteLong( // Write a single unsigned long
 
 bool
 ON_BinaryArchive::WriteFloat(   // Write a number of IEEE floats
-		size_t count,       // number of doubles
+		std::size_t count,       // number of doubles
 		const float* p
 		)
 {
@@ -2773,7 +2773,7 @@ ON_BinaryArchive::WriteFloat(   // Write a single float
 
 bool
 ON_BinaryArchive::WriteDouble(  // Write a single double
-		size_t count,       // number of doubles
+		std::size_t count,       // number of doubles
 		const double* p
 		)
 {
@@ -2948,7 +2948,7 @@ ON_BinaryArchive::WriteString( // Write NULL terminated UTF-8 encoded unicode st
     const char* sUTF8
     )
 {
-  size_t string_utf8_element_count = 0;
+  std::size_t string_utf8_element_count = 0;
   if ( sUTF8 )
   {
     while(sUTF8[string_utf8_element_count])
@@ -2976,7 +2976,7 @@ ON_BinaryArchive::WriteString(  // Write NULL terminated UTF-16 encoded unicode 
     const unsigned short* sUTF16
     )
 {
-  size_t string_utf16_element_count = 0;
+  std::size_t string_utf16_element_count = 0;
   if ( sUTF16 )
   {
     while(sUTF16[string_utf16_element_count])
@@ -2996,7 +2996,7 @@ ON_BinaryArchive::WriteString(  // Write NULL terminated UTF-16 encoded unicode 
 bool
 ON_BinaryArchive::WriteString( const ON_String& sUTF8 )
 {
-  size_t string_utf8_element_count = sUTF8.Length();
+  std::size_t string_utf8_element_count = sUTF8.Length();
   if ( string_utf8_element_count )
     string_utf8_element_count++;
   ON__UINT32 ui32 = (ON__UINT32)string_utf8_element_count;
@@ -3017,7 +3017,7 @@ ON_BinaryArchive::WriteString( const ON_wString& s )
 #pragma warning( disable : 4127 )
 #endif
 
-  size_t string_element_count = s.Length();
+  std::size_t string_element_count = s.Length();
   if ( string_element_count > 0)
     string_element_count++;
   bool rc = false;
@@ -3865,14 +3865,6 @@ bool ON_BinaryArchive::WriteObjectUserData( const ON_Object& object )
   return rc;
 }
 
-int
-ON_BinaryArchive::LoadUserDataApplication( ON_UUID application_id )
-{
-  // This is a virtual function.
-  // Rhino overrides this function to load plug-ins.
-  return 0;
-}
-
 int ON_BinaryArchive::ReadObject( ON_Object** ppObject )
 {
   if ( !ppObject ) 
@@ -4128,7 +4120,7 @@ bool ON_BinaryArchive::ReadObjectUserDataAnonymousChunk(
     // entire anonymous chunk into memory and letting the plug-in use
     // the memory buffer archive.
     unsigned char stack_buffer[2048];
-    const size_t sizeof_buffer = (size_t)(length_TCODE_ANONYMOUS_CHUNK + 4 + SizeofChunkLength());
+    const std::size_t sizeof_buffer = (std::size_t)(length_TCODE_ANONYMOUS_CHUNK + 4 + SizeofChunkLength());
     void* freeme = 0;
     void* buffer = (sizeof_buffer <= sizeof(stack_buffer))
                  ? &stack_buffer[0]
@@ -4528,7 +4520,7 @@ int ON_BinaryArchive::ArchiveOpenNURBSVersion() const
   return m_3dm_opennurbs_version;
 }
 
-size_t ON_BinaryArchive::ArchiveStartOffset() const
+std::size_t ON_BinaryArchive::ArchiveStartOffset() const
 {
   return m_3dm_start_section_offset;
 }
@@ -4540,22 +4532,6 @@ size_t ON_BinaryArchive::ArchiveStartOffset() const
 bool 
 ON_BinaryArchive::BeginWrite3dmChunk( unsigned int typecode, int value )
 {
-  ON__INT64 value64 = 0;
-  if ( 0 != value )
-  {
-    if ( ON_IsUnsignedChunkTypecode(typecode) )
-    {
-      // treat value parameter as an unsigned int
-      ON__UINT32 u32 = (ON__UINT32)value;
-      ON__UINT64 u64 = u32;
-      value64 = (ON__INT64)u64;
-    }
-    else
-    {
-      // treat value paramter is a signed int
-      value64 = value;
-    }
-  }
   return BeginWrite3dmBigChunk(typecode,value);
 }
 
@@ -4643,7 +4619,7 @@ ON_BinaryArchive::EndWrite3dmChunk()
 
       // write length
       m_bDoChunkCRC = 0;
-      const size_t offset = CurrentPosition();
+      const std::size_t offset = CurrentPosition();
       if ( offset < c->m_big_offset ) 
       {
         ON_ERROR("ON_BinaryArchive::EndWrite3dmChunk() - chunk length < 0");
@@ -4812,13 +4788,13 @@ bool ON_BinaryArchive::Seek3dmChunkFromStart(
         ON_ERROR("ON_BinaryArchive::Seek3dmChunkFromStart() called with out of bounds current position");
         return false;
       }
-      rc = BigSeekBackward( pos0 - c->m_big_offset ); // pos0 >= c->m_offset, so this size_t subtraction is ok
+      rc = BigSeekBackward( pos0 - c->m_big_offset ); // pos0 >= c->m_offset, so this std::size_t subtraction is ok
     }
     else 
     {
       // set archive position to the beginning of archive chunks by skipping
       // 32 byte version info and any start section padding.
-      size_t start_offset = ((m_3dm_start_section_offset > 0) ? m_3dm_start_section_offset : 0);
+      std::size_t start_offset = ((m_3dm_start_section_offset > 0) ? m_3dm_start_section_offset : 0);
       rc = SeekFromStart( start_offset );
       if (!rc && start_offset > 0)
       {
@@ -4888,9 +4864,9 @@ bool ON_BinaryArchive::Seek3dmChunkFromCurrentPosition(
   {
     const ON_3DM_BIG_CHUNK* c = m_chunk.Last();
     const ON__UINT64 pos1 = c ? c->m_big_offset + c->Length() : 0;
-    const size_t pos_start = CurrentPosition();
-    size_t pos_prev = 0;
-    size_t pos = 0;
+    const std::size_t pos_start = CurrentPosition();
+    std::size_t pos_prev = 0;
+    std::size_t pos = 0;
     unsigned int t;
     ON__INT64 v64;
     bool bFirstTime = true;
@@ -5535,7 +5511,7 @@ bool ON_BinaryArchive::Read3dmGoo( ON_3dmGoo& goo )
         c->m_do_crc16 = 0;
         c->m_do_crc32 = 0;
         m_bDoChunkCRC = false;
-        size_t sizeof_goo = (size_t)c->Length();
+        std::size_t sizeof_goo = (std::size_t)c->Length();
         goo.m_goo = (unsigned char*)onmalloc( sizeof_goo );
         rc = ReadByte( sizeof_goo, goo.m_goo );
       }
@@ -5682,7 +5658,7 @@ bool ON_BinaryArchive::ReadChunkValue( ON__UINT32 typecode, ON__INT64* value64 )
   return rc;
 }
 
-size_t ON_BinaryArchive::SizeofChunkLength() const
+std::size_t ON_BinaryArchive::SizeofChunkLength() const
 {
   // Version 1 - 4 and early version 5 files had
   // 4 byte chunk lengths.  In October of 2009,
@@ -5852,7 +5828,7 @@ bool ON_BinaryArchive::Write3dmStartSection( int version, const char* sInformati
     if ( rc ) {
       // write information that helps determine what code wrote the 3dm file
       char s[2048];
-      size_t s_len = 0;
+      std::size_t s_len = 0;
       memset( s, 0, sizeof(s) );
       sprintf(s," 3DM I/O processor: OpenNURBS toolkit version %d",ON::Version());
       strcat(s," (compiled on ");
@@ -6155,7 +6131,7 @@ bool ON_BinaryArchive::Read3dmProperties( ON_3dmProperties& prop )
   bool rc = true;
 
   // we need these when reading version 1 files
-  const size_t pos0 = CurrentPosition();
+  const std::size_t pos0 = CurrentPosition();
   bool bHaveRevisionHistory = false;
   bool bHaveNotes = false;
   bool bHavePreviewImage = false;
@@ -6164,7 +6140,6 @@ bool ON_BinaryArchive::Read3dmProperties( ON_3dmProperties& prop )
 
   ON__UINT32 tcode;
   ON__INT64 big_value;
-  int version = 0;
 
   if ( m_3dm_version != 1 ) {
     for(;;) 
@@ -6280,7 +6255,6 @@ bool ON_BinaryArchive::Read3dmProperties( ON_3dmProperties& prop )
 
       case TCODE_SUMMARY: 
         // version 1 revision history chunk (has 16 bit CRC)
-        version = 1;
         bHaveRevisionHistory = true;
         {
           int slength = 0;
@@ -6319,7 +6293,6 @@ bool ON_BinaryArchive::Read3dmProperties( ON_3dmProperties& prop )
 
       case TCODE_NOTES: 
         // version 1 notes chunk
-        version = 1;
         bHaveNotes = true;
         for(;;)
         {
@@ -6356,7 +6329,6 @@ bool ON_BinaryArchive::Read3dmProperties( ON_3dmProperties& prop )
 
       case TCODE_BITMAPPREVIEW: 
         // version 1 preview image chunk
-        version = 1;
         rc = prop.m_PreviewImage.Read(*this)?true:false;
         bHavePreviewImage = rc;
         break;
@@ -6747,7 +6719,7 @@ int ON_BinaryArchive::GetCurrentChunk(ON_3DM_CHUNK& chunk) const
   int rc = GetCurrentChunk(big_chunk);
   if ( rc > 0 )
   {
-    chunk.m_offset = (size_t)big_chunk.m_big_offset;
+    chunk.m_offset = (std::size_t)big_chunk.m_big_offset;
     chunk.m_typecode = big_chunk.m_typecode;
 
     ON__INT32 i32 = 0;
@@ -6890,7 +6862,7 @@ const unsigned char* BufferValidateTcode(
 static 
 const unsigned char* BufferToChunkValue( 
           bool bReverseByteOrder,
-          size_t sizeof_chunk_value, 
+          std::size_t sizeof_chunk_value, 
           const unsigned char* buffer, 
           const unsigned char* buffer_end,
           ON__INT64* chunk_value )
@@ -6950,7 +6922,7 @@ const unsigned char* BufferToUuid(
 static
 const unsigned char* EmergencyFindTable_UuidHelper( 
           bool bReverseByteOrder,
-          size_t sizeof_chunk_value, 
+          std::size_t sizeof_chunk_value, 
           const unsigned char* buffer,
           const unsigned char* buffer_end,
           const ON__UINT32 expected_tcode,
@@ -7043,10 +7015,10 @@ bool ON_BinaryArchive::FindMisplacedTable(
   ON__INT64 i64;
 
   const bool bReverseByteOrder = (ON::big_endian == Endian());
-  const size_t sizeof_chunk_typecode = 4;
-  const size_t sizeof_chunk_value = SizeofChunkLength();
-  const size_t sizeof_chunk_header = sizeof_chunk_typecode + sizeof_chunk_value;
-  size_t length_of_user_uuid_and_header = 0;
+  const std::size_t sizeof_chunk_typecode = 4;
+  const std::size_t sizeof_chunk_value = SizeofChunkLength();
+  const std::size_t sizeof_chunk_header = sizeof_chunk_typecode + sizeof_chunk_value;
+  std::size_t length_of_user_uuid_and_header = 0;
   const bool bFindObjectTable    = (  TCODE_OBJECT_TABLE == table_tcode
                                    && TCODE_OBJECT_RECORD == table_record_tcode );
   const bool bFindUserTable    = (    TCODE_USER_TABLE == table_tcode
@@ -7072,7 +7044,7 @@ bool ON_BinaryArchive::FindMisplacedTable(
   int        empty_table_status = 0; // 1 = found a candidate for an empty table
                                      // 2 = found 2 or more candidates
 
-  const size_t sizeof_buffer2048 = sizeof(buffer2048);
+  const std::size_t sizeof_buffer2048 = sizeof(buffer2048);
   bool bAtEOF = false;
 
   while(!bAtEOF)
@@ -7097,7 +7069,7 @@ bool ON_BinaryArchive::FindMisplacedTable(
     // attempt to read beyond the end of file.
     const unsigned int saved_error_message_mask = m_error_message_mask;
     m_error_message_mask |= 0x04;
-    const size_t sizeof_read = Read(sizeof_buffer2048,buffer2048);
+    const std::size_t sizeof_read = Read(sizeof_buffer2048,buffer2048);
     m_error_message_mask = saved_error_message_mask;
     if ( sizeof_read < sizeof_buffer2048 )
     {
@@ -7122,7 +7094,7 @@ bool ON_BinaryArchive::FindMisplacedTable(
       // This for loop looks through the buffer we just
       // read to reduce the amount of times we seek backwards
       // and re-read.
-      for ( size_t i = 1; i <= sizeof_read - sizeof_chunk_typecode; i++ )
+      for ( std::size_t i = 1; i <= sizeof_read - sizeof_chunk_typecode; i++ )
       {
         tcode = !table_tcode;
         buffer = BufferToUINT32(bReverseByteOrder,&buffer2048[i],buffer_end,&tcode);
@@ -7247,7 +7219,7 @@ bool ON_BinaryArchive::FindMisplacedTable(
       buffer = EmergencyFindTable_UuidHelper(bReverseByteOrder,sizeof_chunk_value,buffer,buffer_end,TCODE_OPENNURBS_CLASS_UUID,(ON_UuidIsNil(class_uuid) ? NULL : &class_uuid));
       if ( 0 == buffer || buffer <= buffer0)
         continue;
-      const size_t length_of_uuid_chunk = buffer-buffer0;
+      const std::size_t length_of_uuid_chunk = buffer-buffer0;
 
       buffer = BufferValidateTcode(bReverseByteOrder,buffer,buffer_end,TCODE_OPENNURBS_CLASS_DATA);
       if ( 0 == buffer )
@@ -7311,7 +7283,7 @@ bool ON_BinaryArchive::FindTableInDamagedArchive(
 
 /*
 static
-bool FindMaterialTable( ON_BinaryArchive& binary_archive, size_t filelength )
+bool FindMaterialTable( ON_BinaryArchive& binary_archive, std::size_t filelength )
 {
   bool rc = EmergencyFindTable( 
                 binary_archive, filelength,
@@ -10238,7 +10210,7 @@ static bool ReadV1_TCODE_ANNOTATION_Helper( ON_BinaryArchive& archive, char* buf
   int j = 0;
   if( !archive.ReadInt( &j))
     return false;
-  size_t sz = (j+1)*sizeof(cp[0]);
+  std::size_t sz = (j+1)*sizeof(cp[0]);
   if( j > BUFLEN - 1 || !buffer )
   {
     cp = (char*)onmalloc( sz );
@@ -10892,7 +10864,7 @@ static ON_NurbsCurve* ReadV1_TCODE_LEGACY_SPLSTUFF( ON_BinaryArchive& file )
 {
   // reads contents of a v1 TCODE_LEGACY_SPLSTUFF chunk
   ON_NurbsCurve* pNurbsCurve = 0;
-  int i, dim, is_rat, order, cv_count, is_closed, form;
+  int i, dim, is_rat, order, cv_count;
   ON_BoundingBox bbox;
   char c;
 
@@ -10931,17 +10903,12 @@ static ON_NurbsCurve* ReadV1_TCODE_LEGACY_SPLSTUFF( ON_BinaryArchive& file )
       return NULL;
   }
 
-  // The "is_closed" and "form" flags are here to recording
-  // the values of legacy data found in the Rhino file.  These
-  // values are not used in the toolkit code.
   if ( !file.ReadByte(1,&c) )
     return NULL;  
   if (c != 0 && c != 1 && c != 2)
     return NULL;
-  is_closed = c; // 0 = open, 1 = closed, 2 = periodic
   if ( !file.ReadByte(1,&c) )
     return NULL;
-  form = c;
 
   // read bounding box
   if ( !file.ReadDouble( dim, bbox.m_min ) )
@@ -11055,7 +11022,7 @@ static ON_NurbsSurface* ReadV1_TCODE_LEGACY_SRFSTUFF( ON_BinaryArchive& file )
 {
   // reads contents of TCODE_LEGACY_SRFSTUFF chunk
   ON_NurbsSurface* pNurbsSurface = 0;
-  int i, j, dim=0, is_rat=0, order[2], cv_count[2], is_closed[2], is_singular[2], form;
+  int i, j, dim=0, is_rat=0, order[2], cv_count[2];
   ON_BoundingBox bbox;
   char c;
 
@@ -11067,7 +11034,6 @@ static ON_NurbsSurface* ReadV1_TCODE_LEGACY_SRFSTUFF( ON_BinaryArchive& file )
   dim = c;
   if ( !file.ReadByte(1,&c) )
     return NULL;
-  form = c;
   if ( !file.ReadChar(1,&c) )
     return NULL;
   if ( c < 1 )
@@ -11109,30 +11075,23 @@ static ON_NurbsSurface* ReadV1_TCODE_LEGACY_SRFSTUFF( ON_BinaryArchive& file )
     return NULL;
   if ( c == 1 ) is_rat = 1; else if ( c == 2 ) is_rat = 2;
 
-  // The "is_closed" and "is_singular" flags are here to recording
-  // the values of legacy data found in the Rhino file.  These
-  // values are not used in the toolkit code.
   if ( !file.ReadByte(1,&c) )
     return NULL;  
   if (c != 0 && c != 1 && c != 2)
     return NULL;
-  is_closed[0] = c; // 0 = open, 1 = closed, 2 = periodic
   if ( !file.ReadByte(1,&c) )
     return NULL;  
   if (c != 0 && c != 1 && c != 2)
     return NULL;
-  is_closed[1] = c; // 0 = open, 1 = closed, 2 = periodic
 
   if ( !file.ReadByte(1,&c) )
     return NULL;  
   if (c != 0 && c != 1 && c != 2 && c != 3)
     return NULL;
-  is_singular[0] = c;
   if ( !file.ReadByte(1,&c) )
     return NULL;  
   if (c != 0 && c != 1 && c != 2 && c != 3)
     return NULL;
-  is_singular[1] = c;
 
   // read bounding box
   if ( !file.ReadDouble( dim, bbox.m_min ) )
@@ -11334,7 +11293,6 @@ bool ON_Brep::ReadV1_LegacyTrimStuff( ON_BinaryArchive& file,
         ON_BrepLoop& loop )
 {
   // read contents of TCODE_LEGACY_TRMSTUFF chunk
-  bool rc = false;
   int revedge, gcon, mono;
   int curve2d_index = -1, curve3d_index = -1, trim_index = -1;
   double tol_3d, tol_2d;
@@ -11364,11 +11322,9 @@ bool ON_Brep::ReadV1_LegacyTrimStuff( ON_BinaryArchive& file,
     return false;
   if ( BeginRead3dmLEGACYSTUFF( file, TCODE_LEGACY_CRVSTUFF ) ) {
     curve2d = ReadV1_TCODE_LEGACY_CRVSTUFF(file);
-    if ( !file.EndRead3dmChunk() ) // end of TCODE_LEGACY_CRVSTUFF chunk
-      rc = false;
+    file.EndRead3dmChunk(); // end of TCODE_LEGACY_CRVSTUFF chunk
   }
-  if ( !file.EndRead3dmChunk() ) // end of TCODE_LEGACY_CRV chunk
-    rc = false;
+  file.EndRead3dmChunk(); // end of TCODE_LEGACY_CRV chunk
   if ( !curve2d )
     return false;
   curve2d_index = AddTrimCurve(curve2d);
@@ -11383,11 +11339,9 @@ bool ON_Brep::ReadV1_LegacyTrimStuff( ON_BinaryArchive& file,
       return false;
     if ( BeginRead3dmLEGACYSTUFF( file, TCODE_LEGACY_CRVSTUFF ) ) {
       curve3d = ReadV1_TCODE_LEGACY_CRVSTUFF(file);
-      if ( !file.EndRead3dmChunk() ) // end of TCODE_LEGACY_CRVSTUFF chunk
-        rc = false;
+      file.EndRead3dmChunk(); // end of TCODE_LEGACY_CRVSTUFF chunk
     }
-    if ( !file.EndRead3dmChunk() ) // end of TCODE_LEGACY_CRV chunk
-      rc = false;
+    file.EndRead3dmChunk(); // end of TCODE_LEGACY_CRV chunk
     if ( !curve3d )
       return false;
     curve3d_index = AddEdgeCurve(curve3d);
@@ -12863,7 +12817,7 @@ bool ON_BinaryArchive::Read3dmAnonymousUserTable( ON_3dmGoo& goo )
 
 bool ON_BinaryArchive::Read3dmAnonymousUserTable( 
     int archive_3dm_version,
-    int archive_opennurbs_version,
+    int,
     ON_3dmGoo& goo
     )
 {
@@ -12872,13 +12826,12 @@ bool ON_BinaryArchive::Read3dmAnonymousUserTable(
     if ( Archive3dmVersion() < 50 )
     {
       archive_3dm_version = Archive3dmVersion();
-      archive_opennurbs_version = ArchiveOpenNURBSVersion();
     }
     else
     {
       // recent version with 4 byte chunk lengths.
       archive_3dm_version = 5;
-      archive_opennurbs_version = 200910190;
+      // archive_opennurbs_version = 200910190;
     }
   }
   bool rc = Read3dmGoo( goo );
@@ -12939,8 +12892,8 @@ bool ON_BinaryArchive::Write3dmEndMark()
   bool rc = BeginWrite3dmChunk( TCODE_ENDOFFILE, 0 );
   if ( rc ) 
   {    
-    size_t sizeof_chunk_length = SizeofChunkLength();
-    size_t sizeoffile_length = (8==SizeofChunkLength()) ? 8 : 4;
+    std::size_t sizeof_chunk_length = SizeofChunkLength();
+    std::size_t sizeoffile_length = (8==SizeofChunkLength()) ? 8 : 4;
     length += (4 + sizeof_chunk_length + sizeoffile_length );
     rc = WriteEOFSizeOfFile(length);
     if ( !EndWrite3dmChunk() )
@@ -12951,7 +12904,7 @@ bool ON_BinaryArchive::Write3dmEndMark()
   return rc;
 }
 
-bool ON_BinaryArchive::Read3dmEndMark( size_t* file_length )
+bool ON_BinaryArchive::Read3dmEndMark( std::size_t* file_length )
 {
   unsigned int tcode=0;
   ON__INT64 value=0;
@@ -12973,7 +12926,7 @@ bool ON_BinaryArchive::Read3dmEndMark( size_t* file_length )
         ON__UINT64 u64 = 0;
         rc = ReadEOFSizeOfFile( &u64 );
         if ( rc && file_length )
-          *file_length = (size_t)u64;
+          *file_length = (std::size_t)u64;
         if ( !EndRead3dmChunk() )
           rc = false;
       }
@@ -12998,7 +12951,7 @@ ON_BinaryArchive::Mode() const
   return m_mode;
 }
 
-void ON_BinaryArchive::UpdateCRC( size_t count, const void* p )
+void ON_BinaryArchive::UpdateCRC( std::size_t count, const void* p )
 {
   if ( m_bDoChunkCRC ) {
     ON_3DM_BIG_CHUNK* c = m_chunk.Last();
@@ -13042,7 +12995,7 @@ ON__UINT64 ON_BinaryArchive::ReadBuffer( ON__UINT64 sizeof_buffer, void* buffer 
     return 0;
   unsigned int saved_error_mask = m_error_message_mask;
   m_error_message_mask |= 0x04; // tell Read to tolerate hitting the end of the file
-  ON__UINT64 sizeof_read = Read((size_t)sizeof_buffer,buffer);
+  ON__UINT64 sizeof_read = Read((std::size_t)sizeof_buffer,buffer);
   m_error_message_mask = saved_error_mask;
   return sizeof_read;
 }
@@ -13076,7 +13029,7 @@ ON_BinaryFile::~ON_BinaryFile()
 }
 
 bool
-ON_BinaryArchive::ReadByte( size_t count, void* p )
+ON_BinaryArchive::ReadByte( std::size_t count, void* p )
 {
   bool rc = false;
   if ( count > 0 ) {
@@ -13105,7 +13058,7 @@ ON_BinaryArchive::ReadByte( size_t count, void* p )
       }
 #endif
 
-      size_t readcount = Read( count, p );
+      std::size_t readcount = Read( count, p );
       if ( readcount == count ) 
       {
         UpdateCRC( count, p );
@@ -13161,7 +13114,7 @@ ON_BinaryArchive::ReadByte( size_t count, void* p )
 }
 
 bool
-ON_BinaryArchive::WriteByte( size_t count, const void* p )
+ON_BinaryArchive::WriteByte( std::size_t count, const void* p )
 {
   bool rc = false;
   if ( count > 0 ) {
@@ -13169,7 +13122,7 @@ ON_BinaryArchive::WriteByte( size_t count, const void* p )
       ON_ERROR("ON_BinaryArchive::WriteByte() WriteMode() is false.");
     }
     else if ( p ) {
-      size_t writecount = (size_t)Write( count, p );
+      std::size_t writecount = (std::size_t)Write( count, p );
       if ( writecount == count ) {
         UpdateCRC( count, p );
         rc = true;      
@@ -13243,14 +13196,14 @@ ON_BinaryFile::EnableMemoryBuffer(
 }
 
 
-size_t ON_BinaryFile::Read( size_t count, void* p )
+std::size_t ON_BinaryFile::Read( std::size_t count, void* p )
 {
   return (m_fp) ? fread( p, 1, count, m_fp ) : 0;
 }
 
-size_t ON_BinaryFile::Write( size_t count, const void* p )
+std::size_t ON_BinaryFile::Write( std::size_t count, const void* p )
 {
-  size_t rc = 0;
+  std::size_t rc = 0;
   if ( m_fp ) 
   {
     if ( m_memory_buffer ) 
@@ -13304,9 +13257,9 @@ bool ON_BinaryFile::Flush()
   return rc;
 }
 
-size_t ON_BinaryFile::CurrentPosition() const
+std::size_t ON_BinaryFile::CurrentPosition() const
 {
-  size_t offset = 0;
+  std::size_t offset = 0;
 
   if ( 0 != m_fp ) 
   {
@@ -13320,7 +13273,7 @@ size_t ON_BinaryFile::CurrentPosition() const
     }
     else
     {
-      offset = (size_t)((ON__UINT64)offset64);
+      offset = (std::size_t)((ON__UINT64)offset64);
     }
 #else
     offset = ftell(m_fp);
@@ -13351,7 +13304,8 @@ bool ON_BinaryFile::AtEnd() const
       else 
       {
         int buffer;
-        fread( &buffer, 1, 1, m_fp );
+        std::size_t res = fread( &buffer, 1, 1, m_fp );
+        (void) res;
         if ( feof( m_fp ) ) 
         {
           rc = true;
@@ -13427,7 +13381,7 @@ bool ON_BinaryFile::SeekFromEnd( int offset )
   return rc;
 }
 
-bool ON_BinaryFile::SeekFromStart( size_t offset )
+bool ON_BinaryFile::SeekFromStart( std::size_t offset )
 {
   bool rc = false;
   if ( m_fp ) 
@@ -13700,13 +13654,13 @@ bool ON_WriteOneObjectArchive(
 }
 
 static 
-void Dump3dmChunk_ErrorReportHelper( size_t offset, const char* msg, ON_TextLog& dump )
+void Dump3dmChunk_ErrorReportHelper( std::size_t offset, const char* msg, ON_TextLog& dump )
 {
   int ioffset = (int)offset;
   dump.Print("** ERROR near offset %d ** %s\n",ioffset,msg);
 }
 static
-bool DumpChunk_PrintHeaderInfo( size_t offset0, ON__UINT32 typecode, ON__INT64 big_value, const char* typecode_name, ON_TextLog& dump)
+bool DumpChunk_PrintHeaderInfo( std::size_t offset0, ON__UINT32 typecode, ON__INT64 big_value, const char* typecode_name, ON_TextLog& dump)
 {
   bool bShortChunk = (0 != (typecode & TCODE_SHORT));
   if ( 0 == typecode_name )
@@ -13953,13 +13907,13 @@ const char* ON_BinaryArchive::TypecodeName( unsigned int tcode )
 
 #undef CASEtcode2string
 
-char* ON_BinaryArchive::ON_TypecodeParse( unsigned int tcode, char* typecode_name, size_t max_length )
+char* ON_BinaryArchive::ON_TypecodeParse( unsigned int tcode, char* typecode_name, std::size_t max_length )
 {
   char* s;
   const char* sub_name;
   const char* h = "0123456789ABCDEF";
   char c, c0;
-  size_t slen;
+  std::size_t slen;
 
   if ( !typecode_name || max_length <= 0 )
     return 0;
@@ -14004,9 +13958,12 @@ char* ON_BinaryArchive::ON_TypecodeParse( unsigned int tcode, char* typecode_nam
   sub_name = ON_BinaryArchive::TypecodeName( tcode & TCODE_SHORT );
   if ( sub_name )
   {
-    if ( slen <= 0 ) return 0; *s++ = ' '; slen--;
-    if ( slen <= 0 ) return 0; *s++ = '|'; slen--;
-    if ( slen <= 0 ) return 0; *s++ = ' '; slen--;
+    if ( slen <= 0 ) return 0;
+    *s++ = ' '; slen--;
+    if ( slen <= 0 ) return 0;
+    *s++ = '|'; slen--;
+    if ( slen <= 0 ) return 0;
+    *s++ = ' '; slen--;
     while ( *sub_name )
     {
       if ( slen <= 0 )
@@ -14019,9 +13976,12 @@ char* ON_BinaryArchive::ON_TypecodeParse( unsigned int tcode, char* typecode_nam
   sub_name = ON_BinaryArchive::TypecodeName( tcode & TCODE_CRC );
   if ( sub_name )
   {
-    if ( slen <= 0 ) return 0; *s++ = ' '; slen--;
-    if ( slen <= 0 ) return 0; *s++ = '|'; slen--;
-    if ( slen <= 0 ) return 0; *s++ = ' '; slen--;
+    if ( slen <= 0 ) return 0;
+    *s++ = ' '; slen--;
+    if ( slen <= 0 ) return 0;
+    *s++ = '|'; slen--;
+    if ( slen <= 0 ) return 0;
+    *s++ = ' '; slen--;
     while ( *sub_name )
     {
       if ( slen <= 0 )
@@ -14034,9 +13994,12 @@ char* ON_BinaryArchive::ON_TypecodeParse( unsigned int tcode, char* typecode_nam
   sub_name = ON_BinaryArchive::TypecodeName( tcode & 0x7FFF );
   if ( sub_name )
   {
-    if ( slen <= 0 ) return 0; *s++ = ' '; slen--;
-    if ( slen <= 0 ) return 0; *s++ = '|'; slen--;
-    if ( slen <= 0 ) return 0; *s++ = ' '; slen--;
+    if ( slen <= 0 ) return 0;
+    *s++ = ' '; slen--;
+    if ( slen <= 0 ) return 0;
+    *s++ = '|'; slen--;
+    if ( slen <= 0 ) return 0;
+    *s++ = ' '; slen--;
     while ( *sub_name )
     {
       if ( slen <= 0 )
@@ -14047,11 +14010,16 @@ char* ON_BinaryArchive::ON_TypecodeParse( unsigned int tcode, char* typecode_nam
   }
   else 
   {
-    if ( slen <= 0 ) return 0; *s++ = ' '; slen--;
-    if ( slen <= 0 ) return 0; *s++ = '|'; slen--;
-    if ( slen <= 0 ) return 0; *s++ = ' '; slen--;
-    if ( slen <= 0 ) return 0; *s++ = '0'; slen--;
-    if ( slen <= 0 ) return 0; *s++ = 'x'; slen--;
+    if ( slen <= 0 ) return 0;
+    *s++ = ' '; slen--;
+    if ( slen <= 0 ) return 0;
+    *s++ = '|'; slen--;
+    if ( slen <= 0 ) return 0;
+    *s++ = ' '; slen--;
+    if ( slen <= 0 ) return 0;
+    *s++ = '0'; slen--;
+    if ( slen <= 0 ) return 0;
+    *s++ = 'x'; slen--;
     c = h[((tcode & 0x7000) / 0x1000) & 0xF];
     if ( slen > 0 ) {*s++ = c; slen--;}
     c = h[((tcode & 0xF00) / 0x100) & 0xF];
@@ -14068,10 +14036,10 @@ char* ON_BinaryArchive::ON_TypecodeParse( unsigned int tcode, char* typecode_nam
 }
 
 static
-bool Dump3dmChunk_EndReadChunkHelper( ON_BinaryArchive& file, size_t offset0, ON__UINT32 tcode, ON__INT64 big_value, ON_TextLog& dump )
+bool Dump3dmChunk_EndReadChunkHelper( ON_BinaryArchive& file, std::size_t offset0, ON__UINT32 tcode, ON__INT64 big_value, ON_TextLog& dump )
 {
   const bool bShortChunk = (0 != (tcode & TCODE_SHORT));
-  const size_t offset1 = file.CurrentPosition();
+  const std::size_t offset1 = file.CurrentPosition();
   bool rc = file.EndRead3dmChunk();
   if ( !rc ) 
   {
@@ -14097,7 +14065,7 @@ bool Dump3dmChunk_EndReadChunkHelper( ON_BinaryArchive& file, size_t offset0, ON
 }
 
 static 
-bool Dump3dmChunk_UserDataHeaderHelper( size_t offset, ON_BinaryArchive& file, 
+bool Dump3dmChunk_UserDataHeaderHelper( std::size_t offset, ON_BinaryArchive& file, 
                                  int major_userdata_version, int minor_userdata_version, 
                                  ON_TextLog& dump )
 {
@@ -14118,7 +14086,7 @@ bool Dump3dmChunk_UserDataHeaderHelper( size_t offset, ON_BinaryArchive& file,
 
   ON__UINT32 tcode = 0;
   ON__INT64 big_value = 0;
-  const size_t offset0 = file.CurrentPosition();
+  const std::size_t offset0 = file.CurrentPosition();
 
   for(;;)
   {
@@ -14260,7 +14228,7 @@ ON_BinaryArchive::Dump3dmChunk( ON_TextLog& dump, int recursion_depth )
   //ON_BinaryArchive& file = *this;
   const char* typecode_name = 0;
   bool bShortChunk = false;
-  const size_t offset0 = CurrentPosition();
+  const std::size_t offset0 = CurrentPosition();
   unsigned int typecode = 0;
   ON__INT64 big_value;
   bool rc = BeginRead3dmBigChunk( &typecode, &big_value );
@@ -14577,7 +14545,7 @@ ON_BinaryArchive::Dump3dmChunk( ON_TextLog& dump, int recursion_depth )
                        );
             if ( 1 == major_userdata_version || 2 == major_userdata_version )
             {
-              const size_t userdata_header_offset = CurrentPosition();
+              const std::size_t userdata_header_offset = CurrentPosition();
               switch ( major_userdata_version )
               {
               case 1:
@@ -14688,7 +14656,7 @@ ON_BinaryArchive::Dump3dmChunk( ON_TextLog& dump, int recursion_depth )
       }
     }
 
-    const size_t offset1 = CurrentPosition();
+    const std::size_t offset1 = CurrentPosition();
     if ( !EndRead3dmChunk(true) ) 
     {
       Dump3dmChunk_ErrorReportHelper(offset1,"EndRead3dmChunk() failed.",dump);
@@ -14712,7 +14680,7 @@ ON_BinaryArchive::Dump3dmChunk( ON_TextLog& dump, int recursion_depth )
 
 
 ON_Read3dmBufferArchive::ON_Read3dmBufferArchive( 
-          size_t sizeof_buffer, 
+          std::size_t sizeof_buffer, 
           const void* buffer,
           bool bCopyBuffer,
           int archive_3dm_version,
@@ -14757,7 +14725,7 @@ ON_Read3dmBufferArchive::~ON_Read3dmBufferArchive()
 }
 
 // ON_BinaryArchive overrides
-size_t ON_Read3dmBufferArchive::CurrentPosition() const
+std::size_t ON_Read3dmBufferArchive::CurrentPosition() const
 {
   return m_buffer_position;
 }
@@ -14772,16 +14740,16 @@ bool ON_Read3dmBufferArchive::SeekFromCurrentPosition( int offset )
       m_buffer_position += offset;
       rc = true;
     }
-    else if ( size_t(-offset) <= m_buffer_position )
+    else if ( std::size_t(-offset) <= m_buffer_position )
     {
-      m_buffer_position -= (size_t(-offset));
+      m_buffer_position -= (std::size_t(-offset));
       rc = true;
     }
   }
   return rc;
 }
 
-bool ON_Read3dmBufferArchive::SeekFromStart( size_t offset )
+bool ON_Read3dmBufferArchive::SeekFromStart( std::size_t offset )
 {
   bool rc = false;
   if ( m_buffer ) 
@@ -14800,12 +14768,12 @@ bool ON_Read3dmBufferArchive::AtEnd() const
   return (m_buffer_position >= m_sizeof_buffer) ? true : false;
 }
 
-size_t ON_Read3dmBufferArchive::Read( size_t count, void* buffer )
+std::size_t ON_Read3dmBufferArchive::Read( std::size_t count, void* buffer )
 {
   if ( count <= 0 || 0 == buffer )
     return 0;
 
-  size_t maxcount = ( m_sizeof_buffer > m_buffer_position ) 
+  std::size_t maxcount = ( m_sizeof_buffer > m_buffer_position ) 
                   ? (m_sizeof_buffer - m_buffer_position)
                   : 0;
   if ( count > maxcount )
@@ -14820,7 +14788,7 @@ size_t ON_Read3dmBufferArchive::Read( size_t count, void* buffer )
   return count;
 }
 
-size_t ON_Read3dmBufferArchive::Write( size_t, const void* )
+std::size_t ON_Read3dmBufferArchive::Write( std::size_t, const void* )
 {
   // ON_Read3dmBufferArchive does not support Write() and Flush()
   return 0;
@@ -14833,7 +14801,7 @@ bool ON_Read3dmBufferArchive::Flush()
 }
 
 
-size_t ON_Read3dmBufferArchive::SizeOfBuffer() const
+std::size_t ON_Read3dmBufferArchive::SizeOfBuffer() const
 {
   return m_sizeof_buffer;
 }
@@ -14848,8 +14816,8 @@ const void* ON_Read3dmBufferArchive::Buffer() const
 
 
 ON_Write3dmBufferArchive::ON_Write3dmBufferArchive( 
-          size_t initial_sizeof_buffer, 
-          size_t max_sizeof_buffer, 
+          std::size_t initial_sizeof_buffer, 
+          std::size_t max_sizeof_buffer, 
           int archive_3dm_version,
           int archive_opennurbs_version
           )
@@ -14879,7 +14847,7 @@ ON_Write3dmBufferArchive::~ON_Write3dmBufferArchive()
     onfree(m_p);
 }
 
-void ON_Write3dmBufferArchive::AllocBuffer( size_t sz )
+void ON_Write3dmBufferArchive::AllocBuffer( std::size_t sz )
 {
   if ( sz > m_sizeof_buffer 
        && (m_max_sizeof_buffer <= 0 || sz <= m_max_sizeof_buffer) 
@@ -14909,7 +14877,7 @@ void ON_Write3dmBufferArchive::AllocBuffer( size_t sz )
 }
 
 // ON_BinaryArchive overrides
-size_t ON_Write3dmBufferArchive::CurrentPosition() const
+std::size_t ON_Write3dmBufferArchive::CurrentPosition() const
 {
   return m_buffer_position;
 }
@@ -14924,16 +14892,16 @@ bool ON_Write3dmBufferArchive::SeekFromCurrentPosition( int offset )
       m_buffer_position += offset;
       rc = true;
     }
-    else if ( size_t(-offset) <= m_buffer_position )
+    else if ( std::size_t(-offset) <= m_buffer_position )
     {
-      m_buffer_position -= (size_t(-offset));
+      m_buffer_position -= (std::size_t(-offset));
       rc = true;
     }
   }
   return rc;
 }
 
-bool ON_Write3dmBufferArchive::SeekFromStart( size_t offset )
+bool ON_Write3dmBufferArchive::SeekFromStart( std::size_t offset )
 {
   bool rc = false;
   if ( m_buffer ) 
@@ -14952,12 +14920,12 @@ bool ON_Write3dmBufferArchive::AtEnd() const
   return (m_buffer_position >= m_sizeof_buffer) ? true : false;
 }
 
-size_t ON_Write3dmBufferArchive::Read( size_t count, void* buffer )
+std::size_t ON_Write3dmBufferArchive::Read( std::size_t count, void* buffer )
 {
   if ( count <= 0 || 0 == buffer )
     return 0;
 
-  size_t maxcount = ( m_sizeof_buffer > m_buffer_position ) 
+  std::size_t maxcount = ( m_sizeof_buffer > m_buffer_position ) 
                   ? (m_sizeof_buffer - m_buffer_position)
                   : 0;
   if ( count > maxcount )
@@ -14972,7 +14940,7 @@ size_t ON_Write3dmBufferArchive::Read( size_t count, void* buffer )
   return count;
 }
 
-size_t ON_Write3dmBufferArchive::Write( size_t sz, const void* buffer )
+std::size_t ON_Write3dmBufferArchive::Write( std::size_t sz, const void* buffer )
 {
   if ( sz <= 0 || 0 == buffer )
     return 0;
@@ -15000,7 +14968,7 @@ bool ON_Write3dmBufferArchive::Flush()
 }
 
 
-size_t ON_Write3dmBufferArchive::SizeOfBuffer() const
+std::size_t ON_Write3dmBufferArchive::SizeOfBuffer() const
 {
   return m_sizeof_buffer;
 }
@@ -15023,7 +14991,7 @@ void* ON_Write3dmBufferArchive::HarvestBuffer()
   return buffer;
 }
 
-size_t ON_Write3dmBufferArchive::SizeOfArchive() const
+std::size_t ON_Write3dmBufferArchive::SizeOfArchive() const
 {
   return m_sizeof_archive;
 }
@@ -15058,10 +15026,10 @@ ON_Buffer* ON_BinaryArchiveBuffer::Buffer() const
   return m_buffer;
 }
 
-size_t ON_BinaryArchiveBuffer::CurrentPosition() const
+std::size_t ON_BinaryArchiveBuffer::CurrentPosition() const
 {
   if ( 0 != m_buffer )
-    return (size_t)m_buffer->CurrentPosition();
+    return (std::size_t)m_buffer->CurrentPosition();
 
   return 0;
 }
@@ -15074,7 +15042,7 @@ bool ON_BinaryArchiveBuffer::SeekFromCurrentPosition(int offset)
   return false;
 }
 
-bool ON_BinaryArchiveBuffer::SeekFromStart(size_t offset)
+bool ON_BinaryArchiveBuffer::SeekFromStart(std::size_t offset)
 {
   if ( 0 != m_buffer )
     return m_buffer->SeekFromStart((ON__INT64)offset);
@@ -15098,18 +15066,18 @@ bool ON_BinaryArchiveBuffer::SeekFromEnd( ON__INT64 offset )
   return false;
 }
 
-size_t ON_BinaryArchiveBuffer::Read( size_t count, void* a )
+std::size_t ON_BinaryArchiveBuffer::Read( std::size_t count, void* a )
 {
   if ( 0 != m_buffer )
-    return (size_t)m_buffer->Read(count,a);
+    return (std::size_t)m_buffer->Read(count,a);
 
   return 0;
 }
 
-size_t ON_BinaryArchiveBuffer::Write( size_t count, const void* a )
+std::size_t ON_BinaryArchiveBuffer::Write( std::size_t count, const void* a )
 {
   if ( 0 != m_buffer )
-    return (size_t)m_buffer->Write(count,a);
+    return (std::size_t)m_buffer->Write(count,a);
 
   return 0;
 }

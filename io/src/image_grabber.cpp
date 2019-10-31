@@ -84,15 +84,15 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   
   //! Get cloud at a particular location
   bool
-  getCloudAt (size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
+  getCloudAt (std::size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
               double &fx, double &fy, double &cx, double &cy) const;
   
   //! Get cloud at a particular location
   bool
-  getCloudVTK (size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) const;
+  getCloudVTK (std::size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) const;
   //! Get cloud at a particular location
   bool
-  getCloudPCLZF (size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
+  getCloudPCLZF (std::size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
                  double &fx, double &fy, double &cx, double &cy) const;
 
   //! Scrapes a directory for image files which contain "rgb" or "depth" and
@@ -119,9 +119,9 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   //! Checks if a timestamp is given in the filename
   //! And returns if so
   bool
-  getTimestampFromFilepath (const std::string &filepath, pcl::uint64_t &timestamp) const;
+  getTimestampFromFilepath (const std::string &filepath, std::uint64_t &timestamp) const;
 
-  size_t
+  std::size_t
   numFrames () const;
 
   
@@ -143,7 +143,7 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   std::vector<std::string> rgb_pclzf_files_;
   std::vector<std::string> xml_files_;
 
-  size_t cur_frame_;
+  std::size_t cur_frame_;
 
   TimeTrigger time_trigger_;
 
@@ -456,7 +456,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::rewindOnce ()
 bool
 pcl::ImageGrabberBase::ImageGrabberImpl::getTimestampFromFilepath (
     const std::string &filepath, 
-    pcl::uint64_t &timestamp) const
+    std::uint64_t &timestamp) const
 {
   // For now, we assume the file is of the form frame_[22-char POSIX timestamp]_*
   char timestamp_str[256];
@@ -465,7 +465,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getTimestampFromFilepath (
                             timestamp_str);
   if (result > 0)
   {
-    // Convert to pcl::uint64_t, microseconds since 1970-01-01
+    // Convert to std::uint64_t, microseconds since 1970-01-01
     boost::posix_time::ptime cur_date = boost::posix_time::from_iso_string (timestamp_str);
     boost::posix_time::ptime zero_date (
         boost::gregorian::date (1970,boost::gregorian::Jan,1));
@@ -477,7 +477,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getTimestampFromFilepath (
   
 /////////////////////////////////////////////////////////////////////////////
 bool
-pcl::ImageGrabberBase::ImageGrabberImpl::getCloudAt (size_t idx, 
+pcl::ImageGrabberBase::ImageGrabberImpl::getCloudAt (std::size_t idx, 
                                                      pcl::PCLPointCloud2 &blob,
                                                      Eigen::Vector4f &origin, 
                                                      Eigen::Quaternionf &orientation, 
@@ -501,7 +501,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudAt (size_t idx,
 }
 
 bool
-pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx, 
+pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (std::size_t idx, 
                                                       pcl::PCLPointCloud2 &blob,
                                                       Eigen::Vector4f &origin, 
                                                       Eigen::Quaternionf &orientation) const
@@ -583,7 +583,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
       }
     }
     // Handle timestamps
-    pcl::uint64_t timestamp;
+    std::uint64_t timestamp;
     if (getTimestampFromFilepath (depth_image_file, timestamp))
     {
       cloud_color.header.stamp = timestamp;
@@ -615,7 +615,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
       }
     }
     // Handle timestamps
-    pcl::uint64_t timestamp;
+    std::uint64_t timestamp;
     if (getTimestampFromFilepath (depth_image_file, timestamp))
     {
       cloud.header.stamp = timestamp;
@@ -636,7 +636,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
 }
 
 bool
-pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx, 
+pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (std::size_t idx, 
                                                         pcl::PCLPointCloud2 &blob,
                                                         Eigen::Vector4f &origin, 
                                                         Eigen::Quaternionf &orientation, 
@@ -706,7 +706,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
       depth.readOMP (depth_pclzf_file, cloud_color, num_threads_);
     }
     // handle timestamps
-    pcl::uint64_t timestamp;
+    std::uint64_t timestamp;
     if (getTimestampFromFilepath (depth_pclzf_file, timestamp))
     {
       cloud_color.header.stamp = timestamp;
@@ -747,7 +747,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
     else
       depth.readOMP (depth_pclzf_file, cloud, num_threads_);
     // handle timestamps
-    pcl::uint64_t timestamp;
+    std::uint64_t timestamp;
     if (getTimestampFromFilepath (depth_pclzf_file, timestamp))
     {
       cloud.header.stamp = timestamp;
@@ -980,7 +980,7 @@ pcl::ImageGrabberBase::numFrames () const
 
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::ImageGrabberBase::getCloudAt (size_t idx,
+pcl::ImageGrabberBase::getCloudAt (std::size_t idx,
                                    pcl::PCLPointCloud2 &blob,
                                    Eigen::Vector4f &origin, 
                                    Eigen::Quaternionf &orientation) const
@@ -1023,7 +1023,7 @@ pcl::ImageGrabberBase::getPrevDepthFileName () const
     
 /////////////////////////////////////////////////////////////////////////////////////////
 std::string
-pcl::ImageGrabberBase::getDepthFileNameAtIndex (size_t idx) const
+pcl::ImageGrabberBase::getDepthFileNameAtIndex (std::size_t idx) const
 {
   std::string pathname;
   if (impl_->pclzf_mode_)
@@ -1036,7 +1036,7 @@ pcl::ImageGrabberBase::getDepthFileNameAtIndex (size_t idx) const
 
 ////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::ImageGrabberBase::getTimestampAtIndex (size_t idx, pcl::uint64_t &timestamp) const
+pcl::ImageGrabberBase::getTimestampAtIndex (std::size_t idx, std::uint64_t &timestamp) const
 {
   std::string filename;
   if (impl_->pclzf_mode_)

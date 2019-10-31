@@ -96,10 +96,10 @@ pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud
       continue; /// \note: we neglect points that are outside the specified interval!
 
     // compute bins and increase
-    int bin_d = static_cast<int> (floor (nr_subdiv * dist / max_dist));
+    int bin_d = static_cast<int> (std::floor (nr_subdiv * dist / max_dist));
     if (compute_histogram)
     {
-      int bin_a = std::min (nr_subdiv-1, static_cast<int> (floor (nr_subdiv * angle / (M_PI/2))));
+      int bin_a = std::min (nr_subdiv-1, static_cast<int> (std::floor (nr_subdiv * angle / (M_PI/2))));
       histogram(bin_a, bin_d)++;
     }
 
@@ -195,10 +195,10 @@ pcl::computeRSD (const pcl::PointCloud<PointNT> &normals,
       continue; /// \note: we neglect points that are outside the specified interval!
 
     // compute bins and increase
-    int bin_d = static_cast<int> (floor (nr_subdiv * dist / max_dist));
+    int bin_d = static_cast<int> (std::floor (nr_subdiv * dist / max_dist));
     if (compute_histogram)
     {
-      int bin_a = std::min (nr_subdiv-1, static_cast<int> (floor (nr_subdiv * angle / (M_PI/2))));
+      int bin_a = std::min (nr_subdiv-1, static_cast<int> (std::floor (nr_subdiv * angle / (M_PI/2))));
       histogram(bin_a, bin_d)++;
     }
 
@@ -270,7 +270,7 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     histograms_->reserve (output.points.size ());
     
     // Iterating over the entire index vector
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
     {
       // Compute and store r_min and r_max in the output cloud
       this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_sqr_dists);
@@ -281,7 +281,7 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   else
   {
     // Iterating over the entire index vector
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
     {
       // Compute and store r_min and r_max in the output cloud
       this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_sqr_dists);

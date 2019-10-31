@@ -68,13 +68,13 @@ void
 {
   //std::cerr << __PRETTY_FUNCTION__<<" called.\n";
   
-  for (size_t scale_space_idx = 1; scale_space_idx<border_extractor_scale_space_.size (); ++scale_space_idx)
+  for (std::size_t scale_space_idx = 1; scale_space_idx<border_extractor_scale_space_.size (); ++scale_space_idx)
     delete border_extractor_scale_space_[scale_space_idx];
   border_extractor_scale_space_.clear ();
-  for (size_t scale_space_idx = 1; scale_space_idx<range_image_scale_space_.size (); ++scale_space_idx)
+  for (std::size_t scale_space_idx = 1; scale_space_idx<range_image_scale_space_.size (); ++scale_space_idx)
     delete range_image_scale_space_[scale_space_idx];
   range_image_scale_space_.clear ();
-  for (size_t scale_space_idx = 1; scale_space_idx<interest_image_scale_space_.size (); ++scale_space_idx)
+  for (std::size_t scale_space_idx = 1; scale_space_idx<interest_image_scale_space_.size (); ++scale_space_idx)
     delete[] interest_image_scale_space_[scale_space_idx];
   interest_image_scale_space_.clear ();
   is_interest_point_image_.clear ();
@@ -158,7 +158,7 @@ namespace
     if (new_radius >= 2)
     {
       float mapping_factor = 1.0f + (1.0f / static_cast<float> (new_radius-1));
-      for (size_t old_idx=0; old_idx<old_beams.size (); ++old_idx)
+      for (std::size_t old_idx=0; old_idx<old_beams.size (); ++old_idx)
       {
         if (old_beams[old_idx])
         {
@@ -318,7 +318,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
       
       angle_histogram.clear ();
       angle_histogram.resize(angle_histogram_size, 0);
-      for (size_t neighbors_to_check_idx=0; neighbors_to_check_idx<neighbors_to_check.size (); ++neighbors_to_check_idx)
+      for (std::size_t neighbors_to_check_idx=0; neighbors_to_check_idx<neighbors_to_check.size (); ++neighbors_to_check_idx)
       {
         int index2 = neighbors_to_check[neighbors_to_check_idx];
         if (!range_image.isValid (index2))
@@ -364,7 +364,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
                      current_negative_score, positive_score);
         float angle = nkdGetDirectionAngle (surface_change_direction, rotation_to_viewer_coordinate_system);
         int histogram_cell = (std::min) (angle_histogram_size-1,
-                          static_cast<int> (pcl_lrint (floorf ( (angle+deg2rad (90.0f))/deg2rad (180.0f) * angle_histogram_size))));
+                          static_cast<int> (pcl_lrint (std::floor ( (angle+deg2rad (90.0f))/deg2rad (180.0f) * angle_histogram_size))));
         float& histogram_value = angle_histogram[histogram_cell];
         
         histogram_value = (std::max) (histogram_value, positive_score);
@@ -501,7 +501,7 @@ NarfKeypoint::calculateSparseInterestImage ()
       angle_elements[angle_histogram_idx].clear ();
     }
     
-    for (size_t neighbors_to_check_idx=0; neighbors_to_check_idx<neighbors_to_check.size (); ++neighbors_to_check_idx)
+    for (std::size_t neighbors_to_check_idx=0; neighbors_to_check_idx<neighbors_to_check.size (); ++neighbors_to_check_idx)
     {
       int index2 = neighbors_to_check[neighbors_to_check_idx];
       if (!range_image.isValid (index2))
@@ -545,7 +545,7 @@ NarfKeypoint::calculateSparseInterestImage ()
       
       float angle = nkdGetDirectionAngle (surface_change_direction, rotation_to_viewer_coordinate_system);
       int histogram_cell = (std::min) (angle_histogram_size-1,
-                                       static_cast<int> (pcl_lrint (floorf ( (angle+deg2rad (90.0f))/deg2rad (180.0f) * angle_histogram_size))));
+                                       static_cast<int> (pcl_lrint (std::floor ( (angle+deg2rad (90.0f))/deg2rad (180.0f) * angle_histogram_size))));
       float& histogram_value = angle_histogram[histogram_cell];
       histogram_value = (std::max) (histogram_value, surface_change_score);
       angle_elements[histogram_cell].push_back (std::make_pair(index2, surface_change_score));
@@ -854,7 +854,7 @@ NarfKeypoint::calculateInterestPoints ()
     if (range_image.isValid (image_x, image_y))
       is_interest_point_image_[image_y*width + image_x] = true;
   }
-  interest_points_->width = static_cast<uint32_t> (interest_points_->points.size ());
+  interest_points_->width = static_cast<std::uint32_t> (interest_points_->points.size ());
   interest_points_->height = 1;
   interest_points_->is_dense = true;
 }

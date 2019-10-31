@@ -62,7 +62,7 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      PointDataAtOffset (uint8_t datatype, uint32_t offset) :
+      PointDataAtOffset (std::uint8_t datatype, std::uint32_t offset) :
         datatype_ (datatype), offset_ (offset)
       {
       }
@@ -75,10 +75,10 @@ namespace pcl
       compare (const PointT& p, const double& val);
     protected:
       /** \brief The type of data. */
-      uint8_t datatype_;
+      std::uint8_t datatype_;
 
       /** \brief The data offset. */
-      uint32_t offset_;
+      std::uint32_t offset_;
     private:
       PointDataAtOffset () : datatype_ (), offset_ () {}
   };
@@ -117,7 +117,7 @@ namespace pcl
       std::string field_name_;
 
       /** \brief The data offset. */
-      uint32_t offset_;
+      std::uint32_t offset_;
 
       /** \brief The comparison operator type. */
       ComparisonOps::CompareOp op_;
@@ -222,7 +222,7 @@ namespace pcl
       std::string component_name_;
 
       /** \brief The offset of the component */
-      uint32_t component_offset_;
+      std::uint32_t component_offset_;
 
       /** \brief All types (that we care about) can be represented as a double. */
       double compare_val_;
@@ -282,7 +282,7 @@ namespace pcl
       double compare_val_;
 
       /** \brief The offset of the component */
-      uint32_t rgb_offset_;
+      std::uint32_t rgb_offset_;
 
     private:
       PackedHSIComparison () :

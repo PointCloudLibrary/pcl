@@ -330,11 +330,11 @@ void
 ClosingBoundary::optimizeBoundary (std::vector<ON_NurbsSurface> &nurbs_list, std::vector<NurbsDataSurface> &data_list,
                                    Parameter param)
 {
-  for (size_t n1 = 0; n1 < nurbs_list.size (); n1++)
+  for (std::size_t n1 = 0; n1 < nurbs_list.size (); n1++)
     data_list[n1].clear_boundary ();
 
   // for each nurbs
-  for (size_t n1 = 0; n1 < nurbs_list.size (); n1++)
+  for (std::size_t n1 = 0; n1 < nurbs_list.size (); n1++)
   {
     //  for (unsigned n1 = 0; n1 < 1; n1++) {
     ON_NurbsSurface *nurbs1 = &nurbs_list[n1];
@@ -345,7 +345,7 @@ ClosingBoundary::optimizeBoundary (std::vector<ON_NurbsSurface> &nurbs_list, std
     sampleFromBoundary (nurbs1, boundary1, params1, param.samples);
 
     // for each other nurbs
-    for (size_t n2 = (n1 + 1); n2 < nurbs_list.size (); n2++)
+    for (std::size_t n2 = (n1 + 1); n2 < nurbs_list.size (); n2++)
     {
       ON_NurbsSurface *nurbs2 = &nurbs_list[n2];
 
@@ -391,12 +391,12 @@ ClosingBoundary::optimizeBoundary (std::vector<ON_NurbsSurface> &nurbs_list, std
     FittingSurface::Parameter paramFP (1.0, param.smoothness, 0.0, 1.0, param.smoothness, 0.0);
 
     std::vector<double> wBnd, wInt;
-    for (size_t i = 0; i < data_list[n1].boundary.size (); i++)
+    for (std::size_t i = 0; i < data_list[n1].boundary.size (); i++)
       data_list[n1].boundary_weight.push_back (param.boundary_weight);
-    for (size_t i = 0; i < data_list[n1].interior.size (); i++)
+    for (std::size_t i = 0; i < data_list[n1].interior.size (); i++)
       data_list[n1].interior_weight.push_back (param.interior_weight);
 
-    for (size_t i = 0; i < param.fit_iter; i++)
+    for (std::size_t i = 0; i < param.fit_iter; i++)
     {
       fit.assemble (paramFP);
       fit.solve ();

@@ -83,7 +83,7 @@ class OpenNIPassthrough
        if (lookup[i])
         ++set;
         
-      cout << "used colors: " << set << endl;
+      std::cout << "used colors: " << set << std::endl;
       
       color_filter_.setLookUpTable (lookup);
     }
@@ -158,15 +158,15 @@ usage (char ** argv)
   {
     for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices (); ++deviceIdx)
     {
-      cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
-              << ", connected: " << (int)driver.getBus (deviceIdx) << " @ " << (int)driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
-      cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << endl
-           << "                 bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << endl
-           << "                 <serial-number> (only in Linux and for devices which provide serial numbers)"  << endl;
+      std::cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
+              << ", connected: " << (int)driver.getBus (deviceIdx) << " @ " << (int)driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << std::endl;
+      std::cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << std::endl
+           << "                 bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << std::endl
+           << "                 <serial-number> (only in Linux and for devices which provide serial numbers)"  << std::endl;
     }
   }
   else
-    cout << "No devices connected." << endl;
+    std::cout << "No devices connected." << std::endl;
 }
 
 int
@@ -192,7 +192,7 @@ main (int argc, char ** argv)
 
   if (pcl::console::parse_3x_arguments (argc, argv, "-rgb", rr, gg, bb, true) != -1 )
   {
-    cout << "-rgb present" << endl;
+    std::cout << "-rgb present" << std::endl;
     int rad;
     int idx = pcl::console::parse_argument (argc, argv, "-radius", rad);
     if (idx != -1)
@@ -217,7 +217,7 @@ main (int argc, char ** argv)
   }
   else
   {
-    cout << "device does not provide rgb stream" << endl;
+    std::cout << "device does not provide rgb stream" << std::endl;
   }
 
   return (0);

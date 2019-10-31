@@ -104,7 +104,7 @@ ON_WindowsBitmapHelper_PaletteColorCount (int bmiHeader_biClrUsed, int bmiHeader
   return color_count;
 }
 
-static size_t
+static std::size_t
 ON_WindowsBitmapHelper_SizeofPalette (int bmiHeader_biClrUsed, int bmiHeader_biBitCount)
 {
 #if defined(ON_OS_WINDOWS_GDI)
@@ -170,13 +170,13 @@ ON_WindowsBitmap::IsValid (ON_TextLog* text_log) const
 #if defined(ON_OS_WINDOWS_GDI)
 
 static BITMAPINFO*
-ON_WindowsBitmapHelper_AllocBMI(size_t sizeof_palette, size_t sizeof_image)
+ON_WindowsBitmapHelper_AllocBMI(std::size_t sizeof_palette, std::size_t sizeof_image)
 {
   // In theory,
   //    sz = sizeof(BITMAPINFOHEADER) + sizeof_palette + sizeof_image;
   // should work, but BITMAPINFO is only 4 bytes bigger than BITMAPINFOHEADER
   // and the allocation below will certainly work.
-  size_t sz = sizeof(BITMAPINFO) + sizeof_palette + sizeof_image;
+  std::size_t sz = sizeof(BITMAPINFO) + sizeof_palette + sizeof_image;
   BITMAPINFO* bmi = (BITMAPINFO*)onmalloc(sz);
   if ( bmi )
   {
@@ -189,9 +189,9 @@ ON_WindowsBitmapHelper_AllocBMI(size_t sizeof_palette, size_t sizeof_image)
 #else
 
 static ON_WindowsBITMAPINFO*
-ON_WindowsBitmapHelper_AllocBMI (size_t sizeof_palette, size_t sizeof_image)
+ON_WindowsBitmapHelper_AllocBMI (std::size_t sizeof_palette, std::size_t sizeof_image)
 {
-  size_t sz = sizeof(ON_WindowsBITMAPINFO) + sizeof_palette + sizeof_image;
+  std::size_t sz = sizeof(ON_WindowsBITMAPINFO) + sizeof_palette + sizeof_image;
   ON_WindowsBITMAPINFO* bmi = (ON_WindowsBITMAPINFO*)onmalloc (sz);
   if (bmi)
   {
@@ -625,8 +625,8 @@ ON_WindowsBitmap::ReadUncompressed (ON_BinaryArchive& file)
   if (rc)
   {
     bmiHeader.biSize = sizeof(bmiHeader);
-    const size_t sizeof_palette = ON_WindowsBitmapHelper_SizeofPalette (bmiHeader.biClrUsed, bmiHeader.biBitCount);
-    const size_t sizeof_image = bmiHeader.biSizeImage;
+    const std::size_t sizeof_palette = ON_WindowsBitmapHelper_SizeofPalette (bmiHeader.biClrUsed, bmiHeader.biBitCount);
+    const std::size_t sizeof_image = bmiHeader.biSizeImage;
 
     m_bmi = ON_WindowsBitmapHelper_AllocBMI (sizeof_palette, sizeof_image);
 
@@ -884,8 +884,8 @@ ON_WindowsBitmap::ReadCompressed (ON_BinaryArchive& file)
   if (rc)
   {
     bmiHeader.biSize = sizeof(bmiHeader);
-    const size_t sizeof_palette = ON_WindowsBitmapHelper_SizeofPalette (bmiHeader.biClrUsed, bmiHeader.biBitCount);
-    const size_t sizeof_image = bmiHeader.biSizeImage;
+    const std::size_t sizeof_palette = ON_WindowsBitmapHelper_SizeofPalette (bmiHeader.biClrUsed, bmiHeader.biBitCount);
+    const std::size_t sizeof_image = bmiHeader.biSizeImage;
     m_bmi = ON_WindowsBitmapHelper_AllocBMI (sizeof_palette, sizeof_image);
     if (!m_bmi)
     {
@@ -899,11 +899,11 @@ ON_WindowsBitmap::ReadCompressed (ON_BinaryArchive& file)
       const int color_count = ON_WindowsBitmapHelper_PaletteColorCount (bmiHeader.biClrUsed, bmiHeader.biBitCount);
       if (sizeof_image > 0)
         m_bits = (unsigned char*)&m_bmi->bmiColors[color_count];
-      size_t sizeof_buffer = 0;
+      std::size_t sizeof_buffer = 0;
       rc = file.ReadCompressedBufferSize (&sizeof_buffer);
       if (rc)
       {
-        const size_t sizeof_colors = color_count * sizeof(*m_bmi->bmiColors);
+        const std::size_t sizeof_colors = color_count * sizeof(*m_bmi->bmiColors);
         if (sizeof_buffer == sizeof_colors || sizeof_buffer == sizeof_colors + sizeof_image)
         {
           // palette and image bits are compressed into one or two chunks
@@ -984,7 +984,7 @@ bool ON_WindowsBitmap::Create( const BITMAPINFO* bmi, const unsigned char* bits,
     if ( bCopy )
     {
       // allocate a contiguous Windows device independent bitmap
-      const size_t sizeof_palette = ON_WindowsBitmapHelper_SizeofPalette(bmi->bmiHeader.biClrUsed, bmi->bmiHeader.biBitCount );
+      const std::size_t sizeof_palette = ON_WindowsBitmapHelper_SizeofPalette(bmi->bmiHeader.biClrUsed, bmi->bmiHeader.biBitCount );
       const int sizeof_image = bmi->bmiHeader.biSizeImage;
       m_bmi = ON_WindowsBitmapHelper_AllocBMI( sizeof_palette, (bCopy?sizeof_image:0) );
       if ( 0 != m_bmi )

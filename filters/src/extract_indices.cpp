@@ -50,8 +50,8 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     if (negative_)
     {
       // Prepare the output and copy the data
-      for (size_t i = 0; i < indices_->size (); ++i)
-        for (size_t j = 0; j < output.fields.size(); ++j)
+      for (std::size_t i = 0; i < indices_->size (); ++i)
+        for (std::size_t j = 0; j < output.fields.size(); ++j)
           memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[j].offset],
                   &user_filter_value_, sizeof(float));
     }
@@ -72,7 +72,7 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 
       // Prepare the output and copy the data
       for (const int &remaining_index : remaining_indices)
-        for (size_t j = 0; j < output.fields.size(); ++j)
+        for (std::size_t j = 0; j < output.fields.size(); ++j)
           memcpy (&output.data[remaining_index * output.point_step + output.fields[j].offset],
                   &user_filter_value_, sizeof(float));
     }
@@ -126,17 +126,17 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
                     inserter (remaining_indices, remaining_indices.begin ()));
 
     // Prepare the output and copy the data
-    output.width = static_cast<uint32_t> (remaining_indices.size ());
+    output.width = static_cast<std::uint32_t> (remaining_indices.size ());
     output.data.resize (remaining_indices.size () * output.point_step);
-    for (size_t i = 0; i < remaining_indices.size (); ++i)
+    for (std::size_t i = 0; i < remaining_indices.size (); ++i)
       memcpy (&output.data[i * output.point_step], &input_->data[remaining_indices[i] * output.point_step], output.point_step);
   }
   else
   {
     // Prepare the output and copy the data
-    output.width = static_cast<uint32_t> (indices_->size ());
+    output.width = static_cast<std::uint32_t> (indices_->size ());
     output.data.resize (indices_->size () * output.point_step);
-    for (size_t i = 0; i < indices_->size (); ++i)
+    for (std::size_t i = 0; i < indices_->size (); ++i)
       memcpy (&output.data[i * output.point_step], &input_->data[(*indices_)[i] * output.point_step], output.point_step);
   }
   output.row_step = output.point_step * output.width;

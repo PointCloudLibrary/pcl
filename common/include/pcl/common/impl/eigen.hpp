@@ -39,6 +39,8 @@
 #ifndef PCL_COMMON_EIGEN_IMPL_HPP_
 #define PCL_COMMON_EIGEN_IMPL_HPP_
 
+#include <algorithm>
+
 #include <pcl/console/print.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -50,7 +52,7 @@ pcl::computeRoots2 (const Scalar& b, const Scalar& c, Roots& roots)
   if (d < 0.0)  // no real roots ! THIS SHOULD NOT HAPPEN!
     d = 0.0;
 
-  Scalar sd = ::std::sqrt (d);
+  Scalar sd = std::sqrt (d);
 
   roots (2) = 0.5f * (b + sd);
   roots (1) = 0.5f * (b - sd);
@@ -153,7 +155,7 @@ pcl::eigen22 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& ei
   if (temp < 0)
     temp = 0;
 
-  eigenvalue = trace - ::std::sqrt (temp);
+  eigenvalue = trace - std::sqrt (temp);
 
   eigenvector[0] = -mat.coeff (1);
   eigenvector[1] = mat.coeff (0) - eigenvalue;
@@ -198,7 +200,7 @@ pcl::eigen22 (const Matrix& mat, Matrix& eigenvectors, Vector& eigenvalues)
   if (temp < 0)
     temp = 0;
   else
-    temp = ::std::sqrt (temp);
+    temp = std::sqrt (temp);
 
   eigenvalues.coeffRef (0) = trace - temp;
   eigenvalues.coeffRef (1) = trace + temp;
@@ -207,7 +209,7 @@ pcl::eigen22 (const Matrix& mat, Matrix& eigenvectors, Vector& eigenvalues)
   eigenvectors.coeffRef (0) = -mat.coeff (1);
   eigenvectors.coeffRef (2) = mat.coeff (0) - eigenvalues.coeff (0);
   typename Matrix::Scalar norm = static_cast<typename Matrix::Scalar> (1.0)
-      / static_cast<typename Matrix::Scalar> (::std::sqrt (eigenvectors.coeffRef (0) * eigenvectors.coeffRef (0) + eigenvectors.coeffRef (2) * eigenvectors.coeffRef (2)));
+      / static_cast<typename Matrix::Scalar> (std::sqrt (eigenvectors.coeffRef (0) * eigenvectors.coeffRef (0) + eigenvectors.coeffRef (2) * eigenvectors.coeffRef (2)));
   eigenvectors.coeffRef (0) *= norm;
   eigenvectors.coeffRef (2) *= norm;
   eigenvectors.coeffRef (1) = eigenvectors.coeffRef (2);
@@ -701,11 +703,11 @@ pcl::getTransformation (Scalar x, Scalar y, Scalar z,
 template <typename Derived> void 
 pcl::saveBinary (const Eigen::MatrixBase<Derived>& matrix, std::ostream& file)
 {
-  uint32_t rows = static_cast<uint32_t> (matrix.rows ()), cols = static_cast<uint32_t> (matrix.cols ());
+  std::uint32_t rows = static_cast<std::uint32_t> (matrix.rows ()), cols = static_cast<std::uint32_t> (matrix.cols ());
   file.write (reinterpret_cast<char*> (&rows), sizeof (rows));
   file.write (reinterpret_cast<char*> (&cols), sizeof (cols));
-  for (uint32_t i = 0; i < rows; ++i)
-    for (uint32_t j = 0; j < cols; ++j)
+  for (std::uint32_t i = 0; i < rows; ++i)
+    for (std::uint32_t j = 0; j < cols; ++j)
     {
       typename Derived::Scalar tmp = matrix(i,j);
       file.write (reinterpret_cast<const char*> (&tmp), sizeof (tmp));
@@ -718,14 +720,14 @@ pcl::loadBinary (Eigen::MatrixBase<Derived> const & matrix_, std::istream& file)
 {
   Eigen::MatrixBase<Derived> &matrix = const_cast<Eigen::MatrixBase<Derived> &> (matrix_);
 
-  uint32_t rows, cols;
+  std::uint32_t rows, cols;
   file.read (reinterpret_cast<char*> (&rows), sizeof (rows));
   file.read (reinterpret_cast<char*> (&cols), sizeof (cols));
   if (matrix.rows () != static_cast<int>(rows) || matrix.cols () != static_cast<int>(cols))
     matrix.derived().resize(rows, cols);
   
-  for (uint32_t i = 0; i < rows; ++i)
-    for (uint32_t j = 0; j < cols; ++j)
+  for (std::uint32_t i = 0; i < rows; ++i)
+    for (std::uint32_t j = 0; j < cols; ++j)
     {
       typename Derived::Scalar tmp;
       file.read (reinterpret_cast<char*> (&tmp), sizeof (tmp));
@@ -859,8 +861,7 @@ pcl::transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
   Eigen::Matrix < Scalar, 4, 1 > v_plane_in (values.data ());
   pcl::transformPlane (v_plane_in, v_plane_in, transformation);
   plane_out->values.resize (4);
-  for (int i = 0; i < 4; i++)
-    plane_in->values[i] = v_plane_in[i];
+  std::copy_n(v_plane_in.data (), 4, plane_in->values.begin ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

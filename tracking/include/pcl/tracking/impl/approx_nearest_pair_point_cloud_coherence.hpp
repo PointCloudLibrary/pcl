@@ -13,8 +13,8 @@ namespace pcl
         const PointCloudInConstPtr &cloud, const IndicesConstPtr &, float &w)
     {
       double val = 0.0;
-      //for (size_t i = 0; i < indices->size (); i++)
-      for (size_t i = 0; i < cloud->points.size (); i++)
+      //for (std::size_t i = 0; i < indices->size (); i++)
+      for (std::size_t i = 0; i < cloud->points.size (); i++)
       {
         int k_index = 0;
         float k_distance = 0.0;
@@ -25,7 +25,7 @@ namespace pcl
         {
           PointInT target_point = target_input_->points[k_index];
           double coherence_val = 1.0;
-          for (size_t i = 0; i < point_coherences_.size (); i++)
+          for (std::size_t i = 0; i < point_coherences_.size (); i++)
           {
             PointCoherencePtr coherence = point_coherences_[i];  
             double w = coherence->compute (input_point, target_point);

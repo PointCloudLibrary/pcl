@@ -69,7 +69,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
   for (unsigned int i = 0; i < nr_points; ++i)
   {
     int xyz = 0;
-    for (size_t d = 0; d < triangles.cloud.fields.size (); ++d)
+    for (std::size_t d = 0; d < triangles.cloud.fields.size (); ++d)
     {
       if ((triangles.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
            triangles.cloud.fields[d].name == "x" || 
@@ -99,15 +99,15 @@ pcl::io::saveVTKFile (const std::string &file_name,
 
   // Write polygons
   // compute the correct number of values:
-  size_t triangle_size = triangles.polygons.size ();
-  size_t correct_number = triangle_size;
-  for (size_t i = 0; i < triangle_size; ++i)
+  std::size_t triangle_size = triangles.polygons.size ();
+  std::size_t correct_number = triangle_size;
+  for (std::size_t i = 0; i < triangle_size; ++i)
     correct_number += triangles.polygons[i].vertices.size ();
   fs << "\nPOLYGONS " << triangle_size << " " << correct_number << '\n';
-  for (size_t i = 0; i < triangle_size; ++i)
+  for (std::size_t i = 0; i < triangle_size; ++i)
   {
     fs << triangles.polygons[i].vertices.size () << " ";
-    for (size_t j = 0; j < triangles.polygons[i].vertices.size () - 1; ++j)
+    for (std::size_t j = 0; j < triangles.polygons[i].vertices.size () - 1; ++j)
       fs << triangles.polygons[i].vertices[j] << " ";
     fs << triangles.polygons[i].vertices.back() << '\n';
   }
@@ -163,7 +163,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
   for (unsigned int i = 0; i < nr_points; ++i)
   {
     int xyz = 0;
-    for (size_t d = 0; d < cloud.fields.size (); ++d)
+    for (std::size_t d = 0; d < cloud.fields.size (); ++d)
     {
       if ((cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
            cloud.fields[d].name == "x" || 

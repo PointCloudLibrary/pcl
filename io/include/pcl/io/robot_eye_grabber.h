@@ -120,7 +120,7 @@ namespace pcl
     private:
 
       bool terminate_thread_;
-      size_t signal_point_cloud_size_;
+      std::size_t signal_point_cloud_size_;
       unsigned short data_port_;
       enum { MAX_LENGTH = 65535 };
       unsigned char receive_buffer_[MAX_LENGTH];
@@ -142,8 +142,8 @@ namespace pcl
       void asyncSocketReceive ();
       void resetPointCloud ();
       void socketCallback (const boost::system::error_code& error, std::size_t number_of_bytes);
-      void convertPacketData (unsigned char *data_packet, size_t length);
+      void convertPacketData (unsigned char *data_packet, std::size_t length);
       void computeXYZI (pcl::PointXYZI& point_XYZI, unsigned char* point_data);
-      void computeTimestamp (boost::uint32_t& timestamp, unsigned char* point_data);
+      void computeTimestamp (std::uint32_t& timestamp, unsigned char* point_data);
   };
 }

@@ -80,7 +80,7 @@ pcl::DepthSenseGrabber::setConfidenceThreshold (int threshold)
 }
 
 void
-pcl::DepthSenseGrabber::enableTemporalFiltering (TemporalFilteringType type, size_t window_size)
+pcl::DepthSenseGrabber::enableTemporalFiltering (TemporalFilteringType type, std::size_t window_size)
 {
   p_->enableTemporalFiltering (type, window_size);
 }

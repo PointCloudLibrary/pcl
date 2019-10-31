@@ -65,6 +65,8 @@ namespace pcl
     using Filter<PointT>::filter_name_;
     using Filter<PointT>::input_;
     using Filter<PointT>::indices_;
+    using Filter<PointT>::removed_indices_;
+    using Filter<PointT>::extract_removed_indices_;
     using Filter<PointT>::getClassName;
 
     public:
@@ -116,7 +118,7 @@ namespace pcl
       };
 
       /** \brief The 3D grid leaves. */
-      std::unordered_map<size_t, Leaf> leaves_;
+      std::unordered_map<std::size_t, Leaf> leaves_;
 
       /** \brief The size of a leaf. */
       Eigen::Vector4f leaf_size_;

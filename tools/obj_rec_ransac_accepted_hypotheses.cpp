@@ -106,7 +106,7 @@ class CallbackParameters
 bool
 vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals, vtkPolyData* vtk_dst)
 {
-  size_t len = strlen (file_name);
+  std::size_t len = strlen (file_name);
   if ( file_name[len-3] != 'v' || file_name[len-2] != 't' || file_name[len-1] != 'k' )
   {
     fprintf (stderr, "ERROR: we need a .vtk object!\n");
@@ -340,7 +340,7 @@ update (CallbackParameters* params)
     params->model_actors_.push_back (vtk_actor);
 
     // Compose the model's id
-    cout << acc_hypo->obj_model_->getObjectName () << "_" << i+1 << " has a confidence value of " << acc_hypo->match_confidence_ << ";  ";
+    std::cout << acc_hypo->obj_model_->getObjectName () << "_" << i+1 << " has a confidence value of " << acc_hypo->match_confidence_ << ";  ";
   }
 
   // Show the bounds of the scene octree
@@ -363,8 +363,8 @@ update (CallbackParameters* params)
   axis(1,0) /=len;
   axis(2,0) /=len;
 
-  cout << "Input angle = " << angle << endl;
-  cout << "Input axis = \n" << axis << endl;
+  std::cout << "Input angle = " << angle << std::endl;
+  std::cout << "Input axis = \n" << axis << std::endl;
 
   // The eigen axis-angle object
   Eigen::AngleAxis<float> angle_axis(angle, axis);
@@ -376,8 +376,8 @@ update (CallbackParameters* params)
   // Now compute back the angle and the axis based on eigen
   float comp_angle, comp_axis[3];
   aux::rotationMatrixToAxisAngle (m, comp_axis, comp_angle);
-  cout << "\nComputed angle = " << comp_angle << endl;
-  cout << "Computed axis = \n" << comp_axis[0] << "\n" << comp_axis[1] << "\n" << comp_axis[2] << endl;
+  std::cout << "\nComputed angle = " << comp_angle << std::endl;
+  std::cout << "Computed axis = \n" << comp_axis[0] << "\n" << comp_axis[1] << "\n" << comp_axis[2] << std::endl;
 #endif
 }
 
@@ -482,8 +482,8 @@ main (int argc, char** argv)
 
   printf ("The following parameter values will be used:\n");
   for ( int i = 0 ; i < num_params ; ++i )
-    cout << "  " << parameter_names[i] << " = " << parameters[i] << endl;
-  cout << endl;
+    std::cout << "  " << parameter_names[i] << " = " << parameters[i] << std::endl;
+  std::cout << std::endl;
 
   run (parameters[0], parameters[1], parameters[2], static_cast<int> (parameters[3] + 0.5f));
 

@@ -172,7 +172,7 @@ TEST (PCL, ConcaveHull_4points)
   cloud_4->push_back (p);
 
   cloud_4->height = 1;
-  cloud_4->width = uint32_t (cloud_4->size ());
+  cloud_4->width = std::uint32_t (cloud_4->size ());
 
   ConcaveHull<PointXYZ> concave_hull;
   concave_hull.setInputCloud (cloud_4);
@@ -211,9 +211,9 @@ TEST (PCL, ConcaveHull_LTable)
   cloud_out_ltable.points.resize (100);
 
   int npoints = 0;
-  for (size_t i = 0; i < 8; i++)
+  for (std::size_t i = 0; i < 8; i++)
   {
-    for (size_t j = 0; j <= 2; j++)
+    for (std::size_t j = 0; j <= 2; j++)
     {
       cloud_out_ltable.points[npoints].x = float (i) * 0.5f;
       cloud_out_ltable.points[npoints].y = -float (j) * 0.5f;
@@ -222,9 +222,9 @@ TEST (PCL, ConcaveHull_LTable)
     }
   }
 
-  for (size_t i = 0; i <= 2; i++)
+  for (std::size_t i = 0; i <= 2; i++)
   {
-    for(size_t j = 3; j < 8; j++)
+    for(std::size_t j = 3; j < 8; j++)
     {
       cloud_out_ltable.points[npoints].x = float (i) * 0.5f;
       cloud_out_ltable.points[npoints].y = -float (j) * 0.5f;

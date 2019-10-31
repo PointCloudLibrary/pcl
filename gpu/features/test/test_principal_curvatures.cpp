@@ -85,7 +85,7 @@ TEST(PCL_FeaturesGPU, PrincipalCurvatures)
     PointCloud<PrincipalCurvatures> pc;
     fe.compute (pc);
 
-    for(size_t i = 0; i < downloaded.size(); ++i)
+    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         PrincipalCurvatures& gpu = downloaded[i];
         PrincipalCurvatures& cpu = pc.points[i];        

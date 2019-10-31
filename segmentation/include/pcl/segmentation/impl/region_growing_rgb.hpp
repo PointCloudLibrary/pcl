@@ -742,7 +742,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::getSegmentFromPoint (int index, pcl::Poi
     for (auto i_segment = clusters_.cbegin (); i_segment != clusters_.cend (); i_segment++)
     {
       bool segment_was_found = false;
-      for (size_t i_point = 0; i_point < i_segment->indices.size (); i_point++)
+      for (std::size_t i_point = 0; i_point < i_segment->indices.size (); i_point++)
       {
         if (i_segment->indices[i_point] == index)
         {

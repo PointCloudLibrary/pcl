@@ -34,27 +34,28 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-  
+
 #include <pcl/ml/point_xy_32i.h>
 
 #include <istream>
 #include <ostream>
 
-///////////////////////////////////////////////////////////////////////////////
-//pcl::PointXY32i::~PointXY32i () 
-//{
-//}
-
-///////////////////////////////////////////////////////////////////////////////
-pcl::PointXY32i 
-pcl::PointXY32i::randomPoint (const int min_x, const int max_x, const int min_y, const int max_y)
+pcl::PointXY32i
+pcl::PointXY32i::randomPoint(const int min_x,
+                             const int max_x,
+                             const int min_y,
+                             const int max_y)
 {
-  const float width = static_cast<float> (max_x - min_x);
-  const float height = static_cast<float> (max_y - min_y);
+  const float width = static_cast<float>(max_x - min_x);
+  const float height = static_cast<float>(max_y - min_y);
 
   PointXY32i point;
-  point.x = static_cast<int> ( width * static_cast<float> (rand ()) / static_cast<float> (RAND_MAX) + static_cast<float> (min_x));
-  point.y = static_cast<int> ( height * static_cast<float> (rand ()) / static_cast<float> (RAND_MAX) + static_cast<float> (min_y));
+  point.x = static_cast<int>(width * static_cast<float>(rand()) /
+                                 static_cast<float>(RAND_MAX) +
+                             static_cast<float>(min_x));
+  point.y = static_cast<int>(height * static_cast<float>(rand()) /
+                                 static_cast<float>(RAND_MAX) +
+                             static_cast<float>(min_y));
 
   return point;
 }

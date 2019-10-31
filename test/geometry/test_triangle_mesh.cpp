@@ -549,7 +549,7 @@ TEST (TestManifoldTriangleMesh, addTrianglePair)
     ASSERT_TRUE (fip.second.isValid ());
   }
 
-  for (size_t i=0; i < faces.size (); ++i)
+  for (std::size_t i=0; i < faces.size (); ++i)
   {
     VertexIndices actual_1, actual_2;
 

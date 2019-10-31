@@ -62,7 +62,7 @@ pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &clou
 #ifdef _OPENMP
 #pragma omp parallel for \
   reduction (+:mean_dist, num) \
-  private (ids, dists_sqr) shared (tree, cloud) \
+  private (ids, dists_sqr) shared (tree, cloud) firstprivate (s, max_dist_sqr) \
   default (none)num_threads (nr_threads)
 #endif
 
@@ -99,7 +99,7 @@ pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &clou
 #ifdef _OPENMP
 #pragma omp parallel for \
   reduction (+:mean_dist, num) \
-  private (ids, dists_sqr) shared (tree, cloud, indices)    \
+  private (ids, dists_sqr) shared (tree, cloud, indices) firstprivate (s, max_dist_sqr) \
   default (none)num_threads (nr_threads)
 #endif
 
@@ -763,7 +763,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   pcl::Correspondences &correspondences)
 {
   // calculate centroid of base and target
-  Eigen::Vector4f centre_base, centre_match;
+  Eigen::Vector4f centre_base {0, 0, 0, 0}, centre_match {0, 0, 0, 0};
   pcl::compute3DCentroid (*target_, base_indices, centre_base);
   pcl::compute3DCentroid (*input_, match_indices, centre_match);
 

@@ -862,7 +862,7 @@ pcl::visualization::PCLVisualizer::removeText3D (const std::string &id, int view
 
   // check all or an individual viewport for a similar id
   rens_->InitTraversal ();
-  for (size_t i = viewport; rens_->GetNextItem (); ++i)
+  for (std::size_t i = viewport; rens_->GetNextItem (); ++i)
   {
     const std::string uid = id + std::string (i, '*');
     ShapeActorMap::iterator am_it = shape_actor_map_->find (uid);
@@ -2919,8 +2919,8 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
     return (false);
   }
 
-  size_t color_handler_size = am_it->second.color_handlers.size ();
-  if (!(size_t (index) < color_handler_size))
+  std::size_t color_handler_size = am_it->second.color_handlers.size ();
+  if (!(std::size_t (index) < color_handler_size))
   {
     pcl::console::print_warn (stderr, "[updateColorHandlerIndex] Invalid index <%d> given! Index must be less than %d.\n", index, int (color_handler_size));
     return (false);
@@ -2990,7 +2990,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
   pcl::fromPCLPointCloud2 (poly_mesh.cloud, *point_cloud);
   poly_points->SetNumberOfPoints (point_cloud->points.size ());
 
-  for (size_t i = 0; i < point_cloud->points.size (); ++i) 
+  for (std::size_t i = 0; i < point_cloud->points.size (); ++i) 
   {
     const pcl::PointXYZ& p = point_cloud->points[i];
     poly_points->InsertPoint (i, p.x, p.y, p.z);
@@ -3051,10 +3051,10 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
   else if (poly_mesh.polygons.size () == 1)
   {
     vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New ();
-    size_t n_points = poly_mesh.polygons[0].vertices.size ();
+    std::size_t n_points = poly_mesh.polygons[0].vertices.size ();
     polygon->GetPointIds ()->SetNumberOfIds (n_points - 1);
 
-    for (size_t j = 0; j < (n_points - 1); j++)
+    for (std::size_t j = 0; j < (n_points - 1); j++)
       polygon->GetPointIds ()->SetId (j, poly_mesh.polygons[0].vertices[j]);
 
     vtkSmartPointer<vtkUnstructuredGrid> poly_grid = vtkSmartPointer<vtkUnstructuredGrid>::New ();
@@ -3163,21 +3163,21 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   int idx = 0;
   if (!lookup.empty ())
   {
-    for (size_t i = 0; i < verts.size (); ++i, ++idx)
+    for (std::size_t i = 0; i < verts.size (); ++i, ++idx)
     {
-      size_t n_points = verts[i].vertices.size ();
+      std::size_t n_points = verts[i].vertices.size ();
       *cell++ = n_points;
-      for (size_t j = 0; j < n_points; j++, cell++, ++idx)
+      for (std::size_t j = 0; j < n_points; j++, cell++, ++idx)
         *cell = lookup[verts[i].vertices[j]];
     }
   }
   else
   {
-    for (size_t i = 0; i < verts.size (); ++i, ++idx)
+    for (std::size_t i = 0; i < verts.size (); ++i, ++idx)
     {
-      size_t n_points = verts[i].vertices.size ();
+      std::size_t n_points = verts[i].vertices.size ();
       *cell++ = n_points;
-      for (size_t j = 0; j < n_points; j++, cell++, ++idx)
+      for (std::size_t j = 0; j < n_points; j++, cell++, ++idx)
         *cell = verts[i].vertices[j];
     }
   }
@@ -3210,7 +3210,7 @@ pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (
   pcl::fromPCLPointCloud2 (polymesh.cloud, point_cloud);
   poly_points->SetNumberOfPoints (point_cloud.points.size ());
 
-  for (size_t i = 0; i < point_cloud.points.size (); ++i)
+  for (std::size_t i = 0; i < point_cloud.points.size (); ++i)
     poly_points->InsertPoint (i, point_cloud.points[i].x, point_cloud.points[i].y, point_cloud.points[i].z);
 
   // Create a cell array to store the lines in and add the lines to it
@@ -3222,7 +3222,7 @@ pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (
   {
     vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
     polyLine->GetPointIds()->SetNumberOfIds(polygon.vertices.size());
-    for(size_t v = 0; v < polygon.vertices.size(); v++)
+    for(std::size_t v = 0; v < polygon.vertices.size(); v++)
     {
       polyLine->GetPointIds ()->SetId (v, polygon.vertices[v]);
     }
@@ -3381,7 +3381,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
     return (false);
   // hardware always supports multitexturing of some degree
   int texture_units = tex_manager->GetNumberOfTextureUnits ();
-  if ((size_t) texture_units < mesh.tex_materials.size ())
+  if ((std::size_t) texture_units < mesh.tex_materials.size ())
     PCL_WARN ("[PCLVisualizer::addTextureMesh] GPU texture units %d < mesh textures %d!\n",
               texture_units, mesh.tex_materials.size ());
   // Load textures
@@ -3641,7 +3641,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     vtkSmartPointer<vtkCellArray> cells_sphere = sphere->GetPolys ();
     cam_positions.resize (sphere->GetNumberOfPolys ());
 
-    size_t i = 0;
+    std::size_t i = 0;
     for (cells_sphere->InitTraversal (); cells_sphere->GetNextCell (npts_com, ptIds_com);)
     {
       sphere->GetPoint (ptIds_com[0], p1_com);
@@ -3798,11 +3798,11 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     render_win->GetZbufferData (0, 0, xres - 1, yres - 1, &(depth[0]));
 
     int count_valid_depth_pixels = 0;
-    size_t xresolution (xres);
-    size_t yresolution (yres);
-    for (size_t x = 0; x < xresolution; x++)
+    std::size_t xresolution (xres);
+    std::size_t yresolution (yres);
+    for (std::size_t x = 0; x < xresolution; x++)
     {
-      for (size_t y = 0; y < yresolution; y++)
+      for (std::size_t y = 0; y < yresolution; y++)
       {
         float value = depth[y * xres + x];
         if (value == 1.0)

@@ -269,7 +269,7 @@ TEST (ExtractIndices, Filters)
     ps.setFilterLimitsNegative ((bool)i);
     ps.filter (scf);
     std::cerr << scf.points.size () << std::endl;
-    for (size_t j = 0; j < scf.points.size (); ++j)
+    for (std::size_t j = 0; j < scf.points.size (); ++j)
       std::cerr << scf.points[j] << std::endl;
   }
   */
@@ -633,7 +633,7 @@ TEST (VoxelGrid, Filters)
   // neighboring centroid should be in the right position
   Eigen::MatrixXi directions = Eigen::Vector3i (0, 0, 1);
   std::vector<int> neighbors = grid.getNeighborCentroidIndices (cloud->points[195], directions);
-  EXPECT_EQ (neighbors.size (), size_t (directions.cols ()));
+  EXPECT_EQ (neighbors.size (), std::size_t (directions.cols ()));
   EXPECT_NE (neighbors.at (0), -1);
   EXPECT_LE (std::abs (output.points[neighbors.at (0)].x - output.points[centroidIdx].x), 0.02);
   EXPECT_LE (std::abs (output.points[neighbors.at (0)].y - output.points[centroidIdx].y), 0.02);
@@ -715,7 +715,7 @@ TEST (VoxelGrid, Filters)
   // neighboring centroid should be in the right position
   Eigen::MatrixXi directions2 = Eigen::Vector3i (0, 0, 1);
   std::vector<int> neighbors2 = grid2.getNeighborCentroidIndices (0.048722f, 0.073760f, 0.017434f, directions2);
-  EXPECT_EQ (neighbors2.size (), size_t (directions2.cols ()));
+  EXPECT_EQ (neighbors2.size (), std::size_t (directions2.cols ()));
   EXPECT_NE (neighbors2.at (0), -1);
   EXPECT_LE (std::abs (output.points[neighbors2.at (0)].x - output.points[centroidIdx2].x), 0.02);
   EXPECT_LE (std::abs (output.points[neighbors2.at (0)].y - output.points[centroidIdx2].y), 0.02);
@@ -786,7 +786,7 @@ TEST (VoxelGrid_No_DownsampleAllData, Filters)
   // neighboring centroid should be in the right position
   Eigen::MatrixXi directions = Eigen::Vector3i (0, 0, 1);
   std::vector<int> neighbors = grid.getNeighborCentroidIndices (cloud->points[195], directions);
-  EXPECT_EQ (neighbors.size (), size_t (directions.cols ()));
+  EXPECT_EQ (neighbors.size (), std::size_t (directions.cols ()));
   EXPECT_NE (neighbors.at (0), -1);
   EXPECT_LE (std::abs (output.points[neighbors.at (0)].x - output.points[centroidIdx].x), 0.02);
   EXPECT_LE (std::abs (output.points[neighbors.at (0)].y - output.points[centroidIdx].y), 0.02);
@@ -861,7 +861,7 @@ TEST (VoxelGrid_No_DownsampleAllData, Filters)
   // neighboring centroid should be in the right position
   Eigen::MatrixXi directions2 = Eigen::Vector3i (0, 0, 1);
   std::vector<int> neighbors2 = grid2.getNeighborCentroidIndices (0.048722f, 0.073760f, 0.017434f, directions2);
-  EXPECT_EQ (neighbors2.size (), size_t (directions2.cols ()));
+  EXPECT_EQ (neighbors2.size (), std::size_t (directions2.cols ()));
   EXPECT_NE (neighbors2.at (0), -1);
   EXPECT_LE (std::abs (output.points[neighbors2.at (0)].x - output.points[centroidIdx2].x), 0.02);
   EXPECT_LE (std::abs (output.points[neighbors2.at (0)].y - output.points[centroidIdx2].y), 0.02);
@@ -991,7 +991,7 @@ TEST (VoxelGrid_RGBA, Filters)
     pt.x = 0.0f;
     pt.y = 0.0f;
     pt.z = 0.0f;
-    pt.rgba = *reinterpret_cast<uint32_t*> (&rgba);
+    pt.rgba = *reinterpret_cast<std::uint32_t*> (&rgba);
     cloud_rgba_.points.push_back (pt);
   }
 
@@ -1288,7 +1288,7 @@ TEST (VoxelGridCovariance, Filters)
   // neighboring centroid should be in the right position
   Eigen::MatrixXi directions = Eigen::Vector3i (0, 1, 0);
   std::vector<int> neighbors = grid.getNeighborCentroidIndices (cloud->points[38], directions);
-  EXPECT_EQ (neighbors.size (), size_t (directions.cols ()));
+  EXPECT_EQ (neighbors.size (), std::size_t (directions.cols ()));
   EXPECT_NE (neighbors.at (0), -1);
   EXPECT_LE (std::abs (output.points[neighbors.at (0)].x - output.points[centroidIdx].x), 0.02);
   EXPECT_LE (std::abs (output.points[neighbors.at (0)].y - output.points[centroidIdx].y), 0.02);
@@ -1780,7 +1780,7 @@ TEST (SamplingSurfaceNormal, Filters)
     }
   }
   incloud->width = 1;
-  incloud->height = uint32_t (incloud->points.size ());
+  incloud->height = std::uint32_t (incloud->points.size ());
 
   pcl::SamplingSurfaceNormal <pcl::PointNormal> ssn_filter;
   ssn_filter.setInputCloud (incloud);
@@ -1814,7 +1814,7 @@ TEST (ShadowPoints, Filters)
   input->points.push_back (pt);
 
   input->width = 1;
-  input->height = static_cast<uint32_t> (input->points.size ());
+  input->height = static_cast<std::uint32_t> (input->points.size ());
 
 	NormalEstimation<PointXYZ, PointNormal> ne;
 	ne.setInputCloud (input);
@@ -1881,7 +1881,7 @@ TEST (FrustumCulling, Filters)
     }
   }
   input->width = 1;
-  input->height = static_cast<uint32_t> (input->points.size ());
+  input->height = static_cast<std::uint32_t> (input->points.size ());
 
   pcl::FrustumCulling<pcl::PointXYZ> fc (true); // Extract removed indices
   fc.setInputCloud (input);
@@ -2039,7 +2039,7 @@ TEST (MedianFilter, Filters)
   cloud_manual.is_dense = false;
   cloud_manual.resize (5 * 5);
 
-  for (size_t i = 0; i < 5; ++i)
+  for (std::size_t i = 0; i < 5; ++i)
   {
     cloud_manual (i, 0).z = static_cast<float> (i + 1);
     cloud_manual (i, 1).z = static_cast<float> (i + 6);
@@ -2099,7 +2099,7 @@ TEST (MedianFilter, Filters)
   out_1_correct (3, 4).z = 100.f;
   out_1_correct (4, 4).z = 100.f;
 
-  for (size_t i = 0; i < 5 * 5; ++i)
+  for (std::size_t i = 0; i < 5 * 5; ++i)
     EXPECT_NEAR (out_1_correct[i].z, out_1[i].z, 1e-5);
 
 
@@ -2119,7 +2119,7 @@ TEST (MedianFilter, Filters)
   out_2_correct = out_1_correct;
   out_2_correct (2, 4).z = 450.f;
 
-  for (size_t i = 0; i < 5 * 5; ++i)
+  for (std::size_t i = 0; i < 5 * 5; ++i)
     EXPECT_NEAR (out_2_correct[i].z, out_2[i].z, 1e-5);
 
 
@@ -2186,7 +2186,7 @@ TEST (NormalRefinement, Filters)
   // Run estimation
   pcl::NormalEstimation<pcl::PointXYZRGB, pcl::PointXYZRGBNormal> ne;
   cloud_organized_normal.reserve (cloud_organized_nonan.size ());
-  for (size_t i = 0; i < cloud_organized_nonan.size (); ++i)
+  for (std::size_t i = 0; i < cloud_organized_nonan.size (); ++i)
   {
     // Output point
     pcl::PointXYZRGBNormal normali;

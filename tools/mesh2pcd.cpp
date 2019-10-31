@@ -137,7 +137,7 @@ main (int argc, char **argv)
   //take views and fuse them together
   std::vector<PointCloud<PointXYZ>::Ptr> aligned_clouds;
 
-  for (size_t i = 0; i < views_xyz.size (); i++)
+  for (std::size_t i = 0; i < views_xyz.size (); i++)
   {
     PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> ());
     Eigen::Matrix4f pose_inverse;

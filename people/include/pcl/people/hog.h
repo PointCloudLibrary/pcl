@@ -151,7 +151,7 @@ namespace pcl
        * \brief Platform independent aligned memory allocation (see also alFree).
        */ 
       void* 
-      alMalloc ( size_t size, int alignment ) const;
+      alMalloc ( std::size_t size, int alignment ) const;
       
       /** 
        * \brief Platform independent aligned memory de-allocation (see also alMalloc).

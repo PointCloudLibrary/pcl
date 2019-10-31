@@ -187,7 +187,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 #ifdef _OPENMP
   #pragma omp parallel for num_threads(threads_) default (shared)
 #endif    
-  for (size_t idx = 0; idx < intensity_gradients_->size (); ++idx)
+  for (std::size_t idx = 0; idx < intensity_gradients_->size (); ++idx)
   {
     float len = intensity_gradients_->points [idx].gradient_x * intensity_gradients_->points [idx].gradient_x +
                 intensity_gradients_->points [idx].gradient_y * intensity_gradients_->points [idx].gradient_y +
@@ -219,7 +219,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     output = *response;
     // we do not change the denseness in this case
     output.is_dense = input_->is_dense;
-    for (size_t i = 0; i < response->size (); ++i)
+    for (std::size_t i = 0; i < response->size (); ++i)
       keypoints_indices_->indices.push_back (i);
   }
   else
@@ -230,7 +230,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 #ifdef _OPENMP
   #pragma omp parallel for num_threads(threads_) default(shared)
 #endif  
-    for (size_t idx = 0; idx < response->points.size (); ++idx)
+    for (std::size_t idx = 0; idx < response->points.size (); ++idx)
     {
       if (!isFinite (response->points[idx]) || response->points[idx].intensity < threshold_)
         continue;
@@ -261,7 +261,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
       refineCorners (output);
 
     output.height = 1;
-    output.width = static_cast<uint32_t> (output.points.size());
+    output.width = static_cast<std::uint32_t> (output.points.size());
     output.is_dense = true;
   }
 }

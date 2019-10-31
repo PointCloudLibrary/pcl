@@ -191,8 +191,8 @@ namespace pcl
 
           handle_y_scale_ = false;      
 
-          min_ =  -1.0f; // numeric_limits<float>::max( );
-          max_ =  1.0f; // numeric_limits<float>::min( );  
+          min_ =  -1.0f; // std::numeric_limits<float>::max( );
+          max_ =  1.0f; // std::numeric_limits<float>::min( );  
         }
     
         /** \brief visualizer object */

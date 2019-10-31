@@ -142,7 +142,7 @@ main (int argc, char** argv)
     //pcl::PointCloud<pcl::PointXYZ> cloud;
     //pcl::io::loadPCDFile (argv[file_indices[i]], cloud);
     //cloud_all += cloud;
-    pcl::concatenatePointCloud (cloud_all, cloud, cloud_all);
+    pcl::concatenate (cloud_all, cloud, cloud_all);
     PCL_INFO ("Total number of points so far: %u. Total data size: %lu bytes.\n", cloud_all.width * cloud_all.height, cloud_all.data.size ());
   }
 

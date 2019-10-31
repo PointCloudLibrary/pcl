@@ -62,6 +62,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
+#include <cstdint>
 #include <iostream>
 
 #include <boost/cstdint.hpp>
@@ -76,15 +77,15 @@
 
 namespace pcl
 {
-  using boost::uint8_t;
-  using boost::int8_t;
-  using boost::int16_t;
-  using boost::uint16_t;
-  using boost::int32_t;
-  using boost::uint32_t;
-  using boost::int64_t;
-  using boost::uint64_t;
-  using boost::int_fast16_t;
+  using uint8_t [[deprecated("use std::uint8_t instead of pcl::uint8_t")]] = std::uint8_t;
+  using int8_t [[deprecated("use std::int8_t instead of pcl::int8_t")]] = std::int8_t;
+  using uint16_t [[deprecated("use std::uint16_t instead of pcl::uint16_t")]] = std::uint16_t;
+  using int16_t [[deprecated("use std::uint16_t instead of pcl::int16_t")]] = std::int16_t;
+  using uint32_t [[deprecated("use std::uint32_t instead of pcl::uint32_t")]] = std::uint32_t;
+  using int32_t [[deprecated("use std::int32_t instead of pcl::int32_t")]] = std::int32_t;
+  using uint64_t [[deprecated("use std::uint64_t instead of pcl::uint64_t")]] = std::uint64_t;
+  using int64_t [[deprecated("use std::int64_t instead of pcl::int64_t")]] = std::int64_t;
+  using int_fast16_t [[deprecated("use std::int_fast16_t instead of pcl::int_fast16_t")]] = std::int_fast16_t;
 }
 
 #if defined _WIN32 && defined _MSC_VER
@@ -138,12 +139,12 @@ namespace pcl
 __inline double
 pcl_round (double number)
 {
-  return (number < 0.0 ? std::ceil (number - 0.5) : floor (number + 0.5));
+  return (number < 0.0 ? std::ceil (number - 0.5) : std::floor (number + 0.5));
 }
 __inline float
 pcl_round (float number)
 {
-  return (number < 0.0f ? std::ceil (number - 0.5f) : floorf (number + 0.5f));
+  return (number < 0.0f ? std::ceil (number - 0.5f) : std::floor (number + 0.5f));
 }
 
 #ifdef __GNUC__
@@ -205,7 +206,7 @@ pcl_round (float number)
 #endif
 
 #ifndef SET_ARRAY
-#define SET_ARRAY(var, value, size) { for (int i = 0; i < static_cast<int> (size); ++i) var[i]=value; }
+#define SET_ARRAY(var, value, size) { for (decltype(size) i = 0; i < size; ++i) var[i]=value; }
 #endif
 
 #ifndef PCL_EXTERN_C
@@ -295,7 +296,7 @@ pcl_round (float number)
 #endif
 
 inline void*
-aligned_malloc (size_t size)
+aligned_malloc (std::size_t size)
 {
   void *ptr;
 #if   defined (MALLOC_ALIGNED)
@@ -344,3 +345,28 @@ aligned_free (void* ptr)
 #define PCL_MAKE_ALIGNED_OPERATOR_NEW \
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
   using _custom_allocator_type_trait = void;
+
+/**
+ * \brief Macro to add a no-op or a fallthrough attribute based on compiler feature
+ *
+ * \ingroup common
+ */
+#if __has_cpp_attribute(fallthrough) && !(defined(__clang__) && __cplusplus < 201703L)
+  #define PCL_FALLTHROUGH [[fallthrough]];
+#elif defined(__clang__)
+  #define PCL_FALLTHROUGH [[clang::fallthrough]];
+#elif defined(__GNUC__)
+  #if __GNUC__ >= 7
+    #define PCL_FALLTHROUGH [[gnu::fallthrough]];
+  #else
+    #define PCL_FALLTHROUGH ;
+  #endif
+#else
+  #define PCL_FALLTHROUGH ;
+#endif
+
+#if __has_cpp_attribute(nodiscard)
+  #define PCL_NODISCARD [[nodiscard]]
+#else
+  #define PCL_NODISCARD
+#endif

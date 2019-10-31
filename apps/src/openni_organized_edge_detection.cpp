@@ -205,7 +205,7 @@ class OpenNIOrganizedEdgeDetection
           // Make gray point cloud
           for (auto &point : cloud_.points)
           {
-            pcl::uint8_t gray = pcl::uint8_t((point.r + point.g + point.b)/3);
+            std::uint8_t gray = std::uint8_t((point.r + point.g + point.b)/3);
             point.r = point.g = point.b = gray;
           }
 
@@ -259,15 +259,15 @@ usage (char ** argv)
   {
     for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices (); ++deviceIdx)
     {
-      cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
-              << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
-      cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << endl
-           << "                 bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << endl
-           << "                 <serial-number> (only in Linux and for devices which provide serial numbers)"  << endl;
+      std::cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
+              << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << std::endl;
+      std::cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << std::endl
+           << "                 bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << std::endl
+           << "                 <serial-number> (only in Linux and for devices which provide serial numbers)"  << std::endl;
     }
   }
   else
-    cout << "No devices connected." << endl;
+    std::cout << "No devices connected." << std::endl;
 }
 
 int

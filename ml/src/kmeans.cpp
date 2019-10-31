@@ -38,10 +38,10 @@
  */
 
 /*
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/ml/kmeans.h>
 #include <pcl/ml/impl/kmeans.hpp>
+#include <pcl/ml/kmeans.h>
+#include <pcl/point_types.h>
 
 // Instantiations of all point types
 PCL_INSTANTIATE(Kmeans, PCL_POINT_TYPES);
@@ -50,82 +50,75 @@ PCL_INSTANTIATE(Kmeans, PCL_POINT_TYPES);
 #include <pcl/ml/kmeans.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::Kmeans::Kmeans (unsigned int num_points, unsigned int num_dimensions) 
-  : num_points_ (num_points), num_dimensions_ (num_dimensions),
-    points_to_clusters_(num_points_, 0)
-    //data_ (num_points_, Point (num_dimensions_))
-{
-}
+pcl::Kmeans::Kmeans(unsigned int num_points, unsigned int num_dimensions)
+: num_points_(num_points)
+, num_dimensions_(num_dimensions)
+, points_to_clusters_(num_points_, 0)
+// data_ (num_points_, Point (num_dimensions_))
+{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::Kmeans::~Kmeans ()
-{
-}
+pcl::Kmeans::~Kmeans() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::Kmeans::initialClusterPoints()
 {
-  for (ClusterId i = 0; i < num_clusters_; i++){
-    Point point;   // each centroid is a point
-    for (unsigned int dim=0; dim<num_dimensions_; dim++) 
+  for (ClusterId i = 0; i < num_clusters_; i++) {
+    Point point; // each centroid is a point
+    for (unsigned int dim = 0; dim < num_dimensions_; dim++)
       point.push_back(0.0);
     SetPoints set_of_points;
 
     // init centroids
-    centroids_.push_back(point);  
+    centroids_.push_back(point);
 
     // init clusterId -> set of points
     clusters_to_points_.push_back(set_of_points);
   }
 
-
-
   ClusterId cid;
-    
-  for (PointId pid = 0; pid < num_points_; pid++){
-      
+
+  for (PointId pid = 0; pid < num_points_; pid++) {
+
     cid = pid % num_clusters_;
 
     points_to_clusters_[pid] = cid;
     clusters_to_points_[cid].insert(pid);
-  }    
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::Kmeans::computeCentroids()
-{    
+{
   ClusterId cid = 0;
   // For each centroid
-  BOOST_FOREACH(Centroids::value_type& centroid, centroids_)
-  {
+  for (Centroids::value_type& centroid : centroids_) {
     PointId num_points_in_cluster = 0;
 
     // For each PointId in this set
-    BOOST_FOREACH(SetPoints::value_type pid, clusters_to_points_[cid])
-    {
+    for (const auto& pid : clusters_to_points_[cid]) {
       Point p = data_[pid];
-      //Point p = ps__.getPoint(pid);
-      for (unsigned int i=0; i<num_dimensions_; i++)
+      // Point p = ps__.getPoint(pid);
+      for (unsigned int i = 0; i < num_dimensions_; i++)
         centroid[i] += p[i];
       num_points_in_cluster++;
     }
     // if no point in the clusters, this goes to inf (correct!)
-    for (unsigned int i=0; i<num_dimensions_; i++)
-    {
-      centroid[i] /= static_cast<float> (num_points_in_cluster);
-      //std::cout << centroid[i] << " ";
+    for (unsigned int i = 0; i < num_dimensions_; i++) {
+      centroid[i] /= static_cast<float>(num_points_in_cluster);
+      // std::cout << centroid[i] << " ";
     }
-    //std::cout << std::endl;
-    
+    // std::cout << std::endl;
+
     cid++;
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::Kmeans::kMeans ()
+pcl::Kmeans::kMeans()
 {
   bool not_converged = true;
   ClusterId cid, to_cluster;
@@ -135,26 +128,23 @@ pcl::Kmeans::kMeans ()
   initialClusterPoints();
 
   // Until not converge
-  while (not_converged){
+  while (not_converged) {
 
     not_converged = false;
 
     computeCentroids();
 
     // for each point
-    for (PointId pid=0; pid<num_points_; pid++)
-    {
+    for (PointId pid = 0; pid < num_points_; pid++) {
       // distance from current cluster
       min = distance(centroids_[points_to_clusters_[pid]], data_[pid]);
 
       // foreach centroid
-      cid = 0; 
+      cid = 0;
       bool move = false;
-      BOOST_FOREACH(Centroids::value_type c, centroids_)
-      {
+      for (const auto& c : centroids_) {
         d = distance(c, data_[pid]);
-        if (d < min)
-        {
+        if (d < min) {
           min = d;
           move = true;
           to_cluster = cid;
@@ -167,8 +157,8 @@ pcl::Kmeans::kMeans ()
         cid++;
       }
 
-      // move towards a closer centroid 
-      if (move){  
+      // move towards a closer centroid
+      if (move) {
         // insert
         points_to_clusters_[pid] = to_cluster;
         clusters_to_points_[to_cluster].insert(pid);
@@ -176,9 +166,6 @@ pcl::Kmeans::kMeans ()
     }
   } // end while
 }
-
-
-
 
 /*
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -203,11 +190,11 @@ pcl::Kmeans::cluster (std::vector<PointIndices> &clusters)
     int x_index = -1;
     int y_index = -1;
     int z_index = -1;
-    x_index = pcl::getFieldIndex (point, "x", fields);
+    x_index = pcl::getFieldIndex<PointT> ("x", fields);
     if (y_index != -1)
-      y_index = pcl::getFieldIndex (point, "y", fields);
+      y_index = pcl::getFieldIndex<PointT> ("y", fields);
     if (z_index != -1)
-      z_index = pcl::getFieldIndex (point, "z", fields);
+      z_index = pcl::getFieldIndex<PointT> ("z", fields);
 
     if (x_index == -1 && y_index == -1 && z_index == -1)
     {
@@ -218,57 +205,54 @@ pcl::Kmeans::cluster (std::vector<PointIndices> &clusters)
     PCL_INFO ("Use X Y Z as input data\n");
 */
 
-    // create input data
+// create input data
 /*
-    for (size_t i = 0; i < input_->points.size (); i++)
+    for (std::size_t i = 0; i < input_->points.size (); i++)
     {
       DataPoint data (3);
       data[0] = input_->points[i].data[0];
-      
+
 
 
     }
 */
 
-    /*
-    std::cout << "x index: " << x_index << std::endl;
-    
-    float x = 0.0;
-    memcpy (&x, &input_->points[0] + fields[x_index].offset, sizeof(float));
-    
-    std::cout << "xxx: " << x << std::endl;
-    */
+/*
+std::cout << "x index: " << x_index << std::endl;
 
-    //memcpy (&x, reinterpret_cast<float*> (&input_->points[0]) + x_index, sizeof (float));
-    
+float x = 0.0;
+memcpy (&x, &input_->points[0] + fields[x_index].offset, sizeof(float));
 
-    //int rgba_index = 1;
+std::cout << "xxx: " << x << std::endl;
+*/
 
-    //pcl::RGB rgb;
-    //memcpy (&rgb, reinterpret_cast<const char*> (&input_->points[index_vector[i].cloud_point_index]) + rgba_index, sizeof (RGB));
+// memcpy (&x, reinterpret_cast<float*> (&input_->points[0]) + x_index, sizeof (float));
 
-    
-    /*    
-  }
-  // if cluster field name is set, check if field name is valid
-  else
-  {
-    user_index = pcl::getFieldIndex (point, cluster_field_name_.c_str (), fields);
+// int rgba_index = 1;
 
-    if (user_index == -1)
-    {
-      PCL_ERROR ("Failed to find match for field '%s'\n", cluster_field_name_.c_str ());
-      return;
-    }
-  }
-    */
-  
-  
-  
+// pcl::RGB rgb;
+// memcpy (&rgb, reinterpret_cast<const char*>
+// (&input_->points[index_vector[i].cloud_point_index]) + rgba_index, sizeof (RGB));
+
+/*
+}
+// if cluster field name is set, check if field name is valid
+else
+{
+user_index = pcl::getFieldIndex<PointT> (cluster_field_name_.c_str (), fields);
+
+if (user_index == -1)
+{
+  PCL_ERROR ("Failed to find match for field '%s'\n", cluster_field_name_.c_str ());
+  return;
+}
+}
+*/
+
 /*
   int xyz_index = -1;
   pcl::PointCloud <PointT> point;
-  xyz_index = pcl::getFieldIndex (point, "r", fields);
+  xyz_index = pcl::getFieldIndex<PointT> ("r", fields);
 
 
   if (xyz_index == -1 && strcmp (cluster_field_name_.c_str (), "") == 0)
@@ -278,29 +262,27 @@ pcl::Kmeans::cluster (std::vector<PointIndices> &clusters)
 
 
   std::cout << "index: " << xyz_index << std::endl;
-  
+
   std::string t = pcl::getFieldsList (point);
   std::cout << "t: " << t << std::endl;
 */
-  
-  //std::vector <pcl::PCLPointField> fields;
-  //pcl::getFieldIndex (*input_, "xyz", fields);
-  
-  
-  //std::cout << "field: " << fields[xyz_index].count << std::endl;
-  
+
+// std::vector <pcl::PCLPointField> fields;
+// pcl::getFieldIndex (*input_, "xyz", fields);
+
+// std::cout << "field: " << fields[xyz_index].count << std::endl;
 
 /*
-  for (size_t i = 0; i < fields[vfh_idx].count; ++i)
+  for (std::size_t i = 0; i < fields[vfh_idx].count; ++i)
   {
-    
+
     //vfh.second[i] = point.points[0].histogram[i];
-    
+
   }
 */
 
-    /*
+/*
 
-  deinitCompute ();
+deinitCompute ();
 }
-    */
+*/

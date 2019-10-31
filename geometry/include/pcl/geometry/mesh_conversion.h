@@ -64,7 +64,7 @@ namespace pcl
       pcl::toPCLPointCloud2 (half_edge_mesh.getVertexDataCloud (), face_vertex_mesh.cloud);
 
       face_vertex_mesh.polygons.reserve (half_edge_mesh.sizeFaces ());
-      for (size_t i=0; i<half_edge_mesh.sizeFaces (); ++i)
+      for (std::size_t i=0; i<half_edge_mesh.sizeFaces (); ++i)
       {
         VAFC       circ     = half_edge_mesh.getVertexAroundFaceCirculator (FaceIndex (i));
         const VAFC circ_end = circ;

@@ -103,10 +103,10 @@ TEST(PCL_FeaturesGPU, vfh1)
     VFHSignature308& gpu = downloaded[0];
     VFHSignature308& cpu = vfh.points[0];
         
-    size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
+    std::size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
         
     float norm = 0, norm_diff = 0;
-    for(size_t j = 0; j < FSize; ++j)
+    for(std::size_t j = 0; j < FSize; ++j)
     {
         norm_diff += (gpu.histogram[j] - cpu.histogram[j]) * (gpu.histogram[j] - cpu.histogram[j]);
         norm += cpu.histogram[j] * cpu.histogram[j];
@@ -170,10 +170,10 @@ TEST(PCL_FeaturesGPU, vfh_norm_bins_false)
     VFHSignature308& gpu = downloaded[0];
     VFHSignature308& cpu = vfh.points[0];
         
-    size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
+    std::size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
         
     float norm = 0, norm_diff = 0;
-    for(size_t j = 0; j < FSize; ++j)
+    for(std::size_t j = 0; j < FSize; ++j)
     {
         norm_diff += (gpu.histogram[j] - cpu.histogram[j]) * (gpu.histogram[j] - cpu.histogram[j]);
         norm += cpu.histogram[j] * cpu.histogram[j];
@@ -237,10 +237,10 @@ TEST(PCL_FeaturesGPU, vfh_norm_distance_true)
     VFHSignature308& gpu = downloaded[0];
     VFHSignature308& cpu = vfh.points[0];
         
-    size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
+    std::size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
         
     float norm = 0, norm_diff = 0;
-    for(size_t j = 0; j < FSize; ++j)
+    for(std::size_t j = 0; j < FSize; ++j)
     {
         norm_diff += (gpu.histogram[j] - cpu.histogram[j]) * (gpu.histogram[j] - cpu.histogram[j]);
         norm += cpu.histogram[j] * cpu.histogram[j];
@@ -305,10 +305,10 @@ TEST(PCL_FeaturesGPU, vfh_fill_size_component_true)
     VFHSignature308& gpu = downloaded[0];
     VFHSignature308& cpu = vfh.points[0];
         
-    size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
+    std::size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
         
     float norm = 0, norm_diff = 0;
-    for(size_t j = 0; j < FSize; ++j)
+    for(std::size_t j = 0; j < FSize; ++j)
     {
         norm_diff += (gpu.histogram[j] - cpu.histogram[j]) * (gpu.histogram[j] - cpu.histogram[j]);
         norm += cpu.histogram[j] * cpu.histogram[j];

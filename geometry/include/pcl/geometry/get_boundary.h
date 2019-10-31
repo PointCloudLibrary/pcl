@@ -56,7 +56,7 @@ namespace pcl
     template <class MeshT> void
     getBoundBoundaryHalfEdges (const MeshT&                                   mesh,
                                std::vector <typename MeshT::HalfEdgeIndices>& boundary_he_collection,
-                               const size_t                                   expected_size = 3)
+                               const std::size_t                                   expected_size = 3)
     {
       using Mesh = MeshT;
       using HalfEdgeIndex = typename Mesh::HalfEdgeIndex;

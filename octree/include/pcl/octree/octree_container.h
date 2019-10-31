@@ -76,7 +76,7 @@ namespace pcl
       /** \brief Pure abstract method to get size of container (number of indices)
        * \return number of points/indices stored in leaf node container.
        */
-      virtual size_t
+      virtual std::size_t
       getSize () const
       {
         return 0u;
@@ -128,7 +128,7 @@ namespace pcl
       /** \brief Abstract get size of container (number of DataT objects)
        * \return number of DataT elements in leaf node container.
        */
-      size_t
+      std::size_t
       getSize () const override
       {
         return 0;
@@ -229,7 +229,7 @@ namespace pcl
         /** \brief Get size of container (number of DataT objects)
          * \return number of DataT elements in leaf node container.
          */
-        size_t
+        std::size_t
         getSize () const override
         {
           return data_<0 ? 0 : 1;
@@ -311,7 +311,7 @@ namespace pcl
         /** \brief Get size of container (number of indices)
          * \return number of point indices in container.
          */
-        size_t
+        std::size_t
         getSize () const override
         {
           return leafDataTVector_.size ();

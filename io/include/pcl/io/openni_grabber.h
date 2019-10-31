@@ -299,15 +299,15 @@ namespace pcl
         */
       inline void
       convertShiftToDepth (
-          const uint16_t* shift_data_ptr,
-          uint16_t* depth_data_ptr,
+          const std::uint16_t* shift_data_ptr,
+          std::uint16_t* depth_data_ptr,
           std::size_t size) const
       {
         // get openni device instance
         auto openni_device = this->getDevice ();
 
-        const uint16_t* shift_data_it = shift_data_ptr;
-        uint16_t* depth_data_it = depth_data_ptr;
+        const std::uint16_t* shift_data_it = shift_data_ptr;
+        std::uint16_t* depth_data_it = depth_data_ptr;
 
         // shift-to-depth lookup
         for (std::size_t i=0; i<size; ++i)

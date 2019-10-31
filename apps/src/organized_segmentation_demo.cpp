@@ -22,7 +22,7 @@ displayPlanarRegions (std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allo
 
   pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT>);
 
-  for (size_t i = 0; i < regions.size (); i++)
+  for (std::size_t i = 0; i < regions.size (); i++)
   {
     Eigen::Vector3f centroid = regions[i].getCentroid ();
     Eigen::Vector4f model = regions[i].getCoefficients ();
@@ -51,7 +51,7 @@ displayEuclideanClusters (const pcl::PointCloud<PointT>::CloudVectorType &cluste
   unsigned char grn [6] = {  0, 255,   0, 255,   0, 255};
   unsigned char blu [6] = {  0,   0, 255,   0, 255, 255};
 
-  for (size_t i = 0; i < clusters.size (); i++)
+  for (std::size_t i = 0; i < clusters.size (); i++)
   {
     sprintf (name, "cluster_%d" , int (i));
     pcl::PointCloud<PointT>::ConstPtr cluster_cloud (new pcl::PointCloud<PointT> (clusters[i]));
@@ -67,7 +67,7 @@ void
 displayCurvature (pcl::PointCloud<PointT>& cloud, pcl::PointCloud<pcl::Normal>& normals, const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   pcl::PointCloud<pcl::PointXYZRGBA> curvature_cloud = cloud;
-  for (size_t i  = 0; i < cloud.points.size (); i++)
+  for (std::size_t i  = 0; i < cloud.points.size (); i++)
   {
     if (normals.points[i].curvature < 0.04)
     {
@@ -91,7 +91,7 @@ void
 displayDistanceMap (pcl::PointCloud<PointT>& cloud, float* distance_map, const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   pcl::PointCloud<pcl::PointXYZRGBA> distance_map_cloud = cloud;
-  for (size_t i  = 0; i < cloud.points.size (); i++)
+  for (std::size_t i  = 0; i < cloud.points.size (); i++)
   {
     if (distance_map[i] < 5.0)
     {
@@ -112,10 +112,10 @@ displayDistanceMap (pcl::PointCloud<PointT>& cloud, float* distance_map, const p
 }
 
 void
-removePreviousDataFromScreen (size_t prev_models_size, size_t prev_clusters_size, const pcl::visualization::PCLVisualizer::Ptr& viewer)
+removePreviousDataFromScreen (std::size_t prev_models_size, std::size_t prev_clusters_size, const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   char name[1024];
-  for (size_t i = 0; i < prev_models_size; i++)
+  for (std::size_t i = 0; i < prev_models_size; i++)
   {
     sprintf (name, "normal_%d", unsigned (i));
     viewer->removeShape (name);
@@ -124,7 +124,7 @@ removePreviousDataFromScreen (size_t prev_models_size, size_t prev_clusters_size
     viewer->removePointCloud (name);
   }
 
-  for (size_t i = 0; i < prev_clusters_size; i++)
+  for (std::size_t i = 0; i < prev_clusters_size; i++)
   {
     sprintf (name, "cluster_%d", int (i));
     viewer->removePointCloud (name);
@@ -307,7 +307,7 @@ OrganizedSegmentationDemo::cloud_cb (const CloudConstPtr& cloud)
   if (use_clustering_ && !regions.empty ())
   {
     pcl::EuclideanClusterComparator<PointT, pcl::Label>::ExcludeLabelSetPtr plane_labels (new pcl::EuclideanClusterComparator<PointT, pcl::Label>::ExcludeLabelSet);
-    for (size_t i = 0; i < label_indices.size (); ++i)
+    for (std::size_t i = 0; i < label_indices.size (); ++i)
       if (label_indices[i].indices.size () > mps.getMinInliers())
         plane_labels->insert (i);
 

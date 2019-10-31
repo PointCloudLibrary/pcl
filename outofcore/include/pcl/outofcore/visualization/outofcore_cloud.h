@@ -82,7 +82,7 @@ class OutofcoreCloud : public Object
     {
     public:
 
-      CloudDataCacheItem (std::string pcd_file, float coverage, vtkSmartPointer<vtkPolyData> cloud_data, size_t timestamp)
+      CloudDataCacheItem (std::string pcd_file, float coverage, vtkSmartPointer<vtkPolyData> cloud_data, std::size_t timestamp)
       {
        this->pcd_file = pcd_file;
        this->coverage = coverage;
@@ -90,7 +90,7 @@ class OutofcoreCloud : public Object
        this->timestamp = timestamp;
       }
 
-      size_t
+      std::size_t
       sizeOf() const override
       {
         return item->GetActualMemorySize();
@@ -150,7 +150,7 @@ class OutofcoreCloud : public Object
         displayDepth = octree_->getDepth ();
       }
 
-      if (display_depth_ != static_cast<uint64_t> (displayDepth))
+      if (display_depth_ != static_cast<std::uint64_t> (displayDepth))
       {
         display_depth_ = displayDepth;
         updateVoxelData ();
@@ -164,13 +164,13 @@ class OutofcoreCloud : public Object
       return display_depth_;
     }
 
-    uint64_t
+    std::uint64_t
     getPointsLoaded () const
     {
       return points_loaded_;
     }
 
-    uint64_t
+    std::uint64_t
     getDataLoaded () const
     {
       return data_loaded_;
@@ -234,7 +234,7 @@ class OutofcoreCloud : public Object
         value = 100;
 
       lod_pixel_threshold_ += value;
-      std::cout << "Increasing lod pixel threshold: " << lod_pixel_threshold_ << endl;
+      std::cout << "Increasing lod pixel threshold: " << lod_pixel_threshold_ << std::endl;
     }
 
     void
@@ -252,7 +252,7 @@ class OutofcoreCloud : public Object
 
       if (lod_pixel_threshold_ < 100)
         lod_pixel_threshold_ = 100;
-      std::cout << "Decreasing lod pixel threshold: " << lod_pixel_threshold_ << endl;
+      std::cout << "Decreasing lod pixel threshold: " << lod_pixel_threshold_ << std::endl;
     }
 
     void
@@ -264,9 +264,9 @@ class OutofcoreCloud : public Object
     // -----------------------------------------------------------------------------
     OctreeDiskPtr octree_;
 
-    uint64_t display_depth_;
-    uint64_t points_loaded_;
-    uint64_t data_loaded_;
+    std::uint64_t display_depth_;
+    std::uint64_t points_loaded_;
+    std::uint64_t data_loaded_;
 
     Eigen::Vector3d bbox_min_, bbox_max_;
 

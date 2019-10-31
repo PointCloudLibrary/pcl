@@ -117,7 +117,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSm
         continue;
       }
 
-      for (size_t j = 1; j < nn_indices.size (); ++j) // nn_indices[0] should be sq_idx
+      for (std::size_t j = 1; j < nn_indices.size (); ++j) // nn_indices[0] should be sq_idx
       {
         if (processed[nn_indices[j]]) // Has this point been processed before ?
           continue;
@@ -144,7 +144,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSm
     {
       pcl::PointIndices r;
       r.indices.resize (seed_queue.size ());
-      for (size_t j = 0; j < seed_queue.size (); ++j)
+      for (std::size_t j = 0; j < seed_queue.size (); ++j)
         r.indices[j] = seed_queue[j];
 
       std::sort (r.indices.begin (), r.indices.end ());
@@ -166,7 +166,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::filterNormalsWithHighCurva
   indices_out.resize (cloud.points.size ());
   indices_in.resize (cloud.points.size ());
 
-  size_t in, out;
+  std::size_t in, out;
   in = out = 0;
 
   for (const int &index : indices_to_use)
@@ -206,7 +206,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
   Eigen::Affine3f transformPC (Eigen::AngleAxisf (static_cast<float> (rotation), axis));
 
   grid->points.resize (processed->points.size ());
-  for (size_t k = 0; k < processed->points.size (); k++)
+  for (std::size_t k = 0; k < processed->points.size (); k++)
     grid->points[k].getVector4fMap () = processed->points[k].getVector4fMap ();
 
   pcl::transformPointCloud (*grid, *grid, transformPC);
@@ -380,7 +380,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
   cluster_axes_.clear ();
   cluster_axes_.resize (centroids_dominant_orientations_.size ());
 
-  for (size_t i = 0; i < centroids_dominant_orientations_.size (); i++)
+  for (std::size_t i = 0; i < centroids_dominant_orientations_.size (); i++)
   {
 
     std::vector < Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > transformations;
@@ -434,65 +434,65 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
         //distribute the weights using the x-coordinate
         if (p[0] >= 0)
         {
-          for (size_t ii = 0; ii <= 3; ii++)
+          for (std::size_t ii = 0; ii <= 3; ii++)
             weights[ii] = 0.5f - wx * 0.5f;
 
-          for (size_t ii = 4; ii <= 7; ii++)
+          for (std::size_t ii = 4; ii <= 7; ii++)
             weights[ii] = 0.5f + wx * 0.5f;
         }
         else
         {
-          for (size_t ii = 0; ii <= 3; ii++)
+          for (std::size_t ii = 0; ii <= 3; ii++)
             weights[ii] = 0.5f + wx * 0.5f;
 
-          for (size_t ii = 4; ii <= 7; ii++)
+          for (std::size_t ii = 4; ii <= 7; ii++)
             weights[ii] = 0.5f - wx * 0.5f;
         }
 
         //distribute the weights using the y-coordinate
         if (p[1] >= 0)
         {
-          for (size_t ii = 0; ii <= 1; ii++)
+          for (std::size_t ii = 0; ii <= 1; ii++)
             weights[ii] *= 0.5f - wy * 0.5f;
-          for (size_t ii = 4; ii <= 5; ii++)
+          for (std::size_t ii = 4; ii <= 5; ii++)
             weights[ii] *= 0.5f - wy * 0.5f;
 
-          for (size_t ii = 2; ii <= 3; ii++)
+          for (std::size_t ii = 2; ii <= 3; ii++)
             weights[ii] *= 0.5f + wy * 0.5f;
 
-          for (size_t ii = 6; ii <= 7; ii++)
+          for (std::size_t ii = 6; ii <= 7; ii++)
             weights[ii] *= 0.5f + wy * 0.5f;
         }
         else
         {
-          for (size_t ii = 0; ii <= 1; ii++)
+          for (std::size_t ii = 0; ii <= 1; ii++)
             weights[ii] *= 0.5f + wy * 0.5f;
-          for (size_t ii = 4; ii <= 5; ii++)
+          for (std::size_t ii = 4; ii <= 5; ii++)
             weights[ii] *= 0.5f + wy * 0.5f;
 
-          for (size_t ii = 2; ii <= 3; ii++)
+          for (std::size_t ii = 2; ii <= 3; ii++)
             weights[ii] *= 0.5f - wy * 0.5f;
 
-          for (size_t ii = 6; ii <= 7; ii++)
+          for (std::size_t ii = 6; ii <= 7; ii++)
             weights[ii] *= 0.5f - wy * 0.5f;
         }
 
         //distribute the weights using the z-coordinate
         if (p[2] >= 0)
         {
-          for (size_t ii = 0; ii <= 7; ii += 2)
+          for (std::size_t ii = 0; ii <= 7; ii += 2)
             weights[ii] *= 0.5f - wz * 0.5f;
 
-          for (size_t ii = 1; ii <= 7; ii += 2)
+          for (std::size_t ii = 1; ii <= 7; ii += 2)
             weights[ii] *= 0.5f + wz * 0.5f;
 
         }
         else
         {
-          for (size_t ii = 0; ii <= 7; ii += 2)
+          for (std::size_t ii = 0; ii <= 7; ii += 2)
             weights[ii] *= 0.5f + wz * 0.5f;
 
-          for (size_t ii = 1; ii <= 7; ii += 2)
+          for (std::size_t ii = 1; ii <= 7; ii += 2)
             weights[ii] *= 0.5f - wz * 0.5f;
         }
 
@@ -572,14 +572,14 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   filterNormalsWithHighCurvature (*normals_, *indices_, indices_out, indices_in, curv_threshold_);
 
   pcl::PointCloud<pcl::PointNormal>::Ptr normals_filtered_cloud (new pcl::PointCloud<pcl::PointNormal> ());
-  normals_filtered_cloud->width = static_cast<uint32_t> (indices_in.size ());
+  normals_filtered_cloud->width = static_cast<std::uint32_t> (indices_in.size ());
   normals_filtered_cloud->height = 1;
   normals_filtered_cloud->points.resize (normals_filtered_cloud->width);
 
   std::vector<int> indices_from_nfc_to_indices;
   indices_from_nfc_to_indices.resize (indices_in.size ());
 
-  for (size_t i = 0; i < indices_in.size (); ++i)
+  for (std::size_t i = 0; i < indices_in.size (); ++i)
   {
     normals_filtered_cloud->points[i].x = surface_->points[indices_in[i]].x;
     normals_filtered_cloud->points[i].y = surface_->points[indices_in[i]].y;
@@ -697,9 +697,9 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
     //compute modified VFH for all dominant clusters and add them to the list!
     output.points.resize (dominant_normals_.size ());
-    output.width = static_cast<uint32_t> (dominant_normals_.size ());
+    output.width = static_cast<std::uint32_t> (dominant_normals_.size ());
 
-    for (size_t i = 0; i < dominant_normals_.size (); ++i)
+    for (std::size_t i = 0; i < dominant_normals_.size (); ++i)
     {
       //configure VFH computation for CVFH
       vfh.setNormalToUse (dominant_normals_[i]);

@@ -42,11 +42,11 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-pcl::common::UniformGenerator<T>::UniformGenerator(T min, T max, pcl::uint32_t seed)
+pcl::common::UniformGenerator<T>::UniformGenerator(T min, T max, std::uint32_t seed)
   : distribution_ (min, max)
 {
   parameters_ = Parameters (min, max, seed);
-  if(parameters_.seed != static_cast<pcl::uint32_t> (-1))
+  if(parameters_.seed != static_cast<std::uint32_t> (-1))
     rng_.seed (seed);
 }
 
@@ -57,15 +57,15 @@ pcl::common::UniformGenerator<T>::UniformGenerator(const Parameters& parameters)
   : parameters_ (parameters)
   , distribution_ (parameters_.min, parameters_.max)
 {
-  if(parameters_.seed != static_cast<pcl::uint32_t> (-1))
+  if(parameters_.seed != static_cast<std::uint32_t> (-1))
     rng_.seed (parameters_.seed);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> void
-pcl::common::UniformGenerator<T>::setSeed (pcl::uint32_t seed)
+pcl::common::UniformGenerator<T>::setSeed (std::uint32_t seed)
 {
-  if (seed != static_cast<pcl::uint32_t> (-1))
+  if (seed != static_cast<std::uint32_t> (-1))
   {
     parameters_.seed = seed;
     rng_.seed(parameters_.seed);
@@ -74,7 +74,7 @@ pcl::common::UniformGenerator<T>::setSeed (pcl::uint32_t seed)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> void
-pcl::common::UniformGenerator<T>::setParameters (T min, T max, pcl::uint32_t seed)
+pcl::common::UniformGenerator<T>::setParameters (T min, T max, std::uint32_t seed)
 {
   parameters_.min = min;
   parameters_.max = max;
@@ -82,7 +82,7 @@ pcl::common::UniformGenerator<T>::setParameters (T min, T max, pcl::uint32_t see
   typename DistributionType::param_type params (parameters_.min, parameters_.max);
   distribution_.param (params);
   distribution_.reset ();
-  if (seed != static_cast<pcl::uint32_t> (-1))
+  if (seed != static_cast<std::uint32_t> (-1))
   {
     parameters_.seed = seed;
     rng_.seed (parameters_.seed);
@@ -97,17 +97,17 @@ pcl::common::UniformGenerator<T>::setParameters (const Parameters& parameters)
   typename DistributionType::param_type params (parameters_.min, parameters_.max);
   distribution_.param (params);
   distribution_.reset ();
-  if (parameters_.seed != static_cast<pcl::uint32_t> (-1))
+  if (parameters_.seed != static_cast<std::uint32_t> (-1))
     rng_.seed (parameters_.seed);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-pcl::common::NormalGenerator<T>::NormalGenerator(T mean, T sigma, pcl::uint32_t seed)
+pcl::common::NormalGenerator<T>::NormalGenerator(T mean, T sigma, std::uint32_t seed)
   : distribution_ (mean, sigma)
 {
   parameters_ = Parameters (mean, sigma, seed);
-  if(parameters_.seed != static_cast<pcl::uint32_t> (-1))
+  if(parameters_.seed != static_cast<std::uint32_t> (-1))
     rng_.seed (seed);
 }
 
@@ -118,15 +118,15 @@ pcl::common::NormalGenerator<T>::NormalGenerator(const Parameters& parameters)
   : parameters_ (parameters)
   , distribution_ (parameters_.mean, parameters_.sigma)
 {
-  if(parameters_.seed != static_cast<pcl::uint32_t> (-1))
+  if(parameters_.seed != static_cast<std::uint32_t> (-1))
     rng_.seed (parameters_.seed);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> void
-pcl::common::NormalGenerator<T>::setSeed (pcl::uint32_t seed)
+pcl::common::NormalGenerator<T>::setSeed (std::uint32_t seed)
 {
-  if (seed != static_cast<pcl::uint32_t> (-1))
+  if (seed != static_cast<std::uint32_t> (-1))
   {
     parameters_.seed = seed;
     rng_.seed(seed);
@@ -135,7 +135,7 @@ pcl::common::NormalGenerator<T>::setSeed (pcl::uint32_t seed)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> void
-pcl::common::NormalGenerator<T>::setParameters (T mean, T sigma, pcl::uint32_t seed)
+pcl::common::NormalGenerator<T>::setParameters (T mean, T sigma, std::uint32_t seed)
 {
   parameters_.mean = mean;
   parameters_.sigma = sigma;
@@ -143,7 +143,7 @@ pcl::common::NormalGenerator<T>::setParameters (T mean, T sigma, pcl::uint32_t s
   typename DistributionType::param_type params (parameters_.mean, parameters_.sigma);
   distribution_.param (params);
   distribution_.reset ();
-  if (seed != static_cast<pcl::uint32_t> (-1))
+  if (seed != static_cast<std::uint32_t> (-1))
     rng_.seed (parameters_.seed);
 }
 
@@ -155,7 +155,7 @@ pcl::common::NormalGenerator<T>::setParameters (const Parameters& parameters)
   typename DistributionType::param_type params (parameters_.mean, parameters_.sigma);
   distribution_.param (params);
   distribution_.reset ();
-  if (parameters_.seed != static_cast<pcl::uint32_t> (-1))
+  if (parameters_.seed != static_cast<std::uint32_t> (-1))
     rng_.seed (parameters_.seed);
 }
 

@@ -116,7 +116,7 @@ ON_3dPoint ON_Cylinder::PointAt( double s, double t ) const
   return ( circle.PointAt(s) + t*circle.plane.zaxis );
 }
 
-ON_3dPoint ON_Cylinder::NormalAt( double s, double t ) const
+ON_3dPoint ON_Cylinder::NormalAt( double s, double ) const
 {
   ON_3dVector N = ON_CrossProduct( circle.TangentAt(s), circle.plane.zaxis );
   N.Unitize();

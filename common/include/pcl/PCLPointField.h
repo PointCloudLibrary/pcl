@@ -19,9 +19,9 @@ namespace pcl
 
     std::string name;
 
-    pcl::uint32_t offset;
-    pcl::uint8_t datatype;
-    pcl::uint32_t count;
+    std::uint32_t offset;
+    std::uint8_t datatype;
+    std::uint32_t count;
 
     enum PointFieldTypes { INT8 = 1,
                            UINT8 = 2,

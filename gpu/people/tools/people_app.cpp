@@ -99,7 +99,7 @@ struct SampledScopeTime : public StopWatch
     time_ms_ += getTime ();    
     if (i_ % EACH == 0 && i_)
     {
-      cout << "[~SampledScopeTime] : Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )" << endl;
+      std::cout << "[~SampledScopeTime] : Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )" << std::endl;
       time_ms_ = 0;        
     }
     ++i_;
@@ -257,7 +257,7 @@ class PeoplePCDApp
         rgba_host_.points.resize(w * h);
         rgba_host_.width = w;
         rgba_host_.height = h;
-        for(size_t i = 0; i < rgba_host_.size(); ++i)
+        for(std::size_t i = 0; i < rgba_host_.size(); ++i)
         {
           const unsigned char *pixel = &rgb_host_[i * 3];
           RGB& rgba = rgba_host_.points[i];         
@@ -315,8 +315,8 @@ class PeoplePCDApp
           }
           final_view_.spinOnce (3);                  
         }
-        catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; }
-        catch (const std::exception& /*e*/) { cout << "Exception" << endl; }
+        catch (const std::bad_alloc& /*e*/) { std::cout << "Bad alloc" << std::endl; }
+        catch (const std::exception& /*e*/) { std::cout << "Exception" << std::endl; }
 
         capture_.stop ();
       }
@@ -355,19 +355,19 @@ class PeoplePCDApp
 
 void print_help()
 {
-  cout << "\nPeople tracking app options (help):" << endl;
-  cout << "\t -numTrees    \t<int> \tnumber of trees to load" << endl;
-  cout << "\t -tree0       \t<path_to_tree_file>" << endl;
-  cout << "\t -tree1       \t<path_to_tree_file>" << endl;
-  cout << "\t -tree2       \t<path_to_tree_file>" << endl;
-  cout << "\t -tree3       \t<path_to_tree_file>" << endl;
-  cout << "\t -gpu         \t<GPU_device_id>" << endl;
-  cout << "\t -w           \t<bool> \tWrite results to disk" << endl;
-  cout << "\t -h           \tPrint this help" << endl;
-  cout << "\t -dev         \t<Kinect_device_id>" << endl;  
-  cout << "\t -pcd         \t<path_to_pcd_file>" << endl;
-  cout << "\t -oni         \t<path_to_oni_file>" << endl;  
-  cout << "\t -pcd_folder  \t<path_to_folder_with_pcd_files>" << endl;
+  std::cout << "\nPeople tracking app options (help):" << std::endl;
+  std::cout << "\t -numTrees    \t<int> \tnumber of trees to load" << std::endl;
+  std::cout << "\t -tree0       \t<path_to_tree_file>" << std::endl;
+  std::cout << "\t -tree1       \t<path_to_tree_file>" << std::endl;
+  std::cout << "\t -tree2       \t<path_to_tree_file>" << std::endl;
+  std::cout << "\t -tree3       \t<path_to_tree_file>" << std::endl;
+  std::cout << "\t -gpu         \t<GPU_device_id>" << std::endl;
+  std::cout << "\t -w           \t<bool> \tWrite results to disk" << std::endl;
+  std::cout << "\t -h           \tPrint this help" << std::endl;
+  std::cout << "\t -dev         \t<Kinect_device_id>" << std::endl;  
+  std::cout << "\t -pcd         \t<path_to_pcd_file>" << std::endl;
+  std::cout << "\t -oni         \t<path_to_oni_file>" << std::endl;  
+  std::cout << "\t -pcd_folder  \t<path_to_folder_with_pcd_files>" << std::endl;
 }
 
 int main(int argc, char** argv)
@@ -423,7 +423,7 @@ int main(int argc, char** argv)
       //capture.reset( new pcl::PCDGrabber<PointXYZRGBA>(pcd_files, 30, true) );      
     }
   }
-  catch (const pcl::PCLException& /*e*/) { return cout << "Can't open depth source" << endl, -1; }
+  catch (const pcl::PCLException& /*e*/) { return std::cout << "Can't open depth source" << std::endl, -1; }
     
   //selecting tree files
   std::vector<string> tree_files;
@@ -462,10 +462,10 @@ int main(int argc, char** argv)
     // executing
     app.startMainLoop ();
   }
-  catch (const pcl::PCLException& e) { cout << "PCLException: " << e.detailedMessage() << endl; print_help();}
-  catch (const std::runtime_error& e) { cout << e.what() << endl; print_help(); }
-  catch (const std::bad_alloc& /*e*/) { cout << "Bad alloc" << endl; print_help(); }
-  catch (const std::exception& /*e*/) { cout << "Exception" << endl; print_help(); }
+  catch (const pcl::PCLException& e) { std::cout << "PCLException: " << e.detailedMessage() << std::endl; print_help();}
+  catch (const std::runtime_error& e) { std::cout << e.what() << std::endl; print_help(); }
+  catch (const std::bad_alloc& /*e*/) { std::cout << "Bad alloc" << std::endl; print_help(); }
+  catch (const std::exception& /*e*/) { std::cout << "Exception" << std::endl; print_help(); }
 
   return 0;
 }  

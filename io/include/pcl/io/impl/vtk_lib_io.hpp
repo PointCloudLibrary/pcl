@@ -85,7 +85,7 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
 
   // Check if XYZ is present
   int x_idx = -1, y_idx = -1, z_idx = -1;
-  for (size_t d = 0; d < fields.size (); ++d)
+  for (std::size_t d = 0; d < fields.size (); ++d)
   {
     if (fields[d].name == "x")
       x_idx = fields[d].offset;
@@ -97,7 +97,7 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
   // Set the coordinates of the pcl::PointCloud (if the pcl::PointCloud supports coordinates)
   if (x_idx != -1 && y_idx != -1 && z_idx != -1)
   {
-    for (size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.points.size (); ++i)
     {
       double coordinate[3];
       polydata->GetPoint (i, coordinate);
@@ -109,7 +109,7 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
 
   // Check if Normals are present
   int normal_x_idx = -1, normal_y_idx = -1, normal_z_idx = -1;
-  for (size_t d = 0; d < fields.size (); ++d)
+  for (std::size_t d = 0; d < fields.size (); ++d)
   {
     if (fields[d].name == "normal_x")
       normal_x_idx = fields[d].offset;
@@ -122,7 +122,7 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
   vtkFloatArray* normals = vtkFloatArray::SafeDownCast (polydata->GetPointData ()->GetNormals ());
   if (normal_x_idx != -1 && normal_y_idx != -1 && normal_z_idx != -1 && normals)
   {
-    for (size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.points.size (); ++i)
     {
       float normal[3];
       normals->GetTupleValue (i, normal);
@@ -135,7 +135,7 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
   // Set the colors of the pcl::PointCloud (if the pcl::PointCloud supports colors and the input vtkPolyData has colors)
   vtkUnsignedCharArray* colors = vtkUnsignedCharArray::SafeDownCast (polydata->GetPointData ()->GetScalars ());
   int rgb_idx = -1;
-  for (size_t d = 0; d < fields.size (); ++d)
+  for (std::size_t d = 0; d < fields.size (); ++d)
   {
     if (fields[d].name == "rgb" || fields[d].name == "rgba")
     {
@@ -146,13 +146,13 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
 
   if (rgb_idx != -1 && colors)
   {
-    for (size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.points.size (); ++i)
     {
       unsigned char color[3];
       colors->GetTupleValue (i, color);
       pcl::RGB rgb;
       rgb.r = color[0]; rgb.g = color[1]; rgb.b = color[2];
-      pcl::setFieldValue<PointT, uint32_t> (cloud.points[i], rgb_idx, rgb.rgba);
+      pcl::setFieldValue<PointT, std::uint32_t> (cloud.points[i], rgb_idx, rgb.rgba);
     }
   }
 }
@@ -174,7 +174,7 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
 
   // Check if XYZ is present
   int x_idx = -1, y_idx = -1, z_idx = -1;
-  for (size_t d = 0; d < fields.size (); ++d)
+  for (std::size_t d = 0; d < fields.size (); ++d)
   {
     if (fields[d].name == "x")
       x_idx = fields[d].offset;
@@ -186,9 +186,9 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
 
   if (x_idx != -1 && y_idx != -1 && z_idx != -1)
   {
-    for (size_t i = 0; i < cloud.width; ++i)
+    for (std::size_t i = 0; i < cloud.width; ++i)
     {
-      for (size_t j = 0; j < cloud.height; ++j)
+      for (std::size_t j = 0; j < cloud.height; ++j)
       {
         int queryPoint[3] = {i, j, 0};
         vtkIdType pointId = vtkStructuredData::ComputePointId (dimensions, queryPoint);
@@ -210,7 +210,7 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
 
   // Check if Normals are present
   int normal_x_idx = -1, normal_y_idx = -1, normal_z_idx = -1;
-  for (size_t d = 0; d < fields.size (); ++d)
+  for (std::size_t d = 0; d < fields.size (); ++d)
   {
     if (fields[d].name == "normal_x")
       normal_x_idx = fields[d].offset;
@@ -224,9 +224,9 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
 
   if (normal_x_idx != -1 && normal_y_idx != -1 && normal_z_idx != -1 && normals)
   {
-    for (size_t i = 0; i < cloud.width; ++i)
+    for (std::size_t i = 0; i < cloud.width; ++i)
     {
-      for (size_t j = 0; j < cloud.height; ++j)
+      for (std::size_t j = 0; j < cloud.height; ++j)
       {
         int queryPoint[3] = {i, j, 0};
         vtkIdType pointId = vtkStructuredData::ComputePointId (dimensions, queryPoint);
@@ -249,7 +249,7 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
   // Set the colors of the pcl::PointCloud (if the pcl::PointCloud supports colors and the input vtkStructuredGrid has colors)
   vtkUnsignedCharArray* colors = vtkUnsignedCharArray::SafeDownCast (structured_grid->GetPointData ()->GetArray ("Colors"));
   int rgb_idx = -1;
-  for (size_t d = 0; d < fields.size (); ++d)
+  for (std::size_t d = 0; d < fields.size (); ++d)
   {
     if (fields[d].name == "rgb" || fields[d].name == "rgba")
     {
@@ -260,9 +260,9 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
 
   if (rgb_idx != -1 && colors)
   {
-    for (size_t i = 0; i < cloud.width; ++i)
+    for (std::size_t i = 0; i < cloud.width; ++i)
     {
-      for (size_t j = 0; j < cloud.height; ++j)
+      for (std::size_t j = 0; j < cloud.height; ++j)
       {
         int queryPoint[3] = {i, j, 0};
         vtkIdType pointId = vtkStructuredData::ComputePointId(dimensions, queryPoint);
@@ -272,7 +272,7 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
           colors->GetTupleValue (i, color);
           pcl::RGB rgb;
           rgb.r = color[0]; rgb.g = color[1]; rgb.b = color[2];
-          pcl::setFieldValue<PointT, uint32_t> (cloud (i, j), rgb_idx, rgb.rgba);
+          pcl::setFieldValue<PointT, std::uint32_t> (cloud (i, j), rgb_idx, rgb.rgba);
         }
         else
         {
@@ -328,7 +328,7 @@ pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyD
 
   // Check if Normals are present
   int normal_x_idx = -1, normal_y_idx = -1, normal_z_idx = -1;
-  for (size_t d = 0; d < fields.size (); ++d)
+  for (std::size_t d = 0; d < fields.size (); ++d)
   {
     if (fields[d].name == "normal_x")
       normal_x_idx = fields[d].offset;
@@ -344,7 +344,7 @@ pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyD
     normals->SetNumberOfTuples (cloud.size ());
     normals->SetName ("Normals");
 
-    for (size_t i = 0; i < cloud.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
       float normal[3];
       pcl::getFieldValue<PointT, float> (cloud[i], normal_x_idx, normal[0]);
@@ -357,7 +357,7 @@ pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyD
 
   // Colors (optional)
   int rgb_idx = -1;
-  for (size_t d = 0; d < fields.size (); ++d)
+  for (std::size_t d = 0; d < fields.size (); ++d)
   {
     if (fields[d].name == "rgb" || fields[d].name == "rgba")
     {
@@ -372,11 +372,11 @@ pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyD
     colors->SetNumberOfTuples (cloud.size ());
     colors->SetName ("RGB");
 
-    for (size_t i = 0; i < cloud.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
       unsigned char color[3];
       pcl::RGB rgb;
-      pcl::getFieldValue<PointT, uint32_t> (cloud[i], rgb_idx, rgb.rgba);
+      pcl::getFieldValue<PointT, std::uint32_t> (cloud[i], rgb_idx, rgb.rgba);
       color[0] = rgb.r; color[1] = rgb.g; color[2] = rgb.b;
       colors->SetTupleValue (i, color);
     }
@@ -405,9 +405,9 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
   vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New ();
   points->SetNumberOfPoints (cloud.width * cloud.height);
 
-  for (size_t i = 0; i < cloud.width; ++i)
+  for (std::size_t i = 0; i < cloud.width; ++i)
   {
-    for (size_t j = 0; j < cloud.height; ++j)
+    for (std::size_t j = 0; j < cloud.height; ++j)
     {
       int queryPoint[3] = {i, j, 0};
       vtkIdType pointId = vtkStructuredData::ComputePointId (dimensions, queryPoint);
@@ -428,7 +428,7 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
 
   // Check if Normals are present
   int normal_x_idx = -1, normal_y_idx = -1, normal_z_idx = -1;
-  for (size_t d = 0; d < fields.size (); ++d)
+  for (std::size_t d = 0; d < fields.size (); ++d)
   {
     if (fields[d].name == "normal_x")
       normal_x_idx = fields[d].offset;
@@ -444,9 +444,9 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
     normals->SetNumberOfComponents (3); // Note this must come before the SetNumberOfTuples calls
     normals->SetNumberOfTuples (cloud.width * cloud.height);
     normals->SetName ("Normals");
-    for (size_t i = 0; i < cloud.width; ++i)
+    for (std::size_t i = 0; i < cloud.width; ++i)
     {
-      for (size_t j = 0; j < cloud.height; ++j)
+      for (std::size_t j = 0; j < cloud.height; ++j)
       {
         int queryPoint[3] = {i, j, 0};
         vtkIdType pointId = vtkStructuredData::ComputePointId (dimensions, queryPoint);
@@ -465,7 +465,7 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
 
   // Colors (optional)
   int rgb_idx = -1;
-  for (size_t d = 0; d < fields.size (); ++d)
+  for (std::size_t d = 0; d < fields.size (); ++d)
   {
     if (fields[d].name == "rgb" || fields[d].name == "rgba")
     {
@@ -480,9 +480,9 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
     colors->SetNumberOfComponents (3); // Note this must come before the SetNumberOfTuples calls
     colors->SetNumberOfTuples (cloud.width * cloud.height);
     colors->SetName ("Colors");
-    for (size_t i = 0; i < cloud.width; ++i)
+    for (std::size_t i = 0; i < cloud.width; ++i)
     {
-      for (size_t j = 0; j < cloud.height; ++j)
+      for (std::size_t j = 0; j < cloud.height; ++j)
       {
         int queryPoint[3] = {i, j, 0};
         vtkIdType pointId = vtkStructuredData::ComputePointId (dimensions, queryPoint);
@@ -493,7 +493,7 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
 
           unsigned char color[3];
           pcl::RGB rgb;
-          pcl::getFieldValue<PointT, uint32_t> (cloud[i], rgb_idx, rgb.rgba);
+          pcl::getFieldValue<PointT, std::uint32_t> (cloud[i], rgb_idx, rgb.rgba);
           color[0] = rgb.r; color[1] = rgb.g; color[2] = rgb.b;
           colors->SetTupleValue (pointId, color);
         }

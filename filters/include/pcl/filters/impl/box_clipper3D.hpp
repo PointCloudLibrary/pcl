@@ -202,7 +202,7 @@ pcl::BoxClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& clou
   if (indices.empty ())
   {
     clipped.reserve (cloud_in.size ());
-    for (size_t pIdx = 0; pIdx < cloud_in.size (); ++pIdx)
+    for (std::size_t pIdx = 0; pIdx < cloud_in.size (); ++pIdx)
       if (clipPoint3D (cloud_in[pIdx]))
         clipped.push_back (pIdx);
   }

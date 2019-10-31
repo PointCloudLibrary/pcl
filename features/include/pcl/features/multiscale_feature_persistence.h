@@ -196,7 +196,7 @@ namespace pcl
       /** \brief Two structures in which to hold the results of the unique feature extraction process.
        * They are superfluous with respect to each other, but improve the time performance of the algorithm
        */
-      std::vector<std::list<size_t> > unique_features_indices_;
+      std::vector<std::list<std::size_t> > unique_features_indices_;
       std::vector<std::vector<bool> > unique_features_table_;
   };
 }

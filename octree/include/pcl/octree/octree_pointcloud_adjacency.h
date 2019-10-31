@@ -108,10 +108,10 @@ namespace pcl
 
         inline iterator begin () { return (leaf_vector_.begin ()); }
         inline iterator end ()   { return (leaf_vector_.end ()); }
-        inline LeafContainerT* at (size_t idx)   { return leaf_vector_.at (idx); }
+        inline LeafContainerT* at (std::size_t idx)   { return leaf_vector_.at (idx); }
         
         // Size of neighbors
-        inline size_t size () const { return leaf_vector_.size (); }
+        inline std::size_t size () const { return leaf_vector_.size (); }
 
         /** \brief Constructor.
           *

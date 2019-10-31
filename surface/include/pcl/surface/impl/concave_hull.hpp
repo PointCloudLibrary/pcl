@@ -76,7 +76,7 @@ pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output)
   std::vector<pcl::Vertices> polygons;
   performReconstruction (output, polygons);
 
-  output.width = static_cast<uint32_t> (output.points.size ());
+  output.width = static_cast<std::uint32_t> (output.points.size ());
   output.height = 1;
   output.is_dense = true;
 
@@ -104,7 +104,7 @@ pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output, std::vector<pcl::Ve
   // Perform the actual surface reconstruction
   performReconstruction (output, polygons);
 
-  output.width = static_cast<uint32_t> (output.points.size ());
+  output.width = static_cast<std::uint32_t> (output.points.size ());
   output.height = 1;
   output.is_dense = true;
 
@@ -185,7 +185,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   // Array of coordinates for each point
   coordT *points = reinterpret_cast<coordT*> (calloc (cloud_transformed.points.size () * dim_, sizeof(coordT)));
 
-  for (size_t i = 0; i < cloud_transformed.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud_transformed.points.size (); ++i)
   {
     points[i * dim_ + 0] = static_cast<coordT> (cloud_transformed.points[i].x);
     points[i * dim_ + 1] = static_cast<coordT> (cloud_transformed.points[i].y);
@@ -205,7 +205,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     if (!cloud_transformed.is_dense)
     {
       bool NaNvalues = false;
-      for (size_t i = 0; i < cloud_transformed.size (); ++i)
+      for (std::size_t i = 0; i < cloud_transformed.size (); ++i)
       {
         if (!std::isfinite (cloud_transformed.points[i].x) ||
             !std::isfinite (cloud_transformed.points[i].y) ||
@@ -375,7 +375,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     }
 
     alpha_shape.points.resize (vertices);
-    alpha_shape.width = static_cast<uint32_t> (alpha_shape.points.size ());
+    alpha_shape.width = static_cast<std::uint32_t> (alpha_shape.points.size ());
     alpha_shape.height = 1;
   }
   else
@@ -520,7 +520,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 
     polygons.reserve (pcd_idx_start_polygons.size () - 1);
 
-    for (size_t poly_id = 0; poly_id < pcd_idx_start_polygons.size () - 1; poly_id++)
+    for (std::size_t poly_id = 0; poly_id < pcd_idx_start_polygons.size () - 1; poly_id++)
     {
       // Check if we actually have a polygon, and not some degenerated output from QHull
       if (pcd_idx_start_polygons[poly_id + 1] - pcd_idx_start_polygons[poly_id] >= 3)
@@ -529,7 +529,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
         vertices.vertices.resize (pcd_idx_start_polygons[poly_id + 1] - pcd_idx_start_polygons[poly_id]);
         // populate points in the corresponding polygon
         for (int j = pcd_idx_start_polygons[poly_id]; j < pcd_idx_start_polygons[poly_id + 1]; ++j)
-          vertices.vertices[j - pcd_idx_start_polygons[poly_id]] = static_cast<uint32_t> (j);
+          vertices.vertices[j - pcd_idx_start_polygons[poly_id]] = static_cast<std::uint32_t> (j);
 
         polygons.push_back (vertices);
       }
@@ -573,7 +573,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     hull_indices_.indices.clear ();
     hull_indices_.indices.reserve (alpha_shape.points.size ());
 
-    for (size_t i = 0; i < alpha_shape.points.size (); i++)
+    for (std::size_t i = 0; i < alpha_shape.points.size (); i++)
     {
       tree.nearestKSearch (alpha_shape.points[i], 1, neighbor, distances);
       hull_indices_.indices.push_back (neighbor[0]);

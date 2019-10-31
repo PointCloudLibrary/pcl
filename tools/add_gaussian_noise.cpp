@@ -98,7 +98,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   std::mt19937 rng(rd());
   std::normal_distribution<float> nd (0.0f, standard_deviation);
 
-  for (size_t point_i = 0; point_i < xyz_cloud->points.size (); ++point_i)
+  for (std::size_t point_i = 0; point_i < xyz_cloud->points.size (); ++point_i)
   {
     xyz_cloud_filtered->points[point_i].x = xyz_cloud->points[point_i].x + nd (rng);
     xyz_cloud_filtered->points[point_i].y = xyz_cloud->points[point_i].y + nd (rng);

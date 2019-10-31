@@ -71,7 +71,7 @@ namespace pcl
             };
 
             const PointType* point_cloud;                           
-            size_t work_size;
+            std::size_t work_size;
 
             PtrStep<int> gindices;            
             const int* sizes;            
@@ -140,15 +140,15 @@ namespace pcl
                         if (computePairFeatures (current_point[warp_idx], current_nomal[warp_idx], p, n, f1, f2, f3, f4))
                         {                                                          
                             // Normalize the f1, f2, f3 features and push them in the histogram
-                            h_index = floorf (bins1 * ((f1 + M_PI) * (1.0f / (2.0f * M_PI))));
+                            h_index = std::floor (bins1 * ((f1 + M_PI) * (1.0f / (2.0f * M_PI))));
                             h_index = min(bins1 - 1, max(0, h_index));                                                       
                             atomicAdd(shist_b1 + h_index, hist_incr);                            
 
-                            h_index = floorf (bins2 * ((f2 + 1.0f) * 0.5f));
+                            h_index = std::floor (bins2 * ((f2 + 1.0f) * 0.5f));
                             h_index = min(bins2 - 1, max (0, h_index));
                             atomicAdd(shist_b2 + h_index, hist_incr);                          
 
-                            h_index = floorf (bins3 * ((f3 + 1.0f) * 0.5f));
+                            h_index = std::floor (bins3 * ((f3 + 1.0f) * 0.5f));
                             h_index = min(bins3 - 1, max (0, h_index));
 
                             atomicAdd(shist_b3 + h_index, hist_incr); 

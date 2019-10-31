@@ -154,7 +154,7 @@ TEST (RandomSample, Filters)
   EXPECT_EQ (int (cloud_out.width), 10);
   EXPECT_EQ (int (indices.size ()), int (cloud_out.size ()));
 
-  for (size_t i = 0; i < indices.size () - 1; ++i)
+  for (std::size_t i = 0; i < indices.size () - 1; ++i)
   {
     // Check that indices are sorted
     EXPECT_LT (indices[i], indices[i+1]);
@@ -172,7 +172,7 @@ TEST (RandomSample, Filters)
   sample.filter(cloud_out);
   removed = sample.getRemovedIndices ();
   EXPECT_EQ (int (removed->size ()), cloud_walls->size () - 10);
-  for (size_t i = 0; i < removed->size (); ++i)
+  for (std::size_t i = 0; i < removed->size (); ++i)
   {
     EXPECT_TRUE (std::isnan (cloud_out.at ((*removed)[i]).x));
     EXPECT_TRUE (std::isnan (cloud_out.at ((*removed)[i]).y));
@@ -220,7 +220,7 @@ TEST (RandomSample, Filters)
   EXPECT_EQ (int (cloud_out.width), 10);
   EXPECT_EQ (int (indices2.size ()), int (cloud_out.size ()));
 
-  for (size_t i = 0; i < indices2.size () - 1; ++i)
+  for (std::size_t i = 0; i < indices2.size () - 1; ++i)
   {
     // Check that indices are sorted
     EXPECT_LT (indices2[i], indices2[i+1]);

@@ -47,14 +47,14 @@
 #include <cmath>
 #include <algorithm>
 #include <cstdio>
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 namespace pcl
 {
 
-  using boost::uint8_t;
-  using boost::uint32_t;
-  using boost::uint64_t;
+  using std::uint8_t;
+  using std::uint32_t;
+  using std::uint64_t;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b AdaptiveRangeCoder compression class
@@ -97,7 +97,7 @@ namespace pcl
     decodeStreamToCharVector (std::istream& inputByteStream_arg, std::vector<char>& outputByteVector_arg);
 
   protected:
-    using DWord = boost::uint32_t; // 4 bytes
+    using DWord = std::uint32_t; // 4 bytes
 
   private:
     /** vector containing compressed data
@@ -162,7 +162,7 @@ namespace pcl
       decodeStreamToCharVector (std::istream& inputByteStream_arg, std::vector<char>& outputByteVector_arg);
 
     protected:
-      using DWord = boost::uint32_t; // 4 bytes
+      using DWord = std::uint32_t; // 4 bytes
 
       /** \brief Helper function to calculate the binary logarithm
        * \param n_arg: some value
@@ -177,7 +177,7 @@ namespace pcl
 
     private:
       /** \brief Vector containing cumulative symbol frequency table. */
-      std::vector<uint64_t> cFreqTable_;
+      std::vector<std::uint64_t> cFreqTable_;
 
       /** \brief Vector containing compressed data. */
       std::vector<char> outputCharVector_;

@@ -200,7 +200,7 @@ scaleInPlace (pcl::PCLPointCloud2 &cloud, double* multiplier)
   int z_idx = pcl::getFieldIndex (cloud, "z");
   Eigen::Array3i xyz_offset (cloud.fields[x_idx].offset, cloud.fields[y_idx].offset, cloud.fields[z_idx].offset);
  
-  for (uint32_t cp = 0; cp < cloud.width * cloud.height; ++cp)
+  for (std::uint32_t cp = 0; cp < cloud.width * cloud.height; ++cp)
   {
     // Assume all 3 fields are the same (XYZ)
     assert ((cloud.fields[x_idx].datatype == cloud.fields[y_idx].datatype));
@@ -208,22 +208,22 @@ scaleInPlace (pcl::PCLPointCloud2 &cloud, double* multiplier)
     switch (cloud.fields[x_idx].datatype)
     {
       case pcl::PCLPointField::INT8:
-        for (int i = 0; i < 3; ++i) multiply<int8_t> (cloud, xyz_offset[i], multiplier[i]);
+        for (int i = 0; i < 3; ++i) multiply<std::int8_t> (cloud, xyz_offset[i], multiplier[i]);
         break;
       case pcl::PCLPointField::UINT8:
-        for (int i = 0; i < 3; ++i) multiply<uint8_t> (cloud, xyz_offset[i], multiplier[i]);
+        for (int i = 0; i < 3; ++i) multiply<std::uint8_t> (cloud, xyz_offset[i], multiplier[i]);
         break;
       case pcl::PCLPointField::INT16:
-        for (int i = 0; i < 3; ++i) multiply<int16_t> (cloud, xyz_offset[i], multiplier[i]);
+        for (int i = 0; i < 3; ++i) multiply<std::int16_t> (cloud, xyz_offset[i], multiplier[i]);
         break;
       case pcl::PCLPointField::UINT16:
-        for (int i = 0; i < 3; ++i) multiply<uint16_t> (cloud, xyz_offset[i], multiplier[i]);
+        for (int i = 0; i < 3; ++i) multiply<std::uint16_t> (cloud, xyz_offset[i], multiplier[i]);
         break;
       case pcl::PCLPointField::INT32:
-        for (int i = 0; i < 3; ++i) multiply<int32_t> (cloud, xyz_offset[i], multiplier[i]);
+        for (int i = 0; i < 3; ++i) multiply<std::int32_t> (cloud, xyz_offset[i], multiplier[i]);
         break;
       case pcl::PCLPointField::UINT32:
-        for (int i = 0; i < 3; ++i) multiply<uint32_t> (cloud, xyz_offset[i], multiplier[i]);
+        for (int i = 0; i < 3; ++i) multiply<std::uint32_t> (cloud, xyz_offset[i], multiplier[i]);
         break;
       case pcl::PCLPointField::FLOAT32:
         for (int i = 0; i < 3; ++i) multiply<float> (cloud, xyz_offset[i], multiplier[i]);

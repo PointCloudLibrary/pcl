@@ -13,7 +13,7 @@ int
   cloud->height = 1;
   cloud->points.resize (cloud->width * cloud->height);
 
-  for (size_t i = 0; i < cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud->points.size (); ++i)
   {
     cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
     cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
@@ -21,7 +21,7 @@ int
   }
 
   std::cerr << "Cloud before filtering: " << std::endl;
-  for (size_t i = 0; i < cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud->points.size (); ++i)
     std::cerr << "    " << cloud->points[i].x << " " 
                         << cloud->points[i].y << " " 
                         << cloud->points[i].z << std::endl;
@@ -35,7 +35,7 @@ int
   pass.filter (*cloud_filtered);
 
   std::cerr << "Cloud after filtering: " << std::endl;
-  for (size_t i = 0; i < cloud_filtered->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud_filtered->points.size (); ++i)
     std::cerr << "    " << cloud_filtered->points[i].x << " " 
                         << cloud_filtered->points[i].y << " " 
                         << cloud_filtered->points[i].z << std::endl;

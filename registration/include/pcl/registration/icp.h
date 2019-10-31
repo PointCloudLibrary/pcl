@@ -46,6 +46,7 @@
 #include <pcl/registration/registration.h>
 #include <pcl/registration/transformation_estimation_svd.h>
 #include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
+#include <pcl/registration/transformation_estimation_symmetric_point_to_plane_lls.h>
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/registration/default_convergence_criteria.h>
 
@@ -177,8 +178,7 @@ namespace pcl
       setInputSource (const PointCloudSourceConstPtr &cloud) override
       {
         Registration<PointSource, PointTarget, Scalar>::setInputSource (cloud);
-        std::vector<pcl::PCLPointField> fields;
-        pcl::getFields (*cloud, fields);
+        const auto fields = pcl::getFields<PointSource> ();
         source_has_normals_ = false;
         for (const auto &field : fields)
         {
@@ -212,8 +212,7 @@ namespace pcl
       setInputTarget (const PointCloudTargetConstPtr &cloud) override
       {
         Registration<PointSource, PointTarget, Scalar>::setInputTarget (cloud);
-        std::vector<pcl::PCLPointField> fields;
-        pcl::getFields (*cloud, fields);
+        const auto fields = pcl::getFields<PointSource> ();
         target_has_normals_ = false;
         for (const auto &field : fields)
         {
@@ -268,10 +267,10 @@ namespace pcl
       determineRequiredBlobData ();
 
       /** \brief XYZ fields offset. */
-      size_t x_idx_offset_, y_idx_offset_, z_idx_offset_;
+      std::size_t x_idx_offset_, y_idx_offset_, z_idx_offset_;
 
       /** \brief Normal fields offset. */
-      size_t nx_idx_offset_, ny_idx_offset_, nz_idx_offset_;
+      std::size_t nx_idx_offset_, ny_idx_offset_, nz_idx_offset_;
 
       /** \brief The correspondence type used for correspondence estimation. */
       bool use_reciprocal_correspondence_;
@@ -289,7 +288,21 @@ namespace pcl
     * IterativeClosestPoint, that uses a transformation estimated based on
     * Point to Plane distances by default.
     *
-    * \author Radu B. Rusu
+    * By default, this implementation uses the traditional point to plane objective
+    * and computes point to plane distances using the normals of the target point
+    * cloud. It also provides the option (through setUseSymmetricObjective) of
+    * using the symmetric objective function of [Rusinkiewicz 2019]. This objective
+    * uses the normals of both the source and target point cloud and has a similar
+    * computational cost to the traditional point to plane objective while also
+    * offering improved convergence speed and a wider basin of convergence.
+    *
+    * Note that this implementation not demean the point clouds which can lead
+    * to increased numerical error. If desired, a user can demean the point cloud,
+    * run iterative closest point, and composite the resulting ICP transformation
+    * with the translations from demeaning to obtain a transformation between
+    * the original point clouds.
+    *
+    * \author Radu B. Rusu, Matthew Cong
     * \ingroup registration
     */
   template <typename PointSource, typename PointTarget, typename Scalar = float>
@@ -308,15 +321,63 @@ namespace pcl
       using ConstPtr = boost::shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
 
       /** \brief Empty constructor. */
-      IterativeClosestPointWithNormals () 
+      IterativeClosestPointWithNormals ()
       {
         reg_name_ = "IterativeClosestPointWithNormals";
-        transformation_estimation_.reset (new pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar> ());
+        setUseSymmetricObjective (false);
+        setEnforceSameDirectionNormals (true);
         //correspondence_rejectors_.add
       };
       
       /** \brief Empty destructor */
       virtual ~IterativeClosestPointWithNormals () {}
+
+      /** \brief Set whether to use a symmetric objective function or not
+        *
+        * \param[in] use_symmetric_objective whether to use a symmetric objective function or not
+        */
+      inline void
+      setUseSymmetricObjective (bool use_symmetric_objective)
+      {
+        use_symmetric_objective_ = use_symmetric_objective;
+        if (use_symmetric_objective_)
+        {
+            auto symmetric_transformation_estimation = std::make_shared<pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> > ();
+            symmetric_transformation_estimation->setEnforceSameDirectionNormals (enforce_same_direction_normals_);
+            transformation_estimation_.reset (symmetric_transformation_estimation);
+        }
+        else
+        {
+            transformation_estimation_.reset (new pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar> ());
+        }
+      }
+
+      /** \brief Obtain whether a symmetric objective is used or not */
+      inline bool
+      getUseSymmetricObjective () const
+      {
+        return use_symmetric_objective_;
+      }
+
+        /** \brief Set whether or not to negate source or target normals on a per-point basis such that they point in the same direction. Only applicable to the symmetric objective function.
+        *
+        * \param[in] enforce_same_direction_normals whether to negate source or target normals on a per-point basis such that they point in the same direction.
+        */
+      inline void
+      setEnforceSameDirectionNormals (bool enforce_same_direction_normals)
+      {
+        enforce_same_direction_normals_ = enforce_same_direction_normals;
+        auto symmetric_transformation_estimation = boost::dynamic_pointer_cast<pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> >(transformation_estimation_);
+        if (symmetric_transformation_estimation)
+            symmetric_transformation_estimation->setEnforceSameDirectionNormals (enforce_same_direction_normals_);
+      }
+
+      /** \brief Obtain whether source or target normals are negated on a per-point basis such that they point in the same direction or not */
+      inline bool
+      getEnforceSameDirectionNormals () const
+      {
+        return enforce_same_direction_normals_;
+      }
 
     protected:
 
@@ -330,7 +391,13 @@ namespace pcl
       transformCloud (const PointCloudSource &input, 
                       PointCloudSource &output, 
                       const Matrix4 &transform);
+
+      /** \brief Type of objective function (asymmetric vs. symmetric) used for transform estimation */
+      bool use_symmetric_objective_;
+      /** \brief Whether or not to negate source and/or target normals such that they point in the same direction in the symmetric objective function */
+      bool enforce_same_direction_normals_;
   };
+
 }
 
 #include <pcl/registration/impl/icp.hpp>

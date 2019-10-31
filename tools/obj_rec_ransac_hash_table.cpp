@@ -111,7 +111,7 @@ main (int argc, char** argv)
 
 bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& points_in, PointCloud<Normal>& normals_in, double b[6])
 {
-  size_t len = strlen (file_name);
+  std::size_t len = strlen (file_name);
   if ( file_name[len-3] != 'v' || file_name[len-2] != 't' || file_name[len-1] != 'k' )
   {
     fprintf (stderr, "ERROR: we need a .vtk object!\n");
@@ -169,7 +169,7 @@ visualize (const ModelLibrary::HashTable& hash_table)
   vis.setBackgroundColor (0.1, 0.1, 0.1);
 
   const ModelLibrary::HashTableCell* cells = hash_table.getVoxels ();
-  size_t max_num_entries = 0;
+  std::size_t max_num_entries = 0;
   int id3[3], num_cells = hash_table.getNumberOfVoxels ();
   float half_side, b[6], cell_center[3], spacing = hash_table.getVoxelSpacing ()[0];
   char cube_id[128];
@@ -179,7 +179,7 @@ visualize (const ModelLibrary::HashTable& hash_table)
   {
     if (!cells->empty ()) // That's the number of models in the cell (it's maximum one, since we loaded only one model)
     {
-      size_t num_entries = (*cells->begin ()).second.size(); // That's the number of entries in the current cell for the model we loaded
+      std::size_t num_entries = (*cells->begin ()).second.size(); // That's the number of entries in the current cell for the model we loaded
       // Get the max number of entries
       if ( num_entries > max_num_entries )
         max_num_entries = num_entries;
@@ -190,7 +190,7 @@ visualize (const ModelLibrary::HashTable& hash_table)
   // right scale factor for the spheres
   float s = (0.5f*spacing)/static_cast<float> (max_num_entries);
 
-  cout << "s = " << s << ", max_num_entries = " << max_num_entries << endl;
+  std::cout << "s = " << s << ", max_num_entries = " << max_num_entries << std::endl;
 
   // Now, render a sphere with the right radius at the right place
   cells = hash_table.getVoxels ();

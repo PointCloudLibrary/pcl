@@ -71,9 +71,9 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
   bool key_found = false;
 
   // Iterate over all the points in the neighborhood
-  for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
+  for (std::size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
-    for (size_t j_idx = 0; j_idx < i_idx; ++j_idx)
+    for (std::size_t j_idx = 0; j_idx < i_idx; ++j_idx)
     {
       // If the 3D points are invalid, don't bother estimating, just continue
       if (!isFinite (cloud.points[indices[i_idx]]) || !isFinite (cloud.points[indices[j_idx]]))
@@ -118,15 +118,15 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
           continue;
 
       // Normalize the f1, f2, f3 features and push them in the histogram
-      f_index_[0] = static_cast<int> (floor (nr_split * ((pfh_tuple_[0] + M_PI) * d_pi_)));
+      f_index_[0] = static_cast<int> (std::floor (nr_split * ((pfh_tuple_[0] + M_PI) * d_pi_)));
       if (f_index_[0] < 0)         f_index_[0] = 0;
       if (f_index_[0] >= nr_split) f_index_[0] = nr_split - 1;
 
-      f_index_[1] = static_cast<int> (floor (nr_split * ((pfh_tuple_[1] + 1.0) * 0.5)));
+      f_index_[1] = static_cast<int> (std::floor (nr_split * ((pfh_tuple_[1] + 1.0) * 0.5)));
       if (f_index_[1] < 0)         f_index_[1] = 0;
       if (f_index_[1] >= nr_split) f_index_[1] = nr_split - 1;
 
-      f_index_[2] = static_cast<int> (floor (nr_split * ((pfh_tuple_[2] + 1.0) * 0.5)));
+      f_index_[2] = static_cast<int> (std::floor (nr_split * ((pfh_tuple_[2] + 1.0) * 0.5)));
       if (f_index_[2] < 0)         f_index_[2] = 0;
       if (f_index_[2] >= nr_split) f_index_[2] = nr_split - 1;
 
@@ -180,7 +180,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   if (input_->is_dense)
   {
     // Iterating over the entire index vector
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
     {
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
@@ -202,7 +202,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   else
   {
     // Iterating over the entire index vector
-    for (size_t idx = 0; idx < indices_->size (); ++idx)
+    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
     {
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)

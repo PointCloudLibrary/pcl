@@ -103,9 +103,9 @@
      std::vector<pcl::PointIndices> boundary_indices;
      mps.segmentAndRefine (regions, model_coefficients, inlier_indices, labels, label_indices, boundary_indices);
      
-     auto plane_labels = boost::make_shared<std::set<uint32_t> > ();
-     for (size_t i = 0; i < label_indices.size (); ++i)
-      if (label_indices[i].indices.size () > (size_t) min_plane_size)
+     auto plane_labels = boost::make_shared<std::set<std::uint32_t> > ();
+     for (std::size_t i = 0; i < label_indices.size (); ++i)
+      if (label_indices[i].indices.size () > (std::size_t) min_plane_size)
         plane_labels->insert (i);
      typename PointCloud<PointT>::CloudVectorType clusters;
      
@@ -122,9 +122,9 @@
      euclidean_segmentation.segment (euclidean_labels, euclidean_label_indices);
      
      pcl::IndicesPtr extracted_indices (new std::vector<int> ());
-     for (size_t i = 0; i < euclidean_label_indices.size (); i++)
+     for (std::size_t i = 0; i < euclidean_label_indices.size (); i++)
      {
-       if (euclidean_label_indices[i].indices.size () >= (size_t) min_cluster_size)
+       if (euclidean_label_indices[i].indices.size () >= (std::size_t) min_cluster_size)
        {
          typename PointCloud<PointT>::Ptr cluster (new PointCloud<PointT>);
          pcl::copyPointCloud (*input_cloud,euclidean_label_indices[i].indices,*cluster);
@@ -137,9 +137,9 @@
        }    
      }
      
-     for (size_t i = 0; i < label_indices.size (); i++)
+     for (std::size_t i = 0; i < label_indices.size (); i++)
      {
-       if (label_indices[i].indices.size () >= (size_t) min_plane_size)
+       if (label_indices[i].indices.size () >= (std::size_t) min_plane_size)
        {
          typename PointCloud<PointT>::Ptr plane (new PointCloud<PointT>);
          pcl::copyPointCloud (*input_cloud,label_indices[i].indices,*plane);

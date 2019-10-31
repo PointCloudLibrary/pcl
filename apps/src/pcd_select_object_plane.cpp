@@ -129,13 +129,13 @@ class ObjectSelection
     keyboard_callback (const visualization::KeyboardEvent&, void*)
     {
       //if (event.getKeyCode())
-      //  cout << "the key \'" << event.getKeyCode() << "\' (" << event.getKeyCode() << ") was";
+      //  std::cout << "the key \'" << event.getKeyCode() << "\' (" << event.getKeyCode() << ") was";
       //else
-      //  cout << "the special key \'" << event.getKeySym() << "\' was";
+      //  std::cout << "the special key \'" << event.getKeySym() << "\' was";
       //if (event.keyDown())
-      //  cout << " pressed" << endl;
+      //  std::cout << " pressed" << std::endl;
       //else
-      //  cout << " released" << endl;
+      //  std::cout << " released" << std::endl;
     }
     
     /////////////////////////////////////////////////////////////////////////
@@ -144,7 +144,7 @@ class ObjectSelection
     {
       if (mouse_event.getType() == visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == visualization::MouseEvent::LeftButton)
       {
-        cout << "left button pressed @ " << mouse_event.getX () << " , " << mouse_event.getY () << endl;
+        std::cout << "left button pressed @ " << mouse_event.getX () << " , " << mouse_event.getY () << std::endl;
       }
     }
 
@@ -241,7 +241,7 @@ class ObjectSelection
         if (cluster_found)
           break;
         // Check if the point that we picked belongs to it
-        for (size_t j = 0; j < euclidean_label_index.indices.size (); ++j)
+        for (std::size_t j = 0; j < euclidean_label_index.indices.size (); ++j)
         {
           if (picked_idx != euclidean_label_index.indices[j])
             continue;
@@ -341,10 +341,10 @@ class ObjectSelection
       }
       print_highlight ("Number of planar regions detected: %lu for a cloud of %lu points\n", regions.size (), cloud_->size ());
 
-      double max_dist = numeric_limits<double>::max ();
+      double max_dist = std::numeric_limits<double>::max ();
       // Compute the distances from all the planar regions to the picked point, and select the closest region
       int idx = -1;
-      for (size_t i = 0; i < regions.size (); ++i)
+      for (std::size_t i = 0; i < regions.size (); ++i)
       {
         double dist = pointToPlaneDistance (picked_point, regions[i].getCoefficients ()); 
         if (dist < max_dist)
@@ -438,7 +438,7 @@ class ObjectSelection
       if (image_viewer_)
       {
         // Get the [u, v] in pixel coordinates for the ImageViewer. Remember that 0,0 is bottom left.
-        uint32_t width  = search_->getInputCloud ()->width,
+        std::uint32_t width  = search_->getInputCloud ()->width,
                  height = search_->getInputCloud ()->height;
         int v = height - indices[0] / width,
             u = indices[0] % width;
@@ -529,7 +529,7 @@ class ObjectSelection
         // If the dataset is organized, and has RGB data, create an image viewer
         std::vector<pcl::PCLPointField> fields;
         int rgba_index = -1;
-        rgba_index = getFieldIndex (*cloud_, "rgba", fields);
+        rgba_index = getFieldIndex<PointT> ("rgba", fields);
        
         if (rgba_index >= 0)
         {
@@ -543,7 +543,7 @@ class ObjectSelection
           int poff = fields[rgba_index].offset;
           // BGR to RGB
           rgb_data_ = new unsigned char [cloud_->width * cloud_->height * 3];
-          for (uint32_t i = 0; i < cloud_->width * cloud_->height; ++i)
+          for (std::uint32_t i = 0; i < cloud_->width * cloud_->height; ++i)
           {
             RGB rgb;
             memcpy (&rgb, reinterpret_cast<unsigned char*> (&cloud_->points[i]) + poff, sizeof (rgb));

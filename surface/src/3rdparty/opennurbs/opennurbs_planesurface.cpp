@@ -22,7 +22,7 @@ ON_OBJECT_IMPLEMENT(ON_ClippingPlaneSurface,ON_PlaneSurface,"DBC5A584-CE3F-4170-
 ON_PlaneSurface::ON_PlaneSurface()
 {}
 
-ON_PlaneSurface::ON_PlaneSurface( const ON_PlaneSurface& src )
+ON_PlaneSurface::ON_PlaneSurface( const ON_PlaneSurface& src ) : ON_Surface(src)
 {
   *this = src;
 }
@@ -76,7 +76,7 @@ ON_PlaneSurface::~ON_PlaneSurface()
 {}
 
 ON_BOOL32
-ON_PlaneSurface::IsValid( ON_TextLog* text_log ) const
+ON_PlaneSurface::IsValid( ON_TextLog* ) const
 {
   return (   m_plane.IsValid() 
            && m_domain[0].IsIncreasing() && m_domain[1].IsIncreasing() 
@@ -198,7 +198,7 @@ ON_Interval ON_PlaneSurface::Domain( int dir ) const
   return dir ? m_domain[1] : m_domain[0];
 }
 
-int ON_PlaneSurface::SpanCount( int dir ) const
+int ON_PlaneSurface::SpanCount( int ) const
 {
   return 1;
 }
@@ -224,7 +224,7 @@ ON_BOOL32 ON_PlaneSurface::GetSpanVector( int dir, double* s ) const
   return d.IsIncreasing();
 }
 
-int ON_PlaneSurface::Degree( int dir ) const
+int ON_PlaneSurface::Degree( int ) const
 {
   return 1;
 }
@@ -241,7 +241,7 @@ ON_PlaneSurface::GetParameterTolerance(
   return ON_GetParameterTolerance( m_domain[dir][0], m_domain[dir][1], t, tminus, tplus );
 }
 
-ON_BOOL32 ON_PlaneSurface::IsPlanar( ON_Plane* plane, double tolerance ) const
+ON_BOOL32 ON_PlaneSurface::IsPlanar( ON_Plane* plane, double ) const
 {
   if ( plane )
     *plane = this->m_plane;
@@ -249,19 +249,19 @@ ON_BOOL32 ON_PlaneSurface::IsPlanar( ON_Plane* plane, double tolerance ) const
 }
 
 ON_BOOL32 
-ON_PlaneSurface::IsClosed( int dir ) const
+ON_PlaneSurface::IsClosed( int ) const
 {
   return false;
 }
 
 ON_BOOL32 
-ON_PlaneSurface::IsPeriodic( int dir ) const
+ON_PlaneSurface::IsPeriodic( int ) const
 {
   return false;
 }
 
 ON_BOOL32 
-ON_PlaneSurface::IsSingular( int side ) const
+ON_PlaneSurface::IsSingular( int ) const
 {
   return false;
 }
@@ -298,15 +298,15 @@ ON_PlaneSurface::Reverse( int dir )
 }
 
 bool ON_PlaneSurface::IsContinuous(
-    ON::continuity desired_continuity,
-    double s, 
-    double t, 
-    int* hint, // default = NULL,
-    double point_tolerance, // default=ON_ZERO_TOLERANCE
-    double d1_tolerance, // default==ON_ZERO_TOLERANCE
-    double d2_tolerance, // default==ON_ZERO_TOLERANCE
-    double cos_angle_tolerance, // default==ON_DEFAULT_ANGLE_TOLERANCE_COSINE
-    double curvature_tolerance  // default==ON_SQRT_EPSILON
+    ON::continuity,
+    double,
+    double,
+    int*,   // default = NULL,
+    double, // default=ON_ZERO_TOLERANCE
+    double, // default==ON_ZERO_TOLERANCE
+    double, // default==ON_ZERO_TOLERANCE
+    double, // default==ON_DEFAULT_ANGLE_TOLERANCE_COSINE
+    double  // default==ON_SQRT_EPSILON
     ) const
 {
   return true;
@@ -335,11 +335,11 @@ ON_PlaneSurface::Evaluate( // returns false if unable to evaluate
        int der_count,  // number of derivatives (>=0)
        int v_stride,   // v[] array stride (>=Dimension())
        double* v,      // v[] array of length stride*(ndir+1)
-       int side,       // optional - determines which side to evaluate from
+       int     ,       // optional - determines which side to evaluate from
                        //         0 = default
                        //      <  0 to evaluate from below, 
                        //      >  0 to evaluate from above
-       int* hint       // optional - evaluation hint (int) used to speed
+       int*            // optional - evaluation hint (int) used to speed
                        //            repeated evaluations
        ) const
 {
@@ -583,7 +583,7 @@ bool ON_PlaneSurface::GetClosestPoint( const ON_3dPoint& test_point,
 // true if returned if the search is successful.  false is returned if
 // the search fails.
 ON_BOOL32 ON_PlaneSurface::GetLocalClosestPoint( const ON_3dPoint& test_point, // test_point
-        double s0, double t0,     // seed_parameters
+        double, double,     // seed_parameters
         double* s,double* t,   // parameters of local closest point returned here
         const ON_Interval* sdomain, // first parameter sub_domain
         const ON_Interval* tdomain  // second parameter sub_domain
@@ -596,7 +596,7 @@ ON_BOOL32 ON_PlaneSurface::GetLocalClosestPoint( const ON_3dPoint& test_point, /
 
 ON_Surface* ON_PlaneSurface::Offset(
       double offset_distance, 
-      double tolerance, 
+      double,
       double* max_deviation
       ) const
 {
@@ -626,7 +626,7 @@ ON_PlaneSurface::GetNurbForm( // returns 0: unable to create NURBS representatio
                    //            parameterization may not match to the 
                    //            desired accuracy.
         ON_NurbsSurface& nurbs,
-        double tolerance
+        double
         ) const
 {
   ON_BOOL32 rc = IsValid();

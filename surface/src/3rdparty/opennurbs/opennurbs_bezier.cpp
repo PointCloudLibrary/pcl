@@ -15,6 +15,7 @@
 */
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
+#include <pcl/pcl_macros.h>
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -305,11 +306,11 @@ void ON_PolynomialSurface::Destroy()
 }
 
 ON_BOOL32 ON_PolynomialSurface::Evaluate( // returns false if unable to evaluate
-       double s, 
-       double t,           // evaluation parameter
-       int der_count,      // number of derivatives (>=0)
-       int v_stride,       // array stride (>=Dimension())
-       double* v           // array of length stride*(ndir+1)*(ndir+2)/2
+       double,
+       double,           // evaluation parameter
+       int,              // number of derivatives (>=0)
+       int,       // array stride (>=Dimension())
+       double*       // array of length stride*(ndir+1)*(ndir+2)/2
        ) const
 {
   ON_ERROR("TODO: - finish ON_PolynomialSurface::Evaluate()\n");
@@ -1374,7 +1375,7 @@ bool ON_BezierCurve::GetCV( int i, ON::point_style style, double* Point ) const
   switch(style) {
   case ON::euclidean_rational:
     Point[dim] = w;
-    // no break here
+    PCL_FALLTHROUGH
   case ON::not_rational:
     if ( w == 0.0 )
       return false;
@@ -2502,7 +2503,7 @@ bool ON_BezierSurface::GetCV( int i, int j, ON::point_style style, double* Point
   switch(style) {
   case ON::euclidean_rational:
     Point[dim] = w;
-    // no break here
+    PCL_FALLTHROUGH
   case ON::not_rational:
     if ( w == 0.0 )
       return false;

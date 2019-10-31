@@ -94,11 +94,11 @@ pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
   bool translation_is_zero = (translation_ == Eigen::Vector3f::Zero ());
   bool inverse_transform_matrix_is_identity = inverse_transform.matrix ().isIdentity ();
 
-  for (size_t index = 0; index < indices_->size (); ++index)
+  for (std::size_t index = 0; index < indices_->size (); ++index)
   {
     if (!input_->is_dense)
       // Check if the point is invalid
-      if (!isFinite (input_->points[index]))
+      if (!isFinite (input_->points[(*indices_)[index]]))
         continue;
 
     // Get local point
@@ -126,13 +126,13 @@ pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
       if (negative_)
         indices[indices_count++] = (*indices_)[index];
       else if (extract_removed_indices_)
-        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
+        (*removed_indices_)[removed_indices_count++] = static_cast<int> ((*indices_)[index]);
     }
     // If inside the cropbox
     else
     {
       if (negative_ && extract_removed_indices_)
-        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
+        (*removed_indices_)[removed_indices_count++] = static_cast<int> ((*indices_)[index]);
       else if (!negative_) 
         indices[indices_count++] = (*indices_)[index];
     }

@@ -65,7 +65,7 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
     // Cloud dimensions may have already been set from obj_info fields
     if (cloud_->width == 0 || cloud_->height == 0)
     {
-      cloud_->width = static_cast<uint32_t> (count);
+      cloud_->width = static_cast<std::uint32_t> (count);
       cloud_->height = 1;
     }
     cloud_->is_dense = true;
@@ -101,24 +101,24 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
 bool
 pcl::PLYReader::endHeaderCallback ()
 {
-  cloud_->data.resize (static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height);
+  cloud_->data.resize (static_cast<std::size_t>(cloud_->point_step) * cloud_->width * cloud_->height);
   return (true);
 }
 
 template<typename Scalar> void
-pcl::PLYReader::appendScalarProperty (const std::string& name, const size_t& size)
+pcl::PLYReader::appendScalarProperty (const std::string& name, const std::size_t& size)
 {
   cloud_->fields.emplace_back();
   ::pcl::PCLPointField &current_field = cloud_->fields.back ();
   current_field.name = name;
   current_field.offset = cloud_->point_step;
   current_field.datatype = pcl::traits::asEnum<Scalar>::value;
-  current_field.count = static_cast<uint32_t> (size);
-  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (pcl::traits::asEnum<Scalar>::value) * size);
+  current_field.count = static_cast<std::uint32_t> (size);
+  cloud_->point_step += static_cast<std::uint32_t> (pcl::getFieldSize (pcl::traits::asEnum<Scalar>::value) * size);
 }
 
 void
-pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& new_name, uint8_t new_datatype)
+pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& new_name, std::uint8_t new_datatype)
 {
   auto finder = cloud_->fields.rbegin ();
   for (; finder != cloud_->fields.rend (); ++finder)
@@ -337,10 +337,10 @@ namespace pcl
       current_field.offset = cloud_->point_step;
       current_field.datatype = pcl::traits::asEnum<pcl::io::ply::int32>::value;
       current_field.count = 1u; // value will be updated once first vertex is read
-      if (sizeof (pcl::io::ply::int32) + cloud_->point_step < std::numeric_limits<uint32_t>::max ())
-          cloud_->point_step += static_cast<uint32_t> (sizeof (pcl::io::ply::int32));
+      if (sizeof (pcl::io::ply::int32) + cloud_->point_step < std::numeric_limits<std::uint32_t>::max ())
+          cloud_->point_step += static_cast<std::uint32_t> (sizeof (pcl::io::ply::int32));
       else
-        cloud_->point_step = static_cast<uint32_t> (std::numeric_limits<uint32_t>::max ());
+        cloud_->point_step = static_cast<std::uint32_t> (std::numeric_limits<std::uint32_t>::max ());
       do_resize_ = true;
       return std::tuple<std::function<void (pcl::io::ply::uint8)>, std::function<void (pcl::io::ply::int32)>, std::function<void ()> > (
         std::bind (&pcl::PLYReader::vertexListPropertyBeginCallback<pcl::io::ply::uint8>, this, property_name, std::placeholders::_1),
@@ -363,10 +363,10 @@ namespace pcl
       current_field.offset = cloud_->point_step;
       current_field.datatype = pcl::traits::asEnum<ContentType>::value;
       current_field.count = 1u; // value will be updated once first vertex is read
-      if (sizeof (ContentType) + cloud_->point_step < std::numeric_limits<uint32_t>::max ())
-        cloud_->point_step += static_cast<uint32_t> (sizeof (ContentType));
+      if (sizeof (ContentType) + cloud_->point_step < std::numeric_limits<std::uint32_t>::max ())
+        cloud_->point_step += static_cast<std::uint32_t> (sizeof (ContentType));
       else
-        cloud_->point_step = static_cast<uint32_t> (std::numeric_limits<uint32_t>::max ());
+        cloud_->point_step = static_cast<std::uint32_t> (std::numeric_limits<std::uint32_t>::max ());
       do_resize_ = true;
       return std::tuple<std::function<void (SizeType)>, std::function<void (ContentType)>, std::function<void ()> > (
         std::bind (&pcl::PLYReader::vertexListPropertyBeginCallback<SizeType>, this, property_name, std::placeholders::_1),
@@ -383,17 +383,17 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply
 {
   if ((color_name == "red") || (color_name == "diffuse_red"))
   {
-    r_ = int32_t (color);
+    r_ = std::int32_t (color);
     rgb_offset_before_ = vertex_offset_before_;
   }
   if ((color_name == "green") || (color_name == "diffuse_green"))
   {
-    g_ = int32_t (color);
+    g_ = std::int32_t (color);
   }
   if ((color_name == "blue") || (color_name == "diffuse_blue"))
   {
-    b_ = int32_t (color);
-    int32_t rgb = r_ << 16 | g_ << 8 | b_;
+    b_ = std::int32_t (color);
+    std::int32_t rgb = r_ << 16 | g_ << 8 | b_;
     memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_],
             &rgb,
             sizeof (pcl::io::ply::float32));
@@ -404,7 +404,7 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply
 void
 pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
 {
-  a_ = uint32_t (alpha);
+  a_ = std::uint32_t (alpha);
   // get anscient rgb value and store it in rgba
   memcpy (&rgba_, 
           &cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_], 
@@ -414,7 +414,7 @@ pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
   // put rgba back
   memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_], 
           &rgba_, 
-          sizeof (uint32_t));
+          sizeof (std::uint32_t));
 }
 
 void
@@ -441,7 +441,7 @@ pcl::PLYReader::vertexEndCallback ()
   {
     cloud_->point_step = vertex_offset_before_;
     cloud_->row_step = cloud_->point_step * cloud_->width;
-    cloud_->data.resize (static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height);
+    cloud_->data.resize (static_cast<std::size_t>(cloud_->point_step) * cloud_->width * cloud_->height);
   }
   ++vertex_count_;
 }
@@ -602,14 +602,14 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   }
 
   // a range_grid element was found ?
-  size_t r_size;
+  std::size_t r_size;
   if ((r_size  = (*range_grid_).size ()) > 0 && r_size != vertex_count_)
   {
     //cloud.header = cloud_->header;
-    std::vector<pcl::uint8_t> data ((*range_grid_).size () * cloud.point_step);
+    std::vector<std::uint8_t> data ((*range_grid_).size () * cloud.point_step);
     const static float f_nan = std::numeric_limits <float>::quiet_NaN ();
     const static double d_nan = std::numeric_limits <double>::quiet_NaN ();
-    for (size_t r = 0; r < r_size; ++r)
+    for (std::size_t r = 0; r < r_size; ++r)
     {
       if ((*range_grid_)[r].empty ())
       {
@@ -669,14 +669,14 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
   }
 
   // a range_grid element was found ?
-  size_t r_size;
+  std::size_t r_size;
   if ((r_size  = (*range_grid_).size ()) > 0 && r_size != vertex_count_)
   {
     //cloud.header = cloud_->header;
-    std::vector<pcl::uint8_t> data ((*range_grid_).size () * mesh.cloud.point_step);
+    std::vector<std::uint8_t> data ((*range_grid_).size () * mesh.cloud.point_step);
     const static float f_nan = std::numeric_limits <float>::quiet_NaN ();
     const static double d_nan = std::numeric_limits <double>::quiet_NaN ();
-    for (size_t r = 0; r < r_size; ++r)
+    for (std::size_t r = 0; r < r_size; ++r)
     {
       if ((*range_grid_)[r].empty ())
       {
@@ -914,7 +914,7 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
   // Iterate through the points
   for (int i = 0; i < nr_points; ++i)
   {
-    for (size_t d = 0; d < cloud.fields.size (); ++d)
+    for (std::size_t d = 0; d < cloud.fields.size (); ++d)
     {
       int count = cloud.fields[d].count;
       if (count == 0)
@@ -1056,7 +1056,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
   {
     std::ostringstream line;
     bool is_valid_line = true;
-    for (size_t d = 0; d < cloud.fields.size (); ++d)
+    for (std::size_t d = 0; d < cloud.fields.size (); ++d)
     {
       int count = cloud.fields[d].count;
       if (count == 0)
@@ -1236,7 +1236,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
     // Otherwise, look at their x-coordinates to determine if points are valid
     else
     {
-      for (size_t i=0; i < nr_points; ++i)
+      for (std::size_t i=0; i < nr_points; ++i)
       {
         float value;
         memcpy(&value, &cloud.data[i * point_size + cloud.fields[xfield].offset], sizeof(float));
@@ -1273,8 +1273,8 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
     if (doRangeGrid && rangegrid[i] < 0)
       continue;
 
-    size_t total = 0;
-    for (size_t d = 0; d < cloud.fields.size (); ++d)
+    std::size_t total = 0;
+    for (std::size_t d = 0; d < cloud.fields.size (); ++d)
     {
       int count = cloud.fields[d].count;
       if (count == 0)
@@ -1439,7 +1439,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
   else if (doRangeGrid)
   {
     // Write out range_grid
-    for (size_t i=0; i < nr_points; ++i)
+    for (std::size_t i=0; i < nr_points; ++i)
     {
       pcl::io::ply::uint8 listlen;
 
@@ -1482,11 +1482,11 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
   }
 
   // number of points
-  size_t nr_points  = mesh.cloud.width * mesh.cloud.height;
-  size_t point_size = mesh.cloud.data.size () / nr_points;
+  std::size_t nr_points  = mesh.cloud.width * mesh.cloud.height;
+  std::size_t point_size = mesh.cloud.data.size () / nr_points;
 
   // number of faces
-  size_t nr_faces = mesh.polygons.size ();
+  std::size_t nr_faces = mesh.polygons.size ();
 
   // Write header
   fs << "ply";
@@ -1535,10 +1535,10 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
   fs << "\nend_header\n";
 
   // Write down vertices
-  for (size_t i = 0; i < nr_points; ++i)
+  for (std::size_t i = 0; i < nr_points; ++i)
   {
     int xyz = 0;
-    for (size_t d = 0; d < mesh.cloud.fields.size (); ++d)
+    for (std::size_t d = 0; d < mesh.cloud.fields.size (); ++d)
     {
       int c = 0;
 
@@ -1567,7 +1567,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
                (mesh.cloud.fields[d].name == "rgba"))
       {
         pcl::RGB color;
-        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (uint32_t)], sizeof (RGB));
+        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (std::uint32_t)], sizeof (RGB));
         fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " " << int (color.a);
       }
       else if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
@@ -1597,10 +1597,10 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
   }
 
   // Write down faces
-  for (size_t i = 0; i < nr_faces; i++)
+  for (std::size_t i = 0; i < nr_faces; i++)
   {
     fs << mesh.polygons[i].vertices.size () << " ";
-    for (size_t j = 0; j < mesh.polygons[i].vertices.size () - 1; ++j)
+    for (std::size_t j = 0; j < mesh.polygons[i].vertices.size () - 1; ++j)
       fs << mesh.polygons[i].vertices[j] << " ";
     fs << mesh.polygons[i].vertices.back() << '\n';
   }
@@ -1629,11 +1629,11 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
   }
 
   // number of points
-  size_t nr_points  = mesh.cloud.width * mesh.cloud.height;
-  size_t point_size = mesh.cloud.data.size () / nr_points;
+  std::size_t nr_points  = mesh.cloud.width * mesh.cloud.height;
+  std::size_t point_size = mesh.cloud.data.size () / nr_points;
 
   // number of faces
-  size_t nr_faces = mesh.polygons.size ();
+  std::size_t nr_faces = mesh.polygons.size ();
 
   // Write header
   fs << "ply";
@@ -1692,10 +1692,10 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
   }
 
   // Write down vertices
-  for (size_t i = 0; i < nr_points; ++i)
+  for (std::size_t i = 0; i < nr_points; ++i)
   {
     int xyz = 0;
-    for (size_t d = 0; d < mesh.cloud.fields.size (); ++d)
+    for (std::size_t d = 0; d < mesh.cloud.fields.size (); ++d)
     {
       int c = 0;
 
@@ -1726,7 +1726,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
                (mesh.cloud.fields[d].name == "rgba"))
       {
         pcl::RGB color;
-        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (uint32_t)], sizeof (RGB));
+        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (std::uint32_t)], sizeof (RGB));
         fpout.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
@@ -1757,7 +1757,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
   }
 
   // Write down faces
-  for (size_t i = 0; i < nr_faces; i++)
+  for (std::size_t i = 0; i < nr_faces; i++)
   {
     unsigned char value = static_cast<unsigned char> (mesh.polygons[i].vertices.size ());
     fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned char));

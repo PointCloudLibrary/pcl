@@ -40,7 +40,7 @@
 
 #include <pcl/console/print.h>
 
-pcl::FeatureHistogram::FeatureHistogram (size_t const number_of_bins,
+pcl::FeatureHistogram::FeatureHistogram (std::size_t const number_of_bins,
     const float min, const float max) : 
     histogram_ (number_of_bins, 0)
 {
@@ -83,13 +83,13 @@ pcl::FeatureHistogram::getThresholdMax () const
   return (threshold_max_);
 }
 
-size_t
+std::size_t
 pcl::FeatureHistogram::getNumberOfElements () const
 {
   return (number_of_elements_);
 }
 
-size_t
+std::size_t
 pcl::FeatureHistogram::getNumberOfBins () const
 {
   return (number_of_bins_);
@@ -105,7 +105,7 @@ pcl::FeatureHistogram::addValue (float value)
     ++number_of_elements_;
 
     // Increase the bin.
-    size_t bin_number = static_cast<size_t> ((value - threshold_min_) / step_);
+    std::size_t bin_number = static_cast<std::size_t> ((value - threshold_min_) / step_);
     ++histogram_[bin_number];
   }
 }
@@ -119,10 +119,10 @@ pcl::FeatureHistogram::getMeanValue ()
     return (0.0f);
   }
   // Smoothe the histogram and find a bin with a max smoothed value.
-  size_t max_idx = 0;
+  std::size_t max_idx = 0;
   float max = 0.50f * histogram_[0] + 
               0.25f * histogram_[1] * 2.0f;
-  for (size_t bin = 1; bin < histogram_.size () - 1; ++bin)
+  for (std::size_t bin = 1; bin < histogram_.size () - 1; ++bin)
   {
     float smothed_value = 0.25f * histogram_[bin - 1] + 
                           0.50f * histogram_[bin] + 
@@ -159,7 +159,7 @@ pcl::FeatureHistogram::getVariance (float mean)
   // Variable to accumulate the terms of variance.
   float variances_sum = 0;
 
-  for (size_t bin = 0; bin < number_of_bins_; ++bin)
+  for (std::size_t bin = 0; bin < number_of_bins_; ++bin)
   {
     if (histogram_[bin] > 0)
     {

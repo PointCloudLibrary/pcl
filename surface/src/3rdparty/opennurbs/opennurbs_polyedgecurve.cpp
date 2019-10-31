@@ -231,12 +231,12 @@ ON_PolyEdgeCurve::~ON_PolyEdgeCurve()
 {
 }
 
-ON_BOOL32 ON_PolyEdgeCurve::SetStartPoint( ON_3dPoint start_point )
+ON_BOOL32 ON_PolyEdgeCurve::SetStartPoint( ON_3dPoint )
 {
   return false; // cannot change edges
 }
 
-ON_BOOL32 ON_PolyEdgeCurve::SetEndPoint( ON_3dPoint end_point )
+ON_BOOL32 ON_PolyEdgeCurve::SetEndPoint( ON_3dPoint )
 {
   return false; // cannot change edges
 }

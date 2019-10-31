@@ -91,7 +91,7 @@ namespace pcl
         mutable std::mutex fps_mutex_;
 
         /// Temporary buffer to store color data
-        std::vector<uint8_t> color_data_;
+        std::vector<std::uint8_t> color_data_;
 
         std::shared_ptr<pcl::io::Buffer<float> > depth_buffer_;
 
@@ -120,7 +120,7 @@ namespace pcl
         setConfidenceThreshold (int threshold);
 
         void
-        enableTemporalFiltering (DepthSenseGrabber::TemporalFilteringType type, size_t window_size);
+        enableTemporalFiltering (DepthSenseGrabber::TemporalFilteringType type, std::size_t window_size);
 
         void
         setCameraParameters (const DepthSense::StereoCameraParameters& parameters);

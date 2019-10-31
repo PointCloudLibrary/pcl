@@ -80,12 +80,12 @@ namespace pcl
     */
   struct Intensity;
 
-  /** \brief Members: intensity (uint8_t)
+  /** \brief Members: intensity (std::uint8_t)
     * \ingroup common
     */
   struct Intensity8u;
 
-  /** \brief Members: intensity (uint32_t)
+  /** \brief Members: intensity (std::uint32_t)
     * \ingroup common
     */
   struct Intensity32u;
@@ -100,12 +100,12 @@ namespace pcl
     */
   struct PointXYZL;
 
-  /** \brief Members: uint32_t label
+  /** \brief Members: std::uint32_t label
     * \ingroup common
     */
   struct Label;
 
-  /** \brief Members: float x, y, z; uint32_t rgba
+  /** \brief Members: float x, y, z; std::uint32_t rgba
     * \ingroup common
     */
   struct PointXYZRGBA;
@@ -115,7 +115,7 @@ namespace pcl
     */
   struct PointXYZRGB;
 
-  /** \brief Members: float x, y, z, rgb, uint32_t label
+  /** \brief Members: float x, y, z, rgb, std::uint32_t label
     * \ingroup common
     */
   struct PointXYZRGBL;
@@ -190,7 +190,7 @@ namespace pcl
     */
   struct PrincipalRadiiRSD;
 
-  /** \brief Members: uint8_t boundary_point
+  /** \brief Members: std::uint8_t boundary_point
     * \ingroup common
     */
   struct Boundary;
@@ -295,7 +295,7 @@ namespace pcl
     */
   struct GFPFHSignature16;
 
-  /** \brief Members: float scale; float orientation; uint8_t descriptor[64]
+  /** \brief Members: float scale; float orientation; std::uint8_t descriptor[64]
     * \ingroup common
     */
   struct BRISKSignature512;
@@ -363,7 +363,7 @@ namespace pcl
 // ==============================
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_RGB,
-    (uint32_t, rgba, rgba)
+    (std::uint32_t, rgba, rgba)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::RGB, pcl::_RGB)
 
@@ -373,12 +373,12 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_Intensity,
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::Intensity, pcl::_Intensity)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_Intensity8u,
-    (uint8_t, intensity, intensity)
+    (std::uint8_t, intensity, intensity)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::Intensity8u, pcl::_Intensity8u)
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_Intensity32u,
-    (uint32_t, intensity, intensity)
+    (std::uint32_t, intensity, intensity)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::Intensity32u, pcl::_Intensity32u)
 
@@ -393,7 +393,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZRGBA,
     (float, x, x)
     (float, y, y)
     (float, z, z)
-    (uint32_t, rgba, rgba)
+    (std::uint32_t, rgba, rgba)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZRGBA, pcl::_PointXYZRGBA)
 
@@ -409,8 +409,8 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointXYZRGBL,
     (float, x, x)
     (float, y, y)
     (float, z, z)
-    (uint32_t, rgba, rgba)
-    (uint32_t, label, label)
+    (std::uint32_t, rgba, rgba)
+    (std::uint32_t, label, label)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZRGBL, pcl::_PointXYZRGBL)
 
@@ -453,11 +453,11 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZL,
     (float, x, x)
     (float, y, y)
     (float, z, z)
-    (uint32_t, label, label)
+    (std::uint32_t, label, label)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Label,
-    (uint32_t, label, label)
+    (std::uint32_t, label, label)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_Normal,
@@ -509,7 +509,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PointXYZLNormal,
     (float, x, x)
     (float, y, y)
     (float, z, z)
-    (uint32_t, label, label)
+    (std::uint32_t, label, label)
     (float, normal_x, normal_x)
     (float, normal_y, normal_y)
     (float, normal_z, normal_z)
@@ -544,7 +544,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PrincipalRadiiRSD,
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Boundary,
-    (uint8_t, boundary_point, boundary_point)
+    (std::uint8_t, boundary_point, boundary_point)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PrincipalCurvatures,
@@ -682,7 +682,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::PointSurfel,
     (float, normal_x, normal_x)
     (float, normal_y, normal_y)
     (float, normal_z, normal_z)
-    (uint32_t, rgba, rgba)
+    (std::uint32_t, rgba, rgba)
     (float, radius, radius)
     (float, confidence, confidence)
     (float, curvature, curvature)
@@ -790,12 +790,43 @@ namespace pcl
                                                             has_field<PointT, boost::mpl::_2> > >::type
     { };
 
+    /** \brief Traits defined for ease of use with fields already registered before
+     *
+     * has_<fields to be detected>: struct with `value` datamember defined at compiletime
+     * has_<fields to be detected>_v: constexpr boolean
+     * Has<Fields to be detected>: concept modelling name alias for `enable_if`
+     */
+
+    /** Metafunction to check if a given point type has x and y fields. */
+    template <typename PointT>
+    struct has_xy : has_all_fields<PointT, boost::mpl::vector<pcl::fields::x,
+                                                              pcl::fields::y> >
+    { };
+
+    template <typename PointT>
+    constexpr auto has_xy_v = has_xy<PointT>::value;
+
+    template <typename PointT>
+    using HasXY = std::enable_if_t<has_xy_v<PointT>, bool>;
+
+    template <typename PointT>
+    using HasNoXY = std::enable_if_t<!has_xy_v<PointT>, bool>;
+
     /** Metafunction to check if a given point type has x, y, and z fields. */
     template <typename PointT>
     struct has_xyz : has_all_fields<PointT, boost::mpl::vector<pcl::fields::x,
                                                                pcl::fields::y,
                                                                pcl::fields::z> >
     { };
+
+    template <typename PointT>
+    constexpr auto has_xyz_v = has_xyz<PointT>::value;
+
+    template <typename PointT>
+    using HasXYZ = std::enable_if_t<has_xyz_v<PointT>, bool>;
+
+    template <typename PointT>
+    using HasNoXYZ = std::enable_if_t<!has_xyz_v<PointT>, bool>;
 
     /** Metafunction to check if a given point type has normal_x, normal_y, and
       * normal_z fields. */
@@ -805,15 +836,42 @@ namespace pcl
                                                                   pcl::fields::normal_z> >
     { };
 
+    template <typename PointT>
+    constexpr auto has_normal_v = has_normal<PointT>::value;
+
+    template <typename PointT>
+    using HasNormal = std::enable_if_t<has_normal_v<PointT>, bool>;
+
+    template <typename PointT>
+    using HasNoNormal = std::enable_if_t<!has_normal_v<PointT>, bool>;
+
     /** Metafunction to check if a given point type has curvature field. */
     template <typename PointT>
     struct has_curvature : has_field<PointT, pcl::fields::curvature>
     { };
 
+    template <typename PointT>
+    constexpr auto has_curvature_v = has_curvature<PointT>::value;
+
+    template <typename PointT>
+    using HasCurvature = std::enable_if_t<has_curvature_v<PointT>, bool>;
+
+    template <typename PointT>
+    using HasNoCurvature = std::enable_if_t<!has_curvature_v<PointT>, bool>;
+
     /** Metafunction to check if a given point type has intensity field. */
     template <typename PointT>
     struct has_intensity : has_field<PointT, pcl::fields::intensity>
     { };
+
+    template <typename PointT>
+    constexpr auto has_intensity_v = has_intensity<PointT>::value;
+
+    template <typename PointT>
+    using HasIntensity = std::enable_if_t<has_intensity_v<PointT>, bool>;
+
+    template <typename PointT>
+    using HasNoIntensity = std::enable_if_t<!has_intensity_v<PointT>, bool>;
 
     /** Metafunction to check if a given point type has either rgb or rgba field. */
     template <typename PointT>
@@ -821,14 +879,34 @@ namespace pcl
                                                                 pcl::fields::rgba> >
     { };
 
+    template <typename PointT>
+    constexpr auto has_color_v = has_color<PointT>::value;
+
+    template <typename PointT>
+    using HasColor = std::enable_if_t<has_color_v<PointT>, bool>;
+
+    template <typename PointT>
+    using HasNoColor = std::enable_if_t<!has_color_v<PointT>, bool>;
+
     /** Metafunction to check if a given point type has label field. */
     template <typename PointT>
     struct has_label : has_field<PointT, pcl::fields::label>
     { };
 
+    template <typename PointT>
+    constexpr auto has_label_v = has_label<PointT>::value;
+
+    template <typename PointT>
+    using HasLabel = std::enable_if_t<has_label_v<PointT>, bool>;
+
+    template <typename PointT>
+    using HasNoLabel = std::enable_if_t<!has_label_v<PointT>, bool>;
   }
 
 } // namespace pcl
+
+// Not strictly required, merely to preserve API for PCL users < 1.4
+#include <pcl/common/point_tests.h>
 
 #if defined _MSC_VER
   #pragma warning(default: 4201)

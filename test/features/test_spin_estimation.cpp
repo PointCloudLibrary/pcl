@@ -254,7 +254,7 @@ TEST (PCL, IntensitySpinEstimation)
       cloud_xyzi.points.push_back (p);
     }
   }
-  cloud_xyzi.width = static_cast<uint32_t> (cloud_xyzi.points.size ());
+  cloud_xyzi.width = static_cast<std::uint32_t> (cloud_xyzi.points.size ());
 
   // Compute the intensity-domain spin features
   using IntensitySpin = Histogram<20>;
@@ -297,7 +297,7 @@ main (int argc, char** argv)
   }
 
   indices.resize (cloud.points.size ());
-  for (size_t i = 0; i < indices.size (); ++i)
+  for (std::size_t i = 0; i < indices.size (); ++i)
     indices[i] = static_cast<int> (i);
 
   tree.reset (new search::KdTree<PointXYZ> (false));

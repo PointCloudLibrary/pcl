@@ -56,7 +56,7 @@ using namespace std;
 
 static void stdDebugOutput(const string &msg)
 {
-    cout << msg;
+    std::cout << msg;
 }
 
 
@@ -105,7 +105,7 @@ void NCVMemSegment::clear()
 }
 
 
-NCVStatus memSegCopyHelper(void *dst, NCVMemoryType dstType, const void *src, NCVMemoryType srcType, size_t sz, cudaStream_t cuStream)
+NCVStatus memSegCopyHelper(void *dst, NCVMemoryType dstType, const void *src, NCVMemoryType srcType, std::size_t sz, cudaStream_t cuStream)
 {
     NCVStatus ncvStat;
     switch (dstType)
@@ -267,7 +267,7 @@ NCVMemStackAllocator::NCVMemStackAllocator(Ncv32u alignment)
 }
 
 
-NCVMemStackAllocator::NCVMemStackAllocator(NCVMemoryType memT, size_t capacity, Ncv32u alignment, void *reusePtr)
+NCVMemStackAllocator::NCVMemStackAllocator(NCVMemoryType memT, std::size_t capacity, Ncv32u alignment, void *reusePtr)
     :
     currentSize(0),
     _maxSize(0),
@@ -345,7 +345,7 @@ NCVMemStackAllocator::~NCVMemStackAllocator()
 }
 
 
-NCVStatus NCVMemStackAllocator::alloc(NCVMemSegment &seg, size_t size)
+NCVStatus NCVMemStackAllocator::alloc(NCVMemSegment &seg, std::size_t size)
 {
     seg.clear();
     ncvAssertReturn(isInitialized(), NCV_ALLOCATOR_BAD_ALLOC);
@@ -356,7 +356,7 @@ NCVStatus NCVMemStackAllocator::alloc(NCVMemSegment &seg, size_t size)
 
     if (!isCounting())
     {
-        size_t availSize = end - begin;
+        std::size_t availSize = end - begin;
         ncvAssertReturn(size <= availSize, NCV_ALLOCATOR_INSUFFICIENT_CAPACITY);
     }
 
@@ -441,7 +441,7 @@ NCVMemNativeAllocator::~NCVMemNativeAllocator()
 }
 
 
-NCVStatus NCVMemNativeAllocator::alloc(NCVMemSegment &seg, size_t size)
+NCVStatus NCVMemNativeAllocator::alloc(NCVMemSegment &seg, std::size_t size)
 {
     seg.clear();
     ncvAssertReturn(isInitialized(), NCV_ALLOCATOR_BAD_ALLOC);

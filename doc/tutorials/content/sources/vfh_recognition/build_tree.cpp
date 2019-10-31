@@ -46,9 +46,9 @@ loadHist (const boost::filesystem::path &path, vfh_model &vfh)
   vfh.second.resize (308);
 
   std::vector <pcl::PCLPointField> fields;
-  pcl::getFieldIndex (point, "vfh", fields);
+  pcl::getFieldIndex<pcl::VFHSignature308> ("vfh", fields);
 
-  for (size_t i = 0; i < fields[vfh_idx].count; ++i)
+  for (std::size_t i = 0; i < fields[vfh_idx].count; ++i)
   {
     vfh.second[i] = point.points[0].histogram[i];
   }
@@ -113,15 +113,15 @@ main (int argc, char** argv)
   // Convert data into FLANN format
   flann::Matrix<float> data (new float[models.size () * models[0].second.size ()], models.size (), models[0].second.size ());
 
-  for (size_t i = 0; i < data.rows; ++i)
-    for (size_t j = 0; j < data.cols; ++j)
+  for (std::size_t i = 0; i < data.rows; ++i)
+    for (std::size_t j = 0; j < data.cols; ++j)
       data[i][j] = models[i].second[j];
 
   // Save data to disk (list of models)
   flann::save_to_file (data, training_data_h5_file_name, "training_data");
   std::ofstream fs;
   fs.open (training_data_list_file_name.c_str ());
-  for (size_t i = 0; i < models.size (); ++i)
+  for (std::size_t i = 0; i < models.size (); ++i)
     fs << models[i].first << "\n";
   fs.close ();
  

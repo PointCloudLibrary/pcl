@@ -178,7 +178,7 @@ void meanShiftSegmentation(const GpuMat& src, Mat& dst, int sp, int sr, int mins
     sort(edges.begin(), edges.end());
 
     // Exclude small components (starting from the nearest couple)
-    for (size_t i = 0; i < edges.size(); ++i)
+    for (std::size_t i = 0; i < edges.size(); ++i)
     {
         int c1 = comps.find(edges[i].from);
         int c2 = comps.find(edges[i].to);

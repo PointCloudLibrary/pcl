@@ -55,16 +55,16 @@ pcl::PPFHashMapSearch::setInputFeatureCloud (PointCloud<PPFSignature>::ConstPtr 
   int d1, d2, d3, d4;
   max_dist_ = -1.0;
   alpha_m_.resize (n);
-  for (size_t i = 0; i < n; ++i)
+  for (std::size_t i = 0; i < n; ++i)
   {
     std::vector <float> alpha_m_row (n);
-    for (size_t j = 0; j < n; ++j)
+    for (std::size_t j = 0; j < n; ++j)
     {
       d1 = static_cast<int> (std::floor (feature_cloud->points[i*n+j].f1 / angle_discretization_step_));
       d2 = static_cast<int> (std::floor (feature_cloud->points[i*n+j].f2 / angle_discretization_step_));
       d3 = static_cast<int> (std::floor (feature_cloud->points[i*n+j].f3 / angle_discretization_step_));
       d4 = static_cast<int> (std::floor (feature_cloud->points[i*n+j].f4 / distance_discretization_step_));
-      feature_hash_map_->insert (std::pair<HashKeyStruct, std::pair<size_t, size_t> > (HashKeyStruct (d1, d2, d3, d4), std::pair<size_t, size_t> (i, j)));
+      feature_hash_map_->insert (std::pair<HashKeyStruct, std::pair<std::size_t, std::size_t> > (HashKeyStruct (d1, d2, d3, d4), std::pair<std::size_t, std::size_t> (i, j)));
       alpha_m_row [j] = feature_cloud->points[i*n + j].alpha_m;
 
       if (max_dist_ < feature_cloud->points[i*n + j].f4)
@@ -80,7 +80,7 @@ pcl::PPFHashMapSearch::setInputFeatureCloud (PointCloud<PPFSignature>::ConstPtr 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::PPFHashMapSearch::nearestNeighborSearch (float &f1, float &f2, float &f3, float &f4,
-                                              std::vector<std::pair<size_t, size_t> > &indices)
+                                              std::vector<std::pair<std::size_t, std::size_t> > &indices)
 {
   if (!internals_initialized_)
   {

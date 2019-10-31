@@ -735,6 +735,13 @@ Section "-Add to path"
   StrCmp $DO_NOT_ADD_TO_PATH "1" doNotAddToPath 0
     Call AddToPath
   doNotAddToPath:
+  ; This is temporary solution for issue #1601.
+  Push $INSTDIR\3rdParty\VTK\bin
+  StrCmp "ON" "ON" 0 doNotAddVTKToPath
+  StrCmp $DO_NOT_ADD_TO_PATH "1" doNotAddVTKToPath 0
+  StrCmp $VTK_selected "0" doNotAddVTKToPath 0
+    Call AddToPath
+  doNotAddVTKToPath:
 SectionEnd
 
 ;--------------------------------
@@ -897,9 +904,15 @@ Section "Uninstall"
   DeleteRegValue SHCTX "Software\Kitware\CMake\Packages\@CPACK_PACKAGE_NAME@" "@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
 
   Push $INSTDIR\bin
-  StrCmp $DO_NOT_ADD_TO_PATH_ "1" doNotRemoveFromPath 0
+  StrCmp $DO_NOT_ADD_TO_PATH "1" doNotRemoveFromPath 0
     Call un.RemoveFromPath
   doNotRemoveFromPath:
+  ; This is temporary solution for issue #1601.
+  Push $INSTDIR\3rdParty\VTK\bin
+  StrCmp $DO_NOT_ADD_TO_PATH "1" doNotRemoveVTKFromPath 0
+  StrCmp $VTK_was_installed "0" doNotRemoveVTKFromPath 0
+    Call un.RemoveFromPath
+  doNotRemoveVTKFromPath:
 SectionEnd
 
 ;--------------------------------

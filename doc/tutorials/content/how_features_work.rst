@@ -160,8 +160,8 @@ The following code snippet will estimate a set of surface normals for a subset o
      ... read, pass in or create a point cloud ...
 
      // Create a set of indices to be used. For simplicity, we're going to be using the first 10% of the points in cloud
-     std::vector<int> indices (floor (cloud->points.size () / 10));
-     for (size_t i = 0; i < indices.size (); ++i) indices[i] = i;
+     std::vector<int> indices (std::floor (cloud->points.size () / 10));
+     for (std::size_t i = 0; i < indices.size (); ++i) indices[i] = i;
 
      // Create the normal estimation class, and pass the input dataset to it
      pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;

@@ -235,7 +235,7 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCl
 #endif
   for (int i = 0; i < static_cast<int>(indices.size ()); ++i)
   {
-    int idx = indices[static_cast<size_t>(i)];
+    int idx = indices[static_cast<std::size_t>(i)];
     if ((response_->points[idx] < second_threshold_) || occupency_map[idx])
       continue;
 
@@ -261,7 +261,7 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCl
   }
 
   output.height = 1;
-  output.width = static_cast<uint32_t> (output.size());
+  output.width = static_cast<std::uint32_t> (output.size());
   // we don not change the denseness
   output.is_dense = true;
 }

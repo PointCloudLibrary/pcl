@@ -260,10 +260,12 @@ namespace pcl
           * \param[in] height the height of the image
           * \param[in] layer_id the name of the layer (default: "image")
           * \param[in] opacity the opacity of the layer (default: 1.0)
+          * \param[in] autoresize flag to enable window to adapt to image size (default true)
           */
         void 
         addRGBImage (const unsigned char* data, unsigned width, unsigned height, 
-                     const std::string &layer_id = "rgb_image", double opacity = 1.0);
+                     const std::string &layer_id = "rgb_image", double opacity = 1.0,
+                     bool autoresize = true);
 
         /** \brief Show a 2D image on screen, obtained from the RGB channel of a point cloud.
           * \param[in] cloud the input data representing the RGB point cloud 
@@ -425,7 +427,7 @@ namespace pcl
           * \param[in] opacity the opacity of the layer (default: 1.0)
           */
         void
-        markPoint (size_t u, size_t v, Vector3ub fg_color, Vector3ub bg_color = red_color, double radius = 3.0,
+        markPoint (std::size_t u, std::size_t v, Vector3ub fg_color, Vector3ub bg_color = red_color, double radius = 3.0,
                    const std::string &layer_id = "points", double opacity = 1.0);
 
         /** \brief Sets the pixel at coordinates(u,v) to color while setting the neighborhood to another
@@ -1005,7 +1007,7 @@ namespace pcl
         boost::shared_array<unsigned char> data_;
   
         /** \brief The data array (representing the image) size. Used internally. */
-        size_t data_size_;
+        std::size_t data_size_;
 
         /** \brief Set to false if the interaction loop is running. */
         bool stopped_;

@@ -69,7 +69,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ihs::_PointIHS,
                                    (float, rgb, rgb)
                                    (float, weight, weight)
                                    (unsigned int, age, age)
-                                   (uint32_t, directions, directions)
+                                   (std::uint32_t, directions, directions)
                                   )
 POINT_CLOUD_REGISTER_POINT_WRAPPER (pcl::ihs::PointIHS, pcl::ihs::_PointIHS)
 

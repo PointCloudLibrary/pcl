@@ -219,7 +219,7 @@ pcl::TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (Poin
 #ifdef _OPENMP
 #pragma omp parallel for shared (output) num_threads (threads_)
 #endif
-  for (size_t i = 0; i < indices.size (); ++i)
+  for (std::size_t i = 0; i < indices.size (); ++i)
   {
     int idx = indices[i];
     if ((response_->points[idx] < second_threshold_) || occupency_map[idx])
@@ -247,7 +247,7 @@ pcl::TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (Poin
   }
 
   output.height = 1;
-  output.width = static_cast<uint32_t> (output.size());
+  output.width = static_cast<std::uint32_t> (output.size());
   // we don not change the denseness
   output.is_dense = input_->is_dense;
 }

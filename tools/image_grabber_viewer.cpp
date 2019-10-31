@@ -96,7 +96,7 @@ struct EventHelper
   void 
   cloud_cb (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & cloud)
   {
-    pcl::uint64_t timestamp;
+    std::uint64_t timestamp;
     timestamp = cloud->header.stamp;
     if (timestamp > 0)
       PCL_INFO ("Acquired cloud with timestamp of %lu\n", timestamp);
@@ -122,7 +122,7 @@ mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void* cookie)
   std::string* message = static_cast<std::string*> (cookie);
   if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton)
   {
-    cout << (*message) << " :: " << mouse_event.getX () << " , " << mouse_event.getY () << endl;
+    std::cout << (*message) << " :: " << mouse_event.getX () << " , " << mouse_event.getY () << std::endl;
   }
 }
 

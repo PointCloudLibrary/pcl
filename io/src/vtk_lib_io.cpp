@@ -252,7 +252,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
   // First get the xyz information
   pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
   xyz_cloud->points.resize (nr_points);
-  xyz_cloud->width = static_cast<uint32_t> (xyz_cloud->points.size ());
+  xyz_cloud->width = static_cast<std::uint32_t> (xyz_cloud->points.size ());
   xyz_cloud->height = 1;
   xyz_cloud->is_dense = true;
   double point_xyz[3];
@@ -288,7 +288,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
   {
     pcl::PointCloud<pcl::RGB>::Ptr rgb_cloud (new pcl::PointCloud<pcl::RGB> ());
     rgb_cloud->points.resize (nr_points);
-    rgb_cloud->width = static_cast<uint32_t> (rgb_cloud->points.size ());
+    rgb_cloud->width = static_cast<std::uint32_t> (rgb_cloud->points.size ());
     rgb_cloud->height = 1;
     rgb_cloud->is_dense = true;
 
@@ -319,7 +319,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
   {
     pcl::PointCloud<pcl::Normal>::Ptr normal_cloud (new pcl::PointCloud<pcl::Normal> ());
     normal_cloud->resize (nr_points);
-    normal_cloud->width = static_cast<uint32_t> (xyz_cloud->points.size ());
+    normal_cloud->width = static_cast<std::uint32_t> (xyz_cloud->points.size ());
     normal_cloud->height = 1;
     normal_cloud->is_dense = true;
 
@@ -542,12 +542,12 @@ pcl::io::pointCloudTovtkPolyData(const pcl::PCLPointCloud2Ptr& cloud, vtkSmartPo
 
 
   // Add Points
-  size_t x_idx = pcl::getFieldIndex (*cloud, std::string ("x") );
+  std::size_t x_idx = pcl::getFieldIndex (*cloud, std::string ("x") );
   vtkSmartPointer<vtkPoints> cloud_points = vtkSmartPointer<vtkPoints>::New ();
   vtkSmartPointer<vtkCellArray> cloud_vertices = vtkSmartPointer<vtkCellArray>::New ();
 
   vtkIdType pid[1];
-  for (size_t point_idx = 0; point_idx < cloud->width * cloud->height; point_idx ++)
+  for (std::size_t point_idx = 0; point_idx < cloud->width * cloud->height; point_idx ++)
   {
     float point[3];
 
@@ -573,7 +573,7 @@ pcl::io::pointCloudTovtkPolyData(const pcl::PCLPointCloud2Ptr& cloud, vtkSmartPo
     colors->SetNumberOfComponents (3);
     colors->SetName ("rgb");
 
-    for (size_t point_idx = 0; point_idx < cloud->width * cloud->height; point_idx ++)
+    for (std::size_t point_idx = 0; point_idx < cloud->width * cloud->height; point_idx ++)
     {
       unsigned char bgr[3];
 
@@ -596,7 +596,7 @@ pcl::io::pointCloudTovtkPolyData(const pcl::PCLPointCloud2Ptr& cloud, vtkSmartPo
     cloud_intensity->SetNumberOfComponents (1);
     cloud_intensity->SetName("intensity");
 
-    for (size_t point_idx = 0; point_idx < cloud->width * cloud->height; point_idx ++)
+    for (std::size_t point_idx = 0; point_idx < cloud->width * cloud->height; point_idx ++)
     {
       float intensity;
 
@@ -621,7 +621,7 @@ pcl::io::pointCloudTovtkPolyData(const pcl::PCLPointCloud2Ptr& cloud, vtkSmartPo
     normals->SetNumberOfComponents(3); //3d normals (ie x,y,z)
     normals->SetName("normals");
 
-    for (size_t point_idx = 0; point_idx < cloud->width * cloud->height; point_idx ++)
+    for (std::size_t point_idx = 0; point_idx < cloud->width * cloud->height; point_idx ++)
     {
       float normal[3];
 

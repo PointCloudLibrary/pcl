@@ -83,7 +83,7 @@ TEST (PCL, PLYPolygonMeshIO)
   EXPECT_EQ (verts_binary_vtk.size (), verts.size ());
   EXPECT_EQ (verts_ascii_pcl.size (), verts.size ());
   EXPECT_EQ (verts_binary_pcl.size (), verts.size ());
-  for (size_t i = 0; i < verts.size (); i++)
+  for (std::size_t i = 0; i < verts.size (); i++)
   {
     EXPECT_NEAR (verts_ascii_vtk.at (i).x, verts.at (i).x, 1E-2);
     EXPECT_NEAR (verts_ascii_vtk.at (i).y, verts.at (i).y, 1E-2);
@@ -102,13 +102,13 @@ TEST (PCL, PLYPolygonMeshIO)
   ASSERT_EQ (mesh_binary_vtk.polygons.size (), mesh.polygons.size ());
   ASSERT_EQ (mesh_ascii_pcl.polygons.size (), mesh.polygons.size ());
   ASSERT_EQ (mesh_binary_pcl.polygons.size (), mesh.polygons.size ());
-  for (size_t i = 0; i < mesh.polygons.size (); i++)
+  for (std::size_t i = 0; i < mesh.polygons.size (); i++)
   {
     ASSERT_EQ (mesh_ascii_vtk.polygons[i].vertices.size (), mesh.polygons[i].vertices.size ());
     ASSERT_EQ (mesh_binary_vtk.polygons[i].vertices.size (), mesh.polygons[i].vertices.size ());
     ASSERT_EQ (mesh_ascii_pcl.polygons[i].vertices.size (), mesh.polygons[i].vertices.size ());
     ASSERT_EQ (mesh_binary_pcl.polygons[i].vertices.size (), mesh.polygons[i].vertices.size ());
-    for (size_t j = 0; j < mesh.polygons[i].vertices.size (); j++)
+    for (std::size_t j = 0; j < mesh.polygons[i].vertices.size (); j++)
     {
       EXPECT_EQ (mesh_ascii_vtk.polygons[i].vertices[j], mesh.polygons[i].vertices[j]);
       EXPECT_EQ (mesh_binary_vtk.polygons[i].vertices[j], mesh.polygons[i].vertices[j]);
@@ -134,14 +134,14 @@ TEST (PCL, PLYPolygonMeshColoredIO)
   pcl::fromPCLPointCloud2 (mesh.cloud, vertices_rgba);
   mesh_rgb.polygons = mesh.polygons;
   mesh_rgba.polygons = mesh.polygons;
-  for (size_t i = 0; i < vertices_rgb.size (); ++i)
+  for (std::size_t i = 0; i < vertices_rgb.size (); ++i)
   {
     pcl::PointXYZRGB &pt_rgb = vertices_rgb.at (i);
     pcl::PointXYZRGBA &pt_rgba = vertices_rgba.at (i);
-    pt_rgb.r = pt_rgba.r = static_cast<uint8_t> (rand () % 256);
-    pt_rgb.g = pt_rgba.g = static_cast<uint8_t> (rand () % 256);
-    pt_rgb.b = pt_rgba.b = static_cast<uint8_t> (rand () % 256);
-    pt_rgba.a = static_cast<uint8_t> (rand () % 256);
+    pt_rgb.r = pt_rgba.r = static_cast<std::uint8_t> (rand () % 256);
+    pt_rgb.g = pt_rgba.g = static_cast<std::uint8_t> (rand () % 256);
+    pt_rgb.b = pt_rgba.b = static_cast<std::uint8_t> (rand () % 256);
+    pt_rgba.a = static_cast<std::uint8_t> (rand () % 256);
   }
   pcl::toPCLPointCloud2 (vertices_rgb, mesh_rgb.cloud);
   pcl::toPCLPointCloud2 (vertices_rgba, mesh_rgba.cloud);
@@ -190,7 +190,7 @@ TEST (PCL, PLYPolygonMeshColoredIO)
   ASSERT_EQ (verts_rgba_ascii_pcl.size (), vertices_rgba.size ());
   ASSERT_EQ (verts_rgb_binary_pcl.size (), vertices_rgba.size ());
   ASSERT_EQ (verts_rgba_binary_pcl.size (), vertices_rgba.size ());
-  for (size_t i = 0; i < vertices_rgba.size (); i++)
+  for (std::size_t i = 0; i < vertices_rgba.size (); i++)
   {
     EXPECT_NEAR (verts_rgba_ascii_vtk.at (i).x, vertices_rgba.at (i).x, 1E-2);
     EXPECT_NEAR (verts_rgba_ascii_vtk.at (i).y, vertices_rgba.at (i).y, 1E-2);
@@ -246,13 +246,13 @@ TEST (PCL, PLYPolygonMeshColoredIO)
   ASSERT_EQ (mesh_rgba_ascii_vtk.polygons.size (), mesh.polygons.size ());
   ASSERT_EQ (mesh_rgb_binary_vtk.polygons.size (), mesh.polygons.size ());
   ASSERT_EQ (mesh_rgba_binary_vtk.polygons.size (), mesh.polygons.size ());
-  for (size_t i = 0; i < mesh.polygons.size (); i++)
+  for (std::size_t i = 0; i < mesh.polygons.size (); i++)
   {
     ASSERT_EQ (mesh_rgb_ascii_vtk.polygons[i].vertices.size (), mesh.polygons[i].vertices.size ());
     ASSERT_EQ (mesh_rgba_ascii_vtk.polygons[i].vertices.size (), mesh.polygons[i].vertices.size ());
     ASSERT_EQ (mesh_rgb_binary_vtk.polygons[i].vertices.size (), mesh.polygons[i].vertices.size ());
     ASSERT_EQ (mesh_rgba_binary_vtk.polygons[i].vertices.size (), mesh.polygons[i].vertices.size ());
-    for (size_t j = 0; j < mesh.polygons[i].vertices.size (); j++)
+    for (std::size_t j = 0; j < mesh.polygons[i].vertices.size (); j++)
     {
       EXPECT_EQ (mesh_rgb_ascii_vtk.polygons[i].vertices[j], mesh.polygons[i].vertices[j]);
       EXPECT_EQ (mesh_rgba_ascii_vtk.polygons[i].vertices[j], mesh.polygons[i].vertices[j]);
@@ -265,13 +265,13 @@ TEST (PCL, PLYPolygonMeshColoredIO)
   ASSERT_EQ (mesh_rgba_ascii_pcl.polygons.size (), mesh.polygons.size ());
   ASSERT_EQ (mesh_rgb_binary_pcl.polygons.size (), mesh.polygons.size ());
   ASSERT_EQ (mesh_rgba_binary_pcl.polygons.size (), mesh.polygons.size ());
-  for (size_t i = 0; i < mesh.polygons.size (); i++)
+  for (std::size_t i = 0; i < mesh.polygons.size (); i++)
   {
     ASSERT_EQ (mesh_rgb_ascii_pcl.polygons[i].vertices.size (), mesh.polygons[i].vertices.size ());
     ASSERT_EQ (mesh_rgba_ascii_pcl.polygons[i].vertices.size (), mesh.polygons[i].vertices.size ());
     ASSERT_EQ (mesh_rgb_binary_pcl.polygons[i].vertices.size (), mesh.polygons[i].vertices.size ());
     ASSERT_EQ (mesh_rgba_binary_pcl.polygons[i].vertices.size (), mesh.polygons[i].vertices.size ());
-    for (size_t j = 0; j < mesh.polygons[i].vertices.size (); j++)
+    for (std::size_t j = 0; j < mesh.polygons[i].vertices.size (); j++)
     {
       EXPECT_EQ (mesh_rgb_ascii_pcl.polygons[i].vertices[j], mesh.polygons[i].vertices[j]);
       EXPECT_EQ (mesh_rgba_ascii_pcl.polygons[i].vertices[j], mesh.polygons[i].vertices[j]);
