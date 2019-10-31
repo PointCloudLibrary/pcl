@@ -120,34 +120,34 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
   if (!simple_layout)
   {
     std::size_t i = 0, j = 0;
-    while (i < cloud1.fields.size () && j < cloud2.fields.size ())
+    while (i < cloud1.fields.size () || j < cloud2.fields.size ())
     {
-      if (cloud1.fields[i].name == "_")
+      if (i < cloud1.fields.size() && cloud1.fields[i].name == "_")
       {
         ++i;
         continue;
       }
-      if (cloud2.fields[j].name == "_")
+      if (j < cloud2.fields.size() && cloud2.fields[j].name == "_")
       {
         ++j;
         continue;
       }
 
-      if (field_same(cloud1.fields[i], cloud2.fields[j]))
+      if (i < cloud1.fields.size() && j < cloud2.fields.size())
       {
-        // Assumption: cloud1.fields[i].datatype == cloud2.fields[j].datatype
-        valid_fields.emplace_back(i, j, cloud1.fields[i], cloud2.fields[j]);
-        ++i;
-        ++j;
-        continue;
+        if (field_same(cloud1.fields[i], cloud2.fields[j]))
+        {
+          // Assumption: cloud1.fields[i].datatype == cloud2.fields[j].datatype
+          valid_fields.emplace_back(i, j, cloud1.fields[i], cloud2.fields[j]);
+          ++i;
+          ++j;
+          continue;
+        }
+        PCL_ERROR ("[pcl::PCLPointCloud2::concatenate] Name of field %d in cloud1, %s, does not match name in cloud2, %s\n",
+            i, cloud1.fields[i].name.c_str (), cloud2.fields[i].name.c_str ());
+        return (false);
       }
-      PCL_ERROR ("[pcl::PCLPointCloud2::concatenate] Name of field %d in cloud1, %s, does not match name in cloud2, %s\n",
-                 i, cloud1.fields[i].name.c_str (), cloud2.fields[i].name.c_str ());
-      return (false);
-    }
-    // Both i and j should have exhausted their respective cloud.fields
-    if (i != cloud1.fields.size () || j != cloud2.fields.size ())
-    {
+      // Both i and j should have exhausted their respective cloud.fields
       PCL_ERROR ("[pcl::PCLPointCloud2::concatenate] Number of fields to copy in cloud1 (%u) != Number of fields to copy in cloud2 (%u)\n", i, j);
       return (false);
     }
