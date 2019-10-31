@@ -99,8 +99,8 @@ namespace pcl
             mapping.serialized_offset = field.offset;
             mapping.struct_offset = traits::offset<PointT, Tag>::value;
             mapping.size = sizeof (typename traits::datatype<PointT, Tag>::type);
-            mapping.field = field;
-            mapping.out_type = static_cast<PCLPointField::PointFieldTypes>(traits::datatype<PointT, Tag>::value);
+            mapping.cast.field = field;
+            mapping.cast.out_type = static_cast<PCLPointField::PointFieldTypes>(traits::datatype<PointT, Tag>::value);
             map_.push_back (mapping);
             return;
           }
@@ -141,9 +141,9 @@ namespace pcl
         /// field where the serialized data has padding
         if ((j->serialized_offset - i->serialized_offset == j->struct_offset - i->struct_offset)
             &&
-            (i->out_type == i->field.datatype)
+            !i->cast.isNeedCasting()
             &&
-            (j->out_type == j->field.datatype))
+            !j->cast.isNeedCasting())
         {
           i->size += (j->struct_offset + j->size) - (i->struct_offset + i->size);
           j = field_map.erase(j);
