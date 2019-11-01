@@ -381,6 +381,8 @@ pcl::eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
       eigenVecLen[i] = vec_len.length;
     }
 
+    // @TODO: might be redundant or over-complicated as per @SergioRAgostinho
+    // see: https://github.com/PointCloudLibrary/pcl/pull/3441#discussion_r341024181
     const auto minmax_it = std::minmax_element (eigenVecLen.cbegin (), eigenVecLen.cend ());
     int min_idx = std::distance (eigenVecLen.cbegin (), minmax_it.first);
     int max_idx = std::distance (eigenVecLen.cbegin (), minmax_it.second);
