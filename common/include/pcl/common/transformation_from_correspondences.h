@@ -53,8 +53,6 @@ namespace pcl
         TransformationFromCorrespondences () 
         { reset (); }
 
-        /** Destructor */
-        ~TransformationFromCorrespondences () = default;
         //TODO: check if copy/move constructors/assignment operators are needed
         
         //-----METHODS-----

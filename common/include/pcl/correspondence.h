@@ -79,8 +79,6 @@ namespace pcl
       index_query (_index_query), index_match (_index_match), distance (_distance)
     {}
 
-    /** \brief Empty destructor. */
-    virtual ~Correspondence () = default;
     //TODO: check if copy/move constructors/assignment operators are needed
 
     PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -122,8 +120,6 @@ namespace pcl
     Eigen::Vector3f point1;  //!< The 3D position of the point in the first coordinate frame
     Eigen::Vector3f point2;  //!< The 3D position of the point in the second coordinate frame
 
-    /** \brief Empty destructor. */
-    virtual ~PointCorrespondence3D () = default;
     //TODO: check if copy/move constructors/assignment operators are needed
     
     PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -139,8 +135,6 @@ namespace pcl
   {
     Eigen::Affine3f transformation;  //!< The transformation to go from the coordinate system
                                         //!< of point2 to the coordinate system of point1
-    /** \brief Empty destructor. */
-    virtual ~PointCorrespondence6D () = default;
     //TODO: check if copy/move constructors/assignment operators are needed
 
     PCL_MAKE_ALIGNED_OPERATOR_NEW

@@ -208,8 +208,6 @@ namespace pcl
         , height (height_)
       {}
 
-      /** \brief Destructor. */
-      virtual ~PointCloud () = default;
       //TODO: check if copy/move contructors/assignment operators are needed
 
       /** \brief Add a point cloud to the current cloud.
