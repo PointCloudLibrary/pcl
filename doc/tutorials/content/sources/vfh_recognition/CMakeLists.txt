@@ -16,7 +16,7 @@ include_directories(SYSTEM
 
 add_executable(build_tree build_tree.cpp)
 target_link_libraries(build_tree ${PCL_LIBRARIES} ${Boost_LIBRARIES}
-                                 FLANN::FLANN ${HDF5_hdf5_LIBRARY})
+                                 FLANN::FLANN ${HDF5_LIBRARIES})
 
 add_executable(nearest_neighbors nearest_neighbors.cpp)
-target_link_libraries(nearest_neighbors ${PCL_LIBRARIES} ${Boost_LIBRARIES} FLANN::FLANN ${HDF5_hdf5_LIBRARY})
+target_link_libraries(nearest_neighbors ${PCL_LIBRARIES} ${Boost_LIBRARIES} FLANN::FLANN ${HDF5_LIBRARIES})
