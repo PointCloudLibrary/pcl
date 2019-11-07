@@ -58,8 +58,7 @@ namespace pcl
         //-----CONSTRUCTOR&DESTRUCTOR-----
         /** Constructor - dimension gives the size of the vectors to work with. */
         VectorAverage ();
-        //TODO: check if copy/move constructors/assignment operators are needed
-        
+
         //-----METHODS-----
         /** Reset the object to work with a new data set */
         inline void 
