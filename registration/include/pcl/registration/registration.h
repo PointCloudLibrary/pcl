@@ -407,7 +407,7 @@ namespace pcl
 
       /** \brief Return the state of convergence after the last align run */
       inline bool 
-      hasConverged () { return (converged_); }
+      hasConverged () const { return (converged_); }
 
       /** \brief Call the registration algorithm which estimates the transformation and returns the transformed source 
         * (input) as \a output.
