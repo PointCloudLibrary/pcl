@@ -63,10 +63,6 @@ namespace pcl
       {
       }
 
-      /** \brief Destructor. */
-      virtual ~StopWatch () = default;
-      //TODO: check if copy/move construcors/assignment operators are needed
-
       /** \brief Retrieve the time in milliseconds spent since the last call to \a reset(). */
       inline double
       getTime () const

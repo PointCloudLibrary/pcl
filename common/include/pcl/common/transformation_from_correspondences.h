@@ -53,10 +53,6 @@ namespace pcl
         TransformationFromCorrespondences () 
         { reset (); }
 
-        /** Destructor */
-        ~TransformationFromCorrespondences () = default;
-        //TODO: check if copy/move constructors/assignment operators are needed
-        
         //-----METHODS-----
         /** Reset the object to work with a new data set */
         inline void 
