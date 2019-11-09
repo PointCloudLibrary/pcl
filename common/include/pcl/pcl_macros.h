@@ -118,7 +118,21 @@ namespace pcl
 # define __PRETTY_FUNCTION__ __FUNCTION__
 # define __func__ __FUNCTION__
 
-#endif
+#endif //defined _WIN32 && defined _MSC_VER
+
+
+template<typename T>
+[[deprecated("use std::isnan instead of pcl_isnan")]]
+bool pcl_isnan (T&& x) { return std::isnan (std::forward<T> (x)); }
+
+template<typename T>
+[[deprecated("use std::isfinite instead of pcl_isfinite")]]
+bool pcl_isfinite (T&& x) { return std::isfinite (std::forward<T> (x)); }
+
+template<typename T>
+[[deprecated("use std::isinf instead of pcl_isinf")]]
+bool pcl_isinf (T&& x) { return std::isinf (std::forward<T> (x)); }
+
 
 #ifndef DEG2RAD
 #define DEG2RAD(x) ((x)*0.017453293)
