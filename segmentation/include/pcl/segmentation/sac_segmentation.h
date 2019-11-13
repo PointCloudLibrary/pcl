@@ -341,8 +341,8 @@ namespace pcl
         , normals_ ()
         , distance_weight_ (0.1)
         , distance_from_origin_ (0)
-        , min_angle_ ()
-        , max_angle_ ()
+        , min_angle_ (0.0)
+        , max_angle_ (M_PI_2)
       {};
 
       /** \brief Provide a pointer to the input dataset that contains the point normals of 
