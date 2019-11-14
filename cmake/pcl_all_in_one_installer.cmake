@@ -27,6 +27,17 @@ foreach(dep Eigen Boost Qhull FLANN VTK)
   list(APPEND PCL_3RDPARTY_COMPONENTS ${dep})
 endforeach()
 
+if(WITH_RSSDK2)
+  get_filename_component(RSSDK2_ROOT "${RSSDK2_INCLUDE_DIRS}" PATH)
+  install(
+          DIRECTORY "${RSSDK2_ROOT}/"
+          DESTINATION 3rdParty/librealsense2
+          COMPONENT rssdk2
+          PATTERN "*/Uninstall.exe" EXCLUDE
+      )
+  list(APPEND PCL_3RDPARTY_COMPONENTS rssdk2)
+endif()
+
 if(WITH_OPENNI)
   if(CMAKE_CL_64)
     set(OPENNI_PACKAGE "OpenNI-Win64-1.5.4-Dev.msi")
