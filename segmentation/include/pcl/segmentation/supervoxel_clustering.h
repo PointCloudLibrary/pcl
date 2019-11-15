@@ -296,20 +296,6 @@ namespace pcl
       typename pcl::PointCloud<PointXYZL>::Ptr
       getLabeledCloud () const;
 
-      /** \brief Returns an RGB colorized voxelized cloud showing superpixels
-       * Otherwise it returns an empty pointer.
-       * Points that belong to the same supervoxel have the same color.
-       * But this function doesn't guarantee that different segments will have different
-       * color(it's random). Points that are unlabeled will be black
-       * \note This will expand the label_colors_ vector so that it can accommodate all labels
-       */
-      [[deprecated("use getLabeledVoxelCloud() instead. An example of how to display and save with colorized labels can be found in examples/segmentation/example_supervoxels.cpp")]]
-      pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
-      getColoredVoxelCloud () const
-      {
-        return pcl::PointCloud<PointXYZRGBA>::Ptr (new pcl::PointCloud<PointXYZRGBA>);
-      }
-
       /** \brief Returns labeled voxelized cloud
        * Points that belong to the same supervoxel have the same label.
        * Labels for segments start from 1, unlabled points have label 0
