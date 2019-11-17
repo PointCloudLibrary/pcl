@@ -90,8 +90,8 @@ namespace pcl
     }
   }; // struct PCLPointCloud2
 
-  using PCLPointCloud2Ptr = boost::shared_ptr< ::pcl::PCLPointCloud2>;
-  using PCLPointCloud2ConstPtr = boost::shared_ptr<const ::pcl::PCLPointCloud2>;
+  using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
+  using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
   inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PCLPointCloud2 &v)
   {

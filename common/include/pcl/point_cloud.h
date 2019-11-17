@@ -50,6 +50,7 @@
 #include <pcl/point_traits.h>
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -135,7 +136,7 @@ namespace pcl
 
   namespace detail
   {
-    template <typename PointT> boost::shared_ptr<pcl::MsgFieldMap>&
+    template <typename PointT> std::shared_ptr<pcl::MsgFieldMap>&
     getMapping (pcl::PointCloud<PointT>& p);
   } // namespace detail
 
@@ -602,9 +603,9 @@ namespace pcl
 
     protected:
       // This is motivated by ROS integration. Users should not need to access mapping_.
-      boost::shared_ptr<MsgFieldMap> mapping_;
+      std::shared_ptr<MsgFieldMap> mapping_;
 
-      friend boost::shared_ptr<MsgFieldMap>& detail::getMapping<PointT>(pcl::PointCloud<PointT> &p);
+      friend std::shared_ptr<MsgFieldMap>& detail::getMapping<PointT>(pcl::PointCloud<PointT> &p);
 
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -612,7 +613,7 @@ namespace pcl
 
   namespace detail
   {
-    template <typename PointT> boost::shared_ptr<pcl::MsgFieldMap>&
+    template <typename PointT> std::shared_ptr<pcl::MsgFieldMap>&
     getMapping (pcl::PointCloud<PointT>& p)
     {
       return (p.mapping_);

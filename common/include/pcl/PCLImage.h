@@ -30,8 +30,8 @@ namespace pcl
     using ConstPtr = boost::shared_ptr<const ::pcl::PCLImage>;
   }; // struct PCLImage
 
-  using PCLImagePtr = boost::shared_ptr< ::pcl::PCLImage>;
-  using PCLImageConstPtr = boost::shared_ptr<const ::pcl::PCLImage>;
+  using PCLImagePtr = PCLImage::Ptr;
+  using PCLImageConstPtr = PCLImage::ConstPtr;
 
   inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PCLImage & v)
   {
