@@ -130,15 +130,7 @@ namespace pcl
       prof.get_stream ( RS2_STREAM_INFRARED ).format ( ) != RS2_FORMAT_Y8 )
       THROW_IO_EXCEPTION ( "This stream type or format not supported." );
 
-    if (signal_PointXYZRGB->num_slots () > 0 || signal_PointXYZRGBA->num_slots () > 0)
-    {
-      assert ( prof.get_stream ( RS2_STREAM_COLOR ).format () == RS2_FORMAT_RGB8 );
-    }
-
-    assert ( prof.get_stream ( RS2_STREAM_DEPTH ).format () == RS2_FORMAT_Z16 );
-
     thread_ = std::thread ( &RealSense2Grabber::threadFunction, this );
-
   }
 
   void
