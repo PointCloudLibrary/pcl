@@ -54,6 +54,7 @@ namespace pcl
     {
       public:
         using Ptr = boost::shared_ptr<FrameWrapper>;
+        using ConstPtr = boost::shared_ptr<const FrameWrapper>;
 
         virtual
         ~FrameWrapper() = default;

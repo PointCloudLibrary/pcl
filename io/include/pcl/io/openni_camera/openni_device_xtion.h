@@ -43,6 +43,9 @@
 #include "openni_driver.h"
 #include "openni_image_yuv_422.h"
 
+#include <pcl/io/openni_camera/openni_image.h>
+
+
 namespace openni_wrapper
 {
 
@@ -61,7 +64,7 @@ namespace openni_wrapper
     //virtual void setImageOutputMode (const XnMapOutputMode& output_mode);
 
   protected:
-    boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
+    Image::Ptr getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
     void enumAvailableModes () throw ();
     bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw () override;
 

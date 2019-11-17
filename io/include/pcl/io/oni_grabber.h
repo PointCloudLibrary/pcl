@@ -174,7 +174,7 @@ namespace pcl
       Synchronizer<openni_wrapper::IRImage::Ptr, openni_wrapper::DepthImage::Ptr > ir_sync_;
 
       /** \brief the actual openni device*/
-      boost::shared_ptr<openni_wrapper::DeviceONI> device_;
+      openni_wrapper::DeviceONI::Ptr device_;
       std::string rgb_frame_id_;
       std::string depth_frame_id_;
       bool running_;

@@ -44,6 +44,9 @@
 #include "openni.h"
 
 #include <pcl/io/boost.h>
+#include <pcl/io/openni_camera/openni_image.h>
+#include <pcl/io/openni_camera/openni_depth_image.h>
+#include <pcl/io/openni_camera/openni_ir_image.h>
 #include <pcl/pcl_macros.h>
 
 #include <condition_variable>
@@ -62,10 +65,6 @@
 
 namespace openni_wrapper
 {
-  class Image;
-  class DepthImage;
-  class IRImage;
-
   /** \brief Class representing an astract device for OpenNI devices: Primesense PSDK, Microsoft Kinect, Asus Xtion Pro/Live.
     * \author Suat Gedikli
     * \ingroup io
@@ -80,9 +79,11 @@ namespace openni_wrapper
       };
 
       using Ptr = boost::shared_ptr<OpenNIDevice>;
-      using ImageCallbackFunction = std::function<void(boost::shared_ptr<Image>, void* cookie) >;
-      using DepthImageCallbackFunction = std::function<void(boost::shared_ptr<DepthImage>, void* cookie) >;
-      using IRImageCallbackFunction = std::function<void(boost::shared_ptr<IRImage>, void* cookie) >;
+      using ConstPtr = boost::shared_ptr<const OpenNIDevice>;
+
+      using ImageCallbackFunction = std::function<void(Image::Ptr, void* cookie) >;
+      using DepthImageCallbackFunction = std::function<void(DepthImage::Ptr, void* cookie) >;
+      using IRImageCallbackFunction = std::function<void(IRImage::Ptr, void* cookie) >;
       using CallbackHandle = unsigned;
 
     public:
@@ -299,7 +300,7 @@ namespace openni_wrapper
         * \return a callback handler that can be used to remove the user callback from list of image-stream callbacks.
         */
       template<typename T> CallbackHandle 
-      registerImageCallback (void (T::*callback)(boost::shared_ptr<Image>, void* cookie), T& instance, void* cookie = nullptr) throw ();
+      registerImageCallback (void (T::*callback)(Image::Ptr, void* cookie), T& instance, void* cookie = nullptr) throw ();
 
       /** \brief unregisters a callback function. i.e. removes that function from the list of image stream callbacks.
         * \param[in] callbackHandle the handle of the callback to unregister.
@@ -327,7 +328,7 @@ namespace openni_wrapper
         * \return a callback handler that can be used to remove the user callback from list of depth-stream callbacks.
         */
       template<typename T> CallbackHandle 
-      registerDepthCallback (void (T::*callback)(boost::shared_ptr<DepthImage>, void* cookie), T& instance, void* cookie = nullptr) throw ();
+      registerDepthCallback (void (T::*callback)(DepthImage::Ptr, void* cookie), T& instance, void* cookie = nullptr) throw ();
 
       /** \brief unregisters a callback function. i.e. removes that function from the list of depth stream callbacks.
         * \param[in] callbackHandle the handle of the callback to unregister.
@@ -354,7 +355,7 @@ namespace openni_wrapper
         * \return a callback handler that can be used to remove the user callback from list of IR-stream callbacks.
         */
       template<typename T> CallbackHandle 
-      registerIRCallback (void (T::*callback)(boost::shared_ptr<IRImage>, void* cookie), T& instance, void* cookie = nullptr) throw ();
+      registerIRCallback (void (T::*callback)(IRImage::Ptr, void* cookie), T& instance, void* cookie = nullptr) throw ();
 
       /** \brief unregisters a callback function. i.e. removes that function from the list of IR stream callbacks.
         * \param[in] callbackHandle the handle of the callback to unregister.
@@ -446,9 +447,9 @@ namespace openni_wrapper
       OpenNIDevice (OpenNIDevice const &);
       OpenNIDevice& operator=(OpenNIDevice const &);
     protected:
-      using ActualImageCallbackFunction = std::function<void(boost::shared_ptr<Image>) >;
-      using ActualDepthImageCallbackFunction = std::function<void(boost::shared_ptr<DepthImage>) >;
-      using ActualIRImageCallbackFunction = std::function<void(boost::shared_ptr<IRImage>) >;
+      using ActualImageCallbackFunction = std::function<void(Image::Ptr) >;
+      using ActualDepthImageCallbackFunction = std::function<void(DepthImage::Ptr) >;
+      using ActualIRImageCallbackFunction = std::function<void(IRImage::Ptr) >;
 
       OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
       OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
@@ -474,7 +475,7 @@ namespace openni_wrapper
       void 
       setRegistration (bool on_off);
 
-      virtual boost::shared_ptr<Image> 
+      virtual Image::Ptr
       getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_data) const throw () = 0;
 
       void 
@@ -591,25 +592,25 @@ namespace openni_wrapper
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename T> OpenNIDevice::CallbackHandle
-  OpenNIDevice::registerImageCallback (void (T::*callback)(boost::shared_ptr<Image>, void* cookie), T& instance, void* custom_data) throw ()
+  OpenNIDevice::registerImageCallback (void (T::*callback)(Image::Ptr, void* cookie), T& instance, void* custom_data) throw ()
   {
-    image_callback_[image_callback_handle_counter_] = [=, &instance] (boost::shared_ptr<Image> img) { (instance.*callback) (img, custom_data); };
+    image_callback_[image_callback_handle_counter_] = [=, &instance] (Image::Ptr img) { (instance.*callback) (img, custom_data); };
     return (image_callback_handle_counter_++);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename T> OpenNIDevice::CallbackHandle
-  OpenNIDevice::registerDepthCallback (void (T::*callback)(boost::shared_ptr<DepthImage>, void* cookie), T& instance, void* custom_data) throw ()
+  OpenNIDevice::registerDepthCallback (void (T::*callback)(DepthImage::Ptr, void* cookie), T& instance, void* custom_data) throw ()
   {
-    depth_callback_[depth_callback_handle_counter_] = [=, &instance] (boost::shared_ptr<DepthImage> img) { (instance.*callback) (img, custom_data); };
+    depth_callback_[depth_callback_handle_counter_] = [=, &instance] (DepthImage::Ptr img) { (instance.*callback) (img, custom_data); };
     return (depth_callback_handle_counter_++);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename T> OpenNIDevice::CallbackHandle
-  OpenNIDevice::registerIRCallback (void (T::*callback)(boost::shared_ptr<IRImage>, void* cookie), T& instance, void* custom_data) throw ()
+  OpenNIDevice::registerIRCallback (void (T::*callback)(IRImage::Ptr, void* cookie), T& instance, void* custom_data) throw ()
   {
-    ir_callback_[ir_callback_handle_counter_] = [=, &instance] (boost::shared_ptr<IRImage> img) { (instance.*callback) (img, custom_data); };
+    ir_callback_[ir_callback_handle_counter_] = [=, &instance] (IRImage::Ptr img) { (instance.*callback) (img, custom_data); };
     return (ir_callback_handle_counter_++);
   }
 

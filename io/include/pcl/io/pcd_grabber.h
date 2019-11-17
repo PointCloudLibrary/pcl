@@ -159,6 +159,7 @@ namespace pcl
   {
     public:
       using Ptr = boost::shared_ptr<PCDGrabber>;
+      using ConstPtr = boost::shared_ptr<const PCDGrabber>;
 
       PCDGrabber (const std::string& pcd_path, float frames_per_second = 0, bool repeat = false);
       PCDGrabber (const std::vector<std::string>& pcd_files, float frames_per_second = 0, bool repeat = false);
