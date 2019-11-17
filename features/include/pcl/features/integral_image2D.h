@@ -109,6 +109,7 @@ namespace pcl
   {
     public:
       using Ptr = boost::shared_ptr<IntegralImage2D<DataType, Dimension>>;
+      using ConstPtr = boost::shared_ptr<const IntegralImage2D<DataType, Dimension>>;
       static const unsigned second_order_size = (Dimension * (Dimension + 1)) >> 1;
       using ElementType = Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, Dimension, 1>;
       using SecondOrderType = Eigen::Matrix<typename IntegralImageTypeTraits<DataType>::IntegralType, second_order_size, 1>;
@@ -232,6 +233,7 @@ namespace pcl
   {
     public:
       using Ptr = boost::shared_ptr<IntegralImage2D<DataType, 1>>;
+      using ConstPtr = boost::shared_ptr<const IntegralImage2D<DataType, 1>>;
 
       static const unsigned second_order_size = 1;
       using ElementType = typename IntegralImageTypeTraits<DataType>::IntegralType;

@@ -68,7 +68,7 @@ namespace pcl
       using FeatureCloud = pcl::PointCloud<PointFeature>;
       using FeatureCloudPtr = typename pcl::PointCloud<PointFeature>::Ptr;
       using FeatureEstimatorPtr = typename pcl::Feature<PointSource, PointFeature>::Ptr;
-      using FeatureRepresentationConstPtr = boost::shared_ptr<const pcl::PointRepresentation<PointFeature> >;
+      using FeatureRepresentationConstPtr = typename pcl::PointRepresentation<PointFeature>::ConstPtr;
 
       using pcl::PCLBase<PointSource>::input_;
 
