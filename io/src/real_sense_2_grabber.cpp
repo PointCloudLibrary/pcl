@@ -333,7 +333,7 @@ namespace pcl
   RealSense2Grabber::getTextureColor ( const rs2::video_frame& texture, float u, float v )
   {
     const auto idx = getTextureIdx (texture, u, v);
-    const auto texture_data = reinterpret_cast<const uint8_t*>(texture.get_data ());
+    const auto texture_data = reinterpret_cast<const std::uint8_t*>(texture.get_data ());
 
     pcl::RGB rgb;
     rgb.r = texture_data[idx];
@@ -342,11 +342,11 @@ namespace pcl
     return rgb;
   }
 
-  uint8_t
+  std::uint8_t
   RealSense2Grabber::getTextureIntensity ( const rs2::video_frame& texture, float u, float v )
   {
     const auto idx = getTextureIdx (texture, u, v);
-    const auto texture_data = reinterpret_cast<const uint8_t*>(texture.get_data ());
+    const auto texture_data = reinterpret_cast<const std::uint8_t*>(texture.get_data ());
     return texture_data[idx];
   }
 }
