@@ -46,6 +46,10 @@ mark_as_advanced(PCL_ENABLE_SSE)
 option(PCL_ENABLE_CCACHE "Enable using compiler cache for compilation" OFF)
 mark_as_advanced(PCL_ENABLE_CCACHE)
 
+# Treat compiler warnings as errors
+option(PCL_WARNINGS_ARE_ERRORS "Treat warnings as errors" OFF)
+mark_as_advanced(PCL_WARNINGS_ARE_ERRORS)
+
 # Display timing information for each compiler instance on screen
 option(CMAKE_TIMING_VERBOSE "Enable the display of timing information for each compiler instance." OFF)
 mark_as_advanced(CMAKE_TIMING_VERBOSE)
