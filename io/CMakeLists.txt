@@ -7,7 +7,7 @@ PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
   PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk rssdk2 pcap png vtk)
 else()
-  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk2 pcap png vtk libusb-1.0)
+  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb-1.0)
 endif()
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
@@ -160,7 +160,8 @@ if(WITH_RSSDK)
   )
 endif()
 
-if(WITH_RSSDK2)
+# RSSDK2 is restricted to Windows until it is functional under other OSs
+if(WIN32 AND WITH_RSSDK2)
   set(RSSDK2_GRABBER_INCLUDES
       include/pcl/io/real_sense_2_grabber.h
   )
@@ -374,7 +375,8 @@ if(WITH_RSSDK)
   target_link_libraries(${LIB_NAME} ${RSSDK_LIBRARIES})
 endif()
 
-if(WITH_RSSDK2)
+# RSSDK2 is restricted to Windows until it is functional under other OSs
+if(WIN32 AND WITH_RSSDK2)
   target_link_libraries(${LIB_NAME} ${RSSDK2_LIBRARIES})
 endif()
 

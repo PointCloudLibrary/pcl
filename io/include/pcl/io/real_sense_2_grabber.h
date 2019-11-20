@@ -74,7 +74,7 @@ namespace pcl
     * \param[in] fps target frames per second for the device
     */
     inline void
-    setDeviceOptions ( uint32_t width, uint32_t height, uint32_t fps = 30 )
+    setDeviceOptions ( std::uint32_t width, std::uint32_t height, std::uint32_t fps = 30 )
     {
       device_width_ = width;
       device_height_ = height;
@@ -187,7 +187,7 @@ namespace pcl
     * \param[in] u 2D coordinate
     * \param[in] v 2D coordinate
     */
-    static uint8_t
+    static std::uint8_t
     getTextureIntensity ( const rs2::video_frame& texture, float u, float v );
 
 
@@ -204,11 +204,11 @@ namespace pcl
     /** \brief Calculated FPS for the grabber. */
     float fps_;
     /** \brief Width for the depth and color sensor. Default 424*/
-    uint32_t device_width_;
+    std::uint32_t device_width_;
     /** \brief Height for the depth and color sensor. Default 240 */
-    uint32_t device_height_;
+    std::uint32_t device_height_;
     /** \brief Target FPS for the device. Default 30. */
-    uint32_t target_fps_;
+    std::uint32_t target_fps_;
     /** \brief Declare pointcloud object, for calculating pointclouds and texture mappings */
     rs2::pointcloud pc_;
     /** \brief Declare RealSense pipeline, encapsulating the actual device and sensors */

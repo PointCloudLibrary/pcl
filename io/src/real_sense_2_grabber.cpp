@@ -2,8 +2,7 @@
 * Software License Agreement (BSD License)
 *
 *  Point Cloud Library (PCL) - www.pointclouds.org
-*  Copyright (c) 2010-2011, Willow Garage, Inc.
-*  Copyright (c) 2012-, Open Perception, Inc.
+*  Copyright (c) 2018-, Open Perception, Inc.
 *
 *  All rights reserved.
 *
@@ -131,15 +130,7 @@ namespace pcl
       prof.get_stream ( RS2_STREAM_INFRARED ).format ( ) != RS2_FORMAT_Y8 )
       THROW_IO_EXCEPTION ( "This stream type or format not supported." );
 
-    if (signal_PointXYZRGB->num_slots () > 0 || signal_PointXYZRGBA->num_slots () > 0)
-    {
-      assert ( prof.get_stream ( RS2_STREAM_COLOR ).format () == RS2_FORMAT_RGB8 );
-    }
-
-    assert ( prof.get_stream ( RS2_STREAM_DEPTH ).format () == RS2_FORMAT_Z16 );
-
     thread_ = std::thread ( &RealSense2Grabber::threadFunction, this );
-
   }
 
   void
@@ -333,7 +324,7 @@ namespace pcl
   RealSense2Grabber::getTextureColor ( const rs2::video_frame& texture, float u, float v )
   {
     const auto idx = getTextureIdx (texture, u, v);
-    const auto texture_data = reinterpret_cast<const uint8_t*>(texture.get_data ());
+    const auto texture_data = reinterpret_cast<const std::uint8_t*>(texture.get_data ());
 
     pcl::RGB rgb;
     rgb.r = texture_data[idx];
@@ -342,11 +333,11 @@ namespace pcl
     return rgb;
   }
 
-  uint8_t
+  std::uint8_t
   RealSense2Grabber::getTextureIntensity ( const rs2::video_frame& texture, float u, float v )
   {
     const auto idx = getTextureIdx (texture, u, v);
-    const auto texture_data = reinterpret_cast<const uint8_t*>(texture.get_data ());
+    const auto texture_data = reinterpret_cast<const std::uint8_t*>(texture.get_data ());
     return texture_data[idx];
   }
 }
