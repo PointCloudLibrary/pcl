@@ -23,8 +23,8 @@ namespace pcl
       using ConstPtr = boost::shared_ptr<const ::pcl::PointIndices>;
   }; // struct PointIndices
 
-  using PointIndicesPtr = boost::shared_ptr< ::pcl::PointIndices>;
-  using PointIndicesConstPtr = boost::shared_ptr<const ::pcl::PointIndices>;
+  using PointIndicesPtr = PointIndices::Ptr;
+  using PointIndicesConstPtr = PointIndices::ConstPtr;
 
   inline std::ostream& operator << (std::ostream& s, const ::pcl::PointIndices &v)
   {

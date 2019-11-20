@@ -59,6 +59,7 @@ namespace pcl
     public:
 
       using Ptr = boost::shared_ptr<DepthSenseGrabber>;
+      using ConstPtr = boost::shared_ptr<const DepthSenseGrabber>;
 
       using sig_cb_depth_sense_point_cloud = void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
       using sig_cb_depth_sense_point_cloud_rgba = void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);

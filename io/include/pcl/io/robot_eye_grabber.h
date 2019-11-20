@@ -45,6 +45,7 @@
 #include <pcl/point_cloud.h>
 #include <boost/asio.hpp>
 
+#include <memory>
 #include <thread>
 
 namespace pcl
@@ -129,9 +130,9 @@ namespace pcl
       boost::asio::ip::address sensor_address_;
       boost::asio::ip::udp::endpoint sender_endpoint_;
       boost::asio::io_service io_service_;
-      boost::shared_ptr<boost::asio::ip::udp::socket> socket_;
-      boost::shared_ptr<std::thread> socket_thread_;
-      boost::shared_ptr<std::thread> consumer_thread_;
+      std::shared_ptr<boost::asio::ip::udp::socket> socket_;
+      std::shared_ptr<std::thread> socket_thread_;
+      std::shared_ptr<std::thread> consumer_thread_;
 
       pcl::SynchronizedQueue<boost::shared_array<unsigned char> > packet_queue_;
       pcl::PointCloud<pcl::PointXYZI>::Ptr point_cloud_xyzi_;

@@ -36,15 +36,17 @@
 #include "pcl/io/io_exception.h"
 
 #include <boost/shared_ptr.hpp>
-#include <cstdint>
-#include <functional>
-#include <string>
-#include <vector>
 
 // Template frame wrappers
 #include <pcl/io/image.h>
 #include <pcl/io/image_depth.h>
 #include <pcl/io/image_ir.h>
+
+#include <cstdint>
+#include <functional>
+#include <memory>
+#include <string>
+#include <vector>
 
 
 
@@ -72,6 +74,7 @@ namespace pcl
       {
         public:
           using Ptr = boost::shared_ptr<OpenNI2Device>;
+          using ConstPtr = boost::shared_ptr<const OpenNI2Device>;
 
           using ImageCallbackFunction = std::function<void(Image::Ptr, void* cookie) >;
           using DepthImageCallbackFunction = std::function<void(DepthImage::Ptr, void* cookie) >;
@@ -272,11 +275,11 @@ namespace pcl
         protected:
           void shutdown ();
 
-          boost::shared_ptr<openni::VideoStream>
+          std::shared_ptr<openni::VideoStream>
           getIRVideoStream () const;
-          boost::shared_ptr<openni::VideoStream>
+          std::shared_ptr<openni::VideoStream>
           getColorVideoStream () const;
-          boost::shared_ptr<openni::VideoStream>
+          std::shared_ptr<openni::VideoStream>
           getDepthVideoStream () const;
 
 
@@ -297,16 +300,16 @@ namespace pcl
 
           // Members
 
-          boost::shared_ptr<openni::Device> openni_device_;
-          boost::shared_ptr<openni::DeviceInfo> device_info_;
+          std::shared_ptr<openni::Device> openni_device_;
+          std::shared_ptr<openni::DeviceInfo> device_info_;
 
-          boost::shared_ptr<OpenNI2FrameListener> ir_frame_listener;
-          boost::shared_ptr<OpenNI2FrameListener> color_frame_listener;
-          boost::shared_ptr<OpenNI2FrameListener> depth_frame_listener;
+          std::shared_ptr<OpenNI2FrameListener> ir_frame_listener;
+          std::shared_ptr<OpenNI2FrameListener> color_frame_listener;
+          std::shared_ptr<OpenNI2FrameListener> depth_frame_listener;
 
-          mutable boost::shared_ptr<openni::VideoStream> ir_video_stream_;
-          mutable boost::shared_ptr<openni::VideoStream> color_video_stream_;
-          mutable boost::shared_ptr<openni::VideoStream> depth_video_stream_;
+          mutable std::shared_ptr<openni::VideoStream> ir_video_stream_;
+          mutable std::shared_ptr<openni::VideoStream> color_video_stream_;
+          mutable std::shared_ptr<openni::VideoStream> depth_video_stream_;
 
           mutable std::vector<OpenNI2VideoMode> ir_video_modes_;
           mutable std::vector<OpenNI2VideoMode> color_video_modes_;

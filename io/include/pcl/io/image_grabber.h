@@ -218,6 +218,7 @@ namespace pcl
   {
     public:
     using Ptr = boost::shared_ptr<ImageGrabber>;
+    using ConstPtr = boost::shared_ptr<const ImageGrabber>;
 
     ImageGrabber (const std::string& dir, 
                   float frames_per_second = 0, 

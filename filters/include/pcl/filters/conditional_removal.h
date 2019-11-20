@@ -459,14 +459,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~ConditionBase ()
-      {
-        // comparisons are boost::shared_ptr.will take care of themselves
-        comparisons_.clear ();
-
-        // conditions are boost::shared_ptr. will take care of themselves
-        conditions_.clear ();
-      }
+      virtual ~ConditionBase () = default;
 
       /** \brief Add a new comparison
         * \param comparison the comparison operator to add

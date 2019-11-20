@@ -288,8 +288,8 @@ namespace pcl
 
     public:
       // Boost shared pointers
-      using Ptr = typename boost::shared_ptr<DefaultFeatureRepresentation<PointDefault> >;
-      using ConstPtr = typename boost::shared_ptr<const DefaultFeatureRepresentation<PointDefault> >;
+      using Ptr = boost::shared_ptr<DefaultFeatureRepresentation<PointDefault>>;
+      using ConstPtr = boost::shared_ptr<const DefaultFeatureRepresentation<PointDefault>>;
       using FieldList = typename pcl::traits::fieldList<PointDefault>::type;
 
       DefaultFeatureRepresentation ()

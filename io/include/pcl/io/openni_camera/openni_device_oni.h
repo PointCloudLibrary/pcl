@@ -42,6 +42,8 @@
 #include "openni_device.h"
 #include "openni_driver.h"
 
+#include <pcl/io/openni_camera/openni_image.h>
+
 #include <condition_variable>
 #include <mutex>
 
@@ -58,6 +60,10 @@ namespace openni_wrapper
   {
     friend class OpenNIDriver;
   public:
+
+    using Ptr = boost::shared_ptr<DeviceONI>;
+    using ConstPtr = boost::shared_ptr<const DeviceONI>;
+
     DeviceONI (xn::Context& context, const std::string& file_name, bool repeat = false, bool streaming = true);
     ~DeviceONI () throw ();
 
@@ -92,7 +98,7 @@ namespace openni_wrapper
     }
 
   protected:
-    boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
+    Image::Ptr getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
 
     void PlayerThreadFunction ();
     static void __stdcall NewONIDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ();

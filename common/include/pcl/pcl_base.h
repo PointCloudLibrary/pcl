@@ -73,8 +73,8 @@ namespace pcl
       using PointCloudPtr = typename PointCloud::Ptr;
       using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-      using PointIndicesPtr = boost::shared_ptr<PointIndices>;
-      using PointIndicesConstPtr = boost::shared_ptr<PointIndices const>;
+      using PointIndicesPtr = PointIndices::Ptr;
+      using PointIndicesConstPtr = PointIndices::ConstPtr;
 
       /** \brief Empty constructor. */
       PCLBase ();
@@ -186,11 +186,11 @@ namespace pcl
   {
     public:
       using PCLPointCloud2 = pcl::PCLPointCloud2;
-      using PCLPointCloud2Ptr = boost::shared_ptr<PCLPointCloud2>;
-      using PCLPointCloud2ConstPtr = boost::shared_ptr<PCLPointCloud2 const>;
+      using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
+      using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
-      using PointIndicesPtr = boost::shared_ptr<PointIndices>;
-      using PointIndicesConstPtr = boost::shared_ptr<PointIndices const>;
+      using PointIndicesPtr = PointIndices::Ptr;
+      using PointIndicesConstPtr = PointIndices::ConstPtr;
 
       /** \brief Empty constructor. */
       PCLBase ();

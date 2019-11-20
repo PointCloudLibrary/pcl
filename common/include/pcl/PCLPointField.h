@@ -34,8 +34,8 @@ namespace pcl
     using ConstPtr = boost::shared_ptr<const ::pcl::PCLPointField>;
   }; // struct PCLPointField
 
-  using PCLPointFieldPtr = boost::shared_ptr< ::pcl::PCLPointField>;
-  using PCLPointFieldConstPtr = boost::shared_ptr<const ::pcl::PCLPointField>;
+  using PCLPointFieldPtr = PCLPointField::Ptr;
+  using PCLPointFieldConstPtr = PCLPointField::ConstPtr;
 
   inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PCLPointField & v)
   {

@@ -100,6 +100,6 @@ namespace pcl
       using ConstPtr = boost::shared_ptr<const pcl::TextureMesh>;
    }; // struct TextureMesh
 
-   using TextureMeshPtr = boost::shared_ptr<pcl::TextureMesh>;
-   using TextureMeshConstPtr = boost::shared_ptr<const pcl::TextureMesh>;
+   using TextureMeshPtr = TextureMesh::Ptr;
+   using TextureMeshConstPtr = TextureMesh::ConstPtr;
 } // namespace pcl

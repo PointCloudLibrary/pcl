@@ -24,8 +24,8 @@ namespace pcl
   }; // struct Vertices
 
 
-  using VerticesPtr = boost::shared_ptr<Vertices>;
-  using VerticesConstPtr = boost::shared_ptr<const Vertices>;
+  using VerticesPtr = Vertices::Ptr;
+  using VerticesConstPtr = Vertices::ConstPtr;
 
   inline std::ostream& operator<<(std::ostream& s, const  ::pcl::Vertices & v)
   {

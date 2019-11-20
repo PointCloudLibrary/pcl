@@ -24,8 +24,8 @@ namespace pcl
     using ConstPtr = boost::shared_ptr<const ::pcl::ModelCoefficients>;
   }; // struct ModelCoefficients
 
-  using ModelCoefficientsPtr = boost::shared_ptr< ::pcl::ModelCoefficients>;
-  using ModelCoefficientsConstPtr = boost::shared_ptr<const ::pcl::ModelCoefficients>;
+  using ModelCoefficientsPtr = ModelCoefficients::Ptr;
+  using ModelCoefficientsConstPtr = ModelCoefficients::ConstPtr;
 
   inline std::ostream& operator<<(std::ostream& s, const  ::pcl::ModelCoefficients & v)
   {

@@ -738,7 +738,7 @@ bool OpenNI2Device::setPlaybackSpeed (double speed)
     return openni_device_->getPlaybackControl ()->setSpeed (speed) == openni::STATUS_OK;
 }
 
-boost::shared_ptr<openni::VideoStream>
+std::shared_ptr<openni::VideoStream>
 pcl::io::openni2::OpenNI2Device::getIRVideoStream () const
 {
   if (ir_video_stream_.get () == nullptr)
@@ -755,7 +755,7 @@ pcl::io::openni2::OpenNI2Device::getIRVideoStream () const
   return (ir_video_stream_);
 }
 
-boost::shared_ptr<openni::VideoStream>
+std::shared_ptr<openni::VideoStream>
 pcl::io::openni2::OpenNI2Device::getColorVideoStream () const
 {
   if (color_video_stream_.get () == nullptr)
@@ -772,7 +772,7 @@ pcl::io::openni2::OpenNI2Device::getColorVideoStream () const
   return (color_video_stream_);
 }
 
-boost::shared_ptr<openni::VideoStream>
+std::shared_ptr<openni::VideoStream>
 pcl::io::openni2::OpenNI2Device::getDepthVideoStream () const
 {
   if (depth_video_stream_.get () == nullptr)

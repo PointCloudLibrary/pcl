@@ -28,8 +28,8 @@ namespace pcl
     using ConstPtr = boost::shared_ptr<const PCLHeader>;
   }; // struct PCLHeader
 
-  using HeaderPtr = boost::shared_ptr<PCLHeader>;
-  using HeaderConstPtr = boost::shared_ptr<const PCLHeader>;
+  using HeaderPtr = PCLHeader::Ptr;
+  using HeaderConstPtr = PCLHeader::ConstPtr;
 
   inline std::ostream& operator << (std::ostream& out, const PCLHeader &h)
   {

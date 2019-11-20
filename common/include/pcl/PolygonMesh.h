@@ -98,8 +98,8 @@ namespace pcl
     using ConstPtr = boost::shared_ptr<const ::pcl::PolygonMesh>;
   }; // struct PolygonMesh
 
-  using PolygonMeshPtr = boost::shared_ptr< ::pcl::PolygonMesh>;
-  using PolygonMeshConstPtr = boost::shared_ptr<const ::pcl::PolygonMesh>;
+  using PolygonMeshPtr = PolygonMesh::Ptr;
+  using PolygonMeshConstPtr = PolygonMesh::ConstPtr;
 
   inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PolygonMesh &v)
   {
