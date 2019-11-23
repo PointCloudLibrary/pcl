@@ -89,9 +89,9 @@ pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
     output = *input_;
     std::vector<pcl::PCLPointField> fields;
     pcl::for_each_type<FieldList> (pcl::detail::FieldAdder<PointT> (fields));
-    for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
+    for (const auto ri : *removed_indices_)  // ri = removed index
     {
-      std::size_t pt_index = (std::size_t)(*removed_indices_)[rii];
+      std::size_t pt_index = (std::size_t)ri;
       if (pt_index >= input_->points.size ())
       {
         PCL_ERROR ("[pcl::%s::applyFilter] The index exceeds the size of the input. Do nothing.\n",
