@@ -66,6 +66,8 @@ namespace pcl
       using Ptr = boost::shared_ptr<SampleConsensus<T> >;
       using ConstPtr = boost::shared_ptr<const SampleConsensus<T> >;
 
+      using IndicesPtr = boost::shared_ptr<std::vector<int>>;
+
       /** \brief Constructor for base SAC.
         * \param[in] model a Sample Consensus model
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
@@ -270,7 +272,7 @@ namespace pcl
         * \param[out] indices_subset the resultant output set of randomly selected indices
         */
       inline void
-      getRandomSamples (const boost::shared_ptr <std::vector<int> > &indices, 
+      getRandomSamples (const IndicesPtr &indices,
                         std::size_t nr_samples, 
                         std::set<int> &indices_subset)
       {
