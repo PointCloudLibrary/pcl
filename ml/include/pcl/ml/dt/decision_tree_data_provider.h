@@ -60,6 +60,11 @@ public:
                                                                 LabelType,
                                                                 ExampleIndex,
                                                                 NodeType>>;
+  using ConstPtr = boost::shared_ptr<const DecisionTreeTrainerDataProvider<FeatureType,
+                                                                           DataSet,
+                                                                           LabelType,
+                                                                           ExampleIndex,
+                                                                           NodeType>>;
 
   /** Constructor. */
   DecisionTreeTrainerDataProvider() {}
