@@ -157,7 +157,7 @@ namespace pcl
         {
           public:
             /** \brief Empty destructor */
-            virtual ~FeatureContainerInterface () {}
+            virtual ~FeatureContainerInterface () = default;
             virtual bool isValid () = 0;
             virtual double getCorrespondenceScore (int index) = 0;
             virtual bool isCorrespondenceValid (int index) = 0;

@@ -92,7 +92,7 @@ namespace pcl
           using Ptr = boost::shared_ptr<ErrorFunctor>;
           using ConstPtr = boost::shared_ptr<const ErrorFunctor>;
 
-          virtual ~ErrorFunctor () {}
+          virtual ~ErrorFunctor () = default;
           virtual float operator () (float d) const = 0;
       };
 
