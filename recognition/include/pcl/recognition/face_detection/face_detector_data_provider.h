@@ -112,6 +112,7 @@ namespace pcl
       public:
 
         using Ptr = boost::shared_ptr<FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>>;
+        using ConstPtr = boost::shared_ptr<const FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>>;
 
         FaceDetectorDataProvider()
         {

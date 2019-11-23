@@ -23,6 +23,8 @@
 #include <pcl/recognition/3rdparty/metslib/mets.hh>
 #include <pcl/features/normal_3d.h>
 
+#include <memory>
+
 namespace pcl
 {
 
@@ -53,7 +55,7 @@ namespace pcl
           int id_;
       };
 
-      using RecognitionModelPtr = boost::shared_ptr<RecognitionModel>;
+      using RecognitionModelPtr = std::shared_ptr<RecognitionModel>;
 
       using SAOptimizerT = GlobalHypothesesVerification<ModelT, SceneT>;
       class SAModel: public mets::evaluable_solution
