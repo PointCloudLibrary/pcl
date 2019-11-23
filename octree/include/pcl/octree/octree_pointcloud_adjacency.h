@@ -91,8 +91,8 @@ namespace pcl
         using BranchNode = typename OctreePointCloudT::BranchNode;
 
         using PointCloud = pcl::PointCloud<PointT>;
-        using PointCloudPtr = boost::shared_ptr<PointCloud>;
-        using PointCloudConstPtr = boost::shared_ptr<const PointCloud>;
+        using PointCloudPtr = typename PointCloud::Ptr;
+        using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
         // BGL graph
         using VoxelAdjacencyList = boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, PointT, float>;
