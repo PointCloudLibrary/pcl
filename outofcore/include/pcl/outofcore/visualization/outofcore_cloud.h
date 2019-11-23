@@ -40,7 +40,7 @@ class OutofcoreCloud : public Object
     using OctreeDiskNode = pcl::outofcore::OutofcoreOctreeBaseNode<>;
 //    using OctreeBreadthFirstIterator = pcl::outofcore::OutofcoreBreadthFirstIterator<>;
 
-    using OctreeDiskPtr = boost::shared_ptr<OctreeDisk>;
+    using OctreeDiskPtr = OctreeDisk::Ptr;
     using AlignedPointT = Eigen::aligned_allocator<PointT>;
 
 
