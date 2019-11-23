@@ -42,6 +42,6 @@
   #include <pcl/point_types.h>
   #include <pcl/impl/instantiate.hpp>
   // Instantiations of specific point types
-  PCL_INSTANTIATE(NormalRefinement, PCL_NORMAL_POINT_TYPES);
+  PCL_INSTANTIATE(NormalRefinement, PCL_NORMAL_POINT_TYPES)
 #endif    // PCL_NO_PRECOMPILE
 
