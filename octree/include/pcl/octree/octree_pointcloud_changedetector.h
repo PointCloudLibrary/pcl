@@ -81,11 +81,6 @@ namespace pcl
         {
         }
 
-        /** \brief Empty class constructor. */
-        ~OctreePointCloudChangeDetector ()
-        {
-        }
-
         /** \brief Get a indices from all leaf nodes that did not exist in previous buffer.
          * \param indicesVector_arg: results are written to this vector of int indices
          * \param minPointsPerLeaf_arg: minimum amount of points required within leaf node to become serialized.

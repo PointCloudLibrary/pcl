@@ -118,11 +118,6 @@ namespace pcl
           * \param[in] resolution_arg Octree resolution at lowest octree level (voxel size) */
         OctreePointCloudAdjacency (const double resolution_arg);
 
-        /** \brief Empty class destructor. */
-        ~OctreePointCloudAdjacency ()
-        {
-        }
-
         /** \brief Adds points from cloud to the octree.
           *
           * \note This overrides addPointsFromInputCloud() from the OctreePointCloud class. */

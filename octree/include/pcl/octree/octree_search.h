@@ -83,12 +83,6 @@ namespace pcl
         {
         }
 
-        /** \brief Empty class destructor. */
-        
-        ~OctreePointCloudSearch ()
-        {
-        }
-
         /** \brief Search for neighbors within a voxel at given point
           * \param[in] point point addressing a leaf node voxel
           * \param[out] point_idx_data the resultant indices of the neighboring voxel points

@@ -82,10 +82,6 @@ namespace pcl
          */
         OctreePointCloud (const double resolution_arg);
 
-        /** \brief Empty deconstructor. */
-        
-        ~OctreePointCloud ();
-
         // public typedefs
         using IndicesPtr = boost::shared_ptr<std::vector<int> >;
         using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
