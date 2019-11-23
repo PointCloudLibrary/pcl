@@ -70,6 +70,7 @@ namespace pcl
       using PCLBase<PointFeature>::input_;
 
       using Ptr = boost::shared_ptr<PyramidFeatureHistogram<PointFeature> >;
+      using ConstPtr = boost::shared_ptr<const PyramidFeatureHistogram<PointFeature>>;
       using PyramidFeatureHistogramPtr = Ptr;
       using FeatureRepresentationConstPtr = boost::shared_ptr<const pcl::PointRepresentation<PointFeature> >;
 

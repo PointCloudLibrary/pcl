@@ -135,7 +135,7 @@ namespace pcl
       int window_size_;
       float depth_step_threshold_;
 
-      using DataContainerPtr = boost::shared_ptr<pcl::registration::DataContainerInterface>;
+      using DataContainerPtr = DataContainerInterface::Ptr;
       DataContainerPtr data_container_;
     };
   }

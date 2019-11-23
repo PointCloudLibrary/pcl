@@ -80,6 +80,7 @@ namespace pcl
       using FeatureHashMapType = std::unordered_multimap<HashKeyStruct, std::pair<std::size_t, std::size_t>, HashKeyStruct>;
       using FeatureHashMapTypePtr = boost::shared_ptr<FeatureHashMapType>;
       using Ptr = boost::shared_ptr<PPFHashMapSearch>;
+      using ConstPtr = boost::shared_ptr<const PPFHashMapSearch>;
 
 
       /** \brief Constructor for the PPFHashMapSearch class which sets the two step parameters for the enclosed data structure

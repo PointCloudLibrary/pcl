@@ -89,6 +89,9 @@ namespace pcl
       class ErrorFunctor
       {
         public:
+          using Ptr = boost::shared_ptr<ErrorFunctor>;
+          using ConstPtr = boost::shared_ptr<const ErrorFunctor>;
+
           virtual ~ErrorFunctor () {}
           virtual float operator () (float d) const = 0;
       };
@@ -127,7 +130,7 @@ namespace pcl
           float threshold_;
       };
 
-      using ErrorFunctorPtr = boost::shared_ptr<ErrorFunctor>;
+      using ErrorFunctorPtr = typename ErrorFunctor::Ptr;
 
       using FeatureKdTreePtr = typename KdTreeFLANN<FeatureT>::Ptr; 
       /** \brief Constructor. */
