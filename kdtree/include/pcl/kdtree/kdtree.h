@@ -59,12 +59,11 @@ namespace pcl
       using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
 
       using PointCloud = pcl::PointCloud<PointT>;
-      using PointCloudPtr = boost::shared_ptr<PointCloud>;
-      using PointCloudConstPtr = boost::shared_ptr<const PointCloud>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
       using PointRepresentation = pcl::PointRepresentation<PointT>;
-      //using PointRepresentationPtr = boost::shared_ptr<PointRepresentation>;
-      using PointRepresentationConstPtr = boost::shared_ptr<const PointRepresentation>;
+      using PointRepresentationConstPtr = typename PointRepresentation::ConstPtr;
 
       // Boost shared pointers
       using Ptr = boost::shared_ptr<KdTree<PointT> >;

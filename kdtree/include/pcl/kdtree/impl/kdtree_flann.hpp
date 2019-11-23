@@ -235,7 +235,7 @@ pcl::KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud)
 
   int original_no_of_points = static_cast<int> (cloud.points.size ());
 
-  cloud_.reset (new float[original_no_of_points * dim_]);
+  cloud_.reset (new float[original_no_of_points * dim_], std::default_delete<float[]> ());
   float* cloud_ptr = cloud_.get ();
   index_mapping_.reserve (original_no_of_points);
   identity_mapping_ = true;
@@ -269,7 +269,7 @@ pcl::KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud, co
 
   int original_no_of_points = static_cast<int> (indices.size ());
 
-  cloud_.reset (new float[original_no_of_points * dim_]);
+  cloud_.reset (new float[original_no_of_points * dim_], std::default_delete<float[]> ());
   float* cloud_ptr = cloud_.get ();
   index_mapping_.reserve (original_no_of_points);
   // its a subcloud -> false

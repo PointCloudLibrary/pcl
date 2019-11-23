@@ -43,7 +43,7 @@
 #include <pcl/kdtree/kdtree.h>
 #include <flann/util/params.h>
 
-#include <boost/shared_array.hpp>
+#include <memory>
 
 // Forward declarations
 namespace flann
@@ -207,14 +207,14 @@ namespace pcl
       getName () const override { return ("KdTreeFLANN"); }
 
       /** \brief A FLANN index object. */
-      boost::shared_ptr<FLANNIndex> flann_index_;
+      std::shared_ptr<FLANNIndex> flann_index_;
 
-      /** \brief Internal pointer to data. */
-      boost::shared_array<float> cloud_;
-      
+      /** \brief Internal pointer to data. TODO: replace with std::shared_ptr<float[]> with C++17*/
+      std::shared_ptr<float> cloud_;
+
       /** \brief mapping between internal and external indices. */
       std::vector<int> index_mapping_;
-      
+
       /** \brief whether the mapping between internal and external indices is identity */
       bool identity_mapping_;
 
