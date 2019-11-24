@@ -47,6 +47,7 @@
 #include <set>
 
 #include <pcl/pcl_macros.h>
+#include <pcl/pcl_base.h>
 #include <pcl/console/print.h>
 #include <pcl/point_cloud.h>
 #include <pcl/sample_consensus/boost.h>
@@ -74,8 +75,6 @@ namespace pcl
 
       using Ptr = boost::shared_ptr<SampleConsensusModel<PointT> >;
       using ConstPtr = boost::shared_ptr<const SampleConsensusModel<PointT> >;
-
-      using IndicesPtr = boost::shared_ptr<std::vector<int>>;
 
     protected:
       /** \brief Empty constructor for base SampleConsensusModel.

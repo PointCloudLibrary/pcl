@@ -42,6 +42,7 @@
 
 #include <pcl/sample_consensus/sac.h>
 #include <pcl/sample_consensus/sac_model.h>
+#include <pcl/pcl_base.h>
 
 namespace pcl
 {
@@ -62,7 +63,6 @@ namespace pcl
       using Ptr = boost::shared_ptr<MaximumLikelihoodSampleConsensus<PointT> >;
       using ConstPtr = boost::shared_ptr<const MaximumLikelihoodSampleConsensus<PointT> >;
 
-      using typename SampleConsensus<PointT>::IndicesPtr;
       using SampleConsensus<PointT>::max_iterations_;
       using SampleConsensus<PointT>::threshold_;
       using SampleConsensus<PointT>::iterations_;

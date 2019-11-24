@@ -41,6 +41,7 @@
 #pragma once
 
 #include <pcl/pcl_macros.h>
+#include <pcl/pcl_base.h>
 #include <pcl/sample_consensus/eigen.h>
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
@@ -218,7 +219,6 @@ namespace pcl
     protected:
       using SampleConsensusModel<PointT>::sample_size_;
       using SampleConsensusModel<PointT>::model_size_;
-      using typename SampleConsensusModel<PointT>::IndicesPtr;
 
       /** \brief Check if a sample of indices results in a good sample of points
         * indices.
