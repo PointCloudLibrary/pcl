@@ -80,7 +80,7 @@ namespace pcl
 
       using Ptr = boost::shared_ptr<RadiusOutlierRemoval<PointT> >;
       using ConstPtr = boost::shared_ptr<const RadiusOutlierRemoval<PointT> >;
-  
+
 
       /** \brief Constructor.
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
@@ -240,7 +240,7 @@ namespace pcl
       }
 
       /** \brief Get the minimum number of neighbors that a point needs to have in the given search radius to be
-        * considered an inlier and avoid being filtered. 
+        * considered an inlier and avoid being filtered.
         */
       inline double
       getMinNeighborsInRadius ()
@@ -253,7 +253,7 @@ namespace pcl
       double search_radius_;
 
       /** \brief The minimum number of neighbors that a point needs to have in the given search radius to be considered
-        * an inlier. 
+        * an inlier.
         */
       int min_pts_radius_;
 
