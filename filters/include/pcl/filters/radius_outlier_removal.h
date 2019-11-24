@@ -189,7 +189,7 @@ namespace pcl
     * \ingroup filters
     */
   template<>
-  class PCL_EXPORTS RadiusOutlierRemoval<pcl::PCLPointCloud2> : public Filter<pcl::PCLPointCloud2>
+  class PCL_EXPORTS RadiusOutlierRemoval<pcl::PCLPointCloud2> : public FilterIndices<pcl::PCLPointCloud2>
   {
     using Filter<pcl::PCLPointCloud2>::filter_name_;
     using Filter<pcl::PCLPointCloud2>::getClassName;
@@ -207,7 +207,7 @@ namespace pcl
     public:
       /** \brief Empty constructor. */
       RadiusOutlierRemoval (bool extract_removed_indices = false) :
-        Filter<pcl::PCLPointCloud2>::Filter (extract_removed_indices),
+        FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices),
         search_radius_ (0.0), min_pts_radius_ (1)
       {
         filter_name_ = "RadiusOutlierRemoval";
@@ -262,6 +262,9 @@ namespace pcl
 
       void
       applyFilter (PCLPointCloud2 &output) override;
+
+      void
+      applyFilter (std::vector<int> &indices) override;
   };
 }
 
