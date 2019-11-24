@@ -67,14 +67,14 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &out
   pcl::fromPCLPointCloud2 (*input_, *cloud);
 
   // Initialize the spatial locator
-  if (!tree_)
+  if (!searcher_)
   {
     if (cloud->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZ> ());
+      searcher_.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZ> ());
     else
-      tree_.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
+      searcher_.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
   }
-  tree_->setInputCloud (cloud);
+  searcher_->setInputCloud (cloud);
 
   // Allocate enough space to hold the results
   std::vector<int> nn_indices (indices_->size ());
@@ -93,7 +93,7 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &out
   // Go over all the points and check which doesn't have enough neighbors
   for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
-    int k = tree_->radiusSearch ((*indices_)[cp], search_radius_, nn_indices, nn_dists);
+    int k = searcher_->radiusSearch ((*indices_)[cp], search_radius_, nn_indices, nn_dists);
     // Check if the number of neighbors is larger than the user imposed limit
     if (k < min_pts_radius_)
     {

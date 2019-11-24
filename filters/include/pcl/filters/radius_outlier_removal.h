@@ -258,7 +258,7 @@ namespace pcl
       int min_pts_radius_;
 
       /** \brief A pointer to the spatial search object. */
-      KdTreePtr tree_;
+      KdTreePtr searcher_;
 
       void
       applyFilter (PCLPointCloud2 &output) override;
