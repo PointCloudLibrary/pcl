@@ -70,9 +70,15 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &out
   if (!searcher_)
   {
     if (cloud->isOrganized ())
+    {
+      PCL_DEBUG ("[pcl::%s::applyFilter] Cloud is organized, so using OrganizedNeighbor.\n", getClassName ().c_str ());
       searcher_.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZ> ());
+    }
     else
+    {
+      PCL_DEBUG ("[pcl::%s::applyFilter] Cloud is not organized, so using KdTree.\n", getClassName ().c_str ());
       searcher_.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
+    }
   }
   searcher_->setInputCloud (cloud);
 
@@ -90,9 +96,12 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &out
 
   int nr_p = 0;
   int nr_removed_p = 0;
+  //size_t log_step = indices_->size () / 10;
   // Go over all the points and check which doesn't have enough neighbors
   for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
+    //if(cp%log_step == 0)
+    //  PCL_DEBUG ("[pcl::%s::applyFilter] Iteration %i of %lu\n", getClassName ().c_str (), cp, indices_->size());
     int k = searcher_->radiusSearch ((*indices_)[cp], search_radius_, nn_indices, nn_dists);
     // Check if the number of neighbors is larger than the user imposed limit
     if (k < min_pts_radius_)
