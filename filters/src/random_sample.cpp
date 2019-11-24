@@ -44,55 +44,54 @@
 void
 pcl::RandomSample<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
-  unsigned N = input_->width * input_->height;
-  // If sample size is 0 or if the sample size is greater then input cloud size
-  //   then return entire copy of cloud
-  if (sample_ >= N)
+  std::vector<int> indices;
+  if (keep_organized_)
   {
+    bool temp = extract_removed_indices_;
+    extract_removed_indices_ = true;
+    applyFilter (indices);
+    extract_removed_indices_ = temp;
+    PCL_DEBUG ("[pcl::%s<pcl::PCLPointCloud2>::applyFilter] Removing %lu points of %lu points.\n",
+               filter_name_.c_str (), removed_indices_->size(), input_->height * input_->width);
+
     output = *input_;
+
+    // Get x, y, z fields. We should not just assume that they are the first fields of each point
+    std::vector<std::uint32_t> offsets;
+    for (const pcl::PCLPointField &field : input_->fields)
+    {
+      if (field.name == "x" ||
+          field.name == "y" ||
+          field.name == "z")
+        offsets.push_back (field.offset);
+    }
+    PCL_DEBUG ("[pcl::%s<pcl::PCLPointCloud2>::applyFilter] Found %lu fields called 'x', 'y', or 'z'.\n",
+               filter_name_.c_str (), offsets.size());
+
+    // For every "removed" point, set the x, y, z fields to user_filter_value_
+    const static float user_filter_value = user_filter_value_;
+    for (const auto ri : *removed_indices_) // ri = removed index
+    {
+      std::uint8_t* pt_data = reinterpret_cast<std::uint8_t*> (&output.data[ri * output.point_step]);
+      for (const auto &offset : offsets)
+      {
+        memcpy (pt_data + offset, &user_filter_value, sizeof (float));
+      }
+    }
+    if (!std::isfinite (user_filter_value_))
+    {
+      PCL_DEBUG ("[pcl::%s<pcl::PCLPointCloud2>::applyFilter] user_filter_value_ is %f, which is not finite, "
+                 "so the is_dense field of the output will be set to false.\n", filter_name_.c_str (), user_filter_value_);
+      output.is_dense = false;
+    }
   }
   else
   {
-    // Resize output cloud to sample size
-    output.data.resize (sample_ * input_->point_step);
-
-    // Copy the common fields
-    output.fields = input_->fields;
-    output.is_bigendian = input_->is_bigendian;
-    output.row_step = input_->row_step;
-    output.point_step = input_->point_step;
-    output.height = 1;
-
-    // Set random seed so derived indices are the same each time the filter runs
-    std::srand (seed_);
-
-    unsigned top = N - sample_;
-    unsigned i = 0;
-    unsigned index = 0;
-
-    // Algorithm A
-    for (std::size_t n = sample_; n >= 2; n--)
-    {
-      float V = unifRand ();
-      unsigned S = 0;
-      float quot = float (top) / float (N);
-      while (quot > V)
-      {
-        S++;
-        top--;
-        N--;
-        quot *= float (top) / float (N);
-      }
-      index += S;
-      memcpy (&output.data[i++ * output.point_step], &input_->data[index++ * output.point_step], output.point_step);
-      N--;
-    }
-
-    index += N * static_cast<unsigned> (unifRand ());
-    memcpy (&output.data[i++ * output.point_step], &input_->data[index++ * output.point_step], output.point_step);
-
-    output.width = sample_;
-    output.row_step = output.point_step * output.width;
+    // Here indices is used, not removed_indices_, so no need to change extract_removed_indices_.
+    applyFilter (indices);
+    PCL_DEBUG ("[pcl::%s<pcl::PCLPointCloud2>::applyFilter] Removing %lu points of %lu points.\n",
+               filter_name_.c_str (), (input_->height * input_->width) - indices.size(), input_->height * input_->width);
+    pcl::copyPointCloud (*input_, indices, output);
   }
 }
 
