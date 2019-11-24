@@ -162,7 +162,7 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
   Eigen::Vector3f local_pt (Eigen::Vector3f::Zero ());
 
   bool transform_matrix_is_identity = transform_.matrix ().isIdentity ();
-  bool translation_is_zero = (translation_ != Eigen::Vector3f::Zero ());
+  bool translation_is_not_zero = (translation_ != Eigen::Vector3f::Zero ());
   bool inverse_transform_matrix_is_identity = inverse_transform.matrix ().isIdentity ();
 
   for (std::size_t index = 0; index < indices_->size (); index++)
@@ -176,7 +176,7 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
     if (!transform_matrix_is_identity)
       local_pt = transform_ * local_pt;
 
-    if (translation_is_zero)
+    if (translation_is_not_zero)
     {
       local_pt.x () -= translation_ (0);
       local_pt.y () -= translation_ (1);
