@@ -165,10 +165,10 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
   bool translation_is_not_zero = (translation_ != Eigen::Vector3f::Zero ());
   bool inverse_transform_matrix_is_identity = inverse_transform.matrix ().isIdentity ();
 
-  for (std::size_t index = 0; index < indices_->size (); index++)
+  for (const auto index : *indices_)
   {
     // Get local point
-    std::size_t point_offset = static_cast<std::size_t>((*indices_)[index]) * input_->point_step;
+    std::size_t point_offset = static_cast<std::size_t>(index) * input_->point_step;
     std::size_t offset = point_offset + input_->fields[x_idx_].offset;
     memcpy (local_pt.data (), &input_->data[offset], sizeof (float)*3);
 
@@ -193,11 +193,11 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
     {
       if (negative_)
       {
-        indices[indices_count++] = (*indices_)[index];
+        indices[indices_count++] = index;
       }
       else if (extract_removed_indices_)
       {
-        (*removed_indices_)[removed_indices_count++] = static_cast<int> ((*indices_)[index]);
+        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
       }
     }
     // If inside the cropbox
@@ -205,10 +205,10 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
     {
       if (negative_ && extract_removed_indices_)
       {
-        (*removed_indices_)[removed_indices_count++] = static_cast<int> ((*indices_)[index]);
+        (*removed_indices_)[removed_indices_count++] = static_cast<int> (index);
       }
       else if (!negative_) {
-        indices[indices_count++] = (*indices_)[index];
+        indices[indices_count++] = index;
       }
     }
   }
