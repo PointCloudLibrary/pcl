@@ -100,45 +100,65 @@ pcl::RandomSample<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 void
 pcl::RandomSample<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
 {
-  unsigned N = input_->width * input_->height;
+  // Note: this function does not have to access input_ at all
+  std::size_t N = indices_->size ();
+  std::size_t sample_size = negative_ ? N - sample_ : sample_;
   // If sample size is 0 or if the sample size is greater then input cloud size
   //   then return all indices
-  if (sample_ >= N)
+  if (sample_size >= N)
   {
     indices = *indices_;
+    removed_indices_->clear ();
   }
   else
   {
     // Resize output indices to sample size
-    indices.resize (sample_);
+    indices.resize (sample_size);
+    if (extract_removed_indices_)
+      removed_indices_->resize (N - sample_size);
 
     // Set random seed so derived indices are the same each time the filter runs
     std::srand (seed_);
 
-    unsigned top = N - sample_;
-    unsigned i = 0;
-    unsigned index = 0;
-
-    // Algorithm A
-    for (std::size_t n = sample_; n >= 2; n--)
+    // Algorithm S
+    std::size_t i = 0;
+    std::size_t index = 0;
+    std::vector<bool> added;
+    if (extract_removed_indices_)
+      added.resize (indices_->size (), false);
+    std::size_t n = sample_size;
+    while (n > 0)
     {
-      float V = unifRand ();
-      unsigned S = 0;
-      float quot = float (top) / float (N);
-      while (quot > V)
+      // Step 1: [Generate U.] Generate a random variate U that is uniformly distributed between 0 and 1.
+      const float U = unifRand ();
+      // Step 2: [Test.] If N * U > n, go to Step 4.
+      if ((N * U) <= n)
       {
-        S++;
-        top--;
-        N--;
-        quot *= float (top) / float (N);
+        // Step 3: [Select.] Select the next record in the file for the sample, and set n : = n - 1.
+        if (extract_removed_indices_)
+          added[index] = true;
+        indices[i++] = (*indices_)[index];
+        --n;
       }
-      index += S;
-      indices[i++] = (*indices_)[index++];
-      N--;
+      // Step 4: [Don't select.] Skip over the next record (do not include it in the sample).
+      // Set N : = N - 1.
+      --N;
+      ++index;
+      // If n > 0, then return to Step 1; otherwise, the sample is complete and the algorithm terminates.
     }
 
-    index += N * static_cast<unsigned> (unifRand ());
-    indices[i++] = (*indices_)[index++];
+    // Now populate removed_indices_ appropriately
+    if (extract_removed_indices_)
+    {
+      std::size_t ri = 0;
+      for (std::size_t i = 0; i < added.size (); i++)
+      {
+        if (!added[i])
+        {
+          (*removed_indices_)[ri++] = (*indices_)[i];
+        }
+      }
+    }
   }
 }
 
