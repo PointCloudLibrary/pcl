@@ -206,7 +206,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
 template <typename PointT> double
 pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedianAbsoluteDeviation (
     const PointCloudConstPtr &cloud, 
-    const boost::shared_ptr <std::vector<int> > &indices, 
+    const IndicesPtr &indices,
     double sigma) const
 {
   std::vector<double> distances (indices->size ());
@@ -239,7 +239,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedianAbsoluteDeviation (
 template <typename PointT> void
 pcl::MaximumLikelihoodSampleConsensus<PointT>::getMinMax (
     const PointCloudConstPtr &cloud, 
-    const boost::shared_ptr <std::vector<int> > &indices, 
+    const IndicesPtr &indices,
     Eigen::Vector4f &min_p, 
     Eigen::Vector4f &max_p) const
 {
@@ -263,7 +263,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::getMinMax (
 template <typename PointT> void
 pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedian (
     const PointCloudConstPtr &cloud, 
-    const boost::shared_ptr <std::vector<int> > &indices, 
+    const IndicesPtr &indices,
     Eigen::Vector4f &median) const
 {
   // Copy the values to vectors for faster sorting

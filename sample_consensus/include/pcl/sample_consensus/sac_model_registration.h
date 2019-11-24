@@ -41,6 +41,7 @@
 #pragma once
 
 #include <pcl/pcl_macros.h>
+#include <pcl/pcl_base.h>
 #include <pcl/sample_consensus/eigen.h>
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
@@ -69,6 +70,7 @@ namespace pcl
       using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
 
       using Ptr = boost::shared_ptr<SampleConsensusModelRegistration<PointT> >;
+      using ConstPtr = boost::shared_ptr<const SampleConsensusModelRegistration<PointT>>;
 
       /** \brief Constructor for base SampleConsensusModelRegistration.
         * \param[in] cloud the input point cloud dataset
@@ -314,7 +316,7 @@ namespace pcl
       PointCloudConstPtr target_;
 
       /** \brief A pointer to the vector of target point indices to use. */
-      boost::shared_ptr <std::vector<int> > indices_tgt_;
+      IndicesPtr indices_tgt_;
 
       /** \brief Given the index in the original point cloud, give the matching original index in the target cloud */
       std::map<int, int> correspondences_;

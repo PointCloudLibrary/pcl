@@ -47,6 +47,7 @@
 #include <set>
 
 #include <pcl/pcl_macros.h>
+#include <pcl/pcl_base.h>
 #include <pcl/console/print.h>
 #include <pcl/point_cloud.h>
 #include <pcl/sample_consensus/boost.h>
@@ -311,7 +312,7 @@ namespace pcl
         * \param[in] indices a pointer to the vector of indices that represents the input data.
         */
       inline void 
-      setIndices (const boost::shared_ptr <std::vector<int> > &indices) 
+      setIndices (const IndicesPtr &indices)
       { 
         indices_ = indices; 
         shuffled_indices_ = *indices_;
@@ -328,7 +329,7 @@ namespace pcl
        }
 
       /** \brief Get a pointer to the vector of indices used. */
-      inline boost::shared_ptr <std::vector<int> > 
+      inline IndicesPtr
       getIndices () const { return (indices_); }
 
       /** \brief Return a unique id for each type of model employed. */
@@ -524,7 +525,7 @@ namespace pcl
       PointCloudConstPtr input_;
 
       /** \brief A pointer to the vector of point indices to use. */
-      boost::shared_ptr <std::vector<int> > indices_;
+      IndicesPtr indices_;
 
       /** The maximum number of samples to try until we get a good one */
       static const unsigned int max_sample_checks_ = 1000;

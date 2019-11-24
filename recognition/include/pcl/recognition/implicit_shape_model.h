@@ -77,6 +77,7 @@ namespace pcl
       public:
 
         using Ptr = boost::shared_ptr<ISMVoteList<PointT> >;
+        using ConstPtr = boost::shared_ptr<const ISMVoteList<PointT>>;
 
         /** \brief Empty constructor with member variables initialization. */
         ISMVoteList ();
@@ -158,6 +159,9 @@ namespace pcl
       */
     struct PCL_EXPORTS ISMModel
     {
+      using Ptr = boost::shared_ptr<ISMModel>;
+      using ConstPtr = boost::shared_ptr<const ISMModel>;
+
       /** \brief Simple constructor that initializes the structure. */
       ISMModel ();
 
@@ -242,7 +246,7 @@ namespace pcl
     {
       public:
 
-        using ISMModelPtr = boost::shared_ptr<pcl::features::ISMModel>;
+        using ISMModelPtr = pcl::features::ISMModel::Ptr;
         using Feature = pcl::Feature<PointT, pcl::Histogram<FeatureSize>>;
         using FeaturePtr = typename Feature::Ptr;
 

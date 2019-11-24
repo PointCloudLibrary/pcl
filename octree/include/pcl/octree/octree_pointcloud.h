@@ -82,17 +82,13 @@ namespace pcl
          */
         OctreePointCloud (const double resolution_arg);
 
-        /** \brief Empty deconstructor. */
-        
-        ~OctreePointCloud ();
-
         // public typedefs
         using IndicesPtr = boost::shared_ptr<std::vector<int> >;
         using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
 
         using PointCloud = pcl::PointCloud<PointT>;
-        using PointCloudPtr = boost::shared_ptr<PointCloud>;
-        using PointCloudConstPtr = boost::shared_ptr<const PointCloud>;
+        using PointCloudPtr = typename PointCloud::Ptr;
+        using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
         // public typedefs for single/double buffering
         using SingleBuffer = OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeBase<LeafContainerT> >;

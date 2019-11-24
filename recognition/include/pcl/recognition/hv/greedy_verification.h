@@ -40,6 +40,8 @@
 #include <pcl/recognition/hv/hypotheses_verification.h>
 #include <pcl/common/common.h>
 
+#include <memory>
+
 namespace pcl
 {
 
@@ -72,7 +74,7 @@ namespace pcl
         float regularizer_;
       };
 
-      using RecognitionModelPtr = boost::shared_ptr<RecognitionModel>;
+      using RecognitionModelPtr = std::shared_ptr<RecognitionModel>;
 
       /*
        * \brief Sorts recognition models based on the number of explained scene points and visible outliers

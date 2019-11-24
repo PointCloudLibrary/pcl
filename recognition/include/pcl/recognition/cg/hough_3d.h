@@ -61,6 +61,7 @@ namespace pcl
         PCL_MAKE_ALIGNED_OPERATOR_NEW
 
         using Ptr = boost::shared_ptr<HoughSpace3D>;
+        using ConstPtr = boost::shared_ptr<const HoughSpace3D>;
 
         /** \brief Constructor
           *

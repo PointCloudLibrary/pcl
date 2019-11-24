@@ -199,7 +199,10 @@ namespace pcl
     class DataContainerInterface
     {
       public:
-        virtual ~DataContainerInterface () {}
+        using Ptr = boost::shared_ptr<DataContainerInterface>;
+        using ConstPtr = boost::shared_ptr<const DataContainerInterface>;
+
+        virtual ~DataContainerInterface () = default;
         virtual double getCorrespondenceScore (int index) = 0;
         virtual double getCorrespondenceScore (const pcl::Correspondence &) = 0;
         virtual double getCorrespondenceScoreFromNormals (const pcl::Correspondence &) = 0;

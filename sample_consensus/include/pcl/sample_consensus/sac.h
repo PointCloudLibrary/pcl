@@ -42,6 +42,7 @@
 
 #include <pcl/sample_consensus/boost.h>
 #include <pcl/sample_consensus/sac_model.h>
+#include <pcl/pcl_base.h>
 
 #include <ctime>
 #include <memory>
@@ -65,6 +66,7 @@ namespace pcl
     public:
       using Ptr = boost::shared_ptr<SampleConsensus<T> >;
       using ConstPtr = boost::shared_ptr<const SampleConsensus<T> >;
+
 
       /** \brief Constructor for base SAC.
         * \param[in] model a Sample Consensus model
@@ -270,7 +272,7 @@ namespace pcl
         * \param[out] indices_subset the resultant output set of randomly selected indices
         */
       inline void
-      getRandomSamples (const boost::shared_ptr <std::vector<int> > &indices, 
+      getRandomSamples (const IndicesPtr &indices,
                         std::size_t nr_samples, 
                         std::set<int> &indices_subset)
       {

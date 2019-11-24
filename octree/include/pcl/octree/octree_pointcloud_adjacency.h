@@ -91,8 +91,8 @@ namespace pcl
         using BranchNode = typename OctreePointCloudT::BranchNode;
 
         using PointCloud = pcl::PointCloud<PointT>;
-        using PointCloudPtr = boost::shared_ptr<PointCloud>;
-        using PointCloudConstPtr = boost::shared_ptr<const PointCloud>;
+        using PointCloudPtr = typename PointCloud::Ptr;
+        using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
         // BGL graph
         using VoxelAdjacencyList = boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, PointT, float>;
@@ -117,11 +117,6 @@ namespace pcl
           *
           * \param[in] resolution_arg Octree resolution at lowest octree level (voxel size) */
         OctreePointCloudAdjacency (const double resolution_arg);
-
-        /** \brief Empty class destructor. */
-        ~OctreePointCloudAdjacency ()
-        {
-        }
 
         /** \brief Adds points from cloud to the octree.
           *

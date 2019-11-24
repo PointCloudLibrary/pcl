@@ -199,7 +199,7 @@ namespace pcl
          */
         double factor_;
 
-        using DataContainerPtr = boost::shared_ptr<DataContainerInterface>;
+        using DataContainerPtr = DataContainerInterface::Ptr;
 
         /** \brief A pointer to the DataContainer object containing the input and target point clouds */
         DataContainerPtr data_container_;

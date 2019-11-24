@@ -97,6 +97,7 @@ namespace pcl
     {
       public:
         using Ptr = boost::shared_ptr<OutofcoreOctreeBaseMetadata>;
+        using ConstPtr = boost::shared_ptr<const OutofcoreOctreeBaseMetadata>;
 
         /** \brief Empty constructor */
         OutofcoreOctreeBaseMetadata ();
