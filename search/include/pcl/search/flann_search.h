@@ -110,8 +110,8 @@ namespace pcl
         using PointCloud = typename Search<PointT>::PointCloud;
         using PointCloudConstPtr = typename Search<PointT>::PointCloudConstPtr;
 
-        using IndicesPtr = boost::shared_ptr<std::vector<int> >;
-        using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
+        using typename Search<PointT>::IndicesPtr;
+        using typename Search<PointT>::IndicesConstPtr;
 
         using MatrixPtr = boost::shared_ptr<flann::Matrix<float> >;
         using MatrixConstPtr = boost::shared_ptr<const flann::Matrix<float> >;
@@ -120,8 +120,8 @@ namespace pcl
         using IndexPtr = boost::shared_ptr<flann::NNIndex<FlannDistance> >;
 
         using PointRepresentation = pcl::PointRepresentation<PointT>;
-        using PointRepresentationPtr = boost::shared_ptr<PointRepresentation>;
-        using PointRepresentationConstPtr = boost::shared_ptr<const PointRepresentation>;
+        using PointRepresentationPtr = typename PointRepresentation::Ptr;
+        using PointRepresentationConstPtr = typename PointRepresentation::ConstPtr;
 
         /** \brief Helper class that creates a FLANN index from a given FLANN matrix. To
           * use a FLANN index type with FlannSearch, implement this interface and

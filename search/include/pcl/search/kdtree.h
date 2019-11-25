@@ -64,8 +64,8 @@ namespace pcl
         using PointCloud = typename Search<PointT>::PointCloud;
         using PointCloudConstPtr = typename Search<PointT>::PointCloudConstPtr;
 
-        using IndicesPtr = boost::shared_ptr<std::vector<int> >;
-        using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
+        using typename Search<PointT>::IndicesPtr;
+        using typename Search<PointT>::IndicesConstPtr;
 
         using pcl::search::Search<PointT>::indices_;
         using pcl::search::Search<PointT>::input_;
@@ -78,9 +78,9 @@ namespace pcl
         using Ptr = boost::shared_ptr<KdTree<PointT, Tree> >;
         using ConstPtr = boost::shared_ptr<const KdTree<PointT, Tree> >;
 
-        using KdTreePtr = boost::shared_ptr<Tree>;
-        using KdTreeConstPtr = boost::shared_ptr<const Tree>;
-        using PointRepresentationConstPtr = boost::shared_ptr<const PointRepresentation<PointT> >;
+        using KdTreePtr = typename Tree::Ptr;
+        using KdTreeConstPtr = typename Tree::ConstPtr;
+        using PointRepresentationConstPtr = typename PointRepresentation<PointT>::ConstPtr;
 
         /** \brief Constructor for KdTree. 
           *
