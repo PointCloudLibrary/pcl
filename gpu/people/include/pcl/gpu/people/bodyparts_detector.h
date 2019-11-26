@@ -45,6 +45,7 @@
 #include <pcl/gpu/people/label_common.h>
 #include "pcl/gpu/people/person_attribs.h"
 #include <boost/shared_ptr.hpp>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -133,8 +134,8 @@ namespace pcl
           pcl::device::LabelProbability P_l_prev_2_;  // for the second iteration
 
         private:
-          boost::shared_ptr<device::MultiTreeLiveProc> impl_;
-          
+          std::shared_ptr<device::MultiTreeLiveProc> impl_;
+
           int max_cluster_size_;
           float cluster_tolerance_;
 

@@ -41,6 +41,8 @@
 #include <pcl/point_types.h>
 #include <pcl/gpu/containers/device_array.h>
 
+#include <memory>
+
 namespace pcl
 {
   namespace gpu
@@ -65,7 +67,7 @@ namespace pcl
 	private:
       
       struct Impl;
-      boost::shared_ptr<Impl> impl_;
+      std::shared_ptr<Impl> impl_;
 
       void
       reconstruct (const Cloud &points, DeviceArray2D<int>& vertexes);  

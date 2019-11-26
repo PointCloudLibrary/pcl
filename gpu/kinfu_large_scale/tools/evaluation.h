@@ -36,11 +36,13 @@
 
 #pragma once
 
-#include <string>
-#include <boost/shared_ptr.hpp>
 #include <pcl/gpu/containers/kernel_containers.h>
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
 
+#include <boost/shared_ptr.hpp>
+
+#include <memory>
+#include <string>
 
 /** \brief  class for  RGB-D SLAM Dataset and Benchmark
   * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
@@ -99,6 +101,6 @@ private:
   void readFile(const std::string& file, std::vector< std::pair<double, std::string> >& output);
 
   struct Impl;
-  boost::shared_ptr<Impl> impl_;
+  std::shared_ptr<Impl> impl_;
 };
 
