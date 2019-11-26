@@ -44,7 +44,8 @@ namespace pcl
       using BaseClass = Tracker<PointInT, StateT>;
 
       using Ptr = boost::shared_ptr<KLDAdaptiveParticleFilterTracker<PointInT, StateT>>;
-      
+      using ConstPtr = boost::shared_ptr<const KLDAdaptiveParticleFilterTracker<PointInT, StateT>>;
+
       using PointCloudIn = typename Tracker<PointInT, StateT>::PointCloudIn;
       using PointCloudInPtr = typename PointCloudIn::Ptr;
       using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
@@ -54,12 +55,12 @@ namespace pcl
       using PointCloudStateConstPtr = typename PointCloudState::ConstPtr;
 
       using Coherence = PointCoherence<PointInT>;
-      using CoherencePtr = boost::shared_ptr<Coherence>;
-      using CoherenceConstPtr = boost::shared_ptr<const Coherence>;
+      using CoherencePtr = typename Coherence::Ptr;
+      using CoherenceConstPtr = typename Coherence::ConstPtr;
 
       using CloudCoherence = PointCloudCoherence<PointInT>;
-      using CloudCoherencePtr = boost::shared_ptr<CloudCoherence>;
-      using CloudCoherenceConstPtr = boost::shared_ptr<const CloudCoherence>;
+      using CloudCoherencePtr = typename CloudCoherence::Ptr;
+      using CloudCoherenceConstPtr = typename CloudCoherence::ConstPtr;
 
       /** \brief Empty constructor. */
       KLDAdaptiveParticleFilterTracker ()

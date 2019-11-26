@@ -27,9 +27,9 @@ namespace pcl
         
         using Ptr = boost::shared_ptr<NearestPairPointCloudCoherence<PointInT> >;
         using ConstPtr = boost::shared_ptr<const NearestPairPointCloudCoherence<PointInT> >;
-        using SearchPtr = boost::shared_ptr<pcl::search::Search<PointInT> >;
-        using SearchConstPtr = boost::shared_ptr<const pcl::search::Search<PointInT> >;
-        
+        using SearchPtr = typename pcl::search::Search<PointInT>::Ptr;
+        using SearchConstPtr = typename pcl::search::Search<PointInT>::ConstPtr;
+
         /** \brief empty constructor */
         NearestPairPointCloudCoherence ()
           : new_target_ (false)
