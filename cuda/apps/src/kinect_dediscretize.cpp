@@ -57,7 +57,7 @@ class SimpleKinectTool
   public:
      SimpleKinectTool () : viewer ("KinectGrabber"), init_(false) {}
 
-    void cloud_cb_ (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float constant)
+    void cloud_cb_ (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float constant)
     {
 	    pcl_cuda::PointCloudAOS<pcl_cuda::Device>::Ptr data;
     	{
@@ -77,7 +77,7 @@ class SimpleKinectTool
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id);
 
-      std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = std::bind (&SimpleKinectTool::cloud_cb_, this, _1, _2, _3);
+      std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&SimpleKinectTool::cloud_cb_, this, _1, _2, _3);
 
       boost::signals2::connection c = interface->registerCallback (f);
 

@@ -122,8 +122,8 @@ class MultiRansac
     }
 
     template <template <typename> class Storage> void 
-    cloud_cb (const boost::shared_ptr<openni_wrapper::Image>& image,
-              const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, 
+    cloud_cb (const openni_wrapper::Image::Ptr& image,
+              const openni_wrapper::DepthImage::Ptr& depth_image,
               float constant)
     {
       static unsigned count = 0;
@@ -243,13 +243,13 @@ class MultiRansac
       if (use_device)
       {
         std::cerr << "[RANSAC] Using GPU..." << std::endl;
-        std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = std::bind (&MultiRansac::cloud_cb<pcl_cuda::Device>, this, _1, _2, _3);
+        std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&MultiRansac::cloud_cb<pcl_cuda::Device>, this, _1, _2, _3);
         c = interface->registerCallback (f);
       }
       else
       {
         std::cerr << "[RANSAC] Using CPU..." << std::endl;
-        std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)> f = std::bind (&MultiRansac::cloud_cb<pcl_cuda::Host>, this, _1, _2, _3);
+        std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&MultiRansac::cloud_cb<pcl_cuda::Host>, this, _1, _2, _3);
         c = interface->registerCallback (f);
       }
 
