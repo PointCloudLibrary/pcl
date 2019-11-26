@@ -59,6 +59,7 @@ namespace pcl
       {
         public:
           using Ptr = boost::shared_ptr<OrganizedPlaneDetector>;
+          using ConstPtr = boost::shared_ptr<const OrganizedPlaneDetector>;
 
           using PointTC = pcl::PointXYZRGBA;
           using PointT = pcl::PointXYZ;

@@ -57,6 +57,7 @@ namespace pcl
     {
     public:
       using Ptr = boost::shared_ptr<RayCaster>;
+      using ConstPtr = boost::shared_ptr<const RayCaster>;
       using MapArr = DeviceArray2D<float>;
       using View = DeviceArray2D<PixelRGB>;
       using Depth = DeviceArray2D<unsigned short>;     

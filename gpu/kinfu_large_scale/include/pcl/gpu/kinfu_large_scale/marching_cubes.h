@@ -70,7 +70,8 @@ namespace pcl
         
         /** \brief Smart pointer. */
         using Ptr = boost::shared_ptr<MarchingCubes>;
-        
+        using ConstPtr = boost::shared_ptr<const MarchingCubes>;
+
         /** \brief Default constructor */
         MarchingCubes();
         

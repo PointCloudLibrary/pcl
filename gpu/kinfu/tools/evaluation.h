@@ -49,6 +49,7 @@ class Evaluation
 {
 public:
   using Ptr = boost::shared_ptr<Evaluation>; 
+  using ConstPtr = boost::shared_ptr<const Evaluation>;
   using RGB = pcl::gpu::KinfuTracker::PixelRGB;
 
   Evaluation(const std::string& folder);

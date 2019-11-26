@@ -62,6 +62,7 @@ namespace pcl
       {
       public:
         using Ptr = boost::shared_ptr<TsdfVolume>;
+        using ConstPtr = boost::shared_ptr<const TsdfVolume>;
 
         /** \brief Supported Point Types */
         using PointType = PointXYZ;

@@ -52,6 +52,9 @@
 class CameraPoseProcessor
 {
   public:
+    using Ptr = boost::shared_ptr<CameraPoseProcessor>;
+    using ConstPtr = boost::shared_ptr<const CameraPoseProcessor>;
+
     virtual ~CameraPoseProcessor () {}
 
     /// process the camera pose, this method is called at every frame.

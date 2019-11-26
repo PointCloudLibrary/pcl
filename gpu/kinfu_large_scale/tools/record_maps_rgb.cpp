@@ -84,6 +84,9 @@ class MapsBuffer
     
     struct MapsRgb
     {
+      using Ptr = boost::shared_ptr<MapsRgb>;
+      using ConstPtr = boost::shared_ptr<const MapsRgb>;
+
       pcl::gpu::PtrStepSz<const PixelRGB> rgb_;
       pcl::gpu::PtrStepSz<const unsigned short> depth_;      
       double time_stamp_;
