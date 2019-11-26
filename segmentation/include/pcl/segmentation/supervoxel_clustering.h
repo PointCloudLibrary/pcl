@@ -176,7 +176,7 @@ namespace pcl
       using OctreeAdjacencyT = pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT>;
       using OctreeSearchT = pcl::octree::OctreePointCloudSearch<PointT>;
       using KdTreeT = pcl::search::KdTree<PointT>;
-      using IndicesPtr = boost::shared_ptr<std::vector<int> >;
+      using IndicesPtr = pcl::IndicesPtr;
 
       using PCLBase <PointT>::initCompute;
       using PCLBase <PointT>::deinitCompute;
