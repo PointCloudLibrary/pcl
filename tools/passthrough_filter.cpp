@@ -102,7 +102,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   passthrough_filter.setInputCloud (input);
   passthrough_filter.setFilterFieldName (field_name);
   passthrough_filter.setFilterLimits (min, max);
-  passthrough_filter.setFilterLimitsNegative (!inside);
+  passthrough_filter.setNegative (!inside);
   passthrough_filter.setKeepOrganized (keep_organized);
   passthrough_filter.filter (output);
 
