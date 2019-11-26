@@ -72,16 +72,16 @@ namespace pcl
         using Ptr = boost::shared_ptr<pcl::search::Octree<PointT,LeafTWrap,BranchTWrap,OctreeT> >;
         using ConstPtr = boost::shared_ptr<const pcl::search::Octree<PointT,LeafTWrap,BranchTWrap,OctreeT> >;
 
-        using IndicesPtr = boost::shared_ptr<std::vector<int> >;
-        using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
+        using typename Search<PointT>::IndicesPtr;
+        using typename Search<PointT>::IndicesConstPtr;
 
         using PointCloud = pcl::PointCloud<PointT>;
-        using PointCloudPtr = boost::shared_ptr<PointCloud>;
-        using PointCloudConstPtr = boost::shared_ptr<const PointCloud>;
+        using PointCloudPtr = typename PointCloud::Ptr;
+        using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
         // Boost shared pointers
-        using OctreePointCloudSearchPtr = boost::shared_ptr<pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap> >;
-        using OctreePointCloudSearchConstPtr = boost::shared_ptr<const pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap> >;
+        using OctreePointCloudSearchPtr = typename pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap>::Ptr;
+        using OctreePointCloudSearchConstPtr = typename pcl::octree::OctreePointCloudSearch<PointT, LeafTWrap, BranchTWrap>::ConstPtr;
         OctreePointCloudSearchPtr tree_;
 
         using pcl::search::Search<PointT>::input_;
