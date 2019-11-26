@@ -42,12 +42,12 @@
 #include <pcl/gpu/segmentation/gpu_extract_clusters.h>
 
 void
-pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> >  &host_cloud_,
-                                    const pcl::gpu::Octree::Ptr                               &tree,
-                                    float                                                     tolerance,
-                                    std::vector<PointIndices>                                 &clusters,
-                                    unsigned int                                              min_pts_per_cluster,
-                                    unsigned int                                              max_pts_per_cluster)
+pcl::gpu::extractEuclideanClusters (const pcl::PointCloud<pcl::PointXYZ>::Ptr  &host_cloud_,
+                                    const pcl::gpu::Octree::Ptr                &tree,
+                                    float                                      tolerance,
+                                    std::vector<PointIndices>                  &clusters,
+                                    unsigned int                               min_pts_per_cluster,
+                                    unsigned int                               max_pts_per_cluster)
 {
 
   // Create a bool vector of processed point indices, and initialize it to false

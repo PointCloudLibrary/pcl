@@ -211,8 +211,8 @@ class PeoplePCDApp
         savePNGFile(make_name(counter_, "d2"), people_detector_.depth_device2_);
       }
     }
-        
-    void source_cb1(const boost::shared_ptr<const PointCloud<PointXYZRGBA> >& cloud)
+
+    void source_cb1(const PointCloud<PointXYZRGBA>::ConstPtr& cloud)
     {
       {          
         std::lock_guard<std::mutex> lock(data_ready_mutex_);
@@ -224,7 +224,7 @@ class PeoplePCDApp
       data_ready_cond_.notify_one();
     }
 
-    void source_cb2(const boost::shared_ptr<openni_wrapper::Image>& image_wrapper, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper, float)
+    void source_cb2(const openni_wrapper::Image::Ptr& image_wrapper, const openni_wrapper::DepthImage::Ptr& depth_wrapper, float)
     {
       {                    
         std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
@@ -278,9 +278,9 @@ class PeoplePCDApp
       PCDGrabberBase* ispcd = dynamic_cast<pcl::PCDGrabberBase*>(&capture_);
       if (ispcd)
         cloud_cb_= true;
-        
-      using DepthImagePtr = boost::shared_ptr<openni_wrapper::DepthImage>;
-      using ImagePtr = boost::shared_ptr<openni_wrapper::Image>;
+
+      using DepthImagePtr = openni_wrapper::DepthImage::Ptr;
+      using ImagePtr = openni_wrapper::Image::Ptr;
 
       std::function<void (const PointCloud<PointXYZRGBA>::ConstPtr&)> func1 = [this] (const PointCloud<PointXYZRGBA>::ConstPtr& cloud) { source_cb1 (cloud); };
       std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func2 = [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant)

@@ -79,6 +79,7 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include "evaluation.h"
 
 #include <pcl/common/angles.h>
+#include <pcl/make_shared.h>
 
 #ifdef HAVE_OPENCV  
 #include <opencv2/highgui/highgui.hpp>
@@ -222,17 +223,17 @@ typename PointCloud<MergedT>::Ptr merge(const PointCloud<PointT>& points, const 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-boost::shared_ptr<pcl::PolygonMesh> convertToMesh(const DeviceArray<PointXYZ>& triangles)
+pcl::PolygonMesh::Ptr convertToMesh(const DeviceArray<PointXYZ>& triangles)
 { 
   if (triangles.empty())
-          return boost::shared_ptr<pcl::PolygonMesh>();
+          return pcl::PolygonMesh::Ptr();
 
   pcl::PointCloud<pcl::PointXYZ> cloud;
   cloud.width  = (int)triangles.size();
   cloud.height = 1;
   triangles.download(cloud.points);
 
-  boost::shared_ptr<pcl::PolygonMesh> mesh_ptr( new pcl::PolygonMesh() ); 
+  PolygonMesh::Ptr mesh_ptr = pcl::make_shared<PolygonMesh> ();
   pcl::toPCLPointCloud2(cloud, mesh_ptr->cloud);
 
   mesh_ptr->polygons.resize (triangles.size() / 3);
@@ -680,7 +681,7 @@ struct SceneCloudView
   MarchingCubes::Ptr marching_cubes_;
   DeviceArray<PointXYZ> triangles_buffer_device_;
 
-  boost::shared_ptr<pcl::PolygonMesh> mesh_ptr_;
+  pcl::PolygonMesh::Ptr mesh_ptr_;
 
 public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -735,7 +736,7 @@ struct KinFuLSApp
     enable_texture_extraction_ = false;
 
     //~ float fx, fy, cx, cy;
-    //~ boost::shared_ptr<openni_wrapper::OpenNIDevice> d = ((pcl::OpenNIGrabber)source).getDevice ();
+    //~ openni_wrapper::OpenNIDevice::Ptr d = ((pcl::OpenNIGrabber)source).getDevice ();
     //~ kinfu_->getDepthIntrinsics (fx, fy, cx, cy);
 
     float height = 480.0f;
@@ -758,7 +759,7 @@ struct KinFuLSApp
   void
   initCurrentFrameView ()
   {
-    current_frame_cloud_view_ = boost::shared_ptr<CurrentFrameCloudView>(new CurrentFrameCloudView ());
+    current_frame_cloud_view_ = pcl::make_shared<CurrentFrameCloudView> ();
     current_frame_cloud_view_->cloud_viewer_.registerKeyboardCallback (keyboard_callback, (void*)this);
     current_frame_cloud_view_->setViewerPose (kinfu_->getCameraPose ());
   }
@@ -892,7 +893,7 @@ struct KinFuLSApp
   }
 
   template<typename DepthImg>
-  void source_cb1(const boost::shared_ptr<DepthImg>& depth_wrapper)
+  void source_cb1(const typename DepthImg::Ptr& depth_wrapper)
   {        
     {
       std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
@@ -911,7 +912,7 @@ struct KinFuLSApp
   }
 
   template<typename Img, typename DepthImg>
-  void source_cb2(const boost::shared_ptr<Img>& image_wrapper, const boost::shared_ptr<DepthImg>& depth_wrapper, float)
+  void source_cb2(const typename Img::Ptr& image_wrapper, const typename DepthImg::Ptr& depth_wrapper, float)
   {
     {
       std::unique_lock<std::mutex> lock (data_ready_mutex_, std::try_to_lock);
@@ -1002,10 +1003,10 @@ struct KinFuLSApp
       std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func1 =
           [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant)
       {
-        source_cb2 (img, depth, constant);
+        source_cb2<Image, DepthImage> (img, depth, constant);
       };
       std::function<void (const DepthImagePtr&)> func2 =
-          [this] (const DepthImagePtr& depth) { source_cb1 (depth); };
+          [this] (const DepthImagePtr& depth) { source_cb1<DepthImage> (depth); };
 
       if(pcd_source_)
       {
@@ -1029,10 +1030,10 @@ struct KinFuLSApp
       std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func1 =
           [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant)
       {
-        source_cb2 (img, depth, constant);
+        source_cb2<Image, DepthImage> (img, depth, constant);
       };
       std::function<void (const DepthImagePtr&)> func2 =
-          [this] (const DepthImagePtr& depth) { source_cb1 (depth); };
+          [this] (const DepthImagePtr& depth) { source_cb1<DepthImage> (depth); };
 
       if(pcd_source_)
       {

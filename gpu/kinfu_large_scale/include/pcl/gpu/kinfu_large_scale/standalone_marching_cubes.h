@@ -79,7 +79,7 @@ namespace pcl
       public:
           using PointCloud = pcl::PointCloud<PointT>;
           using PointCloudPtr = typename PointCloud::Ptr;
-          using MeshPtr = boost::shared_ptr<pcl::PolygonMesh>;
+          using MeshPtr = pcl::PolygonMesh::Ptr;
 
       /** \brief Constructor        
         */
