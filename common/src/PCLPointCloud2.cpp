@@ -63,9 +63,8 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
   {
     case 1:
       cloud1 = cloud2;
-      PCL_FALLTHROUGH;
+      PCL_FALLTHROUGH
     case 0:
-      PCL_FALLTHROUGH;
     case 2:
       cloud1.header.stamp = std::max (cloud1.header.stamp, cloud2.header.stamp);
       return (true);
