@@ -650,6 +650,13 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
         target_link_libraries(${pcl_component} INTERFACE ${PCL_${COMPONENT}_LINK_LIBRARIES})
       endif()
       set(PCL_${COMPONENT}_LIBRARIES ${pcl_component})
+    else() # header-only
+      add_library(${pcl_component} INTERFACE IMPORTED)
+      set_target_properties(${pcl_component} PROPERTIES
+        INTERFACE_COMPILE_DEFINITIONS "${definitions}"
+        INTERFACE_COMPILE_OPTIONS "${PCL_COMPILE_OPTIONS}" # Needed?
+        INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS};${PCL_CONF_INCLUDE_DIR}"
+      )
     endif()
   endif()
 endforeach()
