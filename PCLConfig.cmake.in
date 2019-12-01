@@ -405,7 +405,7 @@ endif()
 if(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl/pcl_config.h")
   # Found a PCL installation
   # pcl_message("Found a PCL installation")
-  set(PCL_INCLUDE_DIRS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
+  set(PCL_CONF_INCLUDE_DIR "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
   set(PCL_LIBRARY_DIRS "${PCL_ROOT}/@LIB_INSTALL_DIR@")
   if(EXISTS "${PCL_ROOT}/3rdParty")
     set(PCL_ALL_IN_ONE_INSTALLER ON)
@@ -413,7 +413,7 @@ if(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl
 elseif(EXISTS "${PCL_ROOT}/include/pcl/pcl_config.h")
   # Found a non-standard (likely ANDROID) PCL installation
   # pcl_message("Found a PCL installation")
-  set(PCL_INCLUDE_DIRS "${PCL_ROOT}/include")
+  set(PCL_CONF_INCLUDE_DIR "${PCL_ROOT}/include")
   set(PCL_LIBRARY_DIRS "${PCL_ROOT}/lib")
   if(EXISTS "${PCL_ROOT}/3rdParty")
     set(PCL_ALL_IN_ONE_INSTALLER ON)
@@ -421,12 +421,14 @@ elseif(EXISTS "${PCL_ROOT}/include/pcl/pcl_config.h")
 elseif(EXISTS "${PCL_DIR}/include/pcl/pcl_config.h")
   # Found PCLConfig.cmake in a build tree of PCL
   # pcl_message("PCL found into a build tree.")
-  set(PCL_INCLUDE_DIRS "${PCL_DIR}/include") # for pcl_config.h
+  set(PCL_CONF_INCLUDE_DIR "${PCL_DIR}/include") # for pcl_config.h
   set(PCL_LIBRARY_DIRS "${PCL_DIR}/@LIB_INSTALL_DIR@")
   set(PCL_SOURCES_TREE "@CMAKE_SOURCE_DIR@")
 else()
   pcl_report_not_found("PCL can not be found on this machine")
 endif()
+
+set(PCL_INCLUDE_DIRS "${PCL_CONF_INCLUDE_DIR}")
 
 #set a suffix for debug libraries
 set(PCL_DEBUG_SUFFIX "@CMAKE_DEBUG_POSTFIX@")
@@ -634,7 +636,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
             INTERFACE_COMPILE_DEFINITIONS "${definitions}"
             INTERFACE_COMPILE_OPTIONS "$<$<COMPILE_LANGUAGE:CXX>:${PCL_COMPILE_OPTIONS}>"
             INTERFACE_COMPILE_FEATURES "@PCL_CXX_COMPILE_FEATURES@"
-            INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS}"
+            INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS};${PCL_CONF_INCLUDE_DIR}"
             INTERFACE_LINK_LIBRARIES "${PCL_${COMPONENT}_LINK_LIBRARIES}"
         )
       else()
@@ -642,7 +644,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
           PROPERTIES
             INTERFACE_COMPILE_DEFINITIONS "${definitions}"
             INTERFACE_COMPILE_OPTIONS "$<$<COMPILE_LANGUAGE:CXX>:${PCL_COMPILE_OPTIONS}>"
-            INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS}"
+            INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS};${PCL_CONF_INCLUDE_DIR}"
         )
         # If possible, we use target_link_libraries to avoid problems with link-type keywords,
         # see https://github.com/PointCloudLibrary/pcl/issues/2989
