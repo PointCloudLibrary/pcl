@@ -276,6 +276,23 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 void
 pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
 {
+  // If input is not present, we cannot filter
+  if (!input_)
+  {
+    PCL_ERROR ("[pcl::%s::applyFilter] Input dataset not given!\n", getClassName ().c_str ());
+    indices.clear ();
+    removed_indices_->clear ();
+    return;
+  }
+
+  // If fields x/y/z are not present, we cannot filter
+  if (x_idx_ == -1 || y_idx_ == -1 || z_idx_ == -1)
+  {
+    PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!\n", getClassName ().c_str ());
+    indices.clear ();
+    removed_indices_->clear ();
+    return;
+  }
   // The arrays to be used
   indices.resize (indices_->size ());
   removed_indices_->resize (indices_->size ());
