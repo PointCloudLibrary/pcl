@@ -356,24 +356,9 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
       float field_value = 0;
       memcpy (&field_value, pt_data + input_->fields[distance_idx].offset, sizeof (float));
 
-      // Remove NAN/INF/-INF values. We expect passthrough to output clean valid data.
-      if (!std::isfinite (field_value))
-      {
-        if (extract_removed_indices_)
-          (*removed_indices_)[rii++] = ii;
-        continue;
-      }
-
-      // Outside of the field limits are passed to removed indices
-      if (!negative_ && (field_value < filter_limit_min_ || field_value > filter_limit_max_))
-      {
-        if (extract_removed_indices_)
-          (*removed_indices_)[rii++] = ii;
-        continue;
-      }
-
-      // Inside of the field limits are passed to removed indices if negative was set
-      if (negative_ && field_value >= filter_limit_min_ && field_value <= filter_limit_max_)
+      if ((!std::isfinite (field_value)) || // Remove NAN/INF/-INF values. We expect passthrough to output clean valid data.
+          (!negative_ && (field_value < filter_limit_min_ || field_value > filter_limit_max_)) || // Outside of the field limits are removed
+          (negative_ && field_value >= filter_limit_min_ && field_value <= filter_limit_max_)) // Inside of the field limits are removed if negative was set
       {
         if (extract_removed_indices_)
           (*removed_indices_)[rii++] = ii;
