@@ -173,33 +173,7 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &i
 
       // Check the number of neighbors
       // Note: nn_dists is sorted, so check the last item
-      bool chk_neighbors = true;
-      if (k == mean_k)
-      {
-        if (negative_)
-        {
-          chk_neighbors = false;
-          if (nn_dists_max < nn_dists[k-1])
-          {
-            chk_neighbors = true;
-          }
-        }
-        else
-        {
-          chk_neighbors = true;
-          if (nn_dists_max < nn_dists[k-1])
-          {
-            chk_neighbors = false;
-          }
-        }
-      }
-      else
-      {
-        if (negative_)
-          chk_neighbors = true;
-        else
-          chk_neighbors = false;
-      }
+      bool chk_neighbors = (k == mean_k)? (negative_ == (nn_dists_max < nn_dists[k-1])) : negative_;
 
       // Points having too few neighbors are outliers and are passed to removed indices
       // Unless negative was set, then it's the opposite condition
