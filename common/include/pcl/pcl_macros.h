@@ -377,7 +377,7 @@ aligned_free (void* ptr)
 
 #if (__cplusplus >= 201703L) || (defined(_MSC_VER) && (_MSC_VER >= 1911) && (_MSVC_LANG >= 201703L))
   #define PCL_NODISCARD [[nodiscard]]
-#elif defined(__clang__) && ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ > 9)))
+#elif defined(__clang__) && (PCL_LINEAR_VERSION(__clang_major__, __clang_minor__, 0) >= PCL_LINEAR_VERSION(3, 9, 0))
   #define PCL_NODISCARD [[clang::warn_unused_result]]
 #elif defined(__GNUC__)
   #define PCL_NODISCARD [[gnu::warn_unused_result]]
