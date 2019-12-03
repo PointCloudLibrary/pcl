@@ -52,7 +52,7 @@ using namespace std::chrono_literals;
 
 struct PointCloudBuffers
 {
-  using Ptr = boost::shared_ptr<PointCloudBuffers>;
+  using Ptr = std::shared_ptr<PointCloudBuffers>;
   std::vector<short> points;
   std::vector<unsigned char> rgb;
 };

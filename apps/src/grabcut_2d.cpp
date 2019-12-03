@@ -32,8 +32,8 @@ class GrabCutHelper : public pcl::GrabCut<pcl::PointXYZRGB>
   using pcl::GrabCut<pcl::PointXYZRGB>::input_;
 
   public:
-  using Ptr = boost::shared_ptr<GrabCutHelper>;
-  using ConstPtr = boost::shared_ptr<const GrabCutHelper>;
+  using Ptr = std::shared_ptr<GrabCutHelper>;
+  using ConstPtr = std::shared_ptr<const GrabCutHelper>;
 
   GrabCutHelper (std::uint32_t K = 5, float lambda = 50.f)
     : pcl::GrabCut<pcl::PointXYZRGB> (K, lambda)
