@@ -6,6 +6,7 @@
 #include <pcl/apps/cloud_composer/cloud_view.h>
 #include <pcl/apps/cloud_composer/merge_selection.h>
 #include <pcl/apps/cloud_composer/transform_clouds.h>
+#include <pcl/make_shared.h>
 
 #include <QAction>
 #include <QFileDialog>
@@ -94,7 +95,7 @@ pcl::cloud_composer::ProjectModel::setCloudView (CloudView* view)
 }
 
 void
-pcl::cloud_composer::ProjectModel::setPointSelection (const boost::shared_ptr<SelectionEvent>& selected_event)
+pcl::cloud_composer::ProjectModel::setPointSelection (const std::shared_ptr<SelectionEvent>& selected_event)
 {
   selection_event_ = selected_event;
   //Get all the items in this project that are clouds
@@ -110,7 +111,7 @@ pcl::cloud_composer::ProjectModel::setPointSelection (const boost::shared_ptr<Se
   // Find all indices in the selected points which are present in the clouds
   foreach (CloudItem* cloud_item, project_clouds)
   {
-    pcl::PointIndices::Ptr found_indices = boost::make_shared<pcl::PointIndices>();
+    pcl::PointIndices::Ptr found_indices = pcl::make_shared<pcl::PointIndices>();
     selected_event->findIndicesInItem (cloud_item, found_indices);
     if (!found_indices->indices.empty ())
     {
@@ -124,7 +125,7 @@ pcl::cloud_composer::ProjectModel::setPointSelection (const boost::shared_ptr<Se
 }
 
 void
-pcl::cloud_composer::ProjectModel::manipulateClouds (const boost::shared_ptr<ManipulationEvent>& manip_event)
+pcl::cloud_composer::ProjectModel::manipulateClouds (const std::shared_ptr<ManipulationEvent>& manip_event)
 {
   
   //Get all the items in this project that are clouds

@@ -282,7 +282,7 @@ pcl::cloud_composer::CloudView::setInteractorStyle (interactor_styles::INTERACTO
 void
 pcl::cloud_composer::CloudView::selectionCompleted (vtkObject*, unsigned long, void*, void* call_data)
 {
-  boost::shared_ptr<SelectionEvent> selected (static_cast<SelectionEvent*> (call_data));
+  std::shared_ptr<SelectionEvent> selected (static_cast<SelectionEvent*> (call_data));
   
   if (selected)
   {
@@ -296,7 +296,7 @@ pcl::cloud_composer::CloudView::selectionCompleted (vtkObject*, unsigned long, v
 void
 pcl::cloud_composer::CloudView::manipulationCompleted (vtkObject*, unsigned long, void*, void* call_data)
 {
-  boost::shared_ptr<ManipulationEvent> manip_event (static_cast<ManipulationEvent*> (call_data));
+  std::shared_ptr<ManipulationEvent> manip_event (static_cast<ManipulationEvent*> (call_data));
   
   if (manip_event)
   {
