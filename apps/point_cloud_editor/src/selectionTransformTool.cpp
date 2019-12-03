@@ -134,21 +134,21 @@ SelectionTransformTool::end (int x, int y, BitMask modifiers, BitMask buttons)
   update(x, y, modifiers, buttons);
   if (modifiers_ & CTRL)
   {
-    boost::shared_ptr<TransformCommand> c(new TransformCommand(selection_ptr_,
+    std::shared_ptr<TransformCommand> c(new TransformCommand(selection_ptr_,
       cloud_ptr_, transform_matrix_, (float) dx * translate_factor_ * scale,
       (float) -dy * translate_factor_ * scale, 0.0f));
     command_queue_ptr_->execute(c);
   }
   else if (modifiers_ & ALT)
   {
-    boost::shared_ptr<TransformCommand> c(new TransformCommand(selection_ptr_,
+    std::shared_ptr<TransformCommand> c(new TransformCommand(selection_ptr_,
       cloud_ptr_, transform_matrix_, 0.0f, 0.0f,
       (float) dy * translate_factor_ * scale));
     command_queue_ptr_->execute(c);
   }
   else
   {
-    boost::shared_ptr<TransformCommand> c(new TransformCommand(selection_ptr_,
+    std::shared_ptr<TransformCommand> c(new TransformCommand(selection_ptr_,
       cloud_ptr_, transform_matrix_, 0.0f, 0.0f, 0.0f));
     command_queue_ptr_->execute(c);
   }
