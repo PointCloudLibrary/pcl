@@ -42,18 +42,9 @@
 
 #include <cstdint>
 
-#include <pcl/pcl_exports.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
-
-////////////////////////////////////////////////////////////////////////////////
-// Forward declarations
-////////////////////////////////////////////////////////////////////////////////
-
-namespace pcl
-{
-  template <typename PointT>
-  class KdTree;
-} // End namespace pcl
+#include <pcl/pcl_exports.h>
+#include <pcl/kdtree/kdtree.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Integration
@@ -164,8 +155,8 @@ namespace pcl
         using CloudIHSConstPtr = pcl::ihs::CloudIHSConstPtr;
 
         using KdTree = pcl::KdTree<PointXYZ>;
-        using KdTreePtr = boost::shared_ptr<KdTree>;
-        using KdTreeConstPtr = boost::shared_ptr<const KdTree>;
+        using KdTreePtr = KdTree::Ptr;
+        using KdTreeConstPtr = KdTree::ConstPtr;
 
         std::uint8_t
         trimRGB (const float val) const;

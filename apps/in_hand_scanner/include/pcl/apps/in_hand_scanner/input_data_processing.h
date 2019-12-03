@@ -44,16 +44,7 @@
 #include <pcl/apps/in_hand_scanner/eigen.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
 #include <pcl/apps/in_hand_scanner/utils.h>
-
-////////////////////////////////////////////////////////////////////////////////
-// Forward declarations
-////////////////////////////////////////////////////////////////////////////////
-
-namespace pcl
-{
-  template <class PointInT, class PointOutT>
-  class IntegralImageNormalEstimation;
-} // End namespace pcl
+#include <pcl/features/integral_image_normal.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // InputDataProcessing
@@ -170,12 +161,12 @@ namespace pcl
 
         using Normal = pcl::Normal;
         using CloudNormals = pcl::PointCloud<Normal>;
-        using CloudNormalsPtr = boost::shared_ptr<CloudNormals>;
-        using CloudNormalsConstPtr = boost::shared_ptr<const CloudNormals>;
+        using CloudNormalsPtr = CloudNormals::Ptr;
+        using CloudNormalsConstPtr = CloudNormals::ConstPtr;
 
         using NormalEstimation = pcl::IntegralImageNormalEstimation <PointXYZRGBA, Normal>;
-        using NormalEstimationPtr = boost::shared_ptr<NormalEstimation>;
-        using NormalEstimationConstPtr = boost::shared_ptr<const NormalEstimation>;
+        using NormalEstimationPtr = NormalEstimation::Ptr;
+        using NormalEstimationConstPtr = NormalEstimation::ConstPtr;
 
         using MatrixXb = Eigen::Matrix <bool, Eigen::Dynamic, Eigen::Dynamic>;
         using MatrixXi = Eigen::MatrixXi;
