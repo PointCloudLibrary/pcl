@@ -12,7 +12,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
   void
   pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::loadFeaturesAndCreateFLANN ()
   {
-    boost::shared_ptr < std::vector<ModelT> > models = source_->getModels ();
+    auto models = source_->getModels ();
     std::cout << "Models size:" << models->size () << std::endl;
 
     for (std::size_t i = 0; i < models->size (); i++)
@@ -103,7 +103,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
   void
   pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::initialize (bool force_retrain)
   {
-    boost::shared_ptr < std::vector<ModelT> > models;
+    std::shared_ptr<std::vector<ModelT>> models;
 
     if(search_model_.empty()) {
       models = source_->getModels ();
@@ -168,7 +168,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
             std::stringstream keypoints_sstr;
             keypoints_sstr << path << "/keypoint_indices_" << v << ".pcd";
 
-            /*boost::shared_ptr < std::vector<int> > indices (new std::vector<int> ());
+            /*std::shared_ptr<std::vector<int>> indices (new std::vector<int> ());
             indices->resize (keypoints.points.size ());
             for (std::size_t kk = 0; kk < indices->size (); kk++)
               (*indices)[kk] = keypoints.points[kk];
@@ -285,7 +285,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           oh.correspondences_to_inputcloud = corr;
           oh.correspondences_to_inputcloud->push_back (pcl::Correspondence (0, static_cast<int> (idx), distances[0][0]));
 
-          boost::shared_ptr < std::vector<float> > feat_dist (new std::vector<float>);
+          std::shared_ptr<std::vector<float>> feat_dist (new std::vector<float>);
           feat_dist->push_back (distances[0][0]);
 
           oh.feature_distances_ = feat_dist;
@@ -424,8 +424,8 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
       hv_algorithm_->verify ();
       hv_algorithm_->getMask (mask_hv);
 
-      boost::shared_ptr < std::vector<ModelT> > models_temp;
-      boost::shared_ptr < std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms_temp;
+      std::shared_ptr<std::vector<ModelT>> models_temp;
+      std::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>> transforms_temp;
 
       models_temp.reset (new std::vector<ModelT>);
       transforms_temp.reset (new std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> >);

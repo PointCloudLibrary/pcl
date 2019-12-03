@@ -84,10 +84,10 @@ namespace pcl
         PointInTPtr input_;
 
         /** \brief Model data source */
-        typename boost::shared_ptr<pcl::rec_3d_framework::Source<PointInT> > source_;
+        std::shared_ptr<pcl::rec_3d_framework::Source<PointInT>> source_;
 
         /** \brief Computes a feature */
-        typename boost::shared_ptr<GlobalEstimator<PointInT, FeatureT> > estimator_;
+        std::shared_ptr<GlobalEstimator<PointInT, FeatureT>> estimator_;
 
         /** \brief Descriptor name */
         std::string descr_name_;
@@ -176,7 +176,7 @@ namespace pcl
          * \brief Sets the model data source_
          */
         void
-        setDataSource (typename boost::shared_ptr<Source<PointInT> > & source)
+        setDataSource (std::shared_ptr<Source<PointInT>>& source)
         {
           source_ = source;
         }
@@ -186,7 +186,7 @@ namespace pcl
          */
 
         void
-        setFeatureEstimator (typename boost::shared_ptr<GlobalEstimator<PointInT, FeatureT> > & feat)
+        setFeatureEstimator (std::shared_ptr<GlobalEstimator<PointInT, FeatureT>>& feat)
         {
           estimator_ = feat;
         }
