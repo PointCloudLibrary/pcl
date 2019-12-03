@@ -40,6 +40,7 @@
 
 #include <pcl/filters/impl/radius_outlier_removal.hpp>
 #include <pcl/conversions.h>
+#include <pcl/make_shared.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -138,7 +139,7 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &i
     return;
   }
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  auto cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
   pcl::fromPCLPointCloud2 (*input_, *cloud);
 
   // Initialize the search class
