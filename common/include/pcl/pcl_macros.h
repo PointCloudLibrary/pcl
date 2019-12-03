@@ -365,22 +365,22 @@ aligned_free (void* ptr)
  *
  * \ingroup common
  */
-#if __has_cpp_attribute(fallthrough) && !(defined(__clang__) && __cplusplus < 201703L)
+#if (__cplusplus >= 201703L) || (defined(_MSC_VER) && (_MSC_VER >= 1910) && (_MSVC_LANG >= 201703L))
   #define PCL_FALLTHROUGH [[fallthrough]];
 #elif defined(__clang__)
   #define PCL_FALLTHROUGH [[clang::fallthrough]];
-#elif defined(__GNUC__)
-  #if __GNUC__ >= 7
-    #define PCL_FALLTHROUGH [[gnu::fallthrough]];
-  #else
-    #define PCL_FALLTHROUGH ;
-  #endif
+#elif defined(__GNUC__) && (__GNUC__ >= 7)
+  #define PCL_FALLTHROUGH [[gnu::fallthrough]];
 #else
-  #define PCL_FALLTHROUGH ;
+  #define PCL_FALLTHROUGH
 #endif
 
-#if __has_cpp_attribute(nodiscard)
+#if (__cplusplus >= 201703L) || (defined(_MSC_VER) && (_MSC_VER >= 1911) && (_MSVC_LANG >= 201703L))
   #define PCL_NODISCARD [[nodiscard]]
+#elif defined(__clang__) && (PCL_LINEAR_VERSION(__clang_major__, __clang_minor__, 0) >= PCL_LINEAR_VERSION(3, 9, 0))
+  #define PCL_NODISCARD [[clang::warn_unused_result]]
+#elif defined(__GNUC__)
+  #define PCL_NODISCARD [[gnu::warn_unused_result]]
 #else
   #define PCL_NODISCARD
 #endif
