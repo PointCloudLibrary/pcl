@@ -59,9 +59,6 @@ namespace pcl
   {
     public:
 
-    //using pcl::IndicesPtr = boost::shared_ptr<std::vector<int> >;
-    
-
       /** \brief Constructor that sets default values for member variables. */
       CrfSegmentation ();
 

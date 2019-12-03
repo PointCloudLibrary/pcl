@@ -17,6 +17,7 @@ namespace pcl
       {
         public:
           using Ptr = boost::shared_ptr<PersonAttribs>;
+          using ConstPtr = boost::shared_ptr<const PersonAttribs>;
 
           /** \brief Constructor creates generic values from **/
           PersonAttribs();

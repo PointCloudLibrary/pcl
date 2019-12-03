@@ -57,7 +57,7 @@ class KinectViewerCuda
   public:
      KinectViewerCuda (bool downsample) : viewer ("KinectGrabber"), downsample_(downsample) {}
 
-    void cloud_cb_ (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float constant)
+    void cloud_cb_ (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float constant)
     {
       PointCloudAOS<Device>::Ptr data;
     	{
@@ -76,7 +76,7 @@ class KinectViewerCuda
     {
       pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id);
 
-      std::function<void (const boost::shared_ptr<openni_wrapper::Image>& image, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image, float)>
+      std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)>
         f = [this](const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float constant) { cloud_cb_(image, depth_image, constant); };
 
       boost::signals2::connection c = interface->registerCallback (f);

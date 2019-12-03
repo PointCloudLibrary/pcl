@@ -39,6 +39,7 @@
 #define PCL_STANDALONE_MARCHING_CUBES_IMPL_HPP_
 
 #include <pcl/gpu/kinfu_large_scale/standalone_marching_cubes.h>
+#include <pcl/make_shared.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -225,8 +226,8 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::convertTrianglesToMesh (cons
   cloud.height = 1;
   triangles.download (cloud.points);
 
-  boost::shared_ptr<pcl::PolygonMesh> mesh_ptr ( new pcl::PolygonMesh () ); 
-  
+  PolygonMesh::Ptr mesh_ptr = make_shared<PolygonMesh> ();
+
   pcl::toPCLPointCloud2 (cloud, mesh_ptr->cloud);
       
   mesh_ptr->polygons.resize (triangles.size () / 3);
@@ -257,7 +258,7 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::runMarchingCubes ()
   pcl::gpu::DeviceArray<pcl::PointXYZ> triangles_device = marching_cubes_->run (*tsdf_volume_const_, triangles_buffer_device_); 
 
   //Creating mesh
-  boost::shared_ptr<pcl::PolygonMesh> mesh_ptr_ = convertTrianglesToMesh (triangles_device);
+  pcl::PolygonMesh::Ptr mesh_ptr_ = convertTrianglesToMesh (triangles_device);
 
   if(mesh_ptr_ != nullptr)
   {

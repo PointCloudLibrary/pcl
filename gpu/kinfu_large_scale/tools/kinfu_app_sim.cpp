@@ -84,6 +84,7 @@
 #include "evaluation.h"
 
 #include <pcl/common/angles.h>
+#include <pcl/make_shared.h>
 
 //#include "tsdf_volume.h"
 //#include "tsdf_volume.hpp"
@@ -540,17 +541,17 @@ typename PointCloud<MergedT>::Ptr merge(const PointCloud<PointT>& points, const 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-boost::shared_ptr<pcl::PolygonMesh> convertToMesh(const DeviceArray<PointXYZ>& triangles)
+pcl::PolygonMesh::Ptr convertToMesh(const DeviceArray<PointXYZ>& triangles)
 { 
   if (triangles.empty())
-      return boost::shared_ptr<pcl::PolygonMesh>();
+      return PolygonMesh::Ptr ();
 
   pcl::PointCloud<pcl::PointXYZ> cloud;
   cloud.width  = (int)triangles.size();
   cloud.height = 1;
   triangles.download(cloud.points);
-  
-  boost::shared_ptr<pcl::PolygonMesh> mesh_ptr( new pcl::PolygonMesh() ); 
+
+  PolygonMesh::Ptr mesh_ptr = make_shared<PolygonMesh> ();
   pcl::toPCLPointCloud2(cloud, mesh_ptr->cloud);
       
   mesh_ptr->polygons.resize (triangles.size() / 3);
@@ -877,7 +878,7 @@ struct SceneCloudView
   MarchingCubes::Ptr marching_cubes_;
   DeviceArray<PointXYZ> triangles_buffer_device_;
 
-  boost::shared_ptr<pcl::PolygonMesh> mesh_ptr_;
+  pcl::PolygonMesh::Ptr mesh_ptr_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -930,7 +931,7 @@ struct KinFuApp
   void
   initCurrentFrameView ()
   {
-    current_frame_cloud_view_ = boost::shared_ptr<CurrentFrameCloudView>(new CurrentFrameCloudView ());
+    current_frame_cloud_view_ = make_shared<CurrentFrameCloudView> ();
     current_frame_cloud_view_->cloud_viewer_.registerKeyboardCallback (keyboard_callback, (void*)this);
     current_frame_cloud_view_->setViewerPose (kinfu_.getCameraPose ());
   }
@@ -1272,7 +1273,7 @@ struct KinFuApp
 
   SceneCloudView scene_cloud_view_;
   ImageView image_view_;
-  boost::shared_ptr<CurrentFrameCloudView> current_frame_cloud_view_;
+  CurrentFrameCloudView::Ptr current_frame_cloud_view_;
 
   KinfuTracker::DepthMap depth_device_;
 

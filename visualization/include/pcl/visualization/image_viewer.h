@@ -118,6 +118,7 @@ namespace pcl
     {
       public:
         using Ptr = boost::shared_ptr<ImageViewer>;
+        using ConstPtr = boost::shared_ptr<const ImageViewer>;
 
         /** \brief Constructor.
           * \param[in] window_title the title of the window

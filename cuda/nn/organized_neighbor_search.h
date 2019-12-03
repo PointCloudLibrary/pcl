@@ -79,8 +79,8 @@ namespace pcl
 
       // public typedefs
       using PointCloud = pcl::PointCloud<PointT>;
-      using PointCloudPtr = boost::shared_ptr<PointCloud>;
-      using PointCloudConstPtr = boost::shared_ptr<const PointCloud>;
+      using PointCloudPtr = typename PointCloud::Ptr;
+      using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
 
       /** \brief Provide a pointer to the input data set.

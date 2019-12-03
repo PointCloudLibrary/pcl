@@ -66,9 +66,9 @@ namespace pcl
       using Ptr = boost::shared_ptr< Tracker<PointInT, StateT> >;
       using ConstPtr = boost::shared_ptr< const Tracker<PointInT, StateT> >;
 
-      using SearchPtr = boost::shared_ptr<pcl::search::Search<PointInT> >;
-      using SearchConstPtr = boost::shared_ptr<const pcl::search::Search<PointInT> >;
-            
+      using SearchPtr = typename pcl::search::Search<PointInT>::Ptr;
+      using SearchConstPtr = typename pcl::search::Search<PointInT>::ConstPtr;
+
       using PointCloudIn = pcl::PointCloud<PointInT>;
       using PointCloudInPtr = typename PointCloudIn::Ptr;
       using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;

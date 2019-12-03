@@ -57,6 +57,7 @@ namespace pcl
     public:
       using PointType = PointXYZ;
       using Ptr = boost::shared_ptr<ColorVolume>;
+      using ConstPtr = boost::shared_ptr<const ColorVolume>;
 
       /** \brief Constructor
         * \param[in] tsdf tsdf volume to get parameters from

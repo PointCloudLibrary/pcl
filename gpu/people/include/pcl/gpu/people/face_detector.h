@@ -58,6 +58,7 @@ namespace pcl
       {
         public:
           using Ptr = boost::shared_ptr<FaceDetector>;
+          using ConstPtr = boost::shared_ptr<const FaceDetector>;
           //using Labels = DeviceArray2D<unsigned char>;
           //using Depth = DeviceArray2D<unsigned short>;
           //using Image = DeviceArray2D<pcl::RGB>;

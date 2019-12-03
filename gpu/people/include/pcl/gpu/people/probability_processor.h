@@ -36,14 +36,15 @@
 
 #pragma once
 
-#include <iostream>
-#include <sstream>
-#include <fstream>
-
 #include <pcl/point_types.h>
 #include <pcl/console/print.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/people/label_common.h>
+
+#include <fstream>
+#include <iostream>
+#include <memory>
+#include <sstream>
 
 namespace pcl
 {
@@ -60,6 +61,7 @@ namespace pcl
       {        
         public:
           using Ptr = boost::shared_ptr<ProbabilityProcessor>;
+          using ConstPtr = boost::shared_ptr<const ProbabilityProcessor>;
           using Depth = DeviceArray2D<unsigned short>;
           using Labels = DeviceArray2D<unsigned char>;
 
@@ -103,7 +105,7 @@ namespace pcl
                         pcl::device::LabelProbability&  probOut);
 
         private:
-          boost::shared_ptr<pcl::device::ProbabilityProc> impl_;
+          std::shared_ptr<pcl::device::ProbabilityProc> impl_;
 
       };
     }
