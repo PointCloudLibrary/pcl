@@ -38,7 +38,6 @@
 
 #include <QTreeWidgetItem>
 
-#include <boost/shared_ptr.hpp>
 #include <pcl/apps/modeler/abstract_item.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
 

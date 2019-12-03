@@ -204,7 +204,7 @@ pcl::modeler::MainWindow::createRecentPointCloudActions()
 {
   for (std::size_t i = 0; i < MAX_RECENT_NUMBER; ++ i)
   {
-    recent_pointcloud_actions_.push_back(boost::shared_ptr<QAction>(new QAction(this)));
+    recent_pointcloud_actions_.push_back(std::shared_ptr<QAction>(new QAction(this)));
     ui_->menuRecentPointClouds->addAction(recent_pointcloud_actions_[i].get());
     recent_pointcloud_actions_[i]->setVisible(false);
     connect(recent_pointcloud_actions_[i].get(), SIGNAL(triggered()), this, SLOT(slotOpenRecentPointCloud()));
@@ -228,7 +228,7 @@ pcl::modeler::MainWindow::createRecentProjectActions()
 {
   for (std::size_t i = 0; i < MAX_RECENT_NUMBER; ++ i)
   {
-    recent_project_actions_.push_back(boost::shared_ptr<QAction>(new QAction(this)));
+    recent_project_actions_.push_back(std::shared_ptr<QAction>(new QAction(this)));
     ui_->menuRecentPointClouds->addAction(recent_project_actions_[i].get());
     recent_project_actions_[i]->setVisible(false);
     connect(recent_project_actions_[i].get(), SIGNAL(triggered()), this, SLOT(slotOpenRecentProject()));
@@ -255,7 +255,7 @@ pcl::modeler::MainWindow::openProjectImpl (const QString&)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::modeler::MainWindow::updateRecentActions (std::vector<boost::shared_ptr<QAction> >& recent_actions, QStringList& recent_items)
+pcl::modeler::MainWindow::updateRecentActions (std::vector<std::shared_ptr<QAction>>& recent_actions, QStringList& recent_items)
 {
   QMutableStringListIterator recent_items_it (recent_items);
   while (recent_items_it.hasNext ())
