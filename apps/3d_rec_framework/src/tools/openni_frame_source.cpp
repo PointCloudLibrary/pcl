@@ -1,6 +1,6 @@
 #include "pcl/apps/3d_rec_framework/tools/openni_frame_source.h"
 #include <pcl/io/pcd_io.h>
-#include <boost/make_shared.hpp>
+#include <pcl/make_shared.h>
 
 namespace OpenNIFrameSource
 {
@@ -37,7 +37,7 @@ namespace OpenNIFrameSource
   {
     mutex_.lock ();
     ++frame_counter_;
-    most_recent_frame_ = boost::make_shared<PointCloud> (*cloud); // Make a copy of the frame
+    most_recent_frame_ = pcl::make_shared<PointCloud> (*cloud); // Make a copy of the frame
     mutex_.unlock ();
   }
 

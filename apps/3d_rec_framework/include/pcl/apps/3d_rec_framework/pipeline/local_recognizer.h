@@ -51,16 +51,16 @@ namespace pcl
         PointInTPtr input_;
 
         /** \brief Model data source */
-        typename boost::shared_ptr<Source<PointInT> > source_;
+        std::shared_ptr<Source<PointInT>> source_;
 
         /** \brief Computes a feature */
-        typename boost::shared_ptr<LocalEstimator<PointInT, FeatureT> > estimator_;
+        std::shared_ptr<LocalEstimator<PointInT, FeatureT>> estimator_;
 
         /** \brief Point-to-point correspondence grouping algorithm */
-        typename boost::shared_ptr<CorrespondenceGrouping<PointInT, PointInT> > cg_algorithm_;
+        std::shared_ptr<CorrespondenceGrouping<PointInT, PointInT>> cg_algorithm_;
 
         /** \brief Hypotheses verification algorithm */
-        typename boost::shared_ptr<HypothesisVerification<PointInT, PointInT> > hv_algorithm_;
+        std::shared_ptr<HypothesisVerification<PointInT, PointInT>> hv_algorithm_;
 
         /** \brief Descriptor name */
         std::string descr_name_;
@@ -94,8 +94,8 @@ namespace pcl
         float threshold_accept_model_hypothesis_;
         int ICP_iterations_;
 
-        boost::shared_ptr<std::vector<ModelT> > models_;
-        boost::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms_;
+        std::shared_ptr<std::vector<ModelT>> models_;
+        std::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>> transforms_;
 
         int kdtree_splits_;
         float VOXEL_SIZE_ICP_;
@@ -133,7 +133,7 @@ namespace pcl
         public:
           ModelT model_;
           typename pcl::PointCloud<PointInT>::Ptr correspondences_pointcloud; //points in model coordinates
-          boost::shared_ptr<std::vector<float> > feature_distances_;
+          std::shared_ptr<std::vector<float> > feature_distances_;
           pcl::CorrespondencesPtr correspondences_to_inputcloud; //indices between correspondences_pointcloud and scene cloud
         };
 
@@ -240,13 +240,13 @@ namespace pcl
           use_cache_ = u;
         }
 
-        boost::shared_ptr<std::vector<ModelT> >
+        std::shared_ptr<std::vector<ModelT>>
         getModels ()
         {
           return models_;
         }
 
-        boost::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > >
+        std::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>>
         getTransforms ()
         {
           return transforms_;
@@ -256,12 +256,12 @@ namespace pcl
          * \brief Sets the model data source_
          */
         void
-        setDataSource (typename boost::shared_ptr<Source<PointInT> > & source)
+        setDataSource (std::shared_ptr<Source<PointInT>>& source)
         {
           source_ = source;
         }
 
-        typename boost::shared_ptr<Source<PointInT> >
+        std::shared_ptr<Source<PointInT>>
         getDataSource ()
         {
           return source_;
@@ -271,7 +271,7 @@ namespace pcl
          * \brief Sets the local feature estimator
          */
         void
-        setFeatureEstimator (typename boost::shared_ptr<LocalEstimator<PointInT, FeatureT> > & feat)
+        setFeatureEstimator (std::shared_ptr<LocalEstimator<PointInT, FeatureT>>& feat)
         {
           estimator_ = feat;
         }
@@ -280,7 +280,7 @@ namespace pcl
          * \brief Sets the CG algorithm
          */
         void
-        setCGAlgorithm (typename boost::shared_ptr<CorrespondenceGrouping<PointInT, PointInT> > & alg)
+        setCGAlgorithm (std::shared_ptr<CorrespondenceGrouping<PointInT, PointInT>>& alg)
         {
           cg_algorithm_ = alg;
         }
@@ -289,7 +289,7 @@ namespace pcl
          * \brief Sets the HV algorithm
          */
         void
-        setHVAlgorithm (typename boost::shared_ptr<HypothesisVerification<PointInT, PointInT> > & alg)
+        setHVAlgorithm (std::shared_ptr<HypothesisVerification<PointInT, PointInT>>& alg)
         {
           hv_algorithm_ = alg;
         }

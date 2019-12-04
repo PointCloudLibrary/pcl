@@ -61,13 +61,13 @@ namespace pcl
         PointInTPtr input_;
 
         /** \brief Model data source */
-        typename boost::shared_ptr<pcl::rec_3d_framework::Source<PointInT> > source_;
+        std::shared_ptr<pcl::rec_3d_framework::Source<PointInT>> source_;
 
         /** \brief Computes a feature */
-        typename boost::shared_ptr<OURCVFHEstimator<PointInT, FeatureT> > micvfh_estimator_;
+        std::shared_ptr<OURCVFHEstimator<PointInT, FeatureT>> micvfh_estimator_;
 
         /** \brief Hypotheses verification algorithm */
-        typename boost::shared_ptr<HypothesisVerification<PointInT, PointInT> > hv_algorithm_;
+        std::shared_ptr<HypothesisVerification<PointInT, PointInT>> hv_algorithm_;
 
         /** \brief Descriptor name */
         std::string descr_name_;
@@ -126,7 +126,7 @@ namespace pcl
 
         std::vector<flann::Matrix<float> > single_categories_data_;
         std::vector<flann::Index<DistT> *> single_categories_index_;
-        std::vector<boost::shared_ptr<std::vector<int> > > single_categories_pointers_to_models_;
+        std::vector<std::shared_ptr<std::vector<int>>> single_categories_pointers_to_models_;
         std::map<std::string, int> category_to_vectors_indices_;
         std::vector<std::string> categories_to_be_searched_;
         bool use_single_categories_;
@@ -163,7 +163,7 @@ namespace pcl
         }
 
         inline void
-        convertToFLANN (const std::vector<flann_model> &models, const boost::shared_ptr<std::vector<int> > & indices, flann::Matrix<float> &data)
+        convertToFLANN (const std::vector<flann_model> &models, const std::shared_ptr<std::vector<int>>& indices, flann::Matrix<float> &data)
         {
           data.rows = indices->size ();
           data.cols = models[0].descr.size (); // number of histogram bins
@@ -196,8 +196,8 @@ namespace pcl
 
         int NN_;
 
-        boost::shared_ptr<std::vector<ModelT> > models_;
-        boost::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms_;
+        std::shared_ptr<std::vector<ModelT>> models_;
+        std::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>> transforms_;
 
         std::vector<float> descriptor_distances_;
 
@@ -268,7 +268,7 @@ namespace pcl
          * \brief Sets the model data source_
          */
         void
-        setDataSource (typename boost::shared_ptr<Source<PointInT> > & source)
+        setDataSource (std::shared_ptr<Source<PointInT>>& source)
         {
           source_ = source;
         }
@@ -278,7 +278,7 @@ namespace pcl
          */
 
         void
-        setFeatureEstimator (typename boost::shared_ptr<OURCVFHEstimator<PointInT, FeatureT> > & feat)
+        setFeatureEstimator (std::shared_ptr<OURCVFHEstimator<PointInT, FeatureT>>& feat)
         {
           micvfh_estimator_ = feat;
         }
@@ -287,7 +287,7 @@ namespace pcl
          * \brief Sets the HV algorithm
          */
         void
-        setHVAlgorithm (typename boost::shared_ptr<HypothesisVerification<PointInT, PointInT> > & alg)
+        setHVAlgorithm (std::shared_ptr<HypothesisVerification<PointInT, PointInT>>& alg)
         {
           hv_algorithm_ = alg;
         }
@@ -326,13 +326,13 @@ namespace pcl
         void
         recognize ();
 
-        boost::shared_ptr<std::vector<ModelT> >
+        std::shared_ptr<std::vector<ModelT>>
         getModels ()
         {
           return models_;
         }
 
-        boost::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > >
+        std::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>>
         getTransforms ()
         {
           return transforms_;

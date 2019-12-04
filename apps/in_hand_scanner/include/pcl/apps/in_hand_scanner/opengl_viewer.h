@@ -340,8 +340,8 @@ namespace pcl
         using CloudIHSConstPtr = pcl::ihs::CloudIHSConstPtr;
 
         using FaceVertexMesh = pcl::ihs::detail::FaceVertexMesh;
-        using FaceVertexMeshPtr = boost::shared_ptr<FaceVertexMesh>;
-        using FaceVertexMeshConstPtr = boost::shared_ptr<const FaceVertexMesh>;
+        using FaceVertexMeshPtr = std::shared_ptr<FaceVertexMesh>;
+        using FaceVertexMeshConstPtr = std::shared_ptr<const FaceVertexMesh>;
         using FaceVertexMeshMap = std::unordered_map <std::string, FaceVertexMeshPtr>;
 
         /** \brief Check if the mesh with the given id is added.
@@ -396,7 +396,7 @@ namespace pcl
         std::mutex mutex_vis_;
 
         /** \brief Visualization timer. */
-        boost::shared_ptr <QTimer> timer_vis_;
+        std::shared_ptr<QTimer> timer_vis_;
 
         /** \brief Colormap. */
         Colormap colormap_;

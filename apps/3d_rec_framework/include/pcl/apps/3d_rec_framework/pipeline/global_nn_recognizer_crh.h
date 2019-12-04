@@ -63,13 +63,13 @@ namespace pcl
       PointInTPtr input_;
 
       /** \brief Model data source */
-      typename boost::shared_ptr<pcl::rec_3d_framework::Source<PointInT> > source_;
+      std::shared_ptr<pcl::rec_3d_framework::Source<PointInT>> source_;
 
       /** \brief Computes a feature */
-      typename boost::shared_ptr<CRHEstimation<PointInT, FeatureT> > crh_estimator_;
+      std::shared_ptr<CRHEstimation<PointInT, FeatureT>> crh_estimator_;
 
       /** \brief Hypotheses verification algorithm */
-      typename boost::shared_ptr<HypothesisVerification<PointInT, PointInT> > hv_algorithm_;
+      std::shared_ptr<HypothesisVerification<PointInT, PointInT>> hv_algorithm_;
 
       /** \brief Descriptor name */
       std::string descr_name_;
@@ -139,8 +139,8 @@ namespace pcl
 
       int NN_;
 
-      boost::shared_ptr<std::vector<ModelT> > models_;
-      boost::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms_;
+      std::shared_ptr<std::vector<ModelT>> models_;
+      std::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>> transforms_;
 
     public:
 
@@ -187,7 +187,7 @@ namespace pcl
        * \brief Sets the model data source_
        */
       void
-      setDataSource (typename boost::shared_ptr<Source<PointInT> > & source)
+      setDataSource (std::shared_ptr<Source<PointInT>>& source)
       {
         source_ = source;
       }
@@ -197,7 +197,7 @@ namespace pcl
        */
 
       void
-      setFeatureEstimator (typename boost::shared_ptr<CRHEstimation<PointInT, FeatureT> > & feat)
+      setFeatureEstimator (std::shared_ptr<CRHEstimation<PointInT, FeatureT>>& feat)
       {
         crh_estimator_ = feat;
       }
@@ -206,7 +206,7 @@ namespace pcl
        * \brief Sets the HV algorithm
        */
       void
-      setHVAlgorithm (typename boost::shared_ptr<HypothesisVerification<PointInT, PointInT> > & alg)
+      setHVAlgorithm (std::shared_ptr<HypothesisVerification<PointInT, PointInT>>& alg)
       {
         hv_algorithm_ = alg;
       }
@@ -245,13 +245,13 @@ namespace pcl
       void
       recognize ();
 
-      boost::shared_ptr<std::vector<ModelT> >
+      std::shared_ptr<std::vector<ModelT>>
       getModels ()
       {
        return models_;
       }
 
-      boost::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > >
+      std::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>>
       getTransforms ()
       {
        return transforms_;

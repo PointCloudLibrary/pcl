@@ -9,6 +9,8 @@
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
 
+#include <memory>
+
 namespace pcl
 {
   namespace rec_3d_framework
@@ -20,7 +22,7 @@ namespace pcl
         using PointInTPtr = typename pcl::PointCloud<PointInT>::Ptr;
         using FeatureTPtr = typename pcl::PointCloud<FeatureT>::Ptr;
 
-        typename boost::shared_ptr<PreProcessorAndNormalEstimator<PointInT, pcl::Normal> > normal_estimator_;
+        std::shared_ptr<PreProcessorAndNormalEstimator<PointInT, pcl::Normal>> normal_estimator_;
 
         pcl::PointCloud<pcl::Normal>::Ptr normals_;
 
@@ -34,7 +36,7 @@ namespace pcl
 
         virtual bool computedNormals() = 0;
 
-        void setNormalEstimator(boost::shared_ptr<PreProcessorAndNormalEstimator<PointInT, pcl::Normal> > & ne) {
+        void setNormalEstimator(std::shared_ptr<PreProcessorAndNormalEstimator<PointInT, pcl::Normal>>& ne) {
           normal_estimator_ = ne;
         }
 

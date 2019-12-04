@@ -11,7 +11,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
   void
   pcl::rec_3d_framework::GlobalNNPipeline<Distance, PointInT, FeatureT>::loadFeaturesAndCreateFLANN ()
   {
-    boost::shared_ptr < std::vector<ModelT> > models = source_->getModels ();
+    auto models = source_->getModels ();
     for (std::size_t i = 0; i < models->size (); i++)
     {
       std::string path = source_->getModelDescriptorDir (models->at (i), training_dir_, descr_name_);
@@ -160,7 +160,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
     //use the source to know what has to be trained and what not, checking if the descr_name directory exists
     //unless force_retrain is true, then train everything
-    boost::shared_ptr < std::vector<ModelT> > models = source_->getModels ();
+    auto models = source_->getModels ();
     std::cout << "Models size:" << models->size () << std::endl;
 
     if (force_retrain)

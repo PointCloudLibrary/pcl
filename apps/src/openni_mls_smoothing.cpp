@@ -72,7 +72,7 @@ class OpenNISmoothing;
 void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event,
                             void *stop_void)
 {
-  boost::shared_ptr<bool> stop = *static_cast<boost::shared_ptr<bool>*> (stop_void);
+  std::shared_ptr<bool> stop = *static_cast<std::shared_ptr<bool>*> (stop_void);
   if (event.getKeySym () == "s" && event.keyDown ())
   {
     *stop = ! *stop;
@@ -167,7 +167,7 @@ class OpenNISmoothing
     CloudConstPtr cloud_;
     CloudPtr cloud_smoothed_;
     int viewport_input_, viewport_smoothed_;
-    boost::shared_ptr<bool> stop_computing_;
+    std::shared_ptr<bool> stop_computing_;
 };
 
 void

@@ -36,10 +36,9 @@
 
 #pragma once
 
-#include <boost/shared_ptr.hpp>
-
 #include <ui_main_window.h>
 
+#include <memory>
 
 namespace pcl
 {
@@ -102,7 +101,7 @@ namespace pcl
         bool 
         openProjectImpl(const QString& filename);
         static void 
-        updateRecentActions(std::vector<boost::shared_ptr<QAction> >& recent_actions, QStringList& recent_items);
+        updateRecentActions(std::vector<std::shared_ptr<QAction>>& recent_actions, QStringList& recent_items);
 
         // methods for view menu
         void 
@@ -138,8 +137,8 @@ namespace pcl
         QStringList                       recent_files_;
         QStringList                       recent_projects_;
         static const std::size_t               MAX_RECENT_NUMBER = 8;
-        std::vector<boost::shared_ptr<QAction> >  recent_pointcloud_actions_;
-        std::vector<boost::shared_ptr<QAction> >  recent_project_actions_;
+        std::vector<std::shared_ptr<QAction>>  recent_pointcloud_actions_;
+        std::vector<std::shared_ptr<QAction>>  recent_project_actions_;
     };
   }
 }

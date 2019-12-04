@@ -43,6 +43,7 @@
 #include <pcl/features/fpfh.h>
 
 #include <pcl/visualization/cloud_viewer.h>
+#include <pcl/make_shared.h>
 
 using namespace pcl;
 
@@ -108,7 +109,7 @@ main (int argc, char **argv)
   feature_persistence.setDistanceMetric (pcl::CS);
 
   PointCloud<FPFHSignature33>::Ptr output_features (new PointCloud<FPFHSignature33> ());
-  boost::shared_ptr<std::vector<int> > output_indices (new std::vector<int> ());
+  auto output_indices = pcl::make_shared<std::vector<int>> ();
   feature_persistence.determinePersistentFeatures (*output_features, output_indices);
 
   PCL_INFO ("persistent features cloud size: %u\n", output_features->points.size ());

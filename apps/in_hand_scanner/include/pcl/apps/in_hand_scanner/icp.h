@@ -44,16 +44,7 @@
 #include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/eigen.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
-
-////////////////////////////////////////////////////////////////////////////////
-// Forward declarations
-////////////////////////////////////////////////////////////////////////////////
-
-namespace pcl
-{
-  template <typename PointT>
-  class KdTree;
-} // End namespace pcl
+#include <pcl/kdtree/kdtree.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // ICP
@@ -170,8 +161,8 @@ namespace pcl
         using CloudNormalConstPtr = CloudNormal::ConstPtr;
 
         using KdTree = pcl::KdTree<PointNormal>;
-        using KdTreePtr = boost::shared_ptr<KdTree>;
-        using KdTreeConstPtr = boost::shared_ptr<const KdTree>;
+        using KdTreePtr = KdTree::Ptr;
+        using KdTreeConstPtr = KdTree::ConstPtr;
 
         /** \brief Selects the model points that are pointing towards to the camera (data coordinate system = camera coordinate system).
           * \param[in] mesh_model Input mesh.

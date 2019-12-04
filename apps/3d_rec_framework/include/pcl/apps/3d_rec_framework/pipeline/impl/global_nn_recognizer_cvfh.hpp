@@ -89,19 +89,19 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
   pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::loadFeaturesAndCreateFLANN ()
   {
 
-    boost::shared_ptr < std::vector<ModelT> > models = source_->getModels ();
+    auto models = source_->getModels ();
 
-    std::map < std::string, boost::shared_ptr<std::vector<int> > > single_categories;
+    std::map<std::string, std::shared_ptr<std::vector<int>>> single_categories;
     if (use_single_categories_)
     {
       for (std::size_t i = 0; i < models->size (); i++)
       {
-        std::map<std::string, boost::shared_ptr<std::vector<int> > >::iterator it;
+        std::map<std::string, std::shared_ptr<std::vector<int>>>::iterator it;
         std::string cat_model = models->at (i).class_;
         it = single_categories.find (cat_model);
         if (it == single_categories.end ())
         {
-          boost::shared_ptr < std::vector<int> > v (new std::vector<int>);
+          std::shared_ptr<std::vector<int>> v (new std::vector<int>);
           single_categories[cat_model] = v;
         }
       }
@@ -141,7 +141,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
           if (use_single_categories_)
           {
-            std::map<std::string, boost::shared_ptr<std::vector<int> > >::iterator it;
+            std::map<std::string, std::shared_ptr<std::vector<int>>>::iterator it;
             std::string cat_model = models->at (i).class_;
             it = single_categories.find (cat_model);
             if (it == single_categories.end ())
@@ -589,8 +589,8 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         hv_algorithm_->verify ();
         hv_algorithm_->getMask (mask_hv);
 
-        boost::shared_ptr < std::vector<ModelT> > models_temp;
-        boost::shared_ptr < std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > > transforms_temp;
+        std::shared_ptr<std::vector<ModelT>> models_temp;
+        std::shared_ptr<std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f>>> transforms_temp;
 
         models_temp.reset (new std::vector<ModelT>);
         transforms_temp.reset (new std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> >);
@@ -618,7 +618,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
     //use the source to know what has to be trained and what not, checking if the descr_name directory exists
     //unless force_retrain is true, then train everything
-    boost::shared_ptr < std::vector<ModelT> > models = source_->getModels ();
+    auto models = source_->getModels ();
     std::cout << "Models size:" << models->size () << std::endl;
 
     if (force_retrain)

@@ -271,7 +271,7 @@ class CloudEditorWidget : public QGLWidget
 
     /// The transformation tool being used. Either a cloud transform tool or
     /// a selection transform tool is activated at a time.
-    boost::shared_ptr<ToolInterface> tool_ptr_;
+    std::shared_ptr<ToolInterface> tool_ptr_;
 
     /// a pointer to the selection object
     SelectionPtr selection_ptr_;

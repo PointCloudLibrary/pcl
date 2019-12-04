@@ -56,7 +56,7 @@ namespace pcl
       using PointCloud = pcl::PointCloud<PointT>;
       using PointCloudPtr = PointCloud::Ptr;
       using PointCloudConstPtr = PointCloud::ConstPtr;
-      using Ptr = boost::shared_ptr<CloudMesh>;
+      using Ptr = std::shared_ptr<CloudMesh>;
 
       CloudMesh ();
       CloudMesh (PointCloudPtr cloud);
