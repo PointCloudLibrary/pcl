@@ -166,10 +166,10 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &i
     int mean_k = min_pts_radius_ + 1;
     double nn_dists_max = search_radius_ * search_radius_;
 
-    for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
+    for (const auto idx : *indices_)
     {
       // Perform the nearest-k search
-      int k = searcher_->nearestKSearch (*it, mean_k, nn_indices, nn_dists);
+      int k = searcher_->nearestKSearch (idx, mean_k, nn_indices, nn_dists);
 
       // Check the number of neighbors
       // Note: nn_dists is sorted, so check the last item
@@ -180,34 +180,34 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &i
       if (!chk_neighbors)
       {
         if (extract_removed_indices_)
-          (*removed_indices_)[rii++] = *it;
+          (*removed_indices_)[rii++] = idx;
         continue;
       }
 
       // Otherwise it was a normal point for output (inlier)
-      indices[oii++] = *it;
+      indices[oii++] = idx;
     }
   }
   // NaN or Inf values could exist => use radius search
   else
   {
-    for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
+    for (const auto idx : *indices_)
     {
       // Perform the radius search
       // Note: k includes the query point, so is always at least 1
-      int k = searcher_->radiusSearch (*it, search_radius_, nn_indices, nn_dists);
+      int k = searcher_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
 
       // Points having too few neighbors are outliers and are passed to removed indices
       // Unless negative was set, then it's the opposite condition
       if ((!negative_ && k <= min_pts_radius_) || (negative_ && k > min_pts_radius_))
       {
         if (extract_removed_indices_)
-          (*removed_indices_)[rii++] = *it;
+          (*removed_indices_)[rii++] = idx;
         continue;
       }
 
       // Otherwise it was a normal point for output (inlier)
-      indices[oii++] = *it;
+      indices[oii++] = idx;
     }
   }
 
