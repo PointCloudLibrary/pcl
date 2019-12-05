@@ -68,7 +68,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   {
     if (filter_field_name_.empty ())
     {
-      // Silly - if no filtering is actually done, and we want to keep the data organized, 
+      // Silly - if no filtering is actually done, and we want to keep the data organized,
       // just copy everything. Any optimizations that can be done here???
       output = *input_;
       return;
@@ -140,7 +140,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
         memcpy (&distance_value, &input_->data[cp * input_->point_step + input_->fields[distance_idx].offset],
                 sizeof (float));
 
-        if (filter_limit_negative_)
+        if (negative_)
         {
           // Use a threshold for cutting out points which inside the interval
           if ((distance_value < filter_limit_max_) && (distance_value > filter_limit_min_))
@@ -189,7 +189,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
           continue;
         }
 
-        if (filter_limit_negative_)
+        if (negative_)
         {
           // Use a threshold for cutting out points which inside the interval
           if (distance_value < filter_limit_max_ && distance_value > filter_limit_min_)
@@ -271,6 +271,108 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   output.data.resize (output.width * output.height * output.point_step);
 
   removed_indices_->resize (nr_removed_p);
+}
+
+void
+pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
+{
+  // If input is not present, we cannot filter
+  if (!input_)
+  {
+    PCL_ERROR ("[pcl::%s::applyFilter] Input dataset not given!\n", getClassName ().c_str ());
+    indices.clear ();
+    removed_indices_->clear ();
+    return;
+  }
+
+  // If fields x/y/z are not present, we cannot filter
+  if (x_idx_ == -1 || y_idx_ == -1 || z_idx_ == -1)
+  {
+    PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!\n", getClassName ().c_str ());
+    indices.clear ();
+    removed_indices_->clear ();
+    return;
+  }
+  // The arrays to be used
+  indices.resize (indices_->size ());
+  removed_indices_->resize (indices_->size ());
+  int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
+  const std::uint32_t xyz_offset[3] = {input_->fields[x_idx_].offset, input_->fields[y_idx_].offset, input_->fields[z_idx_].offset};
+  PCL_DEBUG ("[pcl::%s<pcl::PCLPointCloud2>::applyFilter] Field offsets: x: %u, y: %u, z: %u.\n", filter_name_.c_str (), xyz_offset[0], xyz_offset[1], xyz_offset[2]);
+
+  // Has a field name been specified?
+  if (filter_field_name_.empty ())
+  {
+    // Only filter for non-finite entries then
+    for (const auto ii : indices)  // ii = input index
+    {
+      float pt[3];
+      memcpy (&pt[0], &input_->data[ii * input_->point_step + xyz_offset[0]], sizeof(float));
+      memcpy (&pt[1], &input_->data[ii * input_->point_step + xyz_offset[1]], sizeof(float));
+      memcpy (&pt[2], &input_->data[ii * input_->point_step + xyz_offset[2]], sizeof(float));
+      // Non-finite entries are always passed to removed indices
+      if (!std::isfinite (pt[0]) ||
+          !std::isfinite (pt[1]) ||
+          !std::isfinite (pt[2]))
+      {
+        if (extract_removed_indices_)
+          (*removed_indices_)[rii++] = ii;
+        continue;
+      }
+      indices[oii++] = ii;
+    }
+  }
+  else
+  {
+    // Attempt to get the field name's index
+    int distance_idx = pcl::getFieldIndex (*input_, filter_field_name_);
+    if (distance_idx == -1)
+    {
+      PCL_WARN ("[pcl::%s::applyFilter] Unable to find field name in point type.\n", getClassName ().c_str ());
+      indices.clear ();
+      removed_indices_->clear ();
+      return;
+    }
+
+    // Filter for non-finite entries and the specified field limits
+    for (const auto ii : indices)  // ii = input index
+    {
+      float pt[3];
+      memcpy (&pt[0], &input_->data[ii * input_->point_step + xyz_offset[0]], sizeof(float));
+      memcpy (&pt[1], &input_->data[ii * input_->point_step + xyz_offset[1]], sizeof(float));
+      memcpy (&pt[2], &input_->data[ii * input_->point_step + xyz_offset[2]], sizeof(float));
+      // Non-finite entries are always passed to removed indices
+      if (!std::isfinite (pt[0]) ||
+          !std::isfinite (pt[1]) ||
+          !std::isfinite (pt[2]))
+      {
+        if (extract_removed_indices_)
+          (*removed_indices_)[rii++] = ii;
+        continue;
+      }
+
+      // Get the field's value
+      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&input_->data[ii * input_->point_step]);
+      float field_value = 0;
+      memcpy (&field_value, pt_data + input_->fields[distance_idx].offset, sizeof (float));
+
+      if ((!std::isfinite (field_value)) || // Remove NAN/INF/-INF values. We expect passthrough to output clean valid data.
+          (!negative_ && (field_value < filter_limit_min_ || field_value > filter_limit_max_)) || // Outside of the field limits are removed
+          (negative_ && field_value >= filter_limit_min_ && field_value <= filter_limit_max_)) // Inside of the field limits are removed if negative was set
+      {
+        if (extract_removed_indices_)
+          (*removed_indices_)[rii++] = ii;
+        continue;
+      }
+
+      // Otherwise it was a normal point for output (inlier)
+      indices[oii++] = ii;
+    }
+  }
+
+  // Resize the output arrays
+  indices.resize (oii);
+  removed_indices_->resize (rii);
 }
 
 #ifndef PCL_NO_PRECOMPILE

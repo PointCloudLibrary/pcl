@@ -40,6 +40,7 @@
 
 #include <pcl/filters/impl/radius_outlier_removal.hpp>
 #include <pcl/conversions.h>
+#include <pcl/make_shared.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -67,14 +68,20 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &out
   pcl::fromPCLPointCloud2 (*input_, *cloud);
 
   // Initialize the spatial locator
-  if (!tree_)
+  if (!searcher_)
   {
     if (cloud->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZ> ());
+    {
+      PCL_DEBUG ("[pcl::%s::applyFilter] Cloud is organized, so using OrganizedNeighbor.\n", getClassName ().c_str ());
+      searcher_.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZ> ());
+    }
     else
-      tree_.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
+    {
+      PCL_DEBUG ("[pcl::%s::applyFilter] Cloud is not organized, so using KdTree.\n", getClassName ().c_str ());
+      searcher_.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
+    }
   }
-  tree_->setInputCloud (cloud);
+  searcher_->setInputCloud (cloud);
 
   // Allocate enough space to hold the results
   std::vector<int> nn_indices (indices_->size ());
@@ -90,10 +97,13 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &out
 
   int nr_p = 0;
   int nr_removed_p = 0;
+  //size_t log_step = indices_->size () / 10;
   // Go over all the points and check which doesn't have enough neighbors
   for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
-    int k = tree_->radiusSearch ((*indices_)[cp], search_radius_, nn_indices, nn_dists);
+    //if(cp%log_step == 0)
+    //  PCL_DEBUG ("[pcl::%s::applyFilter] Iteration %i of %lu\n", getClassName ().c_str (), cp, indices_->size());
+    int k = searcher_->radiusSearch ((*indices_)[cp], search_radius_, nn_indices, nn_dists);
     // Check if the number of neighbors is larger than the user imposed limit
     if (k < min_pts_radius_)
     {
@@ -116,6 +126,94 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &out
   output.row_step = output.point_step * output.width;
 
   removed_indices_->resize (nr_removed_p);
+}
+
+void
+pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
+{
+  if (search_radius_ == 0.0)
+  {
+    PCL_ERROR ("[pcl::%s::applyFilter] No radius defined!\n", getClassName ().c_str ());
+    indices.clear ();
+    removed_indices_->clear ();
+    return;
+  }
+
+  auto cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>> ();
+  pcl::fromPCLPointCloud2 (*input_, *cloud);
+
+  // Initialize the search class
+  if (!searcher_)
+  {
+    if (cloud->isOrganized ())
+      searcher_.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZ> ());
+    else
+      searcher_.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
+  }
+  searcher_->setInputCloud (cloud);
+
+  // The arrays to be used
+  std::vector<int> nn_indices (indices_->size ());
+  std::vector<float> nn_dists (indices_->size ());
+  indices.resize (indices_->size ());
+  removed_indices_->resize (indices_->size ());
+  int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
+
+  // If the data is dense => use nearest-k search
+  if (cloud->is_dense)
+  {
+    // Note: k includes the query point, so is always at least 1
+    int mean_k = min_pts_radius_ + 1;
+    double nn_dists_max = search_radius_ * search_radius_;
+
+    for (const auto idx : *indices_)
+    {
+      // Perform the nearest-k search
+      int k = searcher_->nearestKSearch (idx, mean_k, nn_indices, nn_dists);
+
+      // Check the number of neighbors
+      // Note: nn_dists is sorted, so check the last item
+      bool chk_neighbors = (k == mean_k)? (negative_ == (nn_dists_max < nn_dists[k-1])) : negative_;
+
+      // Points having too few neighbors are outliers and are passed to removed indices
+      // Unless negative was set, then it's the opposite condition
+      if (!chk_neighbors)
+      {
+        if (extract_removed_indices_)
+          (*removed_indices_)[rii++] = idx;
+        continue;
+      }
+
+      // Otherwise it was a normal point for output (inlier)
+      indices[oii++] = idx;
+    }
+  }
+  // NaN or Inf values could exist => use radius search
+  else
+  {
+    for (const auto idx : *indices_)
+    {
+      // Perform the radius search
+      // Note: k includes the query point, so is always at least 1
+      int k = searcher_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
+
+      // Points having too few neighbors are outliers and are passed to removed indices
+      // Unless negative was set, then it's the opposite condition
+      if ((!negative_ && k <= min_pts_radius_) || (negative_ && k > min_pts_radius_))
+      {
+        if (extract_removed_indices_)
+          (*removed_indices_)[rii++] = idx;
+        continue;
+      }
+
+      // Otherwise it was a normal point for output (inlier)
+      indices[oii++] = idx;
+    }
+  }
+
+  // Resize the output arrays
+  indices.resize (oii);
+  removed_indices_->resize (rii);
 }
 
 #ifndef PCL_NO_PRECOMPILE

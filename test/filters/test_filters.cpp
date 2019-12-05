@@ -444,7 +444,7 @@ TEST (PassThrough, Filters)
   EXPECT_NEAR (output.points[41].y, 0.039749, 1e-5);
   EXPECT_NEAR (output.points[41].z, 0.052133, 1e-5);
 
-  pt2.setFilterLimitsNegative (true);
+  pt2.setNegative (true);
   pt2.filter (output_blob);
 
   fromPCLPointCloud2 (output_blob, output);
@@ -493,7 +493,7 @@ TEST (PassThrough, Filters)
   EXPECT_NEAR (output.points[41].y, 0.039749, 1e-5);
   EXPECT_NEAR (output.points[41].z, 0.052133, 1e-5);
 
-  pt2_.setFilterLimitsNegative (true);
+  pt2_.setNegative (true);
   pt2_.filter (output_blob);
 
   fromPCLPointCloud2 (output_blob, output);
@@ -526,7 +526,7 @@ TEST (PassThrough, Filters)
   EXPECT_NEAR (output.points[output.points.size () - 1].x, cloud->points[cloud->points.size () - 1].x, 1e-5);
 
   pt2.setFilterFieldName ("z");
-  pt2.setFilterLimitsNegative (false);
+  pt2.setNegative (false);
   pt2.setKeepOrganized (true);
   pt2.filter (output_blob);
   fromPCLPointCloud2 (output_blob, output);
@@ -544,7 +544,7 @@ TEST (PassThrough, Filters)
   EXPECT_TRUE (std::isnan (output.points[41].y));
   EXPECT_TRUE (std::isnan (output.points[41].z));
 
-  pt2.setFilterLimitsNegative (true);
+  pt2.setNegative (true);
   pt2.filter (output_blob);
   fromPCLPointCloud2 (output_blob, output);
 
