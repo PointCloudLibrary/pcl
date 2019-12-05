@@ -289,9 +289,8 @@ pcl::GASDEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
 
     const float shape_grid_step = distance_normalization_factor / shape_half_grid_size_;
 
-    const float dist_hist_start = ((int) (d / shape_grid_step)) * shape_grid_step;
-
-    const float dist_hist_val = (d - dist_hist_start) / shape_grid_step;
+    float integral;
+    const float dist_hist_val = std::modf(d / shape_grid_step, &integral);
 
     const float dbin = dist_hist_val * shape_hists_size_;
 
