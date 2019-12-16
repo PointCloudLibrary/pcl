@@ -163,7 +163,7 @@ pcl::cloud_composer::ToolBoxModel::updateEnabledTools (const QItemSelection& cur
     }
   }
   enableAllTools ();
-  QList <QStandardItem*> enabled_tools = tool_items.toList (); 
+  QList <QStandardItem*> enabled_tools = tool_items.values (); 
   QMap <QStandardItem*,QString> disabled_tools;
   QMutableListIterator<QStandardItem*> enabled_itr(enabled_tools);
   //Go through tools, removing from enabled list if they fail to pass tests
