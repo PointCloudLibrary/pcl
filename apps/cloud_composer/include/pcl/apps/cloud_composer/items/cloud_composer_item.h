@@ -152,7 +152,7 @@ namespace pcl
 
         static QVariant asQVariant (T* ptr)
         {
-          return (qVariantFromValue (static_cast<void*>(ptr)));
+          return (QVariant::fromValue (static_cast<void*>(ptr)));
         }
     };
     
