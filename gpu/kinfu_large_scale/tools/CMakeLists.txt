@@ -1,4 +1,4 @@
-if(NOT WITH_OPENNI)
+if((NOT WITH_OPENNI) AND (NOT WITH_OPENNI2))
   return()
 endif()
 

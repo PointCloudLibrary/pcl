@@ -69,10 +69,14 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/vtk_io.h>
+#ifdef HAVE_OPENNI
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/oni_grabber.h>
+#endif
 #include <pcl/io/pcd_grabber.h>
+#ifdef HAVE_OPENNI2
 #include <pcl/io/openni2_grabber.h>
+#endif
 
 #include "openni_capture.h"
 #include "color_handler.h"
@@ -767,8 +771,16 @@ struct KinFuLSApp
   void
   initRegistration ()
   {
-    registration_ = capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ()
-                      || capture_.providesCallback<pcl::io::OpenNI2Grabber::sig_cb_openni_image_depth_image> ();
+    registration_ = 
+      #ifdef HAVE_OPENNI
+      capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ()
+      #endif
+      #if defined(HAVE_OPENNI) && defined(HAVE_OPENNI2)
+      ||
+      #endif
+      #ifdef HAVE_OPENNI2
+      capture_.providesCallback<pcl::io::OpenNI2Grabber::sig_cb_openni_image_depth_image> ();
+      #endif
     std::cout << "Registration mode: " << (registration_ ? "On" : "Off (not supported by source)") << std::endl;
   }
 
@@ -996,6 +1008,7 @@ struct KinFuLSApp
 
     if(oni2_interface)
     {
+      #ifdef HAVE_OPENNI2
       using namespace pcl::io;
       using DepthImagePtr = boost::shared_ptr<DepthImage>;
       using ImagePtr = boost::shared_ptr<Image>;
@@ -1020,9 +1033,13 @@ struct KinFuLSApp
       {
         c = capture_.registerCallback (func2);
       }
+      #else
+      PCL_ERROR ("OpenNI2 is disabled in this PCL. Please build PCL with OpenNI2 feature.");
+      #endif
     }
     else
     {
+      #ifdef HAVE_OPENNI
       using namespace openni_wrapper;
       using DepthImagePtr = boost::shared_ptr<DepthImage>;
       using ImagePtr = boost::shared_ptr<Image>;
@@ -1047,6 +1064,9 @@ struct KinFuLSApp
       {
         c = capture_.registerCallback (func2);
       }
+      #else
+      PCL_ERROR ("OpenNI is disabled in this PCL. Please build PCL with OpenNI feature.");
+      #endif
     }
 
     {
@@ -1319,7 +1339,8 @@ main (int argc, char* argv[])
 
   std::string eval_folder, match_file, openni_device, oni_file, pcd_dir, oni2_file{};
   try
-  {    
+  {
+    #ifdef HAVE_OPENNI
     if (pc::parse_argument (argc, argv, "-dev", openni_device) > 0)
     {
       capture.reset (new pcl::OpenNIGrabber (openni_device));
@@ -1330,11 +1351,18 @@ main (int argc, char* argv[])
       bool repeat = false; // Only run ONI file once
       capture.reset (new pcl::ONIGrabber (oni_file, repeat, false));
     }
+    #endif
+    #if defined(HAVE_OPENNI) && defined(HAVE_OPENNI2)
     else if (pc::parse_argument (argc, argv, "-oni2", oni2_file) > 0)
+    #elif defined(HAVE_OPENNI2)
+    if (pc::parse_argument(argc, argv, "-oni2", oni2_file) > 0)
+    #endif
+    #ifdef HAVE_OPENNI2
     {
       capture.reset(new pcl::io::OpenNI2Grabber(oni2_file));
       oni2_interface = true;
     }
+    #endif
     else if (pc::parse_argument (argc, argv, "-pcd", pcd_dir) > 0)
     {
       float fps_pcd = 15.0f;
@@ -1354,7 +1382,12 @@ main (int argc, char* argv[])
     }
     else
     {
+      #ifdef HAVE_OPENNI
       capture.reset( new pcl::OpenNIGrabber() );
+      #else
+      capture.reset(new pcl::io::OpenNI2Grabber(oni2_file));
+      oni2_interface = true;
+      #endif
 
       //capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224932.oni", true, true) );
       //capture.reset( new pcl::ONIGrabber("d:/onis/reg20111229-180846.oni, true, true) );    
