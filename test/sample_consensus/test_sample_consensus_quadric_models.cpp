@@ -303,13 +303,25 @@ TEST (SampleConsensusModelCone, RANSAC)
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
   EXPECT_EQ (7, coeff.size ());
+  // apex
   EXPECT_NEAR (0.000000, coeff[0], 1e-2);
   EXPECT_NEAR (0.100000, coeff[1], 1e-2);
+  EXPECT_NEAR (1.000000, coeff[2], 1e-2);
+  // axis, defined as a normal to a given plane
+  EXPECT_NEAR (1.f, std::abs (Eigen::Vector3f (0.f, 1.f, 0.f).dot (coeff.segment<3> (3).normalized ())), 1e-2);
+  // cones opening angle
   EXPECT_NEAR (0.349066, coeff[6], 1e-2);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
   EXPECT_EQ (7, coeff_refined.size ());
+  // apex
+  EXPECT_NEAR (0.000000, coeff_refined[0], 1e-2);
+  EXPECT_NEAR (0.100000, coeff_refined[1], 1e-2);
+  EXPECT_NEAR (1.000000, coeff_refined[2], 1e-2);
+  // axis, defined as a normal to a given plane
+  EXPECT_NEAR (1.f, std::abs (Eigen::Vector3f (0.f, 1.f, 0.f).dot (coeff.segment<3> (3).normalized ())), 1e-2);
+  // cones opening angle
   EXPECT_NEAR (0.349066, coeff_refined[6], 1e-2);
 }
 
