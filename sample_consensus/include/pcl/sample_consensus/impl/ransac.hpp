@@ -61,8 +61,8 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
   std::vector<int> selection;
   Eigen::VectorXf model_coefficients;
 
-  double log_probability  = std::log (1.0 - probability_);
-  double one_over_indices = 1.0 / static_cast<double> (sac_model_->getIndices ()->size ());
+  const double log_probability  = std::log (1.0 - probability_);
+  const double one_over_indices = 1.0 / static_cast<double> (sac_model_->getIndices ()->size ());
 
   std::size_t n_inliers_count;
   unsigned skipped_count = 0;
@@ -70,7 +70,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
   const unsigned max_skip = max_iterations_ * 10;
   
   // Iterate
-  while (iterations_ < k && skipped_count < max_skip)
+  while (iterations_ < k)
   {
     // Get X samples which satisfy the model criteria
     sac_model_->getSamples (iterations_, selection);
@@ -86,7 +86,10 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
     {
       //++iterations_;
       ++skipped_count;
-      continue;
+      if (skipped_count < max_skip)
+        continue;
+      else
+        break;
     }
 
     // Select the inliers that are within threshold_ from the model
@@ -106,7 +109,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
       model_coefficients_ = model_coefficients;
 
       // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
-      double w = static_cast<double> (n_best_inliers_count) * one_over_indices;
+      const double w = static_cast<double> (n_best_inliers_count) * one_over_indices;
       double p_no_outliers = 1.0 - pow (w, static_cast<double> (selection.size ()));
       p_no_outliers = (std::max) (std::numeric_limits<double>::epsilon (), p_no_outliers);       // Avoid division by -Inf
       p_no_outliers = (std::min) (1.0 - std::numeric_limits<double>::epsilon (), p_no_outliers);   // Avoid division by 0.
