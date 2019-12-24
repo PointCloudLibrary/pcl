@@ -55,14 +55,14 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
   }
 
   iterations_ = 0;
-  int n_best_inliers_count = -INT_MAX;
-  double k = 1.0;
+  std::size_t n_best_inliers_count = 0;
+  double k = std::numeric_limits<double>::max();
 
   std::vector<int> selection;
   Eigen::VectorXf model_coefficients;
   std::set<int> indices_subset;
 
-  int n_inliers_count = 0;
+  std::size_t n_inliers_count;
   unsigned skipped_count = 0;
   // suppress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
   const unsigned max_skip = max_iterations_ * 10;
@@ -122,7 +122,7 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
     ++iterations_;
 
     if (debug_verbosity_level > 1)
-      PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] Trial %d out of %d: %d inliers (best is: %d so far).\n", iterations_, static_cast<int> (std::ceil (k)), n_inliers_count, n_best_inliers_count);
+      PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] Trial %d out of %d: %u inliers (best is: %u so far).\n", iterations_, static_cast<int> (std::ceil (k)), n_inliers_count, n_best_inliers_count);
     if (iterations_ > max_iterations_)
     {
       if (debug_verbosity_level > 0)
@@ -132,7 +132,7 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
   }
 
   if (debug_verbosity_level > 0)
-    PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] Model: %lu size, %d inliers.\n", model_.size (), n_best_inliers_count);
+    PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] Model: %lu size, %u inliers.\n", model_.size (), n_best_inliers_count);
 
   if (model_.empty ())
   {

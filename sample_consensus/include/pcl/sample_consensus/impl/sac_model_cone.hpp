@@ -251,7 +251,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::selectWithinDistance (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> int
+template <typename PointT, typename PointNT> std::size_t
 pcl::SampleConsensusModelCone<PointT, PointNT>::countWithinDistance (
     const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
@@ -260,7 +260,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::countWithinDistance (
   if (!isModelValid (model_coefficients))
     return (0);
 
-  int nr_p = 0;
+  std::size_t nr_p = 0;
 
   Eigen::Vector4f apex (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
   Eigen::Vector4f axis_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);

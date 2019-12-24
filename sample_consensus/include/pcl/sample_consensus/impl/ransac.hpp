@@ -55,8 +55,8 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
   }
 
   iterations_ = 0;
-  int n_best_inliers_count = -INT_MAX;
-  double k = 1.0;
+  std::size_t n_best_inliers_count = 0;
+  double k = std::numeric_limits<double>::max();
 
   std::vector<int> selection;
   Eigen::VectorXf model_coefficients;
@@ -64,7 +64,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
   double log_probability  = std::log (1.0 - probability_);
   double one_over_indices = 1.0 / static_cast<double> (sac_model_->getIndices ()->size ());
 
-  int n_inliers_count = 0;
+  std::size_t n_inliers_count;
   unsigned skipped_count = 0;
   // suppress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
   const unsigned max_skip = max_iterations_ * 10;
@@ -114,7 +114,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
     }
 
     ++iterations_;
-    PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Trial %d out of %f: %d inliers (best is: %d so far).\n", iterations_, k, n_inliers_count, n_best_inliers_count);
+    PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Trial %d out of %f: %u inliers (best is: %u so far).\n", iterations_, k, n_inliers_count, n_best_inliers_count);
     if (iterations_ > max_iterations_)
     {
       PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] RANSAC reached the maximum number of trials.\n");
@@ -122,7 +122,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
     }
   }
 
-  PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Model: %lu size, %d inliers.\n", model_.size (), n_best_inliers_count);
+  PCL_DEBUG ("[pcl::RandomSampleConsensus::computeModel] Model: %lu size, %u inliers.\n", model_.size (), n_best_inliers_count);
 
   if (model_.empty ())
   {

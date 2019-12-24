@@ -166,14 +166,14 @@ pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
 }
 
 //////////////////////////////////////////////////////////////////////////
-template <typename PointT> int
+template <typename PointT> std::size_t
 pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistance (
     const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
     return (0);
-  int nr_p = 0;
+  std::size_t nr_p = 0;
 
   // Iterate through the 3d points and calculate the distances from them to the circle
   for (std::size_t i = 0; i < indices_->size (); ++i)

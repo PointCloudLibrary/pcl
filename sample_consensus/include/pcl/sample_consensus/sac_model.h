@@ -254,7 +254,7 @@ namespace pcl
         * determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      virtual int
+      virtual std::size_t
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
                            const double threshold) const = 0;
 

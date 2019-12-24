@@ -102,7 +102,7 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::selectWithinDistance (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> int
+template <typename PointT, typename PointNT> std::size_t
 pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::countWithinDistance (
       const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
@@ -120,7 +120,7 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::countWithinDistance (
   Eigen::Vector4f coeff = model_coefficients;
   coeff[3] = 0;
 
-  int nr_p = 0;
+  std::size_t nr_p = 0;
 
   // Iterate through the 3d points and calculate the distances from them to the plane
   for (std::size_t i = 0; i < indices_->size (); ++i)
