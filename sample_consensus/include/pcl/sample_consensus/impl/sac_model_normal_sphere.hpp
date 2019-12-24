@@ -121,7 +121,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::countWithinDistance (
     return(0);
 
 
-  // Obtain the shpere centroid
+  // Obtain the sphere centroid
   Eigen::Vector4f center = model_coefficients;
   center[3] = 0;
 

@@ -388,7 +388,7 @@ namespace pcl
       }
 
       /** \brief Set the distance we expect a plane model to be from the origin
-        * \param[in] d distance from the template plane modl to the origin
+        * \param[in] d distance from the template plane model to the origin
         */
       inline void
       setDistanceFromOrigin (const double d) { distance_from_origin_ = d; }
