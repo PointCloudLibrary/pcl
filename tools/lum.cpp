@@ -130,7 +130,7 @@ main (int argc, char **argv)
   {
     std::string result_filename (clouds[i].first);
     result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
-    pcl::io::savePCDFileBinary (result_filename.c_str (), *(clouds[i].second));
+    pcl::io::savePCDFileBinary (result_filename, *(clouds[i].second));
     //std::cout << "saving result to " << result_filename << std::endl;
   }
 

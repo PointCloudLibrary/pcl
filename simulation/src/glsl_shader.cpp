@@ -44,7 +44,7 @@ void
 pcl::simulation::gllib::Program::setUniform(const std::string& name,
                                             const Eigen::Vector2f& v)
 {
-  GLuint loc = getUniformLocation(name.c_str());
+  GLuint loc = getUniformLocation(name);
   glUniform2f(loc, v(0), v(1));
 }
 
@@ -52,7 +52,7 @@ void
 pcl::simulation::gllib::Program::setUniform(const std::string& name,
                                             const Eigen::Vector3f& v)
 {
-  GLuint loc = getUniformLocation(name.c_str());
+  GLuint loc = getUniformLocation(name);
   glUniform3f(loc, v(0), v(1), v(2));
 }
 
@@ -60,7 +60,7 @@ void
 pcl::simulation::gllib::Program::setUniform(const std::string& name,
                                             const Eigen::Vector4f& v)
 {
-  GLuint loc = getUniformLocation(name.c_str());
+  GLuint loc = getUniformLocation(name);
   glUniform4f(loc, v(0), v(1), v(2), v(4));
 }
 
@@ -68,7 +68,7 @@ void
 pcl::simulation::gllib::Program::setUniform(const std::string& name,
                                             const Eigen::Matrix3f& v)
 {
-  GLuint loc = getUniformLocation(name.c_str());
+  GLuint loc = getUniformLocation(name);
   glUniformMatrix3fv(loc, 1, false, v.data());
 }
 
@@ -76,28 +76,28 @@ void
 pcl::simulation::gllib::Program::setUniform(const std::string& name,
                                             const Eigen::Matrix4f& v)
 {
-  GLuint loc = getUniformLocation(name.c_str());
+  GLuint loc = getUniformLocation(name);
   glUniformMatrix4fv(loc, 1, false, v.data());
 }
 
 void
 pcl::simulation::gllib::Program::setUniform(const std::string& name, float v)
 {
-  GLuint loc = getUniformLocation(name.c_str());
+  GLuint loc = getUniformLocation(name);
   glUniform1f(loc, v);
 }
 
 void
 pcl::simulation::gllib::Program::setUniform(const std::string& name, int v)
 {
-  GLuint loc = getUniformLocation(name.c_str());
+  GLuint loc = getUniformLocation(name);
   glUniform1i(loc, v);
 }
 
 void
 pcl::simulation::gllib::Program::setUniform(const std::string& name, bool v)
 {
-  GLuint loc = getUniformLocation(name.c_str());
+  GLuint loc = getUniformLocation(name);
   glUniform1i(loc, (v ? 1 : 0));
 }
 
