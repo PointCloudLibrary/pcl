@@ -100,6 +100,26 @@ pcl::SampleConsensusModelCircle2D<PointT>::computeModelCoefficients (const std::
   return (true);
 }
 
+#ifdef __AVX__
+// This function computes the squared distances (i.e. the distances without the square root) of 8 points to the center of the circle
+template <typename PointT> inline __m256 pcl::SampleConsensusModelCircle2D<PointT>::sqr_dist8 (const std::size_t i, const __m256 a_vec, const __m256 b_vec) const
+{
+  const __m256 tmp1 = _mm256_sub_ps (_mm256_set_ps (input_->points[(*indices_)[i  ]].x, input_->points[(*indices_)[i+1]].x, input_->points[(*indices_)[i+2]].x, input_->points[(*indices_)[i+3]].x, input_->points[(*indices_)[i+4]].x, input_->points[(*indices_)[i+5]].x, input_->points[(*indices_)[i+6]].x, input_->points[(*indices_)[i+7]].x), a_vec);
+  const __m256 tmp2 = _mm256_sub_ps (_mm256_set_ps (input_->points[(*indices_)[i  ]].y, input_->points[(*indices_)[i+1]].y, input_->points[(*indices_)[i+2]].y, input_->points[(*indices_)[i+3]].y, input_->points[(*indices_)[i+4]].y, input_->points[(*indices_)[i+5]].y, input_->points[(*indices_)[i+6]].y, input_->points[(*indices_)[i+7]].y), b_vec);
+  return _mm256_add_ps (_mm256_mul_ps (tmp1, tmp1), _mm256_mul_ps (tmp2, tmp2));
+}
+#endif // ifdef __AVX__
+
+#ifdef __SSE__
+// This function computes the squared distances (i.e. the distances without the square root) of 4 points to the center of the circle
+template <typename PointT> inline __m128 pcl::SampleConsensusModelCircle2D<PointT>::sqr_dist4 (const std::size_t i, const __m128 a_vec, const __m128 b_vec) const
+{
+  const __m128 tmp1 = _mm_sub_ps (_mm_set_ps (input_->points[(*indices_)[i  ]].x, input_->points[(*indices_)[i+1]].x, input_->points[(*indices_)[i+2]].x, input_->points[(*indices_)[i+3]].x), a_vec);
+  const __m128 tmp2 = _mm_sub_ps (_mm_set_ps (input_->points[(*indices_)[i  ]].y, input_->points[(*indices_)[i+1]].y, input_->points[(*indices_)[i+2]].y, input_->points[(*indices_)[i+3]].y), b_vec);
+  return _mm_add_ps (_mm_mul_ps (tmp1, tmp1), _mm_mul_ps (tmp2, tmp2));
+}
+#endif // ifdef __SSE__
+
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelCircle2D<PointT>::getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances) const
@@ -175,8 +195,65 @@ pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistance (
     return (0);
   int nr_p = 0;
 
+  std::size_t i = 0;
+#if defined (__AVX__) && defined (__AVX2__)
+  const __m256 a_vec = _mm256_set1_ps (model_coefficients[0]);
+  const __m256 b_vec = _mm256_set1_ps (model_coefficients[1]);
+  // To avoid sqrt computation: consider one larger circle (radius + threshold) and one smaller circle (radius - threshold). Valid if point is in larger circle, but not in smaller circle.
+  const __m256 sqr_inner_circle = _mm256_set1_ps ((model_coefficients[2] <= threshold ? 0.0 : (model_coefficients[2]-threshold)*(model_coefficients[2]-threshold)));
+  const __m256 sqr_outer_circle = _mm256_set1_ps ((model_coefficients[2]+threshold)*(model_coefficients[2]+threshold));
+  __m256i res = _mm256_set1_epi32(0); // This corresponds to nr_p: 8 32bit integers that, summed together, hold the number of inliers
+  for (; (i + 8) <= indices_->size (); i += 8)
+  {
+    const __m256 sqr_dist = sqr_dist8 (i, a_vec, b_vec);
+    const __m256 mask = _mm256_and_ps (_mm256_cmp_ps (sqr_inner_circle, sqr_dist, _CMP_LT_OQ), _mm256_cmp_ps (sqr_dist, sqr_outer_circle, _CMP_LT_OQ)); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
+    res = _mm256_add_epi32 (res, _mm256_and_si256 (_mm256_set1_epi32 (1), _mm256_castps_si256 (mask))); // The latter part creates a vector with ones (as 32bit integers) where the points are inliers
+    //const int res = _mm256_movemask_ps (mask);
+    //if (res &   1) nr_p++;
+    //if (res &   2) nr_p++;
+    //if (res &   4) nr_p++;
+    //if (res &   8) nr_p++;
+    //if (res &  16) nr_p++;
+    //if (res &  32) nr_p++;
+    //if (res &  64) nr_p++;
+    //if (res & 128) nr_p++;
+  }
+  nr_p += _mm256_extract_epi32 (res, 0);
+  nr_p += _mm256_extract_epi32 (res, 1);
+  nr_p += _mm256_extract_epi32 (res, 2);
+  nr_p += _mm256_extract_epi32 (res, 3);
+  nr_p += _mm256_extract_epi32 (res, 4);
+  nr_p += _mm256_extract_epi32 (res, 5);
+  nr_p += _mm256_extract_epi32 (res, 6);
+  nr_p += _mm256_extract_epi32 (res, 7);
+#else
+#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
+  const __m128 a_vec = _mm_set1_ps (model_coefficients[0]);
+  const __m128 b_vec = _mm_set1_ps (model_coefficients[1]);
+  // To avoid sqrt computation: consider one larger circle (radius + threshold) and one smaller circle (radius - threshold). Valid if point is in larger circle, but not in smaller circle.
+  const __m128 sqr_inner_circle = _mm_set1_ps ((model_coefficients[2] <= threshold ? 0.0 : (model_coefficients[2]-threshold)*(model_coefficients[2]-threshold)));
+  const __m128 sqr_outer_circle = _mm_set1_ps ((model_coefficients[2]+threshold)*(model_coefficients[2]+threshold));
+  __m128i res = _mm_set1_epi32(0); // This corresponds to nr_p: 8 32bit integers that, summed together, hold the number of inliers
+  for (; (i + 4) <= indices_->size (); i += 4)
+  {
+    const __m128 sqr_dist = sqr_dist4 (i, a_vec, b_vec);
+    const __m128 mask = _mm_and_ps (_mm_cmplt_ps (sqr_inner_circle, sqr_dist), _mm_cmplt_ps (sqr_dist, sqr_outer_circle)); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
+    res = _mm_add_epi32 (res, _mm_and_si128 (_mm_set1_epi32 (1), _mm_castps_si128 (mask))); // The latter part creates a vector with ones (as 32bit integers) where the points are inliers
+    //const int res = _mm_movemask_ps (mask);
+    //if (res & 1) nr_p++;
+    //if (res & 2) nr_p++;
+    //if (res & 4) nr_p++;
+    //if (res & 8) nr_p++;
+  }
+  nr_p += _mm_extract_epi32 (res, 0);
+  nr_p += _mm_extract_epi32 (res, 1);
+  nr_p += _mm_extract_epi32 (res, 2);
+  nr_p += _mm_extract_epi32 (res, 3);
+#endif // if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
+#endif // if defined (__AVX__) && defined (__AVX2__)
+
   // Iterate through the 3d points and calculate the distances from them to the circle
-  for (std::size_t i = 0; i < indices_->size (); ++i)
+  for (; i < indices_->size (); ++i)
   {
     // Calculate the distance from the point to the circle as the difference between
     // dist(point,circle_origin) and circle_radius

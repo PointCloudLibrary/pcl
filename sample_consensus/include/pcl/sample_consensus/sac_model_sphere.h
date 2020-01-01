@@ -263,6 +263,14 @@ namespace pcl
         const pcl::SampleConsensusModelSphere<PointT> *model_;
         const std::vector<int> &indices_;
       };
+
+#ifdef __AVX__
+      inline __m256 sqr_dist8 (const std::size_t i, const __m256 a_vec, const __m256 b_vec, const __m256 c_vec) const;
+#endif
+
+#ifdef __SSE__
+      inline __m128 sqr_dist4 (const std::size_t i, const __m128 a_vec, const __m128 b_vec, const __m128 c_vec) const;
+#endif
    };
 }
 
