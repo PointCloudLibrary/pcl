@@ -998,7 +998,7 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
         // Else, do cur_field.offset - prev_field.offset + sizeof (prev_field)
         (cloud.fields[i].offset -
         (cloud.fields[i-1].offset +
-         cloud.fields[i-1].count * getFieldSize (cloud.fields[i].datatype)));
+         cloud.fields[i-1].count * getFieldSize (cloud.fields[i-1].datatype)));
 
       toffset += fake_offset;
 
