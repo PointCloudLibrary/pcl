@@ -112,9 +112,10 @@ pcl::filters::Pyramid<PointT>::compute (std::vector<PointCloudPtr>& output)
       output[l].reset (new pcl::PointCloud<PointT> (output[l-1]->width/2, output[l-1]->height/2));
       const PointCloud<PointT> &previous = *output[l-1];
       PointCloud<PointT> &next = *output[l];
-#ifdef _OPENMP
-#pragma omp parallel for shared (next) num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(next) \
+  num_threads(threads_)
       for(int i=0; i < next.height; ++i)
       {
         for(int j=0; j < next.width; ++j)
@@ -147,9 +148,10 @@ pcl::filters::Pyramid<PointT>::compute (std::vector<PointCloudPtr>& output)
       output[l].reset (new pcl::PointCloud<PointT> (output[l-1]->width/2, output[l-1]->height/2));
       const PointCloud<PointT> &previous = *output[l-1];
       PointCloud<PointT> &next = *output[l];
-#ifdef _OPENMP
-#pragma omp parallel for shared (next) num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(next) \
+  num_threads(threads_)
       for(int i=0; i < next.height; ++i)
       {
         for(int j=0; j < next.width; ++j)
@@ -219,9 +221,10 @@ namespace pcl
           output[l].reset (new pcl::PointCloud<pcl::PointXYZRGB> (output[l-1]->width/2, output[l-1]->height/2));
           const PointCloud<pcl::PointXYZRGB> &previous = *output[l-1];
           PointCloud<pcl::PointXYZRGB> &next = *output[l];
-#ifdef _OPENMP
-#pragma omp parallel for shared (next) num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(next) \
+  num_threads(threads_)
           for(int i=0; i < next.height; ++i)              // rows
           {
             for(int j=0; j < next.width; ++j)          // columns
@@ -264,9 +267,10 @@ namespace pcl
           output[l].reset (new pcl::PointCloud<pcl::PointXYZRGB> (output[l-1]->width/2, output[l-1]->height/2));
           const PointCloud<pcl::PointXYZRGB> &previous = *output[l-1];
           PointCloud<pcl::PointXYZRGB> &next = *output[l];
-#ifdef _OPENMP
-#pragma omp parallel for shared (next) num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(next) \
+  num_threads(threads_)
           for(int i=0; i < next.height; ++i)
           {
             for(int j=0; j < next.width; ++j)
@@ -342,9 +346,10 @@ namespace pcl
           output[l].reset (new pcl::PointCloud<pcl::PointXYZRGBA> (output[l-1]->width/2, output[l-1]->height/2));
           const PointCloud<pcl::PointXYZRGBA> &previous = *output[l-1];
           PointCloud<pcl::PointXYZRGBA> &next = *output[l];
-#ifdef _OPENMP
-#pragma omp parallel for shared (next) num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(next) \
+  num_threads(threads_)
           for(int i=0; i < next.height; ++i)              // rows
           {
             for(int j=0; j < next.width; ++j)          // columns
@@ -389,9 +394,10 @@ namespace pcl
           output[l].reset (new pcl::PointCloud<pcl::PointXYZRGBA> (output[l-1]->width/2, output[l-1]->height/2));
           const PointCloud<pcl::PointXYZRGBA> &previous = *output[l-1];
           PointCloud<pcl::PointXYZRGBA> &next = *output[l];
-#ifdef _OPENMP
-#pragma omp parallel for shared (next) num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(next) \
+  num_threads(threads_)
           for(int i=0; i < next.height; ++i)
           {
             for(int j=0; j < next.width; ++j)
@@ -475,9 +481,10 @@ namespace pcl
           output[l].reset (new pcl::PointCloud<pcl::RGB> (output[l-1]->width/2, output[l-1]->height/2));
           const PointCloud<pcl::RGB> &previous = *output[l-1];
           PointCloud<pcl::RGB> &next = *output[l];
-#ifdef _OPENMP
-#pragma omp parallel for shared (next) num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(next) \
+  num_threads(threads_)
           for(int i=0; i < next.height; ++i)
           {
             for(int j=0; j < next.width; ++j)
@@ -514,9 +521,10 @@ namespace pcl
           output[l].reset (new pcl::PointCloud<pcl::RGB> (output[l-1]->width/2, output[l-1]->height/2));
           const PointCloud<pcl::RGB> &previous = *output[l-1];
           PointCloud<pcl::RGB> &next = *output[l];
-#ifdef _OPENMP
-#pragma omp parallel for shared (next) num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(next) \
+  num_threads(threads_)
           for(int i=0; i < next.height; ++i)
           {
             for(int j=0; j < next.width; ++j)

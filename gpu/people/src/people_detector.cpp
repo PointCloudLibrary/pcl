@@ -486,9 +486,9 @@ pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT> &cloud, con
 
   // Process all points in the indices vector
   int total = static_cast<int> (indices.size ());
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(cloud, intr, hue, indices, mask, squared_radius, storage, total)
   for (int k = 0; k < total; ++k)
   {
     int i = indices[k];

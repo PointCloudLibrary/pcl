@@ -299,7 +299,9 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<se
   }
   
   // remove also Nans
-  #pragma omp parallel for
+  #pragma omp parallel for \
+    shared(nan_mask, point_cloud) \
+    default(none)
   for (int pIdx = 0; pIdx < int (point_cloud->size ()); ++pIdx)
   {
     if (!isFinite (point_cloud->points [pIdx]))
@@ -310,7 +312,9 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<se
   if (!input_indices.empty ())
     input_indices_.reset (new pcl::Indices (input_indices));
   
-  #pragma omp parallel for
+  #pragma omp parallel for \
+    shared(input_indices, input_indices_, point_cloud, search_methods) \
+    default(none)
   for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
     search_methods [sIdx]->setInputCloud (point_cloud, input_indices_);
 
@@ -320,7 +324,9 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<se
     // find nn for each point in the cloud
     for (const int &query_index : query_indices)
     {
-      #pragma omp parallel for
+      #pragma omp parallel for \
+        shared(indices, input_indices, indices_mask, distances, knn, nan_mask, passed, point_cloud, query_index, search_methods) \
+        default(none)
       for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
       {
         search_methods [sIdx]->nearestKSearch (point_cloud->points[query_index], knn, indices [sIdx], distances [sIdx]);
@@ -330,7 +336,9 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<se
       }
       
       // compare results to each other
-      #pragma omp parallel for
+      #pragma omp parallel for \
+        shared(distances, indices, passed, search_methods) \
+        default(none)
       for (int sIdx = 1; sIdx < int (search_methods.size ()); ++sIdx)
       {
         passed [sIdx] = passed [sIdx] && compareResults (indices [0],    distances [0],    search_methods [0]->getName (),
@@ -369,7 +377,9 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector
   }
   
   // remove also Nans
-  #pragma omp parallel for
+  #pragma omp parallel for \
+    default(none) \
+    shared(nan_mask, point_cloud)
   for (int pIdx = 0; pIdx < int (point_cloud->size ()); ++pIdx)
   {
     if (!isFinite (point_cloud->points [pIdx]))
@@ -380,7 +390,9 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector
   if (!input_indices.empty ())
     input_indices_.reset (new pcl::Indices (input_indices));
   
-  #pragma omp parallel for
+  #pragma omp parallel for \
+    default(none) \
+    shared(input_indices_, point_cloud, search_methods)
   for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
     search_methods [sIdx]->setInputCloud (point_cloud, input_indices_);
 
@@ -391,7 +403,9 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector
     // find nn for each point in the cloud
     for (const int &query_index : query_indices)
     {
-      #pragma omp parallel for
+      #pragma omp parallel for \
+        default(none) \
+        shared(distances, indices, indices_mask, input_indices, nan_mask, passed, point_cloud, radius, query_index, search_methods)
       for (int sIdx = 0; sIdx < static_cast<int> (search_methods.size ()); ++sIdx)
       {
         search_methods [sIdx]->radiusSearch (point_cloud->points[query_index], radius, indices [sIdx], distances [sIdx], 0);
@@ -401,7 +415,9 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector
       }
       
       // compare results to each other
-      #pragma omp parallel for
+      #pragma omp parallel for \
+        default(none) \
+        shared(distances, indices, passed, search_methods)
       for (int sIdx = 1; sIdx < static_cast<int> (search_methods.size ()); ++sIdx)
       {
         passed [sIdx] = passed [sIdx] && compareResults (indices [0],    distances [0],    search_methods [0]->getName (),

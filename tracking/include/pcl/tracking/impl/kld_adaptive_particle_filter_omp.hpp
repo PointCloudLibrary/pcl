@@ -23,9 +23,9 @@ pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight ()
 {
   if (!use_normal_)
   {
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  num_threads(threads_)
     for (int i = 0; i < particle_num_; i++)
       this->computeTransformedPointCloudWithoutNormal (particles_->points[i], *transed_reference_vector_[i]);
     
@@ -40,9 +40,9 @@ pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight ()
         change_counter_ = change_detector_interval_;
         coherence_->setTargetCloud (coherence_input);
         coherence_->initCompute ();
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  num_threads(threads_)
         for (int i = 0; i < particle_num_; i++)
         {
           IndicesPtr indices;
@@ -57,9 +57,9 @@ pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight ()
       --change_counter_;
       coherence_->setTargetCloud (coherence_input);
       coherence_->initCompute ();
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  num_threads(threads_)
       for (int i = 0; i < particle_num_; i++)
       {
         IndicesPtr indices;
@@ -74,9 +74,10 @@ pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight ()
     {
       indices_list[i] = IndicesPtr (new std::vector<int>);
     }
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(indices_list) \
+  num_threads(threads_)
     for (int i = 0; i < particle_num_; i++)
     {
       this->computeTransformedPointCloudWithNormal (particles_->points[i], *indices_list[i], *transed_reference_vector_[i]);
@@ -87,9 +88,10 @@ pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight ()
     
     coherence_->setTargetCloud (coherence_input);
     coherence_->initCompute ();
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(indices_list) \
+  num_threads(threads_)
     for (int i = 0; i < particle_num_; i++)
     {
       coherence_->compute (transed_reference_vector_[i], indices_list[i], particles_->points[i].weight);

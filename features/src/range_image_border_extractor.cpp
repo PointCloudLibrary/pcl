@@ -106,8 +106,8 @@ RangeImageBorderExtractor::extractLocalSurfaceStructure ()
   //std::cerr << __PRETTY_FUNCTION__<<" called (this="<<(void*)this<<").\n";
   //MEASURE_FUNCTION_TIME;
 
-  const auto width  = range_image_->width,
-      height = range_image_->height;
+  const auto width  = range_image_->width;
+  const auto height = range_image_->height;
   range_image_size_during_extraction_ = width*height;
   const auto array_size = range_image_size_during_extraction_;
   surface_structure_ = new LocalSurface*[array_size];
@@ -120,7 +120,18 @@ RangeImageBorderExtractor::extractLocalSurfaceStructure ()
   // But OpenMP requires signed size. Here we choose the minimum size that fits the bill
   using iteration_type = std::conditional_t<sizeof(int) == sizeof(long int), long long int, long int>;
 
-# pragma omp parallel for num_threads(parameters_.max_no_of_threads) default(shared) schedule(dynamic, 10)
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  schedule(dynamic, 10) \
+  num_threads(parameters_.max_no_of_threads)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(height, no_of_nearest_neighbors, step_size, width) \
+  schedule(dynamic, 10) \
+  num_threads(parameters_.max_no_of_threads)
+#endif
   for (iteration_type y=0; y<height; ++y)
   {
     for (unsigned int x=0; x<width; ++x)
@@ -168,7 +179,11 @@ RangeImageBorderExtractor::extractBorderScoreImages ()
   border_scores_top_.resize (size);
   border_scores_bottom_ .resize (size);
 
-# pragma omp parallel for num_threads(parameters_.max_no_of_threads) default(shared) schedule(dynamic, 10)
+#pragma omp parallel for \
+  default(none) \
+  shared(height, width) \
+  schedule(dynamic, 10) \
+  num_threads(parameters_.max_no_of_threads)
   for (int y=0; y<height; ++y) {
     for (int x=0; x<width; ++x) {
       int index = y*width + x;
@@ -558,7 +573,11 @@ RangeImageBorderExtractor::calculateSurfaceChanges ()
       size   = width*height;
   surface_change_scores_ = new float[size];
   surface_change_directions_ = new Eigen::Vector3f[size];
-# pragma omp parallel for num_threads(parameters_.max_no_of_threads) default(shared) schedule(dynamic, 10)
+#pragma omp parallel for \
+  default(none) \
+  shared(height, width) \
+  schedule(dynamic, 10) \
+  num_threads(parameters_.max_no_of_threads)
   for (int y=0; y<height; ++y)
   {
     for (int x=0; x<width; ++x)

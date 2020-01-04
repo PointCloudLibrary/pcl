@@ -191,8 +191,9 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::convertTsdfVectors (const Po
 	constexpr int DIVISOR = std::numeric_limits<short>::max();
 
     ///For every point in the cloud
-#pragma omp parallel for
- 	
+#pragma omp parallel for \
+  default(none) \
+  shared(cloud, output) 	
 	for(int i = 0; i < (int) cloud.points.size (); ++i)
 	{
 	  int x = cloud.points[i].x;
