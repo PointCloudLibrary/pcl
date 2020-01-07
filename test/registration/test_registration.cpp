@@ -67,7 +67,7 @@ using namespace pcl::io;
 using namespace std;
 
 PointCloud<PointXYZ> cloud_source, cloud_target, cloud_reg;
-PointCloud<PointXYZRGBA> cloud_with_color;
+PointCloud<PointXYZRGB> cloud_with_color;
 
 template <typename PointSource, typename PointTarget>
 class RegistrationWrapper : public Registration<PointSource, PointTarget>
@@ -536,7 +536,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GeneralizedIterativeClosestPoint6D)
 {
-  using PointT = PointXYZRGBA;
+  using PointT = PointXYZRGB;
   Eigen::Affine3f delta_transform;
   PointCloud<PointT>::Ptr src_full (new PointCloud<PointT>);
   copyPointCloud (cloud_with_color, *src_full);
