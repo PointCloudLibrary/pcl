@@ -531,6 +531,9 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         }
         istream.ignore (char_ignore_count);
         ++line_number_;
+	if(istream.eof())
+          return true;
+
         std::istringstream stringstream (line);
         stringstream.unsetf (std::ios_base::skipws);
         stringstream >> std::ws;
@@ -553,7 +556,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
       }
     }
     istream >> std::ws;
-    if (istream.fail () || !istream.eof () || istream.bad ())
+    if (istream.fail () || istream.bad ())
     {
       if (error_callback_)
         error_callback_ (line_number_, "parse error");
