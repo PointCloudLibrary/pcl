@@ -260,16 +260,11 @@ Narf::extractFromRangeImageWithBestRotation (const RangeImage& range_image, cons
   getRotations(rotations, strengths);
   if (rotations.empty())
     return false;
-  float best_rotation=rotations[0], best_strength=strengths[0];
-  for (std::size_t i = 1; i < rotations.size(); ++i)
-  {
-    if (strengths[i] > best_strength)
-    {
-      best_rotation = rotations[i];
-      best_strength = strengths[i];
-    }
-  }
-  
+
+  const auto max_it = std::max_element(strengths.cbegin (), strengths.cend ());
+  const auto max_idx = std::distance(strengths.cbegin (), max_it);
+  const auto best_rotation = rotations[max_idx];
+
   transformation_ = Eigen::AngleAxisf(-best_rotation, Eigen::Vector3f(0.0f, 0.0f, 1.0f))*transformation_;
   surface_patch_rotation_ = best_rotation;
   return extractDescriptor(descriptor_size_);
