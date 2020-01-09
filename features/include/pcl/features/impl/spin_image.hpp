@@ -326,14 +326,9 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClo
   {
     Eigen::ArrayXXd res = computeSiForPoint (indices_->at (i_input));
 
-    // Copy into the resultant cloud
-    for (Eigen::Index iRow = 0; iRow < res.rows () ; iRow++)
-    {
-      for (Eigen::Index iCol = 0; iCol < res.cols () ; iCol++)
-      {
-        output.points[i_input].histogram[ iRow*res.cols () + iCol ] = static_cast<float> (res (iRow, iCol));
-      }
-    }   
+    // Copy into the resultant cloud, can't use std::copy due to type difference
+    std::transform (res.data (), res.data () + res.size (), output.points[i_input].histogram,
+            [](const auto& dbl_data) { return static_cast<float> (dbl_data); });
   } 
 }
 
