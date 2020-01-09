@@ -145,23 +145,10 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::planeFitt
   }
 
   //find the center by averaging the points positions
-  center.setZero ();
-
-  for (int i = 0; i < n_points; ++i)
-  {
-    center += points.row (i);
-  }
-
-  center /= static_cast<float> (n_points);
+  center = points.colwise().mean().transpose();
 
   //copy points - average (center)
-  Eigen::Matrix<float, Eigen::Dynamic, 3> A (n_points, 3); //PointData
-  for (int i = 0; i < n_points; ++i)
-  {
-    A (i, 0) = points (i, 0) - center.x ();
-    A (i, 1) = points (i, 1) - center.y ();
-    A (i, 2) = points (i, 2) - center.z ();
-  }
+  const Eigen::Matrix<float, Eigen::Dynamic, 3> A = points.rowwise() - center.transpose();
 
   Eigen::JacobiSVD<Eigen::MatrixXf> svd (A, Eigen::ComputeFullV);
   norm = svd.matrixV ().col (2);
@@ -265,14 +252,12 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
 
     lrf.row (0).matrix () = x_axis;
 
-    for (int i = 0; i < check_margin_array_size_; i++)
-    {
-      check_margin_array_[i] = false;
-      margin_array_min_angle_[i] = std::numeric_limits<float>::max ();
-      margin_array_max_angle_[i] = -std::numeric_limits<float>::max ();
-      margin_array_min_angle_normal_[i] = -1.0;
-      margin_array_max_angle_normal_[i] = -1.0;
-    }
+    check_margin_array_.assign(check_margin_array_size_, false);
+    margin_array_min_angle_.assign(check_margin_array_size_, std::numeric_limits<float>::max ());
+    margin_array_max_angle_.assign(check_margin_array_size_, -std::numeric_limits<float>::max ());
+    margin_array_min_angle_normal_.assign(check_margin_array_size_, -1.0);
+    margin_array_max_angle_normal_.assign(check_margin_array_size_, -1.0);
+
     max_boundary_angle = (2 * static_cast<float> (M_PI)) / static_cast<float> (check_margin_array_size_);
   }
 
@@ -448,23 +433,16 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
   int hole_end;
   int hole_first;
 
-  //find first no border pie
-  int first_no_border = -1;
-  if (check_margin_array_[check_margin_array_size_ - 1])
-  {
-    first_no_border = 0;
-  }
-  else
-  {
-    for (int i = 0; i < check_margin_array_size_; i++)
+  const auto find_first_no_border_pie = [](const auto& array) -> std::size_t {
+    if (array.back())
     {
-      if (check_margin_array_[i])
-      {
-        first_no_border = i;
-        break;
-      }
+        return 0;
     }
-  }
+    const auto result = std::find_if(array.cbegin (), array.cend (),
+                                     [](const auto& x) -> bool { return x;});
+    return std::distance(array.cbegin (), result);
+  };
+  const auto first_no_border = find_first_no_border_pie(check_margin_array_);
 
   //float steep_prob = 0.0;
   float max_hole_prob = -std::numeric_limits<float>::max ();
