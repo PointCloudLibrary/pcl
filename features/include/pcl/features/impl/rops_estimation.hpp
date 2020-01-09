@@ -193,17 +193,19 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
       } while (theta < 90.0f);
     }
 
-    float norm = 0.0f;
-    for (std::size_t i_dim = 0; i_dim < feature_size; i_dim++)
-      norm += std::abs (feature[i_dim]);
+    const float norm = std::accumulate(
+        feature.cbegin(), feature.cend(), 0.f, [](const auto& sum, const auto& val) {
+          return sum + std::abs(val);
+        });
+    float invert_norm;
     if (norm < std::numeric_limits <float>::epsilon ())
-      norm = 1.0f;
+      invert_norm = 1.0f;
     else
-      norm = 1.0f / norm;
+      invert_norm = 1.0f / norm;
 
     output.points.emplace_back ();
     for (std::size_t i_dim = 0; i_dim < feature_size; i_dim++)
-      output.points.back ().histogram[i_dim] = feature[i_dim] * norm;
+      output.points.back().histogram[i_dim] = feature[i_dim] * invert_norm;
   }
 }
 
@@ -447,13 +449,11 @@ pcl::ROPSEstimation <PointInT, PointOutT>::rotateCloud (const PointInT& axis, co
     rotated_point.z = point (2);
     rotated_cloud.points.emplace_back (rotated_point);
 
-    if (min (0) > rotated_point.x) min (0) = rotated_point.x;
-    if (min (1) > rotated_point.y) min (1) = rotated_point.y;
-    if (min (2) > rotated_point.z) min (2) = rotated_point.z;
-
-    if (max (0) < rotated_point.x) max (0) = rotated_point.x;
-    if (max (1) < rotated_point.y) max (1) = rotated_point.y;
-    if (max (2) < rotated_point.z) max (2) = rotated_point.z;
+    for (int i = 0; i < 3; ++i)
+    {
+      min(i) = std::min(min(i), point(i));
+      max(i) = std::max(max(i), point(i));
+    }
   }
 }
 
@@ -489,7 +489,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::getDistributionMatrix (const unsigned
     matrix (row, col) += 1.0f;
   }
 
-  matrix /= static_cast <float> (std::min<std::size_t> (1, cloud.points.size ()));
+  matrix /= std::max<float> (1, cloud.points.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
