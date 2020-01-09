@@ -102,57 +102,50 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSmoot
   {
     if (processed[i])
       continue;
-
-    std::vector<std::size_t> seed_queue;
-    std::size_t sq_idx = 0;
-    seed_queue.push_back (i);
-
     processed[i] = true;
 
-    while (sq_idx < seed_queue.size ())
+    pcl::PointIndices r;
+    r.header = cloud.header;
+    auto& seed_queue = r.indices;
+
+    seed_queue.push_back (i);
+
+    // loop has an emplace_back, making it difficult to use modern loops
+    for (std::size_t idx = 0; idx != seed_queue.size (); ++idx)
     {
-      // Search for sq_idx
-      if (!tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances))
+      // Search for seed_queue[index]
+      if (!tree->radiusSearch (seed_queue[idx], tolerance, nn_indices, nn_distances))
       {
-        sq_idx++;
         continue;
       }
 
-      for (std::size_t j = 1; j < nn_indices.size (); ++j) // nn_indices[0] should be sq_idx
+      // skip index 0, since nn_indices[0] == idx, worth it?
+      for (std::size_t j = 1; j < nn_indices.size (); ++j)
       {
         if (processed[nn_indices[j]]) // Has this point been processed before ?
           continue;
 
         //processed[nn_indices[j]] = true;
         // [-1;1]
+        const double dot_p = normals.points[seed_queue[idx]].getNormalVector3fMap().dot(
+                        normals.points[nn_indices[j]].getNormalVector3fMap());
 
-        double dot_p = normals.points[seed_queue[sq_idx]].normal[0] * normals.points[nn_indices[j]].normal[0]
-                     + normals.points[seed_queue[sq_idx]].normal[1] * normals.points[nn_indices[j]].normal[1]
-                     + normals.points[seed_queue[sq_idx]].normal[2] * normals.points[nn_indices[j]].normal[2];
-
-        if (std::abs (std::acos (dot_p)) < eps_angle)
+        if (std::acos (dot_p) < eps_angle)
         {
           processed[nn_indices[j]] = true;
-          seed_queue.push_back (nn_indices[j]);
+          seed_queue.emplace_back (nn_indices[j]);
         }
       }
-
-      sq_idx++;
     }
 
     // If this queue is satisfactory, add to the clusters
     if (seed_queue.size () >= min_pts_per_cluster && seed_queue.size () <= max_pts_per_cluster)
     {
-      pcl::PointIndices r;
-      r.indices.resize (seed_queue.size ());
-      for (std::size_t j = 0; j < seed_queue.size (); ++j)
-        r.indices[j] = seed_queue[j];
-
       std::sort (r.indices.begin (), r.indices.end ());
       r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
 
-      r.header = cloud.header;
-      clusters.push_back (r); // We could avoid a copy by working directly in the vector
+      // Might be better to work directly in the cluster somehow
+      clusters.emplace_back (std::move(r)); // Trying to avoid a copy by moving
     }
   }
 }
