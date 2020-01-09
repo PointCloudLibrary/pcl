@@ -170,11 +170,8 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
     // Compute the RIFT descriptor
     computeRIFT (*surface_, *gradient_, (*indices_)[idx], static_cast<float> (search_radius_), nn_indices, nn_dist_sqr, rift_descriptor);
 
-    // Copy into the resultant cloud
-    std::size_t bin = 0;
-    for (Eigen::Index g_bin = 0; g_bin < rift_descriptor.cols (); ++g_bin)
-      for (Eigen::Index d_bin = 0; d_bin < rift_descriptor.rows (); ++d_bin)
-        output.points[idx].histogram[bin++] = rift_descriptor (d_bin, g_bin);
+    // Default layout is column major, copy elementwise
+    std::copy_n (rift_descriptor.data (), rift_descriptor.size (), output.points[idx].histogram);
   }
 }
 
