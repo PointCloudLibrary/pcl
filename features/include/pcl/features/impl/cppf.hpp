@@ -60,19 +60,17 @@ pcl::CPPFEstimation<PointInT, PointNT, PointOutT>::CPPFEstimation ()
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::CPPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
-  // Initialize output container - overwrite the sizes done by Feature::initCompute ()
-  output.points.resize (indices_->size () * input_->points.size ());
-  output.height = 1;
-  output.width = static_cast<std::uint32_t> (output.points.size ());
+  // Initialize output container
+  output.points.clear ();
+  output.points.reserve (indices_->size () * input_->points.size ());
   output.is_dense = true;
-
   // Compute point pair features for every pair of points in the cloud
-  for (std::size_t index_i = 0; index_i < indices_->size (); ++index_i)
+  for (const auto& i: *indices_)
   {
-    std::size_t i = (*indices_)[index_i];
     for (std::size_t j = 0 ; j < input_->points.size (); ++j)
     {
       PointOutT p;
+      // No need to calculate feature for identity pair (i, j) as they aren't used in future calculations
       if (i != j)
       {
         if (
@@ -105,17 +103,18 @@ pcl::CPPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
           output.is_dense = false;
         }
       }
-      // Do not calculate the feature for identity pairs (i, i) as they are not used
-      // in the following computations
       else
       {
         p.f1 = p.f2 = p.f3 = p.f4 = p.f5 = p.f6 = p.f7 = p.f8 = p.f9 = p.f10 = p.alpha_m = std::numeric_limits<float>::quiet_NaN ();
         output.is_dense = false;
       }
 
-      output.points[index_i*input_->points.size () + j] = p;
+      output.points.push_back (p);
     }
   }
+  // overwrite the sizes done by Feature::initCompute ()
+  output.height = 1;
+  output.width = static_cast<std::uint32_t> (output.points.size ());
 }
 
 #define PCL_INSTANTIATE_CPPFEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::CPPFEstimation<T,NT,OutT>;
