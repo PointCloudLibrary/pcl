@@ -103,8 +103,8 @@ pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud
     }
 
     // update min-max values for distance bins
-    if (min_max_angle_by_dist[bin_d][0] > angle) min_max_angle_by_dist[bin_d][0] = angle;
-    if (min_max_angle_by_dist[bin_d][1] < angle) min_max_angle_by_dist[bin_d][1] = angle;
+    min_max_angle_by_dist[bin_d][0] = std::min(angle, min_max_angle_by_dist[bin_d][0]);
+    min_max_angle_by_dist[bin_d][1] = std::max(angle, min_max_angle_by_dist[bin_d][1]);
   }
 
   // Estimate radius from min and max lines
