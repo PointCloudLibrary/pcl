@@ -281,10 +281,10 @@ pcl::GASDEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
   hist_incr_ = 100.0f / static_cast<float> (shape_samples_.size () - 1);
 
   // for each sample
-  for (std::size_t i = 0; i < shape_samples_.size (); ++i)
+  for (const auto& sample: shape_samples_)
   {
     // compute shape histogram array coord based on distance between sample and centroid
-    const Eigen::Vector4f p (shape_samples_[i].x, shape_samples_[i].y, shape_samples_[i].z, 0.0f);
+    const Eigen::Vector4f p (sample.x, sample.y, sample.z, 0.0f);
     const float d = p.norm ();
 
     const float shape_grid_step = distance_normalization_factor / shape_half_grid_size_;
@@ -347,32 +347,32 @@ pcl::GASDColorEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
                                              Eigen::VectorXf::Zero (color_hists_size_ + 2));
 
   // for each sample
-  for (std::size_t i = 0; i < shape_samples_.size (); ++i)
+  for (const auto& sample: shape_samples_)
   {
     // compute shape histogram array coord based on distance between sample and centroid
-    const Eigen::Vector4f p (shape_samples_[i].x, shape_samples_[i].y, shape_samples_[i].z, 0.0f);
+    const Eigen::Vector4f p (sample.x, sample.y, sample.z, 0.0f);
 
     // compute hue value
     float hue = 0.f;
 
-    const unsigned char max = std::max (shape_samples_[i].r, std::max (shape_samples_[i].g, shape_samples_[i].b));
-    const unsigned char min = std::min (shape_samples_[i].r, std::min (shape_samples_[i].g, shape_samples_[i].b));
+    const unsigned char max = std::max (sample.r, std::max (sample.g, sample.b));
+    const unsigned char min = std::min (sample.r, std::min (sample.g, sample.b));
 
     const float diff_inv = 1.f / static_cast <float> (max - min);
 
     if (std::isfinite (diff_inv))
     {
-      if (max == shape_samples_[i].r)
+      if (max == sample.r)
       {
-        hue = 60.f * (static_cast <float> (shape_samples_[i].g - shape_samples_[i].b) * diff_inv);
+        hue = 60.f * (static_cast <float> (sample.g - sample.b) * diff_inv);
       }
-      else if (max == shape_samples_[i].g)
+      else if (max == sample.g)
       {
-        hue = 60.f * (2.f + static_cast <float> (shape_samples_[i].b - shape_samples_[i].r) * diff_inv);
+        hue = 60.f * (2.f + static_cast <float> (sample.b - sample.r) * diff_inv);
       }
       else
       {
-        hue = 60.f * (4.f + static_cast <float> (shape_samples_[i].r - shape_samples_[i].g) * diff_inv); // max == b
+        hue = 60.f * (4.f + static_cast <float> (sample.r - sample.g) * diff_inv); // max == b
       }
 
       if (hue < 0.f)
