@@ -226,8 +226,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistance (
   nr_p += _mm256_extract_epi32 (res, 5);
   nr_p += _mm256_extract_epi32 (res, 6);
   nr_p += _mm256_extract_epi32 (res, 7);
-#else
-#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
+#elif defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
   const __m128 a_vec = _mm_set1_ps (model_coefficients[0]);
   const __m128 b_vec = _mm_set1_ps (model_coefficients[1]);
   // To avoid sqrt computation: consider one larger circle (radius + threshold) and one smaller circle (radius - threshold). Valid if point is in larger circle, but not in smaller circle.
@@ -249,8 +248,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistance (
   nr_p += _mm_extract_epi32 (res, 1);
   nr_p += _mm_extract_epi32 (res, 2);
   nr_p += _mm_extract_epi32 (res, 3);
-#endif // if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
-#endif // if defined (__AVX__) && defined (__AVX2__)
+#endif
 
   // Iterate through the 3d points and calculate the distances from them to the circle
   for (; i < indices_->size (); ++i)
