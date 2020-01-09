@@ -262,9 +262,9 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
   s_xplus = s_xminus = s_yplus = s_yminus = 0.f;
 
   //disambiguate rf using all points
-  for (int k = 0; k < static_cast<int> (grid->points.size ()); k++)
+  for (const auto& point: grid->points)
   {
-    Eigen::Vector3f pvector = grid->points[k].getVector3fMap ();
+    Eigen::Vector3f pvector = point.getVector3fMap ();
     float dist_x, dist_y;
     dist_x = std::abs (evx.dot (pvector));
     dist_y = std::abs (evy.dot (pvector));
@@ -419,9 +419,9 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
       float sigma = 0.01f; //1cm
       float sigma_sq = sigma * sigma;
 
-      for (int k = 0; k < static_cast<int> (grid->points.size ()); k++)
+      for (const auto& point: grid->points)
       {
-        Eigen::Vector4f p = grid->points[k].getVector4fMap ();
+        Eigen::Vector4f p = point.getVector4fMap ();
         p[3] = 0.f;
         float d = p.norm ();
 
