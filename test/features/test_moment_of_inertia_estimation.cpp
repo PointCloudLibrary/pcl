@@ -56,10 +56,9 @@ TEST (MomentOfInertia, FeatureExtraction)
   EXPECT_LE (minor, middle);
   EXPECT_LE (middle, major);
 
-  float dot_product = 0.0f;
   Eigen::Vector3f major_vec, middle_vec, minor_vec;
   feature_extractor.getEigenVectors (major_vec, middle_vec, minor_vec);
-  dot_product = major_vec.dot (middle_vec);
+  float dot_product = major_vec.dot (middle_vec);
   EXPECT_NEAR (0.0f, dot_product, 0.00001f);
   dot_product = major_vec.dot (minor_vec);
   EXPECT_NEAR (0.0f, dot_product, 0.00001f);
