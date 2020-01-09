@@ -41,6 +41,8 @@
 #ifndef PCL_FEATURES_IMPL_FPFH_OMP_H_
 #define PCL_FEATURES_IMPL_FPFH_OMP_H_
 
+#include <numeric>
+
 #include <pcl/features/fpfh_omp.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,14 +85,14 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
       spfh_indices_set.insert (nn_indices.begin (), nn_indices.end ());
     }
     spfh_indices_vec.resize (spfh_indices_set.size ());
-    std::copy (spfh_indices_set.begin (), spfh_indices_set.end (), spfh_indices_vec.begin ());
+    std::copy (spfh_indices_set.cbegin (), spfh_indices_set.cend (), spfh_indices_vec.begin ());
   }
   else
   {
     // Special case: When a feature must be computed at every point, there is no need for a neighborhood search
     spfh_indices_vec.resize (indices_->size ());
-    for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
-      spfh_indices_vec[idx] = idx;
+    std::iota(spfh_indices_vec.begin (), spfh_indices_vec.end (),
+              static_cast<decltype(spfh_indices_vec)::value_type>(0));
   }
 
   // Initialize the arrays that will store the SPFH signatures
