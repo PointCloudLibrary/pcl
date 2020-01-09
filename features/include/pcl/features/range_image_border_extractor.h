@@ -147,7 +147,7 @@ namespace pcl
       getRangeImage () const { return *range_image_; }
 
       float*
-      getBorderScoresLeft ()   { extractBorderScoreImages (); return border_scores_left_; }
+      getBorderScoresLeft ()   { extractBorderScoreImages (); return border_scores_left_.data (); }
 
       float*
       getBorderScoresRight ()  { extractBorderScoreImages (); return border_scores_right_; }
@@ -182,7 +182,8 @@ namespace pcl
       Parameters parameters_;
       const RangeImage* range_image_;
       int range_image_size_during_extraction_;
-      float* border_scores_left_, * border_scores_right_, * border_scores_top_, * border_scores_bottom_;
+      float * border_scores_right_, * border_scores_top_, * border_scores_bottom_;
+      std::vector<float> border_scores_left_;
       LocalSurface** surface_structure_;
       PointCloudOut* border_descriptions_;
       ShadowBorderIndices** shadow_border_informations_;
@@ -347,6 +348,10 @@ namespace pcl
       /** \brief Implementation of abstract derived function */
       void
       computeFeature (PointCloudOut &output) override;
+
+    private:
+      std::vector<float>
+      updatedScoresAccordingToNeighborValues (const std::vector<float>& border_scores) const;
   };
 }  // namespace end
 
