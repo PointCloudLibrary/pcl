@@ -98,6 +98,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::RGB2CIELAB (un
                                                                               unsigned char B, float &L, float &A,
                                                                               float &B2)
 {
+  // @TODO: C++17 supports constexpr lambda for compile time init
   if (sRGB_LUT[0] < 0)
   {
     for (int i = 0; i < 256; i++)
@@ -648,9 +649,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSH
 {
   // Clear the resultant shot
   shot.setZero ();
-  std::vector<double> binDistanceShape;
-  std::vector<double> binDistanceColor;
-  std::size_t nNeighbors = indices.size ();
+  const auto nNeighbors = indices.size ();
   //Skip the current feature if the number of its neighbors is not sufficient for its description
   if (nNeighbors < 5)
   {
@@ -663,15 +662,17 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSH
   }
 
   //If shape description is enabled, compute the bins activated by each neighbor of the current feature in the shape histogram
+  std::vector<double> binDistanceShape;
   if (b_describe_shape_)
   {
     this->createBinDistanceShape (index, indices, binDistanceShape);
   }
 
   //If color description is enabled, compute the bins activated by each neighbor of the current feature in the color histogram
+  std::vector<double> binDistanceColor;
   if (b_describe_color_)
   {
-    binDistanceColor.resize (nNeighbors);
+    binDistanceColor.reserve (nNeighbors);
 
     //unsigned char redRef = input_->points[(*indices_)[index]].rgba >> 16 & 0xFF;
     //unsigned char greenRef = input_->points[(*indices_)[index]].rgba >> 8& 0xFF;
@@ -687,14 +688,11 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSH
     aRef /= 120.0f;
     bRef /= 120.0f;    //normalized LAB components (0<L<1, -1<a<1, -1<b<1)
 
-    for (std::size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
+    for (const auto& idx: indices)
     {
-      //unsigned char red = surface_->points[indices[i_idx]].rgba >> 16 & 0xFF;
-      //unsigned char green = surface_->points[indices[i_idx]].rgba >> 8 & 0xFF;
-      //unsigned char blue = surface_->points[indices[i_idx]].rgba & 0xFF;
-      unsigned char red = surface_->points[indices[i_idx]].r;
-      unsigned char green = surface_->points[indices[i_idx]].g;
-      unsigned char blue = surface_->points[indices[i_idx]].b;
+      unsigned char red = surface_->points[idx].r;
+      unsigned char green = surface_->points[idx].g;
+      unsigned char blue = surface_->points[idx].b;
 
       float L, a, b;
 
@@ -710,7 +708,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSH
       if (colorDistance < 0.0)
         colorDistance = 0.0;
 
-      binDistanceColor[i_idx] = colorDistance * nr_color_bins_;
+      binDistanceColor.push_back (colorDistance * nr_color_bins_);
     }
   }
 
