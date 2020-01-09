@@ -139,38 +139,39 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
       continue;
 
     // Normalize the f1, f2, f3, f4 features and push them in the histogram
-    int h_index = static_cast<int> (std::floor (nr_bins_f1_ * ((pfh_tuple[0] + M_PI) * d_pi_)));
-    if (h_index < 0)
-      h_index = 0;
-    if (h_index >= nr_bins_f1_)
-      h_index = nr_bins_f1_ - 1;
-    hist_f1_ (h_index) += hist_incr;
+    {
+      int h1_index = static_cast<int> (std::floor (nr_bins_f1_ * ((pfh_tuple[0] + M_PI) * d_pi_)));
+      h1_index = std::max(h1_index, 0);
+      h1_index = std::min(h1_index, nr_bins_f1_ - 1);
+      hist_f1_ (h1_index) += hist_incr;
+    }
 
-    h_index = static_cast<int> (std::floor (nr_bins_f2_ * ((pfh_tuple[1] + 1.0) * 0.5)));
-    if (h_index < 0)
-      h_index = 0;
-    if (h_index >= nr_bins_f2_)
-      h_index = nr_bins_f2_ - 1;
-    hist_f2_ (h_index) += hist_incr;
+    {
+      int h2_index = static_cast<int> (std::floor (nr_bins_f2_ * ((pfh_tuple[1] + 1.0) * 0.5)));
+      h2_index = std::max(h2_index, 0);
+      h2_index = std::min(h2_index, nr_bins_f2_ - 1);
+      hist_f2_ (h2_index) += hist_incr;
+    }
 
-    h_index = static_cast<int> (std::floor (nr_bins_f3_ * ((pfh_tuple[2] + 1.0) * 0.5)));
-    if (h_index < 0)
-      h_index = 0;
-    if (h_index >= nr_bins_f3_)
-      h_index = nr_bins_f3_ - 1;
-    hist_f3_ (h_index) += hist_incr;
+    {
+      int h3_index = static_cast<int> (std::floor (nr_bins_f3_ * ((pfh_tuple[2] + 1.0) * 0.5)));
+      h3_index = std::max(h3_index, 0);
+      h3_index = std::min(h3_index, nr_bins_f3_ - 1);
+      hist_f3_ (h3_index) += hist_incr;
+    }
 
-    if (normalize_distances_)
-      h_index = static_cast<int> (std::floor (nr_bins_f4_ * (pfh_tuple[3] / distance_normalization_factor)));
-    else
-      h_index = static_cast<int> (pcl_round (pfh_tuple[3] * 100));
+    if (hist_incr_size_component)
+    {
+      int h4_index;
+      if (normalize_distances_)
+        h4_index = static_cast<int> (std::floor (nr_bins_f4_ * (pfh_tuple[3] / distance_normalization_factor)));
+      else
+        h4_index = static_cast<int> (pcl_round (pfh_tuple[3] * 100));
 
-    if (h_index < 0)
-      h_index = 0;
-    if (h_index >= nr_bins_f4_)
-      h_index = nr_bins_f4_ - 1;
-
-    hist_f4_ (h_index) += hist_incr_size_component;
+      h4_index = std::max(h4_index, 0);
+      h4_index = std::min(h4_index, nr_bins_f4_ - 1);
+      hist_f4_ (h4_index) += hist_incr_size_component;
+    }
   }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -240,11 +241,9 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
                             normals_->points[index].normal[2], 0);
     // Normalize
     double alpha = (normal.dot (d_vp_p) + 1.0) * 0.5;
-    int fi = static_cast<int> (std::floor (alpha * static_cast<double> (hist_vp_.size ())));
-    if (fi < 0)
-      fi = 0;
-    if (fi > (static_cast<int> (hist_vp_.size ()) - 1))
-      fi = static_cast<int> (hist_vp_.size ()) - 1;
+    std::size_t fi = static_cast<std::size_t> (std::floor (alpha * hist_vp_.size ()));
+    fi = std::max<std::size_t> (0u, fi);
+    fi = std::min<std::size_t> (hist_vp_.size () - 1, fi);
     // Bin into the histogram
     hist_vp_ [fi] += hist_incr;
   }
