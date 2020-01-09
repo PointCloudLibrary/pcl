@@ -121,17 +121,13 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
   }
 
   // Factorization constant
-  float hist_incr;
+  float hist_incr = 1;
   if (normalize_bins_)
     hist_incr = 100.0f / static_cast<float> (indices.size () - 1);
-  else
-    hist_incr = 1.0f;
 
-  float hist_incr_size_component;
+  float hist_incr_size_component = 0;;
   if (size_component_)
     hist_incr_size_component = hist_incr;
-  else
-    hist_incr_size_component = 0.0;
 
   // Iterate over all the points in the neighborhood
   for (const int &index : indices)
@@ -200,24 +196,22 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   {
     if (normals_->is_dense)
     {
-      for (std::size_t i = 0; i < indices_->size (); ++i)
+      for (const auto& index: *indices_)
       {
-        normal_centroid += normals_->points[(*indices_)[i]].getNormalVector4fMap ();
-        cp++;
+        normal_centroid.noalias () += normals_->points[index].getNormalVector4fMap ();
       }
+      cp = indices_->size();
     }
     // NaN or Inf values could exist => check for them
     else
     {
-      for (std::size_t i = 0; i < indices_->size (); ++i)
+      for (const auto& index: *indices_)
       {
-        if (!std::isfinite (normals_->points[(*indices_)[i]].normal[0])
-            ||
-            !std::isfinite (normals_->points[(*indices_)[i]].normal[1])
-            ||
-            !std::isfinite (normals_->points[(*indices_)[i]].normal[2]))
+        if (!std::isfinite (normals_->points[index].normal[0]) ||
+            !std::isfinite (normals_->points[index].normal[1]) ||
+            !std::isfinite (normals_->points[index].normal[2]))
           continue;
-        normal_centroid += normals_->points[(*indices_)[i]].getNormalVector4fMap ();
+        normal_centroid.noalias () += normals_->points[index].getNormalVector4fMap ();
         cp++;
       }
     }
@@ -232,41 +226,18 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   // Estimate the SPFH at nn_indices[0] using the entire cloud
   computePointSPFHSignature (xyz_centroid, normal_centroid, *surface_, *normals_, *indices_);
 
-  // We only output _1_ signature
-  output.points.resize (1);
-  output.width = 1;
-  output.height = 1;
-
-  // Estimate the FPFH at nn_indices[0] using the entire cloud and copy the resultant signature
-  for (Eigen::Index d = 0; d < hist_f1_.size (); ++d)
-    output.points[0].histogram[d + 0] = hist_f1_[d];
-
-  std::size_t data_size = hist_f1_.size ();
-  for (Eigen::Index d = 0; d < hist_f2_.size (); ++d)
-    output.points[0].histogram[d + data_size] = hist_f2_[d];
-
-  data_size += hist_f2_.size ();
-  for (Eigen::Index d = 0; d < hist_f3_.size (); ++d)
-    output.points[0].histogram[d + data_size] = hist_f3_[d];
-
-  data_size += hist_f3_.size ();
-  for (Eigen::Index d = 0; d < hist_f4_.size (); ++d)
-    output.points[0].histogram[d + data_size] = hist_f4_[d];
-
   // ---[ Step 2 : obtain the viewpoint component
   hist_vp_.setZero (nr_bins_vp_);
 
-  double hist_incr;
+  float hist_incr = 1.0;
   if (normalize_bins_)
     hist_incr = 100.0 / static_cast<double> (indices_->size ());
-  else
-    hist_incr = 1.0;
 
-  for (std::size_t i = 0; i < indices_->size (); ++i)
+  for (const auto& index: *indices_)
   {
-    Eigen::Vector4f normal (normals_->points[(*indices_)[i]].normal[0],
-                            normals_->points[(*indices_)[i]].normal[1],
-                            normals_->points[(*indices_)[i]].normal[2], 0);
+    Eigen::Vector4f normal (normals_->points[index].normal[0],
+                            normals_->points[index].normal[1],
+                            normals_->points[index].normal[2], 0);
     // Normalize
     double alpha = (normal.dot (d_vp_p) + 1.0) * 0.5;
     int fi = static_cast<int> (std::floor (alpha * static_cast<double> (hist_vp_.size ())));
@@ -275,12 +246,22 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     if (fi > (static_cast<int> (hist_vp_.size ()) - 1))
       fi = static_cast<int> (hist_vp_.size ()) - 1;
     // Bin into the histogram
-    hist_vp_ [fi] += static_cast<float> (hist_incr);
+    hist_vp_ [fi] += hist_incr;
   }
-  data_size += hist_f4_.size ();
-  // Copy the resultant signature
-  for (Eigen::Index d = 0; d < hist_vp_.size (); ++d)
-    output.points[0].histogram[d + data_size] = hist_vp_[d];
+
+  // We only output _1_ signature
+  output.points.resize (1);
+  output.width = 1;
+  output.height = 1;
+
+  // Estimate the FPFH at nn_indices[0] using the entire cloud and copy the resultant signature
+  auto outPtr = std::begin (output.points[0].histogram);
+
+  outPtr = std::copy_n (hist_f1_.data (), hist_f1_.size (), outPtr);
+  outPtr = std::copy_n (hist_f2_.data (), hist_f2_.size (), outPtr);
+  outPtr = std::copy_n (hist_f3_.data (), hist_f3_.size (), outPtr);
+  outPtr = std::copy_n (hist_f4_.data (), hist_f4_.size (), outPtr);
+  outPtr = std::copy_n (hist_vp_.data (), hist_vp_.size (), outPtr);
 }
 
 #define PCL_INSTANTIATE_VFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::VFHEstimation<T,NT,OutT>;
