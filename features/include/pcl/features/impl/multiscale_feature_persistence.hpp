@@ -40,6 +40,7 @@
 #ifndef PCL_FEATURES_IMPL_MULTISCALE_FEATURE_PERSISTENCE_H_
 #define PCL_FEATURES_IMPL_MULTISCALE_FEATURE_PERSISTENCE_H_
 
+#include <numeric>
 #include <pcl/features/multiscale_feature_persistence.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -136,20 +137,24 @@ template <typename PointSource, typename PointFeature> void
 pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::calculateMeanFeature ()
 {
   // Reset mean feature
-  for (int i = 0; i < feature_representation_->getNumberOfDimensions (); ++i)
-    mean_feature_[i] = 0.0f;
+  std::fill_n(mean_feature_.begin (), mean_feature_.size (), 0.f);
 
-  float normalization_factor = 0.0f;
+  std::size_t normalization_factor = 0;
   for (const auto& scale: features_at_scale_vectorized_)
   {
-    normalization_factor += static_cast<float> (scale.size ());
+    normalization_factor += scale.size ();  // not using accumulate for cache efficiency
     for (const auto &feature : scale)
-      for (int dim_i = 0; dim_i < feature_representation_->getNumberOfDimensions (); ++dim_i)
-        mean_feature_[dim_i] += feature[dim_i];
+      std::transform(mean_feature_.cbegin (), mean_feature_.cend (),
+                     feature.cbegin (), mean_feature_.begin (), std::plus<>{});
   }
 
-  for (int dim_i = 0; dim_i < feature_representation_->getNumberOfDimensions (); ++dim_i)
-    mean_feature_[dim_i] /= normalization_factor;
+  const float factor = std::min<float>(1, normalization_factor);
+  std::transform(mean_feature_.cbegin(),
+                 mean_feature_.cend(),
+                 mean_feature_.begin(),
+                 [factor](const auto& mean) {
+                   return mean / factor;
+                 });
 }
 
 
