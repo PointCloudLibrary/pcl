@@ -97,18 +97,18 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSm
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
-  for (int i = 0; i < static_cast<int> (cloud.points.size ()); ++i)
+  for (std::size_t i = 0; i < cloud.points.size (); ++i)
   {
     if (processed[i])
       continue;
 
-    std::vector<unsigned int> seed_queue;
-    int sq_idx = 0;
+    std::vector<std::size_t> seed_queue;
+    std::size_t sq_idx = 0;
     seed_queue.push_back (i);
 
     processed[i] = true;
 
-    while (sq_idx < static_cast<int> (seed_queue.size ()))
+    while (sq_idx < seed_queue.size ())
     {
       // Search for sq_idx
       if (!tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances))
@@ -237,7 +237,6 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
   scatter.setZero ();
   float sum_w = 0.f;
 
-  //for (int k = 0; k < static_cast<intgrid->points[k].getVector3fMap ();> (grid->points.size ()); k++)
   for (const int &index : indices.indices)
   {
     Eigen::Vector3f pvector = grid->points[index].getVector3fMap ();

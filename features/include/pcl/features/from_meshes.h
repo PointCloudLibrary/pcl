@@ -46,7 +46,7 @@ namespace pcl
           normals.points[polygons[i].vertices[j]].getNormalVector3fMap() += normal;
       }
 
-      for ( int i = 0; i < nr_points; ++i )
+      for (std::size_t i = 0; i < nr_points; ++i)
       {
         normals.points[i].getNormalVector3fMap().normalize();
         pcl::flipNormalTowardsViewpoint(cloud.points[i], 0.0f, 0.0f, 0.0f, normals.points[i].normal_x, normals.points[i].normal_y, normals.points[i].normal_z);
@@ -69,9 +69,9 @@ namespace pcl
     {
       assert(cloud.points.size() == normals.points.size());
 
-      int nr_points = static_cast<int>(cloud.points.size());
+      const auto nr_points = cloud.points.size();
       covariances.resize(nr_points);
-      for (int i = 0; i < nr_points; ++i)
+      for (std::size_t i = 0; i < nr_points; ++i)
       {
         Eigen::Vector3d normal(normals.points[i].normal_x, 
                                normals.points[i].normal_y, 

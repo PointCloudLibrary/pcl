@@ -277,7 +277,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
     max_boundary_angle = (2 * static_cast<float> (M_PI)) / static_cast<float> (check_margin_array_size_);
   }
 
-  for (int curr_neigh = 0; curr_neigh < n_neighbours; ++curr_neigh)
+  for (std::size_t curr_neigh = 0; curr_neigh < n_neighbours; ++curr_neigh)
   {
     const int& curr_neigh_idx = neighbours_indices[curr_neigh];
     const float& neigh_distance_sqr = neighbours_distances[curr_neigh];

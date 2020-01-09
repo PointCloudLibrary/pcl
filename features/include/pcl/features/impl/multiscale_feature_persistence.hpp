@@ -123,7 +123,7 @@ template <typename PointSource, typename PointFeature> float
 pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::distanceBetweenFeatures (const std::vector<float> &a,
                                                                                        const std::vector<float> &b)
 {
-  return (pcl::selectNorm<std::vector<float> > (a, b, static_cast<int> (a.size ()), distance_metric_));
+  return (pcl::selectNorm<std::vector<float> > (a, b, a.size (), distance_metric_));
 }
 
 
