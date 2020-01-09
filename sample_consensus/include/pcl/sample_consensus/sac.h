@@ -78,6 +78,7 @@ namespace pcl
         , iterations_ (0)
         , threshold_ (std::numeric_limits<double>::max ())
         , max_iterations_ (1000)
+        , threads_ (-1)
         , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
       {
          // Create a random number generator object
@@ -100,6 +101,7 @@ namespace pcl
         , iterations_ (0)
         , threshold_ (threshold)
         , max_iterations_ (1000)
+        , threads_ (-1)
         , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
       {
          // Create a random number generator object
@@ -158,6 +160,17 @@ namespace pcl
       /** \brief Obtain the probability of choosing at least one sample free from outliers, as set by the user. */
       inline double 
       getProbability () const { return (probability_); }
+
+      /** \brief Set the number of threads to use or turn off parallelization.
+        * \param[in] nr_threads the number of hardware threads to use (0 sets the value automatically, a negative number turns parallelization off)
+        * \note Not all SAC methods have a parallel implementation. Some will ignore this setting.
+        */
+      inline void
+      setNumberOfThreads (const int nr_threads = -1) { threads_ = nr_threads; }
+
+      /** \brief Get the number of threads, as set by the user. */
+      inline int
+      getNumberOfThreads () const { return (threads_); }
 
       /** \brief Compute the actual model. Pure virtual. */
       virtual bool 
@@ -324,6 +337,9 @@ namespace pcl
       
       /** \brief Maximum number of iterations before giving up. */
       int max_iterations_;
+
+      /** \brief The number of threads the scheduler should use, or a negative number if no parallelization is wanted. */
+      int threads_;
 
       /** \brief Boost-based random number generator algorithm. */
       boost::mt19937 rng_alg_;

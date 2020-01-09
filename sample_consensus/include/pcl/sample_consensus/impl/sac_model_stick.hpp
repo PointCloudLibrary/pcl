@@ -174,7 +174,7 @@ pcl::SampleConsensusModelStick<PointT>::selectWithinDistance (
 }
 
 ///////////////////////////////////////////////////////////////////////////
-template <typename PointT> int
+template <typename PointT> std::size_t
 pcl::SampleConsensusModelStick<PointT>::countWithinDistance (
       const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
@@ -184,7 +184,7 @@ pcl::SampleConsensusModelStick<PointT>::countWithinDistance (
 
   float sqr_threshold = static_cast<float> (threshold * threshold);
 
-  int nr_i = 0, nr_o = 0;
+  std::size_t nr_i = 0, nr_o = 0;
 
   // Obtain the line point and direction
   Eigen::Vector4f line_pt1 (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
@@ -215,7 +215,7 @@ pcl::SampleConsensusModelStick<PointT>::countWithinDistance (
       nr_o++;
   }
 
-  return (nr_i - nr_o < 0 ? 0 : nr_i - nr_o);
+  return (nr_i <= nr_o ? 0 : nr_i - nr_o);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -335,6 +335,11 @@ pcl::SACSegmentation<PointT>::initSAC (const int method_type)
     // Set maximum distance for radius search during random sampling
     model_->setSamplesMaxDist (samples_radius_, samples_radius_search_);
   }
+  if (sac_->getNumberOfThreads () != threads_)
+  {
+    PCL_DEBUG ("[pcl::%s::initSAC] Setting the number of threads to %i\n", getClassName ().c_str (), threads_);
+    sac_->setNumberOfThreads (threads_);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

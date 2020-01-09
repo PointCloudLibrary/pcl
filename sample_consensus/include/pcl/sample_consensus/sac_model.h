@@ -200,6 +200,7 @@ namespace pcl
       /** \brief Check whether the given index samples can form a valid model,
         * compute the model coefficients from these samples and store them
         * in model_coefficients. Pure virtual.
+        * Implementations of this function must be thread-safe.
         * \param[in] samples the point indices found as possible good candidates
         * for creating a valid model 
         * \param[out] model_coefficients the computed model coefficients
@@ -247,14 +248,14 @@ namespace pcl
 
       /** \brief Count all the points which respect the given model
         * coefficients as inliers. Pure virtual.
-        * 
+        * Implementations of this function must be thread-safe.
         * \param[in] model_coefficients the coefficients of a model that we need to
         * compute distances to
         * \param[in] threshold a maximum admissible distance threshold for
         * determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      virtual int
+      virtual std::size_t
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
                            const double threshold) const = 0;
 

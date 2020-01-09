@@ -106,7 +106,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::selectWithinDistance (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> int
+template <typename PointT, typename PointNT> std::size_t
 pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::countWithinDistance (
       const Eigen::VectorXf &model_coefficients,  const double threshold) const
 {
@@ -121,11 +121,11 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::countWithinDistance (
     return(0);
 
 
-  // Obtain the shpere centroid
+  // Obtain the sphere centroid
   Eigen::Vector4f center = model_coefficients;
   center[3] = 0;
 
-  int nr_p = 0;
+  std::size_t nr_p = 0;
 
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (std::size_t i = 0; i < indices_->size (); ++i)

@@ -129,7 +129,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
 
       // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
       double w = static_cast<double> (n_inliers_count) / static_cast<double>(sac_model_->getIndices ()->size ());
-      double p_no_outliers = 1 - pow (w, static_cast<double> (selection.size ()));
+      double p_no_outliers = 1 - std::pow (w, static_cast<double> (selection.size ()));
       p_no_outliers = (std::max) (std::numeric_limits<double>::epsilon (), p_no_outliers);       // Avoid division by -Inf
       p_no_outliers = (std::min) (1 - std::numeric_limits<double>::epsilon (), p_no_outliers);   // Avoid division by 0.
       k = std::log (1 - probability_) / std::log (p_no_outliers);
