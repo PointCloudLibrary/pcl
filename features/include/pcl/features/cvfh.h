@@ -147,8 +147,8 @@ namespace pcl
       inline void
       getCentroidClusters (std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids)
       {
-        for (const auto& centroid: centroids_dominant_orientations_)
-          centroids.push_back (centroid);
+        centroids.insert (centroids.cend (), centroids_dominant_orientations_.cbegin (),
+                          centroids_dominant_orientations_.cend ());
       }
 
       /** \brief Get the normal centroids used to compute different CVFH descriptors
