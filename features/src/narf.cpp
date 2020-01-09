@@ -378,11 +378,11 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
 {
   # pragma omp parallel for num_threads(max_no_of_threads) default(shared) schedule(dynamic, 10)
   //!!! nizar 20110408 : for OpenMP sake on MSVC this must be kept signed
-  for (int interest_point_idx = 0; interest_point_idx < int (interest_points.points.size ()); ++interest_point_idx)
+  for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t>(interest_points.points.size ()); ++idx)
   {
-    const InterestPoint& interest_point = interest_points.points[interest_point_idx];
+    const auto& interest_point = interest_points.points[idx];
     Vector3fMapConst point = interest_point.getVector3fMap ();
-    
+
     Narf* feature = new Narf;
     if (!feature->extractFromRangeImage(range_image, point, descriptor_size, support_size))
     {
@@ -442,13 +442,13 @@ Narf::extractForEveryRangeImagePointAndAddToList (const RangeImage& range_image,
 void 
 Narf::getRotations (std::vector<float>& rotations, std::vector<float>& strengths) const
 {
-  int angle_steps_no = (std::max) (descriptor_size_, 36);
-  float min_angle_dist_between_rotations = deg2rad(70.0f);
-  float angle_step_size1 = deg2rad (360.0f) / static_cast<float> (angle_steps_no);
-  float angle_step_size2 = deg2rad (360.0f) / static_cast<float> (descriptor_size_);
-  
-  float score_normalization = 1.0f / static_cast<float> (descriptor_size_);
-  
+  const auto angle_steps_no = std::max (descriptor_size_, 36);
+  const float min_angle_dist_between_rotations = deg2rad(70.0f);
+  const float angle_step_size1 = deg2rad (360.0f) / static_cast<float> (angle_steps_no);
+  const float angle_step_size2 = deg2rad (360.0f) / static_cast<float> (descriptor_size_);
+
+  const float score_normalization = 1.0f / static_cast<float> (descriptor_size_);
+
   std::multimap<float, float> scored_orientations;
   for (int step=0; step<angle_steps_no; ++step)
   {
@@ -655,11 +655,11 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
   std::vector<Narf*> feature_list;
   if (indices_)
   {
-    for (std::size_t indices_idx=0; indices_idx<indices_->size(); ++indices_idx)
+    for (const auto& point_index: *indices_)
     {
-      int point_index = (*indices_)[indices_idx];
-      int y=point_index/range_image_->width, x=point_index - y*range_image_->width;
-      Narf::extractFromRangeImageAndAddToList(*range_image_, static_cast<float> (x), static_cast<float> (y), 36, parameters_.support_size,
+      const float y = point_index/range_image_->width;
+      const float x = point_index - y * range_image_->width;
+      Narf::extractFromRangeImageAndAddToList(*range_image_, x, y, 36, parameters_.support_size,
                                               parameters_.rotation_invariant, feature_list);
     }
   }
