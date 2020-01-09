@@ -130,7 +130,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
   output.width = 1;
   output.height = 1;
   output.points.resize (1);
-  std::copy (gfpfh_histogram.begin (), gfpfh_histogram.end (), output.points[0].histogram);
+  std::copy (gfpfh_histogram.cbegin (), gfpfh_histogram.cend (), output.points[0].histogram);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,12 +196,12 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeDistanceHistogram (const std::vector<float>& distances,
                                                                               std::vector<float>& histogram)
 {
-  std::vector<float>::const_iterator min_it = std::min_element (distances.begin (), distances.end ());
-  assert (min_it != distances.end ());
-  const float min_value = *min_it;
+  std::vector<float>::const_iterator min_it, max_it;
+  std::tie (min_it, max_it) = std::minmax_element (distances.cbegin (), distances.cend ());
+  assert (min_it != distances.cend ());
+  assert (max_it != distances.cend ());
 
-  std::vector<float>::const_iterator max_it = std::max_element (distances.begin (), distances.end ());
-  assert (max_it != distances.end());
+  const float min_value = *min_it;
   const float max_value = *max_it;
 
   histogram.resize (descriptorSize (), 0);
