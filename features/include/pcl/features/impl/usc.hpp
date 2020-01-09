@@ -95,15 +95,15 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::initCompute ()
   for (std::size_t j = 0; j < radius_bins_ + 1; j++)
     radii_interval_[j] = static_cast<float> (std::exp (std::log (min_radius_) + ((static_cast<float> (j) / static_cast<float> (radius_bins_)) * std::log (search_radius_/min_radius_))));
 
-  // Fill theta didvisions of elevation
-  theta_divisions_.resize (elevation_bins_+1);
-  for (std::size_t k = 0; k < elevation_bins_+1; k++)
-    theta_divisions_[k] = static_cast<float> (k) * elevation_interval;
+  // Fill theta divisions of elevation
+  theta_divisions_.resize (elevation_bins_ + 1, elevation_interval);
+  theta_divisions_[0] = 0;
+  std::partial_sum(theta_divisions_.begin (), theta_divisions_.end (), theta_divisions_.begin ());
 
-  // Fill phi didvisions of elevation
-  phi_divisions_.resize (azimuth_bins_+1);
-  for (std::size_t l = 0; l < azimuth_bins_+1; l++)
-    phi_divisions_[l] = static_cast<float> (l) * azimuth_interval;
+  // Fill phi divisions of elevation
+  phi_divisions_.resize (azimuth_bins_ + 1, azimuth_interval);
+  phi_divisions_[0] = 0;
+  std::partial_sum(phi_divisions_.begin (), phi_divisions_.end (), phi_divisions_.begin ());
 
   // LookUp Table that contains the volume of all the bins
   // "phi" term of the volume integral
@@ -188,38 +188,15 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
     float theta = normal.dot (no);
     theta = pcl::rad2deg (std::acos (std::min (1.0f, std::max (-1.0f, theta))));
 
-    /// Bin (j, k, l)
-    std::size_t j = 0;
-    std::size_t k = 0;
-    std::size_t l = 0;
-
     /// Compute the Bin(j, k, l) coordinates of current neighbour
-    for (std::size_t rad = 1; rad < radius_bins_ + 1; rad++)
-    {
-      if (r <= radii_interval_[rad])
-      {
-        j = rad - 1;
-        break;
-      }
-    }
+    const auto rad_min = std::lower_bound(std::next (radii_interval_.cbegin ()), radii_interval_.cend (), r);
+    const auto theta_min = std::lower_bound(std::next (theta_divisions_.cbegin ()), theta_divisions_.cend (), theta);
+    const auto phi_min = std::lower_bound(std::next (phi_divisions_.cbegin ()), phi_divisions_.cend (), phi);
 
-    for (std::size_t ang = 1; ang < elevation_bins_ + 1; ang++)
-    {
-      if (theta <= theta_divisions_[ang])
-      {
-        k = ang - 1;
-        break;
-      }
-    }
-
-    for (std::size_t ang = 1; ang < azimuth_bins_ + 1; ang++)
-    {
-      if (phi <= phi_divisions_[ang])
-      {
-        l = ang - 1;
-        break;
-      }
-    }
+    /// Bin (j, k, l)
+    const auto j = std::distance(radii_interval_.cbegin (), std::prev(rad_min));
+    const auto k = std::distance(theta_divisions_.cbegin (), std::prev(theta_min));
+    const auto l = std::distance(phi_divisions_.cbegin (), std::prev(phi_min));
 
     /// Local point density = number of points in a sphere of radius "point_density_radius_" around the current neighbour
     std::vector<int> neighbour_indices;
@@ -261,10 +238,9 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
         !std::isfinite (current_frame.y_axis[0]) ||
         !std::isfinite (current_frame.z_axis[0])  )
     {
-      for (std::size_t i = 0; i < descriptor_length_; ++i)
-        output[point_index].descriptor[i] = std::numeric_limits<float>::quiet_NaN ();
-
-      memset (output[point_index].rf, 0, sizeof (output[point_index].rf[0]) * 9);
+      std::fill (output.points[point_index].descriptor, output.points[point_index].descriptor + descriptor_length_,
+                 std::numeric_limits<float>::quiet_NaN ());
+      std::fill (output.points[point_index].rf, output.points[point_index].rf + 9, 0);
       output.is_dense = false;
       continue;
     }
@@ -278,8 +254,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
 
     std::vector<float> descriptor (descriptor_length_);
     computePointDescriptor (point_index, descriptor);
-    for (std::size_t j = 0; j < descriptor_length_; ++j)
-      output [point_index].descriptor[j] = descriptor[j];
+    std::copy (descriptor.begin (), descriptor.end (), output.points[point_index].descriptor);
   }
 }
 
