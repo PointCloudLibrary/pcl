@@ -147,8 +147,8 @@ namespace pcl
       inline void
       getCentroidClusters (std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids)
       {
-        for (std::size_t i = 0; i < centroids_dominant_orientations_.size (); ++i)
-          centroids.push_back (centroids_dominant_orientations_[i]);
+        for (const auto& centroid: centroids_dominant_orientations_)
+          centroids.push_back (centroid);
       }
 
       /** \brief Get the normal centroids used to compute different CVFH descriptors
@@ -157,8 +157,8 @@ namespace pcl
       inline void
       getCentroidNormalClusters (std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids)
       {
-        for (std::size_t i = 0; i < dominant_normals_.size (); ++i)
-          centroids.push_back (dominant_normals_[i]);
+        for (const auto& normal: dominant_normals_)
+          centroids.push_back (normal);
       }
 
       /** \brief Sets max. Euclidean distance between points to be added to the cluster 
