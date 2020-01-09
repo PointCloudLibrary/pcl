@@ -162,15 +162,15 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeTransitionHistograms 
     }
 
     // Build a one-dimension histogram out of it.
-    int flat_index = 0;
-    for (int m = 0; m < static_cast<int> (transitions.size ()); ++m)
-      for (int n = m; n < static_cast<int> (transitions[m].size ()); ++n)
+    std::size_t flat_index = 0;
+    for (std::size_t m = 0; m < transitions.size (); ++m)
+      for (std::size_t n = m; n < transitions[m].size (); ++n)
       {
         transition_histograms[i][flat_index] = transitions[m][n];
         ++flat_index;
       }
 
-    assert (flat_index == static_cast<int> (transition_histograms[i].size ()));
+    assert (flat_index == transition_histograms[i].size ());
   }
 }
 

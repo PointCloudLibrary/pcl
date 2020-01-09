@@ -107,7 +107,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 #ifdef _OPENMP
 #pragma omp parallel for shared (spfh_hist_lookup) private (nn_indices, nn_dists) num_threads(threads_)
 #endif
-  for (int i = 0; i < static_cast<int> (spfh_indices_vec.size ()); ++i)
+  for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t> (spfh_indices_vec.size ()); ++i)
   {
     // Get the next point index
     int p_idx = spfh_indices_vec[i];
@@ -134,7 +134,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 #ifdef _OPENMP
 #pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
 #endif
-  for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
+  for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
   {
     // Find the indices of point idx's neighbors...
     if (!isFinite ((*input_)[(*indices_)[idx]]) ||

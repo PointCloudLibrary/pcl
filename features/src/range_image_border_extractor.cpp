@@ -111,21 +111,22 @@ RangeImageBorderExtractor::extractLocalSurfaceStructure ()
   //std::cerr << __PRETTY_FUNCTION__<<" called (this="<<(void*)this<<").\n";
   //MEASURE_FUNCTION_TIME;
   
-  int width  = range_image_->width,
+  const auto width  = range_image_->width,
       height = range_image_->height;
   range_image_size_during_extraction_ = width*height;
-  int array_size = range_image_size_during_extraction_;
+  const auto array_size = range_image_size_during_extraction_;
   surface_structure_ = new LocalSurface*[array_size];
-  int step_size = (std::max)(1, parameters_.pixel_radius_plane_extraction/2);
+  const auto step_size = std::max(1, parameters_.pixel_radius_plane_extraction/2);
   //std::cout << PVARN(step_size);
-  int no_of_nearest_neighbors = static_cast<int> (pow (static_cast<double> (parameters_.pixel_radius_plane_extraction/step_size + 1), 2.0));
-  
+  const auto sqrt_neighbors = parameters_.pixel_radius_plane_extraction/step_size + 1;
+  const auto no_of_nearest_neighbors = sqrt_neighbors * sqrt_neighbors;
+
 # pragma omp parallel for num_threads(parameters_.max_no_of_threads) default(shared) schedule(dynamic, 10)
   for (int y=0; y<height; ++y)
   {
     for (int x=0; x<width; ++x)
     {
-      int index = y*width + x;
+      std::size_t index = y*width + x;
       LocalSurface*& local_surface = surface_structure_[index];
       local_surface = nullptr;
       if (!range_image_->isValid(index))

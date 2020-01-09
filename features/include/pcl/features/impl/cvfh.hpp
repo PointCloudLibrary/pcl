@@ -98,18 +98,18 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSmoot
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
-  for (int i = 0; i < static_cast<int> (cloud.points.size ()); ++i)
+  for (std::size_t i = 0; i < cloud.points.size (); ++i)
   {
     if (processed[i])
       continue;
 
-    std::vector<unsigned int> seed_queue;
-    int sq_idx = 0;
+    std::vector<std::size_t> seed_queue;
+    std::size_t sq_idx = 0;
     seed_queue.push_back (i);
 
     processed[i] = true;
 
-    while (sq_idx < static_cast<int> (seed_queue.size ()))
+    while (sq_idx < seed_queue.size ())
     {
       // Search for sq_idx
       if (!tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances))

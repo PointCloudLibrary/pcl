@@ -131,21 +131,21 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::weightPointSPFHSignature (
     weight = 1.0f / dists[idx];
 
     // Weight the SPFH of the query point with the SPFH of its neighbors
-    for (int f1_i = 0; f1_i < nr_bins_f1; ++f1_i)
+    for (std::size_t f1_i = 0; f1_i < nr_bins_f1; ++f1_i)
     {
       val_f1 = hist_f1 (indices[idx], f1_i) * weight;
       sum_f1 += val_f1;
       fpfh_histogram[f1_i] += val_f1;
     }
 
-    for (int f2_i = 0; f2_i < nr_bins_f2; ++f2_i)
+    for (std::size_t f2_i = 0; f2_i < nr_bins_f2; ++f2_i)
     {
       val_f2 = hist_f2 (indices[idx], f2_i) * weight;
       sum_f2 += val_f2;
       fpfh_histogram[f2_i + nr_bins_f1] += val_f2;
     }
 
-    for (int f3_i = 0; f3_i < nr_bins_f3; ++f3_i)
+    for (std::size_t f3_i = 0; f3_i < nr_bins_f3; ++f3_i)
     {
       val_f3 = hist_f3 (indices[idx], f3_i) * weight;
       sum_f3 += val_f3;
