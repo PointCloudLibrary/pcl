@@ -40,6 +40,8 @@
 #ifndef PCL_FEATURES_IMPL_BRISK_2D_HPP_
 #define PCL_FEATURES_IMPL_BRISK_2D_HPP_
 
+#include <numeric>
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename KeypointT, typename IntensityT>
 pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::BRISK2DEstimation ()
@@ -105,9 +107,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKern
   // get the total number of points
   const auto rings = radius_list.size ();
   assert (radius_list.size () != 0 && radius_list.size () == number_list.size ());
-  points_ = 0; // remember the total number of points
-  for (const auto number: number_list)
-    points_ += number;
+  points_ = std::accumulate (number_list.cbegin (), number_list.cend (), 0.f);
 
   // set up the patterns
   pattern_points_ = new BriskPatternPoint[points_*scales_*n_rot_];
@@ -152,8 +152,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKern
           // adapt the sizeList if necessary
           const unsigned int size = static_cast<unsigned int> (std::ceil (((scale_list_[scale] * radius_list[ring]) + pattern_iterator->sigma)) + 1);
 
-          if (size_list_[scale] < size)
-            size_list_[scale] = size;
+          size_list_[scale] = std::min(size_list_[scale], size);
 
           // increment the iterator
           ++pattern_iterator;
@@ -173,7 +172,8 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKern
   {
     index_change.resize (points_ * (points_ - 1) / 2);
   }
-  std::iota(index_change.begin (), index_change.end (), 0);
+  std::iota(index_change.begin (), index_change.end (),
+            static_cast<decltype(index_change)::value_type>(0));
 
   const float d_min_sq = d_min_ * d_min_;
   const float d_max_sq  = d_max_ * d_max_;
