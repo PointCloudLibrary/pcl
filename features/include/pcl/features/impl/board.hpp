@@ -138,7 +138,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::planeFitt
   // Plane Fitting using Singular Value Decomposition (SVD)
   // -----------------------------------------------------
 
-  int n_points = static_cast<int> (points.rows ());
+  const auto n_points = points.rows ();
   if (n_points == 0)
   {
     return;
@@ -254,9 +254,8 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
   Eigen::Vector3f best_margin_point;
   bool best_point_found_on_margins = false;
 
-  float radius2 = tangent_radius_ * tangent_radius_;
-
-  float margin_distance2 = margin_thresh_ * margin_thresh_ * radius2;
+  const float radius2 = tangent_radius_ * tangent_radius_;
+  const float margin_distance2 = margin_thresh_ * margin_thresh_ * radius2;
 
   float max_boundary_angle = 0;
 
@@ -400,9 +399,9 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
 
   //check if there is at least a hole
   bool is_hole_present = false;
-  for (int i = 0; i < check_margin_array_size_; i++)
+  for (const auto check_margin: check_margin_array_)
   {
-    if (!check_margin_array_[i])
+    if (!check_margin)
     {
       is_hole_present = true;
       break;
@@ -471,7 +470,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
   float max_hole_prob = -std::numeric_limits<float>::max ();
 
   //find holes
-  for (int ch = first_no_border; ch < check_margin_array_size_; ch++)
+  for (auto ch = first_no_border; ch < check_margin_array_size_; ch++)
   {
     if (!check_margin_array_[ch])
     {
