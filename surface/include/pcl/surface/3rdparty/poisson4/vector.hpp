@@ -68,7 +68,9 @@ namespace pcl
         m_N = N;
         if(N){m_pV = new T[N];}
       }
-      memset( m_pV, 0, N*sizeof(T) );
+      if (m_pV) {
+        memset( m_pV, 0, N*sizeof(T) );
+      }
     }
     template<class T>
     Vector<T>::Vector( std::size_t N, T* pV )
