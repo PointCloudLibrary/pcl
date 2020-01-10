@@ -163,14 +163,9 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         error_callback_ (line_number_, "parse error: invalid element statement");
         return false;
       }
-      auto iterator = elements.cbegin ();
-      while (iterator != elements.cend ())
-      {
-        if ((*iterator)->name == name)
-          break;
-        ++iterator;
-      }
-      if (iterator != elements.end ())
+      const auto iterator = std::find_if (elements.cbegin (), elements.cend (),
+            [&name](const auto& ptr) { return ptr->name == name;});
+      if (iterator != elements.cend ())
       {
         error_callback_ (line_number_, "parse error: invalid elements");
         return false;
@@ -208,14 +203,11 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           error_callback_ (line_number_, "parse error: invalid variable property statement");
           return false;
         }
-        auto iterator = current_element_->properties.cbegin ();
-        while (iterator != current_element_->properties.cend ())
-        {
-          if ((*iterator)->name == name)
-            break;
-          ++iterator;
-        }
-        if (iterator != current_element_->properties.end ())
+        const auto iterator =
+            std::find_if (current_element_->properties.cbegin (),
+                          current_element_->properties.cend (),
+                          [&name](const auto& ptr) { return ptr->name == name;});
+        if (iterator != current_element_->properties.cend ())
         {
           error_callback_ (line_number_, "parse error: duplicate property found");
           return false;
@@ -273,14 +265,11 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           error_callback_ (line_number_, "parse error: invalid list statement");
           return false;
         }
-        auto iterator = current_element_->properties.cbegin ();
-        while (iterator != current_element_->properties.cend ())
-        {
-          if ((*iterator)->name == name)
-            break;
-          ++iterator;
-        }
-        if (iterator != current_element_->properties.end ())
+        const auto iterator =
+            std::find_if (current_element_->properties.cbegin (),
+                          current_element_->properties.cend (),
+                          [&name](const auto& ptr) { return ptr->name == name;});
+        if (iterator != current_element_->properties.cend ())
         {
           error_callback_ (line_number_, "parse error: duplicate property found");
           return false;
