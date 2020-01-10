@@ -114,7 +114,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
             !isspace (space_format_format_string) || 
             !isspace (space_format_string_version))
         {
-          error_callback_ (line_number_, "parse error: failed to parse the format statement");
+          error_callback_ (line_number_, "parse error: invalid format statement");
           return false;
         }
         if (format_string == "ascii")
@@ -184,6 +184,11 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
       // property
       else if (keyword == "property")
       {
+        if (number_of_element_statements == 0)
+        {
+          error_callback_ (line_number_, "parse error: property specified without any element declaration");
+          return false;
+        }
         std::string type_or_list;
         char space_property_type_or_list;
         stringstream >> space_property_type_or_list >> std::ws >> type_or_list;
@@ -199,12 +204,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           stringstream >> space_type_name >> std::ws >> name;
           if (!stringstream || !isspace (space_type_name))
           {
-            error_callback_ (line_number_, "parse error");
-            return false;
-          }
-          if (number_of_element_statements == 0)
-          {
-            error_callback_ (line_number_, "parse error");
+            error_callback_ (line_number_, "parse error: invalid variable property statement");
             return false;
           }
           auto iterator = current_element_->properties.cbegin ();
@@ -216,7 +216,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           }
           if (iterator != current_element_->properties.end ())
           {
-            error_callback_ (line_number_, "parse error");
+            error_callback_ (line_number_, "parse error: duplicate property found");
             return false;
           }
           if ((type == type_traits<int8>::name ()) || (type == type_traits<int8>::old_name ()))
@@ -272,11 +272,6 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
             error_callback_ (line_number_, "parse error: invalid list statement");
             return false;
           }
-          if (number_of_element_statements == 0)
-          {
-            error_callback_ (line_number_, "parse error");
-            return false;
-          }
           auto iterator = current_element_->properties.cbegin ();
           while (iterator != current_element_->properties.cend ())
           {
@@ -286,7 +281,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           }
           if (iterator != current_element_->properties.end ())
           {
-            error_callback_ (line_number_, "parse error");
+            error_callback_ (line_number_, "parse error: duplicate property found");
             return false;
           }
           if ((size_type_string == type_traits<uint8>::name ()) || (size_type_string == type_traits<uint8>::old_name ()))
@@ -414,7 +409,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           }
           else
           {
-            error_callback_ (line_number_, "parse error");
+            error_callback_ (line_number_, "parse error: unknown list size type");
             return false;
           }
           ++number_of_property_statements;
@@ -470,7 +465,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           element.begin_element_callback ();
         if (!std::getline (istream, line, line_delim))
         {
-          error_callback_ (line_number_, "parse error");
+          error_callback_ (line_number_, "parse error: found less elements than declared in the header");
           return false;
         }
         istream.ignore (char_ignore_count);
@@ -488,7 +483,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         }
         if (!stringstream.eof ())
         {
-          error_callback_ (line_number_, "parse error");
+          error_callback_ (line_number_, "parse error: element contains more properties than declared");
           return false;
         }
         if (element.end_element_callback)
