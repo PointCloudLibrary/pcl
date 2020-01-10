@@ -472,6 +472,65 @@ TEST_F (PLYTest, NaNInIntensity)
   EXPECT_FALSE (cloud.is_dense);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F (PLYTest, NoEndofLine)
+{
+  // create file
+  std::ofstream fs;
+  fs.open (mesh_file_ply_.c_str ());
+  fs << "ply\n"
+        "format ascii 1.0\n"
+        "element vertex 4\n"
+        "property float x\n"
+        "property float y\n"
+        "property float z\n"
+        "property float intensity\n"
+        "end_header\n"
+        "4.23607 0 1.61803 3.13223\n"
+        "2.61803 2.61803 0 3.13223\n"
+        "0 1.61803 4.23607 NaN\n"
+        "0 -1.61803 4.23607 3.13223";
+  fs.close ();
+
+  // Set up cloud
+  pcl::PointCloud<pcl::PointXYZI> cloud;
+
+  pcl::PLYReader Reader;
+  Reader.read(PLYTest::mesh_file_ply_, cloud);
+
+  ASSERT_EQ (cloud.empty(), false);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F (PLYTest, CommentAtTheEnd)
+{
+  // create file
+  std::ofstream fs;
+  fs.open (mesh_file_ply_.c_str ());
+  fs << "ply\n"
+        "format ascii 1.0\n"
+        "element vertex 4\n"
+        "property float x\n"
+        "property float y\n"
+        "property float z\n"
+        "property float intensity\n"
+        "end_header\n"
+        "4.23607 0 1.61803 3.13223\n"
+        "2.61803 2.61803 0 3.13223\n"
+        "0 1.61803 4.23607 NaN\n"
+        "0 -1.61803 4.23607 3.13223\n"
+        "comment hi\n";
+  fs.close ();
+
+  // Set up cloud
+  pcl::PointCloud<pcl::PointXYZI> cloud;
+
+  pcl::PLYReader Reader;
+  Reader.read(PLYTest::mesh_file_ply_, cloud);
+
+  ASSERT_EQ (cloud.empty(), false);
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
