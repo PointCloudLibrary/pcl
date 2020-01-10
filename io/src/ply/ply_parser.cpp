@@ -454,11 +454,9 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   // ascii
   if (format == ascii_format)
   {
-    for (auto element_iterator = elements.cbegin ();
-         element_iterator != elements.cend ();
-         ++element_iterator)
+    for (const auto element_ptr: elements)
     {
-      struct element& element = *(element_iterator->get ());
+      auto& element = *(element_ptr.get ());
       for (std::size_t element_index = 0; element_index < element.count; ++element_index)
       {
         if (element.begin_element_callback)
@@ -473,11 +471,10 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         std::istringstream stringstream (line);
         stringstream.unsetf (std::ios_base::skipws);
         stringstream >> std::ws;
-        for (auto property_iterator = element.properties.cbegin ();
-             property_iterator != element.properties.cend ();
-             ++property_iterator)
+
+        for (const auto property_ptr: element.properties)
         {
-          struct property& property = *(property_iterator->get ());
+          auto& property = *(property_ptr.get ());
           if (!property.parse (*this, format, stringstream))
           {
             error_callback_ (line_number_, "parse error: element property count doesn't match the declaration in the header");
@@ -511,20 +508,16 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   istream.open (filename.c_str (), std::ios::in | std::ios::binary);
   istream.seekg (data_start);
 
-  for (auto element_iterator = elements.cbegin ();
-       element_iterator != elements.cend ();
-       ++element_iterator)
+  for (const auto element_ptr: elements)
   {
-    struct element& element = *(element_iterator->get ());
+    auto& element = *(element_ptr.get ());
     for (std::size_t element_index = 0; element_index < element.count; ++element_index)
     {
       if (element.begin_element_callback)
         element.begin_element_callback ();
-      for (auto property_iterator = element.properties.cbegin ();
-           property_iterator != element.properties.cend ();
-           ++property_iterator)
+      for (const auto property_ptr: element.properties)
       {
-        struct property& property = *(property_iterator->get ());
+        auto& property = *(property_ptr.get ());
         if (!property.parse (*this, format, istream))
         {
           return false;
