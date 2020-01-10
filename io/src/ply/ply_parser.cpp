@@ -479,7 +479,10 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         {
           struct property& property = *(property_iterator->get ());
           if (!property.parse (*this, format, stringstream))
+          {
+            error_callback_ (line_number_, "parse error: element property count doesn't match the declaration in the header");
             return false;
+          }
         }
         if (!stringstream.eof ())
         {
@@ -491,10 +494,13 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
       }
     }
     istream >> std::ws;
-    if (istream.fail () || !istream.eof () || istream.bad ())
+    if (istream.fail ())
     {
-      error_callback_ (line_number_, "parse error");
-      return false;
+      warning_callback_ (line_number_, "no newline at the end of file");
+    }
+    if (!istream.eof ())
+    {
+      warning_callback_ (line_number_, "ignoring extra data at the end of ascii stream");
     }
     return true;
   }
