@@ -172,10 +172,8 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKern
   if (index_change.empty ())
   {
     index_change.resize (points_ * (points_ - 1) / 2);
-    ind_size = static_cast<unsigned int> (index_change.size ());
   }
-  for (unsigned int i = 0; i < ind_size; i++)
-    index_change[i] = i;
+  std::iota(index_change.begin (), index_change.end (), 0);
 
   const float d_min_sq = d_min_ * d_min_;
   const float d_max_sq  = d_max_ * d_max_;
