@@ -162,7 +162,7 @@ RangeImageBorderExtractor::extractBorderScoreImages ()
   int width  = range_image_->width,
       height = range_image_->height,
       size   = width*height;
-  border_scores_left_.assign(size, 0);
+  border_scores_left_.resize (size);
   border_scores_right_  = new float[size];
   border_scores_top_    = new float[size];
   border_scores_bottom_ = new float[size];
@@ -203,7 +203,8 @@ RangeImageBorderExtractor::updatedScoresAccordingToNeighborValues (const float* 
 std::vector<float>
 RangeImageBorderExtractor::updatedScoresAccordingToNeighborValues (const std::vector<float>& border_scores) const
 {
-  std::vector<float> new_border_scores (range_image_->width*range_image_->height);
+  std::vector<float> new_border_scores;
+  new_border_scores.reserve (range_image_->width*range_image_->height);
   for (int y=0; y < static_cast<int> (range_image_->height); ++y)
     for (int x=0; x < static_cast<int> (range_image_->width); ++x)
       new_border_scores.push_back (updatedScoreAccordingToNeighborValues(x, y, border_scores.data ()));
