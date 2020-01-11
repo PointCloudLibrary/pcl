@@ -62,8 +62,8 @@ namespace pcl
         using Matrix4 = typename WarpPointRigid<PointSourceT, PointTargetT, Scalar>::Matrix4;
         using VectorX = typename WarpPointRigid<PointSourceT, PointTargetT, Scalar>::VectorX;
 
-        using Ptr = boost::shared_ptr<WarpPointRigid6D<PointSourceT, PointTargetT, Scalar> >;
-        using ConstPtr = boost::shared_ptr<const WarpPointRigid6D<PointSourceT, PointTargetT, Scalar> >;
+        using Ptr = shared_ptr<WarpPointRigid6D<PointSourceT, PointTargetT, Scalar> >;
+        using ConstPtr = shared_ptr<const WarpPointRigid6D<PointSourceT, PointTargetT, Scalar> >;
 
         WarpPointRigid6D () : WarpPointRigid<PointSourceT, PointTargetT, Scalar> (6) {}
       

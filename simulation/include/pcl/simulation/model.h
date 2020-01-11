@@ -60,14 +60,14 @@ public:
   virtual void
   draw() = 0;
 
-  using Ptr = boost::shared_ptr<Model>;
-  using ConstPtr = boost::shared_ptr<const Model>;
+  using Ptr = shared_ptr<Model>;
+  using ConstPtr = shared_ptr<const Model>;
 };
 
 class PCL_EXPORTS TriangleMeshModel : public Model {
 public:
-  using Ptr = boost::shared_ptr<TriangleMeshModel>;
-  using ConstPtr = boost::shared_ptr<const TriangleMeshModel>;
+  using Ptr = shared_ptr<TriangleMeshModel>;
+  using ConstPtr = shared_ptr<const TriangleMeshModel>;
 
   TriangleMeshModel(pcl::PolygonMesh::Ptr plg);
 
@@ -91,8 +91,8 @@ public:
   void
   draw() override;
 
-  using Ptr = boost::shared_ptr<PolygonMeshModel>;
-  using ConstPtr = boost::shared_ptr<const PolygonMeshModel>;
+  using Ptr = shared_ptr<PolygonMeshModel>;
+  using ConstPtr = shared_ptr<const PolygonMeshModel>;
 
 private:
   std::vector<SinglePoly> polygons;
@@ -114,8 +114,8 @@ private:
 
 class PCL_EXPORTS PointCloudModel : public Model {
 public:
-  using Ptr = boost::shared_ptr<PointCloudModel>;
-  using ConstPtr = boost::shared_ptr<const PointCloudModel>;
+  using Ptr = shared_ptr<PointCloudModel>;
+  using ConstPtr = shared_ptr<const PointCloudModel>;
 
   PointCloudModel(GLenum mode, pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc);
 
@@ -169,8 +169,8 @@ private:
 
 class PCL_EXPORTS TexturedQuad {
 public:
-  using Ptr = boost::shared_ptr<TexturedQuad>;
-  using ConstPtr = boost::shared_ptr<const TexturedQuad>;
+  using Ptr = shared_ptr<TexturedQuad>;
+  using ConstPtr = shared_ptr<const TexturedQuad>;
 
   TexturedQuad(int width, int height);
   ~TexturedQuad();

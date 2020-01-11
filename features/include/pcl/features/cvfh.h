@@ -63,8 +63,8 @@ namespace pcl
   class CVFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<CVFHEstimation<PointInT, PointNT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const CVFHEstimation<PointInT, PointNT, PointOutT> >;
+      using Ptr = shared_ptr<CVFHEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = shared_ptr<const CVFHEstimation<PointInT, PointNT, PointOutT> >;
 
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;

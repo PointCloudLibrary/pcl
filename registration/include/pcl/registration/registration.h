@@ -67,8 +67,8 @@ namespace pcl
       using PCLBase<PointSource>::input_;
       using PCLBase<PointSource>::indices_;
 
-      using Ptr = boost::shared_ptr< Registration<PointSource, PointTarget, Scalar> >;
-      using ConstPtr = boost::shared_ptr< const Registration<PointSource, PointTarget, Scalar> >;
+      using Ptr = shared_ptr< Registration<PointSource, PointTarget, Scalar> >;
+      using ConstPtr = shared_ptr< const Registration<PointSource, PointTarget, Scalar> >;
 
       using CorrespondenceRejectorPtr = pcl::registration::CorrespondenceRejector::Ptr;
       using KdTree = pcl::search::KdTree<PointTarget>;

@@ -64,8 +64,8 @@ namespace pcl
       SampleConsensus () {};
 
     public:
-      using Ptr = boost::shared_ptr<SampleConsensus<T> >;
-      using ConstPtr = boost::shared_ptr<const SampleConsensus<T> >;
+      using Ptr = shared_ptr<SampleConsensus<T> >;
+      using ConstPtr = shared_ptr<const SampleConsensus<T> >;
 
 
       /** \brief Constructor for base SAC.

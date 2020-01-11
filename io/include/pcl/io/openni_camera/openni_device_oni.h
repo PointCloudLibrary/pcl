@@ -37,6 +37,7 @@
 #pragma once
 
 #include <pcl/pcl_config.h>
+#include <pcl/make_shared.h>
 #ifdef HAVE_OPENNI
 
 #include "openni_device.h"
@@ -61,8 +62,8 @@ namespace openni_wrapper
     friend class OpenNIDriver;
   public:
 
-    using Ptr = boost::shared_ptr<DeviceONI>;
-    using ConstPtr = boost::shared_ptr<const DeviceONI>;
+    using Ptr = pcl::shared_ptr<DeviceONI>;
+    using ConstPtr = pcl::shared_ptr<const DeviceONI>;
 
     DeviceONI (xn::Context& context, const std::string& file_name, bool repeat = false, bool streaming = true);
     ~DeviceONI () throw ();
@@ -98,7 +99,7 @@ namespace openni_wrapper
     }
 
   protected:
-    Image::Ptr getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
+    Image::Ptr getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
 
     void PlayerThreadFunction ();
     static void __stdcall NewONIDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ();

@@ -71,8 +71,8 @@ namespace pcl
         normals_ (new pcl::PointCloud<Normal> ())
         {  } 
 
-      using Ptr = boost::shared_ptr<Supervoxel<PointT> >;
-      using ConstPtr = boost::shared_ptr<const Supervoxel<PointT> >;
+      using Ptr = shared_ptr<Supervoxel<PointT> >;
+      using ConstPtr = shared_ptr<const Supervoxel<PointT> >;
 
       /** \brief Gets the centroid of the supervoxel
        *  \param[out] centroid_arg centroid of the supervoxel

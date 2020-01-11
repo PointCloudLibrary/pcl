@@ -25,8 +25,8 @@ namespace pcl
         using PointCloudInConstPtr = typename PointCloudCoherence<PointInT>::PointCloudInConstPtr;
         using BaseClass = PointCloudCoherence<PointInT>;
         
-        using Ptr = boost::shared_ptr<NearestPairPointCloudCoherence<PointInT> >;
-        using ConstPtr = boost::shared_ptr<const NearestPairPointCloudCoherence<PointInT> >;
+        using Ptr = shared_ptr<NearestPairPointCloudCoherence<PointInT> >;
+        using ConstPtr = shared_ptr<const NearestPairPointCloudCoherence<PointInT> >;
         using SearchPtr = typename pcl::search::Search<PointInT>::Ptr;
         using SearchConstPtr = typename pcl::search::Search<PointInT>::ConstPtr;
 

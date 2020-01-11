@@ -70,8 +70,8 @@ namespace pcl
         using PointCloudConstPtr = typename PointCloud::ConstPtr;
         using typename Search<PointT>::IndicesConstPtr;
 
-        using Ptr = boost::shared_ptr<pcl::search::OrganizedNeighbor<PointT> >;
-        using ConstPtr = boost::shared_ptr<const pcl::search::OrganizedNeighbor<PointT> >;
+        using Ptr = shared_ptr<pcl::search::OrganizedNeighbor<PointT> >;
+        using ConstPtr = shared_ptr<const pcl::search::OrganizedNeighbor<PointT> >;
 
         using pcl::search::Search<PointT>::indices_;
         using pcl::search::Search<PointT>::sorted_results_;

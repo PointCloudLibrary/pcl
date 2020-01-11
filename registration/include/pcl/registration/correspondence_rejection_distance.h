@@ -65,8 +65,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        using Ptr = boost::shared_ptr<CorrespondenceRejectorDistance>;
-        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorDistance>;
+        using Ptr = shared_ptr<CorrespondenceRejectorDistance>;
+        using ConstPtr = shared_ptr<const CorrespondenceRejectorDistance>;
 
         /** \brief Empty constructor. */
         CorrespondenceRejectorDistance () : max_distance_(std::numeric_limits<float>::max ())

@@ -36,6 +36,7 @@
  *
  */
 #include <pcl/pcl_config.h>
+#include <pcl/make_shared.h>
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/openni_camera/openni_image_bayer_grbg.h>
@@ -50,7 +51,7 @@
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////
-openni_wrapper::ImageBayerGRBG::ImageBayerGRBG (boost::shared_ptr<xn::ImageMetaData> image_meta_data, DebayeringMethod method) throw ()
+openni_wrapper::ImageBayerGRBG::ImageBayerGRBG (pcl::shared_ptr<xn::ImageMetaData> image_meta_data, DebayeringMethod method) throw ()
 : Image (std::move(image_meta_data))
 , debayering_method_ (method)
 {

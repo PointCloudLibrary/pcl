@@ -87,8 +87,8 @@ namespace pcl
   class SpinImageEstimation : public Feature<PointInT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<SpinImageEstimation<PointInT, PointNT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const SpinImageEstimation<PointInT, PointNT, PointOutT> >;
+      using Ptr = shared_ptr<SpinImageEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = shared_ptr<const SpinImageEstimation<PointInT, PointNT, PointOutT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;

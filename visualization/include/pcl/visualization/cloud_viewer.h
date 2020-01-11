@@ -52,8 +52,8 @@ namespace pcl
     class PCL_EXPORTS CloudViewer : boost::noncopyable
     {
       public:
-        using Ptr = boost::shared_ptr<CloudViewer>;
-        using ConstPtr = boost::shared_ptr<const CloudViewer>;
+        using Ptr = shared_ptr<CloudViewer>;
+        using ConstPtr = shared_ptr<const CloudViewer>;
 
         using ColorACloud = pcl::PointCloud<pcl::PointXYZRGBA>;
         using ColorCloud = pcl::PointCloud<pcl::PointXYZRGB>;

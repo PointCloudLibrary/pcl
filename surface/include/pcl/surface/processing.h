@@ -56,8 +56,8 @@ namespace pcl
   class CloudSurfaceProcessing : public PCLBase<PointInT>
   {
     public:
-      typedef boost::shared_ptr<CloudSurfaceProcessing<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const CloudSurfaceProcessing<PointInT, PointOutT> > ConstPtr;
+      typedef shared_ptr<CloudSurfaceProcessing<PointInT, PointOutT> > Ptr;
+      typedef shared_ptr<const CloudSurfaceProcessing<PointInT, PointOutT> > ConstPtr;
 
       using PCLBase<PointInT>::input_;
       using PCLBase<PointInT>::indices_;
@@ -93,8 +93,8 @@ namespace pcl
   class PCL_EXPORTS MeshProcessing
   {
     public:
-      using Ptr = boost::shared_ptr<MeshProcessing>;
-      using ConstPtr = boost::shared_ptr<const MeshProcessing>;
+      using Ptr = shared_ptr<MeshProcessing>;
+      using ConstPtr = shared_ptr<const MeshProcessing>;
 
       using PolygonMeshConstPtr = PolygonMesh::ConstPtr;
 

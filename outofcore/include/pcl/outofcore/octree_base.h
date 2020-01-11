@@ -175,13 +175,13 @@ namespace pcl
         using DepthFirstIterator = OutofcoreDepthFirstIterator<PointT, ContainerT>;
         using DepthFirstConstIterator = const OutofcoreDepthFirstIterator<PointT, ContainerT>;
 
-        using Ptr = boost::shared_ptr<OutofcoreOctreeBase<ContainerT, PointT> >;
-        using ConstPtr = boost::shared_ptr<const OutofcoreOctreeBase<ContainerT, PointT> >;
+        using Ptr = shared_ptr<OutofcoreOctreeBase<ContainerT, PointT> >;
+        using ConstPtr = shared_ptr<const OutofcoreOctreeBase<ContainerT, PointT> >;
 
         using PointCloud = pcl::PointCloud<PointT>;
 
-        using IndicesPtr = boost::shared_ptr<std::vector<int> >;
-        using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
+        using IndicesPtr = shared_ptr<std::vector<int> >;
+        using IndicesConstPtr = shared_ptr<const std::vector<int> >;
 
         using PointCloudPtr = typename PointCloud::Ptr;
         using PointCloudConstPtr = typename PointCloud::ConstPtr;

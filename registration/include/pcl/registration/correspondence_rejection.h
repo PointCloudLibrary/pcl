@@ -58,8 +58,8 @@ namespace pcl
     class CorrespondenceRejector
     {
       public:
-        using Ptr = boost::shared_ptr<CorrespondenceRejector>;
-        using ConstPtr = boost::shared_ptr<const CorrespondenceRejector>;
+        using Ptr = shared_ptr<CorrespondenceRejector>;
+        using ConstPtr = shared_ptr<const CorrespondenceRejector>;
 
         /** \brief Empty constructor. */
         CorrespondenceRejector () 
@@ -199,8 +199,8 @@ namespace pcl
     class DataContainerInterface
     {
       public:
-        using Ptr = boost::shared_ptr<DataContainerInterface>;
-        using ConstPtr = boost::shared_ptr<const DataContainerInterface>;
+        using Ptr = shared_ptr<DataContainerInterface>;
+        using ConstPtr = shared_ptr<const DataContainerInterface>;
 
         virtual ~DataContainerInterface () = default;
         virtual double getCorrespondenceScore (int index) = 0;

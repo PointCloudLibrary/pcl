@@ -19,8 +19,8 @@ namespace pcl
     std::vector<int> indices;
 
     public:
-      using Ptr = boost::shared_ptr< ::pcl::PointIndices>;
-      using ConstPtr = boost::shared_ptr<const ::pcl::PointIndices>;
+      using Ptr = shared_ptr< ::pcl::PointIndices>;
+      using ConstPtr = shared_ptr<const ::pcl::PointIndices>;
   }; // struct PointIndices
 
   using PointIndicesPtr = PointIndices::Ptr;

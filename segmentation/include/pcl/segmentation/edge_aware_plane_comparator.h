@@ -61,8 +61,8 @@ namespace pcl
       using PointCloudNPtr = typename PointCloudN::Ptr;
       using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
       
-      using Ptr = boost::shared_ptr<EdgeAwarePlaneComparator<PointT, PointNT> >;
-      using ConstPtr = boost::shared_ptr<const EdgeAwarePlaneComparator<PointT, PointNT> >;
+      using Ptr = shared_ptr<EdgeAwarePlaneComparator<PointT, PointNT> >;
+      using ConstPtr = shared_ptr<const EdgeAwarePlaneComparator<PointT, PointNT> >;
 
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::input_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;

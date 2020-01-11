@@ -75,8 +75,8 @@ namespace pcl
     class PCL_EXPORTS OpenNI2Grabber : public Grabber
     {
       public:
-        using Ptr = boost::shared_ptr<OpenNI2Grabber>;
-        using ConstPtr = boost::shared_ptr<const OpenNI2Grabber>;
+        using Ptr = shared_ptr<OpenNI2Grabber>;
+        using ConstPtr = shared_ptr<const OpenNI2Grabber>;
 
         // Templated images
         using DepthImage = pcl::io::DepthImage;

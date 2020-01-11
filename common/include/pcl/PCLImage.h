@@ -26,8 +26,8 @@ namespace pcl
 
     std::vector<std::uint8_t> data;
 
-    using Ptr = boost::shared_ptr< ::pcl::PCLImage>;
-    using ConstPtr = boost::shared_ptr<const ::pcl::PCLImage>;
+    using Ptr = shared_ptr< ::pcl::PCLImage>;
+    using ConstPtr = shared_ptr<const ::pcl::PCLImage>;
   }; // struct PCLImage
 
   using PCLImagePtr = PCLImage::Ptr;

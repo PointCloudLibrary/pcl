@@ -65,8 +65,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        using Ptr = boost::shared_ptr<CorrespondenceRejectorMedianDistance>;
-        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorMedianDistance>;
+        using Ptr = shared_ptr<CorrespondenceRejectorMedianDistance>;
+        using ConstPtr = shared_ptr<const CorrespondenceRejectorMedianDistance>;
 
         /** \brief Empty constructor. */
         CorrespondenceRejectorMedianDistance () 

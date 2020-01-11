@@ -110,8 +110,8 @@ namespace pcl
 
       using BaseClass = PCLBase<PointInT>;
 
-      using Ptr = boost::shared_ptr< Feature<PointInT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr< const Feature<PointInT, PointOutT> >;
+      using Ptr = shared_ptr< Feature<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr< const Feature<PointInT, PointOutT> >;
 
       using KdTree = pcl::search::Search<PointInT>;
       using KdTreePtr = typename KdTree::Ptr;
@@ -319,8 +319,8 @@ namespace pcl
       using PointCloudNPtr = typename PointCloudN::Ptr;
       using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
 
-      using Ptr = boost::shared_ptr< FeatureFromNormals<PointInT, PointNT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr< const FeatureFromNormals<PointInT, PointNT, PointOutT> >;
+      using Ptr = shared_ptr< FeatureFromNormals<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = shared_ptr< const FeatureFromNormals<PointInT, PointNT, PointOutT> >;
 
       // Members derived from the base class
       using Feature<PointInT, PointOutT>::input_;
@@ -378,8 +378,8 @@ namespace pcl
     using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
     public:
-      using Ptr = boost::shared_ptr< FeatureFromLabels<PointInT, PointLT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr< const FeatureFromLabels<PointInT, PointLT, PointOutT> >;
+      using Ptr = shared_ptr< FeatureFromLabels<PointInT, PointLT, PointOutT> >;
+      using ConstPtr = shared_ptr< const FeatureFromLabels<PointInT, PointLT, PointOutT> >;
 
       // Members derived from the base class
       using Feature<PointInT, PointOutT>::input_;

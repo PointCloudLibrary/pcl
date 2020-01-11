@@ -75,8 +75,8 @@ namespace pcl
       using PointCloudGradientPtr = typename PointCloudGradient::Ptr;
       using PointCloudGradientConstPtr = typename PointCloudGradient::ConstPtr;
 
-      using Ptr = boost::shared_ptr<RIFTEstimation<PointInT, GradientT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const RIFTEstimation<PointInT, GradientT, PointOutT> >;
+      using Ptr = shared_ptr<RIFTEstimation<PointInT, GradientT, PointOutT> >;
+      using ConstPtr = shared_ptr<const RIFTEstimation<PointInT, GradientT, PointOutT> >;
 
 
       /** \brief Empty constructor. */

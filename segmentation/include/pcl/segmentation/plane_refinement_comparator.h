@@ -65,8 +65,8 @@ namespace pcl
       using PointCloudLPtr = typename PointCloudL::Ptr;
       using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
 
-      using Ptr = boost::shared_ptr<PlaneRefinementComparator<PointT, PointNT, PointLT> >;
-      using ConstPtr = boost::shared_ptr<const PlaneRefinementComparator<PointT, PointNT, PointLT> >;
+      using Ptr = shared_ptr<PlaneRefinementComparator<PointT, PointNT, PointLT> >;
+      using ConstPtr = shared_ptr<const PlaneRefinementComparator<PointT, PointNT, PointLT> >;
 
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::input_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;
@@ -85,8 +85,8 @@ namespace pcl
         * \param[in] models
         * \param[in] refine_labels
         */
-      PlaneRefinementComparator (boost::shared_ptr<std::vector<pcl::ModelCoefficients> >& models,
-                                 boost::shared_ptr<std::vector<bool> >& refine_labels)
+      PlaneRefinementComparator (shared_ptr<std::vector<pcl::ModelCoefficients> >& models,
+                                 shared_ptr<std::vector<bool> >& refine_labels)
         : models_ (models)
         , labels_ ()
         , refine_labels_ (refine_labels)
@@ -104,7 +104,7 @@ namespace pcl
         * \param[in] models a vector of model coefficients produced by the initial segmentation step.
         */
       void
-      setModelCoefficients (boost::shared_ptr<std::vector<pcl::ModelCoefficients> >& models)
+      setModelCoefficients (shared_ptr<std::vector<pcl::ModelCoefficients> >& models)
       {
         models_ = models;
       }
@@ -122,7 +122,7 @@ namespace pcl
         * \param[in] refine_labels A vector of bools 0-max_label, true if the label should be refined.
         */
       void
-      setRefineLabels (boost::shared_ptr<std::vector<bool> >& refine_labels)
+      setRefineLabels (shared_ptr<std::vector<bool> >& refine_labels)
       {
         refine_labels_ = refine_labels;
       }
@@ -140,7 +140,7 @@ namespace pcl
         * \param[in] label_to_model A vector of size max_label, with the index of each corresponding model in models
         */
       inline void
-      setLabelToModel (boost::shared_ptr<std::vector<int> >& label_to_model)
+      setLabelToModel (shared_ptr<std::vector<int> >& label_to_model)
       {
         label_to_model_ = label_to_model;
       }
@@ -155,7 +155,7 @@ namespace pcl
       }
 
       /** \brief Get the vector of model coefficients to which we will compare. */
-      inline boost::shared_ptr<std::vector<pcl::ModelCoefficients> >
+      inline shared_ptr<std::vector<pcl::ModelCoefficients> >
       getModelCoefficients () const
       {
         return (models_);
@@ -206,10 +206,10 @@ namespace pcl
       }
 
     protected:
-      boost::shared_ptr<std::vector<pcl::ModelCoefficients> > models_;
+      shared_ptr<std::vector<pcl::ModelCoefficients> > models_;
       PointCloudLPtr labels_;
-      boost::shared_ptr<std::vector<bool> > refine_labels_;
-      boost::shared_ptr<std::vector<int> > label_to_model_;
+      shared_ptr<std::vector<bool> > refine_labels_;
+      shared_ptr<std::vector<int> > label_to_model_;
       bool depth_dependent_;
       using PlaneCoefficientComparator<PointT, PointNT>::z_axis_;
   };

@@ -36,6 +36,7 @@
  *
  */
 #include <pcl/pcl_config.h>
+#include <pcl/make_shared.h>
 #ifdef HAVE_OPENNI
 
 #ifdef __GNUC__
@@ -131,7 +132,7 @@ openni_wrapper::DeviceKinect::enumAvailableModes () throw ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::Image::Ptr 
-openni_wrapper::DeviceKinect::getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_data) const throw ()
+openni_wrapper::DeviceKinect::getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_data) const throw ()
 {
   return (Image::Ptr (new ImageBayerGRBG (image_data, debayering_method_)));
 }

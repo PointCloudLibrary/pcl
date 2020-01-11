@@ -72,8 +72,8 @@ namespace pcl
       using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
       using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
 
-      using Ptr = boost::shared_ptr<SampleConsensusModelLine<PointT> >;
-      using ConstPtr = boost::shared_ptr<const SampleConsensusModelLine<PointT>>;
+      using Ptr = shared_ptr<SampleConsensusModelLine<PointT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelLine<PointT>>;
 
       /** \brief Constructor for base SampleConsensusModelLine.
         * \param[in] cloud the input point cloud dataset

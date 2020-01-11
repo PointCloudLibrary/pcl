@@ -78,14 +78,14 @@ namespace pcl
       using PointCloud = typename KdTree<PointT>::PointCloud;
       using PointCloudConstPtr = typename KdTree<PointT>::PointCloudConstPtr;
 
-      using IndicesPtr = boost::shared_ptr<std::vector<int> >;
-      using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
+      using IndicesPtr = shared_ptr<std::vector<int> >;
+      using IndicesConstPtr = shared_ptr<const std::vector<int> >;
 
       using FLANNIndex = ::flann::Index<Dist>;
 
       // Boost shared pointers
-      using Ptr = boost::shared_ptr<KdTreeFLANN<PointT, Dist> >;
-      using ConstPtr = boost::shared_ptr<const KdTreeFLANN<PointT, Dist> >;
+      using Ptr = shared_ptr<KdTreeFLANN<PointT, Dist> >;
+      using ConstPtr = shared_ptr<const KdTreeFLANN<PointT, Dist> >;
 
       /** \brief Default Constructor for KdTreeFLANN.
         * \param[in] sorted set to true if the application that the tree will be used for requires sorted nearest neighbor indices (default). False otherwise. 

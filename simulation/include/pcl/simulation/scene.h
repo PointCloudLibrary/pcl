@@ -20,8 +20,8 @@ namespace simulation {
 
 class PCL_EXPORTS Scene {
 public:
-  using Ptr = boost::shared_ptr<Scene>;
-  using ConstPtr = boost::shared_ptr<Scene>;
+  using Ptr = shared_ptr<Scene>;
+  using ConstPtr = shared_ptr<Scene>;
 
   void
   draw();

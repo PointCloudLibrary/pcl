@@ -69,8 +69,8 @@ namespace pcl
     {
       public:
         // public typedefs
-        using Ptr = boost::shared_ptr<pcl::search::Octree<PointT,LeafTWrap,BranchTWrap,OctreeT> >;
-        using ConstPtr = boost::shared_ptr<const pcl::search::Octree<PointT,LeafTWrap,BranchTWrap,OctreeT> >;
+        using Ptr = shared_ptr<pcl::search::Octree<PointT,LeafTWrap,BranchTWrap,OctreeT> >;
+        using ConstPtr = shared_ptr<const pcl::search::Octree<PointT,LeafTWrap,BranchTWrap,OctreeT> >;
 
         using typename Search<PointT>::IndicesPtr;
         using typename Search<PointT>::IndicesConstPtr;

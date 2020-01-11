@@ -141,8 +141,8 @@ namespace pcl
     class OctreePointCloudVoxelCentroid : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT>
     {
       public:
-        using Ptr = boost::shared_ptr<OctreePointCloudVoxelCentroid<PointT, LeafContainerT> >;
-        using ConstPtr = boost::shared_ptr<const OctreePointCloudVoxelCentroid<PointT, LeafContainerT> >;
+        using Ptr = shared_ptr<OctreePointCloudVoxelCentroid<PointT, LeafContainerT> >;
+        using ConstPtr = shared_ptr<const OctreePointCloudVoxelCentroid<PointT, LeafContainerT> >;
 
         using OctreeT = OctreePointCloud<PointT, LeafContainerT, BranchContainerT>;
         using LeafNode = typename OctreeT::LeafNode;

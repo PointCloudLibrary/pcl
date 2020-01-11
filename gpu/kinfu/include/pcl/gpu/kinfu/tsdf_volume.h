@@ -54,8 +54,8 @@ namespace pcl
     class PCL_EXPORTS TsdfVolume
     {
     public:
-      using Ptr = boost::shared_ptr<TsdfVolume>;
-      using ConstPtr = boost::shared_ptr<const TsdfVolume>;
+      using Ptr = shared_ptr<TsdfVolume>;
+      using ConstPtr = shared_ptr<const TsdfVolume>;
 
       /** \brief Supported Point Types */
       using PointType = PointXYZ;

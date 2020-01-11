@@ -110,8 +110,8 @@ namespace pcl
     class LUM
     {
       public:
-        using Ptr = boost::shared_ptr<LUM<PointT> >;
-        using ConstPtr = boost::shared_ptr<const LUM<PointT> >;
+        using Ptr = shared_ptr<LUM<PointT> >;
+        using ConstPtr = shared_ptr<const LUM<PointT> >;
 
         using PointCloud = pcl::PointCloud<PointT>;
         using PointCloudPtr = typename PointCloud::Ptr;
@@ -132,7 +132,7 @@ namespace pcl
         };
 
         using SLAMGraph = boost::adjacency_list<boost::eigen_vecS, boost::eigen_vecS, boost::bidirectionalS, VertexProperties, EdgeProperties, boost::no_property, boost::eigen_listS>;
-        using SLAMGraphPtr = boost::shared_ptr<SLAMGraph>;
+        using SLAMGraphPtr = shared_ptr<SLAMGraph>;
         using Vertex = typename SLAMGraph::vertex_descriptor;
         using Edge = typename SLAMGraph::edge_descriptor;
 

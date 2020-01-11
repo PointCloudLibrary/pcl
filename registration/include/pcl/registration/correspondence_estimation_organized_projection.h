@@ -77,8 +77,8 @@ namespace pcl
         using PointCloudTargetPtr = typename PointCloudTarget::Ptr;
         using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
-        using Ptr = boost::shared_ptr< CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar> >;
-        using ConstPtr = boost::shared_ptr< const CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar> >;
+        using Ptr = shared_ptr< CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar> >;
+        using ConstPtr = shared_ptr< const CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar> >;
 
 
 

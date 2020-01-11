@@ -70,8 +70,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr<RandomSample<PointT> >;
-      using ConstPtr = boost::shared_ptr<const RandomSample<PointT> >;
+      using Ptr = shared_ptr<RandomSample<PointT> >;
+      using ConstPtr = shared_ptr<const RandomSample<PointT> >;
 
       /** \brief Empty constructor. */
       RandomSample (bool extract_removed_indices = false) : 
@@ -162,8 +162,8 @@ namespace pcl
 
     public:
   
-      using Ptr = boost::shared_ptr<RandomSample<pcl::PCLPointCloud2> >;
-      using ConstPtr = boost::shared_ptr<const RandomSample<pcl::PCLPointCloud2> >;
+      using Ptr = shared_ptr<RandomSample<pcl::PCLPointCloud2> >;
+      using ConstPtr = shared_ptr<const RandomSample<pcl::PCLPointCloud2> >;
   
       /** \brief Empty constructor. */
       RandomSample () : sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (nullptr)))

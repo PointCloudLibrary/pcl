@@ -67,8 +67,8 @@ namespace pcl
   {
     public:
       /** @cond */
-      using Ptr = boost::shared_ptr<DavidSDKGrabber>;
-      using ConstPtr = boost::shared_ptr<const DavidSDKGrabber>;
+      using Ptr = shared_ptr<DavidSDKGrabber>;
+      using ConstPtr = shared_ptr<const DavidSDKGrabber>;
 
       // Define callback signature typedefs
       using sig_cb_davidsdk_point_cloud = void(const pcl::PointCloud<pcl::PointXYZ>::Ptr &);

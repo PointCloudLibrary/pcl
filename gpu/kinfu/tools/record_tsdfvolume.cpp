@@ -77,8 +77,8 @@ class DeviceVolume
 {
 public:
 
-  using Ptr = boost::shared_ptr<DeviceVolume>;
-  using ConstPtr = boost::shared_ptr<const DeviceVolume>;
+  using Ptr = shared_ptr<DeviceVolume>;
+  using ConstPtr = shared_ptr<const DeviceVolume>;
 
   /** \brief Constructor
    * param[in] volume_size size of the volume in mm

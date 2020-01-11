@@ -104,8 +104,8 @@ namespace pcl
       using Search<PointT>::sorted_results_;
 
       public:
-        using Ptr = boost::shared_ptr<FlannSearch<PointT, FlannDistance> >;
-        using ConstPtr = boost::shared_ptr<const FlannSearch<PointT, FlannDistance> >;
+        using Ptr = shared_ptr<FlannSearch<PointT, FlannDistance> >;
+        using ConstPtr = shared_ptr<const FlannSearch<PointT, FlannDistance> >;
         
         using PointCloud = typename Search<PointT>::PointCloud;
         using PointCloudConstPtr = typename Search<PointT>::PointCloudConstPtr;
@@ -113,11 +113,11 @@ namespace pcl
         using typename Search<PointT>::IndicesPtr;
         using typename Search<PointT>::IndicesConstPtr;
 
-        using MatrixPtr = boost::shared_ptr<flann::Matrix<float> >;
-        using MatrixConstPtr = boost::shared_ptr<const flann::Matrix<float> >;
+        using MatrixPtr = shared_ptr<flann::Matrix<float> >;
+        using MatrixConstPtr = shared_ptr<const flann::Matrix<float> >;
 
         using Index = flann::NNIndex<FlannDistance>;
-        using IndexPtr = boost::shared_ptr<flann::NNIndex<FlannDistance> >;
+        using IndexPtr = shared_ptr<flann::NNIndex<FlannDistance> >;
 
         using PointRepresentation = pcl::PointRepresentation<PointT>;
         using PointRepresentationPtr = typename PointRepresentation::Ptr;
@@ -141,7 +141,7 @@ namespace pcl
             */
             virtual ~FlannIndexCreator () {}
         };
-        using FlannIndexCreatorPtr = boost::shared_ptr<FlannIndexCreator>;
+        using FlannIndexCreatorPtr = shared_ptr<FlannIndexCreator>;
 
         /** \brief Creates a FLANN KdTreeSingleIndex from the given input data.
           */

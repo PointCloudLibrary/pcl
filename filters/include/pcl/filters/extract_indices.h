@@ -76,8 +76,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr<ExtractIndices<PointT> >;
-      using ConstPtr = boost::shared_ptr<const ExtractIndices<PointT> >;
+      using Ptr = shared_ptr<ExtractIndices<PointT> >;
+      using ConstPtr = shared_ptr<const ExtractIndices<PointT> >;
 
       /** \brief Constructor.
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).

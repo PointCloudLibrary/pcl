@@ -96,8 +96,8 @@ namespace pcl
     class PCL_EXPORTS OutofcoreOctreeBaseMetadata : public OutofcoreAbstractMetadata
     {
       public:
-        using Ptr = boost::shared_ptr<OutofcoreOctreeBaseMetadata>;
-        using ConstPtr = boost::shared_ptr<const OutofcoreOctreeBaseMetadata>;
+        using Ptr = shared_ptr<OutofcoreOctreeBaseMetadata>;
+        using ConstPtr = shared_ptr<const OutofcoreOctreeBaseMetadata>;
 
         /** \brief Empty constructor */
         OutofcoreOctreeBaseMetadata ();

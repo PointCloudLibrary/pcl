@@ -60,8 +60,8 @@ namespace pcl
     using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr; 
 
     public:
-      using Ptr = boost::shared_ptr<MaximumLikelihoodSampleConsensus<PointT> >;
-      using ConstPtr = boost::shared_ptr<const MaximumLikelihoodSampleConsensus<PointT> >;
+      using Ptr = shared_ptr<MaximumLikelihoodSampleConsensus<PointT> >;
+      using ConstPtr = shared_ptr<const MaximumLikelihoodSampleConsensus<PointT> >;
 
       using SampleConsensus<PointT>::max_iterations_;
       using SampleConsensus<PointT>::threshold_;

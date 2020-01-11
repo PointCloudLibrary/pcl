@@ -69,8 +69,8 @@ namespace pcl
     {
       public:
         using Matrix4 = Eigen::Matrix<Scalar, 4, 4>;
-        using Ptr = boost::shared_ptr<TransformationValidation<PointSource, PointTarget, Scalar> >;
-        using ConstPtr = boost::shared_ptr<const TransformationValidation<PointSource, PointTarget, Scalar> >;
+        using Ptr = shared_ptr<TransformationValidation<PointSource, PointTarget, Scalar> >;
+        using ConstPtr = shared_ptr<const TransformationValidation<PointSource, PointTarget, Scalar> >;
 
         using PointCloudSource = pcl::PointCloud<PointSource>;
         using PointCloudSourcePtr = typename PointCloudSource::Ptr;

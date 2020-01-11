@@ -58,8 +58,8 @@ namespace pcl
   class IntensitySpinEstimation: public Feature<PointInT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<IntensitySpinEstimation<PointInT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const IntensitySpinEstimation<PointInT, PointOutT> >;
+      using Ptr = shared_ptr<IntensitySpinEstimation<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const IntensitySpinEstimation<PointInT, PointOutT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
 

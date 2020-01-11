@@ -574,8 +574,8 @@ pcl::PolygonMesh::Ptr convertToMesh(const DeviceArray<PointXYZ>& triangles)
 
 struct CurrentFrameCloudView
 {
-  using Ptr = boost::shared_ptr<CurrentFrameCloudView>;
-  using ConstPtr = boost::shared_ptr<const CurrentFrameCloudView>;
+  using Ptr = shared_ptr<CurrentFrameCloudView>;
+  using ConstPtr = shared_ptr<const CurrentFrameCloudView>;
 
   CurrentFrameCloudView() : cloud_device_ (480, 640), cloud_viewer_ ("Frame Cloud Viewer")
   {

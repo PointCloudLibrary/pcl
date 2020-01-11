@@ -65,8 +65,8 @@ namespace pcl
     using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
 
     public:
-      using Ptr = boost::shared_ptr<OrganizedEdgeBase<PointT, PointLT> >;
-      using ConstPtr = boost::shared_ptr<const OrganizedEdgeBase<PointT, PointLT> >;
+      using Ptr = shared_ptr<OrganizedEdgeBase<PointT, PointLT> >;
+      using ConstPtr = shared_ptr<const OrganizedEdgeBase<PointT, PointLT> >;
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
       using PCLBase<PointT>::initCompute;

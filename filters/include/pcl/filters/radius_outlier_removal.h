@@ -78,8 +78,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr<RadiusOutlierRemoval<PointT> >;
-      using ConstPtr = boost::shared_ptr<const RadiusOutlierRemoval<PointT> >;
+      using Ptr = shared_ptr<RadiusOutlierRemoval<PointT> >;
+      using ConstPtr = shared_ptr<const RadiusOutlierRemoval<PointT> >;
 
 
       /** \brief Constructor.

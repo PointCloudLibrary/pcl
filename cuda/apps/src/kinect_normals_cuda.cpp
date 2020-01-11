@@ -120,7 +120,7 @@ class NormalEstimation
 
       // we got a cloud in device..
 
-      boost::shared_ptr<typename Storage<float4>::type> normals;
+      shared_ptr<typename Storage<float4>::type> normals;
       {
         ScopeTimeCPU time ("Normal Estimation");
         float focallength = 580/2.0;
@@ -164,7 +164,7 @@ class NormalEstimation
       d2c.compute<Storage> (depth_image, image, constant, data, false, 1, smoothing_nr_iterations, smoothing_filter_size);
       //d2c.compute<Storage> (depth_image, image, constant, data, true, 2);
 
-      boost::shared_ptr<typename Storage<float4>::type> normals;      
+      shared_ptr<typename Storage<float4>::type> normals;      
       {
         ScopeTimeCPU time ("Normal Estimation");
         normals = computeFastPointNormals<Storage> (data);

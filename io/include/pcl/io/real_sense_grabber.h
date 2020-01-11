@@ -38,6 +38,7 @@
 #pragma once
 
 #include <pcl/io/grabber.h>
+#include <pcl/make_shared.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>
@@ -65,8 +66,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr<RealSenseGrabber>;
-      using ConstPtr = boost::shared_ptr<const RealSenseGrabber>;
+      using Ptr = shared_ptr<RealSenseGrabber>;
+      using ConstPtr = shared_ptr<const RealSenseGrabber>;
 
       using sig_cb_real_sense_point_cloud = void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
       using sig_cb_real_sense_point_cloud_rgba = void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);

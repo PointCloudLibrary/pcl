@@ -61,8 +61,8 @@ namespace pcl
     class TransformationEstimationSymmetricPointToPlaneLLS : public TransformationEstimation<PointSource, PointTarget, Scalar>
     {
       public:
-        using Ptr = boost::shared_ptr<TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> >;
-        using ConstPtr = boost::shared_ptr<const TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> >;
+        using Ptr = shared_ptr<TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> >;
+        using ConstPtr = shared_ptr<const TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> >;
 
         using Matrix4 = typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4;
         using Vector6 = Eigen::Matrix<Scalar, 6, 1>;

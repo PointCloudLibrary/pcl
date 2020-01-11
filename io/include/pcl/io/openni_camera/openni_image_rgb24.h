@@ -37,6 +37,7 @@
 #pragma once
  
 #include <pcl/pcl_config.h>
+#include <pcl/make_shared.h>
 #ifdef HAVE_OPENNI
 
 #include "openni_image.h"
@@ -55,7 +56,7 @@ namespace openni_wrapper
   {
   public:
 
-    ImageRGB24 (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ();
+    ImageRGB24 (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) throw ();
     ~ImageRGB24 () throw ();
 
     inline Encoding

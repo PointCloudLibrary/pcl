@@ -86,8 +86,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr<PassThrough<PointT> >;
-      using ConstPtr = boost::shared_ptr<const PassThrough<PointT> >;
+      using Ptr = shared_ptr<PassThrough<PointT> >;
+      using ConstPtr = shared_ptr<const PassThrough<PointT> >;
 
 
       /** \brief Constructor.

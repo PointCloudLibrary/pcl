@@ -69,8 +69,8 @@ namespace pcl
         using PointType = pcl::PointXYZ;
         
         /** \brief Smart pointer. */
-        using Ptr = boost::shared_ptr<MarchingCubes>;
-        using ConstPtr = boost::shared_ptr<const MarchingCubes>;
+        using Ptr = shared_ptr<MarchingCubes>;
+        using ConstPtr = shared_ptr<const MarchingCubes>;
 
         /** \brief Default constructor */
         MarchingCubes();

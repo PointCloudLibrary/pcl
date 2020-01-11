@@ -78,8 +78,8 @@ namespace pcl
       using PCLBase<PointInT>::deinitCompute;
 
     public:
-      using Ptr = boost::shared_ptr<ConvexHull<PointInT> >;
-      using ConstPtr = boost::shared_ptr<const ConvexHull<PointInT> >;
+      using Ptr = shared_ptr<ConvexHull<PointInT> >;
+      using ConstPtr = shared_ptr<const ConvexHull<PointInT> >;
 
       using MeshConstruction<PointInT>::reconstruct;
 

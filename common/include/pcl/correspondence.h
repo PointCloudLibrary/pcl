@@ -42,7 +42,7 @@
 #pragma GCC system_header 
 #endif
 
-#include <boost/shared_ptr.hpp>
+#include <pcl/make_shared.h>
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
 #include <pcl/pcl_exports.h>
@@ -86,8 +86,8 @@ namespace pcl
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Correspondence& c);
 
   using Correspondences = std::vector< pcl::Correspondence, Eigen::aligned_allocator<pcl::Correspondence> >;
-  using CorrespondencesPtr = boost::shared_ptr<Correspondences>;
-  using CorrespondencesConstPtr = boost::shared_ptr<const Correspondences >;
+  using CorrespondencesPtr = shared_ptr<Correspondences>;
+  using CorrespondencesConstPtr = shared_ptr<const Correspondences >;
 
   /**
     * \brief Get the query points of correspondences that are present in

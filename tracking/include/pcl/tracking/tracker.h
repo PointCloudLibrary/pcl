@@ -63,8 +63,8 @@ namespace pcl
       using PCLBase<PointInT>::input_;
       
       using BaseClass = PCLBase<PointInT>;
-      using Ptr = boost::shared_ptr< Tracker<PointInT, StateT> >;
-      using ConstPtr = boost::shared_ptr< const Tracker<PointInT, StateT> >;
+      using Ptr = shared_ptr< Tracker<PointInT, StateT> >;
+      using ConstPtr = shared_ptr< const Tracker<PointInT, StateT> >;
 
       using SearchPtr = typename pcl::search::Search<PointInT>::Ptr;
       using SearchConstPtr = typename pcl::search::Search<PointInT>::ConstPtr;

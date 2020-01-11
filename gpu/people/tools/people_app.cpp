@@ -387,7 +387,7 @@ int main(int argc, char** argv)
   pc::parse_argument (argc, argv, "-w", write);
 
   // selecting data source
-  boost::shared_ptr<pcl::Grabber> capture;
+  shared_ptr<pcl::Grabber> capture;
   string openni_device, oni_file, pcd_file, pcd_folder;  
    
   try

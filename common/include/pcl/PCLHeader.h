@@ -24,8 +24,8 @@ namespace pcl
     /** \brief Coordinate frame ID */
     std::string frame_id;
 
-    using Ptr = boost::shared_ptr<PCLHeader>;
-    using ConstPtr = boost::shared_ptr<const PCLHeader>;
+    using Ptr = shared_ptr<PCLHeader>;
+    using ConstPtr = shared_ptr<const PCLHeader>;
   }; // struct PCLHeader
 
   using HeaderPtr = PCLHeader::Ptr;

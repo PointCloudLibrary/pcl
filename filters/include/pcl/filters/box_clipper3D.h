@@ -53,8 +53,8 @@ namespace pcl
   {
     public:
 
-      using Ptr = boost::shared_ptr<BoxClipper3D<PointT> >;
-      using ConstPtr = boost::shared_ptr<const BoxClipper3D<PointT> >;
+      using Ptr = shared_ptr<BoxClipper3D<PointT> >;
+      using ConstPtr = shared_ptr<const BoxClipper3D<PointT> >;
 
 
       /**

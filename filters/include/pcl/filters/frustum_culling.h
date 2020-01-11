@@ -82,8 +82,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr<FrustumCulling<PointT> >;
-      using ConstPtr = boost::shared_ptr<const FrustumCulling<PointT> >;
+      using Ptr = shared_ptr<FrustumCulling<PointT> >;
+      using ConstPtr = shared_ptr<const FrustumCulling<PointT> >;
 
 
       using Filter<PointT>::getClassName;

@@ -54,13 +54,13 @@ the table below for a reference on each of the terms used.
 +=============+================================================+
 | Foo         | a class named `Foo`                            |
 +-------------+------------------------------------------------+
-| FooPtr      | a boost shared pointer to a class `Foo`,       |
+| FooPtr      | a shared pointer to a class `Foo`,       |
 |             |                                                | 
-|             | e.g., `boost::shared_ptr<Foo>`                 |
+|             | e.g., `shared_ptr<Foo>`                 |
 +-------------+------------------------------------------------+
-| FooConstPtr | a const boost shared pointer to a class `Foo`, |
+| FooConstPtr | a const shared pointer to a class `Foo`, |
 |             |                                                |
-|             | e.g., `const boost::shared_ptr<const Foo>`     |
+|             | e.g., `const shared_ptr<const Foo>`     |
 +-------------+------------------------------------------------+
 
 How to pass the input
@@ -168,7 +168,7 @@ The following code snippet will estimate a set of surface normals for a subset o
      ne.setInputCloud (cloud);
 
      // Pass the indices
-     boost::shared_ptr<std::vector<int> > indicesptr (new std::vector<int> (indices));
+     pcl::shared_ptr<std::vector<int> > indicesptr (new std::vector<int> (indices));
      ne.setIndices (indicesptr);
 
      // Create an empty kdtree representation, and pass it to the normal estimation object. 

@@ -71,15 +71,15 @@ namespace pcl
 
     public:
       /** @cond */
-      using Ptr = boost::shared_ptr<EnsensoGrabber>;
-      using ConstPtr = boost::shared_ptr<const EnsensoGrabber>;
+      using Ptr = shared_ptr<EnsensoGrabber>;
+      using ConstPtr = shared_ptr<const EnsensoGrabber>;
 
       // Define callback signature typedefs
       using sig_cb_ensenso_point_cloud = void(const pcl::PointCloud<pcl::PointXYZ>::Ptr&);
 
-      using sig_cb_ensenso_images = void(const boost::shared_ptr<PairOfImages>&);
+      using sig_cb_ensenso_images = void(const shared_ptr<PairOfImages>&);
 
-      using sig_cb_ensenso_point_cloud_images = void(const pcl::PointCloud<pcl::PointXYZ>::Ptr&,const boost::shared_ptr<PairOfImages>&);
+      using sig_cb_ensenso_point_cloud_images = void(const pcl::PointCloud<pcl::PointXYZ>::Ptr&,const shared_ptr<PairOfImages>&);
 
      /** @endcond */
 
@@ -425,7 +425,7 @@ namespace pcl
       /** @brief Reference to the NxLib tree root
        * @warning You must handle NxLib exceptions manually when playing with @ref root_ !
        * See ensensoExceptionHandling in ensenso_grabber.cpp */
-      boost::shared_ptr<const NxLibItem> root_;
+      shared_ptr<const NxLibItem> root_;
 
       /** @brief Reference to the camera tree
        *  @warning You must handle NxLib exceptions manually when playing with @ref camera_ ! */

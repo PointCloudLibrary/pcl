@@ -70,8 +70,8 @@ namespace pcl
         using FloatImage = pcl::PointCloud<float>;
         using FloatImagePtr = FloatImage::Ptr;
         using FloatImageConstPtr = FloatImage::ConstPtr;
-        using Ptr = boost::shared_ptr<PyramidalKLTTracker<PointInT, IntensityT> >;
-        using ConstPtr = boost::shared_ptr<const PyramidalKLTTracker<PointInT, IntensityT> >;
+        using Ptr = shared_ptr<PyramidalKLTTracker<PointInT, IntensityT> >;
+        using ConstPtr = shared_ptr<const PyramidalKLTTracker<PointInT, IntensityT> >;
 
         using TrackerBase::tracker_name_;
         using TrackerBase::input_;

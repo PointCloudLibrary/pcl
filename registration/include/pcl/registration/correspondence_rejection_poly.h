@@ -68,8 +68,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        using Ptr = boost::shared_ptr<CorrespondenceRejectorPoly<SourceT, TargetT> >;
-        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorPoly<SourceT, TargetT> >;
+        using Ptr = shared_ptr<CorrespondenceRejectorPoly<SourceT, TargetT> >;
+        using ConstPtr = shared_ptr<const CorrespondenceRejectorPoly<SourceT, TargetT> >;
         
         using PointCloudSource = pcl::PointCloud<SourceT>;
         using PointCloudSourcePtr = typename PointCloudSource::Ptr;

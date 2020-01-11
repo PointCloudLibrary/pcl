@@ -35,8 +35,8 @@ namespace pcl
     std::uint8_t is_dense = 0;
 
   public:
-    using Ptr = boost::shared_ptr< ::pcl::PCLPointCloud2>;
-    using ConstPtr = boost::shared_ptr<const ::pcl::PCLPointCloud2>;
+    using Ptr = shared_ptr< ::pcl::PCLPointCloud2>;
+    using ConstPtr = shared_ptr<const ::pcl::PCLPointCloud2>;
 
     //////////////////////////////////////////////////////////////////////////
     /** \brief Inplace concatenate two pcl::PCLPointCloud2

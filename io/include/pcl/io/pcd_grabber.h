@@ -44,14 +44,13 @@
 #include <pcl/io/file_grabber.h>
 #include <pcl/common/time_trigger.h>
 #include <pcl/conversions.h>
+#include <pcl/make_shared.h>
 
 #ifdef HAVE_OPENNI
 #include <pcl/io/openni_camera/openni_image.h>
 #include <pcl/io/openni_camera/openni_image_rgb24.h>
 #include <pcl/io/openni_camera/openni_depth_image.h>
 #endif
-
-#include <boost/shared_ptr.hpp>
 
 #include <string>
 #include <vector>
@@ -158,8 +157,8 @@ namespace pcl
   template <typename PointT> class PCDGrabber : public PCDGrabberBase, public FileGrabber<PointT>
   {
     public:
-      using Ptr = boost::shared_ptr<PCDGrabber>;
-      using ConstPtr = boost::shared_ptr<const PCDGrabber>;
+      using Ptr = shared_ptr<PCDGrabber>;
+      using ConstPtr = shared_ptr<const PCDGrabber>;
 
       PCDGrabber (const std::string& pcd_path, float frames_per_second = 0, bool repeat = false);
       PCDGrabber (const std::vector<std::string>& pcd_files, float frames_per_second = 0, bool repeat = false);
@@ -260,7 +259,7 @@ namespace pcl
     if (!cloud->isOrganized ())
       return;
 
-    boost::shared_ptr<xn::DepthMetaData> depth_meta_data (new xn::DepthMetaData);
+    shared_ptr<xn::DepthMetaData> depth_meta_data (new xn::DepthMetaData);
     depth_meta_data->AllocateData (cloud->width, cloud->height);
     XnDepthPixel* depth_map = depth_meta_data->WritableData ();
     std::uint32_t k = 0;
@@ -284,7 +283,7 @@ namespace pcl
     {
       rgba_index = fields[rgba_index].offset;
 
-      boost::shared_ptr<xn::ImageMetaData> image_meta_data (new xn::ImageMetaData);
+      shared_ptr<xn::ImageMetaData> image_meta_data (new xn::ImageMetaData);
       image_meta_data->AllocateData (cloud->width, cloud->height, XN_PIXEL_FORMAT_RGB24);
       XnRGB24Pixel* image_map = image_meta_data->WritableRGB24Data ();
       k = 0;

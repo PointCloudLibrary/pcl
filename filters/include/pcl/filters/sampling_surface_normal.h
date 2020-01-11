@@ -66,8 +66,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr<SamplingSurfaceNormal<PointT> >;
-      using ConstPtr = boost::shared_ptr<const SamplingSurfaceNormal<PointT> >;
+      using Ptr = shared_ptr<SamplingSurfaceNormal<PointT> >;
+      using ConstPtr = shared_ptr<const SamplingSurfaceNormal<PointT> >;
 
       /** \brief Empty constructor. */
       SamplingSurfaceNormal () : 

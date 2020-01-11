@@ -36,6 +36,7 @@
  *
  */
 #include <pcl/pcl_config.h>
+#include <pcl/make_shared.h>
 #ifdef HAVE_OPENNI
 
 #ifdef __GNUC__
@@ -835,7 +836,7 @@ openni_wrapper::OpenNIDevice::ImageDataThreadFunction ()
     image_generator_.WaitAndUpdateData ();
     xn::ImageMetaData image_md;
     image_generator_.GetMetaData (image_md);
-    boost::shared_ptr<xn::ImageMetaData> image_data (new xn::ImageMetaData);
+    pcl::shared_ptr<xn::ImageMetaData> image_data (new xn::ImageMetaData);
     image_data->CopyFrom (image_md);
     image_lock.unlock ();
     
@@ -864,7 +865,7 @@ openni_wrapper::OpenNIDevice::DepthDataThreadFunction ()
     depth_generator_.WaitAndUpdateData ();
     xn::DepthMetaData depth_md;
     depth_generator_.GetMetaData (depth_md);    
-    boost::shared_ptr<xn::DepthMetaData> depth_data (new xn::DepthMetaData);
+    pcl::shared_ptr<xn::DepthMetaData> depth_data (new xn::DepthMetaData);
     depth_data->CopyFrom (depth_md);
     depth_lock.unlock ();
 
@@ -894,7 +895,7 @@ openni_wrapper::OpenNIDevice::IRDataThreadFunction ()
     ir_generator_.WaitAndUpdateData ();
     xn::IRMetaData ir_md;
     ir_generator_.GetMetaData (ir_md);
-    boost::shared_ptr<xn::IRMetaData> ir_data (new xn::IRMetaData);
+    pcl::shared_ptr<xn::IRMetaData> ir_data (new xn::IRMetaData);
     ir_data->CopyFrom (ir_md);
     ir_lock.unlock ();
 

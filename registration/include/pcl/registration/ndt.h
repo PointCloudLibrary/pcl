@@ -87,8 +87,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr< NormalDistributionsTransform<PointSource, PointTarget> >;
-      using ConstPtr = boost::shared_ptr< const NormalDistributionsTransform<PointSource, PointTarget> >;
+      using Ptr = shared_ptr< NormalDistributionsTransform<PointSource, PointTarget> >;
+      using ConstPtr = shared_ptr< const NormalDistributionsTransform<PointSource, PointTarget> >;
 
 
       /** \brief Constructor.

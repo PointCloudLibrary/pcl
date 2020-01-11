@@ -67,8 +67,8 @@ namespace pcl
       using PointIndicesConstPtr = PointIndices::ConstPtr;
 
       public:
-        using Ptr = boost::shared_ptr<TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar> >;
-        using ConstPtr = boost::shared_ptr<const TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar> >;
+        using Ptr = shared_ptr<TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar> >;
+        using ConstPtr = shared_ptr<const TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar> >;
 
         using VectorX = Eigen::Matrix<MatScalar, Eigen::Dynamic, 1>;
         using Vector4 = Eigen::Matrix<MatScalar, 4, 1>;

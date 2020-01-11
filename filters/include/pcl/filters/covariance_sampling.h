@@ -72,8 +72,8 @@ namespace pcl
       using NormalsConstPtr = typename pcl::PointCloud<PointNT>::ConstPtr;
 
     public:
-      using Ptr = boost::shared_ptr< CovarianceSampling<PointT, PointNT> >;
-      using ConstPtr = boost::shared_ptr< const CovarianceSampling<PointT, PointNT> >;
+      using Ptr = shared_ptr< CovarianceSampling<PointT, PointNT> >;
+      using ConstPtr = shared_ptr< const CovarianceSampling<PointT, PointNT> >;
  
       /** \brief Empty constructor. */
       CovarianceSampling ()

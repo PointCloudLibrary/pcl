@@ -55,8 +55,8 @@ namespace pcl
     class PCL_EXPORTS DepthImage
     {
       public:
-        using Ptr = boost::shared_ptr<DepthImage>;
-        using ConstPtr = boost::shared_ptr<const DepthImage>;
+        using Ptr = shared_ptr<DepthImage>;
+        using ConstPtr = shared_ptr<const DepthImage>;
 
         using Clock = std::chrono::high_resolution_clock;
         using Timestamp = std::chrono::high_resolution_clock::time_point;

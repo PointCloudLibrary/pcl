@@ -145,7 +145,7 @@ class MultiRansac
       d2c.compute<Storage> (depth_image, image, constant, data, true, 2, smoothing_nr_iterations, smoothing_filter_size);
 
       // Compute normals
-      boost::shared_ptr<typename Storage<float4>::type> normals;
+      shared_ptr<typename Storage<float4>::type> normals;
       {
         ScopeTimeCPU time ("Normal Estimation");
         //normals = computeFastPointNormals<Storage> (data);

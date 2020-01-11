@@ -86,8 +86,8 @@ namespace pcl
     class PCL_EXPORTS PCLVisualizer
     {
       public:
-        using Ptr = boost::shared_ptr<PCLVisualizer>;
-        using ConstPtr = boost::shared_ptr<const PCLVisualizer>;
+        using Ptr = shared_ptr<PCLVisualizer>;
+        using ConstPtr = shared_ptr<const PCLVisualizer>;
 
         using GeometryHandler = PointCloudGeometryHandler<pcl::PCLPointCloud2>;
         using GeometryHandlerPtr = GeometryHandler::Ptr;

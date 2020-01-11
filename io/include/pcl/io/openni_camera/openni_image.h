@@ -37,6 +37,7 @@
 #pragma once
  
 #include <pcl/pcl_config.h>
+#include <pcl/make_shared.h>
 #ifdef HAVE_OPENNI
 
 #include <pcl/pcl_exports.h>
@@ -58,8 +59,8 @@ namespace openni_wrapper
   class PCL_EXPORTS Image
   {
   public:
-    using Ptr = boost::shared_ptr<Image>;
-    using ConstPtr = boost::shared_ptr<const Image>;
+    using Ptr = pcl::shared_ptr<Image>;
+    using ConstPtr = pcl::shared_ptr<const Image>;
 
     enum Encoding
     {
@@ -73,7 +74,7 @@ namespace openni_wrapper
      * @brief Constructor
      * @param[in] image_meta_data the actual image data from the OpenNI driver
      */
-    inline Image (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ();
+    inline Image (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) throw ();
 
     /**
      * @author Suat Gedikli
@@ -165,10 +166,10 @@ namespace openni_wrapper
     inline const xn::ImageMetaData& getMetaData () const throw ();
 
   protected:
-    boost::shared_ptr<xn::ImageMetaData> image_md_;
+    pcl::shared_ptr<xn::ImageMetaData> image_md_;
   } ;
 
-  Image::Image (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ()
+  Image::Image (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) throw ()
   : image_md_ (std::move(image_meta_data))
   {
   }
