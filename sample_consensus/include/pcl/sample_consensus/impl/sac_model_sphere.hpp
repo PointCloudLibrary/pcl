@@ -212,7 +212,7 @@ pcl::SampleConsensusModelSphere<PointT>::selectWithinDistance (
 }
 
 //////////////////////////////////////////////////////////////////////////
-template <typename PointT> int
+template <typename PointT> std::size_t
 pcl::SampleConsensusModelSphere<PointT>::countWithinDistance (
       const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
@@ -220,7 +220,7 @@ pcl::SampleConsensusModelSphere<PointT>::countWithinDistance (
   if (!isModelValid (model_coefficients))
     return (0);
 
-  int nr_p = 0;
+  std::size_t nr_p = 0;
 
   std::size_t i = 0;
 #if defined (__AVX__) && defined (__AVX2__)

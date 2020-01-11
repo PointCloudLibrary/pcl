@@ -66,7 +66,7 @@ int main (int argc, char *argv[])
 
   // Load cloud in blob format
   pcl::PCLPointCloud2 blob;
-  pcl::io::loadPCDFile (infile.c_str(), blob);
+  pcl::io::loadPCDFile (infile, blob);
 
   pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
         std::cout << "Loading point cloud...";
@@ -172,7 +172,7 @@ int main (int argc, char *argv[])
         pcl::PCDWriter writer;
 
         // Save DoN features
-        writer.write<PointOutT> (outfile.c_str (), *doncloud, false);
+        writer.write<PointOutT> (outfile, *doncloud, false);
 
   //Filter by magnitude
   std::cout << "Filtering out DoN mag <= "<< threshold <<  "..." << std::endl;

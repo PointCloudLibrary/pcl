@@ -151,8 +151,8 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCl
   {
     const Vector3 p (source_it->x, source_it->y, source_it->z);
     const Vector3 q (target_it->x, target_it->y, target_it->z);
-    const Vector3 n1 (source_it->getNormalVector3fMap());
-    const Vector3 n2 (target_it->getNormalVector3fMap());
+    const Vector3 n1 (source_it->getNormalVector3fMap().template cast<Scalar>());
+    const Vector3 n2 (target_it->getNormalVector3fMap().template cast<Scalar>());
     Vector3 n;
     if (enforce_same_direction_normals_)
     {

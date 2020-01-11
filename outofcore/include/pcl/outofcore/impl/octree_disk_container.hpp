@@ -634,7 +634,7 @@ namespace pcl
       {
         pcl::PCDReader reader;
         // Open it
-        int res = reader.read (disk_storage_filename_.c_str (), *tmp_cloud);
+        int res = reader.read (disk_storage_filename_, *tmp_cloud);
         (void)res; 
         assert (res == 0);
       }

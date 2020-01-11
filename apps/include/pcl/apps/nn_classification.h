@@ -137,7 +137,7 @@ namespace pcl
       loadTrainingFeatures(const std::string& file_name, const std::string& labels_file_name)
       {
         typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
-        if (pcl::io::loadPCDFile (file_name.c_str (), *cloud) != 0)
+        if (pcl::io::loadPCDFile (file_name, *cloud) != 0)
           return (false);
         std::vector<std::string> labels;
         std::ifstream f (labels_file_name.c_str ());

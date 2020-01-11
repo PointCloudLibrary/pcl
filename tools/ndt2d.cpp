@@ -118,7 +118,7 @@ main (int argc, char **argv)
   result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
   try
   {
-    pcl::io::savePCDFile (result_filename.c_str (), *model);
+    pcl::io::savePCDFile (result_filename, *model);
     std::cout << "saving first model to " << result_filename << std::endl;
   }
   catch(pcl::IOException& e)
@@ -167,7 +167,7 @@ main (int argc, char **argv)
     {
       std::string result_filename (argv[pcd_indices[i]]);
       result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
-      pcl::io::savePCDFileBinary (result_filename.c_str (), *tmp);
+      pcl::io::savePCDFileBinary (result_filename, *tmp);
       std::cout << "saving result to " << result_filename << std::endl;
     }
     catch(pcl::IOException& e)

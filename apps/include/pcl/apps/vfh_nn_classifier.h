@@ -150,7 +150,7 @@ namespace pcl
       {
         if (labels_.size () == training_features_->points.size ())
         {
-          if (pcl::io::savePCDFile (file_name.c_str (), *training_features_) != 0)
+          if (pcl::io::savePCDFile (file_name, *training_features_) != 0)
             return false;
           std::ofstream f (labels_file_name.c_str ());
           for (const auto& s : labels_)
@@ -194,7 +194,7 @@ namespace pcl
       bool loadTrainingFeatures(const std::string& file_name, const std::string& labels_file_name)
       {
         FeatureCloudPtr cloud (new FeatureCloud);
-        if (pcl::io::loadPCDFile (file_name.c_str (), *cloud) != 0)
+        if (pcl::io::loadPCDFile (file_name, *cloud) != 0)
           return false;
         std::vector<std::string> labels;
         std::ifstream f (labels_file_name.c_str ());
@@ -215,7 +215,7 @@ namespace pcl
       bool loadTrainingData (const std::string& file_name, std::string label)
       {
         pcl::PCLPointCloud2 cloud_blob;
-        if (pcl::io::loadPCDFile (file_name.c_str (), cloud_blob) != 0)
+        if (pcl::io::loadPCDFile (file_name, cloud_blob) != 0)
           return false;
         return addTrainingData (cloud_blob, label);
       }

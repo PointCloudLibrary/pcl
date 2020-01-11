@@ -186,8 +186,8 @@ TEST (SampleConsensusModelPlane, RRANSAC)
   // Create the RRANSAC object
   RandomizedRandomSampleConsensus<PointXYZ> sac (model, 0.03);
 
-  sac.setFractionNrPretest (10.0);
-  ASSERT_EQ (10.0, sac.getFractionNrPretest ());
+  sac.setFractionNrPretest (0.1);
+  ASSERT_EQ (0.1, sac.getFractionNrPretest ());
 
   verifyPlaneSac (model, sac, 600, 1.0f, 1.0f, 0.01f);
 }

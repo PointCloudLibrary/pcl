@@ -174,7 +174,7 @@ pcl::SampleConsensusModelRegistration2D<PointT>::selectWithinDistance (const Eig
 } 
 
 //////////////////////////////////////////////////////////////////////////
-template <typename PointT> int
+template <typename PointT> std::size_t
 pcl::SampleConsensusModelRegistration2D<PointT>::countWithinDistance (
     const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
@@ -197,7 +197,7 @@ pcl::SampleConsensusModelRegistration2D<PointT>::countWithinDistance (
   transform.row (2).matrix () = model_coefficients.segment<4>(8);
   transform.row (3).matrix () = model_coefficients.segment<4>(12);
 
-  int nr_p = 0; 
+  std::size_t nr_p = 0;
   
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {

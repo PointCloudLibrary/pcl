@@ -235,7 +235,7 @@ pcl::SampleConsensusModelPlane<PointT>::selectWithinDistance (
 }
 
 //////////////////////////////////////////////////////////////////////////
-template <typename PointT> int
+template <typename PointT> std::size_t
 pcl::SampleConsensusModelPlane<PointT>::countWithinDistance (
       const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
@@ -246,7 +246,7 @@ pcl::SampleConsensusModelPlane<PointT>::countWithinDistance (
     return (0);
   }
 
-  int nr_p = 0;
+  std::size_t nr_p = 0;
   std::size_t i = 0;
 #if defined (__AVX__) && defined (__AVX2__)
   const __m256 a_vec = _mm256_set1_ps (model_coefficients[0]);
