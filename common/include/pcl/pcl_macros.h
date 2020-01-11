@@ -66,6 +66,7 @@
 #include <iostream>
 
 #include <boost/cstdint.hpp>
+#include <boost/smart_ptr/shared_ptr.hpp>
 
 //Eigen has an enum that clashes with X11 Success define, which is ultimately included by pcl
 #ifdef Success
@@ -77,6 +78,17 @@
 
 namespace pcl
 {
+  /**
+   * \brief Alias for boost::shared_ptr
+   *
+   * For ease of switching from boost::shared_ptr to std::shared_ptr
+   *
+   * \see pcl::make_shared
+   * \tparam T Type of the object stored inside the shared_ptr
+   */
+  template <typename T>
+  using shared_ptr = boost::shared_ptr<T>;
+
   using uint8_t [[deprecated("use std::uint8_t instead of pcl::uint8_t")]] = std::uint8_t;
   using int8_t [[deprecated("use std::int8_t instead of pcl::int8_t")]] = std::int8_t;
   using uint16_t [[deprecated("use std::uint16_t instead of pcl::uint16_t")]] = std::uint16_t;
