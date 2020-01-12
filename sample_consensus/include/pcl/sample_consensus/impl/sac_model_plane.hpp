@@ -245,7 +245,88 @@ pcl::SampleConsensusModelPlane<PointT>::countWithinDistance (
     PCL_ERROR ("[pcl::SampleConsensusModelPlane::countWithinDistance] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
     return (0);
   }
+#if defined (__AVX__) && defined (__AVX2__)
+  return countWithinDistanceAVX (model_coefficients, threshold);
+#elif defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
+  return countWithinDistanceSSE (model_coefficients, threshold);
+#else
+  return countWithinDistanceStandard (model_coefficients, threshold);
+#endif
+}
 
+//////////////////////////////////////////////////////////////////////////
+template <typename PointT> std::size_t
+pcl::SampleConsensusModelPlane<PointT>::countWithinDistanceStandard (
+      const Eigen::VectorXf &model_coefficients, const double threshold) const
+{
+  std::size_t nr_p = 0;
+  std::size_t i = 0;
+  // Iterate through the 3d points and calculate the distances from them to the plane
+  for (; i < indices_->size (); ++i)
+  {
+    // Calculate the distance from the point to the plane normal as the dot product
+    // D = (P-A).N/|N|
+    Eigen::Vector4f pt (input_->points[(*indices_)[i]].x,
+                        input_->points[(*indices_)[i]].y,
+                        input_->points[(*indices_)[i]].z,
+                        1);
+    if (std::abs (model_coefficients.dot (pt)) < threshold)
+      nr_p++;
+  }
+  return (nr_p);
+}
+
+//////////////////////////////////////////////////////////////////////////
+template <typename PointT> std::size_t
+pcl::SampleConsensusModelPlane<PointT>::countWithinDistanceSSE (
+      const Eigen::VectorXf &model_coefficients, const double threshold) const
+{
+  std::size_t nr_p = 0;
+  std::size_t i = 0;
+#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
+  const __m128 a_vec = _mm_set1_ps (model_coefficients[0]);
+  const __m128 b_vec = _mm_set1_ps (model_coefficients[1]);
+  const __m128 c_vec = _mm_set1_ps (model_coefficients[2]);
+  const __m128 d_vec = _mm_set1_ps (model_coefficients[3]);
+  const __m128 threshold_vec = _mm_set1_ps (threshold);
+  const __m128 abs_help = _mm_set1_ps (-0.0F); // -0.0F (negative zero) means that all bits are 0, only the sign bit is 1
+  __m128i res = _mm_set1_epi32(0); // This corresponds to nr_p: 8 32bit integers that, summed together, hold the number of inliers
+  for (; (i + 4) <= indices_->size (); i += 4)
+  {
+    const __m128 mask = _mm_cmplt_ps (dist4 (i, a_vec, b_vec, c_vec, d_vec, abs_help), threshold_vec); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
+    res = _mm_add_epi32 (res, _mm_and_si128 (_mm_set1_epi32 (1), _mm_castps_si128 (mask))); // The latter part creates a vector with ones (as 32bit integers) where the points are inliers
+    //const int res = _mm_movemask_ps (mask);
+    //if (res & 1) nr_p++;
+    //if (res & 2) nr_p++;
+    //if (res & 4) nr_p++;
+    //if (res & 8) nr_p++;
+  }
+  nr_p += _mm_extract_epi32 (res, 0);
+  nr_p += _mm_extract_epi32 (res, 1);
+  nr_p += _mm_extract_epi32 (res, 2);
+  nr_p += _mm_extract_epi32 (res, 3);
+#endif
+
+  // Process the remaining points (at most 3)
+  for (; i < indices_->size (); ++i)
+  {
+    // Calculate the distance from the point to the plane normal as the dot product
+    // D = (P-A).N/|N|
+    Eigen::Vector4f pt (input_->points[(*indices_)[i]].x,
+                        input_->points[(*indices_)[i]].y,
+                        input_->points[(*indices_)[i]].z,
+                        1);
+    if (std::abs (model_coefficients.dot (pt)) < threshold)
+      nr_p++;
+  }
+  return (nr_p);
+}
+
+//////////////////////////////////////////////////////////////////////////
+template <typename PointT> std::size_t
+pcl::SampleConsensusModelPlane<PointT>::countWithinDistanceAVX (
+      const Eigen::VectorXf &model_coefficients, const double threshold) const
+{
   std::size_t nr_p = 0;
   std::size_t i = 0;
 #if defined (__AVX__) && defined (__AVX2__)
@@ -278,31 +359,9 @@ pcl::SampleConsensusModelPlane<PointT>::countWithinDistance (
   nr_p += _mm256_extract_epi32 (res, 5);
   nr_p += _mm256_extract_epi32 (res, 6);
   nr_p += _mm256_extract_epi32 (res, 7);
-#elif defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
-  const __m128 a_vec = _mm_set1_ps (model_coefficients[0]);
-  const __m128 b_vec = _mm_set1_ps (model_coefficients[1]);
-  const __m128 c_vec = _mm_set1_ps (model_coefficients[2]);
-  const __m128 d_vec = _mm_set1_ps (model_coefficients[3]);
-  const __m128 threshold_vec = _mm_set1_ps (threshold);
-  const __m128 abs_help = _mm_set1_ps (-0.0F); // -0.0F (negative zero) means that all bits are 0, only the sign bit is 1
-  __m128i res = _mm_set1_epi32(0); // This corresponds to nr_p: 8 32bit integers that, summed together, hold the number of inliers
-  for (; (i + 4) <= indices_->size (); i += 4)
-  {
-    const __m128 mask = _mm_cmplt_ps (dist4 (i, a_vec, b_vec, c_vec, d_vec, abs_help), threshold_vec); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
-    res = _mm_add_epi32 (res, _mm_and_si128 (_mm_set1_epi32 (1), _mm_castps_si128 (mask))); // The latter part creates a vector with ones (as 32bit integers) where the points are inliers
-    //const int res = _mm_movemask_ps (mask);
-    //if (res & 1) nr_p++;
-    //if (res & 2) nr_p++;
-    //if (res & 4) nr_p++;
-    //if (res & 8) nr_p++;
-  }
-  nr_p += _mm_extract_epi32 (res, 0);
-  nr_p += _mm_extract_epi32 (res, 1);
-  nr_p += _mm_extract_epi32 (res, 2);
-  nr_p += _mm_extract_epi32 (res, 3);
 #endif
 
-  // Iterate through the 3d points and calculate the distances from them to the plane
+  // Process the remaining points (at most 7)
   for (; i < indices_->size (); ++i)
   {
     // Calculate the distance from the point to the plane normal as the dot product

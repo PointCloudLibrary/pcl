@@ -257,6 +257,27 @@ namespace pcl
       using SampleConsensusModel<PointT>::sample_size_;
       using SampleConsensusModel<PointT>::model_size_;
 
+      /** This implementation uses no SIMD instructions. It is not intended for normal use.
+        * See countWithinDistance which automatically uses the fastest implementation.
+        */
+      std::size_t
+      countWithinDistanceStandard (const Eigen::VectorXf &model_coefficients,
+                                   const double threshold) const;
+
+      /** This implementation uses SSE, SSE2, and SSE4.1 instructions. It is not intended for normal use.
+        * See countWithinDistance which automatically uses the fastest implementation.
+        */
+      std::size_t
+      countWithinDistanceSSE (const Eigen::VectorXf &model_coefficients,
+                              const double threshold) const;
+
+      /** This implementation uses AVX and AVX2 instructions. It is not intended for normal use.
+        * See countWithinDistance which automatically uses the fastest implementation.
+        */
+      std::size_t
+      countWithinDistanceAVX (const Eigen::VectorXf &model_coefficients,
+                              const double threshold) const;
+
     private:
       /** \brief Check if a sample of indices results in a good sample of points
         * indices.

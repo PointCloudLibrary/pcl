@@ -304,6 +304,75 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+class SampleConsensusModelPlaneTest : private SampleConsensusModelPlane<PointT>
+{
+  public:
+    SampleConsensusModelPlaneTest (const typename SampleConsensusModelPlane<PointT>::PointCloudConstPtr &cloud,
+                                   const std::vector<int> &indices,
+                                   bool random = false)
+                                   : SampleConsensusModelPlane<PointT> (cloud, indices, random) {}
+    std::size_t
+    countWithinDistanceStandardTest (const Eigen::VectorXf &model_coefficients,
+                                     const double threshold) const
+    {
+      return SampleConsensusModelPlane<PointT>::countWithinDistanceStandard (model_coefficients, threshold);
+    }
+
+    std::size_t
+    countWithinDistanceSSETest (const Eigen::VectorXf &model_coefficients,
+                                const double threshold) const
+    {
+      return SampleConsensusModelPlane<PointT>::countWithinDistanceSSE (model_coefficients, threshold);
+    }
+
+    std::size_t
+    countWithinDistanceAVXTest (const Eigen::VectorXf &model_coefficients,
+                                const double threshold) const
+    {
+      return SampleConsensusModelPlane<PointT>::countWithinDistanceAVX (model_coefficients, threshold);
+    }
+};
+
+TEST (SampleConsensusModelPlane, SIMD_countWithinDistance) // Test if all countWithinDistance implementations return the same value
+{
+  const auto seed = static_cast<unsigned> (std::time (nullptr));
+  srand (seed);
+  for (size_t i=0; i<100; i++) // Run as often as you like
+  {
+    // Generate a cloud with 1000 random points
+    PointCloud<PointXYZ> cloud;
+    std::vector<int> indices;
+    cloud.points.resize (1000);
+    for (std::size_t idx = 0; idx < cloud.size (); ++idx)
+    {
+      cloud.points[idx].x = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud.points[idx].y = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud.points[idx].z = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      if (rand () % 2 == 0)
+      {
+        indices.push_back (static_cast<int> (idx));
+      }
+    }
+    SampleConsensusModelPlaneTest<PointXYZ> model (cloud.makeShared (), indices, true);
+
+    // Generate random model parameters
+    Eigen::VectorXf model_coefficients(4);
+    model_coefficients << 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0, 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0, 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0, 0.0;
+    model_coefficients.normalize ();
+    model_coefficients(3) = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0; // Last parameter
+
+    const double threshold = 0.1 * static_cast<double> (rand ()) / RAND_MAX; // threshold in [0; 0.1]
+
+    const auto res_standard = model.countWithinDistanceStandardTest (model_coefficients, threshold); // Standard
+    const auto res_sse      = model.countWithinDistanceSSETest (model_coefficients, threshold); // SSE
+    const auto res_avx      = model.countWithinDistanceAVXTest (model_coefficients, threshold); // AVX
+    PCL_DEBUG ("seed=%lu, i=%lu, model=(%f, %f, %f, %f), threshold=%f, res=%lu, %lu, %lu\n", seed, i, model_coefficients(0), model_coefficients(1), model_coefficients(2), model_coefficients(3), threshold, res_standard, res_sse, res_avx);
+    ASSERT_EQ (res_standard, res_sse); // The number of inliers is usually somewhere between 0 and 100
+    ASSERT_EQ (res_standard, res_avx);
+  }
+}
 
 int
 main (int argc, char** argv)
