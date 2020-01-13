@@ -150,13 +150,13 @@ namespace pcl
       getBorderScoresLeft ()   { extractBorderScoreImages (); return border_scores_left_.data (); }
 
       float*
-      getBorderScoresRight ()  { extractBorderScoreImages (); return border_scores_right_; }
+      getBorderScoresRight ()  { extractBorderScoreImages (); return border_scores_right_.data (); }
 
       float*
-      getBorderScoresTop ()    { extractBorderScoreImages (); return border_scores_top_; }
+      getBorderScoresTop ()    { extractBorderScoreImages (); return border_scores_top_.data (); }
 
       float*
-      getBorderScoresBottom () { extractBorderScoreImages (); return border_scores_bottom_; }
+      getBorderScoresBottom () { extractBorderScoreImages (); return border_scores_bottom_.data (); }
 
       LocalSurface**
       getSurfaceStructure () { extractLocalSurfaceStructure (); return surface_structure_; }
@@ -182,8 +182,8 @@ namespace pcl
       Parameters parameters_;
       const RangeImage* range_image_;
       int range_image_size_during_extraction_;
-      float * border_scores_right_, * border_scores_top_, * border_scores_bottom_;
-      std::vector<float> border_scores_left_;
+      std::vector<float> border_scores_left_, border_scores_right_;
+      std::vector<float> border_scores_top_, border_scores_bottom_;
       LocalSurface** surface_structure_;
       PointCloudOut* border_descriptions_;
       ShadowBorderIndices** shadow_border_informations_;
