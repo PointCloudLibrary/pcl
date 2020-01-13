@@ -257,10 +257,9 @@ pcl::SampleConsensusModelPlane<PointT>::countWithinDistance (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> std::size_t
 pcl::SampleConsensusModelPlane<PointT>::countWithinDistanceStandard (
-      const Eigen::VectorXf &model_coefficients, const double threshold) const
+      const Eigen::VectorXf &model_coefficients, const double threshold, std::size_t i) const
 {
   std::size_t nr_p = 0;
-  std::size_t i = 0;
   // Iterate through the 3d points and calculate the distances from them to the plane
   for (; i < indices_->size (); ++i)
   {
@@ -279,10 +278,9 @@ pcl::SampleConsensusModelPlane<PointT>::countWithinDistanceStandard (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> std::size_t
 pcl::SampleConsensusModelPlane<PointT>::countWithinDistanceSSE (
-      const Eigen::VectorXf &model_coefficients, const double threshold) const
+      const Eigen::VectorXf &model_coefficients, const double threshold, std::size_t i) const
 {
   std::size_t nr_p = 0;
-  std::size_t i = 0;
 #if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
   const __m128 a_vec = _mm_set1_ps (model_coefficients[0]);
   const __m128 b_vec = _mm_set1_ps (model_coefficients[1]);
@@ -308,27 +306,16 @@ pcl::SampleConsensusModelPlane<PointT>::countWithinDistanceSSE (
 #endif
 
   // Process the remaining points (at most 3)
-  for (; i < indices_->size (); ++i)
-  {
-    // Calculate the distance from the point to the plane normal as the dot product
-    // D = (P-A).N/|N|
-    Eigen::Vector4f pt (input_->points[(*indices_)[i]].x,
-                        input_->points[(*indices_)[i]].y,
-                        input_->points[(*indices_)[i]].z,
-                        1);
-    if (std::abs (model_coefficients.dot (pt)) < threshold)
-      nr_p++;
-  }
+  nr_p += countWithinDistanceStandard(model_coefficients, threshold, i);
   return (nr_p);
 }
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> std::size_t
 pcl::SampleConsensusModelPlane<PointT>::countWithinDistanceAVX (
-      const Eigen::VectorXf &model_coefficients, const double threshold) const
+      const Eigen::VectorXf &model_coefficients, const double threshold, std::size_t i) const
 {
   std::size_t nr_p = 0;
-  std::size_t i = 0;
 #if defined (__AVX__) && defined (__AVX2__)
   const __m256 a_vec = _mm256_set1_ps (model_coefficients[0]);
   const __m256 b_vec = _mm256_set1_ps (model_coefficients[1]);
@@ -362,17 +349,7 @@ pcl::SampleConsensusModelPlane<PointT>::countWithinDistanceAVX (
 #endif
 
   // Process the remaining points (at most 7)
-  for (; i < indices_->size (); ++i)
-  {
-    // Calculate the distance from the point to the plane normal as the dot product
-    // D = (P-A).N/|N|
-    Eigen::Vector4f pt (input_->points[(*indices_)[i]].x,
-                        input_->points[(*indices_)[i]].y,
-                        input_->points[(*indices_)[i]].z,
-                        1);
-    if (std::abs (model_coefficients.dot (pt)) < threshold)
-      nr_p++;
-  }
+  nr_p += countWithinDistanceStandard(model_coefficients, threshold, i);
   return (nr_p);
 }
 

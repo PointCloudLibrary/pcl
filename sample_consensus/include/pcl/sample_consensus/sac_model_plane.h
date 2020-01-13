@@ -262,21 +262,24 @@ namespace pcl
         */
       std::size_t
       countWithinDistanceStandard (const Eigen::VectorXf &model_coefficients,
-                                   const double threshold) const;
+                                   const double threshold,
+                                   std::size_t i = 0) const;
 
       /** This implementation uses SSE, SSE2, and SSE4.1 instructions. It is not intended for normal use.
         * See countWithinDistance which automatically uses the fastest implementation.
         */
       std::size_t
       countWithinDistanceSSE (const Eigen::VectorXf &model_coefficients,
-                              const double threshold) const;
+                              const double threshold,
+                              std::size_t i = 0) const;
 
       /** This implementation uses AVX and AVX2 instructions. It is not intended for normal use.
         * See countWithinDistance which automatically uses the fastest implementation.
         */
       std::size_t
       countWithinDistanceAVX (const Eigen::VectorXf &model_coefficients,
-                              const double threshold) const;
+                              const double threshold,
+                              std::size_t i = 0) const;
 
     private:
       /** \brief Check if a sample of indices results in a good sample of points
