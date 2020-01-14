@@ -714,6 +714,8 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
     std::sort (zDist.begin (), zDist.end ());
     std::sort (ptDist.begin (), ptDist.end ());
   }
+    
+  delete octree;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
