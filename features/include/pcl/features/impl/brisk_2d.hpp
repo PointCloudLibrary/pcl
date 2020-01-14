@@ -150,7 +150,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKern
             pattern_iterator->sigma = static_cast<float> (sigma_scale * scale_list_[scale] * (double (radius_list[ring])) * sin (M_PI / double (number_list[ring])));
 
           // adapt the sizeList if necessary
-          const unsigned int size = static_cast<const unsigned int> (std::ceil (((scale_list_[scale] * radius_list[ring]) + pattern_iterator->sigma)) + 1);
+          const unsigned int size = static_cast<unsigned int> (std::ceil (((scale_list_[scale] * radius_list[ring]) + pattern_iterator->sigma)) + 1);
 
           if (size_list_[scale] < size)
             size_list_[scale] = size;
@@ -169,14 +169,11 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKern
   no_long_pairs_  = 0;
 
   // fill index_change with 0..n if empty
-  unsigned int ind_size = static_cast<unsigned int> (index_change.size ());
-  if (ind_size == 0) 
+  if (index_change.empty ())
   {
     index_change.resize (points_ * (points_ - 1) / 2);
-    ind_size = static_cast<unsigned int> (index_change.size ());
   }
-  for (unsigned int i = 0; i < ind_size; i++)
-    index_change[i] = i;
+  std::iota(index_change.begin (), index_change.end (), 0);
 
   const float d_min_sq = d_min_ * d_min_;
   const float d_max_sq  = d_max_ * d_max_;
@@ -201,7 +198,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKern
       else if (norm_sq < d_max_sq)
       {
         // save to short pairs
-        assert (no_short_pairs_ < ind_size); // make sure the user passes something sensible
+        assert (no_short_pairs_ < index_change.size ()); // make sure the user passes something sensible
         BriskShortPair& shortPair = short_pairs_[index_change[no_short_pairs_]];
         shortPair.j = j;
         shortPair.i = i;

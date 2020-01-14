@@ -74,7 +74,7 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
 #pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
 #endif
     // Iterating over the entire index vector
-    for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
+    for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
     {
       Eigen::Vector4f n;
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0 ||
@@ -101,7 +101,7 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
 #pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
 #endif
     // Iterating over the entire index vector
-    for (int idx = 0; idx < static_cast<int> (indices_->size ()); ++idx)
+    for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
     {
       Eigen::Vector4f n;
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||

@@ -41,6 +41,7 @@
 #pragma once
 
 // PCL includes
+#include <pcl/make_shared.h>
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_registration.h>
 #include <pcl/registration/registration.h>
@@ -342,9 +343,9 @@ namespace pcl
         use_symmetric_objective_ = use_symmetric_objective;
         if (use_symmetric_objective_)
         {
-            auto symmetric_transformation_estimation = std::make_shared<pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> > ();
+            auto symmetric_transformation_estimation = pcl::make_shared<pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> > ();
             symmetric_transformation_estimation->setEnforceSameDirectionNormals (enforce_same_direction_normals_);
-            transformation_estimation_.reset (symmetric_transformation_estimation);
+            transformation_estimation_ = symmetric_transformation_estimation;
         }
         else
         {

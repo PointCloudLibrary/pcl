@@ -322,7 +322,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::initCompute ()
 template <typename PointInT, typename PointNT, typename PointOutT> void 
 pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 { 
-  for (int i_input = 0; i_input < static_cast<int> (indices_->size ()); ++i_input)
+  for (std::size_t i_input = 0; i_input < indices_->size (); ++i_input)
   {
     Eigen::ArrayXXd res = computeSiForPoint (indices_->at (i_input));
 

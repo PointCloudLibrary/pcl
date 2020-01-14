@@ -76,7 +76,7 @@ pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud
 
   // Compute distance by normal angle distribution for points
   std::vector<int>::const_iterator i, begin (indices.begin()), end (indices.end());
-  for(i = begin+1; i != end; ++i)
+  for (i = begin+1; i != end; ++i)
   {
     // compute angle between the two lines going through normals (disregard orientation!)
     double cosine = normals.points[*i].normal[0] * normals.points[*begin].normal[0] +
@@ -177,7 +177,7 @@ pcl::computeRSD (const pcl::PointCloud<PointNT> &normals,
   
   // Compute distance by normal angle distribution for points
   std::vector<int>::const_iterator i, begin (indices.begin()), end (indices.end());
-  for(i = begin+1; i != end; ++i)
+  for (i = begin+1; i != end; ++i)
   {
     // compute angle between the two lines going through normals (disregard orientation!)
     double cosine = normals.points[*i].normal[0] * normals.points[*begin].normal[0] +

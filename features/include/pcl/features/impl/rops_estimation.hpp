@@ -147,7 +147,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
   unsigned int number_of_points = static_cast <unsigned int> (indices_->size ());
   output.points.resize (number_of_points, PointOutT ());
 
-  for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
+  for (std::size_t i_point = 0; i_point < number_of_points; i_point++)
   {
     std::set <unsigned int> local_triangles;
     std::vector <int> local_points;
@@ -181,6 +181,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
           distribution_matrix.resize (number_of_bins_, number_of_bins_);
           getDistributionMatrix (i_proj, min, max, rotated_cloud, distribution_matrix);
 
+          // TODO remove this needless copy due to API design
           std::vector <float> moments;
           computeCentralMoments (distribution_matrix, moments);
 
@@ -192,14 +193,14 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
     }
 
     float norm = 0.0f;
-    for (unsigned int i_dim = 0; i_dim < feature_size; i_dim++)
+    for (std::size_t i_dim = 0; i_dim < feature_size; i_dim++)
       norm += std::abs (feature[i_dim]);
     if (norm < std::numeric_limits <float>::epsilon ())
       norm = 1.0f;
     else
       norm = 1.0f / norm;
 
-    for (unsigned int i_dim = 0; i_dim < feature_size; i_dim++)
+    for (std::size_t i_dim = 0; i_dim < feature_size; i_dim++)
       output.points[i_point].histogram[i_dim] = feature[i_dim] * norm;
   }
 }
@@ -288,7 +289,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeLRF (const PointInT& point, co
   overall_scatter_matrix.setZero ();
   std::vector<float> total_weight (number_of_triangles);
   const float denominator = 1.0f / 6.0f;
-  for (unsigned int i_triangle = 0; i_triangle < number_of_triangles; i_triangle++)
+  for (std::size_t i_triangle = 0; i_triangle < number_of_triangles; i_triangle++)
   {
     float factor = distance_weight[i_triangle] * triangle_area[i_triangle] * total_area;
     overall_scatter_matrix += factor * scatter_matrices[i_triangle];
@@ -385,7 +386,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::transformCloud (const PointInT& point
   const unsigned int number_of_points = static_cast <unsigned int> (local_points.size ());
   transformed_cloud.points.resize (number_of_points, PointInT ());
 
-  for (unsigned int i = 0; i < number_of_points; i++)
+  for (std::size_t i = 0; i < number_of_points; i++)
   {
     Eigen::Vector3f transformed_point (
       surface_->points[local_points[i]].x - point.x,
@@ -431,7 +432,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::rotateCloud (const PointInT& axis, co
   max (1) = -std::numeric_limits <float>::max ();
   max (2) = -std::numeric_limits <float>::max ();
 
-  for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
+  for (std::size_t i_point = 0; i_point < number_of_points; i_point++)
   {
     Eigen::Vector3f point (
       cloud.points[i_point].x,

@@ -191,6 +191,17 @@ TEST (PCL, IterativeClosestPoint)
 //  EXPECT_EQ (transformation (3, 3), 1);
 }
 
+TEST (PCL, IterativeClosestPointWithNormals)
+{
+  IterativeClosestPointWithNormals<PointNormal, PointNormal, float> reg_float;
+  reg_float.setUseSymmetricObjective(true);
+  EXPECT_TRUE(reg_float.getUseSymmetricObjective());
+
+  IterativeClosestPointWithNormals<PointNormal, PointNormal, double> reg_double;
+  reg_double.setUseSymmetricObjective(true);
+  EXPECT_TRUE(reg_double.getUseSymmetricObjective());
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 sampleRandomTransform (Eigen::Affine3f &trans, float max_angle, float max_trans)

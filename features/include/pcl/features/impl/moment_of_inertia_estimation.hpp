@@ -618,14 +618,14 @@ pcl::MomentOfInertiaEstimation<PointT>::setIndices (std::size_t row_start, std::
     return;
   }
 
-  std::size_t row_end = row_start + nb_rows;
+  const std::size_t row_end = row_start + nb_rows;
   if (row_end > input_->height)
   {
     PCL_ERROR ("[PCLBase::setIndices] %d is out of rows range %d", row_end, input_->height);
     return;
   }
 
-  std::size_t col_end = col_start + nb_cols;
+  const std::size_t col_end = col_start + nb_cols;
   if (col_end > input_->width)
   {
     PCL_ERROR ("[PCLBase::setIndices] %d is out of columns range %d", col_end, input_->width);
