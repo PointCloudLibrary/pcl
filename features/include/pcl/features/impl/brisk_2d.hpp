@@ -103,11 +103,11 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKern
   d_min_ = d_min;
 
   // get the total number of points
-  const int rings = int (radius_list.size ());
+  const auto rings = radius_list.size ();
   assert (radius_list.size () != 0 && radius_list.size () == number_list.size ());
   points_ = 0; // remember the total number of points
-  for (int ring = 0; ring < rings; ring++)
-    points_ += number_list[ring];
+  for (const auto number: number_list)
+    points_ += number;
 
   // set up the patterns
   pattern_points_ = new BriskPatternPoint[points_*scales_*n_rot_];

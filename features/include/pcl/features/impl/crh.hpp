@@ -96,8 +96,7 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   //fill spatial data vector and the zero-initialize or "value-initialize" an array on c++, 
   // the initialization is made with () after the [nbins]
-  kiss_fft_scalar * spatial_data = new kiss_fft_scalar[nbins]();
-  
+  std::vector<kiss_fft_scalar> spatial_data(nbins);
 
   float sum_w = 0, w = 0;
   int bin = 0;
@@ -109,29 +108,31 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     spatial_data[bin] += w;
   }
 
-  for (int i = 0; i < nbins; ++i)
-    spatial_data[i] /= sum_w;
+  for (auto& data: spatial_data)
+    data /= sum_w;
 
-  kiss_fft_cpx * freq_data = new kiss_fft_cpx[nbins / 2 + 1];
+  std::vector<kiss_fft_cpx> freq_data(nbins / 2 + 1);
   kiss_fftr_cfg mycfg = kiss_fftr_alloc (nbins, 0, nullptr, nullptr);
-  kiss_fftr (mycfg, spatial_data, freq_data);
+  kiss_fftr (mycfg, spatial_data.data (), freq_data.data ());
+
+  for (auto& data: freq_data)
+  {
+      data.r /= freq_data[0].r;
+      data.i /= freq_data[0].r;
+  }
 
   output.points.resize (1);
   output.width = output.height = 1;
 
-  output.points[0].histogram[0] = freq_data[0].r / freq_data[0].r; //dc
+  output.points[0].histogram[0] = freq_data[0].r; //dc
   int k = 1;
   for (int i = 1; i < (nbins / 2); i++, k += 2)
   {
-    output.points[0].histogram[k] = freq_data[i].r / freq_data[0].r;
-    output.points[0].histogram[k + 1] = freq_data[i].i / freq_data[0].r;
+    output.points[0].histogram[k] = freq_data[i].r;
+    output.points[0].histogram[k + 1] = freq_data[i].i;
   }
 
-  output.points[0].histogram[nbins - 1] = freq_data[nbins / 2].r / freq_data[0].r; //nyquist
-
-  delete[] spatial_data;
-  delete[] freq_data;
-
+  output.points[0].histogram[nbins - 1] = freq_data[nbins / 2].r; //nyquist
 }
 
 #define PCL_INSTANTIATE_CRHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::CRHEstimation<T,NT,OutT>;
