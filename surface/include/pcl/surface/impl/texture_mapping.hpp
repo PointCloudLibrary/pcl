@@ -647,8 +647,7 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
   double maxDeltaZ = octree_voxel_size * 2.0;
 
   // create an octree to perform rayTracing
-  pcl::octree::OctreePointCloudSearch<PointInT> *octree;
-  octree = new pcl::octree::OctreePointCloudSearch<PointInT> (octree_voxel_size);
+  OctreePtr octree (new Octree (octree_voxel_size));
   // create octree structure
   octree->setInputCloud (input_cloud);
   // update bounding box automatically
@@ -714,8 +713,6 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
     std::sort (zDist.begin (), zDist.end ());
     std::sort (ptDist.begin (), ptDist.end ());
   }
-    
-  delete octree;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
