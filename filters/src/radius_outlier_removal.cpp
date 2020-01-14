@@ -46,7 +46,6 @@
 void
 pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
-  output.is_dense = true;
   // If fields x/y/z are not present, we cannot filter
   if (x_idx_ == -1 || y_idx_ == -1 || z_idx_ == -1)
   {
@@ -88,11 +87,20 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &out
   std::vector<float> nn_dists (indices_->size ());
 
   // Copy the common fields
+  output.is_dense = input_->is_dense;
   output.is_bigendian = input_->is_bigendian;
   output.point_step = input_->point_step;
-  output.height = 1;
+  if (keep_organized_)
+  {
+    output.height = input_->height;
+    output.data.resize (input_->data.size()); // this is the final size
+  }
+  else
+  {
+    output.height = 1;
+    output.data.resize (input_->data.size()); // reserve enough space
+  }
 
-  output.data.resize (input_->width * input_->point_step); // reserve enough space
   removed_indices_->resize (input_->data.size ());
 
   int nr_p = 0;
@@ -112,17 +120,34 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &out
         (*removed_indices_)[nr_removed_p] = cp;
         nr_removed_p++;
       }
-      continue;
+      if (keep_organized_)
+      {
+          /* Set the current point to the user filter value. */
+          *(reinterpret_cast<float*>(&output.data[nr_p * output.point_step])+0) = user_filter_value_;
+          *(reinterpret_cast<float*>(&output.data[nr_p * output.point_step])+1) = user_filter_value_;
+          *(reinterpret_cast<float*>(&output.data[nr_p * output.point_step])+2) = user_filter_value_;
+          nr_p++;
+          output.is_dense = false;
+      }
     }
-
-    memcpy (&output.data[nr_p * output.point_step], &input_->data[(*indices_)[cp] * output.point_step],
-            output.point_step);
-    nr_p++;
+    else
+    {
+      memcpy (&output.data[nr_p * output.point_step], &input_->data[(*indices_)[cp] * output.point_step],
+              output.point_step);
+      nr_p++;
+    }
   }
 
-  output.width = nr_p;
-  output.height = 1;
-  output.data.resize (output.width * output.point_step);
+  if (keep_organized_)
+  {
+    output.width = input_->width;
+    // no need to resize output.data since the final size is known and set from the beginning
+  }
+  else
+  {
+    output.width = nr_p;
+    output.data.resize (output.width * output.point_step);
+  }
   output.row_step = output.point_step * output.width;
 
   removed_indices_->resize (nr_removed_p);

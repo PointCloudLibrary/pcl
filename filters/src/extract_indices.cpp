@@ -146,39 +146,52 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 void
 pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
 {
-  if (negative_)
+  if (indices_->size () > (input_->width * input_->height))
   {
-    // If the subset is the full set
-    if (indices_->size () == (input_->width * input_->height))
-    {
-      // Empty set copy
-      indices.clear ();
-      return;
-    }
-
-    // Set up the full indices set
-    std::vector<int> indices_fullset (input_->width * input_->height);
-    for (int p_it = 0; p_it < static_cast<int> (indices_fullset.size ()); ++p_it)
-      indices_fullset[p_it] = p_it;
-
-    // If the subset is the empty set
-    if (indices_->empty () || (input_->width * input_->height == 0))
-    {
-      // Full set copy
-      indices = indices_fullset;
-      return;
-    }
-
-    // If the subset is a proper subset
-    // Set up the subset input indices
-    std::vector<int> indices_subset = *indices_;
-    std::sort (indices_subset.begin (), indices_subset.end ());
-
-    // Get the difference
-    set_difference (indices_fullset.begin (), indices_fullset.end (), indices_subset.begin (), indices_subset.end (), inserter (indices, indices.begin ()));
+    PCL_ERROR ("[pcl::%s::applyFilter] The indices size exceeds the size of the input.\n", getClassName ().c_str ());
+    indices.clear ();
+    removed_indices_->clear ();
+    return;
   }
-  else
+
+  if (!negative_)  // Normal functionality
+  {
     indices = *indices_;
+
+    if (extract_removed_indices_)
+    {
+      // Set up the full indices set
+      std::vector<int> full_indices (input_->width * input_->height);
+      for (int fii = 0; fii < static_cast<int> (full_indices.size ()); ++fii)  // fii = full indices iterator
+        full_indices[fii] = fii;
+
+      // Set up the sorted input indices
+      std::vector<int> sorted_input_indices = *indices_;
+      std::sort (sorted_input_indices.begin (), sorted_input_indices.end ());
+
+      // Store the difference in removed_indices
+      removed_indices_->clear ();
+      std::set_difference (full_indices.begin (), full_indices.end (), sorted_input_indices.begin (), sorted_input_indices.end (), std::inserter (*removed_indices_, removed_indices_->begin ()));
+    }
+  }
+  else  // Inverted functionality
+  {
+    // Set up the full indices set
+    std::vector<int> full_indices (input_->width * input_->height);
+    for (int fii = 0; fii < static_cast<int> (full_indices.size ()); ++fii)  // fii = full indices iterator
+      full_indices[fii] = fii;
+
+    // Set up the sorted input indices
+    std::vector<int> sorted_input_indices = *indices_;
+    std::sort (sorted_input_indices.begin (), sorted_input_indices.end ());
+
+    // Store the difference in indices
+    indices.clear ();
+    std::set_difference (full_indices.begin (), full_indices.end (), sorted_input_indices.begin (), sorted_input_indices.end (), std::inserter (indices, indices.begin ()));
+
+    if (extract_removed_indices_)
+      removed_indices_ = indices_;
+  }
 }
 
 #ifndef PCL_NO_PRECOMPILE
