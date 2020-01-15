@@ -152,17 +152,17 @@ class SimpleOpenNIViewer
     {
 
       // create a new grabber for OpenNI devices
-      pcl::Grabber* interface = new pcl::OpenNIGrabber();
+      pcl::OpenNIGrabber interface {};
 
       // make callback function from member function
       std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
         [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) { cloud_cb_ (cloud); };
 
       // connect callback function for desired signal. In this case its a point cloud with color values
-      boost::signals2::connection c = interface->registerCallback (f);
+      boost::signals2::connection c = interface.registerCallback (f);
 
       // start receiving point clouds
-      interface->start ();
+      interface.start ();
 
 
       while (!outputFile_.fail())
@@ -170,7 +170,7 @@ class SimpleOpenNIViewer
         std::this_thread::sleep_for(1s);
       }
 
-      interface->stop ();
+      interface.stop ();
     }
 
     pcl::visualization::CloudViewer viewer;
@@ -207,7 +207,7 @@ struct EventHelper
   run ()
   {
     // create a new grabber for OpenNI devices
-    pcl::Grabber* interface = new pcl::OpenNIGrabber ();
+    pcl::OpenNIGrabber interface {};
 
     // make callback function from member function
     std::function<void
@@ -217,17 +217,17 @@ struct EventHelper
     };
 
     // connect callback function for desired signal. In this case its a point cloud with color values
-    boost::signals2::connection c = interface->registerCallback (f);
+    boost::signals2::connection c = interface.registerCallback (f);
 
     // start receiving point clouds
-    interface->start ();
+    interface.start ();
 
     while (!outputFile_.fail ())
     {
       std::this_thread::sleep_for(1s);
     }
 
-    interface->stop ();
+    interface.stop ();
   }
 
   pcl::PassThrough<PointXYZRGBA> pass_;

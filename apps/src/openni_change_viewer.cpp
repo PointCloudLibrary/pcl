@@ -121,21 +121,21 @@ class OpenNIChangeViewer
     void 
     run ()
     {
-      pcl::Grabber* interface = new pcl::OpenNIGrabber();
+      pcl::OpenNIGrabber interface {};
 
       std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
         [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud) { cloud_cb_ (cloud); };
 
-      boost::signals2::connection c = interface->registerCallback (f);
+      boost::signals2::connection c = interface.registerCallback (f);
       
-      interface->start ();
+      interface.start ();
       
       while (!viewer.wasStopped())
       {
         std::this_thread::sleep_for(1s);
       }
 
-      interface->stop ();
+      interface.stop ();
     }
 
     pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZRGBA> *octree;

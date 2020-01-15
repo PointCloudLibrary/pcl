@@ -119,12 +119,12 @@ class OpenNIPlanarSegmentation
     void
     run ()
     {
-      pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
+      pcl::OpenNIGrabber interface {device_id_};
 
       std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) { cloud_cb_ (cloud); };
-      boost::signals2::connection c = interface->registerCallback (f);
+      boost::signals2::connection c = interface.registerCallback (f);
       
-      interface->start ();
+      interface.start ();
       
       while (!viewer.wasStopped ())
       {
@@ -135,7 +135,7 @@ class OpenNIPlanarSegmentation
         }
       }
 
-      interface->stop ();
+      interface.stop ();
     }
 
     pcl::visualization::CloudViewer viewer;
