@@ -415,13 +415,13 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_
   double maxDeltaZ = octree_voxel_size;
 
   // create an octree to perform rayTracing
-  OctreePtr octree (new Octree (octree_voxel_size));
+  Octree octree (octree_voxel_size);
   // create octree structure
-  octree->setInputCloud (input_cloud);
+  octree.setInputCloud (input_cloud);
   // update bounding box automatically
-  octree->defineBoundingBox ();
+  octree.defineBoundingBox ();
   // add points in the tree
-  octree->addPointsFromInputCloud ();
+  octree.addPointsFromInputCloud ();
 
   visible_indices.clear ();
 
@@ -435,7 +435,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_
     direction (2) = input_cloud->points[i].z;
 
     // if point is not occluded
-    octree->getIntersectedVoxelIndices (direction, -direction, indices);
+    octree.getIntersectedVoxelIndices (direction, -direction, indices);
 
     int nbocc = static_cast<int> (indices.size ());
     for (const int &index : indices)
@@ -647,14 +647,13 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
   double maxDeltaZ = octree_voxel_size * 2.0;
 
   // create an octree to perform rayTracing
-  pcl::octree::OctreePointCloudSearch<PointInT> *octree;
-  octree = new pcl::octree::OctreePointCloudSearch<PointInT> (octree_voxel_size);
+  Octree octree (octree_voxel_size);
   // create octree structure
-  octree->setInputCloud (input_cloud);
+  octree.setInputCloud (input_cloud);
   // update bounding box automatically
-  octree->defineBoundingBox ();
+  octree.defineBoundingBox ();
   // add points in the tree
-  octree->addPointsFromInputCloud ();
+  octree.addPointsFromInputCloud ();
 
   // ray direction
   Eigen::Vector3f direction;
@@ -677,7 +676,7 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
 
     // get number of occlusions for that point
     indices.clear ();
-    int nbocc = octree->getIntersectedVoxelIndices (direction, -direction, indices);
+    int nbocc = octree.getIntersectedVoxelIndices (direction, -direction, indices);
 
     nbocc = static_cast<int> (indices.size ());
 
