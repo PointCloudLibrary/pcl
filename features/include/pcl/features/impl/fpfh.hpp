@@ -73,7 +73,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (
   float hist_incr = 100.0f / static_cast<float>(indices.size () - 1);
 
   // Iterate over all the points in the neighborhood
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
     // Avoid unnecessary returns
     if (p_idx == index)
@@ -112,16 +112,16 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::weightPointSPFHSignature (
   float weight = 0.0, val_f1, val_f2, val_f3;
 
   // Get the number of bins from the histograms size
-  int nr_bins_f1 = static_cast<int> (hist_f1.cols ());
-  int nr_bins_f2 = static_cast<int> (hist_f2.cols ());
-  int nr_bins_f3 = static_cast<int> (hist_f3.cols ());
-  int nr_bins_f12 = nr_bins_f1 + nr_bins_f2;
+  const auto nr_bins_f1 = hist_f1.cols ();
+  const auto nr_bins_f2 = hist_f2.cols ();
+  const auto nr_bins_f3 = hist_f3.cols ();
+  const auto nr_bins_f12 = nr_bins_f1 + nr_bins_f2;
 
   // Clear the histogram
   fpfh_histogram.setZero (nr_bins_f1 + nr_bins_f2 + nr_bins_f3);
 
   // Use the entire patch
-  for (std::size_t idx = 0, data_size = indices.size (); idx < data_size; ++idx)
+  for (std::size_t idx = 0; idx < indices.size (); ++idx)
   {
     // Minus the query point itself
     if (dists[idx] == 0)
@@ -186,10 +186,9 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeSPFHSignatures (std::v
   // (We need an SPFH signature for every point that is a neighbor of any point in input_[indices_])
   if (surface_ != input_ ||
       indices_->size () != surface_->points.size ())
-  { 
-    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+  {
+    for (const auto& p_idx: *indices_)
     {
-      int p_idx = (*indices_)[idx];
       if (this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists) == 0)
         continue;
 
@@ -210,13 +209,9 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeSPFHSignatures (std::v
   hist_f3.setZero (data_size, nr_bins_f3_);
 
   // Compute SPFH signatures for every point that needs them
-  std::set<int>::iterator spfh_indices_itr = spfh_indices.begin ();
-  for (int i = 0; i < static_cast<int> (spfh_indices.size ()); ++i)
+  std::size_t i = 0;
+  for (const auto& p_idx: spfh_indices)
   {
-    // Get the next point index
-    int p_idx = *spfh_indices_itr;
-    ++spfh_indices_itr;
-
     // Find the neighborhood around p_idx
     if (this->searchForNeighbors (*surface_, p_idx, search_parameter_, nn_indices, nn_dists) == 0)
       continue;
@@ -226,6 +221,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeSPFHSignatures (std::v
 
     // Populate a lookup table for converting a point index to its corresponding row in the spfh_hist_* matrices
     spfh_hist_lookup[p_idx] = i;
+    i++;
   }
 }
 
@@ -252,14 +248,14 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
       {
         for (Eigen::Index d = 0; d < fpfh_histogram_.size (); ++d)
           output.points[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
-    
+
         output.is_dense = false;
         continue;
       }
 
       // ... and remap the nn_indices values so that they represent row indices in the spfh_hist_* matrices 
       // instead of indices into surface_->points
-      for (int &nn_index : nn_indices)
+      for (auto &nn_index : nn_indices)
         nn_index = spfh_hist_lookup[nn_index];
 
       // Compute the FPFH signature (i.e. compute a weighted combination of local SPFH signatures) ...
@@ -280,14 +276,14 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
       {
         for (Eigen::Index d = 0; d < fpfh_histogram_.size (); ++d)
           output.points[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
-    
+
         output.is_dense = false;
         continue;
       }
 
       // ... and remap the nn_indices values so that they represent row indices in the spfh_hist_* matrices 
       // instead of indices into surface_->points
-      for (int &nn_index : nn_indices)
+      for (auto &nn_index : nn_indices)
         nn_index = spfh_hist_lookup[nn_index];
 
       // Compute the FPFH signature (i.e. compute a weighted combination of local SPFH signatures) ...

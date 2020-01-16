@@ -88,7 +88,7 @@ pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   rsd.setInputNormals (normals_);
   rsd.setRadiusSearch (std::max (search_radius_, std::sqrt (3.0) * width_ / 2));
   rsd.compute (*radii);
-  
+
   // Save the type of each point
   int NR_CLASS = 5; // TODO make this nicer
   std::vector<int> types (radii->points.size ());

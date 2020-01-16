@@ -79,7 +79,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
       if (!isFinite ((*input_)[p_idx]) ||
           this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists) == 0)
         continue;
-      
+
       spfh_indices_set.insert (nn_indices.begin (), nn_indices.end ());
     }
     spfh_indices_vec.resize (spfh_indices_set.size ());
@@ -94,7 +94,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   }
 
   // Initialize the arrays that will store the SPFH signatures
-  std::size_t data_size = spfh_indices_vec.size ();
+  const auto data_size = spfh_indices_vec.size ();
   hist_f1_.setZero (data_size, nr_bins_f1_);
   hist_f2_.setZero (data_size, nr_bins_f2_);
   hist_f3_.setZero (data_size, nr_bins_f3_);
@@ -142,7 +142,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     {
       for (int d = 0; d < nr_bins; ++d)
         output.points[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
-  
+
       output.is_dense = false;
       continue;
     }
