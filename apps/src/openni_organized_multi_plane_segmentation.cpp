@@ -109,16 +109,16 @@ class OpenNIOrganizedMultiPlaneSegmentation
     void
     run ()
     {
-      pcl::Grabber* interface = new pcl::OpenNIGrabber ();
+      pcl::OpenNIGrabber interface {};
 
       std::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f = [this] (const pcl::PointCloud<PointT>::ConstPtr& cloud) { cloud_cb_ (cloud); };
 
       //make a viewer
       pcl::PointCloud<PointT>::Ptr init_cloud_ptr (new pcl::PointCloud<PointT>);
       viewer = cloudViewer (init_cloud_ptr);
-      boost::signals2::connection c = interface->registerCallback (f);
+      boost::signals2::connection c = interface.registerCallback (f);
 
-      interface->start ();
+      interface.start ();
 
       unsigned char red [6] = {255,   0,   0, 255, 255,   0};
       unsigned char grn [6] = {  0, 255,   0, 255,   0, 255};
@@ -190,7 +190,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
         }
       }
 
-      interface->stop ();
+      interface.stop ();
     }
 };
 

@@ -143,16 +143,16 @@ class OpenNIOrganizedEdgeDetection
     void
     run ()
     {
-      pcl::Grabber* interface = new pcl::OpenNIGrabber ();
+      pcl::OpenNIGrabber interface {};
 
       std::function<void(const pcl::PointCloud<PointT>::ConstPtr&)> f = [this] (const pcl::PointCloud<PointT>::ConstPtr& cloud) { cloud_cb_ (cloud); };
 
       // Make and initialize a cloud viewer
       pcl::PointCloud<PointT>::Ptr init_cloud_ptr (new pcl::PointCloud<PointT>);
       viewer = initCloudViewer (init_cloud_ptr);
-      boost::signals2::connection c = interface->registerCallback (f);
+      boost::signals2::connection c = interface.registerCallback (f);
 
-      interface->start ();
+      interface.start ();
 
       pcl::IntegralImageNormalEstimation<PointT, pcl::Normal> ne;
       ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
@@ -245,7 +245,7 @@ class OpenNIOrganizedEdgeDetection
         }
       }
 
-      interface->stop ();
+      interface.stop ();
     }
 };
 

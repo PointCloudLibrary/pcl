@@ -157,21 +157,21 @@ class OpenNIIntegralImageNormalEstimation
     void
     run ()
     {
-      pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
+      pcl::OpenNIGrabber interface {device_id_};
 
       std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &)> f = [this] (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) { cloud_cb (cloud); };
-      boost::signals2::connection c = interface->registerCallback (f);
+      boost::signals2::connection c = interface.registerCallback (f);
 
       viewer.runOnVisualizationThread ([this] (pcl::visualization::PCLVisualizer& viz) { viz_cb (viz); }, "viz_cb");
 
-      interface->start ();
+      interface.start ();
       
       while (!viewer.wasStopped ())
       {
         std::this_thread::sleep_for(1s);
       }
 
-      interface->stop ();
+      interface.stop ();
     }
 
     pcl::ApproximateVoxelGrid<pcl::PointXYZRGBNormal> pass_;

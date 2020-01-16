@@ -104,14 +104,14 @@ class OpenNIFastMesh
     void
     run (int argc, char **argv)
     {
-      pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
+      pcl::OpenNIGrabber interface {device_id_};
 
       std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) { cloud_cb (cloud); };
-      boost::signals2::connection c = interface->registerCallback (f);
+      boost::signals2::connection c = interface.registerCallback (f);
 
       view.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCL OpenNI Mesh Viewer"));
 
-      interface->start ();
+      interface.start ();
       
       CloudConstPtr temp_cloud;
       std::vector<pcl::Vertices> temp_verts;
@@ -138,7 +138,7 @@ class OpenNIFastMesh
         view->spinOnce (1);
       }
 
-      interface->stop ();
+      interface.stop ();
     }
 
     pcl::OrganizedFastMesh<PointType> ofm;

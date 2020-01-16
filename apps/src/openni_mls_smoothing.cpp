@@ -132,15 +132,15 @@ class OpenNISmoothing
     void
     run ()
     {
-      pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id_);
+      pcl::OpenNIGrabber interface {device_id_};
 
       std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) { cloud_cb_ (cloud); };
-      boost::signals2::connection c = interface->registerCallback (f);
+      boost::signals2::connection c = interface.registerCallback (f);
 
       viewer.registerKeyboardCallback (keyboardEventOccurred, reinterpret_cast<void*> (&stop_computing_));
 
 
-      interface->start ();
+      interface.start ();
 
       while (!viewer.wasStopped ())
       {
@@ -157,7 +157,7 @@ class OpenNISmoothing
         }
       }
 
-      interface->stop ();
+      interface.stop ();
     }
 
     pcl::MovingLeastSquares<PointType, PointType> smoother_;
