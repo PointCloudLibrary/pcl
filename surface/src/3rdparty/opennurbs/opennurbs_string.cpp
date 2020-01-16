@@ -925,7 +925,7 @@ int ON_String::Replace( char token1, char token2 )
 
 int ON_String::Replace( unsigned char token1, unsigned char token2 )
 {
-  return Replace((const char)token1, (const char)token2);
+  return Replace((char)token1, (char)token2);
 }
 
 
