@@ -109,24 +109,29 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
   }
 
   // for all neighbor points
-  for (const auto neighbor: nn_indices)
+  for (const auto& neighbor: nn_indices)
   {
     // first, skip the points with distant normals
     double cos_between_normals = -2.0; // should be initialized if used
     if (support_angle_cos_ > 0.0 || is_angular_) // not bogus
     {
-      cos_between_normals = std::abs (origin_normal.dot (input_normals_->points[neighbor].getNormalVector3fMap ()));
-      if (cos_between_normals > (1.0 + 10*std::numeric_limits<float>::epsilon ())) // should be okay for numeric stability
+      cos_between_normals = (origin_normal.dot (input_normals_->points[neighbor].getNormalVector3fMap ()));
+      if (std::abs (cos_between_normals) > (1.0 + 10*std::numeric_limits<float>::epsilon ())) // should be okay for numeric stability
       {      
         PCL_ERROR ("[pcl::%s::computeSiForPoint] Normal for the point %d and/or the point %d are not normalized, dot ptoduct is %f.\n", 
           getClassName ().c_str (), neighbor, index, cos_between_normals);
         throw PCLException ("Some normals are not normalized",
           "spin_image.hpp", "computeSiForPoint");
       }
-      cos_between_normals = std::max (0., std::min (1.0, cos_between_normals));
+      std::cout << "COS0: " << cos_between_normals << "\n";
+      std::cout << "COS1: " << std::max (-1., std::min (1.0, cos_between_normals)) << "\t"
+                << "COS2: " << std::max (0., std::min (1.0, cos_between_normals)) << "\n";
+      cos_between_normals = std::max (-1., std::min (1.0, cos_between_normals));
+      // cos_between_normals = std::max (0., std::min (1.0, cos_between_normals));
 
-      if (cos_between_normals < support_angle_cos_ )    // allow counter-directed normals
+      if (std::abs (cos_between_normals) < support_angle_cos_ )    // allow counter-directed normals
       {
+        std::cout << "ABS less";
         continue;
       }
     }
@@ -204,6 +209,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
     m_matrix (alpha_bin, beta_bin+1) += (1-a) * b;
     m_matrix (alpha_bin+1, beta_bin+1) += a * b;
 
+    std::cout << "Support: " << (support_angle_cos_ > 0.0) << "\tAngular:" << is_angular_ << "\n";
     if (support_angle_cos_ > 0.0 || is_angular_)
     {
       m_averAngles (alpha_bin, beta_bin) += (1-a) * (1-b) * std::acos (cos_between_normals); 
