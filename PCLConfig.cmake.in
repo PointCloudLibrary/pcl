@@ -619,7 +619,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
     else() # header-only
       add_library(${pcl_component} INTERFACE IMPORTED)
     endif()
-    
+
     foreach(def ${PCL_DEFINITIONS})
       string(REPLACE " " ";" def2 ${def})
       string(REGEX REPLACE "^-D" "" def3 "${def2}")
