@@ -193,9 +193,81 @@ pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistance (
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
     return (0);
-  std::size_t nr_p = 0;
 
-  std::size_t i = 0;
+#if defined (__AVX__) && defined (__AVX2__)
+  return countWithinDistanceAVX (model_coefficients, threshold);
+#elif defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
+  return countWithinDistanceSSE (model_coefficients, threshold);
+#else
+  return countWithinDistanceStandard (model_coefficients, threshold);
+#endif
+}
+
+//////////////////////////////////////////////////////////////////////////
+template <typename PointT> std::size_t
+pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistanceStandard (
+      const Eigen::VectorXf &model_coefficients, const double threshold, std::size_t i) const
+{
+  std::size_t nr_p = 0;
+  // Iterate through the 3d points and calculate the distances from them to the circle
+  for (; i < indices_->size (); ++i)
+  {
+    // Calculate the distance from the point to the circle as the difference between
+    // dist(point,circle_origin) and circle_radius
+    float distance = std::abs (std::sqrt (
+                                      ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) *
+                                      ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) +
+
+                                      ( input_->points[(*indices_)[i]].y - model_coefficients[1] ) *
+                                      ( input_->points[(*indices_)[i]].y - model_coefficients[1] )
+                                      ) - model_coefficients[2]);
+    if (distance < threshold)
+      nr_p++;
+  }
+  return (nr_p);
+}
+
+//////////////////////////////////////////////////////////////////////////
+template <typename PointT> std::size_t
+pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistanceSSE (
+      const Eigen::VectorXf &model_coefficients, const double threshold, std::size_t i) const
+{
+  std::size_t nr_p = 0;
+#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
+  const __m128 a_vec = _mm_set1_ps (model_coefficients[0]);
+  const __m128 b_vec = _mm_set1_ps (model_coefficients[1]);
+  // To avoid sqrt computation: consider one larger circle (radius + threshold) and one smaller circle (radius - threshold). Valid if point is in larger circle, but not in smaller circle.
+  const __m128 sqr_inner_circle = _mm_set1_ps ((model_coefficients[2] <= threshold ? 0.0 : (model_coefficients[2]-threshold)*(model_coefficients[2]-threshold)));
+  const __m128 sqr_outer_circle = _mm_set1_ps ((model_coefficients[2]+threshold)*(model_coefficients[2]+threshold));
+  __m128i res = _mm_set1_epi32(0); // This corresponds to nr_p: 8 32bit integers that, summed together, hold the number of inliers
+  for (; (i + 4) <= indices_->size (); i += 4)
+  {
+    const __m128 sqr_dist = sqr_dist4 (i, a_vec, b_vec);
+    const __m128 mask = _mm_and_ps (_mm_cmplt_ps (sqr_inner_circle, sqr_dist), _mm_cmplt_ps (sqr_dist, sqr_outer_circle)); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
+    res = _mm_add_epi32 (res, _mm_and_si128 (_mm_set1_epi32 (1), _mm_castps_si128 (mask))); // The latter part creates a vector with ones (as 32bit integers) where the points are inliers
+    //const int res = _mm_movemask_ps (mask);
+    //if (res & 1) nr_p++;
+    //if (res & 2) nr_p++;
+    //if (res & 4) nr_p++;
+    //if (res & 8) nr_p++;
+  }
+  nr_p += _mm_extract_epi32 (res, 0);
+  nr_p += _mm_extract_epi32 (res, 1);
+  nr_p += _mm_extract_epi32 (res, 2);
+  nr_p += _mm_extract_epi32 (res, 3);
+#endif
+
+  // Process the remaining points (at most 3)
+  nr_p += countWithinDistanceStandard (model_coefficients, threshold, i);
+  return (nr_p);
+}
+
+//////////////////////////////////////////////////////////////////////////
+template <typename PointT> std::size_t
+pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistanceAVX (
+      const Eigen::VectorXf &model_coefficients, const double threshold, std::size_t i) const
+{
+  std::size_t nr_p = 0;
 #if defined (__AVX__) && defined (__AVX2__)
   const __m256 a_vec = _mm256_set1_ps (model_coefficients[0]);
   const __m256 b_vec = _mm256_set1_ps (model_coefficients[1]);
@@ -226,45 +298,10 @@ pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistance (
   nr_p += _mm256_extract_epi32 (res, 5);
   nr_p += _mm256_extract_epi32 (res, 6);
   nr_p += _mm256_extract_epi32 (res, 7);
-#elif defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
-  const __m128 a_vec = _mm_set1_ps (model_coefficients[0]);
-  const __m128 b_vec = _mm_set1_ps (model_coefficients[1]);
-  // To avoid sqrt computation: consider one larger circle (radius + threshold) and one smaller circle (radius - threshold). Valid if point is in larger circle, but not in smaller circle.
-  const __m128 sqr_inner_circle = _mm_set1_ps ((model_coefficients[2] <= threshold ? 0.0 : (model_coefficients[2]-threshold)*(model_coefficients[2]-threshold)));
-  const __m128 sqr_outer_circle = _mm_set1_ps ((model_coefficients[2]+threshold)*(model_coefficients[2]+threshold));
-  __m128i res = _mm_set1_epi32(0); // This corresponds to nr_p: 8 32bit integers that, summed together, hold the number of inliers
-  for (; (i + 4) <= indices_->size (); i += 4)
-  {
-    const __m128 sqr_dist = sqr_dist4 (i, a_vec, b_vec);
-    const __m128 mask = _mm_and_ps (_mm_cmplt_ps (sqr_inner_circle, sqr_dist), _mm_cmplt_ps (sqr_dist, sqr_outer_circle)); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
-    res = _mm_add_epi32 (res, _mm_and_si128 (_mm_set1_epi32 (1), _mm_castps_si128 (mask))); // The latter part creates a vector with ones (as 32bit integers) where the points are inliers
-    //const int res = _mm_movemask_ps (mask);
-    //if (res & 1) nr_p++;
-    //if (res & 2) nr_p++;
-    //if (res & 4) nr_p++;
-    //if (res & 8) nr_p++;
-  }
-  nr_p += _mm_extract_epi32 (res, 0);
-  nr_p += _mm_extract_epi32 (res, 1);
-  nr_p += _mm_extract_epi32 (res, 2);
-  nr_p += _mm_extract_epi32 (res, 3);
 #endif
 
-  // Iterate through the 3d points and calculate the distances from them to the circle
-  for (; i < indices_->size (); ++i)
-  {
-    // Calculate the distance from the point to the circle as the difference between
-    // dist(point,circle_origin) and circle_radius
-    float distance = std::abs (std::sqrt (
-                                      ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) *
-                                      ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) +
-
-                                      ( input_->points[(*indices_)[i]].y - model_coefficients[1] ) *
-                                      ( input_->points[(*indices_)[i]].y - model_coefficients[1] )
-                                      ) - model_coefficients[2]);
-    if (distance < threshold)
-      nr_p++;
-  }
+  // Process the remaining points (at most 7)
+  nr_p += countWithinDistanceStandard (model_coefficients, threshold, i);
   return (nr_p);
 }
 
