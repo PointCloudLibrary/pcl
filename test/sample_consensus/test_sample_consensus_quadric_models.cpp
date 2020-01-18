@@ -107,6 +107,58 @@ TEST (SampleConsensusModelSphere, RANSAC)
   EXPECT_NEAR (2, coeff_refined[2] / coeff_refined[3], 1e-2);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+class SampleConsensusModelSphereTest : private SampleConsensusModelSphere<PointT>
+{
+  public:
+    using SampleConsensusModelSphere<PointT>::SampleConsensusModelSphere;
+    using SampleConsensusModelSphere<PointT>::countWithinDistanceStandard;
+    using SampleConsensusModelSphere<PointT>::countWithinDistanceSSE;
+    using SampleConsensusModelSphere<PointT>::countWithinDistanceAVX;
+};
+
+TEST (SampleConsensusModelSphere, SIMD_countWithinDistance) // Test if all countWithinDistance implementations return the same value
+{
+  const auto seed = static_cast<unsigned> (std::time (nullptr));
+  srand (seed);
+  for (size_t i=0; i<100; i++) // Run as often as you like
+  {
+    // Generate a cloud with 1000 random points
+    PointCloud<PointXYZ> cloud;
+    std::vector<int> indices;
+    cloud.points.resize (1000);
+    for (std::size_t idx = 0; idx < cloud.size (); ++idx)
+    {
+      cloud.points[idx].x = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud.points[idx].y = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud.points[idx].z = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      if (rand () % 3 != 0)
+      {
+        indices.push_back (static_cast<int> (idx));
+      }
+    }
+    SampleConsensusModelSphereTest<PointXYZ> model (cloud.makeShared (), indices, true);
+
+    // Generate random sphere model parameters
+    Eigen::VectorXf model_coefficients(4);
+    model_coefficients << 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0,
+                          2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0,
+                          2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0,
+                          0.15 * static_cast<float> (rand ()) / RAND_MAX; // center and radius
+
+    const double threshold = 0.15 * static_cast<double> (rand ()) / RAND_MAX; // threshold in [0; 0.1]
+
+    const auto res_standard = model.countWithinDistanceStandard (model_coefficients, threshold); // Standard
+    const auto res_sse      = model.countWithinDistanceSSE (model_coefficients, threshold); // SSE
+    const auto res_avx      = model.countWithinDistanceAVX (model_coefficients, threshold); // AVX
+    PCL_DEBUG ("seed=%lu, i=%lu, model=(%f, %f, %f, %f), threshold=%f, res=%lu, %lu, %lu\n",
+               seed, i, model_coefficients(0), model_coefficients(1), model_coefficients(2), model_coefficients(3), threshold, res_standard, res_sse, res_avx);
+    ASSERT_EQ (res_standard, res_sse); // The number of inliers is usually somewhere between 0 and 10
+    ASSERT_EQ (res_standard, res_avx);
+  }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (SampleConsensusModelNormalSphere, RANSAC)
 {
@@ -456,6 +508,57 @@ TEST (SampleConsensusModelCircle2D, RANSAC)
   EXPECT_NEAR ( 3, coeff_refined[0], 1e-3);
   EXPECT_NEAR (-5, coeff_refined[1], 1e-3);
   EXPECT_NEAR ( 1, coeff_refined[2], 1e-3);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+class SampleConsensusModelCircle2DTest : private SampleConsensusModelCircle2D<PointT>
+{
+  public:
+    using SampleConsensusModelCircle2D<PointT>::SampleConsensusModelCircle2D;
+    using SampleConsensusModelCircle2D<PointT>::countWithinDistanceStandard;
+    using SampleConsensusModelCircle2D<PointT>::countWithinDistanceSSE;
+    using SampleConsensusModelCircle2D<PointT>::countWithinDistanceAVX;
+};
+
+TEST (SampleConsensusModelCircle2D, SIMD_countWithinDistance) // Test if all countWithinDistance implementations return the same value
+{
+  const auto seed = static_cast<unsigned> (std::time (nullptr));
+  srand (seed);
+  for (size_t i=0; i<100; i++) // Run as often as you like
+  {
+    // Generate a cloud with 1000 random points
+    PointCloud<PointXYZ> cloud;
+    std::vector<int> indices;
+    cloud.points.resize (1000);
+    for (std::size_t idx = 0; idx < cloud.size (); ++idx)
+    {
+      cloud.points[idx].x = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud.points[idx].y = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud.points[idx].z = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      if (rand () % 2 == 0)
+      {
+        indices.push_back (static_cast<int> (idx));
+      }
+    }
+    SampleConsensusModelCircle2DTest<PointXYZ> model (cloud.makeShared (), indices, true);
+
+    // Generate random circle model parameters
+    Eigen::VectorXf model_coefficients(3);
+    model_coefficients << 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0,
+                          2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0,
+                          0.1 * static_cast<float> (rand ()) / RAND_MAX; // center and radius
+
+    const double threshold = 0.1 * static_cast<double> (rand ()) / RAND_MAX; // threshold in [0; 0.1]
+
+    const auto res_standard = model.countWithinDistanceStandard (model_coefficients, threshold); // Standard
+    const auto res_sse      = model.countWithinDistanceSSE (model_coefficients, threshold); // SSE
+    const auto res_avx      = model.countWithinDistanceAVX (model_coefficients, threshold); // AVX
+    PCL_DEBUG ("seed=%lu, i=%lu, model=(%f, %f, %f), threshold=%f, res=%lu, %lu, %lu\n",
+               seed, i, model_coefficients(0), model_coefficients(1), model_coefficients(2), threshold, res_standard, res_sse, res_avx);
+    ASSERT_EQ (res_standard, res_sse); // The number of inliers is usually somewhere between 0 and 20
+    ASSERT_EQ (res_standard, res_avx);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
