@@ -64,8 +64,8 @@ namespace pcl
       class PCL_EXPORTS RDFBodyPartsDetector
       {
         public:
-          using Ptr = boost::shared_ptr<RDFBodyPartsDetector>;          
-          using ConstPtr = boost::shared_ptr<const RDFBodyPartsDetector>;
+          using Ptr = shared_ptr<RDFBodyPartsDetector>;          
+          using ConstPtr = shared_ptr<const RDFBodyPartsDetector>;
           using BlobMatrix = std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > >;
           
           using Labels = DeviceArray2D<unsigned char>;

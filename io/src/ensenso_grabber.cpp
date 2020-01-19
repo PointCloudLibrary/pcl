@@ -963,7 +963,7 @@ pcl::EnsensoGrabber::processGrabbing ()
       if (num_slots<sig_cb_ensenso_point_cloud> () > 0 || num_slots<sig_cb_ensenso_images> () > 0 || num_slots<sig_cb_ensenso_point_cloud_images> () > 0)
       {
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-        boost::shared_ptr<PairOfImages> images (new PairOfImages);
+        shared_ptr<PairOfImages> images (new PairOfImages);
 
         fps_mutex_.lock ();
         frequency_.event ();

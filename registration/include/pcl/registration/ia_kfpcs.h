@@ -55,8 +55,8 @@ namespace pcl
     {
     public:
       /** \cond */
-      using Ptr = boost::shared_ptr <KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar> >;
-      using ConstPtr = boost::shared_ptr <const KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar> >;
+      using Ptr = shared_ptr <KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar> >;
+      using ConstPtr = shared_ptr <const KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar> >;
 
       using PointCloudSource = pcl::PointCloud<PointSource>;
       using PointCloudSourcePtr = typename PointCloudSource::Ptr;

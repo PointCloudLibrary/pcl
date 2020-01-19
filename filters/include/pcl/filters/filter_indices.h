@@ -77,8 +77,8 @@ namespace pcl
       using Filter<PointT>::extract_removed_indices_;
       using PointCloud = pcl::PointCloud<PointT>;
 
-      using Ptr = boost::shared_ptr<FilterIndices<PointT> >;
-      using ConstPtr = boost::shared_ptr<const FilterIndices<PointT> >;
+      using Ptr = shared_ptr<FilterIndices<PointT> >;
+      using ConstPtr = shared_ptr<const FilterIndices<PointT> >;
 
 
       /** \brief Constructor.

@@ -63,8 +63,8 @@ namespace pcl
         using Base = pcl::geometry::MeshBase <PolygonMesh <MeshTraitsT>, MeshTraitsT, PolygonMeshTag>;
 
         using Self = PolygonMesh<MeshTraitsT>;
-        using Ptr = boost::shared_ptr<Self>;
-        using ConstPtr = boost::shared_ptr<const Self>;
+        using Ptr = shared_ptr<Self>;
+        using ConstPtr = shared_ptr<const Self>;
 
         using VertexData = typename Base::VertexData;
         using HalfEdgeData = typename Base::HalfEdgeData;

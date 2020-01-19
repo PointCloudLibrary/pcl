@@ -57,8 +57,8 @@ namespace pcl
       using PointCloudPtr = typename PointCloud::Ptr;
       using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-      using Ptr = boost::shared_ptr<Comparator<PointT> >;
-      using ConstPtr = boost::shared_ptr<const Comparator<PointT> >;
+      using Ptr = shared_ptr<Comparator<PointT> >;
+      using ConstPtr = shared_ptr<const Comparator<PointT> >;
 
       /** \brief Empty constructor for comparator. */
       Comparator () : input_ ()

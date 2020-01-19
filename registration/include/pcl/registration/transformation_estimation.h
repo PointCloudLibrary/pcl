@@ -120,8 +120,8 @@ namespace pcl
             Matrix4 &transformation_matrix) const = 0;
 
 
-        using Ptr = boost::shared_ptr<TransformationEstimation<PointSource, PointTarget, Scalar> >;
-        using ConstPtr = boost::shared_ptr<const TransformationEstimation<PointSource, PointTarget, Scalar> >;
+        using Ptr = shared_ptr<TransformationEstimation<PointSource, PointTarget, Scalar> >;
+        using ConstPtr = shared_ptr<const TransformationEstimation<PointSource, PointTarget, Scalar> >;
     };
   }
 }

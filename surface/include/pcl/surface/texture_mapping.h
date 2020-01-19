@@ -99,8 +99,8 @@ namespace pcl
   {
     public:
      
-      using Ptr = boost::shared_ptr<TextureMapping<PointInT> >;
-      using ConstPtr = boost::shared_ptr<const TextureMapping<PointInT> >;
+      using Ptr = shared_ptr<TextureMapping<PointInT> >;
+      using ConstPtr = shared_ptr<const TextureMapping<PointInT> >;
 
       using PointCloud = pcl::PointCloud<PointInT>;
       using PointCloudPtr = typename PointCloud::Ptr;

@@ -60,8 +60,8 @@ namespace pcl
       {
       public:
         using PointType = PointXYZ;
-        using Ptr = boost::shared_ptr<ColorVolume>;
-        using ConstPtr = boost::shared_ptr<const ColorVolume>;
+        using Ptr = shared_ptr<ColorVolume>;
+        using ConstPtr = shared_ptr<const ColorVolume>;
 
         /**
          * \brief Constructor

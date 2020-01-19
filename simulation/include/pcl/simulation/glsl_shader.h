@@ -11,7 +11,7 @@
 
 #include <Eigen/Core>
 #include <GL/glew.h>
-#include <boost/shared_ptr.hpp>
+#include <pcl/make_shared.h>
 
 namespace pcl {
 namespace simulation {
@@ -28,8 +28,8 @@ enum ShaderType {
 /** A GLSL shader program.  */
 class PCL_EXPORTS Program {
 public:
-  using Ptr = boost::shared_ptr<Program>;
-  using ConstPtr = boost::shared_ptr<const Program>;
+  using Ptr = shared_ptr<Program>;
+  using ConstPtr = shared_ptr<const Program>;
 
   /** Construct an empty shader program.  */
   Program();

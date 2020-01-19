@@ -65,8 +65,8 @@ namespace pcl
   class SHOTLocalReferenceFrameEstimation : public Feature<PointInT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<SHOTLocalReferenceFrameEstimation<PointInT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const SHOTLocalReferenceFrameEstimation<PointInT, PointOutT> >;
+      using Ptr = shared_ptr<SHOTLocalReferenceFrameEstimation<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const SHOTLocalReferenceFrameEstimation<PointInT, PointOutT> >;
       /** \brief Constructor */
       SHOTLocalReferenceFrameEstimation ()
       {

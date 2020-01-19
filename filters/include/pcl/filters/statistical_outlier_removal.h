@@ -87,8 +87,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr<StatisticalOutlierRemoval<PointT> >;
-      using ConstPtr = boost::shared_ptr<const StatisticalOutlierRemoval<PointT> >;
+      using Ptr = shared_ptr<StatisticalOutlierRemoval<PointT> >;
+      using ConstPtr = shared_ptr<const StatisticalOutlierRemoval<PointT> >;
 
 
       /** \brief Constructor.

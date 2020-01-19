@@ -52,8 +52,8 @@
 class CameraPoseProcessor
 {
   public:
-    using Ptr = boost::shared_ptr<CameraPoseProcessor>;
-    using ConstPtr = boost::shared_ptr<const CameraPoseProcessor>;
+    using Ptr = shared_ptr<CameraPoseProcessor>;
+    using ConstPtr = shared_ptr<const CameraPoseProcessor>;
 
     virtual ~CameraPoseProcessor () {}
 

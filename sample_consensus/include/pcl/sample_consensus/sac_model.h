@@ -73,8 +73,8 @@ namespace pcl
       using PointCloudPtr = typename PointCloud::Ptr;
       using SearchPtr = typename pcl::search::Search<PointT>::Ptr;
 
-      using Ptr = boost::shared_ptr<SampleConsensusModel<PointT> >;
-      using ConstPtr = boost::shared_ptr<const SampleConsensusModel<PointT> >;
+      using Ptr = shared_ptr<SampleConsensusModel<PointT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModel<PointT> >;
 
     protected:
       /** \brief Empty constructor for base SampleConsensusModel.
@@ -583,8 +583,8 @@ namespace pcl
       using PointCloudNConstPtr = typename pcl::PointCloud<PointNT>::ConstPtr;
       using PointCloudNPtr = typename pcl::PointCloud<PointNT>::Ptr;
 
-      using Ptr = boost::shared_ptr<SampleConsensusModelFromNormals<PointT, PointNT> >;
-      using ConstPtr = boost::shared_ptr<const SampleConsensusModelFromNormals<PointT, PointNT> >;
+      using Ptr = shared_ptr<SampleConsensusModelFromNormals<PointT, PointNT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelFromNormals<PointT, PointNT> >;
 
       /** \brief Empty constructor for base SampleConsensusModelFromNormals. */
       SampleConsensusModelFromNormals () : normal_distance_weight_ (0.0), normals_ () {};

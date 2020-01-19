@@ -53,8 +53,8 @@ namespace pcl
   class PlanarPolygon
   {
     public:
-      using Ptr = boost::shared_ptr<PlanarPolygon<PointT> >;
-      using ConstPtr = boost::shared_ptr<const PlanarPolygon<PointT> >;
+      using Ptr = shared_ptr<PlanarPolygon<PointT> >;
+      using ConstPtr = shared_ptr<const PlanarPolygon<PointT> >;
 
        /** \brief Empty constructor for PlanarPolygon */
       PlanarPolygon () : contour_ ()

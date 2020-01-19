@@ -38,6 +38,7 @@
 #pragma once
 
 #include <pcl/pcl_config.h>
+#include <pcl/make_shared.h>
 #ifdef HAVE_OPENNI
 
 #include "openni_exception.h"
@@ -78,8 +79,8 @@ namespace openni_wrapper
         OpenNI_12_bit_depth = 1, // Default mode: regular 12-bit depth
       };
 
-      using Ptr = boost::shared_ptr<OpenNIDevice>;
-      using ConstPtr = boost::shared_ptr<const OpenNIDevice>;
+      using Ptr = pcl::shared_ptr<OpenNIDevice>;
+      using ConstPtr = pcl::shared_ptr<const OpenNIDevice>;
 
       using ImageCallbackFunction = std::function<void(Image::Ptr, void* cookie) >;
       using DepthImageCallbackFunction = std::function<void(DepthImage::Ptr, void* cookie) >;
@@ -476,7 +477,7 @@ namespace openni_wrapper
       setRegistration (bool on_off);
 
       virtual Image::Ptr
-      getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_data) const throw () = 0;
+      getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_data) const throw () = 0;
 
       void 
       Init ();

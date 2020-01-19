@@ -64,8 +64,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        using Ptr = boost::shared_ptr<CorrespondenceRejectorSurfaceNormal>;
-        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorSurfaceNormal>;
+        using Ptr = shared_ptr<CorrespondenceRejectorSurfaceNormal>;
+        using ConstPtr = shared_ptr<const CorrespondenceRejectorSurfaceNormal>;
 
         /** \brief Empty constructor. Sets the threshold to 1.0. */
         CorrespondenceRejectorSurfaceNormal () 

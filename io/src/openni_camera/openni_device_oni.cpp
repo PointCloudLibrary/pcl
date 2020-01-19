@@ -36,6 +36,7 @@
  *
  */
 #include <pcl/pcl_config.h>
+#include <pcl/make_shared.h>
 #ifdef HAVE_OPENNI
 
 #ifdef __GNUC__
@@ -247,7 +248,7 @@ openni_wrapper::DeviceONI::NewONIIRDataAvailable (xn::ProductionNode&, void* coo
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::Image::Ptr 
-openni_wrapper::DeviceONI::getCurrentImage(boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ()
+openni_wrapper::DeviceONI::getCurrentImage(pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const throw ()
 {
   return (openni_wrapper::Image::Ptr (new openni_wrapper::ImageRGB24 (image_meta_data)));
 }

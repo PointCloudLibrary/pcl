@@ -66,8 +66,8 @@ namespace pcl
   class SHOTLocalReferenceFrameEstimationOMP : public SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT> >;
+      using Ptr = shared_ptr<SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT> >;
       /** \brief Constructor */
     SHOTLocalReferenceFrameEstimationOMP ()
       {

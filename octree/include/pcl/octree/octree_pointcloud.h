@@ -83,8 +83,8 @@ namespace pcl
         OctreePointCloud (const double resolution_arg);
 
         // public typedefs
-        using IndicesPtr = boost::shared_ptr<std::vector<int> >;
-        using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
+        using IndicesPtr = shared_ptr<std::vector<int> >;
+        using IndicesConstPtr = shared_ptr<const std::vector<int> >;
 
         using PointCloud = pcl::PointCloud<PointT>;
         using PointCloudPtr = typename PointCloud::Ptr;
@@ -95,8 +95,8 @@ namespace pcl
        // using DoubleBuffer = OctreePointCloud<PointT, LeafContainerT, BranchContainerT, Octree2BufBase<LeafContainerT> >;
 
         // Boost shared pointers
-        using Ptr = boost::shared_ptr<OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> >;
-        using ConstPtr = boost::shared_ptr<const OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> >;
+        using Ptr = shared_ptr<OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> >;
+        using ConstPtr = shared_ptr<const OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> >;
 
         // Eigen aligned allocator
         using AlignedPointTVector = std::vector<PointT, Eigen::aligned_allocator<PointT> >;

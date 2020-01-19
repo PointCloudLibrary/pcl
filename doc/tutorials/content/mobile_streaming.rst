@@ -138,7 +138,7 @@ socket to the client:
 
     struct PointCloudBuffers
     {
-      typedef boost::shared_ptr<PointCloudBuffers> Ptr;
+      typedef pcl::shared_ptr<PointCloudBuffers> Ptr;
       std::vector<short> points;
       std::vector<unsigned char> rgb;
     };

@@ -73,8 +73,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr< IterativeClosestPointNonLinear<PointSource, PointTarget, Scalar> >;
-      using ConstPtr = boost::shared_ptr< const IterativeClosestPointNonLinear<PointSource, PointTarget, Scalar> >;
+      using Ptr = shared_ptr< IterativeClosestPointNonLinear<PointSource, PointTarget, Scalar> >;
+      using ConstPtr = shared_ptr< const IterativeClosestPointNonLinear<PointSource, PointTarget, Scalar> >;
 
       using Matrix4 = typename Registration<PointSource, PointTarget, Scalar>::Matrix4;
 

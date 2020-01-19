@@ -106,8 +106,8 @@ namespace pcl
       using PointIndicesPtr = PointIndices::Ptr;
       using PointIndicesConstPtr = PointIndices::ConstPtr;
 
-      using Ptr = boost::shared_ptr<IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
-      using ConstPtr = boost::shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
+      using Ptr = shared_ptr<IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
+      using ConstPtr = shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
 
       using Registration<PointSource, PointTarget, Scalar>::reg_name_;
       using Registration<PointSource, PointTarget, Scalar>::getClassName;
@@ -318,8 +318,8 @@ namespace pcl
       using IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformation_estimation_;
       using IterativeClosestPoint<PointSource, PointTarget, Scalar>::correspondence_rejectors_;
 
-      using Ptr = boost::shared_ptr<IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
-      using ConstPtr = boost::shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
+      using Ptr = shared_ptr<IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
+      using ConstPtr = shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
 
       /** \brief Empty constructor. */
       IterativeClosestPointWithNormals ()

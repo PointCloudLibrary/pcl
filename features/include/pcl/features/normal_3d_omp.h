@@ -53,8 +53,8 @@ namespace pcl
   class NormalEstimationOMP: public NormalEstimation<PointInT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<NormalEstimationOMP<PointInT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const NormalEstimationOMP<PointInT, PointOutT> >;
+      using Ptr = shared_ptr<NormalEstimationOMP<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const NormalEstimationOMP<PointInT, PointOutT> >;
       using NormalEstimation<PointInT, PointOutT>::feature_name_;
       using NormalEstimation<PointInT, PointOutT>::getClassName;
       using NormalEstimation<PointInT, PointOutT>::indices_;

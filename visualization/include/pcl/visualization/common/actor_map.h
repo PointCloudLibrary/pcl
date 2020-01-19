@@ -98,12 +98,12 @@ namespace pcl
     };
 
     using CloudActorMap = std::unordered_map<std::string, CloudActor>;
-    using CloudActorMapPtr = boost::shared_ptr<CloudActorMap>;
+    using CloudActorMapPtr = shared_ptr<CloudActorMap>;
 
     using ShapeActorMap = std::unordered_map<std::string, vtkSmartPointer<vtkProp> >;
-    using ShapeActorMapPtr = boost::shared_ptr<ShapeActorMap>;
+    using ShapeActorMapPtr = shared_ptr<ShapeActorMap>;
 
     using CoordinateActorMap = std::unordered_map<std::string, vtkSmartPointer<vtkProp> >;
-    using CoordinateActorMapPtr = boost::shared_ptr<CoordinateActorMap>;
+    using CoordinateActorMapPtr = shared_ptr<CoordinateActorMap>;
   }
 }

@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 #include <ostream>
-#include <boost/shared_ptr.hpp>
 #include <pcl/pcl_macros.h>
 
 namespace pcl
@@ -30,8 +29,8 @@ namespace pcl
                            FLOAT64 = 8 };
 
   public:
-    using Ptr = boost::shared_ptr< ::pcl::PCLPointField>;
-    using ConstPtr = boost::shared_ptr<const ::pcl::PCLPointField>;
+    using Ptr = shared_ptr< ::pcl::PCLPointField>;
+    using ConstPtr = shared_ptr<const ::pcl::PCLPointField>;
   }; // struct PCLPointField
 
   using PCLPointFieldPtr = PCLPointField::Ptr;

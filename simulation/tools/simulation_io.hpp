@@ -33,8 +33,8 @@ namespace simulation {
 
 class PCL_EXPORTS SimExample {
 public:
-  using Ptr = boost::shared_ptr<SimExample>;
-  using ConstPtr = boost::shared_ptr<const SimExample>;
+  using Ptr = shared_ptr<SimExample>;
+  using ConstPtr = shared_ptr<const SimExample>;
 
   SimExample(int argc, char** argv, int height, int width);
   void

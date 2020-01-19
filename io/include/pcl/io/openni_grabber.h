@@ -70,8 +70,8 @@ namespace pcl
   class PCL_EXPORTS OpenNIGrabber : public Grabber
   {
     public:
-      using Ptr = boost::shared_ptr<OpenNIGrabber>;
-      using ConstPtr = boost::shared_ptr<const OpenNIGrabber>;
+      using Ptr = shared_ptr<OpenNIGrabber>;
+      using ConstPtr = shared_ptr<const OpenNIGrabber>;
 
       enum Mode
       {

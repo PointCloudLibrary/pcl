@@ -62,8 +62,8 @@ namespace pcl
       using PointCloudNPtr = typename PointCloudN::Ptr;
       using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
       
-      using Ptr = boost::shared_ptr<PlaneCoefficientComparator<PointT, PointNT> >;
-      using ConstPtr = boost::shared_ptr<const PlaneCoefficientComparator<PointT, PointNT> >;
+      using Ptr = shared_ptr<PlaneCoefficientComparator<PointT, PointNT> >;
+      using ConstPtr = shared_ptr<const PlaneCoefficientComparator<PointT, PointNT> >;
 
       using pcl::Comparator<PointT>::input_;
       
@@ -80,7 +80,7 @@ namespace pcl
       /** \brief Constructor for PlaneCoefficientComparator.
         * \param[in] plane_coeff_d a reference to a vector of d coefficients of plane equations.  Must be the same size as the input cloud and input normals.  a, b, and c coefficients are in the input normals.
         */
-      PlaneCoefficientComparator (boost::shared_ptr<std::vector<float> >& plane_coeff_d) 
+      PlaneCoefficientComparator (shared_ptr<std::vector<float> >& plane_coeff_d) 
         : normals_ ()
         , plane_coeff_d_ (plane_coeff_d)
         , angular_threshold_ (pcl::deg2rad (2.0f))
@@ -122,7 +122,7 @@ namespace pcl
         * \param[in] plane_coeff_d a pointer to the plane coefficients.
         */
       void
-      setPlaneCoeffD (boost::shared_ptr<std::vector<float> >& plane_coeff_d)
+      setPlaneCoeffD (shared_ptr<std::vector<float> >& plane_coeff_d)
       {
         plane_coeff_d_ = plane_coeff_d;
       }
@@ -200,7 +200,7 @@ namespace pcl
       
     protected:
       PointCloudNConstPtr normals_;
-      boost::shared_ptr<std::vector<float> > plane_coeff_d_;
+      shared_ptr<std::vector<float> > plane_coeff_d_;
       float angular_threshold_;
       float distance_threshold_;
       bool depth_dependent_;

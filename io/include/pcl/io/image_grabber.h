@@ -217,8 +217,8 @@ namespace pcl
   template <typename PointT> class ImageGrabber : public ImageGrabberBase, public FileGrabber<PointT>
   {
     public:
-    using Ptr = boost::shared_ptr<ImageGrabber>;
-    using ConstPtr = boost::shared_ptr<const ImageGrabber>;
+    using Ptr = shared_ptr<ImageGrabber>;
+    using ConstPtr = shared_ptr<const ImageGrabber>;
 
     ImageGrabber (const std::string& dir, 
                   float frames_per_second = 0, 

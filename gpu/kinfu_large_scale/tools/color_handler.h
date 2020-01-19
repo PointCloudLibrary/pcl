@@ -54,8 +54,8 @@ namespace pcl
       using RgbCloudConstPtr = pcl::PointCloud<RGB>::ConstPtr;
 
     public:
-      using Ptr = boost::shared_ptr<PointCloudColorHandlerRGBHack<PointT> >;
-      using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerRGBHack<PointT> >;
+      using Ptr = shared_ptr<PointCloudColorHandlerRGBHack<PointT> >;
+      using ConstPtr = shared_ptr<const PointCloudColorHandlerRGBHack<PointT> >;
       
       PointCloudColorHandlerRGBHack (const PointCloudConstPtr& cloud, const RgbCloudConstPtr& colors) : 
           PointCloudColorHandler<PointT> (cloud), rgb_ (colors)

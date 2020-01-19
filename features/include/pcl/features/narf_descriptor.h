@@ -55,8 +55,8 @@ namespace pcl
   class PCL_EXPORTS NarfDescriptor : public Feature<PointWithRange,Narf36>
   {
     public:
-      using Ptr = boost::shared_ptr<NarfDescriptor>;
-      using ConstPtr = boost::shared_ptr<const NarfDescriptor>;
+      using Ptr = shared_ptr<NarfDescriptor>;
+      using ConstPtr = shared_ptr<const NarfDescriptor>;
       // =====TYPEDEFS=====
       using BaseClass = Feature<PointWithRange,Narf36>;
       

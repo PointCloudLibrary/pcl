@@ -55,8 +55,8 @@ namespace pcl
   class PCL_EXPORTS RangeImageBorderExtractor : public Feature<PointWithRange,BorderDescription>
   {
     public:
-      using Ptr = boost::shared_ptr<RangeImageBorderExtractor>;
-      using ConstPtr = boost::shared_ptr<const RangeImageBorderExtractor>;
+      using Ptr = shared_ptr<RangeImageBorderExtractor>;
+      using ConstPtr = shared_ptr<const RangeImageBorderExtractor>;
       // =====TYPEDEFS=====
       using BaseClass = Feature<PointWithRange,BorderDescription>;
       

@@ -84,8 +84,8 @@ namespace pcl
 
       public:
         //public typedefs
-        using Ptr = boost::shared_ptr<OutofcoreOctreeNodeMetadata>;
-        using ConstPtr = boost::shared_ptr<const OutofcoreOctreeNodeMetadata>;
+        using Ptr = shared_ptr<OutofcoreOctreeNodeMetadata>;
+        using ConstPtr = shared_ptr<const OutofcoreOctreeNodeMetadata>;
   
         /** \brief Empty constructor */
         OutofcoreOctreeNodeMetadata ();

@@ -54,8 +54,8 @@ namespace pcl
   class Keypoint : public PCLBase<PointInT>
   {
     public:
-      using Ptr = boost::shared_ptr<Keypoint<PointInT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const Keypoint<PointInT, PointOutT> >;
+      using Ptr = shared_ptr<Keypoint<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const Keypoint<PointInT, PointOutT> >;
 
       using PCLBase<PointInT>::indices_;
       using PCLBase<PointInT>::input_;

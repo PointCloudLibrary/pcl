@@ -73,8 +73,8 @@ namespace pcl
       bool trivial_ = false;
 
     public:
-      using Ptr = boost::shared_ptr<PointRepresentation<PointT> >;
-      using ConstPtr = boost::shared_ptr<const PointRepresentation<PointT> >;
+      using Ptr = shared_ptr<PointRepresentation<PointT> >;
+      using ConstPtr = shared_ptr<const PointRepresentation<PointT> >;
 
       /** \brief Empty destructor */
       virtual ~PointRepresentation () = default;
@@ -181,8 +181,8 @@ namespace pcl
 
     public:
       // Boost shared pointers
-      using Ptr = boost::shared_ptr<DefaultPointRepresentation<PointDefault> >;
-      using ConstPtr = boost::shared_ptr<const DefaultPointRepresentation<PointDefault> >;
+      using Ptr = shared_ptr<DefaultPointRepresentation<PointDefault> >;
+      using ConstPtr = shared_ptr<const DefaultPointRepresentation<PointDefault> >;
 
       DefaultPointRepresentation ()
       {
@@ -288,8 +288,8 @@ namespace pcl
 
     public:
       // Boost shared pointers
-      using Ptr = boost::shared_ptr<DefaultFeatureRepresentation<PointDefault>>;
-      using ConstPtr = boost::shared_ptr<const DefaultFeatureRepresentation<PointDefault>>;
+      using Ptr = shared_ptr<DefaultFeatureRepresentation<PointDefault>>;
+      using ConstPtr = shared_ptr<const DefaultFeatureRepresentation<PointDefault>>;
       using FieldList = typename pcl::traits::fieldList<PointDefault>::type;
 
       DefaultFeatureRepresentation ()
@@ -534,8 +534,8 @@ namespace pcl
 
     public:
       // Boost shared pointers
-      using Ptr = boost::shared_ptr<CustomPointRepresentation<PointDefault> >;
-      using ConstPtr = boost::shared_ptr<const CustomPointRepresentation<PointDefault> >;
+      using Ptr = shared_ptr<CustomPointRepresentation<PointDefault> >;
+      using ConstPtr = shared_ptr<const CustomPointRepresentation<PointDefault> >;
 
       /** \brief Constructor
         * \param[in] max_dim the maximum number of dimensions to use

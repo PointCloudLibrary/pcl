@@ -61,8 +61,8 @@ namespace pcl
         using VectorX = Eigen::Matrix<Scalar, Eigen::Dynamic, 1>;
         using Vector4 = Eigen::Matrix<Scalar, 4, 1>;
 
-        using Ptr = boost::shared_ptr<WarpPointRigid<PointSourceT, PointTargetT, Scalar> >;
-        using ConstPtr = boost::shared_ptr<const WarpPointRigid<PointSourceT, PointTargetT, Scalar> >;
+        using Ptr = shared_ptr<WarpPointRigid<PointSourceT, PointTargetT, Scalar> >;
+        using ConstPtr = shared_ptr<const WarpPointRigid<PointSourceT, PointTargetT, Scalar> >;
 
         /** \brief Constructor
           * \param[in] nr_dim the number of dimensions

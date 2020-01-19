@@ -54,8 +54,8 @@ namespace pcl
   class SmoothedSurfacesKeypoint : public Keypoint <PointT, PointT>
   {
     public:
-      using Ptr = boost::shared_ptr<SmoothedSurfacesKeypoint<PointT, PointNT> >;
-      using ConstPtr = boost::shared_ptr<const SmoothedSurfacesKeypoint<PointT, PointNT> >;
+      using Ptr = shared_ptr<SmoothedSurfacesKeypoint<PointT, PointNT> >;
+      using ConstPtr = shared_ptr<const SmoothedSurfacesKeypoint<PointT, PointNT> >;
 
       using PCLBase<PointT>::input_;
       using Keypoint<PointT, PointT>::name_;

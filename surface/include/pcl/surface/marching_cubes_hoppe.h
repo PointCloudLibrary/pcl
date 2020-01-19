@@ -52,8 +52,8 @@ namespace pcl
   class MarchingCubesHoppe : public MarchingCubes<PointNT>
   {
     public:
-      using Ptr = boost::shared_ptr<MarchingCubesHoppe<PointNT> >;
-      using ConstPtr = boost::shared_ptr<const MarchingCubesHoppe<PointNT> >;
+      using Ptr = shared_ptr<MarchingCubesHoppe<PointNT> >;
+      using ConstPtr = shared_ptr<const MarchingCubesHoppe<PointNT> >;
 
       using SurfaceReconstruction<PointNT>::input_;
       using SurfaceReconstruction<PointNT>::tree_;

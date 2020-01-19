@@ -1,11 +1,12 @@
 #include <pcl/pcl_config.h>
+#include <pcl/make_shared.h>
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/openni_camera/openni_image_rgb24.h>
 
 namespace openni_wrapper
 {
-ImageRGB24::ImageRGB24 (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ()
+ImageRGB24::ImageRGB24 (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) throw ()
 : Image (std::move(image_meta_data))
 {
 }

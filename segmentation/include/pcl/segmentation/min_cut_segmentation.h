@@ -101,7 +101,7 @@ namespace pcl
 
       using InEdgeIterator = boost::graph_traits<mGraph>::in_edge_iterator;
 
-      using mGraphPtr = boost::shared_ptr<mGraph>;
+      using mGraphPtr = shared_ptr<mGraph>;
 
     public:
 

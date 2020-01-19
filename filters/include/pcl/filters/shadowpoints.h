@@ -68,8 +68,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr< ShadowPoints<PointT, NormalT> >;
-      using ConstPtr = boost::shared_ptr< const ShadowPoints<PointT, NormalT> >;
+      using Ptr = shared_ptr< ShadowPoints<PointT, NormalT> >;
+      using ConstPtr = shared_ptr< const ShadowPoints<PointT, NormalT> >;
 
       /** \brief Empty constructor. */
       ShadowPoints (bool extract_removed_indices = false) : 

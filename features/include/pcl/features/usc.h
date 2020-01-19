@@ -77,8 +77,8 @@ namespace pcl
 
       using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
       using PointCloudIn = typename Feature<PointInT, PointOutT>::PointCloudIn;
-      using Ptr = boost::shared_ptr<UniqueShapeContext<PointInT, PointOutT, PointRFT> >;
-      using ConstPtr = boost::shared_ptr<const UniqueShapeContext<PointInT, PointOutT, PointRFT> >;
+      using Ptr = shared_ptr<UniqueShapeContext<PointInT, PointOutT, PointRFT> >;
+      using ConstPtr = shared_ptr<const UniqueShapeContext<PointInT, PointOutT, PointRFT> >;
 
 
       /** \brief Constructor. */

@@ -64,8 +64,8 @@ namespace pcl
             virtual ~Octree();
 
             /** \brief Types */
-            using Ptr = boost::shared_ptr<Octree>;
-            using ConstPtr = boost::shared_ptr<const Octree>;
+            using Ptr = shared_ptr<Octree>;
+            using ConstPtr = shared_ptr<const Octree>;
 
             /** \brief Point typwe supported */
             using PointType = pcl::PointXYZ;

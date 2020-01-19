@@ -51,8 +51,8 @@ namespace pcl
   {
     public:
 
-      using Ptr = boost::shared_ptr< PlaneClipper3D<PointT> >;
-      using ConstPtr = boost::shared_ptr< const PlaneClipper3D<PointT> >;
+      using Ptr = shared_ptr< PlaneClipper3D<PointT> >;
+      using ConstPtr = shared_ptr< const PlaneClipper3D<PointT> >;
 
       /**
        * @author Suat Gedikli <gedikli@willowgarage.com>

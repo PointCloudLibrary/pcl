@@ -78,9 +78,9 @@ namespace pcl
         }
       };
       using FeatureHashMapType = std::unordered_multimap<HashKeyStruct, std::pair<std::size_t, std::size_t>, HashKeyStruct>;
-      using FeatureHashMapTypePtr = boost::shared_ptr<FeatureHashMapType>;
-      using Ptr = boost::shared_ptr<PPFHashMapSearch>;
-      using ConstPtr = boost::shared_ptr<const PPFHashMapSearch>;
+      using FeatureHashMapTypePtr = shared_ptr<FeatureHashMapType>;
+      using Ptr = shared_ptr<PPFHashMapSearch>;
+      using ConstPtr = shared_ptr<const PPFHashMapSearch>;
 
 
       /** \brief Constructor for the PPFHashMapSearch class which sets the two step parameters for the enclosed data structure
@@ -115,7 +115,7 @@ namespace pcl
       nearestNeighborSearch (float &f1, float &f2, float &f3, float &f4,
                              std::vector<std::pair<std::size_t, std::size_t> > &indices);
 
-      /** \brief Convenience method for returning a copy of the class instance as a boost::shared_ptr */
+      /** \brief Convenience method for returning a copy of the class instance as a shared_ptr */
       Ptr
       makeShared() { return Ptr (new PPFHashMapSearch (*this)); }
 

@@ -242,8 +242,8 @@ namespace pcl
   class NormalEstimation: public Feature<PointInT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<NormalEstimation<PointInT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const NormalEstimation<PointInT, PointOutT> >;
+      using Ptr = shared_ptr<NormalEstimation<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const NormalEstimation<PointInT, PointOutT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;

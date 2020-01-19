@@ -2,6 +2,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/point_types.h>
+#include <pcl/make_shared.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/voxel_grid.h>
@@ -18,7 +19,7 @@ template <typename PointT>
 class ConditionThresholdHSV : public pcl::ConditionBase<PointT>
 {
   public:
-    typedef boost::shared_ptr<ConditionThresholdHSV<PointT> > Ptr;
+    typedef pcl::shared_ptr<ConditionThresholdHSV<PointT> > Ptr;
     
     ConditionThresholdHSV (float min_h, float max_h, float min_s, float max_s, float min_v, float max_v) :
       min_h_(min_h), max_h_(max_h), min_s_(min_s), max_s_(max_s), min_v_(min_v), max_v_(max_v)

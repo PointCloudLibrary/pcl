@@ -58,8 +58,8 @@ namespace pcl
   {
   public:
 
-    using Ptr = boost::shared_ptr<TSDFVolume<VoxelT, WeightT> >;
-    using ConstPtr = boost::shared_ptr<const TSDFVolume<VoxelT, WeightT> >;
+    using Ptr = shared_ptr<TSDFVolume<VoxelT, WeightT> >;
+    using ConstPtr = shared_ptr<const TSDFVolume<VoxelT, WeightT> >;
 
     // using VoxelTVec = Eigen::Matrix<VoxelT, Eigen::Dynamic, 1>;
     using VoxelTVec = Eigen::VectorXf;
@@ -283,8 +283,8 @@ public:
   //  void
   //  integrateVolume (const Eigen::MatrixXf &depth_scaled, float tranc_dist, const Eigen::Matrix3f &R_inv, const Eigen::Vector3f &t, const Intr &intr);
 
-    using VolumePtr = boost::shared_ptr<std::vector<VoxelT> >;
-    using WeightsPtr = boost::shared_ptr<std::vector<WeightT> >;
+    using VolumePtr = shared_ptr<std::vector<VoxelT> >;
+    using WeightsPtr = shared_ptr<std::vector<WeightT> >;
 
     Header header_;
     VolumePtr volume_;

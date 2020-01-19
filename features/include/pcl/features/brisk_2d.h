@@ -67,8 +67,8 @@ namespace pcl
   class BRISK2DEstimation// : public Feature<PointT, KeyPointT>
   {
     public:
-      using Ptr = boost::shared_ptr<BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT> >;
-      using ConstPtr = boost::shared_ptr<const BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT> >;
+      using Ptr = shared_ptr<BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT> >;
+      using ConstPtr = shared_ptr<const BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT> >;
 
       using PointCloudInT = pcl::PointCloud<PointInT>;
       using PointCloudInTConstPtr = typename PointCloudInT::ConstPtr;

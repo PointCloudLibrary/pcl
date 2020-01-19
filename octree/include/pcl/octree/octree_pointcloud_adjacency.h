@@ -83,8 +83,8 @@ namespace pcl
         using OctreeBaseT = OctreeBase<LeafContainerT, BranchContainerT>;
 
         using OctreeAdjacencyT = OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>;
-        using Ptr = boost::shared_ptr<OctreeAdjacencyT>;
-        using ConstPtr = boost::shared_ptr<const OctreeAdjacencyT>;
+        using Ptr = shared_ptr<OctreeAdjacencyT>;
+        using ConstPtr = shared_ptr<const OctreeAdjacencyT>;
 
         using OctreePointCloudT = OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeBaseT>;
         using LeafNode = typename OctreePointCloudT::LeafNode;

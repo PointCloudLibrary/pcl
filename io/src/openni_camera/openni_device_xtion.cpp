@@ -36,6 +36,7 @@
  *
  */
 #include <pcl/pcl_config.h>
+#include <pcl/make_shared.h>
 #ifdef HAVE_OPENNI
 
 #ifdef __GNUC__
@@ -115,7 +116,7 @@ openni_wrapper::DeviceXtionPro::enumAvailableModes () throw ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::Image::Ptr 
-openni_wrapper::DeviceXtionPro::getCurrentImage (boost::shared_ptr<xn::ImageMetaData>) const throw ()
+openni_wrapper::DeviceXtionPro::getCurrentImage (pcl::shared_ptr<xn::ImageMetaData>) const throw ()
 {
   return (Image::Ptr (reinterpret_cast<Image*> (0)));
 }

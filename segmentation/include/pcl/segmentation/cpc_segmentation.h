@@ -177,8 +177,8 @@ namespace pcl
           using SampleConsensusModelPtr = SampleConsensusModel<WeightSACPointType>::Ptr;
 
         public:
-          using Ptr = boost::shared_ptr<WeightedRandomSampleConsensus>;
-          using ConstPtr = boost::shared_ptr<const WeightedRandomSampleConsensus>;
+          using Ptr = shared_ptr<WeightedRandomSampleConsensus>;
+          using ConstPtr = shared_ptr<const WeightedRandomSampleConsensus>;
 
           /** \brief WeightedRandomSampleConsensus (Weighted RAndom SAmple Consensus) main constructor
             * \param[in] model a Sample Consensus model

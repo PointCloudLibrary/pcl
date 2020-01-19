@@ -84,8 +84,8 @@ namespace pcl
   class ISSKeypoint3D : public Keypoint<PointInT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<ISSKeypoint3D<PointInT, PointOutT, NormalT> >;
-      using ConstPtr = boost::shared_ptr<const ISSKeypoint3D<PointInT, PointOutT, NormalT> >;
+      using Ptr = shared_ptr<ISSKeypoint3D<PointInT, PointOutT, NormalT> >;
+      using ConstPtr = shared_ptr<const ISSKeypoint3D<PointInT, PointOutT, NormalT> >;
 
       using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
       using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;

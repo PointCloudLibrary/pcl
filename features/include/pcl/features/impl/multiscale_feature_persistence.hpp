@@ -198,7 +198,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::extractUniqueFeatu
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointFeature> void
 pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::determinePersistentFeatures (FeatureCloud &output_features,
-                                                                                           boost::shared_ptr<std::vector<int> > &output_indices)
+                                                                                           shared_ptr<std::vector<int> > &output_indices)
 {
   if (!initCompute ())
     return;

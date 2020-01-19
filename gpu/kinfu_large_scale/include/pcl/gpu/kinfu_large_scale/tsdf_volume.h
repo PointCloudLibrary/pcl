@@ -61,8 +61,8 @@ namespace pcl
       class PCL_EXPORTS TsdfVolume
       {
       public:
-        using Ptr = boost::shared_ptr<TsdfVolume>;
-        using ConstPtr = boost::shared_ptr<const TsdfVolume>;
+        using Ptr = shared_ptr<TsdfVolume>;
+        using ConstPtr = shared_ptr<const TsdfVolume>;
 
         /** \brief Supported Point Types */
         using PointType = PointXYZ;
@@ -277,8 +277,8 @@ namespace pcl
         float tranc_dist_;
 
         // The following member are resulting from the merge of TSDFVolume with TsdfVolume class.
-        using VolumePtr = boost::shared_ptr<std::vector<float> >;
-        using WeightsPtr = boost::shared_ptr<std::vector<short> >;
+        using VolumePtr = shared_ptr<std::vector<float> >;
+        using WeightsPtr = shared_ptr<std::vector<short> >;
 
         Header header_;
         VolumePtr volume_host_;

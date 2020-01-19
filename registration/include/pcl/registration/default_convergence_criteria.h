@@ -65,8 +65,8 @@ namespace pcl
     class DefaultConvergenceCriteria : public ConvergenceCriteria
     {
       public:
-        using Ptr = boost::shared_ptr<DefaultConvergenceCriteria<Scalar> >;
-        using ConstPtr = boost::shared_ptr<const DefaultConvergenceCriteria<Scalar> >;
+        using Ptr = shared_ptr<DefaultConvergenceCriteria<Scalar> >;
+        using ConstPtr = shared_ptr<const DefaultConvergenceCriteria<Scalar> >;
 
         using Matrix4 = Eigen::Matrix<Scalar, 4, 4>;
 

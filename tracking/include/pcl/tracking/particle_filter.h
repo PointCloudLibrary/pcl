@@ -32,8 +32,8 @@ namespace pcl
         using Tracker<PointInT, StateT>::indices_;
         using Tracker<PointInT, StateT>::getClassName;
 
-        using Ptr = boost::shared_ptr<ParticleFilterTracker<PointInT, StateT>>;
-        using ConstPtr = boost::shared_ptr<const ParticleFilterTracker<PointInT, StateT>>;
+        using Ptr = shared_ptr<ParticleFilterTracker<PointInT, StateT>>;
+        using ConstPtr = shared_ptr<const ParticleFilterTracker<PointInT, StateT>>;
 
         using BaseClass = Tracker<PointInT, StateT>;
         

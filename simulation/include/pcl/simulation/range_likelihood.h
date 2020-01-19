@@ -27,8 +27,8 @@ namespace pcl {
 namespace simulation {
 class PCL_EXPORTS RangeLikelihood {
 public:
-  using Ptr = boost::shared_ptr<RangeLikelihood>;
-  using ConstPtr = boost::shared_ptr<const RangeLikelihood>;
+  using Ptr = shared_ptr<RangeLikelihood>;
+  using ConstPtr = shared_ptr<const RangeLikelihood>;
 
 public:
   /** Create a new object to compute range image likelihoods.
