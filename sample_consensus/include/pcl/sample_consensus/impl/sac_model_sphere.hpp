@@ -256,12 +256,12 @@ pcl::SampleConsensusModelSphere<PointT>::countWithinDistanceStandard (
 }
 
 //////////////////////////////////////////////////////////////////////////
+#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
 template <typename PointT> std::size_t
 pcl::SampleConsensusModelSphere<PointT>::countWithinDistanceSSE (
       const Eigen::VectorXf &model_coefficients, const double threshold, std::size_t i) const
 {
   std::size_t nr_p = 0;
-#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
   const __m128 a_vec = _mm_set1_ps (model_coefficients[0]);
   const __m128 b_vec = _mm_set1_ps (model_coefficients[1]);
   const __m128 c_vec = _mm_set1_ps (model_coefficients[2]);
@@ -284,20 +284,20 @@ pcl::SampleConsensusModelSphere<PointT>::countWithinDistanceSSE (
   nr_p += _mm_extract_epi32 (res, 1);
   nr_p += _mm_extract_epi32 (res, 2);
   nr_p += _mm_extract_epi32 (res, 3);
-#endif
 
   // Process the remaining points (at most 3)
   nr_p += countWithinDistanceStandard (model_coefficients, threshold, i);
   return (nr_p);
 }
+#endif
 
 //////////////////////////////////////////////////////////////////////////
+#if defined (__AVX__) && defined (__AVX2__)
 template <typename PointT> std::size_t
 pcl::SampleConsensusModelSphere<PointT>::countWithinDistanceAVX (
       const Eigen::VectorXf &model_coefficients, const double threshold, std::size_t i) const
 {
   std::size_t nr_p = 0;
-#if defined (__AVX__) && defined (__AVX2__)
   const __m256 a_vec = _mm256_set1_ps (model_coefficients[0]);
   const __m256 b_vec = _mm256_set1_ps (model_coefficients[1]);
   const __m256 c_vec = _mm256_set1_ps (model_coefficients[2]);
@@ -328,12 +328,12 @@ pcl::SampleConsensusModelSphere<PointT>::countWithinDistanceAVX (
   nr_p += _mm256_extract_epi32 (res, 5);
   nr_p += _mm256_extract_epi32 (res, 6);
   nr_p += _mm256_extract_epi32 (res, 7);
-#endif
 
   // Process the remaining points (at most 7)
   nr_p += countWithinDistanceStandard (model_coefficients, threshold, i);
   return (nr_p);
 }
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

@@ -114,8 +114,12 @@ class SampleConsensusModelSphereTest : private SampleConsensusModelSphere<PointT
   public:
     using SampleConsensusModelSphere<PointT>::SampleConsensusModelSphere;
     using SampleConsensusModelSphere<PointT>::countWithinDistanceStandard;
+#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
     using SampleConsensusModelSphere<PointT>::countWithinDistanceSSE;
+#endif
+#if defined (__AVX__) && defined (__AVX2__)
     using SampleConsensusModelSphere<PointT>::countWithinDistanceAVX;
+#endif
 };
 
 TEST (SampleConsensusModelSphere, SIMD_countWithinDistance) // Test if all countWithinDistance implementations return the same value
@@ -149,13 +153,18 @@ TEST (SampleConsensusModelSphere, SIMD_countWithinDistance) // Test if all count
 
     const double threshold = 0.15 * static_cast<double> (rand ()) / RAND_MAX; // threshold in [0; 0.1]
 
+    // The number of inliers is usually somewhere between 0 and 10
     const auto res_standard = model.countWithinDistanceStandard (model_coefficients, threshold); // Standard
+    PCL_DEBUG ("seed=%lu, i=%lu, model=(%f, %f, %f, %f), threshold=%f, res_standard=%lu\n", seed, i,
+               model_coefficients(0), model_coefficients(1), model_coefficients(2), model_coefficients(3), threshold, res_standard);
+#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
     const auto res_sse      = model.countWithinDistanceSSE (model_coefficients, threshold); // SSE
+    ASSERT_EQ (res_standard, res_sse);
+#endif
+#if defined (__AVX__) && defined (__AVX2__)
     const auto res_avx      = model.countWithinDistanceAVX (model_coefficients, threshold); // AVX
-    PCL_DEBUG ("seed=%lu, i=%lu, model=(%f, %f, %f, %f), threshold=%f, res=%lu, %lu, %lu\n",
-               seed, i, model_coefficients(0), model_coefficients(1), model_coefficients(2), model_coefficients(3), threshold, res_standard, res_sse, res_avx);
-    ASSERT_EQ (res_standard, res_sse); // The number of inliers is usually somewhere between 0 and 10
     ASSERT_EQ (res_standard, res_avx);
+#endif
   }
 }
 
@@ -517,8 +526,12 @@ class SampleConsensusModelCircle2DTest : private SampleConsensusModelCircle2D<Po
   public:
     using SampleConsensusModelCircle2D<PointT>::SampleConsensusModelCircle2D;
     using SampleConsensusModelCircle2D<PointT>::countWithinDistanceStandard;
+#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
     using SampleConsensusModelCircle2D<PointT>::countWithinDistanceSSE;
+#endif
+#if defined (__AVX__) && defined (__AVX2__)
     using SampleConsensusModelCircle2D<PointT>::countWithinDistanceAVX;
+#endif
 };
 
 TEST (SampleConsensusModelCircle2D, SIMD_countWithinDistance) // Test if all countWithinDistance implementations return the same value
@@ -551,13 +564,18 @@ TEST (SampleConsensusModelCircle2D, SIMD_countWithinDistance) // Test if all cou
 
     const double threshold = 0.1 * static_cast<double> (rand ()) / RAND_MAX; // threshold in [0; 0.1]
 
+    // The number of inliers is usually somewhere between 0 and 20
     const auto res_standard = model.countWithinDistanceStandard (model_coefficients, threshold); // Standard
+    PCL_DEBUG ("seed=%lu, i=%lu, model=(%f, %f, %f), threshold=%f, res_standard=%lu\n", seed, i,
+               model_coefficients(0), model_coefficients(1), model_coefficients(2), threshold, res_standard);
+#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
     const auto res_sse      = model.countWithinDistanceSSE (model_coefficients, threshold); // SSE
+    ASSERT_EQ (res_standard, res_sse);
+#endif
+#if defined (__AVX__) && defined (__AVX2__)
     const auto res_avx      = model.countWithinDistanceAVX (model_coefficients, threshold); // AVX
-    PCL_DEBUG ("seed=%lu, i=%lu, model=(%f, %f, %f), threshold=%f, res=%lu, %lu, %lu\n",
-               seed, i, model_coefficients(0), model_coefficients(1), model_coefficients(2), threshold, res_standard, res_sse, res_avx);
-    ASSERT_EQ (res_standard, res_sse); // The number of inliers is usually somewhere between 0 and 20
     ASSERT_EQ (res_standard, res_avx);
+#endif
   }
 }
 

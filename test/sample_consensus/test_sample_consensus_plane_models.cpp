@@ -311,8 +311,12 @@ class SampleConsensusModelPlaneTest : private SampleConsensusModelPlane<PointT>
   public:
     using SampleConsensusModelPlane<PointT>::SampleConsensusModelPlane;
     using SampleConsensusModelPlane<PointT>::countWithinDistanceStandard;
+#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
     using SampleConsensusModelPlane<PointT>::countWithinDistanceSSE;
+#endif
+#if defined (__AVX__) && defined (__AVX2__)
     using SampleConsensusModelPlane<PointT>::countWithinDistanceAVX;
+#endif
 };
 
 TEST (SampleConsensusModelPlane, SIMD_countWithinDistance) // Test if all countWithinDistance implementations return the same value
@@ -339,18 +343,26 @@ TEST (SampleConsensusModelPlane, SIMD_countWithinDistance) // Test if all countW
 
     // Generate random model parameters
     Eigen::VectorXf model_coefficients(4);
-    model_coefficients << 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0, 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0, 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0, 0.0;
+    model_coefficients << 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0,
+                          2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0,
+                          2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0, 0.0;
     model_coefficients.normalize ();
     model_coefficients(3) = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0; // Last parameter
 
     const double threshold = 0.1 * static_cast<double> (rand ()) / RAND_MAX; // threshold in [0; 0.1]
 
+    // The number of inliers is usually somewhere between 0 and 100
     const auto res_standard = model.countWithinDistanceStandard (model_coefficients, threshold); // Standard
+    PCL_DEBUG ("seed=%lu, i=%lu, model=(%f, %f, %f, %f), threshold=%f, res_standard=%lu\n", seed, i,
+               model_coefficients(0), model_coefficients(1), model_coefficients(2), model_coefficients(3), threshold, res_standard);
+#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
     const auto res_sse      = model.countWithinDistanceSSE (model_coefficients, threshold); // SSE
+    ASSERT_EQ (res_standard, res_sse);
+#endif
+#if defined (__AVX__) && defined (__AVX2__)
     const auto res_avx      = model.countWithinDistanceAVX (model_coefficients, threshold); // AVX
-    PCL_DEBUG ("seed=%lu, i=%lu, model=(%f, %f, %f, %f), threshold=%f, res=%lu, %lu, %lu\n", seed, i, model_coefficients(0), model_coefficients(1), model_coefficients(2), model_coefficients(3), threshold, res_standard, res_sse, res_avx);
-    ASSERT_EQ (res_standard, res_sse); // The number of inliers is usually somewhere between 0 and 100
     ASSERT_EQ (res_standard, res_avx);
+#endif
   }
 }
 

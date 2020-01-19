@@ -265,6 +265,7 @@ namespace pcl
                                    const double threshold,
                                    std::size_t i = 0) const;
 
+#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
       /** This implementation uses SSE, SSE2, and SSE4.1 instructions. It is not intended for normal use.
         * See countWithinDistance which automatically uses the fastest implementation.
         */
@@ -272,7 +273,9 @@ namespace pcl
       countWithinDistanceSSE (const Eigen::VectorXf &model_coefficients,
                               const double threshold,
                               std::size_t i = 0) const;
+#endif
 
+#if defined (__AVX__) && defined (__AVX2__)
       /** This implementation uses AVX and AVX2 instructions. It is not intended for normal use.
         * See countWithinDistance which automatically uses the fastest implementation.
         */
@@ -280,6 +283,7 @@ namespace pcl
       countWithinDistanceAVX (const Eigen::VectorXf &model_coefficients,
                               const double threshold,
                               std::size_t i = 0) const;
+#endif
 
     private:
       /** \brief Check if a sample of indices results in a good sample of points
