@@ -794,7 +794,8 @@ namespace pcl
     long long _InterleaveBits( int p[3] )
     {
       long long key = 0;
-      for( int i=0 ; i<32 ; i++ ) key |= ( ( p[0] & (1<<i) )<<(2*i) ) | ( ( p[1] & (1<<i) )<<(2*i+1) ) | ( ( p[2] & (1<<i) )<<(2*i+2) );
+      long long _p[3] = {p[0],p[1],p[2]};
+      for( int i=0 ; i<31 ; i++ ) key |= ( ( _p[0] & (1ull<<i) )<<(2*i) ) | ( ( _p[1] & (1ull<<i) )<<(2*i+1) ) | ( ( _p[2] & (1ull<<i) )<<(2*i+2) );
       return key;
     }
     template <class NodeData,class Real>
