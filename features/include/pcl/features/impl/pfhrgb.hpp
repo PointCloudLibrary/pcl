@@ -74,46 +74,38 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computePointPFHRGBSignature
   float hist_incr = 100.0f / static_cast<float> (indices.size () * (indices.size () - 1) / 2);
 
   // Iterate over all the points in the neighborhood
-  for (std::size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
+  for (const auto& index_i: indices)
   {
-    for (std::size_t j_idx = 0; j_idx < indices.size (); ++j_idx)
+    for (const auto& index_j: indices)
     {
       // Avoid unnecessary returns
-      if (i_idx == j_idx)
+      if (index_i == index_j)
         continue;
 
       // Compute the pair NNi to NNj
-      if (!computeRGBPairFeatures (cloud, normals, indices[i_idx], indices[j_idx],
+      if (!computeRGBPairFeatures (cloud, normals, index_i, index_j,
                                    pfhrgb_tuple_[0], pfhrgb_tuple_[1], pfhrgb_tuple_[2], pfhrgb_tuple_[3],
                                    pfhrgb_tuple_[4], pfhrgb_tuple_[5], pfhrgb_tuple_[6]))
         continue;
 
       // Normalize the f1, f2, f3, f5, f6, f7 features and push them in the histogram
       f_index_[0] = static_cast<int> (std::floor (nr_split * ((pfhrgb_tuple_[0] + M_PI) * d_pi_)));
-      if (f_index_[0] < 0)         f_index_[0] = 0;
-      if (f_index_[0] >= nr_split) f_index_[0] = nr_split - 1;
-
-      f_index_[1] = static_cast<int> (std::floor (nr_split * ((pfhrgb_tuple_[1] + 1.0) * 0.5)));
-      if (f_index_[1] < 0)         f_index_[1] = 0;
-      if (f_index_[1] >= nr_split) f_index_[1] = nr_split - 1;
-
-      f_index_[2] = static_cast<int> (std::floor (nr_split * ((pfhrgb_tuple_[2] + 1.0) * 0.5)));
-      if (f_index_[2] < 0)         f_index_[2] = 0;
-      if (f_index_[2] >= nr_split) f_index_[2] = nr_split - 1;
-
+      // @TODO: confirm "not to do for i == 3"
+      for (int i = 1; i < 3; ++i)
+      {
+        const float feature_value = nr_split * ((pfhrgb_tuple_[i] + 1.0) * 0.5);
+        f_index_[i] = static_cast<int> (std::floor (feature_value));
+      }
       // color ratios are in [-1, 1]
-      f_index_[4] = static_cast<int> (std::floor (nr_split * ((pfhrgb_tuple_[4] + 1.0) * 0.5)));
-      if (f_index_[4] < 0)         f_index_[4] = 0;
-      if (f_index_[4] >= nr_split) f_index_[4] = nr_split - 1;
-
-      f_index_[5] = static_cast<int> (std::floor (nr_split * ((pfhrgb_tuple_[5] + 1.0) * 0.5)));
-      if (f_index_[5] < 0)         f_index_[5] = 0;
-      if (f_index_[5] >= nr_split) f_index_[5] = nr_split - 1;
-
-      f_index_[6] = static_cast<int> (std::floor (nr_split * ((pfhrgb_tuple_[6] + 1.0) * 0.5)));
-      if (f_index_[6] < 0)         f_index_[6] = 0;
-      if (f_index_[6] >= nr_split) f_index_[6] = nr_split - 1;
-
+      for (int i = 4; i < 7; ++i)
+      {
+        const float feature_value = nr_split * ((pfhrgb_tuple_[i] + 1.0) * 0.5);
+        f_index_[i] = static_cast<int> (std::floor (feature_value));
+      }
+      for (auto& feature: f_index_)
+      {
+        feature = std::min(nr_split - 1, std::max(0, feature));
+      }
 
       // Copy into the histogram
       h_index = 0;
@@ -159,12 +151,8 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
     // Estimate the PFH signature at each patch
     computePointPFHRGBSignature (*surface_, *normals_, nn_indices, nr_subdiv_, pfhrgb_histogram_);
 
-    // Copy into the resultant cloud
-    for (Eigen::Index d = 0; d < pfhrgb_histogram_.size (); ++d) {
-      output.points[idx].histogram[d] = pfhrgb_histogram_[d];
-//      PCL_INFO ("%f ", pfhrgb_histogram_[d]);
-    }
-//    PCL_INFO ("\n");
+    std::copy_n (pfhrgb_histogram_.data (), pfhrgb_histogram_.size (),
+                 output.points[idx].histogram);
   }
 }
 

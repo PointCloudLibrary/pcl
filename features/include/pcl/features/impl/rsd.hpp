@@ -65,14 +65,13 @@ pcl::computeRSD (const pcl::PointCloud<PointInT> &surface, const pcl::PointCloud
   
   // Initialize minimum and maximum angle values in each distance bin
   std::vector<std::vector<double> > min_max_angle_by_dist (nr_subdiv);
-  min_max_angle_by_dist[0].resize (2);
-  min_max_angle_by_dist[0][0] = min_max_angle_by_dist[0][1] = 0.0;
-  for (int di=1; di<nr_subdiv; di++)
+  for (auto& minmax: min_max_angle_by_dist)
   {
-    min_max_angle_by_dist[di].resize (2);
-    min_max_angle_by_dist[di][0] = +DBL_MAX;
-    min_max_angle_by_dist[di][1] = -DBL_MAX;
+    minmax.resize (2);
+    minmax[0] = std::numeric_limits<double>::max();
+    minmax[1] = -std::numeric_limits<double>::max();
   }
+  min_max_angle_by_dist[0][0] = min_max_angle_by_dist[0][1] = 0.0;
 
   // Compute distance by normal angle distribution for points
   std::vector<int>::const_iterator i, begin (indices.begin()), end (indices.end());
