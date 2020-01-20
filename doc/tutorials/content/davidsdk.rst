@@ -14,9 +14,9 @@ Install davidSDK
 You need a davidSDK to run the SDK on the server side, the official davidSDK does not come with a Makefile or a CMake project. An un-official fork provides a CMake project that enables to easily use the SDK under Linux (with minor tweaks)
 
   * `Official davidSDK download page <http://www.david-3d.com/en/support/downloads>`_
-  * `Victor Lamoine davidSDK fork <https://github.com/InstitutMaupertuis/davidSDK>`_
+  * `Victor Lamoine davidSDK fork <https://gitlab.com/InstitutMaupertuis/davidSDK>`_
 
-Please test `the example project <https://github.com/InstitutMaupertuis/davidSDK/blob/master/README.md#example-project-using-the-davidsdk>`_ before going further.
+Please test `the example project <https://gitlab.com/InstitutMaupertuis/davidSDK/blob/master/README.md#example-project-using-the-davidsdk>`_ before going further.
 
 .. note:: If you use the trial version of the server, the only format available is OBJ (used by default)
 
