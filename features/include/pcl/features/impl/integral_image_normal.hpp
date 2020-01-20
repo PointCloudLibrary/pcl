@@ -1114,8 +1114,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
         }
         else
         {
-          output [pt_index].getNormalVector3fMap ().setConstant (bad_point);
-          output [pt_index].curvature = bad_point;
+          output [idx].getNormalVector3fMap ().setConstant (bad_point);
+          output [idx].curvature = bad_point;
         }
       }
     }
