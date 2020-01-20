@@ -63,7 +63,7 @@ Please refer to the platform specific tutorials:
 Documentation
 -------------
 - [Tutorials](http://www.pointclouds.org/documentation/tutorials/)
-- [PCL trunk documentation](http://docs.pointclouds.org/trunk/) (updated daily)
+- [PCL trunk documentation](https://pointcloudlibrary.github.io/documentation/) (updated nightly)
 
 Contributing
 ------------
