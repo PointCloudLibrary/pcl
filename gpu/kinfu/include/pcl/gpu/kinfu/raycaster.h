@@ -41,7 +41,7 @@
 #include <pcl/point_types.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/kinfu/pixel_rgb.h>
-#include <boost/shared_ptr.hpp>
+#include <pcl/make_shared.h>
 #include <Eigen/Geometry>
 
 namespace pcl
