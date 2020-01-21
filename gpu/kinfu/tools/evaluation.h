@@ -39,7 +39,7 @@
 #include <pcl/gpu/containers/kernel_containers.h>
 #include <pcl/gpu/kinfu/kinfu.h>
 
-#include <boost/shared_ptr.hpp>
+#include <pcl/make_shared.h>
 
 #include <memory>
 #include <string>
