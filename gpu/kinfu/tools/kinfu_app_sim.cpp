@@ -101,7 +101,7 @@ using ScopeTimeT = pcl::ScopeTime;
 #include <Eigen/Dense>
 #include <cmath>
 #include <iostream>
-#include <boost/shared_ptr.hpp>
+#include <pcl/make_shared.h>
 #ifdef _WIN32
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>

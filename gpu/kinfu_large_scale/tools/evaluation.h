@@ -39,7 +39,7 @@
 #include <pcl/gpu/containers/kernel_containers.h>
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
 
-#include <boost/shared_ptr.hpp>
+#include <pcl/make_shared.h>
 
 #include <memory>
 #include <string>
@@ -50,8 +50,8 @@
 class Evaluation
 {
 public:
-  using Ptr = shared_ptr<Evaluation>; 
-  using ConstPtr = shared_ptr<const Evaluation>;
+  using Ptr = pcl::shared_ptr<Evaluation>; 
+  using ConstPtr = pcl::shared_ptr<const Evaluation>;
   using RGB = pcl::gpu::kinfuLS::PixelRGB;
 
   Evaluation(const std::string& folder);

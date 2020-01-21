@@ -116,8 +116,8 @@ namespace pcl
       using RgbCloudConstPtr = pcl::PointCloud<RGB>::ConstPtr;
 
       public:
-        using Ptr = shared_ptr<PointCloudColorHandlerRGBCloud<PointT> >;
-        using ConstPtr = shared_ptr<const PointCloudColorHandlerRGBCloud<PointT> >;
+        using Ptr = pcl::shared_ptr<PointCloudColorHandlerRGBCloud<PointT> >;
+        using ConstPtr = pcl::shared_ptr<const PointCloudColorHandlerRGBCloud<PointT> >;
         
         /** \brief Constructor. */
         PointCloudColorHandlerRGBCloud (const PointCloudConstPtr& cloud, const RgbCloudConstPtr& colors)
@@ -307,8 +307,8 @@ pcl::PolygonMesh::Ptr convertToMesh(const DeviceArray<PointXYZ>& triangles)
 
 struct CurrentFrameCloudView
 {
-  using Ptr = shared_ptr<CurrentFrameCloudView>;
-  using ConstPtr = shared_ptr<const CurrentFrameCloudView>;
+  using Ptr = pcl::shared_ptr<CurrentFrameCloudView>;
+  using ConstPtr = pcl::shared_ptr<const CurrentFrameCloudView>;
 
   CurrentFrameCloudView() : cloud_device_ (480, 640), cloud_viewer_ ("Frame Cloud Viewer")
   {
