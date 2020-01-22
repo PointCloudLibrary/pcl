@@ -237,33 +237,33 @@ class MultiRansac
     {
       this->use_viewer = use_viewer;
       //cudaDeviceSetCacheConfig (cudaFuncCachePreferL1);
-      pcl::Grabber* interface = new pcl::OpenNIGrabber();
+      pcl::OpenNIGrabber interface {};
 
       boost::signals2::connection c;
       if (use_device)
       {
         std::cerr << "[RANSAC] Using GPU..." << std::endl;
         std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&MultiRansac::cloud_cb<pcl_cuda::Device>, this, _1, _2, _3);
-        c = interface->registerCallback (f);
+        c = interface.registerCallback (f);
       }
       else
       {
         std::cerr << "[RANSAC] Using CPU..." << std::endl;
         std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&MultiRansac::cloud_cb<pcl_cuda::Host>, this, _1, _2, _3);
-        c = interface->registerCallback (f);
+        c = interface.registerCallback (f);
       }
 
       if (use_viewer)
         viewer.runOnVisualizationThread (std::bind(&MultiRansac::viz_cb, this, _1), "viz_cb");
 
-      interface->start ();
+      interface.start ();
 
       while (!viewer.wasStopped ())
       {
         sleep (1);
       }
 
-      interface->stop ();
+      interface.stop ();
     }
 
     pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr logo_cloud_;

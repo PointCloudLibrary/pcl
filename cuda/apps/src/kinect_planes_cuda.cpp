@@ -248,45 +248,42 @@ class MultiRansac
     {
       this->use_viewer = use_viewer;
       //cudaDeviceSetCacheConfig (cudaFuncCachePreferL1);
-      pcl::Grabber* interface = new pcl::OpenNIGrabber();
+      pcl::OpenNIGrabber interface {};
 
       boost::signals2::connection c;
       if (use_device)
       {
         std::cerr << "[RANSAC] Using GPU..." << std::endl;
         std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&MultiRansac::cloud_cb<Device>, this, _1, _2, _3);
-        c = interface->registerCallback (f);
+        c = interface.registerCallback (f);
       }
       else
       {
         std::cerr << "[RANSAC] Using CPU..." << std::endl;
         std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&MultiRansac::cloud_cb<Host>, this, _1, _2, _3);
-        c = interface->registerCallback (f);
+        c = interface.registerCallback (f);
       }
 
       if (use_viewer)
         viewer.runOnVisualizationThread (std::bind(&MultiRansac::viz_cb, this, _1), "viz_cb");
 
-      interface->start ();
+      interface.start ();
 
       //--------------------- load pcl logo file
-      //pcl::Grabber* filegrabber = 0;
-
       //float frames_per_second = 1;
       //bool repeat = false;
 
       //std::string path = "./pcl_logo.pcd";
-      //if (!path.empty() && boost::filesystem::exists (path))
+      //if (path.empty() || !boost::filesystem::exists (path))
       //{
-      //  filegrabber = new pcl::PCDGrabber<pcl::PointXYZRGB > (path, frames_per_second, repeat);
-      //}
-      //else
       //  std::cerr << "did not find file" << std::endl;
+      //}
+      //pcl::PCDGrabber<pcl::PointXYZRGB> filegrabber {path, frames_per_second, repeat};
       //
       //std::function<void(const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&) > f = std::bind (&MultiRansac::logo_cb, this, _1);
-      //boost::signals2::connection c1 = filegrabber->registerCallback (f);
+      //boost::signals2::connection c1 = filegrabber.registerCallback (f);
 
-      //filegrabber->start ();
+      //filegrabber.start ();
       //------- END --------- load pcl logo file
       //
       while (!viewer.wasStopped ())
@@ -294,8 +291,8 @@ class MultiRansac
         pcl_sleep (1);
       }
 
-      //filegrabber->stop ();
-      interface->stop ();
+      //filegrabber.stop ();
+      interface.stop ();
     }
 
     pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr logo_cloud_;
