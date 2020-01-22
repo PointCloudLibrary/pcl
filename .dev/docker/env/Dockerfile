@@ -1,5 +1,15 @@
-ARG UBUNTU_DISTRO=16.04
-FROM ubuntu:${UBUNTU_DISTRO}
+# For valid combinations, check the following repo:
+# https://gitlab.com/nvidia/container-images/cuda/tree/master/dist
+# To enable cuda, use "--build-arg USE_CUDA=true" during image build process
+ARG USE_CUDA
+ARG CUDA_VERSION="9.0"
+ARG UBUNTU_DISTRO="16.04"
+# Known conflicts:
+# * 9.1 is an issue with 16.04 for Eigen
+ARG BASE_CUDA_IMAGE=${USE_CUDA:+"nvidia/cuda:${CUDA_VERSION}-devel-ubuntu${UBUNTU_DISTRO}"}
+ARG BASE_IMAGE=${BASE_CUDA_IMAGE:-"ubuntu:${UBUNTU_DISTRO}"}
+
+FROM ${BASE_IMAGE}
 
 ARG VTK_VERSION=6
 ENV DEBIAN_FRONTEND=noninteractive
