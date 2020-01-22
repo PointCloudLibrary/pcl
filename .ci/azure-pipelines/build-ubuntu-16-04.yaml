@@ -23,6 +23,13 @@ jobs:
             -DBUILD_global_tests=ON \
             -DBUILD_examples=ON \
             -DBUILD_tools=ON \
+            -DBUILD_GPU=ON \
+            -DBUILD_gpu_people=ON \
+            -DBUILD_gpu_surface=ON \
+            -DBUILD_gpu_tracking=ON \
+            -DBUILD_CUDA=ON\
+            -DBUILD_cuda_io=ON \
+            -DBUILD_cuda_apps=ON \
             -DBUILD_apps=ON \
             -DBUILD_apps_3d_rec_framework=ON \
             -DBUILD_apps_cloud_composer=ON \
