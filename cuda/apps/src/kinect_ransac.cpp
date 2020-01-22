@@ -164,57 +164,55 @@ class SimpleKinectTool
       bool repeat = false;
 
       std::string path = "./frame_0.pcd";
-      filegrabber = new pcl::PCDGrabber<pcl::PointXYZRGB > (path, frames_per_second, repeat);
+      pcl::PCDGrabber<pcl::PointXYZRGB > filegrabber (path, frames_per_second, repeat);
       
       if (use_device)
       {
         std::cerr << "[RANSAC] Using GPU..." << std::endl;
         std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = std::bind (&SimpleKinectTool::file_cloud_cb<pcl_cuda::Device>, this, _1);
-        filegrabber->registerCallback (f);
+        filegrabber.registerCallback (f);
       }
       else
       {
         std::cerr << "[RANSAC] Using CPU..." << std::endl;
         std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = std::bind (&SimpleKinectTool::file_cloud_cb<pcl_cuda::Host>, this, _1);
-        filegrabber->registerCallback (f);
+        filegrabber.registerCallback (f);
       }
 
-      filegrabber->start ();
+      filegrabber.start ();
       while (go_on)//!viewer.wasStopped () && go_on)
       {
         sleep (1);
       }
-      filegrabber->stop ();
+      filegrabber.stop ();
 
       
       //------- END --------- load pcl logo file
 #else
-
-      pcl::Grabber* interface = new pcl::OpenNIGrabber();
-
+      pcl::OpenNIGrabber interface {};
 
       boost::signals2::connection c;
       if (use_device)
       {
         std::cerr << "[RANSAC] Using GPU..." << std::endl;
         std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&SimpleKinectTool::cloud_cb<pcl_cuda::Device>, this, _1, _2, _3);
-        c = interface->registerCallback (f);
+        c = interface.registerCallback (f);
       }
       else
       {
         std::cerr << "[RANSAC] Using CPU..." << std::endl;
         std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&SimpleKinectTool::cloud_cb<pcl_cuda::Host>, this, _1, _2, _3);
-        c = interface->registerCallback (f);
+        c = interface.registerCallback (f);
       }
 
       //viewer.runOnVisualizationThread (fn, "viz_cb");
-      interface->start ();
+      interface.start ();
       while (!viewer.wasStopped ())
       {
         sleep (1);
       }
 
-      interface->stop ();
+      interface.stop ();
 #endif 
     }
 
