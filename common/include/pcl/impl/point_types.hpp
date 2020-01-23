@@ -645,6 +645,28 @@ namespace pcl
       a = 255;
     }
 
+    inline PointXYZRGB(float _x, float _y, float _z)
+    {
+      x = _x;
+      y = _y;
+      z = _z;
+      data[3] = 1.0f;
+      r = g = b = 0;
+      a = 255;
+    }
+
+    inline PointXYZRGB(float _x, float _y, float _z, std::uint8_t _r, std::uint8_t _g, std::uint8_t _b)
+    {
+      x = _x;
+      y = _y;
+      z = _z;
+      data[3] = 1.0f;
+      r = _r;
+      g = _g;
+      b = _b;
+      a = 255;
+    }
+
     friend std::ostream& operator << (std::ostream& os, const PointXYZRGB& p);
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
