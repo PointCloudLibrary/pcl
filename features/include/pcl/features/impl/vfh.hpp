@@ -97,10 +97,10 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
 {
   Eigen::Vector4f pfh_tuple;
   // Reset the whole thing
-  hist_f1_.setZero (nr_bins_f1_);
-  hist_f2_.setZero (nr_bins_f2_);
-  hist_f3_.setZero (nr_bins_f3_);
-  hist_f4_.setZero (nr_bins_f4_);
+  for (int i = 0; i < 4; ++i)
+  {
+    hist_f_[i].setZero (nr_bins_f_[i]);
+  }
 
   // Get the bounding box of the current cluster
   //Eigen::Vector4f min_pt, max_pt;
@@ -139,38 +139,23 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
       continue;
 
     // Normalize the f1, f2, f3, f4 features and push them in the histogram
+    for (int i = 0; i < 3; ++i)
     {
-      int h1_index = static_cast<int> (std::floor (nr_bins_f1_ * ((pfh_tuple[0] + M_PI) * d_pi_)));
-      h1_index = std::max(h1_index, 0);
-      h1_index = std::min(h1_index, nr_bins_f1_ - 1);
-      hist_f1_ (h1_index) += hist_incr;
-    }
-
-    {
-      int h2_index = static_cast<int> (std::floor (nr_bins_f2_ * ((pfh_tuple[1] + 1.0) * 0.5)));
-      h2_index = std::max(h2_index, 0);
-      h2_index = std::min(h2_index, nr_bins_f2_ - 1);
-      hist_f2_ (h2_index) += hist_incr;
-    }
-
-    {
-      int h3_index = static_cast<int> (std::floor (nr_bins_f3_ * ((pfh_tuple[2] + 1.0) * 0.5)));
-      h3_index = std::max(h3_index, 0);
-      h3_index = std::min(h3_index, nr_bins_f3_ - 1);
-      hist_f3_ (h3_index) += hist_incr;
+      const int raw_index = static_cast<int> (std::floor (nr_bins_f_[i] * ((pfh_tuple[i] + M_PI) * d_pi_)));
+      const int index = std::max(std::min(raw_index, nr_bins_f_[i] - 1), 0);
+      hist_f_[i] (index) += hist_incr;
     }
 
     if (hist_incr_size_component)
     {
-      int h4_index;
+      int index;
       if (normalize_distances_)
-        h4_index = static_cast<int> (std::floor (nr_bins_f4_ * (pfh_tuple[3] / distance_normalization_factor)));
+        index = static_cast<int> (std::floor (nr_bins_f_[3] * (pfh_tuple[3] / distance_normalization_factor)));
       else
-        h4_index = static_cast<int> (pcl_round (pfh_tuple[3] * 100));
+        index = static_cast<int> (pcl_round (pfh_tuple[3] * 100));
 
-      h4_index = std::max(h4_index, 0);
-      h4_index = std::min(h4_index, nr_bins_f4_ - 1);
-      hist_f4_ (h4_index) += hist_incr_size_component;
+      index = std::max (std::min (index, nr_bins_f_[3] - 1), 0);
+      hist_f_[3] (index) += hist_incr_size_component;
     }
   }
 }
@@ -256,10 +241,10 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   // Estimate the FPFH at nn_indices[0] using the entire cloud and copy the resultant signature
   auto outPtr = std::begin (output.points[0].histogram);
 
-  outPtr = std::copy_n (hist_f1_.data (), hist_f1_.size (), outPtr);
-  outPtr = std::copy_n (hist_f2_.data (), hist_f2_.size (), outPtr);
-  outPtr = std::copy_n (hist_f3_.data (), hist_f3_.size (), outPtr);
-  outPtr = std::copy_n (hist_f4_.data (), hist_f4_.size (), outPtr);
+  for (int i = 0; i < 4; ++i)
+  {
+    outPtr = std::copy_n (hist_f_[i].data (), hist_f_[i].size (), outPtr);
+  }
   outPtr = std::copy_n (hist_vp_.data (), hist_vp_.size (), outPtr);
 }
 
