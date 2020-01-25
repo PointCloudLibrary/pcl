@@ -1769,6 +1769,6 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
   }
 
   // Close file
-  fs.close ();
+  fpout.close ();
   return (0);
 }
