@@ -1047,7 +1047,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
           continue;
         }
 
-        if (u < border || v > right)
+        if (u < border || u > right)
         {
           output.points[idx].getNormalVector3fMap ().setConstant (bad_point);
           output.points[idx].curvature = bad_point;
@@ -1091,7 +1091,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
           continue;
         }
 
-        if (u < border || v > right)
+        if (u < border || u > right)
         {
           output.points[idx].getNormalVector3fMap ().setConstant (bad_point);
           output.points[idx].curvature = bad_point;
