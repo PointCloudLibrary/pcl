@@ -41,6 +41,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/normal_3d_omp.h>
+#include <pcl/features/integral_image_normal.h>
 #include <pcl/io/pcd_io.h>
 
 using namespace pcl;
@@ -210,6 +211,83 @@ TEST (PCL, NormalEstimationOpenMP)
     EXPECT_NEAR (point.normal[1], -0.369596, 1e-4);
     EXPECT_NEAR (point.normal[2], -0.928511, 1e-4);
     EXPECT_NEAR (point.curvature, 0.0693136, 1e-4);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// This tests the indexing issue from #3573
+// In certain cases when you used a subset of the indices
+// and set the depth dependent smoothing to false the
+// IntegralImageNormalEstimation could crash or produce
+// incorrect normals.
+// This test reproduces the issue.
+TEST (PCL, IntegralImageNormalEstimationIndexingIssue)
+{
+  PointCloud<PointXYZ>::Ptr cloudptr(new PointCloud<PointXYZ>());
+
+  cloudptr->width = 100;
+  cloudptr->height = 100;
+  cloudptr->points.clear();
+  cloudptr->points.resize(cloudptr->width * cloudptr->height);
+
+  int centerX = cloudptr->width >> 1;
+  int centerY = cloudptr->height >> 1;
+
+  int idx = 0;
+  for (int ypos = -centerY; ypos < centerY; ypos++)
+  {
+    for (int xpos = -centerX; xpos < centerX; xpos++)
+	{
+      double z = xpos < 0.0 ? 1.0 : 0.0;
+      double y = ypos;
+      double x = xpos;
+
+      cloudptr->points[idx++] = PointXYZ(float(x), float(y), float(z));
+    }
+  }
+
+  pcl::IndicesPtr indicesptr (new pcl::Indices ());
+  indicesptr->resize(cloudptr->size() / 2);
+  for (int i = 0; i < cloudptr->size() / 2; ++i)
+  {
+    (*indicesptr)[i] = i + cloudptr->size() / 2;
+  }
+
+  IntegralImageNormalEstimation<PointXYZ, Normal> n;
+
+  // Object
+  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
+
+  // set parameters
+  n.setInputCloud (cloudptr);
+  n.setIndices (indicesptr);
+  n.setDepthDependentSmoothing (false);
+
+  // estimate
+  n.compute (*normals);
+
+  std::vector<PointXYZ> normalsVec;
+  normalsVec.resize(normals->size());
+  for( int i = 0; i < normals->size(); ++i )
+  {
+    normalsVec[i].x = normals->points[i].normal_x;
+    normalsVec[i].y = normals->points[i].normal_y;
+    normalsVec[i].z = normals->points[i].normal_z;
+  }
+
+  for (const auto &point : normals->points)
+  {
+  if (std::isnan( point.normal_x ) ||
+	  std::isnan( point.normal_y ) ||
+	  std::isnan( point.normal_z ))
+    {
+      continue;
+	}
+
+    EXPECT_NEAR (point.normal[0], 0.0, 1e-4);
+    EXPECT_NEAR (point.normal[1], 0.0, 1e-4);
+    EXPECT_NEAR (point.normal[2], -1.0, 1e-4);
+    EXPECT_TRUE (std::isnan(point.curvature));
   }
 }
 
