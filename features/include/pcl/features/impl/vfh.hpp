@@ -142,20 +142,20 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
     for (int i = 0; i < 3; ++i)
     {
       const int raw_index = static_cast<int> (std::floor (nr_bins_f_[i] * ((pfh_tuple[i] + M_PI) * d_pi_)));
-      const int index = std::max(std::min(raw_index, nr_bins_f_[i] - 1), 0);
-      hist_f_[i] (index) += hist_incr;
+      const int h_index = std::max(std::min(raw_index, nr_bins_f_[i] - 1), 0);
+      hist_f_[i] (h_index) += hist_incr;
     }
 
     if (hist_incr_size_component)
     {
-      int index;
+      int h_index;
       if (normalize_distances_)
-        index = static_cast<int> (std::floor (nr_bins_f_[3] * (pfh_tuple[3] / distance_normalization_factor)));
+        h_index = static_cast<int> (std::floor (nr_bins_f_[3] * (pfh_tuple[3] / distance_normalization_factor)));
       else
-        index = static_cast<int> (pcl_round (pfh_tuple[3] * 100));
+        h_index = static_cast<int> (pcl_round (pfh_tuple[3] * 100));
 
-      index = std::max (std::min (index, nr_bins_f_[3] - 1), 0);
-      hist_f_[3] (index) += hist_incr_size_component;
+      h_index = std::max (std::min (h_index, nr_bins_f_[3] - 1), 0);
+      hist_f_[3] (h_index) += hist_incr_size_component;
     }
   }
 }
