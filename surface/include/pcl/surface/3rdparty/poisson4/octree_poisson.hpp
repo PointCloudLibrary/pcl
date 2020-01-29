@@ -861,7 +861,7 @@ namespace pcl
     template <class NodeData,class Real>
     OctNode<NodeData,Real>* OctNode<NodeData,Real>::__faceNeighbor(int dir,int off,int forceChildren){
       if(!parent){return NULL;}
-      int pIndex=int(this-parent->children);
+      int pIndex=int(this-(parent->children));
       pIndex^=(1<<dir);
       if((pIndex & (1<<dir))==(off<<dir)){return &parent->children[pIndex];}
       else{
@@ -877,7 +877,7 @@ namespace pcl
     template <class NodeData,class Real>
     const OctNode<NodeData,Real>* OctNode<NodeData,Real>::__faceNeighbor(int dir,int off) const {
       if(!parent){return NULL;}
-      int pIndex=int(this-parent->children);
+      int pIndex=int(this-(parent->children));
       pIndex^=(1<<dir);
       if((pIndex & (1<<dir))==(off<<dir)){return &parent->children[pIndex];}
       else{
@@ -912,7 +912,7 @@ namespace pcl
     template <class NodeData,class Real>
     const OctNode<NodeData,Real>* OctNode<NodeData,Real>::__edgeNeighbor(int o,const int i[2],const int idx[2]) const{
       if(!parent){return NULL;}
-      int pIndex=int(this-parent->children);
+      int pIndex=int(this-(parent->children));
       int aIndex,x[DIMENSION];
 
       Cube::FactorCornerIndex(pIndex,x[0],x[1],x[2]);
@@ -941,7 +941,7 @@ namespace pcl
     template <class NodeData,class Real>
     OctNode<NodeData,Real>* OctNode<NodeData,Real>::__edgeNeighbor(int o,const int i[2],const int idx[2],int forceChildren){
       if(!parent){return NULL;}
-      int pIndex=int(this-parent->children);
+      int pIndex=int(this-(parent->children));
       int aIndex,x[DIMENSION];
 
       Cube::FactorCornerIndex(pIndex,x[0],x[1],x[2]);
@@ -977,7 +977,7 @@ namespace pcl
       int pIndex,aIndex=0;
       if(!parent){return NULL;}
 
-      pIndex=int(this-parent->children);
+      pIndex=int(this-(parent->children));
       aIndex=(cornerIndex ^ pIndex);	// The disagreement bits
       pIndex=(~pIndex)&7;				// The antipodal point
       if(aIndex==7){					// Agree on no bits
@@ -1025,7 +1025,7 @@ namespace pcl
       int pIndex,aIndex=0;
       if(!parent){return NULL;}
 
-      pIndex=int(this-parent->children);
+      pIndex=int(this-(parent->children));
       aIndex=(cornerIndex ^ pIndex);	// The disagreement bits
       pIndex=(~pIndex)&7;				// The antipodal point
       if(aIndex==7){					// Agree on no bits
