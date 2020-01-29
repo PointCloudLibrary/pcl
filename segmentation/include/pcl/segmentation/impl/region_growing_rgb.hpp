@@ -203,7 +203,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::extract (std::vector <pcl::PointIndices>
       cluster_iter = clusters_.erase (cluster_iter);
     }
     else
-      cluster_iter++;
+      ++cluster_iter;
   }
 
   clusters.reserve (clusters_.size ());
@@ -595,9 +595,9 @@ pcl::RegionGrowingRGB<PointT, NormalT>::assembleRegions (std::vector<unsigned in
   while (itr1 < itr2)
   {
     while (!(itr1->indices.empty ()) && itr1 < itr2) 
-      itr1++;
+      ++itr1;
     while (  itr2->indices.empty ()  && itr1 < itr2) 
-      itr2--;
+      --itr2;
 	  
     if (itr1 != itr2)
       itr1->indices.swap (itr2->indices);

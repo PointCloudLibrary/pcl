@@ -284,7 +284,7 @@ namespace pcl
             // select point from organized point cloud
             x = x_pos + (*radiusSearchLookup_Iterator).x_diff_;
             y = y_pos + (*radiusSearchLookup_Iterator).y_diff_;
-            radiusSearchLookup_Iterator++;
+            ++radiusSearchLookup_Iterator;
 
             if ((x >= 0) && (y >= 0) && (x < (int)input_->width) && (y < (int)input_->height))
             {

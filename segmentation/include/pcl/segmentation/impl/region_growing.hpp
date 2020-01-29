@@ -276,13 +276,13 @@ pcl::RegionGrowing<PointT, NormalT>::extract (std::vector <pcl::PointIndices>& c
 
   clusters.resize (clusters_.size ());
   std::vector<pcl::PointIndices>::iterator cluster_iter_input = clusters.begin ();
-  for (std::vector<pcl::PointIndices>::const_iterator cluster_iter = clusters_.begin (); cluster_iter != clusters_.end (); cluster_iter++)
+  for (std::vector<pcl::PointIndices>::const_iterator cluster_iter = clusters_.begin (); cluster_iter != clusters_.end (); ++cluster_iter)
   {
     if ((static_cast<int> (cluster_iter->indices.size ()) >= min_pts_per_cluster_) &&
         (static_cast<int> (cluster_iter->indices.size ()) <= max_pts_per_cluster_))
     {
       *cluster_iter_input = *cluster_iter;
-      cluster_iter_input++;
+      ++cluster_iter_input;
     }
   }
 

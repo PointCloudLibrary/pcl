@@ -421,7 +421,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeHessian (Eig
     std::vector<float> distances;
     target_cells_.radiusSearch (x_trans_pt, resolution_, neighborhood, distances);
 
-    for (typename std::vector<TargetGridLeafConstPtr>::iterator neighborhood_it = neighborhood.begin (); neighborhood_it != neighborhood.end (); neighborhood_it++)
+    for (typename std::vector<TargetGridLeafConstPtr>::iterator neighborhood_it = neighborhood.begin (); neighborhood_it != neighborhood.end (); ++neighborhood_it)
     {
       cell = *neighborhood_it;
 

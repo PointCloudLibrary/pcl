@@ -789,7 +789,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       std::vector<int>::iterator first_gap_after = angleIdx.end ();
       std::vector<int>::iterator last_gap_before = angleIdx.begin ();
       int nr_gaps = 0;
-      for (std::vector<int>::iterator it = angleIdx.begin (); it != angleIdx.end () - 1; it++)
+      for (std::vector<int>::iterator it = angleIdx.begin (); it != angleIdx.end () - 1; ++it)
       {
         if (gaps[*it])
         {
@@ -845,13 +845,13 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
             {
               std::vector<int>::iterator prev_it;
               int erased_idx = static_cast<int> (to_erase.size ()) -1;
-              for (prev_it = it-1; (erased_idx != -1) && (it != angleIdx.begin()); it--)
+              for (prev_it = it-1; (erased_idx != -1) && (it != angleIdx.begin()); --it)
                 if (*it == to_erase[erased_idx])
                   erased_idx--;
                 else
                   break;
               bool can_delete = true;
-              for (std::vector<int>::iterator curr_it = prev_it+1; curr_it != it+1; curr_it++)
+              for (std::vector<int>::iterator curr_it = prev_it+1; curr_it != it+1; ++curr_it)
               {
                 tmp_ = coords_[angles_[*curr_it].index] - proj_qp_;
                 X[0] = tmp_.dot(u_);
@@ -881,7 +881,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         }
         for (const int &it : to_erase)
         {
-          for (std::vector<int>::iterator iter = angleIdx.begin(); iter != angleIdx.end(); iter++)
+          for (std::vector<int>::iterator iter = angleIdx.begin(); iter != angleIdx.end(); ++iter)
             if (it == *iter)
             {
               angleIdx.erase(iter);
@@ -894,7 +894,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       changed_1st_fn_ = false;
       changed_2nd_fn_ = false;
       new2boundary_ = NONE;
-      for (std::vector<int>::iterator it = angleIdx.begin()+1; it != angleIdx.end()-1; it++)
+      for (std::vector<int>::iterator it = angleIdx.begin()+1; it != angleIdx.end()-1; ++it)
       {
         current_index_ = angles_[*it].index;
 

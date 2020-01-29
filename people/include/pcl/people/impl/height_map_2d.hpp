@@ -85,7 +85,7 @@ pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& c
     buckets_.resize(std::size_t((cluster.getMax()(1) - cluster.getMin()(1)) / bin_size_) + 1, 0);
   buckets_cloud_indices_.resize(buckets_.size(), 0);
 
-  for(std::vector<int>::const_iterator pit = cluster.getIndices().indices.begin(); pit != cluster.getIndices().indices.end(); pit++)
+  for(std::vector<int>::const_iterator pit = cluster.getIndices().indices.begin(); pit != cluster.getIndices().indices.end(); ++pit)
   {
     PointT* p = &cloud_->points[*pit];
     int index;
