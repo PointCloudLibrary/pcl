@@ -92,21 +92,21 @@ pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   // Save the type of each point
   int NR_CLASS = 5; // TODO make this nicer
   std::vector<int> types (radii->points.size ());
-  for (std::size_t idx = 0; idx < radii->points.size (); ++idx)
-    types[idx] = getSimpleType (radii->points[idx].r_min, radii->points[idx].r_max);
+  std::transform(radii->points.cbegin (), radii->points.cend (), types.begin (),
+    [](const auto& point) {
+      // GCC 5.4 can't find unqualified getSimpleType
+      return GRSDEstimation<PointInT, PointNT, PointOutT>::getSimpleType(point.r_min, point.r_max); });
 
   // Get the transitions between surface types between neighbors of occupied cells
   Eigen::MatrixXi transition_matrix = Eigen::MatrixXi::Zero (NR_CLASS + 1, NR_CLASS + 1);
   for (std::size_t idx = 0; idx < cloud_downsampled->points.size (); ++idx)
   {
-    int source_type = types[idx];
+    const int source_type = types[idx];
     std::vector<int> neighbors = grid.getNeighborCentroidIndices (cloud_downsampled->points[idx], relative_coordinates_all_);
     for (const int &neighbor : neighbors)
     {
-      int neighbor_type;
-      if (neighbor == -1) // empty
-        neighbor_type = NR_CLASS;
-      else
+      int neighbor_type = NR_CLASS;
+      if (neighbor != -1) // not empty
         neighbor_type = types[neighbor];
       transition_matrix (source_type, neighbor_type)++;
     }

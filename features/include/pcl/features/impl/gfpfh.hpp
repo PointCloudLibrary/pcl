@@ -130,7 +130,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
   output.width = 1;
   output.height = 1;
   output.points.resize (1);
-  std::copy (gfpfh_histogram.begin (), gfpfh_histogram.end (), output.points[0].histogram);
+  std::copy (gfpfh_histogram.cbegin (), gfpfh_histogram.cend (), output.points[0].histogram);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

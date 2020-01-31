@@ -65,6 +65,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (
 {
   Eigen::Vector4f pfh_tuple;
   // Get the number of bins from the histograms size
+  // @TODO: use arrays
   int nr_bins_f1 = static_cast<int> (hist_f1.cols ());
   int nr_bins_f2 = static_cast<int> (hist_f2.cols ());
   int nr_bins_f3 = static_cast<int> (hist_f3.cols ());
@@ -108,6 +109,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::weightPointSPFHSignature (
     const std::vector<int> &indices, const std::vector<float> &dists, Eigen::VectorXf &fpfh_histogram)
 {
   assert (indices.size () == dists.size ());
+  // @TODO: use arrays
   double sum_f1 = 0.0, sum_f2 = 0.0, sum_f3 = 0.0;
   float weight = 0.0, val_f1, val_f2, val_f3;
 
@@ -161,12 +163,15 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::weightPointSPFHSignature (
     sum_f3 = 100.0 / sum_f3;           // histogram values sum up to 100
 
   // Adjust final FPFH values
-  for (int f1_i = 0; f1_i < nr_bins_f1; ++f1_i)
-    fpfh_histogram[f1_i] *= static_cast<float> (sum_f1);
-  for (int f2_i = 0; f2_i < nr_bins_f2; ++f2_i)
-    fpfh_histogram[f2_i + nr_bins_f1] *= static_cast<float> (sum_f2);
-  for (int f3_i = 0; f3_i < nr_bins_f3; ++f3_i)
-    fpfh_histogram[f3_i + nr_bins_f12] *= static_cast<float> (sum_f3);
+  const auto denormalize_with = [](auto factor)
+    {
+      return [=](const auto& data) { return data * factor; };
+    };
+
+  auto last = fpfh_histogram.data ();
+  last = std::transform(last, last + nr_bins_f1, last, denormalize_with (sum_f1));
+  last = std::transform(last, last + nr_bins_f2, last, denormalize_with (sum_f2));
+  std::transform(last, last + nr_bins_f3, last, denormalize_with (sum_f3));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -262,8 +267,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
       weightPointSPFHSignature (hist_f1_, hist_f2_, hist_f3_, nn_indices, nn_dists, fpfh_histogram_);
 
       // ...and copy it into the output cloud
-      for (Eigen::Index d = 0; d < fpfh_histogram_.size (); ++d)
-        output.points[idx].histogram[d] = fpfh_histogram_[d];
+      std::copy_n(fpfh_histogram_.data (), fpfh_histogram_.size (), output.points[idx].histogram);
     }
   }
   else
@@ -290,8 +294,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
       weightPointSPFHSignature (hist_f1_, hist_f2_, hist_f3_, nn_indices, nn_dists, fpfh_histogram_);
 
       // ...and copy it into the output cloud
-      for (Eigen::Index d = 0; d < fpfh_histogram_.size (); ++d)
-        output.points[idx].histogram[d] = fpfh_histogram_[d];
+      std::copy_n(fpfh_histogram_.data (), fpfh_histogram_.size (), output.points[idx].histogram);
     }
   }
 }
