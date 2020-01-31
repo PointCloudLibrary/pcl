@@ -65,14 +65,6 @@ pcl::MomentOfInertiaEstimation<PointT>::MomentOfInertiaEstimation () :
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-pcl::MomentOfInertiaEstimation<PointT>::~MomentOfInertiaEstimation ()
-{
-  moment_of_inertia_.clear ();
-  eccentricity_.clear ();
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::MomentOfInertiaEstimation<PointT>::setAngleStep (const float step)
 {
@@ -156,6 +148,8 @@ pcl::MomentOfInertiaEstimation<PointT>::compute ()
 
   moment_of_inertia_.reserve (90.f/step_);
   eccentricity_.reserve (360.f/step_);
+  // single allocation to prevent dynamic allocation
+  auto projected_cloud = pcl::make_shared<pcl::PointCloud<PointT>>();
   for (float theta = 0.f; theta <= 90.f; theta += step_)
   {
     Eigen::Vector3f rotated_vector;
@@ -171,9 +165,8 @@ pcl::MomentOfInertiaEstimation<PointT>::compute ()
       moment_of_inertia_.push_back (current_moment_of_inertia);
 
       //compute eccentricity for the current plane
-      typename pcl::PointCloud<PointT>::Ptr projected_cloud (new pcl::PointCloud<PointT> ());
       getProjectedCloud (current_axis, mean_value_, projected_cloud);
-      Eigen::Matrix <float, 3, 3> covariance_matrix = Eigen::Matrix3f::Zero();
+      Eigen::Matrix3f covariance_matrix = Eigen::Matrix3f::Zero();
       computeCovarianceMatrix (projected_cloud, covariance_matrix);
       float current_eccentricity = computeEccentricity (covariance_matrix, current_axis);
       eccentricity_.push_back (current_eccentricity);
@@ -306,7 +299,7 @@ pcl::MomentOfInertiaEstimation<PointT>::computeCovarianceMatrix (Eigen::Matrix <
 
   for (const auto& idx: *indices_)
   {
-    Eigen::Vector3f current_point = input_->points[idx].getVector3fMap () - mean_value_;
+    const Eigen::Vector3f current_point = input_->points[idx].getVector3fMap () - mean_value_;
 
     covariance_matrix.noalias() += current_point * current_point.transpose ();
   }
@@ -323,7 +316,7 @@ pcl::MomentOfInertiaEstimation<PointT>::computeCovarianceMatrix (PointCloudConst
 
   for (const auto& point: cloud->points)
   {
-    Eigen::Vector3f current_point = point.getVector3fMap () - mean_value_;
+    const Eigen::Vector3f current_point = point.getVector3fMap () - mean_value_;
 
     covariance_matrix.noalias() += current_point * current_point.transpose ();
   }
@@ -338,58 +331,44 @@ pcl::MomentOfInertiaEstimation<PointT>::computeEigenVectors (const Eigen::Matrix
   Eigen::Vector3f& major_axis, Eigen::Vector3f& middle_axis, Eigen::Vector3f& minor_axis, float& major_value,
   float& middle_value, float& minor_value)
 {
-  Eigen::EigenSolver <Eigen::Matrix <float, 3, 3> > eigen_solver;
+  Eigen::EigenSolver <Eigen::Matrix3f> eigen_solver;
   eigen_solver.compute (covariance_matrix);
 
-  Eigen::EigenSolver <Eigen::Matrix <float, 3, 3> >::EigenvectorsType eigen_vectors;
-  Eigen::EigenSolver <Eigen::Matrix <float, 3, 3> >::EigenvalueType eigen_values;
-  eigen_vectors = eigen_solver.eigenvectors ();
-  eigen_values = eigen_solver.eigenvalues ();
+  Eigen::EigenSolver <Eigen::Matrix3f>::EigenvectorsType eigen_vectors = eigen_solver.eigenvectors ();
+  Eigen::EigenSolver <Eigen::Matrix3f>::EigenvalueType eigen_values = eigen_solver.eigenvalues ();
 
-  unsigned int temp = 0;
   unsigned int major_index = 0;
   unsigned int middle_index = 1;
   unsigned int minor_index = 2;
 
   if (eigen_values.real () (major_index) < eigen_values.real () (middle_index))
   {
-    temp = major_index;
-    major_index = middle_index;
-    middle_index = temp;
+    std::swap (middle_index, major_index);
   }
 
   if (eigen_values.real () (major_index) < eigen_values.real () (minor_index))
   {
-    temp = major_index;
-    major_index = minor_index;
-    minor_index = temp;
+    std::swap (minor_index, major_index);
   }
 
   if (eigen_values.real () (middle_index) < eigen_values.real () (minor_index))
   {
-    temp = minor_index;
-    minor_index = middle_index;
-    middle_index = temp;
+    std::swap (minor_index, middle_index);
   }
 
   major_value = eigen_values.real () (major_index);
   middle_value = eigen_values.real () (middle_index);
   minor_value = eigen_values.real () (minor_index);
 
-  major_axis = eigen_vectors.col (major_index).real ();
-  middle_axis = eigen_vectors.col (middle_index).real ();
-  minor_axis = eigen_vectors.col (minor_index).real ();
-
-  major_axis.normalize ();
-  middle_axis.normalize ();
-  minor_axis.normalize ();
+  major_axis = eigen_vectors.col (major_index).real ().normalized ();
+  middle_axis = eigen_vectors.col (middle_index).real ().normalized ();
+  minor_axis = eigen_vectors.col (minor_index).real ().normalized ();
 
   float det = major_axis.dot (middle_axis.cross (minor_axis));
+  // TODO: replace branch with signum
   if (det <= 0.0f)
   {
-    major_axis (0) = -major_axis (0);
-    major_axis (1) = -major_axis (1);
-    major_axis (2) = -major_axis (2);
+    major_axis = -major_axis;
   }
 }
 
@@ -418,9 +397,7 @@ pcl::MomentOfInertiaEstimation<PointT>::calculateMomentOfInertia (const Eigen::V
   float moment_of_inertia = 0.0f;
   for (const auto& idx: *indices_)
   {
-    Eigen::Vector3f vector(mean_value (0) - input_->points[idx].x,
-                           mean_value (1) - input_->points[idx].y,
-                           mean_value (2) - input_->points[idx].z);
+    const Eigen::Vector3f vector = (mean_value - input_->points[idx].getVector3fMap ());
 
     const auto product = vector.cross (current_axis);
     moment_of_inertia += product.squaredNorm();
@@ -465,9 +442,9 @@ pcl::MomentOfInertiaEstimation<PointT>::computeEccentricity (const Eigen::Matrix
   float minor_value = 0.0f;
   computeEigenVectors (covariance_matrix, major_axis, middle_axis, minor_axis, major_value, middle_value, minor_value);
 
-  float major = std::abs (major_axis.dot (normal_vector));
-  float middle = std::abs (middle_axis.dot (normal_vector));
-  float minor = std::abs (minor_axis.dot (normal_vector));
+  const float major = std::abs (major_axis.dot (normal_vector));
+  const float middle = std::abs (middle_axis.dot (normal_vector));
+  const float minor = std::abs (minor_axis.dot (normal_vector));
 
   float eccentricity = 0.0f;
 
