@@ -60,14 +60,11 @@
 #include <iostream>
 
 namespace pc = pcl::console;
-using namespace pcl::visualization;
-using namespace pcl::gpu;
-using namespace pcl;
-using namespace std;
+using namespace std::chrono_literals;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::vector<string> getPcdFilesInDir(const string& directory)
+std::vector<std::string> getPcdFilesInDir(const std::string& directory)
 {
   namespace fs = boost::filesystem;
   fs::path dir(directory);
@@ -75,7 +72,7 @@ std::vector<string> getPcdFilesInDir(const string& directory)
   if (!fs::exists(dir) || !fs::is_directory(dir))
     PCL_THROW_EXCEPTION(pcl::IOException, "Wrong PCD directory");
     
-  std::vector<string> result;
+  std::vector<std::string> result;
   fs::directory_iterator pos(dir);
   fs::directory_iterator end;           
 
@@ -89,7 +86,7 @@ std::vector<string> getPcdFilesInDir(const string& directory)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct SampledScopeTime : public StopWatch
+struct SampledScopeTime : public pcl::StopWatch
 {          
   enum { EACH = 33 };
   SampledScopeTime(int& time_ms) : time_ms_(time_ms) {}
@@ -110,7 +107,7 @@ struct SampledScopeTime : public StopWatch
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-string 
+std::string
 make_name(int counter, const char* suffix)
 {
   char buf[4096];
@@ -167,15 +164,14 @@ class PeoplePCDApp
       rgba_host_.points.resize(COLS * ROWS);
       rgb_host_.resize(COLS * ROWS * 3);
 
-      people::uploadColorMap(color_map_);
-
+      pcl::gpu::people::uploadColorMap(color_map_);
     }
 
     void
     visualizeAndWrite()
     {
       const PeopleDetector::Labels& labels = people_detector_.rdf_detector_->getLabels();
-      people::colorizeLabels(color_map_, labels, cmap_device_);
+      pcl::gpu::people::colorizeLabels(color_map_, labels, cmap_device_);
       //people::colorizeMixedLabels(
             
       int c;
@@ -212,7 +208,7 @@ class PeoplePCDApp
       }
     }
 
-    void source_cb1(const PointCloud<PointXYZRGBA>::ConstPtr& cloud)
+    void source_cb1(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
     {
       {          
         std::lock_guard<std::mutex> lock(data_ready_mutex_);
@@ -260,7 +256,7 @@ class PeoplePCDApp
         for(std::size_t i = 0; i < rgba_host_.size(); ++i)
         {
           const unsigned char *pixel = &rgb_host_[i * 3];
-          RGB& rgba = rgba_host_.points[i];         
+          pcl::RGB& rgba = rgba_host_.points[i];         
           rgba.r = pixel[0];
           rgba.g = pixel[1];
           rgba.b = pixel[2];
@@ -275,14 +271,14 @@ class PeoplePCDApp
     {         
       cloud_cb_ = false;
       
-      PCDGrabberBase* ispcd = dynamic_cast<pcl::PCDGrabberBase*>(&capture_);
+      auto ispcd = dynamic_cast<pcl::PCDGrabberBase*>(&capture_);
       if (ispcd)
         cloud_cb_= true;
 
       using DepthImagePtr = openni_wrapper::DepthImage::Ptr;
       using ImagePtr = openni_wrapper::Image::Ptr;
 
-      std::function<void (const PointCloud<PointXYZRGBA>::ConstPtr&)> func1 = [this] (const PointCloud<PointXYZRGBA>::ConstPtr& cloud) { source_cb1 (cloud); };
+      std::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> func1 = [this] (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud) { source_cb1 (cloud); };
       std::function<void (const ImagePtr&, const DepthImagePtr&, float)> func2 = [this] (const ImagePtr& img, const DepthImagePtr& depth, float constant)
       {
         source_cb2 (img, depth, constant);
@@ -345,12 +341,12 @@ class PeoplePCDApp
     pcl::PointCloud<pcl::RGB> rgba_host_;
     std::vector<unsigned char> rgb_host_;
 
-    PointCloud<PointXYZRGBA> cloud_host_;
+    pcl::PointCloud<pcl::PointXYZRGBA> cloud_host_;
 
-    ImageViewer final_view_;
-    ImageViewer depth_view_;   
+    pcl::visualization::ImageViewer final_view_;
+    pcl::visualization::ImageViewer depth_view_;
 
-    DeviceArray<pcl::RGB> color_map_;
+    pcl::device::DeviceArray<pcl::RGB> color_map_;
 };
 
 void print_help()
@@ -387,8 +383,8 @@ int main(int argc, char** argv)
   pc::parse_argument (argc, argv, "-w", write);
 
   // selecting data source
-  shared_ptr<pcl::Grabber> capture;
-  string openni_device, oni_file, pcd_file, pcd_folder;  
+  pcl::shared_ptr<pcl::Grabber> capture;
+  std::string openni_device, oni_file, pcd_file, pcd_folder;
    
   try
   {
@@ -404,29 +400,23 @@ int main(int argc, char** argv)
     else
     if (pc::parse_argument (argc, argv, "-pcd", pcd_file) > 0)
     {       
-      capture.reset( new pcl::PCDGrabber<PointXYZRGBA>(vector<string>(31, pcd_file), 30, true) );            
+      capture.reset( new pcl::PCDGrabber<pcl::PointXYZRGBA>(std::vector<std::string>(31, pcd_file), 30, true) );
     }    
     else
     if (pc::parse_argument (argc, argv, "-pcd_folder", pcd_folder) > 0)
     {         
-      std::vector<string> pcd_files = getPcdFilesInDir(pcd_folder);       
-      capture.reset( new pcl::PCDGrabber<PointXYZRGBA>(pcd_files, 30, true) );
+      std::vector<std::string> pcd_files = getPcdFilesInDir(pcd_folder);
+      capture.reset( new pcl::PCDGrabber<pcl::PointXYZRGBA>(pcd_files, 30, true) );
     }    
     else
     {
       capture.reset( new pcl::OpenNIGrabber() );      
-      //capture.reset( new pcl::ONIGrabber("d:/onis/20111013-224932.oni", true, true) );                             
-      
-      //vector<string> pcd_files(31, "d:/3/0008.pcd");
-      //vector<string> pcd_files(31, "d:/git/pcl/gpu/people/tools/test.pcd");
-      //vector<string> pcd_files = getPcdFilesInDir("d:/3/");
-      //capture.reset( new pcl::PCDGrabber<PointXYZRGBA>(pcd_files, 30, true) );      
     }
   }
   catch (const pcl::PCLException& /*e*/) { return std::cout << "Can't open depth source" << std::endl, -1; }
     
   //selecting tree files
-  std::vector<string> tree_files;
+  std::vector<std::string> tree_files;
   tree_files.emplace_back("Data/forest1/tree_20.txt");
   tree_files.emplace_back("Data/forest2/tree_20.txt");
   tree_files.emplace_back("Data/forest3/tree_20.txt");
