@@ -1,9 +1,14 @@
 jobs:
   - job: osx
-    displayName: macOS High Sierra
+    strategy:
+      matrix:
+        # macOS Catalina:
+        #   VMIMAGE: 'macOS-10.15'
+        macOS Mojave:
+          VMIMAGE: 'macOS-10.14'
     timeoutInMinutes: 0
     pool:
-      vmImage: 'macOS-10.13'
+      vmImage: '$(VMIMAGE)'
     variables:
       BUILD_DIR: '$(Agent.WorkFolder)/build'
       GOOGLE_TEST_DIR: '$(Agent.WorkFolder)/googletest'
