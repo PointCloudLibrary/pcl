@@ -230,7 +230,7 @@ function(PCL_ADD_LIBRARY _name)
   endif()
 
   if((UNIX AND NOT ANDROID) OR MINGW)
-    target_link_libraries(${_name} m)
+    target_link_libraries(${_name} m ${ATOMIC_LIBRARY})
   endif()
 
   if(MINGW)
@@ -391,7 +391,7 @@ macro(PCL_ADD_TEST _name _exename)
   #target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
   target_link_libraries(${_exename} ${PCL_ADD_TEST_LINK_WITH} ${CLANG_LIBRARIES})
 
-  target_link_libraries(${_exename} Threads::Threads)
+  target_link_libraries(${_exename} Threads::Threads ${ATOMIC_LIBRARY})
 
   #Only applies to MSVC
   if(MSVC)
