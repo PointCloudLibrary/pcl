@@ -59,7 +59,6 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   double d_best_penalty = std::numeric_limits<double>::max();
   double k = 1.0;
 
-  std::vector<int> best_model;
   std::vector<int> selection;
   Eigen::VectorXf model_coefficients;
   std::vector<double> distances;

@@ -395,7 +395,6 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
     {
       polygons[dd].vertices.resize (3);
 
-      // Needed by FOREACHvertex_i_
       int vertex_n, vertex_i;
       FOREACHvertex_i_ ((*facet).vertices)
       //facet_vertices.vertices.push_back (qhid_to_pcidx[vertex->id]);

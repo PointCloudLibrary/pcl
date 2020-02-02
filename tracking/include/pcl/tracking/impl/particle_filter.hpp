@@ -91,7 +91,6 @@ template <typename PointInT, typename StateT> void
 pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initParticles (bool reset)
 {
   particles_.reset (new PointCloudState ());
-  std::vector<double> initial_noise_mean;
   if (reset)
   {
     representative_state_.zero ();

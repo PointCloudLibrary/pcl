@@ -469,7 +469,6 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 
     alpha_shape.points.resize (vertices);
 
-    std::vector<std::vector<int> > connected;
     PointCloud alpha_shape_sorted;
     alpha_shape_sorted.points.resize (vertices);
 

@@ -302,9 +302,6 @@ pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &te
   // convert mesh's cloud to pcl format for ease
   pcl::fromPCLPointCloud2 (tex_mesh.cloud, *originalCloud);
 
-  // texture coordinates for each mesh
-  std::vector<std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > > texture_map;
-
   for (std::size_t m = 0; m < cams.size (); ++m)
   {
     // get current camera parameters

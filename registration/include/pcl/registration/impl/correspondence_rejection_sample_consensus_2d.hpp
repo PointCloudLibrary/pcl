@@ -78,10 +78,6 @@ pcl::registration::CorrespondenceRejectorSampleConsensus2D<PointT>::getRemaining
     target_indices[i] = original_correspondences[i].index_match;
   }
 
-  // from pcl/registration/icp.hpp:
-  std::vector<int> source_indices_good;
-  std::vector<int> target_indices_good;
-
   // From the set of correspondences found, attempt to remove outliers
   typename pcl::SampleConsensusModelRegistration2D<PointT>::Ptr model (new pcl::SampleConsensusModelRegistration2D<PointT> (input_, source_indices));
   // Pass the target_indices

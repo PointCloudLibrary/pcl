@@ -564,7 +564,6 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
   std::vector<int> explained_indices;
   std::vector<float> outliers_weight;
   std::vector<float> explained_indices_distances;
-  std::vector<float> unexplained_indices_weights;
 
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;

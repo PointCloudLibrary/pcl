@@ -452,8 +452,6 @@ CPCSegmentation Parameters: \n\
     using AdjacencyIterator = LCCPSegmentation<PointT>::AdjacencyIterator;
     using EdgeID = LCCPSegmentation<PointT>::EdgeID;
 
-    std::set<EdgeID> edge_drawn;
-
     const unsigned char black_color   [3] = {0, 0, 0};
     const unsigned char white_color   [3] = {255, 255, 255};
     const unsigned char concave_color [3] = {255,  0,  0};

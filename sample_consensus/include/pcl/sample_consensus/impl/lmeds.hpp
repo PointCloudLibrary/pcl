@@ -57,7 +57,6 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
   iterations_ = 0;
   double d_best_penalty = std::numeric_limits<double>::max();
 
-  std::vector<int> best_model;
   std::vector<int> selection;
   Eigen::VectorXf model_coefficients;
   std::vector<double> distances;
