@@ -390,7 +390,6 @@ ClosingBoundary::optimizeBoundary (std::vector<ON_NurbsSurface> &nurbs_list, std
     FittingSurface fit (&data_list[n1], nurbs_list[n1]);
     FittingSurface::Parameter paramFP (1.0, param.smoothness, 0.0, 1.0, param.smoothness, 0.0);
 
-    std::vector<double> wBnd, wInt;
     for (std::size_t i = 0; i < data_list[n1].boundary.size (); i++)
       data_list[n1].boundary_weight.push_back (param.boundary_weight);
     for (std::size_t i = 0; i < data_list[n1].interior.size (); i++)

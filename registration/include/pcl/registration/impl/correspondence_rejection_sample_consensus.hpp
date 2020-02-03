@@ -74,9 +74,6 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
     target_indices[i] = original_correspondences[i].index_match;
   }
 
-   // from pcl/registration/icp.hpp:
-   std::vector<int> source_indices_good;
-   std::vector<int> target_indices_good;
    {
      // From the set of correspondences found, attempt to remove outliers
      // Create the registration model

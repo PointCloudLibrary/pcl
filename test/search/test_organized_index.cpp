@@ -477,12 +477,6 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
 
   pcl::search::Search<PointXYZ>* organizedNeighborSearch = new pcl::search::OrganizedNeighbor<PointXYZ>();
 
-  std::vector<int> k_indices;
-  std::vector<float> k_sqr_distances;
-
-  std::vector<int> k_indices_bruteforce;
-  std::vector<float> k_sqr_distances_bruteforce;
-
   // typical focal length from kinect
   unsigned int randomIdx;
 

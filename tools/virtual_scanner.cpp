@@ -174,7 +174,7 @@ main (int argc, char** argv)
 
   int subdiv_level = 1;
   double scan_dist = 3;
-  std::string fname, base;
+  std::string fname;
   char seq[256];
 
   // Compute start/stop for vertical and horizontal
