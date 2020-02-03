@@ -149,7 +149,7 @@ RangeImageBorderExtractor::extractLocalSurfaceStructure ()
 void 
 RangeImageBorderExtractor::extractBorderScoreImages ()
 {
-  if (border_scores_left_.empty())
+  if (!border_scores_left_.empty())
     return;
   
   extractLocalSurfaceStructure();
