@@ -541,7 +541,8 @@ pcl::MomentOfInertiaEstimation<PointT>::setIndices (std::size_t row_start, std::
     return;
   }
 
-  indices_.reset (new std::vector<int>(nb_rows * nb_cols));
+  indices_.reset (new std::vector<int> ());
+  indices_->reserve (nb_rows * nb_cols);
   for(std::size_t i = row_start; i < row_end; i++)
     for(std::size_t j = col_start; j < col_end; j++)
       indices_->push_back (static_cast<int> ((i * input_->width) + j));
