@@ -64,8 +64,10 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::SpinImageEstimation (
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT, typename PointOutT> Eigen::ArrayXXd 
+template <typename PointInT, typename PointNT, typename PointOutT>
+template <int Storage> auto
 pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int index) const
+  -> Eigen::Array<double, Eigen::Dynamic, Eigen::Dynamic, Storage>
 {
   assert (image_width_ > 0);
   assert (support_angle_cos_ <= 1.0 && support_angle_cos_ >= 0.0); // may be permit negative cosine?
@@ -84,8 +86,10 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
       rotation_axes_cloud_->points[index].getNormalVector3fMap () :
       origin_normal;  
 
-  Eigen::ArrayXXd m_matrix (Eigen::ArrayXXd::Zero (image_width_+1, 2*image_width_+1));
-  Eigen::ArrayXXd m_averAngles (Eigen::ArrayXXd::Zero (image_width_+1, 2*image_width_+1));
+  using ArrayXXd = Eigen::Array<double, Eigen::Dynamic, Eigen::Dynamic, Storage>;
+
+  ArrayXXd m_matrix (Eigen::ArrayXXd::Zero (image_width_+1, 2*image_width_+1));
+  ArrayXXd m_averAngles (Eigen::ArrayXXd::Zero (image_width_+1, 2*image_width_+1));
 
   // OK, we are interested in the points of the cylinder of height 2*r and
   // base radius r, where r = m_dBinSize * in_iImageWidth
@@ -325,7 +329,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClo
 { 
   for (std::size_t i_input = 0; i_input < indices_->size (); ++i_input)
   {
-    Eigen::ArrayXXd res = computeSiForPoint (indices_->at (i_input));
+    Eigen::ArrayXXd res = computeSiForPoint<Eigen::RowMajor> (indices_->at (i_input));
 
     // Copy into the resultant cloud, can't use std::copy due to type difference
     std::transform (res.data (), res.data () + res.size (), output.points[i_input].histogram,
