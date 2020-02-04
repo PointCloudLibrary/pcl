@@ -57,12 +57,8 @@ namespace pcl
   class PCL_EXPORTS Grabber
   {
     public:
-
-      /** \brief Constructor. */
-      Grabber () {}
-
       /** \brief virtual destructor. */
-      virtual inline ~Grabber () throw ();
+      virtual inline ~Grabber () noexcept;
 
       /** \brief registers a callback function/method to a signal with the corresponding signature
         * \param[in] callback: the callback function/method
@@ -100,6 +96,13 @@ namespace pcl
         */
       virtual void 
       stop () = 0;
+
+      /** \brief For devices that are streaming, stopped streams are started and running stream are stopped.
+        *        For triggered devices, the behavior is not defined.
+        * \return true if grabber is running / streaming. False otherwise.
+        */
+      inline bool
+      toggle ();
 
       /** \brief returns the name of the concrete subclass.
         * \return the name of the concrete driver.
@@ -151,10 +154,23 @@ namespace pcl
       std::map<std::string, std::vector<boost::signals2::shared_connection_block> > shared_connections_;
   } ;
 
-  Grabber::~Grabber () throw ()
+  Grabber::~Grabber () noexcept
   {
     for (auto &signal : signals_)
       delete signal.second;
+  }
+
+  bool
+  Grabber::toggle ()
+  {
+    if (isRunning ())
+    {
+      stop ();
+    } else
+    {
+      start ();
+    }
+    return isRunning ();
   }
 
   template<typename T> boost::signals2::signal<T>*
