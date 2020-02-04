@@ -57,12 +57,8 @@ namespace pcl
   class PCL_EXPORTS Grabber
   {
     public:
-
-      /** \brief Constructor. */
-      Grabber () {}
-
       /** \brief virtual destructor. */
-      virtual inline ~Grabber ();
+      virtual inline ~Grabber () noexcept;
 
       /** \brief registers a callback function/method to a signal with the corresponding signature
         * \param[in] callback: the callback function/method
@@ -100,7 +96,7 @@ namespace pcl
         */
       virtual void 
       stop () = 0;
-   
+
       /** \brief For devices that are streaming, stopped streams are started and running stream are stopped.
         *        For triggered devices, the behavior is not defined.
         * \return true if grabber is running / streaming. False otherwise.
@@ -158,12 +154,12 @@ namespace pcl
       std::map<std::string, std::vector<boost::signals2::shared_connection_block> > shared_connections_;
   } ;
 
-  Grabber::~Grabber ()
+  Grabber::~Grabber () noexcept
   {
     for (auto &signal : signals_)
       delete signal.second;
   }
- 
+
   bool
   Grabber::toggle ()
   {
