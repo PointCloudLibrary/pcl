@@ -211,7 +211,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
     random_access[i].resize (normals_hg[i].size ());
 
     std::size_t j = 0;
-    for (std::list<int>::iterator itr = normals_hg[i].begin (); itr != normals_hg[i].end (); itr++, j++)
+    for (std::list<int>::iterator itr = normals_hg[i].begin (); itr != normals_hg[i].end (); ++itr, ++j)
       random_access[i][j] = itr;
   }
   std::vector<std::size_t> start_index (normals_hg.size ());

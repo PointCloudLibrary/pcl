@@ -103,8 +103,8 @@ public:
       }
 
       size -= tail_size;
-      key_it++;
-      evict_count++;
+      ++key_it;
+      ++evict_count;
     }
 
     // Evict enough items to make room for the new item

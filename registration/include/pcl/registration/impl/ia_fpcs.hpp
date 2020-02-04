@@ -442,20 +442,20 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   std::vector <int> temp (base_indices.begin (), base_indices.end ());
 
   // loop over all combinations of base points
-  for (std::vector <int>::const_iterator i = copy.begin (), i_e = copy.end (); i != i_e; i++)
-  for (std::vector <int>::const_iterator j = copy.begin (), j_e = copy.end (); j != j_e; j++)
+  for (std::vector <int>::const_iterator i = copy.begin (), i_e = copy.end (); i != i_e; ++i)
+  for (std::vector <int>::const_iterator j = copy.begin (), j_e = copy.end (); j != j_e; ++j)
   {
     if (i == j)
       continue;
 
-    for (std::vector <int>::const_iterator k = copy.begin (), k_e = copy.end (); k != k_e; k++)
+    for (std::vector <int>::const_iterator k = copy.begin (), k_e = copy.end (); k != k_e; ++k)
     {
       if (k == j || k == i)
         continue;
 
       std::vector <int>::const_iterator l = copy.begin ();
       while (l == i || l == j || l == k)
-        l++;
+        ++l;
 
       temp[0] = *i;
       temp[1] = *j;
