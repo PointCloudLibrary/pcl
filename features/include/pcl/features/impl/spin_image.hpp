@@ -326,7 +326,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::initCompute ()
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void 
 pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
-{ 
+{
   for (std::size_t i_input = 0; i_input < indices_->size (); ++i_input)
   {
     const auto res = computeSiForPoint<Eigen::RowMajor> (indices_->at (i_input));
@@ -334,7 +334,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClo
     // Copy into the resultant cloud, can't use std::copy due to type difference
     std::transform (res.data (), res.data () + res.size (), output.points[i_input].histogram,
             [](const auto& dbl_data) { return static_cast<float> (dbl_data); });
-  } 
+  }
 }
 
 #define PCL_INSTANTIATE_SpinImageEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::SpinImageEstimation<T,NT,OutT>;
