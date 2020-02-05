@@ -154,6 +154,48 @@ TEST (PCL, findFeatureCorrespondences)
 */
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// This test if the ICP algorithm can successfully find the transformation of a cloud that has been
+// moved 0.7 in x direction.
+// It indirectly test the KDTree doesn't get an empty input cloud, see #3624
+// It is more or less a copy of https://github.com/PointCloudLibrary/pcl/blob/cc7fe363c6463a0abc617b1e17e94ab4bd4169ef/doc/tutorials/content/sources/iterative_closest_point/iterative_closest_point.cpp
+TEST(PCL, ICP_translated)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in(new pcl::PointCloud<pcl::PointXYZ>(5,1));
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZ>);
+
+  // Fill in the CloudIn data
+  for (auto& point : *cloud_in)
+  {
+    point.x = 1024 * rand() / (RAND_MAX + 1.0f);
+    point.y = 1024 * rand() / (RAND_MAX + 1.0f);
+    point.z = 1024 * rand() / (RAND_MAX + 1.0f);
+  }
+
+  *cloud_out = *cloud_in;
+
+  for (auto& point : *cloud_out)
+    point.x += 0.7f;
+
+  pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
+  icp.setInputSource(cloud_in);
+  icp.setInputTarget(cloud_out);
+
+  pcl::PointCloud<pcl::PointXYZ> Final;
+  icp.align(Final);
+
+  // Check that we have sucessfully converged
+  ASSERT_EQ(icp.hasConverged(), true);
+
+  // Test that the fitness score is below acceptable threshold
+  EXPECT_LT(icp.getFitnessScore(), 1e-6);
+
+  // Ensure that the translation found is within acceptable threshold.
+  EXPECT_NEAR(icp.getFinalTransformation()(0, 3), 0.7, 2e-3);
+  EXPECT_NEAR(icp.getFinalTransformation()(1, 3), 0.0, 2e-3);
+  EXPECT_NEAR(icp.getFinalTransformation()(2, 3), 0.0, 2e-3);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, IterativeClosestPoint)
 {
