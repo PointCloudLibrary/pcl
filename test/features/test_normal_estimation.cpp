@@ -183,6 +183,66 @@ TEST (PCL, NormalEstimation)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// There was an issue where the vectors for the indices and the
+// distances of the neighbor search weren't initialized correctly
+// due to a wrong usage of OpenMP.
+// See PR #3614 for details.
+// This tests if the vectors are initialized correctly.
+template<typename PointT>
+class DummySearch : public pcl::search::Search<PointT>
+{
+  public:
+    virtual int nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices,
+                                std::vector<float> &k_sqr_distances ) const
+    {
+      (void)point;
+
+      EXPECT_GE (k_indices.size(), k);
+      EXPECT_GE (k_sqr_distances.size(), k);
+
+	  return k;
+    }
+
+    virtual int radiusSearch (const PointT& point, double radius, std::vector<int>& k_indices,
+                              std::vector<float>& k_sqr_distances, unsigned int max_nn = 0 ) const
+    {
+      (void)point;
+      (void)radius;
+      (void)k_indices;
+      (void)k_sqr_distances;
+
+      return max_nn;
+    }
+};
+
+
+TEST (PCL, NormalEstimationOpenMPInitVectors)
+{
+  NormalEstimationOMP<PointXYZ, Normal> n (4); // instantiate 4 threads
+
+  DummySearch<PointXYZ>::Ptr dummy (new DummySearch<PointXYZ>);
+
+  // Object
+  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
+
+  // set parameters
+  PointCloud<PointXYZ>::Ptr cloudptr = cloud.makeShared ();
+  n.setInputCloud (cloudptr);
+  EXPECT_EQ (n.getInputCloud (), cloudptr);
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
+  n.setIndices (indicesptr);
+  EXPECT_EQ (n.getIndices (), indicesptr);
+  n.setSearchMethod (dummy);
+  EXPECT_EQ (n.getSearchMethod (), dummy);
+  n.setKSearch (static_cast<int> (indices.size ()));
+
+  // This will cause a call to DummySearch::nearestKSearch
+  // which checks if the vectors for the indices and the
+  // distances are correctly set up. See PR #3614.
+  n.compute (*normals);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, NormalEstimationOpenMP)
 {
   NormalEstimationOMP<PointXYZ, Normal> n (4); // instantiate 4 threads

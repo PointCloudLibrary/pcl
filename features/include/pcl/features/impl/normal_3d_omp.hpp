@@ -71,7 +71,7 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
   if (input_->is_dense)
   {
 #ifdef _OPENMP
-#pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
+#pragma omp parallel for shared (output) firstprivate (nn_indices, nn_dists) num_threads(threads_)
 #endif
     // Iterating over the entire index vector
     for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
@@ -98,7 +98,7 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
   else
   {
 #ifdef _OPENMP
-#pragma omp parallel for shared (output) private (nn_indices, nn_dists) num_threads(threads_)
+#pragma omp parallel for shared (output) firstprivate (nn_indices, nn_dists) num_threads(threads_)
 #endif
     // Iterating over the entire index vector
     for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
