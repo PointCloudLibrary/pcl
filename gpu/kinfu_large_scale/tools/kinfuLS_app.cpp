@@ -773,7 +773,7 @@ struct KinFuLSApp
   {
     registration_ = 
       #ifdef HAVE_OPENNI
-      capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ()
+      capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ();
       #endif
       #if defined(HAVE_OPENNI) && defined(HAVE_OPENNI2)
       ||
