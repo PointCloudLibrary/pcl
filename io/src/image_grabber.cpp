@@ -848,7 +848,7 @@ pcl::ImageGrabberBase::ImageGrabberBase (const std::vector<std::string>& depth_i
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::ImageGrabberBase::~ImageGrabberBase () throw ()
+pcl::ImageGrabberBase::~ImageGrabberBase () noexcept
 {
   stop ();
   delete impl_;

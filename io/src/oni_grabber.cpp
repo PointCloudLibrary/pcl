@@ -140,7 +140,7 @@ ONIGrabber::ONIGrabber (const std::string& file_name, bool repeat, bool stream)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-ONIGrabber::~ONIGrabber() throw ()
+ONIGrabber::~ONIGrabber() noexcept
 {
   try
   {

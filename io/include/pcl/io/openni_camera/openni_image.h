@@ -74,13 +74,13 @@ namespace openni_wrapper
      * @brief Constructor
      * @param[in] image_meta_data the actual image data from the OpenNI driver
      */
-    inline Image (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) throw ();
+    inline Image (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept;
 
     /**
      * @author Suat Gedikli
      * @brief virtual Destructor that never throws an exception.
      */
-    inline virtual ~Image () throw ();
+    inline virtual ~Image () noexcept;
 
     /**
      * @author Suat Gedikli
@@ -169,12 +169,12 @@ namespace openni_wrapper
     pcl::shared_ptr<xn::ImageMetaData> image_md_;
   } ;
 
-  Image::Image (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) throw ()
+  Image::Image (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept
   : image_md_ (std::move(image_meta_data))
   {
   }
 
-  Image::~Image () throw () { }
+  Image::~Image () noexcept { }
 
   unsigned
   Image::getWidth () const throw ()

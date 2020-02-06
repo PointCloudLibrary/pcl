@@ -51,14 +51,14 @@
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////
-openni_wrapper::ImageBayerGRBG::ImageBayerGRBG (pcl::shared_ptr<xn::ImageMetaData> image_meta_data, DebayeringMethod method) throw ()
+openni_wrapper::ImageBayerGRBG::ImageBayerGRBG (pcl::shared_ptr<xn::ImageMetaData> image_meta_data, DebayeringMethod method) noexcept
 : Image (std::move(image_meta_data))
 , debayering_method_ (method)
 {
 }
 
 //////////////////////////////////////////////////////////////////////////////
-openni_wrapper::ImageBayerGRBG::~ImageBayerGRBG () throw ()
+openni_wrapper::ImageBayerGRBG::~ImageBayerGRBG () noexcept
 {
 }
 

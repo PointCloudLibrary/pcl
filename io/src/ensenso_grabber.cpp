@@ -85,7 +85,7 @@ pcl::EnsensoGrabber::EnsensoGrabber () :
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::EnsensoGrabber::~EnsensoGrabber () throw ()
+pcl::EnsensoGrabber::~EnsensoGrabber () noexcept
 {
   try
   {

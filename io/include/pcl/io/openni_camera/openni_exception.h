@@ -75,19 +75,19 @@ namespace openni_wrapper
      * @param[in] line_number the line number where this exception was created.
      * @param[in] message the message of the exception
      */
-    OpenNIException (const std::string& function_name, const std::string& file_name, unsigned line_number, const std::string& message) throw ();
+    OpenNIException (const std::string& function_name, const std::string& file_name, unsigned line_number, const std::string& message) noexcept;
 
     /**
      * @brief virtual Destructor that never throws an exception
      */
-    ~OpenNIException () throw ();
+    ~OpenNIException () noexcept;
 
     /**
      * @brief Assignment operator to allow copying the message of another exception variable.
      * @param[in] exception left hand side
      * @return
      */
-    OpenNIException & operator= (const OpenNIException& exception) throw ();
+    OpenNIException & operator= (const OpenNIException& exception) noexcept;
 
     /**
      * @brief virtual method, derived from std::exception

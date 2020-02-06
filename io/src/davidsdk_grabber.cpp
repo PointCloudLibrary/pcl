@@ -68,7 +68,7 @@ pcl::DavidSDKGrabber::DavidSDKGrabber () :
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::DavidSDKGrabber::~DavidSDKGrabber () throw ()
+pcl::DavidSDKGrabber::~DavidSDKGrabber () noexcept
 {
   try
   {

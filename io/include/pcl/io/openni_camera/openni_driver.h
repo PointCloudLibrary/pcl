@@ -68,7 +68,7 @@ namespace openni_wrapper
      * @author Suat Gedikli
      * @brief virtual Destructor that never throws an exception
      */
-    ~OpenNIDriver () throw ();
+    ~OpenNIDriver () noexcept;
 
     /**
      * @author Suat Gedikli
@@ -225,7 +225,7 @@ namespace openni_wrapper
 
 #ifndef _WIN32
     // workaround to get additional device nformation like serial number, vendor and product name, until Primesense fix this
-    void getDeviceInfos () throw ();
+    void getDeviceInfos () noexcept;
 #endif
 
     mutable std::vector<DeviceContext> device_context_;

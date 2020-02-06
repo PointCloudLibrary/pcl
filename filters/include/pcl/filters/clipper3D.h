@@ -59,7 +59,7 @@ namespace pcl
       /**
         * \brief virtual destructor. Never throws an exception.
         */
-      virtual ~Clipper3D () throw () {}
+      virtual ~Clipper3D () noexcept {}
 
       /**
         * \brief interface to clip a single point

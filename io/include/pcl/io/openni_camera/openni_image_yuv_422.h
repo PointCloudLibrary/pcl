@@ -55,8 +55,8 @@ namespace openni_wrapper
   class PCL_EXPORTS ImageYUV422 : public Image
   {
   public:
-    ImageYUV422 (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) throw ();
-    ~ImageYUV422 () throw ();
+    ImageYUV422 (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept;
+    ~ImageYUV422 () noexcept;
 
     inline Encoding
     getEncoding () const override

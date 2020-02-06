@@ -152,7 +152,7 @@ pcl::StereoGrabberBase::StereoGrabberBase(
 {}
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::StereoGrabberBase::~StereoGrabberBase() throw()
+pcl::StereoGrabberBase::~StereoGrabberBase() noexcept
 {
   stop();
   delete impl_;

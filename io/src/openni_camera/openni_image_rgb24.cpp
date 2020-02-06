@@ -6,12 +6,12 @@
 
 namespace openni_wrapper
 {
-ImageRGB24::ImageRGB24 (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) throw ()
+ImageRGB24::ImageRGB24 (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept
 : Image (std::move(image_meta_data))
 {
 }
 
-ImageRGB24::~ImageRGB24 () throw ()
+ImageRGB24::~ImageRGB24 () noexcept
 {
 }
 

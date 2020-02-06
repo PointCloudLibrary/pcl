@@ -58,22 +58,22 @@ namespace openni_wrapper
     friend class OpenNIDriver;
   public:
     DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
-    ~DeviceKinect () throw ();
+    ~DeviceKinect () noexcept;
 
-    inline void setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& debayering_method) throw ();
+    inline void setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& debayering_method) noexcept;
     inline const ImageBayerGRBG::DebayeringMethod& getDebayeringMethod () const throw ();
 
     bool isSynchronizationSupported () const throw () override;
 
   protected:
     Image::Ptr getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
-    void enumAvailableModes () throw ();
+    void enumAvailableModes () noexcept;
     bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw () override;
     ImageBayerGRBG::DebayeringMethod debayering_method_;
   } ;
 
   void
-  DeviceKinect::setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& debayering_method) throw ()
+  DeviceKinect::setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& debayering_method) noexcept
   {
     debayering_method_ = debayering_method;
   }

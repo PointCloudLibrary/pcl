@@ -92,7 +92,7 @@ openni_wrapper::DeviceKinect::DeviceKinect (xn::Context& context, const xn::Node
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::DeviceKinect::~DeviceKinect () throw ()
+openni_wrapper::DeviceKinect::~DeviceKinect () noexcept
 {
   depth_mutex_.lock ();
   depth_generator_.UnregisterFromNewDataAvailable (depth_callback_handle_);
@@ -112,7 +112,7 @@ openni_wrapper::DeviceKinect::isImageResizeSupported (unsigned input_width, unsi
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-openni_wrapper::DeviceKinect::enumAvailableModes () throw ()
+openni_wrapper::DeviceKinect::enumAvailableModes () noexcept
 {
   XnMapOutputMode output_mode;
   available_image_modes_.clear();
