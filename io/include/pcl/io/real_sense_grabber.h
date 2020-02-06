@@ -140,7 +140,7 @@ namespace pcl
       RealSenseGrabber (const std::string& device_id = "", const Mode& mode = Mode (), bool strict = false);
 
       virtual
-      ~RealSenseGrabber () throw ();
+      ~RealSenseGrabber () noexcept;
 
       virtual void
       start ();

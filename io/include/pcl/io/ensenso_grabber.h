@@ -88,7 +88,7 @@ namespace pcl
 
       /** @brief Destructor inherited from the Grabber interface. It never throws. */
       virtual
-      ~EnsensoGrabber () throw ();
+      ~EnsensoGrabber () noexcept;
 
       /** @brief Searches for available devices
        * @returns The number of Ensenso devices connected */

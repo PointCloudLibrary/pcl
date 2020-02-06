@@ -48,12 +48,12 @@ using namespace std;
 namespace openni_wrapper
 {
 
-ImageYUV422::ImageYUV422 (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) throw ()
+ImageYUV422::ImageYUV422 (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept
 : Image (std::move(image_meta_data))
 {
 }
 
-ImageYUV422::~ImageYUV422 () throw ()
+ImageYUV422::~ImageYUV422 () noexcept
 {
 }
 

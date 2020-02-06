@@ -366,7 +366,7 @@ pcl::PCDGrabberBase::PCDGrabberBase (const std::vector<std::string>& pcd_files, 
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::PCDGrabberBase::~PCDGrabberBase () throw ()
+pcl::PCDGrabberBase::~PCDGrabberBase () noexcept
 {
   delete impl_;
 }

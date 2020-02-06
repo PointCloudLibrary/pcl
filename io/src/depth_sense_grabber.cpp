@@ -44,7 +44,7 @@ pcl::DepthSenseGrabber::DepthSenseGrabber (const std::string& device_id)
 {
 }
 
-pcl::DepthSenseGrabber::~DepthSenseGrabber () throw ()
+pcl::DepthSenseGrabber::~DepthSenseGrabber () noexcept
 {
   delete p_;
 }

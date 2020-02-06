@@ -130,7 +130,7 @@ pcl::RealSenseGrabber::RealSenseGrabber (const std::string& device_id, const Mod
   point_cloud_rgba_signal_ = createSignal<sig_cb_real_sense_point_cloud_rgba> ();
 }
 
-pcl::RealSenseGrabber::~RealSenseGrabber () throw ()
+pcl::RealSenseGrabber::~RealSenseGrabber () noexcept
 {
   stop ();
 

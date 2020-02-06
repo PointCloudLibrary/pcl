@@ -88,7 +88,7 @@ namespace pcl
 
       /** @brief Destructor inherited from the Grabber interface. It never throws. */
       virtual
-      ~DavidSDKGrabber () throw ();
+      ~DavidSDKGrabber () noexcept;
 
       /** @brief [Connect](http://docs.david-3d.com/sdk/en/classdavid_1_1_client_json_rpc.html#a4b948e57a2e5e7f9cdcf1171c500aa24) client
        * @param[in] address

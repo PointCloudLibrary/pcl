@@ -83,7 +83,7 @@ openni_wrapper::DevicePrimesense::DevicePrimesense (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::DevicePrimesense::~DevicePrimesense () throw ()
+openni_wrapper::DevicePrimesense::~DevicePrimesense () noexcept
 {
   setDepthRegistration (false);
   setSynchronization (false);
@@ -110,7 +110,7 @@ openni_wrapper::DevicePrimesense::isImageResizeSupported (
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-openni_wrapper::DevicePrimesense::enumAvailableModes () throw ()
+openni_wrapper::DevicePrimesense::enumAvailableModes () noexcept
 {
   XnMapOutputMode output_mode;
   available_image_modes_.clear ();

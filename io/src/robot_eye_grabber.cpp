@@ -61,7 +61,7 @@ pcl::RobotEyeGrabber::RobotEyeGrabber (const boost::asio::ip::address& ipAddress
 }
 
 /////////////////////////////////////////////////////////////////////////////
-pcl::RobotEyeGrabber::~RobotEyeGrabber () throw ()
+pcl::RobotEyeGrabber::~RobotEyeGrabber () noexcept
 {
   stop ();
   disconnect_all_slots<sig_cb_robot_eye_point_cloud_xyzi> ();

@@ -55,8 +55,8 @@ public:
   using Ptr = pcl::shared_ptr<IRImage>;
   using ConstPtr = pcl::shared_ptr<const IRImage>;
 
-  inline IRImage (pcl::shared_ptr<xn::IRMetaData> ir_meta_data) throw ();
-  inline virtual ~IRImage () throw ();
+  inline IRImage (pcl::shared_ptr<xn::IRMetaData> ir_meta_data) noexcept;
+  inline virtual ~IRImage () noexcept;
 
   void fillRaw (unsigned width, unsigned height, unsigned short* ir_buffer, unsigned line_step = 0) const;
 
@@ -70,12 +70,12 @@ protected:
   pcl::shared_ptr<xn::IRMetaData> ir_md_;
 };
 
-IRImage::IRImage (pcl::shared_ptr<xn::IRMetaData> ir_meta_data) throw ()
+IRImage::IRImage (pcl::shared_ptr<xn::IRMetaData> ir_meta_data) noexcept
 : ir_md_ (std::move(ir_meta_data))
 {
 }
 
-IRImage::~IRImage () throw ()
+IRImage::~IRImage () noexcept
 {
 }
 

@@ -55,7 +55,7 @@ pcl::io::ImageRGB24::ImageRGB24 (FrameWrapper::Ptr image_metadata, Timestamp tim
 {}
 
 
-pcl::io::ImageRGB24::~ImageRGB24 () throw ()
+pcl::io::ImageRGB24::~ImageRGB24 () noexcept
 {}
 
 bool

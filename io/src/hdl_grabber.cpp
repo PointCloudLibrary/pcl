@@ -116,7 +116,7 @@ pcl::HDLGrabber::HDLGrabber (const boost::asio::ip::address& ipAddress,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-pcl::HDLGrabber::~HDLGrabber () throw ()
+pcl::HDLGrabber::~HDLGrabber () noexcept
 {
   stop ();
 

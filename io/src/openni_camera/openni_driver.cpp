@@ -218,7 +218,7 @@ openni_wrapper::OpenNIDriver::stopAll ()
     THROW_OPENNI_EXCEPTION ("stopping all streams failed. Reason: %s", xnGetStatusString (status));
 }
 
-openni_wrapper::OpenNIDriver::~OpenNIDriver () throw ()
+openni_wrapper::OpenNIDriver::~OpenNIDriver () noexcept
 {
   // no exception during destuctor
   try
@@ -331,7 +331,7 @@ openni_wrapper::OpenNIDriver::getDeviceByAddress (unsigned char bus, unsigned ch
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-openni_wrapper::OpenNIDriver::getDeviceInfos () throw ()
+openni_wrapper::OpenNIDriver::getDeviceInfos () noexcept
 {
   libusb_context *context = nullptr;
   int result;

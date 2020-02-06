@@ -59,7 +59,7 @@ pcl::io::depth_sense::DepthSenseGrabberImpl::DepthSenseGrabberImpl (DepthSenseGr
   point_cloud_rgba_signal_ = p_->createSignal<sig_cb_depth_sense_point_cloud_rgba> ();
 }
 
-pcl::io::depth_sense::DepthSenseGrabberImpl::~DepthSenseGrabberImpl () throw ()
+pcl::io::depth_sense::DepthSenseGrabberImpl::~DepthSenseGrabberImpl () noexcept
 {
   stop ();
 

@@ -65,7 +65,7 @@ openni_wrapper::DeviceXtionPro::DeviceXtionPro (xn::Context& context, const xn::
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::DeviceXtionPro::~DeviceXtionPro () throw ()
+openni_wrapper::DeviceXtionPro::~DeviceXtionPro () noexcept
 {
   depth_mutex_.lock ();
   depth_generator_.UnregisterFromNewDataAvailable (depth_callback_handle_);
@@ -81,7 +81,7 @@ openni_wrapper::DeviceXtionPro::isImageResizeSupported (unsigned, unsigned, unsi
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-openni_wrapper::DeviceXtionPro::enumAvailableModes () throw ()
+openni_wrapper::DeviceXtionPro::enumAvailableModes () noexcept
 {
   XnMapOutputMode output_mode;
   available_image_modes_.clear();

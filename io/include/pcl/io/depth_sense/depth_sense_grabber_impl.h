@@ -105,7 +105,7 @@ namespace pcl
 
         DepthSenseGrabberImpl (DepthSenseGrabber* parent, const std::string& device_id);
 
-        ~DepthSenseGrabberImpl () throw ();
+        ~DepthSenseGrabberImpl () noexcept;
 
         void
         start ();

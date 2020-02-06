@@ -63,7 +63,7 @@ namespace pcl
         IRImage (FrameWrapper::Ptr ir_metadata);
         IRImage (FrameWrapper::Ptr ir_metadata, Timestamp time);
 
-        ~IRImage () throw ()
+        ~IRImage () noexcept
         {}
 
         void

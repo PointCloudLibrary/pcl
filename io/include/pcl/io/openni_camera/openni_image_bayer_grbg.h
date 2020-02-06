@@ -61,8 +61,8 @@ namespace openni_wrapper
         EdgeAwareWeighted
       };
 
-      ImageBayerGRBG (pcl::shared_ptr<xn::ImageMetaData> image_meta_data, DebayeringMethod method) throw ();
-      ~ImageBayerGRBG () throw ();
+      ImageBayerGRBG (pcl::shared_ptr<xn::ImageMetaData> image_meta_data, DebayeringMethod method) noexcept;
+      ~ImageBayerGRBG () noexcept;
 
       inline Encoding
       getEncoding () const override
@@ -73,7 +73,7 @@ namespace openni_wrapper
       void fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step = 0) const override;
       void fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step = 0) const override;
       bool isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const override;
-      inline void setDebayeringMethod (const DebayeringMethod& method) throw ();
+      inline void setDebayeringMethod (const DebayeringMethod& method) noexcept;
       inline DebayeringMethod getDebayeringMethod () const throw ();
       inline static bool resizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height);
 
@@ -83,7 +83,7 @@ namespace openni_wrapper
   };
 
   void
-  ImageBayerGRBG::setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& method) throw ()
+  ImageBayerGRBG::setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& method) noexcept
   {
     debayering_method_ = method;
   }

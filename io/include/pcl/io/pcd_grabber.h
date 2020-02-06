@@ -96,7 +96,7 @@ namespace pcl
       }
 
       /** \brief Virtual destructor. */
-      ~PCDGrabberBase () throw ();
+      ~PCDGrabberBase () noexcept;
 
       /** \brief Starts playing the list of PCD files if frames_per_second is > 0. Otherwise it works as a trigger: publishes only the next PCD file in the list. */
       void 
@@ -164,7 +164,7 @@ namespace pcl
       PCDGrabber (const std::vector<std::string>& pcd_files, float frames_per_second = 0, bool repeat = false);
       
       /** \brief Virtual destructor. */
-      ~PCDGrabber () throw ()
+      ~PCDGrabber () noexcept
       {
         stop ();
       }

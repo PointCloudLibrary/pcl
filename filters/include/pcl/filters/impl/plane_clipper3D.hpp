@@ -44,7 +44,7 @@ pcl::PlaneClipper3D<PointT>::PlaneClipper3D (const Eigen::Vector4f& plane_params
 }
 
 template<typename PointT>
-pcl::PlaneClipper3D<PointT>::~PlaneClipper3D () throw ()
+pcl::PlaneClipper3D<PointT>::~PlaneClipper3D () noexcept
 {
 }
 

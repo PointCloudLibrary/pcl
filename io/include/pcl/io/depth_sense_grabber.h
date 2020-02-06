@@ -92,7 +92,7 @@ namespace pcl
       DepthSenseGrabber (const std::string& device_id = "");
 
       virtual
-      ~DepthSenseGrabber () throw ();
+      ~DepthSenseGrabber () noexcept;
 
       virtual void
       start ();
