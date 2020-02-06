@@ -4382,6 +4382,7 @@ pcl::visualization::PCLVisualizer::setUseVbos (bool use_vbos)
   style_->setUseVbos (use_vbos_);
 #else
   PCL_WARN ("[PCLVisualizer::setUseVbos] Has no effect when OpenGL version is ≥ 2\n");
+  (void) use_vbos;
 #endif
 }
 
