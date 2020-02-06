@@ -371,6 +371,28 @@ TEST(PCL_FeaturesGPU, normals_highlevel_4)
     }
 }
 
+// Test from issue:
+// - https://github.com/PointCloudLibrary/pcl/issues/2371#issuecomment-577727912
+TEST(PCL_FeaturesGPU, issue_2371)
+{
+    // This number is magic, do not set to lower value.
+    // It may affect error reproducibility.
+    const std::size_t N = 1000;
+    std::vector<pcl::PointXYZ> cloud_cpu(N, {0.0, 0.0, 0.0});
+
+    pcl::gpu::NormalEstimation::PointCloud cloud_gpu;
+    cloud_gpu.upload(cloud_cpu);
+
+    pcl::gpu::NormalEstimation ne_gpu;
+    ne_gpu.setInputCloud(cloud_gpu);
+
+    const float radius_search = 2.0F;
+    const int max_results = 500;
+    ne_gpu.setRadiusSearch(radius_search, max_results);
+
+    pcl::gpu::NormalEstimation::Normals normals_gpu;
+    ne_gpu.compute(normals_gpu);
+}
 
 int main (int argc, char** argv)
 {
