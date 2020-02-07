@@ -356,7 +356,7 @@ namespace pcl
       /** \brief Sets whether the surface and normal are approximated using a polynomial, or only via tangent estimation.
         * \param[in] polynomial_fit set to true for polynomial fit
         */
-      [[deprecated("use setPolynomialOrder() instead")]]
+      PCL_DEPRECATED("use setPolynomialOrder() instead")
       inline void
       setPolynomialFit (bool polynomial_fit)
       {
@@ -374,7 +374,7 @@ namespace pcl
       }
 
       /** \brief Get the polynomial_fit value (true if the surface and normal are approximated using a polynomial). */
-      [[deprecated("use getPolynomialOrder() instead")]]
+      PCL_DEPRECATED("use getPolynomialOrder() instead")
       inline bool
       getPolynomialFit () const { return (order_ > 1); }
 
@@ -746,7 +746,7 @@ namespace pcl
   };
 
   template <typename PointInT, typename PointOutT>
-  using MovingLeastSquaresOMP [[deprecated("use MovingLeastSquares instead, it supports OpenMP now")]] = MovingLeastSquares<PointInT, PointOutT>;
+  using MovingLeastSquaresOMP PCL_DEPRECATED("use MovingLeastSquares instead, it supports OpenMP now") = MovingLeastSquares<PointInT, PointOutT>;
 }
 
 #ifdef PCL_NO_PRECOMPILE

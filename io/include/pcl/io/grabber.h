@@ -72,7 +72,7 @@ namespace pcl
         * \return Connection object, that can be used to disconnect the callback method from the signal again.
         */
       template<typename T, template<typename> class FunctionT>
-      [[deprecated ("please assign the callback to a std::function.")]]
+      PCL_DEPRECATED ("please assign the callback to a std::function.")
       boost::signals2::connection
       registerCallback (const FunctionT<T>& callback)
       {

@@ -89,7 +89,7 @@ namespace pcl
               int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false);
 
   template <typename PointInT, typename PointNT, typename PointOutT>
-  [[deprecated("use computeRSD() overload that takes input point clouds by const reference")]]
+  PCL_DEPRECATED("use computeRSD() overload that takes input point clouds by const reference")
   Eigen::MatrixXf
   computeRSD (typename pcl::PointCloud<PointInT>::ConstPtr &surface, typename pcl::PointCloud<PointNT>::ConstPtr &normals,
               const std::vector<int> &indices, double max_dist,
@@ -115,7 +115,7 @@ namespace pcl
               int nr_subdiv, double plane_radius, PointOutT &radii, bool compute_histogram = false);
 
   template <typename PointNT, typename PointOutT>
-  [[deprecated("use computeRSD() overload that takes input point cloud by const reference")]]
+  PCL_DEPRECATED("use computeRSD() overload that takes input point cloud by const reference")
   Eigen::MatrixXf
   computeRSD (typename pcl::PointCloud<PointNT>::ConstPtr &normals,
               const std::vector<int> &indices, const std::vector<float> &sqr_dists, double max_dist,

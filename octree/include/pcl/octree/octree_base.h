@@ -44,6 +44,7 @@
 #include <pcl/octree/octree_iterator.h>
 #include <pcl/octree/octree_key.h>
 #include <pcl/octree/octree_nodes.h>
+#include <pcl/pcl_macros.h>
 
 namespace pcl {
 namespace octree {
@@ -125,14 +126,14 @@ public:
   using LeafNodeIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
   using ConstLeafNodeIterator = const OctreeLeafNodeDepthFirstIterator<OctreeT>;
 
-  [[deprecated("use leaf_depth_begin() instead")]] LeafNodeIterator
+  PCL_DEPRECATED("use leaf_depth_begin() instead")
+  LeafNodeIterator
   leaf_begin(unsigned int max_depth_arg = 0u)
   {
     return LeafNodeIterator(this, max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
-  [[deprecated("use leaf_depth_end() instead")]] const LeafNodeIterator
-  leaf_end()
+  PCL_DEPRECATED("use leaf_depth_end() instead") const LeafNodeIterator leaf_end()
   {
     return LeafNodeIterator(this, 0, nullptr);
   };
@@ -685,8 +686,7 @@ protected:
    * \param n_arg: some value
    * \return binary logarithm (log2) of argument n_arg
    */
-  [[deprecated("use std::log2 instead")]] double
-  Log2(double n_arg)
+  PCL_DEPRECATED("use std::log2 instead") double Log2(double n_arg)
   {
     return std::log2(n_arg);
   }
