@@ -385,6 +385,21 @@ macro(PCL_ADD_TEST _name _exename)
   # must link explicitly against boost only on Windows
   target_link_libraries(${_exename} ${Boost_LIBRARIES})
 
+  #Only applies to MSVC
+  if(MSVC)    
+    #Requires CMAKE version 3.13.0
+    if(CMAKE_VERSION VERSION_LESS "3.13.0" AND (NOT ArgumentWarningShown))
+      message(WARNING "Arguments for unit test projects are not added - this requires at least CMake 3.13. Can be added manually in \"Project settings -> Debugging -> Command arguments\"")
+      SET (ArgumentWarningShown TRUE PARENT_SCOPE)
+    else()
+      #Only add if there are arguments to test
+      if(PCL_ADD_TEST_ARGUMENTS)
+        string (REPLACE ";" " " PCL_ADD_TEST_ARGUMENTS_STR "${PCL_ADD_TEST_ARGUMENTS}")
+        set_target_properties(${_exename} PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS ${PCL_ADD_TEST_ARGUMENTS_STR})
+      endif()
+    endif()
+  endif()
+
   set_target_properties(${_exename} PROPERTIES FOLDER "Tests")
   add_test(NAME ${_name} COMMAND ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
 
