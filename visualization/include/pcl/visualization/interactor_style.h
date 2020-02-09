@@ -51,8 +51,8 @@
 #include <boost/signals2/signal.hpp>
 #endif
 #include <vtkInteractorStyleRubberBandPick.h>
+#include <vtkRendererCollection.h>
 
-class vtkRendererCollection;
 class vtkLegendScaleActor;
 class vtkScalarBarActor;
 class vtkPNGWriter;

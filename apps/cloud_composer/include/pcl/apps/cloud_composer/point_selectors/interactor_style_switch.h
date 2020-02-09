@@ -45,7 +45,7 @@
 #include <pcl/visualization/common/ren_win_interact_map.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-class QVTKWidget;
+class QVTKOpenGLNativeWidget;
 
 namespace pcl
 {
@@ -93,7 +93,7 @@ namespace pcl
         initializeInteractorStyles (pcl::visualization::PCLVisualizer::Ptr vis, ProjectModel* model);
         
         inline void 
-        setQVTKWidget (QVTKWidget* qvtk) { qvtk_ = qvtk; }
+        setQVTKWidget (QVTKOpenGLNativeWidget* qvtk) { qvtk_ = qvtk; }
                 
         void
         setCurrentInteractorStyle (interactor_styles::INTERACTOR_STYLES interactor_style);
@@ -134,7 +134,7 @@ namespace pcl
         vtkSmartPointer<vtkPointPicker> point_picker_;
         
         /** \brief Internal pointer to QVTKWidget that this Switch works with */
-        QVTKWidget* qvtk_;
+        QVTKOpenGLNativeWidget* qvtk_;
         /** \brief Internal pointer to PCLVisualizer that this Switch works with */
         pcl::visualization::PCLVisualizer::Ptr vis_;
       private:

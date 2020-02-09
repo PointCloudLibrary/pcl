@@ -377,25 +377,26 @@ endif()
 option(WITH_VTK "Build VTK-Visualizations" TRUE)
 if(WITH_VTK AND NOT ANDROID)
   set(PCL_VTK_COMPONENTS
-    vtkChartsCore
-    vtkCommonCore
-    vtkCommonDataModel
-    vtkCommonExecutionModel
-    vtkFiltersCore
-    vtkFiltersExtraction
-    vtkFiltersModeling
-    vtkImagingCore
-    vtkImagingSources
-    vtkInteractionStyle
-    vtkInteractionWidgets
-    vtkIOCore
-    vtkIOGeometry
-    vtkIOImage
-    vtkIOLegacy
-    vtkIOPLY
-    vtkRenderingAnnotation
-    vtkRenderingLOD
-    vtkViewsContext2D
+    ChartsCore
+    CommonCore
+    CommonDataModel
+    CommonExecutionModel
+    FiltersCore
+    FiltersExtraction
+    FiltersGeometry
+    FiltersModeling
+    ImagingCore
+    ImagingSources
+    InteractionStyle
+    InteractionWidgets
+    IOCore
+    IOGeometry
+    IOImage
+    IOLegacy
+    IOPLY
+    RenderingAnnotation
+    RenderingLOD
+    ViewsContext2D
   )
   find_package(VTK COMPONENTS ${PCL_VTK_COMPONENTS})
   if(VTK_FOUND AND ("${VTK_VERSION}" VERSION_LESS 6.2))
@@ -405,16 +406,14 @@ if(WITH_VTK AND NOT ANDROID)
 
   if(VTK_FOUND)
     if(NOT DEFINED VTK_RENDERING_BACKEND)
-      # On old VTK versions this variable does not exist. In this case it is
-      # safe to assume OpenGL backend
-      set(VTK_RENDERING_BACKEND "OpenGL")
+      # In this case it is safe to assume OpenGL backend
+      set(VTK_RENDERING_BACKEND "OpenGL2")
     endif()
-    list(APPEND PCL_VTK_COMPONENTS vtkRenderingContext${VTK_RENDERING_BACKEND})
-
+    list(APPEND PCL_VTK_COMPONENTS RenderingContext${VTK_RENDERING_BACKEND})
     if(WITH_QT)
-      if(";${VTK_MODULES_ENABLED};" MATCHES ";vtkGUISupportQt;" AND ";${VTK_MODULES_ENABLED};" MATCHES ";vtkRenderingQt;")
+      if(";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";GUISupportQt;" AND ";${VTK_AVAILABLE_COMPONENTS};" MATCHES ";RenderingQt;")
         set(QVTK_FOUND ON)
-        list(APPEND PCL_VTK_COMPONENTS vtkRenderingQt vtkGUISupportQt)
+        list(APPEND PCL_VTK_COMPONENTS RenderingQt GUISupportQt)
       else()
         unset(QVTK_FOUND)
       endif()

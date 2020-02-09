@@ -70,7 +70,7 @@ namespace pcl
       ProjectModel* 
       getModel () const { return model_; }
       
-      QVTKWidget* 
+      QVTKOpenGLNativeWidget*
       getQVTK() const {return qvtk_; }
       
       pcl::visualization::PCLVisualizer::Ptr
@@ -141,7 +141,7 @@ namespace pcl
       
       pcl::visualization::PCLVisualizer::Ptr vis_;
       ProjectModel* model_;
-      QVTKWidget* qvtk_;
+      QVTKOpenGLNativeWidget* qvtk_;
       vtkSmartPointer<InteractorStyleSwitch> style_switch_;
       
       vtkSmartPointer<vtkOrientationMarkerWidget> axes_widget_;

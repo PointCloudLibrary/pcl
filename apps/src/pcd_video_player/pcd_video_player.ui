@@ -25,7 +25,7 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QVTKWidget" name="qvtkWidget"/>
+      <widget class="QVTKOpenGLNativeWidget" name="qvtkWidget"/>
      </item>
      <item>
       <widget class="QSlider" name="indexSlider">
@@ -145,9 +145,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QVTKWidget</class>
+   <class>QVTKOpenGLNativeWidget</class>
    <extends>QWidget</extends>
-   <header>QVTKWidget.h</header>
+   <header>QVTKOpenGLNativeWidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

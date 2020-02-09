@@ -50,6 +50,7 @@
 #include <vtkDataArray.h>
 #include <vtkFloatArray.h>
 #include <vtkUnsignedCharArray.h>
+#include <vtkRenderWindow.h>
 
 namespace pcl
 {

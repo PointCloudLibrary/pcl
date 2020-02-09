@@ -50,7 +50,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::RenderWindow::RenderWindow(RenderWindowItem* render_window_item, QWidget *parent, Qt::WindowFlags flags)
-  : QVTKWidget(parent, flags),
+  : QVTKOpenGLNativeWidget(parent, flags),
   axes_(vtkSmartPointer<vtkCubeAxesActor>::New()),
   render_window_item_(render_window_item)
 {
@@ -77,7 +77,7 @@ pcl::modeler::RenderWindow::~RenderWindow()
 void
 pcl::modeler::RenderWindow::initRenderer()
 {
-  vtkSmartPointer<vtkRenderWindow> win = GetRenderWindow();
+  vtkSmartPointer<vtkRenderWindow> win = renderWindow();
   vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
   win->AddRenderer(renderer);
 
@@ -107,7 +107,7 @@ pcl::modeler::RenderWindow::focusInEvent(QFocusEvent * event)
 {
   dynamic_cast<SceneTree*>(render_window_item_->treeWidget())->selectRenderWindowItem(render_window_item_);
 
-  QVTKWidget::focusInEvent(event);
+  QVTKOpenGLNativeWidget::focusInEvent(event);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -136,7 +136,7 @@ pcl::modeler::RenderWindow::setTitle(const QString& title)
 void
 pcl::modeler::RenderWindow::render()
 {
-  GetRenderWindow()->Render();
+  renderWindow()->Render();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -144,8 +144,8 @@ void
 pcl::modeler::RenderWindow::resetCamera()
 {
   double bounds[6];
-  GetRenderWindow()->GetRenderers()->GetFirstRenderer()->ComputeVisiblePropBounds(bounds);
-  GetRenderWindow()->GetRenderers()->GetFirstRenderer()->ResetCamera(bounds);
+  renderWindow()->GetRenderers()->GetFirstRenderer()->ComputeVisiblePropBounds(bounds);
+  renderWindow()->GetRenderers()->GetFirstRenderer()->ResetCamera(bounds);
   render();
 }
 
@@ -153,14 +153,14 @@ pcl::modeler::RenderWindow::resetCamera()
 void
 pcl::modeler::RenderWindow::getBackground(double& r, double& g, double& b)
 {
-  GetRenderWindow()->GetRenderers()->GetFirstRenderer()->GetBackground(r, g, b);
+  renderWindow()->GetRenderers()->GetFirstRenderer()->GetBackground(r, g, b);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::RenderWindow::setBackground(double r, double g, double b)
 {
-  GetRenderWindow()->GetRenderers()->GetFirstRenderer()->SetBackground(r, g, b);
+  renderWindow()->GetRenderers()->GetFirstRenderer()->SetBackground(r, g, b);
 }
 
 
@@ -170,7 +170,7 @@ pcl::modeler::RenderWindow::updateAxes()
 {
   vtkBoundingBox bb;
 
-  vtkActorCollection* actors = GetRenderWindow()->GetRenderers()->GetFirstRenderer()->GetActors();
+  vtkActorCollection* actors = renderWindow()->GetRenderers()->GetFirstRenderer()->GetActors();
 
   actors->InitTraversal();
   for (int i = 0, i_end = actors->GetNumberOfItems(); i < i_end; ++ i)
@@ -187,7 +187,7 @@ pcl::modeler::RenderWindow::updateAxes()
   double bounds[6];
   bb.GetBounds(bounds);
   axes_->SetBounds(bounds);
-  axes_->SetCamera(GetRenderWindow()->GetRenderers()->GetFirstRenderer()->GetActiveCamera());
+  axes_->SetCamera(renderWindow()->GetRenderers()->GetFirstRenderer()->GetActiveCamera());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -195,9 +195,9 @@ void
 pcl::modeler::RenderWindow::setShowAxes(bool flag)
 {
   if (flag)
-    GetRenderWindow()->GetRenderers()->GetFirstRenderer()->AddActor(axes_);
+    renderWindow()->GetRenderers()->GetFirstRenderer()->AddActor(axes_);
   else
-    GetRenderWindow()->GetRenderers()->GetFirstRenderer()->RemoveActor(axes_);
+    renderWindow()->GetRenderers()->GetFirstRenderer()->RemoveActor(axes_);
 
   return;
 }

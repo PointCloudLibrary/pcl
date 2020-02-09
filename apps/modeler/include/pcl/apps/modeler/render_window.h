@@ -38,7 +38,7 @@
 
 #include <vtkSmartPointer.h>
 
-#include <QVTKWidget.h>
+#include <QVTKOpenGLNativeWidget.h>
 
 class vtkCubeAxesActor;
 
@@ -48,7 +48,7 @@ namespace pcl
   {
     class RenderWindowItem;
 
-    class RenderWindow : public QVTKWidget
+    class RenderWindow : public QVTKOpenGLNativeWidget
     {
       public:
         RenderWindow(RenderWindowItem* render_window_item, QWidget *parent = nullptr, Qt::WindowFlags flags = nullptr);

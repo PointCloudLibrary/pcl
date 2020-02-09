@@ -45,3 +45,4 @@
 
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>
+#include <vtkUnsignedCharArray.h>

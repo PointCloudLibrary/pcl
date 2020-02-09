@@ -11,6 +11,7 @@
 
 #include <vtkSmartPointer.h>
 #include <vtkPolyData.h>
+#include <vtkIdTypeArray.h>
 
 #include <functional>
 

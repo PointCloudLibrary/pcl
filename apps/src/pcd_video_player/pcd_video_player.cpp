@@ -93,8 +93,8 @@ PCDVideoPlayer::PCDVideoPlayer ()
 
   // Set up the qvtk window
   vis_.reset (new pcl::visualization::PCLVisualizer ("", false));
-  ui_->qvtkWidget->SetRenderWindow (vis_->getRenderWindow ());
-  vis_->setupInteractor (ui_->qvtkWidget->GetInteractor (), ui_->qvtkWidget->GetRenderWindow ());
+  ui_->qvtkWidget->setRenderWindow (vis_->getRenderWindow ());
+  vis_->setupInteractor (ui_->qvtkWidget->interactor (), ui_->qvtkWidget->renderWindow ());
   vis_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
   ui_->qvtkWidget->update ();
 

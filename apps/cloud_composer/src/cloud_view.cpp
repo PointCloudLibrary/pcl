@@ -7,7 +7,7 @@
 
 #include <QDebug>
 
-#include <QVTKWidget.h>
+#include <QVTKOpenGLNativeWidget.h>
 
 pcl::cloud_composer::CloudView::CloudView (QWidget* parent)
   : QWidget (parent)
@@ -15,10 +15,10 @@ pcl::cloud_composer::CloudView::CloudView (QWidget* parent)
   vis_.reset (new pcl::visualization::PCLVisualizer ("", false));
   vis_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
   //Create the QVTKWidget
-  qvtk_ = new QVTKWidget (this);
-  qvtk_->SetRenderWindow (vis_->getRenderWindow ());
+  qvtk_ = new QVTKOpenGLNativeWidget (this);
+  qvtk_->setRenderWindow (vis_->getRenderWindow());
   initializeInteractorSwitch ();
-  vis_->setupInteractor (qvtk_->GetInteractor (), qvtk_->GetRenderWindow (), style_switch_);
+  vis_->setupInteractor (qvtk_->interactor (), qvtk_->renderWindow (), style_switch_);
   
   QGridLayout *mainLayout = new QGridLayout (this);
   mainLayout-> addWidget (qvtk_,0,0);
@@ -31,10 +31,10 @@ pcl::cloud_composer::CloudView::CloudView (ProjectModel* model, QWidget* parent)
   vis_.reset (new pcl::visualization::PCLVisualizer ("", false));
  // vis_->getInteractorStyle ()->setKeyboardModifier (pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
   //Create the QVTKWidget
-  qvtk_ = new QVTKWidget (this);
-  qvtk_->SetRenderWindow (vis_->getRenderWindow ());
+  qvtk_ = new QVTKOpenGLNativeWidget (this);
+  qvtk_->setRenderWindow (vis_->getRenderWindow ());
   initializeInteractorSwitch ();
-  vis_->setupInteractor (qvtk_->GetInteractor (), qvtk_->GetRenderWindow (), style_switch_);
+  vis_->setupInteractor (qvtk_->interactor (), qvtk_->renderWindow (), style_switch_);
   setModel(model);
   
   QGridLayout *mainLayout = new QGridLayout (this);
@@ -59,7 +59,7 @@ pcl::cloud_composer::CloudView::setModel (ProjectModel* new_model)
   qvtk_->show();
   qvtk_->update ();
   
- // vis_->addOrientationMarkerWidgetAxes (qvtk_->GetInteractor ());
+ // vis_->addOrientationMarkerWidgetAxes (qvtk_->interactor ());
 }
 
 void
@@ -206,7 +206,8 @@ pcl::cloud_composer::CloudView::setAxisVisibility (bool visible)
   if (visible)
   {
     qDebug () << "Adding coordinate system!";
-    vis_->addOrientationMarkerWidgetAxes ( qvtk_->GetInteractor() );
+    vis_->addOrientationMarkerWidgetAxes ( qvtk_->interactor() );
+
   }
   else
   {
@@ -226,7 +227,7 @@ pcl::cloud_composer::CloudView::addOrientationMarkerWidgetAxes ()
     axes_widget_ = vtkSmartPointer<vtkOrientationMarkerWidget>::New ();
     axes_widget_->SetOutlineColor ( 0.9300, 0.5700, 0.1300 );
     axes_widget_->SetOrientationMarker( axes );
-    axes_widget_->SetInteractor( qvtk_->GetInteractor () );
+    axes_widget_->SetInteractor( qvtk_->interactor () );
     axes_widget_->SetViewport( 0.0, 0.0, 0.4, 0.4 );
     axes_widget_->SetEnabled( 1 );
     axes_widget_->InteractiveOn();
@@ -257,7 +258,7 @@ pcl::cloud_composer::CloudView::initializeInteractorSwitch ()
 {
   style_switch_ = vtkSmartPointer<InteractorStyleSwitch>::New();
   style_switch_->initializeInteractorStyles (vis_, model_);
-  style_switch_->SetInteractor (qvtk_->GetInteractor ());
+  style_switch_->SetInteractor (qvtk_->interactor ());
   style_switch_->setCurrentInteractorStyle (interactor_styles::PCL_VISUALIZER);
   
   //Connect the events!

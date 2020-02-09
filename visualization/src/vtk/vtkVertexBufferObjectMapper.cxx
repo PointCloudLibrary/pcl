@@ -33,7 +33,6 @@
 #include "vtkProperty.h"
 #include "vtkRenderer.h"
 #include "vtkRenderWindow.h"
-#include "vtkShaderProgram2.h"
 #include "vtkShader2.h"
 #include "vtkShader2Collection.h"
 #include "vtkUniformVariables.h"

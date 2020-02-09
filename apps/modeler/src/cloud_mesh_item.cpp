@@ -155,9 +155,9 @@ void
 pcl::modeler::CloudMeshItem::createChannels()
 {
   RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
-  addChild(new PointsActorItem(this, cloud_mesh_, render_window_item->getRenderWindow()->GetRenderWindow()));
-  addChild(new NormalsActorItem(this, cloud_mesh_, render_window_item->getRenderWindow()->GetRenderWindow()));
-  addChild(new SurfaceActorItem(this, cloud_mesh_, render_window_item->getRenderWindow()->GetRenderWindow()));
+  addChild(new PointsActorItem(this, cloud_mesh_, render_window_item->getRenderWindow()->renderWindow()));
+  addChild(new NormalsActorItem(this, cloud_mesh_, render_window_item->getRenderWindow()->renderWindow()));
+  addChild(new SurfaceActorItem(this, cloud_mesh_, render_window_item->getRenderWindow()->renderWindow()));
   for (int i = 0, i_end = childCount(); i < i_end; ++ i)
   {
     ChannelActorItem* child_item = dynamic_cast<ChannelActorItem*>(child(i));
@@ -241,7 +241,7 @@ pcl::modeler::CloudMeshItem::updateRenderWindow()
   for (int i = 0, i_end = childCount(); i < i_end; ++ i)
   {
     ChannelActorItem* child_item = dynamic_cast<ChannelActorItem*>(child(i));
-    child_item->switchRenderWindow(render_window_item->getRenderWindow()->GetRenderWindow());
+    child_item->switchRenderWindow(render_window_item->getRenderWindow()->renderWindow());
   }
 
   render_window_item->getRenderWindow()->updateAxes();

@@ -3,7 +3,7 @@
 
 #include <QGridLayout>
 
-#include <QVTKWidget.h>
+#include <QVTKOpenGLNativeWidget.h>
 
 pcl::cloud_composer::FPFHItem::FPFHItem (QString name, const pcl::PointCloud<pcl::FPFHSignature33>::Ptr& fpfh_ptr, double radius)
   : CloudComposerItem (std::move(name))
@@ -40,7 +40,7 @@ pcl::cloud_composer::FPFHItem::getInspectorTabs ()
   if (!plot_)
   {
     plot_.reset (new pcl::visualization::PCLPlotter);
-    qvtk_ = new QVTKWidget ();
+    qvtk_ = new QVTKOpenGLNativeWidget ();
     hist_page_ = new QWidget ();
     QGridLayout *mainLayout = new QGridLayout (hist_page_);
     mainLayout-> addWidget (qvtk_,0,0);
@@ -49,8 +49,8 @@ pcl::cloud_composer::FPFHItem::getInspectorTabs ()
   //Plot the histogram
   plot_->addFeatureHistogram (*fpfh_ptr_, fpfh_ptr_->width, data(ItemDataRole::ITEM_ID).toString().toStdString ());
   //Set the render window of the QVTK widget, update
-  plot_->setViewInteractor (vtkSmartPointer<vtkRenderWindowInteractor> (qvtk_->GetInteractor ()));
-  qvtk_->SetRenderWindow (plot_->getRenderWindow ());
+  plot_->setViewInteractor (vtkSmartPointer<vtkRenderWindowInteractor> (qvtk_->interactor ()));
+  qvtk_->setRenderWindow (plot_->getRenderWindow ());
   qvtk_->show ();
   qvtk_->update ();
   

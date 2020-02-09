@@ -43,7 +43,7 @@
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
 #include <pcl/visualization/pcl_plotter.h>
 
-class QVTKWidget;
+class QVTKOpenGLNativeWidget;
 
 namespace pcl
 {
@@ -74,7 +74,7 @@ namespace pcl
         pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfh_ptr_;
         double radius_;
         pcl::visualization::PCLPlotter::Ptr plot_;
-        QVTKWidget *qvtk_;
+        QVTKOpenGLNativeWidget *qvtk_;
         QWidget *hist_page_;
     };
 
