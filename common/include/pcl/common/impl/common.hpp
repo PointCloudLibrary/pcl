@@ -66,6 +66,44 @@ pcl::getAngle3D (const Eigen::Vector3f &v1, const Eigen::Vector3f &v2, const boo
   return (in_degree ? std::acos (rad) * 180.0 / M_PI : std::acos (rad));
 }
 
+#ifdef __SSE__
+inline __m128
+pcl::acos_SSE (const __m128 &x)
+{
+  return _mm_add_ps (_mm_mul_ps (_mm_add_ps (_mm_set1_ps (1.59121552f), _mm_mul_ps (x, _mm_add_ps (_mm_set1_ps (-0.15461442f), _mm_mul_ps (x, _mm_set1_ps (0.05354897f))))),
+                                 _mm_sqrt_ps (_mm_add_ps (_mm_set1_ps (0.89286965f), _mm_mul_ps (_mm_set1_ps (-0.89282669f), x)))),
+                     _mm_add_ps (_mm_set1_ps (0.06681017f), _mm_mul_ps (x, _mm_add_ps (_mm_set1_ps (-0.09402311f), _mm_mul_ps (x, _mm_set1_ps (0.02708663f))))));
+}
+
+inline __m128
+pcl::getAngle3DSSE (const __m128 &x1, const __m128 &y1, const __m128 &z1, const __m128 &x2, const __m128 &y2, const __m128 &z2)
+{
+  // The andnot-function realizes an abs-operation: the sign bit is removed
+  // -0.0f (negative zero) means that all bits are 0, only the sign bit is 1
+  return acos_SSE (_mm_min_ps (_mm_set1_ps (1.0f), _mm_andnot_ps (_mm_set1_ps (-0.0f),
+         _mm_add_ps (_mm_add_ps (_mm_mul_ps (x1, x2), _mm_mul_ps (y1, y2)), _mm_mul_ps (z1, z2)))));
+}
+#endif // ifdef __SSE__
+
+#ifdef __AVX__
+inline __m256
+pcl::acos_AVX (const __m256 &x)
+{
+  return _mm256_add_ps (_mm256_mul_ps (_mm256_add_ps (_mm256_set1_ps (1.59121552f), _mm256_mul_ps (x, _mm256_add_ps (_mm256_set1_ps (-0.15461442f), _mm256_mul_ps (x, _mm256_set1_ps (0.05354897f))))),
+                                       _mm256_sqrt_ps (_mm256_add_ps (_mm256_set1_ps (0.89286965f), _mm256_mul_ps (_mm256_set1_ps (-0.89282669f), x)))),
+                        _mm256_add_ps (_mm256_set1_ps (0.06681017f), _mm256_mul_ps (x, _mm256_add_ps (_mm256_set1_ps (-0.09402311f), _mm256_mul_ps (x, _mm256_set1_ps (0.02708663f))))));
+}
+
+inline __m256
+pcl::getAngle3DAVX (const __m256 &x1, const __m256 &y1, const __m256 &z1, const __m256 &x2, const __m256 &y2, const __m256 &z2)
+{
+  // The andnot-function realizes an abs-operation: the sign bit is removed
+  // -0.0f (negative zero) means that all bits are 0, only the sign bit is 1
+  return acos_AVX (_mm256_min_ps (_mm256_set1_ps (1.0f), _mm256_andnot_ps (_mm256_set1_ps (-0.0f),
+         _mm256_add_ps (_mm256_add_ps (_mm256_mul_ps (x1, x2), _mm256_mul_ps (y1, y2)), _mm256_mul_ps (z1, z2)))));
+}
+#endif // ifdef __AVX__
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 inline void
 pcl::getMeanStd (const std::vector<float> &values, double &mean, double &stddev)
