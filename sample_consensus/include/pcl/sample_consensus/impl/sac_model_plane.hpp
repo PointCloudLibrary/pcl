@@ -109,7 +109,7 @@ pcl::SampleConsensusModelPlane<PointT>::computeModelCoefficients (
 
 #ifdef __AVX__
 // This function computes the distances of 8 points to the plane
-template <typename PointT> inline __m256 pcl::SampleConsensusModelPlane<PointT>::dist8 (const std::size_t i, const __m256 a_vec, const __m256 b_vec, const __m256 c_vec, const __m256 d_vec, const __m256 abs_help) const
+template <typename PointT> inline __m256 pcl::SampleConsensusModelPlane<PointT>::dist8 (const std::size_t i, const __m256 &a_vec, const __m256 &b_vec, const __m256 &c_vec, const __m256 &d_vec, const __m256 &abs_help) const
 {
   // The andnot-function realizes an abs-operation: the sign bit is removed
   return _mm256_andnot_ps (abs_help,
@@ -143,7 +143,7 @@ template <typename PointT> inline __m256 pcl::SampleConsensusModelPlane<PointT>:
 
 #ifdef __SSE__
 // This function computes the distances of 4 points to the plane
-template <typename PointT> inline __m128 pcl::SampleConsensusModelPlane<PointT>::dist4 (const std::size_t i, const __m128 a_vec, const __m128 b_vec, const __m128 c_vec, const __m128 d_vec, const __m128 abs_help) const
+template <typename PointT> inline __m128 pcl::SampleConsensusModelPlane<PointT>::dist4 (const std::size_t i, const __m128 &a_vec, const __m128 &b_vec, const __m128 &c_vec, const __m128 &d_vec, const __m128 &abs_help) const
 {
   // The andnot-function realizes an abs-operation: the sign bit is removed
   return _mm_andnot_ps (abs_help,

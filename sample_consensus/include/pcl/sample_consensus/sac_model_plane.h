@@ -285,6 +285,14 @@ namespace pcl
                               std::size_t i = 0) const;
 #endif
 
+#ifdef __AVX__
+      inline __m256 dist8 (const std::size_t i, const __m256 &a_vec, const __m256 &b_vec, const __m256 &c_vec, const __m256 &d_vec, const __m256 &abs_help) const;
+#endif
+
+#ifdef __SSE__
+      inline __m128 dist4 (const std::size_t i, const __m128 &a_vec, const __m128 &b_vec, const __m128 &c_vec, const __m128 &d_vec, const __m128 &abs_help) const;
+#endif
+
     private:
       /** \brief Check if a sample of indices results in a good sample of points
         * indices.
@@ -292,14 +300,6 @@ namespace pcl
         */
       bool
       isSampleGood (const std::vector<int> &samples) const override;
-
-#ifdef __AVX__
-      inline __m256 dist8 (const std::size_t i, const __m256 a_vec, const __m256 b_vec, const __m256 c_vec, const __m256 d_vec, const __m256 abs_help) const;
-#endif
-
-#ifdef __SSE__
-      inline __m128 dist4 (const std::size_t i, const __m128 a_vec, const __m128 b_vec, const __m128 c_vec, const __m128 d_vec, const __m128 abs_help) const;
-#endif
   };
 }
 
