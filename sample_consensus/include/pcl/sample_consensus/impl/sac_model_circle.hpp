@@ -239,7 +239,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistanceSSE (
   // To avoid sqrt computation: consider one larger circle (radius + threshold) and one smaller circle (radius - threshold). Valid if point is in larger circle, but not in smaller circle.
   const __m128 sqr_inner_circle = _mm_set1_ps ((model_coefficients[2] <= threshold ? 0.0 : (model_coefficients[2]-threshold)*(model_coefficients[2]-threshold)));
   const __m128 sqr_outer_circle = _mm_set1_ps ((model_coefficients[2]+threshold)*(model_coefficients[2]+threshold));
-  __m128i res = _mm_set1_epi32(0); // This corresponds to nr_p: 8 32bit integers that, summed together, hold the number of inliers
+  __m128i res = _mm_set1_epi32(0); // This corresponds to nr_p: 4 32bit integers that, summed together, hold the number of inliers
   for (; (i + 4) <= indices_->size (); i += 4)
   {
     const __m128 sqr_dist = sqr_dist4 (i, a_vec, b_vec);

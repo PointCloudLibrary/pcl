@@ -268,7 +268,7 @@ pcl::SampleConsensusModelSphere<PointT>::countWithinDistanceSSE (
   // To avoid sqrt computation: consider one larger sphere (radius + threshold) and one smaller sphere (radius - threshold). Valid if point is in larger sphere, but not in smaller sphere.
   const __m128 sqr_inner_sphere = _mm_set1_ps ((model_coefficients[3] <= threshold ? 0.0 : (model_coefficients[3]-threshold)*(model_coefficients[3]-threshold)));
   const __m128 sqr_outer_sphere = _mm_set1_ps ((model_coefficients[3]+threshold)*(model_coefficients[3]+threshold));
-  __m128i res = _mm_set1_epi32(0); // This corresponds to nr_p: 8 32bit integers that, summed together, hold the number of inliers
+  __m128i res = _mm_set1_epi32(0); // This corresponds to nr_p: 4 32bit integers that, summed together, hold the number of inliers
   for (; (i + 4) <= indices_->size (); i += 4)
   {
     const __m128 sqr_dist = sqr_dist4 (i, a_vec, b_vec, c_vec);
@@ -304,7 +304,7 @@ pcl::SampleConsensusModelSphere<PointT>::countWithinDistanceAVX (
   // To avoid sqrt computation: consider one larger sphere (radius + threshold) and one smaller sphere (radius - threshold). Valid if point is in larger sphere, but not in smaller sphere.
   const __m256 sqr_inner_sphere = _mm256_set1_ps ((model_coefficients[3] <= threshold ? 0.0 : (model_coefficients[3]-threshold)*(model_coefficients[3]-threshold)));
   const __m256 sqr_outer_sphere = _mm256_set1_ps ((model_coefficients[3]+threshold)*(model_coefficients[3]+threshold));
-  __m256i res = _mm256_set1_epi32(0);
+  __m256i res = _mm256_set1_epi32(0); // This corresponds to nr_p: 8 32bit integers that, summed together, hold the number of inliers
   for (; (i + 8) <= indices_->size (); i += 8)
   {
     const __m256 sqr_dist = sqr_dist8 (i, a_vec, b_vec, c_vec);

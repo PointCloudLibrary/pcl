@@ -288,7 +288,7 @@ pcl::SampleConsensusModelPlane<PointT>::countWithinDistanceSSE (
   const __m128 d_vec = _mm_set1_ps (model_coefficients[3]);
   const __m128 threshold_vec = _mm_set1_ps (threshold);
   const __m128 abs_help = _mm_set1_ps (-0.0F); // -0.0F (negative zero) means that all bits are 0, only the sign bit is 1
-  __m128i res = _mm_set1_epi32(0); // This corresponds to nr_p: 8 32bit integers that, summed together, hold the number of inliers
+  __m128i res = _mm_set1_epi32(0); // This corresponds to nr_p: 4 32bit integers that, summed together, hold the number of inliers
   for (; (i + 4) <= indices_->size (); i += 4)
   {
     const __m128 mask = _mm_cmplt_ps (dist4 (i, a_vec, b_vec, c_vec, d_vec, abs_help), threshold_vec); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
