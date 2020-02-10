@@ -40,8 +40,8 @@
 
 #include <pcl/octree/octree.h>
 
-#include <pcl/octree/impl/octree_base.hpp>
 #include <pcl/octree/impl/octree2buf_base.hpp>
-#include <pcl/octree/impl/octree_pointcloud.hpp>
+#include <pcl/octree/impl/octree_base.hpp>
 #include <pcl/octree/impl/octree_iterator.hpp>
+#include <pcl/octree/impl/octree_pointcloud.hpp>
 #include <pcl/octree/impl/octree_search.hpp>
