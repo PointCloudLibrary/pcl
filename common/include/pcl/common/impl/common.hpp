@@ -70,6 +70,20 @@ pcl::getAngle3D (const Eigen::Vector3f &v1, const Eigen::Vector3f &v2, const boo
 inline __m128
 pcl::acos_SSE (const __m128 &x)
 {
+  /*
+  This python code generates the coefficients:
+  import math, numpy, scipy.optimize
+  def get_error(S):
+      err_sum=0.0
+      for x in numpy.arange(0.0, 1.0, 0.0025):
+          if (S[3]+S[4]*x)<0.0:
+              err_sum+=10.0
+          else:
+              err_sum+=((S[0]+x*(S[1]+x*S[2]))*numpy.sqrt(S[3]+S[4]*x)+S[5]+x*(S[6]+x*S[7])-math.acos(x))**2.0
+      return err_sum/400.0
+
+  print(scipy.optimize.minimize(fun=get_error, x0=[1.57, 0.0, 0.0, 1.0, -1.0, 0.0, 0.0, 0.0], method='Nelder-Mead', options={'maxiter':42000, 'maxfev':42000, 'disp':True, 'xatol':1e-6, 'fatol':1e-6}))
+  */
   return _mm_add_ps (_mm_mul_ps (_mm_add_ps (_mm_set1_ps (1.59121552f), _mm_mul_ps (x, _mm_add_ps (_mm_set1_ps (-0.15461442f), _mm_mul_ps (x, _mm_set1_ps (0.05354897f))))),
                                  _mm_sqrt_ps (_mm_add_ps (_mm_set1_ps (0.89286965f), _mm_mul_ps (_mm_set1_ps (-0.89282669f), x)))),
                      _mm_add_ps (_mm_set1_ps (0.06681017f), _mm_mul_ps (x, _mm_add_ps (_mm_set1_ps (-0.09402311f), _mm_mul_ps (x, _mm_set1_ps (0.02708663f))))));
