@@ -71,8 +71,9 @@ namespace pcl
 
 #ifdef __SSE__
   /** \brief Compute the approximate arccosine of four values at once using SSE instructions.
+    *
     * The approximation used is \f$ (1.59121552+x*(-0.15461442+x*0.05354897))*\sqrt{0.89286965-0.89282669*x}+0.06681017+x*(-0.09402311+x*0.02708663) \f$.
-    * The average error is 0.00012 rad.
+    * The average error is 0.00012 rad. This approximation is more accurate than other approximations of acos, but also uses a few more operations.
     * \param x four floats, each should be in [0; 1]. They must not be greater than 1 since acos is undefined there.
     *          They should not be less than 0 because there the approximation is less precise
     * \return the four arccosines, each in [0; pi/2]
@@ -82,6 +83,7 @@ namespace pcl
   acos_SSE (const __m128 &x);
 
   /** \brief Like getAngle3D, but four times in parallel using SSE instructions.
+    *
     * All vectors must be normalized (length is 1.0).
     * Since an approximate acos is used, the results may vary slightly compared to getAngle3D.
     * \param[in] the x components of the first four vectors
@@ -99,8 +101,9 @@ namespace pcl
 
 #ifdef __AVX__
   /** \brief Compute the approximate arccosine of eight values at once using AVX instructions.
+    *
     * The approximation used is \f$ (1.59121552+x*(-0.15461442+x*0.05354897))*\sqrt{0.89286965-0.89282669*x}+0.06681017+x*(-0.09402311+x*0.02708663) \f$.
-    * The average error is 0.00012 rad.
+    * The average error is 0.00012 rad. This approximation is more accurate than other approximations of acos, but also uses a few more operations.
     * \param x eight floats, each should be in [0; 1]. They must not be greater than 1 since acos is undefined there.
     *          They should not be less than 0 because there the approximation is less precise
     * \return the eight arccosines, each in [0; pi/2]
@@ -110,6 +113,7 @@ namespace pcl
   acos_AVX (const __m256 &x);
 
   /** \brief Like getAngle3D, but eight times in parallel using AVX instructions.
+    *
     * All vectors must be normalized (length is 1.0).
     * Since an approximate acos is used, the results may vary slightly compared to getAngle3D.
     * \param[in] the x components of the first eight vectors

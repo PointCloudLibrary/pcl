@@ -84,18 +84,18 @@ pcl::acos_SSE (const __m128 &x)
 
   print(scipy.optimize.minimize(fun=get_error, x0=[1.57, 0.0, 0.0, 1.0, -1.0, 0.0, 0.0, 0.0], method='Nelder-Mead', options={'maxiter':42000, 'maxfev':42000, 'disp':True, 'xatol':1e-6, 'fatol':1e-6}))
   */
-  return _mm_add_ps (_mm_mul_ps (_mm_add_ps (_mm_set1_ps (1.59121552f), _mm_mul_ps (x, _mm_add_ps (_mm_set1_ps (-0.15461442f), _mm_mul_ps (x, _mm_set1_ps (0.05354897f))))),
-                                 _mm_sqrt_ps (_mm_add_ps (_mm_set1_ps (0.89286965f), _mm_mul_ps (_mm_set1_ps (-0.89282669f), x)))),
-                     _mm_add_ps (_mm_set1_ps (0.06681017f), _mm_mul_ps (x, _mm_add_ps (_mm_set1_ps (-0.09402311f), _mm_mul_ps (x, _mm_set1_ps (0.02708663f))))));
+  const __m128 mul_term = _mm_add_ps (_mm_set1_ps (1.59121552f), _mm_mul_ps (x, _mm_add_ps (_mm_set1_ps (-0.15461442f), _mm_mul_ps (x, _mm_set1_ps (0.05354897f)))));
+  const __m128 add_term = _mm_add_ps (_mm_set1_ps (0.06681017f), _mm_mul_ps (x, _mm_add_ps (_mm_set1_ps (-0.09402311f), _mm_mul_ps (x, _mm_set1_ps (0.02708663f)))));
+  return _mm_add_ps (_mm_mul_ps (mul_term, _mm_sqrt_ps (_mm_add_ps (_mm_set1_ps (0.89286965f), _mm_mul_ps (_mm_set1_ps (-0.89282669f), x)))), add_term);
 }
 
 inline __m128
 pcl::getAngle3DSSE (const __m128 &x1, const __m128 &y1, const __m128 &z1, const __m128 &x2, const __m128 &y2, const __m128 &z2)
 {
+  const __m128 dot_product = _mm_add_ps (_mm_add_ps (_mm_mul_ps (x1, x2), _mm_mul_ps (y1, y2)), _mm_mul_ps (z1, z2));
   // The andnot-function realizes an abs-operation: the sign bit is removed
   // -0.0f (negative zero) means that all bits are 0, only the sign bit is 1
-  return acos_SSE (_mm_min_ps (_mm_set1_ps (1.0f), _mm_andnot_ps (_mm_set1_ps (-0.0f),
-         _mm_add_ps (_mm_add_ps (_mm_mul_ps (x1, x2), _mm_mul_ps (y1, y2)), _mm_mul_ps (z1, z2)))));
+  return acos_SSE (_mm_min_ps (_mm_set1_ps (1.0f), _mm_andnot_ps (_mm_set1_ps (-0.0f), dot_product)));
 }
 #endif // ifdef __SSE__
 
@@ -103,18 +103,18 @@ pcl::getAngle3DSSE (const __m128 &x1, const __m128 &y1, const __m128 &z1, const 
 inline __m256
 pcl::acos_AVX (const __m256 &x)
 {
-  return _mm256_add_ps (_mm256_mul_ps (_mm256_add_ps (_mm256_set1_ps (1.59121552f), _mm256_mul_ps (x, _mm256_add_ps (_mm256_set1_ps (-0.15461442f), _mm256_mul_ps (x, _mm256_set1_ps (0.05354897f))))),
-                                       _mm256_sqrt_ps (_mm256_add_ps (_mm256_set1_ps (0.89286965f), _mm256_mul_ps (_mm256_set1_ps (-0.89282669f), x)))),
-                        _mm256_add_ps (_mm256_set1_ps (0.06681017f), _mm256_mul_ps (x, _mm256_add_ps (_mm256_set1_ps (-0.09402311f), _mm256_mul_ps (x, _mm256_set1_ps (0.02708663f))))));
+  const __m256 mul_term = _mm256_add_ps (_mm256_set1_ps (1.59121552f), _mm256_mul_ps (x, _mm256_add_ps (_mm256_set1_ps (-0.15461442f), _mm256_mul_ps (x, _mm256_set1_ps (0.05354897f)))));
+  const __m256 add_term = _mm256_add_ps (_mm256_set1_ps (0.06681017f), _mm256_mul_ps (x, _mm256_add_ps (_mm256_set1_ps (-0.09402311f), _mm256_mul_ps (x, _mm256_set1_ps (0.02708663f)))));
+  return _mm256_add_ps (_mm256_mul_ps (mul_term, _mm256_sqrt_ps (_mm256_add_ps (_mm256_set1_ps (0.89286965f), _mm256_mul_ps (_mm256_set1_ps (-0.89282669f), x)))), add_term);
 }
 
 inline __m256
 pcl::getAngle3DAVX (const __m256 &x1, const __m256 &y1, const __m256 &z1, const __m256 &x2, const __m256 &y2, const __m256 &z2)
 {
+  const __m256 dot_product = _mm256_add_ps (_mm256_add_ps (_mm256_mul_ps (x1, x2), _mm256_mul_ps (y1, y2)), _mm256_mul_ps (z1, z2));
   // The andnot-function realizes an abs-operation: the sign bit is removed
   // -0.0f (negative zero) means that all bits are 0, only the sign bit is 1
-  return acos_AVX (_mm256_min_ps (_mm256_set1_ps (1.0f), _mm256_andnot_ps (_mm256_set1_ps (-0.0f),
-         _mm256_add_ps (_mm256_add_ps (_mm256_mul_ps (x1, x2), _mm256_mul_ps (y1, y2)), _mm256_mul_ps (z1, z2)))));
+  return acos_AVX (_mm256_min_ps (_mm256_set1_ps (1.0f), _mm256_andnot_ps (_mm256_set1_ps (-0.0f), dot_product)));
 }
 #endif // ifdef __AVX__
 
