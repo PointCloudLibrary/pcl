@@ -198,6 +198,14 @@ pcl::SampleConsensusModelSphere<PointT>::selectWithinDistance (
       // @TODO: should abs be used here? The negative sign shows the direction of error
       // this should ideally be squared_distance + radius**2 + 2*radius*distance
       error_sqr_dists_.push_back (std::sqrt (squared_distance) - radius);
+      // @TODO: remove, only to test behavior change
+      if (std::abs (error_sqr_dists_.back ()) >= threshold)
+      {
+          std::cout << "sqr_dist:" << squared_distance << "\t"
+                    << "sqr_thresh: " << squared_threshold << "\t"
+                    << "error: " << error_sqr_dists_.back () << "\t"
+                    << "threshold: " << threshold << "\n";
+      }
     }
   }
 }
