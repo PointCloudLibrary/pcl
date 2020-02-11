@@ -137,32 +137,39 @@ pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
     inliers.clear ();
     return;
   }
-  int nr_p = 0;
-  inliers.resize (indices_->size ());
-  error_sqr_dists_.resize (indices_->size ());
+
+  const auto& radius = model_coefficients[2];
+  inliers.reserve (indices_->size ());
+  error_sqr_dists_.reserve (indices_->size ());
+
+  // The distance of point from center of circle needs to be within a threshold
+  // => distance (point, circle_origin) - radius is within threshold
+  // Since distance (point, circle_origin) ~ sqrt(x*x + y*y)
+  // => abs (sqrt (x*x + y*y) - radius) < theshold
+  // => abs (sqrt (x*x + y*y) - radius) + radius < threshold + radius
+  // => abs (sqrt (x*x + y*y) - radius + radius) < threshold + radius
+  // => abs (sqrt (x*x + y*y)) < threshold + radius
+  // => sqrt (x*x + y*y) < threshold + radius
+  // => x*x + y*y < (threshold + radius)**2
+  const auto modified_thresh = (threshold + radius);
+  const auto squared_threshold = modified_thresh * modified_thresh;
 
   // Iterate through the 3d points and calculate the distances from them to the circle
-  for (std::size_t i = 0; i < indices_->size (); ++i)
+  for (const auto idx: *indices_)
   {
     // Calculate the distance from the point to the circle as the difference between
     // dist(point,circle_origin) and circle_radius
-    float distance = std::abs (std::sqrt (
-                                      ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) *
-                                      ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) +
-
-                                      ( input_->points[(*indices_)[i]].y - model_coefficients[1] ) *
-                                      ( input_->points[(*indices_)[i]].y - model_coefficients[1] )
-                                      ) - model_coefficients[2]);
-    if (distance < threshold)
+    const double squared_distance = ( input_->points[idx].x - model_coefficients[0] ) *
+                                    ( input_->points[idx].x - model_coefficients[0] ) +
+                                    ( input_->points[idx].y - model_coefficients[1] ) *
+                                    ( input_->points[idx].y - model_coefficients[1] );
+    if (squared_distance < squared_threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
-      inliers[nr_p] = (*indices_)[i];
-      error_sqr_dists_[nr_p] = static_cast<double> (distance);
-      ++nr_p;
+      inliers.push_back (idx);
+      error_sqr_dists_.push_back (std::sqrt (squared_distance) - radius);
     }
   }
-  inliers.resize (nr_p);
-  error_sqr_dists_.resize (nr_p);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -173,24 +180,26 @@ pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistance (
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
     return (0);
-  std::size_t nr_p = 0;
+  const auto& radius = model_coefficients[2];
 
-  // Iterate through the 3d points and calculate the distances from them to the circle
-  for (std::size_t i = 0; i < indices_->size (); ++i)
-  {
-    // Calculate the distance from the point to the circle as the difference between
-    // dist(point,circle_origin) and circle_radius
-    float distance = std::abs (std::sqrt (
-                                      ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) *
-                                      ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) +
+  // Assumption: threshold and radius aren't negative
+  assert (threshold >= 0);
+  assert (radius >= 0);
 
-                                      ( input_->points[(*indices_)[i]].y - model_coefficients[1] ) *
-                                      ( input_->points[(*indices_)[i]].y - model_coefficients[1] )
-                                      ) - model_coefficients[2]);
-    if (distance < threshold)
-      nr_p++;
-  }
-  return (nr_p);
+  // see selectWithinDistance for more details
+  const auto modified_thresh = (threshold + radius);
+  const auto squared_threshold = modified_thresh * modified_thresh;
+
+  const auto inlier_check = [&](const auto& idx) {
+    const double squared_distance =
+        ( input_->points[idx].x - model_coefficients[0] ) *
+        ( input_->points[idx].x - model_coefficients[0] ) +
+        ( input_->points[idx].y - model_coefficients[1] ) *
+        ( input_->points[idx].y - model_coefficients[1] );
+
+    return squared_distance < squared_threshold;
+  };
+  return std::count_if(indices_->cbegin (), indices_->cend (), inlier_check);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -302,19 +311,28 @@ pcl::SampleConsensusModelCircle2D<PointT>::doSamplesVerifyModel (
     PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::doSamplesVerifyModel] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
     return (false);
   }
+  const auto& radius = model_coefficients[2];
 
-  for (const int &index : indices)
-    // Calculate the distance from the point to the circle as the difference between
-    //dist(point,circle_origin) and circle_radius
-    if (std::abs (std::sqrt (
-                         ( input_->points[index].x - model_coefficients[0] ) *
-                         ( input_->points[index].x - model_coefficients[0] ) +
-                         ( input_->points[index].y - model_coefficients[1] ) *
-                         ( input_->points[index].y - model_coefficients[1] )
-                         ) - model_coefficients[2]) > threshold)
-      return (false);
+  // Assumption: threshold and radius aren't negative
+  assert (threshold >= 0);
+  assert (radius >= 0);
 
-  return (true);
+  // see selectWithinDistance for more details
+  const auto modified_thresh = (threshold + radius);
+  const auto squared_threshold = modified_thresh * modified_thresh;
+
+  const auto outlier_check = [&](const auto& idx) {
+    const double squared_distance =
+        ( input_->points[idx].x - model_coefficients[0] ) *
+        ( input_->points[idx].x - model_coefficients[0] ) +
+        ( input_->points[idx].y - model_coefficients[1] ) *
+        ( input_->points[idx].y - model_coefficients[1] );
+
+    return !(squared_distance < squared_threshold);
+  };
+  const auto outlier = std::find_if (indices.cbegin (), indices.cend (), outlier_check);
+
+  return (outlier == indices.cend ());
 }
 
 //////////////////////////////////////////////////////////////////////////
