@@ -169,21 +169,21 @@ pcl::SampleConsensusModelCircle3D<PointT>::selectWithinDistance (
     inliers.clear ();
     return;
   }
-  int nr_p = 0;
-  inliers.resize (indices_->size ());
+  inliers.reserve (indices_->size ());
+  const auto squared_threshold = threshold * threshold;
 
   // Iterate through the 3d points and calculate the distances from them to the sphere
-  for (std::size_t i = 0; i < indices_->size (); ++i)
+  for (const auto& idx: *indices_)
   {
     // what i have:
     // P : Sample Point
-    Eigen::Vector3d P (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z);
+    const Eigen::Vector3d P = input_->points[idx].getVector3fMap ().template cast<double> ();
     // C : Circle Center
-    Eigen::Vector3d C (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
+    const Eigen::Vector3d C (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
     // N : Circle (Plane) Normal
-    Eigen::Vector3d N (model_coefficients[4], model_coefficients[5], model_coefficients[6]);
+    const Eigen::Vector3d N (model_coefficients[4], model_coefficients[5], model_coefficients[6]);
     // r : Radius
-    double r = model_coefficients[3];
+    const double r = model_coefficients[3];
 
     Eigen::Vector3d helper_vectorPC = P - C;
     // 1.1. get line parameter
@@ -196,14 +196,12 @@ pcl::SampleConsensusModelCircle3D<PointT>::selectWithinDistance (
     Eigen::Vector3d K = C + r * helper_vectorP_projC.normalized ();
     Eigen::Vector3d distanceVector =  P - K;
 
-    if (distanceVector.norm () < threshold)
+    if (distanceVector.squaredNorm () < squared_threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
-      inliers[nr_p] = (*indices_)[i];
-      nr_p++;
+      inliers.push_back (idx);
     }
   }
-  inliers.resize (nr_p);
 }
 
 //////////////////////////////////////////////////////////////////////////
