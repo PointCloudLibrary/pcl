@@ -171,13 +171,15 @@ pcl::SampleConsensusModelSphere<PointT>::selectWithinDistance (
   // => distance (point, sphere_origin) - sphere_radius is within threshold
   // Since distance (point, sphere_origin) ~ sqrt(x*x + y*y + z*z)
   // => abs (sqrt (x*x + y*y + z*z) - radius) < theshold
-  // => abs (sqrt (x*x + y*y + z*z) - radius) + radius < threshold + radius
-  // => abs (sqrt (x*x + y*y + z*z) - radius + radius) < threshold + radius
-  // => abs (sqrt (x*x + y*y + z*z)) < threshold + radius
-  // => sqrt (x*x + y*y + z*z) < threshold + radius
-  // => x*x + y*y + z*z < (threshold + radius)**2
-  const auto modified_thresh = (threshold + radius);
-  const auto squared_threshold = modified_thresh * modified_thresh;
+  // => sqrt (x*x + y*y + z*z) < radius + threshold
+  // OR sqrt (x*x + y*y + z*z) > radius - threshold
+  // => x*x + y*y + z*z < radius**2 + threshold**2 + 2*radius*threshold
+  // OR x*x + y*y + z*z > radius**2 + threshold**2 - 2*radius*threshold
+  // => x*x + y*y + z*z - (radius**2 + threshold**2) < 2*radius*threshold
+  // OR x*x + y*y + z*z - (radius**2 + threshold**2) > -2*radius*threshold
+  // => abs (x*x + y*y + z*z - (radius**2 + threshold**2)) < 2*radius*threshold
+  const auto squared_threshold = 2 * radius * threshold;
+  const auto distance_offset = radius * radius + threshold * threshold;
 
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (const auto idx: *indices_)
@@ -191,7 +193,7 @@ pcl::SampleConsensusModelSphere<PointT>::selectWithinDistance (
         ( input_->points[idx].z - model_coefficients[2] ) *
         ( input_->points[idx].z - model_coefficients[2] );
 
-    if (squared_distance < squared_threshold)
+    if (std::abs (squared_distance - distance_offset) < squared_threshold)
     {
       // Store the indices of the points whose distances are smaller than the threshold
       inliers.push_back (idx);
