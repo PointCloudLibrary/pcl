@@ -192,10 +192,10 @@ pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistance (
 
   const auto inlier_check = [&](const auto& idx) {
     const double squared_distance =
-        ( input_->points[idx].x - model_coefficients[0] ) *
-        ( input_->points[idx].x - model_coefficients[0] ) +
-        ( input_->points[idx].y - model_coefficients[1] ) *
-        ( input_->points[idx].y - model_coefficients[1] );
+        ( this->input_->points[idx].x - model_coefficients[0] ) *
+        ( this->input_->points[idx].x - model_coefficients[0] ) +
+        ( this->input_->points[idx].y - model_coefficients[1] ) *
+        ( this->input_->points[idx].y - model_coefficients[1] );
 
     return squared_distance < squared_threshold;
   };
@@ -323,10 +323,10 @@ pcl::SampleConsensusModelCircle2D<PointT>::doSamplesVerifyModel (
 
   const auto outlier_check = [&](const auto& idx) {
     const double squared_distance =
-        ( input_->points[idx].x - model_coefficients[0] ) *
-        ( input_->points[idx].x - model_coefficients[0] ) +
-        ( input_->points[idx].y - model_coefficients[1] ) *
-        ( input_->points[idx].y - model_coefficients[1] );
+        ( this->input_->points[idx].x - model_coefficients[0] ) *
+        ( this->input_->points[idx].x - model_coefficients[0] ) +
+        ( this->input_->points[idx].y - model_coefficients[1] ) *
+        ( this->input_->points[idx].y - model_coefficients[1] );
 
     return !(squared_distance < squared_threshold);
   };
