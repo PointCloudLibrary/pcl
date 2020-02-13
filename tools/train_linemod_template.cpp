@@ -261,7 +261,7 @@ main (int argc, char** argv)
   float max_height = std::numeric_limits<float>::max ();
   parse_argument (argc, argv, "-max_height", max_height);
 
-  uint32_t unorganized_pcd_cnt = 0;
+  std::size_t unorganized_pcd_cnt = 0;
   // Segment and create templates for each input file
   for (const int &p_file_index : p_file_indices)
   {
