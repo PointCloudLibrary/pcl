@@ -274,7 +274,7 @@ main (int argc, char** argv)
 
     if (!cloud->isOrganized())
     {
-      std::string warn_msg = "Loaded point cloud is not organized. Skipping " + input_filename + ".\n";
+      std::string warn_msg = "Unorganized point cloud detected. Skipping file " + input_filename + "\n";
       print_warn(warn_msg.c_str());
       ++unorganized_pcd_cnt;
       continue;
