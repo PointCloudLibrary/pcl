@@ -296,8 +296,7 @@ main (int argc, char** argv)
 
   if (unorganized_pcd_cnt == p_file_indices.size())
   {
-    print_error("All input pcd files are unorganied.\n");
+    print_error("All input pcd files are unorganized.\n");
   }
 
 }
-
