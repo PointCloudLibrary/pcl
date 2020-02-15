@@ -82,10 +82,11 @@ namespace pcl
   inline __m128
   acos_SSE (const __m128 &x);
 
-  /** \brief Like getAngle3D, but four times in parallel using SSE instructions.
+  /** \brief Similar to getAngle3D, but four times in parallel using SSE instructions.
     *
+    * This behaves like \f$ min(getAngle3D(dot_product), \pi-getAngle3D(dot_product)) \f$.
     * All vectors must be normalized (length is 1.0).
-    * Since an approximate acos is used, the results may vary slightly compared to getAngle3D.
+    * Since an approximate acos is used, the results may be slightly imprecise.
     * \param[in] the x components of the first four vectors
     * \param[in] the y components of the first four vectors
     * \param[in] the z components of the first four vectors
@@ -96,7 +97,7 @@ namespace pcl
     * \ingroup common
     */
   inline __m128
-  getAngle3DSSE (const __m128 &x1, const __m128 &y1, const __m128 &z1, const __m128 &x2, const __m128 &y2, const __m128 &z2);
+  getAcuteAngle3DSSE (const __m128 &x1, const __m128 &y1, const __m128 &z1, const __m128 &x2, const __m128 &y2, const __m128 &z2);
 #endif // ifdef __SSE__
 
 #ifdef __AVX__
@@ -112,10 +113,11 @@ namespace pcl
   inline __m256
   acos_AVX (const __m256 &x);
 
-  /** \brief Like getAngle3D, but eight times in parallel using AVX instructions.
+  /** \brief Similar to getAngle3D, but eight times in parallel using AVX instructions.
     *
+    * This behaves like \f$ min(getAngle3D(dot_product), \pi-getAngle3D(dot_product)) \f$.
     * All vectors must be normalized (length is 1.0).
-    * Since an approximate acos is used, the results may vary slightly compared to getAngle3D.
+    * Since an approximate acos is used, the results may be slightly imprecise.
     * \param[in] the x components of the first eight vectors
     * \param[in] the y components of the first eight vectors
     * \param[in] the z components of the first eight vectors
@@ -126,7 +128,7 @@ namespace pcl
     * \ingroup common
     */
   inline __m256
-  getAngle3DAVX (const __m256 &x1, const __m256 &y1, const __m256 &z1, const __m256 &x2, const __m256 &y2, const __m256 &z2);
+  getAcuteAngle3DAVX (const __m256 &x1, const __m256 &y1, const __m256 &z1, const __m256 &x2, const __m256 &y2, const __m256 &z2);
 #endif // ifdef __AVX__
 
   /** \brief Compute both the mean and the standard deviation of an array of values

@@ -90,7 +90,7 @@ pcl::acos_SSE (const __m128 &x)
 }
 
 inline __m128
-pcl::getAngle3DSSE (const __m128 &x1, const __m128 &y1, const __m128 &z1, const __m128 &x2, const __m128 &y2, const __m128 &z2)
+pcl::getAcuteAngle3DSSE (const __m128 &x1, const __m128 &y1, const __m128 &z1, const __m128 &x2, const __m128 &y2, const __m128 &z2)
 {
   const __m128 dot_product = _mm_add_ps (_mm_add_ps (_mm_mul_ps (x1, x2), _mm_mul_ps (y1, y2)), _mm_mul_ps (z1, z2));
   // The andnot-function realizes an abs-operation: the sign bit is removed
@@ -109,7 +109,7 @@ pcl::acos_AVX (const __m256 &x)
 }
 
 inline __m256
-pcl::getAngle3DAVX (const __m256 &x1, const __m256 &y1, const __m256 &z1, const __m256 &x2, const __m256 &y2, const __m256 &z2)
+pcl::getAcuteAngle3DAVX (const __m256 &x1, const __m256 &y1, const __m256 &z1, const __m256 &x2, const __m256 &y2, const __m256 &z2)
 {
   const __m256 dot_product = _mm256_add_ps (_mm256_add_ps (_mm256_mul_ps (x1, x2), _mm256_mul_ps (y1, y2)), _mm256_mul_ps (z1, z2));
   // The andnot-function realizes an abs-operation: the sign bit is removed
