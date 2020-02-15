@@ -117,9 +117,9 @@ pcl::SampleConsensusModelPlane<PointT>::getDistancesToModel (
       const Eigen::VectorXf &model_coefficients, std::vector<double> &distances) const
 {
   // Needs a valid set of model coefficients
-  if (model_coefficients.size () != model_size_)
+  if (!isModelValid (model_coefficients))
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelPlane::getDistancesToModel] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::getDistancesToModel] Given model is invalid!\n");
     return;
   }
 
@@ -148,9 +148,9 @@ pcl::SampleConsensusModelPlane<PointT>::selectWithinDistance (
       const Eigen::VectorXf &model_coefficients, const double threshold, std::vector<int> &inliers)
 {
   // Needs a valid set of model coefficients
-  if (model_coefficients.size () != model_size_)
+  if (!isModelValid (model_coefficients))
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelPlane::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::selectWithinDistance] Given model is invalid!\n");
     return;
   }
 
@@ -186,9 +186,9 @@ pcl::SampleConsensusModelPlane<PointT>::countWithinDistance (
       const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   // Needs a valid set of model coefficients
-  if (model_coefficients.size () != model_size_)
+  if (!isModelValid (model_coefficients))
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelPlane::countWithinDistance] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::countWithinDistance] Given model is invalid!\n");
     return (0);
   }
 
@@ -217,9 +217,9 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
       const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients) const
 {
   // Needs a valid set of model coefficients
-  if (model_coefficients.size () != model_size_)
+  if (!isModelValid (model_coefficients))
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelPlane::optimizeModelCoefficients] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::optimizeModelCoefficients] Given model is invalid!\n");
     optimized_coefficients = model_coefficients;
     return;
   }
@@ -266,9 +266,9 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
       const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields) const
 {
   // Needs a valid set of model coefficients
-  if (model_coefficients.size () != model_size_)
+  if (!isModelValid (model_coefficients))
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelPlane::projectPoints] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::projectPoints] Given model is invalid!\n");
     return;
   }
 
@@ -352,9 +352,9 @@ pcl::SampleConsensusModelPlane<PointT>::doSamplesVerifyModel (
       const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   // Needs a valid set of model coefficients
-  if (model_coefficients.size () != model_size_)
+  if (!isModelValid (model_coefficients))
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelPlane::doSamplesVerifyModel] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::doSamplesVerifyModel] Given model is invalid!\n");
     return (false);
   }
 

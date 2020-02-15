@@ -106,6 +106,7 @@ pcl::SampleConsensusModelStick<PointT>::getDistancesToModel (
   // Needs a valid set of model coefficients
   if (!isModelValid (model_coefficients))
   {
+    PCL_DEBUG ("[pcl::SampleConsensusModelStick::getDistancesToModel] Given model is invalid!\n");
     return;
   }
 
@@ -145,6 +146,7 @@ pcl::SampleConsensusModelStick<PointT>::selectWithinDistance (
   // Needs a valid set of model coefficients
   if (!isModelValid (model_coefficients))
   {
+    PCL_DEBUG ("[pcl::SampleConsensusModelStick::selectWithinDistance] Given model is invalid!\n");
     return;
   }
 
@@ -194,6 +196,7 @@ pcl::SampleConsensusModelStick<PointT>::countWithinDistance (
   // Needs a valid set of model coefficients
   if (!isModelValid (model_coefficients))
   {
+    PCL_DEBUG ("[pcl::SampleConsensusModelStick::countWithinDistance] Given model is invalid!\n");
     return (0);
   }
 
@@ -286,6 +289,7 @@ pcl::SampleConsensusModelStick<PointT>::projectPoints (
   // Needs a valid model coefficients
   if (!isModelValid (model_coefficients))
   {
+    PCL_DEBUG ("[pcl::SampleConsensusModelStick::projectPoints] Given model is invalid!\n");
     return;
   }
 
@@ -365,6 +369,7 @@ pcl::SampleConsensusModelStick<PointT>::doSamplesVerifyModel (
   // Needs a valid set of model coefficients
   if (!isModelValid (model_coefficients))
   {
+    PCL_DEBUG ("[pcl::SampleConsensusModelStick::doSamplesVerifyModel] Given model is invalid!\n");
     return (false);
   }
 

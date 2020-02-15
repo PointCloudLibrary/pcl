@@ -506,7 +506,7 @@ namespace pcl
       {
         if (model_coefficients.size () != model_size_)
         {
-          PCL_ERROR ("[pcl::%s::isModelValid] Invalid number of model coefficients given (%lu)!\n", getClassName ().c_str (), model_coefficients.size ());
+          PCL_ERROR ("[pcl::%s::isModelValid] Invalid number of model coefficients given (is %lu, should be %lu)!\n", getClassName ().c_str (), model_coefficients.size (), model_size_);
           return (false);
         }
         return (true);

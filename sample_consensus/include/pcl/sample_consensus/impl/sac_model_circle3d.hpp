@@ -260,9 +260,9 @@ pcl::SampleConsensusModelCircle3D<PointT>::optimizeModelCoefficients (
   optimized_coefficients = model_coefficients;
 
   // Needs a set of valid model coefficients
-  if (model_coefficients.size () != model_size_)
+  if (!isModelValid (model_coefficients))
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCircle3D::optimizeModelCoefficients] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle3D::optimizeModelCoefficients] Given model is invalid!\n");
     return;
   }
 
@@ -293,9 +293,9 @@ pcl::SampleConsensusModelCircle3D<PointT>::projectPoints (
       PointCloud &projected_points, bool copy_data_fields) const
 {
   // Needs a valid set of model coefficients
-  if (model_coefficients.size () != model_size_)
+  if (!isModelValid (model_coefficients))
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCircle3D::projectPoints] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle3D::projectPoints] Given model is invalid!\n");
     return;
   }
 
@@ -396,9 +396,9 @@ pcl::SampleConsensusModelCircle3D<PointT>::doSamplesVerifyModel (
       const double threshold) const
 {
   // Needs a valid model coefficients
-  if (model_coefficients.size () != model_size_)
+  if (!isModelValid (model_coefficients))
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCircle3D::doSamplesVerifyModel] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle3D::doSamplesVerifyModel] Given model is invalid!\n");
     return (false);
   }
 
