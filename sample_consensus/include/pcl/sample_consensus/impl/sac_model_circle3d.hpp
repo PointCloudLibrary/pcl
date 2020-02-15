@@ -169,8 +169,8 @@ pcl::SampleConsensusModelCircle3D<PointT>::selectWithinDistance (
     inliers.clear ();
     return;
   }
-  int nr_p = 0;
-  inliers.resize (indices_->size ());
+  inliers.clear ();
+  inliers.reserve (indices_->size ());
 
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (std::size_t i = 0; i < indices_->size (); ++i)
@@ -199,11 +199,9 @@ pcl::SampleConsensusModelCircle3D<PointT>::selectWithinDistance (
     if (distanceVector.norm () < threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
-      inliers[nr_p] = (*indices_)[i];
-      nr_p++;
+      inliers.push_back ((*indices_)[i]);
     }
   }
-  inliers.resize (nr_p);
 }
 
 //////////////////////////////////////////////////////////////////////////
