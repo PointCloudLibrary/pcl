@@ -203,27 +203,6 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::getDistancesToModel (
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> bool 
-pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::isModelValid (const Eigen::VectorXf &model_coefficients) const
-{
-  if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
-  {
-    return (false);
-  }
-
-  if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[3] < radius_min_)
-  {
-    return (false);
-  }
-  if (radius_max_ != std::numeric_limits<double>::max() && model_coefficients[3] > radius_max_)
-  {
-    return (false);
-  }
-
-  return (true);
-}
-
 #define PCL_INSTANTIATE_SampleConsensusModelNormalSphere(PointT, PointNT) template class PCL_EXPORTS pcl::SampleConsensusModelNormalSphere<PointT, PointNT>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_NORMAL_SPHERE_H_
