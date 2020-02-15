@@ -68,13 +68,13 @@ pcl::SampleConsensusModelStick<PointT>::computeModelCoefficients (
       const std::vector<int> &samples, Eigen::VectorXf &model_coefficients) const
 {
   // Need 2 samples
-  if (samples.size () != 2)
+  if (samples.size () != sample_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelStick::computeModelCoefficients] Invalid set of samples given (%lu)!\n", samples.size ());
     return (false);
   }
 
-  model_coefficients.resize (7);
+  model_coefficients.resize (model_size_);
   model_coefficients[0] = input_->points[samples[0]].x;
   model_coefficients[1] = input_->points[samples[0]].y;
   model_coefficients[2] = input_->points[samples[0]].z;
@@ -247,14 +247,14 @@ pcl::SampleConsensusModelStick<PointT>::optimizeModelCoefficients (
   }
 
   // Need at least 2 points to estimate a line
-  if (inliers.size () <= 2)
+  if (inliers.size () <= sample_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelStick::optimizeModelCoefficients] Not enough inliers found to support a model (%lu)! Returning the same coefficients.\n", inliers.size ());
     optimized_coefficients = model_coefficients;
     return;
   }
 
-  optimized_coefficients.resize (7);
+  optimized_coefficients.resize (model_size_);
 
   // Compute the 3x3 covariance matrix
   Eigen::Vector4f centroid;

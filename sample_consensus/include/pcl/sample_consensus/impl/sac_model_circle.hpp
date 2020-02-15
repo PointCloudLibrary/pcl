@@ -69,13 +69,13 @@ template <typename PointT> bool
 pcl::SampleConsensusModelCircle2D<PointT>::computeModelCoefficients (const std::vector<int> &samples, Eigen::VectorXf &model_coefficients) const
 {
   // Need 3 samples
-  if (samples.size () != 3)
+  if (samples.size () != sample_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::computeModelCoefficients] Invalid set of samples given (%lu)!\n", samples.size ());
     return (false);
   }
 
-  model_coefficients.resize (3);
+  model_coefficients.resize (model_size_);
 
   Eigen::Vector2d p0 (input_->points[samples[0]].x, input_->points[samples[0]].y);
   Eigen::Vector2d p1 (input_->points[samples[1]].x, input_->points[samples[1]].y);
@@ -201,14 +201,14 @@ pcl::SampleConsensusModelCircle2D<PointT>::optimizeModelCoefficients (
   optimized_coefficients = model_coefficients;
 
   // Needs a set of valid model coefficients
-  if (model_coefficients.size () != 3)
+  if (model_coefficients.size () != model_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::optimizeModelCoefficients] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
     return;
   }
 
   // Need at least 3 samples
-  if (inliers.size () <= 3)
+  if (inliers.size () <= sample_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::optimizeModelCoefficients] Not enough inliers found to support a model (%lu)! Returning the same coefficients.\n", inliers.size ());
     return;
@@ -231,7 +231,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
       PointCloud &projected_points, bool copy_data_fields) const
 {
   // Needs a valid set of model coefficients
-  if (model_coefficients.size () != 3)
+  if (model_coefficients.size () != model_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::projectPoints] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
     return;
@@ -297,7 +297,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::doSamplesVerifyModel (
       const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   // Needs a valid model coefficients
-  if (model_coefficients.size () != 3)
+  if (model_coefficients.size () != model_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::doSamplesVerifyModel] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
     return (false);

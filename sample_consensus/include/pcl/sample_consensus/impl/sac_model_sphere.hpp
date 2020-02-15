@@ -57,7 +57,7 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
       const std::vector<int> &samples, Eigen::VectorXf &model_coefficients) const
 {
   // Need 4 samples
-  if (samples.size () != 4)
+  if (samples.size () != sample_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelSphere::computeModelCoefficients] Invalid set of samples given (%lu)!\n", samples.size ());
     return (false);
@@ -109,7 +109,7 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
   float m15 = temp.determinant ();
 
   // Center (x , y, z)
-  model_coefficients.resize (4);
+  model_coefficients.resize (model_size_);
   model_coefficients[0] = 0.5f * m12 / m11;
   model_coefficients[1] = 0.5f * m13 / m11;
   model_coefficients[2] = 0.5f * m14 / m11;
@@ -234,14 +234,14 @@ pcl::SampleConsensusModelSphere<PointT>::optimizeModelCoefficients (
   optimized_coefficients = model_coefficients;
 
   // Needs a set of valid model coefficients
-  if (model_coefficients.size () != 4)
+  if (model_coefficients.size () != model_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelSphere::optimizeModelCoefficients] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
     return;
   }
 
   // Need at least 4 samples
-  if (inliers.size () <= 4)
+  if (inliers.size () <= sample_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelSphere::optimizeModelCoefficients] Not enough inliers found to support a model (%lu)! Returning the same coefficients.\n", inliers.size ());
     return;
@@ -263,7 +263,7 @@ pcl::SampleConsensusModelSphere<PointT>::projectPoints (
       const std::vector<int> &, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool) const
 {
   // Needs a valid model coefficients
-  if (model_coefficients.size () != 4)
+  if (model_coefficients.size () != model_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelSphere::projectPoints] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
     return;
@@ -286,7 +286,7 @@ pcl::SampleConsensusModelSphere<PointT>::doSamplesVerifyModel (
       const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   // Needs a valid model coefficients
-  if (model_coefficients.size () != 4)
+  if (model_coefficients.size () != model_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelSphere::doSamplesVerifyModel] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
     return (false);

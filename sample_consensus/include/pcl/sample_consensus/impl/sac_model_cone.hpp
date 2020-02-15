@@ -56,7 +56,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::computeModelCoefficients (
     const std::vector<int> &samples, Eigen::VectorXf &model_coefficients) const
 {
   // Need 3 samples
-  if (samples.size () != 3)
+  if (samples.size () != sample_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelCone::computeModelCoefficients] Invalid set of samples given (%lu)!\n", samples.size ());
     return (false);
@@ -112,7 +112,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::computeModelCoefficients (
   //compute opening angle
   float opening_angle = ( std::acos (ap1.dot (axis_dir)) + std::acos (ap2.dot (axis_dir)) + std::acos (ap3.dot (axis_dir)) ) / 3.0f;
 
-  model_coefficients.resize (7);
+  model_coefficients.resize (model_size_);
   // model_coefficients.template head<3> ()    = line_pt.template head<3> ();
   model_coefficients[0] = apex[0];
   model_coefficients[1] = apex[1];
@@ -312,7 +312,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::optimizeModelCoefficients (
   optimized_coefficients = model_coefficients;
 
   // Needs a set of valid model coefficients
-  if (model_coefficients.size () != 7)
+  if (model_coefficients.size () != model_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelCone::optimizeModelCoefficients] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
     return;
@@ -347,7 +347,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
       const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields) const
 {
   // Needs a valid set of model coefficients
-  if (model_coefficients.size () != 7)
+  if (model_coefficients.size () != model_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelCone::projectPoints] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
     return;
@@ -443,7 +443,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::doSamplesVerifyModel (
       const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   // Needs a valid model coefficients
-  if (model_coefficients.size () != 7)
+  if (model_coefficients.size () != model_size_)
   {
     PCL_ERROR ("[pcl::SampleConsensusModelCone::doSamplesVerifyModel] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
     return (false);

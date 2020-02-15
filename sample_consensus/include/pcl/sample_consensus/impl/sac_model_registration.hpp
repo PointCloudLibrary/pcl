@@ -72,7 +72,7 @@ pcl::SampleConsensusModelRegistration<PointT>::computeModelCoefficients (const s
     return (false);
   }
   // Need 3 samples
-  if (samples.size () != 3)
+  if (samples.size () != sample_size_)
   {
     return (false);
   }

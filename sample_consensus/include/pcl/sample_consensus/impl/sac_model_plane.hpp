@@ -96,7 +96,7 @@ pcl::SampleConsensusModelPlane<PointT>::computeModelCoefficients (
 
   // Compute the plane coefficients from the 3 given points in a straightforward manner
   // calculate the plane normal n = (p2-p1) x (p3-p1) = cross (p2-p1, p3-p1)
-  model_coefficients.resize (4);
+  model_coefficients.resize (model_size_);
   model_coefficients[0] = p1p0[1] * p2p0[2] - p1p0[2] * p2p0[1];
   model_coefficients[1] = p1p0[2] * p2p0[0] - p1p0[0] * p2p0[2];
   model_coefficients[2] = p1p0[0] * p2p0[1] - p1p0[1] * p2p0[0];
@@ -248,7 +248,7 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
   pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
 
   // Hessian form (D = nc . p_plane (centroid here) + p)
-  optimized_coefficients.resize (4);
+  optimized_coefficients.resize (model_size_);
   optimized_coefficients[0] = eigen_vector [0];
   optimized_coefficients[1] = eigen_vector [1];
   optimized_coefficients[2] = eigen_vector [2];
