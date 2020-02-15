@@ -44,8 +44,13 @@
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::SampleConsensusModelRegistration2D<PointT>::isSampleGood (const std::vector<int>&) const
+pcl::SampleConsensusModelRegistration2D<PointT>::isSampleGood (const std::vector<int>&samples) const
 {
+  if (samples.size () != sample_size_)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration2D::isSampleGood] Wrong number of samples (is %lu, should be %lu)!\n", samples.size (), sample_size_);
+    return (false);
+  }
   return (true);
   //using namespace pcl::common;
   //using namespace pcl::traits;

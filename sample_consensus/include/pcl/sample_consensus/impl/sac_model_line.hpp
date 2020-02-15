@@ -49,6 +49,11 @@
 template <typename PointT> bool
 pcl::SampleConsensusModelLine<PointT>::isSampleGood (const std::vector<int> &samples) const
 {
+  if (samples.size () != sample_size_)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelLine::isSampleGood] Wrong number of samples (is %lu, should be %lu)!\n", samples.size (), sample_size_);
+    return (false);
+  }
   // Make sure that the two sample points are not identical
   if (
       (input_->points[samples[0]].x != input_->points[samples[1]].x)

@@ -49,6 +49,11 @@
 template <typename PointT> bool
 pcl::SampleConsensusModelStick<PointT>::isSampleGood (const std::vector<int> &samples) const
 {
+  if (samples.size () != sample_size_)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelStick::isSampleGood] Wrong number of samples (is %lu, should be %lu)!\n", samples.size (), sample_size_);
+    return (false);
+  }
   if (
       (input_->points[samples[0]].x != input_->points[samples[1]].x)
     &&

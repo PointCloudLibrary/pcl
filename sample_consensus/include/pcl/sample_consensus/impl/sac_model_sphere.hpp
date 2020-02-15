@@ -46,8 +46,13 @@
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::SampleConsensusModelSphere<PointT>::isSampleGood (const std::vector<int> &) const
+pcl::SampleConsensusModelSphere<PointT>::isSampleGood (const std::vector<int> &samples) const
 {
+  if (samples.size () != sample_size_)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelSphere::isSampleGood] Wrong number of samples (is %lu, should be %lu)!\n", samples.size (), sample_size_);
+    return (false);
+  }
   return (true);
 }
 

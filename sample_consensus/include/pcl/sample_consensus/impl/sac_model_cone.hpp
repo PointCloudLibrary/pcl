@@ -45,8 +45,13 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
-pcl::SampleConsensusModelCone<PointT, PointNT>::isSampleGood(const std::vector<int> &) const
+pcl::SampleConsensusModelCone<PointT, PointNT>::isSampleGood(const std::vector<int> &samples) const
 {
+  if (samples.size () != sample_size_)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelCone::isSampleGood] Wrong number of samples (is %lu, should be %lu)!\n", samples.size (), sample_size_);
+    return (false);
+  }
   return (true);
 }
 

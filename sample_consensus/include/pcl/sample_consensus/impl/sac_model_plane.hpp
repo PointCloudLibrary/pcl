@@ -51,9 +51,9 @@
 template <typename PointT> bool
 pcl::SampleConsensusModelPlane<PointT>::isSampleGood (const std::vector<int> &samples) const
 {
-  // Need an extra check in case the sample selection is empty
-  if (samples.empty ())
+  if (samples.size () != sample_size_)
   {
+    PCL_ERROR ("[pcl::SampleConsensusModelPlane::isSampleGood] Wrong number of samples (is %lu, should be %lu)!\n", samples.size (), sample_size_);
     return (false);
   }
   // Get the values at the two points

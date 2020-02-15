@@ -48,6 +48,11 @@ template <typename PointT> bool
 pcl::SampleConsensusModelCircle3D<PointT>::isSampleGood (
     const std::vector<int> &samples) const
 {
+  if (samples.size () != sample_size_)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle3D::isSampleGood] Wrong number of samples (is %lu, should be %lu)!\n", samples.size (), sample_size_);
+    return (false);
+  }
   // Get the values at the three points
   Eigen::Vector3d p0 (input_->points[samples[0]].x, input_->points[samples[0]].y, input_->points[samples[0]].z);
   Eigen::Vector3d p1 (input_->points[samples[1]].x, input_->points[samples[1]].y, input_->points[samples[1]].z);
