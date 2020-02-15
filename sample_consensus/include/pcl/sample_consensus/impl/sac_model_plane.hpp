@@ -53,7 +53,9 @@ pcl::SampleConsensusModelPlane<PointT>::isSampleGood (const std::vector<int> &sa
 {
   // Need an extra check in case the sample selection is empty
   if (samples.empty ())
+  {
     return (false);
+  }
   // Get the values at the two points
   pcl::Array4fMapConst p0 = input_->points[samples[0]].getArray4fMap ();
   pcl::Array4fMapConst p1 = input_->points[samples[1]].getArray4fMap ();
@@ -88,7 +90,9 @@ pcl::SampleConsensusModelPlane<PointT>::computeModelCoefficients (
   // Avoid some crashes by checking for collinearity here
   Eigen::Array4f dy1dy2 = p1p0 / p2p0;
   if ( (dy1dy2[0] == dy1dy2[1]) && (dy1dy2[2] == dy1dy2[1]) )          // Check for collinearity
+  {
     return (false);
+  }
 
   // Compute the plane coefficients from the 3 given points in a straightforward manner
   // calculate the plane normal n = (p2-p1) x (p3-p1) = cross (p2-p1, p3-p1)
@@ -202,7 +206,9 @@ pcl::SampleConsensusModelPlane<PointT>::countWithinDistance (
                         input_->points[(*indices_)[i]].z,
                         1);
     if (std::abs (model_coefficients.dot (pt)) < threshold)
+    {
       nr_p++;
+    }
   }
   return (nr_p);
 }
@@ -320,8 +326,10 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
     for (std::size_t i = 0; i < inliers.size (); ++i)
+    {
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+    }
 
     // Iterate through the 3d points and calculate the distances from them to the plane
     for (std::size_t i = 0; i < inliers.size (); ++i)
@@ -359,7 +367,9 @@ pcl::SampleConsensusModelPlane<PointT>::doSamplesVerifyModel (
                         input_->points[index].z,
                         1);
     if (std::abs (model_coefficients.dot (pt)) > threshold)
+    {
       return (false);
+    }
   }
 
   return (true);

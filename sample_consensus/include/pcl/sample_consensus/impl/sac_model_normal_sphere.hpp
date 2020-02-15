@@ -210,12 +210,18 @@ template <typename PointT, typename PointNT> bool
 pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::isModelValid (const Eigen::VectorXf &model_coefficients) const
 {
   if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
+  {
     return (false);
+  }
 
   if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[3] < radius_min_)
+  {
     return (false);
+  }
   if (radius_max_ != std::numeric_limits<double>::max() && model_coefficients[3] > radius_max_)
+  {
     return (false);
+  }
 
   return (true);
 }

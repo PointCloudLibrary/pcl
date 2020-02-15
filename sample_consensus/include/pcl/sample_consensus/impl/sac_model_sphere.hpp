@@ -73,12 +73,16 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
   }
   float m11 = temp.determinant ();
   if (m11 == 0)
+  {
     return (false);             // the points don't define a sphere!
+  }
 
   for (int i = 0; i < 4; ++i)
+  {
     temp (i, 0) = (input_->points[samples[i]].x) * (input_->points[samples[i]].x) +
                   (input_->points[samples[i]].y) * (input_->points[samples[i]].y) +
                   (input_->points[samples[i]].z) * (input_->points[samples[i]].z);
+  }
   float m12 = temp.determinant ();
 
   for (int i = 0; i < 4; ++i)
@@ -132,6 +136,7 @@ pcl::SampleConsensusModelSphere<PointT>::getDistancesToModel (
 
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (std::size_t i = 0; i < indices_->size (); ++i)
+  {
     // Calculate the distance from the point to the sphere as the difference between
     //dist(point,sphere_origin) and sphere_radius
     distances[i] = std::abs (std::sqrt (
@@ -144,6 +149,7 @@ pcl::SampleConsensusModelSphere<PointT>::getDistancesToModel (
                                ( input_->points[(*indices_)[i]].z - model_coefficients[2] ) *
                                ( input_->points[(*indices_)[i]].z - model_coefficients[2] )
                                ) - model_coefficients[3]);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -287,6 +293,7 @@ pcl::SampleConsensusModelSphere<PointT>::doSamplesVerifyModel (
   }
 
   for (const int &index : indices)
+  {
     // Calculate the distance from the point to the sphere as the difference between
     //dist(point,sphere_origin) and sphere_radius
     if (std::abs (sqrt (
@@ -297,7 +304,10 @@ pcl::SampleConsensusModelSphere<PointT>::doSamplesVerifyModel (
                     ( input_->points[index].z - model_coefficients[2] ) *
                     ( input_->points[index].z - model_coefficients[2] )
                    ) - model_coefficients[3]) > threshold)
+    {
       return (false);
+    }
+  }
 
   return (true);
 }

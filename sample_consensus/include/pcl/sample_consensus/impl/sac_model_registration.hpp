@@ -73,11 +73,15 @@ pcl::SampleConsensusModelRegistration<PointT>::computeModelCoefficients (const s
   }
   // Need 3 samples
   if (samples.size () != 3)
+  {
     return (false);
+  }
 
   std::vector<int> indices_tgt (3);
   for (int i = 0; i < 3; ++i)
+  {
     indices_tgt[i] = correspondences_.at (samples[i]);
+  }
 
   estimateRigidTransformationSVD (*input_, samples, *target_, indices_tgt, model_coefficients);
   return (true);
@@ -208,7 +212,9 @@ pcl::SampleConsensusModelRegistration<PointT>::countWithinDistance (
 
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
+  {
     return (0);
+  }
   
   Eigen::Matrix4f transform;
   transform.row (0).matrix () = model_coefficients.segment<4>(0);

@@ -66,7 +66,9 @@ pcl::SampleConsensusModelParallelLine<PointT>::countWithinDistance (
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
+  {
     return (0);
+  }
 
   return (SampleConsensusModelLine<PointT>::countWithinDistance (model_coefficients, threshold));
 }
@@ -104,7 +106,9 @@ pcl::SampleConsensusModelParallelLine<PointT>::isModelValid (const Eigen::Vector
     angle_diff = (std::min) (angle_diff, M_PI - angle_diff);
     // Check whether the current line model satisfies our angle threshold criterion with respect to the given axis
     if (angle_diff > eps_angle_)
+    {
       return (false);
+    }
   }
 
   return (true);

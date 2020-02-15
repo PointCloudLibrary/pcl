@@ -55,7 +55,9 @@ pcl::SampleConsensusModelStick<PointT>::isSampleGood (const std::vector<int> &sa
       (input_->points[samples[0]].y != input_->points[samples[1]].y)
     &&
       (input_->points[samples[0]].z != input_->points[samples[1]].z))
+  {
     return (true);
+  }
 
   return (false);
 }
@@ -98,7 +100,9 @@ pcl::SampleConsensusModelStick<PointT>::getDistancesToModel (
 {
   // Needs a valid set of model coefficients
   if (!isModelValid (model_coefficients))
+  {
     return;
+  }
 
   float sqr_threshold = static_cast<float> (radius_max_ * radius_max_);
   distances.resize (indices_->size ());
@@ -116,11 +120,15 @@ pcl::SampleConsensusModelStick<PointT>::getDistancesToModel (
     float sqr_distance = (line_pt - input_->points[(*indices_)[i]].getVector4fMap ()).cross3 (line_dir).squaredNorm ();
 
     if (sqr_distance < sqr_threshold)
+    {
       // Need to estimate sqrt here to keep MSAC and friends general
       distances[i] = sqrt (sqr_distance);
+    }
     else
+    {
       // Penalize outliers by doubling the distance
       distances[i] = 2 * sqrt (sqr_distance);
+    }
   }
 }
 
@@ -131,7 +139,9 @@ pcl::SampleConsensusModelStick<PointT>::selectWithinDistance (
 {
   // Needs a valid set of model coefficients
   if (!isModelValid (model_coefficients))
+  {
     return;
+  }
 
   float sqr_threshold = static_cast<float> (threshold * threshold);
 
@@ -180,7 +190,9 @@ pcl::SampleConsensusModelStick<PointT>::countWithinDistance (
 {
   // Needs a valid set of model coefficients
   if (!isModelValid (model_coefficients))
+  {
     return (0);
+  }
 
   float sqr_threshold = static_cast<float> (threshold * threshold);
 
@@ -210,9 +222,13 @@ pcl::SampleConsensusModelStick<PointT>::countWithinDistance (
     float sqr_distance = dir.cross3 (line_dir).squaredNorm ();
     // Use a larger threshold (4 times the radius) to get more points in
     if (sqr_distance < sqr_threshold)
+    {
       nr_i++;
+    }
     else if (sqr_distance < 4 * sqr_threshold)
+    {
       nr_o++;
+    }
   }
 
   return (nr_i <= nr_o ? 0 : nr_i - nr_o);
@@ -266,7 +282,9 @@ pcl::SampleConsensusModelStick<PointT>::projectPoints (
 {
   // Needs a valid model coefficients
   if (!isModelValid (model_coefficients))
+  {
     return;
+  }
 
   // Obtain the line point and direction
   Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
@@ -286,8 +304,10 @@ pcl::SampleConsensusModelStick<PointT>::projectPoints (
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
     for (std::size_t i = 0; i < projected_points.points.size (); ++i)
+    {
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
+    }
 
     // Iterate through the 3d points and calculate the distances from them to the line
     for (const int &inlier : inliers)
@@ -313,8 +333,10 @@ pcl::SampleConsensusModelStick<PointT>::projectPoints (
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
     for (std::size_t i = 0; i < inliers.size (); ++i)
+    {
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+    }
 
     // Iterate through the 3d points and calculate the distances from them to the line
     for (std::size_t i = 0; i < inliers.size (); ++i)
@@ -339,7 +361,9 @@ pcl::SampleConsensusModelStick<PointT>::doSamplesVerifyModel (
 {
   // Needs a valid set of model coefficients
   if (!isModelValid (model_coefficients))
+  {
     return (false);
+  }
 
   // Obtain the line point and direction
   Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
@@ -354,7 +378,9 @@ pcl::SampleConsensusModelStick<PointT>::doSamplesVerifyModel (
     // Calculate the distance from the point to the line
     // D = ||(P2-P1) x (P1-P0)|| / ||P2-P1|| = norm (cross (p2-p1, p2-p0)) / norm(p2-p1)
     if ((line_pt - input_->points[index].getVector4fMap ()).cross3 (line_dir).squaredNorm () > sqr_threshold)
+    {
       return (false);
+    }
   }
 
   return (true);

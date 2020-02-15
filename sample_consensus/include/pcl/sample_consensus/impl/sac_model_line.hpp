@@ -102,7 +102,9 @@ pcl::SampleConsensusModelLine<PointT>::getDistancesToModel (
 {
   // Needs a valid set of model coefficients
   if (!isModelValid (model_coefficients))
+  {
     return;
+  }
 
   distances.resize (indices_->size ());
 

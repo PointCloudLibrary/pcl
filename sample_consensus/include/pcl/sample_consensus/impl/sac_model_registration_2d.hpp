@@ -98,7 +98,9 @@ pcl::SampleConsensusModelRegistration2D<PointT>::getDistancesToModel (const Eige
     Eigen::Vector3f uv (projection_matrix_ * p_tr3);
 
     if (uv[2] < 0)
+    {
       continue;
+    }
 
     uv /= uv[2];
 
@@ -212,7 +214,9 @@ pcl::SampleConsensusModelRegistration2D<PointT>::countWithinDistance (
     Eigen::Vector3f uv (projection_matrix_ * p_tr3);
 
     if (uv[2] < 0)
+    {
       continue;
+    }
 
     uv /= uv[2];
 
@@ -221,7 +225,9 @@ pcl::SampleConsensusModelRegistration2D<PointT>::countWithinDistance (
          (uv[0] - target_->points[(*indices_tgt_)[i]].u) +
          (uv[1] - target_->points[(*indices_tgt_)[i]].v) *
          (uv[1] - target_->points[(*indices_tgt_)[i]].v)) < thresh)
+    {
       ++nr_p;
+    }
   }
   return (nr_p);
 } 

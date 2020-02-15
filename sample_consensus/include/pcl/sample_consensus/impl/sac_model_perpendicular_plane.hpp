@@ -65,7 +65,9 @@ pcl::SampleConsensusModelPerpendicularPlane<PointT>::countWithinDistance (
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
+  {
     return (0);
+  }
 
   return (SampleConsensusModelPlane<PointT>::countWithinDistance (model_coefficients, threshold));
 }
@@ -90,7 +92,9 @@ template <typename PointT> bool
 pcl::SampleConsensusModelPerpendicularPlane<PointT>::isModelValid (const Eigen::VectorXf &model_coefficients) const
 {
   if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
+  {
     return (false);
+  }
 
   // Check against template, if given
   if (eps_angle_ > 0.0)
@@ -104,7 +108,9 @@ pcl::SampleConsensusModelPerpendicularPlane<PointT>::isModelValid (const Eigen::
     angle_diff = (std::min) (angle_diff, M_PI - angle_diff);
     // Check whether the current plane model satisfies our angle threshold criterion with respect to the given axis
     if (angle_diff > eps_angle_)
+    {
       return (false);
+    }
   }
 
   return (true);
