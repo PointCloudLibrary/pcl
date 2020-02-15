@@ -121,10 +121,10 @@ pcl::SampleConsensusModelRegistration<PointT>::getDistancesToModel (const Eigen:
   {
     Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
                             input_->points[(*indices_)[i]].y, 
-                            input_->points[(*indices_)[i]].z, 1); 
+                            input_->points[(*indices_)[i]].z, 1.0f);
     Eigen::Vector4f pt_tgt (target_->points[(*indices_tgt_)[i]].x, 
                             target_->points[(*indices_tgt_)[i]].y, 
-                            target_->points[(*indices_tgt_)[i]].z, 1); 
+                            target_->points[(*indices_tgt_)[i]].z, 1.0f);
 
     Eigen::Vector4f p_tr (transform * pt_src);
     // Calculate the distance from the transformed point to its correspondence

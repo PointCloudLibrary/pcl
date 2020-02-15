@@ -100,13 +100,13 @@ pcl::SampleConsensusModelPlane<PointT>::computeModelCoefficients (
   model_coefficients[0] = p1p0[1] * p2p0[2] - p1p0[2] * p2p0[1];
   model_coefficients[1] = p1p0[2] * p2p0[0] - p1p0[0] * p2p0[2];
   model_coefficients[2] = p1p0[0] * p2p0[1] - p1p0[1] * p2p0[0];
-  model_coefficients[3] = 0;
+  model_coefficients[3] = 0.0f;
 
   // Normalize
   model_coefficients.normalize ();
 
   // ... + d = 0
-  model_coefficients[3] = -1 * (model_coefficients.template head<4>().dot (p0.matrix ()));
+  model_coefficients[3] = -1.0f * (model_coefficients.template head<4>().dot (p0.matrix ()));
 
   return (true);
 }
@@ -137,7 +137,7 @@ pcl::SampleConsensusModelPlane<PointT>::getDistancesToModel (
     Eigen::Vector4f pt (input_->points[(*indices_)[i]].x,
                         input_->points[(*indices_)[i]].y,
                         input_->points[(*indices_)[i]].z,
-                        1);
+                        1.0f);
     distances[i] = std::abs (model_coefficients.dot (pt));
   }
 }
@@ -166,7 +166,7 @@ pcl::SampleConsensusModelPlane<PointT>::selectWithinDistance (
     Eigen::Vector4f pt (input_->points[(*indices_)[i]].x,
                         input_->points[(*indices_)[i]].y,
                         input_->points[(*indices_)[i]].z,
-                        1);
+                        1.0f);
     
     float distance = std::abs (model_coefficients.dot (pt));
     
@@ -204,7 +204,7 @@ pcl::SampleConsensusModelPlane<PointT>::countWithinDistance (
     Eigen::Vector4f pt (input_->points[(*indices_)[i]].x,
                         input_->points[(*indices_)[i]].y,
                         input_->points[(*indices_)[i]].z,
-                        1);
+                        1.0f);
     if (std::abs (model_coefficients.dot (pt)) < threshold)
     {
       nr_p++;
@@ -252,8 +252,8 @@ pcl::SampleConsensusModelPlane<PointT>::optimizeModelCoefficients (
   optimized_coefficients[0] = eigen_vector [0];
   optimized_coefficients[1] = eigen_vector [1];
   optimized_coefficients[2] = eigen_vector [2];
-  optimized_coefficients[3] = 0;
-  optimized_coefficients[3] = -1 * optimized_coefficients.dot (xyz_centroid);
+  optimized_coefficients[3] = 0.0f;
+  optimized_coefficients[3] = -1.0f * optimized_coefficients.dot (xyz_centroid);
 
   // Make sure it results in a valid model
   if (!isModelValid (optimized_coefficients))
@@ -277,7 +277,7 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
   projected_points.header = input_->header;
   projected_points.is_dense = input_->is_dense;
 
-  Eigen::Vector4f mc (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
+  Eigen::Vector4f mc (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0.0f);
 
   // normalize the vector perpendicular to the plane...
   mc.normalize ();
@@ -338,7 +338,7 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
       Eigen::Vector4f p (input_->points[inliers[i]].x,
                          input_->points[inliers[i]].y,
                          input_->points[inliers[i]].z,
-                         1);
+                         1.0f);
       // use normalized coefficients to calculate the scalar projection
       float distance_to_plane = tmp_mc.dot (p);
 
@@ -365,7 +365,7 @@ pcl::SampleConsensusModelPlane<PointT>::doSamplesVerifyModel (
     Eigen::Vector4f pt (input_->points[index].x,
                         input_->points[index].y,
                         input_->points[index].z,
-                        1);
+                        1.0f);
     if (std::abs (model_coefficients.dot (pt)) > threshold)
     {
       return (false);

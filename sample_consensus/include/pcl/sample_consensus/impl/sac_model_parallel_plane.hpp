@@ -101,10 +101,10 @@ pcl::SampleConsensusModelParallelPlane<PointT>::isModelValid (const Eigen::Vecto
   {
     // Obtain the plane normal
     Eigen::Vector4f coeff = model_coefficients;
-    coeff[3] = 0;
+    coeff[3] = 0.0f;
     coeff.normalize ();
 
-    Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0);
+    Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0.0f);
     if (std::abs (axis.dot (coeff)) > sin_angle_)
     {
       return  (false);

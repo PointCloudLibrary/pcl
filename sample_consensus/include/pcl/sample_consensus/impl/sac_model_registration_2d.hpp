@@ -89,7 +89,7 @@ pcl::SampleConsensusModelRegistration2D<PointT>::getDistancesToModel (const Eige
   {
     Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
                             input_->points[(*indices_)[i]].y, 
-                            input_->points[(*indices_)[i]].z, 1); 
+                            input_->points[(*indices_)[i]].z, 1.0f);
 
     Eigen::Vector4f p_tr (transform * pt_src);
 
@@ -97,7 +97,7 @@ pcl::SampleConsensusModelRegistration2D<PointT>::getDistancesToModel (const Eige
     Eigen::Vector3f p_tr3 (p_tr[0], p_tr[1], p_tr[2]);
     Eigen::Vector3f uv (projection_matrix_ * p_tr3);
 
-    if (uv[2] < 0)
+    if (uv[2] < 0.0f)
     {
       continue;
     }
@@ -145,7 +145,7 @@ pcl::SampleConsensusModelRegistration2D<PointT>::selectWithinDistance (const Eig
   {
     Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
                             input_->points[(*indices_)[i]].y, 
-                            input_->points[(*indices_)[i]].z, 1); 
+                            input_->points[(*indices_)[i]].z, 1.0f);
 
     Eigen::Vector4f p_tr (transform * pt_src);
 
@@ -153,7 +153,7 @@ pcl::SampleConsensusModelRegistration2D<PointT>::selectWithinDistance (const Eig
     Eigen::Vector3f p_tr3 (p_tr[0], p_tr[1], p_tr[2]);
     Eigen::Vector3f uv (projection_matrix_ * p_tr3);
 
-    if (uv[2] < 0)
+    if (uv[2] < 0.0f)
       continue;
 
     uv /= uv[2];
@@ -205,7 +205,7 @@ pcl::SampleConsensusModelRegistration2D<PointT>::countWithinDistance (
   {
     Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
                             input_->points[(*indices_)[i]].y, 
-                            input_->points[(*indices_)[i]].z, 1); 
+                            input_->points[(*indices_)[i]].z, 1.0f);
 
     Eigen::Vector4f p_tr (transform * pt_src);
 
@@ -213,7 +213,7 @@ pcl::SampleConsensusModelRegistration2D<PointT>::countWithinDistance (
     Eigen::Vector3f p_tr3 (p_tr[0], p_tr[1], p_tr[2]);
     Eigen::Vector3f uv (projection_matrix_ * p_tr3);
 
-    if (uv[2] < 0)
+    if (uv[2] < 0.0f)
     {
       continue;
     }

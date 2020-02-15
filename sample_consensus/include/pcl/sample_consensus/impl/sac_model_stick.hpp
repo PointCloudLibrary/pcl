@@ -108,8 +108,8 @@ pcl::SampleConsensusModelStick<PointT>::getDistancesToModel (
   distances.resize (indices_->size ());
 
   // Obtain the line point and direction
-  Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
-  Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
+  Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0.0f);
+  Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0.0f);
   line_dir.normalize ();
 
   // Iterate through the 3d points and calculate the distances from them to the line
@@ -150,8 +150,8 @@ pcl::SampleConsensusModelStick<PointT>::selectWithinDistance (
   error_sqr_dists_.resize (indices_->size ());
 
   // Obtain the line point and direction
-  Eigen::Vector4f line_pt1 (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
-  Eigen::Vector4f line_pt2 (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
+  Eigen::Vector4f line_pt1 (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0.0f);
+  Eigen::Vector4f line_pt2 (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0.0f);
   Eigen::Vector4f line_dir = line_pt2 - line_pt1;
   //Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
   //Eigen::Vector4f line_dir (model_coefficients[3] - model_coefficients[0], model_coefficients[4] - model_coefficients[1], model_coefficients[5] - model_coefficients[2], 0);
@@ -199,8 +199,8 @@ pcl::SampleConsensusModelStick<PointT>::countWithinDistance (
   std::size_t nr_i = 0, nr_o = 0;
 
   // Obtain the line point and direction
-  Eigen::Vector4f line_pt1 (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
-  Eigen::Vector4f line_pt2 (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
+  Eigen::Vector4f line_pt1 (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0.0f);
+  Eigen::Vector4f line_pt2 (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0.0f);
   Eigen::Vector4f line_dir = line_pt2 - line_pt1;
   line_dir.normalize ();
 
@@ -225,7 +225,7 @@ pcl::SampleConsensusModelStick<PointT>::countWithinDistance (
     {
       nr_i++;
     }
-    else if (sqr_distance < 4 * sqr_threshold)
+    else if (sqr_distance < 4.0f * sqr_threshold)
     {
       nr_o++;
     }
@@ -287,8 +287,8 @@ pcl::SampleConsensusModelStick<PointT>::projectPoints (
   }
 
   // Obtain the line point and direction
-  Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
-  Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
+  Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0.0f);
+  Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0.0f);
 
   projected_points.header = input_->header;
   projected_points.is_dense = input_->is_dense;
@@ -312,7 +312,7 @@ pcl::SampleConsensusModelStick<PointT>::projectPoints (
     // Iterate through the 3d points and calculate the distances from them to the line
     for (const int &inlier : inliers)
     {
-      Eigen::Vector4f pt (input_->points[inlier].x, input_->points[inlier].y, input_->points[inlier].z, 0);
+      Eigen::Vector4f pt (input_->points[inlier].x, input_->points[inlier].y, input_->points[inlier].z, 0.0f);
       // double k = (DOT_PROD_3D (points[i], p21) - dotA_B) / dotB_B;
       float k = (pt.dot (line_dir) - line_pt.dot (line_dir)) / line_dir.dot (line_dir);
 
@@ -341,7 +341,7 @@ pcl::SampleConsensusModelStick<PointT>::projectPoints (
     // Iterate through the 3d points and calculate the distances from them to the line
     for (std::size_t i = 0; i < inliers.size (); ++i)
     {
-      Eigen::Vector4f pt (input_->points[inliers[i]].x, input_->points[inliers[i]].y, input_->points[inliers[i]].z, 0);
+      Eigen::Vector4f pt (input_->points[inliers[i]].x, input_->points[inliers[i]].y, input_->points[inliers[i]].z, 0.0f);
       // double k = (DOT_PROD_3D (points[i], p21) - dotA_B) / dotB_B;
       float k = (pt.dot (line_dir) - line_pt.dot (line_dir)) / line_dir.dot (line_dir);
 
@@ -366,8 +366,8 @@ pcl::SampleConsensusModelStick<PointT>::doSamplesVerifyModel (
   }
 
   // Obtain the line point and direction
-  Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0);
-  Eigen::Vector4f line_dir (model_coefficients[3] - model_coefficients[0], model_coefficients[4] - model_coefficients[1], model_coefficients[5] - model_coefficients[2], 0);
+  Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0.0f);
+  Eigen::Vector4f line_dir (model_coefficients[3] - model_coefficients[0], model_coefficients[4] - model_coefficients[1], model_coefficients[5] - model_coefficients[2], 0.0f);
   //Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
   line_dir.normalize ();
 

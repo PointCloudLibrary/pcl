@@ -64,7 +64,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::selectWithinDistance (
 
   // Obtain the sphere center
   Eigen::Vector4f center = model_coefficients;
-  center[3] = 0;
+  center[3] = 0.0f;
 
   int nr_p = 0;
   inliers.resize (indices_->size ());
@@ -78,12 +78,12 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::selectWithinDistance (
     Eigen::Vector4f p (input_->points[(*indices_)[i]].x, 
                        input_->points[(*indices_)[i]].y,
                        input_->points[(*indices_)[i]].z, 
-                       0);
+                       0.0f);
 
     Eigen::Vector4f n (normals_->points[(*indices_)[i]].normal[0], 
                        normals_->points[(*indices_)[i]].normal[1], 
                        normals_->points[(*indices_)[i]].normal[2], 
-                       0);
+                       0.0f);
 
     Eigen::Vector4f n_dir = p - center;
     double d_euclid = std::abs (n_dir.norm () - model_coefficients[3]);
@@ -92,7 +92,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::selectWithinDistance (
     double d_normal = std::abs (getAngle3D (n, n_dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    double distance = std::abs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid); 
+    double distance = std::abs (normal_distance_weight_ * d_normal + (1.0 - normal_distance_weight_) * d_euclid);
     if (distance < threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
@@ -123,7 +123,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::countWithinDistance (
 
   // Obtain the sphere centroid
   Eigen::Vector4f center = model_coefficients;
-  center[3] = 0;
+  center[3] = 0.0f;
 
   std::size_t nr_p = 0;
 
@@ -135,12 +135,12 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::countWithinDistance (
     Eigen::Vector4f p (input_->points[(*indices_)[i]].x, 
                        input_->points[(*indices_)[i]].y, 
                        input_->points[(*indices_)[i]].z, 
-                       0);
+                       0.0f);
 
     Eigen::Vector4f n (normals_->points[(*indices_)[i]].normal[0], 
                        normals_->points[(*indices_)[i]].normal[1], 
                        normals_->points[(*indices_)[i]].normal[2], 
-                       0);
+                       0.0f);
 
     Eigen::Vector4f n_dir = (p-center);
     double d_euclid = std::abs (n_dir.norm () - model_coefficients[3]);
@@ -149,7 +149,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::countWithinDistance (
     double d_normal = std::abs (getAngle3D (n, n_dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    if (std::abs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid) < threshold)
+    if (std::abs (normal_distance_weight_ * d_normal + (1.0 - normal_distance_weight_) * d_euclid) < threshold)
       nr_p++;
   }
   return (nr_p);
@@ -175,7 +175,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::getDistancesToModel (
 
   // Obtain the sphere centroid
   Eigen::Vector4f center = model_coefficients;
-  center[3] = 0;
+  center[3] = 0.0f;
 
   distances.resize (indices_->size ());
 
@@ -187,12 +187,12 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::getDistancesToModel (
     Eigen::Vector4f p (input_->points[(*indices_)[i]].x, 
                        input_->points[(*indices_)[i]].y, 
                        input_->points[(*indices_)[i]].z, 
-                       0);
+                       0.0f);
 
     Eigen::Vector4f n (normals_->points[(*indices_)[i]].normal[0], 
                        normals_->points[(*indices_)[i]].normal[1], 
                        normals_->points[(*indices_)[i]].normal[2], 
-                       0);
+                       0.0f);
 
     Eigen::Vector4f n_dir = (p-center);
     double d_euclid = std::abs (n_dir.norm () - model_coefficients[3]);
