@@ -61,19 +61,20 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
   Eigen::VectorXf model_coefficients;
   std::vector<double> distances;
 
-  int n_inliers_count = 0;
-
   unsigned skipped_count = 0;
   // suppress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
   const unsigned max_skip = max_iterations_ * 10;
   
   // Iterate
-  while (iterations_ < max_iterations_ && skipped_count < max_skip)
+  while ((iterations_ < max_iterations_) && (skipped_count < max_skip))
   {
     // Get X samples which satisfy the model criteria
     sac_model_->getSamples (iterations_, selection);
 
-    if (selection.empty ()) break;
+    if (selection.empty ())
+    {
+      break;
+    }
 
     // Search for inliers in the point cloud for the current plane model M
     if (!sac_model_->computeModelCoefficients (selection, model_coefficients))
@@ -83,7 +84,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
       continue;
     }
 
-    double d_cur_penalty = 0;
+    double d_cur_penalty;
     // d_cur_penalty = sum (min (dist, threshold))
 
     // Iterate through the 3d points and calculate the distances from them to the model
@@ -125,13 +126,17 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
 
     ++iterations_;
     if (debug_verbosity_level > 1)
+    {
       PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] Trial %d out of %d. Best penalty is %f.\n", iterations_, max_iterations_, d_best_penalty);
+    }
   }
 
   if (model_.empty ())
   {
     if (debug_verbosity_level > 0)
+    {
       PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] Unable to find a solution!\n");
+    }
     return (false);
   }
 
@@ -160,16 +165,22 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
 
   inliers_.resize (distances.size ());
   // Get the inliers for the best model found
-  n_inliers_count = 0;
+  std::size_t n_inliers_count = 0;
   for (std::size_t i = 0; i < distances.size (); ++i)
+  {
     if (distances[i] <= threshold_)
+    {
       inliers_[n_inliers_count++] = indices[i];
+    }
+  }
 
   // Resize the inliers vector
   inliers_.resize (n_inliers_count);
 
   if (debug_verbosity_level > 0)
-    PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] Model: %lu size, %d inliers.\n", model_.size (), n_inliers_count);
+  {
+    PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] Model: %lu size, %lu inliers.\n", model_.size (), n_inliers_count);
+  }
 
   return (true);
 }
