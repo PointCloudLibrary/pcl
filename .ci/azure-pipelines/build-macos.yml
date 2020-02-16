@@ -51,7 +51,7 @@ jobs:
           cmake --build . -- test_filters test_registration test_registration_api
           cmake --build . -- -j2
         displayName: 'Build Library'
-      - script: cd $BUILD_DIR/test && ctest -V -T Test
+      - script: cd $BUILD_DIR && cmake --build . -- tests
         displayName: 'Run Unit Tests'
       - task: PublishTestResults@2
         inputs:
