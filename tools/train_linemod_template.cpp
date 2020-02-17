@@ -261,14 +261,27 @@ main (int argc, char** argv)
   float max_height = std::numeric_limits<float>::max ();
   parse_argument (argc, argv, "-max_height", max_height);
 
+  bool processed_at_least_one_pcd = false;
   // Segment and create templates for each input file
   for (const int &p_file_index : p_file_indices)
   {
     // Load input file
     const std::string input_filename = argv[p_file_index];
     PointCloudXYZRGBA::Ptr cloud (new PointCloudXYZRGBA);
+  
     if (!loadCloud (input_filename, *cloud)) 
       return (-1);
+
+    if (!cloud->isOrganized())
+    {
+      std::string warn_msg = "Unorganized point cloud detected. Skipping file " + input_filename + "\n";
+      print_warn(warn_msg.c_str());
+      continue;
+    }
+    else
+    {
+      processed_at_least_one_pcd = true;
+    }
 
     // Construct output filenames
     std::string sqmmt_filename = input_filename;
@@ -284,5 +297,9 @@ main (int argc, char** argv)
     compute (cloud, min_depth, max_depth, max_height, pcd_filename, sqmmt_filename);
   }
 
-}
+  if (!processed_at_least_one_pcd)
+  {
+    print_error("All input pcd files are unorganized.\n");
+  }
 
+}
