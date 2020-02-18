@@ -43,181 +43,208 @@
 #include <pcl/octree/octree_pointcloud.h>
 #include <pcl/octree/octree_pointcloud_adjacency_container.h>
 
-#include <set>
 #include <list>
+#include <set>
 
-namespace pcl
-{
+namespace pcl {
 
-  namespace octree
+namespace octree {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/** \brief @b Octree pointcloud voxel class which maintains adjacency information for
+ * its voxels.
+ *
+ * This pointcloud octree class generates an octree from a point cloud (zero-copy). The
+ * octree pointcloud is initialized with its voxel resolution. Its bounding box is
+ * automatically adjusted or can be predefined.
+ *
+ * The OctreePointCloudAdjacencyContainer class can be used to store data in leaf nodes.
+ *
+ * An optional transform function can be provided which changes how the voxel grid is
+ * computed - this can be used to, for example, make voxel bins larger as they increase
+ * in distance from the origin (camera). \note See SupervoxelClustering for an example
+ * of how to provide a transform function.
+ *
+ * If used in academic work, please cite:
+ *
+ * - J. Papon, A. Abramov, M. Schoeler, F. Woergoetter
+ *   Voxel Cloud Connectivity Segmentation - Supervoxels from PointClouds
+ *   In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition
+ * (CVPR) 2013
+ *
+ * \ingroup octree
+ * \author Jeremie Papon (jpapon@gmail.com) */
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT,
+          typename LeafContainerT = OctreePointCloudAdjacencyContainer<PointT>,
+          typename BranchContainerT = OctreeContainerEmpty>
+class OctreePointCloudAdjacency
+: public OctreePointCloud<PointT, LeafContainerT, BranchContainerT> {
+
+public:
+  using OctreeBaseT = OctreeBase<LeafContainerT, BranchContainerT>;
+
+  using OctreeAdjacencyT =
+      OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>;
+  using Ptr = shared_ptr<OctreeAdjacencyT>;
+  using ConstPtr = shared_ptr<const OctreeAdjacencyT>;
+
+  using OctreePointCloudT =
+      OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeBaseT>;
+  using LeafNode = typename OctreePointCloudT::LeafNode;
+  using BranchNode = typename OctreePointCloudT::BranchNode;
+
+  using PointCloud = pcl::PointCloud<PointT>;
+  using PointCloudPtr = typename PointCloud::Ptr;
+  using PointCloudConstPtr = typename PointCloud::ConstPtr;
+
+  // BGL graph
+  using VoxelAdjacencyList = boost::
+      adjacency_list<boost::setS, boost::setS, boost::undirectedS, PointT, float>;
+  using VoxelID = typename VoxelAdjacencyList::vertex_descriptor;
+  using EdgeID = typename VoxelAdjacencyList::edge_descriptor;
+
+  // Leaf vector - pointers to all leaves
+  using LeafVectorT = std::vector<LeafContainerT*>;
+
+  // Fast leaf iterators that don't require traversing tree
+  using iterator = typename LeafVectorT::iterator;
+  using const_iterator = typename LeafVectorT::const_iterator;
+
+  inline iterator
+  begin()
   {
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree pointcloud voxel class which maintains adjacency information for its voxels.
-      *
-      * This pointcloud octree class generates an octree from a point cloud (zero-copy). The octree pointcloud is
-      * initialized with its voxel resolution. Its bounding box is automatically adjusted or can be predefined.
-      *
-      * The OctreePointCloudAdjacencyContainer class can be used to store data in leaf nodes.
-      *
-      * An optional transform function can be provided which changes how the voxel grid is computed - this can be used to,
-      * for example, make voxel bins larger as they increase in distance from the origin (camera).
-      * \note See SupervoxelClustering for an example of how to provide a transform function.
-      *
-      * If used in academic work, please cite:
-      *
-      * - J. Papon, A. Abramov, M. Schoeler, F. Woergoetter
-      *   Voxel Cloud Connectivity Segmentation - Supervoxels from PointClouds
-      *   In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR) 2013
-      *
-      * \ingroup octree
-      * \author Jeremie Papon (jpapon@gmail.com) */
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template <typename PointT,
-              typename LeafContainerT = OctreePointCloudAdjacencyContainer<PointT>,
-              typename BranchContainerT = OctreeContainerEmpty>
-    class OctreePointCloudAdjacency : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT>
-    {
-
-      public:
-
-        using OctreeBaseT = OctreeBase<LeafContainerT, BranchContainerT>;
-
-        using OctreeAdjacencyT = OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>;
-        using Ptr = shared_ptr<OctreeAdjacencyT>;
-        using ConstPtr = shared_ptr<const OctreeAdjacencyT>;
-
-        using OctreePointCloudT = OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeBaseT>;
-        using LeafNode = typename OctreePointCloudT::LeafNode;
-        using BranchNode = typename OctreePointCloudT::BranchNode;
-
-        using PointCloud = pcl::PointCloud<PointT>;
-        using PointCloudPtr = typename PointCloud::Ptr;
-        using PointCloudConstPtr = typename PointCloud::ConstPtr;
-
-        // BGL graph
-        using VoxelAdjacencyList = boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, PointT, float>;
-        using VoxelID = typename VoxelAdjacencyList::vertex_descriptor;
-        using EdgeID = typename VoxelAdjacencyList::edge_descriptor;
-
-        // Leaf vector - pointers to all leaves
-        using LeafVectorT = std::vector<LeafContainerT *>;
-
-        // Fast leaf iterators that don't require traversing tree
-        using iterator = typename LeafVectorT::iterator;
-        using const_iterator = typename LeafVectorT::const_iterator;
-
-        inline iterator begin () { return (leaf_vector_.begin ()); }
-        inline iterator end ()   { return (leaf_vector_.end ()); }
-        inline LeafContainerT* at (std::size_t idx)   { return leaf_vector_.at (idx); }
-        
-        // Size of neighbors
-        inline std::size_t size () const { return leaf_vector_.size (); }
-
-        /** \brief Constructor.
-          *
-          * \param[in] resolution_arg Octree resolution at lowest octree level (voxel size) */
-        OctreePointCloudAdjacency (const double resolution_arg);
-
-        /** \brief Adds points from cloud to the octree.
-          *
-          * \note This overrides addPointsFromInputCloud() from the OctreePointCloud class. */
-        void
-        addPointsFromInputCloud ();
-
-        /** \brief Gets the leaf container for a given point.
-          *
-          * \param[in] point_arg Point to search for
-          *
-          * \returns Pointer to the leaf container - null if no leaf container found. */
-        LeafContainerT*
-        getLeafContainerAtPoint (const PointT& point_arg) const;
-
-        /** \brief Computes an adjacency graph of voxel relations.
-          *
-          * \warning This slows down rapidly as cloud size increases due to the number of edges.
-          *
-          * \param[out] voxel_adjacency_graph Boost Graph Library Adjacency graph of the voxel touching relationships.
-          * Vertices are PointT, edges represent touching, and edge lengths are the distance between the points. */
-        void
-        computeVoxelAdjacencyGraph (VoxelAdjacencyList &voxel_adjacency_graph);
-
-        /** \brief Sets a point transform (and inverse) used to transform the space of the input cloud.
-          *
-          * This is useful for changing how adjacency is calculated - such as relaxing the adjacency criterion for
-          * points further from the camera.
-          *
-          * \param[in] transform_func A boost:function pointer to the transform to be used. The transform must have one
-          * parameter (a point) which it modifies in place. */
-        void
-        setTransformFunction (std::function<void (PointT &p)> transform_func)
-        {
-          transform_func_ = transform_func;
-        }
-
-        /** \brief Tests whether input point is occluded from specified camera point by other voxels.
-          *
-          * \param[in] point_arg Point to test for
-          * \param[in] camera_pos Position of camera, defaults to origin
-          *
-          * \returns True if path to camera is blocked by a voxel, false otherwise. */
-        bool
-        testForOcclusion (const PointT& point_arg, const PointXYZ &camera_pos = PointXYZ (0, 0, 0));
-
-      protected:
-
-        /** \brief Add point at index from input pointcloud dataset to octree.
-          *
-          * \param[in] point_idx_arg The index representing the point in the dataset given by setInputCloud() to be added
-          *
-          * \note This virtual implementation allows the use of a transform function to compute keys. */
-         void
-         addPointIdx (const int point_idx_arg) override;
-
-        /** \brief Fills in the neighbors fields for new voxels.
-          *
-          * \param[in] key_arg Key of the voxel to check neighbors for
-          * \param[in] leaf_container Pointer to container of the leaf to check neighbors for */
-        void
-        computeNeighbors (OctreeKey &key_arg, LeafContainerT* leaf_container);
-
-        /** \brief Generates octree key for specified point (uses transform if provided).
-          *
-          * \param[in] point_arg Point to generate key for
-          * \param[out] key_arg Resulting octree key */
-        void
-        genOctreeKeyforPoint (const PointT& point_arg, OctreeKey& key_arg) const;
-
-      private:
-
-        /** \brief Add point at given index from input point cloud to octree.
-          *
-          * Index will be also added to indices vector. This functionality is not enabled for adjacency octree. */
-        using OctreePointCloudT::addPointFromCloud;
-
-        /** \brief Add point simultaneously to octree and input point cloud.
-          *
-          * This functionality is not enabled for adjacency octree. */
-        using OctreePointCloudT::addPointToCloud;
-
-        using OctreePointCloudT::input_;
-        using OctreePointCloudT::resolution_;
-        using OctreePointCloudT::min_x_;
-        using OctreePointCloudT::min_y_;
-        using OctreePointCloudT::min_z_;
-        using OctreePointCloudT::max_x_;
-        using OctreePointCloudT::max_y_;
-        using OctreePointCloudT::max_z_;
-
-        /// Local leaf pointer vector used to make iterating through leaves fast.
-        LeafVectorT leaf_vector_;
-
-        std::function<void (PointT &p)> transform_func_;
-
-    };
-
+    return (leaf_vector_.begin());
+  }
+  inline iterator
+  end()
+  {
+    return (leaf_vector_.end());
+  }
+  inline LeafContainerT*
+  at(std::size_t idx)
+  {
+    return leaf_vector_.at(idx);
   }
 
-}
+  // Size of neighbors
+  inline std::size_t
+  size() const
+  {
+    return leaf_vector_.size();
+  }
 
-// Note: Do not precompile this octree type because it is typically used with custom leaf containers.
+  /** \brief Constructor.
+   *
+   * \param[in] resolution_arg Octree resolution at lowest octree level (voxel size) */
+  OctreePointCloudAdjacency(const double resolution_arg);
+
+  /** \brief Adds points from cloud to the octree.
+   *
+   * \note This overrides addPointsFromInputCloud() from the OctreePointCloud class. */
+  void
+  addPointsFromInputCloud();
+
+  /** \brief Gets the leaf container for a given point.
+   *
+   * \param[in] point_arg Point to search for
+   *
+   * \returns Pointer to the leaf container - null if no leaf container found. */
+  LeafContainerT*
+  getLeafContainerAtPoint(const PointT& point_arg) const;
+
+  /** \brief Computes an adjacency graph of voxel relations.
+   *
+   * \warning This slows down rapidly as cloud size increases due to the number of
+   * edges.
+   *
+   * \param[out] voxel_adjacency_graph Boost Graph Library Adjacency graph of the voxel
+   * touching relationships. Vertices are PointT, edges represent touching, and edge
+   * lengths are the distance between the points. */
+  void
+  computeVoxelAdjacencyGraph(VoxelAdjacencyList& voxel_adjacency_graph);
+
+  /** \brief Sets a point transform (and inverse) used to transform the space of the
+   * input cloud.
+   *
+   * This is useful for changing how adjacency is calculated - such as relaxing the
+   * adjacency criterion for points further from the camera.
+   *
+   * \param[in] transform_func A boost:function pointer to the transform to be used. The
+   * transform must have one parameter (a point) which it modifies in place. */
+  void
+  setTransformFunction(std::function<void(PointT& p)> transform_func)
+  {
+    transform_func_ = transform_func;
+  }
+
+  /** \brief Tests whether input point is occluded from specified camera point by other
+   * voxels.
+   *
+   * \param[in] point_arg Point to test for
+   * \param[in] camera_pos Position of camera, defaults to origin
+   *
+   * \returns True if path to camera is blocked by a voxel, false otherwise. */
+  bool
+  testForOcclusion(const PointT& point_arg,
+                   const PointXYZ& camera_pos = PointXYZ(0, 0, 0));
+
+protected:
+  /** \brief Add point at index from input pointcloud dataset to octree.
+   *
+   * \param[in] point_idx_arg The index representing the point in the dataset given by
+   * setInputCloud() to be added
+   *
+   * \note This virtual implementation allows the use of a transform function to compute
+   * keys. */
+  void
+  addPointIdx(const int point_idx_arg) override;
+
+  /** \brief Fills in the neighbors fields for new voxels.
+   *
+   * \param[in] key_arg Key of the voxel to check neighbors for
+   * \param[in] leaf_container Pointer to container of the leaf to check neighbors for
+   */
+  void
+  computeNeighbors(OctreeKey& key_arg, LeafContainerT* leaf_container);
+
+  /** \brief Generates octree key for specified point (uses transform if provided).
+   *
+   * \param[in] point_arg Point to generate key for
+   * \param[out] key_arg Resulting octree key */
+  void
+  genOctreeKeyforPoint(const PointT& point_arg, OctreeKey& key_arg) const;
+
+private:
+  /** \brief Add point at given index from input point cloud to octree.
+   *
+   * Index will be also added to indices vector. This functionality is not enabled for
+   * adjacency octree. */
+  using OctreePointCloudT::addPointFromCloud;
+
+  /** \brief Add point simultaneously to octree and input point cloud.
+   *
+   * This functionality is not enabled for adjacency octree. */
+  using OctreePointCloudT::addPointToCloud;
+
+  using OctreePointCloudT::input_;
+  using OctreePointCloudT::max_x_;
+  using OctreePointCloudT::max_y_;
+  using OctreePointCloudT::max_z_;
+  using OctreePointCloudT::min_x_;
+  using OctreePointCloudT::min_y_;
+  using OctreePointCloudT::min_z_;
+  using OctreePointCloudT::resolution_;
+
+  /// Local leaf pointer vector used to make iterating through leaves fast.
+  LeafVectorT leaf_vector_;
+
+  std::function<void(PointT& p)> transform_func_;
+};
+
+} // namespace octree
+
+} // namespace pcl
+
+// Note: Do not precompile this octree type because it is typically used with custom
+// leaf containers.
 #include <pcl/octree/impl/octree_pointcloud_adjacency.hpp>
