@@ -42,8 +42,7 @@ jobs:
           cmake --build . -- -j2
         displayName: 'Build Library'
       - script: |
-          cd $BUILD_DIR/test
-          ctest -V -T Test
+          cd $BUILD_DIR && cmake --build . -- tests
         displayName: 'Run Unit Tests'
       - task: PublishTestResults@2
         inputs:

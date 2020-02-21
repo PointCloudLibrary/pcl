@@ -37,7 +37,7 @@ jobs:
         displayName: 'CMake Configuration'
       - script: cd %BUILD_DIR% && cmake --build . --config %CONFIGURATION%
         displayName: 'Build Library'
-      - script: cd %BUILD_DIR%/test && ctest -C %CONFIGURATION% -V -T Test
+      - script: cd %BUILD_DIR% && cmake --build . --target tests --config %CONFIGURATION%
         displayName: 'Run Unit Tests'
       - task: PublishTestResults@2
         inputs:
