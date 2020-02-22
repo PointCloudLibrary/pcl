@@ -32,7 +32,7 @@ pcl::cloud_composer::BackgroundDelegate::paint (QPainter *painter, const QStyleO
   if (text_color_variant.canConvert<QColor> ())
   {
     QColor text_color = text_color_variant.value<QColor> ();
-    QPalette palette = option.palette;
+    QPalette palette;
     QStyleOptionViewItem option_copy = option;
     option_copy.palette.setColor (QPalette::HighlightedText, text_color);
     QStyledItemDelegate::paint (painter, option_copy, index);
