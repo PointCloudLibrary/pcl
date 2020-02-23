@@ -501,11 +501,10 @@ OctreeBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
     typename std::vector<LeafContainerT*>::const_iterator*
         leaf_container_vector_it_end_arg)
 {
-  char node_bits;
 
   if (binary_tree_input_it_arg != binary_tree_input_it_end_arg) {
     // read branch occupancy bit pattern from input vector
-    node_bits = (*binary_tree_input_it_arg);
+    char node_bits = (*binary_tree_input_it_arg);
     binary_tree_input_it_arg++;
 
     // iterate over all children

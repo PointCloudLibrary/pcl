@@ -346,14 +346,14 @@ inline void
     if (tmp1 > 0)
     {
       tmp1 = sqrt (tmp1);
-      root1 = - (b/ (4.0*a)) + 0.5* (w+tmp1);
-      root2 = - (b/ (4.0*a)) + 0.5* (w-tmp1);
+      double root1 = - (b/ (4.0*a)) + 0.5* (w+tmp1);
+      double root2 = - (b/ (4.0*a)) + 0.5* (w-tmp1);
       roots.push_back (root1);
       roots.push_back (root2);
     }
     else if (isNearlyZero (tmp1))
     {
-      root1 = - (b/ (4.0*a)) + 0.5*w;
+      double root1 = - (b/ (4.0*a)) + 0.5*w;
       roots.push_back (root1);
     }
 
@@ -361,13 +361,13 @@ inline void
    {
       tmp2 = sqrt (tmp2);
       root3 = - (b/ (4.0*a)) + 0.5* (-w+tmp2);
-      root4 = - (b/ (4.0*a)) + 0.5* (-w-tmp2);
+      double root4 = - (b/ (4.0*a)) + 0.5* (-w-tmp2);
       roots.push_back (root3);
       roots.push_back (root4);
     }
     else if (isNearlyZero (tmp2))
     {
-      root3 = - (b/ (4.0*a)) - 0.5*w;
+      double root3 = - (b/ (4.0*a)) - 0.5*w;
       roots.push_back (root3);
     }
 

@@ -513,7 +513,6 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deleteLeafRecursive(
   if (depth_mask_arg > 1) {
     // we have not reached maximum tree depth
     BranchNode* child_branch;
-    bool bBranchOccupied;
 
     // next branch child on our path through the tree
     child_branch =
@@ -521,7 +520,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deleteLeafRecursive(
 
     if (child_branch) {
       // recursively explore the indexed child branch
-      bBranchOccupied = deleteLeafRecursive(key_arg, depth_mask_arg / 2, child_branch);
+      bool bBranchOccupied = deleteLeafRecursive(key_arg, depth_mask_arg / 2, child_branch);
 
       if (!bBranchOccupied) {
         // child branch does not own any sub-child nodes anymore -> delete child branch
@@ -651,9 +650,6 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
     bool branch_reset_arg,
     bool do_XOR_decoding_arg)
 {
-  // node bits
-  char nodeBits;
-  char recoveredNodeBits;
 
   // branch reset -> this branch has been taken from previous buffer
   if (branch_reset_arg) {
@@ -664,6 +660,9 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
   }
 
   if (binaryTreeIT_arg != binaryTreeIT_End_arg) {
+    // node bits
+    char nodeBits, recoveredNodeBits;
+
     // read branch occupancy bit pattern from vector
     nodeBits = *binaryTreeIT_arg++;
 
@@ -683,12 +682,10 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
         // add current branch voxel to key
         key_arg.pushBranch(child_idx);
 
-        bool doNodeReset;
-
-        doNodeReset = false;
-
         if (depth_mask_arg > 1) {
           // we have not reached maximum tree depth
+
+          bool doNodeReset = false;
 
           BranchNode* child_branch;
 
