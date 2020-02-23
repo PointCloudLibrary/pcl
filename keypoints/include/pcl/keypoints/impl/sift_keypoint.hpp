@@ -226,7 +226,6 @@ void pcl::SIFTKeypoint<PointInT, PointOutT>::computeScaleSpace (
 
     // For each scale, compute the Gaussian "filter response" at the current point
     float filter_response = 0.0f;
-    float previous_filter_response;
     for (std::size_t i_scale = 0; i_scale < scales.size (); ++i_scale)
     {
       float sigma_sqr = powf (scales[i_scale], 2.0f);
@@ -245,7 +244,7 @@ void pcl::SIFTKeypoint<PointInT, PointOutT>::computeScaleSpace (
         }
         else break; // i.e. if dist > 3 standard deviations, then terminate early
       }
-      previous_filter_response = filter_response;
+      float previous_filter_response = filter_response;
       filter_response = numerator / denominator;
 
       // Compute the difference between adjacent scales

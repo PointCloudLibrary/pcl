@@ -267,8 +267,7 @@ inline void
     return;
   }
 
-  double root1, root2, root3, root4,
-         a2 = a*a,
+  double a2 = a*a,
          a3 = a2*a,
          a4 = a2*a2,
          b2 = b*b,
@@ -297,7 +296,7 @@ inline void
       }
       else if (quadraticRoot > 0.0)
       {
-        root1 = sqrt (quadraticRoot);
+        double root1 = sqrt (quadraticRoot);
         roots.push_back (root1 - resubValue);
         roots.push_back (-root1 - resubValue);
       }
@@ -360,7 +359,7 @@ inline void
    if (tmp2 > 0)
    {
       tmp2 = sqrt (tmp2);
-      root3 = - (b/ (4.0*a)) + 0.5* (-w+tmp2);
+      double root3 = - (b/ (4.0*a)) + 0.5* (-w+tmp2);
       double root4 = - (b/ (4.0*a)) + 0.5* (-w-tmp2);
       roots.push_back (root3);
       roots.push_back (root4);

@@ -717,7 +717,6 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
 
   // Child index, node and key
   unsigned char child_idx;
-  const OctreeNode* child_node;
   OctreeKey child_key;
 
   do {
@@ -727,7 +726,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
       child_idx = a;
 
     // child_node == 0 if child_node doesn't exist
-    child_node =
+    const OctreeNode* child_node =
         this->getBranchChildPtr(static_cast<const BranchNode&>(*node), child_idx);
 
     // Generate new key for current branch voxel

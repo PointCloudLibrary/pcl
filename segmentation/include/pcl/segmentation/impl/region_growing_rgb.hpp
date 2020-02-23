@@ -399,10 +399,9 @@ pcl::RegionGrowingRGB<PointT, NormalT>::applyRegionMergingAlgorithm ()
 
   float dist_thresh = distance_threshold_;
   int homogeneous_region_number = 0;
-  int curr_homogeneous_region = 0;
   for (int i_seg = 0; i_seg < number_of_segments_; i_seg++)
   {
-    curr_homogeneous_region = 0;
+    int curr_homogeneous_region = 0;
     if (segment_labels_[i_seg] == -1)
     {
       segment_labels_[i_seg] = homogeneous_region_number;

@@ -254,11 +254,10 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh)
     // processing for each face
     for (std::size_t i = 0; i < tex_mesh.tex_polygons[m].size (); ++i)
     {
-      std::size_t idx;
       Eigen::Vector2f tmp_VT;
       for (std::size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
       {
-        idx = tex_mesh.tex_polygons[m][i].vertices[j];
+        std::size_t idx = tex_mesh.tex_polygons[m][i].vertices[j];
         memcpy (&x_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[0].offset], sizeof(float));
         memcpy (&y_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[1].offset], sizeof(float));
         memcpy (&z_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[2].offset], sizeof(float));

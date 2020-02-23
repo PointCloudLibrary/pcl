@@ -233,10 +233,9 @@ namespace pcl
               normal_distributions_ (cells_[0], cells_[1])
         {
           // sort through all points, assigning them to distributions:
-          NormalDist* n;
           std::size_t used_points = 0;
           for (std::size_t i = 0; i < cloud->size (); i++)
-          if ((n = normalDistForPoint (cloud->at (i))))
+          if (NormalDist* n = normalDistForPoint (cloud->at (i)))
           {
             n->addIdx (i);
             used_points++;
