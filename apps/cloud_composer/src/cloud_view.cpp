@@ -129,7 +129,7 @@ pcl::cloud_composer::CloudView::rowsAboutToBeRemoved (const QModelIndex& parent,
     parent_item = model_->invisibleRootItem();
   else
     parent_item = model_->itemFromIndex (parent);
-  QString project_name = model_->getName ();
+  QString project_name;
   //qDebug () << "Rows about to be removed, parent = "<<parent_item->text ()<<" start="<<start<<" end="<<end;
   for (int row = start; row <= end; ++row)
   {
