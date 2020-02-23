@@ -121,7 +121,6 @@ pcl::people::HeightMap2D<PointT>::searchLocalMaxima ()
   // Search for local maxima:
   maxima_number_ = 0;
   int left = buckets_[0];         // current left element
-  int right = 0;              // current right element
   float offset = 0;           // used to center the maximum to the right place
   maxima_indices_.resize(std::size_t(buckets_.size()), 0);
   maxima_cloud_indices_.resize(std::size_t(buckets_.size()), 0);

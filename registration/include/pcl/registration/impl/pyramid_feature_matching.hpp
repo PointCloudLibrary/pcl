@@ -69,7 +69,6 @@ pcl::PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms (con
     PCL_ERROR ("[pcl::PyramidFeatureMatching::comparePyramidFeatureHistograms] The two given pyramids have different numbers of bins on level 0: %u vs %u\n", pyramid_a->hist_levels[0].hist.size (), pyramid_b->hist_levels[0].hist.size ());
     return -1;
   }
-  float match_count_level = 0.0f, match_count_prev_level = 0.0f;
   for (std::size_t bin_i = 0; bin_i < pyramid_a->hist_levels[0].hist.size (); ++bin_i)
   {
     if (pyramid_a->hist_levels[0].hist[bin_i] < pyramid_b->hist_levels[0].hist[bin_i])
@@ -184,9 +183,9 @@ pcl::PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
   {
     std::vector<std::size_t> bins_per_dimension (nr_dimensions);
     std::vector<float> bin_step (nr_dimensions);
-    for (std::size_t dim_i = 0; dim_i < nr_dimensions; ++dim_i) 
+    for (std::size_t dim_i = 0; dim_i < nr_dimensions; ++dim_i)
     {
-      bins_per_dimension[dim_i] = 
+      bins_per_dimension[dim_i] =
         static_cast<std::size_t> (std::ceil ((dimension_range_target_[dim_i].second - dimension_range_target_[dim_i].first) / (powf (2.0f, static_cast<float> (level_i)) * std::sqrt (static_cast<float> (nr_dimensions)))));
       bin_step[dim_i] = powf (2.0f, static_cast<float> (level_i)) * std::sqrt (static_cast<float> (nr_dimensions));
     }

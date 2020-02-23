@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -30,8 +30,8 @@ public:
   ON_BrepRegionTopologyUserData& operator=(const ON_BrepRegionTopologyUserData&);
 
   unsigned int SizeOf() const;
-  ON_BOOL32 Archive() const; 
-  ON_BOOL32 Transform( const ON_Xform& ); 
+  ON_BOOL32 Archive() const;
+  ON_BOOL32 Transform( const ON_Xform& );
   ON_BOOL32 Write(ON_BinaryArchive& binary_archive) const;
   ON_BOOL32 Read(ON_BinaryArchive& binary_archive);
 
@@ -69,7 +69,7 @@ ON_BrepRegionTopologyUserData::~ON_BrepRegionTopologyUserData()
 {
 }
 
-ON_BrepRegionTopologyUserData::ON_BrepRegionTopologyUserData( const ON_BrepRegionTopologyUserData& src ) 
+ON_BrepRegionTopologyUserData::ON_BrepRegionTopologyUserData( const ON_BrepRegionTopologyUserData& src )
                               : ON_UserData(src)
                               , m_region_topology(src.m_region_topology)
 {
@@ -420,7 +420,7 @@ bool ON_BrepFaceSideArray::Read( ON_BinaryArchive& file )
   int major_version = 0;
   int minor_version = 0;
   bool rc = file.BeginRead3dmChunk( TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version );
-  if (rc) 
+  if (rc)
   {
     for(;;)
     {
@@ -428,11 +428,11 @@ bool ON_BrepFaceSideArray::Read( ON_BinaryArchive& file )
       if (!rc) break;
       if (rc) rc = file.ReadInt(&count);
       SetCapacity(count);
-      for ( i = 0; i < count && rc; i++ ) 
+      for ( i = 0; i < count && rc; i++ )
       {
         ON_BrepFaceSide& faceside = AppendNew();
         rc = faceside.Read(file)?true:false;
-      }    
+      }
       break;
     }
     if ( !file.EndRead3dmChunk() )
@@ -445,11 +445,11 @@ bool ON_BrepFaceSideArray::Write( ON_BinaryArchive& file ) const
 {
   int i;
   bool rc = file.BeginWrite3dmChunk( TCODE_ANONYMOUS_CHUNK, 1, 0 );
-  if (rc) 
+  if (rc)
   {
     const int count = Count();
     if (rc) rc = file.WriteInt( count );
-    for ( i = 0; rc && i < count; i++ ) 
+    for ( i = 0; rc && i < count; i++ )
     {
       rc = m_a[i].Write(file)?true:false;
     }
@@ -483,7 +483,7 @@ bool ON_BrepRegionArray::Read( ON_BinaryArchive& file )
   int major_version = 0;
   int minor_version = 0;
   bool rc = file.BeginRead3dmChunk( TCODE_ANONYMOUS_CHUNK, &major_version, &minor_version );
-  if (rc) 
+  if (rc)
   {
     for(;;)
     {
@@ -491,11 +491,11 @@ bool ON_BrepRegionArray::Read( ON_BinaryArchive& file )
       if (!rc) break;
       if (rc) rc = file.ReadInt(&count);
       SetCapacity(count);
-      for ( i = 0; i < count && rc ; i++ ) 
+      for ( i = 0; i < count && rc ; i++ )
       {
         ON_BrepRegion& region = AppendNew();
         rc = region.Read(file)?true:false;
-      }    
+      }
       break;
     }
     if ( !file.EndRead3dmChunk() )
@@ -508,11 +508,11 @@ bool ON_BrepRegionArray::Write( ON_BinaryArchive& file ) const
 {
   int i;
   bool rc = file.BeginWrite3dmChunk( TCODE_ANONYMOUS_CHUNK, 1, 0 );
-  if (rc) 
+  if (rc)
   {
     const int count = Count();
     if (rc) rc = file.WriteInt( count );
-    for ( i = 0; rc && i < count; i++ ) 
+    for ( i = 0; rc && i < count; i++ )
     {
       rc = m_a[i].Write(file)?true:false;
     }
@@ -815,7 +815,7 @@ void ON_Brep::MemoryRelocate()
 {
   int i, count;
 
-  // The call to the base class MemoryRelocate() takes care of 
+  // The call to the base class MemoryRelocate() takes care of
   // updating user data back-pointers.
   ON_Geometry::MemoryRelocate();
 
@@ -860,9 +860,9 @@ void ON_Brep::MemoryRelocate()
 
 }
 
-ON_Brep* ON_Brep::SubBrep( 
-          int subfi_count, 
-          const int* subfi, 
+ON_Brep* ON_Brep::SubBrep(
+          int subfi_count,
+          const int* subfi,
           ON_Brep* sub_brep
           ) const
 {
@@ -972,7 +972,7 @@ ON_Brep* ON_Brep::SubBrep(
               return 0;
             if ( 0 == Vmap[edge->m_vi[1]] )
               return 0;
-          }          
+          }
         }
         else
         {
@@ -1151,8 +1151,6 @@ ON_Brep* ON_Brep::SubBrep(
     sub_brep->m_bbox = sub_bbox;
 
   // return subbrep after disabling the leak stopper
-  leak_stopper.m_p = 0;
-  leak_stopper.m_sub_brep = 0;
   return sub_brep;
 }
 
@@ -1213,4 +1211,3 @@ ON_Brep* ON_BrepRegion::RegionBoundaryBrep( ON_Brep* brep ) const
 
   return brep;
 }
-

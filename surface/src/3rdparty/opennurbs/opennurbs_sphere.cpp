@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -96,8 +96,8 @@ double ON_Sphere::Diameter() const
   return 2.0*radius;
 }
 
-bool ON_Sphere::ClosestPointTo( 
-       ON_3dPoint point, 
+bool ON_Sphere::ClosestPointTo(
+       ON_3dPoint point,
        double* longitude,
        double* latitude
        ) const
@@ -107,7 +107,6 @@ bool ON_Sphere::ClosestPointTo(
   double h = v*plane.zaxis;
   double x = v*plane.xaxis;
   double y = v*plane.yaxis;
-  double r = 1.0;
   if ( x == 0.0 && y == 0.0 ) {
     if ( longitude )
       *longitude = 0.0;
@@ -305,9 +304,9 @@ ON_RevSurface* ON_Sphere::RevSurfaceForm( ON_RevSurface* srf ) const
   return RevSurfaceForm(false,srf);
 }
 
-ON_RevSurface* ON_Sphere::RevSurfaceForm( 
+ON_RevSurface* ON_Sphere::RevSurfaceForm(
   bool bArcLengthParameterization,
-  ON_RevSurface* srf 
+  ON_RevSurface* srf
   ) const
 {
   if ( srf )
@@ -354,5 +353,3 @@ ON_RevSurface* ON_Sphere::RevSurfaceForm(
   }
   return pRevSurface;
 }
-
-

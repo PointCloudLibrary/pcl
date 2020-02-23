@@ -57,7 +57,7 @@ pcl::LCCPSegmentation<PointT>::LCCPSegmentation () :
   supervoxels_set_ (false),
   use_smoothness_check_ (false),
   smoothness_threshold_ (0.1),
-  use_sanity_check_ (false),  
+  use_sanity_check_ (false),
   seed_resolution_ (0),
   voxel_resolution_ (0),
   k_factor_ (0),
@@ -97,9 +97,9 @@ pcl::LCCPSegmentation<PointT>::segment ()
 
     // group supervoxels
     doGrouping ();
-    
+
     grouping_data_valid_ = true;
-    
+
     // merge small segments
     mergeSmallSegments ();
   }
@@ -135,7 +135,7 @@ pcl::LCCPSegmentation<PointT>::relabelCloud (pcl::PointCloud<pcl::PointXYZL> &la
 
 template <typename PointT> void
 pcl::LCCPSegmentation<PointT>::computeSegmentAdjacency ()
-{  
+{
   seg_label_to_neighbor_set_map_.clear ();
 
   //The vertices in the supervoxel adjacency list are the supervoxel centroids
@@ -176,8 +176,6 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
 
   std::set<std::uint32_t> filteredSegLabels;
 
-  std::uint32_t largest_neigh_size = 0;
-  std::uint32_t largest_neigh_seg_label = 0;
   std::uint32_t current_seg_label;
 
   std::pair<VertexIterator, VertexIterator> vertex_iterator_range;
@@ -279,7 +277,7 @@ pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<std::uint32_t
 
     VertexID u = label_ID_map[sv_label];
     VertexID v = label_ID_map[neighbor_label];
-    
+
     boost::add_edge (u, v, sv_adjacency_list_);
   }
 
@@ -310,7 +308,7 @@ pcl::LCCPSegmentation<PointT>::doGrouping ()
     processed_[sv_label] = false;
     sv_label_to_seg_label_map_[sv_label] = 0;
   }
-  
+
   // Perform depth search on the graph and recursively group all supervoxels with convex connections
   //The vertices in the supervoxel adjacency list are the supervoxel centroids
   std::pair< VertexIterator, VertexIterator> vertex_iterator_range;
@@ -368,7 +366,6 @@ pcl::LCCPSegmentation<PointT>::applyKconvexity (const unsigned int k_arg)
     return;
 
   bool is_convex;
-  unsigned int kcount = 0;
 
   EdgeIterator edge_itr, edge_itr_end, next_edge;
   boost::tie (edge_itr, edge_itr_end) = boost::edges (sv_adjacency_list_);
@@ -476,7 +473,7 @@ pcl::LCCPSegmentation<PointT>::connIsConvex (const std::uint32_t source_label_ar
   normal_angle = getAngle3D (source_normal, target_normal, true);
   //  Geometric comparisons
   Eigen::Vector3f vec_t_to_s, vec_s_to_t;
-  
+
   vec_t_to_s = source_centroid - target_centroid;
   vec_s_to_t = -vec_t_to_s;
 

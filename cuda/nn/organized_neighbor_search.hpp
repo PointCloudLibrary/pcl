@@ -261,7 +261,6 @@ namespace pcl
         leftY *=leftY;
         rightY *= rightY;
 
-        pointCountRadiusSearch = (rightX-leftX)*(rightY-leftY);
 
         // search for maximum distance between search point to window borders in 2-D search window
         maxSearchDistance = 0;
@@ -273,7 +272,6 @@ namespace pcl
         maxSearchDistance +=1;
         maxSearchDistance *=maxSearchDistance;
 
-        pointCountCircleSearch= (int)(PI*(double)(maxSearchDistance*maxSearchDistance));
 
         if (1){//(pointCountCircleSearch<pointCountRadiusSearch) {
 

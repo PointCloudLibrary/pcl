@@ -92,7 +92,6 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2
   // Build a new cloud by neglecting outliers
   int nr_p = 0;
   int nr_removed_p = 0;
-  bool remove_point = false;
   for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
     if (negative_)
@@ -214,7 +213,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double&
   // Go over all the points and calculate the mean or smallest distance
   for (std::size_t cp = 0; cp < indices_->size (); ++cp)
   {
-    if (!std::isfinite (cloud->points[(*indices_)[cp]].x) || 
+    if (!std::isfinite (cloud->points[(*indices_)[cp]].x) ||
         !std::isfinite (cloud->points[(*indices_)[cp]].y) ||
         !std::isfinite (cloud->points[(*indices_)[cp]].z))
     {
@@ -259,4 +258,3 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double&
 PCL_INSTANTIATE(StatisticalOutlierRemoval, PCL_XYZ_POINT_TYPES)
 
 #endif    // PCL_NO_PRECOMPILE
-

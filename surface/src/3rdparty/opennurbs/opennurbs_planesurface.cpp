@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -78,9 +78,9 @@ ON_PlaneSurface::~ON_PlaneSurface()
 ON_BOOL32
 ON_PlaneSurface::IsValid( ON_TextLog* ) const
 {
-  return (   m_plane.IsValid() 
-           && m_domain[0].IsIncreasing() && m_domain[1].IsIncreasing() 
-           && m_extents[0].IsIncreasing() && m_extents[1].IsIncreasing() 
+  return (   m_plane.IsValid()
+           && m_domain[0].IsIncreasing() && m_domain[1].IsIncreasing()
+           && m_extents[0].IsIncreasing() && m_extents[1].IsIncreasing()
            ) ? true : false;
 }
 
@@ -90,7 +90,7 @@ ON_PlaneSurface::Dump( ON_TextLog& dump ) const
   dump.Print("ON_PlaneSurface\n");
 }
 
-ON_BOOL32 
+ON_BOOL32
 ON_PlaneSurface::Write(
        ON_BinaryArchive& file  // open binary file
      ) const
@@ -104,7 +104,7 @@ ON_PlaneSurface::Write(
     rc = file.WriteInterval( m_domain[0] );
   if (rc)
     rc = file.WriteInterval( m_domain[1] );
-  
+
   // added to version 1.1 chunks
   if (rc)
     rc = file.WriteInterval( m_extents[0] );
@@ -113,7 +113,7 @@ ON_PlaneSurface::Write(
   return rc;
 }
 
-ON_BOOL32 
+ON_BOOL32
 ON_PlaneSurface::Read(
        ON_BinaryArchive& file // open binary file
      )
@@ -142,13 +142,13 @@ ON_PlaneSurface::Read(
   return rc;
 }
 
-int 
+int
 ON_PlaneSurface::Dimension() const
 {
   return 3;
 }
 
-ON_BOOL32 
+ON_BOOL32
 ON_PlaneSurface::GetBBox( // returns true if successful
          double* boxmin,    // minimum
          double* boxmax,    // maximum
@@ -160,9 +160,9 @@ ON_PlaneSurface::GetBBox( // returns true if successful
   for ( i = 0; i < 2; i++ ) for ( j = 0; j < 2; j++ ) {
     corner[k++] = PointAt( m_domain[0].m_t[i], m_domain[1].m_t[j] );
   }
-  return ON_GetPointListBoundingBox( 3, 0, 4, 3, 
-                                     &corner[0].x, 
-                                     boxmin, 
+  return ON_GetPointListBoundingBox( 3, 0, 4, 3,
+                                     &corner[0].x,
+                                     boxmin,
                                      boxmax, bGrowBox?true:false );
 }
 
@@ -203,14 +203,14 @@ int ON_PlaneSurface::SpanCount( int ) const
   return 1;
 }
 
-ON_BOOL32 ON_PlaneSurface::GetSurfaceSize( 
-    double* width, 
-    double* height 
+ON_BOOL32 ON_PlaneSurface::GetSurfaceSize(
+    double* width,
+    double* height
     ) const
 {
-  if ( width ) 
+  if ( width )
     *width = Extents(0).Length();
-  if ( height ) 
+  if ( height )
     *height = Extents(1).Length();
   return true;
 }
@@ -229,7 +229,7 @@ int ON_PlaneSurface::Degree( int ) const
   return 1;
 }
 
-ON_BOOL32 
+ON_BOOL32
 ON_PlaneSurface::GetParameterTolerance(
          int dir,
          double t,  // t = parameter in domain
@@ -248,25 +248,25 @@ ON_BOOL32 ON_PlaneSurface::IsPlanar( ON_Plane* plane, double ) const
   return true;
 }
 
-ON_BOOL32 
+ON_BOOL32
 ON_PlaneSurface::IsClosed( int ) const
 {
   return false;
 }
 
-ON_BOOL32 
+ON_BOOL32
 ON_PlaneSurface::IsPeriodic( int ) const
 {
   return false;
 }
 
-ON_BOOL32 
+ON_BOOL32
 ON_PlaneSurface::IsSingular( int ) const
 {
   return false;
 }
 
-bool ON_PlaneSurface::GetNextDiscontinuity( 
+bool ON_PlaneSurface::GetNextDiscontinuity(
                 int dir,
                 ON::continuity c,
                 double t0,
@@ -329,7 +329,7 @@ ON_PlaneSurface::Transpose()
   return true;
 }
 
-ON_BOOL32 
+ON_BOOL32
 ON_PlaneSurface::Evaluate( // returns false if unable to evaluate
        double s, double t, // evaluation parameters
        int der_count,  // number of derivatives (>=0)
@@ -337,7 +337,7 @@ ON_PlaneSurface::Evaluate( // returns false if unable to evaluate
        double* v,      // v[] array of length stride*(ndir+1)
        int     ,       // optional - determines which side to evaluate from
                        //         0 = default
-                       //      <  0 to evaluate from below, 
+                       //      <  0 to evaluate from below,
                        //      >  0 to evaluate from above
        int*            // optional - evaluation hint (int) used to speed
                        //            repeated evaluations
@@ -360,7 +360,7 @@ ON_PlaneSurface::Evaluate( // returns false if unable to evaluate
   v[1] = P.y;
   v[2] = P.z;
   v += v_stride;
-  if ( der_count >= 1 ) 
+  if ( der_count >= 1 )
   {
     v[0] = ds*m_plane.xaxis.x;
     v[1] = ds*m_plane.xaxis.y;
@@ -372,7 +372,7 @@ ON_PlaneSurface::Evaluate( // returns false if unable to evaluate
     v[2] = dt*m_plane.yaxis.z;
     v += v_stride;
 
-    if ( der_count > 1 ) 
+    if ( der_count > 1 )
     {
       // zero higher partials
       memset( v, 0, (((der_count+1)*(der_count+2)/2-4)*v_stride+3)*sizeof(*v) );
@@ -384,7 +384,7 @@ ON_PlaneSurface::Evaluate( // returns false if unable to evaluate
 ON_Curve* ON_PlaneSurface::IsoCurve( int dir, double c ) const
 {
   ON_LineCurve* line_curve = 0;
-  if ( (dir == 0 || dir == 1) && IsValid() ) 
+  if ( (dir == 0 || dir == 1) && IsValid() )
   {
     ON_Line line;
     ON_Interval domain = Domain(dir);
@@ -414,7 +414,6 @@ ON_BOOL32 ON_PlaneSurface::Trim(
     return false;
   ON_Interval current_domain = Domain(dir);
   if ( current_domain[0] == ON_UNSET_VALUE && current_domain[1] == ON_UNSET_VALUE )
-    current_domain = domain;
   ON_Interval trim_domain, trim_extents = m_extents[dir];
   trim_domain.Intersection(domain, Domain(dir) );
   if ( !trim_domain.IsIncreasing() )
@@ -538,7 +537,7 @@ bool ON_PlaneSurface::GetClosestPoint( const ON_3dPoint& test_point,
 		tdomain = &tdom;
 
   bool rc = m_plane.ClosestPointTo( test_point, &u, &v );
-  if ( rc ) 
+  if ( rc )
   {
     // convert m_plane coordinates to ON_Surface coordinates
     if ( m_domain[0] != m_extents[0] )
@@ -564,7 +563,7 @@ bool ON_PlaneSurface::GetClosestPoint( const ON_3dPoint& test_point,
       *s = u;
     if ( t )
       *t = v;
-    if (maximum_distance > 0.0) 
+    if (maximum_distance > 0.0)
     {
       ON_3dPoint pt = PointAt(u,v);
       if ( test_point.DistanceTo(pt) > maximum_distance )
@@ -575,8 +574,8 @@ bool ON_PlaneSurface::GetClosestPoint( const ON_3dPoint& test_point,
 }
 
 //////////
-// Find parameters of the point on a surface that is locally closest to 
-// the test_point.  The search for a local close point starts at 
+// Find parameters of the point on a surface that is locally closest to
+// the test_point.  The search for a local close point starts at
 // seed parameters. If a sub_domain parameter is not NULL, then
 // the search is restricted to the specified portion of the surface.
 //
@@ -595,7 +594,7 @@ ON_BOOL32 ON_PlaneSurface::GetLocalClosestPoint( const ON_3dPoint& test_point, /
 
 
 ON_Surface* ON_PlaneSurface::Offset(
-      double offset_distance, 
+      double offset_distance,
       double,
       double* max_deviation
       ) const
@@ -614,16 +613,16 @@ ON_Surface* ON_PlaneSurface::Offset(
 }
 
 
-int 
+int
 ON_PlaneSurface::GetNurbForm( // returns 0: unable to create NURBS representation
                    //            with desired accuracy.
                    //         1: success - returned NURBS parameterization
                    //            matches the surface's to wthe desired accuracy
                    //         2: success - returned NURBS point locus matches
                    //            the surfaces's to the desired accuracy but, on
-                   //            the interior of the surface's domain, the 
+                   //            the interior of the surface's domain, the
                    //            surface's parameterization and the NURBS
-                   //            parameterization may not match to the 
+                   //            parameterization may not match to the
                    //            desired accuracy.
         ON_NurbsSurface& nurbs,
         double
@@ -633,8 +632,8 @@ ON_PlaneSurface::GetNurbForm( // returns 0: unable to create NURBS representatio
 
   if( !rc )
   {
-    if (    m_plane.origin.x != ON_UNSET_VALUE 
-         && m_plane.xaxis.x != ON_UNSET_VALUE 
+    if (    m_plane.origin.x != ON_UNSET_VALUE
+         && m_plane.xaxis.x != ON_UNSET_VALUE
          && m_plane.yaxis.x != ON_UNSET_VALUE
          && m_domain[0].IsIncreasing() && m_domain[1].IsIncreasing()
          && m_extents[0].Length() > 0.0 && m_extents[1].Length() > 0.0
@@ -649,7 +648,7 @@ ON_PlaneSurface::GetNurbForm( // returns 0: unable to create NURBS representatio
     }
   }
 
-  if ( rc ) 
+  if ( rc )
   {
     nurbs.m_dim = 3;
     nurbs.m_is_rat = 0;
@@ -673,16 +672,16 @@ ON_PlaneSurface::GetNurbForm( // returns 0: unable to create NURBS representatio
   return rc;
 }
 
-int 
+int
 ON_PlaneSurface::HasNurbForm( // returns 0: unable to create NURBS representation
                    //            with desired accuracy.
                    //         1: success - returned NURBS parameterization
                    //            matches the surface's to wthe desired accuracy
                    //         2: success - returned NURBS point locus matches
                    //            the surfaces's to the desired accuracy but, on
-                   //            the interior of the surface's domain, the 
+                   //            the interior of the surface's domain, the
                    //            surface's parameterization and the NURBS
-                   //            parameterization may not match to the 
+                   //            parameterization may not match to the
                    //            desired accuracy.
         ) const
 
@@ -692,7 +691,7 @@ ON_PlaneSurface::HasNurbForm( // returns 0: unable to create NURBS representatio
   return 1;
 }
 
-bool ON_PlaneSurface::SetExtents( 
+bool ON_PlaneSurface::SetExtents(
        int dir,
        ON_Interval extents,
        bool bSyncDomain
@@ -714,7 +713,7 @@ ON_Interval ON_PlaneSurface::Extents(
   return dir ? m_extents[1] : m_extents[0];
 }
 
-bool ON_PlaneSurface::CreatePseudoInfinitePlane( 
+bool ON_PlaneSurface::CreatePseudoInfinitePlane(
         ON_PlaneEquation plane_equation,
         const ON_BoundingBox& bbox,
         double padding
@@ -724,7 +723,7 @@ bool ON_PlaneSurface::CreatePseudoInfinitePlane(
   return CreatePseudoInfinitePlane(plane,bbox,padding);
 }
 
-bool ON_PlaneSurface::CreatePseudoInfinitePlane( 
+bool ON_PlaneSurface::CreatePseudoInfinitePlane(
         const ON_Plane& plane,
         const ON_BoundingBox& bbox,
         double padding
@@ -736,7 +735,7 @@ bool ON_PlaneSurface::CreatePseudoInfinitePlane(
   return CreatePseudoInfinitePlane(plane,8,bbox_corners,padding);
 }
 
-bool ON_PlaneSurface::CreatePseudoInfinitePlane( 
+bool ON_PlaneSurface::CreatePseudoInfinitePlane(
         const ON_Plane& plane,
         int point_count,
         const ON_3dPoint* point_list,
@@ -760,7 +759,7 @@ bool ON_PlaneSurface::CreatePseudoInfinitePlane(
     return 0;
   plane_domain[0].m_t[1] = plane_domain[0].m_t[0] = s;
   plane_domain[1].m_t[1] = plane_domain[1].m_t[0] = t;
-  
+
   for ( int i = 1; i < point_count; i++ )
   {
     s = ON_UNSET_VALUE;
@@ -794,9 +793,9 @@ bool ON_PlaneSurface::CreatePseudoInfinitePlane(
 
 
 
-ON_BOOL32 ON_PlaneSurface::SetDomain( 
-  int dir, 
-  double t0, 
+ON_BOOL32 ON_PlaneSurface::SetDomain(
+  int dir,
+  double t0,
   double t1
   )
 {
@@ -820,7 +819,7 @@ bool ON_ClippingPlaneInfo::Write( ON_BinaryArchive& file ) const
   bool rc = file.BeginWrite3dmChunk(TCODE_ANONYMOUS_CHUNK,1,0);
   if (!rc)
     return false;
-  
+
   for(;;)
   {
     rc = file.WritePlaneEquation(m_plane_equation);
@@ -850,7 +849,7 @@ bool ON_ClippingPlaneInfo::Read( ON_BinaryArchive& file )
   bool rc = file.BeginRead3dmChunk(TCODE_ANONYMOUS_CHUNK,&major_version,&minor_version);
   if (!rc)
     return false;
-  
+
   for(;;)
   {
     rc = (1 == major_version);
@@ -907,7 +906,7 @@ bool ON_ClippingPlane::Read( ON_BinaryArchive& file )
 
   int major_version = 0;
   int minor_version = 0;
-  
+
   bool rc = file.BeginRead3dmChunk(TCODE_ANONYMOUS_CHUNK,&major_version,&minor_version);
   if (!rc)
     return false;
@@ -1055,7 +1054,7 @@ ON__UINT32 ON_ClippingPlaneSurface::DataCRC(ON__UINT32 current_remainder) const
 void ON_ClippingPlaneSurface::Dump( ON_TextLog& text_log ) const
 {
   text_log.Print("Clipping plane surface\n");
-  text_log.PushIndent();  
+  text_log.PushIndent();
   text_log.Print("Enabled = %d",m_clipping_plane.m_bEnabled);
   text_log.Print("View IDs =\n");
   {
@@ -1071,13 +1070,13 @@ void ON_ClippingPlaneSurface::Dump( ON_TextLog& text_log ) const
   }
   text_log.Print("Plane ID = ");
   text_log.Print(m_clipping_plane.m_plane_id);
-  text_log.Print("\n");  
+  text_log.Print("\n");
 
   text_log.Print("Plane surface\n");
-  text_log.PushIndent();  
+  text_log.PushIndent();
   ON_PlaneSurface::Dump(text_log);
-  text_log.PopIndent();  
-  text_log.PopIndent();  
+  text_log.PopIndent();
+  text_log.PopIndent();
 }
 
 ON_BOOL32 ON_ClippingPlaneSurface::Write( ON_BinaryArchive& file ) const
@@ -1150,5 +1149,3 @@ ON_BOOL32 ON_ClippingPlaneSurface::Read( ON_BinaryArchive& file )
 
   return rc;
 }
-
-

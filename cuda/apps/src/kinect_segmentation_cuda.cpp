@@ -93,7 +93,7 @@ struct ImageType<Host>
 class Segmentation
 {
   public:
-    Segmentation () 
+    Segmentation ()
       : viewer ("PCL CUDA - Segmentation"),
       new_cloud(false), go_on(true), enable_color(1), normal_method(0), nr_neighbors (36), radius_cm (5), normal_viz_step(200)
       , enable_normal_viz(false)
@@ -144,8 +144,8 @@ class Segmentation
       last_enable_normal_viz = enable_normal_viz;
     }
 
-    template <template <typename> class Storage> void 
-    file_cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) 
+    template <template <typename> class Storage> void
+    file_cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud)
     {
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (new pcl::PointCloud<pcl::PointXYZRGB>);
       PointCloudAOS<Host> data_host;
@@ -181,7 +181,7 @@ class Segmentation
       new_cloud = true;
     }
 
-    template <template <typename> class Storage> void 
+    template <template <typename> class Storage> void
     cloud_cb (const openni_wrapper::Image::Ptr& image,
               const openni_wrapper::DepthImage::Ptr& depth_image,
               float constant)
@@ -214,7 +214,7 @@ class Segmentation
         d2c.compute<Storage> (depth_image, image, constant, data, false, 1, smoothing_nr_iterations, smoothing_filter_size);
       }
 
-      shared_ptr<typename Storage<float4>::type> normals;      
+      shared_ptr<typename Storage<float4>::type> normals;
       {
         ScopeTimeCPU time ("Normal Estimation");
         if (normal_method == 1)
@@ -276,7 +276,7 @@ class Segmentation
             if (enable_visualization)
             {
 //              std::cerr << "getting inliers.. ";
-              
+
               std::vector<typename SampleConsensusModel1PointPlane<Storage>::IndicesPtr> planes;
               typename Storage<int>::type region_mask;
               markInliers<Storage> (data, region_mask, planes);
@@ -288,7 +288,6 @@ class Segmentation
               }
               std::vector<int> planes_inlier_counts = sac.getAllInlierCounts ();
               std::vector<float4> coeffs = sac.getAllModelCoefficients ();
-              std::vector<float3> centroids = sac.getAllModelCentroids ();
               std::cerr << "Found " << planes_inlier_counts.size () << " planes" << std::endl;
 
               for (unsigned int i = 0; i < planes.size (); i++)
@@ -351,20 +350,19 @@ class Segmentation
         cv::waitKey (2);
       }
     }
-    
-    void 
+
+    void
     run (bool use_device, bool use_file)
     {
       if (use_file)
       {
-        pcl::Grabber* filegrabber = 0;
 
         float frames_per_second = 1;
         bool repeat = false;
 
         std::string path = "./frame_0.pcd";
         pcl::PCDGrabber<pcl::PointXYZRGB > filegrabber {path, frames_per_second, repeat};
-        
+
         if (use_device)
         {
           std::cerr << "[Segmentation] Using GPU..." << std::endl;
@@ -394,7 +392,6 @@ class Segmentation
         {
           std::cerr << "[Segmentation] Using GPU..." << std::endl;
           std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&Segmentation::cloud_cb<Device>, this, _1, _2, _3);
-          c = grabber.registerCallback (f);
         }
         else
         {
@@ -406,7 +403,7 @@ class Segmentation
         viewer.runOnVisualizationThread (std::bind(&Segmentation::viz_cb, this, _1), "viz_cb");
 
         grabber.start ();
-        
+
         while (!viewer.wasStopped ())
         {
           pcl_sleep (1);
@@ -429,7 +426,7 @@ class Segmentation
     int enable_normal_viz;
 };
 
-int 
+int
 main (int argc, char **argv)
 {
   bool use_device = false;
@@ -442,4 +439,3 @@ main (int argc, char **argv)
   s.run (use_device, use_file);
   return 0;
 }
-

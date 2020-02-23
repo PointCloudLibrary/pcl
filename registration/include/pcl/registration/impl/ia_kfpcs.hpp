@@ -41,7 +41,7 @@
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::KFPCSInitialAlignment () :
   lower_trl_boundary_ (-1.f),
-  upper_trl_boundary_ (-1.f),  
+  upper_trl_boundary_ (-1.f),
   lambda_ (0.5f),
   use_trl_score_ (false),
   indices_validation_ (new std::vector <int>)
@@ -100,7 +100,6 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
   MatchingCandidates &candidates)
 {
   candidates.clear ();
-  float fitness_score = FLT_MAX;
 
   // loop over all Candidate matches
   for (auto &match : matches)
@@ -138,7 +137,7 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
 
   const std::size_t nr_points = source_transformed.size ();
   float score_a = 0.f, score_b = 0.f;
-  
+
   // residual costs based on mse
   std::vector <int> ids;
   std::vector <float> dists_sqr;

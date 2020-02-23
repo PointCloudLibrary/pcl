@@ -91,7 +91,7 @@ struct ImageType<Host>
 class Segmentation
 {
   public:
-    Segmentation () 
+    Segmentation ()
       : viewer ("PCL CUDA - Segmentation"),
       new_cloud(false), go_on(true) {}
 
@@ -118,8 +118,8 @@ class Segmentation
       }
     }
 
-    template <template <typename> class Storage> void 
-    file_cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) 
+    template <template <typename> class Storage> void
+    file_cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud)
     {
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (new pcl::PointCloud<pcl::PointXYZRGB>);
       PointCloudAOS<Host> data_host;
@@ -141,7 +141,7 @@ class Segmentation
 
       // we got a cloud in device..
 
-      shared_ptr<typename Storage<float4>::type> normals;      
+      shared_ptr<typename Storage<float4>::type> normals;
       {
         ScopeTimeCPU time ("TIMING: Normal Estimation");
         constexpr float focallength = 580/2.0;
@@ -155,7 +155,7 @@ class Segmentation
       new_cloud = true;
     }
 
-    template <template <typename> class Storage> void 
+    template <template <typename> class Storage> void
     cloud_cb (const openni_wrapper::Image::Ptr& image,
               const openni_wrapper::DepthImage::Ptr& depth_image,
               float constant)
@@ -226,8 +226,8 @@ class Segmentation
       new_cloud = true;
       }
     }
-    
-    void 
+
+    void
     run (bool use_device, bool use_file)
     {
       if (use_file)
@@ -237,7 +237,7 @@ class Segmentation
 
         std::string path = "./frame_0.pcd";
         pcl::PCDGrabber<pcl::PointXYZRGB > filegrabber {path, frames_per_second, repeat};
-        
+
         if (use_device)
         {
           std::cerr << "[Segmentation] Using GPU..." << std::endl;
@@ -267,7 +267,6 @@ class Segmentation
         {
           std::cerr << "[Segmentation] Using GPU..." << std::endl;
           std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&Segmentation::cloud_cb<Device>, this, _1, _2, _3);
-          c = grabber.registerCallback (f);
         }
         else
         {
@@ -279,7 +278,7 @@ class Segmentation
         viewer.runOnVisualizationThread (std::bind(&Segmentation::viz_cb, this, _1), "viz_cb");
 
         grabber.start ();
-        
+
         while (!viewer.wasStopped ())
         {
           pcl_sleep (1);
@@ -296,7 +295,7 @@ class Segmentation
     bool new_cloud, go_on;
 };
 
-int 
+int
 main (int argc, char **argv)
 {
   bool use_device = false;
@@ -309,4 +308,3 @@ main (int argc, char **argv)
   s.run (use_device, use_file);
   return 0;
 }
-

@@ -178,7 +178,6 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
 
   // Convergence and registration failure
   float current_fitness  = 0.f;
-  float previous_fitness = std::numeric_limits <float>::max ();
   float delta_fitness    = std::numeric_limits <float>::max ();
   float overlap          = std::numeric_limits <float>::quiet_NaN ();
 

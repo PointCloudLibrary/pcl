@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -21,7 +21,7 @@ ON_OBJECT_IMPLEMENT(ON_Layer,ON_Object,"95809813-E985-11d3-BFE5-0010830122F0");
 #define ON_BOZO_VACCINE_3E4904E6E9304fbcAA42EBD407AEFE3B
 #define ON_BOZO_VACCINE_BFB63C094BC7472789BB7CC754118200
 
-ON_Layer::ON_Layer() 
+ON_Layer::ON_Layer()
 : m_extension_bits(0)
 {
   Default();
@@ -32,8 +32,8 @@ void ON_Layer::Default()
   m_layer_id = ON_nil_uuid;
   m_parent_layer_id = ON_nil_uuid;
   m_layer_index = -1; // 10 March 2006 Dale Lear - changed from 0 to -1
-  m_iges_level = -1; 
-  m_material_index = -1; 
+  m_iges_level = -1;
+  m_material_index = -1;
   m_rendering_attributes.Default();
   m_linetype_index = -1;
   m_color.SetRGB(0,0,0);
@@ -158,12 +158,12 @@ static const wchar_t* LayerLeafName( const wchar_t* s )
   // this static helper function assumes s0 does not being with "reference : ".
   if ( 0 == s || 0 == s[0] )
     return 0;
-  
+
   const wchar_t* t;
   const wchar_t* d;
   const wchar_t* d0 = ON_Layer::LayerNamePathDelimiter();
   const wchar_t* s0 = s;
-  
+
   while ( 0 != *s0 )
   {
     if ( *s0 == *d0 )
@@ -320,7 +320,7 @@ ON_BOOL32 ON_Layer::Write(
 
     // Starting with version 200312110, this value is zero.  For files written
     // with earlier versions, the number was a "model index" value that was
-    // set to something >= 1, but never used.  We have to continue to 
+    // set to something >= 1, but never used.  We have to continue to
     // read/write an integer here so that old/new versions of opennurbs can
     // read files written by new/old versions.
     i = 0;
@@ -329,7 +329,7 @@ ON_BOOL32 ON_Layer::Write(
 
     rc = file.WriteColor( m_color );
     if (!rc) break;
-    
+
     {
       // OBSOLETE LINE STYLE if ( rc ) rc = file.WriteLineStyle( LineStyle() );
       // Starting with version 200503170, this section is "officially" not used.
@@ -360,7 +360,7 @@ ON_BOOL32 ON_Layer::Write(
     rc = file.WriteDouble( m_plot_weight_mm);
     if (!rc) break;
 
-    // 1.4 field - 3 May 2005 Dale Lear 
+    // 1.4 field - 3 May 2005 Dale Lear
     //           - locked and visible are independent settings
     rc = file.WriteBool( bLocked );
     if (!rc) break;
@@ -400,11 +400,11 @@ ON_BOOL32 ON_Layer::Read(
   int mode = ON::normal_layer;
   Default();
   ON_BOOL32 rc = file.Read3dmChunkVersion(&major_version,&minor_version);
-  if ( rc && major_version == 1 ) 
+  if ( rc && major_version == 1 )
   {
     // common to all 1.x formats
     if ( rc ) rc = file.ReadInt( &mode );
-    if ( rc ) 
+    if ( rc )
     {
       switch(mode)
       {
@@ -461,12 +461,12 @@ ON_BOOL32 ON_Layer::Read(
             if (rc && minor_version >= 5 )
             {
               rc = file.ReadUuid(m_layer_id);
-              if ( rc 
-                   && minor_version >= 6 
+              if ( rc
+                   && minor_version >= 6
                    && file.ArchiveOpenNURBSVersion() > 200505110
                  )
               {
-                // Some files saved with opennurbs version 200505110 
+                // Some files saved with opennurbs version 200505110
                 // do not contain correctly written m_parent_layer_id
                 // and m_bExpanded values.
                 // It is ok to default these values.
@@ -613,7 +613,7 @@ void ON_Layer::SetLocked( bool bLocked )
     // child's m_bLocked value is set to false.
     //
     // This call ensures that if, at some point in the future, the
-    // parent layer is locked and then unlocked, this layer will 
+    // parent layer is locked and then unlocked, this layer will
     // get unlocked on as well.
     SetPersistentLocking(false);
   }
@@ -675,8 +675,8 @@ double ON_Layer::PlotWeight() const
 
 void ON_Layer::SetPlotWeight(double plot_weight_mm)
 {
-  m_plot_weight_mm = (ON_IsValid(plot_weight_mm) && (plot_weight_mm>0.0 || -1.0==plot_weight_mm) ) 
-                   ? plot_weight_mm 
+  m_plot_weight_mm = (ON_IsValid(plot_weight_mm) && (plot_weight_mm>0.0 || -1.0==plot_weight_mm) )
+                   ? plot_weight_mm
                    : 0.0;
 }
 
@@ -714,23 +714,23 @@ public:
   static
   int Compare(
       const ON__LayerPerViewSettings* a,
-      const ON__LayerPerViewSettings* b 
+      const ON__LayerPerViewSettings* b
       );
 
   static
   int CompareViewportId(
-      const ON__LayerPerViewSettings* a, 
+      const ON__LayerPerViewSettings* a,
       const ON__LayerPerViewSettings* b
       );
 
   /*
   Returns:
     A bitfield that sets the bits if a layer setting is
-    per viewport for the specified for the viewport. 
-    The ON_Layer::PER_VIEWPORT_SETTINGS enum values 
-    which bits correspond to which settings. 
+    per viewport for the specified for the viewport.
+    The ON_Layer::PER_VIEWPORT_SETTINGS enum values
+    which bits correspond to which settings.
   Remarks:
-    If m_viewport_id is nil, this function returns 0. 
+    If m_viewport_id is nil, this function returns 0.
   */
   unsigned int SettingsMask() const;
 
@@ -744,9 +744,9 @@ public:
       a bitfield that specifies which settings to copy.  The bits
       are defined in the ON_Layer::PER_VIEWPORT_SETTINGS enum.
   */
-  void CopySettings( 
-      const ON__LayerPerViewSettings* src, 
-      unsigned int settings_mask 
+  void CopySettings(
+      const ON__LayerPerViewSettings* src,
+      unsigned int settings_mask
       );
 };
 
@@ -853,7 +853,7 @@ unsigned int ON__LayerPerViewSettings::SettingsMask() const
     if ( 1 == m_persistent_visibility || 2 == m_persistent_visibility )
       bits |= ON_Layer::per_viewport_persistent_visibility;
     // It is critical that bit "1" is set only if
-    // some layer property is overridden.  That's 
+    // some layer property is overridden.  That's
     // why the 0 != bits test is here.
     if ( 0 != bits )
       bits |= ON_Layer::per_viewport_id;
@@ -884,13 +884,13 @@ bool ON__LayerPerViewSettings::Write(const ON_Layer&, ON_BinaryArchive& binary_a
   for(;;)
   {
     // This complicated "bits" stuff is to minimize number of bytes
-    // written in the file.  Even though long term storage space is 
-    // nearly free, we have lots of customers who complain about 
+    // written in the file.  Even though long term storage space is
+    // nearly free, we have lots of customers who complain about
     // large file size and so ...
     unsigned int bits = SettingsMask();
     if ( !binary_archive.WriteInt(1,&bits) )
       break;
-    
+
     if ( 0 == bits )
     {
       rcc = true;
@@ -960,8 +960,8 @@ bool ON__LayerPerViewSettings::Read(const ON_Layer& layer, ON_BinaryArchive& bin
       break;
 
     // This complicated "bits" stuff is to minimize number of bytes
-    // written in the file.  Even though long term storage space is 
-    // nearly free, we have lots of customers who complain about 
+    // written in the file.  Even though long term storage space is
+    // nearly free, we have lots of customers who complain about
     // large file size and so ...
     unsigned int bits = 0;
     if ( !binary_archive.ReadInt(1,&bits) )
@@ -1073,14 +1073,14 @@ public:
 
   static
   ON__LayerPerViewSettings* ViewportSettings(
-      const ON_Layer& layer, const unsigned char* layer_m_extension_bits, 
-      ON_UUID viewport_id, 
+      const ON_Layer& layer, const unsigned char* layer_m_extension_bits,
+      ON_UUID viewport_id,
       bool bCreate
       );
 
   static
   void DeleteViewportSettings(
-      const ON_Layer& layer, const unsigned char* layer_m_extension_bits, 
+      const ON_Layer& layer, const unsigned char* layer_m_extension_bits,
       const ON__LayerPerViewSettings* vp_settings_to_delete
       );
 
@@ -1108,17 +1108,17 @@ ON__LayerExtensions* ON__LayerExtensions::LayerExtensions(const ON_Layer& layer,
     {
       ud = new ON__LayerExtensions();
       const_cast<ON_Layer&>(layer).AttachUserData(ud);
-      // Clear 0x01 bit of ON_Layer::m_extension_bits so 
+      // Clear 0x01 bit of ON_Layer::m_extension_bits so
       // ON_Layer visibility and color queries will check
       // for ON__LayerExtensions userdata.
       ClearExtensionBit( const_cast<unsigned char*>(layer_m_extension_bits), 0x01 );
     }
     else
     {
-      // Set 0x01 bit of ON_Layer::m_extension_bits so 
+      // Set 0x01 bit of ON_Layer::m_extension_bits so
       // ON_Layer visibility and color queries will not
-      // perform the expensive check for ON__LayerExtensions 
-      // userdata. This speeds up visibility and color queries 
+      // perform the expensive check for ON__LayerExtensions
+      // userdata. This speeds up visibility and color queries
       // that occur millions of times when complicated models
       // are rendered.
       SetExtensionBit( const_cast<unsigned char*>(layer_m_extension_bits), 0x01 );
@@ -1126,7 +1126,7 @@ ON__LayerExtensions* ON__LayerExtensions::LayerExtensions(const ON_Layer& layer,
   }
   else
   {
-    // Clear 0x01 bit of ON_Layer::m_extension_bits so 
+    // Clear 0x01 bit of ON_Layer::m_extension_bits so
     // ON_Layer visibility and color queries will check
     // for ON__LayerExtensions userdata.
     ClearExtensionBit( const_cast<unsigned char*>(layer_m_extension_bits), 0x01 );
@@ -1225,7 +1225,7 @@ ON_BOOL32 ON__LayerExtensions::Read(ON_BinaryArchive& binary_archive)
     for ( int i = 0; i < count; i++ )
     {
       rc = m_vp_settings.AppendNew().Read(*layer,binary_archive);
-      if (!rc) 
+      if (!rc)
       {
         m_vp_settings.Remove();
         break;
@@ -1263,7 +1263,7 @@ ON_BOOL32 ON__LayerExtensions::GetDescription( ON_wString& description )
   return true;
 }
 
-ON__LayerPerViewSettings* ON__LayerExtensions::ViewportSettings( 
+ON__LayerPerViewSettings* ON__LayerExtensions::ViewportSettings(
   const ON_Layer& layer,
   const unsigned char* layer_m_extension_bits,
   ON_UUID viewport_id,
@@ -1306,8 +1306,8 @@ ON__LayerPerViewSettings* ON__LayerExtensions::ViewportSettings(
   return 0;
 }
 
-void ON__LayerExtensions::DeleteViewportSettings( 
-  const ON_Layer& layer, 
+void ON__LayerExtensions::DeleteViewportSettings(
+  const ON_Layer& layer,
   const unsigned char* layer_m_extension_bits,
   const ON__LayerPerViewSettings* vp_settings_to_delete
   )
@@ -1521,7 +1521,7 @@ bool ON_Layer::PerViewportIsVisible( ON_UUID viewport_id ) const
         }
       }
     }
-    else 
+    else
     {
       const ON__LayerPerViewSettings* vp_settings = ON__LayerExtensions::ViewportSettings( *this, &m_extension_bits, viewport_id, false );
       if (vp_settings)
@@ -1557,7 +1557,7 @@ void ON_Layer::SetPerViewportVisible( ON_UUID viewport_id, bool bVisible )
     // set general visibility setting
     SetVisible(bVisible);
   }
-  else 
+  else
   {
     ON__LayerPerViewSettings* vp_settings = ON__LayerExtensions::ViewportSettings( *this, &m_extension_bits, viewport_id, true );
     if (vp_settings)
@@ -1660,7 +1660,7 @@ void ON_Layer::DeletePerViewportColor( const ON_UUID& viewport_id )
   else
   {
     ON__LayerPerViewSettings* vp_settings = ON__LayerExtensions::ViewportSettings( *this, &m_extension_bits, viewport_id, false );
-    if (vp_settings) 
+    if (vp_settings)
     {
       vp_settings->m_color = ON_Color::UnsetColor;
       if ( 0 == vp_settings->SettingsMask() )
@@ -1692,7 +1692,7 @@ void ON_Layer::DeletePerViewportPlotColor( const ON_UUID& viewport_id )
   else
   {
     ON__LayerPerViewSettings* vp_settings = ON__LayerExtensions::ViewportSettings( *this, &m_extension_bits, viewport_id, false );
-    if (vp_settings) 
+    if (vp_settings)
     {
       vp_settings->m_plot_color = ON_UNSET_COLOR;
       if ( 0 == vp_settings->SettingsMask() )
@@ -1745,7 +1745,7 @@ void ON_Layer::DeletePerViewportPlotWeight( const ON_UUID& viewport_id )
   else
   {
     ON__LayerPerViewSettings* vp_settings = ON__LayerExtensions::ViewportSettings( *this, &m_extension_bits, viewport_id, false );
-    if (vp_settings) 
+    if (vp_settings)
     {
       vp_settings->m_plot_weight_mm = ON_UNSET_VALUE;
       if ( 0 == vp_settings->SettingsMask() )
@@ -1778,7 +1778,7 @@ void ON_Layer::DeletePerViewportVisible( const ON_UUID& viewport_id )
   else
   {
     ON__LayerPerViewSettings* vp_settings = ON__LayerExtensions::ViewportSettings( *this, &m_extension_bits, viewport_id, false );
-    if (vp_settings) 
+    if (vp_settings)
     {
       vp_settings->m_visible = 0;
       vp_settings->m_persistent_visibility = 0;
@@ -1803,8 +1803,8 @@ void ON_Layer::GetPerViewportVisibilityViewportIds(
       for( int i = 0; i < count; i++ )
       {
         const ON__LayerPerViewSettings& s = ud->m_vp_settings[i];
-        if (    0 != ( ON_Layer::per_viewport_visible & s.SettingsMask() ) 
-             || 0 != ( ON_Layer::per_viewport_persistent_visibility & s.SettingsMask() ) 
+        if (    0 != ( ON_Layer::per_viewport_visible & s.SettingsMask() )
+             || 0 != ( ON_Layer::per_viewport_persistent_visibility & s.SettingsMask() )
            )
         {
           viewport_id_list.Append(s.m_viewport_id);
@@ -1855,8 +1855,8 @@ bool ON_Layer::HasPerViewportSettings(
 bool ON_Layer::CopyPerViewportSettings(ON_UUID source_viewport_id, ON_UUID destination_viewport_id)
 {
   bool rc = false;
-  if (    ON_UuidIsNotNil(source_viewport_id) 
-       && ON_UuidIsNotNil(destination_viewport_id) 
+  if (    ON_UuidIsNotNil(source_viewport_id)
+       && ON_UuidIsNotNil(destination_viewport_id)
        && 0 != ON_UuidCompare(source_viewport_id, destination_viewport_id)
      )
   {
@@ -1867,7 +1867,6 @@ bool ON_Layer::CopyPerViewportSettings(ON_UUID source_viewport_id, ON_UUID desti
       // the pointer to the source settings may be invalid
       // after adding storage for the destination settings.
       const ON__LayerPerViewSettings local_src(*src);
-      src = 0; // never use this pointer again in this function.
       ON__LayerPerViewSettings* dst = ON__LayerExtensions::ViewportSettings( *this, &m_extension_bits, destination_viewport_id, true);
       if( 0 != dst )
       {
@@ -1880,7 +1879,7 @@ bool ON_Layer::CopyPerViewportSettings(ON_UUID source_viewport_id, ON_UUID desti
   return rc;
 }
 
-bool ON_Layer::CopyPerViewportSettings( 
+bool ON_Layer::CopyPerViewportSettings(
     const ON_Layer& source_layer,
     ON_UUID viewport_id,
     unsigned int settings_mask
@@ -2065,7 +2064,7 @@ void ON_Layer::Set( unsigned int settings, const ON_Layer& settings_values )
   if ( 0 != (ON_Layer::userdata_settings & settings) )
   {
     // save original user data on this layer
-    ON_UserDataHolder ud; 
+    ON_UserDataHolder ud;
     ud.MoveUserDataFrom(*this);
 
     // make a complete copy of the userdata on settings_values
@@ -2134,9 +2133,9 @@ public:
 
 public:
 
-  enum 
+  enum
   {
-    valid_settings = 
+    valid_settings =
       (
           ON_Layer::color_settings
         | ON_Layer::plot_color_settings
@@ -2322,7 +2321,6 @@ void ON_Layer::SaveSettings( unsigned int settings, bool bUpdate )
       if ( ud )
       {
         delete ud;
-        ud = 0;
       }
     }
   }
@@ -2414,7 +2412,7 @@ bool ON_Layer::PersistentVisibility() const
 void ON_Layer::SetPersistentVisibility(bool bVisibleChild)
 {
   const unsigned char and_mask = 0xF9;
-  const unsigned char or_bit = ON_UuidIsNotNil(m_parent_layer_id) 
+  const unsigned char or_bit = ON_UuidIsNotNil(m_parent_layer_id)
                              ? (bVisibleChild ? 0x02 : 0x04)
                              : 0x00;
   m_extension_bits &= and_mask;
@@ -2459,4 +2457,3 @@ void ON_Layer::UnsetPersistentLocking()
   const unsigned char and_mask = 0xE7;
   m_extension_bits &= and_mask;
 }
-

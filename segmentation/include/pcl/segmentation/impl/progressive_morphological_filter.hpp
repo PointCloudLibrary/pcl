@@ -82,7 +82,6 @@ pcl::ProgressiveMorphologicalFilter<PointT>::extract (std::vector<int>& ground)
   std::vector<float> window_sizes;
   int iteration = 0;
   float window_size = 0.0f;
-  float height_threshold = 0.0f;
 
   while (window_size < max_window_size_)
   {
@@ -149,4 +148,3 @@ pcl::ProgressiveMorphologicalFilter<PointT>::extract (std::vector<int>& ground)
 #define PCL_INSTANTIATE_ProgressiveMorphologicalFilter(T) template class pcl::ProgressiveMorphologicalFilter<T>;
 
 #endif    // PCL_SEGMENTATION_PROGRESSIVE_MORPHOLOGICAL_FILTER_HPP_
-

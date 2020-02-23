@@ -238,7 +238,6 @@ pcl::MinCutSegmentation<PointT>::extract (std::vector <pcl::PointIndices>& clust
   }
 
   clusters_.clear ();
-  bool success = true;
 
   if ( !graph_is_valid_ )
   {
@@ -374,7 +373,6 @@ pcl::MinCutSegmentation<PointT>::calculateUnaryPotential (int point, double& sou
   double min_dist_to_foreground = std::numeric_limits<double>::max ();
   //double min_dist_to_background = std::numeric_limits<double>::max ();
   double closest_foreground_point[2];
-  closest_foreground_point[0] = closest_foreground_point[1] = 0;
   //double closest_background_point[] = {0.0, 0.0};
   double initial_point[] = {0.0, 0.0};
 
@@ -587,7 +585,6 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
     colored_cloud->is_dense = input_->is_dense;
 
     pcl::PointXYZRGB point;
-    int point_index = 0;
     for (int i_point = 0; i_point < num_of_pts_in_first_cluster; i_point++)
     {
       point_index = clusters_[0].indices[i_point];

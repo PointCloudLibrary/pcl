@@ -68,7 +68,7 @@ pcl::registration::TransformationEstimationSVDScale<PointSource, PointTarget, Sc
   Eigen::Matrix<Scalar, 3, 3> R = v * u.transpose ();
 
   // rotated cloud
-  Eigen::Matrix<Scalar, 4, 4> R4; 
+  Eigen::Matrix<Scalar, 4, 4> R4;
   R4.block (0, 0, 3, 3) = R;
   R4 (0, 3) = 0;
   R4 (1, 3) = 0;
@@ -76,7 +76,7 @@ pcl::registration::TransformationEstimationSVDScale<PointSource, PointTarget, Sc
   R4 (3, 3) = 1;
 
   Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> src_ = R4 * cloud_src_demean;
-  
+
   float scale1, scale2;
   double sum_ss = 0.0f, sum_tt = 0.0f, sum_tt_ = 0.0f;
   for (unsigned corrIdx = 0; corrIdx < cloud_src_demean.cols (); ++corrIdx)
@@ -84,17 +84,16 @@ pcl::registration::TransformationEstimationSVDScale<PointSource, PointTarget, Sc
     sum_ss += cloud_src_demean (0, corrIdx) * cloud_src_demean (0, corrIdx);
     sum_ss += cloud_src_demean (1, corrIdx) * cloud_src_demean (1, corrIdx);
     sum_ss += cloud_src_demean (2, corrIdx) * cloud_src_demean (2, corrIdx);
-    
+
     sum_tt += cloud_tgt_demean (0, corrIdx) * cloud_tgt_demean (0, corrIdx);
     sum_tt += cloud_tgt_demean (1, corrIdx) * cloud_tgt_demean (1, corrIdx);
     sum_tt += cloud_tgt_demean (2, corrIdx) * cloud_tgt_demean (2, corrIdx);
-    
+
     sum_tt_ += cloud_tgt_demean (0, corrIdx) * src_ (0, corrIdx);
     sum_tt_ += cloud_tgt_demean (1, corrIdx) * src_ (1, corrIdx);
     sum_tt_ += cloud_tgt_demean (2, corrIdx) * src_ (2, corrIdx);
   }
-  
-  scale1 = sqrt (sum_tt / sum_ss);
+
   scale2 = sum_tt_ / sum_ss;
   float scale = scale2;
   transformation_matrix.topLeftCorner (3, 3) = scale * R;

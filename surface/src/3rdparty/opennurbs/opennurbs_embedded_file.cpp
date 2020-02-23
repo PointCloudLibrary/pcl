@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -76,9 +76,9 @@ int ON_Buffer::Compare( const ON_Buffer& a, const ON_Buffer& b )
   std::size_t aoffset = 0;
   std::size_t boffset = 0;
   std::size_t asegsize = 0;
-  std::size_t bsegsize = 0;  
+  std::size_t bsegsize = 0;
   std::size_t asize = 0;
-  std::size_t bsize = 0;  
+  std::size_t bsize = 0;
   std::size_t sz;
   int rc = 0;
 
@@ -105,7 +105,7 @@ int ON_Buffer::Compare( const ON_Buffer& a, const ON_Buffer& b )
       bsegsize = (std::size_t)(bseg->m_segment_position1 - bseg->m_segment_position0);
       boffset = 0;
     }
-    
+
     if ( aoffset >= asegsize )
     {
       asegsize = 0;
@@ -210,8 +210,8 @@ bool ON_Buffer::Seek( ON__INT64 offset, int origin )
     {
       // current position cannot be negative
       ON_ERROR("Attempt to seek before start of buffer.");
-      return false; 
-    }    
+      return false;
+    }
     pos1 = pos0 - (ON__UINT64)(-offset); // overflow cannot happen in this operation
   }
   else if ( offset > 0 )
@@ -222,7 +222,7 @@ bool ON_Buffer::Seek( ON__INT64 offset, int origin )
     {
       // overflow
       ON_ERROR("Attempt to seek to a position that is too large for 64-bit unsigned int storage.");
-      return false; 
+      return false;
     }
   }
   else
@@ -261,7 +261,7 @@ bool ON_Buffer::Compact()
     ChangeSize(0); // frees all heap and zeros everything but m_current_position.
     m_current_segment = 0;
   }
-  else if ( 0 != m_last_segment 
+  else if ( 0 != m_last_segment
             && m_buffer_size > m_last_segment->m_segment_position0
             && m_buffer_size <= m_last_segment->m_segment_position1
             )
@@ -309,7 +309,6 @@ bool ON_Buffer::ChangeSize(ON__UINT64 buffer_size)
   if ( buffer_size <= 0 )
   {
     struct ON_BUFFER_SEGMENT* p0 = m_last_segment;
-    struct ON_BUFFER_SEGMENT* p1 = 0;
     m_buffer_size = 0;
     m_first_segment = 0;
     m_last_segment = 0;
@@ -378,7 +377,7 @@ bool ON_Buffer::ChangeSize(ON__UINT64 buffer_size)
     if ( SeekFromStart(buffer_size-1) )
     {
       // calling Write with the current position at buffer_size-1
-      // will pad with zeros from offset m_buffer_size to 
+      // will pad with zeros from offset m_buffer_size to
       // offset buffer_size-2, write a zero at offset buffer_size-1,
       // and set m_buffer_size to buffer size.
       const unsigned char zero_byte = 0;
@@ -397,14 +396,14 @@ void ON_Buffer::Copy( const ON_Buffer& src )
   struct ON_BUFFER_SEGMENT* dst_seg;
   for ( src_seg = src.m_first_segment; 0 != src_seg; src_seg = src_seg->m_next_segment )
   {
-    if (    m_buffer_size != src_seg->m_segment_position0 
+    if (    m_buffer_size != src_seg->m_segment_position0
          || src_seg->m_segment_position0 >= src.m_buffer_size
         )
     {
       ON_ERROR("Attempt to copy corrupt source.");
       break;
     }
-    if ( src_seg->m_segment_position0 >= src_seg->m_segment_position1 
+    if ( src_seg->m_segment_position0 >= src_seg->m_segment_position1
         )
     {
       ON_ERROR("Attempt to copy corrupt source.");
@@ -501,8 +500,8 @@ bool ON_Buffer::IsValid( const ON_TextLog* ) const
   if ( pos < m_buffer_size )
     return ON_Buffer_IsNotValid();
 
-  if (    m_buffer_size <= m_last_segment->m_segment_position0 
-       || m_buffer_size > m_last_segment->m_segment_position1 
+  if (    m_buffer_size <= m_last_segment->m_segment_position0
+       || m_buffer_size > m_last_segment->m_segment_position1
      )
     return ON_Buffer_IsNotValid();
 
@@ -556,7 +555,7 @@ ON__UINT32 ON_Buffer::CRC32( ON__UINT32 current_remainder ) const
     }
     else if ( prev_seg->m_segment_position1 != seg->m_segment_position0 )
     {
-      // Every segment after the first should have 
+      // Every segment after the first should have
       // seg->m_segment_position0 = previous_segment->m_segment_position1.
       // We'll keep going after the call to ON_ERROR.
       //
@@ -574,7 +573,7 @@ ON__UINT32 ON_Buffer::CRC32( ON__UINT32 current_remainder ) const
       ON_ERROR("corrupt buffer - empty segment buffer.");
       continue;
     }
-    
+
     if ( seg_size + size > m_buffer_size )
     {
       if ( seg != m_last_segment || seg->m_next_segment )
@@ -611,12 +610,12 @@ ON__UINT64 ON_Buffer::CurrentPosition() const
 
 bool ON_Buffer::SetCurrentSegment( bool bWritePending )
 {
-  // When ON_Buffer::Write() needs to write at least on byted, it 
+  // When ON_Buffer::Write() needs to write at least on byted, it
   // calls ON_Buffer::SetCurrentSegment(true).
   //   In this case true is returned in all cases unless the information
   //   in the ON_Buffer class is corrupt.
   // When ON_Buffer::Read() needs to read a at least one byte, it
-  // calls ON_Buffer::SetCurrentSegment(false).  
+  // calls ON_Buffer::SetCurrentSegment(false).
   //   In this case, true is returned when m_current_position < m_buffer_size
   //   and false is returned in all other cases.
   //
@@ -633,9 +632,9 @@ bool ON_Buffer::SetCurrentSegment( bool bWritePending )
     return false; // cannot read past end of buffer
   }
 
-  if ( 0 != m_current_segment 
-       && m_current_segment->m_segment_position0 <= m_current_position 
-       && m_current_position < m_current_segment->m_segment_position1 
+  if ( 0 != m_current_segment
+       && m_current_segment->m_segment_position0 <= m_current_position
+       && m_current_position < m_current_segment->m_segment_position1
      )
   {
     // The current position is inside of m_current_segment.
@@ -720,7 +719,7 @@ ON__UINT64 ON_Buffer::Write( ON__UINT64 size, const void* buffer )
                           ? padding_size + header_size + (m_last_segment->m_segment_position1 - m_last_segment->m_segment_position0)
                           : 0;
       if ( malloc_size < page_size/2 )
-        malloc_size = page_size/2;      
+        malloc_size = page_size/2;
       if ( malloc_size < max_malloc_size )
         malloc_size *= 2;
       while ( malloc_size < max_malloc_size && size > malloc_size - header_size - padding_size )
@@ -728,7 +727,7 @@ ON__UINT64 ON_Buffer::Write( ON__UINT64 size, const void* buffer )
 
       malloc_size -= padding_size;
       // (std::size_t) cast is safe because malloc_size is always <= max_malloc_size = 16*page_size <  0xFFFFFFFF
-      m_current_segment = (struct ON_BUFFER_SEGMENT*)onmalloc((std::size_t)malloc_size); 
+      m_current_segment = (struct ON_BUFFER_SEGMENT*)onmalloc((std::size_t)malloc_size);
       memset(m_current_segment,0,(std::size_t)malloc_size);
       m_current_segment->m_prev_segment = m_last_segment;
       m_current_segment->m_segment_buffer = (unsigned char*)(m_current_segment + 1);
@@ -743,8 +742,8 @@ ON__UINT64 ON_Buffer::Write( ON__UINT64 size, const void* buffer )
       m_current_segment->m_segment_position1 = m_current_segment->m_segment_position0 + (ON__UINT64)(malloc_size - header_size);
     }
 
-    if (    m_current_position < m_current_segment->m_segment_position0 
-         || m_current_segment->m_segment_position1 <= m_current_segment->m_segment_position0 
+    if (    m_current_position < m_current_segment->m_segment_position0
+         || m_current_segment->m_segment_position1 <= m_current_segment->m_segment_position0
        )
     {
       ON_ERROR("Corrupt ON_Buffer");
@@ -759,7 +758,7 @@ ON__UINT64 ON_Buffer::Write( ON__UINT64 size, const void* buffer )
       m_current_segment = m_current_segment->m_next_segment;
       continue;
     }
-            
+
     ON__UINT64 offset = m_current_position - m_current_segment->m_segment_position0;
     ON__UINT64 sz = (m_current_segment->m_segment_position1 - m_current_position);
 
@@ -802,7 +801,7 @@ ON__UINT64 ON_Buffer::Read( ON__UINT64 size, void* buffer )
     // m_current_position == m_buffer_size is a common situation
     // and is not an error condition.
     // For example, it occurs when a previous Read() read up to the
-    // end of the buffer and the caller is testing the number of 
+    // end of the buffer and the caller is testing the number of
     // bytes read to detect the end of buffer condition.
     if ( m_current_position > m_buffer_size )
     {
@@ -836,7 +835,7 @@ ON__UINT64 ON_Buffer::Read( ON__UINT64 size, void* buffer )
       return 0;
     }
 
-    ON__UINT64 offset = m_current_position - m_current_segment->m_segment_position0;           
+    ON__UINT64 offset = m_current_position - m_current_segment->m_segment_position0;
     ON__UINT64 sz = pos1 - m_current_position;
 
     if ( sz > size )
@@ -850,7 +849,7 @@ ON__UINT64 ON_Buffer::Read( ON__UINT64 size, void* buffer )
     {
       if ( m_current_position == m_buffer_size && m_current_segment == m_last_segment )
       {
-        // This is a common situation that occures when the read request is for a 
+        // This is a common situation that occures when the read request is for a
         // size larger than the remaining number of bytes in the buffer. For example,
         // when repeatedly reading into a fixed size buffer until reasing the end
         // of the file. This is not an error condition.
@@ -868,7 +867,7 @@ ON__UINT32 ON_Buffer::LastError() const
   return m_last_error;
 }
 
-  
+
 void ON_Buffer::ClearLastError()
 {
   m_last_error = 0;
@@ -879,7 +878,7 @@ ON_Buffer_ErrorHandler ON_Buffer::ErrorHandler() const
 {
   return m_error_handler;
 }
-  
+
 void ON_Buffer::SetErrorHandler(ON_Buffer_ErrorHandler error_handler)
 {
   m_error_handler = error_handler;
@@ -905,9 +904,9 @@ bool ON_Buffer::WriteToBinaryArchive( ON_BinaryArchive& archive ) const
       break;
 
     ON__UINT64 size = 0;
-    for ( struct ON_BUFFER_SEGMENT* seg = m_first_segment; 
-          0 != seg && size < m_buffer_size; 
-          seg = seg->m_next_segment 
+    for ( struct ON_BUFFER_SEGMENT* seg = m_first_segment;
+          0 != seg && size < m_buffer_size;
+          seg = seg->m_next_segment
         )
     {
       if ( 0 == seg->m_segment_buffer )
@@ -923,7 +922,7 @@ bool ON_Buffer::WriteToBinaryArchive( ON_BinaryArchive& archive ) const
       }
       size += seg_size;
     }
-    
+
     rc = true;
     break;
   }
@@ -938,7 +937,7 @@ bool ON_Buffer::WriteToBinaryArchive( ON_BinaryArchive& archive ) const
 bool ON_Buffer::ReadFromBinaryArchive( ON_BinaryArchive& archive )
 {
   Destroy();
-  
+
   int major_version = 0;
   int minor_version = 0;
   if ( !archive.BeginRead3dmChunk(TCODE_OPENNURBS_BUFFER,&major_version,&minor_version) )
@@ -956,7 +955,7 @@ bool ON_Buffer::ReadFromBinaryArchive( ON_BinaryArchive& archive )
   {
     if ( 1 != major_version )
       break;
-    
+
     if ( !archive.ReadBigInt(&saved_buffer_size) )
       break;
 
@@ -1010,7 +1009,7 @@ bool ON_Buffer::ReadFromBinaryArchive( ON_BinaryArchive& archive )
         Write(read_size,a);
         size += read_size;
       }
-    
+
       if ( !buffer_rc )
         break;
     }
@@ -1071,7 +1070,7 @@ bool ON_Buffer::Compress( ON_Buffer& compressed_buffer ) const
     for ( seg = m_first_segment; 0 != seg; seg = seg->m_next_segment )
     {
       const ON__UINT64 pos1 = (uncompressed_size < seg->m_segment_position1)
-                            ? uncompressed_size 
+                            ? uncompressed_size
                             : seg->m_segment_position1;
       if ( pos1 < seg->m_segment_position0 )
         break;
@@ -1133,7 +1132,7 @@ bool ON_Buffer::Compress( ON_Buffer& compressed_buffer ) const
       compressed_buffer.m_heap = out->m_heap;
       compressed_buffer.m_error_handler = out->m_error_handler;
       compressed_buffer.m_last_error = out->m_last_error;
-      
+
       out->m_first_segment = 0;
       out->m_last_segment = 0;
       out->m_current_segment = 0;
@@ -1168,7 +1167,7 @@ bool ON_Buffer::Uncompress( ON_Buffer& uncompressed_buffer ) const
     for ( seg = m_first_segment; 0 != seg; seg = seg->m_next_segment )
     {
       const ON__UINT64 pos1 = (compressed_size < seg->m_segment_position1)
-                            ? compressed_size 
+                            ? compressed_size
                             : seg->m_segment_position1;
       if ( pos1 < seg->m_segment_position0 )
         break;
@@ -1230,7 +1229,7 @@ bool ON_Buffer::Uncompress( ON_Buffer& uncompressed_buffer ) const
       uncompressed_buffer.m_heap = out->m_heap;
       uncompressed_buffer.m_error_handler = out->m_error_handler;
       uncompressed_buffer.m_last_error = out->m_last_error;
-      
+
       out->m_first_segment = 0;
       out->m_last_segment = 0;
       out->m_current_segment = 0;
@@ -1247,7 +1246,7 @@ bool ON_Buffer::Uncompress( ON_Buffer& uncompressed_buffer ) const
 
 ON_OBJECT_IMPLEMENT( ON_EmbeddedFile, ON_Object, "1247BEC9-D9A9-46B3-900F-39DE7A355BD3");
 
-bool ON_EmbeddedFile::Create( 
+bool ON_EmbeddedFile::Create(
   const wchar_t* file_full_path_name,
   bool bCompress
   )
@@ -1373,7 +1372,7 @@ static bool CompressedStreamHandler( void* context, ON__UINT32 size, const void*
   return (size == ((ON_Buffer*)context)->Write(size,buffer) );
 }
 
-bool ON_EmbeddedFile::Create( 
+bool ON_EmbeddedFile::Create(
   FILE* fp,
   bool bCompress
   )
@@ -1468,7 +1467,7 @@ bool ON_EmbeddedFile::Create(
   return true;
 }
 
-bool ON_EmbeddedFile::Extract( 
+bool ON_EmbeddedFile::Extract(
   const wchar_t* destination_filename
   ) const
 {
@@ -1489,7 +1488,7 @@ static bool UncompressedToFileHandler( void* context, ON__UINT32 size, const voi
   return ( size == ON_FileStream::Write((FILE*)context,size,buffer) );
 }
 
-bool ON_EmbeddedFile::Extract( 
+bool ON_EmbeddedFile::Extract(
   FILE* fp
   ) const
 {
@@ -1570,7 +1569,7 @@ static bool UncompressedToBufferHandler( void* context, ON__UINT32 size, const v
   return ( sz == size );
 }
 
-bool ON_EmbeddedFile::Extract( 
+bool ON_EmbeddedFile::Extract(
   void* out_buffer
   ) const
 {
@@ -1693,7 +1692,7 @@ static bool ON_EmbeddedFileIsNotValid()
 {
   return ON_IsNotValid();
 }
-  
+
 ON_BOOL32 ON_EmbeddedFile::IsValid( ON_TextLog* text_log ) const
 {
   if ( !m_buffer.IsValid(text_log) )
@@ -1747,7 +1746,7 @@ ON_BOOL32 ON_EmbeddedFile::Write( ON_BinaryArchive& archive ) const
         break;
       if ( !archive.WriteString(m_full_file_name) )
         break;
-      if ( !archive.WriteString(m_relative_file_name) ) 
+      if ( !archive.WriteString(m_relative_file_name) )
         break;
       if ( !archive.WriteBigInt(m_file_size) )
         break;
@@ -1810,7 +1809,7 @@ ON_BOOL32 ON_EmbeddedFile::Read( ON_BinaryArchive& archive )
         break;
       if ( !archive.ReadString(m_full_file_name) )
         break;
-      if ( !archive.ReadString(m_relative_file_name) ) 
+      if ( !archive.ReadString(m_relative_file_name) )
         break;
 
       if ( !archive.ReadBigInt(&m_file_size) )
@@ -1845,5 +1844,3 @@ ON_BOOL32 ON_EmbeddedFile::Read( ON_BinaryArchive& archive )
 
   return rc;
 }
-
-

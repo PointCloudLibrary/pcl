@@ -122,7 +122,6 @@ void
 pcl::kernel<PointT>::loGKernel(pcl::PointCloud<PointT>& kernel)
 {
   float sum = 0;
-  float temp = 0;
   kernel.resize(kernel_size_ * kernel_size_);
   kernel.height = kernel_size_;
   kernel.width = kernel_size_;

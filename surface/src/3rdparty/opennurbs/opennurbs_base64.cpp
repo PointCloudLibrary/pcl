@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -19,7 +19,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 //
 // ON_DecodeBase64
-// 
+//
 
 ON_DecodeBase64::ON_DecodeBase64()
 {
@@ -41,7 +41,7 @@ void ON_DecodeBase64::Begin()
   m_cache[0] = 0;
   m_cache[1] = 0;
   m_cache[2] = 0;
-  m_cache[3] = 0;  
+  m_cache[3] = 0;
 }
 
 bool ON_DecodeBase64::End()
@@ -149,7 +149,7 @@ const char* ON_DecodeBase64::Decode(const char* base64str)
   //#if defined(_DEBUG)
   //  if (    m_cache_count < 0
   //       || m_cache_count >= 4
-  //       || m_cache_count != (m_decode_count % 4) 
+  //       || m_cache_count != (m_decode_count % 4)
   //     )
   //  {
   //    // algorithm error
@@ -171,7 +171,7 @@ const char* ON_DecodeBase64::Decode(const char* base64str)
       if      (i >= 65 && i <=  90) i =  1;
       else if (i >= 97 && i <= 122) i =  1;
       else if (i >= 48 && i <=  57) i =  1;
-      else if ('+' == i)            i =  1; 
+      else if ('+' == i)            i =  1;
       else if ('/' == i)            i =  1;
       else if ('=' == i)            i = -1;
       else
@@ -188,7 +188,7 @@ const char* ON_DecodeBase64::Decode(const char* base64str)
       {
         // base64 encoded strings are parsed in groups of 4 characters.
         // When we enter this part of the Decode function, m_status is
-        // either 1 (error occured earlier) or 2.  
+        // either 1 (error occured earlier) or 2.
         // A 2 means the previous character we parsed was the 3rd
         // of the group and it was an equal sign.  In this case, the
         // the 4th character in the group must be an equal sign and
@@ -225,17 +225,17 @@ const char* ON_DecodeBase64::Decode(const char* base64str)
       // '=' padding used to encode the last one or two bytes
       //     If the 3rd and 4th characters in the quartet are
       //     equal signs, the quartet represents a single byte
-      //     as a 2 digit base 64 number.  
+      //     as a 2 digit base 64 number.
       //     If the 4th character in the quartet is an equal sign,
-      //     the quartet represents two bytes as a 3 digit 
-      //     base 64 number.  
+      //     the quartet represents two bytes as a 3 digit
+      //     base 64 number.
       i = *base64str++;
       if      (i >= 65 && i <=  90) i -= 65;
       else if (i >= 97 && i <= 122) i -= 71;
       else if (i >= 48 && i <=  57) i +=  4;
-      else if ('+' == i) i = 62; 
+      else if ('+' == i) i = 62;
       else if ('/' == i) i = 63;
-      else if ('=' == i) 
+      else if ('=' == i)
       {
         if ( m_cache_count < 2 )
         {
@@ -246,7 +246,7 @@ const char* ON_DecodeBase64::Decode(const char* base64str)
         }
         if ( 2 == m_cache_count )
         {
-          // This equal sign is the 3rd character.  The next 
+          // This equal sign is the 3rd character.  The next
           // character must also be an = sign or the input is
           // not valid.
           m_status = 2;
@@ -280,7 +280,7 @@ const char* ON_DecodeBase64::Decode(const char* base64str)
       }
       else
       {
-        // end of valid portion of this base64str 
+        // end of valid portion of this base64str
         return (base64str-1);
       }
       m_cache[m_cache_count++] = i;
@@ -410,7 +410,7 @@ const wchar_t* ON_DecodeBase64::Decode(const wchar_t* base64str, std::size_t bas
   return base64str;
 }
 
-// virtual 
+// virtual
 void ON_DecodeBase64::Output()
 {
   // default does nothing.
@@ -420,7 +420,7 @@ void ON_DecodeBase64::Output()
 //////////////////////////////////////////////////////////////////////////////////////////
 //
 // ON_EncodeBase64
-// 
+//
 
 ON_EncodeBase64::ON_EncodeBase64()
 {
@@ -453,16 +453,16 @@ void ON_EncodeBase64::EncodeHelper1(const unsigned char* inbuf, char* outbuf )
 {
   // base64 encode the final byte of input into 4 bytes of outbuf.
   unsigned char c;
-  
+
   c = (*inbuf >> 2);
 
-  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71; 
+  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71;
   else if ( c < 62 ) c -= 4; else c = (c&1) ? '/' : '+';
   *outbuf++ = c;
 
   c = (*inbuf & 3) << 4;
 
-  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71; 
+  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71;
   else if ( c < 62 ) c -= 4; else c = (c&1) ? '/' : '+';
   *outbuf++ = c;
 
@@ -474,11 +474,11 @@ void ON_EncodeBase64::EncodeHelper2(const unsigned char* inbuf, char* outbuf )
 {
   // base64 encode the final 2 bytes of input into 4 bytes of outbuf.
   unsigned char b, c;
-  
+
   b = *inbuf++;
   c = (b >> 2);
 
-  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71; 
+  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71;
   else if ( c < 62 ) c -= 4; else c = (c&1) ? '/' : '+';
   *outbuf++ = c;
 
@@ -486,13 +486,13 @@ void ON_EncodeBase64::EncodeHelper2(const unsigned char* inbuf, char* outbuf )
   b = *inbuf;
   c |= (b & 0xF0) >> 4;
 
-  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71; 
+  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71;
   else if ( c < 62 ) c -= 4; else c = (c&1) ? '/' : '+';
   *outbuf++ = c;
 
   c = (b & 0x0F) << 2;
 
-  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71; 
+  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71;
   else if ( c < 62 ) c -= 4; else c = (c&1) ? '/' : '+';
   *outbuf++ = c;
 
@@ -504,11 +504,11 @@ void ON_EncodeBase64::EncodeHelper3(const unsigned char* inbuf, char* outbuf )
 {
   // base64 encode 3 bytes from inbuf into 4 bytes of outbuf.
   unsigned char b, c;
-  
+
   b = *inbuf++;
   c = (b >> 2);
 
-  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71; 
+  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71;
   else if ( c < 62 ) c -= 4; else c = (c&1) ? '/' : '+';
   *outbuf++ = c;
 
@@ -516,7 +516,7 @@ void ON_EncodeBase64::EncodeHelper3(const unsigned char* inbuf, char* outbuf )
   b = *inbuf++;
   c |= (b & 0xF0) >> 4;
 
-  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71; 
+  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71;
   else if ( c < 62 ) c -= 4; else c = (c&1) ? '/' : '+';
   *outbuf++ = c;
 
@@ -524,12 +524,12 @@ void ON_EncodeBase64::EncodeHelper3(const unsigned char* inbuf, char* outbuf )
   b = *inbuf++;
   c |= (b&0xC0) >> 6;
 
-  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71; 
+  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71;
   else if ( c < 62 ) c -= 4; else c = (c&1) ? '/' : '+';
   *outbuf++ = c;
 
   b &= 0x3F;
-  if ( b < 26 ) b += 65; else if ( b < 52 ) b += 71; 
+  if ( b < 26 ) b += 65; else if ( b < 52 ) b += 71;
   else if ( b < 62 ) b -= 4; else b = (b&1) ? '/' : '+';
   *outbuf++ = b;
 }
@@ -541,43 +541,43 @@ void ON_EncodeBase64::EncodeHelper57(const unsigned char* inbuf )
   // Encoding 57 input bytes creates 76 output bytes and 76
   // is the maximum line length for base64 encoding.
   char* outbuf = m_output;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeHelper3(inbuf,outbuf); 
+  EncodeHelper3(inbuf,outbuf);
   memset(outbuf+4,0,4);
   m_encode_count += 57;
 }
@@ -627,7 +627,7 @@ void ON_EncodeBase64::Encode( const void* buffer, std::size_t sizeof_buffer )
   {
     // encode 57 bytes in m_input_count[]
     EncodeHelper57(inbuf);
-    Output();  
+    Output();
     inbuf += 57;
     sizeof_buffer -= 57;
   }
@@ -730,7 +730,7 @@ public:
   unsigned char m_in_buffer[64];
 
   // When the output stream handler is called, m_out_buffer[]
-  // is a null terminated string with 4 to 76 characters of 
+  // is a null terminated string with 4 to 76 characters of
   // base64 encoded output.
   char m_out_buffer[80];
 };
@@ -744,7 +744,7 @@ bool ON_Base64EncodeStream::Begin()
     m_implementation = 0;
   }
 
-  // zero these because the same instance of an 
+  // zero these because the same instance of an
   // ON_UncompressStream class may be used multiple times.
   m_in_size = 0;
   m_out_size = 0;
@@ -762,16 +762,16 @@ static void EncodeBase64Helper1(const unsigned char* inbuf, char* outbuf )
 {
   // base64 encode the final byte of input into 4 bytes of outbuf.
   unsigned char c;
-  
+
   c = (*inbuf >> 2);
 
-  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71; 
+  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71;
   else if ( c < 62 ) c -= 4; else c = (c&1) ? '/' : '+';
   *outbuf++ = c;
 
   c = (*inbuf & 3) << 4;
 
-  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71; 
+  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71;
   else if ( c < 62 ) c -= 4; else c = (c&1) ? '/' : '+';
   *outbuf++ = c;
 
@@ -783,11 +783,11 @@ static void EncodeBase64Helper2(const unsigned char* inbuf, char* outbuf )
 {
   // base64 encode the final 2 bytes of input into 4 bytes of outbuf.
   unsigned char b, c;
-  
+
   b = *inbuf++;
   c = (b >> 2);
 
-  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71; 
+  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71;
   else if ( c < 62 ) c -= 4; else c = (c&1) ? '/' : '+';
   *outbuf++ = c;
 
@@ -795,13 +795,13 @@ static void EncodeBase64Helper2(const unsigned char* inbuf, char* outbuf )
   b = *inbuf;
   c |= (b & 0xF0) >> 4;
 
-  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71; 
+  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71;
   else if ( c < 62 ) c -= 4; else c = (c&1) ? '/' : '+';
   *outbuf++ = c;
 
   c = (b & 0x0F) << 2;
 
-  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71; 
+  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71;
   else if ( c < 62 ) c -= 4; else c = (c&1) ? '/' : '+';
   *outbuf++ = c;
 
@@ -813,11 +813,11 @@ static void EncodeBase64Helper3(const unsigned char* inbuf, char* outbuf )
 {
   // base64 encode 3 bytes from inbuf into 4 bytes of outbuf.
   unsigned char b, c;
-  
+
   b = *inbuf++;
   c = (b >> 2);
 
-  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71; 
+  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71;
   else if ( c < 62 ) c -= 4; else c = (c&1) ? '/' : '+';
   *outbuf++ = c;
 
@@ -825,7 +825,7 @@ static void EncodeBase64Helper3(const unsigned char* inbuf, char* outbuf )
   b = *inbuf++;
   c |= (b & 0xF0) >> 4;
 
-  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71; 
+  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71;
   else if ( c < 62 ) c -= 4; else c = (c&1) ? '/' : '+';
   *outbuf++ = c;
 
@@ -833,12 +833,12 @@ static void EncodeBase64Helper3(const unsigned char* inbuf, char* outbuf )
   b = *inbuf++;
   c |= (b&0xC0) >> 6;
 
-  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71; 
+  if ( c < 26 ) c += 65; else if ( c < 52 ) c += 71;
   else if ( c < 62 ) c -= 4; else c = (c&1) ? '/' : '+';
   *outbuf++ = c;
 
   b &= 0x3F;
-  if ( b < 26 ) b += 65; else if ( b < 52 ) b += 71; 
+  if ( b < 26 ) b += 65; else if ( b < 52 ) b += 71;
   else if ( b < 62 ) b -= 4; else b = (b&1) ? '/' : '+';
   *outbuf++ = b;
 }
@@ -849,43 +849,43 @@ static void EncodeBase64Helper57(const unsigned char* inbuf, char* outbuf )
   //
   // Encoding 57 input bytes creates 76 output bytes and 76
   // is the maximum line length for base64 encoding.
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   inbuf += 3; outbuf += 4;
-  EncodeBase64Helper3(inbuf,outbuf); 
+  EncodeBase64Helper3(inbuf,outbuf);
   outbuf[4] = 0;
 }
 
@@ -909,8 +909,7 @@ bool ON_Base64EncodeStream::In(
     ErrorHandler();
     return false;
   }
-  
-  bool rc = false;
+
   ON__UINT32 crc1;
   ON__UINT32 sz;
 
@@ -990,7 +989,7 @@ bool ON_Base64EncodeStream::End()
     ErrorHandler();
     return false;
   }
-  
+
   bool rc = true;
   ON_Base64EncodeImplementation* imp = (ON_Base64EncodeImplementation*)m_implementation;
   if ( imp->m_in_buffer_size > 0 )
@@ -1045,7 +1044,7 @@ bool ON_Base64EncodeStream::Out( void*, ON__UINT32, const char* )
   return true;
 }
 
-bool ON_Base64EncodeStream::SetCallback( 
+bool ON_Base64EncodeStream::SetCallback(
     ON_StreamCallbackFunction out_callback_function,
     void* out_callback_context
     )
@@ -1084,5 +1083,3 @@ ON__UINT32 ON_Base64EncodeStream::OutCRC() const
 {
   return m_out_crc;
 }
-
-

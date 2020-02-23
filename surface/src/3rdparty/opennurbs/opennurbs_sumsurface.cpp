@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -102,12 +102,12 @@ ON__UINT32 ON_SumSurface::DataCRC(ON__UINT32 current_remainder) const
 
 ON_SumSurface& ON_SumSurface::operator=(const ON_SumSurface& src )
 {
-  if ( this != &src ) 
+  if ( this != &src )
   {
     Destroy();
     for ( int i = 0; i < 2; i++ )
     {
-      if ( src.m_curve[i] ) 
+      if ( src.m_curve[i] )
       {
         ON_Object* obj = src.m_curve[i]->DuplicateCurve();
         m_curve[i] = ON_Curve::Cast(obj);
@@ -344,16 +344,16 @@ ON_BOOL32 ON_SumSurface::GetBBox( // returns true if successful
     dim = Dimension();
     for ( j = 0; j < 3 && j < dim; j++ )
     {
-      if(boxmin) 
+      if(boxmin)
         boxmin[j] = bbox.m_min[j];
-      if(boxmax) 
+      if(boxmax)
         boxmax[j] = bbox.m_max[j];
     }
     for ( j = 3; j < dim; j++ )
     {
-      if (boxmin) 
+      if (boxmin)
         boxmin[j] = 0.0;
-      if (boxmax) 
+      if (boxmax)
         boxmax[j] = 0.0;
     }
   }
@@ -393,12 +393,12 @@ ON_BOOL32 ON_SumSurface::Transform( const ON_Xform& xform )
   ON_BOOL32 rc = false;
 
   ON_3dPoint A0, A1, A2;
-  if ( m_curve[0] ) 
+  if ( m_curve[0] )
   {
     A0 = m_curve[0]->PointAtStart();
     rc = m_curve[0]->Transform(xform);
   }
-  if ( m_curve[1] ) 
+  if ( m_curve[1] )
   {
     A1 = m_curve[1]->PointAtStart();
     if ( !m_curve[1]->Transform(xform) )
@@ -422,9 +422,9 @@ ON_BOOL32 ON_SumSurface::Transform( const ON_Xform& xform )
 // overrides of virtual ON_Surface functions
 //
 
-ON_BOOL32 ON_SumSurface::SetDomain( 
+ON_BOOL32 ON_SumSurface::SetDomain(
   int dir, // 0 sets first parameter's domain, 1 gets second parameter's domain
-  double t0, 
+  double t0,
   double t1
   )
 {
@@ -452,9 +452,9 @@ ON_Interval ON_SumSurface::Domain( int dir ) const
   return domain;
 }
 
-ON_BOOL32 ON_SumSurface::GetSurfaceSize( 
-    double* width, 
-    double* height 
+ON_BOOL32 ON_SumSurface::GetSurfaceSize(
+    double* width,
+    double* height
     ) const
 {
   ON_BOOL32 rc = true;
@@ -627,7 +627,7 @@ ON_BOOL32 ON_SumSurface::IsSingular( int ) const
 }
 
 
-bool ON_SumSurface::GetNextDiscontinuity( 
+bool ON_SumSurface::GetNextDiscontinuity(
                 int dir,
                 ON::continuity c,
                 double t0,
@@ -659,8 +659,8 @@ bool ON_SumSurface::GetNextDiscontinuity(
 
 bool ON_SumSurface::IsContinuous(
     ON::continuity desired_continuity,
-    double s, 
-    double t, 
+    double s,
+    double t,
     int* hint, // default = NULL,
     double point_tolerance, // default=ON_ZERO_TOLERANCE
     double d1_tolerance, // default==ON_ZERO_TOLERANCE
@@ -673,7 +673,7 @@ bool ON_SumSurface::IsContinuous(
   if ( m_curve[0] && m_curve[1] )
   {
     int crv_hint[2] = {0,0};
-    if ( hint ) 
+    if ( hint )
     {
       crv_hint[0] = (*hint) & 0xFFFF;
       crv_hint[1] = ((*hint) & 0xFFFF0000) >> 16;
@@ -733,10 +733,10 @@ ON_BOOL32 ON_SumSurface::Evaluate( // returns false if unable to evaluate
 {
   ON_BOOL32 rc = false;
   const int dim = Dimension();
-  if ( dim > 0 ) 
+  if ( dim > 0 )
   {
     int crv_hint[2] = {0,0};
-    if ( hint ) 
+    if ( hint )
     {
       crv_hint[0] = (*hint) & 0xFFFF;
       crv_hint[1] = ((*hint) & 0xFFFF0000) >> 16;
@@ -744,7 +744,7 @@ ON_BOOL32 ON_SumSurface::Evaluate( // returns false if unable to evaluate
     double* v0 = (double*)onmalloc( 2*(nder+1)*dim*sizeof(*v0) );
     double* v1 = v0 + (nder+1)*dim;
     int side0, side1;
-    switch(side) 
+    switch(side)
     {
     case 1:
       side0 =  1;
@@ -770,21 +770,21 @@ ON_BOOL32 ON_SumSurface::Evaluate( // returns false if unable to evaluate
     rc = m_curve[0]->Evaluate(s,nder,dim,v0,side0,hint ? &crv_hint[0] : 0);
     if ( rc )
       rc = m_curve[1]->Evaluate(t,nder,dim,v1,side1,hint ? &crv_hint[1] : 0);
-    if (rc) 
+    if (rc)
     {
       int j,ds,dt,der;
-      for ( j = 0; j < dim; j++ ) 
+      for ( j = 0; j < dim; j++ )
       {
         v[j] = m_basepoint[j] + v0[j] + v1[j];
       }
-      for ( der = 1; der <= nder; der++ ) 
+      for ( der = 1; der <= nder; der++ )
       {
         for ( ds = der, dt = 0; ds >= 0; ds--, dt++ )
         {
           v += v_stride;
           for ( j = 0; j < dim; j++ )
             v[j] = 0.0;
-          
+
           // Mar 18 CCW - Fixed bug in evaluator that
           //              returned non-zero values for mixed partials.
           if (ds && dt)
@@ -803,7 +803,7 @@ ON_BOOL32 ON_SumSurface::Evaluate( // returns false if unable to evaluate
         }
       }
     }
-    if ( hint ) 
+    if ( hint )
     {
       *hint = crv_hint[0] | (crv_hint[1] << 16);
     }
@@ -888,7 +888,7 @@ int ON_SumSurface::GetNurbForm(
     const ON_NurbsCurve* nurbs_curveA=0;
     const ON_NurbsCurve* nurbs_curveB=0;
     nurbs_curveA = ON_NurbsCurve::Cast(m_curve[0]);
-    if ( !nurbs_curveA ) 
+    if ( !nurbs_curveA )
     {
       rcA = 1;
       rcA = m_curve[0]->GetNurbForm( tmpA, tolerance );
@@ -899,7 +899,7 @@ int ON_SumSurface::GetNurbForm(
     {
       rcB = 1;
       nurbs_curveB = ON_NurbsCurve::Cast(m_curve[1]);
-      if ( !nurbs_curveB ) 
+      if ( !nurbs_curveB )
       {
         rcB = m_curve[1]->GetNurbForm( tmpB, tolerance );
         if ( rcB > 0 )
@@ -1001,7 +1001,7 @@ ON_BOOL32 ON_SumSurface::Trim(int dir,
   trim_domain.Intersection(domain, Domain(dir) );
   if ( !trim_domain.IsIncreasing() )
     return false;
-  if (trim_domain[0] == current_domain[0] 
+  if (trim_domain[0] == current_domain[0]
        && trim_domain[1] == current_domain[1] )
     return true;
   m_bbox.Destroy();
@@ -1016,7 +1016,6 @@ bool ON_SumSurface::Extend(
 {
   if ( dir < 0 || dir > 1 ) return false;
   if (IsClosed(dir)) return false;
-  ON_Interval current_domain = Domain(dir);
   if (!m_curve[dir]) return false;
   bool rc = m_curve[dir]->Extend(domain);
   if (rc){
@@ -1079,7 +1078,7 @@ ON_BOOL32 ON_SumSurface::Split(int dir,
   }
 
 
-  if (!m_curve[dir]->Split(c, left_srf->m_curve[dir], 
+  if (!m_curve[dir]->Split(c, left_srf->m_curve[dir],
     right_srf->m_curve[dir])){
     if (!west_or_south_side) delete left_srf;
     if (!east_or_north_side) delete right_srf;

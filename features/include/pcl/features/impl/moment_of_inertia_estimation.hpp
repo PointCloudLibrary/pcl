@@ -409,7 +409,6 @@ pcl::MomentOfInertiaEstimation<PointT>::computeEigenVectors (const Eigen::Matrix
   eigen_vectors = eigen_solver.eigenvectors ();
   eigen_values = eigen_solver.eigenvalues ();
 
-  unsigned int temp = 0;
   unsigned int major_index = 0;
   unsigned int middle_index = 1;
   unsigned int minor_index = 2;

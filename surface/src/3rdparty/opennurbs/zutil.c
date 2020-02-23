@@ -280,7 +280,6 @@ voidpf zcalloc (voidpf opaque, unsigned items, unsigned size)
 
 void  zcfree (voidpf opaque, voidpf ptr)
 {
-    if (opaque) opaque = 0; /* to make compiler happy */
     _hfree(ptr);
 }
 

@@ -99,7 +99,7 @@ pcl::CrfSegmentation<PointT>::setVoxelGridLeafSize (const float x, const float y
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::CrfSegmentation<PointT>::setSmoothnessKernelParameters (const float sx, const float sy, const float sz, 
+pcl::CrfSegmentation<PointT>::setSmoothnessKernelParameters (const float sx, const float sy, const float sz,
                                                              const float w)
 {
   smoothness_kernel_param_[0] = sx;
@@ -110,7 +110,7 @@ pcl::CrfSegmentation<PointT>::setSmoothnessKernelParameters (const float sx, con
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::CrfSegmentation<PointT>::setAppearanceKernelParameters (float sx, float sy, float sz, 
+pcl::CrfSegmentation<PointT>::setAppearanceKernelParameters (float sx, float sy, float sz,
                                                              float sr, float sg, float sb,
                                                              float w)
 {
@@ -125,7 +125,7 @@ pcl::CrfSegmentation<PointT>::setAppearanceKernelParameters (float sx, float sy,
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::CrfSegmentation<PointT>::setSurfaceKernelParameters (float sx, float sy, float sz, 
+pcl::CrfSegmentation<PointT>::setSurfaceKernelParameters (float sx, float sy, float sz,
                                                           float snx, float sny, float snz,
                                                           float w)
 {
@@ -183,7 +183,7 @@ pcl::CrfSegmentation<PointT>::createVoxelGrid ()
     // Save leaf information
     //vg.setSaveLeafLayout (false);
     // apply the filter
-    vg.filter (*filtered_normal_);    
+    vg.filter (*filtered_normal_);
   }
 
 }
@@ -196,7 +196,7 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
   //Eigen::Vector3i min_b, max_b;
   //min_b = voxel_grid_.getMinBoxCoordinates ();
   //max_b = voxel_grid_.getMaxBoxCoordinates ();
-  
+
   //std::cout << "min_b: " << min_b.x () << " " << min_b.y () << " " << min_b.z () << std::endl;
   //std::cout << "max_b: " << max_b.x () << " " << max_b.y () << " " << max_b.z () << std::endl;
 
@@ -204,7 +204,7 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
   //dim_.x () = std::abs (max_b.x () - min_b.x ());
   //dim_.y () = std::abs (max_b.y () - min_b.y ());
   //dim_.z () = std::abs (max_b.z () - min_b.z ());
-  
+
   //std::cout << dim_.x () * dim_.y () * dim_.z () << std::endl;
 
   // reserve the space for the data vector
@@ -232,12 +232,12 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
   }
 */
 
-  
+
 /*
   // get the size of the input fields
   std::vector< pcl::PCLPointField > fields;
   pcl::getFields (*input_cloud_, fields);
-  
+
   for (int i = 0; i < fields.size (); i++)
     std::cout << fields[i] << std::endl;
 */
@@ -249,26 +249,26 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
   std::vector< pcl::PCLPointField > fields;
   // check if we have color data
   bool color_data = false;
-  int rgba_index = -1;  
+  int rgba_index = -1;
   rgba_index = pcl::getFieldIndex<PointT> ("rgb", fields);
   if (rgba_index == -1)
     rgba_index = pcl::getFieldIndex<PointT> ("rgba", fields);
   if (rgba_index >= 0)
   {
     color_data = true;
-    color_.resize (filtered_cloud_->points.size ());    
+    color_.resize (filtered_cloud_->points.size ());
   }
 
 
 /*
   // check if we have normal data
   bool normal_data = false;
-  int normal_index = -1;  
+  int normal_index = -1;
   rgba_index = pcl::getFieldIndex<PointT> ("normal_x", fields);
   if (rgba_index >= 0)
   {
     normal_data = true;
-    normal_.resize (filtered_cloud_->points.size ());    
+    normal_.resize (filtered_cloud_->points.size ());
   }
 */
 
@@ -282,7 +282,7 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
     data_[i] = c;
 
     if (color_data)
-    {    
+    {
       std::uint32_t rgb = *reinterpret_cast<int*>(&filtered_cloud_->points[i].rgba);
       std::uint8_t r = (rgb >> 16) & 0x0000ff;
       std::uint8_t g = (rgb >> 8)  & 0x0000ff;
@@ -309,7 +309,7 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
     float n_z = filtered_normal_->points[i].normal_z;
     normal_[i] = Eigen::Vector3f (n_x, n_y, n_z);
   }
-  
+
 
 }
 
@@ -350,7 +350,7 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
           label = 0;
       }
     }
-  
+
     // set the engeries for the labels
     std::size_t u_idx = k * n_labels;
     if (label > 0)
@@ -369,13 +369,13 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
           unary[u_idx + i] = n_energy2;
         unary[u_idx + labels.size ()] = p_energy2;
       }
-    
+
     }
     else
     {
       for (std::size_t i = 0; i < n_labels; i++)
         unary[u_idx + i] = u_energy;
-    } 
+    }
   }
 }
 
@@ -386,7 +386,7 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
   // create the voxel grid
   createVoxelGrid ();
   std::cout << "create Voxel Grid - DONE" << std::endl;
-  
+
   // create the data Vector
   createDataVectorFromVoxelGrid ();
   std::cout << "create Data Vector from Voxel Grid - DONE" << std::endl;
@@ -433,7 +433,7 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
     pos[i * 3] = data_[i].x ();
     pos[i * 3 +1] = data_[i].y ();
     pos[i * 3 +2] = data_[i].z ();
-  }  
+  }
 	crfOLD.addPairwiseGaussian( pos, 3, 3, 3, 2.0 );
 
   float * col = new float[N*3];
@@ -442,7 +442,7 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
     col[i * 3] = color_[i].x ();
     col[i * 3 +1] = color_[i].y ();
     col[i * 3 +2] = color_[i].z ();
-  }  
+  }
 	crfOLD.addPairwiseBilateral(pos, col,  20, 20, 20, 10, 10, 10, 1.3 );
 
 	short * map = new short[N];
@@ -458,12 +458,12 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
 
   //float * resultOLD = new float[N*n_labels];
   //crfOLD.inference (10, resultOLD);
-  
+
   //std::vector<float> baryOLD;
   //crfOLD.getBarycentric (0, baryOLD);
   //std::vector<float> featuresOLD;
   //crfOLD.getFeature (1, featuresOLD);
-  
+
 /*
   for(int i = 0; i < 25; i++)
   {
@@ -481,7 +481,6 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
   // --------      -------------------//
 
   pcl::PointCloud<pcl::PointXYZRGBL> tmp_cloud;
-  tmp_cloud = *filtered_anno_;
 
   // create dense CRF
   DenseCrf crf (N, n_labels);
@@ -554,13 +553,13 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
   {
     if (tmp_cloud.points[i].label != tmp_cloud_OLD.points[i].label)
     {
-      
+
       std::cout << "idx: " << i << " =  " <<tmp_cloud.points[i].label << " |  " << tmp_cloud_OLD.points[i].label << std::endl;
       c = false;
       break;
     }
   }
-  
+
   if (c)
     std::cout << "DEBUG - OUTPUT - OK" << std::endl;
   else
@@ -574,7 +573,7 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
   {
     std::cout << result[i] << " |  " << resultOLD[i] << std::endl;
   }
-  
+
 
   c = true;
   for (std::size_t i = 0; i < result.size (); i++)
@@ -582,12 +581,12 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
     if (result[i] != resultOLD[i])
     {
       std::cout << result[i] << " |  " << resultOLD[i] << std::endl;
-      
+
       c = false;
       break;
     }
   }
-  
+
   if (c)
     std::cout << "DEBUG - OUTPUT - OK" << std::endl;
   else

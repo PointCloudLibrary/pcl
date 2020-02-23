@@ -19,7 +19,7 @@ pcl::cloud_composer::CloudView::CloudView (QWidget* parent)
   qvtk_->SetRenderWindow (vis_->getRenderWindow ());
   initializeInteractorSwitch ();
   vis_->setupInteractor (qvtk_->GetInteractor (), qvtk_->GetRenderWindow (), style_switch_);
-  
+
   QGridLayout *mainLayout = new QGridLayout (this);
   mainLayout-> addWidget (qvtk_,0,0);
 }
@@ -36,7 +36,7 @@ pcl::cloud_composer::CloudView::CloudView (ProjectModel* model, QWidget* parent)
   initializeInteractorSwitch ();
   vis_->setupInteractor (qvtk_->GetInteractor (), qvtk_->GetRenderWindow (), style_switch_);
   setModel(model);
-  
+
   QGridLayout *mainLayout = new QGridLayout (this);
   mainLayout-> addWidget (qvtk_,0,0);
 }
@@ -58,7 +58,7 @@ pcl::cloud_composer::CloudView::setModel (ProjectModel* new_model)
   //Refresh the view
   qvtk_->show();
   qvtk_->update ();
-  
+
  // vis_->addOrientationMarkerWidgetAxes (qvtk_->GetInteractor ());
 }
 
@@ -76,7 +76,7 @@ pcl::cloud_composer::CloudView::connectSignalsAndSlots()
 void
 pcl::cloud_composer::CloudView::refresh ()
 {
-  qvtk_->update (); 
+  qvtk_->update ();
 }
 
 void
@@ -109,13 +109,13 @@ pcl::cloud_composer::CloudView::rowsInserted (const QModelIndex& parent, int sta
     CloudComposerItem* item = dynamic_cast<CloudComposerItem*> (new_item);
     if (item)
       item->paintView (vis_);
-    
+
     //Recursive call, need to paint all children as well
   //  qDebug () << "Making recursive call, start =0, end="<<new_item->rowCount ()-1;
-    if (new_item->rowCount () > 0)  
+    if (new_item->rowCount () > 0)
       rowsInserted(new_item->index(),0,new_item->rowCount ()-1);
   }
-  
+
   qvtk_->update ();
 
 }
@@ -129,7 +129,6 @@ pcl::cloud_composer::CloudView::rowsAboutToBeRemoved (const QModelIndex& parent,
     parent_item = model_->invisibleRootItem();
   else
     parent_item = model_->itemFromIndex (parent);
-  QString project_name = model_->getName ();
   //qDebug () << "Rows about to be removed, parent = "<<parent_item->text ()<<" start="<<start<<" end="<<end;
   for (int row = start; row <= end; ++row)
   {
@@ -139,23 +138,23 @@ pcl::cloud_composer::CloudView::rowsAboutToBeRemoved (const QModelIndex& parent,
     CloudComposerItem* item = dynamic_cast<CloudComposerItem*> (item_to_remove);
     if (item )
       item->removeFromView (vis_);
-    
+
     //Recursive call, need to remove all children as well
   //  qDebug () << "Making recursive call, start =0, end="<<item_to_remove->rowCount ()-1;
-    if (item_to_remove->rowCount () > 0) 
+    if (item_to_remove->rowCount () > 0)
       rowsAboutToBeRemoved(item_to_remove->index(),0,item_to_remove->rowCount ()-1);
   }
   qvtk_->update ();
 }
 
 
-void 
+void
 pcl::cloud_composer::CloudView::paintEvent (QPaintEvent*)
 {
   qvtk_->update ();
 }
 
-void 
+void
 pcl::cloud_composer::CloudView::resizeEvent (QResizeEvent*)
 {
   qvtk_->update ();
@@ -194,8 +193,8 @@ pcl::cloud_composer::CloudView::selectedItemChanged (const QItemSelection & sele
 void
 pcl::cloud_composer::CloudView::dataChanged (const QModelIndex &, const QModelIndex &)
 {
-    
-  
+
+
 }
 
 ////// Axis Functions
@@ -222,7 +221,7 @@ pcl::cloud_composer::CloudView::addOrientationMarkerWidgetAxes ()
   if (!axes_widget_)
   {
     vtkSmartPointer<vtkAxesActor> axes = vtkSmartPointer<vtkAxesActor>::New ();
-   
+
     axes_widget_ = vtkSmartPointer<vtkOrientationMarkerWidget>::New ();
     axes_widget_->SetOutlineColor ( 0.9300, 0.5700, 0.1300 );
     axes_widget_->SetOrientationMarker( axes );
@@ -246,8 +245,8 @@ pcl::cloud_composer::CloudView::removeOrientationMarkerWidgetAxes ()
   {
     axes_widget_->SetEnabled (false);
   }
-  
-  
+
+
 }
 
 ////////  Interactor Functions
@@ -259,14 +258,14 @@ pcl::cloud_composer::CloudView::initializeInteractorSwitch ()
   style_switch_->initializeInteractorStyles (vis_, model_);
   style_switch_->SetInteractor (qvtk_->GetInteractor ());
   style_switch_->setCurrentInteractorStyle (interactor_styles::PCL_VISUALIZER);
-  
+
   //Connect the events!
   connections_ = vtkSmartPointer<vtkEventQtSlotConnect>::New();
   connections_->Connect (style_switch_->getInteractorStyle (interactor_styles::RECTANGULAR_FRUSTUM),
                          interactor_events::SELECTION_COMPLETE_EVENT,
                          this,
                          SLOT (selectionCompleted (vtkObject*, unsigned long, void*, void*)));
- 
+
   connections_->Connect (style_switch_->getInteractorStyle (interactor_styles::CLICK_TRACKBALL),
                          interactor_events::MANIPULATION_COMPLETE_EVENT,
                          this,
@@ -283,7 +282,7 @@ void
 pcl::cloud_composer::CloudView::selectionCompleted (vtkObject*, unsigned long, void*, void* call_data)
 {
   std::shared_ptr<SelectionEvent> selected (static_cast<SelectionEvent*> (call_data));
-  
+
   if (selected)
   {
     qDebug () << "Selection Complete! - Num points="<<selected->getNumPoints();
@@ -297,11 +296,10 @@ void
 pcl::cloud_composer::CloudView::manipulationCompleted (vtkObject*, unsigned long, void*, void* call_data)
 {
   std::shared_ptr<ManipulationEvent> manip_event (static_cast<ManipulationEvent*> (call_data));
-  
+
   if (manip_event)
   {
     qDebug () << "Manipulation event received in cloud view!";
-    model_->manipulateClouds (manip_event);   
+    model_->manipulateClouds (manip_event);
   }
 }
-

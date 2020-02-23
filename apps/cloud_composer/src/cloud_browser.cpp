@@ -13,7 +13,7 @@ void
 pcl::cloud_composer::CloudBrowser::setModel (QAbstractItemModel* new_model)
 {
   QTreeView::setModel (new_model);
-  
+
   current_project_model_ = dynamic_cast <ProjectModel*>(new_model);
 }
 
@@ -32,13 +32,12 @@ pcl::cloud_composer::BackgroundDelegate::paint (QPainter *painter, const QStyleO
   if (text_color_variant.canConvert<QColor> ())
   {
     QColor text_color = text_color_variant.value<QColor> ();
-    QPalette palette = option.palette;
     QStyleOptionViewItem option_copy = option;
     option_copy.palette.setColor (QPalette::HighlightedText, text_color);
     QStyledItemDelegate::paint (painter, option_copy, index);
   }
   else
     QStyledItemDelegate::paint (painter, option, index);
-  
-  
+
+
 }

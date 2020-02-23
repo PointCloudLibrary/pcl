@@ -3,7 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2012-, Open Perception, Inc.
- * 
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -82,7 +82,7 @@ class ObjectSelection
     ObjectSelection ()
       : plane_comparator_ (new EdgeAwarePlaneComparator<PointT, Normal>)
       , rgb_data_ ()
-    { 
+    {
       // Set the parameters for planar segmentation
       plane_comparator_->setDistanceThreshold (0.01f, false);
     }
@@ -125,7 +125,7 @@ class ObjectSelection
     }
 
     /////////////////////////////////////////////////////////////////////////
-    void 
+    void
     keyboard_callback (const visualization::KeyboardEvent&, void*)
     {
       //if (event.getKeyCode())
@@ -137,9 +137,9 @@ class ObjectSelection
       //else
       //  std::cout << " released" << std::endl;
     }
-    
+
     /////////////////////////////////////////////////////////////////////////
-    void 
+    void
     mouse_callback (const visualization::MouseEvent& mouse_event, void*)
     {
       if (mouse_event.getType() == visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == visualization::MouseEvent::LeftButton)
@@ -150,17 +150,17 @@ class ObjectSelection
 
     /////////////////////////////////////////////////////////////////////////
     /** \brief Given a plane, and the set of inlier indices representing it,
-      * segment out the object of intererest supported by it. 
+      * segment out the object of intererest supported by it.
       *
       * \param[in] picked_idx the index of a point on the object
       * \param[in] cloud the full point cloud dataset
       * \param[in] plane_indices a set of indices representing the plane supporting the object of interest
-      * \param[out] object the segmented resultant object 
+      * \param[out] object the segmented resultant object
       */
     void
-    segmentObject (int picked_idx, 
-                   const typename PointCloud<PointT>::ConstPtr &cloud, 
-                   const PointIndices::Ptr &plane_indices, 
+    segmentObject (int picked_idx,
+                   const typename PointCloud<PointT>::ConstPtr &cloud,
+                   const PointIndices::Ptr &plane_indices,
                    PointCloud<PointT> &object)
     {
       typename PointCloud<PointT>::Ptr plane_hull (new PointCloud<PointT>);
@@ -230,7 +230,7 @@ class ObjectSelection
         ec.setInputCloud (cloud);
         ec.setIndices (points_above_plane);
         ec.extract (euclidean_label_indices);
-        
+
         print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%lu", euclidean_label_indices.size ()); print_info (" clusters]\n");
       }
 
@@ -254,7 +254,7 @@ class ObjectSelection
 
     /////////////////////////////////////////////////////////////////////////
     void
-    segment (const PointT &picked_point, 
+    segment (const PointT &picked_point,
              int picked_idx,
              PlanarRegion<PointT> &region,
              typename PointCloud<PointT>::Ptr &object)
@@ -318,7 +318,7 @@ class ObjectSelection
           TicToc tt; tt.tic ();
           seg.segment (*inliers, coefficients);
           print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%lu", inliers->indices.size ()); print_info (" points]\n");
- 
+
           // No datasets could be found anymore
           if (inliers->indices.empty ())
             break;
@@ -346,7 +346,7 @@ class ObjectSelection
       int idx = -1;
       for (std::size_t i = 0; i < regions.size (); ++i)
       {
-        double dist = pointToPlaneDistance (picked_point, regions[i].getCoefficients ()); 
+        double dist = pointToPlaneDistance (picked_point, regions[i].getCoefficients ());
         if (dist < max_dist)
         {
           max_dist = dist;
@@ -367,7 +367,7 @@ class ObjectSelection
         else
         {
           // Save the current region
-          region = regions[idx]; 
+          region = regions[idx];
 
           print_highlight (stderr, "Obtaining the boundary points for the region ");
           TicToc tt; tt.tic ();
@@ -409,7 +409,7 @@ class ObjectSelection
       *
       * \param[in] event the event that triggered the call
       */
-    void 
+    void
     pp_callback (const visualization::PointPickingEvent& event, void*)
     {
       // Check to see if we got a valid point. Early exit.
@@ -491,7 +491,7 @@ class ObjectSelection
       if (image_viewer_)
         image_viewer_->addRectangle (search_->getInputCloud (), *object_);
     }
-    
+
     /////////////////////////////////////////////////////////////////////////
     void
     compute ()
@@ -517,7 +517,7 @@ class ObjectSelection
         std::this_thread::sleep_for(100us);
       }
     }
-    
+
     /////////////////////////////////////////////////////////////////////////
     void
     initGUI ()
@@ -530,7 +530,7 @@ class ObjectSelection
         std::vector<pcl::PCLPointField> fields;
         int rgba_index = -1;
         rgba_index = getFieldIndex<PointT> ("rgba", fields);
-       
+
         if (rgba_index >= 0)
         {
           image_viewer_.reset (new visualization::ImageViewer ("RGB PCLImage"));
@@ -573,17 +573,17 @@ class ObjectSelection
     {
       // Load the input file
       TicToc tt; tt.tic ();
-      print_highlight (stderr, "Loading "); 
+      print_highlight (stderr, "Loading ");
       print_value (stderr, "%s ", file.c_str ());
       cloud_.reset (new PointCloud<PointT>);
-      if (io::loadPCDFile (file, *cloud_) < 0) 
+      if (io::loadPCDFile (file, *cloud_) < 0)
       {
         print_error (stderr, "[error]\n");
         return (false);
       }
-      print_info ("[done, "); print_value ("%g", tt.toc ()); 
+      print_info ("[done, "); print_value ("%g", tt.toc ());
       print_info (" ms : "); print_value ("%lu", cloud_->size ()); print_info (" points]\n");
-      
+
       if (cloud_->isOrganized ())
         search_.reset (new search::OrganizedNeighbor<PointT>);
       else
@@ -593,7 +593,7 @@ class ObjectSelection
 
       return (true);
     }
-    
+
     /////////////////////////////////////////////////////////////////////////
     void
     save (const std::string &object_file, const std::string &plane_file)
@@ -609,7 +609,7 @@ class ObjectSelection
 
     visualization::PCLVisualizer::Ptr cloud_viewer_;
     visualization::ImageViewer::Ptr image_viewer_;
-    
+
     typename PointCloud<PointT>::Ptr cloud_;
     typename search::Search<PointT>::Ptr search_;
   private:
@@ -637,10 +637,8 @@ main (int argc, char** argv)
     print_info ("Ideally, need an input file, and three output PCD files, e.g., object.pcd, plane.pcd, rest.pcd\n");
     return (-1);
   }
-  
-  string object_file = "object.pcd", plane_file = "plane.pcd", rest_file = "rest.pcd";
+
   if (p_file_indices.size () >= 4)
-    rest_file = argv[p_file_indices[3]];
   if (p_file_indices.size () >= 3)
     plane_file = argv[p_file_indices[2]];
   if (p_file_indices.size () >= 2)

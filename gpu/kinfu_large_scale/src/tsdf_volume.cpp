@@ -56,7 +56,7 @@ pcl::gpu::kinfuLS::TsdfVolume::TsdfVolume(const Vector3i& resolution) : resoluti
   int volume_z = resolution_(2);
 
   volume_.create (volume_y * volume_z, volume_x);
-  
+
   const Vector3f default_volume_size = Vector3f::Constant (3.f); //meters
   const float    default_tranc_dist  = 0.03f; //meters
 
@@ -64,14 +64,14 @@ pcl::gpu::kinfuLS::TsdfVolume::TsdfVolume(const Vector3i& resolution) : resoluti
   setTsdfTruncDist(default_tranc_dist);
 
   reset();
-  
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 pcl::gpu::kinfuLS::TsdfVolume::setSize(const Vector3f& size)
-{  
+{
   size_ = size;
   setTsdfTruncDist(tranc_dist_);
 }
@@ -85,12 +85,12 @@ pcl::gpu::kinfuLS::TsdfVolume::setTsdfTruncDist (float distance)
   float cy = size_(1) / resolution_(1);
   float cz = size_(2) / resolution_(2);
 
-  tranc_dist_ = std::max (distance, 2.1f * std::max (cx, std::max (cy, cz)));  
+  tranc_dist_ = std::max (distance, 2.1f * std::max (cx, std::max (cy, cz)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pcl::gpu::DeviceArray2D<int> 
+pcl::gpu::DeviceArray2D<int>
 pcl::gpu::kinfuLS::TsdfVolume::data() const
 {
   return volume_;
@@ -116,7 +116,7 @@ pcl::gpu::kinfuLS::TsdfVolume::getResolution() const
 
 const Eigen::Vector3f
 pcl::gpu::kinfuLS::TsdfVolume::getVoxelSize() const
-{    
+{
   return size_.array () / resolution_.array().cast<float>();
 }
 
@@ -130,7 +130,7 @@ pcl::gpu::kinfuLS::TsdfVolume::getTsdfTruncDist () const
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void 
+void
 pcl::gpu::kinfuLS::TsdfVolume::reset()
 {
   pcl::device::kinfuLS::initVolume(volume_);
@@ -299,7 +299,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchNormals (const DeviceArray<PointType>& cloud
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void 
+void
 pcl::gpu::kinfuLS::TsdfVolume::pushSlice (PointCloud<PointXYZI>::Ptr existing_data_cloud, const pcl::gpu::kinfuLS::tsdf_buffer* buffer) const
 {
   std::size_t gpu_array_size = existing_data_cloud->points.size ();
@@ -329,15 +329,15 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchSliceAsCloud (DeviceArray<PointType>& cloud_
     cloud_buffer_xyz.create (DEFAULT_CLOUD_BUFFER_SIZE/2);
 
   if (cloud_buffer_intensity.empty ()) {
-    cloud_buffer_intensity.create (DEFAULT_CLOUD_BUFFER_SIZE/2);  
+    cloud_buffer_intensity.create (DEFAULT_CLOUD_BUFFER_SIZE/2);
   }
 
   float3 device_volume_size = device_cast<const float3> (size_);
-  
+
   std::size_t size = pcl::device::kinfuLS::extractSliceAsCloud (volume_, device_volume_size, buffer, shiftX, shiftY, shiftZ, cloud_buffer_xyz, cloud_buffer_intensity);
-  
+
   std::cout << " SIZE IS " << size << std::endl;
-  
+
   return (size);
 }
 
@@ -366,7 +366,6 @@ pcl::gpu::kinfuLS::TsdfVolume::convertToTsdfCloud ( pcl::PointCloud<pcl::PointXY
   cloud->clear();
   cloud->reserve (std::min (cloud_size/10, 500000));
 
-  int volume_idx = 0, cloud_idx = 0;
   // #pragma omp parallel for // if used, increment over idx not possible! use index calculation
   for (int z = 0; z < sz; z+=step)
     for (int y = 0; y < sy; y+=step)
@@ -417,13 +416,13 @@ pcl::gpu::kinfuLS::TsdfVolume::downloadTsdfAndWeights (std::vector<float>& tsdf,
   tsdf.resize (volumeSize);
   weights.resize (volumeSize);
   volume_.download(&tsdf[0], volume_.cols() * sizeof(int));
-  
+
   #pragma omp parallel for
   for(int i = 0; i < (int) tsdf.size(); ++i)
   {
     short2 elem = *reinterpret_cast<short2*>(&tsdf[i]);
-    tsdf[i] = (float)(elem.x)/pcl::device::kinfuLS::DIVISOR;    
-    weights[i] = (short)(elem.y);    
+    tsdf[i] = (float)(elem.x)/pcl::device::kinfuLS::DIVISOR;
+    weights[i] = (short)(elem.y);
   }
 }
 

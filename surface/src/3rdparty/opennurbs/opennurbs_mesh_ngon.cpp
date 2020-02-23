@@ -24,7 +24,7 @@ ON_MeshNgonList::ON_MeshNgonList()
   m_ngons_count = 0;
   m_ngons_capacity = 0;
   m_ngons = 0;
-  m_memblk_list = 0; 
+  m_memblk_list = 0;
 }
 
 ON_MeshNgonList::~ON_MeshNgonList()
@@ -57,7 +57,7 @@ ON_MeshNgonList::ON_MeshNgonList(const ON_MeshNgonList& src)
   m_ngons_count = 0;
   m_ngons_capacity = 0;
   m_ngons = 0;
-  m_memblk_list = 0; 
+  m_memblk_list = 0;
   if ( src.m_ngons_count > 0 && 0 != src.m_ngons )
   {
     *this = src;
@@ -172,7 +172,7 @@ public:
 
   // vitual ON_UserData override
   ON_BOOL32 GetDescription( ON_wString& );
-  ON_BOOL32 Archive() const; 
+  ON_BOOL32 Archive() const;
 
 public:
   ON_MeshNgonList* m_ngon_list;
@@ -206,12 +206,12 @@ ON_MeshNgonUserData::~ON_MeshNgonUserData()
   }
 }
 
-ON_MeshNgonUserData::ON_MeshNgonUserData(const ON_MeshNgonUserData& src) 
+ON_MeshNgonUserData::ON_MeshNgonUserData(const ON_MeshNgonUserData& src)
 : ON_UserData(src)
 , m_mesh_F_count(src.m_mesh_F_count)
 , m_mesh_V_count(src.m_mesh_V_count)
 {
-  m_ngon_list = (0 != src.m_ngon_list) 
+  m_ngon_list = (0 != src.m_ngon_list)
               ? new ON_MeshNgonList(*src.m_ngon_list)
               : 0;
 }
@@ -226,7 +226,7 @@ ON_MeshNgonUserData& ON_MeshNgonUserData::operator=(const ON_MeshNgonUserData& s
       m_ngon_list = 0;
     }
     ON_UserData::operator=(src);
-    if (0 != src.m_ngon_list) 
+    if (0 != src.m_ngon_list)
     {
        m_ngon_list = new ON_MeshNgonList(*src.m_ngon_list);
     }
@@ -410,7 +410,7 @@ bool ON_ValidateNgon(
   return true;
 }
 
-static 
+static
 bool ON_ValidateMeshNgonUserData(
   ON_MeshNgonUserData* ngud,
   const ON_Mesh& mesh
@@ -440,7 +440,7 @@ bool ON_ValidateMeshNgonUserData(
         return false;
     }
 
-    // Set validation counts to proper values because we will 
+    // Set validation counts to proper values because we will
     // assume this old ngon information is valid since the indices
     // are in range.  This assumption may not be valid, but
     // at least the ngon won't cause a crash.
@@ -450,13 +450,13 @@ bool ON_ValidateMeshNgonUserData(
 
   return ( ngud->m_mesh_F_count == mesh_F_count && ngud->m_mesh_V_count == mesh_V_count );
 }
-                         
+
 
 const class ON_MeshNgonList* ON_Mesh::NgonList() const
 {
   ON_UserData* ud = GetUserData(ON_MeshNgonUserData::m_ON_MeshNgonUserData_class_id.Uuid());
   ON_MeshNgonUserData* ngud = ON_MeshNgonUserData::Cast(ud);
-  
+
   if ( 0 != ngud && !ON_ValidateMeshNgonUserData(ngud,*this) )
   {
     delete ngud;
@@ -506,7 +506,5 @@ void ON_Mesh::DestroyNgonList()
   if ( 0 != ud )
   {
     delete ud;
-    ud = 0;
   }
 }
-

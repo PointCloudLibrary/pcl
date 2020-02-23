@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -40,8 +40,8 @@ ON_RevSurface* ON_RevSurface::New( const ON_RevSurface& rev_surface )
   return new ON_RevSurface(rev_surface);
 }
 
-ON_RevSurface::ON_RevSurface() : m_curve(0), 
-                                 m_axis( ON_origin, ON_zaxis ), 
+ON_RevSurface::ON_RevSurface() : m_curve(0),
+                                 m_axis( ON_origin, ON_zaxis ),
                                  m_angle( 0.0, 2.0*ON_PI ),
                                  m_t( 0.0, 2.0*ON_PI ),
                                  m_bTransposed(0)
@@ -103,11 +103,11 @@ ON__UINT32 ON_RevSurface::DataCRC(ON__UINT32 current_remainder) const
 
 ON_RevSurface& ON_RevSurface::operator=( const ON_RevSurface& src )
 {
-  if ( this != &src ) 
+  if ( this != &src )
   {
     Destroy();
     ON_Surface::operator=(src);
-    if ( src.m_curve ) 
+    if ( src.m_curve )
       m_curve = src.m_curve->Duplicate();
     m_axis = src.m_axis;
     m_angle = src.m_angle;
@@ -145,9 +145,9 @@ ON_BOOL32 ON_RevSurface::SetAngleDegrees (
   double end_angle_degrees
   )
 {
-  return SetAngleRadians( 
-    start_angle_degrees*ON_PI/180.0, 
-    end_angle_degrees*ON_PI/180.0 
+  return SetAngleRadians(
+    start_angle_degrees*ON_PI/180.0,
+    end_angle_degrees*ON_PI/180.0
     );
 }
 
@@ -229,25 +229,25 @@ void ON_RevSurface::Dump( ON_TextLog& dump ) const
     dump.PushIndent();
     m_curve->Dump(dump);
     dump.PopIndent();
-  }  
+  }
 }
 
 ON_BOOL32 ON_RevSurface::Write( ON_BinaryArchive& file ) const
 {
   ON_BOOL32 rc = file.Write3dmChunkVersion(2,0);
-  if (rc) 
+  if (rc)
   {
     rc = file.WriteLine( m_axis );
     rc = file.WriteInterval( m_angle );
     rc = file.WriteInterval( m_t );
     rc = file.WriteBoundingBox( m_bbox );
     rc = file.WriteInt( m_bTransposed );
-    if ( m_curve ) 
+    if ( m_curve )
     {
       rc = file.WriteChar((char)1);
       if (rc) rc = file.WriteObject(*m_curve);
     }
-    else 
+    else
     {
       rc = file.WriteChar((char)0);
     }
@@ -262,18 +262,18 @@ ON_BOOL32 ON_RevSurface::Read( ON_BinaryArchive& file )
   int minor_version = 0;
   char bHaveCurve = 0;
   ON_BOOL32 rc = file.Read3dmChunkVersion(&major_version,&minor_version);
-  if (rc && major_version == 1) 
+  if (rc && major_version == 1)
   {
     rc = file.ReadLine( m_axis );
     rc = file.ReadInterval( m_angle );
     rc = file.ReadBoundingBox( m_bbox );
     rc = file.ReadInt( &m_bTransposed );
     rc = file.ReadChar( &bHaveCurve );
-    if ( bHaveCurve ) 
+    if ( bHaveCurve )
     {
       ON_Object* obj = 0;
       rc = file.ReadObject(&obj);
-      if ( obj ) 
+      if ( obj )
       {
         m_curve = ON_Curve::Cast(obj);
         if ( !m_curve )
@@ -283,7 +283,7 @@ ON_BOOL32 ON_RevSurface::Read( ON_BinaryArchive& file )
     m_t[0] = m_angle.Min();
     m_t[1] = m_angle.Max();
   }
-  else if (rc && major_version == 2) 
+  else if (rc && major_version == 2)
   {
     rc = file.ReadLine( m_axis );
     rc = file.ReadInterval( m_angle );
@@ -291,11 +291,11 @@ ON_BOOL32 ON_RevSurface::Read( ON_BinaryArchive& file )
     rc = file.ReadBoundingBox( m_bbox );
     rc = file.ReadInt( &m_bTransposed );
     rc = file.ReadChar( &bHaveCurve );
-    if ( bHaveCurve ) 
+    if ( bHaveCurve )
     {
       ON_Object* obj = 0;
       rc = file.ReadObject(&obj);
-      if ( obj ) 
+      if ( obj )
       {
         m_curve = ON_Curve::Cast(obj);
         if ( !m_curve )
@@ -372,12 +372,12 @@ ON_BOOL32 ON_RevSurface::Evaluate( // returns false if unable to evaluate
   int i, j, k, src_i, dst_i;
   ON_3dPoint pt;
 
-  if ( m_bTransposed ) 
+  if ( m_bTransposed )
   {
     x = s; s = t; t = x;
     if ( side == 2 ) side = 4; else if ( side == 4 ) side = 2;
   }
-  
+
   if ( m_t != m_angle )
   {
     if ( m_t.m_t[1] != m_t.m_t[0] )
@@ -389,17 +389,17 @@ ON_BOOL32 ON_RevSurface::Evaluate( // returns false if unable to evaluate
     }
   }
 
-  
+
   double a = cos(s);
   double b = sin(s);
   const double ca[4] = {a, -b, -a,  b}; // cosine derivatives
   const double sa[4] = {b,  a, -b, -a}; // sine derivatives
 
   const int curve_dim = m_curve ? m_curve->Dimension() : 0;
-  if ( curve_dim == 2 || curve_dim == 3 ) 
+  if ( curve_dim == 2 || curve_dim == 3 )
   {
     int curve_side = 0;
-    switch(side) 
+    switch(side)
     {
     case 1:
     case 2:
@@ -411,7 +411,7 @@ ON_BOOL32 ON_RevSurface::Evaluate( // returns false if unable to evaluate
       break;
     }
     rc = m_curve->Evaluate( t, der_count, v_stride, v, curve_side, hint )?true:false;
-    if ( rc ) 
+    if ( rc )
     {
       ON_3dVector zaxis = m_axis.Tangent();
       ON_3dVector xaxis, yaxis;
@@ -420,9 +420,9 @@ ON_BOOL32 ON_RevSurface::Evaluate( // returns false if unable to evaluate
       yaxis = ON_CrossProduct(zaxis,xaxis);
 
       // move curve derivatives to pure t partial spaces in v[]
-      if ( curve_dim == 2 ) 
+      if ( curve_dim == 2 )
       {
-        for ( i = der_count; i >= 1; i-- ) 
+        for ( i = der_count; i >= 1; i-- )
         {
           // move curve derivative to proper spots
           src_i = v_stride*i;
@@ -432,9 +432,9 @@ ON_BOOL32 ON_RevSurface::Evaluate( // returns false if unable to evaluate
           v[dst_i]   = v[src_i];
         }
       }
-      else 
+      else
       {
-        for ( i = der_count; i >= 1; i-- ) 
+        for ( i = der_count; i >= 1; i-- )
         {
           // move curve derivative to proper spots
           src_i = v_stride*i;
@@ -454,7 +454,7 @@ ON_BOOL32 ON_RevSurface::Evaluate( // returns false if unable to evaluate
       }
 
       // convert curve derivative coordinates to local frame
-      for ( i = 1; i <= der_count; i++ ) 
+      for ( i = 1; i <= der_count; i++ )
       {
         dst_i = v_stride*((i+1)*(i+2)/2 - 1);
         pt = ON_3dPoint(v+dst_i); // pt = curve derivative in world coords
@@ -471,7 +471,7 @@ ON_BOOL32 ON_RevSurface::Evaluate( // returns false if unable to evaluate
         {
           // j = number of partials w.r.t curve parameter
           // i-j = number of partials w.r.t angular parameter
-          dst_i = v_stride*(i*(i+1)/2 + j); // 
+          dst_i = v_stride*(i*(i+1)/2 + j); //
           src_i = v_stride*((j+1)*(j+2)/2 - 1); // curve derivative
           k=(i-j)%4;
           a = f*ca[k];
@@ -495,11 +495,11 @@ ON_BOOL32 ON_RevSurface::Evaluate( // returns false if unable to evaluate
       v[1] += m_axis.from.y;
       v[2] += m_axis.from.z;
 
-      if ( m_bTransposed ) 
+      if ( m_bTransposed )
       {
-        for ( i = 1; i <= der_count; i++ ) 
+        for ( i = 1; i <= der_count; i++ )
         {
-          for ( j = 0, k = i; j < k; j++, k-- ) 
+          for ( j = 0, k = i; j < k; j++, k-- )
           {
             dst_i = i*(i+1)/2;
             src_i = dst_i + k;
@@ -567,7 +567,7 @@ bool ON_RevolutionTensor::Evaluate( double a, const double* ArcPoint, double b, 
 		B[2] = b*ShapePoint[2];
 		ShapePoint = B;
 	}
-	
+
 
 	x = (ShapePoint[0] - O.x)*X.x + (ShapePoint[1] - O.y)*X.y + (ShapePoint[2] - O.z)*X.z;
 	y = (ShapePoint[0] - O.x)*Y.x + (ShapePoint[1] - O.y)*Y.y + (ShapePoint[2] - O.z)*Y.z;
@@ -589,19 +589,19 @@ bool ON_RevolutionTensor::Evaluate( double a, const double* ArcPoint, double b, 
 int ON_RevSurface::GetNurbForm(class ON_NurbsSurface& srf , double tolerance ) const
 {
   int rc = 0;
-  if ( 0 != m_curve ) 
+  if ( 0 != m_curve )
   {
     ON_NurbsCurve a, c;
     ON_Arc arc;
     arc.plane.CreateFromNormal( ON_origin, ON_zaxis );
     arc.radius = 1.0;
     arc.SetAngleRadians(m_angle[1]-m_angle[0]);
-    if ( arc.GetNurbForm(a) ) 
+    if ( arc.GetNurbForm(a) )
     {
       if ( m_t.IsIncreasing() )
         a.SetDomain( m_t[0], m_t[1] );
       rc = m_curve->GetNurbForm(c,tolerance);
-      if (rc) 
+      if (rc)
       {
         if ( 2 == c.m_dim )
         {
@@ -771,7 +771,7 @@ ON_Curve* ON_RevSurface::IsoCurve( int dir, double c ) const
     return NULL;
 
   ON_Curve* crv = 0;
-  
+
   if ( m_bTransposed )
     dir = 1-dir;
 
@@ -874,9 +874,9 @@ bool ON_RevSurface::Extend(
       const ON_Interval& domain
       )
 {
-  if ( dir != 0 && dir != 1 ) 
+  if ( dir != 0 && dir != 1 )
     return false;
-  if (IsClosed(dir)) 
+  if (IsClosed(dir))
     return false;
   bool do_it = false;
   ON_Interval dom = Domain(dir);
@@ -885,17 +885,17 @@ bool ON_RevSurface::Extend(
     dom[0] = domain[0];
     do_it = true;
   }
-  
+
   if (domain[1] > dom[1])
   {
     dom[1] = domain[1];
     do_it = true;
   }
 
-  if (!do_it) 
+  if (!do_it)
     return false;
 
-  if ( m_bTransposed ) 
+  if ( m_bTransposed )
     dir = 1-dir;
 
   bool rc = false;
@@ -921,7 +921,6 @@ bool ON_RevSurface::Extend(
   {
     DestroySurfaceTree();
     // update bounding box
-    ON_BoundingBox bbox0 = m_bbox;
     m_bbox.Destroy();
     BoundingBox();
   }
@@ -1061,8 +1060,8 @@ ON_BOOL32 ON_RevSurface::Transpose()
 
 bool ON_RevSurface::IsContinuous(
     ON::continuity desired_continuity,
-    double s, 
-    double t, 
+    double s,
+    double t,
     int* hint, // default = NULL,
     double point_tolerance, // default=ON_ZERO_TOLERANCE
     double d1_tolerance, // default==ON_ZERO_TOLERANCE
@@ -1103,7 +1102,7 @@ ON_BOOL32 ON_RevSurface::Reverse( int dir )
   return rc;
 }
 
-bool ON_RevSurface::GetNextDiscontinuity( 
+bool ON_RevSurface::GetNextDiscontinuity(
                 int dir,
                 ON::continuity c,
                 double t0,
@@ -1175,7 +1174,7 @@ ON_BOOL32 ON_RevSurface::IsSingular( int side ) const // 0 = south, 1 = east, 2 
     //     other coordinates that are very large.  The
     //     fabs(Q.*)*ON_SQRT_EPSILON term is required
     //     in cases where the evaluations in PointAtStart()
-    //     and/or ClosestPointTo() have more numerical 
+    //     and/or ClosestPointTo() have more numerical
     //     error than ON_ZERO_TOLERANCE.  The numerical
     //     tolerance term has to be calculated on a
     //     coordinate-by-coordinate basis.  See RR 9683.
@@ -1280,9 +1279,9 @@ ON_BOOL32 ON_RevSurface::GetParameterTolerance( // returns tminus < tplus: param
   return rc;
 }
 
-ON_BOOL32 ON_RevSurface::SetDomain( 
+ON_BOOL32 ON_RevSurface::SetDomain(
   int dir, // 0 sets first parameter's domain, 1 gets second parameter's domain
-  double t0, 
+  double t0,
   double t1
   )
 {
@@ -1322,9 +1321,9 @@ ON_Interval ON_RevSurface::Domain( int dir ) const
   return d;
 }
 
-ON_BOOL32 ON_RevSurface::GetSurfaceSize( 
-    double* width, 
-    double* height 
+ON_BOOL32 ON_RevSurface::GetSurfaceSize(
+    double* width,
+    double* height
     ) const
 {
   ON_BOOL32 rc = false;
@@ -1486,7 +1485,7 @@ ON_BOOL32 ON_RevSurface::GetBBox(    // returns true if successful
           if ( !arc.plane.xaxis.Unitize() )
             break;
           if ( fabs(arc.plane.xaxis*arc.plane.zaxis) > 0.0001 )
-            break; 
+            break;
           arc.plane.yaxis = ON_CrossProduct(arc.plane.zaxis,arc.plane.xaxis);
           if ( !arc.plane.yaxis.Unitize() )
             break;
@@ -1612,7 +1611,7 @@ bool ON_Surface::IsSphere( ON_Sphere* sphere, double tolerance ) const
   if ( !bIsArc1 )
     return false;
 
-  // Determine if one of these arcs is a a portion of a 
+  // Determine if one of these arcs is a a portion of a
   // great circle.
 
   ON_Sphere sph0;
@@ -2038,7 +2037,6 @@ bool ON_Surface::IsTorus( ON_Torus* torus, double tolerance ) const
   ON_Arc arc1;
   int bIsArc1 = crv->IsArc(0,&arc1,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
   delete crv;
-  crv = 0;
   if ( !bIsArc1 )
     return false;
 
@@ -2210,7 +2208,7 @@ bool ON_Surface::IsTorus( ON_Torus* torus, double tolerance ) const
 
 static
 bool ON__IsCylConeHelper(
-          const ON_Line& axis, 
+          const ON_Line& axis,
           const ON_Curve* curve,
           double tolerance,
           ON_Plane& plane,
@@ -2354,4 +2352,3 @@ ON_BOOL32 ON_RevSurface::IsConical(
     *cone = c;
   return c.IsValid();
 }
-

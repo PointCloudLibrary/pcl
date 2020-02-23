@@ -97,8 +97,8 @@ class NormalEstimation
       }
     }
 
-    template <template <typename> class Storage> void 
-    file_cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud) 
+    template <template <typename> class Storage> void
+    file_cloud_cb (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& cloud)
     {
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (new pcl::PointCloud<pcl::PointXYZRGB>);
       PointCloudAOS<Host> data_host;
@@ -134,7 +134,7 @@ class NormalEstimation
       new_cloud = true;
     }
 
-    template <template <typename> class Storage> void 
+    template <template <typename> class Storage> void
     cloud_cb (const openni_wrapper::Image::Ptr& image,
               const openni_wrapper::DepthImage::Ptr& depth_image,
               float constant)
@@ -164,7 +164,7 @@ class NormalEstimation
       d2c.compute<Storage> (depth_image, image, constant, data, false, 1, smoothing_nr_iterations, smoothing_filter_size);
       //d2c.compute<Storage> (depth_image, image, constant, data, true, 2);
 
-      shared_ptr<typename Storage<float4>::type> normals;      
+      shared_ptr<typename Storage<float4>::type> normals;
       {
         ScopeTimeCPU time ("Normal Estimation");
         normals = computeFastPointNormals<Storage> (data);
@@ -177,8 +177,8 @@ class NormalEstimation
       toPCL (*data, *normals, *normal_cloud);
       new_cloud = true;
     }
-    
-    void 
+
+    void
     run (bool use_device, bool use_file)
     {
       if (use_file)
@@ -189,7 +189,7 @@ class NormalEstimation
 
         std::string path = "./frame_0.pcd";
         pcl::PCDGrabber<pcl::PointXYZRGB > filegrabber {path, frames_per_second, repeat};
-        
+
         if (use_device)
         {
           std::cerr << "[NormalEstimation] Using GPU..." << std::endl;
@@ -225,13 +225,12 @@ class NormalEstimation
         {
           std::cerr << "[NormalEstimation] Using CPU..." << std::endl;
           std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&NormalEstimation::cloud_cb<Host>, this, _1, _2, _3);
-          c = grabber.registerCallback (f);
         }
 
         viewer.runOnVisualizationThread (std::bind(&NormalEstimation::viz_cb, this, _1), "viz_cb");
 
         grabber.start ();
-        
+
         while (!viewer.wasStopped ())
         {
           pcl_sleep (1);
@@ -248,7 +247,7 @@ class NormalEstimation
     bool new_cloud, go_on;
 };
 
-int 
+int
 main (int argc, char **argv)
 {
   bool use_device = false;
@@ -261,4 +260,3 @@ main (int argc, char **argv)
   v.run (use_device, use_file);
   return 0;
 }
-

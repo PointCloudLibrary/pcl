@@ -94,12 +94,10 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   pcl::transformPointCloudWithNormals (grid, grid, transformPC);
 
-  //fill spatial data vector and the zero-initialize or "value-initialize" an array on c++, 
+  //fill spatial data vector and the zero-initialize or "value-initialize" an array on c++,
   // the initialization is made with () after the [nbins]
   std::vector<kiss_fft_scalar> spatial_data(nbins);
 
-  float sum_w = 0, w = 0;
-  int bin = 0;
   for (const auto &point : grid.points)
   {
     bin = static_cast<int> ((((std::atan2 (point.normal_y, point.normal_x) + M_PI) * 180 / M_PI) / bin_angle)) % nbins;

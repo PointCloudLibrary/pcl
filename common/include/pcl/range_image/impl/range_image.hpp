@@ -51,7 +51,7 @@ RangeImage::asinLookUp (float value)
 {
   return (asin_lookup_table[
       static_cast<int> (
-        static_cast<float> (pcl_lrintf ( (static_cast<float> (lookup_table_size-1) / 2.0f) * value)) + 
+        static_cast<float> (pcl_lrintf ( (static_cast<float> (lookup_table_size-1) / 2.0f) * value)) +
         static_cast<float> (lookup_table_size-1) / 2.0f)]);
 }
 
@@ -62,22 +62,22 @@ RangeImage::atan2LookUp (float y, float x)
   if (x==0 && y==0)
     return 0;
   float ret;
-  if (std::abs (x) < std::abs (y)) 
+  if (std::abs (x) < std::abs (y))
   {
     ret = atan_lookup_table[
       static_cast<int> (
-          static_cast<float> (pcl_lrintf ( (static_cast<float> (lookup_table_size-1) / 2.0f) * (x / y))) + 
+          static_cast<float> (pcl_lrintf ( (static_cast<float> (lookup_table_size-1) / 2.0f) * (x / y))) +
           static_cast<float> (lookup_table_size-1) / 2.0f)];
     ret = static_cast<float> (x*y > 0 ? M_PI/2-ret : -M_PI/2-ret);
   }
   else
     ret = atan_lookup_table[
       static_cast<int> (
-          static_cast<float> (pcl_lrintf ( (static_cast<float> (lookup_table_size-1) / 2.0f) * (y / x))) + 
+          static_cast<float> (pcl_lrintf ( (static_cast<float> (lookup_table_size-1) / 2.0f) * (y / x))) +
           static_cast<float> (lookup_table_size-1)/2.0f)];
   if (x < 0)
     ret = static_cast<float> (y < 0 ? ret-M_PI : ret+M_PI);
-  
+
   return (ret);
 }
 
@@ -90,7 +90,7 @@ RangeImage::cosLookUp (float value)
 }
 
 /////////////////////////////////////////////////////////////////////////
-template <typename PointCloudType> void 
+template <typename PointCloudType> void
 RangeImage::createFromPointCloud (const PointCloudType& point_cloud, float angular_resolution,
                                   float max_angle_width, float max_angle_height,
                                   const Eigen::Affine3f& sensor_pose, RangeImage::CoordinateFrame coordinate_frame,
@@ -101,7 +101,7 @@ RangeImage::createFromPointCloud (const PointCloudType& point_cloud, float angul
 }
 
 /////////////////////////////////////////////////////////////////////////
-template <typename PointCloudType> void 
+template <typename PointCloudType> void
 RangeImage::createFromPointCloud (const PointCloudType& point_cloud,
                                   float angular_resolution_x, float angular_resolution_y,
                                   float max_angle_width, float max_angle_height,
@@ -109,31 +109,31 @@ RangeImage::createFromPointCloud (const PointCloudType& point_cloud,
                                   float noise_level, float min_range, int border_size)
 {
   setAngularResolution (angular_resolution_x, angular_resolution_y);
-  
+
   width  = static_cast<std::uint32_t> (pcl_lrint (std::floor (max_angle_width*angular_resolution_x_reciprocal_)));
   height = static_cast<std::uint32_t> (pcl_lrint (std::floor (max_angle_height*angular_resolution_y_reciprocal_)));
-  
+
   int full_width  = static_cast<int> (pcl_lrint (std::floor (pcl::deg2rad (360.0f)*angular_resolution_x_reciprocal_))),
       full_height = static_cast<int> (pcl_lrint (std::floor (pcl::deg2rad (180.0f)*angular_resolution_y_reciprocal_)));
   image_offset_x_ = (full_width -static_cast<int> (width) )/2;
   image_offset_y_ = (full_height-static_cast<int> (height))/2;
   is_dense = false;
-  
+
   getCoordinateFrameTransformation (coordinate_frame, to_world_system_);
   to_world_system_ = sensor_pose * to_world_system_;
-  
+
   to_range_image_system_ = to_world_system_.inverse (Eigen::Isometry);
   //std::cout << "to_world_system_ is\n"<<to_world_system_<<"\nand to_range_image_system_ is\n"<<to_range_image_system_<<"\n\n";
-  
+
   unsigned int size = width*height;
   points.clear ();
   points.resize (size, unobserved_point);
-  
+
   int top=height, right=-1, bottom=-1, left=width;
   doZBuffer (point_cloud, noise_level, min_range, top, right, bottom, left);
-  
+
   cropImage (border_size, top, right, bottom, left);
-  
+
   recalculate3DPointPositions ();
 }
 
@@ -157,9 +157,9 @@ RangeImage::createFromPointCloudWithKnownSize (const PointCloudType& point_cloud
                                                float noise_level, float min_range, int border_size)
 {
   //MEASURE_FUNCTION_TIME;
-  
+
   //std::cout << "Starting to create range image from "<<point_cloud.points.size ()<<" points.\n";
-  
+
   // If the sensor pose is inside of the sphere we have to calculate the image the normal way
   if ((point_cloud_center-sensor_pose.translation()).norm() <= point_cloud_radius) {
     createFromPointCloud (point_cloud, angular_resolution_x, angular_resolution_y,
@@ -167,20 +167,20 @@ RangeImage::createFromPointCloudWithKnownSize (const PointCloudType& point_cloud
                           sensor_pose, coordinate_frame, noise_level, min_range, border_size);
     return;
   }
-  
+
   setAngularResolution (angular_resolution_x, angular_resolution_y);
-  
+
   getCoordinateFrameTransformation (coordinate_frame, to_world_system_);
   to_world_system_ = sensor_pose * to_world_system_;
   to_range_image_system_ = to_world_system_.inverse (Eigen::Isometry);
-  
+
   float max_angle_size = getMaxAngleSize (sensor_pose, point_cloud_center, point_cloud_radius);
   int pixel_radius_x = pcl_lrint (std::ceil (0.5f*max_angle_size*angular_resolution_x_reciprocal_)),
       pixel_radius_y = pcl_lrint (std::ceil (0.5f*max_angle_size*angular_resolution_y_reciprocal_));
   width  = 2*pixel_radius_x;
   height = 2*pixel_radius_y;
   is_dense = false;
-  
+
   image_offset_x_ = image_offset_y_ = 0;  // temporary values for getImagePoint
   int center_pixel_x, center_pixel_y;
   getImagePoint (point_cloud_center, center_pixel_x, center_pixel_y);
@@ -189,17 +189,17 @@ RangeImage::createFromPointCloudWithKnownSize (const PointCloudType& point_cloud
 
   points.clear ();
   points.resize (width*height, unobserved_point);
-  
+
   int top=height, right=-1, bottom=-1, left=width;
   doZBuffer (point_cloud, noise_level, min_range, top, right, bottom, left);
-  
+
   cropImage (border_size, top, right, bottom, left);
-  
+
   recalculate3DPointPositions ();
 }
 
 /////////////////////////////////////////////////////////////////////////
-template <typename PointCloudTypeWithViewpoints> void 
+template <typename PointCloudTypeWithViewpoints> void
 RangeImage::createFromPointCloudWithViewpoints (const PointCloudTypeWithViewpoints& point_cloud,
                                                 float angular_resolution,
                                                 float max_angle_width, float max_angle_height,
@@ -212,7 +212,7 @@ RangeImage::createFromPointCloudWithViewpoints (const PointCloudTypeWithViewpoin
 }
 
 /////////////////////////////////////////////////////////////////////////
-template <typename PointCloudTypeWithViewpoints> void 
+template <typename PointCloudTypeWithViewpoints> void
 RangeImage::createFromPointCloudWithViewpoints (const PointCloudTypeWithViewpoints& point_cloud,
                                                 float angular_resolution_x, float angular_resolution_y,
                                                 float max_angle_width, float max_angle_height,
@@ -226,18 +226,18 @@ RangeImage::createFromPointCloudWithViewpoints (const PointCloudTypeWithViewpoin
 }
 
 /////////////////////////////////////////////////////////////////////////
-template <typename PointCloudType> void 
+template <typename PointCloudType> void
 RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, float min_range, int& top, int& right, int& bottom, int& left)
 {
   using PointType2 = typename PointCloudType::PointType;
   const typename pcl::PointCloud<PointType2>::VectorType &points2 = point_cloud.points;
-  
+
   unsigned int size = width*height;
   int* counters = new int[size];
   ERASE_ARRAY (counters, size);
-  
+
   top=height; right=-1; bottom=-1; left=width;
-  
+
   float x_real, y_real, range_of_current_point;
   int x, y;
   for (const auto& point: points2)
@@ -245,25 +245,25 @@ RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, flo
     if (!isFinite (point))  // Check for NAN etc
       continue;
     Vector3fMapConst current_point = point.getVector3fMap ();
-    
+
     this->getImagePoint (current_point, x_real, y_real, range_of_current_point);
     this->real2DToInt2D (x_real, y_real, x, y);
-    
+
     if (range_of_current_point < min_range|| !isInImage (x, y))
       continue;
     //std::cout << " ("<<current_point[0]<<", "<<current_point[1]<<", "<<current_point[2]<<") falls into pixel "<<x<<","<<y<<".\n";
-    
+
     // Do some minor interpolation by checking the three closest neighbors to the point, that are not filled yet.
     int floor_x = pcl_lrint (std::floor (x_real)), floor_y = pcl_lrint (std::floor (y_real)),
         ceil_x  = pcl_lrint (std::ceil (x_real)),  ceil_y  = pcl_lrint (std::ceil (y_real));
-    
+
     int neighbor_x[4], neighbor_y[4];
     neighbor_x[0]=floor_x; neighbor_y[0]=floor_y;
     neighbor_x[1]=floor_x; neighbor_y[1]=ceil_y;
     neighbor_x[2]=ceil_x;  neighbor_y[2]=floor_y;
     neighbor_x[3]=ceil_x;  neighbor_y[3]=ceil_y;
     //std::cout << x_real<<","<<y_real<<": ";
-    
+
     for (int i=0; i<4; ++i)
     {
       int n_x=neighbor_x[i], n_y=neighbor_y[i];
@@ -282,13 +282,13 @@ RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, flo
       }
     }
     //std::cout <<std::endl;
-    
+
     // The point itself
     int arrayPos = y*width + x;
     float& range_at_image_point = points[arrayPos].range;
     int& counter = counters[arrayPos];
     bool addCurrentPoint=false, replace_with_current_point=false;
-    
+
     if (counter==0)
     {
       replace_with_current_point = true;
@@ -304,7 +304,7 @@ RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, flo
         addCurrentPoint = true;
       }
     }
-    
+
     if (replace_with_current_point)
     {
       counter = 1;
@@ -318,29 +318,29 @@ RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, flo
       range_at_image_point += (range_of_current_point-range_at_image_point)/counter;
     }
   }
-  
+
   delete[] counters;
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
-RangeImage::getImagePoint (float x, float y, float z, float& image_x, float& image_y, float& range) const 
+void
+RangeImage::getImagePoint (float x, float y, float z, float& image_x, float& image_y, float& range) const
 {
   Eigen::Vector3f point (x, y, z);
   getImagePoint (point, image_x, image_y, range);
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
-RangeImage::getImagePoint (float x, float y, float z, float& image_x, float& image_y) const 
+void
+RangeImage::getImagePoint (float x, float y, float z, float& image_x, float& image_y) const
 {
   float range;
   getImagePoint (x, y, z, image_x, image_y, range);
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
-RangeImage::getImagePoint (float x, float y, float z, int& image_x, int& image_y) const 
+void
+RangeImage::getImagePoint (float x, float y, float z, int& image_x, int& image_y) const
 {
   float image_x_float, image_y_float;
   getImagePoint (x, y, z, image_x_float, image_y_float);
@@ -348,8 +348,8 @@ RangeImage::getImagePoint (float x, float y, float z, int& image_x, int& image_y
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
-RangeImage::getImagePoint (const Eigen::Vector3f& point, float& image_x, float& image_y, float& range) const 
+void
+RangeImage::getImagePoint (const Eigen::Vector3f& point, float& image_x, float& image_y, float& range) const
 {
   Eigen::Vector3f transformedPoint = to_range_image_system_ * point;
   range = transformedPoint.norm ();
@@ -362,7 +362,7 @@ RangeImage::getImagePoint (const Eigen::Vector3f& point, float& image_x, float& 
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImage::getImagePoint (const Eigen::Vector3f& point, int& image_x, int& image_y, float& range) const {
   float image_x_float, image_y_float;
   getImagePoint (point, image_x_float, image_y_float, range);
@@ -370,7 +370,7 @@ RangeImage::getImagePoint (const Eigen::Vector3f& point, int& image_x, int& imag
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImage::getImagePoint (const Eigen::Vector3f& point, float& image_x, float& image_y) const
 {
   float range;
@@ -378,7 +378,7 @@ RangeImage::getImagePoint (const Eigen::Vector3f& point, float& image_x, float& 
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImage::getImagePoint (const Eigen::Vector3f& point, int& image_x, int& image_y) const
 {
   float image_x_float, image_y_float;
@@ -387,7 +387,7 @@ RangeImage::getImagePoint (const Eigen::Vector3f& point, int& image_x, int& imag
 }
 
 /////////////////////////////////////////////////////////////////////////
-float 
+float
 RangeImage::checkPoint (const Eigen::Vector3f& point, PointWithRange& point_in_image) const
 {
   int image_x, image_y;
@@ -401,7 +401,7 @@ RangeImage::checkPoint (const Eigen::Vector3f& point, PointWithRange& point_in_i
 }
 
 /////////////////////////////////////////////////////////////////////////
-float 
+float
 RangeImage::getRangeDifference (const Eigen::Vector3f& point) const
 {
   int image_x, image_y;
@@ -420,7 +420,7 @@ RangeImage::getRangeDifference (const Eigen::Vector3f& point) const
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImage::getImagePointFromAngles (float angle_x, float angle_y, float& image_x, float& image_y) const
 {
   image_x = (angle_x*cosLookUp (angle_y) + static_cast<float> (M_PI))*angular_resolution_x_reciprocal_ - static_cast<float> (image_offset_x_);
@@ -428,43 +428,43 @@ RangeImage::getImagePointFromAngles (float angle_x, float angle_y, float& image_
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImage::real2DToInt2D (float x, float y, int& xInt, int& yInt) const
 {
-  xInt = static_cast<int> (pcl_lrintf (x)); 
+  xInt = static_cast<int> (pcl_lrintf (x));
   yInt = static_cast<int> (pcl_lrintf (y));
 }
 
 /////////////////////////////////////////////////////////////////////////
-bool 
+bool
 RangeImage::isInImage (int x, int y) const
 {
   return (x >= 0 && x < static_cast<int> (width) && y >= 0 && y < static_cast<int> (height));
 }
 
 /////////////////////////////////////////////////////////////////////////
-bool 
+bool
 RangeImage::isValid (int x, int y) const
 {
   return isInImage (x,y) && std::isfinite (getPoint (x,y).range);
 }
 
 /////////////////////////////////////////////////////////////////////////
-bool 
+bool
 RangeImage::isValid (int index) const
 {
   return std::isfinite (getPoint (index).range);
 }
 
 /////////////////////////////////////////////////////////////////////////
-bool 
+bool
 RangeImage::isObserved (int x, int y) const
 {
   return !(!isInImage (x,y) || (std::isinf (getPoint (x,y).range) && getPoint (x,y).range < 0.0f));
 }
 
 /////////////////////////////////////////////////////////////////////////
-bool 
+bool
 RangeImage::isMaxRange (int x, int y) const
 {
   float range = getPoint (x,y).range;
@@ -472,7 +472,7 @@ RangeImage::isMaxRange (int x, int y) const
 }
 
 /////////////////////////////////////////////////////////////////////////
-const PointWithRange& 
+const PointWithRange&
 RangeImage::getPoint (int image_x, int image_y) const
 {
   if (!isInImage (image_x, image_y))
@@ -481,21 +481,21 @@ RangeImage::getPoint (int image_x, int image_y) const
 }
 
 /////////////////////////////////////////////////////////////////////////
-const PointWithRange& 
+const PointWithRange&
 RangeImage::getPointNoCheck (int image_x, int image_y) const
 {
   return points[image_y*width + image_x];
 }
 
 /////////////////////////////////////////////////////////////////////////
-PointWithRange& 
+PointWithRange&
 RangeImage::getPointNoCheck (int image_x, int image_y)
 {
   return points[image_y*width + image_x];
 }
 
 /////////////////////////////////////////////////////////////////////////
-PointWithRange& 
+PointWithRange&
 RangeImage::getPoint (int image_x, int image_y)
 {
   return points[image_y*width + image_x];
@@ -503,7 +503,7 @@ RangeImage::getPoint (int image_x, int image_y)
 
 
 /////////////////////////////////////////////////////////////////////////
-const PointWithRange& 
+const PointWithRange&
 RangeImage::getPoint (int index) const
 {
   return points[index];
@@ -519,7 +519,7 @@ RangeImage::getPoint (float image_x, float image_y) const
 }
 
 /////////////////////////////////////////////////////////////////////////
-PointWithRange& 
+PointWithRange&
 RangeImage::getPoint (float image_x, float image_y)
 {
   int x, y;
@@ -528,7 +528,7 @@ RangeImage::getPoint (float image_x, float image_y)
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImage::getPoint (int image_x, int image_y, Eigen::Vector3f& point) const
 {
   //std::cout << getPoint (image_x, image_y)<< " - " << getPoint (image_x, image_y).getVector3fMap ()<<"\n";
@@ -536,41 +536,41 @@ RangeImage::getPoint (int image_x, int image_y, Eigen::Vector3f& point) const
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImage::getPoint (int index, Eigen::Vector3f& point) const
 {
   point = getPoint (index).getVector3fMap ();
 }
 
 /////////////////////////////////////////////////////////////////////////
-const Eigen::Map<const Eigen::Vector3f> 
+const Eigen::Map<const Eigen::Vector3f>
 RangeImage::getEigenVector3f (int x, int y) const
 {
   return getPoint (x, y).getVector3fMap ();
 }
 
 /////////////////////////////////////////////////////////////////////////
-const Eigen::Map<const Eigen::Vector3f> 
+const Eigen::Map<const Eigen::Vector3f>
 RangeImage::getEigenVector3f (int index) const
 {
   return getPoint (index).getVector3fMap ();
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
-RangeImage::calculate3DPoint (float image_x, float image_y, float range, Eigen::Vector3f& point) const 
+void
+RangeImage::calculate3DPoint (float image_x, float image_y, float range, Eigen::Vector3f& point) const
 {
   float angle_x, angle_y;
   //std::cout << image_x<<","<<image_y<<","<<range;
   getAnglesFromImagePoint (image_x, image_y, angle_x, angle_y);
-  
+
   float cosY = std::cos (angle_y);
   point = Eigen::Vector3f (range * sinf (angle_x) * cosY, range * sinf (angle_y), range * std::cos (angle_x)*cosY);
   point = to_world_system_ * point;
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImage::calculate3DPoint (float image_x, float image_y, Eigen::Vector3f& point) const
 {
   const PointWithRange& point_in_image = getPoint (image_x, image_y);
@@ -578,7 +578,7 @@ RangeImage::calculate3DPoint (float image_x, float image_y, Eigen::Vector3f& poi
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImage::calculate3DPoint (float image_x, float image_y, float range, PointWithRange& point) const {
   point.range = range;
   Eigen::Vector3f tmp_point;
@@ -587,7 +587,7 @@ RangeImage::calculate3DPoint (float image_x, float image_y, float range, PointWi
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImage::calculate3DPoint (float image_x, float image_y, PointWithRange& point) const
 {
   const PointWithRange& point_in_image = getPoint (image_x, image_y);
@@ -595,8 +595,8 @@ RangeImage::calculate3DPoint (float image_x, float image_y, PointWithRange& poin
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
-RangeImage::getAnglesFromImagePoint (float image_x, float image_y, float& angle_x, float& angle_y) const 
+void
+RangeImage::getAnglesFromImagePoint (float image_x, float image_y, float& angle_x, float& angle_y) const
 {
   angle_y = (image_y+static_cast<float> (image_offset_y_))*angular_resolution_y_ - 0.5f*static_cast<float> (M_PI);
   float cos_angle_y = std::cos (angle_y);
@@ -604,7 +604,7 @@ RangeImage::getAnglesFromImagePoint (float image_x, float image_y, float& angle_
 }
 
 /////////////////////////////////////////////////////////////////////////
-float 
+float
 RangeImage::getImpactAngle (int x1, int y1, int x2, int y2) const
 {
   if (!isInImage (x1, y1) || !isInImage (x2,y2))
@@ -613,21 +613,21 @@ RangeImage::getImpactAngle (int x1, int y1, int x2, int y2) const
 }
 
 /////////////////////////////////////////////////////////////////////////
-float 
+float
 RangeImage::getImpactAngle (const PointWithRange& point1, const PointWithRange& point2) const {
   if ( (std::isinf (point1.range)&&point1.range<0) || (std::isinf (point2.range)&&point2.range<0))
     return -std::numeric_limits<float>::infinity ();
-  
+
   float r1 = (std::min) (point1.range, point2.range),
         r2 = (std::max) (point1.range, point2.range);
   float impact_angle = static_cast<float> (0.5f * M_PI);
-  
-  if (std::isinf (r2)) 
+
+  if (std::isinf (r2))
   {
     if (r2 > 0.0f && !std::isinf (r1))
       impact_angle = 0.0f;
   }
-  else if (!std::isinf (r1)) 
+  else if (!std::isinf (r1))
   {
     float r1Sqr = r1*r1,
           r2Sqr = r2*r2,
@@ -637,15 +637,15 @@ RangeImage::getImpactAngle (const PointWithRange& point1, const PointWithRange& 
     cos_impact_angle = (std::max) (0.0f, (std::min) (1.0f, cos_impact_angle));
     impact_angle = std::acos (cos_impact_angle);  // Using the cosine rule
   }
-  
+
   if (point1.range > point2.range)
     impact_angle = -impact_angle;
-  
+
   return impact_angle;
 }
 
 /////////////////////////////////////////////////////////////////////////
-float 
+float
 RangeImage::getAcutenessValue (const PointWithRange& point1, const PointWithRange& point2) const
 {
   float impact_angle = getImpactAngle (point1, point2);
@@ -660,7 +660,7 @@ RangeImage::getAcutenessValue (const PointWithRange& point1, const PointWithRang
 }
 
 /////////////////////////////////////////////////////////////////////////
-float 
+float
 RangeImage::getAcutenessValue (int x1, int y1, int x2, int y2) const
 {
   if (!isInImage (x1, y1) || !isInImage (x2,y2))
@@ -669,14 +669,14 @@ RangeImage::getAcutenessValue (int x1, int y1, int x2, int y2) const
 }
 
 /////////////////////////////////////////////////////////////////////////
-const Eigen::Vector3f 
+const Eigen::Vector3f
 RangeImage::getSensorPos () const
 {
   return Eigen::Vector3f (to_world_system_ (0,3), to_world_system_ (1,3), to_world_system_ (2,3));
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImage::getSurfaceAngleChange (int x, int y, int radius, float& angle_change_x, float& angle_change_y) const
 {
   angle_change_x = angle_change_y = -std::numeric_limits<float>::infinity ();
@@ -685,7 +685,7 @@ RangeImage::getSurfaceAngleChange (int x, int y, int radius, float& angle_change
   Eigen::Vector3f point;
   getPoint (x, y, point);
   Eigen::Affine3f transformation = getTransformationToViewerCoordinateFrame (point);
-  
+
   if (isObserved (x-radius, y) && isObserved (x+radius, y))
   {
     Eigen::Vector3f transformed_left;
@@ -700,7 +700,7 @@ RangeImage::getSurfaceAngleChange (int x, int y, int radius, float& angle_change
       transformed_left[1] = 0.0f;
       transformed_left.normalize ();
     }
-    
+
     Eigen::Vector3f transformed_right;
     if (isMaxRange (x+radius, y))
       transformed_right = Eigen::Vector3f (0.0f, 0.0f, 1.0f);
@@ -717,7 +717,7 @@ RangeImage::getSurfaceAngleChange (int x, int y, int radius, float& angle_change
     angle_change_x = (std::max) (0.0f, (std::min) (1.0f, angle_change_x));
     angle_change_x = std::acos (angle_change_x);
   }
-  
+
   if (isObserved (x, y-radius) && isObserved (x, y+radius))
   {
     Eigen::Vector3f transformed_top;
@@ -732,7 +732,7 @@ RangeImage::getSurfaceAngleChange (int x, int y, int radius, float& angle_change
       transformed_top[0] = 0.0f;
       transformed_top.normalize ();
     }
-    
+
     Eigen::Vector3f transformed_bottom;
     if (isMaxRange (x, y+radius))
       transformed_bottom = Eigen::Vector3f (0.0f, 0.0f, 1.0f);
@@ -765,7 +765,7 @@ RangeImage::getSurfaceAngleChange (int x, int y, int radius, float& angle_change
   //}
   //if (std::isinf (neighbor2.range))
     //return std::acos ( (Eigen::Vector3f (point.x, point.y, point.z)-getSensorPos ()).normalized ().dot ( (Eigen::Vector3f (neighbor1.x, neighbor1.y, neighbor1.z)-Eigen::Vector3f (point.x, point.y, point.z)).normalized ()));
-  
+
   //float d1_squared = squaredEuclideanDistance (point, neighbor1),
         //d1 = std::sqrt (d1_squared),
         //d2_squared = squaredEuclideanDistance (point, neighbor2),
@@ -781,21 +781,21 @@ RangeImage::getSurfaceAngleChange (int x, int y, int radius, float& angle_change
 //}
 
 /////////////////////////////////////////////////////////////////////////
-float 
+float
 RangeImage::getMaxAngleSize (const Eigen::Affine3f& viewer_pose, const Eigen::Vector3f& center, float radius)
 {
   return 2.0f * asinf (radius/ (viewer_pose.translation ()-center).norm ());
 }
 
 /////////////////////////////////////////////////////////////////////////
-Eigen::Vector3f 
+Eigen::Vector3f
 RangeImage::getEigenVector3f (const PointWithRange& point)
 {
   return Eigen::Vector3f (point.x, point.y, point.z);
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImage::get1dPointAverage (int x, int y, int delta_x, int delta_y, int no_of_points, PointWithRange& average_point) const
 {
   //std::cout << __PRETTY_FUNCTION__<<" called.\n";
@@ -809,7 +809,7 @@ RangeImage::get1dPointAverage (int x, int y, int delta_x, int delta_y, int no_of
     weight_sum = 0.0f;
     average_point.x = average_point.y = average_point.z = average_point.range = 0.0f;
   }
-  
+
   int x2=x, y2=y;
   Vector4fMap average_point_eigen = average_point.getVector4fMap ();
   //std::cout << PVARN (no_of_points);
@@ -829,13 +829,12 @@ RangeImage::get1dPointAverage (int x, int y, int delta_x, int delta_y, int no_of
     return;
   }
   float normalization_factor = 1.0f/weight_sum;
-  average_point_eigen *= normalization_factor;
   average_point.range *= normalization_factor;
   //std::cout << PVARN (average_point);
 }
 
 /////////////////////////////////////////////////////////////////////////
-float 
+float
 RangeImage::getEuclideanDistanceSquared (int x1, int y1, int x2, int y2) const
 {
   if (!isObserved (x1,y1)||!isObserved (x2,y2))
@@ -850,7 +849,7 @@ RangeImage::getEuclideanDistanceSquared (int x1, int y1, int x2, int y2) const
 }
 
 /////////////////////////////////////////////////////////////////////////
-float 
+float
 RangeImage::getAverageEuclideanDistance (int x, int y, int offset_x, int offset_y, int max_steps) const
 {
   float average_pixel_distance = 0.0f;
@@ -877,7 +876,7 @@ RangeImage::getAverageEuclideanDistance (int x, int y, int offset_x, int offset_
 }
 
 /////////////////////////////////////////////////////////////////////////
-float 
+float
 RangeImage::getImpactAngleBasedOnLocalNormal (int x, int y, int radius) const
 {
   if (!isValid (x,y))
@@ -892,7 +891,7 @@ RangeImage::getImpactAngleBasedOnLocalNormal (int x, int y, int radius) const
 
 
 /////////////////////////////////////////////////////////////////////////
-bool 
+bool
 RangeImage::getNormal (int x, int y, int radius, Eigen::Vector3f& normal, int step_size) const
 {
   VectorAverage3f vector_average;
@@ -918,7 +917,7 @@ RangeImage::getNormal (int x, int y, int radius, Eigen::Vector3f& normal, int st
 }
 
 /////////////////////////////////////////////////////////////////////////
-float 
+float
 RangeImage::getNormalBasedAcutenessValue (int x, int y, int radius) const
 {
   float impact_angle = getImpactAngleBasedOnLocalNormal (x, y, radius);
@@ -930,7 +929,7 @@ RangeImage::getNormalBasedAcutenessValue (int x, int y, int radius) const
 }
 
 /////////////////////////////////////////////////////////////////////////
-bool 
+bool
 RangeImage::getNormalForClosestNeighbors (int x, int y, int radius, const PointWithRange& point,
                                               int no_of_nearest_neighbors, Eigen::Vector3f& normal, int step_size) const
 {
@@ -938,7 +937,7 @@ RangeImage::getNormalForClosestNeighbors (int x, int y, int radius, const PointW
 }
 
 /////////////////////////////////////////////////////////////////////////
-bool 
+bool
 RangeImage::getNormalForClosestNeighbors (int x, int y, Eigen::Vector3f& normal, int radius) const
 {
   if (!isValid (x,y))
@@ -947,9 +946,9 @@ RangeImage::getNormalForClosestNeighbors (int x, int y, Eigen::Vector3f& normal,
   return getNormalForClosestNeighbors (x, y, radius, getPoint (x,y).getVector3fMap (), no_of_nearest_neighbors, normal);
 }
 
-namespace 
+namespace
 {  // Anonymous namespace, so that this is only accessible in this file
-  struct NeighborWithDistance 
+  struct NeighborWithDistance
   {  // local struct to help us with sorting
     float distance;
     const PointWithRange* neighbor;
@@ -958,7 +957,7 @@ namespace
 }
 
 /////////////////////////////////////////////////////////////////////////
-bool 
+bool
 RangeImage::getSurfaceInformation (int x, int y, int radius, const Eigen::Vector3f& point, int no_of_closest_neighbors, int step_size,
                                    float& max_closest_neighbor_distance_squared,
                                    Eigen::Vector3f& normal, Eigen::Vector3f& mean, Eigen::Vector3f& eigen_values,
@@ -973,13 +972,13 @@ RangeImage::getSurfaceInformation (int x, int y, int radius, const Eigen::Vector
     mean_all_neighbors->setZero ();
   if (eigen_values_all_neighbors!=nullptr)
     eigen_values_all_neighbors->setZero ();
-  
+
   const auto sqrt_blocksize = 2 * radius + 1;
   const auto blocksize = sqrt_blocksize * sqrt_blocksize;
-  
+
   PointWithRange given_point;
   given_point.x=point[0];  given_point.y=point[1];  given_point.z=point[2];
-  
+
   std::vector<NeighborWithDistance> ordered_neighbors (blocksize);
   int neighbor_counter = 0;
   for (int y2=y-radius; y2<=y+radius; y2+=step_size)
@@ -999,12 +998,12 @@ RangeImage::getSurfaceInformation (int x, int y, int radius, const Eigen::Vector
   std::sort (ordered_neighbors.begin (), ordered_neighbors.begin () + neighbor_counter);  // Normal sort seems to be the fastest method (faster than partial_sort)
   //std::stable_sort (ordered_neighbors, ordered_neighbors+neighbor_counter);
   //std::partial_sort (ordered_neighbors, ordered_neighbors+no_of_closest_neighbors, ordered_neighbors+neighbor_counter);
-  
+
   max_closest_neighbor_distance_squared = ordered_neighbors[no_of_closest_neighbors-1].distance;
   //float max_distance_squared = max_closest_neighbor_distance_squared;
   float max_distance_squared = max_closest_neighbor_distance_squared*4.0f;  // Double the allowed distance value
   //max_closest_neighbor_distance_squared = max_distance_squared;
-  
+
   VectorAverage3f vector_average;
   //for (int neighbor_idx=0; neighbor_idx<no_of_closest_neighbors; ++neighbor_idx)
   int neighbor_idx;
@@ -1015,7 +1014,7 @@ RangeImage::getSurfaceInformation (int x, int y, int radius, const Eigen::Vector
     //std::cout << ordered_neighbors[neighbor_idx].distance<<"\n";
     vector_average.add (ordered_neighbors[neighbor_idx].neighbor->getVector3fMap ());
   }
-  
+
   if (vector_average.getNoOfSamples () < 3)
     return false;
   //std::cout << PVARN (vector_average.getNoOfSamples ());
@@ -1025,33 +1024,33 @@ RangeImage::getSurfaceInformation (int x, int y, int radius, const Eigen::Vector
   if (normal.dot (viewing_direction) < 0.0f)
     normal *= -1.0f;
   mean = vector_average.getMean ();
-  
+
   if (normal_all_neighbors==nullptr)
     return true;
-  
+
   // Add remaining neighbors
   for (int neighbor_idx2=neighbor_idx; neighbor_idx2<neighbor_counter; ++neighbor_idx2)
     vector_average.add (ordered_neighbors[neighbor_idx2].neighbor->getVector3fMap ());
-  
+
   vector_average.doPCA (*eigen_values_all_neighbors, *normal_all_neighbors, eigen_vector2, eigen_vector3);
   //std::cout << PVARN (vector_average.getNoOfSamples ())<<".\n";
   if (normal_all_neighbors->dot (viewing_direction) < 0.0f)
     *normal_all_neighbors *= -1.0f;
   *mean_all_neighbors = vector_average.getMean ();
-  
+
   //std::cout << viewing_direction[0]<<","<<viewing_direction[1]<<","<<viewing_direction[2]<<"\n";
-  
+
   return true;
 }
 
 /////////////////////////////////////////////////////////////////////////
-float 
+float
 RangeImage::getSquaredDistanceOfNthNeighbor (int x, int y, int radius, int n, int step_size) const
 {
   const PointWithRange& point = getPoint (x, y);
   if (!std::isfinite (point.range))
     return -std::numeric_limits<float>::infinity ();
-  
+
   const auto sqrt_blocksize = 2 * radius + 1;
   const auto blocksize = sqrt_blocksize * sqrt_blocksize;
   std::vector<float> neighbor_distances (blocksize);
@@ -1075,7 +1074,7 @@ RangeImage::getSquaredDistanceOfNthNeighbor (int x, int y, int radius, int n, in
 
 
 /////////////////////////////////////////////////////////////////////////
-bool 
+bool
 RangeImage::getNormalForClosestNeighbors (int x, int y, int radius, const Eigen::Vector3f& point, int no_of_nearest_neighbors,
                                                      Eigen::Vector3f& normal, Eigen::Vector3f* point_on_plane, int step_size) const
 {
@@ -1083,7 +1082,7 @@ RangeImage::getNormalForClosestNeighbors (int x, int y, int radius, const Eigen:
   float used_squared_max_distance;
   bool ret = getSurfaceInformation (x, y, radius, point, no_of_nearest_neighbors, step_size, used_squared_max_distance,
                                    normal, mean, eigen_values);
-  
+
   if (ret)
   {
     if (point_on_plane != nullptr)
@@ -1094,7 +1093,7 @@ RangeImage::getNormalForClosestNeighbors (int x, int y, int radius, const Eigen:
 
 
 /////////////////////////////////////////////////////////////////////////
-float 
+float
 RangeImage::getCurvature (int x, int y, int radius, int step_size) const
 {
   VectorAverage3f vector_average;
@@ -1119,7 +1118,7 @@ RangeImage::getCurvature (int x, int y, int radius, int step_size) const
 
 
 /////////////////////////////////////////////////////////////////////////
-template <typename PointCloudTypeWithViewpoints> Eigen::Vector3f 
+template <typename PointCloudTypeWithViewpoints> Eigen::Vector3f
 RangeImage::getAverageViewPoint (const PointCloudTypeWithViewpoints& point_cloud)
 {
   Eigen::Vector3f average_viewpoint (0,0,0);
@@ -1134,12 +1133,12 @@ RangeImage::getAverageViewPoint (const PointCloudTypeWithViewpoints& point_cloud
     ++point_counter;
   }
   average_viewpoint /= point_counter;
-  
+
   return average_viewpoint;
 }
 
 /////////////////////////////////////////////////////////////////////////
-bool 
+bool
 RangeImage::getViewingDirection (int x, int y, Eigen::Vector3f& viewing_direction) const
 {
   if (!isValid (x, y))
@@ -1149,14 +1148,14 @@ RangeImage::getViewingDirection (int x, int y, Eigen::Vector3f& viewing_directio
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImage::getViewingDirection (const Eigen::Vector3f& point, Eigen::Vector3f& viewing_direction) const
 {
   viewing_direction = (point-getSensorPos ()).normalized ();
 }
 
 /////////////////////////////////////////////////////////////////////////
-Eigen::Affine3f 
+Eigen::Affine3f
 RangeImage::getTransformationToViewerCoordinateFrame (const Eigen::Vector3f& point) const
 {
   Eigen::Affine3f transformation;
@@ -1165,7 +1164,7 @@ RangeImage::getTransformationToViewerCoordinateFrame (const Eigen::Vector3f& poi
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImage::getTransformationToViewerCoordinateFrame (const Eigen::Vector3f& point, Eigen::Affine3f& transformation) const
 {
   Eigen::Vector3f viewing_direction = (point-getSensorPos ()).normalized ();
@@ -1173,7 +1172,7 @@ RangeImage::getTransformationToViewerCoordinateFrame (const Eigen::Vector3f& poi
 }
 
 /////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImage::getRotationToViewerCoordinateFrame (const Eigen::Vector3f& point, Eigen::Affine3f& transformation) const
 {
   Eigen::Vector3f viewing_direction = (point-getSensorPos ()).normalized ();
@@ -1199,7 +1198,7 @@ RangeImage::setAngularResolution (float angular_resolution_x, float angular_reso
 }
 
 /////////////////////////////////////////////////////////////////////////
-inline void 
+inline void
 RangeImage::setTransformationToRangeImageSystem (const Eigen::Affine3f& to_range_image_system)
 {
   to_range_image_system_ = to_range_image_system;
@@ -1207,15 +1206,15 @@ RangeImage::setTransformationToRangeImageSystem (const Eigen::Affine3f& to_range
 }
 
 /////////////////////////////////////////////////////////////////////////
-inline void 
+inline void
 RangeImage::getAngularResolution (float& angular_resolution_x, float& angular_resolution_y) const
-{  
+{
   angular_resolution_x = angular_resolution_x_;
   angular_resolution_y = angular_resolution_y_;
 }
 
 /////////////////////////////////////////////////////////////////////////
-template <typename PointCloudType> void 
+template <typename PointCloudType> void
 RangeImage::integrateFarRanges (const PointCloudType& far_ranges)
 {
   float x_real, y_real, range_of_current_point;
@@ -1224,20 +1223,20 @@ RangeImage::integrateFarRanges (const PointCloudType& far_ranges)
     //if (!isFinite (point))  // Check for NAN etc
       //continue;
     Vector3fMapConst current_point = point.getVector3fMap ();
-    
+
     this->getImagePoint (current_point, x_real, y_real, range_of_current_point);
-    
-    int floor_x = static_cast<int> (pcl_lrint (std::floor (x_real))), 
+
+    int floor_x = static_cast<int> (pcl_lrint (std::floor (x_real))),
         floor_y = static_cast<int> (pcl_lrint (std::floor (y_real))),
         ceil_x  = static_cast<int> (pcl_lrint (std::ceil (x_real))),
         ceil_y  = static_cast<int> (pcl_lrint (std::ceil (y_real)));
-    
+
     int neighbor_x[4], neighbor_y[4];
     neighbor_x[0]=floor_x; neighbor_y[0]=floor_y;
     neighbor_x[1]=floor_x; neighbor_y[1]=ceil_y;
     neighbor_x[2]=ceil_x;  neighbor_y[2]=floor_y;
     neighbor_x[3]=ceil_x;  neighbor_y[3]=ceil_y;
-    
+
     for (int i=0; i<4; ++i)
     {
       int x=neighbor_x[i], y=neighbor_y[i];
@@ -1252,4 +1251,3 @@ RangeImage::integrateFarRanges (const PointCloudType& far_ranges)
 
 }  // namespace end
 #endif
-

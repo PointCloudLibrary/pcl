@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -98,7 +98,7 @@ void SynchFaceOrientation( ON_Brep& brep, int fi )
 ON_BrepFace* ON_Brep::NewRuledFace(
       const ON_BrepEdge& edgeA,
       bool bRevEdgeA,
-      const ON_BrepEdge& edgeB, 
+      const ON_BrepEdge& edgeB,
       bool bRevEdgeB
       )
 {
@@ -147,11 +147,11 @@ ON_BrepFace* ON_Brep::NewRuledFace(
   // side edges (s,e,n,w)
   int eid[4] = {-1,-1,-1,-1};
   ON_BOOL32 bRev3d[4] = {false,false,false,false};
-  
+
   // south side
   eid[0] = edgeA.m_edge_index;
   bRev3d[0] = bRevEdgeA;
-  
+
   // east side
   const ON_BrepEdge* east_edge = FindLinearEdge( *this, vid[1], vid[2] );
   if ( east_edge )
@@ -215,11 +215,11 @@ ON_BrepFace* ON_Brep::NewConeFace(
   // side edges (s,e,n,w)
   int eid[4] = {-1,-1,-1,-1};
   ON_BOOL32 bRev3d[4] = {false,false,false,false};
-  
+
   // south side
   eid[0] = edge.m_edge_index;
   bRev3d[0] = bRevEdge;
-  
+
   // east side
   const ON_BrepEdge* east_edge = FindLinearEdge( *this, vid[1], vid[2] );
   if ( east_edge )
@@ -330,7 +330,7 @@ bool ON_Brep::SetTrimBoundingBoxes( ON_BrepLoop& loop, ON_BOOL32 bLazy )
 
 bool ON_Brep::SetTrimBoundingBox( ON_BrepTrim& trim, ON_BOOL32 bLazy )
 {
-  // TL_Brep overrides this function and computes much 
+  // TL_Brep overrides this function and computes much
   // tighter bounding boxes that take trim.m_t[] into account.
   ON_BOOL32 rc = true;
   if ( !trim.m_pbox.IsValid() || !bLazy )
@@ -441,7 +441,7 @@ ON_BrepFace* ON_Brep::NewFace(
   {
     pFace = &m_F[face_index];
   }
-  else 
+  else
   {
     // failed
     if ( bAddedSurface )
@@ -472,13 +472,13 @@ ON_BrepLoop* ON_Brep::NewOuterLoop(
     return NULL;
   ON_BrepFace& face = m_F[face_index];
   const ON_Surface* pSurface = face.SurfaceOf();
-  if (!pSurface) 
+  if (!pSurface)
     return NULL;
 
   double u[2], v[2];
-  if (!pSurface->GetDomain(0, &u[0], &u[1])) 
+  if (!pSurface->GetDomain(0, &u[0], &u[1]))
       return 0;
-  if (!pSurface->GetDomain(1, &v[0], &v[1])) 
+  if (!pSurface->GetDomain(1, &v[0], &v[1]))
       return 0;
 
   ON_3dPoint srf_P[2][2];
@@ -581,7 +581,7 @@ ON_BrepLoop* ON_Brep::NewOuterLoop(
         }
       }
     }
-  }  
+  }
 
   // if surface has singularities or is closed, make sure vertex and edge information is correct
   for ( i = 0; i < 4; i++ )
@@ -629,16 +629,16 @@ ON_BrepLoop* ON_Brep::NewOuterLoop(
     switch(i)
     {
     case 0:  // south side
-      c3[i] = pSurface->IsoCurve(i%2, v[0]); 
+      c3[i] = pSurface->IsoCurve(i%2, v[0]);
       break;
     case 1:  // east side
-      c3[i] = pSurface->IsoCurve(i%2, u[1]); 
+      c3[i] = pSurface->IsoCurve(i%2, u[1]);
       break;
     case 2:  // north side
-      c3[i] = pSurface->IsoCurve(i%2, v[1]); 
+      c3[i] = pSurface->IsoCurve(i%2, v[1]);
       break;
     case 3:  // west side
-      c3[i] = pSurface->IsoCurve(i%2, u[0]); 
+      c3[i] = pSurface->IsoCurve(i%2, u[0]);
       break;
     }
     if ( !c3[i] )
@@ -672,9 +672,9 @@ ON_BrepLoop* ON_Brep::NewOuterLoop(
 
   if ( vid[1] == -1 )
   {
-    if ( bEdgeIsClosed[0] ) 
+    if ( bEdgeIsClosed[0] )
       vid[1] = vid[0];
-    else if ( vid[2] >= 0 && bEdgeIsClosed[1] ) 
+    else if ( vid[2] >= 0 && bEdgeIsClosed[1] )
       vid[1] = vid[2];
     else
       vid[1] = NewVertex(srf_P[1][0],0.0).m_vertex_index;
@@ -682,9 +682,9 @@ ON_BrepLoop* ON_Brep::NewOuterLoop(
 
   if ( vid[2] == -1 )
   {
-    if ( bEdgeIsClosed[1] ) 
+    if ( bEdgeIsClosed[1] )
       vid[2] = vid[1];
-    else if (vid[3] >= 0 && bEdgeIsClosed[2] ) 
+    else if (vid[3] >= 0 && bEdgeIsClosed[2] )
       vid[2] = vid[3];
     else
       vid[2] = NewVertex( srf_P[1][1],0.0).m_vertex_index;
@@ -692,9 +692,9 @@ ON_BrepLoop* ON_Brep::NewOuterLoop(
 
   if ( vid[3] == -1 )
   {
-    if ( bEdgeIsClosed[2] ) 
+    if ( bEdgeIsClosed[2] )
       vid[3] = vid[2];
-    else if ( bEdgeIsClosed[3] ) 
+    else if ( bEdgeIsClosed[3] )
       vid[3] = vid[0];
     else
       vid[3] = NewVertex( srf_P[0][1],0.0).m_vertex_index;
@@ -774,7 +774,7 @@ ON_BrepLoop* ON_Brep::NewOuterLoop(
     {
       ON_BrepTrim& trim = NewTrim( m_E[eid[i]], bRev3d[i], loop, c2i);
       trim.m_iso = srf_iso[i];
-      if ( bIsClosed[(i+1)%2] ) 
+      if ( bIsClosed[(i+1)%2] )
         trim.m_type = ON_BrepTrim::seam;
       else {
         trim.m_type = ON_BrepTrim::boundary;
@@ -851,7 +851,7 @@ ON_Brep* ON_BrepBox( const ON_3dPoint* box_corners, ON_Brep* pBrep )
     //           v7_______e6_____v6
     //            |\             |\
     //            | e7           | e5
-    //            |  \ ______e4_____\ 
+    //            |  \ ______e4_____\
     //           e11  v4         |   v5
     //            |   |        e10   |
     //            |   |          |   |
@@ -942,7 +942,7 @@ ON_Brep* ON_BrepBox( const ON_3dPoint* box_corners, ON_Brep* pBrep )
       brep = 0;
     }
   }
-  else 
+  else
     brep = 0;
   return brep;
 }
@@ -953,18 +953,18 @@ ON_Brep* ON_BrepWedge( const ON_3dPoint* corners, ON_Brep* pBrep )
   ON_Brep* brep = 0;
 
   int vi, ei, ti, fi, si, c2i;
-  
+
   if(corners)
   {
     // use the one passed in or make a new one
-    if( pBrep ) 
+    if( pBrep )
     {
       pBrep->Destroy();
       brep = pBrep;
     }
     else
       brep = new ON_Brep();
-    
+
     brep->m_C2.Reserve(18);
     brep->m_C3.Reserve(9);
     brep->m_S.Reserve(5);
@@ -979,7 +979,7 @@ ON_Brep* ON_BrepWedge( const ON_3dPoint* corners, ON_Brep* pBrep )
     {
       brep->NewVertex( corners[vi], 0.0 );
     }
-    
+
     // 3d edges around bottom e0 - e2
     for ( ei = 0; ei < 3; ei++ )
     {
@@ -1007,20 +1007,20 @@ ON_Brep* ON_BrepWedge( const ON_3dPoint* corners, ON_Brep* pBrep )
 
     /*
     //
-    //                      /v5    
-    //                     /|\       
-    //                    / | \     
-    //                   e5 |  e4   
-    //                  /   e8  \     
-    //                 /__e3_____\  
-    //               v3|    |    |v4     
-    //                 |    |    |       
-    //                 |    /v2  |   
-    //                 e6  / \   e7   
-    //                 |  /   \  |   
-    //                 | e2    e1|   
-    //                 |/       \|     
-    //                 /____e0___\  
+    //                      /v5
+    //                     /|\
+    //                    / | \
+    //                   e5 |  e4
+    //                  /   e8  \
+    //                 /__e3_____\
+    //               v3|    |    |v4
+    //                 |    |    |
+    //                 |    /v2  |
+    //                 e6  / \   e7
+    //                 |  /   \  |
+    //                 | e2    e1|
+    //                 |/       \|
+    //                 /____e0___\
     //               v0           v1
     */
 
@@ -1084,11 +1084,11 @@ ON_Brep* ON_BrepWedge( const ON_3dPoint* corners, ON_Brep* pBrep )
         // south side of surface
         c2i = brep->AddTrimCurve( new ON_LineCurve( p0, p1 ) );
         brep->NewTrim( *e0, f[fi].bRev[0], loop, c2i ).m_iso = ON_Surface::S_iso;
-        
+
         // east side of surface
         c2i = brep->AddTrimCurve( new ON_LineCurve( p1, p2 ) );
         brep->NewTrim( *e1, f[fi].bRev[1], loop, c2i ).m_iso = ON_Surface::E_iso;
-        
+
         // north side of surface
         c2i = brep->AddTrimCurve( new ON_LineCurve( p2, p3 ) );
         brep->NewTrim( *e2, f[fi].bRev[2], loop, c2i ).m_iso = ON_Surface::N_iso;
@@ -1102,7 +1102,7 @@ ON_Brep* ON_BrepWedge( const ON_3dPoint* corners, ON_Brep* pBrep )
         // south side of surface
         c2i = brep->AddTrimCurve( new ON_LineCurve( p0, p1 ) );
         brep->NewTrim( *e0, f[fi].bRev[0], loop, c2i ).m_iso = ON_Surface::S_iso;
-        
+
         // diagonal from upper left to lower right
         c2i = brep->AddTrimCurve( new ON_LineCurve( p1, p3 ) );
         brep->NewTrim( *e1, f[fi].bRev[1], loop, c2i ).m_iso = ON_Surface::not_iso;
@@ -1132,7 +1132,7 @@ ON_Brep* ON_BrepWedge( const ON_3dPoint* corners, ON_Brep* pBrep )
       brep = 0;
     }
   }
-  else 
+  else
     brep = 0;
   return brep;
 }
@@ -1185,7 +1185,7 @@ ON_Brep* ON_BrepTorus( const ON_Torus& torus, ON_Brep* pBrep )
 }
 
 
-ON_Brep* ON_BrepCylinder( const ON_Cylinder& cylinder, 
+ON_Brep* ON_BrepCylinder( const ON_Cylinder& cylinder,
                           ON_BOOL32 bCapBottom,
                           ON_BOOL32 bCapTop,
                           ON_Brep* pBrep )
@@ -1236,11 +1236,11 @@ ON_Brep* ON_BrepCone( const ON_Cone& cone, ON_BOOL32 bCapBase, ON_Brep* pBrep )
 }
 
 
-ON_Brep* ON_BrepRevSurface( 
+ON_Brep* ON_BrepRevSurface(
           ON_RevSurface*& pRevSurface,
           ON_BOOL32 bCapStart,
           ON_BOOL32 bCapEnd,
-          ON_Brep* pBrep 
+          ON_Brep* pBrep
           )
 {
   ON_Brep* brep = 0;
@@ -1323,7 +1323,7 @@ ON_Brep* ON_BrepRevSurface(
 
         // create cap surface
         double radius = circle.radius;
-        ON_NurbsSurface* pCapSurface = ON_NurbsSurfaceQuadrilateral( 
+        ON_NurbsSurface* pCapSurface = ON_NurbsSurfaceQuadrilateral(
           circle.plane.PointAt(-radius,-radius),
           circle.plane.PointAt(+radius,-radius),
           circle.plane.PointAt(+radius,+radius),
@@ -1543,7 +1543,7 @@ bool ON_Brep::NewPlanarFaceLoop(
   // add new edges
   const int ei0 = m_E.Count();
   m_E.Reserve( ei0 + count );
-  for ( i = 0; i < count; i++ ) 
+  for ( i = 0; i < count; i++ )
   {
     int c3i = AddEdgeCurve( C3[i] );
     ON_BrepEdge& edge = NewEdge( m_V[vi0+i], m_V[vi0+((i+1)%count)], c3i );
@@ -1613,8 +1613,8 @@ bool ON_Brep::NewPlanarFaceLoop(
 }
 
 
-ON_Brep* ON_BrepTrimmedPlane( 
-            const ON_Plane& plane, 
+ON_Brep* ON_BrepTrimmedPlane(
+            const ON_Plane& plane,
             ON_SimpleArray<ON_Curve*>& boundary,
             ON_BOOL32 bDuplicateCurves,
             ON_Brep* pBrep )
@@ -1662,8 +1662,8 @@ ON_Brep* ON_BrepTrimmedPlane(
 
 
 
-ON_Brep* ON_BrepTrimmedPlane( 
-            const ON_Plane& plane, 
+ON_Brep* ON_BrepTrimmedPlane(
+            const ON_Plane& plane,
             const ON_Curve& boundary,
             ON_Brep* pBrep )
 {
@@ -1673,10 +1673,10 @@ ON_Brep* ON_BrepTrimmedPlane(
 }
 
 
-ON_Brep* ON_BrepFromMesh( 
-                         const ON_MeshTopology& mesh_topology, 
+ON_Brep* ON_BrepFromMesh(
+                         const ON_MeshTopology& mesh_topology,
                          ON_BOOL32 bTrimmedTriangles,
-                         ON_Brep* pBrep 
+                         ON_Brep* pBrep
                          )
 {
   ON_BezierCurve edge_line(3,false,2);
@@ -1736,7 +1736,7 @@ ON_Brep* ON_BrepFromMesh(
       edge_line.SetCV(1, v1.point);
       ON_Curve* pEdgeCurve = new ON_NurbsCurve( edge_line );
       c3i = brep->AddEdgeCurve( pEdgeCurve );
-      ON_BrepEdge& edge = brep->NewEdge( v0, v1, c3i );    
+      ON_BrepEdge& edge = brep->NewEdge( v0, v1, c3i );
       edge.m_tolerance = 0.0;
     }
 
@@ -1753,10 +1753,10 @@ ON_Brep* ON_BrepFromMesh(
       {
         if ( bTrimmedTriangles )
         {
-          // trimmed triangle 
+          // trimmed triangle
           srf_3d_corner[3] = srf_3d_corner[2] - srf_3d_corner[1] + srf_3d_corner[0];
         }
-        else 
+        else
         {
           // singular triangle
           srf_3d_corner[3] = srf_3d_corner[0];
@@ -1768,7 +1768,7 @@ ON_Brep* ON_BrepFromMesh(
         srf_3d_corner[3] = brep->m_V[fvi[3]].point;
       }
       ON_Surface* pSurface = ON_NurbsSurfaceQuadrilateral(
-                              srf_3d_corner[0], srf_3d_corner[1], 
+                              srf_3d_corner[0], srf_3d_corner[1],
                               srf_3d_corner[2], srf_3d_corner[3] );
       srf_dom[0] = pSurface->Domain(0);
       srf_dom[1] = pSurface->Domain(1);
@@ -1797,9 +1797,9 @@ ON_Brep* ON_BrepFromMesh(
           trim_line.SetCV(1,srf_2d_corner[(lti+1)%3]);
           ON_Curve* pTrimCurve = new ON_NurbsCurve( trim_line );
           c2i = brep->AddTrimCurve( pTrimCurve );
-          ON_BrepTrim& trim = brep->NewTrim( brep_edge, 
-                                             mesh_face.m_reve[fei]?true:false, 
-                                             loop, 
+          ON_BrepTrim& trim = brep->NewTrim( brep_edge,
+                                             mesh_face.m_reve[fei]?true:false,
+                                             loop,
                                              c2i );
           trim.m__legacy_2d_tol = 0.0;
           trim.m__legacy_3d_tol = 0.0;
@@ -1820,20 +1820,20 @@ ON_Brep* ON_BrepFromMesh(
           if ( bTriangle && lti == 3 )
           {
             // build a new singular edge
-            brep->NewSingularTrim( brep->m_V[fvi[0]], 
-                                               loop, 
+            brep->NewSingularTrim( brep->m_V[fvi[0]],
+                                               loop,
                                                quad_iso[lti],
                                                c2i );
           }
-          else 
+          else
           {
             fei = bTriangle ? ((lti+1)%3) : ((lti+1)%4);
             edge_index = mesh_face.m_topei[fei];
             ON_BrepEdge& brep_edge = brep->m_E[edge_index];
             const ON_MeshTopologyEdge& mesh_edge = mesh_topology.m_tope[edge_index];
-            ON_BrepTrim& trim = brep->NewTrim( brep_edge, 
-                                               mesh_face.m_reve[fei]?true:false, 
-                                               loop, 
+            ON_BrepTrim& trim = brep->NewTrim( brep_edge,
+                                               mesh_face.m_reve[fei]?true:false,
+                                               loop,
                                                c2i );
             trim.m__legacy_2d_tol = 0.0;
             trim.m__legacy_3d_tol = 0.0;
@@ -1843,7 +1843,7 @@ ON_Brep* ON_BrepFromMesh(
             trim.m_type = (mesh_edge.m_topf_count > 1) ? ON_BrepTrim::mated : ON_BrepTrim::boundary;
           }
         }
-      }      
+      }
     }
   }
   return brep;
@@ -1932,7 +1932,7 @@ bool ON_Brep::ChangeVertex( int old_vi, int new_vi, bool bClearTolerances )
 
   ON_BrepVertex* old_v = Vertex(old_vi);
   ON_BrepVertex* new_v = Vertex(new_vi);
-  
+
   if ( 0 == old_v )
     return false;
   if ( 0 == new_v )
@@ -2031,7 +2031,6 @@ ON_BOOL32 ON_BrepTrim::SetStartPoint(ON_3dPoint point)
     return false;
 
   point.z = 0.0;
-  ON_Interval domain = Domain();
   ON_3dPoint q = PointAtStart();
   q.z = 0;
   if ( point != q )
@@ -2261,7 +2260,7 @@ bool ON_Brep::CollapseEdge( int edge_index, bool bCloseTrimGap, int vertex_index
 
     ChangeVertex(edge->m_vi[0], vertex_index, true);
     ChangeVertex(edge->m_vi[1], vertex_index, true);
-    
+
     trim_count = ti.Count();
     for ( eti = 0; eti < trim_count; eti++ )
     {
@@ -2313,7 +2312,7 @@ int ON_Brep::RemoveWireVertices()
 
 bool ON_Brep::RemoveNesting(
         bool bExtractSingleSegments,
-        bool bEdges, 
+        bool bEdges,
         bool bTrimCurves
         )
 {
@@ -2563,14 +2562,14 @@ static bool ON_BrepRemoveSlits(ON_BrepLoop& L)
 }
 
 //This removes all slit trims  from F that are not joined to another face.
-//Unlike ON_Brep::RemoveSlits(), this will remove slit pairs from a loop in cases 
-//that will result in the creation of more loops. Caller is responsible for calling 
+//Unlike ON_Brep::RemoveSlits(), this will remove slit pairs from a loop in cases
+//that will result in the creation of more loops. Caller is responsible for calling
 //ON_Brep::Compact() to get rid of deleted trims and loops.
 
 bool ON_BrepRemoveSlits(ON_BrepFace& F)
 
 {
-  //For each loop, look for slit pairs that fall between non slits and 
+  //For each loop, look for slit pairs that fall between non slits and
   //break the loop at the pair.
   //After all loops have been split, call ON_Brep::RemoveSlits() on the result.
 
@@ -2634,7 +2633,7 @@ int ON_BrepMergeFaces(ON_Brep& B, int fid0, int fid1)
   if (F0.m_si != F1.m_si)
     return -1;
 
-  //Find a manifold edge that joins the two faces and combine the loops by removing 
+  //Find a manifold edge that joins the two faces and combine the loops by removing
   //the trims at that edge.
 
   ON_BrepEdge* pE = 0;
@@ -2857,4 +2856,3 @@ void ON_BrepMergeAllEdges(ON_Brep& B)
   }
   return;
 }
-

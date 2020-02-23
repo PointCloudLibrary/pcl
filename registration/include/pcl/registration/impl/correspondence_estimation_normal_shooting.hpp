@@ -70,7 +70,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
 
   double min_dist = std::numeric_limits<double>::max ();
   int min_index = 0;
-  
+
   pcl::Correspondence corr;
   unsigned int nr_valid_correspondences = 0;
 
@@ -86,11 +86,11 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
 
       // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
       min_dist = std::numeric_limits<double>::max ();
-      
+
       // Find the best correspondence
       for (std::size_t j = 0; j < nn_indices.size (); j++)
       {
-        // computing the distance between a point and a line in 3d. 
+        // computing the distance between a point and a line in 3d.
         // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
         pt.x = target_->points[nn_indices[j]].x - input_->points[*idx_i].x;
         pt.y = target_->points[nn_indices[j]].y - input_->points[*idx_i].y;
@@ -100,7 +100,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
         Eigen::Vector3d N (normal.normal_x, normal.normal_y, normal.normal_z);
         Eigen::Vector3d V (pt.x, pt.y, pt.z);
         Eigen::Vector3d C = N.cross (V);
-        
+
         // Check if we have a better correspondence
         double dist = C.dot (C);
         if (dist < min_dist)
@@ -121,15 +121,15 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
   else
   {
     PointTarget pt;
-    
+
     // Iterate over the input set of source indices
     for (std::vector<int>::const_iterator idx_i = indices_->begin (); idx_i != indices_->end (); ++idx_i)
     {
       tree_->nearestKSearch (input_->points[*idx_i], k_, nn_indices, nn_dists);
- 
+
       // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
       min_dist = std::numeric_limits<double>::max ();
-      
+
       // Find the best correspondence
       for (std::size_t j = 0; j < nn_indices.size (); j++)
       {
@@ -137,17 +137,17 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
         // Copy the source data to a target PointTarget format so we can search in the tree
         copyPoint (input_->points[*idx_i], pt_src);
 
-        // computing the distance between a point and a line in 3d. 
+        // computing the distance between a point and a line in 3d.
         // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
         pt.x = target_->points[nn_indices[j]].x - pt_src.x;
         pt.y = target_->points[nn_indices[j]].y - pt_src.y;
         pt.z = target_->points[nn_indices[j]].z - pt_src.z;
-        
+
         const NormalT &normal = source_normals_->points[*idx_i];
         Eigen::Vector3d N (normal.normal_x, normal.normal_y, normal.normal_z);
         Eigen::Vector3d V (pt.x, pt.y, pt.z);
         Eigen::Vector3d C = N.cross (V);
-        
+
         // Check if we have a better correspondence
         double dist = C.dot (C);
         if (dist < min_dist)
@@ -158,7 +158,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       }
       if (min_dist > max_distance)
         continue;
-      
+
       corr.index_query = *idx_i;
       corr.index_match = nn_indices[min_index];
       corr.distance = nn_dists[min_index];//min_dist;
@@ -189,9 +189,8 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
   std::vector<int> index_reciprocal (1);
   std::vector<float> distance_reciprocal (1);
 
-  double min_dist = std::numeric_limits<double>::max ();
   int min_index = 0;
-  
+
   pcl::Correspondence corr;
   unsigned int nr_valid_correspondences = 0;
   int target_idx = 0;
@@ -208,11 +207,11 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
 
       // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
       min_dist = std::numeric_limits<double>::max ();
-      
+
       // Find the best correspondence
       for (std::size_t j = 0; j < nn_indices.size (); j++)
       {
-        // computing the distance between a point and a line in 3d. 
+        // computing the distance between a point and a line in 3d.
         // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
         pt.x = target_->points[nn_indices[j]].x - input_->points[*idx_i].x;
         pt.y = target_->points[nn_indices[j]].y - input_->points[*idx_i].y;
@@ -222,7 +221,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
         Eigen::Vector3d N (normal.normal_x, normal.normal_y, normal.normal_z);
         Eigen::Vector3d V (pt.x, pt.y, pt.z);
         Eigen::Vector3d C = N.cross (V);
-        
+
         // Check if we have a better correspondence
         double dist = C.dot (C);
         if (dist < min_dist)
@@ -251,7 +250,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
   else
   {
     PointTarget pt;
-    
+
     // Iterate over the input set of source indices
     for (std::vector<int>::const_iterator idx_i = indices_->begin (); idx_i != indices_->end (); ++idx_i)
     {
@@ -259,7 +258,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
 
       // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
       min_dist = std::numeric_limits<double>::max ();
-      
+
       // Find the best correspondence
       for (std::size_t j = 0; j < nn_indices.size (); j++)
       {
@@ -267,17 +266,17 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
         // Copy the source data to a target PointTarget format so we can search in the tree
         copyPoint (input_->points[*idx_i], pt_src);
 
-        // computing the distance between a point and a line in 3d. 
+        // computing the distance between a point and a line in 3d.
         // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
         pt.x = target_->points[nn_indices[j]].x - pt_src.x;
         pt.y = target_->points[nn_indices[j]].y - pt_src.y;
         pt.z = target_->points[nn_indices[j]].z - pt_src.z;
-        
+
         const NormalT &normal = source_normals_->points[*idx_i];
         Eigen::Vector3d N (normal.normal_x, normal.normal_y, normal.normal_z);
         Eigen::Vector3d V (pt.x, pt.y, pt.z);
         Eigen::Vector3d C = N.cross (V);
-        
+
         // Check if we have a better correspondence
         double dist = C.dot (C);
         if (dist < min_dist)

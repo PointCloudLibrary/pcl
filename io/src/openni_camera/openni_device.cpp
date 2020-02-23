@@ -57,15 +57,15 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::OpenNIDevice::OpenNIDevice (
-    xn::Context& context, 
-    const xn::NodeInfo& device_node, 
+    xn::Context& context,
+    const xn::NodeInfo& device_node,
 #ifdef __APPLE__
-    const xn::NodeInfo&, 
-    const xn::NodeInfo&, 
+    const xn::NodeInfo&,
+    const xn::NodeInfo&,
     const xn::NodeInfo&
 #else
-    const xn::NodeInfo& image_node, 
-    const xn::NodeInfo& depth_node, 
+    const xn::NodeInfo& image_node,
+    const xn::NodeInfo& depth_node,
     const xn::NodeInfo& ir_node
 #endif
   )
@@ -83,7 +83,7 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (
     image_callback_handle_counter_ (),
     depth_callback_handle_counter_ (),
     ir_callback_handle_counter_ (),
-    quit_ () 
+    quit_ ()
 {
 // workaround for MAC from Alex Ichim
 #ifdef __APPLE__
@@ -165,12 +165,12 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node, 
+openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::NodeInfo& device_node,
 #ifdef __APPLE__
-    const xn::NodeInfo&, 
+    const xn::NodeInfo&,
     const xn::NodeInfo&
 #else
-    const xn::NodeInfo& depth_node, 
+    const xn::NodeInfo& depth_node,
     const xn::NodeInfo& ir_node
 #endif
     )
@@ -188,7 +188,7 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::Node
     image_callback_handle_counter_ (),
     depth_callback_handle_counter_ (),
     ir_callback_handle_counter_ (),
-    quit_ () 
+    quit_ ()
 {
 // workaround for MAC from Alex Ichim
 #ifdef __APPLE__
@@ -209,7 +209,6 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context, const xn::Node
   XnStatus status = context_.FindExistingNode (XN_NODE_TYPE_DEPTH, depth_generator_);
   //if (status != XN_STATUS_OK)
   //  THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any depth nodes!\n");
-  status = context_.FindExistingNode (XN_NODE_TYPE_IR, ir_generator_);
   //if (status != XN_STATUS_OK)
   //  THROW_OPENNI_EXCEPTION ("[openni_wrapper::OpenNIDevice::OpenNIDevice] Cannot find any IR nodes!\n");
 
@@ -269,7 +268,7 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context)
     image_callback_handle_counter_ (),
     depth_callback_handle_counter_ (),
     ir_callback_handle_counter_ (),
-    quit_ () 
+    quit_ ()
 {
 }
 
@@ -303,19 +302,19 @@ openni_wrapper::OpenNIDevice::~OpenNIDevice () noexcept
   device_node_info_.GetInstance(deviceNode);
   if (deviceNode.IsValid())
     deviceNode.Release ();
-  
+
   if (hasImageStream ())
   {
     image_thread_.join ();
     image_generator_.Release ();
   }
-  
+
   if (hasDepthStream ())
   {
     depth_thread_.join ();
     depth_generator_.Release ();
   }
-  
+
   if (hasIRStream ())
   {
     ir_thread_.join ();
@@ -324,7 +323,7 @@ openni_wrapper::OpenNIDevice::~OpenNIDevice () noexcept
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::Init ()
 {
   quit_ = false;
@@ -500,7 +499,7 @@ openni_wrapper::OpenNIDevice::ReadDeviceParametersFromSensorNode ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::startImageStream ()
 {
   if (hasImageStream ())
@@ -518,7 +517,7 @@ openni_wrapper::OpenNIDevice::startImageStream ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::stopImageStream ()
 {
   if (hasImageStream ())
@@ -536,7 +535,7 @@ openni_wrapper::OpenNIDevice::stopImageStream ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::startDepthStream ()
 {
   if (hasDepthStream ())
@@ -555,7 +554,7 @@ openni_wrapper::OpenNIDevice::startDepthStream ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::stopDepthStream ()
 {
   if (hasDepthStream ())
@@ -574,7 +573,7 @@ openni_wrapper::OpenNIDevice::stopDepthStream ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::startIRStream ()
 {
   if (hasIRStream ())
@@ -595,7 +594,7 @@ openni_wrapper::OpenNIDevice::startIRStream ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::stopIRStream ()
 {
   if (hasIRStream ())
@@ -614,7 +613,7 @@ openni_wrapper::OpenNIDevice::stopIRStream ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::isImageStreamRunning () const throw ()
 {
   std::lock_guard<std::mutex> image_lock (image_mutex_);
@@ -622,7 +621,7 @@ openni_wrapper::OpenNIDevice::isImageStreamRunning () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::isDepthStreamRunning () const throw ()
 {
   std::lock_guard<std::mutex> depth_lock (depth_mutex_);
@@ -630,7 +629,7 @@ openni_wrapper::OpenNIDevice::isDepthStreamRunning () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::isIRStreamRunning () const throw ()
 {
   std::lock_guard<std::mutex> ir_lock (ir_mutex_);
@@ -638,7 +637,7 @@ openni_wrapper::OpenNIDevice::isIRStreamRunning () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::hasImageStream () const throw ()
 {
   std::lock_guard<std::mutex> lock (image_mutex_);
@@ -647,7 +646,7 @@ openni_wrapper::OpenNIDevice::hasImageStream () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::hasDepthStream () const throw ()
 {
   std::lock_guard<std::mutex> lock (depth_mutex_);
@@ -656,7 +655,7 @@ openni_wrapper::OpenNIDevice::hasDepthStream () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::hasIRStream () const throw ()
 {
   std::lock_guard<std::mutex> ir_lock (ir_mutex_);
@@ -664,7 +663,7 @@ openni_wrapper::OpenNIDevice::hasIRStream () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::setDepthRegistration (bool on_off)
 {
   if (hasDepthStream () && hasImageStream())
@@ -695,7 +694,7 @@ openni_wrapper::OpenNIDevice::setDepthRegistration (bool on_off)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::isDepthRegistered () const throw ()
 {
   if (hasDepthStream () && hasImageStream() )
@@ -711,7 +710,7 @@ openni_wrapper::OpenNIDevice::isDepthRegistered () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::isDepthRegistrationSupported () const throw ()
 {
   std::lock_guard<std::mutex> image_lock (image_mutex_);
@@ -721,7 +720,7 @@ openni_wrapper::OpenNIDevice::isDepthRegistrationSupported () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::isSynchronizationSupported () const throw ()
 {
   std::lock_guard<std::mutex> image_lock (image_mutex_);
@@ -730,7 +729,7 @@ openni_wrapper::OpenNIDevice::isSynchronizationSupported () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::setSynchronization (bool on_off)
 {
   if (hasDepthStream () && hasImageStream())
@@ -757,7 +756,7 @@ openni_wrapper::OpenNIDevice::setSynchronization (bool on_off)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::isSynchronized () const throw ()
 {
   if (hasDepthStream () && hasImageStream())
@@ -772,7 +771,7 @@ openni_wrapper::OpenNIDevice::isSynchronized () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::isDepthCroppingSupported () const throw ()
 {
   std::lock_guard<std::mutex> depth_lock (depth_mutex_);
@@ -780,7 +779,7 @@ openni_wrapper::OpenNIDevice::isDepthCroppingSupported () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::isDepthCropped () const
 {
   if (hasDepthStream ())
@@ -798,7 +797,7 @@ openni_wrapper::OpenNIDevice::isDepthCropped () const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::setDepthCropping (unsigned x, unsigned y, unsigned width, unsigned height)
 {
   if (hasDepthStream ())
@@ -809,7 +808,7 @@ openni_wrapper::OpenNIDevice::setDepthCropping (unsigned x, unsigned y, unsigned
     cropping.nYOffset = static_cast<XnUInt16> (y);
     cropping.nXSize   = static_cast<XnUInt16> (width);
     cropping.nYSize   = static_cast<XnUInt16> (height);
-    
+
     cropping.bEnabled = (width != 0 && height != 0);
     XnStatus status = depth_generator_.GetCroppingCap ().SetCropping (cropping);
     if (status != XN_STATUS_OK)
@@ -820,7 +819,7 @@ openni_wrapper::OpenNIDevice::setDepthCropping (unsigned x, unsigned y, unsigned
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::ImageDataThreadFunction ()
 {
   while (true)
@@ -839,7 +838,7 @@ openni_wrapper::OpenNIDevice::ImageDataThreadFunction ()
     pcl::shared_ptr<xn::ImageMetaData> image_data (new xn::ImageMetaData);
     image_data->CopyFrom (image_md);
     image_lock.unlock ();
-    
+
     auto image = getCurrentImage (image_data);
     for (const auto &callback : image_callback_)
     {
@@ -849,7 +848,7 @@ openni_wrapper::OpenNIDevice::ImageDataThreadFunction ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::DepthDataThreadFunction ()
 {
   while (true)
@@ -864,7 +863,7 @@ openni_wrapper::OpenNIDevice::DepthDataThreadFunction ()
 
     depth_generator_.WaitAndUpdateData ();
     xn::DepthMetaData depth_md;
-    depth_generator_.GetMetaData (depth_md);    
+    depth_generator_.GetMetaData (depth_md);
     pcl::shared_ptr<xn::DepthMetaData> depth_data (new xn::DepthMetaData);
     depth_data->CopyFrom (depth_md);
     depth_lock.unlock ();
@@ -879,7 +878,7 @@ openni_wrapper::OpenNIDevice::DepthDataThreadFunction ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::IRDataThreadFunction ()
 {
   while (true)
@@ -909,7 +908,7 @@ openni_wrapper::OpenNIDevice::IRDataThreadFunction ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void __stdcall 
+void __stdcall
 openni_wrapper::OpenNIDevice::NewDepthDataAvailable (xn::ProductionNode&, void* cookie) noexcept
 {
   OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
@@ -917,7 +916,7 @@ openni_wrapper::OpenNIDevice::NewDepthDataAvailable (xn::ProductionNode&, void* 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void __stdcall 
+void __stdcall
 openni_wrapper::OpenNIDevice::NewImageDataAvailable (xn::ProductionNode&, void* cookie) noexcept
 {
   OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
@@ -925,7 +924,7 @@ openni_wrapper::OpenNIDevice::NewImageDataAvailable (xn::ProductionNode&, void* 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void __stdcall 
+void __stdcall
 openni_wrapper::OpenNIDevice::NewIRDataAvailable (xn::ProductionNode&, void* cookie) noexcept
 {
   OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
@@ -933,7 +932,7 @@ openni_wrapper::OpenNIDevice::NewIRDataAvailable (xn::ProductionNode&, void* coo
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::OpenNIDevice::CallbackHandle 
+openni_wrapper::OpenNIDevice::CallbackHandle
 openni_wrapper::OpenNIDevice::registerImageCallback (const ImageCallbackFunction& callback, void* custom_data) noexcept
 {
   image_callback_[image_callback_handle_counter_] = [=] (const Image::Ptr& img) { callback (img, custom_data); };
@@ -941,14 +940,14 @@ openni_wrapper::OpenNIDevice::registerImageCallback (const ImageCallbackFunction
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::unregisterImageCallback (const OpenNIDevice::CallbackHandle& callbackHandle) noexcept
 {
   return (image_callback_.erase (callbackHandle) != 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::OpenNIDevice::CallbackHandle 
+openni_wrapper::OpenNIDevice::CallbackHandle
 openni_wrapper::OpenNIDevice::registerDepthCallback (const DepthImageCallbackFunction& callback, void* custom_data) noexcept
 {
   depth_callback_[depth_callback_handle_counter_] = [=] (const DepthImage::Ptr& img) { callback (img, custom_data); };
@@ -956,14 +955,14 @@ openni_wrapper::OpenNIDevice::registerDepthCallback (const DepthImageCallbackFun
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::unregisterDepthCallback (const OpenNIDevice::CallbackHandle& callbackHandle) noexcept
 {
   return (depth_callback_.erase (callbackHandle) != 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::OpenNIDevice::CallbackHandle 
+openni_wrapper::OpenNIDevice::CallbackHandle
 openni_wrapper::OpenNIDevice::registerIRCallback (const IRImageCallbackFunction& callback, void* custom_data) noexcept
 {
   ir_callback_[ir_callback_handle_counter_] = [=] (const IRImage::Ptr& img) { callback (img, custom_data); };
@@ -971,28 +970,28 @@ openni_wrapper::OpenNIDevice::registerIRCallback (const IRImageCallbackFunction&
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::unregisterIRCallback (const OpenNIDevice::CallbackHandle& callbackHandle) noexcept
 {
   return (ir_callback_.erase (callbackHandle) != 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const char* 
+const char*
 openni_wrapper::OpenNIDevice::getSerialNumber () const throw ()
 {
   return (device_node_info_.GetInstanceName ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const char* 
+const char*
 openni_wrapper::OpenNIDevice::getConnectionString () const throw ()
 {
   return (device_node_info_.GetCreationInfo ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-unsigned short 
+unsigned short
 openni_wrapper::OpenNIDevice::getVendorID () const throw ()
 {
   unsigned short vendor_id;
@@ -1011,7 +1010,7 @@ openni_wrapper::OpenNIDevice::getVendorID () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-unsigned short 
+unsigned short
 openni_wrapper::OpenNIDevice::getProductID () const throw ()
 {
   unsigned short vendor_id;
@@ -1028,7 +1027,7 @@ openni_wrapper::OpenNIDevice::getProductID () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-unsigned char 
+unsigned char
 openni_wrapper::OpenNIDevice::getBus () const throw ()
 {
   unsigned char bus = 0;
@@ -1042,7 +1041,7 @@ openni_wrapper::OpenNIDevice::getBus () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-unsigned char 
+unsigned char
 openni_wrapper::OpenNIDevice::getAddress () const throw ()
 {
   unsigned char address = 0;
@@ -1056,7 +1055,7 @@ openni_wrapper::OpenNIDevice::getAddress () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const char* 
+const char*
 openni_wrapper::OpenNIDevice::getVendorName () const throw ()
 {
   XnProductionNodeDescription& description = const_cast<XnProductionNodeDescription&>(device_node_info_.GetDescription ());
@@ -1064,7 +1063,7 @@ openni_wrapper::OpenNIDevice::getVendorName () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const char* 
+const char*
 openni_wrapper::OpenNIDevice::getProductName () const throw ()
 {
   XnProductionNodeDescription& description = const_cast<XnProductionNodeDescription&>(device_node_info_.GetDescription ());
@@ -1072,7 +1071,7 @@ openni_wrapper::OpenNIDevice::getProductName () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::findCompatibleImageMode (const XnMapOutputMode& output_mode, XnMapOutputMode& mode) const throw ()
 {
   if (isImageModeSupported (output_mode))
@@ -1101,7 +1100,7 @@ openni_wrapper::OpenNIDevice::findCompatibleImageMode (const XnMapOutputMode& ou
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::findCompatibleDepthMode (const XnMapOutputMode& output_mode, XnMapOutputMode& mode) const throw ()
 {
   if (isDepthModeSupported (output_mode))
@@ -1130,7 +1129,7 @@ openni_wrapper::OpenNIDevice::findCompatibleDepthMode (const XnMapOutputMode& ou
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::isImageModeSupported (const XnMapOutputMode& output_mode) const throw ()
 {
   for (const auto &available_image_mode : available_image_modes_)
@@ -1142,7 +1141,7 @@ openni_wrapper::OpenNIDevice::isImageModeSupported (const XnMapOutputMode& outpu
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 openni_wrapper::OpenNIDevice::isDepthModeSupported (const XnMapOutputMode& output_mode) const throw ()
 {
   for (const auto &available_depth_mode : available_depth_modes_)
@@ -1154,21 +1153,21 @@ openni_wrapper::OpenNIDevice::isDepthModeSupported (const XnMapOutputMode& outpu
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const XnMapOutputMode& 
+const XnMapOutputMode&
 openni_wrapper::OpenNIDevice::getDefaultImageMode () const throw ()
 {
   return (available_image_modes_[0]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const XnMapOutputMode& 
+const XnMapOutputMode&
 openni_wrapper::OpenNIDevice::getDefaultDepthMode () const throw ()
 {
   return (available_depth_modes_[0]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const XnMapOutputMode& 
+const XnMapOutputMode&
 openni_wrapper::OpenNIDevice::getDefaultIRMode () const throw ()
 {
   /// @todo Something else here?
@@ -1176,7 +1175,7 @@ openni_wrapper::OpenNIDevice::getDefaultIRMode () const throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::setImageOutputMode (const XnMapOutputMode& output_mode)
 {
   if (hasImageStream ())
@@ -1191,7 +1190,7 @@ openni_wrapper::OpenNIDevice::setImageOutputMode (const XnMapOutputMode& output_
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::setDepthOutputMode (const XnMapOutputMode& output_mode)
 {
   if (hasDepthStream ())
@@ -1206,7 +1205,7 @@ openni_wrapper::OpenNIDevice::setDepthOutputMode (const XnMapOutputMode& output_
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::setDepthOutputFormat (const DepthMode& depth_mode)
 {
   if (hasDepthStream ())
@@ -1221,7 +1220,7 @@ openni_wrapper::OpenNIDevice::setDepthOutputFormat (const DepthMode& depth_mode)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-XnUInt64 
+XnUInt64
 openni_wrapper::OpenNIDevice::getDepthOutputFormat () const
 {
   if (!hasDepthStream () )
@@ -1236,7 +1235,7 @@ openni_wrapper::OpenNIDevice::getDepthOutputFormat () const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 openni_wrapper::OpenNIDevice::setIROutputMode (const XnMapOutputMode& output_mode)
 {
   if (hasIRStream ())
@@ -1253,7 +1252,7 @@ openni_wrapper::OpenNIDevice::setIROutputMode (const XnMapOutputMode& output_mod
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-XnMapOutputMode 
+XnMapOutputMode
 openni_wrapper::OpenNIDevice::getImageOutputMode () const
 {
   if (!hasImageStream ())
@@ -1268,7 +1267,7 @@ openni_wrapper::OpenNIDevice::getImageOutputMode () const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-XnMapOutputMode 
+XnMapOutputMode
 openni_wrapper::OpenNIDevice::getDepthOutputMode () const
 {
   if (!hasDepthStream () )
@@ -1283,7 +1282,7 @@ openni_wrapper::OpenNIDevice::getDepthOutputMode () const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-XnMapOutputMode 
+XnMapOutputMode
 openni_wrapper::OpenNIDevice::getIROutputMode () const
 {
   if (!hasIRStream ())

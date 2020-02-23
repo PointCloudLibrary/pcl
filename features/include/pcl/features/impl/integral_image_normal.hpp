@@ -337,7 +337,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     }
 
     flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, normal_x, normal_y, normal_z);
-    
+
     const float scale = 1.0f / std::sqrt (normal_length);
 
     normal.normal_x = normal_x * scale;
@@ -374,7 +374,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
     float nz = static_cast<float> (normal_vector [2]);
 
     flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, nx, ny, nz);
-    
+
     normal.normal_x = nx;
     normal.normal_y = ny;
     normal.normal_z = nz;
@@ -391,7 +391,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 template <typename T>
 void
 sumArea (int start_x, int start_y, int end_x, int end_y, const int width, const int height,
-  const std::function<T(unsigned, unsigned, unsigned, unsigned)> &f, 
+  const std::function<T(unsigned, unsigned, unsigned, unsigned)> &f,
   T & result)
 {
   if (start_x < 0)
@@ -468,7 +468,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
   const int height = input_->height;
 
   // ==============================================================
-  if (normal_estimation_method_ == COVARIANCE_MATRIX) 
+  if (normal_estimation_method_ == COVARIANCE_MATRIX)
   {
     if (!init_covariance_matrix_)
       initCovarianceMatrixMethod ();
@@ -539,7 +539,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     return;
   }
   // =======================================================
-  if (normal_estimation_method_ == AVERAGE_3D_GRADIENT) 
+  if (normal_estimation_method_ == AVERAGE_3D_GRADIENT)
   {
     if (!init_average_3d_gradient_)
       initAverage3DGradientMethod ();
@@ -596,7 +596,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     return;
   }
   // ======================================================
-  if (normal_estimation_method_ == AVERAGE_DEPTH_CHANGE) 
+  if (normal_estimation_method_ == AVERAGE_DEPTH_CHANGE)
   {
     if (!init_depth_change_)
       initAverageDepthChangeMethod ();
@@ -705,7 +705,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     }
 
     flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, normal_x, normal_y, normal_z);
-    
+
     const float scale = 1.0f / std::sqrt (normal_length);
 
     normal.normal_x = normal_x * scale;
@@ -716,7 +716,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     return;
   }
   // ========================================================
-  if (normal_estimation_method_ == SIMPLE_3D_GRADIENT) 
+  if (normal_estimation_method_ == SIMPLE_3D_GRADIENT)
   {
     PCL_THROW_EXCEPTION (PCLException, "BORDER_POLICY_MIRROR not supported for normal estimation method SIMPLE_3D_GRADIENT");
   }
@@ -732,7 +732,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 {
   output.sensor_origin_ = input_->sensor_origin_;
   output.sensor_orientation_ = input_->sensor_orientation_;
-  
+
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
   // compute depth-change map
@@ -839,7 +839,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
                                                                              const float &bad_point,
                                                                              PointCloudOut &output)
 {
-  unsigned index = 0;
 
   if (border_policy_ == BORDER_POLICY_IGNORE)
   {
@@ -1202,4 +1201,3 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCompute ()
 #define PCL_INSTANTIATE_IntegralImageNormalEstimation(T,NT) template class PCL_EXPORTS pcl::IntegralImageNormalEstimation<T,NT>;
 
 #endif
-

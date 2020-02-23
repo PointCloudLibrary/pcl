@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -27,7 +27,7 @@
 //////////////////////////////////////////////////////////////
 //
 // OPENNURBS_ZLIB_OUTPUT_DIR is the directory containing zlib
-// relative to the "opennurbs" directory.  
+// relative to the "opennurbs" directory.
 //
 // OPENNURBS_ZLIB_OUTPUT_DIR must not have a trailing slash
 //
@@ -115,7 +115,6 @@ bool ON_BinaryArchive::WriteCompressedBuffer(
     rc = WriteByte(sizeof__inbuffer, inbuffer);
     if ( rc )
     {
-      compressed_size = sizeof__inbuffer;
     }
     break;
 
@@ -177,10 +176,10 @@ bool ON_BinaryArchive::ReadCompressedBuffer( // read and uncompress
     break;
   }
 
-  if (rc ) 
+  if (rc )
   {
     buffer_crc1 = ON_CRC32( 0, sizeof__outbuffer, outbuffer );
-    if ( buffer_crc1 != buffer_crc0 ) 
+    if ( buffer_crc1 != buffer_crc0 )
     {
       ON_ERROR("ON_BinaryArchive::ReadCompressedBuffer() crc error");
       if ( bFailedCRC )
@@ -198,41 +197,41 @@ std::size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
 {
   /*
     In "standard" (in 2005) 32 bit code
-    
-      sizeof(int)     = 4 bytes, 
+
+      sizeof(int)     = 4 bytes,
       sizeof(long)    = 4 bytes,
       sizeof(pointer) = 4 bytes, and
       sizeof(std::size_t)  = 4 bytes.
 
     Theoretically I don't need to use multiple input buffer
-    chunks in case.  But I'm paranoid and I will use multiple 
+    chunks in case.  But I'm paranoid and I will use multiple
     input chunks when sizeof_inbuffer > 2GB in order to dodge
     any potential zlib signed verses unsigned compare bugs or
     having a signed int i++ roll over to a negative number.
 
     In "standard" code that has 64 bit pointers
-    
-      sizeof(int)     >= 4 bytes, (it's 4 on MS VS2005) 
+
+      sizeof(int)     >= 4 bytes, (it's 4 on MS VS2005)
       sizeof(long)    >= 4 bytes, (it's 4 on MS VS2005)
       sizeof(pointer)  = 8 bytes, and
       sizeof(std::size_t)   = 8 bytes.
 
-    So, I'm going to assume the ints and longs in the zlib code 
+    So, I'm going to assume the ints and longs in the zlib code
     are 4 bytes, but I could have sizeof_inbuffer > 4GB.
-    This means I have to use multiple input buffer chunks.  
-    In this case I still use multiple input chunks when 
+    This means I have to use multiple input buffer chunks.
+    In this case I still use multiple input chunks when
     sizeof_inbuffer > 2GB in order to dodge any potential zlib
     signed verses unsigned compare bugs or having a signed
     int i++ roll over to a negative number.
 
     So, I set
-    
+
        const std::size_t max_avail = (largest signed 4 byte integer - 15)
-    
+
     and feed inflate and deflate buffers with size <= max_avail.
 
 
-    This information below is from the zlib 1.2.3 FAQ.  
+    This information below is from the zlib 1.2.3 FAQ.
 
     32. Can zlib work with greater than 4 GB of data?
 
@@ -270,7 +269,7 @@ std::size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
   if ( d > max_avail )
     d = max_avail;
   m_zlib.strm.next_in = my_next_in;
-  m_zlib.strm.avail_in = (unsigned int)d; 
+  m_zlib.strm.avail_in = (unsigned int)d;
   my_avail_in -= d;
   my_next_in  += d;
 
@@ -278,12 +277,12 @@ std::size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
   m_zlib.strm.avail_out = m_zlib.sizeof_x_buffer;
 
   // counter guards prevents infinte loops if there is a bug in zlib return codes.
-  int counter = 512; 
+  int counter = 512;
   int flush = Z_NO_FLUSH;
 
   std::size_t deflate_output_count = 0;
 
-  while( rc && counter > 0 ) 
+  while( rc && counter > 0 )
   {
     // Call zlib's deflate function.  It can either process
     // more input from m_zlib.strm.next_in[], create more
@@ -293,8 +292,8 @@ std::size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
       // no uncompressed input is left - switch to finish mode
       flush = Z_FINISH;
     }
-    zrc = z_deflate( &m_zlib.strm, flush ); 
-    if ( zrc < 0 ) 
+    zrc = z_deflate( &m_zlib.strm, flush );
+    if ( zrc < 0 )
     {
       // Something went haywire - bail out.
       ON_ERROR("ON_BinaryArchive::WriteDeflate - z_deflate failure");
@@ -303,7 +302,7 @@ std::size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
     }
 
     deflate_output_count = m_zlib.sizeof_x_buffer - m_zlib.strm.avail_out;
-    if ( deflate_output_count > 0 ) 
+    if ( deflate_output_count > 0 )
     {
       // The last call to deflate created output.  Send
       // this output to the archive.
@@ -329,14 +328,14 @@ std::size_t ON_BinaryArchive::WriteDeflate( // returns number of bytes written
       // that the 32 bit integers in the zlib code can handle.
       if ( 0 == m_zlib.strm.avail_in || 0 == m_zlib.strm.next_in )
       {
-        // The call to deflate() used up all the input 
+        // The call to deflate() used up all the input
         // in m_zlib.strm.next_in[].  I can feed it another chunk
         // from inbuffer[]
         d = my_avail_in;
         if ( d > max_avail )
           d = max_avail;
         m_zlib.strm.next_in = my_next_in;
-        m_zlib.strm.avail_in = (unsigned int)d; 
+        m_zlib.strm.avail_in = (unsigned int)d;
       }
       else
       {
@@ -400,9 +399,9 @@ bool ON_BinaryArchive::ReadInflate(
         memset(out___buffer,0,sizeof___outbuffer);
       return false;
     }
-    if (   tcode == TCODE_ANONYMOUS_CHUNK 
-        && big_value > 4 
-        && sizeof___outbuffer > 0 
+    if (   tcode == TCODE_ANONYMOUS_CHUNK
+        && big_value > 4
+        && sizeof___outbuffer > 0
         && 0 != out___buffer )
     {
       // read compressed buffer from the archive
@@ -420,7 +419,7 @@ bool ON_BinaryArchive::ReadInflate(
     else
     {
       // Either I have the wrong chunk, or the input
-      // parameters are bogus. 
+      // parameters are bogus.
       rc = false;
     }
     int c0 = m_bad_CRC_count;
@@ -492,7 +491,7 @@ bool ON_BinaryArchive::ReadInflate(
       flush = Z_FINISH;
     }
     zrc = z_inflate( &m_zlib.strm, flush );
-    if ( zrc < 0 ) 
+    if ( zrc < 0 )
     {
       // Something went haywire - bail out.
       ON_ERROR("ON_BinaryArchive::ReadInflate - z_inflate failure");
@@ -512,14 +511,14 @@ bool ON_BinaryArchive::ReadInflate(
     {
       if ( 0 == m_zlib.strm.avail_in || 0 == m_zlib.strm.next_in )
       {
-        // The call to inflate() used up all the input 
+        // The call to inflate() used up all the input
         // in m_zlib.strm.next_in[].  I can feed it another chunk
         // from inbuffer[]
         d = my_avail_in;
         if ( d > max_avail )
           d = max_avail;
         m_zlib.strm.next_in  = my_next_in;
-        m_zlib.strm.avail_in = (unsigned int)d; 
+        m_zlib.strm.avail_in = (unsigned int)d;
       }
       else
       {
@@ -752,7 +751,7 @@ bool ON_CompressedBuffer::Read( ON_BinaryArchive& binary_archive )
   for(;;)
   {
     rc = ( 1 == major_version );
-    if ( !rc ) 
+    if ( !rc )
       break;
     rc = binary_archive.ReadSize(&m_sizeof_uncompressed);
     if (!rc)
@@ -850,20 +849,20 @@ bool ON_CompressedBuffer::Compress(
     break;
   };
 
-  if ( bToggleByteOrder ) 
+  if ( bToggleByteOrder )
   {
-    ON_BinaryFile::ToggleByteOrder( 
-      (int)(sizeof__inbuffer/m_sizeof_element), 
-      m_sizeof_element, 
-      inbuffer, 
+    ON_BinaryFile::ToggleByteOrder(
+      (int)(sizeof__inbuffer/m_sizeof_element),
+      m_sizeof_element,
+      inbuffer,
       (void*)inbuffer
       );
   }
 
   m_method = (sizeof__inbuffer > 128) ? 1 : 0;
-  if ( m_method ) 
+  if ( m_method )
   {
-    if ( !CompressionInit(&helper) ) 
+    if ( !CompressionInit(&helper) )
     {
       CompressionEnd(&helper);
       m_method = 0;
@@ -904,12 +903,12 @@ bool ON_CompressedBuffer::Compress(
     }
   }
 
-  if ( bToggleByteOrder ) 
+  if ( bToggleByteOrder )
   {
-    ON_BinaryFile::ToggleByteOrder( 
-      (int)(sizeof__inbuffer/m_sizeof_element), 
-      m_sizeof_element, 
-      inbuffer, 
+    ON_BinaryFile::ToggleByteOrder(
+      (int)(sizeof__inbuffer/m_sizeof_element),
+      m_sizeof_element,
+      inbuffer,
       (void*)inbuffer
       );
   }
@@ -987,10 +986,10 @@ bool ON_CompressedBuffer::Uncompress(
     {
       if ( ON::big_endian == ON::Endian() )
       {
-        ON_BinaryFile::ToggleByteOrder( 
-          (int)(m_sizeof_uncompressed/m_sizeof_element), 
-          m_sizeof_element, 
-          outbuffer, 
+        ON_BinaryFile::ToggleByteOrder(
+          (int)(m_sizeof_uncompressed/m_sizeof_element),
+          m_sizeof_element,
+          outbuffer,
           outbuffer
           );
       }
@@ -999,10 +998,10 @@ bool ON_CompressedBuffer::Uncompress(
   };
 
 
-  if (rc ) 
+  if (rc )
   {
     ON__UINT32 uncompressed_crc = ON_CRC32( 0, m_sizeof_uncompressed, outbuffer );
-    if ( uncompressed_crc != m_crc_uncompressed ) 
+    if ( uncompressed_crc != m_crc_uncompressed )
     {
       ON_ERROR("ON_CompressedBuffer::Uncompress() crc error");
       if ( bFailedCRC )
@@ -1013,8 +1012,8 @@ bool ON_CompressedBuffer::Uncompress(
   return rc;
 }
 
-bool ON_CompressedBuffer::WriteChar( 
-        std::size_t count, const void* buffer         
+bool ON_CompressedBuffer::WriteChar(
+        std::size_t count, const void* buffer
         )
 {
   bool rc = true;
@@ -1055,41 +1054,41 @@ std::size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes writt
 {
   /*
     In "standard" (in 2005) 32 bit code
-    
-      sizeof(int)     = 4 bytes, 
+
+      sizeof(int)     = 4 bytes,
       sizeof(long)    = 4 bytes,
       sizeof(pointer) = 4 bytes, and
       sizeof(std::size_t)  = 4 bytes.
 
     Theoretically I don't need to use multiple input buffer
-    chunks in case.  But I'm paranoid and I will use multiple 
+    chunks in case.  But I'm paranoid and I will use multiple
     input chunks when sizeof_inbuffer > 2GB in order to dodge
     any potential zlib signed verses unsigned compare bugs or
     having a signed int i++ roll over to a negative number.
 
     In "standard" code that has 64 bit pointers
-    
-      sizeof(int)     >= 4 bytes, (it's 4 on MS VS2005) 
+
+      sizeof(int)     >= 4 bytes, (it's 4 on MS VS2005)
       sizeof(long)    >= 4 bytes, (it's 4 on MS VS2005)
       sizeof(pointer)  = 8 bytes, and
       sizeof(std::size_t)   = 8 bytes.
 
-    So, I'm going to assume the ints and longs in the zlib code 
+    So, I'm going to assume the ints and longs in the zlib code
     are 4 bytes, but I could have sizeof_inbuffer > 4GB.
-    This means I have to use multiple input buffer chunks.  
-    In this case I still use multiple input chunks when 
+    This means I have to use multiple input buffer chunks.
+    In this case I still use multiple input chunks when
     sizeof_inbuffer > 2GB in order to dodge any potential zlib
     signed verses unsigned compare bugs or having a signed
     int i++ roll over to a negative number.
 
     So, I set
-    
+
        const std::size_t max_avail = (largest signed 4 byte integer - 15)
-    
+
     and feed inflate and deflate buffers with size <= max_avail.
 
 
-    This information below is from the zlib 1.2.3 FAQ.  
+    This information below is from the zlib 1.2.3 FAQ.
 
     32. Can zlib work with greater than 4 GB of data?
 
@@ -1116,7 +1115,6 @@ std::size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes writt
   bool rc = true;
 
   std::size_t out__count = 0;
-  int zrc = Z_OK;
 
   std::size_t my_avail_in = sizeof___inbuffer;
   unsigned char* my_next_in = (unsigned char*)in___buffer;
@@ -1128,7 +1126,7 @@ std::size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes writt
   ON_CompressedBufferHelper& m_zlib = *helper;
 
   m_zlib.strm.next_in = my_next_in;
-  m_zlib.strm.avail_in = (unsigned int)d; 
+  m_zlib.strm.avail_in = (unsigned int)d;
   my_avail_in -= d;
   my_next_in  += d;
 
@@ -1136,12 +1134,11 @@ std::size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes writt
   m_zlib.strm.avail_out = m_zlib.sizeof_x_buffer;
 
   // counter guards prevents infinte loops if there is a bug in zlib return codes.
-  int counter = 512; 
+  int counter = 512;
   int flush = Z_NO_FLUSH;
 
-  std::size_t deflate_output_count = 0;
 
-  while( rc && counter > 0 ) 
+  while( rc && counter > 0 )
   {
     // Call zlib's deflate function.  It can either process
     // more input from m_zlib.strm.next_in[], create more
@@ -1151,8 +1148,8 @@ std::size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes writt
       // no uncompressed input is left - switch to finish mode
       flush = Z_FINISH;
     }
-    zrc = z_deflate( &m_zlib.strm, flush ); 
-    if ( zrc < 0 ) 
+    zrc = z_deflate( &m_zlib.strm, flush );
+    if ( zrc < 0 )
     {
       // Something went haywire - bail out.
       ON_ERROR("ON_CompressedBuffer::DeflateHelper - z_deflate failure");
@@ -1161,7 +1158,7 @@ std::size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes writt
     }
 
     deflate_output_count = m_zlib.sizeof_x_buffer - m_zlib.strm.avail_out;
-    if ( deflate_output_count > 0 ) 
+    if ( deflate_output_count > 0 )
     {
       // The last call to deflate created output.  Send
       // this output to the archive.
@@ -1187,14 +1184,14 @@ std::size_t ON_CompressedBuffer::DeflateHelper( // returns number of bytes writt
       // that the 32 bit integers in the zlib code can handle.
       if ( 0 == m_zlib.strm.avail_in || 0 == m_zlib.strm.next_in )
       {
-        // The call to deflate() used up all the input 
+        // The call to deflate() used up all the input
         // in m_zlib.strm.next_in[].  I can feed it another chunk
         // from inbuffer[]
         d = my_avail_in;
         if ( d > max_avail )
           d = max_avail;
         m_zlib.strm.next_in = my_next_in;
-        m_zlib.strm.avail_in = (unsigned int)d; 
+        m_zlib.strm.avail_in = (unsigned int)d;
       }
       else
       {
@@ -1240,7 +1237,6 @@ bool ON_CompressedBuffer::InflateHelper(
 
   bool rc = true;
 
-  int zrc = -1;
 
   // set up zlib in buffer
   unsigned char* my_next_in = (unsigned char*)m_buffer_compressed;
@@ -1285,7 +1281,7 @@ bool ON_CompressedBuffer::InflateHelper(
       flush = Z_FINISH;
     }
     zrc = z_inflate( &m_zlib.strm, flush );
-    if ( zrc < 0 ) 
+    if ( zrc < 0 )
     {
       // Something went haywire - bail out.
       ON_ERROR("ON_CompressedBuffer::InflateHelper - z_inflate failure");
@@ -1305,14 +1301,14 @@ bool ON_CompressedBuffer::InflateHelper(
     {
       if ( 0 == m_zlib.strm.avail_in || 0 == m_zlib.strm.next_in )
       {
-        // The call to inflate() used up all the input 
+        // The call to inflate() used up all the input
         // in m_zlib.strm.next_in[].  I can feed it another chunk
         // from inbuffer[]
         d = my_avail_in;
         if ( d > max_avail )
           d = max_avail;
         m_zlib.strm.next_in  = my_next_in;
-        m_zlib.strm.avail_in = (unsigned int)d; 
+        m_zlib.strm.avail_in = (unsigned int)d;
       }
       else
       {
@@ -1370,27 +1366,27 @@ bool ON_CompressedBuffer::CompressionInit( struct ON_CompressedBufferHelper* hel
   if ( helper )
   {
     // inflateInit() and deflateInit() are in zlib 1.3.3
-    if ( 1 == helper->action ) 
+    if ( 1 == helper->action )
     {
       // begin compression using zlib's deflate tool
-      if ( Z_OK == deflateInit( &helper->strm, Z_BEST_COMPRESSION ) ) 
+      if ( Z_OK == deflateInit( &helper->strm, Z_BEST_COMPRESSION ) )
       {
         rc = true;
       }
-      else 
+      else
       {
         memset(&helper->strm,0,sizeof(helper->strm));
         helper->action = 0;
       }
     }
-    else if ( 2 == helper->action ) 
+    else if ( 2 == helper->action )
     {
       // begin uncompression using zlib's inflate tool
-      if ( Z_OK == inflateInit( &helper->strm ) ) 
+      if ( Z_OK == inflateInit( &helper->strm ) )
       {
         rc = true;
       }
-      else 
+      else
       {
         memset(&helper->strm,0,sizeof(helper->strm));
         helper->action = 0;
@@ -1408,7 +1404,7 @@ bool ON_CompressedBuffer::CompressionEnd( struct ON_CompressedBufferHelper* help
   if ( helper )
   {
     // inflateEnd() and deflateEnd() are in zlib 1.3.3
-    if ( 1 == helper->action ) 
+    if ( 1 == helper->action )
     {
       // finish compression
       deflateEnd(&helper->strm);
@@ -1426,5 +1422,3 @@ bool ON_CompressedBuffer::CompressionEnd( struct ON_CompressedBufferHelper* help
 
   return rc;
 }
-
-

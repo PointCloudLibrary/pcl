@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -74,10 +74,10 @@ ON_BOOL32 ON_BrepEdge::Read( ON_BinaryArchive& file )
   if (rc) rc = file.ReadArray( m_ti );
   if (rc) rc = file.ReadDouble( &m_tolerance );
   ON_Interval domain = proxy_domain;
-  if (    file.Archive3dmVersion() >= 3 
+  if (    file.Archive3dmVersion() >= 3
        && file.ArchiveOpenNURBSVersion() >= 200206180 )
   {
-    if (rc) 
+    if (rc)
     {
       rc = file.ReadInterval(domain);
       if ( !rc)
@@ -369,7 +369,7 @@ ON_BOOL32 ON_BrepVertexArray::Read( ON_BinaryArchive& file )
         for ( i = 0; i < count && rc ; i++ ) {
           ON_BrepVertex& vertex = AppendNew();
           rc = vertex.Read(file)?true:false;
-        }    
+        }
       }
       else {
         rc = 0;
@@ -419,7 +419,7 @@ ON_BOOL32 ON_BrepEdgeArray::Read( ON_BinaryArchive& file )
         for ( i = 0; i < count && rc ; i++ ) {
           ON_BrepEdge& edge = AppendNew();
           rc = edge.Read(file) ? true : false;
-        }    
+        }
       }
       else {
         rc = 0;
@@ -469,7 +469,7 @@ ON_BOOL32 ON_BrepTrimArray::Read( ON_BinaryArchive& file )
         for ( i = 0; i < count && rc ; i++ ) {
           ON_BrepTrim& trim = AppendNew();
           rc = trim.Read(file)?true:false;
-        }    
+        }
       }
       else {
         rc = 0;
@@ -519,7 +519,7 @@ ON_BOOL32 ON_BrepLoopArray::Read( ON_BinaryArchive& file )
         for ( i = 0; i < count && rc ; i++ ) {
           ON_BrepLoop& loop = AppendNew();
           rc = loop.Read(file) ? true : false;
-        }    
+        }
       }
       else {
         rc = 0;
@@ -563,15 +563,15 @@ ON_BOOL32 ON_BrepFaceArray::Read( ON_BinaryArchive& file )
       rc = false;
     if (rc) rc = file.Read3dmChunkVersion(&major_version,&minor_version);
     if (rc) {
-      if ( major_version==1 ) 
+      if ( major_version==1 )
       {
         if (rc) rc = file.ReadInt(&count);
         SetCapacity(count);
-        for ( i = 0; i < count && rc ; i++ ) 
+        for ( i = 0; i < count && rc ; i++ )
         {
           ON_BrepFace& face = AppendNew();
           rc = face.Read(file)?true:false;
-        }    
+        }
 
         if ( minor_version >= 1 )
         {
@@ -582,7 +582,7 @@ ON_BOOL32 ON_BrepFaceArray::Read( ON_BinaryArchive& file )
           }
         }
       }
-      else 
+      else
       {
         rc = 0;
       }
@@ -597,14 +597,14 @@ ON_BOOL32 ON_BrepFaceArray::Write( ON_BinaryArchive& file ) const
 {
   int i;
   ON_BOOL32 rc = file.BeginWrite3dmChunk( TCODE_ANONYMOUS_CHUNK, 0 );
-  if (rc) 
+  if (rc)
   {
     rc = file.Write3dmChunkVersion(1,1); // 1.1 added m_face_uuid
 
     // chunk version 1.0 and later
     const int count = Count();
     if (rc) rc = file.WriteInt( count );
-    for ( i = 0; rc && i < count; i++ ) 
+    for ( i = 0; rc && i < count; i++ )
     {
       if (rc) rc = m_a[i].Write(file);
     }
@@ -707,7 +707,7 @@ ON_BOOL32 ON_Brep::Write( ON_BinaryArchive& file ) const
 
   if (rc)
   {
-    // use value of "this" m_is_solid to avoid expensive 
+    // use value of "this" m_is_solid to avoid expensive
     // calculation on the v2brep
     if ( !file.WriteInt( m_is_solid ) )
       rc = false;
@@ -731,7 +731,7 @@ void ReadFillInMissingBoxes( ON_Brep& brep )
   for ( ti = 0; ti < trim_count; ti++ )
   {
     ON_BrepTrim& trim = brep.m_T[ti];
-    if ( !trim.m_pbox.IsValid() ) 
+    if ( !trim.m_pbox.IsValid() )
     {
       c2 = trim.TrimCurveOf();
       if ( c2 )
@@ -742,7 +742,7 @@ void ReadFillInMissingBoxes( ON_Brep& brep )
   for ( li = 0; li < loop_count; li++ )
   {
     ON_BrepLoop& loop = brep.m_L[li];
-    if ( !loop.m_pbox.IsValid() ) 
+    if ( !loop.m_pbox.IsValid() )
     {
       for ( lti = 0; lti < loop.m_ti.Count(); lti++ )
       {
@@ -757,39 +757,36 @@ void ReadFillInMissingBoxes( ON_Brep& brep )
 ON_BOOL32 ON_Brep::Read( ON_BinaryArchive& file )
 {
   int i;
-  int C2_count = 0;
-  int C3_count = 0;
-  int S_count = 0;
   int major_version = 0;
   int minor_version = 0;
   ON_BOOL32 rc = file.Read3dmChunkVersion( &major_version, &minor_version );
-  if ( rc && major_version == 2 ) 
+  if ( rc && major_version == 2 )
   {
     rc = ReadOld200(file,minor_version); // legacy trimmed face
   }
-  else if ( rc && major_version == 3 ) 
+  else if ( rc && major_version == 3 )
   {
     // 2d curves
-    if (rc) 
+    if (rc)
       rc = m_C2.Read(file);
     C2_count = m_C2.Count();
 
     // 3d curves
-    if (rc) 
+    if (rc)
       rc = m_C3.Read(file);
     C3_count = m_C3.Count();
 
     // untrimmed surfaces
-    if (rc) 
+    if (rc)
       rc = m_S.Read(file);
     S_count = m_S.Count();
 
     // vertices
-    if (rc) 
+    if (rc)
       rc = m_V.Read(file);
 
     // edges
-    if (rc) 
+    if (rc)
     {
       rc = m_E.Read(file);
       if (rc) {
@@ -811,7 +808,7 @@ ON_BOOL32 ON_Brep::Read( ON_BinaryArchive& file )
     }
 
     // trims
-    if (rc) 
+    if (rc)
     {
       rc = m_T.Read(file);
       if (rc) {
@@ -833,12 +830,12 @@ ON_BOOL32 ON_Brep::Read( ON_BinaryArchive& file )
     }
 
     // loops
-    if (rc) 
+    if (rc)
     {
       rc = m_L.Read(file);
       if ( rc )
       {
-        for ( i = 0; i < m_L.Count(); i++ ) 
+        for ( i = 0; i < m_L.Count(); i++ )
         {
           m_L[i].m_brep = this;
         }
@@ -846,7 +843,7 @@ ON_BOOL32 ON_Brep::Read( ON_BinaryArchive& file )
     }
 
     // faces
-    if (rc) 
+    if (rc)
     {
       rc = m_F.Read(file);
       if (rc) {
@@ -860,9 +857,9 @@ ON_BOOL32 ON_Brep::Read( ON_BinaryArchive& file )
     }
 
     // bounding box
-    if (rc) 
+    if (rc)
       rc = file.ReadPoint( m_bbox.m_min );
-    if (rc) 
+    if (rc)
       rc = file.ReadPoint( m_bbox.m_max );
 
     // fill in missing information
@@ -892,10 +889,10 @@ ON_BOOL32 ON_Brep::Read( ON_BinaryArchive& file )
           rc = false;
         else
         {
-          for ( fi = 0; rc && fi < face_count; fi++ ) 
+          for ( fi = 0; rc && fi < face_count; fi++ )
           {
             rc = file.ReadChar(&b);
-            if (rc && b) 
+            if (rc && b)
             {
               obj = 0;
               rc = file.ReadObject(&obj);
@@ -924,10 +921,10 @@ ON_BOOL32 ON_Brep::Read( ON_BinaryArchive& file )
             rc = false;
           else
           {
-            for ( fi = 0; rc && fi < face_count; fi++ ) 
+            for ( fi = 0; rc && fi < face_count; fi++ )
             {
               rc = file.ReadChar(&b);
-              if (rc && b) 
+              if (rc && b)
               {
                 rc = file.ReadObject(&obj);
                 m_F[fi].m_analysis_mesh = ON_Mesh::Cast(obj);
@@ -1018,7 +1015,7 @@ bool ON_Brep::ReadOld200( ON_BinaryArchive& file, int minor_version )
 
   // make a new edge for each 3d curve
   m_E.Reserve(c3_count);
-  for ( i = 0; i < c3_count && rc; i++ ) 
+  for ( i = 0; i < c3_count && rc; i++ )
   {
     NewEdge(i);
   }
@@ -1038,7 +1035,7 @@ bool ON_Brep::ReadOld200( ON_BinaryArchive& file, int minor_version )
   m_L.Reserve(loop_count);
   m_T.Reserve(trim_count);
 
-  for ( fi = 0; rc && fi < face_count; fi++ ) 
+  for ( fi = 0; rc && fi < face_count; fi++ )
   {
     ftype_flag = 0;
     fbcnt = 0;
@@ -1342,7 +1339,7 @@ bool ON_Brep::ReadOld101( ON_BinaryArchive& file )
   // 2d curves
   file.ReadInt( &count );
   m_C2.Reserve(count);
-  for ( i = 0; i < count; i++ ) 
+  for ( i = 0; i < count; i++ )
   {
     pO = NULL;
     file.ReadObject( &pO );
@@ -1357,7 +1354,7 @@ bool ON_Brep::ReadOld101( ON_BinaryArchive& file )
   // 3d curves
   file.ReadInt( &count );
   m_C3.Reserve(count);
-  for ( i = 0; i < count; i++ ) 
+  for ( i = 0; i < count; i++ )
   {
     pO = NULL;
     file.ReadObject( &pO );
@@ -1372,7 +1369,7 @@ bool ON_Brep::ReadOld101( ON_BinaryArchive& file )
   // untrimmed surfaces
   file.ReadInt( &count );
   m_S.Reserve(count);
-  for ( i = 0; i < count; i++ ) 
+  for ( i = 0; i < count; i++ )
   {
     pO = NULL;
     file.ReadObject( &pO );
@@ -1388,7 +1385,7 @@ bool ON_Brep::ReadOld101( ON_BinaryArchive& file )
   file.ReadInt( &count );
   m_V.Reserve(count);
   m_V.SetCount(count);
-  for ( i = 0; i < count; i++ ) 
+  for ( i = 0; i < count; i++ )
   {
     m_V[i].Read(file);
   }
@@ -1397,7 +1394,7 @@ bool ON_Brep::ReadOld101( ON_BinaryArchive& file )
   file.ReadInt( &count );
   m_E.Reserve(count);
   m_E.SetCount(count);
-  for ( i = 0; i < count; i++ ) 
+  for ( i = 0; i < count; i++ )
   {
     ON_BrepEdge& edge = m_E[i];
     edge.Read(file);
@@ -1409,7 +1406,7 @@ bool ON_Brep::ReadOld101( ON_BinaryArchive& file )
   file.ReadInt( &count );
   m_T.Reserve(count);
   m_T.SetCount(count);
-  for ( i = 0; i < count; i++ ) 
+  for ( i = 0; i < count; i++ )
   {
     m_T[i].Read(file);
     ON_BrepTrim& trim = m_T[i];
@@ -1421,7 +1418,7 @@ bool ON_Brep::ReadOld101( ON_BinaryArchive& file )
   file.ReadInt( &count );
   m_L.Reserve(count);
   m_L.SetCount(count);
-  for ( i = 0; i < count; i++ ) 
+  for ( i = 0; i < count; i++ )
   {
     m_L[i].Read(file);
     m_L[i].m_brep = this;
@@ -1431,7 +1428,7 @@ bool ON_Brep::ReadOld101( ON_BinaryArchive& file )
   file.ReadInt( &count );
   m_F.Reserve(count);
   m_F.SetCount(count);
-  for ( i = 0; i < count; i++ ) 
+  for ( i = 0; i < count; i++ )
   {
     ON_BrepFace& face = m_F[i];
     face.Read(file);
@@ -1460,4 +1457,3 @@ ON_Surface* ON_Brep::Read100_BrepSurface( ON_BinaryArchive& ) const
   // TODO - look at old Rhino I/O tookit code and read b-rep surfaces
   return NULL;
 }
-

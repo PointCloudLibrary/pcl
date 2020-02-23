@@ -247,8 +247,6 @@ TEST (PCL, InverseSymmetric3x3d)
   RMatrix r_inverse = RMatrix::Zero ();
   CMatrix c_matrix = CMatrix::Zero ();
   CMatrix c_inverse = CMatrix::Zero ();
-  Eigen::Matrix<Scalar, 3, 3> result = Eigen::Matrix<Scalar, 3, 3>::Zero ();
-  Eigen::Matrix<Scalar, 3, 3> error = Eigen::Matrix<Scalar, 3, 3>::Zero ();
   const Scalar epsilon = 1e-13;
   const unsigned iterations = 1000000;
 
@@ -313,8 +311,6 @@ TEST (PCL, Inverse2x2f)
   RMatrix r_inverse = RMatrix::Zero ();
   CMatrix c_matrix = CMatrix::Zero ();
   CMatrix c_inverse = CMatrix::Zero ();
-  Eigen::Matrix<Scalar, 2, 2> result = Eigen::Matrix<Scalar, 2, 2>::Zero ();
-  Eigen::Matrix<Scalar, 2, 2> error = Eigen::Matrix<Scalar, 2, 2>::Zero ();
   const Scalar epsilon = 1e-6f;
   const unsigned iterations = 1000000;
 
@@ -369,7 +365,6 @@ TEST (PCL, Inverse2x2d)
   using CMatrix = Eigen::Matrix<Scalar, 2, 2, Eigen::ColMajor>;
   RMatrix r_matrix = RMatrix::Zero ();
   RMatrix r_inverse = RMatrix::Zero ();
-  CMatrix c_matrix = CMatrix::Zero ();
   CMatrix c_inverse = CMatrix::Zero ();
   Eigen::Matrix<Scalar, 2, 2> result;
   Eigen::Matrix<Scalar, 2, 2> error;
@@ -787,10 +782,8 @@ TEST (PCL, eigen33f)
     // test if column major matrices are also calculated correctly
     eigen33 (c_matrix, c_vectors, c_eigenvalues);
     c_result = c_vectors * c_eigenvalues.asDiagonal () * c_vectors.transpose ();
-    c_error = c_result - c_matrix;
 
     g_result = c_vectors * c_vectors.transpose ();
-    g_error = g_result - CMatrix::Identity ();
   }
 
   // less than 1% failure rate

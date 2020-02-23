@@ -144,7 +144,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       dim_ = 2;
     else
       dim_ = 3;
-  } 
+  }
 
   if (dim_ == 2)
   {
@@ -166,7 +166,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   {
     transform1.setIdentity ();
   }
-  
+
   PointCloud cloud_transformed;
   pcl::demeanPointCloud (*input_, *indices_, xyz_centroid, cloud_transformed);
   pcl::transformPointCloud (cloud_transformed, cloud_transformed, transform1);
@@ -362,7 +362,6 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
             alpha_shape.points[vertices].z = static_cast<float> (vertex->point[2]);
 
             qhid_to_pcidx[vertex->id] = vertices;   //map the vertex id of qhull to the point cloud index
-            added_vertices[vertex->id] = true;
             vertices++;
           }
 
@@ -370,7 +369,6 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 
         }
 
-        triangles++;
       }
     }
 
@@ -458,7 +456,6 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
             pcd_indices[vertices_in_ridge] = qhid_to_pcidx[vertex->id];
           }
 
-          vertices_in_ridge++;
         }
 
         // make edges bidirectional and pointing to alpha_shape pointcloud...

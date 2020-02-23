@@ -463,5 +463,4 @@ int main(int argc, char ** argv)
   }
 
   std::string cloud_path(argv[1]);
-  OctreeViewer v(cloud_path, atof(argv[2]));
 }

@@ -167,7 +167,6 @@ pcl::TSDFVolume<VoxelT, WeightT>::convertToTsdfCloud (pcl::PointCloud<pcl::Point
   cloud->clear();
   cloud->reserve (std::min (cloud_size/10, 500000));
 
-  int volume_idx = 0, cloud_idx = 0;
 //#pragma omp parallel for // if used, increment over idx not possible! use index calculation
   for (int z = 0; z < sz; z+=step)
     for (int y = 0; y < sy; y+=step)
@@ -295,7 +294,6 @@ pcl::TSDFVolume<VoxelT, WeightT>::addNeighborhood (const Eigen::Vector3i &voxel_
   // static const int descriptor_size = neighborhood_size*neighborhood_size*neighborhood_size;
   const Eigen::RowVector3i offset_vector (1, neighborhood_size, neighborhood_size*neighborhood_size);
 
-  Eigen::Vector3i index = min_index;
   // loop over all voxels in 3D neighborhood
   #pragma omp parallel for
   for (int z = min_index(2); z <= max_index(2); ++z)

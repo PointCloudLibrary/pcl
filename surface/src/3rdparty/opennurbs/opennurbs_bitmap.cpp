@@ -708,7 +708,7 @@ ON_WindowsBitmapEx::Read (ON_BinaryArchive& file)
   {
     // Calling ON_WindowsBitmap::ReadCompressed() destroys
     // m_bitmap_filename, so we have to read it into a local
-    // string and make the assigment after calling 
+    // string and make the assigment after calling
     // ON_WindowsBitmap::ReadCompressed().
     ON_wString bitmap_filename;
     if (rc)
@@ -750,7 +750,6 @@ ON_WindowsBitmap::WriteCompressed (ON_BinaryArchive& file) const
   else
   {
     bContiguousBitmap = true;
-    color_count = 0;
     sizeof_palette = 0;
     sizeof_image = 0;
     memset (&bmiHeader, 0, sizeof(bmiHeader));
@@ -802,7 +801,7 @@ ON_WindowsBitmap::WriteCompressed (ON_BinaryArchive& file) const
     {
       // 28 July 2003
       //     Added support for writing non-contiguous bitmaps
-      // palette 
+      // palette
       rc = file.WriteCompressedBuffer (sizeof_palette, m_bmi->bmiColors);
       if (rc)
       {
@@ -1226,4 +1225,3 @@ ON_EmbeddedBitmap::Bits (int) const
 {
   return 0;
 }
-

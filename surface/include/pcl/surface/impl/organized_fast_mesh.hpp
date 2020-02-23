@@ -211,7 +211,6 @@ pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices
   int last_column = input_->width - triangle_pixel_size_columns_;
   int last_row = input_->height - triangle_pixel_size_rows_;
 
-  int i = 0, index_down = 0, index_right = 0, index_down_right = 0, idx = 0;
   int y_big_incr = triangle_pixel_size_rows_ * input_->width,
       x_big_incr = y_big_incr + triangle_pixel_size_columns_;
   // Reserve enough space

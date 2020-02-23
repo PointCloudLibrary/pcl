@@ -73,9 +73,9 @@ pcl::getMeanStd (const std::vector<float> &values, double &mean, double &stddev)
   // throw an exception when the input array is empty
   if (values.empty ())
   {
-    PCL_THROW_EXCEPTION (BadArgumentException, "Input array must have at least 1 element."); 
+    PCL_THROW_EXCEPTION (BadArgumentException, "Input array must have at least 1 element.");
   }
-  
+
   // when the array has only one element, mean is the number itself and standard dev is 0
   if (values.size () == 1)
   {
@@ -83,7 +83,7 @@ pcl::getMeanStd (const std::vector<float> &values, double &mean, double &stddev)
     stddev = 0;
     return;
   }
-  
+
   double sum = 0, sq_sum = 0;
 
   for (const float &value : values)
@@ -98,7 +98,7 @@ pcl::getMeanStd (const std::vector<float> &values, double &mean, double &stddev)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline void
-pcl::getPointsInBox (const pcl::PointCloud<PointT> &cloud, 
+pcl::getPointsInBox (const pcl::PointCloud<PointT> &cloud,
                      Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt,
                      std::vector<int> &indices)
 {
@@ -124,8 +124,8 @@ pcl::getPointsInBox (const pcl::PointCloud<PointT> &cloud,
     for (std::size_t i = 0; i < cloud.points.size (); ++i)
     {
       // Check if the point is invalid
-      if (!std::isfinite (cloud.points[i].x) || 
-          !std::isfinite (cloud.points[i].y) || 
+      if (!std::isfinite (cloud.points[i].x) ||
+          !std::isfinite (cloud.points[i].y) ||
           !std::isfinite (cloud.points[i].z))
         continue;
       // Check if the point is inside bounds
@@ -337,8 +337,8 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const pcl::PointIndices 
     for (const int &index : indices.indices)
     {
       // Check if the point is invalid
-      if (!std::isfinite (cloud.points[index].x) || 
-          !std::isfinite (cloud.points[index].y) || 
+      if (!std::isfinite (cloud.points[index].x) ||
+          !std::isfinite (cloud.points[index].y) ||
           !std::isfinite (cloud.points[index].z))
         continue;
       pcl::Array4fMapConst pt = cloud.points[index].getArray4fMap ();
@@ -374,8 +374,8 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &
     for (const int &index : indices)
     {
       // Check if the point is invalid
-      if (!std::isfinite (cloud.points[index].x) || 
-          !std::isfinite (cloud.points[index].y) || 
+      if (!std::isfinite (cloud.points[index].x) ||
+          !std::isfinite (cloud.points[index].y) ||
           !std::isfinite (cloud.points[index].z))
         continue;
       pcl::Array4fMapConst pt = cloud.points[index].getArray4fMap ();
@@ -386,7 +386,7 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> inline double 
+template <typename PointT> inline double
 pcl::getCircumcircleRadius (const PointT &pa, const PointT &pb, const PointT &pc)
 {
   Eigen::Vector4f p1 (pa.x, pa.y, pa.z, 0);
@@ -394,7 +394,7 @@ pcl::getCircumcircleRadius (const PointT &pa, const PointT &pb, const PointT &pc
   Eigen::Vector4f p3 (pc.x, pc.y, pc.z, 0);
 
   double p2p1 = (p2 - p1).norm (), p3p2 = (p3 - p2).norm (), p1p3 = (p1 - p3).norm ();
-  // Calculate the area of the triangle using Heron's formula 
+  // Calculate the area of the triangle using Heron's formula
   // (http://en.wikipedia.org/wiki/Heron's_formula)
   double semiperimeter = (p2p1 + p3p2 + p1p3) / 2.0;
   double area = sqrt (semiperimeter * (semiperimeter - p2p1) * (semiperimeter - p3p2) * (semiperimeter - p1p3));
@@ -403,7 +403,7 @@ pcl::getCircumcircleRadius (const PointT &pa, const PointT &pb, const PointT &pc
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> inline void 
+template <typename PointT> inline void
 pcl::getMinMax (const PointT &histogram, int len, float &min_p, float &max_p)
 {
   min_p = FLT_MAX;
@@ -411,22 +411,21 @@ pcl::getMinMax (const PointT &histogram, int len, float &min_p, float &max_p)
 
   for (int i = 0; i < len; ++i)
   {
-    min_p = (histogram[i] > min_p) ? min_p : histogram[i]; 
-    max_p = (histogram[i] < max_p) ? max_p : histogram[i]; 
+    min_p = (histogram[i] > min_p) ? min_p : histogram[i];
+    max_p = (histogram[i] < max_p) ? max_p : histogram[i];
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline float
-pcl::calculatePolygonArea (const pcl::PointCloud<PointT> &polygon) 
+pcl::calculatePolygonArea (const pcl::PointCloud<PointT> &polygon)
 {
   float area = 0.0f;
   int num_points = polygon.size ();
-  int j = 0;
   Eigen::Vector3f va,vb,res;
 
   res(0) = res(1) = res(2) = 0.0f;
-  for (int i = 0; i < num_points; ++i) 
+  for (int i = 0; i < num_points; ++i)
   {
     j = (i + 1) % num_points;
     va = polygon[i].getVector3fMap ();
@@ -438,4 +437,3 @@ pcl::calculatePolygonArea (const pcl::PointCloud<PointT> &polygon)
 }
 
 #endif  //#ifndef PCL_COMMON_IMPL_H_
-

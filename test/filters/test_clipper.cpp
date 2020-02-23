@@ -305,7 +305,7 @@ TEST (CropBox, Filters)
   // PointCloud with indices selection
   // -------------------------------------------------------------------------
 
-  // Reset cropBox transformation 
+  // Reset cropBox transformation
   cropBoxFilter.setNegative (false);
   cropBoxFilter.setTransform (getTransformation(0, 0, 0, 0, 0, 0));
   cropBoxFilter.setRotation (Eigen::Vector3f (0.0f, 0.0f, 0.0f));
@@ -729,7 +729,6 @@ TEST (CropBox, Filters)
     EXPECT_EQ (int (cloud_out2.width), 1);
     EXPECT_EQ (int (cloud_out2.height), 1);
 
-    removed_indices = cropBoxFilter.getRemovedIndices ();
     EXPECT_EQ (int (removed_indices2->size ()), 6);
     EXPECT_VECTOR_CONTAINS_ALL (std::vector<int>( {1, 2, 3, 5, 6, 8}), *removed_indices2);
 

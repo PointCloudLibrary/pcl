@@ -8,7 +8,7 @@
 // THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT EXPRESS OR IMPLIED WARRANTY.
 // ALL IMPLIED WARRANTIES OF FITNESS FOR ANY PARTICULAR PURPOSE AND OF
 // MERCHANTABILITY ARE HEREBY DISCLAIMED.
-//				
+//
 // For complete openNURBS copyright information see <http://www.opennurbs.org>.
 //
 ////////////////////////////////////////////////////////////////
@@ -18,8 +18,8 @@
 
 
 bool ON_IntersectLineLine(
-          const ON_Line& lineA, 
-          const ON_Line& lineB, 
+          const ON_Line& lineA,
+          const ON_Line& lineB,
           double* a,
           double* b,
           double tolerance,
@@ -49,8 +49,8 @@ bool ON_IntersectLineLine(
 }
 
 
-bool ON_Intersect( const ON_BoundingBox& bbox, 
-                   const ON_Line& line, 
+bool ON_Intersect( const ON_BoundingBox& bbox,
+                   const ON_Line& line,
                    double tol,
                    ON_Interval* line_parameters)
 {
@@ -164,7 +164,7 @@ bool ON_Intersect( const ON_BoundingBox& bbox,
     chord.from = v;
     break;
   }
-  
+
   // test k-th coordinate direction
   const int k = (i&&j) ? 0 : ((i!=1&&j!=1)?1:2);
   a = chord.from[k];
@@ -239,14 +239,14 @@ bool ON_Intersect( const ON_BoundingBox& bbox,
 
 
 
-bool ON_Intersect( const ON_Line& lineA, const ON_Line& lineB, 
-                double* lineA_parameter, 
+bool ON_Intersect( const ON_Line& lineA, const ON_Line& lineB,
+                double* lineA_parameter,
                 double* lineB_parameter
                 )
 {
   // If you are looking at this code because you don't like an
   // answer you are getting, then the first thing to try is
-  // to read the header file comments and try calling 
+  // to read the header file comments and try calling
   // ON_IntersectLineLine.
   bool rc = false;
   double M_zero_tol = 0.0;
@@ -256,7 +256,7 @@ bool ON_Intersect( const ON_Line& lineA, const ON_Line& lineB,
   ON_3dVector A = lineA.Direction();
   ON_3dVector B = lineB.Direction();
   ON_3dVector C = lineB[0] - lineA[0];
-  
+
   ON_Matrix M(2,2);
   M[0][0] =  ON_DotProduct( A, A );
   M[1][1] =  ON_DotProduct( B, B );
@@ -277,7 +277,7 @@ bool ON_Intersect( const ON_Line& lineA, const ON_Line& lineB,
   Y[1] = -ON_DotProduct( B, C );
 
   rank = M.RowReduce( M_zero_tol, Y, &pivot );
-  if ( rank == 2 ) 
+  if ( rank == 2 )
   {
     // 19 November 2003 Dale Lear and Chuck
     //   Added lineA.from/to == lineB.from/to tests
@@ -315,20 +315,20 @@ bool ON_Intersect( const ON_Line& lineA, const ON_Line& lineB,
     else
     {
       rc = M.BackSolve( 0.0, 2, Y, X );
-      if ( rc ) 
+      if ( rc )
       {
         if ( lineA_parameter )
           *lineA_parameter = X[i];
         if ( lineB_parameter )
           *lineB_parameter = X[1-i];
-        if ( fabs(pivot) <= pr_tolerance ) 
+        if ( fabs(pivot) <= pr_tolerance )
         {
           // test answer because matrix was close to singular
           // (This test is slow but it is rarely used.)
           ON_3dPoint pA = lineA.PointAt(X[i]);
           ON_3dPoint pB = lineB.PointAt(X[1-i]);
           double d = pA.DistanceTo(pB);
-          if ( d > pr_tolerance && d > ON_ZERO_TOLERANCE ) { 
+          if ( d > pr_tolerance && d > ON_ZERO_TOLERANCE ) {
             ON_3dPoint qA = lineA.ClosestPointTo(pB);
             ON_3dPoint qB = lineB.ClosestPointTo(pA);
             double dA = pA.DistanceTo(qB);
@@ -344,13 +344,13 @@ bool ON_Intersect( const ON_Line& lineA, const ON_Line& lineB,
       }
     }
   }
-  
+
   return rc;
 }
 
 
-bool ON_Intersect( const ON_Line& line, const ON_Plane& plane,  
-                   double* line_parameter 
+bool ON_Intersect( const ON_Line& line, const ON_Plane& plane,
+                   double* line_parameter
                  )
 {
   bool rc = false;
@@ -404,9 +404,9 @@ bool ON_Intersect( const ON_Plane& R, const ON_Plane& S, const ON_Plane& T,
                 ON_3dPoint& P )
 {
   double pr = 0.0;
-  const int rank = ON_Solve3x3( 
-                &R.plane_equation.x, &S.plane_equation.x, &T.plane_equation.x, 
-                -R.plane_equation.d, -S.plane_equation.d, -T.plane_equation.d, 
+  const int rank = ON_Solve3x3(
+                &R.plane_equation.x, &S.plane_equation.x, &T.plane_equation.x,
+                -R.plane_equation.d, -S.plane_equation.d, -T.plane_equation.d,
                 &P.x, &P.y, &P.z, &pr );
   return (rank == 3) ? true : false;
 }
@@ -414,7 +414,7 @@ bool ON_Intersect( const ON_Plane& R, const ON_Plane& S, const ON_Plane& T,
 
 int ON_Intersect(
         const ON_Plane& plane,
-        const ON_Sphere& sphere, 
+        const ON_Sphere& sphere,
         ON_Circle& circle
         )
 {
@@ -439,7 +439,7 @@ int ON_Intersect(
       d /= sphere_radius;
       d = 1.0 - d*d;
       // The d > 4.0*ON_EPSILON was picked by testing spheres with
-      // radius = 1 and center = (0,0,0).  Do not make 4.0*ON_EPSILON 
+      // radius = 1 and center = (0,0,0).  Do not make 4.0*ON_EPSILON
       // any smaller and please discuss changes with Dale Lear.
       circle.radius = (d > 4.0*ON_EPSILON) ? sphere_radius*sqrt(d) : 0.0;
     }
@@ -450,7 +450,7 @@ int ON_Intersect(
     {
       // return a single point
       rc = 1;
-      
+
       circle.radius = 0.0;
 
       //  When tolerance is in play, put the point on the sphere.
@@ -467,14 +467,14 @@ int ON_Intersect(
           circle_center = C1;
       }
     }
-    else 
+    else
     {
       // return a circle
       rc = 2;
     }
   }
 
-  // Update circle's plane here in case the input plane 
+  // Update circle's plane here in case the input plane
   // is the circle's plane member.
   circle.plane = plane;
   circle.plane.origin = circle_center;
@@ -485,10 +485,10 @@ int ON_Intersect(
 
 
 
-int ON_Intersect( // returns 0 = no intersections, 
-                  // 1 = one intersection, 
+int ON_Intersect( // returns 0 = no intersections,
+                  // 1 = one intersection,
                   // 2 = 2 intersections
-                  // If 0 is returned, first point is point 
+                  // If 0 is returned, first point is point
                   // on line closest to sphere and 2nd point is the point
                   // on the sphere closest to the line.
                   // If 1 is returned, first point is obtained by evaluating
@@ -540,7 +540,7 @@ int Intersect2dLineCircle(ON_2dPoint line_from, // 2d line from point
                  )
 {
   // returns 0 = line is degenerate
-  // 1 = one intersection returned, 
+  // 1 = one intersection returned,
   // 2 = 2 intersections returned
   // 3 = 1 closest point returned
   int xcnt = 0;
@@ -582,12 +582,12 @@ int Intersect2dLineCircle(ON_2dPoint line_from, // 2d line from point
   s = dy/d;
 
   // change coordinates so line is horizontal
-  x = line_from.x; 
+  x = line_from.x;
   y = line_from.y;
   line_from.x = c*x + s*y;
   line_from.y = c*y - s*x;
 
-  x = line_to.x; 
+  x = line_to.x;
   y = line_to.y;
   line_to.x = c*x + s*y;
   line_to.y = c*y - s*x;
@@ -603,7 +603,6 @@ int Intersect2dLineCircle(ON_2dPoint line_from, // 2d line from point
   }
   dy = line_to.y - line_from.y; // should be zero
   t = -line_from.x/dx;
-  x = (1.0-t)*line_from.x + t*line_to.x;
   y = (1.0-t)*line_from.y + t*line_to.y;
   d = fabs(y);
   if ( d < r-tol )
@@ -654,17 +653,17 @@ int Intersect2dLineCircle(ON_2dPoint line_from, // 2d line from point
 
 
 
-int ON_Intersect( // returns 0 = no intersections, 
-                  // 1 = one intersection, 
+int ON_Intersect( // returns 0 = no intersections,
+                  // 1 = one intersection,
                   // 2 = 2 intersections
                   // 3 = line lies on cylinder
-                  // If 0 is returned, first point is point 
+                  // If 0 is returned, first point is point
                   // on line closest to cylinder and 2nd point is the point
                   // on the sphere closest to the line.
                   // If 1 is returned, first point is obtained by evaluating
                   // the line and the second point is obtained by evaluating
                   // the cylinder.
-                  const ON_Line& line, 
+                  const ON_Line& line,
                   const ON_Cylinder& cylinder, // if cylinder.height[0]==cylinder.height[1],
                                                // then infinite cyl is used.  Otherwise
                                                // finite cyl is used.
@@ -703,7 +702,7 @@ int ON_Intersect( // returns 0 = no intersections,
       axis_t = 1.0;
     axis_point = axis.PointAt(axis_t);
   }
-  
+
   if ( d >= cylinder_radius-tol) {
     rc = ( d <= cylinder_radius+tol ) ? 1 : 0;
     A = line_point;
@@ -770,7 +769,7 @@ int ON_Intersect( // returns 0 = no intersections,
       V.Unitize();
       B = axis_point + cylinder_radius*V;
       rc = 1;
-    }    
+    }
     else
       rc = 2;
   }
@@ -779,7 +778,7 @@ int ON_Intersect( // returns 0 = no intersections,
 
 
 int ON_Intersect(
-      const ON_Line& line, 
+      const ON_Line& line,
       const ON_Circle& circle,
       double* line_t0,
       ON_3dPoint& circle_point0,
@@ -799,7 +798,7 @@ int ON_Intersect(
   if ( tol < ON_ZERO_TOLERANCE )
     tol = ON_ZERO_TOLERANCE;
   int xcnt;
-  if (    fabs(L.from.x - L.to.x) <= tol 
+  if (    fabs(L.from.x - L.to.x) <= tol
        && fabs(L.from.y - L.to.y) <= tol
        && fabs(L.from.z - L.to.z) > tol )
   {
@@ -811,7 +810,7 @@ int ON_Intersect(
     if ( xcnt == 3 )
       xcnt = 1;
   }
-  
+
   if ( xcnt == 0 )
   {
     if ( L.ClosestPointTo( circle.Center(), line_t0 ) )
@@ -823,7 +822,7 @@ int ON_Intersect(
   ON_3dPoint line_point1, line_point0 = line.PointAt(*line_t0);
   circle_point0 = circle.ClosestPointTo(line_point0);
   double d1, d0 = line_point0.DistanceTo(circle_point0);
-  if ( xcnt == 2 ) 
+  if ( xcnt == 2 )
   {
     line_point1 = line.PointAt(*line_t1);
     circle_point1 = circle.ClosestPointTo(line_point1);
@@ -838,12 +837,11 @@ int ON_Intersect(
   if ( xcnt==2 && (d0 > tol && d1 > tol) )
   {
     xcnt = 1;
-    if ( d0 <= d1 ) 
+    if ( d0 <= d1 )
     {
       *line_t1 = *line_t0;
       line_point1 = line_point0;
       circle_point1 = circle_point0;
-      d1 = d0;
     }
     else
     {
@@ -860,8 +858,8 @@ int ON_Intersect(
   return xcnt;
 }
 
-int ON_Intersect( 
-                  const ON_Plane& plane, 
+int ON_Intersect(
+                  const ON_Plane& plane,
                   const ON_Circle& circle,
                   ON_3dPoint& point0,
                   ON_3dPoint& point1
@@ -873,21 +871,21 @@ int ON_Intersect(
 	bool rc = ON_Intersect(plane, circle.Plane(), xline);
 	if(rc)
 	{
-		rval = ON_Intersect(xline, circle, &a, point0, &b, point1); 
+		rval = ON_Intersect(xline, circle, &a, point0, &b, point1);
 	}
 	else
 	{
 		double d = plane.plane_equation.ValueAt( circle.Center() );
 		if(d<ON_ZERO_TOLERANCE)
 			rval =3;
-		else 
+		else
 			rval = 0;
 	}
 	return rval;
 }
 
-int ON_Intersect( 
-                  const ON_Plane& plane, 
+int ON_Intersect(
+                  const ON_Plane& plane,
                   const ON_Arc& arc,
                   ON_3dPoint& point0,
                   ON_3dPoint& point1
@@ -899,21 +897,21 @@ int ON_Intersect(
 	bool rc = ON_Intersect(plane, arc.Plane(), xline);
 	if(rc)
 	{
-		rval = ON_Intersect(xline, arc, &a, point0, &b, point1); 
+		rval = ON_Intersect(xline, arc, &a, point0, &b, point1);
 	}
 	else
 	{
 		double d = plane.plane_equation.ValueAt( arc.StartPoint() );
 		if(d<ON_ZERO_TOLERANCE)
 			rval =3;
-		else 
+		else
 			rval = 0;
 	}
 	return rval;
 }
 
 int ON_Intersect(
-      const ON_Line& line, 
+      const ON_Line& line,
       const ON_Arc& arc,
       double* line_t0,
       ON_3dPoint& arc_point0,
@@ -983,7 +981,6 @@ int ON_Intersect(
         ON_3dPoint q = line.PointAt(t[0]);
         if ( p[0].DistanceTo(q) > p[1].DistanceTo(q) )
         {
-          a[0] = a[1];
           t[0] = t[1];
           p[0] = p[1];
         }
@@ -1007,8 +1004,8 @@ int ON_Intersect(
   return xcnt;
 }
 
-int ON_Intersect( const ON_Sphere& sphere0, 
-                  const ON_Sphere& sphere1, 
+int ON_Intersect( const ON_Sphere& sphere0,
+                  const ON_Sphere& sphere1,
                   ON_Circle& circle
                  )
 
@@ -1069,5 +1066,3 @@ int ON_Intersect( const ON_Sphere& sphere0,
   circle.Create(plane, y);
   return 2;
 }
-
-

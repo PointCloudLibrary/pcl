@@ -1,15 +1,15 @@
 /*
  * Software License Agreement (BSD License)
- * 
+ *
  * Point Cloud Library (PCL) - www.pointclouds.org
  * Copyright (c) 2009-2011, Willow Garage, Inc.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
- * are met: 
- * 
+ * are met:
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  *  * Redistributions in binary form must reproduce the above
@@ -19,7 +19,7 @@
  *  * Neither the name of the copyright holder(s) nor the names of its
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -62,7 +62,7 @@ pcl::SamplingSurfaceNormal<PointT>::applyFilter (PointCloud &output)
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename PointT> void 
+template<typename PointT> void
 pcl::SamplingSurfaceNormal<PointT>::findXYZMaxMin (const PointCloud& cloud, Vector& max_vec, Vector& min_vec)
 {
   float maxval = cloud.points[0].x;
@@ -118,10 +118,10 @@ pcl::SamplingSurfaceNormal<PointT>::findXYZMaxMin (const PointCloud& cloud, Vect
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename PointT> void 
+template<typename PointT> void
 pcl::SamplingSurfaceNormal<PointT>::partition (
     const PointCloud& cloud, const int first, const int last,
-    const Vector min_values, const Vector max_values, 
+    const Vector min_values, const Vector max_values,
     std::vector<int>& indices, PointCloud&  output)
 {
 	const int count (last - first);
@@ -136,34 +136,34 @@ pcl::SamplingSurfaceNormal<PointT>::partition (
 	const int rightCount (count / 2);
 	const int leftCount (count - rightCount);
 	assert (last - rightCount == first + leftCount);
-	
+
 	// sort, hack std::nth_element
 	std::nth_element (indices.begin () + first, indices.begin () + first + leftCount,
                     indices.begin () + last, CompareDim (cutDim, cloud));
 
 	const int cutIndex (indices[first+leftCount]);
 	const float cutVal = findCutVal (cloud, cutDim, cutIndex);
-	
+
 	// update bounds for left
 	Vector leftMaxValues (max_values);
 	leftMaxValues[cutDim] = cutVal;
 	// update bounds for right
 	Vector rightMinValues (min_values);
 	rightMinValues[cutDim] = cutVal;
-	
+
 	// recurse
 	partition (cloud, first, first + leftCount, min_values, leftMaxValues, indices, output);
 	partition (cloud, first + leftCount, last, rightMinValues, max_values, indices, output);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-template<typename PointT> void 
+template<typename PointT> void
 pcl::SamplingSurfaceNormal<PointT>::samplePartition (
     const PointCloud& data, const int first, const int last,
     std::vector <int>& indices, PointCloud& output)
 {
   pcl::PointCloud <PointT> cloud;
-  
+
   for (int i = first; i < last; i++)
   {
     PointT pt;
@@ -211,7 +211,6 @@ pcl::SamplingSurfaceNormal<PointT>::computeNormal (const PointCloud& cloud, Eige
 
   if (computeMeanAndCovarianceMatrix (cloud, covariance_matrix, xyz_centroid) == 0)
   {
-    nx = ny = nz = curvature = std::numeric_limits<float>::quiet_NaN ();
     return;
   }
 

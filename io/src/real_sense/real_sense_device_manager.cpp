@@ -51,7 +51,6 @@ releasePXCResource (T* resource)
   if (resource)
   {
     resource->Release ();
-    resource = 0;
   }
 }
 
@@ -219,4 +218,3 @@ pcl::io::real_sense::RealSenseDeviceManager::capture (DeviceInfo& device_info)
     return device;
   }
 }
-
