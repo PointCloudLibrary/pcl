@@ -3404,10 +3404,7 @@ bool EvBoxSideTextureCoordinateHelper1(
       PT = &P_xform[0][0];
       NT = &N_xform[0][0];
     }
-    else
-    {
-      mesh_xform = 0;
-    }
+   
   }
 
   const float* f;
