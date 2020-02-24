@@ -813,7 +813,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         Eigen::Vector2f S1;
         Eigen::Vector2f S2;
         std::vector<int> to_erase;
-        for (std::vector<int>::iterator it = angleIdx.begin()+1; it != angleIdx.end()-1; it++)
+        for (std::vector<int>::iterator it = angleIdx.begin()+1; it != angleIdx.end()-1; ++it)
         {
           if (gaps[*(it-1)])
             angle_so_far = 0;
