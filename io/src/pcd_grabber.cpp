@@ -204,7 +204,7 @@ bool
 pcl::PCDGrabberBase::PCDGrabberImpl::readTARHeader ()
 {
   // Read in the header
-#ifdef WIN32
+#ifdef _WIN32
   int result = static_cast<int> (_read (tar_fd_, reinterpret_cast<char*> (&tar_header_), 512));
 #else
   int result = static_cast<int> (::read (tar_fd_, reinterpret_cast<char*> (&tar_header_), 512));
@@ -459,5 +459,4 @@ pcl::PCDGrabberBase::numFrames () const
 {
   return (impl_->numFrames ());
 }
-
 
