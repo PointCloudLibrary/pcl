@@ -106,7 +106,6 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         nearestKSearch (flann_index_, histogram, NN_, indices, distances);
 
         //gather NN-search results
-        double score = 0;
         for (int i = 0; i < NN_; ++i)
         {
           index_score is;

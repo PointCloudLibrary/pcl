@@ -70,7 +70,7 @@ pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm (LOAGraph &g, double *we
   // process all junctions
   while (!crossings.empty ())
   {
-    int dist = -1;
+    double dist = -1;
     // find shortest crossing for all vertices on the loop
     for (auto crossings_it = crossings.begin (); crossings_it != crossings.end (); )
     {

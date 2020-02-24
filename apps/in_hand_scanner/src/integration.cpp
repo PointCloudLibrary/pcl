@@ -304,6 +304,8 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
       const PointIHS&          pt_d_t_3 = cloud_data_transformed->operator [] (ind_3);
       const PointIHS&          pt_d_t_4 = cloud_data_transformed->operator [] (ind_4);
 
+      VertexIndex& vi_0 = vertex_indices [ind_0];
+
       const float weight = -pt_d_0.normal_z; // weight = -dot (normal, [0; 0; 1])
 
       if (!std::isnan (pt_d_0.x) && weight > min_weight_)
@@ -367,7 +369,6 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
       //   \   \    //
       // *   3 - 0  //
 
-      VertexIndex& vi_0 = vertex_indices [ind_0];
       VertexIndex& vi_1 = vertex_indices [ind_1];
       VertexIndex& vi_2 = vertex_indices [ind_2];
       VertexIndex& vi_3 = vertex_indices [ind_3];
