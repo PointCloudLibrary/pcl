@@ -36,12 +36,8 @@ Grid::Grid (std::string name, int size/*=10*/, double spacing/*=1.0*/) :
   grid_->SetXCoordinates (xz_array);
   grid_->SetYCoordinates (y_array);
   grid_->SetZCoordinates (xz_array);
-
   grid_mapper->SetInputData(grid_);
-
-  vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New ();
   grid_actor_->SetMapper (grid_mapper);
-
   grid_actor_->GetProperty ()->SetRepresentationToWireframe ();
   grid_actor_->GetProperty ()->SetColor (0.5, 0.5, 0.5);
   grid_actor_->GetProperty ()->SetLighting (false);
