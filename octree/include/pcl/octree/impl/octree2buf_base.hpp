@@ -520,7 +520,8 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deleteLeafRecursive(
 
     if (child_branch) {
       // recursively explore the indexed child branch
-      bool bBranchOccupied = deleteLeafRecursive(key_arg, depth_mask_arg / 2, child_branch);
+      bool bBranchOccupied =
+          deleteLeafRecursive(key_arg, depth_mask_arg / 2, child_branch);
 
       if (!bBranchOccupied) {
         // child branch does not own any sub-child nodes anymore -> delete child branch
