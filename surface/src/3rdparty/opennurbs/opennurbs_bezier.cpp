@@ -2319,7 +2319,7 @@ bool ON_BezierSurface::GetNurbForm( ON_NurbsSurface& n ) const
     n.m_knot[0][m_order[0]-1] = 1.0;	//m_domain[0].Max();
     n.m_knot[1][m_order[1]-2] = 0.0;	//m_domain[1].Min();
     n.m_knot[1][m_order[1]-1] = 1.0;	//m_domain[1].Max();
-    rc = ON_ClampKnotVector( n.m_order[0], n.m_cv_count[0], n.m_knot[0], 2 );
+    rc = ON_ClampKnotVector( n.m_order[1], n.m_cv_count[1], n.m_knot[1], 2 );
   }
   return rc;
 }
