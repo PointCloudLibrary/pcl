@@ -536,7 +536,7 @@ bool ON_UncompressStream::End()
 
   const ON__UINT32 sizeof_out_buffer = (ON__UINT32)(sizeof(imp->m_zlib_out_buffer));
   void* out_buffer = imp->m_zlib_out_buffer;
-  int zrc;
+  
   bool rc = false;
   ON__UINT32 inflate_output_count;
 
@@ -550,7 +550,7 @@ bool ON_UncompressStream::End()
     strm.avail_out = sizeof_out_buffer;
 
     // finish compression calculation
-    zrc = z_inflate( &strm, Z_FINISH ); 
+    int zrc = z_inflate( &strm, Z_FINISH ); 
     if ( zrc < 0 ) 
     {
       // Something went haywire - bail out.
