@@ -48,7 +48,7 @@
 #include <pcl/point_cloud.h>
 
 #include <pcl/common/centroid.h>
-#include <pcl/test/pcl_macros.h>
+#include <pcl/test/test_macros.h>
 
 using namespace pcl;
 

@@ -35,14 +35,13 @@
  *
  *
  */
-#include <pcl/pcl_macros.h>
 #include <pcl/octree/octree_pointcloud_adjacency.h>
 #include <pcl/octree/octree_base.h>
 #include <pcl/octree/octree_iterator.h>
 #include <pcl/common/projection_matrix.h>
 #include <pcl/point_types.h>
 #include <gtest/gtest.h>
-#include <pcl/test/pcl_macros.h>
+#include <pcl/test/test_macros.h>
 
 using pcl::octree::OctreeBase;
 using pcl::octree::OctreeIteratorBase;

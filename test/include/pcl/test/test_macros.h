@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2019-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -37,7 +37,7 @@
 #pragma once
 
 /**
- * \file pcl/test/pcl_macros.h
+ * \file pcl/test/test_macros.h
  *
  * \brief Defines all the PCL test macros used
  * \ingroup test

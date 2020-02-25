@@ -40,7 +40,6 @@
 #include <pcl/point_types.h>
 
 #include <gtest/gtest.h>
-#include <pcl/test/pcl_macros.h>
 
 TEST (TypeTraits, HasCustomAllocatorTrait)
 {

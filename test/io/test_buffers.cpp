@@ -41,7 +41,7 @@
 #include <cstdint>
 
 #include <pcl/io/buffers.h>
-#include <pcl/test/pcl_macros.h>
+#include <pcl/test/test_macros.h>
 
 using namespace pcl::io;
 

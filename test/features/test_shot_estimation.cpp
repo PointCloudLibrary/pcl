@@ -46,7 +46,7 @@
 #include "pcl/features/shot_lrf.h"
 #include <pcl/features/3dsc.h>
 #include <pcl/features/usc.h>
-#include <pcl/test/pcl_macros.h>
+#include <pcl/test/test_macros.h>
 
 using namespace pcl;
 using namespace pcl::io;

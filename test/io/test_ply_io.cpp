@@ -41,7 +41,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <gtest/gtest.h>
-#include <pcl/test/pcl_macros.h>
+#include <pcl/test/test_macros.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PLYReaderWriter)
