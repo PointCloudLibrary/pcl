@@ -48,7 +48,7 @@
 # include <OpenGL/gl.h>
 # include <OpenGL/glu.h>
 #else
-#if _WIN32
+#ifdef _WIN32
 // Need this to pull in APIENTRY, etc.
 #include "windows.h"
 #endif
