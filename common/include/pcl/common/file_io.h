@@ -40,7 +40,8 @@
 
 #include <iostream>
 #ifndef _WIN32
-  #include <dirent.h>
+  #include <boost/filesystem.hpp>
+  #include <boost/range/iterator_range.hpp>
 #endif
 #include <vector>
 #include <algorithm>
