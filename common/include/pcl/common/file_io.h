@@ -39,12 +39,10 @@
 #pragma once
 
 #include <iostream>
-#ifndef _WIN32
-  #include <boost/filesystem.hpp>
-  #include <boost/range/iterator_range.hpp>
-#endif
 #include <vector>
 #include <algorithm>
+#include <boost/filesystem.hpp>
+#include <boost/range/iterator_range.hpp>
 
 /** 
   * \file pcl/common/file_io.h
