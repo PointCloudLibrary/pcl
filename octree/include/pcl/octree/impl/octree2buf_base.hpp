@@ -661,13 +661,11 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
   }
 
   if (binaryTreeIT_arg != binaryTreeIT_End_arg) {
-    // node bits
-    char nodeBits, recoveredNodeBits;
-
     // read branch occupancy bit pattern from vector
-    nodeBits = *binaryTreeIT_arg++;
+    char nodeBits = *binaryTreeIT_arg++;
 
     // recover branch occupancy bit pattern
+    char recoveredNodeBits;
     if (do_XOR_decoding_arg) {
       recoveredNodeBits =
           getBranchBitPattern(*branch_arg, !buffer_selector_) ^ nodeBits;

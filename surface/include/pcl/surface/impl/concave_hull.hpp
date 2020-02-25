@@ -381,10 +381,10 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     // Compute the alpha complex for the set of points
     // Filters the delaunay triangles
     setT *edges_set = qh_settemp (3 * num_facets);
-    int dd = 0;
     if (voronoi_centers_)
       voronoi_centers_->points.resize (num_facets);
 
+    int dd = 0;
     FORALLfacets
     {
       // Facets are the delaunay triangles (2d)

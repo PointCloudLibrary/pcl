@@ -1333,14 +1333,13 @@ main (int argc, char* argv[])
   //    return std::cout << std::endl << "Kinfu is supported only for Fermi and Kepler arhitectures. It is not even compiled for pre-Fermi by default. Exiting..." << std::endl, 1;
 
   pcl::shared_ptr<pcl::Grabber> capture;
+  bool triggered_capture = false;
+  bool pcd_input = false;
+  bool oni2_interface = false;
 
   std::string eval_folder, match_file, openni_device, oni_file, pcd_dir, oni2_file{};
   try
   {
-    bool triggered_capture = false;
-    bool pcd_input = false;
-    bool oni2_interface = false;
-
     #ifdef HAVE_OPENNI
     if (pc::parse_argument (argc, argv, "-dev", openni_device) > 0)
     {

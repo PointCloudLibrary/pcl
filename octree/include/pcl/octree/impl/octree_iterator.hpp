@@ -226,14 +226,13 @@ OctreeBreadthFirstIterator<OctreeT>::operator++()
       // current node is a branch node
       BranchNode* current_branch = static_cast<BranchNode*>(FIFO_entry.node_);
 
-      OctreeKey& current_key = FIFO_entry.key_;
-
       // iterate over all children
       for (unsigned char child_idx = 0; child_idx < 8; ++child_idx) {
 
         // if child exist
         if (this->octree_->branchHasChild(*current_branch, child_idx)) {
           // add child to stack
+          OctreeKey& current_key = FIFO_entry.key_;
           current_key.pushBranch(static_cast<unsigned char>(child_idx));
 
           FIFO_entry.node_ =

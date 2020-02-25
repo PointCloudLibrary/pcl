@@ -90,7 +90,6 @@ pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm (LOAGraph &g, double *we
           end_min = end_it;
           do_swap = true;
         }
-
       }
       if (do_swap)
       {
