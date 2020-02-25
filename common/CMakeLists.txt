@@ -52,6 +52,7 @@ set(srcs
 
 set(incs
   include/pcl/correspondence.h
+  include/pcl/memory.h
   include/pcl/exceptions.h
   include/pcl/pcl_base.h
   include/pcl/pcl_exports.h

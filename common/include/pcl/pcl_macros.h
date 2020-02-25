@@ -66,13 +66,6 @@
 #include <iostream>
 
 #include <boost/cstdint.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
-
-//Eigen has an enum that clashes with X11 Success define, which is ultimately included by pcl
-#ifdef Success
-  #undef Success
-#endif
-#include <Eigen/Core>
 
 #include <pcl/pcl_config.h>
 
@@ -96,17 +89,6 @@
 
 namespace pcl
 {
-  /**
-   * \brief Alias for boost::shared_ptr
-   *
-   * For ease of switching from boost::shared_ptr to std::shared_ptr
-   *
-   * \see pcl::make_shared
-   * \tparam T Type of the object stored inside the shared_ptr
-   */
-  template <typename T>
-  using shared_ptr = boost::shared_ptr<T>;
-
   using uint8_t PCL_DEPRECATED("use std::uint8_t instead of pcl::uint8_t") = std::uint8_t;
   using int8_t PCL_DEPRECATED("use std::int8_t instead of pcl::int8_t") = std::int8_t;
   using uint16_t PCL_DEPRECATED("use std::uint16_t instead of pcl::uint16_t") = std::uint16_t;
@@ -376,19 +358,6 @@ aligned_free (void* ptr)
   #error aligned_free not supported on your platform
 #endif
 }
-
-/**
- * \brief Macro to signal a class requires a custom allocator
- *
- *  It's an implementation detail to have pcl::has_custom_allocator work, a
- *  thin wrapper over Eigen's own macro
- *
- * \see pcl::has_custom_allocator, pcl::make_shared
- * \ingroup common
- */
-#define PCL_MAKE_ALIGNED_OPERATOR_NEW \
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
-  using _custom_allocator_type_trait = void;
 
 /**
  * \brief Macro to add a no-op or a fallthrough attribute based on compiler feature
