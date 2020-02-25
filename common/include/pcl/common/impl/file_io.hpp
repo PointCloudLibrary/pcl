@@ -42,12 +42,11 @@
 namespace pcl
 {
 
-#ifndef _WIN32
   void getAllPcdFilesInDirectory(const std::string& directory, std::vector<std::string>& file_names)
   {
     boost::filesystem::path p(directory);
     if(boost::filesystem::is_directory(p)) {
-      for(boost::filesystem::directory_entry& entry : boost::make_iterator_range(boost::filesystem::directory_iterator(p), {}))
+      for(auto& entry : boost::make_iterator_range(boost::filesystem::directory_iterator(p), {}))
         if (boost::filesystem::is_regular_file(entry)) {
           std::string file_name = entry.path().filename().string();
           if (file_name.size() >= 4 && file_name.substr(file_name.size()-4, 4)==".pcd")
@@ -58,7 +57,6 @@ namespace pcl
     //for (unsigned int i=0; i<file_names.size(); ++i)
       //std::cout << file_names[i]<<"\n";
   }
-#endif
 
 std::string getFilenameWithoutPath(const std::string& input)
 {
