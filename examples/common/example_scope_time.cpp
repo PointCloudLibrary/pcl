@@ -51,7 +51,7 @@ main ()
     float total;
     for (std::size_t i = 0; i < 1e4; ++i)
   }
-  std::cout << "Done." << std::endl;
+  std::cout << "Total." << std::endl;
 
   return (0);
 }
