@@ -46,6 +46,7 @@
 #include <memory>
 #include <set>
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/pcl_base.h>
 #include <pcl/console/print.h>

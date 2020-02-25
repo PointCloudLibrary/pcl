@@ -44,7 +44,7 @@
 #include <pcl/io/file_grabber.h>
 #include <pcl/common/time_trigger.h>
 #include <pcl/conversions.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 #ifdef HAVE_OPENNI
 #include <pcl/io/openni_camera/openni_image.h>

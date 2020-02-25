@@ -39,6 +39,7 @@
 #pragma once
 
 #include <pcl/segmentation/boost.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>

@@ -43,6 +43,7 @@
 #include <boost/version.hpp>
 
 #include <pcl/features/normal_3d.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
@@ -69,7 +70,7 @@ namespace pcl
       Supervoxel () :
         voxels_ (new pcl::PointCloud<PointT> ()),
         normals_ (new pcl::PointCloud<Normal> ())
-        {  } 
+        {  }
 
       using Ptr = shared_ptr<Supervoxel<PointT> >;
       using ConstPtr = shared_ptr<const Supervoxel<PointT> >;
@@ -281,7 +282,7 @@ namespace pcl
       PCL_DEPRECATED("use getLabeledCloud() instead. An example of how to display and save with colorized labels can be found in examples/segmentation/example_supervoxels.cpp")
       typename pcl::PointCloud<PointXYZRGBA>::Ptr
       getColoredCloud () const
-      { 
+      {
         return pcl::PointCloud<PointXYZRGBA>::Ptr (new pcl::PointCloud<PointXYZRGBA>);
       }
 

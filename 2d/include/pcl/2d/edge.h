@@ -39,6 +39,7 @@
 
 #include <pcl/2d/convolution.h>
 #include <pcl/2d/kernel.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 

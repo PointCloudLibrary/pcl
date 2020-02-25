@@ -44,6 +44,7 @@
 
 #include <Eigen/Core>
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 #include "octree_container.h"

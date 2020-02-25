@@ -31,7 +31,7 @@
 
 #pragma once
 
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/io/openni2/openni2_device.h>
 #include <pcl/io/openni2/openni2_device_info.h>

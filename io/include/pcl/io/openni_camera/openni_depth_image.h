@@ -39,7 +39,7 @@
 #pragma once
  
 #include <pcl/pcl_config.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 #ifdef HAVE_OPENNI
 
 #include "openni.h"

@@ -39,7 +39,7 @@
 #define PCL_STANDALONE_MARCHING_CUBES_IMPL_HPP_
 
 #include <pcl/gpu/kinfu_large_scale/standalone_marching_cubes.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename PointT>

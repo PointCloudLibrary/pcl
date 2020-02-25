@@ -42,7 +42,8 @@
 #pragma GCC system_header
 #endif
 
-#include "pcl/pcl_macros.h"
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
 
 #include <pcl/PCLPointField.h>
 #include <boost/mpl/assert.hpp>
