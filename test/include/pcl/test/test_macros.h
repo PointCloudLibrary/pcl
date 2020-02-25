@@ -36,6 +36,8 @@
 
 #pragma once
 
+#include <gtest/gtest.h>
+
 /**
  * \file pcl/test/test_macros.h
  *
