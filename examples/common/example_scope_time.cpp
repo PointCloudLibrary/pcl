@@ -50,8 +50,11 @@ main ()
   {
     
     for (std::size_t i = 0; i < 1e4; ++i)
+     #ifdef BUSY_LOOP
+    asm("")
+    #endif;
   }
-  std::cout << "Total." << std::endl;
+  std::cout << "Total" << std::endl;
 
   return (0);
 }
