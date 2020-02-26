@@ -54,7 +54,7 @@ main ()
     asm("")
     #endif;
   }
-  std::cout << "Total" << std::endl;
+  std::cout << "Done." << std::endl;
 
   return (0);
 }
