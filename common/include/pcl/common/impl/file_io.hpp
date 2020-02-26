@@ -42,21 +42,30 @@
 namespace pcl
 {
 
-  void getAllPcdFilesInDirectory(const std::string& directory, std::vector<std::string>& file_names)
+void getAllPcdFilesInDirectory(const std::string& directory, std::vector<std::string>& file_names)
+{
+  boost::filesystem::path p(directory);
+  if(boost::filesystem::is_directory(p))
   {
-    boost::filesystem::path p(directory);
-    if(boost::filesystem::is_directory(p)) {
-      for(auto& entry : boost::make_iterator_range(boost::filesystem::directory_iterator(p), {}))
-        if (boost::filesystem::is_regular_file(entry)) {
-          std::string file_name = entry.path().filename().string();
-          if (file_name.size() >= 4 && file_name.substr(file_name.size()-4, 4)==".pcd")
-            file_names.emplace_back(file_name);
-        }
+    for(const auto& entry : boost::make_iterator_range(boost::filesystem::directory_iterator(p), {}))
+    {
+      if (boost::filesystem::is_regular_file(entry))
+      {
+        std::string file_name = entry.path().filename().string();
+        if (entry.path().extension() == "pcd")
+          file_names.emplace_back(file_name);
+      }
     }
-    std::sort(file_names.begin(), file_names.end());
-    //for (unsigned int i=0; i<file_names.size(); ++i)
-      //std::cout << file_names[i]<<"\n";
   }
+  else
+  {
+    std::cerr << "Could not open directory.\n";
+    return;
+  }
+  std::sort(file_names.begin(), file_names.end());
+  //for (unsigned int i=0; i<file_names.size(); ++i)
+  //std::cout << file_names[i]<<"\n";
+}
 
 std::string getFilenameWithoutPath(const std::string& input)
 {
