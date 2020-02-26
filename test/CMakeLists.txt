@@ -26,6 +26,8 @@ endif()
 
 set_target_properties(tests PROPERTIES FOLDER "Tests")
 
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+
 add_subdirectory(2d)
 add_subdirectory(common)
 add_subdirectory(features)

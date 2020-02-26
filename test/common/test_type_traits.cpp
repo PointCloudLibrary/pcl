@@ -36,7 +36,6 @@
  */
 
 
-#include <pcl/pcl_macros.h>
 #include <pcl/point_traits.h>
 #include <pcl/point_types.h>
 

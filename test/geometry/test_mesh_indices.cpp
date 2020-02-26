@@ -44,6 +44,7 @@
 #include <gtest/gtest.h>
 
 #include <pcl/geometry/mesh_indices.h>
+#include <pcl/test/gtest.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -63,7 +64,7 @@ class TestMeshIndicesTyped : public testing::Test
 
 using MeshIndexTypes = testing::Types <VertexIndex, HalfEdgeIndex, EdgeIndex, FaceIndex>;
 
-TYPED_TEST_CASE (TestMeshIndicesTyped, MeshIndexTypes);
+TYPED_TEST_SUITE (TestMeshIndicesTyped, MeshIndexTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 
