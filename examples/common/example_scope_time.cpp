@@ -48,7 +48,7 @@ main ()
 {
   pcl::ScopeTime scope_time ("Test loop");
   {
-    float total;
+    
     for (std::size_t i = 0; i < 1e4; ++i)
   }
   std::cout << "Total." << std::endl;
