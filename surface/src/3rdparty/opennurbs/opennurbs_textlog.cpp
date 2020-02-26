@@ -727,7 +727,6 @@ void ON_TextLog::PrintWrappedText( const wchar_t* s, int line_length )
     wchar_t* sLine = (wchar_t*)ws.GetMemory((max_line_length+1)*sizeof(*sLine));
     const int wrap_length = line_length;
     int i  = 0;
-    int i1 = 0;
     int isp = 0;
     ON_BOOL32 bPrintLine = false;
     while ( s[i] ) {
