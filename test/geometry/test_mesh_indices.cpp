@@ -44,7 +44,7 @@
 #include <gtest/gtest.h>
 
 #include <pcl/geometry/mesh_indices.h>
-#include <pcl/test/test_macros.h>
+#include <pcl/test/gtest.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 

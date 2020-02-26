@@ -50,7 +50,7 @@
 #include <pcl/features/vfh.h>
 #include <pcl/features/gfpfh.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/test/test_macros.h>
+#include <pcl/test/gtest.h>
 
 using PointT = pcl::PointNormal;
 using KdTreePtr = pcl::search::KdTree<PointT>::Ptr;

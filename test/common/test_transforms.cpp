@@ -46,7 +46,7 @@
 #include <pcl/common/io.h>
 
 #include <pcl/pcl_tests.h>
-#include <pcl/test/test_macros.h>
+#include <pcl/test/gtest.h>
 
 using namespace pcl;
 

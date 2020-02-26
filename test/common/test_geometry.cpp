@@ -40,7 +40,7 @@
 #include <gtest/gtest.h>
 #include <pcl/common/geometry.h>
 #include <pcl/point_types.h>
-#include <pcl/test/test_macros.h>
+#include <pcl/test/gtest.h>
 
 using namespace pcl;
 

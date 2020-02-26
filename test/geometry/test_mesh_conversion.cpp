@@ -47,7 +47,7 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <pcl/test/test_macros.h>
+#include <pcl/test/gtest.h>
 
 #include "test_mesh_common_functions.h"
 

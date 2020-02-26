@@ -39,7 +39,7 @@
 #include <gtest/gtest.h>
 
 /**
- * \file pcl/test/test_macros.h
+ * \file pcl/test/gtest.h
  *
  * \brief Defines all the PCL test macros used
  * \ingroup test

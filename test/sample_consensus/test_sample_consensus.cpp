@@ -45,7 +45,7 @@
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/rransac.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
-#include <pcl/test/test_macros.h>
+#include <pcl/test/gtest.h>
 
 #include <chrono>
 #include <condition_variable>

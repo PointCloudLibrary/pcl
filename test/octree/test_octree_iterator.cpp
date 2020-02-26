@@ -41,7 +41,7 @@
 #include <pcl/common/projection_matrix.h>
 #include <pcl/point_types.h>
 #include <gtest/gtest.h>
-#include <pcl/test/test_macros.h>
+#include <pcl/test/gtest.h>
 
 using pcl::octree::OctreeBase;
 using pcl::octree::OctreeIteratorBase;

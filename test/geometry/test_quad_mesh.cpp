@@ -44,7 +44,7 @@
 #include <gtest/gtest.h>
 
 #include <pcl/geometry/quad_mesh.h>
-#include <pcl/test/test_macros.h>
+#include <pcl/test/gtest.h>
 
 #include "test_mesh_common_functions.h"
 

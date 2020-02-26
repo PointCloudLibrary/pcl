@@ -48,7 +48,7 @@
 #include <gtest/gtest.h>
 
 #include <pcl/segmentation/random_walker.h>
-#include <pcl/test/test_macros.h>
+#include <pcl/test/gtest.h>
 
 std::string TEST_DATA_DIR;
 
