@@ -2351,14 +2351,8 @@ svm_group_classes(const svm_problem* prob,
     if (j == nr_class) {
       if (nr_class == max_nr_class) {
         max_nr_class *= 2;
-        int* label_temp = static_cast<int*>(realloc(label, max_nr_class * sizeof(int)));
-        if (label_temp) {
-          label = label_temp;
-        }
-        int* count_temp = static_cast<int*>(realloc(count, max_nr_class * sizeof(int)));
-        if (count_temp) {
-          count = count_temp;
-        }
+        label = static_cast<int*>(realloc(label, max_nr_class * sizeof(int)));
+        count = static_cast<int*>(realloc(count, max_nr_class * sizeof(int)));
       }
 
       label[nr_class] = this_label;
@@ -3125,11 +3119,7 @@ readline(FILE* input)
 
   while (strrchr(line, '\n') == nullptr) {
     max_line_len *= 2;
-
-    char* line_temp = static_cast<char*>(realloc(line, max_line_len));
-    if (line_temp) {
-      line = line_temp;
-    }
+    line = static_cast<char*>(realloc(line, max_line_len));
     int len = int(strlen(line));
 
     if (fgets(line + len, max_line_len - len, input) == nullptr)
@@ -3539,14 +3529,8 @@ svm_check_parameter(const svm_problem* prob, const svm_parameter* param)
       if (j == nr_class) {
         if (nr_class == max_nr_class) {
           max_nr_class *= 2;
-          int* label_temp = static_cast<int*>(realloc(label, max_nr_class * sizeof(int)));
-          if (label_temp) {
-            label = label_temp;
-          }
-          int* count_temp = static_cast<int*>(realloc(count, max_nr_class * sizeof(int)));
-          if (count_temp) {
-            count = count_temp;
-          }
+          label = static_cast<int*>(realloc(label, max_nr_class * sizeof(int)));
+          count = static_cast<int*>(realloc(count, max_nr_class * sizeof(int)));
         }
 
         label[nr_class] = this_label;

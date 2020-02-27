@@ -76,8 +76,8 @@ init ()
 /* Test for FlannSearch nearestKSearch */
 TEST (PCL, FlannSearch_nearestKSearch)
 {
-  pcl::search::Search<PointXYZ>* FlannSearch = new pcl::search::FlannSearch<PointXYZ> (new search::FlannSearch<PointXYZ>::KdTreeIndexCreator);
-  FlannSearch->setInputCloud (cloud.makeShared ());
+  pcl::search::FlannSearch<PointXYZ> FlannSearch (new search::FlannSearch<PointXYZ>::KdTreeIndexCreator);
+  FlannSearch.setInputCloud (cloud.makeShared ());
   PointXYZ test_point (0.01f, 0.01f, 0.01f);
   unsigned int no_of_neighbors = 20;
   multimap<float, int> sorted_brute_force_result;
@@ -100,7 +100,7 @@ TEST (PCL, FlannSearch_nearestKSearch)
   std::vector<float> k_distances;
   k_distances.resize (no_of_neighbors);
 
-  FlannSearch->nearestKSearch (test_point, no_of_neighbors, k_indices, k_distances);
+  FlannSearch.nearestKSearch (test_point, no_of_neighbors, k_indices, k_distances);
 
   //if (k_indices.size () != no_of_neighbors)  std::cerr << "Found "<<k_indices.size ()<<" instead of "<<no_of_neighbors<<" neighbors.\n";
   EXPECT_EQ (k_indices.size (), no_of_neighbors);
@@ -119,15 +119,12 @@ TEST (PCL, FlannSearch_nearestKSearch)
 
   ScopeTime scopeTime ("FLANN nearestKSearch");
   {
-    pcl::search::Search<PointXYZ>* FlannSearch = new pcl::search::FlannSearch<PointXYZ>( new search::FlannSearch<PointXYZ>::KdTreeIndexCreator);
-    //FlannSearch->initSearchDS ();
-    FlannSearch->setInputCloud (cloud_big.makeShared ());
+    pcl::search::FlannSearch<PointXYZ> FlannSearch( new search::FlannSearch<PointXYZ>::KdTreeIndexCreator);
+    //FlannSearch.initSearchDS ();
+    FlannSearch.setInputCloud (cloud_big.makeShared ());
     for (const auto &point : cloud_big.points)
-      FlannSearch->nearestKSearch (point, no_of_neighbors, k_indices, k_distances);
-    delete(FlannSearch);
+      FlannSearch.nearestKSearch (point, no_of_neighbors, k_indices, k_distances);
   }
-
-  delete(FlannSearch);
 }
 
 /* Test the templated NN search (for different query point types) */
@@ -136,9 +133,9 @@ TEST (PCL, FlannSearch_differentPointT)
 
   unsigned int no_of_neighbors = 20;
 
-  pcl::search::Search<PointXYZ>* FlannSearch = new pcl::search::FlannSearch<PointXYZ> (new search::FlannSearch<PointXYZ>::KdTreeIndexCreator);
-  //FlannSearch->initSearchDS ();
-  FlannSearch->setInputCloud (cloud_big.makeShared ());
+  pcl::search::FlannSearch<PointXYZ> FlannSearch (new search::FlannSearch<PointXYZ>::KdTreeIndexCreator);
+  //FlannSearch.initSearchDS ();
+  FlannSearch.setInputCloud (cloud_big.makeShared ());
 
   PointCloud<PointXYZRGB> cloud_rgb;
 
@@ -148,7 +145,7 @@ TEST (PCL, FlannSearch_differentPointT)
 
   std::vector< std::vector< float > > dists;
   std::vector< std::vector< int > > indices;
-  FlannSearch->nearestKSearchT (cloud_rgb, std::vector<int> (),no_of_neighbors,indices,dists);
+  FlannSearch.nearestKSearchT (cloud_rgb, std::vector<int> (),no_of_neighbors,indices,dists);
 
   std::vector<int> k_indices;
   k_indices.resize (no_of_neighbors);
@@ -162,8 +159,8 @@ TEST (PCL, FlannSearch_differentPointT)
 
   for (std::size_t i = 0; i < cloud_rgb.points.size (); ++i)
   {
-    //FlannSearch->nearestKSearchT (cloud_rgb.points[i], no_of_neighbors, k_indices_t, k_distances_t);
-    FlannSearch->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
+    //FlannSearch.nearestKSearchT (cloud_rgb.points[i], no_of_neighbors, k_indices_t, k_distances_t);
+    FlannSearch.nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
     EXPECT_EQ (k_indices.size (), indices[i].size ());
     EXPECT_EQ (k_distances.size (), dists[i].size ());
     for (std::size_t j = 0; j< no_of_neighbors; j++)
@@ -174,8 +171,6 @@ TEST (PCL, FlannSearch_differentPointT)
     }
 
   }
-
-  delete(FlannSearch);
 }
 
 /* Test for FlannSearch nearestKSearch with multiple query points */
@@ -185,13 +180,13 @@ TEST (PCL, FlannSearch_multipointKnnSearch)
   unsigned int no_of_neighbors = 20;
 
 
-  pcl::search::Search<PointXYZ>* FlannSearch = new pcl::search::FlannSearch<PointXYZ> (new search::FlannSearch<PointXYZ>::KdTreeIndexCreator);
-  //FlannSearch->initSearchDS ();
-  FlannSearch->setInputCloud (cloud_big.makeShared ());
+  pcl::search::FlannSearch<PointXYZ> FlannSearch (new search::FlannSearch<PointXYZ>::KdTreeIndexCreator);
+  //FlannSearch.initSearchDS ();
+  FlannSearch.setInputCloud (cloud_big.makeShared ());
 
   std::vector< std::vector< float > > dists;
   std::vector< std::vector< int > > indices;
-  FlannSearch->nearestKSearch (cloud_big, std::vector<int>(),no_of_neighbors,indices,dists);
+  FlannSearch.nearestKSearch (cloud_big, std::vector<int>(),no_of_neighbors,indices,dists);
 
   std::vector<int> k_indices;
   k_indices.resize (no_of_neighbors);
@@ -200,7 +195,7 @@ TEST (PCL, FlannSearch_multipointKnnSearch)
 
   for (std::size_t i = 0; i < cloud_big.points.size (); ++i)
   {
-    FlannSearch->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
+    FlannSearch.nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
     EXPECT_EQ (k_indices.size (), indices[i].size ());
     EXPECT_EQ (k_distances.size (), dists[i].size ());
     for (std::size_t j = 0; j< no_of_neighbors; j++ )
@@ -209,8 +204,6 @@ TEST (PCL, FlannSearch_multipointKnnSearch)
     }
 
   }
-
-  delete(FlannSearch);
 }
 
 /* Test for FlannSearch nearestKSearch with multiple query points */
@@ -257,7 +250,7 @@ TEST (PCL, FlannSearch_knnByIndex)
 
   }
 
-  delete(flann_search);
+  delete (flann_search);
 }
 
 
@@ -381,9 +374,8 @@ main (int argc, char** argv)
   init ();
 
   // Testing using explicit instantiation of inherited class
-  pcl::search::Search<PointXYZ>* FlannSearch = new pcl::search::FlannSearch<PointXYZ> ( new search::FlannSearch<PointXYZ>::KdTreeIndexCreator);
-  FlannSearch->setInputCloud (cloud.makeShared ());
+  pcl::search::FlannSearch<PointXYZ> FlannSearch ( new search::FlannSearch<PointXYZ>::KdTreeIndexCreator);
+  FlannSearch.setInputCloud (cloud.makeShared ());
 
-  delete(FlannSearch);
   return (RUN_ALL_TESTS ());
 }
