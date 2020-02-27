@@ -125,5 +125,6 @@ int main(int argc, char** argv)
   }
   /// Run the app
   app.run();
+  delete(app.m_proc);
   return 0;
 }

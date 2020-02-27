@@ -738,6 +738,8 @@ pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::getGeometry 
     data->SetArray (&pts[0], j * 3, 0);
     points->SetData (data);
   }
+
+  free(pts);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

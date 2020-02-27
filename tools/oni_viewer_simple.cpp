@@ -206,5 +206,6 @@ main(int argc, char ** argv)
     v.run();
   }
 
+  delete(grabber);
   return (0);
 }

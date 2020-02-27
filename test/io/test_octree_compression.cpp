@@ -108,6 +108,9 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBA)
         std::cout << e.what() << std::endl;
       }
     } // runs
+
+    delete(pointcloud_encoder);
+    delete(pointcloud_decoder);
   } // compression profiles
 } // TEST
 
@@ -153,6 +156,9 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZ)
         std::cout << e.what() << std::endl;
       }
     } // runs
+
+    delete(pointcloud_encoder);
+    delete(pointcloud_decoder);
   } // compression profiles
 } // TEST
 

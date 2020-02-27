@@ -184,6 +184,8 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
       k_sqr_distances.pop_back();
     }
   }
+
+  delete(octree);
 }
 
 TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
@@ -306,8 +308,10 @@ TEST (PCL, KdTreeWrapper_nearestKSearch)
     kdtree->setInputCloud (cloud_big.makeShared ());
     for (std::size_t i = 0; i < cloud_big.points.size (); ++i)
       kdtree->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
+    delete(kdtree);
   }
 
+  delete(kdtree);
 }	
 
 
@@ -322,6 +326,7 @@ TEST (PCL, AutoTunedSearch_Evaluate)
   if (pcd.read ("office1.pcd", *cloudIn) == -1)
   {
     std::cout <<"Couldn't read input cloud" << std::endl;
+    delete(search);
     return;
   }
 
@@ -341,6 +346,7 @@ main(int argc, char** argv)
   pcl::search::Search<PointXYZ>* kdtree = new pcl::search::AutotunedSearch<PointXYZ>(pcl::search::KDTREE);
   kdtree->setInputCloud (cloud.makeShared ());
 
+  delete(kdtree);
   return (RUN_ALL_TESTS ());
 };
 /* ]--- */

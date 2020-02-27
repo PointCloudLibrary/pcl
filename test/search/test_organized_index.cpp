@@ -170,6 +170,8 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
       k_sqr_distances_bruteforce.pop_back();
     }
   }
+
+  delete(organizedNeighborSearch);
 }
 
 
@@ -199,6 +201,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search_Kinec
   if (pcd.read ("office1.pcd", *cloudIn) == -1)
   {
     std::cout <<"Couldn't read input cloud" << std::endl;
+    delete(organizedNeighborSearch);
     return;
   }
 
@@ -257,6 +260,8 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search_Kinec
     }
     ASSERT_EQ ( k_indices.size() , k_indices_bruteforce.size() );
   }
+
+  delete(organizedNeighborSearch);
 }
 
 TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
@@ -372,6 +377,8 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
 
     ASSERT_EQ (cloudNWRRadius.size () <= 5, true);
   }
+
+  delete(organizedNeighborSearch);
 }
 
 
@@ -458,6 +465,8 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
 
     radiusSearchTime += getTime() - check_time2;
   }
+
+  delete(organizedNeighborSearch);
 }
 
 TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_Kinect_Data)
@@ -591,6 +600,8 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
 
     ASSERT_EQ (cloudNWRRadius.size () <= 5, true);
   }
+
+  delete(organizedNeighborSearch);
 }
 
 /* ---[ */

@@ -124,7 +124,10 @@ TEST (PCL, FlannSearch_nearestKSearch)
     FlannSearch->setInputCloud (cloud_big.makeShared ());
     for (const auto &point : cloud_big.points)
       FlannSearch->nearestKSearch (point, no_of_neighbors, k_indices, k_distances);
+    delete(FlannSearch);
   }
+
+  delete(FlannSearch);
 }
 
 /* Test the templated NN search (for different query point types) */
@@ -171,6 +174,8 @@ TEST (PCL, FlannSearch_differentPointT)
     }
 
   }
+
+  delete(FlannSearch);
 }
 
 /* Test for FlannSearch nearestKSearch with multiple query points */
@@ -204,6 +209,8 @@ TEST (PCL, FlannSearch_multipointKnnSearch)
     }
 
   }
+
+  delete(FlannSearch);
 }
 
 /* Test for FlannSearch nearestKSearch with multiple query points */
@@ -249,6 +256,8 @@ TEST (PCL, FlannSearch_knnByIndex)
     }
 
   }
+
+  delete(flann_search);
 }
 
 
@@ -375,5 +384,6 @@ main (int argc, char** argv)
   pcl::search::Search<PointXYZ>* FlannSearch = new pcl::search::FlannSearch<PointXYZ> ( new search::FlannSearch<PointXYZ>::KdTreeIndexCreator);
   FlannSearch->setInputCloud (cloud.makeShared ());
 
+  delete(FlannSearch);
   return (RUN_ALL_TESTS ());
 }

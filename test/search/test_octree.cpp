@@ -164,6 +164,8 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
       k_sqr_distances.pop_back();
     }
   }
+
+  delete(octree);
 }
 
 #if 0
