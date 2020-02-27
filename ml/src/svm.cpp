@@ -2351,8 +2351,14 @@ svm_group_classes(const svm_problem* prob,
     if (j == nr_class) {
       if (nr_class == max_nr_class) {
         max_nr_class *= 2;
-        label = static_cast<int*>(realloc(label, max_nr_class * sizeof(int)));
-        count = static_cast<int*>(realloc(count, max_nr_class * sizeof(int)));
+        int* label_temp = static_cast<int*>(realloc(label, max_nr_class * sizeof(int)));
+        if (label_temp) {
+          label = label_temp;
+        }
+        int* count_temp = static_cast<int*>(realloc(count, max_nr_class * sizeof(int)));
+        if (count_temp) {
+          count = count_temp;
+        }
       }
 
       label[nr_class] = this_label;
@@ -3119,7 +3125,11 @@ readline(FILE* input)
 
   while (strrchr(line, '\n') == nullptr) {
     max_line_len *= 2;
-    line = static_cast<char*>(realloc(line, max_line_len));
+
+    char* line_temp = static_cast<char*>(realloc(line, max_line_len));
+    if (line_temp) {
+      line = line_temp;
+    }
     int len = int(strlen(line));
 
     if (fgets(line + len, max_line_len - len, input) == nullptr)
@@ -3178,6 +3188,7 @@ svm_load_model(const char* model_file_name)
         free(model->rho);
         free(model->label);
         free(model->nSV);
+        free(model->scaling);
         free(model);
         return nullptr;
       }
@@ -3198,6 +3209,7 @@ svm_load_model(const char* model_file_name)
         free(model->rho);
         free(model->label);
         free(model->nSV);
+        free(model->scaling);
         free(model);
         return nullptr;
       }
@@ -3297,6 +3309,7 @@ svm_load_model(const char* model_file_name)
       free(model->rho);
       free(model->label);
       free(model->nSV);
+      free(model->scaling);
       free(model);
       return nullptr;
     }
@@ -3385,8 +3398,14 @@ svm_load_model(const char* model_file_name)
 
   // printf("%d e %f\n",model->scaling[j-2].index,model->scaling[j-2].value);
 
-  if (ferror(fp) != 0 || fclose(fp) != 0)
+  if (ferror(fp) != 0 || fclose(fp) != 0) {
+    free(model->rho);
+    free(model->label);
+    free(model->nSV);
+    free(model->scaling);
+    free(model);
     return nullptr;
+  }
 
   model->free_sv = 1; // XXX
 
@@ -3520,8 +3539,14 @@ svm_check_parameter(const svm_problem* prob, const svm_parameter* param)
       if (j == nr_class) {
         if (nr_class == max_nr_class) {
           max_nr_class *= 2;
-          label = static_cast<int*>(realloc(label, max_nr_class * sizeof(int)));
-          count = static_cast<int*>(realloc(count, max_nr_class * sizeof(int)));
+          int* label_temp = static_cast<int*>(realloc(label, max_nr_class * sizeof(int)));
+          if (label_temp) {
+            label = label_temp;
+          }
+          int* count_temp = static_cast<int*>(realloc(count, max_nr_class * sizeof(int)));
+          if (count_temp) {
+            count = count_temp;
+          }
         }
 
         label[nr_class] = this_label;

@@ -119,7 +119,10 @@ init ()
     kdtree->setInputCloud (cloud_big.makeShared ());
     for (const auto &point : cloud_big.points)
     kdtree->nearestKSearch (point, no_of_neighbors, k_indices, k_distances);
+    delete(kdtree);
   }
+
+  delete(kdtree);
 }
 
 
@@ -163,6 +166,8 @@ TEST (PCL, KdTree_differentPointT)
       EXPECT_TRUE (k_distances[j] == k_distances_t[j]);
     }
   }
+
+  delete(kdtree);
 }
 
 /* Test for KdTree nearestKSearch with multiple query points */
@@ -193,6 +198,8 @@ TEST (PCL, KdTree_multipointKnnSearch)
       EXPECT_TRUE( k_indices[j]==indices[i][j] || k_distances[j] == dists[i][j]);
     }
   }
+
+  delete(kdtree);
 }
 
 int
@@ -205,6 +212,7 @@ main (int argc, char** argv)
   pcl::search::Search<PointXYZ>* kdtree = new pcl::search::KdTree<PointXYZ> ();
   kdtree->setInputCloud (cloud.makeShared ());
 
+  delete(kdtree);
   return (RUN_ALL_TESTS ());
 }
 

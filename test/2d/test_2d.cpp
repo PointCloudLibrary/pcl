@@ -121,6 +121,9 @@ TEST (Convolution, borderOptions)
     EXPECT_NEAR ((*output_cloud)(0,i).intensity, ((*input_cloud)(1,i).intensity), 1);
     EXPECT_NEAR ((*output_cloud)(width-1,i).intensity, (-(*input_cloud)(width-2,i).intensity), 1);
   }
+
+  delete(k);
+  delete(conv);
 }
 
 TEST (Convolution, gaussianSmooth)
@@ -154,6 +157,8 @@ TEST (Convolution, gaussianSmooth)
     for (int j = 1; j < width - 1; j++)
       EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity, 1);
 
+  delete(k);
+  delete(conv);
 }
 
 TEST(Edge, sobel)
@@ -293,6 +298,7 @@ TEST(Morphology, erosion)
     for (int j = 1; j < width - 1; j++)
       EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity/255.0, 1);
 
+  delete(morph);
 }
 
 TEST(Morphology, dilation)
@@ -326,6 +332,8 @@ TEST(Morphology, dilation)
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
       EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity/255.0, 1);
+
+  delete(morph);
 }
 
 TEST(Morphology, opening)
@@ -359,6 +367,8 @@ TEST(Morphology, opening)
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
       EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity/255.0, 1);
+
+  delete(morph);
 }
 
 TEST(Morphology, closing)
@@ -392,6 +402,8 @@ TEST(Morphology, closing)
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
       EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity/255.0, 1);
+
+  delete(morph);
 }
 
 /** --[ */
