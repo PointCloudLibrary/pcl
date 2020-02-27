@@ -56,7 +56,7 @@
 #endif
 
 #ifndef _USE_MATH_DEFINES
-#define _USE_MATH_DEFINES
+  #define _USE_MATH_DEFINES
 #endif
 #include <cmath>
 #include <cstdarg>
@@ -118,11 +118,11 @@ namespace pcl
   using int_fast16_t PCL_DEPRECATED("use std::int_fast16_t instead of pcl::int_fast16_t") = std::int_fast16_t;
 }
 
-#if defined _WIN32 && defined _MSC_VER
+#if defined _WIN32
 
 // Define math constants, without including math.h, to prevent polluting global namespace with old math methods
 // Copied from math.h
-#ifndef _MATH_DEFINES_DEFINED
+#if !defined _MATH_DEFINES_DEFINED && !defined M_2_SQRTPI
   #define _MATH_DEFINES_DEFINED
 
   #define M_E        2.71828182845904523536   // e
@@ -140,15 +140,16 @@ namespace pcl
   #define M_SQRT1_2  0.707106781186547524401  // 1/sqrt(2)
 #endif
 
-// Stupid. This should be removed when all the PCL dependencies have min/max fixed.
-#ifndef NOMINMAX
-# define NOMINMAX
+#if defined _MSC_VER
+  // Stupid. This should be removed when all the PCL dependencies have min/max fixed.
+  #ifndef NOMINMAX
+    #define NOMINMAX
+  #endif
+
+  #define __PRETTY_FUNCTION__ __FUNCTION__
+  #define __func__ __FUNCTION__
 #endif
-
-# define __PRETTY_FUNCTION__ __FUNCTION__
-# define __func__ __FUNCTION__
-
-#endif //defined _WIN32 && defined _MSC_VER
+#endif // defined _WIN32
 
 
 template<typename T>
