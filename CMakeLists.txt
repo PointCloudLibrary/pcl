@@ -80,6 +80,8 @@ elseif(__COMPILER_PATHSCALE)
   set(CMAKE_COMPILER_IS_PATHSCALE 1)
 elseif(MSVC)
   set(CMAKE_COMPILER_IS_MSVC 1)
+elseif(MINGW)
+  set(CMAKE_COMPILER_IS_MINGW 1)
 endif()
 
 # Create a variable with expected default CXX flags
@@ -213,6 +215,10 @@ if(CMAKE_COMPILER_IS_CLANG)
     endif()
   endif()
   set(CLANG_LIBRARIES "stdc++")
+endif()
+
+if(CMAKE_COMPILER_IS_MINGW)
+  add_definitions(-DPCL_ONLY_CORE_POINT_TYPES)
 endif()
 
 include("${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake")
