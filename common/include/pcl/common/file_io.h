@@ -41,8 +41,6 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-#include <boost/filesystem.hpp>
-#include <boost/range/iterator_range.hpp>
 
 /** 
   * \file pcl/common/file_io.h
