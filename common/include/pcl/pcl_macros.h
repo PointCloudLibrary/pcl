@@ -55,8 +55,10 @@
   #pragma warning (disable: 4018 4244 4267 4521 4251 4661 4305 4503 4146)
 #endif
 
-#ifndef _USE_MATH_DEFINES
-#define _USE_MATH_DEFINES
+#if !(defined _WIN32 && (defined _MSC_VER || defined __MINGW32__))
+  #ifndef _USE_MATH_DEFINES
+    #define _USE_MATH_DEFINES
+  #endif
 #endif
 #include <cmath>
 #include <cstdarg>
@@ -100,7 +102,7 @@ namespace pcl
   using int_fast16_t [[deprecated("use std::int_fast16_t instead of pcl::int_fast16_t")]] = std::int_fast16_t;
 }
 
-#if defined _WIN32 && defined _MSC_VER
+#if defined _WIN32 && (defined _MSC_VER || defined __MINGW32__)
 
 // Define math constants, without including math.h, to prevent polluting global namespace with old math methods
 // Copied from math.h
