@@ -37,7 +37,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/io/pcd_io.h>
@@ -46,7 +46,6 @@
 #include "pcl/features/shot_lrf.h"
 #include <pcl/features/3dsc.h>
 #include <pcl/features/usc.h>
-#include <pcl/test/gtest.h>
 
 using namespace pcl;
 using namespace pcl::io;

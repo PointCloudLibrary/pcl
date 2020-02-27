@@ -37,7 +37,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/pcl_tests.h>
 #include <pcl/common/common.h>
 #include <pcl/common/distances.h>
@@ -48,7 +48,6 @@
 #include <pcl/point_cloud.h>
 
 #include <pcl/common/centroid.h>
-#include <pcl/test/gtest.h>
 
 using namespace pcl;
 

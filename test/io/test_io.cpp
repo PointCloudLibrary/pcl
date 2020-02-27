@@ -37,7 +37,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/point_traits.h>
 #include <pcl/point_types.h>
@@ -48,7 +48,6 @@
 #include <pcl/io/ply_io.h>
 #include <pcl/io/ascii_io.h>
 #include <pcl/io/obj_io.h>
-#include <pcl/test/gtest.h>
 #include <fstream>
 #include <locale>
 #include <stdexcept>

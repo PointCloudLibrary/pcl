@@ -35,13 +35,12 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <cmath>
 #include <cstdint>
 
 #include <pcl/io/buffers.h>
-#include <pcl/test/gtest.h>
 
 using namespace pcl::io;
 
