@@ -223,10 +223,7 @@ compute (const PointCloudXYZRGBA::ConstPtr & input, float min_depth, float max_d
   trainTemplate (input, foreground_mask, linemod);
 
   // Save the LINEMOD template
-  std::ofstream file_stream;
-  file_stream.open (template_sqmmt_filename.c_str (), std::ofstream::out | std::ofstream::binary);
-  linemod.getTemplate (0).serialize (file_stream);
-  file_stream.close ();
+  linemod.saveTemplates (template_sqmmt_filename.c_str());
 }
 
 /* ---[ */
