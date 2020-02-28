@@ -35,7 +35,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
