@@ -76,6 +76,24 @@
 
 #include <pcl/pcl_config.h>
 
+// It seems that __has_cpp_attribute doesn't work correctly
+// when compiling with some versions of nvcc so we
+// additionally check if nvcc is used before setting the
+// PCL_DEPRECATED macro to [[deprecated]].
+#if defined(__has_cpp_attribute) && __has_cpp_attribute(deprecated) && !defined(__CUDACC__)
+  #define PCL_DEPRECATED(message) [[deprecated(message)]]
+#elif defined(__GNUC__) || defined(__clang__)
+  #define PCL_DEPRECATED(message) __attribute__((deprecated(message)))
+#elif defined(_MSC_VER)
+  // Until Visual Studio 2013 you had to use __declspec(deprecated).
+  // However, we decided to ignore the deprecation for these version because
+  // of simplicity reasons. See PR #3634 for the details.
+  #define PCL_DEPRECATED(message)
+#else
+  #warning "You need to implement PCL_DEPRECATED for this compiler"
+  #define PCL_DEPRECATED(message)
+#endif
+
 namespace pcl
 {
   /**
@@ -89,15 +107,15 @@ namespace pcl
   template <typename T>
   using shared_ptr = boost::shared_ptr<T>;
 
-  using uint8_t [[deprecated("use std::uint8_t instead of pcl::uint8_t")]] = std::uint8_t;
-  using int8_t [[deprecated("use std::int8_t instead of pcl::int8_t")]] = std::int8_t;
-  using uint16_t [[deprecated("use std::uint16_t instead of pcl::uint16_t")]] = std::uint16_t;
-  using int16_t [[deprecated("use std::uint16_t instead of pcl::int16_t")]] = std::int16_t;
-  using uint32_t [[deprecated("use std::uint32_t instead of pcl::uint32_t")]] = std::uint32_t;
-  using int32_t [[deprecated("use std::int32_t instead of pcl::int32_t")]] = std::int32_t;
-  using uint64_t [[deprecated("use std::uint64_t instead of pcl::uint64_t")]] = std::uint64_t;
-  using int64_t [[deprecated("use std::int64_t instead of pcl::int64_t")]] = std::int64_t;
-  using int_fast16_t [[deprecated("use std::int_fast16_t instead of pcl::int_fast16_t")]] = std::int_fast16_t;
+  using uint8_t PCL_DEPRECATED("use std::uint8_t instead of pcl::uint8_t") = std::uint8_t;
+  using int8_t PCL_DEPRECATED("use std::int8_t instead of pcl::int8_t") = std::int8_t;
+  using uint16_t PCL_DEPRECATED("use std::uint16_t instead of pcl::uint16_t") = std::uint16_t;
+  using int16_t PCL_DEPRECATED("use std::uint16_t instead of pcl::int16_t") = std::int16_t;
+  using uint32_t PCL_DEPRECATED("use std::uint32_t instead of pcl::uint32_t") = std::uint32_t;
+  using int32_t PCL_DEPRECATED("use std::int32_t instead of pcl::int32_t") = std::int32_t;
+  using uint64_t PCL_DEPRECATED("use std::uint64_t instead of pcl::uint64_t") = std::uint64_t;
+  using int64_t PCL_DEPRECATED("use std::int64_t instead of pcl::int64_t") = std::int64_t;
+  using int_fast16_t PCL_DEPRECATED("use std::int_fast16_t instead of pcl::int_fast16_t") = std::int_fast16_t;
 }
 
 #if defined _WIN32 && defined _MSC_VER
@@ -134,15 +152,15 @@ namespace pcl
 
 
 template<typename T>
-[[deprecated("use std::isnan instead of pcl_isnan")]]
+PCL_DEPRECATED("use std::isnan instead of pcl_isnan")
 bool pcl_isnan (T&& x) { return std::isnan (std::forward<T> (x)); }
 
 template<typename T>
-[[deprecated("use std::isfinite instead of pcl_isfinite")]]
+PCL_DEPRECATED("use std::isfinite instead of pcl_isfinite")
 bool pcl_isfinite (T&& x) { return std::isfinite (std::forward<T> (x)); }
 
 template<typename T>
-[[deprecated("use std::isinf instead of pcl_isinf")]]
+PCL_DEPRECATED("use std::isinf instead of pcl_isinf")
 bool pcl_isinf (T&& x) { return std::isinf (std::forward<T> (x)); }
 
 

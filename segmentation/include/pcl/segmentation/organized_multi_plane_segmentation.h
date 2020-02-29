@@ -41,6 +41,7 @@
 
 #include <pcl/segmentation/planar_region.h>
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/common/angles.h>
 #include <pcl/PointIndices.h>
 #include <pcl/ModelCoefficients.h>
@@ -284,7 +285,7 @@ namespace pcl
         * \param [in] labels The labels produced by the initial segmentation
         * \param [in] label_indices The list of indices corresponding to each label
         */
-      [[deprecated("centroids and covariances parameters are not used; they are deprecated and will be removed in future releases")]]
+      PCL_DEPRECATED("centroids and covariances parameters are not used; they are deprecated and will be removed in future releases")
       void
       refine (std::vector<ModelCoefficients>& model_coefficients, 
               std::vector<PointIndices>& inlier_indices,

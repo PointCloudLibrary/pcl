@@ -194,7 +194,7 @@ namespace pcl
        */
       SupervoxelClustering (float voxel_resolution, float seed_resolution);
 
-      [[deprecated("constructor with flag for using the single camera transform is deprecated. Default behavior is now to use the transform for organized clouds, and not use it for unorganized. Use setUseSingleCameraTransform() to override the defaults.")]]
+      PCL_DEPRECATED("constructor with flag for using the single camera transform is deprecated. Default behavior is now to use the transform for organized clouds, and not use it for unorganized. Use setUseSingleCameraTransform() to override the defaults.")
       SupervoxelClustering (float voxel_resolution, float seed_resolution, bool) : SupervoxelClustering (voxel_resolution, seed_resolution) { }
 
       /** \brief This destructor destroys the cloud, normals and search method used for
@@ -278,7 +278,7 @@ namespace pcl
         * color(it's random). Points that are unlabeled will be black
         * \note This will expand the label_colors_ vector so that it can accommodate all labels
         */
-      [[deprecated("use getLabeledCloud() instead. An example of how to display and save with colorized labels can be found in examples/segmentation/example_supervoxels.cpp")]]
+      PCL_DEPRECATED("use getLabeledCloud() instead. An example of how to display and save with colorized labels can be found in examples/segmentation/example_supervoxels.cpp")
       typename pcl::PointCloud<PointXYZRGBA>::Ptr
       getColoredCloud () const
       { 
