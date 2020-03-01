@@ -39,7 +39,7 @@
 
 #include <pcl/test/gtest.h>
 #include <pcl/PCLPointCloud2.h>
-#include <pcl/point_traits.h>
+#include <pcl/type_traits.h>
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
 #include <pcl/console/print.h>

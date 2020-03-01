@@ -53,7 +53,7 @@
 //https://bugreports.qt-project.org/browse/QTBUG-22829
 #ifndef Q_MOC_RUN
 #include <pcl/pcl_macros.h>
-#include <pcl/point_traits.h>
+#include <pcl/type_traits.h>
 #include <boost/mpl/vector.hpp>
 #include <boost/preprocessor/seq/enum.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>

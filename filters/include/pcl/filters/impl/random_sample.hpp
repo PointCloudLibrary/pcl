@@ -40,7 +40,7 @@
 
 #include <pcl/filters/random_sample.h>
 #include <pcl/common/io.h>
-#include <pcl/point_traits.h>
+#include <pcl/type_traits.h>
 
 
 ///////////////////////////////////////////////////////////////////////////////
