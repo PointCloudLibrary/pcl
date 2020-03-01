@@ -170,8 +170,6 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
   std::vector<float> nn_dists (k_);
   std::vector<int> index_reciprocal (1);
   std::vector<float> distance_reciprocal (1);
-
-  float min_dist = std::numeric_limits<float>::max ();
   int min_index = 0;
   
   pcl::Correspondence corr;

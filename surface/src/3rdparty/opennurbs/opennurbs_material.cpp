@@ -3404,10 +3404,7 @@ bool EvBoxSideTextureCoordinateHelper1(
       PT = &P_xform[0][0];
       NT = &N_xform[0][0];
     }
-    else
-    {
-      mesh_xform = 0;
-    }
+   
   }
 
   const float* f;
@@ -3889,12 +3886,6 @@ void AdjustMeshPeriodicTextureCoordinatesHelper(
 
   if ( newvcnt <= 0 )
     return;
-
-
-  F = 0; // Setting them to NULL makes sure anybody who
-         // tries to use them below will crash.
-
-  // reserve room for new vertex information
   ON__CChangeTextureCoordinateHelper helper(mesh,newvcnt,mesh_T);
 
   // add vertices and update mesh faces
@@ -4104,8 +4095,7 @@ bool ON_Mesh::SetTextureCoordinates(
     if ( Tsd && Tside.Count() != m_V.Count() )
       Tsd = 0;
     AdjustMeshPeriodicTextureCoordinatesHelper( *this, mesh_xform, mesh_T, mesh_T_stride, Tsd ? Tside.Array() : 0, two_pi_tc, mp );
-    mesh_T = 0; // when the array is grown, the pointer may become invalid
-    if ( !mapping.m_uvw.IsIdentity() && !mapping.m_uvw.IsZero() )
+   if ( !mapping.m_uvw.IsIdentity() && !mapping.m_uvw.IsZero() )
     {
       // Apply the uvw transformation that is on mapping
       // to the texture coordinates.

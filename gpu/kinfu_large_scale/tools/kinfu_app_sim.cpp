@@ -980,8 +980,6 @@ struct KinFuApp
     PtrStepSz<const unsigned short> depth;
     PtrStepSz<const KinfuTracker::PixelRGB> rgb24;
     int time_ms = 0;
-    bool has_image = false;
-
     // Create simulation environment:
     int width = 640;
     int height = 480;

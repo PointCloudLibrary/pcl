@@ -2038,7 +2038,6 @@ bool ON_Surface::IsTorus( ON_Torus* torus, double tolerance ) const
   ON_Arc arc1;
   int bIsArc1 = crv->IsArc(0,&arc1,tolerance > ON_ZERO_TOLERANCE ? tolerance : 0.0);
   delete crv;
-  crv = 0;
   if ( !bIsArc1 )
     return false;
 

@@ -175,9 +175,7 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
   computeSegmentAdjacency ();
 
   std::set<std::uint32_t> filteredSegLabels;
-
-  std::uint32_t largest_neigh_size = 0;
-  std::uint32_t largest_neigh_seg_label = 0;
+ 
   std::uint32_t current_seg_label;
 
   std::pair<VertexIterator, VertexIterator> vertex_iterator_range;
@@ -368,7 +366,7 @@ pcl::LCCPSegmentation<PointT>::applyKconvexity (const unsigned int k_arg)
     return;
 
   bool is_convex;
-  unsigned int kcount = 0;
+  
 
   EdgeIterator edge_itr, edge_itr_end, next_edge;
   boost::tie (edge_itr, edge_itr_end) = boost::edges (sv_adjacency_list_);
@@ -430,7 +428,7 @@ pcl::LCCPSegmentation<PointT>::applyKconvexity (const unsigned int k_arg)
 template <typename PointT> void
 pcl::LCCPSegmentation<PointT>::calculateConvexConnections (SupervoxelAdjacencyList& adjacency_list_arg)
 {
-  bool is_convex;
+  int is_convex;
 
   EdgeIterator edge_itr, edge_itr_end, next_edge;
   boost::tie (edge_itr, edge_itr_end) = boost::edges (adjacency_list_arg);

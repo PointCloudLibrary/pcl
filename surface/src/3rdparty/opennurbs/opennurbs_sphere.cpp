@@ -107,7 +107,6 @@ bool ON_Sphere::ClosestPointTo(
   double h = v*plane.zaxis;
   double x = v*plane.xaxis;
   double y = v*plane.yaxis;
-  double r = 1.0;
   if ( x == 0.0 && y == 0.0 ) {
     if ( longitude )
       *longitude = 0.0;

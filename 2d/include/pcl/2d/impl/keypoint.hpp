@@ -193,7 +193,6 @@ pcl::keypoint::hessianBlob(ImageType& output,
     hessianBlob(cornerness[i], input, scale, false);
     scale *= scaling_factor;
   }
-  bool non_max_flag = false;
   float scale_max, local_max;
   for (std::size_t i = 0; i < height; i++) {
     for (std::size_t j = 0; j < width; j++) {
