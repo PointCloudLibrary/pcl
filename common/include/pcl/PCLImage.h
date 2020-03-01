@@ -4,7 +4,6 @@
 #include <vector>   // for vector
 #include <ostream>  // for ostream
 
-// Include the correct Header path here
 #include <pcl/PCLHeader.h>   // for PCLHeader
 
 namespace pcl

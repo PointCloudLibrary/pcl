@@ -7,11 +7,6 @@
   #error PCL requires C++14 or above
 #endif
 
-// PCL was a ROS package earlier but no longer depends on ROS
-#ifdef USE_ROS
-   #error USE_ROS setup requires PCL to compile against ROS message headers, which is now deprecated
-#endif
-
 #define BUILD_@CMAKE_BUILD_TYPE@
 /* PCL version information */
 #define PCL_MAJOR_VERSION ${PCL_VERSION_MAJOR}

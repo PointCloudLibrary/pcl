@@ -4,7 +4,6 @@
 #include <ostream>  // for ostream
 
 #include <pcl/make_shared.h>  // for shared_ptr
-#include <pcl/pcl_config.h>   // for compatibility
 
 namespace pcl
 {

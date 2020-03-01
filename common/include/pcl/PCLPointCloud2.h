@@ -5,7 +5,6 @@
 
 #include <boost/predef/other/endian.h>
 
-// Include the correct Header path here
 #include <pcl/PCLHeader.h>
 #include <pcl/PCLPointField.h>
 
