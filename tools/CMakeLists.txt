@@ -15,6 +15,18 @@ endif()
 # to be filled with all targets the tools subsystem
 set(PCL_TOOLS_ALL_TARGETS)
 
+PCL_ADD_EXECUTABLE(pcl_ply2obj COMPONENT ${SUBSYS_NAME} SOURCES ply2obj.cpp)
+target_link_libraries(pcl_ply2obj pcl_io_ply)
+
+PCL_ADD_EXECUTABLE(pcl_ply2ply COMPONENT ${SUBSYS_NAME} SOURCES ply2ply.cpp)
+target_link_libraries(pcl_ply2ply pcl_io_ply)
+
+PCL_ADD_EXECUTABLE(pcl_ply2raw COMPONENT ${SUBSYS_NAME} SOURCES ply2raw.cpp)
+target_link_libraries(pcl_ply2raw pcl_io_ply)
+
+PCL_ADD_EXECUTABLE(pcl_plyheader COMPONENT ${SUBSYS_NAME} SOURCES plyheader.cpp)
+target_link_libraries(pcl_plyheader pcl_io_ply)
+
 PCL_ADD_EXECUTABLE(pcl_sac_segmentation_plane COMPONENT ${SUBSYS_NAME} SOURCES sac_segmentation_plane.cpp)
 target_link_libraries(pcl_sac_segmentation_plane pcl_common pcl_io pcl_sample_consensus pcl_segmentation)
 
@@ -156,9 +168,29 @@ target_link_libraries(pcl_local_max pcl_common pcl_io pcl_filters)
 PCL_ADD_EXECUTABLE(pcl_grid_min COMPONENT ${SUBSYS_NAME} SOURCES grid_min.cpp)
 target_link_libraries(pcl_grid_min pcl_common pcl_io pcl_filters)
 
+PCL_ADD_EXECUTABLE(pcl_pcd_convert_NaN_nan COMPONENT ${SUBSYS_NAME} SOURCES pcd_convert_NaN_nan.cpp)
+
+PCL_ADD_EXECUTABLE(pcl_pcd_introduce_nan COMPONENT ${SUBSYS_NAME} SOURCES pcd_introduce_nan.cpp)
+target_link_libraries(pcl_pcd_introduce_nan pcl_common pcl_io)
+
+PCL_ADD_EXECUTABLE(pcl_convert_pcd_ascii_binary COMPONENT ${SUBSYS_NAME} SOURCES convert_pcd_ascii_binary.cpp)
+target_link_libraries(pcl_convert_pcd_ascii_binary pcl_common pcl_io)
+
+PCL_ADD_EXECUTABLE(pcl_hdl_grabber COMPONENT ${SUBSYS_NAME} SOURCES hdl_grabber_example.cpp)
+target_link_libraries(pcl_hdl_grabber pcl_common pcl_io)
+
 if(WITH_OPENNI)
   PCL_ADD_EXECUTABLE(pcl_oni2pcd COMPONENT ${SUBSYS_NAME} SOURCES oni2pcd.cpp)
   target_link_libraries(pcl_oni2pcd pcl_common pcl_io)
+  
+  PCL_ADD_EXECUTABLE(pcl_openni_grabber_example COMPONENT ${SUBSYS_NAME} SOURCES openni_grabber_example.cpp)
+  target_link_libraries(pcl_openni_grabber_example pcl_common pcl_io)
+
+  PCL_ADD_EXECUTABLE(pcl_openni_grabber_depth_example COMPONENT ${SUBSYS_NAME} SOURCES openni_grabber_depth_example.cpp)
+  target_link_libraries(pcl_openni_grabber_depth_example pcl_common pcl_io)
+
+  PCL_ADD_EXECUTABLE(pcl_openni_pcd_recorder COMPONENT ${SUBSYS_NAME} SOURCES openni_pcd_recorder.cpp)
+  target_link_libraries(pcl_openni_pcd_recorder pcl_common pcl_io)
 endif()
 
 if(QHULL_FOUND)
@@ -176,6 +208,9 @@ else()
   set(DEFAULT TRUE)
   set(REASON)
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+  
+  PCL_ADD_EXECUTABLE(pcl_converter COMPONENT ${SUBSYS_NAME} SOURCES converter.cpp)
+  target_link_libraries(pcl_converter pcl_common pcl_io)
 
   PCL_ADD_EXECUTABLE(pcl_png2pcd COMPONENT ${SUBSYS_NAME} SOURCES png2pcd.cpp)
   target_link_libraries(pcl_png2pcd pcl_common pcl_io)
@@ -340,4 +375,3 @@ else()
 endif()
 add_custom_target(${SUBSYS_TARGET_NAME} DEPENDS ${PCL_TOOLS_ALL_TARGETS})
 set_target_properties(${SUBSYS_TARGET_NAME} PROPERTIES FOLDER "Tools")
-
