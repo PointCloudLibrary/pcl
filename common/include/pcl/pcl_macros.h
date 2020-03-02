@@ -122,7 +122,7 @@ namespace pcl
 
 // Define math constants, without including math.h, to prevent polluting global namespace with old math methods
 // Copied from math.h
-#ifndef _MATH_DEFINES_DEFINED
+#if !defined _MATH_DEFINES_DEFINED && !defined M_2_SQRTPI
   #define _MATH_DEFINES_DEFINED
 
   #define M_E        2.71828182845904523536   // e
