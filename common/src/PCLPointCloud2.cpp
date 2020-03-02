@@ -76,6 +76,14 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
   auto field_eq = [](const auto& field1, const auto& field2)
   {
     // We're fine with the special RGB vs RGBA use case
+    return (field1.datatype == field2.datatype) &&
+            ((field1.name == field2.name) ||
+             (field1.name == "rgb" && field2.name == "rgba") ||
+             (field1.name == "rgba" && field2.name == "rgb"));
+  };
+  auto field_same = [](const auto& field1, const auto& field2)
+  {
+    // We're fine with the special RGB vs RGBA use case
     return ((field1.name == field2.name) ||
             (field1.name == "rgb" && field2.name == "rgba") ||
             (field1.name == "rgba" && field2.name == "rgb"));
@@ -83,17 +91,24 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
 
   // A simple memcpy is possible if layout (name and order of fields) is same for both clouds
   bool simple_layout = std::equal(cloud1.fields.begin (),
-                                    cloud1.fields.end (),
-                                    cloud2.fields.begin (),
-                                    cloud2.fields.end (),
-                                    field_eq);
+                                  cloud1.fields.end (),
+                                  cloud2.fields.begin (),
+                                  cloud2.fields.end (),
+                                  field_eq);
 
   struct FieldDetails
   {
     std::size_t idx1, idx2;
     std::uint16_t size;
-    FieldDetails (std::size_t idx1_, std::size_t idx2_, std::uint16_t size_): idx1 (idx1_), idx2 (idx2_), size (size_)
-    {}
+    ::pcl::detail::FieldCasting cast;
+
+    FieldDetails (std::size_t idx1_, std::size_t idx2_,
+                  pcl::PCLPointField const & field1_, pcl::PCLPointField const & field2_)
+      : idx1 (idx1_), idx2 (idx2_), size (field1_.count * pcl::getFieldSize(field1_.datatype))
+    {
+      cast.field = field2_;
+      cast.out_type = static_cast<PCLPointField::PointFieldTypes>(field1_.datatype);
+    }
   };
   std::vector<FieldDetails> valid_fields;
   const auto max_field_size = std::max (cloud1.fields.size (), cloud2.fields.size ());
@@ -104,33 +119,34 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
   if (!simple_layout)
   {
     std::size_t i = 0, j = 0;
-    while (i < cloud1.fields.size () && j < cloud2.fields.size ())
+    while (i < cloud1.fields.size () || j < cloud2.fields.size ())
     {
-      if (cloud1.fields[i].name == "_")
+      if (i < cloud1.fields.size() && cloud1.fields[i].name == "_")
       {
         ++i;
         continue;
       }
-      if (cloud2.fields[j].name == "_")
+      if (j < cloud2.fields.size() && cloud2.fields[j].name == "_")
       {
         ++j;
         continue;
       }
 
-      if (field_eq(cloud1.fields[i], cloud2.fields[j]))
+      if (i < cloud1.fields.size() && j < cloud2.fields.size())
       {
-        // Assumption: cloud1.fields[i].datatype == cloud2.fields[j].datatype
-        valid_fields.emplace_back(i, j, pcl::getFieldSize (cloud2.fields[j].datatype));
-        ++i;
-        ++j;
-        continue;
+        if (field_same(cloud1.fields[i], cloud2.fields[j]))
+        {
+          // Assumption: cloud1.fields[i].datatype == cloud2.fields[j].datatype
+          valid_fields.emplace_back(i, j, cloud1.fields[i], cloud2.fields[j]);
+          ++i;
+          ++j;
+          continue;
+        }
+        PCL_ERROR ("[pcl::PCLPointCloud2::concatenate] Name of field %d in cloud1, %s, does not match name in cloud2, %s\n",
+            i, cloud1.fields[i].name.c_str (), cloud2.fields[i].name.c_str ());
+        return (false);
       }
-      PCL_ERROR ("[pcl::PCLPointCloud2::concatenate] Name of field %d in cloud1, %s, does not match name in cloud2, %s\n", i, cloud1.fields[i].name.c_str (), cloud2.fields[i].name.c_str ());
-      return (false);
-    }
-    // Both i and j should have exhausted their respective cloud.fields
-    if (i != cloud1.fields.size () || j != cloud2.fields.size ())
-    {
+      // Both i and j should have exhausted their respective cloud.fields
       PCL_ERROR ("[pcl::PCLPointCloud2::concatenate] Number of fields to copy in cloud1 (%u) != Number of fields to copy in cloud2 (%u)\n", i, j);
       return (false);
     }
@@ -148,20 +164,21 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
     cloud1.data.insert (cloud1.data.end (), cloud2.data.begin (), cloud2.data.end ());
     return (true);
   }
-  const auto data1_size = cloud1.data.size ();
+  const std::size_t data1_size = cloud1.data.size ();
   cloud1.data.resize(data1_size + cloud2.data.size ());
   for (std::size_t cp = 0; cp < size2; ++cp)
   {
+    const std::size_t src_point_offset = cp * cloud2.point_step;
+    const std::size_t dst_point_offset = data1_size + cp * cloud1.point_step;
     for (const auto& field_data: valid_fields)
     {
       const auto& i = field_data.idx1;
       const auto& j = field_data.idx2;
-      const auto& size = field_data.size;
       // Leave the data for the skip fields untouched in cloud1
       // Copy only the required data from cloud2 to the correct location for cloud1
-      memcpy (reinterpret_cast<char*> (&cloud1.data[data1_size + cp * cloud1.point_step + cloud1.fields[i].offset]),
-              reinterpret_cast<const char*> (&cloud2.data[cp * cloud2.point_step + cloud2.fields[j].offset]),
-              cloud2.fields[j].count * size);
+      memcpy (&cloud1.data[dst_point_offset + cloud1.fields[i].offset],
+              field_data.cast(&cloud2.data[src_point_offset + cloud2.fields[j].offset]),
+              field_data.size);
     }
   }
   return (true);

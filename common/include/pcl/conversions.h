@@ -99,6 +99,8 @@ namespace pcl
             mapping.serialized_offset = field.offset;
             mapping.struct_offset = traits::offset<PointT, Tag>::value;
             mapping.size = sizeof (typename traits::datatype<PointT, Tag>::type);
+            mapping.cast.field = field;
+            mapping.cast.out_type = static_cast<PCLPointField::PointFieldTypes>(traits::datatype<PointT, Tag>::value);
             map_.push_back (mapping);
             return;
           }
@@ -137,7 +139,11 @@ namespace pcl
         // This check is designed to permit padding between adjacent fields.
         /// @todo One could construct a pathological case where the struct has a
         /// field where the serialized data has padding
-        if (j->serialized_offset - i->serialized_offset == j->struct_offset - i->struct_offset)
+        if ((j->serialized_offset - i->serialized_offset == j->struct_offset - i->struct_offset)
+            &&
+            !i->cast.isNeedCasting()
+            &&
+            !j->cast.isNeedCasting())
         {
           i->size += (j->struct_offset + j->size) - (i->struct_offset + i->size);
           j = field_map.erase(j);
@@ -213,7 +219,9 @@ namespace pcl
           const std::uint8_t* msg_data = row_data + col * msg.point_step;
           for (const detail::FieldMapping& mapping : field_map)
           {
-            memcpy (cloud_data + mapping.struct_offset, msg_data + mapping.serialized_offset, mapping.size);
+            memcpy (cloud_data + mapping.struct_offset,
+                mapping.cast(msg_data + mapping.serialized_offset),
+                mapping.size);
           }
           cloud_data += sizeof (PointT);
         }
