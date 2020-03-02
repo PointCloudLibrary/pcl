@@ -42,7 +42,7 @@
  *      Stephen Fox (foxstephend@gmail.com)
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <vector>
 #include <cstdio>

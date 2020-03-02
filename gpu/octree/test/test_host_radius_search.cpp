@@ -38,7 +38,7 @@
 #include <algorithm>
 #include <vector>
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #if defined _MSC_VER
     #pragma warning (disable: 4521)

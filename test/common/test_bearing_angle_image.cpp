@@ -40,7 +40,7 @@
   * \author: Qinghua Li (qinghua__li@163.com)
   */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <iostream>
 #include <pcl/range_image/bearing_angle_image.h>
 

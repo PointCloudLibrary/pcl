@@ -34,7 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <iostream>
 #include <fstream>

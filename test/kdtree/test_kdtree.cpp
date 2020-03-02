@@ -36,7 +36,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <iostream>  // For debug
 #include <map>
 #include <pcl/common/time.h>

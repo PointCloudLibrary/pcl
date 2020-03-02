@@ -38,11 +38,10 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/geometry/polygon_mesh.h>
 #include <pcl/geometry/get_boundary.h>
-#include <pcl/test/gtest.h>
 #include "test_mesh_common_functions.h"
 
 ////////////////////////////////////////////////////////////////////////////////

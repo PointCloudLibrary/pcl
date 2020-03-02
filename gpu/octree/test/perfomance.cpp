@@ -38,7 +38,7 @@
     #pragma warning (disable : 4996 4530)
 #endif
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include<iostream>
 #include<algorithm>

@@ -39,7 +39,7 @@
 
 #include <iostream>
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_types.h>
 #include <pcl/io/point_cloud_image_extractors.h>
 
