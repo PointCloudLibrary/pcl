@@ -299,6 +299,35 @@ else()
 
     PCL_ADD_EXECUTABLE(pcl_vlp_viewer COMPONENT ${SUBSYS_NAME} SOURCES vlp_viewer.cpp)
     target_link_libraries(pcl_vlp_viewer pcl_io pcl_common pcl_visualization)
+    
+    if(BUILD_simulation AND (GLEW_FOUND AND GLUT_FOUND))
+    
+      PCL_ADD_EXECUTABLE(pcl_sim_viewer COMPONENT ${SUBSYS_NAME} SOURCES sim_viewer.cpp)
+      target_link_libraries (pcl_sim_viewer
+        ${VTK_IO_TARGET_LINK_LIBRARIES}    pcl_kdtree
+        pcl_simulation   pcl_common  pcl_io pcl_visualization
+        GLEW::GLEW GLUT::GLUT ${OPENGL_LIBRARIES})
+
+      PCL_ADD_EXECUTABLE(pcl_sim_test_simple COMPONENT ${SUBSYS_NAME} SOURCES sim_test_simple.cpp)
+      target_link_libraries (pcl_sim_test_simple
+        ${VTK_IO_TARGET_LINK_LIBRARIES}
+        pcl_simulation   pcl_common  pcl_io pcl_visualization
+        GLEW::GLEW GLUT::GLUT ${OPENGL_LIBRARIES})
+
+      PCL_ADD_EXECUTABLE(pcl_sim_test_performance COMPONENT ${SUBSYS_NAME} SOURCES sim_test_performance.cpp)
+      target_link_libraries (pcl_sim_test_performance
+        ${VTK_IO_TARGET_LINK_LIBRARIES}
+        pcl_simulation   pcl_common  pcl_io pcl_visualization
+        GLEW::GLEW GLUT::GLUT ${OPENGL_LIBRARIES})
+
+      if(BUILD_simulation_io)
+        PCL_ADD_EXECUTABLE(pcl_sim_terminal_demo COMPONENT ${SUBSYS_NAME} SOURCES sim_terminal_demo.cpp)
+        target_link_libraries (pcl_sim_terminal_demo
+          ${VTK_IO_TARGET_LINK_LIBRARIES}
+          pcl_simulation   pcl_common  pcl_io pcl_visualization pcl_simulation_io
+          GLEW::GLEW GLUT::GLUT ${OPENGL_LIBRARIES})
+      endif()
+    endif()
 
     if(WITH_OPENNI)
       PCL_ADD_EXECUTABLE(pcl_openni_save_image COMPONENT ${SUBSYS_NAME} SOURCES openni_save_image.cpp)
