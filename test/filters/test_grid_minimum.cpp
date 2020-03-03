@@ -39,7 +39,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/filters/grid_minimum.h>
 #include <pcl/point_types.h>
 

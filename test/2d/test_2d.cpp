@@ -43,7 +43,7 @@
 #include <pcl/2d/edge.h>
 #include <pcl/2d/morphology.h>
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <fstream>
 
 #include <pcl/point_types.h>

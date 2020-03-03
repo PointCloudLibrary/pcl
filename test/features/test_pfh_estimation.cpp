@@ -42,7 +42,7 @@
   #define PCL_NO_PRECOMPILE
 #endif
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
 #include <pcl/features/pfh.h>
 #include <pcl/features/fpfh.h>
@@ -50,7 +50,6 @@
 #include <pcl/features/vfh.h>
 #include <pcl/features/gfpfh.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/test/gtest.h>
 
 using PointT = pcl::PointNormal;
 using KdTreePtr = pcl::search::KdTree<PointT>::Ptr;

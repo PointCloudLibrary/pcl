@@ -36,7 +36,7 @@
  *
  */
 #include <iostream>
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/common/time.h>
 #include <pcl/search/pcl_search.h>
 #include <pcl/point_cloud.h>

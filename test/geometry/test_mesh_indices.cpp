@@ -41,10 +41,9 @@
 #include <string>
 #include <sstream>
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/geometry/mesh_indices.h>
-#include <pcl/test/gtest.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
