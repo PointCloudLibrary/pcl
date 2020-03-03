@@ -277,11 +277,17 @@ if("${is_system_dir}" STREQUAL "-1")
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 endif()
 
-#Used in Simulation / simulation_io
-find_package(GLEW)
+option(WITH_GLEW "Used to build simulation" FALSE)
+if(WITH_GLEW)
+  #Used in Simulation / simulation_io
+  find_package(GLEW)
+endif()
 
-#Used in Simulation / simulation_io
-find_package(GLUT)
+option(WITH_GLUT "Used to build simulation" FALSE)
+if(WITH_GLUT)
+  #Used in simulation_io
+  find_package(GLUT)
+endif()
 
 ### ---[ Find universal dependencies
 find_package(OpenMP)

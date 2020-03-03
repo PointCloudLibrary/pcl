@@ -2,9 +2,16 @@ set(SUBSYS_NAME simulation)
 set(SUBSYS_DESC "Point Cloud Library Simulation")
 set(SUBSYS_DEPS common io surface kdtree features search octree visualization filters geometry)
 
-set(build FALSE)
+set(DEFAULT FALSE)
+#Requires glew
+if(WITH_GLEW)
+  if(NOT GLEW_FOUND)
+    set(DEFAULT FALSE)
+    set(REASON "GLEW was not found.")
+  endif()
+endif()
 
-PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" OFF)
+PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS opengl glew)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
