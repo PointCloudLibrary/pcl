@@ -36,7 +36,7 @@
 
 #pragma once
 
-#include <pcl/test/gtest.h>
+#include <gtest/gtest.h>
 
 /**
  * \file pcl/test/gtest.h
