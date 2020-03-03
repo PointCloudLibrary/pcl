@@ -32,13 +32,6 @@ class PeopleTrackingApp
   public:
     PeopleTrackingApp () : viewer ("PCL People Tracking App") {}
 
-    ~PeopleTrackingApp ()
-    {
-      if (m_proc) {
-        free(m_proc);
-      }
-    }
-
     void cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud)
     {
       if (!viewer.wasStopped())
@@ -79,12 +72,12 @@ class PeopleTrackingApp
       interface->stop ();
     }
 
-    pcl::visualization::CloudViewer         viewer;
-    pcl::people::trees::MultiTreeLiveProc*  m_proc;
-    cv::Mat                                 m_lmap;
-    cv::Mat                                 m_cmap;
-    cv::Mat                                 cmap;
-    cv::Mat                                 m_bmap;
+    pcl::visualization::CloudViewer                         viewer;
+    std::unique_ptr<pcl::people::trees::MultiTreeLiveProc>  m_proc;
+    cv::Mat                                                 m_lmap;
+    cv::Mat                                                 m_cmap;
+    cv::Mat                                                 cmap;
+    cv::Mat                                                 m_bmap;
 };
 
 int print_help()
@@ -102,7 +95,7 @@ void load_tree(std::string treeFilenames[], int numTrees, PeopleTrackingApp& app
 {
   std::ifstream fin0(treeFilenames[0].c_str() );
   assert(fin0.is_open() );
-  app.m_proc = new pcl::people::trees::MultiTreeLiveProc(fin0);
+  app.m_proc = std::make_shared<pcl::people::trees::MultiTreeLiveProc>(fin0);
   fin0.close();
 
   /// Load the other tree files
