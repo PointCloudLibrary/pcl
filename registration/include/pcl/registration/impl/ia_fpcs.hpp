@@ -179,11 +179,11 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
 
       MatchingCandidates candidates (1);
       std::vector <int> base_indices (4);
-      float ratio[2];
       all_candidates[i] = candidates;
 
       if (!abort)
       {
+        float ratio[2];
         // select four coplanar point base
         if (selectBase (base_indices, ratio) == 0)
         {

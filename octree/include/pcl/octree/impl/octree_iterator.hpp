@@ -123,12 +123,13 @@ OctreeDepthFirstIterator<OctreeT>::operator++()
     stack_.pop_back();
 
     stack_entry.depth_++;
-    OctreeKey& current_key = stack_entry.key_;
 
     if ((this->max_octree_depth_ >= stack_entry.depth_) &&
         (stack_entry.node_->getNodeType() == BRANCH_NODE)) {
       // current node is a branch node
       BranchNode* current_branch = static_cast<BranchNode*>(stack_entry.node_);
+
+      OctreeKey& current_key = stack_entry.key_;
 
       // add all children to stack
       for (std::int8_t i = 7; i >= 0; --i) {
@@ -219,7 +220,6 @@ OctreeBreadthFirstIterator<OctreeT>::operator++()
     FIFO_.pop_front();
 
     FIFO_entry.depth_++;
-    OctreeKey& current_key = FIFO_entry.key_;
 
     if ((this->max_octree_depth_ >= FIFO_entry.depth_) &&
         (FIFO_entry.node_->getNodeType() == BRANCH_NODE)) {
@@ -232,6 +232,7 @@ OctreeBreadthFirstIterator<OctreeT>::operator++()
         // if child exist
         if (this->octree_->branchHasChild(*current_branch, child_idx)) {
           // add child to stack
+          OctreeKey& current_key = FIFO_entry.key_;
           current_key.pushBranch(static_cast<unsigned char>(child_idx));
 
           FIFO_entry.node_ =

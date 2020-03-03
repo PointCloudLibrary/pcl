@@ -163,11 +163,8 @@ namespace pcl
     {
       int x_pos, y_pos, x, y, idx;
 
-      int leftX, rightX, leftY, rightY;
-
       int radiusSearchPointCount;
 
-      int maxSearchDistance;
       double squaredMaxSearchRadius;
 
       assert (k_arg>0);
@@ -254,6 +251,7 @@ namespace pcl
 
         squared_radius = std::min<double>(nearestNeighbors.back ().squared_distance_, squaredMaxSearchRadius);
 
+        int leftX, rightX, leftY, rightY;
         this->getProjectedRadiusSearchBox(p_q_arg, squared_radius, leftX, rightX, leftY, rightY);
 
         leftX *=leftX;
@@ -264,7 +262,7 @@ namespace pcl
         pointCountRadiusSearch = (rightX-leftX)*(rightY-leftY);
 
         // search for maximum distance between search point to window borders in 2-D search window
-        maxSearchDistance = 0;
+        int maxSearchDistance = 0;
         maxSearchDistance = std::max<int> (maxSearchDistance, leftX + leftY);
         maxSearchDistance = std::max<int> (maxSearchDistance, leftX + rightY);
         maxSearchDistance = std::max<int> (maxSearchDistance, rightX + leftY);

@@ -75,6 +75,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
 
   std::size_t n_inliers_count;
   unsigned skipped_count = 0;
+
   // suppress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
   const unsigned max_skip = max_iterations_ * 10;
 

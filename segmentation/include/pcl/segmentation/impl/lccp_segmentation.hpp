@@ -367,7 +367,6 @@ pcl::LCCPSegmentation<PointT>::applyKconvexity (const unsigned int k_arg)
   if (k_arg == 0)
     return;
 
-  bool is_convex;
   unsigned int kcount = 0;
 
   EdgeIterator edge_itr, edge_itr_end, next_edge;
@@ -381,7 +380,7 @@ pcl::LCCPSegmentation<PointT>::applyKconvexity (const unsigned int k_arg)
   {
     next_edge++;  // next_edge iterator is necessary, because removing an edge invalidates the iterator to the current edge
 
-    is_convex = sv_adjacency_list_[*edge_itr].is_convex;
+    bool is_convex = sv_adjacency_list_[*edge_itr].is_convex;
 
     if (is_convex)  // If edge is (0-)convex
     {
@@ -430,7 +429,6 @@ pcl::LCCPSegmentation<PointT>::applyKconvexity (const unsigned int k_arg)
 template <typename PointT> void
 pcl::LCCPSegmentation<PointT>::calculateConvexConnections (SupervoxelAdjacencyList& adjacency_list_arg)
 {
-  bool is_convex;
 
   EdgeIterator edge_itr, edge_itr_end, next_edge;
   boost::tie (edge_itr, edge_itr_end) = boost::edges (adjacency_list_arg);
@@ -443,7 +441,7 @@ pcl::LCCPSegmentation<PointT>::calculateConvexConnections (SupervoxelAdjacencyLi
     std::uint32_t target_sv_label = adjacency_list_arg[boost::target (*edge_itr, adjacency_list_arg)];
 
     float normal_difference;
-    is_convex = connIsConvex (source_sv_label, target_sv_label, normal_difference);
+    bool is_convex = connIsConvex (source_sv_label, target_sv_label, normal_difference);
     adjacency_list_arg[*edge_itr].is_convex = is_convex;
     adjacency_list_arg[*edge_itr].is_valid = is_convex;
     adjacency_list_arg[*edge_itr].normal_difference = normal_difference;

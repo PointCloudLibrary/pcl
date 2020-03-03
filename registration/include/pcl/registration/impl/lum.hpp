@@ -234,10 +234,11 @@ pcl::registration::LUM<PointT>::compute ()
       {
         // Attempt to use the forward edge, otherwise use backward edge, otherwise there was no edge
         Edge e;
-        bool present1, present2;
+        bool present1;
         std::tie (e, present1) = edge (vi, vj, *slam_graph_);
         if (!present1)
         {
+          bool present2;
           std::tie (e, present2) = edge (vj, vi, *slam_graph_);
           if (!present2)
             continue;

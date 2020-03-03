@@ -296,9 +296,6 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (const Eigen::Vector3i& 
   float t_delta_y = leaf_size_[1] / static_cast<float> (std::abs (direction[1]));
   float t_delta_z = leaf_size_[2] / static_cast<float> (std::abs (direction[2]));
 
-  // index of the point in the point cloud
-  int index;
-
   while ( (ijk[0] < max_b_[0]+1) && (ijk[0] >= min_b_[0]) && 
           (ijk[1] < max_b_[1]+1) && (ijk[1] >= min_b_[1]) && 
           (ijk[2] < max_b_[2]+1) && (ijk[2] >= min_b_[2]) )
@@ -307,8 +304,9 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (const Eigen::Vector3i& 
     if (ijk[0] == target_voxel[0] && ijk[1] == target_voxel[1] && ijk[2] == target_voxel[2])
       return 0;
 
+    // index of the point in the point cloud
+    int index = this->getCentroidIndexAt (ijk);
     // check if voxel is occupied, if yes return 1 for occluded
-    index = this->getCentroidIndexAt (ijk);
     if (index != -1)
       return 1;
 
@@ -397,7 +395,6 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (std::vector<Eigen::Vect
   float t_delta_z = leaf_size_[2] / static_cast<float> (std::abs (direction[2]));
 
   // the index of the cloud (-1 if empty)
-  int index = -1;
   int result = 0;
 
   while ( (ijk[0] < max_b_[0]+1) && (ijk[0] >= min_b_[0]) && 
@@ -412,7 +409,7 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (std::vector<Eigen::Vect
       break;
 
     // check if voxel is occupied
-    index = this->getCentroidIndexAt (ijk);
+    int index = this->getCentroidIndexAt (ijk);
     if (index != -1)
       result = 1;
 

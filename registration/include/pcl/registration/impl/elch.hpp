@@ -64,14 +64,13 @@ pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm (LOAGraph &g, double *we
   int *p_min = new int[num_vertices (g)];
   double *d = new double[num_vertices (g)];
   double *d_min = new double[num_vertices (g)];
-  double dist;
   bool do_swap = false;
   std::list<int>::iterator start_min, end_min;
 
   // process all junctions
   while (!crossings.empty ())
   {
-    dist = -1;
+    double dist = -1;
     // find shortest crossing for all vertices on the loop
     for (auto crossings_it = crossings.begin (); crossings_it != crossings.end (); )
     {
@@ -136,12 +135,11 @@ pcl::registration::ELCH<PointT>::loopOptimizerAlgorithm (LOAGraph &g, double *we
   delete[] d_min;
 
   boost::graph_traits<LOAGraph>::adjacency_iterator adjacent_it, adjacent_it_end;
-  int s;
 
   // error propagation
   while (!branches.empty ())
   {
-    s = branches.front ();
+    int s = branches.front ();
     branches.pop_front ();
 
     for (std::tie (adjacent_it, adjacent_it_end) = adjacent_vertices (s, g); adjacent_it != adjacent_it_end; ++adjacent_it)
