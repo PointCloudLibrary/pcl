@@ -19,7 +19,7 @@
 #include <windows.h>
 #endif
 
-#include "simulation_io.hpp"
+#include <pcl/simulation/io/impl/simulation_io.hpp>
 
 using namespace Eigen;
 using namespace pcl;

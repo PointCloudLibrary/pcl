@@ -52,4 +52,17 @@ PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
 
-add_subdirectory(io)
+#Simulation I/O Requires glew
+if(NOT GLEW_FOUND AND GLUT_FOUND)
+  return()
+endif()
+
+set(srcs src/simulation_io.cpp)
+set(impl_incs include/pcl/${SUBSYS_NAME}/io/impl/simulation_io.hpp)
+set(LIB_NAME pcl_simulation_io)
+
+PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES
+  ${srcs} ${impl_incs})
+
+target_link_libraries(${LIB_NAME} pcl_simulation pcl_common pcl_io
+  ${VTK_IO_TARGET_LINK_LIBRARIES} ${OPENGL_LIBRARIES} GLUT::GLUT)
