@@ -1,7 +1,7 @@
 set(SUBSYS_NAME tools)
 set(SUBSYS_DESC "Useful PCL-based command line tools")
-set(SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration recognition geometry keypoints ml simulation)
-set(SUBSYS_OPT_DEPS visualization)
+set(SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree features surface octree registration recognition geometry keypoints ml)
+set(SUBSYS_OPT_DEPS visualization simulation simulation_io)
 set(DEFAULT ON)
 set(REASON "")
 
