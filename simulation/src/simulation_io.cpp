@@ -1,4 +1,4 @@
-#include "simulation_io.hpp"
+#include <pcl/simulation/io/impl/simulation_io.hpp>
 #include <pcl/io/png_io.h>
 
 pcl::simulation::SimExample::SimExample(int argc, char** argv, int height, int width)
