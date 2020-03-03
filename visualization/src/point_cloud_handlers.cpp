@@ -689,9 +689,9 @@ pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::getGeometry 
   vtkIdType nr_points = cloud_->width * cloud_->height;
 
   // Add all points
-  float dim_x, dim_y, dim_z;
+  float dim;
   vtkIdType j = 0;    // true point index
-  std::vector<float> pts;
+  std::vector<float> pts (nr_points * 3);
   int point_offset = 0;
 
   // If the dataset has no invalid values, just copy all of them
@@ -700,14 +700,14 @@ pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::getGeometry 
     for (vtkIdType i = 0; i < nr_points; ++i, point_offset+=cloud_->point_step)
     {
       // Copy the value at the specified field
-      memcpy (&dim_x, &cloud_->data[point_offset + cloud_->fields[field_x_idx_].offset], sizeof (float));
-      pts.push_back(dim_x);
+      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_x_idx_].offset], sizeof (float));
+      pts[i * 3 + 0] = dim;
 
-      memcpy (&dim_y, &cloud_->data[point_offset + cloud_->fields[field_y_idx_].offset], sizeof (float));
-      pts.push_back(dim_y);
+      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_y_idx_].offset], sizeof (float));
+      pts[i * 3 + 1] = dim;
 
-      memcpy (&dim_z, &cloud_->data[point_offset + cloud_->fields[field_z_idx_].offset], sizeof (float));
-      pts.push_back(dim_z);
+      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_z_idx_].offset], sizeof (float));
+      pts[i * 3 + 2] = dim;
     }
     data->SetArray (&pts[0], nr_points * 3, 0);
     points->SetData (data);
@@ -717,21 +717,20 @@ pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::getGeometry 
     for (vtkIdType i = 0; i < nr_points; ++i, point_offset+=cloud_->point_step)
     {
       // Copy the value at the specified field
-      memcpy (&dim_x, &cloud_->data[point_offset + cloud_->fields[field_x_idx_].offset], sizeof (float));
-      if (!std::isfinite (dim_x))
+      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_x_idx_].offset], sizeof (float));
+      if (!std::isfinite (dim))
         continue;
+      pts[j * 3 + 0] = dim;
 
-      memcpy (&dim_y, &cloud_->data[point_offset + cloud_->fields[field_y_idx_].offset], sizeof (float));
-      if (!std::isfinite (dim_y))
+      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_y_idx_].offset], sizeof (float));
+      if (!std::isfinite (dim))
         continue;
+      pts[j * 3 + 1] = dim;
 
-      memcpy (&dim_z, &cloud_->data[point_offset + cloud_->fields[field_z_idx_].offset], sizeof (float));
-      if (!std::isfinite (dim_z))
+      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_z_idx_].offset], sizeof (float));
+      if (!std::isfinite (dim))
         continue;
-
-      pts.push_back(dim_x);
-      pts.push_back(dim_y);
-      pts.push_back(dim_z);
+      pts[j * 3 + 2] = dim;
 
       // Set j and increment
       j++;

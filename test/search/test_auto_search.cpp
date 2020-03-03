@@ -313,7 +313,7 @@ TEST (PCL, KdTreeWrapper_nearestKSearch)
 /* Function to auto evaluate the best search structure for the given dataset */
 TEST (PCL, AutoTunedSearch_Evaluate)
 {
-  pcl::search::Search<PointXYZ> search (pcl::search::AUTO_TUNED);
+  pcl::search::AutotunedSearch<PointXYZ> search (pcl::search::AUTO_TUNED);
 
   pcl::PCDReader pcd;
   pcl::PointCloud<PointXYZ>::Ptr cloudIn (new pcl::PointCloud<PointXYZ>);

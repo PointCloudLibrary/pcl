@@ -213,9 +213,9 @@ TEST (PCL, FlannSearch_knnByIndex)
   unsigned int no_of_neighbors = 3;
 
 
-  pcl::search::Search<PointXYZ>* flann_search = new pcl::search::FlannSearch<PointXYZ> (new search::FlannSearch<PointXYZ>::KdTreeIndexCreator);
+  pcl::search::FlannSearch<PointXYZ> flann_search (new search::FlannSearch<PointXYZ>::KdTreeIndexCreator);
   //FlannSearch->initSearchDS ();
-  flann_search->setInputCloud (cloud_big.makeShared ());
+  flann_search.setInputCloud (cloud_big.makeShared ());
 
   std::vector< std::vector< float > > dists;
   std::vector< std::vector< int > > indices;
@@ -224,7 +224,7 @@ TEST (PCL, FlannSearch_knnByIndex)
   {
     query_indices.push_back (int (i));
   }
-  flann_search->nearestKSearch (cloud_big, query_indices,no_of_neighbors,indices,dists);
+  flann_search.nearestKSearch (cloud_big, query_indices,no_of_neighbors,indices,dists);
 
   std::vector<int> k_indices;
   k_indices.resize (no_of_neighbors);
@@ -233,14 +233,14 @@ TEST (PCL, FlannSearch_knnByIndex)
 
   for (std::size_t i = 0; i < query_indices.size (); ++i)
   {
-    flann_search->nearestKSearch (cloud_big[2*i], no_of_neighbors, k_indices, k_distances);
+    flann_search.nearestKSearch (cloud_big[2*i], no_of_neighbors, k_indices, k_distances);
     EXPECT_EQ (k_indices.size (), indices[i].size ());
     EXPECT_EQ (k_distances.size (), dists[i].size ());
     for (std::size_t j = 0; j< no_of_neighbors; j++)
     {
       EXPECT_TRUE (k_indices[j] == indices[i][j] || k_distances[j] == dists[i][j]);
     }
-    flann_search->nearestKSearch (cloud_big,query_indices[i], no_of_neighbors, k_indices, k_distances);
+    flann_search.nearestKSearch (cloud_big,query_indices[i], no_of_neighbors, k_indices, k_distances);
     EXPECT_EQ (k_indices.size (), indices[i].size ());
     EXPECT_EQ (k_distances.size (), dists[i].size ());
     for (std::size_t j = 0; j< no_of_neighbors; j++)
@@ -249,8 +249,6 @@ TEST (PCL, FlannSearch_knnByIndex)
     }
 
   }
-
-  delete (flann_search);
 }
 
 
