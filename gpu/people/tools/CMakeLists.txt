@@ -1,3 +1,5 @@
+set(SUBSYS_NAME tools)
+
 if(NOT VTK_FOUND)
   set(DEFAULT FALSE)
   set(REASON "VTK was not found.")
