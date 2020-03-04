@@ -72,9 +72,9 @@ namespace pcl
       covariances.reserve (nr_points);
       for (const auto& point: normals.points)
       {
-        Eigen::Vector3d normal (normals.points[i].normal_x,
-                                normals.points[i].normal_y,
-                                normals.points[i].normal_z);
+        Eigen::Vector3d normal (point.normal_x,
+                                point.normal_y,
+                                point.normal_z);
 
         // compute rotation matrix
         Eigen::Matrix3d rot;
