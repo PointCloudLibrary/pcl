@@ -410,3 +410,16 @@ For the compute, filter, segment, etc. type methods the following rules apply:
   size.
 * The output arguments will always be passed by reference.
 
+3.3. Object declaration
+^^^^^^^^^^^^^^^^^^^^^^^
+
+3.3.1 Use of auto
+"""""""""""""""""
+* For Iterators auto must be used as much as possible 
+* In all the other cases auto can be used at the author's discretion
+
+3.3.2 Type qualifiers of variables
+""""""""""""""""""""""""""""""""""
+* Use of const reference variables if the value is not being modified
+* Use of unsigned variables if the value is sure to not go negative by 
+  use and by definition of the variable
