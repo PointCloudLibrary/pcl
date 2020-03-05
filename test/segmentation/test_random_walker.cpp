@@ -45,7 +45,7 @@
 #include <boost/property_tree/info_parser.hpp>
 #include <boost/foreach.hpp>
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/segmentation/random_walker.h>
 
@@ -235,7 +235,7 @@ TEST_P (RandomWalkerTest, GetPotentials)
       }
 }
 
-INSTANTIATE_TEST_CASE_P (VariousGraphs,
+INSTANTIATE_TEST_SUITE_P (VariousGraphs,
                          RandomWalkerTest,
                          ::testing::Values ("graph0.info",
                                             "graph1.info",

@@ -112,12 +112,17 @@ pcl::removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   index.resize (cloud_in.points.size ());
   std::size_t j = 0;
 
+  // Assume cloud is dense
+  cloud_out.is_dense = true;
+
   for (std::size_t i = 0; i < cloud_in.points.size (); ++i)
   {
     if (!std::isfinite (cloud_in.points[i].normal_x) ||
         !std::isfinite (cloud_in.points[i].normal_y) ||
         !std::isfinite (cloud_in.points[i].normal_z))
       continue;
+    if (cloud_out.is_dense && !pcl::isFinite(cloud_in.points[i]))
+      cloud_out.is_dense = false;
     cloud_out.points[j] = cloud_in.points[i];
     index[j] = static_cast<int>(i);
     j++;

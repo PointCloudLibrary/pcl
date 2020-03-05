@@ -98,12 +98,11 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   // the initialization is made with () after the [nbins]
   std::vector<kiss_fft_scalar> spatial_data(nbins);
 
-  float sum_w = 0, w = 0;
-  int bin = 0;
+  float sum_w = 0;
   for (const auto &point : grid.points)
   {
-    bin = static_cast<int> ((((std::atan2 (point.normal_y, point.normal_x) + M_PI) * 180 / M_PI) / bin_angle)) % nbins;
-    w = std::sqrt (point.normal_y * point.normal_y + point.normal_x * point.normal_x);
+    int bin = static_cast<int> ((((std::atan2 (point.normal_y, point.normal_x) + M_PI) * 180 / M_PI) / bin_angle)) % nbins;
+    float w = std::sqrt (point.normal_y * point.normal_y + point.normal_x * point.normal_x);
     sum_w += w;
     spatial_data[bin] += w;
   }

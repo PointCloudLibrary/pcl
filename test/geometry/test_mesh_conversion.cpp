@@ -38,7 +38,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/geometry/triangle_mesh.h>
 #include <pcl/geometry/quad_mesh.h>
@@ -152,7 +152,7 @@ using NonManifoldMeshTraits = MeshTraits<false>;
 
 using MeshTraitsTypes = testing::Types <ManifoldMeshTraits, NonManifoldMeshTraits>;
 
-TYPED_TEST_CASE (TestMeshConversion, MeshTraitsTypes);
+TYPED_TEST_SUITE (TestMeshConversion, MeshTraitsTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 

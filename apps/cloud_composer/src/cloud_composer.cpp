@@ -210,13 +210,13 @@ pcl::cloud_composer::ComposerMainWindow::initializePlugins ()
 {
   QDir plugin_dir = QCoreApplication::applicationDirPath ();
   qDebug() << plugin_dir.path ()<< "   "<<QDir::cleanPath ("../lib/cloud_composer_plugins");
-#if _WIN32
+#ifdef _WIN32
   if (!plugin_dir.cd (QDir::cleanPath ("cloud_composer_plugins")))
 #else
   if (!plugin_dir.cd (QDir::cleanPath ("../lib/cloud_composer_plugins")))
 #endif
   {
-    #if _WIN32
+    #ifdef _WIN32
       if (!plugin_dir.cd (QDir::cleanPath ("cloud_composer_plugins")))
     #else
       if (!plugin_dir.cd (QDir::cleanPath ("../lib")))
@@ -226,7 +226,7 @@ pcl::cloud_composer::ComposerMainWindow::initializePlugins ()
       }
   }
   QStringList plugin_filter;
-#if _WIN32
+#ifdef _WIN32
   plugin_filter << "pcl_cc_tool_*.dll";
 #else
   plugin_filter << "libpcl_cc_tool_*.so";

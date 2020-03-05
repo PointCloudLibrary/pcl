@@ -211,7 +211,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
   std::vector<int> sample_indices (nr_samples_);
   std::vector<int> corresponding_indices (nr_samples_);
   PointCloudSource input_transformed;
-  float error, lowest_error (0);
+  float lowest_error (0);
 
   final_transformation_ = guess;
   int i_iter = 0;
@@ -237,7 +237,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
 
     // Transform the data and compute the error
     transformPointCloud (*input_, input_transformed, transformation_);
-    error = computeErrorMetric (input_transformed, static_cast<float> (corr_dist_threshold_));
+    float error = computeErrorMetric (input_transformed, static_cast<float> (corr_dist_threshold_));
 
     // If the new error is lower, update the final transformation
     if (i_iter == 0 || error < lowest_error)

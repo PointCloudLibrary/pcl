@@ -73,15 +73,14 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
   // Initialize to 0
   covariance_matrix_.setZero ();
 
-  double demean_xy, demean_xz, demean_yz;
   // For each point in the cloud
   for (std::size_t idx = 0; idx < indices.size (); ++idx)
   {
     demean_ = projected_normals_[idx] - xyz_centroid_;
 
-    demean_xy = demean_[0] * demean_[1];
-    demean_xz = demean_[0] * demean_[2];
-    demean_yz = demean_[1] * demean_[2];
+    double demean_xy = demean_[0] * demean_[1];
+    double demean_xz = demean_[0] * demean_[2];
+    double demean_yz = demean_[1] * demean_[2];
 
     covariance_matrix_(0, 0) += demean_[0] * demean_[0];
     covariance_matrix_(0, 1) += static_cast<float> (demean_xy);

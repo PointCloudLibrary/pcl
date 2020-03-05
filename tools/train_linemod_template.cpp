@@ -223,10 +223,7 @@ compute (const PointCloudXYZRGBA::ConstPtr & input, float min_depth, float max_d
   trainTemplate (input, foreground_mask, linemod);
 
   // Save the LINEMOD template
-  std::ofstream file_stream;
-  file_stream.open (template_sqmmt_filename.c_str (), std::ofstream::out | std::ofstream::binary);
-  linemod.getTemplate (0).serialize (file_stream);
-  file_stream.close ();
+  linemod.saveTemplates (template_sqmmt_filename.c_str());
 }
 
 /* ---[ */
@@ -262,18 +259,32 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-max_height", max_height);
 
   bool error_detected = false;
+  bool processed_at_least_one_pcd = false;
+
   // Segment and create templates for each input file
   for (const int &p_file_index : p_file_indices)
   {
     // Load input file
     const std::string input_filename = argv[p_file_index];
     PointCloudXYZRGBA::Ptr cloud (new PointCloudXYZRGBA);
+
     if (!loadCloud (input_filename, *cloud))
     {
       error_detected = true;
       std::string warn_msg = "Could not load point cloud from file: " + input_filename + "\n";
       print_warn (warn_msg.c_str ());
       continue;
+    }
+
+    if (!cloud->isOrganized())
+    {
+      std::string warn_msg = "Unorganized point cloud detected. Skipping file " + input_filename + "\n";
+      print_warn(warn_msg.c_str());
+      continue;
+    }
+    else
+    {
+      processed_at_least_one_pcd = true;
     }
 
     // Construct output filenames
@@ -290,6 +301,11 @@ main (int argc, char** argv)
     compute (cloud, min_depth, max_depth, max_height, pcd_filename, sqmmt_filename);
   }
 
+  if (!processed_at_least_one_pcd)
+  {
+    print_error("All input pcd files are unorganized.\n");
+  }
+
   if (error_detected)
   {
     return -1;
@@ -299,4 +315,3 @@ main (int argc, char** argv)
     return 0;
   }
 }
-

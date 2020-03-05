@@ -36,7 +36,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/sample_consensus/msac.h>
 #include <pcl/sample_consensus/lmeds.h>
@@ -92,7 +92,7 @@ using sacTypes = ::testing::Types<
   RandomizedMEstimatorSampleConsensus<PointXYZ>,
   MaximumLikelihoodSampleConsensus<PointXYZ>
 >;
-TYPED_TEST_CASE(SacTest, sacTypes);
+TYPED_TEST_SUITE(SacTest, sacTypes);
 
 TYPED_TEST(SacTest, InfiniteLoop)
 {

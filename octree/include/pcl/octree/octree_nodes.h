@@ -48,346 +48,288 @@
 
 #include "octree_container.h"
 
-namespace pcl
-{
-  namespace octree
+namespace pcl {
+namespace octree {
+
+// enum of node types within the octree
+enum node_type_t { BRANCH_NODE, LEAF_NODE };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/** \brief @b Abstract octree node class
+ * \note Every octree node should implement the getNodeType () method
+ * \author Julius Kammerl (julius@kammerl.de)
+ */
+class PCL_EXPORTS OctreeNode {
+public:
+  OctreeNode() {}
+
+  virtual ~OctreeNode() {}
+  /** \brief Pure virtual method for receiving the type of octree node (branch or leaf)
+   */
+  virtual node_type_t
+  getNodeType() const = 0;
+
+  /** \brief Pure virtual method to perform a deep copy of the octree */
+  virtual OctreeNode*
+  deepCopy() const = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/** \brief @b Abstract octree leaf class
+ * \note Octree leafs may collect data of type DataT
+ * \author Julius Kammerl (julius@kammerl.de)
+ */
+
+template <typename ContainerT>
+class OctreeLeafNode : public OctreeNode {
+public:
+  /** \brief Empty constructor. */
+  OctreeLeafNode() : OctreeNode() {}
+
+  /** \brief Copy constructor. */
+  OctreeLeafNode(const OctreeLeafNode& source) : OctreeNode()
   {
-
-    // enum of node types within the octree
-    enum node_type_t
-    {
-      BRANCH_NODE, LEAF_NODE
-    };
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Abstract octree node class
-     * \note Every octree node should implement the getNodeType () method
-     * \author Julius Kammerl (julius@kammerl.de)
-     */
-    class PCL_EXPORTS OctreeNode
-    {
-    public:
-
-      OctreeNode ()
-      {
-      }
-
-      virtual
-      ~OctreeNode ()
-      {
-      }
-      /** \brief Pure virtual method for receiving the type of octree node (branch or leaf)  */
-      virtual node_type_t
-      getNodeType () const = 0;
-
-      /** \brief Pure virtual method to perform a deep copy of the octree */
-      virtual OctreeNode*
-      deepCopy () const = 0;
-
-    };
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Abstract octree leaf class
-     * \note Octree leafs may collect data of type DataT
-     * \author Julius Kammerl (julius@kammerl.de)
-     */
-
-    template<typename ContainerT>
-      class OctreeLeafNode : public OctreeNode
-      {
-      public:
-
-        /** \brief Empty constructor. */
-        OctreeLeafNode () :
-            OctreeNode ()
-        {
-        }
-
-        /** \brief Copy constructor. */
-        OctreeLeafNode (const OctreeLeafNode& source) :
-            OctreeNode ()
-        {
-          container_ = source.container_;
-        }
-
-        /** \brief Empty deconstructor. */
-        
-        ~OctreeLeafNode ()
-        {
-        }
-
-        /** \brief Method to perform a deep copy of the octree */
-        OctreeLeafNode<ContainerT>*
-        deepCopy () const override
-        {
-          return new OctreeLeafNode<ContainerT> (*this);
-        }
-
-        /** \brief Get the type of octree node. Returns LEAVE_NODE type */
-        node_type_t
-        getNodeType () const override
-        {
-          return LEAF_NODE;
-        }
-
-        /** \brief Get const pointer to container */
-        const ContainerT*
-        operator->() const
-        {
-          return &container_;
-        }
-
-        /** \brief Get pointer to container */
-        ContainerT*
-        operator-> ()
-        {
-          return &container_;
-        }
-
-        /** \brief Get const reference to container */
-        const ContainerT&
-        operator* () const
-        {
-          return container_;
-        }
-
-        /** \brief Get reference to container */
-        ContainerT&
-        operator* ()
-        {
-          return container_;
-        }
-
-        /** \brief Get const reference to container */
-        const ContainerT&
-        getContainer () const
-        {
-          return container_;
-        }
-
-        /** \brief Get reference to container */
-        ContainerT&
-        getContainer ()
-        {
-          return container_;
-        }
-
-        /** \brief Get const pointer to container */
-        const ContainerT*
-        getContainerPtr() const
-        {
-          return &container_;
-        }
-
-        /** \brief Get pointer to container */
-        ContainerT*
-        getContainerPtr ()
-        {
-          return &container_;
-        }
-
-      protected:
-        ContainerT container_;
-        
-      public:
-        //Type ContainerT may have fixed-size Eigen objects inside
-        PCL_MAKE_ALIGNED_OPERATOR_NEW
-      };
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Abstract octree branch class
-     * \note Octree branch classes may collect data of type DataT
-     * \author Julius Kammerl (julius@kammerl.de)
-     */
-    template<typename ContainerT>
-      class OctreeBranchNode : public OctreeNode
-      {
-      public:
-
-        /** \brief Empty constructor. */
-        OctreeBranchNode () :
-            OctreeNode()
-        {
-          // reset pointer to child node vectors
-          memset (child_node_array_, 0, sizeof(child_node_array_));
-        }
-
-        /** \brief Empty constructor. */
-        OctreeBranchNode (const OctreeBranchNode& source) :
-            OctreeNode()
-        {
-          memset (child_node_array_, 0, sizeof(child_node_array_));
-
-          for (unsigned char i = 0; i < 8; ++i)
-            if (source.child_node_array_[i])
-              child_node_array_[i] = source.child_node_array_[i]->deepCopy ();
-        }
-
-        /** \brief Copy operator. */
-        inline OctreeBranchNode&
-        operator = (const OctreeBranchNode &source)
-        {
-          memset (child_node_array_, 0, sizeof(child_node_array_));
-
-          for (unsigned char i = 0; i < 8; ++i)
-            if (source.child_node_array_[i])
-              child_node_array_[i] = source.child_node_array_[i]->deepCopy ();
-          return (*this);
-        }
-
-        /** \brief Octree deep copy method */
-        OctreeBranchNode*
-        deepCopy () const override
-        {
-          return (new OctreeBranchNode<ContainerT> (*this));
-        }
-
-        /** \brief Empty deconstructor. */
-        
-        ~OctreeBranchNode ()
-        {
-        }
-
-        /** \brief Access operator.
-         *  \param child_idx_arg: index to child node
-         *  \return OctreeNode pointer
-         * */
-        inline OctreeNode*&
-        operator[] (unsigned char child_idx_arg)
-        {
-          assert(child_idx_arg < 8);
-          return child_node_array_[child_idx_arg];
-        }
-
-        /** \brief Get pointer to child
-         *  \param child_idx_arg: index to child node
-         *  \return OctreeNode pointer
-         * */
-        inline OctreeNode*
-        getChildPtr (unsigned char child_idx_arg) const
-        {
-          assert(child_idx_arg < 8);
-          return child_node_array_[child_idx_arg];
-        }
-
-        /** \brief Get pointer to child
-         *  \return OctreeNode pointer
-         * */
-        inline void setChildPtr (OctreeNode* child, unsigned char index)
-        {
-          assert(index < 8);
-          child_node_array_[index] = child;
-        }
-
-
-        /** \brief Check if branch is pointing to a particular child node
-         *  \param child_idx_arg: index to child node
-         *  \return "true" if pointer to child node exists; "false" otherwise
-         * */
-        inline bool hasChild (unsigned char child_idx_arg) const
-        {
-          return (child_node_array_[child_idx_arg] != nullptr);
-        }
-
-
-        /** \brief Check if branch can be pruned
-         *  \note if all children are leaf nodes AND contain identical containers, branch can be pruned
-         *  \return "true" if branch can be pruned; "false" otherwise
-         * */
-    /*    inline bool isPrunable () const
-        {
-          const OctreeNode* firstChild = child_node_array_[0];
-          if (!firstChild || firstChild->getNodeType()==BRANCH_NODE)
-            return false;
-
-          bool prunable = true;
-          for (unsigned char i = 1; i < 8 && prunable; ++i)
-          {
-            const OctreeNode* child = child_node_array_[i];
-            if ( (!child) ||
-                 (child->getNodeType()==BRANCH_NODE) ||
-                 ((*static_cast<const OctreeContainerBase*>(child)) == (*static_cast<const OctreeContainerBase*>(child)) ) )
-              prunable = false;
-          }
-
-          return prunable;
-        }*/
-
-        /** \brief Get the type of octree node. Returns LEAVE_NODE type */
-        node_type_t
-        getNodeType () const override
-        {
-          return BRANCH_NODE;
-        }
-
-        // reset node
-        void reset()
-        {
-          memset(child_node_array_, 0, sizeof(child_node_array_));
-          container_.reset();
-        }
-
-
-        /** \brief Get const pointer to container */
-        const ContainerT*
-        operator->() const
-        {
-          return &container_;
-        }
-
-        /** \brief Get pointer to container */
-        ContainerT*
-        operator-> ()
-        {
-          return &container_;
-        }
-
-        /** \brief Get const reference to container */
-        const ContainerT&
-        operator* () const
-        {
-          return container_;
-        }
-
-        /** \brief Get reference to container */
-        ContainerT&
-        operator* ()
-        {
-          return container_;
-        }
-
-        /** \brief Get const reference to container */
-        const ContainerT&
-        getContainer () const
-        {
-          return container_;
-        }
-
-        /** \brief Get reference to container */
-        ContainerT&
-        getContainer ()
-        {
-          return container_;
-        }
-
-        /** \brief Get const pointer to container */
-        const ContainerT*
-        getContainerPtr() const
-        {
-          return &container_;
-        }
-
-        /** \brief Get pointer to container */
-        ContainerT*
-        getContainerPtr ()
-        {
-          return &container_;
-        }
-
-      protected:
-        OctreeNode* child_node_array_[8];
-
-        ContainerT container_;
-      };
+    container_ = source.container_;
   }
-}
+
+  /** \brief Empty deconstructor. */
+
+  ~OctreeLeafNode() {}
+
+  /** \brief Method to perform a deep copy of the octree */
+  OctreeLeafNode<ContainerT>*
+  deepCopy() const override
+  {
+    return new OctreeLeafNode<ContainerT>(*this);
+  }
+
+  /** \brief Get the type of octree node. Returns LEAVE_NODE type */
+  node_type_t
+  getNodeType() const override
+  {
+    return LEAF_NODE;
+  }
+
+  /** \brief Get const pointer to container */
+  const ContainerT* operator->() const { return &container_; }
+
+  /** \brief Get pointer to container */
+  ContainerT* operator->() { return &container_; }
+
+  /** \brief Get const reference to container */
+  const ContainerT& operator*() const { return container_; }
+
+  /** \brief Get reference to container */
+  ContainerT& operator*() { return container_; }
+
+  /** \brief Get const reference to container */
+  const ContainerT&
+  getContainer() const
+  {
+    return container_;
+  }
+
+  /** \brief Get reference to container */
+  ContainerT&
+  getContainer()
+  {
+    return container_;
+  }
+
+  /** \brief Get const pointer to container */
+  const ContainerT*
+  getContainerPtr() const
+  {
+    return &container_;
+  }
+
+  /** \brief Get pointer to container */
+  ContainerT*
+  getContainerPtr()
+  {
+    return &container_;
+  }
+
+protected:
+  ContainerT container_;
+
+public:
+  // Type ContainerT may have fixed-size Eigen objects inside
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/** \brief @b Abstract octree branch class
+ * \note Octree branch classes may collect data of type DataT
+ * \author Julius Kammerl (julius@kammerl.de)
+ */
+template <typename ContainerT>
+class OctreeBranchNode : public OctreeNode {
+public:
+  /** \brief Empty constructor. */
+  OctreeBranchNode() : OctreeNode()
+  {
+    // reset pointer to child node vectors
+    memset(child_node_array_, 0, sizeof(child_node_array_));
+  }
+
+  /** \brief Empty constructor. */
+  OctreeBranchNode(const OctreeBranchNode& source) : OctreeNode()
+  {
+    memset(child_node_array_, 0, sizeof(child_node_array_));
+
+    for (unsigned char i = 0; i < 8; ++i)
+      if (source.child_node_array_[i])
+        child_node_array_[i] = source.child_node_array_[i]->deepCopy();
+  }
+
+  /** \brief Copy operator. */
+  inline OctreeBranchNode&
+  operator=(const OctreeBranchNode& source)
+  {
+    memset(child_node_array_, 0, sizeof(child_node_array_));
+
+    for (unsigned char i = 0; i < 8; ++i)
+      if (source.child_node_array_[i])
+        child_node_array_[i] = source.child_node_array_[i]->deepCopy();
+    return (*this);
+  }
+
+  /** \brief Octree deep copy method */
+  OctreeBranchNode*
+  deepCopy() const override
+  {
+    return (new OctreeBranchNode<ContainerT>(*this));
+  }
+
+  /** \brief Empty deconstructor. */
+
+  ~OctreeBranchNode() {}
+
+  /** \brief Access operator.
+   *  \param child_idx_arg: index to child node
+   *  \return OctreeNode pointer
+   * */
+  inline OctreeNode*& operator[](unsigned char child_idx_arg)
+  {
+    assert(child_idx_arg < 8);
+    return child_node_array_[child_idx_arg];
+  }
+
+  /** \brief Get pointer to child
+   *  \param child_idx_arg: index to child node
+   *  \return OctreeNode pointer
+   * */
+  inline OctreeNode*
+  getChildPtr(unsigned char child_idx_arg) const
+  {
+    assert(child_idx_arg < 8);
+    return child_node_array_[child_idx_arg];
+  }
+
+  /** \brief Get pointer to child
+   *  \return OctreeNode pointer
+   * */
+  inline void
+  setChildPtr(OctreeNode* child, unsigned char index)
+  {
+    assert(index < 8);
+    child_node_array_[index] = child;
+  }
+
+  /** \brief Check if branch is pointing to a particular child node
+   *  \param child_idx_arg: index to child node
+   *  \return "true" if pointer to child node exists; "false" otherwise
+   * */
+  inline bool
+  hasChild(unsigned char child_idx_arg) const
+  {
+    return (child_node_array_[child_idx_arg] != nullptr);
+  }
+
+  /** \brief Check if branch can be pruned
+   *  \note if all children are leaf nodes AND contain identical containers, branch can
+   * be pruned
+   * \return "true" if branch can be pruned; "false" otherwise
+   **/
+  /*    inline bool isPrunable () const
+      {
+        const OctreeNode* firstChild = child_node_array_[0];
+        if (!firstChild || firstChild->getNodeType()==BRANCH_NODE)
+          return false;
+
+        bool prunable = true;
+        for (unsigned char i = 1; i < 8 && prunable; ++i)
+        {
+          const OctreeNode* child = child_node_array_[i];
+          if ( (!child) ||
+               (child->getNodeType()==BRANCH_NODE) ||
+               ((*static_cast<const OctreeContainerBase*>(child)) == (*static_cast<const
+     OctreeContainerBase*>(child)) ) ) prunable = false;
+        }
+
+        return prunable;
+      }*/
+
+  /** \brief Get the type of octree node. Returns LEAVE_NODE type */
+  node_type_t
+  getNodeType() const override
+  {
+    return BRANCH_NODE;
+  }
+
+  // reset node
+  void
+  reset()
+  {
+    memset(child_node_array_, 0, sizeof(child_node_array_));
+    container_.reset();
+  }
+
+  /** \brief Get const pointer to container */
+  const ContainerT* operator->() const { return &container_; }
+
+  /** \brief Get pointer to container */
+  ContainerT* operator->() { return &container_; }
+
+  /** \brief Get const reference to container */
+  const ContainerT& operator*() const { return container_; }
+
+  /** \brief Get reference to container */
+  ContainerT& operator*() { return container_; }
+
+  /** \brief Get const reference to container */
+  const ContainerT&
+  getContainer() const
+  {
+    return container_;
+  }
+
+  /** \brief Get reference to container */
+  ContainerT&
+  getContainer()
+  {
+    return container_;
+  }
+
+  /** \brief Get const pointer to container */
+  const ContainerT*
+  getContainerPtr() const
+  {
+    return &container_;
+  }
+
+  /** \brief Get pointer to container */
+  ContainerT*
+  getContainerPtr()
+  {
+    return &container_;
+  }
+
+protected:
+  OctreeNode* child_node_array_[8];
+
+  ContainerT container_;
+};
+} // namespace octree
+} // namespace pcl

@@ -42,7 +42,7 @@
 #include <pcl/compression/entropy_range_coder.h>
 #include <pcl/compression/impl/entropy_range_coder.hpp>
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <vector>
 #include <sstream>
 

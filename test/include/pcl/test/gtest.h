@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2019-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +16,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -32,23 +32,34 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id$
  */
 
 #pragma once
 
-#include <pcl/octree/octree2buf_base.h>
-#include <pcl/octree/octree_base.h>
-#include <pcl/octree/octree_iterator.h>
-#include <pcl/octree/octree_pointcloud.h>
+#include <gtest/gtest.h>
 
-#include <pcl/octree/octree_pointcloud_adjacency.h>
-#include <pcl/octree/octree_pointcloud_changedetector.h>
-#include <pcl/octree/octree_pointcloud_density.h>
-#include <pcl/octree/octree_pointcloud_occupancy.h>
-#include <pcl/octree/octree_pointcloud_pointvector.h>
-#include <pcl/octree/octree_pointcloud_singlepoint.h>
-#include <pcl/octree/octree_pointcloud_voxelcentroid.h>
+/**
+ * \file pcl/test/gtest.h
+ *
+ * \brief Defines all the PCL test macros used
+ * \ingroup test
+ */
 
-#include <pcl/octree/octree_search.h>
+/**
+ * \brief Macro choose between TYPED_TEST_CASE and TYPED_TEST_SUITE depending on the GTest version
+ *
+ * \ingroup test
+ */
+#if !defined(TYPED_TEST_SUITE)
+  #define TYPED_TEST_SUITE TYPED_TEST_CASE
+#endif
+
+/**
+ * \brief Macro choose between INSTANTIATE_TEST_CASE_P and INSTANTIATE_TEST_SUITE_P depending on the GTest version
+ *
+ * \ingroup test
+ */
+#if !defined(INSTANTIATE_TEST_SUITE_P)
+  #define INSTANTIATE_TEST_SUITE_P INSTANTIATE_TEST_CASE_P
+#endif
+

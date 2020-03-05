@@ -40,7 +40,7 @@
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PLYReaderWriter)
@@ -288,7 +288,7 @@ TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoPolygonMesh)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> class PLYPointCloudTest : public PLYColorTest { };
 using RGBPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_RGB_POINT_TYPES)>;
-TYPED_TEST_CASE (PLYPointCloudTest, RGBPointTypes);
+TYPED_TEST_SUITE (PLYPointCloudTest, RGBPointTypes);
 TYPED_TEST (PLYPointCloudTest, LoadPLYFileColoredASCIIIntoPointCloud)
 {
   int res;
@@ -316,7 +316,7 @@ template<typename T>
 struct PLYCoordinatesIsDenseTest : public PLYTest {};
 
 using XYZPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_XYZ_POINT_TYPES)>;
-TYPED_TEST_CASE (PLYCoordinatesIsDenseTest, XYZPointTypes);
+TYPED_TEST_SUITE (PLYCoordinatesIsDenseTest, XYZPointTypes);
 
 TYPED_TEST (PLYCoordinatesIsDenseTest, NaNInCoordinates)
 {
@@ -410,7 +410,7 @@ template<typename T>
 struct PLYNormalsIsDenseTest : public PLYTest {};
 
 using NormalPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_NORMAL_POINT_TYPES)>;
-TYPED_TEST_CASE (PLYNormalsIsDenseTest, NormalPointTypes);
+TYPED_TEST_SUITE (PLYNormalsIsDenseTest, NormalPointTypes);
 
 TYPED_TEST (PLYNormalsIsDenseTest, NaNInNormals)
 {

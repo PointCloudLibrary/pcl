@@ -555,11 +555,11 @@ namespace pcl
 
       Eigen::Vector4f  origin;
       Eigen::Quaternionf  orientation;
-      int  pcd_version;
-          
+
       if (boost::filesystem::exists (disk_storage_filename_))
       {
 //            PCL_INFO ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Reading points from disk from %s.\n", __FUNCTION__ , disk_storage_filename_->c_str ());
+        int  pcd_version;
         int res = reader.read (disk_storage_filename_, *dst, origin, orientation, pcd_version);
         (void)res;
         assert (res != -1);

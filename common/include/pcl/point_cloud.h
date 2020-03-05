@@ -138,7 +138,7 @@ namespace pcl
   namespace detail
   {
     template <typename PointT>
-    [[deprecated("use createMapping() instead")]]
+    PCL_DEPRECATED("use createMapping() instead")
     shared_ptr<pcl::MsgFieldMap>&
     getMapping (pcl::PointCloud<PointT>& p);
   } // namespace detail
@@ -606,7 +606,7 @@ namespace pcl
 
     protected:
       // This is motivated by ROS integration. Users should not need to access mapping_.
-      [[deprecated("rewrite your code to avoid using this protected field")]] shared_ptr<MsgFieldMap> mapping_;
+      PCL_DEPRECATED("rewrite your code to avoid using this protected field") shared_ptr<MsgFieldMap> mapping_;
 
       friend shared_ptr<MsgFieldMap>& detail::getMapping<PointT>(pcl::PointCloud<PointT> &p);
 

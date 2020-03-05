@@ -16,8 +16,17 @@ include_directories(SYSTEM ${GTEST_INCLUDE_DIRS} ${GTEST_SRC_DIR})
 add_library(pcl_gtest STATIC ${GTEST_SRC_DIR}/src/gtest-all.cc)
 
 enable_testing()
-add_custom_target(tests "${CMAKE_CTEST_COMMAND}" "-V" VERBATIM)
+
+if(MSVC)
+  # VS needs -C config to run correct
+  add_custom_target(tests "${CMAKE_CTEST_COMMAND}" -C $<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release> -V -T Test VERBATIM)
+else()
+  add_custom_target(tests "${CMAKE_CTEST_COMMAND}" -V -T Test VERBATIM)
+endif()  
+
 set_target_properties(tests PROPERTIES FOLDER "Tests")
+
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 add_subdirectory(2d)
 add_subdirectory(common)

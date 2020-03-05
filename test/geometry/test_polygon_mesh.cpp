@@ -41,7 +41,7 @@
 #include <vector>
 #include <typeinfo>
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/geometry/polygon_mesh.h>
 
@@ -82,7 +82,7 @@ class TestPolygonMesh : public testing::Test
     using Mesh = MeshT;
 };
 
-TYPED_TEST_CASE (TestPolygonMesh, PolygonMeshTypes);
+TYPED_TEST_SUITE (TestPolygonMesh, PolygonMeshTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 

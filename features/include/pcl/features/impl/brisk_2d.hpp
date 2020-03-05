@@ -128,17 +128,16 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKern
     size_list_[scale]  = 0;
 
     // generate the pattern points look-up
-    double alpha, theta;
     for (std::size_t rot = 0; rot < n_rot_; ++rot)
     {
       // this is the rotation of the feature
-      theta = double (rot) * 2 * M_PI / double (n_rot_); 
+      double theta = double (rot) * 2 * M_PI / double (n_rot_);
       for (int ring = 0; ring < rings; ++ring)
       {
         for (int num = 0; num < number_list[ring]; ++num)
         {
           // the actual coordinates on the circle
-          alpha = double (num) * 2 * M_PI / double (number_list[ring]);
+          double alpha = double (num) * 2 * M_PI / double (number_list[ring]);
           
           // feature rotation plus angle of the point
           pattern_iterator->x = scale_list_[scale] * radius_list[ring] * static_cast<float> (std::cos (alpha + theta)); 

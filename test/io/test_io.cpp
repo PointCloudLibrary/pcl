@@ -37,7 +37,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/point_traits.h>
 #include <pcl/point_types.h>
@@ -1319,7 +1319,7 @@ TEST (PCL, Locale)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> class AutoIOTest : public testing::Test { };
 using PCLXyzNormalPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_XYZ_POINT_TYPES PCL_NORMAL_POINT_TYPES)>;
-TYPED_TEST_CASE (AutoIOTest, PCLXyzNormalPointTypes);
+TYPED_TEST_SUITE (AutoIOTest, PCLXyzNormalPointTypes);
 TYPED_TEST (AutoIOTest, AutoLoadCloudFiles)
 {
   PointCloud<TypeParam> cloud;

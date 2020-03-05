@@ -40,69 +40,75 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <pcl/octree/octree_pointcloud.h>
 #include <pcl/octree/octree2buf_base.h>
+#include <pcl/octree/octree_pointcloud.h>
 
-namespace pcl
+namespace pcl {
+namespace octree {
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/** \brief @b Octree pointcloud change detector class
+ *  \note This pointcloud octree class generate an octrees from a point cloud
+ * (zero-copy). It allows to detect new leaf nodes and serialize their point indices
+ *  \note The octree pointcloud is initialized with its voxel resolution. Its bounding
+ * box is automatically adjusted or can be predefined.
+ * \tparam PointT type of point used in pointcloud
+ * \ingroup octree
+ * \author Julius Kammerl (julius@kammerl.de)
+ */
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT,
+          typename LeafContainerT = OctreeContainerPointIndices,
+          typename BranchContainerT = OctreeContainerEmpty>
+
+class OctreePointCloudChangeDetector
+: public OctreePointCloud<PointT,
+                          LeafContainerT,
+                          BranchContainerT,
+                          Octree2BufBase<LeafContainerT, BranchContainerT>>
+
 {
-  namespace octree
+
+public:
+  using Ptr = shared_ptr<
+      OctreePointCloudChangeDetector<PointT, LeafContainerT, BranchContainerT>>;
+  using ConstPtr = shared_ptr<
+      const OctreePointCloudChangeDetector<PointT, LeafContainerT, BranchContainerT>>;
+
+  /** \brief Constructor.
+   *  \param resolution_arg:  octree resolution at lowest octree level
+   * */
+  OctreePointCloudChangeDetector(const double resolution_arg)
+  : OctreePointCloud<PointT,
+                     LeafContainerT,
+                     BranchContainerT,
+                     Octree2BufBase<LeafContainerT, BranchContainerT>>(resolution_arg)
+  {}
+
+  /** \brief Get a indices from all leaf nodes that did not exist in previous buffer.
+   * \param indicesVector_arg: results are written to this vector of int indices
+   * \param minPointsPerLeaf_arg: minimum amount of points required within leaf node to
+   * become serialized.
+   * \return number of point indices
+   */
+  std::size_t
+  getPointIndicesFromNewVoxels(std::vector<int>& indicesVector_arg,
+                               const int minPointsPerLeaf_arg = 0)
   {
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree pointcloud change detector class
-     *  \note This pointcloud octree class generate an octrees from a point cloud (zero-copy). It allows to detect new leaf nodes and serialize their point indices
-     *  \note The octree pointcloud is initialized with its voxel resolution. Its bounding box is automatically adjusted or can be predefined.
-     *  \note
-     *  \note typename: PointT: type of point used in pointcloud
-     *  \ingroup octree
-     *  \author Julius Kammerl (julius@kammerl.de)
-     */
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT,
-        typename LeafContainerT = OctreeContainerPointIndices,
-        typename BranchContainerT = OctreeContainerEmpty >
+    std::vector<OctreeContainerPointIndices*> leaf_containers;
+    this->serializeNewLeafs(leaf_containers);
 
-    class OctreePointCloudChangeDetector : public OctreePointCloud<PointT,
-        LeafContainerT, BranchContainerT, Octree2BufBase<LeafContainerT, BranchContainerT> >
+    for (const auto& leaf_container : leaf_containers) {
+      if (static_cast<int>(leaf_container->getSize()) >= minPointsPerLeaf_arg)
+        leaf_container->getPointIndices(indicesVector_arg);
+    }
 
-    {
-
-      public:
-
-        using Ptr = shared_ptr<OctreePointCloudChangeDetector<PointT, LeafContainerT, BranchContainerT>>;
-        using ConstPtr = shared_ptr<const OctreePointCloudChangeDetector<PointT, LeafContainerT, BranchContainerT>>;
-
-        /** \brief Constructor.
-         *  \param resolution_arg:  octree resolution at lowest octree level
-         * */
-        OctreePointCloudChangeDetector (const double resolution_arg) :
-            OctreePointCloud<PointT, LeafContainerT, BranchContainerT,
-                Octree2BufBase<LeafContainerT, BranchContainerT> > (resolution_arg)
-        {
-        }
-
-        /** \brief Get a indices from all leaf nodes that did not exist in previous buffer.
-         * \param indicesVector_arg: results are written to this vector of int indices
-         * \param minPointsPerLeaf_arg: minimum amount of points required within leaf node to become serialized.
-         * \return number of point indices
-         */
-        std::size_t getPointIndicesFromNewVoxels (std::vector<int> &indicesVector_arg,
-            const int minPointsPerLeaf_arg = 0)
-        {
-
-          std::vector<OctreeContainerPointIndices*> leaf_containers;
-          this->serializeNewLeafs (leaf_containers);
-
-          for (const auto &leaf_container : leaf_containers)
-          {
-            if (static_cast<int> (leaf_container->getSize ()) >= minPointsPerLeaf_arg)
-              leaf_container->getPointIndices(indicesVector_arg);
-          }
-
-          return (indicesVector_arg.size ());
-        }
-    };
+    return (indicesVector_arg.size());
   }
-}
+};
+} // namespace octree
+} // namespace pcl
 
-#define PCL_INSTANTIATE_OctreePointCloudChangeDetector(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudChangeDetector<T>;
+#define PCL_INSTANTIATE_OctreePointCloudChangeDetector(T)                              \
+  template class PCL_EXPORTS pcl::octree::OctreePointCloudChangeDetector<T>;

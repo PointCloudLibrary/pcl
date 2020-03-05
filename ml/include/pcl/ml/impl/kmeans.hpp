@@ -73,7 +73,6 @@ pcl::Kmeans<PointT>::cluster(std::vector<PointIndices>& clusters)
   pcl::PointCloud<PointT> point;
   std::vector<pcl::PCLPointField> fields;
 
-  int user_index = -1;
   // if no cluster field name is set, check for X Y Z
   if (strcmp(cluster_field_name_.c_str(), "") == 0) {
     int x_index = -1;
@@ -121,7 +120,7 @@ pcl::Kmeans<PointT>::cluster(std::vector<PointIndices>& clusters)
   }
   // if cluster field name is set, check if field name is valid
   else {
-    user_index = pcl::getFieldIndex<PointT>(cluster_field_name_.c_str(), fields);
+    int user_index = pcl::getFieldIndex<PointT>(cluster_field_name_.c_str(), fields);
 
     if (user_index == -1) {
       PCL_ERROR("Failed to find match for field '%s'\n", cluster_field_name_.c_str());

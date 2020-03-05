@@ -69,7 +69,7 @@ pcl::PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms (con
     PCL_ERROR ("[pcl::PyramidFeatureMatching::comparePyramidFeatureHistograms] The two given pyramids have different numbers of bins on level 0: %u vs %u\n", pyramid_a->hist_levels[0].hist.size (), pyramid_b->hist_levels[0].hist.size ());
     return -1;
   }
-  float match_count_level = 0.0f, match_count_prev_level = 0.0f;
+  float match_count_level = 0.0f;
   for (std::size_t bin_i = 0; bin_i < pyramid_a->hist_levels[0].hist.size (); ++bin_i)
   {
     if (pyramid_a->hist_levels[0].hist[bin_i] < pyramid_b->hist_levels[0].hist[bin_i])
@@ -88,7 +88,7 @@ pcl::PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms (con
       return -1;
     }
 
-    match_count_prev_level = match_count_level;
+    float match_count_prev_level = match_count_level;
     match_count_level = 0.0f;
     for (std::size_t bin_i = 0; bin_i < pyramid_a->hist_levels[level_i].hist.size (); ++bin_i)
     {

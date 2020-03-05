@@ -173,13 +173,13 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   // ---[ Step 1b : compute the centroid in normal space
   Eigen::Vector4f normal_centroid = Eigen::Vector4f::Zero ();
-  std::size_t cp = 0;
 
   // If the data is dense, we don't need to check for NaN
   if (use_given_normal_)
     normal_centroid = normal_to_use_;
   else
   {
+    std::size_t cp = 0;
     if (normals_->is_dense)
     {
       for (const auto& index: *indices_)

@@ -460,7 +460,6 @@ pcl::visualization::PointCloudColorHandlerRGBAField<PointT>::getColor () const
   scalars->SetNumberOfTuples (nr_points);
   unsigned char* colors = scalars->GetPointer (0);
 
-  int j = 0;
   // If XYZ present, check if the points are invalid
   int x_idx = -1;
   for (std::size_t d = 0; d < fields_.size (); ++d)
@@ -469,6 +468,7 @@ pcl::visualization::PointCloudColorHandlerRGBAField<PointT>::getColor () const
 
   if (x_idx != -1)
   {
+    int j = 0;
     // Color every point
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {

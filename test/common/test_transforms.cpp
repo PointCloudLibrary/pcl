@@ -37,7 +37,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
@@ -107,7 +107,7 @@ class Transforms : public ::testing::Test
   PCL_MAKE_ALIGNED_OPERATOR_NEW;
 };
 
-TYPED_TEST_CASE (Transforms, TransformTypes);
+TYPED_TEST_SUITE (Transforms, TransformTypes);
 
 TYPED_TEST (Transforms, PointCloudXYZDense)
 {

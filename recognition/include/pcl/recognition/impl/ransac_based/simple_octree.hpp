@@ -277,15 +277,13 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::createLeaf (S
   }
 
   Node* node = root_;
-  const Scalar *c;
-  int id;
 
   // Go down to the right leaf
   for ( int l = 0 ; l < tree_levels_ ; ++l )
   {
     node->createChildren ();
-    c = node->getCenter ();
-    id = 0;
+    const Scalar *c = node->getCenter ();
+    int id = 0;
 
     if ( x >= c[0] ) id |= 4;
     if ( y >= c[1] ) id |= 2;
@@ -333,8 +331,6 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::getFullLeaf (
   }
 
   Node* node = root_;
-  const Scalar *c;
-  int id;
 
   // Go down to the right leaf
   for ( int l = 0 ; l < tree_levels_ ; ++l )
@@ -342,8 +338,8 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::getFullLeaf (
     if ( !node->hasChildren () )
       return (nullptr);
 
-    c = node->getCenter ();
-    id = 0;
+    const Scalar *c = node->getCenter ();
+    int id = 0;
 
     if ( x >= c[0] ) id |= 4;
     if ( y >= c[1] ) id |= 2;

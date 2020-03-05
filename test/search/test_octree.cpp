@@ -35,7 +35,7 @@
  *
  *
  */
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <vector>
 #include <cstdio>
 #include <pcl/common/time.h>

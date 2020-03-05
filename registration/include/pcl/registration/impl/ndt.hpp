@@ -109,7 +109,6 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
   Eigen::Matrix<double, 6, 6> hessian;
 
   double score = 0;
-  double delta_p_norm;
 
   // Calculate derivates of initial transform vector, subsequent derivative calculations are done in the step length determination.
   score = computeDerivatives (score_gradient, hessian, output, p);
@@ -125,7 +124,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
     delta_p = sv.solve (-score_gradient);
 
     //Calculate step length with guarnteed sufficient decrease [More, Thuente 1994]
-    delta_p_norm = delta_p.norm ();
+    double delta_p_norm = delta_p.norm ();
 
     if (delta_p_norm == 0 || std::isnan(delta_p_norm))
     {
@@ -206,7 +205,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeDerivatives 
     std::vector<float> distances;
     target_cells_.radiusSearch (x_trans_pt, resolution_, neighborhood, distances);
 
-    for (typename std::vector<TargetGridLeafConstPtr>::iterator neighborhood_it = neighborhood.begin (); neighborhood_it != neighborhood.end (); neighborhood_it++)
+    for (typename std::vector<TargetGridLeafConstPtr>::iterator neighborhood_it = neighborhood.begin (); neighborhood_it != neighborhood.end (); ++neighborhood_it)
     {
       cell = *neighborhood_it;
       x_pt = input_->points[idx];

@@ -35,7 +35,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/registration/correspondence_estimation_normal_shooting.h>
 #include <pcl/features/normal_3d.h>

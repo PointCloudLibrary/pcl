@@ -221,7 +221,7 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
   candidates.clear ();
 
   // loop over all candidates starting from the best one
-  for (MatchingCandidates::iterator it_candidate = candidates_.begin (), it_e = candidates_.end (); it_candidate != it_e; it_candidate++)
+  for (MatchingCandidates::iterator it_candidate = candidates_.begin (), it_e = candidates_.end (); it_candidate != it_e; ++it_candidate)
   {
     // stop if current candidate has no valid score
     if (it_candidate->fitness_score == FLT_MAX)
@@ -236,7 +236,7 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
       const float angle3d = Eigen::AngleAxisf (diff.block <3, 3> (0, 0)).angle ();
       const float translation3d = diff.block <3, 1> (0, 3).norm ();
       unique = angle3d > min_angle3d && translation3d > min_translation3d;
-      it++;
+      ++it;
     }
 
     // add candidate to best candidates
