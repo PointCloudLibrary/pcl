@@ -258,7 +258,7 @@ main (int argc, char** argv)
   float max_height = std::numeric_limits<float>::max ();
   parse_argument (argc, argv, "-max_height", max_height);
 
-  bool error_detected = false;
+  int error_code = 0;
   bool processed_at_least_one_pcd = false;
 
   // Segment and create templates for each input file
@@ -270,7 +270,7 @@ main (int argc, char** argv)
 
     if (!loadCloud (input_filename, *cloud))
     {
-      error_detected = true;
+      error_code = -1;
       std::string warn_msg = "Could not load point cloud from file: " + input_filename + "\n";
       print_warn (warn_msg.c_str ());
       continue;
@@ -306,12 +306,5 @@ main (int argc, char** argv)
     print_error("All input pcd files are unorganized.\n");
   }
 
-  if (error_detected)
-  {
-    return -1;
-  }
-  else
-  {
-    return 0;
-  }
+  return error_code;
 }
