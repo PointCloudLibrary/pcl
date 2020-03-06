@@ -1,14 +1,9 @@
 #pragma once
 
-#ifdef USE_ROS
-   #error USE_ROS setup requires PCL to compile against ROS message headers, which is now deprecated
-#endif 
+#include <string>   // for string
+#include <ostream>  // for ostream
 
-#include <string>
-#include <vector>
-#include <boost/shared_ptr.hpp>
-#include <pcl/pcl_macros.h>
-#include <ostream>
+#include <pcl/make_shared.h>  // for shared_ptr
 
 namespace pcl
 {
