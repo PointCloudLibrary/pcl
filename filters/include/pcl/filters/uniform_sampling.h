@@ -55,7 +55,7 @@ namespace pcl
     * represents the underlying surface more accurately.
     *
     * \author Radu Bogdan Rusu
-    * \ingroup keypoints
+    * \ingroup filters
     */
   template <typename PointT>
   class UniformSampling: public Filter<PointT>
