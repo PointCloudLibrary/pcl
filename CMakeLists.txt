@@ -274,6 +274,8 @@ set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 endif()
 
 ### ---[ Find universal dependencies
+
+# OpenMP (optional)
 find_package(OpenMP COMPONENTS C CXX)
 if(OpenMP_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -299,6 +301,8 @@ if(OpenMP_FOUND)
     else()
       message(WARNING "Delay loading flag for OpenMP DLL is invalid.")
     endif()
+  else()
+    link_libraries("${OpenMP_CXX_LIBRARIES}")
   endif()
 else()
   message(STATUS "Not found OpenMP")
