@@ -84,11 +84,7 @@ namespace pcl
       PCLBase (const PCLBase& base);
 
       /** \brief Destructor. */
-      virtual ~PCLBase ()
-      {
-        input_.reset ();
-        indices_.reset ();
-      }
+      virtual ~PCLBase () = default;
 
       /** \brief Provide a pointer to the input dataset
         * \param[in] cloud the const boost shared pointer to a PointCloud message
@@ -197,11 +193,7 @@ namespace pcl
       PCLBase ();
 
       /** \brief destructor. */
-      virtual ~PCLBase()
-      {
-        input_.reset ();
-        indices_.reset ();
-      }
+      virtual ~PCLBase () = default;
 
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message
