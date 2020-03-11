@@ -400,7 +400,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
       FOREACHvertex_i_ ((*facet).vertices)
       //facet_vertices.vertices.push_back (qhid_to_pcidx[vertex->id]);
       polygons[dd].vertices[vertex_i] = qhid_to_pcidx[vertex->id];
-      ++dd;
+      
     }
   }
   // Deallocates memory (also the points)
