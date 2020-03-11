@@ -949,7 +949,6 @@ namespace pcl
       for( int i=0 ; i<iters ; i++ )
       {
         M.Multiply( solution , Md );
-        r = b-Md;
         // solution_new[j] * diagonal[j] + ( Md[j] - solution_old[j] * diagonal[j] ) = b[j]
         // solution_new[j] = ( b[j] - ( Md[j] - solution_old[j] * diagonal[j] ) ) / diagonal[j]
         // solution_new[j] = ( b[j] - Md[j] ) / diagonal[j] + solution_old[j]
