@@ -622,7 +622,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
           INTERFACE_COMPILE_OPTIONS "${PCL_COMPILE_OPTIONS}"
           INTERFACE_COMPILE_FEATURES "@PCL_CXX_COMPILE_FEATURES@"
           INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS};${PCL_CONF_INCLUDE_DIR}"
-          INTERFACE_LINK_LIBRARIES "${PCL_${COMPONENT}_LINK_LIBRARIES}"
+          INTERFACE_LINK_LIBRARIES "${PCL_${COMPONENT}_LINK_LIBRARIES};${PCL_${COMPONENT}_LIBRARIES}"
       )
     elseif(CMAKE_VERSION VERSION_LESS 3.11)
       set_target_properties(${pcl_component}
@@ -631,7 +631,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
           INTERFACE_COMPILE_OPTIONS "$<$<COMPILE_LANGUAGE:CXX>:${PCL_COMPILE_OPTIONS}>"
           INTERFACE_COMPILE_FEATURES "@PCL_CXX_COMPILE_FEATURES@"
           INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS};${PCL_CONF_INCLUDE_DIR}"
-          INTERFACE_LINK_LIBRARIES "${PCL_${COMPONENT}_LINK_LIBRARIES}"
+          INTERFACE_LINK_LIBRARIES "${PCL_${COMPONENT}_LINK_LIBRARIES};${PCL_${COMPONENT}_LIBRARIES}"
       )
     else()
       set_target_properties(${pcl_component}
@@ -644,7 +644,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
       # If possible, we use target_link_libraries to avoid problems with link-type keywords,
       # see https://github.com/PointCloudLibrary/pcl/issues/2989
       # target_link_libraries on imported libraries is supported only since CMake 3.11
-      target_link_libraries(${pcl_component} INTERFACE ${PCL_${COMPONENT}_LINK_LIBRARIES})
+      target_link_libraries(${pcl_component} INTERFACE ${PCL_${COMPONENT}_LINK_LIBRARIES} ${PCL_${COMPONENT}_LIBRARIES})
     endif()
     set(PCL_${COMPONENT}_LIBRARIES ${pcl_component})
   endif()
