@@ -369,7 +369,6 @@ TEST (PCL, Inverse2x2d)
   using CMatrix = Eigen::Matrix<Scalar, 2, 2, Eigen::ColMajor>;
   RMatrix r_matrix = RMatrix::Zero ();
   RMatrix r_inverse = RMatrix::Zero ();
-  CMatrix c_inverse = CMatrix::Zero ();
   Eigen::Matrix<Scalar, 2, 2> result;
   Eigen::Matrix<Scalar, 2, 2> error;
   const Scalar epsilon = 1e-15;
