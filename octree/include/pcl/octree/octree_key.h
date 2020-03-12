@@ -37,7 +37,7 @@
 
 #pragma once
 
-#include <cstdint>
+#include <cstdint> // for uint32_t
 #include <cstring> // for memcpy
 
 namespace pcl {
