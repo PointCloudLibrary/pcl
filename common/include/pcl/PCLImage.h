@@ -1,10 +1,13 @@
 #pragma once
 
+#include <pcl/PCLHeader.h>    // for PCLHeader
+#include <pcl/make_shared.h>  // for shared_ptr
+
 #include <string>   // for string
 #include <vector>   // for vector
 #include <ostream>  // for ostream
 
-#include <pcl/PCLHeader.h>   // for PCLHeader
+#include <cstdint>  // for uint32_t, uint8_t
 
 namespace pcl
 {

@@ -1,14 +1,12 @@
 #pragma once
 
-#include <algorithm>
-#include <string>
-#include <vector>
-#include <ostream>
+#include <pcl/PCLHeader.h>       // for PCLHeader
+#include <pcl/PCLPointCloud2.h>  // for PCLPointCloud2
+#include <pcl/Vertices.h>        // for Vertices
 
-// Include the correct Header path here
-#include <pcl/PCLHeader.h>
-#include <pcl/PCLPointCloud2.h>
-#include <pcl/Vertices.h>
+#include <algorithm>  // for transform
+#include <vector>     // for vector
+#include <ostream>    // for ostream
 
 namespace pcl
 {

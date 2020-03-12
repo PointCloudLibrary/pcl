@@ -1,25 +1,25 @@
 #pragma once
 
-#include <ostream>
-#include <vector>
+#include <pcl/PCLHeader.h>      // for PCLHeader
+#include <pcl/PCLPointField.h>  // for PCLPointField
+#include <pcl/pcl_macros.h>     // for PCL_EXPORTS
 
-#include <boost/predef/other/endian.h>
+#include <boost/predef/other/endian.h>  // for BOOST_ENDIAN_{X}_BYTE
 
-#include <pcl/pcl_macros.h>  // for PCL_EXPORTS
-#include <pcl/PCLHeader.h>
-#include <pcl/PCLPointField.h>
+#include <ostream>  // for ostream
+#include <vector>   // for vector
 
 namespace pcl
 {
 
   struct PCL_EXPORTS PCLPointCloud2
   {
-    ::pcl::PCLHeader header;
+    PCLHeader header;
 
     std::uint32_t height = 0;
     std::uint32_t width = 0;
 
-    std::vector<::pcl::PCLPointField>  fields;
+    std::vector<PCLPointField>  fields;
 
     static_assert(BOOST_ENDIAN_BIG_BYTE || BOOST_ENDIAN_LITTLE_BYTE, "unable to determine system endianness");
     std::uint8_t is_bigendian = BOOST_ENDIAN_BIG_BYTE;
@@ -31,8 +31,8 @@ namespace pcl
     std::uint8_t is_dense = 0;
 
   public:
-    using Ptr = shared_ptr< ::pcl::PCLPointCloud2>;
-    using ConstPtr = shared_ptr<const ::pcl::PCLPointCloud2>;
+    using Ptr = shared_ptr<PCLPointCloud2>;
+    using ConstPtr = shared_ptr<const PCLPointCloud2>;
 
     //////////////////////////////////////////////////////////////////////////
     /** \brief Inplace concatenate two pcl::PCLPointCloud2
@@ -51,7 +51,7 @@ namespace pcl
       * \return true if successful, false if failed (e.g., name/number of fields differs)
       */
     static bool
-    concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPointCloud2 &cloud2);
+    concatenate (PCLPointCloud2 &cloud1, const PCLPointCloud2 &cloud2);
 
     /** \brief Concatenate two pcl::PCLPointCloud2
       * \param[in] cloud1 the first input point cloud dataset
@@ -89,7 +89,7 @@ namespace pcl
   using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
   using PCLPointCloud2ConstPtr = PCLPointCloud2::ConstPtr;
 
-  inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PCLPointCloud2 &v)
+  inline std::ostream& operator<<(std::ostream& s, const PCLPointCloud2 &v)
   {
     s << "header: " << std::endl;
     s << v.header;
