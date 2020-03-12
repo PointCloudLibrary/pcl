@@ -36,9 +36,13 @@
  *
  */
 
-#include <pcl/correspondence.h>
-#include <algorithm>
-#include <iterator>
+#include <pcl/correspondence.h>  // for Correspondences, Correspondence,
+
+#include <algorithm>  // for sort, set_difference, max
+#include <iterator>   // for insert_iterator, inserter
+#include <memory>     // for allocator_traits<>::value_type
+#include <ostream>    // for basic_ostream::operator<<, operator<<, ostream
+#include <vector>     // for vector
 
 //////////////////////////////////////////////////////////////////////////////
 void

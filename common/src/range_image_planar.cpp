@@ -34,14 +34,23 @@
 
 /** \author Bastian Steder */
 
-#include <iostream>
+#include <pcl/range_image/range_image_planar.h>  // for RangeImagePlanar
+#include <pcl/point_types.h>                     // for PointWithRange
+#include <pcl/pcl_macros.h>                      // for pcl_lrint, PVARN, PVARC
+
+#include <iostream>  // for cout, operator<<
+#include <typeinfo>  // for typeid
+
+#include <cassert>   // for assert
+#include <cmath>     // for asinf, isfinite
+
 using std::cout;
 using std::cerr;
 
-#include <pcl/range_image/range_image_planar.h>
-
 namespace pcl 
 {
+  class RangeImage;
+
   /////////////////////////////////////////////////////////////////////////
   RangeImagePlanar::RangeImagePlanar () : focal_length_x_ (0.0f), focal_length_y_ (0.0f),
                                           focal_length_x_reciprocal_ (0.0f), focal_length_y_reciprocal_ (0.0f),

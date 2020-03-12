@@ -34,7 +34,8 @@
  * $Id$
  *
  */
-#include <pcl/common/distances.h>
+
+#include <pcl/common/distances.h>  // for lineToLineSegment
 
 void
 pcl::lineToLineSegment (const Eigen::VectorXf &line_a, const Eigen::VectorXf &line_b, 

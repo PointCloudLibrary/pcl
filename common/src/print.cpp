@@ -34,24 +34,35 @@
  * $Id$
  *
  */
-#include <pcl/console/print.h>
-#include <algorithm>
-#include <cstdlib>
-#include <cctype> // for toupper
-#include <map>
-#include <string>
-#include <boost/optional.hpp>
 
-#if defined WIN32
-# include <windows.h>
-# include <io.h>
+#include <pcl/console/print.h>
+
+#include <boost/optional/optional.hpp>  // for optional
+
+#include <algorithm>                    // for transform
+#include <map>                          // for map, map<>::mapped_type
+#include <string>                       // for basic_string, string
+
+#include <cctype>                       // for toupper
+#include <cstdlib>                      // for getenv
+#include <cstdarg>                      // for va_end, va_list, va_start
+
+#ifndef WIN32
+
+#include <cstdio>                       // for vfprintf, FILE, fprintf, stdout
+#include <unistd.h>                     // for isatty
+
+#else
+
+#include <windows.h>
+#include <io.h>
 
 #ifndef _MSC_VER
 # define COMMON_LVB_UNDERSCORE    0
 # define COMMON_LVB_REVERSE_VIDEO 0
 #endif
 
-WORD 
+WORD
 convertAttributesColor (int attribute, int fg, int bg=0)
 {
   static WORD wAttributes[7]  = { 0,                        // TT_RESET
@@ -83,10 +94,6 @@ convertAttributesColor (int attribute, int fg, int bg=0)
 
   return wAttributes[attribute] | wFgColors[fg] | wBgColors[bg];
 }
-
-#else
-#  include <unistd.h>
-#  include <cstdio>
 #endif
 
 // Map to store, for each output stream, whether to use colored output
@@ -177,7 +184,7 @@ pcl::console::print_color (FILE *stream, int attr, int fg, const char *format, .
   va_start (ap, format);
   vfprintf (stream, format, ap);
   va_end (ap);
-  
+
   reset_text_color (stream);
 }
 
@@ -185,7 +192,7 @@ pcl::console::print_color (FILE *stream, int attr, int fg, const char *format, .
 void
 pcl::console::print_info (const char *format, ...)
 {
-  if (!isVerbosityLevelEnabled (L_INFO)) return; 
+  if (!isVerbosityLevelEnabled (L_INFO)) return;
 
   reset_text_color (stdout);
 
@@ -257,7 +264,7 @@ pcl::console::print_error (const char *format, ...)
   va_start (ap, format);
   vfprintf (stderr, format, ap);
   va_end (ap);
-  
+
   reset_text_color (stderr);
 }
 
@@ -273,7 +280,7 @@ pcl::console::print_error (FILE *stream, const char *format, ...)
   va_start (ap, format);
   vfprintf (stream, format, ap);
   va_end (ap);
-  
+
   reset_text_color (stream);
 }
 
@@ -289,7 +296,7 @@ pcl::console::print_warn (const char *format, ...)
   va_start (ap, format);
   vfprintf (stderr, format, ap);
   va_end (ap);
-  
+
   reset_text_color (stderr);
 }
 
@@ -305,7 +312,7 @@ pcl::console::print_warn (FILE *stream, const char *format, ...)
   va_start (ap, format);
   vfprintf (stream, format, ap);
   va_end (ap);
-  
+
   reset_text_color (stream);
 }
 
@@ -321,7 +328,7 @@ pcl::console::print_value (const char *format, ...)
   va_start (ap, format);
   vfprintf (stdout, format, ap);
   va_end (ap);
-  
+
   reset_text_color (stdout);
 }
 
@@ -337,7 +344,7 @@ pcl::console::print_value (FILE *stream, const char *format, ...)
   va_start (ap, format);
   vfprintf (stream, format, ap);
   va_end (ap);
-  
+
   reset_text_color (stream);
 }
 
@@ -353,7 +360,7 @@ pcl::console::print_debug (const char *format, ...)
   va_start (ap, format);
   vfprintf (stdout, format, ap);
   va_end (ap);
-  
+
   reset_text_color (stdout);
 }
 
@@ -369,7 +376,7 @@ pcl::console::print_debug (FILE *stream, const char *format, ...)
   va_start (ap, format);
   vfprintf (stream, format, ap);
   va_end (ap);
-  
+
   reset_text_color (stream);
 }
 
@@ -380,7 +387,7 @@ namespace pcl
   {
     static bool s_NeedVerbosityInit = true;
 #ifdef VERBOSITY_LEVEL_ALWAYS
-  static VERBOSITY_LEVEL s_VerbosityLevel = pcl::console::L_ALWAYS; 
+  static VERBOSITY_LEVEL s_VerbosityLevel = pcl::console::L_ALWAYS;
 #elif defined VERBOSITY_LEVEL_ERROR
   static VERBOSITY_LEVEL s_VerbosityLevel = pcl::console::L_ERROR;
 #elif defined VERBOSITY_LEVEL_WARN
@@ -388,9 +395,9 @@ namespace pcl
 #elif defined VERBOSITY_LEVEL_DEBUG
   static VERBOSITY_LEVEL s_VerbosityLevel = pcl::console::L_DEBUG;
 #elif defined VERBOSITY_LEVEL_VERBOSE
-  static VERBOSITY_LEVEL s_VerbosityLevel = pcl::console::L_VERBOSE; 
-#else 
-  static VERBOSITY_LEVEL s_VerbosityLevel = pcl::console::L_INFO; 
+  static VERBOSITY_LEVEL s_VerbosityLevel = pcl::console::L_VERBOSE;
+#else
+  static VERBOSITY_LEVEL s_VerbosityLevel = pcl::console::L_INFO;
 #endif
   }
 }
@@ -415,15 +422,15 @@ bool
 pcl::console::isVerbosityLevelEnabled (pcl::console::VERBOSITY_LEVEL level)
 {
   if (s_NeedVerbosityInit) pcl::console::initVerbosityLevel ();
-  return level <= s_VerbosityLevel;  
+  return level <= s_VerbosityLevel;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool 
+bool
 pcl::console::initVerbosityLevel ()
 {
 #ifdef VERBOSITY_LEVEL_ALWAYS
-  s_VerbosityLevel = pcl::console::L_ALWAYS; 
+  s_VerbosityLevel = pcl::console::L_ALWAYS;
 #elif defined VERBOSITY_LEVEL_ERROR
   s_VerbosityLevel = pcl::console::L_ERROR;
 #elif defined VERBOSITY_LEVEL_WARN
@@ -431,8 +438,8 @@ pcl::console::initVerbosityLevel ()
 #elif defined VERBOSITY_LEVEL_DEBUG
   s_VerbosityLevel = pcl::console::L_DEBUG;
 #elif defined VERBOSITY_LEVEL_VERBOSE
-  s_VerbosityLevel = pcl::console::L_VERBOSE; 
-#else 
+  s_VerbosityLevel = pcl::console::L_VERBOSE;
+#else
   s_VerbosityLevel = pcl::console::L_INFO; // Default value
 #endif
 
@@ -456,7 +463,7 @@ pcl::console::initVerbosityLevel ()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::console::print (pcl::console::VERBOSITY_LEVEL level, FILE *stream, const char *format, ...)
 {
   if (!isVerbosityLevelEnabled (level)) return;
@@ -483,12 +490,12 @@ pcl::console::print (pcl::console::VERBOSITY_LEVEL level, FILE *stream, const ch
   va_start (ap, format);
   vfprintf (stream, format, ap);
   va_end (ap);
-  
+
   reset_text_color (stream);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::console::print (pcl::console::VERBOSITY_LEVEL level, const char *format, ...)
 {
   if (!isVerbosityLevelEnabled (level)) return;
@@ -510,13 +517,13 @@ pcl::console::print (pcl::console::VERBOSITY_LEVEL level, const char *format, ..
     default:
       break;
   }
-  
+
   va_list ap;
 
   va_start (ap, format);
   vfprintf (stream, format, ap);
   va_end (ap);
-  
+
   reset_text_color (stream);
 
 }

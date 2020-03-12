@@ -34,11 +34,16 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <pcl/point_types.h>
+
+#include <pcl/point_types.h>  // for operator <<
+
+#include <ostream>            // for ostream
+
+#include <cmath>              // for M_PI
 
 namespace pcl
 {
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PointXYZ& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << ")";
@@ -84,14 +89,14 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PointXYZL& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.label << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const Label& p)
   {
     os << "(" << p.label << ")";
@@ -109,7 +114,7 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PointXYZRGB& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - "
@@ -119,7 +124,7 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PointXYZRGBL& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - "
@@ -130,63 +135,63 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PointXYZHSV& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.h << " , " <<  p.s << " , " << p.v << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PointXY& p)
   {
     os << "(" << p.x << "," << p.y << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PointUV& p)
   {
     os << "(" << p.u << "," << p.v << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const InterestPoint& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.strength << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const Normal& p)
   {
     os << "(" << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.curvature << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const Axis& p)
   {
     os << "(" << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << ")";
     return os;
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const _Axis& p)
   {
     os << "(" << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << ")";
     return os;
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PointNormal& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.curvature << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PointXYZRGBNormal& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - "<< p.rgb << " - " << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - "
@@ -197,7 +202,7 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PointXYZINormal& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.intensity << " - " << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.curvature << ")";
@@ -211,49 +216,49 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PointWithRange& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.range << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PointWithViewpoint& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.vp_x << "," << p.vp_y << "," << p.vp_z << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const MomentInvariants& p)
   {
     os << "(" << p.j1 << "," << p.j2 << "," << p.j3 << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PrincipalRadiiRSD& p)
   {
     os << "(" << p.r_min << "," << p.r_max << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const Boundary& p)
   {
     os << p.boundary_point;
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PrincipalCurvatures& p)
   {
     os << "(" << p.principal_curvature[0] << "," << p.principal_curvature[1] << "," << p.principal_curvature[2] << " - " << p.pc1 << "," << p.pc2 << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PFHSignature125& p)
   {
     for (int i = 0; i < 125; ++i)
@@ -261,7 +266,7 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PFHRGBSignature250& p)
   {
     for (int i = 0; i < 250; ++i)
@@ -269,21 +274,21 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PPFSignature& p)
   {
     os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " << p.alpha_m << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const CPPFSignature& p)
   {
     os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " << p.f5 << ", " << p.f6 << ", " << p.f7 << ", " << p.f8 << ", " << p.f9 << ", " << p.f10 << ", " << p.alpha_m << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PPFRGBSignature& p)
    {
      os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " <<
@@ -291,7 +296,7 @@ namespace pcl
      return (os);
    }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const NormalBasedSignature12& p)
   {
     for (int i = 0; i < 12; ++i)
@@ -299,7 +304,7 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const ShapeContext1980& p)
   {
     for (int i = 0; i < 9; ++i)
@@ -309,7 +314,7 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const UniqueShapeContext1960& p)
   {
     for (int i = 0; i < 9; ++i)
@@ -319,7 +324,7 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const SHOT352& p)
   {
     for (int i = 0; i < 9; ++i)
@@ -329,7 +334,7 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const SHOT1344& p)
   {
     for (int i = 0; i < 9; ++i)
@@ -339,7 +344,7 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const ReferenceFrame& p)
   {
     os << "("
@@ -349,7 +354,7 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const FPFHSignature33& p)
   {
     for (int i = 0; i < 33; ++i)
@@ -357,7 +362,7 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const VFHSignature308& p)
   {
     for (int i = 0; i < 308; ++i)
@@ -365,7 +370,7 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const BRISKSignature512& p)
   {
     os << p.scale << " " << p.orientation << " ";
@@ -374,7 +379,7 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const ESFSignature640& p)
   {
     for (int i = 0; i < 640; ++i)
@@ -406,7 +411,7 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const GFPFHSignature16& p)
   {
     for (int i = 0; i < pcl::GFPFHSignature16::descriptorSize (); ++i)
@@ -414,7 +419,7 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const Narf36& p)
   {
     os << p.x<<","<<p.y<<","<<p.z<<" - "<<p.roll*360.0/M_PI<<"deg,"<<p.pitch*360.0/M_PI<<"deg,"<<p.yaw*360.0/M_PI<<"deg - ";
@@ -423,28 +428,28 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const BorderDescription& p)
   {
     os << "(" << p.x << "," << p.y << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const IntensityGradient& p)
   {
     os << "(" << p.gradient[0] << "," << p.gradient[1] << "," << p.gradient[2] << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PointWithScale& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.scale << "," << p.angle << "," << p.response << "," << p.octave << ")";
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PointSurfel& p)
   {
     os <<
@@ -458,11 +463,11 @@ namespace pcl
     return (os);
   }
 
-  std::ostream& 
+  std::ostream&
   operator << (std::ostream& os, const PointDEM& p)
   {
-    os << "(" << p.x << "," << p.y << "," << p.z << " - " 
-       << p.intensity << " - " << p.intensity_variance << " - " 
+    os << "(" << p.x << "," << p.y << "," << p.z << " - "
+       << p.intensity << " - " << p.intensity_variance << " - "
        << p.height_variance << ")";
     return (os);
   }

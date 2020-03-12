@@ -40,8 +40,14 @@
   * \author: Qinghua Li (qinghua__li@163.com)
   */
 
-#include <pcl/common/eigen.h>
-#include <pcl/range_image/bearing_angle_image.h>
+#include <pcl/point_cloud.h>                      // for PointCloud
+#include <pcl/point_types.h>                      // for PointXYZ
+#include <pcl/range_image/bearing_angle_image.h>  // for BearingAngleImage
+
+#include <Eigen/Core>  // for Vector3f
+
+#include <cmath>       // for sqrt, acos, M_PI
+#include <cstdint>     // for uint8_t
 
 namespace pcl
 {

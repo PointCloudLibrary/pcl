@@ -37,13 +37,22 @@
  *
  */
 
-#include <limits>
+#include <pcl/PCLPointCloud2.h>  // for PCLPointCloud2
+#include <pcl/common/common.h>   // for getMeanStdDev, getMinMax
+#include <pcl/console/print.h>   // for PCL_ERROR
 
-#include <pcl/common/common.h>
-#include <pcl/console/print.h>
+#include <algorithm>             // for find_if
+#include <iterator>              // for distance
+#include <limits>                // for numeric_limits
+#include <memory>                // for allocator_traits<>::value_type
+#include <string>                // for operator==, string
+#include <vector>                // for vector
+
+#include <cmath>                 // for sqrt
+#include <cstring>               // for memcpy
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::getMinMax (const pcl::PCLPointCloud2 &cloud, int,
                 const std::string &field_name, float &min_p, float &max_p)
 {
@@ -63,9 +72,9 @@ pcl::getMinMax (const pcl::PCLPointCloud2 &cloud, int,
   {
     float data;
     // TODO: replace float with the real data type
-    memcpy (&data, &cloud.data[cloud.fields[field_idx].offset + i * sizeof (float)], sizeof (float));
-    min_p = (data > min_p) ? min_p : data; 
-    max_p = (data < max_p) ? max_p : data; 
+    std::memcpy (&data, &cloud.data[cloud.fields[field_idx].offset + i * sizeof (float)], sizeof (float));
+    min_p = (data > min_p) ? min_p : data;
+    max_p = (data < max_p) ? max_p : data;
   }
 }
 

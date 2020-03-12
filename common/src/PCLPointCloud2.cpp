@@ -38,13 +38,21 @@
  *
  */
 
-#include <numeric>
-#include <vector>
+#include <pcl/PCLHeader.h>       // for PCLHeader
+#include <pcl/PCLPointCloud2.h>  // for PCLPointCloud2
+#include <pcl/common/io.h>       // for getFieldSize
+#include <pcl/console/print.h>   // for PCL_ERROR
+#include <pcl/exceptions.h>      // for ComputeFailedException, PCL_THROW_EX...
+#include <pcl/pcl_macros.h>      // for PCL_FALLTHROUGH
 
-#include <pcl/common/io.h>
-#include <pcl/pcl_macros.h>
-#include <pcl/exceptions.h>
-#include <pcl/PCLPointCloud2.h>
+#include <algorithm>             // for max, equal
+#include <memory>                // for allocator_traits<>::value_type
+#include <string>                // for operator==, string
+#include <vector>                // for vector, vector<>::const_iterator
+
+#include <cstddef>               // for size_t
+#include <cstdint>               // for uint8_t, uint16_t
+#include <cstring>               // for memcpy
 
 bool
 pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPointCloud2 &cloud2)
@@ -159,9 +167,9 @@ pcl::PCLPointCloud2::concatenate (pcl::PCLPointCloud2 &cloud1, const pcl::PCLPoi
       const auto& size = field_data.size;
       // Leave the data for the skip fields untouched in cloud1
       // Copy only the required data from cloud2 to the correct location for cloud1
-      memcpy (reinterpret_cast<char*> (&cloud1.data[data1_size + cp * cloud1.point_step + cloud1.fields[i].offset]),
-              reinterpret_cast<const char*> (&cloud2.data[cp * cloud2.point_step + cloud2.fields[j].offset]),
-              cloud2.fields[j].count * size);
+      std::memcpy (reinterpret_cast<char*> (&cloud1.data[data1_size + cp * cloud1.point_step + cloud1.fields[i].offset]),
+                   reinterpret_cast<const char*> (&cloud2.data[cp * cloud2.point_step + cloud2.fields[j].offset]),
+                   cloud2.fields[j].count * size);
     }
   }
   return (true);
