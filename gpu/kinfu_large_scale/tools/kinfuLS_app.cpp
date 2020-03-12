@@ -771,16 +771,15 @@ struct KinFuLSApp
   void
   initRegistration ()
   {
-    registration_ = 
-      #ifdef HAVE_OPENNI
-      capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ()
-      #endif
-      #if defined(HAVE_OPENNI) && defined(HAVE_OPENNI2)
-      ||
-      #endif
-      #ifdef HAVE_OPENNI2
-      capture_.providesCallback<pcl::io::OpenNI2Grabber::sig_cb_openni_image_depth_image> ();
-      #endif
+    registration_ =
+    #if defined(HAVE_OPENNI) && !defined(HAVE_OPENNI2)
+    capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ();
+    #elif !defined(HAVE_OPENNI) && defined(HAVE_OPENNI2)
+    capture_.providesCallback<pcl::io::OpenNI2Grabber::sig_cb_openni_image_depth_image> ();
+    #elif defined(HAVE_OPENNI) && defined(HAVE_OPENNI2)
+    capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> () ||
+    capture_.providesCallback<pcl::io::OpenNI2Grabber::sig_cb_openni_image_depth_image> ();
+    #endif
     std::cout << "Registration mode: " << (registration_ ? "On" : "Off (not supported by source)") << std::endl;
   }
 
