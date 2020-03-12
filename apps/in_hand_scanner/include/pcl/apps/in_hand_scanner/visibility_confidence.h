@@ -40,12 +40,11 @@
 
 #pragma once
 
-#include <cstdint>
-
-#include <pcl/memory.h>
-#include <pcl/pcl_exports.h>
-#include <pcl/pcl_macros.h>
 #include <pcl/apps/in_hand_scanner/eigen.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
+
+#include <cstdint>
 
 namespace pcl
 {
