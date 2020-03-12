@@ -481,7 +481,7 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
   // --------      -------------------//
 
   pcl::PointCloud<pcl::PointXYZRGBL> tmp_cloud;
-  tmp_cloud = *filtered_anno_;
+  
 
   // create dense CRF
   DenseCrf crf (N, n_labels);
