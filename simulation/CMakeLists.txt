@@ -47,4 +47,6 @@ PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_
 # Install include files
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
 
-add_subdirectory(tools)
+if(BUILD_tools)
+  add_subdirectory(tools)
+endif()
