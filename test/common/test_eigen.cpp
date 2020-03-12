@@ -247,8 +247,8 @@ TEST (PCL, InverseSymmetric3x3d)
   RMatrix r_inverse = RMatrix::Zero ();
   CMatrix c_matrix = CMatrix::Zero ();
   CMatrix c_inverse = CMatrix::Zero ();
-  Eigen::Matrix<Scalar, 3, 3> ::Zero ();
-  Eigen::Matrix<Scalar, 3, 3> ::Zero ();
+    Eigen::Matrix<Scalar, 3, 3> Eigen::Matrix<Scalar, 3, 3>::Zero ();
+  Eigen::Matrix<Scalar, 3, 3>Eigen::Matrix<Scalar, 3, 3>::Zero ();
   const Scalar epsilon = 1e-13;
   const unsigned iterations = 1000000;
 
