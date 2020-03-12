@@ -1,11 +1,10 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <ostream>
+#include <pcl/PCLHeader.h>    // for PCLHeader
+#include <pcl/make_shared.h>  // for shared_ptr
 
-// Include the correct Header path here
-#include <pcl/PCLHeader.h>
+#include <vector>   // for vector
+#include <ostream>  // for ostream
 
 namespace pcl
 {
