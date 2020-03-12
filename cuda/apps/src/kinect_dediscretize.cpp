@@ -78,7 +78,7 @@ class SimpleKinectTool
       pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id);
 
       std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&SimpleKinectTool::cloud_cb_, this, _1, _2, _3);
-
+      boost::signals2::connection c = registerCallback (f);
       //viewer.runOnVisualizationThread (fn, "viz_cb");
       interface->start ();
       
