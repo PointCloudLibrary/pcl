@@ -428,7 +428,7 @@ pcl::LCCPSegmentation<PointT>::applyKconvexity (const unsigned int k_arg)
 template <typename PointT> void
 pcl::LCCPSegmentation<PointT>::calculateConvexConnections (SupervoxelAdjacencyList& adjacency_list_arg)
 {
-  int is_convex;
+  bool is_convex;
 
   EdgeIterator edge_itr, edge_itr_end, next_edge;
   boost::tie (edge_itr, edge_itr_end) = boost::edges (adjacency_list_arg);
