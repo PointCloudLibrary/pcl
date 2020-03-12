@@ -1,7 +1,7 @@
 #include "internal.hpp"
 #include <algorithm>
 #include "pcl/gpu/utils/safe_call.hpp"
-#include "pcl/pcl_exports.h"
+#include "pcl/pcl_macros.h"
 
 namespace pcl
 {
