@@ -50,7 +50,7 @@ main ()
   {
     
     for (std::size_t i = 0; i < 1e4; ++i)
-     #ifdef BUSY_LOOP
+    
     asm("")
     #endif;
   }
