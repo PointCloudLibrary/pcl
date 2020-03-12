@@ -38,9 +38,11 @@
 
 #pragma once
 
-#include <vector>
-#include <sstream>
-#include <pcl/pcl_macros.h>
+#include <pcl/pcl_macros.h>  // for PCL_EXPORTS
+
+#include <sstream>           // for istringstream
+#include <string>            // for string
+#include <vector>            // for vector
 
 namespace pcl
 {
