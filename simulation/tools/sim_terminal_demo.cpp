@@ -20,6 +20,7 @@
 #endif
 
 #include "simulation_io.hpp"
+#include <pcl/common/time.h>
 
 using namespace Eigen;
 using namespace pcl;
