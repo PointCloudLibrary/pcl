@@ -35,7 +35,7 @@
  *
  */
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 
 #include <pcl/cuda/point_cloud.h>
 //#include <pcl/cuda/io/extract_indices.h>
