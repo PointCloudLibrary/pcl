@@ -37,7 +37,12 @@
 
 #pragma once
 
-#include <pcl/range_image/range_image.h>
+#include <pcl/make_shared.h>              // for shared_ptr
+#include <pcl/pcl_macros.h>               // for PCL_EXPORTS
+#include <pcl/range_image/range_image.h>  // for RangeImage
+
+#include <Eigen/Core>      // for Vector3f
+#include <Eigen/Geometry>  // for Affine3f
 
 namespace pcl
 {
@@ -213,4 +218,5 @@ namespace pcl
 }  // namespace end
 
 
-#include <pcl/range_image/impl/range_image_planar.hpp>  // Definitions of templated and inline functions
+// Definitions of templated and inline functions
+#include <pcl/range_image/impl/range_image_planar.hpp>  // IWYU pragma: export

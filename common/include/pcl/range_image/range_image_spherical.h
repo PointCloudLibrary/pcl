@@ -34,7 +34,9 @@
 
 #pragma once
 
-#include <pcl/range_image/range_image.h>
+#include <pcl/make_shared.h>              // for shared_ptr
+#include <pcl/pcl_macros.h>               // for PCL_EXPORTS
+#include <pcl/range_image/range_image.h>  // for RangeImage
 
 namespace pcl
 {
