@@ -39,14 +39,20 @@
 
 #pragma once
 
-#include <pcl/PCLPointField.h>
-#include <pcl/register_point_struct.h>
+#include <pcl/PCLPointField.h>          // for PCLPointField
+#include <pcl/type_traits.h>            // for traits::
+#include <pcl/register_point_struct.h>  // for POINT_CLOUD_REGISTER...
 
-#include <boost/mpl/contains.hpp>
-#include <boost/mpl/fold.hpp>
-#include <boost/mpl/vector.hpp>
+#include <boost/mpl/bool.hpp>           // for bool_
+#include <boost/mpl/contains.hpp>       // for contains
+#include <boost/mpl/fold.hpp>           // for fold
+#include <boost/mpl/logical.hpp>        // for and_, or_
+#include <boost/mpl/vector.hpp>         // for vector
 
-#include <bitset>
+#include <bitset>                       // for bitset
+#include <type_traits>                  // for enable_if_t
+
+#include <cstdint>                      // for uint32_t
 
 /**
   * \file pcl/point_types.h
@@ -354,7 +360,8 @@ namespace pcl
 
 /** @} */
 
-#include <pcl/impl/point_types.hpp>  // Include struct definitions
+// Include struct definitions
+#include <pcl/impl/point_types.hpp>  // IWYU pragma: export
 
 // ==============================
 // =====POINT_CLOUD_REGISTER=====
@@ -904,7 +911,7 @@ namespace pcl
 } // namespace pcl
 
 // Not strictly required, merely to preserve API for PCL users < 1.4
-#include <pcl/common/point_tests.h>
+#include <pcl/common/point_tests.h>  // IWYU pragma: keep
 
 #if defined _MSC_VER
   #pragma warning(default: 4201)

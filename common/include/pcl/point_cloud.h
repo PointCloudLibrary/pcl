@@ -38,21 +38,22 @@
 
 #pragma once
 
-#ifdef __GNUC__
-#pragma GCC system_header
-#endif
+#include <pcl/PCLHeader.h>     // for PCLHeader
+#include <pcl/exceptions.h>    // for UnorganizedPointCloudException
+#include <pcl/pcl_macros.h>    // for PCL_EXPORTS, ...
+#include <pcl/point_traits.h>  // for has_custom_allocator
+#include <pcl/memory.h>        // for shared_ptr
 
-#include <Eigen/StdVector>
-#include <Eigen/Geometry>
-#include <pcl/PCLHeader.h>
-#include <pcl/exceptions.h>
-#include <pcl/memory.h>
-#include <pcl/pcl_macros.h>
-#include <pcl/type_traits.h>
+#include <Eigen/StdVector>  // to specialize vector
+#include <Eigen/Geometry>   // for Quaternionf
+#include <Eigen/Core>       // for VectorXf
 
-#include <algorithm>
-#include <utility>
-#include <vector>
+#include <algorithm>  // for max
+#include <utility>    // for swap
+#include <vector>     // for vector
+
+#include <cstddef>  // for size_t
+#include <cstdint>  // for uint8_t
 
 namespace pcl
 {
