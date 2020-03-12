@@ -42,7 +42,7 @@
 #include <pcl/recognition/ransac_based/voxel_structure.h>
 #include <pcl/recognition/ransac_based/orr_octree.h>
 #include <pcl/common/random.h>
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <ctime>

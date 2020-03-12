@@ -46,7 +46,7 @@
 #pragma once
 
 #include "orr_octree.h"
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 #include <set>
 
 namespace pcl
