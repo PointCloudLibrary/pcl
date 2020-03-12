@@ -438,7 +438,7 @@ namespace pcl
       std::vector<float> grid_;
 
       /** \brief The grid resolution */
-      int res_x_, res_y_, res_z_;
+      int res_x_ = 32, res_y_ = 32, res_z_ = 32;
 
       /** \brief bounding box */
       Eigen::Array3f upper_boundary_;
