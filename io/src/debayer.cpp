@@ -34,7 +34,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include <pcl/io/debayer.h>
+
+#include <pcl/io/debayer.h>  // for DeBayer
+
+#include <cstdlib>  // for abs
 
 #define AVG(a,b) static_cast<unsigned char>((int(a) + int(b)) >> 1)
 #define AVG3(a,b,c) static_cast<unsigned char>((int(a) + int(b) + int(c)) / 3)

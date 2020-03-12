@@ -38,11 +38,20 @@
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/io/lzf.h>
 #include <pcl/console/print.h>
-#include <fcntl.h>
+#include <pcl/exceptions.h>
+
+#include <boost/filesystem.hpp>                // for exists
+#include <boost/property_tree/ptree.hpp>       // for ptree
+#include <boost/property_tree/xml_parser.hpp>  // for xml_parser
+
 #include <cstring>
-#include <boost/filesystem.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
+
+#ifdef _WIN32
+#include <windows.h>
+#include <io.h>
+#else
+#include <fcntl.h>
+#endif
 
 #define LZF_HEADER_SIZE 37
 

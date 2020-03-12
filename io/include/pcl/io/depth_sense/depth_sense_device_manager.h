@@ -39,7 +39,7 @@
 
 #include <boost/utility.hpp>
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 
 #include <DepthSense.hxx>
 

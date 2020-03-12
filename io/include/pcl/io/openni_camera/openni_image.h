@@ -40,7 +40,7 @@
 #include <pcl/memory.h>
 #ifdef HAVE_OPENNI
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 #include "openni.h"
 #include "openni_exception.h"
 #include <pcl/io/boost.h>

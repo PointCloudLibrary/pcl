@@ -1,5 +1,3 @@
-
-
 /*
  * Software License Agreement (BSD License)
  *
@@ -35,6 +33,9 @@
  *
  * Author: Julius Kammerl (julius@kammerl.de)
  */
+
+#include <pcl/pcl_config.h>  // for PCL_NO_PRECOMPILE
+
 #define PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>

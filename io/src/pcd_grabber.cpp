@@ -35,15 +35,33 @@
  *
  */
 
-#include <pcl/io/low_level_io.h>
-#include <pcl/io/pcd_grabber.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/io/tar.h>
-#include <pcl/memory.h>
-#include <pcl/pcl_config.h>
-#include <pcl/pcl_macros.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include <pcl/PCLPointCloud2.h>       // for PCLPointCloud2
+#include <pcl/common/time_trigger.h>  // for TimeTrigger
+#include <pcl/io/low_level_io.h>      // for raw_lseek
+#include <pcl/io/pcd_grabber.h>       // for PCDGrabberBase
+#include <pcl/io/pcd_io.h>            // for PCDReader
+#include <pcl/io/tar.h>               // for TARHeader
+#include <pcl/memory.h>               // for PCL_MAKE_ALIGNED_OPERATOR_NEW
+
+#include <Eigen/Core>      // for Vector4f
+#include <Eigen/Geometry>  // for Quaternionf
+
+#include <algorithm>  // for max
+#include <mutex>      // for mutex, lock_guard
+#include <string>     // for string
+#include <thread>     // for thread
+#include <vector>     // for vector
+
+#include <cstddef>  // for size_t
+#include <cstdio>   // for SEEK_SET
+#include <cstring>  // for memset
+
+#ifdef _WIN32
+#include <io.h>
+#include <windows.h>
+#else
+#include <unistd.h>  // for read
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberImplementation //////////////////////
