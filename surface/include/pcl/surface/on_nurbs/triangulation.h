@@ -37,7 +37,7 @@
 
 #pragma once
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/surface/3rdparty/opennurbs/opennurbs.h>

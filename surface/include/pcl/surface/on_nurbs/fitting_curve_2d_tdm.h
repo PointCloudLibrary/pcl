@@ -37,7 +37,7 @@
 
 #pragma once
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/surface/on_nurbs/nurbs_tools.h>
 #include <pcl/surface/on_nurbs/nurbs_data.h>
 #include <pcl/surface/on_nurbs/nurbs_solve.h>

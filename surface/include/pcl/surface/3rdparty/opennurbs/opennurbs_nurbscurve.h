@@ -23,7 +23,7 @@
 #if !defined(OPENNURBS_NURBSCURVE_INC_)
 #define OPENNURBS_NURBSCURVE_INC_
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 
 class ON_NurbsCurve;
 class PCL_EXPORTS ON_CLASS ON_NurbsCurve : public ON_Curve

@@ -23,7 +23,7 @@
 #if !defined(OPENNURBS_DEFINES_INC_)
 #define OPENNURBS_DEFINES_INC_
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 
 #if defined (cplusplus) || defined(_cplusplus) || defined(__cplusplus) || defined(ON_CPLUSPLUS)
 // C++ extern "C" declaration for C linkage
