@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 
 #include "vtkMapper.h"
 #include "vtkSmartPointer.h"
