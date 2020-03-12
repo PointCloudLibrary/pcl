@@ -2,8 +2,8 @@ jobs:
   - job: osx
     strategy:
       matrix:
-        # macOS Catalina:
-        #   VMIMAGE: 'macOS-10.15'
+        macOS Catalina:
+          VMIMAGE: 'macOS-10.15'
         macOS Mojave:
           VMIMAGE: 'macOS-10.14'
     timeoutInMinutes: 0
