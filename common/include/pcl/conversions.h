@@ -39,21 +39,26 @@
 
 #pragma once
 
-#ifdef __GNUC__
-#pragma GCC system_header
-#endif
+#include <pcl/PCLImage.h>        // for PCLImage
+#include <pcl/PCLPointCloud2.h>  // for PCLPointCloud2
+#include <pcl/PCLPointField.h>   // for PCLPointField
+#include <pcl/console/print.h>   // for PCL_WARN
+#include <pcl/for_each_type.h>   // for for_each_type
+#include <pcl/point_cloud.h>     // for PointCloud, MsgFieldMap
+#include <pcl/type_traits.h>     // for traits
 
-#include <pcl/PCLPointField.h>
-#include <pcl/PCLPointCloud2.h>
-#include <pcl/PCLImage.h>
-#include <pcl/point_cloud.h>
-#include <pcl/type_traits.h>
-#include <pcl/for_each_type.h>
-#include <pcl/exceptions.h>
-#include <pcl/console/print.h>
 #ifndef Q_MOC_RUN
 #include <boost/foreach.hpp>
 #endif
+
+#include <algorithm>  // for find_if
+#include <iterator>   // for distance
+#include <stdexcept>  // for runtime_error
+#include <vector>     // for vector
+
+#include <cstddef>  // for size_t
+#include <cstdint>  // for uint32_t, uint8_t
+#include <cstring>  // for memcpy
 
 namespace pcl
 {
@@ -193,12 +198,12 @@ namespace pcl
       // Should usually be able to copy all rows at once
       if (msg.row_step == cloud_row_step)
       {
-        memcpy (cloud_data, msg_data, msg.data.size ());
+        std::memcpy (cloud_data, msg_data, msg.data.size ());
       }
       else
       {
         for (std::uint32_t i = 0; i < msg.height; ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
-          memcpy (cloud_data, msg_data, cloud_row_step);
+          std::memcpy (cloud_data, msg_data, cloud_row_step);
       }
 
     }
@@ -213,7 +218,7 @@ namespace pcl
           const std::uint8_t* msg_data = row_data + col * msg.point_step;
           for (const detail::FieldMapping& mapping : field_map)
           {
-            memcpy (cloud_data + mapping.struct_offset, msg_data + mapping.serialized_offset, mapping.size);
+            std::memcpy (cloud_data + mapping.struct_offset, msg_data + mapping.serialized_offset, mapping.size);
           }
           cloud_data += sizeof (PointT);
         }
@@ -258,7 +263,7 @@ namespace pcl
     msg.data.resize (data_size);
     if (data_size)
     {
-      memcpy(&msg.data[0], &cloud.points[0], data_size);
+      std::memcpy(&msg.data[0], &cloud.points[0], data_size);
     }
 
     // Fill fields metadata
@@ -301,7 +306,7 @@ namespace pcl
       for (std::size_t x = 0; x < cloud.width; x++)
       {
         std::uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
-        memcpy (pixel, &cloud (x, y).rgb, 3 * sizeof(std::uint8_t));
+        std::memcpy (pixel, &cloud (x, y).rgb, 3 * sizeof(std::uint8_t));
       }
     }
   }
@@ -340,7 +345,7 @@ namespace pcl
       for (std::size_t x = 0; x < cloud.width; x++, rgb_offset += point_step)
       {
         std::uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
-        memcpy (pixel, &(cloud.data[rgb_offset]), 3 * sizeof (std::uint8_t));
+        std::memcpy (pixel, &(cloud.data[rgb_offset]), 3 * sizeof (std::uint8_t));
       }
     }
   }

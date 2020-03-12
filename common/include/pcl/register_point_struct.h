@@ -40,10 +40,6 @@
 
 #pragma once
 
-#ifdef __GNUC__
-#pragma GCC system_header
-#endif
-
 #if defined _MSC_VER
   #pragma warning (push, 2)
   // 4244 : conversion from 'type1' to 'type2', possible loss of data
@@ -62,8 +58,9 @@
 #include <boost/preprocessor/comparison.hpp>
 #endif
 
-#include <cstddef> //offsetof
-#include <type_traits>
+#include <type_traits>  // for enable_if_t
+
+#include <cstddef>  // for offsetof
 
 // Must be used in global namespace with name fully qualified
 #define POINT_CLOUD_REGISTER_POINT_STRUCT(name, fseq)               \

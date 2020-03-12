@@ -40,9 +40,9 @@
 
 #include <pcl/PCLHeader.h>     // for PCLHeader
 #include <pcl/exceptions.h>    // for UnorganizedPointCloudException
-#include <pcl/pcl_macros.h>    // for PCL_EXPORTS, ...
-#include <pcl/point_traits.h>  // for has_custom_allocator
 #include <pcl/memory.h>        // for shared_ptr
+#include <pcl/pcl_macros.h>    // for PCL_EXPORTS, ...
+#include <pcl/type_traits.h>   // for has_custom_allocator
 
 #include <Eigen/StdVector>  // to specialize vector
 #include <Eigen/Geometry>   // for Quaternionf

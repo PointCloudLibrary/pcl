@@ -38,9 +38,13 @@
 
 #pragma once
 
-#include <pcl/point_cloud.h>
-#include <pcl/PointIndices.h>
-#include <pcl/correspondence.h>
+#include <pcl/PointIndices.h>    // for PointIndices
+#include <pcl/correspondence.h>  // for Correspondences
+#include <pcl/point_cloud.h>     // for PointCloud
+
+#include <vector>  // for vector
+
+#include <cstddef>  // for size_t
 
 namespace pcl
 {
