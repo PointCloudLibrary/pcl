@@ -38,22 +38,14 @@
 
 #pragma once
 
-#if defined __GNUC__
-#  pragma GCC system_header
-#endif
+#include <pcl/PCLPointCloud2.h>  // for PCLPointCloud2
+#include <pcl/PointIndices.h>    // for PointIndices
+#include <pcl/memory.h>          // for shared_ptr
+#include <pcl/pcl_macros.h>      // for PCL_ERROR
+#include <pcl/point_cloud.h>     // or PointCloud
 
-// Include PCL macros such as PCL_ERROR, PCL_MAKE_ALIGNED_OPERATOR_NEW, etc
-#include <pcl/memory.h>
-#include <pcl/pcl_macros.h>
-
-#include <boost/shared_ptr.hpp>
-#include <Eigen/StdVector>
-#include <Eigen/Core>
-
-// Point Cloud message includes. Needed everywhere.
-#include <pcl/point_cloud.h>
-#include <pcl/PointIndices.h>
-#include <pcl/PCLPointCloud2.h>
+#include <Eigen/StdVector>  // for specialized vector
+#include <Eigen/Core>       // for vector
 
 namespace pcl
 {
@@ -259,5 +251,5 @@ namespace pcl
 }
 
 #ifdef PCL_NO_PRECOMPILE
-#include <pcl/impl/pcl_base.hpp>
+#include <pcl/impl/pcl_base.hpp>  // IWYU pragma: export
 #endif

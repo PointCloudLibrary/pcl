@@ -38,7 +38,9 @@
 
 #pragma once
 
-#include <Eigen/Core>
+#include <Eigen/Core>     // for Vector3f
+
+#include <gtest/gtest.h>  // for EXPECT_EQ
 
 /** \file pcl_tests.h
   * Helper macros for testing equality of various data fields in PCL points */

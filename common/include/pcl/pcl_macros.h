@@ -40,16 +40,25 @@
  * \file pcl/pcl_macros.h
  *
  * \brief Defines all the PCL and non-PCL macros used
+ *
+ * Please make sure this is compatible with C, C++ and CUDA:
+ *   * Use __cplusplus macro to separate C++ from C
+ *   * NVCC 10.1, Windows 10 doesn't accept [[deprecated]]. Do not include any file that
+ *     uses this
  * \ingroup common
  */
 
 #if defined __INTEL_COMPILER
+  // 2196 : routine is both inline and noinline
+  // 2536 : type qualifiers are meaningless here
+  // 279  : controlling expression is constant
   #pragma warning disable 2196 2536 279
+  // can also use -wd<number> to disable them
 #endif
 
 #if defined _MSC_VER
   // 4244 : conversion from 'type1' to 'type2', possible loss of data
-  // 4661 : no suitable definition provided for explicit template instantiation reques
+  // 4661 : no suitable definition provided for explicit template instantiation request
   // 4503 : decorated name length exceeded, name was truncated
   // 4146 : unary minus operator applied to unsigned type, result still unsigned
   #pragma warning (disable: 4018 4244 4267 4521 4251 4661 4305 4503 4146)
@@ -58,14 +67,27 @@
 #ifndef _USE_MATH_DEFINES
   #define _USE_MATH_DEFINES
 #endif
+
+#include <pcl/pcl_config.h>
+
+#ifdef __cplusplus
+#include <boost/cstdint.hpp>
+#include <boost/smart_ptr/shared_ptr.hpp>
+
+#include <iostream>
+
 #include <cmath>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
 #include <cstdint>
-#include <iostream>
-
-#include <pcl/pcl_config.h>
+#else
+#include <math.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#endif
 
 // It seems that __has_cpp_attribute doesn't work correctly
 // when compiling with some versions of nvcc so we
@@ -119,7 +141,7 @@
 #endif
 #endif // defined _WIN32
 
-
+#ifdef __cplusplus
 template<typename T>
 PCL_DEPRECATED("use std::isnan instead of pcl_isnan")
 bool pcl_isnan (T&& x) { return std::isnan (std::forward<T> (x)); }
@@ -132,6 +154,20 @@ template<typename T>
 PCL_DEPRECATED("use std::isinf instead of pcl_isinf")
 bool pcl_isinf (T&& x) { return std::isinf (std::forward<T> (x)); }
 
+/** Win32 doesn't seem to have rounding functions.
+  * Therefore implement our own versions of these functions here.
+  */
+__inline double
+pcl_round (double number)
+{
+  return (number < 0.0 ? std::ceil (number - 0.5) : std::floor (number + 0.5));
+}
+__inline float
+pcl_round (float number)
+{
+  return (number < 0.0f ? std::ceil (number - 0.5f) : std::floor (number + 0.5f));
+}
+#endif
 
 #ifndef DEG2RAD
 #define DEG2RAD(x) ((x)*0.017453293)
@@ -144,21 +180,6 @@ bool pcl_isinf (T&& x) { return std::isinf (std::forward<T> (x)); }
 /** \brief Macro that maps version information given by major.minor.patch to a linear integer value to enable easy comparison
  */
 #define PCL_LINEAR_VERSION(major,minor,patch) ((major)<<16|(minor)<<8|(patch))
-
-/** Win32 doesn't seem to have rounding functions.
-  * Therefore implement our own versions of these functions here.
-  */
-
-__inline double
-pcl_round (double number)
-{
-  return (number < 0.0 ? std::ceil (number - 0.5) : std::floor (number + 0.5));
-}
-__inline float
-pcl_round (float number)
-{
-  return (number < 0.0f ? std::ceil (number - 0.5f) : std::floor (number + 0.5f));
-}
 
 #ifdef __GNUC__
 #define pcl_lrint(x) (lrint(static_cast<double> (x)))
@@ -211,11 +232,11 @@ pcl_round (float number)
   std::fixed << s << std::resetiosflags(std::ios_base::fixed)
 
 #ifndef ERASE_STRUCT
-#define ERASE_STRUCT(var) memset(&var, 0, sizeof(var))
+#define ERASE_STRUCT(var) std::memset(&var, 0, sizeof(var))
 #endif
 
 #ifndef ERASE_ARRAY
-#define ERASE_ARRAY(var, size) memset(var, 0, size*sizeof(*var))
+#define ERASE_ARRAY(var, size) std::memset(var, 0, size*sizeof(*var))
 #endif
 
 #ifndef SET_ARRAY
@@ -309,11 +330,11 @@ pcl_round (float number)
 #endif
 
 inline void*
-aligned_malloc (std::size_t size)
+aligned_malloc (size_t size)
 {
   void *ptr;
 #if   defined (MALLOC_ALIGNED)
-  ptr = std::malloc (size);
+  ptr = malloc (size);
 #elif defined (HAVE_POSIX_MEMALIGN)
   if (posix_memalign (&ptr, 16, size))
     ptr = 0;
@@ -334,7 +355,7 @@ inline void
 aligned_free (void* ptr)
 {
 #if   defined (MALLOC_ALIGNED) || defined (HAVE_POSIX_MEMALIGN)
-  std::free (ptr);
+  free (ptr);
 #elif defined (HAVE_MM_MALLOC)
   _mm_free (ptr);
 #elif defined (_MSC_VER)
