@@ -22,10 +22,9 @@ jobs:
           cd $GOOGLE_TEST_DIR && git checkout release-1.8.1
         displayName: 'Install Dependencies'
       - script: |
-          XCODE_APP_PATH=`ls -d /Applications/Xcode*`
           mkdir $BUILD_DIR && cd $BUILD_DIR
           cmake $(Build.SourcesDirectory) \
-            -DCMAKE_OSX_SYSROOT="$XCODE_APP_PATH/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk" \
+            -DCMAKE_OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk" \
             -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
             -DGTEST_SRC_DIR="$GOOGLE_TEST_DIR/googletest" \
             -DGTEST_INCLUDE_DIR="$GOOGLE_TEST_DIR/googletest/include" \
