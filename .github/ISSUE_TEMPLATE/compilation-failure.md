@@ -2,7 +2,7 @@
 name: Compilation failure
 about: Help! My code doesn't compile (but it should)
 title: '[compile error] "Please add a short description here"'
-labels: ['status: triage', 'kind: compile error']
+labels: 'status: triage, kind: compile error'
 assignees: ''
 
 ---

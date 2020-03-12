@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report to help us improve PCL
 title: "[module_name] Provide a general summary of the issue"
-labels: ['status: triage', 'kind: bug']
+labels: 'status: triage, kind: bug'
 assignees: ''
 
 ---

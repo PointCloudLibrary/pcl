@@ -2,7 +2,7 @@
 name: Feature request
 about: Suggest an idea for PCL
 title: '[module_name] "Please insert a short description of the feature request"'
-labels: ['status: triage', 'kind: request']
+labels: 'status: triage, kind: request'
 assignees: ''
 
 ---
