@@ -37,9 +37,18 @@
 
 #pragma once
 
-#include <limits>
+#include <pcl/pcl_macros.h>   // for PCL_EXPORTS
+#include <pcl/point_types.h>  // for PointXY
+#include <pcl/forward.h>      // for forward declarations
 
-#include <pcl/common/common.h>
+#include <Eigen/Core>         // for Matrix
+#include <Eigen/Geometry>     // for cross3
+
+#include <limits>             // for numeric_limits
+#include <vector>             // for vector
+
+#include <cmath>              // for sqrt
+#include <cstddef>            // for size_t
 
 /**
   * \file pcl/common/distances.h

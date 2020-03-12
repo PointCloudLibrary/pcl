@@ -36,12 +36,14 @@
 
 #pragma once
 
-#include <vector>
+#include <pcl/pcl_macros.h>  // for PCL_EXPORTS
 
-#include <pcl/pcl_macros.h>
+#include <vector>  // for vector
+
+#include <cstddef>  // for size_t
 
 namespace pcl
-{ 
+{
   /** \brief Type for histograms for computing mean and variance of some floats.
     *
     * \author Timur Ibadov (ibadov.timur@gmail.com)

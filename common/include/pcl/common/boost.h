@@ -38,10 +38,6 @@
 
 #pragma once
 
-#ifdef __GNUC__
-#pragma GCC system_header 
-#endif
-
 #ifndef Q_MOC_RUN
 // Marking all Boost headers as system headers to remove warnings
 #include <boost/fusion/sequence/intrinsic/at_key.hpp>

@@ -39,6 +39,9 @@
 #define __PCL_ORGANIZED_PROJECTION_MATRIX_HPP__
 
 #include <pcl/cloud_iterator.h>
+#include <pcl/console/print.h>
+
+#include <Eigen/Eigenvalues>  // for SelfAdjointEigenSolver
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 namespace pcl
@@ -74,10 +77,10 @@ namespace pcl
 }
 
 //////////////////////////////////////////////////////////////////////////////
-template <typename PointT> double 
+template <typename PointT> double
 pcl::estimateProjectionMatrix (
-    typename pcl::PointCloud<PointT>::ConstPtr cloud, 
-    Eigen::Matrix<float, 3, 4, Eigen::RowMajor>& projection_matrix, 
+    typename pcl::PointCloud<PointT>::ConstPtr cloud,
+    Eigen::Matrix<float, 3, 4, Eigen::RowMajor>& projection_matrix,
     const std::vector<int>& indices)
 {
   // internally we calculate with double but store the result into float matrices.
@@ -88,19 +91,19 @@ pcl::estimateProjectionMatrix (
     PCL_ERROR ("[pcl::estimateProjectionMatrix] Input dataset is not organized!\n");
     return (-1.0);
   }
-  
+
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> A = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> B = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> C = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> D = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
 
   pcl::ConstCloudIterator <PointT> pointIt (*cloud, indices);
-  
+
   while (pointIt)
   {
     unsigned yIdx = pointIt.getCurrentPointIndex () / cloud->width;
     unsigned xIdx = pointIt.getCurrentPointIndex () % cloud->width;
-    
+
     const PointT& point = *pointIt;
     if (std::isfinite (point.x))
     {
@@ -167,10 +170,10 @@ pcl::estimateProjectionMatrix (
 
       D.coeffRef (15) += xx_yy;
     }
-    
+
     ++pointIt;
-  } // while  
-  
+  } // while
+
   pcl::common::internal::makeSymmetric (A);
   pcl::common::internal::makeSymmetric (B);
   pcl::common::internal::makeSymmetric (C);
@@ -190,7 +193,7 @@ pcl::estimateProjectionMatrix (
 
   // check whether the residual MSE is low. If its high, the cloud was not captured from a projective device.
   Eigen::Matrix<Scalar, 1, 1> residual_sqr = eigen_vectors.col (0).transpose () * X *  eigen_vectors.col (0);
-  
+
   double residual = residual_sqr.coeff (0);
 
   projection_matrix.coeffRef (0) = static_cast <float> (eigen_vectors.coeff (0));
