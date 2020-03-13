@@ -52,7 +52,7 @@ namespace pcl
     }
 
 
-    /** \brief Compute GICP-style covariance matrices given a point cloud and 
+    /** \brief Compute GICP-style covariance matrices given a point cloud and
      * the corresponding surface normals.
      * \param[in] cloud Point cloud containing the XYZ coordinates,
      * \param[in] normals Point cloud containing the corresponding surface normals.
@@ -60,7 +60,7 @@ namespace pcl
      * \param[in] Optional: Epsilon for the expected noise along the surface normal (default: 0.001)
      */
     template <typename PointT, typename PointNT> inline void
-    computeApproximateCovariances(const pcl::PointCloud<PointT>& cloud, 
+    computeApproximateCovariances(const pcl::PointCloud<PointT>& cloud,
                                   const pcl::PointCloud<PointNT>& normals,
                                   std::vector<Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> >& covariances,
                                   double epsilon = 0.001)
@@ -97,3 +97,6 @@ namespace pcl
 
   }
 }
+
+#define PCL_INSTANTIATE_computeApproximateCovariances(T,NT) template PCL_EXPORTS void pcl::features::computeApproximateCovariances<T,NT> \
+    (const pcl::PointCloud<T>&, const pcl::PointCloud<NT>&, std::vector<Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d>>&, double);
