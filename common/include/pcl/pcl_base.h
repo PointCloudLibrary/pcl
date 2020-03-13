@@ -41,8 +41,8 @@
 #include <pcl/PCLPointCloud2.h>  // for PCLPointCloud2
 #include <pcl/PointIndices.h>    // for PointIndices
 #include <pcl/memory.h>          // for shared_ptr
-#include <pcl/pcl_macros.h>      // for PCL_ERROR
-#include <pcl/point_cloud.h>     // or PointCloud
+#include <pcl/pcl_config.h>      // for PCL_NO_PRECOMPILE
+#include <pcl/point_cloud.h>     // for PointCloud
 
 #include <Eigen/StdVector>  // for specialized vector
 #include <Eigen/Core>       // for vector
