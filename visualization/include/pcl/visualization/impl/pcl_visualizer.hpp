@@ -1696,18 +1696,18 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   {
     // Create polys from polyMesh.polygons
     vtkSmartPointer<vtkCellArray> cell_array = vtkSmartPointer<vtkCellArray>::New ();
-    vtkIdType *cell = cell_array->WritePointer (vertices.size (), vertices.size () * (max_size_of_polygon + 1));
+    // vtkIdType *cell = cell_array->WritePointer (vertices.size (), vertices.size () * (max_size_of_polygon + 1));
     int idx = 0;
     if (!lookup.empty ())
     {
       for (std::size_t i = 0; i < vertices.size (); ++i, ++idx)
       {
         std::size_t n_points = vertices[i].vertices.size ();
-        *cell++ = n_points;
-        //cell_array->InsertNextCell (n_points);
+        //*cell++ = n_points;
+        cell_array->InsertNextCell (n_points);
         for (std::size_t j = 0; j < n_points; j++, ++idx)
-          *cell++ = lookup[vertices[i].vertices[j]];
-          //cell_array->InsertCellPoint (lookup[vertices[i].vertices[j]]);
+          //*cell++ = lookup[vertices[i].vertices[j]];
+          cell_array->InsertCellPoint (lookup[vertices[i].vertices[j]]);
       }
     }
     else
@@ -1715,11 +1715,11 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
       for (std::size_t i = 0; i < vertices.size (); ++i, ++idx)
       {
         std::size_t n_points = vertices[i].vertices.size ();
-        *cell++ = n_points;
-        //cell_array->InsertNextCell (n_points);
+        //*cell++ = n_points;
+        cell_array->InsertNextCell (n_points);
         for (std::size_t j = 0; j < n_points; j++, ++idx)
-          *cell++ = vertices[i].vertices[j];
-          //cell_array->InsertCellPoint (vertices[i].vertices[j]);
+          //*cell++ = vertices[i].vertices[j];
+          cell_array->InsertCellPoint (vertices[i].vertices[j]);
       }
     }
     vtkSmartPointer<vtkPolyData> polydata;
@@ -1873,16 +1873,19 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
 
   // Update the cells
   cells = vtkSmartPointer<vtkCellArray>::New ();
-  vtkIdType *cell = cells->WritePointer (verts.size (), verts.size () * (max_size_of_polygon + 1));
+  //vtkIdType *cell = cells->WritePointer (verts.size (), verts.size () * (max_size_of_polygon + 1));
   int idx = 0;
   if (!lookup.empty ())
   {
     for (std::size_t i = 0; i < verts.size (); ++i, ++idx)
     {
       std::size_t n_points = verts[i].vertices.size ();
-      *cell++ = n_points;
-      for (std::size_t j = 0; j < n_points; j++, cell++, ++idx)
-        *cell = lookup[verts[i].vertices[j]];
+      //*cell++ = n_points;
+      cells->InsertNextCell (n_points);
+      //for (std::size_t j = 0; j < n_points; j++, cell++, ++idx)
+      for (std::size_t j = 0; j < n_points; j++, ++idx)
+        //*cell = lookup[verts[i].vertices[j]];
+        cells->InsertCellPoint (lookup[verts[i].vertices[j]]);
     }
   }
   else
@@ -1890,9 +1893,12 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
     for (std::size_t i = 0; i < verts.size (); ++i, ++idx)
     {
       std::size_t n_points = verts[i].vertices.size ();
-      *cell++ = n_points;
-      for (std::size_t j = 0; j < n_points; j++, cell++, ++idx)
-        *cell = verts[i].vertices[j];
+      //*cell++ = n_points;
+      cells->InsertNextCell (n_points);
+      //for (std::size_t j = 0; j < n_points; j++, cell++, ++idx)
+      for (std::size_t j = 0; j < n_points; j++, ++idx)
+        //*cell = verts[i].vertices[j];
+        cells->InsertCellPoint (verts[i].vertices[j]);
     }
   }
   cells->GetData ()->SetNumberOfValues (idx);
