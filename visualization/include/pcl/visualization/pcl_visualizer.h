@@ -54,9 +54,11 @@
 #include <pcl/visualization/interactor_style.h>
 
 // VTK includes
+class vtkSmartPointerBase;
+template <class T>
+class vtkSmartPointer;
 class vtkPolyData;
 class vtkTextActor;
-class vtkRenderWindow;
 class vtkOrientationMarkerWidget;
 class vtkAppendPolyData;
 class vtkRenderWindow;
