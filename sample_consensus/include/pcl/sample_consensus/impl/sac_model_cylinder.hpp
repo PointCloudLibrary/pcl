@@ -451,14 +451,9 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::isModelValid (const Eigen::V
   if (eps_angle_ > 0.0)
   {
     // Obtain the cylinder direction
-    Eigen::Vector4f coeff;
-    coeff[0] = model_coefficients[3];
-    coeff[1] = model_coefficients[4];
-    coeff[2] = model_coefficients[5];
-    coeff[3] = 0.0f;
+    const Eigen::Vector3f coeff(model_coefficients[3], model_coefficients[4], model_coefficients[5]);
 
-    Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0.0f);
-    double angle_diff = std::abs (getAngle3D (axis, coeff));
+    double angle_diff = std::abs (getAngle3D (axis_, coeff));
     angle_diff = (std::min) (angle_diff, M_PI - angle_diff);
     // Check whether the current cylinder model satisfies our angle threshold criterion with respect to the given axis
     if (angle_diff > eps_angle_)
