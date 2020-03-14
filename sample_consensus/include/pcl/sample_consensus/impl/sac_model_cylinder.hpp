@@ -280,7 +280,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::optimizeModelCoefficients (
 
   if (inliers.empty ())
   {
-    PCL_DEBUG ("[pcl::SampleConsensusModelCylinder:optimizeModelCoefficients] Inliers vector empty! Returning the same coefficients.\n"); 
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder:optimizeModelCoefficients] Inliers vector empty! Returning the same coefficients.\n"); 
     return;
   }
 

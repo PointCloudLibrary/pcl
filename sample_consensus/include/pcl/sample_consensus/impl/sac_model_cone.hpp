@@ -323,7 +323,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::optimizeModelCoefficients (
 
   if (inliers.empty ())
   {
-    PCL_DEBUG ("[pcl::SampleConsensusModelCone:optimizeModelCoefficients] Inliers vector empty! Returning the same coefficients.\n");
+    PCL_ERROR ("[pcl::SampleConsensusModelCone:optimizeModelCoefficients] Inliers vector empty! Returning the same coefficients.\n");
     return;
   }
 
