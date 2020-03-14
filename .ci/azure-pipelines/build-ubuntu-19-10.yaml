@@ -34,12 +34,6 @@ jobs:
         displayName: 'CMake Configuration'
       - script: |
           cd $BUILD_DIR
-          # Compiling some of the test targets with -j2 option leads to pipeline failures
-          # (presumably out of memory error). Thus we make them separately in a single
-          # thread mode. Their corresponding modules are built before with the -j2 mode
-          # to make the process faster.
-          cmake --build . -- -j2 pcl_filters pcl_registration
-          cmake --build . -- test_filters test_registration test_registration_api
           cmake --build . -- -j2
         displayName: 'Build Library'
       - script: |
