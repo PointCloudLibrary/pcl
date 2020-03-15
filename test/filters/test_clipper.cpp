@@ -39,6 +39,8 @@
  */
 
 #include <pcl/test/gtest.h>
+#include <pcl/memory.h>  // for pcl::make_shared
+#include <pcl/pcl_base.h>  // for pcl::Indices
 #include <pcl/pcl_tests.h>
 #include <pcl/point_types.h>
 #include <pcl/filters/box_clipper3D.h>
@@ -71,7 +73,7 @@ TEST (BoxClipper3D, Filters)
   input->push_back (PointXYZ (-0.9f, -0.9f, -0.9f));
 
   ExtractIndices<PointXYZ> extract_indices;
-  std::vector<int> indices;
+  pcl::Indices indices;
 
   BoxClipper3D<PointXYZ> boxClipper3D (Affine3f::Identity ());
   boxClipper3D.clipPointCloud3D (*input, indices);
@@ -79,7 +81,7 @@ TEST (BoxClipper3D, Filters)
   PointCloud<PointXYZ> cloud_out;
 
   extract_indices.setInputCloud (input);
-  extract_indices.setIndices (boost::make_shared<vector<int> > (indices));
+  extract_indices.setIndices (pcl::make_shared<pcl::Indices> (indices));
   extract_indices.filter (cloud_out);
 
   EXPECT_EQ (int (indices.size ()), 9);

@@ -39,12 +39,12 @@
 
 #pragma once
 
-#include <pcl/segmentation/boost.h>
+#include <pcl/memory.h>  // for pcl::make_shared
 #include <pcl/segmentation/plane_coefficient_comparator.h>
 
 namespace pcl
 {
-  /** \brief PlaneRefinementComparator is a Comparator that operates on plane coefficients, 
+  /** \brief PlaneRefinementComparator is a Comparator that operates on plane coefficients,
     * for use in planar segmentation.
     * In conjunction with OrganizedConnectedComponentSegmentation, this allows planes to be segmented from organized data.
     *
@@ -56,7 +56,7 @@ namespace pcl
     public:
       using PointCloud = typename Comparator<PointT>::PointCloud;
       using PointCloudConstPtr = typename Comparator<PointT>::PointCloudConstPtr;
-      
+
       using PointCloudN = pcl::PointCloud<PointNT>;
       using PointCloudNPtr = typename PointCloudN::Ptr;
       using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
@@ -81,7 +81,7 @@ namespace pcl
       {
       }
 
-      /** \brief Empty constructor for PlaneCoefficientComparator. 
+      /** \brief Empty constructor for PlaneCoefficientComparator.
         * \param[in] models
         * \param[in] refine_labels
         */
@@ -95,7 +95,6 @@ namespace pcl
       }
 
       /** \brief Destructor for PlaneCoefficientComparator. */
-      
       ~PlaneRefinementComparator ()
       {
       }
@@ -115,7 +114,7 @@ namespace pcl
       void
       setModelCoefficients (std::vector<pcl::ModelCoefficients>& models)
       {
-        models_ = boost::make_shared<std::vector<pcl::ModelCoefficients> >(models);
+        models_ = pcl::make_shared<std::vector<pcl::ModelCoefficients> >(models);
       }
 
       /** \brief Set which labels should be refined.  This is a vector of bools 0-max_label, true if the label should be refined.
@@ -126,14 +125,14 @@ namespace pcl
       {
         refine_labels_ = refine_labels;
       }
-      
+
       /** \brief Set which labels should be refined.  This is a vector of bools 0-max_label, true if the label should be refined.
         * \param[in] refine_labels A vector of bools 0-max_label, true if the label should be refined.
         */
       void
       setRefineLabels (std::vector<bool>& refine_labels)
       {
-        refine_labels_ = boost::make_shared<std::vector<bool> >(refine_labels);
+        refine_labels_ = pcl::make_shared<std::vector<bool> >(refine_labels);
       }
 
       /** \brief A mapping from label to index in the vector of models, allowing the model coefficients of a label to be accessed.
@@ -144,14 +143,14 @@ namespace pcl
       {
         label_to_model_ = label_to_model;
       }
-      
+
       /** \brief A mapping from label to index in the vector of models, allowing the model coefficients of a label to be accessed.
         * \param[in] label_to_model A vector of size max_label, with the index of each corresponding model in models
         */
       inline void
       setLabelToModel (std::vector<int>& label_to_model)
       {
-        label_to_model_ = boost::make_shared<std::vector<int> >(label_to_model);
+        label_to_model_ = pcl::make_shared<std::vector<int> >(label_to_model);
       }
 
       /** \brief Get the vector of model coefficients to which we will compare. */
@@ -182,26 +181,26 @@ namespace pcl
 
         if (!((*refine_labels_)[current_label] && !(*refine_labels_)[next_label]))
           return (false);
-        
+
         const pcl::ModelCoefficients& model_coeff = (*models_)[(*label_to_model_)[current_label]];
-        
+
         PointT pt = input_->points[idx2];
-        double ptp_dist = std::fabs (model_coeff.values[0] * pt.x + 
-                                model_coeff.values[1] * pt.y + 
+        double ptp_dist = std::fabs (model_coeff.values[0] * pt.x +
+                                model_coeff.values[1] * pt.y +
                                 model_coeff.values[2] * pt.z +
                                 model_coeff.values[3]);
-        
+
         // depth dependent
         float threshold = distance_threshold_;
         if (depth_dependent_)
         {
           //Eigen::Vector4f origin = input_->sensor_origin_;
           Eigen::Vector3f vec = input_->points[idx1].getVector3fMap ();// - origin.head<3> ();
-          
+
           float z = vec.dot (z_axis_);
           threshold *= z * z;
         }
-        
+
         return (ptp_dist < threshold);
       }
 

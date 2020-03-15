@@ -44,7 +44,6 @@
  */
 
 
-
 #include <boost/make_shared.hpp>  // for boost::allocate_shared, boost::make_shared
 #include <boost/smart_ptr/shared_ptr.hpp>  // for boost::shared_ptr
 
@@ -108,6 +107,10 @@ template <typename T> struct has_custom_allocator<T, void_t<typename T::_custom_
  *
  * boost::allocate_shared or boost::make_shared will be invoked in case T has or
  * doesn't have a custom allocator, respectively.
+ *
+ * \note In MSVC < 1915 (before version 15.8) alignment was incorrectly set at
+ *   most at alignof(max_align_t). This bug was fixed in said version and is
+ *   acknowledged by defining _ENABLE_EXTENDED_ALIGNED_STORAGE. See #3752.
  *
  * \see pcl::has_custom_allocator, PCL_MAKE_ALIGNED_OPERATOR_NEW
  * \tparam T Type of the object to create a pcl::shared_ptr of

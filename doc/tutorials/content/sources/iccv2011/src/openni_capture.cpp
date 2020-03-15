@@ -1,6 +1,8 @@
 #include "openni_capture.h"
+
 #include <pcl/io/pcd_io.h>
-#include <boost/make_shared.hpp>
+#include <pcl/memory.h>  // for pcl::make_shared
+
 #include <mutex>
 
 OpenNICapture::OpenNICapture (const std::string& device_id)
@@ -67,7 +69,7 @@ OpenNICapture::onNewFrame (const PointCloudConstPtr &cloud)
 {
   mutex_.lock ();
   ++frame_counter_;
-  most_recent_frame_ = boost::make_shared<PointCloud> (*cloud); // Make a copy of the frame
+  most_recent_frame_ = pcl::make_shared<PointCloud> (*cloud); // Make a copy of the frame
   mutex_.unlock ();
 }
 

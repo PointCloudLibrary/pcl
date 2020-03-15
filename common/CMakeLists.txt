@@ -172,6 +172,13 @@ set(kissfft_srcs
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
+
+if(MSVC AND NOT (MSVC_VERSION LESS 1915))
+  # You must acknowledge that you understand MSVC resolved a byte alignment issue in this compiler
+  # We get this due to using Eigen objects and allocating those objects with make_shared
+  target_compile_definitions(${LIB_NAME} PRIVATE _ENABLE_EXTENDED_ALIGNED_STORAGE)
+endif()
+
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC})
 
 # Install include files
