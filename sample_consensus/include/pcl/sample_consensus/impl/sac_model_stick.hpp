@@ -252,10 +252,10 @@ pcl::SampleConsensusModelStick<PointT>::optimizeModelCoefficients (
     return;
   }
 
-  // Need at least 2 points to estimate a line
+  // Need more than the minimum sample size to make a difference
   if (inliers.size () <= sample_size_)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelStick::optimizeModelCoefficients] Not enough inliers found to support a model (%lu)! Returning the same coefficients.\n", inliers.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelStick::optimizeModelCoefficients] Not enough inliers to refine/optimize the model's coefficients (%lu)! Returning the same coefficients.\n", inliers.size ());
     optimized_coefficients = model_coefficients;
     return;
   }

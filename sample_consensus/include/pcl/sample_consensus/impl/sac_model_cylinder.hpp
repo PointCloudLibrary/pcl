@@ -278,9 +278,10 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::optimizeModelCoefficients (
     return;
   }
 
-  if (inliers.empty ())
+  // Need more than the minimum sample size to make a difference
+  if (inliers.size () <= sample_size_)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCylinder:optimizeModelCoefficients] Inliers vector empty! Returning the same coefficients.\n"); 
+    PCL_ERROR ("[pcl::SampleConsensusModelCylinder:optimizeModelCoefficients] Not enough inliers found to optimize model coefficients (%lu)! Returning the same coefficients.\n", inliers.size ());
     return;
   }
 

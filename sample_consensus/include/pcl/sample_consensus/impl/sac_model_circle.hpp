@@ -210,10 +210,10 @@ pcl::SampleConsensusModelCircle2D<PointT>::optimizeModelCoefficients (
     return;
   }
 
-  // Need at least 3 samples
+  // Need more than the minimum sample size to make a difference
   if (inliers.size () <= sample_size_)
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::optimizeModelCoefficients] Not enough inliers found to support a model (%lu)! Returning the same coefficients.\n", inliers.size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::optimizeModelCoefficients] Not enough inliers to refine/optimize the model's coefficients (%lu)! Returning the same coefficients.\n", inliers.size ());
     return;
   }
 
