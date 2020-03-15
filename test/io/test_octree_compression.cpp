@@ -121,7 +121,7 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZ)
   {
     // instantiate point cloud compression encoder/decoder
     pcl::io::OctreePointCloudCompression<pcl::PointXYZ> pointcloud_encoder((pcl::io::compression_Profiles_e) compression_profile, false);
-    pcl::io::OctreePointCloudCompression<pcl::PointXYZ> pointcloud_decoder();
+    pcl::io::OctreePointCloudCompression<pcl::PointXYZ> pointcloud_decoder;
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZ>());
     // loop over runs
     for (int test_idx = 0; test_idx < NUMBER_OF_TEST_RUNS; test_idx++, total_runs++)
