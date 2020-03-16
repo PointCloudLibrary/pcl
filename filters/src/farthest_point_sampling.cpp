@@ -41,3 +41,4 @@
 #include <pcl/filters/impl/farthest_point_sampling.hpp>
 
 PCL_INSTANTIATE(FarthestPointSampling, PCL_XYZ_POINT_TYPES);
+

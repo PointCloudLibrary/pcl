@@ -125,3 +125,4 @@ pcl::FarthestPointSampling<PointT>::applyFilter (std::vector<int> &indices)
 }
 
 #define PCL_INSTANTIATE_FarthestPointSampling(T) template class PCL_EXPORTS pcl::FarthestPointSampling<T>;
+
