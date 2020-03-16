@@ -44,6 +44,7 @@ namespace pcl
       * distance, starting with a random point, utilizing a naive method.
       * \author Haritha Jayasinghe
       * \ingroup filters
+      * @TODO: add support to export/import distance metric
       */
     template<typename PointT>
     class FarthestPointSampling : public FilterIndices<PointT>
@@ -51,7 +52,6 @@ namespace pcl
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
       using Filter<PointT>::filter_name_;
-      using FilterIndices<PointT>::negative_;
       using FilterIndices<PointT>::keep_organized_;
       using FilterIndices<PointT>::user_filter_value_;
       using FilterIndices<PointT>::extract_removed_indices_;
@@ -111,13 +111,13 @@ namespace pcl
         unsigned int seed_;
 
         /** \brief Sample of point indices into a separate PointCloud
-          * \param output the resultant point cloud
+          * \param output the filtered point cloud
           */
         void
         applyFilter (PointCloud &output) override;
 
-              /** \brief Sample of point indices
-          * \param indices the resultant point cloud indices
+        /** \brief Sample of point indices
+          * \param indices indices of the filtered point cloud
           */
         void
         applyFilter (std::vector<int> &indices) override;

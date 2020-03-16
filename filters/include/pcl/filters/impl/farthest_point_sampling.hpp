@@ -49,6 +49,7 @@ template<typename PointT> void
 pcl::FarthestPointSampling<PointT>::applyFilter (PointCloud &output)
 {
   std::vector<int> indices;
+  indices.reserve(sample_);
   if (keep_organized_)
   {
     bool temp = extract_removed_indices_;
@@ -74,13 +75,7 @@ template<typename PointT> void
 pcl::FarthestPointSampling<PointT>::applyFilter (std::vector<int> &indices)
 {
   std::size_t size = input_->points.size();
-  int max_index;
-  std::vector<float> distances_to_selected_points (size, std::numeric_limits<float>::max ());
-  
-  //set random seed
-  std::mt19937 random_gen(seed_);
-  std::uniform_int_distribution<> dis(0, size -1);
-  
+
   //check if number of points in cloud is less than requested number of points
   if (size <= sample_)
   {
@@ -88,6 +83,13 @@ pcl::FarthestPointSampling<PointT>::applyFilter (std::vector<int> &indices)
                         "Requested number of points is greater than point cloud size!");
     return;
   }
+
+  int max_index;
+  std::vector<float> distances_to_selected_points (size, std::numeric_limits<float>::max ());
+  
+  //set random seed
+  std::mt19937 random_gen(seed_);
+  std::uniform_int_distribution<> dis(0, size -1);
 
   //pick the first point at random
   max_index = dis(random_gen);
@@ -99,9 +101,8 @@ pcl::FarthestPointSampling<PointT>::applyFilter (std::vector<int> &indices)
     //recompute distances
     for (int i = 0; i < distances_to_selected_points.size(); i++)
     {
-      if (distances_to_selected_points[i] == -1.0)
-        continue;
-      distances_to_selected_points[i] = std::min(distances_to_selected_points[i], geometry::distance(input_->points[i], input_->points[max_index]));
+      if (distances_to_selected_points[i] != -1.0)
+        distances_to_selected_points[i] = std::min(distances_to_selected_points[i], geometry::distance(input_->points[i], input_->points[max_index]));
     }
 
     //select farthest point based on previously calculated distances
@@ -123,4 +124,4 @@ pcl::FarthestPointSampling<PointT>::applyFilter (std::vector<int> &indices)
   }
 }
 
- #define PCL_INSTANTIATE_FarthestPointSampling(T) template class PCL_EXPORTS pcl::FarthestPointSampling<T>;
+#define PCL_INSTANTIATE_FarthestPointSampling(T) template class PCL_EXPORTS pcl::FarthestPointSampling<T>;
