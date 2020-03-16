@@ -45,6 +45,11 @@
 #include <immintrin.h>
 #endif
 
+#include <algorithm>
+#include <cmath>
+#include <cstddef>
+#include <vector>
+
 namespace pcl
 {
 
@@ -212,7 +217,7 @@ namespace pcl
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Scalar> void
-pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
+pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                           pcl::PointCloud<PointT> &cloud_out,
                           const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
                           bool copy_all_fields)
@@ -245,8 +250,8 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     // otherwise we get errors during the multiplication (?)
     for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
     {
-      if (!std::isfinite (cloud_in.points[i].x) || 
-          !std::isfinite (cloud_in.points[i].y) || 
+      if (!std::isfinite (cloud_in.points[i].x) ||
+          !std::isfinite (cloud_in.points[i].y) ||
           !std::isfinite (cloud_in.points[i].z))
         continue;
       tf.se3 (cloud_in[i].data, cloud_out[i].data);
@@ -256,8 +261,8 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Scalar> void
-pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                          const std::vector<int> &indices, 
+pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
+                          const std::vector<int> &indices,
                           pcl::PointCloud<PointT> &cloud_out,
                           const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
                           bool copy_all_fields)
@@ -292,8 +297,8 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     {
       if (copy_all_fields)
         cloud_out.points[i] = cloud_in.points[indices[i]];
-      if (!std::isfinite (cloud_in.points[indices[i]].x) || 
-          !std::isfinite (cloud_in.points[indices[i]].y) || 
+      if (!std::isfinite (cloud_in.points[indices[i]].x) ||
+          !std::isfinite (cloud_in.points[indices[i]].y) ||
           !std::isfinite (cloud_in.points[indices[i]].z))
         continue;
       tf.se3 (cloud_in[indices[i]].data, cloud_out[i].data);
@@ -303,7 +308,7 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Scalar> void
-pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
+pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
                                      pcl::PointCloud<PointT> &cloud_out,
                                      const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
                                      bool copy_all_fields)
@@ -339,8 +344,8 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   {
     for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
     {
-      if (!std::isfinite (cloud_in.points[i].x) || 
-          !std::isfinite (cloud_in.points[i].y) || 
+      if (!std::isfinite (cloud_in.points[i].x) ||
+          !std::isfinite (cloud_in.points[i].y) ||
           !std::isfinite (cloud_in.points[i].z))
         continue;
       tf.se3 (cloud_in[i].data, cloud_out[i].data);
@@ -351,8 +356,8 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Scalar> void
-pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
-                                     const std::vector<int> &indices, 
+pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
+                                     const std::vector<int> &indices,
                                      pcl::PointCloud<PointT> &cloud_out,
                                      const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
                                      bool copy_all_fields)
@@ -389,8 +394,8 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
       if (copy_all_fields)
         cloud_out.points[i] = cloud_in.points[indices[i]];
 
-      if (!std::isfinite (cloud_in.points[indices[i]].x) || 
-          !std::isfinite (cloud_in.points[indices[i]].y) || 
+      if (!std::isfinite (cloud_in.points[indices[i]].x) ||
+          !std::isfinite (cloud_in.points[indices[i]].y) ||
           !std::isfinite (cloud_in.points[indices[i]].z))
         continue;
 
@@ -402,9 +407,9 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Scalar> inline void
-pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
+pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                           pcl::PointCloud<PointT> &cloud_out,
-                          const Eigen::Matrix<Scalar, 3, 1> &offset, 
+                          const Eigen::Matrix<Scalar, 3, 1> &offset,
                           const Eigen::Quaternion<Scalar> &rotation,
                           bool copy_all_fields)
 {
@@ -416,9 +421,9 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Scalar> inline void
-pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
+pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
                                      pcl::PointCloud<PointT> &cloud_out,
-                                     const Eigen::Matrix<Scalar, 3, 1> &offset, 
+                                     const Eigen::Matrix<Scalar, 3, 1> &offset,
                                      const Eigen::Quaternion<Scalar> &rotation,
                                      bool copy_all_fields)
 {
@@ -430,7 +435,7 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Scalar> inline PointT
-pcl::transformPoint (const PointT &point, 
+pcl::transformPoint (const PointT &point,
                      const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform)
 {
   PointT ret = point;
@@ -441,7 +446,7 @@ pcl::transformPoint (const PointT &point,
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Scalar> inline PointT
-pcl::transformPointWithNormal (const PointT &point, 
+pcl::transformPointWithNormal (const PointT &point,
                      const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform)
 {
   PointT ret = point;
@@ -453,12 +458,12 @@ pcl::transformPointWithNormal (const PointT &point,
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Scalar> double
-pcl::getPrincipalTransformation (const pcl::PointCloud<PointT> &cloud, 
+pcl::getPrincipalTransformation (const pcl::PointCloud<PointT> &cloud,
                                  Eigen::Transform<Scalar, 3, Eigen::Affine> &transform)
 {
   EIGEN_ALIGN16 Eigen::Matrix<Scalar, 3, 3> covariance_matrix;
   Eigen::Matrix<Scalar, 4, 1> centroid;
-  
+
   pcl::computeMeanAndCovarianceMatrix (cloud, covariance_matrix, centroid);
 
   EIGEN_ALIGN16 Eigen::Matrix<Scalar, 3, 3> eigen_vects;
@@ -467,10 +472,10 @@ pcl::getPrincipalTransformation (const pcl::PointCloud<PointT> &cloud,
 
   double rel1 = eigen_vals.coeff (0) / eigen_vals.coeff (1);
   double rel2 = eigen_vals.coeff (1) / eigen_vals.coeff (2);
-  
+
   transform.translation () = centroid.head (3);
   transform.linear () = eigen_vects;
-  
+
   return (std::min (rel1, rel2));
 }
 

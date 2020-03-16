@@ -8,6 +8,9 @@
 #ifndef SIMPLE_OCTREE_HPP_
 #define SIMPLE_OCTREE_HPP_
 
+#include <algorithm>
+#include <cmath>
+
 //===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline

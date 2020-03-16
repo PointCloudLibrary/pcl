@@ -45,6 +45,10 @@
 
 #pragma once
 
+#include <algorithm>
+#include <cstddef>
+#include <list>
+#include <set>
 #include <vector>
 
 namespace pcl
