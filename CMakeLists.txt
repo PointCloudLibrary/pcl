@@ -35,10 +35,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODUL
 # ---[ Include pkgconfig
 include(FindPkgConfig)
 
-# ---[ Release/Debug specific flags
-if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-  add_definitions("-DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG")
-endif()
 if(WIN32 AND NOT MINGW)
   set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Add postfix to target for Debug build.")
   set(CMAKE_RELEASE_POSTFIX "" CACHE STRING "Add postfix to target for Release build.")
