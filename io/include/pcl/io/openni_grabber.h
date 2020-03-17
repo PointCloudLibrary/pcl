@@ -131,7 +131,7 @@ namespace pcl
       float
       getFramesPerSecond () const override;
 
-      /** \brief Get a boost shared pointer to the \ref pcl::openni_wrapper::OpenNIDevice object. */
+      /** \brief Get a pcl::shared pointer to the openni_wrapper::OpenNIDevice object. */
       inline openni_wrapper::OpenNIDevice::Ptr
       getDevice () const;
 

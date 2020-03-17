@@ -305,7 +305,6 @@ namespace pcl
         * \param top    returns the minimum y pixel position in the image where a point was added
         * \param right  returns the maximum x pixel position in the image where a point was added
         * \param bottom returns the maximum y pixel position in the image where a point was added
-        * \param top returns the minimum y position in the image where a point was added
         * \param left   returns the minimum x pixel position in the image where a point was added
         */
       template <typename PointCloudType> void
