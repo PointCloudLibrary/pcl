@@ -16,6 +16,7 @@ jobs:
       - script: |
           mkdir $BUILD_DIR && cd $BUILD_DIR
           cmake $(Build.SourcesDirectory) \
+            -DCMAKE_BUILD_TYPE="Release" \
             -DPCL_ONLY_CORE_POINT_TYPES=ON \
             -DPCL_WARNINGS_ARE_ERRORS=ON \
             -DBUILD_simulation=ON \

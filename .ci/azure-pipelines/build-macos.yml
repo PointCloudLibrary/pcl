@@ -24,6 +24,7 @@ jobs:
       - script: |
           mkdir $BUILD_DIR && cd $BUILD_DIR
           cmake $(Build.SourcesDirectory) \
+            -DCMAKE_BUILD_TYPE="Release" \
             -DCMAKE_OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk" \
             -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
             -DGTEST_SRC_DIR="$GOOGLE_TEST_DIR/googletest" \
