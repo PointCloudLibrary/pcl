@@ -35,6 +35,10 @@
 
 /* \author Bastian Steder */
 
+#include <algorithm>
+#include <cmath>
+// #include <iostream>
+
 
 namespace pcl {
 

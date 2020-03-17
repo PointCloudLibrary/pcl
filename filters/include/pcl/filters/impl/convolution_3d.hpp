@@ -44,6 +44,11 @@
 #include <pcl/point_types.h>
 #include <pcl/common/point_operators.h>
 
+#include <cmath>
+#include <cstdint>
+#include <limits>
+#include <vector>
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 namespace pcl
 {

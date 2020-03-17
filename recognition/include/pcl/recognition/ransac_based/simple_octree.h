@@ -46,7 +46,9 @@
 #pragma once
 
 #include <pcl/pcl_exports.h>
+
 #include <set>
+#include <vector>
 
 namespace pcl
 {
