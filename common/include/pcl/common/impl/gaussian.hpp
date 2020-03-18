@@ -4,7 +4,7 @@
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *
- *  All rights reserved. 
+ *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -42,11 +42,14 @@
 
 #include <pcl/exceptions.h>
 
+namespace pcl
+{
+
 template <typename PointT> void
-pcl::GaussianKernel::convolveRows(const pcl::PointCloud<PointT> &input,
-                                  std::function <float (const PointT& p)> field_accessor,
-                                  const Eigen::VectorXf& kernel,
-                                  pcl::PointCloud<float> &output) const
+GaussianKernel::convolveRows(const pcl::PointCloud<PointT> &input,
+                             std::function <float (const PointT& p)> field_accessor,
+                             const Eigen::VectorXf& kernel,
+                             pcl::PointCloud<float> &output) const
 {
   assert(kernel.size () % 2 == 1);
   int kernel_width = kernel.size () -1;
@@ -76,10 +79,10 @@ pcl::GaussianKernel::convolveRows(const pcl::PointCloud<PointT> &input,
 }
 
 template <typename PointT> void
-pcl::GaussianKernel::convolveCols(const pcl::PointCloud<PointT> &input,
-                                  std::function <float (const PointT& p)> field_accessor,
-                                  const Eigen::VectorXf& kernel,
-                                  pcl::PointCloud<float> &output) const
+GaussianKernel::convolveCols(const pcl::PointCloud<PointT> &input,
+                             std::function <float (const PointT& p)> field_accessor,
+                             const Eigen::VectorXf& kernel,
+                             pcl::PointCloud<float> &output) const
 {
   assert(kernel.size () % 2 == 1);
   int kernel_width = kernel.size () -1;
@@ -110,4 +113,7 @@ pcl::GaussianKernel::convolveCols(const pcl::PointCloud<PointT> &input,
   }
 }
 
+} // namespace pcl
+
 #endif
+
