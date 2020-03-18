@@ -34,6 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
+
 #ifndef _PCL_TEST_GPU_OCTREE_DATAGEN_
 #define _PCL_TEST_GPU_OCTREE_DATAGEN_
 
@@ -48,15 +49,22 @@
     EIGEN_DEFINE_STL_VECTOR_SPECIALIZATION(pcl::PointXYZ)
 #endif
 
+
+namespace pcl
+{
+
+namespace gpu
+{
+
 struct DataGenerator
 {
-    using PointType = pcl::gpu::Octree::PointType;
+    using PointType = Octree::PointType;
 
-    std::size_t data_size;            
+    std::size_t data_size;
     std::size_t tests_num;
 
     float cube_size;
-    float max_radius;     
+    float max_radius;
 
     float shared_radius;
 
@@ -74,43 +82,43 @@ struct DataGenerator
     }
 
     void operator()()
-    {             
+    {
         srand (0);
 
         points.resize(data_size);
         for(std::size_t i = 0; i < data_size; ++i)
-        {            
-            points[i].x = ((float)rand())/RAND_MAX * cube_size;  
-            points[i].y = ((float)rand())/RAND_MAX * cube_size;  
+        {
+            points[i].x = ((float)rand())/RAND_MAX * cube_size;
+            points[i].y = ((float)rand())/RAND_MAX * cube_size;
             points[i].z = ((float)rand())/RAND_MAX * cube_size;
         }
-        
+
 
         queries.resize(tests_num);
         radiuses.resize(tests_num);
         for (std::size_t i = 0; i < tests_num; ++i)
-        {            
-            queries[i].x = ((float)rand())/RAND_MAX * cube_size;  
-            queries[i].y = ((float)rand())/RAND_MAX * cube_size;  
-            queries[i].z = ((float)rand())/RAND_MAX * cube_size;  		
-            radiuses[i]  = ((float)rand())/RAND_MAX * max_radius;	
-        };        
+        {
+            queries[i].x = ((float)rand())/RAND_MAX * cube_size;
+            queries[i].y = ((float)rand())/RAND_MAX * cube_size;
+            queries[i].z = ((float)rand())/RAND_MAX * cube_size;
+            radiuses[i]  = ((float)rand())/RAND_MAX * max_radius;
+        };
 
         for(std::size_t i = 0; i < tests_num/2; ++i)
             indices.push_back(i*2);
     }
 
     void bruteForceSearch(bool log = false, float radius = -1.f)
-    {        
+    {
         if (log)
             std::cout << "BruteForceSearch";
 
         int value100 = std::min<int>(tests_num, 50);
-        int step = tests_num/value100;        
+        int step = tests_num/value100;
 
         bfresutls.resize(tests_num);
         for(std::size_t i = 0; i < tests_num; ++i)
-        {            
+        {
             if (log && i % step == 0)
             {
                 std::cout << ".";
@@ -119,7 +127,7 @@ struct DataGenerator
 
             std::vector<int>& curr_res = bfresutls[i];
             curr_res.clear();
-                        
+
             float query_radius = radius > 0 ? radius : radiuses[i];
             const PointType& query = queries[i];
 
@@ -141,8 +149,8 @@ struct DataGenerator
             std::cout << "Done" << std::endl;
     }
 
-    void printParams() const 
-    {        
+    void printParams() const
+    {
         std::cout << "Points number  = " << data_size << std::endl;
         std::cout << "Queries number = " << tests_num << std::endl;
         std::cout << "Cube size      = " << cube_size << std::endl;
@@ -152,8 +160,8 @@ struct DataGenerator
 
     template<typename Dst>
     struct ConvPoint
-    {    
-        Dst operator()(const PointType& src) const 
+    {
+        Dst operator()(const PointType& src) const
         {
             Dst dst;
             dst.x = src.x;
@@ -162,10 +170,10 @@ struct DataGenerator
             return dst;
         }
     };
-
 };
 
+} // namespace gpu
+} // namespace pcl
+
 #endif  /* _PCL_TEST_GPU_OCTREE_DATAGEN_ */
-
-
 
