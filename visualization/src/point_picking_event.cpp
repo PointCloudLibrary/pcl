@@ -61,7 +61,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
 {
   PCLVisualizerInteractorStyle *style = reinterpret_cast<PCLVisualizerInteractorStyle*>(caller);
   vtkRenderWindowInteractor* iren = reinterpret_cast<pcl::visualization::PCLVisualizerInteractorStyle*>(caller)->GetInteractor ();
-  actors_ = vtkActorCollection::New();
+  
   if (style->CurrentMode == 0)
   {
     if ((eventid == vtkCommand::LeftButtonPressEvent) && (iren->GetShiftKey () > 0))
@@ -116,6 +116,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
     }
     else if (eventid == vtkCommand::LeftButtonReleaseEvent)
     {
+      actors_ = vtkActorCollection::New();
       style->OnLeftButtonUp ();
       std::vector<std::vector<int> > indices;
       int nb_points = performAreaPick (iren, indices);
