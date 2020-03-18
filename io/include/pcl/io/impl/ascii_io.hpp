@@ -35,11 +35,16 @@
  *
  */
 
+
 #ifndef PCL_IO_ASCII_IO_HPP_
 #define PCL_IO_ASCII_IO_HPP_
 
+
+namespace pcl
+{
+
 template<typename PointT> void
-pcl::ASCIIReader::setInputFields ()
+ASCIIReader::setInputFields ()
 {
   fields_ = pcl::getFields<PointT> ();
 
@@ -55,5 +60,6 @@ pcl::ASCIIReader::setInputFields ()
   }
 }
 
+} // namespace pcl
 
 #endif    //PCL_IO_ASCII_IO_HPP_
