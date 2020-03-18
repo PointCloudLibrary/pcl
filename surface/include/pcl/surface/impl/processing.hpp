@@ -37,10 +37,14 @@
  *
  */
 
+#pragma once
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
 template <typename PointInT, typename PointOutT> void
-pcl::CloudSurfaceProcessing<PointInT, PointOutT>::process (pcl::PointCloud<PointOutT> &output)
+CloudSurfaceProcessing<PointInT, PointOutT>::process (pcl::PointCloud<PointOutT> &output)
 {
   // Copy the header
   output.header = input_->header;
@@ -57,3 +61,6 @@ pcl::CloudSurfaceProcessing<PointInT, PointOutT>::process (pcl::PointCloud<Point
 
   deinitCompute ();
 }
+
+} // namespace pcl
+
