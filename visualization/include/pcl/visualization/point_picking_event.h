@@ -40,8 +40,15 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/types.h> // for pcl::Indices
+#include <pcl/visualization/common/actor_map.h>
 
 #include <vtkCommand.h>
+#include <vtkActor.h>
+
+#include <map>
+#include <vector>
+
+
 class vtkRenderWindowInteractor;
 
 namespace pcl
@@ -71,21 +78,24 @@ namespace pcl
         performSinglePick (vtkRenderWindowInteractor *iren, float &x, float &y, float &z);
 
         int
-        performAreaPick (vtkRenderWindowInteractor *iren, pcl::Indices &indices) const;
+        performAreaPick (vtkRenderWindowInteractor *iren,
+                         CloudActorMapPtr cam_ptr,
+                         std::map<std::string, pcl::Indices>& cloud_indices) const;
+
 
       private:
         float x_, y_, z_;
         int idx_;
         bool pick_first_;
+        const vtkActor* actor_;
      };
 
     /** /brief Class representing 3D point picking events. */
     class PCL_EXPORTS PointPickingEvent
     {
       public:
-        PointPickingEvent (int idx) : idx_ (idx), idx2_ (-1), x_ (), y_ (), z_ (), x2_ (), y2_ (), z2_ () {}
-        PointPickingEvent (int idx, float x, float y, float z) : idx_ (idx), idx2_ (-1), x_ (x), y_ (y), z_ (z), x2_ (), y2_ (), z2_ () {}
-
+        PointPickingEvent (int idx) : PointPickingEvent ( idx, -1,-1, -1) {}
+        PointPickingEvent (int idx, float x, float y, float z, const std::string& name = "") : idx_ (idx), idx2_ (-1), x_ (x), y_ (y), z_ (z), x2_ (), y2_ (), z2_ (), name_ (name) {}
         PointPickingEvent (int idx1, int idx2, float x1, float y1, float z1, float x2, float y2, float z2) :
           idx_ (idx1), idx2_ (idx2), x_ (x1), y_ (y1), z_ (z1), x2_ (x2), y2_ (y2), z2_ (z2) 
         {}
@@ -153,11 +163,18 @@ namespace pcl
           return (true);
         }
 
+        /** \brief Get name of selected cloud.
+          * \return name of the cloud selected by the user
+          */
+        inline const std::string&
+        getCloudName () const { return name_; }
+
       private:
         int idx_, idx2_;
 
         float x_, y_, z_;
         float x2_, y2_, z2_;
+        std::string name_;
     };
   } //namespace visualization
 } //namespace pcl
