@@ -50,9 +50,10 @@ namespace pcl
     class PCL_EXPORTS AreaPickingEvent
     {
       public:
-        AreaPickingEvent (int nb_points, const std::vector<int>& indices)
+        AreaPickingEvent (int nb_points, const std::vector<std::vector<int> >& indices, std::vector<std::string>& names)
           : nb_points_ (nb_points)
           , indices_ (indices)
+          , names_ (names)
         {}
 
         /** \brief For situations where a whole are is selected, return the points indices.
@@ -64,13 +65,47 @@ namespace pcl
         {
           if (nb_points_ <= 0)
             return (false);
-          indices = indices_;
+          for(int i=0; i < indices_.size(); i++)
+            indices.insert(indices.end(), indices_.at(i).begin(), indices_.at(i).end());
+          return (true);
+        }
+        /** \brief For situations where a whole area is selected, return the points indices.
+          * \param[out] names of selected clouds.
+          * \return true, if the area selected by the user contains points, false otherwise
+          */
+        inline int
+        getCloudNames (std::vector<std::string>& names) const
+        {
+          if (nb_points_ <= 0)
+            return (false);
+          names=names_;
+          return names_.size();
+        }
+        /** \brief For situations where a whole area is selected, return the points indices. for given cloud
+          * \param[in] name of selected clouds.
+          * \param[out] indices of given cloud .
+        * \return true, if the area selected by the user contains points, false otherwise
+        */
+        inline bool
+        getCloudIndices (std::string& name, std::vector<int>& indices) const
+        {
+          if (nb_points_ <= 0)
+            return (false);
+            for(int i=0; i<names_.size(); i++)
+            {
+              if(name == names_.at(i))
+              {
+                indices=indices_.at(i);
+                break;
+              }
+            }
           return (true);
         }
 
       private:
         int nb_points_;
-        std::vector<int> indices_;
+        std::vector<std::vector<int> > indices_;
+        std::vector<std::string> names_;
     };
   } //namespace visualization
 } //namespace pcl

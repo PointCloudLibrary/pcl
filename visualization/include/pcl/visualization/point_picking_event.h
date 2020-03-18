@@ -42,6 +42,9 @@
 #include <vector>
 
 #include <vtkCommand.h>
+#include <vtkActor.h>
+#include <vtkActorCollection.h>
+
 class vtkRenderWindowInteractor;
 
 namespace pcl
@@ -71,12 +74,14 @@ namespace pcl
         performSinglePick (vtkRenderWindowInteractor *iren, float &x, float &y, float &z);
 
         int
-        performAreaPick (vtkRenderWindowInteractor *iren, std::vector<int> &indices);
+        performAreaPick (vtkRenderWindowInteractor *iren, std::vector<std::vector<int> > &indices);
 
       private:
         float x_, y_, z_;
         int idx_;
         bool pick_first_;
+        vtkActorCollection* actors_;
+        vtkActor* actor_;
      };
 
     /** /brief Class representing 3D point picking events. */
@@ -84,7 +89,7 @@ namespace pcl
     {
       public:
         PointPickingEvent (int idx) : idx_ (idx), idx2_ (-1), x_ (), y_ (), z_ (), x2_ (), y2_ (), z2_ () {}
-        PointPickingEvent (int idx, float x, float y, float z) : idx_ (idx), idx2_ (-1), x_ (x), y_ (y), z_ (z), x2_ (), y2_ (), z2_ () {}
+        PointPickingEvent (int idx, float x, float y, float z, std::string name) : idx_ (idx), idx2_ (-1), x_ (x), y_ (y), z_ (z), x2_ (), y2_ (), z2_ (), name_ (name) {}
 
         PointPickingEvent (int idx1, int idx2, float x1, float y1, float z1, float x2, float y2, float z2) :
           idx_ (idx1), idx2_ (idx2), x_ (x1), y_ (y1), z_ (z1), x2_ (x2), y2_ (y2), z2_ (z2) 
@@ -152,12 +157,25 @@ namespace pcl
           index_2 = idx2_;
           return (true);
         }
+        /** \brief Get name of selected cloud.
+        * \param[out] name of the cloud selected by the user
+        * \return true, if point have been clicked by the user, false otherwise
+        */
+        inline bool
+        getCloudName (std::string& name) const
+        {
+          if (idx_ == -1)
+            return (false);
+          name=name_;
+          return (true);
+        }
 
       private:
         int idx_, idx2_;
 
         float x_, y_, z_;
         float x2_, y2_, z2_;
+        std::string name_;
     };
   } //namespace visualization
 } //namespace pcl
