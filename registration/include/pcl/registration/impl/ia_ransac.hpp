@@ -43,9 +43,12 @@
 
 #include <pcl/common/distances.h>
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename FeatureT> void 
-pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setSourceFeatures (const FeatureCloudConstPtr &features)
+
+namespace pcl
+{
+
+template <typename PointSource, typename PointTarget, typename FeatureT> void
+SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setSourceFeatures (const FeatureCloudConstPtr &features)
 {
   if (features == nullptr || features->empty ())
   {
@@ -55,9 +58,9 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setSou
   input_features_ = features;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename FeatureT> void 
-pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setTargetFeatures (const FeatureCloudConstPtr &features)
+
+template <typename PointSource, typename PointTarget, typename FeatureT> void
+SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setTargetFeatures (const FeatureCloudConstPtr &features)
 {
   if (features == nullptr || features->empty ())
   {
@@ -68,10 +71,10 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::setTar
   feature_tree_->setInputCloud (target_features_);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename FeatureT> void 
-pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::selectSamples (
-    const PointCloudSource &cloud, int nr_samples, float min_sample_distance, 
+
+template <typename PointSource, typename PointTarget, typename FeatureT> void
+SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::selectSamples (
+    const PointCloudSource &cloud, int nr_samples, float min_sample_distance,
     std::vector<int> &sample_indices)
 {
   if (nr_samples > static_cast<int> (cloud.points.size ()))
@@ -127,10 +130,10 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::select
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename FeatureT> void 
-pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::findSimilarFeatures (
-    const FeatureCloud &input_features, const std::vector<int> &sample_indices, 
+
+template <typename PointSource, typename PointTarget, typename FeatureT> void
+SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::findSimilarFeatures (
+    const FeatureCloud &input_features, const std::vector<int> &sample_indices,
     std::vector<int> &corresponding_indices)
 {
   std::vector<int> nn_indices (k_correspondences_);
@@ -148,9 +151,9 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::findSi
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename FeatureT> float 
-pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::computeErrorMetric (
+
+template <typename PointSource, typename PointTarget, typename FeatureT> float
+SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::computeErrorMetric (
     const PointCloudSource &cloud, float)
 {
   std::vector<int> nn_index (1);
@@ -170,9 +173,9 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
   return (error);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename FeatureT> void 
-pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess)
+
+template <typename PointSource, typename PointTarget, typename FeatureT> void
+SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess)
 {
   // Some sanity checks first
   if (!input_features_)
@@ -216,7 +219,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
   final_transformation_ = guess;
   int i_iter = 0;
   converged_ = false;
-  if (!guess.isApprox (Eigen::Matrix4f::Identity (), 0.01f)) 
+  if (!guess.isApprox (Eigen::Matrix4f::Identity (), 0.01f))
   {
     // If guess is not the Identity matrix we check it.
     transformPointCloud (*input_, input_transformed, final_transformation_);
@@ -251,6 +254,8 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
   // Apply the final transformation
   transformPointCloud (*input_, output, final_transformation_);
 }
+
+} // namespace pcl
 
 #endif  //#ifndef IA_RANSAC_HPP_
 

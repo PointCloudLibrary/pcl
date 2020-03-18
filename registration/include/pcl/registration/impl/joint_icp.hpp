@@ -1,16 +1,16 @@
 /*
  * Software License Agreement (BSD License)
- * 
+ *
  * Point Cloud Library (PCL) - www.pointclouds.org
  * Copyright (c) 2009-2012, Willow Garage, Inc.
  * Copyright (c) 2012-, Open Perception, Inc.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  *  * Redistributions in binary form must reproduce the above
@@ -20,7 +20,7 @@
  *  * Neither the name of the copyright holder(s) nor the names of its
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -44,9 +44,11 @@
 #include <pcl/console/print.h>
 
 
-///////////////////////////////////////////////////////////////////////////////////////////
+namespace pcl
+{
+
 template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation (
+JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation (
     PointCloudSource &output, const Matrix4 &guess)
 {
   // Point clouds containing the correspondences of each point in <input, indices>
@@ -63,7 +65,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
     correspondence_estimations_.resize (sources_.size ());
     for (std::size_t i = 0; i < sources_.size (); i++)
     {
-      correspondence_estimations_[i] = correspondence_estimation_->clone ();      
+      correspondence_estimations_[i] = correspondence_estimation_->clone ();
       KdTreeReciprocalPtr src_tree (new KdTreeReciprocal);
       KdTreePtr tgt_tree (new KdTree);
       correspondence_estimations_[i]->setSearchMethodTarget (tgt_tree);
@@ -117,8 +119,6 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
     target_offset += targets_[i]->size ();
   }
 
-
- 
   transformation_ = Matrix4::Identity ();
   // Make blobs if necessary
   determineRequiredBlobData ();
@@ -176,7 +176,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
         toPCLPointCloud2 (*inputs_transformed[i], *input_transformed_blob);
         correspondence_estimations_[i]->setSourceNormals (input_transformed_blob);
       }
-      
+
       // Estimate correspondences on each cloud pair separately
       if (use_reciprocal_correspondence_)
       {
@@ -186,8 +186,8 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
       {
         correspondence_estimations_[i]->determineCorrespondences (*partial_correspondences_[i], corr_dist_threshold_);
       }
-      PCL_DEBUG ("[pcl::%s::computeTransformation] Found %d partial correspondences for cloud [%d]\n", 
-          getClassName ().c_str (), 
+      PCL_DEBUG ("[pcl::%s::computeTransformation] Found %d partial correspondences for cloud [%d]\n",
+          getClassName ().c_str (),
           partial_correspondences_[i]->size (), i);
       for (std::size_t j = 0; j < partial_correspondences_[i]->size (); j++)
       {
@@ -199,7 +199,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
       }
     }
     PCL_DEBUG ("[pcl::%s::computeTransformation] Total correspondences: %d\n", getClassName ().c_str (), correspondences_->size ());
-    
+
     PCLPointCloud2::Ptr inputs_transformed_combined_blob;
     if (need_source_blob_)
     {
@@ -244,7 +244,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
       this->transformCloud (*inputs_transformed[i], *inputs_transformed[i], transformation_);
     }
 
-    // Obtain the final transformation    
+    // Obtain the final transformation
     final_transformation_ = transformation_ * final_transformation_;
 
     ++nr_iterations_;
@@ -257,7 +257,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
   }
   while (!converged_);
 
-  PCL_DEBUG ("Transformation is:\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n", 
+  PCL_DEBUG ("Transformation is:\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n\t%5f\t%5f\t%5f\t%5f\n",
       final_transformation_ (0, 0), final_transformation_ (0, 1), final_transformation_ (0, 2), final_transformation_ (0, 3),
       final_transformation_ (1, 0), final_transformation_ (1, 1), final_transformation_ (1, 2), final_transformation_ (1, 3),
       final_transformation_ (2, 0), final_transformation_ (2, 1), final_transformation_ (2, 2), final_transformation_ (2, 3),
@@ -274,13 +274,14 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
   }
 
 
-  // By definition, this method will return an empty cloud (for compliance with the ICP API). 
+  // By definition, this method will return an empty cloud (for compliance with the ICP API).
   // We can figure out a better solution, if necessary.
   output = PointCloudSource ();
 }
 
-  template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::determineRequiredBlobData ()
+
+template <typename PointSource, typename PointTarget, typename Scalar> void
+JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::determineRequiredBlobData ()
 {
   need_source_blob_ = false;
   need_target_blob_ = false;
@@ -320,7 +321,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::determineRequ
   }
 }
 
+} // namespace pcl
 
 #endif /* PCL_REGISTRATION_IMPL_JOINT_ICP_HPP_ */
-
 
