@@ -1,5 +1,94 @@
 # ChangeList
 
+## *= 1.10.1 (18.03.2020) =*
+
+### Notable changes
+
+**Deprecation** *of public APIs, scheduled to be removed after two minor releases*
+
+* **[common]** Deprecate several `PointWithViewpoint` ctors; make ctors more uniform in PCL point types [[#3597](https://github.com/PointCloudLibrary/pcl/pull/3597)]
+
+**Removal** *of the public APIs deprecated in previous releases*
+
+* **[common]** Remove deprecated checks for `USE_ROS` macro [[#3690](https://github.com/PointCloudLibrary/pcl/pull/3690)]
+
+**Behavior changes** *in classes, apps, or tools*
+
+* **[tools]** Continue on PCD load failure in `pcl_train_linemod_template` [[#3652](https://github.com/PointCloudLibrary/pcl/pull/3652)]
+
+### Changes grouped by module
+
+#### CMake:
+
+* Fix CMake grouping of tools targets [[#3709](https://github.com/PointCloudLibrary/pcl/pull/3709)]
+* Enable `PCL_ONLY_CORE_POINT_TYPES` in mingw builds [[#3694](https://github.com/PointCloudLibrary/pcl/pull/3694)]
+* Downgrade RSSDK2 warning message to status [[#3683](https://github.com/PointCloudLibrary/pcl/pull/3683)]
+* Fix test targets arguments for MSVC [[#3636](https://github.com/PointCloudLibrary/pcl/pull/3636)]
+* Remove duplicate `/bigobj` for MSVC [[#3604](https://github.com/PointCloudLibrary/pcl/pull/3604)]
+
+#### libpcl_common:
+
+* Better PointType ctor and reduced warnings in `register_point_struct.h` [[#3732](https://github.com/PointCloudLibrary/pcl/pull/3732)]
+* **[removal]** Remove deprecated checks for `USE_ROS` macro [[#3690](https://github.com/PointCloudLibrary/pcl/pull/3690)]
+* Replace `dirent` with `boost::filesystem` [[#3676](https://github.com/PointCloudLibrary/pcl/pull/3676)]
+* Fix code accidentally casting away const-ness [[#3648](https://github.com/PointCloudLibrary/pcl/pull/3648)]
+* Fix compilation of CUDA code on Windows [[#3634](https://github.com/PointCloudLibrary/pcl/pull/3634)]
+* Remove undefined behavior and add stricter checks in console arg parsing [[#3613](https://github.com/PointCloudLibrary/pcl/pull/3613)]
+* **[deprecation]** Deprecate several `PointWithViewpoint` ctors; make ctors more uniform in PCL point types [[#3597](https://github.com/PointCloudLibrary/pcl/pull/3597)]
+
+#### libpcl_cuda:
+
+* Fix memory leaks in CUDA apps [[#3587](https://github.com/PointCloudLibrary/pcl/pull/3587)]
+* Fix compilation of CUDA/GPU modules [[#3576](https://github.com/PointCloudLibrary/pcl/pull/3576)]
+
+#### libpcl_features:
+
+* Add precompiled `computeApproximateCovariances`; fix compilation error for the same [[#3711](https://github.com/PointCloudLibrary/pcl/pull/3711)]
+* Fix vector initialization in `NormalEstimationOMP` [[#3614](https://github.com/PointCloudLibrary/pcl/pull/3614)]
+* Fix indexing bug in `IntegralImageNormalEstimation` [[#3574](https://github.com/PointCloudLibrary/pcl/pull/3574)]
+
+#### libpcl_filters:
+
+* Set `is_dense` based on actual cloud contents in `removeNaNNormalsFromPointCloud()` [[#3685](https://github.com/PointCloudLibrary/pcl/pull/3685)]
+
+#### libpcl_gpu:
+
+* Fix compile error in KinFuLS `initRegistration` [[#3737](https://github.com/PointCloudLibrary/pcl/pull/3737)]
+* Fix illegal memory acces in CUDA Octree builder [[#3627](https://github.com/PointCloudLibrary/pcl/pull/3627)]
+* Fix compile issue in `people_app` [[#3618](https://github.com/PointCloudLibrary/pcl/pull/3618)]
+* Fix compilation of CUDA/GPU modules [[#3576](https://github.com/PointCloudLibrary/pcl/pull/3576)]
+
+#### libpcl_io:
+
+* Fix `if/ifdef` WIN32 issues [[#3668](https://github.com/PointCloudLibrary/pcl/pull/3668)]
+* Add `Grabber::toggle()` method [[#3615](https://github.com/PointCloudLibrary/pcl/pull/3615)]
+* Close the correct file in `pcl::io::savePLYFileBinary` [[#3601](https://github.com/PointCloudLibrary/pcl/pull/3601)]
+* Fix entropy range encoding in octree-based pointcloud compression [[#3579](https://github.com/PointCloudLibrary/pcl/pull/3579)]
+
+#### libpcl_surface:
+
+* Add default initialization of grid resolution in `MarchingCubes` [[#3718](https://github.com/PointCloudLibrary/pcl/pull/3718)]
+
+#### PCL Apps:
+
+* Fix `if/ifdef` WIN32 issues [[#3668](https://github.com/PointCloudLibrary/pcl/pull/3668)]
+
+#### PCL Docs:
+
+* Fix missing standard includes, reduce warnings in doxygen-enabled builds [[#3755](https://github.com/PointCloudLibrary/pcl/pull/3755)]
+
+#### PCL Tutorials:
+
+* Fix documentation for point cloud stream compression executable name [[#3693](https://github.com/PointCloudLibrary/pcl/pull/3693)]
+* Fix segfault in NARF keypoint extraction tutorial [[#3623](https://github.com/PointCloudLibrary/pcl/pull/3623)]
+
+#### PCL Tools:
+
+* Use linemod member method to save templates [[#3691](https://github.com/PointCloudLibrary/pcl/pull/3691)]
+* **[behavior change]** Continue on PCD load failure in `pcl_train_linemod_template` [[#3652](https://github.com/PointCloudLibrary/pcl/pull/3652)]
+* Warn user about unorganized PCDs in `pcl_train_linemod_template` [[#3644](https://github.com/PointCloudLibrary/pcl/pull/3644)]
+
+
 ## *= 1.10.0 (19.01.2020) =*
 
 Starting with PCL 1.10, to ensure compatibility with future PCL releases, please
