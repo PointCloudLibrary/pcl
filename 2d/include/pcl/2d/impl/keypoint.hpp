@@ -46,14 +46,16 @@
 #include <pcl/2d/convolution.h>
 #include <pcl/2d/edge.h>
 
-//////////////////////////////////////////////////////////////////////////////
+namespace pcl {
+namespace keypoint {
+
 void
-pcl::keypoint::harrisCorner(ImageType& output,
-                            ImageType& input,
-                            const float sigma_d,
-                            const float sigma_i,
-                            const float alpha,
-                            const float thresh)
+harrisCorner(ImageType& output,
+             ImageType& input,
+             const float sigma_d,
+             const float sigma_i,
+             const float alpha,
+             const float thresh)
 {
 
   /*creating the gaussian kernels*/
@@ -115,12 +117,8 @@ pcl::keypoint::harrisCorner(ImageType& output,
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoint::hessianBlob(ImageType& output,
-                           ImageType& input,
-                           const float sigma,
-                           bool SCALED)
+hessianBlob(ImageType& output, ImageType& input, const float sigma, bool SCALED)
 {
   /*creating the gaussian kernels*/
   ImageType kernel, cornerness;
@@ -175,13 +173,12 @@ pcl::keypoint::hessianBlob(ImageType& output,
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoint::hessianBlob(ImageType& output,
-                           ImageType& input,
-                           const float start_scale,
-                           const float scaling_factor,
-                           const int num_scales)
+hessianBlob(ImageType& output,
+            ImageType& input,
+            const float start_scale,
+            const float scaling_factor,
+            const int num_scales)
 {
   const std::size_t height = input.size();
   const std::size_t width = input[0].size();
@@ -239,11 +236,8 @@ pcl::keypoint::hessianBlob(ImageType& output,
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
 void
-pcl::keypoint::imageElementMultiply(ImageType& output,
-                                    ImageType& input1,
-                                    ImageType& input2)
+imageElementMultiply(ImageType& output, ImageType& input1, ImageType& input2)
 {
   const std::size_t height = input1.size();
   const std::size_t width = input1[0].size();
@@ -255,5 +249,7 @@ pcl::keypoint::imageElementMultiply(ImageType& output,
     }
   }
 }
+} // namespace keypoint
+} // namespace pcl
 
 #endif // PCL_2D_KEYPOINT_HPP_
