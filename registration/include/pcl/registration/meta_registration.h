@@ -87,10 +87,10 @@ namespace pcl {
         virtual ~MetaRegistration () {};
 
         /** \brief Register new point cloud
-          * \note You have to set a valid registration object with @ref setICP before using this
+          * \note You have to set a valid registration object with \ref setRegistration before using this
           * \param[in] cloud point cloud to register
           * \param[in] delta_estimate estimated transform between last registered cloud and this one
-          * \return true if ICP converged
+          * \return true if registration converged
           */
         bool
         registerCloud (const PointCloudConstPtr& cloud, const Matrix4& delta_estimate = Matrix4::Identity ());
@@ -99,7 +99,7 @@ namespace pcl {
         inline Matrix4
         getAbsoluteTransform () const;
 
-        /** \brief Reset MetaICP without resetting registration_ */
+        /** \brief Reset MetaRegistration without resetting registration_ */
         inline void
         reset ();
 

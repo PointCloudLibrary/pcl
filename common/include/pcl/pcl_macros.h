@@ -89,14 +89,23 @@
 
 namespace pcl
 {
+  /// \deprecated use std::uint8_t instead of pcl::uint8_t
   using uint8_t PCL_DEPRECATED("use std::uint8_t instead of pcl::uint8_t") = std::uint8_t;
+  /// \deprecated use std::int8_t instead of pcl::int8_t
   using int8_t PCL_DEPRECATED("use std::int8_t instead of pcl::int8_t") = std::int8_t;
+  /// \deprecated use std::uint16_t instead of pcl::uint16_t
   using uint16_t PCL_DEPRECATED("use std::uint16_t instead of pcl::uint16_t") = std::uint16_t;
+  /// \deprecated use std::uint16_t instead of pcl::int16_t
   using int16_t PCL_DEPRECATED("use std::uint16_t instead of pcl::int16_t") = std::int16_t;
+  /// \deprecated use std::uint32_t instead of pcl::uint32_t
   using uint32_t PCL_DEPRECATED("use std::uint32_t instead of pcl::uint32_t") = std::uint32_t;
+  /// \deprecated use std::int32_t instead of pcl::int32_t
   using int32_t PCL_DEPRECATED("use std::int32_t instead of pcl::int32_t") = std::int32_t;
+  /// \deprecated use std::uint64_t instead of pcl::uint64_t
   using uint64_t PCL_DEPRECATED("use std::uint64_t instead of pcl::uint64_t") = std::uint64_t;
+  /// \deprecated use std::int64_t instead of pcl::int64_t
   using int64_t PCL_DEPRECATED("use std::int64_t instead of pcl::int64_t") = std::int64_t;
+  /// \deprecated use std::int_fast16_t instead of pcl::int_fast16_t
   using int_fast16_t PCL_DEPRECATED("use std::int_fast16_t instead of pcl::int_fast16_t") = std::int_fast16_t;
 }
 

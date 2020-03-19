@@ -57,11 +57,6 @@ pcl::Kmeans<PointT>::~Kmeans()
 
 template <typename PointT>
 void
-pcl::Kmeans<PointT>::k_means()
-{}
-
-template <typename PointT>
-void
 pcl::Kmeans<PointT>::cluster(std::vector<PointIndices>& clusters)
 {
   if (!initCompute() || (input_ != 0 && input_->points.empty()) ||

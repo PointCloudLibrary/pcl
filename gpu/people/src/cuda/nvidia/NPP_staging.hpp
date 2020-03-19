@@ -75,7 +75,7 @@ NCV_EXPORTS
 cudaStream_t nppStSetActiveCUDAstream(cudaStream_t cudaStream);
 
 
-/*@}*/
+/**@}*/
 
 
 /** \defgroup nppi NPPST Image Processing
@@ -131,7 +131,7 @@ enum NppStInterpMode
 
 
 /** Size of a buffer required for interpolation.
- * 
+ *
  * Requires several such buffers. See \see NppStInterpolationState.
  *
  * \param srcSize           [IN]  Frame size (both frames must be of the same size)
@@ -177,17 +177,17 @@ NCVStatus nppiStInterpolateFrames(const NppStInterpolationState *pState);
  * \return NCV status code
  */
 NCV_EXPORTS
-NCVStatus nppiStFilterRowBorder_32f_C1R(const Ncv32f *pSrc, 
-                                        NcvSize32u srcSize, 
+NCVStatus nppiStFilterRowBorder_32f_C1R(const Ncv32f *pSrc,
+                                        NcvSize32u srcSize,
                                         Ncv32u nSrcStep,
-                                        Ncv32f *pDst, 
-                                        NcvSize32u dstSize, 
+                                        Ncv32f *pDst,
+                                        NcvSize32u dstSize,
                                         Ncv32u nDstStep,
-                                        NcvRect32u oROI, 
+                                        NcvRect32u oROI,
                                         NppStBorderType borderType,
-                                        const Ncv32f *pKernel, 
+                                        const Ncv32f *pKernel,
                                         Ncv32s nKernelSize,
-                                        Ncv32s nAnchor, 
+                                        Ncv32s nAnchor,
                                         Ncv32f multiplier);
 
 
@@ -226,14 +226,14 @@ NCVStatus nppiStFilterColumnBorder_32f_C1R(const Ncv32f *pSrc,
 
 
 /** Size of buffer required for vector image warping.
- * 
+ *
  * \param srcSize           [IN]  Source image size
  * \param nSrcStep          [IN]  Source image line step
  * \param hpSize            [OUT] Where to store computed size (host memory)
  *
  * \return NCV status code
  */
-NCV_EXPORTS 
+NCV_EXPORTS
 NCVStatus nppiStVectorWarpGetBufferSize(NcvSize32u srcSize,
                                         Ncv32u nSrcStep,
                                         Ncv32u *hpSize);
@@ -318,7 +318,7 @@ NCVStatus nppiStVectorWarp_PSF2x2_32f_C1(const Ncv32f *pSrc,
  * \param xFactor           [IN]  Row scale factor
  * \param yFactor           [IN]  Column scale factor
  * \param interpolation     [IN]  Interpolation type
- * 
+ *
  * \return NCV status code
  */
 NCV_EXPORTS
@@ -790,7 +790,7 @@ NCVStatus nppiStSqrIntegral_8u64u_C1R_host(Ncv8u *h_src, Ncv32u srcStep,
                                            Ncv64u *h_dst, Ncv32u dstStep, NcvSize32u roiSize);
 
 
-/*@}*/
+/**@}*/
 
 
 /** \defgroup npps NPPST Signal Processing
@@ -902,7 +902,7 @@ NCVStatus nppsStCompact_32f_host(Ncv32f *h_src, Ncv32u srcLen,
                                  Ncv32f *h_dst, Ncv32u *dstLen, Ncv32f elemRemove);
 
 
-/*@}*/
+/**@}*/
 
 
 #endif // _npp_staging_hpp_

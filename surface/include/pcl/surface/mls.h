@@ -486,7 +486,7 @@ namespace pcl
       getDilationIterations () const { return (dilation_iteration_num_); }
 
       /** \brief Set whether the mls results should be stored for each point in the input cloud
-        * \param[in] True if the mls results should be stored, otherwise false.
+        * \param[in] cache_mls_results True if the mls results should be stored, otherwise false.
         * \note The cache_mls_results_ is forced to true when using upsampling method VOXEL_GRID_DILATION or DISTINCT_CLOUD.
         * \note If memory consumption is a concern set to false when not using upsampling method VOXEL_GRID_DILATION or DISTINCT_CLOUD.
         */
