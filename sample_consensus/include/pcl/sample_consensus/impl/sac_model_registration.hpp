@@ -50,6 +50,11 @@
 template <typename PointT> bool
 pcl::SampleConsensusModelRegistration<PointT>::isSampleGood (const std::vector<int> &samples) const
 {
+  if (samples.size () != sample_size_)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration::isSampleGood] Wrong number of samples (is %lu, should be %lu)!\n", samples.size (), sample_size_);
+    return (false);
+  }
   using namespace pcl::common;
   using namespace pcl::traits;
 
@@ -72,12 +77,16 @@ pcl::SampleConsensusModelRegistration<PointT>::computeModelCoefficients (const s
     return (false);
   }
   // Need 3 samples
-  if (samples.size () != 3)
+  if (samples.size () != sample_size_)
+  {
     return (false);
+  }
 
   std::vector<int> indices_tgt (3);
   for (int i = 0; i < 3; ++i)
+  {
     indices_tgt[i] = correspondences_.at (samples[i]);
+  }
 
   estimateRigidTransformationSVD (*input_, samples, *target_, indices_tgt, model_coefficients);
   return (true);
@@ -117,10 +126,10 @@ pcl::SampleConsensusModelRegistration<PointT>::getDistancesToModel (const Eigen:
   {
     Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
                             input_->points[(*indices_)[i]].y, 
-                            input_->points[(*indices_)[i]].z, 1); 
+                            input_->points[(*indices_)[i]].z, 1.0f);
     Eigen::Vector4f pt_tgt (target_->points[(*indices_tgt_)[i]].x, 
                             target_->points[(*indices_tgt_)[i]].y, 
-                            target_->points[(*indices_tgt_)[i]].z, 1); 
+                            target_->points[(*indices_tgt_)[i]].z, 1.0f);
 
     Eigen::Vector4f p_tr (transform * pt_src);
     // Calculate the distance from the transformed point to its correspondence
@@ -154,9 +163,10 @@ pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen
     return;
   }
   
-  int nr_p = 0;
-  inliers.resize (indices_->size ());
-  error_sqr_dists_.resize (indices_->size ());
+  inliers.clear ();
+  error_sqr_dists_.clear ();
+  inliers.reserve (indices_->size ());
+  error_sqr_dists_.reserve (indices_->size ());
 
   Eigen::Matrix4f transform;
   transform.row (0).matrix () = model_coefficients.segment<4>(0);
@@ -179,13 +189,10 @@ pcl::SampleConsensusModelRegistration<PointT>::selectWithinDistance (const Eigen
     // Calculate the distance from the transformed point to its correspondence
     if (distance < thresh)
     {
-      inliers[nr_p] = (*indices_)[i];
-      error_sqr_dists_[nr_p] = static_cast<double> (distance);
-      ++nr_p;
+      inliers.push_back ((*indices_)[i]);
+      error_sqr_dists_.push_back (static_cast<double> (distance));
     }
   }
-  inliers.resize (nr_p);
-  error_sqr_dists_.resize (nr_p);
 } 
 
 //////////////////////////////////////////////////////////////////////////
@@ -208,7 +215,9 @@ pcl::SampleConsensusModelRegistration<PointT>::countWithinDistance (
 
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
+  {
     return (0);
+  }
   
   Eigen::Matrix4f transform;
   transform.row (0).matrix () = model_coefficients.segment<4>(0);
