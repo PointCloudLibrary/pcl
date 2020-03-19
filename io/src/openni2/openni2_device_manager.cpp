@@ -33,7 +33,7 @@
 #include "pcl/io/openni2/openni2_convert.h"
 #include "pcl/io/openni2/openni2_device.h"
 #include "pcl/io/io_exception.h"
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 #include <mutex>
 #include <set>

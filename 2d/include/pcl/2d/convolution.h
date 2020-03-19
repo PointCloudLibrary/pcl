@@ -38,6 +38,7 @@
 #pragma once
 
 #include <pcl/filters/filter.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>

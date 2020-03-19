@@ -38,6 +38,7 @@
 
 #include <chrono>
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/io/boost.h>
 

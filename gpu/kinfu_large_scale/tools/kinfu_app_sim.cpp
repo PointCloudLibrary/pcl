@@ -84,7 +84,7 @@
 #include "evaluation.h"
 
 #include <pcl/common/angles.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 //#include "tsdf_volume.h"
 //#include "tsdf_volume.hpp"

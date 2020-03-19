@@ -43,6 +43,7 @@
 #endif
 
 // Include PCL macros such as PCL_ERROR, PCL_MAKE_ALIGNED_OPERATOR_NEW, etc
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 #include <boost/shared_ptr.hpp>

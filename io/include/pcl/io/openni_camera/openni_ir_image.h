@@ -37,7 +37,7 @@
 #define __OPENNI_IR_IMAGE__
 
 #include <pcl/pcl_macros.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 #include "openni.h"
 #include "openni_exception.h"
 #include <pcl/io/boost.h>

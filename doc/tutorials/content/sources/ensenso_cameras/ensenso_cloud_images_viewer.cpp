@@ -11,7 +11,7 @@
 #include <vector>
 
 #include <pcl/common/common.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 #include <pcl/console/print.h>
 #include <pcl/io/ensenso_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>

@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * 
+ *
  *
  */
 
@@ -50,6 +50,7 @@
 #include <pcl/surface/on_nurbs/fitting_surface_pdm.h>
 #include <pcl/surface/on_nurbs/nurbs_data.h>
 
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
@@ -115,8 +116,8 @@ namespace pcl
         project (const Eigen::Vector3d &pt);
 
         bool
-        is_back_facing (const Eigen::Vector3d &v0, 
-                        const Eigen::Vector3d &v1, 
+        is_back_facing (const Eigen::Vector3d &v0,
+                        const Eigen::Vector3d &v1,
                         const Eigen::Vector3d &v2,
                         const Eigen::Vector3d &v3);
 
@@ -149,7 +150,7 @@ namespace pcl
          *  \param[in] intrinsic The camera projection matrix.
          *  \param[in] intrinsic The world matrix.*/
         void
-        setProjectionMatrix (const Eigen::Matrix4d &intrinsic, 
+        setProjectionMatrix (const Eigen::Matrix4d &intrinsic,
                              const Eigen::Matrix4d &extrinsic);
 
         /** \brief Compute point cloud and fit (multiple) models */
@@ -204,9 +205,9 @@ namespace pcl
          *  \param[in] maxSteps Maximum iteration steps
          *  \param[in] accuracy Accuracy below which the iterations stop */
         static void
-        getClosestPointOnNurbs (ON_NurbsSurface nurbs, 
-                                const Eigen::Vector3d &pt, 
-                                Eigen::Vector2d& params, 
+        getClosestPointOnNurbs (ON_NurbsSurface nurbs,
+                                const Eigen::Vector3d &pt,
+                                Eigen::Vector2d& params,
                                 int maxSteps = 100,
                                 double accuracy = 1e-4);
 

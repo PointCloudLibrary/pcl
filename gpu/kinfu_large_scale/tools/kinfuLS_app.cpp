@@ -51,6 +51,7 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include <iostream>
 #include <thread>
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/console/parse.h>
 
@@ -83,7 +84,7 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include "evaluation.h"
 
 #include <pcl/common/angles.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 #ifdef HAVE_OPENCV  
 #include <opencv2/highgui/highgui.hpp>

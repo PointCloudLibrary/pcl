@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/registration/transformation_estimation_point_to_plane.h>
 #include <pcl/registration/warp_point_rigid.h>

@@ -44,6 +44,7 @@
 #include <random>
 
 // PCL includes
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/search/pcl_search.h>

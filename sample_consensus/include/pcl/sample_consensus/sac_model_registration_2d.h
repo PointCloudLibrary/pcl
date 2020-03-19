@@ -39,6 +39,7 @@
 #pragma once
 
 #include <pcl/sample_consensus/sac_model_registration.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl

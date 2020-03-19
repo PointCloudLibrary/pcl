@@ -39,7 +39,7 @@
 #include <pcl/gpu/containers/kernel_containers.h>
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
 
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 #include <memory>
 #include <string>

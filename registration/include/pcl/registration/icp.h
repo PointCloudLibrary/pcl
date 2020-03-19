@@ -41,7 +41,7 @@
 #pragma once
 
 // PCL includes
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_registration.h>
 #include <pcl/registration/registration.h>
