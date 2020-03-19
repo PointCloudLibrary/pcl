@@ -33,7 +33,17 @@ jobs:
         displayName: 'Free Up Space'
       - script: |
           mkdir %BUILD_DIR% && cd %BUILD_DIR%
-          cmake $(Build.SourcesDirectory) -G"%GENERATOR%" -DCMAKE_BUILD_TYPE="Release" -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake -DVCPKG_APPLOCAL_DEPS=ON -DPCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32=ON -DPCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32=ON -DPCL_BUILD_WITH_QHULL_DYNAMIC_LINKING_WIN32=ON -DBUILD_global_tests=ON -DBUILD_tools=OFF -DBUILD_surface_on_nurbs=ON
+          cmake $(Build.SourcesDirectory) ^
+            -G"%GENERATOR%" ^
+            -DCMAKE_BUILD_TYPE="Release" ^
+            -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake ^
+            -DVCPKG_APPLOCAL_DEPS=ON ^
+            -DPCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32=ON ^
+            -DPCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32=ON ^
+            -DPCL_BUILD_WITH_QHULL_DYNAMIC_LINKING_WIN32=ON ^
+            -DBUILD_global_tests=ON ^
+            -DBUILD_tools=OFF ^
+            -DBUILD_surface_on_nurbs=ON
         displayName: 'CMake Configuration'
       - script: cd %BUILD_DIR% && cmake --build . --config %CONFIGURATION%
         displayName: 'Build Library'
