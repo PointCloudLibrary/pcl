@@ -120,8 +120,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
       style->OnLeftButtonUp ();
       std::vector<std::vector<int> > indices;
       int nb_points = performAreaPick (iren, indices);
-      pcl::visualization::CloudActorMapPtr cam_ptr;
-      cam_ptr = style->getCloudActorMap();
+      pcl::visualization::CloudActorMapPtr cam_ptr = style->getCloudActorMap();
       pcl::visualization::CloudActorMap::iterator cam_it;
       std::vector<std::string> names;
       actors_->InitTraversal();
