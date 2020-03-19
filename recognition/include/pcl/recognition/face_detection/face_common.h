@@ -151,10 +151,11 @@ namespace pcl
             for (std::size_t j = 0; j < 3; j++)
               stream.read (reinterpret_cast<char*> (&covariance_rot_ (i, j)), sizeof(covariance_rot_ (i, j)));
 
-          sub_nodes.resize (num_of_sub_nodes);
-
           if (num_of_sub_nodes > 0)
           {
+
+            sub_nodes.resize (num_of_sub_nodes);
+
             for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes; ++sub_node_index)
             {
               sub_nodes[sub_node_index].deserialize (stream);

@@ -78,15 +78,22 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   //Read the magic
   std::uint32_t length_of_magic;
   fs.read ((char*)&length_of_magic, sizeof (std::uint32_t));
-  char *magic = new char [length_of_magic];
-  fs.read (magic, sizeof (char) * length_of_magic);
-  if (strcmp (magic, "IFS"))
+  if (length_of_magic > 0)
   {
-    PCL_ERROR ("[pcl::IFSReader::readHeader] File %s is not an IFS file!\n", file_name.c_str ());
-    fs.close ();
-    return (-1);
+    char *magic = new char [length_of_magic];
+    fs.read (magic, sizeof (char) * length_of_magic);
+    if (strcmp (magic, "IFS"))
+    {
+      PCL_ERROR ("[pcl::IFSReader::readHeader] File %s is not an IFS file!\n", file_name.c_str ());
+      fs.close ();
+      return (-1);
+    }
+    delete[] magic;
   }
-  delete[] magic;
+  else
+  {
+    PCL_THROW_EXCEPTION (pcl::IOException, "File does not contain length_of_magic");
+  }
 
   //Read IFS version
   float version;
@@ -106,9 +113,27 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   //Read the name
   std::uint32_t length_of_name;
   fs.read ((char*)&length_of_name, sizeof (std::uint32_t));
-  char *name = new char [length_of_name];
-  fs.read (name, sizeof (char) * length_of_name);
-  delete[] name;
+  if (length_of_name > 0)
+  {
+    char *name = new char [length_of_name];
+    fs.read (name, sizeof (char) * length_of_name);
+    delete[] name;
+  }
+  else
+  {
+    if (fs.bad())
+    {
+      PCL_THROW_EXCEPTION (pcl::IOException, "Failure reading data from file");
+    }
+    else if (fs. fail())
+    {
+      PCL_THROW_EXCEPTION (pcl::IOException, "failbit set (formatting or extraction error");
+    }
+    else
+    {
+      PCL_THROW_EXCEPTION (pcl::IOException, "Incorrect Data Read");
+    }
+  }
 
   // Read the header and fill it in with wonderful values
   try
@@ -118,35 +143,42 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       //Read the keyword
       std::uint32_t length_of_keyword;
       fs.read ((char*)&length_of_keyword, sizeof (std::uint32_t));
-      char *keyword = new char [length_of_keyword];
-      fs.read (keyword, sizeof (char) * length_of_keyword);
-
-      if (strcmp (keyword, "VERTICES") == 0)
+      if (length_of_keyword > 0)
       {
-        fs.read ((char*)&nr_points, sizeof (std::uint32_t));
-        if ((nr_points == 0) || (nr_points > 10000000))
-        {
-          PCL_ERROR ("[pcl::IFSReader::readHeader] Bad number of vertices %lu!\n", nr_points);
-          fs.close ();
-          return (-1);
-        }
+        char *keyword = new char [length_of_keyword];
+        fs.read (keyword, sizeof (char) * length_of_keyword);
 
-        cloud.fields.resize (3);
-        cloud.fields[0].name = "x";
-        cloud.fields[1].name = "y";
-        cloud.fields[2].name = "z";
-
-        int offset = 0;
-        for (int i = 0; i < 3; ++i, offset += 4)
+        if (strcmp (keyword, "VERTICES") == 0)
         {
-          cloud.fields[i].offset   = offset;
-          cloud.fields[i].datatype = pcl::PCLPointField::FLOAT32;
-          cloud.fields[i].count    = 1;
+          fs.read ((char*)&nr_points, sizeof (std::uint32_t));
+          if ((nr_points == 0) || (nr_points > 10000000))
+          {
+            PCL_ERROR ("[pcl::IFSReader::readHeader] Bad number of vertices %lu!\n", nr_points);
+            fs.close ();
+            return (-1);
+          }
+
+          cloud.fields.resize (3);
+          cloud.fields[0].name = "x";
+          cloud.fields[1].name = "y";
+          cloud.fields[2].name = "z";
+
+          int offset = 0;
+          for (int i = 0; i < 3; ++i, offset += 4)
+          {
+            cloud.fields[i].offset   = offset;
+            cloud.fields[i].datatype = pcl::PCLPointField::FLOAT32;
+            cloud.fields[i].count    = 1;
+          }
+          cloud.point_step = offset;
+          cloud.data.resize (nr_points * cloud.point_step);
+          data_idx = fs.tellg ();
+          break;
         }
-        cloud.point_step = offset;
-        cloud.data.resize (nr_points * cloud.point_step);
-        data_idx = fs.tellg ();
-        break;
+      }
+      else
+      {
+        PCL_THROW_EXCEPTION (pcl::IOException, "File does not contain length_of_keyword");
       }
     }
   }
@@ -278,15 +310,22 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
   // Read the TRIANGLES keyword
   std::uint32_t length_of_keyword;
   fs.read ((char*)&length_of_keyword, sizeof (std::uint32_t));
-  char *keyword = new char [length_of_keyword];
-  fs.read (keyword, sizeof (char) * length_of_keyword);
-  if (strcmp (keyword, "TRIANGLES"))
+  if (length_of_keyword > 0)
   {
-    PCL_ERROR ("[pcl::IFSReader::read] File %s is does not contain facets!\n", file_name.c_str ());
-    fs.close ();
-    return (-1);
+    char *keyword = new char [length_of_keyword];
+    fs.read (keyword, sizeof (char) * length_of_keyword);
+    if (strcmp (keyword, "TRIANGLES"))
+    {
+      PCL_ERROR ("[pcl::IFSReader::read] File %s is does not contain facets!\n", file_name.c_str ());
+      fs.close ();
+      return (-1);
+    }
+    delete[] keyword;
   }
-  delete[] keyword;
+  else
+  {
+    PCL_THROW_EXCEPTION (pcl::IOException, "File does not contain length_of_keyword");
+  }
   // Read the number of facets
   std::uint32_t nr_facets;
   fs.read ((char*)&nr_facets, sizeof (std::uint32_t));

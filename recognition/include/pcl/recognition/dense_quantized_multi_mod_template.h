@@ -39,6 +39,7 @@
 
 #include <vector>
 
+#include <pcl/common/common.h>
 #include <pcl/recognition/region_xy.h>
 
 namespace pcl
@@ -66,10 +67,21 @@ namespace pcl
 
       std::size_t num_of_features;
       read (stream, num_of_features);
-      features.resize (num_of_features);
-      for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
+      if (stream.bad())
       {
-        read (stream, features[feature_index]);
+        PCL_THROW_EXCEPTION (pcl::IOException, "Failure in num_of_features from file");
+      }
+      else if (stream.fail())
+      {
+        PCL_THROW_EXCEPTION (pcl::IOException, "failbit set while reading num_of_features(formatting or extraction error");
+      }
+      else
+      {
+        features.resize (num_of_features);
+        for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
+        {
+          read (stream, features[feature_index]);
+        }
       }
     }
   };

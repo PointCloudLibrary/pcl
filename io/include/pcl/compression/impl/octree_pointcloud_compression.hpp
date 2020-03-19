@@ -359,9 +359,16 @@ namespace pcl
           // decode differential color information
           std::vector<char>& pointDiffColorDataVector = color_coder_.getDifferentialDataVector ();
           compressed_tree_data_in_arg.read (reinterpret_cast<char*> (&point_diff_color_data_vector_size), sizeof (point_diff_color_data_vector_size));
-          pointDiffColorDataVector.resize (static_cast<std::size_t> (point_diff_color_data_vector_size));
-          compressed_color_data_len_ += entropy_coder_.decodeStreamToCharVector (compressed_tree_data_in_arg,
+          if (point_diff_color_data_vector_size > 0)
+          {
+            pointDiffColorDataVector.resize (static_cast<std::size_t> (point_diff_color_data_vector_size));
+            compressed_color_data_len_ += entropy_coder_.decodeStreamToCharVector (compressed_tree_data_in_arg,
                                                                              pointDiffColorDataVector);
+          }
+          else
+          {
+            PCL_THROW_EXCEPTION (pcl::IOException, "Failed to read point_diff_color_data_vector_size from file");
+          }
         }
       }
     }

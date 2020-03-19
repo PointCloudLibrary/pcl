@@ -332,7 +332,14 @@ namespace pcl
 
         // reading compressed rgb data
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColorSize), sizeof (compressedColorSize));
-        compressedColor.resize (compressedColorSize);
+        if (compressedColorSize > 0)
+        {
+          compressedColor.resize (compressedColorSize);
+        }
+        else
+        {
+          PCL_THROW_EXCEPTION (pcl::IOException, "Failed to read compressedColorSize from file");
+        }
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColor[0]), compressedColorSize * sizeof(std::uint8_t));
 
         // decode PNG compressed disparity data

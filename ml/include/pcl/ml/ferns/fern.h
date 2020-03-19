@@ -117,24 +117,35 @@ public:
   deserialize(::std::istream& stream)
   {
     stream.read(reinterpret_cast<char*>(&num_of_decisions_), sizeof(num_of_decisions_));
-
-    features_.resize(num_of_decisions_);
-    thresholds_.resize(num_of_decisions_);
-    nodes_.resize(0x1 << num_of_decisions_);
-
-    for (std::size_t feature_index = 0; feature_index < features_.size();
-         ++feature_index) {
-      features_[feature_index].deserialize(stream);
+    if (stream.bad())
+    {
+      PCL_THROW_EXCEPTION (pcl::IOException, "Failure reading num_of_decisions_ from file");
     }
-
-    for (std::size_t threshold_index = 0; threshold_index < thresholds_.size();
-         ++threshold_index) {
-      stream.read(reinterpret_cast<char*>(&(thresholds_[threshold_index])),
-                  sizeof(thresholds_[threshold_index]));
+    else if (stream.fail())
+    {
+      PCL_THROW_EXCEPTION (pcl::IOException, "failbit set while reading num_of_decisions_ (formatting or extraction error");
     }
+    else
+    {
 
-    for (std::size_t node_index = 0; node_index < nodes_.size(); ++node_index) {
-      nodes_[node_index].deserialize(stream);
+      features_.resize(num_of_decisions_);
+      thresholds_.resize(num_of_decisions_);
+      nodes_.resize(0x1 << num_of_decisions_);
+
+      for (std::size_t feature_index = 0; feature_index < features_.size();
+           ++feature_index) {
+        features_[feature_index].deserialize(stream);
+      }
+
+      for (std::size_t threshold_index = 0; threshold_index < thresholds_.size();
+           ++threshold_index) {
+        stream.read(reinterpret_cast<char*>(&(thresholds_[threshold_index])),
+                    sizeof(thresholds_[threshold_index]));
+      }
+
+      for (std::size_t node_index = 0; node_index < nodes_.size(); ++node_index) {
+        nodes_[node_index].deserialize(stream);
+      }
     }
   }
 
