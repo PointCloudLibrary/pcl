@@ -71,8 +71,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
       // Create a PointPickingEvent if a point was selected
       if (idx != -1)
       {
-        pcl::visualization::CloudActorMapPtr cam_ptr;
-        cam_ptr = style->getCloudActorMap();
+        pcl::visualization::CloudActorMapPtr cam_ptr = style->getCloudActorMap();
         pcl::visualization::CloudActorMap::iterator cam_it;
         std::string name;
           for(cam_it = cam_ptr->begin();cam_it != cam_ptr->end();cam_it++)
