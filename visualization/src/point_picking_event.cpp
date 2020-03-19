@@ -72,16 +72,8 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
       if (idx != -1)
       {
         pcl::visualization::CloudActorMapPtr cam_ptr = style->getCloudActorMap();
-        pcl::visualization::CloudActorMap::iterator cam_it;
-        std::string name;
-          for(cam_it = cam_ptr->begin();cam_it != cam_ptr->end();cam_it++)
-        {
-            vtkSmartPointer<vtkActor> actor_ptr = actor_;
-          if(cam_it->second.actor == actor_ptr)
-          {
-            name = cam_it->first;
-          }
-        }
+const auto actor = std::find_if(cam_ptr->cbegin(), cam_ptr->cend(), [&actor_](const auto& cloud_actor) { return cloud_actor.second.actor == actor_; });
+const std::string name = (actor != cam_ptr->cend()) ? actor->first : "not_found";
         PointPickingEvent event (idx, x, y, z, name);
         style->point_picking_signal_ (event);
       }
