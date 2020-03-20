@@ -48,6 +48,7 @@
 #include <boost/make_shared.hpp>  // for boost::allocate_shared, boost::make_shared
 #include <boost/pointer_cast.hpp>  // for boost::dynamic_pointer_cast, boost::static_pointer_cast
 #include <boost/smart_ptr/shared_ptr.hpp>  // for boost::shared_ptr
+#include <boost/weak_ptr.hpp>  // for boost::weak_ptr
 
 #include <Eigen/Core>  // for EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -84,6 +85,14 @@ using boost::dynamic_pointer_cast;
 
 /** ADL doesn't work until C++20 for static_pointer_cast since it requires an explicit Tparam */
 using boost::static_pointer_cast;
+
+/**
+ * \brief Force ADL for `weak_ptr`
+ *
+ * For ease of switching from boost::weak_ptr to std::weak_ptr
+ */
+using boost::weak_ptr;
+
 
 #ifdef DOXYGEN_ONLY
 
