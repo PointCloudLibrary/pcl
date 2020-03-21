@@ -129,49 +129,22 @@ namespace pcl
         int height;
 
         stream.read (reinterpret_cast<char*> (&width), sizeof (width));
-        if (stream.bad())
-        {
-          PCL_THROW_EXCEPTION (pcl::IOException, "Failure reading width from file");
-        }
-        else if (stream.fail())
-        {
-          PCL_THROW_EXCEPTION (pcl::IOException, "failbit set while reading width(formatting or extraction error");
-        }
-        else
-        {
-          width_ = static_cast<std::size_t> (width);
-        }
+        pcl::IOException::throw_on_io_fail (stream, "width");
+
+        width_ = static_cast<std::size_t> (width);
         stream.read (reinterpret_cast<char*> (&height), sizeof (height));
-        if (stream.bad())
-        {
-          PCL_THROW_EXCEPTION (pcl::IOException, "Failure reading height from file");
-        }
-        else if (stream.fail())
-        {
-          PCL_THROW_EXCEPTION (pcl::IOException, "failbit set while reading height(formatting or extraction error");
-        }
-        else
-        {
-          height_ = static_cast<std::size_t> (height);
-        }
+        pcl::IOException::throw_on_io_fail (stream, "height");
+
+        height_ = static_cast<std::size_t> (height);
 
         int num_of_elements;
         stream.read (reinterpret_cast<char*> (&num_of_elements), sizeof (num_of_elements));
-        if (stream.bad())
+        pcl::IOException::throw_on_io_fail (stream, "num_of_elements");
+
+        data_.resize (num_of_elements);
+        for (int element_index = 0; element_index < num_of_elements; ++element_index)
         {
-          PCL_THROW_EXCEPTION (pcl::IOException, "Failure reading num_of_elements from file");
-        }
-        else if (stream.fail())
-        {
-          PCL_THROW_EXCEPTION (pcl::IOException, "failbit set while reading num_of_elements(formatting or extraction error");
-        }
-        else
-        {
-          data_.resize (num_of_elements);
-          for (int element_index = 0; element_index < num_of_elements; ++element_index)
-          {
-            stream.read (reinterpret_cast<char*> (&(data_[element_index])), sizeof (data_[element_index]));
-          }
+          stream.read (reinterpret_cast<char*> (&(data_[element_index])), sizeof (data_[element_index]));
         }
       }
 

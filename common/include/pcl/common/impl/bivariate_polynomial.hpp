@@ -289,20 +289,11 @@ pcl::BivariatePolynomialT<real>::readBinary (std::istream& os)
 {
   memoryCleanUp ();
   os.read (reinterpret_cast<char*> (&this->degree), sizeof (int));
-  if (os.bad())
-  {
-    PCL_THROW_EXCEPTION (pcl::IOException, "Failure in reading degree from file");
-  }
-  else if (os.fail())
-  {
-    PCL_THROW_EXCEPTION (pcl::IOException, "failbit set while reading degree (formatting or extraction error");
-  }
-  else
-  {
-    unsigned int paramCnt = getNoOfParametersFromDegree (this->degree);
-    parameters = new real[paramCnt];
-    os.read (reinterpret_cast<char*> (&(*this->parameters)), paramCnt * sizeof (real));
-  }
+  pcl::IOException::throw_on_io_fail(os, "degree");
+
+  unsigned int paramCnt = getNoOfParametersFromDegree (this->degree);
+  parameters = new real[paramCnt];
+  os.read (reinterpret_cast<char*> (&(*this->parameters)), paramCnt * sizeof (real));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -94,23 +94,14 @@ public:
 
     int num_of_sub_nodes;
     stream.read(reinterpret_cast<char*>(&num_of_sub_nodes), sizeof(num_of_sub_nodes));
-    if (stream.bad())
-    {
-      PCL_THROW_EXCEPTION (pcl::IOException, "Failure reading num_of_sub_nodes from file");
-    }
-    else if (stream.fail())
-    {
-      PCL_THROW_EXCEPTION (pcl:IOEXCEPTION, "failbit set while reading num_of_sub_nodes (formatting or extraction error");
-    }
-    else
-    {
-      sub_nodes.resize(num_of_sub_nodes);
+    pcl::IOException::throw_on_io_fail(stream, "num_of_sub_nodes");
 
-      if (num_of_sub_nodes > 0) {
+    sub_nodes.resize(num_of_sub_nodes);
+
+    if (num_of_sub_nodes > 0) {
       for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes;
-             ++sub_node_index) {
-          sub_nodes[sub_node_index].deserialize(stream);
-        }
+           ++sub_node_index) {
+        sub_nodes[sub_node_index].deserialize(stream);
       }
     }
   }

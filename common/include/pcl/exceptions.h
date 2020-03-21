@@ -185,6 +185,21 @@ namespace pcl
                    const char* function_name = nullptr,
                    unsigned line_number = 0)
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }
+      static void
+      throw_on_io_fail (std::istream& stream, std::string msg = "data")
+      {
+        std::string message;
+        if (stream.bad())
+        {
+          message = "Failed in reading " + msg + " from file";
+          PCL_THROW_EXCEPTION (IOException, message);
+        }
+        else if (stream.fail())
+        {
+          message = "Bad formatting or corrupted file encountered while reading " + msg;
+          PCL_THROW_EXCEPTION (IOException, message);
+        }
+      }
   } ;
 
   /** \class InitFailedException

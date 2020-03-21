@@ -90,13 +90,11 @@ public:
   {
     int num_of_trees;
     stream.read(reinterpret_cast<char*>(&num_of_trees), sizeof(num_of_trees));
-    if (num_of_trees > 0)
-    {
-      this->resize(num_of_trees);
+    if (num_of_trees == 0) {
+      PCL_THROW_EXCEPTION(pcl::IOException, "Failed in reading num_of_trees from file");
     }
-    else
-    {
-      PCL_THROW_EXCEPTION (pcl::IOException, "Failed in reading num_of_trees from file");
+    else {
+      this->resize(num_of_trees);
     }
 
     for (std::size_t tree_index = 0; tree_index < this->size(); ++tree_index) {

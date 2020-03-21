@@ -128,7 +128,11 @@ namespace pcl
           int num_of_sub_nodes;
           stream.read (reinterpret_cast<char*> (&num_of_sub_nodes), sizeof(num_of_sub_nodes));
 
-          if (num_of_sub_nodes > 0)
+          if (num_of_sub_nodes == 0)
+          {
+            PCL_THROW_EXCEPTION (pcl::IOException, "Failed to read num_of_sub_nodes from file");
+          }
+          else
           {
             feature.deserialize (stream);
             stream.read (reinterpret_cast<char*> (&threshold), sizeof(threshold));
@@ -151,9 +155,12 @@ namespace pcl
             for (std::size_t j = 0; j < 3; j++)
               stream.read (reinterpret_cast<char*> (&covariance_rot_ (i, j)), sizeof(covariance_rot_ (i, j)));
 
-          if (num_of_sub_nodes > 0)
+          if (num_of_sub_nodes == 0)
           {
-
+            PCL_THROW_EXCEPTION (pcl::IOException, "Failed to read sub_nodes from file");
+          }
+          else
+          {
             sub_nodes.resize (num_of_sub_nodes);
 
             for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes; ++sub_node_index)

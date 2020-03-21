@@ -78,7 +78,11 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   //Read the magic
   std::uint32_t length_of_magic;
   fs.read ((char*)&length_of_magic, sizeof (std::uint32_t));
-  if (length_of_magic > 0)
+  if (length_of_magic == 0)
+  {
+    PCL_THROW_EXCEPTION (pcl::IOException, "File does not contain length_of_magic");
+  }
+  else
   {
     char *magic = new char [length_of_magic];
     fs.read (magic, sizeof (char) * length_of_magic);
@@ -89,10 +93,6 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       return (-1);
     }
     delete[] magic;
-  }
-  else
-  {
-    PCL_THROW_EXCEPTION (pcl::IOException, "File does not contain length_of_magic");
   }
 
   //Read IFS version
@@ -113,27 +113,11 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   //Read the name
   std::uint32_t length_of_name;
   fs.read ((char*)&length_of_name, sizeof (std::uint32_t));
-  if (length_of_name > 0)
-  {
-    char *name = new char [length_of_name];
-    fs.read (name, sizeof (char) * length_of_name);
-    delete[] name;
-  }
-  else
-  {
-    if (fs.bad())
-    {
-      PCL_THROW_EXCEPTION (pcl::IOException, "Failure reading data from file");
-    }
-    else if (fs. fail())
-    {
-      PCL_THROW_EXCEPTION (pcl::IOException, "failbit set (formatting or extraction error");
-    }
-    else
-    {
-      PCL_THROW_EXCEPTION (pcl::IOException, "Incorrect Data Read");
-    }
-  }
+  pcl::IOException::throw_on_io_fail (fs, "length_of_name");
+
+  char *name = new char [length_of_name];
+  fs.read (name, sizeof (char) * length_of_name);
+  delete[] name;
 
   // Read the header and fill it in with wonderful values
   try
@@ -143,7 +127,11 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       //Read the keyword
       std::uint32_t length_of_keyword;
       fs.read ((char*)&length_of_keyword, sizeof (std::uint32_t));
-      if (length_of_keyword > 0)
+      if (length_of_keyword == 0)
+      {
+        PCL_THROW_EXCEPTION (pcl::IOException, "File does not contain length_of_keyword");
+      }
+      else
       {
         char *keyword = new char [length_of_keyword];
         fs.read (keyword, sizeof (char) * length_of_keyword);
@@ -175,10 +163,6 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
           data_idx = fs.tellg ();
           break;
         }
-      }
-      else
-      {
-        PCL_THROW_EXCEPTION (pcl::IOException, "File does not contain length_of_keyword");
       }
     }
   }
