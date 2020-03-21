@@ -94,7 +94,7 @@ public:
 
     int num_of_sub_nodes;
     stream.read(reinterpret_cast<char*>(&num_of_sub_nodes), sizeof(num_of_sub_nodes));
-    pcl::IOException::throw_on_io_fail(stream, "num_of_sub_nodes");
+    PCL_CHECK_IO_STREAM(stream, "num_of_sub_nodes");
 
     sub_nodes.resize(num_of_sub_nodes);
 

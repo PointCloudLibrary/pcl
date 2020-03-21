@@ -129,17 +129,17 @@ namespace pcl
         int height;
 
         stream.read (reinterpret_cast<char*> (&width), sizeof (width));
-        pcl::IOException::throw_on_io_fail (stream, "width");
+        PCL_CHECK_IO_STREAM(stream, "width");
 
         width_ = static_cast<std::size_t> (width);
         stream.read (reinterpret_cast<char*> (&height), sizeof (height));
-        pcl::IOException::throw_on_io_fail (stream, "height");
+        PCL_CHECK_IO_STREAM(stream, "height");
 
         height_ = static_cast<std::size_t> (height);
 
         int num_of_elements;
         stream.read (reinterpret_cast<char*> (&num_of_elements), sizeof (num_of_elements));
-        pcl::IOException::throw_on_io_fail (stream, "num_of_elements");
+        PCL_CHECK_IO_STREAM(stream, "num_of_elements");
 
         data_.resize (num_of_elements);
         for (int element_index = 0; element_index < num_of_elements; ++element_index)

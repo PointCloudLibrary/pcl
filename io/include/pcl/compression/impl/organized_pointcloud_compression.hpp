@@ -292,7 +292,7 @@ namespace pcl
       std::vector<std::uint8_t> compressedColor;
 
       std::uint32_t compressedDisparitySize;
-      std::uint32_t compressedColorSize;
+      std::uint32_t compressedColorSize = 0;
 
       // PNG decoded parameters
       std::size_t png_width = 0;
@@ -332,13 +332,13 @@ namespace pcl
 
         // reading compressed rgb data
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColorSize), sizeof (compressedColorSize));
-        if (compressedColorSize > 0)
+        if (compressedColorSize == 0)
         {
-          compressedColor.resize (compressedColorSize);
+          PCL_THROW_EXCEPTION (pcl::IOException, "Failed to read compressedColorSize from file");
         }
         else
         {
-          PCL_THROW_EXCEPTION (pcl::IOException, "Failed to read compressedColorSize from file");
+          compressedColor.resize (compressedColorSize);
         }
         compressedDataIn_arg.read (reinterpret_cast<char*> (&compressedColor[0]), compressedColorSize * sizeof(std::uint8_t));
 

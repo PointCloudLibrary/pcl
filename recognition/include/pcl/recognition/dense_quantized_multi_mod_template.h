@@ -67,7 +67,7 @@ namespace pcl
 
       std::size_t num_of_features;
       read (stream, num_of_features);
-      pcl::IOException::throw_on_io_fail (stream, "num_of_features");
+      PCL_CHECK_IO_STREAM(stream, "num_of_features");
 
       features.resize (num_of_features);
       for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index)

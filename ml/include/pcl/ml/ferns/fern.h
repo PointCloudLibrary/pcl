@@ -117,7 +117,7 @@ public:
   deserialize(::std::istream& stream)
   {
     stream.read(reinterpret_cast<char*>(&num_of_decisions_), sizeof(num_of_decisions_));
-    pcl::IOException::throw_on_io_fail(stream, "num_of_decisions");
+    PCL_CHECK_IO_STREAM(stream, "num_of_decisions");
 
     features_.resize(num_of_decisions_);
     thresholds_.resize(num_of_decisions_);

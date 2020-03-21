@@ -113,7 +113,7 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   //Read the name
   std::uint32_t length_of_name;
   fs.read ((char*)&length_of_name, sizeof (std::uint32_t));
-  pcl::IOException::throw_on_io_fail (fs, "length_of_name");
+  PCL_CHECK_IO_STREAM(fs, "length_of_name");
 
   char *name = new char [length_of_name];
   fs.read (name, sizeof (char) * length_of_name);
