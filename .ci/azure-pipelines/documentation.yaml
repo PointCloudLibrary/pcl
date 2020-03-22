@@ -18,10 +18,6 @@ jobs:
           hostName: github.com
           sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBh5Yrau/gguTfoNALxhVX77Pgz6y6UWoJRERMKR68ee documentation@pointclouds.org
           sshKeySecureFile: id_ed25519
-      - task: UsePythonVersion@0
-        inputs:
-          versionSpec: '3.6'
-          addToPath: true
       - script: |
           mkdir $BUILD_DIR && cd $BUILD_DIR
           cmake $(Build.SourcesDirectory) \
