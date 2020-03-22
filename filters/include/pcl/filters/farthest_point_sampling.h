@@ -63,7 +63,7 @@ namespace pcl
         /** \brief Empty constructor. */
         FarthestPointSampling (bool extract_removed_indices = false) : 
           FilterIndices<PointT> (extract_removed_indices),
-          sample_ (UINT_MAX), 
+          sample_ (std::numeric_limits<int>::max ()), 
           seed_ (static_cast<unsigned int> (std::random_device()()))
         {
           filter_name_ = "FarthestPointSamping";

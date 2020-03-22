@@ -84,7 +84,6 @@ pcl::FarthestPointSampling<PointT>::applyFilter (std::vector<int> &indices)
     return;
   }
 
-  int max_index;
   std::vector<float> distances_to_selected_points (size, std::numeric_limits<float>::max ());
   
   //set random seed
@@ -92,11 +91,11 @@ pcl::FarthestPointSampling<PointT>::applyFilter (std::vector<int> &indices)
   std::uniform_int_distribution<> dis(0, size -1);
 
   //pick the first point at random
-  max_index = dis(random_gen);
+  int max_index = dis(random_gen);
   distances_to_selected_points[max_index] = -1.0;
   indices.push_back(max_index);
 
-  for (int j = 0; j < sample_ - 1; j++)
+  for (int j = 1; j < sample_; j++)
   {
     //recompute distances
     for (int i = 0; i < distances_to_selected_points.size(); i++)

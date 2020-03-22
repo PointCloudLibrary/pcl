@@ -46,12 +46,12 @@ PointCloud<PointXYZ>::Ptr cloud_in (new PointCloud<PointXYZ>);
 TEST (FarthestPointSampling, farthest_point_sampling)
 {
   const static int SAMPLE = 100;
-  PointCloud<PointXYZ>::Ptr cloud_out (new PointCloud<PointXYZ>);
+  PointCloud<PointXYZ> cloud_out;
   FarthestPointSampling<PointXYZ> fps;
   fps.setInputCloud(cloud_in);
   fps.setSample(SAMPLE);
-  fps.filter(*cloud_out);
-  EXPECT_EQ (cloud_out->points.size(),  SAMPLE);
+  fps.filter(cloud_out);
+  EXPECT_EQ (cloud_out.points.size(),  SAMPLE);
 }
 
 

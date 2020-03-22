@@ -35,10 +35,14 @@
  *
  */
 
-#include <pcl/point_types.h>
-#include <pcl/impl/instantiate.hpp>
 #include <pcl/filters/farthest_point_sampling.h>
 #include <pcl/filters/impl/farthest_point_sampling.hpp>
 
+#ifndef PCL_NO_PRECOMPILE
+#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>
+
 PCL_INSTANTIATE(FarthestPointSampling, PCL_XYZ_POINT_TYPES);
+
+#endif    // PCL_NO_PRECOMPILE
 
