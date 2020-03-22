@@ -69,7 +69,7 @@ namespace pcl
         virtual ~CorrespondenceRejector () {}
 
         /** \brief Provide a pointer to the vector of the input correspondences.
-          * \param[in] correspondences the const boost shared pointer to a correspondence vector
+          * \param[in] correspondences the const shared pointer to a correspondence vector
           */
         virtual inline void 
         setInputCorrespondences (const CorrespondencesConstPtr &correspondences) 
@@ -78,7 +78,7 @@ namespace pcl
         };
 
         /** \brief Get a pointer to the vector of the input correspondences.
-          * \return correspondences the const boost shared pointer to a correspondence vector
+          * \return correspondences the const shared pointer to a correspondence vector
           */
         inline CorrespondencesConstPtr 
         getInputCorrespondences () { return input_correspondences_; };
