@@ -6,10 +6,15 @@
 #include <QEvent>
 #include <QObject>
 
+#include <pcl/memory.h>  // for dynamic_pointer_cast
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/surface/convex_hull.h>
 
 #include <vtkRenderWindow.h>
+
+// #include <boost/filesystem.hpp>  // for boost::filesystem::directory_iterator
+#include <boost/signals2/connection.hpp>  // for boost::signals2::connection
+
 
 void
 displayPlanarRegions (std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allocator<pcl::PlanarRegion<PointT> > > &regions,
@@ -276,7 +281,7 @@ OrganizedSegmentationDemo::cloud_cb (const CloudConstPtr& cloud)
   ne.setInputCloud (cloud);
   ne.compute (*normal_cloud);
   float* distance_map = ne.getDistanceMap ();
-  pcl::EdgeAwarePlaneComparator<PointT, pcl::Normal>::Ptr eapc = boost::dynamic_pointer_cast<pcl::EdgeAwarePlaneComparator<PointT, pcl::Normal> >(edge_aware_comparator_);
+  pcl::EdgeAwarePlaneComparator<PointT, pcl::Normal>::Ptr eapc = dynamic_pointer_cast<pcl::EdgeAwarePlaneComparator<PointT, pcl::Normal> >(edge_aware_comparator_);
   eapc->setDistanceMap (distance_map);
   eapc->setDistanceThreshold (0.01f, false);
 
