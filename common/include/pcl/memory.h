@@ -46,6 +46,7 @@
 
 
 #include <boost/make_shared.hpp>  // for boost::allocate_shared, boost::make_shared
+#include <boost/pointer_cast.hpp>  // for boost::dynamic_pointer_cast, boost::static_pointer_cast
 #include <boost/smart_ptr/shared_ptr.hpp>  // for boost::shared_ptr
 
 #include <Eigen/Core>  // for EIGEN_MAKE_ALIGNED_OPERATOR_NEW
