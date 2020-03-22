@@ -115,6 +115,13 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Input point cloud has no data!");
     return (-1);
   }
+
+  if (cloud.width * cloud.height != cloud.points.size ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Number of points different than width * height!");
+    return (-1);
+  }
+
   int data_idx = 0;
   std::ostringstream oss;
   oss << generateHeader<PointT> (cloud) << "DATA binary\n";
@@ -246,6 +253,13 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Input point cloud has no data!");
     return (-1);
   }
+
+  if (cloud.width * cloud.height != cloud.points.size ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Number of points different than width * height!");
+    return (-1);
+  }
+
   int data_idx = 0;
   std::ostringstream oss;
   oss << generateHeader<PointT> (cloud) << "DATA binary_compressed\n";
@@ -592,6 +606,13 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Input point cloud has no data or empty indices given!");
     return (-1);
   }
+
+  if (cloud.width * cloud.height != cloud.points.size ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Number of points different than width * height!");
+    return (-1);
+  }
+
   int data_idx = 0;
   std::ostringstream oss;
   oss << generateHeader<PointT> (cloud, static_cast<int> (indices.size ())) << "DATA binary\n";
