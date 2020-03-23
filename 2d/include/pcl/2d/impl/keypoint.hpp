@@ -254,4 +254,3 @@ pcl::keypoint::imageElementMultiply(ImageType& output,
     }
   }
 }
-

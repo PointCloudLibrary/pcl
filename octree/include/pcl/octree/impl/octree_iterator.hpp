@@ -372,4 +372,3 @@ OctreeLeafNodeBreadthFirstIterator<OctreeT>::operator++(int)
 }
 } // namespace octree
 } // namespace pcl
-

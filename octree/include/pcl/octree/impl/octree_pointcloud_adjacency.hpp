@@ -329,4 +329,3 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
 
 #define PCL_INSTANTIATE_OctreePointCloudAdjacency(T)                                   \
   template class PCL_EXPORTS pcl::octree::OctreePointCloudAdjacency<T>;
-

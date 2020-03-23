@@ -136,4 +136,3 @@ pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafContainerT, BranchContain
 
 #define PCL_INSTANTIATE_OctreePointCloudVoxelCentroid(T)                               \
   template class PCL_EXPORTS pcl::octree::OctreePointCloudVoxelCentroid<T>;
-

@@ -374,4 +374,3 @@ pcl::Morphology<PointT>::setStructuringElement(
 {
   structuring_element_ = structuring_element;
 }
-

@@ -558,4 +558,3 @@ OctreeBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
 
 #define PCL_INSTANTIATE_OctreeBase(T)                                                  \
   template class PCL_EXPORTS pcl::octree::OctreeBase<T>;
-

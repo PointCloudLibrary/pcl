@@ -468,4 +468,3 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeLoG(const float kernel_sigma,
   convolution_.setKernel(*log_kernel);
   convolution_.filter(output);
 }
-

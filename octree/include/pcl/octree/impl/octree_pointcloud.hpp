@@ -1051,4 +1051,3 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
       pcl::octree::OctreeContainerEmpty,                                               \
       pcl::octree::Octree2BufBase<pcl::octree::OctreeContainerEmpty,                   \
                                   pcl::octree::OctreeContainerEmpty>>;
-

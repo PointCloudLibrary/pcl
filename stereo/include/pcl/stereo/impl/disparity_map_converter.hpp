@@ -322,4 +322,3 @@ pcl::DisparityMapConverter<PointT>::translateCoordinates(std::size_t row,
 
 #define PCL_INSTANTIATE_DisparityMapConverter(T)                                       \
   template class PCL_EXPORTS pcl::DisparityMapConverter<T>;
-

@@ -348,4 +348,3 @@ pcl::kernel<PointT>::setKernelSigma(float kernel_sigma)
 {
   sigma_ = kernel_sigma;
 }
-

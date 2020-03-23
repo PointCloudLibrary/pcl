@@ -1066,4 +1066,3 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
 
 #define PCL_INSTANTIATE_OctreePointCloudSearch(T)                                      \
   template class PCL_EXPORTS pcl::octree::OctreePointCloudSearch<T>;
-
