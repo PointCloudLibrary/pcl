@@ -466,15 +466,15 @@ void ON_SimpleArray<T>::Append( int count, const T* p )
 template <class T>
 void ON_SimpleArray<T>::Insert( int i, const T& x ) 
 {
-  if( i >= 0 && i <= m_count ) 
+  if( i >= 0 && i <= m_count )
   {
-    if ( m_count == m_capacity ) 
+    if ( m_count == m_capacity )
     {
       int newcapacity = NewCapacity();
       Reserve( newcapacity );
     }
 	  m_count++;
-    Move( i+1, i, m_count-1-i );
+    Move( i+1, i, static_cast<unsigned int>(m_count)-1-i );
 	  m_a[i] = x;
   }
 }
@@ -1372,7 +1372,7 @@ void ON_ClassArray<T>::Insert( int i, const T& x )
     DestroyElement( m_a[m_count] );
 	  m_count++;
     if ( i < m_count-1 ) {
-      Move( i+1, i, m_count-1-i );
+      Move( i+1, i, static_cast<unsigned int>(m_count)-1-i );
       // This call to memset is ok even when T has a vtable
       // because in-place construction is used later.
       memset( (void*)(&m_a[i]), 0, sizeof(T) );

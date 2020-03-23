@@ -46,6 +46,7 @@
 #include <pcl/geometry/mesh_indices.h>
 #include <pcl/geometry/mesh_elements.h>
 #include <pcl/geometry/mesh_traits.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 

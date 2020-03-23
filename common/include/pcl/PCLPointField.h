@@ -3,7 +3,7 @@
 #include <string>   // for string
 #include <ostream>  // for ostream
 
-#include <pcl/pcl_macros.h>  // for shared_ptr
+#include <pcl/memory.h>  // for shared_ptr
 
 namespace pcl
 {

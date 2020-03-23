@@ -11,7 +11,7 @@
 
 #include <Eigen/Core>
 #include <GL/glew.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 namespace pcl {
 namespace simulation {

@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/search/search.h>
@@ -81,7 +82,7 @@ namespace pcl
       /** \brief This destructor destroys the cloud, normals and search method used for
         * finding KNN. In other words it frees memory.
         */
-      
+
       ~RegionGrowing ();
 
       /** \brief Get the minimum number of points that a cluster needs to contain in order to be considered valid. */

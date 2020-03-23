@@ -56,7 +56,7 @@
 #endif
 
 #ifndef _USE_MATH_DEFINES
-#define _USE_MATH_DEFINES
+  #define _USE_MATH_DEFINES
 #endif
 #include <cmath>
 #include <cstdarg>
@@ -66,13 +66,6 @@
 #include <iostream>
 
 #include <boost/cstdint.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
-
-//Eigen has an enum that clashes with X11 Success define, which is ultimately included by pcl
-#ifdef Success
-  #undef Success
-#endif
-#include <Eigen/Core>
 
 #include <pcl/pcl_config.h>
 
@@ -96,33 +89,33 @@
 
 namespace pcl
 {
-  /**
-   * \brief Alias for boost::shared_ptr
-   *
-   * For ease of switching from boost::shared_ptr to std::shared_ptr
-   *
-   * \see pcl::make_shared
-   * \tparam T Type of the object stored inside the shared_ptr
-   */
-  template <typename T>
-  using shared_ptr = boost::shared_ptr<T>;
-
+  /// \deprecated use std::uint8_t instead of pcl::uint8_t
   using uint8_t PCL_DEPRECATED("use std::uint8_t instead of pcl::uint8_t") = std::uint8_t;
+  /// \deprecated use std::int8_t instead of pcl::int8_t
   using int8_t PCL_DEPRECATED("use std::int8_t instead of pcl::int8_t") = std::int8_t;
+  /// \deprecated use std::uint16_t instead of pcl::uint16_t
   using uint16_t PCL_DEPRECATED("use std::uint16_t instead of pcl::uint16_t") = std::uint16_t;
+  /// \deprecated use std::uint16_t instead of pcl::int16_t
   using int16_t PCL_DEPRECATED("use std::uint16_t instead of pcl::int16_t") = std::int16_t;
+  /// \deprecated use std::uint32_t instead of pcl::uint32_t
   using uint32_t PCL_DEPRECATED("use std::uint32_t instead of pcl::uint32_t") = std::uint32_t;
+  /// \deprecated use std::int32_t instead of pcl::int32_t
   using int32_t PCL_DEPRECATED("use std::int32_t instead of pcl::int32_t") = std::int32_t;
+  /// \deprecated use std::uint64_t instead of pcl::uint64_t
   using uint64_t PCL_DEPRECATED("use std::uint64_t instead of pcl::uint64_t") = std::uint64_t;
+  /// \deprecated use std::int64_t instead of pcl::int64_t
   using int64_t PCL_DEPRECATED("use std::int64_t instead of pcl::int64_t") = std::int64_t;
+  /// \deprecated use std::int_fast16_t instead of pcl::int_fast16_t
   using int_fast16_t PCL_DEPRECATED("use std::int_fast16_t instead of pcl::int_fast16_t") = std::int_fast16_t;
 }
 
-#if defined _WIN32 && defined _MSC_VER
+#if defined _WIN32
 
 // Define math constants, without including math.h, to prevent polluting global namespace with old math methods
 // Copied from math.h
-#ifndef _MATH_DEFINES_DEFINED
+// Check for M_2_SQRTPI since the cmath header on mingw-w64 doesn't seem to define
+// _MATH_DEFINES_DEFINED when included with _USE_MATH_DEFINES
+#if !defined _MATH_DEFINES_DEFINED && !defined M_2_SQRTPI
   #define _MATH_DEFINES_DEFINED
 
   #define M_E        2.71828182845904523536   // e
@@ -140,15 +133,16 @@ namespace pcl
   #define M_SQRT1_2  0.707106781186547524401  // 1/sqrt(2)
 #endif
 
-// Stupid. This should be removed when all the PCL dependencies have min/max fixed.
-#ifndef NOMINMAX
-# define NOMINMAX
+#if defined _MSC_VER
+  // Stupid. This should be removed when all the PCL dependencies have min/max fixed.
+  #ifndef NOMINMAX
+    #define NOMINMAX
+  #endif
+
+  #define __PRETTY_FUNCTION__ __FUNCTION__
+  #define __func__ __FUNCTION__
 #endif
-
-# define __PRETTY_FUNCTION__ __FUNCTION__
-# define __func__ __FUNCTION__
-
-#endif //defined _WIN32 && defined _MSC_VER
+#endif // defined _WIN32
 
 
 template<typename T>
@@ -376,19 +370,6 @@ aligned_free (void* ptr)
   #error aligned_free not supported on your platform
 #endif
 }
-
-/**
- * \brief Macro to signal a class requires a custom allocator
- *
- *  It's an implementation detail to have pcl::has_custom_allocator work, a
- *  thin wrapper over Eigen's own macro
- *
- * \see pcl::has_custom_allocator, pcl::make_shared
- * \ingroup common
- */
-#define PCL_MAKE_ALIGNED_OPERATOR_NEW \
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
-  using _custom_allocator_type_trait = void;
 
 /**
  * \brief Macro to add a no-op or a fallthrough attribute based on compiler feature

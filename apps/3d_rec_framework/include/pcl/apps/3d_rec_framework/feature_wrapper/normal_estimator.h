@@ -12,6 +12,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/common/time.h>
+#include <pcl/memory.h>  // for pcl::make_shared
 
 namespace pcl
 {
@@ -27,7 +28,7 @@ namespace pcl
         computeMeshResolution (PointInTPtr & input)
         {
           using KdTreeInPtr = typename pcl::KdTree<PointInT>::Ptr;
-          KdTreeInPtr tree = boost::make_shared<pcl::KdTreeFLANN<PointInT> > (false);
+          KdTreeInPtr tree = pcl::make_shared<pcl::KdTreeFLANN<PointInT> > (false);
           tree->setInputCloud (input);
 
           std::vector<int> nn_indices (9);

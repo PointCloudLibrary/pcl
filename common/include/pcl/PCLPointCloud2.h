@@ -5,6 +5,7 @@
 
 #include <boost/predef/other/endian.h>
 
+#include <pcl/pcl_macros.h>  // for PCL_EXPORTS
 #include <pcl/PCLHeader.h>
 #include <pcl/PCLPointField.h>
 

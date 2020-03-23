@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pcl/features/integral_image2D.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 #include <Eigen/Core>

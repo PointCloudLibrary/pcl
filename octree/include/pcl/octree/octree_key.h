@@ -38,6 +38,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstring> // for memcpy
 
 namespace pcl {
 namespace octree {

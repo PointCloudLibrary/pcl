@@ -40,6 +40,7 @@
 #include <QDebug>
 
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/search/kdtree.h>

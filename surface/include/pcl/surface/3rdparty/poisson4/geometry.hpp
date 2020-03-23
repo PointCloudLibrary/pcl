@@ -8,14 +8,14 @@ are permitted provided that the following conditions are met:
 Redistributions of source code must retain the above copyright notice, this list of
 conditions and the following disclaimer. Redistributions in binary form must reproduce
 the above copyright notice, this list of conditions and the following disclaimer
-in the documentation and/or other materials provided with the distribution. 
+in the documentation and/or other materials provided with the distribution.
 
 Neither the name of the Johns Hopkins University nor the names of its contributors
 may be used to endorse or promote products derived from this software without specific
-prior written permission. 
+prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES 
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES
 OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
 SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
@@ -32,8 +32,6 @@ namespace pcl
 {
   namespace poisson
   {
-
-
     template<class Real>
     Real Random(void){return Real(rand())/RAND_MAX;}
 
@@ -78,6 +76,7 @@ namespace pcl
       p.coords[1]=-p1.coords[0]*p2.coords[2]+p1.coords[2]*p2.coords[0];
       p.coords[2]= p1.coords[0]*p2.coords[1]-p1.coords[1]*p2.coords[0];
     }
+
     template<class Real>
     void EdgeCollapse(const Real& edgeRatio,std::vector<TriangleIndex>& triangles,std::vector< Point3D<Real> >& positions,std::vector< Point3D<Real> >* normals){
       int i,j,*remapTable,*pointCount,idx[3];
@@ -173,6 +172,7 @@ namespace pcl
       delete[] pointCount;
       delete[] remapTable;
     }
+
     template<class Real>
     void TriangleCollapse(const Real& edgeRatio,std::vector<TriangleIndex>& triangles,std::vector< Point3D<Real> >& positions,std::vector< Point3D<Real> >* normals){
       int i,j,*remapTable,*pointCount,idx[3];
@@ -306,6 +306,7 @@ namespace pcl
       else													{p3=edges[triangles[tIndex].eIndex[2]].pIndex[1];}
       return 1;
     }
+
     template<class Real>
     double Triangulation<Real>::area(int p1,int p2,int p3){
       Point3D<Real> q1,q2,q;
@@ -316,18 +317,21 @@ namespace pcl
       CrossProduct(q1,q2,q);
       return Length(q);
     }
+
     template<class Real>
     double Triangulation<Real>::area(int tIndex){
       int p1,p2,p3;
       factor(tIndex,p1,p2,p3);
       return area(p1,p2,p3);
     }
+
     template<class Real>
     double Triangulation<Real>::area(void){
       double a=0;
       for(int i=0;i<int(triangles.size());i++){a+=area(i);}
       return a;
     }
+
     template<class Real>
     int Triangulation<Real>::addTriangle(int p1,int p2,int p3){
       int tIdx,eIdx,p[3];
@@ -366,6 +370,7 @@ namespace pcl
       }
       return tIdx;
     }
+
     template<class Real>
     int Triangulation<Real>::flipMinimize(int eIndex){
       double oldArea,newArea;
@@ -426,6 +431,5 @@ namespace pcl
       }
       return 1;
     }
-
   }
 }

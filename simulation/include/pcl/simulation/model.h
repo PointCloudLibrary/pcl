@@ -19,6 +19,7 @@
 #include <boost/shared_ptr.hpp>
 #include <pcl/PolygonMesh.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/simulation/glsl_shader.h>

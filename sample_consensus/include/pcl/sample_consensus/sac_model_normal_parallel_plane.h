@@ -42,6 +42,7 @@
 
 #include <pcl/sample_consensus/sac_model_normal_plane.h>
 #include <pcl/sample_consensus/model_types.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl

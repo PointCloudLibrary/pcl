@@ -396,7 +396,7 @@ protected:
   createLeaf(const OctreeKey& key_arg)
   {
 
-    LeafNode* leaf_node;
+    LeafNode* leaf_node = nullptr;
     BranchNode* leaf_node_parent;
 
     createLeafRecursive(key_arg, depth_mask_, root_node_, leaf_node, leaf_node_parent);

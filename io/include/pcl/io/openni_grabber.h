@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_config.h>
 #include <pcl/pcl_macros.h>
 
@@ -127,10 +128,10 @@ namespace pcl
       getName () const override;
 
       /** \brief Obtain the number of frames per second (FPS). */
-      float 
+      float
       getFramesPerSecond () const override;
 
-      /** \brief Get a boost shared pointer to the \ref pcl::openni_wrapper::OpenNIDevice object. */
+      /** \brief Get a pcl::shared pointer to the openni_wrapper::OpenNIDevice object. */
       inline openni_wrapper::OpenNIDevice::Ptr
       getDevice () const;
 
@@ -151,8 +152,8 @@ namespace pcl
         * and the grabber will use the default values from the camera instead.
         */
       inline void
-      setRGBCameraIntrinsics (const double rgb_focal_length_x, 
-                              const double rgb_focal_length_y, 
+      setRGBCameraIntrinsics (const double rgb_focal_length_x,
+                              const double rgb_focal_length_y,
                               const double rgb_principal_point_x,
                               const double rgb_principal_point_y)
       {
@@ -161,7 +162,7 @@ namespace pcl
         rgb_principal_point_x_ = rgb_principal_point_x;
         rgb_principal_point_y_ = rgb_principal_point_y;
       }
-      
+
       /** \brief Get the RGB camera parameters (fx, fy, cx, cy)
         * \param[out] rgb_focal_length_x the RGB focal length (fx)
         * \param[out] rgb_focal_length_y the RGB focal length (fy)
@@ -169,8 +170,8 @@ namespace pcl
         * \param[out] rgb_principal_point_y the RGB principal point (cy)
         */
       inline void
-      getRGBCameraIntrinsics (double &rgb_focal_length_x, 
-                              double &rgb_focal_length_y, 
+      getRGBCameraIntrinsics (double &rgb_focal_length_x,
+                              double &rgb_focal_length_y,
                               double &rgb_principal_point_x,
                               double &rgb_principal_point_y) const
       {
@@ -217,7 +218,7 @@ namespace pcl
         rgb_focal_length_x = rgb_focal_length_x_;
         rgb_focal_length_y = rgb_focal_length_y_;
       }
-      
+
       /** \brief Set the Depth camera parameters (fx, fy, cx, cy)
         * \param[in] depth_focal_length_x the Depth focal length (fx)
         * \param[in] depth_focal_length_y the Depth focal length (fy)
@@ -227,8 +228,8 @@ namespace pcl
         * and the grabber will use the default values from the camera instead.
         */
       inline void
-      setDepthCameraIntrinsics (const double depth_focal_length_x, 
-                                const double depth_focal_length_y, 
+      setDepthCameraIntrinsics (const double depth_focal_length_x,
+                                const double depth_focal_length_y,
                                 const double depth_principal_point_x,
                                 const double depth_principal_point_y)
       {
@@ -237,7 +238,7 @@ namespace pcl
         depth_principal_point_x_ = depth_principal_point_x;
         depth_principal_point_y_ = depth_principal_point_y;
       }
-      
+
       /** \brief Get the Depth camera parameters (fx, fy, cx, cy)
         * \param[out] depth_focal_length_x the Depth focal length (fx)
         * \param[out] depth_focal_length_y the Depth focal length (fy)
@@ -245,8 +246,8 @@ namespace pcl
         * \param[out] depth_principal_point_y the Depth principal point (cy)
         */
       inline void
-      getDepthCameraIntrinsics (double &depth_focal_length_x, 
-                                double &depth_focal_length_y, 
+      getDepthCameraIntrinsics (double &depth_focal_length_x,
+                                double &depth_focal_length_y,
                                 double &depth_principal_point_x,
                                 double &depth_principal_point_y) const
       {
@@ -266,7 +267,7 @@ namespace pcl
       {
         depth_focal_length_x_ = depth_focal_length_y_ = depth_focal_length;
       }
-      
+
 
       /** \brief Set the Depth image focal length
         * \param[in] depth_focal_length_x the Depth focal length (fx)
@@ -427,7 +428,7 @@ namespace pcl
       unsigned image_height_;
       unsigned depth_width_;
       unsigned depth_height_;
-      
+
       bool image_required_;
       bool depth_required_;
       bool ir_required_;

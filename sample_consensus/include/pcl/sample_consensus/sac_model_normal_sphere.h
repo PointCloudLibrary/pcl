@@ -44,6 +44,7 @@
 #include <pcl/sample_consensus/sac_model_sphere.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/common/common.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl
@@ -157,13 +158,7 @@ namespace pcl
     protected:
       using SampleConsensusModel<PointT>::sample_size_;
       using SampleConsensusModel<PointT>::model_size_;
-
-      /** \brief Check whether a model is valid given the user constraints.
-        * \param[in] model_coefficients the set of model coefficients
-        */
-      bool
-      isModelValid (const Eigen::VectorXf &model_coefficients) const override;
-
+      using SampleConsensusModelSphere<PointT>::isModelValid;
   };
 }
 

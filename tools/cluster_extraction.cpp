@@ -3,7 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2011, Willow Garage, Inc.
- *  
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@
  */
 
 #include <pcl/PCLPointCloud2.h>
+#include <pcl/memory.h>  // for pcl::make_shared
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/segmentation/extract_clusters.h>
@@ -43,8 +44,8 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
+
 #include <vector>
-#include "boost.h"
 
 using namespace pcl;
 using namespace pcl::io;
@@ -62,11 +63,11 @@ printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input.pcd output.pcd <options>\n", argv[0]);
   print_info ("  where options are:\n");
-  print_info ("                     -min X = use a minimum of X points peer cluster (default: "); 
+  print_info ("                     -min X = use a minimum of X points peer cluster (default: ");
   print_value ("%d", default_min); print_info (")\n");
-  print_info ("                     -max X      = use a maximum of X points peer cluster (default: "); 
+  print_info ("                     -max X      = use a maximum of X points peer cluster (default: ");
   print_value ("%d", default_max); print_info (")\n");
-  print_info ("                     -tolerance X = the spacial distance between clusters (default: "); 
+  print_info ("                     -tolerance X = the spacial distance between clusters (default: ");
   print_value ("%lf", default_tolerance); print_info (")\n");
 }
 
@@ -96,7 +97,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, std::vector<pcl::PCLPointCl
   // Estimate
   TicToc tt;
   tt.tic ();
-  
+
   print_highlight (stderr, "Computing ");
 
   // Creating the KdTree object for the search method of the extraction
@@ -119,7 +120,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, std::vector<pcl::PCLPointCl
   {
     pcl::ExtractIndices<pcl::PCLPointCloud2> extract;
     extract.setInputCloud (input);
-    extract.setIndices (boost::make_shared<const pcl::PointIndices> (*it));
+    extract.setIndices (pcl::make_shared<const pcl::PointIndices> (*it));
     pcl::PCLPointCloud2::Ptr out (new pcl::PCLPointCloud2);
     extract.filter (*out);
     output.push_back (out);
@@ -143,7 +144,7 @@ saveCloud (const std::string &filename, const std::vector<pcl::PCLPointCloud2::P
 
     print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output[i]->width * output[i]->height); print_info (" points]\n");
   }
-  
+
 }
 
 /* ---[ */
@@ -178,7 +179,7 @@ main (int argc, char** argv)
 
   // Load the first file
   pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
-  if (!loadCloud (argv[p_file_indices[0]], *cloud)) 
+  if (!loadCloud (argv[p_file_indices[0]], *cloud))
     return (-1);
 
   // Perform the feature estimation
