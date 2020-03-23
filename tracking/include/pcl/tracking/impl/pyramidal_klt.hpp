@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_TRACKING_IMPL_PYRAMIDAL_KLT_HPP
-#define PCL_TRACKING_IMPL_PYRAMIDAL_KLT_HPP
+#pragma once
 
 #include <pcl/common/time.h>
 #include <pcl/common/utils.h>
@@ -637,4 +636,3 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::computeTracking ()
   keypoints_status_->indices = status;
 }
 
-#endif

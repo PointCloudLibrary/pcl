@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_NORMAL_3D_OMP_H_
-#define PCL_FEATURES_IMPL_NORMAL_3D_OMP_H_
+#pragma once
 
 #include <pcl/features/normal_3d_omp.h>
 
@@ -127,5 +126,4 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
 
 #define PCL_INSTANTIATE_NormalEstimationOMP(T,NT) template class PCL_EXPORTS pcl::NormalEstimationOMP<T,NT>;
 
-#endif    // PCL_FEATURES_IMPL_NORMAL_3D_OMP_H_
 

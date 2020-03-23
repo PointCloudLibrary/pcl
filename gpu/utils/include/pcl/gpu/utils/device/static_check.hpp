@@ -34,8 +34,7 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#ifndef PCL_GPU_DEVICE_STATIC_CHECK_HPP_
-#define PCL_GPU_DEVICE_STATIC_CHECK_HPP_
+#pragma once
 
 #if defined(__CUDACC__) 
     #define __PCL_GPU_HOST_DEVICE__ __host__ __device__ __forceinline__ 
@@ -63,4 +62,3 @@ namespace pcl
 
 #undef __PCL_GPU_HOST_DEVICE__
 
-#endif /* PCL_GPU_DEVICE_STATIC_CHECK_HPP_ */ 

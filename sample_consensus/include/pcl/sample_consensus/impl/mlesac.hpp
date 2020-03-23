@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_MLESAC_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_MLESAC_H_
+#pragma once
 
 #include <pcl/sample_consensus/mlesac.h>
 #include <pcl/point_types.h>
@@ -297,5 +296,4 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedian (
 
 #define PCL_INSTANTIATE_MaximumLikelihoodSampleConsensus(T) template class PCL_EXPORTS pcl::MaximumLikelihoodSampleConsensus<T>;
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_MLESAC_H_
 

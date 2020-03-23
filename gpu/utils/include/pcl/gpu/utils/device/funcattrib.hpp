@@ -34,8 +34,7 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#ifndef PCL_DEVICE_FUNCATTRIB_HPP_
-#define PCL_DEVICE_FUNCATTRIB_HPP_
+#pragma once
 
 #include<cstdio>
 
@@ -66,4 +65,3 @@ namespace pcl
 
 }
 
-#endif  /* PCL_DEVICE_FUNCATTRIB_HPP_ */

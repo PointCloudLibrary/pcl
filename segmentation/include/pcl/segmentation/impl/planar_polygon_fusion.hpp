@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_PLANAR_POLYGON_FUSION_HPP_
-#define PCL_SEGMENTATION_PLANAR_POLYGON_FUSION_HPP_
+#pragma once
 
 #include <pcl/segmentation/planar_polygon_fusion.h>
 
@@ -45,4 +44,3 @@
 
 #define PCL_INSTANTIATE_PlanarPolygonFusion(T) template class PCL_EXPORTS pcl::PlanarPolygonFusion<T>;
 
-#endif // PCL_SEGMENTATION_PLANAR_POLYGON_FUSION_HPP_

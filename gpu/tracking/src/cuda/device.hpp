@@ -1,5 +1,4 @@
-#ifndef PCL_GPU_TRACKING_DEVICE_HPP_
-#define PCL_GPU_TRACKING_DEVICE_HPP_
+#pragma once
 
 #include "internal.h"
 
@@ -16,4 +15,3 @@ namespace pcl
 	}
 }
 
-#endif // PCL_GPU_TRACKING_DEVICE_HPP_

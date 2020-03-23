@@ -37,8 +37,7 @@
  * $Id$
  *
  */
-#ifndef PCL_NDT_2D_IMPL_H_
-#define PCL_NDT_2D_IMPL_H_
+#pragma once
 
 #include <pcl/registration/eigen.h>
 #include <pcl/registration/boost.h>
@@ -492,5 +491,4 @@ pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransforma
   output = intm_cloud;
 }
 
-#endif    // PCL_NDT_2D_IMPL_H_
  

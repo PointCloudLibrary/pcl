@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_RSD_H_
-#define PCL_FEATURES_IMPL_RSD_H_
+#pragma once
 
 #include <cfloat>
 #include <pcl/features/rsd.h>
@@ -292,4 +291,3 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
 #define PCL_INSTANTIATE_RSDEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::RSDEstimation<T,NT,OutT>;
 
-#endif    // PCL_FEATURES_IMPL_RSD_H_ 

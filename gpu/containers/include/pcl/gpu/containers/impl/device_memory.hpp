@@ -34,8 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef PCL_GPU_CONTAINER_DEVICE_MEMORY_IMPL_HPP_
-#define PCL_GPU_CONTAINER_DEVICE_MEMORY_IMPL_HPP_
+#pragma once
 
 /////////////////////  Inline implementations of DeviceMemory ////////////////////////////////////////////
 
@@ -73,5 +72,4 @@ template <class U> pcl::gpu::DeviceMemory2D::operator pcl::gpu::PtrStepSz<U>() c
     return result;
 }
 
-#endif /* PCL_GPU_CONTAINER_DEVICE_MEMORY_IMPL_HPP_ */ 
 

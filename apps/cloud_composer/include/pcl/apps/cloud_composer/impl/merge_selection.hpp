@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef IMPL_MERGE_SELECTION_H_
-#define IMPL_MERGE_SELECTION_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/merge_selection.h>
 #include <pcl/point_cloud.h>
@@ -115,4 +114,3 @@ pcl::cloud_composer::MergeSelection::performTemplatedAction (const QList <const 
 
 
 
-#endif //IMPL_MERGE_SELECTION_H_

@@ -33,9 +33,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_MODELER_SCENE_TREE_IMPL_H_
-#define PCL_MODELER_SCENE_TREE_IMPL_H_
+#pragma once
 
 #include <pcl/apps/modeler/scene_tree.h>
 
@@ -61,5 +59,3 @@ namespace pcl
   }
 }
 
-
-#endif // PCL_MODELER_SCENE_TREE_IMPL_H_

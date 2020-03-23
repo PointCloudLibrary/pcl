@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CIRCLE_3D_HPP_
-#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CIRCLE_3D_HPP_
+#pragma once
 
 #include <pcl/sample_consensus/eigen.h>
 #include <pcl/sample_consensus/sac_model_circle3d.h>
@@ -447,5 +446,4 @@ pcl::SampleConsensusModelCircle3D<PointT>::isModelValid (const Eigen::VectorXf &
 
 #define PCL_INSTANTIATE_SampleConsensusModelCircle3D(T) template class PCL_EXPORTS pcl::SampleConsensusModelCircle3D<T>;
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CIRCLE3D_HPP_
 

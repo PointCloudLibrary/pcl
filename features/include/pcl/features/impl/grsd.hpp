@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_GRSD_H_
-#define PCL_FEATURES_IMPL_GRSD_H_
+#pragma once
 
 #include <pcl/features/grsd.h>
 ///////// STATIC /////////
@@ -123,4 +122,3 @@ pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 
 #define PCL_INSTANTIATE_GRSDEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::GRSDEstimation<T,NT,OutT>;
 
-#endif /* PCL_FEATURES_IMPL_GRSD_H_ */

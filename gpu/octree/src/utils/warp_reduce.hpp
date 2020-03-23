@@ -34,8 +34,7 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#ifndef PCL_GPU_WARP_REDUCE
-#define PCL_GPU_WARP_REDUCE
+#pragma once
 
 
 namespace pcl
@@ -63,4 +62,3 @@ namespace pcl
     }
 }
 
-#endif

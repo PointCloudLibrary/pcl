@@ -87,8 +87,7 @@
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef PCL_GPU_FEATURES_EIGEN_HPP_
-#define PCL_GPU_FEATURES_EIGEN_HPP_
+#pragma once
 
 #include <limits>
 
@@ -448,4 +447,3 @@ namespace pcl
     }
 }
 
-#endif  /* PCL_GPU_FEATURES_EIGEN_HPP_ */

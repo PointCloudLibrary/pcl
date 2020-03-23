@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_LINEMOD_LINE_RGBD_IMPL_HPP_
-#define PCL_RECOGNITION_LINEMOD_LINE_RGBD_IMPL_HPP_
+#pragma once
 
 //#include <pcl/recognition/linemod/line_rgbd.h>
 #include <pcl/io/pcd_io.h>
@@ -975,5 +974,4 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBoxIntersectionVolume (
 }
 
 
-#endif        // PCL_RECOGNITION_LINEMOD_LINE_RGBD_IMPL_HPP_ 
 

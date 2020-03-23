@@ -35,9 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef _LIBSVM_HPP_
-#define _LIBSVM_HPP_
+#pragma once
 
 #include <cctype>
 #include <cfloat>
@@ -3570,5 +3568,3 @@ svm_set_print_string_function(void (*print_func)(const char*))
   else
     svm_print_string = print_func;
 }
-
-#endif // _LIBSVM_HPP_

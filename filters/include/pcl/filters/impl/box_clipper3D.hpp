@@ -32,8 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_FILTERS_IMPL_BOX_CLIPPER3D_HPP
-#define PCL_FILTERS_IMPL_BOX_CLIPPER3D_HPP
+#pragma once
 
 #include <pcl/filters/box_clipper3D.h>
 
@@ -213,4 +212,3 @@ pcl::BoxClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& clou
         clipped.push_back (index);
   }
 }
-#endif //PCL_FILTERS_IMPL_BOX_CLIPPER3D_HPP

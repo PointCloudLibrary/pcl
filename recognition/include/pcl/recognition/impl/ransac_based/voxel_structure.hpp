@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_VOXEL_STRUCTURE_HPP_
-#define PCL_RECOGNITION_VOXEL_STRUCTURE_HPP_
+#pragma once
 
 template<class T, typename REAL> inline void
 pcl::recognition::VoxelStructure<T,REAL>::build (const REAL bounds[6], int num_of_voxels[3])
@@ -153,4 +152,3 @@ pcl::recognition::VoxelStructure<T,REAL>::getNeighbors (const REAL* p, T **neigh
 
 //================================================================================================================================
 
-#endif // PCL_RECOGNITION_VOXEL_STRUCTURE_HPP_

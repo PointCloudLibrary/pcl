@@ -36,8 +36,7 @@
  * $Id: point_cloud_handlers.hpp 7678 2012-10-22 20:54:04Z rusu $
  *
  */
-#ifndef PCL_POINT_CLOUD_GEOMETRY_HANDLERS_IMPL_HPP_
-#define PCL_POINT_CLOUD_GEOMETRY_HANDLERS_IMPL_HPP_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 
@@ -153,5 +152,4 @@ pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<PointT>::getGeometry 
 #define PCL_INSTANTIATE_PointCloudGeometryHandlerXYZ(T) template class PCL_EXPORTS pcl::visualization::PointCloudGeometryHandlerXYZ<T>;
 #define PCL_INSTANTIATE_PointCloudGeometryHandlerSurfaceNormal(T) template class PCL_EXPORTS pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<T>;
 
-#endif      // PCL_POINT_CLOUD_GEOMETRY_HANDLERS_IMPL_HPP_
 

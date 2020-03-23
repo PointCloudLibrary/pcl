@@ -34,8 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_PCL_IMPL_BASE_HPP_
-#define PCL_PCL_IMPL_BASE_HPP_
+#pragma once
 
 #include <pcl/pcl_base.h>
 #include <pcl/console/print.h>
@@ -175,5 +174,4 @@ pcl::PCLBase<PointT>::deinitCompute ()
 
 #define PCL_INSTANTIATE_PCLBase(T) template class PCL_EXPORTS pcl::PCLBase<T>;
 
-#endif  //#ifndef PCL_PCL_IMPL_BASE_HPP_
 

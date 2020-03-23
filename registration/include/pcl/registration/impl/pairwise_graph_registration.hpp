@@ -37,8 +37,7 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_IMPL_PAIRWISE_GRAPH_REGISTRATION_HPP_
-#define PCL_REGISTRATION_IMPL_PAIRWISE_GRAPH_REGISTRATION_HPP_
+#pragma once
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename GraphT, typename PointT> void
 pcl::PairwiseGraphRegistration<GraphT, PointT>::computeRegistration ()
@@ -76,4 +75,3 @@ pcl::PairwiseGraphRegistration<GraphT, PointT>::computeRegistration ()
     registration_method_->setInputTarget (boost::get_cloud<PointT> (last_aligned_vertex_, *(graph_handler_->getGraph ())));
   }
 }
-#endif //PCL_REGISTRATION_IMPL_PAIRWISE_GRAPH_REGISTRATION_HPP_

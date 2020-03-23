@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_SHOT_H_
-#define PCL_FEATURES_IMPL_SHOT_H_
+#pragma once
 
 #include <pcl/features/shot.h>
 #include <pcl/features/shot_lrf.h>
@@ -897,4 +896,3 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
 #define PCL_INSTANTIATE_SHOTEstimation(T,NT,OutT,RFT) template class PCL_EXPORTS pcl::SHOTEstimation<T,NT,OutT,RFT>;
 #define PCL_INSTANTIATE_SHOTColorEstimation(T,NT,OutT,RFT) template class PCL_EXPORTS pcl::SHOTColorEstimation<T,NT,OutT,RFT>;
 
-#endif    // PCL_FEATURES_IMPL_SHOT_H_

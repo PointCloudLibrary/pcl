@@ -26,8 +26,7 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
-#ifndef FACTOR_INCLUDED
-#define FACTOR_INCLUDED
+#pragma once
 
 #include <pcl/pcl_exports.h>
 
@@ -57,4 +56,3 @@ namespace pcl
 }
 
 
-#endif // FACTOR_INCLUDED

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_SAMPLING_SURFACE_NORMAL_H_
-#define PCL_FILTERS_IMPL_SAMPLING_SURFACE_NORMAL_H_
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -310,4 +309,3 @@ pcl::SamplingSurfaceNormal<PointT>::findCutVal (
 
 #define PCL_INSTANTIATE_SamplingSurfaceNormal(T) template class PCL_EXPORTS pcl::SamplingSurfaceNormal<T>;
 
-#endif    // PCL_FILTERS_IMPL_NORMAL_SPACE_SAMPLE_H_

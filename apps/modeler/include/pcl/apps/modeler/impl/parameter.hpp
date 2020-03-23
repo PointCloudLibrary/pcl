@@ -33,8 +33,7 @@
 *
 *
 */
-#ifndef PCL_MODELER_PARAMETER_IMPL_H_
-#define PCL_MODELER_PARAMETER_IMPL_H_
+#pragma once
 
 #include <pcl/apps/modeler/parameter.h>
 
@@ -116,5 +115,3 @@ namespace pcl
     }
   }
 }
-
-#endif // PCL_MODELER_PARAMETER_IMPL_H_

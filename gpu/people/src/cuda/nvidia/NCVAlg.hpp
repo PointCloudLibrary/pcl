@@ -38,8 +38,7 @@
  * Ported to PCL by Koen Buys : Attention Work in progress!
  */
 
-#ifndef _ncv_alg_hpp_
-#define _ncv_alg_hpp_
+#pragma once
 
 #include "NCV.hpp"
 
@@ -150,4 +149,3 @@ static __device__ Tdata subReduce(Tdata threadElem)
 }
 
 
-#endif //_ncv_alg_hpp_

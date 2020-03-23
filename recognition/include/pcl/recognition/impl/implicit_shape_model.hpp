@@ -38,8 +38,7 @@
  * Authors: Roman Shapovalov, Alexander Velizhev, Sergey Ushakov
  */
 
-#ifndef PCL_IMPLICIT_SHAPE_MODEL_HPP_
-#define PCL_IMPLICIT_SHAPE_MODEL_HPP_
+#pragma once
 
 #include "../implicit_shape_model.h"
 
@@ -1526,4 +1525,3 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::computeDis
   return (distance);
 }
 
-#endif //#ifndef PCL_IMPLICIT_SHAPE_MODEL_HPP_

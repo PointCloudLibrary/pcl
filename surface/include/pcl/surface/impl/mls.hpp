@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_IMPL_MLS_H_
-#define PCL_SURFACE_IMPL_MLS_H_
+#pragma once
 
 #include <pcl/point_traits.h>
 #include <pcl/surface/mls.h>
@@ -897,4 +896,3 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::copyMissingFields (const PointInT 
 #define PCL_INSTANTIATE_MovingLeastSquares(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquares<T,OutT>;
 #define PCL_INSTANTIATE_MovingLeastSquaresOMP(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquaresOMP<T,OutT>;
 
-#endif    // PCL_SURFACE_IMPL_MLS_H_

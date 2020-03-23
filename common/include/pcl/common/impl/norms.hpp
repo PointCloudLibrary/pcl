@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_COMMON_NORMS_IMPL_HPP_
-#define PCL_COMMON_NORMS_IMPL_HPP_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/console/print.h>
@@ -238,5 +237,4 @@ HIK_Norm(FloatVectorT a, FloatVectorT b, int dim)
 }
 
 }
-#endif
 

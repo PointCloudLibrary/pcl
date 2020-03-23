@@ -38,8 +38,7 @@
  * Ported to PCL by Koen Buys : Attention Work in progress!
  */
 
-#ifndef _ncvruntimetemplates_hpp_
-#define _ncvruntimetemplates_hpp_
+#pragma once
 #if _MSC_VER >= 1200
 #pragma warning( disable: 4800 )
 #endif
@@ -215,4 +214,3 @@ namespace NCVRuntimeTemplateBool
     };
 }
 
-#endif //_ncvruntimetemplates_hpp_

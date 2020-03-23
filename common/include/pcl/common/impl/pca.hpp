@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_PCA_IMPL_HPP
-#define PCL_PCA_IMPL_HPP
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/common/centroid.h>
@@ -240,4 +239,3 @@ pcl::PCA<PointT>::reconstruct (const PointCloud& projection, PointCloud& input)
   }
 }
 
-#endif

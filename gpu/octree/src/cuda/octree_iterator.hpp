@@ -34,8 +34,7 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#ifndef PCL_GPU_OCTREE_ITERATOR
-#define PCL_GPU_OCTREE_ITERATOR
+#pragma once
 
 namespace pcl
 {
@@ -152,4 +151,3 @@ namespace pcl
     }
 }
 
-#endif /* PCL_GPU_OCTREE_ITERATOR */

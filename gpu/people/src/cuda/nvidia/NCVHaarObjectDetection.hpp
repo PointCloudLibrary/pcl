@@ -54,8 +54,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef PCL_GPU_PEOPLE_NCVHAAROBJECTDETECTION_HPP_
-#define PCL_GPU_PEOPLE_NCVHAAROBJECTDETECTION_HPP_
+#pragma once
 
 #include <string>
 #include "NCV.hpp"
@@ -428,4 +427,3 @@ NCV_EXPORTS NCVStatus ncvHaarStoreNVBIN_host(const std::string &filename,
                                              NCVVector<HaarClassifierNode128> &h_HaarNodes,
                                              NCVVector<HaarFeature64> &h_HaarFeatures);
 
-#endif // PCL_GPU_PEOPLE_NCVHAAROBJECTDETECTION_HPP_

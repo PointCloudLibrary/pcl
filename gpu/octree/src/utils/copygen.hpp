@@ -34,8 +34,7 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#ifndef PCL_GPU_OCTREE_COPYGE_HPP
-#define PCL_GPU_OCTREE_COPYGE_HPP
+#pragma once
 
 #include <pcl/gpu/utils/device/warp.hpp>
 
@@ -82,4 +81,3 @@ namespace pcl
     }
 }
 
-#endif /* PCL_GPU_OCTREE_COPYGE_HPP */

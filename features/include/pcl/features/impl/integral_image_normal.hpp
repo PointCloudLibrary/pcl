@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_INTEGRALIMAGE_BASED_IMPL_NORMAL_ESTIMATOR_H_
-#define PCL_FEATURES_INTEGRALIMAGE_BASED_IMPL_NORMAL_ESTIMATOR_H_
+#pragma once
 
 #include <pcl/features/integral_image_normal.h>
 
@@ -1201,5 +1200,4 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCompute ()
 
 #define PCL_INSTANTIATE_IntegralImageNormalEstimation(T,NT) template class PCL_EXPORTS pcl::IntegralImageNormalEstimation<T,NT>;
 
-#endif
 

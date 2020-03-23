@@ -37,8 +37,7 @@
  *  $Id$
  */
 
-#ifndef PCL_FEATURES_IMPL_STATISTICAL_MULTISCALE_INTEREST_REGION_EXTRACTION_H_
-#define PCL_FEATURES_IMPL_STATISTICAL_MULTISCALE_INTEREST_REGION_EXTRACTION_H_
+#pragma once
 
 #include <pcl/features/statistical_multiscale_interest_region_extraction.h>
 #include <pcl/kdtree/kdtree_flann.h>
@@ -249,5 +248,4 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::extractExtrema (std:
 
 #define PCL_INSTANTIATE_StatisticalMultiscaleInterestRegionExtraction(T) template class PCL_EXPORTS pcl::StatisticalMultiscaleInterestRegionExtraction<T>;
 
-#endif /* PCL_FEATURES_IMPL_STATISTICAL_MULTISCALE_INTEREST_REGION_EXTRACTION_H_ */
 

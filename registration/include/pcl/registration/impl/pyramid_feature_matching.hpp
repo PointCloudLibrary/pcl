@@ -39,8 +39,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_IMPL_PYRAMID_FEATURE_MATCHING_H_
-#define PCL_REGISTRATION_IMPL_PYRAMID_FEATURE_MATCHING_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/console/print.h>
@@ -299,4 +298,3 @@ pcl::PyramidFeatureHistogram<PointFeature>::addFeature (std::vector<float> &feat
 
 #define PCL_INSTANTIATE_PyramidFeatureHistogram(PointFeature) template class PCL_EXPORTS pcl::PyramidFeatureHistogram<PointFeature>;
 
-#endif /* PCL_REGISTRATION_IMPL_PYRAMID_FEATURE_MATCHING_H_ */

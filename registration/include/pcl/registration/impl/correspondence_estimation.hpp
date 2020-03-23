@@ -37,8 +37,7 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_
-#define PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_
+#pragma once
 
 #include <pcl/common/io.h>
 #include <pcl/common/copy_point.h>
@@ -248,4 +247,3 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
 
 //#define PCL_INSTANTIATE_CorrespondenceEstimation(T,U) template class PCL_EXPORTS pcl::registration::CorrespondenceEstimation<T,U>;
 
-#endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_ */

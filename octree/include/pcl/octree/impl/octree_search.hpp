@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_SEARCH_IMPL_H_
-#define PCL_OCTREE_SEARCH_IMPL_H_
+#pragma once
 
 #include <cassert>
 
@@ -1068,4 +1067,3 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
 #define PCL_INSTANTIATE_OctreePointCloudSearch(T)                                      \
   template class PCL_EXPORTS pcl::octree::OctreePointCloudSearch<T>;
 
-#endif // PCL_OCTREE_SEARCH_IMPL_H_

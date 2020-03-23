@@ -39,8 +39,7 @@
  */
 
 
-#ifndef _ncvpyramid_hpp_
-#define _ncvpyramid_hpp_
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -95,4 +94,3 @@ private:
 
 #endif //_WIN32
 
-#endif //_ncvpyramid_hpp_

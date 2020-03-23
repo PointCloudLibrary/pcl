@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_TRAJKOVIC_KEYPOINT_2D_IMPL_H_
-#define PCL_TRAJKOVIC_KEYPOINT_2D_IMPL_H_
+#pragma once
 
 template <typename PointInT, typename PointOutT, typename IntensityT> bool
 pcl::TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
@@ -253,4 +252,3 @@ pcl::TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (Poin
 }
 
 #define PCL_INSTANTIATE_TrajkovicKeypoint2D(T,U,I) template class PCL_EXPORTS pcl::TrajkovicKeypoint2D<T,U,I>;
-#endif

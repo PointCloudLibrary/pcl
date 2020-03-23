@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_RECONSTRUCTION_IMPL_H_
-#define PCL_SURFACE_RECONSTRUCTION_IMPL_H_
+#pragma once
 #include <pcl/search/pcl_search.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,5 +195,4 @@ pcl::MeshConstruction<PointInT>::reconstruct (std::vector<pcl::Vertices> &polygo
 }
 
 
-#endif  // PCL_SURFACE_RECONSTRUCTION_IMPL_H_
 

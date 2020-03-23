@@ -36,8 +36,7 @@
 *
 */
 
-#ifndef PCL_FEATURES_IMPL_FLARE_H_
-#define PCL_FEATURES_IMPL_FLARE_H_
+#pragma once
 
 #include <pcl/features/flare.h>
 #include <pcl/common/geometry.h>
@@ -262,4 +261,3 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
 #define PCL_INSTANTIATE_FLARELocalReferenceFrameEstimation(T,NT,OutT,SdT) template class PCL_EXPORTS pcl::FLARELocalReferenceFrameEstimation<T,NT,OutT,SdT>;
 
-#endif // PCL_FEATURES_IMPL_FLARE_H_

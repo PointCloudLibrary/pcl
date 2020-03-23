@@ -5,8 +5,7 @@
 
 /* @(#) $Id$ */
 
-#ifndef ZCONF_H
-#define ZCONF_H
+#pragma once
 
 
 /* BEGIN -- OpenNURBS Modification 
@@ -359,4 +358,3 @@ typedef uLong FAR uLongf;
 #   pragma map(inflate_copyright,"INCOPY")
 #endif
 
-#endif /* ZCONF_H */

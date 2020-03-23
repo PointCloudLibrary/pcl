@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_POINT_CLOUD_COLOR_HANDLERS_IMPL_HPP_
-#define PCL_POINT_CLOUD_COLOR_HANDLERS_IMPL_HPP_
+#pragma once
 
 #include <set>
 #include <map>
@@ -558,5 +557,4 @@ pcl::visualization::PointCloudColorHandlerLabelField<PointT>::getColor () const
   return scalars;
 }
 
-#endif      // PCL_POINT_CLOUD_COLOR_HANDLERS_IMPL_HPP_
 

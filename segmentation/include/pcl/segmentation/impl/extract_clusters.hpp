@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
-#define PCL_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
+#pragma once
 
 #include <pcl/segmentation/extract_clusters.h>
 
@@ -243,4 +242,3 @@ pcl::EuclideanClusterExtraction<PointT>::extract (std::vector<PointIndices> &clu
 #define PCL_INSTANTIATE_extractEuclideanClusters(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
 #define PCL_INSTANTIATE_extractEuclideanClusters_indices(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const std::vector<int> &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
 
-#endif        // PCL_EXTRACT_CLUSTERS_IMPL_H_

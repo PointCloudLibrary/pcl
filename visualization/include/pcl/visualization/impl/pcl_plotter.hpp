@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_VISUALUALIZATION_PCL_PLOTTER_IMPL_H_
-#define	PCL_VISUALUALIZATION_PCL_PLOTTER_IMPL_H_
+#pragma once
 
 template <typename PointT> bool
 pcl::visualization::PCLPlotter::addFeatureHistogram (
@@ -98,5 +97,4 @@ pcl::visualization::PCLPlotter::addFeatureHistogram (
   return (true);
 }
 
-#endif	/* PCL_VISUALUALIZATION_PCL_PLOTTER_IMPL_H_ */
 

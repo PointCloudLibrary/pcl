@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_RRANSAC_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_RRANSAC_H_
+#pragma once
 
 #include <pcl/sample_consensus/rransac.h>
 
@@ -161,5 +160,4 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
 
 #define PCL_INSTANTIATE_RandomizedRandomSampleConsensus(T) template class PCL_EXPORTS pcl::RandomizedRandomSampleConsensus<T>;
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_RRANSAC_H_
 

@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_GASD_H_
-#define PCL_FEATURES_IMPL_GASD_H_
+#pragma once
 
 #include <pcl/features/gasd.h>
 #include <pcl/common/transforms.h>
@@ -398,4 +397,3 @@ pcl::GASDColorEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
 #define PCL_INSTANTIATE_GASDEstimation(InT, OutT) template class PCL_EXPORTS pcl::GASDEstimation<InT, OutT>;
 #define PCL_INSTANTIATE_GASDColorEstimation(InT, OutT) template class PCL_EXPORTS pcl::GASDColorEstimation<InT, OutT>;
 
-#endif  // PCL_FEATURES_IMPL_GASD_H_

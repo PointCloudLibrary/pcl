@@ -35,8 +35,7 @@
   *
   */
 
-#ifndef PCL_FILTERS_IMPL_CROP_HULL_H_
-#define PCL_FILTERS_IMPL_CROP_HULL_H_
+#pragma once
 
 #include <pcl/filters/crop_hull.h>
 
@@ -326,4 +325,3 @@ pcl::CropHull<PointT>::rayTriangleIntersect (const PointT& point,
 
 #define PCL_INSTANTIATE_CropHull(T) template class PCL_EXPORTS pcl::CropHull<T>;
 
-#endif // PCL_FILTERS_IMPL_CROP_HULL_H_

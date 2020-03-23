@@ -36,8 +36,7 @@
  * $Id: outofcore_depth_first_iterator.hpp 7938 2012-11-14 06:27:39Z jrosen $
  */
 
-#ifndef PCL_OUTOFCORE_BREADTH_FIRST_ITERATOR_IMPL_H_
-#define PCL_OUTOFCORE_BREADTH_FIRST_ITERATOR_IMPL_H_
+#pragma once
 
 namespace pcl
 {
@@ -111,5 +110,4 @@ namespace pcl
   }//namesapce pcl
 }//namespace outofcore
 
-#endif //PCL_OUTOFCORE_BREADTH_FIRST_ITERATOR_IMPL_H_
 

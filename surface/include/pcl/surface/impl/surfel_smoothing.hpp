@@ -35,8 +35,7 @@
  * $Id$
  */
 
-#ifndef PCL_SURFACE_IMPL_SURFEL_SMOOTHING_H_
-#define PCL_SURFACE_IMPL_SURFEL_SMOOTHING_H_
+#pragma once
 
 #include <pcl/surface/surfel_smoothing.h>
 #include <pcl/common/distances.h>
@@ -314,4 +313,3 @@ pcl::SurfelSmoothing<PointT, PointNT>::extractSalientFeaturesBetweenScales (Poin
 
 #define PCL_INSTANTIATE_SurfelSmoothing(PointT,PointNT) template class PCL_EXPORTS pcl::SurfelSmoothing<PointT, PointNT>;
 
-#endif /* PCL_SURFACE_IMPL_SURFEL_SMOOTHING_H_ */

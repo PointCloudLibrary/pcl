@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_LINE_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_LINE_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model_line.h>
 #include <pcl/common/centroid.h>
@@ -334,5 +333,4 @@ pcl::SampleConsensusModelLine<PointT>::doSamplesVerifyModel (
 
 #define PCL_INSTANTIATE_SampleConsensusModelLine(T) template class PCL_EXPORTS pcl::SampleConsensusModelLine<T>;
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_LINE_H_
 

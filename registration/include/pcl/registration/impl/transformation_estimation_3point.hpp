@@ -34,8 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_REGISTRATION_IMPL_TRANSFORMATION_ESTIMATION_3POINT_H_
-#define PCL_REGISTRATION_IMPL_TRANSFORMATION_ESTIMATION_3POINT_H_
+#pragma once
 
 #include <pcl/common/eigen.h>
 #include <pcl/registration/transformation_estimation_3point.h>
@@ -178,4 +177,3 @@ pcl::registration::TransformationEstimation3Point<PointSource, PointTarget, Scal
 
 //#define PCL_INSTANTIATE_TransformationEstimation3Point(T,U) template class PCL_EXPORTS pcl::registration::TransformationEstimation3Point<T,U>;
 
-#endif // PCL_REGISTRATION_IMPL_TRANSFORMATION_ESTIMATION_3POINT_H_

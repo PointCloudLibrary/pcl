@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_IMPL_CPC_SEGMENTATION_HPP_
-#define PCL_SEGMENTATION_IMPL_CPC_SEGMENTATION_HPP_
+#pragma once
 
 #include <pcl/segmentation/cpc_segmentation.h>
 
@@ -371,4 +370,3 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel (int)
   return (true);
 }
 
-#endif // PCL_SEGMENTATION_IMPL_CPC_SEGMENTATION_HPP_

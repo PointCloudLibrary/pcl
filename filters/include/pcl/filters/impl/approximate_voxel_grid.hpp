@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_FAST_VOXEL_GRID_H_
-#define PCL_FILTERS_IMPL_FAST_VOXEL_GRID_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
@@ -135,4 +134,3 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
 
 #define PCL_INSTANTIATE_ApproximateVoxelGrid(T) template class PCL_EXPORTS pcl::ApproximateVoxelGrid<T>;
 
-#endif    // PCL_FILTERS_IMPL_FAST_VOXEL_GRID_H_

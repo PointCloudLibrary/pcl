@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_REGISTRATION_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_REGISTRATION_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model_registration.h>
 #include <pcl/common/point_operators.h>
@@ -300,5 +299,4 @@ pcl::SampleConsensusModelRegistration<PointT>::estimateRigidTransformationSVD (
 
 #define PCL_INSTANTIATE_SampleConsensusModelRegistration(T) template class PCL_EXPORTS pcl::SampleConsensusModelRegistration<T>;
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_REGISTRATION_H_
 

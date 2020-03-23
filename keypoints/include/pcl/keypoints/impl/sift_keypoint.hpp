@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SIFT_KEYPOINT_IMPL_H_
-#define PCL_SIFT_KEYPOINT_IMPL_H_
+#pragma once
 
 #include <pcl/keypoints/sift_keypoint.h>
 #include <pcl/common/io.h>
@@ -321,5 +320,4 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::findScaleSpaceExtrema (
 
 #define PCL_INSTANTIATE_SIFTKeypoint(T,U) template class PCL_EXPORTS pcl::SIFTKeypoint<T,U>;
 
-#endif // #ifndef PCL_SIFT_KEYPOINT_IMPL_H_
 

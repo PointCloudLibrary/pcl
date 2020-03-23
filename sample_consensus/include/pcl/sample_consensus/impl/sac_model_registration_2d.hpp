@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_REGISTRATION_2D_HPP_
-#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_REGISTRATION_2D_HPP_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model_registration_2d.h>
 #include <pcl/common/point_operators.h>
@@ -226,5 +225,4 @@ pcl::SampleConsensusModelRegistration2D<PointT>::countWithinDistance (
   return (nr_p);
 } 
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_REGISTRATION_2D_HPP_
 

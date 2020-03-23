@@ -35,8 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_IMPL_INSTANTIATE_H_
-#define PCL_IMPL_INSTANTIATE_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header 
@@ -111,4 +110,3 @@
 
 #endif
 
-#endif

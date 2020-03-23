@@ -33,8 +33,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_IMPL_MARCHING_CUBES_H_
-#define PCL_SURFACE_IMPL_MARCHING_CUBES_H_
+#pragma once
 
 #include <pcl/surface/marching_cubes.h>
 #include <pcl/common/common.h>
@@ -276,5 +275,4 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
 
 #define PCL_INSTANTIATE_MarchingCubes(T) template class PCL_EXPORTS pcl::MarchingCubes<T>;
 
-#endif    // PCL_SURFACE_IMPL_MARCHING_CUBES_H_
 

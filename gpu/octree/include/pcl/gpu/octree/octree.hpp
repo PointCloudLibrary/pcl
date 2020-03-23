@@ -33,9 +33,7 @@
  *
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
-
-#ifndef _PCL_GPU_OCTREE_
-#define _PCL_GPU_OCTREE_
+#pragma once
 
 #include <vector>
 
@@ -169,5 +167,3 @@ namespace pcl
         PCL_EXPORTS void bruteForceRadiusSearchGPU(const Octree::PointCloud& cloud, const Octree::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer);
     }
 }
-
-#endif /* _PCL_GPU_OCTREE_ */

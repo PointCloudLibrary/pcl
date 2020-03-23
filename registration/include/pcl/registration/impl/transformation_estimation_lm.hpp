@@ -37,8 +37,7 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_HPP_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_HPP_
+#pragma once
 
 #include <pcl/registration/warp_point_rigid.h>
 #include <pcl/registration/warp_point_rigid_6d.h>
@@ -270,4 +269,3 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
 
 //#define PCL_INSTANTIATE_TransformationEstimationLM(T,U) template class PCL_EXPORTS pcl::registration::TransformationEstimationLM<T,U>;
 
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_HPP_ */

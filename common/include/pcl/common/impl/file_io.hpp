@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_COMMON_FILE_IO_IMPL_HPP_
-#define PCL_COMMON_FILE_IO_IMPL_HPP_
+#pragma once
 
 #include <boost/filesystem.hpp>
 #include <boost/range/iterator_range.hpp>
@@ -93,4 +92,3 @@ std::string getFileExtension(const std::string& input)
 
 }  // namespace end
 
-#endif

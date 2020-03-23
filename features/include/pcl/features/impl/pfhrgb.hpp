@@ -37,8 +37,7 @@
  *  $Id$
  */
 
-#ifndef PCL_FEATURES_IMPL_PFHRGB_H_
-#define PCL_FEATURES_IMPL_PFHRGB_H_
+#pragma once
 
 #include <pcl/features/pfhrgb.h>
 
@@ -158,4 +157,3 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
 
 #define PCL_INSTANTIATE_PFHRGBEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::PFHRGBEstimation<T,NT,OutT>;
 
-#endif /* PCL_FEATURES_IMPL_PFHRGB_H_ */

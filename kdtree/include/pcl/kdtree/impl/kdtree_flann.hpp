@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_KDTREE_KDTREE_IMPL_FLANN_H_
-#define PCL_KDTREE_KDTREE_IMPL_FLANN_H_
+#pragma once
 
 #include <cstdio>
 
@@ -297,5 +296,4 @@ pcl::KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud, co
 
 #define PCL_INSTANTIATE_KdTreeFLANN(T) template class PCL_EXPORTS pcl::KdTreeFLANN<T>;
 
-#endif  //#ifndef _PCL_KDTREE_KDTREE_IMPL_FLANN_H_
 

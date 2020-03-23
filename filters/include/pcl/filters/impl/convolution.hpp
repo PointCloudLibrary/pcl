@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_CONVOLUTION_IMPL_HPP
-#define PCL_FILTERS_CONVOLUTION_IMPL_HPP
+#pragma once
 
 #include <pcl/pcl_config.h>
 #include <pcl/common/distances.h>
@@ -668,4 +667,3 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOu
   }
 }
 
-#endif //PCL_FILTERS_CONVOLUTION_IMPL_HPP

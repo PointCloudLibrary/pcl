@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_CRH_H_
-#define PCL_FEATURES_IMPL_CRH_H_
+#pragma once
 
 #include <pcl/features/crh.h>
 #include <pcl/common/fft/kiss_fftr.h>
@@ -136,4 +135,3 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
 #define PCL_INSTANTIATE_CRHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::CRHEstimation<T,NT,OutT>;
 
-#endif    // PCL_FEATURES_IMPL_CRH_H_

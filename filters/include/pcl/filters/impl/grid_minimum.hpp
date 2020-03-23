@@ -39,8 +39,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_VOXEL_GRID_MINIMUM_H_
-#define PCL_FILTERS_IMPL_VOXEL_GRID_MINIMUM_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
@@ -194,5 +193,4 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
 
 #define PCL_INSTANTIATE_GridMinimum(T) template class PCL_EXPORTS pcl::GridMinimum<T>;
 
-#endif    // PCL_FILTERS_IMPL_VOXEL_GRID_MINIMUM_H_
 

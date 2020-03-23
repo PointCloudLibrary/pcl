@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_PPFRGB_H_
-#define PCL_FEATURES_IMPL_PPFRGB_H_
+#pragma once
 
 #include <pcl/features/ppfrgb.h>
 #include <pcl/features/pfhrgb.h>
@@ -177,4 +176,3 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
 #define PCL_INSTANTIATE_PPFRGBEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::PPFRGBEstimation<T,NT,OutT>;
 #define PCL_INSTANTIATE_PPFRGBRegionEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::PPFRGBRegionEstimation<T,NT,OutT>;
 
-#endif // PCL_FEATURES_IMPL_PPFRGB_H_

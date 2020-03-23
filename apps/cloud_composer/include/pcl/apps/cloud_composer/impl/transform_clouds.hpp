@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef IMPL_TRANSFORM_CLOUDS_HPP_
-#define IMPL_TRANSFORM_CLOUDS_HPP_
+#pragma once
 
 #include <pcl/apps/cloud_composer/transform_clouds.h>
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
@@ -95,4 +94,3 @@ pcl::cloud_composer::TransformClouds::performTemplatedAction (const QList <const
 
 
 
-#endif //IMPL_TRANSFORM_CLOUDS_HPP_

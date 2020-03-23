@@ -35,8 +35,7 @@
 */
 
 
-#ifndef PCL_DEVICE_FUNCTIONAL_HPP_
-#define PCL_DEVICE_FUNCTIONAL_HPP_
+#pragma once
 
 #include <thrust/functional.h>
 
@@ -107,4 +106,3 @@ namespace pcl
 };
 
 
-#endif /* PCL_DEVICE_FUNCTIONAL_HPP_ */

@@ -38,8 +38,7 @@
  a
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_PLANE_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_PLANE_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model_parallel_plane.h>
 
@@ -110,5 +109,4 @@ pcl::SampleConsensusModelParallelPlane<PointT>::isModelValid (const Eigen::Vecto
 
 #define PCL_INSTANTIATE_SampleConsensusModelParallelPlane(T) template class PCL_EXPORTS pcl::SampleConsensusModelParallelPlane<T>;
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_PLANE_H_
 

@@ -34,8 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef PCL_GPU_UTILS_INTERNAL_HPP_
-#define PCL_GPU_UTILS_INTERNAL_HPP_
+#pragma once
 
 namespace pcl
 {
@@ -45,4 +44,3 @@ namespace pcl
     }
 }
 
-#endif

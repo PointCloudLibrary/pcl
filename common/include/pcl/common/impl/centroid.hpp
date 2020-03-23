@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_COMMON_IMPL_CENTROID_H_
-#define PCL_COMMON_IMPL_CENTROID_H_
+#pragma once
 
 #include <pcl/common/centroid.h>
 #include <pcl/conversions.h>
@@ -911,5 +910,4 @@ pcl::computeCentroid (const pcl::PointCloud<PointInT>& cloud,
   return (cp.getSize ());
 }
 
-#endif  //#ifndef PCL_COMMON_IMPL_CENTROID_H_
 

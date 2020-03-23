@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SUSAN_IMPL_HPP_
-#define PCL_SUSAN_IMPL_HPP_
+#pragma once
 
 #include <pcl/keypoints/susan.h>
 #include <pcl/features/normal_3d.h>
@@ -465,5 +464,4 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
 }
 
 #define PCL_INSTANTIATE_SUSAN(T,U,N) template class PCL_EXPORTS pcl::SUSANKeypoint<T,U,N>;
-#endif // #ifndef PCL_HARRIS_KEYPOINT_3D_IMPL_H_
 

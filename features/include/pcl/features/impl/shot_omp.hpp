@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_SHOT_OMP_H_
-#define PCL_FEATURES_IMPL_SHOT_OMP_H_
+#pragma once
 
 #include <pcl/features/shot_omp.h>
 #include <pcl/common/time.h>
@@ -290,4 +289,3 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
 #define PCL_INSTANTIATE_SHOTEstimationOMP(T,NT,OutT,RFT) template class PCL_EXPORTS pcl::SHOTEstimationOMP<T,NT,OutT,RFT>;
 #define PCL_INSTANTIATE_SHOTColorEstimationOMP(T,NT,OutT,RFT) template class PCL_EXPORTS pcl::SHOTColorEstimationOMP<T,NT,OutT,RFT>;
 
-#endif    // PCL_FEATURES_IMPL_SHOT_OMP_H_

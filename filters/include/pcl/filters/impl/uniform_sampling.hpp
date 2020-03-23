@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_UNIFORM_SAMPLING_IMPL_H_
-#define PCL_FILTERS_UNIFORM_SAMPLING_IMPL_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/filters/uniform_sampling.h>
@@ -140,5 +139,4 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
 
 #define PCL_INSTANTIATE_UniformSampling(T) template class PCL_EXPORTS pcl::UniformSampling<T>;
 
-#endif    // PCL_FILTERS_UNIFORM_SAMPLING_IMPL_H_
 

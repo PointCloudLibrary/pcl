@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_RECOGNITION_CORRESPONDENCE_GROUPING_IMPL_H_
-#define PCL_RECOGNITION_CORRESPONDENCE_GROUPING_IMPL_H_
+#pragma once
 
 template <typename PointModelT, typename PointSceneT> void
 pcl::CorrespondenceGrouping<PointModelT, PointSceneT>::cluster (std::vector<Correspondences> &clustered_corrs)
@@ -57,4 +56,3 @@ pcl::CorrespondenceGrouping<PointModelT, PointSceneT>::cluster (std::vector<Corr
   deinitCompute ();
 }
 
-#endif // PCL_RECOGNITION_CORRESPONDENCE_GROUPING_IMPL_H_

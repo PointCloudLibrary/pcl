@@ -37,8 +37,6 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_ICP_NL_HPP_
-#define PCL_REGISTRATION_ICP_NL_HPP_
+#pragma once
 
-#endif /* PCL_REGISTRATION_ICP_NL_HPP_ */
 

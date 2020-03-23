@@ -35,8 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_POLY_HPP_
-#define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_POLY_HPP_
+#pragma once
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename SourceT, typename TargetT> void 
@@ -238,4 +237,3 @@ pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::findThresholdOt
   return (result);
 }
 
-#endif    // PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_POLY_HPP_

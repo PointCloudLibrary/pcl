@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_IMPL_TEXTURE_MAPPING_HPP_
-#define PCL_SURFACE_IMPL_TEXTURE_MAPPING_HPP_
+#pragma once
 
 #include <pcl/common/distances.h>
 #include <pcl/surface/texture_mapping.h>
@@ -1098,5 +1097,4 @@ pcl::TextureMapping<PointInT>::isFaceProjected (const Camera &camera, const Poin
 #define PCL_INSTANTIATE_TextureMapping(T)                \
     template class PCL_EXPORTS pcl::TextureMapping<T>;
 
-#endif /* TEXTURE_MAPPING_HPP_ */
 

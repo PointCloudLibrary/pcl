@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_VFH_H_
-#define PCL_FEATURES_IMPL_VFH_H_
+#pragma once
 
 #include <pcl/features/vfh.h>
 #include <pcl/features/pfh_tools.h>
@@ -250,4 +249,3 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
 #define PCL_INSTANTIATE_VFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::VFHEstimation<T,NT,OutT>;
 
-#endif    // PCL_FEATURES_IMPL_VFH_H_

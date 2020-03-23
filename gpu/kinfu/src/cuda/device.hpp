@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_GPU_KINFU_DEVICE_HPP_
-#define PCL_GPU_KINFU_DEVICE_HPP_
+#pragma once
 
 #include "utils.hpp" //temporary reimplementing to release kinfu without pcl_gpu_utils
 
@@ -102,4 +101,3 @@ namespace pcl
   }
 }
 
-#endif /* PCL_GPU_KINFU_DEVICE_HPP_ */

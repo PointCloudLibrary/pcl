@@ -34,8 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_RECOGNITION_IMPL_HV_GO_HPP_
-#define PCL_RECOGNITION_IMPL_HV_GO_HPP_
+#pragma once
 
 #include <pcl/recognition/hv/hv_go.h>
 #include <pcl/common/time.h>
@@ -741,5 +740,4 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(Recogn
 
 #define PCL_INSTANTIATE_GoHV(T1,T2) template class PCL_EXPORTS pcl::GlobalHypothesesVerification<T1,T2>;
 
-#endif /* PCL_RECOGNITION_IMPL_HV_GO_HPP_ */
 

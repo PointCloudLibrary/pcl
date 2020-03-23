@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_IMPL_ELCH_H_
-#define PCL_REGISTRATION_IMPL_ELCH_H_
+#pragma once
 
 #include <algorithm>
 #include <list>
@@ -273,4 +272,3 @@ pcl::registration::ELCH<PointT>::compute ()
   deinitCompute ();
 }
 
-#endif // PCL_REGISTRATION_IMPL_ELCH_H_

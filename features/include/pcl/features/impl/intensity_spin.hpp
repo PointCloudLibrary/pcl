@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_INTENSITY_SPIN_H_
-#define PCL_FEATURES_IMPL_INTENSITY_SPIN_H_
+#pragma once
 
 #include <pcl/features/intensity_spin.h>
 
@@ -170,5 +169,4 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
 
 #define PCL_INSTANTIATE_IntensitySpinEstimation(T,NT) template class PCL_EXPORTS pcl::IntensitySpinEstimation<T,NT>;
 
-#endif    // PCL_FEATURES_IMPL_INTENSITY_SPIN_H_ 
 

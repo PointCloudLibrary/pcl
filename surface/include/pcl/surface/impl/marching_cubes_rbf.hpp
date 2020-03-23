@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_IMPL_MARCHING_CUBES_RBF_H_
-#define PCL_SURFACE_IMPL_MARCHING_CUBES_RBF_H_
+#pragma once
 
 #include <pcl/surface/marching_cubes_rbf.h>
 #include <pcl/common/common.h>
@@ -118,5 +117,4 @@ pcl::MarchingCubesRBF<PointNT>::kernel (Eigen::Vector3d c, Eigen::Vector3d x)
 
 #define PCL_INSTANTIATE_MarchingCubesRBF(T) template class PCL_EXPORTS pcl::MarchingCubesRBF<T>;
 
-#endif    // PCL_SURFACE_IMPL_MARCHING_CUBES_HOPPE_H_
 

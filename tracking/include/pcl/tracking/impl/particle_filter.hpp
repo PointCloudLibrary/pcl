@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_IMPL_PARTICLE_FILTER_H_
-#define PCL_TRACKING_IMPL_PARTICLE_FILTER_H_
+#pragma once
 
 #include <random>
 
@@ -407,5 +406,3 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTracking ()
 }
 
 #define PCL_INSTANTIATE_ParticleFilterTracker(T,ST) template class PCL_EXPORTS pcl::tracking::ParticleFilterTracker<T,ST>;
-
-#endif 

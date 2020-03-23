@@ -1,6 +1,5 @@
 
-#ifndef __PCL_OUTOFCORE_LRU_CACHE__
-#define __PCL_OUTOFCORE_LRU_CACHE__
+#pragma once
 
 #include <cstddef>
 #include <cassert>
@@ -178,4 +177,3 @@ public:
   Cache cache_;
 };
 
-#endif //__PCL_OUTOFCORE_LRU_CACHE__

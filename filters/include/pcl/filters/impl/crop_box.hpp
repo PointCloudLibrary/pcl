@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_CROP_BOX_H_
-#define PCL_FILTERS_IMPL_CROP_BOX_H_
+#pragma once
 
 #include <pcl/filters/crop_box.h>
 #include <pcl/common/io.h>
@@ -143,4 +142,3 @@ pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
 
 #define PCL_INSTANTIATE_CropBox(T) template class PCL_EXPORTS pcl::CropBox<T>;
 
-#endif    // PCL_FILTERS_IMPL_CROP_BOX_H_

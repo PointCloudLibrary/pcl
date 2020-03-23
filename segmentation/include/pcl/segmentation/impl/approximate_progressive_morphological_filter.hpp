@@ -36,8 +36,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_SEGMENTATION_APPROXIMATE_PROGRESSIVE_MORPHOLOGICAL_FILTER_HPP_
-#define PCL_SEGMENTATION_APPROXIMATE_PROGRESSIVE_MORPHOLOGICAL_FILTER_HPP_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
@@ -260,5 +259,4 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
 
 #define PCL_INSTANTIATE_ApproximateProgressiveMorphologicalFilter(T) template class pcl::ApproximateProgressiveMorphologicalFilter<T>;
 
-#endif    // PCL_SEGMENTATION_APPROXIMATE_PROGRESSIVE_MORPHOLOGICAL_FILTER_HPP_
 

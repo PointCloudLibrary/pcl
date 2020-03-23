@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_VOXEL_GRID_H_
-#define PCL_FILTERS_IMPL_VOXEL_GRID_H_
+#pragma once
 
 #include <pcl/common/centroid.h>
 #include <pcl/common/common.h>
@@ -433,5 +432,4 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
 #define PCL_INSTANTIATE_VoxelGrid(T) template class PCL_EXPORTS pcl::VoxelGrid<T>;
 #define PCL_INSTANTIATE_getMinMax3D(T) template PCL_EXPORTS void pcl::getMinMax3D<T> (const pcl::PointCloud<T>::ConstPtr &, const std::string &, float, float, Eigen::Vector4f &, Eigen::Vector4f &, bool);
 
-#endif    // PCL_FILTERS_IMPL_VOXEL_GRID_H_
 

@@ -38,8 +38,7 @@
  * Ported to PCL by Koen Buys : Attention Work in progress!
  */
 
-#ifndef _ncv_pixel_operations_hpp_
-#define _ncv_pixel_operations_hpp_
+#pragma once
 
 #include <limits.h>
 #include <float.h>
@@ -346,4 +345,3 @@ template<> struct TAccPixDist<float1> {using type = Ncv32f;};
 template<> struct TAccPixDist<float3> {using type = Ncv32f;};
 template<> struct TAccPixDist<float4> {using type = Ncv32f;};
 
-#endif //_ncv_pixel_operations_hpp_

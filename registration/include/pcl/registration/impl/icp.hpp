@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_IMPL_ICP_HPP_
-#define PCL_REGISTRATION_IMPL_ICP_HPP_
+#pragma once
 
 #include <pcl/registration/boost.h>
 #include <pcl/correspondence.h>
@@ -297,4 +296,3 @@ pcl::IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>::transfo
 }
 
 
-#endif /* PCL_REGISTRATION_IMPL_ICP_HPP_ */

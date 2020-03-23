@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEARCH_SEARCH_IMPL_HPP_
-#define PCL_SEARCH_SEARCH_IMPL_HPP_
+#pragma once
 
 #include <pcl/search/search.h>
 
@@ -207,6 +206,5 @@ pcl::search::Search<PointT>::sortResults (
 
 #define PCL_INSTANTIATE_Search(T) template class PCL_EXPORTS pcl::search::Search<T>;
 
-#endif  //#ifndef _PCL_SEARCH_SEARCH_IMPL_HPP_
 
 

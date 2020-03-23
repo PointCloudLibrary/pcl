@@ -40,8 +40,7 @@
  */
 
 
-#ifndef PCL_REGISTRATION_IMPL_PPF_REGISTRATION_H_
-#define PCL_REGISTRATION_IMPL_PPF_REGISTRATION_H_
+#pragma once
 
 #include <pcl/registration/ppf_registration.h>
 #include <pcl/features/ppf.h>
@@ -286,4 +285,3 @@ pcl::PPFRegistration<PointSource, PointTarget>::clusterVotesCompareFunction (con
 
 //#define PCL_INSTANTIATE_PPFRegistration(PointSource,PointTarget) template class PCL_EXPORTS pcl::PPFRegistration<PointSource, PointTarget>;
 
-#endif // PCL_REGISTRATION_IMPL_PPF_REGISTRATION_H_

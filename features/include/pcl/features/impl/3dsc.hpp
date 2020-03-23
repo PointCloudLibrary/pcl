@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_3DSC_HPP_
-#define PCL_FEATURES_IMPL_3DSC_HPP_
+#pragma once
 
 #include <cmath>
 #include <pcl/features/3dsc.h>
@@ -272,4 +271,3 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computeFeature (Poi
 
 #define PCL_INSTANTIATE_ShapeContext3DEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::ShapeContext3DEstimation<T,NT,OutT>;
 
-#endif

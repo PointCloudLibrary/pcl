@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_IMPL_TRACKING_H_
-#define PCL_TRACKING_IMPL_TRACKING_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/common/eigen.h>
@@ -813,4 +812,3 @@ namespace pcl
   (pcl::tracking::ParticleXYRPY) \
   (pcl::tracking::ParticleXYRP)
 
-#endif  // 

@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_RANGE_IMAGE_IMPL_HPP_
-#define PCL_RANGE_IMAGE_IMPL_HPP_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/common/distances.h>
@@ -1251,5 +1250,3 @@ RangeImage::integrateFarRanges (const PointCloudType& far_ranges)
 }
 
 }  // namespace end
-#endif
-

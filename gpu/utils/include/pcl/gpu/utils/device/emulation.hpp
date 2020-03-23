@@ -34,8 +34,7 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
-#ifndef PCL_GPU_DEVICE_EMULATION_HPP_
-#define PCL_GPU_DEVICE_EMULATION_HPP_
+#pragma once
 
 #include <pcl/gpu/device/warp_reduce.hpp>
 
@@ -54,4 +53,3 @@ namespace pcl
 	}
 }
 
-#endif /* PCL_GPU_DEVICE_EMULATION_HPP_ */

@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_2BUF_BASE_HPP
-#define PCL_OCTREE_2BUF_BASE_HPP
+#pragma once
 
 namespace pcl {
 namespace octree {
@@ -834,4 +833,3 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::treeCleanUpRecursive(
 #define PCL_INSTANTIATE_Octree2BufBase(T)                                              \
   template class PCL_EXPORTS pcl::octree::Octree2BufBase<T>;
 
-#endif

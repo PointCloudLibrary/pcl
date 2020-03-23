@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_HARRIS_KEYPOINT_3D_IMPL_H_
-#define PCL_HARRIS_KEYPOINT_3D_IMPL_H_
+#pragma once
 
 #include <pcl/keypoints/harris_3d.h>
 #include <pcl/common/io.h>
@@ -537,5 +536,4 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
 }
 
 #define PCL_INSTANTIATE_HarrisKeypoint3D(T,U,N) template class PCL_EXPORTS pcl::HarrisKeypoint3D<T,U,N>;
-#endif // #ifndef PCL_HARRIS_KEYPOINT_3D_IMPL_H_
 

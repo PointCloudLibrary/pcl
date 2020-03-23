@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_IO_ASCII_IO_HPP_
-#define PCL_IO_ASCII_IO_HPP_
+#pragma once
 
 template<typename PointT> void
 pcl::ASCIIReader::setInputFields ()
@@ -56,4 +55,3 @@ pcl::ASCIIReader::setInputFields ()
 }
 
 
-#endif    //PCL_IO_ASCII_IO_HPP_

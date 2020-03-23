@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_PROJECT_INLIERS_H_
-#define PCL_FILTERS_IMPL_PROJECT_INLIERS_H_
+#pragma once
 
 #include <pcl/filters/project_inliers.h>
 
@@ -162,5 +161,4 @@ pcl::ProjectInliers<PointT>::initSACModel (int model_type)
 
 #define PCL_INSTANTIATE_ProjectInliers(T) template class PCL_EXPORTS pcl::ProjectInliers<T>;
 
-#endif    // PCL_FILTERS_IMPL_PROJECT_INLIERS_H_
 

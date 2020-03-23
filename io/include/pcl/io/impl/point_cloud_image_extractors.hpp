@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_POINT_CLOUD_IMAGE_EXTRACTORS_IMPL_HPP_
-#define PCL_POINT_CLOUD_IMAGE_EXTRACTORS_IMPL_HPP_
+#pragma once
 
 #include <set>
 #include <map>
@@ -296,5 +295,4 @@ pcl::io::PointCloudImageExtractorWithScaling<PointT>::extractImpl (const PointCl
   return (true);
 }
 
-#endif      // PCL_POINT_CLOUD_IMAGE_EXTRACTORS_IMPL_HPP_
 

@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_IMPL_SAC_SEGMENTATION_H_
-#define PCL_SEGMENTATION_IMPL_SAC_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/segmentation/sac_segmentation.h>
 
@@ -507,5 +506,4 @@ pcl::SACSegmentationFromNormals<PointT, PointNT>::initSACModel (const int model_
 #define PCL_INSTANTIATE_SACSegmentation(T) template class PCL_EXPORTS pcl::SACSegmentation<T>;
 #define PCL_INSTANTIATE_SACSegmentationFromNormals(T,NT) template class PCL_EXPORTS pcl::SACSegmentationFromNormals<T,NT>;
 
-#endif        // PCL_SEGMENTATION_IMPL_SAC_SEGMENTATION_H_
 

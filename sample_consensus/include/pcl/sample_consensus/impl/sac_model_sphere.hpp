@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_SPHERE_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_SPHERE_H_
+#pragma once
 
 #include <pcl/sample_consensus/eigen.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
@@ -304,5 +303,4 @@ pcl::SampleConsensusModelSphere<PointT>::doSamplesVerifyModel (
 
 #define PCL_INSTANTIATE_SampleConsensusModelSphere(T) template class PCL_EXPORTS pcl::SampleConsensusModelSphere<T>;
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_SPHERE_H_
 

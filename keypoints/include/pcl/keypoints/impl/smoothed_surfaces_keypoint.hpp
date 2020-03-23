@@ -35,8 +35,7 @@
  * $Id$
  */
 
-#ifndef PCL_KEYPOINTS_IMPL_SMOOTHEDSURFACESKEYPOINT_H_
-#define PCL_KEYPOINTS_IMPL_SMOOTHEDSURFACESKEYPOINT_H_
+#pragma once
 
 #include <pcl/keypoints/smoothed_surfaces_keypoint.h>
 
@@ -247,4 +246,3 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::initCompute ()
 #define PCL_INSTANTIATE_SmoothedSurfacesKeypoint(T,NT) template class PCL_EXPORTS pcl::SmoothedSurfacesKeypoint<T,NT>;
 
 
-#endif /* PCL_KEYPOINTS_IMPL_SMOOTHEDSURFACESKEYPOINT_H_ */

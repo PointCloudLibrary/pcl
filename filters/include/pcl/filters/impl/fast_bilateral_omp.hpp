@@ -37,8 +37,7 @@
  * $Id: fast_bilateral_omp.hpp 8381 2013-01-02 23:12:44Z sdmiller $
  *
  */
-#ifndef PCL_FILTERS_IMPL_FAST_BILATERAL_OMP_HPP_
-#define PCL_FILTERS_IMPL_FAST_BILATERAL_OMP_HPP_
+#pragma once
 
 #include <pcl/filters/fast_bilateral_omp.h>
 #include <pcl/common/io.h>
@@ -208,5 +207,4 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
 
 
 
-#endif /* PCL_FILTERS_IMPL_FAST_BILATERAL_OMP_HPP_ */
 

@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_RADIUS_OUTLIER_REMOVAL_H_
-#define PCL_FILTERS_IMPL_RADIUS_OUTLIER_REMOVAL_H_
+#pragma once
 
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/common/io.h>
@@ -182,5 +181,4 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices
 
 #define PCL_INSTANTIATE_RadiusOutlierRemoval(T) template class PCL_EXPORTS pcl::RadiusOutlierRemoval<T>;
 
-#endif  // PCL_FILTERS_IMPL_RADIUS_OUTLIER_REMOVAL_H_
 

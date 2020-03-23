@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_IMPL_DISTANCE_COHERENCE_H_
-#define PCL_TRACKING_IMPL_DISTANCE_COHERENCE_H_
+#pragma once
 
 #include <Eigen/Dense>
 #include <pcl/tracking/distance_coherence.h>
@@ -20,5 +19,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_DistanceCoherence(T) template class PCL_EXPORTS pcl::tracking::DistanceCoherence<T>;
-
-#endif

@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_POINT_CLOUD_ITERATOR_HPP_
-#define PCL_POINT_CLOUD_ITERATOR_HPP_
+#pragma once
 
 #include <pcl/cloud_iterator.h>
 
@@ -553,5 +552,4 @@ pcl::ConstCloudIterator<PointT>::isValid () const
   return (iterator_->isValid ());
 }
 
-#endif    // PCL_POINT_CLOUD_ITERATOR_HPP_
 

@@ -31,8 +31,7 @@
  *
  */
 
-#ifndef METS_TABU_SEARCH_HH_
-#define METS_TABU_SEARCH_HH_
+#pragma once
 
 namespace mets {
 
@@ -636,4 +635,3 @@ mets::best_ever_criteria::operator()(feasible_solution& fs,
     return aspiration_criteria_chain::operator()(fs, mov, eval); 
 }
 
-#endif

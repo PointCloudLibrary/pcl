@@ -26,8 +26,7 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
-#ifndef BSPLINE_DATA_INCLUDED
-#define BSPLINE_DATA_INCLUDED
+#pragma once
 
 
 #include "ppolynomial.h"
@@ -145,4 +144,3 @@ namespace pcl
 
 #include "bspline_data.hpp"
 
-#endif // BSPLINE_DATA_INCLUDED

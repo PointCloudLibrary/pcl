@@ -32,8 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_FILTERS_IMPL_PLANE_CLIPPER3D_HPP
-#define PCL_FILTERS_IMPL_PLANE_CLIPPER3D_HPP
+#pragma once
 
 #include <pcl/filters/plane_clipper3D.h>
 
@@ -225,4 +224,3 @@ pcl::PlaneClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cl
         clipped.push_back (*iIt);
   }
 }
-#endif //PCL_FILTERS_IMPL_PLANE_CLIPPER3D_HPP

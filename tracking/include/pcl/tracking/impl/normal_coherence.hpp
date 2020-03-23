@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_IMPL_NORMAL_COHERENCE_H_
-#define PCL_TRACKING_IMPL_NORMAL_COHERENCE_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/console/print.h>
@@ -28,5 +27,3 @@ pcl::tracking::NormalCoherence<PointInT>::computeCoherence (PointInT &source, Po
 
 
 #define PCL_INSTANTIATE_NormalCoherence(T) template class PCL_EXPORTS pcl::tracking::NormalCoherence<T>;
-
-#endif

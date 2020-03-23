@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_GFPFH_H_
-#define PCL_FEATURES_IMPL_GFPFH_H_
+#pragma once
 
 #include <pcl/features/gfpfh.h>
 #include <pcl/octree/octree_search.h>
@@ -269,4 +268,3 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const std:
 
 #define PCL_INSTANTIATE_GFPFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::GFPFHEstimation<T,NT,OutT>;
 
-#endif    // PCL_FEATURES_IMPL_GFPFH_H_

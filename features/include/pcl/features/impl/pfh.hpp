@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_PFH_H_
-#define PCL_FEATURES_IMPL_PFH_H_
+#pragma once
 
 #include <pcl/features/pfh.h>
 
@@ -226,5 +225,4 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
 #define PCL_INSTANTIATE_PFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::PFHEstimation<T,NT,OutT>;
 
-#endif    // PCL_FEATURES_IMPL_PFH_H_ 
 

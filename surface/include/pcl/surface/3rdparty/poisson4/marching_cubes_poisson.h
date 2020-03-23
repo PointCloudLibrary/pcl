@@ -26,8 +26,7 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
-#ifndef MARCHING_CUBES_INCLUDED
-#define MARCHING_CUBES_INCLUDED
+#pragma once
 #include <pcl/pcl_macros.h>
 #include <vector>
 #include "geometry.h"
@@ -141,4 +140,3 @@ namespace pcl
 }
 
 
-#endif //MARCHING_CUBES_INCLUDED

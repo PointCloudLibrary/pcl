@@ -35,8 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_REGISTRATION_IMPL_META_REGISTRATION_HPP_
-#define PCL_REGISTRATION_IMPL_META_REGISTRATION_HPP_
+#pragma once
 
 template <typename PointT, typename Scalar>
 pcl::registration::MetaRegistration<PointT, Scalar>::MetaRegistration () :
@@ -98,4 +97,3 @@ pcl::registration::MetaRegistration<PointT, Scalar>::getMetaCloud () const
 {
   return full_cloud_;
 }
-#endif /*PCL_REGISTRATION_IMPL_META_REGISTRATION_HPP_*/

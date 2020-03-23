@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_NORMAL_REFINEMENT_H_
-#define PCL_FILTERS_IMPL_NORMAL_REFINEMENT_H_
+#pragma once
 
 #include <pcl/filters/normal_refinement.h>
 
@@ -119,4 +118,3 @@ pcl::NormalRefinement<NormalT>::applyFilter (PointCloud &output)
   }
 }
 
-#endif

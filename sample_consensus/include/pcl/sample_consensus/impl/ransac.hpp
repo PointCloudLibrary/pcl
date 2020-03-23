@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_RANSAC_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_RANSAC_H_
+#pragma once
 
 #include <pcl/sample_consensus/ransac.h>
 #ifdef _OPENMP
@@ -219,5 +218,4 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
 
 #define PCL_INSTANTIATE_RandomSampleConsensus(T) template class PCL_EXPORTS pcl::RandomSampleConsensus<T>;
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_RANSAC_H_
 

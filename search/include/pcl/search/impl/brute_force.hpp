@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEARCH_IMPL_BRUTE_FORCE_SEARCH_H_
-#define PCL_SEARCH_IMPL_BRUTE_FORCE_SEARCH_H_
+#pragma once
 
 #include <pcl/search/brute_force.h>
 #include <queue>
@@ -349,4 +348,3 @@ pcl::search::BruteForce<PointT>::radiusSearch (
 
 #define PCL_INSTANTIATE_BruteForce(T) template class PCL_EXPORTS pcl::search::BruteForce<T>;
 
-#endif //PCL_SEARCH_IMPL_BRUTE_FORCE_SEARCH_H_

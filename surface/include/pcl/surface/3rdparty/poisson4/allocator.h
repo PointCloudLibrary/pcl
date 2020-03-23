@@ -26,8 +26,7 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
-#ifndef ALLOCATOR_INCLUDED
-#define ALLOCATOR_INCLUDED
+#pragma once
 #include <vector>
 
 namespace pcl
@@ -165,4 +164,3 @@ namespace pcl
   }
 }
 
-#endif // ALLOCATOR_INCLUDE

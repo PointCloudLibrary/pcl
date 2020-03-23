@@ -34,8 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_RECOGNITION_OCCLUSION_REASONING_HPP_
-#define PCL_RECOGNITION_OCCLUSION_REASONING_HPP_
+#pragma once
 
 #include <pcl/recognition/hv/occlusion_reasoning.h>
 
@@ -196,4 +195,3 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::computeDepthMap (typename 
   }
 }
 
-#endif    // PCL_RECOGNITION_OCCLUSION_REASONING_HPP_

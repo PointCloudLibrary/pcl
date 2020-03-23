@@ -26,8 +26,7 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
-#ifndef P_POLYNOMIAL_INCLUDED
-#define P_POLYNOMIAL_INCLUDED
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header
@@ -125,4 +124,3 @@ namespace pcl
 
 
 #include "ppolynomial.hpp"
-#endif // P_POLYNOMIAL_INCLUDED

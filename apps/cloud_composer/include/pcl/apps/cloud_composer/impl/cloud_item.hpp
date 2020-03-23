@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef IMPL_CLOUD_ITEM_H_
-#define IMPL_CLOUD_ITEM_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <pcl/point_cloud.h>
@@ -79,4 +78,3 @@ pcl::cloud_composer::CloudItem::createCloudItemFromTemplate (const QString& name
 
 #define PCL_INSTANTIATE_printNumPoints(T) template void pcl::cloud_composer::CloudItem::getNumPoints<T>();
 
-#endif

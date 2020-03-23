@@ -35,8 +35,7 @@
 *
 */
 
-#ifndef IMPL_SUPERVOXELS_HPP_
-#define IMPL_SUPERVOXELS_HPP_
+#pragma once
 
 #include <pcl/apps/cloud_composer/tools/supervoxels.h>
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
@@ -121,4 +120,3 @@ pcl::cloud_composer::SupervoxelsTool::performTemplatedAction (const QList <const
 
 
 
-#endif //IMPL_SUPERVOXELS_HPP_

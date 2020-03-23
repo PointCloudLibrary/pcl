@@ -26,8 +26,7 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
-#ifndef GEOMETRY_INCLUDED
-#define GEOMETRY_INCLUDED
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header
@@ -330,4 +329,3 @@ namespace pcl
 
 
 
-#endif // GEOMETRY_INCLUDED

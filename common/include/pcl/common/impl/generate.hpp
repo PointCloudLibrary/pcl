@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_COMMON_GENERATE_HPP_
-#define PCL_COMMON_GENERATE_HPP_
+#pragma once
 
 #include <pcl/console/print.h>
 
@@ -284,4 +283,3 @@ pcl::common::CloudGenerator<pcl::PointXY, GeneratorT>::fill (int width, int heig
   return (0);
 }
 
-#endif

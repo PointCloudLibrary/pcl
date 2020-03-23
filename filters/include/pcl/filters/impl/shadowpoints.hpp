@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_SHADOW_POINTS_FILTER_H_
-#define PCL_FILTERS_IMPL_SHADOW_POINTS_FILTER_H_
+#pragma once
 
 #include <pcl/filters/shadowpoints.h>
 
@@ -108,4 +107,3 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter (std::vector<int> &indices)
 
 #define PCL_INSTANTIATE_ShadowPoints(T,NT) template class PCL_EXPORTS pcl::ShadowPoints<T,NT>;
 
-#endif    // PCL_FILTERS_IMPL_NORMAL_SPACE_SAMPLE_H_

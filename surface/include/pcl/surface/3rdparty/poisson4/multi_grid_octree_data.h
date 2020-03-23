@@ -26,8 +26,7 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
-#ifndef MULTI_GRID_OCTREE_DATA_INCLUDED
-#define MULTI_GRID_OCTREE_DATA_INCLUDED
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header
@@ -368,4 +367,3 @@ namespace pcl
 
 
 #include "multi_grid_octree_data.hpp"
-#endif // MULTI_GRID_OCTREE_DATA_INCLUDED

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_PCL_VISUALIZER_IMPL_H_
-#define PCL_PCL_VISUALIZER_IMPL_H_
+#pragma once
 
 #include <vtkVersion.h>
 #include <vtkSmartPointer.h>
@@ -1909,4 +1908,3 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
 #undef GetTupleValue
 #endif
 
-#endif

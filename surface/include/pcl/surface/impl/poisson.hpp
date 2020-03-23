@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_IMPL_POISSON_H_
-#define PCL_SURFACE_IMPL_POISSON_H_
+#pragma once
 
 #include <pcl/surface/poisson.h>
 #include <pcl/common/common.h>
@@ -311,5 +310,4 @@ pcl::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
 
 #define PCL_INSTANTIATE_Poisson(T) template class PCL_EXPORTS pcl::Poisson<T>;
 
-#endif    // PCL_SURFACE_IMPL_POISSON_H_
 

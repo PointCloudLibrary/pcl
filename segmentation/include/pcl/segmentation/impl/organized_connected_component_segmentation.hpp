@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_IMPL_ORGANIZED_CONNECTED_COMPONENT_SEGMENTATION_H_
-#define PCL_SEGMENTATION_IMPL_ORGANIZED_CONNECTED_COMPONENT_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 
@@ -228,4 +227,3 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
 
 #define PCL_INSTANTIATE_OrganizedConnectedComponentSegmentation(T,LT) template class PCL_EXPORTS pcl::OrganizedConnectedComponentSegmentation<T,LT>;
 
-#endif //#ifndef PCL_SEGMENTATION_IMPL_ORGANIZED_CONNECTED_COMPONENT_SEGMENTATION_H_

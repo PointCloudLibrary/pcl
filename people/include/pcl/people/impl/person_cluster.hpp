@@ -38,8 +38,7 @@
  * Author: Matteo Munaro
  */
 
-#ifndef PCL_PEOPLE_PERSON_CLUSTER_HPP_
-#define PCL_PEOPLE_PERSON_CLUSTER_HPP_
+#pragma once
 
 #include <pcl/people/person_cluster.h>
 
@@ -430,4 +429,3 @@ pcl::people::PersonCluster<PointT>::~PersonCluster ()
 {
   // Auto-generated destructor stub
 }
-#endif /* PCL_PEOPLE_PERSON_CLUSTER_HPP_ */

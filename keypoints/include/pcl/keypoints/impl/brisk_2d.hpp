@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_KEYPOINTS_BRISK_KEYPOINT_2D_IMPL_H_
-#define PCL_KEYPOINTS_BRISK_KEYPOINT_2D_IMPL_H_
+#pragma once
 
 #include <pcl/common/io.h>
 
@@ -105,4 +104,3 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClo
   }
 }
 
-#endif 

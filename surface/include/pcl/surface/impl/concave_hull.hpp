@@ -40,8 +40,7 @@
 #include <pcl/pcl_config.h>
 #ifdef HAVE_QHULL
 
-#ifndef PCL_SURFACE_IMPL_CONCAVE_HULL_H_
-#define PCL_SURFACE_IMPL_CONCAVE_HULL_H_
+#pragma once
 
 #include <map>
 #include <pcl/surface/concave_hull.h>
@@ -614,5 +613,4 @@ pcl::ConcaveHull<PointInT>::getHullPointIndices (pcl::PointIndices &hull_point_i
 
 #define PCL_INSTANTIATE_ConcaveHull(T) template class PCL_EXPORTS pcl::ConcaveHull<T>;
 
-#endif    // PCL_SURFACE_IMPL_CONCAVE_HULL_H_
 #endif

@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_IMPL_KLD_ADAPTIVE_PARTICLE_OMP_FILTER_H_
-#define PCL_TRACKING_IMPL_KLD_ADAPTIVE_PARTICLE_OMP_FILTER_H_
+#pragma once
 
 #include <pcl/tracking/kld_adaptive_particle_filter_omp.h>
 
@@ -101,4 +100,3 @@ pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight ()
 
 #define PCL_INSTANTIATE_KLDAdaptiveParticleFilterOMPTracker(T,ST) template class PCL_EXPORTS pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<T,ST>;
 
-#endif

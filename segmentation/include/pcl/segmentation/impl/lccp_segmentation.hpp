@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_IMPL_LCCP_SEGMENTATION_HPP_
-#define PCL_SEGMENTATION_IMPL_LCCP_SEGMENTATION_HPP_
+#pragma once
 
 #include <pcl/segmentation/lccp_segmentation.h>
 #include <pcl/common/common.h>
@@ -522,4 +521,3 @@ pcl::LCCPSegmentation<PointT>::connIsConvex (const std::uint32_t source_label_ar
   return (is_convex && is_smooth);
 }
 
-#endif // PCL_SEGMENTATION_IMPL_LCCP_SEGMENTATION_HPP_

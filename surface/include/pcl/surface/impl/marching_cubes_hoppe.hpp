@@ -33,8 +33,7 @@
  *
  */
 
-#ifndef PCL_SURFACE_IMPL_MARCHING_CUBES_HOPPE_H_
-#define PCL_SURFACE_IMPL_MARCHING_CUBES_HOPPE_H_
+#pragma once
 
 #include <pcl/surface/marching_cubes_hoppe.h>
 #include <pcl/common/common.h>
@@ -90,5 +89,4 @@ pcl::MarchingCubesHoppe<PointNT>::voxelizeData ()
 
 #define PCL_INSTANTIATE_MarchingCubesHoppe(T) template class PCL_EXPORTS pcl::MarchingCubesHoppe<T>;
 
-#endif    // PCL_SURFACE_IMPL_MARCHING_CUBES_HOPPE_H_
 

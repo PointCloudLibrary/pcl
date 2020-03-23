@@ -37,8 +37,7 @@
  * $Id$
  */
 
-#ifndef PCL_FEATURES_IMPL_PPF_H_
-#define PCL_FEATURES_IMPL_PPF_H_
+#pragma once
 
 #include <pcl/features/ppf.h>
 #include <pcl/features/pfh.h>
@@ -120,4 +119,3 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 #define PCL_INSTANTIATE_PPFEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::PPFEstimation<T,NT,OutT>;
 
 
-#endif // PCL_FEATURES_IMPL_PPF_H_

@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_IMPL_RANDOM_WALKER_HPP
-#define PCL_SEGMENTATION_IMPL_RANDOM_WALKER_HPP
+#pragma once
 
 #include <boost/bimap.hpp>
 
@@ -344,5 +343,4 @@ namespace pcl
 
 }
 
-#endif /* PCL_SEGMENTATION_IMPL_RANDOM_WALKER_HPP */
 

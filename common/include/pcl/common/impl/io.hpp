@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_IO_IMPL_IO_HPP_
-#define PCL_IO_IMPL_IO_HPP_
+#pragma once
 
 #include <pcl/common/concatenate.h>
 #include <pcl/common/copy_point.h>
@@ -460,5 +459,4 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<Po
   }
 }
 
-#endif // PCL_IO_IMPL_IO_H_
 

@@ -34,8 +34,7 @@
  * $id $
  */
 
-#ifndef PCL_SEGMENTATION_IMPL_EXTRACT_LABELED_CLUSTERS_H_
-#define PCL_SEGMENTATION_IMPL_EXTRACT_LABELED_CLUSTERS_H_
+#pragma once
 
 #include <pcl/segmentation/extract_labeled_clusters.h>
 
@@ -153,4 +152,3 @@ pcl::LabeledEuclideanClusterExtraction<PointT>::extract (std::vector<std::vector
 #define PCL_INSTANTIATE_LabeledEuclideanClusterExtraction(T) template class PCL_EXPORTS pcl::LabeledEuclideanClusterExtraction<T>;
 #define PCL_INSTANTIATE_extractLabeledEuclideanClusters(T) template void PCL_EXPORTS pcl::extractLabeledEuclideanClusters<T>(const pcl::PointCloud<T> &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<std::vector<pcl::PointIndices> > &, unsigned int, unsigned int, unsigned int);
 
-#endif        // PCL_EXTRACT_CLUSTERS_IMPL_H_

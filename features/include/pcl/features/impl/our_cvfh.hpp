@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_OURCVFH_H_
-#define PCL_FEATURES_IMPL_OURCVFH_H_
+#pragma once
 
 #include <pcl/features/our_cvfh.h>
 #include <pcl/features/vfh.h>
@@ -741,4 +740,3 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
 #define PCL_INSTANTIATE_OURCVFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::OURCVFHEstimation<T,NT,OutT>;
 
-#endif    // PCL_FEATURES_IMPL_OURCVFH_H_

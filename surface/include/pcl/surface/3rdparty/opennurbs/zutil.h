@@ -10,8 +10,7 @@
 
 /* @(#) $Id$ */
 
-#ifndef ZUTIL_H
-#define ZUTIL_H
+#pragma once
 
 #define ZLIB_INTERNAL
 #include "zlib.h"
@@ -266,4 +265,3 @@ void   zcfree  OF((voidpf opaque, voidpf ptr));
 #define ZFREE(strm, addr)  (*((strm)->zfree))((strm)->opaque, (voidpf)(addr))
 #define TRY_FREE(s, p) {if (p) ZFREE(s, p);}
 
-#endif /* ZUTIL_H */

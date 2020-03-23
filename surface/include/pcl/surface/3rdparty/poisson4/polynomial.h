@@ -26,8 +26,7 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
-#ifndef POLYNOMIAL_INCLUDED
-#define POLYNOMIAL_INCLUDED
+#pragma once
 
 #include <vector>
 
@@ -99,4 +98,3 @@ namespace pcl
 
 
 #include "polynomial.hpp"
-#endif // POLYNOMIAL_INCLUDED

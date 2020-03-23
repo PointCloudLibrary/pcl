@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_IMPL_PARTICLE_OMP_FILTER_H_
-#define PCL_TRACKING_IMPL_PARTICLE_OMP_FILTER_H_
+#pragma once
 
 #include <pcl/tracking/particle_filter_omp.h>
 
@@ -101,4 +100,3 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
 
 #define PCL_INSTANTIATE_ParticleFilterOMPTracker(T,ST) template class PCL_EXPORTS pcl::tracking::ParticleFilterOMPTracker<T,ST>;
 
-#endif

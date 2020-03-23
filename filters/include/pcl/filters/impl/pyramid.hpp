@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_PYRAMID_HPP
-#define PCL_FILTERS_IMPL_PYRAMID_HPP
+#pragma once
 
 template <typename PointT> bool
 pcl::filters::Pyramid<PointT>::initCompute ()
@@ -565,4 +564,3 @@ namespace pcl
   }
 }
 
-#endif

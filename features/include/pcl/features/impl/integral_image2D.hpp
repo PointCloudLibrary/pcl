@@ -37,8 +37,7 @@
  * $Id: feature.h 2784 2011-10-15 22:05:38Z aichim $
  */
 
-#ifndef PCL_INTEGRAL_IMAGE2D_IMPL_H_
-#define PCL_INTEGRAL_IMAGE2D_IMPL_H_
+#pragma once
 
 #include <cstddef>
 
@@ -381,5 +380,4 @@ pcl::IntegralImage2D<DataType, 1>::computeIntegralImages (
     }
   }
 }
-#endif    // PCL_INTEGRAL_IMAGE2D_IMPL_H_
 

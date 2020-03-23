@@ -40,8 +40,7 @@
 #include <pcl/pcl_config.h>
 #ifdef HAVE_QHULL
 
-#ifndef PCL_SURFACE_IMPL_CONVEX_HULL_H_
-#define PCL_SURFACE_IMPL_CONVEX_HULL_H_
+#pragma once
 
 #include <pcl/surface/convex_hull.h>
 #include <pcl/common/common.h>
@@ -503,5 +502,4 @@ pcl::ConvexHull<PointInT>::getHullPointIndices (pcl::PointIndices &hull_point_in
 
 #define PCL_INSTANTIATE_ConvexHull(T) template class PCL_EXPORTS pcl::ConvexHull<T>;
 
-#endif    // PCL_SURFACE_IMPL_CONVEX_HULL_H_
 #endif

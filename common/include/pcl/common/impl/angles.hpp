@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_COMMON_ANGLES_IMPL_HPP_
-#define PCL_COMMON_ANGLES_IMPL_HPP_
+#pragma once
 
 #include <cmath>
 #include <pcl/pcl_macros.h>
@@ -82,5 +81,4 @@ namespace pcl
   }
 }
 
-#endif  // PCL_COMMON_ANGLES_IMPL_HPP_
 

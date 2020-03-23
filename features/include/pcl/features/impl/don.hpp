@@ -34,8 +34,7 @@
   *  POSSIBILITY OF SUCH DAMAGE.
   *
   */
-#ifndef PCL_FILTERS_DON_IMPL_H_
-#define PCL_FILTERS_DON_IMPL_H_
+#pragma once
 
 #include <pcl/features/don.h>
 
@@ -101,4 +100,3 @@ pcl::DifferenceOfNormalsEstimation<PointInT, PointNT, PointOutT>::computeFeature
 
 #define PCL_INSTANTIATE_DifferenceOfNormalsEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::DifferenceOfNormalsEstimation<T,NT,OutT>;
 
-#endif // PCL_FILTERS_DON_H_

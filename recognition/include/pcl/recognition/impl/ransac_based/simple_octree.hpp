@@ -5,8 +5,7 @@
  *      Author: papazov
  */
 
-#ifndef SIMPLE_OCTREE_HPP_
-#define SIMPLE_OCTREE_HPP_
+#pragma once
 
 #include <algorithm>
 #include <cmath>
@@ -399,4 +398,3 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::insertNeighbo
 
 //===============================================================================================================================
 
-#endif /* SIMPLE_OCTREE_HPP_ */

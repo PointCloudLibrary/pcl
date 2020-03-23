@@ -37,8 +37,7 @@
  * $Id$
  */
 
-#ifndef PCL_FEATURES_IMPL_SHOT_LRF_H_
-#define PCL_FEATURES_IMPL_SHOT_LRF_H_
+#pragma once
 
 #include <utility>
 #include <pcl/features/shot_lrf.h>
@@ -202,5 +201,4 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::computeFeature (Poi
 
 #define PCL_INSTANTIATE_SHOTLocalReferenceFrameEstimation(T,OutT) template class PCL_EXPORTS pcl::SHOTLocalReferenceFrameEstimation<T,OutT>;
 
-#endif    // PCL_FEATURES_IMPL_SHOT_LRF_H_
 

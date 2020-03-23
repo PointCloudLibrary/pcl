@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_IMPL_KLD_ADAPTIVE_PARTICLE_FILTER_H_
-#define PCL_TRACKING_IMPL_KLD_ADAPTIVE_PARTICLE_FILTER_H_
+#pragma once
 
 #include <pcl/tracking/kld_adaptive_particle_filter.h>
 
@@ -91,4 +90,3 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample ()
 
 #define PCL_INSTANTIATE_KLDAdaptiveParticleFilterTracker(T,ST) template class PCL_EXPORTS pcl::tracking::KLDAdaptiveParticleFilterTracker<T,ST>;
 
-#endif

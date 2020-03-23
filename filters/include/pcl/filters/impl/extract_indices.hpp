@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_EXTRACT_INDICES_HPP_
-#define PCL_FILTERS_IMPL_EXTRACT_INDICES_HPP_
+#pragma once
 
 #include <pcl/filters/extract_indices.h>
 #include <pcl/common/io.h>
@@ -167,5 +166,4 @@ pcl::ExtractIndices<PointT>::applyFilterIndices (std::vector<int> &indices)
 
 #define PCL_INSTANTIATE_ExtractIndices(T) template class PCL_EXPORTS pcl::ExtractIndices<T>;
 
-#endif  // PCL_FILTERS_IMPL_EXTRACT_INDICES_HPP_
 

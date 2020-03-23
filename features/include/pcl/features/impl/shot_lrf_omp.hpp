@@ -37,8 +37,7 @@
  * $Id$
  */
 
-#ifndef PCL_FEATURES_IMPL_SHOT_LRF_OMP_H_
-#define PCL_FEATURES_IMPL_SHOT_LRF_OMP_H_
+#pragma once
 
 #include <utility>
 #include <pcl/features/shot_lrf_omp.h>
@@ -104,4 +103,3 @@ pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeature (
 
 #define PCL_INSTANTIATE_SHOTLocalReferenceFrameEstimationOMP(T,OutT) template class PCL_EXPORTS pcl::SHOTLocalReferenceFrameEstimationOMP<T,OutT>;
 
-#endif    // PCL_FEATURES_IMPL_SHOT_LRF_H_

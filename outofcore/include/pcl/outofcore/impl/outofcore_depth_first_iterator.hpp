@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_IMPL_H_
-#define PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_IMPL_H_
+#pragma once
 
 namespace pcl
 {
@@ -147,5 +146,4 @@ namespace pcl
   }//namesapce pcl
 }//namespace outofcore
 
-#endif //PCL_OUTOFCORE_DEPTH_FIRST_ITERATOR_IMPL_H_
 

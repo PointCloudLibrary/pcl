@@ -37,9 +37,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_APPS_IN_HAND_SCANNER_IMPL_COMMON_TYPES_HPP
-#define PCL_APPS_IN_HAND_SCANNER_IMPL_COMMON_TYPES_HPP
+#pragma once
 
 #include <limits>
 
@@ -125,5 +123,3 @@ namespace pcl
 
   } // End namespace ihs
 } // End namespace pcl
-
-#endif // PCL_APPS_IN_HAND_SCANNER_IMPL_COMMON_TYPES_HPP

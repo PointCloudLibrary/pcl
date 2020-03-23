@@ -36,8 +36,7 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_BASE_HPP
-#define PCL_OCTREE_BASE_HPP
+#pragma once
 
 #include <vector>
 
@@ -560,4 +559,3 @@ OctreeBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
 #define PCL_INSTANTIATE_OctreeBase(T)                                                  \
   template class PCL_EXPORTS pcl::octree::OctreeBase<T>;
 
-#endif

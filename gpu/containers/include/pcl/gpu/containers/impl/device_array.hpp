@@ -34,8 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef PCL_GPU_CONTAINER_DEVICE_ARRAY_IMPL_HPP_
-#define PCL_GPU_CONTAINER_DEVICE_ARRAY_IMPL_HPP_
+#pragma once
 
 
 /////////////////////  Inline implementations of DeviceArray ////////////////////////////////////////////
@@ -112,4 +111,3 @@ template<class T> inline int pcl::gpu::DeviceArray2D<T>::rows() const { return D
 template<class T> inline std::size_t pcl::gpu::DeviceArray2D<T>::elem_step() const { return DeviceMemory2D::step()/elem_size; }
 
 
-#endif /* PCL_GPU_CONTAINER_DEVICE_ARRAY_IMPL_HPP_ */ 

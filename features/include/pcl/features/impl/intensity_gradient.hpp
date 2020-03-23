@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_INTENSITY_GRADIENT_H_
-#define PCL_FEATURES_IMPL_INTENSITY_GRADIENT_H_
+#pragma once
 
 #include <pcl/features/intensity_gradient.h>
 
@@ -234,4 +233,3 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
 
 #define PCL_INSTANTIATE_IntensityGradientEstimation(InT,NT,OutT) template class PCL_EXPORTS pcl::IntensityGradientEstimation<InT,NT,OutT>;
 
-#endif    // PCL_FEATURES_IMPL_INTENSITY_GRADIENT_H_

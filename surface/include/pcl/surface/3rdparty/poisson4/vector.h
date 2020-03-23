@@ -26,8 +26,7 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
-#ifndef __VECTOR_HPP
-#define __VECTOR_HPP
+#pragma once
 
 #define Assert assert
 #include <assert.h>
@@ -152,4 +151,3 @@ namespace pcl
 
 #include "vector.hpp"
 
-#endif

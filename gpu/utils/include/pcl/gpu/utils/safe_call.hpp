@@ -34,8 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef __PCL_CUDA_SAFE_CALL_HPP__
-#define __PCL_CUDA_SAFE_CALL_HPP__
+#pragma once
 
 #include "cuda_runtime_api.h"
 #include <pcl/gpu/containers/initialization.h>
@@ -66,4 +65,3 @@ namespace pcl
 }
 
 
-#endif /* __PCL_CUDA_SAFE_CALL_HPP__ */

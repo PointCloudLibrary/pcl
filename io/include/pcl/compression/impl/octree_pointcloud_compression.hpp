@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef OCTREE_COMPRESSION_HPP
-#define OCTREE_COMPRESSION_HPP
+#pragma once
 
 #include <pcl/compression/entropy_range_coder.h>
 
@@ -561,5 +560,4 @@ namespace pcl
   }
 }
 
-#endif
 

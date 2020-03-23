@@ -37,8 +37,7 @@
  *
  */
 
-#ifndef PCL_SEARCH_IMPL_ORGANIZED_NEIGHBOR_SEARCH_H_
-#define PCL_SEARCH_IMPL_ORGANIZED_NEIGHBOR_SEARCH_H_
+#pragma once
 
 #include <pcl/search/organized.h>
 #include <pcl/common/eigen.h>
@@ -388,4 +387,3 @@ pcl::search::OrganizedNeighbor<PointT>::projectPoint (const PointT& point, pcl::
 }
 #define PCL_INSTANTIATE_OrganizedNeighbor(T) template class PCL_EXPORTS pcl::search::OrganizedNeighbor<T>;
 
-#endif

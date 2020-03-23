@@ -36,8 +36,7 @@
  *  Author: Raphael Favier, Technical University Eindhoven, (r.mysurname <aT> tue.nl)
  */
 
-#ifndef PCL_WORLD_MODEL_IMPL_HPP_
-#define PCL_WORLD_MODEL_IMPL_HPP_
+#pragma once
 
 #include <pcl/gpu/kinfu_large_scale/world_model.h>
 
@@ -408,4 +407,3 @@ pcl::kinfuLS::WorldModel<PointT>::setSliceAsNans (const double origin_x, const d
 
 #define PCL_INSTANTIATE_WorldModel(T) template class PCL_EXPORTS pcl::kinfuLS::WorldModel<T>;
 
-#endif // PCL_WORLD_MODEL_IMPL_HPP_

@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_IMPL_TRACKER_H_
-#define PCL_TRACKING_IMPL_TRACKER_H_
+#pragma once
 
 #include <pcl/common/eigen.h>
 #include <ctime>
@@ -35,5 +34,3 @@ pcl::tracking::Tracker<PointInT, StateT>::compute ()
   computeTracking ();
   deinitCompute ();
 }
-
-#endif

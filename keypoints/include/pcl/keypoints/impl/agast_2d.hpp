@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_KEYPOINTS_AGAST_KEYPOINT_2D_IMPL_H_
-#define PCL_KEYPOINTS_AGAST_KEYPOINT_2D_IMPL_H_
+#pragma once
 
 #include <pcl/common/io.h>
 
@@ -99,4 +98,3 @@ pcl::AgastKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &outpu
 
 
 #define AgastKeypoint2D(T,I) template class PCL_EXPORTS pcl::AgastKeypoint2D<T,I>;
-#endif 

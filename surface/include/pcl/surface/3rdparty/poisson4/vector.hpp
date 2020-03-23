@@ -26,8 +26,7 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
-#ifndef __VECTORIMPL_HPP
-#define __VECTORIMPL_HPP
+#pragma once
 
 ////////////
 // Vector //
@@ -491,4 +490,3 @@ namespace pcl
 
   }
 }
-#endif

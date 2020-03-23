@@ -26,8 +26,7 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
-#ifndef FUNCTION_DATA_INCLUDED
-#define FUNCTION_DATA_INCLUDED
+#pragma once
 
 #define BOUNDARY_CONDITIONS 1
 
@@ -120,4 +119,3 @@ namespace pcl
 
 #include "function_data.hpp"
 
-#endif // FUNCTION_DATA_INCLUDED

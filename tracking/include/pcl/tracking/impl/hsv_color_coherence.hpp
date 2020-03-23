@@ -36,8 +36,7 @@
  * $Id$
  *
  */
-#ifndef PCL_TRACKING_IMPL_HSV_COLOR_COHERENCE_H_
-#define PCL_TRACKING_IMPL_HSV_COLOR_COHERENCE_H_
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header 
@@ -180,5 +179,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_HSVColorCoherence(T) template class PCL_EXPORTS pcl::tracking::HSVColorCoherence<T>;
-
-#endif

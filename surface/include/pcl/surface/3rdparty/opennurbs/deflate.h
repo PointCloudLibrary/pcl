@@ -10,8 +10,7 @@
 
 /* @(#) $Id$ */
 
-#ifndef DEFLATE_H
-#define DEFLATE_H
+#pragma once
 
 #include "zutil.h"
 
@@ -328,4 +327,3 @@ void _tr_stored_block OF((deflate_state *s, charf *buf, ulg stored_len,
               flush = _tr_tally(s, distance, length)
 #endif
 
-#endif /* DEFLATE_H */

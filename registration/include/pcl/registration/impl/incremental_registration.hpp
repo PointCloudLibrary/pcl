@@ -35,8 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_REGISTRATION_IMPL_INCREMENTAL_REGISTRATION_HPP_
-#define PCL_REGISTRATION_IMPL_INCREMENTAL_REGISTRATION_HPP_
+#pragma once
 
 template <typename PointT, typename Scalar>
 pcl::registration::IncrementalRegistration<PointT, Scalar>::IncrementalRegistration () :
@@ -100,4 +99,3 @@ pcl::registration::IncrementalRegistration<PointT, Scalar>::setRegistration (Reg
   registration_ = registration;
 }
 
-#endif /*PCL_REGISTRATION_IMPL_INCREMENTAL_REGISTRATION_HPP_*/

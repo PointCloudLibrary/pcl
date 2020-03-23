@@ -35,9 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_SVM_WRAPPER_HPP_
-#define PCL_SVM_WRAPPER_HPP_
+#pragma once
 
 #include <cassert>
 #include <fstream>
@@ -876,5 +874,3 @@ pcl::SVMClassify::saveClassificationResult(const char* filename)
 #define PCL_INSTANTIATE_SVM(T) template class PCL_EXPORTS pcl::SVM<T>;
 #define PCL_INSTANTIATE_SVMTrain(T) template class PCL_EXPORTS pcl::SVMTrain<T>;
 #define PCL_INSTANTIATE_SVMClassify(T) template class PCL_EXPORTS pcl::SVMClassify<T>;
-
-#endif // PCL_SVM_WRAPPER_HPP_

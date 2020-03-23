@@ -34,8 +34,7 @@
  *
  */
 
-#ifndef METS_OBSERVER_HH_
-#define METS_OBSERVER_HH_
+#pragma once
 
 #include <set>
 #include <algorithm> 
@@ -168,4 +167,3 @@ namespace mets {
   
 }
 
-#endif // METS_OBSERVER_HH_

@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_COVARIANCE_SAMPLING_H_
-#define PCL_FILTERS_IMPL_COVARIANCE_SAMPLING_H_
+#pragma once
 
 #include <pcl/common/eigen.h>
 #include <pcl/filters/covariance_sampling.h>
@@ -226,4 +225,3 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (Cloud &output)
 
 #define PCL_INSTANTIATE_CovarianceSampling(T,NT) template class PCL_EXPORTS pcl::CovarianceSampling<T,NT>;
 
-#endif /* PCL_FILTERS_IMPL_COVARIANCE_SAMPLING_H_ */

@@ -37,8 +37,7 @@
  *  $Id$
  */
 
-#ifndef PCL_FEATURES_IMPL_NORMAL_BASED_SIGNATURE_H_
-#define PCL_FEATURES_IMPL_NORMAL_BASED_SIGNATURE_H_
+#pragma once
 
 #include <pcl/features/normal_based_signature.h>
 
@@ -188,4 +187,3 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
 #define PCL_INSTANTIATE_NormalBasedSignatureEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::NormalBasedSignatureEstimation<T,NT,OutT>;
 
 
-#endif /* PCL_FEATURES_IMPL_NORMAL_BASED_SIGNATURE_H_ */

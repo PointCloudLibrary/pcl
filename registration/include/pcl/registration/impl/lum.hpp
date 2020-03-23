@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_IMPL_LUM_HPP_
-#define PCL_REGISTRATION_IMPL_LUM_HPP_
+#pragma once
 
 #include <tuple>
 
@@ -423,5 +422,4 @@ pcl::registration::LUM<PointT>::incidenceCorrection (const Eigen::Vector6f &pose
 
 #define PCL_INSTANTIATE_LUM(T) template class PCL_EXPORTS pcl::registration::LUM<T>;
 
-#endif  // PCL_REGISTRATION_IMPL_LUM_HPP_
 

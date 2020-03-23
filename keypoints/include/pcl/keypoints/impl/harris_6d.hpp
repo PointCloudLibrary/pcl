@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_HARRIS_KEYPOINT_6D_IMPL_H_
-#define PCL_HARRIS_KEYPOINT_6D_IMPL_H_
+#pragma once
 
 #include <pcl/keypoints/harris_6d.h>
 #include <pcl/common/io.h>
@@ -403,5 +402,4 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
 }
 
 #define PCL_INSTANTIATE_HarrisKeypoint6D(T,U,N) template class PCL_EXPORTS pcl::HarrisKeypoint6D<T,U,N>;
-#endif // #ifndef PCL_HARRIS_KEYPOINT_6D_IMPL_H_
 

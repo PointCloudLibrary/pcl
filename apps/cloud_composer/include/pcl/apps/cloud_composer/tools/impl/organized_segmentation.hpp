@@ -35,8 +35,7 @@
   *
   */
  
- #ifndef IMPL_ORGANIZED_SEGMENTATION_HPP_
- #define IMPL_ORGANIZED_SEGMENTATION_HPP_
+#pragma once
  
  #include <pcl/apps/cloud_composer/tools/organized_segmentation.h>
  #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
@@ -178,4 +177,3 @@
  
  
  
- #endif //IMPL_TRANSFORM_CLOUDS_HPP_

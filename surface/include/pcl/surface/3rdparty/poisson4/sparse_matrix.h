@@ -26,8 +26,7 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
-#ifndef __SPARSEMATRIX_HPP
-#define __SPARSEMATRIX_HPP
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header
@@ -184,5 +183,4 @@ namespace pcl
 
 #include "sparse_matrix.hpp"
 
-#endif
 

@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_ORGANIZED_PROJECTION_IMPL_HPP_
-#define PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_ORGANIZED_PROJECTION_IMPL_HPP_
+#pragma once
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> bool
@@ -123,5 +122,4 @@ pcl::registration::CorrespondenceEstimationOrganizedProjection<PointSource, Poin
   determineCorrespondences (correspondences, max_distance);
 }
 
-#endif    // PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_ORGANIZED_PROJECTION_IMPL_HPP_
 

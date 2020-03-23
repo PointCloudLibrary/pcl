@@ -36,8 +36,7 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_SCALE_HPP_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_SCALE_HPP_
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> void
@@ -104,4 +103,3 @@ pcl::registration::TransformationEstimationSVDScale<PointSource, PointTarget, Sc
 
 //#define PCL_INSTANTIATE_TransformationEstimationSVD(T,U) template class PCL_EXPORTS pcl::registration::TransformationEstimationSVD<T,U>;
 
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_SCALE_HPP_ */

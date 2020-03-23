@@ -36,8 +36,7 @@
  * $id $
  */
 
-#ifndef PCL_SEGMENTATION_IMPL_SEEDED_HUE_SEGMENTATION_H_
-#define PCL_SEGMENTATION_IMPL_SEEDED_HUE_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/segmentation/seeded_hue_segmentation.h>
 
@@ -219,4 +218,3 @@ pcl::SeededHueSegmentation::segment (PointIndices &indices_in, PointIndices &ind
   deinitCompute ();
 }
 
-#endif        // PCL_EXTRACT_CLUSTERS_IMPL_H_

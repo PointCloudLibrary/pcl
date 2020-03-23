@@ -38,8 +38,7 @@
  * Ported to PCL by Koen Buys : Attention Work in progress!
  */
 
-#ifndef _ncv_color_conversion_hpp_
-#define _ncv_color_conversion_hpp_
+#pragma once
 
 #include "NCVPixelOperations.hpp"
 
@@ -92,4 +91,3 @@ NCVStatus _ncvColorConv_host(const NCVMatrix<Tin> &h_imgIn,
     return NCV_SUCCESS;
 }
 
-#endif //_ncv_color_conversion_hpp_

@@ -34,8 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef PCL_GPU_FEATURES_INTERNAL_HPP_
-#define PCL_GPU_FEATURES_INTERNAL_HPP_
+#pragma once
 
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/octree/device_format.hpp>
@@ -175,4 +174,3 @@ namespace pcl
     }
 }
 
-#endif /* PCL_GPU_FEATURES_INTERNAL_HPP_ */

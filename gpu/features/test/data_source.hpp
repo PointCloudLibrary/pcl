@@ -35,8 +35,7 @@
  */
 
 
-#ifndef PCL_GPU_FEATURES_TEST_DATA_SOURCE_HPP_
-#define PCL_GPU_FEATURES_TEST_DATA_SOURCE_HPP_
+#pragma once
 
 #include<string>
 
@@ -210,4 +209,3 @@ namespace pcl
     }
 }
 
-#endif /* PCL_GPU_FEATURES_TEST_DATA_SOURCE_HPP_ */

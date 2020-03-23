@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_SAMPLE_CONSENSUS_PREREJECTIVE_HPP_
-#define PCL_REGISTRATION_SAMPLE_CONSENSUS_PREREJECTIVE_HPP_
+#pragma once
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename FeatureT> void 
@@ -332,5 +331,4 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness
     fitness_score = std::numeric_limits<float>::max ();
 }
 
-#endif
 

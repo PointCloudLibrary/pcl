@@ -38,8 +38,7 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_ESF_H_
-#define PCL_FEATURES_IMPL_ESF_H_
+#pragma once
 
 #include <pcl/features/esf.h>
 #include <pcl/common/common.h>
@@ -551,5 +550,4 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
 
 #define PCL_INSTANTIATE_ESFEstimation(T,OutT) template class PCL_EXPORTS pcl::ESFEstimation<T,OutT>;
 
-#endif    // PCL_FEATURES_IMPL_ESF_H_
 

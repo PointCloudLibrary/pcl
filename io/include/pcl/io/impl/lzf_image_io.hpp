@@ -35,8 +35,7 @@
  *
  */
 
-#ifndef PCL_LZF_IMAGE_IO_HPP_
-#define PCL_LZF_IMAGE_IO_HPP_
+#pragma once
 
 #include <pcl/console/print.h>
 #include <pcl/io/debayer.h>
@@ -522,5 +521,4 @@ pcl::io::LZFBayer8ImageReader::readOMP (
   return (true);
 }
 
-#endif  //#ifndef PCL_LZF_IMAGE_IO_HPP_
 
