@@ -6,7 +6,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/keypoints/sift_keypoint.h>
 #include <pcl/keypoints/harris_3d.h>
-#include <pcl/memory.h>  // for dynamic_pointer_cast
+#include <pcl/memory.h>  // for pcl::dynamic_pointer_cast
 #include <pcl/ModelCoefficients.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
@@ -241,20 +241,18 @@ void ICCVTutorial<FeatureType>::detectKeypoints (const typename pcl::PointCloud<
 template<typename FeatureType>
 void ICCVTutorial<FeatureType>::extractDescriptors (typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr input, const typename pcl::PointCloud<pcl::PointXYZI>::Ptr& keypoints, typename pcl::PointCloud<FeatureType>::Ptr features)
 {
-  using pcl::dynamic_pointer_cast;  // force ADL
-
   typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr kpts(new pcl::PointCloud<pcl::PointXYZRGB>);
   kpts->points.resize(keypoints->points.size());
 
   pcl::copyPointCloud(*keypoints, *kpts);
 
-  typename pcl::FeatureFromNormals<pcl::PointXYZRGB, pcl::Normal, FeatureType>::Ptr feature_from_normals = dynamic_pointer_cast<pcl::FeatureFromNormals<pcl::PointXYZRGB, pcl::Normal, FeatureType> > (feature_extractor_);
+  typename pcl::FeatureFromNormals<pcl::PointXYZRGB, pcl::Normal, FeatureType>::Ptr feature_from_normals = pcl::dynamic_pointer_cast<pcl::FeatureFromNormals<pcl::PointXYZRGB, pcl::Normal, FeatureType> > (feature_extractor_);
 
   feature_extractor_->setSearchSurface(input);
   feature_extractor_->setInputCloud(kpts);
 
   if (feature_from_normals)
-  //if (dynamic_pointer_cast<typename pcl::FeatureFromNormals<pcl::PointXYZRGB, pcl::Normal, FeatureType> > (feature_extractor_))
+  //if (pcl::dynamic_pointer_cast<typename pcl::FeatureFromNormals<pcl::PointXYZRGB, pcl::Normal, FeatureType> > (feature_extractor_))
   {
     std::cout << "normal estimation..." << std::flush;
     typename pcl::PointCloud<pcl::Normal>::Ptr normals (new  pcl::PointCloud<pcl::Normal>);
