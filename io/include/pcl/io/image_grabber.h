@@ -75,24 +75,6 @@ namespace pcl
      */
     ImageGrabberBase (const std::vector<std::string>& depth_image_files, float frames_per_second, bool repeat);
 
-    /** \brief Copy constructor.
-     * \param[in] src the Image Grabber base object to copy into this
-     */
-    ImageGrabberBase (const ImageGrabberBase &src) : impl_ ()
-    {
-      *this = src;
-    }
-
-    /** \brief Copy operator.
-     * \param[in] src the Image Grabber base object to copy into this
-     */
-    ImageGrabberBase&
-    operator = (const ImageGrabberBase &src)
-    {
-      impl_ = src.impl_;
-      return (*this);
-    }
-
     /** \brief Virtual destructor. */
     ~ImageGrabberBase () noexcept;
 

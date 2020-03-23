@@ -77,24 +77,6 @@ namespace pcl
         */
       PCDGrabberBase (const std::vector<std::string>& pcd_files, float frames_per_second, bool repeat);
 
-      /** \brief Copy constructor.
-        * \param[in] src the PCD Grabber base object to copy into this
-        */
-      PCDGrabberBase (const PCDGrabberBase &src) : impl_ ()
-      {
-        *this = src;
-      }
-
-      /** \brief Copy operator.
-        * \param[in] src the PCD Grabber base object to copy into this
-        */
-      PCDGrabberBase&
-      operator = (const PCDGrabberBase &src)
-      {
-        impl_ = src.impl_;
-        return (*this);
-      }
-
       /** \brief Virtual destructor. */
       ~PCDGrabberBase () noexcept;
 
