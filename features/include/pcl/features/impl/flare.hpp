@@ -81,7 +81,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   }
 
   if (sampled_tree_->getInputCloud () != sampled_surface_) // Make sure the tree searches the sampled surface
-    sampled_tree_->setInputCloud (sampled_surface_); 
+    sampled_tree_->setInputCloud (sampled_surface_);
 
   return (true);
 }
@@ -121,7 +121,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
   const std::size_t n_normal_neighbours =
       this->searchForNeighbors (index, search_parameter_, neighbours_indices, neighbours_distances);
-  if (n_normal_neighbours < min_neighbors_for_normal_axis_)
+  if (n_normal_neighbours < static_cast<std::size_t>(min_neighbors_for_normal_axis_))
   {
     if (!pcl::isFinite ((*normals_)[index]))
     {
@@ -158,7 +158,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   const std::size_t n_tangent_neighbours =
       sampled_tree_->radiusSearch ((*input_)[index], tangent_radius_, neighbours_indices, neighbours_distances);
 
-  if (n_tangent_neighbours < min_neighbors_for_tangent_axis_)
+  if (n_tangent_neighbours < static_cast<std::size_t>(min_neighbors_for_tangent_axis_))
   {
     //set X axis as a random axis
     x_axis = pcl::geometry::randomOrthogonalAxis (fitted_normal);
