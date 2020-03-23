@@ -38,7 +38,7 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/boost.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 #include <mutex>
 #include <thread>

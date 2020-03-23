@@ -46,10 +46,9 @@
 #include <Eigen/Geometry>
 #include <pcl/PCLHeader.h>
 #include <pcl/exceptions.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_traits.h>
-
-#include <pcl/make_shared.h>
 
 #include <algorithm>
 #include <utility>
@@ -321,7 +320,6 @@ namespace pcl
       }
 
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
-        * \anchor getMatrixXfMap
         * \note This method is for advanced users only! Use with care!
         *
         * \attention Since 1.4.0, Eigen matrices are forced to Row Major to increase the efficiency of the algorithms in PCL
@@ -345,7 +343,6 @@ namespace pcl
       }
 
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
-        * \anchor getMatrixXfMap
         * \note This method is for advanced users only! Use with care!
         *
         * \attention Since 1.4.0, Eigen matrices are forced to Row Major to increase the efficiency of the algorithms in PCL
@@ -368,22 +365,24 @@ namespace pcl
           return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(const_cast<PointT*>(&points[0]))+offset, dim, points.size (), Eigen::OuterStride<> (stride)));
       }
 
-      /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud.
-        * \note This method is for advanced users only! Use with care!
-        * \attention PointT types are most of the time aligned, so the offsets are not continuous!
-        * See \ref getMatrixXfMap for more information.
-        */
+      /**
+       * \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud.
+       * \note This method is for advanced users only! Use with care!
+       * \attention PointT types are most of the time aligned, so the offsets are not continuous!
+       * \overload Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> > pcl::PointCloud::getMatrixXfMap ()
+       */
       inline Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >
       getMatrixXfMap ()
       {
         return (getMatrixXfMap (sizeof (PointT) / sizeof (float),  sizeof (PointT) / sizeof (float), 0));
       }
 
-      /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud.
-        * \note This method is for advanced users only! Use with care!
-        * \attention PointT types are most of the time aligned, so the offsets are not continuous!
-        * See \ref getMatrixXfMap for more information.
-        */
+      /**
+       * \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud.
+       * \note This method is for advanced users only! Use with care!
+       * \attention PointT types are most of the time aligned, so the offsets are not continuous!
+       * \overload const Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> > pcl::PointCloud::getMatrixXfMap () const
+       */
       inline const Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >
       getMatrixXfMap () const
       {

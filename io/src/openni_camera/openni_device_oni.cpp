@@ -36,7 +36,7 @@
  *
  */
 #include <pcl/pcl_config.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 #ifdef HAVE_OPENNI
 
 #ifdef __GNUC__

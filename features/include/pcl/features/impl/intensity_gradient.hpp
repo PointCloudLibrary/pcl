@@ -89,9 +89,7 @@ pcl::IntensityGradientEstimation <PointInT, PointNT, PointOutT, IntensitySelecto
   A (2, 0) = A (0, 2);
   A (2, 1) = A (1, 2);
 
-//*
-  Eigen::Vector3f x = A.colPivHouseholderQr ().solve (b);
-/*/
+//  Eigen::Vector3f x = A.colPivHouseholderQr ().solve (b);
 
   Eigen::Vector3f eigen_values;
   Eigen::Matrix3f eigen_vectors;
@@ -129,9 +127,8 @@ pcl::IntensityGradientEstimation <PointInT, PointNT, PointOutT, IntensitySelecto
 //  x [2] = b.dot (A.col (2));
 //  if (A.col (2).squaredNorm () != 0)
 //    x[2] /= A.col (2).squaredNorm ();
-  // Fit a hyperplane to the data
-
-//*/
+//  // Fit a hyperplane to the data
+//
 //  std::cout << A << "\n*\n" << bb << "\n=\n" << x << "\nvs.\n" << x2 << "\n\n";
 //  std::cout << A * x << "\nvs.\n" << A * x2 << "\n\n------\n";
   // Project the gradient vector, x, onto the tangent plane

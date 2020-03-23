@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <cassert> // for assert
 #include <cstddef>
 #include <vector>
 

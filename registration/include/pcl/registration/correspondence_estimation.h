@@ -45,6 +45,7 @@
 #include <pcl/pcl_base.h>
 #include <pcl/common/transforms.h>
 #include <pcl/search/kdtree.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 #include <pcl/registration/correspondence_types.h>

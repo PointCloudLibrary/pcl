@@ -43,7 +43,7 @@
 #include <pcl/features/fpfh.h>
 
 #include <pcl/visualization/cloud_viewer.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 using namespace pcl;
 

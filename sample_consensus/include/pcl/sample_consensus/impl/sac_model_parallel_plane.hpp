@@ -64,7 +64,9 @@ pcl::SampleConsensusModelParallelPlane<PointT>::countWithinDistance (
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
+  {
     return (0);
+  }
 
   return (SampleConsensusModelPlane<PointT>::countWithinDistance (model_coefficients, threshold));
 }
@@ -89,19 +91,23 @@ template <typename PointT> bool
 pcl::SampleConsensusModelParallelPlane<PointT>::isModelValid (const Eigen::VectorXf &model_coefficients) const
 {
   if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
+  {
     return (false);
+  }
 
   // Check against template, if given
   if (eps_angle_ > 0.0)
   {
     // Obtain the plane normal
     Eigen::Vector4f coeff = model_coefficients;
-    coeff[3] = 0;
+    coeff[3] = 0.0f;
     coeff.normalize ();
 
-    Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0);
+    Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0.0f);
     if (std::abs (axis.dot (coeff)) > sin_angle_)
+    {
       return  (false);
+    }
   }
 
   return (true);

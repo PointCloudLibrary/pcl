@@ -41,10 +41,11 @@
 #pragma once
 
 #if defined __GNUC__
-#  pragma GCC system_header 
+#  pragma GCC system_header
 #endif
 
 // PCL includes
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/search/search.h>
@@ -133,7 +134,7 @@ namespace pcl
         search_parameter_(0), search_radius_(0), k_(0),
         fake_surface_(false)
       {}
-            
+
       /** \brief Empty destructor */
       virtual ~Feature () {}
 
@@ -329,7 +330,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       FeatureFromNormals () : normals_ () {}
-      
+
       /** \brief Empty destructor */
       virtual ~FeatureFromNormals () {}
 
@@ -392,7 +393,7 @@ namespace pcl
       {
         k_ = 1; // Search tree is not always used here.
       }
-      
+
       /** \brief Empty destructor */
       virtual ~FeatureFromLabels () {}
 

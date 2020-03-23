@@ -48,7 +48,7 @@ namespace pcl
     /** \brief @b TransformationEstimationSymmetricPointToPlaneLLS implements a Linear Least Squares (LLS) approximation
       * for minimizing the symmetric point-to-plane distance between two clouds of corresponding points with normals.
       *
-      * For additional details, see 
+      * For additional details, see
       *   "Linear Least-Squares Optimization for Point-to-Plane ICP Surface Registration", Kok-Lim Low, 2004
       *   "A Symmetric Objective Function for ICP", Szymon Rusinkiewicz, 2019
       *
@@ -66,7 +66,7 @@ namespace pcl
 
         using Matrix4 = typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4;
         using Vector6 = Eigen::Matrix<Scalar, 6, 1>;
-        
+
         TransformationEstimationSymmetricPointToPlaneLLS () : enforce_same_direction_normals_ (true) {};
         ~TransformationEstimationSymmetricPointToPlaneLLS () {};
 
@@ -127,25 +127,25 @@ namespace pcl
         */
         inline void
         setEnforceSameDirectionNormals (bool enforce_same_direction_normals);
-        
+
         /** \brief Obtain whether source or target normals are negated on a per-point basis such that they point in the same direction or not */
         inline bool
         getEnforceSameDirectionNormals ();
 
       protected:
-        
+
         /** \brief Estimate a rigid rotation transformation between a source and a target
           * \param[in] source_it an iterator over the source point cloud dataset
           * \param[in] target_it an iterator over the target point cloud dataset
           * \param[out] transformation_matrix the resultant transformation matrix
           */
-        void 
-        estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, 
-                                     ConstCloudIterator<PointTarget>& target_it, 
+        void
+        estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
+                                     ConstCloudIterator<PointTarget>& target_it,
                                      Matrix4 &transformation_matrix) const;
 
         /** \brief Construct a 4 by 4 transformation matrix from the provided rotation and translation.
-          * \param[in] (alpha, beta, gamma, tx, ty, tz) specifying rotation about the x, y, and z-axis and translation along the the x, y, and z-axis respectively
+          * \param[in] parameters (alpha, beta, gamma, tx, ty, tz) specifying rotation about the x, y, and z-axis and translation along the the x, y, and z-axis respectively
           * \param[out] transformation_matrix the resultant transformation matrix
           */
         inline void

@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/file_io.h>
@@ -69,7 +70,7 @@ namespace pcl
         *   - HEIGHT ...
         *   - POINTS ...
         *   - DATA ascii/binary
-        * 
+        *
         * Everything that follows \b DATA is interpreted as data points and
         * will be read accordingly.
         *
@@ -100,19 +101,19 @@ namespace pcl
         * \param[out] origin the sensor acquisition origin (only for > PCD_V7 - null if not present)
         * \param[out] orientation the sensor acquisition orientation (only for > PCD_V7 - identity if not present)
         * \param[out] pcd_version the PCD version of the file (i.e., PCD_V6, PCD_V7)
-        * \param[out] data_type the type of data (0 = ASCII, 1 = Binary, 2 = Binary compressed) 
+        * \param[out] data_type the type of data (0 = ASCII, 1 = Binary, 2 = Binary compressed)
         * \param[out] data_idx the offset of cloud data within the file
         *
         * \return
         *  * < 0 (-1) on error
         *  * == 0 on success
         */
-      int 
+      int
       readHeader (std::istream &binary_istream, pcl::PCLPointCloud2 &cloud,
                   Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version,
                   int &data_type, unsigned int &data_idx);
 
-      /** \brief Read a point cloud data header from a PCD file. 
+      /** \brief Read a point cloud data header from a PCD file.
         *
         * Load only the meta information (number of points, their types, etc),
         * and not the points themselves, from a given PCD file. Useful for fast
@@ -128,7 +129,7 @@ namespace pcl
         * \param[out] origin the sensor acquisition origin (only for > PCD_V7 - null if not present)
         * \param[out] orientation the sensor acquisition orientation (only for > PCD_V7 - identity if not present)
         * \param[out] pcd_version the PCD version of the file (i.e., PCD_V6, PCD_V7)
-        * \param[out] data_type the type of data (0 = ASCII, 1 = Binary, 2 = Binary compressed) 
+        * \param[out] data_type the type of data (0 = ASCII, 1 = Binary, 2 = Binary compressed)
         * \param[out] data_idx the offset of cloud data within the file
         * \param[in] offset the offset of where to expect the PCD Header in the
         * file (optional parameter). One usage example for setting the offset
@@ -141,13 +142,13 @@ namespace pcl
         *  * < 0 (-1) on error
         *  * == 0 on success
         */
-      int 
+      int
       readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
                   Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version,
                   int &data_type, unsigned int &data_idx, const int offset = 0) override;
 
 
-      /** \brief Read a point cloud data header from a PCD file. 
+      /** \brief Read a point cloud data header from a PCD file.
         *
         * Load only the meta information (number of points, their types, etc),
         * and not the points themselves, from a given PCD file. Useful for fast
@@ -171,10 +172,10 @@ namespace pcl
         *  * < 0 (-1) on error
         *  * == 0 on success
         */
-      int 
+      int
       readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud, const int offset = 0);
 
-      /** \brief Read the point cloud data (body) from a PCD stream. 
+      /** \brief Read the point cloud data (body) from a PCD stream.
         *
         * Reads the cloud points from a text-formatted stream.  For use after
         * readHeader(), when the resulting data_type == 0.
@@ -193,7 +194,7 @@ namespace pcl
       int
       readBodyASCII (std::istream &stream, pcl::PCLPointCloud2 &cloud, int pcd_version);
 
-      /** \brief Read the point cloud data (body) from a block of memory. 
+      /** \brief Read the point cloud data (body) from a block of memory.
         *
         * Reads the cloud points from a binary-formatted memory block.  For use
         * after readHeader(), when the resulting data_type is nonzero.
@@ -230,16 +231,16 @@ namespace pcl
         *  * < 0 (-1) on error
         *  * == 0 on success
         */
-      int 
+      int
       read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version, const int offset = 0) override;
 
       /** \brief Read a point cloud data from a PCD (PCD_V6) and store it into a pcl/PCLPointCloud2.
-        * 
+        *
         * \note This function is provided for backwards compatibility only and
         * it can only read PCD_V6 files correctly, as pcl::PCLPointCloud2
-        * does not contain a sensor origin/orientation. Reading any file 
-        * > PCD_V6 will generate a warning. 
+        * does not contain a sensor origin/orientation. Reading any file
+        * > PCD_V6 will generate a warning.
         *
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
@@ -254,7 +255,7 @@ namespace pcl
         *  * < 0 (-1) on error
         *  * == 0 on success
         */
-      int 
+      int
       read (const std::string &file_name, pcl::PCLPointCloud2 &cloud, const int offset = 0);
 
       /** \brief Read a point cloud data from any PCD file, and convert it to the given template format.
@@ -276,7 +277,7 @@ namespace pcl
       {
         pcl::PCLPointCloud2 blob;
         int pcd_version;
-        int res = read (file_name, blob, cloud.sensor_origin_, cloud.sensor_orientation_, 
+        int res = read (file_name, blob, cloud.sensor_origin_, cloud.sensor_orientation_,
                         pcd_version, offset);
 
         // If no error, convert the data
@@ -298,7 +299,7 @@ namespace pcl
       PCDWriter() : map_synchronization_(false) {}
       ~PCDWriter() {}
 
-      /** \brief Set whether mmap() synchornization via msync() is desired before munmap() calls. 
+      /** \brief Set whether mmap() synchornization via msync() is desired before munmap() calls.
         * Setting this to true could prevent NFS data loss (see
         * http://www.pcl-developers.org/PCD-IO-consistency-on-NFS-msync-needed-td4885942.html).
         * Default: false
@@ -319,7 +320,7 @@ namespace pcl
         */
       std::string
       generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
-                            const Eigen::Vector4f &origin, 
+                            const Eigen::Vector4f &origin,
                             const Eigen::Quaternionf &orientation);
 
       /** \brief Generate the header of a BINARY_COMPRESSED PCD file format
@@ -335,18 +336,17 @@ namespace pcl
       int
       generateHeaderBinaryCompressed (std::ostream &os,
                                       const pcl::PCLPointCloud2 &cloud,
-                                      const Eigen::Vector4f &origin, 
+                                      const Eigen::Vector4f &origin,
                                       const Eigen::Quaternionf &orientation);
 
       /** \brief Generate the header of a BINARY_COMPRESSED PCD file format
-        * \param[out] os the stream into which to write the header
         * \param[in] cloud the point cloud data message
         * \param[in] origin the sensor acquisition origin
         * \param[in] orientation the sensor acquisition orientation
         */
       std::string
       generateHeaderBinaryCompressed (const pcl::PCLPointCloud2 &cloud,
-                                      const Eigen::Vector4f &origin, 
+                                      const Eigen::Vector4f &origin,
                                       const Eigen::Quaternionf &orientation);
 
       /** \brief Generate the header of a PCD file format
@@ -356,7 +356,7 @@ namespace pcl
         */
       std::string
       generateHeaderASCII (const pcl::PCLPointCloud2 &cloud,
-                           const Eigen::Vector4f &origin, 
+                           const Eigen::Vector4f &origin,
                            const Eigen::Quaternionf &orientation);
 
       /** \brief Generate the header of a PCD file format
@@ -365,7 +365,7 @@ namespace pcl
         * By default, nr_points is set to INTMAX, and the data in the header is used instead.
         */
       template <typename PointT> static std::string
-      generateHeader (const pcl::PointCloud<PointT> &cloud, 
+      generateHeader (const pcl::PointCloud<PointT> &cloud,
                       const int nr_points = std::numeric_limits<int>::max ());
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in ASCII format
@@ -384,9 +384,9 @@ namespace pcl
         *
         * As an intermediary solution, precision 8 is used, which guarantees lossless storage for RGB.
         */
-      int 
+      int
       writeASCII (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
-                  const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
+                  const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (),
                   const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
                   const int precision = 8);
 
@@ -396,9 +396,9 @@ namespace pcl
         * \param[in] origin the sensor acquisition origin
         * \param[in] orientation the sensor acquisition orientation
         */
-      int 
+      int
       writeBinary (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
-                   const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
+                   const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (),
                    const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity ());
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in BINARY_COMPRESSED format
@@ -411,9 +411,9 @@ namespace pcl
         * (-2) if the input cloud is too large for the file format
         * 0 on success
         */
-      int 
+      int
       writeBinaryCompressed (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
-                             const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
+                             const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (),
                              const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity ());
 
       /** \brief Save point cloud data to a std::ostream containing n-D points, in BINARY_COMPRESSED format
@@ -450,7 +450,7 @@ namespace pcl
         */
       inline int
       write (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
-             const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
+             const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (),
              const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
              const bool binary = false) override
       {
@@ -462,7 +462,7 @@ namespace pcl
       /** \brief Save point cloud data to a PCD file containing n-D points
         * \param[in] file_name the output file name
         * \param[in] cloud the point cloud data message (boost shared pointer)
-        * \param[in] binary set to true if the file is to be written in a binary PCD format, 
+        * \param[in] binary set to true if the file is to be written in a binary PCD format,
         * false (default) for ASCII
         * \param[in] origin the sensor acquisition origin
         * \param[in] orientation the sensor acquisition orientation
@@ -476,7 +476,7 @@ namespace pcl
         */
       inline int
       write (const std::string &file_name, const pcl::PCLPointCloud2::ConstPtr &cloud,
-             const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
+             const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (),
              const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
              const bool binary = false)
       {
@@ -487,8 +487,8 @@ namespace pcl
         * \param[in] file_name the output file name
         * \param[in] cloud the point cloud data message
         */
-      template <typename PointT> int 
-      writeBinary (const std::string &file_name, 
+      template <typename PointT> int
+      writeBinary (const std::string &file_name,
                    const pcl::PointCloud<PointT> &cloud);
 
       /** \brief Save point cloud data to a binary comprssed PCD file
@@ -499,8 +499,8 @@ namespace pcl
         * (-2) if the input cloud is too large for the file format
         * 0 on success
         */
-      template <typename PointT> int 
-      writeBinaryCompressed (const std::string &file_name, 
+      template <typename PointT> int
+      writeBinaryCompressed (const std::string &file_name,
                              const pcl::PointCloud<PointT> &cloud);
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in BINARY format
@@ -508,9 +508,9 @@ namespace pcl
         * \param[in] cloud the point cloud data message
         * \param[in] indices the set of point indices that we want written to disk
         */
-      template <typename PointT> int 
-      writeBinary (const std::string &file_name, 
-                   const pcl::PointCloud<PointT> &cloud, 
+      template <typename PointT> int
+      writeBinary (const std::string &file_name,
+                   const pcl::PointCloud<PointT> &cloud,
                    const std::vector<int> &indices);
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in ASCII format
@@ -518,8 +518,8 @@ namespace pcl
         * \param[in] cloud the point cloud data message
         * \param[in] precision the specified output numeric stream precision (default: 8)
         */
-      template <typename PointT> int 
-      writeASCII (const std::string &file_name, 
+      template <typename PointT> int
+      writeASCII (const std::string &file_name,
                   const pcl::PointCloud<PointT> &cloud,
                   const int precision = 8);
 
@@ -529,8 +529,8 @@ namespace pcl
         * \param[in] indices the set of point indices that we want written to disk
         * \param[in] precision the specified output numeric stream precision (default: 8)
         */
-      template <typename PointT> int 
-      writeASCII (const std::string &file_name, 
+      template <typename PointT> int
+      writeASCII (const std::string &file_name,
                   const pcl::PointCloud<PointT> &cloud,
                   const std::vector<int> &indices,
                   const int precision = 8);
@@ -549,8 +549,8 @@ namespace pcl
         * future versions of PCL.
         */
       template<typename PointT> inline int
-      write (const std::string &file_name, 
-             const pcl::PointCloud<PointT> &cloud, 
+      write (const std::string &file_name,
+             const pcl::PointCloud<PointT> &cloud,
              const bool binary = false)
       {
         if (binary)
@@ -573,8 +573,8 @@ namespace pcl
         * future versions of PCL.
         */
       template<typename PointT> inline int
-      write (const std::string &file_name, 
-             const pcl::PointCloud<PointT> &cloud, 
+      write (const std::string &file_name,
+             const pcl::PointCloud<PointT> &cloud,
              const std::vector<int> &indices,
              bool binary = false)
       {
@@ -608,7 +608,7 @@ namespace pcl
   namespace io
   {
     /** \brief Load a PCD v.6 file into a templated PointCloud type.
-      * 
+      *
       * Any PCD files > v.6 will generate a warning as a
       * pcl/PCLPointCloud2 message cannot hold the sensor origin.
       *
@@ -616,7 +616,7 @@ namespace pcl
       * \param[out] cloud the resultant templated point cloud
       * \ingroup io
       */
-    inline int 
+    inline int
     loadPCDFile (const std::string &file_name, pcl::PCLPointCloud2 &cloud)
     {
       pcl::PCDReader p;
@@ -631,7 +631,7 @@ namespace pcl
       * PCD_V7 - identity if not present)
       * \ingroup io
       */
-    inline int 
+    inline int
     loadPCDFile (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
                  Eigen::Vector4f &origin, Eigen::Quaternionf &orientation)
     {
@@ -667,9 +667,9 @@ namespace pcl
       * future versions of PCL.
       * \ingroup io
       */
-    inline int 
+    inline int
     savePCDFile (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
-                 const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
+                 const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (),
                  const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
                  const bool binary_mode = false)
     {
@@ -698,7 +698,7 @@ namespace pcl
       return (w.write<PointT> (file_name, cloud, binary_mode));
     }
 
-    /** 
+    /**
       * \brief Templated version for saving point cloud data to a PCD file
       * containing a specific given cloud format.
       *
@@ -721,7 +721,7 @@ namespace pcl
       return (w.write<PointT> (file_name, cloud, false));
     }
 
-    /** 
+    /**
       * \brief Templated version for saving point cloud data to a PCD file
       * containing a specific given cloud format. The resulting file will be an uncompressed binary.
       *
@@ -737,7 +737,7 @@ namespace pcl
       return (w.write<PointT> (file_name, cloud, true));
     }
 
-    /** 
+    /**
       * \brief Templated version for saving point cloud data to a PCD file
       * containing a specific given cloud format
       *
@@ -755,9 +755,9 @@ namespace pcl
       * \ingroup io
       */
     template<typename PointT> int
-    savePCDFile (const std::string &file_name, 
+    savePCDFile (const std::string &file_name,
                  const pcl::PointCloud<PointT> &cloud,
-                 const std::vector<int> &indices, 
+                 const std::vector<int> &indices,
                  const bool binary_mode = false)
     {
       // Save the data

@@ -57,7 +57,7 @@ namespace pcl
      * \param[in] cloud Point cloud containing the XYZ coordinates,
      * \param[in] normals Point cloud containing the corresponding surface normals.
      * \param[out] covariances Vector of computed covariances.
-     * \param[in] Optional: Epsilon for the expected noise along the surface normal (default: 0.001)
+     * \param[in] epsilon Optional: Epsilon for the expected noise along the surface normal (default: 0.001)
      */
     template <typename PointT, typename PointNT> inline void
     computeApproximateCovariances(const pcl::PointCloud<PointT>& cloud,

@@ -39,6 +39,7 @@
 
 #include <pcl/surface/boost.h>
 #include <pcl/PolygonMesh.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl

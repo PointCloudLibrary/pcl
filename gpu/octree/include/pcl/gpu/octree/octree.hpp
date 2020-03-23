@@ -37,6 +37,7 @@
 
 #include <vector>
 
+#include <pcl/memory.h>
 #include <pcl/point_types.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>

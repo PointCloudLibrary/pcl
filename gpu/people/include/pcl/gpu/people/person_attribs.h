@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <iosfwd>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 #include <pcl/pcl_exports.h>
 

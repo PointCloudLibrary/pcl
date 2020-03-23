@@ -39,7 +39,7 @@
 
 #include <pcl/cuda/point_types.h>
 #include <pcl/cuda/thrust.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 namespace pcl
 {

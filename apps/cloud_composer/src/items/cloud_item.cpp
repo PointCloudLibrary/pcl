@@ -1,6 +1,7 @@
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <pcl/filters/passthrough.h>
 
+#include <pcl/memory.h>  // for pcl::make_shared
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
@@ -145,7 +146,7 @@ pcl::cloud_composer::CloudItem::setTemplateCloudFromBlob ()
         pcl::fromPCLPointCloud2 (*cloud_blob_ptr_, *cloud_ptr);
         cloud_pointer_variant = QVariant::fromValue (cloud_ptr);
         //Initialize the search kd-tree for this cloud
-        pcl::search::KdTree<PointXYZ>::Ptr kd_search = boost::make_shared<search::KdTree<PointXYZ> >();
+        pcl::search::KdTree<PointXYZ>::Ptr kd_search = pcl::make_shared<search::KdTree<PointXYZ> >();
         kd_search->setInputCloud (cloud_ptr);
         kd_tree_variant = QVariant::fromValue (kd_search);
         break;
@@ -155,7 +156,7 @@ pcl::cloud_composer::CloudItem::setTemplateCloudFromBlob ()
         pcl::PointCloud <PointXYZRGB>::Ptr cloud_ptr (new pcl::PointCloud <PointXYZRGB>);
         pcl::fromPCLPointCloud2 (*cloud_blob_ptr_, *cloud_ptr);
         cloud_pointer_variant = QVariant::fromValue (cloud_ptr);
-        pcl::search::KdTree<PointXYZRGB>::Ptr kd_search = boost::make_shared<search::KdTree<PointXYZRGB> >();
+        pcl::search::KdTree<PointXYZRGB>::Ptr kd_search = pcl::make_shared<search::KdTree<PointXYZRGB> >();
         kd_search->setInputCloud (cloud_ptr);
         kd_tree_variant = QVariant::fromValue (kd_search);
         break;
@@ -165,7 +166,7 @@ pcl::cloud_composer::CloudItem::setTemplateCloudFromBlob ()
         pcl::PointCloud <PointXYZRGBA>::Ptr cloud_ptr (new pcl::PointCloud <PointXYZRGBA>);
         pcl::fromPCLPointCloud2 (*cloud_blob_ptr_, *cloud_ptr);
         cloud_pointer_variant = QVariant::fromValue (cloud_ptr);
-        pcl::search::KdTree<PointXYZRGBA>::Ptr kd_search = boost::make_shared<search::KdTree<PointXYZRGBA> >();
+        pcl::search::KdTree<PointXYZRGBA>::Ptr kd_search = pcl::make_shared<search::KdTree<PointXYZRGBA> >();
         kd_search->setInputCloud (cloud_ptr);
         kd_tree_variant = QVariant::fromValue (kd_search);
         break;
@@ -191,7 +192,7 @@ pcl::cloud_composer::CloudItem::checkIfFinite ()
   if (! cloud_blob_ptr_)
     return false;
   
-  pcl::PCLPointCloud2::Ptr cloud_filtered = boost::make_shared<pcl::PCLPointCloud2> ();
+  pcl::PCLPointCloud2::Ptr cloud_filtered = pcl::make_shared<pcl::PCLPointCloud2> ();
   pcl::PassThrough<pcl::PCLPointCloud2> pass_filter;
   pass_filter.setInputCloud (cloud_blob_ptr_);
   pass_filter.setKeepOrganized (false);
