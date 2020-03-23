@@ -13,17 +13,17 @@ jobs:
     timeoutInMinutes: 0
     strategy:
       matrix:
-        ubuntu16 Clang:
-          containerResource: env1604
-          CC: clang
-          CXX: clang++
-          CMakeArgs: '-DPCL_WARNINGS_ARE_ERRORS=ON'
-
-        ubuntu19 Clang:
-          containerResource: env1910
-          CC: clang
-          CXX: clang++
-          CMakeArgs: ''
+#        ubuntu16 Clang:
+#          containerResource: env1604
+#          CC: clang
+#          CXX: clang++
+#          CMakeArgs: '-DPCL_WARNINGS_ARE_ERRORS=ON'
+#
+#        ubuntu19 Clang:
+#          containerResource: env1910
+#          CC: clang
+#          CXX: clang++
+#          CMakeArgs: ''
 
         ubuntu16 GCC:
           containerResource: env1604
