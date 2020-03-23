@@ -1,9 +1,9 @@
 resources:
   containers:
     - container: env1604
-      image: shrijitsingh99/pcl:16.04
+      image: pointcloudlibrary/env:16.04
     - container: env1910
-      image: shrijitsingh99/pcl:19.10
+      image: pointcloudlibrary/env:19.10
 
 jobs:
   - job: ubuntu
