@@ -271,6 +271,8 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo (pcl::Grabber& grabber) : g
 void
 OrganizedSegmentationDemo::cloud_cb (const CloudConstPtr& cloud)
 {
+  using pcl::dynamic_pointer_cast; // force ADL
+
   if (!capture_)
     return;
   QMutexLocker locker (&mtx_);

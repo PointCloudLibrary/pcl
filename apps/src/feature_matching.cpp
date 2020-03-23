@@ -241,6 +241,8 @@ void ICCVTutorial<FeatureType>::detectKeypoints (const typename pcl::PointCloud<
 template<typename FeatureType>
 void ICCVTutorial<FeatureType>::extractDescriptors (typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr input, const typename pcl::PointCloud<pcl::PointXYZI>::Ptr& keypoints, typename pcl::PointCloud<FeatureType>::Ptr features)
 {
+  using pcl::dynamic_pointer_cast;  // force ADL
+
   typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr kpts(new pcl::PointCloud<pcl::PointXYZRGB>);
   kpts->points.resize(keypoints->points.size());
 
