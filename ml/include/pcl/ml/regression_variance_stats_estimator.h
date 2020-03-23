@@ -97,7 +97,6 @@ public:
     PCL_CHECK_IO_STREAM(stream, "num_of_sub_nodes");
 
     sub_nodes.resize(num_of_sub_nodes);
-
     if (num_of_sub_nodes > 0) {
       for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes;
            ++sub_node_index) {

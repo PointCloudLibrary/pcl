@@ -68,6 +68,10 @@ namespace pcl
       std::size_t num_of_features;
       read (stream, num_of_features);
       PCL_CHECK_IO_STREAM(stream, "num_of_features");
+      if (num_of_features <= 0)
+      {
+        PCL_THROW_EXCEPTION(pcl::IOException, "Error! Number of features read from file is not positive!");
+      }
 
       features.resize (num_of_features);
       for (std::size_t feature_index = 0; feature_index < num_of_features; ++feature_index)
@@ -104,6 +108,12 @@ namespace pcl
 
       std::size_t num_of_modalities;
       read (stream, num_of_modalities);
+      PCL_CHECK_IO_STREAM(stream, "num_of_modalities");
+      if (num_of_modalities <= 0)
+      {
+        PCL_THROW_EXCEPTION(pcl::IOException, "Error! Number of modalities read from file is not positive!");
+      }
+
       modalities.resize (num_of_modalities);
       for (std::size_t modality_index = 0; modality_index < num_of_modalities; ++modality_index)
       {

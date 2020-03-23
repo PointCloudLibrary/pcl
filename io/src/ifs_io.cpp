@@ -78,22 +78,23 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   //Read the magic
   std::uint32_t length_of_magic;
   fs.read ((char*)&length_of_magic, sizeof (std::uint32_t));
-  if (length_of_magic == 0)
+  PCL_CHECK_IO_STREAM(fs, "length of magic");
+
+  if (length_of_magic <= 0)
   {
-    PCL_THROW_EXCEPTION (pcl::IOException, "File does not contain length_of_magic");
+    PCL_THROW_EXCEPTION (pcl::IOException, "Error! Length of magic read from file is not positive!");
   }
-  else
+  char *magic = new char [length_of_magic];
+  fs.read (magic, sizeof (char) * length_of_magic);
+  PCL_CHECK_IO_STREAM(fs, "magic");
+
+  if (strcmp (magic, "IFS"))
   {
-    char *magic = new char [length_of_magic];
-    fs.read (magic, sizeof (char) * length_of_magic);
-    if (strcmp (magic, "IFS"))
-    {
-      PCL_ERROR ("[pcl::IFSReader::readHeader] File %s is not an IFS file!\n", file_name.c_str ());
-      fs.close ();
-      return (-1);
-    }
-    delete[] magic;
+    PCL_ERROR ("[pcl::IFSReader::readHeader] File %s is not an IFS file!\n", file_name.c_str ());
+    fs.close ();
+    return (-1);
   }
+  delete[] magic;
 
   //Read IFS version
   float version;
@@ -117,6 +118,7 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
 
   char *name = new char [length_of_name];
   fs.read (name, sizeof (char) * length_of_name);
+  PCL_CHECK_IO_STREAM(fs, "name");
   delete[] name;
 
   // Read the header and fill it in with wonderful values
@@ -127,42 +129,42 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       //Read the keyword
       std::uint32_t length_of_keyword;
       fs.read ((char*)&length_of_keyword, sizeof (std::uint32_t));
-      if (length_of_keyword == 0)
+      PCL_CHECK_IO_STREAM(fs, "length of keyword");
+
+      if (length_of_keyword <= 0)
       {
-        PCL_THROW_EXCEPTION (pcl::IOException, "File does not contain length_of_keyword");
+        PCL_THROW_EXCEPTION (pcl::IOException, "Error! Length of keyword read is not positive!");
       }
-      else
+      char *keyword = new char [length_of_keyword];
+      fs.read (keyword, sizeof (char) * length_of_keyword);
+      PCL_CHECK_IO_STREAM(fs, "keyword");
+
+      if (strcmp (keyword, "VERTICES") == 0)
       {
-        char *keyword = new char [length_of_keyword];
-        fs.read (keyword, sizeof (char) * length_of_keyword);
-
-        if (strcmp (keyword, "VERTICES") == 0)
+        fs.read ((char*)&nr_points, sizeof (std::uint32_t));
+        if ((nr_points == 0) || (nr_points > 10000000))
         {
-          fs.read ((char*)&nr_points, sizeof (std::uint32_t));
-          if ((nr_points == 0) || (nr_points > 10000000))
-          {
-            PCL_ERROR ("[pcl::IFSReader::readHeader] Bad number of vertices %lu!\n", nr_points);
-            fs.close ();
-            return (-1);
-          }
-
-          cloud.fields.resize (3);
-          cloud.fields[0].name = "x";
-          cloud.fields[1].name = "y";
-          cloud.fields[2].name = "z";
-
-          int offset = 0;
-          for (int i = 0; i < 3; ++i, offset += 4)
-          {
-            cloud.fields[i].offset   = offset;
-            cloud.fields[i].datatype = pcl::PCLPointField::FLOAT32;
-            cloud.fields[i].count    = 1;
-          }
-          cloud.point_step = offset;
-          cloud.data.resize (nr_points * cloud.point_step);
-          data_idx = fs.tellg ();
-          break;
+          PCL_ERROR ("[pcl::IFSReader::readHeader] Bad number of vertices %lu!\n", nr_points);
+          fs.close ();
+          return (-1);
         }
+
+        cloud.fields.resize (3);
+        cloud.fields[0].name = "x";
+        cloud.fields[1].name = "y";
+        cloud.fields[2].name = "z";
+
+        int offset = 0;
+        for (int i = 0; i < 3; ++i, offset += 4)
+        {
+          cloud.fields[i].offset   = offset;
+          cloud.fields[i].datatype = pcl::PCLPointField::FLOAT32;
+          cloud.fields[i].count    = 1;
+        }
+        cloud.point_step = offset;
+        cloud.data.resize (nr_points * cloud.point_step);
+        data_idx = fs.tellg ();
+        break;
       }
     }
   }
@@ -294,22 +296,23 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
   // Read the TRIANGLES keyword
   std::uint32_t length_of_keyword;
   fs.read ((char*)&length_of_keyword, sizeof (std::uint32_t));
-  if (length_of_keyword > 0)
+  PCL_CHECK_IO_STREAM(fs, "length of keyword");
+
+  if (length_of_keyword <= 0)
   {
-    char *keyword = new char [length_of_keyword];
-    fs.read (keyword, sizeof (char) * length_of_keyword);
-    if (strcmp (keyword, "TRIANGLES"))
-    {
-      PCL_ERROR ("[pcl::IFSReader::read] File %s is does not contain facets!\n", file_name.c_str ());
-      fs.close ();
-      return (-1);
-    }
-    delete[] keyword;
+    PCL_THROW_EXCEPTION (pcl::IOException, "Error! Length of keyword read from file is not positive!");
   }
-  else
+  char *keyword = new char [length_of_keyword];
+  fs.read (keyword, sizeof (char) * length_of_keyword);
+  PCL_CHECK_IO_STREAM(fs, "keyword");
+
+  if (strcmp (keyword, "TRIANGLES"))
   {
-    PCL_THROW_EXCEPTION (pcl::IOException, "File does not contain length_of_keyword");
+    PCL_ERROR ("[pcl::IFSReader::read] File %s is does not contain facets!\n", file_name.c_str ());
+    fs.close ();
+    return (-1);
   }
+  delete[] keyword;
   // Read the number of facets
   std::uint32_t nr_facets;
   fs.read ((char*)&nr_facets, sizeof (std::uint32_t));
@@ -327,8 +330,13 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
     pcl::Vertices &facet = mesh.polygons[i];
     facet.vertices.resize (3);
     fs.read ((char*)&(facet.vertices[0]), sizeof (std::uint32_t));
+    PCL_CHECK_IO_STREAM (fs, "first value of facet.vertices");
+
     fs.read ((char*)&(facet.vertices[1]), sizeof (std::uint32_t));
+    PCL_CHECK_IO_STREAM (fs, "second value of facet.vertices");
+
     fs.read ((char*)&(facet.vertices[2]), sizeof (std::uint32_t));
+    PCL_CHECK_IO_STREAM (fs, "third value of facet.vertices");
   }
   // We are done, close the file
   fs.close ();

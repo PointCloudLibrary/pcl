@@ -130,11 +130,10 @@ namespace pcl
 
         stream.read (reinterpret_cast<char*> (&width), sizeof (width));
         PCL_CHECK_IO_STREAM(stream, "width");
-
         width_ = static_cast<std::size_t> (width);
+
         stream.read (reinterpret_cast<char*> (&height), sizeof (height));
         PCL_CHECK_IO_STREAM(stream, "height");
-
         height_ = static_cast<std::size_t> (height);
 
         int num_of_elements;

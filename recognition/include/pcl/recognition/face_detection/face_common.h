@@ -127,19 +127,21 @@ namespace pcl
         {
           int num_of_sub_nodes;
           stream.read (reinterpret_cast<char*> (&num_of_sub_nodes), sizeof(num_of_sub_nodes));
+          PCL_CHECK_IO_STREAM(stream, "num_of_sub_nodes");
 
-          if (num_of_sub_nodes == 0)
+          if (num_of_sub_nodes <= 0)
           {
-            PCL_THROW_EXCEPTION (pcl::IOException, "Failed to read num_of_sub_nodes from file");
+            PCL_THROW_EXCEPTION (pcl::IOException, "Error! Number of sub nodes read from file is not positive!");
           }
-          else
-          {
-            feature.deserialize (stream);
-            stream.read (reinterpret_cast<char*> (&threshold), sizeof(threshold));
-          }
+          feature.deserialize (stream);
+          stream.read (reinterpret_cast<char*> (&threshold), sizeof(threshold));
+          PCL_CHECK_IO_STREAM(stream, "threshold");
 
           stream.read (reinterpret_cast<char*> (&value), sizeof(value));
+          PCL_CHECK_IO_STREAM(stream, "value");
+
           stream.read (reinterpret_cast<char*> (&variance), sizeof(variance));
+          PCL_CHECK_IO_STREAM(stream, "variance");
 
           for (std::size_t i = 0; i < 3; i++)
             stream.read (reinterpret_cast<char*> (&trans_mean_[i]), sizeof(trans_mean_[i]));
@@ -155,18 +157,15 @@ namespace pcl
             for (std::size_t j = 0; j < 3; j++)
               stream.read (reinterpret_cast<char*> (&covariance_rot_ (i, j)), sizeof(covariance_rot_ (i, j)));
 
-          if (num_of_sub_nodes == 0)
+          if (num_of_sub_nodes <= 0)
           {
-            PCL_THROW_EXCEPTION (pcl::IOException, "Failed to read sub_nodes from file");
+            PCL_THROW_EXCEPTION (pcl::IOException, "Error! Number of sub nodes read from file is not positive!");
           }
-          else
-          {
-            sub_nodes.resize (num_of_sub_nodes);
+          sub_nodes.resize (num_of_sub_nodes);
 
-            for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes; ++sub_node_index)
-            {
-              sub_nodes[sub_node_index].deserialize (stream);
-            }
+          for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes; ++sub_node_index)
+          {
+            sub_nodes[sub_node_index].deserialize (stream);
           }
         }
     };

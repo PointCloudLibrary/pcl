@@ -54,10 +54,14 @@
   throw ExceptionName(s.str(), __FILE__, BOOST_CURRENT_FUNCTION, __LINE__); \
 }
 
-/** PCL_CHECK_IO_STREAM a helper macro to be used to detect failure in reading
- * This is an example of how to use:
- * PCL_CHECK_IO_STREAM(stream, "num_of_elements")
- */
+/** \macro PCL_CHECK_IO_STREAM
+  * \brief helper macro to be used to detect failure in reading from file
+  * \detail checks the istream to see whether badbit or failbit is set
+  *         and if either is set, throws an IOException and lets upper
+  *         layers of stack decide what to do
+  * This is an example of how to use:
+  * PCL_CHECK_IO_STREAM(stream, "num_of_elements")
+  */
 #define PCL_CHECK_IO_STREAM(stream, msg)                                    \
 {                                                                           \
   std::string message;                                                      \

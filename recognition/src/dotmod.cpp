@@ -245,14 +245,12 @@ deserialize (std::istream & stream)
 
   int nr_templates;
   read (stream, nr_templates);
-  if (nr_templates == 0)
+  PCL_CHECK_IO_STREAM(stream, "data");
+  if (nr_templates <= 0)
   {
-    PCL_THROW_EXCEPTION (pcl::IOException, "Failed in reading data from file");
+    PCL_THROW_EXCEPTION (pcl::IOException, "Error! Expected positive data but read negative!");
   }
-  else
-  {
-    templates_.resize (nr_templates);
-    for (int template_index = 0; template_index < nr_templates; ++template_index)
-      templates_[template_index].deserialize (stream);
-  }
+  templates_.resize (nr_templates);
+  for (int template_index = 0; template_index < nr_templates; ++template_index)
+    templates_[template_index].deserialize (stream);
 }

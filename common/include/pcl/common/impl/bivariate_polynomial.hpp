@@ -294,6 +294,7 @@ pcl::BivariatePolynomialT<real>::readBinary (std::istream& os)
   unsigned int paramCnt = getNoOfParametersFromDegree (this->degree);
   parameters = new real[paramCnt];
   os.read (reinterpret_cast<char*> (&(*this->parameters)), paramCnt * sizeof (real));
+  PCL_CHECK_IO_STREAM(os, "parameters of degree");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
