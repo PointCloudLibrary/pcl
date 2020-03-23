@@ -120,7 +120,6 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::weightPointSPFHSignature (
   const auto nr_bins_f2 = hist_f2.cols ();
   const auto nr_bins_f3 = hist_f3.cols ();
   const auto nr_bins_f12 = nr_bins_f1 + nr_bins_f2;
-  using iteration_type = std::remove_cv_t<decltype(nr_bins_f1)>;
 
   // Clear the histogram
   fpfh_histogram.setZero (nr_bins_f1 + nr_bins_f2 + nr_bins_f3);
@@ -136,21 +135,21 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::weightPointSPFHSignature (
     weight = 1.0f / dists[idx];
 
     // Weight the SPFH of the query point with the SPFH of its neighbors
-    for (iteration_type f1_i = 0; f1_i < nr_bins_f1; ++f1_i)
+    for (Eigen::MatrixXf::Index f1_i = 0; f1_i < nr_bins_f1; ++f1_i)
     {
       val_f1 = hist_f1 (indices[idx], f1_i) * weight;
       sum_f1 += val_f1;
       fpfh_histogram[f1_i] += val_f1;
     }
 
-    for (iteration_type f2_i = 0; f2_i < nr_bins_f2; ++f2_i)
+    for (Eigen::MatrixXf::Index f2_i = 0; f2_i < nr_bins_f2; ++f2_i)
     {
       val_f2 = hist_f2 (indices[idx], f2_i) * weight;
       sum_f2 += val_f2;
       fpfh_histogram[f2_i + nr_bins_f1] += val_f2;
     }
 
-    for (iteration_type f3_i = 0; f3_i < nr_bins_f3; ++f3_i)
+    for (Eigen::MatrixXf::Index f3_i = 0; f3_i < nr_bins_f3; ++f3_i)
     {
       val_f3 = hist_f3 (indices[idx], f3_i) * weight;
       sum_f3 += val_f3;
