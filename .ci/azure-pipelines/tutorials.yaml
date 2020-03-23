@@ -19,6 +19,7 @@ jobs:
       - script: |
           mkdir $BUILD_DIR && cd $BUILD_DIR
           cmake $(Build.SourcesDirectory) \
+            -DCMAKE_BUILD_TYPE="Release" \
             -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR \
             -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
             -DPCL_ONLY_CORE_POINT_TYPES=ON \
