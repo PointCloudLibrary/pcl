@@ -44,8 +44,6 @@
 #include <pcl/features/fpfh.h>
 #include <pcl/features/pfh_tools.h>
 
-#include <type_traits>
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> bool
 pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePairFeatures (
