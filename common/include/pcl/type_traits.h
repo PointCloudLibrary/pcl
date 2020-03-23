@@ -37,13 +37,6 @@
 
 #pragma once
 
-#ifdef __GNUC__
-#pragma GCC system_header
-#endif
-
-#include <pcl/pcl_macros.h>
-
-#include <pcl/PCLPointField.h>
 #include <boost/mpl/assert.hpp>
 
 // This is required for the workaround at line 109
@@ -52,7 +45,10 @@
 #include <Eigen/src/StlSupport/details.h>
 #endif
 
+#include <string>
 #include <type_traits>
+
+#include <cstdint>
 
 namespace pcl
 {
@@ -71,27 +67,47 @@ namespace pcl
 
   namespace traits
   {
+    namespace detail {
+    /**
+     * \brief Enumeration for different numerical types
+     *
+     * \detail struct used to enable scope and implicit conversion to int
+     */
+    struct PointFieldTypes {
+        static const std::uint8_t INT8 = 1,    UINT8 = 2,
+                                  INT16 = 3,   UINT16 = 4,
+                                  INT32 = 5,   UINT32 = 6,
+                                  FLOAT32 = 7, FLOAT64 = 8;
+    };
+    }
+
     // Metafunction to return enum value representing a type
     template<typename T> struct asEnum {};
-    template<> struct asEnum<std::int8_t>   { static const std::uint8_t value = pcl::PCLPointField::INT8;    };
-    template<> struct asEnum<std::uint8_t>  { static const std::uint8_t value = pcl::PCLPointField::UINT8;   };
-    template<> struct asEnum<std::int16_t>  { static const std::uint8_t value = pcl::PCLPointField::INT16;   };
-    template<> struct asEnum<std::uint16_t> { static const std::uint8_t value = pcl::PCLPointField::UINT16;  };
-    template<> struct asEnum<std::int32_t>  { static const std::uint8_t value = pcl::PCLPointField::INT32;   };
-    template<> struct asEnum<std::uint32_t> { static const std::uint8_t value = pcl::PCLPointField::UINT32;  };
-    template<> struct asEnum<float>    { static const std::uint8_t value = pcl::PCLPointField::FLOAT32; };
-    template<> struct asEnum<double>   { static const std::uint8_t value = pcl::PCLPointField::FLOAT64; };
+    template<> struct asEnum<std::int8_t>   { static const std::uint8_t value = detail::PointFieldTypes::INT8;    };
+    template<> struct asEnum<std::uint8_t>  { static const std::uint8_t value = detail::PointFieldTypes::UINT8;   };
+    template<> struct asEnum<std::int16_t>  { static const std::uint8_t value = detail::PointFieldTypes::INT16;   };
+    template<> struct asEnum<std::uint16_t> { static const std::uint8_t value = detail::PointFieldTypes::UINT16;  };
+    template<> struct asEnum<std::int32_t>  { static const std::uint8_t value = detail::PointFieldTypes::INT32;   };
+    template<> struct asEnum<std::uint32_t> { static const std::uint8_t value = detail::PointFieldTypes::UINT32;  };
+    template<> struct asEnum<float>    { static const std::uint8_t value = detail::PointFieldTypes::FLOAT32; };
+    template<> struct asEnum<double>   { static const std::uint8_t value = detail::PointFieldTypes::FLOAT64; };
+
+    template<typename T>
+    static constexpr std::uint8_t asEnum_v = asEnum<T>::value;
 
     // Metafunction to return type of enum value
     template<int> struct asType {};
-    template<> struct asType<pcl::PCLPointField::INT8>    { using type = std::int8_t; };
-    template<> struct asType<pcl::PCLPointField::UINT8>   { using type = std::uint8_t; };
-    template<> struct asType<pcl::PCLPointField::INT16>   { using type = std::int16_t; };
-    template<> struct asType<pcl::PCLPointField::UINT16>  { using type = std::uint16_t; };
-    template<> struct asType<pcl::PCLPointField::INT32>   { using type = std::int32_t; };
-    template<> struct asType<pcl::PCLPointField::UINT32>  { using type = std::uint32_t; };
-    template<> struct asType<pcl::PCLPointField::FLOAT32> { using type = float; };
-    template<> struct asType<pcl::PCLPointField::FLOAT64> { using type = double; };
+    template<> struct asType<detail::PointFieldTypes::INT8>    { using type = std::int8_t; };
+    template<> struct asType<detail::PointFieldTypes::UINT8>   { using type = std::uint8_t; };
+    template<> struct asType<detail::PointFieldTypes::INT16>   { using type = std::int16_t; };
+    template<> struct asType<detail::PointFieldTypes::UINT16>  { using type = std::uint16_t; };
+    template<> struct asType<detail::PointFieldTypes::INT32>   { using type = std::int32_t; };
+    template<> struct asType<detail::PointFieldTypes::UINT32>  { using type = std::uint32_t; };
+    template<> struct asType<detail::PointFieldTypes::FLOAT32> { using type = float; };
+    template<> struct asType<detail::PointFieldTypes::FLOAT64> { using type = double; };
+
+    template<int index>
+    using asType_t = typename asType<index>::type;
 
     // Metafunction to decompose a type (possibly of array of any number of dimensions) into
     // its scalar type and total number of elements.
@@ -185,20 +201,6 @@ namespace pcl
                            POINT_TYPE_NOT_PROPERLY_REGISTERED, (PointT&));
     };
   } //namespace traits
-
-  // Return true if the PCLPointField matches the expected name and data type.
-  // Written as a struct to allow partially specializing on Tag.
-  template<typename PointT, typename Tag>
-  struct FieldMatches
-  {
-    bool operator() (const pcl::PCLPointField& field)
-    {
-      return (field.name == traits::name<PointT, Tag>::value &&
-              field.datatype == traits::datatype<PointT, Tag>::value &&
-              (field.count == traits::datatype<PointT, Tag>::size ||
-               field.count == 0 && traits::datatype<PointT, Tag>::size == 1 /* see bug #821 */));
-    }
-  };
 
   /** \brief A helper functor that can copy a specific value if the given field exists.
     *
@@ -356,3 +358,4 @@ namespace pcl
 
 #endif
 }
+

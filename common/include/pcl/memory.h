@@ -43,7 +43,7 @@
  * \ingroup common
  */
 
-#include <pcl/type_traits.h>
+#include <pcl/type_traits.h>  // for has_custom_allocator
 
 #include <boost/make_shared.hpp>  // for boost::allocate_shared, boost::make_shared
 #include <boost/smart_ptr/shared_ptr.hpp>  // for boost::shared_ptr
