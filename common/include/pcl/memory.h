@@ -81,6 +81,12 @@ namespace pcl
 template <typename T>
 using shared_ptr = boost::shared_ptr<T>;
 
+/** ADL doesn't work until C++20 for dynamic_pointer_cast since it requires an explicit Tparam */
+using boost::dynamic_pointer_cast;
+
+/** ADL doesn't work until C++20 for static_pointer_cast since it requires an explicit Tparam */
+using boost::static_pointer_cast;
+
 
 template <typename ...> using void_t = void; // part of std in c++17
 
