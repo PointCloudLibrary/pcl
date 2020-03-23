@@ -2,7 +2,6 @@
 
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
-#include <boost/shared_ptr.hpp>
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
