@@ -116,8 +116,12 @@ RangeImageBorderExtractor::extractLocalSurfaceStructure ()
   const auto sqrt_neighbors = parameters_.pixel_radius_plane_extraction/step_size + 1;
   const auto no_of_nearest_neighbors = sqrt_neighbors * sqrt_neighbors;
 
+  // iteration_type should be at least as big as unsigned int (decltype of height)
+  // But OpenMP requires signed size. Here we choose the minimum size that fits the bill
+  using iteration_type = std::conditional_t<sizeof(int) == sizeof(long int), long long int, long int>;
+
 # pragma omp parallel for num_threads(parameters_.max_no_of_threads) default(shared) schedule(dynamic, 10)
-  for (unsigned int y=0; y<height; ++y)
+  for (iteration_type y=0; y<height; ++y)
   {
     for (unsigned int x=0; x<width; ++x)
     {
