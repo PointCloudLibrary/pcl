@@ -13,11 +13,7 @@ pool:
 stages:
   - stage: Formatting
     jobs:
-      - job: formatting
-        displayName: Check code formatting
-        container: fmt
-        steps:
-        - template: formatting.yaml
+    - template: formatting.yaml
   - stage: Build
     jobs:
       - job: ubuntu
@@ -86,14 +82,4 @@ stages:
             condition: succeededOrFailed()
   - stage: Tutorials
     jobs:
-      - job: tutorials
-        displayName: Building Tutorials
-        timeoutInMinutes: 0
-        container: env1604
-        variables:
-          BUILD_DIR: '$(Agent.BuildDirectory)/build'
-          INSTALL_DIR: '$(Agent.BuildDirectory)/install'
-          CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi -O2'
-          EXCLUDE_TUTORIALS: 'davidsdk,ensenso_cameras,gpu'
-        steps:
-          - template: tutorials.yaml
+    - template: tutorials.yaml
