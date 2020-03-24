@@ -19,6 +19,7 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
+#include <pcl/make_shared.h>
 
 #include <opencv2/opencv.hpp>
 
@@ -72,12 +73,27 @@ class PeopleTrackingApp
       interface->stop ();
     }
 
-    pcl::visualization::CloudViewer                         viewer;
-    std::unique_ptr<pcl::people::trees::MultiTreeLiveProc>  m_proc;
-    cv::Mat                                                 m_lmap;
-    cv::Mat                                                 m_cmap;
-    cv::Mat                                                 cmap;
-    cv::Mat                                                 m_bmap;
+    void load_tree(std::string treeFilenames[4], int numTrees)
+    {
+      std::ifstream fin0 (treeFilenames[0]);
+      assert(fin0.is_open());
+      m_proc = pcl::make_shared<pcl::people::trees::MultiTreeLiveProc>(fin0);
+
+      /// Load the other tree files
+      for (const auto& file : treeFilenames)
+      {
+        std::ifstream fin (file);
+        assert (fin.is_open());
+        m_proc->addTree(fin);
+      }
+    }
+
+    pcl::visualization::CloudViewer                           viewer;
+    boost::shared_ptr<pcl::people::trees::MultiTreeLiveProc>  m_proc;
+    cv::Mat                                                   m_lmap;
+    cv::Mat                                                   m_cmap;
+    cv::Mat                                                   cmap;
+    cv::Mat                                                   m_bmap;
 };
 
 int print_help()
@@ -89,22 +105,6 @@ int print_help()
   std::cout << "\t -tree2 \t<path_to_tree_file>" << std::endl;
   std::cout << "\t -tree3 \t<path_to_tree_file>" << std::endl;
   return 0;
-}
-
-void load_tree(std::string treeFilenames[], int numTrees, PeopleTrackingApp& app)
-{
-  std::ifstream fin0(treeFilenames[0].c_str() );
-  assert(fin0.is_open() );
-  app.m_proc = std::make_shared<pcl::people::trees::MultiTreeLiveProc>(fin0);
-  fin0.close();
-
-  /// Load the other tree files
-  for(int ti=1;ti<numTrees;++ti) {
-    std::ifstream fin(treeFilenames[ti].c_str() );
-    assert(fin.is_open() );
-    app.m_proc->addTree(fin);
-    fin.close();
-  }
 }
 
 int main(int argc, char** argv)
@@ -127,7 +127,7 @@ int main(int argc, char** argv)
   PeopleTrackingApp app;
 
   /// Load the first tree
-  load_tree(treeFilenames, numTrees, app);
+  app.load_tree(treeFilenames, numTrees);
 
   /// Run the app
   app.run();
