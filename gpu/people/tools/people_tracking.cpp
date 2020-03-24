@@ -19,7 +19,7 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 #include <opencv2/opencv.hpp>
 
