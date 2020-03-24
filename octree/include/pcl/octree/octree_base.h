@@ -247,9 +247,8 @@ public:
   {
     leaf_count_ = source.leaf_count_;
     branch_count_ = source.branch_count_;
-    if (root_node_)
-    {
-        delete root_node_;
+    if (root_node_) {
+      delete root_node_;
     }
     root_node_ = new (BranchNode)(*(source.root_node_));
     depth_mask_ = source.depth_mask_;
