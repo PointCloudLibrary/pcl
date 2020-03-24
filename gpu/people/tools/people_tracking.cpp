@@ -72,12 +72,27 @@ class PeopleTrackingApp
       interface->stop ();
     }
 
-    pcl::visualization::CloudViewer         viewer;
-    pcl::people::trees::MultiTreeLiveProc*  m_proc;
-    cv::Mat                                 m_lmap;
-    cv::Mat                                 m_cmap;
-    cv::Mat                                 cmap;
-    cv::Mat                                 m_bmap;
+    void load_tree(std::string treeFilenames[4], int numTrees)
+    {
+      std::ifstream fin0 (treeFilenames[0]);
+      assert(fin0.is_open());
+      m_proc = std::make_unique<pcl::people::trees::MultiTreeLiveProc> (fin0);
+
+      /// Load the other tree files
+      for (const auto& file : treeFilenames)
+      {
+        std::ifstream fin (file);
+        assert (fin.is_open());
+        m_proc->addTree(fin);
+      }
+    }
+
+    pcl::visualization::CloudViewer                        viewer;
+    std::unique_ptr<pcl::people::trees::MultiTreeLiveProc> m_proc;
+    cv::Mat                                                m_lmap;
+    cv::Mat                                                m_cmap;
+    cv::Mat                                                cmap;
+    cv::Mat                                                m_bmap;
 };
 
 int print_help()
@@ -111,18 +126,8 @@ int main(int argc, char** argv)
   PeopleTrackingApp app;
 
   /// Load the first tree
-  std::ifstream fin0(treeFilenames[0].c_str() );
-  assert(fin0.is_open() );
-  app.m_proc = new pcl::people::trees::MultiTreeLiveProc(fin0);
-  fin0.close();
+  app.load_tree(treeFilenames, numTrees);
 
-  /// Load the other tree files
-  for(int ti=1;ti<numTrees;++ti) {
-    std::ifstream fin(treeFilenames[ti].c_str() );
-    assert(fin.is_open() );
-    app.m_proc->addTree(fin);
-    fin.close();
-  }
   /// Run the app
   app.run();
   return 0;

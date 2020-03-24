@@ -94,9 +94,9 @@ TEST (ORROctreeTest, OctreeSphereIntersection)
   float frac_of_points_for_registration = 0.3f;
   std::string object_name = "test_object";
 
-  ModelLibrary::Model* new_model = new ModelLibrary::Model (*model_cloud, *model_cloud_normals, voxel_size, object_name, frac_of_points_for_registration);
+  ModelLibrary::Model new_model (*model_cloud, *model_cloud_normals, voxel_size, object_name, frac_of_points_for_registration);
 
-  const ORROctree& octree = new_model->getOctree ();
+  const ORROctree& octree = new_model.getOctree ();
   const std::vector<ORROctree::Node*> &full_leaves = octree.getFullLeaves ();
   list<ORROctree::Node*> inter_leaves;
 
@@ -113,7 +113,6 @@ TEST (ORROctreeTest, OctreeSphereIntersection)
       EXPECT_NE(*leaf1, *leaf2);
     }
   }
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
