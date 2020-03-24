@@ -36,19 +36,16 @@ stages:
     #          CC: clang
     #          CXX: clang++
     #          CMakeArgs: ''
-
             ubuntu16 GCC:
               containerResource: env1604
               CC: gcc
               CXX: g++
               CMakeArgs: '-DPCL_WARNINGS_ARE_ERRORS=ON'
-
             ubuntu19 GCC:
               containerResource: env1910
               CC: gcc
               CXX: g++
               CMakeArgs: ''
-
         container: $[ variables['containerResource'] ]
         variables:
           BUILD_DIR: '$(Agent.BuildDirectory)/build'
@@ -87,3 +84,16 @@ stages:
               testResultsFiles: '**/Test*.xml'
               searchFolder: '$(Agent.BuildDirectory)/build'
             condition: succeededOrFailed()
+  - stage: Tutorials
+    jobs:
+      - job: tutorials
+        displayName: Building Tutorials
+        timeoutInMinutes: 0
+        container: env1604
+        variables:
+          BUILD_DIR: '$(Agent.BuildDirectory)/build'
+          INSTALL_DIR: '$(Agent.BuildDirectory)/install'
+          CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi -O2'
+          EXCLUDE_TUTORIALS: 'davidsdk,ensenso_cameras,gpu'
+        steps:
+          - template: tutorials.yaml
