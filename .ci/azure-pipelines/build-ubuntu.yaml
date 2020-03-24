@@ -59,6 +59,8 @@ jobs:
             -DBUILD_apps_in_hand_scanner=ON \
             -DBUILD_apps_modeler=ON \
             -DBUILD_apps_point_cloud_editor=ON
+          # Temporary fix to ensure no tests are fixed
+          cmake $(Build.SourcesDirectory)
         displayName: 'CMake Configuration'
       - script: |
           cd $BUILD_DIR
