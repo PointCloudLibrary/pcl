@@ -39,3 +39,4 @@
 #warning "Do not use this header, its contents have been moved to pcl/memory.h"
 
 #include <pcl/memory.h>
+
