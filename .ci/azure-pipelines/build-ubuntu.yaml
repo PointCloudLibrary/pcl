@@ -1,22 +1,27 @@
 resources:
   containers:
+    - container: fmt
+      image: pointcloudlibrary/fmt
     - container: env1604
       image: pointcloudlibrary/env:16.04
     - container: env1910
       image: pointcloudlibrary/env:19.10
 
+pool:
+  vmImage: 'Ubuntu 16.04'
+
 stages:
-  - stage: Format
+  - stage: Formatting
     jobs:
       - job: formatting
+        displayName: Check code formatting
+        container: fmt
         steps:
         - template: formatting.yaml
-  - stage: Build & Test
+  - stage: Build
     jobs:
       - job: ubuntu
         displayName: Ubuntu
-        pool:
-          vmImage: 'Ubuntu 16.04'
         timeoutInMinutes: 0
         strategy:
           matrix:
