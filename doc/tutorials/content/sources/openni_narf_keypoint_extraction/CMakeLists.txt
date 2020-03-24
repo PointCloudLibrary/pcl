@@ -10,4 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (openni_narf_keypoint_extraction openni_narf_keypoint_extraction.cpp)
 target_link_libraries (openni_narf_keypoint_extraction ${PCL_LIBRARIES})
-
+'\n'

@@ -10,3 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (model_outlier_removal model_outlier_removal.cpp)
 target_link_libraries (model_outlier_removal ${PCL_LIBRARIES})
+'\n'

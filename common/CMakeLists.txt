@@ -190,3 +190,4 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" impl ${impl_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" console ${tools_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" range_image ${range_image_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" range_image/impl ${range_image_incs_impl})
+'\n'

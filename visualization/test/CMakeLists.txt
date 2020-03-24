@@ -17,3 +17,4 @@ target_link_libraries(demo_text_simple pcl_common pcl_visualization)
 
 add_executable(demo_text_simple_multiport text_simple_multiport.cpp)
 target_link_libraries(demo_text_simple_multiport pcl_common pcl_visualization)
+'\n'

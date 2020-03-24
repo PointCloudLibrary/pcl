@@ -10,5 +10,5 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (don_segmentation don_segmentation.cpp)
 target_link_libraries (don_segmentation ${PCL_LIBRARIES})
-
+'\n'
 

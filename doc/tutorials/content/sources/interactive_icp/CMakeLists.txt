@@ -10,3 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (interactive_icp interactive_icp.cpp)
 target_link_libraries (interactive_icp ${PCL_LIBRARIES})
+'\n'

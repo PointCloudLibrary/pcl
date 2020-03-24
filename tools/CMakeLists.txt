@@ -340,4 +340,4 @@ else()
 endif()
 add_custom_target(${SUBSYS_TARGET_NAME} DEPENDS ${PCL_TOOLS_ALL_TARGETS})
 set_target_properties(${SUBSYS_TARGET_NAME} PROPERTIES FOLDER "Tools")
-
+'\n'

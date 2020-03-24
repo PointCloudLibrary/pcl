@@ -9,3 +9,4 @@ get_filename_component(INC "${DIR}/../../../octree/include" REALPATH)
 include_directories("${INC}")
 
 file(GLOB test_src *.cpp *.hpp)
+'\n'

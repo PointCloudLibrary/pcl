@@ -34,3 +34,4 @@ if(BUILD_io)
                LINK_WITH pcl_gtest pcl_search pcl_io pcl_kdtree
                ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd")
 endif()
+'\n'

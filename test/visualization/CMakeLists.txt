@@ -18,3 +18,4 @@ if(BUILD_features AND NOT UNIX OR (UNIX AND DEFINED ENV{DISPLAY}))
                LINK_WITH pcl_gtest pcl_io pcl_visualization pcl_features
                ARGUMENTS "${PCL_SOURCE_DIR}/test/bunny.pcd")
 endif()
+'\n'

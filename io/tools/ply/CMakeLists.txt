@@ -9,3 +9,4 @@ target_link_libraries(pcl_ply2raw pcl_io_ply)
 
 PCL_ADD_EXECUTABLE(pcl_plyheader COMPONENT ${SUBSYS_NAME} SOURCES plyheader.cpp)
 target_link_libraries(pcl_plyheader pcl_io_ply)
+'\n'

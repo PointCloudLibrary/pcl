@@ -42,3 +42,4 @@ target_link_libraries (pcl_sim_terminal_demo
   ${VTK_IO_TARGET_LINK_LIBRARIES}
   pcl_simulation   pcl_common  pcl_io pcl_visualization pcl_simulation_io
   GLEW::GLEW GLUT::GLUT ${OPENGL_LIBRARIES})
+'\n'

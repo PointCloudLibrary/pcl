@@ -10,3 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (radius_outlier_removal radius_outlier_removal.cpp)
 target_link_libraries (radius_outlier_removal ${PCL_LIBRARIES})
+'\n'

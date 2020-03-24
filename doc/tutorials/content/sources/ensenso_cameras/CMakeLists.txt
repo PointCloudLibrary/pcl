@@ -11,3 +11,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable(ensenso_cloud_images_viewer ensenso_cloud_images_viewer.cpp)
 target_link_libraries(ensenso_cloud_images_viewer ${PCL_LIBRARIES} ${OpenCV_LIBS})
+'\n'

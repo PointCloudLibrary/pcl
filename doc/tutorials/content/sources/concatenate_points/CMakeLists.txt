@@ -10,3 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (concatenate_points concatenate_points.cpp)
 target_link_libraries (concatenate_points ${PCL_LIBRARIES})
+'\n'

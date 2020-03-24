@@ -22,3 +22,4 @@ PCL_ADD_EXAMPLE(pcl_example_sift_z_keypoint_estimation FILES example_sift_z_keyp
                 LINK_WITH pcl_common  pcl_visualization pcl_keypoints pcl_io)
 PCL_ADD_EXAMPLE(pcl_example_get_keypoints_indices FILES example_get_keypoints_indices.cpp
                 LINK_WITH pcl_common pcl_keypoints pcl_io)
+'\n'

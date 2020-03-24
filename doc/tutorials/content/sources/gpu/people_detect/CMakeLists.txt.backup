@@ -15,4 +15,4 @@ include_directories(${VTK_INCLUDE_DIRS})
 
 PCL_ADD_EXECUTABLE(people_detect ${SUBSYS_NAME} src/people_detect.cpp)
 target_link_libraries (people_detect pcl_common pcl_filters pcl_kdtree pcl_segmentation pcl_kdtree pcl_gpu_people pcl_filters pcl_io pcl_visualization ${Boost_LIBRARIES})
-
+'\n'

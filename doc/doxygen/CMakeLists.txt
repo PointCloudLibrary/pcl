@@ -60,3 +60,4 @@ else()
           DESTINATION "${DOC_INSTALL_DIR}/html"
           COMPONENT doc)
 endif()
+'\n'

@@ -19,3 +19,4 @@ include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
 file(GLOB test_src *.cpp *.hpp)
 #PCL_ADD_TEST(a_gpu_surface_test ${the_test_target} FILES ${test_src} LINK_WITH pcl_io pcl_gpu_containers pcl_gpu_surface pcl_visualization pcl_surface pcl_octree pcl_kdtree pcl_search)
 #add_dependencies(${the_test_target} pcl_io pcl_gpu_containes pcl_gpu_surface pcl_visualization)
+'\n'

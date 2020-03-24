@@ -41,3 +41,4 @@ PCL_ADD_TEST(common_type_traits test_type_traits FILES test_type_traits.cpp LINK
 if(BUILD_io)
   PCL_ADD_TEST(common_centroid test_centroid FILES test_centroid.cpp LINK_WITH pcl_gtest pcl_io ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
 endif()
+'\n'

@@ -10,3 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (pcd_write pcd_write.cpp)
 target_link_libraries (pcd_write ${PCL_LIBRARIES})
+'\n'

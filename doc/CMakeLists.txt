@@ -12,3 +12,4 @@ endif()
 add_subdirectory(doxygen)
 add_subdirectory(advanced)
 add_subdirectory(tutorials)
+'\n'

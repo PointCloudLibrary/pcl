@@ -180,3 +180,4 @@ endif()
 if(WIN32)
   target_link_libraries("${LIB_NAME}" Rpcrt4.lib)
 endif()
+'\n'
