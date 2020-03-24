@@ -25,11 +25,12 @@ jobs:
           echo ##vso[task.prependpath]%BOOST_ROOT%\lib
         displayName: 'Update System PATH'
       - script: |
-          vcpkg.exe install eigen3 flann gtest qhull --triplet %PLATFORM%-windows && vcpkg.exe list
+          vcpkg.exe install eigen3 flann gtest qhull vtk --triplet %PLATFORM%-windows && vcpkg.exe list
         displayName: 'Install c++ dependencies via vcpkg'
       - script: |
           rmdir %VCPKG_ROOT%\downloads /S /Q
           rmdir %VCPKG_ROOT%\packages /S /Q
+          rmdir %VCPKG_ROOT%\buildtrees /S /Q
         displayName: 'Free Up Space'
       - script: |
           mkdir %BUILD_DIR% && cd %BUILD_DIR%
