@@ -39,12 +39,14 @@
 
 #pragma once
 
-#include <pcl/pcl_macros.h>
-#include <bitset>
+#include <pcl/PCLPointField.h>
 #include <pcl/register_point_struct.h>
+
 #include <boost/mpl/contains.hpp>
 #include <boost/mpl/fold.hpp>
 #include <boost/mpl/vector.hpp>
+
+#include <bitset>
 
 /**
   * \file pcl/point_types.h
@@ -56,10 +58,6 @@
 // be able to fix them anyway
 #if defined _MSC_VER
   #pragma warning(disable: 4201)
-#endif
-//#pragma warning(push, 1)
-#if defined __GNUC__
-#  pragma GCC system_header
 #endif
 
 /** @{*/
@@ -259,17 +257,17 @@ namespace pcl
     * \ingroup common
     */
   struct FPFHSignature33;
-  
+
   /** \brief Members: float vfh[308]
     * \ingroup common
     */
   struct VFHSignature308;
-  
+
   /** \brief Members: float grsd[21]
     * \ingroup common
     */
   struct GRSDSignature21;
-  
+
   /** \brief Members: float esf[640]
     * \ingroup common
     */
@@ -705,7 +703,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointDEM,
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointDEM, pcl::_PointDEM)
 
-namespace pcl 
+namespace pcl
 {
   // Allow float 'rgb' data to match to the newer uint32 'rgba' tag. This is so
   // you can load old 'rgb' PCD files into e.g. a PointCloud<PointXYZRGBA>.
@@ -911,4 +909,4 @@ namespace pcl
 #if defined _MSC_VER
   #pragma warning(default: 4201)
 #endif
-//#pragma warning(pop)
+

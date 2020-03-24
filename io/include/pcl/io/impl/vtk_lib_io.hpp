@@ -44,7 +44,7 @@
 #include <pcl/common/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-#include <pcl/point_traits.h>
+#include <pcl/type_traits.h>
 
 // VTK
 // Ignore warnings in the above headers

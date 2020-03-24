@@ -43,6 +43,7 @@
  * \ingroup common
  */
 
+#include <pcl/type_traits.h>  // for has_custom_allocator
 
 #include <boost/make_shared.hpp>  // for boost::allocate_shared, boost::make_shared
 #include <boost/smart_ptr/shared_ptr.hpp>  // for boost::shared_ptr
@@ -78,27 +79,6 @@ namespace pcl
  */
 template <typename T>
 using shared_ptr = boost::shared_ptr<T>;
-
-
-template <typename ...> using void_t = void; // part of std in c++17
-
-#ifdef DOXYGEN_ONLY
-
-/**
- * \brief Tests at compile time if type T has a custom allocator
- *
- * \see pcl::make_shared, PCL_MAKE_ALIGNED_OPERATOR_NEW
- * \tparam T Type of the object to test
- */
-template <typename T> struct has_custom_allocator;
-
-#else
-
-template <typename, typename = void_t<>> struct has_custom_allocator : std::false_type {};
-template <typename T> struct has_custom_allocator<T, void_t<typename T::_custom_allocator_type_trait>> : std::true_type {};
-
-#endif
-
 
 #ifdef DOXYGEN_ONLY
 
