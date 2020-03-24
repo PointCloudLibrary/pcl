@@ -19,7 +19,6 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
-#include <pcl/memory.h>
 
 #include <opencv2/opencv.hpp>
 
@@ -77,7 +76,7 @@ class PeopleTrackingApp
     {
       std::ifstream fin0 (treeFilenames[0]);
       assert(fin0.is_open());
-      m_proc = pcl::make_shared<pcl::people::trees::MultiTreeLiveProc>(fin0);
+      m_proc = std::make_unique<pcl::people::trees::MultiTreeLiveProc> (fin0);
 
       /// Load the other tree files
       for (const auto& file : treeFilenames)
@@ -88,12 +87,12 @@ class PeopleTrackingApp
       }
     }
 
-    pcl::visualization::CloudViewer                           viewer;
-    boost::shared_ptr<pcl::people::trees::MultiTreeLiveProc>  m_proc;
-    cv::Mat                                                   m_lmap;
-    cv::Mat                                                   m_cmap;
-    cv::Mat                                                   cmap;
-    cv::Mat                                                   m_bmap;
+    pcl::visualization::CloudViewer                        viewer;
+    std::unique_ptr<pcl::people::trees::MultiTreeLiveProc> m_proc;
+    cv::Mat                                                m_lmap;
+    cv::Mat                                                m_cmap;
+    cv::Mat                                                cmap;
+    cv::Mat                                                m_bmap;
 };
 
 int print_help()
