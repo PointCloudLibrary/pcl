@@ -67,8 +67,8 @@ using namespace pcl;
 
 TEST (Convolution, borderOptions)
 {
-  kernel<pcl::PointXYZI> *k = new kernel<pcl::PointXYZI> ();
-  Convolution<pcl::PointXYZI> *conv = new Convolution<pcl::PointXYZI> ();
+  kernel<pcl::PointXYZI> k;
+  Convolution<pcl::PointXYZI> conv;
 
   /*dummy clouds*/
   pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZI>);
@@ -80,14 +80,14 @@ TEST (Convolution, borderOptions)
   int height = input_cloud->height;
   int width = input_cloud->width;
 
-  k->setKernelType(kernel<pcl::PointXYZI>::DERIVATIVE_CENTRAL_X);
-  k->fetchKernel (*kernel_cloud);
+  k.setKernelType(kernel<pcl::PointXYZI>::DERIVATIVE_CENTRAL_X);
+  k.fetchKernel (*kernel_cloud);
 
-  conv->setKernel(*kernel_cloud);
-  conv->setInputCloud(input_cloud);
+  conv.setKernel(*kernel_cloud);
+  conv.setInputCloud(input_cloud);
 
-  conv->setBoundaryOptions(Convolution<pcl::PointXYZI>::BOUNDARY_OPTION_MIRROR);
-  conv->filter (*output_cloud);
+  conv.setBoundaryOptions(Convolution<pcl::PointXYZI>::BOUNDARY_OPTION_MIRROR);
+  conv.filter (*output_cloud);
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
       EXPECT_NEAR ((*output_cloud)(j,i).intensity, ((*input_cloud)(j+1,i).intensity-(*input_cloud)(j-1,i).intensity), 1);
@@ -98,8 +98,8 @@ TEST (Convolution, borderOptions)
     EXPECT_NEAR ((*output_cloud)(width-1,i).intensity, ((*input_cloud)(width-1,i).intensity-(*input_cloud)(width-2,i).intensity), 1);
   }
 
-  conv->setBoundaryOptions(Convolution<pcl::PointXYZI>::BOUNDARY_OPTION_CLAMP);
-  conv->filter (*output_cloud);
+  conv.setBoundaryOptions(Convolution<pcl::PointXYZI>::BOUNDARY_OPTION_CLAMP);
+  conv.filter (*output_cloud);
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
       EXPECT_NEAR ((*output_cloud)(j,i).intensity, ((*input_cloud)(j+1,i).intensity-(*input_cloud)(j-1,i).intensity), 1);
@@ -110,8 +110,8 @@ TEST (Convolution, borderOptions)
   //  EXPECT_NEAR ((*output_cloud)(width-1,i).intensity, ((*input_cloud)(width-1,i).intensity-(*input_cloud)(width-2,i).intensity), 1);
   }
 
-  conv->setBoundaryOptions(Convolution<pcl::PointXYZI>::BOUNDARY_OPTION_ZERO_PADDING);
-  conv->filter (*output_cloud);
+  conv.setBoundaryOptions(Convolution<pcl::PointXYZI>::BOUNDARY_OPTION_ZERO_PADDING);
+  conv.filter (*output_cloud);
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
       EXPECT_NEAR ((*output_cloud)(j,i).intensity, ((*input_cloud)(j+1,i).intensity-(*input_cloud)(j-1,i).intensity), 1);
@@ -125,8 +125,8 @@ TEST (Convolution, borderOptions)
 
 TEST (Convolution, gaussianSmooth)
 {
-  kernel<pcl::PointXYZI> *k = new kernel<pcl::PointXYZI> ();
-  Convolution<pcl::PointXYZI> *conv = new Convolution<pcl::PointXYZI> ();
+  kernel<pcl::PointXYZI> k;
+  Convolution<pcl::PointXYZI> conv;
 
   /*dummy clouds*/
   pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZI>);
@@ -140,20 +140,19 @@ TEST (Convolution, gaussianSmooth)
   int height = input_cloud->height;
   int width = input_cloud->width;
 
-  k->setKernelType(kernel<pcl::PointXYZI>::GAUSSIAN);
-  k->setKernelSize(3);
-  k->setKernelSigma(1.0f);
-  k->fetchKernel (*kernel_cloud);
+  k.setKernelType(kernel<pcl::PointXYZI>::GAUSSIAN);
+  k.setKernelSize(3);
+  k.setKernelSigma(1.0f);
+  k.fetchKernel (*kernel_cloud);
 
-  conv->setKernel(*kernel_cloud);
-  conv->setInputCloud(input_cloud);
+  conv.setKernel(*kernel_cloud);
+  conv.setInputCloud(input_cloud);
 
-  conv->setBoundaryOptions(Convolution<pcl::PointXYZI>::BOUNDARY_OPTION_MIRROR);
-  conv->filter (*output_cloud);
+  conv.setBoundaryOptions(Convolution<pcl::PointXYZI>::BOUNDARY_OPTION_MIRROR);
+  conv.filter (*output_cloud);
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
       EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity, 1);
-
 }
 
 TEST(Edge, sobel)
@@ -272,11 +271,11 @@ TEST(Morphology, erosion)
   pcl::io::loadPCDFile(lena, *input_cloud);
   pcl::io::loadPCDFile(erosion_ref, *gt_output_cloud);
 
-  Morphology<pcl::PointXYZI> *morph = new Morphology<pcl::PointXYZI>();
-  morph->setInputCloud(input_cloud);
-  morph->structuringElementRectangle(*structuring_element_cloud, 3, 3);
-  morph->setStructuringElement(structuring_element_cloud);
-  morph->erosionGray(*output_cloud);
+  Morphology<pcl::PointXYZI> morph;
+  morph.setInputCloud(input_cloud);
+  morph.structuringElementRectangle(*structuring_element_cloud, 3, 3);
+  morph.setStructuringElement(structuring_element_cloud);
+  morph.erosionGray(*output_cloud);
 
   int height = input_cloud->height;
   int width = input_cloud->width;
@@ -287,12 +286,11 @@ TEST(Morphology, erosion)
 
   pcl::io::loadPCDFile(erosion_binary_ref, *gt_output_cloud);
   threshold(input_cloud, 100);
-  morph->setInputCloud(input_cloud);
-  morph->erosionBinary(*output_cloud);
+  morph.setInputCloud(input_cloud);
+  morph.erosionBinary(*output_cloud);
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
       EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity/255.0, 1);
-
 }
 
 TEST(Morphology, dilation)
@@ -306,11 +304,11 @@ TEST(Morphology, dilation)
   pcl::io::loadPCDFile(lena, *input_cloud);
   pcl::io::loadPCDFile(dilation_ref, *gt_output_cloud);
 
-  Morphology<pcl::PointXYZI> *morph = new Morphology<pcl::PointXYZI>();
-  morph->setInputCloud(input_cloud);
-  morph->structuringElementRectangle(*structuring_element_cloud, 3, 3);
-  morph->setStructuringElement(structuring_element_cloud);
-  morph->dilationGray(*output_cloud);
+  Morphology<pcl::PointXYZI> morph;
+  morph.setInputCloud(input_cloud);
+  morph.structuringElementRectangle(*structuring_element_cloud, 3, 3);
+  morph.setStructuringElement(structuring_element_cloud);
+  morph.dilationGray(*output_cloud);
 
   int height = input_cloud->height;
   int width = input_cloud->width;
@@ -321,8 +319,8 @@ TEST(Morphology, dilation)
 
   pcl::io::loadPCDFile(dilation_binary_ref, *gt_output_cloud);
   threshold(input_cloud, 100);
-  morph->setInputCloud(input_cloud);
-  morph->dilationBinary(*output_cloud);
+  morph.setInputCloud(input_cloud);
+  morph.dilationBinary(*output_cloud);
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
       EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity/255.0, 1);
@@ -339,11 +337,11 @@ TEST(Morphology, opening)
   pcl::io::loadPCDFile(lena, *input_cloud);
   pcl::io::loadPCDFile(opening_ref, *gt_output_cloud);
 
-  Morphology<pcl::PointXYZI> *morph = new Morphology<pcl::PointXYZI>();
-  morph->setInputCloud(input_cloud);
-  morph->structuringElementRectangle(*structuring_element_cloud, 3, 3);
-  morph->setStructuringElement(structuring_element_cloud);
-  morph->openingGray(*output_cloud);
+  Morphology<pcl::PointXYZI> morph;
+  morph.setInputCloud(input_cloud);
+  morph.structuringElementRectangle(*structuring_element_cloud, 3, 3);
+  morph.setStructuringElement(structuring_element_cloud);
+  morph.openingGray(*output_cloud);
 
   int height = input_cloud->height;
   int width = input_cloud->width;
@@ -354,8 +352,8 @@ TEST(Morphology, opening)
 
   pcl::io::loadPCDFile(opening_binary_ref, *gt_output_cloud);
   threshold(input_cloud, 100);
-  morph->setInputCloud(input_cloud);
-  morph->openingBinary(*output_cloud);
+  morph.setInputCloud(input_cloud);
+  morph.openingBinary(*output_cloud);
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
       EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity/255.0, 1);
@@ -372,11 +370,11 @@ TEST(Morphology, closing)
   pcl::io::loadPCDFile(lena, *input_cloud);
   pcl::io::loadPCDFile(closing_ref, *gt_output_cloud);
 
-  Morphology<pcl::PointXYZI> *morph = new Morphology<pcl::PointXYZI>();
-  morph->setInputCloud(input_cloud);
-  morph->structuringElementRectangle(*structuring_element_cloud, 3, 3);
-  morph->setStructuringElement(structuring_element_cloud);
-  morph->closingGray(*output_cloud);
+  Morphology<pcl::PointXYZI> morph;
+  morph.setInputCloud(input_cloud);
+  morph.structuringElementRectangle(*structuring_element_cloud, 3, 3);
+  morph.setStructuringElement(structuring_element_cloud);
+  morph.closingGray(*output_cloud);
 
   int height = input_cloud->height;
   int width = input_cloud->width;
@@ -387,8 +385,8 @@ TEST(Morphology, closing)
 
   pcl::io::loadPCDFile(closing_binary_ref, *gt_output_cloud);
   threshold(input_cloud, 100);
-  morph->setInputCloud(input_cloud);
-  morph->closingBinary(*output_cloud);
+  morph.setInputCloud(input_cloud);
+  morph.closingBinary(*output_cloud);
   for (int i = 1; i < height - 1; i++)
     for (int j = 1; j < width - 1; j++)
       EXPECT_NEAR ((*output_cloud)(j,i).intensity, (*gt_output_cloud)(j,i).intensity/255.0, 1);
