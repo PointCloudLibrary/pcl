@@ -4,6 +4,8 @@ resources:
       image: pointcloudlibrary/env:16.04
     - container: env1910
       image: pointcloudlibrary/env:19.10
+    - container: doc
+      image: pointcloudlibrary/doc
 
 pool:
   vmImage: 'Ubuntu 16.04'
@@ -80,4 +82,7 @@ stages:
   - stage: Tutorials
     jobs:
     - template: tutorials.yaml
-      
+  - stage: Documentation
+    dependsOn: []
+    jobs:
+      - template: documentation.yaml
