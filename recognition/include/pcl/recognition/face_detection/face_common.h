@@ -129,13 +129,12 @@ namespace pcl
           stream.read (reinterpret_cast<char*> (&num_of_sub_nodes), sizeof(num_of_sub_nodes));
           PCL_CHECK_IO_STREAM(stream, "num_of_sub_nodes");
 
-          if (num_of_sub_nodes <= 0)
+          if (num_of_sub_nodes > 0)
           {
-            PCL_THROW_EXCEPTION (pcl::IOException, "Error! Number of sub nodes read from file is not positive!");
+            feature.deserialize (stream);
+            stream.read (reinterpret_cast<char*> (&threshold), sizeof(threshold));
+            PCL_CHECK_IO_STREAM(stream, "threshold");
           }
-          feature.deserialize (stream);
-          stream.read (reinterpret_cast<char*> (&threshold), sizeof(threshold));
-          PCL_CHECK_IO_STREAM(stream, "threshold");
 
           stream.read (reinterpret_cast<char*> (&value), sizeof(value));
           PCL_CHECK_IO_STREAM(stream, "value");
@@ -157,9 +156,9 @@ namespace pcl
             for (std::size_t j = 0; j < 3; j++)
               stream.read (reinterpret_cast<char*> (&covariance_rot_ (i, j)), sizeof(covariance_rot_ (i, j)));
 
-          if (num_of_sub_nodes <= 0)
+          if (num_of_sub_nodes < 0)
           {
-            PCL_THROW_EXCEPTION (pcl::IOException, "Error! Number of sub nodes read from file is not positive!");
+            PCL_THROW_EXCEPTION (pcl::IOException, "Error! Number of sub nodes specified in the file is negative!");
           }
           sub_nodes.resize (num_of_sub_nodes);
 

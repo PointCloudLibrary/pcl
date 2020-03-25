@@ -80,10 +80,6 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   fs.read ((char*)&length_of_magic, sizeof (std::uint32_t));
   PCL_CHECK_IO_STREAM(fs, "length of magic");
 
-  if (length_of_magic <= 0)
-  {
-    PCL_THROW_EXCEPTION (pcl::IOException, "Error! Length of magic read from file is not positive!");
-  }
   char *magic = new char [length_of_magic];
   fs.read (magic, sizeof (char) * length_of_magic);
   PCL_CHECK_IO_STREAM(fs, "magic");
@@ -131,10 +127,6 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       fs.read ((char*)&length_of_keyword, sizeof (std::uint32_t));
       PCL_CHECK_IO_STREAM(fs, "length of keyword");
 
-      if (length_of_keyword <= 0)
-      {
-        PCL_THROW_EXCEPTION (pcl::IOException, "Error! Length of keyword read is not positive!");
-      }
       char *keyword = new char [length_of_keyword];
       fs.read (keyword, sizeof (char) * length_of_keyword);
       PCL_CHECK_IO_STREAM(fs, "keyword");
@@ -298,10 +290,6 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
   fs.read ((char*)&length_of_keyword, sizeof (std::uint32_t));
   PCL_CHECK_IO_STREAM(fs, "length of keyword");
 
-  if (length_of_keyword <= 0)
-  {
-    PCL_THROW_EXCEPTION (pcl::IOException, "Error! Length of keyword read from file is not positive!");
-  }
   char *keyword = new char [length_of_keyword];
   fs.read (keyword, sizeof (char) * length_of_keyword);
   PCL_CHECK_IO_STREAM(fs, "keyword");

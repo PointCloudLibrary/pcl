@@ -91,9 +91,9 @@ public:
     int num_of_trees;
     stream.read(reinterpret_cast<char*>(&num_of_trees), sizeof(num_of_trees));
     PCL_CHECK_IO_STREAM(stream, "num_of_trees");
-    if (num_of_trees <= 0) {
+    if (num_of_trees < 0) {
       PCL_THROW_EXCEPTION(pcl::IOException,
-                          "Error! Number of trees read from file is not positive!");
+                          "Error! Number of trees specified in the file is negative!");
     }
     this->resize(num_of_trees);
 

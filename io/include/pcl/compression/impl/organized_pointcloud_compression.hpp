@@ -292,7 +292,7 @@ namespace pcl
       std::vector<std::uint8_t> compressedColor;
 
       std::uint32_t compressedDisparitySize;
-      std::uint32_t compressedColorSize = 0;
+      std::uint32_t compressedColorSize;
 
       // PNG decoded parameters
       std::size_t png_width = 0;
@@ -349,7 +349,7 @@ namespace pcl
         PCL_CHECK_IO_STREAM(compressedDataIn_arg, "compressedColorSize");
         if (compressedColorSize <= 0)
         {
-          PCL_THROW_EXCEPTION (pcl::IOException, "Error! Size of compressed color read is not positive!");
+          PCL_THROW_EXCEPTION (pcl::IOException, "Error! Size of compressed color specified in the file is not positive!");
         }
         compressedColor.resize (compressedColorSize);
 

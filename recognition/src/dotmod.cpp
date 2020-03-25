@@ -246,7 +246,7 @@ deserialize (std::istream & stream)
   int nr_templates;
   read (stream, nr_templates);
   PCL_CHECK_IO_STREAM(stream, "data");
-  if (nr_templates <= 0)
+  if (nr_templates < 0)
   {
     PCL_THROW_EXCEPTION (pcl::IOException, "Error! Expected positive data but read negative!");
   }

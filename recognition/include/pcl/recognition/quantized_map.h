@@ -140,6 +140,10 @@ namespace pcl
         stream.read (reinterpret_cast<char*> (&num_of_elements), sizeof (num_of_elements));
         PCL_CHECK_IO_STREAM(stream, "num_of_elements");
 
+        if (num_of_elements < 0)
+        {
+          PCL_THROW_EXCEPTION (pcl::IOException, "Error! Number of elements specfied in the file is negative!");
+        }
         data_.resize (num_of_elements);
         for (int element_index = 0; element_index < num_of_elements; ++element_index)
         {
