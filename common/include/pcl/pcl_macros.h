@@ -68,9 +68,9 @@
   #define _USE_MATH_DEFINES
 #endif
 
+#ifdef __cplusplus
 #include <pcl/pcl_config.h>
 
-#ifdef __cplusplus
 #include <boost/cstdint.hpp>
 #include <boost/smart_ptr/shared_ptr.hpp>
 

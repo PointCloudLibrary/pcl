@@ -1,7 +1,7 @@
 #pragma once
 
 #include <pcl/PCLHeader.h>    // for PCLHeader
-#include <pcl/make_shared.h>  // for shared_ptr
+#include <pcl/memory.h>       // for shared_ptr
 
 #include <string>   // for string
 #include <vector>   // for vector
