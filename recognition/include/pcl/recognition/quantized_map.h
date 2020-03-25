@@ -39,7 +39,7 @@
 
 #include <vector>
 #include <pcl/pcl_macros.h>
-#include <pcl/common/common.h>
+#include <pcl/exceptions.h>
 
 namespace pcl
 {

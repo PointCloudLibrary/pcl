@@ -39,7 +39,7 @@
 
 #include <vector>
 
-#include <pcl/common/common.h>
+#include <pcl/exceptions.h>
 #include <pcl/recognition/region_xy.h>
 
 namespace pcl

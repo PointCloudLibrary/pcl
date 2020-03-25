@@ -158,7 +158,7 @@ namespace pcl
 
           if (num_of_sub_nodes < 0)
           {
-            PCL_THROW_EXCEPTION (pcl::IOException, "Error! Number of sub nodes specified in the file is negative!");
+              return ;
           }
           sub_nodes.resize (num_of_sub_nodes);
 
