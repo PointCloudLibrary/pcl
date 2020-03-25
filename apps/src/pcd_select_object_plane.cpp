@@ -638,9 +638,7 @@ main (int argc, char** argv)
     return (-1);
   }
   
-  string object_file = "object.pcd", plane_file = "plane.pcd", rest_file = "rest.pcd";
-  if (p_file_indices.size () >= 4)
-    rest_file = argv[p_file_indices[3]];
+  string object_file = "object.pcd", plane_file = "plane.pcd";
   if (p_file_indices.size () >= 3)
     plane_file = argv[p_file_indices[2]];
   if (p_file_indices.size () >= 2)
