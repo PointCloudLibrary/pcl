@@ -75,7 +75,7 @@ class SimpleKinectTool
 
       std::function<void (const openni_wrapper::Image::Ptr& image)> f = std::bind (&SimpleKinectTool::cloud_cb_, this, _1);
 
-      boost::signals2::connection c = interface->registerCallback (f);
+      interface->registerCallback (f);
 
       interface->start ();
       
