@@ -86,7 +86,7 @@ inline int _ConvertSMVer2CoresDrvApi(int major, int minor)
 inline int cutilDrvGetMaxGflopsDeviceId()
 {
     CUdevice current_device = 0, max_perf_device = 0;
-    int device_count     = 0, sm_per_multiproc = 0;
+    int device_count     = 0, sm_per_multiproc;
     int max_compute_perf = 0, best_SM_arch     = 0;
     int major = 0, minor = 0, multiProcessorCount, clockRate;
 
@@ -144,7 +144,7 @@ inline int cutilDrvGetMaxGflopsDeviceId()
 inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
 {
     CUdevice current_device = 0, max_perf_device = 0;
-    int device_count     = 0, sm_per_multiproc = 0;
+    int device_count     = 0, sm_per_multiproc;
     int max_compute_perf = 0, best_SM_arch     = 0;
     int major = 0, minor = 0, multiProcessorCount, clockRate;
 	int bTCC = 0;
