@@ -1,6 +1,6 @@
 jobs:
   - job: tutorials
-    displayName: Tutorials
+    displayName: Building Tutorials
     timeoutInMinutes: 0
     container: env1604
     variables:
