@@ -48,7 +48,7 @@
 template<typename PointT> void
 pcl::FarthestPointSampling<PointT>::applyFilter (PointCloud &output)
 {
-  std::vector<int> indices;
+  Indices indices;
   indices.reserve(sample_);
   if (keep_organized_)
   {
@@ -124,4 +124,3 @@ pcl::FarthestPointSampling<PointT>::applyFilter (std::vector<int> &indices)
 }
 
 #define PCL_INSTANTIATE_FarthestPointSampling(T) template class PCL_EXPORTS pcl::FarthestPointSampling<T>;
-
