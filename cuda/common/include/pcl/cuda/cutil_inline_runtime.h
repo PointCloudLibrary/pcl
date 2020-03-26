@@ -105,12 +105,12 @@ inline int _ConvertSMVer2Cores(int major, int minor)
 // This function returns the best GPU (with maximum GFLOPS)
 inline int cutGetMaxGflopsDeviceId()
 {
-	int current_device   = 0;
-	int max_compute_perf = 0;
+    int current_device   = 0;
+    int max_compute_perf = 0;
     int max_perf_device  = 0;
-	int device_count     = 0;
+    int device_count     = 0;
     int best_SM_arch     = 0;
-	cudaDeviceProp deviceProp;
+    cudaDeviceProp deviceProp;
 
 	cudaGetDeviceCount( &device_count );
 	// Find the best major SM Architecture GPU device
@@ -126,11 +126,9 @@ inline int cutGetMaxGflopsDeviceId()
 	current_device = 0;
 	while( current_device < device_count ) {
 		cudaGetDeviceProperties( &deviceProp, current_device );
-        int sm_per_multiproc = 0;
-		if (deviceProp.major == 9999 && deviceProp.minor == 9999) {
-		    sm_per_multiproc = 1;
-		} else {
-			sm_per_multiproc = _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
+        int sm_per_multiproc = 1;
+		if (deviceProp.major != 9999 || deviceProp.minor != 9999) {
+		    sm_per_multiproc = _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
 		}
 
 		int compute_perf  = deviceProp.multiProcessorCount * sm_per_multiproc * deviceProp.clockRate;
@@ -155,13 +153,13 @@ inline int cutGetMaxGflopsDeviceId()
 // This function returns the best GPU (with maximum GFLOPS)
 inline int cutGetMaxGflopsGraphicsDeviceId()
 {
-	int current_device   = 0;
-	int max_compute_perf = 0;
+    int current_device   = 0;
+    int max_compute_perf = 0;
     int max_perf_device  = 0;
-	int device_count     = 0;
+    int device_count     = 0;
     int best_SM_arch     = 0;
-	int bTCC = 0;
-	cudaDeviceProp deviceProp;
+    int bTCC = 0;
+    cudaDeviceProp deviceProp;
 
 	cudaGetDeviceCount( &device_count );
 	// Find the best major SM Architecture GPU device that is graphics capable
@@ -182,11 +180,9 @@ inline int cutGetMaxGflopsGraphicsDeviceId()
 	current_device = 0;
 	while( current_device < device_count ) {
 		cudaGetDeviceProperties( &deviceProp, current_device );
-        int sm_per_multiproc = 0;
-		if (deviceProp.major == 9999 && deviceProp.minor == 9999) {
-		    sm_per_multiproc = 1;
-		} else {
-			sm_per_multiproc = _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
+        int sm_per_multiproc = 1;
+		if (deviceProp.major != 9999 || deviceProp.minor != 9999) {
+		    sm_per_multiproc = _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
 		}
 
 		if (deviceProp.tccDriver) bTCC = 1;

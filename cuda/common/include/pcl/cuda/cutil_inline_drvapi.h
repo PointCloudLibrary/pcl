@@ -85,13 +85,13 @@ inline int _ConvertSMVer2CoresDrvApi(int major, int minor)
 // This function returns the best GPU based on performance
 inline int cutilDrvGetMaxGflopsDeviceId()
 {
-    CUdevice current_device = 0
+    CUdevice current_device = 0;
     CUdevice max_perf_device = 0;
     int device_count     = 0;
     int max_compute_perf = 0;
     int best_SM_arch     = 0;
-    int major = 0
-    int minor = 0
+    int major = 0;
+    int minor = 0;
     int multiProcessorCount;
     int clockRate;
 
@@ -120,11 +120,9 @@ inline int cutilDrvGetMaxGflopsDeviceId()
         cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, current_device));
         cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
 
-        int sm_per_multiproc = 0;
+        int sm_per_multiproc = 1;
 
-		if (major == 9999 && minor == 9999) {
-		    sm_per_multiproc = 1;
-		} else {
+		if (major != 9999 || minor != 9999) {
 		    sm_per_multiproc = _ConvertSMVer2CoresDrvApi(major, minor);
 		}
 
@@ -159,8 +157,8 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
     int minor = 0;
     int multiProcessorCount;
     int clockRate;
-	int bTCC = 0;
-	char deviceName[256];
+    int bTCC = 0;
+    char deviceName[256];
 
     cuInit(0);
     cutilDrvSafeCallNoSync(cuDeviceGetCount(&device_count));
@@ -194,11 +192,9 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
 
 		cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &bTCC,  CU_DEVICE_ATTRIBUTE_TCC_DRIVER, current_device ) );
 
-        int sm_per_multiproc = 0;
+        int sm_per_multiproc = 1;
 
-		if (major == 9999 && minor == 9999) {
-		    sm_per_multiproc = 1;
-		} else {
+		if (major != 9999 || minor != 9999) {
 		    sm_per_multiproc = _ConvertSMVer2CoresDrvApi(major, minor);
 		}
 
