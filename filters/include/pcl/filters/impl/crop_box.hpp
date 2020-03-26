@@ -46,32 +46,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
-pcl::CropBox<PointT>::applyFilter (PointCloud &output)
-{
-  std::vector<int> indices;
-  if (keep_organized_)
-  {
-    bool temp = extract_removed_indices_;
-    extract_removed_indices_ = true;
-    applyFilter (indices);
-    extract_removed_indices_ = temp;
-
-    output = *input_;
-    for (const auto ri : *removed_indices_)  // ri = removed index
-      output.points[ri].x = output.points[ri].y = output.points[ri].z = user_filter_value_;
-    if (!std::isfinite (user_filter_value_))
-      output.is_dense = false;
-  }
-  else
-  {
-    output.is_dense = true;
-    applyFilter (indices);
-    pcl::copyPointCloud (*input_, indices, output);
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-template<typename PointT> void
 pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
 {
   indices.resize (input_->points.size ());
