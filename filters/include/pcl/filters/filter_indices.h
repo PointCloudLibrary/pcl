@@ -171,6 +171,8 @@ namespace pcl
 
       using Filter<PointT>::initCompute;
       using Filter<PointT>::deinitCompute;
+      using Filter<PointT>::input_;
+      using Filter<PointT>::removed_indices_;
 
       /** \brief False = normal filter behavior (default), true = inverted behavior. */
       bool negative_;
@@ -187,7 +189,7 @@ namespace pcl
 
       /** \brief Abstract filter method for point cloud. */
       void
-      applyFilter (PointCloud &output) override = 0;
+      applyFilter (PointCloud &output) override;
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
