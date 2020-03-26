@@ -3,7 +3,6 @@ jobs:
     displayName: Ubuntu
     pool:
       vmImage: 'Ubuntu 16.04'
-    timeoutInMinutes: 0
     strategy:
       matrix:
         #        16.04 Clang:
@@ -27,6 +26,7 @@ jobs:
           CXX: g++
           CMakeArgs: ''
     container: $[ variables['containerResource'] ]
+    timeoutInMinutes: 0
     variables:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'
       CMAKE_CXX_FLAGS: '-Wall -Wextra -O2'

@@ -1,8 +1,10 @@
 jobs:
   - job: tutorials
     displayName: Building Tutorials
-    timeoutInMinutes: 0
+    pool:
+      vmImage: 'Ubuntu 16.04'
     container: env1604
+    timeoutInMinutes: 0
     variables:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'
       INSTALL_DIR: '$(Agent.BuildDirectory)/install'

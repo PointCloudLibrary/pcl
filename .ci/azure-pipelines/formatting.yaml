@@ -1,6 +1,8 @@
 jobs:
   - job: formatting
     displayName: Check code formatting
+    pool:
+      vmImage: 'Ubuntu 16.04'
     container: fmt
     steps:
       - script: ./.dev/format.sh $(which clang-format-8) .

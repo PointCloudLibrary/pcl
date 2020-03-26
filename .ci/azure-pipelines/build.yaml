@@ -9,9 +9,6 @@ resources:
     - container: doc
       image: pointcloudlibrary/doc
 
-pool:
-  vmImage: 'Ubuntu 16.04'
-
 stages:
   - stage: formatting
     displayName: Formatting

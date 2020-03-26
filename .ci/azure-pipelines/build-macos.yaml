@@ -1,13 +1,13 @@
 jobs:
   - job: osx
     displayName: macOS
+    timeoutInMinutes: 0
     strategy:
       matrix:
         Catalina 10.15:
           VMIMAGE: 'macOS-10.15'
         Mojave 10.14:
           VMIMAGE: 'macOS-10.14'
-    timeoutInMinutes: 0
     pool:
       vmImage: '$(VMIMAGE)'
     variables:
