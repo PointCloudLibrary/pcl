@@ -85,10 +85,15 @@ inline int _ConvertSMVer2CoresDrvApi(int major, int minor)
 // This function returns the best GPU based on performance
 inline int cutilDrvGetMaxGflopsDeviceId()
 {
-    CUdevice current_device = 0, max_perf_device = 0;
-    int device_count     = 0, sm_per_multiproc;
-    int max_compute_perf = 0, best_SM_arch     = 0;
-    int major = 0, minor = 0, multiProcessorCount, clockRate;
+    CUdevice current_device = 0
+    CUdevice max_perf_device = 0;
+    int device_count     = 0;
+    int max_compute_perf = 0;
+    int best_SM_arch     = 0;
+    int major = 0
+    int minor = 0
+    int multiProcessorCount;
+    int clockRate;
 
     cuInit(0);
     cutilDrvSafeCallNoSync(cuDeviceGetCount(&device_count));
@@ -114,6 +119,8 @@ inline int cutilDrvGetMaxGflopsDeviceId()
                                                             current_device ) );
         cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, current_device));
         cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
+
+        int sm_per_multiproc = 0;
 
 		if (major == 9999 && minor == 9999) {
 		    sm_per_multiproc = 1;
@@ -143,10 +150,15 @@ inline int cutilDrvGetMaxGflopsDeviceId()
 // This function returns the best Graphics GPU based on performance
 inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
 {
-    CUdevice current_device = 0, max_perf_device = 0;
-    int device_count     = 0, sm_per_multiproc;
-    int max_compute_perf = 0, best_SM_arch     = 0;
-    int major = 0, minor = 0, multiProcessorCount, clockRate;
+    CUdevice current_device = 0;
+    CUdevice max_perf_device = 0;
+    int device_count     = 0;
+    int max_compute_perf = 0;
+    int best_SM_arch     = 0;
+    int major = 0;
+    int minor = 0;
+    int multiProcessorCount;
+    int clockRate;
 	int bTCC = 0;
 	char deviceName[256];
 
@@ -181,6 +193,8 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
         cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
 
 		cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &bTCC,  CU_DEVICE_ATTRIBUTE_TCC_DRIVER, current_device ) );
+
+        int sm_per_multiproc = 0;
 
 		if (major == 9999 && minor == 9999) {
 		    sm_per_multiproc = 1;
