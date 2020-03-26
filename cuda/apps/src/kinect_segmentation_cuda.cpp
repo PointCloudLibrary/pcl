@@ -356,7 +356,6 @@ class Segmentation
     {
       if (use_file)
       {
-        pcl::Grabber* filegrabber;
 
         float frames_per_second = 1;
         bool repeat = false;

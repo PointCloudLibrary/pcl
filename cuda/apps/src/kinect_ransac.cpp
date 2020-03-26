@@ -158,7 +158,6 @@ class SimpleKinectTool
     run (bool use_device)
     {
 #if 1
-      pcl::Grabber* filegrabber;
 
       float frames_per_second = 1;
       bool repeat = false;
