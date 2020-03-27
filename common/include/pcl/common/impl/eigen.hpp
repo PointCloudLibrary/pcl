@@ -705,6 +705,7 @@ pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<Oth
   // Eq. (40) and (43)
   Rt.block (0,0,m,m).noalias () = svd.matrixU () * S.asDiagonal () * svd.matrixV ().transpose ();
 
+  /*
   if (with_scaling)
   {
     // Eq. (42)
@@ -720,6 +721,7 @@ pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<Oth
     Rt.col (m).head (m) = dst_mean;
     Rt.col (m).head (m).noalias () -= Rt.topLeftCorner (m, m) * src_mean;
   }
+  */
 
   return (Rt);
 #endif
