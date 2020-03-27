@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  * Email  : potthast@usc.edu
  *
  */
-
 #pragma once
 
 #include <Eigen/Core>
@@ -429,4 +429,3 @@ pcl::UnaryClassifier<PointT>::segment (pcl::PointCloud<pcl::PointXYZRGBL>::Ptr &
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define PCL_INSTANTIATE_UnaryClassifier(T) template class pcl::UnaryClassifier<T>;
-

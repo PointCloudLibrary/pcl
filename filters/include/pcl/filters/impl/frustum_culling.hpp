@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -34,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/filters/frustum_culling.h>
@@ -176,4 +176,3 @@ pcl::FrustumCulling<PointT>::applyFilter (std::vector<int> &indices)
 }
 
 #define PCL_INSTANTIATE_FrustumCulling(T) template class PCL_EXPORTS pcl::FrustumCulling<T>;
-

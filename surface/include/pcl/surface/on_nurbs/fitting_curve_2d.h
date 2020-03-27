@@ -34,7 +34,6 @@
  * 
  *
  */
-
 #pragma once
 
 #include <pcl/pcl_exports.h>

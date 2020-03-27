@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -33,7 +34,6 @@
  *
  * Author: Julius Kammerl (julius@kammerl.de)
  */
-
 #pragma once
 
 #include <pcl/point_cloud.h>

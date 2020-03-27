@@ -36,7 +36,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/pcl_config.h>
@@ -260,4 +259,3 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::convolve (PointCloudO
     }
   }
 }
-

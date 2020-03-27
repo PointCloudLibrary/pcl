@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -35,7 +36,6 @@
  *
  *
  */
-
 #pragma once
 
 template<class T, typename REAL> inline void
@@ -151,4 +151,3 @@ pcl::recognition::VoxelStructure<T,REAL>::getNeighbors (const REAL* p, T **neigh
 }
 
 //================================================================================================================================
-

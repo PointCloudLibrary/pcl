@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -34,7 +35,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/common/io.h>
@@ -784,4 +784,3 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
 #define PCL_INSTANTIATE_ConditionAnd(T) template class PCL_EXPORTS pcl::ConditionAnd<T>;
 #define PCL_INSTANTIATE_ConditionOr(T) template class PCL_EXPORTS pcl::ConditionOr<T>;
 #define PCL_INSTANTIATE_ConditionalRemoval(T) template class PCL_EXPORTS pcl::ConditionalRemoval<T>;
-

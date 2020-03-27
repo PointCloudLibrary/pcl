@@ -34,7 +34,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/segmentation/segment_differences.h>
@@ -119,4 +118,3 @@ pcl::SegmentDifferences<PointT>::segment (PointCloud &output)
 
 #define PCL_INSTANTIATE_SegmentDifferences(T) template class PCL_EXPORTS pcl::SegmentDifferences<T>;
 #define PCL_INSTANTIATE_getPointCloudDifference(T) template PCL_EXPORTS void pcl::getPointCloudDifference<T>(const pcl::PointCloud<T> &, double, const typename pcl::search::Search<T>::Ptr &, pcl::PointCloud<T> &);
-

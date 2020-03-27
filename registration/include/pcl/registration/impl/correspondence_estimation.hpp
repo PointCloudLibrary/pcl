@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -246,4 +247,3 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
 }
 
 //#define PCL_INSTANTIATE_CorrespondenceEstimation(T,U) template class PCL_EXPORTS pcl::registration::CorrespondenceEstimation<T,U>;
-

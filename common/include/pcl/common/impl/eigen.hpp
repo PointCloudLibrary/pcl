@@ -35,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <array>
@@ -899,4 +898,3 @@ pcl::transformBetween2CoordinateSystems (const Eigen::Matrix<Scalar, Eigen::Dyna
   transformation.translation () = to0 - (transformation.linear () * fr0);
   return (true);
 }
-

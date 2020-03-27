@@ -37,7 +37,6 @@
  * $Id: cvfh.hpp 5311 2012-03-26 22:02:04Z aaldoma $
  *
  */
-
 #pragma once
 
 #include <pcl/features/crh.h>
@@ -134,4 +133,3 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 }
 
 #define PCL_INSTANTIATE_CRHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::CRHEstimation<T,NT,OutT>;
-

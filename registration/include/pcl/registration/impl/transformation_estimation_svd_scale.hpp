@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -102,4 +103,3 @@ pcl::registration::TransformationEstimationSVDScale<PointSource, PointTarget, Sc
 }
 
 //#define PCL_INSTANTIATE_TransformationEstimationSVD(T,U) template class PCL_EXPORTS pcl::registration::TransformationEstimationSVD<T,U>;
-

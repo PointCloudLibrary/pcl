@@ -464,4 +464,3 @@ int on_vsnwprintf( wchar_t *buffer, size_t count, const wchar_t *format, va_list
 
 
 #endif
-

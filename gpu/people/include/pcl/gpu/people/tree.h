@@ -36,7 +36,6 @@
  * $Id: $
  * @authors: Cedric Cagniart, Koen Buys
  */
-
 #pragma once
 
 #include "label_common.h"

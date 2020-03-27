@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/search/organized.h>
@@ -386,4 +386,3 @@ pcl::search::OrganizedNeighbor<PointT>::projectPoint (const PointT& point, pcl::
   return (projected[2] != 0);
 }
 #define PCL_INSTANTIATE_OrganizedNeighbor(T) template class PCL_EXPORTS pcl::search::OrganizedNeighbor<T>;
-

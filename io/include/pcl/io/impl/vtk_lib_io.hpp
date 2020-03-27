@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  * $Id: vtk_io.hpp 4968 2012-05-03 06:39:52Z doria $
  *
  */
-
 #pragma once
 
 // PCL

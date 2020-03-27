@@ -37,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/PolygonMesh.h>

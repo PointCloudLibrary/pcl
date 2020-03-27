@@ -35,7 +35,6 @@
  *
  * @authors: Anatoly Baksheev
  */
-
 #pragma once
 
 #include <pcl/gpu/containers/device_array.h>

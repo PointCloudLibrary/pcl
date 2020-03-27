@@ -36,7 +36,6 @@
  * $Id: $
  * @author: Koen Buys, Anatoly Baksheev
  */
-
 #pragma once
 
 #include <pcl/point_cloud.h>

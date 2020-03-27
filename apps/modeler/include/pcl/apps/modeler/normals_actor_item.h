@@ -33,7 +33,6 @@
  *
  *
  */
-
 #pragma once
 
 #include <pcl/apps/modeler/channel_actor_item.h>

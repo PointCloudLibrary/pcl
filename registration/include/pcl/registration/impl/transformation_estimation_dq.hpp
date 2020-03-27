@@ -201,4 +201,3 @@ pcl::registration::TransformationEstimationDQ<PointSource, PointTarget, Scalar>:
   transformation_matrix(1,3) = -t.y();
   transformation_matrix(2,3) = -t.z();
 }
-

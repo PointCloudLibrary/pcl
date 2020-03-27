@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -35,7 +36,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <boost/filesystem.hpp>
@@ -91,4 +91,3 @@ std::string getFileExtension(const std::string& input)
 }
 
 }  // namespace end
-

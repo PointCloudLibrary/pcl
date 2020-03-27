@@ -36,7 +36,6 @@
  *
  *  $Id: octree_disk_container.h 6927M 2012-08-24 13:26:40Z (local) $
  */
-
 #pragma once
 
 // C++

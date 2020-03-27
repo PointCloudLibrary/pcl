@@ -34,7 +34,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/surface/grid_projection.h>

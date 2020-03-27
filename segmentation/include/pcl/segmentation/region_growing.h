@@ -36,7 +36,6 @@
  * Email  : mine_all_mine@bk.ru
  *
  */
-
 #pragma once
 
 #include <pcl/memory.h>

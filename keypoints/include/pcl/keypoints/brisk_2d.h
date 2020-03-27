@@ -36,7 +36,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/keypoints/agast_2d.h>

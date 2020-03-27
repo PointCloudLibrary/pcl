@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +38,6 @@
  * Created on: Nov 30, 2012
  * Author: Matteo Munaro
  */
-
 #pragma once
 
 #include <pcl/people/head_based_subcluster.h>

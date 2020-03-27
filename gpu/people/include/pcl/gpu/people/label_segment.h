@@ -38,7 +38,6 @@
  * @file segment.h
  * @brief This file contains the function prototypes for the segmentation functions
  */
-
 #pragma once
 
 // our headers

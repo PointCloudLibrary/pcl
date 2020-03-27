@@ -1,10 +1,10 @@
+
 /*
  * crh_recognition.h
  *
  *  Created on: Mar 30, 2012
  *      Author: aitor
  */
-
 #pragma once
 
 #include <pcl/common/common.h>

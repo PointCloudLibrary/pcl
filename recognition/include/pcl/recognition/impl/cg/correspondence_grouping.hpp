@@ -36,7 +36,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 template <typename PointModelT, typename PointSceneT> void
@@ -55,4 +54,3 @@ pcl::CorrespondenceGrouping<PointModelT, PointSceneT>::cluster (std::vector<Corr
 
   deinitCompute ();
 }
-

@@ -35,7 +35,6 @@
  *
  *
  */
-
 #pragma once
 
 #include <pcl/recognition/ransac_based/hypothesis.h>

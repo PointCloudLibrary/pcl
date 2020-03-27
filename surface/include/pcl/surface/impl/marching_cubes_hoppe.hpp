@@ -32,7 +32,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/surface/marching_cubes_hoppe.h>

@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +38,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/features/intensity_gradient.h>
@@ -229,4 +229,3 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
 }
 
 #define PCL_INSTANTIATE_IntensityGradientEstimation(InT,NT,OutT) template class PCL_EXPORTS pcl::IntensityGradientEstimation<InT,NT,OutT>;
-

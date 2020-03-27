@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -35,7 +36,6 @@
  *
  * $Id$
  */
-
 #pragma once
 
 #include <pcl/point_types.h>
@@ -238,4 +238,3 @@ pcl::PCA<PointT>::reconstruct (const PointCloud& projection, PointCloud& input)
     }
   }
 }
-

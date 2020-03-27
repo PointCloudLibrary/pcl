@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -33,7 +34,6 @@
  *
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
-
 #pragma once
 
 #include <cuda_runtime_api.h>
@@ -93,4 +93,3 @@ namespace pcl
         };
     }
 }
-

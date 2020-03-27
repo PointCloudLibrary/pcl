@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/exceptions.h>
@@ -108,4 +108,3 @@ pcl::GaussianKernel::convolveCols(const pcl::PointCloud<PointT> &input,
       output (i,j) = 0;
   }
 }
-

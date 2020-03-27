@@ -36,7 +36,6 @@
  *
  *  $Id$
  */
-
 #pragma once
 
 
@@ -740,4 +739,3 @@ namespace pcl
     }
   }//namespace outofcore
 }//namespace pcl
-

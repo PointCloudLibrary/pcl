@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -35,7 +36,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <cstdint>
@@ -1828,4 +1828,3 @@ namespace pcl
     return (os);
   }
 } // End namespace
-

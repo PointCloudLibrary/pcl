@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  *
  *
  */
-
 #pragma once
 
 #include <pcl/features/shot.h>
@@ -895,4 +895,3 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
 #define PCL_INSTANTIATE_SHOTEstimationBase(T,NT,OutT,RFT) template class PCL_EXPORTS pcl::SHOTEstimationBase<T,NT,OutT,RFT>;
 #define PCL_INSTANTIATE_SHOTEstimation(T,NT,OutT,RFT) template class PCL_EXPORTS pcl::SHOTEstimation<T,NT,OutT,RFT>;
 #define PCL_INSTANTIATE_SHOTColorEstimation(T,NT,OutT,RFT) template class PCL_EXPORTS pcl::SHOTColorEstimation<T,NT,OutT,RFT>;
-

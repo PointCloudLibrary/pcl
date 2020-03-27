@@ -34,7 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/registration/ia_fpcs.h>
@@ -909,4 +908,3 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-

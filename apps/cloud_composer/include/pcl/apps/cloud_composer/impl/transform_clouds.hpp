@@ -34,7 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/apps/cloud_composer/transform_clouds.h>
@@ -91,6 +90,5 @@ pcl::cloud_composer::TransformClouds::performTemplatedAction (const QList <const
 
 
 #define PCL_INSTANTIATE_performTemplatedAction(T) template void pcl::cloud_composer::TransformClouds::performTemplatedAction<T> (QList <const CloudComposerItem*>);
-
 
 

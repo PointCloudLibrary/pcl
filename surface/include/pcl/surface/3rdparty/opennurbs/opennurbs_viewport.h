@@ -1511,4 +1511,3 @@ ON_IntersectViewFrustumPlane(
           );
 
 #endif
-

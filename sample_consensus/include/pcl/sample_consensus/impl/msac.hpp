@@ -37,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/sample_consensus/msac.h>
@@ -160,4 +159,3 @@ pcl::MEstimatorSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
 }
 
 #define PCL_INSTANTIATE_MEstimatorSampleConsensus(T) template class PCL_EXPORTS pcl::MEstimatorSampleConsensus<T>;
-

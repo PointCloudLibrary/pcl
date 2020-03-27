@@ -35,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 #define EIGEN_II_METHOD 1
 

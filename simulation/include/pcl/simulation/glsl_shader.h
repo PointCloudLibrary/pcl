@@ -4,7 +4,6 @@
  *  Created on: Nov 27, 2011
  *      Author: Hordur Johannsson
  */
-
 #pragma once
 
 #include <pcl/pcl_exports.h>

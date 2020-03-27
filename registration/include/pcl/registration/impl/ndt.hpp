@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +38,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -746,4 +746,3 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT
 
   return (a_t);
 }
-

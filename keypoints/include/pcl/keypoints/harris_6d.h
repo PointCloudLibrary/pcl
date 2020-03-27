@@ -33,7 +33,6 @@
  *
  *  @author Suat Gedikli
  */
-
 #pragma once
 
 #include <pcl/keypoints/keypoint.h>

@@ -39,7 +39,6 @@
 /// on extending the editors with cloud processing algorithms.  See
 /// http://pointclouds.org/documentation/tutorials/statistical_outlier.php
 /// @author Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>

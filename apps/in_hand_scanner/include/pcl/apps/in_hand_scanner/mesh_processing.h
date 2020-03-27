@@ -37,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/apps/in_hand_scanner/common_types.h>

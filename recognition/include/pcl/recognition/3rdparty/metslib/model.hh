@@ -1,3 +1,4 @@
+
 // METSlib source file - model.hh                                -*- C++ -*-
 //
 /*
@@ -31,7 +32,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 namespace mets {
@@ -788,4 +788,3 @@ mets::invert_subsequence::operator==(const mets::mana_move& o) const
     return false;
   }
 }
-

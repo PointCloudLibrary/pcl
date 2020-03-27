@@ -37,7 +37,6 @@
  * $Id:  $
  * Ported to PCL by Koen Buys : Attention Work in progress!
  */
-
 #pragma once
 
 #include "NCVPixelOperations.hpp"
@@ -90,4 +89,3 @@ NCVStatus _ncvColorConv_host(const NCVMatrix<Tin> &h_imgIn,
     NCV_SKIP_COND_END
     return NCV_SUCCESS;
 }
-

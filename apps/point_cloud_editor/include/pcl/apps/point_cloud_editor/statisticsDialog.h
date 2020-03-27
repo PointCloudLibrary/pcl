@@ -37,7 +37,6 @@
 /// @details the class representing the dialog which accepts the parameters
 /// to PCL's denoising filter.
 /// @author  Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <QLineEdit>

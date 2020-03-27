@@ -33,7 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-
 #pragma once
 
 #include <gtest/gtest.h>
@@ -62,4 +61,3 @@
 #if !defined(INSTANTIATE_TEST_SUITE_P)
   #define INSTANTIATE_TEST_SUITE_P INSTANTIATE_TEST_CASE_P
 #endif
-

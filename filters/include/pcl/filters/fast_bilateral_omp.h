@@ -37,7 +37,6 @@
  * $Id: fast_bilateral_omp.h 8379 2013-01-02 23:12:21Z sdmiller $
  *
  */
-
 #pragma once
 
 #include <pcl/filters/filter.h>

@@ -35,7 +35,6 @@
  *
  *
  */
-
 #pragma once
 
 #include <pcl/cloud_iterator.h>

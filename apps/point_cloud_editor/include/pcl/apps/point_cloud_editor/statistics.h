@@ -37,7 +37,6 @@
 /// @details The statistics of the current editing. These statistics will be
 /// displayed in a pop-up dialog.
 /// @author Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <vector>

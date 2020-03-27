@@ -33,7 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-
 #pragma once
 
 #warning "Do not use this header, its contents have been moved to pcl/memory.h"

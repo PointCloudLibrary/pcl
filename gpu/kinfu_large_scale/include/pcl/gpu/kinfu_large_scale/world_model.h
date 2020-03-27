@@ -35,7 +35,6 @@
  *
  *  Author: Raphael Favier, Technical University Eindhoven, (r.mysurname <aT> tue.nl)
  */
-
 #pragma once
 
 #include <pcl/common/impl/common.hpp>

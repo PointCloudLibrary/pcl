@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +38,6 @@
  * $Id:  $
  * Ported to PCL by Koen Buys : Attention Work in progress!
  */
-
 #pragma once
 
 #if (defined WIN32 || defined _WIN32 || defined WINCE) && defined CVAPI_EXPORTS
@@ -958,4 +958,3 @@ NCV_EXPORTS NCVStatus ncvDrawRects_32u_device(Ncv32u *d_dst, Ncv32u dstStride, N
 #define ncvSafeMatAlloc(name, type, alloc, width, height, err) \
     NCVMatrixAlloc<type> name(alloc, width, height); \
     ncvAssertReturn(name.isMemAllocated(), err);
-

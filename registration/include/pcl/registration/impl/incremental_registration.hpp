@@ -34,7 +34,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-
 #pragma once
 
 template <typename PointT, typename Scalar>
@@ -98,4 +97,3 @@ pcl::registration::IncrementalRegistration<PointT, Scalar>::setRegistration (Reg
 {
   registration_ = registration;
 }
-

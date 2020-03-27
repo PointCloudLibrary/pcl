@@ -36,7 +36,6 @@
  * $Id: point_cloud.h 4696 2012-02-23 06:12:55Z rusu $
  *
  */
-
 #pragma once
 
 #include <pcl/point_types.h>

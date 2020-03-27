@@ -474,4 +474,3 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::applyState(Eige
   Eigen::Vector4f T (static_cast<float> (x[0]), static_cast<float> (x[1]), static_cast<float> (x[2]), 0.0f);
   t.col (3) += T;
 }
-

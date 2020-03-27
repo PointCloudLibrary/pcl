@@ -36,7 +36,6 @@
  * $Id: extract_clusters.h 5027 2012-03-12 03:10:45Z rusu $
  *
  */
-
 #pragma once
 
 #include <pcl/memory.h>  // for pcl::make_shared

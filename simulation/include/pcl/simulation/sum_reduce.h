@@ -4,7 +4,6 @@
  *      Author: Hordur Johannsson
  *
  */
-
 #pragma once
 
 #include <GL/glew.h>

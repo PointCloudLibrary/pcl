@@ -34,7 +34,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <iostream>
@@ -308,4 +307,3 @@ pcl::SamplingSurfaceNormal<PointT>::findCutVal (
 
 
 #define PCL_INSTANTIATE_SamplingSurfaceNormal(T) template class PCL_EXPORTS pcl::SamplingSurfaceNormal<T>;
-

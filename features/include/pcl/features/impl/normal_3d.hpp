@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +38,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/features/normal_3d.h>
@@ -95,4 +95,3 @@ pcl::NormalEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &outpu
 }
 
 #define PCL_INSTANTIATE_NormalEstimation(T,NT) template class PCL_EXPORTS pcl::NormalEstimation<T,NT>;
-

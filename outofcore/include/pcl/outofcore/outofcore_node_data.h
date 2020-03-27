@@ -35,7 +35,6 @@
  *
  *  $Id: outofcore_node_data.h 6915 2012-08-22 10:54:21Z stfox88 $
  */
-
 #pragma once
 
 #include <pcl/memory.h>

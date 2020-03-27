@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +38,6 @@
  * $Id: cvfh.hpp 5311 2012-03-26 22:02:04Z aaldoma $
  *
  */
-
 #pragma once
 
 #include <pcl/features/our_cvfh.h>
@@ -739,4 +739,3 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 }
 
 #define PCL_INSTANTIATE_OURCVFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::OURCVFHEstimation<T,NT,OutT>;
-

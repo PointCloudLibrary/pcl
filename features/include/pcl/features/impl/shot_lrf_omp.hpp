@@ -36,7 +36,6 @@
  *
  * $Id$
  */
-
 #pragma once
 
 #include <utility>
@@ -102,4 +101,3 @@ pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeature (
 }
 
 #define PCL_INSTANTIATE_SHOTLocalReferenceFrameEstimationOMP(T,OutT) template class PCL_EXPORTS pcl::SHOTLocalReferenceFrameEstimationOMP<T,OutT>;
-

@@ -32,7 +32,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include "organized_index_iterator.h"

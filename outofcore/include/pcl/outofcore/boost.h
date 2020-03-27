@@ -35,7 +35,6 @@
  *
  *  $Id: boost.h 6913 2012-08-22 09:37:26Z stfox88 $
  */
-
 #pragma once
 
 #if defined __GNUC__

@@ -33,7 +33,6 @@
 *
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
-
 #pragma once
 
 namespace pcl
@@ -43,4 +42,3 @@ namespace pcl
        
     }
 }
-

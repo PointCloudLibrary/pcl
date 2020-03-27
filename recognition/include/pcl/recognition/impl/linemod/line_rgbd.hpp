@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -34,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 //#include <pcl/recognition/linemod/line_rgbd.h>
@@ -972,6 +972,5 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBoxIntersectionVolume (
 
   return (intersection_volume);
 }
-
 
 

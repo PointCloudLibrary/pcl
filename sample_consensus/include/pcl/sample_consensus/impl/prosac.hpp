@@ -37,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #if defined __GNUC__
@@ -234,4 +233,3 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
 }
 
 #define PCL_INSTANTIATE_ProgressiveSampleConsensus(T) template class PCL_EXPORTS pcl::ProgressiveSampleConsensus<T>;
-

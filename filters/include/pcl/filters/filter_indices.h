@@ -36,7 +36,6 @@
  * $Id: filter_indices.h 4707 2012-02-23 10:34:17Z florentinus $
  *
  */
-
 #pragma once
 
 #include <pcl/filters/filter.h>

@@ -36,7 +36,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -669,6 +668,5 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   // clean-up
   delete [] values;
 }
-
 
 

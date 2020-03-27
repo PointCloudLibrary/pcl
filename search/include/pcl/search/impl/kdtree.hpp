@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -34,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/search/kdtree.h>
@@ -102,6 +102,5 @@ pcl::search::KdTree<PointT,Tree>::radiusSearch (
 }
 
 #define PCL_INSTANTIATE_KdTree(T) template class PCL_EXPORTS pcl::search::KdTree<T>;
-
 
 

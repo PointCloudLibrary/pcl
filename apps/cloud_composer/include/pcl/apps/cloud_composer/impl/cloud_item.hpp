@@ -1,3 +1,4 @@
+
  /*
  * Software License Agreement  (BSD License)
  *
@@ -34,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
@@ -78,4 +78,3 @@ pcl::cloud_composer::CloudItem::createCloudItemFromTemplate (const QString& name
 #define PCL_INSTANTIATE_createCloudItemFromTemplate(T) template pcl::cloud_composer::CloudItem* pcl::cloud_composer::CloudItem::createCloudItemFromTemplate<T>(const QString, typename PointCloud<PointT>::Ptr);
 
 #define PCL_INSTANTIATE_printNumPoints(T) template void pcl::cloud_composer::CloudItem::getNumPoints<T>();
-

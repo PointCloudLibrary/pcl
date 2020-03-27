@@ -1,5 +1,5 @@
-//http://www.paulbridger.com/monitor_object/#ixzz2CeN1rr4P
 
+//http://www.paulbridger.com/monitor_object/#ixzz2CeN1rr4P
 #pragma once
 
 #include <condition_variable>
@@ -39,4 +39,3 @@ private:
   std::mutex monitor_mutex_;
   std::condition_variable item_available_;
 };
-

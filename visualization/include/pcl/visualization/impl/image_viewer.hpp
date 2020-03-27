@@ -35,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <vtkVersion.h>
@@ -462,4 +461,3 @@ pcl::visualization::ImageViewer::showCorrespondences (
   
   return (true);
 }
-

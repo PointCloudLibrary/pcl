@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  *
  *  $Id$
  */
-
 #pragma once
 
 #include <pcl/features/statistical_multiscale_interest_region_extraction.h>

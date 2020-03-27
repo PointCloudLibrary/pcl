@@ -4,7 +4,6 @@
  */
 
 /* @(#) $Id$ */
-
 #pragma once
 
 
@@ -357,4 +356,3 @@ typedef uLong FAR uLongf;
 #   pragma map(inflate_fast,"INFA")
 #   pragma map(inflate_copyright,"INCOPY")
 #endif
-

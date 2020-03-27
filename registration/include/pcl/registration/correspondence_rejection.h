@@ -37,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/registration/correspondence_types.h>

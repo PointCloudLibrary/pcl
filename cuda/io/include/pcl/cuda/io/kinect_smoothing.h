@@ -34,7 +34,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/io/openni_camera/openni_image.h>

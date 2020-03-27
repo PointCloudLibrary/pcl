@@ -1,3 +1,4 @@
+
 /*
 * Software License Agreement (BSD License)
 *
@@ -33,7 +34,6 @@
 *
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
-
 #pragma once
 
 #include <pcl/gpu/utils/device/vector_math.hpp>
@@ -210,4 +210,3 @@ namespace pcl
         }     
     }
 }
-

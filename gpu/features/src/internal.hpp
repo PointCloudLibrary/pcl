@@ -33,7 +33,6 @@
  *
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
-
 #pragma once
 
 #include <pcl/gpu/containers/device_array.h>
@@ -173,4 +172,3 @@ namespace pcl
 		void computeMask(const NeighborIndices& neighbours, int min_neighb, DeviceArray<unsigned char>& mask);
     }
 }
-

@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  * Email  : sergey.s.ushakov@mail.ru
  *
  */
-
 #pragma once
 
 #include <pcl/features/moment_of_inertia_estimation.h>
@@ -641,4 +641,3 @@ pcl::MomentOfInertiaEstimation<PointT>::setIndices (std::size_t row_start, std::
 
   is_valid_ = false;
 }
-

@@ -36,7 +36,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/point_traits.h>
@@ -895,4 +894,3 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::copyMissingFields (const PointInT 
 
 #define PCL_INSTANTIATE_MovingLeastSquares(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquares<T,OutT>;
 #define PCL_INSTANTIATE_MovingLeastSquaresOMP(T,OutT) template class PCL_EXPORTS pcl::MovingLeastSquaresOMP<T,OutT>;
-

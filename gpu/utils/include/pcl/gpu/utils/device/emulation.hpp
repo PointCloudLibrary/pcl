@@ -33,7 +33,6 @@
 *
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
-
 #pragma once
 
 #include <pcl/gpu/device/warp_reduce.hpp>
@@ -52,4 +51,3 @@ namespace pcl
 		};
 	}
 }
-

@@ -89,4 +89,3 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample ()
 
 
 #define PCL_INSTANTIATE_KLDAdaptiveParticleFilterTracker(T,ST) template class PCL_EXPORTS pcl::tracking::KLDAdaptiveParticleFilterTracker<T,ST>;
-

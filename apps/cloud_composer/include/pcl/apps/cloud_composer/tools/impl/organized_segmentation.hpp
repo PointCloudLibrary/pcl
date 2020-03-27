@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement  (BSD License)
  *
@@ -34,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/apps/cloud_composer/tools/organized_segmentation.h>

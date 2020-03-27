@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -33,7 +34,6 @@
  *
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
-
 #pragma once
 
 namespace pcl
@@ -43,4 +43,3 @@ namespace pcl
         void copyFields(int in_size, int out_size, int info[4], int size, const void* input, void* output);
     }
 }
-

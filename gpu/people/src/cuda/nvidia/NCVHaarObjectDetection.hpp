@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -53,7 +54,6 @@
 // Alexey Mendelenko, Cyril Crassin, and Mikhail Smirnov.
 //
 ////////////////////////////////////////////////////////////////////////////////
-
 #pragma once
 
 #include <string>
@@ -426,4 +426,3 @@ NCV_EXPORTS NCVStatus ncvHaarStoreNVBIN_host(const std::string &filename,
                                              NCVVector<HaarStage64> &h_HaarStages,
                                              NCVVector<HaarClassifierNode128> &h_HaarNodes,
                                              NCVVector<HaarFeature64> &h_HaarFeatures);
-

@@ -4,7 +4,6 @@
  *  Created on: Aug 16, 2011
  *      Author: Hordur Johannsson
  */
-
 #pragma once
 
 #include <boost/shared_ptr.hpp>

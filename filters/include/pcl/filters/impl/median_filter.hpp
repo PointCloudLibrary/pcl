@@ -36,7 +36,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/filters/median_filter.h>

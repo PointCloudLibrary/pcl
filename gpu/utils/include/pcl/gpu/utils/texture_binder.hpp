@@ -33,7 +33,6 @@
  *
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
-
 #pragma once
 
 #include <pcl/gpu/utils/safe_call.hpp>
@@ -88,4 +87,3 @@ namespace pcl
       using pcl::gpu::TextureBinder;
   }
 }
-

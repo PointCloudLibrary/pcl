@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +38,6 @@
  * $Id: gfpfh.hpp 2218 2011-08-25 20:27:15Z rusu $
  *
  */
-
 #pragma once
 
 #include <pcl/features/gfpfh.h>
@@ -267,4 +267,3 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const std:
 }
 
 #define PCL_INSTANTIATE_GFPFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::GFPFHEstimation<T,NT,OutT>;
-

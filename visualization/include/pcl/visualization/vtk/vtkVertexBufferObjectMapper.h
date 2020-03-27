@@ -18,7 +18,6 @@
 // to graphics primitives. vtkVertexBufferObjectMapper serves as a superclass for
 // device-specific poly data mappers, that actually do the mapping to the
 // rendering/graphics hardware/software.
-
 #pragma once
 
 #include <pcl/pcl_exports.h>

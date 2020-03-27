@@ -37,7 +37,6 @@
  * $Id: kdtree_flann.h 36261 2011-02-26 01:34:42Z mariusm $
  *
  */
-
 #pragma once
 
 #include <pcl/kdtree/kdtree.h>

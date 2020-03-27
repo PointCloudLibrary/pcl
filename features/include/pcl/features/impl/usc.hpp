@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +38,6 @@
  *  $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/features/usc.h>
@@ -258,4 +258,3 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
 }
 
 #define PCL_INSTANTIATE_UniqueShapeContext(T,OutT,RFT) template class PCL_EXPORTS pcl::UniqueShapeContext<T,OutT,RFT>;
-

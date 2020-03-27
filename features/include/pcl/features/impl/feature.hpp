@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +38,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/search/pcl_search.h>

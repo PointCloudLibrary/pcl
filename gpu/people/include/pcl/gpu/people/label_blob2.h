@@ -38,7 +38,6 @@
  * @file blob2.h
  * @brief This file contains the Blob2 structure and the inline <<-operator for it
  */
-
 #pragma once
 
 #include <pcl/PointIndices.h>

@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/console/print.h>
@@ -282,4 +282,3 @@ pcl::common::CloudGenerator<pcl::PointXY, GeneratorT>::fill (int width, int heig
   }
   return (0);
 }
-

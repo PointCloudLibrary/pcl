@@ -35,7 +35,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-
 #pragma once
 
 #include <pcl/registration/warp_point_rigid.h>
@@ -297,4 +296,3 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
   }
   return (0);
 }
-

@@ -39,7 +39,6 @@
 /// point cloud editor
 /// @author  Yue Li and Matthew Hielsberg
 ///
-
 #pragma once
 
 #include <QtGui>

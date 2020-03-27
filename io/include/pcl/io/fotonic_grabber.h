@@ -34,7 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #error PCL does not support FZ-API anymore. See https://github.com/PointCloudLibrary/pcl/issues/2701 for more details.

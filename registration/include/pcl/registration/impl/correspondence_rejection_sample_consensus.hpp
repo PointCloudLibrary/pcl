@@ -131,4 +131,3 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
      best_transformation_.row (3) = model_coefficients.segment<4>(12);
    }
 }
-

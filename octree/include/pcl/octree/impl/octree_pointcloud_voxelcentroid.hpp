@@ -36,7 +36,6 @@
  *
  * $Id: octree_pointcloud_voxelcentroid.hpp 6459 2012-07-18 07:50:37Z dpb $
  */
-
 #pragma once
 
 /*

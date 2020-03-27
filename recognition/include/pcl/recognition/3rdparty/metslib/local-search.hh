@@ -1,3 +1,4 @@
+
 // METS lib source file - local-search.hh                   -*- C++ -*-
 //
 /*
@@ -31,7 +32,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 namespace mets {

@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -35,7 +36,6 @@
  *
  * $Id: outofcore_depth_first_iterator.hpp 7938 2012-11-14 06:27:39Z jrosen $
  */
-
 #pragma once
 
 namespace pcl

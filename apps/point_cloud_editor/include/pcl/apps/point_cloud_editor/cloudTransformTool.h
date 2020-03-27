@@ -37,7 +37,6 @@
 /// @details Provides a tool for changing the view of cloud through a simple
 /// transformation matrix using inputs from the mouse.
 /// @author Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <pcl/apps/point_cloud_editor/toolInterface.h>

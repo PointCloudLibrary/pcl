@@ -36,7 +36,6 @@
  *
  *
  */
-
 #pragma once
 
 #include <pcl/segmentation/boost.h>

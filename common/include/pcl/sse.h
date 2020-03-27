@@ -35,7 +35,6 @@
  * Taken from Piotr Dollar's MATLAB Image&Video ToolboxVersion 3.00.
  *
  */
-
 #pragma once
 
 #if defined(__SSE2__)

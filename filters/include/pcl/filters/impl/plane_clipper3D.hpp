@@ -31,7 +31,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-
 #pragma once
 
 #include <pcl/filters/plane_clipper3D.h>

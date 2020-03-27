@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  * Email  : potthast@usc.edu
  *
  */
-
 #pragma once
 
 #include <pcl/segmentation/crf_segmentation.h>
@@ -597,4 +597,3 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
 }
 
 #define PCL_INSTANTIATE_CrfSegmentation(T) template class pcl::CrfSegmentation<T>;
-

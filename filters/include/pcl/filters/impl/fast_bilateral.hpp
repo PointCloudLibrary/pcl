@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -210,4 +211,3 @@ pcl::FastBilateralFilter<PointT>::Array3D::trilinear_interpolation (const float 
       (1.0f-x_alpha) * y_alpha        * z_alpha        * (*this)(x_index, yy_index, zz_index) +
       x_alpha        * y_alpha        * z_alpha        * (*this)(xx_index, yy_index, zz_index);
 }
-

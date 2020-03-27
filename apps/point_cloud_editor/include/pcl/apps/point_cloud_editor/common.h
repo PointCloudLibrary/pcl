@@ -36,7 +36,6 @@
 /// @file common.h
 /// @details The set of simple common operations used throughout the project.
 /// @author Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <sstream>

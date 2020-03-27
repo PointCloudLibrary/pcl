@@ -37,7 +37,6 @@
  * $Id$
  a
  */
-
 #pragma once
 
 #include <pcl/sample_consensus/sac_model_parallel_plane.h>

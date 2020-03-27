@@ -37,7 +37,6 @@
 /// @details A PasteCommand object that allows the duplication of selected
 /// points in a cloud object as well as undo.
 /// @author  Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>

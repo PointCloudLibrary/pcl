@@ -34,7 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/features/ppfrgb.h>
@@ -175,4 +174,3 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
 
 #define PCL_INSTANTIATE_PPFRGBEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::PPFRGBEstimation<T,NT,OutT>;
 #define PCL_INSTANTIATE_PPFRGBRegionEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::PPFRGBRegionEstimation<T,NT,OutT>;
-

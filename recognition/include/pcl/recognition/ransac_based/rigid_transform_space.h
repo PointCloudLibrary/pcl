@@ -42,7 +42,6 @@
  *  Created on: Feb 15, 2013
  *      Author: papazov
  */
-
 #pragma once
 
 #include "simple_octree.h"

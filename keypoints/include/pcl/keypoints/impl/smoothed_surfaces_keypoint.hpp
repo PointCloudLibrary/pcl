@@ -34,7 +34,6 @@
  *
  * $Id$
  */
-
 #pragma once
 
 #include <pcl/keypoints/smoothed_surfaces_keypoint.h>

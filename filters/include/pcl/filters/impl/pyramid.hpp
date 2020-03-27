@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 template <typename PointT> bool
@@ -563,4 +563,3 @@ namespace pcl
 
   }
 }
-

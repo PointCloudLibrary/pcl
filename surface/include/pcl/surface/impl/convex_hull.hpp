@@ -39,7 +39,6 @@
 
 #include <pcl/pcl_config.h>
 #ifdef HAVE_QHULL
-
 #pragma once
 
 #include <pcl/surface/convex_hull.h>

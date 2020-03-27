@@ -38,7 +38,6 @@
 /// command of the cloud editor.  This class is designed to be used with the
 /// CommandQueue.
 /// @author Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <pcl/apps/point_cloud_editor/localTypes.h>

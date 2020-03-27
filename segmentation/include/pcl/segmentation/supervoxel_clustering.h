@@ -37,7 +37,6 @@
  * Email  : jpapon@gmail.com
  *
  */
-
 #pragma once
 
 #include <boost/version.hpp>

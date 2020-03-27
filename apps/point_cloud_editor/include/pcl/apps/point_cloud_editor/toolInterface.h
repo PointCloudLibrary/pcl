@@ -38,7 +38,6 @@
 /// on mouse inputs from the user along with modifier keys (ALT, CTRL, SHIFT).
 /// Note that the CTRL key may be evaluated as the Command key in OSX.
 /// @author  Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <pcl/apps/point_cloud_editor/localTypes.h>

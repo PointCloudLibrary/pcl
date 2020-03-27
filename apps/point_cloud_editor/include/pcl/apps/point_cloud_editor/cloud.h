@@ -38,7 +38,6 @@
 /// This class allows for the basic manipulation of the cloud as well as its
 /// display.
 /// @author  Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <QtGui/QColor>

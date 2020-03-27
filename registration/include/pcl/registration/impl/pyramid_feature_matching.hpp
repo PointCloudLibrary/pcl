@@ -38,7 +38,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/pcl_macros.h>
@@ -297,4 +296,3 @@ pcl::PyramidFeatureHistogram<PointFeature>::addFeature (std::vector<float> &feat
 }
 
 #define PCL_INSTANTIATE_PyramidFeatureHistogram(PointFeature) template class PCL_EXPORTS pcl::PyramidFeatureHistogram<PointFeature>;
-

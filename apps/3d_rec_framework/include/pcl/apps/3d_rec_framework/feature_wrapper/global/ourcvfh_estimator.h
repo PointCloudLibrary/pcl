@@ -4,7 +4,6 @@
  *  Created on: Mar 22, 2012
  *      Author: aitor
  */
-
 #pragma once
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/global/global_estimator.h>

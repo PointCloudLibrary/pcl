@@ -34,7 +34,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/pcl_macros.h>
@@ -166,4 +165,3 @@ pcl::threePlanesIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
   intersection_point = left_member.fullPivLu ().solve (right_member);
   return (true);
 }
-

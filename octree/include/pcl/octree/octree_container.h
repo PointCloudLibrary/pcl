@@ -35,7 +35,6 @@
  *
  * $Id: octree_nodes.h 5596 2012-04-17 15:09:31Z jkammerl $
  */
-
 #pragma once
 
 #include <cassert> // for assert

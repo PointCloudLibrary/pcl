@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -34,7 +35,6 @@
  * $Id: extract_indices.hpp 1897 2011-07-26 20:35:49Z rusu $
  *
  */
-
 #pragma once
 
 #include <pcl/filters/random_sample.h>
@@ -152,4 +152,3 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
 }
 
 #define PCL_INSTANTIATE_RandomSample(T) template class PCL_EXPORTS pcl::RandomSample<T>;
-

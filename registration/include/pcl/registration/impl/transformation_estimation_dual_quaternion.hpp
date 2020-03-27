@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -202,4 +203,3 @@ pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarg
   transformation_matrix (1, 3) = - t.y ();
   transformation_matrix (2, 3) = - t.z ();
 }
-

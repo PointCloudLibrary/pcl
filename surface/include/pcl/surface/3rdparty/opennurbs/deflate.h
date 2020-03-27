@@ -9,7 +9,6 @@
  */
 
 /* @(#) $Id$ */
-
 #pragma once
 
 #include "zutil.h"
@@ -326,4 +325,3 @@ void _tr_stored_block OF((deflate_state *s, charf *buf, ulg stored_len,
 # define _tr_tally_dist(s, distance, length, flush) \
               flush = _tr_tally(s, distance, length)
 #endif
-

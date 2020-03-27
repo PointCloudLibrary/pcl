@@ -34,7 +34,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/filters/shadowpoints.h>
@@ -106,4 +105,3 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter (std::vector<int> &indices)
 }
 
 #define PCL_INSTANTIATE_ShadowPoints(T,NT) template class PCL_EXPORTS pcl::ShadowPoints<T,NT>;
-

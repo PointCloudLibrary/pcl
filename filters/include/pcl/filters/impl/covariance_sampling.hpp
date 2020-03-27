@@ -37,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/common/eigen.h>
@@ -224,4 +223,3 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (Cloud &output)
 
 
 #define PCL_INSTANTIATE_CovarianceSampling(T,NT) template class PCL_EXPORTS pcl::CovarianceSampling<T,NT>;
-

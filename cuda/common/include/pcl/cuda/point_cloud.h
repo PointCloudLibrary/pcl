@@ -34,7 +34,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/cuda/point_types.h>

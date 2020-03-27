@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  * $Id:$
  *
  */
-
 #pragma once
 
 #include <pcl/recognition/cg/hough_3d.h>
@@ -369,4 +369,3 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::re
 
 
 #define PCL_INSTANTIATE_Hough3DGrouping(T,ST,RFT,SRFT) template class PCL_EXPORTS pcl::Hough3DGrouping<T,ST,RFT,SRFT>;
-

@@ -1,3 +1,4 @@
+
 /*
 * Software License Agreement (BSD License)
 *
@@ -33,7 +34,6 @@
 *
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
-
 #pragma once
 
 #if defined(__CUDACC__) 
@@ -61,4 +61,3 @@ namespace pcl
 }
 
 #undef __PCL_GPU_HOST_DEVICE__
-

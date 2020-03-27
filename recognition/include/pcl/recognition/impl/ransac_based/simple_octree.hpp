@@ -1,10 +1,10 @@
+
 /*
  * simple_octree.hpp
  *
  *  Created on: Mar 12, 2013
  *      Author: papazov
  */
-
 #pragma once
 
 #include <algorithm>
@@ -397,4 +397,3 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::insertNeighbo
 }
 
 //===============================================================================================================================
-

@@ -37,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #if defined __GNUC__

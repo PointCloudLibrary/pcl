@@ -38,7 +38,6 @@
  * Added optimized symbol lookup and fixed/static frequency tables
  *
  */
-
 #pragma once
 
 #include <pcl/compression/entropy_range_coder.h>

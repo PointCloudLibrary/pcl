@@ -35,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/pcl_macros.h>
@@ -237,4 +236,3 @@ HIK_Norm(FloatVectorT a, FloatVectorT b, int dim)
 }
 
 }
-

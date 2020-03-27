@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +38,6 @@
  * $Id:  $
  * Ported to PCL by Koen Buys : Attention Work in progress!
  */
-
 #pragma once
 
 #include <limits.h>
@@ -344,4 +344,3 @@ template<> struct TAccPixDist<ushort4> {using type = Ncv32u;};
 template<> struct TAccPixDist<float1> {using type = Ncv32f;};
 template<> struct TAccPixDist<float3> {using type = Ncv32f;};
 template<> struct TAccPixDist<float4> {using type = Ncv32f;};
-

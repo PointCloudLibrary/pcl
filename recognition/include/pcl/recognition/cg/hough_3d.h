@@ -36,7 +36,6 @@
  * $Id:$
  *
  */
-
 #pragma once
 
 #include <pcl/recognition/cg/correspondence_grouping.h>

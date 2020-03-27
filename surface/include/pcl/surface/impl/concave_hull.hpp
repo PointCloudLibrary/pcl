@@ -1,3 +1,4 @@
+
 /**
   * Software License Agreement (BSD License)
   *
@@ -39,7 +40,6 @@
 
 #include <pcl/pcl_config.h>
 #ifdef HAVE_QHULL
-
 #pragma once
 
 #include <map>

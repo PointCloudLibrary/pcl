@@ -39,4 +39,3 @@
 
 #include <pcl/visualization/impl/point_cloud_color_handlers.hpp>
 #include <pcl/visualization/impl/point_cloud_geometry_handlers.hpp>
-

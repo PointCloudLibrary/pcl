@@ -36,7 +36,6 @@
  * $Id: planar_polygon.h 4696 2012-02-23 06:12:55Z rusu $
  *
  */
-
 #pragma once
 
 #include <pcl/common/eigen.h>

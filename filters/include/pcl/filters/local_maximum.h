@@ -38,7 +38,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/filters/filter_indices.h>

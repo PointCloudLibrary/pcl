@@ -1,3 +1,4 @@
+
 /*
 * Software License Agreement (BSD License)
 *
@@ -86,7 +87,6 @@
 // FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
 // ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-
 #pragma once
 
 #include <limits>
@@ -446,4 +446,3 @@ namespace pcl
         };           
     }
 }
-

@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -35,7 +36,6 @@
  *
  *  Author: Raphael Favier, Technical University Eindhoven, (r.mysurname <aT> tue.nl)
  */
-
 #pragma once
 
 #include <pcl/gpu/kinfu_large_scale/world_model.h>
@@ -406,4 +406,3 @@ pcl::kinfuLS::WorldModel<PointT>::setSliceAsNans (const double origin_x, const d
 }
 
 #define PCL_INSTANTIATE_WorldModel(T) template class PCL_EXPORTS pcl::kinfuLS::WorldModel<T>;
-

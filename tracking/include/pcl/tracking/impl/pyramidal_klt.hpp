@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -34,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/common/time.h>
@@ -635,4 +635,3 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::computeTracking ()
   keypoints_ = keypoints;
   keypoints_status_->indices = status;
 }
-

@@ -35,7 +35,6 @@
  *
  * $id $
  */
-
 #pragma once
 
 #include <pcl/segmentation/seeded_hue_segmentation.h>
@@ -217,4 +216,3 @@ pcl::SeededHueSegmentation::segment (PointIndices &indices_in, PointIndices &ind
   seededHueSegmentation (*input_, tree_, static_cast<float> (cluster_tolerance_), indices_in, indices_out, delta_hue_);
   deinitCompute ();
 }
-

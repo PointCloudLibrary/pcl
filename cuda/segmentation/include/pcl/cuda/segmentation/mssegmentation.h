@@ -1,3 +1,4 @@
+
 // this file is extracted from OpenCV/modules/gpu/src/mssegmentation.cpp
 // to get access to the intermediate results of meanShiftSegmentation()
 // minor changes to compile correctly with pcl::cuda and namespace reorganization
@@ -43,7 +44,6 @@
 // the use of this software, even if advised of the possibility of such damage.
 //
 //M*/
-
 #pragma once
 
 #include <pcl/pcl_exports.h>

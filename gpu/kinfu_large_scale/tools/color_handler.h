@@ -33,7 +33,6 @@
 *
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
-
 #pragma once
 
 #include <pcl/point_types.h>

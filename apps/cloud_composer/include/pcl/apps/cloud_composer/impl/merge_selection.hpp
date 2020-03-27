@@ -1,3 +1,4 @@
+
  /*
  * Software License Agreement  (BSD License)
  *
@@ -34,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/apps/cloud_composer/merge_selection.h>
@@ -111,6 +111,5 @@ pcl::cloud_composer::MergeSelection::performTemplatedAction (const QList <const 
 
 
 #define PCL_INSTANTIATE_performTemplatedAction(T) template void pcl::cloud_composer::MergeSelection::performTemplatedAction<T> (QList <const CloudComposerItem*>);
-
 
 

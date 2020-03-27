@@ -37,7 +37,6 @@
  * Derived from Piotr Dollar's MATLAB Image&Video Toolbox      Version 3.00. 
  * Non-SSE version of the code provided by Matteo Munaro, Stefano Ghidoni and Stefano Michieletto
  */
-
 #pragma once
 
 #include <pcl/pcl_macros.h>

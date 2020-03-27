@@ -37,7 +37,6 @@
 /// @details A CopyCommand object provides functionality for filling the copy
 /// buffer with the current selection.  The
 /// @author Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>

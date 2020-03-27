@@ -34,7 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/features/boundary.h>
@@ -460,4 +459,3 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 }
 
 #define PCL_INSTANTIATE_ISSKeypoint3D(T,U,N) template class PCL_EXPORTS pcl::ISSKeypoint3D<T,U,N>;
-

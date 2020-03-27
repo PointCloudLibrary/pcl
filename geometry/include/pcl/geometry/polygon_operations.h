@@ -36,7 +36,6 @@
  * $Id: point_operators.h 4389 2012-02-10 10:10:26Z nizar $
  *
  */
-
 #pragma once
 
 #include "planar_polygon.h"

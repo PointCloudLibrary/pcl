@@ -34,7 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/search/search.h>
@@ -205,6 +204,5 @@ pcl::search::Search<PointT>::sortResults (
 }
 
 #define PCL_INSTANTIATE_Search(T) template class PCL_EXPORTS pcl::search::Search<T>;
-
 
 

@@ -37,7 +37,6 @@
  * $Id: pfh.hpp 5027 2012-03-12 03:10:45Z rusu $
  *
  */
-
 #pragma once
 
 #include <pcl/features/esf.h>

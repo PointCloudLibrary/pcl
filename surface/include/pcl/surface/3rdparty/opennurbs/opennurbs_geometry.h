@@ -377,4 +377,3 @@ public:
 };
 
 #endif
-

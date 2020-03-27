@@ -37,5 +37,4 @@
  * $Id$
  *
  */
-
 #pragma once

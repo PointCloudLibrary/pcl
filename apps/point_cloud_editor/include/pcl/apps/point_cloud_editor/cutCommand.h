@@ -37,7 +37,6 @@
 /// @details A CutCommand object provides functionality for removing selected
 /// points from the cloud and filling the copy buffer.
 /// @author  Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>

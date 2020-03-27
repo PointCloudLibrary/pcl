@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -42,4 +43,3 @@
 //Within PCL, force always to use boost unordered_map and random generators
 //Other options give problems with Clang... needs further investigation...
 #define METSLIB_TR1_BOOST 1
-

@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -208,4 +209,3 @@ namespace pcl
         };
     }
 }
-

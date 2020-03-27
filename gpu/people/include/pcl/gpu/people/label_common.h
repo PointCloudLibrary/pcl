@@ -36,7 +36,6 @@
  * $Id: $
  * @author: Koen Buys
  */
-
 #pragma once
 
 #include <pcl/gpu/containers/device_array.h>

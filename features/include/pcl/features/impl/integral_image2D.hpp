@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  *
  * $Id: feature.h 2784 2011-10-15 22:05:38Z aichim $
  */
-
 #pragma once
 
 #include <cstddef>
@@ -380,4 +380,3 @@ pcl::IntegralImage2D<DataType, 1>::computeIntegralImages (
     }
   }
 }
-

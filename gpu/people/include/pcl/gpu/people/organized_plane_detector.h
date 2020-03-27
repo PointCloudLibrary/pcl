@@ -33,7 +33,6 @@
  *
  * @author: Koen Buys
  */
-
 #pragma once
 
 #include <pcl/pcl_exports.h>

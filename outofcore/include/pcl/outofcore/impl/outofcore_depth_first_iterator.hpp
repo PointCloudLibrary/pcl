@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -35,7 +36,6 @@
  *
  * $Id$
  */
-
 #pragma once
 
 namespace pcl

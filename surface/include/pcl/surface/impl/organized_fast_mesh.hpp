@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +38,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/surface/organized_fast_mesh.h>
@@ -278,4 +278,3 @@ pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices
 
 #define PCL_INSTANTIATE_OrganizedFastMesh(T)                \
   template class PCL_EXPORTS pcl::OrganizedFastMesh<T>;
-

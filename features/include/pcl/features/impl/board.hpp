@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  *
  *
  */
-
 #pragma once
 
 #include <pcl/features/board.h>
@@ -600,4 +600,3 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computeFe
 }
 
 #define PCL_INSTANTIATE_BOARDLocalReferenceFrameEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::BOARDLocalReferenceFrameEstimation<T,NT,OutT>;
-

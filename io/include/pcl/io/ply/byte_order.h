@@ -36,7 +36,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <boost/predef/other/endian.h>

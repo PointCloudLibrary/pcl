@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -34,7 +35,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/filters/project_inliers.h>

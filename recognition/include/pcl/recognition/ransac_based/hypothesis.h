@@ -42,7 +42,6 @@
  *  Created on: Mar 12, 2013
  *      Author: papazov
  */
-
 #pragma once
 
 #include <pcl/recognition/ransac_based/model_library.h>

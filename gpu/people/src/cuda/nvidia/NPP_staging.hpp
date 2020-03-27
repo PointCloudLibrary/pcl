@@ -37,7 +37,6 @@
  * $Id:  $
  * Ported to PCL by Koen Buys : Attention Work in progress!
  */
-
 #pragma once
 
 #include "NCV.hpp"

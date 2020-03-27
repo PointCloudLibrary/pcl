@@ -1,3 +1,4 @@
+
  /*
  * Software License Agreement (BSD License)
  *
@@ -34,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/gpu/kinfu_large_scale/standalone_marching_cubes.h>

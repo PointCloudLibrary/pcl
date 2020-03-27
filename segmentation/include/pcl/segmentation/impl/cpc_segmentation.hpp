@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -34,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/segmentation/cpc_segmentation.h>
@@ -369,4 +369,3 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel (int)
   sac_model_->selectWithinDistance (model_coefficients_, threshold_, inliers_);
   return (true);
 }
-

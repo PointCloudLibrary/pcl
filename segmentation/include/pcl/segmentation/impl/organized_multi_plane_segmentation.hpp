@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  *
  *
  */
-
 #pragma once
 
 #include <pcl/segmentation/boost.h>
@@ -407,4 +407,3 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
 }
 
 #define PCL_INSTANTIATE_OrganizedMultiPlaneSegmentation(T,NT,LT) template class PCL_EXPORTS pcl::OrganizedMultiPlaneSegmentation<T,NT,LT>;
-

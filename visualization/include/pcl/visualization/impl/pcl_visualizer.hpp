@@ -34,7 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <vtkVersion.h>
@@ -1907,4 +1906,3 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
 #undef InsertNextTupleValue
 #undef GetTupleValue
 #endif
-

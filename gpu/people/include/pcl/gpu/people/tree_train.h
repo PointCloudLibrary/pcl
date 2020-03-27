@@ -4,7 +4,6 @@
  *
  * Author : Cedric Cagniart 
  * ************************************************* */
-
 #pragma once
 
 #include "tree.h"

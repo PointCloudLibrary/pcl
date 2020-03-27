@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -35,7 +36,6 @@
  * $Id:$
  *
  */
-
 #pragma once
 
 #include <pcl/segmentation/boost.h>
@@ -616,4 +616,3 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
 }
 
 #define PCL_INSTANTIATE_MinCutSegmentation(T) template class pcl::MinCutSegmentation<T>;
-

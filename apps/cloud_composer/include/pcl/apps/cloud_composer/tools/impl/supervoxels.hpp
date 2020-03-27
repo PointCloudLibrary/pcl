@@ -34,7 +34,6 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *
 */
-
 #pragma once
 
 #include <pcl/apps/cloud_composer/tools/supervoxels.h>
@@ -117,6 +116,5 @@ pcl::cloud_composer::SupervoxelsTool::performTemplatedAction (const QList <const
 
 
 #define PCL_INSTANTIATE_performTemplatedAction(T) template void pcl::cloud_composer::SupervoxelsTool::performTemplatedAction<T> (QList <const CloudComposerItem*>);
-
 
 

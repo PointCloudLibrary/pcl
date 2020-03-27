@@ -38,7 +38,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/common/common.h>

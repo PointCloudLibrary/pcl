@@ -34,7 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/segmentation/planar_polygon_fusion.h>
@@ -43,4 +42,3 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #define PCL_INSTANTIATE_PlanarPolygonFusion(T) template class PCL_EXPORTS pcl::PlanarPolygonFusion<T>;
-

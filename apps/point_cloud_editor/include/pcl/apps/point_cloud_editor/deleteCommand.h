@@ -37,7 +37,6 @@
 /// @details A Delete object provides the functionality for removing points
 /// from the cloud as well as the ability to undo the removal.
 /// @author  Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>

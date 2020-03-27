@@ -34,7 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/keypoints/susan.h>
@@ -464,4 +463,3 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
 }
 
 #define PCL_INSTANTIATE_SUSAN(T,U,N) template class PCL_EXPORTS pcl::SUSANKeypoint<T,U,N>;
-

@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  *
  *
  */
-
 #pragma once
 
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
@@ -226,4 +226,3 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
 }
 
 #define PCL_INSTANTIATE_OrganizedConnectedComponentSegmentation(T,LT) template class PCL_EXPORTS pcl::OrganizedConnectedComponentSegmentation<T,LT>;
-

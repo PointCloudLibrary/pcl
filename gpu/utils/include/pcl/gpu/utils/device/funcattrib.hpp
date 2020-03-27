@@ -33,7 +33,6 @@
 *
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
-
 #pragma once
 
 #include<cstdio>
@@ -64,4 +63,3 @@ namespace pcl
     }
 
 }
-

@@ -35,7 +35,6 @@
  * Email  : potthast@usc.edu
  *
  */
-
 #pragma once
 
 #include <pcl/common/common.h>
@@ -434,4 +433,3 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (std::vector<Eigen::Vect
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define PCL_INSTANTIATE_VoxelGridOcclusionEstimation(T) template class PCL_EXPORTS pcl::VoxelGridOcclusionEstimation<T>;
-

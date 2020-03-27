@@ -2,7 +2,6 @@
 
 // This file is specific to Micrsoft's compiler.
 // It contains linking pragmas for building the opennurbs examples.
-
 #pragma once
 
 #if defined(ON_DLL_EXPORTS)

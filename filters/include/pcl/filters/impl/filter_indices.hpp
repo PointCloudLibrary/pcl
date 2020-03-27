@@ -34,7 +34,6 @@
  * $Id: filter.hpp 1800 2011-07-15 11:45:31Z marton $
  *
  */
-
 #pragma once
 
 #include <pcl/pcl_macros.h>

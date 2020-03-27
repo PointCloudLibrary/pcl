@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -93,4 +94,3 @@ private:
 };
 
 #endif //_WIN32
-

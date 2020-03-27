@@ -812,4 +812,3 @@ namespace pcl
   (pcl::tracking::ParticleXYZR) \
   (pcl::tracking::ParticleXYRPY) \
   (pcl::tracking::ParticleXYRP)
-

@@ -37,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/sample_consensus/sac_model_perpendicular_plane.h>

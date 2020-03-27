@@ -33,7 +33,6 @@
  *
  *  $Id: tsdf_volume.h 6459 2012-07-18 07:50:37Z dpb $
  */
-
 #pragma once
 
 #include <pcl/memory.h>

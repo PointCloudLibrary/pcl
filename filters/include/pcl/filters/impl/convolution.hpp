@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/pcl_config.h>
@@ -666,4 +666,3 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOu
     }
   }
 }
-

@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -34,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/search/organized.h>
@@ -507,4 +507,3 @@ pcl::GrabCut<PointT>::extract (std::vector<pcl::PointIndices>& clusters)
     else
       clusters[0].indices.push_back (i);
 }
-

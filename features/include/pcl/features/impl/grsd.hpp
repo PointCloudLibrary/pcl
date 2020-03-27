@@ -35,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/features/grsd.h>
@@ -121,4 +120,3 @@ pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 }
 
 #define PCL_INSTANTIATE_GRSDEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::GRSDEstimation<T,NT,OutT>;
-

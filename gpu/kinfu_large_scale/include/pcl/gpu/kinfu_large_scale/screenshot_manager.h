@@ -35,7 +35,6 @@
  *
  *  Author: Francisco, Technical University Eindhoven, (f.j.mysurname.soriano <At > tue.nl)
  */
-
 #pragma once
 
 #include <iostream>

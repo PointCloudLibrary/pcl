@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +38,6 @@
  * $Id: sac_model_normal_sphere.hpp schrandt $
  *
  */
-
 #pragma once
 
 #include <pcl/sample_consensus/sac_model_normal_sphere.h>

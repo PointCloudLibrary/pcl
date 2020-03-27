@@ -36,7 +36,6 @@
  * Email  : mine_all_mine@bk.ru
  *
  */
-
 #pragma once
 
 #include <pcl/segmentation/region_growing.h>
@@ -739,4 +738,3 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
 }
 
 #define PCL_INSTANTIATE_RegionGrowing(T) template class pcl::RegionGrowing<T, pcl::Normal>;
-

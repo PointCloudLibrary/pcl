@@ -1,3 +1,4 @@
+
 /* header created automatically with -DGEN_TREES_H */
 
 local const ct_data static_ltree[L_CODES+2] = {
@@ -125,4 +126,3 @@ local const int base_dist[D_CODES] = {
    32,    48,    64,    96,   128,   192,   256,   384,   512,   768,
  1024,  1536,  2048,  3072,  4096,  6144,  8192, 12288, 16384, 24576
 };
-

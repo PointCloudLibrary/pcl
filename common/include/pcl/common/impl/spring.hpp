@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 template <typename PointT> void 
@@ -253,4 +253,3 @@ pcl::common::deleteCols (const PointCloud<PointT>& input, PointCloud<PointT>& ou
   output.height = old_height;
   output.width = new_width;
 }
-

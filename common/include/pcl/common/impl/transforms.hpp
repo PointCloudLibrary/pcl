@@ -478,4 +478,3 @@ pcl::getPrincipalTransformation (const pcl::PointCloud<PointT> &cloud,
 
   return (std::min (rel1, rel2));
 }
-

@@ -99,4 +99,3 @@ pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<PointInT, StateT>::weight ()
 }
 
 #define PCL_INSTANTIATE_KLDAdaptiveParticleFilterOMPTracker(T,ST) template class PCL_EXPORTS pcl::tracking::KLDAdaptiveParticleFilterOMPTracker<T,ST>;
-

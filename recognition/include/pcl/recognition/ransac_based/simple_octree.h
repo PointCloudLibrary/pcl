@@ -42,7 +42,6 @@
  *  Created on: Mar 11, 2013
  *      Author: papazov
  */
-
 #pragma once
 
 #include <pcl/pcl_exports.h>

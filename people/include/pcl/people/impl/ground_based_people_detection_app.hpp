@@ -37,7 +37,6 @@
  * Created on: Nov 30, 2012
  * Author: Matteo Munaro
  */
-
 #pragma once
 
 #include <pcl/people/ground_based_people_detection_app.h>

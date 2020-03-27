@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -268,4 +269,3 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
 }
 
 //#define PCL_INSTANTIATE_TransformationEstimationLM(T,U) template class PCL_EXPORTS pcl::registration::TransformationEstimationLM<T,U>;
-

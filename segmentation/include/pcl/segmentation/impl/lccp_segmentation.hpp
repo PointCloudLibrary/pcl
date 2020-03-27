@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -34,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/segmentation/lccp_segmentation.h>
@@ -520,4 +520,3 @@ pcl::LCCPSegmentation<PointT>::connIsConvex (const std::uint32_t source_label_ar
   }
   return (is_convex && is_smooth);
 }
-

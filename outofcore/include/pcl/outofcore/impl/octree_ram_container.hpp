@@ -36,7 +36,6 @@
  *
  *  $Id: octree_ram_container.hpp 6927 2012-08-23 02:34:54Z stfox88 $
  */
-
 #pragma once
 
 // C++
@@ -136,4 +135,3 @@ namespace pcl
 
   }//namespace outofcore
 }//namespace pcl
-

@@ -35,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/features/gasd.h>
@@ -396,4 +395,3 @@ pcl::GASDColorEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
 
 #define PCL_INSTANTIATE_GASDEstimation(InT, OutT) template class PCL_EXPORTS pcl::GASDEstimation<InT, OutT>;
 #define PCL_INSTANTIATE_GASDColorEstimation(InT, OutT) template class PCL_EXPORTS pcl::GASDColorEstimation<InT, OutT>;
-

@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +38,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/filters/normal_refinement.h>
@@ -117,4 +117,3 @@ pcl::NormalRefinement<NormalT>::applyFilter (PointCloud &output)
     }
   }
 }
-

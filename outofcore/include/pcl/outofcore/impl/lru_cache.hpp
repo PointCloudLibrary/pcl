@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <cstddef>
@@ -176,4 +175,3 @@ public:
   // LRU cache
   Cache cache_;
 };
-

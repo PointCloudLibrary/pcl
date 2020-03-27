@@ -300,4 +300,3 @@ pcl::BivariatePolynomialT<real>::readBinary (const char* filename)
   std::ifstream fin (filename);
   readBinary (fin);
 }
-

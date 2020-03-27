@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  *
  *  $Id$
  */
-
 #pragma once
 
 #include <pcl/features/pfhrgb.h>
@@ -156,4 +156,3 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
 }
 
 #define PCL_INSTANTIATE_PFHRGBEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::PFHRGBEstimation<T,NT,OutT>;
-

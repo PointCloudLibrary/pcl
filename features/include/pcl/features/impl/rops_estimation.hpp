@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  * Email  : sergey.s.ushakov@mail.ru
  *
  */
-
 #pragma once
 
 #include <pcl/features/rops_estimation.h>
@@ -531,4 +531,3 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeCentralMoments (const Eigen::M
 
   moments[number_of_moments_to_compute] = entropy;
 }
-

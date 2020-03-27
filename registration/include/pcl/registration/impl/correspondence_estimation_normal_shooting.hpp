@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -305,4 +306,3 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
   correspondences.resize (nr_valid_correspondences);
   deinitCompute ();
 }
-

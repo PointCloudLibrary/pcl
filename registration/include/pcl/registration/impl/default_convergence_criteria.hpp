@@ -36,7 +36,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/console/print.h>
@@ -124,4 +123,3 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
 
   return (false);
 }
-

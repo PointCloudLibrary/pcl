@@ -28,7 +28,6 @@
  *
  *      Author: Julius Kammerl (jkammerl@willowgarage.com)
  */
-
 #pragma once
 
 #include <cstddef>

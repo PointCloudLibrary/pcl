@@ -37,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #ifdef BUILD_Maintainer

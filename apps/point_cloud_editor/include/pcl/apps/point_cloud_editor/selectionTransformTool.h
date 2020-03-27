@@ -36,7 +36,6 @@
 /// @file selectionTransformTool.h
 /// @details This tool provides the ability to transform the current selection.
 /// @author Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <pcl/apps/point_cloud_editor/toolInterface.h>

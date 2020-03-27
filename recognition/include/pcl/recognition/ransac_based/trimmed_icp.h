@@ -43,7 +43,6 @@
  *  Created on: Mar 10, 2013
  *      Author: papazov
  */
-
 #pragma once
 
 #include <pcl/registration/transformation_estimation_svd.h>

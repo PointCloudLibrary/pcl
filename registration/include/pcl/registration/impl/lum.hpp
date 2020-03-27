@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +38,6 @@
  * $Id: lum.hpp 5663 2012-05-02 13:49:39Z florentinus $
  *
  */
-
 #pragma once
 
 #include <tuple>

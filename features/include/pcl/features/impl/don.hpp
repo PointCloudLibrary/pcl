@@ -99,4 +99,3 @@ pcl::DifferenceOfNormalsEstimation<PointInT, PointNT, PointOutT>::computeFeature
 
 
 #define PCL_INSTANTIATE_DifferenceOfNormalsEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::DifferenceOfNormalsEstimation<T,NT,OutT>;
-

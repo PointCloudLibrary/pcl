@@ -34,7 +34,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/segmentation/extract_polygonal_prism_data.h>

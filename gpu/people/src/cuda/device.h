@@ -37,7 +37,6 @@
  * @authors: Anatoly Baksheev
  *
  */
-
 #pragma once
 
 #include <cuda_runtime.h>

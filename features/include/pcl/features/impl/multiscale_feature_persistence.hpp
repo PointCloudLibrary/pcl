@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  *
  *  $Id$
  */
-
 #pragma once
 
 #include <numeric>
@@ -257,4 +257,3 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::determinePersisten
 
 
 #define PCL_INSTANTIATE_MultiscaleFeaturePersistence(InT, Feature) template class PCL_EXPORTS pcl::MultiscaleFeaturePersistence<InT, Feature>;
-

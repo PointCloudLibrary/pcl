@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -176,4 +177,3 @@ pcl::registration::TransformationEstimation3Point<PointSource, PointTarget, Scal
 }
 
 //#define PCL_INSTANTIATE_TransformationEstimation3Point(T,U) template class PCL_EXPORTS pcl::registration::TransformationEstimation3Point<T,U>;
-

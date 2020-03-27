@@ -36,7 +36,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/common/io.h>
@@ -103,4 +102,3 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClo
     output.is_dense = true;      // set to true as there's no keypoint at an invalid XYZ
   }
 }
-

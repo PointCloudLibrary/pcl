@@ -33,7 +33,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/registration/ia_fpcs.h>

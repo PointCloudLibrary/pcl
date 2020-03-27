@@ -37,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <cfloat>
@@ -290,4 +289,3 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 }
 
 #define PCL_INSTANTIATE_RSDEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::RSDEstimation<T,NT,OutT>;
-

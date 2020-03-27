@@ -30,7 +30,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 namespace mets {
@@ -634,4 +633,3 @@ mets::best_ever_criteria::operator()(feasible_solution& fs,
   else
     return aspiration_criteria_chain::operator()(fs, mov, eval); 
 }
-

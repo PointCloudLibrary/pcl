@@ -37,7 +37,6 @@
  * $Id: sac_model_line.h 2326 2011-08-31 07:48:25Z rusu $
  *
  */
-
 #pragma once
 
 #include <pcl/sample_consensus/sac_model.h>

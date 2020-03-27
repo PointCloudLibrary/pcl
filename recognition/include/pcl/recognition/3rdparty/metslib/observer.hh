@@ -33,7 +33,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <set>
@@ -166,4 +165,3 @@ namespace mets {
   }
   
 }
-

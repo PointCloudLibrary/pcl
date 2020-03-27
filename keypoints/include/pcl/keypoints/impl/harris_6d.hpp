@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -34,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/keypoints/harris_6d.h>
@@ -402,4 +402,3 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
 }
 
 #define PCL_INSTANTIATE_HarrisKeypoint6D(T,U,N) template class PCL_EXPORTS pcl::HarrisKeypoint6D<T,U,N>;
-

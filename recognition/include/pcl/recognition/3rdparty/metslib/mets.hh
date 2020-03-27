@@ -1,3 +1,4 @@
+
 // METS lib source file - mets.h                               -*- C++ -*-
 //
 /*
@@ -157,4 +158,3 @@ operator<<(std::ostream& os, const mets::printable& p)
   p.print(os);
   return os;
 }
-

@@ -37,7 +37,6 @@
  *
  * Authors: Roman Shapovalov, Alexander Velizhev, Sergey Ushakov
  */
-
 #pragma once
 
 #include "../implicit_shape_model.h"
@@ -1524,4 +1523,3 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::computeDis
 
   return (distance);
 }
-

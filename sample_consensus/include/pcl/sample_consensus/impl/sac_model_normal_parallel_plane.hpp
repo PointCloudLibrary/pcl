@@ -37,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/sample_consensus/sac_model_normal_parallel_plane.h>
@@ -71,6 +70,5 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::isModelValid (con
 }
 
 #define PCL_INSTANTIATE_SampleConsensusModelNormalParallelPlane(PointT, PointNT) template class PCL_EXPORTS pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>;
-
 
 

@@ -1,3 +1,4 @@
+
 /*
 Copyright (c) 2006, Michael Kazhdan and Matthew Bolitho
 All rights reserved.
@@ -25,7 +26,6 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING 
 ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
-
 #pragma once
 
 #define Assert assert
@@ -150,4 +150,3 @@ namespace pcl
 
 
 #include "vector.hpp"
-

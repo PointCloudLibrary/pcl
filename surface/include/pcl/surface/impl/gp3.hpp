@@ -34,7 +34,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/surface/gp3.h>
@@ -1669,6 +1668,5 @@ pcl::GreedyProjectionTriangulation<PointInT>::getTriangleList (const pcl::Polygo
 
 #define PCL_INSTANTIATE_GreedyProjectionTriangulation(T)                \
   template class PCL_EXPORTS pcl::GreedyProjectionTriangulation<T>;
-
 
 

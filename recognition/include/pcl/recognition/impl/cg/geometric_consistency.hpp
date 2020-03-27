@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/recognition/cg/geometric_consistency.h>
@@ -178,4 +178,3 @@ pcl::GeometricConsistencyGrouping<PointModelT, PointSceneT>::recognize (
 }
 
 #define PCL_INSTANTIATE_GeometricConsistencyGrouping(T,ST) template class PCL_EXPORTS pcl::GeometricConsistencyGrouping<T,ST>;
-

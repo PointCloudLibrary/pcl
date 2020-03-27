@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -157,4 +157,3 @@ pcl::common::NormalGenerator<T>::setParameters (const Parameters& parameters)
   if (parameters_.seed != static_cast<std::uint32_t> (-1))
     rng_.seed (parameters_.seed);
 }
-

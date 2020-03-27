@@ -1,3 +1,4 @@
+
 // METSlib source file - termination-criteria.hh                 -*- C++ -*-
 /*
  * Software License Agreement (BSD License)
@@ -30,7 +31,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 namespace mets {
@@ -282,4 +282,3 @@ mets::noimprove_termination_criteria::operator()(const feasible_solution& fs)
   
   return termination_criteria_chain::operator()(fs);
 }
-

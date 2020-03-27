@@ -1,3 +1,4 @@
+
  /*
   * Software License Agreement (BSD License)
   *
@@ -34,7 +35,6 @@
   *  POSSIBILITY OF SUCH DAMAGE.
   *
   */
-
 #pragma once
 
 #include <pcl/filters/crop_hull.h>
@@ -324,4 +324,3 @@ pcl::CropHull<PointT>::rayTriangleIntersect (const PointT& point,
 }
 
 #define PCL_INSTANTIATE_CropHull(T) template class PCL_EXPORTS pcl::CropHull<T>;
-

@@ -37,7 +37,6 @@
 /// @details A CopyBuffer object provides a buffer to store the points
 /// copied from the cloud.
 /// @author Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <pcl/apps/point_cloud_editor/localTypes.h>

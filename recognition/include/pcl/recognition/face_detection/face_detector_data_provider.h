@@ -4,7 +4,6 @@
  *  Created on: Sep 2, 2012
  *      Author: aitor
  */
-
 #pragma once
 
 #include <iostream>

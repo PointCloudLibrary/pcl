@@ -34,7 +34,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #include <pcl/filters/filter_indices.h>

@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  * Email  : mine_all_mine@bk.ru
  *
  */
-
 #pragma once
 
 #include <pcl/segmentation/region_growing_rgb.h>
@@ -760,4 +760,3 @@ pcl::RegionGrowingRGB<PointT, NormalT>::getSegmentFromPoint (int index, pcl::Poi
 
   deinitCompute ();
 }
-

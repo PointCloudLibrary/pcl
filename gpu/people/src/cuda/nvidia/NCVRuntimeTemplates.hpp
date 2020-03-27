@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +38,6 @@
  * $Id:  $
  * Ported to PCL by Koen Buys : Attention Work in progress!
  */
-
 #pragma once
 #if _MSC_VER >= 1200
 #pragma warning( disable: 4800 )
@@ -213,4 +213,3 @@ namespace NCVRuntimeTemplateBool
         }
     };
 }
-

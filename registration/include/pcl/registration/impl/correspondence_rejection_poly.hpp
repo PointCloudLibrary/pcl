@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -236,4 +237,3 @@ pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::findThresholdOt
   
   return (result);
 }
-

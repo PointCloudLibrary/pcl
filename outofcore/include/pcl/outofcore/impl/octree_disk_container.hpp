@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -36,7 +37,6 @@
  *
  *  $Id: octree_disk_container.hpp 6927M 2012-08-24 17:01:57Z (local) $
  */
-
 #pragma once
 
 // C++
@@ -689,4 +689,3 @@ namespace pcl
 
   }//namespace outofcore
 }//namespace pcl
-

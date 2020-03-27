@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -34,7 +35,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-
 #pragma once
 
 #include <pcl/filters/model_outlier_removal.h>
@@ -262,4 +262,3 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
 }
 
 #define PCL_INSTANTIATE_ModelOutlierRemoval(T) template class PCL_EXPORTS pcl::ModelOutlierRemoval<T>;
-

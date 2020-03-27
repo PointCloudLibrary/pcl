@@ -37,7 +37,6 @@
  * $Id: io.h 5850 2012-06-06 14:04:59Z stfox88 $
  *
  */
-
 #pragma once
 
 #ifdef __GNUC__

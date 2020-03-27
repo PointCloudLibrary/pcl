@@ -34,7 +34,6 @@
  * $Id: voxel_grid.hpp 1600 2011-07-07 16:55:51Z shapovalov $
  *
  */
-
 #pragma once
 
 #include <pcl/common/common.h>
@@ -133,4 +132,3 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
 }
 
 #define PCL_INSTANTIATE_ApproximateVoxelGrid(T) template class PCL_EXPORTS pcl::ApproximateVoxelGrid<T>;
-

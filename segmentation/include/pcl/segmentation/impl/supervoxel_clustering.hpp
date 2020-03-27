@@ -36,7 +36,6 @@
  * Email  : jpapon@gmail.com
  *
  */
-
 #pragma once
 
 #include <pcl/segmentation/supervoxel_clustering.h>

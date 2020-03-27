@@ -4,7 +4,6 @@
  *  Created on: 22 Sep 2012
  *      Author: ari
  */
-
 #pragma once
 
 namespace face_detection_apps_utils

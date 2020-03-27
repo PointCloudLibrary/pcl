@@ -36,7 +36,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <fstream>
@@ -865,4 +864,3 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
 
   return (0);
 }
-

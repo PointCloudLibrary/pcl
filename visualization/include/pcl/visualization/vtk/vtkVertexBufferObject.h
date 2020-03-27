@@ -23,7 +23,6 @@
 // Since most GPUs don't support double format all double data is converted to
 // float and then uploaded.
 // DON'T PLAY WITH IT YET.
-
 #pragma once
 
 #include <vector>

@@ -36,7 +36,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 // #include <pcl/io/file_io.h>
@@ -91,4 +90,3 @@ namespace pcl
     }
   }
 }
-

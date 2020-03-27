@@ -37,7 +37,6 @@
  * $Id: cvfh.h 4936 2012-03-07 11:12:45Z aaldoma $
  *
  */
-
 #pragma once
 
 #include <pcl/features/feature.h>

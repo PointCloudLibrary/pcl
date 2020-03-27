@@ -1,3 +1,4 @@
+
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +38,6 @@
  *  $Id$
  *
  */
-
 #pragma once
 
 // C++
@@ -2176,4 +2176,3 @@ namespace pcl
 }//namespace pcl
 
 //#define PCL_INSTANTIATE....
-

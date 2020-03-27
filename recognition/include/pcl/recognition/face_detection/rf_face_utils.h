@@ -4,7 +4,6 @@
  *  Created on: 22 Sep 2012
  *      Author: Aitor Aldoma
  */
-
 #pragma once
 
 #include "pcl/recognition/face_detection/face_common.h"

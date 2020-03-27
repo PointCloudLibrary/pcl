@@ -36,7 +36,6 @@
  *  Author : jpapon@gmail.com
  *  Email  : jpapon@gmail.com
  */
-
 #pragma once
 
 #include <pcl/octree/boost.h>

@@ -42,7 +42,6 @@
  *  Created on: Nov 23, 2012
  *      Author: papazov
  */
-
 #pragma once
 
 #include <algorithm>
