@@ -35,8 +35,6 @@
  *
  *  Author: Francisco Heredia, Technical University Eindhoven, (f.j.mysurname.soriano < aT > tue.nl)
  */
-#pragma once
-
 #include <pcl/gpu/kinfu_large_scale/screenshot_manager.h>
 
 namespace pcl
