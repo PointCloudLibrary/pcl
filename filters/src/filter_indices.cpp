@@ -62,6 +62,7 @@ pcl::FilterIndices<pcl::PCLPointCloud2>::filter (std::vector<int> &indices)
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(removeNanFromPointCloud, PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE(FilterIndices, PCL_POINT_TYPES)
 
 #endif    // PCL_NO_PRECOMPILE
 

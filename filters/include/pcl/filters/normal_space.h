@@ -164,12 +164,6 @@ namespace pcl
       /** \brief The normals computed at each point in the input cloud */
       NormalsConstPtr input_normals_;
 
-      /** \brief Sample of point indices into a separate PointCloud
-        * \param[out] output the resultant point cloud
-        */
-      void
-      applyFilter (PointCloud &output) override;
-
       /** \brief Sample of point indices
         * \param[out] indices the resultant point cloud indices
         */
