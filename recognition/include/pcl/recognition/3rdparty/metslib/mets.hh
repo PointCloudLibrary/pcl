@@ -1,4 +1,3 @@
-
 // METS lib source file - mets.h                               -*- C++ -*-
 //
 /*

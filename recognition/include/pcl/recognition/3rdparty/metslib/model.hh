@@ -1,4 +1,3 @@
-
 // METSlib source file - model.hh                                -*- C++ -*-
 //
 /*

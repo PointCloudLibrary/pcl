@@ -1,4 +1,3 @@
-
 /*
  * crh_recognition.h
  *

@@ -1,4 +1,3 @@
-
 // METSlib source file - termination-criteria.hh                 -*- C++ -*-
 /*
  * Software License Agreement (BSD License)

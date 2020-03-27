@@ -1,4 +1,3 @@
-
 //http://www.paulbridger.com/monitor_object/#ixzz2CeN1rr4P
 #pragma once
 

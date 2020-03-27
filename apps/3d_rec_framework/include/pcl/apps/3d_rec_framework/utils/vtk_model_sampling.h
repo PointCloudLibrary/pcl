@@ -1,4 +1,3 @@
-
 /*
  * uniform_sampling.h
  *

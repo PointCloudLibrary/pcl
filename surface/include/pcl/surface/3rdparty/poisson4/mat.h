@@ -1,4 +1,3 @@
-
 /*
 Copyright (c) 2007, Michael Kazhdan
 All rights reserved.

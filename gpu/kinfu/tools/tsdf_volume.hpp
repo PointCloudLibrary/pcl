@@ -1,5 +1,3 @@
-
-
 /*
  * Software License Agreement (BSD License)
  *
