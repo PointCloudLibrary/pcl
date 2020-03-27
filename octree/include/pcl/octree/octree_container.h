@@ -37,11 +37,10 @@
  */
 #pragma once
 
-#include <cassert> // for assert
-#include <cstddef>
 #include <vector>
 
-#include <pcl/pcl_macros.h>
+#include <cassert>
+#include <cstddef>
 
 namespace pcl {
 namespace octree {

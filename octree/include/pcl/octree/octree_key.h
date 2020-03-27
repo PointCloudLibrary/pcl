@@ -59,7 +59,7 @@ public:
   {}
 
   /** \brief Copy constructor. */
-  OctreeKey(const OctreeKey& source) { memcpy(key_, source.key_, sizeof(key_)); }
+  OctreeKey(const OctreeKey& source) { std::memcpy(key_, source.key_, sizeof(key_)); }
 
   OctreeKey&
   operator=(const OctreeKey&) = default;
