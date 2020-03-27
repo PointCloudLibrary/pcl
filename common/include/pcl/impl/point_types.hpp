@@ -36,21 +36,16 @@
  *
  */
 
-#ifndef PCL_IMPL_POINT_TYPES_HPP_
-#define PCL_IMPL_POINT_TYPES_HPP_
+#pragma once
 
-#include <cstdint>
-#if defined __GNUC__
-#  pragma GCC system_header
-#endif
+#include <pcl/pcl_macros.h>  // for PCL_EXPORTS
 
-#include <algorithm>
-#include <ostream>
+#include <Eigen/Core>        // for MatrixMap
 
-#include <Eigen/Core>
+#include <algorithm>         // for copy_n, fill_n
+#include <ostream>           // for ostream, operator<<
 
-#include <pcl/memory.h>
-#include <pcl/pcl_macros.h>
+#include <cstdint>           // for uint8_t
 
 // Define all PCL point types
 #define PCL_POINT_TYPES         \
@@ -1015,9 +1010,9 @@ namespace pcl
       curvature = p.curvature;
       intensity = p.intensity;
     }
-    
+
     inline PointXYZINormal (float _intensity = 0.f): PointXYZINormal (0.f, 0.f, 0.f, _intensity) {}
-    
+
     inline PointXYZINormal (float _x, float _y, float _z, float _intensity = 0.f):
       PointXYZINormal (_x, _y, _z, _intensity, 0.f, 0.f, 0.f) {}
 
@@ -1067,7 +1062,7 @@ namespace pcl
     }
 
     inline PointXYZLNormal (std::uint32_t _label = 0): PointXYZLNormal (0.f, 0.f, 0.f, _label) {}
-    
+
     inline PointXYZLNormal (float _x, float _y, float _z, std::uint32_t _label = 0.f):
       PointXYZLNormal (_x, _y, _z, _label, 0.f, 0.f, 0.f) {}
 
@@ -1164,7 +1159,7 @@ namespace pcl
     PCL_DEPRECATED("Use ctor accepting all viewpoint (vp_x, vp_y, vp_z) data")
     inline PointWithViewpoint (float _x, float _y, float _z, float _vp_x, float _vp_y = 0.f):
       PointWithViewpoint (_x, _y, _z, _vp_x, _vp_y, 0.f) {}
-    
+
     inline PointWithViewpoint (float _x, float _y, float _z): PointWithViewpoint (_x, _y, _z, 0.f, 0.f, 0.f) {}
 
     inline PointWithViewpoint (float _x, float _y, float _z, float _vp_x, float _vp_y, float _vp_z)
@@ -1203,7 +1198,7 @@ namespace pcl
     inline PrincipalRadiiRSD () = default;
 
     inline PrincipalRadiiRSD (float _r_min, float _r_max): r_min (_r_min), r_max (_r_max) {}
-    
+
     friend std::ostream& operator << (std::ostream& os, const PrincipalRadiiRSD& p);
   };
 
@@ -1711,7 +1706,7 @@ namespace pcl
 
     inline PointWithScale (): PointWithScale (0.f, 0.f, 0.f) {}
 
-    inline PointWithScale (float _x, float _y, float _z, float _scale = 1.f, 
+    inline PointWithScale (float _x, float _y, float _z, float _scale = 1.f,
                            float _angle = -1.f, float _response = 0.f, int _octave = 0)
     {
       x = _x; y = _y; z = _z;
@@ -1815,7 +1810,7 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const PointDEM& p);
   };
 
-  template <int N> std::ostream& 
+  template <int N> std::ostream&
   operator << (std::ostream& os, const Histogram<N>& p)
   {
     // make constexpr
@@ -1830,4 +1825,3 @@ namespace pcl
   }
 } // End namespace
 
-#endif

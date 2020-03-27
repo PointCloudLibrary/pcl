@@ -37,11 +37,19 @@
  *
  */
 
-#include <pcl/point_types.h>
-#include <pcl/io/vtk_io.h>
-#include <fstream>
-#include <iostream>
-#include <pcl/common/io.h>
+#include <pcl/PCLPointCloud2.h>  // for PCLPointCloud2
+#include <pcl/PCLPointField.h>   // for PCLPointField
+#include <pcl/PolygonMesh.h>     // for PolygonMesh
+#include <pcl/common/io.h>       // for getFieldIndex
+#include <pcl/console/print.h>   // for PCL_ERROR
+#include <pcl/io/vtk_io.h>       // for saveVTKFile
+#include <pcl/point_types.h>     // for RGB, ...
+
+#include <fstream>               // for ofstream
+#include <string>                // for string
+#include <vector>                // for vector
+
+#include <cstring>               // for memcpy
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 int

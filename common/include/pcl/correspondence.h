@@ -38,15 +38,15 @@
 
 #pragma once
 
-#ifdef __GNUC__
-#pragma GCC system_header
-#endif
+#include <pcl/memory.h>       // for shared_ptr
+#include <pcl/pcl_macros.h>   // for PCL_MAKE_ALIGNED_OPERATOR_NEW
 
-#include <pcl/memory.h>
-#include <Eigen/StdVector>
-#include <Eigen/Geometry>
-#include <pcl/pcl_exports.h>
-#include <pcl/pcl_macros.h>
+#include <Eigen/Core>         // for aligned_allocator, Vector
+#include <Eigen/Geometry>     // for Affine3f
+
+#include <iosfwd>             // for ostream
+#include <limits>             // for numeric_limits
+#include <vector>             // for vector
 
 namespace pcl
 {

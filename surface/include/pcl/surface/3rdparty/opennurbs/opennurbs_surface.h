@@ -23,7 +23,7 @@
 #if !defined(OPENNURBS_SURFACE_INC_)
 #define OPENNURBS_SURFACE_INC_
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 
 class ON_Curve;
 class ON_NurbsSurface;

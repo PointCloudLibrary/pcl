@@ -50,7 +50,7 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/correspondence.h>
 #include <pcl/point_cloud.h>
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 #include <limits>
 #include <pcl/recognition/ransac_based/auxiliary.h>
 

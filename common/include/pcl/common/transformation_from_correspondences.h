@@ -88,4 +88,4 @@ namespace pcl
 
 }  // END namespace
 
-#include <pcl/common/impl/transformation_from_correspondences.hpp>
+#include <pcl/common/impl/transformation_from_correspondences.hpp>  // IWYU pragma: export

@@ -83,4 +83,4 @@ namespace pcl
   normAngle (float alpha);
 }
 /*@}*/
-#include <pcl/common/impl/angles.hpp>
+#include <pcl/common/impl/angles.hpp>  // IWYU pragma: export

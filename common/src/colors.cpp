@@ -35,8 +35,14 @@
  *
  */
 
-#include <pcl/point_types.h>
-#include <pcl/common/colors.h>
+#include <pcl/pcl_macros.h>     // for PCL_EXPORTS
+#include <pcl/point_types.h>    // for pcl::RGB
+#include <pcl/common/colors.h>  // for ColorLUT, ColorLUTName, LUT_GLASBEY
+
+#include <cassert>              // for assert
+#include <cstddef>              // for size_t
+#include <cstdlib>              // for rand
+#include <cstdint>              // for uint8_t
 
 /// Glasbey lookup table
 static const unsigned char GLASBEY_LUT[] =

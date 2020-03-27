@@ -38,10 +38,12 @@
 
 #pragma once
 
-#include <Eigen/Core>
-#include <string>
-#include <pcl/PCLPointCloud2.h>
-#include <pcl/Vertices.h>
+#include <pcl/PCLPointCloud2.h>  // for PCLPointCloud2
+#include <pcl/Vertices.h>        // for Vertices
+
+#include <Eigen/Core>  // for Vector2f
+
+#include <string>  // for string
 
 namespace pcl
 {

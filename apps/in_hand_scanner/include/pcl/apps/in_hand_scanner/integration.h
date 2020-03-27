@@ -43,7 +43,7 @@
 #include <cstdint>
 
 #include <pcl/apps/in_hand_scanner/common_types.h>
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/kdtree/kdtree.h>
 
 ////////////////////////////////////////////////////////////////////////////////

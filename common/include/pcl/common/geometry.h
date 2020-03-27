@@ -37,12 +37,9 @@
 
 #pragma once
 
-#if defined __GNUC__
-#  pragma GCC system_header
-#endif
+#include <pcl/console/print.h>  // for PCL_WARN
 
-#include <Eigen/Core>
-#include <pcl/console/print.h>
+#include <Eigen/Core>  // for Vector3f
 
 /**
   * \file common/geometry.h

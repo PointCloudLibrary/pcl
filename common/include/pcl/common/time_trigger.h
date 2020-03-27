@@ -38,15 +38,16 @@
 
 #pragma once
 
-#include <pcl/pcl_macros.h>
+#include <pcl/pcl_macros.h>    // for PCL_EXPORTS
+
 #ifndef Q_MOC_RUN
-#include <boost/signals2.hpp>
+#include <boost/signals2.hpp>  // for connection, mutex, signal
 #endif
 
-#include <condition_variable>
-#include <functional>
-#include <mutex>
-#include <thread>
+#include <condition_variable>  // for condition_variable
+#include <functional>          // for function
+#include <mutex>               // for mutex
+#include <thread>              // for thread
 
 namespace pcl
 {
@@ -81,18 +82,18 @@ namespace pcl
       /** \brief Resets the timer interval
         * \param[in] interval_seconds interval in seconds
         */
-      void 
+      void
       setInterval (double interval_seconds);
 
       /** \brief Start the Trigger. */
-      void 
+      void
       start ();
 
       /** \brief Stop the Trigger. */
-      void 
+      void
       stop ();
     private:
-      void 
+      void
       thread_function ();
       boost::signals2::signal <void() > callbacks_;
 

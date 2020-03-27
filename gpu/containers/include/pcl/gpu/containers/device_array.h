@@ -36,7 +36,7 @@
 
 #pragma once
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_memory.h>
 
 #include <vector>

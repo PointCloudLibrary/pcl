@@ -34,11 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <pcl/common/feature_histogram.h>
-
-#include <algorithm>
-
-#include <pcl/console/print.h>
+#include <pcl/common/feature_histogram.h>  // for FeatureHistogram
+#include <pcl/console/print.h>             // for PCL_WARN
 
 pcl::FeatureHistogram::FeatureHistogram (std::size_t const number_of_bins,
     const float min, const float max) : 

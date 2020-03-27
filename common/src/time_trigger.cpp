@@ -35,9 +35,18 @@
  *
  */
 
-#include <pcl/common/time_trigger.h>
-#include <pcl/common/time.h>
-#include <iostream>
+#include <pcl/common/time_trigger.h>  // for TimeTrigger
+#include <pcl/common/time.h>          // for getTime
+
+#include <boost/signals2/connection.hpp>           // for connection
+#include <boost/signals2/signal.hpp>               // for signal
+#include <boost/signals2/expired_slot.hpp>         // for expired_slot
+#include <boost/signals2/optional_last_value.hpp>  // for optional_last_v...
+#include <boost/smart_ptr/shared_ptr.hpp>          // for shared_ptr
+
+#include <chrono>  // for chrono_literals
+#include <mutex>   // for mutex
+#include <thread>  // for thread
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::TimeTrigger::TimeTrigger (double interval, const callback_type& callback)
@@ -70,7 +79,7 @@ pcl::TimeTrigger::~TimeTrigger ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-boost::signals2::connection 
+boost::signals2::connection
 pcl::TimeTrigger::registerCallback (const callback_type& callback)
 {
   return (callbacks_.connect (callback));

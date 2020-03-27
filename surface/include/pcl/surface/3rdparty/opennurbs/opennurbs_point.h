@@ -22,7 +22,7 @@
 #if !defined(ON_POINT_INC_)
 #define ON_POINT_INC_
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 
 class ON_BoundingBox;
 class ON_Xform;

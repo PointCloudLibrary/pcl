@@ -37,10 +37,11 @@
 
 #pragma once
 
-#include <stdexcept>
-#include <sstream>
-#include <pcl/pcl_macros.h>
-#include <boost/current_function.hpp>
+#include <boost/current_function.hpp>  // for BOOST_CURRENT_FUNCTION
+
+#include <sstream>    // for ostringstream
+#include <stdexcept>  // for runtime_error
+#include <string>     // for string
 
 /** PCL_THROW_EXCEPTION a helper macro to be used for throwing exceptions.
   * This is an example on how to use:
@@ -77,7 +78,7 @@ namespace pcl
         , function_name_ (function_name)
         , line_number_ (line_number)
       {}
-      
+
       const char*
       getFileName () const throw ()
       {
@@ -101,7 +102,7 @@ namespace pcl
       {
         return (what ());
       }
-    
+
 
     protected:
       static std::string
@@ -113,7 +114,7 @@ namespace pcl
         std::ostringstream sstream;
         if (function_name != nullptr)
           sstream << function_name << " ";
-        
+
         if (file_name != nullptr)
         {
           sstream << "in " << file_name << " ";
@@ -121,10 +122,10 @@ namespace pcl
             sstream << "@ " << line_number << " ";
         }
         sstream << ": " << error_description;
-        
+
         return (sstream.str ());
       }
-    
+
       const char* file_name_;
       const char* function_name_;
       unsigned line_number_;
@@ -208,7 +209,7 @@ namespace pcl
   class UnorganizedPointCloudException : public PCLException
   {
     public:
-    
+
       UnorganizedPointCloudException (const std::string& error_description,
                                       const char* file_name = nullptr,
                                       const char* function_name = nullptr,
@@ -222,7 +223,7 @@ namespace pcl
   class KernelWidthTooSmallException : public PCLException
   {
     public:
-    
+
     KernelWidthTooSmallException (const std::string& error_description,
                                   const char* file_name = nullptr,
                                   const char* function_name = nullptr,

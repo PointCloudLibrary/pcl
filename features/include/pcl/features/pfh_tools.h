@@ -41,7 +41,7 @@
 #  pragma GCC system_header 
 #endif
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 #include <Eigen/Core>
 
 namespace pcl

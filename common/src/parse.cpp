@@ -35,17 +35,24 @@
  *
  */
 
-#include <cctype>
-#include <cerrno>
-#include <complex>
-#include <cstdio>
-#include <limits>
-#include <type_traits>
+#include <pcl/console/parse.h>  // for parse_argument
+#include <pcl/console/print.h>  // for print_error
 
-#include <pcl/console/parse.h>
-#include <pcl/console/print.h>
+#include <boost/algorithm/string/classification.hpp>  // for is_any_of
+#include <boost/algorithm/string/constants.hpp>       // for token_compress_on
+#include <boost/algorithm/string/split.hpp>           // for split
 
-#include <boost/algorithm/string.hpp>
+#include <algorithm>            // for max, transform
+#include <limits>               // for numeric_limits
+#include <string>               // for string
+#include <type_traits>          // for conditional_t
+#include <vector>               // for vector
+
+#include <cerrno>               // for errno
+#include <cstddef>              // for size_t
+#include <cstdlib>              // for atof, atoi
+#include <cstring>              // for strcmp
+#include <cctype>               // for tolower
 
 ////////////////////////////////////////////////////////////////////////////////
 int

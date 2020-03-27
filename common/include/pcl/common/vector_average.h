@@ -117,4 +117,4 @@ namespace pcl
   using VectorAverage4f = VectorAverage<float, 4>;
 }  // END namespace
 
-#include <pcl/common/impl/vector_average.hpp>
+#include <pcl/common/impl/vector_average.hpp>  // IWYU pragma: export

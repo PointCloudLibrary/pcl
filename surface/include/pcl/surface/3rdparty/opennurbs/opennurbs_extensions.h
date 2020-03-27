@@ -18,7 +18,7 @@
 #if !defined(OPENNURBS_EXTENSIONS_INC_)
 #define OPENNURBS_EXTENSIONS_INC_
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 
 /*
 Description:

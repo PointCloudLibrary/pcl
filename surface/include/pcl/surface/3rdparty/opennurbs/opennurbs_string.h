@@ -17,7 +17,7 @@
 #if !defined(ON_STRING_INC_)
 #define ON_STRING_INC_
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 
 /*
 Description:

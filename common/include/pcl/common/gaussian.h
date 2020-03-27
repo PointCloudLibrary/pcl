@@ -39,11 +39,13 @@
 
 #pragma once
 
-#include <pcl/common/eigen.h>
-#include <pcl/point_cloud.h>
+#include <pcl/pcl_macros.h>    // for PCL_EXPORTS
+#include <pcl/point_cloud.h>   // for PointCloud
 
-#include <functional>
-#include <sstream>
+#include <Eigen/Core>  // for VectorXf
+
+#include <functional>  // for function
+#include <iostream>    // for cout, operator<<
 
 namespace pcl
 {
@@ -259,4 +261,4 @@ namespace pcl
   };
 }
 
-#include <pcl/common/impl/gaussian.hpp>
+#include <pcl/common/impl/gaussian.hpp>  // IWYU pragma: export

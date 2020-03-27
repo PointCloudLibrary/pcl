@@ -41,9 +41,8 @@
 
 #pragma once
 
-#include <cmath>
-#include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
+#include <pcl/point_cloud.h>  // for PointCloud
+#include <pcl/point_types.h>  // for PointXYZRGBA
 
 namespace pcl
 {

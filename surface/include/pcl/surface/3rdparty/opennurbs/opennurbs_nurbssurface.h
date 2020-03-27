@@ -23,7 +23,7 @@
 #if !defined(OPENNURBS_NURBSSURFACE_INC_)
 #define OPENNURBS_NURBSSURFACE_INC_
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 
 class ON_CLASS ON_TensorProduct
 {

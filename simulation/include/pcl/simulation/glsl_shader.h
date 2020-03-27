@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 
 #include <Eigen/Core>
 #include <GL/glew.h>

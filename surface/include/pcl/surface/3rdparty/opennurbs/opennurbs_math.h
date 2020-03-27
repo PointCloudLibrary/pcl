@@ -381,7 +381,7 @@ private:
 #if defined(_GNU_SOURCE)
 // if you are using an older version of gcc, use finite()
 //#define ON_IS_FINITE(x) (finite(x)?true:false)
-#define ON_IS_FINITE(x) (isfinite(x)?true:false)
+#define ON_IS_FINITE(x) (std::isfinite(x)?true:false)
 #else
 #define ON_IS_FINITE(x) (_finite(x)?true:false)
 #endif

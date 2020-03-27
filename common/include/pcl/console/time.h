@@ -38,9 +38,9 @@
 
 #pragma once
 
-#include <chrono>
+#include <pcl/console/print.h>  // for print_value, print_info
 
-#include <pcl/console/print.h>
+#include <chrono>  // for steady_clock, duration
 
 namespace pcl
 {

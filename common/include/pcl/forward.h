@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2020, Open Perception
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -34,16 +34,13 @@
 
 #pragma once
 
-// This header is created to include to NVCC compiled sources.
-// Header 'pcl_macros' is not suitable since it includes <Eigen/Core>,
-// which can't be eaten by nvcc (it's too weak)
+namespace pcl
+{
+template <typename PointT>
+struct PointCloud;
 
-#if defined WIN32 || defined _WIN32 || defined WINCE || defined __MINGW32__
-    #ifdef PCLAPI_EXPORTS
-        #define PCL_EXPORTS __declspec(dllexport)
-    #else
-        #define PCL_EXPORTS
-    #endif
-#else
-    #define PCL_EXPORTS
-#endif
+template <typename, typename>
+struct has_custom_allocator;
+
+struct PCLPointField;
+}

@@ -37,13 +37,12 @@
 
 #pragma once
 
-#include <pcl/memory.h>
-#include <pcl/point_cloud.h>
-#include <pcl/pcl_macros.h>
-#include <pcl/point_types.h>
-#include <pcl/common/common_headers.h>
-#include <pcl/common/vector_average.h>
-#include <typeinfo>
+#include <pcl/PCLPointCloud2.h> // for PointCloud2
+#include <pcl/common/angles.h>  // for deg2rad
+#include <pcl/memory.h>         // for shared_ptr
+#include <pcl/pcl_macros.h>     // for PCL_EXPORTS
+#include <pcl/point_cloud.h>    // for PointCloud
+#include <pcl/point_types.h>    // for PointWithRange
 
 namespace pcl
 {
@@ -838,4 +837,5 @@ namespace pcl
 }  // namespace end
 
 
-#include <pcl/range_image/impl/range_image.hpp>  // Definitions of templated and inline functions
+// Definitions of templated and inline functions
+#include <pcl/range_image/impl/range_image.hpp>  // IWYU pragma: export

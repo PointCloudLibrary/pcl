@@ -1,7 +1,7 @@
 /* \author Bastian Steder */
-
 #include <iostream>
 
+#include <pcl/common/file_io.h>
 #include <pcl/range_image/range_image.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/range_image_visualizer.h>
@@ -23,7 +23,7 @@ bool setUnseenToMaxRange = false;
 // --------------
 // -----Help-----
 // --------------
-void 
+void
 printUsage (const char* progName)
 {
   std::cout << "\n\nUsage: "<<progName<<" [options] <scene.pcd>\n\n"
@@ -38,7 +38,7 @@ printUsage (const char* progName)
             << "\n\n";
 }
 
-//void 
+//void
 //setViewerPose (pcl::visualization::PCLVisualizer& viewer, const Eigen::Affine3f& viewer_pose)
 //{
   //Eigen::Vector3f pos_vector = viewer_pose * Eigen::Vector3f (0, 0, 0);
@@ -52,7 +52,7 @@ printUsage (const char* progName)
 // --------------
 // -----Main-----
 // --------------
-int 
+int
 main (int argc, char** argv)
 {
   // --------------------------------------
@@ -79,7 +79,7 @@ main (int argc, char** argv)
   if (pcl::console::parse (argc, argv, "-r", angular_resolution) >= 0)
     std::cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
   angular_resolution = pcl::deg2rad (angular_resolution);
-  
+
   // ------------------------------------------------------------------
   // -----Read pcd file or create example point cloud if not given-----
   // ------------------------------------------------------------------
@@ -119,7 +119,7 @@ main (int argc, char** argv)
     }
     point_cloud.width = (int) point_cloud.points.size ();  point_cloud.height = 1;
   }
-  
+
   // -----------------------------------------------
   // -----Create RangeImage from the PointCloud-----
   // -----------------------------------------------
@@ -127,13 +127,13 @@ main (int argc, char** argv)
   float min_range = 0.0f;
   int border_size = 1;
   pcl::RangeImage::Ptr range_image_ptr (new pcl::RangeImage);
-  pcl::RangeImage& range_image = *range_image_ptr;   
+  pcl::RangeImage& range_image = *range_image_ptr;
   range_image.createFromPointCloud (point_cloud, angular_resolution, pcl::deg2rad (360.0f), pcl::deg2rad (180.0f),
                                    scene_sensor_pose, coordinate_frame, noise_level, min_range, border_size);
   range_image.integrateFarRanges (far_ranges);
   if (setUnseenToMaxRange)
     range_image.setUnseenToMaxRange ();
-  
+
   // --------------------------------------------
   // -----Open 3D viewer and add point cloud-----
   // --------------------------------------------
@@ -147,13 +147,13 @@ main (int argc, char** argv)
   //viewer.addPointCloud (point_cloud_ptr, point_cloud_color_handler, "original point cloud");
   viewer.initCameraParameters ();
   //setViewerPose (viewer, range_image.getTransformationToWorldSystem ());
-  
+
   // --------------------------
   // -----Show range image-----
   // --------------------------
   pcl::visualization::RangeImageVisualizer range_image_widget ("Range image");
   range_image_widget.showRangeImage (range_image);
-  
+
   // --------------------------------
   // -----Extract NARF keypoints-----
   // --------------------------------
@@ -163,7 +163,7 @@ main (int argc, char** argv)
   narf_keypoint_detector.getParameters ().support_size = support_size;
   //narf_keypoint_detector.getParameters ().add_points_on_straight_edges = true;
   //narf_keypoint_detector.getParameters ().distance_for_additional_points = 0.5;
-  
+
   pcl::PointCloud<int> keypoint_indices;
   narf_keypoint_detector.compute (keypoint_indices);
   std::cout << "Found "<<keypoint_indices.points.size ()<<" key points.\n";
@@ -174,7 +174,7 @@ main (int argc, char** argv)
   //for (std::size_t i=0; i<keypoint_indices.points.size (); ++i)
     //range_image_widget.markPoint (keypoint_indices.points[i]%range_image.width,
                                   //keypoint_indices.points[i]/range_image.width);
-  
+
   // -------------------------------------
   // -----Show keypoints in 3D viewer-----
   // -------------------------------------
@@ -187,7 +187,7 @@ main (int argc, char** argv)
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> keypoints_color_handler (keypoints_ptr, 0, 255, 0);
   viewer.addPointCloud<pcl::PointXYZ> (keypoints_ptr, keypoints_color_handler, "keypoints");
   viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 7, "keypoints");
-  
+
   //--------------------
   // -----Main loop-----
   //--------------------

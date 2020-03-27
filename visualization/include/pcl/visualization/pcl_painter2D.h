@@ -41,7 +41,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>

@@ -50,7 +50,7 @@
 #include <pcl/recognition/ransac_based/bvh.h>
 #include <pcl/registration/transformation_estimation_svd.h>
 #include <pcl/correspondence.h>
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <cmath>
 #include <string>

@@ -17,7 +17,7 @@
 #if !defined(ON_TEXTLOG_INC_)
 #define ON_TEXTLOG_INC_
 
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 
 class PCL_EXPORTS ON_CLASS ON_TextLog
 {

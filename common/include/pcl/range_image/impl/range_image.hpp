@@ -36,11 +36,12 @@
  *
  */
 
-#ifndef PCL_RANGE_IMAGE_IMPL_HPP_
-#define PCL_RANGE_IMAGE_IMPL_HPP_
+#pragma once
 
-#include <pcl/pcl_macros.h>
-#include <pcl/common/distances.h>
+#include <pcl/pcl_macros.h>             // for pcl_lrint, pcl_lrintf
+#include <pcl/common/distances.h>       // for squaredEuclideanDistance
+#include <pcl/common/vector_average.h>  // for VectorAverage3f
+#include <pcl/common/angles.h>          // for deg2rad
 
 namespace pcl
 {
@@ -1251,5 +1252,4 @@ RangeImage::integrateFarRanges (const PointCloudType& far_ranges)
 }
 
 }  // namespace end
-#endif
 

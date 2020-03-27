@@ -48,7 +48,7 @@
 #include "auxiliary.h"
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 #include <cstdlib>
 #include <ctime>
 #include <vector>

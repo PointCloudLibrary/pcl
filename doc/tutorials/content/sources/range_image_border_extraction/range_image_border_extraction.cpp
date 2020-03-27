@@ -1,7 +1,7 @@
 /* \author Bastian Steder */
-
 #include <iostream>
 
+#include <pcl/common/file_io.h>
 #include <pcl/range_image/range_image.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/range_image_visualizer.h>
@@ -21,7 +21,7 @@ bool setUnseenToMaxRange = false;
 // --------------
 // -----Help-----
 // --------------
-void 
+void
 printUsage (const char* progName)
 {
   std::cout << "\n\nUsage: "<<progName<<" [options] <scene.pcd>\n\n"
@@ -37,7 +37,7 @@ printUsage (const char* progName)
 // --------------
 // -----Main-----
 // --------------
-int 
+int
 main (int argc, char** argv)
 {
   // --------------------------------------
@@ -62,7 +62,7 @@ main (int argc, char** argv)
   if (pcl::console::parse (argc, argv, "-r", angular_resolution) >= 0)
     std::cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
   angular_resolution = pcl::deg2rad (angular_resolution);
-  
+
   // ------------------------------------------------------------------
   // -----Read pcd file or create example point cloud if not given-----
   // ------------------------------------------------------------------
@@ -84,7 +84,7 @@ main (int argc, char** argv)
                                                                point_cloud.sensor_origin_[1],
                                                                point_cloud.sensor_origin_[2])) *
                         Eigen::Affine3f (point_cloud.sensor_orientation_);
-  
+
     std::string far_ranges_filename = pcl::getFilenameWithoutExtension (filename)+"_far_ranges.pcd";
     if (pcl::io::loadPCDFile(far_ranges_filename.c_str(), far_ranges) == -1)
       std::cout << "Far ranges file \""<<far_ranges_filename<<"\" does not exists.\n";
@@ -102,7 +102,7 @@ main (int argc, char** argv)
     }
     point_cloud.width = (int) point_cloud.points.size ();  point_cloud.height = 1;
   }
-  
+
   // -----------------------------------------------
   // -----Create RangeImage from the PointCloud-----
   // -----------------------------------------------
@@ -110,7 +110,7 @@ main (int argc, char** argv)
   float min_range = 0.0f;
   int border_size = 1;
   pcl::RangeImage::Ptr range_image_ptr (new pcl::RangeImage);
-  pcl::RangeImage& range_image = *range_image_ptr;   
+  pcl::RangeImage& range_image = *range_image_ptr;
   range_image.createFromPointCloud (point_cloud, angular_resolution, pcl::deg2rad (360.0f), pcl::deg2rad (180.0f),
                                    scene_sensor_pose, coordinate_frame, noise_level, min_range, border_size);
   range_image.integrateFarRanges (far_ranges);
@@ -128,14 +128,14 @@ main (int argc, char** argv)
   //PointCloudColorHandlerCustom<pcl::PointWithRange> range_image_color_handler (range_image_ptr, 150, 150, 150);
   //viewer.addPointCloud (range_image_ptr, range_image_color_handler, "range image");
   //viewer.setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 2, "range image");
-  
+
   // -------------------------
   // -----Extract borders-----
   // -------------------------
   pcl::RangeImageBorderExtractor border_extractor (&range_image);
   pcl::PointCloud<pcl::BorderDescription> border_descriptions;
   border_extractor.compute (border_descriptions);
-  
+
   // ----------------------------------
   // -----Show points in 3D viewer-----
   // ----------------------------------
@@ -166,7 +166,7 @@ main (int argc, char** argv)
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointWithRange> shadow_points_color_handler (shadow_points_ptr, 0, 255, 255);
   viewer.addPointCloud<pcl::PointWithRange> (shadow_points_ptr, shadow_points_color_handler, "shadow points");
   viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 7, "shadow points");
-  
+
   //-------------------------------------
   // -----Show points on range image-----
   // ------------------------------------
@@ -175,8 +175,8 @@ main (int argc, char** argv)
     pcl::visualization::RangeImageVisualizer::getRangeImageBordersWidget (range_image, -std::numeric_limits<float>::infinity (), std::numeric_limits<float>::infinity (), false,
                                                                           border_descriptions, "Range image with borders");
   // -------------------------------------
-  
-  
+
+
   //--------------------
   // -----Main loop-----
   //--------------------

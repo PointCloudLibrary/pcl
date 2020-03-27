@@ -38,10 +38,10 @@
 
 #pragma once
 
-#include <limits>
+#include <pcl/point_cloud.h>  // for PointCloud
+#include <pcl/point_types.h>  // for PointXYZI, ...
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include <limits>  // for numeric_limits<float>
 
 namespace pcl
 {

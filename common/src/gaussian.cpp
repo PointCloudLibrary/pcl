@@ -35,11 +35,22 @@
  *
  */
 
-#include <pcl/common/gaussian.h>
+#include <pcl/common/gaussian.h>  // for GaussianKernel
+#include <pcl/exceptions.h>       // for KernelWidthTooSmallException
+#include <pcl/point_cloud.h>      // for PointCloud
 
-void 
-pcl::GaussianKernel::compute (float sigma, 
-                              Eigen::VectorXf &kernel, 
+#include <Eigen/Core>             // for VectorXf
+
+#include <algorithm>              // for max
+#include <iostream>               // for operator<<, endl, basic_ostream, cout
+#include <vector>                 // for vector
+
+#include <cassert>                // for assert
+#include <cmath>                  // for exp
+
+void
+pcl::GaussianKernel::compute (float sigma,
+                              Eigen::VectorXf &kernel,
                               unsigned kernel_width) const
 {
   assert (kernel_width %2 == 1);
@@ -55,9 +66,9 @@ pcl::GaussianKernel::compute (float sigma,
   unsigned g_width = kernel_width;
   for (unsigned i = 0; std::fabs (kernel[i]/max_gauss) < factor; i++, g_width-= 2) ;
   if (g_width == kernel_width)
-  { 
+  {
     PCL_THROW_EXCEPTION (pcl::KernelWidthTooSmallException,
-                        "kernel width " << kernel_width 
+                        "kernel width " << kernel_width
                         << "is too small for the given sigma " << sigma);
     return;
   }
@@ -72,9 +83,9 @@ pcl::GaussianKernel::compute (float sigma,
   kernel/= kernel.sum ();
 }
 
-void 
-pcl::GaussianKernel::compute (float sigma, 
-                              Eigen::VectorXf &kernel, 
+void
+pcl::GaussianKernel::compute (float sigma,
+                              Eigen::VectorXf &kernel,
                               Eigen::VectorXf &derivative,
                               unsigned kernel_width) const
 {
@@ -101,9 +112,9 @@ pcl::GaussianKernel::compute (float sigma,
   for (unsigned i = 0; std::fabs (derivative[i]/max_deriv) < factor; i++, d_width-= 2) ;
   for (unsigned i = 0; std::fabs (kernel[i]/max_gauss) < factor; i++, g_width-= 2) ;
   if (g_width == kernel_width || d_width == kernel_width)
-  { 
+  {
     PCL_THROW_EXCEPTION (KernelWidthTooSmallException,
-                        "kernel width " << kernel_width 
+                        "kernel width " << kernel_width
                         << "is too small for the given sigma " << sigma);
     return;
   }
@@ -130,7 +141,7 @@ pcl::GaussianKernel::compute (float sigma,
   derivative/= den;
 }
 
-void 
+void
 pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
                                    const Eigen::VectorXf& kernel,
                                    pcl::PointCloud<float>& output) const
@@ -151,14 +162,14 @@ pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
   }
   else
     input_ = new pcl::PointCloud<float>(input);
-  
+
   std::size_t i;
   for (std::size_t j = 0; j < input_->height; j++)
   {
     for (i = 0 ; i < radius ; i++)
       output (i,j) = 0;
 
-    for ( ; i < input_->width - radius ; i++)  
+    for ( ; i < input_->width - radius ; i++)
     {
       output (i,j) = 0;
       for (int k = static_cast<int>(kernel_width), l = static_cast<int>(i - radius); k >= 0 ; k--, l++)
@@ -175,7 +186,7 @@ pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
   }
 }
 
-void 
+void
 pcl::GaussianKernel::convolveCols (const pcl::PointCloud<float>& input,
                                    const Eigen::VectorXf& kernel,
                                    pcl::PointCloud<float>& output) const

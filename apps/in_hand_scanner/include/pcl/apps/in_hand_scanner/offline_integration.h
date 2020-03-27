@@ -40,15 +40,14 @@
 
 #pragma once
 
-#include <pcl/memory.h>
-#include <pcl/pcl_exports.h>
-#include <pcl/pcl_macros.h>
-#include <pcl/common/time.h>
-#include <pcl/features/integral_image_normal.h>
-#include <pcl/apps/in_hand_scanner/common_types.h>
 #include <pcl/apps/in_hand_scanner/boost.h>
+#include <pcl/apps/in_hand_scanner/common_types.h>
 #include <pcl/apps/in_hand_scanner/eigen.h>
 #include <pcl/apps/in_hand_scanner/opengl_viewer.h>
+#include <pcl/common/time.h>
+#include <pcl/features/integral_image_normal.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
 
 #include <mutex>
 #include <vector>

@@ -36,10 +36,18 @@
  *
  */
 
-#include <algorithm>
-#include <numeric>
+#include <pcl/PCLPointCloud2.h>   // for PCLPointCloud2
+#include <pcl/PCLPointField.h>    // for PCLPointField
+#include <pcl/PointIndices.h>     // for PointIndices
+#include <pcl/console/print.h>    // for PCL_ERROR
+#include <pcl/pcl_config.h>       // for PCL_NO_PRECOMPILE
+#include <pcl/pcl_base.h>         // for PCLBase
 
-#include <pcl/impl/pcl_base.hpp>
+#include <algorithm>  // for min, transform
+#include <numeric>    // for iota
+#include <vector>     // for vector
+
+#include <cstddef>  // for size_t
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 pcl::PCLBase<pcl::PCLPointCloud2>::PCLBase ()
@@ -163,8 +171,9 @@ pcl::PCLBase<pcl::PCLPointCloud2>::setIndices (const PointIndicesConstPtr &indic
 }
 
 #ifndef PCL_NO_PRECOMPILE
-#include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>  // for PCL_INSTANTIATE
+#include <pcl/point_types.h>         // for PCL_POINT_TYPES
+
 PCL_INSTANTIATE(PCLBase, PCL_POINT_TYPES)
 #endif    // PCL_NO_PRECOMPILE
 

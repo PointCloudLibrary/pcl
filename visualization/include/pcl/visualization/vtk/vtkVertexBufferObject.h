@@ -14,7 +14,7 @@
 =========================================================================*/
 // .NAME vtkVertexBufferObject - abstracts an OpenGL vertex buffer object.
 // .SECTION Description
-// Provides low-level access to GPU memory. Used to pass raw data to GPU. 
+// Provides low-level access to GPU memory. Used to pass raw data to GPU.
 // The data is uploaded into a vertex buffer.
 // .SECTION See Also
 // OpenGL Vertex Buffer Object Extension Spec (ARB_vertex_buffer_object):
@@ -26,13 +26,18 @@
 
 #pragma once
 
-#include <vector>
+#include <pcl/pcl_macros.h>
+
+// Eigen has an enum that clashes with X11 Success macro, included by VTK below
+// Do not include VTK GL before Eigen
+#include <Eigen/Core>
 
 #include "vtkObject.h"
 #include "vtkWeakPointer.h"
 
 #include "vtkgl.h" // Needed for gl data types exposed in API
-#include <pcl/pcl_macros.h>
+
+#include <vector>
 
 class vtkCellArray;
 class vtkDataArray;
@@ -45,7 +50,7 @@ class vtkRenderWindow;
 class PCL_EXPORTS vtkVertexBufferObject : public vtkObject
 {
 public:
-  
+
   static vtkVertexBufferObject* New();
   vtkTypeMacro(vtkVertexBufferObject, vtkObject);
   void PrintSelf(ostream& os, vtkIndent indent) override;
@@ -61,7 +66,7 @@ public:
 
   //BTX
   // Usage values.
-  enum 
+  enum
   {
     StreamDraw=0,
     StreamRead,
@@ -75,7 +80,7 @@ public:
     NumberOfUsages
   };
   //ETX
-  
+
   // Description:
   // Usage is a performance hint.
   // Valid values are:
@@ -94,7 +99,7 @@ public:
   // Initial value is StaticDraw, as in OpenGL spec.
   vtkGetMacro(Usage, int);
   vtkSetMacro(Usage, int);
-  
+
   int GetAttributeIndex();
   void SetUserDefinedAttribute(int index, bool normalized=false, int stride=0);
   void ResetUserDefinedAttribute();
@@ -150,7 +155,7 @@ public:
   // Description:
   // Allocate the memory. size is in number of bytes. type is a VTK type.
 //  void Allocate(unsigned int size, int type);
-  
+
 //BTX
 
   // Description:
