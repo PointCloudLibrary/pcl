@@ -35,6 +35,11 @@
  *
  *  Author: Francisco Heredia, Technical University Eindhoven, (f.j.mysurname.soriano < aT > tue.nl)
  */
+
+
+
+#ifndef PCL_SCREENSHOT_MANAGER_CPP_
+#define PCL_SCREENSHOT_MANAGER_CPP_
 #include <pcl/gpu/kinfu_large_scale/screenshot_manager.h>
 
 namespace pcl
@@ -112,3 +117,5 @@ namespace pcl
 
   } // namespace kinfuLS
 } //namespace pcl
+
+#endif // PCL_SCREENSHOT_MANAGER_CPP_
