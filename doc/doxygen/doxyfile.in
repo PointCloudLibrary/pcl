@@ -312,7 +312,7 @@ PREDEFINED =           = "HAVE_QHULL=1" \
                          "HAVE_RSSDK=1" \
                          "DOXYGEN_ONLY=1" \
                          "_WIN32=1" \
-                         "PCL_DEPRECATED(x)=/** \deprecated x */"
+                         "PCL_DEPRECATED(1, 12, x)=/** \deprecated x */"
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES
 

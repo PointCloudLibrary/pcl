@@ -76,7 +76,7 @@ namespace pcl
     * \ingroup common
     */
   template <typename PointT>
-  PCL_DEPRECATED("use getFieldIndex<PointT> (field_name, fields) instead")
+  PCL_DEPRECATED(1, 12, "use getFieldIndex<PointT> (field_name, fields) instead")
   inline int
   getFieldIndex (const pcl::PointCloud<PointT> &cloud, const std::string &field_name, 
                  std::vector<pcl::PCLPointField> &fields);
@@ -106,7 +106,7 @@ namespace pcl
     * \ingroup common
     */
   template <typename PointT>
-  PCL_DEPRECATED("use getFields<PointT> () with return value instead")
+  PCL_DEPRECATED(1, 12, "use getFields<PointT> () with return value instead")
   inline void
   getFields (const pcl::PointCloud<PointT> &cloud, std::vector<pcl::PCLPointField> &fields);
 
@@ -116,7 +116,7 @@ namespace pcl
     * \ingroup common
     */
   template <typename PointT>
-  PCL_DEPRECATED("use getFields<PointT> () with return value instead")
+  PCL_DEPRECATED(1, 12, "use getFields<PointT> () with return value instead")
   inline void
   getFields (std::vector<pcl::PCLPointField> &fields);
 
@@ -328,7 +328,7 @@ namespace pcl
     * \return true if successful, false otherwise (e.g., name/number of fields differs)
     * \ingroup common
     */
-  PCL_DEPRECATED("use pcl::concatenate() instead, but beware of subtle difference in behavior (see documentation)")
+  PCL_DEPRECATED(1, 12, "use pcl::concatenate() instead, but beware of subtle difference in behavior (see documentation)")
   PCL_EXPORTS bool
   concatenatePointCloud (const pcl::PCLPointCloud2 &cloud1,
                          const pcl::PCLPointCloud2 &cloud2,

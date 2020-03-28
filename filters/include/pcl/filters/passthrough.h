@@ -287,7 +287,7 @@ namespace pcl
         * Default: false.
         * \param[in] limit_negative return data inside the interval (false) or outside (true)
         */
-      PCL_DEPRECATED("use inherited FilterIndices::setNegative() instead")
+      PCL_DEPRECATED(1, 12, "use inherited FilterIndices::setNegative() instead")
       inline void
       setFilterLimitsNegative (const bool limit_negative)
       {
@@ -297,7 +297,7 @@ namespace pcl
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
-      PCL_DEPRECATED("use inherited FilterIndices::getNegative() instead")
+      PCL_DEPRECATED(1, 12, "use inherited FilterIndices::getNegative() instead")
       inline void
       getFilterLimitsNegative (bool &limit_negative) const
       {
@@ -307,7 +307,7 @@ namespace pcl
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \return true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
-      PCL_DEPRECATED("use inherited FilterIndices::getNegative() instead")
+      PCL_DEPRECATED(1, 12, "use inherited FilterIndices::getNegative() instead")
       inline bool
       getFilterLimitsNegative () const
       {

@@ -151,15 +151,15 @@
 
 
 template<typename T>
-PCL_DEPRECATED("use std::isnan instead of pcl_isnan")
+PCL_DEPRECATED(1, 12, "use std::isnan instead of pcl_isnan")
 bool pcl_isnan (T&& x) { return std::isnan (std::forward<T> (x)); }
 
 template<typename T>
-PCL_DEPRECATED("use std::isfinite instead of pcl_isfinite")
+PCL_DEPRECATED(1, 12, "use std::isfinite instead of pcl_isfinite")
 bool pcl_isfinite (T&& x) { return std::isfinite (std::forward<T> (x)); }
 
 template<typename T>
-PCL_DEPRECATED("use std::isinf instead of pcl_isinf")
+PCL_DEPRECATED(1, 12, "use std::isinf instead of pcl_isinf")
 bool pcl_isinf (T&& x) { return std::isinf (std::forward<T> (x)); }
 
 
