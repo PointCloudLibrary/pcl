@@ -54,11 +54,12 @@
 #include <pcl/point_cloud.h>
 #include <pcl/PointIndices.h>
 #include <pcl/PCLPointCloud2.h>
+#include <pcl/types.h>
 
 namespace pcl
 {
   // definitions used everywhere
-  using Indices = std::vector<int>;
+  using Indices = PointIndices::Indices;
   using IndicesPtr = shared_ptr<Indices>;
   using IndicesConstPtr = shared_ptr<const Indices>;
 
