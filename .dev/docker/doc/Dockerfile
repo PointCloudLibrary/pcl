@@ -8,6 +8,7 @@ RUN apt-get update \
       dvipng \
       git \
       python3-pip \
+      pandoc \
  && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install Jinja2==2.8.1 sphinx sphinxcontrib-doxylink
+RUN pip3 install Jinja2==2.8.1 sphinx sphinxcontrib-doxylink requests grip
