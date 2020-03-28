@@ -170,7 +170,7 @@ namespace pcl
        * \param n_arg: some value
        * \return binary logarithm (log2) of argument n_arg
        */
-      PCL_DEPRECATED("use std::log2 instead")
+      PCL_DEPRECATED(1, 12, "use std::log2 instead")
       inline double
       Log2 (double n_arg)
       {

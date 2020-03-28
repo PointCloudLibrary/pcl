@@ -76,23 +76,53 @@
 
 #include <pcl/pcl_config.h>
 
+#include <boost/preprocessor/comparison/equal.hpp>
+#include <boost/preprocessor/comparison/less.hpp>
+#include <boost/preprocessor/control/if.hpp>
+#include <boost/preprocessor/stringize.hpp>
+
 // It seems that __has_cpp_attribute doesn't work correctly
 // when compiling with some versions of nvcc so we
 // additionally check if nvcc is used before setting the
-// PCL_DEPRECATED macro to [[deprecated]].
+// PCL_DEPRECATED_IMPL macro to [[deprecated]].
 #if defined(__has_cpp_attribute) && __has_cpp_attribute(deprecated) && !defined(__CUDACC__)
-  #define PCL_DEPRECATED(message) [[deprecated(message)]]
+  #define PCL_DEPRECATED_IMPL(message) [[deprecated(message)]]
 #elif defined(__GNUC__) || defined(__clang__)
-  #define PCL_DEPRECATED(message) __attribute__((deprecated(message)))
+  #define PCL_DEPRECATED_IMPL(message) __attribute__((deprecated(message)))
 #elif defined(_MSC_VER)
   // Until Visual Studio 2013 you had to use __declspec(deprecated).
   // However, we decided to ignore the deprecation for these version because
   // of simplicity reasons. See PR #3634 for the details.
-  #define PCL_DEPRECATED(message)
+  #define PCL_DEPRECATED_IMPL(message)
 #else
-  #warning "You need to implement PCL_DEPRECATED for this compiler"
-  #define PCL_DEPRECATED(message)
+  #warning "You need to implement PCL_DEPRECATED_IMPL for this compiler"
+  #define PCL_DEPRECATED_IMPL(message)
 #endif
+
+#define PCL_DEPRECATED_MODIFY_MSG(major, minor, msg) \
+    msg " (It will be removed in PCL " \
+    BOOST_PP_STRINGIZE(PCL_MAJOR_VERSION.PCL_MINOR_VERSION) ")"
+
+#define PCL_DEPRECATED_MINOR(Minor, Msg)                      \
+    BOOST_PP_IF(BOOST_PP_LESS(PCL_MINOR_VERSION, Minor),  \
+                PCL_DEPRECATED_IMPL(Msg),           \
+                unneeded_deprecation)
+
+/**
+ * \brief macro for compatibility across compilers and help remove old deprecated
+ *        items for the Major.Minor release
+ *
+ * \detail compiler errors of `unneeded_deprecation` and `major_version_mismatch`
+ * are hints to the developer that those items can be safely removed.
+ * Warning message with PCL_DEPRECATED(1, 99, "Not needed anymore") till PCL 1.98:
+ * "Slated for removal in PCL 1.99: Not needed anymore"
+ */
+#define PCL_DEPRECATED(Major, Minor, Message)                           \
+    BOOST_PP_IF(BOOST_PP_EQUAL(PCL_MAJOR_VERSION, Major),               \
+                PCL_DEPRECATED_MINOR(Minor,                             \
+                    PCL_DEPRECATED_MODIFY_MSG(Major, Minor, Message)),  \
+                major_version_mismatch)
+
 
 #if defined _WIN32
 // Define math constants, without including math.h, to prevent polluting global namespace with old math methods
@@ -130,15 +160,15 @@
 
 
 template<typename T>
-PCL_DEPRECATED("use std::isnan instead of pcl_isnan")
+PCL_DEPRECATED(1, 12, "use std::isnan instead of pcl_isnan")
 bool pcl_isnan (T&& x) { return std::isnan (std::forward<T> (x)); }
 
 template<typename T>
-PCL_DEPRECATED("use std::isfinite instead of pcl_isfinite")
+PCL_DEPRECATED(1, 12, "use std::isfinite instead of pcl_isfinite")
 bool pcl_isfinite (T&& x) { return std::isfinite (std::forward<T> (x)); }
 
 template<typename T>
-PCL_DEPRECATED("use std::isinf instead of pcl_isinf")
+PCL_DEPRECATED(1, 12, "use std::isinf instead of pcl_isinf")
 bool pcl_isinf (T&& x) { return std::isinf (std::forward<T> (x)); }
 
 
