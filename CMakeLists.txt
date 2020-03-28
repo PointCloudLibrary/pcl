@@ -274,11 +274,17 @@ set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 endif()
 
 ### ---[ Find universal dependencies
-find_package(OpenMP)
-if(OPENMP_FOUND)
+find_package(OpenMP COMPONENTS C CXX)
+if(OpenMP_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-  message(STATUS "Found OpenMP")
+  if(${CMAKE_VERSION} VERSION_LESS "3.7")
+    message(STATUS "Found OpenMP")
+  else()
+    # We could use OpenMP_CXX_VERSION starting from CMake 3.9, but this value is only available on first run of CMake (see https://gitlab.kitware.com/cmake/cmake/issues/19150),
+    # so we use always OpenMP_CXX_SPEC_DATE, which is available since CMake 3.7.
+    message(STATUS "Found OpenMP, spec date ${OpenMP_CXX_SPEC_DATE}")
+  endif()
   if(MSVC)
     if(MSVC_VERSION EQUAL 1900)
       set(OPENMP_DLL VCOMP140)

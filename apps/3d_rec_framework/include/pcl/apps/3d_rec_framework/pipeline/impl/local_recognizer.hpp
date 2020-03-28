@@ -366,7 +366,11 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
       voxel_grid_icp.filter (*cloud_voxelized_icp);
       source_->voxelizeAllModels (VOXEL_SIZE_ICP_);
 
-#pragma omp parallel for schedule(dynamic,1) num_threads(omp_get_num_procs())
+#pragma omp parallel for \
+  default(none) \
+  shared(cloud_voxelized_icp) \
+  schedule(dynamic,1) \
+  num_threads(omp_get_num_procs())
       for (int i = 0; i < static_cast<int>(models_->size ()); i++)
       {
 

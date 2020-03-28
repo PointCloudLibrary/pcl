@@ -72,9 +72,10 @@ pcl::SHOTLocalReferenceFrameEstimationOMP<PointInT, PointOutT>::computeFeature (
   }
   tree_->setSortedResults (true);
 
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(output) \
+  num_threads(threads_)
   for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t> (indices_->size ()); ++i)
   {
     // point result
