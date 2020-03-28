@@ -23,6 +23,7 @@ jobs:
         displayName: 'Install Dependencies'
       - script: |
           mkdir $BUILD_DIR && cd $BUILD_DIR
+          # Surface switched off due to OpenGL error on Mac
           cmake $(Build.SourcesDirectory) \
             -DCMAKE_BUILD_TYPE="Release" \
             -DCMAKE_OSX_SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk" \
@@ -32,7 +33,7 @@ jobs:
             -DQt5_DIR=/usr/local/opt/qt5/lib/cmake/Qt5 \
             -DPCL_ONLY_CORE_POINT_TYPES=ON \
             -DBUILD_simulation=ON \
-            -DBUILD_surface=OFF \
+            -DBUILD_surface=ON \
             -DBUILD_global_tests=ON \
             -DBUILD_examples=ON \
             -DBUILD_tools=ON \
