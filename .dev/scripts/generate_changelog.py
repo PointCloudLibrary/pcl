@@ -197,7 +197,7 @@ if __name__ == "__main__":
                 fp.write(json.dumps(pr_data))
 
     selected_prs = list()
-    for pr in pr_data:
+    for pr in sorted(pr_data, key=lambda d: d["closed_at"]):
         categories = filter_labels(pr["labels"], "changelog: ")
         if not categories:
             continue  # ignore PRs not tagged with any changelog label
