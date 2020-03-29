@@ -37,7 +37,6 @@ Software License Agreement (BSD License)
 
 """
 
-import sys
 import json
 import argparse
 from pathlib import Path
@@ -184,6 +183,15 @@ if __name__ == "__main__":
     cache_grp = parser.add_mutually_exclusive_group()
     cache_grp.add_argument("--save", type=Path, help="Save PR data fetched from GitHub")
     cache_grp.add_argument("--load", type=Path, help="Load PR data from a file")
+    parser.add_argument(
+        "--with-misc",
+        "-m",
+        action="store_true",
+        help=(
+            "Add section with miscellaneous PRs that are not important enough to be "
+            "included in the official changelog"
+        ),
+    )
     args = parser.parse_args()
 
     if args.load:
@@ -197,20 +205,19 @@ if __name__ == "__main__":
                 fp.write(json.dumps(pr_data))
 
     selected_prs = list()
+    excluded_prs = list()
     for pr in sorted(pr_data, key=lambda d: d["closed_at"]):
         categories = filter_labels(pr["labels"], "changelog: ")
-        if not categories:
-            continue  # ignore PRs not tagged with any changelog label
-        selected_prs.append(
-            {
-                "number": pr["number"],
-                "title": pr["title"],
-                "modules": filter_labels(pr["labels"], "module: "),
-                "categories": [
-                    g for g in categories if g not in ["fix", "enhancement"]
-                ],
-            }
-        )
+        pr_info = {
+            "number": pr["number"],
+            "title": pr["title"],
+            "modules": filter_labels(pr["labels"], "module: "),
+            "categories": [g for g in categories if g not in ["fix", "enhancement"]],
+        }
+        if categories:
+            selected_prs.append(pr_info)
+        else:  # exclude PRs not tagged with any changelog label
+            excluded_prs.append(pr_info)
 
     clog = list()
 
@@ -221,5 +228,10 @@ if __name__ == "__main__":
     clog += ["\n### Changes grouped by module"]
     for k in MODULES.keys():
         clog.extend(generate_module_section(k, selected_prs))
+
+    if args.with_misc:
+        clog += ["\n### Miscellaneous PRs excluded from changelog\n"]
+        for pr in excluded_prs:
+            clog += [make_pr_bullet_point(pr)]
 
     print("\n".join(clog))
