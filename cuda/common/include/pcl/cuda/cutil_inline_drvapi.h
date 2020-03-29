@@ -121,10 +121,10 @@ inline int cutilDrvGetMaxGflopsDeviceId()
         cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
 
         int sm_per_multiproc = 1;
-
-		if (major != 9999 || minor != 9999) {
-		    sm_per_multiproc = _ConvertSMVer2CoresDrvApi(major, minor);
-		}
+        
+        if (major != 9999 || minor != 9999) {
+            sm_per_multiproc = _ConvertSMVer2CoresDrvApi(major, minor);
+        }
 
 		int compute_perf  = multiProcessorCount * sm_per_multiproc * clockRate;
 		if( compute_perf  > max_compute_perf ) {
@@ -192,11 +192,11 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
 
 		cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &bTCC,  CU_DEVICE_ATTRIBUTE_TCC_DRIVER, current_device ) );
 
-        int sm_per_multiproc = 1;
-
-		if (major != 9999 || minor != 9999) {
-		    sm_per_multiproc = _ConvertSMVer2CoresDrvApi(major, minor);
-		}
+              int sm_per_multiproc = 1;
+        
+              if (major != 9999 || minor != 9999) {
+                  sm_per_multiproc = _ConvertSMVer2CoresDrvApi(major, minor);
+              }
 
 		// If this is a Tesla based GPU and SM 2.0, and TCC is disabled, this is a contender
 		if (!bTCC) // Is this GPU running the TCC driver?  If so we pass on this
