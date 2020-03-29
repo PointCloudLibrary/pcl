@@ -59,7 +59,6 @@
 namespace pcl
 {
   // definitions used everywhere
-  using Indices = PointIndices::Indices;
   using IndicesPtr = shared_ptr<Indices>;
   using IndicesConstPtr = shared_ptr<const Indices>;
 
