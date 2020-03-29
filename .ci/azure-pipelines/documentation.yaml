@@ -45,4 +45,4 @@ jobs:
           git commit --amend --reset-author -m 'Documentation for commit $(Build.SourceVersion)' -q
           git push --force
         displayName: 'Push Generated Documentation To GitHub'
-        condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+        condition: and(eq(variables['Build.Repository.Name'], 'PointCloudLibrary/pcl'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
