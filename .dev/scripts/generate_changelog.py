@@ -149,7 +149,7 @@ def make_pr_bullet_point(pr, prefix=None):
     if prefix in ("modules", "categories"):
         tags = "".join(["[" + k + "]" for k in pr[prefix]])
     if tags:
-        tags = "**" + tags + "**"
+        tags = "**" + tags + "** "
 
     return f"* {tags}{pr['title']} [{ref}]"
 
