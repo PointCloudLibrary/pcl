@@ -126,10 +126,10 @@ inline int cutGetMaxGflopsDeviceId()
 	current_device = 0;
 	while( current_device < device_count ) {
 		cudaGetDeviceProperties( &deviceProp, current_device );
-        int sm_per_multiproc = 1;
-		if (deviceProp.major != 9999 || deviceProp.minor != 9999) {
-		    sm_per_multiproc = _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
-		}
+              int sm_per_multiproc = 1;
+              if (deviceProp.major != 9999 || deviceProp.minor != 9999) {
+                  sm_per_multiproc = _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
+              }
 
 		int compute_perf  = deviceProp.multiProcessorCount * sm_per_multiproc * deviceProp.clockRate;
 		if( compute_perf  > max_compute_perf ) {
@@ -180,10 +180,10 @@ inline int cutGetMaxGflopsGraphicsDeviceId()
 	current_device = 0;
 	while( current_device < device_count ) {
 		cudaGetDeviceProperties( &deviceProp, current_device );
-        int sm_per_multiproc = 1;
-		if (deviceProp.major != 9999 || deviceProp.minor != 9999) {
-		    sm_per_multiproc = _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
-		}
+              int sm_per_multiproc = 1;
+              if (deviceProp.major != 9999 || deviceProp.minor != 9999) {
+                  sm_per_multiproc = _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
+              }
 
 		if (deviceProp.tccDriver) bTCC = 1;
 
