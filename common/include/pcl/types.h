@@ -63,7 +63,8 @@ namespace pcl
 // Aim is to remove macros and instead allow multiple index types to coexist together
 #ifndef PCL_INDEX_SIZE
 #if PCL_MINOR_VERSION <= 11
-#define PCL_INDEX_SIZE sizeof(int)
+// sizeof returns bytes, while we measure size by bits in the template
+#define PCL_INDEX_SIZE (sizeof(int) * 8)
 #else
 #define PCL_INDEX_SIZE 32
 #endif  // PCL_MINOR_VERSION
