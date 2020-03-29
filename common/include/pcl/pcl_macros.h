@@ -101,7 +101,7 @@
 
 #define PCL_DEPRECATED_MODIFY_MSG(major, minor, msg) \
     msg " (It will be removed in PCL " \
-    BOOST_PP_STRINGIZE(PCL_MAJOR_VERSION.PCL_MINOR_VERSION) ")"
+    BOOST_PP_STRINGIZE(major.minor) ")"
 
 #define PCL_DEPRECATED_MINOR(Minor, Msg)                      \
     BOOST_PP_IF(BOOST_PP_LESS(PCL_MINOR_VERSION, Minor),  \
