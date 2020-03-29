@@ -10,4 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (conditional_euclidean_clustering conditional_euclidean_clustering.cpp)
 target_link_libraries (conditional_euclidean_clustering ${PCL_LIBRARIES})
-
+\n

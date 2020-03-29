@@ -132,3 +132,4 @@ target_link_libraries(pcl_local_or_mian pcl_apps pcl_3d_rec_framework pcl_recogn
 string(TOUPPER ${SUBSUBSYS_NAME} SUBSUBSYS_NAME_UPPER)
 list(APPEND PCL_APPS_ALL_TARGETS ${PCL_${SUBSUBSYS_NAME_UPPER}_ALL_TARGETS})
 set(PCL_APPS_ALL_TARGETS ${PCL_APPS_ALL_TARGETS} PARENT_SCOPE)
+\n

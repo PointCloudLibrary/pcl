@@ -10,3 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (concatenate_clouds concatenate_clouds.cpp)
 target_link_libraries (concatenate_clouds ${PCL_LIBRARIES})
+\n

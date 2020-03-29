@@ -31,3 +31,4 @@ target_link_libraries (pcl_people_pcd_prob pcl_common pcl_filters pcl_kdtree pcl
 
 #PCL_ADD_EXECUTABLE(people_pcd_person COMPONENT ${SUBSYS_NAME} SOURCES people_pcd_person.cpp)
 #target_link_libraries (people_pcd_person pcl_common pcl_filters pcl_kdtree pcl_segmentation pcl_kdtree pcl_gpu_people pcl_filters pcl_io pcl_visualization)
+\n

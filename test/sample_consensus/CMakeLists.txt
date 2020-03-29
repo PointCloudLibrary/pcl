@@ -30,3 +30,4 @@ PCL_ADD_TEST(sample_consensus_quadric_models test_sample_consensus_quadric_model
 PCL_ADD_TEST(sample_consensus_line_models test_sample_consensus_line_models
              FILES test_sample_consensus_line_models.cpp
              LINK_WITH pcl_gtest pcl_sample_consensus)
+\n

@@ -10,3 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (openni_grabber openni_grabber.cpp)
 target_link_libraries (openni_grabber ${PCL_LIBRARIES})
+\n

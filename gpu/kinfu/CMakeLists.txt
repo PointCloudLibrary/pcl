@@ -60,3 +60,4 @@ if(BUILD_visualization)
   add_subdirectory(test)
   add_subdirectory(tools)
 endif()
+\n

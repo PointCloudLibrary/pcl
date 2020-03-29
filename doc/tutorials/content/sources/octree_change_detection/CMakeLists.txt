@@ -10,3 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (octree_change_detection octree_change_detection.cpp)
 target_link_libraries (octree_change_detection ${PCL_LIBRARIES})
+\n

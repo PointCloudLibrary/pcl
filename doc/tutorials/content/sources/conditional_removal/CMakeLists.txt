@@ -10,3 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (conditional_removal conditional_removal.cpp)
 target_link_libraries (conditional_removal ${PCL_LIBRARIES})
+\n

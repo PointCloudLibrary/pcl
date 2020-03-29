@@ -115,3 +115,4 @@ if(BUILD_io)
                  ARGUMENTS "${PCL_SOURCE_DIR}/test/brisk_image_gt.pcd" "${PCL_SOURCE_DIR}/test/brisk_keypoints_gt.pcd" "${PCL_SOURCE_DIR}/test/brisk_descriptors_gt.pcd")
   endif()
 endif()
+\n

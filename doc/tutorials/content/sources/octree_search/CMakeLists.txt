@@ -10,3 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (octree_search octree_search.cpp)
 target_link_libraries (octree_search ${PCL_LIBRARIES})
+\n

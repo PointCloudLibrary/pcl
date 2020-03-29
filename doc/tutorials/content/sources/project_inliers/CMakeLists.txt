@@ -10,3 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (project_inliers project_inliers.cpp)
 target_link_libraries (project_inliers ${PCL_LIBRARIES})
+\n

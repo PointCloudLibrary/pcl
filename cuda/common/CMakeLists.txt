@@ -37,3 +37,4 @@ set(EXT_DEPS CUDA)
 # Install include files
 PCL_ADD_INCLUDES(${SUBSYS_NAME} "cuda" ${incs})
 PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_PATH} ${common_incs})
+\n

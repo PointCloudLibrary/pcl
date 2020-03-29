@@ -10,4 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (bspline_fitting bspline_fitting.cpp)
 target_link_libraries (bspline_fitting ${PCL_LIBRARIES})
-
+\n

@@ -10,4 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (range_image_visualization range_image_visualization.cpp)
 target_link_libraries (range_image_visualization ${PCL_LIBRARIES})
-
+\n
