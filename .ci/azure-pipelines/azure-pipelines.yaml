@@ -34,8 +34,8 @@ stages:
     dependsOn: formatting
     jobs:
       - template: build-windows.yaml
-#  - stage: documentation
-#    displayName: Documentation
-#    dependsOn: []
-#    jobs:
-#      - template: documentation.yaml
+  - stage: documentation
+    displayName: Documentation
+    dependsOn: []
+    jobs:
+      - template: documentation.yaml
