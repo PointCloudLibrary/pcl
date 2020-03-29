@@ -144,9 +144,14 @@ def make_pr_bullet_point(pr, prefix=None):
     ref = "[#{0}](https://github.com/PointCloudLibrary/pcl/pull/{0})".format(
         pr["number"]
     )
+
+    tags = ""
     if prefix in ("modules", "categories"):
-        prefix = "**" + "".join(["[" + k + "]" for k in pr[prefix]]) + "** "
-    return f"* {prefix}{pr['title']} [{ref}]"
+        tags = "".join(["[" + k + "]" for k in pr[prefix]])
+    if tags:
+        tags = "**" + tags + "**"
+
+    return f"* {tags}{pr['title']} [{ref}]"
 
 
 def generate_category_section(key, prs):
