@@ -132,6 +132,6 @@ namespace pcl
    * Default index_t = int for PCL 1.11, std::int32_t for PCL >= 1.12
    */
   using index_t = detail::int_type_t<detail::index_type_size, detail::index_type_signed>;
-  static_assert(!std::is_void<index_t>::value, "Index can't be void");
+  static_assert(!std::is_void<index_t>::value, "`index_t` can't have type `void`");
 }  // namespace pcl
 
