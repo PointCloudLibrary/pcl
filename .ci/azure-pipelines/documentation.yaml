@@ -14,6 +14,7 @@ jobs:
           hostName: github.com
           sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBh5Yrau/gguTfoNALxhVX77Pgz6y6UWoJRERMKR68ee documentation@pointclouds.org
           sshKeySecureFile: id_ed25519
+          condition: eq(variables['Build.Repository.Name'], 'PointCloudLibrary/pcl')
       - script: |
           $(Build.SourcesDirectory)/.dev/scripts/generate_changelog.py > $CHANGELOG.md
           grip --export $CHANGELOG.md $CHANGELOG.html
