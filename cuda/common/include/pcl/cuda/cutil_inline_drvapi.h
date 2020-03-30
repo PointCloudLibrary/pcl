@@ -90,14 +90,14 @@ inline int cutilDrvGetMaxGflopsDeviceId()
     int device_count     = 0;
     int max_compute_perf = 0;
     int best_SM_arch     = 0;
-    int major = 0;
-    int minor = 0;
 
     cuInit(0);
     cutilDrvSafeCallNoSync(cuDeviceGetCount(&device_count));
 
 	// Find the best major SM Architecture GPU device
 	while ( current_device < device_count ) {
+              int major = 0;
+              int minor = 0;
 		cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, current_device));
 		cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
 		if (major > 0 && major < 9999) {
@@ -111,6 +111,8 @@ inline int cutilDrvGetMaxGflopsDeviceId()
 	while( current_device < device_count ) {
               int multiProcessorCount;
               int clockRate;
+              int major = 0;
+              int minor = 0;              
 		cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &multiProcessorCount, 
                                                             CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT, 
                                                             current_device ) );
@@ -153,9 +155,6 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
     int device_count     = 0;
     int max_compute_perf = 0;
     int best_SM_arch     = 0;
-    int major = 0;
-    int minor = 0;
-    int bTCC = 0;
 
     cuInit(0);
     cutilDrvSafeCallNoSync(cuDeviceGetCount(&device_count));
@@ -163,6 +162,9 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
 	// Find the best major SM Architecture GPU device that are graphics devices
 	while ( current_device < device_count ) {
               char deviceName[256];
+              int major = 0;
+              int minor = 0;
+              int bTCC = 0;
 		cutilDrvSafeCallNoSync( cuDeviceGetName(deviceName, 256, current_device) );
 		cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, current_device));
 		cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
@@ -181,6 +183,9 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
 	while( current_device < device_count ) {
               int multiProcessorCount;
               int clockRate;
+              int major = 0;
+              int minor = 0;
+              int bTCC = 0;
 		cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &multiProcessorCount, 
                                                             CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT, 
                                                             current_device ) );
