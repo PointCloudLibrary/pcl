@@ -68,7 +68,7 @@
 // We need to check for GCC version, because GCC releases before 9 were implementing an
 // OpenMP 3.1 data sharing rule, even OpenMP 4 is supported, so a plain OpenMP version 4 check
 // isn't enough (see https://www.gnu.org/software/gcc/gcc-9/porting_to.html#ompdatasharing)
-#if defined _OPENMP && (_OPENMP <= 201307) || (__GNUC__ < 9)
+#if (defined _OPENMP && (_OPENMP <= 201307)) || (defined ___GNUC__ && (__GNUC__ >= 6 && __GNUC__ < 9))
   #define OPENMP_LEGACY_CONST_DATA_SHARING_RULE 1
 #else
   #define OPENMP_LEGACY_CONST_DATA_SHARING_RULE 0
