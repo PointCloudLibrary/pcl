@@ -14,14 +14,9 @@ stages:
     displayName: Formatting
     jobs:
       - template: formatting.yaml
-  - stage: tutorials
-    displayName: Tutorials
-    dependsOn: formatting
-    jobs:
-      - template: tutorials.yaml
   - stage: build_ubuntu
     displayName: Build Ubuntu
-    dependsOn: tutorials
+    dependsOn: formatting
     jobs:
       - template: build-ubuntu.yaml
   - stage: build_osx
@@ -39,3 +34,8 @@ stages:
     dependsOn: []
     jobs:
       - template: documentation.yaml
+  - stage: tutorials
+    displayName: Tutorials
+    dependsOn: build_ubuntu
+    jobs:
+      - template: tutorials.yaml
