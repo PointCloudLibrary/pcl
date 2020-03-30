@@ -110,11 +110,11 @@ inline int cutGetMaxGflopsDeviceId()
     int max_perf_device  = 0;
     int device_count     = 0;
     int best_SM_arch     = 0;
-    cudaDeviceProp deviceProp;
 
 	cudaGetDeviceCount( &device_count );
 	// Find the best major SM Architecture GPU device
 	while ( current_device < device_count ) {
+              cudaDeviceProp deviceProp;
 		cudaGetDeviceProperties( &deviceProp, current_device );
 		if (deviceProp.major > 0 && deviceProp.major < 9999) {
 			best_SM_arch = MAX(best_SM_arch, deviceProp.major);
@@ -125,6 +125,7 @@ inline int cutGetMaxGflopsDeviceId()
     // Find the best CUDA capable GPU device
 	current_device = 0;
 	while( current_device < device_count ) {
+              cudaDeviceProp deviceProp;
 		cudaGetDeviceProperties( &deviceProp, current_device );
               int sm_per_multiproc = 1;
               if (deviceProp.major != 9999 || deviceProp.minor != 9999) {
@@ -159,11 +160,11 @@ inline int cutGetMaxGflopsGraphicsDeviceId()
     int device_count     = 0;
     int best_SM_arch     = 0;
     int bTCC = 0;
-    cudaDeviceProp deviceProp;
 
 	cudaGetDeviceCount( &device_count );
 	// Find the best major SM Architecture GPU device that is graphics capable
 	while ( current_device < device_count ) {
+              cudaDeviceProp deviceProp;
 		cudaGetDeviceProperties( &deviceProp, current_device );
 
 		if (deviceProp.tccDriver) bTCC = 1;
@@ -179,6 +180,7 @@ inline int cutGetMaxGflopsGraphicsDeviceId()
     // Find the best CUDA capable GPU device
 	current_device = 0;
 	while( current_device < device_count ) {
+              cudaDeviceProp deviceProp;
 		cudaGetDeviceProperties( &deviceProp, current_device );
               int sm_per_multiproc = 1;
               if (deviceProp.major != 9999 || deviceProp.minor != 9999) {
