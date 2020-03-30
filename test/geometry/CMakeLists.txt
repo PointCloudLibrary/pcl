@@ -55,4 +55,3 @@ PCL_ADD_TEST(geometry_quad_mesh test_quad_mesh
 PCL_ADD_TEST(geometry_triangle_mesh test_triangle_mesh
              FILES test_triangle_mesh.cpp
              LINK_WITH pcl_gtest)
-\n

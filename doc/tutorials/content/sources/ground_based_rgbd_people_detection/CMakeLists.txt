@@ -8,4 +8,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (ground_based_rgbd_people_detector MACOSX_BUNDLE src/main_ground_based_people_detection.cpp)
 target_link_libraries (ground_based_rgbd_people_detector ${PCL_LIBRARIES})
-\n

@@ -10,4 +10,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (concatenate_fields concatenate_fields.cpp)
 target_link_libraries (concatenate_fields ${PCL_LIBRARIES})
-\n

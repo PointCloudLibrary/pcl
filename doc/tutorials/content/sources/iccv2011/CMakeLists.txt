@@ -40,4 +40,3 @@ target_link_libraries (iccv2011_build_all_object_models ${PCL_LIBRARIES})
 
 add_executable (iccv2011_tutorial src/tutorial.cpp)
 target_link_libraries (iccv2011_tutorial ${PCL_LIBRARIES})
-\n

@@ -10,4 +10,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (resampling resampling.cpp)
 target_link_libraries (resampling ${PCL_LIBRARIES})
-\n

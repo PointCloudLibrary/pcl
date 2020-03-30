@@ -10,4 +10,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (matrix_transform matrix_transform.cpp)
 target_link_libraries (matrix_transform ${PCL_LIBRARIES})
-\n

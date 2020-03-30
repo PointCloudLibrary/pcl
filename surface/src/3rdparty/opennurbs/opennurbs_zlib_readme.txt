@@ -50,4 +50,3 @@ http://www.zlib.net/zlib_license.html on 6 October 2005.
     Jean-loup Gailly jloup@gzip.org
     Mark Adler madler@alumni.caltech.edu
   */
-\n

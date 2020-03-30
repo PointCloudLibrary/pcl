@@ -37,4 +37,3 @@ PCL_ADD_EXAMPLE(pcl_example_nurbs_fitting_curve2d
 PCL_ADD_EXAMPLE(pcl_example_nurbs_fitting_closed_curve3d
                 FILES example_nurbs_fitting_closed_curve3d.cpp
                 LINK_WITH pcl_common pcl_io pcl_surface pcl_visualization)
-\n

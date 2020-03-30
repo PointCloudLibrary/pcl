@@ -16,4 +16,3 @@ include(FindCUDA)
 
 cuda_add_executable (people_detect src/people_detect.cpp)
 target_link_libraries (people_detect ${PCL_LIBRARIES})
-\n

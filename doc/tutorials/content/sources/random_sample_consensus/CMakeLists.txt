@@ -10,4 +10,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (random_sample_consensus random_sample_consensus.cpp)
 target_link_libraries (random_sample_consensus ${PCL_LIBRARIES})
-\n

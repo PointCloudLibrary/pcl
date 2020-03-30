@@ -21,4 +21,3 @@ sort_relative(PCL_CUDA_MODULES_NAMES_UNSORTED PCL_CUDA_MODULES_NAMES PCL_CUDA_MO
 foreach(subdir ${PCL_CUDA_MODULES_DIRS})
   add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/${subdir}")
 endforeach()
-\n

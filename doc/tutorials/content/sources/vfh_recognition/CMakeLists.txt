@@ -20,4 +20,3 @@ target_link_libraries(build_tree ${PCL_LIBRARIES} ${Boost_LIBRARIES}
 
 add_executable(nearest_neighbors nearest_neighbors.cpp)
 target_link_libraries(nearest_neighbors ${PCL_LIBRARIES} ${Boost_LIBRARIES} FLANN::FLANN ${HDF5_LIBRARIES})
-\n

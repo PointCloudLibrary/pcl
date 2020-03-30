@@ -23,4 +23,3 @@ if(BUILD_keypoints)
                LINK_WITH pcl_gtest pcl_common pcl_io pcl_kdtree pcl_features pcl_recognition pcl_keypoints
                ARGUMENTS "${PCL_SOURCE_DIR}/test/milk.pcd" "${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd")
 endif()
-\n

@@ -210,4 +210,3 @@ define_composer_tool (supervoxels "${VSP_SOURCES}" "${VSP_HEADERS}" "${VSP_DEPS}
 # Add to the compound apps target
 list(APPEND PCL_APPS_ALL_TARGETS ${EXE_NAME})
 set(PCL_APPS_ALL_TARGETS ${PCL_APPS_ALL_TARGETS} PARENT_SCOPE)
-\n

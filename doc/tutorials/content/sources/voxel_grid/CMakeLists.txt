@@ -10,4 +10,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (voxel_grid voxel_grid.cpp)
 target_link_libraries (voxel_grid ${PCL_LIBRARIES})
-\n

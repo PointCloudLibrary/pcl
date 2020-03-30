@@ -6,4 +6,3 @@ link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 add_executable(pcl_painter2D_demo pcl_painter2D_demo.cpp)
 target_link_libraries(pcl_painter2D_demo ${PCL_LIBRARIES})
-\n

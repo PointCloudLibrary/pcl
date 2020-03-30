@@ -11,4 +11,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable(davidsdk_images_viewer davidsdk_images_viewer.cpp)
 target_link_libraries(davidsdk_images_viewer ${PCL_LIBRARIES} ${OpenCV_LIBS})
-\n

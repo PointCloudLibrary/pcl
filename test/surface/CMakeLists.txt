@@ -49,4 +49,3 @@ if(QHULL_FOUND)
                  ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
   endif()
 endif()
-\n

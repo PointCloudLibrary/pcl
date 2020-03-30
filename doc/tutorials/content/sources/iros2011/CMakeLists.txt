@@ -37,4 +37,3 @@ target_link_libraries (iros2011_build_all_object_models ${PCL_LIBRARIES})
 
 add_executable (iros2011_correspondence_viewer src/correspondence_viewer.cpp)
 target_link_libraries (iros2011_correspondence_viewer ${PCL_LIBRARIES})
-\n

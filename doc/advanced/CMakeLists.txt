@@ -12,4 +12,3 @@ install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html"
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/content/files"
         DESTINATION "${DOC_INSTALL_DIR}/advanced"
         COMPONENT doc)
-\n

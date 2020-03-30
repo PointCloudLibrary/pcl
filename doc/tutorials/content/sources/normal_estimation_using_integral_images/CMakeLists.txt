@@ -10,4 +10,4 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (normal_estimation_using_integral_images normal_estimation_using_integral_images.cpp)
 target_link_libraries (normal_estimation_using_integral_images ${PCL_LIBRARIES})
-\n
+

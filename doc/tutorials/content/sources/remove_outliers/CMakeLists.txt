@@ -10,4 +10,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (remove_outliers remove_outliers.cpp)
 target_link_libraries (remove_outliers ${PCL_LIBRARIES})
-\n

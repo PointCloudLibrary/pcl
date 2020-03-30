@@ -56,4 +56,3 @@ if(BUILD_io)
                LINK_WITH pcl_gtest pcl_io pcl_registration pcl_features pcl_search pcl_kdtree
                ARGUMENTS "${PCL_SOURCE_DIR}/test/office1_keypoints.pcd" "${PCL_SOURCE_DIR}/test/office2_keypoints.pcd")
 endif()
-\n
