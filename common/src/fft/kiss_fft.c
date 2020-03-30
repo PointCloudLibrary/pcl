@@ -257,7 +257,7 @@ void kf_work(
         // execute the p different work units in different threads
 // We cannot use OPENMP_LEGACY_CONST_DATA_SHARING_RULE here, because we cannot include
 // pcl_macros.h in this file as this is a C file.
-#if (defined _OPENMP && (_OPENMP <= 201307)) || (defined ___GNUC__ && (__GNUC__ >= 6 && __GNUC__ < 9))
+#if (defined _OPENMP && (_OPENMP <= 201307)) || (defined __GNUC__ && (__GNUC__ >= 6 && __GNUC__ < 9))
 #pragma omp parallel for \
   default(none) \
   shared(f, factors, Fout, in_stride)
