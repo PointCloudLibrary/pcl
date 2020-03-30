@@ -92,8 +92,6 @@ inline int cutilDrvGetMaxGflopsDeviceId()
     int best_SM_arch     = 0;
     int major = 0;
     int minor = 0;
-    int multiProcessorCount;
-    int clockRate;
 
     cuInit(0);
     cutilDrvSafeCallNoSync(cuDeviceGetCount(&device_count));
@@ -111,6 +109,8 @@ inline int cutilDrvGetMaxGflopsDeviceId()
     // Find the best CUDA capable GPU device
 	current_device = 0;
 	while( current_device < device_count ) {
+              int multiProcessorCount;
+              int clockRate;
 		cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &multiProcessorCount, 
                                                             CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT, 
                                                             current_device ) );
@@ -155,16 +155,14 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
     int best_SM_arch     = 0;
     int major = 0;
     int minor = 0;
-    int multiProcessorCount;
-    int clockRate;
     int bTCC = 0;
-    char deviceName[256];
 
     cuInit(0);
     cutilDrvSafeCallNoSync(cuDeviceGetCount(&device_count));
 
 	// Find the best major SM Architecture GPU device that are graphics devices
 	while ( current_device < device_count ) {
+              char deviceName[256];
 		cutilDrvSafeCallNoSync( cuDeviceGetName(deviceName, 256, current_device) );
 		cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, current_device));
 		cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
@@ -181,6 +179,8 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
     // Find the best CUDA capable GPU device
 	current_device = 0;
 	while( current_device < device_count ) {
+              int multiProcessorCount;
+              int clockRate;
 		cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &multiProcessorCount, 
                                                             CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT, 
                                                             current_device ) );
