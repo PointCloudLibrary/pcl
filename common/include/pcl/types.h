@@ -45,6 +45,8 @@
 
 #include <pcl/pcl_macros.h>
 
+#include <vector>
+
 #include <cstdint>
 
 namespace pcl
@@ -63,7 +65,8 @@ namespace pcl
 // Aim is to remove macros and instead allow multiple index types to coexist together
 #ifndef PCL_INDEX_SIZE
 #if PCL_MINOR_VERSION <= 11
-#define PCL_INDEX_SIZE sizeof(int)
+// sizeof returns bytes, while we measure size by bits in the template
+#define PCL_INDEX_SIZE (sizeof(int) * 8)
 #else
 #define PCL_INDEX_SIZE 32
 #endif  // PCL_MINOR_VERSION
@@ -126,10 +129,16 @@ namespace pcl
 }  // namespace detail
 
   /**
-   * \brief Type used for indices in PCL
+   * \brief Type used for an index in PCL
    *
    * Default index_t = int for PCL 1.11, std::int32_t for PCL >= 1.12
    */
   using index_t = detail::int_type_t<detail::index_type_size, detail::index_type_signed>;
+  static_assert(!std::is_void<index_t>::value, "`index_t` can't have type `void`");
+
+  /**
+   * \brief Type used for indices in PCL
+   */
+  using Indices = std::vector<index_t>;
 }  // namespace pcl
 
