@@ -45,7 +45,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
-pcl::SampleConsensusModelCone<PointT, PointNT>::isSampleGood(const std::vector<int> &samples) const
+pcl::SampleConsensusModelCone<PointT, PointNT>::isSampleGood(const Indices &samples) const
 {
   if (samples.size () != sample_size_)
   {
@@ -58,7 +58,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::isSampleGood(const std::vector<i
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
 pcl::SampleConsensusModelCone<PointT, PointNT>::computeModelCoefficients (
-    const std::vector<int> &samples, Eigen::VectorXf &model_coefficients) const
+    const Indices &samples, Eigen::VectorXf &model_coefficients) const
 {
   // Need 3 samples
   if (samples.size () != sample_size_)
@@ -192,7 +192,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::getDistancesToModel (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCone<PointT, PointNT>::selectWithinDistance (
-    const Eigen::VectorXf &model_coefficients, const double threshold, std::vector<int> &inliers)
+    const Eigen::VectorXf &model_coefficients, const double threshold, Indices &inliers)
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
@@ -310,7 +310,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::countWithinDistance (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCone<PointT, PointNT>::optimizeModelCoefficients (
-      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients) const
+      const Indices &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients) const
 {
   optimized_coefficients = model_coefficients;
 
@@ -348,7 +348,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::optimizeModelCoefficients (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
-      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields) const
+      const Indices &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields) const
 {
   // Needs a valid set of model coefficients
   if (!isModelValid (model_coefficients))
@@ -382,7 +382,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the cone
-    for (const int &inlier : inliers)
+    for (const auto &inlier : inliers)
     {
       Eigen::Vector4f pt (input_->points[inlier].x, 
                           input_->points[inlier].y, 
@@ -444,7 +444,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool
 pcl::SampleConsensusModelCone<PointT, PointNT>::doSamplesVerifyModel (
-      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold) const
+      const std::set<index_t> &indices, const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   // Needs a valid model coefficients
   if (!isModelValid (model_coefficients))
@@ -461,7 +461,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::doSamplesVerifyModel (
   float dirdotdir = 1.0f / axis_dir.dot (axis_dir);
 
   // Iterate through the 3d points and calculate the distances from them to the cone
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
     Eigen::Vector4f pt (input_->points[index].x, input_->points[index].y, input_->points[index].z, 0.0f);
 

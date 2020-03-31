@@ -127,7 +127,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud, 
-                                               const std::vector<int> &indices,
+                                               const Indices &indices,
                                                bool random = false) 
         : SampleConsensusModelNormalPlane<PointT, PointNT> (cloud, indices, random)
         , axis_ (Eigen::Vector4f::Zero ())
