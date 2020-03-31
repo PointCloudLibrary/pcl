@@ -35,10 +35,10 @@
  *
  */
 
-#ifndef PCL_2D_EDGE_IMPL_HPP
-#define PCL_2D_EDGE_IMPL_HPP
+#pragma once
 
 #include <pcl/2d/convolution.h>
+#include <pcl/2d/edge.h>
 #include <pcl/common/common_headers.h> // rad2deg()
 
 namespace pcl {
@@ -463,5 +463,3 @@ Edge<PointInT, PointOutT>::detectEdgeLoG(const float kernel_sigma,
 }
 
 } // namespace pcl
-
-#endif
