@@ -349,7 +349,7 @@ pcl::visualization::PCLPainter2D::setWindowSize (int w, int h)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int*
-pcl::visualization::PCLPainter2D::getWindowSize ()
+pcl::visualization::PCLPainter2D::getWindowSize () const
 {
   int *sz = new int[2];
   sz[0] = win_width_;

@@ -138,7 +138,7 @@ public:
 
   // Return the pose of the camera:
   Eigen::Vector3d
-  getYPR()
+  getYPR() const
   {
     return Eigen::Vector3d(yaw_, pitch_, roll_);
   }

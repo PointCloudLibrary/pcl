@@ -234,7 +234,7 @@ namespace pcl
 
             /** \brief Computes the "radius" of the node which is half the diagonal length. */
             inline float
-            getRadius (){ return radius_;}
+            getRadius () const{ return radius_;}
 
             bool
             createChildren ();

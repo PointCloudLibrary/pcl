@@ -396,7 +396,7 @@ void
 pcl::HDLGrabber::computeXYZI (pcl::PointXYZI& point,
                               std::uint16_t azimuth,
                               HDLLaserReturn laserReturn,
-                              HDLLaserCorrection correction)
+                              HDLLaserCorrection correction) const
 {
   double cos_azimuth, sin_azimuth;
 

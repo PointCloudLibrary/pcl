@@ -62,7 +62,7 @@ class TrackBall
     
   private:
     
-    void getPointFromScreenPoint(int s_x, int s_y, float &x, float &y, float &z);
+    void getPointFromScreenPoint(int s_x, int s_y, float &x, float &y, float &z) const;
 
     /// the quaternion representing the current orientation of the trackball
     boost::math::quaternion<float> quat_;

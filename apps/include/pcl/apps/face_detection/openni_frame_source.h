@@ -23,7 +23,7 @@ namespace OpenNIFrameSource
     const PointCloudPtr
     snap ();
     bool
-    isActive ();
+    isActive () const;
     void
     onKeyboardEvent (const pcl::visualization::KeyboardEvent & event);
 

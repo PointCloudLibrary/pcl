@@ -80,7 +80,7 @@ namespace pcl
 
 		  void compactFacets();
 
-		  bool canSplit();
+		  bool canSplit() const;
 		  void splitFacets();
 	  private:
 		  

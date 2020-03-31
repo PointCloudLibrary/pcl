@@ -95,7 +95,7 @@ namespace pcl
 
         /** \brief Get the maximum distance used for thresholding in correspondence rejection. */
         inline float 
-        getMaximumDistance () { return std::sqrt (max_distance_); };
+        getMaximumDistance () const { return std::sqrt (max_distance_); };
 
         /** \brief Provide a source point cloud dataset (must contain XYZ
           * data!), used to compute the correspondence distance.  

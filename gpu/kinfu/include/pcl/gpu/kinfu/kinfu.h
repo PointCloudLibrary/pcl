@@ -98,7 +98,7 @@ namespace pcl
           * \param[out] cy principal point y
           */
         void
-        getDepthIntrinsics (float& fx, float& fy, float& cx, float& cy);
+        getDepthIntrinsics (float& fx, float& fy, float& cx, float& cy) const;
         
 
         /** \brief Sets initial camera pose relative to volume coordinate space

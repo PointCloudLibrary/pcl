@@ -80,7 +80,7 @@ namespace pcl
         getDevice (const std::string& device_URI);
 
         OpenNI2Device::Ptr
-        getDeviceByIndex (int index);
+        getDeviceByIndex (int index) const;
 
         OpenNI2Device::Ptr
         getFileDevice (const std::string& path);

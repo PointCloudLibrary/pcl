@@ -59,7 +59,7 @@ pcl::device::FacetStream::FacetStream(std::size_t buffer_size)
 }
 
 bool 
-pcl::device::FacetStream::canSplit()
+pcl::device::FacetStream::canSplit() const
 {
   return facet_count * 3 < verts_inds.cols();
 }

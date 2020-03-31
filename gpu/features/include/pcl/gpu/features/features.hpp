@@ -99,7 +99,7 @@ namespace pcl
             NormalEstimation();
             void compute(Normals& normals);
             void setViewPoint(float  vpx, float  vpy, float  vpz);  
-            void getViewPoint(float& vpx, float& vpy, float& vpz);      
+            void getViewPoint(float& vpx, float& vpy, float& vpz) const;
 
             static void computeNormals(const PointCloud& cloud, const NeighborIndices& nn_indices, Normals& normals);
             static void flipNormalTowardsViewpoint(const PointCloud& cloud, float vp_x, float vp_y, float vp_z, Normals& normals);            
@@ -223,7 +223,7 @@ namespace pcl
             VFHEstimation();
 
             void setViewPoint(float  vpx, float  vpy, float  vpz);  
-            void getViewPoint(float& vpx, float& vpy, float& vpz);      
+            void getViewPoint(float& vpx, float& vpy, float& vpz) const;      
 
             void setUseGivenNormal (bool use);
             void setNormalToUse (const NormalType& normal);

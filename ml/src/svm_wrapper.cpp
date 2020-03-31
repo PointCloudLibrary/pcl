@@ -145,7 +145,7 @@ pcl::SVMTrain::scaleFactors(std::vector<SVMData> training_set, svm_scaling& scal
 };
 
 void
-pcl::SVM::adaptLibSVMToInput(std::vector<SVMData>& training_set, svm_problem prob)
+pcl::SVM::adaptLibSVMToInput(std::vector<SVMData>& training_set, svm_problem prob) const
 {
   training_set.clear(); // Reset input
 
