@@ -123,7 +123,6 @@ inline int cutilDrvGetMaxGflopsDeviceId()
         cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
 
         int sm_per_multiproc = 1;
-        
         if (major != 9999 || minor != 9999) {
             sm_per_multiproc = _ConvertSMVer2CoresDrvApi(major, minor);
         }
@@ -198,7 +197,6 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
 		cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &bTCC,  CU_DEVICE_ATTRIBUTE_TCC_DRIVER, current_device ) );
 
               int sm_per_multiproc = 1;
-        
               if (major != 9999 || minor != 9999) {
                   sm_per_multiproc = _ConvertSMVer2CoresDrvApi(major, minor);
               }
