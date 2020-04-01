@@ -50,7 +50,7 @@ namespace pcl
     class PCL_EXPORTS AreaPickingEvent
     {
       public:
-       [[deprecated("old constructor")]] AreaPickingEvent (int nb_points, const std::vector<int>& indices)
+       PCL_DEPRECATED AreaPickingEvent (int nb_points, const Indices& indices)
         : nb_points_ (nb_points)
         , indices_ (indices)
         {cloudIndices_.insert({"all_clouds",indices});}
@@ -69,8 +69,8 @@ namespace pcl
         {
           if (nb_points_ <= 0)
             return (false);
-            for (auto i : cloudIndices_)
-              indices.insert(indices.end(), i.second.begin(), i.second.end());
+            for (const auto& i : cloudIndices_)
+              indices.insert(indices.end(), i.second.cbegin(), i.second.cend());
           return (true);
         }
         /** \brief For situations where a whole area is selected, return the points indices.
@@ -82,7 +82,7 @@ namespace pcl
         {
           if (nb_points_ <= 0)
             return (false);
-          for (auto i : cloudIndices_)
+          for (const auto& i : cloudIndices_)
             names.insert(names.end(), i.first);
           return names.size();
         }
