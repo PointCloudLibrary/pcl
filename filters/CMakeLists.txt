@@ -14,6 +14,7 @@ endif()
 
 set(srcs
   src/conditional_removal.cpp
+  src/convolution.cpp
   src/crop_box.cpp
   src/extract_indices.cpp
   src/filter.cpp
@@ -21,6 +22,7 @@ set(srcs
   src/passthrough.cpp
   src/shadowpoints.cpp
   src/project_inliers.cpp
+  src/pyramid.cpp
   src/radius_outlier_removal.cpp
   src/random_sample.cpp
   src/normal_space.cpp
