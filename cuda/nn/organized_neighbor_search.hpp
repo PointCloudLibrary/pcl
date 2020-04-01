@@ -246,8 +246,6 @@ namespace pcl
       if ((int)nearestNeighbors.size () == k_arg)
       {
         double squared_radius;
-        //unsigned int pointCountRadiusSearch;
-        //unsigned int pointCountCircleSearch;
 
         squared_radius = std::min<double>(nearestNeighbors.back ().squared_distance_, squaredMaxSearchRadius);
 
@@ -259,8 +257,6 @@ namespace pcl
         leftY *=leftY;
         rightY *= rightY;
 
-        //pointCountRadiusSearch = (rightX-leftX)*(rightY-leftY);
-
         // search for maximum distance between search point to window borders in 2-D search window
         int maxSearchDistance = 0;
         maxSearchDistance = std::max<int> (maxSearchDistance, leftX + leftY);
@@ -270,8 +266,6 @@ namespace pcl
 
         maxSearchDistance +=1;
         maxSearchDistance *=maxSearchDistance;
-
-        //pointCountCircleSearch= (int)(PI*(double)(maxSearchDistance*maxSearchDistance));
 
         if (1){//(pointCountCircleSearch<pointCountRadiusSearch) {
 
