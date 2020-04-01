@@ -50,10 +50,14 @@ namespace pcl
     class PCL_EXPORTS AreaPickingEvent
     {
       public:
-        AreaPickingEvent (int nb_points, const std::vector<std::vector<int> >& indices, std::vector<std::string>& names)
+       [[deprecated("old constructor")]] AreaPickingEvent (int nb_points, const std::vector<int>& indices)
+        : nb_points_ (nb_points)
+        , indices_ (indices)
+        {cloudIndices_.insert({"all_clouds",indices});}
+        
+        AreaPickingEvent (int nb_points, std::map<std::string, std::vector<int>> cloudIndices)
           : nb_points_ (nb_points)
-          , indices_ (indices)
-          , names_ (names)
+          , cloudIndices_ (cloudIndices)
         {}
 
         /** \brief For situations where a whole are is selected, return the points indices.
@@ -65,8 +69,8 @@ namespace pcl
         {
           if (nb_points_ <= 0)
             return (false);
-          for(int i=0; i < indices_.size(); i++)
-            indices.insert(indices.end(), indices_.at(i).begin(), indices_.at(i).end());
+            for (auto i : cloudIndices_)
+              indices.insert(indices.end(), i.second.begin(), i.second.end());
           return (true);
         }
         /** \brief For situations where a whole area is selected, return the points indices.
@@ -78,12 +82,13 @@ namespace pcl
         {
           if (nb_points_ <= 0)
             return (false);
-          names=names_;
-          return names_.size();
+          for (auto i : cloudIndices_)
+            names.insert(names.end(), i.first);
+          return names.size();
         }
         /** \brief For situations where a whole area is selected, return the points indices. for given cloud
           * \param[in] name of selected clouds.
-          * \param[out] indices of given cloud .
+          * \param[out] indices of given cloud.
         * \return true, if the area selected by the user contains points, false otherwise
         */
         inline bool
@@ -91,21 +96,17 @@ namespace pcl
         {
           if (nb_points_ <= 0)
             return (false);
-            for(int i=0; i<names_.size(); i++)
-            {
-              if(name == names_.at(i))
-              {
-                indices=indices_.at(i);
-                break;
-              }
-            }
+          auto cloud = std::find_if(cloudIndices_.begin(), cloudIndices_.end(), [&name](const auto& cloud_Indices) { return cloud_Indices.first == name; });
+          if(cloud == cloudIndices_.end())
+            return (false);
+          indices = cloud->second;
           return (true);
         }
 
       private:
         int nb_points_;
-        std::vector<std::vector<int> > indices_;
-        std::vector<std::string> names_;
+        std::vector<int> indices_;
+        std::map<std::string, std::vector<int>> cloudIndices_;
     };
   } //namespace visualization
 } //namespace pcl

@@ -72,8 +72,10 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
       if (idx != -1)
       {
         pcl::visualization::CloudActorMapPtr cam_ptr = style->getCloudActorMap();
-const auto actor = std::find_if(cam_ptr->cbegin(), cam_ptr->cend(), [&actor_](const auto& cloud_actor) { return cloud_actor.second.actor == actor_; });
-const std::string name = (actor != cam_ptr->cend()) ? actor->first : "not_found";
+        vtkSmartPointer<vtkActor> actor_ptr = actor_;
+        const auto actor = std::find_if(cam_ptr->cbegin(), cam_ptr->cend(), [&actor_ptr](const auto& cloud_actor) { return cloud_actor.second.actor == actor_ptr; });
+        const std::string name = (actor != cam_ptr->cend()) ? actor->first : "not_found";
+          
         PointPickingEvent event (idx, x, y, z, name);
         style->point_picking_signal_ (event);
       }
@@ -107,25 +109,25 @@ const std::string name = (actor != cam_ptr->cend()) ? actor->first : "not_found"
     }
     else if (eventid == vtkCommand::LeftButtonReleaseEvent)
     {
-      actors_ = vtkActorCollection::New();
+      vtkActorCollection *actors_ = vtkActorCollection::New();
       style->OnLeftButtonUp ();
       std::vector<std::vector<int> > indices;
-      int nb_points = performAreaPick (iren, indices);
+      int nb_points = performAreaPick (iren, indices, actors_);
       pcl::visualization::CloudActorMapPtr cam_ptr = style->getCloudActorMap();
       pcl::visualization::CloudActorMap::iterator cam_it;
       std::vector<std::string> names;
+      
+      std::map<std::string, std::vector<int>> cloudIndices;
       actors_->InitTraversal();
       for(vtkIdType i = 0; i< actors_->GetNumberOfItems(); i++)
       {
-        vtkActor* actor = actors_->GetNextActor();
-        vtkSmartPointer<vtkActor> actor_ptr = actor;
-          for(cam_it = cam_ptr->begin();cam_it != cam_ptr->end(); cam_it++)
-        {
-          if(actor_ptr == cam_it->second.actor)
-            names.push_back(cam_it->first);
-        }
+        //vtkActor* actor = actors_->GetNextActor();
+        vtkSmartPointer<vtkActor> actor_ptr = actors_->GetNextActor();
+        const auto actor = std::find_if(cam_ptr->cbegin(), cam_ptr->cend(), [&actor_ptr](const auto& cloud_actor) { return cloud_actor.second.actor == actor_ptr; });
+        const std::string name = (actor != cam_ptr->cend()) ? actor->first : "not_found";
+          cloudIndices.insert({name, indices.at(i)});
       }
-      AreaPickingEvent event (nb_points, indices, names);
+      AreaPickingEvent event (nb_points, cloudIndices);
       style->area_picking_signal_ (event);
     }
   }
@@ -189,12 +191,12 @@ pcl::visualization::PointPickingCallback::performSinglePick (
 /////////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowInteractor *iren,
-                                                           std::vector<std::vector<int> > &indices)
+                                                           std::vector<std::vector<int> > &indices, vtkActorCollection *actors )
 {
   vtkAreaPicker *picker = static_cast<vtkAreaPicker*> (iren->GetPicker ());
   vtkRenderer *ren = iren->FindPokedRenderer (iren->GetEventPosition ()[0], iren->GetEventPosition ()[1]);
   picker->AreaPick (x_, y_, iren->GetEventPosition ()[0], iren->GetEventPosition ()[1], ren);
- if (picker->GetProp3Ds())
+  if (picker->GetProp3Ds())
   {
     int pt_numb=0;
     vtkProp3DCollection* props = picker->GetProp3Ds();
@@ -203,52 +205,51 @@ pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowIntera
     for(props->InitTraversal(pit);(prop = props->GetNextProp3D(pit));)
     {
       vtkActor* actor = vtkActor::SafeDownCast(prop);
-      if(actor)
-      {
-        actors_->AddItem(actor);
-
-        std::vector<int> actorIndices;
-        vtkPolyData* pd = vtkPolyData::SafeDownCast(actor->GetMapper()->GetInput());
-
-        if(pd->GetPointData()->HasArray("Indices"))
+      if (!actor)
+        { continue; }
+        
+      vtkPolyData* pd = vtkPolyData::SafeDownCast(actor->GetMapper()->GetInput());
+      if(pd->GetPointData()->HasArray("Indices"))
             pd->GetPointData()->RemoveArray("Indices");
 
+      vtkSmartPointer<vtkIdTypeArray> IDs = vtkSmartPointer<vtkIdTypeArray>::New();
+      IDs->SetNumberOfComponents(1);
+      IDs->SetName("Indices");
+      for(vtkIdType i = 0; i < pd->GetNumberOfPoints(); i++)
+        IDs->InsertNextValue(i);
 
-        vtkSmartPointer<vtkIdTypeArray> IDs = vtkSmartPointer<vtkIdTypeArray>::New();
-        IDs->SetNumberOfComponents(1);
-        IDs->SetName("Indices");
-        for(vtkIdType i = 0; i < pd->GetNumberOfPoints(); i++)
-          IDs->InsertNextValue(i);
+      pd->GetPointData()->AddArray(IDs);
 
-        pd->GetPointData()->AddArray(IDs);
+      vtkPlanes* frustum = picker->GetFrustum();
 
-        vtkPlanes* frustum = picker->GetFrustum();
-
-        vtkSmartPointer<vtkExtractGeometry> extract_geometry = vtkSmartPointer<vtkExtractGeometry>::New();
-        extract_geometry->SetImplicitFunction(frustum);
+      vtkSmartPointer<vtkExtractGeometry> extract_geometry = vtkSmartPointer<vtkExtractGeometry>::New();
+      extract_geometry->SetImplicitFunction(frustum);
   #if VTK_MAJOR_VERSION < 6
-        extract_geometry->SetInput(pd);
+      extract_geometry->SetInput(pd);
   #else
-        extract_geometry->SetInputData(pd);
+      extract_geometry->SetInputData(pd);
   #endif
 
-        extract_geometry->Update();
+      extract_geometry->Update();
 
-        vtkSmartPointer<vtkVertexGlyphFilter> glyph_filter = vtkSmartPointer<vtkVertexGlyphFilter>::New ();
-        glyph_filter->SetInputConnection (extract_geometry->GetOutputPort ());
-        glyph_filter->Update ();
+      vtkSmartPointer<vtkVertexGlyphFilter> glyph_filter = vtkSmartPointer<vtkVertexGlyphFilter>::New ();
+      glyph_filter->SetInputConnection (extract_geometry->GetOutputPort ());
+      glyph_filter->Update ();
 
-        vtkPolyData* selected = glyph_filter->GetOutput ();
+      vtkPolyData* selected = glyph_filter->GetOutput ();
 
-        vtkIdTypeArray* GlobalIDs  = vtkIdTypeArray::SafeDownCast(selected->GetPointData()->GetArray("Indices"));
-        for (vtkIdType i = 0; i < selected->GetNumberOfPoints (); i++)
-        {
-          actorIndices.push_back(static_cast<int>(GlobalIDs->GetValue(i)));
-          pt_numb++;
-        }
-        indices.push_back(actorIndices);
-      }
+      vtkIdTypeArray* GlobalIDs  = vtkIdTypeArray::SafeDownCast(selected->GetPointData()->GetArray("Indices"));
+      actors->AddItem(actor);
+      std::vector<int> actorIndices;
+      assert (GlobalIDs->GetSize());
+      actorIndices.reserve (selected->GetNumberOfPoints ());
+      for (vtkIdType i = 0; i < selected->GetNumberOfPoints (); i++)
+        actorIndices.push_back(static_cast<int>(GlobalIDs->GetValue(i)));
+        
+      pt_numb+= selected->GetNumberOfPoints ();
+      indices.push_back(actorIndices);
     }
+    
     return (pt_numb);
   }
   return (-1);
