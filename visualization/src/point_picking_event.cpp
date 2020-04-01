@@ -116,11 +116,11 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
       pcl::visualization::CloudActorMapPtr cam_ptr = style->getCloudActorMap();
       
       std::map<std::string, std::vector<int>> cloudIndices;
-      actors_->InitTraversal();
-      for(vtkIdType i = 0; i< electedActorsCollection->GetNumberOfItems(); i++)
+      selectedActorsCollection->InitTraversal();
+      for(vtkIdType i = 0; i< selectedActorsCollection->GetNumberOfItems(); i++)
       {
         //vtkActor* actor = actors_->GetNextActor();
-        vtkSmartPointer<vtkActor> actor_ptr = electedActorsCollection->GetNextActor();
+        vtkSmartPointer<vtkActor> actor_ptr = selectedActorsCollection->GetNextActor();
         const auto actor = std::find_if(cam_ptr->cbegin(), cam_ptr->cend(), [&actor_ptr](const auto& cloud_actor) { return cloud_actor.second.actor == actor_ptr; });
         const std::string name = (actor != cam_ptr->cend()) ? actor->first : "not_found";
           cloudIndices.insert({name, std::move(indices[i])});
