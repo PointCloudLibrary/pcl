@@ -52,7 +52,7 @@ pcl::search::BruteForce<PointT>::getDistSqr (
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::search::BruteForce<PointT>::nearestKSearch (
-    const PointT& point, int k, std::vector<int>& k_indices, std::vector<float>& k_distances) const
+    const PointT& point, int k, Indices& k_indices, std::vector<float>& k_distances) const
 {
   assert (isFinite (point) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
   
@@ -69,7 +69,7 @@ pcl::search::BruteForce<PointT>::nearestKSearch (
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::search::BruteForce<PointT>::denseKSearch (
-    const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) const
+    const PointT &point, int k, Indices &k_indices, std::vector<float> &k_distances) const
 {
   // container for first k elements -> O(1) for insertion, since order not required here
   std::vector<Entry> result;
@@ -77,8 +77,8 @@ pcl::search::BruteForce<PointT>::denseKSearch (
   std::priority_queue<Entry> queue;
   if (indices_)
   {
-    std::vector<int>::const_iterator iIt =indices_->begin ();
-    std::vector<int>::const_iterator iEnd = indices_->begin () + std::min (static_cast<unsigned> (k), static_cast<unsigned> (indices_->size ()));
+    auto iIt =indices_->begin ();
+    auto iEnd = indices_->begin () + std::min (static_cast<unsigned> (k), static_cast<unsigned> (indices_->size ()));
     for (; iIt != iEnd; ++iIt)
       result.push_back (Entry (*iIt, getDistSqr (input_->points[*iIt], point)));
 
@@ -137,7 +137,7 @@ pcl::search::BruteForce<PointT>::denseKSearch (
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::search::BruteForce<PointT>::sparseKSearch (
-    const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) const
+    const PointT &point, int k, Indices &k_indices, std::vector<float> &k_distances) const
 {
   // result used to collect the first k neighbors -> unordered
   std::vector<Entry> result;
@@ -146,7 +146,7 @@ pcl::search::BruteForce<PointT>::sparseKSearch (
   std::priority_queue<Entry> queue;
   if (indices_)
   {
-    std::vector<int>::const_iterator iIt =indices_->begin ();
+    auto iIt =indices_->begin ();
     for (; iIt != indices_->end () && result.size () < static_cast<unsigned> (k); ++iIt)
     {
       if (std::isfinite (input_->points[*iIt].x))
@@ -217,7 +217,7 @@ pcl::search::BruteForce<PointT>::sparseKSearch (
 template <typename PointT> int
 pcl::search::BruteForce<PointT>::denseRadiusSearch (
     const PointT& point, double radius,
-    std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
+    Indices &k_indices, std::vector<float> &k_sqr_distances,
     unsigned int max_nn) const
 {  
   radius *= radius;
@@ -235,7 +235,7 @@ pcl::search::BruteForce<PointT>::denseRadiusSearch (
   float distance;
   if (indices_)
   {
-    for (std::vector<int>::const_iterator iIt =indices_->begin (); iIt != indices_->end (); ++iIt)
+    for (auto iIt =indices_->begin (); iIt != indices_->end (); ++iIt)
     {
       distance = getDistSqr (input_->points[*iIt], point);
       if (distance <= radius)
@@ -272,7 +272,7 @@ pcl::search::BruteForce<PointT>::denseRadiusSearch (
 template <typename PointT> int
 pcl::search::BruteForce<PointT>::sparseRadiusSearch (
     const PointT& point, double radius,
-    std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
+    Indices &k_indices, std::vector<float> &k_sqr_distances,
     unsigned int max_nn) const
 {
   radius *= radius;
@@ -291,7 +291,7 @@ pcl::search::BruteForce<PointT>::sparseRadiusSearch (
   float distance;
   if (indices_)
   {
-    for (std::vector<int>::const_iterator iIt =indices_->begin (); iIt != indices_->end (); ++iIt)
+    for (auto iIt =indices_->begin (); iIt != indices_->end (); ++iIt)
     {
       if (!std::isfinite (input_->points[*iIt].x))
         continue;
@@ -332,7 +332,7 @@ pcl::search::BruteForce<PointT>::sparseRadiusSearch (
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::search::BruteForce<PointT>::radiusSearch (
-    const PointT& point, double radius, std::vector<int> &k_indices,
+    const PointT& point, double radius, Indices &k_indices,
     std::vector<float> &k_sqr_distances, unsigned int max_nn) const
 {
   assert (isFinite (point) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");

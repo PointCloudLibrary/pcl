@@ -53,8 +53,8 @@ namespace pcl
       using PointCloud = typename Search<PointT>::PointCloud;
       using PointCloudConstPtr = typename Search<PointT>::PointCloudConstPtr;
 
-      using IndicesPtr = shared_ptr<std::vector<int> >;
-      using IndicesConstPtr = shared_ptr<const std::vector<int> >;
+      using IndicesPtr = pcl::IndicesPtr;
+      using IndicesConstPtr = pcl::IndicesConstPtr;
 
       using pcl::search::Search<PointT>::input_;
       using pcl::search::Search<PointT>::indices_;
@@ -62,10 +62,10 @@ namespace pcl
 
       struct Entry
       {
-        Entry (int idx, float dist) : index (idx), distance (dist) {}
+        Entry (index_t idx, float dist) : index (idx), distance (dist) {}
 
         Entry () : index (0), distance (0) {}
-        unsigned index;
+        index_t index;
         float distance;
         
         inline bool 
@@ -104,7 +104,7 @@ namespace pcl
           * \return number of neighbors found
           */
         int
-        nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) const override;
+        nearestKSearch (const PointT &point, int k, Indices &k_indices, std::vector<float> &k_distances) const override;
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
           * \param[in] point the given query point
@@ -118,24 +118,24 @@ namespace pcl
           */
         int
         radiusSearch (const PointT& point, double radius,
-                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
+                      Indices &k_indices, std::vector<float> &k_sqr_distances,
                       unsigned int max_nn = 0) const override;
 
       private:
         int
-        denseKSearch (const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) const;
+        denseKSearch (const PointT &point, int k, Indices &k_indices, std::vector<float> &k_distances) const;
 
         int
-        sparseKSearch (const PointT &point, int k, std::vector<int> &k_indices, std::vector<float> &k_distances) const;
+        sparseKSearch (const PointT &point, int k, Indices &k_indices, std::vector<float> &k_distances) const;
 
         int
         denseRadiusSearch (const PointT& point, double radius,
-                           std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
+                           Indices &k_indices, std::vector<float> &k_sqr_distances,
                            unsigned int max_nn = 0) const;
 
         int
         sparseRadiusSearch (const PointT& point, double radius,
-                            std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
+                            Indices &k_indices, std::vector<float> &k_sqr_distances,
                             unsigned int max_nn = 0) const;
     };
   }
