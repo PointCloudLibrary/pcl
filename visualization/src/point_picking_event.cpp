@@ -125,7 +125,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
         vtkSmartPointer<vtkActor> actor_ptr = actors_->GetNextActor();
         const auto actor = std::find_if(cam_ptr->cbegin(), cam_ptr->cend(), [&actor_ptr](const auto& cloud_actor) { return cloud_actor.second.actor == actor_ptr; });
         const std::string name = (actor != cam_ptr->cend()) ? actor->first : "not_found";
-          cloudIndices.insert({name, indices.at(i)});
+          cloudIndices.insert({name, std::move(indices[i])});
       }
       AreaPickingEvent event (nb_points, cloudIndices);
       style->area_picking_signal_ (event);
