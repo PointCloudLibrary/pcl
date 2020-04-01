@@ -136,8 +136,8 @@ namespace pcl
           if (indices_ && !indices_->empty())
           {
             mask_.assign (input_->size (), 0);
-            for (auto iIt = indices_->begin (); iIt != indices_->end (); ++iIt)
-              mask_[*iIt] = 1;
+            for (const auto& idx : *indices_)
+              mask_[idx] = 1;
           }
           else
             mask_.assign (input_->size (), 1);
