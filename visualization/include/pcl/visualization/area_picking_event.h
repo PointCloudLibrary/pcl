@@ -50,7 +50,7 @@ namespace pcl
     class PCL_EXPORTS AreaPickingEvent
     {
       public:
-       PCL_DEPRECATED AreaPickingEvent (int nb_points, const Indices& indices)
+       PCL_DEPRECATED("This constructor is deprecated!") AreaPickingEvent (int nb_points, const Indices& indices)
         : nb_points_ (nb_points)
         , indices_ (indices)
         {cloudIndices_.insert({"all_clouds",indices});}
