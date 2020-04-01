@@ -109,20 +109,18 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
     }
     else if (eventid == vtkCommand::LeftButtonReleaseEvent)
     {
-      vtkActorCollection *actors_ = vtkActorCollection::New();
+      vtkActorCollection *selectedActorsCollection = vtkActorCollection::New();
       style->OnLeftButtonUp ();
       std::vector<std::vector<int> > indices;
-      int nb_points = performAreaPick (iren, indices, actors_);
+      int nb_points = performAreaPick (iren, indices, electedActorsCollection);
       pcl::visualization::CloudActorMapPtr cam_ptr = style->getCloudActorMap();
-      pcl::visualization::CloudActorMap::iterator cam_it;
-      std::vector<std::string> names;
       
       std::map<std::string, std::vector<int>> cloudIndices;
       actors_->InitTraversal();
-      for(vtkIdType i = 0; i< actors_->GetNumberOfItems(); i++)
+      for(vtkIdType i = 0; i< electedActorsCollection->GetNumberOfItems(); i++)
       {
         //vtkActor* actor = actors_->GetNextActor();
-        vtkSmartPointer<vtkActor> actor_ptr = actors_->GetNextActor();
+        vtkSmartPointer<vtkActor> actor_ptr = electedActorsCollection->GetNextActor();
         const auto actor = std::find_if(cam_ptr->cbegin(), cam_ptr->cend(), [&actor_ptr](const auto& cloud_actor) { return cloud_actor.second.actor == actor_ptr; });
         const std::string name = (actor != cam_ptr->cend()) ? actor->first : "not_found";
           cloudIndices.insert({name, std::move(indices[i])});
@@ -237,9 +235,8 @@ pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowIntera
       glyph_filter->Update ();
 
       vtkPolyData* selected = glyph_filter->GetOutput ();
-
       vtkIdTypeArray* GlobalIDs  = vtkIdTypeArray::SafeDownCast(selected->GetPointData()->GetArray("Indices"));
-      actors->AddItem(actor);
+
       std::vector<int> actorIndices;
       assert (GlobalIDs->GetSize());
       actorIndices.reserve (selected->GetNumberOfPoints ());
@@ -248,8 +245,8 @@ pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowIntera
         
       pt_numb+= selected->GetNumberOfPoints ();
       indices.push_back(actorIndices);
+      actors->AddItem(actor);
     }
-    
     return (pt_numb);
   }
   return (-1);
