@@ -224,8 +224,7 @@ class SimpleOpenNIViewer
       
       cloud_connection.disconnect();
       image_connection.disconnect();
-      if (rgb_data)
-        delete[] rgb_data;
+      delete[] rgb_data;
     }
 
     pcl::visualization::CloudViewer cloud_viewer_;

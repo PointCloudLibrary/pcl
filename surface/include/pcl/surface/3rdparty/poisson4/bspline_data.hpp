@@ -95,15 +95,15 @@ namespace pcl
     {
       if( functionCount )
       {
-        if( vvDotTable ) delete[] vvDotTable;
-        if( dvDotTable ) delete[] dvDotTable;
-        if( ddDotTable ) delete[] ddDotTable;
+        delete[] vvDotTable;
+        delete[] dvDotTable;
+        delete[] ddDotTable;
 
-        if(  valueTables ) delete[]  valueTables;
-        if( dValueTables ) delete[] dValueTables;
+        delete[]  valueTables;
+        delete[] dValueTables;
         
-        if( baseFunctions ) delete[] baseFunctions;
-        if(  baseBSplines ) delete[]  baseBSplines;
+        delete[] baseFunctions;
+        delete[]  baseBSplines;
       }
       vvDotTable = dvDotTable = ddDotTable = NULL;
       valueTables = dValueTables=NULL;
@@ -292,9 +292,11 @@ namespace pcl
     template<int Degree,class Real>
     void BSplineData<Degree,Real>::clearDotTables( int flags )
     {
-      if( (flags & VV_DOT_FLAG) && vvDotTable ) delete[] vvDotTable , vvDotTable = NULL;
-      if( (flags & DV_DOT_FLAG) && dvDotTable ) delete[] dvDotTable , dvDotTable = NULL;
-      if( (flags & DD_DOT_FLAG) && ddDotTable ) delete[] ddDotTable , ddDotTable = NULL;
+      if (flags & VV_DOT_FLAG) {
+        delete[] vvDotTable ; vvDotTable = NULL;
+        delete[] dvDotTable ; dvDotTable = NULL;
+        delete[] ddDotTable ; ddDotTable = NULL;
+      }
     }
     template< int Degree , class Real >
     void BSplineData< Degree , Real >::setSampleSpan( int idx , int& start , int& end , double smooth ) const
@@ -367,8 +369,8 @@ namespace pcl
 
     template<int Degree,class Real>
     void BSplineData<Degree,Real>::clearValueTables(void){
-      if( valueTables){delete[]  valueTables;}
-      if(dValueTables){delete[] dValueTables;}
+      delete[]  valueTables;
+      delete[] dValueTables;
       valueTables=dValueTables=NULL;
     }
 

@@ -90,7 +90,6 @@ class ObjectSelection
     /////////////////////////////////////////////////////////////////////////
     virtual ~ObjectSelection ()
     {
-      if (rgb_data_)
         delete[] rgb_data_;
     }
 

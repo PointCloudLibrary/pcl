@@ -110,7 +110,6 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     } else {
       models = source_->getModels (search_model_);
       //reset cache and flann structures
-      if(flann_index_ != nullptr)
         delete flann_index_;
 
       flann_models_.clear();

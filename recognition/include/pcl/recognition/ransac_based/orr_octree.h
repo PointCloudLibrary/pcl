@@ -241,23 +241,17 @@ namespace pcl
 
             inline void
             deleteChildren ()
-            {
-              if ( children_ )
               {
                 delete[] children_;
                 children_ = nullptr;
               }
-            }
 
             inline void
             deleteData ()
-            {
-              if ( data_ )
               {
                 delete data_;
                 data_ = nullptr;
               }
-            }
 
             /** \brief Make this and 'node' neighbors by inserting each node in the others node neighbor set. Nothing happens
               * of either of the nodes has no data. */

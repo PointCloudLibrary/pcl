@@ -73,7 +73,7 @@ namespace pcl
 
     template <class NodeData,class Real>
     OctNode<NodeData,Real>::~OctNode(void){
-      if(!UseAlloc){if(children){delete[] children;}}
+      if(!UseAlloc){delete[] children;}
       parent=children=NULL;
     }
 
@@ -92,7 +92,7 @@ namespace pcl
 
       if(UseAlloc){children=internalAllocator.newElements(8);}
       else{
-        if(children){delete[] children;}
+        delete[] children;
         children=NULL;
         children=new OctNode[Cube::CORNERS];
       }
@@ -804,7 +804,7 @@ namespace pcl
     template<class NodeData2>
     OctNode<NodeData,Real>& OctNode<NodeData,Real>::operator = (const OctNode<NodeData2,Real>& node){
       int i;
-      if(children){delete[] children;}
+      delete[] children;
       children=NULL;
 
       d=node.depth ();
@@ -1143,14 +1143,14 @@ namespace pcl
     template<class NodeData,class Real>
     OctNode<NodeData,Real>::NeighborKey3::~NeighborKey3(void)
     {
-      if( neighbors ) delete[] neighbors;
+      delete[] neighbors;
       neighbors = NULL;
     }
 
     template<class NodeData,class Real>
     void OctNode<NodeData,Real>::NeighborKey3::set( int d )
     {
-      if( neighbors ) delete[] neighbors;
+      delete[] neighbors;
       neighbors = NULL;
       if( d<0 ) return;
       neighbors = new Neighbors3[d+1];
@@ -1538,13 +1538,13 @@ namespace pcl
 
     template<class NodeData,class Real>
     OctNode<NodeData,Real>::ConstNeighborKey3::~ConstNeighborKey3(void){
-      if(neighbors){delete[] neighbors;}
+      delete[] neighbors;
       neighbors=NULL;
     }
 
     template<class NodeData,class Real>
     void OctNode<NodeData,Real>::ConstNeighborKey3::set(int d){
-      if(neighbors){delete[] neighbors;}
+      delete[] neighbors;
       neighbors=NULL;
       if(d<0){return;}
       neighbors=new ConstNeighbors3[d+1];
@@ -1703,21 +1703,21 @@ namespace pcl
     template< class NodeData , class Real >
     OctNode< NodeData , Real >::NeighborKey5::~NeighborKey5( void )
     {
-      if( neighbors ) delete[] neighbors;
+      delete[] neighbors;
       neighbors = NULL;
     }
 
     template< class NodeData , class Real >
     OctNode< NodeData , Real >::ConstNeighborKey5::~ConstNeighborKey5( void )
     {
-      if( neighbors ) delete[] neighbors;
+      delete[] neighbors;
       neighbors = NULL;
     }
 
     template< class NodeData , class Real >
     void OctNode< NodeData , Real >::NeighborKey5::set( int d )
     {
-      if( neighbors ) delete[] neighbors;
+      delete[] neighbors;
       neighbors = NULL;
       if(d<0) return;
       _depth = d;
@@ -1727,7 +1727,7 @@ namespace pcl
     template< class NodeData , class Real >
     void OctNode< NodeData , Real >::ConstNeighborKey5::set( int d )
     {
-      if( neighbors ) delete[] neighbors;
+      delete[] neighbors;
       neighbors = NULL;
       if(d<0) return;
       _depth = d;

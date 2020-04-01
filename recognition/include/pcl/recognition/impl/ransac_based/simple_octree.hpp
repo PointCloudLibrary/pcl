@@ -156,22 +156,16 @@ SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::createChildren ()
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline void
 SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::deleteChildren ()
 {
-  if ( children_ )
-  {
-    delete[] children_;
-    children_ = nullptr;
-  }
+  delete[] children_;
+  children_ = nullptr;
 }
 
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline void
 SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::deleteData ()
 {
-  if ( data_ )
-  {
-    delete data_;
-    data_ = nullptr;
-  }
+  delete data_;
+  data_ = nullptr;
 }
 
 
@@ -204,11 +198,8 @@ SimpleOctree<NodeData, NodeDataCreator, Scalar>::~SimpleOctree ()
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline void
 SimpleOctree<NodeData, NodeDataCreator, Scalar>::clear ()
 {
-  if ( root_ )
-  {
-    delete root_;
-    root_ = nullptr;
-  }
+  delete root_;
+  root_ = nullptr;
 
   full_leaves_.clear();
 }

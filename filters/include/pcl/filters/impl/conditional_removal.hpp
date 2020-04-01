@@ -90,11 +90,8 @@ pcl::FieldComparison<PointT>::FieldComparison (
 template <typename PointT>
 pcl::FieldComparison<PointT>::~FieldComparison () 
 {
-  if (point_data_ != nullptr)
-  {
-    delete point_data_;
-    point_data_ = nullptr;
-  }
+  delete point_data_;
+  point_data_ = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////
