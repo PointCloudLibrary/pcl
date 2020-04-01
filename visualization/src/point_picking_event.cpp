@@ -112,7 +112,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
       vtkActorCollection *selectedActorsCollection = vtkActorCollection::New();
       style->OnLeftButtonUp ();
       std::vector<std::vector<int> > indices;
-      int nb_points = performAreaPick (iren, indices, electedActorsCollection);
+      int nb_points = performAreaPick (iren, indices, selectedActorsCollection);
       pcl::visualization::CloudActorMapPtr cam_ptr = style->getCloudActorMap();
       
       std::map<std::string, std::vector<int>> cloudIndices;
