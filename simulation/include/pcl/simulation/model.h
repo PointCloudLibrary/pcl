@@ -162,7 +162,7 @@ public:
 
   /** Render the quad. */
   void
-  render();
+  render() const;
 
 private:
   GLuint quad_vbo_;
@@ -177,7 +177,7 @@ public:
   ~TexturedQuad();
 
   void
-  setTexture(const std::uint8_t* data);
+  setTexture(const std::uint8_t* data) const;
 
   void
   render();

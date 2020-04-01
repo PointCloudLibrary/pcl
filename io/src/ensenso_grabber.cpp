@@ -290,7 +290,7 @@ pcl::EnsensoGrabber::configureCapture (const bool auto_exposure,
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::EnsensoGrabber::grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud)
+pcl::EnsensoGrabber::grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud) const
 {
   if (!device_open_)
     return (false);
@@ -575,7 +575,7 @@ bool
 pcl::EnsensoGrabber::setExtrinsicCalibration (const double euler_angle,
                                               Eigen::Vector3d &rotation_axis,
                                               const Eigen::Vector3d &translation,
-                                              const std::string target)
+                                              const std::string target) const
 {
   if (!device_open_)
     return (false);

@@ -79,7 +79,7 @@ pcl::registration::CorrespondenceRejectorVarTrimmed::getRemainingCorrespondences
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 float
-pcl::registration::CorrespondenceRejectorVarTrimmed::optimizeInlierRatio (std::vector <double>&  dists)
+pcl::registration::CorrespondenceRejectorVarTrimmed::optimizeInlierRatio (std::vector <double>&  dists) const
 {
   unsigned int points_nbr = static_cast<unsigned int> (dists.size ());
   std::sort (dists.begin (), dists.end ());

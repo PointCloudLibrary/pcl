@@ -19,7 +19,7 @@ namespace OpenNIFrameSource
     grabber_.stop ();
   }
 
-  bool OpenNIFrameSource::isActive()
+  bool OpenNIFrameSource::isActive() const
   {
     return active_;
   }

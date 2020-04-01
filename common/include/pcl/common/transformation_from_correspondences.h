@@ -64,7 +64,7 @@ namespace pcl
         
         /** Get the number of added vectors */
         inline unsigned int 
-        getNoOfSamples () { return no_of_samples_;}
+        getNoOfSamples () const { return no_of_samples_;}
         
         /** Add a new sample */
         inline void 

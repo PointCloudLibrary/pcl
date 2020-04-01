@@ -21,7 +21,7 @@ namespace OpenNIFrameSource
   }
 
   bool
-  OpenNIFrameSource::isActive ()
+  OpenNIFrameSource::isActive () const
   {
     return active_;
   }

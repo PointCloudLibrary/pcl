@@ -108,7 +108,7 @@ public:
   expAndNormalize(std::vector<float>& out,
                   const std::vector<float>& in,
                   float scale,
-                  float relax = 1.0f);
+                  float relax = 1.0f) const;
 
   void
   expAndNormalizeORI(float* out,

@@ -94,7 +94,7 @@ void pcl::gpu::NormalEstimation::setViewPoint (float vpx, float vpy, float vpz)
     vpx_ = vpx; vpy_ = vpy; vpz_ = vpz;
 }
 
-void pcl::gpu::NormalEstimation::getViewPoint (float &vpx, float &vpy, float &vpz)
+void pcl::gpu::NormalEstimation::getViewPoint (float &vpx, float &vpy, float &vpz) const
 {
     vpx = vpx_; vpy = vpy_; vpz = vpz_;
 }
@@ -383,7 +383,7 @@ pcl::gpu::VFHEstimation::VFHEstimation()
 }
 
 void pcl::gpu::VFHEstimation::setViewPoint(float  vpx, float  vpy, float  vpz) { vpx_ = vpx; vpy_ = vpy; vpz_ = vpz; }
-void pcl::gpu::VFHEstimation::getViewPoint(float& vpx, float& vpy, float& vpz) { vpx = vpx_; vpy = vpy_; vpz = vpz_; }      
+void pcl::gpu::VFHEstimation::getViewPoint(float& vpx, float& vpy, float& vpz) const { vpx = vpx_; vpy = vpy_; vpz = vpz_; }      
 
 void pcl::gpu::VFHEstimation::setUseGivenNormal (bool use) { use_given_normal_ = use; }
 void pcl::gpu::VFHEstimation::setNormalToUse (const NormalType& normal)   { normal_to_use_ = normal; }

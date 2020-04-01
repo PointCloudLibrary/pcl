@@ -1107,7 +1107,7 @@ getDefaultScalarInterpolationForDataSet (vtkDataSet* data)
 void
 pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
                                                               vtkSmartPointer<vtkLODActor> &actor,
-                                                              bool use_scalars)
+                                                              bool use_scalars) const
 {
   // If actor is not initialized, initialize it here
   if (!actor)
@@ -1185,7 +1185,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
 void
 pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
                                                               vtkSmartPointer<vtkActor> &actor,
-                                                              bool use_scalars)
+                                                              bool use_scalars) const
 {
   // If actor is not initialized, initialize it here
   if (!actor)

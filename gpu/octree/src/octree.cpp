@@ -95,7 +95,7 @@ void pcl::gpu::Octree::build()
     built_ = true;
 }
 
-bool pcl::gpu::Octree::isBuilt()
+bool pcl::gpu::Octree::isBuilt() const
 {
     return built_;
 }

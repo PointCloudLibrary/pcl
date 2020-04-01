@@ -122,7 +122,7 @@ SequentialFitter::compute_quadfit ()
 }
 
 void
-SequentialFitter::compute_refinement (FittingSurface* fitting)
+SequentialFitter::compute_refinement (FittingSurface* fitting) const
 {
   // Refinement
   FittingSurface::Parameter paramFP (0.0, 1.0, 0.0, m_params.forceBoundary, m_params.stiffnessBoundary, 0.0);
@@ -137,7 +137,7 @@ SequentialFitter::compute_refinement (FittingSurface* fitting)
 }
 
 void
-SequentialFitter::compute_boundary (FittingSurface* fitting)
+SequentialFitter::compute_boundary (FittingSurface* fitting) const
 {
   FittingSurface::Parameter paramFP (0.0, 1.0, 0.0, m_params.forceBoundary, m_params.stiffnessBoundary, 0.0);
 
@@ -149,7 +149,7 @@ SequentialFitter::compute_boundary (FittingSurface* fitting)
   }
 }
 void
-SequentialFitter::compute_interior (FittingSurface* fitting)
+SequentialFitter::compute_interior (FittingSurface* fitting) const
 {
   // iterate interior points
   //std::vector<double> wInt(m_data.interior.PointCount(), m_params.forceInterior);
@@ -420,37 +420,37 @@ SequentialFitter::compute_interior (const ON_NurbsSurface &nurbs)
 }
 
 void
-SequentialFitter::getInteriorError (std::vector<double> &error)
+SequentialFitter::getInteriorError (std::vector<double> &error) const
 {
   error = m_data.interior_error;
 }
 
 void
-SequentialFitter::getBoundaryError (std::vector<double> &error)
+SequentialFitter::getBoundaryError (std::vector<double> &error) const
 {
   error = m_data.boundary_error;
 }
 
 void
-SequentialFitter::getInteriorParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params)
+SequentialFitter::getInteriorParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params) const
 {
   params = m_data.interior_param;
 }
 
 void
-SequentialFitter::getBoundaryParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params)
+SequentialFitter::getBoundaryParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params) const
 {
   params = m_data.boundary_param;
 }
 
 void
-SequentialFitter::getInteriorNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals)
+SequentialFitter::getInteriorNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals) const
 {
   normals = m_data.interior_normals;
 }
 
 void
-SequentialFitter::getBoundaryNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals)
+SequentialFitter::getBoundaryNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals) const
 {
   normals = m_data.boundary_normals;
 }

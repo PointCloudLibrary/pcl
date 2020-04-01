@@ -121,15 +121,15 @@ namespace pcl
 
       /** \brief Returns the angle discretization step parameter (the step value between each bin of the hash map for the angular values) */
       inline float
-      getAngleDiscretizationStep () { return angle_discretization_step_; }
+      getAngleDiscretizationStep () const { return angle_discretization_step_; }
 
       /** \brief Returns the distance discretization step parameter (the step value between each bin of the hash map for the distance values) */
       inline float
-      getDistanceDiscretizationStep () { return distance_discretization_step_; }
+      getDistanceDiscretizationStep () const { return distance_discretization_step_; }
 
       /** \brief Returns the maximum distance found between any feature pair in the given input feature cloud */
       inline float
-      getModelDiameter () { return max_dist_; }
+      getModelDiameter () const { return max_dist_; }
 
       std::vector <std::vector <float> > alpha_m_;
     private:
