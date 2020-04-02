@@ -42,6 +42,7 @@ import argparse
 from pathlib import Path
 
 import requests
+import re
 
 
 CATEGORIES = {
@@ -139,6 +140,20 @@ def filter_labels(labels, prefix):
     ]
 
 
+def strip_leading_tag(text):
+    """
+    >>> strip_leading_tag("[text] larger text")
+    'larger text'
+    >>> strip_leading_tag("no tag text")
+    'no tag text'
+    """
+    if len(text) == 0 or text[0] != '[':
+        return text
+    pattern = re.compile('\[.*\]\s*')
+    match = pattern.match(text)
+    return text[match.end():] if match else text
+
+
 def make_pr_bullet_point(pr, prefix=None):
     ref = "[#{0}](https://github.com/PointCloudLibrary/pcl/pull/{0})".format(
         pr["number"]
@@ -208,9 +223,10 @@ if __name__ == "__main__":
     excluded_prs = list()
     for pr in sorted(pr_data, key=lambda d: d["closed_at"]):
         categories = filter_labels(pr["labels"], "changelog: ")
+        title = strip_leading_tag(pr["title"])
         pr_info = {
             "number": pr["number"],
-            "title": pr["title"],
+            "title": title,
             "modules": filter_labels(pr["labels"], "module: "),
             "categories": [g for g in categories if g not in ["fix", "enhancement"]],
         }
