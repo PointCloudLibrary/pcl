@@ -331,7 +331,7 @@ Details about the style options used can be found `here
 2.6.1. Script usage
 """""""""""""""""""
 
-PCL also has a supporting format script which runs the clang-format on the whitelisted directories.
+PCL also creates a build target 'format' to format the whitelisted directories using clang-format.
 
 Command line usage:
 
