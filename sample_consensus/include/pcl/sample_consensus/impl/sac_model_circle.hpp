@@ -47,7 +47,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::SampleConsensusModelCircle2D<PointT>::isSampleGood(const std::vector<int> &samples) const
+pcl::SampleConsensusModelCircle2D<PointT>::isSampleGood(const Indices &samples) const
 {
   if (samples.size () != sample_size_)
   {
@@ -71,7 +71,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::isSampleGood(const std::vector<int> &
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::SampleConsensusModelCircle2D<PointT>::computeModelCoefficients (const std::vector<int> &samples, Eigen::VectorXf &model_coefficients) const
+pcl::SampleConsensusModelCircle2D<PointT>::computeModelCoefficients (const Indices &samples, Eigen::VectorXf &model_coefficients) const
 {
   // Need 3 samples
   if (samples.size () != sample_size_)
@@ -134,7 +134,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::getDistancesToModel (const Eigen::Vec
 template <typename PointT> void
 pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
     const Eigen::VectorXf &model_coefficients, const double threshold, 
-    std::vector<int> &inliers)
+    Indices &inliers)
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
@@ -199,7 +199,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistance (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelCircle2D<PointT>::optimizeModelCoefficients (
-      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients) const
+      const Indices &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients) const
 {
   optimized_coefficients = model_coefficients;
 
@@ -230,7 +230,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::optimizeModelCoefficients (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
-      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients,
+      const Indices &inliers, const Eigen::VectorXf &model_coefficients,
       PointCloud &projected_points, bool copy_data_fields) const
 {
   // Needs a valid set of model coefficients
@@ -258,7 +258,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
 
     // Iterate through the points and project them to the circle
-    for (const int &inlier : inliers)
+    for (const auto &inlier : inliers)
     {
       float dx = input_->points[inlier].x - model_coefficients[0];
       float dy = input_->points[inlier].y - model_coefficients[1];
@@ -297,7 +297,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::SampleConsensusModelCircle2D<PointT>::doSamplesVerifyModel (
-      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold) const
+      const std::set<index_t> &indices, const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   // Needs a valid model coefficients
   if (!isModelValid (model_coefficients))
@@ -306,7 +306,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::doSamplesVerifyModel (
     return (false);
   }
 
-  for (const int &index : indices)
+  for (const auto &index : indices)
     // Calculate the distance from the point to the circle as the difference between
     //dist(point,circle_origin) and circle_radius
     if (std::abs (std::sqrt (
