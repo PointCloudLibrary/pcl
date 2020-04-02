@@ -75,7 +75,8 @@ namespace pcl
         performSinglePick (vtkRenderWindowInteractor *iren, float &x, float &y, float &z);
 
         int
-        performAreaPick (vtkRenderWindowInteractor *iren, std::vector<std::vector<int> > &indices, vtkActorCollection *actors );
+        performAreaPick (vtkRenderWindowInteractor *iren,pcl::visualization::CloudActorMapPtr cam_ptr,
+                                                           std::map<std::string, std::vector<int>>& cloudIndices );
 
       private:
         float x_, y_, z_;
