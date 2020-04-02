@@ -109,22 +109,10 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
     }
     else if (eventid == vtkCommand::LeftButtonReleaseEvent)
     {
-      vtkActorCollection *selectedActorsCollection = vtkActorCollection::New();
       style->OnLeftButtonUp ();
-      std::vector<std::vector<int> > indices;
-      int nb_points = performAreaPick (iren, indices, selectedActorsCollection);
-      pcl::visualization::CloudActorMapPtr cam_ptr = style->getCloudActorMap();
-      
       std::map<std::string, std::vector<int>> cloudIndices;
-      selectedActorsCollection->InitTraversal();
-      for(vtkIdType i = 0; i< selectedActorsCollection->GetNumberOfItems(); i++)
-      {
-        //vtkActor* actor = actors_->GetNextActor();
-        vtkSmartPointer<vtkActor> actor_ptr = selectedActorsCollection->GetNextActor();
-        const auto actor = std::find_if(cam_ptr->cbegin(), cam_ptr->cend(), [&actor_ptr](const auto& cloud_actor) { return cloud_actor.second.actor == actor_ptr; });
-        const std::string name = (actor != cam_ptr->cend()) ? actor->first : "not_found";
-          cloudIndices.insert({name, std::move(indices[i])});
-      }
+      pcl::visualization::CloudActorMapPtr cam_ptr = style->getCloudActorMap();
+      int nb_points = performAreaPick (iren, cam_ptr, selectedActorsCollection);
       AreaPickingEvent event (nb_points, cloudIndices);
       style->area_picking_signal_ (event);
     }
@@ -188,8 +176,8 @@ pcl::visualization::PointPickingCallback::performSinglePick (
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowInteractor *iren,
-                                                           std::vector<std::vector<int> > &indices, vtkActorCollection *actors )
+pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowInteractor *iren,pcl::visualization::CloudActorMapPtr cam_ptr,
+                                                           std::map<std::string, std::vector<int>>& cloudIndices)
 {
   vtkAreaPicker *picker = static_cast<vtkAreaPicker*> (iren->GetPicker ());
   vtkRenderer *ren = iren->FindPokedRenderer (iren->GetEventPosition ()[0], iren->GetEventPosition ()[1]);
@@ -202,7 +190,7 @@ pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowIntera
     vtkProp3D* prop;
     for(props->InitTraversal(pit);(prop = props->GetNextProp3D(pit));)
     {
-      vtkActor* actor = vtkActor::SafeDownCast(prop);
+      vtkSmartPointer<vtkActor> actor = vtkActor::SafeDownCast(prop);
       if (!actor)
         { continue; }
         
@@ -239,13 +227,17 @@ pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowIntera
 
       std::vector<int> actorIndices;
       assert (GlobalIDs->GetSize());
+      
       actorIndices.reserve (selected->GetNumberOfPoints ());
       for (vtkIdType i = 0; i < selected->GetNumberOfPoints (); i++)
         actorIndices.push_back(static_cast<int>(GlobalIDs->GetValue(i)));
         
       pt_numb+= selected->GetNumberOfPoints ();
+      
+      const auto actorSelected = std::find_if(cam_ptr->cbegin(), cam_ptr->cend(), [&actor](const auto& cloud_actor) { return cloud_actor.second.actor == actor; });
+      const std::string name = (actor != cam_ptr->cend()) ? actor->first : "not_found";
       indices.push_back(actorIndices);
-      actors->AddItem(actor);
+      cloudIndices.insert({name, std::move(indices)});
     }
     return (pt_numb);
   }
