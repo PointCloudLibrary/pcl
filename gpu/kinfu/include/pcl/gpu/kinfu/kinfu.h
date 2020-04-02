@@ -108,8 +108,8 @@ namespace pcl
         void
         setInitalCameraPose (const Eigen::Affine3f& pose);
                         
-		/** \brief Sets truncation threshold for depth image for ICP step only! This helps 
-		  *  to filter measurements that are outside tsdf volume. Pass zero to disable the truncation.
+        /** \brief Sets truncation threshold for depth image for ICP step only! This helps 
+          *  to filter measurements that are outside tsdf volume. Pass zero to disable the truncation.
           * \param[in] max_icp_distance Maximal distance, higher values are reset to zero (means no measurement). 
           */
         void
@@ -215,6 +215,28 @@ namespace pcl
         using Matrix3frm = Eigen::Matrix<float, 3, 3, Eigen::RowMajor>;
         using Vector3f = Eigen::Vector3f;
 
+        struct PyramidBuffer {
+            /** \brief Depth pyramid. */
+            DepthMap depth_curr;
+            /** \brief Vertex maps pyramid for current frame in global coordinate space. */
+            MapArr vmap_g_curr;
+            /** \brief Normal maps pyramid for current frame in global coordinate space. */
+            MapArr nmap_g_curr;
+
+            /** \brief Vertex maps pyramid for previous frame in global coordinate space. */
+            MapArr vmap_g_prev;
+            /** \brief Normal maps pyramid for previous frame in global coordinate space. */
+            MapArr nmap_g_prev;
+
+            /** \brief Vertex maps pyramid for current frame in current coordinate space. */
+            MapArr vmap_curr;
+            /** \brief Normal maps pyramid for current frame in current coordinate space. */
+            MapArr nmap_curr;
+
+            /** \brief Array of buffers with ICP correspondences for each pyramid level. */
+            CorespMap coresp;
+        };
+
         /** \brief Height of input depth image. */
         int rows_;
         /** \brief Width of input depth image. */
@@ -245,25 +267,8 @@ namespace pcl
         /** \brief angle threshold in correspondences filtering. Represents max sine of angle between normals. */
         float angleThres_;
         
-        /** \brief Depth pyramid. */
-        std::vector<DepthMap> depths_curr_;
-        /** \brief Vertex maps pyramid for current frame in global coordinate space. */
-        std::vector<MapArr> vmaps_g_curr_;
-        /** \brief Normal maps pyramid for current frame in global coordinate space. */
-        std::vector<MapArr> nmaps_g_curr_;
-
-        /** \brief Vertex maps pyramid for previous frame in global coordinate space. */
-        std::vector<MapArr> vmaps_g_prev_;
-        /** \brief Normal maps pyramid for previous frame in global coordinate space. */
-        std::vector<MapArr> nmaps_g_prev_;
-                
-        /** \brief Vertex maps pyramid for current frame in current coordinate space. */
-        std::vector<MapArr> vmaps_curr_;
-        /** \brief Normal maps pyramid for current frame in current coordinate space. */
-        std::vector<MapArr> nmaps_curr_;
-
-        /** \brief Array of buffers with ICP correspondences for each pyramid level. */
-        std::vector<CorespMap> coresps_;
+        /** \brief Buffers required to define the pyramid. */
+        std::vector<PyramidBuffer> pyramid_buffer_;
         
         /** \brief Buffer for storing scaled depth image */
         DeviceArray2D<float> depthRawScaled_;
