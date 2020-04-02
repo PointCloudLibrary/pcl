@@ -322,7 +322,7 @@ We currently use clang-format as the tool for auto-formatting our C++ code. The 
 The style rules mentioned in this document are enforced via `PCL's .clang-format file
 <https://github.com/PointCloudLibrary/pcl/blob/master/.clang-format>`_.
 
-For the integration of clang-format with various text editors and IDE's, refer `this
+For the integration of clang-format with various text editors and IDE's, refer to this `page
 <https://clang.llvm.org/docs/ClangFormat.html>`_.
 
 Details about the style options used can be found `here
@@ -380,4 +380,3 @@ For the compute, filter, segment, etc. type methods the following rules apply:
 * The output arguments are preferably non-pointer type, regardless of data
   size.
 * The output arguments will always be passed by reference.
-
