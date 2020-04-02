@@ -317,64 +317,35 @@ indentation level of the class body and members affected by these qualifiers are
 2.6. Automatic code formatting
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The following set of rules can be automatically used by various different IDEs,
-editors, etc.
+We currently use clang-format as the tool for auto-formatting our C++ code. The style files which were previously distributed should now be considered deprecated.
 
-2.6.1. Emacs
-""""""""""""
+The style rules mentioned in this document are enforced via `PCL's .clang-format file
+<https://github.com/PointCloudLibrary/pcl/blob/master/.clang-format>`_.
 
-You can use the following `PCL C/C++ style file
-<https://raw.githubusercontent.com/PointCloudLibrary/pcl/master/doc/advanced/content/files/pcl-c-style.el>`_,
-download it to some known location and then:
+For the integration of clang-format with various text editors and IDE's, refer `this
+<https://clang.llvm.org/docs/ClangFormat.html>`_.
 
-* open .emacs 
-* add the following before any C/C++ custom hooks
+Details about the style options used can be found `here
+<https://clang.llvm.org/docs/ClangFormatStyleOptions.html>`_.
 
-::
+2.6.1. Script usage
+"""""""""""""""""""
 
-   (load-file "/location/to/pcl-c-style.el")
-   (add-hook 'c-mode-common-hook 'pcl-set-c-style)
+PCL also has a supporting `format script
+<https://github.com/PointCloudLibrary/pcl/blob/master/.dev/format.sh>`_, 
+which will run the clang-format on the whitelisted directories.
 
-2.6.2. Uncrustify
-"""""""""""""""""
+Sample command line usage from the PCL source directory:
 
-You can find a semi-finished config for `Uncrustify <http://uncrustify.sourceforge.net/>`_ `here
-<http://dev.pointclouds.org/attachments/download/537/uncrustify.cfg>`_
+.. code-block:: shell
 
-2.6.3 Eclipse
-"""""""""""""
+   $ sh ./.dev/format.sh `which clang-format` ./
 
-| You can find a PCL code style file for Eclipse `on GitHub <https://github.com/PointCloudLibrary/pcl/tree/master/doc/advanced/content/files>`_.
-| To add the new formatting style go to: Windows > Preferences > C/C++ > Code Style > Formatter
+You can also perform the same task by using make:
 
-| To format portion of codes, select the code and press Ctrl + Shift + F.
-| If you want to format the whole code in your project go to the tree and right click on the project: Source > Format.
+.. code-block:: shell
 
-Note that the Eclipse formatter style is configured to wrap all arguments in a function, feel free to re-arange the arguments if you feel the need; for example,
-this improves readability:
-
-.. code-block:: cpp
-
-   int
-   displayPoint (float x, float y, float z,
-                 float r, float g, float b
-                );
-
-This eclipse formatter fails to add a space before brackets when using PCL macros:
-
-.. code-block:: cpp
-
-   PCL_ERROR("Text\n");
-
-should be
-
-.. code-block:: cpp
-
-   PCL_ERROR ("Text\n");
-
-.. note::
-
-   This style sheet is not perfect, please mention errors on the user mailing list and feel free to patch!
+   $ make format
 
 3. Structuring
 ==============
