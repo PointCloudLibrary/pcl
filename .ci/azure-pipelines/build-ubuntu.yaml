@@ -25,7 +25,7 @@ jobs:
           CC: gcc
           CXX: g++
           CMAKE_ARGS: ''
-    container: $CONTAINER
+    container: $[ variables['CONTAINER'] ]
     timeoutInMinutes: 0
     variables:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'
