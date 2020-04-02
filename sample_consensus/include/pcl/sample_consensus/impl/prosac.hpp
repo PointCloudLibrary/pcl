@@ -164,8 +164,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
 
       // We only need to compute possible better epsilon_n_star for when _n is just about to be removed an inlier
       std::size_t I_possible_n_star = I_N;
-      for (Indices::const_reverse_iterator last_inlier = inliers.rbegin (),
-                                                    inliers_end = inliers.rend (); 
+      for (auto last_inlier = inliers.crbegin (), inliers_end = inliers.crend ();
            last_inlier != inliers_end; 
            ++last_inlier, --I_possible_n_star)
       {
