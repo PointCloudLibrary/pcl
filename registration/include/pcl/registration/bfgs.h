@@ -149,6 +149,7 @@ public:
   BFGSSpace::Status minimizeInit(FVectorType &x);
   BFGSSpace::Status minimizeOneStep(FVectorType &x);
   BFGSSpace::Status testGradient(Scalar epsilon);
+  BFGSSpace::Status testGradient(Scalar head_epsilon,Scalar tail_epsilon);
   void resetParameters(void) { parameters = Parameters(); }
   
   Parameters parameters;
@@ -415,6 +416,20 @@ BFGS<FunctorType>::testGradient(Scalar epsilon)
   else
   {
     if(gradient.norm () < epsilon)
+      return BFGSSpace::Success;
+    else
+      return BFGSSpace::Running;
+  }
+}
+
+template<typename FunctorType> typename BFGSSpace::Status 
+BFGS<FunctorType>::testGradient(Scalar head_epsilon,Scalar tail_epsilon)
+{
+  if((head_epsilon < 0)&&(tail_epsilon < 0))
+    return BFGSSpace::NegativeGradientEpsilon;
+  else
+  {
+    if((gradient.head(3).norm () < head_epsilon)&&(gradient.tail(3).norm () < tail_epsilon))
       return BFGSSpace::Success;
     else
       return BFGSSpace::Running;

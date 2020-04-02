@@ -206,7 +206,6 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTr
   tmp_idx_tgt_ = &indices_tgt;
 
   // Optimize using forward-difference approximation LM
-  const double gradient_tol = 1e-2;
   OptimizationFunctorWithIndices functor(this);
   BFGS<OptimizationFunctorWithIndices> bfgs (functor);
   bfgs.parameters.sigma = 0.01;
@@ -227,7 +226,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTr
     {
       break;
     }
-    result = bfgs.testGradient(gradient_tol);
+    result = bfgs.testGradient(linear_gradient_tolerance_,angular_gradient_tolerance_);
   } while(result == BFGSSpace::Running && inner_iterations_ < max_inner_iterations_);
   if(result == BFGSSpace::NoProgress || result == BFGSSpace::Success || inner_iterations_ == max_inner_iterations_)
   {
