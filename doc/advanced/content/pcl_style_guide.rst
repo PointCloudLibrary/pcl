@@ -331,21 +331,14 @@ Details about the style options used can be found `here
 2.6.1. Script usage
 """""""""""""""""""
 
-PCL also has a supporting `format script
-<https://github.com/PointCloudLibrary/pcl/blob/master/.dev/format.sh>`_, 
-which will run the clang-format on the whitelisted directories.
+PCL also has a supporting format script which runs the clang-format on the whitelisted directories.
 
-Sample command line usage from the PCL source directory:
-
-.. code-block:: shell
-
-   $ sh ./.dev/format.sh `which clang-format` ./
-
-You can also perform the same task by using make:
+Command line usage:
 
 .. code-block:: shell
 
    $ make format
+
 
 3. Structuring
 ==============
