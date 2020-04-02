@@ -190,9 +190,7 @@ pcl::gpu::KinfuTracker::reset()
 void
 pcl::gpu::KinfuTracker::allocateBuffers (int rows, int cols)
 {
-  pyramid_buffer_.resize(LEVELS);
-
-  for (int i = 0; i < LEVELS; ++i)
+  for (int i = 0; i < pyramid_buffer_.size(); ++i)
   {
     int pyr_rows = rows >> i;
     int pyr_cols = cols >> i;

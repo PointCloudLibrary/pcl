@@ -268,7 +268,7 @@ namespace pcl
         float angleThres_;
         
         /** \brief Buffers required to define the pyramid. */
-        std::vector<PyramidBuffer> pyramid_buffer_;
+        std::array<PyramidBuffer, LEVELS> pyramid_buffer_;
         
         /** \brief Buffer for storing scaled depth image */
         DeviceArray2D<float> depthRawScaled_;
