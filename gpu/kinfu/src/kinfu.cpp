@@ -84,8 +84,7 @@ pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(c
   init_Rcam_ = Eigen::Matrix3f::Identity ();// * AngleAxisf(-30.f/180*3.1415926, Vector3f::UnitX());
   init_tcam_ = volume_size * 0.5f - Vector3f (0, 0, volume_size (2) / 2 * 1.2f);
 
-  const int iters[] = {10, 5, 4};
-  std::copy (iters, iters + LEVELS, icp_iterations_);
+  icp_iterations_ = {10, 5, 4};
 
   const float default_distThres = 0.10f; //meters
   const float default_angleThres = sin (20.f * 3.14159254f / 180.f);

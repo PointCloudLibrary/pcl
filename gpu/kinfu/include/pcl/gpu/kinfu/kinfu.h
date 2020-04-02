@@ -47,6 +47,7 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <Eigen/Core>
+#include <array>
 #include <vector>
 
 // Focal lengths of RGB camera
@@ -238,7 +239,7 @@ namespace pcl
         Vector3f   init_tcam_;
 
         /** \brief array with IPC iteration numbers for each pyramid level */
-        int icp_iterations_[LEVELS];
+        std::array<int, LEVELS> icp_iterations_;
         /** \brief distance threshold in correspondences filtering */
         float  distThres_;
         /** \brief angle threshold in correspondences filtering. Represents max sine of angle between normals. */
