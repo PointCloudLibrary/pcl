@@ -199,10 +199,10 @@ Pyramid<PointT>::compute (std::vector<PointCloudPtr>& output)
   }
 }
 
-template <> inline void
+template <> void
 Pyramid<pcl::PointXYZRGB>::compute (std::vector<Pyramid<pcl::PointXYZRGB>::PointCloudPtr> &output);
 
-template <> inline void
+template <> void
 Pyramid<pcl::PointXYZRGBA>::compute (std::vector<Pyramid<pcl::PointXYZRGBA>::PointCloudPtr> &output);
 
 template<> void
@@ -218,4 +218,3 @@ Pyramid<pcl::RGB>::compute (std::vector<Pyramid<pcl::RGB>::PointCloudPtr> &outpu
 } // namespace pcl
 
 #endif
-
