@@ -93,7 +93,7 @@ pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(c
   setIcpCorespFilteringParams (default_distThres, default_angleThres);
   tsdf_volume_->setTsdfTruncDist (default_tranc_dist);
 
-  allocateBufffers (rows, cols);
+  allocateBuffers (rows, cols);
 
   rmats_.reserve (30000);
   tvecs_.reserve (30000);
@@ -188,7 +188,7 @@ pcl::gpu::KinfuTracker::reset()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::allocateBufffers (int rows, int cols)
+pcl::gpu::KinfuTracker::allocateBuffers (int rows, int cols)
 {
   pyramid_buffer_.resize(LEVELS);
 

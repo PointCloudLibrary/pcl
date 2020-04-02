@@ -295,7 +295,7 @@ namespace pcl
           * \param[in] cols_arg          
           */
         void
-        allocateBufffers (int rows_arg, int cols_arg);
+        allocateBuffers (int rows_arg, int cols_arg);
 
         /** \brief Performs the tracker reset to initial  state. It's used if case of camera tracking fail.
           */
