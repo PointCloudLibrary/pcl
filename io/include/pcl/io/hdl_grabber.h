@@ -270,7 +270,7 @@ namespace pcl
       computeXYZI (pcl::PointXYZI& pointXYZI,
                    std::uint16_t azimuth,
                    HDLLaserReturn laserReturn,
-                   HDLLaserCorrection correction);
+                   HDLLaserCorrection correction) const;
 
 
     private:

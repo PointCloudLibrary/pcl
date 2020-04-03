@@ -92,7 +92,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelSphere (const PointCloudConstPtr &cloud,
-                                  const std::vector<int> &indices,
+                                  const Indices &indices,
                                   bool random = false)
         : SampleConsensusModel<PointT> (cloud, indices, random)
       {
@@ -131,7 +131,7 @@ namespace pcl
         * \param[out] model_coefficients the resultant model coefficients
         */
       bool
-      computeModelCoefficients (const std::vector<int> &samples,
+      computeModelCoefficients (const Indices &samples,
                                 Eigen::VectorXf &model_coefficients) const override;
 
       /** \brief Compute all distances from the cloud data to a given sphere model.
@@ -150,7 +150,7 @@ namespace pcl
       void 
       selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
                             const double threshold, 
-                            std::vector<int> &inliers) override;
+                            Indices &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers. 
         * 
@@ -169,7 +169,7 @@ namespace pcl
         * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization
         */
       void
-      optimizeModelCoefficients (const std::vector<int> &inliers,
+      optimizeModelCoefficients (const Indices &inliers,
                                  const Eigen::VectorXf &model_coefficients,
                                  Eigen::VectorXf &optimized_coefficients) const override;
 
@@ -181,7 +181,7 @@ namespace pcl
         * \todo implement this.
         */
       void
-      projectPoints (const std::vector<int> &inliers,
+      projectPoints (const Indices &inliers,
                      const Eigen::VectorXf &model_coefficients,
                      PointCloud &projected_points,
                      bool copy_data_fields = true) const override;
@@ -192,7 +192,7 @@ namespace pcl
         * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         */
       bool
-      doSamplesVerifyModel (const std::set<int> &indices,
+      doSamplesVerifyModel (const std::set<index_t> &indices,
                             const Eigen::VectorXf &model_coefficients,
                             const double threshold) const override;
 
@@ -225,7 +225,7 @@ namespace pcl
         * \param[in] samples the resultant index samples
         */
       bool
-      isSampleGood(const std::vector<int> &samples) const override;
+      isSampleGood(const Indices &samples) const override;
 
     private:
       struct OptimizationFunctor : pcl::Functor<float>
@@ -234,7 +234,7 @@ namespace pcl
           * \param[in] indices the indices of data points to evaluate
           * \param[in] estimator pointer to the estimator object
           */
-        OptimizationFunctor (const pcl::SampleConsensusModelSphere<PointT> *model, const std::vector<int>& indices) :
+        OptimizationFunctor (const pcl::SampleConsensusModelSphere<PointT> *model, const Indices& indices) :
           pcl::Functor<float> (indices.size ()), model_ (model), indices_ (indices) {}
 
         /** Cost function to be minimized
@@ -261,7 +261,7 @@ namespace pcl
         }
 
         const pcl::SampleConsensusModelSphere<PointT> *model_;
-        const std::vector<int> &indices_;
+        const Indices &indices_;
       };
    };
 }

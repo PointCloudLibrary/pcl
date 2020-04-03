@@ -58,9 +58,9 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
   std::size_t n_best_inliers_count = 0;
   double k = std::numeric_limits<double>::max();
 
-  std::vector<int> selection;
+  Indices selection;
   Eigen::VectorXf model_coefficients;
-  std::set<int> indices_subset;
+  std::set<index_t> indices_subset;
 
   const double log_probability  = std::log (1.0 - probability_);
   const double one_over_indices = 1.0 / static_cast<double> (sac_model_->getIndices ()->size ());

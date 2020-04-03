@@ -64,7 +64,7 @@ namespace pcl
     };
     PCL_MAKE_ALIGNED_OPERATOR_NEW
 
-    inline bool operator< (const GradientXY & rhs)
+    inline bool operator< (const GradientXY & rhs) const
     {
       return (magnitude > rhs.magnitude);
     }

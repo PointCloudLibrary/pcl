@@ -197,7 +197,7 @@ namespace pcl
         double sigma_sqr = sigma * sigma;
         unsigned int refine_iterations = 0;
         bool inlier_changed = false, oscillating = false;
-        std::vector<int> new_inliers, prev_inliers = inliers_;
+        Indices new_inliers, prev_inliers = inliers_;
         std::vector<std::size_t> inliers_sizes;
         Eigen::VectorXf new_model_coefficients = model_coefficients_;
         do
@@ -287,25 +287,25 @@ namespace pcl
       inline void
       getRandomSamples (const IndicesPtr &indices,
                         std::size_t nr_samples, 
-                        std::set<int> &indices_subset)
+                        std::set<index_t> &indices_subset)
       {
         indices_subset.clear ();
         while (indices_subset.size () < nr_samples)
-          //indices_subset.insert ((*indices)[(int) (indices->size () * (rand () / (RAND_MAX + 1.0)))]);
-          indices_subset.insert ((*indices)[static_cast<int> (static_cast<double>(indices->size ()) * rnd ())]);
+          //indices_subset.insert ((*indices)[(index_t) (indices->size () * (rand () / (RAND_MAX + 1.0)))]);
+          indices_subset.insert ((*indices)[static_cast<index_t> (static_cast<double>(indices->size ()) * rnd ())]);
       }
 
       /** \brief Return the best model found so far. 
         * \param[out] model the resultant model
         */
       inline void 
-      getModel (std::vector<int> &model) const { model = model_; }
+      getModel (Indices &model) const { model = model_; }
 
       /** \brief Return the best set of inliers found so far for this model. 
         * \param[out] inliers the resultant set of inliers
         */
       inline void 
-      getInliers (std::vector<int> &inliers) const { inliers = inliers_; }
+      getInliers (Indices &inliers) const { inliers = inliers_; }
 
       /** \brief Return the model coefficients of the best model found so far. 
         * \param[out] model_coefficients the resultant model coefficients, as documented in \ref sample_consensus
@@ -318,10 +318,10 @@ namespace pcl
       SampleConsensusModelPtr sac_model_;
 
       /** \brief The model found after the last computeModel () as point cloud indices. */
-      std::vector<int> model_;
+      Indices model_;
 
       /** \brief The indices of the points that were chosen as inliers after the last computeModel () call. */
-      std::vector<int> inliers_;
+      Indices inliers_;
 
       /** \brief The coefficients of our model computed directly from the model found. */
       Eigen::VectorXf model_coefficients_;

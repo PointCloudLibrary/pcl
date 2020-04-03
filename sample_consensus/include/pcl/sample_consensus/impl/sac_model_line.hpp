@@ -47,7 +47,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::SampleConsensusModelLine<PointT>::isSampleGood (const std::vector<int> &samples) const
+pcl::SampleConsensusModelLine<PointT>::isSampleGood (const Indices &samples) const
 {
   if (samples.size () != sample_size_)
   {
@@ -71,7 +71,7 @@ pcl::SampleConsensusModelLine<PointT>::isSampleGood (const std::vector<int> &sam
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::SampleConsensusModelLine<PointT>::computeModelCoefficients (
-      const std::vector<int> &samples, Eigen::VectorXf &model_coefficients) const
+      const Indices &samples, Eigen::VectorXf &model_coefficients) const
 {
   // Need 2 samples
   if (samples.size () != sample_size_)
@@ -131,7 +131,7 @@ pcl::SampleConsensusModelLine<PointT>::getDistancesToModel (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelLine<PointT>::selectWithinDistance (
-      const Eigen::VectorXf &model_coefficients, const double threshold, std::vector<int> &inliers)
+      const Eigen::VectorXf &model_coefficients, const double threshold, Indices &inliers)
 {
   // Needs a valid set of model coefficients
   if (!isModelValid (model_coefficients))
@@ -199,7 +199,7 @@ pcl::SampleConsensusModelLine<PointT>::countWithinDistance (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelLine<PointT>::optimizeModelCoefficients (
-      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients) const
+      const Indices &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients) const
 {
   // Needs a valid set of model coefficients
   if (!isModelValid (model_coefficients))
@@ -240,7 +240,7 @@ pcl::SampleConsensusModelLine<PointT>::optimizeModelCoefficients (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelLine<PointT>::projectPoints (
-      const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields) const
+      const Indices &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields) const
 {
   // Needs a valid model coefficients
   if (!isModelValid (model_coefficients))
@@ -268,7 +268,7 @@ pcl::SampleConsensusModelLine<PointT>::projectPoints (
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the line
-    for (const int &inlier : inliers)
+    for (const auto &inlier : inliers)
     {
       Eigen::Vector4f pt (input_->points[inlier].x, input_->points[inlier].y, input_->points[inlier].z, 0.0f);
       // double k = (DOT_PROD_3D (points[i], p21) - dotA_B) / dotB_B;
@@ -313,7 +313,7 @@ pcl::SampleConsensusModelLine<PointT>::projectPoints (
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::SampleConsensusModelLine<PointT>::doSamplesVerifyModel (
-      const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, const double threshold) const
+      const std::set<index_t> &indices, const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   // Needs a valid set of model coefficients
   if (!isModelValid (model_coefficients))
@@ -326,7 +326,7 @@ pcl::SampleConsensusModelLine<PointT>::doSamplesVerifyModel (
 
   double sqr_threshold = threshold * threshold;
   // Iterate through the 3d points and calculate the distances from them to the line
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
     // Calculate the distance from the point to the line
     // D = ||(P2-P1) x (P1-P0)|| / ||P2-P1|| = norm (cross (p2-p1, p2-p0)) / norm(p2-p1)

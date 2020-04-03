@@ -65,7 +65,7 @@ namespace pcl
 
       /** \brief Get the target reduction factor */
       inline float
-      getTargetReductionFactor ()
+      getTargetReductionFactor () const
       {
         return target_reduction_factor_;
       }

@@ -163,9 +163,9 @@ namespace mets {
       termination_criteria_chain::reset();      
     }
 
-    int second_guess() { return second_guess_m; }
-    int iteration() { return total_iterations_m; }
-    int resets() { return resets_m; }
+    int second_guess() const { return second_guess_m; }
+    int iteration() const { return total_iterations_m; }
+    int resets() const { return resets_m; }
 
   protected:
     gol_type best_cost_m;

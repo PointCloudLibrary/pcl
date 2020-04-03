@@ -2136,7 +2136,7 @@ namespace pcl
         void
         createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
                                    vtkSmartPointer<vtkActor> &actor,
-                                   bool use_scalars = true);
+                                   bool use_scalars = true) const;
 
         /** \brief Internal method. Creates a vtk actor from a vtk polydata object.
           * \param[in] data the vtk polydata object to create an actor for
@@ -2146,7 +2146,7 @@ namespace pcl
         void
         createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
                                    vtkSmartPointer<vtkLODActor> &actor,
-                                   bool use_scalars = true);
+                                   bool use_scalars = true) const;
 
         /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
           * \param[in] cloud the input PCL PointCloud dataset

@@ -253,7 +253,7 @@ private:
   applyCameraTransform(const Camera& camera);
 
   void
-  setupProjectionMatrix();
+  setupProjectionMatrix() const;
 
   Scene::Ptr scene_;
   int rows_;

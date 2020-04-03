@@ -58,10 +58,10 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
   double d_best_penalty = std::numeric_limits<double>::max();
   double k = 1.0;
 
-  std::vector<int> selection;
+  Indices selection;
   Eigen::VectorXf model_coefficients;
   std::vector<double> distances;
-  std::set<int> indices_subset;
+  std::set<index_t> indices_subset;
 
   int n_inliers_count = 0;
   unsigned skipped_count = 0;
@@ -154,7 +154,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
 
   // Iterate through the 3d points and calculate the distances from them to the model again
   sac_model_->getDistancesToModel (model_coefficients_, distances);
-  std::vector<int> &indices = *sac_model_->getIndices ();
+  Indices &indices = *sac_model_->getIndices ();
   if (distances.size () != indices.size ())
   {
     PCL_ERROR ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] Estimated distances (%lu) differs than the normal of indices (%lu).\n", distances.size (), indices.size ());

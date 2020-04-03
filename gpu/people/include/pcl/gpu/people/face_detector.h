@@ -162,7 +162,7 @@ namespace pcl
 
           /** \brief Get the cuda GPU device id in use **/
           int
-          getDeviceId() {return cuda_dev_id_;}
+          getDeviceId() const {return cuda_dev_id_;}
 
         private:
           bool                largest_object_;      /** \brief only give back largest object **/

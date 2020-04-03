@@ -106,11 +106,11 @@ namespace pcl
         void
         compute_quadfit ();
         void
-        compute_refinement (FittingSurface* fitting);
+        compute_refinement (FittingSurface* fitting) const;
         void
-        compute_boundary (FittingSurface* fitting);
+        compute_boundary (FittingSurface* fitting) const;
         void
-        compute_interior (FittingSurface* fitting);
+        compute_interior (FittingSurface* fitting) const;
 
         Eigen::Vector2d
         project (const Eigen::Vector3d &pt);
@@ -176,27 +176,27 @@ namespace pcl
 
         /** \brief Get error of each interior point (L2-norm of point to closest point on surface) and square-error */
         void
-        getInteriorError (std::vector<double> &error);
+        getInteriorError (std::vector<double> &error) const;
 
         /** \brief Get error of each boundary point (L2-norm of point to closest point on surface) and square-error */
         void
-        getBoundaryError (std::vector<double> &error);
+        getBoundaryError (std::vector<double> &error) const;
 
         /** \brief Get parameter of each interior point */
         void
-        getInteriorParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params);
+        getInteriorParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params) const;
 
         /** \brief Get parameter of each boundary point */
         void
-        getBoundaryParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params);
+        getBoundaryParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params) const;
 
         /** \brief get the normals to the interior points given by setInterior() */
         void
-        getInteriorNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normal);
+        getInteriorNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normal) const;
 
         /** \brief get the normals to the boundary points given by setBoundary() */
         void
-        getBoundaryNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals);
+        getBoundaryNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals) const;
 
         /** \brief Get the closest point on a NURBS from a point pt in parameter space
          *  \param[in] nurbs  The NURBS surface

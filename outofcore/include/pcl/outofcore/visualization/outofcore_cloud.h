@@ -208,7 +208,7 @@ class OutofcoreCloud : public Object
     }
 
     int
-    getLodPixelThreshold ()
+    getLodPixelThreshold () const
     {
       return lod_pixel_threshold_;
     }

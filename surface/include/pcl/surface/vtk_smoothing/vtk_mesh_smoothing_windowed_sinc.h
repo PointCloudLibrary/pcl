@@ -73,7 +73,7 @@ namespace pcl
 
       /** \brief Get the number of iterations. */
       inline int
-      getNumIter ()
+      getNumIter () const
       {
         return num_iter_;
       };
@@ -89,7 +89,7 @@ namespace pcl
 
       /** \brief Get the pass band value. */
       inline float
-      getPassBand ()
+      getPassBand () const
       {
         return pass_band_;
       };
@@ -108,7 +108,7 @@ namespace pcl
 
       /** \brief Get whether the coordinate normalization is active or not */
       inline bool
-      getNormalizeCoordinates ()
+      getNormalizeCoordinates () const
       {
         return normalize_coordinates_;
       }
@@ -124,7 +124,7 @@ namespace pcl
 
       /** \brief Get the status of the feature edge smoothing */
       inline bool
-      getFeatureEdgeSmoothing ()
+      getFeatureEdgeSmoothing () const
       {
         return feature_edge_smoothing_;
       };
@@ -140,7 +140,7 @@ namespace pcl
 
       /** \brief Get the angle threshold for considering an edge to be sharp */
       inline float
-      getFeatureAngle ()
+      getFeatureAngle () const
       {
         return feature_angle_;
       };
@@ -156,7 +156,7 @@ namespace pcl
 
       /** \brief Get the edge angle to control smoothing along edges */
       inline float
-      getEdgeAngle ()
+      getEdgeAngle () const
       {
         return edge_angle_;
       };
@@ -173,7 +173,7 @@ namespace pcl
 
       /** \brief Get the status of the boundary smoothing */
       inline bool
-      getBoundarySmoothing ()
+      getBoundarySmoothing () const
       {
         return boundary_smoothing_;
       }

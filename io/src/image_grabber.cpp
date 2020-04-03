@@ -111,7 +111,7 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
 
   //! True if it is an image we know how to read
   bool
-  isValidExtension (const std::string &extension);
+  isValidExtension (const std::string &extension) const;
 
   //! Convenience function to rewind to the last frame
   void
@@ -430,7 +430,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::loadPCLZFFiles (const std::string &dir)
 }
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::ImageGrabberBase::ImageGrabberImpl::isValidExtension (const std::string &extension)
+pcl::ImageGrabberBase::ImageGrabberImpl::isValidExtension (const std::string &extension) const
 {
   bool valid;
   if(pclzf_mode_)
