@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
@@ -114,7 +115,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelNormalPlane (const PointCloudConstPtr &cloud, 
-                                       const std::vector<int> &indices,
+                                       const Indices &indices,
                                        bool random = false) 
         : SampleConsensusModelPlane<PointT> (cloud, indices, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
@@ -135,7 +136,7 @@ namespace pcl
       void 
       selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
                             const double threshold, 
-                            std::vector<int> &inliers) override;
+                            Indices &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers. 
         * 

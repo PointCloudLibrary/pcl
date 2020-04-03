@@ -83,9 +83,6 @@ namespace pcl
   class Filter : public PCLBase<PointT>
   {
     public:
-      using PCLBase<PointT>::indices_;
-      using PCLBase<PointT>::input_;
-
       using Ptr = shared_ptr<Filter<PointT> >;
       using ConstPtr = shared_ptr<const Filter<PointT> >;
 
@@ -103,9 +100,6 @@ namespace pcl
         extract_removed_indices_ (extract_removed_indices)
       {
       }
-
-      /** \brief Empty destructor */
-      ~Filter () {}
 
       /** \brief Get the point indices being removed */
       inline IndicesConstPtr const
@@ -153,6 +147,9 @@ namespace pcl
       }
 
     protected:
+
+      using PCLBase<PointT>::indices_;
+      using PCLBase<PointT>::input_;
 
       using PCLBase<PointT>::initCompute;
       using PCLBase<PointT>::deinitCompute;
@@ -208,9 +205,6 @@ namespace pcl
         extract_removed_indices_ (extract_removed_indices)
       {
       }
-
-      /** \brief Empty destructor */
-      ~Filter () {}
 
       /** \brief Get the point indices being removed */
       inline IndicesConstPtr const

@@ -44,6 +44,7 @@
 #undef Success
 #include <Eigen/StdVector>
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl

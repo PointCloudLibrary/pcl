@@ -41,12 +41,13 @@
 
 #include <pcl/people/hog.h>
 
-#include <cstring>
+#include <cstring> // for memcpy
+#include <algorithm> // for std::min
 
 #if defined(__SSE2__)
-#include <pcl/sse.h>
+  #include <pcl/sse.h> // sse methods
 #else
-#include <cstdlib>
+  #include <cstdlib>
 #endif
 
 /** \brief Constructor. */

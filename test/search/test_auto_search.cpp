@@ -106,7 +106,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   std::priority_queue<prioPointQueueEntry, std::vector<prioPointQueueEntry, Eigen::aligned_allocator<prioPointQueueEntry> > > pointCandidates;
 
   // create octree
-  pcl::search::Search<PointXYZ>* octree = new  pcl::search::AutotunedSearch<PointXYZ>(pcl::search::OCTREE);
+  pcl::search::Search<PointXYZ> octree(pcl::search::OCTREE);
 
   std::vector<int> k_indices;
   std::vector<float> k_sqr_distances;
@@ -166,8 +166,8 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     }
 
     // octree nearest neighbor search
-    octree->setInputCloud (cloudIn);
-    octree->nearestKSearch (searchPoint, (int)K, k_indices, k_sqr_distances);
+    octree.setInputCloud (cloudIn);
+    octree.nearestKSearch (searchPoint, (int)K, k_indices, k_sqr_distances);
 
     ASSERT_EQ ( k_indices.size() , k_indices_bruteforce.size() );
 
@@ -260,8 +260,8 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
 TEST (PCL, KdTreeWrapper_nearestKSearch)
 {
 
-  pcl::search::Search<PointXYZ>* kdtree = new pcl::search::AutotunedSearch<PointXYZ>(pcl::search::KDTREE);
-  kdtree->setInputCloud (cloud.makeShared ());
+  pcl::search::Search<PointXYZ> kdtree(pcl::search::KDTREE);
+  kdtree.setInputCloud (cloud.makeShared ());
   PointXYZ test_point (0.01f, 0.01f, 0.01f);
   unsigned int no_of_neighbors = 20;
   multimap<float, int> sorted_brute_force_result;
@@ -283,7 +283,7 @@ TEST (PCL, KdTreeWrapper_nearestKSearch)
   std::vector<float> k_distances;
   k_distances.resize (no_of_neighbors);
 
-  kdtree->nearestKSearch (test_point, no_of_neighbors, k_indices, k_distances);
+  kdtree.nearestKSearch (test_point, no_of_neighbors, k_indices, k_distances);
 
   EXPECT_EQ (k_indices.size (), no_of_neighbors);
 
@@ -301,20 +301,19 @@ TEST (PCL, KdTreeWrapper_nearestKSearch)
 
   ScopeTime scopeTime ("FLANN nearestKSearch");
   {
-    pcl::search::Search<PointXYZ>* kdtree = new pcl::search::AutotunedSearch<PointXYZ>(pcl::search::KDTREE);
-    //kdtree->initSearchDS ();
-    kdtree->setInputCloud (cloud_big.makeShared ());
+    pcl::search::AutotunedSearch<PointXYZ> kdtree (pcl::search::KDTREE);
+    //kdtree.initSearchDS ();
+    kdtree.setInputCloud (cloud_big.makeShared ());
     for (std::size_t i = 0; i < cloud_big.points.size (); ++i)
-      kdtree->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
+      kdtree.nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
   }
-
 }	
 
 
 /* Function to auto evaluate the best search structure for the given dataset */
 TEST (PCL, AutoTunedSearch_Evaluate)
 {
-  pcl::search::Search<PointXYZ>* search = new pcl::search::AutotunedSearch<PointXYZ>(pcl::search::AUTO_TUNED);
+  pcl::search::AutotunedSearch<PointXYZ> search (pcl::search::AUTO_TUNED);
 
   pcl::PCDReader pcd;
   pcl::PointCloud<PointXYZ>::Ptr cloudIn (new pcl::PointCloud<PointXYZ>);
@@ -325,8 +324,8 @@ TEST (PCL, AutoTunedSearch_Evaluate)
     return;
   }
 
- search->evaluateSearchMethods (cloudIn, pcl::search::NEAREST_K_SEARCH);
- search->evaluateSearchMethods (cloudIn, pcl::search::NEAREST_RADIUS_SEARCH);
+ search.evaluateSearchMethods (cloudIn, pcl::search::NEAREST_K_SEARCH);
+ search.evaluateSearchMethods (cloudIn, pcl::search::NEAREST_RADIUS_SEARCH);
 }
 
 
@@ -338,8 +337,8 @@ main(int argc, char** argv)
   init ();
 
   // Testing using explicit instantiation of inherited class
-  pcl::search::Search<PointXYZ>* kdtree = new pcl::search::AutotunedSearch<PointXYZ>(pcl::search::KDTREE);
-  kdtree->setInputCloud (cloud.makeShared ());
+  pcl::search::AutotunedSearch<PointXYZ> kdtree(pcl::search::KDTREE);
+  kdtree.setInputCloud (cloud.makeShared ());
 
   return (RUN_ALL_TESTS ());
 };

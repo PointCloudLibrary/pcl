@@ -243,7 +243,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
   else
   {    
     std::sort (indices_->begin (), indices_->end (), [this] (int p1, int p2) { return greaterIntensityAtIndices (p1, p2); });
-    float threshold = threshold_ * response_->points[indices_->front ()].intensity;
+    const float threshold = threshold_ * response_->points[indices_->front ()].intensity;
     output.clear ();
     output.reserve (response_->size());
     std::vector<bool> occupency_map (response_->size (), false);    
@@ -251,8 +251,18 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
     int height (response_->height);
     const int occupency_map_size (occupency_map.size ());
 
-#ifdef _OPENMP
-#pragma omp parallel for shared (output, occupency_map) firstprivate (width, height) num_threads(threads_)
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  shared(occupency_map, output) \
+  firstprivate(width, height) \
+  num_threads(threads_)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(occupency_map, occupency_map_size, output, threshold) \
+  firstprivate(width, height) \
+  num_threads(threads_)	
 #endif
     for (int i = 0; i < occupency_map_size; ++i)
     {
@@ -261,9 +271,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
       if (occupency_map[idx] || point_out.intensity < threshold || !isFinite (point_out))
         continue;
         
-#ifdef _OPENMP
 #pragma omp critical
-#endif
       {
         output.push_back (point_out);
         keypoints_indices_->indices.push_back (idx);
@@ -296,8 +304,18 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseHarris (PointClo
   output.resize (input_->size ());
   const int output_size (output.size ());
 
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) private (covar) num_threads(threads_)
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  shared(output) \
+  private(covar) \
+  num_threads(threads_)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(output, output_size) \
+  private(covar) \
+  num_threads(threads_)
 #endif
   for (int index = 0; index < output_size; ++index)
   {
@@ -332,8 +350,18 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseNoble (PointClou
   output.resize (input_->size ());
   const int output_size (output.size ());
 
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) private (covar) num_threads(threads_)
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  shared(output) \
+  private(covar) \
+  num_threads(threads_)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(output, output_size) \
+  private(covar) \
+  num_threads(threads_)
 #endif
   for (int index = 0; index < output_size; ++index)
   {
@@ -368,8 +396,18 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseLowe (PointCloud
   output.resize (input_->size ());
   const int output_size (output.size ());
 
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) private (covar) num_threads(threads_)
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  shared(output) \
+  private(covar) \
+  num_threads(threads_)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(output, output_size) \
+  private(covar) \
+  num_threads(threads_)
 #endif
   for (int index = 0; index < output_size; ++index)      
   {
@@ -404,8 +442,18 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseTomasi (PointClo
   output.resize (input_->size ());
   const int output_size (output.size ());
 
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) private (covar) num_threads(threads_)
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  shared(output) \
+  private(covar) \
+  num_threads(threads_)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(output, output_size) \
+  private(covar) \
+  num_threads(threads_)
 #endif
   for (int index = 0; index < output_size; ++index)
   {
@@ -426,50 +474,6 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseTomasi (PointClo
   output.height = input_->height;
   output.width = input_->width;
 }
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// template <typename PointInT, typename PointOutT, typename IntensityT> void
-// pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::refineCorners (PointCloudOut &corners) const
-// {
-//   std::vector<int> nn_indices;
-//   std::vector<float> nn_dists;
-
-//   Eigen::Matrix2f nnT;
-//   Eigen::Matrix2f NNT;
-//   Eigen::Matrix2f NNTInv;
-//   Eigen::Vector2f NNTp;
-//   float diff;
-//   const unsigned max_iterations = 10;
-// #ifdef _OPENMP
-//   #pragma omp parallel for shared (corners) private (nnT, NNT, NNTInv, NNTp, diff, nn_indices, nn_dists) num_threads(threads_)
-// #endif
-//   for (int cIdx = 0; cIdx < static_cast<int> (corners.size ()); ++cIdx)
-//   {
-//     unsigned iterations = 0;
-//     do {
-//       NNT.setZero();
-//       NNTp.setZero();
-//       PointInT corner;
-//       corner.x = corners[cIdx].x;
-//       corner.y = corners[cIdx].y;
-//       corner.z = corners[cIdx].z;
-//       tree_->radiusSearch (corner, search_radius_, nn_indices, nn_dists);
-//       for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
-//       {
-//         if (!std::isfinite (normals_->points[*iIt].normal_x))
-//           continue;
-
-//         nnT = normals_->points[*iIt].getNormalVector3fMap () * normals_->points[*iIt].getNormalVector3fMap ().transpose();
-//         NNT += nnT;
-//         NNTp += nnT * surface_->points[*iIt].getVector3fMap ();
-//       }
-//       if (invert3x3SymMatrix (NNT, NNTInv) != 0)
-//         corners[cIdx].getVector3fMap () = NNTInv * NNTp;
-
-//       diff = (corners[cIdx].getVector3fMap () - corner.getVector3fMap()).squaredNorm ();
-//     } while (diff > 1e-6 && ++iterations < max_iterations);
-//   }
-// }
 
 #define PCL_INSTANTIATE_HarrisKeypoint2D(T,U,I) template class PCL_EXPORTS pcl::HarrisKeypoint2D<T,U,I>;
 #endif // #ifndef PCL_HARRIS_KEYPOINT_2D_IMPL_H_

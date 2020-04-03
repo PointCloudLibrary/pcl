@@ -5,7 +5,7 @@
 [![Release][release-image]][releases]
 [![License][license-image]][license]
 
-[release-image]: https://img.shields.io/badge/release-1.10.0-green.svg?style=flat
+[release-image]: https://img.shields.io/badge/release-1.10.1-green.svg?style=flat
 [releases]: https://github.com/PointCloudLibrary/pcl/releases
 
 [license-image]: https://img.shields.io/badge/license-BSD-green.svg?style=flat
@@ -16,8 +16,8 @@ Continuous integration
 
 [![Ubuntu Build Status][ci-ubuntu-image]][ci-ubuntu] [![Windows Build Status][ci-windows-image]][ci-windows] [![MacOS Build Status][ci-macos-image]][ci-macos]
 
-[ci-ubuntu]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=4
-[ci-ubuntu-image]: https://img.shields.io/azure-devops/build/PointCloudLibrary/0fc52e87-00b9-420e-acbc-c842c4f2d9cc/4.svg?label=Ubuntu&logo=azure%20pipelines
+[ci-ubuntu]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=8
+[ci-ubuntu-image]: https://img.shields.io/azure-devops/build/PointCloudLibrary/0fc52e87-00b9-420e-acbc-c842c4f2d9cc/8.svg?label=Ubuntu&logo=azure%20pipelines
 [ci-windows]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=3
 [ci-windows-image]: https://img.shields.io/azure-devops/build/PointCloudLibrary/0fc52e87-00b9-420e-acbc-c842c4f2d9cc/3.svg?label=Windows&logo=azure%20pipelines
 [ci-macos]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=2

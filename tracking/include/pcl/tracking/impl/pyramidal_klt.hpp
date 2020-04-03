@@ -229,9 +229,11 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::downsample (const Floa
     ii[i] = 2 * i;
 
   FloatImagePtr down (new FloatImage (width, height));
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) firstprivate (ii) num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(down, height, output, smoothed, width) \
+  firstprivate(ii) \
+  num_threads(threads_)
   for (int j = 0; j < height; ++j)
   {
     int jj = 2*j;
@@ -275,9 +277,10 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::convolveRows (const Fl
   int last = input->width - kernel_size_2_;
   int w = last - 1;
 
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(input, height, last, output, w, width) \
+  num_threads(threads_)
   for (int j = 0; j < height; ++j)
   {
     for (int i = kernel_size_2_; i < last; ++i)
@@ -308,9 +311,10 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::convolveCols (const Fl
   int last = input->height - kernel_size_2_;
   int h = last -1;
 
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(input, h, height, last, output, width) \
+  num_threads(threads_)
   for (int i = 0; i < width; ++i)
   {
     for (int j = kernel_size_2_; j < last; ++j)
@@ -340,9 +344,10 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::computePyramids (const
 
   FloatImageConstPtr previous;
   FloatImagePtr tmp (new FloatImage (input->width, input->height));
-#ifdef _OPENMP
-#pragma omp parallel for num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(input, tmp) \
+  num_threads(threads_)
   for (int i = 0; i < static_cast<int> (input->size ()); ++i)
     tmp->points[i] = intensity_ (input->points[i]);
   previous = tmp;

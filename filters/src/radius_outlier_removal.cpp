@@ -40,7 +40,7 @@
 
 #include <pcl/filters/impl/radius_outlier_removal.hpp>
 #include <pcl/conversions.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void

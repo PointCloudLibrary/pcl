@@ -36,7 +36,8 @@
  */
 
 
-#include <pcl/point_traits.h>
+#include <pcl/memory.h>  // for pcl::has_custom_allocator, PCL_MAKE_ALIGNED_OPERATOR_NEW
+#include <pcl/type_traits.h>
 #include <pcl/point_types.h>
 
 #include <pcl/test/gtest.h>

@@ -41,7 +41,7 @@
 #include <pcl/apps/cloud_composer/tools/supervoxels.h>
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
 #include <pcl/apps/cloud_composer/items/normals_item.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/segmentation/supervoxel_clustering.h>
 

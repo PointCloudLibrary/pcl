@@ -12,16 +12,18 @@ jobs:
     variables:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'
       DOC_DIR: '$(Agent.BuildDirectory)/documentation'
+      CHANGELOG: '$(Agent.TempDirectory)/changelog'
     steps:
       - task: InstallSSHKey@0
         inputs:
           hostName: github.com
           sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBh5Yrau/gguTfoNALxhVX77Pgz6y6UWoJRERMKR68ee documentation@pointclouds.org
           sshKeySecureFile: id_ed25519
-      - task: UsePythonVersion@0
-        inputs:
-          versionSpec: '3.6'
-          addToPath: true
+      - script: |
+          $(Build.SourcesDirectory)/.dev/scripts/generate_changelog.py --with-misc > $CHANGELOG.md
+          grip --export $CHANGELOG.md $CHANGELOG.html
+          pandoc -f markdown -t plain --wrap=none $CHANGELOG.md
+        displayName: 'Generate Changelog'
       - script: |
           mkdir $BUILD_DIR && cd $BUILD_DIR
           cmake $(Build.SourcesDirectory) \
@@ -43,6 +45,7 @@ jobs:
           cp -r $BUILD_DIR/doc/tutorials/html/* tutorials
           cp -r $BUILD_DIR/doc/advanced/html/* advanced
           cp -r $BUILD_DIR/doc/doxygen/html/* .
+          cp $CHANGELOG.html .
           git add --all
           git commit --amend --reset-author -m 'Documentation for commit $(Build.SourceVersion)' -q
           git push --force

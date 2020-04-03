@@ -102,8 +102,16 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCl
 
   if (method_ == FOUR_CORNERS)
   {
-#ifdef _OPENMP
-#pragma omp parallel for num_threads (threads_)
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  shared(input, normals, response) \
+  num_threads(threads_)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(h, input, normals, response, w) \
+  num_threads(threads_)
 #endif
     for(int j = half_window_size_; j < h; ++j)
     {
@@ -144,8 +152,16 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCl
   }
   else
   {
-#ifdef _OPENMP
-#pragma omp parallel for num_threads (threads_)
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  shared(input, normals, response) \
+  num_threads(threads_)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(h, input, normals, response, w) \
+  num_threads(threads_)
 #endif
     for(int j = half_window_size_; j < h; ++j)
     {
@@ -230,8 +246,16 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCl
   const int width (input_->width);
   const int height (input_->height);
 
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) num_threads (threads_)
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  shared(indices, occupency_map, output) \
+  num_threads(threads_)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(height, indices, occupency_map, output, width) \
+  num_threads(threads_)
 #endif
   for (int i = 0; i < static_cast<int>(indices.size ()); ++i)
   {
@@ -243,9 +267,7 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCl
     p.getVector3fMap () = input_->points[idx].getVector3fMap ();
     p.intensity = response_->points [idx];
 
-#ifdef _OPENMP
 #pragma omp critical
-#endif
     {
       output.push_back (p);
       keypoints_indices_->indices.push_back (idx);

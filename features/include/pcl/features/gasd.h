@@ -139,8 +139,8 @@ namespace pcl
         shape_interp_ = interp;
       }
 
-      /** \brief Returns the transformation aligning the point cloud to the canonical coordinate system
-       * \param[out] trans transformation
+      /**
+       * \brief Returns the transformation aligning the point cloud to the canonical coordinate system
        */
       const Eigen::Matrix4f&
       getTransform () const
@@ -338,7 +338,7 @@ namespace pcl
       /** \brief copy computed color histograms to output descriptor point cloud
        * \param[in] grid_size size of the regular grid used to compute the descriptor
        * \param[in] hists_size size of the color histograms
-       * \param[in,out] hists color histograms, which are finalized, since they are circular 
+       * \param[in,out] hists color histograms, which are finalized, since they are circular
        * \param[out] output output descriptor point cloud
        * \param[in,out] pos current position of output descriptor point cloud
        */

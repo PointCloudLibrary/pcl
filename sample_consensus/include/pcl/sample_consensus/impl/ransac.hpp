@@ -67,7 +67,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
   std::size_t n_best_inliers_count = 0;
   double k = std::numeric_limits<double>::max();
 
-  std::vector<int> selection;
+  Indices selection;
   Eigen::VectorXf model_coefficients;
 
   const double log_probability  = std::log (1.0 - probability_);

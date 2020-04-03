@@ -91,7 +91,7 @@ namespace pcl
 
           /**Write camera pose to file*/
           void 
-          writePose(const std::string &filename_pose, const Eigen::Vector3f &teVecs, const Eigen::Matrix<float, 3, 3, Eigen::RowMajor> &erreMats);
+          writePose(const std::string &filename_pose, const Eigen::Vector3f &teVecs, const Eigen::Matrix<float, 3, 3, Eigen::RowMajor> &erreMats) const;
 
           /**Counter of the number of screenshots taken*/
           int screenshot_counter;

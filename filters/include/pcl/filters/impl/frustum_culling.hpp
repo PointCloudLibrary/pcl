@@ -44,35 +44,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::FrustumCulling<PointT>::applyFilter (PointCloud& output)
-{
-  std::vector<int> indices;
-  if (keep_organized_)
-  {
-    bool temp = extract_removed_indices_;
-    extract_removed_indices_ = true;
-    applyFilter (indices);
-    extract_removed_indices_ = temp;
-    copyPointCloud (*input_, output);
-
-    for (std::size_t rii = 0; rii < removed_indices_->size (); ++rii)
-    {
-      PointT &pt_to_remove = output.at ((*removed_indices_)[rii]);
-      pt_to_remove.x = pt_to_remove.y = pt_to_remove.z = user_filter_value_;
-      if (!std::isfinite (user_filter_value_))
-        output.is_dense = false;
-    }
-  }
-  else
-  {
-    output.is_dense = true;
-    applyFilter (indices);
-    copyPointCloud (*input_, indices, output);
-  }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
 pcl::FrustumCulling<PointT>::applyFilter (std::vector<int> &indices)
 {
   Eigen::Vector4f pl_n; // near plane 

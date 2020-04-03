@@ -70,7 +70,7 @@ namespace pcl
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
         */
       CropBox (bool extract_removed_indices = false) :
-        FilterIndices<PointT>::FilterIndices (extract_removed_indices),
+        FilterIndices<PointT> (extract_removed_indices),
         min_pt_ (Eigen::Vector4f (-1, -1, -1, 1)),
         max_pt_ (Eigen::Vector4f (1, 1, 1, 1)),
         rotation_ (Eigen::Vector3f::Zero ()),
@@ -173,12 +173,6 @@ namespace pcl
       using FilterIndices<PointT>::user_filter_value_;
       using FilterIndices<PointT>::extract_removed_indices_;
       using FilterIndices<PointT>::removed_indices_;
-
-      /** \brief Sample of point indices into a separate PointCloud
-        * \param[out] output the resultant point cloud
-        */
-      void
-      applyFilter (PointCloud &output) override;
 
       /** \brief Sample of point indices
         * \param[out] indices the resultant point cloud indices

@@ -5,11 +5,11 @@ Aligning object templates to a point cloud
 
 This tutorial gives an example of how some of the tools covered in the other tutorials can be combined to solve a higher level problem --- aligning a previously captured model of an object to some newly captured data.  In this specific example, we'll take a depth image that contains a person and try to fit some previously captured templates of their face; this will allow us to determine the position and orientation of the face in the scene.
 
-.. raw:: html 
+.. raw:: html
 
   <iframe width="560" height="349" style="margin-left:50px" src="http://www.youtube.com/embed/1T5HxTTgE4I" frameborder="0" allowfullscreen></iframe>
 
-We can use the code below to fit a template of a person's face (the blue points) to a new point cloud (the green points). 
+We can use the code below to fit a template of a person's face (the blue points) to a new point cloud (the green points).
 
 
 The code
@@ -71,11 +71,11 @@ The methods described above serve to encapsulate the work needed to compute feat
 
 Now we'll examine the *TemplateAlignment* class, which as the name suggests, will be used to perform template alignment (also referred to as template fitting/matching/registration).  A template is typically a small group of pixels or points that represents a known part of a larger object or scene.  By registering a template to a new image or point cloud, you can determine the position and orientation of the object that the template represents.
 
-We start by defining a structure to store the alignment results.  It contains a floating point value that represents the "fitness" of the alignment (a lower number means a better alignment) and a transformation matrix that describes how template points should be rotated and translated in order to best align with the points in the target cloud.  
+We start by defining a structure to store the alignment results.  It contains a floating point value that represents the "fitness" of the alignment (a lower number means a better alignment) and a transformation matrix that describes how template points should be rotated and translated in order to best align with the points in the target cloud.
 
 .. note::
 
-   Because we are including an Eigen::Matrix4f in this struct, we need to include the EIGEN_MAKE_ALIGNED_OPERATOR_NEW macro, which will overload the struct's "operator new" so that it will generate 16-bytes-aligned pointers.  If you're curious, you can find more information about this issue `here <http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html>`_. For convenience, there is a redefinition of the macro in pcl_macros.h, aptly named PCL_MAKE_ALIGNED_OPERATOR_NEW which will let us for example call `pcl::make_shared` to create a `shared_ptr` of over-aligned classes.
+   Because we are including an Eigen::Matrix4f in this struct, we need to include the EIGEN_MAKE_ALIGNED_OPERATOR_NEW macro, which will overload the struct's "operator new" so that it will generate 16-bytes-aligned pointers.  If you're curious, you can find more information about this issue `here <http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html>`_. For convenience, there is a redefinition of the macro in memory.h, aptly named PCL_MAKE_ALIGNED_OPERATOR_NEW which will let us for example call `pcl::make_shared` to create a `shared_ptr` of over-aligned classes.
 
 .. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp
@@ -201,11 +201,11 @@ After you have made the executable, you can run it like so::
 After a few seconds, you will see output similar to::
 
   Best fitness score: 0.000009
-  
-      |  0.834  0.295  0.466 | 
-  R = | -0.336  0.942  0.006 | 
-      | -0.437 -0.162  0.885 | 
-  
+
+      |  0.834  0.295  0.466 |
+  R = | -0.336  0.942  0.006 |
+      | -0.437 -0.162  0.885 |
+
   t = < -0.373, -0.097, 0.087 >
 
 You can also use the `pcl_viewer <http://www.pointclouds.org/documentation/overview/visualization.php>`_ utility to visualize the aligned template and overlay it against the target cloud by running the following command::

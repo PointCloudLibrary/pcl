@@ -373,7 +373,7 @@ namespace pcl
           * \return[in] array containing the width and height of the window
           */
         int*
-        getWindowSize ();
+        getWindowSize () const;
 
         /** \brief Return a pointer to the underlying VTK RenderWindow used. */
         vtkSmartPointer<vtkRenderWindow>

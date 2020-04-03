@@ -371,7 +371,11 @@ void
 Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<InterestPoint>& interest_points,
                                 int descriptor_size, float support_size, bool rotation_invariant, std::vector<Narf*>& feature_list)
 {
-  # pragma omp parallel for num_threads(max_no_of_threads) default(shared) schedule(dynamic, 10)
+#pragma omp parallel for \
+  default(none) \
+  shared(descriptor_size, feature_list, interest_points, range_image, rotation_invariant, support_size) \
+  schedule(dynamic, 10) \
+  num_threads(max_no_of_threads)
   //!!! nizar 20110408 : for OpenMP sake on MSVC this must be kept signed
   for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t>(interest_points.points.size ()); ++idx)
   {

@@ -7,6 +7,7 @@
 // PCL
 #include <pcl/outofcore/visualization/object.h>
 #include <pcl/common/eigen.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 // VTK

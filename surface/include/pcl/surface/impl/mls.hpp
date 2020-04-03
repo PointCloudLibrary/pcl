@@ -40,7 +40,7 @@
 #ifndef PCL_SURFACE_IMPL_MLS_H_
 #define PCL_SURFACE_IMPL_MLS_H_
 
-#include <pcl/point_traits.h>
+#include <pcl/type_traits.h>
 #include <pcl/surface/mls.h>
 #include <pcl/common/io.h>
 #include <pcl/common/copy_point.h>
@@ -292,9 +292,11 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
 #endif
 
   // For all points
-#ifdef _OPENMP
-#pragma omp parallel for schedule (dynamic,1000) num_threads (threads)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(corresponding_input_indices, projected_points, projected_points_normals) \
+  schedule(dynamic,1000) \
+  num_threads(threads)
   for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
     // Allocate enough space to hold the results of nearest neighbor searches

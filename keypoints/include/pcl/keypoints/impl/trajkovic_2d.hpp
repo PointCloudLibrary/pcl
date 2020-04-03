@@ -81,13 +81,20 @@ template <typename PointInT, typename PointOutT, typename IntensityT> void
 pcl::TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOut &output)
 {
   response_.reset (new pcl::PointCloud<float> (input_->width, input_->height));
-  int w = static_cast<int> (input_->width) - half_window_size_;
-  int h = static_cast<int> (input_->height) - half_window_size_;
+  const int w = static_cast<int> (input_->width) - half_window_size_;
+  const int h = static_cast<int> (input_->height) - half_window_size_;
 
   if (method_ == pcl::TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::FOUR_CORNERS)
   {
-#ifdef _OPENMP
-#pragma omp parallel for num_threads (threads_)
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  num_threads(threads_)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(h, w) \
+  num_threads(threads_)
 #endif
     for(int j = half_window_size_; j < h; ++j)
     {
@@ -127,8 +134,15 @@ pcl::TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (Poin
   }
   else
   {
-#ifdef _OPENMP
-#pragma omp parallel for num_threads (threads_)
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  num_threads(threads_)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(h, w) \
+  num_threads(threads_)
 #endif
     for(int j = half_window_size_; j < h; ++j)
     {
@@ -216,8 +230,16 @@ pcl::TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (Poin
   const int width (input_->width);
   const int height (input_->height);
 
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) num_threads (threads_)
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  shared(indices, occupency_map, output) \
+  num_threads(threads_)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(height, indices, occupency_map, output, width) \
+  num_threads(threads_)
 #endif
   for (std::size_t i = 0; i < indices.size (); ++i)
   {
@@ -229,9 +251,7 @@ pcl::TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (Poin
     p.getVector3fMap () = input_->points[idx].getVector3fMap ();
     p.intensity = response_->points [idx];
 
-#ifdef _OPENMP
 #pragma omp critical
-#endif
     {
       output.push_back (p);
       keypoints_indices_->indices.push_back (idx);

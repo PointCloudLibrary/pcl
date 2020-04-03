@@ -4,6 +4,7 @@
 #include <vector>
 #include <ostream>
 #include <boost/shared_ptr.hpp>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl

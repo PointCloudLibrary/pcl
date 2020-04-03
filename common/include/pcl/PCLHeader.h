@@ -1,9 +1,9 @@
 #pragma once
 
+#include <pcl/memory.h>  // for shared_ptr
+
 #include <string>   // for string
 #include <ostream>  // for ostream
-
-#include <pcl/make_shared.h>  // for shared_ptr
 
 namespace pcl
 {
@@ -41,3 +41,4 @@ namespace pcl
   }
 
 } // namespace pcl
+

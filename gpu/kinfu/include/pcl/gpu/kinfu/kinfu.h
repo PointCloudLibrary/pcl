@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/kinfu/pixel_rgb.h>
@@ -97,7 +98,7 @@ namespace pcl
           * \param[out] cy principal point y
           */
         void
-        getDepthIntrinsics (float& fx, float& fy, float& cx, float& cy);
+        getDepthIntrinsics (float& fx, float& fy, float& cx, float& cy) const;
         
 
         /** \brief Sets initial camera pose relative to volume coordinate space

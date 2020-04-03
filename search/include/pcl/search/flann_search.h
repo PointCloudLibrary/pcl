@@ -260,6 +260,8 @@ namespace pcl
         void
         setInputCloud (const PointCloudConstPtr& cloud, const IndicesConstPtr& indices = IndicesConstPtr ()) override;
 
+        using Search<PointT>::nearestKSearch;
+
         /** \brief Search for the k-nearest neighbors for the given query point.
           * \param[in] point the given query point
           * \param[in] k the number of neighbors to search for

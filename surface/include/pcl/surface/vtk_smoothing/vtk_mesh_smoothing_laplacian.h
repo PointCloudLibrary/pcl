@@ -73,7 +73,7 @@ namespace pcl
 
       /** \brief Get the number of iterations. */
       inline int
-      getNumIter ()
+      getNumIter () const
       {
         return num_iter_;
       };
@@ -89,7 +89,7 @@ namespace pcl
 
       /** \brief Get the convergence criterion. */
       inline float
-      getConvergence ()
+      getConvergence () const
       {
         return convergence_;
       };
@@ -108,7 +108,7 @@ namespace pcl
 
       /** \brief Get the relaxation factor of the Laplacian smoothing */
       inline float
-      getRelaxationFactor ()
+      getRelaxationFactor () const
       {
         return relaxation_factor_;
       };
@@ -124,7 +124,7 @@ namespace pcl
 
       /** \brief Get the status of the feature edge smoothing */
       inline bool
-      getFeatureEdgeSmoothing ()
+      getFeatureEdgeSmoothing () const
       {
         return feature_edge_smoothing_;
       };
@@ -140,7 +140,7 @@ namespace pcl
 
       /** \brief Get the angle threshold for considering an edge to be sharp */
       inline float
-      getFeatureAngle ()
+      getFeatureAngle () const
       {
         return feature_angle_;
       };
@@ -156,7 +156,7 @@ namespace pcl
 
       /** \brief Get the edge angle to control smoothing along edges */
       inline float
-      getEdgeAngle ()
+      getEdgeAngle () const
       {
         return edge_angle_;
       };
@@ -172,7 +172,7 @@ namespace pcl
 
       /** \brief Get the status of the boundary smoothing */
       inline bool
-      getBoundarySmoothing ()
+      getBoundarySmoothing () const
       {
         return boundary_smoothing_;
       }

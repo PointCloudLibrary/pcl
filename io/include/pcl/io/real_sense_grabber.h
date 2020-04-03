@@ -38,7 +38,7 @@
 #pragma once
 
 #include <pcl/io/grabber.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>

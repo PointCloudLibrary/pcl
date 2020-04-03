@@ -509,10 +509,10 @@ RELATED FUNCTIONS:
 {
   unsigned char stack_buffer[4*64*sizeof(double)];
   double delta_t;
-  register double alpha0;
-  register double alpha1;
-  register double *cv0, *cv1;
-  register int i, j, k; 
+  double alpha0;
+  double alpha1;
+  double *cv0, *cv1;
+  int i, j, k; 
   double* CV, *tmp;
   void* free_me = 0;
   const int degree = order-1;
@@ -733,11 +733,11 @@ RELATED FUNCTIONS:
   TL_EvNurbBasis
   TL_EvNurbBasisDer
 *****************************************************************************/
-  register double a0, a1, x, y;
+  double a0, a1, x, y;
   const double *k0;
   double *t_k, *k_t, *N0;
   const int d = order-1;
-  register int j, r;
+  int j, r;
 
   t_k = (double*)alloca( d<<4 );
   k_t = t_k + d;

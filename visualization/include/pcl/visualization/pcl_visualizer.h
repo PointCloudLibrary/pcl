@@ -103,7 +103,7 @@ namespace pcl
           */
         PCLVisualizer (const std::string &name = "", const bool create_interactor = true);
 
-        /** \brief PCL Visualizer constructor. It looks through the passed argv arguments to find the "-cam *.cam" argument. 
+        /** \brief PCL Visualizer constructor. It looks through the passed argv arguments to find the "-cam *.cam" argument.
           *        If the search failed, the name for cam file is calculated with boost uuid. If there is no such file, camera is not initilalized.
           * \param[in] argc
           * \param[in] argv
@@ -113,10 +113,10 @@ namespace pcl
           */
         PCLVisualizer (int &argc, char **argv, const std::string &name = "",
             PCLVisualizerInteractorStyle* style = PCLVisualizerInteractorStyle::New (), const bool create_interactor = true);
-            
+
         /** \brief PCL Visualizer constructor.
-          * \param[in] custom vtk renderer
-          * \param[in] custom vtk render window
+          * \param[in] ren custom vtk renderer
+          * \param[in] wind custom vtk render window
           * \param[in] create_interactor if true (default), create an interactor, false otherwise
           */
         PCLVisualizer (vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, const std::string &name = "", const bool create_interactor = true);
@@ -124,8 +124,8 @@ namespace pcl
         /** \brief PCL Visualizer constructor.
           * \param[in] argc
           * \param[in] argv
-          * \param[in] custom vtk renderer
-          * \param[in] custom vtk render window
+          * \param[in] ren custom vtk renderer
+          * \param[in] wind custom vtk render window
           * \param[in] style interactor style (defaults to PCLVisualizerInteractorStyle)
           * \param[in] create_interactor if true (default), create an interactor, false otherwise
           */
@@ -286,11 +286,11 @@ namespace pcl
         spinOnce (int time = 1, bool force_redraw = false);
 
         /** \brief Adds a widget which shows an interactive axes display for orientation
-         *  \param[in] interactor - Pointer to the vtk interactor object used by the PCLVisualizer window 
+         *  \param[in] interactor - Pointer to the vtk interactor object used by the PCLVisualizer window
          */
         void
         addOrientationMarkerWidgetAxes (vtkRenderWindowInteractor* interactor);
-        
+
         /** \brief Disables the Orientatation Marker Widget so it is removed from the renderer */
         void
         removeOrientationMarkerWidgetAxes ();
@@ -466,7 +466,7 @@ namespace pcl
         /** \brief Update a text to screen
           * \param[in] text the text to update
           * \param[in] xpos the new X position on screen
-          * \param[in] ypos the new Y position on screen 
+          * \param[in] ypos the new Y position on screen
           * \param[in] id the text object id (default: equal to the "text" parameter)
           */
         bool
@@ -477,21 +477,21 @@ namespace pcl
         /** \brief Update a text to screen
           * \param[in] text the text to update
           * \param[in] xpos the new X position on screen
-          * \param[in] ypos the new Y position on screen 
+          * \param[in] ypos the new Y position on screen
           * \param[in] r the red color value
           * \param[in] g the green color value
           * \param[in] b the blue color value
           * \param[in] id the text object id (default: equal to the "text" parameter)
           */
         bool
-        updateText (const std::string &text, 
+        updateText (const std::string &text,
                     int xpos, int ypos, double r, double g, double b,
                     const std::string &id = "");
 
         /** \brief Update a text to screen
           * \param[in] text the text to update
           * \param[in] xpos the new X position on screen
-          * \param[in] ypos the new Y position on screen 
+          * \param[in] ypos the new Y position on screen
           * \param[in] fontsize the fontsize of the text
           * \param[in] r the red color value
           * \param[in] g the green color value
@@ -499,13 +499,13 @@ namespace pcl
           * \param[in] id the text object id (default: equal to the "text" parameter)
           */
         bool
-        updateText (const std::string &text, 
+        updateText (const std::string &text,
                     int xpos, int ypos, int fontsize, double r, double g, double b,
                     const std::string &id = "");
 
-        /** \brief Set the pose of an existing shape. 
-          * 
-          * Returns false if the shape doesn't exist, true if the pose was successfully 
+        /** \brief Set the pose of an existing shape.
+          *
+          * Returns false if the shape doesn't exist, true if the pose was successfully
           * updated.
           *
           * \param[in] id the shape or cloud object id (i.e., given on \a addLine etc.)
@@ -630,7 +630,7 @@ namespace pcl
             const typename pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
             int level = 100, float scale = 1.0f,
             const std::string &id = "cloud", int viewport = 0);
-        
+
         /** \brief Add the estimated principal curvatures of a Point Cloud to screen.
           * \param[in] cloud the input point cloud dataset containing the XYZ data
           * \param[in] normals the input point cloud dataset containing the normal data
@@ -1067,7 +1067,7 @@ namespace pcl
                             int viewport = 0)
         {
           // If Nth not given, display all correspondences
-          return (addCorrespondences<PointT> (source_points, target_points, 
+          return (addCorrespondences<PointT> (source_points, target_points,
                                               correspondences, 1, id, viewport));
         }
 
@@ -1158,7 +1158,7 @@ namespace pcl
         bool
         setPointCloudRenderingProperties (int property, double val1, double val2,
                                           const std::string &id = "cloud", int viewport = 0);
-        
+
        /** \brief Set the rendering properties of a PointCloud
          * \param[in] property the property type
          * \param[in] value the value to be set
@@ -1179,7 +1179,7 @@ namespace pcl
         bool
         getPointCloudRenderingProperties (int property, double &value,
                                           const std::string &id = "cloud");
-        
+
        /** \brief Get the rendering properties of a PointCloud
          * \param[in] property the property type
          * \param[out] val1 the resultant property value
@@ -1193,13 +1193,13 @@ namespace pcl
         getPointCloudRenderingProperties (RenderingProperties property, double &val1, double &val2, double &val3,
                                           const std::string &id = "cloud");
 
-        /** \brief Set whether the point cloud is selected or not 
+        /** \brief Set whether the point cloud is selected or not
          *  \param[in] selected whether the cloud is selected or not (true = selected)
          *  \param[in] id the point cloud object id (default: cloud)
          */
         bool
         setPointCloudSelected (const bool selected, const std::string &id = "cloud" );
-        
+
        /** \brief Set the rendering properties of a shape
          * \param[in] property the property type
          * \param[in] value the value to be set
@@ -1256,8 +1256,8 @@ namespace pcl
           * \param[in] ymax the maximum Y coordinate for the viewport (0.0 <= 1.0)
           * \param[in] viewport the id of the new viewport
           *
-          * \note If no renderer for the current window exists, one will be created, and 
-          * the viewport will be set to 0 ('all'). In case one or multiple renderers do 
+          * \note If no renderer for the current window exists, one will be created, and
+          * the viewport will be set to 0 ('all'). In case one or multiple renderers do
           * exist, the viewport ID will be set to the total number of renderers - 1.
           */
         void
@@ -1780,7 +1780,7 @@ namespace pcl
 
         /** \brief Get camera file for camera parameter saving/restoring.
           * \note This will be valid only when valid "-cam" option were available in command line
-          * or a saved camera file were automatically loaded. 
+          * or a saved camera file were automatically loaded.
           * \sa cameraParamsSet (), cameraFileLoaded ()
           */
         std::string
@@ -1892,21 +1892,21 @@ namespace pcl
         {
           return (win_);
         }
-        
+
         /** \brief Return a pointer to the underlying VTK Renderer Collection. */
         vtkSmartPointer<vtkRendererCollection>
         getRendererCollection ()
         {
           return (rens_);
         }
-        
+
         /** \brief Return a pointer to the CloudActorMap this visualizer uses. */
         CloudActorMapPtr
         getCloudActorMap ()
         {
           return (cloud_actor_map_);
         }
-        
+
         /** \brief Return a pointer to the ShapeActorMap this visualizer uses. */
         ShapeActorMapPtr
         getShapeActorMap ()
@@ -1931,7 +1931,7 @@ namespace pcl
         /** \brief Use Vertex Buffer Objects renderers.
           * This is an optimization for the obsolete OpenGL backend. Modern OpenGL2 backend (VTK ≥ 6.3) uses vertex
           * buffer objects by default, transparently for the user.
-          * \param[in] use_vbos set to true to use VBOs 
+          * \param[in] use_vbos set to true to use VBOs
           */
         void
         setUseVbos (bool use_vbos);
@@ -1959,13 +1959,13 @@ namespace pcl
           * attached to a given vtkRenderWindow
           * \param[in,out] iren the vtkRenderWindowInteractor object to set up
           * \param[in,out] win a vtkRenderWindow object that the interactor is attached to
-          * \param[in,out] style a vtkInteractorStyle object 
+          * \param[in,out] style a vtkInteractorStyle object
           */
         void
         setupInteractor (vtkRenderWindowInteractor *iren,
                          vtkRenderWindow *win,
                          vtkInteractorStyle *style);
-        
+
         /** \brief Get a pointer to the current interactor style used. */
         inline vtkSmartPointer<PCLVisualizerInteractorStyle>
         getInteractorStyle ()
@@ -2013,7 +2013,7 @@ namespace pcl
           {
             return (new ExitMainLoopTimerCallback);
           }
-          void 
+          void
           Execute (vtkObject*, unsigned long event_id, void*) override;
 
           int right_timer_id;
@@ -2026,7 +2026,7 @@ namespace pcl
           {
             return (new ExitCallback);
           }
-          void 
+          void
           Execute (vtkObject*, unsigned long event_id, void*) override;
 
           PCLVisualizer* pcl_visualizer;
@@ -2041,7 +2041,7 @@ namespace pcl
           FPSCallback (const FPSCallback& src) : vtkCommand (src), actor (src.actor), pcl_visualizer (src.pcl_visualizer), decimated (src.decimated), last_fps (src.last_fps) {}
           FPSCallback& operator = (const FPSCallback& src) { actor = src.actor; pcl_visualizer = src.pcl_visualizer; decimated = src.decimated; last_fps = src.last_fps; return (*this); }
 
-          void 
+          void
           Execute (vtkObject*, unsigned long event_id, void*) override;
 
           vtkTextActor *actor;
@@ -2083,7 +2083,7 @@ namespace pcl
 
         /** \brief Internal pointer to widget which contains a set of axes */
         vtkSmartPointer<vtkOrientationMarkerWidget> axes_widget_;
-        
+
         /** \brief Boolean that holds whether or not the camera parameters were manually initialized */
         bool camera_set_;
 
@@ -2113,7 +2113,7 @@ namespace pcl
           * \param[in] actor a pointer to the vtk actor object
           * \param[in] viewport port where the actor should be added to (default: 0/all)
           *
-          * \note If viewport is set to 0, the actor will be added to all existing 
+          * \note If viewport is set to 0, the actor will be added to all existing
           * renders. To select a specific viewport use an integer between 1 and N.
           */
         void
@@ -2136,7 +2136,7 @@ namespace pcl
         void
         createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
                                    vtkSmartPointer<vtkActor> &actor,
-                                   bool use_scalars = true);
+                                   bool use_scalars = true) const;
 
         /** \brief Internal method. Creates a vtk actor from a vtk polydata object.
           * \param[in] data the vtk polydata object to create an actor for
@@ -2146,7 +2146,7 @@ namespace pcl
         void
         createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
                                    vtkSmartPointer<vtkLODActor> &actor,
-                                   bool use_scalars = true);
+                                   bool use_scalars = true) const;
 
         /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
           * \param[in] cloud the input PCL PointCloud dataset
@@ -2298,7 +2298,7 @@ namespace pcl
           * \param[in] tex_mat texture material in PCL format
           * \param[out] vtk_tex texture material in VTK format
           * \return 0 on success and -1 else.
-          * \note for now only image based textures are supported, image file must be in 
+          * \note for now only image based textures are supported, image file must be in
           * tex_file attribute of \a tex_mat.
           */
         int
@@ -2311,7 +2311,7 @@ namespace pcl
           */
         std::string
         getUniqueCameraFile (int argc, char **argv);
-        
+
         //There's no reason these conversion functions shouldn't be public and static so others can use them.
       public:
         /** \brief Convert Eigen::Matrix4f to vtkMatrix4x4
@@ -2331,7 +2331,7 @@ namespace pcl
         convertToVtkMatrix (const Eigen::Vector4f &origin,
                             const Eigen::Quaternion<float> &orientation,
                             vtkSmartPointer<vtkMatrix4x4> &vtk_matrix);
-        
+
         /** \brief Convert vtkMatrix4x4 to an Eigen4f
           * \param[in] vtk_matrix the original VTK 4x4 matrix
           * \param[out] m the resultant Eigen 4x4 matrix

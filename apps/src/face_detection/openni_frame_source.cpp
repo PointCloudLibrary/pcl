@@ -1,6 +1,6 @@
 #include "pcl/apps/face_detection/openni_frame_source.h"
 #include <pcl/io/pcd_io.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 namespace OpenNIFrameSource
 {
@@ -19,7 +19,7 @@ namespace OpenNIFrameSource
     grabber_.stop ();
   }
 
-  bool OpenNIFrameSource::isActive()
+  bool OpenNIFrameSource::isActive() const
   {
     return active_;
   }

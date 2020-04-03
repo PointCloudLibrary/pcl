@@ -40,6 +40,7 @@
 #pragma once
 
 #include <pcl/common/angles.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/segmentation/comparator.h>
 #include <boost/make_shared.hpp>

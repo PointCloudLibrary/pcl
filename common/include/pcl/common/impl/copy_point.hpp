@@ -39,7 +39,7 @@
 #define PCL_COMMON_IMPL_COPY_POINT_HPP_
 
 #include <pcl/point_types.h>
-#include <pcl/point_traits.h>
+#include <pcl/type_traits.h>
 #include <pcl/for_each_type.h>
 #include <pcl/common/concatenate.h>
 

@@ -163,7 +163,7 @@ protected:
 
   /** Convert the libSVM format (svm_problem) into a easier output format. */
   void
-  adaptLibSVMToInput(std::vector<SVMData>& training_set, svm_problem prob);
+  adaptLibSVMToInput(std::vector<SVMData>& training_set, svm_problem prob) const;
 
   /** Load a problem from an extern file. */
   bool
