@@ -177,7 +177,7 @@ pcl::visualization::PointPickingCallback::performSinglePick (
 /////////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowInteractor *iren,
-                                                           std::vector<int> &indices) const
+                                                           pcl::visualization::CloudActorMapPtr cam_ptr, std::map<std::string, std::vector<int>>& cloudIndices) const
 {
   vtkAreaPicker *picker = static_cast<vtkAreaPicker*> (iren->GetPicker ());
   vtkRenderer *ren = iren->FindPokedRenderer (iren->GetEventPosition ()[0], iren->GetEventPosition ()[1]);
