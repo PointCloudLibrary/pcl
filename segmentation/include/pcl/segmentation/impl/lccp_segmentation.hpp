@@ -139,8 +139,7 @@ pcl::LCCPSegmentation<PointT>::computeSegmentAdjacency ()
   seg_label_to_neighbor_set_map_.clear ();
 
   //The vertices in the supervoxel adjacency list are the supervoxel centroids
-  std::pair<VertexIterator, VertexIterator> vertex_iterator_range;
-  vertex_iterator_range = boost::vertices (sv_adjacency_list_);
+  std::pair<VertexIterator, VertexIterator> vertex_iterator_range = boost::vertices (sv_adjacency_list_);
 
   std::uint32_t current_segLabel;
   std::uint32_t neigh_segLabel;
@@ -176,12 +175,7 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
 
   std::set<std::uint32_t> filteredSegLabels;
 
-  std::uint32_t largest_neigh_size = 0;
-  std::uint32_t largest_neigh_seg_label = 0;
-  std::uint32_t current_seg_label;
-
-  std::pair<VertexIterator, VertexIterator> vertex_iterator_range;
-  vertex_iterator_range = boost::vertices (sv_adjacency_list_);
+  std::pair<VertexIterator, VertexIterator> vertex_iterator_range = boost::vertices (sv_adjacency_list_);
 
   bool continue_filtering = true;
 
@@ -194,9 +188,9 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
     for (VertexIterator sv_itr = vertex_iterator_range.first; sv_itr != vertex_iterator_range.second; ++sv_itr)  // For all supervoxels
     {
       const std::uint32_t& sv_label = sv_adjacency_list_[*sv_itr];
-      current_seg_label = sv_label_to_seg_label_map_[sv_label];
-      largest_neigh_seg_label = current_seg_label;
-      largest_neigh_size = seg_label_to_sv_list_map_[current_seg_label].size ();
+      std::uint32_t current_seg_label = sv_label_to_seg_label_map_[sv_label];
+      std::uint32_t largest_neigh_seg_label = current_seg_label;
+      std::uint32_t largest_neigh_size = seg_label_to_sv_list_map_[current_seg_label].size ();
 
       const std::uint32_t& nr_neighbors = seg_label_to_neighbor_set_map_[current_seg_label].size ();
       if (nr_neighbors == 0)
@@ -313,8 +307,7 @@ pcl::LCCPSegmentation<PointT>::doGrouping ()
   
   // Perform depth search on the graph and recursively group all supervoxels with convex connections
   //The vertices in the supervoxel adjacency list are the supervoxel centroids
-  std::pair< VertexIterator, VertexIterator> vertex_iterator_range;
-  vertex_iterator_range = boost::vertices (sv_adjacency_list_);
+  std::pair< VertexIterator, VertexIterator> vertex_iterator_range = boost::vertices (sv_adjacency_list_);
 
   // Note: *sv_itr is of type " boost::graph_traits<VoxelAdjacencyList>::vertex_descriptor " which it nothing but a typedef of std::size_t..
   unsigned int segment_label = 1;  // This starts at 1, because 0 is reserved for errors
@@ -344,8 +337,7 @@ pcl::LCCPSegmentation<PointT>::recursiveSegmentGrowing (const VertexID &query_po
   seg_label_to_sv_list_map_[segment_label].insert (sv_label);
 
   // Iterate through all neighbors of this supervoxel and check whether they should be merged with the current supervoxel
-  std::pair<OutEdgeIterator, OutEdgeIterator> out_edge_iterator_range;
-  out_edge_iterator_range = boost::out_edges (query_point_id, sv_adjacency_list_);  // adjacent vertices to node (*itr) in graph sv_adjacency_list_
+  std::pair<OutEdgeIterator, OutEdgeIterator> out_edge_iterator_range = boost::out_edges (query_point_id, sv_adjacency_list_);  // adjacent vertices to node (*itr) in graph sv_adjacency_list_
   for (OutEdgeIterator out_Edge_itr = out_edge_iterator_range.first; out_Edge_itr != out_edge_iterator_range.second; ++out_Edge_itr)
   {
     const VertexID neighbor_ID = boost::target (*out_Edge_itr, sv_adjacency_list_);
@@ -367,13 +359,8 @@ pcl::LCCPSegmentation<PointT>::applyKconvexity (const unsigned int k_arg)
   if (k_arg == 0)
     return;
 
-  unsigned int kcount = 0;
-
   EdgeIterator edge_itr, edge_itr_end, next_edge;
   boost::tie (edge_itr, edge_itr_end) = boost::edges (sv_adjacency_list_);
-
-  std::pair<OutEdgeIterator, OutEdgeIterator> source_neighbors_range;
-  std::pair<OutEdgeIterator, OutEdgeIterator> target_neighbors_range;
 
   // Check all edges in the graph for k-convexity
   for (next_edge = edge_itr; edge_itr != edge_itr_end; edge_itr = next_edge)
@@ -384,13 +371,13 @@ pcl::LCCPSegmentation<PointT>::applyKconvexity (const unsigned int k_arg)
 
     if (is_convex)  // If edge is (0-)convex
     {
-      kcount = 0;
+      unsigned int kcount = 0;
 
       const VertexID source = boost::source (*edge_itr, sv_adjacency_list_);
       const VertexID target = boost::target (*edge_itr, sv_adjacency_list_);
 
-      source_neighbors_range = boost::out_edges (source, sv_adjacency_list_);
-      target_neighbors_range = boost::out_edges (target, sv_adjacency_list_);
+      std::pair<OutEdgeIterator, OutEdgeIterator> source_neighbors_range = boost::out_edges (source, sv_adjacency_list_);
+      std::pair<OutEdgeIterator, OutEdgeIterator> target_neighbors_range = boost::out_edges (target, sv_adjacency_list_);
 
       // Find common neighbors, check their connection
       for (OutEdgeIterator source_neighbors_itr = source_neighbors_range.first; source_neighbors_itr != source_neighbors_range.second; ++source_neighbors_itr)  // For all supervoxels
