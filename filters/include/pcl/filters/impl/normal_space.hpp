@@ -59,11 +59,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::initCompute ()
     return false;
   }
 
-  boost::mt19937 rng (static_cast<unsigned int> (seed_));
-  boost::uniform_int<unsigned int> uniform_distrib (0, unsigned (input_->size ()));
-  delete rng_uniform_distribution_;
-  rng_uniform_distribution_ = new boost::variate_generator<boost::mt19937, boost::uniform_int<unsigned int> > (rng, uniform_distrib);
-
+  rng_.seed (seed_);
   return (true);
 }
 
@@ -213,11 +209,14 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
 
       unsigned int pos = 0;
       unsigned int random_index = 0;
+      // std::uniform_int_distribution<unsigned> rng_uniform_distribution (0u, M - 1u); Test fails with this
+      std::uniform_int_distribution<unsigned> rng_uniform_distribution (0u, input_->size ());
 
       // Picking up a sample at random from jth bin
       do
       {
-        random_index = static_cast<unsigned int> ((*rng_uniform_distribution_) () % M);
+        // random_index = rng_uniform_distribution (rng_); // Test fails with this combo
+        random_index = rng_uniform_distribution (rng_) % M;
         pos = start_index[j] + random_index;
       } while (is_sampled_flag.test (pos));
 
