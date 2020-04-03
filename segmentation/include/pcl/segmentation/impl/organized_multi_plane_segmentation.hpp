@@ -91,13 +91,6 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   if (!initCompute ())
     return;
 
-  // Check that the input cloud is present
-  if (!input_)
-  {
-    PCL_ERROR( "[pcl::%s::segment] Must specify input cloud.\n", getClassName().c_str());
-    return;
-  }
-
   // Check that the normals are present
   if (!normals_)
   {
