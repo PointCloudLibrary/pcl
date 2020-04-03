@@ -382,10 +382,10 @@ namespace pcl
       {
         OptimizationFunctorWithIndices (const GeneralizedIterativeClosestPoint* gicp)
           : BFGSDummyFunctor<double,6> (), gicp_(gicp) {}
-        double operator() (const Vector6d& x) override;
-        void  df(const Vector6d &x, Vector6d &df) override;
-        void fdf(const Vector6d &x, double &f, Vector6d &df) override;
-		BFGSSpace::Status checkGradient(const Vector6d& g) override;
+        inline double operator() (const Vector6d& x) override;
+        inline void  df(const Vector6d &x, Vector6d &df) override;
+        inline void fdf(const Vector6d &x, double &f, Vector6d &df) override;
+		inline BFGSSpace::Status checkGradient(const Vector6d& g) override;
 
         const GeneralizedIterativeClosestPoint *gicp_;
       };

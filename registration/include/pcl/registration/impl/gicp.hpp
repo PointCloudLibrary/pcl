@@ -354,8 +354,8 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFun
 template <typename PointSource, typename PointTarget> inline BFGSSpace::Status
 pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFunctorWithIndices::checkGradient(const Vector6d& g)
 {
-  auto linear_epsilon = gicp_->getLinearGradientTolerance();
-  auto angular_epsilon = gicp_->getAngularGradientTolerance();
+  auto linear_epsilon = gicp_->linear_gradient_tolerance_;
+  auto angular_epsilon = gicp_->angular_gradient_tolerance_;
 
   if ((linear_epsilon < 0.) || (angular_epsilon < 0.))
     return BFGSSpace::NegativeGradientEpsilon;
