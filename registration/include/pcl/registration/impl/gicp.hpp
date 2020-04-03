@@ -43,18 +43,6 @@
 #include <pcl/registration/boost.h>
 #include <pcl/registration/exceptions.h>
 
-#include <algorithm>
-namespace std {
-#ifndef clamp
-template<class T>
-constexpr const T& clamp( const T& v, const T& lo, const T& hi )
-{
-    assert( !(hi < lo) );
-    return (v < lo) ? lo : (hi < v) ? hi : v;
-}	
-#endif
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget>
 template<typename PointT> void
@@ -369,7 +357,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFun
   auto R = Eigen::Matrix3f{	Eigen::AngleAxisf(g[5], Eigen::Vector3f::UnitZ()) *
 							Eigen::AngleAxisf(g[4], Eigen::Vector3f::UnitY()) *
 							Eigen::AngleAxisf(g[3], Eigen::Vector3f::UnitX())};
-  auto angular_grad = std::acos(std::clamp(0.5f * (R.trace() - 1.f), -1.f, 1.f));
+  auto angular_grad = std::acos(std::min(std::max(0.5f * (R.trace() - 1.f), -1.f), 1.f));
 
   if ((linear_epsilon < 0.) && (angular_grad < angular_epsilon))
 	return BFGSSpace::Success;
