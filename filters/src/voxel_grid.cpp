@@ -41,6 +41,7 @@
 #include <iostream>
 #include <pcl/common/io.h>
 #include <pcl/filters/impl/voxel_grid.hpp>
+#include <boost/sort/spreadsort/integer_sort.hpp>
 
 using Array4size_t = Eigen::Array<std::size_t, 4, 1>;
 
@@ -377,7 +378,10 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 
   // Second pass: sort the index_vector vector using value representing target cell as index
   // in effect all points belonging to the same output cell will be next to each other
-  std::sort (index_vector.begin (), index_vector.end (), std::less<cloud_point_index_idx> ());
+  //std::sort (index_vector.begin (), index_vector.end (), std::less<cloud_point_index_idx> ());
+
+  boost::sort::spreadsort::integer_sort(index_vector.begin (), index_vector.end (),
+                                        cloud_point_index_rightshift (), std::less<cloud_point_index_idx> ());
 
   // Third pass: count output cells
   // we need to skip all the same, adjacenent idx values

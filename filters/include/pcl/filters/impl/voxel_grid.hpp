@@ -42,6 +42,7 @@
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
 #include <pcl/filters/voxel_grid.h>
+#include  <boost/sort/spreadsort/integer_sort.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -202,11 +203,16 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
 
 struct cloud_point_index_idx 
 {
-  unsigned int idx;
+  int idx;
   unsigned int cloud_point_index;
 
-  cloud_point_index_idx (unsigned int idx_, unsigned int cloud_point_index_) : idx (idx_), cloud_point_index (cloud_point_index_) {}
+  cloud_point_index_idx(){}
+  cloud_point_index_idx (int idx_, unsigned int cloud_point_index_) : idx (idx_), cloud_point_index (cloud_point_index_) {}
   bool operator < (const cloud_point_index_idx &p) const { return (idx < p.idx); }
+};
+
+struct cloud_point_index_rightshift {
+  inline int operator()(const cloud_point_index_idx &p, const unsigned offset) { return p.idx >> offset; }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -339,7 +345,9 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
 
   // Second pass: sort the index_vector vector using value representing target cell as index
   // in effect all points belonging to the same output cell will be next to each other
-  std::sort (index_vector.begin (), index_vector.end (), std::less<cloud_point_index_idx> ());
+  //std::sort (index_vector.begin (), index_vector.end (), std::less<cloud_point_index_idx> ());
+  boost::sort::spreadsort::integer_sort(index_vector.begin (), index_vector.end (),
+                                        cloud_point_index_rightshift (), std::less<cloud_point_index_idx> ());
 
   // Third pass: count output cells
   // we need to skip all the same, adjacent idx values
