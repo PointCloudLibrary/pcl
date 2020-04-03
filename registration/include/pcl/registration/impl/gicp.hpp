@@ -43,6 +43,18 @@
 #include <pcl/registration/boost.h>
 #include <pcl/registration/exceptions.h>
 
+#include <algorithm>
+namespace std {
+#ifndef clamp
+template<class T>
+constexpr const T& clamp( const T& v, const T& lo, const T& hi )
+{
+    assert( !(hi < lo) );
+    return (v < lo) ? lo : (hi < v) ? hi : v;
+}	
+#endif
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget>
 template<typename PointT> void
@@ -226,7 +238,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTr
     {
       break;
     }
-    result = bfgs.testGradient(linear_gradient_tolerance_,angular_gradient_tolerance_);
+    result = bfgs.testGradient();
   } while(result == BFGSSpace::Running && inner_iterations_ < max_inner_iterations_);
   if(result == BFGSSpace::NoProgress || result == BFGSSpace::Success || inner_iterations_ == max_inner_iterations_)
   {
@@ -336,6 +348,33 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFun
   g.head<3> ()*= double(2.0/m);
   R*= 2.0/m;
   gicp_->computeRDerivative(x, R, g);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget> inline BFGSSpace::Status
+pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFunctorWithIndices::checkGradient(const Vector6d& g)
+{
+  auto linear_epsilon = gicp_->getLinearGradientTolerance();
+  auto angular_epsilon = gicp_->getAngularGradientTolerance();
+
+  if ((linear_epsilon < 0.) || (angular_epsilon < 0.))
+    return BFGSSpace::NegativeGradientEpsilon;
+
+  // express linear gradient as norm of translation parameters
+  auto linear_grad = g.head(3).norm();
+
+  // express angular gradient as a rotation around a given axis of a certain positive angle,
+  // we're literally only interested in the magnitude of the angular error.
+  // !!! CAUTION Stanford GICP uses the Z Y X euler angles convention
+  auto R = Eigen::Matrix3f{	Eigen::AngleAxisf(g[5], Eigen::Vector3f::UnitZ()) *
+							Eigen::AngleAxisf(g[4], Eigen::Vector3f::UnitY()) *
+							Eigen::AngleAxisf(g[3], Eigen::Vector3f::UnitX())};
+  auto angular_grad = std::acos(std::clamp(0.5f * (R.trace() - 1.f), -1.f, 1.f));
+
+  if ((linear_epsilon < 0.) && (angular_grad < angular_epsilon))
+	return BFGSSpace::Success;
+
+  return BFGSSpace::Running;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////

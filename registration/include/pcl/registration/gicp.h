@@ -109,8 +109,8 @@ namespace pcl
         , rotation_epsilon_(2e-3)
         , mahalanobis_(0)
         , max_inner_iterations_(20)
-		,linear_gradient_tolerance_(1e-2)
-		,angular_gradient_tolerance_(1e-2)
+		,linear_gradient_tolerance_(1e-2) // 1cm
+		,angular_gradient_tolerance_(2e-2) // ~1deg 
       {
         min_number_correspondences_ = 4;
         reg_name_ = "GeneralizedIterativeClosestPoint";
@@ -224,7 +224,7 @@ namespace pcl
         * consecutive rotations) as set by the user.
         */
       inline double
-      getRotationEpsilon () { return rotation_epsilon_; }
+      getRotationEpsilon () const { return rotation_epsilon_; }
 
       /** \brief Set the number of neighbors used when selecting a point neighbourhood
         * to compute covariances.
@@ -239,7 +239,7 @@ namespace pcl
         * the user
         */
       int
-      getCorrespondenceRandomness () { return k_correspondences_; }
+      getCorrespondenceRandomness () const { return k_correspondences_; }
 
       /** \brief Set maximum number of iterations at the optimization step
         * \param[in] max maximum number of iterations for the optimizer
@@ -250,29 +250,29 @@ namespace pcl
       /** \brief Return maximum number of iterations at the optimization step
 	  */
       int
-      getMaximumOptimizerIterations () { return max_inner_iterations_; }
+      getMaximumOptimizerIterations () const { return max_inner_iterations_; }
 
 	  /** \brief Set the minimal linear gradient threshold for early optimization stop
         * \param[in] linear gradient threshold in meters
         */
       void
-      setLinearGradientTolerance_ (double tolerance) { linear_gradient_tolerance_ = tolerance; }
+      setLinearGradientTolerance (double tolerance) { linear_gradient_tolerance_ = tolerance; }
 
       /** \brief Return the minimal linear gradient threshold for early optimization stop
 	  */
       double
-      getLinearGradientTolerance_ () { return linear_gradient_tolerance_; }
+      getLinearGradientTolerance () const { return linear_gradient_tolerance_; }
 
 	  /** \brief Set the minimal angular gradient threshold for early optimization stop
         * \param[in] linear gradient threshold in radians
         */
       void
-      setAngularGradientTolerance_ (double tolerance) { angular_gradient_tolerance_ = tolerance; }
+      setAngularGradientTolerance (double tolerance) { angular_gradient_tolerance_ = tolerance; }
 
       /** \brief Return the minimal angular gradient threshold for early optimization stop
 	  */
       double
-      getAngularGradientTolerance_ () { return angular_gradient_tolerance_; }
+      getAngularGradientTolerance () const { return angular_gradient_tolerance_; }
 
     protected:
 
@@ -385,6 +385,7 @@ namespace pcl
         double operator() (const Vector6d& x) override;
         void  df(const Vector6d &x, Vector6d &df) override;
         void fdf(const Vector6d &x, double &f, Vector6d &df) override;
+		BFGSSpace::Status checkGradient(const Vector6d& g) override;
 
         const GeneralizedIterativeClosestPoint *gicp_;
       };

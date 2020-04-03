@@ -69,6 +69,16 @@ namespace Eigen
   };
 }
 
+namespace BFGSSpace {
+  enum Status {
+    NegativeGradientEpsilon = -3,
+    NotStarted = -2,
+    Running = -1,
+    Success = 0,
+    NoProgress = 1
+  };
+}
+
 template<typename _Scalar, int NX=Eigen::Dynamic>
 struct BFGSDummyFunctor
 {
@@ -87,17 +97,8 @@ struct BFGSDummyFunctor
   virtual double operator() (const VectorType &x) = 0;
   virtual void  df(const VectorType &x, VectorType &df) = 0;
   virtual void fdf(const VectorType &x, Scalar &f, VectorType &df) = 0;
+  virtual BFGSSpace::Status checkGradient(const VectorType& g) = 0;
 };
-
-namespace BFGSSpace {
-  enum Status {
-    NegativeGradientEpsilon = -3,
-    NotStarted = -2,
-    Running = -1,
-    Success = 0,
-    NoProgress = 1
-  };
-}
 
 /**
  * BFGS stands for Broyden–Fletcher–Goldfarb–Shanno (BFGS) method for solving 
@@ -148,8 +149,7 @@ public:
   BFGSSpace::Status minimize(FVectorType &x);
   BFGSSpace::Status minimizeInit(FVectorType &x);
   BFGSSpace::Status minimizeOneStep(FVectorType &x);
-  BFGSSpace::Status testGradient(Scalar epsilon);
-  BFGSSpace::Status testGradient(Scalar head_epsilon,Scalar tail_epsilon);
+  BFGSSpace::Status testGradient();
   void resetParameters(void) { parameters = Parameters(); }
   
   Parameters parameters;
@@ -408,32 +408,11 @@ BFGS<FunctorType>::minimizeOneStep(FVectorType  &x)
   return BFGSSpace::Success;
 }
 
-template<typename FunctorType> typename BFGSSpace::Status 
-BFGS<FunctorType>::testGradient(Scalar epsilon)
+template <typename FunctorType>
+typename BFGSSpace::Status
+BFGS<FunctorType>::testGradient()
 {
-  if(epsilon < 0)
-    return BFGSSpace::NegativeGradientEpsilon;
-  else
-  {
-    if(gradient.norm () < epsilon)
-      return BFGSSpace::Success;
-    else
-      return BFGSSpace::Running;
-  }
-}
-
-template<typename FunctorType> typename BFGSSpace::Status 
-BFGS<FunctorType>::testGradient(Scalar head_epsilon,Scalar tail_epsilon)
-{
-  if((head_epsilon < 0)&&(tail_epsilon < 0))
-    return BFGSSpace::NegativeGradientEpsilon;
-  else
-  {
-    if((gradient.head(3).norm () < head_epsilon)&&(gradient.tail(3).norm () < tail_epsilon))
-      return BFGSSpace::Success;
-    else
-      return BFGSSpace::Running;
-  }
+  return functor.checkGradient(gradient);
 }
 
 template<typename FunctorType> typename BFGS<FunctorType>::Scalar 
