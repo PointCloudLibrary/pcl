@@ -130,7 +130,6 @@ pcl::kernel<PointT>::loGKernel(pcl::PointCloud<PointT>& kernel)
 
   for (int i = 0; i < kernel_size_; i++) {
     for (int j = 0; j < kernel_size_; j++) {
-      float temp = 0;
       int iks = (i - kernel_size_ / 2);
       int jks = (j - kernel_size_ / 2);
       float temp = float(double(iks * iks + jks * jks) / sigma_sqr);
