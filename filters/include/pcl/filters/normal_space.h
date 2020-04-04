@@ -171,10 +171,9 @@ namespace pcl
     private:
       /** \brief Finds the bin number of the input normal, returns the bin number
         * \param[in] normal the input normal 
-        * \param[in] nbins total number of bins
         */
       unsigned int 
-      findBin (const float *normal, unsigned int nbins);
+      findBin (const float *normal);
 
       /** \brief Checks of the entire bin is sampled, returns true or false
         * \param[out] array flag which says whether a point is sampled or not

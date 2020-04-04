@@ -79,66 +79,12 @@ pcl::NormalSpaceSampling<PointT, NormalT>::isEntireBinSampled (boost::dynamic_bi
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename NormalT> unsigned int 
-pcl::NormalSpaceSampling<PointT, NormalT>::findBin (const float *normal, unsigned int)
+pcl::NormalSpaceSampling<PointT, NormalT>::findBin (const float *normal)
 {
-  unsigned int bin_number = 0;
-  // Holds the bin numbers for direction cosines in x,y,z directions
-  unsigned int t[3] = {0,0,0};
-  
-  // dcos is the direction cosine.
-  float dcos = 0.0;
-  float bin_size = 0.0;
-  // max_cos and min_cos are the maximum and minimum values of std::cos(theta) respectively
-  float max_cos = 1.0;
-  float min_cos = -1.0;
-
-//  dcos = std::cos (normal[0]);
-  dcos = normal[0];
-  bin_size = (max_cos - min_cos) / static_cast<float> (binsx_);
-
-  // Finding bin number for direction cosine in x direction
-  unsigned int k = 0;
-  for (float i = min_cos; (i + bin_size) < (max_cos - bin_size); i += bin_size , k++)
-  {
-    if (dcos >= i && dcos <= (i+bin_size))
-    {
-      break;
-    }
-  }
-  t[0] = k;
-
-//  dcos = std::cos (normal[1]);
-  dcos = normal[1];
-  bin_size = (max_cos - min_cos) / static_cast<float> (binsy_);
-
-  // Finding bin number for direction cosine in y direction
-  k = 0;
-  for (float i = min_cos; (i + bin_size) < (max_cos - bin_size); i += bin_size , k++)
-  {
-    if (dcos >= i && dcos <= (i+bin_size))
-    {
-      break;
-    }
-  }
-  t[1] = k;
-    
-//  dcos = std::cos (normal[2]);
-  dcos = normal[2];
-  bin_size = (max_cos - min_cos) / static_cast<float> (binsz_);
-
-  // Finding bin number for direction cosine in z direction
-  k = 0;
-  for (float i = min_cos; (i + bin_size) < (max_cos - bin_size); i += bin_size , k++)
-  {
-    if (dcos >= i && dcos <= (i+bin_size))
-    {
-      break;
-    }
-  }
-  t[2] = k;
-
-  bin_number = t[0] * (binsy_*binsz_) + t[1] * binsz_ + t[2];
-  return bin_number;
+  const unsigned ix = static_cast<unsigned> (std::round (0.5f * (binsx_ - 1.f) * (normal[0] + 1.f)));
+  const unsigned iy = static_cast<unsigned> (std::round (0.5f * (binsy_ - 1.f) * (normal[1] + 1.f)));
+  const unsigned iz = static_cast<unsigned> (std::round (0.5f * (binsz_ - 1.f) * (normal[2] + 1.f)));
+  return ix * (binsy_*binsz_) + iy * binsz_ + iz;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -165,10 +111,10 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
   for (unsigned int i = 0; i < n_bins; i++)
     normals_hg.emplace_back();
 
-  for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
+  for (const auto index : *indices_)
   {
-    unsigned int bin_number = findBin (input_normals_->points[*it].normal, n_bins);
-    normals_hg[bin_number].push_back (*it);
+    unsigned int bin_number = findBin ((*input_normals_)[index].normal);
+    normals_hg[bin_number].push_back (index);
   }
 
 
