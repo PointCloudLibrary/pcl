@@ -193,16 +193,15 @@ pcl::keypoint::hessianBlob(ImageType& output,
     hessianBlob(cornerness[i], input, scale, false);
     scale *= scaling_factor;
   }
-  float scale_max, local_max;
   for (std::size_t i = 0; i < height; i++) {
     for (std::size_t j = 0; j < width; j++) {
-      scale_max = std::numeric_limits<float>::min();
+      float scale_max = std::numeric_limits<float>::min();
       /*default output in case of no blob at the current point is 0*/
       output[i][j] = 0;
       for (int k = 0; k < num_scales; k++) {
         /*check if the current point (k,i,j) is a maximum in the defined search radius*/
         bool non_max_flag = false;
-        local_max = cornerness[k][i][j];
+        const float local_max = cornerness[k][i][j];
         for (int n = -local_search_radius; n <= local_search_radius; n++) {
           if (n + k < 0 || n + k >= num_scales)
             continue;
