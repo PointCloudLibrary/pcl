@@ -229,7 +229,7 @@ pcl::keypoint::hessianBlob(ImageType& output,
             scale_max = cornerness[k][i][j];
             /*output indicates the scale at which the blob is found at the current
              * location in the image*/
-            output[i][i] = start_scale * pow(scaling_factor, k);
+            output[i][j] = start_scale * pow(scaling_factor, k);
           }
         }
       }
