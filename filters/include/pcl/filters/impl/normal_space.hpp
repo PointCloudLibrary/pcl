@@ -155,14 +155,12 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
 
       unsigned int pos = 0;
       unsigned int random_index = 0;
-      // std::uniform_int_distribution<unsigned> rng_uniform_distribution (0u, M - 1u); Test fails with this
-      std::uniform_int_distribution<unsigned> rng_uniform_distribution (0u, input_->size ());
+      std::uniform_int_distribution<unsigned> rng_uniform_distribution (0u, M - 1u);
 
       // Picking up a sample at random from jth bin
       do
       {
-        // random_index = rng_uniform_distribution (rng_); // Test fails with this combo
-        random_index = rng_uniform_distribution (rng_) % M;
+        random_index = rng_uniform_distribution (rng_);
         pos = start_index[j] + random_index;
       } while (is_sampled_flag.test (pos));
 
