@@ -7,8 +7,8 @@ namespace tracking {
 /** \brief @b HSVColorCoherence computes coherence between the two points from the color
  * difference between them. the color difference is calculated in HSV color space. the
  * coherence is calculated by 1 / ( 1 + w * (w_h^2 * h_diff^2 + w_s^2 * s_diff^2 + w_v^2
- * * v_diff^2)) 
- * \author Ryohei Ueda 
+ * * v_diff^2))
+ * \author Ryohei Ueda
  * \ingroup tracking
  */
 template <typename PointInT>

@@ -7,10 +7,10 @@
 namespace pcl {
 namespace tracking {
 /** \brief @b ApproxNearestPairPointCloudCoherence computes coherence between
-  two pointclouds using the approximate nearest point pairs.
-  * \author Ryohei Ueda
-  * \ingroup tracking
-  */
+ * two pointclouds using the approximate nearest point pairs.
+ * \author Ryohei Ueda
+ * \ingroup tracking
+ */
 template <typename PointInT>
 class ApproxNearestPairPointCloudCoherence
 : public NearestPairPointCloudCoherence<PointInT> {

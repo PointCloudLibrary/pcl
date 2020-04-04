@@ -1,9 +1,10 @@
 #ifndef PCL_TRACKING_IMPL_TRACKER_H_
 #define PCL_TRACKING_IMPL_TRACKER_H_
 
-#include <ctime>
 #include <pcl/common/eigen.h>
 #include <pcl/tracking/tracker.h>
+
+#include <ctime>
 
 template <typename PointInT, typename StateT>
 bool

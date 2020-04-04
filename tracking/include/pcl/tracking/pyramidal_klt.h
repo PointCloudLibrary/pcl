@@ -111,7 +111,7 @@ public:
     nb_levels_ = levels;
   }
 
-  /** \brief \return the number of pyramid levels */
+  /** \return the number of pyramid levels */
   inline int
   getNumberOfPyramidLevels() const
   {
@@ -182,7 +182,7 @@ public:
     track_width_ = width;
   };
 
-  /** \brief \return the tracking window size */
+  /** \return the tracking window size */
   inline int
   getTrackingWindowWidth()
   {
@@ -196,7 +196,7 @@ public:
     track_height_ = height;
   };
 
-  /** \brief \return the tracking window size */
+  /** \return the tracking window size */
   inline int
   getTrackingWindowHeight()
   {
@@ -229,7 +229,7 @@ public:
     max_iterations_ = max;
   }
 
-  /** \brief \return the maximum iterations number */
+  /** \return the maximum iterations number */
   inline unsigned int
   getMaxIterationsNumber() const
   {
@@ -248,14 +248,14 @@ public:
   inline void
   setPointsToTrack(const pcl::PointCloud<pcl::PointUV>::ConstPtr& points);
 
-  /** \brief \return a pointer to the points successfully tracked. */
+  /** \return a pointer to the points successfully tracked. */
   inline pcl::PointCloud<pcl::PointUV>::ConstPtr
   getTrackedPoints() const
   {
     return (keypoints_);
   };
 
-  /** \brief \return the status of points to track.
+  /** \return the status of points to track.
    * Status == 0  --> points successfully tracked;
    * Status < 0   --> point is lost;
    * Status == -1 --> point is out of bond;
@@ -274,7 +274,7 @@ public:
     return (motion_);
   }
 
-  /** \brief \return initialization state */
+  /** \return initialization state */
   bool
   getInitialized() const
   {

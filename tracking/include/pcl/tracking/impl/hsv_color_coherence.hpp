@@ -43,8 +43,9 @@
 #pragma GCC system_header
 #endif
 
-#include <Eigen/Dense>
 #include <pcl/tracking/hsv_color_coherence.h>
+
+#include <Eigen/Dense>
 
 namespace pcl {
 namespace tracking {

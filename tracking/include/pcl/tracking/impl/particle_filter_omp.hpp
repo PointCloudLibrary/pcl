@@ -26,8 +26,8 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight()
 {
   if (!use_normal_) {
     // clang-format off
-#pragma omp parallel for \
-  default(none) \
+#pragma omp parallel for \	
+  default(none) \	
   num_threads(threads_)
     // clang-format on
     for (int i = 0; i < particle_num_; i++)
@@ -44,8 +44,8 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight()
         coherence_->setTargetCloud(coherence_input);
         coherence_->initCompute();
         // clang-format off
-#pragma omp parallel for \
-  default(none) \
+#pragma omp parallel for \	
+  default(none) \	
   num_threads(threads_)
         // clang-format on
         for (int i = 0; i < particle_num_; i++) {
@@ -62,8 +62,8 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight()
       coherence_->setTargetCloud(coherence_input);
       coherence_->initCompute();
       // clang-format off
-#pragma omp parallel for \
-  default(none) \
+#pragma omp parallel for \	
+  default(none) \	
   num_threads(threads_)
       // clang-format on
       for (int i = 0; i < particle_num_; i++) {
@@ -79,9 +79,9 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight()
       indices_list[i] = IndicesPtr(new std::vector<int>);
     }
     // clang-format off
-#pragma omp parallel for \
-  default(none) \
-  shared(indices_list) \
+#pragma omp parallel for \	
+  default(none) \	
+  shared(indices_list) \	
   num_threads(threads_)
     // clang-format on	
     for (int i = 0; i < particle_num_; i++) {
@@ -95,9 +95,9 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight()
     coherence_->setTargetCloud(coherence_input);
     coherence_->initCompute();
     // clang-format off
-#pragma omp parallel for \
-  default(none) \
-  shared(indices_list) \
+#pragma omp parallel for \	
+  default(none) \	
+  shared(indices_list) \	
   num_threads(threads_)
     // clang-format on	
     for (int i = 0; i < particle_num_; i++) {

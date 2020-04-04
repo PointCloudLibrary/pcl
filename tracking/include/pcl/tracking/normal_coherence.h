@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pcl/tracking/coherence.h>
+
 namespace pcl {
 namespace tracking {
 /** \brief @b NormalCoherence computes coherence between two points from the angle

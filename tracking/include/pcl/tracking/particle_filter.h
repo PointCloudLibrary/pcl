@@ -1,7 +1,5 @@
 #pragma once
 
-#include <boost/shared_ptr.hpp>
-
 #include <pcl/filters/passthrough.h>
 #include <pcl/octree/octree_pointcloud_changedetector.h>
 #include <pcl/tracking/coherence.h>
@@ -444,7 +442,7 @@ protected:
                                PointCloudIn& cloud);
 
   /** \brief Compute a reference pointcloud transformed to the pose that hypothesis
-   represents and calculate indices taking occlusion into account.
+   * represents and calculate indices taking occlusion into account.
    * \param[in] hypothesis a particle which represents a hypothesis.
    * \param[in] indices the indices which should be taken into account.
    * \param[out] cloud the resultant point cloud model dataset which is transformed to
@@ -456,9 +454,10 @@ protected:
                                          PointCloudIn& cloud);
 
   /** \brief Compute a reference pointcloud transformed to the pose that hypothesis
-   *represents and calculate indices without taking occlusion into account. \param[in]
-   *hypothesis a particle which represents a hypothesis. \param[out] cloud the resultant
-   *point cloud model dataset which is transformed to hypothesis.
+   * represents and calculate indices without taking occlusion into account.
+   * \param[in] hypothesis a particle which represents a hypothesis.
+   * \param[out] cloud the resultant point cloud model dataset which is transformed to
+   *hypothesis.
    **/
   void
   computeTransformedPointCloudWithoutNormal(const StateT& hypothesis,

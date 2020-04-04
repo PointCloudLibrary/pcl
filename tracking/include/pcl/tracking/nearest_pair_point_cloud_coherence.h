@@ -1,13 +1,14 @@
 #pragma once
 
 #include <pcl/search/search.h>
-
 #include <pcl/tracking/coherence.h>
 
 namespace pcl {
 namespace tracking {
 /** \brief @b NearestPairPointCloudCoherence computes coherence between two pointclouds
- * using the nearest point pairs. \author Ryohei Ueda \ingroup tracking
+ * using the nearest point pairs.
+ * \author Ryohei Ueda
+ * \ingroup tracking
  */
 template <typename PointInT>
 class NearestPairPointCloudCoherence : public PointCloudCoherence<PointInT> {

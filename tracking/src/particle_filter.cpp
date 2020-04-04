@@ -41,6 +41,7 @@
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 #define PCL_TRACKING_NORMAL_SUPPORTED
+
 // clang-format off
 PCL_INSTANTIATE_PRODUCT(ParticleFilterTracker,
                         ((pcl::PointNormal)

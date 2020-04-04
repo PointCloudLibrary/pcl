@@ -245,10 +245,10 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::downsample(
 
   FloatImagePtr down(new FloatImage(width, height));
   // clang-format off
-#pragma omp parallel for \
-  default(none) \
-  shared(down, height, output, smoothed, width) \
-  firstprivate(ii) \
+#pragma omp parallel for \	
+  default(none) \	
+  shared(down, height, output, smoothed, width) \	
+  firstprivate(ii) \	
   num_threads(threads_)
   // clang-format on	
   for (int j = 0; j < height; ++j) {
@@ -300,9 +300,9 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::convolveRows(
   int w = last - 1;
 
   // clang-format off
-#pragma omp parallel for \
-  default(none) \
-  shared(input, height, last, output, w, width) \
+#pragma omp parallel for \	
+  default(none) \	
+  shared(input, height, last, output, w, width) \	
   num_threads(threads_)
   // clang-format on
   for (int j = 0; j < height; ++j) {
@@ -335,12 +335,12 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::convolveCols(
   int last = input->height - kernel_size_2_;
   int h = last - 1;
 
-  // clang-format off
-#pragma omp parallel for \
-  default(none) \
-  shared(input, h, height, last, output, width) \
+  //clang-format off
+#pragma omp parallel for \	
+  default(none) \	
+  shared(input, h, height, last, output, width) \	
   num_threads(threads_)
-  // clang-format on
+  //clang-format on
   for (int i = 0; i < width; ++i) {
     for (int j = kernel_size_2_; j < last; ++j) {
       double result = 0;
@@ -371,9 +371,9 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::computePyramids(
   FloatImageConstPtr previous;
   FloatImagePtr tmp(new FloatImage(input->width, input->height));
   // clang-format off
-#pragma omp parallel for \
-  default(none) \
-  shared(input, tmp) \
+#pragma omp parallel for \	
+  default(none) \	
+  shared(input, tmp) \	
   num_threads(threads_)
   // clang-format on
   for (int i = 0; i < static_cast<int>(input->size()); ++i)
@@ -733,4 +733,3 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::computeTracking()
 } // namespace pcl
 
 #endif
-

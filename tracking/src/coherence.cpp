@@ -43,6 +43,7 @@
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
+
 // clang-format off
 PCL_INSTANTIATE(ApproxNearestPairPointCloudCoherence, PCL_XYZ_POINT_TYPES)
 PCL_INSTANTIATE(DistanceCoherence, PCL_XYZ_POINT_TYPES)
