@@ -110,17 +110,8 @@ template <typename PointT> int
 pcl::PCDWriter::writeBinary (const std::string &file_name, 
                              const pcl::PointCloud<PointT> &cloud)
 {
-  if (cloud.empty ())
-  {
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Input point cloud has no data!");
+  if (checkCloudSize<PointT> (cloud))
     return (-1);
-  }
-
-  if (cloud.width * cloud.height != cloud.points.size ())
-  {
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Number of points different than width * height!");
-    return (-1);
-  }
 
   int data_idx = 0;
   std::ostringstream oss;
@@ -248,17 +239,8 @@ template <typename PointT> int
 pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, 
                                        const pcl::PointCloud<PointT> &cloud)
 {
-  if (cloud.points.empty ())
-  {
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Input point cloud has no data!");
+  if (checkCloudSize<PointT> (cloud))
     return (-1);
-  }
-
-  if (cloud.width * cloud.height != cloud.points.size ())
-  {
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Number of points different than width * height!");
-    return (-1);
-  }
 
   int data_idx = 0;
   std::ostringstream oss;
@@ -447,17 +429,8 @@ template <typename PointT> int
 pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<PointT> &cloud, 
                             const int precision)
 {
-  if (cloud.empty ())
-  {
-    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Input point cloud has no data!");
+  if (checkCloudSize<PointT> (cloud))
     return (-1);
-  }
-
-  if (cloud.width * cloud.height != cloud.points.size ())
-  {
-    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Number of points different than width * height!");
-    return (-1);
-  }
 
   std::ofstream fs;
   fs.open (file_name.c_str ());      // Open file
@@ -601,17 +574,8 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
                              const pcl::PointCloud<PointT> &cloud, 
                              const std::vector<int> &indices)
 {
-  if (cloud.points.empty () || indices.empty ())
-  {
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Input point cloud has no data or empty indices given!");
+  if (checkCloudSize<PointT> (cloud, indices))
     return (-1);
-  }
-
-  if (cloud.width * cloud.height != cloud.points.size ())
-  {
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Number of points different than width * height!");
-    return (-1);
-  }
 
   int data_idx = 0;
   std::ostringstream oss;
@@ -737,17 +701,8 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
                             const std::vector<int> &indices,
                             const int precision)
 {
-  if (cloud.points.empty () || indices.empty ())
-  {
-    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Input point cloud has no data or empty indices given!");
+  if (checkCloudSize<PointT> (cloud, indices))
     return (-1);
-  }
-
-  if (cloud.width * cloud.height != cloud.points.size ())
-  {
-    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Number of points different than width * height!");
-    return (-1);
-  }
 
   std::ofstream fs;
   fs.open (file_name.c_str ());      // Open file
@@ -887,5 +842,41 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
 
   return (0);
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+checkCloudSize (const pcl::PointCloud<PointT> &cloud)
+{
+  if (cloud.points.empty ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::checkCloudSize] Input point cloud has no data or empty indices given!");
+    return (1);
+  }
+
+  if (cloud.width * cloud.height != cloud.points.size ())
+  {
+    cloud.width = cloud.points.size();
+    cloud.height = 1;
+    PCL_WARN ("[pcl::PCDWriter::checkCloudSize]  Number of points different than width * height. Width reset to number of points");
+  }
+  return (0);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+checkCloudSize (const pcl::PointCloud<PointT> &cloud,
+                const std::vector<int> &indices)
+{
+  if (indices.empty ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::checkCloudSize] Input point cloud has no data or empty indices given!");
+    return (1);
+  }
+  
+  if (checkCloudSize<PointT> (cloud))
+    return (1);
+  return (0);
+}
+
 
 #endif  //#ifndef PCL_IO_PCD_IO_H_

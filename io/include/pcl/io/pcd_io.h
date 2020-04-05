@@ -599,6 +599,19 @@ namespace pcl
       void
       resetLockingPermissions (const std::string &file_name,
                                boost::interprocess::file_lock &lock);
+   
+      /** \brief Check point cloud size before writing
+        * \param[in] cloud the pcl::PointCloud data
+        */
+      template<typename PointT> inline bool
+      checkCloudSize (const pcl::PointCloud<PointT> &cloud);
+
+      /** \brief Check point cloud size before writing
+        * \param[in] cloud the pcl::PointCloud data
+        */
+      template<typename PointT> inline bool
+      checkCloudSize (const pcl::PointCloud<PointT> &cloud,
+                      const std::vector<int> &indices);
 
     private:
       /** \brief Set to true if msync() should be called before munmap(). Prevents data loss on NFS systems. */
