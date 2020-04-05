@@ -43,9 +43,14 @@
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/search/pcl_search.h>
+#include <pcl/common/random.h>
 
 using namespace std;
 using namespace pcl;
+
+std::random_device rd;
+pcl::common::UniformGenerator<unsigned int> u_gen;
+pcl::common::UniformGenerator<double> d_gen;
 
 // helper class for priority queue
 class prioPointQueueEntry
@@ -78,7 +83,8 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
   // instantiate point cloud
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
 
-  srand (time (NULL));
+  u_gen.setSeed(rd());
+  d_gen.setSeed(rd());
 
   // create organized search
   pcl::search::OrganizedNeighbor<PointXYZ> organizedNeighborSearch;
@@ -96,7 +102,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
   {
     // define a random search point
 
-    const unsigned int K = (rand () % 10)+1;
+    const unsigned int K = +1;
 
     // generate point cloud
     cloudIn->width = 128;
@@ -104,20 +110,23 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
     cloudIn->points.clear();
     cloudIn->points.reserve (cloudIn->width * cloudIn->height);
 
+    u_gen.setParameters(0, cloudIn->width * cloudIn->height);
+    d_gen.setParameters(0, 1);
+
     int centerX = cloudIn->width >> 1;
     int centerY = cloudIn->height >> 1;
 
     for (int ypos = -centerY; ypos < centerY; ypos++)
       for (int xpos = -centerX; xpos < centerX; xpos++)
       {
-        double z = 15.0 * ((double)rand () / (double)(RAND_MAX+1.0))+20;
+        double z = 15.0 * d_gen.run() + 20;
         double y = (double)ypos*oneOverFocalLength*(double)z;
         double x = (double)xpos*oneOverFocalLength*(double)z;
 
         cloudIn->points.push_back(PointXYZ (x, y, z));
       }
 
-    unsigned int searchIdx = rand()%(cloudIn->width * cloudIn->height);
+    unsigned int searchIdx = u_gen.run();
     const PointXYZ& searchPoint = cloudIn->points[searchIdx];
 
     k_indices.clear();
@@ -179,7 +188,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search_Kinec
 
   // instantiate point cloud
 
-  srand (time (NULL));
+  u_gen.setSeed(rd());
 
   // create organized search
   pcl::search::OrganizedNeighbor<PointXYZ> organizedNeighborSearch;
@@ -202,18 +211,20 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search_Kinec
     return;
   }
 
+  u_gen.setParameters(0, cloudIn->width * cloudIn->height);
   while(1)
   {
-   searchIdx = rand()%(cloudIn->width * cloudIn->height);
+   searchIdx = u_gen.run();
    if(cloudIn->points[searchIdx].z < 100)
      break;
   }
 
+  u_gen.setParameters(1, 10);
   for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
     // define a random search point
 
-    const unsigned int K = (rand () % 10)+1;
+    const unsigned int K = u_gen.run();
 //     K = 16;
     // generate point cloud
     const PointXYZ& searchPoint = cloudIn->points[searchIdx];
@@ -262,9 +273,9 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search_Kinec
 TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
 {
   constexpr unsigned int test_runs = 10;
+  u_gen.setSeed(rd());
+  d_gen.setSeed(rd());
 
-  srand (time (NULL));
-  
   pcl::search::OrganizedNeighbor<PointXYZ> organizedNeighborSearch;
 
   std::vector<int> k_indices;
@@ -286,6 +297,9 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     cloudIn->points.clear();
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
 
+    u_gen.setParameters(0, cloudIn->width*cloudIn->height);
+    d_gen.setParameters(0, 1);
+
     int centerX = cloudIn->width >> 1;
     int centerY = cloudIn->height >> 1;
 
@@ -293,18 +307,18 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     for (int ypos = -centerY; ypos < centerY; ypos++)
       for (int xpos = -centerX; xpos < centerX; xpos++)
       {
-        double z = 5.0 * ( ((double)rand () / (double)RAND_MAX))+5;
+        double z = 5.0 * d_gen.run() + 5;
         double y = ypos*oneOverFocalLength*z;
         double x = xpos*oneOverFocalLength*z;
 
         cloudIn->points[idx++]= PointXYZ (x, y, z);
       }
 
-    unsigned int randomIdx = rand()%(cloudIn->width * cloudIn->height);
+    unsigned int randomIdx = u_gen.run();
 
     const PointXYZ& searchPoint = cloudIn->points[randomIdx];
 
-    const double searchRadius = 1.0 * ((double)rand () / (double)RAND_MAX);
+    const double searchRadius = 1.0 * d_gen.run();
 //   double searchRadius = 1/10;
 
     // bruteforce radius search
@@ -378,9 +392,10 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
 TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_Benchmark_Test)
 {
   constexpr unsigned int test_runs = 10;
-  srand (time (NULL));
+  u_gen.setSeed(rd());
+  d_gen.setSeed(rd());
 
-  pcl::search::OrganizedNeighbor<PointXYZ> organizedNeighborSearch();
+  pcl::search::OrganizedNeighbor<PointXYZ> organizedNeighborSearch;
 
   std::vector<int> k_indices;
   std::vector<float> k_sqr_distances;
@@ -390,7 +405,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
 
   // typical focal length from kinect
   constexpr double oneOverFocalLength = 0.0018;
-  
+
   double radiusSearchTime = 0, radiusSearchLPTime = 0;
 
   for (unsigned int test_id = 0; test_id < test_runs; test_id++)
@@ -404,6 +419,9 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     cloudIn->points.clear();
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
 
+    u_gen.setParameters(0, cloudIn->width*cloudIn->height);
+    d_gen.setParameters(0, 1);
+
     int centerX = cloudIn->width >> 1;
     int centerY = cloudIn->height >> 1;
 
@@ -411,18 +429,18 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     for (int ypos = -centerY; ypos < centerY; ypos++)
       for (int xpos = -centerX; xpos < centerX; xpos++)
       {
-        double z = 5.0 * ( ((double)rand () / (double)RAND_MAX))+5;
+        double z = 5.0 * d_gen.run() + 5;
         double y = ypos*oneOverFocalLength*z;
         double x = xpos*oneOverFocalLength*z;
 
         cloudIn->points[idx++]= PointXYZ (x, y, z);
       }
 
-    const unsigned int randomIdx = rand() % (cloudIn->width * cloudIn->height);
+    const unsigned int randomIdx = u_gen.run();
 
     const PointXYZ& searchPoint = cloudIn->points[randomIdx];
 
-    const double searchRadius = 1.0 * ((double)rand () / (double)RAND_MAX);
+    const double searchRadius = 1.0 * d_gen.run();
 
     // bruteforce radius search
     std::vector<int> cloudSearchBruteforce;
@@ -473,16 +491,17 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     return;
   }
   constexpr unsigned int test_runs = 10;
-  srand (time (NULL));
+  u_gen.setSeed(rd());
 
-  pcl::search::OrganizedNeighbor<PointXYZ> organizedNeighborSearch();
+  pcl::search::OrganizedNeighbor<PointXYZ> organizedNeighborSearch;
 
   // typical focal length from kinect
   unsigned int randomIdx;
 
+  u_gen.setParameters(0, cloudIn->width * cloudIn->height);
   while (1)
   {
-	  randomIdx = rand()%(cloudIn->width * cloudIn->height);
+	  randomIdx = u_gen.run();
 	  if(cloudIn->points[randomIdx].z <100)break;
   }
 

@@ -22,7 +22,7 @@ PCL_ADD_TEST(flann_search test_flann_search
 
 PCL_ADD_TEST(organized_neighbor test_organized_search
              FILES test_organized.cpp
-             LINK_WITH pcl_gtest pcl_search pcl_kdtree)
+             LINK_WITH pcl_gtest pcl_search pcl_common pcl_kdtree)
 
 PCL_ADD_TEST(octree_search test_octree_search
              FILES test_octree.cpp

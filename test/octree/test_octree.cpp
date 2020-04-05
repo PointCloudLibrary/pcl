@@ -45,14 +45,21 @@
 using namespace std;
 
 #include <pcl/common/time.h>
+#include <pcl/common/generate.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
 using namespace pcl;
+using namespace pcl::common;
 
 #include <pcl/octree/octree.h>
 #include <pcl/octree/octree_impl.h>
 #include <pcl/octree/octree_pointcloud_adjacency.h>
+
+std::random_device rd;
+common::CloudGenerator<pcl::PointXYZ,  common::UniformGenerator<float>> cloud_gen;
+common::UniformGenerator<float> f_gen;
+common::UniformGenerator<unsigned int> u_gen;
 
 using namespace octree;
 
@@ -75,8 +82,6 @@ TEST (PCL, Octree_Test)
     unsigned int z;
   };
   MyVoxel voxels[256];
-
-  srand (static_cast<unsigned int> (time (nullptr)));
 
   // generate some voxel indices
   for (unsigned int i = 0; i < 256; i++)
@@ -292,17 +297,14 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
     cloud->points.clear ();
     octree.deleteTree ();
 
-    for (int point = 0; point < pointcount; point++)
-    {
-      // gereate a random point
-      PointXYZ newPoint (static_cast<float> (1024.0 * rand () / RAND_MAX),
-          static_cast<float> (1024.0 * rand () / RAND_MAX),
-          static_cast<float> (1024.0 * rand () / RAND_MAX));
+    UniformGenerator<float>::Parameters x_params(0, 1024, rd());
+    cloud_gen.setParametersForX (x_params);
+    UniformGenerator<float>::Parameters y_params (0, 1024, rd());
+    cloud_gen.setParametersForY (y_params);
+    UniformGenerator<float>::Parameters z_params (0, 1024, rd());
+    cloud_gen.setParametersForZ (z_params);
 
-      // OctreePointCloudPointVector can store all points..
-      cloud->push_back (newPoint);
-    }
-
+    ASSERT_EQ(cloud_gen.fill (pointcount, 1, *cloud), 0);
 
     // check if all points from leaf data can be found in input pointcloud data sets
     octree.defineBoundingBox ();
@@ -389,8 +391,6 @@ TEST (PCL, Octree2Buf_Test)
 
   int data[256];
   MyVoxel voxels[256];
-
-  srand (static_cast<unsigned int> (time (nullptr)));
 
   // generate some voxel indices
   for (unsigned int i = 0; i < 256; i++)
@@ -557,7 +557,7 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_Test)
   int data[TESTPOINTS];
   MyVoxel voxels[TESTPOINTS];
 
-  srand (static_cast<unsigned int> (time (nullptr)));
+  u_gen.setSeed(rd());
 
   const unsigned int test_runs = 20;
 
@@ -568,20 +568,22 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_Test)
     octreeA.setTreeDepth (5);
     octreeB.setTreeDepth (5);
 
-    unsigned int runs = rand () % 20 + 1;
+    u_gen.setParameters(1, 20);
+    unsigned int runs = u_gen.run();
     for (unsigned int k = 0; k < runs; k++)
     {
       // switch buffers
       octreeA.switchBuffers ();
       octreeB.switchBuffers ();
 
+      u_gen.setParameters(0, 4096);
       for (unsigned int i = 0; i < TESTPOINTS; i++)
       {
-        data[i] = rand ();
+        data[i] = u_gen.run();
 
-        voxels[i].x = rand () % 4096;
-        voxels[i].y = rand () % 4096;
-        voxels[i].z = rand () % 4096;
+        voxels[i].x = u_gen.run();
+        voxels[i].y = u_gen.run();
+        voxels[i].z = u_gen.run();
 
         // add data to octree
 
@@ -638,19 +640,20 @@ TEST (PCL, Octree2Buf_Base_Double_Buffering_XOR_Test)
   int data[TESTPOINTS];
   MyVoxel voxels[TESTPOINTS];
 
-  srand (static_cast<unsigned int> (time (nullptr)));
+  u_gen.setSeed(rd());
 
   const unsigned int test_runs = 15;
 
+  u_gen.setParameters(0, 4096);
   for (unsigned int j = 0; j < test_runs; j++)
   {
     for (unsigned int i = 0; i < TESTPOINTS; i++)
     {
-      data[i] = rand ();
+      data[i] = u_gen.run();
 
-      voxels[i].x = rand () % 4096;
-      voxels[i].y = rand () % 4096;
-      voxels[i].z = rand () % 4096;
+      voxels[i].x = u_gen.run();
+      voxels[i].y = u_gen.run();
+      voxels[i].z = u_gen.run();
 
       // add data to octree
 
@@ -689,7 +692,9 @@ TEST (PCL, Octree_Pointcloud_Test)
 
   constexpr float resolution = 0.01f;
 
-  // instantiate OctreePointCloudSinglePoint and OctreePointCloudPointVector classes
+  f_gen.setSeed(rd());
+
+// instantiate OctreePointCloudSinglePoint and OctreePointCloudPointVector classes
   OctreePointCloudSinglePoint<PointXYZ> octreeA (resolution);
   OctreePointCloudSearch<PointXYZ> octreeB (resolution);
   OctreePointCloudPointVector<PointXYZ> octreeC (resolution);
@@ -715,12 +720,11 @@ TEST (PCL, Octree_Pointcloud_Test)
 
     octreeC.deleteTree ();
 
+    f_gen.setParameters(0, 1024);
     for (int point = 0; point < pointcount; point++)
     {
       // gereate a random point
-      PointXYZ newPoint (static_cast<float> (1024.0 * rand () / RAND_MAX),
-                         static_cast<float> (1024.0 * rand () / RAND_MAX),
-                         static_cast<float> (1024.0 * rand () / RAND_MAX));
+      PointXYZ newPoint (f_gen.run(), f_gen.run(), f_gen.run());
 
       if (!octreeA.isVoxelOccupiedAtPoint (newPoint))
       {
@@ -936,7 +940,12 @@ TEST(PCL, Octree_Pointcloud_Occupancy_Test)
 
   OctreePointCloudOccupancy<PointXYZ> octree (0.00001f);
 
-  srand (static_cast<unsigned int> (time (nullptr)));
+  UniformGenerator<float>::Parameters x_params(0, 5, rd());
+  cloud_gen.setParametersForX (x_params);
+  UniformGenerator<float>::Parameters y_params (0, 10, rd());
+  cloud_gen.setParametersForY (y_params);
+  UniformGenerator<float>::Parameters z_params (0, 10, rd());
+  cloud_gen.setParametersForZ (z_params);
 
   for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
@@ -946,12 +955,7 @@ TEST(PCL, Octree_Pointcloud_Occupancy_Test)
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
 
     // generate point data for point cloud
-    for (std::size_t i = 0; i < 1000; i++)
-    {
-      cloudIn->points[i] = PointXYZ (static_cast<float> (5.0  * rand () / RAND_MAX),
-                                     static_cast<float> (10.0 * rand () / RAND_MAX),
-                                     static_cast<float> (10.0 * rand () / RAND_MAX));
-    }
+    ASSERT_EQ(cloud_gen.fill(*cloudIn), 0);
 
     // create octree
     octree.setInputCloud (cloudIn);
@@ -975,19 +979,20 @@ TEST (PCL, Octree_Pointcloud_Change_Detector_Test)
 
   OctreePointCloudChangeDetector<PointXYZ> octree (0.01f);
 
-  srand (static_cast<unsigned int> (time (nullptr)));
+  UniformGenerator<float>::Parameters x_params(0, 5, rd());
+  cloud_gen.setParametersForX (x_params);
+  UniformGenerator<float>::Parameters y_params (0, 10, rd());
+  cloud_gen.setParametersForY (y_params);
+  UniformGenerator<float>::Parameters z_params (0, 10, rd());
+  cloud_gen.setParametersForZ (z_params);
+  f_gen.setSeed(rd());
 
   cloudIn->width = 1000;
   cloudIn->height = 1;
   cloudIn->points.resize (cloudIn->width * cloudIn->height);
 
   // generate point data for point cloud
-  for (std::size_t i = 0; i < 1000; i++)
-  {
-    cloudIn->points[i] = PointXYZ (static_cast<float> (5.0  * rand () / RAND_MAX),
-                                   static_cast<float> (10.0 * rand () / RAND_MAX),
-                                   static_cast<float> (10.0 * rand () / RAND_MAX));
-  }
+  ASSERT_EQ(cloud_gen.fill(*cloudIn), 0);
 
   // assign point cloud to octree
   octree.setInputCloud (cloudIn);
@@ -1002,13 +1007,11 @@ TEST (PCL, Octree_Pointcloud_Change_Detector_Test)
   octree.addPointsFromInputCloud ();
 
   // add 1000 additional points
+  f_gen.setParameters(0, 10);
   for (std::size_t i = 0; i < 1000; i++)
   {
     octree.addPointToCloud (
-        PointXYZ (static_cast<float> (100.0 + 5.0  * rand () / RAND_MAX),
-                  static_cast<float> (100.0 + 10.0 * rand () / RAND_MAX),
-                  static_cast<float> (100.0 + 10.0 * rand () / RAND_MAX)),
-        cloudIn);
+        PointXYZ (100.0 + (f_gen.run() / 2), 100.0 + f_gen.run(), 100.0 + f_gen.run()), cloudIn);
   }
 
   std::vector<int> newPointIdxVector;
@@ -1035,8 +1038,6 @@ TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
 
   OctreePointCloudVoxelCentroid<PointXYZ> octree (1.0f);
   octree.defineBoundingBox (10.0, 10.0, 10.0);
-
-  srand (static_cast<unsigned int> (time (nullptr)));
 
   cloudIn->width = 10 * 3;
   cloudIn->height = 1;
@@ -1132,7 +1133,14 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   // instantiate point cloud
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
 
-  srand (static_cast<unsigned int> (time (nullptr)));
+  UniformGenerator<float>::Parameters x_params(0, 5, rd());
+  cloud_gen.setParametersForX (x_params);
+  UniformGenerator<float>::Parameters y_params (0, 10, rd());
+  cloud_gen.setParametersForY (y_params);
+  UniformGenerator<float>::Parameters z_params (0, 10, rd());
+  cloud_gen.setParametersForZ (z_params);
+  f_gen.setSeed(rd());
+  u_gen.setSeed(rd());
 
   std::priority_queue<prioPointQueueEntry, pcl::PointCloud<prioPointQueueEntry>::VectorType> pointCandidates;
 
@@ -1146,26 +1154,21 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   std::vector<int> k_indices_bruteforce;
   std::vector<float> k_sqr_distances_bruteforce;
 
+  u_gen.setParameters(1, 10);
   for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
     // define a random search point
 
-    PointXYZ searchPoint (static_cast<float> (10.0 * rand () / RAND_MAX),
-                          static_cast<float> (10.0 * rand () / RAND_MAX),
-                          static_cast<float> (10.0 * rand () / RAND_MAX));
+    f_gen.setParameters(0, 10);
+    PointXYZ searchPoint (f_gen.run(), f_gen.run(), f_gen.run());
 
-    unsigned int K = 1 + rand () % 10;
+    unsigned int K = u_gen.run();
 
     // generate point cloud
     cloudIn->width = 1000;
     cloudIn->height = 1;
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
-    for (std::size_t i = 0; i < 1000; i++)
-    {
-      cloudIn->points[i] = PointXYZ (static_cast<float> (5.0  * rand () / RAND_MAX),
-                                     static_cast<float> (10.0 * rand () / RAND_MAX),
-                                     static_cast<float> (10.0 * rand () / RAND_MAX));
-    }
+    ASSERT_EQ(cloud_gen.fill(*cloudIn), 0);
 
     k_indices.clear ();
     k_sqr_distances.clear ();
@@ -1231,7 +1234,13 @@ TEST (PCL, Octree_Pointcloud_Box_Search)
   // instantiate point cloud
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
 
-  srand (static_cast<unsigned int> (time (nullptr)));
+  UniformGenerator<float>::Parameters x_params(0, 10, rd());
+  cloud_gen.setParametersForX (x_params);
+  UniformGenerator<float>::Parameters y_params (0, 10, rd());
+  cloud_gen.setParametersForY (y_params);
+  UniformGenerator<float>::Parameters z_params (0, 10, rd());
+  cloud_gen.setParametersForZ (z_params);
+  f_gen.setSeed(rd());
 
   // create octree
   OctreePointCloudSearch<PointXYZ> octree (1);
@@ -1245,12 +1254,7 @@ TEST (PCL, Octree_Pointcloud_Box_Search)
     cloudIn->width = 300;
     cloudIn->height = 1;
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
-    for (auto &point : cloudIn->points)
-    {
-      point = PointXYZ (static_cast<float> (10.0 * rand () / RAND_MAX),
-                        static_cast<float> (10.0 * rand () / RAND_MAX),
-                        static_cast<float> (10.0 * rand () / RAND_MAX));
-    }
+    ASSERT_EQ(cloud_gen.fill(*cloudIn), 0);
 
 
     // octree points to octree
@@ -1258,13 +1262,10 @@ TEST (PCL, Octree_Pointcloud_Box_Search)
     octree.addPointsFromInputCloud ();
 
     // define a random search area
-
-    Eigen::Vector3f lowerBoxCorner (static_cast<float> (4.0 * rand () / RAND_MAX),
-                                    static_cast<float> (4.0 * rand () / RAND_MAX),
-                                    static_cast<float> (4.0 * rand () / RAND_MAX));
-    Eigen::Vector3f upperBoxCorner (static_cast<float> (5.0 + 4.0 * rand () / RAND_MAX),
-                                    static_cast<float> (5.0 + 4.0 * rand () / RAND_MAX),
-                                    static_cast<float> (5.0 + 4.0 * rand () / RAND_MAX));
+    f_gen.setParameters(0, 4);
+    Eigen::Vector3f lowerBoxCorner (f_gen.run(), f_gen.run(), f_gen.run());
+    f_gen.setParameters(5, 9);
+    Eigen::Vector3f upperBoxCorner (f_gen.run(), f_gen.run(), f_gen.run());
 
     octree.boxSearch (lowerBoxCorner, upperBoxCorner, k_indices);
 
@@ -1300,7 +1301,13 @@ TEST(PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
   // instantiate point cloud
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
 
-  srand (static_cast<unsigned int> (time (nullptr)));
+  UniformGenerator<float>::Parameters x_params(0, 5, rd());
+  cloud_gen.setParametersForX (x_params);
+  UniformGenerator<float>::Parameters y_params (0, 10, rd());
+  cloud_gen.setParametersForY (y_params);
+  UniformGenerator<float>::Parameters z_params (0, 10, rd());
+  cloud_gen.setParametersForZ (z_params);
+  f_gen.setSeed(rd());
 
   constexpr double voxelResolution = 0.1;
 
@@ -1312,20 +1319,13 @@ TEST(PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
   {
     // define a random search point
 
-    PointXYZ searchPoint (static_cast<float> (10.0 * rand () / RAND_MAX),
-                          static_cast<float> (10.0 * rand () / RAND_MAX),
-                          static_cast<float> (10.0 * rand () / RAND_MAX));
+    PointXYZ searchPoint (f_gen.run(), f_gen.run(), f_gen.run());
 
     // generate point cloud
     cloudIn->width = 1000;
     cloudIn->height = 1;
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
-    for (std::size_t i = 0; i < 1000; i++)
-    {
-      cloudIn->points[i] = PointXYZ (static_cast<float> (5.0  * rand () / RAND_MAX),
-                                     static_cast<float> (10.0 * rand () / RAND_MAX),
-                                     static_cast<float> (10.0 * rand () / RAND_MAX));
-    }
+    ASSERT_EQ(cloud_gen.fill(*cloudIn), 0);
 
     // brute force search
     double BFdistance = std::numeric_limits<double>::max ();
@@ -1373,26 +1373,26 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
   PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
   PointCloud<PointXYZ>::Ptr cloudOut (new PointCloud<PointXYZ> ());
 
-  srand (static_cast<unsigned int> (time (nullptr)));
+  UniformGenerator<float>::Parameters x_params(0, 10, rd());
+  cloud_gen.setParametersForX (x_params);
+  UniformGenerator<float>::Parameters y_params (0, 10, rd());
+  cloud_gen.setParametersForY (y_params);
+  UniformGenerator<float>::Parameters z_params (0, 5, rd());
+  cloud_gen.setParametersForZ (z_params);
+  f_gen.setSeed(rd());
 
   for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
+    f_gen.setParameters(0, 0.10);
     // define a random search point
-    PointXYZ searchPoint (static_cast<float> (10.0 * rand () / RAND_MAX),
-                          static_cast<float> (10.0 * rand () / RAND_MAX),
-                          static_cast<float> (10.0 * rand () / RAND_MAX));
+    PointXYZ searchPoint (f_gen.run(), f_gen.run(), f_gen.run());
 
     cloudIn->width = 1000;
     cloudIn->height = 1;
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
 
     // generate point cloud data
-    for (std::size_t i = 0; i < 1000; i++)
-    {
-      cloudIn->points[i] = PointXYZ (static_cast<float> (10.0 * rand () / RAND_MAX),
-                                     static_cast<float> (10.0 * rand () / RAND_MAX),
-                                     static_cast<float> (5.0  * rand () / RAND_MAX));
-    }
+    ASSERT_EQ(cloud_gen.fill(1000, 1, *cloudIn), 0);
 
     OctreePointCloudSearch<PointXYZ> octree (0.001);
 
@@ -1401,7 +1401,8 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     octree.addPointsFromInputCloud ();
 
     double pointDist;
-    double searchRadius = 5.0 * static_cast<float> (rand () / RAND_MAX);
+    f_gen.setParameters(0, 5.0);
+    double searchRadius = f_gen.run();
 
     // bruteforce radius search
     std::vector<int> cloudSearchBruteforce;
@@ -1465,7 +1466,7 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
   // Indices in ray
   std::vector<int> indicesInRay, indicesInRay2;
 
-  srand (static_cast<unsigned int> (time (nullptr)));
+  f_gen.setSeed(rd());
 
   for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
@@ -1478,14 +1479,11 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
     cloudIn->height = 1;
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
 
-    Eigen::Vector3f p (static_cast<float> (10.0 * rand () / RAND_MAX),
-                       static_cast<float> (10.0 * rand () / RAND_MAX),
-                       static_cast<float> (10.0 * rand () / RAND_MAX));
+    f_gen.setParameters(0, 10);
+    Eigen::Vector3f p (f_gen.run(), f_gen.run(), f_gen.run());
 
     // origin
-    Eigen::Vector3f o (static_cast<float> (12.0 * rand () / RAND_MAX),
-                       static_cast<float> (12.0 * rand () / RAND_MAX),
-                       static_cast<float> (12.0 * rand () / RAND_MAX));
+    Eigen::Vector3f o (f_gen.run(), f_gen.run(), f_gen.run());
 
     cloudIn->points[0] = pcl::PointXYZ (p[0], p[1], p[2]);
 
@@ -1537,18 +1535,18 @@ TEST (PCL, Octree_Pointcloud_Adjacency)
 {
   constexpr unsigned int test_runs = 100;
 
-  srand (static_cast<unsigned int> (time (nullptr)));
+  f_gen.setSeed(rd());
 
   for (unsigned int test_id = 0; test_id < test_runs; test_id++)
   {
     // instantiate point cloud
     PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
 
-    float resolution = static_cast<float> (0.01 * rand () / RAND_MAX) + 0.00001f;
+    f_gen.setParameters(0, 0.01);
+    float resolution = f_gen.run() + 0.00001f;
     //Define a random point
-    PointXYZ point (static_cast<float> (0.5 * rand () / RAND_MAX),
-                    static_cast<float> (0.5 * rand () / RAND_MAX),
-                    static_cast<float> (0.5 * rand () / RAND_MAX));
+    f_gen.setParameters(0, 0.5);
+    PointXYZ point (f_gen.run(), f_gen.run(), f_gen.run());
     //This is done to define the grid
     PointXYZ p1 (10,10,10);
     PointXYZ p2 (-10,-10,-10);
@@ -1576,11 +1574,10 @@ TEST (PCL, Octree_Pointcloud_Adjacency)
                      static_cast<float> (point.z + 10*resolution));
     cloudIn->push_back (point2);
     // Add points which are not neighbors
+    f_gen.setParameters(0, 10);
     for (int i = 0; i < 100; ++i)
     {
-      PointXYZ not_neighbor_point (static_cast<float> (10.0 * rand () / RAND_MAX),
-                     static_cast<float> (10.0 * rand () / RAND_MAX),
-                     static_cast<float> (10.0 * rand () / RAND_MAX));
+      PointXYZ not_neighbor_point (f_gen.run(), f_gen.run(), f_gen.run());
       if ( (point2.getVector3fMap () - not_neighbor_point.getVector3fMap ()).norm () > 3*resolution )
       {
         cloudIn->push_back(not_neighbor_point);

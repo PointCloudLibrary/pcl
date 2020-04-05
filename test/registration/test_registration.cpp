@@ -40,6 +40,7 @@
 #include <pcl/test/gtest.h>
 
 #include <pcl/point_types.h>
+#include <pcl/common/generate.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/registration/registration.h>
@@ -64,7 +65,13 @@
 
 using namespace pcl;
 using namespace pcl::io;
+using namespace pcl::common;
 using namespace std;
+
+std::random_device rd;
+CloudGenerator<pcl::PointXYZ,  UniformGenerator<float>> cloud_gen;
+UniformGenerator<float> f_gen;
+
 
 PointCloud<PointXYZ> cloud_source, cloud_target, cloud_reg;
 PointCloud<PointXYZRGBA> cloud_with_color;
@@ -164,13 +171,14 @@ TEST(PCL, ICP_translated)
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in(new pcl::PointCloud<pcl::PointXYZ>(5,1));
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZ>);
 
-  // Fill in the CloudIn data
-  for (auto& point : *cloud_in)
-  {
-    point.x = 1024 * rand() / (RAND_MAX + 1.0f);
-    point.y = 1024 * rand() / (RAND_MAX + 1.0f);
-    point.z = 1024 * rand() / (RAND_MAX + 1.0f);
-  }
+  UniformGenerator<float>::Parameters x_params(0, 1024, rd());
+  cloud_gen.setParametersForX (x_params);
+  UniformGenerator<float>::Parameters y_params (0, 1024, rd());
+  cloud_gen.setParametersForY (y_params);
+  UniformGenerator<float>::Parameters z_params (0, 1024, rd());
+  cloud_gen.setParametersForZ (z_params);
+
+  ASSERT_EQ(cloud_gen.fill(*cloud_in), 0);
 
   *cloud_out = *cloud_in;
 
@@ -248,12 +256,12 @@ TEST (PCL, IterativeClosestPointWithNormals)
 void
 sampleRandomTransform (Eigen::Affine3f &trans, float max_angle, float max_trans)
 {
-    srand(0);
+    f_gen.setParameters(0, 1, rd());
     // Sample random transform
-    Eigen::Vector3f axis((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX);
+    Eigen::Vector3f axis(f_gen.run(), f_gen.run(), f_gen.run());
     axis.normalize();
-    float angle = (float)rand() / RAND_MAX * max_angle;
-    Eigen::Vector3f translation((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX);
+    float angle = f_gen.run() * max_angle;
+    Eigen::Vector3f translation(f_gen.run(), f_gen.run(), f_gen.run());
     translation *= max_trans;
     Eigen::Affine3f rotation(Eigen::AngleAxis<float>(angle, axis));
     trans = Eigen::Translation3f(translation) * rotation;
