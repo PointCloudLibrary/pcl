@@ -76,8 +76,8 @@ pcl::FarthestPointSampling<PointT>::applyFilter (std::vector<int> &indices)
 {
   const std::size_t size = input_->size();
 
-  //check if number of points in cloud is less than requested number of points
-  if (size <= sample_)
+  //check if requested number of points is greater than the point cloud size
+  if (sample_ > size)
   {
     PCL_THROW_EXCEPTION (BadArgumentException,
                         "Requested number of points is greater than point cloud size!");
