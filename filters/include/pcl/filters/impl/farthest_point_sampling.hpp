@@ -88,7 +88,7 @@ pcl::FarthestPointSampling<PointT>::applyFilter (std::vector<int> &indices)
   
   //set random seed
   std::mt19937 random_gen(seed_);
-  std::uniform_int_distribution<> dis(0, size -1);
+  std::uniform_int_distribution<std::size_t> dis(0, size -1);
 
   //pick the first point at random
   int max_index = dis(random_gen);
