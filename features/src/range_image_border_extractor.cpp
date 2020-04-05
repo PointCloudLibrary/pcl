@@ -110,7 +110,7 @@ RangeImageBorderExtractor::extractLocalSurfaceStructure ()
   const auto height = range_image_->height;
   range_image_size_during_extraction_ = width*height;
   const auto array_size = range_image_size_during_extraction_;
-  surface_structure_ = new LocalSurface*[array_size];
+  surface_structure_ = std::make_unique<LocalSurface*[]>(array_size);
   const auto step_size = std::max(1, parameters_.pixel_radius_plane_extraction/2);
   //std::cout << PVARN(step_size);
   const auto sqrt_neighbors = parameters_.pixel_radius_plane_extraction/step_size + 1;
@@ -257,7 +257,7 @@ RangeImageBorderExtractor::findAndEvaluateShadowBorders ()
 
   int width  = range_image_->width,
       height = range_image_->height;
-  shadow_border_informations_ = new ShadowBorderIndices*[width*height];
+  shadow_border_informations_ = std::make_unique<ShadowBorderIndices*[]>(width * height);
   for (int y = 0; y < static_cast<int> (height); ++y)
   {
     for (int x = 0; x < static_cast<int> (width); ++x)
@@ -393,7 +393,7 @@ RangeImageBorderExtractor::classifyBorders ()
 
   BorderDescription initial_border_description;
   initial_border_description.traits = 0;
-  border_descriptions_ = new PointCloudOut;
+  border_descriptions_ = std::make_unique<PointCloudOut>();
   border_descriptions_->width = width;
   border_descriptions_->height = height;
   border_descriptions_->is_dense = true;
@@ -488,7 +488,7 @@ RangeImageBorderExtractor::calculateBorderDirections ()
   int width  = range_image_->width,
       height = range_image_->height,
       size   = width*height;
-  border_directions_ = new Eigen::Vector3f*[size];
+  border_directions_ = std::make_unique<Eigen::Vector3f*[]>(size);
   for (int y=0; y<height; ++y)
   {
     for (int x=0; x<width; ++x)
@@ -497,7 +497,7 @@ RangeImageBorderExtractor::calculateBorderDirections ()
     }
   }
 
-  Eigen::Vector3f** average_border_directions = new Eigen::Vector3f*[size];
+  std::unique_ptr<Eigen::Vector3f*[]> average_border_directions(std::make_unique<Eigen::Vector3f*[]>(size));
   int radius = parameters_.pixel_radius_border_direction;
   int minimum_weight = radius+1;
   float min_cos_angle=std::cos(deg2rad(120.0f));
@@ -553,8 +553,7 @@ RangeImageBorderExtractor::calculateBorderDirections ()
 
   for (int i=0; i<size; ++i)
     delete border_directions_[i];
-  delete[] border_directions_;
-  border_directions_ = average_border_directions;
+  border_directions_ = std::move(average_border_directions);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
