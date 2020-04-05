@@ -203,7 +203,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
 
 struct cloud_point_index_idx 
 {
-  int idx;
+  unsigned int idx;
   unsigned int cloud_point_index;
 
   cloud_point_index_idx(){}
