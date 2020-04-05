@@ -211,10 +211,6 @@ struct cloud_point_index_idx
   bool operator < (const cloud_point_index_idx &p) const { return (idx < p.idx); }
 };
 
-struct cloud_point_index_rightshift {
-  inline int operator()(const cloud_point_index_idx &p, const unsigned offset) { return p.idx >> offset; }
-};
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
