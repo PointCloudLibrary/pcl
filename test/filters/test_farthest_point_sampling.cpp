@@ -52,6 +52,8 @@ TEST (FarthestPointSampling, farthest_point_sampling)
   fps.setSample(SAMPLE);
   fps.filter(cloud_out);
   EXPECT_EQ (cloud_out.points.size(),  SAMPLE);
+  pcl::io::savePCDFileBinary("output.pcd", cloud_out);
+
 }
 
 

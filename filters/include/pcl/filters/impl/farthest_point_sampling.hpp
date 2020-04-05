@@ -75,7 +75,13 @@ template<typename PointT> void
 pcl::FarthestPointSampling<PointT>::applyFilter (std::vector<int> &indices)
 {
   const std::size_t size = input_->size();
-
+  //if requested number of point is equal to the point cloud size, copy original cloud
+  if (sample_ == size)
+  {
+    indices = *indices_;
+    removed_indices_->clear ();
+    return;
+  }
   //check if requested number of points is greater than the point cloud size
   if (sample_ > size)
   {
@@ -94,20 +100,24 @@ pcl::FarthestPointSampling<PointT>::applyFilter (std::vector<int> &indices)
   int max_index = dis(random_gen);
   distances_to_selected_points[max_index] = -1.0;
   indices.push_back(max_index);
-
+  
   for (int j = 1; j < sample_; j++)
   {
+    int next_max_index = 0;
+    
     //recompute distances
-    for (int i = 0; i < size); i++)
+    for (int i = 0; i < size; i++)
     {
       if (distances_to_selected_points[i] != -1.0)
         distances_to_selected_points[i] = std::min(distances_to_selected_points[i], geometry::distance((*input_)[i], (*input_)[max_index]));
+      if (distances_to_selected_points[i] > distances_to_selected_points[next_max_index])
+        next_max_index = i;
     }
 
     //select farthest point based on previously calculated distances
     //since distance is set to -1 for all selected elements,previously selected 
     //elements are guaranteed to not be selected
-    max_index = std::distance(distances_to_selected_points.begin(), std::max_element(distances_to_selected_points.begin(), distances_to_selected_points.end()));
+    max_index = next_max_index;
     distances_to_selected_points[max_index] = -1.0;
     indices.push_back(max_index);
     //set distance to -1 to ignore during max element search
