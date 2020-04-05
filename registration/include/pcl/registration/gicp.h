@@ -110,7 +110,7 @@ namespace pcl
         , mahalanobis_(0)
         , max_inner_iterations_(20)
 		,linear_gradient_tolerance_(1e-2) // 1cm
-		,angular_gradient_tolerance_(2e-2) // ~1deg 
+		,angular_gradient_tolerance_(1e-2) // ~0.6deg 
       {
         min_number_correspondences_ = 4;
         reg_name_ = "GeneralizedIterativeClosestPoint";

@@ -359,7 +359,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFun
 							Eigen::AngleAxisd(g[3], Eigen::Vector3d::UnitX())};
   auto angular_grad = std::acos(std::min(std::max(0.5 * (R.trace() - 1.), -1.), 1.));
 
-  if ((linear_epsilon < 0.) && (angular_grad < angular_epsilon))
+  if ((linear_grad < linear_epsilon) && (angular_grad < angular_epsilon))
 	return BFGSSpace::Success;
 
   return BFGSSpace::Running;
