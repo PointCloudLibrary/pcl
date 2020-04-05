@@ -380,7 +380,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   // in effect all points belonging to the same output cell will be next to each other
   //std::sort (index_vector.begin (), index_vector.end (), std::less<cloud_point_index_idx> ());
   auto rightshift_func = [](const cloud_point_index_idx &x, const unsigned offset) { return x.idx >> offset; };
-  boost::sort::spreadsort::integer_sort(index_vector.begin(), index_vector.end(), rightshift);
+  boost::sort::spreadsort::integer_sort(index_vector.begin(), index_vector.end(), rightshift_func);
 
   // Third pass: count output cells
   // we need to skip all the same, adjacenent idx values
