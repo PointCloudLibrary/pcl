@@ -36,8 +36,10 @@
 #pragma once
 
 #include <pcl/filters/filter_indices.h>
+
 #include <climits>
 #include <random>
+
 namespace pcl
  {
     /** \brief @b FarthestPointSampling applies farthest point sampling using euclidean 
@@ -124,4 +126,3 @@ namespace pcl
 
     };
  }
-
