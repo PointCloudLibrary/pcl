@@ -101,7 +101,7 @@ pcl::FarthestPointSampling<PointT>::applyFilter (std::vector<int> &indices)
     for (int i = 0; i < size); i++)
     {
       if (distances_to_selected_points[i] != -1.0)
-        distances_to_selected_points[i] = std::min(distances_to_selected_points[i], geometry::distance(input_->points[i], input_->points[max_index]));
+        distances_to_selected_points[i] = std::min(distances_to_selected_points[i], geometry::distance((*input_)[i], (*input_)[max_index]));
     }
 
     //select farthest point based on previously calculated distances
