@@ -74,7 +74,7 @@ pcl::FarthestPointSampling<PointT>::applyFilter (PointCloud &output)
 template<typename PointT> void
 pcl::FarthestPointSampling<PointT>::applyFilter (std::vector<int> &indices)
 {
-  std::size_t size = input_->points.size();
+  const std::size_t size = input_->size();
 
   //check if number of points in cloud is less than requested number of points
   if (size <= sample_)
