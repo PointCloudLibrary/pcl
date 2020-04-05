@@ -112,12 +112,6 @@ namespace pcl
         /** \brief Random number seed. */
         unsigned int seed_;
 
-        /** \brief Sample of point indices into a separate PointCloud
-          * \param output the filtered point cloud
-          */
-        void
-        applyFilter (PointCloud &output) override;
-
         /** \brief Sample of point indices
           * \param indices indices of the filtered point cloud
           */
