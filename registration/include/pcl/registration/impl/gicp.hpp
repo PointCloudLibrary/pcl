@@ -354,10 +354,10 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFun
   // express angular gradient as a rotation around a given axis of a certain positive angle,
   // we're literally only interested in the magnitude of the angular error.
   // !!! CAUTION Stanford GICP uses the Z Y X euler angles convention
-  auto R = Eigen::Matrix3f{	Eigen::AngleAxisf(g[5], Eigen::Vector3f::UnitZ()) *
-							Eigen::AngleAxisf(g[4], Eigen::Vector3f::UnitY()) *
-							Eigen::AngleAxisf(g[3], Eigen::Vector3f::UnitX())};
-  auto angular_grad = std::acos(std::min(std::max(0.5f * (R.trace() - 1.f), -1.f), 1.f));
+  auto R = Eigen::Matrix3d{	Eigen::AngleAxisd(g[5], Eigen::Vector3d::UnitZ()) *
+							Eigen::AngleAxisd(g[4], Eigen::Vector3d::UnitY()) *
+							Eigen::AngleAxisd(g[3], Eigen::Vector3d::UnitX())};
+  auto angular_grad = std::acos(std::min(std::max(0.5 * (R.trace() - 1.), -1.), 1.));
 
   if ((linear_epsilon < 0.) && (angular_grad < angular_epsilon))
 	return BFGSSpace::Success;
