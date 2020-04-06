@@ -91,7 +91,6 @@ template <typename PointT>
 pcl::FieldComparison<PointT>::~FieldComparison () 
 {
   delete point_data_;
-  point_data_ = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////
