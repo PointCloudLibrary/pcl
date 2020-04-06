@@ -39,13 +39,15 @@
 #pragma once
 
 #include <pcl/pcl_macros.h>
-#include <vector>
+#include <pcl/visualization/common/actor_map.h>
 
 #include <vtkCommand.h>
 #include <vtkActor.h>
 #include <vtkSmartPointer.h>
+
 #include <map>
-#include <pcl/visualization/common/actor_map.h>
+#include <vector>
+
 
 class vtkRenderWindowInteractor;
 
