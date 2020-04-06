@@ -100,14 +100,13 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
   MatchingCandidates &candidates)
 {
   candidates.clear ();
-  float fitness_score = FLT_MAX;
 
   // loop over all Candidate matches
   for (auto &match : matches)
   {
     Eigen::Matrix4f transformation_temp;
     pcl::Correspondences correspondences_temp;
-    fitness_score = FLT_MAX; // reset to FLT_MAX to accept all candidates and not only best
+    float fitness_score = FLT_MAX; // reset to FLT_MAX to accept all candidates and not only best
 
     // determine corresondences between base and match according to their distance to centroid
     linkMatchWithBase (base_indices, match, correspondences_temp);

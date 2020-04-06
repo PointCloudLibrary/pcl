@@ -68,7 +68,6 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
   std::vector<int> nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
-  double min_dist = std::numeric_limits<double>::max ();
   int min_index = 0;
   
   pcl::Correspondence corr;
@@ -85,7 +84,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       tree_->nearestKSearch (input_->points[*idx_i], k_, nn_indices, nn_dists);
 
       // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
-      min_dist = std::numeric_limits<double>::max ();
+      double min_dist = std::numeric_limits<double>::max ();
       
       // Find the best correspondence
       for (std::size_t j = 0; j < nn_indices.size (); j++)
@@ -128,7 +127,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       tree_->nearestKSearch (input_->points[*idx_i], k_, nn_indices, nn_dists);
  
       // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
-      min_dist = std::numeric_limits<double>::max ();
+      double min_dist = std::numeric_limits<double>::max ();
       
       // Find the best correspondence
       for (std::size_t j = 0; j < nn_indices.size (); j++)
@@ -189,7 +188,6 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
   std::vector<int> index_reciprocal (1);
   std::vector<float> distance_reciprocal (1);
 
-  double min_dist = std::numeric_limits<double>::max ();
   int min_index = 0;
   
   pcl::Correspondence corr;
@@ -207,7 +205,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       tree_->nearestKSearch (input_->points[*idx_i], k_, nn_indices, nn_dists);
 
       // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
-      min_dist = std::numeric_limits<double>::max ();
+      double min_dist = std::numeric_limits<double>::max ();
       
       // Find the best correspondence
       for (std::size_t j = 0; j < nn_indices.size (); j++)
@@ -258,7 +256,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       tree_->nearestKSearch (input_->points[*idx_i], k_, nn_indices, nn_dists);
 
       // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
-      min_dist = std::numeric_limits<double>::max ();
+      double min_dist = std::numeric_limits<double>::max ();
       
       // Find the best correspondence
       for (std::size_t j = 0; j < nn_indices.size (); j++)
