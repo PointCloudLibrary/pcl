@@ -185,6 +185,15 @@ namespace pcl
         */
       PointCloud () = default;
 
+      /** \brief Copy constructor.
+        * \param[in] pc the cloud to copy into this
+        * \todo Erase once mapping_ is removed.
+        */
+      #pragma clang diagnostic push
+      #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      PointCloud (const PointCloud<PointT> &pc) = default;
+      #pragma clang diagnostic pop
+
       /** \brief Copy constructor from point cloud subset
         * \param[in] pc the cloud to copy into this
         * \param[in] indices the subset to copy
