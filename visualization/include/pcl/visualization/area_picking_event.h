@@ -41,6 +41,7 @@
 #include <pcl/pcl_macros.h>
 
 #include <vector>
+#include <map>
 
 namespace pcl
 {
