@@ -363,7 +363,7 @@ namespace pcl
 
           if (point_diff_color_data_vector_size < 0)
           {
-            PCL_THROW_EXCEPTION (pcl::IOException, "Error! Size of pointDiffColorDataVector specified in the file is negative!");
+            PCL_THROW_EXCEPTION (pcl::BadValueException, "Error! Size of pointDiffColorDataVector specified in the file is negative!");
           }
           pointDiffColorDataVector.resize (static_cast<std::size_t> (point_diff_color_data_vector_size));
           compressed_color_data_len_ += entropy_coder_.decodeStreamToCharVector (compressed_tree_data_in_arg,

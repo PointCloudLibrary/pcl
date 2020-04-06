@@ -117,9 +117,9 @@ namespace pcl
             for (std::size_t j = 0; j < 3; j++)
               stream.write (reinterpret_cast<const char*> (&covariance_rot_ (i, j)), sizeof(covariance_rot_ (i, j)));
 
-          for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes; ++sub_node_index)
+          for (auto sub_node_index : sub_nodes)
           {
-            sub_nodes[sub_node_index].serialize (stream);
+            sub_node_index.serialize (stream);
           }
         }
 
@@ -162,9 +162,9 @@ namespace pcl
           }
           sub_nodes.resize (num_of_sub_nodes);
 
-          for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes; ++sub_node_index)
+          for (auto sub_node_index : sub_nodes)
           {
-            sub_nodes[sub_node_index].deserialize (stream);
+            sub_node_index.deserialize (stream);
           }
         }
     };

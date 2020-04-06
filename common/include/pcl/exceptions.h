@@ -286,4 +286,17 @@ namespace pcl
                           unsigned line_number = 0)
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   };
+  /** \class BadValueException
+    * \brief An exception that is thrown when the value of a variable is out of expected
+    *        range. Example - Negative value being given to a variable that stores size.
+    */
+  class BadValueException : public PCLException
+  {
+    public:
+    BadValueException (const std::string& error_description,
+                                 const char* file_name = nullptr,
+                                 const char* function_name = nullptr,
+                                 unsigned line_number = 0)
+      : pcl::PCLException (error_description, file_name, function_name, line_number) { }
+  };
 }

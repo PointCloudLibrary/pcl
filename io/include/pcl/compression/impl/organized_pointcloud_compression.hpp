@@ -349,7 +349,7 @@ namespace pcl
         PCL_CHECK_IO_STREAM(compressedDataIn_arg, "compressedColorSize");
         if (compressedColorSize <= 0)
         {
-          PCL_THROW_EXCEPTION (pcl::IOException, "Error! Size of compressed color specified in the file is not positive!");
+          PCL_THROW_EXCEPTION (pcl::BadValueException, "Error! Size of compressed color specified in the file is not positive!");
         }
         compressedColor.resize (compressedColorSize);
 
