@@ -1,19 +1,14 @@
-resources:
-  containers:
-    - container: env1604
-      image: pointcloudlibrary/env:16.04
-
 jobs:
   - job: tutorials
-    displayName: Tutorials
-    timeoutInMinutes: 0
+    displayName: Building Tutorials
     pool:
       vmImage: 'Ubuntu 16.04'
     container: env1604
+    timeoutInMinutes: 0
     variables:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'
       INSTALL_DIR: '$(Agent.BuildDirectory)/install'
-      CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi -O2'
+      CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi'
       EXCLUDE_TUTORIALS: 'davidsdk,ensenso_cameras,gpu'
     steps:
       - script: |

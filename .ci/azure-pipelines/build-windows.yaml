@@ -1,7 +1,6 @@
 jobs:
   - job: vs2017
     displayName: Windows VS2017 Build
-    timeoutInMinutes: 0
     pool:
       vmImage: 'vs2017-win2016'
     strategy:
@@ -14,6 +13,7 @@ jobs:
           PLATFORM: 'x64'
           ARCHITECTURE: 'x86_amd64'
           GENERATOR: 'Visual Studio 15 2017 Win64'
+    timeoutInMinutes: 0
     variables:
       BUILD_DIR: '$(Agent.WorkFolder)\build'
       CONFIGURATION: 'Release'

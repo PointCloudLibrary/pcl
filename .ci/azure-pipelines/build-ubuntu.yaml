@@ -1,60 +1,53 @@
-resources:
-  containers:
-    - container: env1604
-      image: pointcloudlibrary/env:16.04
-    - container: env1910
-      image: pointcloudlibrary/env:19.10
-
 jobs:
   - job: ubuntu
     displayName: Ubuntu
     pool:
       vmImage: 'Ubuntu 16.04'
-    timeoutInMinutes: 0
     strategy:
       matrix:
-#        16.04 Clang:
-#          containerResource: env1604
-#          CC: clang
-#          CXX: clang++
-#          CMakeArgs: '-DPCL_WARNINGS_ARE_ERRORS=ON'
-#        19.10 Clang:
-#          containerResource: env1910
-#          CC: clang
-#          CXX: clang++
-#          CMakeArgs: ''
+        #        16.04 Clang:
+        #          CONTAINER: env1604
+        #          CC: clang
+        #          CXX: clang++
+        #          CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
+        #        19.10 Clang:
+        #          CONTAINER: env1910
+        #          CC: clang
+        #          CXX: clang++
+        #          CMAKE_ARGS: ''
         16.04 GCC:
-          containerResource: env1604
+          CONTAINER: env1604
           CC: gcc
           CXX: g++
-          CMakeArgs: '-DPCL_WARNINGS_ARE_ERRORS=ON'
+          CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
         19.10 GCC:
-          containerResource: env1910
+          CONTAINER: env1910
           CC: gcc
           CXX: g++
-          CMakeArgs: ''
-    container: $[ variables['containerResource'] ]
+          CMAKE_ARGS: ''
+    container: $[ variables['CONTAINER'] ]
+    timeoutInMinutes: 0
     variables:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'
-      CMAKE_CXX_FLAGS: '-Wall -Wextra -O2'
+      CMAKE_CXX_FLAGS: '-Wall -Wextra'
     steps:
       - script: |
           mkdir $BUILD_DIR && cd $BUILD_DIR
-          cmake $(Build.SourcesDirectory) $(CMakeArgs) \
-            -DCMAKE_BUILD_TYPE="Release" \
-            -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
-            -DPCL_ONLY_CORE_POINT_TYPES=ON \
-            -DBUILD_simulation=ON \
-            -DBUILD_surface_on_nurbs=ON \
-            -DBUILD_global_tests=ON \
-            -DBUILD_examples=ON \
-            -DBUILD_tools=ON \
-            -DBUILD_apps=ON \
-            -DBUILD_apps_3d_rec_framework=ON \
-            -DBUILD_apps_cloud_composer=ON \
-            -DBUILD_apps_in_hand_scanner=ON \
-            -DBUILD_apps_modeler=ON \
-            -DBUILD_apps_point_cloud_editor=ON
+          cmake $(Build.SourcesDirectory) $(CMAKE_ARGS) \
+          -DCMAKE_BUILD_TYPE="Release" \
+          -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+          -DPCL_ONLY_CORE_POINT_TYPES=ON \
+          -DBUILD_simulation=ON \
+          -DBUILD_surface_on_nurbs=ON \
+          -DBUILD_global_tests=ON \
+          -DBUILD_examples=ON \
+          -DBUILD_tools=ON \
+          -DBUILD_apps=ON \
+          -DBUILD_apps_3d_rec_framework=ON \
+          -DBUILD_apps_cloud_composer=ON \
+          -DBUILD_apps_in_hand_scanner=ON \
+          -DBUILD_apps_modeler=ON \
+          -DBUILD_apps_point_cloud_editor=ON
         displayName: 'CMake Configuration'
       - script: |
           cd $BUILD_DIR

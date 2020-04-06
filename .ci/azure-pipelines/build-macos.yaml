@@ -1,18 +1,19 @@
 jobs:
   - job: osx
-    strategy:
-      matrix:
-        macOS Catalina:
-          VMIMAGE: 'macOS-10.15'
-        macOS Mojave:
-          VMIMAGE: 'macOS-10.14'
-    timeoutInMinutes: 0
+    displayName: macOS
     pool:
       vmImage: '$(VMIMAGE)'
+    strategy:
+      matrix:
+        Catalina 10.15:
+          VMIMAGE: 'macOS-10.15'
+        Mojave 10.14:
+          VMIMAGE: 'macOS-10.14'
+    timeoutInMinutes: 0
     variables:
       BUILD_DIR: '$(Agent.WorkFolder)/build'
       GOOGLE_TEST_DIR: '$(Agent.WorkFolder)/googletest'
-      CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi -O2'
+      CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi'
     steps:
       - script: |
           brew install pkg-config qt5 libpcap brewsci/science/openni
