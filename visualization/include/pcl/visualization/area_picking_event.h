@@ -51,9 +51,7 @@ namespace pcl
     {
       public:
        PCL_DEPRECATED(1,11,"This constructor is deprecated!") AreaPickingEvent (int nb_points, const Indices& indices)
-        : nb_points_ (nb_points)
-        , indices_ (indices)
-        {cloudIndices_.insert({"all_clouds",indices});}
+        : AreaPickingEvent(nb_points, {"all_clouds",indices}) {}
         
         AreaPickingEvent (int nb_points, std::map<std::string, std::vector<int>> cloudIndices)
           : nb_points_ (nb_points)
@@ -105,7 +103,6 @@ namespace pcl
 
       private:
         int nb_points_;
-        std::vector<int> indices_;
         std::map<std::string, std::vector<int>> cloudIndices_;
     };
   } //namespace visualization
