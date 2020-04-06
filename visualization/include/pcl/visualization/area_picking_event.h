@@ -51,7 +51,7 @@ namespace pcl
     {
       public:
        PCL_DEPRECATED(1,11,"This constructor is deprecated!") AreaPickingEvent (int nb_points, const Indices& indices)
-        : AreaPickingEvent(nb_points, {"all_clouds",indices}) {}
+        : AreaPickingEvent(nb_points, std:move{"all_clouds",indices}) {}
         
         AreaPickingEvent (int nb_points, std::map<std::string, std::vector<int>> cloudIndices)
           : nb_points_ (nb_points)
