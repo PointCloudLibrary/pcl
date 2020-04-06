@@ -36,6 +36,8 @@
  */
 
 #include <pcl/filters/pyramid.h>
+#include <pcl/console/print.h>
+#include <pcl/point_types.h>
 
 namespace pcl {
 namespace filters {
@@ -66,10 +68,8 @@ Pyramid<pcl::PointXYZRGB>::compute(
       const PointCloud<pcl::PointXYZRGB>& previous = *output[l - 1];
       PointCloud<pcl::PointXYZRGB>& next = *output[l];
 #pragma omp parallel for default(none) shared(next) num_threads(threads_)
-      for (int i = 0; i < next.height; ++i) // rows
-      {
-        for (int j = 0; j < next.width; ++j) // columns
-        {
+      for (int i = 0; i < static_cast<int>(next.height); ++i) {  // rows
+        for (int j = 0; j < static_cast<int>(next.width); ++j) {  // columns
           float r = 0, g = 0, b = 0;
           for (int m = 0; m < kernel_rows; ++m) // kernel rows
           {
@@ -84,11 +84,11 @@ Pyramid<pcl::PointXYZRGB>::compute(
               // ignore input samples which are out of bound
               if (ii < 0)
                 ii = 0;
-              if (ii >= previous.height)
+              if (ii >= static_cast<int>(previous.height))
                 ii = previous.height - 1;
               if (jj < 0)
                 jj = 0;
-              if (jj >= previous.width)
+              if (jj >= static_cast<int>(previous.width))
                 jj = previous.width - 1;
               next.at(j, i).x += previous.at(jj, ii).x * kernel_(mm, nn);
               next.at(j, i).y += previous.at(jj, ii).y * kernel_(mm, nn);
@@ -112,8 +112,8 @@ Pyramid<pcl::PointXYZRGB>::compute(
       const PointCloud<pcl::PointXYZRGB>& previous = *output[l - 1];
       PointCloud<pcl::PointXYZRGB>& next = *output[l];
 #pragma omp parallel for default(none) shared(next) num_threads(threads_)
-      for (int i = 0; i < next.height; ++i) {
-        for (int j = 0; j < next.width; ++j) {
+      for (int i = 0; i < static_cast<int>(next.height); ++i) {  // rows
+        for (int j = 0; j < static_cast<int>(next.width); ++j) {  // columns
           float weight = 0;
           float r = 0, g = 0, b = 0;
           for (int m = 0; m < kernel_rows; ++m) {
@@ -124,11 +124,11 @@ Pyramid<pcl::PointXYZRGB>::compute(
               int jj = 2 * j + (n - kernel_center_x);
               if (ii < 0)
                 ii = 0;
-              if (ii >= previous.height)
+              if (ii >= static_cast<int>(previous.height))
                 ii = previous.height - 1;
               if (jj < 0)
                 jj = 0;
-              if (jj >= previous.width)
+              if (jj >= static_cast<int>(previous.width))
                 jj = previous.width - 1;
               if (!isFinite(previous.at(jj, ii)))
                 continue;
@@ -191,10 +191,8 @@ Pyramid<pcl::PointXYZRGBA>::compute(
       const PointCloud<pcl::PointXYZRGBA>& previous = *output[l - 1];
       PointCloud<pcl::PointXYZRGBA>& next = *output[l];
 #pragma omp parallel for default(none) shared(next) num_threads(threads_)
-      for (int i = 0; i < next.height; ++i) // rows
-      {
-        for (int j = 0; j < next.width; ++j) // columns
-        {
+      for (int i = 0; i < static_cast<int>(next.height); ++i) {  // rows
+        for (int j = 0; j < static_cast<int>(next.width); ++j) {  // columns
           float r = 0, g = 0, b = 0, a = 0;
           for (int m = 0; m < kernel_rows; ++m) // kernel rows
           {
@@ -209,11 +207,11 @@ Pyramid<pcl::PointXYZRGBA>::compute(
               // ignore input samples which are out of bound
               if (ii < 0)
                 ii = 0;
-              if (ii >= previous.height)
+              if (ii >= static_cast<int>(previous.height))
                 ii = previous.height - 1;
               if (jj < 0)
                 jj = 0;
-              if (jj >= previous.width)
+              if (jj >= static_cast<int>(previous.width))
                 jj = previous.width - 1;
               next.at(j, i).x += previous.at(jj, ii).x * kernel_(mm, nn);
               next.at(j, i).y += previous.at(jj, ii).y * kernel_(mm, nn);
@@ -239,8 +237,8 @@ Pyramid<pcl::PointXYZRGBA>::compute(
       const PointCloud<pcl::PointXYZRGBA>& previous = *output[l - 1];
       PointCloud<pcl::PointXYZRGBA>& next = *output[l];
 #pragma omp parallel for default(none) shared(next) num_threads(threads_)
-      for (int i = 0; i < next.height; ++i) {
-        for (int j = 0; j < next.width; ++j) {
+      for (int i = 0; i < static_cast<int>(next.height); ++i) {  // rows
+        for (int j = 0; j < static_cast<int>(next.width); ++j) {  // columns
           float weight = 0;
           float r = 0, g = 0, b = 0, a = 0;
           for (int m = 0; m < kernel_rows; ++m) {
@@ -251,11 +249,11 @@ Pyramid<pcl::PointXYZRGBA>::compute(
               int jj = 2 * j + (n - kernel_center_x);
               if (ii < 0)
                 ii = 0;
-              if (ii >= previous.height)
+              if (ii >= static_cast<int>(previous.height))
                 ii = previous.height - 1;
               if (jj < 0)
                 jj = 0;
-              if (jj >= previous.width)
+              if (jj >= static_cast<int>(previous.width))
                 jj = previous.width - 1;
               if (!isFinite(previous.at(jj, ii)))
                 continue;
@@ -320,8 +318,8 @@ Pyramid<pcl::RGB>::compute(std::vector<Pyramid<pcl::RGB>::PointCloudPtr>& output
       const PointCloud<pcl::RGB>& previous = *output[l - 1];
       PointCloud<pcl::RGB>& next = *output[l];
 #pragma omp parallel for default(none) shared(next) num_threads(threads_)
-      for (int i = 0; i < next.height; ++i) {
-        for (int j = 0; j < next.width; ++j) {
+      for (int i = 0; i < static_cast<int>(next.height); ++i) {  // rows
+        for (int j = 0; j < static_cast<int>(next.width); ++j) {  // columns
           float r = 0, g = 0, b = 0;
           for (int m = 0; m < kernel_rows; ++m) {
             int mm = kernel_rows - 1 - m;
@@ -331,11 +329,11 @@ Pyramid<pcl::RGB>::compute(std::vector<Pyramid<pcl::RGB>::PointCloudPtr>& output
               int jj = 2 * j + (n - kernel_center_x);
               if (ii < 0)
                 ii = 0;
-              if (ii >= previous.height)
+              if (ii >= static_cast<int>(previous.height))
                 ii = previous.height - 1;
               if (jj < 0)
                 jj = 0;
-              if (jj >= previous.width)
+              if (jj >= static_cast<int>(previous.width))
                 jj = previous.width - 1;
               b += previous.at(jj, ii).b * kernel_(mm, nn);
               g += previous.at(jj, ii).g * kernel_(mm, nn);
@@ -356,8 +354,8 @@ Pyramid<pcl::RGB>::compute(std::vector<Pyramid<pcl::RGB>::PointCloudPtr>& output
       const PointCloud<pcl::RGB>& previous = *output[l - 1];
       PointCloud<pcl::RGB>& next = *output[l];
 #pragma omp parallel for default(none) shared(next) num_threads(threads_)
-      for (int i = 0; i < next.height; ++i) {
-        for (int j = 0; j < next.width; ++j) {
+      for (int i = 0; i < static_cast<int>(next.height); ++i) {  // rows
+        for (int j = 0; j < static_cast<int>(next.width); ++j) {  // columns
           float weight = 0;
           float r = 0, g = 0, b = 0;
           for (int m = 0; m < kernel_rows; ++m) {
@@ -368,11 +366,11 @@ Pyramid<pcl::RGB>::compute(std::vector<Pyramid<pcl::RGB>::PointCloudPtr>& output
               int jj = 2 * j + (n - kernel_center_x);
               if (ii < 0)
                 ii = 0;
-              if (ii >= previous.height)
+              if (ii >= static_cast<int>(previous.height))
                 ii = previous.height - 1;
               if (jj < 0)
                 jj = 0;
-              if (jj >= previous.width)
+              if (jj >= static_cast<int>(previous.width))
                 jj = previous.width - 1;
               if (!isFinite(previous.at(jj, ii)))
                 continue;

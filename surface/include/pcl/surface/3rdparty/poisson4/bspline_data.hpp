@@ -27,6 +27,7 @@ DAMAGE.
 */
 
 #include "poisson_exceptions.h"
+#include "binary_node.h"
 
 namespace pcl
 {

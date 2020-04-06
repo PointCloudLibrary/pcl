@@ -26,10 +26,15 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
+#include "factor.h"
+
 #include <float.h>
 #include <math.h>
+
 #include <algorithm>
-#include "factor.h"
+
+#include <cstdio>
+#include <cstring>
 
 ////////////////
 // Polynomial //

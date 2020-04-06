@@ -41,13 +41,15 @@
 #ifndef PCL_FILTERS_IMPL_PYRAMID_HPP
 #define PCL_FILTERS_IMPL_PYRAMID_HPP
 
+#include <pcl/common/distances.h>
+#include <pcl/filters/pyramid.h>
+#include <pcl/console/print.h>
+#include <pcl/point_types.h>
 
 namespace pcl
 {
-
 namespace filters
 {
-
 template <typename PointT> bool
 Pyramid<PointT>::initCompute ()
 {

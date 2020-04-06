@@ -39,11 +39,11 @@
 
 #pragma once
 
-#include <pcl/memory.h>
-#include <pcl/pcl_macros.h>
 #include <pcl/common/point_operators.h>
-#include <pcl/point_cloud.h>
+#include <pcl/console/print.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_config.h>
+#include <pcl/point_cloud.h>
 
 namespace pcl
 {
@@ -166,3 +166,5 @@ namespace pcl
     };
   }
 }
+
+#include <pcl/filters/impl/pyramid.hpp>
