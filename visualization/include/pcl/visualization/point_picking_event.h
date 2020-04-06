@@ -92,8 +92,8 @@ namespace pcl
     class PCL_EXPORTS PointPickingEvent
     {
       public:
-        PointPickingEvent (int idx) : idx_ (idx), idx2_ (-1), x_ (), y_ (), z_ (), x2_ (), y2_ (), z2_ () {}
-        PCL_DEPRECATED(1,11,"This constructor is deprecated!") PointPickingEvent (int idx, float x, float y, float z) : idx_ (idx), idx2_ (-1), x_ (x), y_ (y), z_ (z), x2_ (), y2_ (), z2_ () {}
+        PointPickingEvent (int idx) : PointPickingEvent (int idx, -1,-1, -1, "no_name") {}
+        PCL_DEPRECATED(1,11,"This constructor is deprecated!") PointPickingEvent (int idx, float x, float y, float z) : : PointPickingEvent (int idx, x, y, z, "no_name") {}
         PointPickingEvent (int idx, float x, float y, float z, std::string name) : idx_ (idx), idx2_ (-1), x_ (x), y_ (y), z_ (z), x2_ (), y2_ (), z2_ (), name_ (name) {}
         PointPickingEvent (int idx1, int idx2, float x1, float y1, float z1, float x2, float y2, float z2) :
           idx_ (idx1), idx2_ (idx2), x_ (x1), y_ (y1), z_ (z1), x2_ (x2), y2_ (y2), z2_ (z2) 
