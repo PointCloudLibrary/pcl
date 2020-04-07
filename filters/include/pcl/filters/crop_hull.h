@@ -40,6 +40,8 @@
 #include <pcl/point_types.h>
 #include <pcl/Vertices.h>
 #include <pcl/filters/filter_indices.h>
+#include <pcl/filters/crop_box.h>
+#include <pcl/common/common.h>
 
 namespace pcl
 {
@@ -68,7 +70,8 @@ namespace pcl
       CropHull () :
         hull_cloud_(),
         dim_(3),
-        crop_outside_(true)
+        crop_outside_(true),
+        crop_box_(true)
       {
         filter_name_ = "CropHull";
       }
@@ -90,7 +93,7 @@ namespace pcl
       {
         return (hull_polygons_);
       }
-      
+
       /** \brief Set the point cloud that the hull indices refer to
         * \param[in] points the point cloud that the hull indices refer to
         */
@@ -98,6 +101,20 @@ namespace pcl
       setHullCloud (PointCloudPtr points)
       {
         hull_cloud_ = points;
+        Eigen::Vector4f minPt, maxPt;
+        pcl::getMinMax3D(*hull_cloud_, minPt, maxPt);
+        crop_box_.setMin(minPt);
+        crop_box_.setMax(maxPt);
+      }
+
+      /** \brief Provide a pointer to the input dataset. Chain call Base::setInputCloud
+        * \param[in] points the point cloud that the input for filter processing
+        */
+      inline void
+      setInputCloud(PointCloudConstPtr const & cloud) override
+      {
+        crop_box_.setInputCloud(cloud);
+        FilterIndices<PointT>::setInputCloud(cloud);
       }
 
       /** \brief Get the point cloud that the hull indices refer to. */
@@ -230,6 +247,9 @@ namespace pcl
        * false, those inside will be removed.
        */
       bool crop_outside_;
+
+      /** \brief The CropBox filter for speedup. */
+      pcl::CropBox<PointT> crop_box_;
   };
 
 } // namespace pcl
