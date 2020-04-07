@@ -44,6 +44,7 @@
 template<typename PointT> void
 pcl::CropHull<PointT>::applyFilter (PointCloud &output)
 {
+  output.resize(0);
   if (dim_ == 2)
   {
     // in this case we are assuming all the points lie in the same plane as the
@@ -69,6 +70,8 @@ pcl::CropHull<PointT>::applyFilter (PointCloud &output)
 template<typename PointT> void
 pcl::CropHull<PointT>::applyFilter (std::vector<int> &indices)
 {
+  indices.resize(0);
+  indices.reserve(indices_->size());
   if (dim_ == 2)
   {
     // in this case we are assuming all the points lie in the same plane as the
@@ -113,7 +116,7 @@ pcl::CropHull<PointT>::getHullCloudRange ()
       if (pt[i] > cloud_max[i]) cloud_max[i] = pt[i];
     }
   }
-  
+
   return (cloud_max - cloud_min);
 }
 
@@ -199,10 +202,10 @@ pcl::CropHull<PointT>::applyFilter3D (PointCloud &output)
         crossings[ray] += rayTriangleIntersect
           (input_->points[(*indices_)[index]], rays[ray], hull_polygons_[poly], *hull_cloud_);
 
-    if (crop_outside_ && (crossings[0]&1) + (crossings[1]&1) + (crossings[2]&1) > 1)
+    bool isPointInsideHull = (crossings[0]&1) + (crossings[1]&1) + (crossings[2]&1) > 1;
+    if ((crop_outside_ && isPointInsideHull) || (!crop_outside_ && !isPointInsideHull)) {
       output.push_back (input_->points[(*indices_)[index]]);
-    else if (!crop_outside_)
-      output.push_back (input_->points[(*indices_)[index]]);
+    }
   }
 }
 
@@ -226,10 +229,10 @@ pcl::CropHull<PointT>::applyFilter3D (std::vector<int> &indices)
         crossings[ray] += rayTriangleIntersect
           (input_->points[(*indices_)[index]], rays[ray], hull_polygons_[poly], *hull_cloud_);
 
-    if (crop_outside_ && (crossings[0]&1) + (crossings[1]&1) + (crossings[2]&1) > 1)
+    bool isPointInsideHull = (crossings[0]&1) + (crossings[1]&1) + (crossings[2]&1) > 1;
+    if ((crop_outside_ && isPointInsideHull) || (!crop_outside_ && !isPointInsideHull)) {
       indices.push_back ((*indices_)[index]);
-    else if (!crop_outside_)
-      indices.push_back ((*indices_)[index]);
+    }
   }
 }
 
