@@ -328,6 +328,8 @@ For the integration of clang-format with various text editors and IDE's, refer t
 Details about the style options used can be found `here
 <https://clang.llvm.org/docs/ClangFormatStyleOptions.html>`_.
 
+Note: We are currently supporting clang-format 7-9. Version 10 of clang-format contains changes we cannot control with the .clang-format file. So we cannot force clang-format 10 to give same output like version 7-9 of clang-format.
+
 2.6.1. Script usage
 """""""""""""""""""
 

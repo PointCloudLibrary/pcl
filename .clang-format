@@ -1,6 +1,6 @@
 ---
 AlwaysBreakAfterReturnType: All
-AlwaysBreakTemplateDeclarations: true
+AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
 BraceWrapping:
