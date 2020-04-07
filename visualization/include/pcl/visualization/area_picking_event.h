@@ -53,10 +53,10 @@ namespace pcl
       public:
       AreaPickingEvent (int nb_points, std::map<std::string, std::vector<int>> cloudIndices)
           : nb_points_ (nb_points)
-          , cloudIndices_ (cloudIndices)
+          , cloudIndices_ (std::move(cloudIndices))
         {}
-       PCL_DEPRECATED(1,11,"This constructor is deprecated!") AreaPickingEvent (int nb_points, const Indices& indices)
-        : AreaPickingEvent(nb_points,std::map("all_clouds",indices)) {}
+       PCL_DEPRECATED(1,12,"This constructor is deprecated!") AreaPickingEvent (int nb_points, const Indices& indices)
+        : AreaPickingEvent(nb_points,{{"all_clouds",indices}}) {}
  
         /** \brief For situations where a whole are is selected, return the points indices.
           * \param[out] indices indices of the points under the area selected by user.
