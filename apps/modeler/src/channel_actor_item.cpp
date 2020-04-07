@@ -36,39 +36,37 @@
 
 #include <pcl/apps/modeler/channel_actor_item.h>
 
-#include <vtkCamera.h>
-#include <vtkPolyData.h>
-#include <vtkRenderer.h>
-#include <vtkMatrix4x4.h>
-#include <vtkRenderWindow.h>
-#include <vtkRendererCollection.h>
-#include <pcl/point_cloud.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
+#include <pcl/point_cloud.h>
+#include <vtkCamera.h>
+#include <vtkMatrix4x4.h>
+#include <vtkPolyData.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderer.h>
+#include <vtkRendererCollection.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ChannelActorItem::ChannelActorItem(QTreeWidgetItem* parent,
-  const CloudMesh::Ptr& cloud_mesh,
-  const vtkSmartPointer<vtkRenderWindow>& render_window,
-  const vtkSmartPointer<vtkActor>& actor,
-  const std::string& channel_name)
-  :QTreeWidgetItem(parent),
-  cloud_mesh_(cloud_mesh),
-  poly_data_(vtkSmartPointer<vtkPolyData>::New()),
-  render_window_(render_window),
-  color_scheme_("rgb"),
-  actor_(actor)
+pcl::modeler::ChannelActorItem::ChannelActorItem(
+    QTreeWidgetItem* parent,
+    const CloudMesh::Ptr& cloud_mesh,
+    const vtkSmartPointer<vtkRenderWindow>& render_window,
+    const vtkSmartPointer<vtkActor>& actor,
+    const std::string& channel_name)
+: QTreeWidgetItem(parent)
+, cloud_mesh_(cloud_mesh)
+, poly_data_(vtkSmartPointer<vtkPolyData>::New())
+, render_window_(render_window)
+, color_scheme_("rgb")
+, actor_(actor)
 {
-  setFlags(flags()&(~Qt::ItemIsDragEnabled));
-  setFlags(flags()&(~Qt::ItemIsDropEnabled));
+  setFlags(flags() & (~Qt::ItemIsDragEnabled));
+  setFlags(flags() & (~Qt::ItemIsDropEnabled));
 
   setText(0, QString(channel_name.c_str()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ChannelActorItem::~ChannelActorItem ()
-{
-  detachActor();
-}
+pcl::modeler::ChannelActorItem::~ChannelActorItem() { detachActor(); }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -106,9 +104,7 @@ pcl::modeler::ChannelActorItem::detachActor()
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::ChannelActorItem::prepareContextMenu(QMenu*) const
-{
-
-}
+{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void

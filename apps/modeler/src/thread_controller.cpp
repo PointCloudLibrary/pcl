@@ -44,10 +44,7 @@
 #include <QThread>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::ThreadController::ThreadController()
-{
-
-}
+pcl::modeler::ThreadController::ThreadController() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::ThreadController::~ThreadController()
@@ -59,14 +56,13 @@ pcl::modeler::ThreadController::~ThreadController()
 bool
 pcl::modeler::ThreadController::runWorker(AbstractWorker* worker)
 {
-  if (worker->exec() != QDialog::Accepted)
-  {
+  if (worker->exec() != QDialog::Accepted) {
     delete worker;
     deleteLater();
 
     return (false);
   }
-  
+
   QThread* thread = new QThread;
 
   connect(this, SIGNAL(prepared()), worker, SLOT(process()));
@@ -85,12 +81,13 @@ pcl::modeler::ThreadController::runWorker(AbstractWorker* worker)
 
   emit prepared();
 
-   return (true);
+  return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::ThreadController::slotOnCloudMeshItemUpdate(CloudMeshItem* cloud_mesh_item)
+pcl::modeler::ThreadController::slotOnCloudMeshItemUpdate(
+    CloudMeshItem* cloud_mesh_item)
 {
   cloud_mesh_item->updateChannels();
 }
