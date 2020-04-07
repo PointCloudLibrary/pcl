@@ -13,15 +13,19 @@
 
 Continuous integration
 ----------------------
+[ci-latest-build]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=9&branchName=master
+[ci-ubuntu-16.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Ubuntu&jobName=Ubuntu&configuration=Ubuntu%2016.04%20GCC&label=Ubuntu%2016.04
+[ci-ubuntu-19.10]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Ubuntu&jobName=Ubuntu&configuration=Ubuntu%2019.10%20GCC&label=Ubuntu%2019.10
+[ci-windows-x86]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Windows&jobName=Windows%20VS2017%20Build&configuration=Windows%20VS2017%20Build%20x86&label=Windows%20VS2017%20x86
+[ci-windows-x64]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Windows&jobName=Windows%20VS2017%20Build&configuration=Windows%20VS2017%20Build%20x64&label=Windows%20VS2017%20x64
+[ci-macos-10.14]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20macOS&jobName=macOS&configuration=macOS%20Mojave%2010.14&label=macOS%20Mojave%2010.14
+[ci-macos-10.15]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20macOS&jobName=macOS&configuration=macOS%20Catalina%2010.15&label=macOS%20Catalina%2010.15
 
-[![Ubuntu Build Status][ci-ubuntu-image]][ci-ubuntu] [![Windows Build Status][ci-windows-image]][ci-windows] [![MacOS Build Status][ci-macos-image]][ci-macos]
-
-[ci-ubuntu]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=8
-[ci-ubuntu-image]: https://img.shields.io/azure-devops/build/PointCloudLibrary/0fc52e87-00b9-420e-acbc-c842c4f2d9cc/8.svg?label=Ubuntu&logo=azure%20pipelines
-[ci-windows]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=3
-[ci-windows-image]: https://img.shields.io/azure-devops/build/PointCloudLibrary/0fc52e87-00b9-420e-acbc-c842c4f2d9cc/3.svg?label=Windows&logo=azure%20pipelines
-[ci-macos]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=2
-[ci-macos-image]: https://img.shields.io/azure-devops/build/PointCloudLibrary/0fc52e87-00b9-420e-acbc-c842c4f2d9cc/2.svg?label=MacOS&logo=azure%20pipelines
+Build Platform           | Status                                                                                                                                                                                                                                                                                                                                       
+------------------------ | ------------------------------------------------------------------------------------------------- |
+Ubuntu                   | [![Status][ci-ubuntu-16.04]][ci-latest-build] <br> [![Status][ci-ubuntu-19.10]][ci-latest-build]  |
+Windows                  | [![Status][ci-windows-x86]][ci-latest-build]  <br> [![Status][ci-windows-x64]][ci-latest-build]   |                                                                                                                                                                    
+macOS                    | [![Status][ci-macos-10.14]][ci-latest-build]  <br> [![Status][ci-macos-10.15]][ci-latest-build]   |                                                                                                                                                                    
 
 Community
 ---------
