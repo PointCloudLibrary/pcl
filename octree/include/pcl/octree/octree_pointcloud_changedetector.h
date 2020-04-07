@@ -38,8 +38,7 @@
 
 #pragma once
 
-#include <boost/shared_ptr.hpp>
-
+#include <pcl/memory.h>
 #include <pcl/octree/octree2buf_base.h>
 #include <pcl/octree/octree_pointcloud.h>
 

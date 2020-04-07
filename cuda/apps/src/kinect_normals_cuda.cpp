@@ -35,6 +35,10 @@
  *
  */
 
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 #include <pcl/cuda/features/normal_3d.h>
 #include <pcl/cuda/time_cpu.h>
 #include <pcl/cuda/time_gpu.h>
@@ -45,18 +49,14 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/pcl_macros.h>
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/gpu/gpu.hpp>
 
-#include <boost/shared_ptr.hpp>
-
 #include <functional>
 #include <iostream>
 #include <mutex>
+
 
 using namespace pcl::cuda;
 

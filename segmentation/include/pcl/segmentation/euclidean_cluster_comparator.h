@@ -39,10 +39,12 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/point_types.h>
 #include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/comparator.h>
-#include <pcl/point_types.h>
+
 
 namespace pcl
 {
@@ -251,7 +253,7 @@ namespace pcl
       void
       setExcludeLabels (const std::vector<bool>& exclude_labels)
       {
-        exclude_labels_ = boost::make_shared<std::set<std::uint32_t> > ();
+        exclude_labels_ = pcl::make_shared<std::set<std::uint32_t> > ();
         for (std::size_t i = 0; i < exclude_labels.size (); ++i)
           if (exclude_labels[i])
             exclude_labels_->insert (i);

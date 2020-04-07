@@ -40,16 +40,16 @@
 
 #pragma once
 
+#include <pcl/conversions.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_config.h>
+#include <pcl/common/time_trigger.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/file_grabber.h>
-#include <pcl/common/time_trigger.h>
-#include <pcl/conversions.h>
-
-#include <boost/shared_ptr.hpp>
 
 #include <string>
 #include <vector>
+
 
 namespace pcl
 {

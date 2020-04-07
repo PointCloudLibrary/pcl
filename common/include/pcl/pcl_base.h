@@ -46,7 +46,6 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
-#include <boost/shared_ptr.hpp>
 #include <Eigen/StdVector>
 #include <Eigen/Core>
 
