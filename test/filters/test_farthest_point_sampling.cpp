@@ -40,35 +40,76 @@
 #include <pcl/common/io.h>
 #include <pcl/filters/farthest_point_sampling.h>
 
+#include <cmath>
+#include <random>
+
 using namespace pcl;
 PointCloud<PointXYZ>::Ptr cloud_in (new PointCloud<PointXYZ>);
+const static int CLOUD_SIZE = 10;
+const static int SAMPLE_SIZE = CLOUD_SIZE -1;
+std::vector<float> x_values;
 
 TEST (FarthestPointSampling, farthest_point_sampling)
 {
-  const static int SAMPLE = 100;
   PointCloud<PointXYZ> cloud_out;
   FarthestPointSampling<PointXYZ> fps;
   fps.setInputCloud(cloud_in);
-  fps.setSample(SAMPLE);
+  
+  //set a seed, and identify first sample point
+  std::random_device rd;
+  int random_seed = rd();
+  fps.setSeed(random_seed);
+  fps.setSample(1);
   fps.filter(cloud_out);
-  EXPECT_EQ (cloud_out.points.size(),  SAMPLE);
-  pcl::io::savePCDFileBinary("output.pcd", cloud_out);
+  float first_element = cloud_out.points[0].x;
+  
+  //identify index of first element
+  std::vector<float>::iterator itr;
+  itr = std::find(x_values.begin(), x_values.end(), first_element);
+  int first_index = std::distance(x_values.begin(), itr);
+  
+  //resample cloud with the same seed
+  fps.setSeed(random_seed);
+  fps.setSample(SAMPLE_SIZE);
+  fps.filter(cloud_out);
 
+  //asert cloud size
+  EXPECT_EQ (cloud_out.points.size(),  SAMPLE_SIZE);
+
+  //check if each element is in the correct order
+  //by default, filtered indices should be sorted in order of distance
+  int point_index, expected_index;
+  for (int j = 1; j < SAMPLE_SIZE; j++)
+  {
+    itr = std::find(x_values.begin(), x_values.end(), cloud_out.points[j].x);
+    point_index = std::distance(x_values.begin(), itr);
+
+    if ((CLOUD_SIZE -j) == first_index)
+      expected_index = 0;
+    else
+      expected_index = CLOUD_SIZE - j;
+
+    EXPECT_EQ (point_index, expected_index);
+  }
 }
-
 
 int 
 main (int argc, char** argv)
 {
-  if (argc < 2)
+  // Fill in the cloud data
+  cloud_in->width    = CLOUD_SIZE;
+  cloud_in->height   = 1;
+  cloud_in->is_dense = false;
+  cloud_in->points.resize (cloud_in->width * cloud_in->height);
+
+  x_values.push_back(0);
+
+  for (std::size_t i = 1; i < CLOUD_SIZE; ++i)
   {
-    std::cerr << "No test file given. Please download bunny.pcd` and pass its path to the test." << std::endl;
-    return (-1);
-  }
-  if (io::loadPCDFile<PointXYZ> (argv[1], *cloud_in) == -1) //* load the file
-  {
-    std::cerr << "Please download `bunny.pcd` and pass its path to the test." << std::endl;
-    return (-1);
+    x_values.push_back(std::pow(3,i-1));
+    cloud_in->points[i].x = x_values[i];
+    cloud_in->points[i].y = 0;
+    cloud_in->points[i].z = 0;
   }
 
   testing::InitGoogleTest (&argc, argv);

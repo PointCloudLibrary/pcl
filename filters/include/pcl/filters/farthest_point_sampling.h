@@ -65,7 +65,7 @@ namespace pcl
         /** \brief Empty constructor. */
         FarthestPointSampling (bool extract_removed_indices = false) : 
           FilterIndices<PointT> (extract_removed_indices),
-          sample_ (std::numeric_limits<int>::max ()), 
+          sample_size_ (std::numeric_limits<int>::max ()), 
           seed_ (std::random_device()())
         {
           filter_name_ = "FarthestPointSamping";
@@ -75,17 +75,17 @@ namespace pcl
           * \param sample
           */
         inline void
-        setSample (std::size_t sample)
+        setSample (std::size_t sample_size)
         {
-          sample_ = sample;
+          sample_size_ = sample_size;
         }
 
-        /** \brief Get the value of the internal \a sample_ parameter.
+        /** \brief Get the value of the internal \a sample_size parameter.
           */
         inline std::size_t
-        getSample ()
+        getSample () const
         {
-          return (sample_);
+          return (sample_size_);
         }
 
         /** \brief Set seed of random function.
@@ -100,7 +100,7 @@ namespace pcl
         /** \brief Get the value of the internal \a seed_ parameter.
           */
         inline unsigned int 
-        getSeed ()
+        getSeed () const
         {
           return (seed_);
         }
@@ -108,7 +108,7 @@ namespace pcl
       protected:
 
         /** \brief Number of points that will be returned. */
-        std::size_t sample_;
+        std::size_t sample_size_;
         /** \brief Random number seed. */
         unsigned int seed_;
 
