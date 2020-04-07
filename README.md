@@ -1,6 +1,6 @@
 # Point Cloud Library
 
-<img src="pcl.png" align="center" height="100">
+<p align="center"><img src="pcl.png" height="100"></p>
 
 [![Release][release-image]][releases]
 [![License][license-image]][license]
