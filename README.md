@@ -29,12 +29,13 @@ macOS                    | [![Status][ci-macos-10.14]][ci-latest-build]  <br> [!
 
 Community
 ---------
-[![Gitter][gitter-image]][gitter-channel]
+[![Discord][discord-image]][discord-server]
 [![StackOverflow][so-question-count]][stackoverflow]
 [![Website][website-status]][website]
 
-[gitter-image]: https://img.shields.io/gitter/room/PointCloudLibrary/pcl.svg?label=community%20chat&logo=gitter&logoColor=%23ED1965
-[gitter-channel]: https://gitter.im/PointCloudLibrary/pcl
+
+[discord-image]: https://img.shields.io/discord/694824801977630762?color=7289da&label=community%20chat&logo=discord&style=plastic
+[discord-server]: https://discord.gg/gvcqHTW
 [website-status]: https://img.shields.io/website/http/www.pointclouds.org.svg?down_color=red&down_message=is%20down&up_color=yellow&up_message=is%20outdated
 [website]: http://www.pointclouds.org
 
@@ -81,7 +82,7 @@ For general questions on how to use the PCL, please consider one of the followin
 * [Stack Overflow](https://stackoverflow.com/questions/tagged/point-cloud-library)
 for Q&A as well as support for troubleshooting, installation and debugging. Do
 remember to tag your questions with the tag `point-cloud-library`.
-* [Gitter channel](https://gitter.im/PointCloudLibrary/pcl) for live chat with
+* [Discord Server](https://discord.gg/gvcqHTW) for live chat with
 other members of the PCL community and casual discussions
 
 <!-- 
