@@ -41,12 +41,13 @@
 #include <pcl/registration/ia_fpcs.h>
 #include <pcl/common/time.h>
 #include <pcl/common/distances.h>
+#include <pcl/common/utils.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/registration/transformation_estimation_3point.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline float
-pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, float max_dist, int /*nr_threads*/)
+pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, float max_dist, int nr_threads)
 {
   const float max_dist_sqr = max_dist * max_dist;
   const std::size_t s = cloud.size ();
@@ -59,6 +60,7 @@ pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &clou
   std::vector <int> ids (2);
   std::vector <float> dists_sqr (2);
 
+  pcl::utils::ignore(nr_threads);
 #pragma omp parallel for \
   default(none) \
   shared(tree, cloud) \
@@ -83,7 +85,7 @@ pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &clou
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline float
 pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &cloud, const std::vector <int> &indices,
-  float max_dist, int /*nr_threads*/)
+  float max_dist, int nr_threads)
 {
   const float max_dist_sqr = max_dist * max_dist;
   const std::size_t s = indices.size ();
@@ -96,6 +98,7 @@ pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &clou
   std::vector <int> ids (2);
   std::vector <float> dists_sqr (2);
 
+  pcl::utils::ignore(nr_threads);
 #pragma omp parallel for \
   default(none) \
   shared(tree, cloud, indices) \
