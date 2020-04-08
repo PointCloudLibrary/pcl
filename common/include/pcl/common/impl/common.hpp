@@ -34,9 +34,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_COMMON_IMPL_H_
-#define PCL_COMMON_IMPL_H_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/common/common.h>
@@ -436,5 +434,4 @@ pcl::calculatePolygonArea (const pcl::PointCloud<PointT> &polygon)
   return (area*0.5);
 }
 
-#endif  //#ifndef PCL_COMMON_IMPL_H_
 

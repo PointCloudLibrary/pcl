@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef IMPL_TRANSFORM_CLOUDS_HPP_
-#define IMPL_TRANSFORM_CLOUDS_HPP_
+#pragma once
 
 #include <pcl/apps/cloud_composer/transform_clouds.h>
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
@@ -94,5 +92,3 @@ pcl::cloud_composer::TransformClouds::performTemplatedAction (const QList <const
 #define PCL_INSTANTIATE_performTemplatedAction(T) template void pcl::cloud_composer::TransformClouds::performTemplatedAction<T> (QList <const CloudComposerItem*>);
 
 
-
-#endif //IMPL_TRANSFORM_CLOUDS_HPP_

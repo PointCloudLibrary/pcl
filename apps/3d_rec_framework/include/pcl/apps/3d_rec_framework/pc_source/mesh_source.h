@@ -4,7 +4,6 @@
  *  Created on: Mar 9, 2012
  *      Author: aitor
  */
-
 #pragma once
 
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>

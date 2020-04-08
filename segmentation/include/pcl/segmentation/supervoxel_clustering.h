@@ -1,4 +1,3 @@
-
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +36,6 @@
  * Email  : jpapon@gmail.com
  *
  */
-
 #pragma once
 
 #include <boost/version.hpp>

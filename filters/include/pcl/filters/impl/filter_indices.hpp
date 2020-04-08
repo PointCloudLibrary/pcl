@@ -34,9 +34,7 @@
  * $Id: filter.hpp 1800 2011-07-15 11:45:31Z marton $
  *
  */
-
-#ifndef PCL_FILTERS_IMPL_FILTER_INDICES_H_
-#define PCL_FILTERS_IMPL_FILTER_INDICES_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/filters/filter_indices.h>
@@ -111,5 +109,4 @@ pcl::FilterIndices<PointT>::applyFilter (PointCloud &output)
 #define PCL_INSTANTIATE_removeNanFromPointCloud(T) template PCL_EXPORTS void pcl::removeNaNFromPointCloud<T>(const pcl::PointCloud<T>&, std::vector<int>&);
 #define PCL_INSTANTIATE_FilterIndices(T) template class PCL_EXPORTS  pcl::FilterIndices<T>;
 
-#endif    // PCL_FILTERS_IMPL_FILTER_INDICES_H_
 

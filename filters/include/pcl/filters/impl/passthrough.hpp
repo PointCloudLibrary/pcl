@@ -36,9 +36,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_FILTERS_IMPL_PASSTHROUGH_HPP_
-#define PCL_FILTERS_IMPL_PASSTHROUGH_HPP_
+#pragma once
 
 #include <pcl/filters/passthrough.h>
 #include <pcl/common/io.h>
@@ -137,5 +135,4 @@ pcl::PassThrough<PointT>::applyFilterIndices (std::vector<int> &indices)
 
 #define PCL_INSTANTIATE_PassThrough(T) template class PCL_EXPORTS pcl::PassThrough<T>;
 
-#endif  // PCL_FILTERS_IMPL_PASSTHROUGH_HPP_
 

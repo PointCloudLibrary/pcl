@@ -37,9 +37,7 @@
  *
  * $Id$
  */
-
-#ifndef PCL_FEATURES_IMPL_CPPF_H_
-#define PCL_FEATURES_IMPL_CPPF_H_
+#pragma once
 
 #include <pcl/features/cppf.h>
 #include <pcl/features/pfh.h>
@@ -121,4 +119,3 @@ pcl::CPPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 #define PCL_INSTANTIATE_CPPFEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::CPPFEstimation<T,NT,OutT>;
 
 
-#endif // PCL_FEATURES_IMPL_CPPF_H_

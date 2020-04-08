@@ -38,7 +38,6 @@
   * \file bearing_angle_image.h
   * Created on: July 07, 2012
   */
-
 #pragma once
 
 #include <cmath>

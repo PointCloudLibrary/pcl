@@ -36,9 +36,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_FILTERS_IMPL_MEDIAN_FILTER_HPP_
-#define PCL_FILTERS_IMPL_MEDIAN_FILTER_HPP_
+#pragma once
 
 #include <pcl/filters/median_filter.h>
 #include <pcl/common/io.h>
@@ -89,4 +87,3 @@ pcl::MedianFilter<PointT>::applyFilter (PointCloud &output)
 }
 
 
-#endif /* PCL_FILTERS_IMPL_MEDIAN_FILTER_HPP_ */

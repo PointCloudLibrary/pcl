@@ -34,7 +34,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 //#if THRUST_DEVICE_COMPILER == THRUST_DEVICE_COMPILER_NVCC

@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_REGISTRATION_IMPL_IA_FPCS_H_
-#define PCL_REGISTRATION_IMPL_IA_FPCS_H_
+#pragma once
 
 #include <pcl/registration/ia_fpcs.h>
 #include <pcl/common/time.h>
@@ -906,5 +904,3 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-
-#endif // PCL_REGISTRATION_IMPL_IA_4PCS_H_

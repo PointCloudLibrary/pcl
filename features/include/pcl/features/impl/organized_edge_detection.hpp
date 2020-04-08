@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_FEATURES_IMPL_ORGANIZED_EDGE_DETECTION_H_
-#define PCL_FEATURES_IMPL_ORGANIZED_EDGE_DETECTION_H_
+#pragma once
 
 #include <pcl/2d/edge.h>
 #include <pcl/features/organized_edge_detection.h>
@@ -349,5 +347,3 @@ pcl::OrganizedEdgeFromRGBNormals<PointT, PointNT, PointLT>::compute (pcl::PointC
 #define PCL_INSTANTIATE_OrganizedEdgeFromRGB(T,LT)            template class PCL_EXPORTS pcl::OrganizedEdgeFromRGB<T,LT>;
 #define PCL_INSTANTIATE_OrganizedEdgeFromNormals(T,NT,LT)     template class PCL_EXPORTS pcl::OrganizedEdgeFromNormals<T,NT,LT>;
 #define PCL_INSTANTIATE_OrganizedEdgeFromRGBNormals(T,NT,LT)  template class PCL_EXPORTS pcl::OrganizedEdgeFromRGBNormals<T,NT,LT>;
-
-#endif //#ifndef PCL_FEATURES_IMPL_ORGANIZED_EDGE_DETECTION_H_

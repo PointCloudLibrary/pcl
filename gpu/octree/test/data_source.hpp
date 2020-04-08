@@ -33,9 +33,7 @@
  *
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
-
-#ifndef _PCL_TEST_GPU_OCTREE_DATAGEN_
-#define _PCL_TEST_GPU_OCTREE_DATAGEN_
+#pragma once
 
 #include <vector>
 #include <algorithm>
@@ -164,8 +162,3 @@ struct DataGenerator
     };
 
 };
-
-#endif  /* _PCL_TEST_GPU_OCTREE_DATAGEN_ */
-
-
-

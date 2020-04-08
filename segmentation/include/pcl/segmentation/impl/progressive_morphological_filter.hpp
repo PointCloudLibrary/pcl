@@ -35,9 +35,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-
-#ifndef PCL_SEGMENTATION_PROGRESSIVE_MORPHOLOGICAL_FILTER_HPP_
-#define PCL_SEGMENTATION_PROGRESSIVE_MORPHOLOGICAL_FILTER_HPP_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
@@ -148,5 +146,4 @@ pcl::ProgressiveMorphologicalFilter<PointT>::extract (std::vector<int>& ground)
 
 #define PCL_INSTANTIATE_ProgressiveMorphologicalFilter(T) template class pcl::ProgressiveMorphologicalFilter<T>;
 
-#endif    // PCL_SEGMENTATION_PROGRESSIVE_MORPHOLOGICAL_FILTER_HPP_
 

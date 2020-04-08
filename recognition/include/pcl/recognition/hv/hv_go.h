@@ -4,7 +4,6 @@
  *  Created on: Jun 4, 2012
  *      Author: aitor
  */
-
 #pragma once
 
 #include <random>

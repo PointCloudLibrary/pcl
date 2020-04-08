@@ -36,8 +36,7 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_BACK_PROJECTION_HPP_
-#define PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_BACK_PROJECTION_HPP_
+#pragma once
 
 #include <pcl/common/copy_point.h>
 
@@ -268,5 +267,3 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
   correspondences.resize (nr_valid_correspondences);
   deinitCompute ();
 }
-
-#endif    // PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_BACK_PROJECTION_HPP_

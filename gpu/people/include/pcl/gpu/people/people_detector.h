@@ -33,7 +33,6 @@
  * 
  * @author: Koen Buys
  */
-
 #pragma once
 
 #include <iostream>

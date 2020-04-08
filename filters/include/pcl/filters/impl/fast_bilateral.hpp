@@ -37,8 +37,7 @@
  * $Id$
  *
  */
-#ifndef PCL_FILTERS_IMPL_FAST_BILATERAL_HPP_
-#define PCL_FILTERS_IMPL_FAST_BILATERAL_HPP_
+#pragma once
 
 #include <pcl/common/io.h>
 
@@ -211,5 +210,3 @@ pcl::FastBilateralFilter<PointT>::Array3D::trilinear_interpolation (const float 
       (1.0f-x_alpha) * y_alpha        * z_alpha        * (*this)(x_index, yy_index, zz_index) +
       x_alpha        * y_alpha        * z_alpha        * (*this)(xx_index, yy_index, zz_index);
 }
-
-#endif /* PCL_FILTERS_IMPL_FAST_BILATERAL_HPP_ */

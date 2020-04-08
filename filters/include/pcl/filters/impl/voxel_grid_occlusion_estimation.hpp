@@ -35,9 +35,7 @@
  * Email  : potthast@usc.edu
  *
  */
-
-#ifndef PCL_FILTERS_IMPL_VOXEL_GRID_OCCLUSION_ESTIMATION_H_
-#define PCL_FILTERS_IMPL_VOXEL_GRID_OCCLUSION_ESTIMATION_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/filters/voxel_grid_occlusion_estimation.h>
@@ -435,5 +433,3 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (std::vector<Eigen::Vect
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define PCL_INSTANTIATE_VoxelGridOcclusionEstimation(T) template class PCL_EXPORTS pcl::VoxelGridOcclusionEstimation<T>;
-
-#endif    // PCL_FILTERS_IMPL_VOXEL_GRID_OCCLUSION_ESTIMATION_H_

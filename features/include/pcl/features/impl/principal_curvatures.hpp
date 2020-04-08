@@ -37,9 +37,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_FEATURES_IMPL_PRINCIPAL_CURVATURES_H_
-#define PCL_FEATURES_IMPL_PRINCIPAL_CURVATURES_H_
+#pragma once
 
 #include <pcl/features/principal_curvatures.h>
 
@@ -161,5 +159,3 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
 }
 
 #define PCL_INSTANTIATE_PrincipalCurvaturesEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::PrincipalCurvaturesEstimation<T,NT,OutT>;
-
-#endif    // PCL_FEATURES_IMPL_PRINCIPAL_CURVATURES_H_

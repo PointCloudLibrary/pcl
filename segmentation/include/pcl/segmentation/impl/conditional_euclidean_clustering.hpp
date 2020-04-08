@@ -33,9 +33,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_SEGMENTATION_IMPL_CONDITIONAL_EUCLIDEAN_CLUSTERING_HPP_
-#define PCL_SEGMENTATION_IMPL_CONDITIONAL_EUCLIDEAN_CLUSTERING_HPP_
+#pragma once
 
 #include <pcl/segmentation/conditional_euclidean_clustering.h>
 
@@ -140,5 +138,4 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
 
 #define PCL_INSTANTIATE_ConditionalEuclideanClustering(T) template class PCL_EXPORTS pcl::ConditionalEuclideanClustering<T>;
 
-#endif  // PCL_SEGMENTATION_IMPL_CONDITIONAL_EUCLIDEAN_CLUSTERING_HPP_
 

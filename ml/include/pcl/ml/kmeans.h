@@ -36,7 +36,6 @@
  * Email  : potthast@usc.edu
  *
  */
-
 #pragma once
 
 #include <set>

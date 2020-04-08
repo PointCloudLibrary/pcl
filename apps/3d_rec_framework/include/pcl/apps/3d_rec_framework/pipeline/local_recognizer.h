@@ -4,7 +4,6 @@
  *  Created on: Mar 24, 2012
  *      Author: aitor
  */
-
 #pragma once
 
 #include <flann/util/matrix.h>

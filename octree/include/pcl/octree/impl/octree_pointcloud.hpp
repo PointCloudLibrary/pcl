@@ -35,9 +35,7 @@
  *
  * $Id$
  */
-
-#ifndef PCL_OCTREE_POINTCLOUD_HPP_
-#define PCL_OCTREE_POINTCLOUD_HPP_
+#pragma once
 
 #include <cassert>
 
@@ -1052,5 +1050,3 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
       pcl::octree::OctreeContainerEmpty,                                               \
       pcl::octree::Octree2BufBase<pcl::octree::OctreeContainerEmpty,                   \
                                   pcl::octree::OctreeContainerEmpty>>;
-
-#endif /* OCTREE_POINTCLOUD_HPP_ */

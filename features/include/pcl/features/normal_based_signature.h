@@ -36,7 +36,6 @@
  *
  *  $Id$
  */
-
 #pragma once
 
 #include <pcl/features/feature.h>

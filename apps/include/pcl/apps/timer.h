@@ -36,7 +36,6 @@
  * $Id: openni_viewer.cpp 5059 2012-03-14 02:12:17Z gedikli $
  *
  */
-
 #pragma once
 
 #define MEASURE_FUNCTION_TIME

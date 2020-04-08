@@ -33,7 +33,6 @@
  *
  * Author: Julius Kammerl (julius@kammerl.de)
  */
-
 #pragma once
 
 namespace pcl

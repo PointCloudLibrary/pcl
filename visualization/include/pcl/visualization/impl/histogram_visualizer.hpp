@@ -35,9 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_PCL_HISTOGRAM_VISUALIZER_IMPL_H_
-#define PCL_PCL_HISTOGRAM_VISUALIZER_IMPL_H_
+#pragma once
 
 #include <vtkDoubleArray.h>
 
@@ -209,5 +207,4 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
   return (true);
 }
 
-#endif
 

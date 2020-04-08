@@ -37,9 +37,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_RMSAC_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_RMSAC_H_
+#pragma once
 
 #include <pcl/sample_consensus/rmsac.h>
 
@@ -179,5 +177,4 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
 
 #define PCL_INSTANTIATE_RandomizedMEstimatorSampleConsensus(T) template class PCL_EXPORTS pcl::RandomizedMEstimatorSampleConsensus<T>;
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_RMSAC_H_
 

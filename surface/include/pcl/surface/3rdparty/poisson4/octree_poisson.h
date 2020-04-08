@@ -25,9 +25,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING 
 ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
-
-#ifndef OCT_NODE_INCLUDED
-#define OCT_NODE_INCLUDED
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header
@@ -283,5 +281,3 @@ namespace pcl
 #include "octree_poisson.hpp"
 
 
-
-#endif // OCT_NODE

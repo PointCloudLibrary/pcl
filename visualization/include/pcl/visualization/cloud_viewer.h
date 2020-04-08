@@ -33,7 +33,6 @@
  *
  *
  */
-
 #pragma once
 
 #include <pcl/visualization/pcl_visualizer.h> //pcl vis

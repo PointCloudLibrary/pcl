@@ -33,9 +33,7 @@
 *
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
-
-#ifndef PCL_DEVICE_UTILS_WARP_HPP_
-#define PCL_DEVICE_UTILS_WARP_HPP_
+#pragma once
 
 namespace pcl
 {
@@ -176,5 +174,3 @@ namespace pcl
         };
     }
 }
-
-#endif /* PCL_DEVICE_UTILS_WARP_HPP_ */

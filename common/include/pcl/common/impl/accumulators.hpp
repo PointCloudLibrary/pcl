@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_COMMON_IMPL_DETAIL_ACCUMULATORS_HPP
-#define PCL_COMMON_IMPL_DETAIL_ACCUMULATORS_HPP
+#pragma once
 
 #include <map>
 
@@ -286,5 +284,4 @@ namespace pcl
 
 }
 
-#endif /* PCL_COMMON_IMPL_DETAIL_ACCUMULATORS_HPP */
 

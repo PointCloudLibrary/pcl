@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef __PCL_ORGANIZED_PROJECTION_MATRIX_HPP__
-#define __PCL_ORGANIZED_PROJECTION_MATRIX_HPP__
+#pragma once
 
 #include <pcl/cloud_iterator.h>
 
@@ -211,5 +209,3 @@ pcl::estimateProjectionMatrix (
 
   return (residual);
 }
-
-#endif

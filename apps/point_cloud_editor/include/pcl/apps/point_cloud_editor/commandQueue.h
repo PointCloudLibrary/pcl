@@ -38,7 +38,6 @@
 /// manipulate the deque.  This class is designed to work with Command objects
 /// in order to both execute them and undo them in the proper order.
 /// @author Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <deque>

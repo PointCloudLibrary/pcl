@@ -36,9 +36,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_SEARCH_IMPL_FLANN_SEARCH_H_
-#define PCL_SEARCH_IMPL_FLANN_SEARCH_H_
+#pragma once
 
 #include <flann/algorithms/kdtree_index.h>
 #include <flann/algorithms/kdtree_single_index.h>
@@ -430,5 +428,3 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
 }
 
 #define PCL_INSTANTIATE_FlannSearch(T) template class PCL_EXPORTS pcl::search::FlannSearch<T>;
-
-#endif

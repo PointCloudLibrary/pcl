@@ -37,7 +37,6 @@
  * $Id: gfpfh.h 1423 2011-06-21 09:51:32Z bouffa $
  *
  */
-
 #pragma once
 
 #include <pcl/features/feature.h>

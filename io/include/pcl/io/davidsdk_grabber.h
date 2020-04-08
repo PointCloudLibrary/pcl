@@ -35,7 +35,6 @@
  *
  *  Author: Victor Lamoine (victor.lamoine@gmail.com)
  */
-
 #pragma once
 
 #include <pcl/pcl_config.h>

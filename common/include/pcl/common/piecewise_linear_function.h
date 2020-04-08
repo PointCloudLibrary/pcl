@@ -34,7 +34,6 @@
  */
 
 /* \author Bastian Steder */
-
 #pragma once
 
 #include <vector>

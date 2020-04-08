@@ -36,7 +36,6 @@
  * $Id$ 
  * Authors: Anatoly Baksheev
  */
-
 #pragma once
 
 #include <pcl/pcl_macros.h>

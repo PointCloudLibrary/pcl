@@ -35,9 +35,7 @@
  * $Id:$
  * @author: Koen Buys
  */
-
-#ifndef PCL_GPU_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
-#define PCL_GPU_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
+#pragma once
 
 #include <pcl/gpu/segmentation/gpu_extract_clusters.h>
 
@@ -205,5 +203,3 @@ pcl::gpu::EuclideanClusterExtraction::extract (std::vector<pcl::PointIndices> &c
   // Sort the clusters based on their size (largest one first)
   //std::sort (clusters.rbegin (), clusters.rend (), comparePointClusters);
 }
-
-#endif //PCL_GPU_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_

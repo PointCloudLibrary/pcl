@@ -35,9 +35,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_REGISTRATION_IMPL_JOINT_ICP_HPP_
-#define PCL_REGISTRATION_IMPL_JOINT_ICP_HPP_
+#pragma once
 
 #include <pcl/registration/boost.h>
 #include <pcl/correspondence.h>
@@ -321,6 +319,5 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::determineRequ
 }
 
 
-#endif /* PCL_REGISTRATION_IMPL_JOINT_ICP_HPP_ */
 
 

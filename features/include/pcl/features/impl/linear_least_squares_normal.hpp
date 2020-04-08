@@ -35,9 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_FEATURES_LINEAR_LEAST_SQUARES_NORMAL_HPP_
-#define PCL_FEATURES_LINEAR_LEAST_SQUARES_NORMAL_HPP_
+#pragma once
 #define EIGEN_II_METHOD 1
 
 #include <pcl/features/linear_least_squares_normal.h>
@@ -266,5 +264,4 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
 #define PCL_INSTANTIATE_LinearLeastSquaresNormalEstimation(T,NT) template class PCL_EXPORTS pcl::LinearLeastSquaresNormalEstimation<T,NT>;
 //#define LinearLeastSquaresNormalEstimation(T,NT) template class PCL_EXPORTS pcl::LinearLeastSquaresNormalEstimation<T,NT>;
 
-#endif
 

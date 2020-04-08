@@ -35,9 +35,7 @@
  * $Id:$
  *
  */
-
-#ifndef PCL_GPU_SEGMENTATION_IMPL_SEEDED_HUE_SEGMENTATION_H_
-#define PCL_GPU_SEGMENTATION_IMPL_SEEDED_HUE_SEGMENTATION_H_
+#pragma once
 
 #include <pcl/gpu/segmentation/gpu_seeded_hue_segmentation.h>
 
@@ -161,5 +159,3 @@ pcl::gpu::SeededHueSegmentation::segment (PointIndices &indices_in, PointIndices
   // Extract the actual clusters
   seededHueSegmentation (host_cloud_, tree_, cluster_tolerance_, indices_in, indices_out, delta_hue_);
 }
-
-#endif //PCL_GPU_SEGMENTATION_IMPL_SEEDED_HUE_SEGMENTATION_H_

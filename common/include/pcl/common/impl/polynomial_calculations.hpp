@@ -35,8 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_POLYNOMIAL_CALCULATIONS_HPP_
-#define PCL_POLYNOMIAL_CALCULATIONS_HPP_
+#pragma once
 
 ////////////////////////////////////
 
@@ -505,5 +504,4 @@ inline bool
   return true;
 }
 
-#endif      // PCL_POLYNOMIAL_CALCULATIONS_HPP_
 

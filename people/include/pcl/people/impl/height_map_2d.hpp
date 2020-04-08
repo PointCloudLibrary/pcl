@@ -37,11 +37,9 @@
  * Created on: Nov 30, 2012
  * Author: Matteo Munaro
  */
+#pragma once
 
 #include <pcl/people/height_map_2d.h>
-
-#ifndef PCL_PEOPLE_HEIGHT_MAP_2D_HPP_
-#define PCL_PEOPLE_HEIGHT_MAP_2D_HPP_
 
 template <typename PointT>
 pcl::people::HeightMap2D<PointT>::HeightMap2D ()
@@ -308,4 +306,3 @@ pcl::people::HeightMap2D<PointT>::~HeightMap2D ()
 {
   // TODO Auto-generated destructor stub
 }
-#endif /* PCL_PEOPLE_HEIGHT_MAP_2D_HPP_ */

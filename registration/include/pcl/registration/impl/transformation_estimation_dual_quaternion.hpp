@@ -36,8 +36,7 @@
  *
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_DQ_HPP_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_DQ_HPP_
+#pragma once
 
 #include <pcl/common/eigen.h>
 
@@ -203,5 +202,3 @@ pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarg
   transformation_matrix (1, 3) = - t.y ();
   transformation_matrix (2, 3) = - t.z ();
 }
-
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_DQ_HPP_ */

@@ -36,7 +36,6 @@
  * $Id: point_cloud.h 4927 2012-03-07 03:35:53Z rusu $
  *
  */
-
 #pragma once
 
 #include <thrust/host_vector.h>

@@ -1,4 +1,3 @@
-
 /*
  * Software License Agreement (BSD License)
  *
@@ -37,7 +36,6 @@
  *
  *
  */
-
 #pragma once
 
 #include <pcl/pcl_config.h>

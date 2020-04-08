@@ -35,9 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
-#define	PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
+#pragma once
 
 #include <vtkVersion.h>
 #include <vtkContextActor.h>
@@ -463,5 +461,3 @@ pcl::visualization::ImageViewer::showCorrespondences (
   
   return (true);
 }
-
-#endif      // PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_

@@ -1,7 +1,5 @@
 //http://www.paulbridger.com/monitor_object/#ixzz2CeN1rr4P
-
-#ifndef PCL_OUTOFCORE_MONITOR_QUEUE_IMPL_H_
-#define PCL_OUTOFCORE_MONITOR_QUEUE_IMPL_H_
+#pragma once
 
 #include <condition_variable>
 #include <mutex>
@@ -40,5 +38,3 @@ private:
   std::mutex monitor_mutex_;
   std::condition_variable item_available_;
 };
-
-#endif //PCL_OUTOFCORE_MONITOR_QUEUE_IMPL_H_

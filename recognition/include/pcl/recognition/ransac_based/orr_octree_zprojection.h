@@ -42,7 +42,6 @@
  *  Created on: Nov 17, 2012
  *      Author: papazov
  */
-
 #pragma once
 
 #include "orr_octree.h"

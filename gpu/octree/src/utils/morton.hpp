@@ -33,9 +33,7 @@
 *
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
-
-#ifndef PCL_GPU_OCTREE_MORTON_HPP
-#define PCL_GPU_OCTREE_MORTON_HPP
+#pragma once
 
 
 namespace pcl
@@ -144,5 +142,3 @@ namespace pcl
         };
     }
 }
-
-#endif /* PCL_GPU_OCTREE_MORTON_HPP */

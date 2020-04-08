@@ -33,9 +33,7 @@
 *
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
-
-#ifndef PCL_PGU_DEVICE_ALGORITHM_HPP_
-#define PCL_PGU_DEVICE_ALGORITHM_HPP_
+#pragma once
 
 namespace pcl
 {
@@ -74,4 +72,3 @@ namespace pcl
         }
     }
 }
-#endif /* PCL_PGU_DEVICE_ALGORITHM_HPP_ */

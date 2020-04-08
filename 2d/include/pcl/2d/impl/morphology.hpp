@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_2D_MORPHOLOGY_HPP_
-#define PCL_2D_MORPHOLOGY_HPP_
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////
 // Assumes input, kernel and output images have 0's and 1's only
@@ -375,5 +373,3 @@ pcl::Morphology<PointT>::setStructuringElement(
 {
   structuring_element_ = structuring_element;
 }
-
-#endif // PCL_2D_MORPHOLOGY_HPP_

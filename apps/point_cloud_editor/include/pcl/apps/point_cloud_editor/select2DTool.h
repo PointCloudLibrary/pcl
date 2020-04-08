@@ -37,7 +37,6 @@
 /// @details the declaration of the 2D selection tool class providing
 /// functionalities to enable 2D selection.
 /// @author  Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <qgl.h>

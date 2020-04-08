@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef IMPL_CLOUD_ITEM_H_
-#define IMPL_CLOUD_ITEM_H_
+#pragma once
 
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <pcl/memory.h>  // for pcl::make_shared
@@ -79,5 +77,3 @@ pcl::cloud_composer::CloudItem::createCloudItemFromTemplate (const QString& name
 #define PCL_INSTANTIATE_createCloudItemFromTemplate(T) template pcl::cloud_composer::CloudItem* pcl::cloud_composer::CloudItem::createCloudItemFromTemplate<T>(const QString, typename PointCloud<PointT>::Ptr);
 
 #define PCL_INSTANTIATE_printNumPoints(T) template void pcl::cloud_composer::CloudItem::getNumPoints<T>();
-
-#endif

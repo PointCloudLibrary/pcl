@@ -37,9 +37,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_REGISTRATION_NDT_IMPL_H_
-#define PCL_REGISTRATION_NDT_IMPL_H_
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointSource, typename PointTarget>
@@ -747,5 +745,3 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT
 
   return (a_t);
 }
-
-#endif // PCL_REGISTRATION_NDT_IMPL_H_

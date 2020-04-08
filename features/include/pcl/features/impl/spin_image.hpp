@@ -37,9 +37,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_FEATURES_IMPL_SPIN_IMAGE_H_
-#define PCL_FEATURES_IMPL_SPIN_IMAGE_H_
+#pragma once
 
 #include <limits>
 #include <pcl/point_cloud.h>
@@ -339,5 +337,4 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClo
 
 #define PCL_INSTANTIATE_SpinImageEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::SpinImageEstimation<T,NT,OutT>;
 
-#endif    // PCL_FEATURES_IMPL_SPIN_IMAGE_H_
 

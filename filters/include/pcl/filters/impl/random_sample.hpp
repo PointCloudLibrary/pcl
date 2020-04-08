@@ -34,9 +34,7 @@
  * $Id: extract_indices.hpp 1897 2011-07-26 20:35:49Z rusu $
  *
  */
-
-#ifndef PCL_FILTERS_IMPL_RANDOM_SAMPLE_H_
-#define PCL_FILTERS_IMPL_RANDOM_SAMPLE_H_
+#pragma once
 
 #include <pcl/filters/random_sample.h>
 #include <pcl/common/io.h>
@@ -110,5 +108,3 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
 }
 
 #define PCL_INSTANTIATE_RandomSample(T) template class PCL_EXPORTS pcl::RandomSample<T>;
-
-#endif    // PCL_FILTERS_IMPL_RANDOM_SAMPLE_H_

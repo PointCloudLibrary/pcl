@@ -37,9 +37,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_FEATURES_IMPL_CVFH_H_
-#define PCL_FEATURES_IMPL_CVFH_H_
+#pragma once
 
 #include <pcl/features/cvfh.h>
 #include <pcl/features/normal_3d.h>
@@ -328,5 +326,3 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 }
 
 #define PCL_INSTANTIATE_CVFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::CVFHEstimation<T,NT,OutT>;
-
-#endif    // PCL_FEATURES_IMPL_VFH_H_ 

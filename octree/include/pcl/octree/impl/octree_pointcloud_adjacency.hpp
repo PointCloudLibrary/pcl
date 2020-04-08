@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_OCTREE_POINTCLOUD_ADJACENCY_HPP_
-#define PCL_OCTREE_POINTCLOUD_ADJACENCY_HPP_
+#pragma once
 
 #include <pcl/common/geometry.h>
 #include <pcl/console/print.h>
@@ -330,5 +328,3 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
 
 #define PCL_INSTANTIATE_OctreePointCloudAdjacency(T)                                   \
   template class PCL_EXPORTS pcl::octree::OctreePointCloudAdjacency<T>;
-
-#endif

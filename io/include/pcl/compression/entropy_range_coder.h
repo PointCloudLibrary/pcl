@@ -37,7 +37,6 @@
  *
  * Author: Julius Kammerl (julius@kammerl.de)
  */
-
 #pragma once
 
 #include <map>

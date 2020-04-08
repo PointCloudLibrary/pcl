@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_STANDALONE_MARCHING_CUBES_IMPL_HPP_
-#define PCL_STANDALONE_MARCHING_CUBES_IMPL_HPP_
+#pragma once
 
 #include <pcl/gpu/kinfu_large_scale/standalone_marching_cubes.h>
 #include <pcl/memory.h>
@@ -271,5 +269,4 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::runMarchingCubes ()
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#endif // PCL_STANDALONE_MARCHING_CUBES_IMPL_HPP_
  

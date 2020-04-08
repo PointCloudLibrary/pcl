@@ -35,9 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_IMPL_POINT_TYPES_HPP_
-#define PCL_IMPL_POINT_TYPES_HPP_
+#pragma once
 
 #include <cstdint>
 #if defined __GNUC__
@@ -1829,5 +1827,3 @@ namespace pcl
     return (os);
   }
 } // End namespace
-
-#endif

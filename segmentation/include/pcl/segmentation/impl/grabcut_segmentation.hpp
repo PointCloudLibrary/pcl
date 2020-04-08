@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_SEGMENTATION_IMPL_GRABCUT_HPP
-#define PCL_SEGMENTATION_IMPL_GRABCUT_HPP
+#pragma once
 
 #include <pcl/search/organized.h>
 #include <pcl/search/kdtree.h>
@@ -508,5 +506,3 @@ pcl::GrabCut<PointT>::extract (std::vector<pcl::PointIndices>& clusters)
     else
       clusters[0].indices.push_back (i);
 }
-
-#endif

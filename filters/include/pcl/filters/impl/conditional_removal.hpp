@@ -34,9 +34,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_FILTER_IMPL_FIELD_VAL_CONDITION_H_
-#define PCL_FILTER_IMPL_FIELD_VAL_CONDITION_H_
+#pragma once
 
 #include <pcl/common/io.h>
 #include <pcl/common/copy_point.h>
@@ -785,5 +783,3 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
 #define PCL_INSTANTIATE_ConditionAnd(T) template class PCL_EXPORTS pcl::ConditionAnd<T>;
 #define PCL_INSTANTIATE_ConditionOr(T) template class PCL_EXPORTS pcl::ConditionOr<T>;
 #define PCL_INSTANTIATE_ConditionalRemoval(T) template class PCL_EXPORTS pcl::ConditionalRemoval<T>;
-
-#endif 

@@ -36,9 +36,7 @@
  * Email  : potthast@usc.edu
  *
  */
-
-#ifndef PCL_UNARY_CLASSIFIER_HPP_
-#define PCL_UNARY_CLASSIFIER_HPP_
+#pragma once
 
 #include <Eigen/Core>
 #include <flann/algorithms/center_chooser.h>
@@ -430,5 +428,3 @@ pcl::UnaryClassifier<PointT>::segment (pcl::PointCloud<pcl::PointXYZRGBL>::Ptr &
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define PCL_INSTANTIATE_UnaryClassifier(T) template class pcl::UnaryClassifier<T>;
-
-#endif    // PCL_UNARY_CLASSIFIER_HPP_

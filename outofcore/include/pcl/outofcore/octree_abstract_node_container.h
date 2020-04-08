@@ -35,7 +35,6 @@
  *
  *  $Id: octree_abstract_node_container.h 6802M 2012-08-25 00:11:05Z (local) $
  */
-
 #pragma once
 
 #include <mutex>

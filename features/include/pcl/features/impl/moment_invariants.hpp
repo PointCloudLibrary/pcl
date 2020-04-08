@@ -37,9 +37,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_FEATURES_IMPL_MOMENT_INVARIANTS_H_
-#define PCL_FEATURES_IMPL_MOMENT_INVARIANTS_H_
+#pragma once
 
 #include <pcl/features/moment_invariants.h>
 #include <pcl/common/centroid.h>
@@ -159,5 +157,4 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computeFeature (PointCloud
 
 #define PCL_INSTANTIATE_MomentInvariantsEstimation(T,NT) template class PCL_EXPORTS pcl::MomentInvariantsEstimation<T,NT>;
 
-#endif    // PCL_FEATURES_IMPL_MOMENT_INVARIANTS_H_ 
 

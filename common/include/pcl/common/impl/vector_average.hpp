@@ -34,9 +34,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-
-#ifndef PCL_COMMON_VECTOR_AVERAGE_IMPL_HPP_
-#define PCL_COMMON_VECTOR_AVERAGE_IMPL_HPP_
+#pragma once
 
 namespace pcl
 {
@@ -197,5 +195,4 @@ namespace pcl
   }
 }  // END namespace
 
-#endif
 

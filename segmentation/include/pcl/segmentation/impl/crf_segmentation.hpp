@@ -36,9 +36,7 @@
  * Email  : potthast@usc.edu
  *
  */
-
-#ifndef PCL_CRF_SEGMENTATION_HPP_
-#define PCL_CRF_SEGMENTATION_HPP_
+#pragma once
 
 #include <pcl/segmentation/crf_segmentation.h>
 
@@ -598,5 +596,3 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
 }
 
 #define PCL_INSTANTIATE_CrfSegmentation(T) template class pcl::CrfSegmentation<T>;
-
-#endif    // PCL_CRF_SEGMENTATION_HPP_

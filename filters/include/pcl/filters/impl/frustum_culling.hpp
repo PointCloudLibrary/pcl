@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_FILTERS_IMPL_FRUSTUM_CULLING_HPP_
-#define PCL_FILTERS_IMPL_FRUSTUM_CULLING_HPP_
+#pragma once
 
 #include <pcl/filters/frustum_culling.h>
 #include <pcl/common/io.h>
@@ -148,5 +146,3 @@ pcl::FrustumCulling<PointT>::applyFilter (std::vector<int> &indices)
 }
 
 #define PCL_INSTANTIATE_FrustumCulling(T) template class PCL_EXPORTS pcl::FrustumCulling<T>;
-
-#endif

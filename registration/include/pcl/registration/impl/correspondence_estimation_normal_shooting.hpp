@@ -37,8 +37,7 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_NORMAL_SHOOTING_H_
-#define PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_NORMAL_SHOOTING_H_
+#pragma once
 
 #include <pcl/common/copy_point.h>
 
@@ -304,5 +303,3 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
   correspondences.resize (nr_valid_correspondences);
   deinitCompute ();
 }
-
-#endif    // PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_NORMAL_SHOOTING_H_

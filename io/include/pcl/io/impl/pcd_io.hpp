@@ -36,9 +36,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_IO_PCD_IO_IMPL_H_
-#define PCL_IO_PCD_IO_IMPL_H_
+#pragma once
 
 #include <fstream>
 #include <fcntl.h>
@@ -866,5 +864,3 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
 
   return (0);
 }
-
-#endif  //#ifndef PCL_IO_PCD_IO_H_

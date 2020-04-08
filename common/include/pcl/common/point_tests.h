@@ -36,7 +36,6 @@
  * $Id: point_types.hpp 6415 2012-07-16 20:11:47Z rusu $
  *
  */
-
 #pragma once
 
 #include <pcl/point_types.h>

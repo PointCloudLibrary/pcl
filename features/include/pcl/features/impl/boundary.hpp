@@ -37,9 +37,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_FEATURES_IMPL_BOUNDARY_H_
-#define PCL_FEATURES_IMPL_BOUNDARY_H_
+#pragma once
 
 #include <pcl/features/boundary.h>
 #include <cfloat>
@@ -169,5 +167,4 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClou
 
 #define PCL_INSTANTIATE_BoundaryEstimation(PointInT,PointNT,PointOutT) template class PCL_EXPORTS pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>;
 
-#endif    // PCL_FEATURES_IMPL_BOUNDARY_H_ 
 

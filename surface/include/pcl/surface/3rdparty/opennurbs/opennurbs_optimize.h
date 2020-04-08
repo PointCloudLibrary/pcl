@@ -98,4 +98,3 @@ private:
 };
 
 #endif
-

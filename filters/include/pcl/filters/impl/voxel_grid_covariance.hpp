@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_VOXEL_GRID_COVARIANCE_IMPL_H_
-#define PCL_VOXEL_GRID_COVARIANCE_IMPL_H_
+#pragma once
 
 #include <pcl/common/common.h>
 #include <pcl/filters/boost.h>
@@ -444,5 +442,3 @@ pcl::VoxelGridCovariance<PointT>::getDisplayCloud (pcl::PointCloud<PointXYZ>& ce
 }
 
 #define PCL_INSTANTIATE_VoxelGridCovariance(T) template class PCL_EXPORTS pcl::VoxelGridCovariance<T>;
-
-#endif    // PCL_VOXEL_GRID_COVARIANCE_IMPL_H_

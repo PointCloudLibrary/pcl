@@ -37,9 +37,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_PROSAC_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_PROSAC_H_
+#pragma once
 
 #if defined __GNUC__
 #  pragma GCC system_header 
@@ -234,5 +232,3 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
 }
 
 #define PCL_INSTANTIATE_ProgressiveSampleConsensus(T) template class PCL_EXPORTS pcl::ProgressiveSampleConsensus<T>;
-
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_PROSAC_H_

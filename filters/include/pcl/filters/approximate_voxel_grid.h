@@ -34,7 +34,6 @@
  * $Id: voxel_grid.h 1374 2011-06-19 02:29:56Z bouffa $
  *
  */
-
 #pragma once
 
 #include <pcl/filters/boost.h>

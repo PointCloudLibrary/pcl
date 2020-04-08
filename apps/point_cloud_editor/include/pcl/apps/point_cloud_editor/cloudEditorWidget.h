@@ -37,7 +37,6 @@
 /// @details the declaration of the class representing the widgets
 /// which are used for viewing and editing point clouds
 /// @author  Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <pcl/apps/point_cloud_editor/localTypes.h>

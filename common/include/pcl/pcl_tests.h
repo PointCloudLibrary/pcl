@@ -35,7 +35,6 @@
  *
  * $Id$
  */
-
 #pragma once
 
 #include <Eigen/Core>
@@ -387,6 +386,5 @@ namespace pcl
 #define ASSERT_VECTOR_DOES_NOT_CONTAIN(expected, actual)           \
     ASSERT_PRED_FORMAT2(::pcl::test::internal::VectorDoesNotContain, \
                         expected, actual)
-
 
 

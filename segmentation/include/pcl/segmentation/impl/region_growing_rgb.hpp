@@ -36,9 +36,7 @@
  * Email  : mine_all_mine@bk.ru
  *
  */
-
-#ifndef PCL_SEGMENTATION_REGION_GROWING_RGB_HPP_
-#define PCL_SEGMENTATION_REGION_GROWING_RGB_HPP_
+#pragma once
 
 #include <pcl/segmentation/region_growing_rgb.h>
 #include <pcl/search/search.h>
@@ -761,5 +759,3 @@ pcl::RegionGrowingRGB<PointT, NormalT>::getSegmentFromPoint (int index, pcl::Poi
 
   deinitCompute ();
 }
-
-#endif    // PCL_SEGMENTATION_REGION_GROWING_RGB_HPP_

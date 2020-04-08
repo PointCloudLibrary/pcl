@@ -37,9 +37,7 @@
  *  $Id$
  *
  */
-
-#ifndef PCL_FEATURES_IMPL_USC_HPP_
-#define PCL_FEATURES_IMPL_USC_HPP_
+#pragma once
 
 #include <pcl/features/usc.h>
 #include <pcl/features/shot_lrf.h>
@@ -259,5 +257,3 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
 }
 
 #define PCL_INSTANTIATE_UniqueShapeContext(T,OutT,RFT) template class PCL_EXPORTS pcl::UniqueShapeContext<T,OutT,RFT>;
-
-#endif

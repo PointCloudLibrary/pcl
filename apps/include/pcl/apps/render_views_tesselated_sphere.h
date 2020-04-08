@@ -4,7 +4,6 @@
  *  Created on: Dec 23, 2011
  *      Author: aitor
  */
-
 #pragma once
 
 #include <pcl/common/common.h>

@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_SEARCH_KDTREE_IMPL_HPP_
-#define PCL_SEARCH_KDTREE_IMPL_HPP_
+#pragma once
 
 #include <pcl/search/kdtree.h>
 #include <pcl/search/impl/search.hpp>
@@ -103,7 +101,5 @@ pcl::search::KdTree<PointT,Tree>::radiusSearch (
 }
 
 #define PCL_INSTANTIATE_KdTree(T) template class PCL_EXPORTS pcl::search::KdTree<T>;
-
-#endif  //#ifndef _PCL_SEARCH_KDTREE_IMPL_HPP_
 
 

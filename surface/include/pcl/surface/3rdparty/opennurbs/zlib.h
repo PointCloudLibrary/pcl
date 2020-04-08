@@ -27,9 +27,7 @@
   Comments) 1950 to 1952 in the files http://www.ietf.org/rfc/rfc1950.txt
   (zlib format), rfc1951.txt (deflate format) and rfc1952.txt (gzip format).
 */
-
-#ifndef ZLIB_H
-#define ZLIB_H
+#pragma once
 
 #include "zconf.h"
 
@@ -1353,5 +1351,3 @@ ZEXTERN const uLongf * ZEXPORT get_crc_table    OF((void));
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* ZLIB_H */

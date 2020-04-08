@@ -37,9 +37,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_LMEDS_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_LMEDS_H_
+#pragma once
 
 #include <pcl/sample_consensus/lmeds.h>
 
@@ -200,5 +198,3 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
 }
 
 #define PCL_INSTANTIATE_LeastMedianSquares(T) template class PCL_EXPORTS pcl::LeastMedianSquares<T>;
-
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_LMEDS_H_

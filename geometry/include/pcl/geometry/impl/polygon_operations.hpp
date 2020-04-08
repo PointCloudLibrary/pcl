@@ -32,9 +32,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_GEOMETRY_POLYGON_OPERATIONS_HPP_
-#define PCL_GEOMETRY_POLYGON_OPERATIONS_HPP_
+#pragma once
 
 #include <pcl/geometry/polygon_operations.h>
 
@@ -295,5 +293,3 @@ pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &p
       approx_polygon.push_back (polygon [*it]);
   }
 }
-
-#endif // PCL_GEOMETRY_POLYGON_OPERATIONS_HPP_

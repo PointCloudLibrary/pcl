@@ -36,9 +36,7 @@
  *
  *  $Id$
  */
-
-#ifndef PCL_FEATURES_IMPL_MULTISCALE_FEATURE_PERSISTENCE_H_
-#define PCL_FEATURES_IMPL_MULTISCALE_FEATURE_PERSISTENCE_H_
+#pragma once
 
 #include <numeric>
 #include <pcl/features/multiscale_feature_persistence.h>
@@ -258,5 +256,3 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::determinePersisten
 
 
 #define PCL_INSTANTIATE_MultiscaleFeaturePersistence(InT, Feature) template class PCL_EXPORTS pcl::MultiscaleFeaturePersistence<InT, Feature>;
-
-#endif /* PCL_FEATURES_IMPL_MULTISCALE_FEATURE_PERSISTENCE_H_ */

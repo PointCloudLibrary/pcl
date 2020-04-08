@@ -29,11 +29,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#pragma ocne
 
 #include <iostream>
-
-#ifndef METS_ABSTRACT_SEARCH_HH_
-#define METS_ABSTRACT_SEARCH_HH_
 
 namespace mets {
 
@@ -349,5 +347,3 @@ mets::best_ever_solution::accept(const mets::feasible_solution& sol)
     }
   return false;
 }
-
-#endif

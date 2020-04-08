@@ -36,7 +36,6 @@
  * $Id: io.h 2413 2011-09-07 07:01:00Z rusu $
  *
  */
-
 #pragma once
 
 #include <pcl/point_cloud.h>

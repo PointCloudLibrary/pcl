@@ -36,8 +36,7 @@
  */
 
 
-#ifndef PCL_SURFACE_IMPL_BILATERAL_UPSAMPLING_H_
-#define PCL_SURFACE_IMPL_BILATERAL_UPSAMPLING_H_
+#pragma once
 
 #include <pcl/surface/bilateral_upsampling.h>
 #include <algorithm>
@@ -180,4 +179,3 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::computeDistances (Eigen::MatrixXf
 #define PCL_INSTANTIATE_BilateralUpsampling(T,OutT) template class PCL_EXPORTS pcl::BilateralUpsampling<T,OutT>;
 
 
-#endif /* PCL_SURFACE_IMPL_BILATERAL_UPSAMPLING_H_ */

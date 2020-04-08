@@ -36,7 +36,6 @@
  *
  *
  */
-
 #pragma once
 
 #include <pcl/point_cloud.h>

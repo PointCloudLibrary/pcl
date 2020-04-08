@@ -33,7 +33,6 @@
  *
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
-
 #pragma once
 
 #include <pcl/gpu/containers/kernel_containers.h>
@@ -103,4 +102,3 @@ private:
   struct Impl;
   std::shared_ptr<Impl> impl_;
 };
-

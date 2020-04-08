@@ -33,9 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-
-#ifndef PCL_DISPARITY_MAP_CONVERTER_IMPL_H_
-#define PCL_DISPARITY_MAP_CONVERTER_IMPL_H_
+#pragma once
 
 #include <pcl/stereo/disparity_map_converter.h>
 
@@ -323,5 +321,3 @@ pcl::DisparityMapConverter<PointT>::translateCoordinates(std::size_t row,
 
 #define PCL_INSTANTIATE_DisparityMapConverter(T)                                       \
   template class PCL_EXPORTS pcl::DisparityMapConverter<T>;
-
-#endif // PCL_DISPARITY_MAP_CONVERTER_IMPL_H_

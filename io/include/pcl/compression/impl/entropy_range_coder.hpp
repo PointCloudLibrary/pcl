@@ -38,9 +38,7 @@
  * Added optimized symbol lookup and fixed/static frequency tables
  *
  */
-
-#ifndef __PCL_IO_RANGECODING__HPP
-#define __PCL_IO_RANGECODING__HPP
+#pragma once
 
 #include <pcl/compression/entropy_range_coder.h>
 #include <map>
@@ -622,5 +620,4 @@ pcl::StaticRangeCoder::decodeStreamToCharVector (std::istream& inputByteStream_a
   return (streamByteCount);
 }
 
-#endif
 

@@ -36,9 +36,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_HARRIS_KEYPOINT_2D_IMPL_H_
-#define PCL_HARRIS_KEYPOINT_2D_IMPL_H_
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename IntensityT> void
@@ -476,4 +474,3 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseTomasi (PointClo
 }
 
 #define PCL_INSTANTIATE_HarrisKeypoint2D(T,U,I) template class PCL_EXPORTS pcl::HarrisKeypoint2D<T,U,I>;
-#endif // #ifndef PCL_HARRIS_KEYPOINT_2D_IMPL_H_

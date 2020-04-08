@@ -33,7 +33,6 @@
  *
  *
  */
-
 #pragma once
 
 // PCL includes

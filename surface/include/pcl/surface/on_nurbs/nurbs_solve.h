@@ -34,7 +34,6 @@
  * 
  *
  */
-
 #pragma once
 
 #undef Success

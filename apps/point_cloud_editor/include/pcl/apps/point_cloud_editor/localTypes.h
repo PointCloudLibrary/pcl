@@ -36,7 +36,6 @@
 /// @file   localTypes.h
 /// @details A set of useful typedefs, forward declarations and constants.
 /// @author  Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <pcl/point_types.h>

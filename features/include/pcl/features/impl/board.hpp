@@ -36,9 +36,7 @@
  *
  *
  */
-
-#ifndef PCL_FEATURES_IMPL_BOARD_H_
-#define PCL_FEATURES_IMPL_BOARD_H_
+#pragma once
 
 #include <pcl/features/board.h>
 #include <utility>
@@ -601,5 +599,3 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computeFe
 }
 
 #define PCL_INSTANTIATE_BOARDLocalReferenceFrameEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::BOARDLocalReferenceFrameEstimation<T,NT,OutT>;
-
-#endif // PCL_FEATURES_IMPL_BOARD_H_

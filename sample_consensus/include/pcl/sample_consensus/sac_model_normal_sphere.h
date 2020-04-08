@@ -37,7 +37,6 @@
  * $Id: sac_model_normal_sphere.h schrandt $
  *
  */
-
 #pragma once
 
 #include <pcl/sample_consensus/sac_model.h>

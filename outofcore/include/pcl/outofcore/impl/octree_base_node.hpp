@@ -37,9 +37,7 @@
  *  $Id$
  *
  */
-
-#ifndef PCL_OUTOFCORE_OCTREE_BASE_NODE_IMPL_H_
-#define PCL_OUTOFCORE_OCTREE_BASE_NODE_IMPL_H_
+#pragma once
 
 // C++
 #include <iostream>
@@ -2177,5 +2175,3 @@ namespace pcl
 }//namespace pcl
 
 //#define PCL_INSTANTIATE....
-
-#endif //PCL_OUTOFCORE_OCTREE_BASE_NODE_IMPL_H_

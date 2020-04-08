@@ -38,9 +38,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_FILTERS_IMPL_MORPHOLOGICAL_FILTER_H_
-#define PCL_FILTERS_IMPL_MORPHOLOGICAL_FILTER_H_
+#pragma once
 
 #include <limits>
 #include <vector>
@@ -204,5 +202,4 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
 
 #define PCL_INSTANTIATE_applyMorphologicalOperator(T) template PCL_EXPORTS void pcl::applyMorphologicalOperator<T> (const pcl::PointCloud<T>::ConstPtr &, float, const int, pcl::PointCloud<T> &);
 
-#endif  //#ifndef PCL_FILTERS_IMPL_MORPHOLOGICAL_FILTER_H_
 

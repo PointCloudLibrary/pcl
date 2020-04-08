@@ -37,9 +37,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_COMMON_INTENSITY_FIELD_ACCESSOR_IMPL_HPP
-#define PCL_COMMON_INTENSITY_FIELD_ACCESSOR_IMPL_HPP
+#pragma once
 
 #include <pcl/point_types.h>
 namespace pcl
@@ -550,5 +548,3 @@ namespace pcl
     };
   }
 }
-
-#endif

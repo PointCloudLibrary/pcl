@@ -4,7 +4,6 @@
  *  Created on: Mar 9, 2012
  *      Author: aitor
  */
-
 #pragma once
 
 #include <boost/filesystem.hpp>

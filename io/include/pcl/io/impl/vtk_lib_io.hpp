@@ -36,9 +36,7 @@
  * $Id: vtk_io.hpp 4968 2012-05-03 06:39:52Z doria $
  *
  */
-
-#ifndef PCL_IO_VTK_IO_IMPL_H_
-#define PCL_IO_VTK_IO_IMPL_H_
+#pragma once
 
 // PCL
 #include <pcl/common/io.h>
@@ -512,5 +510,4 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
 #undef GetTupleValue
 #endif
 
-#endif  //#ifndef PCL_IO_VTK_IO_H_
 

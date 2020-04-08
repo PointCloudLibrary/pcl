@@ -34,7 +34,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <pcl/cuda/point_cloud.h>
@@ -58,4 +57,3 @@ namespace pcl
     
   } // namespace
 } // namespace
-

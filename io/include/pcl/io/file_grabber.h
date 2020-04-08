@@ -1,4 +1,3 @@
-
 /*
  * Software License Agreement (BSD License)
  *
@@ -38,7 +37,6 @@
  * $Id: file_grabber.h 8413 2013-01-15 08:37:39Z sdmiller $
  *
  */
-
 #pragma once
 
 #include <pcl/point_cloud.h>

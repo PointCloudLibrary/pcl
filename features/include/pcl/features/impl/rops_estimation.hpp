@@ -36,9 +36,7 @@
  * Email  : sergey.s.ushakov@mail.ru
  *
  */
-
-#ifndef PCL_ROPS_ESTIMATION_HPP_
-#define PCL_ROPS_ESTIMATION_HPP_
+#pragma once
 
 #include <pcl/features/rops_estimation.h>
 
@@ -532,5 +530,3 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeCentralMoments (const Eigen::M
 
   moments[number_of_moments_to_compute] = entropy;
 }
-
-#endif    // PCL_ROPS_ESTIMATION_HPP_

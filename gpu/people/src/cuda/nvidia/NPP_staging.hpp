@@ -37,9 +37,7 @@
  * $Id:  $
  * Ported to PCL by Koen Buys : Attention Work in progress!
  */
-
-#ifndef _npp_staging_hpp_
-#define _npp_staging_hpp_
+#pragma once
 
 #include "NCV.hpp"
 
@@ -905,4 +903,3 @@ NCVStatus nppsStCompact_32f_host(Ncv32f *h_src, Ncv32u srcLen,
 /**@}*/
 
 
-#endif // _npp_staging_hpp_

@@ -42,7 +42,6 @@
  *  Created on: Oct 23, 2012
  *      Author: papazov
  */
-
 #pragma once
 
 #include "auxiliary.h"

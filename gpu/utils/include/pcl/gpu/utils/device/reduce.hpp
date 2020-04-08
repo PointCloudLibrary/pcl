@@ -33,9 +33,7 @@
 *
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
-
-#ifndef PCL_GPU_DEVICE_REDUCE_HPP_
-#define PCL_GPU_DEVICE_REDUCE_HPP_
+#pragma once
 
 namespace pcl
 {
@@ -65,4 +63,3 @@ namespace pcl
 }
 
 
-#endif

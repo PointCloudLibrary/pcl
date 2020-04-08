@@ -33,7 +33,6 @@
  * 
  * @author: Koen Buys, Anatoly Baksheev
  */
-
 #pragma once
 
 #include <pcl/pcl_exports.h>

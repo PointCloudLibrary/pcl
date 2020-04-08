@@ -34,7 +34,6 @@
  * $Id: normal_3d.h 1370 2011-06-19 01:06:01Z jspricke $
  *
  */
-
 #pragma once
 
 #include <pcl/pcl_exports.h>

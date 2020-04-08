@@ -37,7 +37,6 @@
 /// @details A Selection object maintains the set of indices of points from a
 /// point cloud that have been identifed by the selection tools.
 /// @author  Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <set>

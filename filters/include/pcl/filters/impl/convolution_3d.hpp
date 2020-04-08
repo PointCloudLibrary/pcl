@@ -36,9 +36,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_FILTERS_CONVOLUTION_3D_IMPL_HPP
-#define PCL_FILTERS_CONVOLUTION_3D_IMPL_HPP
+#pragma once
 
 #include <pcl/pcl_config.h>
 #include <pcl/point_types.h>
@@ -263,5 +261,3 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::convolve (PointCloudO
     }
   }
 }
-
-#endif

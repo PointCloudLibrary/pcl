@@ -34,7 +34,6 @@
  * 
  *
  */
-
 #pragma once
 
 #include <pcl/surface/on_nurbs/fitting_surface_pdm.h>

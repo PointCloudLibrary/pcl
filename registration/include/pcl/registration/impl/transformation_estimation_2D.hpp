@@ -34,8 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_2D_HPP_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_2D_HPP_
+#pragma once
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
@@ -161,5 +160,3 @@ pcl::registration::TransformationEstimation2D<PointSource, PointTarget, Scalar>:
   const Eigen::Matrix<Scalar, 3, 1> Rc (R * centroid_src.head (3).matrix ());
   transformation_matrix.block (0, 3, 3, 1).matrix () = centroid_tgt.head (3) - Rc;
 }
-
-#endif    // PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_2D_HPP_

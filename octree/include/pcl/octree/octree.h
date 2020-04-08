@@ -35,7 +35,6 @@
  *
  * $Id$
  */
-
 #pragma once
 
 #include <pcl/octree/octree2buf_base.h>

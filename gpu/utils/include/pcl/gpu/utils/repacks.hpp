@@ -33,9 +33,7 @@
  *
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
-
-#ifndef __PCL_GPU_UTILS_REPACKS_HPP__
-#define __PCL_GPU_UTILS_REPACKS_HPP__
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
@@ -129,5 +127,3 @@ namespace pcl
         };
     }
 }
-
-#endif /* __PCL_GPU_UTILS_REPACKS_HPP__ */

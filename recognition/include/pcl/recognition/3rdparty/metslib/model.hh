@@ -31,9 +31,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef METS_MODEL_HH_
-#define METS_MODEL_HH_
+#pragma once
 
 namespace mets {
 
@@ -789,5 +787,3 @@ mets::invert_subsequence::operator==(const mets::mana_move& o) const
     return false;
   }
 }
-
-#endif

@@ -34,9 +34,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_COMMON_INTERSECTIONS_IMPL_HPP_
-#define PCL_COMMON_INTERSECTIONS_IMPL_HPP_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/console/print.h>
@@ -167,5 +165,3 @@ pcl::threePlanesIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
   intersection_point = left_member.fullPivLu ().solve (right_member);
   return (true);
 }
-
-#endif  //PCL_COMMON_INTERSECTIONS_IMPL_HPP

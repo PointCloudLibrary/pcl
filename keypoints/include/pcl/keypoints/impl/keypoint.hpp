@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_KEYPOINT_IMPL_H_
-#define PCL_KEYPOINT_IMPL_H_
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> bool
@@ -144,5 +142,4 @@ pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
     surface_.reset ();
 }
 
-#endif  //#ifndef PCL_KEYPOINT_IMPL_H_
 

@@ -36,9 +36,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_FILTERS_BILATERAL_IMPL_H_
-#define PCL_FILTERS_BILATERAL_IMPL_H_
+#pragma once
 
 #include <pcl/filters/bilateral.h>
 
@@ -109,5 +107,4 @@ pcl::BilateralFilter<PointT>::applyFilter (PointCloud &output)
  
 #define PCL_INSTANTIATE_BilateralFilter(T) template class PCL_EXPORTS pcl::BilateralFilter<T>;
 
-#endif // PCL_FILTERS_BILATERAL_IMPL_H_
 

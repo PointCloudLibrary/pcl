@@ -33,9 +33,7 @@
  *
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
-
-#ifndef PCL_GPU_UTILS_TEXTURE_BINDER_HPP_
-#define PCL_GPU_UTILS_TEXTURE_BINDER_HPP_
+#pragma once
 
 #include <pcl/gpu/utils/safe_call.hpp>
 #include <pcl/gpu/containers/device_array.h>
@@ -89,5 +87,3 @@ namespace pcl
       using pcl::gpu::TextureBinder;
   }
 }
-
-#endif /* PCL_GPU_UTILS_TEXTURE_BINDER_HPP_*/

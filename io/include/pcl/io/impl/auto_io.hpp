@@ -36,9 +36,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_IO_AUTO_IO_IMPL_H_
-#define PCL_IO_AUTO_IO_IMPL_H_
+#pragma once
 
 // #include <pcl/io/file_io.h>
 // #include <pcl/io/boost.h>
@@ -92,5 +90,3 @@ namespace pcl
     }
   }
 }
-
-#endif //PCL_IO_AUTO_IO_IMPL_H_

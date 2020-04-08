@@ -37,8 +37,7 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_HPP_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_HPP_
+#pragma once
 
 #include <pcl/common/eigen.h>
 
@@ -202,5 +201,3 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>
 }
 
 //#define PCL_INSTANTIATE_TransformationEstimationSVD(T,U) template class PCL_EXPORTS pcl::registration::TransformationEstimationSVD<T,U>;
-
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_SVD_HPP_ */

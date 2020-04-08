@@ -19,7 +19,6 @@
 
     Thanks to Linh Hah for additions and fixes.
 */
-
 #pragma once
 
 #include "cuda_runtime.h"

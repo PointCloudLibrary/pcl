@@ -35,7 +35,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 #include <vtkSmartPointer.h>
 #include <vtkPoints.h>
@@ -106,4 +105,3 @@ pcl::visualization::createPolygon (const pcl::PlanarPolygon<PointT> &planar_poly
 
   return (poly_grid);
 }
-

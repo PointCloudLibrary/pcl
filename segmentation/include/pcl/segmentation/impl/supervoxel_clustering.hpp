@@ -36,9 +36,7 @@
  * Email  : jpapon@gmail.com
  *
  */
-
-#ifndef PCL_SEGMENTATION_SUPERVOXEL_CLUSTERING_HPP_
-#define PCL_SEGMENTATION_SUPERVOXEL_CLUSTERING_HPP_
+#pragma once
 
 #include <pcl/segmentation/supervoxel_clustering.h>
 
@@ -939,4 +937,3 @@ pcl::SupervoxelClustering<PointT>::SupervoxelHelper::getNeighborLabels (std::set
 }
 
 
-#endif    // PCL_SUPERVOXEL_CLUSTERING_HPP_

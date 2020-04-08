@@ -37,11 +37,9 @@
  * Created on: Nov 30, 2012
  * Author: Matteo Munaro
  */
+#pragma once
 
 #include <pcl/people/person_classifier.h>
-
-#ifndef PCL_PEOPLE_PERSON_CLASSIFIER_HPP_
-#define PCL_PEOPLE_PERSON_CLASSIFIER_HPP_
 
 template <typename PointT>
 pcl::people::PersonClassifier<PointT>::PersonClassifier () {}
@@ -303,4 +301,3 @@ pcl::people::PersonClassifier<PointT>::evaluate (PointCloudPtr& image,
   }
   return (evaluate(pixel_width, pixel_yc, image->height-pixel_xc+1, image));
 }
-#endif /* PCL_PEOPLE_PERSON_CLASSIFIER_HPP_ */

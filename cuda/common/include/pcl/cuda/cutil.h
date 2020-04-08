@@ -22,7 +22,6 @@
 
 
 /* CUda UTility Library */
-
 #pragma once
 
 #ifdef _WIN32

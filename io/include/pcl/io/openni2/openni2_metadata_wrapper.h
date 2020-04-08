@@ -36,7 +36,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #if defined(HAVE_OPENNI2)

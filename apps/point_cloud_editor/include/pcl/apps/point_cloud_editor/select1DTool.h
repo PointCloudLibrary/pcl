@@ -36,7 +36,6 @@
 /// @file   select1DTool.h
 /// @details Tool for selecting and deselecting individual points in the cloud.
 /// @author  Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <pcl/apps/point_cloud_editor/toolInterface.h>

@@ -37,9 +37,7 @@
  * $Id$
  *
  */
-
-#ifndef IA_RANSAC_HPP_
-#define IA_RANSAC_HPP_
+#pragma once
 
 #include <pcl/common/distances.h>
 
@@ -252,5 +250,4 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
   transformPointCloud (*input_, output, final_transformation_);
 }
 
-#endif  //#ifndef IA_RANSAC_HPP_
 

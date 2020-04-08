@@ -38,9 +38,7 @@
  *  Created on: May 28, 2012
  *      Author: somani
  */
-
-#ifndef PCL_2D_KEYPOINT_HPP_
-#define PCL_2D_KEYPOINT_HPP_
+#pragma once
 
 #include <limits>
 #include <pcl/2d/convolution.h>
@@ -255,5 +253,3 @@ pcl::keypoint::imageElementMultiply(ImageType& output,
     }
   }
 }
-
-#endif // PCL_2D_KEYPOINT_HPP_

@@ -33,9 +33,7 @@
  *
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
-
-#ifndef _PCL_GPU_OCTREE_DEVICE_FORMAT_HPP_
-#define _PCL_GPU_OCTREE_DEVICE_FORMAT_HPP_
+#pragma once
 
 #include <pcl/gpu/containers/device_array.h>
 
@@ -85,5 +83,3 @@ namespace pcl
         };
     }
 }
-
-#endif /* _PCL_GPU_OCTREE_DEVICE_FORMAT_HPP_ */

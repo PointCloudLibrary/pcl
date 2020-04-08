@@ -4,7 +4,6 @@
  *  Created on: Jun 22, 2011
  *      Author: aitor
  */
-
 #pragma once
 
 #include <cmath>

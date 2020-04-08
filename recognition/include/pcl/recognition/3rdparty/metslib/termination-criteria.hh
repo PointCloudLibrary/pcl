@@ -30,9 +30,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef METS_TERMINATION_CRITERIA_HH_
-#define METS_TERMINATION_CRITERIA_HH_
+#pragma once
 
 namespace mets {
  
@@ -283,5 +281,3 @@ mets::noimprove_termination_criteria::operator()(const feasible_solution& fs)
   
   return termination_criteria_chain::operator()(fs);
 }
-
-#endif

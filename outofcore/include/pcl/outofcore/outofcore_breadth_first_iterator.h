@@ -35,7 +35,6 @@
  *
  * $Id: outofcore_depth_first_iterator.h 7938 2012-11-14 06:27:39Z jrosen $
  */
-
 #pragma once
 
 #include <pcl/outofcore/outofcore_iterator_base.h>

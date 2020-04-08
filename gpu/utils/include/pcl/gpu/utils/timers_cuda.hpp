@@ -33,9 +33,7 @@
  *
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
-
-#ifndef _PCL_CUDA_TIMERS_HPP_
-#define _PCL_CUDA_TIMERS_HPP_
+#pragma once
 
 #include <cuda_runtime_api.h>
 #include <cstdio>
@@ -94,5 +92,3 @@ namespace pcl
         };
     }
 }
-
-#endif /* _PCL_CUDA_TIMERS_HPP_ */

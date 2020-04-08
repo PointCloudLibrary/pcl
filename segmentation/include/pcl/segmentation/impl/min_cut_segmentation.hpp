@@ -35,9 +35,7 @@
  * $Id:$
  *
  */
-
-#ifndef PCL_SEGMENTATION_MIN_CUT_SEGMENTATION_HPP_
-#define PCL_SEGMENTATION_MIN_CUT_SEGMENTATION_HPP_
+#pragma once
 
 #include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/min_cut_segmentation.h>
@@ -617,5 +615,3 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
 }
 
 #define PCL_INSTANTIATE_MinCutSegmentation(T) template class pcl::MinCutSegmentation<T>;
-
-#endif    // PCL_SEGMENTATION_MIN_CUT_SEGMENTATION_HPP_

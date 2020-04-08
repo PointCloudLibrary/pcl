@@ -36,9 +36,7 @@
  *
  *  $Id: octree_ram_container.hpp 6927 2012-08-23 02:34:54Z stfox88 $
  */
-
-#ifndef PCL_OUTOFCORE_RAM_CONTAINER_IMPL_H_
-#define PCL_OUTOFCORE_RAM_CONTAINER_IMPL_H_
+#pragma once
 
 // C++
 #include <sstream>
@@ -137,5 +135,3 @@ namespace pcl
 
   }//namespace outofcore
 }//namespace pcl
-
-#endif //PCL_OUTOFCORE_RAM_CONTAINER_IMPL_H_

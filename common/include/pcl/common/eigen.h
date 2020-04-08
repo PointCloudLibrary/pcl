@@ -39,7 +39,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #ifndef NOMINMAX

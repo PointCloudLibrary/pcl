@@ -35,9 +35,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_WEIGHTED_HPP_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_WEIGHTED_HPP_
+#pragma once
 
 #include <pcl/registration/warp_point_rigid.h>
 #include <pcl/registration/warp_point_rigid_6d.h>
@@ -298,5 +296,3 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
   }
   return (0);
 }
-
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_WEIGHTED_HPP_ */

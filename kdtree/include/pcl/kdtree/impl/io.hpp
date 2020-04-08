@@ -36,9 +36,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_KDTREE_IO_IMPL_HPP_
-#define PCL_KDTREE_IO_IMPL_HPP_
+#pragma once
 
 #include <pcl/kdtree/io.h>
 
@@ -82,5 +80,4 @@ pcl::getApproximateIndices (
   }
 }
 
-#endif // PCL_KDTREE_IO_IMPL_H_
 

@@ -37,7 +37,6 @@
  * Email  : potthast@usc.edu
  *
  */
-
 #pragma once
 
 #include <pcl/filters/voxel_grid.h>

@@ -36,9 +36,7 @@
  * Email  : sergey.s.ushakov@mail.ru
  *
  */
-
-#ifndef PCL_MOMENT_OF_INERTIA_ESTIMATION_HPP_
-#define PCL_MOMENT_OF_INERTIA_ESTIMATION_HPP_
+#pragma once
 
 #include <pcl/features/moment_of_inertia_estimation.h>
 
@@ -642,5 +640,3 @@ pcl::MomentOfInertiaEstimation<PointT>::setIndices (std::size_t row_start, std::
 
   is_valid_ = false;
 }
-
-#endif    // PCL_MOMENT_OF_INERTIA_ESTIMATION_HPP_

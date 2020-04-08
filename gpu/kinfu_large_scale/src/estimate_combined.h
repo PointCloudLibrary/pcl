@@ -34,7 +34,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #pragma once
 
 #define ESTIMATE_COMBINED_CUDA_GRID_X 32

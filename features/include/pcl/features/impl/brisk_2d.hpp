@@ -36,9 +36,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_FEATURES_IMPL_BRISK_2D_HPP_
-#define PCL_FEATURES_IMPL_BRISK_2D_HPP_
+#pragma once
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename KeypointT, typename IntensityT>
@@ -671,6 +669,4 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   delete [] values;
 }
 
-
-#endif  //#ifndef PCL_FEATURES_IMPL_BRISK_2D_HPP_
 

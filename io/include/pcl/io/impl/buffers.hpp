@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_IO_IMPL_BUFFERS_HPP
-#define PCL_IO_IMPL_BUFFERS_HPP
+#pragma once
 
 #include <iostream>
 #include <cstring>
@@ -288,5 +286,4 @@ pcl::io::AverageBuffer<T>::push (std::vector<T>& data)
   data.clear ();
 }
 
-#endif /* PCL_IO_IMPL_BUFFERS_HPP */
 

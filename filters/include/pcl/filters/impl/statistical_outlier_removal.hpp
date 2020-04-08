@@ -36,9 +36,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_FILTERS_IMPL_STATISTICAL_OUTLIER_REMOVAL_H_
-#define PCL_FILTERS_IMPL_STATISTICAL_OUTLIER_REMOVAL_H_
+#pragma once
 
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/common/io.h>
@@ -130,5 +128,4 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &in
 
 #define PCL_INSTANTIATE_StatisticalOutlierRemoval(T) template class PCL_EXPORTS pcl::StatisticalOutlierRemoval<T>;
 
-#endif  // PCL_FILTERS_IMPL_STATISTICAL_OUTLIER_REMOVAL_H_
 

@@ -36,9 +36,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_REGISTRATION_DEFAULT_CONVERGENCE_CRITERIA_HPP_
-#define PCL_REGISTRATION_DEFAULT_CONVERGENCE_CRITERIA_HPP_
+#pragma once
 
 #include <pcl/console/print.h>
 
@@ -125,5 +123,3 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
 
   return (false);
 }
-
-#endif    // PCL_REGISTRATION_DEFAULT_CONVERGENCE_CRITERIA_HPP_

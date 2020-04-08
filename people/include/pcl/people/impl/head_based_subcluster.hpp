@@ -37,9 +37,7 @@
  * Created on: Nov 30, 2012
  * Author: Matteo Munaro
  */
-
-#ifndef PCL_PEOPLE_HEAD_BASED_SUBCLUSTER_HPP_
-#define PCL_PEOPLE_HEAD_BASED_SUBCLUSTER_HPP_
+#pragma once
 
 #include <pcl/people/head_based_subcluster.h>
 
@@ -337,4 +335,3 @@ pcl::people::HeadBasedSubclustering<PointT>::~HeadBasedSubclustering ()
 {
   // TODO Auto-generated destructor stub
 }
-#endif /* PCL_PEOPLE_HEAD_BASED_SUBCLUSTER_HPP_ */

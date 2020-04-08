@@ -35,9 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CONE_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CONE_H_
+#pragma once
 
 #include <pcl/sample_consensus/eigen.h>
 #include <pcl/sample_consensus/sac_model_cone.h>
@@ -524,5 +522,4 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::isModelValid (const Eigen::Vecto
 
 #define PCL_INSTANTIATE_SampleConsensusModelCone(PointT, PointNT)	template class PCL_EXPORTS pcl::SampleConsensusModelCone<PointT, PointNT>;
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CONE_H_
 

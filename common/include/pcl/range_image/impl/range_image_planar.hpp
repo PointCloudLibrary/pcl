@@ -35,9 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_RANGE_IMAGE_PLANAR_IMPL_HPP_
-#define PCL_RANGE_IMAGE_PLANAR_IMPL_HPP_
+#pragma once
 
 #include <pcl/pcl_macros.h>
 #include <pcl/common/eigen.h>
@@ -118,5 +116,4 @@ RangeImagePlanar::getImagePoint (const Eigen::Vector3f& point, float& image_x, f
 
 }  // namespace end
 
-#endif
 

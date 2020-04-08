@@ -34,9 +34,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_SURFACE_IMPL_GRID_PROJECTION_H_
-#define PCL_SURFACE_IMPL_GRID_PROJECTION_H_
+#pragma once
 
 #include <pcl/surface/grid_projection.h>
 #include <pcl/common/common.h>
@@ -770,5 +768,4 @@ pcl::GridProjection<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &p
 
 #define PCL_INSTANTIATE_GridProjection(T) template class PCL_EXPORTS pcl::GridProjection<T>;
 
-#endif    // PCL_SURFACE_IMPL_GRID_PROJECTION_H_
 

@@ -37,8 +37,7 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_IMPL_GICP_HPP_
-#define PCL_REGISTRATION_IMPL_GICP_HPP_
+#pragma once
 
 #include <pcl/registration/boost.h>
 #include <pcl/registration/exceptions.h>
@@ -475,5 +474,3 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::applyState(Eige
   Eigen::Vector4f T (static_cast<float> (x[0]), static_cast<float> (x[1]), static_cast<float> (x[2]), 0.0f);
   t.col (3) += T;
 }
-
-#endif //PCL_REGISTRATION_IMPL_GICP_HPP_

@@ -4,7 +4,6 @@
  *  Created on: Mar 22, 2012
  *      Author: aitor
  */
-
 #pragma once
 
 #include <pcl/filters/radius_outlier_removal.h>

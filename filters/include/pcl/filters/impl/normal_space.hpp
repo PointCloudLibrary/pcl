@@ -34,9 +34,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_FILTERS_IMPL_NORMAL_SPACE_SAMPLE_H_
-#define PCL_FILTERS_IMPL_NORMAL_SPACE_SAMPLE_H_
+#pragma once
 
 #include <pcl/filters/normal_space.h>
 #include <pcl/common/io.h>
@@ -250,5 +248,3 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
 }
 
 #define PCL_INSTANTIATE_NormalSpaceSampling(T,NT) template class PCL_EXPORTS pcl::NormalSpaceSampling<T,NT>;
-
-#endif    // PCL_FILTERS_IMPL_NORMAL_SPACE_SAMPLE_H_

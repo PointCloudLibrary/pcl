@@ -37,9 +37,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_SURFACE_ORGANIZED_FAST_MESH_HPP_
-#define PCL_SURFACE_ORGANIZED_FAST_MESH_HPP_
+#pragma once
 
 #include <pcl/surface/organized_fast_mesh.h>
 
@@ -279,5 +277,3 @@ pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices
 
 #define PCL_INSTANTIATE_OrganizedFastMesh(T)                \
   template class PCL_EXPORTS pcl::OrganizedFastMesh<T>;
-
-#endif  // PCL_SURFACE_ORGANIZED_FAST_MESH_HPP_

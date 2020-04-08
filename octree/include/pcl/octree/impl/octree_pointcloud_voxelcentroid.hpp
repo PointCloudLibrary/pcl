@@ -36,9 +36,7 @@
  *
  * $Id: octree_pointcloud_voxelcentroid.hpp 6459 2012-07-18 07:50:37Z dpb $
  */
-
-#ifndef PCL_OCTREE_VOXELCENTROID_HPP
-#define PCL_OCTREE_VOXELCENTROID_HPP
+#pragma once
 
 /*
  * OctreePointCloudVoxelcontroid is not precompiled, since it's used in other
@@ -137,5 +135,3 @@ pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafContainerT, BranchContain
 
 #define PCL_INSTANTIATE_OctreePointCloudVoxelCentroid(T)                               \
   template class PCL_EXPORTS pcl::octree::OctreePointCloudVoxelCentroid<T>;
-
-#endif

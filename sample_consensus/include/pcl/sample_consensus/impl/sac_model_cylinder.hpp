@@ -37,9 +37,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
+#pragma once
 
 #include <pcl/sample_consensus/eigen.h>
 #include <pcl/sample_consensus/sac_model_cylinder.h>
@@ -471,5 +469,4 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::isModelValid (const Eigen::V
 
 #define PCL_INSTANTIATE_SampleConsensusModelCylinder(PointT, PointNT)	template class PCL_EXPORTS pcl::SampleConsensusModelCylinder<PointT, PointNT>;
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
 

@@ -35,8 +35,7 @@
  *
  *
  */
-#ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_2D_HPP_
-#define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_2D_HPP_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model_registration_2d.h>
 #include <pcl/sample_consensus/ransac.h>
@@ -127,5 +126,4 @@ pcl::registration::CorrespondenceRejectorSampleConsensus2D<PointT>::getRemaining
   best_transformation_.row (3) = model_coefficients.segment<4>(12);
 }
 
-#endif    // PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_2D_HPP_
 

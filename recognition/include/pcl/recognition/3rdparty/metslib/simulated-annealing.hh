@@ -30,9 +30,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef METS_SIMULATED_ANNEALING_HH_
-#define METS_SIMULATED_ANNEALING_HH_
+#pragma once
 
 namespace mets {
 
@@ -274,4 +272,3 @@ mets::simulated_annealing<move_manager_t>::search()
       cooling_schedule_m(current_temp_m, base_t::working_solution_m);
     }
 }
-#endif

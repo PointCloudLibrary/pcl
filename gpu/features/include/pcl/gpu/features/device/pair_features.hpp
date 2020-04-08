@@ -33,9 +33,7 @@
 *
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
-
-#ifndef PCL_GPU_FEATURES_DEVICE_PAIR_FEATURES_HPP_
-#define PCL_GPU_FEATURES_DEVICE_PAIR_FEATURES_HPP_
+#pragma once
 
 #include <pcl/gpu/utils/device/vector_math.hpp>
 #include <pcl/gpu/features/device/rodrigues.hpp>
@@ -211,5 +209,3 @@ namespace pcl
         }     
     }
 }
-
-#endif /* PCL_GPU_FEATURES_DEVICE_PAIR_FEATURES_HPP_ */

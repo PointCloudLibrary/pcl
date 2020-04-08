@@ -37,8 +37,7 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
-#define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
+#pragma once
 
 #include <unordered_map>
 
@@ -132,5 +131,3 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
      best_transformation_.row (3) = model_coefficients.segment<4>(12);
    }
 }
-
-#endif    // PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_

@@ -4,7 +4,6 @@
  *  Created on: Mar 25, 2012
  *      Author: aitor
  */
-
 #pragma once
 
 #include <vtkPolyData.h>

@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_2D_CONVOLUTION_IMPL_HPP
-#define PCL_2D_CONVOLUTION_IMPL_HPP
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -133,5 +131,3 @@ pcl::Convolution<PointT>::filter(pcl::PointCloud<PointT>& output)
   }
   } // switch
 }
-
-#endif

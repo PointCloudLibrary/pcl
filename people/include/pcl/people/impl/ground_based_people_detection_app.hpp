@@ -37,9 +37,7 @@
  * Created on: Nov 30, 2012
  * Author: Matteo Munaro
  */
-
-#ifndef PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_HPP_
-#define PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_HPP_
+#pragma once
 
 #include <pcl/people/ground_based_people_detection_app.h>
 
@@ -417,4 +415,3 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::~GroundBasedPeopleDetectionA
 {
   // TODO Auto-generated destructor stub
 }
-#endif /* PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_HPP_ */

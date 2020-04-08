@@ -39,7 +39,6 @@
  */
 
 // NOTE: This file has been created with 'pcl_src/geometry/include/pcl/geometry/mesh_indices.py'
-
 #pragma once
 
 #include <iostream>

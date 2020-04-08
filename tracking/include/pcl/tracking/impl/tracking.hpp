@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_IMPL_TRACKING_H_
-#define PCL_TRACKING_IMPL_TRACKING_H_
+#pragma once
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
@@ -813,5 +812,3 @@ namespace pcl
   (pcl::tracking::ParticleXYZR) \
   (pcl::tracking::ParticleXYRPY) \
   (pcl::tracking::ParticleXYRP)
-
-#endif  // 

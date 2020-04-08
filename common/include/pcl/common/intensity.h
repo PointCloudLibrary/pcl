@@ -36,7 +36,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 namespace pcl

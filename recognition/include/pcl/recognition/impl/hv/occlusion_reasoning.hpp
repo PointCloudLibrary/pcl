@@ -33,9 +33,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  */
-
-#ifndef PCL_RECOGNITION_OCCLUSION_REASONING_HPP_
-#define PCL_RECOGNITION_OCCLUSION_REASONING_HPP_
+#pragma once
 
 #include <pcl/recognition/hv/occlusion_reasoning.h>
 
@@ -195,5 +193,3 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::computeDepthMap (typename 
     delete[] depth_smooth;
   }
 }
-
-#endif    // PCL_RECOGNITION_OCCLUSION_REASONING_HPP_

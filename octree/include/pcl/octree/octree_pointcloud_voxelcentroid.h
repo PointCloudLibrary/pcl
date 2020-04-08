@@ -36,7 +36,6 @@
  *
  * $Id$
  */
-
 #pragma once
 
 #include <pcl/octree/octree_pointcloud.h>

@@ -36,9 +36,7 @@
  * Email  : potthast@usc.edu
  *
  */
-
-#ifndef PCL_CRF_NORMAL_SEGMENTATION_HPP_
-#define PCL_CRF_NORMAL_SEGMENTATION_HPP_
+#pragma once
 
 #include <pcl/segmentation/crf_normal_segmentation.h>
 
@@ -76,5 +74,3 @@ pcl::CrfNormalSegmentation<PointT>::segmentPoints ()
 }
 
 #define PCL_INSTANTIATE_CrfNormalSegmentation(T) template class pcl::CrfNormalSegmentation<T>;
-
-#endif    // PCL_CRF_NORMAL_SEGMENTATION_HPP_

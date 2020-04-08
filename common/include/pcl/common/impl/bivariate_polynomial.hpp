@@ -36,8 +36,7 @@
  * $Id$
  *
  */
-#ifndef BIVARIATE_POLYNOMIAL_HPP
-#define BIVARIATE_POLYNOMIAL_HPP
+#pragma once
 
 #include <algorithm>
 #include <cmath>
@@ -301,5 +300,3 @@ pcl::BivariatePolynomialT<real>::readBinary (const char* filename)
   std::ifstream fin (filename);
   readBinary (fin);
 }
-
-#endif

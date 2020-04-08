@@ -35,8 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_IMPL_INSTANTIATE_H_
-#define PCL_IMPL_INSTANTIATE_H_
+#pragma once
 
 #ifdef __GNUC__
 #pragma GCC system_header 
@@ -108,7 +107,5 @@
 
 #define PCL_INSTANTIATE_PRODUCT(TEMPLATE, PRODUCT) \
   BOOST_PP_SEQ_FOR_EACH_PRODUCT(PCL_INSTANTIATE_PRODUCT_IMPL, ((TEMPLATE))PRODUCT)
-
-#endif
 
 #endif

@@ -36,7 +36,6 @@
  * $Id$
  * Authors: Julius Kammerl (julius@kammerl.de)
  */
-
 #pragma once
 
 #include <pcl/pcl_macros.h>

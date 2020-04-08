@@ -33,9 +33,7 @@
  *
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
-
-#ifndef PCL_GPU_UTILS_INTERNAL_HPP_
-#define PCL_GPU_UTILS_INTERNAL_HPP_
+#pragma once
 
 namespace pcl
 {
@@ -44,5 +42,3 @@ namespace pcl
         void copyFields(int in_size, int out_size, int info[4], int size, const void* input, void* output);
     }
 }
-
-#endif

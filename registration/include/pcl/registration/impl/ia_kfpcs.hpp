@@ -33,9 +33,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_REGISTRATION_IMPL_IA_KFPCS_H_
-#define PCL_REGISTRATION_IMPL_IA_KFPCS_H_
+#pragma once
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
@@ -284,5 +282,3 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-
-#endif // PCL_REGISTRATION_IMPL_IA_KFPCS_H_

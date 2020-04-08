@@ -37,7 +37,6 @@
 /// @details a TransformCommand object provides transformation and undo
 /// functionalities.  // XXX - transformation of what?
 /// @author  Yue Li and Matthew Hielsberg
-
 #pragma once
 
 #include <pcl/apps/point_cloud_editor/command.h>

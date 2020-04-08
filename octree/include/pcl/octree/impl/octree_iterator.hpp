@@ -35,9 +35,7 @@
  *
  * $Id$
  */
-
-#ifndef PCL_OCTREE_ITERATOR_HPP_
-#define PCL_OCTREE_ITERATOR_HPP_
+#pragma once
 
 #include <pcl/console/print.h>
 
@@ -373,5 +371,3 @@ OctreeLeafNodeBreadthFirstIterator<OctreeT>::operator++(int)
 }
 } // namespace octree
 } // namespace pcl
-
-#endif

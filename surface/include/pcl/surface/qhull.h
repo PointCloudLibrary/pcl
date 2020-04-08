@@ -36,7 +36,6 @@
  * $Id: concave_hull.h 5027 2012-03-12 03:10:45Z rusu $
  *
  */
-
 #pragma once
 
 #include <pcl/pcl_config.h>

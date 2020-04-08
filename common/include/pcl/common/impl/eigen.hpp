@@ -35,9 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_COMMON_EIGEN_IMPL_HPP_
-#define PCL_COMMON_EIGEN_IMPL_HPP_
+#pragma once
 
 #include <array>
 #include <algorithm>
@@ -900,5 +898,3 @@ pcl::transformBetween2CoordinateSystems (const Eigen::Matrix<Scalar, Eigen::Dyna
   transformation.translation () = to0 - (transformation.linear () * fr0);
   return (true);
 }
-
-#endif  //PCL_COMMON_EIGEN_IMPL_HPP_

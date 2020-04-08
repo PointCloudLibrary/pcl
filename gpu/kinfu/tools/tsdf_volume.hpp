@@ -33,9 +33,7 @@
  *
  *  $Id$
  */
-
-#ifndef TSDF_VOLUME_HPP_
-#define TSDF_VOLUME_HPP_
+#pragma once
 
 #include "tsdf_volume.h"
 
@@ -344,5 +342,3 @@ pcl::TSDFVolume<VoxelT, WeightT>::averageValues ()
 }
 
 #define PCL_INSTANTIATE_TSDFVolume(VT,WT) template class PCL_EXPORTS pcl::reconstruction::TSDFVolume<VT,WT>;
-
-#endif /* TSDF_VOLUME_HPP_ */

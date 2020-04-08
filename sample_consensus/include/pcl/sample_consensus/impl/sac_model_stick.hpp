@@ -37,9 +37,7 @@
  * $Id: sac_model_line.hpp 2328 2011-08-31 08:11:00Z rusu $
  *
  */
-
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_STICK_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_STICK_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model_stick.h>
 #include <pcl/common/centroid.h>
@@ -396,5 +394,4 @@ pcl::SampleConsensusModelStick<PointT>::doSamplesVerifyModel (
 
 #define PCL_INSTANTIATE_SampleConsensusModelStick(T) template class PCL_EXPORTS pcl::SampleConsensusModelStick<T>;
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_STICK_H_
 

@@ -37,8 +37,7 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_LLS_HPP_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_LLS_HPP_
+#pragma once
 #include <pcl/cloud_iterator.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -247,4 +246,3 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCl
   // Construct the transformation matrix from x
   constructTransformationMatrix (x (0), x (1), x (2), x (3), x (4), x (5), transformation_matrix);
 }
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_LLS_HPP_ */

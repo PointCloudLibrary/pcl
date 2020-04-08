@@ -34,9 +34,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_SEGMENTATION_IMPL_EXTRACT_POLYGONAL_PRISM_DATA_H_
-#define PCL_SEGMENTATION_IMPL_EXTRACT_POLYGONAL_PRISM_DATA_H_
+#pragma once
 
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/common/centroid.h>
@@ -254,5 +252,4 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
 #define PCL_INSTANTIATE_isPointIn2DPolygon(T) template bool PCL_EXPORTS pcl::isPointIn2DPolygon<T>(const T&, const pcl::PointCloud<T> &);
 #define PCL_INSTANTIATE_isXYPointIn2DXYPolygon(T) template bool PCL_EXPORTS pcl::isXYPointIn2DXYPolygon<T>(const T &, const pcl::PointCloud<T> &);
 
-#endif    // PCL_SEGMENTATION_IMPL_EXTRACT_POLYGONAL_PRISM_DATA_H_
 

@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_PCL_VISUALIZER_IMPL_H_
-#define PCL_PCL_VISUALIZER_IMPL_H_
+#pragma once
 
 #include <vtkVersion.h>
 #include <vtkSmartPointer.h>
@@ -1907,6 +1905,4 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
 #undef SetTupleValue
 #undef InsertNextTupleValue
 #undef GetTupleValue
-#endif
-
 #endif

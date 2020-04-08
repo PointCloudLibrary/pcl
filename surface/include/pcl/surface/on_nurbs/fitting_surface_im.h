@@ -34,7 +34,6 @@
  *
  *
  */
-
 #pragma once
 
 #include <pcl/surface/on_nurbs/nurbs_tools.h>

@@ -201,4 +201,3 @@ pcl::Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &ou
 
   deinitCompute ();
 }
-

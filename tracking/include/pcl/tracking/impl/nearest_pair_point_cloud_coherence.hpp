@@ -1,5 +1,4 @@
-#ifndef PCL_TRACKING_IMPL_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
-#define PCL_TRACKING_IMPL_NEAREST_PAIR_POINT_CLOUD_COHERENCE_H_
+#pragma once
 
 #include <pcl/search/kdtree.h>
 #include <pcl/search/organized.h>
@@ -67,5 +66,3 @@ namespace pcl
 }
 
 #define PCL_INSTANTIATE_NearestPairPointCloudCoherence(T) template class PCL_EXPORTS pcl::tracking::NearestPairPointCloudCoherence<T>;
-
-#endif

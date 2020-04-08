@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_COMMON_IMPL_COPY_POINT_HPP_
-#define PCL_COMMON_IMPL_COPY_POINT_HPP_
+#pragma once
 
 #include <pcl/point_types.h>
 #include <pcl/type_traits.h>
@@ -141,5 +139,4 @@ pcl::copyPoint (const PointInT& point_in, PointOutT& point_out)
   copy (point_in, point_out);
 }
 
-#endif //PCL_COMMON_IMPL_COPY_POINT_HPP_
 

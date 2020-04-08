@@ -32,7 +32,6 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *  Author: Nico Blodow (blodow@in.tum.de), Suat Gedikli (gedikli@willowgarage.com)
  */
-
 #pragma once
 
 #include <deque>

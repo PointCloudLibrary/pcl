@@ -36,7 +36,6 @@
  * Email  : sergey.s.ushakov@mail.ru
  *
  */
-
 #pragma once
 
 #include <pcl/memory.h>

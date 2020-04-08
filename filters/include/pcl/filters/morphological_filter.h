@@ -38,7 +38,6 @@
  * $Id$
  *
  */
-
 #pragma once
 
 #include <string>

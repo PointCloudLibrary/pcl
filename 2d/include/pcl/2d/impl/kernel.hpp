@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_2D_KERNEL_IMPL_HPP
-#define PCL_2D_KERNEL_IMPL_HPP
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -349,5 +347,3 @@ pcl::kernel<PointT>::setKernelSigma(float kernel_sigma)
 {
   sigma_ = kernel_sigma;
 }
-
-#endif

@@ -37,7 +37,6 @@
 /// @details Generic object for generating rotations given mouse input.  This
 /// class has been based on 
 /// @author Matthew Hielsberg
-
 #pragma once
 
 #include <boost/math/quaternion.hpp>

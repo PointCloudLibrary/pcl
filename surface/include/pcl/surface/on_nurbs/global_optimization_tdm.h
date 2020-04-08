@@ -34,7 +34,6 @@
  * 
  *
  */
-
 #pragma once
 
 #include <pcl/surface/on_nurbs/global_optimization_pdm.h>

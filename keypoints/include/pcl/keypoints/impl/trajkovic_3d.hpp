@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef PCL_TRAJKOVIC_KEYPOINT_3D_IMPL_H_
-#define PCL_TRAJKOVIC_KEYPOINT_3D_IMPL_H_
+#pragma once
 
 #include <pcl/features/integral_image_normal.h>
 
@@ -289,4 +287,3 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCl
 }
 
 #define PCL_INSTANTIATE_TrajkovicKeypoint3D(T,U,N) template class PCL_EXPORTS pcl::TrajkovicKeypoint3D<T,U,N>;
-#endif

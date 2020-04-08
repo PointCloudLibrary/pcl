@@ -36,7 +36,6 @@
  *  Author: Marco Paladini <marco.paladini@ocado.com>
  *  Date: March 2014
  */
-
 #pragma once
 
 #include <Eigen/Core>

@@ -685,4 +685,3 @@ ON_DLL_TEMPLATE template class ON_CLASS ON_ObjectArray<ON_TextureMapping>;
 
 
 #endif
-

@@ -36,9 +36,7 @@
  *
  *  $Id$
  */
-
-#ifndef PCL_OUTOFCORE_OCTREE_BASE_IMPL_H_
-#define PCL_OUTOFCORE_OCTREE_BASE_IMPL_H_
+#pragma once
 
 
 #include <pcl/outofcore/octree_base.h>
@@ -741,5 +739,3 @@ namespace pcl
     }
   }//namespace outofcore
 }//namespace pcl
-
-#endif //PCL_OUTOFCORE_OCTREE_BASE_IMPL_H_

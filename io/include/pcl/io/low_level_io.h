@@ -39,7 +39,6 @@
  * This file defines compatibility wrappers for low level I/O functions.
  * Implemented as inlinable functions to prevent any performance overhead.
  */
-
 #pragma once
 
 #ifdef _WIN32

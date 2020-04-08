@@ -37,9 +37,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_FEATURES_IMPL_FEATURE_H_
-#define PCL_FEATURES_IMPL_FEATURE_H_
+#pragma once
 
 #include <pcl/search/pcl_search.h>
 
@@ -334,5 +332,4 @@ pcl::FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFram
   return (true);
 }
 
-#endif  //#ifndef PCL_FEATURES_IMPL_FEATURE_H_
 

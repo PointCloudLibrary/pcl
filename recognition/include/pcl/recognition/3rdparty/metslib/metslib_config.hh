@@ -29,8 +29,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef METSLIB_CONFIG_HH_
-#define METSLIB_CONFIG_HH_
+#pragma once
 #  if defined (_WIN32)
 #    define METSLIB_HAVE_UNORDERED_MAP 1
 #    define METSLIB_TR1_MIXED_NAMESPACE 1
@@ -43,5 +42,3 @@
 //Within PCL, force always to use boost unordered_map and random generators
 //Other options give problems with Clang... needs further investigation...
 #define METSLIB_TR1_BOOST 1
-
-#endif

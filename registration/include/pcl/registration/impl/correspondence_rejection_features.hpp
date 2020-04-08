@@ -37,8 +37,7 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_FEATURES_HPP_
-#define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_FEATURES_HPP_
+#pragma once
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename FeatureT> inline void 
@@ -102,4 +101,3 @@ pcl::registration::CorrespondenceRejectorFeatures::setFeatureRepresentation (
 }
 
 
-#endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_FEATURES_HPP_ */

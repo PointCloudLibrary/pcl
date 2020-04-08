@@ -36,9 +36,7 @@
  * $Id$
  *
  */
-
-#ifndef PCL_POINT_CLOUD_SPRING_IMPL_HPP_
-#define PCL_POINT_CLOUD_SPRING_IMPL_HPP_
+#pragma once
 
 template <typename PointT> void 
 pcl::common::expandColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output, 
@@ -254,5 +252,3 @@ pcl::common::deleteCols (const PointCloud<PointT>& input, PointCloud<PointT>& ou
   output.height = old_height;
   output.width = new_width;
 }
-
-#endif

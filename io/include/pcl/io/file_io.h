@@ -34,7 +34,6 @@
  * $Id: file_io.h 827 2011-05-04 02:00:04Z nizar $
  *
  */
-
 #pragma once
 
 #include <pcl/pcl_macros.h>

@@ -37,9 +37,7 @@
  * $Id: sac_model_normal_sphere.hpp schrandt $
  *
  */
-
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_NORMAL_SPHERE_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_NORMAL_SPHERE_H_
+#pragma once
 
 #include <pcl/sample_consensus/sac_model_normal_sphere.h>
 
@@ -205,5 +203,4 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::getDistancesToModel (
 
 #define PCL_INSTANTIATE_SampleConsensusModelNormalSphere(PointT, PointNT) template class PCL_EXPORTS pcl::SampleConsensusModelNormalSphere<PointT, PointNT>;
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_NORMAL_SPHERE_H_
 

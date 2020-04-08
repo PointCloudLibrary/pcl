@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef ORGANIZED_COMPRESSION_HPP
-#define ORGANIZED_COMPRESSION_HPP
+#pragma once
 
 #include <pcl/compression/organized_pointcloud_compression.h>
 
@@ -444,5 +442,4 @@ namespace pcl
   }
 }
 
-#endif
 

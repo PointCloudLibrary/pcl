@@ -1,5 +1,4 @@
-#ifndef POINTCLOUD_DEPTH_NEIGHBOR_SEARCH_HPP
-#define POINTCLOUD_DEPTH_NEIGHBOR_SEARCH_HPP
+#pragma once
 
 #ifndef PI
   #define PI 3.14159
@@ -431,5 +430,3 @@ namespace pcl
 
 
 #define PCL_INSTANTIATE_OrganizedNeighborSearch(T) template class pcl::OrganizedNeighborSearch<T>;
-
-#endif

@@ -34,9 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
-#ifndef IMPL_ORGANIZED_SEGMENTATION_HPP_
-#define IMPL_ORGANIZED_SEGMENTATION_HPP_
+#pragma once
 
 #include <pcl/apps/cloud_composer/tools/organized_segmentation.h>
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
@@ -175,7 +173,3 @@ pcl::cloud_composer::OrganizedSegmentationTool::performTemplatedAction (const QL
 
 
 #define PCL_INSTANTIATE_performTemplatedAction(T) template void pcl::cloud_composer::OrganizedSegmentationTool::performTemplatedAction<T> (QList <const CloudComposerItem*>);
-
-
-
-#endif //IMPL_TRANSFORM_CLOUDS_HPP_
