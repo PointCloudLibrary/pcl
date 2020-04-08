@@ -44,7 +44,7 @@
 template<typename PointT> void
 pcl::CropHull<PointT>::applyFilter (PointCloud &output)
 {
-  output.resize(0);
+  output.clear();
   std::vector<int> indices;
   applyFilter(indices);
   pcl::copyPointCloud(*input_, indices, output);
@@ -54,7 +54,7 @@ pcl::CropHull<PointT>::applyFilter (PointCloud &output)
 template<typename PointT> void
 pcl::CropHull<PointT>::applyFilter (std::vector<int> &indices)
 {
-  indices.resize(0);
+  indices.clear();
   indices.reserve(indices_->size());
 
   //std::min_element(range.data(), range.data() + 3);
