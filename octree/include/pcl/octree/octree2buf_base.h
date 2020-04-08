@@ -139,16 +139,32 @@ public:
   }
 
   /** \brief Get const pointer to container */
-  const ContainerT* operator->() const { return &container_; }
+  const ContainerT*
+  operator->() const
+  {
+    return &container_;
+  }
 
   /** \brief Get pointer to container */
-  ContainerT* operator->() { return &container_; }
+  ContainerT*
+  operator->()
+  {
+    return &container_;
+  }
 
   /** \brief Get const reference to container */
-  const ContainerT& operator*() const { return container_; }
+  const ContainerT&
+  operator*() const
+  {
+    return container_;
+  }
 
   /** \brief Get reference to container */
-  ContainerT& operator*() { return container_; }
+  ContainerT&
+  operator*()
+  {
+    return container_;
+  }
 
   /** \brief Get const reference to container */
   const ContainerT&
