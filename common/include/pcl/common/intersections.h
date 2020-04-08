@@ -151,6 +151,32 @@ namespace pcl
                                             intersection_point, determinant_tolerance));
   }
 
+  struct LineWithPlaneIntersectionResults
+  {
+    Eigen::Vector3f points[2]; /**< \brief The points defining the line. */
+    Eigen::Vector3f w;         /**< \brief The vector defining the line direction. */
+    Eigen::Vector3f origin;    /**< \brief The origin of the plane. */
+    Eigen::Vector3f u;         /**< \brief The vector defining the planes relative u directions. */
+    Eigen::Vector3f v;         /**< \brief The vector defining the planes relative v directions. */
+    Eigen::Vector3f p;         /**< \brief The point of intersection p = origin + x * u + y * v  || p = points[0] + w * lw */
+    float mw;                  /**< \brief The parametric coeff defining the intersection location on the line. */
+    float mu;                  /**< \brief The parametric plane u coeff of intersetion. */
+    float mv;                  /**< \brief The parametric plane v coeff of intersetion. */
+    bool parallel;             /**< \brief Indicate whether the line is parallel to the plane. */
+  };
+
+  /**
+    * \brief Find the intersection between a plane and line
+    * \param[in] p1     The origin point of the line
+    * \param[in] p2     The terminating point of the line
+    * \param[in] origin The origin of the plane
+    * \param[in] u      The vector defining the u direction for the plane
+    * \param[in] v      The vector defining the v direction for the plane
+    * \return IntersectionLine2PlaneResults
+    */
+  LineWithPlaneIntersectionResults
+  lineWithPlaneIntersection (const Eigen::Vector3f &p1, const Eigen::Vector3f &p2, const Eigen::Vector3f &origin, const Eigen::Vector3f &u, const Eigen::Vector3f &v);
+
 }
 /*@}*/
 

@@ -48,6 +48,7 @@
 #include <pcl/point_cloud.h>
 
 #include <pcl/common/centroid.h>
+#include <pcl/common/normals.h>
 
 using namespace pcl;
 
@@ -140,6 +141,22 @@ TEST (PCL, Common)
   Eigen::Vector4f pt (1,0,0,0), line_pt (0,0,0,0), line_dir (1,1,0,0);
   double point2line_disance = sqrt (sqrPointToLineDistance (pt, line_pt, line_dir));
   EXPECT_NEAR (point2line_disance, sqrt(2.0)/2, 1e-4);
+
+  Eigen::Vector3f n1 (0.5, 0.5, 0.0), n1_neg (-0.5, -0.5, 0.0), n2 (0.75, 0.5, 0.0);
+  EXPECT_FALSE (alignNormals (n1, n2));
+  EXPECT_TRUE (n1.isApprox (Eigen::Vector3f(0.5, 0.5, 0.0)));
+
+
+  EXPECT_TRUE (alignNormals (n1_neg, n2));
+  EXPECT_TRUE (n1_neg.isApprox (Eigen::Vector3f(0.5, 0.5, 0.0)));
+
+  EXPECT_TRUE (checkNormalsEqual(n1, n2, 0.2094));
+  EXPECT_FALSE (checkNormalsEqual(n1, n2, 0.1920));
+
+  EXPECT_TRUE (checkNormalsEqual(-1.0 * n1, n2, 2.9496));
+  EXPECT_FALSE (checkNormalsEqual(-1.0 * n1, n2, 2.9321));
+
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -557,6 +574,89 @@ TEST (PCL, GetMaxDistance)
   max_exp_pt = cloud[2].getVector4fMap ();
   getMaxDistance (cloud, idx, pivot_pt, max_pt);
   test::EXPECT_EQ_VECTORS (max_exp_pt, max_pt);
+}
+
+TEST (PCL, pointToLineSegmentDistance)
+{
+  using pcl::PointToLineSegmentDistanceResults;
+  using pcl::pointToLineSegmentDistance;
+  Eigen::Vector3f lp1 (0.0, 0.0, 0.0);
+  Eigen::Vector3f lp2 (1.0, 0.0, 0.0);
+  Eigen::Vector3f p (0.5, 1.0, 0.0);
+  PointToLineSegmentDistanceResults results = pointToLineSegmentDistance (lp1, lp2, p);
+  EXPECT_FLOAT_EQ (results.d, 1.0);
+  EXPECT_FLOAT_EQ (results.mu, 0.5);
+  EXPECT_TRUE (results.p.isApprox (Eigen::Vector3f (0.5, 0.0, 0.0), 1e-10));
+}
+
+TEST (PCL, pointToLineSegmentDistanceLeftBound)
+{
+  using pcl::PointToLineSegmentDistanceResults;
+  using pcl::pointToLineSegmentDistance;
+  Eigen::Vector3f lp1 (0.0, 0.0, 0.0);
+  Eigen::Vector3f lp2 (1.0, 0.0, 0.0);
+  Eigen::Vector3f p (-0.5, 1.0, 0.0);
+  PointToLineSegmentDistanceResults results = pointToLineSegmentDistance (lp1, lp2, p);
+  EXPECT_FLOAT_EQ (results.d, std::sqrt (1.0 * 1.0 + 0.5 * 0.5));
+  EXPECT_FLOAT_EQ (results.mu, 0.0);
+  EXPECT_TRUE (results.p.isApprox (lp1, 1e-10));
+}
+
+TEST (PCL, pointToLineSegmentDistanceRightBound)
+{
+  using pcl::PointToLineSegmentDistanceResults;
+  using pcl::pointToLineSegmentDistance;
+  Eigen::Vector3f lp1 (0.0, 0.0, 0.0);
+  Eigen::Vector3f lp2 (1.0, 0.0, 0.0);
+  Eigen::Vector3f p (1.5, 1.0, 0.0);
+  PointToLineSegmentDistanceResults results = pointToLineSegmentDistance (lp1, lp2, p);
+  EXPECT_FLOAT_EQ (results.d, std::sqrt (1.0 * 1.0 + 0.5 * 0.5));
+  EXPECT_FLOAT_EQ (results.mu, 1.0);
+  EXPECT_TRUE (results.p.isApprox (lp2, 1e-10));
+}
+
+TEST (PCL, lineSegmentToLineSegmentDistance)
+{
+  using pcl::LineSegmentToLineSegmentDistanceResults;
+  using pcl::lineSegmentToLineSegmentDistance;
+
+  Eigen::Vector3f l1[2], l2[2];
+
+  l1[0] << 0.0, 0.0, 0.0;
+  l1[1] << 1.0, 0.0, 0.0;
+
+  l2[0] << 0.0, -0.5, 0.5;
+  l2[1] << 0.0, 0.5, 0.5;
+
+  LineSegmentToLineSegmentDistanceResults results = lineSegmentToLineSegmentDistance (l1[0], l1[1], l2[0], l2[1]);
+  EXPECT_FLOAT_EQ (results.mu[0], 0.0);
+  EXPECT_FLOAT_EQ (results.mu[1], 0.5);
+
+  EXPECT_TRUE (results.p[0].isApprox (l1[0], 1e-10));
+  EXPECT_TRUE (results.p[1].isApprox (Eigen::Vector3f (0.0, 0.0, 0.5), 1e-10));
+  EXPECT_FALSE (results.parallel);
+}
+
+TEST (PCL, lineSegmentToLineSegmentDistanceParallel)
+{
+  using pcl::LineSegmentToLineSegmentDistanceResults;
+  using pcl::lineSegmentToLineSegmentDistance;
+
+  Eigen::Vector3f l1[2], l2[2];
+
+  l1[0] << 0.0, 0.0, 0.0;
+  l1[1] << 1.0, 0.0, 0.0;
+
+  l2[0] << -0.5, 0.0, 0.5;
+  l2[1] << 0.5, 0.0, 0.5;
+
+  LineSegmentToLineSegmentDistanceResults results = lineSegmentToLineSegmentDistance (l1[0], l1[1], l2[0], l2[1]);
+  EXPECT_FLOAT_EQ (results.mu[0], 0.0);
+  EXPECT_FLOAT_EQ (results.mu[1], 0.5);
+
+  EXPECT_TRUE (results.p[0].isApprox (l1[0], 1e-10));
+  EXPECT_TRUE (results.p[1].isApprox (Eigen::Vector3f (0.0, 0.0, 0.5), 1e-10));
+  EXPECT_TRUE (results.parallel);
 }
 
 /* ---[ */
