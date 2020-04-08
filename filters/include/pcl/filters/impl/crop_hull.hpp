@@ -221,7 +221,7 @@ pcl::CropHull<PointT>::applyFilter3D (std::vector<int> &indices)
           (input_->points[(*indices_)[index]], rays[ray], hull_polygons_[poly], *hull_cloud_);
 
     bool isPointInsideHull = (crossings[0]&1) + (crossings[1]&1) + (crossings[2]&1) > 1;
-    if ((crop_outside_ && isPointInsideHull) || (!crop_outside_ && !isPointInsideHull)) {
+    if (crop_outside_ == isPointInsideHull) {
       indices.push_back ((*indices_)[index]);
     }
   }
