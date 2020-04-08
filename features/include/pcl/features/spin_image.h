@@ -258,8 +258,8 @@ namespace pcl
         * \param[in] index the index of the reference point in the input cloud
         * \return estimated spin-image (or its variant) as a matrix
         */
-      Eigen::ArrayXXd 
-      computeSiForPoint (int index) const;
+      template <int Storage = Eigen::ColMajor> auto
+      computeSiForPoint (int index) const -> Eigen::Array<double, Eigen::Dynamic, Eigen::Dynamic, Storage>;
 
     private:
       PointCloudNConstPtr input_normals_;

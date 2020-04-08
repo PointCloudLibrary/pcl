@@ -243,12 +243,8 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::normalizeHistog
 	// and not the sum of bins, as reported in the ECCV paper.
 	// This is due to additional experiments performed by the authors after its pubblication,
 	// where L2 normalization turned out better at handling point density variations.
-  double acc_norm = 0;
-  for (int j = 0; j < desc_length; j++)
-    acc_norm += shot[j] * shot[j];
-  acc_norm = sqrt (acc_norm);
-  for (int j = 0; j < desc_length; j++)
-    shot[j] /= static_cast<float> (acc_norm);
+
+  shot.segment (0, desc_length).normalize ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -796,12 +792,9 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
         lrf_is_nan ||
         this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
     {
-      // Copy into the resultant cloud
-      for (int d = 0; d < descLength_; ++d)
-        output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
-      for (int d = 0; d < 9; ++d)
-        output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
-
+      const auto nan = std::numeric_limits<float>::quiet_NaN ();
+      std::fill (output.points[idx].descriptor, output.points[idx].descriptor + descLength_, nan);
+      std::fill (output.points[idx].rf, output.points[idx].rf + 9, nan);
       output.is_dense = false;
       continue;
     }
@@ -809,9 +802,7 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
     // Estimate the SHOT descriptor at each patch
     computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot_);
 
-    // Copy into the resultant cloud
-    for (int d = 0; d < descLength_; ++d)
-      output.points[idx].descriptor[d] = shot_[d];
+    std::copy_n (shot_.data (), descLength_, output.points[idx].descriptor);
     for (int d = 0; d < 3; ++d)
     {
       output.points[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
@@ -868,11 +859,9 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
         lrf_is_nan ||
         this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
     {
-      // Copy into the resultant cloud
-      for (int d = 0; d < descLength_; ++d)
-        output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
-      for (int d = 0; d < 9; ++d)
-        output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
+      const auto nan = std::numeric_limits<float>::quiet_NaN ();
+      std::fill (output.points[idx].descriptor, output.points[idx].descriptor + descLength_, nan);
+      std::fill (output.points[idx].rf, output.points[idx].rf + 9, nan);
 
       output.is_dense = false;
       continue;
@@ -881,9 +870,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
     // Compute the SHOT descriptor for the current 3D feature
     computePointSHOT (static_cast<int> (idx), nn_indices, nn_dists, shot_);
 
-    // Copy into the resultant cloud
-    for (int d = 0; d < descLength_; ++d)
-      output.points[idx].descriptor[d] = shot_[d];
+    std::copy_n (shot_.data (), descLength_, output.points[idx].descriptor);
     for (int d = 0; d < 3; ++d)
     {
       output.points[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
