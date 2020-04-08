@@ -156,21 +156,22 @@ namespace pcl
         }
 
         /** \brief Return the 'score' (denormalised likelihood) and derivatives of score of the point p given this distribution.
-          * \param[in] transformed_pt   Location to evaluate at.
+          * \param[in] pt               Location in the source space to evaluate at.
+          * \param[in] transformed_pt   Location in the target space to evaluate at.
           * \param[in] cos_theta        sin(theta) of the current rotation angle of rigid transformation: to avoid repeated evaluation
           * \param[in] sin_theta        cos(theta) of the current rotation angle of rigid transformation: to avoid repeated evaluation
           * estimateParams must have been called after at least three points were provided, or this will return zero.
           *
           */
         ValueAndDerivatives<3,double>
-        test (const PointT& transformed_pt, const double& cos_theta, const double& sin_theta) const
+        test (const PointT& pt, const PointT& transformed_pt, const double& cos_theta, const double& sin_theta) const
         {
           if (n_ < min_n_)
             return ValueAndDerivatives<3,double>::Zero ();
           
           ValueAndDerivatives<3,double> r;
-          const double x = transformed_pt.x;
-          const double y = transformed_pt.y;
+          const double x = pt.x;
+          const double y = pt.y;
           const Eigen::Vector2d p_xy (transformed_pt.x, transformed_pt.y);
           const Eigen::Vector2d q = p_xy - mean_;
           const Eigen::RowVector2d qt_cvi (q.transpose () * covar_inv_);
@@ -251,18 +252,19 @@ namespace pcl
         }
         
         /** \brief Return the 'score' (denormalised likelihood) and derivatives of score of the point p given this distribution.
-          * \param[in] transformed_pt   Location to evaluate at.
+          * \param[in] pt               Location in the source space to evaluate at.
+          * \param[in] transformed_pt   Location in the target space to evaluate at.
           * \param[in] cos_theta        sin(theta) of the current rotation angle of rigid transformation: to avoid repeated evaluation
           * \param[in] sin_theta        cos(theta) of the current rotation angle of rigid transformation: to avoid repeated evaluation
           */
         ValueAndDerivatives<3,double>
-        test (const PointT& transformed_pt, const double& cos_theta, const double& sin_theta) const
+        test (const PointT& pt, const PointT& transformed_pt, const double& cos_theta, const double& sin_theta) const
         {
           const NormalDist* n = normalDistForPoint (transformed_pt);
           // index is in grid, return score from the normal distribution from
           // the correct part of the grid:
           if (n)
-            return n->test (transformed_pt, cos_theta, sin_theta);
+            return n->test (pt, transformed_pt, cos_theta, sin_theta);
           return ValueAndDerivatives<3,double>::Zero ();
         }
 
@@ -328,16 +330,17 @@ namespace pcl
         }
         
         /** \brief Return the 'score' (denormalised likelihood) and derivatives of score of the point p given this distribution.
-          * \param[in] transformed_pt   Location to evaluate at.
+          * \param[in] pt               Location in the source space to evaluate at.
+          * \param[in] transformed_pt   Location in the target space to evaluate at.
           * \param[in] cos_theta        sin(theta) of the current rotation angle of rigid transformation: to avoid repeated evaluation
           * \param[in] sin_theta        cos(theta) of the current rotation angle of rigid transformation: to avoid repeated evaluation
           */
         ValueAndDerivatives<3,double>
-        test (const PointT& transformed_pt, const double& cos_theta, const double& sin_theta) const
+        test (const PointT& pt, const PointT& transformed_pt, const double& cos_theta, const double& sin_theta) const
         {
           ValueAndDerivatives<3,double> r = ValueAndDerivatives<3,double>::Zero ();
           for (const auto &single_grid : single_grids_)
-              r += single_grid->test (transformed_pt, cos_theta, sin_theta);
+              r += single_grid->test (pt, transformed_pt, cos_theta, sin_theta);
           return r;
         }
 
@@ -414,7 +417,7 @@ pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransforma
 
     ndt2d::ValueAndDerivatives<3, double> score = ndt2d::ValueAndDerivatives<3, double>::Zero ();
     for (std::size_t i = 0; i < intm_cloud.size (); i++)
-      score += target_ndt.test (intm_cloud[i], cos_theta, sin_theta);
+      score += target_ndt.test (output[i], intm_cloud[i], cos_theta, sin_theta);
     
     PCL_DEBUG ("[pcl::NormalDistributionsTransform2D::computeTransformation] NDT score %f (x=%f,y=%f,r=%f)\n",
       float (score.value), xytheta_transformation[0], xytheta_transformation[1], xytheta_transformation[2]
