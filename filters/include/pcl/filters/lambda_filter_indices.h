@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2020-, Open Perception
  *
  *  All rights reserved.
  *
@@ -42,17 +42,46 @@
 #include <pcl/filters/filter_indices.h>
 #include <pcl/pcl_macros.h>
 
+#ifndef __cpp_lib_is_invocable
+#include <boost/hof/is_invocable.hpp>
+#endif
+
+#include <type_traits>
+#include <utility>
+
 namespace pcl {
+namespace detail {
+#ifndef __cpp_lib_is_invocable
+template <typename F, typename... Args>
+constexpr bool is_invocable_v = boost::is_invocable<F, Args...>();
+#else
+using std::is_invocable_v;
+#endif
+
+#ifndef __cpp_lib_remove_cvref
 template <typename T>
-inline bool
-conditional_reserve(T& container, std::size_t size)
-{
-  if (container.capacity() < size) {
-    container.reserve(size);
-    return true;
-  }
-  return false;
-}
+using remove_cvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
+#else
+using std::remove_cvref_t;
+#endif
+
+template <typename PointT, typename Function>
+using PointFilterLambda = std::enable_if_t<
+    is_invocable_v<Function, const remove_cvref_t<std::PointT>&, pcl::index_t> &&
+        std::is_convertible<decltype(Function(const remove_cvref_t<std::PointT>&,
+                                              pcl::index_t)),
+                            bool>::value,
+    bool>;
+
+// can't use this for SFINAE since Derived isn't properly defined
+// but this can be used after the class definition to test it
+template <class Base, Derived>
+constexpr auto IsValidLambdaFilter = std::enable_if_t<
+    std::is_base_of<Base, Derived>::value &&
+        is_invocable_v<std::declval<Derived>().get_lambda, void> &&
+        std::is_same<PointFilterLambda<std::declval<Derived>().get_lambda()>, bool>,
+    bool>;
+
 /**
  * \brief LambdaFilterIndices filters point clouds and indices based on a function
  *        pointer passed to filter command
@@ -78,10 +107,10 @@ protected:
   applyFilter(std::vector<int>& indices) override
   {
     indices.clear();
-    conditional_reserve(indices, input_->points.size());
+    indices.reserve(input_->points.size());
     if (extract_removed_indices_) {
       reserved_indices_->clear();
-      conditional_reserve(*reserved_indices_, input_->points.size());
+      reserved_indices_->reserve(input_->points.size());
     }
 
     const auto& lambda = static_cast<Derived>(this)->get_lambda();
@@ -98,21 +127,28 @@ protected:
     }
   }
 };
+} // namespace detail
 
-template <typename PointT, typename FunctorT>
+template <typename PointT, typename Functor>
 struct LambdaFilterIndices
-: public LambdaFilterIndicesImpl<LambdaFilterIndices<PointT, FunctorT>> {
+: public detail::LambdaFilterIndicesImpl<LambdaFilterIndices<PointT, Functor>> {
 protected:
-  using Self = LambdaFilterIndices<PointT, FunctorT>;
-  using Base = LambdaFilterIndicesImpl<Self>;
+  // using in type would complicate signature
+  static_assert(std::is_same<detail::PointFilterLambda<PointT, Functor>, bool>::value,
+                "Functor needs to be able to satisfy the callable constraint");
+
+  using Self = LambdaFilterIndices<PointT, Functor>;
+  using Base = detail::LambdaFilterIndicesImpl<Self>;
 
 public:
+  using FunctorT = Functor;
+
   /** \brief Constructor.
    * \param[in] extract_removed_indices Set to true if you want to be able to extract
    * the indices of points being removed (default = false).
    */
   LambdaFilterIndices(FunctorT lambda, bool extract_removed_indices = false)
-  : LambdaFilterIndicesImpl<PointT>(extract_removed_indices),
+  : Base(extract_removed_indices),
   {
     filter_name_ = "lambda_filter_indices";
   }
@@ -126,13 +162,18 @@ protected:
   }
 };
 
+// version specialized to hold a callable of the right type
 template <typename PointT>
 struct LambdaFilterIndices<PointT, std::function<bool(const PointT&, index_t)>>
 : public LambdaFilterIndicesImpl<
       LambdaFilterIndices<PointT, std::function<bool(const PointT&, index_t)>>> {
 protected:
+  static_assert(
+      std::is_same <
+          PointFilterLambda<std::function<bool(const PointT&, index_t)>, bool>::value,
+      "Specialized version needs to satisfy the base criteria");
   using Self = LambdaFilterIndices<PointT>;
-  using Base = LambdaFilterIndicesImpl<Self>;
+  using Base = detail::LambdaFilterIndicesImpl<Self>;
 
 public:
   using FunctorT = std::function<bool(const PointT&, index_t)>;
@@ -143,7 +184,7 @@ public:
    * the indices of points being removed (default = false).
    */
   LambdaFilterIndices(FunctorT functor, bool extract_removed_indices = false)
-  : LambdaFilterIndicesImpl<PointT>(extract_removed_indices),
+  : Base(extract_removed_indices),
   {
     filter_name_ = "lambda_filter_indices";
   }
