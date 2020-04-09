@@ -420,6 +420,7 @@ For the compute, filter, segment, etc. type methods the following rules apply:
 
 3.3.2 Type qualifiers of variables
 """"""""""""""""""""""""""""""""""
-* Use of const reference variables if the value is not being modified
+* Declare variables const when they don't need to be modified.
+* Use const references whenever you don't need a copy of the variable. 
 * Use of unsigned variables if the value is sure to not go negative by 
   use and by definition of the variable
