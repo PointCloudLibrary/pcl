@@ -373,3 +373,19 @@ For the compute, filter, segment, etc. type methods the following rules apply:
 * The output arguments are preferably non-pointer type, regardless of data
   size.
 * The output arguments will always be passed by reference.
+
+3.3. Object declaration
+^^^^^^^^^^^^^^^^^^^^^^^
+
+3.3.1 Use of auto
+"""""""""""""""""
+* For Iterators auto must be used as much as possible 
+* In all the other cases auto can be used at the author's discretion
+* Use const auto references by default in range loops. Drop the const if the item needs to be modified.
+
+3.3.2 Type qualifiers of variables
+""""""""""""""""""""""""""""""""""
+* Declare variables const when they don't need to be modified.
+* Use const references whenever you don't need a copy of the variable. 
+* Use of unsigned variables if the value is sure to not go negative by 
+  use and by definition of the variable
