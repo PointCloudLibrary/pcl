@@ -39,14 +39,14 @@
  *      Author: somani
  */
 
-#ifndef PCL_2D_KEYPOINT_HPP_
-#define PCL_2D_KEYPOINT_HPP_
+#pragma once
 
 #include <pcl/2d/convolution.h>
 #include <pcl/2d/edge.h>
 #include <pcl/2d/keypoint.h> // for pcl::Keypoint
 
 #include <limits>
+
 
 namespace pcl {
 
@@ -260,4 +260,3 @@ Keypoint<ImageType>::imageElementMultiply(ImageType& output,
 }
 } // namespace pcl
 
-#endif // PCL_2D_KEYPOINT_HPP_
