@@ -417,6 +417,7 @@ For the compute, filter, segment, etc. type methods the following rules apply:
 """""""""""""""""
 * For Iterators auto must be used as much as possible 
 * In all the other cases auto can be used at the author's discretion
+* Use const auto references by default in range loops. Drop the const if the item needs to be modified.
 
 3.3.2 Type qualifiers of variables
 """"""""""""""""""""""""""""""""""
