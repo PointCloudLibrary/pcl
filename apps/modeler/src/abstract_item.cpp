@@ -52,8 +52,6 @@ pcl::modeler::AbstractItem::showContextMenu(const QPoint* position)
   QMenu menu(&MainWindow::getInstance());
   prepareContextMenu(&menu);
   menu.exec(*position);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

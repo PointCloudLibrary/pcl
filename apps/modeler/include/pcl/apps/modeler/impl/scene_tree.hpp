@@ -55,7 +55,7 @@ pcl::modeler::SceneTree::selectedTypeItems() const
       selected_t_items.push_back(t_item);
   }
 
-  return (selected_t_items);
+  return selected_t_items;
 }
 
 } // namespace modeler

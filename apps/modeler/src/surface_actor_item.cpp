@@ -94,8 +94,6 @@ pcl::modeler::SurfaceActorItem::initImpl()
   actor->GetProperty()->BackfaceCullingOn();
   actor->GetProperty()->EdgeVisibilityOff();
   actor->GetProperty()->ShadingOff();
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,8 +106,6 @@ pcl::modeler::SurfaceActorItem::updateImpl()
   double minmax[2];
   scalars->GetRange(minmax);
   actor_->GetMapper()->SetScalarRange(minmax);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -54,7 +54,7 @@ protected:
   std::string
   getName() const override
   {
-    return ("Statistical Outlier Removal");
+    return "Statistical Outlier Removal";
   }
 
   void

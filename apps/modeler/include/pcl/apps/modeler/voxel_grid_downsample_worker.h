@@ -53,7 +53,7 @@ protected:
   std::string
   getName() const override
   {
-    return ("Down Sample");
+    return "Down Sample";
   }
 
   void

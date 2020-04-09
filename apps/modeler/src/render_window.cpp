@@ -69,8 +69,6 @@ pcl::modeler::RenderWindow::~RenderWindow()
     MainWindow::getInstance().removeDockWidget(dock_widget);
     dock_widget->deleteLater();
   }
-
-  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -97,8 +95,6 @@ pcl::modeler::RenderWindow::initRenderer()
   win->SwapBuffersOn();
   win->SetStereoTypeToAnaglyph();
   win->GetInteractor()->SetDesiredUpdateRate(30.0);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -118,8 +114,6 @@ pcl::modeler::RenderWindow::setActive(bool flag)
   DockWidget* dock_widget = dynamic_cast<DockWidget*>(parent());
   if (dock_widget != nullptr)
     dock_widget->setFocusBasedStyle(flag);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -129,8 +123,6 @@ pcl::modeler::RenderWindow::setTitle(const QString& title)
   DockWidget* dock_widget = dynamic_cast<DockWidget*>(parent());
   if (dock_widget != nullptr)
     dock_widget->setWindowTitle(title);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -200,6 +192,4 @@ pcl::modeler::RenderWindow::setShowAxes(bool flag)
     GetRenderWindow()->GetRenderers()->GetFirstRenderer()->AddActor(axes_);
   else
     GetRenderWindow()->GetRenderers()->GetFirstRenderer()->RemoveActor(axes_);
-
-  return;
 }

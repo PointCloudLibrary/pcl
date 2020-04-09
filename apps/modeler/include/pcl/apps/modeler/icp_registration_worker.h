@@ -56,7 +56,7 @@ protected:
   std::string
   getName() const override
   {
-    return ("Normal Estimation");
+    return "Normal Estimation";
   }
 
   void

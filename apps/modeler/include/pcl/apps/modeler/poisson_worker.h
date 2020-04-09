@@ -54,7 +54,7 @@ protected:
   std::string
   getName() const override
   {
-    return ("Poisson Reconstruction");
+    return "Poisson Reconstruction";
   }
 
   void

@@ -113,6 +113,4 @@ pcl::modeler::ChannelActorItem::switchRenderWindow(vtkRenderWindow* render_windo
   detachActor();
   render_window_ = vtkSmartPointer<vtkRenderWindow>(render_window);
   attachActor();
-
-  return;
 }

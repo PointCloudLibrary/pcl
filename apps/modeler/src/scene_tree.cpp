@@ -100,7 +100,7 @@ pcl::modeler::SceneTree::selectedRenderWindowItems() const
   else
     selected_render_window_items = selectedTypeItems<RenderWindowItem>();
 
-  return (selected_render_window_items);
+  return selected_render_window_items;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,8 +109,6 @@ pcl::modeler::SceneTree::contextMenuEvent(QContextMenuEvent* event)
 {
   AbstractItem* item = dynamic_cast<AbstractItem*>(currentItem());
   item->showContextMenu(&(event->globalPos()));
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -129,13 +127,13 @@ pcl::modeler::SceneTree::openPointCloud(const QString& filename)
 
   for (auto& selected_render_window_item : selected_render_window_items) {
     if (!selected_render_window_item->openPointCloud(filename))
-      return (false);
+      return false;
     expandItem(selected_render_window_item);
   }
 
   emit fileOpened(filename);
 
-  return (true);
+  return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -144,7 +142,7 @@ pcl::modeler::SceneTree::savePointCloud(const QString& filename)
 {
   QList<CloudMeshItem*> selected_cloud_mesh_items = selectedTypeItems<CloudMeshItem>();
 
-  return (CloudMeshItem::savePointCloud(selected_cloud_mesh_items, filename));
+  return CloudMeshItem::savePointCloud(selected_cloud_mesh_items, filename);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,8 +187,6 @@ pcl::modeler::SceneTree::slotOpenPointCloud()
                               "in valid .pcd format!")
                                .arg(*filenames_it));
   }
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,14 +214,11 @@ pcl::modeler::SceneTree::slotImportPointCloud()
        filenames_it != filenames.end();
        ++filenames_it) {
     if (!openPointCloud(*filenames_it))
-      QMessageBox::warning(main_window,
-                           tr("Failed to Import Point Cloud"),
-                           tr("Can not import point cloud file %1, please check if "
-                              "it's in valid .pcd format!")
-                               .arg(*filenames_it));
+      QMessageBox::warning(
+          main_window,
+          tr("Failed to Import Point Cloud"),
+          tr("Can not import point cloud file %1 as .pcd file!").arg(*filenames_it));
   }
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -250,8 +243,6 @@ pcl::modeler::SceneTree::slotSavePointCloud()
     return;
 
   savePointCloud(filename);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -276,8 +267,6 @@ pcl::modeler::SceneTree::closePointCloud(const QList<CloudMeshItem*>& items)
        ++render_window_items_it) {
     (*render_window_items_it)->getRenderWindow()->render();
   }
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -295,8 +284,6 @@ pcl::modeler::SceneTree::slotClosePointCloud()
   }
 
   closePointCloud(selected_cloud_mesh_items);
-
-  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -321,8 +308,6 @@ pcl::modeler::SceneTree::slotICPRegistration()
   }
 
   thread_controller->runWorker(worker);
-
-  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -338,8 +323,6 @@ pcl::modeler::SceneTree::slotVoxelGridDownsampleFilter()
           thread_controller,
           SLOT(slotOnCloudMeshItemUpdate(CloudMeshItem*)));
   thread_controller->runWorker(worker);
-
-  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -355,8 +338,6 @@ pcl::modeler::SceneTree::slotStatisticalOutlierRemovalFilter()
           thread_controller,
           SLOT(slotOnCloudMeshItemUpdate(CloudMeshItem*)));
   thread_controller->runWorker(worker);
-
-  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -372,8 +353,6 @@ pcl::modeler::SceneTree::slotEstimateNormal()
           thread_controller,
           SLOT(slotOnCloudMeshItemUpdate(CloudMeshItem*)));
   thread_controller->runWorker(worker);
-
-  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -389,8 +368,6 @@ pcl::modeler::SceneTree::slotPoissonReconstruction()
           thread_controller,
           SLOT(slotOnCloudMeshItemUpdate(CloudMeshItem*)));
   thread_controller->runWorker(worker);
-
-  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -429,8 +406,6 @@ pcl::modeler::SceneTree::slotUpdateOnSelectionChange(const QItemSelection& selec
       render_window_item->getRenderWindow()->setActive(false);
     }
   }
-
-  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -477,8 +452,6 @@ pcl::modeler::SceneTree::slotCloseRenderWindow()
   }
 
   emit itemInsertedOrRemoved();
-
-  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -520,8 +493,6 @@ pcl::modeler::SceneTree::dropEvent(QDropEvent* event)
     previous_parent->getRenderWindow()->updateAxes();
     previous_parent->getRenderWindow()->render();
   }
-
-  return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

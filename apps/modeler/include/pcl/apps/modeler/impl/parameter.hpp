@@ -56,7 +56,7 @@ EnumParameter<T>::valueTip()
   } while (it != candidates_.end());
   tip += "}";
 
-  return (tip);
+  return tip;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -71,7 +71,7 @@ EnumParameter<T>::createEditor(QWidget* parent)
     editor->addItem(it->second.c_str());
   }
 
-  return (editor);
+  return editor;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -111,7 +111,7 @@ EnumParameter<T>::toModelData()
   }
   model_data.second = Qt::EditRole;
 
-  return (model_data);
+  return model_data;
 }
 
 } // namespace modeler

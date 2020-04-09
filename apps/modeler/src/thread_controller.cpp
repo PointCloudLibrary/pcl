@@ -60,7 +60,7 @@ pcl::modeler::ThreadController::runWorker(AbstractWorker* worker)
     delete worker;
     deleteLater();
 
-    return (false);
+    return false;
   }
 
   QThread* thread = new QThread;
@@ -81,7 +81,7 @@ pcl::modeler::ThreadController::runWorker(AbstractWorker* worker)
 
   emit prepared();
 
-  return (true);
+  return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

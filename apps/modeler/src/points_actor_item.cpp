@@ -105,8 +105,6 @@ pcl::modeler::PointsActorItem::updateImpl()
   double minmax[2];
   scalars->GetRange(minmax);
   actor_->GetMapper()->SetScalarRange(minmax);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

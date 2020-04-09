@@ -117,8 +117,6 @@ pcl::modeler::NormalsActorItem::createNormalLines()
       lines->InsertCellPoint(2 * j + 1);
     }
   }
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -164,8 +162,6 @@ pcl::modeler::NormalsActorItem::updateImpl()
   double minmax[2];
   scalars->GetRange(minmax);
   actor_->GetMapper()->SetScalarRange(minmax);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

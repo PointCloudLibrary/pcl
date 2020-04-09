@@ -72,7 +72,7 @@ std::vector<std::string>
 pcl::modeler::CloudMesh::getAvaiableFieldNames() const
 {
   // TODO:
-  return (std::vector<std::string>());
+  return {};
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,11 +80,11 @@ bool
 pcl::modeler::CloudMesh::open(const std::string& filename)
 {
   if (pcl::io::loadPCDFile(filename, *cloud_) != 0)
-    return (false);
+    return false;
 
   updateVtkPoints();
 
-  return (true);
+  return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,10 +95,10 @@ pcl::modeler::CloudMesh::save(const std::string& filename) const
     pcl::PolygonMesh polygon_mesh;
     pcl::toPCLPointCloud2(*cloud_, polygon_mesh.cloud);
     polygon_mesh.polygons = polygons_;
-    return (pcl::io::saveOBJFile(filename, polygon_mesh, true) == 0);
+    return pcl::io::saveOBJFile(filename, polygon_mesh, true) == 0;
   }
 
-  return (pcl::io::savePCDFile(filename, *cloud_, true) == 0);
+  return pcl::io::savePCDFile(filename, *cloud_, true) == 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,7 +110,7 @@ pcl::modeler::CloudMesh::save(const std::vector<const CloudMesh*>& cloud_meshes,
     return false;
 
   if (cloud_meshes.size() == 1)
-    return (cloud_meshes[0]->save(filename));
+    return cloud_meshes[0]->save(filename);
 
   CloudMesh cloud_mesh;
   for (const auto& mesh : cloud_meshes) {
@@ -126,7 +126,7 @@ pcl::modeler::CloudMesh::save(const std::vector<const CloudMesh*>& cloud_meshes,
     *cloud_mesh.cloud_ += *(mesh->cloud_);
   }
 
-  return (cloud_mesh.save(filename));
+  return cloud_mesh.save(filename);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -149,8 +149,6 @@ pcl::modeler::CloudMesh::getColorScalarsFromField(
   pcl::visualization::PointCloudColorHandlerGenericField<PointT> color_handler(cloud_,
                                                                                field);
   scalars = color_handler.getColor();
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,8 +187,6 @@ pcl::modeler::CloudMesh::updateVtkPoints()
     }
   }
   data->Squeeze();
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -216,8 +212,6 @@ pcl::modeler::CloudMesh::updateVtkPolygons()
         vtk_polygons_->InsertCellPoint((*indices)[vertex]);
     }
   }
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -242,6 +236,4 @@ pcl::modeler::CloudMesh::transform(
 
   centroid = -centroid;
   pcl::demeanPointCloud(transform_cloud, centroid, *cloud_);
-
-  return;
 }

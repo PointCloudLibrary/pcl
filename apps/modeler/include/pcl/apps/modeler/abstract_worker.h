@@ -73,7 +73,7 @@ protected:
   virtual std::string
   getName() const
   {
-    return ("");
+    return "";
   }
 
   virtual void

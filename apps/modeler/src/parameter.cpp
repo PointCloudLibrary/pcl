@@ -102,7 +102,7 @@ pcl::modeler::IntParameter::toModelData()
   std::pair<QVariant, int> model_data;
   model_data.first = int(*this);
   model_data.second = Qt::EditRole;
-  return (model_data);
+  return model_data;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +147,7 @@ pcl::modeler::BoolParameter::toModelData()
   std::pair<QVariant, int> model_data;
   model_data.first = bool(*this);
   model_data.second = Qt::EditRole;
-  return (model_data);
+  return model_data;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,14 +197,14 @@ pcl::modeler::DoubleParameter::toModelData()
   std::pair<QVariant, int> model_data;
   model_data.first = double(*this);
   model_data.second = Qt::EditRole;
-  return (model_data);
+  return model_data;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 std::string
 pcl::modeler::ColorParameter::valueTip()
 {
-  return ("Color");
+  return "Color";
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -224,8 +224,6 @@ pcl::modeler::ColorParameter::setEditorData(QWidget* editor)
 
   QColor value = QColor(*this);
   color_dialog->setCurrentColor(value);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -245,5 +243,5 @@ pcl::modeler::ColorParameter::toModelData()
   std::pair<QVariant, int> model_data;
   model_data.first = QBrush(QColor(*this));
   model_data.second = Qt::BackgroundRole;
-  return (model_data);
+  return model_data;
 }

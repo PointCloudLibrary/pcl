@@ -65,12 +65,12 @@ pcl::modeler::RenderWindowItem::openPointCloud(const QString& filename)
   if (!cloud_mesh_item->open()) {
     removeChild(cloud_mesh_item);
     delete cloud_mesh_item;
-    return (false);
+    return false;
   }
 
   treeWidget()->setCurrentItem(cloud_mesh_item);
 
-  return (true);
+  return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ pcl::modeler::RenderWindowItem::addPointCloud(CloudMesh::PointCloudPtr cloud)
 
   treeWidget()->setCurrentItem(cloud_mesh_item);
 
-  return (cloud_mesh_item);
+  return cloud_mesh_item;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,6 +117,4 @@ pcl::modeler::RenderWindowItem::setProperties()
       color.red() / 255.0, color.green() / 255.0, color.blue() / 255.0);
 
   render_window_->setShowAxes(*show_axes_);
-
-  return;
 }

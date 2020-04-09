@@ -115,14 +115,14 @@ pcl::modeler::CloudMeshItem::savePointCloud(const QList<CloudMeshItem*>& items,
                                             const QString& filename)
 {
   if (items.size() == 1)
-    return (items.first()->getCloudMesh()->save(filename.toStdString()));
+    return items.first()->getCloudMesh()->save(filename.toStdString());
 
   std::vector<const CloudMesh*> cloud_meshes;
   for (const auto& item : items) {
     cloud_meshes.push_back(item->getCloudMesh().get());
   }
 
-  return (CloudMesh::save(cloud_meshes, filename.toStdString()));
+  return CloudMesh::save(cloud_meshes, filename.toStdString());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,13 +130,13 @@ bool
 pcl::modeler::CloudMeshItem::open()
 {
   if (!cloud_mesh_->open(filename_))
-    return (false);
+    return false;
 
   createChannels();
 
   treeWidget()->expandItem(this);
 
-  return (true);
+  return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -168,8 +168,6 @@ pcl::modeler::CloudMeshItem::createChannels()
 
   render_window_item->getRenderWindow()->updateAxes();
   render_window_item->getRenderWindow()->resetCamera();
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -186,8 +184,6 @@ pcl::modeler::CloudMeshItem::updateChannels()
 
   RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
   render_window_item->getRenderWindow()->updateAxes();
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -250,6 +246,4 @@ pcl::modeler::CloudMeshItem::updateRenderWindow()
 
   render_window_item->getRenderWindow()->updateAxes();
   render_window_item->getRenderWindow()->resetCamera();
-
-  return;
 }

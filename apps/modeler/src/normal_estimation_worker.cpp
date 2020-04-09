@@ -78,8 +78,6 @@ pcl::modeler::NormalEstimationWorker::initParameters(CloudMeshItem* cloud_mesh_i
 
   z_min_ = std::min(double(min_pt.z()), z_min_);
   z_max_ = std::max(double(max_pt.z()), z_max_);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -103,8 +101,6 @@ pcl::modeler::NormalEstimationWorker::setupParameters()
       step);
 
   parameter_dialog_->addParameter(search_radius_);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -140,6 +136,4 @@ pcl::modeler::NormalEstimationWorker::processImpl(CloudMeshItem* cloud_mesh_item
     cloud->points[dest].normal_y = normals.points[i].normal_y;
     cloud->points[dest].normal_z = normals.points[i].normal_z;
   }
-
-  return;
 }

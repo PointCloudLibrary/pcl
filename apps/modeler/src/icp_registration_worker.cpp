@@ -81,8 +81,6 @@ pcl::modeler::ICPRegistrationWorker::initParameters(CloudMeshItem* cloud_mesh_it
 
   z_min_ = std::min(double(min_pt.z()), z_min_);
   z_max_ = std::max(double(max_pt.z()), z_max_);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,8 +133,6 @@ pcl::modeler::ICPRegistrationWorker::setupParameters()
   parameter_dialog_->addParameter(max_iterations_);
   parameter_dialog_->addParameter(transformation_epsilon_);
   parameter_dialog_->addParameter(euclidean_fitness_epsilon_);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -171,6 +167,4 @@ pcl::modeler::ICPRegistrationWorker::processImpl(CloudMeshItem* cloud_mesh_item)
 
   *(cloud_mesh_item->getCloudMesh()->getCloud()) = result;
   *cloud_ += result;
-
-  return;
 }

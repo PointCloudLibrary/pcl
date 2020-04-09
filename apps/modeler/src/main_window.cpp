@@ -199,8 +199,6 @@ void
 pcl::modeler::MainWindow::slotCreateRenderWindow()
 {
   createRenderWindow();
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -210,8 +208,6 @@ pcl::modeler::MainWindow::slotOpenRecentPointCloud()
   QAction* action = qobject_cast<QAction*>(sender());
   if (action)
     ui_->scene_tree_->openPointCloud(action->data().toString());
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -221,8 +217,6 @@ pcl::modeler::MainWindow::slotOpenRecentProject()
   QAction* action = qobject_cast<QAction*>(sender());
   if (action)
     openProjectImpl(action->data().toString());
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -238,8 +232,6 @@ pcl::modeler::MainWindow::createRecentPointCloudActions()
             this,
             SLOT(slotOpenRecentPointCloud()));
   }
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -247,8 +239,6 @@ void
 pcl::modeler::MainWindow::updateRecentPointCloudActions()
 {
   updateRecentActions(recent_pointcloud_actions_, recent_files_);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -264,8 +254,6 @@ pcl::modeler::MainWindow::createRecentProjectActions()
             this,
             SLOT(slotOpenRecentProject()));
   }
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -273,15 +261,13 @@ void
 pcl::modeler::MainWindow::updateRecentProjectActions()
 {
   updateRecentActions(recent_project_actions_, recent_projects_);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::modeler::MainWindow::openProjectImpl(const QString&)
 {
-  return (true);
+  return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -324,7 +310,7 @@ pcl::modeler::MainWindow::getRecentFolder()
   if (!recent_filename.isEmpty())
     return QFileInfo(recent_filename).path();
 
-  return (QString("."));
+  return ".";
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -338,8 +324,6 @@ pcl::modeler::MainWindow::loadGlobalSettings()
 
   recent_projects_ = global_settings.value("recent_projects").toStringList();
   updateRecentProjectActions();
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -351,8 +335,6 @@ pcl::modeler::MainWindow::saveGlobalSettings()
   global_settings.setValue("recent_pointclouds", recent_files_);
 
   global_settings.setValue("recent_projects", recent_projects_);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

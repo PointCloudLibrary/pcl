@@ -59,9 +59,7 @@ pcl::modeler::StatisticalOutlierRemovalWorker::~StatisticalOutlierRemovalWorker(
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::StatisticalOutlierRemovalWorker::initParameters(CloudMeshItem*)
-{
-  return;
-}
+{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -74,6 +72,7 @@ pcl::modeler::StatisticalOutlierRemovalWorker::setupParameters()
       1,
       1024,
       1);
+
   stddev_mul_thresh_ = new DoubleParameter(
       "Standard Deviation Multiplier",
       "The distance threshold will be equal to: mean + stddev_mult * stddev. Points "
@@ -86,8 +85,6 @@ pcl::modeler::StatisticalOutlierRemovalWorker::setupParameters()
 
   parameter_dialog_->addParameter(mean_k_);
   parameter_dialog_->addParameter(stddev_mul_thresh_);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,6 +103,4 @@ pcl::modeler::StatisticalOutlierRemovalWorker::processImpl(
   cloud_mesh_item->getCloudMesh()->getCloud() = cloud;
 
   emitDataUpdated(cloud_mesh_item);
-
-  return;
 }

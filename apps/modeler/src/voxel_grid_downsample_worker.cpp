@@ -80,8 +80,6 @@ pcl::modeler::VoxelGridDownampleWorker::initParameters(CloudMeshItem* cloud_mesh
 
   z_min_ = std::min(double(min_pt.z()), z_min_);
   z_max_ = std::max(double(max_pt.z()), z_max_);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,8 +104,6 @@ pcl::modeler::VoxelGridDownampleWorker::setupParameters()
   parameter_dialog_->addParameter(leaf_size_x_);
   parameter_dialog_->addParameter(leaf_size_y_);
   parameter_dialog_->addParameter(leaf_size_z_);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,6 +121,4 @@ pcl::modeler::VoxelGridDownampleWorker::processImpl(CloudMeshItem* cloud_mesh_it
   cloud_mesh_item->getCloudMesh()->getCloud() = cloud;
 
   emitDataUpdated(cloud_mesh_item);
-
-  return;
 }

@@ -76,6 +76,4 @@ pcl::modeler::DockWidget::setFocusBasedStyle(bool focused)
   else {
     setStyleSheet("QDockWidget::title {text-align: center;}");
   }
-
-  return;
 }
