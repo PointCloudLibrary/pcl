@@ -136,4 +136,3 @@ Convolution<PointT>::filter(pcl::PointCloud<PointT>& output)
   } // switch
 }
 } // namespace pcl
-

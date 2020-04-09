@@ -47,7 +47,6 @@
 
 #include <limits>
 
-
 namespace pcl {
 
 template <typename ImageType>
@@ -259,4 +258,3 @@ Keypoint<ImageType>::imageElementMultiply(ImageType& output,
   }
 }
 } // namespace pcl
-

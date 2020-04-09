@@ -336,4 +336,3 @@ kernel<PointT>::setKernelSigma(float kernel_sigma)
 }
 
 } // namespace pcl
-
