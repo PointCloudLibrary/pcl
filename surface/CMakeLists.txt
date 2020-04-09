@@ -187,7 +187,7 @@ if(VTK_FOUND)
 endif()
 
 if(QHULL_FOUND)
-  target_link_libraries("${LIB_NAME}" ${QHULL_LIBRARIES})
+  target_link_libraries("${LIB_NAME}" QHULL::QHULL)
 endif()
 
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})

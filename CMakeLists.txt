@@ -356,9 +356,6 @@ if(WITH_QHULL)
     set(QHULL_USE_STATIC ON)
   endif()
   find_package(Qhull)
-  if(QHULL_FOUND)
-    include_directories(SYSTEM ${QHULL_INCLUDE_DIRS})
-  endif()
 endif()
 
 # Cuda
