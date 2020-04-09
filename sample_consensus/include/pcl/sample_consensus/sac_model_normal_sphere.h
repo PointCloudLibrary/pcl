@@ -44,6 +44,7 @@
 #include <pcl/sample_consensus/sac_model_sphere.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/common/common.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl
@@ -108,7 +109,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelNormalSphere (const PointCloudConstPtr &cloud, 
-                                        const std::vector<int> &indices,
+                                        const Indices &indices,
                                         bool random = false) 
         : SampleConsensusModelSphere<PointT> (cloud, indices, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
@@ -129,7 +130,7 @@ namespace pcl
       void 
       selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
                             const double threshold, 
-                            std::vector<int> &inliers) override;
+                            Indices &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers. 
         * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
@@ -157,13 +158,7 @@ namespace pcl
     protected:
       using SampleConsensusModel<PointT>::sample_size_;
       using SampleConsensusModel<PointT>::model_size_;
-
-      /** \brief Check whether a model is valid given the user constraints.
-        * \param[in] model_coefficients the set of model coefficients
-        */
-      bool
-      isModelValid (const Eigen::VectorXf &model_coefficients) const override;
-
+      using SampleConsensusModelSphere<PointT>::isModelValid;
   };
 }
 

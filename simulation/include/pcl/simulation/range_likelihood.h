@@ -14,6 +14,7 @@
 //#include <math.h>
 #include <Eigen/StdVector>
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 //#include <pcl/win32_macros.h>
 #include <pcl/common/transforms.h>
@@ -252,7 +253,7 @@ private:
   applyCameraTransform(const Camera& camera);
 
   void
-  setupProjectionMatrix();
+  setupProjectionMatrix() const;
 
   Scene::Ptr scene_;
   int rows_;

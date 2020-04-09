@@ -83,7 +83,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   std::priority_queue<prioPointQueueEntry, pcl::PointCloud<prioPointQueueEntry>::VectorType> pointCandidates;
 
   // create octree
-  pcl::search::Search<PointXYZ>* octree = new pcl::search::Octree<PointXYZ> (0.1);
+  pcl::search::Octree<PointXYZ> octree(0.1);
 
   std::vector<int> k_indices;
   std::vector<float> k_sqr_distances;
@@ -146,8 +146,8 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
       pointCandidates.pop ();
     }
     // octree nearest neighbor search
-    octree->setInputCloud (cloudIn);
-    octree->nearestKSearch (searchPoint, static_cast<int> (K), k_indices, k_sqr_distances);
+    octree.setInputCloud (cloudIn);
+    octree.nearestKSearch (searchPoint, static_cast<int> (K), k_indices, k_sqr_distances);
 
     ASSERT_EQ ( k_indices.size() , k_indices_bruteforce.size() );
 

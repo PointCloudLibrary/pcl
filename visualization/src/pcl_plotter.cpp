@@ -542,7 +542,7 @@ pcl::visualization::PCLPlotter::setWindowSize (int w, int h)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int*
-pcl::visualization::PCLPlotter::getWindowSize ()
+pcl::visualization::PCLPlotter::getWindowSize () const
 {
   int *sz = new int[2];
   sz[0] = win_width_;

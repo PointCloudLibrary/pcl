@@ -11,7 +11,7 @@
 
 #include <Eigen/Core>
 #include <GL/glew.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 namespace pcl {
 namespace simulation {
@@ -39,7 +39,7 @@ public:
 
   /** Add a new shader object to the program.  */
   bool
-  addShaderText(const std::string& text, ShaderType shader_type);
+  addShaderText(const std::string& text, ShaderType shader_type) const;
 
   /** Add a new shader object to the program.  */
   bool
@@ -47,7 +47,7 @@ public:
 
   /** Link the program.  */
   bool
-  link();
+  link() const;
 
   /** Return true if the program is linked.  */
   bool
@@ -55,7 +55,7 @@ public:
 
   /** Use the program.  */
   void
-  use();
+  use() const;
 
   // Set uniforms
   void
@@ -86,7 +86,7 @@ public:
   setUniform(const std::string& name, bool v);
 
   int
-  getUniformLocation(const std::string& name);
+  getUniformLocation(const std::string& name) const;
 
   void
   printActiveUniforms();
@@ -94,7 +94,7 @@ public:
   printActiveAttribs();
 
   GLuint
-  programId()
+  programId() const
   {
     return program_id_;
   }

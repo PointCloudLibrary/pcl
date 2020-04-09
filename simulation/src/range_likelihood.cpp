@@ -512,7 +512,7 @@ pcl::simulation::RangeLikelihood::sampleNormal(double sigma)
 }
 
 void
-pcl::simulation::RangeLikelihood::setupProjectionMatrix()
+pcl::simulation::RangeLikelihood::setupProjectionMatrix() const
 {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();

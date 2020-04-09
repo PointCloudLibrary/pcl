@@ -285,7 +285,7 @@ namespace pcl
         * \param [in] labels The labels produced by the initial segmentation
         * \param [in] label_indices The list of indices corresponding to each label
         */
-      PCL_DEPRECATED("centroids and covariances parameters are not used; they are deprecated and will be removed in future releases")
+      PCL_DEPRECATED(1, 12, "centroids and covariances parameters are not used; they are deprecated and will be removed in future releases")
       void
       refine (std::vector<ModelCoefficients>& model_coefficients, 
               std::vector<PointIndices>& inlier_indices,

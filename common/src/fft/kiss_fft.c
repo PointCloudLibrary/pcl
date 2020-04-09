@@ -255,7 +255,17 @@ void kf_work(
         int k;
 
         // execute the p different work units in different threads
-#       pragma omp parallel for
+// We cannot use OPENMP_LEGACY_CONST_DATA_SHARING_RULE here, because we cannot include
+// pcl_macros.h in this file as this is a C file.
+#if (defined _OPENMP && (_OPENMP <= 201307)) || (defined __GNUC__ && (__GNUC__ >= 6 && __GNUC__ < 9))
+#pragma omp parallel for \
+  default(none) \
+  shared(f, factors, Fout, in_stride)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(f, factors, Fout, fstride, in_stride, m, p, st)
+#endif
         for (k=0;k<p;++k) 
             kf_work( Fout +k*m, f+ fstride*in_stride*k,fstride*p,in_stride,factors,st);
         // all threads have joined by this point

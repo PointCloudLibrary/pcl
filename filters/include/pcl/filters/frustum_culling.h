@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/filters/filter_indices.h>
@@ -89,7 +90,7 @@ namespace pcl
       using Filter<PointT>::getClassName;
 
       FrustumCulling (bool extract_removed_indices = false) 
-        : FilterIndices<PointT>::FilterIndices (extract_removed_indices)
+        : FilterIndices<PointT> (extract_removed_indices)
         , camera_pose_ (Eigen::Matrix4f::Identity ())
         , hfov_ (60.0f)
         , vfov_ (60.0f)
@@ -203,12 +204,6 @@ namespace pcl
       using FilterIndices<PointT>::user_filter_value_;
       using FilterIndices<PointT>::extract_removed_indices_;
       using FilterIndices<PointT>::removed_indices_;
-
-      /** \brief Sample of point indices into a separate PointCloud
-        * \param[out] output the resultant point cloud
-        */
-      void
-      applyFilter (PointCloud &output) override;
 
       /** \brief Sample of point indices
         * \param[out] indices the resultant point cloud indices

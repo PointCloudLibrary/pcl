@@ -44,6 +44,7 @@
 #include <random>
 
 // PCL includes
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/search/pcl_search.h>
@@ -356,7 +357,7 @@ namespace pcl
       /** \brief Sets whether the surface and normal are approximated using a polynomial, or only via tangent estimation.
         * \param[in] polynomial_fit set to true for polynomial fit
         */
-      PCL_DEPRECATED("use setPolynomialOrder() instead")
+      PCL_DEPRECATED(1, 12, "use setPolynomialOrder() instead")
       inline void
       setPolynomialFit (bool polynomial_fit)
       {
@@ -374,7 +375,7 @@ namespace pcl
       }
 
       /** \brief Get the polynomial_fit value (true if the surface and normal are approximated using a polynomial). */
-      PCL_DEPRECATED("use getPolynomialOrder() instead")
+      PCL_DEPRECATED(1, 12, "use getPolynomialOrder() instead")
       inline bool
       getPolynomialFit () const { return (order_ > 1); }
 
@@ -485,7 +486,7 @@ namespace pcl
       getDilationIterations () const { return (dilation_iteration_num_); }
 
       /** \brief Set whether the mls results should be stored for each point in the input cloud
-        * \param[in] True if the mls results should be stored, otherwise false.
+        * \param[in] cache_mls_results True if the mls results should be stored, otherwise false.
         * \note The cache_mls_results_ is forced to true when using upsampling method VOXEL_GRID_DILATION or DISTINCT_CLOUD.
         * \note If memory consumption is a concern set to false when not using upsampling method VOXEL_GRID_DILATION or DISTINCT_CLOUD.
         */
@@ -746,7 +747,7 @@ namespace pcl
   };
 
   template <typename PointInT, typename PointOutT>
-  using MovingLeastSquaresOMP PCL_DEPRECATED("use MovingLeastSquares instead, it supports OpenMP now") = MovingLeastSquares<PointInT, PointOutT>;
+  using MovingLeastSquaresOMP PCL_DEPRECATED(1, 12, "use MovingLeastSquares instead, it supports OpenMP now") = MovingLeastSquares<PointInT, PointOutT>;
 }
 
 #ifdef PCL_NO_PRECOMPILE

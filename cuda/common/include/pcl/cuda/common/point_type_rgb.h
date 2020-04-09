@@ -64,7 +64,7 @@ namespace cuda
     inline __host__ __device__ RGB (char _r, char _g, char _b, char _alpha) :
                                        r(_r), g(_g), b(_b), alpha(_alpha) {}
 
-    inline __host__ __device__ bool operator == (const RGB &rhs)
+    inline __host__ __device__ bool operator == (const RGB &rhs) const
     {
       return (r == rhs.r && g == rhs.g && b == rhs.b && alpha == rhs.alpha);
     }

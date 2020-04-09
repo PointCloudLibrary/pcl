@@ -5,7 +5,7 @@
 
 The PCL geometry library contains computational geometry data structures and algorithms.
 
-  \section secRecognitionRequirements Requirements
+  \section secGeometryRequirements Requirements
   - \ref common "common"
 
 */

@@ -46,7 +46,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::selectWithinDistance (
-      const Eigen::VectorXf &model_coefficients, const double threshold, std::vector<int> &inliers)
+      const Eigen::VectorXf &model_coefficients, const double threshold, Indices &inliers)
 {
   if (!normals_)
   {
@@ -64,11 +64,12 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::selectWithinDistance (
 
   // Obtain the sphere center
   Eigen::Vector4f center = model_coefficients;
-  center[3] = 0;
+  center[3] = 0.0f;
 
-  int nr_p = 0;
-  inliers.resize (indices_->size ());
-  error_sqr_dists_.resize (indices_->size ());
+  inliers.clear ();
+  error_sqr_dists_.clear ();
+  inliers.reserve (indices_->size ());
+  error_sqr_dists_.reserve (indices_->size ());
 
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (std::size_t i = 0; i < indices_->size (); ++i)
@@ -78,12 +79,12 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::selectWithinDistance (
     Eigen::Vector4f p (input_->points[(*indices_)[i]].x, 
                        input_->points[(*indices_)[i]].y,
                        input_->points[(*indices_)[i]].z, 
-                       0);
+                       0.0f);
 
     Eigen::Vector4f n (normals_->points[(*indices_)[i]].normal[0], 
                        normals_->points[(*indices_)[i]].normal[1], 
                        normals_->points[(*indices_)[i]].normal[2], 
-                       0);
+                       0.0f);
 
     Eigen::Vector4f n_dir = p - center;
     double d_euclid = std::abs (n_dir.norm () - model_coefficients[3]);
@@ -92,17 +93,14 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::selectWithinDistance (
     double d_normal = std::abs (getAngle3D (n, n_dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    double distance = std::abs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid); 
+    double distance = std::abs (normal_distance_weight_ * d_normal + (1.0 - normal_distance_weight_) * d_euclid);
     if (distance < threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
-      inliers[nr_p] = (*indices_)[i];
-      error_sqr_dists_[nr_p] = static_cast<double> (distance);
-      ++nr_p;
+      inliers.push_back ((*indices_)[i]);
+      error_sqr_dists_.push_back (static_cast<double> (distance));
     }
   }
-  inliers.resize (nr_p);
-  error_sqr_dists_.resize (nr_p);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,7 +121,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::countWithinDistance (
 
   // Obtain the sphere centroid
   Eigen::Vector4f center = model_coefficients;
-  center[3] = 0;
+  center[3] = 0.0f;
 
   std::size_t nr_p = 0;
 
@@ -135,12 +133,12 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::countWithinDistance (
     Eigen::Vector4f p (input_->points[(*indices_)[i]].x, 
                        input_->points[(*indices_)[i]].y, 
                        input_->points[(*indices_)[i]].z, 
-                       0);
+                       0.0f);
 
     Eigen::Vector4f n (normals_->points[(*indices_)[i]].normal[0], 
                        normals_->points[(*indices_)[i]].normal[1], 
                        normals_->points[(*indices_)[i]].normal[2], 
-                       0);
+                       0.0f);
 
     Eigen::Vector4f n_dir = (p-center);
     double d_euclid = std::abs (n_dir.norm () - model_coefficients[3]);
@@ -149,7 +147,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::countWithinDistance (
     double d_normal = std::abs (getAngle3D (n, n_dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    if (std::abs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid) < threshold)
+    if (std::abs (normal_distance_weight_ * d_normal + (1.0 - normal_distance_weight_) * d_euclid) < threshold)
       nr_p++;
   }
   return (nr_p);
@@ -175,7 +173,7 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::getDistancesToModel (
 
   // Obtain the sphere centroid
   Eigen::Vector4f center = model_coefficients;
-  center[3] = 0;
+  center[3] = 0.0f;
 
   distances.resize (indices_->size ());
 
@@ -187,12 +185,12 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::getDistancesToModel (
     Eigen::Vector4f p (input_->points[(*indices_)[i]].x, 
                        input_->points[(*indices_)[i]].y, 
                        input_->points[(*indices_)[i]].z, 
-                       0);
+                       0.0f);
 
     Eigen::Vector4f n (normals_->points[(*indices_)[i]].normal[0], 
                        normals_->points[(*indices_)[i]].normal[1], 
                        normals_->points[(*indices_)[i]].normal[2], 
-                       0);
+                       0.0f);
 
     Eigen::Vector4f n_dir = (p-center);
     double d_euclid = std::abs (n_dir.norm () - model_coefficients[3]);
@@ -203,21 +201,6 @@ pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::getDistancesToModel (
 
     distances[i] = std::abs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid);
   }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename PointNT> bool 
-pcl::SampleConsensusModelNormalSphere<PointT, PointNT>::isModelValid (const Eigen::VectorXf &model_coefficients) const
-{
-  if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
-    return (false);
-
-  if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[3] < radius_min_)
-    return (false);
-  if (radius_max_ != std::numeric_limits<double>::max() && model_coefficients[3] > radius_max_)
-    return (false);
-
-  return (true);
 }
 
 #define PCL_INSTANTIATE_SampleConsensusModelNormalSphere(PointT, PointNT) template class PCL_EXPORTS pcl::SampleConsensusModelNormalSphere<PointT, PointNT>;

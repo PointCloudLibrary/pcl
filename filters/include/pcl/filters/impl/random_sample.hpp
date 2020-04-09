@@ -40,51 +40,8 @@
 
 #include <pcl/filters/random_sample.h>
 #include <pcl/common/io.h>
-#include <pcl/point_traits.h>
+#include <pcl/type_traits.h>
 
-
-///////////////////////////////////////////////////////////////////////////////
-template<typename PointT> void
-pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
-{
-  std::vector<int> indices;
-  if (keep_organized_)
-  {
-    bool temp = extract_removed_indices_;
-    extract_removed_indices_ = true;
-    applyFilter (indices);
-    extract_removed_indices_ = temp;
-    copyPointCloud (*input_, output);
-    // Get X, Y, Z fields
-    const auto fields = pcl::getFields<PointT> ();
-    std::vector<std::size_t> offsets;
-    for (const auto &field : fields)
-    {
-      if (field.name == "x" ||
-          field.name == "y" ||
-          field.name == "z")
-        offsets.push_back (field.offset);
-    }
-    // For every "removed" point, set the x,y,z fields to user_filter_value_
-    const static float user_filter_value = user_filter_value_;
-    for (const auto ri : *removed_indices_)  // ri = removed index
-    {
-      std::uint8_t* pt_data = reinterpret_cast<std::uint8_t*> (&output[ri]);
-      for (const unsigned long &offset : offsets)
-      {
-        memcpy (pt_data + offset, &user_filter_value, sizeof (float));
-      }
-    }
-    if (!std::isfinite (user_filter_value_))
-      output.is_dense = false;
-  }
-  else
-  {
-    output.is_dense = true;
-    applyFilter (indices);
-    copyPointCloud (*input_, indices, output);
-  }
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT>

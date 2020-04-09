@@ -65,7 +65,7 @@ namespace pcl
       * \param[in] base the feature to compare to.
       */
     bool
-    compareForEquality (const QuantizedMultiModFeature & base)
+    compareForEquality (const QuantizedMultiModFeature & base) const
     {
       if (base.x != x)
         return false;

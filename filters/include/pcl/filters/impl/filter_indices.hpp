@@ -74,7 +74,42 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   }
 }
 
+template<typename PointT> void
+pcl::FilterIndices<PointT>::applyFilter (PointCloud &output)
+{
+  std::vector<int> indices;
+  if (keep_organized_)
+  {
+    if (!extract_removed_indices_)
+    {
+      PCL_WARN ("[pcl::FilterIndices<PointT>::applyFilter] extract_removed_indices_ was set to 'true' to keep the point cloud organized.\n");
+      extract_removed_indices_ = true;
+    }
+    applyFilter (indices);
+
+    output = *input_;
+
+    // To preserve legacy behavior, only coordinates xyz are filtered.
+    // Copying a PointXYZ initialized with the user_filter_value_ into a generic
+    // PointT, ensures only the xyz coordinates, if they exist at destination,
+    // are overwritten.
+    const PointXYZ ufv (user_filter_value_, user_filter_value_, user_filter_value_);
+    for (const auto ri : *removed_indices_)  // ri = removed index
+      copyPoint(ufv, output[ri]);
+    if (!std::isfinite (user_filter_value_))
+      output.is_dense = false;
+  }
+  else
+  {
+    output.is_dense = true;
+    applyFilter (indices);
+    pcl::copyPointCloud (*input_, indices, output);
+  }
+}
+
+
 #define PCL_INSTANTIATE_removeNanFromPointCloud(T) template PCL_EXPORTS void pcl::removeNaNFromPointCloud<T>(const pcl::PointCloud<T>&, std::vector<int>&);
+#define PCL_INSTANTIATE_FilterIndices(T) template class PCL_EXPORTS  pcl::FilterIndices<T>;
 
 #endif    // PCL_FILTERS_IMPL_FILTER_INDICES_H_
 

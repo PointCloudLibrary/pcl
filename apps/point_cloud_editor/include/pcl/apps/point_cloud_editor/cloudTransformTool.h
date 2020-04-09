@@ -116,7 +116,7 @@ class CloudTransformTool : public ToolInterface
 
     /// generate scale matrix
     void
-    getScaleMatrix (int dy, float* matrix);
+    getScaleMatrix (int dy, float* matrix) const;
 
     /// the transform matrix to be used for updating the coordinates of all
     /// the points in the cloud

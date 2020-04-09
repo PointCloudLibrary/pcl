@@ -42,6 +42,12 @@
 #include <boost/filesystem.hpp>
 #include <boost/range/iterator_range.hpp>
 
+#include <algorithm>
+#include <cstddef>
+#include <iostream>
+#include <string>
+#include <vector>
+
 namespace pcl
 {
 
@@ -88,4 +94,3 @@ std::string getFileExtension(const std::string& input)
 }  // namespace end
 
 #endif
-

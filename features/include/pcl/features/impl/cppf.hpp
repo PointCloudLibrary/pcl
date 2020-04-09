@@ -71,7 +71,8 @@ pcl::CPPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
     {
       PointOutT p;
       // No need to calculate feature for identity pair (i, j) as they aren't used in future calculations
-      if (i != j)
+      // @TODO: resolve issue with comparison in a better manner
+      if (static_cast<std::size_t>(i) != j)
       {
         if (
             pcl::computeCPPFPairFeature (input_->points[i].getVector4fMap (),

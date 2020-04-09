@@ -51,6 +51,7 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include <iostream>
 #include <thread>
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/console/parse.h>
 
@@ -83,7 +84,7 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include "evaluation.h"
 
 #include <pcl/common/angles.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 #ifdef HAVE_OPENCV  
 #include <opencv2/highgui/highgui.hpp>
@@ -771,16 +772,15 @@ struct KinFuLSApp
   void
   initRegistration ()
   {
-    registration_ = 
-      #ifdef HAVE_OPENNI
-      capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ()
-      #endif
-      #if defined(HAVE_OPENNI) && defined(HAVE_OPENNI2)
-      ||
-      #endif
-      #ifdef HAVE_OPENNI2
-      capture_.providesCallback<pcl::io::OpenNI2Grabber::sig_cb_openni_image_depth_image> ();
-      #endif
+    registration_ =
+    #if defined(HAVE_OPENNI) && !defined(HAVE_OPENNI2)
+    capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ();
+    #elif !defined(HAVE_OPENNI) && defined(HAVE_OPENNI2)
+    capture_.providesCallback<pcl::io::OpenNI2Grabber::sig_cb_openni_image_depth_image> ();
+    #elif defined(HAVE_OPENNI) && defined(HAVE_OPENNI2)
+    capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> () ||
+    capture_.providesCallback<pcl::io::OpenNI2Grabber::sig_cb_openni_image_depth_image> ();
+    #endif
     std::cout << "Registration mode: " << (registration_ ? "On" : "Off (not supported by source)") << std::endl;
   }
 

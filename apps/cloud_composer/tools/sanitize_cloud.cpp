@@ -1,19 +1,17 @@
 #include <pcl/apps/cloud_composer/tools/sanitize_cloud.h>
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
 #include <pcl/filters/passthrough.h>
+#include <pcl/memory.h>  // for pcl::make_shared
 
 Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
 
 pcl::cloud_composer::SanitizeCloudTool::SanitizeCloudTool (PropertiesModel* parameter_model, QObject* parent)
 : ModifyItemTool (parameter_model, parent)
 {
-  
-  
 }
 
 pcl::cloud_composer::SanitizeCloudTool::~SanitizeCloudTool ()
 {
-  
 }
 
 QList <pcl::cloud_composer::CloudComposerItem*>
@@ -42,7 +40,7 @@ pcl::cloud_composer::SanitizeCloudTool::performAction (ConstItemList input_data,
     pass_filter.setKeepOrganized (keep_organized);
         
     //Create output cloud
-    pcl::PCLPointCloud2::Ptr cloud_filtered = boost::make_shared<pcl::PCLPointCloud2> ();
+    pcl::PCLPointCloud2::Ptr cloud_filtered = pcl::make_shared<pcl::PCLPointCloud2> ();
     //Filter!  
     pass_filter.filter (*cloud_filtered);
     

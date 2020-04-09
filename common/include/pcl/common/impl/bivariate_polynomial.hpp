@@ -40,6 +40,10 @@
 #define BIVARIATE_POLYNOMIAL_HPP
 
 #include <algorithm>
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename real>
@@ -99,18 +103,18 @@ template<typename real> void
 pcl::BivariatePolynomialT<real>::deepCopy (const pcl::BivariatePolynomialT<real>& other)
 {
   if (this == &other) return;
-  if (degree != other.degree) 
+  if (degree != other.degree)
   {
     memoryCleanUp ();
     degree = other.degree;
     parameters = new real[getNoOfParameters ()];
   }
-  if (other.gradient_x == NULL) 
+  if (other.gradient_x == NULL)
   {
     delete gradient_x; gradient_x=NULL;
     delete gradient_y; gradient_y=NULL;
   }
-  else if (gradient_x==NULL) 
+  else if (gradient_x==NULL)
   {
     gradient_x = new pcl::BivariatePolynomialT<real> ();
     gradient_y = new pcl::BivariatePolynomialT<real> ();
@@ -118,7 +122,7 @@ pcl::BivariatePolynomialT<real>::deepCopy (const pcl::BivariatePolynomialT<real>
 
   std::copy_n(other.parameters, getNoOfParameters (), parameters);
 
-  if (other.gradient_x != NULL) 
+  if (other.gradient_x != NULL)
   {
     gradient_x->deepCopy (*other.gradient_x);
     gradient_y->deepCopy (*other.gradient_y);
@@ -130,23 +134,23 @@ template<typename real> void
 pcl::BivariatePolynomialT<real>::calculateGradient (bool forceRecalc)
 {
   if (gradient_x!=NULL && !forceRecalc) return;
-  
+
   if (gradient_x == NULL)
     gradient_x = new pcl::BivariatePolynomialT<real> (degree-1);
   if (gradient_y == NULL)
     gradient_y = new pcl::BivariatePolynomialT<real> (degree-1);
-  
+
   unsigned int parameterPosDx=0, parameterPosDy=0;
-  for (int xDegree=degree; xDegree>=0; xDegree--) 
+  for (int xDegree=degree; xDegree>=0; xDegree--)
   {
-    for (int yDegree=degree-xDegree; yDegree>=0; yDegree--) 
+    for (int yDegree=degree-xDegree; yDegree>=0; yDegree--)
     {
-      if (xDegree > 0) 
+      if (xDegree > 0)
       {
         gradient_x->parameters[parameterPosDx] = xDegree * parameters[parameterPosDx];
         parameterPosDx++;
       }
-      if (yDegree > 0) 
+      if (yDegree > 0)
       {
         gradient_y->parameters[parameterPosDy] = yDegree * parameters[ ( (degree+2-xDegree)* (degree+1-xDegree))/2 -
                                                                         yDegree - 1];
@@ -163,7 +167,7 @@ pcl::BivariatePolynomialT<real>::getValue (real x, real y) const
   unsigned int parametersSize = getNoOfParameters ();
   real* tmpParameter = &parameters[parametersSize-1];
   real tmpX=1.0, tmpY, ret=0;
-  for (int xDegree=0; xDegree<=degree; xDegree++) 
+  for (int xDegree=0; xDegree<=degree; xDegree++)
   {
     tmpY = 1.0;
     for (int yDegree=0; yDegree<=degree-xDegree; yDegree++)
@@ -194,16 +198,16 @@ pcl::BivariatePolynomialT<real>::findCriticalPoints (std::vector<real>& x_values
   x_values.clear ();
   y_values.clear ();
   types.clear ();
-  
+
   if (degree == 2)
   {
     real x = (real(2)*parameters[2]*parameters[3] - parameters[1]*parameters[4]) /
              (parameters[1]*parameters[1] - real(4)*parameters[0]*parameters[3]),
          y = (real(-2)*parameters[0]*x - parameters[2]) / parameters[1];
-    
+
     if (!std::isfinite(x) || !std::isfinite(y))
       return;
-    
+
     int type = 2;
     real det_H = real(4)*parameters[0]*parameters[3] - parameters[1]*parameters[1];
     //std::cout << "det(H) = "<<det_H<<"\n";
@@ -231,30 +235,30 @@ pcl::operator<< (std::ostream& os, const pcl::BivariatePolynomialT<real>& p)
   real* tmpParameter = p.parameters;
   bool first = true;
   real currentParameter;
-  for (int xDegree=p.degree; xDegree>=0; xDegree--) 
+  for (int xDegree=p.degree; xDegree>=0; xDegree--)
   {
-    for (int yDegree=p.degree-xDegree; yDegree>=0; yDegree--) 
+    for (int yDegree=p.degree-xDegree; yDegree>=0; yDegree--)
     {
       currentParameter = *tmpParameter;
-      if (!first) 
+      if (!first)
       {
         os << (currentParameter<0.0?" - ":" + ");
         currentParameter = std::abs (currentParameter);
       }
       os << currentParameter;
-      if (xDegree>0) 
+      if (xDegree>0)
       {
         os << "x";
         if (xDegree>1)
           os<<"^"<<xDegree;
       }
-      if (yDegree>0) 
+      if (yDegree>0)
       {
         os << "y";
         if (yDegree>1)
           os<<"^"<<yDegree;
       }
-      
+
       first = false;
       tmpParameter++;
     }
@@ -299,4 +303,3 @@ pcl::BivariatePolynomialT<real>::readBinary (const char* filename)
 }
 
 #endif
-

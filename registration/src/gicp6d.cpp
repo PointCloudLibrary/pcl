@@ -38,6 +38,8 @@
 
 #include <pcl/registration/gicp6d.h>
 
+#include <pcl/memory.h>  // for pcl::make_shared
+
 namespace pcl
 {
   // convert sRGB to CIELAB
@@ -160,7 +162,7 @@ namespace pcl
     // ...and build 6d-tree
     target_tree_lab_.setInputCloud (target_lab_);
     target_tree_lab_.setPointRepresentation (
-        boost::make_shared<MyPointRepresentation> (point_rep_));
+        pcl::make_shared<MyPointRepresentation> (point_rep_));
   }
 
   bool

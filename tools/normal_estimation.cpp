@@ -131,9 +131,9 @@ saveCloud (const string &filename, const pcl::PCLPointCloud2 &output,
 int
 batchProcess (const std::vector<string> &pcd_files, string &output_dir, int k, double radius)
 {
-#if _OPENMP
-#pragma omp parallel for
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(k, output_dir, pcd_files, radius)
   for (int i = 0; i < int (pcd_files.size ()); ++i)
   {
     // Load the first file

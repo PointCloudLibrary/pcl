@@ -1,6 +1,6 @@
 #include "pcl/apps/3d_rec_framework/tools/openni_frame_source.h"
 #include <pcl/io/pcd_io.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 namespace OpenNIFrameSource
 {
@@ -21,7 +21,7 @@ namespace OpenNIFrameSource
   }
 
   bool
-  OpenNIFrameSource::isActive ()
+  OpenNIFrameSource::isActive () const
   {
     return active_;
   }

@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/features/eigen.h>
 #include <pcl/common/common_headers.h>

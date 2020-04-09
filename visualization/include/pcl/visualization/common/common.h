@@ -108,7 +108,7 @@ namespace pcl
       PCL_VISUALIZER_IMMEDIATE_RENDERING,
       PCL_VISUALIZER_SHADING,
       PCL_VISUALIZER_LUT,                   /**< colormap type \ref pcl::visualization::LookUpTableRepresentationProperties */
-      PCL_VISUALIZER_LUT_RANGE              /**< two doubles (min and max) or \ref pcl::visualization::LookUpTableRepresentationProperties::PCL_VISUALIZER_LUT_RANGE_AUTO */
+      PCL_VISUALIZER_LUT_RANGE              /**< two doubles (min and max) or ::PCL_VISUALIZER_LUT_RANGE_AUTO */
     };
 
     enum RenderingRepresentationProperties
@@ -142,7 +142,7 @@ namespace pcl
       * \param[in] colormap_type
       * \param[out] table a vtk lookup table
       * \note The list of available colormaps can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
-      */    
+      */
     PCL_EXPORTS bool
     getColormapLUT  (LookUpTableRepresentationProperties colormap_type, vtkSmartPointer<vtkLookupTable> &table);
 
@@ -192,36 +192,36 @@ namespace pcl
         /** \brief Computes View matrix for Camera (Based on gluLookAt)
           * \param[out] view_mat the resultant matrix
           */
-        void 
+        void
         computeViewMatrix (Eigen::Matrix4d& view_mat) const;
 
         /** \brief Computes Projection Matrix for Camera
           *  \param[out] proj the resultant matrix
           */
-        void 
+        void
         computeProjectionMatrix (Eigen::Matrix4d& proj) const;
 
-        /** \brief converts point to window coordiantes
-          * \param[in] pt xyz point to be converted
-          * \param[out] window_cord vector containing the pts' window X,Y, Z and 1
-          *
-          * This function computes the projection and view matrix every time.
-          * It is very inefficient to use this for every point in the point cloud!
-          */
-        template<typename PointT> void 
+        /**
+         * \brief Converts point to window coordinates
+         * \param[in] pt xyz point to be converted
+         * \param[out] window_cord vector containing the pts' window X,Y, Z and 1
+         * \note This function computes the projection and view matrix every time.
+         * It is very inefficient to use this for every point in the point cloud!
+         */
+        template<typename PointT> void
         cvtWindowCoordinates (const PointT& pt, Eigen::Vector4d& window_cord) const;
 
-        /** \brief converts point to window coordiantes
-          * \param[in] pt xyz point to be converted
-          * \param[out] window_cord vector containing the pts' window X,Y, Z and 1
-          * \param[in] composite_mat composite transformation matrix (proj*view)
-          *
-          * Use this function to compute window coordinates with a precomputed
-          * transformation function.  The typical composite matrix will be
-          * the projection matrix * the view matrix.  However, additional
-          * matrices like a camera disortion matrix can also be added.
-          */
-        template<typename PointT> void 
+        /**
+         * \brief Converts point to window coordinates
+         * \param[in] pt xyz point to be converted
+         * \param[out] window_cord vector containing the pts' window X,Y, Z and 1
+         * \param[in] composite_mat composite transformation matrix (proj*view)
+         *
+         * \note Use this function to compute window coordinates with a pre-computed transformation function.
+         * The typical composite matrix will be the projection matrix * the view matrix. However, additional matrices like
+         * a camera distortion matrix can also be added.
+         */
+        template<typename PointT> void
         cvtWindowCoordinates (const PointT& pt, Eigen::Vector4d& window_cord, const Eigen::Matrix4d& composite_mat) const;
     };
   }

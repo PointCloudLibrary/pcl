@@ -38,9 +38,10 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
-#include <pcl/point_traits.h>
+#include <pcl/type_traits.h>
 #include <pcl/PointIndices.h>
 #include <pcl/cloud_iterator.h>
 

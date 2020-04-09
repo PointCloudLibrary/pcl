@@ -1,3 +1,5 @@
+set(SUBSYS_NAME tools)
+
 if(WITH_OPENNI)
   PCL_ADD_EXECUTABLE(pcl_openni_grabber_example COMPONENT ${SUBSYS_NAME} SOURCES openni_grabber_example.cpp)
   target_link_libraries(pcl_openni_grabber_example pcl_common pcl_io)

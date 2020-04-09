@@ -164,9 +164,9 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI>);
   cloud->resize (surface_->size ());
-#ifdef _OPENMP
-  #pragma omp parallel for num_threads(threads_) default(shared)
-#endif  
+#pragma omp parallel for \
+  default(none) \
+  num_threads(threads_)
   for (unsigned idx = 0; idx < surface_->size (); ++idx)
   {
     cloud->points [idx].x = surface_->points [idx].x;
@@ -184,9 +184,9 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
   grad_est.setRadiusSearch (search_radius_);
   grad_est.compute (*intensity_gradients_);
   
-#ifdef _OPENMP
-  #pragma omp parallel for num_threads(threads_) default (shared)
-#endif    
+#pragma omp parallel for \
+  default(none) \
+  num_threads(threads_)
   for (std::size_t idx = 0; idx < intensity_gradients_->size (); ++idx)
   {
     float len = intensity_gradients_->points [idx].gradient_x * intensity_gradients_->points [idx].gradient_x +
@@ -227,9 +227,9 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     output.points.clear ();
     output.points.reserve (response->points.size());
 
-#ifdef _OPENMP
-  #pragma omp parallel for num_threads(threads_) default(shared)
-#endif  
+#pragma omp parallel for \
+  default(none) \
+  num_threads(threads_)
     for (std::size_t idx = 0; idx < response->points.size (); ++idx)
     {
       if (!isFinite (response->points[idx]) || response->points[idx].intensity < threshold_)
@@ -248,9 +248,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
         }
       }
       if (is_maxima)
-#ifdef _OPENMP
         #pragma omp critical
-#endif
       {
         output.points.push_back (response->points[idx]);
         keypoints_indices_->indices.push_back (idx);
@@ -275,9 +273,10 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
   Eigen::SelfAdjointEigenSolver <Eigen::Matrix<float, 6, 6> > solver;
   Eigen::Matrix<float, 6, 6> covariance;
 
-#ifdef _OPENMP
-  #pragma omp parallel for default (shared) private (pointOut, covar, covariance, solver) num_threads(threads_)
-#endif  
+#pragma omp parallel for \
+  default(none) \
+  private(pointOut, covar, covariance, solver) \
+  num_threads(threads_)
   for (unsigned pIdx = 0; pIdx < input_->size (); ++pIdx)
   {
     const PointInT& pointIn = input_->points [pIdx];
@@ -347,10 +346,8 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
     pointOut.x = pointIn.x;
     pointOut.y = pointIn.y;
     pointOut.z = pointIn.z;
-#ifdef _OPENMP
-    #pragma omp critical
-#endif
 
+    #pragma omp critical
     output.points.push_back(pointOut);
   }
   output.height = input_->height;

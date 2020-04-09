@@ -41,6 +41,12 @@
 #include <pcl/console/print.h>
 #include <pcl/io/debayer.h>
 
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <string>
+#include <vector>
+
 #define CLIP_CHAR(c) static_cast<unsigned char> ((c)>255?255:(c)<0?0:(c))
 
 //////////////////////////////////////////////////////////////////////////////
@@ -145,7 +151,10 @@ pcl::io::LZFDepth16ImageReader::readOMP (const std::string &filename,
   double constant_x = 1.0 / parameters_.focal_length_x,
          constant_y = 1.0 / parameters_.focal_length_y;
 #ifdef _OPENMP
-#pragma omp parallel for num_threads (num_threads)
+#pragma omp parallel for \
+  default(none) \
+  shared(cloud, constant_x, constant_y, uncompressed_data) \
+  num_threads(num_threads)
 #else
   (void) num_threads; // suppress warning if OMP is not present
 #endif
@@ -162,9 +171,7 @@ pcl::io::LZFDepth16ImageReader::readOMP (const std::string &filename,
       pt.x = pt.y = pt.z = std::numeric_limits<float>::quiet_NaN ();
       if (cloud.is_dense)
       {
-#ifdef _OPENMP
 #pragma omp critical
-#endif
       {
       if (cloud.is_dense)
         cloud.is_dense = false;
@@ -276,7 +283,10 @@ pcl::io::LZFRGB24ImageReader::readOMP (
   unsigned char *color_b = reinterpret_cast<unsigned char*> (&uncompressed_data[2 * getWidth () * getHeight ()]);
 
 #ifdef _OPENMP
-#pragma omp parallel for num_threads (num_threads)
+#pragma omp parallel for \
+  default(none) \
+  shared(cloud, color_b, color_g, color_r) \
+  num_threads(num_threads)
 #else
   (void) num_threads; // suppress warning if OMP is not present
 #endif//_OPENMP
@@ -388,7 +398,10 @@ pcl::io::LZFYUV422ImageReader::readOMP (
   unsigned char *color_v = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2 + getWidth () * getHeight ()]);
   
 #ifdef _OPENMP
-#pragma omp parallel for num_threads (num_threads)
+#pragma omp parallel for \
+  default(none) \
+  shared(cloud, color_u, color_v, color_y, wh2) \
+  num_threads(num_threads)
 #else
   (void) num_threads; //suppress warning if OMP is not present
 #endif//_OPENMP
@@ -501,7 +514,9 @@ pcl::io::LZFBayer8ImageReader::readOMP (
   cloud.height = getHeight ();
   cloud.resize (getWidth () * getHeight ());
 #ifdef _OPENMP
-#pragma omp parallel for num_threads (num_threads)
+#pragma omp parallel for \
+  default(none) \
+  num_threads(num_threads)
 #else
   (void) num_threads; //suppress warning if OMP is not present
 #endif//_OPENMP

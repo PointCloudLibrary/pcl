@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -107,7 +108,7 @@ public:
   expAndNormalize(std::vector<float>& out,
                   const std::vector<float>& in,
                   float scale,
-                  float relax = 1.0f);
+                  float relax = 1.0f) const;
 
   void
   expAndNormalizeORI(float* out,

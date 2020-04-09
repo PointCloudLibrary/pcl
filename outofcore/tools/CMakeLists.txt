@@ -1,3 +1,5 @@
+set(SUBSYS_NAME tools)
+
 # pcl_outofcore_process
 PCL_ADD_EXECUTABLE(pcl_outofcore_process COMPONENT ${SUBSYS_NAME} SOURCES outofcore_process.cpp)
 target_link_libraries(pcl_outofcore_process pcl_common pcl_filters pcl_io pcl_octree pcl_outofcore)

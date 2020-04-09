@@ -39,6 +39,7 @@
 #define IMPL_CLOUD_ITEM_H_
 
 #include <pcl/apps/cloud_composer/items/cloud_item.h>
+#include <pcl/memory.h>  // for pcl::make_shared
 #include <pcl/point_cloud.h>
 #include <pcl/impl/instantiate.hpp>
 
@@ -66,7 +67,7 @@ pcl::cloud_composer::CloudItem::printNumPoints () const
 template <typename PointT> pcl::cloud_composer::CloudItem* 
 pcl::cloud_composer::CloudItem::createCloudItemFromTemplate (const QString& name, typename PointCloud<PointT>::Ptr cloud_ptr)
 {
-  pcl::PCLPointCloud2::Ptr cloud_blob = boost::make_shared <pcl::PCLPointCloud2> ();
+  pcl::PCLPointCloud2::Ptr cloud_blob = pcl::make_shared <pcl::PCLPointCloud2> ();
   toPCLPointCloud2 (*cloud_ptr, *cloud_blob);
   CloudItem* cloud_item = new CloudItem ( name, cloud_blob,  Eigen::Vector4f (), Eigen::Quaternionf (), false);
   cloud_item->setData (QVariant::fromValue(cloud_ptr), ItemDataRole::CLOUD_TEMPLATED);

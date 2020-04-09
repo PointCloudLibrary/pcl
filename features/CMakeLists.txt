@@ -130,6 +130,7 @@ set(srcs
   src/crh.cpp
   src/don.cpp
   src/fpfh.cpp
+  src/from_meshes.cpp
   src/gasd.cpp
   src/gfpfh.cpp
   src/integral_image_normal.cpp

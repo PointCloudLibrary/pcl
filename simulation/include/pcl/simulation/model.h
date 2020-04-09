@@ -19,6 +19,7 @@
 #include <boost/shared_ptr.hpp>
 #include <pcl/PolygonMesh.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/simulation/glsl_shader.h>
@@ -161,7 +162,7 @@ public:
 
   /** Render the quad. */
   void
-  render();
+  render() const;
 
 private:
   GLuint quad_vbo_;
@@ -176,7 +177,7 @@ public:
   ~TexturedQuad();
 
   void
-  setTexture(const std::uint8_t* data);
+  setTexture(const std::uint8_t* data) const;
 
   void
   render();

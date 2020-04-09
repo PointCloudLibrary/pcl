@@ -2,8 +2,11 @@
 #ifndef __PCL_OUTOFCORE_LRU_CACHE__
 #define __PCL_OUTOFCORE_LRU_CACHE__
 
+#include <cstddef>
 #include <cassert>
 #include <list>
+#include <map>
+#include <utility>
 
 template<typename T>
 class LRUCacheItem

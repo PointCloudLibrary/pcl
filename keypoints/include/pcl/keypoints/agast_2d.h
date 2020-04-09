@@ -92,7 +92,7 @@ namespace pcl
             */
           void 
           detectKeypoints (const std::vector<unsigned char> &intensity_data, 
-                           pcl::PointCloud<pcl::PointUV> &output);
+                           pcl::PointCloud<pcl::PointUV> &output) const;
 
           /** \brief Detects corner points. 
             * \param intensity_data
@@ -100,7 +100,7 @@ namespace pcl
             */
           void 
           detectKeypoints (const std::vector<float> &intensity_data, 
-                           pcl::PointCloud<pcl::PointUV> &output);
+                           pcl::PointCloud<pcl::PointUV> &output) const;
 
           /** \brief Applies non-max-suppression. 
             * \param[in] intensity_data the image data
@@ -227,7 +227,7 @@ namespace pcl
           void 
           computeCornerScores (const unsigned char* im, 
                                const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners_all, 
-                               std::vector<ScoreIndex> & scores);
+                               std::vector<ScoreIndex> & scores) const;
 
           /** \brief Computes corner scores for the specified points. 
             * \param im
@@ -237,7 +237,7 @@ namespace pcl
           void 
           computeCornerScores (const float* im, 
                                const std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > & corners_all, 
-                               std::vector<ScoreIndex> & scores);
+                               std::vector<ScoreIndex> & scores) const;
 
           /** \brief Width of the image to process. */
           std::size_t width_;

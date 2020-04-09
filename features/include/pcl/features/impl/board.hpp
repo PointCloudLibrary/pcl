@@ -189,7 +189,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
   //extract support points for Rz radius
   std::vector<int> neighbours_indices;
   std::vector<float> neighbours_distances;
-  int n_neighbours = this->searchForNeighbors (index, search_parameter_, neighbours_indices, neighbours_distances);
+  std::size_t n_neighbours = this->searchForNeighbors (index, search_parameter_, neighbours_indices, neighbours_distances);
 
   //check if there are enough neighbor points, otherwise compute a random X axis and use normal as Z axis
   if (n_neighbours < 6)
@@ -206,7 +206,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
 
   //copy neighbours coordinates into eigen matrix
   Eigen::Matrix<float, Eigen::Dynamic, 3> neigh_points_mat (n_neighbours, 3);
-  for (int i = 0; i < n_neighbours; ++i)
+  for (std::size_t i = 0; i < n_neighbours; ++i)
   {
     neigh_points_mat.row (i) = (*surface_)[neighbours_indices[i]].getVector3fMap ();
   }
@@ -311,7 +311,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
   if (!margin_point_found)
   {
     //find among points with neighDistance <= marginThresh*radius
-    for (int curr_neigh = 0; curr_neigh < n_neighbours; curr_neigh++)
+    for (std::size_t curr_neigh = 0; curr_neigh < n_neighbours; curr_neigh++)
     {
       const int& curr_neigh_idx = neighbours_indices[curr_neigh];
       const float& neigh_distance_sqr = neighbours_distances[curr_neigh];
@@ -448,7 +448,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
   float max_hole_prob = -std::numeric_limits<float>::max ();
 
   //find holes
-  for (auto ch = first_no_border; ch < check_margin_array_size_; ch++)
+  for (auto ch = first_no_border; ch < static_cast<std::size_t>(check_margin_array_size_); ch++)
   {
     if (!check_margin_array_[ch])
     {
