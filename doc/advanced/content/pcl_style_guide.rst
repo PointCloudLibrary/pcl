@@ -167,27 +167,20 @@ variant of the GNU style formatting.
 2.1. Namespaces
 ^^^^^^^^^^^^^^^
 
-In a header file, the contets of a namespace should be indented, e.g.:
+In both header and implementation files, namespaces are to be explicitly
+declared, and their contents should not be indented, like clang-format
+enforces in the Formatting CI job, e.g.:
 
 .. code-block:: cpp
 
   namespace pcl
   {
-    class Foo
-    {
-      ...
-    };
-  }
 
-In an implementation file, the namespace must be added to each individual
-method or function definition, e.g.:
-
-.. code-block:: cpp
-
-  void
-  pcl::Foo::bar ()
+  class Foo
   {
     ...
+  };
+
   }
 
 
@@ -281,19 +274,6 @@ function/method, e.g.:
    int 
    exampleMethod (int example_arg);
 
-If multiple namespaces are declared within header files, always use **2
-spaces** to indent them, e.g.:
-
-.. code-block:: cpp
-
-   namespace foo
-   {
-     namespace bar
-     {
-        void
-        method (int my_var);
-      }
-   }
 
 Class and struct members are indented by **2 spaces**. Access qualifiers (public, private and protected) are put at the
 indentation level of the class body and members affected by these qualifiers are indented by one more level, i.e. 2 spaces. E.g.:
@@ -302,15 +282,16 @@ indentation level of the class body and members affected by these qualifiers are
 
    namespace foo
    {
-     class Bar
-     {
-       int i;
-       public:
-         int j;
-       protected:
-         void
-         baz ();
-     }
+
+   class Bar
+   {
+     int i;
+     public:
+       int j;
+     protected:
+       void
+       baz ();
+   };
    }
 
 
