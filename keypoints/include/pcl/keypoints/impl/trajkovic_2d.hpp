@@ -35,11 +35,16 @@
  *
  */
 
+
 #ifndef PCL_TRAJKOVIC_KEYPOINT_2D_IMPL_H_
 #define PCL_TRAJKOVIC_KEYPOINT_2D_IMPL_H_
 
+
+namespace pcl
+{
+
 template <typename PointInT, typename PointOutT, typename IntensityT> bool
-pcl::TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
+TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
 {
   if (!PCLBase<PointInT>::initCompute ())
     return (false);
@@ -76,9 +81,9 @@ pcl::TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
   return (true);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointInT, typename PointOutT, typename IntensityT> void
-pcl::TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOut &output)
+TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOut &output)
 {
   response_.reset (new pcl::PointCloud<float> (input_->width, input_->height));
   const int w = static_cast<int> (input_->width) - half_window_size_;
@@ -272,5 +277,9 @@ pcl::TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (Poin
   output.is_dense = input_->is_dense;
 }
 
+} // namespace pcl
+
 #define PCL_INSTANTIATE_TrajkovicKeypoint2D(T,U,I) template class PCL_EXPORTS pcl::TrajkovicKeypoint2D<T,U,I>;
+
 #endif
+

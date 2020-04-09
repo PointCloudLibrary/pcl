@@ -40,8 +40,12 @@
 
 #include <pcl/features/integral_image_normal.h>
 
+
+namespace pcl
+{
+
 template <typename PointInT, typename PointOutT, typename NormalT> bool
-pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
+TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
 {
   if (!PCLBase<PointInT>::initCompute ())
     return (false);
@@ -89,9 +93,9 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
   return (true);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointInT, typename PointOutT, typename NormalT> void
-pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut &output)
+TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut &output)
 {
   response_.reset (new pcl::PointCloud<float> (input_->width, input_->height));
   const Normals &normals = *normals_;
@@ -288,5 +292,9 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCl
   output.is_dense = true;
 }
 
+} // namespace pcl
+
 #define PCL_INSTANTIATE_TrajkovicKeypoint3D(T,U,N) template class PCL_EXPORTS pcl::TrajkovicKeypoint3D<T,U,N>;
+
 #endif
+

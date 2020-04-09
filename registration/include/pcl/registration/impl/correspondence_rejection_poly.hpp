@@ -35,18 +35,26 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_POLY_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_POLY_HPP_
 
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename SourceT, typename TargetT> void 
-pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::getRemainingCorrespondences (
-    const pcl::Correspondences& original_correspondences, 
+
+namespace pcl
+{
+
+namespace registration
+{
+
+template <typename SourceT, typename TargetT> void
+CorrespondenceRejectorPoly<SourceT, TargetT>::getRemainingCorrespondences (
+    const pcl::Correspondences& original_correspondences,
     pcl::Correspondences& remaining_correspondences)
 {
   // This is reset after all the checks below
   remaining_correspondences = original_correspondences;
-  
+
   // Check source/target
   if (!input_)
   {
@@ -61,7 +69,7 @@ pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::getRemainingCor
                getClassName ().c_str ());
     return;
   }
-  
+
   // Check cardinality
   if (cardinality_ < 2)
   {
@@ -69,7 +77,7 @@ pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::getRemainingCor
                getClassName ().c_str() );
     return;
   }
-  
+
   // Number of input correspondences
   const int nr_correspondences = static_cast<int> (original_correspondences.size ());
 
@@ -80,7 +88,7 @@ pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::getRemainingCor
                getClassName ().c_str() );
     return;
   }
-  
+
   // Check similarity
   if (similarity_threshold_ < 0.0f || similarity_threshold_ > 1.0f)
   {
@@ -88,24 +96,24 @@ pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::getRemainingCor
                getClassName ().c_str() );
     return;
   }
-  
+
   // Similarity, squared
   similarity_threshold_squared_ = similarity_threshold_ * similarity_threshold_;
 
   // Initialization of result
   remaining_correspondences.clear ();
   remaining_correspondences.reserve (nr_correspondences);
-  
+
   // Number of times a correspondence is sampled and number of times it was accepted
   std::vector<int> num_samples (nr_correspondences, 0);
   std::vector<int> num_accepted (nr_correspondences, 0);
-  
+
   // Main loop
   for (int i = 0; i < iterations_; ++i)
   {
     // Sample cardinality_ correspondences without replacement
     const std::vector<int> idx = getUniqueRandomIndices (nr_correspondences, cardinality_);
-    
+
     // Verify the polygon similarity
     if (thresholdPolygon (original_correspondences, idx))
     {
@@ -123,7 +131,7 @@ pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::getRemainingCor
         ++num_samples[ idx[j] ];
     }
   }
-  
+
   // Now calculate the acceptance rate of each correspondence
   std::vector<float> accept_rate (nr_correspondences, 0.0f);
   for (int i = 0; i < nr_correspondences; ++i)
@@ -134,50 +142,50 @@ pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::getRemainingCor
     else
       accept_rate[i] = static_cast<float> (num_accepted[i]) / static_cast<float> (numsi);
   }
-  
+
   // Compute a histogram in range [0,1] for acceptance rates
   const int hist_size = nr_correspondences / 2; // TODO: Optimize this
   const std::vector<int> histogram = computeHistogram (accept_rate, 0.0f, 1.0f, hist_size);
-  
+
   // Find the cut point between outliers and inliers using Otsu's thresholding method
   const int cut_idx = findThresholdOtsu (histogram);
   const float cut = static_cast<float> (cut_idx) / static_cast<float> (hist_size);
-  
+
   // Threshold
   for (int i = 0; i < nr_correspondences; ++i)
     if (accept_rate[i] > cut)
       remaining_correspondences.push_back (original_correspondences[i]);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename SourceT, typename TargetT> std::vector<int> 
-pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::computeHistogram (const std::vector<float>& data,
-                                                                         float lower, float upper, int bins)
+
+template <typename SourceT, typename TargetT> std::vector<int>
+CorrespondenceRejectorPoly<SourceT, TargetT>::computeHistogram (const std::vector<float>& data,
+                                                                float lower, float upper, int bins)
 {
   // Result
   std::vector<int> result (bins, 0);
-  
+
   // Last index into result and increment factor from data value --> index
   const int last_idx = bins - 1;
   const float idx_per_val = static_cast<float> (bins) / (upper - lower);
-  
+
   // Accumulate
   for (const float &value : data)
      ++result[ std::min (last_idx, int (value*idx_per_val)) ];
-  
+
   return (result);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename SourceT, typename TargetT> int 
-pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::findThresholdOtsu (const std::vector<int>& histogram)
+
+template <typename SourceT, typename TargetT> int
+CorrespondenceRejectorPoly<SourceT, TargetT>::findThresholdOtsu (const std::vector<int>& histogram)
 {
   // Precision
   const double eps = std::numeric_limits<double>::epsilon();
-  
+
   // Histogram dimension
   const int nbins = static_cast<int> (histogram.size ());
-  
+
   // Mean and inverse of the number of data points
   double mean = 0.0;
   double sum_inv = 0.0;
@@ -188,45 +196,45 @@ pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::findThresholdOt
   }
   sum_inv = 1.0/sum_inv;
   mean *= sum_inv;
-  
+
   // Probability and mean of class 1 (data to the left of threshold)
   double class_mean1 = 0.0;
   double class_prob1 = 0.0;
   double class_prob2 = 1.0;
-  
+
   // Maximized between class variance and associated bin value
   double between_class_variance_max = 0.0;
   int result = 0;
-  
+
   // Loop over all bin values
   for (int i = 0; i < nbins; ++i)
   {
     class_mean1 *= class_prob1;
-    
+
     // Probability of bin i
     const double prob_i = static_cast<double> (histogram[i]) * sum_inv;
-    
+
     // Class probability 1: sum of probabilities from 0 to i
     class_prob1 += prob_i;
-    
+
     // Class probability 2: sum of probabilities from i+1 to nbins-1
     class_prob2 -= prob_i;
-    
+
     // Avoid division by zero below
     if (std::min (class_prob1,class_prob2) < eps || std::max (class_prob1,class_prob2) > 1.0-eps)
       continue;
-    
+
     // Class mean 1: sum of probabilities from 0 to i, weighted by bin value
     class_mean1 = (class_mean1 + static_cast<double> (i) * prob_i) / class_prob1;
-    
+
     // Class mean 2: sum of probabilities from i+1 to nbins-1, weighted by bin value
     const double class_mean2 = (mean - class_prob1*class_mean1) / class_prob2;
-    
+
     // Between class variance
     const double between_class_variance = class_prob1 * class_prob2
                                           * (class_mean1 - class_mean2)
                                           * (class_mean1 - class_mean2);
-    
+
     // If between class variance is maximized, update result
     if (between_class_variance > between_class_variance_max)
     {
@@ -234,8 +242,12 @@ pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::findThresholdOt
       result = i;
     }
   }
-  
+
   return (result);
 }
 
+} // namespace registration
+} // namespace pcl
+
 #endif    // PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_POLY_HPP_
+

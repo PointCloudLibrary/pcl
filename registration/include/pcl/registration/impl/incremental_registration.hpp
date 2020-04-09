@@ -38,14 +38,21 @@
 #ifndef PCL_REGISTRATION_IMPL_INCREMENTAL_REGISTRATION_HPP_
 #define PCL_REGISTRATION_IMPL_INCREMENTAL_REGISTRATION_HPP_
 
+
+namespace pcl
+{
+
+namespace registration
+{
+
 template <typename PointT, typename Scalar>
-pcl::registration::IncrementalRegistration<PointT, Scalar>::IncrementalRegistration () :
+IncrementalRegistration<PointT, Scalar>::IncrementalRegistration () :
   delta_transform_ (Matrix4::Identity ()),
   abs_transform_ (Matrix4::Identity ())
 {}
 
 template <typename PointT, typename Scalar> bool
-pcl::registration::IncrementalRegistration<PointT, Scalar>::registerCloud (const PointCloudConstPtr& cloud, const Matrix4& delta_estimate)
+IncrementalRegistration<PointT, Scalar>::registerCloud (const PointCloudConstPtr& cloud, const Matrix4& delta_estimate)
 {
   assert (registration_);
 
@@ -76,28 +83,32 @@ pcl::registration::IncrementalRegistration<PointT, Scalar>::registerCloud (const
 }
 
 template <typename PointT, typename Scalar> inline typename pcl::registration::IncrementalRegistration<PointT, Scalar>::Matrix4
-pcl::registration::IncrementalRegistration<PointT, Scalar>::getDeltaTransform () const
+IncrementalRegistration<PointT, Scalar>::getDeltaTransform () const
 {
   return (delta_transform_);
 }
 
 template <typename PointT, typename Scalar> inline typename pcl::registration::IncrementalRegistration<PointT, Scalar>::Matrix4
-pcl::registration::IncrementalRegistration<PointT, Scalar>::getAbsoluteTransform () const
+IncrementalRegistration<PointT, Scalar>::getAbsoluteTransform () const
 {
   return (abs_transform_);
 }
 
 template <typename PointT, typename Scalar> inline void
-pcl::registration::IncrementalRegistration<PointT, Scalar>::reset ()
+IncrementalRegistration<PointT, Scalar>::reset ()
 {
   last_cloud_.reset ();
   delta_transform_ = abs_transform_ = Matrix4::Identity ();
 }
 
 template <typename PointT, typename Scalar> inline void
-pcl::registration::IncrementalRegistration<PointT, Scalar>::setRegistration (RegistrationPtr registration)
+IncrementalRegistration<PointT, Scalar>::setRegistration (RegistrationPtr registration)
 {
   registration_ = registration;
 }
 
+} // namespace registration
+} // namespace pcl
+
 #endif /*PCL_REGISTRATION_IMPL_INCREMENTAL_REGISTRATION_HPP_*/
+

@@ -42,9 +42,12 @@
 
 #include <pcl/common/io.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
 template <typename PointInT, typename PointOutT, typename IntensityT> bool
-pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
+BriskKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
 {
   if (!pcl::Keypoint<PointInT, PointOutT>::initCompute ())
   {
@@ -53,7 +56,7 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
   }
 
   if (!input_->isOrganized ())
-  {    
+  {
     PCL_ERROR ("[pcl::%s::initCompute] %s doesn't support non organized clouds!\n", name_.c_str ());
     return (false);
   }
@@ -61,9 +64,9 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointInT, typename PointOutT, typename IntensityT> void
-pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOut &output)
+BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOut &output)
 {
   // image size
   const int width = int (input_->width);
@@ -105,4 +108,7 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClo
   }
 }
 
-#endif 
+} // namespace pcl
+
+#endif
+

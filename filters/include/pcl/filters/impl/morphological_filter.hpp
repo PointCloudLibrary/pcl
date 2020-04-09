@@ -52,11 +52,12 @@
 #include <pcl/filters/morphological_filter.h>
 #include <pcl/octree/octree_search.h>
 
-///////////////////////////////////////////////////////////////////////////////////////////
+namespace pcl
+{
 template <typename PointT> void
-pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr &cloud_in,
-                                 float resolution, const int morphological_operator,
-                                 pcl::PointCloud<PointT> &cloud_out)
+applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr &cloud_in,
+                            float resolution, const int morphological_operator,
+                            pcl::PointCloud<PointT> &cloud_out)
 {
   if (cloud_in->empty ())
     return;
@@ -202,7 +203,8 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
   return;
 }
 
+} // namespace pcl
+
 #define PCL_INSTANTIATE_applyMorphologicalOperator(T) template PCL_EXPORTS void pcl::applyMorphologicalOperator<T> (const pcl::PointCloud<T>::ConstPtr &, float, const int, pcl::PointCloud<T> &);
 
 #endif  //#ifndef PCL_FILTERS_IMPL_MORPHOLOGICAL_FILTER_H_
-

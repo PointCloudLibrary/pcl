@@ -45,13 +45,14 @@
 
 #include <vector>
 
+namespace pcl {
+
 template <class FeatureType,
           class DataSet,
           class LabelType,
           class ExampleIndex,
           class NodeType>
-pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    FernEvaluator()
+FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::FernEvaluator()
 {}
 
 template <class FeatureType,
@@ -59,8 +60,7 @@ template <class FeatureType,
           class LabelType,
           class ExampleIndex,
           class NodeType>
-pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    ~FernEvaluator()
+FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::~FernEvaluator()
 {}
 
 template <class FeatureType,
@@ -69,7 +69,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 void
-pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::evaluate(
+FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::evaluate(
     pcl::Fern<FeatureType, NodeType>& fern,
     pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
     pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator,
@@ -123,15 +123,13 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 void
-pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    evaluateAndAdd(
-        pcl::Fern<FeatureType, NodeType>& fern,
-        pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
-        pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>&
-            stats_estimator,
-        DataSet& data_set,
-        std::vector<ExampleIndex>& examples,
-        std::vector<LabelType>& label_data)
+FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::evaluateAndAdd(
+    pcl::Fern<FeatureType, NodeType>& fern,
+    pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
+    pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator,
+    DataSet& data_set,
+    std::vector<ExampleIndex>& examples,
+    std::vector<LabelType>& label_data)
 {
   const std::size_t num_of_examples = examples.size();
   const std::size_t num_of_branches = stats_estimator.getNumOfBranches();
@@ -177,7 +175,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 void
-pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::getNodes(
+FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::getNodes(
     pcl::Fern<FeatureType, NodeType>& fern,
     pcl::FeatureHandler<FeatureType, DataSet, ExampleIndex>& feature_handler,
     pcl::StatsEstimator<LabelType, NodeType, DataSet, ExampleIndex>& stats_estimator,
@@ -224,3 +222,5 @@ pcl::FernEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::get
     nodes.push_back(&(fern[node_index]));
   }
 }
+
+} // namespace pcl
