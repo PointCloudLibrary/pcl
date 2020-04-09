@@ -66,7 +66,6 @@ set(incs
   include/pcl/point_representation.h
   include/pcl/point_types.h
   include/pcl/for_each_type.h
-  include/pcl/pcl_tests.h
   include/pcl/cloud_iterator.h
   include/pcl/TextureMesh.h
   include/pcl/sse.h

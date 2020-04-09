@@ -39,6 +39,8 @@
 #pragma once
 
 #include <Eigen/Core>
+#include <pcl/test/gtest.h>
+
 
 /** \file pcl_tests.h
   * Helper macros for testing equality of various data fields in PCL points */
@@ -387,6 +389,4 @@ namespace pcl
 #define ASSERT_VECTOR_DOES_NOT_CONTAIN(expected, actual)           \
     ASSERT_PRED_FORMAT2(::pcl::test::internal::VectorDoesNotContain, \
                         expected, actual)
-
-
 
