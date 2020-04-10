@@ -259,19 +259,19 @@ Convolution<pcl::RGB, pcl::RGB>::convolveOneRowDense (int i, int j);
 template<> pcl::RGB
 Convolution<pcl::RGB, pcl::RGB>::convolveOneColDense (int i, int j);
 
-template<> pcl::RGB
+template<> inline pcl::RGB
 Convolution<pcl::RGB, pcl::RGB>::convolveOneRowNonDense (int i, int j)
 {
   return (convolveOneRowDense (i,j));
 }
 
-template<> pcl::RGB
+template<> inline pcl::RGB
 Convolution<pcl::RGB, pcl::RGB>::convolveOneColNonDense (int i, int j)
 {
   return (convolveOneColDense (i,j));
 }
 
-template<> void
+template<> inline void
 Convolution<pcl::RGB, pcl::RGB>::makeInfinite (pcl::RGB& p)
 {
   p.r = 0; p.g = 0; p.b = 0;
