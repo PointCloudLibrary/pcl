@@ -19,6 +19,6 @@ ConstructorInitializerIndentWidth: 0
 Language: Cpp
 NamespaceIndentation: None
 PointerAlignment: Left
-Standard: Latest
+Standard: c++14
 TabWidth: 2
 UseTab: Never
