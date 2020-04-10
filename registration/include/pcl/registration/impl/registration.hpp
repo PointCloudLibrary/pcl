@@ -38,9 +38,13 @@
  *
  */
 
-///////////////////////////////////////////////////////////////////////////////////////////
+#pragma once
+
+namespace pcl
+{
+
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
-pcl::Registration<PointSource, PointTarget, Scalar>::setInputTarget (const PointCloudTargetConstPtr &cloud)
+Registration<PointSource, PointTarget, Scalar>::setInputTarget (const PointCloudTargetConstPtr &cloud)
 {
   if (cloud->points.empty ())
   {
@@ -51,9 +55,9 @@ pcl::Registration<PointSource, PointTarget, Scalar>::setInputTarget (const Point
   target_cloud_updated_ = true;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> bool
-pcl::Registration<PointSource, PointTarget, Scalar>::initCompute ()
+Registration<PointSource, PointTarget, Scalar>::initCompute ()
 {
   if (!target_)
   {
@@ -68,23 +72,22 @@ pcl::Registration<PointSource, PointTarget, Scalar>::initCompute ()
     target_cloud_updated_ = false;
   }
 
-  
   // Update the correspondence estimation
   if (correspondence_estimation_)
   {
     correspondence_estimation_->setSearchMethodTarget (tree_, force_no_recompute_);
     correspondence_estimation_->setSearchMethodSource (tree_reciprocal_, force_no_recompute_reciprocal_);
   }
-  
+
   // Note: we /cannot/ update the search method on all correspondence rejectors, because we know 
   // nothing about them. If they should be cached, they must be cached individually.
 
   return (PCLBase<PointSource>::initCompute ());
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> bool
-pcl::Registration<PointSource, PointTarget, Scalar>::initComputeReciprocal ()
+Registration<PointSource, PointTarget, Scalar>::initComputeReciprocal ()
 {
   if (!input_)
   {
@@ -100,9 +103,9 @@ pcl::Registration<PointSource, PointTarget, Scalar>::initComputeReciprocal ()
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> inline double
-pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (
+Registration<PointSource, PointTarget, Scalar>::getFitnessScore (
     const std::vector<float> &distances_a,
     const std::vector<float> &distances_b)
 {
@@ -112,11 +115,10 @@ pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (
   return (static_cast<double> ((map_a - map_b).sum ()) / static_cast<double> (nr_elem));
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget, typename Scalar> inline double
-pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max_range)
-{
 
+template <typename PointSource, typename PointTarget, typename Scalar> inline double
+Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max_range)
+{
   double fitness_score = 0.0;
 
   // Transform the input dataset using the final transformation
@@ -132,7 +134,7 @@ pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max
   {
     // Find its nearest neighbor in the target
     tree_->nearestKSearch (input_transformed.points[i], 1, nn_indices, nn_dists);
-    
+
     // Deal with occlusions (incomplete targets)
     if (nn_dists[0] <= max_range)
     {
@@ -148,18 +150,18 @@ pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max
 
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
-pcl::Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &output)
+Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &output)
 {
   align (output, Matrix4::Identity ());
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
-pcl::Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &output, const Matrix4& guess)
+Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &output, const Matrix4& guess)
 {
-  if (!initCompute ()) 
+  if (!initCompute ())
     return;
 
   // Resize the output dataset
@@ -201,4 +203,6 @@ pcl::Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &ou
 
   deinitCompute ();
 }
+
+} // namespace pcl
 

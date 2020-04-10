@@ -36,27 +36,32 @@
  *
  */
 
+#pragma once
+
 #include <thread>
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
 template<typename PointSource, typename PointTarget> void
-pcl::RegistrationVisualizer<PointSource, PointTarget>::startDisplay ()
+RegistrationVisualizer<PointSource, PointTarget>::startDisplay ()
 {
   // Create and start the rendering thread. This will open the display window.
   viewer_thread_ = std::thread (&pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay, this);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template<typename PointSource, typename PointTarget> void
-pcl::RegistrationVisualizer<PointSource, PointTarget>::stopDisplay ()
+RegistrationVisualizer<PointSource, PointTarget>::stopDisplay ()
 {
   // Stop the rendering thread. This will kill the display window.
   viewer_thread_.~thread ();
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template<typename PointSource, typename PointTarget> void
-pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
+RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
 {
   // Open 3D viewer
   viewer_
@@ -179,9 +184,9 @@ pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template<typename PointSource, typename PointTarget> void
-pcl::RegistrationVisualizer<PointSource, PointTarget>::updateIntermediateCloud (
+RegistrationVisualizer<PointSource, PointTarget>::updateIntermediateCloud (
     const pcl::PointCloud<PointSource> &cloud_src,
     const std::vector<int> &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
@@ -212,3 +217,6 @@ pcl::RegistrationVisualizer<PointSource, PointTarget>::updateIntermediateCloud (
   // Unlock local buffers
   visualizer_updating_mutex_.unlock ();
 }
+
+} // namespace pcl
+

@@ -1,8 +1,3 @@
-resources:
-  containers:
-    - container: doc
-      image: pointcloudlibrary/doc
-
 jobs:
   - job: documentation
     displayName: Generate Documentation
@@ -19,6 +14,7 @@ jobs:
           hostName: github.com
           sshPublicKey: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBh5Yrau/gguTfoNALxhVX77Pgz6y6UWoJRERMKR68ee documentation@pointclouds.org
           sshKeySecureFile: id_ed25519
+          condition: eq(variables['Build.Repository.Name'], 'PointCloudLibrary/pcl')
       - script: |
           $(Build.SourcesDirectory)/.dev/scripts/generate_changelog.py --with-misc > $CHANGELOG.md
           grip --export $CHANGELOG.md $CHANGELOG.html
@@ -50,4 +46,4 @@ jobs:
           git commit --amend --reset-author -m 'Documentation for commit $(Build.SourceVersion)' -q
           git push --force
         displayName: 'Push Generated Documentation To GitHub'
-        condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+        condition: and(eq(variables['Build.Repository.Name'], 'PointCloudLibrary/pcl'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))

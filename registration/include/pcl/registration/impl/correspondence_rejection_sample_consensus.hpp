@@ -37,15 +37,22 @@
  * $Id$
  *
  */
+
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
 
 #include <unordered_map>
 
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void 
-pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences (
-    const pcl::Correspondences& original_correspondences, 
+
+namespace pcl
+{
+
+namespace registration
+{
+
+template <typename PointT> void
+CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences (
+    const pcl::Correspondences& original_correspondences,
     pcl::Correspondences& remaining_correspondences)
 {
   if (!input_)
@@ -133,4 +140,8 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
    }
 }
 
+} // namespace registration
+} // namespace pcl
+
 #endif    // PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
+

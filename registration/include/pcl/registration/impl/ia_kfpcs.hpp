@@ -37,11 +37,17 @@
 #ifndef PCL_REGISTRATION_IMPL_IA_KFPCS_H_
 #define PCL_REGISTRATION_IMPL_IA_KFPCS_H_
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
+namespace registration
+{
+
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
-pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::KFPCSInitialAlignment () :
+KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::KFPCSInitialAlignment () :
   lower_trl_boundary_ (-1.f),
-  upper_trl_boundary_ (-1.f),  
+  upper_trl_boundary_ (-1.f),
   lambda_ (0.5f),
   use_trl_score_ (false),
   indices_validation_ (new std::vector <int>)
@@ -50,9 +56,8 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar> bool
-pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::initCompute ()
+KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::initCompute ()
 {
   // due to sparse keypoint cloud, do not normalize delta with estimated point density
   if (normalize_delta_)
@@ -92,22 +97,20 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar> void
-pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::handleMatches (
+KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::handleMatches (
   const std::vector <int> &base_indices,
   std::vector <std::vector <int> > &matches,
   MatchingCandidates &candidates)
 {
   candidates.clear ();
-  float fitness_score = FLT_MAX;
 
   // loop over all Candidate matches
   for (auto &match : matches)
   {
     Eigen::Matrix4f transformation_temp;
     pcl::Correspondences correspondences_temp;
-    fitness_score = FLT_MAX; // reset to FLT_MAX to accept all candidates and not only best
+    float fitness_score = FLT_MAX; // reset to FLT_MAX to accept all candidates and not only best
 
     // determine corresondences between base and match according to their distance to centroid
     linkMatchWithBase (base_indices, match, correspondences_temp);
@@ -126,9 +129,8 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar> int
-pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::validateTransformation (
+KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::validateTransformation (
   Eigen::Matrix4f &transformation,
   float &fitness_score)
 {
@@ -138,7 +140,7 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
 
   const std::size_t nr_points = source_transformed.size ();
   float score_a = 0.f, score_b = 0.f;
-  
+
   // residual costs based on mse
   std::vector <int> ids;
   std::vector <float> dists_sqr;
@@ -173,9 +175,8 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar> void
-pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::finalCompute (
+KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::finalCompute (
   const std::vector <MatchingCandidates > &candidates)
 {
   // reorganize candidates into single vector
@@ -210,9 +211,9 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
   converged_ = fitness_score_ < score_threshold_;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar> void
-pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::getNBestCandidates (
+KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::getNBestCandidates (
   int n,
   float min_angle3d,
   float min_translation3d,
@@ -249,9 +250,9 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar> void
-pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::getTBestCandidates (
+KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::getTBestCandidates (
   float t,
   float min_angle3d,
   float min_translation3d,
@@ -284,6 +285,8 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+} // namespace registration
+} // namespace pcl
 
 #endif // PCL_REGISTRATION_IMPL_IA_KFPCS_H_
+

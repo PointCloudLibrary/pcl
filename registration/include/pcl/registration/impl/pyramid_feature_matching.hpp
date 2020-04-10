@@ -45,10 +45,13 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/console/print.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
 template <typename PointFeature> float
-pcl::PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms (const PyramidFeatureHistogramPtr &pyramid_a,
-                                                                             const PyramidFeatureHistogramPtr &pyramid_b)
+PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms (const PyramidFeatureHistogramPtr &pyramid_a,
+                                                                        const PyramidFeatureHistogramPtr &pyramid_b)
 {
   // do a few consistency checks before and during the computation
   if (pyramid_a->nr_dimensions != pyramid_b->nr_dimensions)
@@ -113,9 +116,8 @@ pcl::PyramidFeatureHistogram<PointFeature>::comparePyramidFeatureHistograms (con
 }
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature>
-pcl::PyramidFeatureHistogram<PointFeature>::PyramidFeatureHistogram () :
+PyramidFeatureHistogram<PointFeature>::PyramidFeatureHistogram () :
   nr_dimensions (0), nr_levels (0), nr_features (0),
   feature_representation_ (new DefaultPointRepresentation<PointFeature>),
   is_computed_ (false),
@@ -123,9 +125,9 @@ pcl::PyramidFeatureHistogram<PointFeature>::PyramidFeatureHistogram () :
 {
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointFeature> void
-pcl::PyramidFeatureHistogram<PointFeature>::PyramidFeatureHistogramLevel::initializeHistogramLevel ()
+PyramidFeatureHistogram<PointFeature>::PyramidFeatureHistogramLevel::initializeHistogramLevel ()
 {
   std::size_t total_vector_size = 1;
   for (std::vector<std::size_t>::iterator dim_it = bins_per_dimension.begin (); dim_it != bins_per_dimension.end (); ++dim_it)
@@ -135,9 +137,8 @@ pcl::PyramidFeatureHistogram<PointFeature>::PyramidFeatureHistogramLevel::initia
 }
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature> bool
-pcl::PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
+PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
 {
   // a few consistency checks before starting the computations
   if (!PCLBase<PointFeature>::initCompute ())
@@ -202,10 +203,9 @@ pcl::PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
 }
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature> unsigned int&
-pcl::PyramidFeatureHistogram<PointFeature>::at (std::vector<std::size_t> &access,
-                                                std::size_t &level)
+PyramidFeatureHistogram<PointFeature>::at (std::vector<std::size_t> &access,
+                                           std::size_t &level)
 {
   if (access.size () != nr_dimensions)
   {
@@ -231,10 +231,9 @@ pcl::PyramidFeatureHistogram<PointFeature>::at (std::vector<std::size_t> &access
 }
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature> unsigned int&
-pcl::PyramidFeatureHistogram<PointFeature>::at (std::vector<float> &feature,
-                                                std::size_t &level)
+PyramidFeatureHistogram<PointFeature>::at (std::vector<float> &feature,
+                                           std::size_t &level)
 {
   if (feature.size () != nr_dimensions)
   {
@@ -255,10 +254,9 @@ pcl::PyramidFeatureHistogram<PointFeature>::at (std::vector<float> &feature,
 }
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature> void
-pcl::PyramidFeatureHistogram<PointFeature>::convertFeatureToVector (const PointFeature &feature,
-                                                                    std::vector<float> &feature_vector)
+PyramidFeatureHistogram<PointFeature>::convertFeatureToVector (const PointFeature &feature,
+                                                               std::vector<float> &feature_vector)
 {
   // convert feature to vector representation
   feature_vector.resize (feature_representation_->getNumberOfDimensions ());
@@ -271,9 +269,8 @@ pcl::PyramidFeatureHistogram<PointFeature>::convertFeatureToVector (const PointF
 }
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature> void
-pcl::PyramidFeatureHistogram<PointFeature>::compute ()
+PyramidFeatureHistogram<PointFeature>::compute ()
 {
   if (!initializeHistogram ())
     return;
@@ -289,14 +286,16 @@ pcl::PyramidFeatureHistogram<PointFeature>::compute ()
 }
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointFeature> void
-pcl::PyramidFeatureHistogram<PointFeature>::addFeature (std::vector<float> &feature)
+PyramidFeatureHistogram<PointFeature>::addFeature (std::vector<float> &feature)
 {
   for (std::size_t level_i = 0; level_i < nr_levels; ++level_i)
     at (feature, level_i) ++;
 }
 
+} // namespace pcl
+
 #define PCL_INSTANTIATE_PyramidFeatureHistogram(PointFeature) template class PCL_EXPORTS pcl::PyramidFeatureHistogram<PointFeature>;
 
 #endif /* PCL_REGISTRATION_IMPL_PYRAMID_FEATURE_MATCHING_H_ */
+

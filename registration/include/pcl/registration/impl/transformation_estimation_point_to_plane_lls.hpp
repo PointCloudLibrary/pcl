@@ -37,13 +37,21 @@
  * $Id$
  *
  */
+
 #ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_LLS_HPP_
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_LLS_HPP_
+
 #include <pcl/cloud_iterator.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
+namespace registration
+{
+
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
-pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar>::
+TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar>::
 estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const pcl::PointCloud<PointTarget> &cloud_tgt,
                              Matrix4 &transformation_matrix) const
@@ -57,12 +65,12 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
 
   ConstCloudIterator<PointSource> source_it (cloud_src);
   ConstCloudIterator<PointTarget> target_it (cloud_tgt);
-  estimateRigidTransformation (source_it, target_it, transformation_matrix);  
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar>::
+TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar>::
 estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const std::vector<int> &indices_src,
                              const pcl::PointCloud<PointTarget> &cloud_tgt,
@@ -77,13 +85,12 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
 
   ConstCloudIterator<PointSource> source_it (cloud_src, indices_src);
   ConstCloudIterator<PointTarget> target_it (cloud_tgt);
-  estimateRigidTransformation (source_it, target_it, transformation_matrix);  
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
-pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar>::
+TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar>::
 estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const std::vector<int> &indices_src,
                              const pcl::PointCloud<PointTarget> &cloud_tgt,
@@ -99,12 +106,12 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
 
   ConstCloudIterator<PointSource> source_it (cloud_src, indices_src);
   ConstCloudIterator<PointTarget> target_it (cloud_tgt, indices_tgt);
-  estimateRigidTransformation (source_it, target_it, transformation_matrix);  
+  estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
-pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar>::
+TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar>::
 estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const pcl::PointCloud<PointTarget> &cloud_tgt,
                              const pcl::Correspondences &correspondences,
@@ -115,14 +122,14 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
   estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
-pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar>::
+TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar>::
 constructTransformationMatrix (const double & alpha, const double & beta, const double & gamma,
                                const double & tx,    const double & ty,   const double & tz,
                                Matrix4 &transformation_matrix) const
 {
-  // Construct the transformation matrix from rotation and translation 
+  // Construct the transformation matrix from rotation and translation
   transformation_matrix = Eigen::Matrix<Scalar, 4, 4>::Zero ();
   transformation_matrix (0, 0) = static_cast<Scalar> ( std::cos (gamma) * std::cos (beta));
   transformation_matrix (0, 1) = static_cast<Scalar> (-sin (gamma) * std::cos (alpha) + std::cos (gamma) * sin (beta) * sin (alpha));
@@ -140,9 +147,9 @@ constructTransformationMatrix (const double & alpha, const double & beta, const 
   transformation_matrix (3, 3) = static_cast<Scalar> (1);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
-pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar>::
+TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar>::
 estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCloudIterator<PointTarget>& target_it, Matrix4 &transformation_matrix) const
 {
   using Vector6d = Eigen::Matrix<double, 6, 1>;
@@ -167,7 +174,7 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCl
         !std::isfinite (target_it->normal_z))
     {
       ++target_it;
-      ++source_it;    
+      ++source_it;
       continue;
     }
 
@@ -182,16 +189,16 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCl
     const float & nz = target_it->normal[2];
 
     double a = nz*sy - ny*sz;
-    double b = nx*sz - nz*sx; 
+    double b = nx*sz - nz*sx;
     double c = ny*sx - nx*sy;
-   
+
     //    0  1  2  3  4  5
     //    6  7  8  9 10 11
     //   12 13 14 15 16 17
     //   18 19 20 21 22 23
     //   24 25 26 27 28 29
     //   30 31 32 33 34 35
-   
+
     ATA.coeffRef (0) += a * a;
     ATA.coeffRef (1) += a * b;
     ATA.coeffRef (2) += a * c;
@@ -223,8 +230,9 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCl
     ATb.coeffRef (5) += nz * d;
 
     ++target_it;
-    ++source_it;    
+    ++source_it;
   }
+
   ATA.coeffRef (6) = ATA.coeff (1);
   ATA.coeffRef (12) = ATA.coeff (2);
   ATA.coeffRef (13) = ATA.coeff (8);
@@ -243,8 +251,13 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it, ConstCl
 
   // Solve A*x = b
   Vector6d x = static_cast<Vector6d> (ATA.inverse () * ATb);
-  
+
   // Construct the transformation matrix from x
   constructTransformationMatrix (x (0), x (1), x (2), x (3), x (4), x (5), transformation_matrix);
 }
+
+} // namespace registration
+} // namespace pcl
+
 #endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_LLS_HPP_ */
+
