@@ -35,7 +35,7 @@
 
 #include <pcl/test/gtest.h>
 
-#include <pcl/pcl_tests.h>
+#include <pcl/test/pcl_tests.h>
 #include <pcl/common/colors.h>
 
 TEST (ColorLUT, Glasbey)

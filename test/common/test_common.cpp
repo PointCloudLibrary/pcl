@@ -38,7 +38,7 @@
  */
 
 #include <pcl/test/gtest.h>
-#include <pcl/pcl_tests.h>
+#include <pcl/test/pcl_tests.h>
 #include <pcl/common/common.h>
 #include <pcl/common/distances.h>
 #include <pcl/common/intersections.h>

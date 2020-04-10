@@ -35,10 +35,12 @@
  *
  */
 
-#include <pcl/test/gtest.h>
-#include <pcl/pcl_tests.h>
-#include <pcl/point_types.h>
 #include <pcl/common/io.h>
+
+#include <pcl/point_types.h>
+#include <pcl/test/gtest.h>
+#include <pcl/test/pcl_tests.h>
+
 
 using namespace pcl;
 using namespace std;

@@ -36,7 +36,7 @@
  */
 
 #include <pcl/test/gtest.h>
-#include <pcl/pcl_tests.h>
+#include <pcl/test/pcl_tests.h>
 #include <pcl/console/parse.h>
 
 using namespace std;

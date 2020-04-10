@@ -36,7 +36,7 @@
  */
 
 #include <pcl/test/gtest.h>
-#include <pcl/pcl_tests.h>
+#include <pcl/test/pcl_tests.h>
 #include <pcl/point_types.h>
 #include <pcl/common/random.h>
 #include <pcl/common/generate.h>

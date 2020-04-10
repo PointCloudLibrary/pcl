@@ -46,7 +46,7 @@
 #include <pcl/common/transforms.h>
 #include <pcl/common/io.h>
 
-#include <pcl/pcl_tests.h>
+#include <pcl/test/pcl_tests.h>
 
 using namespace pcl;
 
