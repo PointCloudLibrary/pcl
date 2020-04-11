@@ -37,25 +37,24 @@
 #include <pcl/2d/keypoint.h> // for pcl::Keypoint
 
 #include <pcl/point_types.h> // for pcl::PointXYZ
-
-namespace pcl
-{
+#include <pcl/test/gtest.h>  // for SUCCESS
 
 /**
  * \brief Test if Keypoint instantiates correctly
  *
  * This isn't useful except for this purpose. See #3898
  */
-void
-instantiateKeypoint()
+TEST (Keypoint, instantiatesWithAndWithoutPrecompiledHeaders)
 {
-  auto keypoint = Keypoint<pcl::PointXYZ>();
+  pcl::Keypoint<pcl::PointXYZ> keypoint = pcl::Keypoint<pcl::PointXYZ>();
+  SUCCEED();
 }
 
+/** --[ */
 int
-main(int argc, char** argv)
+main (int argc, char** argv)
 {
-  instantiateKeypoint();
+  testing::InitGoogleTest (&argc, argv);
+  return (RUN_ALL_TESTS ());
 }
-
-} // namespace pcl
+/* ]-- */
