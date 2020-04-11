@@ -39,6 +39,7 @@
 #include <pcl/memory.h>  // for pcl::has_custom_allocator, PCL_MAKE_ALIGNED_OPERATOR_NEW
 #include <pcl/type_traits.h>
 #include <pcl/point_types.h>
+#include <pcl/common/point_tests.h> // for pcl::isXYFinite, pcl::isXYZFinite, pcl::isNormalFinite
 
 #include <pcl/test/gtest.h>
 

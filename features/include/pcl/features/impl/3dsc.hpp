@@ -36,14 +36,17 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_3DSC_HPP_
-#define PCL_FEATURES_IMPL_3DSC_HPP_
+#pragma once
+
+#include <pcl/features/3dsc.h>
+
+#include <pcl/common/angles.h>
+#include <pcl/common/geometry.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
+#include <pcl/common/utils.h>
 
 #include <cmath>
-#include <pcl/features/3dsc.h>
-#include <pcl/common/utils.h>
-#include <pcl/common/geometry.h>
-#include <pcl/common/angles.h>
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> bool
@@ -272,4 +275,3 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computeFeature (Poi
 
 #define PCL_INSTANTIATE_ShapeContext3DEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::ShapeContext3DEstimation<T,NT,OutT>;
 
-#endif

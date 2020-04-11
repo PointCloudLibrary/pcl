@@ -38,11 +38,11 @@
  *
  */
 
-#ifndef PCL_FILTERS_CONVOLUTION_IMPL_HPP
-#define PCL_FILTERS_CONVOLUTION_IMPL_HPP
+#pragma once
 
 #include <pcl/pcl_config.h>
 #include <pcl/common/distances.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 
 
 namespace pcl
@@ -559,6 +559,4 @@ Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOut& output)
 
 } // namespace filters
 } // namespace pcl
-
-#endif //PCL_FILTERS_CONVOLUTION_IMPL_HPP
 

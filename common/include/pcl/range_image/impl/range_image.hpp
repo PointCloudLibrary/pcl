@@ -38,9 +38,12 @@
 
 #pragma once
 
-#include <pcl/common/distances.h>
 #include <pcl/range_image/range_image.h>
+
 #include <pcl/pcl_macros.h>
+#include <pcl/common/distances.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
+
 
 namespace pcl
 {
