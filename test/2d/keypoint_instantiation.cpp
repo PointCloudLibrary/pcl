@@ -37,13 +37,9 @@
 #include <pcl/2d/keypoint.h> // for pcl::Keypoint
 
 #include <pcl/point_types.h> // for pcl::PointXYZ
-#include <pcl/test/gtest.h>  // for SUCCESS
+#include <pcl/test/gtest.h>  // for SUCCEED
 
-/**
- * \brief Test if Keypoint instantiates correctly
- *
- * This isn't useful except for this purpose. See #3898
- */
+/** This isn't useful except for testing the instantiation of this class. See #3898 */
 TEST (Keypoint, instantiatesWithAndWithoutPrecompiledHeaders)
 {
   pcl::Keypoint<pcl::PointXYZ> keypoint = pcl::Keypoint<pcl::PointXYZ>();
