@@ -298,10 +298,12 @@ indentation level of the class body and members affected by these qualifiers are
 2.6. Automatic code formatting
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We currently use clang-format as the tool for auto-formatting our C++ code. The style files which were previously distributed should now be considered deprecated.
+We currently use clang-format-10 as the tool for auto-formatting our C++ code.
+Please note that different versions of clang-format can result in slightly different outputs.
 
 The style rules mentioned in this document are enforced via `PCL's .clang-format file
 <https://github.com/PointCloudLibrary/pcl/blob/master/.clang-format>`_.
+The style files which were previously distributed should now be considered deprecated.
 
 For the integration of clang-format with various text editors and IDE's, refer to this `page
 <https://clang.llvm.org/docs/ClangFormat.html>`_.
