@@ -8,9 +8,11 @@
 
 #include <random>
 
+namespace pcl {
+namespace tracking {
 template <typename PointInT, typename StateT>
 bool
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initCompute()
+ParticleFilterTracker<PointInT, StateT>::initCompute()
 {
   if (!Tracker<PointInT, StateT>::initCompute()) {
     PCL_ERROR("[pcl::%s::initCompute] Init failed.\n", getClassName().c_str());
@@ -38,7 +40,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initCompute()
 
 template <typename PointInT, typename StateT>
 int
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::sampleWithReplacement(
+ParticleFilterTracker<PointInT, StateT>::sampleWithReplacement(
     const std::vector<int>& a, const std::vector<double>& q)
 {
   static std::mt19937 rng([] {
@@ -57,7 +59,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::sampleWithReplacement(
 
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::genAliasTable(
+ParticleFilterTracker<PointInT, StateT>::genAliasTable(
     std::vector<int>& a,
     std::vector<double>& q,
     const PointCloudStateConstPtr& particles)
@@ -93,7 +95,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::genAliasTable(
 
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initParticles(bool reset)
+ParticleFilterTracker<PointInT, StateT>::initParticles(bool reset)
 {
   particles_.reset(new PointCloudState());
   if (reset) {
@@ -116,7 +118,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initParticles(bool reset
 
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight()
+ParticleFilterTracker<PointInT, StateT>::normalizeWeight()
 {
   // apply exponential function
   double w_min = std::numeric_limits<double>::max();
@@ -163,7 +165,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::normalizeWeight()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::cropInputPointCloud(
+ParticleFilterTracker<PointInT, StateT>::cropInputPointCloud(
     const PointCloudInConstPtr&, PointCloudIn& output)
 {
   double x_min, y_min, z_min, x_max, y_max, z_max;
@@ -188,12 +190,12 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::cropInputPointCloud(
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcBoundingBox(double& x_min,
-                                                                        double& x_max,
-                                                                        double& y_min,
-                                                                        double& y_max,
-                                                                        double& z_min,
-                                                                        double& z_max)
+ParticleFilterTracker<PointInT, StateT>::calcBoundingBox(double& x_min,
+                                                         double& x_max,
+                                                         double& y_min,
+                                                         double& y_max,
+                                                         double& z_min,
+                                                         double& z_max)
 {
   x_min = y_min = z_min = std::numeric_limits<double>::max();
   x_max = y_max = z_max = -std::numeric_limits<double>::max();
@@ -219,7 +221,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::calcBoundingBox(double& 
 
 template <typename PointInT, typename StateT>
 bool
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::testChangeDetection(
+ParticleFilterTracker<PointInT, StateT>::testChangeDetection(
     const PointCloudInConstPtr& input)
 {
   change_detector_->setInputCloud(input);
@@ -233,7 +235,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::testChangeDetection(
 
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::weight()
+ParticleFilterTracker<PointInT, StateT>::weight()
 {
   if (!use_normal_) {
     for (std::size_t i = 0; i < particles_->points.size(); i++) {
@@ -276,7 +278,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::weight()
 
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloud(
+ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloud(
     const StateT& hypothesis, std::vector<int>& indices, PointCloudIn& cloud)
 {
   if (use_normal_)
@@ -287,9 +289,8 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTransformedPointC
 
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::
-    computeTransformedPointCloudWithoutNormal(const StateT& hypothesis,
-                                              PointCloudIn& cloud)
+ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithoutNormal(
+    const StateT& hypothesis, PointCloudIn& cloud)
 {
   const Eigen::Affine3f trans = toEigenMatrix(hypothesis);
   // destructively assigns to cloud
@@ -299,12 +300,11 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::
-    computeTransformedPointCloudWithNormal(
+ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithNormal(
 #ifdef PCL_TRACKING_NORMAL_SUPPORTED
-        const StateT& hypothesis, std::vector<int>& indices, PointCloudIn& cloud)
+    const StateT& hypothesis, std::vector<int>& indices, PointCloudIn& cloud)
 #else
-        const StateT&, std::vector<int>&, PointCloudIn&)
+    const StateT&, std::vector<int>&, PointCloudIn&)
 #endif
 {
 #ifdef PCL_TRACKING_NORMAL_SUPPORTED
@@ -333,14 +333,14 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::
 
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resample()
+ParticleFilterTracker<PointInT, StateT>::resample()
 {
   resampleWithReplacement();
 }
 
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resampleWithReplacement()
+ParticleFilterTracker<PointInT, StateT>::resampleWithReplacement()
 {
   std::vector<int> a(particles_->points.size());
   std::vector<double> q(particles_->points.size());
@@ -378,7 +378,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resampleWithReplacement(
 
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::update()
+ParticleFilterTracker<PointInT, StateT>::update()
 {
 
   StateT orig_representative = representative_state_;
@@ -394,7 +394,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::update()
 
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTracking()
+ParticleFilterTracker<PointInT, StateT>::computeTracking()
 {
 
   for (int i = 0; i < iteration_num_; i++) {
@@ -415,6 +415,8 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::computeTracking()
   //   initParticles (false);
   // }
 }
+} // namespace tracking
+} // namespace pcl
 
 #define PCL_INSTANTIATE_ParticleFilterTracker(T, ST)                                   \
   template class PCL_EXPORTS pcl::tracking::ParticleFilterTracker<T, ST>;

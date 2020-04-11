@@ -42,11 +42,12 @@
 #include <pcl/common/time.h>
 #include <pcl/common/utils.h>
 
+namespace pcl {
+namespace tracking {
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT>
 inline void
-pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::setTrackingWindowSize(
-    int width, int height)
+PyramidalKLTTracker<PointInT, IntensityT>::setTrackingWindowSize(int width, int height)
 {
   track_width_ = width;
   track_height_ = height;
@@ -55,7 +56,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::setTrackingWindowSize(
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT>
 inline void
-pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::setPointsToTrack(
+PyramidalKLTTracker<PointInT, IntensityT>::setPointsToTrack(
     const pcl::PointCloud<pcl::PointUV>::ConstPtr& keypoints)
 {
   if (keypoints->size() <= keypoints_nbr_)
@@ -75,11 +76,10 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::setPointsToTrack(
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT>
 inline void
-pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::setPointsToTrack(
+PyramidalKLTTracker<PointInT, IntensityT>::setPointsToTrack(
     const pcl::PointIndicesConstPtr& points)
 {
-  assert((input_ || ref_) &&
-         "[pcl::tracking::PyramidalKLTTracker] CALL setInputCloud FIRST!");
+  assert((input_ || ref_) && "[PyramidalKLTTracker] CALL setInputCloud FIRST!");
 
   pcl::PointCloud<pcl::PointUV>::Ptr keypoints(new pcl::PointCloud<pcl::PointUV>);
   keypoints->reserve(keypoints_nbr_);
@@ -95,19 +95,18 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::setPointsToTrack(
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT>
 bool
-pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::initCompute()
+PyramidalKLTTracker<PointInT, IntensityT>::initCompute()
 {
   // std::cout << ">>> [PyramidalKLTTracker::initCompute]" << std::endl;
   if (!PCLBase<PointInT>::initCompute()) {
-    PCL_ERROR("[pcl::tracking::%s::initCompute] PCLBase::Init failed.\n",
-              tracker_name_.c_str());
+    PCL_ERROR("[%s::initCompute] PCLBase::Init failed.\n", tracker_name_.c_str());
     return (false);
   }
 
   if (!input_->isOrganized()) {
-    PCL_ERROR("[pcl::tracking::%s::initCompute] Need an organized point cloud to "
-              "proceed!",
-              tracker_name_.c_str());
+    PCL_ERROR(
+        "[pcl::tracking::%s::initCompute] Need an organized point cloud to proceed!",
+        tracker_name_.c_str());
     return (false);
   }
 
@@ -123,20 +122,20 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::initCompute()
     // std::cout << "First run!!!" << std::endl;
 
     if ((track_height_ * track_width_) % 2 == 0) {
-      PCL_ERROR("[pcl::tracking::%s::initCompute] Tracking window (%dx%d) must be "
-                "odd!\n",
-                tracker_name_.c_str(),
-                track_width_,
-                track_height_);
+      PCL_ERROR(
+          "[pcl::tracking::%s::initCompute] Tracking window (%dx%d) must be odd!\n",
+          tracker_name_.c_str(),
+          track_width_,
+          track_height_);
       return (false);
     }
 
     if (track_height_ < 3 || track_width_ < 3) {
-      PCL_ERROR("[pcl::tracking::%s::initCompute] Tracking window (%dx%d) must be >= "
-                "3x3!\n",
-                tracker_name_.c_str(),
-                track_width_,
-                track_height_);
+      PCL_ERROR(
+          "[pcl::tracking::%s::initCompute] Tracking window (%dx%d) must be >= 3x3!\n",
+          tracker_name_.c_str(),
+          track_width_,
+          track_height_);
       return (false);
     }
 
@@ -151,8 +150,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::initCompute()
     }
 
     if (nb_levels_ > 5) {
-      PCL_ERROR("[pcl::tracking::%s::initCompute] Number of pyramid levels should "
-                "not "
+      PCL_ERROR("[pcl::tracking::%s::initCompute] Number of pyramid levels should not "
                 "exceed 5!",
                 tracker_name_.c_str());
       return (false);
@@ -170,8 +168,9 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::initCompute()
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT>
 void
-pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::derivatives(
-    const FloatImage& src, FloatImage& grad_x, FloatImage& grad_y) const
+PyramidalKLTTracker<PointInT, IntensityT>::derivatives(const FloatImage& src,
+                                                       FloatImage& grad_x,
+                                                       FloatImage& grad_y) const
 {
   // std::cout << ">>> derivatives" << std::endl;
   ////////////////////////////////////////////////////////
@@ -231,8 +230,8 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::derivatives(
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT>
 void
-pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::downsample(
-    const FloatImageConstPtr& input, FloatImageConstPtr& output) const
+PyramidalKLTTracker<PointInT, IntensityT>::downsample(const FloatImageConstPtr& input,
+                                                      FloatImageConstPtr& output) const
 {
   FloatImage smoothed(input->width, input->height);
   convolve(input, smoothed);
@@ -263,7 +262,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::downsample(
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT>
 void
-pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::downsample(
+PyramidalKLTTracker<PointInT, IntensityT>::downsample(
     const FloatImageConstPtr& input,
     FloatImageConstPtr& output,
     FloatImageConstPtr& output_grad_x,
@@ -280,7 +279,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::downsample(
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT>
 void
-pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::convolve(
+PyramidalKLTTracker<PointInT, IntensityT>::convolve(
     const FloatImageConstPtr& input, FloatImage& output) const
 {
   FloatImagePtr tmp(new FloatImage(input->width, input->height));
@@ -291,7 +290,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::convolve(
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT>
 void
-pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::convolveRows(
+PyramidalKLTTracker<PointInT, IntensityT>::convolveRows(
     const FloatImageConstPtr& input, FloatImage& output) const
 {
   int width = input->width;
@@ -325,8 +324,8 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::convolveRows(
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT>
 void
-pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::convolveCols(
-    const FloatImageConstPtr& input, FloatImage& output) const
+PyramidalKLTTracker<PointInT, IntensityT>::convolveCols(const FloatImageConstPtr& input,
+                                                        FloatImage& output) const
 {
   output = FloatImage(input->width, input->height);
 
@@ -360,7 +359,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::convolveCols(
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT>
 void
-pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::computePyramids(
+PyramidalKLTTracker<PointInT, IntensityT>::computePyramids(
     const PointCloudInConstPtr& input,
     std::vector<FloatImageConstPtr>& pyramid,
     pcl::InterpolationType border_type) const
@@ -470,7 +469,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::computePyramids(
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT>
 void
-pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::spatialGradient(
+PyramidalKLTTracker<PointInT, IntensityT>::spatialGradient(
     const FloatImage& img,
     const FloatImage& grad_x,
     const FloatImage& grad_y,
@@ -516,7 +515,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::spatialGradient(
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT>
 void
-pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::mismatchVector(
+PyramidalKLTTracker<PointInT, IntensityT>::mismatchVector(
     const Eigen::ArrayXXf& prev,
     const Eigen::ArrayXXf& prev_grad_x,
     const Eigen::ArrayXXf& prev_grad_y,
@@ -546,7 +545,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::mismatchVector(
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT>
 void
-pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::track(
+PyramidalKLTTracker<PointInT, IntensityT>::track(
     const PointCloudInConstPtr& prev_input,
     const PointCloudInConstPtr& input,
     const std::vector<FloatImageConstPtr>& prev_pyramid,
@@ -711,7 +710,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::track(
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename IntensityT>
 void
-pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::computeTracking()
+PyramidalKLTTracker<PointInT, IntensityT>::computeTracking()
 {
   if (!initialized_)
     return;

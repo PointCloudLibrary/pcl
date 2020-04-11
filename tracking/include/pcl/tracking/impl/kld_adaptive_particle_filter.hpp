@@ -3,9 +3,11 @@
 
 #include <pcl/tracking/kld_adaptive_particle_filter.h>
 
+namespace pcl {
+namespace tracking {
 template <typename PointInT, typename StateT>
 bool
-pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::initCompute()
+KLDAdaptiveParticleFilterTracker<PointInT, StateT>::initCompute()
 {
   if (!Tracker<PointInT, StateT>::initCompute()) {
     PCL_ERROR("[pcl::%s::initCompute] Init failed.\n", getClassName().c_str());
@@ -33,7 +35,7 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::initCompute()
 
 template <typename PointInT, typename StateT>
 bool
-pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::insertIntoBins(
+KLDAdaptiveParticleFilterTracker<PointInT, StateT>::insertIntoBins(
     std::vector<int>&& new_bin, std::vector<std::vector<int>>& bins)
 {
   for (auto& existing_bin : bins) {
@@ -46,7 +48,7 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::insertIntoBin
 
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample()
+KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample()
 {
   unsigned int k = 0;
   unsigned int n = 0;
@@ -85,6 +87,8 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample()
   particles_ = S; // swap
   particle_num_ = static_cast<int>(particles_->points.size());
 }
+} // namespace tracking
+} // namespace pcl
 
 #define PCL_INSTANTIATE_KLDAdaptiveParticleFilterTracker(T, ST)                        \
   template class PCL_EXPORTS pcl::tracking::KLDAdaptiveParticleFilterTracker<T, ST>;

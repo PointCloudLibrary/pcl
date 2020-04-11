@@ -3,11 +3,12 @@
 
 #include <pcl/tracking/particle_filter_omp.h>
 
+namespace pcl {
+namespace tracking {
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::setNumberOfThreads(
-    unsigned int nr_threads)
+ParticleFilterOMPTracker<PointInT, StateT>::setNumberOfThreads(unsigned int nr_threads)
 {
   if (nr_threads == 0)
 #ifdef _OPENMP
@@ -22,7 +23,7 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::setNumberOfThreads(
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight()
+ParticleFilterOMPTracker<PointInT, StateT>::weight()
 {
   if (!use_normal_) {
     // clang-format off
@@ -108,6 +109,8 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight()
 
   normalizeWeight();
 }
+} // namespace tracking
+} // namespace pcl
 
 #define PCL_INSTANTIATE_ParticleFilterOMPTracker(T, ST)                                \
   template class PCL_EXPORTS pcl::tracking::ParticleFilterOMPTracker<T, ST>;

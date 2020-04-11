@@ -122,7 +122,7 @@ struct EIGEN_ALIGN16 ParticleXYZRPY : public _ParticleXYZRPY {
     return getTransformation(x, y, z, roll, pitch, yaw);
   }
 
-  static pcl::tracking::ParticleXYZRPY
+  static ParticleXYZRPY
   toState(const Eigen::Affine3f& trans)
   {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
@@ -165,7 +165,7 @@ operator<<(std::ostream& os, const ParticleXYZRPY& p)
 }
 
 // a * k
-inline pcl::tracking::ParticleXYZRPY
+inline ParticleXYZRPY
 operator*(const ParticleXYZRPY& p, double val)
 {
   pcl::tracking::ParticleXYZRPY newp;
@@ -179,7 +179,7 @@ operator*(const ParticleXYZRPY& p, double val)
 }
 
 // a + b
-inline pcl::tracking::ParticleXYZRPY
+inline ParticleXYZRPY
 operator+(const ParticleXYZRPY& a, const ParticleXYZRPY& b)
 {
   pcl::tracking::ParticleXYZRPY newp;
@@ -193,7 +193,7 @@ operator+(const ParticleXYZRPY& a, const ParticleXYZRPY& b)
 }
 
 // a - b
-inline pcl::tracking::ParticleXYZRPY
+inline ParticleXYZRPY
 operator-(const ParticleXYZRPY& a, const ParticleXYZRPY& b)
 {
   pcl::tracking::ParticleXYZRPY newp;
@@ -288,7 +288,7 @@ struct EIGEN_ALIGN16 ParticleXYZR : public _ParticleXYZR {
     return getTransformation(x, y, z, roll, pitch, yaw);
   }
 
-  static pcl::tracking::ParticleXYZR
+  static ParticleXYZR
   toState(const Eigen::Affine3f& trans)
   {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
@@ -331,7 +331,7 @@ operator<<(std::ostream& os, const ParticleXYZR& p)
 }
 
 // a * k
-inline pcl::tracking::ParticleXYZR
+inline ParticleXYZR
 operator*(const ParticleXYZR& p, double val)
 {
   pcl::tracking::ParticleXYZR newp;
@@ -345,7 +345,7 @@ operator*(const ParticleXYZR& p, double val)
 }
 
 // a + b
-inline pcl::tracking::ParticleXYZR
+inline ParticleXYZR
 operator+(const ParticleXYZR& a, const ParticleXYZR& b)
 {
   pcl::tracking::ParticleXYZR newp;
@@ -359,7 +359,7 @@ operator+(const ParticleXYZR& a, const ParticleXYZR& b)
 }
 
 // a - b
-inline pcl::tracking::ParticleXYZR
+inline ParticleXYZR
 operator-(const ParticleXYZR& a, const ParticleXYZR& b)
 {
   pcl::tracking::ParticleXYZR newp;
@@ -454,7 +454,7 @@ struct EIGEN_ALIGN16 ParticleXYRPY : public _ParticleXYRPY {
     return getTransformation(x, y, z, roll, pitch, yaw);
   }
 
-  static pcl::tracking::ParticleXYRPY
+  static ParticleXYRPY
   toState(const Eigen::Affine3f& trans)
   {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
@@ -498,7 +498,7 @@ operator<<(std::ostream& os, const ParticleXYRPY& p)
 }
 
 // a * k
-inline pcl::tracking::ParticleXYRPY
+inline ParticleXYRPY
 operator*(const ParticleXYRPY& p, double val)
 {
   pcl::tracking::ParticleXYRPY newp;
@@ -512,7 +512,7 @@ operator*(const ParticleXYRPY& p, double val)
 }
 
 // a + b
-inline pcl::tracking::ParticleXYRPY
+inline ParticleXYRPY
 operator+(const ParticleXYRPY& a, const ParticleXYRPY& b)
 {
   pcl::tracking::ParticleXYRPY newp;
@@ -526,7 +526,7 @@ operator+(const ParticleXYRPY& a, const ParticleXYRPY& b)
 }
 
 // a - b
-inline pcl::tracking::ParticleXYRPY
+inline ParticleXYRPY
 operator-(const ParticleXYRPY& a, const ParticleXYRPY& b)
 {
   pcl::tracking::ParticleXYRPY newp;
@@ -621,7 +621,7 @@ struct EIGEN_ALIGN16 ParticleXYRP : public _ParticleXYRP {
     return getTransformation(x, y, z, roll, pitch, yaw);
   }
 
-  static pcl::tracking::ParticleXYRP
+  static ParticleXYRP
   toState(const Eigen::Affine3f& trans)
   {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
@@ -665,7 +665,7 @@ operator<<(std::ostream& os, const ParticleXYRP& p)
 }
 
 // a * k
-inline pcl::tracking::ParticleXYRP
+inline ParticleXYRP
 operator*(const ParticleXYRP& p, double val)
 {
   pcl::tracking::ParticleXYRP newp;
@@ -679,7 +679,7 @@ operator*(const ParticleXYRP& p, double val)
 }
 
 // a + b
-inline pcl::tracking::ParticleXYRP
+inline ParticleXYRP
 operator+(const ParticleXYRP& a, const ParticleXYRP& b)
 {
   pcl::tracking::ParticleXYRP newp;
@@ -693,7 +693,7 @@ operator+(const ParticleXYRP& a, const ParticleXYRP& b)
 }
 
 // a - b
-inline pcl::tracking::ParticleXYRP
+inline ParticleXYRP
 operator-(const ParticleXYRP& a, const ParticleXYRP& b)
 {
   pcl::tracking::ParticleXYRP newp;
@@ -788,7 +788,7 @@ struct EIGEN_ALIGN16 ParticleXYR : public _ParticleXYR {
     return getTransformation(x, y, z, roll, pitch, yaw);
   }
 
-  static pcl::tracking::ParticleXYR
+  static ParticleXYR
   toState(const Eigen::Affine3f& trans)
   {
     float trans_x, trans_y, trans_z, trans_roll, trans_pitch, trans_yaw;
@@ -831,7 +831,7 @@ operator<<(std::ostream& os, const ParticleXYR& p)
 }
 
 // a * k
-inline pcl::tracking::ParticleXYR
+inline ParticleXYR
 operator*(const ParticleXYR& p, double val)
 {
   pcl::tracking::ParticleXYR newp;
@@ -845,7 +845,7 @@ operator*(const ParticleXYR& p, double val)
 }
 
 // a + b
-inline pcl::tracking::ParticleXYR
+inline ParticleXYR
 operator+(const ParticleXYR& a, const ParticleXYR& b)
 {
   pcl::tracking::ParticleXYR newp;
@@ -859,7 +859,7 @@ operator+(const ParticleXYR& a, const ParticleXYR& b)
 }
 
 // a - b
-inline pcl::tracking::ParticleXYR
+inline ParticleXYR
 operator-(const ParticleXYR& a, const ParticleXYR& b)
 {
   pcl::tracking::ParticleXYR newp;

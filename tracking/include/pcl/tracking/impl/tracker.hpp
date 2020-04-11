@@ -6,9 +6,11 @@
 
 #include <ctime>
 
+namespace pcl {
+namespace tracking {
 template <typename PointInT, typename StateT>
 bool
-pcl::tracking::Tracker<PointInT, StateT>::initCompute()
+Tracker<PointInT, StateT>::initCompute()
 {
   if (!PCLBase<PointInT>::initCompute()) {
     PCL_ERROR("[pcl::%s::initCompute] PCLBase::Init failed.\n", getClassName().c_str());
@@ -28,7 +30,7 @@ pcl::tracking::Tracker<PointInT, StateT>::initCompute()
 
 template <typename PointInT, typename StateT>
 void
-pcl::tracking::Tracker<PointInT, StateT>::compute()
+Tracker<PointInT, StateT>::compute()
 {
   if (!initCompute())
     return;
@@ -36,5 +38,7 @@ pcl::tracking::Tracker<PointInT, StateT>::compute()
   computeTracking();
   deinitCompute();
 }
+} // namespace tracking
+} // namespace pcl
 
 #endif
