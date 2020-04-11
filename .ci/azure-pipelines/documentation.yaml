@@ -33,6 +33,10 @@ jobs:
           cmake --build . -- doc tutorials advanced
         displayName: 'Build Documentation'
       - script: |
+          cd $BUILD_DIR
+          sed -r -e 's/([0-9]+)\s\.\s([0-9]+)\s/\1.\2/' doc/doxygen/html/deprecated.html
+        displayName: 'Remove extra spaces in Doxygen''s Deprecated List'
+      - script: |
           git config --global user.email "documentation@pointclouds.org"
           git config --global user.name "PointCloudLibrary (via Azure Pipelines)"
           echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
