@@ -38,12 +38,16 @@
  *
  */
 
-#ifndef PCL_COMMON_IMPL_CENTROID_H_
-#define PCL_COMMON_IMPL_CENTROID_H_
+#pragma once
 
 #include <pcl/common/centroid.h>
 #include <pcl/conversions.h>
-#include <boost/mpl/size.hpp>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
+
+#include <boost/fusion/algorithm/transformation/filter_if.hpp> // for boost::fusion::filter_if
+#include <boost/fusion/algorithm/iteration/for_each.hpp> // for boost::fusion::for_each
+#include <boost/mpl/size.hpp> // for boost::mpl::size
+
 
 namespace pcl
 {
@@ -916,6 +920,4 @@ computeCentroid (const pcl::PointCloud<PointInT>& cloud,
 }
 
 } // namespace pcl
-
-#endif  //#ifndef PCL_COMMON_IMPL_CENTROID_H_
 

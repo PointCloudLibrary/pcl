@@ -37,8 +37,9 @@
  *
  */
 
-#ifndef PCL_POINT_CLOUD_SPRING_IMPL_HPP_
-#define PCL_POINT_CLOUD_SPRING_IMPL_HPP_
+#pragma once
+
+#include <pcl/common/spring.h>
 
 
 namespace pcl
@@ -264,6 +265,4 @@ deleteCols (const PointCloud<PointT>& input, PointCloud<PointT>& output,
 
 } // namespace common
 } // namespace pcl
-
-#endif
 

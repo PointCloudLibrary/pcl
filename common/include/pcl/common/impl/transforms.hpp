@@ -37,6 +37,10 @@
  *
  */
 
+#pragma once
+
+#include <pcl/common/transforms.h>
+
 #if defined(__SSE2__)
 #include <xmmintrin.h>
 #endif
@@ -49,6 +53,7 @@
 #include <cmath>
 #include <cstddef>
 #include <vector>
+
 
 namespace pcl
 {

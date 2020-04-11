@@ -37,8 +37,9 @@
  *
  */
 
-#ifndef BIVARIATE_POLYNOMIAL_HPP
-#define BIVARIATE_POLYNOMIAL_HPP
+#pragma once
+
+#include <pcl/common/bivariate_polynomial.h>
 
 #include <algorithm>
 #include <cmath>
@@ -309,6 +310,3 @@ BivariatePolynomialT<real>::readBinary (const char* filename)
 }
 
 } // namespace pcl
-
-#endif
-

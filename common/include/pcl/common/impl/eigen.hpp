@@ -36,13 +36,15 @@
  *
  */
 
-#ifndef PCL_COMMON_EIGEN_IMPL_HPP_
-#define PCL_COMMON_EIGEN_IMPL_HPP_
+#pragma once
+
+#include <pcl/common/eigen.h>
+#include <pcl/console/print.h>
 
 #include <array>
 #include <algorithm>
 #include <cmath>
-#include <pcl/console/print.h>
+
 
 namespace pcl
 {
@@ -906,6 +908,4 @@ transformBetween2CoordinateSystems (const Eigen::Matrix<Scalar, Eigen::Dynamic, 
 }
 
 } // namespace pcl
-
-#endif  //PCL_COMMON_EIGEN_IMPL_HPP_
 

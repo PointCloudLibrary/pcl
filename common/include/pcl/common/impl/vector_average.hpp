@@ -35,8 +35,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_COMMON_VECTOR_AVERAGE_IMPL_HPP_
-#define PCL_COMMON_VECTOR_AVERAGE_IMPL_HPP_
+#pragma once
+
+#include <pcl/common/vector_average.h>
+
 
 namespace pcl
 {
@@ -195,7 +197,4 @@ namespace pcl
     eigen33(covariance_, eigen_value, eigen_vector);
     eigen_vector1 = eigen_vector;
   }
-}  // END namespace
-
-#endif
-
+}  // namespace pcl
