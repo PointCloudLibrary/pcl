@@ -128,6 +128,10 @@ Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max_rang
   std::vector<int> nn_indices (1);
   std::vector<float> nn_dists (1);
 
+  // will keep the distance to each matched point
+  tf_points_distance_.clear();
+  tf_points_distance_.resize(input_transformed.points.size ());
+  
   // For each point in the source dataset
   int nr = 0;
   for (std::size_t i = 0; i < input_transformed.points.size (); ++i)
@@ -142,6 +146,9 @@ Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max_rang
       fitness_score += nn_dists[0];
       nr++;
     }
+        
+    // get the distance after registration
+    tf_points_distance_[i] = nn_dists[0];
   }
 
   if (nr > 0)
