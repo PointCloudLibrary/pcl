@@ -1,14 +1,16 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
 project(keypoint_instantiation)
 
 find_package(PCL 1.10 REQUIRED COMPONENTS 2d common)
 
 add_executable (keypoint_instantiation_with_precompile keypoint_instantiation.cpp)
+target_compile_definitions(keypoint_instantiation_with_precompile PUBLIC ${PCL_DEFINITIONS})
 target_include_directories(keypoint_instantiation_with_precompile ${PCL_INCLUDE_DIRS})
 target_link_libraries (keypoint_instantiation_with_precompile ${PCL_LIBRARIES})
 
 add_executable (keypoint_instantiation_without_precompile keypoint_instantiation.cpp)
+target_compile_definitions(keypoint_instantiation_without_precompile PUBLIC ${PCL_DEFINITIONS})
 target_compile_definitions(keypoint_instantiation_without_precompile PUBLIC PCL_NO_PRECOMPILE)
 target_include_directories(keypoint_instantiation_without_precompile ${PCL_INCLUDE_DIRS})
 target_link_libraries (keypoint_instantiation_without_precompile ${PCL_LIBRARIES})
