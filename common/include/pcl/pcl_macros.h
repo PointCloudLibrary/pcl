@@ -81,19 +81,19 @@
 #include <boost/preprocessor/control/if.hpp>
 #include <boost/preprocessor/stringize.hpp>
 
-// It seems that __has_cpp_attribute doesn't work correctly
-// when compiling with some versions of nvcc so we
-// additionally check if nvcc is used before setting the
-// PCL_DEPRECATED_IMPL macro to [[deprecated]].
-#if defined(__has_cpp_attribute) && __has_cpp_attribute(deprecated) && !defined(__CUDACC__)
+// MSVC < 2019 have issues:
+// * can't short-circuiting logic in macros
+// * don't define standard macros
+// => this leads to annyoing C4067 warnings (see https://developercommunity.visualstudio.com/content/problem/327796/-has-cpp-attribute-emits-warning-is-wrong-highligh.html)
+#if defined(_MSC_VER)
+  // nvcc on msvc can't work with [[deprecated]]
+  #if !defined(__CUDACC__)
+    #define PCL_DEPRECATED_IMPL(message) [[deprecated(message)]]
+  #else
+    #define PCL_DEPRECATED_IMPL(message)
+  #endif
+#elif __has_cpp_attribute(deprecated)
   #define PCL_DEPRECATED_IMPL(message) [[deprecated(message)]]
-#elif defined(__GNUC__) || defined(__clang__)
-  #define PCL_DEPRECATED_IMPL(message) __attribute__((deprecated(message)))
-#elif defined(_MSC_VER)
-  // Until Visual Studio 2013 you had to use __declspec(deprecated).
-  // However, we decided to ignore the deprecation for these version because
-  // of simplicity reasons. See PR #3634 for the details.
-  #define PCL_DEPRECATED_IMPL(message)
 #else
   #warning "You need to implement PCL_DEPRECATED_IMPL for this compiler"
   #define PCL_DEPRECATED_IMPL(message)
