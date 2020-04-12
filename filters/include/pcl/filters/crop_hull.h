@@ -57,6 +57,7 @@ namespace pcl
     using Filter<PointT>::indices_;
     using Filter<PointT>::input_;
     using Filter<PointT>::removed_indices_;
+    using Filter<PointT>::extract_removed_indices_;
     using FilterIndices<PointT>::negative_;
 
     using PointCloud = typename Filter<PointT>::PointCloud;
