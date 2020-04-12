@@ -140,7 +140,7 @@ pcl::CropHull<PointT>::applyFilter2D (std::vector<int> &indices)
     const bool found_in_polygons = (poly_it != hull_polygons_.cend());
     if (keepInside == found_in_polygons) {
       // valid index: either found inside and need to keep inside
-      //                     or not found inside and not need to crop outside
+      //                     or not found inside and need to remove inside
       indices.push_back (idx);
     }
     else if (extract_removed_indices_) {
