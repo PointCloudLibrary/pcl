@@ -107,14 +107,14 @@ pcl::CropHull<PointT>::applyFilter2D (std::vector<int> &indices)
 
   const Eigen::Vector4f minPt = crop_box_.getMin();
   const Eigen::Vector4f maxPt = crop_box_.getMax();
-  std::vector<bool> cropInlierMask(input_->size(), true);
+  std::vector<bool> cropBoxInlierMask(input_->size(), true);
   for (const index_t idx : *indices_)
   {
     Eigen::Vector3f pt = input_->points[idx].getVector3fMap();
     if (pt[PlaneDim1] < minPt[PlaneDim1] || pt[PlaneDim1] > maxPt[PlaneDim1] ||
         pt[PlaneDim2] < minPt[PlaneDim2] || pt[PlaneDim2] > maxPt[PlaneDim2])
     {
-      cropInlierMask.at(idx) = false;
+      cropBoxInlierMask.at(idx) = false;
       if (!keepInside) {
         indices.push_back(idx);
       }
@@ -126,7 +126,7 @@ pcl::CropHull<PointT>::applyFilter2D (std::vector<int> &indices)
 
   for (const index_t idx : *indices_)
   {
-    if (!cropInlierMask[idx]) {
+    if (!cropBoxInlierMask[idx]) {
       continue;
     }
     // iterate over polygons faster than points because we expect this data
@@ -161,14 +161,14 @@ pcl::CropHull<PointT>::applyFilter3D (std::vector<int> &indices)
   std::vector<int> cropInlierIndices;
   crop_box_.setIndices(indices_);
   crop_box_.filter(cropInlierIndices);
-  std::vector<bool> cropInlierMask(input_->size(), false);
+  std::vector<bool> cropBoxInlierMask(input_->size(), false);
   for (index_t idx : cropInlierIndices) {
-    cropInlierMask.at(idx) = true;
+    cropBoxInlierMask.at(idx) = true;
   }
 
   for (index_t idx : *indices_)
   {
-    if (!cropInlierMask[idx]) {
+    if (!cropBoxInlierMask[idx]) {
       continue;
     }
     // test ray-crossings for three random rays, and take vote of crossings
