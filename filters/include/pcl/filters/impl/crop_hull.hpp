@@ -106,7 +106,7 @@ pcl::CropHull<PointT>::applyFilter2D (std::vector<int> &indices)
   for (const index_t idx : *indices_)
   {
     Eigen::Vector3f pt = input_->points[idx].getVector3fMap();
-    if (pt[PlaneDim1] < minPt[PlaneDim1] || pt[PlaneDim1] > maxPt[PlaneDim2] ||
+    if (pt[PlaneDim1] < minPt[PlaneDim1] || pt[PlaneDim1] > maxPt[PlaneDim1] ||
         pt[PlaneDim2] < minPt[PlaneDim2] || pt[PlaneDim2] > maxPt[PlaneDim2])
     {
       cropInlierMask.at(idx) = false;

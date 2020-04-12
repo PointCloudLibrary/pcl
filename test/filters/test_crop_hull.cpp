@@ -184,41 +184,54 @@ namespace
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, ConvexHull_2dsquare)
 {
-  pcl::CropHull<pcl::PointXYZ> cropHullFilter;
+  pcl::PointCloud<pcl::PointXYZ> baseOffsetList;
+  baseOffsetList.emplace_back(5, 1, -3);
+  baseOffsetList.emplace_back(1, 5, -3);
+  for (pcl::PointXYZ const & baseOffset : baseOffsetList)
   {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud (new pcl::PointCloud<pcl::PointXYZ> ());
-    inputCloud->push_back(pcl::PointXYZ(0.0f, 0.0f, 0.0f));
-    inputCloud->push_back(pcl::PointXYZ(0.0f, 1.0f, 0.0f));
-    inputCloud->push_back(pcl::PointXYZ(1.0f, 0.0f, 0.0f));
-    inputCloud->push_back(pcl::PointXYZ(1.0f, 1.0f, 0.0f));
-    inputCloud->push_back(pcl::PointXYZ(0.0f, 0.0f, 0.1f));
-    inputCloud->push_back(pcl::PointXYZ(0.0f, 1.0f, 0.1f));
-    inputCloud->push_back(pcl::PointXYZ(1.0f, 0.0f, 0.1f));
-    inputCloud->push_back(pcl::PointXYZ(1.0f, 1.0f, 0.1f));
+    pcl::CropHull<pcl::PointXYZ> cropHullFilter;
+    {
+      pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud (new pcl::PointCloud<pcl::PointXYZ> ());
+      inputCloud->emplace_back(0.0f, 0.0f, 0.0f);
+      inputCloud->emplace_back(0.0f, 1.0f, 0.0f);
+      inputCloud->emplace_back(1.0f, 0.0f, 0.0f);
+      inputCloud->emplace_back(1.0f, 1.0f, 0.0f);
+      inputCloud->emplace_back(0.0f, 0.0f, 0.1f);
+      inputCloud->emplace_back(0.0f, 1.0f, 0.1f);
+      inputCloud->emplace_back(1.0f, 0.0f, 0.1f);
+      inputCloud->emplace_back(1.0f, 1.0f, 0.1f);
+      for (pcl::PointXYZ & p : *inputCloud) {
+        p.getVector3fMap() += baseOffset.getVector3fMap();
+      }
 
-    pcl::ConvexHull<pcl::PointXYZ> convexHull;
-    convexHull.setDimension(3);
-    convexHull.setInputCloud(inputCloud);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr hullCloudPtr(new pcl::PointCloud<pcl::PointXYZ>);
-    std::vector<pcl::Vertices> hullPolygons;
-    convexHull.reconstruct(*hullCloudPtr, hullPolygons);
+      pcl::ConvexHull<pcl::PointXYZ> convexHull;
+      convexHull.setDimension(3);
+      convexHull.setInputCloud(inputCloud);
+      pcl::PointCloud<pcl::PointXYZ>::Ptr hullCloudPtr(new pcl::PointCloud<pcl::PointXYZ>);
+      std::vector<pcl::Vertices> hullPolygons;
+      convexHull.reconstruct(*hullCloudPtr, hullPolygons);
 
-    cropHullFilter.setHullIndices(hullPolygons);
-    cropHullFilter.setHullCloud(hullCloudPtr);
-    cropHullFilter.setDim(2);
-    cropHullFilter.setCropOutside(true);
+      cropHullFilter.setHullIndices(hullPolygons);
+      cropHullFilter.setHullCloud(hullCloudPtr);
+      cropHullFilter.setDim(2);
+      cropHullFilter.setCropOutside(true);
+    }
+
+    std::mt19937 gen(12345u);
+    std::uniform_real_distribution<float> rd (0.0f, 1.0f);
+    auto insidePointGenerator = [&rd, &gen, baseOffset] () {
+      pcl::PointXYZ p(rd(gen), rd(gen), 1.0);
+      p.getVector3fMap() += baseOffset.getVector3fMap();
+      return p;
+    };
+    auto outsidePointGenerator = [&rd, &gen, baseOffset] () {
+      pcl::PointXYZ p(rd(gen) + 2., rd(gen) + 2., rd(gen) + 2.);
+      p.getVector3fMap() += baseOffset.getVector3fMap();
+      return p;
+    };
+
+    complexTest(cropHullFilter, insidePointGenerator, outsidePointGenerator);
   }
-
-  std::mt19937 gen(12345u);
-  std::uniform_real_distribution<float> rd (0.0f, 1.0f);
-  auto insidePointGenerator = [&rd, &gen] () {
-    return pcl::PointXYZ(rd(gen), rd(gen), 1.0);
-  };
-  auto outsidePointGenerator = [&rd, &gen] () {
-    return pcl::PointXYZ(rd(gen) + 2., rd(gen) + 2., rd(gen) + 2.);
-  };
-
-  complexTest(cropHullFilter, insidePointGenerator, outsidePointGenerator);
 }
 
 
@@ -318,41 +331,54 @@ TEST (PCL, issue_1657_CropHull3d_not_cropping_inside)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, ConvexHull_3dcube)
 {
-  pcl::CropHull<pcl::PointXYZ> cropHullFilter;
+  pcl::PointCloud<pcl::PointXYZ> baseOffsetList;
+  baseOffsetList.emplace_back(5, 1, -3);
+  baseOffsetList.emplace_back(1, 5, -3);
+  for (pcl::PointXYZ const & baseOffset : baseOffsetList)
   {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud (new pcl::PointCloud<pcl::PointXYZ> ());
-    inputCloud->push_back(pcl::PointXYZ(0.0f, 0.0f, 0.0f));
-    inputCloud->push_back(pcl::PointXYZ(0.0f, 0.0f, 1.0f));
-    inputCloud->push_back(pcl::PointXYZ(0.0f, 1.0f, 0.0f));
-    inputCloud->push_back(pcl::PointXYZ(0.0f, 1.0f, 1.0f));
-    inputCloud->push_back(pcl::PointXYZ(1.0f, 0.0f, 0.0f));
-    inputCloud->push_back(pcl::PointXYZ(1.0f, 0.0f, 1.0f));
-    inputCloud->push_back(pcl::PointXYZ(1.0f, 1.0f, 0.0f));
-    inputCloud->push_back(pcl::PointXYZ(1.0f, 1.0f, 1.0f));
+    pcl::CropHull<pcl::PointXYZ> cropHullFilter;
+    {
+      pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud (new pcl::PointCloud<pcl::PointXYZ> ());
+      inputCloud->emplace_back(0.0f, 0.0f, 0.0f);
+      inputCloud->emplace_back(0.0f, 0.0f, 1.0f);
+      inputCloud->emplace_back(0.0f, 1.0f, 0.0f);
+      inputCloud->emplace_back(0.0f, 1.0f, 1.0f);
+      inputCloud->emplace_back(1.0f, 0.0f, 0.0f);
+      inputCloud->emplace_back(1.0f, 0.0f, 1.0f);
+      inputCloud->emplace_back(1.0f, 1.0f, 0.0f);
+      inputCloud->emplace_back(1.0f, 1.0f, 1.0f);
+      for (pcl::PointXYZ & p : *inputCloud) {
+        p.getVector3fMap() += baseOffset.getVector3fMap();
+      }
 
-    pcl::ConvexHull<pcl::PointXYZ> convexHull;
-    convexHull.setDimension(3);
-    convexHull.setInputCloud(inputCloud);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr hullCloudPtr(new pcl::PointCloud<pcl::PointXYZ>);
-    std::vector<pcl::Vertices> hullPolygons;
-    convexHull.reconstruct(*hullCloudPtr, hullPolygons);
+      pcl::ConvexHull<pcl::PointXYZ> convexHull;
+      convexHull.setDimension(3);
+      convexHull.setInputCloud(inputCloud);
+      pcl::PointCloud<pcl::PointXYZ>::Ptr hullCloudPtr(new pcl::PointCloud<pcl::PointXYZ>);
+      std::vector<pcl::Vertices> hullPolygons;
+      convexHull.reconstruct(*hullCloudPtr, hullPolygons);
 
-    cropHullFilter.setHullIndices(hullPolygons);
-    cropHullFilter.setHullCloud(hullCloudPtr);
-    cropHullFilter.setDim(3);
-    cropHullFilter.setCropOutside(true);
+      cropHullFilter.setHullIndices(hullPolygons);
+      cropHullFilter.setHullCloud(hullCloudPtr);
+      cropHullFilter.setDim(3);
+      cropHullFilter.setCropOutside(true);
+    }
+
+    std::mt19937 gen(12345u);
+    std::uniform_real_distribution<float> rd (0.0f, 1.0f);
+    auto insidePointGenerator = [&rd, &gen, baseOffset] () {
+      pcl::PointXYZ p(rd(gen), rd(gen), rd(gen));
+      p.getVector3fMap() += baseOffset.getVector3fMap();
+      return p;
+    };
+    auto outsidePointGenerator = [&rd, &gen, baseOffset] () {
+      pcl::PointXYZ p(rd(gen) + 2., rd(gen) + 2., rd(gen) + 2.);
+      p.getVector3fMap() += baseOffset.getVector3fMap();
+      return p;
+    };
+
+    complexTest(cropHullFilter, insidePointGenerator, outsidePointGenerator);
   }
-
-  std::mt19937 gen(12345u);
-  std::uniform_real_distribution<float> rd (0.0f, 1.0f);
-  auto insidePointGenerator = [&rd, &gen] () {
-    return pcl::PointXYZ(rd(gen), rd(gen), rd(gen));
-  };
-  auto outsidePointGenerator = [&rd, &gen] () {
-    return pcl::PointXYZ(rd(gen) + 2., rd(gen) + 2., rd(gen) + 2.);
-  };
-
-  complexTest(cropHullFilter, insidePointGenerator, outsidePointGenerator);
 }
 
 
