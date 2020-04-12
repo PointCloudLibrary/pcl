@@ -224,6 +224,10 @@ function(PCL_ADD_LIBRARY _name)
   target_compile_features(${_name} PUBLIC ${PCL_CXX_COMPILE_FEATURES})
   # must link explicitly against boost.
   target_link_libraries(${_name} ${Boost_LIBRARIES} Threads::Threads)
+  if(TARGET OpenMP::OpenMP_CXX)
+    target_link_libraries(${_name} OpenMP::OpenMP_CXX)
+  endif()
+
   if((UNIX AND NOT ANDROID) OR MINGW)
     target_link_libraries(${_name} m)
   endif()
