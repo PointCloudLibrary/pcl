@@ -16,7 +16,7 @@ jobs:
       CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi'
     steps:
       - script: |
-          brew install pkg-config qt5 libpcap brewsci/science/openni
+          brew install pkg-config qt5 libpcap brewsci/science/openni libomp
           brew install vtk --with-qt --without-python@2
           brew install --only-dependencies pcl
           git clone https://github.com/abseil/googletest.git $GOOGLE_TEST_DIR # the official endpoint changed to abseil/googletest
