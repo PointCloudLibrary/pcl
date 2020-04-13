@@ -11,5 +11,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (implicit_shape_model implicit_shape_model.cpp)
 target_link_libraries (implicit_shape_model ${PCL_LIBRARIES})
-
-

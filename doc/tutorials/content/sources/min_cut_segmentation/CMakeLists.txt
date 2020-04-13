@@ -10,5 +10,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (min_cut_segmentation min_cut_segmentation.cpp)
 target_link_libraries (min_cut_segmentation ${PCL_LIBRARIES})
-
-

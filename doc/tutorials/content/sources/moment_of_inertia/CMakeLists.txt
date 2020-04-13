@@ -11,4 +11,3 @@ add_definitions(${PCL_DEFINITIONS})
 add_executable (moment_of_inertia moment_of_inertia.cpp)
 target_link_libraries (moment_of_inertia ${PCL_LIBRARIES})
 
-
