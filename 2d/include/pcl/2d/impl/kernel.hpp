@@ -121,7 +121,6 @@ void
 kernel<PointT>::loGKernel(pcl::PointCloud<PointT>& kernel)
 {
   float sum = 0;
-  float temp = 0;
   kernel.resize(kernel_size_ * kernel_size_);
   kernel.height = kernel_size_;
   kernel.width = kernel_size_;
@@ -132,7 +131,7 @@ kernel<PointT>::loGKernel(pcl::PointCloud<PointT>& kernel)
     for (int j = 0; j < kernel_size_; j++) {
       int iks = (i - kernel_size_ / 2);
       int jks = (j - kernel_size_ / 2);
-      temp = float(double(iks * iks + jks * jks) / sigma_sqr);
+      float temp = float(double(iks * iks + jks * jks) / sigma_sqr);
       kernel(j, i).intensity = (1.0f - temp) * std::exp(-temp);
       sum += kernel(j, i).intensity;
     }
