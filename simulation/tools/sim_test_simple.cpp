@@ -33,8 +33,6 @@
 #include <pcl/surface/gp3.h>
 #include <pcl/visualization/cloud_viewer.h> // Pop-up viewer
 
-// define the following in order to eliminate the deprecated headers warning
-#define VTK_EXCLUDE_STRSTREAM_HEADERS
 #include <pcl/io/vtk_lib_io.h>
 
 #include <Eigen/Dense>

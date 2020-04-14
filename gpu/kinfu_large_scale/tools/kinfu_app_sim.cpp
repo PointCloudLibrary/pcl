@@ -109,8 +109,6 @@ using ScopeTimeT = pcl::ScopeTime;
 #include "pcl/common/common.h"
 #include "pcl/common/transforms.h"
 #include <pcl/console/print.h>
-// define the following in order to eliminate the deprecated headers warning
-#define VTK_EXCLUDE_STRSTREAM_HEADERS
 #include <pcl/io/vtk_lib_io.h>
 //
 #include <pcl/simulation/camera.h>
