@@ -5,6 +5,8 @@
 # Try to find QHULL library and headers. This module supports both old released versions
 # of QHULL ≤ 7.3.2 and newer development versions that ship with a modern config file.
 #
+# If QHULL_USE_STATIC is specified then look for static libraries ONLY else look for shared one.
+#
 # IMPORTED Targets
 # ^^^^^^^^^^^^^^^^
 #
@@ -21,7 +23,6 @@
 # ::
 #
 #   QHULL_FOUND               True in case QHULL is found, otherwise false
-#   QHULL_ROOT                Path to the root of found QHULL installation
 #
 # Example usage
 # ^^^^^^^^^^^^^
@@ -44,18 +45,15 @@ find_package(Qhull NO_MODULE QUIET)
 if(Qhull_FOUND)
   unset(Qhull_FOUND)
   set(QHULL_FOUND ON)
+  set(HAVE_QHULL ON)
   add_library(QHULL::QHULL INTERFACE IMPORTED)
   if(QHULL_USE_STATIC)
     set_property(TARGET QHULL::QHULL APPEND PROPERTY INTERFACE_LINK_LIBRARY Qhull::qhullstatic)
   else()
     set_property(TARGET QHULL::QHULL APPEND PROPERTY INTERFACE_LINK_LIBRARY Qhull::libqhull)
   endif()
-  get_filename_component(_config_dir "${Qhull_CONFIG}" DIRECTORY)
-  get_filename_component(QHULL_ROOT "${_config_dir}/../../.." ABSOLUTE)
   return()
 endif()
-
-set(QHULL_MAJOR_VERSION 6)
 
 if(QHULL_USE_STATIC)
   set(QHULL_RELEASE_NAME qhullstatic_r)
@@ -118,12 +116,11 @@ if(QHULL_FOUND)
   add_library(QHULL::QHULL ${QHULL_LIBRARY_TYPE} IMPORTED)
   set_target_properties(QHULL::QHULL PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${QHULL_INCLUDE_DIR}")
   set_property(TARGET QHULL::QHULL APPEND PROPERTY IMPORTED_CONFIGURATIONS "RELEASE")
-  set_target_properties(QHULL::QHULL PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX")
-  set_target_properties(QHULL::QHULL PROPERTIES COMPILE_DEFINITIONS "-Dqh_QHpointer")
+  set_target_properties(QHULL::QHULL PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES "CXX")
+  set_target_properties(QHULL::QHULL PROPERTIES INTERFACE_COMPILE_DEFINITIONS "qh_QHpointer")
   if(MSVC)
-    set_target_properties(QHULL::QHULL PROPERTIES COMPILE_DEFINITIONS "--Dqh_QHpointer_dllimport")
+    set_target_properties(QHULL::QHULL PROPERTIES INTERFACE_COMPILE_DEFINITIONS "qh_QHpointer_dllimport")
   endif()
-
   if(WIN32 AND NOT QHULL_USE_STATIC)
     set_target_properties(QHULL::QHULL PROPERTIES IMPORTED_IMPLIB_RELEASE "${QHULL_LIBRARY}")
   else()
@@ -131,11 +128,11 @@ if(QHULL_FOUND)
   endif()
   if(QHULL_LIBRARY_DEBUG)
     set_property(TARGET QHULL::QHULL APPEND PROPERTY IMPORTED_CONFIGURATIONS "DEBUG")
-    set_target_properties(QHULL::QHULL PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG "CXX")
     if(WIN32 AND NOT QHULL_USE_STATIC)
       set_target_properties(QHULL::QHULL PROPERTIES IMPORTED_IMPLIB_DEBUG "${QHULL_LIBRARY_DEBUG}")
     else()
       set_target_properties(QHULL::QHULL PROPERTIES IMPORTED_LOCATION_DEBUG "${QHULL_LIBRARY_DEBUG}")
     endif()
   endif()
+  message(STATUS "QHULL found (include: ${QHULL_INCLUDE_DIR}, lib: ${QHULL_LIBRARY})")
 endif()
