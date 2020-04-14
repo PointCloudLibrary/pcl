@@ -613,7 +613,9 @@ namespace pcl
       makeShared () const { return Ptr (new PointCloud<PointT> (*this)); }
 
     protected:
-      // This is motivated by ROS integration. Users should not need to access mapping_.
+      /** \brief This is motivated by ROS integration. Users should not need to access mapping_.
+        * \todo Once mapping_ is removed, erase the explicitly defined copy constructor in PointCloud.
+        */
       PCL_DEPRECATED(1, 12, "rewrite your code to avoid using this protected field") shared_ptr<MsgFieldMap> mapping_;
 
       friend shared_ptr<MsgFieldMap>& detail::getMapping<PointT>(pcl::PointCloud<PointT> &p);
