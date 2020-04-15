@@ -185,6 +185,15 @@ namespace pcl
         */
       PointCloud () = default;
 
+      /** \brief Copy constructor.
+        * \param[in] pc the cloud to copy into this
+        * \todo Erase once mapping_ is removed.
+        */
+      #pragma clang diagnostic push
+      #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      PointCloud (const PointCloud<PointT> &pc) = default;
+      #pragma clang diagnostic pop
+
       /** \brief Copy constructor from point cloud subset
         * \param[in] pc the cloud to copy into this
         * \param[in] indices the subset to copy
@@ -604,7 +613,9 @@ namespace pcl
       makeShared () const { return Ptr (new PointCloud<PointT> (*this)); }
 
     protected:
-      // This is motivated by ROS integration. Users should not need to access mapping_.
+      /** \brief This is motivated by ROS integration. Users should not need to access mapping_.
+        * \todo Once mapping_ is removed, erase the explicitly defined copy constructor in PointCloud.
+        */
       PCL_DEPRECATED(1, 12, "rewrite your code to avoid using this protected field") shared_ptr<MsgFieldMap> mapping_;
 
       friend shared_ptr<MsgFieldMap>& detail::getMapping<PointT>(pcl::PointCloud<PointT> &p);
