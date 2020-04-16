@@ -71,7 +71,7 @@ namespace pcl
     /**
      * \brief Enumeration for different numerical types
      *
-     * \detail struct used to enable scope and implicit conversion to int
+     * \details struct used to enable scope and implicit conversion to int
      */
     struct PointFieldTypes {
         static const std::uint8_t INT8 = 1,    UINT8 = 2,
