@@ -46,6 +46,7 @@
 #include <pcl/type_traits.h>  // for has_custom_allocator
 
 #include <boost/make_shared.hpp>  // for boost::allocate_shared, boost::make_shared
+#include <boost/pointer_cast.hpp>  // for boost::dynamic_pointer_cast, boost::static_pointer_cast
 #include <boost/smart_ptr/shared_ptr.hpp>  // for boost::shared_ptr
 
 #include <Eigen/Core>  // for EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -70,15 +71,19 @@
 namespace pcl
 {
 /**
- * \brief Alias for boost::shared_ptr
+ * \brief Force ADL for `shared_ptr`
  *
  * For ease of switching from boost::shared_ptr to std::shared_ptr
  *
  * \see pcl::make_shared
- * \tparam T Type of the object stored inside the shared_ptr
  */
-template <typename T>
-using shared_ptr = boost::shared_ptr<T>;
+using boost::shared_ptr;
+
+/** ADL doesn't work until C++20 for dynamic_pointer_cast since it requires an explicit Tparam */
+using boost::dynamic_pointer_cast;
+
+/** ADL doesn't work until C++20 for static_pointer_cast since it requires an explicit Tparam */
+using boost::static_pointer_cast;
 
 #ifdef DOXYGEN_ONLY
 

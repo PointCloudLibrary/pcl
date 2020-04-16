@@ -42,8 +42,10 @@
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
-#include <pcl/io/boost.h>
+#include <pcl/io/boost.h>  // for boost::shared_array
+#include <pcl/memory.h>  // for dynamic_pointer_cast
 #include <pcl/exceptions.h>
+
 #include <iostream>
 
 namespace
@@ -82,7 +84,7 @@ ONIGrabber::ONIGrabber (const std::string& file_name, bool repeat, bool stream)
   , point_cloud_rgba_signal_ ()
 {
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
-  device_ = boost::dynamic_pointer_cast< openni_wrapper::DeviceONI> (driver.createVirtualDevice (file_name, repeat, stream));
+  device_ = dynamic_pointer_cast< openni_wrapper::DeviceONI> (driver.createVirtualDevice (file_name, repeat, stream));
 
   if (!device_->hasDepthStream ())
     PCL_THROW_EXCEPTION (pcl::IOException, "Device does not provide 3D information.");

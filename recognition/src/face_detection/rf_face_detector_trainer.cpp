@@ -8,6 +8,7 @@
 #include "pcl/recognition/face_detection/rf_face_detector_trainer.h"
 #include "pcl/recognition/face_detection/face_common.h"
 #include "pcl/io/pcd_io.h"
+#include <pcl/memory.h>  // for dynamic_pointer_cast
 #include "pcl/ml/dt/decision_tree_trainer.h"
 #include "pcl/ml/dt/decision_tree_evaluator.h"
 #include "pcl/ml/dt/decision_forest_trainer.h"
@@ -21,6 +22,7 @@
 #include "pcl/filters/voxel_grid.h"
 #include <pcl/recognition/hv/hv_papazov.h>
 #include <pcl/features/normal_3d.h>
+
 
 void pcl::RFFaceDetectorTrainer::trainWithDataProvider()
 {
@@ -58,7 +60,7 @@ void pcl::RFFaceDetectorTrainer::trainWithDataProvider()
 
   dtdp->initialize (directory_);
 
-  auto cast_dtdp = boost::dynamic_pointer_cast<pcl::DecisionTreeTrainerDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>> (dtdp);
+  auto cast_dtdp = dynamic_pointer_cast<pcl::DecisionTreeTrainerDataProvider<face_detection::FeatureType, std::vector<face_detection::TrainingExample>, float, int, NodeType>> (dtdp);
   dft.setDecisionTreeDataProvider (cast_dtdp);
 
   pcl::DecisionForest<NodeType> forest;

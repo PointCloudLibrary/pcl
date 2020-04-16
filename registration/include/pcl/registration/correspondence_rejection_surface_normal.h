@@ -40,7 +40,9 @@
 #pragma once
 
 #include <pcl/registration/correspondence_rejection.h>
+#include <pcl/memory.h>  // for static_pointer_cast
 #include <pcl/point_cloud.h>
+
 
 namespace pcl
 {
@@ -111,7 +113,7 @@ namespace pcl
             PCL_ERROR ("[pcl::registration::%s::setInputCloud] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
-          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (input);
+          static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (input);
         }
 
         /** \brief Provide a source point cloud dataset (must contain XYZ data!), used to compute the correspondence distance.  
@@ -125,7 +127,7 @@ namespace pcl
             PCL_ERROR ("[pcl::registration::%s::setInputCloud] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
-          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (input);
+          static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (input);
         }
 
         /** \brief Get the target input point cloud */
@@ -137,7 +139,7 @@ namespace pcl
             PCL_ERROR ("[pcl::registration::%s::getInputSource] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
-          return (boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->getInputSource ());
+          return (static_pointer_cast<DataContainer<PointT> > (data_container_)->getInputSource ());
         }
 
         /** \brief Provide a target point cloud dataset (must contain XYZ data!), used to compute the correspondence distance.  
@@ -151,7 +153,7 @@ namespace pcl
             PCL_ERROR ("[pcl::registration::%s::setInputTarget] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
-          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputTarget (target);
+          static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputTarget (target);
         }
 
         /** \brief Provide a pointer to the search object used to find correspondences in
@@ -165,7 +167,7 @@ namespace pcl
         setSearchMethodTarget (const typename pcl::search::KdTree<PointT>::Ptr &tree,
                                bool force_no_recompute = false)
         { 
-          boost::static_pointer_cast< DataContainer<PointT> > 
+          static_pointer_cast< DataContainer<PointT> > 
             (data_container_)->setSearchMethodTarget (tree, force_no_recompute );
         }
 
@@ -178,7 +180,7 @@ namespace pcl
             PCL_ERROR ("[pcl::registration::%s::getInputTarget] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
-          return (boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->getInputTarget ());
+          return (static_pointer_cast<DataContainer<PointT> > (data_container_)->getInputTarget ());
         }
 
         /** \brief Set the normals computed on the input point cloud
@@ -192,7 +194,7 @@ namespace pcl
             PCL_ERROR ("[pcl::registration::%s::setInputNormals] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
-          boost::static_pointer_cast<DataContainer<PointT, NormalT> > (data_container_)->setInputNormals (normals);
+          static_pointer_cast<DataContainer<PointT, NormalT> > (data_container_)->setInputNormals (normals);
         }
 
         /** \brief Get the normals computed on the input point cloud */
@@ -204,7 +206,7 @@ namespace pcl
             PCL_ERROR ("[pcl::registration::%s::getInputNormals] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
-          return (boost::static_pointer_cast<DataContainer<pcl::PointXYZ, NormalT> > (data_container_)->getInputNormals ());
+          return (static_pointer_cast<DataContainer<pcl::PointXYZ, NormalT> > (data_container_)->getInputNormals ());
         }
 
         /** \brief Set the normals computed on the target point cloud
@@ -218,7 +220,7 @@ namespace pcl
             PCL_ERROR ("[pcl::registration::%s::setTargetNormals] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
-          boost::static_pointer_cast<DataContainer<PointT, NormalT> > (data_container_)->setTargetNormals (normals);
+          static_pointer_cast<DataContainer<PointT, NormalT> > (data_container_)->setTargetNormals (normals);
         }
 
         /** \brief Get the normals computed on the target point cloud */
@@ -230,7 +232,7 @@ namespace pcl
             PCL_ERROR ("[pcl::registration::%s::getTargetNormals] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
             return;
           }
-          return (boost::static_pointer_cast<DataContainer<pcl::PointXYZ, NormalT> > (data_container_)->getTargetNormals ());
+          return (static_pointer_cast<DataContainer<pcl::PointXYZ, NormalT> > (data_container_)->getTargetNormals ());
         }
 
 
