@@ -99,6 +99,25 @@
   #define _PCL_DEPRECATED_IMPL(Message)
 #endif
 
+// Macro for pragma operator
+#if (defined (__GNUC__) || defined(__clang__))
+  #define PCL_PRAGMA(x) _Pragma (#x)
+#elif _MSC_VER
+  #define PCL_PRAGMA(x) __pragma (#x)
+#else
+  #define PCL_PRAGMA
+#endif
+
+// Macro for emitting pragma warning for deprecated headers
+#if (defined (__GNUC__) || defined(__clang__))
+  #define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA (GCC warning Message)
+#elif _MSC_VER
+  #define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA (warning (Message))
+#else
+  #warning "You need to implement _PCL_DEPRECATED_HEADER_IMPL for this compiler"
+  #define _PCL_DEPRECATED_HEADER_IMPL(Message)
+#endif
+
 /**
  * \brief A handy way to inform the user of the removal deadline
  */
@@ -133,8 +152,31 @@
       Major,                                                                           \
       _PCL_COMPAT_MINOR_VERSION(                                                       \
           Minor,                                                                       \
-          _PCL_DEPRECATED_IMPL(_PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Message)),    \
+          _PCL_DEPRECATED_IMPL(_PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Message)),   \
           unneeded_deprecation),                                                       \
+      major_version_mismatch)
+
+/**
+ * \brief macro for compatibility across compilers and help remove old deprecated
+ *        headers for the Major.Minor release
+ *
+ * \details compiler errors of `unneeded_header` and `major_version_mismatch`
+ * are hints to the developer that those items can be safely removed.
+ * Behavior of PCL_DEPRECATED_HEADER(1, 99, "Use file <newfile.h> instead.")
+ *   * till PCL 1.98: "This header is deprecated. Use file <newfile.h> instead. (It will be removed in PCL 1.99)"
+ *   * PCL 1.99 onwards: compiler error with "unneeded_header"
+ *   * PCL 2.0 onwards: compiler error with "major_version_mismatch"
+ */
+#define PCL_DEPRECATED_HEADER(Major, Minor, Message)                                   \
+  _PCL_COMPAT_MAJOR_VERSION(                                                           \
+      Major,                                                                           \
+      _PCL_COMPAT_MINOR_VERSION(                                                       \
+          Minor,                                                                       \
+          _PCL_DEPRECATED_HEADER_IMPL(_PCL_PREPARE_REMOVAL_MESSAGE(                    \
+              Major,                                                                   \
+              Minor,                                                                   \
+              "This header is deprecated. " Message)),                                 \
+          unneeded_header),                                                            \
       major_version_mismatch)
 
 #if defined _WIN32
@@ -302,24 +344,6 @@ pcl_round (float number)
 
 #ifndef PCLAPI
     #define PCLAPI(rettype) PCL_EXTERN_C PCL_EXPORTS rettype PCL_CDECL
-#endif
-
-// Macro for pragma operator
-#if (defined (__GNUC__) || defined(__clang__))
-  #define PCL_PRAGMA(x) _Pragma (#x)
-#elif _MSC_VER
-  #define PCL_PRAGMA(x) __pragma (#x)
-#else
-  #define PCL_PRAGMA
-#endif
-
-// Macro for emitting pragma warning
-#if (defined (__GNUC__) || defined(__clang__))
-  #define PCL_PRAGMA_WARNING(x) PCL_PRAGMA (GCC warning x)
-#elif _MSC_VER
-  #define PCL_PRAGMA_WARNING(x) PCL_PRAGMA (warning (x))
-#else
-  #define PCL_PRAGMA_WARNING
 #endif
 
 //for clang cf. http://clang.llvm.org/docs/LanguageExtensions.html
