@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/filters/filter.h>
 
 namespace pcl
@@ -51,11 +52,13 @@ namespace pcl
    * \ingroup filters
    */
   template <typename NormalT> inline std::vector<float>
-  assignNormalWeights (const PointCloud<NormalT>&,
-                       int,
+  assignNormalWeights (const PointCloud<NormalT>& cloud,
+                       int index,
                        const std::vector<int>& k_indices,
                        const std::vector<float>& k_sqr_distances)
   {
+    PCL_UNUSED(cloud);
+    PCL_UNUSED(index);
     // Check inputs
     if (k_indices.size () != k_sqr_distances.size ())
       PCL_ERROR("[pcl::assignNormalWeights] inequal size of neighbor indices and distances!\n");
