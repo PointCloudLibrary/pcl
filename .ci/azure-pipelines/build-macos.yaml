@@ -13,7 +13,7 @@ jobs:
     variables:
       BUILD_DIR: '$(Agent.WorkFolder)/build'
       GOOGLE_TEST_DIR: '$(Agent.WorkFolder)/googletest'
-      CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi'
+      CMAKE_CXX_FLAGS: '-Wall -Wextra -Werror -Wabi'
     steps:
       - script: |
           brew install pkg-config qt5 libpcap brewsci/science/openni libomp
