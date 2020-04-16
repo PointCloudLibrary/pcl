@@ -178,7 +178,6 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
 
   // Convergence and registration failure
   float current_fitness  = 0.f;
-  float previous_fitness = std::numeric_limits <float>::max ();
   float delta_fitness    = std::numeric_limits <float>::max ();
   float overlap          = std::numeric_limits <float>::quiet_NaN ();
 
@@ -274,7 +273,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
     }
 
     // NOTE: The fitness is calculated with the transformation from the previous iteration (I don't re-calculate it after the transformation estimation). This means that the actual fitness will be one iteration "better" than the calculated fitness suggests. This should be no problem because the difference is small at the state of convergence.
-    previous_fitness           = current_fitness;
+    float previous_fitness = current_fitness;
     current_fitness            = squared_distance_sum / static_cast <float> (n_corr);
     delta_fitness              = std::abs (previous_fitness - current_fitness);
     squared_distance_threshold = factor_ * current_fitness;
