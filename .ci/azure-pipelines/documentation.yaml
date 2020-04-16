@@ -34,7 +34,7 @@ jobs:
         displayName: 'Build Documentation'
       - script: |
           cd $BUILD_DIR
-          sed -r -e 's/([0-9]+)\s\.\s([0-9]+)\s/\1.\2/' doc/doxygen/html/deprecated.html
+          sed -i -r -e 's/([0-9]+)\s\.\s([0-9]+)\s/\1.\2/' doc/doxygen/html/deprecated.html
         displayName: 'Remove extra spaces in Doxygen''s Deprecated List'
       - script: |
           git config --global user.email "documentation@pointclouds.org"
