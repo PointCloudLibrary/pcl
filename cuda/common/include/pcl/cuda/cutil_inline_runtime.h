@@ -161,7 +161,7 @@ inline int cutGetMaxGflopsGraphicsDeviceId()
 	cudaGetDeviceCount( &device_count );
 	// Find the best major SM Architecture GPU device that is graphics capable
 	while ( current_device < device_count ) {
-              cudaDeviceProp deviceProp;
+              	cudaDeviceProp deviceProp;
 		cudaGetDeviceProperties( &deviceProp, current_device );
 
 		if (deviceProp.tccDriver) bTCC = 1;
@@ -177,9 +177,9 @@ inline int cutGetMaxGflopsGraphicsDeviceId()
     // Find the best CUDA capable GPU device
 	current_device = 0;
 	while( current_device < device_count ) {
-              cudaDeviceProp deviceProp;
+              	cudaDeviceProp deviceProp;
 		cudaGetDeviceProperties( &deviceProp, current_device );
-              int sm_per_multiproc = (deviceProp.major == 9999 && deviceProp.minor == 9999) ? 1 : _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
+              	int sm_per_multiproc = (deviceProp.major == 9999 && deviceProp.minor == 9999) ? 1 : _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
 
 		if (deviceProp.tccDriver) bTCC = 1;
 
@@ -194,7 +194,8 @@ inline int cutGetMaxGflopsGraphicsDeviceId()
 						max_compute_perf  = compute_perf;
 						max_perf_device   = current_device;
 					}
-				} else {
+				} 
+				else {
 					max_compute_perf  = compute_perf;
 					max_perf_device   = current_device;
 				}
@@ -211,8 +212,8 @@ inline int cutGetMaxGflopsGraphicsDeviceId()
 #  ifdef _DEBUG // Do this only in debug mode...
 	inline void VSPrintf(FILE *file, LPCSTR fmt, ...)
 	{
-		std::size_t fmt2_sz	= 2048;
-		char *fmt2		= (char*)malloc(fmt2_sz);
+		std::size_t fmt2_sz = 2048;
+		char *fmt2 = (char*)malloc(fmt2_sz);
 		va_list  vlist;
 		va_start(vlist, fmt);
 		while((_vsnprintf(fmt2, fmt2_sz, fmt, vlist)) < 0) // means there wasn't anough room
@@ -225,17 +226,17 @@ inline int cutGetMaxGflopsGraphicsDeviceId()
 		fprintf(file, fmt2);
 		free(fmt2);
 	}
-#	define FPRINTF(a) VSPrintf a
-#  else //debug
-#	define FPRINTF(a) fprintf a
+#define FPRINTF(a) VSPrintf a
+#else //debug
+#define FPRINTF(a) fprintf a
 // For other than Win32
-#  endif //debug
-# else //unicode
+#endif //debug
+#else //unicode
 // Unicode case... let's give-up for now and keep basic printf
-#	define FPRINTF(a) fprintf a
-# endif //unicode
+#define FPRINTF(a) fprintf a
+#endif //unicode
 #else //win32
-#	define FPRINTF(a) fprintf a
+#define FPRINTF(a) fprintf a
 #endif //win32
 
 // NOTE: "%s(%i) : " allows Visual Studio to directly jump to the file at the right line
@@ -253,7 +254,7 @@ inline void __cudaSafeCallNoSync( cudaError err, const char *file, const int lin
 inline void __cudaSafeCall( cudaError err, const char *file, const int line )
 {
     if( cudaSuccess != err) {
-		FPRINTF((stderr, "%s(%i) : cudaSafeCall() Runtime API error : %s.\n",
+	FPRINTF((stderr, "%s(%i) : cudaSafeCall() Runtime API error : %s.\n",
                 file, line, cudaGetErrorString( err) ));
         exit(-1);
     }
@@ -308,7 +309,7 @@ inline void __cutilGetLastErrorAndSync( const char *errorMessage, const char *fi
 
 	err = cutilDeviceSynchronize();
     if( cudaSuccess != err) {
-		FPRINTF((stderr, "%s(%i) : cutilCheckMsg cudaDeviceSynchronize error: %s : %s.\n",
+	FPRINTF((stderr, "%s(%i) : cutilCheckMsg cudaDeviceSynchronize error: %s : %s.\n",
                 file, line, errorMessage, cudaGetErrorString( err) ));
         exit(-1);
     }
@@ -430,7 +431,8 @@ inline void __cutilQAFinish(int argc, char **argv, bool bStatus)
     if (bFlag) {
         printf("&&&& %s %s", sStatus[bStatus], argv[0]);
         for (int i=1; i < argc; i++) printf(" %s", argv[i]);
-    } else {
+    } 
+    else {
         printf("[%s] test result\n%s\n", argv[0], sStatus[bStatus]);
     }
 }
@@ -451,13 +453,11 @@ inline bool cutilCudaCapabilities(int major_version, int minor_version, int argc
     cutilSafeCall( cudaGetDeviceProperties(&deviceProp, dev));
 
     if((deviceProp.major > major_version) ||
-	   (deviceProp.major == major_version && deviceProp.minor >= minor_version))
-    {
+	   (deviceProp.major == major_version && deviceProp.minor >= minor_version)) {
         printf("> Device %d: <%16s >, Compute SM %d.%d detected\n", dev, deviceProp.name, deviceProp.major, deviceProp.minor);
         return true;
     }
-    else
-    {
+    else {
         printf("There is no device supporting CUDA compute capability %d.%d.\n", major_version, minor_version);
         __cutilQAFinish(argc, argv, true);
         return false;
