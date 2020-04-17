@@ -602,14 +602,16 @@ namespace pcl
    
       /** \brief Check point cloud size before writing
         * \param[in] cloud the pcl::PointCloud data
+        * returns 1 if point cloud is empty, 2 if (width*height != size), 0 otherwise  
         */
-      template<typename PointT> inline bool
+      template<typename PointT> inline int
       checkCloudSize (const pcl::PointCloud<PointT> &cloud);
 
       /** \brief Check point cloud size before writing
         * \param[in] cloud the pcl::PointCloud data
+        * returns 1 if point cloud or indices are empty, 2 if (width*height != size), 0 otherwise  
         */
-      template<typename PointT> inline bool
+      template<typename PointT> inline int
       checkCloudSize (const pcl::PointCloud<PointT> &cloud,
                       const std::vector<int> &indices);
 
