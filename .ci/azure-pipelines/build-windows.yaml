@@ -19,6 +19,9 @@ jobs:
       CONFIGURATION: 'Release'
       VCPKG_ROOT: 'C:\vcpkg'
     steps:
+      - checkout: self
+        # find the commit hash on a quick non-forced update too
+        fetchDepth: 10
       - script: |
           echo ##vso[task.setvariable variable=BOOST_ROOT]%BOOST_ROOT_1_69_0%
         displayName: 'Set BOOST_ROOT Environment Variable'
