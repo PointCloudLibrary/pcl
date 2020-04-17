@@ -97,8 +97,8 @@ class SimpleKinectTool
         }
         else
         {
-          typename SampleConsensusModel1PointPlane<Storage>::IndicesPtr inliers_stencil;
-          inliers_stencil = sac.getInliersStencil ();
+          //typename SampleConsensusModel1PointPlane<Storage>::IndicesPtr inliers_stencil;
+          //inliers_stencil = sac.getInliersStencil ();
 
       //    OpenNIRGB color;
       //    color.r = 253; color.g = 0; color.b = 0;
@@ -157,7 +157,6 @@ class SimpleKinectTool
     run (bool use_device)
     {
 #if 1
-      pcl::Grabber* filegrabber = 0;
 
       float frames_per_second = 1;
       bool repeat = false;

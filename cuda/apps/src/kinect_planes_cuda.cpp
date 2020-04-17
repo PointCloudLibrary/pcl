@@ -250,18 +250,17 @@ class MultiRansac
       //cudaDeviceSetCacheConfig (cudaFuncCachePreferL1);
       pcl::OpenNIGrabber interface {};
 
-      boost::signals2::connection c;
       if (use_device)
       {
         std::cerr << "[RANSAC] Using GPU..." << std::endl;
         std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&MultiRansac::cloud_cb<Device>, this, _1, _2, _3);
-        c = interface.registerCallback (f);
+        interface.registerCallback (f);
       }
       else
       {
         std::cerr << "[RANSAC] Using CPU..." << std::endl;
         std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&MultiRansac::cloud_cb<Host>, this, _1, _2, _3);
-        c = interface.registerCallback (f);
+        interface.registerCallback (f);
       }
 
       if (use_viewer)
