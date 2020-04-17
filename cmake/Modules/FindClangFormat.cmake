@@ -12,16 +12,23 @@
 #
 # .. code-block:: cmake
 #
-# find_package(ClangFormat) 
+# find_package(ClangFormat)
 # if(ClangFormat_FOUND)
 # message("clang-format executable found: ${ClangFormat_EXECUTABLE}\n"
-#         "version: ${ClangFormat_VERSION}") 
+#         "version: ${ClangFormat_VERSION}")
 # endif()
 
 find_program(ClangFormat_EXECUTABLE
              NAMES
+             # unreleased versions
+                   clang-format-14
+                   clang-format-13
+                   clang-format-12
+                   clang-format-11
+             # current latest
+                   clang-format-10
                    clang-format-9
-                   clang-format-9.0
+             # since clang-format-8, only major version is prefixed
                    clang-format-8
                    clang-format-8.0
                    clang-format-7
