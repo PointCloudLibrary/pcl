@@ -41,14 +41,6 @@
 
 #include <pcl/point_types.h>
 
-#ifdef BUILD_Maintainer
-#  if defined __GNUC__
-#      pragma GCC system_header 
-#  elif defined _MSC_VER
-#    pragma warning(push, 1)
-#  endif
-#endif
-
 namespace pcl
 {
   namespace tracking
@@ -120,12 +112,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::tracking::_ParticleXYZR,
     (float, yaw, yaw)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYZR, pcl::tracking::_ParticleXYZR)
-
-#ifdef BUILD_Maintainer
-#  if defined _MSC_VER
-#    pragma warning(pop)
-#  endif
-#endif
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/tracking/impl/tracking.hpp>
