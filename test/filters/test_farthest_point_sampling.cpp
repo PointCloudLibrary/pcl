@@ -73,7 +73,13 @@ TEST (FarthestPointSampling, farthest_point_sampling)
   fps.setSample(SAMPLE_SIZE);
   fps.filter(cloud_out);
 
-  //asert cloud size
+  //check get methods
+  std::size_t sample_value = fps.getSample();
+  int seed_value = fps.getSeed();
+
+  //assert seed value and sample value and sample cloud size
+  EXPECT_EQ(seed_value, random_seed);
+  EXPECT_EQ(sample_value, SAMPLE_SIZE);
   EXPECT_EQ (cloud_out.points.size(),  SAMPLE_SIZE);
 
   //check if each element is in the correct order
