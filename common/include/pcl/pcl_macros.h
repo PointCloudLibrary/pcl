@@ -112,7 +112,7 @@
  * \brief macro for compatibility across compilers and help remove old deprecated
  *        items for the Major.Minor release
  *
- * \detail compiler errors of `unneeded_deprecation` and `major_version_mismatch`
+ * \details compiler errors of `unneeded_deprecation` and `major_version_mismatch`
  * are hints to the developer that those items can be safely removed.
  * Warning message with PCL_DEPRECATED(1, 99, "Not needed anymore") till PCL 1.98:
  * "Slated for removal in PCL 1.99: Not needed anymore"
