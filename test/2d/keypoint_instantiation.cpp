@@ -1,8 +1,8 @@
-/*
- * Software License Agreement (BSD License)
+/**
+ *  Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2020-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -32,50 +32,25 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *
- *  keypoint.h
- *
- *  Created on: May 28, 2012
- *      Author: somani
  */
 
-#pragma once
+#include <pcl/2d/keypoint.h> // for pcl::Keypoint
 
-#include <pcl/2d/edge.h>
+#include <pcl/point_types.h> // for pcl::PointXYZ
+#include <pcl/test/gtest.h>  // for SUCCEED
 
-namespace pcl {
+/** This isn't useful except for testing the instantiation of this class. See #3898 */
+TEST (Keypoint, instantiatesWithAndWithoutPrecompiledHeaders)
+{
+  pcl::Keypoint<pcl::PointXYZ> keypoint = pcl::Keypoint<pcl::PointXYZ>();
+  SUCCEED();
+}
 
-template <typename ImageType>
-class Keypoint {
-private:
-  Edge<ImageType, ImageType> edge_detection;
-  Convolution<ImageType> conv_2d;
-
-public:
-  Keypoint() {}
-
-  void
-  harrisCorner(ImageType& output,
-               ImageType& input,
-               const float sigma_d,
-               const float sigma_i,
-               const float alpha,
-               const float thresh);
-
-  void
-  hessianBlob(ImageType& output, ImageType& input, const float sigma, bool SCALE);
-
-  void
-  hessianBlob(ImageType& output,
-              ImageType& input,
-              const float start_scale,
-              const float scaling_factor,
-              const int num_scales);
-
-  void
-  imageElementMultiply(ImageType& output, ImageType& input1, ImageType& input2);
-};
-
-} // namespace pcl
-
-#include <pcl/2d/impl/keypoint.hpp>
+/** --[ */
+int
+main (int argc, char** argv)
+{
+  testing::InitGoogleTest (&argc, argv);
+  return (RUN_ALL_TESTS ());
+}
+/* ]-- */

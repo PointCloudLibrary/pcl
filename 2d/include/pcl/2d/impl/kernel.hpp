@@ -35,8 +35,9 @@
  *
  */
 
-#ifndef PCL_2D_KERNEL_IMPL_HPP
-#define PCL_2D_KERNEL_IMPL_HPP
+#pragma once
+
+#include <pcl/2d/kernel.h>
 
 namespace pcl {
 
@@ -334,5 +335,3 @@ kernel<PointT>::setKernelSigma(float kernel_sigma)
 }
 
 } // namespace pcl
-
-#endif

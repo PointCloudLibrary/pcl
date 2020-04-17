@@ -35,8 +35,9 @@
  *
  */
 
-#ifndef PCL_2D_MORPHOLOGY_HPP_
-#define PCL_2D_MORPHOLOGY_HPP_
+#pragma once
+
+#include <pcl/2d/morphology.h>
 
 namespace pcl {
 
@@ -364,5 +365,3 @@ Morphology<PointT>::setStructuringElement(const PointCloudInPtr& structuring_ele
 }
 
 } // namespace pcl
-
-#endif // PCL_2D_MORPHOLOGY_HPP_
