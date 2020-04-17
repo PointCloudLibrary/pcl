@@ -56,7 +56,7 @@ else()
             PATH_SUFFIXES libusb-1.0)
 
   find_library(LIBUSB_1_LIBRARY
-               NAMES usb-1.0
+               NAMES usb-1.0 libusb-1.0
                PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
 
   set(LIBUSB_1_INCLUDE_DIRS ${LIBUSB_1_INCLUDE_DIR})
