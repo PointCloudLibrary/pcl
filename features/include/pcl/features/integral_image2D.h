@@ -39,9 +39,10 @@
 
 #pragma once
 
+#include <pcl/memory.h>
+
 #include <vector>
 
-#include <boost/shared_ptr.hpp>
 
 namespace pcl
 {
