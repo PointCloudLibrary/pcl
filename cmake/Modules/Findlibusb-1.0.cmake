@@ -55,6 +55,8 @@ else()
             PATHS /usr/include /usr/local/include /opt/local/include /sw/include
             PATH_SUFFIXES libusb-1.0)
 
+  # We need to look for libusb-1.0 too because find_library does not attempt to find
+  # library files with a "lib" prefix implicitly on Windows
   find_library(LIBUSB_1_LIBRARY
                NAMES usb-1.0 libusb-1.0
                PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
