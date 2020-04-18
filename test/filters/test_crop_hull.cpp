@@ -189,7 +189,7 @@ TEST (PCL, ConvexHull_2dsquare)
   baseOffsetList.emplace_back(1, 5, -3);
   for (pcl::PointXYZ const & baseOffset : baseOffsetList)
   {
-    pcl::CropHull<pcl::PointXYZ> cropHullFilter;
+    pcl::CropHull<pcl::PointXYZ> cropHullFilter(true);
     {
       pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud (new pcl::PointCloud<pcl::PointXYZ> ());
       inputCloud->emplace_back(0.0f, 0.0f, 0.0f);
@@ -241,7 +241,7 @@ TEST (PCL, issue_1657_CropHull3d_not_cropping_inside)
 {
   typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
 
-  pcl::CropHull<pcl::PointXYZ> cropHullFilter;
+  pcl::CropHull<pcl::PointXYZ> cropHullFilter(true);
   PointCloud::Ptr hullCloud(new PointCloud());
   PointCloud::Ptr hullPoints(new PointCloud());
   std::vector<pcl::Vertices> hullPolygons;
@@ -336,7 +336,7 @@ TEST (PCL, ConvexHull_3dcube)
   baseOffsetList.emplace_back(1, 5, -3);
   for (pcl::PointXYZ const & baseOffset : baseOffsetList)
   {
-    pcl::CropHull<pcl::PointXYZ> cropHullFilter;
+    pcl::CropHull<pcl::PointXYZ> cropHullFilter(true);
     {
       pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud (new pcl::PointCloud<pcl::PointXYZ> ());
       inputCloud->emplace_back(0.0f, 0.0f, 0.0f);
