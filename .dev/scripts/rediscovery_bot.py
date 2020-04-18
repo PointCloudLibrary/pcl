@@ -38,15 +38,18 @@ Software License Agreement (BSD License)
 """
 
 import aiohttp
+import argparse
 import asyncio
 from datetime import datetime
 import discord
 import itertools
 import random
+import time
 
 
 async def get_issues(repository, closed=False, include_labels=[],
                      exclude_labels=[]):
+    print("Getting issues from GitHub")
     closed = 'closed' if closed else 'open'
 
     # All query items are list of strings, which will be flattened later
@@ -101,6 +104,17 @@ async def set_playing(status):
     await client.change_presence(activity=discord.Game(name=status))
 
 
+async def send_message(channel, number_of_issues):
+    await set_playing('Rummaging through Baggage')
+    issues = await get_issues('PointCloudLibrary/pcl', exclude_labels=['stale'])
+
+    async with channel.typing():
+        chosen_issues = random.choices(issues, k=number_of_issues)
+        reply = compose_message(beautify_issues(chosen_issues))
+    await channel.send(reply)
+    await set_playing('The Waiting Game')
+
+
 @client.event
 async def on_ready():
     await set_playing('The Waiting Game')
@@ -123,14 +137,7 @@ async def on_message(message):
                            " I'm not a monster!!")
         return
 
-    await set_playing('Rummaging through Baggage')
-    issues = await get_issues('PointCloudLibrary/pcl', exclude_labels=['stale'])
-
-    async with channel.typing():
-        chosen_issues = random.choices(issues, k=number_of_issues)
-        reply = compose_message(beautify_issues(chosen_issues))
-    await channel.send(reply)
-    await set_playing('The Waiting Game')
+    await send_message(channel, number_of_issues)
 
 
 def read_secret_token(filename):
@@ -142,8 +149,41 @@ async def testing():
     print((await get_issues('PointCloudLibrary/pcl', exclude_labels=['stale']))[0])
 
 
+async def oneshot(channel_id, n):
+    await client.wait_until_ready()
+    await send_message(client.get_channel(channel_id), n)
+    await client.close()
+
+
+def get_args():
+    p = argparse.ArgumentParser("GitHub Issue Slot Machine",
+                                description="""[Discord bot]
+It helps to discover random open, non-stale issues.
+By default, it'll enter interactive mode and return N issues when prompted by:
+`!give N`
+where N is a number less than open issues.
+If a channel ID is provided, it'll send N issues and exit
+""")
+    p.add_argument("--channel_id", type=int,
+                   help="Channel ID (numerical) to send messages to")
+    p.add_argument("--issues", metavar="N", default=5, type=int,
+                   help="Number of issues to send in one-shot mode, default: 5")
+    return p.parse_known_args()
+
+
 def main():
-    client.run(read_secret_token(".discord-token"))
+    args, _ = get_args()
+    if not (args.channel_id and args.issues > 0):
+        print("Entering interactive mode")
+        client.run(read_secret_token(".discord-token"))
+        return
+
+    print("Running in one-shot mode."
+          f" Will send {args.issues} messages to requested channel")
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(client.login(read_secret_token(".discord-token")))
+    loop.create_task(oneshot(args.channel_id, args.issues))
+    loop.run_until_complete(client.connect())
 
 
 if __name__ == "__main__":
