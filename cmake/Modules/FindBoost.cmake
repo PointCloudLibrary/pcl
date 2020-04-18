@@ -29,7 +29,7 @@ set(Boost_ADDITIONAL_VERSIONS
 set(Boost_NO_BOOST_CMAKE ON)
 
 # Required boost modules
-set(BOOST_OPTIONAL_MODULES serialization mpi) # MPI needed?
+set(BOOST_OPTIONAL_MODULES serialization)
 set(BOOST_REQUIRED_MODULES filesystem date_time iostreams system)
 
 # Temporarily clean out CMAKE_MODULE_PATH, so that we can pick up the built-in Find-module from CMake:
@@ -37,7 +37,7 @@ set( CMAKE_MODULE_PATH_BAK ${CMAKE_MODULE_PATH} )
 set( CMAKE_MODULE_PATH )
 
 # Call CMake's own Find-module
-find_package(Boost 1.55.0  REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES} OPTIONAL_COMPONENTS ${BOOST_OPTIONAL_MODULES})
+find_package(Boost 1.55.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES} OPTIONAL_COMPONENTS ${BOOST_OPTIONAL_MODULES})
 
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH_BAK} )
 
