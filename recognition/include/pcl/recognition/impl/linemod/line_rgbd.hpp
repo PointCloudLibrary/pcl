@@ -150,72 +150,79 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
 
   // Compute 3D bounding boxes from the template point clouds
   bounding_boxes_.resize (template_point_clouds_.size ());
-  for (std::size_t i = 0; i < template_point_clouds_.size (); ++i)
+  for (std::size_t i = 0; i < template_point_clouds_.size (); ++i) 
   {
-    PointCloud<PointXYZRGBA> & template_point_cloud = template_point_clouds_[i];
-    BoundingBoxXYZ & bb = bounding_boxes_[i];
-    bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
-    bb.width = bb.height = bb.depth = 0.0f;
-
-    float center_x = 0.0f;
-    float center_y = 0.0f;
-    float center_z = 0.0f;
-    float min_x = std::numeric_limits<float>::max ();
-    float min_y = std::numeric_limits<float>::max ();
-    float min_z = std::numeric_limits<float>::max ();
-    float max_x = -std::numeric_limits<float>::max ();
-    float max_y = -std::numeric_limits<float>::max ();
-    float max_z = -std::numeric_limits<float>::max ();
-    std::size_t counter = 0;
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
-    {
-      const PointXYZRGBA & p = template_point_cloud.points[j];
-
-      if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
-        continue;
-
-      min_x = std::min (min_x, p.x);
-      min_y = std::min (min_y, p.y);
-      min_z = std::min (min_z, p.z);
-      max_x = std::max (max_x, p.x);
-      max_y = std::max (max_y, p.y);
-      max_z = std::max (max_z, p.z);
-
-      center_x += p.x;
-      center_y += p.y;
-      center_z += p.z;
-
-      ++counter;
-    }
-
-    center_x /= static_cast<float> (counter);
-    center_y /= static_cast<float> (counter);
-    center_z /= static_cast<float> (counter);
-
-    bb.width  = max_x - min_x;
-    bb.height = max_y - min_y;
-    bb.depth  = max_z - min_z;
-
-    bb.x = (min_x + bb.width / 2.0f) - center_x - bb.width / 2.0f;
-    bb.y = (min_y + bb.height / 2.0f) - center_y - bb.height / 2.0f;
-    bb.z = (min_z + bb.depth / 2.0f) - center_z - bb.depth / 2.0f;
-
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
-    {
-      PointXYZRGBA p = template_point_cloud.points[j];
-
-      if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
-        continue;
-
-      p.x -= center_x;
-      p.y -= center_y;
-      p.z -= center_z;
-
-      template_point_cloud.points[j] = p;
-    }
+    computeBoundingBox (i);
   }
 
   return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointXYZT, typename PointRGBT> void
+pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBox (int i)
+{
+  PointCloud<PointXYZRGBA> & template_point_cloud = template_point_clouds_[i];
+  BoundingBoxXYZ & bb = bounding_boxes_[i];
+  bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
+  bb.width = bb.height = bb.depth = 0.0f;
+
+  float center_x = 0.0f;
+  float center_y = 0.0f;
+  float center_z = 0.0f;
+  float min_x = std::numeric_limits<float>::max ();
+  float min_y = std::numeric_limits<float>::max ();
+  float min_z = std::numeric_limits<float>::max ();
+  float max_x = -std::numeric_limits<float>::max ();
+  float max_y = -std::numeric_limits<float>::max ();
+  float max_z = -std::numeric_limits<float>::max ();
+  std::size_t counter = 0;
+  for (std::size_t j = 0; j < template_point_cloud.size (); ++j) 
+  {
+    const PointXYZRGBA & p = template_point_cloud.points[j];
+
+    if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
+      continue;
+
+    min_x = std::min (min_x, p.x);
+    min_y = std::min (min_y, p.y);
+    min_z = std::min (min_z, p.z);
+    max_x = std::max (max_x, p.x);
+    max_y = std::max (max_y, p.y);
+    max_z = std::max (max_z, p.z);
+
+    center_x += p.x;
+    center_y += p.y;
+    center_z += p.z;
+
+    ++counter;
+  }
+
+  center_x /= static_cast<float> (counter);
+  center_y /= static_cast<float> (counter);
+  center_z /= static_cast<float> (counter);
+
+  bb.width  = max_x - min_x;
+  bb.height = max_y - min_y;
+  bb.depth  = max_z - min_z;
+
+  bb.x = (min_x + bb.width / 2.0f) - center_x - bb.width / 2.0f;
+  bb.y = (min_y + bb.height / 2.0f) - center_y - bb.height / 2.0f;
+  bb.z = (min_z + bb.depth / 2.0f) - center_z - bb.depth / 2.0f;
+
+  for (std::size_t j = 0; j < template_point_cloud.size (); ++j) 
+  {
+    PointXYZRGBA p = template_point_cloud.points[j];
+
+    if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
+      continue;
+
+    p.x -= center_x;
+    p.y -= center_y;
+    p.z -= center_z;
+
+    template_point_cloud.points[j] = p;
+  }
 }
 
 
@@ -238,68 +245,7 @@ LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
   bounding_boxes_.resize (template_point_clouds_.size ());
   {
     const std::size_t i = template_point_clouds_.size () - 1;
-
-    PointCloud<PointXYZRGBA> & template_point_cloud = template_point_clouds_[i];
-    BoundingBoxXYZ & bb = bounding_boxes_[i];
-    bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
-    bb.width = bb.height = bb.depth = 0.0f;
-
-    float center_x = 0.0f;
-    float center_y = 0.0f;
-    float center_z = 0.0f;
-    float min_x = std::numeric_limits<float>::max ();
-    float min_y = std::numeric_limits<float>::max ();
-    float min_z = std::numeric_limits<float>::max ();
-    float max_x = -std::numeric_limits<float>::max ();
-    float max_y = -std::numeric_limits<float>::max ();
-    float max_z = -std::numeric_limits<float>::max ();
-    std::size_t counter = 0;
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
-    {
-      const PointXYZRGBA & p = template_point_cloud.points[j];
-
-      if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
-        continue;
-
-      min_x = std::min (min_x, p.x);
-      min_y = std::min (min_y, p.y);
-      min_z = std::min (min_z, p.z);
-      max_x = std::max (max_x, p.x);
-      max_y = std::max (max_y, p.y);
-      max_z = std::max (max_z, p.z);
-
-      center_x += p.x;
-      center_y += p.y;
-      center_z += p.z;
-
-      ++counter;
-    }
-
-    center_x /= static_cast<float> (counter);
-    center_y /= static_cast<float> (counter);
-    center_z /= static_cast<float> (counter);
-
-    bb.width  = max_x - min_x;
-    bb.height = max_y - min_y;
-    bb.depth  = max_z - min_z;
-
-    bb.x = (min_x + bb.width / 2.0f) - center_x - bb.width / 2.0f;
-    bb.y = (min_y + bb.height / 2.0f) - center_y - bb.height / 2.0f;
-    bb.z = (min_z + bb.depth / 2.0f) - center_z - bb.depth / 2.0f;
-
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
-    {
-      PointXYZRGBA p = template_point_cloud.points[j];
-
-      if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
-        continue;
-
-      p.x -= center_x;
-      p.y -= center_y;
-      p.z -= center_z;
-
-      template_point_cloud.points[j] = p;
-    }
+    computeBoundingBox (i);
   }
 
   std::vector<pcl::QuantizableModality*> modalities;
