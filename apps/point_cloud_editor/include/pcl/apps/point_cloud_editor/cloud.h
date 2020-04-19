@@ -44,6 +44,9 @@
 #include <QtGui/QColor>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/statistics.h>
+
+#include <pcl/memory.h>  // for pcl::weak_ptr
+
 #ifdef OPENGL_IS_A_FRAMEWORK
 # include <OpenGL/gl.h>
 # include <OpenGL/glu.h>
@@ -75,6 +78,12 @@
 class Cloud : public Statistics
 {
   public:
+    /// The type for shared pointer pointing to a selection buffer
+    using SelectionPtr = pcl::shared_ptr<Selection>;
+
+    /// The type for weak pointer pointing to a selection buffer
+    using SelectionWeakPtr = pcl::weak_ptr<Selection>;
+
     /// @brief Default Constructor
     Cloud ();
 
@@ -412,7 +421,7 @@ class Cloud : public Statistics
     /// @brief A weak pointer pointing to the selection object.
     /// @details This implementation uses the weak pointer to allow for a lazy
     /// update of the cloud if the selection object is destroyed.
-    std::weak_ptr<Selection> selection_wk_ptr_;
+    SelectionWeakPtr selection_wk_ptr_;
 
     /// Flag that indicates whether a color ramp should be used (true) or not
     /// (false) when displaying the cloud
