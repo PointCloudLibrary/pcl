@@ -66,15 +66,13 @@ namespace pcl
 
       class PCL_EXPORTS RealSenseDeviceManager : boost::noncopyable
       {
-
         public:
+          using Ptr = pcl::shared_ptr<RealSenseDeviceManager>;
 
-          using Ptr = std::shared_ptr<RealSenseDeviceManager>;
-
-          static Ptr&
+          static RealSenseDeviceManagerPtr&
           getInstance ()
           {
-            static Ptr instance;
+            static RealSenseDeviceManagerPtr instance;
             if (!instance)
             {
               std::lock_guard<std::mutex> lock (mutex_);
@@ -90,18 +88,20 @@ namespace pcl
             return (device_list_.size ());
           }
 
-          std::shared_ptr<RealSenseDevice>
+          RealSenseDevicePtr
           captureDevice ();
 
-          std::shared_ptr<RealSenseDevice>
+          RealSenseDevicePtr
           captureDevice (std::size_t index);
 
-          std::shared_ptr<RealSenseDevice>
+          RealSenseDevicePtr
           captureDevice (const std::string& sn);
 
           ~RealSenseDeviceManager ();
 
         private:
+          using PXCSessionPtr = pcl::shared_ptr<PXCSession>;
+          using PXCCaptureManagerPtr = pcl::shared_ptr<PXCCaptureManager>;
 
           struct DeviceInfo
           {
@@ -113,7 +113,7 @@ namespace pcl
           };
 
           /** If the device is already captured returns a pointer. */
-          std::shared_ptr<RealSenseDevice>
+          RealSenseDevicePtr
           capture (DeviceInfo& device_info);
 
           RealSenseDeviceManager ();
@@ -123,18 +123,17 @@ namespace pcl
           void
           populateDeviceList ();
 
-          std::shared_ptr<PXCSession> session_;
-          std::shared_ptr<PXCCaptureManager> capture_manager_;
+          PXCSessionPtr session_;
+          PXCCaptureManagerPtr capture_manager_;
 
           std::vector<DeviceInfo> device_list_;
 
           static std::mutex mutex_;
-
       };
+
 
       class PCL_EXPORTS RealSenseDevice : boost::noncopyable
       {
-
         public:
           using Ptr = pcl::shared_ptr<RealSenseDevice>;
 
@@ -146,7 +145,7 @@ namespace pcl
 
           /** Reset the state of given device by releasing and capturing again. */
           static void
-          reset (RealSenseDevice::Ptr& device)
+          reset (RealSenseDevicePtr& device)
           {
             std::string id = device->getSerialNumber ();
             device.reset ();
@@ -154,15 +153,16 @@ namespace pcl
           }
 
         private:
+           using PXCCapturePtr = pcl::shared_ptr<PXCCapture>;
+           using PXCCaptureDevicePtr = pcl::shared_ptr<PXCCapture::Device>;
 
           friend class RealSenseDeviceManager;
 
           std::string device_id_;
-          std::shared_ptr<PXCCapture> capture_;
-          std::shared_ptr<PXCCapture::Device> device_;
+          PXCCapturePtr capture_;
+          PXCCaptureDevicePtr device_;
 
           RealSenseDevice (const std::string& id) : device_id_ (id) { };
-
       };
 
     } // namespace real_sense
@@ -170,3 +170,4 @@ namespace pcl
   } // namespace io
 
 } // namespace pcl
+
