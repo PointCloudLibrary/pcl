@@ -104,10 +104,9 @@ def beautify_issues(github_issue_list):
 
 
 def compose_message(issues):
-    message = [f"My top {len(issues)} pick(s) are:"]
-    issue_data = [f'{i+1}. **Issue:** {issue["title"]}\n  {issue["html_url"]}'
+    issue_data = [f'**{i+1}.** {issue["title"]}\n  {issue["html_url"]}'
                   for i, issue in enumerate(issues)]
-    return '\n'.join(itertools.chain.from_iterable([message, issue_data]))
+    return '\n'.join(issue_data)
 
 
 client = discord.Client()
@@ -117,15 +116,36 @@ async def set_playing(status):
     await client.change_presence(activity=discord.Game(name=status))
 
 
-async def send_message(channel, number_of_issues):
+async def give_random(channel, number_of_issues):
     await set_playing('Finding Issues')
     issues = await get_issues('PointCloudLibrary/pcl',
                               exclude_labels=['status: stale'])
 
     async with channel.typing():
         chosen_issues = random.choices(issues, k=number_of_issues)
-        reply = compose_message(beautify_issues(chosen_issues))
-    await channel.send(reply)
+        reply = discord.Embed(color=discord.Color.purple())
+        reply.title = f"{number_of_issues} random picks out of {len(issues)}:"
+        reply.description = compose_message(beautify_issues(chosen_issues))
+    await channel.send(embed=reply)
+    await set_playing('The Waiting Game')
+
+
+async def review_q(channel, number_of_issues, author=None):
+    await set_playing('On The Cue')
+    issues = await get_issues('PointCloudLibrary/pcl', pull_request=True,
+                              exclude_labels=['status: stale'],
+                              include_labels=['needs: code review'],
+                              sort='updated', ascending_order=True)
+    if author:
+        pass
+    print(issues[0])
+    async with channel.typing():
+        chosen_issues = issues[:number_of_issues]
+        reply = discord.Embed(color=discord.Color.purple())
+        reply.title = f"Top {number_of_issues}/{len(issues)} of review queue:"
+        reply.description = compose_message(beautify_issues(chosen_issues))
+        print(reply.description)
+    await channel.send(embed=reply)
     await set_playing('The Waiting Game')
 
 
@@ -150,27 +170,59 @@ async def on_message(message):
     query = data.strip().split(' ')
     command = query[0][1:]
     args = query[1:]
+
+    reply = discord.Embed(color=discord.Color.purple())
+    reply.description = "Talking to me? Use `!what` to know more."
+
     if command == 'what':
-        await channel.send('Want to discover random open, non-stale issues?')
-        await channel.send('Use `!give <N>` to get N picks made just for you')
+        reply.title = "Command list for GitHub Helper"
+        reply.description = '''`!give <N>`
+Retrieves N random open, non-stale issues
+
+`!q <N>`
+Retrieves top N Pull Requests in the review queue'''
+        await channel.send(embed=reply)
         return
 
-    if command == "give":
+    elif command == "give":
         if len(args) != 1:
-            await channel.send("Talking to me? Use `!what` to know more.")
+            await channel.send(embed=reply)
             return
         try:
             number_of_issues = int(args[0].strip())
             if number_of_issues < 1:
                 raise ValueError("Positive integer needed")
         except ValueError:
-            await channel.send("I can't give you un-natural issues."
-                               " I'm not a monster!!")
+            reply.description = "I can't give you un-natural issues." + \
+                " I'm not a monster!!"
+            await channel.send(embed=reply)
             return
         if number_of_issues > 10:
             number_of_issues = 10
             await channel.send("Let's curb that enthusiasm.. just a little")
-        await send_message(channel, number_of_issues)
+        await give_random(channel, number_of_issues)
+        return
+
+    elif command == "my_q":
+        pass
+
+    elif command == "q":
+        if len(args) != 1:
+            await channel.send(embed=reply)
+            return
+        try:
+            number_of_issues = int(args[0].strip())
+            if number_of_issues < 1:
+                raise ValueError("Positive integer needed")
+        except ValueError:
+            await channel.send("This queue is 100% natural. Check your orders")
+            return
+        if number_of_issues > 10:
+            number_of_issues = 10
+            await channel.send("Let's curb that enthusiasm.. just a little")
+        await review_q(channel, number_of_issues)
+        return
+    return
 
 
 def read_secret_token(filename):
@@ -184,7 +236,7 @@ async def testing():
 
 async def oneshot(channel_id, n):
     await client.wait_until_ready()
-    await send_message(client.get_channel(channel_id), n)
+    await give_random(client.get_channel(channel_id), n)
     await client.close()
 
 
