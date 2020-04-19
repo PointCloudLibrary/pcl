@@ -125,6 +125,9 @@ async def on_message(message):
     # we do not want the bot to reply to itself
     if message.author.id == client.user.id:
         return
+    # Don't reply to bots
+    if message.author.bot:
+        return
     channel = message.channel
     query = message.content.partition("!give")
     if query[0]:
