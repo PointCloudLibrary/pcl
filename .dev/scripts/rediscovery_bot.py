@@ -91,7 +91,7 @@ def beautify_issues(github_issue_list):
 
 
 def compose_message(issues):
-    message = [f"My top {len(issues)} picks are:"]
+    message = [f"My top {len(issues)} pick(s) are:"]
     issue_data = [f'{i+1}. **Issue:** {issue["title"]}\n  {issue["html_url"]}'
                   for i, issue in enumerate(issues)]
     return '\n'.join(itertools.chain.from_iterable([message, issue_data]))
@@ -130,7 +130,7 @@ async def on_message(message):
         return
     channel = message.channel
     data = message.content
-    if data[0] != '!':
+    if len(data) == 0 or data[0] != '!':
         return
     # split message into command and arguments
     query = data.strip().split(' ')
@@ -153,7 +153,9 @@ async def on_message(message):
             await channel.send("I can't give you un-natural issues."
                                " I'm not a monster!!")
             return
-
+        if number_of_issues > 10:
+            number_of_issues = 10
+            await channel.send("Let's curb that enthusiasm.. just a little")
         await send_message(channel, number_of_issues)
 
 
