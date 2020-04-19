@@ -38,6 +38,7 @@
 #pragma once
 
 #include <pcl/pcl_macros.h>
+#include <pcl/common/utils.h>
 #include <pcl/filters/filter.h>
 
 namespace pcl
@@ -57,8 +58,8 @@ namespace pcl
                        const std::vector<int>& k_indices,
                        const std::vector<float>& k_sqr_distances)
   {
-    PCL_UNUSED(cloud);
-    PCL_UNUSED(index);
+    pcl::utils::ignore(cloud);
+    pcl::utils::ignore(index);
     // Check inputs
     if (k_indices.size () != k_sqr_distances.size ())
       PCL_ERROR("[pcl::assignNormalWeights] inequal size of neighbor indices and distances!\n");
