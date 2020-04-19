@@ -109,8 +109,9 @@ kiss_fft_stride(kiss_fft_cfg cfg,const kiss_fft_cpx *fin,kiss_fft_cpx *fout,int 
  Cleans up some memory that gets managed internally. Not necessary to call, but it might clean up 
  your compiler output to call this before you exit.
 */
+PCL_DEPRECATED(1, 13, "This function does nothing, you can safely not use it.")
 void PCL_EXPORTS 
-kiss_fft_cleanup(void);
+kiss_fft_cleanup(void) {};
 
 /*
  * Returns the smallest integer k, such that k>=n and k has only "fast" factors (2,3,5)
