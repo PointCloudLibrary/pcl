@@ -619,9 +619,7 @@ namespace pcl
         void
         flushToDiskLazy ();
 
-        /** \brief DEPRECATED - Flush empty nodes only 
-         *  \deprecated
-         */
+        /** \brief Flush empty nodes only */
         void
         DeAllocEmptyNodeCache ();
 
