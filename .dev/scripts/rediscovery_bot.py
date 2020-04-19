@@ -105,7 +105,7 @@ async def set_playing(status):
 
 
 async def send_message(channel, number_of_issues):
-    await set_playing('Rummaging through Baggage')
+    await set_playing('Finding Issues')
     issues = await get_issues('PointCloudLibrary/pcl', exclude_labels=['stale'])
 
     async with channel.typing():
@@ -129,18 +129,32 @@ async def on_message(message):
     if message.author.bot:
         return
     channel = message.channel
-    query = message.content.partition("!give")
-    if query[0]:
+    data = message.content
+    if data[0] != '!':
+        return
+    # split message into command and arguments
+    query = data.strip().split(' ')
+    command = query[0][1:]
+    args = query[1:]
+    if command == 'what':
+        await channel.send('Want to discover random open, non-stale issues?')
+        await channel.send('Use `!give <N>` to get N picks made just for you')
         return
 
-    try:
-        number_of_issues = int(query[2].strip())
-    except ValueError:
-        await channel.send("Talking to me? I can't give you uncountable issues."
-                           " I'm not a monster!!")
-        return
+    if command == "give":
+        if len(args) != 1:
+            await channel.send("Talking to me? Use `!what` to know more.")
+            return
+        try:
+            number_of_issues = int(args[0].strip())
+            if number_of_issues < 1:
+                raise ValueError("Positive integer needed")
+        except ValueError:
+            await channel.send("I can't give you un-natural issues."
+                               " I'm not a monster!!")
+            return
 
-    await send_message(channel, number_of_issues)
+        await send_message(channel, number_of_issues)
 
 
 def read_secret_token(filename):
