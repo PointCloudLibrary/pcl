@@ -21,8 +21,6 @@
 #include <pcl/simulation/scene.h>
 #include <pcl/surface/gp3.h>
 
-// define the following in order to eliminate the deprecated headers warning
-#define VTK_EXCLUDE_STRSTREAM_HEADERS
 #include <pcl/io/vtk_lib_io.h>
 
 #ifdef _WIN32
