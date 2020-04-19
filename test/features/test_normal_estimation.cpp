@@ -39,6 +39,7 @@
 
 #include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/features/integral_image_normal.h>
@@ -195,7 +196,7 @@ class DummySearch : public pcl::search::Search<PointT>
     virtual int nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices,
                                 std::vector<float> &k_sqr_distances ) const
     {
-      (void)point;
+      pcl::utils::ignore(point);
 
       EXPECT_GE (k_indices.size(), k);
       EXPECT_GE (k_sqr_distances.size(), k);
@@ -206,10 +207,10 @@ class DummySearch : public pcl::search::Search<PointT>
     virtual int radiusSearch (const PointT& point, double radius, std::vector<int>& k_indices,
                               std::vector<float>& k_sqr_distances, unsigned int max_nn = 0 ) const
     {
-      (void)point;
-      (void)radius;
-      (void)k_indices;
-      (void)k_sqr_distances;
+      pcl::utils::ignore(point);
+      pcl::utils::ignore(radius);
+      pcl::utils::ignore(k_indices);
+      pcl::utils::ignore(k_sqr_distances);
 
       return max_nn;
     }

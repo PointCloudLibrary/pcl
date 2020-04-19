@@ -41,6 +41,7 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/keypoints/brisk_2d.h>
 #include <pcl/point_types.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/impl/instantiate.hpp>
 #if defined(__SSSE3__) && !defined(__i386__)
 #include <tmmintrin.h>
@@ -1445,7 +1446,7 @@ pcl::keypoints::brisk::Layer::getValue (
     int width, int height,
     float xf, float yf, float scale)
 {
-  (void)height;
+  pcl::utils::ignore(height);
   assert (!mat.empty ());
   // get the position
   const int x = int (std::floor (xf));
@@ -1559,7 +1560,7 @@ pcl::keypoints::brisk::Layer::halfsample (
     std::vector<unsigned char>& dstimg,
     int dstwidth, int dstheight)
 {
-  (void)dstheight;
+  pcl::utils::ignore(dstheight);
 #if defined(__SSSE3__) && !defined(__i386__)
   const unsigned short leftoverCols = static_cast<unsigned short> ((srcwidth % 16) / 2); // take care with border...
   const bool noleftover = (srcwidth % 16) == 0; // note: leftoverCols can be zero but this still false...
@@ -1699,11 +1700,11 @@ pcl::keypoints::brisk::Layer::halfsample (
     }
   }
 #else
-  (void) (srcimg);
-  (void) (srcwidth);
-  (void) (srcheight);
-  (void) (dstimg); 
-  (void) (dstwidth);
+  pcl::utils::ignore(srcimg);
+  pcl::utils::ignore(srcwidth);
+  pcl::utils::ignore(srcheight);
+  pcl::utils::ignore(dstimg); 
+  pcl::utils::ignore(dstwidth);
   PCL_ERROR("brisk without SSSE3 support not implemented");
 #endif
 }
@@ -1716,7 +1717,7 @@ pcl::keypoints::brisk::Layer::twothirdsample (
     std::vector<unsigned char>& dstimg,
     int dstwidth, int dstheight)
 {
-  (void)dstheight;
+  pcl::utils::ignore(dstheight);
 #if defined(__SSSE3__) && !defined(__i386__)
   const unsigned short leftoverCols = static_cast<unsigned short> (((srcwidth / 3) * 3) % 15);// take care with border...
 
@@ -1813,11 +1814,11 @@ pcl::keypoints::brisk::Layer::twothirdsample (
     p_dest2 = p_dest1 + dstwidth;
   }
 #else
-  (void) (srcimg);
-  (void) (srcwidth);
-  (void) (srcheight);
-  (void) (dstimg); 
-  (void) (dstwidth);
+  pcl::utils::ignore(srcimg);
+  pcl::utils::ignore(srcwidth);
+  pcl::utils::ignore(srcheight);
+  pcl::utils::ignore(dstimg); 
+  pcl::utils::ignore(dstwidth);
   PCL_ERROR("brisk without SSSE3 support not implemented");
 #endif
 }
