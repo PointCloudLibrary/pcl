@@ -123,20 +123,6 @@
                     PCL_DEPRECATED_MODIFY_MSG(Major, Minor, Message)),  \
                 major_version_mismatch)
 
-/**
- * \brief Utility macro to eliminate unused variable warnings.
- *
- * \param x A parameter which will be used without being evaluated.
- *
- * Slightly better than `(void)(x)` as explained [here](https://stackoverflow.com/a/4030983/9926122)
- * but only works on MSVC so fall back on the classic version for other cases.
- */
-#if defined _MSC_VER
-  #define PCL_UNUSED(x) ((void)(true ? 0 : ((x), void(), 0)))
-#else
-  #define PCL_UNUSED(x) ((void)(x))
-#endif
-
 #if defined _WIN32
 // Define math constants, without including math.h, to prevent polluting global namespace with old math methods
 // Copied from math.h
