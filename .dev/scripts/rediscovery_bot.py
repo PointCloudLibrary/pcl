@@ -45,21 +45,33 @@ import discord
 import itertools
 import random
 import time
+from urllib.parse import quote_plus
 
 
-async def get_issues(repository, closed=False, include_labels=[],
-                     exclude_labels=[]):
-    print("Getting issues from GitHub")
+async def get_issues(repository, closed=False, pull_request=False,
+                     include_labels=[], exclude_labels=[],
+                     sort='created', ascending_order=False):
     closed = 'closed' if closed else 'open'
+    pull_request = 'pr' if pull_request else 'issue'
+    print(f"Getting list of {closed} {pull_request} from GitHub")
+    def gh_encode(x): return quote_plus(x, safe='"')
 
+    api_url = f"https://api.github.com/search/issues?"
     # All query items are list of strings, which will be flattened later
-    status = [f"is:{closed}"]
-    excluded_labels = [f"-label:'{x}'" for x in exclude_labels]
-    included_labels = [f"label:'{x}'" for x in include_labels]
+    excluded_labels = [f'-label:"{gh_encode(x)}"' for x in exclude_labels]
+    included_labels = [f'label:"{gh_encode(x)}"' for x in include_labels]
+    issue = [f'is:{pull_request}']
     repo = [f"repo:{repository}"]
-    api_url = ["https://api.github.com/search/issues?q=is:issue"]
-    queries = [api_url, repo, status, excluded_labels, included_labels]
-    query_url = '+'.join(itertools.chain.from_iterable(queries))
+    status = [f"is:{closed}"]
+    query = [issue, repo, status, excluded_labels, included_labels]
+
+    query_string = 'q=' + '+'.join(itertools.chain.from_iterable(query))
+    sort_string = f'sort={sort}'
+    order_string = 'order=' + ('asc' if ascending_order else 'desc')
+
+    query_url = api_url + '&'.join([query_string, sort_string, order_string])
+
+    print(query_url)
 
     issue_data = []
     page = 1
@@ -82,6 +94,7 @@ async def get_issues(repository, closed=False, include_labels=[],
                 # exit if all data has been received
                 if len(issue_data) == total_count:
                     break
+    print(f"Found {len(issue_data)} entries")
     return issue_data
 
 
@@ -106,7 +119,8 @@ async def set_playing(status):
 
 async def send_message(channel, number_of_issues):
     await set_playing('Finding Issues')
-    issues = await get_issues('PointCloudLibrary/pcl', exclude_labels=['stale'])
+    issues = await get_issues('PointCloudLibrary/pcl',
+                              exclude_labels=['status: stale'])
 
     async with channel.typing():
         chosen_issues = random.choices(issues, k=number_of_issues)
