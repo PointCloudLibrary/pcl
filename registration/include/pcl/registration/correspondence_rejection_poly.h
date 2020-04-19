@@ -109,11 +109,10 @@ namespace pcl
         /** \brief Provide a source point cloud dataset (must contain XYZ data!), used to compute the correspondence distance.
           * \param[in] cloud a cloud containing XYZ data
           */
+        PCL_DEPRECATED(1, 12, "pcl::registration::CorrespondenceRejectorPoly::setInputCloud is deprecated. Please use setInputSource instead")
         inline void 
         setInputCloud (const PointCloudSourceConstPtr &cloud)
         {
-          PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n",
-                    getClassName ().c_str ());
           input_ = cloud;
         }
 
