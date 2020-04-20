@@ -37,10 +37,10 @@
 
 #pragma once
 
-#include <algorithm>
-
 #include <pcl/conversions.h>
 #include <pcl/point_types.h>
+
+#include <algorithm>
 
 namespace pcl {
 template <class T>

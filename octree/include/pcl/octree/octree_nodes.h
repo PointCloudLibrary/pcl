@@ -38,16 +38,14 @@
 
 #pragma once
 
-#include <cstddef>
-
-#include <cassert>
+#include <pcl/memory.h>
+#include <pcl/octree/octree_container.h>
+#include <pcl/pcl_macros.h>
 
 #include <Eigen/Core>
 
-#include <pcl/memory.h>
-#include <pcl/pcl_macros.h>
-
-#include "octree_container.h"
+#include <cassert>
+#include <cstddef>
 
 namespace pcl {
 namespace octree {

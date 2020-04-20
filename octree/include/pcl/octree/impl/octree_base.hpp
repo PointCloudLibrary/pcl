@@ -39,9 +39,9 @@
 #ifndef PCL_OCTREE_BASE_HPP
 #define PCL_OCTREE_BASE_HPP
 
-#include <vector>
-
 #include <pcl/impl/instantiate.hpp>
+
+#include <vector>
 
 namespace pcl {
 namespace octree {

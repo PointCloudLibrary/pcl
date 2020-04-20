@@ -38,12 +38,12 @@
 
 #pragma once
 
-#include <pcl/point_cloud.h>
-
 #include <pcl/octree/octree_pointcloud.h>
+#include <pcl/point_cloud.h>
 
 namespace pcl {
 namespace octree {
+
 /** \brief @b Octree pointcloud search class
  * \note This class provides several methods for spatial neighbor search based on octree
  * structure

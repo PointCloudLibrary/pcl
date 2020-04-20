@@ -40,11 +40,10 @@
 #pragma once
 
 #include <pcl/memory.h>
+#include <pcl/ml/pairwise_potential.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-
-#include <pcl/ml/pairwise_potential.h>
 
 namespace pcl {
 

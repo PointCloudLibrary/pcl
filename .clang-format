@@ -22,3 +22,39 @@ PointerAlignment: Left
 Standard: c++14
 TabWidth: 2
 UseTab: Never
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:           '^<pcl/'
+    Priority:        1
+  - Regex:           '^<gtest/'
+    Priority:        2
+  - Regex:           '^<boost/'
+    Priority:        3
+  - Regex:           '^<(unsupported/)?Eigen/'
+    Priority:        4
+  - Regex:           '^<flann/'
+    Priority:        5
+  - Regex:           '^<Q[^/]+>$'
+    Priority:        6
+  - Regex:           '^<ui_[^/]+\.h>$'
+    Priority:        6
+  - Regex:           '^<vtk[^/]+\.h>$'
+    Priority:        7
+  - Regex:           '^<librealsense2/'
+    Priority:        8
+  - Regex:           '^<(ros|message_filters)/'
+    Priority:        9
+  - Regex:           '^<opencv(2)?/'
+    Priority:        10
+  - Regex:           '^<tide/'
+    Priority:        11
+  - Regex:           '^<thrust/'
+    Priority:        12
+  - Regex:           '^<(OpenGL|(GL(UT)?/))'
+    Priority:        13
+# Matches all std includes. Match them before any unknown include, so we can order them behind.
+  - Regex:           '^<[a-z]+>$'
+    Priority:        15
+# Any unknown include
+  - Regex:           '.*'
+    Priority:        14

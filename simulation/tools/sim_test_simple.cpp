@@ -22,6 +22,7 @@
 #include <pcl/console/print.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/io/vtk_lib_io.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_config.h>
 #include <pcl/point_types.h>
@@ -33,14 +34,8 @@
 #include <pcl/surface/gp3.h>
 #include <pcl/visualization/cloud_viewer.h> // Pop-up viewer
 
-#include <pcl/io/vtk_lib_io.h>
-
 #include <Eigen/Dense>
 
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
 #include <GL/glew.h>
 
 #ifdef OPENGL_IS_A_FRAMEWORK
@@ -59,6 +54,10 @@
 #include <cmath>
 #include <iostream>
 #include <thread>
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 
 using namespace Eigen;
 using namespace pcl;

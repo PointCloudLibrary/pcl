@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Eigen/Dense>
-#include <Eigen/StdVector>
-
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+
+#include <Eigen/Dense>
+#include <Eigen/StdVector>
 
 namespace pcl {
 namespace simulation {

@@ -1,5 +1,6 @@
-#include <iostream>
 #include <pcl/simulation/camera.h>
+
+#include <iostream>
 
 using namespace Eigen;
 using namespace pcl::simulation;
