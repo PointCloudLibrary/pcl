@@ -43,6 +43,7 @@
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/common/angles.h>
+#include <pcl/common/utils.h>
 #include <pcl/PointIndices.h>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/segmentation/plane_coefficient_comparator.h>
@@ -294,8 +295,8 @@ namespace pcl
               PointCloudLPtr& labels,
               std::vector<pcl::PointIndices>& label_indices)
       {
-        PCL_UNUSED(centroids);
-        PCL_UNUSED(covariances);
+        pcl::utils::ignore(centroids);
+        pcl::utils::ignore(covariances);
         refine(model_coefficients, inlier_indices, labels, label_indices);
       }
 
