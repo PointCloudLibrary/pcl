@@ -48,6 +48,17 @@ import time
 from urllib.parse import quote_plus
 
 
+async def github_ratelimiter(headers):
+    # If this is the last message before rate-limiting kicks in
+    if int(headers['X-RateLimit-Remaining']) == 1:
+        epoch_sec = int(headers['X-RateLimit-Reset'])
+        delay = datetime.fromtimestamp(epoch_sec) - datetime.now()
+        # adding 1 to ensure we wait till after the rate-limit reset
+        sleep_time = delay.total_seconds() + 1
+        print(f'Need to sleep for {sleep_time}')
+        await asyncio.sleep(sleep_time)
+
+
 async def get_issues(repository, closed=False, pull_request=False,
                      include_labels=[], exclude_labels=[],
                      sort='created', ascending_order=False):
@@ -85,17 +96,37 @@ async def get_issues(repository, closed=False, pull_request=False,
                 total_count = data["total_count"]
                 issue_data.extend(data["items"])
                 page += 1
-                # implement rate limiting
-                if int(response.headers['X-RateLimit-Remaining']) == 1:
-                    epoch_sec = int(response.headers['X-RateLimit-Reset'])
-                    delay = datetime.fromtimestamp(epoch_sec) - datetime.now()
-                    # adding 1 to ensure we wait till after the rate-limit reset
-                    await asyncio.sleep(delay.total_seconds() + 1)
+                await github_ratelimiter(response.headers)
                 # exit if all data has been received
                 if len(issue_data) == total_count:
                     break
     print(f"Found {len(issue_data)} entries")
     return issue_data
+
+
+async def get_pr_details(issues):
+    print("Getting more details about the PRs")
+    counter = 0
+    for issue in issues:
+        async with aiohttp.ClientSession() as session:
+            response = await session.get(issue['pull_request']['url'],
+                                         raise_for_status=True)
+            async with response:
+                pr_data = await response.json()
+                counter += 1
+                yield pr_data
+                await github_ratelimiter(response.headers)
+    print(f"Received data about {counter} PRs")
+
+
+async def pr_with_pending_review(pr_list, user):
+    '''
+    Generates PR which need to be reviewed by the user
+    '''
+    async for pr in pr_list:
+        for reviewer in pr['requested_reviewers']:
+            if reviewer['login'] == user:
+                yield pr
 
 
 def beautify_issues(github_issue_list):
@@ -118,33 +149,45 @@ async def set_playing(status):
 
 async def give_random(channel, number_of_issues):
     await set_playing('Finding Issues')
-    issues = await get_issues('PointCloudLibrary/pcl',
-                              exclude_labels=['status: stale'])
-
     async with channel.typing():
-        chosen_issues = random.choices(issues, k=number_of_issues)
+        issues = await get_issues('PointCloudLibrary/pcl',
+                                  exclude_labels=['status: stale'])
         reply = discord.Embed(color=discord.Color.purple())
         reply.title = f"{number_of_issues} random picks out of {len(issues)}:"
+
+        chosen_issues = random.choices(issues, k=number_of_issues)
         reply.description = compose_message(beautify_issues(chosen_issues))
+        if len(chosen_issues) < number_of_issues:
+            reply.set_footer(text="There wasn't enough...")
     await channel.send(embed=reply)
     await set_playing('The Waiting Game')
 
 
 async def review_q(channel, number_of_issues, author=None):
     await set_playing('On The Cue')
-    issues = await get_issues('PointCloudLibrary/pcl', pull_request=True,
-                              exclude_labels=['status: stale'],
-                              include_labels=['needs: code review'],
-                              sort='updated', ascending_order=True)
-    if author:
-        pass
-    print(issues[0])
     async with channel.typing():
-        chosen_issues = issues[:number_of_issues]
+        issues = await get_issues('PointCloudLibrary/pcl', pull_request=True,
+                                  exclude_labels=['status: stale'],
+                                  include_labels=['needs: code review'],
+                                  sort='updated', ascending_order=True)
         reply = discord.Embed(color=discord.Color.purple())
-        reply.title = f"Top {number_of_issues}/{len(issues)} of review queue:"
+        reply.title = f"Oldest {number_of_issues}/{len(issues)} PR"
+        if author:
+            reply.title += f" waiting {author}'s review:"
+            issues = pr_with_pending_review(get_pr_details(issues), author)
+            chosen_issues = []
+            # since async islice doesn't exist
+            async for issue in issues:
+                chosen_issues.append(issue)
+                if len(chosen_issues) == number_of_issues:
+                    break
+        else:
+            reply.title += " in review queue:"
+            chosen_issues = issues[:number_of_issues]
+
         reply.description = compose_message(beautify_issues(chosen_issues))
-        print(reply.description)
+        if len(chosen_issues) < number_of_issues:
+            reply.set_footer(text="There wasn't enough...")
     await channel.send(embed=reply)
     await set_playing('The Waiting Game')
 
@@ -176,15 +219,18 @@ async def on_message(message):
 
     if command == 'what':
         reply.title = "Command list for GitHub Helper"
-        reply.description = '''`!give <N>`
+        reply.description = '''`!rand <N>`
 Retrieves N random open, non-stale issues
 
+`!review <N>`
+Retrieves N least-recently-updated PR awaiting your review
+
 `!q <N>`
-Retrieves top N Pull Requests in the review queue'''
+Retrieves N least-recently-updated PR in the review queue'''
         await channel.send(embed=reply)
         return
 
-    elif command == "give":
+    elif command == "rand":
         if len(args) != 1:
             await channel.send(embed=reply)
             return
@@ -203,10 +249,7 @@ Retrieves top N Pull Requests in the review queue'''
         await give_random(channel, number_of_issues)
         return
 
-    elif command == "my_q":
-        pass
-
-    elif command == "q":
+    elif command == "q" or command == "review":
         if len(args) != 1:
             await channel.send(embed=reply)
             return
@@ -220,7 +263,8 @@ Retrieves top N Pull Requests in the review queue'''
         if number_of_issues > 10:
             number_of_issues = 10
             await channel.send("Let's curb that enthusiasm.. just a little")
-        await review_q(channel, number_of_issues)
+        author = None if command == "q" else message.author.name
+        await review_q(channel, number_of_issues, author)
         return
     return
 
@@ -228,10 +272,6 @@ Retrieves top N Pull Requests in the review queue'''
 def read_secret_token(filename):
     with open(filename, "r") as f:
         return f.readline().strip()
-
-
-async def testing():
-    print((await get_issues('PointCloudLibrary/pcl', exclude_labels=['stale']))[0])
 
 
 async def oneshot(channel_id, n):
@@ -272,9 +312,4 @@ def main():
 
 
 if __name__ == "__main__":
-    """
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(testing())
-    loop.close()
-    """
     main()
