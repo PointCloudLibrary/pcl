@@ -127,7 +127,7 @@ inline int cutGetMaxGflopsDeviceId()
 	while( current_device < device_count ) {
               cudaDeviceProp deviceProp;
 		cudaGetDeviceProperties( &deviceProp, current_device );
-              int sm_per_multiproc = (deviceProp.major == 9999 && deviceProp.minor == 9999 ? 1 : _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
+              int sm_per_multiproc = (deviceProp.major == 9999 && deviceProp.minor == 9999) ? 1 : _ConvertSMVer2Cores(deviceProp.major, deviceProp.minor);
 
 		int compute_perf  = deviceProp.multiProcessorCount * sm_per_multiproc * deviceProp.clockRate;
 		if( compute_perf  > max_compute_perf ) {
