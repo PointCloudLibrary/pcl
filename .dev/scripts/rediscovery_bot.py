@@ -124,6 +124,7 @@ async def pr_with_pending_review(pr_list, user):
     '''
     Generates PR which need to be reviewed by the user
     '''
+    print(f"Filtering for @{user}")
     async for pr in pr_list:
         for reviewer in pr['requested_reviewers']:
             if reviewer['login'] == user:
@@ -259,7 +260,8 @@ Retrieves N least-recently-updated PR in the review queue'''
             return
         if number_of_issues > 10:
             number_of_issues = 10
-            await channel.send("Let's curb that enthusiasm.. just a little")
+            reply.description = "Let's curb that enthusiasm.. just a little"
+            await channel.send(embed=reply)
         await give_random(channel, number_of_issues)
         return
 
@@ -276,7 +278,8 @@ Retrieves N least-recently-updated PR in the review queue'''
             return
         if number_of_issues > 10:
             number_of_issues = 10
-            await channel.send("Let's curb that enthusiasm.. just a little")
+            reply.description = "Let's curb that enthusiasm.. just a little"
+            await channel.send(embed=reply)
         author = None if command == "q" else message.author.name
         await review_q(channel, number_of_issues, author)
         return
