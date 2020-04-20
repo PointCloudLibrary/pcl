@@ -42,7 +42,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
-pcl::CropHull<PointT>::applyFilter (std::vector<int> &indices)
+pcl::CropHull<PointT>::applyFilter (pcl::Indices &indices)
 {
   indices.clear();
   removed_indices_->clear();
@@ -86,9 +86,9 @@ pcl::CropHull<PointT>::getHullCloudRange ()
     -std::numeric_limits<float>::max (),
     -std::numeric_limits<float>::max ()
   );
-  for (std::size_t index = 0; index < indices_->size (); index++)
+  for (const index_t idx : *indices_)
   {
-    Eigen::Vector3f pt = input_->points[(*indices_)[index]].getVector3fMap ();
+    Eigen::Vector3f pt = input_->points[idx].getVector3fMap ();
     for (int i = 0; i < 3; i++)
     {
       if (pt[i] < cloud_min[i]) cloud_min[i] = pt[i];
@@ -101,7 +101,7 @@ pcl::CropHull<PointT>::getHullCloudRange ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> template<unsigned PlaneDim1, unsigned PlaneDim2> void
-pcl::CropHull<PointT>::applyFilter2D (std::vector<int> &indices)
+pcl::CropHull<PointT>::applyFilter2D (pcl::Indices &indices)
 {
   const bool keepInside = crop_outside_ ^ negative_;
 
@@ -150,15 +150,15 @@ pcl::CropHull<PointT>::applyFilter2D (std::vector<int> &indices)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointT> void 
-pcl::CropHull<PointT>::applyFilter3D (std::vector<int> &indices)
+template<typename PointT> void
+pcl::CropHull<PointT>::applyFilter3D (pcl::Indices &indices)
 {
   // This algorithm could definitely be sped up using kdtree/octree
   // information, if that is available!
 
   const bool keepInside = crop_outside_ ^ negative_;
 
-  std::vector<int> cropInlierIndices;
+  pcl::Indices cropInlierIndices;
   crop_box_.setIndices(indices_);
   crop_box_.filter(cropInlierIndices);
   std::vector<bool> cropBoxInlierMask(input_->size(), false);
@@ -303,7 +303,7 @@ pcl::CropHull<PointT>::rayTriangleIntersect (const PointT& point,
   const float t = t_numerator / denominator;
   if (t < 0 || s+t > 1)
     return (false);
-  
+
   return (true);
 }
 

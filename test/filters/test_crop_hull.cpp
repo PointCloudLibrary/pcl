@@ -38,6 +38,7 @@
  */
 
 #include <pcl/test/gtest.h>
+#include <pcl/pcl_tests.h>
 
 #include <random>
 
@@ -67,9 +68,9 @@ namespace
       }
       *mixedCubeCloud = (*insideCubeCloud) + (*outsideCubeCloud);
     }
-    std::vector<int> emptyIndices;
-    std::vector<int> lowerIndices(insideCubeCloud->size());
-    std::vector<int> upperIndices(insideCubeCloud->size());
+    pcl::Indices emptyIndices;
+    pcl::Indices lowerIndices(insideCubeCloud->size());
+    pcl::Indices upperIndices(insideCubeCloud->size());
     std::iota(lowerIndices.begin(), lowerIndices.end(), 0);
     std::iota(upperIndices.begin(), upperIndices.end(), lowerIndices.size());
 
@@ -79,14 +80,14 @@ namespace
         : cropHullFilter(cropHullFilter)
       {}
       void check(
-          std::vector<int> const & expectedFilteredIndices,
+          pcl::Indices const & expectedFilteredIndices,
           pcl::PointCloud<pcl::PointXYZ>::ConstPtr inputCloud)
       {
         std::vector<bool> expectedFilteredMask(inputCloud->size(), false);
-        std::vector<int> expectedRemovedIndices;
+        pcl::Indices expectedRemovedIndices;
         pcl::PointCloud<pcl::PointXYZ> expectedCloud;
         pcl::copyPointCloud(*inputCloud, expectedFilteredIndices, expectedCloud);
-        for (int idx : expectedFilteredIndices) {
+        for (pcl::index_t idx : expectedFilteredIndices) {
           expectedFilteredMask[idx] = true;
         }
         for (size_t i = 0; i < inputCloud->size(); ++i) {
@@ -97,49 +98,33 @@ namespace
 
         cropHullFilter.setInputCloud(inputCloud);
 
-        std::vector<int> filteredIndices;
+        pcl::Indices filteredIndices;
         cropHullFilter.filter(filteredIndices);
-        ASSERT_EQ (expectedFilteredIndices.size(), filteredIndices.size());
-        for (int i = 0; i < filteredIndices.size(); ++i)
-        {
-          ASSERT_EQ (expectedFilteredIndices[i], filteredIndices[i]);
-        }
+        pcl::test::EXPECT_EQ_VECTORS(expectedFilteredIndices, filteredIndices);
         //expected extract_removed_indices_ is true
-        ASSERT_EQ (expectedRemovedIndices.size(), cropHullFilter.getRemovedIndices()->size());
-        for (int i = 0; i < cropHullFilter.getRemovedIndices()->size(); ++i)
-        {
-          ASSERT_EQ (expectedRemovedIndices[i], cropHullFilter.getRemovedIndices()->at(i));
-        }
+        pcl::test::EXPECT_EQ_VECTORS(expectedRemovedIndices, *cropHullFilter.getRemovedIndices());
         // check negative filter functionality
         {
           cropHullFilter.setNegative(true);
           cropHullFilter.filter(filteredIndices);
           //expected extract_removed_indices_ is true
-          ASSERT_EQ (expectedRemovedIndices.size(), filteredIndices.size());
-          for (int i = 0; i < filteredIndices.size(); ++i)
-          {
-            ASSERT_EQ (expectedRemovedIndices[i], filteredIndices[i]);
-          }
-          ASSERT_EQ (expectedFilteredIndices.size(), cropHullFilter.getRemovedIndices()->size());
-          for (int i = 0; i < cropHullFilter.getRemovedIndices()->size(); ++i)
-          {
-            ASSERT_EQ (expectedFilteredIndices[i], cropHullFilter.getRemovedIndices()->at(i));
-          }
+          pcl::test::EXPECT_EQ_VECTORS(expectedRemovedIndices, filteredIndices);
+          pcl::test::EXPECT_EQ_VECTORS(expectedFilteredIndices, *cropHullFilter.getRemovedIndices());
           cropHullFilter.setNegative(false);
         }
 
         pcl::PointCloud<pcl::PointXYZ> filteredCloud;
         cropHullFilter.filter(filteredCloud);
         ASSERT_EQ (expectedCloud.size(), filteredCloud.size());
-        for (int i = 0; i < expectedCloud.size(); ++i)
+        for (pcl::index_t i = 0; i < expectedCloud.size(); ++i)
         {
           Eigen::Vector3f expectedPoint = expectedCloud[i].getVector3fMap();
           Eigen::Vector3f actualPoint = filteredCloud[i].getVector3fMap();
-          ASSERT_NEAR((expectedPoint - actualPoint).norm(), 0.0, 1e-5);
+          EXPECT_NEAR((expectedPoint - actualPoint).norm(), 0.0, 1e-5);
         }
-        // check non empty cloud filtering
+        // check non empty out cloud filtering
         cropHullFilter.filter(filteredCloud);
-        ASSERT_EQ (expectedCloud.size(), filteredCloud.size());
+        EXPECT_EQ (expectedCloud.size(), filteredCloud.size());
 
         // check keep organized
         {
@@ -148,7 +133,7 @@ namespace
           pcl::PointXYZ defaultPoint(-10., -10., -10.);
           cropHullFilter.filter(filteredCloud);
           ASSERT_EQ (inputCloud->size(), filteredCloud.size());
-          for (int i = 0; i < inputCloud->size(); ++i)
+          for (pcl::index_t i = 0; i < inputCloud->size(); ++i)
           {
             Eigen::Vector3f actualPoint = filteredCloud[i].getVector3fMap();
             Eigen::Vector3f expectedPoint = defaultPoint.getVector3fMap();

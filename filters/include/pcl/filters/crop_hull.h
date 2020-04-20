@@ -129,7 +129,7 @@ namespace pcl
       {
         return (hull_cloud_);
       }
-    
+
       /** \brief Set the dimensionality of the hull to be used.
         * This should be set to correspond to the dimensionality of the
         * convex/concave hull produced by the pcl::ConvexHull and
@@ -141,7 +141,7 @@ namespace pcl
       {
         dim_ = dim;
       }
-      
+
       /** \brief Remove points outside the hull (default), or those inside the hull.
         * \param[in] crop_outside If true, the filter will remove points
         * outside the hull. If false, those inside will be removed.
@@ -157,9 +157,9 @@ namespace pcl
         * \param[out] indices the indices of the set of points that passed the filter.
         */
       void
-      applyFilter (std::vector<int> &indices) override;
+      applyFilter (pcl::Indices &indices) override;
 
-    private:  
+    private:
       /** \brief Return the size of the hull point cloud in line with coordinate axes.
         * This is used to choose the 2D projection to use when cropping to a 2d
         * polygon.
@@ -175,7 +175,7 @@ namespace pcl
         *                     2D polygon filter.
         */
       template<unsigned PlaneDim1, unsigned PlaneDim2> void
-      applyFilter2D (std::vector<int> &indices);
+      applyFilter2D (pcl::Indices &indices);
 
       /** \brief Apply the three-dimensional hull filter.
         *  Polygon-ray crossings are used for three rays cast from each point
@@ -186,7 +186,7 @@ namespace pcl
         *                     polygon hull filter.
         */
       void
-      applyFilter3D (std::vector<int> &indices);
+      applyFilter3D (pcl::Indices &indices);
 
       /** \brief Test an individual point against a 2D polygon.
         * PlaneDim1 and PlaneDim2 specify the x/y/z coordinate axes to use.
