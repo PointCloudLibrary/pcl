@@ -84,7 +84,7 @@ async def get_issues(repository, closed=False, pull_request=False,
 
     print(query_url)
 
-    issue_data = []
+    data_count = 0
     page = 1
     while True:
         # max pagination size is 100 as of github api v3
@@ -94,20 +94,21 @@ async def get_issues(repository, closed=False, pull_request=False,
             async with response:
                 data = await response.json()
                 total_count = data["total_count"]
-                issue_data.extend(data["items"])
+                data_count += len(data["items"])
+                for item in data["items"]:
+                    yield item
                 page += 1
                 await github_ratelimiter(response.headers)
                 # exit if all data has been received
-                if len(issue_data) == total_count:
+                if data_count == total_count:
                     break
-    print(f"Found {len(issue_data)} entries")
-    return issue_data
+    print(f"Found {data_count} entries")
 
 
 async def get_pr_details(issues):
     print("Getting more details about the PRs")
     counter = 0
-    for issue in issues:
+    async for issue in issues:
         async with aiohttp.ClientSession() as session:
             response = await session.get(issue['pull_request']['url'],
                                          raise_for_status=True)
@@ -148,10 +149,18 @@ async def set_playing(status):
 
 
 async def give_random(channel, number_of_issues):
+    """
+    @TODO: improve algorithm to save queries
+    1. get first batch of github_max (100), find total number
+    2. if total < requested, return all
+    3. Generate requested random numbers
+    4. get issues till max(generated_list)
+    5. return them
+    """
     await set_playing('Finding Issues')
     async with channel.typing():
-        issues = await get_issues('PointCloudLibrary/pcl',
-                                  exclude_labels=['status: stale'])
+        issues = [x async for x in get_issues('PointCloudLibrary/pcl',
+                                              exclude_labels=['status: stale'])]
         reply = discord.Embed(color=discord.Color.purple())
         reply.title = f"{number_of_issues} random picks out of {len(issues)}:"
 
@@ -166,14 +175,14 @@ async def give_random(channel, number_of_issues):
 async def review_q(channel, number_of_issues, author=None):
     await set_playing('On The Cue')
     async with channel.typing():
-        issues = await get_issues('PointCloudLibrary/pcl', pull_request=True,
-                                  exclude_labels=['status: stale'],
-                                  include_labels=['needs: code review'],
-                                  sort='updated', ascending_order=True)
+        issues = get_issues('PointCloudLibrary/pcl', pull_request=True,
+                            exclude_labels=['status: stale'],
+                            include_labels=['needs: code review'],
+                            sort='updated', ascending_order=True)
         reply = discord.Embed(color=discord.Color.purple())
-        reply.title = f"Oldest {number_of_issues}/{len(issues)} PR"
+
         if author:
-            reply.title += f" waiting {author}'s review:"
+            title_suffix = f" waiting @{author}'s review:"
             issues = pr_with_pending_review(get_pr_details(issues), author)
             chosen_issues = []
             # since async islice doesn't exist
@@ -182,12 +191,17 @@ async def review_q(channel, number_of_issues, author=None):
                 if len(chosen_issues) == number_of_issues:
                     break
         else:
-            reply.title += " in review queue:"
-            chosen_issues = issues[:number_of_issues]
+            title_suffix = " in review queue:"
+            chosen_issues = []
+            async for issue in issues:
+                chosen_issues.append(issue)
+                if len(chosen_issues) == number_of_issues:
+                    break
 
+        reply.title = f"Oldest {number_of_issues} PR" + title_suffix
         reply.description = compose_message(beautify_issues(chosen_issues))
         if len(chosen_issues) < number_of_issues:
-            reply.set_footer(text="There wasn't enough...")
+            reply.set_footer(text="There weren't enough...")
     await channel.send(embed=reply)
     await set_playing('The Waiting Game')
 
