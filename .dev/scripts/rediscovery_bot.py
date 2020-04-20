@@ -47,6 +47,8 @@ import random
 import time
 from urllib.parse import quote_plus
 
+gh_auth = None
+
 
 async def github_ratelimiter(headers):
     # If this is the last message before rate-limiting kicks in
@@ -90,7 +92,8 @@ async def get_issues(repository, closed=False, pull_request=False,
         # max pagination size is 100 as of github api v3
         search_url = f"{query_url}&page={page}&per_page=100"
         async with aiohttp.ClientSession() as session:
-            response = await session.get(search_url, raise_for_status=True)
+            response = await session.get(search_url, raise_for_status=True,
+                                         headers=gh_auth)
             async with response:
                 data = await response.json()
                 total_count = data["total_count"]
@@ -111,7 +114,8 @@ async def get_pr_details(issues):
     async for issue in issues:
         async with aiohttp.ClientSession() as session:
             response = await session.get(issue['pull_request']['url'],
-                                         raise_for_status=True)
+                                         raise_for_status=True,
+                                         headers=gh_auth)
             async with response:
                 pr_data = await response.json()
                 counter += 1
@@ -280,7 +284,8 @@ Retrieves N least-recently-updated PR in the review queue'''
             number_of_issues = 10
             reply.description = "Let's curb that enthusiasm.. just a little"
             await channel.send(embed=reply)
-        author = None if command == "q" else message.author.name
+        author = message.author
+        author = None if command == "q" else (author.nick or author.name)
         await review_q(channel, number_of_issues, author)
         return
     return
@@ -315,6 +320,12 @@ If a channel ID is provided, it'll send N issues and exit
 
 def main():
     args, _ = get_args()
+    try:
+        gh_token = read_secret_token(".github-token")
+    except FileNotFoundError:
+        gh_token = None
+    global gh_auth
+    gh_auth = {"Authorization": f"token {gh_token}"} if gh_token else None
     if not (args.channel_id and args.issues > 0):
         print("Entering interactive mode")
         client.run(read_secret_token(".discord-token"))
