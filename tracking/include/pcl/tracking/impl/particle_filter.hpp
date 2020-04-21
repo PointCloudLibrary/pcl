@@ -43,10 +43,7 @@ int
 ParticleFilterTracker<PointInT, StateT>::sampleWithReplacement(
     const std::vector<int>& a, const std::vector<double>& q)
 {
-  static std::mt19937 rng([] {
-    std::random_device rd;
-    return rd();
-  }());
+  static std::mt19937 rng{std::random_device{}()};
   std::uniform_real_distribution<> rd(0.0, 1.0);
 
   double rU = rd(rng) * static_cast<double>(particles_->points.size());
