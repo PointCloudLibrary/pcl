@@ -68,6 +68,38 @@ namespace pcl
       using type = std::normal_distribution<T>;
     };
 
+    template <typename RandomEngineT = std::default_random_engine>
+    class RandomBase {
+    public:
+      using SeedT = typename RandomEngineT::result_type;
+
+      RandomBase(SeedT seed = std::random_device()()) : seed_(seed), rng_(seed) {}
+
+      inline SeedT
+      getSeed() const
+      {
+        return seed_;
+      }
+
+      inline void
+      setSeed(SeedT seed)
+      {
+        seed_ = seed;
+        resetEngine();
+      }
+
+      inline void
+      resetEngine()
+      {
+        rng_.seed(seed_);
+      }
+
+    protected:
+      SeedT seed_;
+
+      RandomEngineT rng_;
+    };
+
     /** \brief UniformGenerator class generates a random number from range [min, max] at each run picked
       * according to a uniform distribution i.e eaach number within [min, max] has almost the same 
       * probability of being drawn.
