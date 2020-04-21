@@ -24,37 +24,46 @@ TabWidth: 2
 UseTab: Never
 IncludeBlocks: Regroup
 IncludeCategories:
-  - Regex:           '^<pcl/'
-    Priority:        1
+# Main PCL includes of common module should be sorted at end of PCL includes
+  - Regex:           '^<pcl/[^/]+>$'
+    Priority:        100
+    SortPriority:    101
+# All other PCL includes, which are grouped into modules
+  - Regex:           '^<pcl/.*/.*>$'
+    Priority:        100
+    SortPriority:    100
+# Major 3rd-Party components of tests & modules
   - Regex:           '^<gtest/'
-    Priority:        2
+    Priority:        200
   - Regex:           '^<boost/'
-    Priority:        3
+    Priority:        210
   - Regex:           '^<(unsupported/)?Eigen/'
-    Priority:        4
+    Priority:        220
   - Regex:           '^<flann/'
-    Priority:        5
+    Priority:        230
+# Major 3rd-Party components of apps
   - Regex:           '^<Q[^/]+>$'
-    Priority:        6
+    Priority:        300
   - Regex:           '^<ui_[^/]+\.h>$'
-    Priority:        6
+    Priority:        300
   - Regex:           '^<vtk[^/]+\.h>$'
-    Priority:        7
+    Priority:        310
+# Minor 3rd-Party components
   - Regex:           '^<librealsense2/'
-    Priority:        8
+    Priority:        400
   - Regex:           '^<(ros|message_filters)/'
-    Priority:        9
+    Priority:        410
   - Regex:           '^<opencv(2)?/'
-    Priority:        10
+    Priority:        420
   - Regex:           '^<tide/'
-    Priority:        11
+    Priority:        430
   - Regex:           '^<thrust/'
-    Priority:        12
+    Priority:        440
   - Regex:           '^<(OpenGL|(GL(UT)?/))'
-    Priority:        13
+    Priority:        450
 # Matches all std includes. Match them before any unknown include, so we can order them behind.
   - Regex:           '^<[a-z]+>$'
-    Priority:        15
+    Priority:        900
 # Any unknown include
   - Regex:           '.*'
-    Priority:        14
+    Priority:        500

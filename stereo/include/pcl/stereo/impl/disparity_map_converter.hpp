@@ -39,8 +39,8 @@
 
 #include <pcl/common/intensity.h>
 #include <pcl/console/print.h>
-#include <pcl/point_types.h>
 #include <pcl/stereo/disparity_map_converter.h>
+#include <pcl/point_types.h>
 
 #include <fstream>
 #include <limits>

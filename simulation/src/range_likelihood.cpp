@@ -1,6 +1,6 @@
 #include <pcl/common/time.h>
-#include <pcl/pcl_config.h>
 #include <pcl/simulation/range_likelihood.h>
+#include <pcl/pcl_config.h>
 
 #include <boost/math/distributions/normal.hpp>
 

@@ -38,8 +38,8 @@
 
 #pragma once
 
-#include <pcl/memory.h>
 #include <pcl/octree/octree_container.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 #include <Eigen/Core>

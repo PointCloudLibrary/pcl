@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <pcl/pcl_config.h>
 #include <pcl/simulation/glsl_shader.h>
 #include <pcl/simulation/model.h>
+#include <pcl/pcl_config.h>
 
 #include <GL/glew.h>
 #ifdef OPENGL_IS_A_FRAMEWORK
