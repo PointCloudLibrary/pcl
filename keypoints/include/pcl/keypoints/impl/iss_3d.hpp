@@ -235,13 +235,11 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
     return (false);
   }
 
-  if (third_eigen_value_)
     delete[] third_eigen_value_;
 
   third_eigen_value_ = new double[input_->size ()];
   memset(third_eigen_value_, 0, sizeof(double) * input_->size ());
 
-  if (edge_points_)
     delete[] edge_points_;
 
   if (border_radius_ > 0.0)

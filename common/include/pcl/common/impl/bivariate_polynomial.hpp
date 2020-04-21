@@ -113,12 +113,14 @@ BivariatePolynomialT<real>::deepCopy (const pcl::BivariatePolynomialT<real>& oth
     degree = other.degree;
     parameters = new real[getNoOfParameters ()];
   }
-  if (other.gradient_x == NULL)
+  if (!other.gradient_x)
   {
-    delete gradient_x; gradient_x=NULL;
-    delete gradient_y; gradient_y=NULL;
+    delete gradient_x;
+    delete gradient_y;
+    gradient_x = nullptr;
+    gradient_y = nullptr;
   }
-  else if (gradient_x==NULL)
+  else if (!gradient_x)
   {
     gradient_x = new pcl::BivariatePolynomialT<real> ();
     gradient_y = new pcl::BivariatePolynomialT<real> ();
@@ -126,7 +128,7 @@ BivariatePolynomialT<real>::deepCopy (const pcl::BivariatePolynomialT<real>& oth
 
   std::copy_n(other.parameters, getNoOfParameters (), parameters);
 
-  if (other.gradient_x != NULL)
+  if (other.gradient_x != nullptr)
   {
     gradient_x->deepCopy (*other.gradient_x);
     gradient_y->deepCopy (*other.gradient_y);

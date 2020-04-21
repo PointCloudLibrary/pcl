@@ -164,7 +164,6 @@ class OpenNIViewer
       {
         if (rgb_data_size_ < image->getWidth () * image->getHeight ())
         {
-          if (rgb_data_)
             delete [] rgb_data_;
           rgb_data_size_ = image->getWidth () * image->getHeight ();
           rgb_data_ = new unsigned char [rgb_data_size_ * 3];
@@ -288,7 +287,6 @@ class OpenNIViewer
 
       cloud_connection.disconnect ();
       image_connection.disconnect ();
-      if (rgb_data_)
         delete[] rgb_data_;
     }
 

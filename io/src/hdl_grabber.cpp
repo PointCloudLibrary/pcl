@@ -550,11 +550,8 @@ pcl::HDLGrabber::stop ()
     queue_consumer_thread_ = nullptr;
   }
 
-  if (hdl_read_socket_ != nullptr)
-  {
-    delete hdl_read_socket_;
-    hdl_read_socket_ = nullptr;
-  }
+  delete hdl_read_socket_;
+  hdl_read_socket_ = nullptr;
 }
 
 /////////////////////////////////////////////////////////////////////////////

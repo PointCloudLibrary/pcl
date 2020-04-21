@@ -89,11 +89,11 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::BRISK2DEstimation
 template <typename PointInT, typename PointOutT, typename KeypointT, typename IntensityT>
 BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::~BRISK2DEstimation ()
 {
-   if (pattern_points_) delete [] pattern_points_;
-  if (short_pairs_) delete [] short_pairs_;
-  if (long_pairs_) delete [] long_pairs_;
-  if (scale_list_) delete [] scale_list_;
-  if (size_list_) delete [] size_list_;
+  delete [] pattern_points_;
+  delete [] short_pairs_;
+  delete [] long_pairs_;
+  delete [] scale_list_;
+  delete [] size_list_;
 }
 
 

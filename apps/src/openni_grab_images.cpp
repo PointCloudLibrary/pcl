@@ -135,7 +135,6 @@ class OpenNIGrabFrame
 
           if (rgb_data_size < image->getWidth () * image->getHeight ())
           {
-            if (rgb_data)
               delete [] rgb_data;
             rgb_data_size = image->getWidth () * image->getHeight ();
             rgb_data = new unsigned char [rgb_data_size * 3];
@@ -224,7 +223,6 @@ class OpenNIGrabFrame
           {
             if (rgb_data_size < image->getWidth () * image->getHeight ())
             {
-              if (rgb_data)
                 delete [] rgb_data;
               rgb_data_size = image->getWidth () * image->getHeight ();
               rgb_data = new unsigned char [rgb_data_size * 3];
@@ -257,8 +255,7 @@ class OpenNIGrabFrame
         
         if (depth_image)
         {
-          if (depth_data)
-            delete[] depth_data;
+          delete[] depth_data;
           depth_data = pcl::visualization::FloatImageUtils::getVisualImage (
               reinterpret_cast<const unsigned short*> (depth_image->getDepthMetaData ().Data ()),
                 depth_image->getWidth (), depth_image->getHeight (),

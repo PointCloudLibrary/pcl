@@ -77,16 +77,16 @@ namespace pcl
       maxDepth=0;
     }
     SortedTreeNodes::~SortedTreeNodes(void){
-      if( nodeCount ) delete[] nodeCount;
-      if( treeNodes ) delete[] treeNodes;
+      delete[] nodeCount;
+      delete[] treeNodes;
       nodeCount = NULL;
       treeNodes = NULL;
     }
 
     void SortedTreeNodes::set( TreeOctNode& root )
     {
-      if( nodeCount ) delete[] nodeCount;
-      if( treeNodes ) delete[] treeNodes;
+      delete[] nodeCount;
+      delete[] treeNodes;
       maxDepth = root.maxDepth()+1;
       nodeCount = new int[ maxDepth+1 ];
       treeNodes = new TreeOctNode*[ root.nodes() ];

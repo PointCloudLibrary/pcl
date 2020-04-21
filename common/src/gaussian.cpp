@@ -138,7 +138,8 @@ pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
   assert (kernel.size () % 2 == 1);
   std::size_t kernel_width = kernel.size () -1;
   std::size_t radius = kernel.size () / 2;
-  const pcl::PointCloud<float>* input_;
+  std::unique_ptr<const pcl::PointCloud<float>> copied_input;
+  const pcl::PointCloud<float>* unaliased_input;
   if (&input != &output)
   {
     if (output.height < input.height || output.width < input.width)
@@ -147,31 +148,29 @@ pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
       output.height = input.height;
       output.points.resize (input.height * input.width);
     }
-    input_ = &input;
+    unaliased_input = &input;
   }
   else
-    input_ = new pcl::PointCloud<float>(input);
+  {
+    copied_input = std::make_unique<pcl::PointCloud<float>>(input);
+    unaliased_input = copied_input.get();
+  }
   
   std::size_t i;
-  for (std::size_t j = 0; j < input_->height; j++)
+  for (std::size_t j = 0; j < unaliased_input->height; j++)
   {
     for (i = 0 ; i < radius ; i++)
       output (i,j) = 0;
 
-    for ( ; i < input_->width - radius ; i++)  
+    for ( ; i < unaliased_input->width - radius ; i++)
     {
       output (i,j) = 0;
       for (int k = static_cast<int>(kernel_width), l = static_cast<int>(i - radius); k >= 0 ; k--, l++)
-        output (i,j) += (*input_) (l,j) * kernel[k];
+        output (i,j) += (*unaliased_input) (l,j) * kernel[k];
     }
 
-    for ( ; i < input_->width ; i++)
+    for ( ; i < unaliased_input->width ; i++)
       output (i,j) = 0;
-  }
-
-  if (&input == &output)
-  {
-    delete input_;
   }
 }
 
@@ -183,37 +182,39 @@ pcl::GaussianKernel::convolveCols (const pcl::PointCloud<float>& input,
   assert (kernel.size () % 2 == 1);
   std::size_t kernel_width = kernel.size () -1;
   std::size_t radius = kernel.size () / 2;
-  const pcl::PointCloud<float>* input_;
+  std::unique_ptr<const pcl::PointCloud<float>> copied_input;
+  const pcl::PointCloud<float>* unaliased_input;
   if (&input != &output)
   {
     if (output.height < input.height || output.width < input.width)
     {
       output.width = input.width;
       output.height = input.height;
-      output.resize (input.width * input.height);
+      output.points.resize (input.height * input.width);
     }
-    input_ = &input;
+    unaliased_input = &input;
   }
   else
-    input_ = new pcl::PointCloud<float> (input);
+  {
+    copied_input = std::make_unique<pcl::PointCloud<float>>(input);
+    unaliased_input = copied_input.get();
+  }
 
   std::size_t j;
-  for (std::size_t i = 0; i < input_->width; i++)
+  for (std::size_t i = 0; i < unaliased_input->width; i++)
   {
     for (j = 0 ; j < radius ; j++)
       output (i,j) = 0;
 
-    for ( ; j < input_->height - radius ; j++)  {
+    for ( ; j < unaliased_input->height - radius ; j++)  {
       output (i,j) = 0;
       for (int k = static_cast<int>(kernel_width), l = static_cast<int>(j - radius) ; k >= 0 ; k--, l++)
       {
-        output (i,j) += (*input_) (i,l) * kernel[k];
+        output (i,j) += (*unaliased_input) (i,l) * kernel[k];
       }
     }
 
-    for ( ; j < input_->height ; j++)
+    for ( ; j < unaliased_input->height ; j++)
       output (i,j) = 0;
   }
-  if (&input == &output)
-    delete input_;
 }
