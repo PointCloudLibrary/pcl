@@ -133,7 +133,7 @@
       Major,                                                                           \
       _PCL_COMPAT_MINOR_VERSION(                                                       \
           Minor,                                                                       \
-          _PCL_DEPRECATED_IMPL(PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Message)),    \
+          _PCL_DEPRECATED_IMPL(_PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Message)),    \
           unneeded_deprecation),                                                       \
       major_version_mismatch)
 
@@ -422,4 +422,3 @@ aligned_free (void* ptr)
 #else
   #define PCL_NODISCARD
 #endif
-
