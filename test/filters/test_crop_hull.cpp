@@ -50,118 +50,128 @@
 
 namespace
 {
-  template <class PointGenerator1, class PointGenerator2>
-  void complexTest(
-      pcl::CropHull<pcl::PointXYZ> cropHullFilter,
-      PointGenerator1 insidePointGenerator,
-      PointGenerator2 outsidePointGenerator)
+  struct Checker
   {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr insideCubeCloud(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr outsideCubeCloud(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr mixedCubeCloud(new pcl::PointCloud<pcl::PointXYZ>);
-    size_t const chunkSize = 100;
+    pcl::CropHull<pcl::PointXYZ> cropHullFilter;
+
+    Checker(pcl::ConvexHull<pcl::PointXYZ> & hull, int dim)
+      : cropHullFilter(true)
     {
-      for (size_t i = 0; i < chunkSize; ++i)
-      {
-        insideCubeCloud->push_back(insidePointGenerator());
-        outsideCubeCloud->push_back(outsidePointGenerator());
-      }
-      *mixedCubeCloud = (*insideCubeCloud) + (*outsideCubeCloud);
+      pcl::PointCloud<pcl::PointXYZ>::Ptr hullCloudPtr(new pcl::PointCloud<pcl::PointXYZ>);
+      std::vector<pcl::Vertices> hullPolygons;
+      hull.reconstruct(*hullCloudPtr, hullPolygons);
+
+      cropHullFilter.setHullIndices(hullPolygons);
+      cropHullFilter.setHullCloud(hullCloudPtr);
+      cropHullFilter.setDim(dim);
+      cropHullFilter.setCropOutside(true);
     }
-    pcl::Indices emptyIndices;
-    pcl::Indices lowerIndices(insideCubeCloud->size());
-    pcl::Indices upperIndices(insideCubeCloud->size());
-    std::iota(lowerIndices.begin(), lowerIndices.end(), 0);
-    std::iota(upperIndices.begin(), upperIndices.end(), lowerIndices.size());
 
-    struct CheckEquals {
-      pcl::CropHull<pcl::PointXYZ> cropHullFilter;
-      CheckEquals(pcl::CropHull<pcl::PointXYZ> const & cropHullFilter)
-        : cropHullFilter(cropHullFilter)
-      {}
-      void check(
-          pcl::Indices const & expectedFilteredIndices,
-          pcl::PointCloud<pcl::PointXYZ>::ConstPtr inputCloud)
+    void check(
+        pcl::Indices const & expectedFilteredIndices,
+        pcl::PointCloud<pcl::PointXYZ>::ConstPtr inputCloud)
+    {
+      std::vector<bool> expectedFilteredMask(inputCloud->size(), false);
+      pcl::Indices expectedRemovedIndices;
+      pcl::PointCloud<pcl::PointXYZ> expectedCloud;
+      pcl::copyPointCloud(*inputCloud, expectedFilteredIndices, expectedCloud);
+      for (pcl::index_t idx : expectedFilteredIndices) {
+        expectedFilteredMask[idx] = true;
+      }
+      for (size_t i = 0; i < inputCloud->size(); ++i) {
+        if (!expectedFilteredMask[i]) {
+          expectedRemovedIndices.push_back(i);
+        }
+      }
+
+      cropHullFilter.setInputCloud(inputCloud);
+
+      pcl::Indices filteredIndices;
+      cropHullFilter.filter(filteredIndices);
+      pcl::test::EXPECT_EQ_VECTORS(expectedFilteredIndices, filteredIndices);
+      pcl::test::EXPECT_EQ_VECTORS(expectedRemovedIndices, *cropHullFilter.getRemovedIndices());
+      // check negative filter functionality
       {
-        std::vector<bool> expectedFilteredMask(inputCloud->size(), false);
-        pcl::Indices expectedRemovedIndices;
-        pcl::PointCloud<pcl::PointXYZ> expectedCloud;
-        pcl::copyPointCloud(*inputCloud, expectedFilteredIndices, expectedCloud);
-        for (pcl::index_t idx : expectedFilteredIndices) {
-          expectedFilteredMask[idx] = true;
-        }
-        for (size_t i = 0; i < inputCloud->size(); ++i) {
-          if (!expectedFilteredMask[i]) {
-            expectedRemovedIndices.push_back(i);
-          }
-        }
-
-        cropHullFilter.setInputCloud(inputCloud);
-
-        pcl::Indices filteredIndices;
+        cropHullFilter.setNegative(true);
         cropHullFilter.filter(filteredIndices);
-        pcl::test::EXPECT_EQ_VECTORS(expectedFilteredIndices, filteredIndices);
-        //expected extract_removed_indices_ is true
-        pcl::test::EXPECT_EQ_VECTORS(expectedRemovedIndices, *cropHullFilter.getRemovedIndices());
-        // check negative filter functionality
-        {
-          cropHullFilter.setNegative(true);
-          cropHullFilter.filter(filteredIndices);
-          //expected extract_removed_indices_ is true
-          pcl::test::EXPECT_EQ_VECTORS(expectedRemovedIndices, filteredIndices);
-          pcl::test::EXPECT_EQ_VECTORS(expectedFilteredIndices, *cropHullFilter.getRemovedIndices());
-          cropHullFilter.setNegative(false);
-        }
-
-        pcl::PointCloud<pcl::PointXYZ> filteredCloud;
-        cropHullFilter.filter(filteredCloud);
-        ASSERT_EQ (expectedCloud.size(), filteredCloud.size());
-        for (pcl::index_t i = 0; i < expectedCloud.size(); ++i)
-        {
-          Eigen::Vector3f expectedPoint = expectedCloud[i].getVector3fMap();
-          Eigen::Vector3f actualPoint = filteredCloud[i].getVector3fMap();
-          EXPECT_NEAR((expectedPoint - actualPoint).norm(), 0.0, 1e-5);
-        }
-        // check non empty out cloud filtering
-        cropHullFilter.filter(filteredCloud);
-        EXPECT_EQ (expectedCloud.size(), filteredCloud.size());
-
-        // check keep organized
-        {
-          cropHullFilter.setKeepOrganized(true);
-          cropHullFilter.setUserFilterValue(-10.);
-          pcl::PointXYZ defaultPoint(-10., -10., -10.);
-          cropHullFilter.filter(filteredCloud);
-          ASSERT_EQ (inputCloud->size(), filteredCloud.size());
-          for (pcl::index_t i = 0; i < inputCloud->size(); ++i)
-          {
-            Eigen::Vector3f actualPoint = filteredCloud[i].getVector3fMap();
-            Eigen::Vector3f expectedPoint = defaultPoint.getVector3fMap();
-            if (expectedFilteredMask[i])
-            {
-              expectedPoint = inputCloud->at(i).getVector3fMap();
-            }
-            ASSERT_NEAR((expectedPoint - actualPoint).norm(), 0.0, 1e-5);
-          }
-          cropHullFilter.setKeepOrganized(false);
-        }
+        pcl::test::EXPECT_EQ_VECTORS(expectedRemovedIndices, filteredIndices);
+        pcl::test::EXPECT_EQ_VECTORS(expectedFilteredIndices, *cropHullFilter.getRemovedIndices());
+        cropHullFilter.setNegative(false);
       }
-    };
+      // check cropOutside functionality
+      {
+        cropHullFilter.setCropOutside(false);
+        cropHullFilter.filter(filteredIndices);
+        pcl::test::EXPECT_EQ_VECTORS(expectedRemovedIndices, filteredIndices);
+        pcl::test::EXPECT_EQ_VECTORS(expectedFilteredIndices, *cropHullFilter.getRemovedIndices());
+        cropHullFilter.setCropOutside(true);
+      }
 
-    {
-      CheckEquals checker(cropHullFilter);
-      checker.check(lowerIndices, insideCubeCloud);
-      checker.check(emptyIndices, outsideCubeCloud);
-      checker.check(lowerIndices, mixedCubeCloud);
-    }
+      pcl::PointCloud<pcl::PointXYZ> filteredCloud;
+      cropHullFilter.filter(filteredCloud);
+      ASSERT_EQ (expectedCloud.size(), filteredCloud.size());
+      for (pcl::index_t i = 0; i < expectedCloud.size(); ++i)
+      {
+        EXPECT_XYZ_NEAR(expectedCloud[i], filteredCloud[i], 1e-5);
+      }
+      // check non empty out cloud filtering
+      cropHullFilter.filter(filteredCloud);
+      EXPECT_EQ (expectedCloud.size(), filteredCloud.size());
 
-    {
-      cropHullFilter.setCropOutside(false);
-      CheckEquals checker(cropHullFilter);
-      checker.check(emptyIndices, insideCubeCloud);
-      checker.check(lowerIndices, outsideCubeCloud);
-      checker.check(upperIndices, mixedCubeCloud);
+      // check keep organized
+      {
+        cropHullFilter.setKeepOrganized(true);
+        cropHullFilter.setUserFilterValue(-10.);
+        pcl::PointXYZ defaultPoint(-10., -10., -10.);
+        cropHullFilter.filter(filteredCloud);
+        ASSERT_EQ (inputCloud->size(), filteredCloud.size());
+        for (pcl::index_t i = 0; i < inputCloud->size(); ++i)
+        {
+          pcl::PointXYZ expectedPoint = expectedFilteredMask[i] ? inputCloud->at(i) : defaultPoint;
+          EXPECT_XYZ_NEAR(expectedPoint, filteredCloud[i], 1e-5);
+        }
+        cropHullFilter.setKeepOrganized(false);
+      }
     }
+  };
+
+  bool randomBool() {
+    static auto gen = std::bind(
+        std::uniform_int_distribution<>(0,1),
+        std::default_random_engine());
+    return gen();
+  }
+
+  std::vector<std::pair<pcl::Indices, pcl::PointCloud<pcl::PointXYZ>::ConstPtr>>
+  createTestData(
+      std::function<pcl::PointXYZ()> insidePointGenerator,
+      std::function<pcl::PointXYZ()> outsidePointGenerator)
+  {
+    std::vector<std::pair<pcl::Indices, pcl::PointCloud<pcl::PointXYZ>::ConstPtr>> testData;
+    size_t const chunkSize = 1000;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr insideCloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr outsideCloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr mixedCloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::Indices insideIndicesForInsideCloud;
+    pcl::Indices insideIndicesForOutsideCloud;
+    pcl::Indices insideIndicesForMixedCloud;
+    for (size_t i = 0; i < chunkSize; ++i)
+    {
+      insideIndicesForInsideCloud.push_back(i);
+      insideCloud->push_back(insidePointGenerator());
+      outsideCloud->push_back(outsidePointGenerator());
+      if (randomBool()) {
+        insideIndicesForMixedCloud.push_back(i);
+        mixedCloud->push_back(insidePointGenerator());
+      }
+      else {
+        mixedCloud->push_back(outsidePointGenerator());
+      }
+    }
+    testData.emplace_back(insideIndicesForInsideCloud, insideCloud);
+    testData.emplace_back(insideIndicesForOutsideCloud, outsideCloud);
+    testData.emplace_back(insideIndicesForMixedCloud, mixedCloud);
+    return testData;
   }
 }
 
@@ -174,7 +184,7 @@ TEST (PCL, ConvexHull_2dsquare)
   baseOffsetList.emplace_back(1, 5, -3);
   for (pcl::PointXYZ const & baseOffset : baseOffsetList)
   {
-    pcl::CropHull<pcl::PointXYZ> cropHullFilter(true);
+    pcl::ConvexHull<pcl::PointXYZ> convexHull;
     {
       pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud (new pcl::PointCloud<pcl::PointXYZ> ());
       inputCloud->emplace_back(0.0f, 0.0f, 0.0f);
@@ -189,18 +199,10 @@ TEST (PCL, ConvexHull_2dsquare)
         p.getVector3fMap() += baseOffset.getVector3fMap();
       }
 
-      pcl::ConvexHull<pcl::PointXYZ> convexHull;
       convexHull.setDimension(3);
       convexHull.setInputCloud(inputCloud);
-      pcl::PointCloud<pcl::PointXYZ>::Ptr hullCloudPtr(new pcl::PointCloud<pcl::PointXYZ>);
-      std::vector<pcl::Vertices> hullPolygons;
-      convexHull.reconstruct(*hullCloudPtr, hullPolygons);
-
-      cropHullFilter.setHullIndices(hullPolygons);
-      cropHullFilter.setHullCloud(hullCloudPtr);
-      cropHullFilter.setDim(2);
-      cropHullFilter.setCropOutside(true);
     }
+    Checker checker(convexHull, 2);
 
     std::mt19937 gen(12345u);
     std::uniform_real_distribution<float> rd (0.0f, 1.0f);
@@ -214,8 +216,13 @@ TEST (PCL, ConvexHull_2dsquare)
       p.getVector3fMap() += baseOffset.getVector3fMap();
       return p;
     };
+    std::vector<std::pair<pcl::Indices, pcl::PointCloud<pcl::PointXYZ>::ConstPtr>> testData =
+      createTestData(insidePointGenerator, outsidePointGenerator);
 
-    complexTest(cropHullFilter, insidePointGenerator, outsidePointGenerator);
+    for (auto const & entry : testData)
+    {
+      checker.check(entry.first, entry.second);
+    }
   }
 }
 
@@ -321,7 +328,7 @@ TEST (PCL, ConvexHull_3dcube)
   baseOffsetList.emplace_back(1, 5, -3);
   for (pcl::PointXYZ const & baseOffset : baseOffsetList)
   {
-    pcl::CropHull<pcl::PointXYZ> cropHullFilter(true);
+    pcl::ConvexHull<pcl::PointXYZ> convexHull;
     {
       pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud (new pcl::PointCloud<pcl::PointXYZ> ());
       inputCloud->emplace_back(0.0f, 0.0f, 0.0f);
@@ -336,18 +343,10 @@ TEST (PCL, ConvexHull_3dcube)
         p.getVector3fMap() += baseOffset.getVector3fMap();
       }
 
-      pcl::ConvexHull<pcl::PointXYZ> convexHull;
       convexHull.setDimension(3);
       convexHull.setInputCloud(inputCloud);
-      pcl::PointCloud<pcl::PointXYZ>::Ptr hullCloudPtr(new pcl::PointCloud<pcl::PointXYZ>);
-      std::vector<pcl::Vertices> hullPolygons;
-      convexHull.reconstruct(*hullCloudPtr, hullPolygons);
-
-      cropHullFilter.setHullIndices(hullPolygons);
-      cropHullFilter.setHullCloud(hullCloudPtr);
-      cropHullFilter.setDim(3);
-      cropHullFilter.setCropOutside(true);
     }
+    Checker checker(convexHull, 3);
 
     std::mt19937 gen(12345u);
     std::uniform_real_distribution<float> rd (0.0f, 1.0f);
@@ -361,8 +360,13 @@ TEST (PCL, ConvexHull_3dcube)
       p.getVector3fMap() += baseOffset.getVector3fMap();
       return p;
     };
+    std::vector<std::pair<pcl::Indices, pcl::PointCloud<pcl::PointXYZ>::ConstPtr>> testData =
+      createTestData(insidePointGenerator, outsidePointGenerator);
 
-    complexTest(cropHullFilter, insidePointGenerator, outsidePointGenerator);
+    for (auto const & entry : testData)
+    {
+      checker.check(entry.first, entry.second);
+    }
   }
 }
 
