@@ -54,8 +54,7 @@
   * \ingroup common
   */
 
-// We're doing a lot of black magic with Boost here, so disable warnings in Maintainer mode, as we will never
-// be able to fix them anyway
+// Allow nameless structs/unions
 #if defined _MSC_VER
   #pragma warning(disable: 4201)
 #endif
