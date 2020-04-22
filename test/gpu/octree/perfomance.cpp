@@ -251,3 +251,13 @@ TEST(PCL_OctreeGPU, performance)
             octree_host.nearestKSearch(data.queries[i], k, indeces, pointRadiusSquaredDistance);
     }*/
 }
+
+/* ---[ */
+int
+main (int argc, char** argv)
+{
+  testing::InitGoogleTest (&argc, argv);
+  return (RUN_ALL_TESTS ());
+}
+/* ]--- */
+
