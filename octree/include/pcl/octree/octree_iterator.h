@@ -39,14 +39,13 @@
 
 #pragma once
 
-#include <cstddef>
-#include <deque>
-#include <vector>
-
 #include <pcl/octree/octree_key.h>
 #include <pcl/octree/octree_nodes.h>
 
+#include <cstddef>
+#include <deque>
 #include <iterator>
+#include <vector>
 
 // Ignore warnings in the above headers
 #ifdef __GNUC__

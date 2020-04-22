@@ -39,6 +39,8 @@
 #ifndef _LIBSVM_HPP_
 #define _LIBSVM_HPP_
 
+#include <pcl/ml/svm.h>
+
 #include <cctype>
 #include <cfloat>
 #include <climits>
@@ -48,7 +50,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
-#include <pcl/ml/svm.h>
 int libsvm_version = LIBSVM_VERSION;
 using Qfloat = float;
 using schar = signed char;

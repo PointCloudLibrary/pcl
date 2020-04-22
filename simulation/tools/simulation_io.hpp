@@ -1,14 +1,13 @@
 #pragma once
 
 #include <pcl/io/pcd_io.h>
-#include <pcl/memory.h>
-#include <pcl/pcl_config.h>
-#include <pcl/point_types.h>
+#include <pcl/io/vtk_lib_io.h>
 #include <pcl/simulation/camera.h>
 #include <pcl/simulation/range_likelihood.h>
 #include <pcl/simulation/scene.h>
-
-#include <pcl/io/vtk_lib_io.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_config.h>
+#include <pcl/point_types.h>
 
 #include <GL/glew.h>
 

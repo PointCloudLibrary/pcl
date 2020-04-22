@@ -38,16 +38,17 @@
 
 #pragma once
 
-#include <vector>
-
 #include <pcl/octree/octree_container.h>
 #include <pcl/octree/octree_iterator.h>
 #include <pcl/octree/octree_key.h>
 #include <pcl/octree/octree_nodes.h>
 #include <pcl/pcl_macros.h>
 
+#include <vector>
+
 namespace pcl {
 namespace octree {
+
 /** \brief Octree class
  * \note The tree depth defines the maximum amount of octree voxels / leaf nodes (should
  * be initially defined).

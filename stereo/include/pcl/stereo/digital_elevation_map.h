@@ -36,8 +36,8 @@
 
 #pragma once
 
-#include <pcl/point_types.h>
 #include <pcl/stereo/disparity_map_converter.h>
+#include <pcl/point_types.h>
 
 namespace pcl {
 

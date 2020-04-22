@@ -44,9 +44,7 @@
 #include <pcl/console/time.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/memory.h>
-#include <pcl/pcl_config.h>
-#include <pcl/point_types.h>
+#include <pcl/io/vtk_lib_io.h>
 #include <pcl/range_image/range_image_planar.h> // RangeImage
 #include <pcl/simulation/camera.h>
 #include <pcl/simulation/model.h>
@@ -59,16 +57,14 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/point_picking_event.h>
-
-#include <pcl/io/vtk_lib_io.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_config.h>
+#include <pcl/point_types.h>
 
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
+#include <vtkPolyDataReader.h>
 
 #include <GL/glew.h>
 
@@ -78,11 +74,13 @@
 #include <GL/gl.h>
 #endif
 
-#include <vtkPolyDataReader.h>
-
 #include <cfloat>
 #include <cmath>
 #include <iostream>
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 
 using namespace Eigen;
 using namespace pcl;
