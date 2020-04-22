@@ -69,10 +69,15 @@ namespace pcl
       using Ptr = shared_ptr<CropHull<PointT> >;
       using ConstPtr = shared_ptr<const CropHull<PointT> >;
 
-      /** \brief Constructor.
-        * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
+      /** \brief Default constructor.
+        * \note set extract_removed_indices as false.
         */
-      CropHull (bool extract_removed_indices = false) :
+      CropHull() : CropHull(false) {}
+
+      /** \brief Constructor.
+        * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed.
+        */
+      explicit CropHull (bool extract_removed_indices) :
         FilterIndices<PointT>(extract_removed_indices),
         hull_cloud_(),
         dim_(3),
