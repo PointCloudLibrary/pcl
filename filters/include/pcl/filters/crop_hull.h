@@ -104,7 +104,7 @@ namespace pcl
         * \param[in] points the point cloud that the hull indices refer to
         */
       inline void
-      setHullCloud (PointCloudPtr points)
+      setHullCloud (PointCloudConstPtr points)
       {
         hull_cloud_ = points;
         Eigen::Vector4f minPt, maxPt;
@@ -124,7 +124,7 @@ namespace pcl
       }
 
       /** \brief Get the point cloud that the hull indices refer to. */
-      PointCloudPtr
+      PointCloudConstPtr
       getHullCloud () const
       {
         return (hull_cloud_);
@@ -218,7 +218,7 @@ namespace pcl
       std::vector<pcl::Vertices> hull_polygons_;
 
       /** \brief The point cloud that the hull indices refer to. */
-      PointCloudPtr hull_cloud_;
+      PointCloudConstPtr hull_cloud_;
 
       /** \brief The dimensionality of the hull to be used. */
       int dim_;
