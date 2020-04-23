@@ -48,28 +48,49 @@ import time
 from urllib.parse import quote_plus
 
 gh_auth = None
+client = discord.Client()
 
 
-async def github_ratelimiter(headers):
+async def github_ratelimiter(headers, error_channel):
     # If this is the last message before rate-limiting kicks in
     if int(headers['X-RateLimit-Remaining']) == 1:
         epoch_sec = int(headers['X-RateLimit-Reset'])
         delay = datetime.fromtimestamp(epoch_sec) - datetime.now()
         # adding 1 to ensure we wait till after the rate-limit reset
         sleep_time = delay.total_seconds() + 1
+        if sleep_time > 61:  # Waiting more than a minute is not kinda-sorta ok
+            await error_channel("API Request timed out",
+                                f"Try again after {sleep_time} seconds")
+            return sleep_time
         print(f'Need to sleep for {sleep_time}')
         await asyncio.sleep(sleep_time)
+    return 0
+
+
+def error_handler(channel):
+    error = discord.Embed(color=discord.Color.red())
+
+    async def handler(title, description):
+        error.title = title
+        error.description = description
+        await channel.send(embed=error)
+    return handler
+
+
+async def default_error_handler(title, description):
+    return True
 
 
 async def get_issues(repository, closed=False, pull_request=False,
                      include_labels=[], exclude_labels=[],
-                     sort='created', ascending_order=False):
+                     sort='created', ascending_order=False,
+                     error_channel=default_error_handler):
     closed = 'closed' if closed else 'open'
     pull_request = 'pr' if pull_request else 'issue'
     print(f"Getting list of {closed} {pull_request} from GitHub")
     def gh_encode(x): return quote_plus(x, safe='"')
 
-    api_url = f"https://api.github.com/search/issues?"
+    api_url = "https://api.github.com/search/issues?"
     # All query items are list of strings, which will be flattened later
     excluded_labels = [f'-label:"{gh_encode(x)}"' for x in exclude_labels]
     included_labels = [f'label:"{gh_encode(x)}"' for x in include_labels]
@@ -92,8 +113,13 @@ async def get_issues(repository, closed=False, pull_request=False,
         # max pagination size is 100 as of github api v3
         search_url = f"{query_url}&page={page}&per_page=100"
         async with aiohttp.ClientSession() as session:
-            response = await session.get(search_url, raise_for_status=True,
-                                         headers=gh_auth)
+            try:
+                response = await session.get(search_url, raise_for_status=True,
+                                             headers=gh_auth)
+            except TimeoutError:
+                await error_channel("API Request timed out",
+                                    "Please check https://www.githubstatus.com/")
+                break
             async with response:
                 data = await response.json()
                 total_count = data["total_count"]
@@ -101,26 +127,33 @@ async def get_issues(repository, closed=False, pull_request=False,
                 for item in data["items"]:
                     yield item
                 page += 1
-                await github_ratelimiter(response.headers)
+                if await github_ratelimiter(response.headers, error_channel):
+                    break
                 # exit if all data has been received
                 if data_count == total_count:
                     break
     print(f"Found {data_count} entries")
 
 
-async def get_pr_details(issues):
+async def get_pr_details(issues, error_channel=lambda title, desc: True):
     print("Getting more details about the PRs")
     counter = 0
     async for issue in issues:
         async with aiohttp.ClientSession() as session:
-            response = await session.get(issue['pull_request']['url'],
-                                         raise_for_status=True,
-                                         headers=gh_auth)
+            try:
+                response = await session.get(issue['pull_request']['url'],
+                                             raise_for_status=True,
+                                             headers=gh_auth)
+            except TimeoutError:
+                await error_channel("API Request timed out",
+                                    "Please check https://www.githubstatus.com/")
+                break
             async with response:
                 pr_data = await response.json()
                 counter += 1
                 yield pr_data
-                await github_ratelimiter(response.headers)
+                if await github_ratelimiter(response.headers, error_channel):
+                    break
     print(f"Received data about {counter} PRs")
 
 
@@ -146,9 +179,6 @@ def compose_message(issues):
     return '\n'.join(issue_data)
 
 
-client = discord.Client()
-
-
 async def set_playing(status):
     await client.change_presence(activity=discord.Game(name=status))
 
@@ -163,9 +193,11 @@ async def give_random(channel, number_of_issues):
     5. return them
     """
     await set_playing('Finding Issues')
+    error_channel = error_handler(channel)
     async with channel.typing():
         issues = [x async for x in get_issues('PointCloudLibrary/pcl',
-                                              exclude_labels=['status: stale'])]
+                                              exclude_labels=['status: stale'],
+                                              error_channel=error_channel)]
         reply = discord.Embed(color=discord.Color.purple())
         reply.title = f"{number_of_issues} random picks out of {len(issues)}:"
 
@@ -179,11 +211,13 @@ async def give_random(channel, number_of_issues):
 
 async def review_q(channel, number_of_issues, author=None):
     await set_playing('On The Cue')
+    error_channel = error_handler(channel)
     async with channel.typing():
         issues = get_issues('PointCloudLibrary/pcl', pull_request=True,
                             exclude_labels=['status: stale'],
                             include_labels=['needs: code review'],
-                            sort='updated', ascending_order=True)
+                            sort='updated', ascending_order=True,
+                            error_channel=error_channel)
         reply = discord.Embed(color=discord.Color.purple())
 
         if author:
@@ -284,8 +318,15 @@ Retrieves N least-recently-updated PR in the review queue'''
             number_of_issues = 10
             reply.description = "Let's curb that enthusiasm.. just a little"
             await channel.send(embed=reply)
+
         author = message.author
-        author = None if command == "q" else (author.nick or author.name)
+        if command == "q":
+            author = None
+        elif type(author) is discord.Member:
+            author = author.nick or author.name
+        elif type(author) is discord.User:
+            author = author.name
+
         await review_q(channel, number_of_issues, author)
         return
     return
