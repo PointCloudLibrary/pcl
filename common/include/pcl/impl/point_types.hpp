@@ -960,7 +960,7 @@ namespace pcl
     }
 
     inline PointXYZRGBNormal (float _curvature = 0.f):
-        PointXYZRGBNormal (0.f, 0.f, 0, 0, 0, 0.f, 0.f, 0.f, 0.f, _curvature) {}
+        PointXYZRGBNormal (0.f, 0.f, 0.f, 0, 0, 0, 0.f, 0.f, 0.f, _curvature) {}
 
     inline PointXYZRGBNormal (float _x, float _y, float _z):
       PointXYZRGBNormal (_x, _y, _z, 0, 0, 0) {}
