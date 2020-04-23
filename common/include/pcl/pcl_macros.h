@@ -88,25 +88,34 @@
 #if defined(_MSC_VER)
   // nvcc on msvc can't work with [[deprecated]]
   #if !defined(__CUDACC__)
-    #define PCL_DEPRECATED_IMPL(message) [[deprecated(message)]]
+    #define _PCL_DEPRECATED_IMPL(Message) [[deprecated(Message)]]
   #else
-    #define PCL_DEPRECATED_IMPL(message)
+    #define _PCL_DEPRECATED_IMPL(Message)
   #endif
 #elif __has_cpp_attribute(deprecated)
-  #define PCL_DEPRECATED_IMPL(message) [[deprecated(message)]]
+  #define _PCL_DEPRECATED_IMPL(Message) [[deprecated(Message)]]
 #else
-  #warning "You need to implement PCL_DEPRECATED_IMPL for this compiler"
-  #define PCL_DEPRECATED_IMPL(message)
+  #warning "You need to implement _PCL_DEPRECATED_IMPL for this compiler"
+  #define _PCL_DEPRECATED_IMPL(Message)
 #endif
 
-#define PCL_DEPRECATED_MODIFY_MSG(major, minor, msg) \
-    msg " (It will be removed in PCL " \
-    BOOST_PP_STRINGIZE(major.minor) ")"
+/**
+ * \brief A handy way to inform the user of the removal deadline
+ */
+#define _PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Msg)                                 \
+  Msg " (It will be removed in PCL " BOOST_PP_STRINGIZE(Major.Minor) ")"
 
-#define PCL_DEPRECATED_MINOR(Minor, Msg)                      \
-    BOOST_PP_IF(BOOST_PP_LESS(PCL_MINOR_VERSION, Minor),  \
-                PCL_DEPRECATED_IMPL(Msg),           \
-                unneeded_deprecation)
+/**
+ * \brief Tests for Minor < PCL_MINOR_VERSION
+ */
+#define _PCL_COMPAT_MINOR_VERSION(Minor, IfPass, IfFail)                                \
+  BOOST_PP_IF(BOOST_PP_LESS(PCL_MINOR_VERSION, Minor), IfPass, IfFail)
+
+/**
+ * \brief Tests for Major == PCL_MAJOR_VERSION
+ */
+#define _PCL_COMPAT_MAJOR_VERSION(Major, IfPass, IfFail)                                \
+  BOOST_PP_IF(BOOST_PP_EQUAL(PCL_MAJOR_VERSION, Major), IfPass, IfFail)
 
 /**
  * \brief macro for compatibility across compilers and help remove old deprecated
@@ -114,14 +123,19 @@
  *
  * \details compiler errors of `unneeded_deprecation` and `major_version_mismatch`
  * are hints to the developer that those items can be safely removed.
- * Warning message with PCL_DEPRECATED(1, 99, "Not needed anymore") till PCL 1.98:
- * "Slated for removal in PCL 1.99: Not needed anymore"
+ * Behavior of PCL_DEPRECATED(1, 99, "Not needed anymore")
+ *   * till PCL 1.98: "Not needed anymore (It will be removed in PCL 1.99)"
+ *   * PCL 1.99 onwards: compiler error with "unneeded_deprecation"
+ *   * PCL 2.0 onwards: compiler error with "major_version_mismatch"
  */
-#define PCL_DEPRECATED(Major, Minor, Message)                           \
-    BOOST_PP_IF(BOOST_PP_EQUAL(PCL_MAJOR_VERSION, Major),               \
-                PCL_DEPRECATED_MINOR(Minor,                             \
-                    PCL_DEPRECATED_MODIFY_MSG(Major, Minor, Message)),  \
-                major_version_mismatch)
+#define PCL_DEPRECATED(Major, Minor, Message)                                          \
+  _PCL_COMPAT_MAJOR_VERSION(                                                           \
+      Major,                                                                           \
+      _PCL_COMPAT_MINOR_VERSION(                                                       \
+          Minor,                                                                       \
+          _PCL_DEPRECATED_IMPL(_PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Message)),    \
+          unneeded_deprecation),                                                       \
+      major_version_mismatch)
 
 #if defined _WIN32
 // Define math constants, without including math.h, to prevent polluting global namespace with old math methods
@@ -408,4 +422,3 @@ aligned_free (void* ptr)
 #else
   #define PCL_NODISCARD
 #endif
-
