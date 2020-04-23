@@ -335,7 +335,7 @@ namespace
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F (PCLCropHullTestFixture2d, 3dcude_simple_test)
+TEST_F (PCLCropHullTestFixture2d, 2dsquare_simple_test)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
     cropHullFilter.setInputCloud(testData.inputCloud);
@@ -347,7 +347,7 @@ TEST_F (PCLCropHullTestFixture2d, 3dcude_simple_test)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F (PCLCropHullTestFixture2d, 3dcude_test_reentrancy)
+TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_reentrancy)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
     cropHullFilter.setInputCloud(testData.inputCloud);
@@ -361,7 +361,7 @@ TEST_F (PCLCropHullTestFixture2d, 3dcude_test_reentrancy)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F (PCLCropHullTestFixture2d, 3dcude_test_negative_filter_functionality)
+TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_negative_filter_functionality)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
     cropHullFilter.setInputCloud(testData.inputCloud);
@@ -375,7 +375,7 @@ TEST_F (PCLCropHullTestFixture2d, 3dcude_test_negative_filter_functionality)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F (PCLCropHullTestFixture2d, 3dcude_test_crop_inside)
+TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_crop_inside)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
     cropHullFilter.setInputCloud(testData.inputCloud);
@@ -389,7 +389,7 @@ TEST_F (PCLCropHullTestFixture2d, 3dcude_test_crop_inside)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F (PCLCropHullTestFixture2d, 3dcude_test_negative_crop_inside)
+TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_negative_crop_inside)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
     cropHullFilter.setInputCloud(testData.inputCloud);
@@ -404,7 +404,7 @@ TEST_F (PCLCropHullTestFixture2d, 3dcude_test_negative_crop_inside)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F (PCLCropHullTestFixture2d, 3dcude_test_cloud_filtering)
+TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_cloud_filtering)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
     cropHullFilter.setInputCloud(testData.inputCloud);
@@ -420,7 +420,7 @@ TEST_F (PCLCropHullTestFixture2d, 3dcude_test_cloud_filtering)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F (PCLCropHullTestFixture2d, 3dcude_test_cloud_filtering_reentrancy)
+TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_cloud_filtering_reentrancy)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
     cropHullFilter.setInputCloud(testData.inputCloud);
@@ -433,7 +433,7 @@ TEST_F (PCLCropHullTestFixture2d, 3dcude_test_cloud_filtering_reentrancy)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F (PCLCropHullTestFixture2d, 3dcude_test_keep_organized)
+TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_keep_organized)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
     cropHullFilter.setInputCloud(testData.inputCloud);
@@ -457,7 +457,7 @@ TEST_F (PCLCropHullTestFixture2d, 3dcude_test_keep_organized)
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F (PCLCropHullTestFixture3d, 3dsquare_simple_test)
+TEST_F (PCLCropHullTestFixture3d, 3dcube_simple_test)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
     cropHullFilter.setInputCloud(testData.inputCloud);
@@ -469,7 +469,7 @@ TEST_F (PCLCropHullTestFixture3d, 3dsquare_simple_test)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F (PCLCropHullTestFixture3d, 3dsquare_test_reentrancy)
+TEST_F (PCLCropHullTestFixture3d, 3dcube_test_reentrancy)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
     cropHullFilter.setInputCloud(testData.inputCloud);
@@ -483,7 +483,7 @@ TEST_F (PCLCropHullTestFixture3d, 3dsquare_test_reentrancy)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F (PCLCropHullTestFixture3d, 3dsquare_test_negative_filter_functionality)
+TEST_F (PCLCropHullTestFixture3d, 3dcube_test_negative_filter_functionality)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
     cropHullFilter.setInputCloud(testData.inputCloud);
@@ -497,7 +497,7 @@ TEST_F (PCLCropHullTestFixture3d, 3dsquare_test_negative_filter_functionality)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F (PCLCropHullTestFixture3d, 3dsquare_test_crop_inside)
+TEST_F (PCLCropHullTestFixture3d, 3dcube_test_crop_inside)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
     cropHullFilter.setInputCloud(testData.inputCloud);
@@ -511,7 +511,7 @@ TEST_F (PCLCropHullTestFixture3d, 3dsquare_test_crop_inside)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F (PCLCropHullTestFixture3d, 3dsquare_test_negative_crop_inside)
+TEST_F (PCLCropHullTestFixture3d, 3dcube_test_negative_crop_inside)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
     cropHullFilter.setInputCloud(testData.inputCloud);
@@ -526,7 +526,7 @@ TEST_F (PCLCropHullTestFixture3d, 3dsquare_test_negative_crop_inside)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F (PCLCropHullTestFixture3d, 3dsquare_test_cloud_filtering)
+TEST_F (PCLCropHullTestFixture3d, 3dcube_test_cloud_filtering)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
     cropHullFilter.setInputCloud(testData.inputCloud);
@@ -542,7 +542,7 @@ TEST_F (PCLCropHullTestFixture3d, 3dsquare_test_cloud_filtering)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F (PCLCropHullTestFixture3d, 3dsquare_test_cloud_filtering_reentrancy)
+TEST_F (PCLCropHullTestFixture3d, 3dcube_test_cloud_filtering_reentrancy)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
     cropHullFilter.setInputCloud(testData.inputCloud);
@@ -555,7 +555,7 @@ TEST_F (PCLCropHullTestFixture3d, 3dsquare_test_cloud_filtering_reentrancy)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST_F (PCLCropHullTestFixture3d, 3dsquare_test_keep_organized)
+TEST_F (PCLCropHullTestFixture3d, 3dcube_test_keep_organized)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
     cropHullFilter.setInputCloud(testData.inputCloud);
