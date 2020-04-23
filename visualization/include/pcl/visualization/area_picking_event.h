@@ -91,7 +91,7 @@ namespace pcl
           * \return The indices for the selected cloud.
           */
         inline Indices
-        getPointIndices (const std::string& name) const
+        getPointsIndices (const std::string& name) const
         {
           const auto cloud = cloud_indices_.find (name);
           if(cloud == cloud_indices_.cend ())
