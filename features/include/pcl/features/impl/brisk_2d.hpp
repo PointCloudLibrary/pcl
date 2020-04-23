@@ -136,7 +136,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::generateKernel (
     {
       // this is the rotation of the feature
       double theta = double (rot) * 2 * M_PI / double (n_rot_);
-      for (int ring = 0; ring < rings; ++ring)
+      for (int ring = 0; ring < static_cast<int>(rings); ++ring)
       {
         for (int num = 0; num < number_list[ring]; ++num)
         {
@@ -453,8 +453,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   }
 
   // image size
-  const int width = int (input_cloud_->width);
-  const int height = int (input_cloud_->height);
+  const index_t width = static_cast<index_t>(input_cloud_->width);
+  const index_t height = static_cast<index_t>(input_cloud_->height);
 
   // destination for intensity data; will be forwarded to BRISK
   std::vector<unsigned char> image_data (width*height);
@@ -521,9 +521,9 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   // current integral image
   std::vector<int> integral ((width+1)*(height+1), 0);    // the integral image
 
-  for (std::size_t row_index = 1; row_index < height; ++row_index)
+  for (index_t row_index = 1; row_index < height; ++row_index)
   {
-    for (std::size_t col_index = 1; col_index < width; ++col_index)
+    for (index_t col_index = 1; col_index < width; ++col_index)
     {
       const std::size_t index = row_index*width+col_index;
       const std::size_t index2 = (row_index)*(width+1)+(col_index);

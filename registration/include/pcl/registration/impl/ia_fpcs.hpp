@@ -41,6 +41,7 @@
 #include <pcl/registration/ia_fpcs.h>
 #include <pcl/common/time.h>
 #include <pcl/common/distances.h>
+#include <pcl/common/utils.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/registration/transformation_estimation_3point.h>
 
@@ -59,6 +60,7 @@ pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &clou
   std::vector <int> ids (2);
   std::vector <float> dists_sqr (2);
 
+  pcl::utils::ignore(nr_threads);
 #pragma omp parallel for \
   default(none) \
   shared(tree, cloud) \
@@ -96,6 +98,7 @@ pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &clou
   std::vector <int> ids (2);
   std::vector <float> dists_sqr (2);
 
+  pcl::utils::ignore(nr_threads);
 #pragma omp parallel for \
   default(none) \
   shared(tree, cloud, indices) \

@@ -308,7 +308,7 @@ TEST (PCL, IntegralImageNormalEstimationIndexingIssue)
 
   pcl::IndicesPtr indicesptr (new pcl::Indices ());
   indicesptr->resize(cloudptr->size() / 2);
-  for (int i = 0; i < cloudptr->size() / 2; ++i)
+  for (std::size_t i = 0; i < cloudptr->size() / 2; ++i)
   {
     (*indicesptr)[i] = i + cloudptr->size() / 2;
   }
@@ -328,7 +328,7 @@ TEST (PCL, IntegralImageNormalEstimationIndexingIssue)
 
   std::vector<PointXYZ> normalsVec;
   normalsVec.resize(normals->size());
-  for( int i = 0; i < normals->size(); ++i )
+  for(std::size_t i = 0; i < normals->size(); ++i )
   {
     normalsVec[i].x = normals->points[i].normal_x;
     normalsVec[i].y = normals->points[i].normal_y;
