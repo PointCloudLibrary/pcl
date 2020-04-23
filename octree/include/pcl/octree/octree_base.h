@@ -38,16 +38,17 @@
 
 #pragma once
 
-#include <vector>
-
 #include <pcl/octree/octree_container.h>
 #include <pcl/octree/octree_iterator.h>
 #include <pcl/octree/octree_key.h>
 #include <pcl/octree/octree_nodes.h>
 #include <pcl/pcl_macros.h>
 
+#include <vector>
+
 namespace pcl {
 namespace octree {
+
 /** \brief Octree class
  * \note The tree depth defines the maximum amount of octree voxels / leaf nodes (should
  * be initially defined).
@@ -126,14 +127,16 @@ public:
   using LeafNodeIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
   using ConstLeafNodeIterator = const OctreeLeafNodeDepthFirstIterator<OctreeT>;
 
-  PCL_DEPRECATED("use leaf_depth_begin() instead")
+  PCL_DEPRECATED(1, 12, "use leaf_depth_begin() instead")
   LeafNodeIterator
   leaf_begin(unsigned int max_depth_arg = 0u)
   {
     return LeafNodeIterator(this, max_depth_arg ? max_depth_arg : this->octree_depth_);
   };
 
-  PCL_DEPRECATED("use leaf_depth_end() instead") const LeafNodeIterator leaf_end()
+  PCL_DEPRECATED(1, 12, "use leaf_depth_end() instead")
+  const LeafNodeIterator
+  leaf_end()
   {
     return LeafNodeIterator(this, 0, nullptr);
   };
@@ -247,6 +250,8 @@ public:
   {
     leaf_count_ = source.leaf_count_;
     branch_count_ = source.branch_count_;
+    delete root_node_;
+
     root_node_ = new (BranchNode)(*(source.root_node_));
     depth_mask_ = source.depth_mask_;
     max_key_ = source.max_key_;
@@ -396,7 +401,7 @@ protected:
   createLeaf(const OctreeKey& key_arg)
   {
 
-    LeafNode* leaf_node;
+    LeafNode* leaf_node = nullptr;
     BranchNode* leaf_node_parent;
 
     createLeafRecursive(key_arg, depth_mask_, root_node_, leaf_node, leaf_node_parent);
@@ -686,7 +691,7 @@ protected:
    * \param n_arg: some value
    * \return binary logarithm (log2) of argument n_arg
    */
-  PCL_DEPRECATED("use std::log2 instead") double Log2(double n_arg)
+  PCL_DEPRECATED(1, 12, "use std::log2 instead") double Log2(double n_arg)
   {
     return std::log2(n_arg);
   }

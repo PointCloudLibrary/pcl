@@ -43,9 +43,9 @@
 #endif
 
 // Include PCL macros such as PCL_ERROR, PCL_MAKE_ALIGNED_OPERATOR_NEW, etc
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
-#include <boost/shared_ptr.hpp>
 #include <Eigen/StdVector>
 #include <Eigen/Core>
 
@@ -53,11 +53,11 @@
 #include <pcl/point_cloud.h>
 #include <pcl/PointIndices.h>
 #include <pcl/PCLPointCloud2.h>
+#include <pcl/types.h>
 
 namespace pcl
 {
   // definitions used everywhere
-  using Indices = std::vector<int>;
   using IndicesPtr = shared_ptr<Indices>;
   using IndicesConstPtr = shared_ptr<const Indices>;
 
@@ -83,11 +83,7 @@ namespace pcl
       PCLBase (const PCLBase& base);
 
       /** \brief Destructor. */
-      virtual ~PCLBase ()
-      {
-        input_.reset ();
-        indices_.reset ();
-      }
+      virtual ~PCLBase () = default;
 
       /** \brief Provide a pointer to the input dataset
         * \param[in] cloud the const boost shared pointer to a PointCloud message
@@ -196,11 +192,7 @@ namespace pcl
       PCLBase ();
 
       /** \brief destructor. */
-      virtual ~PCLBase()
-      {
-        input_.reset ();
-        indices_.reset ();
-      }
+      virtual ~PCLBase () = default;
 
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message

@@ -142,7 +142,8 @@ public:
    *
    * \param node_index the index of the node to access
    */
-  inline NodeType& operator[](const std::size_t node_index)
+  inline NodeType&
+  operator[](const std::size_t node_index)
   {
     return nodes_[node_index];
   }
@@ -151,7 +152,8 @@ public:
    *
    * \param node_index the index of the node to access
    */
-  inline const NodeType& operator[](const std::size_t node_index) const
+  inline const NodeType&
+  operator[](const std::size_t node_index) const
   {
     return nodes_[node_index];
   }

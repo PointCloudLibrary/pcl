@@ -39,7 +39,7 @@
 #define PCL_STANDALONE_MARCHING_CUBES_IMPL_HPP_
 
 #include <pcl/gpu/kinfu_large_scale/standalone_marching_cubes.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
@@ -191,8 +191,9 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::convertTsdfVectors (const Po
 	constexpr int DIVISOR = std::numeric_limits<short>::max();
 
     ///For every point in the cloud
-#pragma omp parallel for
- 	
+#pragma omp parallel for \
+  default(none) \
+  shared(cloud, output) 	
 	for(int i = 0; i < (int) cloud.points.size (); ++i)
 	{
 	  int x = cloud.points[i].x;

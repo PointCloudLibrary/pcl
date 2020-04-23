@@ -36,15 +36,22 @@
  * $Id: point_cloud_handlers.hpp 7678 2012-10-22 20:54:04Z rusu $
  *
  */
+
 #ifndef PCL_POINT_CLOUD_GEOMETRY_HANDLERS_IMPL_HPP_
 #define PCL_POINT_CLOUD_GEOMETRY_HANDLERS_IMPL_HPP_
 
 #include <pcl/pcl_macros.h>
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
+namespace visualization
+{
+
 template <typename PointT>
-pcl::visualization::PointCloudGeometryHandlerXYZ<PointT>::PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud) 
-  : pcl::visualization::PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
+PointCloudGeometryHandlerXYZ<PointT>::PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud)
+  : PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
 {
   field_x_idx_ = pcl::getFieldIndex<PointT> ("x", fields_);
   if (field_x_idx_ == -1)
@@ -58,9 +65,9 @@ pcl::visualization::PointCloudGeometryHandlerXYZ<PointT>::PointCloudGeometryHand
   capable_ = true;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void 
-pcl::visualization::PointCloudGeometryHandlerXYZ<PointT>::getGeometry (vtkSmartPointer<vtkPoints> &points) const
+
+template <typename PointT> void
+PointCloudGeometryHandlerXYZ<PointT>::getGeometry (vtkSmartPointer<vtkPoints> &points) const
 {
   if (!capable_)
     return;
@@ -109,10 +116,10 @@ pcl::visualization::PointCloudGeometryHandlerXYZ<PointT>::getGeometry (vtkSmartP
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT>
-pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<PointT>::PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr &cloud) 
-  : pcl::visualization::PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
+PointCloudGeometryHandlerSurfaceNormal<PointT>::PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr &cloud)
+  : PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
 {
   field_x_idx_ = pcl::getFieldIndex<PointT> ("normal_x", fields_);
   if (field_x_idx_ == -1)
@@ -126,9 +133,9 @@ pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<PointT>::PointCloudGe
   capable_ = true;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void 
-pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<PointT>::getGeometry (vtkSmartPointer<vtkPoints> &points) const
+
+template <typename PointT> void
+PointCloudGeometryHandlerSurfaceNormal<PointT>::getGeometry (vtkSmartPointer<vtkPoints> &points) const
 {
   if (!capable_)
     return;
@@ -149,6 +156,9 @@ pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<PointT>::getGeometry 
     points->SetPoint (i, p);
   }
 }
+
+} // namespace visualization
+} // namespace pcl
 
 #define PCL_INSTANTIATE_PointCloudGeometryHandlerXYZ(T) template class PCL_EXPORTS pcl::visualization::PointCloudGeometryHandlerXYZ<T>;
 #define PCL_INSTANTIATE_PointCloudGeometryHandlerSurfaceNormal(T) template class PCL_EXPORTS pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<T>;

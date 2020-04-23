@@ -44,6 +44,11 @@
 #include <pcl/point_types.h>
 #include <pcl/common/point_operators.h>
 
+#include <cmath>
+#include <cstdint>
+#include <limits>
+#include <vector>
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 namespace pcl
 {
@@ -237,9 +242,11 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::convolve (PointCloudO
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
 
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) private (nn_indices, nn_distances) num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(output) \
+  private(nn_indices, nn_distances) \
+  num_threads(threads_)
   for (std::int64_t point_idx = 0; point_idx < static_cast<std::int64_t> (surface_->size ()); ++point_idx)
   {
     const PointInT& point_in = surface_->points [point_idx];

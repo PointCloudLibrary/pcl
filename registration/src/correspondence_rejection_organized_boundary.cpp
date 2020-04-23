@@ -37,13 +37,15 @@
  */
 
 #include <pcl/registration/correspondence_rejection_organized_boundary.h>
+#include <pcl/memory.h>  // for static_pointer_cast
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::registration::CorrespondenceRejectionOrganizedBoundary::getRemainingCorrespondences (const pcl::Correspondences& original_correspondences,
                                                                                           pcl::Correspondences& remaining_correspondences)
 {
-  pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud = boost::static_pointer_cast<pcl::registration::DataContainer<pcl::PointXYZ, pcl::PointNormal> >(data_container_)->getInputTarget ();
+  pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud = static_pointer_cast<pcl::registration::DataContainer<pcl::PointXYZ, pcl::PointNormal> >(data_container_)->getInputTarget ();
 
   if (!cloud->isOrganized ())
   {

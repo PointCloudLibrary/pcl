@@ -160,7 +160,7 @@ namespace pcl
 
     /** \brief template function to convert realsense point cloud to PCL point cloud
     * \param[in] points - realsense point cloud array
-    * \param[in] dynamic function to convert individual point color or intensity values
+    * \param[in] mapColorFunc dynamic function to convert individual point color or intensity values
     */
     template <typename PointT, typename Functor>
     typename pcl::PointCloud<PointT>::Ptr

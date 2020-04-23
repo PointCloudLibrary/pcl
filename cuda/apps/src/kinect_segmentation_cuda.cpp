@@ -35,6 +35,10 @@
  *
  */
 
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 #include <pcl/cuda/features/normal_3d.h>
 #include <pcl/cuda/time_cpu.h>
 #include <pcl/cuda/time_gpu.h>
@@ -48,19 +52,15 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/pcl_macros.h>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/highgui/highgui_c.h>
 #include <opencv2/gpu/gpu.hpp>
 
-#include <boost/shared_ptr.hpp>
-
 #include <functional>
 #include <iostream>
 #include <mutex>
+
 
 using namespace pcl::cuda;
 
@@ -288,7 +288,6 @@ class Segmentation
               }
               std::vector<int> planes_inlier_counts = sac.getAllInlierCounts ();
               std::vector<float4> coeffs = sac.getAllModelCoefficients ();
-              std::vector<float3> centroids = sac.getAllModelCentroids ();
               std::cerr << "Found " << planes_inlier_counts.size () << " planes" << std::endl;
 
               for (unsigned int i = 0; i < planes.size (); i++)
@@ -357,7 +356,6 @@ class Segmentation
     {
       if (use_file)
       {
-        pcl::Grabber* filegrabber = 0;
 
         float frames_per_second = 1;
         bool repeat = false;
@@ -389,18 +387,17 @@ class Segmentation
       {
         pcl::OpenNIGrabber grabber {};
 
-        boost::signals2::connection c;
         if (use_device)
         {
           std::cerr << "[Segmentation] Using GPU..." << std::endl;
           std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&Segmentation::cloud_cb<Device>, this, _1, _2, _3);
-          c = grabber.registerCallback (f);
+          grabber.registerCallback (f);
         }
         else
         {
 //          std::cerr << "[Segmentation] Using CPU..." << std::endl;
 //          std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&Segmentation::cloud_cb<Host>, this, _1, _2, _3);
-//          c = grabber.registerCallback (f);
+//          grabber.registerCallback (f);
         }
 
         viewer.runOnVisualizationThread (std::bind(&Segmentation::viz_cb, this, _1), "viz_cb");

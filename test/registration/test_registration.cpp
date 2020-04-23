@@ -154,6 +154,48 @@ TEST (PCL, findFeatureCorrespondences)
 */
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// This test if the ICP algorithm can successfully find the transformation of a cloud that has been
+// moved 0.7 in x direction.
+// It indirectly test the KDTree doesn't get an empty input cloud, see #3624
+// It is more or less a copy of https://github.com/PointCloudLibrary/pcl/blob/cc7fe363c6463a0abc617b1e17e94ab4bd4169ef/doc/tutorials/content/sources/iterative_closest_point/iterative_closest_point.cpp
+TEST(PCL, ICP_translated)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in(new pcl::PointCloud<pcl::PointXYZ>(5,1));
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZ>);
+
+  // Fill in the CloudIn data
+  for (auto& point : *cloud_in)
+  {
+    point.x = 1024 * rand() / (RAND_MAX + 1.0f);
+    point.y = 1024 * rand() / (RAND_MAX + 1.0f);
+    point.z = 1024 * rand() / (RAND_MAX + 1.0f);
+  }
+
+  *cloud_out = *cloud_in;
+
+  for (auto& point : *cloud_out)
+    point.x += 0.7f;
+
+  pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
+  icp.setInputSource(cloud_in);
+  icp.setInputTarget(cloud_out);
+
+  pcl::PointCloud<pcl::PointXYZ> Final;
+  icp.align(Final);
+
+  // Check that we have sucessfully converged
+  ASSERT_EQ(icp.hasConverged(), true);
+
+  // Test that the fitness score is below acceptable threshold
+  EXPECT_LT(icp.getFitnessScore(), 1e-6);
+
+  // Ensure that the translation found is within acceptable threshold.
+  EXPECT_NEAR(icp.getFinalTransformation()(0, 3), 0.7, 2e-3);
+  EXPECT_NEAR(icp.getFinalTransformation()(1, 3), 0.0, 2e-3);
+  EXPECT_NEAR(icp.getFinalTransformation()(2, 3), 0.0, 2e-3);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, IterativeClosestPoint)
 {
@@ -169,26 +211,26 @@ TEST (PCL, IterativeClosestPoint)
   reg.align (cloud_reg);
   EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
 
-  //Eigen::Matrix4f transformation = reg.getFinalTransformation ();
-//  EXPECT_NEAR (transformation (0, 0), 0.8806,  1e-3);
-//  EXPECT_NEAR (transformation (0, 1), 0.036481287330389023, 1e-2);
-//  EXPECT_NEAR (transformation (0, 2), -0.4724, 1e-3);
-//  EXPECT_NEAR (transformation (0, 3), 0.03453, 1e-3);
-//
-//  EXPECT_NEAR (transformation (1, 0), -0.02354,  1e-3);
-//  EXPECT_NEAR (transformation (1, 1),  0.9992,   1e-3);
-//  EXPECT_NEAR (transformation (1, 2),  0.03326,  1e-3);
-//  EXPECT_NEAR (transformation (1, 3), -0.001519, 1e-3);
-//
-//  EXPECT_NEAR (transformation (2, 0),  0.4732,  1e-3);
-//  EXPECT_NEAR (transformation (2, 1), -0.01817, 1e-3);
-//  EXPECT_NEAR (transformation (2, 2),  0.8808,  1e-3);
-//  EXPECT_NEAR (transformation (2, 3),  0.04116, 1e-3);
-//
-//  EXPECT_EQ (transformation (3, 0), 0);
-//  EXPECT_EQ (transformation (3, 1), 0);
-//  EXPECT_EQ (transformation (3, 2), 0);
-//  EXPECT_EQ (transformation (3, 3), 1);
+  Eigen::Matrix4f transformation = reg.getFinalTransformation ();
+  EXPECT_NEAR (transformation (0, 0), 0.8806,  1e-3);
+  EXPECT_NEAR (transformation (0, 1), 0.036481287330389023, 1e-2);
+  EXPECT_NEAR (transformation (0, 2), -0.4724, 1e-3);
+  EXPECT_NEAR (transformation (0, 3), 0.03453, 1e-3);
+
+  EXPECT_NEAR (transformation (1, 0), -0.02354,  1e-3);
+  EXPECT_NEAR (transformation (1, 1),  0.9992,   1e-3);
+  EXPECT_NEAR (transformation (1, 2),  0.03326,  1e-3);
+  EXPECT_NEAR (transformation (1, 3), -0.001519, 1e-3);
+
+  EXPECT_NEAR (transformation (2, 0),  0.4732,  1e-3);
+  EXPECT_NEAR (transformation (2, 1), -0.01817, 1e-3);
+  EXPECT_NEAR (transformation (2, 2),  0.8808,  1e-3);
+  EXPECT_NEAR (transformation (2, 3),  0.04116, 1e-3);
+
+  EXPECT_EQ (transformation (3, 0), 0);
+  EXPECT_EQ (transformation (3, 1), 0);
+  EXPECT_EQ (transformation (3, 2), 0);
+  EXPECT_EQ (transformation (3, 3), 1);
 }
 
 TEST (PCL, IterativeClosestPointWithNormals)

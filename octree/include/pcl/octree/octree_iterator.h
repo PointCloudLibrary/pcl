@@ -39,14 +39,13 @@
 
 #pragma once
 
-#include <cstddef>
-#include <deque>
-#include <vector>
-
 #include <pcl/octree/octree_key.h>
 #include <pcl/octree/octree_nodes.h>
 
+#include <cstddef>
+#include <deque>
 #include <iterator>
+#include <vector>
 
 // Ignore warnings in the above headers
 #ifdef __GNUC__
@@ -218,7 +217,8 @@ public:
   /** \brief *operator.
    * \return pointer to the current octree node
    */
-  inline OctreeNode* operator*() const
+  inline OctreeNode*
+  operator*() const
   { // return designated object
     if (octree_ && current_state_) {
       return (current_state_->node_);
@@ -728,7 +728,8 @@ public:
   /** \brief *operator.
    * \return pointer to the current octree leaf node
    */
-  OctreeNode* operator*() const
+  OctreeNode*
+  operator*() const
   {
     // return designated object
     OctreeNode* ret = 0;

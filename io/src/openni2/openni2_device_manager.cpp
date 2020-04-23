@@ -33,7 +33,7 @@
 #include "pcl/io/openni2/openni2_convert.h"
 #include "pcl/io/openni2/openni2_device.h"
 #include "pcl/io/io_exception.h"
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 #include <mutex>
 #include <set>
@@ -226,7 +226,7 @@ pcl::io::openni2::OpenNI2DeviceManager::getDevice (const std::string& device_URI
 }
 
 OpenNI2Device::Ptr
-pcl::io::openni2::OpenNI2DeviceManager::getDeviceByIndex (int index)
+pcl::io::openni2::OpenNI2DeviceManager::getDeviceByIndex (int index) const
 {
   auto URIs = getConnectedDeviceURIs ();
   return pcl::make_shared<OpenNI2Device>( URIs->at (index) );

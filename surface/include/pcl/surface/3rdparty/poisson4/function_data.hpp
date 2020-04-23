@@ -48,11 +48,11 @@ namespace pcl
     {
       if(res)
       {
-        if(  dotTable) delete[]   dotTable;
-        if( dDotTable) delete[]  dDotTable;
-        if(d2DotTable) delete[] d2DotTable;
-        if( valueTables) delete[]  valueTables;
-        if(dValueTables) delete[] dValueTables;
+        delete[]   dotTable;
+        delete[]  dDotTable;
+        delete[] d2DotTable;
+        delete[]  valueTables;
+        delete[] dValueTables;
       }
       dotTable=dDotTable=d2DotTable=NULL;
       valueTables=dValueTables=NULL;
@@ -224,18 +224,12 @@ namespace pcl
     template<int Degree,class Real>
     void FunctionData<Degree,Real>::clearDotTables( const int& flags )
     {
-      if((flags & DOT_FLAG) && dotTable)
+      if (flags & DOT_FLAG)
       {
         delete[] dotTable;
         dotTable=NULL;
-      }
-      if((flags & D_DOT_FLAG) && dDotTable)
-      {
         delete[] dDotTable;
         dDotTable=NULL;
-      }
-      if((flags & D2_DOT_FLAG) && d2DotTable)
-      {
         delete[] d2DotTable;
         d2DotTable=NULL;
       }
@@ -292,8 +286,8 @@ namespace pcl
 
     template<int Degree,class Real>
     void FunctionData<Degree,Real>::clearValueTables(void){
-      if( valueTables){delete[]  valueTables;}
-      if(dValueTables){delete[] dValueTables;}
+      delete[]  valueTables;
+      delete[] dValueTables;
       valueTables=dValueTables=NULL;
     }
 

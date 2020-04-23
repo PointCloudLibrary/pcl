@@ -43,6 +43,7 @@
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/common/angles.h>
+#include <pcl/common/utils.h>
 #include <pcl/PointIndices.h>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/segmentation/plane_coefficient_comparator.h>
@@ -285,15 +286,17 @@ namespace pcl
         * \param [in] labels The labels produced by the initial segmentation
         * \param [in] label_indices The list of indices corresponding to each label
         */
-      PCL_DEPRECATED("centroids and covariances parameters are not used; they are deprecated and will be removed in future releases")
+      PCL_DEPRECATED(1, 12, "centroids and covariances parameters are not used; they are deprecated and will be removed in future releases")
       void
       refine (std::vector<ModelCoefficients>& model_coefficients, 
               std::vector<PointIndices>& inlier_indices,
-              std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> >& /*centroids*/,
-              std::vector <Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> >& /*covariances*/,
+              std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> >& centroids,
+              std::vector <Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> >& covariances,
               PointCloudLPtr& labels,
               std::vector<pcl::PointIndices>& label_indices)
       {
+        pcl::utils::ignore(centroids);
+        pcl::utils::ignore(covariances);
         refine(model_coefficients, inlier_indices, labels, label_indices);
       }
 

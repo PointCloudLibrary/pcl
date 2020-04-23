@@ -133,9 +133,10 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
   Eigen::MatrixXf Zf (rows, cols);
   Zf.setConstant (std::numeric_limits<float>::quiet_NaN ());
 
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(A, global_min) \
+  num_threads(threads_)
   for (int i = 0; i < (int)input_->points.size (); ++i)
   {
     // ...then test for lower points within the cell
@@ -164,9 +165,10 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
     pcl::copyPointCloud<PointT> (*input_, ground, *cloud);
 
     // Apply the morphological opening operation at the current window size.
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(A, cols, half_sizes, i, rows, Z) \
+  num_threads(threads_)
     for (int row = 0; row < rows; ++row)
     {
       int rs, re;
@@ -198,9 +200,10 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
       }
     }
 
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(cols, half_sizes, i, rows, Z, Zf) \
+  num_threads(threads_)
     for (int row = 0; row < rows; ++row)
     {
       int rs, re;

@@ -1,9 +1,10 @@
 #pragma once
 
+#include <pcl/memory.h>       // for shared_ptr
+#include <pcl/type_traits.h>  // for asEnum_v
+
 #include <string>   // for string
 #include <ostream>  // for ostream
-
-#include <pcl/pcl_macros.h>  // for shared_ptr
 
 namespace pcl
 {
@@ -15,14 +16,14 @@ namespace pcl
     std::uint8_t datatype = 0;
     std::uint32_t count = 0;
 
-    enum PointFieldTypes { INT8 = 1,
-                           UINT8 = 2,
-                           INT16 = 3,
-                           UINT16 = 4,
-                           INT32 = 5,
-                           UINT32 = 6,
-                           FLOAT32 = 7,
-                           FLOAT64 = 8 };
+    enum PointFieldTypes { INT8 = traits::asEnum_v<std::int8_t>,
+                           UINT8 = traits::asEnum_v<std::uint8_t>,
+                           INT16 = traits::asEnum_v<std::int16_t>,
+                           UINT16 = traits::asEnum_v<std::uint16_t>,
+                           INT32 = traits::asEnum_v<std::int32_t>,
+                           UINT32 = traits::asEnum_v<std::uint32_t>,
+                           FLOAT32 = traits::asEnum_v<float>,
+                           FLOAT64 = traits::asEnum_v<double>};
 
   public:
     using Ptr = shared_ptr< ::pcl::PCLPointField>;
@@ -44,4 +45,20 @@ namespace pcl
     s << "  " << v.count << std::endl;
     return (s);
   }
+
+  // Return true if the PCLPointField matches the expected name and data type.
+  // Written as a struct to allow partially specializing on Tag.
+  template<typename PointT, typename Tag>
+  struct FieldMatches
+  {
+    bool operator() (const PCLPointField& field)
+    {
+      return ((field.name == traits::name<PointT, Tag>::value) &&
+              (field.datatype == traits::datatype<PointT, Tag>::value) &&
+              ((field.count == traits::datatype<PointT, Tag>::size) ||
+               (field.count == 0 && traits::datatype<PointT, Tag>::size == 1 /* see bug #821 */)));
+    }
+  };
+
 } // namespace pcl
+

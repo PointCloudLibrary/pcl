@@ -37,12 +37,14 @@
 
 #pragma once
 
+namespace pcl {
+
 template <class FeatureType,
           class DataSet,
           class LabelType,
           class ExampleIndex,
           class NodeType>
-pcl::DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     DecisionForestTrainer()
 : num_of_trees_to_train_(1), decision_tree_trainer_()
 {}
@@ -52,7 +54,7 @@ template <class FeatureType,
           class LabelType,
           class ExampleIndex,
           class NodeType>
-pcl::DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
+DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     ~DecisionForestTrainer()
 {}
 
@@ -62,8 +64,8 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 void
-pcl::DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    train(pcl::DecisionForest<NodeType>& forest)
+DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::train(
+    pcl::DecisionForest<NodeType>& forest)
 {
   for (std::size_t tree_index = 0; tree_index < num_of_trees_to_train_; ++tree_index) {
     pcl::DecisionTree<NodeType> tree;
@@ -72,3 +74,5 @@ pcl::DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeTy
     forest.push_back(tree);
   }
 }
+
+} // namespace pcl

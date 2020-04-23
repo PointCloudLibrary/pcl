@@ -691,7 +691,7 @@ pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::getGeometry 
   // Add all points
   float dim;
   vtkIdType j = 0;    // true point index
-  float* pts = static_cast<float*> (malloc (nr_points * 3 * sizeof (float)));
+  std::vector<float> pts (nr_points * 3);
   int point_offset = 0;
 
   // If the dataset has no invalid values, just copy all of them

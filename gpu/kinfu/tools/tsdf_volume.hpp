@@ -168,7 +168,6 @@ pcl::TSDFVolume<VoxelT, WeightT>::convertToTsdfCloud (pcl::PointCloud<pcl::Point
   cloud->reserve (std::min (cloud_size/10, 500000));
 
   int volume_idx = 0, cloud_idx = 0;
-//#pragma omp parallel for // if used, increment over idx not possible! use index calculation
   for (int z = 0; z < sz; z+=step)
     for (int y = 0; y < sy; y+=step)
       for (int x = 0; x < sx; x+=step, ++cloud_idx)
@@ -245,7 +244,8 @@ pcl::TSDFVolume<VoxelT, WeightT>::extractNeighborhood (const Eigen::Vector3i &vo
   const Eigen::RowVector3i offset_vector (1, neighborhood_size, neighborhood_size*neighborhood_size);
 
   // loop over all voxels in 3D neighborhood
-  #pragma omp parallel for
+  #pragma omp parallel for \
+    default(none)
   for (int z = min_index(2); z <= max_index(2); ++z)
   {
     for (int y = min_index(1); y <= max_index(1); ++y)
@@ -297,7 +297,8 @@ pcl::TSDFVolume<VoxelT, WeightT>::addNeighborhood (const Eigen::Vector3i &voxel_
 
   Eigen::Vector3i index = min_index;
   // loop over all voxels in 3D neighborhood
-  #pragma omp parallel for
+  #pragma omp parallel for \
+    default(none)
   for (int z = min_index(2); z <= max_index(2); ++z)
   {
     for (int y = min_index(1); y <= max_index(1); ++y)
@@ -329,7 +330,8 @@ pcl::TSDFVolume<VoxelT, WeightT>::addNeighborhood (const Eigen::Vector3i &voxel_
 template <typename VoxelT, typename WeightT> void
 pcl::TSDFVolume<VoxelT, WeightT>::averageValues ()
 {
-  #pragma omp parallel for
+  #pragma omp parallel for \
+    default(none)
   for (std::size_t i = 0; i < volume_->size(); ++i)
   {
     WeightT &w = weights_->at(i);

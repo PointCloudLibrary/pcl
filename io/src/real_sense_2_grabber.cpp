@@ -292,9 +292,9 @@ namespace pcl
     const auto cloud_vertices_ptr = points.get_vertices ();
     const auto cloud_texture_ptr = points.get_texture_coordinates ();
 
-#ifdef _OPENMP
-#pragma omp parallel for 
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(cloud, cloud_vertices_ptr, mapColorFunc)
     for (int index = 0; index < cloud->points.size (); ++index)
     {
       const auto ptr = cloud_vertices_ptr + index;

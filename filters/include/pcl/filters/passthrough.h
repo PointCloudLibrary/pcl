@@ -95,7 +95,7 @@ namespace pcl
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
         */
       PassThrough (bool extract_removed_indices = false) :
-        FilterIndices<PointT>::FilterIndices (extract_removed_indices),
+        FilterIndices<PointT> (extract_removed_indices),
         filter_field_name_ (""),
         filter_limit_min_ (FLT_MIN),
         filter_limit_max_ (FLT_MAX)
@@ -150,6 +150,7 @@ namespace pcl
         * \warning This method will be removed in the future. Use setNegative() instead.
         * \param[in] limit_negative return data inside the interval (false) or outside (true)
         */
+      PCL_DEPRECATED(1, 13, "use inherited FilterIndices::setNegative() instead")
       inline void
       setFilterLimitsNegative (const bool limit_negative)
       {
@@ -160,6 +161,7 @@ namespace pcl
         * \warning This method will be removed in the future. Use getNegative() instead.
         * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
+      PCL_DEPRECATED(1, 13, "use inherited FilterIndices::getNegative() instead")
       inline void
       getFilterLimitsNegative (bool &limit_negative) const
       {
@@ -186,12 +188,6 @@ namespace pcl
       using FilterIndices<PointT>::user_filter_value_;
       using FilterIndices<PointT>::extract_removed_indices_;
       using FilterIndices<PointT>::removed_indices_;
-
-      /** \brief Filtered results are stored in a separate point cloud.
-        * \param[out] output The resultant point cloud.
-        */
-      void
-      applyFilter (PointCloud &output) override;
 
       /** \brief Filtered results are indexed by an indices array.
         * \param[out] indices The resultant indices.
@@ -287,7 +283,7 @@ namespace pcl
         * Default: false.
         * \param[in] limit_negative return data inside the interval (false) or outside (true)
         */
-      PCL_DEPRECATED("use inherited FilterIndices::setNegative() instead")
+      PCL_DEPRECATED(1, 12, "use inherited FilterIndices::setNegative() instead")
       inline void
       setFilterLimitsNegative (const bool limit_negative)
       {
@@ -297,7 +293,7 @@ namespace pcl
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
-      PCL_DEPRECATED("use inherited FilterIndices::getNegative() instead")
+      PCL_DEPRECATED(1, 12, "use inherited FilterIndices::getNegative() instead")
       inline void
       getFilterLimitsNegative (bool &limit_negative) const
       {
@@ -307,7 +303,7 @@ namespace pcl
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \return true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
-      PCL_DEPRECATED("use inherited FilterIndices::getNegative() instead")
+      PCL_DEPRECATED(1, 12, "use inherited FilterIndices::getNegative() instead")
       inline bool
       getFilterLimitsNegative () const
       {

@@ -38,13 +38,17 @@
 #pragma once
 
 #include <pcl/io/grabber.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>
 
+#include <cstddef>
 #include <memory>
+#include <mutex>
+#include <string>
 #include <thread>
+#include <vector>
 
 namespace pcl
 {
@@ -269,7 +273,5 @@ namespace pcl
 
       /// Depth buffer to perform temporal filtering of the depth images
       std::shared_ptr<pcl::io::Buffer<unsigned short> > depth_buffer_;
-
   };
-
 }

@@ -46,10 +46,9 @@
 #include <Eigen/Geometry>
 #include <pcl/PCLHeader.h>
 #include <pcl/exceptions.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/point_traits.h>
-
-#include <pcl/make_shared.h>
+#include <pcl/type_traits.h>
 
 #include <algorithm>
 #include <utility>
@@ -138,7 +137,7 @@ namespace pcl
   namespace detail
   {
     template <typename PointT>
-    PCL_DEPRECATED("use createMapping() instead")
+    PCL_DEPRECATED(1, 12, "use createMapping() instead")
     shared_ptr<pcl::MsgFieldMap>&
     getMapping (pcl::PointCloud<PointT>& p);
   } // namespace detail
@@ -185,6 +184,20 @@ namespace pcl
         * sensor_orientation_ to identity.
         */
       PointCloud () = default;
+
+      /** \brief Copy constructor.
+        * \param[in] pc the cloud to copy into this
+        * \todo Erase once mapping_ is removed.
+        */
+      // Ignore unknown pragma warning on MSVC (4996)
+      #pragma warning(push)
+      #pragma warning(disable: 4068)
+      // Ignore deprecated warning on clang compilers
+      #pragma clang diagnostic push
+      #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      PointCloud (const PointCloud<PointT> &pc) = default;
+      #pragma clang diagnostic pop
+      #pragma warning(pop)
 
       /** \brief Copy constructor from point cloud subset
         * \param[in] pc the cloud to copy into this
@@ -321,7 +334,6 @@ namespace pcl
       }
 
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
-        * \anchor getMatrixXfMap
         * \note This method is for advanced users only! Use with care!
         *
         * \attention Since 1.4.0, Eigen matrices are forced to Row Major to increase the efficiency of the algorithms in PCL
@@ -345,7 +357,6 @@ namespace pcl
       }
 
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
-        * \anchor getMatrixXfMap
         * \note This method is for advanced users only! Use with care!
         *
         * \attention Since 1.4.0, Eigen matrices are forced to Row Major to increase the efficiency of the algorithms in PCL
@@ -368,22 +379,24 @@ namespace pcl
           return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(const_cast<PointT*>(&points[0]))+offset, dim, points.size (), Eigen::OuterStride<> (stride)));
       }
 
-      /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud.
-        * \note This method is for advanced users only! Use with care!
-        * \attention PointT types are most of the time aligned, so the offsets are not continuous!
-        * See \ref getMatrixXfMap for more information.
-        */
+      /**
+       * \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud.
+       * \note This method is for advanced users only! Use with care!
+       * \attention PointT types are most of the time aligned, so the offsets are not continuous!
+       * \overload Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> > pcl::PointCloud::getMatrixXfMap ()
+       */
       inline Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >
       getMatrixXfMap ()
       {
         return (getMatrixXfMap (sizeof (PointT) / sizeof (float),  sizeof (PointT) / sizeof (float), 0));
       }
 
-      /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud.
-        * \note This method is for advanced users only! Use with care!
-        * \attention PointT types are most of the time aligned, so the offsets are not continuous!
-        * See \ref getMatrixXfMap for more information.
-        */
+      /**
+       * \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud.
+       * \note This method is for advanced users only! Use with care!
+       * \attention PointT types are most of the time aligned, so the offsets are not continuous!
+       * \overload const Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> > pcl::PointCloud::getMatrixXfMap () const
+       */
       inline const Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >
       getMatrixXfMap () const
       {
@@ -605,8 +618,10 @@ namespace pcl
       makeShared () const { return Ptr (new PointCloud<PointT> (*this)); }
 
     protected:
-      // This is motivated by ROS integration. Users should not need to access mapping_.
-      PCL_DEPRECATED("rewrite your code to avoid using this protected field") shared_ptr<MsgFieldMap> mapping_;
+      /** \brief This is motivated by ROS integration. Users should not need to access mapping_.
+        * \todo Once mapping_ is removed, erase the explicitly defined copy constructor in PointCloud.
+        */
+      PCL_DEPRECATED(1, 12, "rewrite your code to avoid using this protected field") shared_ptr<MsgFieldMap> mapping_;
 
       friend shared_ptr<MsgFieldMap>& detail::getMapping<PointT>(pcl::PointCloud<PointT> &p);
 

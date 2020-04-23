@@ -39,10 +39,11 @@
 
 #pragma once
 
-#include <pcl/common/angles.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/common/angles.h>
 #include <pcl/segmentation/comparator.h>
-#include <boost/make_shared.hpp>
+
 
 namespace pcl
 {
@@ -139,7 +140,7 @@ namespace pcl
       void
       setPlaneCoeffD (std::vector<float>& plane_coeff_d)
       {
-        plane_coeff_d_ = boost::make_shared<std::vector<float> >(plane_coeff_d);
+        plane_coeff_d_ = pcl::make_shared<std::vector<float> >(plane_coeff_d);
       }
       
       /** \brief Get a pointer to the vector of the d-coefficient of the planes' hessian normal form. */

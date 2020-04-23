@@ -6,21 +6,21 @@
 
 // Include the correct Header path here
 #include <pcl/PCLHeader.h>
+#include <pcl/types.h>
 
 namespace pcl
 {
   struct PointIndices
   {
+    using Ptr = shared_ptr< ::pcl::PointIndices>;
+    using ConstPtr = shared_ptr<const ::pcl::PointIndices>;
+
     PointIndices ()
     {}
 
     ::pcl::PCLHeader header;
 
-    std::vector<int> indices;
-
-    public:
-      using Ptr = shared_ptr< ::pcl::PointIndices>;
-      using ConstPtr = shared_ptr<const ::pcl::PointIndices>;
+    Indices indices;
   }; // struct PointIndices
 
   using PointIndicesPtr = PointIndices::Ptr;

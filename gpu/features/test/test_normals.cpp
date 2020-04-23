@@ -394,6 +394,41 @@ TEST(PCL_FeaturesGPU, issue_2371)
     ne_gpu.compute(normals_gpu);
 }
 
+// See:
+// - https://github.com/PointCloudLibrary/pcl/pull/3627#discussion_r375826172
+TEST(PCL_FeaturesGPU, normals_nan_gpu)
+{
+    const std::size_t N = 5;
+
+    PointCloud<PointXYZ> cloud;
+    cloud.points.assign(N, {0.0, 0.0, 0.0});
+
+    const float radius_search = 2.0F;
+    const int max_results = 500;
+
+    pcl::gpu::NormalEstimation::PointCloud cloud_device;
+    cloud_device.upload(cloud.points);
+
+    pcl::gpu::NormalEstimation ne_device;
+    ne_device.setInputCloud(cloud_device);
+    ne_device.setRadiusSearch(radius_search, max_results);
+
+    pcl::gpu::NormalEstimation::Normals normals_device;
+    ne_device.compute(normals_device);
+
+    std::vector<PointXYZ> downloaded;
+    normals_device.download(downloaded);
+
+    ASSERT_EQ(downloaded.size(), N);
+
+    for(const auto& n : downloaded)
+    {
+        ASSERT_TRUE(std::isnan(n.x));
+        ASSERT_TRUE(std::isnan(n.y));
+        ASSERT_TRUE(std::isnan(n.z));
+    }
+}
+
 int main (int argc, char** argv)
 {
     pcl::gpu::setDevice(0);

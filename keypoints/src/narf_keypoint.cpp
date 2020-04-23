@@ -279,8 +279,13 @@ NarfKeypoint::calculateCompleteInterestImage ()
     was_touched.resize (array_size, false);
     std::vector<int> neighbors_to_check;
     
-#   pragma omp parallel for num_threads (parameters_.max_no_of_threads) default (shared) \
-                            firstprivate (was_touched, neighbors_to_check, angle_histogram) schedule (dynamic, 10)
+#pragma omp parallel for \
+  default(none) \
+  shared(array_size, border_descriptions, interest_image, range_image, radius_reciprocal, radius_squared, scale_idx, \
+         surface_change_directions, surface_change_scores, start_usage_range) \
+  firstprivate(was_touched, neighbors_to_check, angle_histogram) \
+  schedule(dynamic, 10) \
+  num_threads(parameters_.max_no_of_threads)
     for (int index=0; index<array_size; ++index)
     {
       float& interest_value = interest_image[index];
@@ -473,9 +478,13 @@ NarfKeypoint::calculateSparseInterestImage ()
                    neighbors_within_radius_overhead;
   
   //double interest_value_calculation_start_time = getTime ();
-# pragma omp parallel for default (shared) num_threads (parameters_.max_no_of_threads) schedule (guided, 10) \
-                          firstprivate (was_touched, neighbors_to_check, angle_histogram, neighbors_within_radius_overhead, \
-                                        angle_elements, relevant_point_still_valid) 
+#pragma omp parallel for \
+  default(none) \
+  shared(array_size, border_descriptions, increased_radius_squared, radius_reciprocal, radius_overhead_squared, range_image, search_radius, \
+         surface_change_directions, surface_change_scores) \
+  num_threads(parameters_.max_no_of_threads) \
+  schedule(guided, 10) \
+  firstprivate(was_touched, neighbors_to_check, angle_histogram, neighbors_within_radius_overhead, angle_elements, relevant_point_still_valid) 
   for (int index=0; index<array_size; ++index)
   {
     if (interest_image_[index] <= 1.0f)

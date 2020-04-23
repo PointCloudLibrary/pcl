@@ -105,31 +105,44 @@ TEST (CovarianceSampling, Filters)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (NormalSpaceSampling, Filters)
 {
-  NormalSpaceSampling<PointNormal, PointNormal> normal_space_sampling;
-  normal_space_sampling.setInputCloud (cloud_walls_normals);
-  normal_space_sampling.setNormals (cloud_walls_normals);
-  normal_space_sampling.setBins (4, 4, 4);
-  normal_space_sampling.setSeed (0);
-  normal_space_sampling.setSample (static_cast<unsigned int> (cloud_walls_normals->size ()) / 4);
+  // pcl::Normal is not precompiled by default so we use PointNormal
+  auto cloud = pcl::make_shared<PointCloud<PointNormal>> ();
+  // generate 16 points (8 unique) with unit norm
+  cloud->reserve (16);
+  // ensure that the normals have unit norm
+  const auto value = std::sqrt(1/3.f);
+  for (int unique = 0; unique < 8; ++unique) {
+    const auto i = ((unique % 2) < 1) ? -1 : 1;  // points alternate sign
+    const auto j = ((unique % 4) < 2) ? -1 : 1;  // 2 points negative, 2 positive
+    const auto k = ((unique % 8) < 4) ? -1 : 1;  // first 4 points negative, rest positive
+    for (int duplicate = 0; duplicate < 2; ++duplicate) {
+      cloud->emplace_back (0.f, 0.f, 0.f, i * value,  j * value, k * value);
+    }
+  }
 
-  IndicesPtr walls_indices (new std::vector<int> ());
+  NormalSpaceSampling<PointNormal, PointNormal> normal_space_sampling;
+  normal_space_sampling.setInputCloud (cloud);
+  normal_space_sampling.setNormals (cloud);
+  normal_space_sampling.setBins (2, 2, 2);
+  normal_space_sampling.setSeed (0);
+  normal_space_sampling.setSample (8);
+
+  IndicesPtr walls_indices  = pcl::make_shared<Indices> ();
   normal_space_sampling.filter (*walls_indices);
 
-  CovarianceSampling<PointNormal, PointNormal> covariance_sampling;
-  covariance_sampling.setInputCloud (cloud_walls_normals);
-  covariance_sampling.setNormals (cloud_walls_normals);
-  covariance_sampling.setIndices (walls_indices);
-  covariance_sampling.setNumberOfSamples (0);
-  double cond_num_walls_sampled = covariance_sampling.computeConditionNumber ();
+  // The orientation space of the normals is divided into 2x2x2 buckets
+  // points are samples arbitrarily from each bucket in succession until the
+  // requested number of samples is met. This means we expect to see only one index
+  // for every two elements in the original array e.g. 0, 3, 4, 6, etc...
+  // if 0 is sampled, index 1 can no longer be there and so forth
+  std::array<std::set<index_t>, 8> buckets;
+  for (const auto index : *walls_indices)
+    buckets[index/2].insert (index);
 
 
-  EXPECT_NEAR (33.04893, cond_num_walls_sampled, 1e-1);
-
-  EXPECT_EQ (1412, (*walls_indices)[0]);
-  EXPECT_EQ (1943, (*walls_indices)[walls_indices->size () / 4]);
-  EXPECT_EQ (2771, (*walls_indices)[walls_indices->size () / 2]);
-  EXPECT_EQ (3215, (*walls_indices)[walls_indices->size () * 3 / 4]);
-  EXPECT_EQ (2503, (*walls_indices)[walls_indices->size () - 1]);
+  EXPECT_EQ (8u, walls_indices->size ());
+  for (const auto& bucket : buckets)
+    EXPECT_EQ (1u, bucket.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -95,7 +95,7 @@ namespace pcl
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
         */
       StatisticalOutlierRemoval (bool extract_removed_indices = false) :
-        FilterIndices<PointT>::FilterIndices (extract_removed_indices),
+        FilterIndices<PointT> (extract_removed_indices),
         searcher_ (),
         mean_k_ (1),
         std_mul_ (0.0)
@@ -152,12 +152,6 @@ namespace pcl
       using FilterIndices<PointT>::user_filter_value_;
       using FilterIndices<PointT>::extract_removed_indices_;
       using FilterIndices<PointT>::removed_indices_;
-
-      /** \brief Filtered results are stored in a separate point cloud.
-        * \param[out] output The resultant point cloud.
-        */
-      void
-      applyFilter (PointCloud &output) override;
 
       /** \brief Filtered results are indexed by an indices array.
         * \param[out] indices The resultant indices.

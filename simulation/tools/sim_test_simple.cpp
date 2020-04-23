@@ -16,18 +16,28 @@
  *
  */
 
+#include <pcl/common/common.h>
+#include <pcl/common/transforms.h>
+#include <pcl/console/parse.h>
+#include <pcl/console/print.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/io/vtk_lib_io.h>
+#include <pcl/range_image/range_image_planar.h> // RangeImage
+#include <pcl/simulation/camera.h>
+#include <pcl/simulation/model.h>
+#include <pcl/simulation/range_likelihood.h>
+#include <pcl/simulation/scene.h>
+#include <pcl/surface/gp3.h>
+#include <pcl/visualization/cloud_viewer.h> // Pop-up viewer
+#include <pcl/memory.h>
+#include <pcl/pcl_config.h>
+#include <pcl/point_types.h>
+
 #include <Eigen/Dense>
-#include <boost/shared_ptr.hpp>
-#include <cmath>
-#include <iostream>
-#include <thread>
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
+
 #include <GL/glew.h>
 
-#include <pcl/pcl_config.h>
 #ifdef OPENGL_IS_A_FRAMEWORK
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -41,34 +51,13 @@
 #include <GL/glut.h>
 #endif
 
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-
-#include "pcl/common/common.h"
-#include "pcl/common/transforms.h"
-
-#include <pcl/features/normal_3d.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/surface/gp3.h>
-
-// define the following in order to eliminate the deprecated headers warning
-#define VTK_EXCLUDE_STRSTREAM_HEADERS
-#include <pcl/io/vtk_lib_io.h>
-
-#include "pcl/simulation/camera.h"
-#include "pcl/simulation/model.h"
-#include "pcl/simulation/range_likelihood.h"
-#include "pcl/simulation/scene.h"
-
-#include <pcl/console/parse.h>
-#include <pcl/console/print.h>
-
-// RangeImage:
-#include <pcl/range_image/range_image_planar.h>
-
-// Pop-up viewer
-#include <pcl/visualization/cloud_viewer.h>
+#include <cmath>
+#include <iostream>
+#include <thread>
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 
 using namespace Eigen;
 using namespace pcl;

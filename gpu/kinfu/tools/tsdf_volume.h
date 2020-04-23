@@ -36,6 +36,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -225,7 +226,7 @@ public:
     // Functionality
 
     /** \brief Converts volume to cloud of TSDF values
-      * \param[ou] cloud - the output point cloud
+      * \param[out] cloud - the output point cloud
       * \param[in] step - the decimation step to use
       */
     void

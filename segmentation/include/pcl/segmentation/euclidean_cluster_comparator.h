@@ -39,10 +39,12 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/point_types.h>
 #include <pcl/segmentation/boost.h>
 #include <pcl/segmentation/comparator.h>
-#include <pcl/point_types.h>
+
 
 namespace pcl
 {
@@ -211,7 +213,7 @@ namespace pcl
       using experimental::EuclideanClusterComparator<PointT, PointLT>::setExcludeLabels;
 
       /** \brief Default constructor for EuclideanClusterComparator. */
-      PCL_DEPRECATED("remove PointNT from template parameters")
+      PCL_DEPRECATED(1, 12, "remove PointNT from template parameters")
       EuclideanClusterComparator ()
         : normals_ ()
         , angular_threshold_ (0.0f)
@@ -220,19 +222,19 @@ namespace pcl
       /** \brief Provide a pointer to the input normals.
        * \param[in] normals the input normal cloud
        */
-      PCL_DEPRECATED("EuclideadClusterComparator never actually used normals and angular threshold, this function has no effect on the behavior of the comparator. It is deprecated and will be removed in future releases.")
+      PCL_DEPRECATED(1, 12, "EuclideadClusterComparator never actually used normals and angular threshold, this function has no effect on the behavior of the comparator. It is deprecated and will be removed in future releases.")
       inline void
       setInputNormals (const PointCloudNConstPtr& normals) { normals_ = normals; }
 
       /** \brief Get the input normals. */
-      PCL_DEPRECATED("EuclideadClusterComparator never actually used normals and angular threshold, this function has no effect on the behavior of the comparator. It is deprecated and will be removed in future releases.")
+      PCL_DEPRECATED(1, 12, "EuclideadClusterComparator never actually used normals and angular threshold, this function has no effect on the behavior of the comparator. It is deprecated and will be removed in future releases.")
       inline PointCloudNConstPtr
       getInputNormals () const { return (normals_); }
 
       /** \brief Set the tolerance in radians for difference in normal direction between neighboring points, to be considered part of the same plane.
         * \param[in] angular_threshold the tolerance in radians
         */
-      PCL_DEPRECATED("EuclideadClusterComparator never actually used normals and angular threshold, this function has no effect on the behavior of the comparator. It is deprecated and will be removed in future releases.")
+      PCL_DEPRECATED(1, 12, "EuclideadClusterComparator never actually used normals and angular threshold, this function has no effect on the behavior of the comparator. It is deprecated and will be removed in future releases.")
       inline void
       setAngularThreshold (float angular_threshold)
       {
@@ -240,18 +242,18 @@ namespace pcl
       }
 
       /** \brief Get the angular threshold in radians for difference in normal direction between neighboring points, to be considered part of the same plane. */
-      PCL_DEPRECATED("EuclideadClusterComparator never actually used normals and angular threshold, this function has no effect on the behavior of the comparator. It is deprecated and will be removed in future releases.")
+      PCL_DEPRECATED(1, 12, "EuclideadClusterComparator never actually used normals and angular threshold, this function has no effect on the behavior of the comparator. It is deprecated and will be removed in future releases.")
       inline float
       getAngularThreshold () const { return (std::acos (angular_threshold_) ); }
 
       /** \brief Set labels in the label cloud to exclude.
         * \param[in] exclude_labels a vector of bools corresponding to whether or not a given label should be considered
         */
-      PCL_DEPRECATED("use setExcludeLabels(const ExcludeLabelSetConstPtr &) instead")
+      PCL_DEPRECATED(1, 12, "use setExcludeLabels(const ExcludeLabelSetConstPtr &) instead")
       void
       setExcludeLabels (const std::vector<bool>& exclude_labels)
       {
-        exclude_labels_ = boost::make_shared<std::set<std::uint32_t> > ();
+        exclude_labels_ = pcl::make_shared<std::set<std::uint32_t> > ();
         for (std::size_t i = 0; i < exclude_labels.size (); ++i)
           if (exclude_labels[i])
             exclude_labels_->insert (i);

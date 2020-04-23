@@ -36,7 +36,8 @@
  */
 
 
-#include <pcl/point_traits.h>
+#include <pcl/memory.h>  // for pcl::has_custom_allocator, PCL_MAKE_ALIGNED_OPERATOR_NEW
+#include <pcl/type_traits.h>
 #include <pcl/point_types.h>
 
 #include <pcl/test/gtest.h>
@@ -46,7 +47,15 @@ TEST (TypeTraits, HasCustomAllocatorTrait)
   struct Foo
   {
   public:
+    // Manually ignore warnings here because of an issue in Eigen which
+    // results in a local typedef being unused inside the new and delete
+    // operators added by Eigen for C++14 or lower standards
+    /** \todo Remove for C++17 (or future standards)
+     */
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wunused-local-typedef"
     PCL_MAKE_ALIGNED_OPERATOR_NEW
+    #pragma clang diagnostic pop
   };
 
   struct Bar

@@ -38,15 +38,14 @@
 
 #pragma once
 
-#include <cstddef>
-
-#include <cassert>
+#include <pcl/octree/octree_container.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
 
 #include <Eigen/Core>
 
-#include <pcl/pcl_macros.h>
-
-#include "octree_container.h"
+#include <cassert>
+#include <cstddef>
 
 namespace pcl {
 namespace octree {
@@ -111,16 +110,32 @@ public:
   }
 
   /** \brief Get const pointer to container */
-  const ContainerT* operator->() const { return &container_; }
+  const ContainerT*
+  operator->() const
+  {
+    return &container_;
+  }
 
   /** \brief Get pointer to container */
-  ContainerT* operator->() { return &container_; }
+  ContainerT*
+  operator->()
+  {
+    return &container_;
+  }
 
   /** \brief Get const reference to container */
-  const ContainerT& operator*() const { return container_; }
+  const ContainerT&
+  operator*() const
+  {
+    return container_;
+  }
 
   /** \brief Get reference to container */
-  ContainerT& operator*() { return container_; }
+  ContainerT&
+  operator*()
+  {
+    return container_;
+  }
 
   /** \brief Get const reference to container */
   const ContainerT&
@@ -210,7 +225,8 @@ public:
    *  \param child_idx_arg: index to child node
    *  \return OctreeNode pointer
    * */
-  inline OctreeNode*& operator[](unsigned char child_idx_arg)
+  inline OctreeNode*&
+  operator[](unsigned char child_idx_arg)
   {
     assert(child_idx_arg < 8);
     return child_node_array_[child_idx_arg];
@@ -287,16 +303,32 @@ public:
   }
 
   /** \brief Get const pointer to container */
-  const ContainerT* operator->() const { return &container_; }
+  const ContainerT*
+  operator->() const
+  {
+    return &container_;
+  }
 
   /** \brief Get pointer to container */
-  ContainerT* operator->() { return &container_; }
+  ContainerT*
+  operator->()
+  {
+    return &container_;
+  }
 
   /** \brief Get const reference to container */
-  const ContainerT& operator*() const { return container_; }
+  const ContainerT&
+  operator*() const
+  {
+    return container_;
+  }
 
   /** \brief Get reference to container */
-  ContainerT& operator*() { return container_; }
+  ContainerT&
+  operator*()
+  {
+    return container_;
+  }
 
   /** \brief Get const reference to container */
   const ContainerT&

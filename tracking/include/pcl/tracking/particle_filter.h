@@ -1,14 +1,14 @@
 #pragma once
 
-#include <boost/shared_ptr.hpp>
-
-#include <pcl/tracking/tracking.h>
-#include <pcl/tracking/tracker.h>
-#include <pcl/tracking/coherence.h>
+#include <pcl/memory.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/octree/octree_pointcloud_changedetector.h>
+#include <pcl/tracking/coherence.h>
+#include <pcl/tracking/tracker.h>
+#include <pcl/tracking/tracking.h>
 
 #include <Eigen/Dense>
+
 
 namespace pcl
 {

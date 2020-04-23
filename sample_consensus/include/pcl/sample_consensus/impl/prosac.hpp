@@ -82,12 +82,12 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
   // Initialize the usual RANSAC parameters
   iterations_ = 0;
 
-  std::vector<int> inliers;
-  std::vector<int> selection;
+  Indices inliers;
+  Indices selection;
   Eigen::VectorXf model_coefficients;
 
   // We will increase the pool so the indices_ vector can only contain m elements at first
-  std::vector<int> index_pool;
+  Indices index_pool;
   index_pool.reserve (N);
   for (unsigned int i = 0; i < n; ++i)
     index_pool.push_back (sac_model_->indices_->operator[](i));
@@ -164,8 +164,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
 
       // We only need to compute possible better epsilon_n_star for when _n is just about to be removed an inlier
       std::size_t I_possible_n_star = I_N;
-      for (std::vector<int>::const_reverse_iterator last_inlier = inliers.rbegin (), 
-                                                    inliers_end = inliers.rend (); 
+      for (auto last_inlier = inliers.crbegin (), inliers_end = inliers.crend ();
            last_inlier != inliers_end; 
            ++last_inlier, --I_possible_n_star)
       {

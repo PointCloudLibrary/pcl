@@ -41,7 +41,7 @@
 #pragma once
 
 // PCL includes
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>  // for dynamic_pointer_cast, pcl::make_shared, shared_ptr
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_registration.h>
 #include <pcl/registration/registration.h>
@@ -50,6 +50,7 @@
 #include <pcl/registration/transformation_estimation_symmetric_point_to_plane_lls.h>
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/registration/default_convergence_criteria.h>
+
 
 namespace pcl
 {
@@ -368,7 +369,7 @@ namespace pcl
       setEnforceSameDirectionNormals (bool enforce_same_direction_normals)
       {
         enforce_same_direction_normals_ = enforce_same_direction_normals;
-        auto symmetric_transformation_estimation = boost::dynamic_pointer_cast<pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> >(transformation_estimation_);
+        auto symmetric_transformation_estimation = dynamic_pointer_cast<pcl::registration::TransformationEstimationSymmetricPointToPlaneLLS<PointSource, PointTarget, Scalar> >(transformation_estimation_);
         if (symmetric_transformation_estimation)
             symmetric_transformation_estimation->setEnforceSameDirectionNormals (enforce_same_direction_normals_);
       }

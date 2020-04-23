@@ -84,7 +84,7 @@
 #include "evaluation.h"
 
 #include <pcl/common/angles.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 #include "tsdf_volume.h"
 #include "tsdf_volume.hpp"
@@ -101,7 +101,7 @@ using ScopeTimeT = pcl::ScopeTime;
 #include <Eigen/Dense>
 #include <cmath>
 #include <iostream>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 #ifdef _WIN32
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
@@ -112,8 +112,6 @@ using ScopeTimeT = pcl::ScopeTime;
 #include "pcl/common/common.h"
 #include "pcl/common/transforms.h"
 #include <pcl/console/print.h>
-// define the following in order to eliminate the deprecated headers warning
-#define VTK_EXCLUDE_STRSTREAM_HEADERS
 #include <pcl/io/vtk_lib_io.h>
 //
 #include <pcl/simulation/camera.h>

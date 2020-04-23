@@ -49,6 +49,7 @@
 
 #include <Eigen/Core>
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 // Define all PCL point types
@@ -958,7 +959,8 @@ namespace pcl
       rgba = p.rgba;
     }
 
-    inline PointXYZRGBNormal (float _curvature = 0.f): PointXYZRGBNormal (0.f, 0.f, 0.f) {}
+    inline PointXYZRGBNormal (float _curvature = 0.f):
+        PointXYZRGBNormal (0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, _curvature) {}
 
     inline PointXYZRGBNormal (float _x, float _y, float _z):
       PointXYZRGBNormal (_x, _y, _z, 0, 0, 0) {}
@@ -1014,10 +1016,10 @@ namespace pcl
       intensity = p.intensity;
     }
     
-    inline PointXYZINormal (float _intensity = 0.f): PointXYZINormal (0.f, 0.f, 0.f, 0.f) {}
+    inline PointXYZINormal (float _intensity = 0.f): PointXYZINormal (0.f, 0.f, 0.f, _intensity) {}
     
     inline PointXYZINormal (float _x, float _y, float _z, float _intensity = 0.f):
-      PointXYZINormal (_x, _y, _z, 0.f, 0.f, 0.f, 0.f) {}
+      PointXYZINormal (_x, _y, _z, _intensity, 0.f, 0.f, 0.f) {}
 
     inline PointXYZINormal (float _x, float _y, float _z, float _intensity,
                             float n_x, float n_y, float n_z, float _curvature = 0.f)
@@ -1064,10 +1066,10 @@ namespace pcl
       label = p.label;
     }
 
-    inline PointXYZLNormal (std::uint32_t _label = 0): PointXYZLNormal (0.f, 0.f, 0.f, 0) {}
+    inline PointXYZLNormal (std::uint32_t _label = 0): PointXYZLNormal (0.f, 0.f, 0.f, _label) {}
     
     inline PointXYZLNormal (float _x, float _y, float _z, std::uint32_t _label = 0.f):
-      PointXYZLNormal (_x, _y, _z, 0, 0.f, 0.f, 0.f) {}
+      PointXYZLNormal (_x, _y, _z, _label, 0.f, 0.f, 0.f) {}
 
     inline PointXYZLNormal (float _x, float _y, float _z, std::uint32_t _label,
                             float n_x, float n_y, float n_z, float _curvature = 0.f)
@@ -1155,11 +1157,11 @@ namespace pcl
 
     inline PointWithViewpoint (): PointWithViewpoint (0.f, 0.f, 0.f) {}
 
-    PCL_DEPRECATED("Use ctor accepting all position (x, y, z) data")
+    PCL_DEPRECATED(1, 12, "Use ctor accepting all position (x, y, z) data")
     inline PointWithViewpoint (float _x, float _y = 0.f):
       PointWithViewpoint (_x, _y, 0.f) {}
 
-    PCL_DEPRECATED("Use ctor accepting all viewpoint (vp_x, vp_y, vp_z) data")
+    PCL_DEPRECATED(1, 12, "Use ctor accepting all viewpoint (vp_x, vp_y, vp_z) data")
     inline PointWithViewpoint (float _x, float _y, float _z, float _vp_x, float _vp_y = 0.f):
       PointWithViewpoint (_x, _y, _z, _vp_x, _vp_y, 0.f) {}
     
@@ -1334,7 +1336,7 @@ namespace pcl
     inline PPFRGBSignature (float _alpha = 0.f): PPFRGBSignature (0.f, 0.f, 0.f, 0.f, _alpha) {}
 
     inline PPFRGBSignature (float _f1, float _f2, float _f3, float _f4, float _alpha = 0.f):
-      PPFRGBSignature (0.f, 0.f, 0.f, 0.f, _alpha, 0.f, 0.f, 0.f) {}
+      PPFRGBSignature (_f1, _f2, _f3, _f4, _alpha, 0.f, 0.f, 0.f) {}
 
     inline PPFRGBSignature (float _f1, float _f2, float _f3, float _f4, float _alpha, float _r, float _g, float _b):
       f1 (_f1), f2 (_f2), f3 (_f3), f4 (_f4), r_ratio (_r), g_ratio (_g), b_ratio (_b), alpha_m (_alpha) {}

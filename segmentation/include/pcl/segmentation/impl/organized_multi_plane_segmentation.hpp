@@ -91,6 +91,13 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   if (!initCompute ())
     return;
 
+  // Check that the normals are present
+  if (!normals_)
+  {
+    PCL_ERROR( "[pcl::%s::segment] Must specify normals.\n", getClassName().c_str());
+    return;
+  }
+
   // Check that we got the same number of points and normals
   if (static_cast<int> (normals_->points.size ()) != static_cast<int> (input_->points.size ()))
   {

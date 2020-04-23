@@ -169,7 +169,7 @@ namespace pcl
        * @return True if successful, false otherwise
        * @warning A device must be opened and not running */
       bool
-      grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud);
+      grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud) const;
 
       /** @brief Set up the Ensenso sensor and API to do 3D extrinsic calibration using the Ensenso 2D patterns
        * @param[in] grid_spacing
@@ -256,7 +256,7 @@ namespace pcl
       setExtrinsicCalibration (const double euler_angle,
                                Eigen::Vector3d &rotation_axis,
                                const Eigen::Vector3d &translation,
-                               const std::string target = "Hand");
+                               const std::string target = "Hand") const;
 
       /** @brief Update Link node in NxLib tree with an identity matrix
        * @param[in] target "Hand" or "Workspace" for example

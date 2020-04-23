@@ -38,13 +38,13 @@
 
 #pragma once
 
-#include <vector>
-
 #include <pcl/octree/octree_container.h>
 #include <pcl/octree/octree_iterator.h>
 #include <pcl/octree/octree_key.h>
 #include <pcl/octree/octree_nodes.h>
 #include <pcl/pcl_macros.h>
+
+#include <vector>
 
 namespace pcl {
 namespace octree {
@@ -139,16 +139,32 @@ public:
   }
 
   /** \brief Get const pointer to container */
-  const ContainerT* operator->() const { return &container_; }
+  const ContainerT*
+  operator->() const
+  {
+    return &container_;
+  }
 
   /** \brief Get pointer to container */
-  ContainerT* operator->() { return &container_; }
+  ContainerT*
+  operator->()
+  {
+    return &container_;
+  }
 
   /** \brief Get const reference to container */
-  const ContainerT& operator*() const { return container_; }
+  const ContainerT&
+  operator*() const
+  {
+    return container_;
+  }
 
   /** \brief Get reference to container */
-  ContainerT& operator*() { return container_; }
+  ContainerT&
+  operator*()
+  {
+    return container_;
+  }
 
   /** \brief Get const reference to container */
   const ContainerT&
@@ -237,14 +253,16 @@ public:
   using LeafNodeIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
   using ConstLeafNodeIterator = const OctreeLeafNodeDepthFirstIterator<OctreeT>;
 
-  PCL_DEPRECATED("use leaf_depth_begin() instead")
+  PCL_DEPRECATED(1, 12, "use leaf_depth_begin() instead")
   LeafNodeIterator
   leaf_begin(unsigned int max_depth_arg = 0)
   {
     return LeafNodeIterator(this, max_depth_arg);
   };
 
-  PCL_DEPRECATED("use leaf_depth_end() instead") const LeafNodeIterator leaf_end()
+  PCL_DEPRECATED(1, 12, "use leaf_depth_end() instead")
+  const LeafNodeIterator
+  leaf_end()
   {
     return LeafNodeIterator();
   };
@@ -938,7 +956,7 @@ protected:
    * \param n_arg: some value
    * \return binary logarithm (log2) of argument n_arg
    */
-  PCL_DEPRECATED("use std::log2 instead") inline double Log2(double n_arg)
+  PCL_DEPRECATED(1, 12, "use std::log2 instead") inline double Log2(double n_arg)
   {
     return std::log2(n_arg);
   }

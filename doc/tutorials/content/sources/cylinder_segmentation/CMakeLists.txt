@@ -10,5 +10,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (cylinder_segmentation cylinder_segmentation.cpp)
 target_link_libraries (cylinder_segmentation ${PCL_LIBRARIES})
-
-

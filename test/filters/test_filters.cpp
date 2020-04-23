@@ -266,7 +266,7 @@ TEST (ExtractIndices, Filters)
   ps.setFilterLimits (0.99, 2.01);
   for (int i = 0; i < 2; i++)
   {
-    ps.setFilterLimitsNegative ((bool)i);
+    ps.setNegative ((bool)i);
     ps.filter (scf);
     std::cerr << scf.points.size () << std::endl;
     for (std::size_t j = 0; j < scf.points.size (); ++j)
@@ -306,7 +306,7 @@ TEST (PassThrough, Filters)
   EXPECT_NEAR (output.points[41].y, 0.039749, 1e-5);
   EXPECT_NEAR (output.points[41].z, 0.052133, 1e-5);
 
-  pt.setFilterLimitsNegative (true);
+  pt.setNegative (true);
   pt.filter (output);
 
   EXPECT_EQ (int (output.points.size ()), 355);
@@ -350,7 +350,7 @@ TEST (PassThrough, Filters)
   EXPECT_NEAR (output.points[41].y, 0.039749, 1e-5);
   EXPECT_NEAR (output.points[41].z, 0.052133, 1e-5);
 
-  pt_.setFilterLimitsNegative (true);
+  pt_.setNegative (true);
   pt_.filter (output);
 
   EXPECT_EQ (int (output.points.size ()), 355);
@@ -380,7 +380,7 @@ TEST (PassThrough, Filters)
   EXPECT_NEAR (output.points[output.points.size () - 1].x, cloud->points[cloud->points.size () - 1].x, 1e-5);
 
   pt.setFilterFieldName ("z");
-  pt.setFilterLimitsNegative (false);
+  pt.setNegative (false);
   pt.setKeepOrganized (true);
   pt.filter (output);
 
@@ -396,7 +396,7 @@ TEST (PassThrough, Filters)
   EXPECT_TRUE (std::isnan (output.points[41].y));
   EXPECT_TRUE (std::isnan (output.points[41].z));
 
-  pt.setFilterLimitsNegative (true);
+  pt.setNegative (true);
   pt.filter (output);
 
   EXPECT_EQ (output.points.size (), cloud->points.size ());

@@ -360,7 +360,10 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
 
   {
     pcl::ScopeTime tcues ("Computing clutter cues");
-#pragma omp parallel for schedule(dynamic, 4) num_threads(omp_get_num_procs())
+#pragma omp parallel for \
+  default(none) \
+  schedule(dynamic, 4) \
+  num_threads(omp_get_num_procs())
     for (int j = 0; j < static_cast<int> (recognition_models_.size ()); j++)
       computeClutterCue (recognition_models_[j]);
   }

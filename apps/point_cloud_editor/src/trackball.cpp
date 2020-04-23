@@ -221,7 +221,7 @@ TrackBall::reset()
 
 void
 TrackBall::getPointFromScreenPoint(int s_x, int s_y,
-                                   float &x, float &y, float &z)
+                                   float &x, float &y, float &z) const
 {
   // See http://www.opengl.org/wiki/Trackball for more info
     

@@ -5,9 +5,10 @@
  *      Author: hordurj
  */
 
+#include <pcl/simulation/glsl_shader.h>
+
 #include <fstream>
 #include <iostream>
-#include <pcl/simulation/glsl_shader.h>
 
 using namespace pcl::simulation::gllib;
 
@@ -35,7 +36,7 @@ pcl::simulation::gllib::Program::Program() { program_id_ = glCreateProgram(); }
 pcl::simulation::gllib::Program::~Program() {}
 
 int
-pcl::simulation::gllib::Program::getUniformLocation(const std::string& name)
+pcl::simulation::gllib::Program::getUniformLocation(const std::string& name) const
 {
   return glGetUniformLocation(program_id_, name.c_str());
 }
@@ -103,7 +104,7 @@ pcl::simulation::gllib::Program::setUniform(const std::string& name, bool v)
 
 bool
 pcl::simulation::gllib::Program::addShaderText(const std::string& text,
-                                               ShaderType shader_type)
+                                               ShaderType shader_type) const
 {
   GLuint id;
   GLint compile_status;
@@ -139,7 +140,7 @@ pcl::simulation::gllib::Program::addShaderFile(const std::string& filename,
 }
 
 bool
-pcl::simulation::gllib::Program::link()
+pcl::simulation::gllib::Program::link() const
 {
   glLinkProgram(program_id_);
   printProgramInfoLog(program_id_);
@@ -148,7 +149,7 @@ pcl::simulation::gllib::Program::link()
 }
 
 void
-pcl::simulation::gllib::Program::use()
+pcl::simulation::gllib::Program::use() const
 {
   glUseProgram(program_id_);
 }

@@ -60,7 +60,7 @@ namespace pcl
       pcl::PointCloud<PointT> &output);
 
   template <typename PointT>
-  PCL_DEPRECATED("tgt parameter is not used; it is deprecated and will be removed in future releases")
+  PCL_DEPRECATED(1, 12, "tgt parameter is not used; it is deprecated and will be removed in future releases")
   inline void getPointCloudDifference (
       const pcl::PointCloud<PointT> &src,
       const pcl::PointCloud<PointT> & /* tgt */,

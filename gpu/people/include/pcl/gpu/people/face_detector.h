@@ -36,11 +36,12 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
-#include <boost/shared_ptr.hpp>
+
 #include <string>
 #include <vector>
 
@@ -162,7 +163,7 @@ namespace pcl
 
           /** \brief Get the cuda GPU device id in use **/
           int
-          getDeviceId() {return cuda_dev_id_;}
+          getDeviceId() const {return cuda_dev_id_;}
 
         private:
           bool                largest_object_;      /** \brief only give back largest object **/

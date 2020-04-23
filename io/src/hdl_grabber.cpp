@@ -396,7 +396,7 @@ void
 pcl::HDLGrabber::computeXYZI (pcl::PointXYZI& point,
                               std::uint16_t azimuth,
                               HDLLaserReturn laserReturn,
-                              HDLLaserCorrection correction)
+                              HDLLaserCorrection correction) const
 {
   double cos_azimuth, sin_azimuth;
 
@@ -550,11 +550,8 @@ pcl::HDLGrabber::stop ()
     queue_consumer_thread_ = nullptr;
   }
 
-  if (hdl_read_socket_ != nullptr)
-  {
-    delete hdl_read_socket_;
-    hdl_read_socket_ = nullptr;
-  }
+  delete hdl_read_socket_;
+  hdl_read_socket_ = nullptr;
 }
 
 /////////////////////////////////////////////////////////////////////////////

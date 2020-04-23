@@ -38,12 +38,12 @@
 
 #pragma once
 
-#include <pcl/point_cloud.h>
-
 #include <pcl/octree/octree_pointcloud.h>
+#include <pcl/point_cloud.h>
 
 namespace pcl {
 namespace octree {
+
 /** \brief @b Octree pointcloud search class
  * \note This class provides several methods for spatial neighbor search based on octree
  * structure
@@ -339,8 +339,8 @@ protected:
     prioPointQueueEntry() : point_idx_(0), point_distance_(0) {}
 
     /** \brief Constructor for initializing priority queue entry.
-     * \param[in] point_idx an index representing a point in the dataset given by \a
-     * setInputCloud \param[in] point_distance distance of query point to voxel center
+     * \param[in] point_idx index for a dataset point given by \a setInputCloud
+     * \param[in] point_distance distance of query point to voxel center
      */
     prioPointQueueEntry(unsigned int& point_idx, float point_distance)
     : point_idx_(point_idx), point_distance_(point_distance)

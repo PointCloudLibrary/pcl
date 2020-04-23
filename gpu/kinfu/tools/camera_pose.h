@@ -43,7 +43,7 @@
 #include <Eigen/Geometry>
 #include <fstream>
 
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 /**
  * @brief The CameraPoseProcessor class is an interface to extract

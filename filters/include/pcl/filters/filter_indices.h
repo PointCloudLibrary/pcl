@@ -85,29 +85,19 @@ namespace pcl
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
         */
       FilterIndices (bool extract_removed_indices = false) :
-          negative_ (false), 
-          keep_organized_ (false), 
+          Filter<PointT> (extract_removed_indices),
+          negative_ (false),
+          keep_organized_ (false),
           user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
       {
-        extract_removed_indices_ = extract_removed_indices;
       }
 
-      /** \brief Empty virtual destructor. */
-      
-      ~FilterIndices ()
-      {
-      }
-
-      inline void
-      filter (PointCloud &output)
-      {
-        pcl::Filter<PointT>::filter (output);
-      }
+      using Filter<PointT>::filter;
 
       /** \brief Calls the filtering method and returns the filtered point cloud indices.
         * \param[out] indices the resultant filtered point cloud indices
         */
-      inline void
+      void
       filter (std::vector<int> &indices)
       {
         if (!initCompute ())
@@ -171,6 +161,8 @@ namespace pcl
 
       using Filter<PointT>::initCompute;
       using Filter<PointT>::deinitCompute;
+      using Filter<PointT>::input_;
+      using Filter<PointT>::removed_indices_;
 
       /** \brief False = normal filter behavior (default), true = inverted behavior. */
       bool negative_;
@@ -187,7 +179,7 @@ namespace pcl
 
       /** \brief Abstract filter method for point cloud. */
       void
-      applyFilter (PointCloud &output) override = 0;
+      applyFilter (PointCloud &output) override;
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -210,24 +202,14 @@ namespace pcl
         * \param[in] extract_removed_indices Set to true if you want to extract the indices of points being removed (default = false).
         */
       FilterIndices (bool extract_removed_indices = false) :
+          Filter<PCLPointCloud2> (extract_removed_indices),
           negative_ (false), 
           keep_organized_ (false), 
           user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
       {
-        extract_removed_indices_ = extract_removed_indices;
       }
 
-      /** \brief Empty virtual destructor. */
-      
-      ~FilterIndices ()
-      {
-      }
-
-      virtual void
-      filter (PCLPointCloud2 &output)
-      {
-        pcl::Filter<PCLPointCloud2>::filter (output);
-      }
+      using Filter<PCLPointCloud2>::filter;
 
       /** \brief Calls the filtering method and returns the filtered point cloud indices.
         * \param[out] indices the resultant filtered point cloud indices

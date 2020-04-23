@@ -49,7 +49,7 @@ using std::cerr;
 #include <pcl/features/eigen.h>
 #include <pcl/features/range_image_border_extractor.h>
 
-namespace pcl 
+namespace pcl
 {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ RangeImageBorderExtractor::~RangeImageBorderExtractor()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImageBorderExtractor::setRangeImage (const RangeImage* range_image)
 {
   clearData ();
@@ -75,7 +75,7 @@ RangeImageBorderExtractor::setRangeImage (const RangeImage* range_image)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImageBorderExtractor::clearData ()
 {
   //std::cout << PVARC(range_image_size_during_extraction_)<<PVARN((void*)this);
@@ -89,25 +89,25 @@ RangeImageBorderExtractor::clearData ()
       delete border_directions_[i];
   }
   delete[] surface_structure_; surface_structure_ = nullptr;
-  delete border_descriptions_; border_descriptions_ = nullptr;
   delete[] shadow_border_informations_; shadow_border_informations_ = nullptr;
   delete[] border_directions_; border_directions_ = nullptr;
-  
+  delete border_descriptions_; border_descriptions_ = nullptr;
+
   delete[] surface_change_scores_;  surface_change_scores_ = nullptr;
   delete[] surface_change_directions_;  surface_change_directions_ = nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImageBorderExtractor::extractLocalSurfaceStructure ()
 {
   if (surface_structure_ != nullptr)
     return;
   //std::cerr << __PRETTY_FUNCTION__<<" called (this="<<(void*)this<<").\n";
   //MEASURE_FUNCTION_TIME;
-  
-  const auto width  = range_image_->width,
-      height = range_image_->height;
+
+  const auto width  = range_image_->width;
+  const auto height = range_image_->height;
   range_image_size_during_extraction_ = width*height;
   const auto array_size = range_image_size_during_extraction_;
   surface_structure_ = new LocalSurface*[array_size];
@@ -116,10 +116,25 @@ RangeImageBorderExtractor::extractLocalSurfaceStructure ()
   const auto sqrt_neighbors = parameters_.pixel_radius_plane_extraction/step_size + 1;
   const auto no_of_nearest_neighbors = sqrt_neighbors * sqrt_neighbors;
 
-# pragma omp parallel for num_threads(parameters_.max_no_of_threads) default(shared) schedule(dynamic, 10)
-  for (int y=0; y<height; ++y)
+  // iteration_type should be at least as big as unsigned int (decltype of height)
+  // But OpenMP requires signed size. Here we choose the minimum size that fits the bill
+  using iteration_type = std::conditional_t<sizeof(int) == sizeof(long int), long long int, long int>;
+
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  schedule(dynamic, 10) \
+  num_threads(parameters_.max_no_of_threads)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(height, no_of_nearest_neighbors, step_size, width) \
+  schedule(dynamic, 10) \
+  num_threads(parameters_.max_no_of_threads)
+#endif
+  for (iteration_type y=0; y<height; ++y)
   {
-    for (int x=0; x<width; ++x)
+    for (unsigned int x=0; x<width; ++x)
     {
       std::size_t index = y*width + x;
       LocalSurface*& local_surface = surface_structure_[index];
@@ -139,23 +154,23 @@ RangeImageBorderExtractor::extractLocalSurfaceStructure ()
         delete local_surface;
         local_surface = nullptr;
       }
-      
+
       //std::cout << x<<","<<y<<": ("<<local_surface->normal_no_jumps[0]<<","<<local_surface->normal_no_jumps[1]<<","<<local_surface->normal_no_jumps[2]<<")\n";
     }
   }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImageBorderExtractor::extractBorderScoreImages ()
 {
   if (!border_scores_left_.empty())
     return;
-  
+
   extractLocalSurfaceStructure();
-  
+
   //MEASURE_FUNCTION_TIME;
-  
+
   int width  = range_image_->width,
       height = range_image_->height,
       size   = width*height;
@@ -163,20 +178,24 @@ RangeImageBorderExtractor::extractBorderScoreImages ()
   border_scores_right_.resize (size);
   border_scores_top_.resize (size);
   border_scores_bottom_ .resize (size);
-  
-# pragma omp parallel for num_threads(parameters_.max_no_of_threads) default(shared) schedule(dynamic, 10)
+
+#pragma omp parallel for \
+  default(none) \
+  shared(height, width) \
+  schedule(dynamic, 10) \
+  num_threads(parameters_.max_no_of_threads)
   for (int y=0; y<height; ++y) {
     for (int x=0; x<width; ++x) {
       int index = y*width + x;
       float& left=border_scores_left_[index]; float& right=border_scores_right_[index];
-      float& top=border_scores_top_[index]; float& bottom=border_scores_bottom_[index]; 
+      float& top=border_scores_top_[index]; float& bottom=border_scores_bottom_[index];
       LocalSurface* local_surface_ptr = surface_structure_[index];
       if (local_surface_ptr==nullptr)
       {
         left=right=top=bottom = 0.0f;
         continue;
       }
-      
+
       left   = getNeighborDistanceChangeScore(*local_surface_ptr, x, y, -1,  0, parameters_.pixel_radius_borders);
       right  = getNeighborDistanceChangeScore(*local_surface_ptr, x, y,  1,  0, parameters_.pixel_radius_borders);
       top    = getNeighborDistanceChangeScore(*local_surface_ptr, x, y,  0, -1, parameters_.pixel_radius_borders);
@@ -186,13 +205,13 @@ RangeImageBorderExtractor::extractBorderScoreImages ()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float* 
+float*
 RangeImageBorderExtractor::updatedScoresAccordingToNeighborValues (const float* border_scores) const
 {
   float* new_scores = new float[range_image_->width*range_image_->height];
   float* new_scores_ptr = new_scores;
-  for (int y=0; y < static_cast<int> (range_image_->height); ++y) 
-    for (int x=0; x < static_cast<int> (range_image_->width); ++x) 
+  for (int y=0; y < static_cast<int> (range_image_->height); ++y)
+    for (int x=0; x < static_cast<int> (range_image_->width); ++x)
       *(new_scores_ptr++) = updatedScoreAccordingToNeighborValues(x, y, border_scores);
   return (new_scores);
 }
@@ -209,45 +228,45 @@ RangeImageBorderExtractor::updatedScoresAccordingToNeighborValues (const std::ve
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImageBorderExtractor::updateScoresAccordingToNeighborValues ()
 {
   extractBorderScoreImages();
-  
+
   //MEASURE_FUNCTION_TIME;
-  
+
   border_scores_left_ = updatedScoresAccordingToNeighborValues(border_scores_left_);
   border_scores_right_ = updatedScoresAccordingToNeighborValues(border_scores_right_);
   border_scores_top_ = updatedScoresAccordingToNeighborValues(border_scores_top_);
   border_scores_bottom_ = updatedScoresAccordingToNeighborValues(border_scores_bottom_);
 }
- 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImageBorderExtractor::findAndEvaluateShadowBorders ()
 {
   if (shadow_border_informations_ != nullptr)
     return;
-  
+
   if (border_scores_left_.empty ())
   {
     std::cerr << __PRETTY_FUNCTION__<<": border score images not available!\n";
   }
-  
+
   //MEASURE_FUNCTION_TIME;
-  
+
   int width  = range_image_->width,
       height = range_image_->height;
   shadow_border_informations_ = new ShadowBorderIndices*[width*height];
-  for (int y = 0; y < static_cast<int> (height); ++y) 
+  for (int y = 0; y < static_cast<int> (height); ++y)
   {
-    for (int x = 0; x < static_cast<int> (width); ++x) 
+    for (int x = 0; x < static_cast<int> (width); ++x)
     {
       int index = y*width+x;
       ShadowBorderIndices*& shadow_border_indices = shadow_border_informations_[index];
       shadow_border_indices = nullptr;
       int shadow_border_idx;
-      
+
       if (changeScoreAccordingToShadowBorderValue(x, y, -1, 0, border_scores_left_.data (), border_scores_right_.data (), shadow_border_idx))
       {
         shadow_border_indices = (shadow_border_indices==nullptr ? new ShadowBorderIndices : shadow_border_indices);
@@ -273,16 +292,16 @@ RangeImageBorderExtractor::findAndEvaluateShadowBorders ()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float* 
+float*
 RangeImageBorderExtractor::getAnglesImageForBorderDirections ()
 {
   calculateBorderDirections();
-  
+
   int width  = range_image_->width,
       height = range_image_->height,
       array_size = width*height;
   float* angles_image = new float[array_size];
-  
+
   for (int y=0; y<height; ++y)
   {
     for (int x=0; x<width; ++x)
@@ -295,7 +314,7 @@ RangeImageBorderExtractor::getAnglesImageForBorderDirections ()
         continue;
       const Eigen::Vector3f& border_direction = *border_direction_ptr;
       const PointWithRange& point = range_image_->getPoint(index);
-      
+
       float border_direction_in_image_x, border_direction_in_image_y;
       float tmp_factor = point.range*range_image_->getAngularResolution();
       range_image_->getImagePoint(point.x+tmp_factor*border_direction[0], point.y+tmp_factor*border_direction[1], point.z+tmp_factor*border_direction[2],
@@ -308,18 +327,18 @@ RangeImageBorderExtractor::getAnglesImageForBorderDirections ()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float* 
+float*
 RangeImageBorderExtractor::getAnglesImageForSurfaceChangeDirections ()
 {
   //MEASURE_FUNCTION_TIME;
-  
+
   calculateSurfaceChanges();
-  
+
   int width  = range_image_->width,
       height = range_image_->height,
       array_size = width*height;
   float* angles_image = new float[array_size];
-  
+
   for (int y=0; y<height; ++y)
   {
     for (int x=0; x<width; ++x)
@@ -332,7 +351,7 @@ RangeImageBorderExtractor::getAnglesImageForSurfaceChangeDirections ()
         continue;
       const Eigen::Vector3f& direction = surface_change_directions_[index];
       const PointWithRange& point = range_image_->getPoint(index);
-      
+
       float border_direction_in_image_x, border_direction_in_image_y;
       float tmp_factor = point.range*range_image_->getAngularResolution();
       range_image_->getImagePoint(point.x+tmp_factor*direction[0], point.y+tmp_factor*direction[1], point.z+tmp_factor*direction[2],
@@ -350,28 +369,28 @@ RangeImageBorderExtractor::getAnglesImageForSurfaceChangeDirections ()
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImageBorderExtractor::classifyBorders ()
 {
   if (border_descriptions_ != nullptr)
     return;
-  
+
   // Get local plane approximations
   extractLocalSurfaceStructure();
-  
+
   // Get scores for every point, describing how probable a border in that direction is
   extractBorderScoreImages();
-  
+
   // Propagate values to neighboring pixels
   updateScoresAccordingToNeighborValues();
-  
+
   // Change border score according to the existence of a shadow border
   findAndEvaluateShadowBorders();
-  
+
   int width  = range_image_->width,
       height = range_image_->height,
       size   = width*height;
-  
+
   BorderDescription initial_border_description;
   initial_border_description.traits = 0;
   border_descriptions_ = new PointCloudOut;
@@ -379,21 +398,21 @@ RangeImageBorderExtractor::classifyBorders ()
   border_descriptions_->height = height;
   border_descriptions_->is_dense = true;
   border_descriptions_->points.resize(size, initial_border_description);
-  
-  for (int y = 0; y < static_cast<int> (height); ++y) 
+
+  for (int y = 0; y < static_cast<int> (height); ++y)
   {
-    for (int x = 0; x < static_cast<int> (width); ++x) 
+    for (int x = 0; x < static_cast<int> (width); ++x)
     {
       int index = y*width+x;
       BorderDescription& border_description = border_descriptions_->points[index];
       border_description.x = x;
       border_description.y = y;
       BorderTraits& border_traits = border_description.traits;
-      
+
       ShadowBorderIndices* shadow_border_indices = shadow_border_informations_[index];
       if (shadow_border_indices == nullptr)
         continue;
-      
+
       int shadow_border_index = shadow_border_indices->left;
       if (shadow_border_index >= 0 && checkIfMaximum(x, y, -1, 0, border_scores_left_.data (), shadow_border_index))
       {
@@ -406,7 +425,7 @@ RangeImageBorderExtractor::classifyBorders ()
           veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_RIGHT] = true;
         }
       }
-      
+
       shadow_border_index = shadow_border_indices->right;
       if (shadow_border_index >= 0 && checkIfMaximum(x, y, 1, 0, border_scores_right_.data (), shadow_border_index))
       {
@@ -419,7 +438,7 @@ RangeImageBorderExtractor::classifyBorders ()
           veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_LEFT] = true;
         }
       }
-      
+
       shadow_border_index = shadow_border_indices->top;
       if (shadow_border_index >= 0 && checkIfMaximum(x, y, 0, -1, border_scores_top_.data (), shadow_border_index))
       {
@@ -433,7 +452,7 @@ RangeImageBorderExtractor::classifyBorders ()
           veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_BOTTOM] = true;
         }
       }
-      
+
       shadow_border_index = shadow_border_indices->bottom;
       if (shadow_border_index >= 0 && checkIfMaximum(x, y, 0, 1, border_scores_bottom_.data (), shadow_border_index))
       {
@@ -447,7 +466,7 @@ RangeImageBorderExtractor::classifyBorders ()
           veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_TOP] = true;
         }
       }
-      
+
       //if (border_traits[BORDER_TRAIT__OBSTACLE_BORDER])
       //{
         //border_points.push_back(&border_description);
@@ -457,15 +476,15 @@ RangeImageBorderExtractor::classifyBorders ()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImageBorderExtractor::calculateBorderDirections ()
 {
   if (border_directions_!=nullptr)
     return;
   classifyBorders();
-  
+
   //MEASURE_FUNCTION_TIME;
-  
+
   int width  = range_image_->width,
       height = range_image_->height,
       size   = width*height;
@@ -477,7 +496,7 @@ RangeImageBorderExtractor::calculateBorderDirections ()
       calculateBorderDirection(x, y);
     }
   }
-  
+
   Eigen::Vector3f** average_border_directions = new Eigen::Vector3f*[size];
   int radius = parameters_.pixel_radius_border_direction;
   int minimum_weight = radius+1;
@@ -502,7 +521,7 @@ RangeImageBorderExtractor::calculateBorderDirections ()
           const Eigen::Vector3f* neighbor_border_direction = border_directions_[index2];
           if (neighbor_border_direction==nullptr || index2==index)
             continue;
-          
+
           // Opposite directions?
           float cos_angle = neighbor_border_direction->dot(*border_direction);
           if (cos_angle<min_cos_angle)
@@ -512,12 +531,12 @@ RangeImageBorderExtractor::calculateBorderDirections ()
           }
           //else
             //std::cout << "No reject\n";
-          
+
           // Border in between?
           float border_between_points_score = getNeighborDistanceChangeScore(*surface_structure_[index], x, y, x2-x,  y2-y, 1);
           if (std::abs(border_between_points_score) >= 0.95f*parameters_.minimum_border_probability)
             continue;
-          
+
           *average_border_direction += *neighbor_border_direction;
           weight_sum += 1.0f;
         }
@@ -531,7 +550,7 @@ RangeImageBorderExtractor::calculateBorderDirections ()
         average_border_direction->normalize();
     }
   }
-  
+
   for (int i=0; i<size; ++i)
     delete border_directions_[i];
   delete[] border_directions_;
@@ -539,22 +558,26 @@ RangeImageBorderExtractor::calculateBorderDirections ()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImageBorderExtractor::calculateSurfaceChanges ()
 {
   if (surface_change_scores_!=nullptr)
     return;
-  
+
   calculateBorderDirections();
-  
+
   //MEASURE_FUNCTION_TIME;
-  
+
   int width  = range_image_->width,
       height = range_image_->height,
       size   = width*height;
   surface_change_scores_ = new float[size];
   surface_change_directions_ = new Eigen::Vector3f[size];
-# pragma omp parallel for num_threads(parameters_.max_no_of_threads) default(shared) schedule(dynamic, 10)
+#pragma omp parallel for \
+  default(none) \
+  shared(height, width) \
+  schedule(dynamic, 10) \
+  num_threads(parameters_.max_no_of_threads)
   for (int y=0; y<height; ++y)
   {
     for (int x=0; x<width; ++x)
@@ -564,7 +587,7 @@ RangeImageBorderExtractor::calculateSurfaceChanges ()
       surface_change_score = 0.0f;
       Eigen::Vector3f& surface_change_direction = surface_change_directions_[index];
       surface_change_direction.setZero();
-      
+
       const BorderTraits& border_traits = border_descriptions_->points[index].traits;
       if (border_traits[BORDER_TRAIT__VEIL_POINT] || border_traits[BORDER_TRAIT__SHADOW_BORDER])
         continue;
@@ -588,13 +611,13 @@ RangeImageBorderExtractor::calculateSurfaceChanges ()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImageBorderExtractor::blurSurfaceChanges ()
 {
   int blur_radius = 1;
-  
+
   const RangeImage& range_image = *range_image_;
-  
+
   Eigen::Vector3f* blurred_directions = new Eigen::Vector3f[range_image.width*range_image.height];
   float* blurred_scores = new float[range_image.width*range_image.height];
   for (int y=0; y<int(range_image.height); ++y)
@@ -649,11 +672,11 @@ RangeImageBorderExtractor::blurSurfaceChanges ()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImageBorderExtractor::computeFeature (PointCloudOut& output)
 {
   output.points.clear();
-  
+
   if (indices_)
   {
     std::cerr << __PRETTY_FUNCTION__
@@ -662,7 +685,7 @@ RangeImageBorderExtractor::computeFeature (PointCloudOut& output)
     output.points.clear ();
     return;
   }
-  
+
   if (range_image_==nullptr)
   {
     std::cerr << __PRETTY_FUNCTION__
@@ -676,7 +699,7 @@ RangeImageBorderExtractor::computeFeature (PointCloudOut& output)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 RangeImageBorderExtractor::compute (PointCloudOut& output)
 {
   computeFeature (output);

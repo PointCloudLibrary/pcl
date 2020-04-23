@@ -39,6 +39,7 @@
 #include <fstream>
 #include <limits>
 #include <Eigen/src/Core/Matrix.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
@@ -153,7 +154,7 @@ namespace pcl
         /** \brief Stores square distances to the corresponding neighbours. */
         std::vector<float> k_sqr_dist_;
     };
- 
+
     /** \brief The assignment of this structure is to store the statistical/learned weights and other information
       * of the trained Implict Shape Model algorithm.
       */
@@ -553,7 +554,7 @@ namespace pcl
                                  int flags,
                                  Eigen::MatrixXf& cluster_centers);
 
-        /** \brief Generates centers for clusters as described in 
+        /** \brief Generates centers for clusters as described in
           * Arthur, David and Sergei Vassilvitski (2007) k-means++: The Advantages of Careful Seeding.
           * \param[in] data points to cluster
           * \param[out] out_centers it will contain generated centers

@@ -39,6 +39,7 @@
 #pragma once
 
 #include <pcl/segmentation/boost.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
@@ -156,7 +157,7 @@ namespace pcl
 
       /** \brief Allows to set search method for finding KNN.
         * The graph is build such way that it contains the edges that connect point and its KNN.
-        * \param[in] search search method that will be used for finding KNN.
+        * \param[in] tree search method that will be used for finding KNN.
         */
       void
       setSearchMethod (const KdTreePtr& tree);
@@ -166,7 +167,7 @@ namespace pcl
       getNumberOfNeighbours () const;
 
       /** \brief Allows to set the number of neighbours to find.
-        * \param[in] number_of_neighbours new number of neighbours
+        * \param[in] neighbour_number new number of neighbours
         */
       void
       setNumberOfNeighbours (unsigned int neighbour_number);

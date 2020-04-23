@@ -38,13 +38,13 @@
 
 #pragma once
 
+#include <cassert>
 #include <cstddef>
 #include <vector>
 
-#include <pcl/pcl_macros.h>
-
 namespace pcl {
 namespace octree {
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief @b Octree container class that can serve as a base to construct own leaf node
  * container classes.

@@ -138,27 +138,27 @@ struct HaarFeatureDescriptor32
       return NCV_SUCCESS;
     }
 
-    __device__ __host__ NcvBool isTilted()
+    __device__ __host__ NcvBool isTilted() const
     {
       return (this->desc & HaarFeatureDescriptor32_Interpret_MaskFlagTilted) != 0;
     }
 
-    __device__ __host__ NcvBool isLeftNodeLeaf()
+    __device__ __host__ NcvBool isLeftNodeLeaf() const
     {
       return (this->desc & HaarFeatureDescriptor32_Interpret_MaskFlagLeftNodeLeaf) != 0;
     }
 
-    __device__ __host__ NcvBool isRightNodeLeaf()
+    __device__ __host__ NcvBool isRightNodeLeaf() const
     {
       return (this->desc & HaarFeatureDescriptor32_Interpret_MaskFlagRightNodeLeaf) != 0;
     }
 
-    __device__ __host__ Ncv32u getNumFeatures()
+    __device__ __host__ Ncv32u getNumFeatures() const
     {
       return (this->desc >> HaarFeatureDescriptor32_NumFeatures_Shift) & HaarFeatureDescriptor32_CreateCheck_MaxNumFeatures;
     }
 
-    __device__ __host__ Ncv32u getFeaturesOffset()
+    __device__ __host__ Ncv32u getFeaturesOffset() const
     {
       return this->desc & HaarFeatureDescriptor32_CreateCheck_MaxFeatureOffset;
     }
@@ -185,7 +185,7 @@ struct HaarClassifierNodeDescriptor32
       return (*(Ncv32f *)&this->_ui1.x);
     }
 
-    __host__ bool isLeaf()                                  // TODO: check this hack don't know if is correct
+    __host__ bool isLeaf() const                                  // TODO: check this hack don't know if is correct
     {
       return ( _ui1.x != 0);
     }
@@ -291,12 +291,12 @@ struct HaarStage64
       return *(Ncv32f*)&this->_ui2.x;
     }
 
-    __host__ __device__ Ncv32u getStartClassifierRootNodeOffset()
+    __host__ __device__ Ncv32u getStartClassifierRootNodeOffset() const
     {
       return (this->_ui2.y >> HaarStage64_Interpret_ShiftRootNodeOffset);
     }
 
-    __host__ __device__ Ncv32u getNumClassifierRootNodes()
+    __host__ __device__ Ncv32u getNumClassifierRootNodes() const
     {
       return (this->_ui2.y & HaarStage64_Interpret_MaskRootNodes);
     }

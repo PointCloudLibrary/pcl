@@ -44,7 +44,7 @@
 
 namespace pcl
 {
-  /** \brief EdgeAwarePlaneComparator is a Comparator that operates on plane coefficients, 
+  /** \brief EdgeAwarePlaneComparator is a Comparator that operates on plane coefficients,
     * for use in planar segmentation.
     * In conjunction with OrganizedConnectedComponentSegmentation, this allows planes to be segmented from organized data.
     *
@@ -56,11 +56,11 @@ namespace pcl
     public:
       using PointCloud = typename Comparator<PointT>::PointCloud;
       using PointCloudConstPtr = typename Comparator<PointT>::PointCloudConstPtr;
-      
+
       using PointCloudN = pcl::PointCloud<PointNT>;
       using PointCloudNPtr = typename PointCloudN::Ptr;
       using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
-      
+
       using Ptr = shared_ptr<EdgeAwarePlaneComparator<PointT, PointNT> >;
       using ConstPtr = shared_ptr<const EdgeAwarePlaneComparator<PointT, PointNT> >;
 
@@ -80,10 +80,10 @@ namespace pcl
       {
       }
 
-      /** \brief Empty constructor for PlaneCoefficientComparator. 
+      /** \brief Empty constructor for PlaneCoefficientComparator.
         * \param[in] distance_map the distance map to use
         */
-      EdgeAwarePlaneComparator (const float *distance_map) : 
+      EdgeAwarePlaneComparator (const float *distance_map) :
         distance_map_ (distance_map),
         distance_map_threshold_ (5),
         curvature_threshold_ (0.04f),
@@ -92,13 +92,13 @@ namespace pcl
       }
 
       /** \brief Destructor for PlaneCoefficientComparator. */
-      
+
       ~EdgeAwarePlaneComparator ()
       {
       }
 
-      /** \brief Set a distance map to use. For an example of a valid distance map see 
-        * \ref OrganizedIntegralImageNormalEstimation
+      /** \brief Set a distance map to use. For an example of a valid distance map see
+        * IntegralImageNormalEstimation::getDistanceMap
         * \param[in] distance_map the distance map to use
         */
       inline void
@@ -161,7 +161,7 @@ namespace pcl
       {
         return (euclidean_distance_threshold_);
       }
-      
+
     protected:
       /** \brief Compare two neighboring points, by using normal information, curvature, and euclidean distance information.
         * \param[in] idx1 The index of the first point.
@@ -184,7 +184,7 @@ namespace pcl
           dist_threshold *= z * z;
           euclidean_dist_threshold *= z * z;
         }
-        
+
         float dx = input_->points[idx1].x - input_->points[idx2].x;
         float dy = input_->points[idx1].y - input_->points[idx2].y;
         float dz = input_->points[idx1].z - input_->points[idx2].z;
@@ -195,10 +195,10 @@ namespace pcl
 
         bool curvature_ok = normals_->points[idx1].curvature < curvature_threshold_;
         bool plane_d_ok = std::abs ((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < dist_threshold;
-        
-        if (distance_map_[idx1] < distance_map_threshold_)    
+
+        if (distance_map_[idx1] < distance_map_threshold_)
           curvature_ok = false;
-        
+
         return (dist_ok && normal_ok && curvature_ok && plane_d_ok);
       }
 

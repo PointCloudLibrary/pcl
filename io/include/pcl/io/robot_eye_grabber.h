@@ -43,7 +43,7 @@
 #include <pcl/io/impl/synchronized_queue.hpp>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 #include <boost/asio.hpp>
 
 #include <memory>

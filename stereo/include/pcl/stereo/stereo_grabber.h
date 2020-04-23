@@ -38,10 +38,10 @@
 #pragma once
 
 #include <pcl/common/time_trigger.h>
-#include <pcl/conversions.h>
 #include <pcl/io/grabber.h>
-#include <pcl/point_cloud.h>
 #include <pcl/stereo/stereo_matching.h>
+#include <pcl/conversions.h>
+#include <pcl/point_cloud.h>
 
 namespace pcl {
 
@@ -71,21 +71,6 @@ public:
   StereoGrabberBase(const std::vector<std::pair<std::string, std::string>>& files,
                     float frames_per_second,
                     bool repeat);
-
-  /** \brief Copy constructor.
-   * \param[in] src the Stereo Grabber base object to copy into this
-   */
-  StereoGrabberBase(const StereoGrabberBase& src) : impl_() { *this = src; }
-
-  /** \brief Copy operator.
-   * \param[in] src the Stereo Grabber base object to copy into this
-   */
-  StereoGrabberBase&
-  operator=(const StereoGrabberBase& src)
-  {
-    impl_ = src.impl_;
-    return (*this);
-  }
 
   /** \brief Virtual destructor. */
   ~StereoGrabberBase() noexcept;

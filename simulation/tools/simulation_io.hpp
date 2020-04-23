@@ -1,10 +1,16 @@
 #pragma once
 
-#include <boost/shared_ptr.hpp>
+#include <pcl/io/pcd_io.h>
+#include <pcl/io/vtk_lib_io.h>
+#include <pcl/simulation/camera.h>
+#include <pcl/simulation/range_likelihood.h>
+#include <pcl/simulation/scene.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_config.h>
+#include <pcl/point_types.h>
 
 #include <GL/glew.h>
 
-#include <pcl/pcl_config.h>
 #ifdef OPENGL_IS_A_FRAMEWORK
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -17,16 +23,6 @@
 #else
 #include <GL/glut.h>
 #endif
-
-// define the following in order to eliminate the deprecated headers warning
-#define VTK_EXCLUDE_STRSTREAM_HEADERS
-#include <pcl/io/pcd_io.h>
-#include <pcl/io/vtk_lib_io.h>
-#include <pcl/point_types.h>
-
-#include <pcl/simulation/camera.h>
-#include <pcl/simulation/range_likelihood.h>
-#include <pcl/simulation/scene.h>
 
 namespace pcl {
 namespace simulation {

@@ -41,6 +41,7 @@
 
 #include <pcl/recognition/cg/correspondence_grouping.h>
 #include <pcl/recognition/boost.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 

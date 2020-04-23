@@ -114,7 +114,7 @@ namespace pcl
           * This virtual method should not be overriden or used. The default implementation
           * is provided only for backwards compatibility with handlers that were written
           * before PCL 1.10.0 and will be removed in future. */
-        PCL_DEPRECATED("use getColor() without parameters instead")
+        PCL_DEPRECATED(1, 12, "use getColor() without parameters instead")
         virtual bool
         getColor (vtkSmartPointer<vtkDataArray> &scalars) const {
           scalars = getColor ();
@@ -616,7 +616,7 @@ namespace pcl
           * This virtual method should not be overriden or used. The default implementation
           * is provided only for backwards compatibility with handlers that were written
           * before PCL 1.10.0 and will be removed in future. */
-        PCL_DEPRECATED("use getColor() without parameters instead")
+        PCL_DEPRECATED(1, 12, "use getColor() without parameters instead")
         virtual bool
         getColor (vtkSmartPointer<vtkDataArray> &scalars) const {
           scalars = getColor ();

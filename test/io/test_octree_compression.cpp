@@ -63,8 +63,8 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBA)
   for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
     compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile) {
     // instantiate point cloud compression encoder/decoder
-    pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA>* pointcloud_encoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA>((pcl::io::compression_Profiles_e) compression_profile, false);
-    pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA>* pointcloud_decoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA>();
+    pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> pointcloud_encoder((pcl::io::compression_Profiles_e) compression_profile, false);
+    pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> pointcloud_decoder;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZRGBA>());
     // iterate over runs
     for (int test_idx = 0; test_idx < NUMBER_OF_TEST_RUNS; test_idx++, total_runs++)
@@ -98,8 +98,8 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBA)
 
 //        std::cout << "Run: " << total_runs << " compression profile:" << compression_profile << " point_count: " << point_count;
         std::stringstream compressed_data;
-        pointcloud_encoder->encodePointCloud(cloud, compressed_data);
-        pointcloud_decoder->decodePointCloud(compressed_data, cloud_out);
+        pointcloud_encoder.encodePointCloud(cloud, compressed_data);
+        pointcloud_decoder.decodePointCloud(compressed_data, cloud_out);
         EXPECT_GT((int)cloud_out->width, 0) << "decoded PointCloud width <= 0";
         EXPECT_GT((int)cloud_out->height, 0) << " decoded PointCloud height <= 0 ";
       }
@@ -120,8 +120,8 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZ)
         compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile)
   {
     // instantiate point cloud compression encoder/decoder
-    pcl::io::OctreePointCloudCompression<pcl::PointXYZ>* pointcloud_encoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZ>((pcl::io::compression_Profiles_e) compression_profile, false);
-    pcl::io::OctreePointCloudCompression<pcl::PointXYZ>* pointcloud_decoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZ>();
+    pcl::io::OctreePointCloudCompression<pcl::PointXYZ> pointcloud_encoder((pcl::io::compression_Profiles_e) compression_profile, false);
+    pcl::io::OctreePointCloudCompression<pcl::PointXYZ> pointcloud_decoder;
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZ>());
     // loop over runs
     for (int test_idx = 0; test_idx < NUMBER_OF_TEST_RUNS; test_idx++, total_runs++)
@@ -143,8 +143,8 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZ)
       std::stringstream compressed_data;
       try
       { // decodePointCloud() throws exceptions on errors
-        pointcloud_encoder->encodePointCloud(cloud, compressed_data);
-        pointcloud_decoder->decodePointCloud(compressed_data, cloud_out);
+        pointcloud_encoder.encodePointCloud(cloud, compressed_data);
+        pointcloud_decoder.decodePointCloud(compressed_data, cloud_out);
         EXPECT_GT((int)cloud_out->width, 0) << "decoded PointCloud width <= 0";
         EXPECT_GT((int)cloud_out->height, 0) << " decoded PointCloud height <= 0 ";
       }

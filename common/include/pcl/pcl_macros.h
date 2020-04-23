@@ -56,7 +56,7 @@
 #endif
 
 #ifndef _USE_MATH_DEFINES
-#define _USE_MATH_DEFINES
+  #define _USE_MATH_DEFINES
 #endif
 #include <cmath>
 #include <cstdarg>
@@ -65,64 +65,84 @@
 #include <cstdint>
 #include <iostream>
 
-#include <boost/cstdint.hpp>
-#include <boost/smart_ptr/shared_ptr.hpp>
-
-//Eigen has an enum that clashes with X11 Success define, which is ultimately included by pcl
-#ifdef Success
-  #undef Success
+// We need to check for GCC version, because GCC releases before 9 were implementing an
+// OpenMP 3.1 data sharing rule, even OpenMP 4 is supported, so a plain OpenMP version 4 check
+// isn't enough (see https://www.gnu.org/software/gcc/gcc-9/porting_to.html#ompdatasharing)
+#if (defined _OPENMP && (_OPENMP <= 201307)) || (defined __GNUC__ && (__GNUC__ >= 6 && __GNUC__ < 9))
+  #define OPENMP_LEGACY_CONST_DATA_SHARING_RULE 1
+#else
+  #define OPENMP_LEGACY_CONST_DATA_SHARING_RULE 0
 #endif
-#include <Eigen/Core>
 
 #include <pcl/pcl_config.h>
 
-// It seems that __has_cpp_attribute doesn't work correctly
-// when compiling with some versions of nvcc so we
-// additionally check if nvcc is used before setting the
-// PCL_DEPRECATED macro to [[deprecated]].
-#if defined(__has_cpp_attribute) && __has_cpp_attribute(deprecated) && !defined(__CUDACC__)
-  #define PCL_DEPRECATED(message) [[deprecated(message)]]
-#elif defined(__GNUC__) || defined(__clang__)
-  #define PCL_DEPRECATED(message) __attribute__((deprecated(message)))
-#elif defined(_MSC_VER)
-  // Until Visual Studio 2013 you had to use __declspec(deprecated).
-  // However, we decided to ignore the deprecation for these version because
-  // of simplicity reasons. See PR #3634 for the details.
-  #define PCL_DEPRECATED(message)
+#include <boost/preprocessor/comparison/equal.hpp>
+#include <boost/preprocessor/comparison/less.hpp>
+#include <boost/preprocessor/control/if.hpp>
+#include <boost/preprocessor/stringize.hpp>
+
+// MSVC < 2019 have issues:
+// * can't short-circuiting logic in macros
+// * don't define standard macros
+// => this leads to annyoing C4067 warnings (see https://developercommunity.visualstudio.com/content/problem/327796/-has-cpp-attribute-emits-warning-is-wrong-highligh.html)
+#if defined(_MSC_VER)
+  // nvcc on msvc can't work with [[deprecated]]
+  #if !defined(__CUDACC__)
+    #define _PCL_DEPRECATED_IMPL(Message) [[deprecated(Message)]]
+  #else
+    #define _PCL_DEPRECATED_IMPL(Message)
+  #endif
+#elif __has_cpp_attribute(deprecated)
+  #define _PCL_DEPRECATED_IMPL(Message) [[deprecated(Message)]]
 #else
-  #warning "You need to implement PCL_DEPRECATED for this compiler"
-  #define PCL_DEPRECATED(message)
+  #warning "You need to implement _PCL_DEPRECATED_IMPL for this compiler"
+  #define _PCL_DEPRECATED_IMPL(Message)
 #endif
 
-namespace pcl
-{
-  /**
-   * \brief Alias for boost::shared_ptr
-   *
-   * For ease of switching from boost::shared_ptr to std::shared_ptr
-   *
-   * \see pcl::make_shared
-   * \tparam T Type of the object stored inside the shared_ptr
-   */
-  template <typename T>
-  using shared_ptr = boost::shared_ptr<T>;
+/**
+ * \brief A handy way to inform the user of the removal deadline
+ */
+#define _PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Msg)                                 \
+  Msg " (It will be removed in PCL " BOOST_PP_STRINGIZE(Major.Minor) ")"
 
-  using uint8_t PCL_DEPRECATED("use std::uint8_t instead of pcl::uint8_t") = std::uint8_t;
-  using int8_t PCL_DEPRECATED("use std::int8_t instead of pcl::int8_t") = std::int8_t;
-  using uint16_t PCL_DEPRECATED("use std::uint16_t instead of pcl::uint16_t") = std::uint16_t;
-  using int16_t PCL_DEPRECATED("use std::uint16_t instead of pcl::int16_t") = std::int16_t;
-  using uint32_t PCL_DEPRECATED("use std::uint32_t instead of pcl::uint32_t") = std::uint32_t;
-  using int32_t PCL_DEPRECATED("use std::int32_t instead of pcl::int32_t") = std::int32_t;
-  using uint64_t PCL_DEPRECATED("use std::uint64_t instead of pcl::uint64_t") = std::uint64_t;
-  using int64_t PCL_DEPRECATED("use std::int64_t instead of pcl::int64_t") = std::int64_t;
-  using int_fast16_t PCL_DEPRECATED("use std::int_fast16_t instead of pcl::int_fast16_t") = std::int_fast16_t;
-}
+/**
+ * \brief Tests for Minor < PCL_MINOR_VERSION
+ */
+#define _PCL_COMPAT_MINOR_VERSION(Minor, IfPass, IfFail)                                \
+  BOOST_PP_IF(BOOST_PP_LESS(PCL_MINOR_VERSION, Minor), IfPass, IfFail)
 
-#if defined _WIN32 && defined _MSC_VER
+/**
+ * \brief Tests for Major == PCL_MAJOR_VERSION
+ */
+#define _PCL_COMPAT_MAJOR_VERSION(Major, IfPass, IfFail)                                \
+  BOOST_PP_IF(BOOST_PP_EQUAL(PCL_MAJOR_VERSION, Major), IfPass, IfFail)
 
+/**
+ * \brief macro for compatibility across compilers and help remove old deprecated
+ *        items for the Major.Minor release
+ *
+ * \details compiler errors of `unneeded_deprecation` and `major_version_mismatch`
+ * are hints to the developer that those items can be safely removed.
+ * Behavior of PCL_DEPRECATED(1, 99, "Not needed anymore")
+ *   * till PCL 1.98: "Not needed anymore (It will be removed in PCL 1.99)"
+ *   * PCL 1.99 onwards: compiler error with "unneeded_deprecation"
+ *   * PCL 2.0 onwards: compiler error with "major_version_mismatch"
+ */
+#define PCL_DEPRECATED(Major, Minor, Message)                                          \
+  _PCL_COMPAT_MAJOR_VERSION(                                                           \
+      Major,                                                                           \
+      _PCL_COMPAT_MINOR_VERSION(                                                       \
+          Minor,                                                                       \
+          _PCL_DEPRECATED_IMPL(_PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Message)),    \
+          unneeded_deprecation),                                                       \
+      major_version_mismatch)
+
+#if defined _WIN32
 // Define math constants, without including math.h, to prevent polluting global namespace with old math methods
 // Copied from math.h
-#ifndef _MATH_DEFINES_DEFINED
+// Check for M_2_SQRTPI since the cmath header on mingw-w64 doesn't seem to define
+// _MATH_DEFINES_DEFINED when included with _USE_MATH_DEFINES
+#if !defined _MATH_DEFINES_DEFINED && !defined M_2_SQRTPI
   #define _MATH_DEFINES_DEFINED
 
   #define M_E        2.71828182845904523536   // e
@@ -140,27 +160,28 @@ namespace pcl
   #define M_SQRT1_2  0.707106781186547524401  // 1/sqrt(2)
 #endif
 
-// Stupid. This should be removed when all the PCL dependencies have min/max fixed.
-#ifndef NOMINMAX
-# define NOMINMAX
+#if defined _MSC_VER
+  // Stupid. This should be removed when all the PCL dependencies have min/max fixed.
+  #ifndef NOMINMAX
+    #define NOMINMAX
+  #endif
+
+  #define __PRETTY_FUNCTION__ __FUNCTION__
+  #define __func__ __FUNCTION__
 #endif
-
-# define __PRETTY_FUNCTION__ __FUNCTION__
-# define __func__ __FUNCTION__
-
-#endif //defined _WIN32 && defined _MSC_VER
+#endif // defined _WIN32
 
 
 template<typename T>
-PCL_DEPRECATED("use std::isnan instead of pcl_isnan")
+PCL_DEPRECATED(1, 12, "use std::isnan instead of pcl_isnan")
 bool pcl_isnan (T&& x) { return std::isnan (std::forward<T> (x)); }
 
 template<typename T>
-PCL_DEPRECATED("use std::isfinite instead of pcl_isfinite")
+PCL_DEPRECATED(1, 12, "use std::isfinite instead of pcl_isfinite")
 bool pcl_isfinite (T&& x) { return std::isfinite (std::forward<T> (x)); }
 
 template<typename T>
-PCL_DEPRECATED("use std::isinf instead of pcl_isinf")
+PCL_DEPRECATED(1, 12, "use std::isinf instead of pcl_isinf")
 bool pcl_isinf (T&& x) { return std::isinf (std::forward<T> (x)); }
 
 
@@ -376,19 +397,6 @@ aligned_free (void* ptr)
   #error aligned_free not supported on your platform
 #endif
 }
-
-/**
- * \brief Macro to signal a class requires a custom allocator
- *
- *  It's an implementation detail to have pcl::has_custom_allocator work, a
- *  thin wrapper over Eigen's own macro
- *
- * \see pcl::has_custom_allocator, pcl::make_shared
- * \ingroup common
- */
-#define PCL_MAKE_ALIGNED_OPERATOR_NEW \
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
-  using _custom_allocator_type_trait = void;
 
 /**
  * \brief Macro to add a no-op or a fallthrough attribute based on compiler feature

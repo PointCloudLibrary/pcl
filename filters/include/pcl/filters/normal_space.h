@@ -39,8 +39,10 @@
 
 #include <pcl/filters/boost.h>
 #include <pcl/filters/filter_indices.h>
+
 #include <ctime>
 #include <climits>
+#include <random> // std::mt19937
 
 namespace pcl
 {
@@ -77,15 +79,8 @@ namespace pcl
         , binsy_ ()
         , binsz_ ()
         , input_normals_ ()
-        , rng_uniform_distribution_ (nullptr)
       {
         filter_name_ = "NormalSpaceSampling";
-      }
-
-      /** \brief Destructor. */
-      ~NormalSpaceSampling ()
-      {
-        delete rng_uniform_distribution_;
       }
 
       /** \brief Set number of indices to be sampled.
@@ -164,12 +159,6 @@ namespace pcl
       /** \brief The normals computed at each point in the input cloud */
       NormalsConstPtr input_normals_;
 
-      /** \brief Sample of point indices into a separate PointCloud
-        * \param[out] output the resultant point cloud
-        */
-      void
-      applyFilter (PointCloud &output) override;
-
       /** \brief Sample of point indices
         * \param[out] indices the resultant point cloud indices
         */
@@ -182,10 +171,9 @@ namespace pcl
     private:
       /** \brief Finds the bin number of the input normal, returns the bin number
         * \param[in] normal the input normal 
-        * \param[in] nbins total number of bins
         */
       unsigned int 
-      findBin (const float *normal, unsigned int nbins);
+      findBin (const float *normal);
 
       /** \brief Checks of the entire bin is sampled, returns true or false
         * \param[out] array flag which says whether a point is sampled or not
@@ -195,8 +183,8 @@ namespace pcl
       bool
       isEntireBinSampled (boost::dynamic_bitset<> &array, unsigned int start_index, unsigned int length);
 
-      /** \brief Uniform random distribution. */
-      boost::variate_generator<boost::mt19937, boost::uniform_int<std::uint32_t> > *rng_uniform_distribution_;
+      /** \brief Random engine */
+      std::mt19937 rng_;
   };
 }
 

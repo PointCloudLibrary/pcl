@@ -1,10 +1,10 @@
 #pragma once
 
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
+
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
-#include <boost/shared_ptr.hpp>
-
-#include <pcl/pcl_macros.h>
 
 namespace pcl {
 namespace simulation {
@@ -138,7 +138,7 @@ public:
 
   // Return the pose of the camera:
   Eigen::Vector3d
-  getYPR()
+  getYPR() const
   {
     return Eigen::Vector3d(yaw_, pitch_, roll_);
   }

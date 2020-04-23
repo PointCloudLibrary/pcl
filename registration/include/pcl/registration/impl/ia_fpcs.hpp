@@ -41,6 +41,7 @@
 #include <pcl/registration/ia_fpcs.h>
 #include <pcl/common/time.h>
 #include <pcl/common/distances.h>
+#include <pcl/common/utils.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/registration/transformation_estimation_3point.h>
 
@@ -59,13 +60,14 @@ pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &clou
   std::vector <int> ids (2);
   std::vector <float> dists_sqr (2);
 
-#ifdef _OPENMP
+  pcl::utils::ignore(nr_threads);
 #pragma omp parallel for \
-  reduction (+:mean_dist, num) \
-  private (ids, dists_sqr) shared (tree, cloud) firstprivate (s, max_dist_sqr) \
-  default (none)num_threads (nr_threads)
-#endif
-
+  default(none) \
+  shared(tree, cloud) \
+  private(ids, dists_sqr) \
+  reduction(+:mean_dist, num) \
+  firstprivate(s, max_dist_sqr) \
+  num_threads(nr_threads)
   for (int i = 0; i < 1000; i++)
   {
     tree.nearestKSearch (cloud->points[rand () % s], 2, ids, dists_sqr);
@@ -96,13 +98,14 @@ pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &clou
   std::vector <int> ids (2);
   std::vector <float> dists_sqr (2);
 
-#ifdef _OPENMP
+  pcl::utils::ignore(nr_threads);
 #pragma omp parallel for \
-  reduction (+:mean_dist, num) \
-  private (ids, dists_sqr) shared (tree, cloud, indices) firstprivate (s, max_dist_sqr) \
-  default (none)num_threads (nr_threads)
-#endif
-
+  default(none) \
+  shared(tree, cloud, indices) \
+  private(ids, dists_sqr) \
+  reduction(+:mean_dist, num) \
+  firstprivate(s, max_dist_sqr) \
+  num_threads(nr_threads)
   for (int i = 0; i < 1000; i++)
   {
     tree.nearestKSearch (cloud->points[indices[rand () % s]], 2, ids, dists_sqr);
@@ -162,20 +165,18 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   std::vector <MatchingCandidates> all_candidates (max_iterations_);
   pcl::StopWatch timer;
 
-  #ifdef _OPENMP
-  #pragma omp parallel num_threads (nr_threads_)
-  #endif
+  #pragma omp parallel \
+    default(none) \
+    shared(abort, all_candidates, timer) \
+    num_threads(nr_threads_)
   {
     #ifdef _OPENMP
     std::srand (static_cast <unsigned int> (std::time (NULL)) ^ omp_get_thread_num ());    
-    #pragma omp for schedule (dynamic)
+    #pragma omp for schedule(dynamic)
     #endif
     for (int i = 0; i < max_iterations_; i++)
     {
-
-      #ifdef _OPENMP
       #pragma omp flush (abort)
-      #endif
 
       MatchingCandidates candidates (1);
       std::vector <int> base_indices (4);
@@ -209,9 +210,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
         abort = (abort ? abort : timer.getTimeSeconds () > max_runtime_);
 
 
-        #ifdef _OPENMP
         #pragma omp flush (abort)
-        #endif
       }
     }
   }

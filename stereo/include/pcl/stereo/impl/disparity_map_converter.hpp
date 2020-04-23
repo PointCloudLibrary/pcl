@@ -37,14 +37,13 @@
 #ifndef PCL_DISPARITY_MAP_CONVERTER_IMPL_H_
 #define PCL_DISPARITY_MAP_CONVERTER_IMPL_H_
 
+#include <pcl/common/intensity.h>
+#include <pcl/console/print.h>
 #include <pcl/stereo/disparity_map_converter.h>
+#include <pcl/point_types.h>
 
 #include <fstream>
 #include <limits>
-
-#include <pcl/common/intensity.h>
-#include <pcl/console/print.h>
-#include <pcl/point_types.h>
 
 template <typename PointT>
 pcl::DisparityMapConverter<PointT>::DisparityMapConverter()

@@ -37,9 +37,9 @@
 
 #pragma once
 
-#include <vector>
-
 #include <pcl/pcl_macros.h>
+
+#include <vector>
 
 namespace pcl {
 namespace octree {

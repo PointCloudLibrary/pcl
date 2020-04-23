@@ -5822,7 +5822,7 @@ void ON_Annotation2Text::SetText(const wchar_t* s)
 
 // SDKBREAK Oct 30, 07 - LW
 // This function should not be used any longer
-PCL_DEPRECATED("Use the version that takes a model transform argument")
+PCL_DEPRECATED(1, 12, "Use the version that takes a model transform argument")
 bool ON_Annotation2::GetTextXform( 
       ON_RECT /*gdi_text_rect*/,
       const ON_Font& /*font*/,
@@ -5862,7 +5862,7 @@ bool ON_Annotation2::GetTextXform(
 // New function added Oct 30, 07 - LW 
 // To use model xform to draw annotation in blocks correctly
 #if 0
-PCL_DEPRECATED("Use the version that takes a dimstyle pointer")
+PCL_DEPRECATED(1, 12, "Use the version that takes a dimstyle pointer")
 bool ON_Annotation2::GetTextXform( 
       ON_RECT gdi_text_rect,
       const ON_Font& font,
@@ -5991,7 +5991,7 @@ static bool GetLeaderEndAndDirection( const ON_Annotation2* pAnn,
 
 // SDKBREAK Oct 30, 07 - LW
 // This function should not be used any longer
-PCL_DEPRECATED("Use the version that takes a model transform argument")
+PCL_DEPRECATED(1, 12, "Use the version that takes a model transform argument")
 bool ON_Annotation2::GetTextXform( 
       ON_RECT /*gdi_text_rect*/,
       int /*gdi_height_of_I*/,

@@ -291,7 +291,7 @@ namespace pcl
 
       // index routines
       int
-      grc2gl (int I, int J)
+      grc2gl (int I, int J) const
       {
         return m_nurbs.CVCount (1) * I + J;
       } // global row/col index to global lexicographic index
@@ -301,12 +301,12 @@ namespace pcl
         return grc2gl (E + i, F + j);
       } // local row/col index to global lexicographic index
       int
-      gl2gr (int A)
+      gl2gr (int A) const
       {
         return (static_cast<int> (A / m_nurbs.CVCount (1)));
       } // global lexicographic in global row index
       int
-      gl2gc (int A)
+      gl2gc (int A) const
       {
         return (static_cast<int> (A % m_nurbs.CVCount (1)));
       } // global lexicographic in global col index

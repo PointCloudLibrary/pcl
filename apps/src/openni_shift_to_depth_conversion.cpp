@@ -66,14 +66,8 @@ class SimpleOpenNIViewer
   public:
     SimpleOpenNIViewer () :
       viewer_ ("Input Point Cloud - Shift-to-depth conversion viewer"),
-      grabber_(nullptr)
+      grabber_ ("", pcl::OpenNIGrabber::OpenNI_Default_Mode, pcl::OpenNIGrabber::OpenNI_Default_Mode)
     {
-    }
-
-    ~SimpleOpenNIViewer ()
-    {
-      if (grabber_)
-        delete grabber_;
     }
 
     void
@@ -95,7 +89,7 @@ class SimpleOpenNIViewer
 
       // convert raw shift data to raw depth data
       raw_depth_data.resize(width*height);
-      grabber_->convertShiftToDepth(&raw_shift_data[0], &raw_depth_data[0], raw_shift_data.size());
+      grabber_.convertShiftToDepth(&raw_shift_data[0], &raw_depth_data[0], raw_shift_data.size());
 
       // check for color data
       if (image->getEncoding() != openni_wrapper::Image::RGB)
@@ -124,13 +118,10 @@ class SimpleOpenNIViewer
     run ()
     {
       // initialize OpenNIDevice to shift-value mode
-      pcl::OpenNIGrabber::Mode image_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;
       int depthformat = openni_wrapper::OpenNIDevice::OpenNI_shift_values;
 
-      grabber_ = new pcl::OpenNIGrabber("", pcl::OpenNIGrabber::OpenNI_Default_Mode, image_mode);
-
       // Set the depth output format
-      grabber_->getDevice ()->setDepthOutputFormat (static_cast<openni_wrapper::OpenNIDevice::DepthMode> (depthformat));
+      grabber_.getDevice ()->setDepthOutputFormat (static_cast<openni_wrapper::OpenNIDevice::DepthMode> (depthformat));
 
       // define image callback
       std::function<void
@@ -139,15 +130,15 @@ class SimpleOpenNIViewer
           {
             image_callback (img, depth, f);
           };
-      boost::signals2::connection image_connection = grabber_->registerCallback (image_cb);
+      grabber_.registerCallback (image_cb);
 
       // start grabber thread
-      grabber_->start ();
+      grabber_.start ();
       while (true)
       {
         std::this_thread::sleep_for(1s);
       }
-      grabber_->stop ();
+      grabber_.stop ();
 
   }
 
@@ -217,7 +208,7 @@ protected:
   }
 
   pcl::visualization::CloudViewer viewer_;
-  pcl::OpenNIGrabber* grabber_;
+  pcl::OpenNIGrabber grabber_;
 
 };
 

@@ -39,10 +39,10 @@
 #ifndef PCL_OCTREE_POINTCLOUD_HPP_
 #define PCL_OCTREE_POINTCLOUD_HPP_
 
-#include <cassert>
-
 #include <pcl/common/common.h>
 #include <pcl/octree/impl/octree_base.hpp>
+
+#include <cassert>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT,

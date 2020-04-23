@@ -337,11 +337,7 @@ namespace pcl
 
       for (std::size_t i = 0; i < 8; i++)
       {
-        if (children_[i])
-        {
-          OutofcoreOctreeBaseNode<ContainerT, PointT>* current = children_[i];
-          delete (current);
-        }
+        delete static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>*>(children_[i]);
       }
       children_.resize (8, static_cast<OutofcoreOctreeBaseNode<ContainerT, PointT>* > (nullptr));
       num_children_ = 0;

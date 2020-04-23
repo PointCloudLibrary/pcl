@@ -60,11 +60,8 @@ pcl::recognition::ORROctree::ORROctree ()
 void
 pcl::recognition::ORROctree::clear ()
 {
-  if ( root_ )
-  {
-    delete root_;
-    root_ = nullptr;
-  }
+  delete root_;
+  root_ = nullptr;
 
   full_leaves_.clear();
 }

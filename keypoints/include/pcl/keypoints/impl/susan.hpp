@@ -309,9 +309,6 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
   label_idx_ = pcl::getFieldIndex<PointOutT> ("label", out_fields_);
 
   const int input_size = static_cast<int> (input_->size ());
-//#ifdef _OPENMP
-//#pragma omp parallel for shared (response) num_threads(threads_)
-//#endif
   for (int point_index = 0; point_index < input_size; ++point_index)
   {
     const PointInT& point_in = input_->points [point_index];
@@ -362,9 +359,6 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
           memcpy (reinterpret_cast<char*> (&point_out) + out_fields_[label_idx_].offset,
                   &label, sizeof (std::uint32_t));
         }
-//#ifdef _OPENMP
-//#pragma omp critical
-//#endif
         response->push_back (point_out);
       }
       else
@@ -398,9 +392,6 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
               memcpy (reinterpret_cast<char*> (&point_out) + out_fields_[label_idx_].offset,
                       &label, sizeof (std::uint32_t));
             }
-//#ifdef _OPENMP
-//#pragma omp critical
-//#endif
             response->push_back (point_out);
           }
         }
@@ -424,9 +415,6 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
     output.points.clear ();
     output.points.reserve (response->points.size());
     
-//#ifdef _OPENMP
-//#pragma omp parallel for shared (output) num_threads(threads_)   
-//#endif
     for (int idx = 0; idx < static_cast<int> (response->points.size ()); ++idx)
     {
       const PointOutT& point_in = response->points [idx];
@@ -449,9 +437,6 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
         }
       }
       if (is_minima)
-//#ifdef _OPENMP
-//#pragma omp critical
-//#endif
       {
         output.points.push_back (response->points[idx]);
         keypoints_indices_->indices.push_back (idx);

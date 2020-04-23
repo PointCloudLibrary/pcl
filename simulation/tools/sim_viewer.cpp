@@ -36,67 +36,51 @@
  * $Id: pcd_viewer.cpp 5094 2012-03-15 01:03:51Z rusu $
  *
  */
+
+#include <pcl/common/common.h>
+#include <pcl/common/transforms.h>
+#include <pcl/console/parse.h>
+#include <pcl/console/print.h>
+#include <pcl/console/time.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/io/vtk_lib_io.h>
+#include <pcl/range_image/range_image_planar.h> // RangeImage
+#include <pcl/simulation/camera.h>
+#include <pcl/simulation/model.h>
+#include <pcl/simulation/range_likelihood.h>
+#include <pcl/simulation/scene.h>
+#include <pcl/surface/gp3.h>
+#include <pcl/visualization/cloud_viewer.h> // Pop-up viewer
+#include <pcl/visualization/histogram_visualizer.h>
+#include <pcl/visualization/keyboard_event.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/visualization/point_cloud_handlers.h>
+#include <pcl/visualization/point_picking_event.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_config.h>
+#include <pcl/point_types.h>
+
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
-#include <boost/shared_ptr.hpp>
-#include <cmath>
-#include <iostream>
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif
+
+#include <vtkPolyDataReader.h>
 
 #include <GL/glew.h>
 
-#include <pcl/pcl_config.h>
 #ifdef OPENGL_IS_A_FRAMEWORK
 #include <OpenGL/gl.h>
 #else
 #include <GL/gl.h>
 #endif
 
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-
-#include "pcl/common/common.h"
-#include "pcl/common/transforms.h"
-
-#include <pcl/features/normal_3d.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/surface/gp3.h>
-
-// define the following in order to eliminate the deprecated headers warning
-#define VTK_EXCLUDE_STRSTREAM_HEADERS
-#include <pcl/io/vtk_lib_io.h>
-
-#include "pcl/simulation/camera.h"
-#include "pcl/simulation/model.h"
-#include "pcl/simulation/range_likelihood.h"
-#include "pcl/simulation/scene.h"
-
-#include <pcl/console/parse.h>
-#include <pcl/console/print.h>
-#include <pcl/console/time.h>
-
-// RangeImage:
-#include <pcl/range_image/range_image_planar.h>
-
-// Pop-up viewer
-#include <pcl/visualization/cloud_viewer.h>
-
 #include <cfloat>
-#include <pcl/common/common.h>
-#include <pcl/console/parse.h>
-#include <pcl/console/print.h>
-#include <pcl/console/time.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/visualization/histogram_visualizer.h>
-#include <pcl/visualization/keyboard_event.h>
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/point_cloud_handlers.h>
-#include <pcl/visualization/point_picking_event.h>
-#include <vtkPolyDataReader.h>
+#include <cmath>
+#include <iostream>
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 
 using namespace Eigen;
 using namespace pcl;

@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -68,7 +69,6 @@ namespace pcl
         using PointCloudPtr = typename PointCloud::Ptr;
 
         using PointCloudConstPtr = typename PointCloud::ConstPtr;
-        using typename Search<PointT>::IndicesConstPtr;
 
         using Ptr = shared_ptr<pcl::search::OrganizedNeighbor<PointT> >;
         using ConstPtr = shared_ptr<const pcl::search::OrganizedNeighbor<PointT> >;
@@ -136,8 +136,8 @@ namespace pcl
           if (indices_ && !indices_->empty())
           {
             mask_.assign (input_->size (), 0);
-            for (std::vector<int>::const_iterator iIt = indices_->begin (); iIt != indices_->end (); ++iIt)
-              mask_[*iIt] = 1;
+            for (const auto& idx : *indices_)
+              mask_[idx] = 1;
           }
           else
             mask_.assign (input_->size (), 1);
@@ -158,7 +158,7 @@ namespace pcl
         int
         radiusSearch (const PointT &p_q,
                       double radius,
-                      std::vector<int> &k_indices,
+                      Indices &k_indices,
                       std::vector<float> &k_sqr_distances,
                       unsigned int max_nn = 0) const override;
 
@@ -178,7 +178,7 @@ namespace pcl
         int
         nearestKSearch (const PointT &p_q,
                         int k,
-                        std::vector<int> &k_indices,
+                        Indices &k_indices,
                         std::vector<float> &k_sqr_distances) const override;
 
         /** \brief projects a point into the image
@@ -192,9 +192,9 @@ namespace pcl
 
         struct Entry
         {
-          Entry (int idx, float dist) : index (idx), distance (dist) {}
+          Entry (index_t idx, float dist) : index (idx), distance (dist) {}
           Entry () : index (0), distance (0) {}
-          unsigned index;
+          index_t index;
           float distance;
           
           inline bool 
@@ -212,7 +212,7 @@ namespace pcl
           * \return whether the top element changed or not.
           */
         inline bool 
-        testPoint (const PointT& query, unsigned k, std::priority_queue<Entry>& queue, unsigned index) const
+        testPoint (const PointT& query, unsigned k, std::priority_queue<Entry>& queue, index_t index) const
         {
           const PointT& point = input_->points [index];
           if (mask_ [index] && std::isfinite (point.x))

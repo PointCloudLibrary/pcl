@@ -271,7 +271,7 @@ pcl::simulation::Quad::Quad()
 pcl::simulation::Quad::~Quad() { glDeleteBuffers(1, &quad_vbo_); }
 
 void
-pcl::simulation::Quad::render()
+pcl::simulation::Quad::render() const
 {
   glBindBuffer(GL_ARRAY_BUFFER, quad_vbo_);
   glEnableVertexAttribArray(0);
@@ -313,7 +313,7 @@ pcl::simulation::TexturedQuad::TexturedQuad(int width, int height)
 pcl::simulation::TexturedQuad::~TexturedQuad() { glDeleteTextures(1, &texture_); }
 
 void
-pcl::simulation::TexturedQuad::setTexture(const std::uint8_t* data)
+pcl::simulation::TexturedQuad::setTexture(const std::uint8_t* data) const
 {
   glBindTexture(GL_TEXTURE_2D, texture_);
   glTexImage2D(
