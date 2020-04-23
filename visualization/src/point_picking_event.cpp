@@ -72,7 +72,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
       if (idx != -1)
       {
         CloudActorMapPtr cam_ptr = style->getCloudActorMap();
-        const auto actor = std::find_if(cam_ptr->cbegin(), cam_ptr->cend(), [this](const auto& cloud_actor) { return cloud_actor.second.actor.Get() == actor_; });
+        const auto actor = std::find_if(cam_ptr->cbegin(), cam_ptr->cend(), [this](const auto& cloud_actor) { return cloud_actor.second.actor.GetPointer() == actor_; });
         const std::string name = (actor != cam_ptr->cend()) ? actor->first : "";
         style->point_picking_signal_ (PointPickingEvent (idx, x, y, z, std::move (name)));
       }
@@ -205,11 +205,7 @@ pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowIntera
 
     vtkSmartPointer<vtkExtractGeometry> extract_geometry = vtkSmartPointer<vtkExtractGeometry>::New ();
     extract_geometry->SetImplicitFunction (picker->GetFrustum ());
-#if VTK_MAJOR_VERSION < 6
-    extract_geometry->SetInput (pd);
-#else
     extract_geometry->SetInputData (pd);
-#endif
     extract_geometry->Update ();
 
     vtkSmartPointer<vtkVertexGlyphFilter> glyph_filter = vtkSmartPointer<vtkVertexGlyphFilter>::New ();
