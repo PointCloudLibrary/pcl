@@ -53,9 +53,7 @@ pcl::CropHull<PointT>::applyFilter (pcl::Indices &indices)
 
   if (dim_ == 2)
   {
-    // in this case we are assuming all the points lie in the same plane as the
-    // 2D convex hull, so the choice of projection just changes the
-    // conditioning of the problem: choose to squash the XYZ component of the
+    // choose to squash the XYZ component of the
     // hull-points that has least variation - this will also give reasonable
     // results if the points don't lie exactly in the same plane
     const Eigen::Vector3f range = getHullCloudRange ();
@@ -86,13 +84,16 @@ pcl::CropHull<PointT>::getHullCloudRange ()
     -std::numeric_limits<float>::max (),
     -std::numeric_limits<float>::max ()
   );
-  for (const index_t idx : *indices_)
+  for (pcl::Vertices const & poly : hull_polygons_)
   {
-    Eigen::Vector3f pt = input_->points[idx].getVector3fMap ();
-    for (int i = 0; i < 3; i++)
+    for (std::uint32_t const & idx : poly.vertices)
     {
-      if (pt[i] < cloud_min[i]) cloud_min[i] = pt[i];
-      if (pt[i] > cloud_max[i]) cloud_max[i] = pt[i];
+      Eigen::Vector3f pt = hull_cloud_->points[idx].getVector3fMap ();
+      for (int i = 0; i < 3; i++)
+      {
+        if (pt[i] < cloud_min[i]) cloud_min[i] = pt[i];
+        else if (pt[i] > cloud_max[i]) cloud_max[i] = pt[i];
+      }
     }
   }
 
