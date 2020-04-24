@@ -92,7 +92,7 @@ pcl::CropHull<PointT>::getHullCloudRange ()
       for (int i = 0; i < 3; i++)
       {
         if (pt[i] < cloud_min[i]) cloud_min[i] = pt[i];
-        else if (pt[i] > cloud_max[i]) cloud_max[i] = pt[i];
+        if (pt[i] > cloud_max[i]) cloud_max[i] = pt[i];
       }
     }
   }
