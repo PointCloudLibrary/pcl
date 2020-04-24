@@ -36,13 +36,13 @@
 
 #pragma once
 
-#include <QTreeWidgetItem>
-
-#include <vtkSmartPointer.h>
-
 #include <pcl/apps/modeler/abstract_item.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
 #include <pcl/common/eigen.h>
+
+#include <QTreeWidgetItem>
+
+#include <vtkSmartPointer.h>
 
 class vtkActor;
 class vtkPolyData;

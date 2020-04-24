@@ -34,9 +34,8 @@
  *
  */
 
-#include <pcl/apps/modeler/normals_actor_item.h>
-
 #include <pcl/apps/modeler/cloud_mesh.h>
+#include <pcl/apps/modeler/normals_actor_item.h>
 #include <pcl/filters/filter_indices.h>
 
 #include <vtkCellArray.h>

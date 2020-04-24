@@ -36,10 +36,10 @@
 
 #pragma once
 
-#include <QTreeWidgetItem>
-
 #include <pcl/apps/modeler/abstract_item.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
+
+#include <QTreeWidgetItem>
 
 namespace pcl {
 namespace modeler {

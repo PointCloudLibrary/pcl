@@ -34,15 +34,15 @@
  *
  */
 
-#include <pcl/apps/modeler/main_window.h>
-
 #include <pcl/apps/modeler/dock_widget.h>
+#include <pcl/apps/modeler/main_window.h>
 #include <pcl/apps/modeler/render_window.h>
 #include <pcl/apps/modeler/render_window_item.h>
 #include <pcl/apps/modeler/scene_tree.h>
 
 #include <QFileInfo>
 #include <QSettings>
+
 #include <vtkActor.h>
 #include <vtkRenderer.h>
 

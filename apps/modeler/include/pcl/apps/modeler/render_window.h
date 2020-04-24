@@ -36,9 +36,9 @@
 
 #pragma once
 
-#include <vtkSmartPointer.h>
-
 #include <QVTKWidget.h>
+
+#include <vtkSmartPointer.h>
 
 class vtkCubeAxesActor;
 

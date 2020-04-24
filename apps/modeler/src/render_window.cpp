@@ -39,6 +39,7 @@
 #include <pcl/apps/modeler/render_window.h>
 #include <pcl/apps/modeler/render_window_item.h>
 #include <pcl/apps/modeler/scene_tree.h>
+
 #include <vtkBoundingBox.h>
 #include <vtkCubeAxesActor.h>
 #include <vtkProp.h>

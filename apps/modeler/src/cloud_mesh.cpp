@@ -35,13 +35,13 @@
  */
 
 #include <pcl/apps/modeler/cloud_mesh.h>
-
-#include <pcl/PolygonMesh.h>
 #include <pcl/common/transforms.h>
 #include <pcl/filters/filter_indices.h>
 #include <pcl/io/obj_io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/point_cloud_handlers.h>
+#include <pcl/PolygonMesh.h>
+
 #include <vtkCellArray.h>
 #include <vtkDataArray.h>
 

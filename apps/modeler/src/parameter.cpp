@@ -36,14 +36,14 @@
 
 #include <pcl/apps/modeler/parameter.h>
 
-#include <cassert>
-#include <fstream>
-#include <iomanip>
-
 #include <QAbstractItemModel>
 #include <QCheckBox>
 #include <QColorDialog>
 #include <QSpinBox>
+
+#include <cassert>
+#include <fstream>
+#include <iomanip>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void

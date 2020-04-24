@@ -34,11 +34,10 @@
  *
  */
 
-#include <pcl/apps/modeler/thread_controller.h>
-
 #include <pcl/apps/modeler/abstract_worker.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
 #include <pcl/apps/modeler/main_window.h>
+#include <pcl/apps/modeler/thread_controller.h>
 
 #include <QDialog>
 #include <QThread>

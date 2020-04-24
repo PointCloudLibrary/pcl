@@ -35,7 +35,6 @@
  */
 
 #include <pcl/apps/modeler/abstract_worker.h>
-
 #include <pcl/apps/modeler/cloud_mesh_item.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
 

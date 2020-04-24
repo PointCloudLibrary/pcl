@@ -36,13 +36,13 @@
 
 #pragma once
 
-#include <map>
-#include <string>
-
 #include <boost/any.hpp>
 
 #include <QColor>
 #include <QVariant>
+
+#include <map>
+#include <string>
 
 class QAbstractItemModel;
 class QWidget;

@@ -37,15 +37,15 @@
 #include <pcl/apps/modeler/parameter.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
 
-#include <cassert>
-#include <fstream>
-
 #include <QCheckBox>
 #include <QColorDialog>
 #include <QGridLayout>
 #include <QHeaderView>
 #include <QPushButton>
 #include <QTableView>
+
+#include <cassert>
+#include <fstream>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void

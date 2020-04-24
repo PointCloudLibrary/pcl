@@ -35,7 +35,6 @@
  */
 
 #include <pcl/apps/modeler/abstract_item.h>
-
 #include <pcl/apps/modeler/main_window.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
 

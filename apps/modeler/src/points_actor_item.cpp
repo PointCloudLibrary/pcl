@@ -34,9 +34,8 @@
  *
  */
 
-#include <pcl/apps/modeler/points_actor_item.h>
-
 #include <pcl/apps/modeler/cloud_mesh.h>
+#include <pcl/apps/modeler/points_actor_item.h>
 
 #include <vtkDataSetMapper.h>
 #include <vtkLODActor.h>

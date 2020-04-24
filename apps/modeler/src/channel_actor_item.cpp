@@ -35,9 +35,9 @@
  */
 
 #include <pcl/apps/modeler/channel_actor_item.h>
-
 #include <pcl/apps/modeler/cloud_mesh.h>
 #include <pcl/point_cloud.h>
+
 #include <vtkCamera.h>
 #include <vtkMatrix4x4.h>
 #include <vtkPolyData.h>

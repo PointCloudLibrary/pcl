@@ -45,6 +45,7 @@
 #include <pcl/apps/modeler/render_window_item.h>
 #include <pcl/apps/modeler/surface_actor_item.h>
 #include <pcl/common/common.h>
+
 #include <vtkRenderWindow.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

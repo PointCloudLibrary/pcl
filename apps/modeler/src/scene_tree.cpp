@@ -34,14 +34,6 @@
  *
  */
 
-#include <pcl/apps/modeler/scene_tree.h>
-
-#include <set>
-
-#include <QContextMenuEvent>
-#include <QFileDialog>
-#include <QMessageBox>
-
 #include <pcl/apps/modeler/cloud_mesh_item.h>
 #include <pcl/apps/modeler/cloud_mesh_item_updater.h>
 #include <pcl/apps/modeler/icp_registration_worker.h>
@@ -50,10 +42,17 @@
 #include <pcl/apps/modeler/poisson_worker.h>
 #include <pcl/apps/modeler/render_window.h>
 #include <pcl/apps/modeler/render_window_item.h>
+#include <pcl/apps/modeler/scene_tree.h>
 #include <pcl/apps/modeler/statistical_outlier_removal_worker.h>
 #include <pcl/apps/modeler/thread_controller.h>
 #include <pcl/apps/modeler/voxel_grid_downsample_worker.h>
 #include <pcl/io/pcd_io.h>
+
+#include <QContextMenuEvent>
+#include <QFileDialog>
+#include <QMessageBox>
+
+#include <set>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::SceneTree::SceneTree(QWidget* parent) : QTreeWidget(parent)
