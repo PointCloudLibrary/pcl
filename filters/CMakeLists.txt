@@ -14,6 +14,7 @@ endif()
 
 set(srcs
   src/conditional_removal.cpp
+  src/convolution.cpp
   src/crop_box.cpp
   src/extract_indices.cpp
   src/filter.cpp
