@@ -36,7 +36,7 @@
 
 #pragma once
 
-#warning "Do not use this header, its contents have been moved to pcl/memory.h"
+PCL_DEPRECATED_HEADER(1, 13, "Use <pcl/memory.h> instead.")
 
 #include <pcl/memory.h>
 
