@@ -50,92 +50,8 @@
 
 namespace
 {
-  struct Checker
+  bool randomBool()
   {
-    pcl::CropHull<pcl::PointXYZ> cropHullFilter;
-
-    Checker(pcl::ConvexHull<pcl::PointXYZ> & hull, int dim)
-      : cropHullFilter(true)
-    {
-      pcl::PointCloud<pcl::PointXYZ>::Ptr hullCloudPtr(new pcl::PointCloud<pcl::PointXYZ>);
-      std::vector<pcl::Vertices> hullPolygons;
-      hull.reconstruct(*hullCloudPtr, hullPolygons);
-
-      cropHullFilter.setHullIndices(hullPolygons);
-      cropHullFilter.setHullCloud(hullCloudPtr);
-      cropHullFilter.setDim(dim);
-      cropHullFilter.setCropOutside(true);
-    }
-
-    void check(
-        pcl::Indices const & expectedFilteredIndices,
-        pcl::PointCloud<pcl::PointXYZ>::ConstPtr inputCloud)
-    {
-      std::vector<bool> expectedFilteredMask(inputCloud->size(), false);
-      pcl::Indices expectedRemovedIndices;
-      pcl::PointCloud<pcl::PointXYZ> expectedCloud;
-      pcl::copyPointCloud(*inputCloud, expectedFilteredIndices, expectedCloud);
-      for (pcl::index_t idx : expectedFilteredIndices) {
-        expectedFilteredMask[idx] = true;
-      }
-      for (size_t i = 0; i < inputCloud->size(); ++i) {
-        if (!expectedFilteredMask[i]) {
-          expectedRemovedIndices.push_back(i);
-        }
-      }
-
-      cropHullFilter.setInputCloud(inputCloud);
-
-      pcl::Indices filteredIndices;
-      cropHullFilter.filter(filteredIndices);
-      pcl::test::EXPECT_EQ_VECTORS(expectedFilteredIndices, filteredIndices);
-      pcl::test::EXPECT_EQ_VECTORS(expectedRemovedIndices, *cropHullFilter.getRemovedIndices());
-      // check negative filter functionality
-      {
-        cropHullFilter.setNegative(true);
-        cropHullFilter.filter(filteredIndices);
-        pcl::test::EXPECT_EQ_VECTORS(expectedRemovedIndices, filteredIndices);
-        pcl::test::EXPECT_EQ_VECTORS(expectedFilteredIndices, *cropHullFilter.getRemovedIndices());
-        cropHullFilter.setNegative(false);
-      }
-      // check cropOutside functionality
-      {
-        cropHullFilter.setCropOutside(false);
-        cropHullFilter.filter(filteredIndices);
-        pcl::test::EXPECT_EQ_VECTORS(expectedRemovedIndices, filteredIndices);
-        pcl::test::EXPECT_EQ_VECTORS(expectedFilteredIndices, *cropHullFilter.getRemovedIndices());
-        cropHullFilter.setCropOutside(true);
-      }
-
-      pcl::PointCloud<pcl::PointXYZ> filteredCloud;
-      cropHullFilter.filter(filteredCloud);
-      ASSERT_EQ (expectedCloud.size(), filteredCloud.size());
-      for (pcl::index_t i = 0; i < expectedCloud.size(); ++i)
-      {
-        EXPECT_XYZ_NEAR(expectedCloud[i], filteredCloud[i], 1e-5);
-      }
-      // check non empty out cloud filtering
-      cropHullFilter.filter(filteredCloud);
-      EXPECT_EQ (expectedCloud.size(), filteredCloud.size());
-
-      // check keep organized
-      {
-        cropHullFilter.setKeepOrganized(true);
-        cropHullFilter.setUserFilterValue(-10.);
-        pcl::PointXYZ defaultPoint(-10., -10., -10.);
-        cropHullFilter.filter(filteredCloud);
-        ASSERT_EQ (inputCloud->size(), filteredCloud.size());
-        for (pcl::index_t i = 0; i < inputCloud->size(); ++i)
-        {
-          pcl::PointXYZ expectedPoint = expectedFilteredMask[i] ? inputCloud->at(i) : defaultPoint;
-          EXPECT_XYZ_NEAR(expectedPoint, filteredCloud[i], 1e-5);
-        }
-        cropHullFilter.setKeepOrganized(false);
-      }
-    }
-  };
-
-  bool randomBool() {
     static std::default_random_engine gen;
     static std::uniform_int_distribution<> int_distr(0, 1);
     return int_distr(gen);
@@ -205,105 +121,27 @@ namespace
   class PCLCropHullTestFixtureBase : public ::testing::Test
   {
     public:
-      PCLCropHullTestFixtureBase() {
+      PCLCropHullTestFixtureBase()
+        : gen(12345u),
+          rd(0.0f, 1.0f)
+      {
+        baseOffsetList.emplace_back(0, 0, 0);
         baseOffsetList.emplace_back(5, 1, 10);
         baseOffsetList.emplace_back(1, 5, 10);
         baseOffsetList.emplace_back(1, 10, 5);
         baseOffsetList.emplace_back(10, 1, 5);
         baseOffsetList.emplace_back(10, 5, 1);
       }
-      static pcl::CropHull<pcl::PointXYZ> createDefaultCropHull (pcl::PointCloud<pcl::PointXYZ>::ConstPtr inputCloud) {
-        pcl::CropHull<pcl::PointXYZ> cropHullFilter(true);
-        pcl::ConvexHull<pcl::PointXYZ> convexHull;
-        convexHull.setDimension(3);
-        convexHull.setInputCloud(inputCloud);
-        pcl::PointCloud<pcl::PointXYZ>::Ptr hullCloudPtr(new pcl::PointCloud<pcl::PointXYZ>);
-        std::vector<pcl::Vertices> hullPolygons;
-        convexHull.reconstruct(*hullCloudPtr, hullPolygons);
-        cropHullFilter.setHullIndices(hullPolygons);
-        cropHullFilter.setHullCloud(hullCloudPtr);
-        return cropHullFilter;
-      }
     protected:
-      pcl::PointCloud<pcl::PointXYZ> baseOffsetList;
-  };
+      virtual pcl::PointCloud<pcl::PointXYZ>::ConstPtr getBaseInputCloud() const = 0;
+      virtual int getDim() const = 0;
 
-  class PCLCropHullTestFixture2d : public PCLCropHullTestFixtureBase
-  {
-    public:
-      PCLCropHullTestFixture2d()
-        : gen(12345u),
-          rd(0.0f, 1.0f),
-          baseInputCloud(new pcl::PointCloud<pcl::PointXYZ>)
+      void test(std::function<void(pcl::CropHull<pcl::PointXYZ>, TestData const &)> checker) const
       {
-        baseInputCloud->emplace_back(0.0f, 0.0f, 0.0f);
-        baseInputCloud->emplace_back(0.0f, 1.0f, 0.0f);
-        baseInputCloud->emplace_back(1.0f, 0.0f, 0.0f);
-        baseInputCloud->emplace_back(1.0f, 1.0f, 0.0f);
-        baseInputCloud->emplace_back(0.0f, 0.0f, 0.1f);
-        baseInputCloud->emplace_back(0.0f, 1.0f, 0.1f);
-        baseInputCloud->emplace_back(1.0f, 0.0f, 0.1f);
-        baseInputCloud->emplace_back(1.0f, 1.0f, 0.1f);
-      }
-    protected:
-
-      void test(std::function<void(pcl::CropHull<pcl::PointXYZ>, TestData const &)> checker) {
         pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud (new pcl::PointCloud<pcl::PointXYZ>);
         for (pcl::PointXYZ const & baseOffset : baseOffsetList)
         {
-          pcl::copyPointCloud(*baseInputCloud, *inputCloud);
-          for (pcl::PointXYZ & p : *inputCloud) {
-            p.getVector3fMap() += baseOffset.getVector3fMap();
-          }
-          auto insidePointGenerator = [this, &baseOffset] () {
-            pcl::PointXYZ p(rd(gen), rd(gen), 1.0);
-            p.getVector3fMap() += baseOffset.getVector3fMap();
-            return p;
-          };
-          auto outsidePointGenerator = [this, &baseOffset] () {
-            pcl::PointXYZ p(rd(gen) + 2., rd(gen) + 2., rd(gen) + 2.);
-            p.getVector3fMap() += baseOffset.getVector3fMap();
-            return p;
-          };
-          pcl::CropHull<pcl::PointXYZ> cropHullFilter = createDefaultCropHull(inputCloud);
-          cropHullFilter.setDim(2);
-          std::vector<TestData> testDataSuite = createTestDataSuite(insidePointGenerator, outsidePointGenerator);
-          for (TestData const & testData : testDataSuite)
-          {
-            checker(cropHullFilter, testData);
-          }
-        }
-      }
-    private:
-      std::mt19937 gen;
-      std::uniform_real_distribution<float> rd;
-      pcl::PointCloud<pcl::PointXYZ>::Ptr baseInputCloud;
-  };
-
-  class PCLCropHullTestFixture3d : public PCLCropHullTestFixtureBase
-  {
-    public:
-      PCLCropHullTestFixture3d()
-        : gen(12345u),
-          rd(0.0f, 1.0f),
-          baseInputCloud(new pcl::PointCloud<pcl::PointXYZ>)
-    {
-      baseInputCloud->emplace_back(0.0f, 0.0f, 0.0f);
-      baseInputCloud->emplace_back(0.0f, 0.0f, 1.0f);
-      baseInputCloud->emplace_back(0.0f, 1.0f, 0.0f);
-      baseInputCloud->emplace_back(0.0f, 1.0f, 1.0f);
-      baseInputCloud->emplace_back(1.0f, 0.0f, 0.0f);
-      baseInputCloud->emplace_back(1.0f, 0.0f, 1.0f);
-      baseInputCloud->emplace_back(1.0f, 1.0f, 0.0f);
-      baseInputCloud->emplace_back(1.0f, 1.0f, 1.0f);
-    }
-    protected:
-
-      void test(std::function<void(pcl::CropHull<pcl::PointXYZ>, TestData const &)> checker) {
-        pcl::PointCloud<pcl::PointXYZ>::Ptr inputCloud (new pcl::PointCloud<pcl::PointXYZ>);
-        for (pcl::PointXYZ const & baseOffset : baseOffsetList)
-        {
-          pcl::copyPointCloud(*baseInputCloud, *inputCloud);
+          pcl::copyPointCloud(*getBaseInputCloud(), *inputCloud);
           for (pcl::PointXYZ & p : *inputCloud) {
             p.getVector3fMap() += baseOffset.getVector3fMap();
           }
@@ -318,17 +156,87 @@ namespace
             return p;
           };
           pcl::CropHull<pcl::PointXYZ> cropHullFilter = createDefaultCropHull(inputCloud);
-          cropHullFilter.setDim(3);
           std::vector<TestData> testDataSuite = createTestDataSuite(insidePointGenerator, outsidePointGenerator);
           for (TestData const & testData : testDataSuite)
           {
+            cropHullFilter.setInputCloud(testData.inputCloud);
             checker(cropHullFilter, testData);
           }
         }
       }
+
     private:
-      std::mt19937 gen;
-      std::uniform_real_distribution<float> rd;
+      pcl::CropHull<pcl::PointXYZ> createDefaultCropHull (pcl::PointCloud<pcl::PointXYZ>::ConstPtr inputCloud) const
+      {
+        pcl::CropHull<pcl::PointXYZ> cropHullFilter(true);
+        pcl::ConvexHull<pcl::PointXYZ> convexHull;
+        convexHull.setDimension(3);
+        convexHull.setInputCloud(inputCloud);
+        pcl::PointCloud<pcl::PointXYZ>::Ptr hullCloudPtr(new pcl::PointCloud<pcl::PointXYZ>);
+        std::vector<pcl::Vertices> hullPolygons;
+        convexHull.reconstruct(*hullCloudPtr, hullPolygons);
+        cropHullFilter.setHullIndices(hullPolygons);
+        cropHullFilter.setHullCloud(hullCloudPtr);
+        cropHullFilter.setDim(getDim());
+        return cropHullFilter;
+      }
+
+      mutable std::mt19937 gen;
+      mutable std::uniform_real_distribution<float> rd;
+      pcl::PointCloud<pcl::PointXYZ> baseOffsetList;
+  };
+
+
+  class PCLCropHullTestFixture2d : public PCLCropHullTestFixtureBase
+  {
+    public:
+      PCLCropHullTestFixture2d()
+        : baseInputCloud(new pcl::PointCloud<pcl::PointXYZ>)
+      {
+        baseInputCloud->emplace_back(0.0f, 0.0f, 0.0f);
+        baseInputCloud->emplace_back(0.0f, 1.0f, 0.0f);
+        baseInputCloud->emplace_back(1.0f, 0.0f, 0.0f);
+        baseInputCloud->emplace_back(1.0f, 1.0f, 0.0f);
+        baseInputCloud->emplace_back(0.0f, 0.0f, -0.1f);
+        baseInputCloud->emplace_back(0.0f, 1.0f, -0.1f);
+        baseInputCloud->emplace_back(1.0f, 0.0f, -0.1f);
+        baseInputCloud->emplace_back(1.0f, 1.0f, -0.1f);
+      }
+    protected:
+      pcl::PointCloud<pcl::PointXYZ>::ConstPtr getBaseInputCloud() const override {
+        return baseInputCloud;
+      }
+      int getDim() const override {
+        return 2;
+      }
+    private:
+      pcl::PointCloud<pcl::PointXYZ>::Ptr baseInputCloud;
+  };
+
+
+  class PCLCropHullTestFixture3d : public PCLCropHullTestFixtureBase
+  {
+    public:
+      PCLCropHullTestFixture3d()
+        : baseInputCloud(new pcl::PointCloud<pcl::PointXYZ>)
+    {
+      baseInputCloud->emplace_back(0.0f, 0.0f, 0.0f);
+      baseInputCloud->emplace_back(0.0f, 0.0f, 1.0f);
+      baseInputCloud->emplace_back(0.0f, 1.0f, 0.0f);
+      baseInputCloud->emplace_back(0.0f, 1.0f, 1.0f);
+      baseInputCloud->emplace_back(1.0f, 0.0f, 0.0f);
+      baseInputCloud->emplace_back(1.0f, 0.0f, 1.0f);
+      baseInputCloud->emplace_back(1.0f, 1.0f, 0.0f);
+      baseInputCloud->emplace_back(1.0f, 1.0f, 1.0f);
+    }
+    protected:
+      pcl::PointCloud<pcl::PointXYZ>::ConstPtr getBaseInputCloud() const override {
+        return baseInputCloud;
+      }
+      int getDim() const override {
+        return 3;
+      }
+    private:
       pcl::PointCloud<pcl::PointXYZ>::Ptr baseInputCloud;
   };
 }
@@ -350,7 +258,6 @@ TEST_F (PCLCropHullTestFixture2d, 2dsquare_simple_test)
 TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_reentrancy)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
-    cropHullFilter.setInputCloud(testData.inputCloud);
     pcl::Indices filteredIndices;
     cropHullFilter.filter(filteredIndices);
     pcl::test::EXPECT_EQ_VECTORS(testData.insideIndices, filteredIndices);
@@ -364,7 +271,6 @@ TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_reentrancy)
 TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_negative_filter_functionality)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
-    cropHullFilter.setInputCloud(testData.inputCloud);
     cropHullFilter.setNegative(true);
     pcl::Indices filteredIndices;
     cropHullFilter.filter(filteredIndices);
@@ -378,7 +284,6 @@ TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_negative_filter_functionality)
 TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_crop_inside)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
-    cropHullFilter.setInputCloud(testData.inputCloud);
     cropHullFilter.setCropOutside(false);
     pcl::Indices filteredIndices;
     cropHullFilter.filter(filteredIndices);
@@ -392,7 +297,6 @@ TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_crop_inside)
 TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_negative_crop_inside)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
-    cropHullFilter.setInputCloud(testData.inputCloud);
     cropHullFilter.setCropOutside(false);
     cropHullFilter.setNegative(true);
     pcl::Indices filteredIndices;
@@ -407,7 +311,6 @@ TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_negative_crop_inside)
 TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_cloud_filtering)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
-    cropHullFilter.setInputCloud(testData.inputCloud);
     pcl::PointCloud<pcl::PointXYZ> filteredCloud;
     cropHullFilter.filter(filteredCloud);
     ASSERT_EQ (testData.insideCloud->size(), filteredCloud.size());
@@ -423,7 +326,6 @@ TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_cloud_filtering)
 TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_cloud_filtering_reentrancy)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
-    cropHullFilter.setInputCloud(testData.inputCloud);
     pcl::PointCloud<pcl::PointXYZ> filteredCloud;
     cropHullFilter.filter(filteredCloud);
     cropHullFilter.filter(filteredCloud);
@@ -436,7 +338,6 @@ TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_cloud_filtering_reentrancy)
 TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_keep_organized)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
-    cropHullFilter.setInputCloud(testData.inputCloud);
     cropHullFilter.setKeepOrganized(true);
     cropHullFilter.setUserFilterValue(-10.);
     pcl::PointXYZ defaultPoint(-10., -10., -10.);
@@ -460,7 +361,6 @@ TEST_F (PCLCropHullTestFixture2d, 2dsquare_test_keep_organized)
 TEST_F (PCLCropHullTestFixture3d, 3dcube_simple_test)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
-    cropHullFilter.setInputCloud(testData.inputCloud);
     pcl::Indices filteredIndices;
     cropHullFilter.filter(filteredIndices);
     pcl::test::EXPECT_EQ_VECTORS(testData.insideIndices, filteredIndices);
@@ -472,7 +372,6 @@ TEST_F (PCLCropHullTestFixture3d, 3dcube_simple_test)
 TEST_F (PCLCropHullTestFixture3d, 3dcube_test_reentrancy)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
-    cropHullFilter.setInputCloud(testData.inputCloud);
     pcl::Indices filteredIndices;
     cropHullFilter.filter(filteredIndices);
     pcl::test::EXPECT_EQ_VECTORS(testData.insideIndices, filteredIndices);
@@ -486,7 +385,6 @@ TEST_F (PCLCropHullTestFixture3d, 3dcube_test_reentrancy)
 TEST_F (PCLCropHullTestFixture3d, 3dcube_test_negative_filter_functionality)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
-    cropHullFilter.setInputCloud(testData.inputCloud);
     cropHullFilter.setNegative(true);
     pcl::Indices filteredIndices;
     cropHullFilter.filter(filteredIndices);
@@ -500,7 +398,6 @@ TEST_F (PCLCropHullTestFixture3d, 3dcube_test_negative_filter_functionality)
 TEST_F (PCLCropHullTestFixture3d, 3dcube_test_crop_inside)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
-    cropHullFilter.setInputCloud(testData.inputCloud);
     cropHullFilter.setCropOutside(false);
     pcl::Indices filteredIndices;
     cropHullFilter.filter(filteredIndices);
@@ -514,7 +411,6 @@ TEST_F (PCLCropHullTestFixture3d, 3dcube_test_crop_inside)
 TEST_F (PCLCropHullTestFixture3d, 3dcube_test_negative_crop_inside)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
-    cropHullFilter.setInputCloud(testData.inputCloud);
     cropHullFilter.setCropOutside(false);
     cropHullFilter.setNegative(true);
     pcl::Indices filteredIndices;
@@ -529,7 +425,6 @@ TEST_F (PCLCropHullTestFixture3d, 3dcube_test_negative_crop_inside)
 TEST_F (PCLCropHullTestFixture3d, 3dcube_test_cloud_filtering)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
-    cropHullFilter.setInputCloud(testData.inputCloud);
     pcl::PointCloud<pcl::PointXYZ> filteredCloud;
     cropHullFilter.filter(filteredCloud);
     ASSERT_EQ (testData.insideCloud->size(), filteredCloud.size());
@@ -545,7 +440,6 @@ TEST_F (PCLCropHullTestFixture3d, 3dcube_test_cloud_filtering)
 TEST_F (PCLCropHullTestFixture3d, 3dcube_test_cloud_filtering_reentrancy)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
-    cropHullFilter.setInputCloud(testData.inputCloud);
     pcl::PointCloud<pcl::PointXYZ> filteredCloud;
     cropHullFilter.filter(filteredCloud);
     cropHullFilter.filter(filteredCloud);
@@ -558,7 +452,6 @@ TEST_F (PCLCropHullTestFixture3d, 3dcube_test_cloud_filtering_reentrancy)
 TEST_F (PCLCropHullTestFixture3d, 3dcube_test_keep_organized)
 {
   auto checker = [](pcl::CropHull<pcl::PointXYZ> cropHullFilter, TestData const & testData) {
-    cropHullFilter.setInputCloud(testData.inputCloud);
     cropHullFilter.setKeepOrganized(true);
     cropHullFilter.setUserFilterValue(-10.);
     pcl::PointXYZ defaultPoint(-10., -10., -10.);
