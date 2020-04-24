@@ -96,7 +96,7 @@ namespace
     pcl::PointCloud<pcl::PointXYZ>::Ptr outsideCloud(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::PointCloud<pcl::PointXYZ>::Ptr mixedCloud(new pcl::PointCloud<pcl::PointXYZ>);
     pcl::Indices insideIndicesForInsideCloud;
-    pcl::Indices insideIndicesForOutsideCloud;
+    pcl::Indices insideIndicesForOutsideCloud; // empty indices, cause outsideCloud don't contains any inside point
     pcl::Indices insideIndicesForMixedCloud;
     for (size_t i = 0; i < chunkSize; ++i)
     {
@@ -111,9 +111,9 @@ namespace
         mixedCloud->push_back(outsidePointGenerator());
       }
     }
-    testDataSuite.emplace_back(insideIndicesForInsideCloud, insideCloud);
-    testDataSuite.emplace_back(insideIndicesForOutsideCloud, outsideCloud);
-    testDataSuite.emplace_back(insideIndicesForMixedCloud, mixedCloud);
+    testDataSuite.emplace_back(std::move(insideIndicesForInsideCloud), insideCloud);
+    testDataSuite.emplace_back(std::move(insideIndicesForOutsideCloud), outsideCloud);
+    testDataSuite.emplace_back(std::move(insideIndicesForMixedCloud), mixedCloud);
     return testDataSuite;
   }
 
