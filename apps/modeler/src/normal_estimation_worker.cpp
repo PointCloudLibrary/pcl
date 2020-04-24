@@ -92,13 +92,12 @@ pcl::modeler::NormalEstimationWorker::setupParameters()
   double radius = range_max / 100;
   double step = range_max / 1000;
 
+  // clang-format off
   search_radius_ = new DoubleParameter(
       "Search Radius",
       "The sphere radius that is to be used for determining the nearest neighbors",
-      radius,
-      0,
-      x_max_ - x_min_,
-      step);
+      radius, 0, x_max_ - x_min_, step);
+  // clang-format on
 
   parameter_dialog_->addParameter(search_radius_);
 }
