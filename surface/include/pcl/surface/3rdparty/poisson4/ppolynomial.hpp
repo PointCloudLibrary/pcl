@@ -28,6 +28,9 @@ DAMAGE.
 
 #include "factor.h"
 
+#include <cstdio>
+#include <cstring>
+
 ////////////////////////
 // StartingPolynomial //
 ////////////////////////
