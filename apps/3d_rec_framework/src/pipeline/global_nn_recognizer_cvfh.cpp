@@ -28,10 +28,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::Histogram<1327>,
                                   (float[1327], histogram, histogram1327))
 
 // Instantiation
-// template class pcl::rec_3d_framework::GlobalNNCVFHRecognizer<flann::L2,
-// pcl::PointXYZ, pcl::VFHSignature308>; template class
-// pcl::rec_3d_framework::GlobalNNCVFHRecognizer<flann::L1, pcl::PointXYZ,
-// pcl::VFHSignature308>;
 template class pcl::rec_3d_framework::GlobalNNCVFHRecognizer<
     Metrics::HistIntersectionUnionDistance,
     pcl::PointXYZ,
@@ -48,18 +44,7 @@ template class pcl::rec_3d_framework::GlobalNNCVFHRecognizer<
     Metrics::HistIntersectionUnionDistance,
     pcl::PointXYZRGB,
     pcl::Histogram<559>>;
-// template class
-// pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Metrics::HistIntersectionUnionDistance,
-// pcl::PointXYZRGB, pcl::Histogram<815> >; template class
-// pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Metrics::HistIntersectionUnionDistance,
-// pcl::PointXYZRGB, pcl::Histogram<879> >;
 template class pcl::rec_3d_framework::GlobalNNCVFHRecognizer<
     Metrics::HistIntersectionUnionDistance,
     pcl::PointXYZRGB,
     pcl::Histogram<1327>>;
-// template class pcl::rec_3d_framework::GlobalNNCVFHRecognizer<flann::L2,
-// pcl::PointXYZRGB, pcl::Histogram<431> >; template class
-// pcl::rec_3d_framework::GlobalNNCVFHRecognizer<flann::L2, pcl::PointXYZRGB,
-// pcl::Histogram<431> >; template class
-// pcl::rec_3d_framework::GlobalNNCVFHRecognizer<flann::L1, pcl::PointXYZRGB,
-// pcl::Histogram<431> >;

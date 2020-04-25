@@ -173,7 +173,6 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::
   flann_index_ = new flann::Index<DistT>(flann_data_, flann::LinearIndexParams());
   flann_index_->buildIndex();
 
-  // single categories...
   if (use_single_categories_) {
     single_categories_data_.resize(single_categories.size());
     single_categories_index_.resize(single_categories.size());
@@ -254,23 +253,9 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::rec
         for (std::size_t c = 0; c < categories_to_be_searched_.size(); c++) {
           std::cout << "Using category:" << categories_to_be_searched_[c] << std::endl;
           for (std::size_t idx = 0; idx < signatures.size(); idx++) {
-            /*float* hist = signatures[idx].points[0].histogram;
-             std::vector<float> std_hist (hist, hist + getHistogramLength (dummy));
-             flann_model histogram ("", std_hist);
-             flann::Matrix<int> indices;
-             flann::Matrix<float> distances;
-
-             std::map<std::string, int>::iterator it;
-             it = category_to_vectors_indices_.find (categories_to_be_searched_[c]);
-
-             assert (it != category_to_vectors_indices_.end ());
-             nearestKSearch (single_categories_index_[it->second], histogram, nmodels_,
-             indices, distances);*/
-
             float* hist = signatures[idx].points[0].histogram;
             int size_feat = sizeof(signatures[idx].points[0].histogram) / sizeof(float);
             std::vector<float> std_hist(hist, hist + size_feat);
-            // ModelT empty;
 
             flann_model histogram;
             histogram.descr = std_hist;
@@ -311,7 +296,6 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::rec
           float* hist = signatures[idx].points[0].histogram;
           int size_feat = sizeof(signatures[idx].points[0].histogram) / sizeof(float);
           std::vector<float> std_hist(hist, hist + size_feat);
-          // ModelT empty;
 
           flann_model histogram;
           histogram.descr = std_hist;
@@ -355,35 +339,6 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::rec
       indices_scores.resize(found.size());
 
       int num_n = std::min(NN_, static_cast<int>(indices_scores.size()));
-
-      /*
-       * Filter some hypothesis regarding to their distance to the first neighbour
-       */
-
-      /*std::vector<index_score> indices_scores_filtered;
-       indices_scores_filtered.resize (num_n);
-       indices_scores_filtered[0] = indices_scores[0];
-
-       float best_score = indices_scores[0].score_;
-       int kept = 1;
-       for (int i = 1; i < num_n; ++i)
-       {
-       //std::cout << best_score << indices_scores[i].score_ << (best_score /
-       indices_scores[i].score_) << std::endl; if ((best_score /
-       indices_scores[i].score_) > 0.65)
-       {
-       indices_scores_filtered[i] = indices_scores[i];
-       kept++;
-       }
-
-       //best_score = indices_scores[i].score_;
-       }
-
-       indices_scores_filtered.resize (kept);
-       //std::cout << indices_scores_filtered.size () << " § " << num_n << std::endl;
-
-       indices_scores = indices_scores_filtered;
-       num_n = indices_scores.size ();*/
       std::cout << "Number of object hypotheses... " << num_n << std::endl;
 
       std::vector<bool> valid_trans;
@@ -573,9 +528,6 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::rec
           pcl::transformPointCloud(*model_cloud, *model_aligned, transforms_->at(i));
         }
 
-        // ConstPointInTPtr model_cloud = models_->at (i).getAssembled (0.005f);
-        // PointInTPtr model_aligned (new pcl::PointCloud<PointInT>);
-        // pcl::transformPointCloud (*model_cloud, *model_aligned, transforms_->at (i));
         aligned_models[i] = model_aligned;
       }
 

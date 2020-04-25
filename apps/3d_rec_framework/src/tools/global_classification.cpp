@@ -130,10 +130,6 @@ segmentAndClassify(
   }
 }
 
-// bin/pcl_global_classification -models_dir /home/aitor/data/3d-net_one_class/
-// -descriptor_name esf -training_dir /home/aitor/data/3d-net_one_class_trained_level_1
-// -nn 10
-
 int
 main(int argc, char** argv)
 {
@@ -147,9 +143,6 @@ main(int argc, char** argv)
   pcl::console::parse_argument(argc, argv, "-training_dir", training_dir);
   pcl::console::parse_argument(argc, argv, "-descriptor_name", desc_name);
   pcl::console::parse_argument(argc, argv, "-nn", NN);
-
-  // pcl::console::parse_argument (argc, argv, "-z_dist", chop_at_z_);
-  // pcl::console::parse_argument (argc, argv, "-tesselation_level", views_level_);
 
   std::shared_ptr<pcl::rec_3d_framework::MeshSource<pcl::PointXYZ>> mesh_source(
       new pcl::rec_3d_framework::MeshSource<pcl::PointXYZ>);

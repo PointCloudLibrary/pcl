@@ -223,35 +223,6 @@ pcl::rec_3d_framework::GlobalNNCRHRecognizer<Distance, PointInT, FeatureT>::reco
 
       int num_n = std::min(NN_, static_cast<int>(indices_scores.size()));
 
-      /*
-       * Filter some hypothesis regarding to their distance to the first neighbour
-       */
-
-      /*std::vector<index_score> indices_scores_filtered;
-      indices_scores_filtered.resize (num_n);
-      indices_scores_filtered[0] = indices_scores[0];
-
-      float best_score = indices_scores[0].score_;
-      int kept = 1;
-      for (int i = 1; i < num_n; ++i)
-      {
-        std::cout << best_score << indices_scores[i].score_ << (best_score /
-      indices_scores[i].score_) << std::endl; if ((best_score /
-      indices_scores[i].score_) > 0.75)
-        {
-          indices_scores_filtered[i] = indices_scores[i];
-          kept++;
-        }
-
-        //best_score = indices_scores[i].score_;
-      }
-
-      indices_scores_filtered.resize (kept);
-      std::cout << indices_scores_filtered.size () << " § " << num_n << std::endl;
-
-      indices_scores = indices_scores_filtered;
-      num_n = indices_scores.size ();*/
-
       if (do_CRH_) {
         /*
          * Once we have the models, we need to find a 6DOF pose using the roll histogram

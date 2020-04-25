@@ -176,23 +176,6 @@ public:
 
       model.assembled_.reset(new pcl::PointCloud<PointInT>);
       assembleModelFromViewsAndPoses(model, poses_to_assemble_);
-
-      /*pcl::visualization::PCLVisualizer vis ("results");
-      pcl::visualization::PointCloudColorHandlerCustom<PointInT> random_handler
-      (model.assembled_, 255, 0, 0); vis.addPointCloud<PointInT> (model.assembled_,
-      random_handler, "points");
-
-      Eigen::Matrix4f view_transformation = model.poses_->at(0).inverse();
-      typename pcl::PointCloud<PointInT>::Ptr view_trans(new pcl::PointCloud<PointInT>);
-      pcl::transformPointCloud(*(model.views_->at(0)), *view_trans,
-      view_transformation);
-
-      pcl::visualization::PointCloudColorHandlerCustom<PointInT> random_handler2
-      (view_trans, 0, 255, 0); vis.addPointCloud<PointInT> (view_trans, random_handler2,
-      "view");
-
-      vis.addCoordinateSystem(0.1);
-      vis.spin ();*/
     }
     else {
 

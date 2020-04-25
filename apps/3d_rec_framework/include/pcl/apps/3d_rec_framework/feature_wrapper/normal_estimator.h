@@ -265,15 +265,6 @@ public:
         out->is_dense = false;
       }
     }
-
-    /*for (std::size_t i = 0; i < out->points.size (); i++)
-    {
-      int r, g, b;
-      r = static_cast<int> (out->points[i].r);
-      g = static_cast<int> (out->points[i].g);
-      b = static_cast<int> (out->points[i].b);
-      std::cout << "in normal estimator:" << r << " " << g << " " << b << std::endl;
-    }*/
   }
 };
 } // namespace rec_3d_framework

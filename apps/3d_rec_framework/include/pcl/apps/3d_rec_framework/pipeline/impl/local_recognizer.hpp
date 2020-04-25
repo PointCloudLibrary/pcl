@@ -211,7 +211,6 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
 
   PointInTPtr processed;
   typename pcl::PointCloud<FeatureT>::Ptr signatures(new pcl::PointCloud<FeatureT>());
-  // pcl::PointCloud<int> keypoints_input;
   PointInTPtr keypoints_pointcloud;
 
   if (signatures_ != nullptr && processed_ != nullptr &&
