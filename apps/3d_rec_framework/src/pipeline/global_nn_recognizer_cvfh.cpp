@@ -6,8 +6,7 @@
  */
 
 #include <pcl/apps/3d_rec_framework/pipeline/impl/global_nn_recognizer_cvfh.hpp>
-
-#include "pcl/apps/3d_rec_framework/utils/metrics.h"
+#include <pcl/apps/3d_rec_framework/utils/metrics.h>
 
 POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::Histogram<367>,
                                   (float[367], histogram, histogram367))

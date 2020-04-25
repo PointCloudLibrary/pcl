@@ -1,5 +1,4 @@
-#include "pcl/apps/3d_rec_framework/tools/openni_frame_source.h"
-
+#include <pcl/apps/3d_rec_framework/tools/openni_frame_source.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/memory.h>
 

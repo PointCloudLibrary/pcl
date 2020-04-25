@@ -6,8 +6,7 @@
  */
 
 #include <pcl/apps/3d_rec_framework/pipeline/impl/global_nn_classifier.hpp>
-
-#include "pcl/apps/3d_rec_framework/utils/metrics.h"
+#include <pcl/apps/3d_rec_framework/utils/metrics.h>
 
 // Instantiation
 template class pcl::rec_3d_framework::
