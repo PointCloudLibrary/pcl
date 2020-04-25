@@ -43,6 +43,7 @@
 #include <fcntl.h>
 #include <pcl/point_cloud.h>
 #include <limits>
+#include <Eigen/Dense>
 
 
 namespace pcl
@@ -167,59 +168,52 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBox (int i)
   bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
   bb.width = bb.height = bb.depth = 0.0f;
 
-  float center_x = 0.0f;
-  float center_y = 0.0f;
-  float center_z = 0.0f;
-  float min_x = std::numeric_limits<float>::max ();
-  float min_y = std::numeric_limits<float>::max ();
-  float min_z = std::numeric_limits<float>::max ();
-  float max_x = -std::numeric_limits<float>::max ();
-  float max_y = -std::numeric_limits<float>::max ();
-  float max_z = -std::numeric_limits<float>::max ();
+  Eigen::Vector3f geometric_center = Eigen::Vector3f::Zero ();
+  Eigen::Vector3f min_pos, max_pos;
+  min_pos.fill (std::numeric_limits<float>::max ());
+  max_pos.fill (std::numeric_limits<float>::lowest ());
   std::size_t counter = 0;
   for (std::size_t j = 0; j < template_point_cloud.size (); ++j) 
   {
     const PointXYZRGBA & p = template_point_cloud.points[j];
 
-    if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
+    if (!isFinite(p))
       continue;
 
-    min_x = std::min (min_x, p.x);
-    min_y = std::min (min_y, p.y);
-    min_z = std::min (min_z, p.z);
-    max_x = std::max (max_x, p.x);
-    max_y = std::max (max_y, p.y);
-    max_z = std::max (max_z, p.z);
+    min_pos [0] = std::min (min_pos [0], p.x);
+    min_pos [1] = std::min (min_pos [1], p.y);
+    min_pos [2] = std::min (min_pos [2], p.z);
+    min_pos [0] = std::max (min_pos [0], p.x);
+    min_pos [1] = std::max (min_pos [1], p.y);
+    min_pos [2] = std::max (min_pos [2], p.z);
 
-    center_x += p.x;
-    center_y += p.y;
-    center_z += p.z;
+    geometric_center [0] += p.x;
+    geometric_center [1] += p.y;
+    geometric_center [2] += p.z;
 
     ++counter;
   }
+  geometric_center /= static_cast<float> (counter);
 
-  center_x /= static_cast<float> (counter);
-  center_y /= static_cast<float> (counter);
-  center_z /= static_cast<float> (counter);
+  auto diff_pos = max_pos - min_pos;
+  bb.width  = diff_pos [0];
+  bb.height = diff_pos [1];
+  bb.depth  = diff_pos [2];
 
-  bb.width  = max_x - min_x;
-  bb.height = max_y - min_y;
-  bb.depth  = max_z - min_z;
-
-  bb.x = (min_x + bb.width / 2.0f) - center_x - bb.width / 2.0f;
-  bb.y = (min_y + bb.height / 2.0f) - center_y - bb.height / 2.0f;
-  bb.z = (min_z + bb.depth / 2.0f) - center_z - bb.depth / 2.0f;
+  bb.x = min_pos [0] - geometric_center [0];
+  bb.y = min_pos [1] - geometric_center [1];
+  bb.z = min_pos [2] - geometric_center [2];
 
   for (std::size_t j = 0; j < template_point_cloud.size (); ++j) 
   {
     PointXYZRGBA p = template_point_cloud.points[j];
 
-    if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
+    if (!isFinite(p))
       continue;
 
-    p.x -= center_x;
-    p.y -= center_y;
-    p.z -= center_z;
+    p.x -= geometric_center [0]; 
+    p.y -= geometric_center [1]; 
+    p.z -= geometric_center [2]; 
 
     template_point_cloud.points[j] = p;
   }
