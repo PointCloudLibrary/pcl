@@ -342,7 +342,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
       Eigen::Vector4f p (input_->points[inlier].x,
                          input_->points[inlier].y,
                          input_->points[inlier].z,
-                         1);
+                         0);
 
       float k = (p.dot (line_dir) - ptdotdir) * dirdotdir;
 
