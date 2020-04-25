@@ -960,7 +960,7 @@ namespace pcl
     }
 
     inline PointXYZRGBNormal (float _curvature = 0.f):
-        PointXYZRGBNormal (0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, _curvature) {}
+        PointXYZRGBNormal (0.f, 0.f, 0.f, 0, 0, 0, 0.f, 0.f, 0.f, _curvature) {}
 
     inline PointXYZRGBNormal (float _x, float _y, float _z):
       PointXYZRGBNormal (_x, _y, _z, 0, 0, 0) {}
@@ -1458,9 +1458,9 @@ namespace pcl
 
     inline ReferenceFrame ()
     {
-      std::fill_n(x_axis, 3, 0);
-      std::fill_n(y_axis, 3, 0);
-      std::fill_n(z_axis, 3, 0);
+      std::fill_n(x_axis, 3, 0.f);
+      std::fill_n(y_axis, 3, 0.f);
+      std::fill_n(z_axis, 3, 0.f);
     }
 
     // @TODO: add other ctors
@@ -1626,7 +1626,7 @@ namespace pcl
     */
   struct BorderDescription
   {
-    int x = 0.f, y = 0.f;
+    int x = 0, y = 0;
     BorderTraits traits;
     //std::vector<const BorderDescription*> neighbors;
 
