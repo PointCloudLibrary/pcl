@@ -301,7 +301,6 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::optimizeModelCoefficients (
   optimized_coefficients[4] = line_dir[1];
   optimized_coefficients[5] = line_dir[2];
 }
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
@@ -333,7 +332,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
     // Iterate over each point
     for (std::size_t i = 0; i < projected_points.points.size (); ++i)
       // Iterate over each dimension
-    pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
   }
   else
   {
@@ -352,9 +351,9 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
   for (std::size_t i = 0; i < inliers.size (); ++i)
   {
     pcl::Vector4fMap pp = projected_points.points[i].getVector4fMap();
-    Eigen::Vector4f p(input_->points[inlier].x,
-                      input_->points[inlier].y,
-                      input_->points[inlier].z,
+    Eigen::Vector4f p(input_->points[inliers[i]].x,
+                      input_->points[inliers[i]].y,
+                      input_->points[inliers[i]].z,
                       0);
 
     float k = (p.dot (line_dir) - ptdotdir) * dirdotdir;
