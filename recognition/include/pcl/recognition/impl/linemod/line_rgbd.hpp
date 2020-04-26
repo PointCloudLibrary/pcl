@@ -177,43 +177,39 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBox (int i)
   {
     const PointXYZRGBA & p = template_point_cloud.points[j];
 
-    if (!isFinite(p))
+    if (!isXYZFinite(p))
       continue;
 
-    min_pos [0] = std::min (min_pos [0], p.x);
-    min_pos [1] = std::min (min_pos [1], p.y);
-    min_pos [2] = std::min (min_pos [2], p.z);
-    min_pos [0] = std::max (min_pos [0], p.x);
-    min_pos [1] = std::max (min_pos [1], p.y);
-    min_pos [2] = std::max (min_pos [2], p.z);
+    for (std::size_t row=0; row<3; ++row)
+    {
+      min_pos[row] = std::min (min_pos[row], p.getVector3fMap ()[row]);
+      max_pos[row] = std::max (max_pos[row], p.getVector3fMap ()[row]);
+    }
 
-    geometric_center [0] += p.x;
-    geometric_center [1] += p.y;
-    geometric_center [2] += p.z;
+    geometric_center += p.getVector3fMap ();
 
     ++counter;
   }
   geometric_center /= static_cast<float> (counter);
 
-  auto diff_pos = max_pos - min_pos;
-  bb.width  = diff_pos [0];
-  bb.height = diff_pos [1];
-  bb.depth  = diff_pos [2];
+  auto bb_dim = max_pos - min_pos;
+  bb.width  = bb_dim[0];
+  bb.height = bb_dim[1];
+  bb.depth  = bb_dim[2];
 
-  bb.x = min_pos [0] - geometric_center [0];
-  bb.y = min_pos [1] - geometric_center [1];
-  bb.z = min_pos [2] - geometric_center [2];
+  auto diff_pos = min_pos - geometric_center;
+  bb.x = diff_pos[0];
+  bb.y = diff_pos[1];
+  bb.z = diff_pos[2];
 
   for (std::size_t j = 0; j < template_point_cloud.size (); ++j) 
   {
     PointXYZRGBA p = template_point_cloud.points[j];
 
-    if (!isFinite(p))
+    if (!isXYZFinite(p))
       continue;
 
-    p.x -= geometric_center [0]; 
-    p.y -= geometric_center [1]; 
-    p.z -= geometric_center [2]; 
+    p.getVector3fMap () -= geometric_center;
 
     template_point_cloud.points[j] = p;
   }
