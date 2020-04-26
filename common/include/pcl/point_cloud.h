@@ -443,14 +443,14 @@ namespace pcl
       using const_reverse_iterator = typename VectorType::const_reverse_iterator;
       inline iterator begin () noexcept { return (points.begin ()); }
       inline iterator end () noexcept { return (points.end ()); }
-      inline iterator begin () const noexcept { return (points.begin ()); }
-      inline iterator end () const noexcept { return (points.end ()); }
+      inline const_iterator begin () const noexcept { return (points.begin ()); }
+      inline const_iterator end () const noexcept { return (points.end ()); }
       inline const_iterator cbegin () const noexcept { return (points.cbegin ()); }
       inline const_iterator cend () const noexcept { return (points.cend ()); }
       inline reverse_iterator rbegin () noexcept { return (points.rbegin ()); }
       inline reverse_iterator rend () noexcept { return (points.rend ()); }
-      inline reverse_iterator rbegin () const noexcept { return (points.rbegin ()); }
-      inline reverse_iterator rend () const noexcept { return (points.rend ()); }
+      inline const_reverse_iterator rbegin () const noexcept { return (points.rbegin ()); }
+      inline const_reverse_iterator rend () const noexcept { return (points.rend ()); }
       inline const_reverse_iterator crbegin () const noexcept { return (points.crbegin ()); }
       inline const_reverse_iterator crend () const noexcept { return (points.crend ()); }
 
