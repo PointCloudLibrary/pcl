@@ -385,8 +385,13 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
     voxel_grid_icp.filter(*cloud_voxelized_icp);
     source_->voxelizeAllModels(VOXEL_SIZE_ICP_);
 
-#pragma omp parallel for default(none) shared(cloud_voxelized_icp)                     \
-    schedule(dynamic, 1) num_threads(omp_get_num_procs())
+    // clang-format off
+#pragma omp parallel for \
+  default(none) \
+  shared(cloud_voxelized_icp) \
+  schedule(dynamic,1) \
+  num_threads(omp_get_num_procs())
+    // clang-format on
     for (int i = 0; i < static_cast<int>(models_->size()); i++) {
 
       ConstPointInTPtr model_cloud;

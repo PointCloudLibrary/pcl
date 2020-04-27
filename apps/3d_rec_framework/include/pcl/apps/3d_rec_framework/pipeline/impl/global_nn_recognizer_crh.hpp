@@ -293,8 +293,12 @@ pcl::rec_3d_framework::GlobalNNCRHRecognizer<Distance, PointInT, FeatureT>::reco
       voxel_grid_icp.filter(*cloud_voxelized_icp);
       source_->voxelizeAllModels(VOXEL_SIZE_ICP_);
 
-#pragma omp parallel for default(none) shared(VOXEL_SIZE_ICP_, cloud_voxelized_icp)    \
-    num_threads(omp_get_num_procs())
+      // clang-format off
+#pragma omp parallel for \
+  default(none) \
+  shared(VOXEL_SIZE_ICP_, cloud_voxelized_icp) \
+  num_threads(omp_get_num_procs())
+      // clang-format on
       for (int i = 0; i < static_cast<int>(models_->size()); i++) {
 
         ConstPointInTPtr model_cloud = models_->at(i).getAssembled(VOXEL_SIZE_ICP_);
