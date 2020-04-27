@@ -577,15 +577,11 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
 
     // find occlusions on transformed cloud
     std::vector<int> visible, occluded;
-    std::unordered_set<int> occluded_set;
     removeOccludedPoints (transformed_cloud, filtered_cloud, octree_voxel_size, visible, occluded);
     visible_pts = *filtered_cloud;
 
     // pushing occluded idxs into a set for faster lookup
-    for (int occluded_idx = 0; occluded_idx < (int)occluded.size(); ++occluded_idx)
-    {
-      occluded_set.insert(occluded[occluded_idx]);
-    }
+    std::unordered_set<int> occluded_set(occluded.begin(), occluded.end());
 
     // find visible faces => add them to polygon N for camera N
     // add polygon group for current camera in clean
