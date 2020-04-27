@@ -40,6 +40,7 @@
 
 #include <pcl/common/distances.h>
 #include <pcl/surface/texture_mapping.h>
+#include <unordered_set>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >
@@ -576,8 +577,15 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
 
     // find occlusions on transformed cloud
     std::vector<int> visible, occluded;
+    std::unordered_set<int> occluded_set;
     removeOccludedPoints (transformed_cloud, filtered_cloud, octree_voxel_size, visible, occluded);
     visible_pts = *filtered_cloud;
+
+    // pushing occluded idxs into a set for faster lookup
+    for (int occluded_idx = 0; occluded_idx < (int)occluded.size(); ++occluded_idx)
+    {
+      occluded_set.insert(occluded[occluded_idx]);
+    }
 
     // find visible faces => add them to polygon N for camera N
     // add polygon group for current camera in clean
@@ -587,15 +595,14 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
     {
       // check if all the face's points are visible
       bool faceIsVisible = true;
-      std::vector<int>::iterator it;
+      std::unordered_set<int>::const_iterator it;
 
       // iterate over face's vertex
       for (std::size_t current_pt_indice = 0; faceIsVisible && current_pt_indice < tex_mesh.tex_polygons[0][faces].vertices.size (); ++current_pt_indice)
       {
-        // TODO this is far too long! Better create an helper function that raycasts here.
-        it = find (occluded.begin (), occluded.end (), tex_mesh.tex_polygons[0][faces].vertices[current_pt_indice]);
+        it = occluded_set.find (tex_mesh.tex_polygons[0][faces].vertices[current_pt_indice]);
 
-        if (it == occluded.end ())
+        if (it == occluded_set.end ())
         {
           // point is not occluded
           // does it land on the camera's image plane?
