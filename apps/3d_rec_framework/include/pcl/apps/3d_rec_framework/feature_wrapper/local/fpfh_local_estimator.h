@@ -34,8 +34,8 @@ public:
   {
 
     if (!normal_estimator_) {
-      PCL_ERROR("FPFHLocalEstimation :: This feature needs normals... please provide a "
-                "normal estimator\n");
+      PCL_ERROR("FPFHLocalEstimation :: This feature needs normals... "
+                "please provide a normal estimator\n");
       return false;
     }
 
