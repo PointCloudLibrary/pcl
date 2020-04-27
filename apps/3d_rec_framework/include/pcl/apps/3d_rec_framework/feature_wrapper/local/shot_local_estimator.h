@@ -14,6 +14,7 @@
 
 namespace pcl {
 namespace rec_3d_framework {
+
 template <typename PointInT, typename FeatureT>
 class SHOTLocalEstimation : public LocalEstimator<PointInT, FeatureT> {
 
@@ -133,8 +134,7 @@ public:
 
     return true;
   }
-
-private:
 };
+
 } // namespace rec_3d_framework
 } // namespace pcl

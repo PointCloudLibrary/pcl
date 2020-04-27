@@ -24,6 +24,7 @@ correspSorter(const pcl::Correspondence& i, const pcl::Correspondence& j)
 
 namespace pcl {
 namespace rec_3d_framework {
+
 /**
  * \brief Object recognition + 6DOF pose based on local features, GC and HV
  * Contains keypoints/local features computation, matching using FLANN,
@@ -371,5 +372,6 @@ public:
   void
   recognize();
 };
+
 } // namespace rec_3d_framework
 } // namespace pcl

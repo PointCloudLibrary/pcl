@@ -270,5 +270,6 @@ public:
 
   bool do_CRH_;
 };
+
 } // namespace rec_3d_framework
 } // namespace pcl

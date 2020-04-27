@@ -13,6 +13,7 @@
 
 namespace pcl {
 namespace rec_3d_framework {
+
 template <typename PointInT, typename FeatureT>
 class GlobalEstimator {
 protected:
@@ -52,5 +53,6 @@ public:
     normals = normals_;
   }
 };
+
 } // namespace rec_3d_framework
 } // namespace pcl

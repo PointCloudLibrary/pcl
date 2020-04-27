@@ -17,6 +17,7 @@
 #include <memory>
 
 namespace pcl {
+
 template <>
 struct SIFTKeypointFieldSelector<PointXYZ> {
   inline float
@@ -25,6 +26,7 @@ struct SIFTKeypointFieldSelector<PointXYZ> {
     return p.z;
   }
 };
+
 } // namespace pcl
 
 namespace pcl {
@@ -449,5 +451,6 @@ public:
     support_radius_ = r;
   }
 };
+
 } // namespace rec_3d_framework
 } // namespace pcl

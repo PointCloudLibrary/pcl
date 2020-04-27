@@ -14,6 +14,7 @@
 
 namespace pcl {
 namespace rec_3d_framework {
+
 template <typename PointInT, typename FeatureT>
 class CVFHEstimation : public GlobalEstimator<PointInT, FeatureT> {
 
@@ -163,5 +164,6 @@ public:
     normalize_bins_ = b;
   }
 };
+
 } // namespace rec_3d_framework
 } // namespace pcl

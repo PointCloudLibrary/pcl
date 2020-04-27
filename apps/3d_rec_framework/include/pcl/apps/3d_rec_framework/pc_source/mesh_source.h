@@ -262,5 +262,6 @@ public:
     }
   }
 };
+
 } // namespace rec_3d_framework
 } // namespace pcl

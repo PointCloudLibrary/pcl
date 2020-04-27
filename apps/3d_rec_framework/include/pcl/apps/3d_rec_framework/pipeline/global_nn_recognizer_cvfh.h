@@ -347,5 +347,6 @@ public:
     use_cache_ = u;
   }
 };
+
 } // namespace rec_3d_framework
 } // namespace pcl

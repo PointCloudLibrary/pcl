@@ -253,6 +253,7 @@ getPointCloudFromFile(std::string dir,
 
   pcl::io::loadPCDFile(view_file.str(), *cloud);
 }
+
 } // namespace PersistenceUtils
 } // namespace rec_3d_framework
 } // namespace pcl

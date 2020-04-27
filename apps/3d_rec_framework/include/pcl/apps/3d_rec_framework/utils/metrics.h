@@ -13,6 +13,7 @@
 #include <cstdlib>
 
 namespace Metrics {
+
 using ::std::abs;
 
 template <typename T>
@@ -126,4 +127,5 @@ struct HistIntersectionUnionDistance {
     // return (a+b-2*(a<b?a:b));
   }
 };
+
 } // namespace Metrics

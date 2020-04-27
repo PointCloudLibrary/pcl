@@ -16,6 +16,7 @@
 
 namespace pcl {
 namespace rec_3d_framework {
+
 template <typename PointInT, typename PointOutT>
 class PreProcessorAndNormalEstimator {
 
@@ -267,5 +268,6 @@ public:
     }
   }
 };
+
 } // namespace rec_3d_framework
 } // namespace pcl

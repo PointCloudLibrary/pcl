@@ -13,6 +13,7 @@
 
 namespace pcl {
 namespace rec_3d_framework {
+
 template <typename PointInT, typename FeatureT>
 class FPFHLocalEstimationOMP : public LocalEstimator<PointInT, FeatureT> {
 
@@ -88,5 +89,6 @@ public:
     return true;
   }
 };
+
 } // namespace rec_3d_framework
 } // namespace pcl

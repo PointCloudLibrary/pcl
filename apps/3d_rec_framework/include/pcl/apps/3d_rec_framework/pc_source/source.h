@@ -276,5 +276,6 @@ public:
     load_views_ = load;
   }
 };
+
 } // namespace rec_3d_framework
 } // namespace pcl

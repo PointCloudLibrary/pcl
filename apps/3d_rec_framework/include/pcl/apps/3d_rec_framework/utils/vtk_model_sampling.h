@@ -172,5 +172,6 @@ getVerticesAsPointCloud(const vtkSmartPointer<vtkPolyData>& polydata,
     cloud_out.points[i].z = static_cast<float>(p[2]);
   }
 }
+
 } // namespace rec_3d_framework
 } // namespace pcl

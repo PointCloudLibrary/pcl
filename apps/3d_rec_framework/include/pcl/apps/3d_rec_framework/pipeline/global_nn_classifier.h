@@ -212,5 +212,6 @@ public:
     training_dir_ = dir;
   }
 };
+
 } // namespace rec_3d_framework
 } // namespace pcl

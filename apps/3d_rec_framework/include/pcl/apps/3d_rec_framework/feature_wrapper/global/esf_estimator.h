@@ -12,6 +12,7 @@
 
 namespace pcl {
 namespace rec_3d_framework {
+
 template <typename PointInT, typename FeatureT>
 class ESFEstimation : public GlobalEstimator<PointInT, FeatureT> {
 
@@ -52,5 +53,6 @@ public:
     return false;
   }
 };
+
 } // namespace rec_3d_framework
 } // namespace pcl
