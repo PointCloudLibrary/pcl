@@ -284,7 +284,7 @@ namespace pcl
 
       /** \brief Compute bounding box from PCD masks **/
       BoundingBoxXYZ 
-      computeBoundingBox (PointCloud<PointXYZRGBA> & template_point_cloud);
+      computeBoundingBoxAndCenterTemplatePointCloud (PointCloud<PointXYZRGBA> & template_point_cloud);
 
       /** \brief Intersection volume threshold. */
       float intersection_volume_threshold_;

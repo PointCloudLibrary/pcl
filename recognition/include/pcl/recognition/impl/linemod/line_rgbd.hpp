@@ -153,7 +153,7 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
   bounding_boxes_.resize (template_point_clouds_.size ());
   for (std::size_t i = 0; i < template_point_clouds_.size (); ++i) 
   {
-    bounding_boxes_[i] = computeBoundingBox (template_point_clouds_[i]);
+    bounding_boxes_[i] = computeBoundingBoxAndCenterTemplatePointCloud (template_point_clouds_[i]);
   }
 
   return (true);
@@ -161,7 +161,7 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointXYZT, typename PointRGBT> BoundingBoxXYZ
-pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBox (PointCloud<PointXYZRGBA> & template_point_cloud)
+pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBoxAndCenterTemplatePointCloud (PointCloud<PointXYZRGBA> & template_point_cloud)
 {
   BoundingBoxXYZ bb;
   bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
@@ -236,7 +236,7 @@ LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
   bounding_boxes_.resize (template_point_clouds_.size ());
   {
     const std::size_t new_idx = template_point_clouds_.size () - 1;
-    bounding_boxes_[new_idx] = computeBoundingBox (template_point_clouds_[new_idx]);
+    bounding_boxes_[new_idx] = computeBoundingBoxAndCenterTemplatePointCloud (template_point_clouds_[new_idx]);
   }
 
   std::vector<pcl::QuantizableModality*> modalities;
