@@ -125,9 +125,6 @@ public:
       }
     }
 
-    /*normals_.reset(new pcl::PointCloud<pcl::Normal>);
-     normal_estimator_->estimate (in, processed, normals_);*/
-
     using OURCVFHEstimation =
         pcl::OURCVFHEstimation<PointInT, pcl::Normal, pcl::VFHSignature308>;
     pcl::PointCloud<pcl::VFHSignature308> cvfh_signatures;
@@ -162,10 +159,6 @@ public:
     cvfh.setRadiusNormals(radius);
     cvfh.setMinPoints(100);
     cvfh.compute(cvfh_signatures);
-
-    // std::cout << "Res:" << normal_estimator_->mesh_resolution_ << " Radius normals:"
-    // << radius << " Cluster tolerance:" << cluster_tolerance_radius << " " <<
-    // eps_angle_threshold_ << " " << curvature_threshold_ << std::endl;
 
     for (const auto& point : cvfh_signatures.points) {
       pcl::PointCloud<FeatureT> vfh_signature;
