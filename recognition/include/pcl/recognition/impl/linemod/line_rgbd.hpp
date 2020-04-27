@@ -38,7 +38,7 @@
 #ifndef PCL_RECOGNITION_LINEMOD_LINE_RGBD_IMPL_HPP_
 #define PCL_RECOGNITION_LINEMOD_LINE_RGBD_IMPL_HPP_
 
-//#include <pcl/recognition/linemod/line_rgbd.h>
+// #include <pcl/recognition/linemod/line_rgbd.h>
 #include <pcl/io/pcd_io.h>
 #include <fcntl.h>
 #include <pcl/point_cloud.h>
@@ -153,18 +153,17 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
   bounding_boxes_.resize (template_point_clouds_.size ());
   for (std::size_t i = 0; i < template_point_clouds_.size (); ++i) 
   {
-    computeBoundingBox (i);
+    bounding_boxes_[i] = computeBoundingBox (template_point_clouds_[i]);
   }
 
   return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointXYZT, typename PointRGBT> void
-pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBox (int i)
+template <typename PointXYZT, typename PointRGBT> BoundingBoxXYZ
+pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBox (PointCloud<PointXYZRGBA> & template_point_cloud)
 {
-  PointCloud<PointXYZRGBA> & template_point_cloud = template_point_clouds_[i];
-  BoundingBoxXYZ & bb = bounding_boxes_[i];
+  BoundingBoxXYZ bb;
   bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
   bb.width = bb.height = bb.depth = 0.0f;
 
@@ -192,12 +191,12 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBox (int i)
   }
   geometric_center /= static_cast<float> (counter);
 
-  auto bb_dim = max_pos - min_pos;
+  Eigen::Vector3f bb_dim = max_pos - min_pos;
   bb.width  = bb_dim[0];
   bb.height = bb_dim[1];
   bb.depth  = bb_dim[2];
 
-  auto diff_pos = min_pos - geometric_center;
+  Eigen::Vector3f diff_pos = min_pos - geometric_center;
   bb.x = diff_pos[0];
   bb.y = diff_pos[1];
   bb.z = diff_pos[2];
@@ -213,6 +212,8 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBox (int i)
 
     template_point_cloud.points[j] = p;
   }
+
+  return bb;
 }
 
 
@@ -234,8 +235,8 @@ LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
   // Compute 3D bounding boxes from the template point clouds
   bounding_boxes_.resize (template_point_clouds_.size ());
   {
-    const std::size_t i = template_point_clouds_.size () - 1;
-    computeBoundingBox (i);
+    const std::size_t new_idx = template_point_clouds_.size () - 1;
+    bounding_boxes_[new_idx] = computeBoundingBox (template_point_clouds_[new_idx]);
   }
 
   std::vector<pcl::QuantizableModality*> modalities;
