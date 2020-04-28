@@ -127,7 +127,7 @@ compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
 
 template <typename PointT, typename Scalar> inline unsigned int
 compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
-                   const std::vector<int> &indices,
+                   const Indices &indices,
                    Eigen::Matrix<Scalar, 4, 1> &centroid)
 {
   if (indices.empty ())
@@ -261,7 +261,7 @@ computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
 
 template <typename PointT, typename Scalar> inline unsigned int
 computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                         const std::vector<int> &indices,
+                         const Indices &indices,
                          const Eigen::Matrix<Scalar, 4, 1> &centroid,
                          Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
 {
@@ -342,7 +342,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
 
 template <typename PointT, typename Scalar> inline unsigned int
 computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
-                                   const std::vector<int> &indices,
+                                   const Indices &indices,
                                    const Eigen::Matrix<Scalar, 4, 1> &centroid,
                                    Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
 {
@@ -360,11 +360,7 @@ computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
                                    const Eigen::Matrix<Scalar, 4, 1> &centroid,
                                    Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
 {
-  unsigned int point_count = pcl::computeCovarianceMatrix (cloud, indices.indices, centroid, covariance_matrix);
-  if (point_count != 0)
-    covariance_matrix /= static_cast<Scalar> (point_count);
-
-  return point_count;
+  return computeCovarianceMatrixNormalized(cloud, indices.indices, centroid, covariance_matrix);
 }
 
 
@@ -424,7 +420,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
 
 template <typename PointT, typename Scalar> inline unsigned int
 computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                         const std::vector<int> &indices,
+                         const Indices &indices,
                          Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
 {
   // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
@@ -552,7 +548,7 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
 
 template <typename PointT, typename Scalar> inline unsigned int
 computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                                const std::vector<int> &indices,
+                                const Indices &indices,
                                 Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
                                 Eigen::Matrix<Scalar, 4, 1> &centroid)
 {
@@ -679,7 +675,7 @@ demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 
 template <typename PointT, typename Scalar> void
 demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                  const std::vector<int> &indices,
+                  const Indices &indices,
                   const Eigen::Matrix<Scalar, 4, 1> &centroid,
                   pcl::PointCloud<PointT> &cloud_out)
 {
@@ -773,7 +769,7 @@ demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 
 template <typename PointT, typename Scalar> void
 demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                  const std::vector<int> &indices,
+                  const Indices &indices,
                   const Eigen::Matrix<Scalar, 4, 1> &centroid,
                   Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_out)
 {
@@ -829,7 +825,7 @@ computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
 
 template <typename PointT, typename Scalar> inline void
 computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
-                   const std::vector<int> &indices,
+                   const Indices &indices,
                    Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid)
 {
   using FieldList = typename pcl::traits::fieldList<PointT>::type;
@@ -902,7 +898,7 @@ computeCentroid (const pcl::PointCloud<PointInT>& cloud,
 
 template <typename PointInT, typename PointOutT> std::size_t
 computeCentroid (const pcl::PointCloud<PointInT>& cloud,
-                      const std::vector<int>& indices,
+                      const Indices& indices,
                       PointOutT& centroid)
 {
   pcl::CentroidPoint<PointInT> cp;
