@@ -264,6 +264,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
 
       std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
       j++;
+      ptr += 3;
     }
     nr_points = j;
     points->SetNumberOfPoints (nr_points);
