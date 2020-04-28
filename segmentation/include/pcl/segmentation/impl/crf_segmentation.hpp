@@ -480,9 +480,6 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
   // ----------------------------------//
   // --------      -------------------//
 
-  pcl::PointCloud<pcl::PointXYZRGBL> tmp_cloud;
-  tmp_cloud = *filtered_anno_;
-
   // create dense CRF
   DenseCrf crf (N, n_labels);
 
@@ -549,6 +546,9 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
 
 
 /*
+  pcl::PointCloud<pcl::PointXYZRGBL> tmp_cloud;	
+  tmp_cloud = *filtered_anno_;
+
   bool c = true;
   for (std::size_t i = 0; i < tmp_cloud.points.size (); i++)
   {
