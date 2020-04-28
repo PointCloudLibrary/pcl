@@ -301,14 +301,14 @@ namespace pcl
         }
       }
     }
-    template< >
+    template< > inline
     Polynomial< 0 > Polynomial< 0 >::BSplineComponent( int i )
     {
       Polynomial p;
       p.coefficients[0] = 1.;
       return p;
     }
-    template< int Degree >
+    template< int Degree > inline
     Polynomial< Degree > Polynomial< Degree >::BSplineComponent( int i )
     {
       Polynomial p;

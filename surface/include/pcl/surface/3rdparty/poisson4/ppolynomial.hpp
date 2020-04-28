@@ -373,7 +373,7 @@ namespace pcl
       }
       printf("\n");
     }
-    template< >
+    template< > inline
     PPolynomial< 0 > PPolynomial< 0 >::BSpline( double radius )
     {
       PPolynomial q;
