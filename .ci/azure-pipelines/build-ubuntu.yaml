@@ -31,6 +31,9 @@ jobs:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'
       CMAKE_CXX_FLAGS: '-Wall -Wextra'
     steps:
+      - checkout: self
+        # find the commit hash on a quick non-forced update too
+        fetchDepth: 10
       - script: |
           mkdir $BUILD_DIR && cd $BUILD_DIR
           cmake $(Build.SourcesDirectory) $(CMAKE_ARGS) \
