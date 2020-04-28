@@ -264,6 +264,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
 
       std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
       j++;
+      ptr += 3;
     }
     nr_points = j;
     points->SetNumberOfPoints (nr_points);
@@ -1477,6 +1478,8 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
     return (false);
 
   vtkSmartPointer<vtkPolyData> polydata = reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ();
+  if (!polydata)
+      return false;
   // Convert the PointCloud to VTK PolyData
   convertPointCloudToVTKPolyData<PointT> (cloud, polydata, am_it->second.cells);
 
