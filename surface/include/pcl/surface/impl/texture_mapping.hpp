@@ -590,31 +590,18 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
     for (std::size_t faces = 0; faces < tex_mesh.tex_polygons[0].size (); ++faces)
     {
       // check if all the face's points are visible
-      bool faceIsVisible = true;
-      std::unordered_set<int>::const_iterator it;
-
       // iterate over face's vertex
-      for (std::size_t current_pt_indice = 0; faceIsVisible && current_pt_indice < tex_mesh.tex_polygons[0][faces].vertices.size (); ++current_pt_indice)
+      const auto faceIsVisible = std::all_of(tex_mesh.tex_polygons[0][faces].vertices.cbegin(),
+                                             tex_mesh.tex_polygons[0][faces].vertices.cend(),
+                                             [this, occluded_set, transformed_cloud, camera](const auto& vertex)
       {
-        it = occluded_set.find (tex_mesh.tex_polygons[0][faces].vertices[current_pt_indice]);
-
-        if (it == occluded_set.end ())
-        {
-          // point is not occluded
-          // does it land on the camera's image plane?
-          PointInT pt = transformed_cloud->points[tex_mesh.tex_polygons[0][faces].vertices[current_pt_indice]];
-          Eigen::Vector2f dummy_UV;
-          if (!getPointUVCoordinates (pt, camera, dummy_UV))
-          {
-            // point is not visible by the camera
-            faceIsVisible = false;
+          if (occluded_set.find(vertex) != occluded_set.cend()) {
+            return false;  // point is occluded
           }
-        }
-        else
-        {
-          faceIsVisible = false;
-        }
-      }
+          // is the point visible to the camera?
+          Eigen::Vector2f dummy_UV;
+          return this->getPointUVCoordinates (transformed_cloud->points[vertex], camera, dummy_UV);
+      });
 
       if (faceIsVisible)
       {
