@@ -69,13 +69,25 @@ PtrSz<U>() const
 template<class T> T*
 DeviceMemory2D::ptr(int y_arg)
 {
-  return (T*)((char*)data_ + y_arg * step_);
+  return ptr<T>(static_cast<size_t>(y_arg));
+}
+
+template<class T> T*
+DeviceMemory2D::ptr(std::size_t index)
+{
+  return (T*)((char*)data_ + index * step_);
 }
 
 template<class T> const T*
 DeviceMemory2D::ptr(int y_arg) const
 {
-  return (const T*)((const char*)data_ + y_arg * step_);
+  return ptr<T>(static_cast<size_t>(y_arg));
+}
+
+template<class T> const T*
+DeviceMemory2D::ptr(std::size_t index) const
+{
+  return (const T*)((const char*)data_ + index * step_);
 }
 
 template <class U> DeviceMemory2D::operator
