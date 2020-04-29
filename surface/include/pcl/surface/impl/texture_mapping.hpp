@@ -593,7 +593,7 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
       // iterate over face's vertex
       const auto faceIsVisible = std::all_of(tex_mesh.tex_polygons[0][faces].vertices.cbegin(),
                                              tex_mesh.tex_polygons[0][faces].vertices.cend(),
-                                             [this, occluded_set, transformed_cloud, camera](const auto& vertex)
+                                             [&](const auto& vertex)
       {
           if (occluded_set.find(vertex) != occluded_set.cend()) {
             return false;  // point is occluded
