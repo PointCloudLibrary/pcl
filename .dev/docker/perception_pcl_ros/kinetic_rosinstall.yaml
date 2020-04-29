@@ -1,0 +1,16 @@
+- git:
+    local-name: 'kinetic/perception_pcl'
+    uri: 'https://github.com/ros-perception/perception_pcl'
+    version: 'kinetic-devel'
+- git:
+    local-name: 'kinetic/common_msgs'
+    uri: 'https://github.com/ros/common_msgs'
+    version: 'jade-devel'
+- git:
+    local-name: 'kinetic/pcl_msgs'
+    uri: 'https://github.com/ros-perception/pcl_msgs'
+    version: 'indigo-devel'
+- git:
+    local-name: 'pcl'
+    uri: 'https://github.com/PointCloudLibrary/pcl'
+    version: 'master'
