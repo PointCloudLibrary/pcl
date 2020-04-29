@@ -254,7 +254,7 @@ namespace pcl
 void pcl::device::repackToAosForPfh(const PointCloud& cloud, const Normals& normals, const NeighborIndices& neighbours, DeviceArray2D<float>& data_rpk, int& max_elems_rpk)
 {   
     max_elems_rpk = (neighbours.max_elems/32 + 1) * 32;
-    data_rpk.create(6, (int)neighbours.sizes.size() * max_elems_rpk);
+    data_rpk.create(6, neighbours.sizes.size() * max_elems_rpk);
 
     Repack<false> rpk;
     rpk.sizes = neighbours.sizes;
@@ -311,7 +311,7 @@ namespace pcl
 void pcl::device::repackToAosForPfhRgb(const PointCloud& cloud, const Normals& normals, const NeighborIndices& neighbours, DeviceArray2D<float>& data_rpk, int& max_elems_rpk)
 {   
     max_elems_rpk = (neighbours.max_elems/32 + 1) * 32;
-    data_rpk.create(7, (int)neighbours.sizes.size() * max_elems_rpk);
+    data_rpk.create(7, neighbours.sizes.size() * max_elems_rpk);
 
     Repack<true> rpk;
     rpk.sizes = neighbours.sizes;

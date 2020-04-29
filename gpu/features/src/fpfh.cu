@@ -182,7 +182,7 @@ void pcl::device::computeSPFH(const PointCloud& surface, const Normals& normals,
     spfh.output = spfh33;
 
     int block = KernelBase::CTA_SIZE;
-    int grid  = divUp((int)spfh.work_size, KernelBase::WAPRS);
+    int grid  = divUp(spfh.work_size, KernelBase::WAPRS);
 
     SpfhKernel<<<grid, block>>>(spfh);
 

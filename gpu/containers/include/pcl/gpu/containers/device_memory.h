@@ -212,7 +212,16 @@ namespace pcl
               * \param rows_arg number of rows to upload
               * \param colsBytes_arg width of host buffer in bytes
               * */
+            PCL_DEPRECATED(1, 13, "Use DeviceMemory2D::upload(std::size_t rows, std::size_t colsBytes) instead.")
             void upload(const void *host_ptr_arg, std::size_t host_step_arg, int rows_arg, int colsBytes_arg);
+
+            /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to ensure that intenal buffer size is enough.
+              * \param host_ptr pointer to host buffer to upload               
+              * \param host_step stride between two consecutive rows in bytes for host buffer
+              * \param rows number of rows to upload
+              * \param colsBytes width of host buffer in bytes
+              * */
+            void upload(const void *host_ptr, std::size_t host_step, std::size_t rows, std::size_t colsBytes);
 
             /** \brief Downloads data from internal buffer to CPU memory. User is responsible for correct host buffer size.
               * \param host_ptr_arg pointer to host buffer to download               

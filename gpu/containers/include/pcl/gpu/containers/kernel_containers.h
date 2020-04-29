@@ -89,11 +89,14 @@ namespace pcl
         template <typename T> struct PtrStepSz : public PtrStep<T>
         {   
             __PCL_GPU_HOST_DEVICE__ PtrStepSz() : cols(0), rows(0) {}
+            PCL_DEPRECATED(1, 13, "Use PtrStepSz(std::size_t rows, std::size_t cols, T* data, std::size_t step) instead.")
             __PCL_GPU_HOST_DEVICE__ PtrStepSz(int rows_arg, int cols_arg, T* data_arg, std::size_t step_arg) 
                 : PtrStep<T>(data_arg, step_arg), cols(cols_arg), rows(rows_arg) {}
+            __PCL_GPU_HOST_DEVICE__ PtrStepSz(std::size_t rows, std::size_t cols, T* data, std::size_t step)
+                : PtrStep<T>(data, step), cols(cols), rows(rows) {}
 
-            int cols;
-            int rows;                                                                              
+            std::size_t cols;
+			std::size_t rows;
         };
     }
 

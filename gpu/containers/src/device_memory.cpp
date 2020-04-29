@@ -297,8 +297,13 @@ void pcl::gpu::DeviceMemory2D::copyTo(DeviceMemory2D& other) const
 
 void pcl::gpu::DeviceMemory2D::upload(const void *host_ptr_arg, std::size_t host_step_arg, int rows_arg, int colsBytes_arg)
 {
-    create(rows_arg, colsBytes_arg);
-    cudaSafeCall( cudaMemcpy2D(data_, step_, host_ptr_arg, host_step_arg, colsBytes_, rows_, cudaMemcpyHostToDevice) );        
+	upload(host_ptr_arg, host_step_arg, static_cast<std::size_t>(rows_arg), static_cast<std::size_t>(colsBytes_arg));
+}
+
+void pcl::gpu::DeviceMemory2D::upload(const void *host_ptr, std::size_t host_step, std::size_t rows, std::size_t colsBytes)
+{
+    create(rows, colsBytes);
+    cudaSafeCall( cudaMemcpy2D(data_, step_, host_ptr, host_step, colsBytes_, rows_, cudaMemcpyHostToDevice) );        
     cudaSafeCall( cudaDeviceSynchronize() );
 }
 

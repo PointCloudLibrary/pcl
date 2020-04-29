@@ -353,8 +353,8 @@ namespace pcl
 template<typename T> void
 pcl::device::convert (const MapArr& vmap, DeviceArray2D<T>& output)
 {
-  int cols = vmap.cols ();
-  int rows = vmap.rows () / 3;
+  std::size_t cols = vmap.cols ();
+  std::size_t rows = vmap.rows () / 3;
 
   output.create (rows, cols);
 
