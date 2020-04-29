@@ -243,7 +243,7 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   }
 
   // Copy the headers and allocate enough space
-  cloud_out = detail::copyPrelude<PointOutT>(cloud_in, static_cast<index_t>(nr_p));
+  cloud_out = detail::copyPrelude(cloud_in, static_cast<index_t>(nr_p));
   // no need to clear because cloud_out is a new copy
   cloud_out.reserve (nr_p);
 
