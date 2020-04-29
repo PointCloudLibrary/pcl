@@ -39,7 +39,7 @@
 namespace pcl {
 namespace poisson {
 template <>
-inline void
+void
 BSplineElements<1>::upSample(BSplineElements<1>& high) const
 {
   high.resize(size() * 2);
@@ -59,7 +59,7 @@ BSplineElements<1>::upSample(BSplineElements<1>& high) const
 }
 
 template <>
-inline void
+void
 BSplineElements<2>::upSample(BSplineElements<2>& high) const
 {
   /*    /----\
