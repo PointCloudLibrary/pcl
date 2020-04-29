@@ -46,6 +46,7 @@
 
 #include <ctime>
 #include <memory>
+#include <random>
 #include <set>
 
 namespace pcl
@@ -79,13 +80,9 @@ namespace pcl
         , threshold_ (std::numeric_limits<double>::max ())
         , max_iterations_ (1000)
         , threads_ (-1)
-        , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
+        , rng_alg_ (random ? std::random_device{}() : 12345u)
+        , rng_ (new std::uniform_real_distribution<> {})
       {
-         // Create a random number generator object
-         if (random)
-           rng_->base ().seed (static_cast<unsigned> (std::time (nullptr)));
-         else
-           rng_->base ().seed (12345u);
       };
 
       /** \brief Constructor for base SAC.
@@ -102,13 +99,9 @@ namespace pcl
         , threshold_ (threshold)
         , max_iterations_ (1000)
         , threads_ (-1)
-        , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
+        , rng_alg_ (random ? std::random_device{}() : 12345u)
+        , rng_ (new std::uniform_real_distribution<> {})
       {
-         // Create a random number generator object
-         if (random)
-           rng_->base ().seed (static_cast<unsigned> (std::time (nullptr)));
-         else
-           rng_->base ().seed (12345u);
       };
 
       /** \brief Set the Sample Consensus model to use.
@@ -342,16 +335,16 @@ namespace pcl
       int threads_;
 
       /** \brief Boost-based random number generator algorithm. */
-      boost::mt19937 rng_alg_;
+      std::mt19937 rng_alg_;
 
       /** \brief Boost-based random number generator distribution. */
-      std::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
+      std::shared_ptr<std::uniform_real_distribution<> > rng_;
 
       /** \brief Boost-based random number generator. */
       inline double
       rnd ()
       {
-        return ((*rng_) ());
+        return ((*rng_) (rng_alg_));
       }
    };
 }
