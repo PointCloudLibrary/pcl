@@ -236,7 +236,7 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
         return index.size() + acc;
       });
   // Do we want to copy everything? Remember we assume UNIQUE indices
-  if (nr_p == cloud_in.points.size ())
+  if (nr_p == cloud_in.size ())
   {
     cloud_out = cloud_in;
     return;
@@ -244,8 +244,8 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 
   // Copy the headers and allocate enough space
   cloud_out = detail::copyPrelude<PointOutT>(cloud_in, static_cast<index_t>(nr_p));
-  cloud_out.points.reserve (nr_p);
-  cloud_out.points.clear ();
+  // no need to clear because cloud_out is a new copy
+  cloud_out.reserve (nr_p);
 
   // Iterate over each cluster
   for (auto cluster_it = first; cluster_it != last; ++cluster_it)
@@ -254,7 +254,7 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     for (const auto &index : *cluster_it)
     {
       // Iterate over each dimension
-      cloud_out.points.push_back(cloud_in.points[index]);
+      cloud_out.push_back(cloud_in[index]);
     }
   }
 }
