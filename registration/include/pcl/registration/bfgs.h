@@ -150,6 +150,8 @@ public:
   BFGSSpace::Status minimizeInit(FVectorType &x);
   BFGSSpace::Status minimizeOneStep(FVectorType &x);
   BFGSSpace::Status testGradient();
+  PCL_DEPRECATED(1, 13, "Use `testGradient()` instead")
+  BFGSSpace::Status testGradient(Scalar) { return testGradient(); }
   void resetParameters(void) { parameters = Parameters(); }
   
   Parameters parameters;
