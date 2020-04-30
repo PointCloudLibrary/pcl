@@ -313,8 +313,6 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::rec
             is.idx_input_ = static_cast<int>(idx);
             is.score_ = score;
             indices_scores.push_back(is);
-
-            // ModelT m = flann_models_[indices[0][i]].model;
           }
         }
       }
@@ -363,8 +361,6 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::rec
 
         if (roll_pose_found && valid_trans[idx_input]) {
           Eigen::Matrix4f transposed = roll_view_pose.transpose();
-
-          // std::cout << transposed << std::endl;
 
           PointInTPtr view;
           getView(m, view_id, view);

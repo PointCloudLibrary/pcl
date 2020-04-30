@@ -174,8 +174,6 @@ pcl::rec_3d_framework::GlobalNNPipeline<Distance, PointInT, FeatureT>::initializ
         estimator_->estimate(
             models->at(i).views_->at(v), processed, signatures, centroids);
 
-        // source_->makeModelPersistent (models->at (i), training_dir_, descr_name_,
-        // static_cast<int> (v));
         std::string path =
             source_->getModelDescriptorDir(models->at(i), training_dir_, descr_name_);
 

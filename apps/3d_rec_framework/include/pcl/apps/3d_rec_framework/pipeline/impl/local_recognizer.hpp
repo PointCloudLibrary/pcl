@@ -175,12 +175,6 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
           std::stringstream keypoints_sstr;
           keypoints_sstr << path << "/keypoint_indices_" << v << ".pcd";
 
-          /*std::shared_ptr<std::vector<int>> indices (new std::vector<int> ());
-          indices->resize (keypoints.points.size ());
-          for (std::size_t kk = 0; kk < indices->size (); kk++)
-            (*indices)[kk] = keypoints.points[kk];
-          typename pcl::PointCloud<PointInT> keypoints_pointcloud;
-          pcl::copyPointCloud (*processed, *indices, keypoints_pointcloud);*/
           pcl::io::savePCDFileBinary(keypoints_sstr.str(), *keypoints_pointcloud);
 
           std::stringstream path_descriptor;
@@ -309,7 +303,6 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
   }
 
   {
-    // pcl::ScopeTime t("Geometric verification, RANSAC and transform estimation");
     for (auto it_map = object_hypotheses.cbegin(); it_map != object_hypotheses.cend();
          it_map++) {
       std::vector<pcl::Correspondences> corresp_clusters;
@@ -330,8 +323,6 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
         // cardinality
         int max_cardinality = -1;
         for (const auto& corresp_cluster : corresp_clusters) {
-          // std::cout <<  (corresp_clusters[i]).size() << " -- " <<
-          // (*(*it_map).second.correspondences_to_inputcloud).size() << std::endl;
           if (max_cardinality < static_cast<int>(corresp_cluster.size())) {
             max_cardinality = static_cast<int>(corresp_cluster.size());
           }
@@ -350,9 +341,6 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
 
         if (!good_indices_for_hypothesis[i])
           continue;
-
-        // drawCorrespondences (processed, it_map->second, keypoints_pointcloud,
-        // corresp_clusters[i]);
 
         Eigen::Matrix4f best_trans;
         typename pcl::registration::TransformationEstimationSVD<PointInT, PointInT>
@@ -434,7 +422,6 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
     aligned_models.resize(models_->size());
     for (std::size_t i = 0; i < models_->size(); i++) {
       ConstPointInTPtr model_cloud = models_->at(i).getAssembled(0.0025f);
-      // ConstPointInTPtr model_cloud = models_->at (i).getAssembled (VOXEL_SIZE_ICP_);
       PointInTPtr model_aligned(new pcl::PointCloud<PointInT>);
       pcl::transformPointCloud(*model_cloud, *model_aligned, transforms_->at(i));
       aligned_models[i] = model_aligned;

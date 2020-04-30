@@ -96,9 +96,6 @@ public:
       }
     }
 
-    /*normals_.reset(new pcl::PointCloud<pcl::Normal>);
-    normal_estimator_->estimate (in, processed, normals_);*/
-
     using CVFHEstimation = pcl::CVFHEstimation<PointInT, pcl::Normal, FeatureT>;
     pcl::PointCloud<FeatureT> cvfh_signatures;
     typename pcl::search::KdTree<PointInT>::Ptr cvfh_tree(
@@ -132,10 +129,6 @@ public:
     cvfh.setRadiusNormals(radius);
     cvfh.setMinPoints(100);
 
-    // std::cout << "Res:" << normal_estimator_->mesh_resolution_ << " Radius normals:"
-    // << radius << " Cluster tolerance:" << cluster_tolerance_radius << " " <<
-    // eps_angle_threshold_ << " " << curvature_threshold_ << std::endl;
-
     cvfh.compute(cvfh_signatures);
 
     for (std::size_t i = 0; i < cvfh_signatures.points.size(); i++) {
@@ -149,7 +142,6 @@ public:
     }
 
     cvfh.getCentroidClusters(centroids);
-    // std::cout << "centroids size:" << centroids.size () << std::endl;
   }
 
   bool

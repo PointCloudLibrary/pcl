@@ -90,9 +90,6 @@ struct HistIntersectionUnionDistance {
       sum_max += max0 + max1 + max2 + max3;
       a += 4;
       b += 4;
-      /*if (worst_dist>0 && result>worst_dist) {
-       return result;
-       }*/
     }
 
     while (a < last) {
@@ -102,7 +99,6 @@ struct HistIntersectionUnionDistance {
       sum_max += max0;
       a++;
       b++;
-      // std::cout << a << " " << last << std::endl;
     }
 
     result = static_cast<ResultType>(1.0 - ((1 + sum_min) / (1 + sum_max)));
@@ -118,13 +114,11 @@ struct HistIntersectionUnionDistance {
   inline ResultType
   accum_dist(const U& a, const V& b, int) const
   {
-    // printf("New code being used, accum_dist\n");
     ResultType min0;
     ResultType max0;
     min0 = (a < b ? a : b) + 1.0;
     max0 = (a > b ? a : b) + 1.0;
     return (1 - (min0 / max0));
-    // return (a+b-2*(a<b?a:b));
   }
 };
 

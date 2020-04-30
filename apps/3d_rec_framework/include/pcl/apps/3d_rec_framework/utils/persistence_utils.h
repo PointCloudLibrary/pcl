@@ -81,14 +81,8 @@ writeFloatToFile(const std::string& file, float value)
 inline std::string
 getViewId(std::string id)
 {
-  // descriptor_xxx_xx.pcd
-  // and we want xxx
-
   std::vector<std::string> strs;
   boost::split(strs, id, boost::is_any_of("_"));
-
-  // std::cout << "id:" << id << std::endl;
-  // std::cout << "returned:" << strs[strs.size() - 2] << std::endl;
 
   return strs[strs.size() - 2];
 }
@@ -162,7 +156,6 @@ readMatrixFromFile(std::string dir, std::string file, Eigen::Matrix4f& matrix)
   std::stringstream matrix_file;
   matrix_file << file_replaced << id << "/" << dname << "/pose_" << getViewId(file)
               << ".txt";
-  // std::cout << matrix_file.str() << std::endl;
 
   std::ifstream in;
   in.open(matrix_file.str().c_str(), std::ifstream::in);

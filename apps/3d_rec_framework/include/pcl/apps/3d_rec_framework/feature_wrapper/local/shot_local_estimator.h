@@ -82,25 +82,10 @@ public:
       }
     }
 
-    // compute normals
-    // pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
-    // normal_estimator_->estimate (in, processed, normals);
-
     // compute keypoints
     this->computeKeypoints(processed, keypoints, normals);
     std::cout << " " << normals->points.size() << " " << processed->points.size()
               << std::endl;
-
-    // compute keypoints
-    /*keypoint_extractor_->setInputCloud (processed);
-    if(keypoint_extractor_->needNormals())
-      keypoint_extractor_->setNormals(normals);
-
-    std::cout << " " << normals->points.size() << " " << processed->points.size() <<
-    std::endl;
-
-    keypoint_extractor_->setSupportRadius(support_radius_);
-    keypoint_extractor_->compute (keypoints);*/
 
     if (keypoints->points.empty()) {
       PCL_WARN("SHOTLocalEstimation :: No keypoints were found\n");

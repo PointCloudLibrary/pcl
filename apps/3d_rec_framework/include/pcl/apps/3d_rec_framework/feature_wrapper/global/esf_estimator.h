@@ -44,7 +44,6 @@ public:
     centroids[0] = Eigen::Vector3f(centroid4f[0], centroid4f[1], centroid4f[2]);
 
     pcl::copyPointCloud(*in, *processed);
-    // processed = in;
   }
 
   bool

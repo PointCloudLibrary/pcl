@@ -174,12 +174,9 @@ public:
     if (out->isOrganized()) {
       pcl::IntegralImageNormalEstimation<PointInT, pcl::Normal> n3d;
       n3d.setNormalEstimationMethod(n3d.COVARIANCE_MATRIX);
-      // n3d.setNormalEstimationMethod (n3d.AVERAGE_3D_GRADIENT);
       n3d.setInputCloud(out);
       n3d.setRadiusSearch(radius);
       n3d.setKSearch(0);
-      // n3d.setMaxDepthChangeFactor(0.02f);
-      // n3d.setNormalSmoothingSize(15.0f);
       {
         pcl::ScopeTime t("compute normals...");
         n3d.compute(*normals);

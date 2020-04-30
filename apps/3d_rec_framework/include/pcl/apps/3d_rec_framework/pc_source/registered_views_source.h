@@ -156,15 +156,10 @@ public:
         PersistenceUtils::readMatrixFromFile(pose_file.str(), pose);
 
         if (pose_files_order_ != 0) {
-          // std::cout << "Transpose..." << std::endl;
-
           Eigen::Matrix4f pose_trans = pose.transpose();
           poses_to_assemble_.push_back(pose_trans);
-          // pose = pose_trans;
-          // std::cout << pose << std::endl;
         }
 
-        // std::cout << "pose being push backed to model" << std::endl;
         std::cout << pose << std::endl;
 
         // the recognizer assumes transformation from M to CC
@@ -316,8 +311,6 @@ public:
       loadOrGenerate(training_dir, path_model, m);
 
       models_->push_back(m);
-
-      // std::cout << files[i] << std::endl;
     }
   }
 };
