@@ -196,9 +196,12 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransfo
   }
   // Set the initial solution
   Vector6d x = Vector6d::Zero ();
+  // translation part
   x[0] = transformation_matrix (0,3);
   x[1] = transformation_matrix (1,3);
   x[2] = transformation_matrix (2,3);
+  // rotation part (Z Y X euler angles convention)
+  // see: https://en.wikipedia.org/wiki/Rotation_matrix#General_rotations
   x[3] = std::atan2 (transformation_matrix (2,1), transformation_matrix (2,2));
   x[4] = asin (-transformation_matrix (2,0));
   x[5] = std::atan2 (transformation_matrix (1,0), transformation_matrix (0,0));
@@ -345,24 +348,19 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFunctorW
 template <typename PointSource, typename PointTarget> inline BFGSSpace::Status
 GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFunctorWithIndices::checkGradient(const Vector6d& g)
 {
-  auto linear_epsilon = gicp_->linear_gradient_tolerance_;
-  auto angular_epsilon = gicp_->angular_gradient_tolerance_;
+  auto translation_epsilon = gicp_->translation_gradient_tolerance_;
+  auto rotation_epsilon = gicp_->rotation_gradient_tolerance_;
 
-  if ((linear_epsilon < 0.) || (angular_epsilon < 0.))
+  if ((translation_epsilon < 0.) || (rotation_epsilon < 0.))
     return BFGSSpace::NegativeGradientEpsilon;
 
-  // express linear gradient as norm of translation parameters
-  auto linear_grad = g.head(3).norm();
+  // express translation gradient as norm of translation parameters
+  auto translation_grad = g.head<3>().norm();
 
-  // express angular gradient as a rotation around a given axis of a certain positive angle,
-  // we're literally only interested in the magnitude of the angular error.
-  // !!! CAUTION Stanford GICP uses the Z Y X euler angles convention
-  auto R = Eigen::Matrix3d{	Eigen::AngleAxisd(g[5], Eigen::Vector3d::UnitZ()) *
-							Eigen::AngleAxisd(g[4], Eigen::Vector3d::UnitY()) *
-							Eigen::AngleAxisd(g[3], Eigen::Vector3d::UnitX())};
-  auto angular_grad = std::acos(std::min(std::max(0.5 * (R.trace() - 1.), -1.), 1.));
+  // express rotation gradient as a norm of rotation parameters
+  auto rotation_grad = g.tail<3>().norm();
 
-  if ((linear_grad < linear_epsilon) && (angular_grad < angular_epsilon))
+  if ((translation_grad < translation_epsilon) && (rotation_grad < rotation_epsilon))
 	return BFGSSpace::Success;
 
   return BFGSSpace::Running;
@@ -495,7 +493,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
 template <typename PointSource, typename PointTarget> void
 GeneralizedIterativeClosestPoint<PointSource, PointTarget>::applyState(Eigen::Matrix4f &t, const Vector6d& x) const
 {
-  // !!! CAUTION Stanford GICP uses the Z Y X euler angles convention
+  // Z Y X euler angles convention
   Eigen::Matrix3f R;
   R = Eigen::AngleAxisf (static_cast<float> (x[5]), Eigen::Vector3f::UnitZ ())
     * Eigen::AngleAxisf (static_cast<float> (x[4]), Eigen::Vector3f::UnitY ())

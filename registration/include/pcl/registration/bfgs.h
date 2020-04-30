@@ -97,7 +97,7 @@ struct BFGSDummyFunctor
   virtual double operator() (const VectorType &x) = 0;
   virtual void  df(const VectorType &x, VectorType &df) = 0;
   virtual void fdf(const VectorType &x, Scalar &f, VectorType &df) = 0;
-  virtual BFGSSpace::Status checkGradient(const VectorType& g) = 0;
+  virtual BFGSSpace::Status checkGradient(const VectorType& g) { return BFGSSpace::NotStarted; };
 };
 
 /**

@@ -109,8 +109,8 @@ namespace pcl
         , rotation_epsilon_(2e-3)
         , mahalanobis_(0)
         , max_inner_iterations_(20)
-		,linear_gradient_tolerance_(1e-2) // 1cm
-		,angular_gradient_tolerance_(1e-2) // ~0.6deg 
+        ,translation_gradient_tolerance_(1e-2)
+        ,rotation_gradient_tolerance_(1e-2) 
       {
         min_number_correspondences_ = 4;
         reg_name_ = "GeneralizedIterativeClosestPoint";
@@ -252,27 +252,27 @@ namespace pcl
       int
       getMaximumOptimizerIterations () const { return max_inner_iterations_; }
 
-	  /** \brief Set the minimal linear gradient threshold for early optimization stop
-        * \param[in] linear gradient threshold in meters
+	  /** \brief Set the minimal translation gradient threshold for early optimization stop
+        * \param[in] translation gradient threshold in meters
         */
       void
-      setLinearGradientTolerance (double tolerance) { linear_gradient_tolerance_ = tolerance; }
+      setTranslationGradientTolerance (double tolerance) { translation_gradient_tolerance_ = tolerance; }
 
-      /** \brief Return the minimal linear gradient threshold for early optimization stop
+      /** \brief Return the minimal translation gradient threshold for early optimization stop
 	  */
       double
-      getLinearGradientTolerance () const { return linear_gradient_tolerance_; }
+      getTranslationGradientTolerance () const { return translation_gradient_tolerance_; }
 
-	  /** \brief Set the minimal angular gradient threshold for early optimization stop
-        * \param[in] linear gradient threshold in radians
+	  /** \brief Set the minimal rotation gradient threshold for early optimization stop
+        * \param[in] rotation gradient threshold in radians
         */
       void
-      setAngularGradientTolerance (double tolerance) { angular_gradient_tolerance_ = tolerance; }
+      setRotationGradientTolerance (double tolerance) { rotation_gradient_tolerance_ = tolerance; }
 
-      /** \brief Return the minimal angular gradient threshold for early optimization stop
+      /** \brief Return the minimal rotation gradient threshold for early optimization stop
 	  */
       double
-      getAngularGradientTolerance () const { return angular_gradient_tolerance_; }
+      getRotationGradientTolerance () const { return rotation_gradient_tolerance_; }
 
     protected:
 
@@ -320,11 +320,11 @@ namespace pcl
       /** \brief maximum number of optimizations */
       int max_inner_iterations_;
 
-	  /** \brief minimal linear gradient for early optimization stop */
-	  double linear_gradient_tolerance_;
+	  /** \brief minimal translation gradient for early optimization stop */
+	  double translation_gradient_tolerance_;
 
-	  /** \brief minimal angular gradient for early optimization stop */
-	  double angular_gradient_tolerance_;
+	  /** \brief minimal rotation gradient for early optimization stop */
+	  double rotation_gradient_tolerance_;
 
       /** \brief compute points covariances matrices according to the K nearest
         * neighbors. K is set via setCorrespondenceRandomness() method.
@@ -382,10 +382,10 @@ namespace pcl
       {
         OptimizationFunctorWithIndices (const GeneralizedIterativeClosestPoint* gicp)
           : BFGSDummyFunctor<double,6> (), gicp_(gicp) {}
-        inline double operator() (const Vector6d& x) override;
-        inline void  df(const Vector6d &x, Vector6d &df) override;
-        inline void fdf(const Vector6d &x, double &f, Vector6d &df) override;
-		inline BFGSSpace::Status checkGradient(const Vector6d& g) override;
+        double operator() (const Vector6d& x) override;
+        void  df(const Vector6d &x, Vector6d &df) override;
+        void fdf(const Vector6d &x, double &f, Vector6d &df) override;
+        BFGSSpace::Status checkGradient(const Vector6d& g) override;
 
         const GeneralizedIterativeClosestPoint *gicp_;
       };
