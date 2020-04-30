@@ -101,13 +101,13 @@ the program will display only the indices of the original PointCloud which satis
    :align: center
    :height: 400px
 
-Again hit 'r' to scale and center the view and then click and drag with the mouse to rotate around the cloud.  You can see there are no longer any points that do not lie with in the plane model in this PointCloud. Hit 'q' to exit the viewer and program.
+Again hit 'r' to scale and center the view and then click and drag with the mouse to rotate around the cloud.  You can see there are no longer any points that do not lie within the plane model in this PointCloud. Hit 'q' to exit the viewer and program.
 
 There is also an example using a sphere in this program.  If you run it with::
 
   $ ./random_sample_consensus -s
 
-It will generate and display a sphereical cloud and some outliers as well.
+It will generate and display a spherical cloud and some outliers as well.
 
 .. image:: images/ransac_outliers_sphere.png
    :align: center
