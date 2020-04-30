@@ -27,6 +27,7 @@ DAMAGE.
 */
 
 #include "poisson_exceptions.h"
+#include "binary_node.h"
 
 namespace pcl
 {
@@ -449,60 +450,10 @@ namespace pcl
       POISSON_THROW_EXCEPTION (pcl::poisson::PoissonBadArgumentException, "B-spline up-sampling not supported for degree " << Degree);
     }
     template<>
-    void BSplineElements< 1 >::upSample( BSplineElements< 1 >& high ) const
-    {
-      high.resize( size()*2 );
-      high.assign( high.size() , BSplineElementCoefficients<1>() );
-      for( int i=0 ; i<int(size()) ; i++ )
-      {
-        high[2*i+0][0] += 1 * (*this)[i][0];
-        high[2*i+0][1] += 0 * (*this)[i][0];
-        high[2*i+1][0] += 2 * (*this)[i][0];
-        high[2*i+1][1] += 1 * (*this)[i][0];
+    void BSplineElements< 1 >::upSample( BSplineElements< 1 >& high ) const;
 
-        high[2*i+0][0] += 1 * (*this)[i][1];
-        high[2*i+0][1] += 2 * (*this)[i][1];
-        high[2*i+1][0] += 0 * (*this)[i][1];
-        high[2*i+1][1] += 1 * (*this)[i][1];
-      }
-      high.denominator = denominator * 2;
-    }
     template<>
-    void BSplineElements< 2 >::upSample( BSplineElements< 2 >& high ) const
-    {
-      //    /----\
-      //   /      \
-      //  /        \  = 1  /--\       +3    /--\     +3      /--\   +1        /--\
-      // /          \     /    \           /    \           /    \           /    \
-      // |----------|     |----------|   |----------|   |----------|   |----------|
-
-      high.resize( size()*2 );
-      high.assign( high.size() , BSplineElementCoefficients<2>() );
-      for( int i=0 ; i<int(size()) ; i++ )
-      {
-        high[2*i+0][0] += 1 * (*this)[i][0];
-        high[2*i+0][1] += 0 * (*this)[i][0];
-        high[2*i+0][2] += 0 * (*this)[i][0];
-        high[2*i+1][0] += 3 * (*this)[i][0];
-        high[2*i+1][1] += 1 * (*this)[i][0];
-        high[2*i+1][2] += 0 * (*this)[i][0];
-
-        high[2*i+0][0] += 3 * (*this)[i][1];
-        high[2*i+0][1] += 3 * (*this)[i][1];
-        high[2*i+0][2] += 1 * (*this)[i][1];
-        high[2*i+1][0] += 1 * (*this)[i][1];
-        high[2*i+1][1] += 3 * (*this)[i][1];
-        high[2*i+1][2] += 3 * (*this)[i][1];
-
-        high[2*i+0][0] += 0 * (*this)[i][2];
-        high[2*i+0][1] += 1 * (*this)[i][2];
-        high[2*i+0][2] += 3 * (*this)[i][2];
-        high[2*i+1][0] += 0 * (*this)[i][2];
-        high[2*i+1][1] += 0 * (*this)[i][2];
-        high[2*i+1][2] += 1 * (*this)[i][2];
-      }
-      high.denominator = denominator * 4;
-    }
+    void BSplineElements< 2 >::upSample( BSplineElements< 2 >& high ) const;
 
     template< int Degree >
     void BSplineElements< Degree >::differentiate( BSplineElements< Degree-1 >& d ) const
