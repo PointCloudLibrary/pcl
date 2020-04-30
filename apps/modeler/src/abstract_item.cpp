@@ -35,22 +35,14 @@
  */
 
 #include <pcl/apps/modeler/abstract_item.h>
-
 #include <pcl/apps/modeler/main_window.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::AbstractItem::AbstractItem() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::AbstractItem::AbstractItem()
-{
-
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::AbstractItem::~AbstractItem()
-{
-
-}
+pcl::modeler::AbstractItem::~AbstractItem() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -59,8 +51,6 @@ pcl::modeler::AbstractItem::showContextMenu(const QPoint* position)
   QMenu menu(&MainWindow::getInstance());
   prepareContextMenu(&menu);
   menu.exec(*position);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +64,8 @@ pcl::modeler::AbstractItem::ui() const
 void
 pcl::modeler::AbstractItem::showPropertyEditor()
 {
-  ParameterDialog* parameter_dialog = new ParameterDialog(getItemName() + " Properties", &MainWindow::getInstance());
+  ParameterDialog* parameter_dialog =
+      new ParameterDialog(getItemName() + " Properties", &MainWindow::getInstance());
   prepareProperties(parameter_dialog);
 
   if (parameter_dialog->exec() == QDialog::Accepted)

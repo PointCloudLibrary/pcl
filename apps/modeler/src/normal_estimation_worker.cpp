@@ -34,26 +34,28 @@
  *
  */
 
-#include <pcl/apps/modeler/normal_estimation_worker.h>
-#include <pcl/apps/modeler/parameter_dialog.h>
-#include <pcl/apps/modeler/parameter.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
-#include <pcl/filters/filter_indices.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/filters/voxel_grid.h>
+#include <pcl/apps/modeler/normal_estimation_worker.h>
+#include <pcl/apps/modeler/parameter.h>
+#include <pcl/apps/modeler/parameter_dialog.h>
 #include <pcl/common/common.h>
+#include <pcl/features/normal_3d.h>
+#include <pcl/filters/filter_indices.h>
+#include <pcl/filters/voxel_grid.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::NormalEstimationWorker::NormalEstimationWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent) :
-  AbstractWorker(cloud_mesh_items, parent),
-  x_min_(std::numeric_limits<double>::max()), x_max_(std::numeric_limits<double>::min()),
-  y_min_(std::numeric_limits<double>::max()), y_max_(std::numeric_limits<double>::min()),
-  z_min_(std::numeric_limits<double>::max()), z_max_(std::numeric_limits<double>::min()),
-  search_radius_(nullptr)
-{
-
-}
+pcl::modeler::NormalEstimationWorker::NormalEstimationWorker(
+    const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent)
+: AbstractWorker(cloud_mesh_items, parent)
+, x_min_(std::numeric_limits<double>::max())
+, x_max_(std::numeric_limits<double>::min())
+, y_min_(std::numeric_limits<double>::max())
+, y_max_(std::numeric_limits<double>::min())
+, z_min_(std::numeric_limits<double>::max())
+, z_max_(std::numeric_limits<double>::min())
+, search_radius_(nullptr)
+{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::NormalEstimationWorker::~NormalEstimationWorker()
@@ -76,8 +78,6 @@ pcl::modeler::NormalEstimationWorker::initParameters(CloudMeshItem* cloud_mesh_i
 
   z_min_ = std::min(double(min_pt.z()), z_min_);
   z_max_ = std::max(double(max_pt.z()), z_max_);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,15 +89,17 @@ pcl::modeler::NormalEstimationWorker::setupParameters()
   double z_range = z_max_ - z_min_;
 
   double range_max = std::max(x_range, std::max(y_range, z_range));
-  double radius = range_max/100;
-  double step = range_max/1000;
+  double radius = range_max / 100;
+  double step = range_max / 1000;
 
-  search_radius_ = new DoubleParameter("Search Radius",
-    "The sphere radius that is to be used for determining the nearest neighbors", radius, 0, x_max_-x_min_, step);
+  // clang-format off
+  search_radius_ = new DoubleParameter(
+      "Search Radius",
+      "The sphere radius that is to be used for determining the nearest neighbors",
+      radius, 0, x_max_ - x_min_, step);
+  // clang-format on
 
   parameter_dialog_->addParameter(search_radius_);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,23 +117,22 @@ pcl::modeler::NormalEstimationWorker::processImpl(CloudMeshItem* cloud_mesh_item
   normal_estimator.setIndices(indices);
 
   // Create an empty kdtree representation, and pass it to the normal estimation object.
-  // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
-  pcl::search::KdTree<pcl::PointSurfel>::Ptr tree (new pcl::search::KdTree<pcl::PointSurfel> ());
-  normal_estimator.setSearchMethod (tree);
+  // Its content will be filled inside the object, based on the given input dataset (as
+  // no other search surface is given).
+  pcl::search::KdTree<pcl::PointSurfel>::Ptr tree(
+      new pcl::search::KdTree<pcl::PointSurfel>());
+  normal_estimator.setSearchMethod(tree);
 
   // Use all neighbors in a sphere of the search radius
-  normal_estimator.setRadiusSearch (*search_radius_);
+  normal_estimator.setRadiusSearch(*search_radius_);
 
   pcl::PointCloud<pcl::PointNormal> normals;
   normal_estimator.compute(normals);
 
-  for (std::size_t i = 0, i_end = indices->size(); i < i_end; ++ i)
-  {
+  for (std::size_t i = 0, i_end = indices->size(); i < i_end; ++i) {
     std::size_t dest = (*indices)[i];
     cloud->points[dest].normal_x = normals.points[i].normal_x;
     cloud->points[dest].normal_y = normals.points[i].normal_y;
     cloud->points[dest].normal_z = normals.points[i].normal_z;
   }
-
-  return;
 }
