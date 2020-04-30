@@ -251,7 +251,7 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
       bool hasLf, hasRt; int xb0, yb0;
       if( x==0 ) { init=(0+.5f)*sInv-0.5f; xb=init; }
       hasLf = xb>=0; xb0 = hasLf?(int)xb:-1; hasRt = xb0 < wb-1;
-      xd=xb-xb0; xb+=sInv; yb=init; y=0;
+      xd=xb-xb0; xb+=sInv; yb=init; int y=0;
       // lambda for code conciseness
       const auto GHinit = [&]()
       {
