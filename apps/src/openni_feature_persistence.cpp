@@ -35,218 +35,224 @@
  *
  */
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include <pcl/common/time.h>
+#include <pcl/console/parse.h>
+#include <pcl/features/fpfh_omp.h>
+#include <pcl/features/multiscale_feature_persistence.h>
+#include <pcl/features/normal_3d_omp.h>
+#include <pcl/filters/extract_indices.h>
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/io/openni_camera/openni_driver.h>
-#include <pcl/console/parse.h>
-#include <pcl/common/time.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <pcl/features/multiscale_feature_persistence.h>
-#include <pcl/features/fpfh_omp.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/filters/extract_indices.h>
-#include <pcl/features/normal_3d_omp.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
 #include <mutex>
 #include <thread>
 
 using namespace std::chrono_literals;
 
-#define FPS_CALC(_WHAT_) \
-do \
-{ \
-    static unsigned count = 0;\
-    static double last = pcl::getTime ();\
-    double now = pcl::getTime (); \
-    ++count; \
-    if (now - last >= 1.0) \
-    { \
-      std::cout << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
-      count = 0; \
-      last = now; \
-    } \
-}while(false)
+// clang-format off
+#define FPS_CALC(_WHAT_)                                                               \
+  do {                                                                                 \
+    static unsigned count = 0;                                                         \
+    static double last = pcl::getTime();                                               \
+    double now = pcl::getTime();                                                       \
+    ++count;                                                                           \
+    if (now - last >= 1.0) {                                                           \
+      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
+                << double(count) / double(now - last) << " Hz" << std::endl;           \
+      count = 0;                                                                       \
+      last = now;                                                                      \
+    }                                                                                  \
+  } while (false)
+// clang-format on
 
 const float default_subsampling_leaf_size = 0.02f;
 const float default_normal_search_radius = 0.041f;
-const double aux [] = {0.21, 0.32};
-const std::vector<double> default_scales_vector (aux, aux + 2);
+const double aux[] = {0.21, 0.32};
+const std::vector<double> default_scales_vector(aux, aux + 2);
 const float default_alpha = 1.2f;
 
 template <typename PointType>
-class OpenNIFeaturePersistence
-{
-  public:
-    using Cloud = pcl::PointCloud<PointType>;
-    using CloudPtr = typename Cloud::Ptr;
-    using CloudConstPtr = typename Cloud::ConstPtr;
+class OpenNIFeaturePersistence {
+public:
+  using Cloud = pcl::PointCloud<PointType>;
+  using CloudPtr = typename Cloud::Ptr;
+  using CloudConstPtr = typename Cloud::ConstPtr;
 
-    OpenNIFeaturePersistence (float &subsampling_leaf_size,
-                              double &normal_search_radius,
-                              std::vector<float> &scales_vector,
-                              float &alpha,
-                              const std::string& device_id = "")
-      : viewer ("PCL OpenNI Feature Persistence Viewer")
-    , device_id_(device_id)
-    {
-      std::cout << "Launching with parameters:\n"
-                << "    octree_leaf_size = " << subsampling_leaf_size << "\n"
-                << "    normal_search_radius = " << normal_search_radius << "\n"
-                << "    persistence_alpha = " << alpha << "\n"
-                << "    scales = "; for (const float scale : scales_vector) std::cout << scale << " ";
-      std::cout << "\n";
+  OpenNIFeaturePersistence(float& subsampling_leaf_size,
+                           double& normal_search_radius,
+                           std::vector<float>& scales_vector,
+                           float& alpha,
+                           const std::string& device_id = "")
+  : viewer("PCL OpenNI Feature Persistence Viewer"), device_id_(device_id)
+  {
+    std::cout << "Launching with parameters:\n"
+              << "    octree_leaf_size = " << subsampling_leaf_size << "\n"
+              << "    normal_search_radius = " << normal_search_radius << "\n"
+              << "    persistence_alpha = " << alpha << "\n"
+              << "    scales = ";
+    for (const float scale : scales_vector)
+      std::cout << scale << " ";
+    std::cout << "\n";
 
-      subsampling_filter_.setLeafSize (subsampling_leaf_size, subsampling_leaf_size, subsampling_leaf_size);
-      typename pcl::search::KdTree<PointType>::Ptr normal_search_tree (new typename pcl::search::KdTree<PointType>);
-      normal_estimation_filter_.setSearchMethod (normal_search_tree);
-      normal_estimation_filter_.setRadiusSearch (normal_search_radius);
+    subsampling_filter_.setLeafSize(
+        subsampling_leaf_size, subsampling_leaf_size, subsampling_leaf_size);
+    typename pcl::search::KdTree<PointType>::Ptr normal_search_tree(
+        new typename pcl::search::KdTree<PointType>);
+    normal_estimation_filter_.setSearchMethod(normal_search_tree);
+    normal_estimation_filter_.setRadiusSearch(normal_search_radius);
 
-      feature_persistence_.setScalesVector (scales_vector);
-      feature_persistence_.setAlpha (alpha);
+    feature_persistence_.setScalesVector(scales_vector);
+    feature_persistence_.setAlpha(alpha);
 
-      fpfh_estimation_.reset (new typename pcl::FPFHEstimationOMP<PointType, pcl::Normal, pcl::FPFHSignature33> ());
-      typename pcl::search::KdTree<PointType>::Ptr fpfh_tree (new typename pcl::search::KdTree<PointType> ());
-      fpfh_estimation_->setSearchMethod (fpfh_tree);
-      feature_persistence_.setFeatureEstimator (fpfh_estimation_);
-      feature_persistence_.setDistanceMetric (pcl::CS);
+    fpfh_estimation_.reset(new typename pcl::FPFHEstimationOMP<PointType,
+                                                               pcl::Normal,
+                                                               pcl::FPFHSignature33>());
+    typename pcl::search::KdTree<PointType>::Ptr fpfh_tree(
+        new typename pcl::search::KdTree<PointType>());
+    fpfh_estimation_->setSearchMethod(fpfh_tree);
+    feature_persistence_.setFeatureEstimator(fpfh_estimation_);
+    feature_persistence_.setDistanceMetric(pcl::CS);
 
+    new_cloud_ = false;
+  }
+
+  void
+  cloud_cb(const CloudConstPtr& cloud)
+  {
+    std::lock_guard<std::mutex> lock(mtx_);
+    // lock while we set our cloud;
+    FPS_CALC("computation");
+
+    // Create temporary clouds
+    cloud_subsampled_.reset(new typename pcl::PointCloud<PointType>());
+    normals_.reset(new pcl::PointCloud<pcl::Normal>());
+    features_.reset(new pcl::PointCloud<pcl::FPFHSignature33>());
+    feature_indices_.reset(new std::vector<int>());
+    feature_locations_.reset(new typename pcl::PointCloud<PointType>());
+
+    // Subsample input cloud
+    subsampling_filter_.setInputCloud(cloud);
+    subsampling_filter_.filter(*cloud_subsampled_);
+
+    // Estimate normals
+    normal_estimation_filter_.setInputCloud(cloud_subsampled_);
+    normal_estimation_filter_.compute(*normals_);
+
+    // Compute persistent features
+    fpfh_estimation_->setInputCloud(cloud_subsampled_);
+    fpfh_estimation_->setInputNormals(normals_);
+    feature_persistence_.determinePersistentFeatures(*features_, feature_indices_);
+
+    // Extract feature locations by using indices
+    extract_indices_filter_.setInputCloud(cloud_subsampled_);
+    extract_indices_filter_.setIndices(feature_indices_);
+    extract_indices_filter_.filter(*feature_locations_);
+
+    PCL_INFO("Persistent feature locations %d\n", feature_locations_->points.size());
+
+    cloud_ = cloud;
+
+    new_cloud_ = true;
+  }
+
+  void
+  viz_cb(pcl::visualization::PCLVisualizer& viz)
+  {
+    std::lock_guard<std::mutex> lock(mtx_);
+    if (!cloud_) {
+      std::this_thread::sleep_for(1s);
+      return;
+    }
+
+    CloudConstPtr temp_cloud;
+    temp_cloud.swap(cloud_); // here we set cloud_ to null, so that
+
+    // Render the data
+    if (new_cloud_ && feature_locations_) {
+      viz.removePointCloud("featurecloud");
+      viz.removePointCloud("OpenNICloud");
+      colors_.reset(
+          new typename pcl::visualization::PointCloudColorHandlerCustom<PointType>(
+              feature_locations_, 255.0, 0.0, 0.0));
+      viz.addPointCloud(feature_locations_, *colors_, "featurecloud");
+      viz.addPointCloud(temp_cloud, "OpenNICloud");
       new_cloud_ = false;
     }
+  }
 
+  void
+  run()
+  {
+    pcl::OpenNIGrabber interface{device_id_};
 
-    void
-    cloud_cb (const CloudConstPtr& cloud)
-    {
-      std::lock_guard<std::mutex> lock (mtx_);
-      //lock while we set our cloud;
-      FPS_CALC ("computation");
+    std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
+      cloud_cb(cloud);
+    };
+    boost::signals2::connection c = interface.registerCallback(f);
 
-      // Create temporary clouds
-      cloud_subsampled_.reset (new typename pcl::PointCloud<PointType> ());
-      normals_.reset (new pcl::PointCloud<pcl::Normal> ());
-      features_.reset (new pcl::PointCloud<pcl::FPFHSignature33> ());
-      feature_indices_.reset (new std::vector<int> ());
-      feature_locations_.reset (new typename pcl::PointCloud<PointType> ());
+    viewer.runOnVisualizationThread(
+        [this](pcl::visualization::PCLVisualizer& viz) { viz_cb(viz); }, "viz_cb");
 
-      // Subsample input cloud
-      subsampling_filter_.setInputCloud (cloud);
-      subsampling_filter_.filter (*cloud_subsampled_);
+    interface.start();
 
-      // Estimate normals
-      normal_estimation_filter_.setInputCloud (cloud_subsampled_);
-      normal_estimation_filter_.compute (*normals_);
-
-      // Compute persistent features
-      fpfh_estimation_->setInputCloud (cloud_subsampled_);
-      fpfh_estimation_->setInputNormals (normals_);
-      feature_persistence_.determinePersistentFeatures (*features_, feature_indices_);
-
-      // Extract feature locations by using indices
-      extract_indices_filter_.setInputCloud (cloud_subsampled_);
-      extract_indices_filter_.setIndices (feature_indices_);
-      extract_indices_filter_.filter (*feature_locations_);
-
-      PCL_INFO ("Persistent feature locations %d\n", feature_locations_->points.size ());
-
-      cloud_ = cloud;
-
-      new_cloud_ = true;
+    while (!viewer.wasStopped()) {
+      std::this_thread::sleep_for(1s);
     }
 
-    void
-    viz_cb (pcl::visualization::PCLVisualizer& viz)
-    {
-      std::lock_guard<std::mutex> lock (mtx_);
-      if (!cloud_)
-      {
-        std::this_thread::sleep_for(1s);
-        return;
-      }
+    interface.stop();
+  }
 
-      CloudConstPtr temp_cloud;
-      temp_cloud.swap (cloud_); //here we set cloud_ to null, so that
+  pcl::VoxelGrid<PointType> subsampling_filter_;
+  pcl::NormalEstimationOMP<PointType, pcl::Normal> normal_estimation_filter_;
+  typename pcl::FPFHEstimationOMP<PointType, pcl::Normal, pcl::FPFHSignature33>::Ptr
+      fpfh_estimation_;
+  pcl::MultiscaleFeaturePersistence<PointType, pcl::FPFHSignature33>
+      feature_persistence_;
+  pcl::ExtractIndices<PointType> extract_indices_filter_;
 
-//      if (!viz.updatePointCloud (temp_cloud, "OpenNICloud"))
-//      {
-//        viz.addPointCloud (temp_cloud, "OpenNICloud");
-//        viz.resetCameraViewpoint ("OpenNICloud");
-//      }
-      // Render the data
-      if (new_cloud_ && feature_locations_)
-      {
-        viz.removePointCloud ("featurecloud");
-        viz.removePointCloud ("OpenNICloud");
-        colors_.reset (new typename pcl::visualization::PointCloudColorHandlerCustom<PointType> (feature_locations_, 255.0, 0.0, 0.0));
-        viz.addPointCloud (feature_locations_, *colors_, "featurecloud");
-        viz.addPointCloud (temp_cloud, "OpenNICloud");
-        new_cloud_ = false;
-      }
-    }
-
-    void
-    run ()
-    {
-      pcl::OpenNIGrabber interface {device_id_};
-
-      std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) { cloud_cb (cloud); };
-      boost::signals2::connection c = interface.registerCallback (f);
-
-      viewer.runOnVisualizationThread ([this] (pcl::visualization::PCLVisualizer& viz) { viz_cb (viz); }, "viz_cb");
-
-      interface.start ();
-
-      while (!viewer.wasStopped ())
-      {
-        std::this_thread::sleep_for(1s);
-      }
-
-      interface.stop ();
-    }
-
-
-    pcl::VoxelGrid<PointType> subsampling_filter_;
-    pcl::NormalEstimationOMP<PointType, pcl::Normal> normal_estimation_filter_;
-    typename pcl::FPFHEstimationOMP<PointType, pcl::Normal, pcl::FPFHSignature33>::Ptr fpfh_estimation_;
-    pcl::MultiscaleFeaturePersistence<PointType, pcl::FPFHSignature33> feature_persistence_;
-    pcl::ExtractIndices<PointType> extract_indices_filter_;
-
-    pcl::visualization::CloudViewer viewer;
-    std::string device_id_;
-    std::mutex mtx_;
-    // Data
-    CloudPtr feature_locations_, cloud_subsampled_;
-    pcl::PointCloud<pcl::Normal>::Ptr normals_;
-    pcl::PointCloud<pcl::FPFHSignature33>::Ptr features_;
-    typename pcl::visualization::PointCloudColorHandlerCustom<PointType>::Ptr colors_;
-    pcl::IndicesPtr feature_indices_;
-    CloudConstPtr cloud_;
-    bool new_cloud_;
+  pcl::visualization::CloudViewer viewer;
+  std::string device_id_;
+  std::mutex mtx_;
+  // Data
+  CloudPtr feature_locations_, cloud_subsampled_;
+  pcl::PointCloud<pcl::Normal>::Ptr normals_;
+  pcl::PointCloud<pcl::FPFHSignature33>::Ptr features_;
+  typename pcl::visualization::PointCloudColorHandlerCustom<PointType>::Ptr colors_;
+  pcl::IndicesPtr feature_indices_;
+  CloudConstPtr cloud_;
+  bool new_cloud_;
 };
 
 void
-usage (char ** argv)
+usage(char** argv)
 {
+  // clang-format off
   std::cout << "usage: " << argv[0] << " <device_id> <options>\n\n"
             << "where options are:\n"
             << "         -octree_leaf_size X = size of the leaf for the octree-based subsampling filter (default: " << default_subsampling_leaf_size << "\n"
             << "         -normal_search_radius X = size of the neighborhood to consider for calculating the local plane and extracting the normals (default: " << default_normal_search_radius << "\n"
             << "         -persistence_alpha X = value of alpha for the multiscale feature persistence (default: " << default_alpha << "\n"
             << "         -scales X1 X2 ... = values for the multiple scales for extracting features (default: ";
-  for (const double &i : default_scales_vector) std::cout << i << " ";
+  // clang-format on
+  for (const double& i : default_scales_vector)
+    std::cout << i << " ";
   std::cout << "\n\n";
 
-  openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
-  if (driver.getNumberDevices () > 0)
-  {
-    for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices (); ++deviceIdx)
-    {
+  openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
+  if (driver.getNumberDevices() > 0) {
+    for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices(); ++deviceIdx) {
+      // clang-format off
       std::cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
               << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << std::endl;
       std::cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << std::endl
            << "                 bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << std::endl
            << "                 <serial-number> (only in Linux and for devices which provide serial numbers)"  << std::endl;
+      // clang-format on
     }
   }
   else
@@ -254,53 +260,45 @@ usage (char ** argv)
 }
 
 int
-main (int argc, char **argv)
+main(int argc, char** argv)
 {
-  std::cout << "OpenNIFeaturePersistence - show persistent features based on the MultiscaleFeaturePersistence class using the FPFH features\n"
+  std::cout << "OpenNIFeaturePersistence - show persistent features based on the "
+               "MultiscaleFeaturePersistence class using the FPFH features\n"
             << "Use \"-h\" to get more info about the available options.\n";
 
-  if (pcl::console::find_argument (argc, argv, "-h") == -1)
-  {
-    usage (argv);
+  if (pcl::console::find_argument(argc, argv, "-h") == -1) {
+    usage(argv);
     return 1;
   }
 
   // Parse arguments
   float subsampling_leaf_size = default_subsampling_leaf_size;
-  pcl::console::parse_argument (argc, argv, "-octree_leaf_size", subsampling_leaf_size);
+  pcl::console::parse_argument(argc, argv, "-octree_leaf_size", subsampling_leaf_size);
   double normal_search_radius = default_normal_search_radius;
-  pcl::console::parse_argument (argc, argv, "-normal_search_radius", normal_search_radius);
+  pcl::console::parse_argument(
+      argc, argv, "-normal_search_radius", normal_search_radius);
   std::vector<double> scales_vector_double = default_scales_vector;
-  pcl::console::parse_multiple_arguments (argc, argv, "-scales", scales_vector_double);
-  std::vector<float> scales_vector (scales_vector_double.size ());
-  for (std::size_t i = 0; i < scales_vector_double.size (); ++i) scales_vector[i] = float (scales_vector_double[i]);
+  pcl::console::parse_multiple_arguments(argc, argv, "-scales", scales_vector_double);
+  std::vector<float> scales_vector(scales_vector_double.size());
+  for (std::size_t i = 0; i < scales_vector_double.size(); ++i)
+    scales_vector[i] = float(scales_vector_double[i]);
 
   float alpha = default_alpha;
-  pcl::console::parse_argument (argc, argv, "-persistence_alpha", alpha);
+  pcl::console::parse_argument(argc, argv, "-persistence_alpha", alpha);
 
-
-  pcl::OpenNIGrabber grabber ("");
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
-  {
-    PCL_INFO ("PointXYZRGBA mode enabled.\n");
-    OpenNIFeaturePersistence<pcl::PointXYZRGBA> v (subsampling_leaf_size,
-                                                   normal_search_radius,
-                                                   scales_vector,
-                                                   alpha,
-                                                   "");
-    v.run ();
+  pcl::OpenNIGrabber grabber("");
+  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
+    PCL_INFO("PointXYZRGBA mode enabled.\n");
+    OpenNIFeaturePersistence<pcl::PointXYZRGBA> v(
+        subsampling_leaf_size, normal_search_radius, scales_vector, alpha, "");
+    v.run();
   }
-  else
-  {
-    PCL_INFO ("PointXYZ mode enabled.\n");
-    OpenNIFeaturePersistence<pcl::PointXYZ> v (subsampling_leaf_size,
-                                               normal_search_radius,
-                                               scales_vector,
-                                               alpha,
-                                               "");
-    v.run ();
+  else {
+    PCL_INFO("PointXYZ mode enabled.\n");
+    OpenNIFeaturePersistence<pcl::PointXYZ> v(
+        subsampling_leaf_size, normal_search_radius, scales_vector, alpha, "");
+    v.run();
   }
 
-  return (0);
+  return 0;
 }
-
