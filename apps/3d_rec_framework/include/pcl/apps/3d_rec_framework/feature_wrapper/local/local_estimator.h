@@ -373,8 +373,7 @@ protected:
 
   std::shared_ptr<PreProcessorAndNormalEstimator<PointInT, pcl::Normal>>
       normal_estimator_;
-  std::vector<std::shared_ptr<KeypointExtractor<PointInT>>>
-      keypoint_extractor_;
+  std::vector<std::shared_ptr<KeypointExtractor<PointInT>>> keypoint_extractor_;
   float support_radius_;
 
   bool adaptative_MLS_;
