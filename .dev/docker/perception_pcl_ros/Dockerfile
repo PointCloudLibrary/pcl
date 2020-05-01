@@ -1,11 +1,17 @@
+# flavor appears twice, once for the FOR, once for the contents since
+# Dockerfile seems to reset arguments after a FOR appears
 ARG flavor="melodic"
+FROM ros:${flavor}-ros-core
 
+ARG flavor="melodic"
 ARG workspace="/root/catkin_ws"
 
-FROM ros:${flavor}-ros-core
 COPY ${flavor}_rosinstall.yaml ${workspace}/src/.rosinstall
 
-# Be careful, ROS uses Python2
+# Be careful:
+# * ROS uses Python2
+# * source ROS setup file in evey RUN snippet
+#
 # The dependencies of PCL can be reduced since
 # * we don't need to build visualization or docs
 RUN sed -i "s/^# deb-src/deb-src/" /etc/apt/sources.list \
