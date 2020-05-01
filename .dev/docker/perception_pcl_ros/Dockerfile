@@ -18,7 +18,7 @@ RUN sed -i "s/^# deb-src/deb-src/" /etc/apt/sources.list \
  && pip install -U pip \
  && pip install catkin_tools \
  && cd ${workspace}/src \
- && source "/opt/ros/${flavor}/setup.sh" \
+ && . "/opt/ros/${flavor}/setup.sh" \
  && catkin_init_workspace \
  && cd .. \
  && wstool update -t src
