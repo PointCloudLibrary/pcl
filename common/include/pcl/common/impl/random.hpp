@@ -90,61 +90,48 @@ UniformGenerator<T>::setParameters (const Parameters& parameters)
   setSeed(parameters.seed);
 }
 
-
 template <typename T>
-NormalGenerator<T>::NormalGenerator(T mean, T sigma, std::uint32_t seed)
-  : distribution_ (mean, sigma)
-{
-  parameters_ = Parameters (mean, sigma, seed);
-  if(parameters_.seed != static_cast<std::uint32_t> (-1))
-    rng_.seed (seed);
-}
-
+NormalGenerator<T>::NormalGenerator(T mean, T sigma, SeedT seed)
+: NormalGenerator(Parameters(mean, sigma, seed))
+{}
 
 template <typename T>
 NormalGenerator<T>::NormalGenerator(const Parameters& parameters)
-  : parameters_ (parameters)
-  , distribution_ (parameters_.mean, parameters_.sigma)
+: RandomBase<std::mt19937>(parameters.seed)
+, parameters_(parameters)
+, distribution_(parameters_.mean, parameters_.sigma)
 {
-  if(parameters_.seed != static_cast<std::uint32_t> (-1))
-    rng_.seed (parameters_.seed);
+  if (parameters_.seed == static_cast<std::uint32_t>(-1))
+    rng_.seed(std::mt19937::default_seed);
 }
 
-
-template <typename T> void
-NormalGenerator<T>::setSeed (std::uint32_t seed)
+template <typename T>
+void
+NormalGenerator<T>::setSeed(SeedT seed)
 {
-  if (seed != static_cast<std::uint32_t> (-1))
-  {
-    parameters_.seed = seed;
-    rng_.seed(seed);
-  }
-}
+  if (seed == static_cast<SeedT>(-1))
+    return;
 
-
-template <typename T> void
-NormalGenerator<T>::setParameters (T mean, T sigma, std::uint32_t seed)
-{
-  parameters_.mean = mean;
-  parameters_.sigma = sigma;
   parameters_.seed = seed;
-  typename DistributionType::param_type params (parameters_.mean, parameters_.sigma);
-  distribution_.param (params);
-  distribution_.reset ();
-  if (seed != static_cast<std::uint32_t> (-1))
-    rng_.seed (parameters_.seed);
+  RandomBase<std::mt19937>::setSeed(seed);
 }
 
+template <typename T>
+void
+NormalGenerator<T>::setParameters(T mean, T sigma, std::uint32_t seed)
+{
+  setParameters(Parameters(mean, sigma, seed));
+}
 
-template <typename T> void
-NormalGenerator<T>::setParameters (const Parameters& parameters)
+template <typename T>
+void
+NormalGenerator<T>::setParameters(const Parameters& parameters)
 {
   parameters_ = parameters;
-  typename DistributionType::param_type params (parameters_.mean, parameters_.sigma);
-  distribution_.param (params);
-  distribution_.reset ();
-  if (parameters_.seed != static_cast<std::uint32_t> (-1))
-    rng_.seed (parameters_.seed);
+  typename DistributionType::param_type params(parameters_.mean, parameters_.sigma);
+  distribution_.param(params);
+  distribution_.reset();
+  setSeed(parameters.seed);
 }
 
 } // namespace common

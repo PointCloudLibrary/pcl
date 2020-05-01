@@ -177,7 +177,7 @@ namespace pcl
       * \author Nizar Sallem
       */
     template<typename T>
-    class NormalGenerator 
+    class NormalGenerator : public RandomBase<std::mt19937>
     {
       public:
         struct Parameters
@@ -198,7 +198,7 @@ namespace pcl
           * \param[in] sigma normal variation
           * \param[in] seed seeding value
           */
-        NormalGenerator(T mean = 0, T sigma = 1, std::uint32_t seed = -1);
+        NormalGenerator(T mean = 0, T sigma = 1, SeedT seed = -1);
 
         /** Constructor
           * \param parameters normal distribution parameters and seed
@@ -208,15 +208,15 @@ namespace pcl
         /** Change seed value
           * \param[in] seed new seed value
           */
-        void 
-        setSeed (std::uint32_t seed);
+        void
+        setSeed (SeedT seed);
 
         /** Set the normal number generator parameters
           * \param[in] mean mean of the normal distribution
           * \param[in] sigma standard variation of the normal distribution
           * \param[in] seed random number generator seed (applied if != -1)
           */
-        void 
+        void
         setParameters (T mean, T sigma, std::uint32_t seed = -1);
 
         /** Set generator parameters
@@ -227,17 +227,15 @@ namespace pcl
 
         /// \return normal distribution parameters and generator seed
         const Parameters&
-        getParameters () { return (parameters_); }
+        getParameters () const { return (parameters_); }
 
         /// \return a randomly generated number in the normal distribution (mean, sigma)
-        inline T 
+        inline T
         run () { return (distribution_ (rng_)); }
 
         using DistributionType = typename normal_distribution<T>::type;
         /// parameters
         Parameters parameters_;
-        /// random number generator
-        std::mt19937 rng_;
         /// normal distribution
         DistributionType distribution_;
     };
