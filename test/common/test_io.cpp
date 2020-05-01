@@ -131,8 +131,10 @@ TEST (PCL, copyPointCloud)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Ignore unknown pragma warning on MSVC (4996)
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4068)
+#endif
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #pragma GCC diagnostic push
 TEST (PCL, concatenatePointCloud)
@@ -320,7 +322,9 @@ TEST (PCL, concatenatePointCloud)
   }
 }
 #pragma GCC diagnostic pop
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, concatenatePointCloud2)
