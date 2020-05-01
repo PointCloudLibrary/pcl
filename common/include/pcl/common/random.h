@@ -101,13 +101,13 @@ namespace pcl
     };
 
     /** \brief UniformGenerator class generates a random number from range [min, max] at each run picked
-      * according to a uniform distribution i.e eaach number within [min, max] has almost the same 
+      * according to a uniform distribution i.e eaach number within [min, max] has almost the same
       * probability of being drawn.
       *
       * \author Nizar Sallem
       */
     template<typename T>
-    class UniformGenerator 
+    class UniformGenerator : public RandomBase<std::mt19937>
     {
       public:
         struct Parameters
@@ -128,7 +128,7 @@ namespace pcl
           * \param max: included higher bound
           * \param seed: seeding value
           */
-        UniformGenerator(T min = 0, T max = 1, std::uint32_t seed = -1);
+        UniformGenerator(T min = 0, T max = 1, SeedT seed = -1);
 
         /** Constructor
           * \param parameters uniform distribution parameters and generator seed
@@ -138,15 +138,15 @@ namespace pcl
         /** Change seed value
           * \param[in] seed new generator seed value
           */
-        void 
-        setSeed (std::uint32_t seed);
+        void
+        setSeed (SeedT seed);
 
         /** Set the uniform number generator parameters
           * \param[in] min minimum allowed value
           * \param[in] max maximum allowed value
           * \param[in] seed random number generator seed (applied if != -1)
           */
-        void 
+        void
         setParameters (T min, T max, std::uint32_t seed = -1);
 
         /** Set generator parameters
@@ -160,15 +160,13 @@ namespace pcl
         getParameters () { return (parameters_); }
 
         /// \return a randomly generated number in the interval [min, max]
-        inline T 
+        inline T
         run () { return (distribution_ (rng_)); }
 
       private:
         using DistributionType = typename uniform_distribution<T>::type;
         /// parameters
         Parameters parameters_;
-        /// random number generator
-        std::mt19937 rng_;
         /// uniform distribution
         DistributionType distribution_;
     };

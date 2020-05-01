@@ -47,52 +47,36 @@ namespace pcl
 namespace common
 {
 
-
 template <typename T>
-UniformGenerator<T>::UniformGenerator(T min, T max, std::uint32_t seed)
-  : distribution_ (min, max)
-{
-  parameters_ = Parameters (min, max, seed);
-  if(parameters_.seed != static_cast<std::uint32_t> (-1))
-    rng_.seed (seed);
-}
-
+UniformGenerator<T>::UniformGenerator(T min, T max, SeedT seed)
+: UniformGenerator(Parameters(min, max, seed))
+{}
 
 template <typename T>
 UniformGenerator<T>::UniformGenerator(const Parameters& parameters)
-  : parameters_ (parameters)
-  , distribution_ (parameters_.min, parameters_.max)
+: RandomBase<std::mt19937>(parameters.seed)
+, parameters_(parameters)
+, distribution_(parameters_.min, parameters_.max)
 {
-  if(parameters_.seed != static_cast<std::uint32_t> (-1))
-    rng_.seed (parameters_.seed);
+  if (parameters_.seed == static_cast<std::uint32_t>(-1))
+    rng_.seed(std::mt19937::default_seed);
 }
 
-
-template <typename T> void
-UniformGenerator<T>::setSeed (std::uint32_t seed)
+template <typename T>
+void
+UniformGenerator<T>::setSeed(SeedT seed)
 {
-  if (seed != static_cast<std::uint32_t> (-1))
-  {
-    parameters_.seed = seed;
-    rng_.seed(parameters_.seed);
-  }
-}
+  if (seed == static_cast<SeedT>(-1))
+    return;
 
+  parameters_.seed = seed;
+  RandomBase<std::mt19937>::setSeed(seed);
+}
 
 template <typename T> void
 UniformGenerator<T>::setParameters (T min, T max, std::uint32_t seed)
 {
-  parameters_.min = min;
-  parameters_.max = max;
-  parameters_.seed = seed;
-  typename DistributionType::param_type params (parameters_.min, parameters_.max);
-  distribution_.param (params);
-  distribution_.reset ();
-  if (seed != static_cast<std::uint32_t> (-1))
-  {
-    parameters_.seed = seed;
-    rng_.seed (parameters_.seed);
-  }
+  setParameters(Parameters(min, max, seed));
 }
 
 
@@ -103,8 +87,7 @@ UniformGenerator<T>::setParameters (const Parameters& parameters)
   typename DistributionType::param_type params (parameters_.min, parameters_.max);
   distribution_.param (params);
   distribution_.reset ();
-  if (parameters_.seed != static_cast<std::uint32_t> (-1))
-    rng_.seed (parameters_.seed);
+  setSeed(parameters.seed);
 }
 
 
