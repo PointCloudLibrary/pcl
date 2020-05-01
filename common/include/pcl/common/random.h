@@ -68,12 +68,12 @@ namespace pcl
       using type = std::normal_distribution<T>;
     };
 
-    template <typename RandomEngineT = std::default_random_engine>
+    template <typename RandomEngineT = std::mt19937>
     class RandomBase {
     public:
       using SeedT = typename RandomEngineT::result_type;
 
-      RandomBase(SeedT seed = std::random_device()()) : seed_(seed), rng_(seed) {}
+      RandomBase(SeedT seed = std::random_device{}()) : seed_(seed), rng_(seed) {}
 
       inline SeedT
       getSeed() const

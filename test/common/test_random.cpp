@@ -62,17 +62,7 @@ struct RandomDerived : public RandomBase<T> {
 template <typename T>
 struct RandomBaseTest : public testing::Test {};
 
-using RandomEngineTypes = testing::Types<std::default_random_engine,
-                                         std::minstd_rand0,
-                                         std::minstd_rand,
-                                         std::mt19937,
-                                         std::mt19937_64,
-                                         std::ranlux24_base,
-                                         std::ranlux48_base,
-                                         std::ranlux48_base,
-                                         std::ranlux24,
-                                         std::ranlux48,
-                                         std::knuth_b>;
+using RandomEngineTypes = testing::Types<std::default_random_engine, std::mt19937>;
 TYPED_TEST_SUITE(RandomBaseTest, RandomEngineTypes);
 
 TYPED_TEST(RandomBaseTest, Constructor)
