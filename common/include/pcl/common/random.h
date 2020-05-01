@@ -157,7 +157,7 @@ namespace pcl
 
         /// \return uniform distribution parameters and generator seed
         const Parameters&
-        getParameters () { return (parameters_); }
+        getParameters () const { return (parameters_); }
 
         /// \return a randomly generated number in the interval [min, max]
         inline T
