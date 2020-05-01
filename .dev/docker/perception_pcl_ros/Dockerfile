@@ -26,5 +26,6 @@ RUN sed -i "s/^# deb-src/deb-src/" /etc/apt/sources.list \
 COPY package.xml ${workspace}/src/pcl/
 
 RUN cd ${workspace} \
+ && . "/opt/ros/${flavor}/setup.sh" \
  && catkin build libpcl-all-dev --cmake-args -DWITH_OPENGL:BOOL=OFF \
  && catkin build
