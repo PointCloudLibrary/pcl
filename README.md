@@ -11,6 +11,11 @@
 [license-image]: https://img.shields.io/badge/license-BSD-green.svg?style=flat
 [license]: https://github.com/PointCloudLibrary/pcl/blob/master/LICENSE.txt
 
+:bangbang:Website:bangbang:
+-------
+
+The website (http://pointclouds.org) is down currently :broken_heart:, and we are working on bringing it back online :hammer_and_wrench:. In the meanwhile, please use [the copy made by the internet archive](https://web.archive.org/web/20191017164724/http://www.pointclouds.org/).
+
 Continuous integration
 ----------------------
 [ci-latest-build]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=9&branchName=master
