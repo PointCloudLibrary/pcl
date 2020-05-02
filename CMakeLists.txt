@@ -17,6 +17,7 @@ if(CMAKE_VERSION VERSION_LESS 3.8)
   set(PCL_CXX_COMPILE_FEATURES cxx_attribute_deprecated)
 else()
   set(PCL_CXX_COMPILE_FEATURES cxx_std_14)
+  add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
 endif()
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
