@@ -8,7 +8,7 @@ extensions = ['sphinx.ext.imgmath', 'sphinxcontrib.doxylink.doxylink']
 imgmath_dvipng_args = ['-gamma', '1.5', '-D', '110', '-bg', 'Transparent']
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+# templates_path = ['_templates']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
