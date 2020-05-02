@@ -475,8 +475,11 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-   OutofcoreOctreeBase<ContainerT, PointT>::DeAllocEmptyNodeCache (OutofcoreOctreeBaseNode<ContainerT, PointT>* current)
+    OutofcoreOctreeBase<ContainerT, PointT>::DeAllocEmptyNodeCache (OutofcoreOctreeBaseNode<ContainerT, PointT>* current)
     {
+      if (current == nullptr)
+        current = root_node_;
+
       if (current->size () == 0)
       {
         current->flush_DeAlloc_this_only ();
@@ -486,7 +489,6 @@ namespace pcl
       {
         DeAllocEmptyNodeCache (current->children[i]);
       }
-
     }
 
     ////////////////////////////////////////////////////////////////////////////////
