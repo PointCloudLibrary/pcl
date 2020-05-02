@@ -12,7 +12,7 @@
     version: 'indigo-devel'
 - git:
     local-name: 'kinetic/dynamic_reconfigure'
-    uti: 'https://github.com/ros/dynamic_reconfigure'
+    uri: 'https://github.com/ros/dynamic_reconfigure'
     version: 'master'
 - git:
     local-name: 'pcl'
