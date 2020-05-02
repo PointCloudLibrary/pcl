@@ -90,9 +90,9 @@ stages:
         archiveFile: '$(Build.ArtifactStagingDirectory)/source.tar.gz'
         replaceExistingArchive: true
         verbose: true
-      - task: PublishBuildArtifacts@1
-        displayName: "Publish archive"
-        inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-          ArtifactName: 'source.tar.gz'
-          publishLocation: 'Container'
+    - task: PublishBuildArtifacts@1
+      displayName: "Publish archive"
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'source.tar.gz'
+        publishLocation: 'Container'
