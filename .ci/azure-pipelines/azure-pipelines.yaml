@@ -4,8 +4,8 @@ resources:
       image: pointcloudlibrary/fmt
     - container: env1604
       image: pointcloudlibrary/env:16.04
-    - container: env1910
-      image: pointcloudlibrary/env:19.10
+    - container: env2004
+      image: pointcloudlibrary/env:20.04
     - container: doc
       image: pointcloudlibrary/doc
 
