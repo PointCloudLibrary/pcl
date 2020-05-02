@@ -10,8 +10,8 @@ jobs:
         #          CC: clang
         #          CXX: clang++
         #          CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
-        #        19.10 Clang:
-        #          CONTAINER: env1910
+        #        20.04 Clang:
+        #          CONTAINER: env2004
         #          CC: clang
         #          CXX: clang++
         #          CMAKE_ARGS: ''
@@ -20,8 +20,8 @@ jobs:
           CC: gcc
           CXX: g++
           CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
-        19.10 GCC:
-          CONTAINER: env1910
+        20.04 GCC:
+          CONTAINER: env2004
           CC: gcc
           CXX: g++
           CMAKE_ARGS: ''

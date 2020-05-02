@@ -1,4 +1,4 @@
-FROM pointcloudlibrary/env:19.04
+FROM pointcloudlibrary/env:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
