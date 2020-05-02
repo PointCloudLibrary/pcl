@@ -59,6 +59,6 @@ stages:
         arguments: |
           --no-cache
           -t $(dockerHubID)/release:$(tag)
-        dockerfile: '$(Build.SourcesDirectory)/.dev/docker/perception_pcl/Dockerfile'
-        buildContext: '$(Build.SourcesDirectory)/.dev/docker/perception_pcl'
+        dockerfile: '$(Build.SourcesDirectory)/.dev/docker/perception_pcl_ros/Dockerfile'
+        buildContext: '$(Build.SourcesDirectory)/.dev/docker/perception_pcl_ros'
         tags: "$(tag)"
