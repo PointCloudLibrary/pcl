@@ -1,0 +1,64 @@
+# Release PCL steps:
+# 1. Check tests:
+#   * debian:latest
+#   * perception_pcl
+# 2. Package for
+#   * MacOS
+#   * tar source release
+#   * Windows Installers
+
+resources:
+- repo: self
+
+variables:
+  dockerHub: "PersonalDockerHub"
+  dockerHubID: "kunaltyagi"
+
+stages:
+- stage: Debian
+  jobs:
+  - job: BuildDebian
+    displayName: "Build Debian Latest"
+    dependsOn: []
+    timeoutInMinutes: 360
+    variables:
+      tag: "release"
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+      # find the commit hash on a quick non-forced update too
+      fetchDepth: 10
+    - task: Docker@2
+      displayName: "Build docker image"
+      inputs:
+        command: build
+        arguments: |
+          --no-cache
+          -t $(dockerHubID)/release:$(tag)
+        dockerfile: '$(Build.SourcesDirectory)/.dev/docker/release/Dockerfile'
+        tags: "$(tag)"
+- stage: ROS
+  jobs:
+  - job: PerceptionPCL
+    displayName: "perception_pcl compile"
+    dependsOn: []
+    timeoutInMinutes: 360
+    pool:
+      vmImage: 'ubuntu-latest'
+    variables:
+      tag: "ros"
+    steps:
+    - checkout: self
+      # find the commit hash on a quick non-forced update too
+      fetchDepth: 10
+    - task: Docker@2
+      displayName: "Build docker image"
+      inputs:
+        command: build
+        arguments: |
+          --no-cache
+          -t $(dockerHubID)/release:$(tag)
+        dockerfile: '$(Build.SourcesDirectory)/.dev/docker/perception_pcl/Dockerfile'
+        buildContext: '$(Build.SourcesDirectory)/.dev/docker/perception_pcl'
+        tags: "$(tag)"
