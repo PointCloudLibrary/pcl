@@ -60,6 +60,36 @@ PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree3;
 search::KdTree<PointNormal>::Ptr tree4;
 
+pcl::PointCloud<pcl::PointXYZRGB>::Ptr getPointCloud(int pointNumber) {
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>());
+
+  for (int i = 0; i < pointNumber; i++) {
+    pcl::PointXYZRGB pt;
+    pt.x = (double)rand() / RAND_MAX * 10 - 5;
+    pt.y = (double)rand() / RAND_MAX * 10 - 5;
+    pt.z = (double)rand() / RAND_MAX * 10 - 5;
+    cloud->push_back(pt);
+  }
+  return cloud;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, PCLVisualizer_updatePointCloud)
+{
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = getPointCloud(3);
+
+  // Setup a basic viewport window
+  pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
+  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> color_green(cloud, 0, 225, 100);
+  viewer->addPointCloud<pcl::PointXYZRGB>(cloud, color_green, "sample cloud");
+
+  // remove points one by one)
+  while (!cloud->empty()) {
+    cloud->erase(cloud->end() - 1);
+    viewer->updatePointCloud(cloud, "sample cloud");
+    viewer->spinOnce(100);
+  }
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PCLVisualizer_camera)
 {
