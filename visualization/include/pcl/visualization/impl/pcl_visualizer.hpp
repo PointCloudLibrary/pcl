@@ -1587,6 +1587,8 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
 
   // Set the cells and the vertices
   vertices->SetCells (nr_points, cells);
+  // Set the cell count explicitly as the array doesn't get modified enough so the above method updates accordingly. See #4001 and #3452
+  vertices->SetNumberOfCells(nr_points);
 
   // Get the colors from the handler
   bool has_colors = false;
