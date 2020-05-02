@@ -11,6 +11,10 @@
     uri: 'https://github.com/ros-perception/pcl_msgs'
     version: 'indigo-devel'
 - git:
+    local-name: 'kinetic/dynamic_reconfigure'
+    uti: 'https://github.com/ros/dynamic_reconfigure'
+    version: 'master'
+- git:
     local-name: 'pcl'
     uri: 'https://github.com/PointCloudLibrary/pcl'
     version: 'master'

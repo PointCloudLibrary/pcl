@@ -7,7 +7,7 @@
 #   * tar source release
 #   * Windows Installers
 
-trigger: None
+trigger: none
 
 resources:
 - repo: self
