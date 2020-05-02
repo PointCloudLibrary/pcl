@@ -12,6 +12,10 @@ trigger: none
 resources:
 - repo: self
 
+variables:
+  dockerHub: "PersonalDockerHub"
+  dockerHubID: "kunaltyagi"
+
 stages:
 - stage: Debian
   dependsOn: []
