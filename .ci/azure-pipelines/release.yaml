@@ -16,10 +16,10 @@ variables:
 
 stages:
 - stage: Debian
+  dependsOn: []
   jobs:
   - job: BuildDebian
     displayName: "Build Debian Latest"
-    dependsOn: []
     timeoutInMinutes: 360
     variables:
       tag: "release"
@@ -39,10 +39,10 @@ stages:
         dockerfile: '$(Build.SourcesDirectory)/.dev/docker/release/Dockerfile'
         tags: "$(tag)"
 - stage: ROS
+  dependsOn: []
   jobs:
   - job: PerceptionPCL
     displayName: "perception_pcl compile"
-    dependsOn: []
     timeoutInMinutes: 360
     pool:
       vmImage: 'ubuntu-latest'
