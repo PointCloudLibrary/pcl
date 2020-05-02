@@ -17,7 +17,7 @@
 The original website (http://pointclouds.org) is down currently :broken_heart:, and we are working on bringing it back online :hammer_and_wrench:. In the meantime, PCL's documentation can be accessed at the following locations:
 - API reference: http://pointclouds.org;
 - Tutorials: https://pcl-tutorials.readthedocs.io/;
-- Advanced Tutorials: yet to be uploaded.
+- Advanced Tutorials: https://pcl-advanced.readthedocs.io/.
 
 If you really need access to the old website, please use [the copy made by the internet archive](https://web.archive.org/web/20191017164724/http://www.pointclouds.org/). Please be aware that the website was hacked before and could still be hosting some malicious code.
 
