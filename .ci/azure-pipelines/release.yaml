@@ -12,10 +12,6 @@ trigger: None
 resources:
 - repo: self
 
-variables:
-  dockerHub: "PersonalDockerHub"
-  dockerHubID: "kunaltyagi"
-
 stages:
 - stage: Debian
   dependsOn: []
@@ -23,10 +19,10 @@ stages:
   - job: BuildDebian
     displayName: "Build Debian Latest"
     timeoutInMinutes: 360
-    variables:
-      tag: "release"
     pool:
       vmImage: 'ubuntu-latest'
+    variables:
+      tag: "release"
     steps:
     - checkout: self
       # find the commit hash on a quick non-forced update too
@@ -46,14 +42,14 @@ stages:
   - job: PerceptionPCL
     displayName: "perception_pcl compile"
     timeoutInMinutes: 360
+    pool:
+      vmImage: 'ubuntu-latest'
     strategy:
       matrix:
         ROS Kinetic:
           flavor: "kinetic"
         ROS Melodic:
           flavor: "melodic"
-    pool:
-      vmImage: 'ubuntu-latest'
     variables:
       tag: "ros"
     steps:
@@ -71,7 +67,7 @@ stages:
         dockerfile: '$(Build.SourcesDirectory)/.dev/docker/perception_pcl_ros/Dockerfile'
         buildContext: '$(Build.SourcesDirectory)/.dev/docker/perception_pcl_ros'
         tags: "$(tag)"
-- stage: Source
+- stage: Prepare
   dependsOn: ["Debian", "ROS"]
   jobs:
   - job: src_code
@@ -79,6 +75,8 @@ stages:
     timeoutInMinutes: 360
     pool:
       vmImage: 'ubuntu-latest'
+    variables:
+      SOURCE_TAR: '$(Build.ArtifactStagingDirectory)/source.tar.gz'
     steps:
     - checkout: self
       # find the commit hash on a quick non-forced update too
@@ -96,12 +94,57 @@ stages:
         rootFolderOrFile: '$(Build.SourcesDirectory)'
         includeRootFolder: true
         archiveType: 'tar'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/source.tar.gz'
+        archiveFile: '$(SOURCE_TAR)'
         replaceExistingArchive: true
         verbose: true
     - task: PublishBuildArtifacts@1
       displayName: "Publish archive"
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        PathtoPublish: '$(SOURCE_TAR)'
         ArtifactName: 'source.tar.gz'
         publishLocation: 'Container'
+  - job: documentation
+    displayName: Generate Documentation
+    container: pointcloudlibrary/doc
+    pool:
+      vmImage: 'ubuntu-latest'
+    variables:
+      BUILD_DIR: '$(Agent.BuildDirectory)/build'
+      CHANGELOG: '$(Build.ArtifactStagingDirectory)/changelog.md'
+    steps:
+    - checkout: self
+      # find the commit hash on a quick non-forced update too
+      fetchDepth: 10
+    - script: |
+        $(Build.SourcesDirectory)/.dev/scripts/generate_changelog.py --with-misc > $(CHANGELOG)
+        pandoc -f markdown -t plain --wrap=none $(CHANGELOG)
+      displayName: 'Generate Changelog'
+    - task: PublishBuildArtifacts@1
+      displayName: "Publish Changelog"
+      inputs:
+        PathtoPublish: '$(CHANGELOG)'
+        ArtifactName: 'changelog.md'
+        publishLocation: 'Container'
+#- stage: Release
+#  dependsOn: ["Source"]
+#  jobs:
+#  - job: release
+#    displayName: "Release the kraken"
+#    timeoutInMinutes: 360
+#    pool:
+#      vmImage: 'ubuntu-latest'
+#    steps:
+#    - task: GitHubRelease@1
+#      inputs:
+#        gitHubConnection: 'Release to GitHub'
+#        repositoryName: 'kunaltyagi/pcl'
+#        action: 'create'
+#        target: '$(Build.SourceVersion)'
+#        tagSource: 'gitTag'
+#        tagPattern: 'pcl-*'
+#        releaseNotesFilePath: '$(Build.ArtifactStagingDirectory)/release.md'
+#        isDraft: true
+#        isPreRelease: true
+#        changeLogCompareToRelease: 'lastFullRelease'
+#        changeLogType: 'issueBased'
+#        changeLogLabels: '[{ "label" : "changelog: new feature", "displayName" : "New", "state" : "closed" }]'

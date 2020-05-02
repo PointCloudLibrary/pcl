@@ -1,7 +1,7 @@
 # flavor appears twice, once for the FOR, once for the contents since
 # Dockerfile seems to reset arguments after a FOR appears
 ARG flavor="melodic"
-FROM ros:${flavor}-ros-core
+FROM ros:${flavor}-robot
 
 ARG flavor="melodic"
 ARG workspace="/root/catkin_ws"
