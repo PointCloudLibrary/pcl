@@ -44,6 +44,12 @@ stages:
   - job: PerceptionPCL
     displayName: "perception_pcl compile"
     timeoutInMinutes: 360
+    strategy:
+      matrix:
+        ROS Kinetic:
+          flavor: "kinetic"
+        ROS Melodic:
+          flavor: "melodic"
     pool:
       vmImage: 'ubuntu-latest'
     variables:
@@ -58,6 +64,7 @@ stages:
         command: build
         arguments: |
           --no-cache
+          --build-arg flavor=$(flavor)
           -t $(dockerHubID)/release:$(tag)
         dockerfile: '$(Build.SourcesDirectory)/.dev/docker/perception_pcl_ros/Dockerfile'
         buildContext: '$(Build.SourcesDirectory)/.dev/docker/perception_pcl_ros'
