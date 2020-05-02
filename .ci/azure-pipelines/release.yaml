@@ -62,3 +62,37 @@ stages:
         dockerfile: '$(Build.SourcesDirectory)/.dev/docker/perception_pcl_ros/Dockerfile'
         buildContext: '$(Build.SourcesDirectory)/.dev/docker/perception_pcl_ros'
         tags: "$(tag)"
+- stage: Source
+  dependsOn: ["Debian", "ROS"]
+  jobs:
+  - job: src_code
+    displayName: "Package Source Code"
+    timeoutInMinutes: 360
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+      # find the commit hash on a quick non-forced update too
+      fetchDepth: 10
+    - task: Bash@3
+      displayName: "Remove git files"
+      inputs:
+        targetType: 'inline'
+        script: 'rm -fr ./.git'
+        workingDirectory: '$(Build.SourcesDirectory)'
+        failOnStderr: true
+    - task: ArchiveFiles@2
+      displayName: "Create release archive"
+      inputs:
+        rootFolderOrFile: '$(Build.SourcesDirectory)'
+        includeRootFolder: true
+        archiveType: 'tar'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/source.tar.gz'
+        replaceExistingArchive: true
+        verbose: true
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish archive"
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'source.tar.gz'
+          publishLocation: 'Container'
