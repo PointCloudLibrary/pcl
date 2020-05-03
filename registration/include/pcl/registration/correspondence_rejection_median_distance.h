@@ -53,7 +53,7 @@ namespace pcl
       * rejection method based on thresholding based on the median distance between the
       * correspondences.
       *
-      * \note If \ref setInputCloud and \ref setInputTarget are given, then the
+      * \note If \ref setInputSource and \ref setInputTarget are given, then the
       * distances between correspondences will be estimated using the given XYZ
       * data, and not read from the set of input correspondences.
       *
@@ -106,13 +106,13 @@ namespace pcl
           * data!), used to compute the correspondence distance.  
           * \param[in] cloud a cloud containing XYZ data
           */
-        template <typename PointT> inline void 
+        template <typename PointT>
+        PCL_DEPRECATED(1, 12, "Use setInputSource instead")
+        inline void
         setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
         {
           PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n", getClassName ().c_str ());
-          if (!data_container_)
-            data_container_.reset (new DataContainer<PointT>);
-          static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
+          setInputSource(cloud);
         }
 
         /** \brief Provide a target point cloud dataset (must contain XYZ
