@@ -25,7 +25,7 @@ Continuous integration
 ----------------------
 [ci-latest-build]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=9&branchName=master
 [ci-ubuntu-16.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Ubuntu&jobName=Ubuntu&configuration=Ubuntu%2016.04%20GCC&label=Ubuntu%2016.04
-[ci-ubuntu-19.10]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Ubuntu&jobName=Ubuntu&configuration=Ubuntu%2019.10%20GCC&label=Ubuntu%2019.10
+[ci-ubuntu-20.04]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Ubuntu&jobName=Ubuntu&configuration=Ubuntu%2020.04%20GCC&label=Ubuntu%2020.04
 [ci-windows-x86]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Windows&jobName=Windows%20VS2017%20Build&configuration=Windows%20VS2017%20Build%20x86&label=Windows%20VS2017%20x86
 [ci-windows-x64]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Windows&jobName=Windows%20VS2017%20Build&configuration=Windows%20VS2017%20Build%20x64&label=Windows%20VS2017%20x64
 [ci-macos-10.14]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20macOS&jobName=macOS&configuration=macOS%20Mojave%2010.14&label=macOS%20Mojave%2010.14
