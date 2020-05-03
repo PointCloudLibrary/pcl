@@ -39,6 +39,7 @@
 
 #include <pcl/test/gtest.h>
 
+#include <pcl/common/generate.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
@@ -60,23 +61,13 @@ PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree3;
 search::KdTree<PointNormal>::Ptr tree4;
 
-pcl::PointCloud<pcl::PointXYZRGB>::Ptr getPointCloud(int pointNumber) {
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>());
-
-  for (int i = 0; i < pointNumber; i++) {
-    pcl::PointXYZRGB pt;
-    pt.x = (double)rand() / RAND_MAX * 10 - 5;
-    pt.y = (double)rand() / RAND_MAX * 10 - 5;
-    pt.z = (double)rand() / RAND_MAX * 10 - 5;
-    cloud->push_back(pt);
-  }
-  return cloud;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 TEST(PCL, PCLVisualizer_updatePointCloud)
 {
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = getPointCloud(3);
+  pcl::common::CloudGenerator<pcl::PointXYZRGB, pcl::common::UniformGenerator<float> > generator;
+
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>());
+  int result = generator.fill(3, 1, *cloud);
 
   // Setup a basic viewport window
   pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
