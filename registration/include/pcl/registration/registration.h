@@ -609,6 +609,12 @@ namespace pcl
     private:
       /** \brief The point representation used (internal). */
       PointRepresentationConstPtr point_representation_;
+
+      /**
+       * \brief Remove from public API in favor of \ref setInputSource
+       */
+      using PCLBase<PointSource>::setInputCloud;
+
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW
    };
