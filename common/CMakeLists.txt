@@ -111,7 +111,6 @@ set(common_incs
   include/pcl/common/utils.h
   include/pcl/common/geometry.h
   include/pcl/common/gaussian.h
-  include/pcl/common/point_operators.h
   include/pcl/common/spring.h
   include/pcl/common/intensity.h
   include/pcl/common/random.h

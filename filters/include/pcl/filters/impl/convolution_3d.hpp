@@ -42,7 +42,6 @@
 
 #include <pcl/pcl_config.h>
 #include <pcl/point_types.h>
-#include <pcl/common/point_operators.h>
 
 #include <cmath>
 #include <cstdint>
