@@ -41,8 +41,10 @@
 #define PCL_UNARY_CLASSIFIER_HPP_
 
 #include <Eigen/Core>
-#include <flann/algorithms/center_chooser.h>
-#include <flann/util/matrix.h>
+#include <flann/flann.hpp>                  // for flann::Index
+#include <flann/algorithms/dist.h>          // for flann::ChiSquareDistance
+#include <flann/algorithms/linear_index.h>  // for flann::LinearIndexParams
+#include <flann/util/matrix.h>              // for flann::Matrix
 
 #include <pcl/segmentation/unary_classifier.h>
 #include <pcl/common/io.h>
