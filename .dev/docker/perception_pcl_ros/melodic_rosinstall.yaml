@@ -3,17 +3,9 @@
     uri: 'https://github.com/ros-perception/perception_pcl'
     version: 'melodic-devel'
 - git:
-    local-name: 'melodic/common_msgs'
-    uri: 'https://github.com/ros/common_msgs'
-    version: 'jade-devel'
-- git:
     local-name: 'melodic/pcl_msgs'
     uri: 'https://github.com/ros-perception/pcl_msgs'
     version: 'indigo-devel'
-- git:
-    local-name: 'melodic/dynamic_reconfigure'
-    uri: 'https://github.com/ros/dynamic_reconfigure'
-    version: 'melodic-devel'
 - git:
     local-name: 'pcl'
     uri: 'https://github.com/PointCloudLibrary/pcl'
