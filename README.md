@@ -33,7 +33,7 @@ Continuous integration
 
 Build Platform           | Status                                                                                                                                                                                                                                                                                                                                       
 ------------------------ | ------------------------------------------------------------------------------------------------- |
-Ubuntu                   | [![Status][ci-ubuntu-16.04]][ci-latest-build] <br> [![Status][ci-ubuntu-19.10]][ci-latest-build]  |
+Ubuntu                   | [![Status][ci-ubuntu-16.04]][ci-latest-build] <br> [![Status][ci-ubuntu-20.04]][ci-latest-build]  |
 Windows                  | [![Status][ci-windows-x86]][ci-latest-build]  <br> [![Status][ci-windows-x64]][ci-latest-build]   |                                                                                                                                                                    
 macOS                    | [![Status][ci-macos-10.14]][ci-latest-build]  <br> [![Status][ci-macos-10.15]][ci-latest-build]   |                                                                                                                                                                    
 
