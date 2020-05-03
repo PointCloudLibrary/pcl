@@ -3,6 +3,10 @@
     uri: 'https://github.com/ros-perception/perception_pcl'
     version: 'kinetic-devel'
 - git:
+    local-name: 'kinetic/pcl_conversions'
+    uri: 'https://github.com/ros-perception/pcl_conversions'
+    version: 'indigo-devel'
+- git:
     local-name: 'kinetic/pcl_msgs'
     uri: 'https://github.com/ros-perception/pcl_msgs'
     version: 'indigo-devel'
