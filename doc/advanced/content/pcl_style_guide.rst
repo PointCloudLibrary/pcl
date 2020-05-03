@@ -350,7 +350,7 @@ For consistent usage, headers should be included in the following order with alp
     #.  opencv/opencv2
     #.  tide
     #.  thrust
-    #.  OpenGL(UT)/GL(UT)
+    #.  OpenGL, GL & GLUT
 5.  C++ standard library headers (alphabetical)
 6.  Others
 
