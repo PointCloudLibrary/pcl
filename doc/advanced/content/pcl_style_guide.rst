@@ -341,7 +341,7 @@ For consistent usage, headers should be included in the following order with alp
 3.  Major 3rd-Party components of apps
 
     i.  Qt
-    #.  ui\_
+    #.  ui-files
     #.  vtk
 4.  Minor 3rd-Party components
 
