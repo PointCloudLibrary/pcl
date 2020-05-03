@@ -175,9 +175,10 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
 
 if(MSVC AND NOT (MSVC_VERSION LESS 1915))
-  # You must acknowledge that you understand MSVC resolved a byte alignment issue in this compiler
+  # MSVC resolved a byte alignment issue in compiler version 15.9
   # We get this due to using Eigen objects and allocating those objects with make_shared
-  target_compile_definitions(${LIB_NAME} PRIVATE _ENABLE_EXTENDED_ALIGNED_STORAGE)
+  # It has to be public so that everything linking with common has this definition too
+  target_compile_definitions(${LIB_NAME} PUBLIC _ENABLE_EXTENDED_ALIGNED_STORAGE)
 endif()
 
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC})
