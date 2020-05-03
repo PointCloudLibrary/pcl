@@ -347,7 +347,7 @@ For consistent usage, headers should be included in the following order with alp
 
     i.  librealsense
     #.  ros/message_filters
-    #.  opencv(2)
+    #.  opencv/opencv2
     #.  tide
     #.  thrust
     #.  OpenGL(UT)/GL(UT)
