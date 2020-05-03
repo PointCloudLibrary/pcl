@@ -295,8 +295,6 @@ indentation level of the class body and members affected by these qualifiers are
    }
 
 
-.. _2.6.-Automatic-code-formatting:
-
 2.6. Automatic code formatting
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -356,7 +354,7 @@ For consistent usage, headers should be included in the following order with alp
 5.  C++ standard library headers (alphabetical)
 6.  Others
 
-This style can also be enforced via clang-format. For usage instructions, refer :ref:`2.6.-Automatic-code-formatting`.
+This style can also be enforced via clang-format. For usage instructions, refer `2.6. Automatic code formatting`_.
 
 
 3. Structuring
