@@ -162,7 +162,7 @@ class TemplateAlignment
     void
     align (FeatureCloud &template_cloud, TemplateAlignment::Result &result)
     {
-      sac_ia_.setInputCloud (template_cloud.getPointCloud ());
+      sac_ia_.setInputSource (template_cloud.getPointCloud ());
       sac_ia_.setSourceFeatures (template_cloud.getLocalFeatures ());
 
       pcl::PointCloud<pcl::PointXYZ> registration_output;

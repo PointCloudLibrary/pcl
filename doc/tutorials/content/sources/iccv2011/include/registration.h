@@ -34,7 +34,7 @@ computeInitialAlignment (const PointCloudPtr & source_points, const LocalDescrip
   sac_ia.setMaxCorrespondenceDistance (max_correspondence_distance);
   sac_ia.setMaximumIterations (nr_iterations);
   
-  sac_ia.setInputCloud (source_points);
+  sac_ia.setInputSource (source_points);
   sac_ia.setSourceFeatures (source_descriptors);
 
   sac_ia.setInputTarget (target_points);
@@ -81,7 +81,7 @@ refineAlignment (const PointCloudPtr & source_points, const PointCloudPtr & targ
   PointCloudPtr source_points_transformed (new PointCloud);
   pcl::transformPointCloud (*source_points, *source_points_transformed, initial_alignment);
 
-  icp.setInputCloud (source_points_transformed);
+  icp.setInputSource (source_points_transformed);
   icp.setInputTarget (target_points);
 
   PointCloud registration_output;
