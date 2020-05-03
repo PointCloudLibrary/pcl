@@ -296,6 +296,7 @@ indentation level of the class body and members affected by these qualifiers are
 
 
 .. _2.6.-Automatic-code-formatting:
+
 2.6. Automatic code formatting
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
