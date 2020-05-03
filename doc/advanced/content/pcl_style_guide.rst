@@ -295,6 +295,7 @@ indentation level of the class body and members affected by these qualifiers are
    }
 
 
+.. _2.6.-Automatic-code-formatting:
 2.6. Automatic code formatting
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -321,6 +322,36 @@ Command line usage:
 .. code-block:: shell
 
    $ make format
+
+
+2.7. Includes
+^^^^^^^^^^^^^
+
+For consistent usage, headers should be included in the following order with alphabetical grouping ensured:
+
+1. PCL headers
+  i. All modular PCL includes, except main includes of common module
+  #. The main PCL includes of common module
+2. Major 3rd-Party components of tests and modules
+  i. gtest
+  #. boost
+  #. Eigen
+  #. flann
+3. Major 3rd-Party components of apps
+  i. Qt
+  #. ui\_
+  #. vtk
+4. Minor 3rd-Party components
+  i. librealsense
+  #. ros/message_filters
+  #. opencv(2)
+  #. tide
+  #. thrust
+  #. OpenGL(UT)/GL(UT)
+5. C++ standard library headers (alphabetical)
+6. Others
+
+This style can also be enforced via clang-format. For usage instructions, refer :ref:`2.6.-Automatic-code-formatting`.
 
 
 3. Structuring
