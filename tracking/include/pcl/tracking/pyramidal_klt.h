@@ -150,8 +150,7 @@ public:
     return (epsilon_);
   }
 
-  /** \brief Set the maximum number of points to track. Only the first
-   * keypoints_nbr_ are used as points to track after sorting detected keypoints
+  /** \brief Set the maximum number of points to track after sorting detected keypoints
    * according to their response measure.
    * \param[in] number the desired number of points to detect.
    */
