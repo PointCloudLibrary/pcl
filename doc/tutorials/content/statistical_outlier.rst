@@ -20,7 +20,7 @@ characteristics such as surface normals or curvature changes, leading to
 erroneous values, which in turn might cause point cloud registration failures.
 Some of these irregularities can be solved by performing a statistical analysis
 on each point's neighborhood, and trimming those which do not meet a certain
-criteria.  Our sparse outlier removal is based on the computation of the
+criterion.  Our sparse outlier removal is based on the computation of the
 distribution of point to neighbors distances in the input dataset. For each
 point, we compute the mean distance from it to all its neighbors. By assuming
 that the resulted distribution is Gaussian with a mean and a standard
