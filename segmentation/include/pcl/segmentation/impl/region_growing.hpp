@@ -37,15 +37,15 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_REGION_GROWING_HPP_
-#define PCL_SEGMENTATION_REGION_GROWING_HPP_
+#pragma once
 
 #include <pcl/segmentation/region_growing.h>
 
-#include <pcl/search/search.h>
-#include <pcl/search/kdtree.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
+#include <pcl/search/search.h>
+#include <pcl/search/kdtree.h>
 
 #include <queue>
 #include <list>
@@ -741,4 +741,3 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
 
 #define PCL_INSTANTIATE_RegionGrowing(T) template class pcl::RegionGrowing<T, pcl::Normal>;
 
-#endif    // PCL_SEGMENTATION_REGION_GROWING_HPP_

@@ -38,12 +38,14 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_FPFH_OMP_H_
-#define PCL_FEATURES_IMPL_FPFH_OMP_H_
+#pragma once
+
+#include <pcl/features/fpfh_omp.h>
+
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 
 #include <numeric>
 
-#include <pcl/features/fpfh_omp.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> void
@@ -171,6 +173,4 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 }
 
 #define PCL_INSTANTIATE_FPFHEstimationOMP(T,NT,OutT) template class PCL_EXPORTS pcl::FPFHEstimationOMP<T,NT,OutT>;
-
-#endif    // PCL_FEATURES_IMPL_FPFH_OMP_H_ 
 

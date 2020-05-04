@@ -39,10 +39,10 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_LOCAL_MAXIMUM_H_
-#define PCL_FILTERS_IMPL_LOCAL_MAXIMUM_H_
+#pragma once
 
 #include <pcl/common/io.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/filters/local_maximum.h>
 #include <pcl/filters/project_inliers.h>
 #include <pcl/ModelCoefficients.h>
@@ -186,6 +186,4 @@ pcl::LocalMaximum<PointT>::applyFilterIndices (std::vector<int> &indices)
 }
 
 #define PCL_INSTANTIATE_LocalMaximum(T) template class PCL_EXPORTS pcl::LocalMaximum<T>;
-
-#endif    // PCL_FILTERS_IMPL_LOCAL_MAXIMUM_H_
 

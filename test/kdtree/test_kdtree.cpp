@@ -36,17 +36,21 @@
  *
  */
 
-#include <pcl/test/gtest.h>
-#include <iostream>  // For debug
-#include <map>
-#include <pcl/common/time.h>
+#include <pcl/kdtree/impl/kdtree_flann.hpp>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/distances.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
+#include <pcl/common/time.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/kdtree/impl/kdtree_flann.hpp>
+#include <pcl/test/gtest.h>
+
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+
+#include <iostream>  // For debug
+#include <map>
 
 
 using namespace std;

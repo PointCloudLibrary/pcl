@@ -37,9 +37,9 @@
  *
  */
 
-#ifndef PCL_COMMON_GENERATE_HPP_
-#define PCL_COMMON_GENERATE_HPP_
+#pragma once
 
+#include <pcl/common/generate.h>
 #include <pcl/console/print.h>
 
 
@@ -291,6 +291,4 @@ CloudGenerator<pcl::PointXY, GeneratorT>::fill (int width, int height, pcl::Poin
 
 } // namespace common
 } // namespace pcl
-
-#endif
 

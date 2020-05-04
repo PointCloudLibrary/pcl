@@ -35,9 +35,9 @@
  *
  */
 
-#ifndef __PCL_ORGANIZED_PROJECTION_MATRIX_HPP__
-#define __PCL_ORGANIZED_PROJECTION_MATRIX_HPP__
+#pragma once
 
+#include <pcl/common/projection_matrix.h>
 #include <pcl/cloud_iterator.h>
 
 
@@ -216,6 +216,4 @@ estimateProjectionMatrix (
 }
 
 } // namespace pcl
-
-#endif
 

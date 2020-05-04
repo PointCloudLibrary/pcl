@@ -38,6 +38,7 @@
 #pragma once
 
 #include <pcl/common/eigen.h>
+#include <pcl/common/transformation_from_correspondences.h>
 
 
 namespace pcl

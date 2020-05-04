@@ -35,10 +35,10 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_FILTER_H_
-#define PCL_FILTERS_IMPL_FILTER_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/filters/filter.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -141,6 +141,4 @@ pcl::removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 
 #define PCL_INSTANTIATE_removeNaNFromPointCloud(T) template PCL_EXPORTS void pcl::removeNaNFromPointCloud<T>(const pcl::PointCloud<T>&, pcl::PointCloud<T>&, std::vector<int>&);
 #define PCL_INSTANTIATE_removeNaNNormalsFromPointCloud(T) template PCL_EXPORTS void pcl::removeNaNNormalsFromPointCloud<T>(const pcl::PointCloud<T>&, pcl::PointCloud<T>&, std::vector<int>&);
-
-#endif    // PCL_FILTERS_IMPL_FILTER_H_
 

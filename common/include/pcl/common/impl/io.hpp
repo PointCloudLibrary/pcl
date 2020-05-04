@@ -38,11 +38,11 @@
  *
  */
 
-#ifndef PCL_IO_IMPL_IO_HPP_
-#define PCL_IO_IMPL_IO_HPP_
+#pragma once
 
 #include <pcl/common/concatenate.h>
 #include <pcl/common/copy_point.h>
+#include <pcl/common/io.h>
 #include <pcl/point_types.h>
 
 
@@ -464,6 +464,4 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT>
 }
 
 } // namespace pcl
-
-#endif // PCL_IO_IMPL_IO_H_
 

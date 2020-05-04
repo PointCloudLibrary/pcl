@@ -38,14 +38,15 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_USC_HPP_
-#define PCL_FEATURES_IMPL_USC_HPP_
+#pragma once
 
 #include <pcl/features/usc.h>
 #include <pcl/features/shot_lrf.h>
-#include <pcl/common/geometry.h>
 #include <pcl/common/angles.h>
+#include <pcl/common/geometry.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/common/utils.h>
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename PointRFT> bool
@@ -260,4 +261,3 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
 
 #define PCL_INSTANTIATE_UniqueShapeContext(T,OutT,RFT) template class PCL_EXPORTS pcl::UniqueShapeContext<T,OutT,RFT>;
 
-#endif

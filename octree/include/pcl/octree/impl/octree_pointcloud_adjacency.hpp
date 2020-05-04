@@ -35,11 +35,12 @@
  *
  */
 
-#ifndef PCL_OCTREE_POINTCLOUD_ADJACENCY_HPP_
-#define PCL_OCTREE_POINTCLOUD_ADJACENCY_HPP_
+#pragma once
 
 #include <pcl/common/geometry.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/console/print.h>
+
 /*
  * OctreePointCloudAdjacency is not precompiled, since it's used in other
  * parts of PCL with custom LeafContainers. So if PCL_NO_PRECOMPILE is NOT
@@ -330,5 +331,3 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
 
 #define PCL_INSTANTIATE_OctreePointCloudAdjacency(T)                                   \
   template class PCL_EXPORTS pcl::octree::OctreePointCloudAdjacency<T>;
-
-#endif

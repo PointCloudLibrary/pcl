@@ -41,6 +41,7 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 
 #include <vector>
 #include <limits>
