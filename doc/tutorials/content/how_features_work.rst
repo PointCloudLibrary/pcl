@@ -71,7 +71,7 @@ the `pcl::Feature` class accepts input data in two different ways:
 
  1. an entire point cloud dataset, given via **setInputCloud (PointCloudConstPtr &)** - **mandatory**
 
-    Any feature estimation class with an attempt to estimate a feature at **every** point in the given input cloud.
+    Any feature estimation class will attempt to estimate a feature at **every** point in the given input cloud.
 
  2. a subset of a point cloud dataset, given via **setInputCloud (PointCloudConstPtr &)** and **setIndices (IndicesConstPtr &)** - **optional**
 
