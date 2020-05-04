@@ -15,7 +15,7 @@ main (int argc, char** argv)
   reader.read ("table_scene_lms400.pcd", *cloud); // Remember to download the file first!
 
   std::cerr << "PointCloud before filtering: " << cloud->width * cloud->height 
-       << " data points (" << pcl::getFieldsList (*cloud) << ").";
+       << " data points (" << pcl::getFieldsList (*cloud) << ")." << std::endl;
 
   // Create the filtering object
   pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
@@ -24,7 +24,7 @@ main (int argc, char** argv)
   sor.filter (*cloud_filtered);
 
   std::cerr << "PointCloud after filtering: " << cloud_filtered->width * cloud_filtered->height 
-       << " data points (" << pcl::getFieldsList (*cloud_filtered) << ").";
+       << " data points (" << pcl::getFieldsList (*cloud_filtered) << ")." << std::endl;
 
   pcl::PCDWriter writer;
   writer.write ("table_scene_lms400_downsampled.pcd", *cloud_filtered, 
