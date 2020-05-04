@@ -45,7 +45,7 @@ In general, PCL features use approximate methods to compute the nearest neighbor
 Terminology
 -----------
 
-For the reminder of this article, we will make certain abbreviations and
+For the remainder of this article, we will make certain abbreviations and
 introduce certain notations, to simplify the in-text explanations. Please see
 the table below for a reference on each of the terms used.
 
@@ -71,7 +71,7 @@ the `pcl::Feature` class accepts input data in two different ways:
 
  1. an entire point cloud dataset, given via **setInputCloud (PointCloudConstPtr &)** - **mandatory**
 
-    Any feature estimation class with attempt to estimate a feature at **every** point in the given input cloud.
+    Any feature estimation class will attempt to estimate a feature at **every** point in the given input cloud.
 
  2. a subset of a point cloud dataset, given via **setInputCloud (PointCloudConstPtr &)** and **setIndices (IndicesConstPtr &)** - **optional**
 
