@@ -36,7 +36,7 @@ we obtain:
 
 To approximate the surface defined by a local neighborhood of points 
 **p1**, **p2** ... **pk** at a point **q** we use a bivariate polynomial height function
-defined on a on a robustly computed reference plane. 
+defined on a robustly computed reference plane. 
 
 .. raw:: html
 
