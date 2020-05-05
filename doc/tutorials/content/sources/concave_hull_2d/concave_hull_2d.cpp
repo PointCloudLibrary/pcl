@@ -45,7 +45,7 @@ main (int argc, char** argv)
   // Project the model inliers
   pcl::ProjectInliers<pcl::PointXYZ> proj;
   proj.setModelType (pcl::SACMODEL_PLANE);
-  proj.setIndices (inliers);
+  // proj.setIndices (inliers);
   proj.setInputCloud (cloud_filtered);
   proj.setModelCoefficients (coefficients);
   proj.filter (*cloud_projected);
