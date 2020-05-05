@@ -45,7 +45,11 @@ defined on a robustly computed reference plane.
 The code
 --------
 
-First, create a file, let's say, ``resampling.cpp`` in your favorite
+First, download the dataset `bun0.pcd
+<https://raw.githubusercontent.com/PointCloudLibrary/pcl/master/test/bun0.pcd>`_
+and save it somewhere to disk.
+
+Then, create a file, let's say, ``resampling.cpp`` in your favorite
 editor, and place the following inside it:
 
 
