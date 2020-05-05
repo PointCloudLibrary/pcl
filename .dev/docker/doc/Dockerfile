@@ -6,6 +6,7 @@ RUN apt-get update \
  && apt-get install -y \
       doxygen-latex \
       dvipng \
+      graphviz \
       git \
       python3-pip \
       pandoc \
