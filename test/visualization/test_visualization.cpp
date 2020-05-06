@@ -61,7 +61,7 @@ PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree3;
 search::KdTree<PointNormal>::Ptr tree4;
 
-// Test that updatepointcloud works when removing points. Ie. modifying vtkdata to reflect modified pointcloud
+// Test that updatepointcloud works when removing points. Ie. modifying vtk data structure to reflect modified pointcloud
 // See #4001 and #3452 for previously undetected error.
 ////////////////////////////////////////////////////////////////////////////////
 TEST(PCL, PCLVisualizer_updatePointCloud)
