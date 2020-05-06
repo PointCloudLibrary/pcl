@@ -13,4 +13,5 @@
 - git:
     local-name: 'pcl'
     uri: 'https://github.com/PointCloudLibrary/pcl'
-    version: 'master'
+    # Kinetic doesn't support PCL 1.8 onwards
+    version: '1.7.2'
