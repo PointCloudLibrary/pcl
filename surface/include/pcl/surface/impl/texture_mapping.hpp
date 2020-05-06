@@ -581,7 +581,7 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
     visible_pts = *filtered_cloud;
 
     // pushing occluded idxs into a set for faster lookup
-    std::unordered_set<int> occluded_set(occluded.begin(), occluded.end());
+    std::unordered_set<index_t> occluded_set(occluded.cbegin(), occluded.cend());
 
     // find visible faces => add them to polygon N for camera N
     // add polygon group for current camera in clean
@@ -1089,4 +1089,3 @@ pcl::TextureMapping<PointInT>::isFaceProjected (const Camera &camera, const Poin
     template class PCL_EXPORTS pcl::TextureMapping<T>;
 
 #endif /* TEXTURE_MAPPING_HPP_ */
-
