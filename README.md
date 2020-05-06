@@ -52,10 +52,15 @@ Community
 Distribution
 ---------
 [![Packaging status](https://repology.org/badge/tiny-repos/pcl-pointclouds.svg)](https://repology.org/project/pcl-pointclouds/badges)
+[![latest packaged version(s)](https://repology.org/badge/latest-versions/pcl-pointclouds.svg)](https://repology.org/project/pcl-pointclouds/versions)
+
 <details>
 <summary>Click to see all</summary>
 <p>
-<a href="https://repology.org/project/pcl-pointclouds/versions"><img src="https://repology.org/badge/vertical-allrepos/pcl-pointclouds.svg?header=pcl-pointclouds"></a>
+<a href="https://repology.org/project/pcl-pointclouds/packages">
+    <img src="https://repology.org/badge/vertical-allrepos/pcl-pointclouds.svg?columns=3"
+         alt="Packaging status">
+</a>
 </p>
 </details>
 
