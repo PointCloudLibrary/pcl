@@ -600,7 +600,7 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
           }
           // is the point visible to the camera?
           Eigen::Vector2f dummy_UV;
-          return this->getPointUVCoordinates (transformed_cloud->points[vertex], camera, dummy_UV);
+          return this->getPointUVCoordinates ((*transformed_cloud)[vertex], camera, dummy_UV);
       });
 
       if (faceIsVisible)
