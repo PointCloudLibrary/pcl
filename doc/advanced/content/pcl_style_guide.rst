@@ -337,13 +337,7 @@ For consistent usage, headers should be included in the following order with alp
         .. code-block:: cpp
 
            #include <pcl/common/common.h>
-
-        .. code-block:: cpp
-  
            #include <pcl/simulation/camera.h>
-
-        .. code-block:: cpp
-
            #include <pcl/ml/dt/decision_forest.h>
 
     #.  The main PCL includes of common module. These are the header files in the ``pcl/common/include/pcl/`` directory.
@@ -353,13 +347,7 @@ For consistent usage, headers should be included in the following order with alp
         .. code-block:: cpp
 
            #include <pcl/memory.h>
-
-        .. code-block:: cpp
-  
            #include <pcl/pcl_macros.h>
-
-        .. code-block:: cpp
-
            #include <pcl/point_cloud.h>
 
 2.  Major 3rd-Party components of tests and modules
