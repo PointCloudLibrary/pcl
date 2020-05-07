@@ -108,7 +108,7 @@ pcl::CropHull<PointT>::getHullCloudRange ()
   {
     for (std::uint32_t const & idx : poly.vertices)
     {
-      Eigen::Vector3f pt = hull_cloud_->points[idx].getVector3fMap ();
+      Eigen::Vector3f pt = (*hull_cloud_)[idx].getVector3fMap ();
       for (int i = 0; i < 3; i++)
       {
         if (pt[i] < cloud_min[i]) cloud_min[i] = pt[i];
