@@ -179,8 +179,8 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBoxAndCenterTemplatePointClo
     if (!isXYZFinite(p))
       continue;
 
-    min_pos.cwiseMin (p.getVector3fMap ());
-    max_pos.cwiseMax (p.getVector3fMap ());
+    min_pos = min_pos.cwiseMin (p.getVector3fMap ());
+    max_pos = max_pos.cwiseMax (p.getVector3fMap ());
 
     geometric_center += p.getVector3fMap ();
 
