@@ -424,6 +424,9 @@ if(WITH_VTK AND NOT ANDROID)
       endif()
       if(${VTK_RENDERING_BACKEND} STREQUAL "OpenGL")
         set(VTK_RENDERING_BACKEND_OPENGL_VERSION "1")
+        message(DEPRECATION "The rendering backend OpenGL is deprecated and not available anymore since VTK 8.2."
+                            "Please switch to the OpenGL2 backend instead, which is available since VTK 6.2."
+                            "Support of the deprecated backend will be dropped with PCL 1.13.")
       elseif(${VTK_RENDERING_BACKEND} STREQUAL "OpenGL2")
         set(VTK_RENDERING_BACKEND_OPENGL_VERSION "2")
       endif()
