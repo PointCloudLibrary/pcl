@@ -423,7 +423,7 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT>
                     cloud_out.width * sizeof (PointT));
           }
         }
-        catch (pcl::BadArgumentException &e)
+        catch (pcl::BadArgumentException&)
         {
           PCL_ERROR ("[pcl::copyPointCloud] Unhandled interpolation type %d!\n", border_type);
         }
