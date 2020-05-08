@@ -35,33 +35,17 @@
  *
  */
 
-// Stdlib
 #include <cstdlib>
-#include <cmath>
-#include <climits>
 #include <thread>
 
 #include <boost/format.hpp>
-#include <boost/filesystem.hpp>
 
-// PCL input/output
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/point_cloud_color_handlers.h>
 
-//PCL other
-#include <pcl/filters/passthrough.h>
-#include <pcl/segmentation/supervoxel_clustering.h>
-
-// The segmentation class this example is for
 #include <pcl/segmentation/cpc_segmentation.h>
 
-// VTK
-#include <vtkImageReader2Factory.h>
-#include <vtkImageReader2.h>
-#include <vtkImageData.h>
-#include <vtkImageFlip.h>
 #include <vtkPolyLine.h>
 
 using namespace std::chrono_literals;

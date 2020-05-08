@@ -37,12 +37,8 @@
  *
  */
 
-// STL
 #include <iostream>
 
-// PCL
-#include <pcl/memory.h>  // for pcl::make_shared
-#include <pcl/point_types.h>
 #include <pcl/filters/extract_indices.h>
 
 int

@@ -43,12 +43,8 @@
  * members of the source PointType.
  */
 
-// STL
 #include <iostream>
 
-// PCL
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/common/io.h>
 
 static void

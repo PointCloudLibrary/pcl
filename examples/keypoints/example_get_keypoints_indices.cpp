@@ -37,10 +37,6 @@
 
 #include <iostream>
 
-#include <pcl/console/parse.h>
-#include <pcl/console/print.h>
-#include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/harris_3d.h>
 

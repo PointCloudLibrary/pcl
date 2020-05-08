@@ -38,17 +38,11 @@
  *
  */
 
-// STL
 #include <iostream>
 
-// PCL
-#include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/kdtree/kdtree.h>
 #include <pcl/segmentation/extract_clusters.h>
-
 
 int 
 main (int, char **argv)

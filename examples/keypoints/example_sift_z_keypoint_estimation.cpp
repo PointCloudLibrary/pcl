@@ -38,16 +38,10 @@
  *
  */
 
-// STL
 #include <iostream>
 
-// PCL
 #include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/common/io.h>
 #include <pcl/keypoints/sift_keypoint.h>
-#include <pcl/features/normal_3d.h>
-// #include <pcl/visualization/pcl_visualizer.h>
 
 /* This examples shows how to estimate the SIFT points based on the 
  * z gradient of the 3D points than using the Intensity gradient as

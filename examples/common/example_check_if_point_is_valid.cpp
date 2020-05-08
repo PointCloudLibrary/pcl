@@ -40,10 +40,6 @@
 #include <pcl/point_types.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 
-#include <iostream>
-#include <limits>
-
-
 int
 main ()
 {
