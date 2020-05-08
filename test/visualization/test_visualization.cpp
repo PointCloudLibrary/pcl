@@ -39,6 +39,7 @@
 
 #include <pcl/test/gtest.h>
 
+#include <pcl/common/generate.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
@@ -60,6 +61,28 @@ PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree3;
 search::KdTree<PointNormal>::Ptr tree4;
 
+// Test that updatepointcloud works when removing points. Ie. modifying vtk data structure to reflect modified pointcloud
+// See #4001 and #3452 for previously undetected error.
+////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, PCLVisualizer_updatePointCloud)
+{
+  pcl::common::CloudGenerator<pcl::PointXYZRGB, pcl::common::UniformGenerator<float> > generator;
+
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>());
+  int result = generator.fill(3, 1, *cloud);
+
+  // Setup a basic viewport window
+  pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
+  pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> color_green(cloud, 0, 225, 100);
+  viewer->addPointCloud<pcl::PointXYZRGB>(cloud, color_green, "sample cloud");
+
+  // remove points one by one)
+  while (!cloud->empty()) {
+    cloud->erase(cloud->end() - 1);
+    viewer->updatePointCloud(cloud, "sample cloud");
+    viewer->spinOnce(100);
+  }
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PCLVisualizer_camera)
 {
