@@ -56,7 +56,9 @@
 // PCL - visualziation
 //#include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/common/common.h>
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
+#endif
 
 //#include "vtkVBOPolyDataMapper.h"
 

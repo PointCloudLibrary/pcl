@@ -42,6 +42,7 @@ class vtkUnsignedCharArray;
 class vtkOpenGLExtensionManager;
 class vtkRenderWindow;
 
+PCL_DEPRECATED(1, 13, "The OpenGL backend of VTK is deprecated. Please switch to the OpenGL2 backend.")
 class PCL_EXPORTS vtkVertexBufferObject : public vtkObject
 {
 public:
