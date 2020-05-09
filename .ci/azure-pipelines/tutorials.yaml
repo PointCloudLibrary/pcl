@@ -39,5 +39,15 @@ jobs:
           cmake --build . -- install
         displayName: 'Install PCL'
       - script: |
-          $(Build.SourcesDirectory)/.ci/scripts/build_tutorials.sh -k -s -e $EXCLUDE_TUTORIALS $INSTALL_DIR/share/pcl-1.10 $(Build.SourcesDirectory) $BUILD_DIR/tutorials
+          cd $BUILD_DIR
+          major=$(find . -type f -exec sed -n -e \
+              's,#define PCL_MAJOR_VERSION \([0-9]\+\),\1,p' {} \;)
+          minor=$(find . -type f -exec sed -n -e \
+              's,#define PCL_MINOR_VERSION \([0-9]\+\),\1,p' {} \;)
+          $(Build.SourcesDirectory)/.ci/scripts/build_tutorials.sh \
+              -k -s \
+              -e $EXCLUDE_TUTORIALS \
+              $INSTALL_DIR/share/pcl-${major}.${minor} \
+              $(Build.SourcesDirectory) \
+              $BUILD_DIR/tutorials
         displayName: 'Build Tutorials'
