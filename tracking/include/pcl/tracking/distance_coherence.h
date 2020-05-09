@@ -1,8 +1,7 @@
 #pragma once
 
 #include <pcl/tracking/coherence.h>
-
-#include <boost/shared_ptr.hpp>
+#include <pcl/memory.h>
 
 namespace pcl {
 namespace tracking {

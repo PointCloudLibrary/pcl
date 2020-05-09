@@ -5,8 +5,7 @@
 #include <pcl/tracking/coherence.h>
 #include <pcl/tracking/tracker.h>
 #include <pcl/tracking/tracking.h>
-
-#include <boost/shared_ptr.hpp>
+#include <pcl/memory.h>
 
 #include <Eigen/Dense>
 
