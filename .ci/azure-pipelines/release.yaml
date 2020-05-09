@@ -109,7 +109,8 @@ stages:
         publishLocation: 'Container'
   - job: documentation
     displayName: Generate Documentation
-    container: pointcloudlibrary/doc
+    container:
+      image: pointcloudlibrary/doc
     pool:
       vmImage: 'ubuntu-latest'
     variables:
@@ -129,26 +130,3 @@ stages:
         PathtoPublish: '$(CHANGELOG)'
         ArtifactName: 'changelog.md'
         publishLocation: 'Container'
-#- stage: Release
-#  dependsOn: ["Source"]
-#  jobs:
-#  - job: release
-#    displayName: "Release the kraken"
-#    timeoutInMinutes: 360
-#    pool:
-#      vmImage: 'ubuntu-latest'
-#    steps:
-#    - task: GitHubRelease@1
-#      inputs:
-#        gitHubConnection: 'Release to GitHub'
-#        repositoryName: 'kunaltyagi/pcl'
-#        action: 'create'
-#        target: '$(Build.SourceVersion)'
-#        tagSource: 'gitTag'
-#        tagPattern: 'pcl-*'
-#        releaseNotesFilePath: '$(Build.ArtifactStagingDirectory)/release.md'
-#        isDraft: true
-#        isPreRelease: true
-#        changeLogCompareToRelease: 'lastFullRelease'
-#        changeLogType: 'issueBased'
-#        changeLogLabels: '[{ "label" : "changelog: new feature", "displayName" : "New", "state" : "closed" }]'
