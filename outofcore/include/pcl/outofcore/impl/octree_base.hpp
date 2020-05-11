@@ -518,7 +518,7 @@ namespace pcl
     template<typename ContainerT, typename PointT> void
     OutofcoreOctreeBase<ContainerT, PointT>::setLODFilter (const pcl::Filter<pcl::PCLPointCloud2>::Ptr& filter_arg)
     {
-      lod_filter_ptr_ = filter_arg;
+      lod_filter_ptr_ = std::static_pointer_cast<decltype(lod_filter_ptr_)>(filter_arg);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
