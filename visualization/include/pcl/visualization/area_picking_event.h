@@ -51,7 +51,7 @@ namespace pcl
     class PCL_EXPORTS AreaPickingEvent
     {
       public:
-        AreaPickingEvent (int nb_points, const std::map<std::string, Indices>& cloud_indices)
+        AreaPickingEvent (int nb_points, std::map<std::string, Indices> cloud_indices)
           : nb_points_ (nb_points)
           , cloud_indices_ (std::move(cloud_indices))
         {}
