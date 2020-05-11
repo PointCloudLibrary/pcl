@@ -48,7 +48,6 @@ is also explicitly mentioned in the deprecation compile time warnings
 
 **ABI changes** *that are still API compatible*
 
-* **[io]** Make grabbers move-only using `unique_ptr` [[#3626](https://github.com/PointCloudLibrary/pcl/pull/3626)]
 * **[filters]** NormalSpaceSampling - fix bucket assignment, remove use of raw distribution pointer, unit-test rewriting [[#3862](https://github.com/PointCloudLibrary/pcl/pull/3862)]
 * **[io]** Add pcl::weak_ptr to have a single-switch move from boost:: to std:: weak pointers [[#3753](https://github.com/PointCloudLibrary/pcl/pull/3753)]
 
