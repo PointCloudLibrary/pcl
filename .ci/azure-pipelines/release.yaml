@@ -13,12 +13,29 @@ resources:
 - repo: self
 
 variables:
-  dockerHub: "PersonalDockerHub"
-  dockerHubID: "kunaltyagi"
+  dockerHub: "PointCloudLibrary@hub.docker.com"
+  dockerHubID: "pointcloudlibrary"
+  isPreRelease: 0  # number of pre-release
 
 stages:
+- stage: Info
+  displayName: "PCL-rc${{variables.isPreRelease}}"
+  jobs:
+  - job: additional_info
+    displayName: "More Info"
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+      # find the commit hash on a quick non-forced update too
+      fetchDepth: 10
+    - script: |
+        echo "Prev release: $(git tag | sort -rV | head -1 | cut -d- -f 2)"
+        echo "Current release: "$(version)
+        # can't test easily if version variable is empty or not
+      displayName: "Test for and display version info"
 - stage: Debian
-  dependsOn: []
+  dependsOn: ["Info"]
   jobs:
   - job: BuildDebian
     displayName: "Build Debian Latest"
@@ -41,7 +58,7 @@ stages:
         dockerfile: '$(Build.SourcesDirectory)/.dev/docker/release/Dockerfile'
         tags: "$(tag)"
 - stage: ROS
-  dependsOn: []
+  dependsOn: ["Info"]
   jobs:
   - job: PerceptionPCL
     displayName: "perception_pcl compile"
@@ -80,7 +97,7 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     variables:
-      SOURCE_TAR: '$(Build.ArtifactStagingDirectory)/source.tar.gz'
+      PUBLISH_LOCATION: '$(Build.ArtifactStagingDirectory)'
     steps:
     - checkout: self
       # find the commit hash on a quick non-forced update too
@@ -93,19 +110,38 @@ stages:
         workingDirectory: '$(Build.SourcesDirectory)'
         failOnStderr: true
     - task: ArchiveFiles@2
-      displayName: "Create release archive"
+      displayName: "Create release archive (.tar.gz)"
       inputs:
         rootFolderOrFile: '$(Build.SourcesDirectory)'
         includeRootFolder: true
         archiveType: 'tar'
-        archiveFile: '$(SOURCE_TAR)'
+        archiveFile: '$(PUBLISH_LOCATION)/source.tar.gz'
         replaceExistingArchive: true
         verbose: true
+    - task: ArchiveFiles@2
+      displayName: "Create release archive (.zip)"
+      inputs:
+        rootFolderOrFile: '$(Build.SourcesDirectory)'
+        includeRootFolder: true
+        archiveType: 'zip'
+        archiveFile: '$(PUBLISH_LOCATION)/source.zip'
+        replaceExistingArchive: true
+        verbose: true
+    - script: |
+        for file in $(ls "$(PUBLISH_LOCATION)/"); do
+          sha256sum "$(PUBLISH_LOCATION)"/"${file}" >> $(PUBLISH_LOCATION)/sha256_checksums.txt
+          sha512sum "$(PUBLISH_LOCATION)"/"${file}" >> $(PUBLISH_LOCATION)/sha512_checksums.txt
+        done
+        echo "SHA 256 Checksums:"
+        cat $(PUBLISH_LOCATION)/sha256_checksums.txt
+        echo "SHA 512 Checksums:"
+        cat $(PUBLISH_LOCATION)/sha512_checksums.txt
+      displayName: "Generate checksum"
     - task: PublishBuildArtifacts@1
       displayName: "Publish archive"
       inputs:
-        PathtoPublish: '$(SOURCE_TAR)'
-        ArtifactName: 'source.tar.gz'
+        PathtoPublish: '$(PUBLISH_LOCATION)/'
+        ArtifactName: 'source'
         publishLocation: 'Container'
   - job: documentation
     displayName: Generate Documentation
@@ -121,12 +157,47 @@ stages:
       # find the commit hash on a quick non-forced update too
       fetchDepth: 10
     - script: |
-        $(Build.SourcesDirectory)/.dev/scripts/generate_changelog.py --with-misc > $(CHANGELOG)
+        $(Build.SourcesDirectory)/.dev/scripts/generate_changelog.py > $(CHANGELOG)
         pandoc -f markdown -t plain --wrap=none $(CHANGELOG)
       displayName: 'Generate Changelog'
     - task: PublishBuildArtifacts@1
       displayName: "Publish Changelog"
       inputs:
         PathtoPublish: '$(CHANGELOG)'
-        ArtifactName: 'changelog.md'
+        ArtifactName: 'changelog'
         publishLocation: 'Container'
+- stage: Release
+  dependsOn: ["Prepare"]
+  jobs:
+  - job: release
+    displayName: "Release the kraken"
+    timeoutInMinutes: 360
+    variables:
+      DOWNLOAD_LOCATION: '$(Build.ArtifactStagingDirectory)'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+      # find the commit hash on a quick non-forced update too
+      fetchDepth: 10
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        downloadType: 'all'  # can be anything except single
+        downloadPath: '$(DOWNLOAD_LOCATION)'
+    - task: GitHubRelease@1
+      inputs:
+        action: 'create'
+        addChangeLog: false
+        # assets, one pattern per line
+        assets: |
+          $(DOWNLOAD_LOCATION)/source/*
+        isDraft: true
+        isPreRelease: $(isPreRelease)
+        gitHubConnection: 'Release to GitHub'
+        releaseNotesFilePath: '$(DOWNLOAD_LOCATION)/changelog/changelog.md'
+        repositoryName: 'kunaltyagi/pcl'
+        tagSource: 'userSpecifiedTag'
+        tag: "pcl-${{variables.version}}-rc${{variables.isPreRelease}}"
+        tagPattern: 'pcl-*'
+        target: '$(Build.SourceVersion)'
+        title: 'PCL $(version)'
