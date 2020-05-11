@@ -130,7 +130,7 @@ PCL_ADD_EXECUTABLE(pcl_match_linemod_template COMPONENT ${SUBSYS_NAME} SOURCES m
 target_link_libraries(pcl_match_linemod_template pcl_common pcl_io pcl_recognition)
 
 PCL_ADD_EXECUTABLE(pcl_linemod_detection COMPONENT ${SUBSYS_NAME} SOURCES linemod_detection.cpp)
-target_link_libraries(pcl_linemod_detection pcl_common pcl_io pcl_recognition)
+target_link_libraries(pcl_linemod_detection pcl_common pcl_filters pcl_io pcl_recognition)
 
 PCL_ADD_EXECUTABLE(pcl_fast_bilateral_filter COMPONENT ${SUBSYS_NAME} SOURCES fast_bilateral_filter.cpp)
 target_link_libraries(pcl_fast_bilateral_filter pcl_common pcl_io pcl_filters)
