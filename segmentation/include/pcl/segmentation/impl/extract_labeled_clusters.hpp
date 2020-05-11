@@ -103,15 +103,29 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
     if (seed_queue.size () >= min_pts_per_cluster && seed_queue.size () <= max_pts_per_cluster)
     {
       pcl::PointIndices r;
-      r.indices.resize (seed_queue.size ());
-      for (std::size_t j = 0; j < seed_queue.size (); ++j)
-        r.indices[j] = seed_queue[j];
-
+      r.indices = std::move(seed_queue);
+      
       std::sort (r.indices.begin (), r.indices.end ());
       r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
 
       r.header = cloud.header;
-      labeled_clusters[cloud.points[i].label].push_back (r);   // We could avoid a copy by working directly in the vector
+      const auto label = cloud.points[i].label;
+
+      // find existing label group, if any
+      //  Map (or similar) would likely be more efficient if number of labels is high (>10-20?  needs benchmark)
+      const auto it = std::find_if( labeled_clusters.begin(), labeled_clusters.end()
+        , [label]( const std::vector<pcl::PointIndices>& pi ) {
+          return !pi.empty() && !pi.front().indices.empty() && pi.front().indices.front() == label;
+        }
+        );
+
+      if ( it == labeled_clusters.end() ) { // label group not found, add new
+        std::vector<pcl::PointIndices> group = {};
+        group.emplace_back(std::move(r));
+        labeled_clusters.emplace_back( std::move(group) );
+      } else {  // found existing label group; append
+        it->emplace_back(std::move(r));
+      }
     }
   }
 }
