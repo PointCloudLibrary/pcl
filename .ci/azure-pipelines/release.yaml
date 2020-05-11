@@ -1,0 +1,132 @@
+# Release PCL steps:
+# 1. Check tests:
+#   * debian:latest
+#   * perception_pcl
+# 2. Package for
+#   * MacOS
+#   * tar source release
+#   * Windows Installers
+
+trigger: none
+
+resources:
+- repo: self
+
+variables:
+  dockerHub: "PersonalDockerHub"
+  dockerHubID: "kunaltyagi"
+
+stages:
+- stage: Debian
+  dependsOn: []
+  jobs:
+  - job: BuildDebian
+    displayName: "Build Debian Latest"
+    timeoutInMinutes: 360
+    pool:
+      vmImage: 'ubuntu-latest'
+    variables:
+      tag: "release"
+    steps:
+    - checkout: self
+      # find the commit hash on a quick non-forced update too
+      fetchDepth: 10
+    - task: Docker@2
+      displayName: "Build docker image"
+      inputs:
+        command: build
+        arguments: |
+          --no-cache
+          -t $(dockerHubID)/release:$(tag)
+        dockerfile: '$(Build.SourcesDirectory)/.dev/docker/release/Dockerfile'
+        tags: "$(tag)"
+- stage: ROS
+  dependsOn: []
+  jobs:
+  - job: PerceptionPCL
+    displayName: "perception_pcl compile"
+    timeoutInMinutes: 360
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      matrix:
+        # Only ROS Melodic works with current releases of PCL
+        # Kinetic has stopped supporting any version later than PCL 1.7.2
+        ROS Melodic:
+          flavor: "melodic"
+    variables:
+      tag: "ros"
+    steps:
+    - checkout: self
+      # find the commit hash on a quick non-forced update too
+      fetchDepth: 10
+    - task: Docker@2
+      displayName: "Build docker image"
+      inputs:
+        command: build
+        arguments: |
+          --no-cache
+          --build-arg flavor=$(flavor)
+          -t $(dockerHubID)/release:$(tag)
+        dockerfile: '$(Build.SourcesDirectory)/.dev/docker/perception_pcl_ros/Dockerfile'
+        buildContext: '$(Build.SourcesDirectory)/.dev/docker/perception_pcl_ros'
+        tags: "$(tag)"
+- stage: Prepare
+  dependsOn: ["Debian", "ROS"]
+  jobs:
+  - job: src_code
+    displayName: "Package Source Code"
+    timeoutInMinutes: 360
+    pool:
+      vmImage: 'ubuntu-latest'
+    variables:
+      SOURCE_TAR: '$(Build.ArtifactStagingDirectory)/source.tar.gz'
+    steps:
+    - checkout: self
+      # find the commit hash on a quick non-forced update too
+      fetchDepth: 10
+    - task: Bash@3
+      displayName: "Remove git files"
+      inputs:
+        targetType: 'inline'
+        script: 'rm -fr ./.git'
+        workingDirectory: '$(Build.SourcesDirectory)'
+        failOnStderr: true
+    - task: ArchiveFiles@2
+      displayName: "Create release archive"
+      inputs:
+        rootFolderOrFile: '$(Build.SourcesDirectory)'
+        includeRootFolder: true
+        archiveType: 'tar'
+        archiveFile: '$(SOURCE_TAR)'
+        replaceExistingArchive: true
+        verbose: true
+    - task: PublishBuildArtifacts@1
+      displayName: "Publish archive"
+      inputs:
+        PathtoPublish: '$(SOURCE_TAR)'
+        ArtifactName: 'source.tar.gz'
+        publishLocation: 'Container'
+  - job: documentation
+    displayName: Generate Documentation
+    container:
+      image: pointcloudlibrary/doc
+    pool:
+      vmImage: 'ubuntu-latest'
+    variables:
+      BUILD_DIR: '$(Agent.BuildDirectory)/build'
+      CHANGELOG: '$(Build.ArtifactStagingDirectory)/changelog.md'
+    steps:
+    - checkout: self
+      # find the commit hash on a quick non-forced update too
+      fetchDepth: 10
+    - script: |
+        $(Build.SourcesDirectory)/.dev/scripts/generate_changelog.py --with-misc > $(CHANGELOG)
+        pandoc -f markdown -t plain --wrap=none $(CHANGELOG)
+      displayName: 'Generate Changelog'
+    - task: PublishBuildArtifacts@1
+      displayName: "Publish Changelog"
+      inputs:
+        PathtoPublish: '$(CHANGELOG)'
+        ArtifactName: 'changelog.md'
+        publishLocation: 'Container'

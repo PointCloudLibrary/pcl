@@ -1,0 +1,17 @@
+- git:
+    local-name: 'kinetic/perception_pcl'
+    uri: 'https://github.com/ros-perception/perception_pcl'
+    version: 'kinetic-devel'
+- git:
+    local-name: 'kinetic/pcl_conversions'
+    uri: 'https://github.com/ros-perception/pcl_conversions'
+    version: 'indigo-devel'
+- git:
+    local-name: 'kinetic/pcl_msgs'
+    uri: 'https://github.com/ros-perception/pcl_msgs'
+    version: 'indigo-devel'
+- git:
+    local-name: 'pcl'
+    uri: 'https://github.com/PointCloudLibrary/pcl'
+    # Kinetic doesn't support PCL 1.8 onwards
+    version: '1.7.2'
