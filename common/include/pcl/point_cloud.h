@@ -618,6 +618,14 @@ namespace pcl
       makeShared () const { return Ptr (new PointCloud<PointT> (*this)); }
 
     protected:
+      /**
+       * \brief Protected, non-virtual destructor
+       * \details This prevents deletion of a sub-class via pointer to the base-class. It is
+       * needed to throw a compile-time error when such undefined behavior is detected.
+       * The bitter alternative is to use a public virtual destructor
+       */
+      ~PointCloud = default;
+
       /** \brief This is motivated by ROS integration. Users should not need to access mapping_.
         * \todo Once mapping_ is removed, erase the explicitly defined copy constructor in PointCloud.
         */
