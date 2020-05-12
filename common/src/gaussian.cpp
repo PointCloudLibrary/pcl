@@ -138,7 +138,7 @@ pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
   assert (kernel.size () % 2 == 1);
   std::size_t kernel_width = kernel.size () -1;
   std::size_t radius = kernel.size () / 2;
-  std::unique_ptr<const pcl::PointCloud<float>> copied_input;
+  pcl::PointCloud<float> copied_input;
   const pcl::PointCloud<float>* unaliased_input;
   if (&input != &output)
   {
@@ -152,8 +152,8 @@ pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
   }
   else
   {
-    copied_input = std::make_unique<pcl::PointCloud<float>>(input);
-    unaliased_input = copied_input.get();
+    copied_input = input;
+    unaliased_input = &copied_input;
   }
   
   std::size_t i;
@@ -182,7 +182,7 @@ pcl::GaussianKernel::convolveCols (const pcl::PointCloud<float>& input,
   assert (kernel.size () % 2 == 1);
   std::size_t kernel_width = kernel.size () -1;
   std::size_t radius = kernel.size () / 2;
-  std::unique_ptr<const pcl::PointCloud<float>> copied_input;
+  pcl::PointCloud<float> copied_input;
   const pcl::PointCloud<float>* unaliased_input;
   if (&input != &output)
   {
@@ -196,8 +196,8 @@ pcl::GaussianKernel::convolveCols (const pcl::PointCloud<float>& input,
   }
   else
   {
-    copied_input = std::make_unique<pcl::PointCloud<float>>(input);
-    unaliased_input = copied_input.get();
+    copied_input = input;
+    unaliased_input = &copied_input;
   }
 
   std::size_t j;
