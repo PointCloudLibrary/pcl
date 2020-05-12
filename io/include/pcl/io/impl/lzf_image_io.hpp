@@ -39,6 +39,7 @@
 #define PCL_LZF_IMAGE_IO_HPP_
 
 #include <pcl/console/print.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/io/debayer.h>
 
 #include <cstddef>
@@ -162,7 +163,7 @@ LZFDepth16ImageReader::readOMP (const std::string &filename,
   shared(cloud, constant_x, constant_y, uncompressed_data) \
   num_threads(num_threads)
 #else
-  (void) num_threads; // suppress warning if OMP is not present
+  pcl::utils::ignore(num_threads); // suppress warning if OMP is not present
 #endif
   for (int i = 0; i < static_cast< int> (cloud.size ()); ++i)
   {
@@ -293,7 +294,7 @@ LZFRGB24ImageReader::readOMP (
   shared(cloud, color_b, color_g, color_r) \
   num_threads(num_threads)
 #else
-  (void) num_threads; // suppress warning if OMP is not present
+  pcl::utils::ignore(num_threads); // suppress warning if OMP is not present
 #endif//_OPENMP
   for (long int i = 0; i < cloud.size (); ++i)
   {
@@ -408,7 +409,7 @@ LZFYUV422ImageReader::readOMP (
   shared(cloud, color_u, color_v, color_y, wh2) \
   num_threads(num_threads)
 #else
-  (void) num_threads; //suppress warning if OMP is not present
+  pcl::utils::ignore(num_threads); //suppress warning if OMP is not present
 #endif//_OPENMP
   for (int i = 0; i < wh2; ++i)
   {
@@ -523,7 +524,7 @@ LZFBayer8ImageReader::readOMP (
   default(none)          \
   num_threads(num_threads)
 #else
-  (void) num_threads; //suppress warning if OMP is not present
+  pcl::utils::ignore(num_threads); //suppress warning if OMP is not present
 #endif//_OPENMP
   for (long int i = 0; i < cloud.size (); ++i)
   {

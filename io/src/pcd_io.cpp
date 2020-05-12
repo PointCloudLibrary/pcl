@@ -42,6 +42,7 @@
 #include <string>
 #include <cstdlib>
 #include <pcl/io/boost.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/common/io.h>
 #include <pcl/io/low_level_io.h>
 #include <pcl/io/lzf.h>
@@ -58,8 +59,8 @@ void
 pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
                                        boost::interprocess::file_lock &lock)
 {
-  (void)file_name;
-  (void)lock;
+  pcl::utils::ignore(file_name);
+  pcl::utils::ignore(lock);
 #ifndef WIN32
 #ifndef NO_MANDATORY_LOCKING
   // Attempt to lock the file.
@@ -88,11 +89,10 @@ void
 pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
                                          boost::interprocess::file_lock &lock)
 {
-  (void)file_name;
-  (void)lock;
+  pcl::utils::ignore(file_name);
+  pcl::utils::ignore(lock);
 #ifndef WIN32
 #ifndef NO_MANDATORY_LOCKING
-  (void)file_name;
   namespace fs = boost::filesystem;
   try
   {

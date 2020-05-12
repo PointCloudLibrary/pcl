@@ -50,6 +50,7 @@
 #include <exception>
 
 #include <pcl/common/common.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/visualization/common/common.h>
 #include <pcl/outofcore/octree_base_node.h>
 #include <pcl/filters/random_sample.h>
@@ -1422,7 +1423,7 @@ namespace pcl
               PCL_DEBUG ("[pcl::outofocre::OutofcoreOctreeBaseNode::%s] Size of cloud before: %lu\n", __FUNCTION__, dst_blob->width*dst_blob->height );
               PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Concatenating point cloud\n", __FUNCTION__);
               int res = pcl::concatenate (*dst_blob, *tmp_blob, *dst_blob);
-              (void)res;
+              pcl::utils::ignore(res);
               assert (res == 1);
 
               PCL_DEBUG ("[pcl::outofocre::OutofcoreOctreeBaseNode::%s] Size of cloud after: %lu\n", __FUNCTION__, dst_blob->width*dst_blob->height );
@@ -1470,9 +1471,9 @@ namespace pcl
               //concatenate those points into the returned dst_blob
               PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Concatenating point cloud in place\n", __FUNCTION__);
               std::uint64_t orig_points_in_destination = dst_blob->width*dst_blob->height;
-              (void)orig_points_in_destination;
+              pcl::utils::ignore(orig_points_in_destination);
               int res = pcl::concatenate (*dst_blob, *tmp_blob_within_bb, *dst_blob);
-              (void)res;
+              pcl::utils::ignore(res);
               assert (res == 1);
               assert (dst_blob->width*dst_blob->height == indices.size () + orig_points_in_destination);
 

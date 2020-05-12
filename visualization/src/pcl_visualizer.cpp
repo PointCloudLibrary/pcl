@@ -106,6 +106,7 @@
 #include <boost/uuid/sha1.hpp>
 #endif
 #include <boost/filesystem.hpp>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/console/parse.h>
 
 // Support for VTK 7.1 upwards
@@ -4382,7 +4383,7 @@ pcl::visualization::PCLVisualizer::setUseVbos (bool use_vbos)
   style_->setUseVbos (use_vbos_);
 #else
   PCL_WARN ("[PCLVisualizer::setUseVbos] Has no effect when OpenGL version is ≥ 2\n");
-  (void) use_vbos;
+  pcl::utils::ignore(use_vbos);
 #endif
 }
 

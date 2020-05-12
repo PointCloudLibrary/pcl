@@ -16,6 +16,9 @@
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
 
+#include <pcl/common/utils.h> // pcl::utils::ignore
+
+
 FILE* ON_FileStream::Open( const wchar_t* filename, const wchar_t* mode )
 {
   FILE* fp = 0;
@@ -13305,7 +13308,7 @@ bool ON_BinaryFile::AtEnd() const
       {
         int buffer;
         std::size_t res = fread( &buffer, 1, 1, m_fp );
-        (void) res;
+        pcl::utils::ignore(res);
         if ( feof( m_fp ) ) 
         {
           rc = true;

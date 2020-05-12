@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <pcl/common/utils.h> // pcl::utils::ignore
+
 #include <cmath>
 #include <cstdlib>
 
@@ -68,7 +70,7 @@ namespace Metrics
         ResultType
         operator() (Iterator1 a, Iterator2 b, std::size_t size, ResultType worst_dist = -1) const
         {
-          (void)worst_dist;
+          pcl::utils::ignore(worst_dist);
           ResultType result = ResultType ();
           ResultType min0, min1, min2, min3;
           ResultType max0, max1, max2, max3;

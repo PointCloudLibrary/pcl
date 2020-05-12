@@ -47,6 +47,7 @@
 // Boost
 #include <boost/uuid/random_generator.hpp>
 
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/octree_abstract_node_container.h>
 #include <pcl/io/pcd_io.h>
@@ -237,10 +238,10 @@ namespace pcl
             for (std::uint64_t i = 0; i < num; i++)
             {
               int seekret = _fseeki64 (f, i * sizeof (PointT), SEEK_SET);
-              (void)seekret;
+              pcl::utils::ignore(seekret);
               assert (seekret == 0);
               std::size_t readlen = fread (loc, sizeof (PointT), 1, f);
-              (void)readlen;
+              pcl::utils::ignore(readlen);
               assert (readlen == 1);
 
               //of << p.x << "\t" << p.y << "\t" << p.z << "\n";
@@ -252,7 +253,7 @@ namespace pcl
               fwrite (ss.str ().c_str (), 1, ss.str ().size (), fxyz);
             }
             int res = fclose (f);
-            (void)res;
+            pcl::utils::ignore(res);
             assert (res == 0);
             res = fclose (fxyz);
             assert (res == 0);
