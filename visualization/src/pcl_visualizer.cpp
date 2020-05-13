@@ -3160,8 +3160,33 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
 
   // Update the cells
   cells = vtkSmartPointer<vtkCellArray>::New ();
-  vtkIdType *cell = cells->WritePointer (verts.size (), verts.size () * (max_size_of_polygon + 1));
   int idx = 0;
+
+#ifdef VTK_CELL_ARRAY_V2
+  if (!lookup.empty ())
+  {
+    for (std::size_t i = 0; i < verts.size (); ++i, ++idx)
+    {
+      std::size_t n_points = verts[i].vertices.size ();
+      cells->InsertNextCell(n_points);
+      for (std::size_t j = 0; j < n_points; j++, ++idx)
+        cells->InsertCellPoint(lookup[verts[i].vertices[j]]);
+    }
+  }
+  else
+  {
+    for (std::size_t i = 0; i < verts.size (); ++i, ++idx)
+    {
+      std::size_t n_points = verts[i].vertices.size ();
+      cells->InsertNextCell(n_points);
+      for (std::size_t j = 0; j < n_points; j++, ++idx)
+      {
+        cells->InsertCellPoint(verts[i].vertices[j]);
+      }
+    }
+  }
+#else
+  vtkIdType *cell = cells->WritePointer (verts.size (), verts.size () * (max_size_of_polygon + 1));
   if (!lookup.empty ())
   {
     for (std::size_t i = 0; i < verts.size (); ++i, ++idx)
@@ -3182,6 +3207,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
         *cell = verts[i].vertices[j];
     }
   }
+#endif
   cells->GetData ()->SetNumberOfValues (idx);
   cells->Squeeze ();
   // Set the the vertices
@@ -3552,7 +3578,12 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 
   //center object
   double CoM[3];
-  vtkIdType npts_com = 0, *ptIds_com = nullptr;
+  vtkIdType npts_com = 0;
+#ifdef VTK_CELL_ARRAY_V2
+  vtkIdType const *ptIds_com = nullptr;
+#else
+  vtkIdType *ptIds_com = nullptr;
+#endif
   vtkSmartPointer<vtkCellArray> cells_com = polydata->GetPolys ();
 
   double center[3], p1_com[3], p2_com[3], p3_com[3], totalArea_com = 0;
@@ -3611,7 +3642,12 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   // * Compute area of the mesh
   //////////////////////////////
   vtkSmartPointer<vtkCellArray> cells = mapper->GetInput ()->GetPolys ();
-  vtkIdType npts = 0, *ptIds = nullptr;
+  vtkIdType npts = 0;
+#ifdef VTK_CELL_ARRAY_V2
+  vtkIdType const *ptIds = nullptr;
+#else
+  vtkIdType *ptIds = nullptr;
+#endif
 
   double p1[3], p2[3], p3[3], totalArea = 0;
   for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds);)
@@ -3830,7 +3866,12 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     polydata->BuildCells ();
 
     vtkSmartPointer<vtkCellArray> cells = polydata->GetPolys ();
-    vtkIdType npts = 0, *ptIds = nullptr;
+    vtkIdType npts = 0;
+#ifdef VTK_CELL_ARRAY_V2
+    vtkIdType const *ptIds = nullptr;
+#else
+    vtkIdType *ptIds = nullptr;
+#endif
 
     double p1[3], p2[3], p3[3], area, totalArea = 0;
     for (cells->InitTraversal (); cells->GetNextCell (npts, ptIds);)

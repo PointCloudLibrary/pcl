@@ -26,6 +26,7 @@
 #include <vtkTransformFilter.h>
 #include <vtkTriangle.h>
 #include <vtkWorldPointPicker.h>
+#include <vtkIdTypeArray.h>
 
 #include <array>
 
@@ -34,7 +35,13 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
 {
   // center object
   double CoM[3];
-  vtkIdType npts_com = 0, *ptIds_com = nullptr;
+  vtkIdType npts_com = 0;
+#ifdef VTK_CELL_ARRAY_V2
+  vtkIdType const *ptIds_com = nullptr;
+#else
+  vtkIdType *ptIds_com = nullptr;
+#endif
+
   vtkSmartPointer<vtkCellArray> cells_com = polydata_->GetPolys();
 
   double center[3], p1_com[3], p2_com[3], p3_com[3], totalArea_com = 0;
@@ -95,7 +102,12 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
   // * Compute area of the mesh
   //////////////////////////////
   vtkSmartPointer<vtkCellArray> cells = mapper->GetInput()->GetPolys();
-  vtkIdType npts = 0, *ptIds = nullptr;
+  vtkIdType npts = 0;
+#ifdef VTK_CELL_ARRAY_V2
+  vtkIdType const *ptIds = nullptr;
+#else
+  vtkIdType *ptIds = nullptr;
+#endif
 
   double p1[3], p2[3], p3[3], totalArea = 0;
   for (cells->InitTraversal(); cells->GetNextCell(npts, ptIds);) {
@@ -363,7 +375,12 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
       polydata->BuildCells();
 
       vtkSmartPointer<vtkCellArray> cells = polydata->GetPolys();
-      vtkIdType npts = 0, *ptIds = nullptr;
+      vtkIdType npts = 0;
+#ifdef VTK_CELL_ARRAY_V2
+      vtkIdType const *ptIds = nullptr;
+#else
+      vtkIdType *ptIds = nullptr;
+#endif
 
       double p1[3], p2[3], p3[3], area, totalArea = 0;
       for (cells->InitTraversal(); cells->GetNextCell(npts, ptIds);) {
