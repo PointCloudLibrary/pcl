@@ -70,7 +70,7 @@ else()
 endif()
 
 find_file(QHULL_HEADER
-          NAMES libqhull/libqhull.h qhull.h
+          NAMES libqhull/libqhull.h
           HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}" "${QHULL_INCLUDE_DIR}"
           PATHS "$ENV{PROGRAMFILES}/QHull" "$ENV{PROGRAMW6432}/QHull"
           PATH_SUFFIXES qhull src/libqhull libqhull include)
@@ -84,7 +84,6 @@ if(QHULL_HEADER)
   elseif("${qhull_header}" STREQUAL "libqhull")
     get_filename_component(QHULL_INCLUDE_DIR ${QHULL_HEADER} PATH)
     get_filename_component(QHULL_INCLUDE_DIR ${QHULL_INCLUDE_DIR} PATH)
-  endif()
 else()
   set(QHULL_INCLUDE_DIR "QHULL_INCLUDE_DIR-NOTFOUND")
 endif()
