@@ -61,7 +61,7 @@
 #include <pcl/outofcore/octree_disk_container.h>
 
 //allows operation on POSIX
-#if !defined WIN32
+#if !defined _WIN32
 #define _fseeki64 fseeko
 #elif defined __MINGW32__
 #define _fseeki64 fseeko64
