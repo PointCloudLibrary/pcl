@@ -367,27 +367,29 @@ endif()
 option(WITH_VTK "Build VTK-Visualizations" TRUE)
 if(WITH_VTK AND NOT ANDROID)
   set(PCL_VTK_COMPONENTS
-    vtkChartsCore
-    vtkCommonCore
-    vtkCommonDataModel
-    vtkCommonExecutionModel
-    vtkFiltersCore
-    vtkFiltersExtraction
-    vtkFiltersModeling
-    vtkImagingCore
-    vtkImagingSources
-    vtkInteractionStyle
-    vtkInteractionWidgets
-    vtkIOCore
-    vtkIOGeometry
-    vtkIOImage
-    vtkIOLegacy
-    vtkIOPLY
-    vtkRenderingAnnotation
-    vtkRenderingLOD
-    vtkViewsContext2D
+    ChartsCore
+    CommonCore
+    CommonDataModel
+    CommonExecutionModel
+    FiltersCore
+    FiltersExtraction
+    FiltersGeometry
+    FiltersModeling
+    ImagingCore
+    ImagingSources
+    InteractionStyle
+    InteractionWidgets
+    IOCore
+    IOGeometry
+    IOImage
+    IOLegacy
+    IOPLY
+    RenderingAnnotation
+    RenderingLOD
+    ViewsContext2D
   )
-  find_package(VTK COMPONENTS ${PCL_VTK_COMPONENTS})
+
+  find_package(VTK COMPONENTS)
   if(VTK_FOUND AND ("${VTK_VERSION}" VERSION_LESS 6.2))
     message(WARNING "The minimum required version of VTK is 6.2, but found ${VTK_VERSION}")
     set(VTK_FOUND FALSE)
@@ -397,17 +399,25 @@ if(WITH_VTK AND NOT ANDROID)
     if(NOT DEFINED VTK_RENDERING_BACKEND)
       # On old VTK versions this variable does not exist. In this case it is
       # safe to assume OpenGL backend
-      set(VTK_RENDERING_BACKEND "OpenGL")
+      if(${VTK_VERSION} VERSION_LESS 9.0)
+        set(VTK_RENDERING_BACKEND "OpenGL")
+        else()
+        set(VTK_RENDERING_BACKEND "OpenGL2")
+      endif()
     endif()
-    list(APPEND PCL_VTK_COMPONENTS vtkRenderingContext${VTK_RENDERING_BACKEND})
+    list(APPEND PCL_VTK_COMPONENTS RenderingContext${VTK_RENDERING_BACKEND})
 
     if(WITH_QT)
       if(";${VTK_MODULES_ENABLED};" MATCHES ";vtkGUISupportQt;" AND ";${VTK_MODULES_ENABLED};" MATCHES ";vtkRenderingQt;")
         set(QVTK_FOUND ON)
-        list(APPEND PCL_VTK_COMPONENTS vtkRenderingQt vtkGUISupportQt)
+        list(APPEND PCL_VTK_COMPONENTS RenderingQt GUISupportQt)
       else()
         unset(QVTK_FOUND)
       endif()
+    endif()
+
+    if(${VTK_VERSION} VERSION_LESS 9.0)
+      list(TRANSFORM PCL_VTK_COMPONENTS PREPEND vtk PCL_VTK_COMPONENTS)
     endif()
 
     find_package(VTK COMPONENTS ${PCL_VTK_COMPONENTS})
@@ -430,6 +440,7 @@ if(WITH_VTK AND NOT ANDROID)
       elseif(${VTK_RENDERING_BACKEND} STREQUAL "OpenGL2")
         set(VTK_RENDERING_BACKEND_OPENGL_VERSION "2")
       endif()
+
     else()
       set(VTK_FOUND OFF)
       message("Warning: You are to build PCL in STATIC but VTK is SHARED!")
