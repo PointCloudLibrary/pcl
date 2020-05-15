@@ -63,6 +63,10 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr another_cloud_;
 pcl::PointCloud<pcl::Normal>::Ptr normals_;
 pcl::PointCloud<pcl::Normal>::Ptr another_normals_;
 
+pcl::PointCloud<pcl::PointXYZL>::Ptr labeled_cloud_;
+static const std::size_t LABELED_CLOUD_NUM_LABELS_ = 5;
+static const std::size_t LABELED_CLOUD_NUM_PTS_PER_CLUSTER_ = 5;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (RegionGrowingRGBTest, Segment)
 {
@@ -401,33 +405,18 @@ TEST (ExtractLabeledEuclideanClusters, SegmentEmptyCloud)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-TEST (ExtractLabeledEuclideanClusters, SegmentFromPoints)
+TEST (ExtractLabeledEuclideanClusters, SegmentFromPointsVec)
 {
-  static const std::size_t NUM_LABELS = 5;
-  static const std::size_t NUM_PTS_PER_CLUSTER = 5;
-
-  pcl::PointCloud<pcl::PointXYZL>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZL>);
   pcl::LabeledEuclideanClusterExtraction<pcl::PointXYZL> ec;
-  
-  // create NUM_LABELS labels, each with 1 cluster of NUM_PTS_PER_CLUSTER points
-  for (std::size_t i = 0; i < NUM_LABELS; ++i)
-  {
-    for (std::size_t j = 0; j < NUM_PTS_PER_CLUSTER; ++j) {
-      auto pt = pcl::PointXYZL();
-      pt.x = pt.y = pt.z = static_cast<float>( j );
-      pt.label = static_cast<std::uint32_t> (i);
-      cloud->points.emplace_back(std::move(pt));
-    }
-  }
 
-  ec.setInputCloud (cloud);
+  ec.setInputCloud (labeled_cloud_);
   ec.setClusterTolerance( std::numeric_limits<double>::max() ); // no distance limit
 
   std::vector < std::vector< pcl::PointIndices > > labeled_clusters;
   ec.extract (labeled_clusters);
   
-  int num_of_labels = static_cast<int> (labeled_clusters.size ());
-  EXPECT_EQ (NUM_LABELS, num_of_labels);
+  const auto num_of_labels = labeled_clusters.size ();
+  EXPECT_EQ (LABELED_CLOUD_NUM_LABELS_, num_of_labels);
 
   for ( std::size_t i = 0; i < labeled_clusters.size(); ++i ) 
   {
@@ -436,12 +425,41 @@ TEST (ExtractLabeledEuclideanClusters, SegmentFromPoints)
     EXPECT_EQ( 1, label.size() );          // 1 cluster per label
 
     const auto& cluster = label.front();
-    EXPECT_EQ( NUM_PTS_PER_CLUSTER, cluster.indices.size() );  // n points per cluster
+    EXPECT_EQ( LABELED_CLOUD_NUM_PTS_PER_CLUSTER_, cluster.indices.size() );  // n points per cluster
     
     for ( const auto idx : cluster.indices ) // check all labels in the cluster
-      EXPECT_EQ( i, cloud->points[idx].label ); // get point from cloud, check its label
+      EXPECT_EQ( i, (*labeled_cloud_)[idx].label ); // get point from cloud, check its label
   }
+}
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+TEST (ExtractLabeledEuclideanClusters, SegmentFromPointsMap)
+{
+  pcl::LabeledEuclideanClusterExtraction<pcl::PointXYZL> ec;
+
+  ec.setInputCloud (labeled_cloud_);
+  ec.setClusterTolerance( std::numeric_limits<double>::max() ); // no distance limit
+
+  pcl::labeled_cluster_map_t labeled_clusters = {};
+  ec.extract (labeled_clusters);
+  
+  const auto num_of_labels = labeled_clusters.size ();
+  EXPECT_EQ (LABELED_CLOUD_NUM_LABELS_, num_of_labels);
+
+  for ( const auto& label : labeled_clusters )
+  {
+    const auto& clusters = label.second;
+    EXPECT_EQ( 1, clusters.size() );          // 1 cluster per label
+
+    for ( const auto& cluster : clusters )
+    {
+      EXPECT_EQ( LABELED_CLOUD_NUM_PTS_PER_CLUSTER_, cluster.size() );  // n points per cluster
+    
+      for ( const auto idx : cluster ) // check all labels in the cluster
+        EXPECT_EQ( label.first, (*labeled_cloud_)[idx].label ); // get point from cloud, check its label
+    }
+
+  }
 }
   
 
@@ -497,6 +515,20 @@ main (int argc, char** argv)
   normal_estimator.setInputCloud(another_cloud_);
   normal_estimator.setKSearch(30);
   normal_estimator.compute(*another_normals_);
+
+  // load labeled cloud
+  labeled_cloud_ = (new pcl::PointCloud<pcl::PointXYZL>)->makeShared();
+  
+  // create LABELED_CLOUD_NUM_LABELS_ labels, each with 1 cluster of LABELED_CLOUD_NUM_PTS_PER_CLUSTER_ points
+  for (std::size_t i = 0; i < LABELED_CLOUD_NUM_LABELS_; ++i)
+  {
+    for (std::size_t j = 0; j < LABELED_CLOUD_NUM_PTS_PER_CLUSTER_; ++j) {
+      auto pt = pcl::PointXYZL();
+      pt.x = pt.y = pt.z = static_cast<float>( j );
+      pt.label = static_cast<std::uint32_t> (i);
+      labeled_cloud_->points.emplace_back(std::move(pt));
+    }
+  }
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
