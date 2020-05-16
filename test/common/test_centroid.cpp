@@ -61,26 +61,31 @@ TEST (PCL, compute3DCentroidFloat)
   Indices indices;
   PointXYZ point;
   PointCloud<PointXYZ> cloud;
-  Eigen::Vector4f centroid;
+  Eigen::Vector4f centroid = Eigen::Vector4f::Random();
+  Eigen::Vector4f old_centroid = centroid;
 
   // test empty cloud which is dense
   cloud.is_dense = true;
   EXPECT_EQ (compute3DCentroid (cloud, centroid), 0);
+  EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
 
   // test empty cloud non_dense
   cloud.is_dense = false;
   EXPECT_EQ (compute3DCentroid (cloud, centroid), 0);
+  EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
 
-  // test non-empty cloud non_dense
+  // test non-empty cloud non_dense (with only invalid points)
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
   EXPECT_EQ (compute3DCentroid (cloud, centroid), 0);
+  EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
 
-  // test non-empty cloud non_dense
+  // test non-empty cloud non_dense (with only invalid points)
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
   indices.push_back (1);
   EXPECT_EQ (compute3DCentroid (cloud, indices, centroid), 0);
+  EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
 
   cloud.clear ();
   indices.clear ();
@@ -167,26 +172,32 @@ TEST (PCL, compute3DCentroidDouble)
   Indices indices;
   PointXYZ point;
   PointCloud<PointXYZ> cloud;
-  Eigen::Vector4d centroid;
+  Eigen::Vector4d centroid = Eigen::Vector4d::Random();
+  Eigen::Vector4d old_centroid = centroid;
+
 
   // test empty cloud which is dense
   cloud.is_dense = true;
   EXPECT_EQ (compute3DCentroid (cloud, centroid), 0);
+  EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
 
   // test empty cloud non_dense
   cloud.is_dense = false;
   EXPECT_EQ (compute3DCentroid (cloud, centroid), 0);
+  EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
 
-  // test non-empty cloud non_dense
+  // test non-empty cloud non_dense (with only invalid points)
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
   EXPECT_EQ (compute3DCentroid (cloud, centroid), 0);
+  EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
 
-  // test non-empty cloud non_dense
+  // test non-empty cloud non_dense (with only invalid points)
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
   indices.push_back (1);
   EXPECT_EQ (compute3DCentroid (cloud, indices, centroid), 0);
+  EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
 
   cloud.clear ();
   indices.clear ();
@@ -324,6 +335,14 @@ TEST (PCL, compute3DCentroidCloudIterator)
 
     EXPECT_EQ (8, compute3DCentroid (it, centroid_f));
     EXPECT_EQ_VECTORS (Eigen::Vector4f (0.f, 0.f, 0.f, 1.f), centroid_f);
+
+    Eigen::Vector4f old_centroid = centroid_f;
+    indices.clear ();
+    indices.push_back (cloud.size () - 1);
+    ConstCloudIterator<PointXYZ> it2 (cloud, indices);
+    // zero valid points and centroid remains unchanged
+    EXPECT_EQ (0, compute3DCentroid (it2, centroid_f));
+    EXPECT_EQ (old_centroid, centroid_f);
   }
 }
 
@@ -335,7 +354,8 @@ TEST (PCL, computeCovarianceMatrix)
   PointXYZ point;
   Indices indices;
   Eigen::Vector4f centroid;
-  Eigen::Matrix3f covariance_matrix;
+  Eigen::Matrix3f covariance_matrix = Eigen::Matrix3f::Random();
+  Eigen::Matrix3f old_covariance_matrix = covariance_matrix;
 
   centroid [0] = 0;
   centroid [1] = 0;
@@ -344,21 +364,25 @@ TEST (PCL, computeCovarianceMatrix)
   // test empty cloud which is dense
   cloud.is_dense = true;
   EXPECT_EQ (computeCovarianceMatrix (cloud, centroid, covariance_matrix), 0);
+  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
 
   // test empty cloud non_dense
   cloud.is_dense = false;
   EXPECT_EQ (computeCovarianceMatrix (cloud, centroid, covariance_matrix), 0);
+  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
 
-  // test non-empty cloud non_dense
+  // test non-empty cloud non_dense (with only invalid points)
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
   EXPECT_EQ (computeCovarianceMatrix (cloud, centroid, covariance_matrix), 0);
+  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
 
-  // test non-empty cloud non_dense
+  // test non-empty cloud non_dense (with only invalid points)
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
   indices.push_back (1);
   EXPECT_EQ (computeCovarianceMatrix (cloud, indices, centroid, covariance_matrix), 0);
+  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
 
   cloud.clear ();
   indices.clear ();
@@ -451,7 +475,8 @@ TEST (PCL, computeCovarianceMatrixNormalized)
   PointXYZ point;
   Indices indices;
   Eigen::Vector4f centroid;
-  Eigen::Matrix3f covariance_matrix;
+  Eigen::Matrix3f covariance_matrix = Eigen::Matrix3f::Random();
+  Eigen::Matrix3f old_covariance_matrix = covariance_matrix;
 
   centroid [0] = 0;
   centroid [1] = 0;
@@ -460,21 +485,25 @@ TEST (PCL, computeCovarianceMatrixNormalized)
   // test empty cloud which is dense
   cloud.is_dense = true;
   EXPECT_EQ (computeCovarianceMatrixNormalized (cloud, centroid, covariance_matrix), 0);
+  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
 
   // test empty cloud non_dense
   cloud.is_dense = false;
   EXPECT_EQ (computeCovarianceMatrixNormalized (cloud, centroid, covariance_matrix), 0);
+  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
 
   // test non-empty cloud non_dense
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
   EXPECT_EQ (computeCovarianceMatrixNormalized (cloud, centroid, covariance_matrix), 0);
+  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
 
   // test non-empty cloud non_dense
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
   indices.push_back (1);
   EXPECT_EQ (computeCovarianceMatrixNormalized (cloud, indices, centroid, covariance_matrix), 0);
+  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
 
   cloud.clear ();
   indices.clear ();
@@ -568,26 +597,31 @@ TEST (PCL, computeDemeanedCovariance)
   PointCloud<PointXYZ> cloud;
   PointXYZ point;
   Indices indices;
-  Eigen::Matrix3f covariance_matrix;
+  Eigen::Matrix3f covariance_matrix = Eigen::Matrix3f::Random();
+  Eigen::Matrix3f old_covariance_matrix = covariance_matrix;
 
   // test empty cloud which is dense
   cloud.is_dense = true;
   EXPECT_EQ (computeCovarianceMatrix (cloud, covariance_matrix), 0);
+  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
 
   // test empty cloud non_dense
   cloud.is_dense = false;
   EXPECT_EQ (computeCovarianceMatrix (cloud, covariance_matrix), 0);
+  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
 
   // test non-empty cloud non_dense
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
   EXPECT_EQ (computeCovarianceMatrix (cloud, covariance_matrix), 0);
+  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
 
   // test non-empty cloud non_dense
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
   indices.push_back (1);
   EXPECT_EQ (computeCovarianceMatrix (cloud, indices, covariance_matrix), 0);
+  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
 
   cloud.clear ();
   indices.clear ();
@@ -674,27 +708,37 @@ TEST (PCL, computeMeanAndCovariance)
   PointCloud<PointXYZ> cloud;
   PointXYZ point;
   Indices indices;
-  Eigen::Matrix3f covariance_matrix;
-  Eigen::Vector4f centroid;
+  Eigen::Matrix3f covariance_matrix = Eigen::Matrix3f::Random();
+  Eigen::Vector4f centroid = Eigen::Vector4f::Random();
+  Eigen::Matrix3f old_covariance_matrix = covariance_matrix;
+  Eigen::Vector4f old_centroid = centroid;
 
   // test empty cloud which is dense
   cloud.is_dense = true;
   EXPECT_EQ (computeMeanAndCovarianceMatrix (cloud, covariance_matrix, centroid), 0);
+  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
+  EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
 
   // test empty cloud non_dense
   cloud.is_dense = false;
   EXPECT_EQ (computeMeanAndCovarianceMatrix (cloud, covariance_matrix, centroid), 0);
+  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
+  EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
 
   // test non-empty cloud non_dense
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
   EXPECT_EQ (computeMeanAndCovarianceMatrix (cloud, covariance_matrix, centroid), 0);
+  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
+  EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
 
   // test non-empty cloud non_dense
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
   indices.push_back (1);
   EXPECT_EQ (computeMeanAndCovarianceMatrix (cloud, indices, covariance_matrix, centroid), 0);
+  EXPECT_EQ (old_covariance_matrix, covariance_matrix); // cov. matrix remains unchanged
+  EXPECT_EQ (old_centroid, centroid); // centroid remains unchanged
 
   cloud.clear ();
   indices.clear ();
