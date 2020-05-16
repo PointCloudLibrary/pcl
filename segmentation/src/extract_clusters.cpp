@@ -53,5 +53,6 @@
   PCL_INSTANTIATE(extractEuclideanClusters_indices, PCL_XYZ_POINT_TYPES)
 #endif
 PCL_INSTANTIATE(LabeledEuclideanClusterExtraction, PCL_XYZL_POINT_TYPES)
+PCL_INSTANTIATE(extractLabeledEuclideanClusters_deprecated, PCL_XYZL_POINT_TYPES)
 PCL_INSTANTIATE(extractLabeledEuclideanClusters, PCL_XYZL_POINT_TYPES)
 

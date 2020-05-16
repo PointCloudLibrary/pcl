@@ -52,12 +52,30 @@ namespace pcl
     * \param[in] max_label
     * \ingroup segmentation
     */
-  template <typename PointT> void 
+  template <typename PointT>
+  PCL_DEPRECATED(1, 14, "Use of max_label is deprecated")
+  void
   extractLabeledEuclideanClusters (
       const PointCloud<PointT> &cloud, const typename search::Search<PointT>::Ptr &tree,
       float tolerance, std::vector<std::vector<PointIndices> > &labeled_clusters,
-      unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = std::numeric_limits<unsigned int>::max (),
-      unsigned int max_label = std::numeric_limits<unsigned int>::max ());
+      unsigned int min_pts_per_cluster, unsigned int max_pts_per_cluster,
+      unsigned int max_label);
+
+  /** \brief Decompose a region of space into clusters based on the Euclidean distance between points
+    * \param[in] cloud the point cloud message
+    * \param[in] tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching
+    * \note the tree has to be created as a spatial locator on \a cloud
+    * \param[in] tolerance the spatial cluster tolerance as a measure in L2 Euclidean space
+    * \param[out] labeled_clusters the resultant clusters containing point indices (as a vector of PointIndices)
+    * \param[in] min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
+    * \param[in] max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
+    * \ingroup segmentation
+    */
+  template <typename PointT> void
+  extractLabeledEuclideanClusters (
+      const PointCloud<PointT> &cloud, const typename search::Search<PointT>::Ptr &tree,
+      float tolerance, std::vector<std::vector<PointIndices> > &labeled_clusters,
+      unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = std::numeric_limits<unsigned int>::max ());
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,10 +153,12 @@ namespace pcl
       /** \brief Set the maximum number of labels in the cloud.
         * \param[in] max_label the maximum
         */
+      PCL_DEPRECATED(1, 14, "Max label is being deprecated")
       inline void 
       setMaxLabels (unsigned int max_label) { max_label_ = max_label; }
 
       /** \brief Get the maximum number of labels */
+      PCL_DEPRECATED(1, 14, "Max label is being deprecated")
       inline unsigned int 
       getMaxLabels () const { return (max_label_); }
 
