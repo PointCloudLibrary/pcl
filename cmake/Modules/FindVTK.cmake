@@ -14,15 +14,20 @@ endif()
 
 # assume VTK version >= 9.0
 set(PCL_VTK_COMPONENTS
-    CommonColor
     ChartsCore
+    CommonColor
     CommonCore
     CommonDataModel
     CommonExecutionModel
+    CommonMath
+    CommonMisc
+    CommonTransforms
     FiltersCore
     FiltersExtraction
+    FiltersGeneral
     FiltersGeometry
     FiltersModeling
+    FiltersSources
     ImagingCore
     ImagingSources
     InteractionStyle
@@ -33,7 +38,13 @@ set(PCL_VTK_COMPONENTS
     IOLegacy
     IOPLY
     RenderingAnnotation
+    RenderingCore
+    RenderingContext2D
     RenderingLOD
+    RenderingFreeType
+    RenderingOpenGL2
+    RenderingUI
+    ViewsCore
     ViewsContext2D
   )
 

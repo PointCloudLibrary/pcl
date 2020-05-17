@@ -134,14 +134,37 @@ endif()
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${common_incs} ${impl_incs} ${common_impl_incs} ${vtk_incs})
 
-target_include_directories("${LIB_NAME}" SYSTEM PUBLIC ${VTK_INCLUDE_DIRS})
-
 # apple workaround (continued)
 if(APPLE)
   target_link_libraries("${LIB_NAME}" "-framework Cocoa")
 endif()
 
-target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree ${VTK_LIBRARIES} ${OPENGL_LIBRARIES})
+target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_kdtree ${OPENGL_LIBRARIES})
+
+if(${VTK_VERSION} VERSION_LESS 9.0)
+  target_include_directories("${LIB_NAME}" SYSTEM PUBLIC ${VTK_INCLUDE_DIRS})
+  target_link_libraries("${LIB_NAME}" ${VTK_LIBRARIES})
+else()
+  #Some libs are referenced through depending on IO
+  target_link_libraries("${LIB_NAME}"
+                        VTK::ChartsCore
+                        VTK::CommonColor
+                        VTK::CommonDataModel
+                        VTK::FiltersExtraction
+                        VTK::FiltersGeneral
+                        VTK::FiltersModeling
+                        VTK::FiltersSources
+                        VTK::IOImage
+                        VTK::IOPLY
+                        VTK::ImagingSources
+                        VTK::InteractionStyle
+                        VTK::RenderingAnnotation
+                        VTK::RenderingContext2D
+                        VTK::RenderingFreeType
+                        VTK::RenderingLOD
+                        VTK::RenderingOpenGL2
+                        VTK::ViewsContext2D)
+endif()
 
 set(EXT_DEPS "")
 if(WITH_OPENNI)
@@ -172,9 +195,10 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/common/impl" ${common_impl_inc
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/vtk" ${vtk_incs})
 
 if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
-  vtk_module_autoinit(TARGETS "${LIB_NAME}" MODULES VTK::RenderingOpenGL2 VTK::RenderingFreeType)
+  vtk_module_autoinit(TARGETS "${LIB_NAME}" 
+                      MODULES VTK::RenderingOpenGL2
+                              VTK::RenderingFreeType)
 endif()
-
 
 if(BUILD_TESTS)
   add_subdirectory(test)
