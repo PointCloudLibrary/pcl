@@ -56,6 +56,7 @@ if(Qhull_FOUND)
       target_compile_definitions(QHULL::QHULL INTERFACE qh_QHpointer_dllimport)
     endif()
   endif()
+  message(STATUS "Found Qhull version ${Qhull_VERSION}")
   return()
 endif()
 
