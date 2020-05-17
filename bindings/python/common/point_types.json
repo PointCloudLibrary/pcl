@@ -1,91 +1,177 @@
 [
     {"type": "include", "file": "bitset"},
+    {"type": "include", "file": "pcl/memory.h"},
+    {"type": "include", "file": "pcl/pcl_macros.h"},
+    {"type": "include", "file": "pcl/PCLPointField.h"},
+    {"type": "include", "file": "pcl/point_types.h"},
+    {"type": "include", "file": "pcl/register_point_struct.h"},
+    {"type": "include", "file": "boost/mpl/and.hpp"},
+    {"type": "include", "file": "boost/mpl/bool.hpp"},
+    {"type": "include", "file": "boost/mpl/contains.hpp"},
+    {"type": "include", "file": "boost/mpl/fold.hpp"},
+    {"type": "include", "file": "boost/mpl/or.hpp"},
+    {"type": "include", "file": "boost/mpl/placeholders.hpp"},
+    {"type": "include", "file": "boost/mpl/vector.hpp"},
+    {"type": "include", "file": "Eigen/Core"},
+    {"type": "include", "file": "algorithm"},
+    {"type": "include", "file": "cstdint"},
+    {"type": "include", "file": "ostream"},
+    {"type": "include", "file": "type_traits"},
     {
         "type": "namespace",
-        "name": "pcl",
+        "identifier": "pcl",
         "members": [
-            {"type": "struct", "name": "PointXYZ", "members": []},
-            {"type": "struct", "name": "RGB", "members": []},
-            {"type": "struct", "name": "Intensity", "members": []},
-            {"type": "struct", "name": "Intensity8u", "members": []},
-            {"type": "struct", "name": "Intensity32u", "members": []},
-            {"type": "struct", "name": "PointXYZI", "members": []},
-            {"type": "struct", "name": "PointXYZL", "members": []},
-            {"type": "struct", "name": "Label", "members": []},
-            {"type": "struct", "name": "PointXYZRGBA", "members": []},
-            {"type": "struct", "name": "PointXYZRGB", "members": []},
-            {"type": "struct", "name": "PointXYZRGBL", "members": []},
-            {"type": "struct", "name": "PointXYZHSV", "members": []},
-            {"type": "struct", "name": "PointXY", "members": []},
-            {"type": "struct", "name": "PointUV", "members": []},
-            {"type": "struct", "name": "InterestPoint", "members": []},
-            {"type": "struct", "name": "Normal", "members": []},
-            {"type": "struct", "name": "Axis", "members": []},
-            {"type": "struct", "name": "PointNormal", "members": []},
-            {"type": "struct", "name": "PointXYZRGBNormal", "members": []},
-            {"type": "struct", "name": "PointXYZINormal", "members": []},
-            {"type": "struct", "name": "PointXYZLNormal", "members": []},
-            {"type": "struct", "name": "PointWithRange", "members": []},
-            {"type": "struct", "name": "PointWithViewpoint", "members": []},
-            {"type": "struct", "name": "MomentInvariants", "members": []},
-            {"type": "struct", "name": "PrincipalRadiiRSD", "members": []},
-            {"type": "struct", "name": "Boundary", "members": []},
-            {"type": "struct", "name": "PrincipalCurvatures", "members": []},
-            {"type": "struct", "name": "SHOT352", "members": []},
-            {"type": "struct", "name": "SHOT1344", "members": []},
-            {"type": "struct", "name": "ReferenceFrame", "members": []},
-            {"type": "struct", "name": "ShapeContext1980", "members": []},
-            {"type": "struct", "name": "UniqueShapeContext1960", "members": []},
-            {"type": "struct", "name": "PFHSignature125", "members": []},
-            {"type": "struct", "name": "PFHRGBSignature250", "members": []},
-            {"type": "struct", "name": "PPFSignature", "members": []},
-            {"type": "struct", "name": "CPPFSignature", "members": []},
-            {"type": "struct", "name": "PPFRGBSignature", "members": []},
-            {"type": "struct", "name": "NormalBasedSignature12", "members": []},
-            {"type": "struct", "name": "FPFHSignature33", "members": []},
-            {"type": "struct", "name": "VFHSignature308", "members": []},
-            {"type": "struct", "name": "GRSDSignature21", "members": []},
-            {"type": "struct", "name": "ESFSignature640", "members": []},
-            {"type": "struct", "name": "GASDSignature512", "members": []},
-            {"type": "struct", "name": "GASDSignature984", "members": []},
-            {"type": "struct", "name": "GASDSignature7992", "members": []},
-            {"type": "struct", "name": "GFPFHSignature16", "members": []},
-            {"type": "struct", "name": "BRISKSignature512", "members": []},
-            {"type": "struct", "name": "Narf36", "members": []},
-            {"type": "alias", "alias_identifier": "BorderTraits", "alias_type": "std::bitset<32>"},
             {
-                "type": "enum",
-                "name": "BorderTrait",
-                "members": [
-                    {"key": "BORDER_TRAIT__OBSTACLE_BORDER"},
-                    {"key": "BORDER_TRAIT__SHADOW_BORDER"},
-                    {"key": "BORDER_TRAIT__VEIL_POINT"},
-                    {"key": "BORDER_TRAIT__SHADOW_BORDER_TOP"},
-                    {"key": "BORDER_TRAIT__SHADOW_BORDER_RIGHT"},
-                    {"key": "BORDER_TRAIT__SHADOW_BORDER_BOTTOM"},
-                    {"key": "BORDER_TRAIT__SHADOW_BORDER_LEFT"},
-                    {"key": "BORDER_TRAIT__OBSTACLE_BORDER_TOP"},
-                    {"key": "BORDER_TRAIT__OBSTACLE_BORDER_RIGHT"},
-                    {"key": "BORDER_TRAIT__OBSTACLE_BORDER_BOTTOM"},
-                    {"key": "BORDER_TRAIT__OBSTACLE_BORDER_LEFT"},
-                    {"key": "BORDER_TRAIT__VEIL_POINT_TOP"},
-                    {"key": "BORDER_TRAIT__VEIL_POINT_RIGHT"},
-                    {"key": "BORDER_TRAIT__VEIL_POINT_BOTTOM"},
-                    {"key": "BORDER_TRAIT__VEIL_POINT_LEFT"}
-                ]
+                "type": "alias",
+                "identifier": "Array3fMap",
+                "aliastype": "Eigen::Map<Eigen::Array3f>"
             },
-            {"type": "struct", "name": "BorderDescription", "members": []},
-            {"type": "struct", "name": "IntensityGradient", "members": []},
+            {
+                "type": "alias",
+                "identifier": "Array3fMapConst",
+                "aliastype": "const Eigen::Map<const Eigen::Array3f>"
+            },
+            {
+                "type": "alias",
+                "identifier": "Array4fMap",
+                "aliastype": "Eigen::Map<Eigen::Array4f, Eigen::Aligned>"
+            },
+            {
+                "type": "alias",
+                "identifier": "Array4fMapConst",
+                "aliastype": "const Eigen::Map<const Eigen::Array4f, Eigen::Aligned>"
+            },
+            {
+                "type": "alias",
+                "identifier": "Vector3fMap",
+                "aliastype": "Eigen::Map<Eigen::Vector3f>"
+            },
+            {
+                "type": "alias",
+                "identifier": "Vector3fMapConst",
+                "aliastype": "const Eigen::Map<const Eigen::Vector3f>"
+            },
+            {
+                "type": "alias",
+                "identifier": "Vector4fMap",
+                "aliastype": "Eigen::Map<Eigen::Vector4f, Eigen::Aligned>"
+            },
+            {
+                "type": "alias",
+                "identifier": "Vector4fMapConst",
+                "aliastype": "const Eigen::Map<const Eigen::Vector4f, Eigen::Aligned>"
+            },
+            {
+                "type": "alias",
+                "identifier": "Vector3c",
+                "aliastype": "Eigen::Matrix<std::uint8_t, 3, 1>"
+            },
+            {
+                "type": "alias",
+                "identifier": "Vector3cMap",
+                "aliastype": "Eigen::Map<Vector3c>"
+            },
+            {
+                "type": "alias",
+                "identifier": "Vector3cMapConst",
+                "aliastype": "const Eigen::Map<const Vector3c>"
+            },
+            {
+                "type": "alias",
+                "identifier": "Vector4c",
+                "aliastype": "Eigen::Matrix<std::uint8_t, 4, 1>"
+            },
+            {
+                "type": "alias",
+                "identifier": "Vector4cMap",
+                "aliastype": "Eigen::Map<Vector4c, Eigen::Aligned>"
+            },
+            {
+                "type": "alias",
+                "identifier": "Vector4cMapConst",
+                "aliastype": "const Eigen::Map<const Vector4c, Eigen::Aligned>"
+            },
             {
                 "type": "struct",
-                "template": {"arguments": [{"typeParameterKey": "int", "name": "N"}]},
-                "name": "Histogram",
-                "members": []
+                "identifier": "PointXYZ",
+                "meta": ["EIGEN_ALIGN16"],
+                "implements": "public _PointXYZ",
+                "members": [
+                    {
+                        "type": "constructor",
+                        "meta": ["inline"],
+                        "parameters": ["const _PointXYZ &p"],
+                        "initializers": ["PointXYZ(p.x, p.y, p.z)"]
+                    },
+                    {
+                        "type": "constructor",
+                        "meta": ["inline"],
+                        "parameters": [],
+                        "initializers": ["PointXYZ(0.f, 0.f, 0.f)"]
+                    },
+                    {
+                        "type": "constructor",
+                        "meta": ["inline"],
+                        "parameters": ["float _x", "float _y", "float _z"],
+                        "members": [
+                            {
+                                "type": "statements",
+                                "execute": ["x = _x", "y = _y", "z = _z", "data[3] = 1.0f"]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "operator",
+                        "operatortype": "std::ostream&",
+                        "identifier": "<<",
+                        "meta": ["friend"],
+                        "parameters": ["std::ostream& os", "const PointXYZ& p"]
+                    },
+                    {"type": "macro", "identifier": "PCL_MAKE_ALIGNED_OPERATOR_NEW"}
+                ]
             },
-            {"type": "struct", "name": "PointWithScale", "members": []},
-            {"type": "struct", "name": "PointSurfel", "members": []},
-            {"type": "struct", "name": "PointDEM", "members": []}
+            {
+                "type": "struct",
+                "identifier": "RGB",
+                "meta": [],
+                "implements": "public _RGB",
+                "members": [
+                    {
+                        "type": "constructor",
+                        "meta": ["inline"],
+                        "parameters": ["const _RGB &p"],
+                        "members": [{"type": "statement", "execute": "rgba = p.rgba"}]
+                    },
+                    {
+                        "type": "constructor",
+                        "meta": ["inline"],
+                        "parameters": [],
+                        "initializers": ["RGB(0, 0, 0)"]
+                    },
+                    {
+                        "type": "constructor",
+                        "meta": ["inline"],
+                        "parameters": [
+                            "std::uint8_t _r",
+                            "std::uint8_t _g",
+                            "std::uint8_t _b"
+                        ],
+                        "members": [
+                            {
+                                "type": "statement",
+                                "execute": ["r = _r", "g = _g", "b = _b", "a = 255"]
+                            }
+                        ]
+                    },
+                    {
+                        "type": "operator",
+                        "operatortype": "std::ostream&",
+                        "identifier": "<<",
+                        "meta": ["friend"],
+                        "parameters": ["std::ostream& os", "const RGB& p"]
+                    }
+                ]
+            }
         ]
-    },
-    {"type": "include", "file": "pcl/impl/point_types.hpp"}
+    }
 ]
