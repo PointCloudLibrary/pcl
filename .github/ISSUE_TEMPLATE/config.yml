@@ -3,7 +3,7 @@ blank_issues_enabled: true
 contact_links:
 - name: Get help on Discord
   url: https://discord.gg/JFFMAXS
-  about: Have a quick question? Not sure if your issue affects everyone reproducibly?
+  about: Have a quick question about PCL or how to use PCL in your project?
 - name: Get help on StackOverflow
   url: https://stackoverflow.com/tags/point-cloud-library/
   about: Have a programming question? Not sure if it's a issue with your code or the PCL library?
