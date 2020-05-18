@@ -116,30 +116,74 @@ getFieldsList (const pcl::PointCloud<PointT> &)
   return (result);
 }
 
+namespace detail {
+template <typename PointTOut, typename PointTIn> pcl::PointCloud<PointTOut>
+copyPrelude (const pcl::PointCloud<PointTIn>& cloud_in)
+{
+  pcl::PointCloud<PointTOut> cloud_out;
+  cloud_out.header   = cloud_in.header;
+  cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
+  cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
+  cloud_out.width    = cloud_in.width;
+  cloud_out.height   = cloud_in.height;
+  cloud_out.is_dense = cloud_in.is_dense;
+  return cloud_out;
+}
+
+template <typename PointTOut, typename PointTIn>
+pcl::PointCloud<PointTOut>
+copyPrelude(const pcl::PointCloud<PointTIn>& cloud_in, pcl::index_t size)
+{
+  pcl::PointCloud<PointTOut> cloud_out;
+  cloud_out.header = cloud_in.header;
+  cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
+  cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
+  cloud_out.width = static_cast<std::uint32_t>(size);
+  cloud_out.height = 1;
+  cloud_out.is_dense = false;
+  return cloud_out;
+}
+
+template <typename PointT>
+pcl::PointCloud<PointT>
+copyPrelude(const pcl::PointCloud<PointT>& cloud_in)
+{
+  return detail::copyPrelude<PointT, PointT>(cloud_in);
+}
+
+template <typename PointT>
+pcl::PointCloud<PointT>
+copyPrelude(const pcl::PointCloud<PointT>& cloud_in,
+            pcl::index_t size)
+{
+  return detail::copyPrelude<PointT, PointT>(cloud_in, size);
+}
+} // namespace detail
+
+template <typename PointT>
+void
+copyPointCloud(const pcl::PointCloud<PointT>& cloud_in,
+               pcl::PointCloud<PointT>& cloud_out)
+{
+  cloud_out = cloud_in;
+}
 
 template <typename PointInT, typename PointOutT> void
 copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
                 pcl::PointCloud<PointOutT> &cloud_out)
 {
-  // Allocate enough space and copy the basics
-  cloud_out.header   = cloud_in.header;
-  cloud_out.width    = cloud_in.width;
-  cloud_out.height   = cloud_in.height;
-  cloud_out.is_dense = cloud_in.is_dense;
-  cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
-  cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
+  if (isSamePointType<PointInT, PointOutT> ()) {
+    copyPointCloud<PointInT>(cloud_in, cloud_out);
+    return;
+  }
+
+  // Copy the headers and allocate enough space
+  cloud_out = detail::copyPrelude<PointOutT>(cloud_in);
   cloud_out.points.resize (cloud_in.points.size ());
 
-  if (cloud_in.points.empty ())
-    return;
-
-  if (isSamePointType<PointInT, PointOutT> ())
-    // Copy the whole memory block
-    memcpy (&cloud_out.points[0], &cloud_in.points[0], cloud_in.points.size () * sizeof (PointInT));
-  else
-    // Iterate over each point
-    for (std::size_t i = 0; i < cloud_in.points.size (); ++i)
-      copyPoint (cloud_in.points[i], cloud_out.points[i]);
+  // Iterate over each point
+  for (std::size_t i = 0; i < cloud_in.points.size (); ++i)
+    copyPoint (cloud_in.points[i], cloud_out.points[i]);
 }
 
 
@@ -155,14 +199,9 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     return;
   }
 
-  // Allocate enough space and copy the basics
+  // Copy the headers and allocate enough space
+  cloud_out = detail::copyPrelude(cloud_in, static_cast<index_t>(indices.size()));
   cloud_out.points.resize (indices.size ());
-  cloud_out.header   = cloud_in.header;
-  cloud_out.width    = static_cast<std::uint32_t>(indices.size ());
-  cloud_out.height   = 1;
-  cloud_out.is_dense = cloud_in.is_dense;
-  cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
-  cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
 
   // Iterate over each point
   for (std::size_t i = 0; i < indices.size (); ++i)
@@ -172,17 +211,12 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 
 template <typename PointInT, typename PointOutT, typename IndicesVectorAllocator> void
 copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
-                const IndicesAllocator< IndicesVectorAllocator> &indices,
+                const IndicesAllocator<IndicesVectorAllocator> &indices,
                 pcl::PointCloud<PointOutT> &cloud_out)
 {
-  // Allocate enough space and copy the basics
+  // Copy the headers and allocate enough space
+  cloud_out = detail::copyPrelude<PointOutT>(cloud_in, static_cast<index_t>(indices.size()));
   cloud_out.points.resize (indices.size ());
-  cloud_out.header   = cloud_in.header;
-  cloud_out.width    = std::uint32_t (indices.size ());
-  cloud_out.height   = 1;
-  cloud_out.is_dense = cloud_in.is_dense;
-  cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
-  cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
 
   // Iterate over each point
   for (std::size_t i = 0; i < indices.size (); ++i)
@@ -195,25 +229,7 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                 const pcl::PointIndices &indices,
                      pcl::PointCloud<PointT> &cloud_out)
 {
-  // Do we want to copy everything?
-  if (indices.indices.size () == cloud_in.points.size ())
-  {
-    cloud_out = cloud_in;
-    return;
-  }
-
-  // Allocate enough space and copy the basics
-  cloud_out.points.resize (indices.indices.size ());
-  cloud_out.header   = cloud_in.header;
-  cloud_out.width    = indices.indices.size ();
-  cloud_out.height   = 1;
-  cloud_out.is_dense = cloud_in.is_dense;
-  cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
-  cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
-
-  // Iterate over each point
-  for (std::size_t i = 0; i < indices.indices.size (); ++i)
-    cloud_out.points[i] = cloud_in.points[indices.indices[i]];
+  copyPointCloud (cloud_in, indices.indices, cloud_out);
 }
 
 
@@ -242,14 +258,9 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     return;
   }
 
-  // Allocate enough space and copy the basics
+  // Copy the headers and allocate enough space
+  cloud_out = detail::copyPrelude(cloud_in, static_cast<index_t>(nr_p));
   cloud_out.points.resize (nr_p);
-  cloud_out.header   = cloud_in.header;
-  cloud_out.width    = nr_p;
-  cloud_out.height   = 1;
-  cloud_out.is_dense = cloud_in.is_dense;
-  cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
-  cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
 
   // Iterate over each cluster
   int cp = 0;
@@ -281,14 +292,9 @@ copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
     return;
   }
 
-  // Allocate enough space and copy the basics
+  // Copy the headers and allocate enough space
+  cloud_out = detail::copyPrelude<PointOutT>(cloud_in, static_cast<index_t>(nr_p));
   cloud_out.points.resize (nr_p);
-  cloud_out.header   = cloud_in.header;
-  cloud_out.width    = nr_p;
-  cloud_out.height   = 1;
-  cloud_out.is_dense = cloud_in.is_dense;
-  cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
-  cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
 
   // Iterate over each cluster
   std::size_t cp = 0;

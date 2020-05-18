@@ -368,10 +368,12 @@ namespace pcl
                   pcl::PCLPointCloud2 &cloud_out);
 
   /** \brief Check if two given point types are the same or not. */
-  template <typename Point1T, typename Point2T> inline bool
-  isSamePointType ()
+  template <typename Point1T, typename Point2T>
+  inline bool
+  isSamePointType()
   {
-    return (typeid (Point1T) == typeid (Point2T));
+    return std::is_same<Point1T, Point2T>::value;
+    // \todo Add special case exception for RGB and RGBA
   }
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
@@ -409,6 +411,16 @@ namespace pcl
   copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                   const std::vector<pcl::PointIndices> &indices,
                   pcl::PointCloud<PointT> &cloud_out);
+
+  /** \brief Copy all the fields from a given point cloud into a new point cloud
+    * \param[in] cloud_in the input point cloud dataset
+    * \param[out] cloud_out the resultant output point cloud dataset
+    * \ingroup common
+    */
+  template <typename PointT>
+  void
+  copyPointCloud(const pcl::PointCloud<PointT>& cloud_in,
+                 pcl::PointCloud<PointT>& cloud_out);
 
   /** \brief Copy all the fields from a given point cloud into a new point cloud
     * \param[in] cloud_in the input point cloud dataset
