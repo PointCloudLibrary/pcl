@@ -93,6 +93,21 @@
             },
             {
                 "type": "struct",
+                "identifier": "_PointXYZ",
+                "members": [
+                    {"type": "macro", "identifier": "PCL_ADD_POINT4D;"},
+                    {"type": "macro", "identifier": "PCL_MAKE_ALIGNED_OPERATOR_NEW"}
+                ]
+            },
+            {
+                "type": "operator",
+                "operatortype": "std::ostream&",
+                "identifier": "<<",
+                "meta": ["PCL_EXPORTS"],
+                "parameters": ["std::ostream& os", "const PointXYZ& p"]
+            },
+            {
+                "type": "struct",
                 "identifier": "PointXYZ",
                 "meta": ["EIGEN_ALIGN16"],
                 "implements": "public _PointXYZ",
@@ -129,6 +144,20 @@
                     },
                     {"type": "macro", "identifier": "PCL_MAKE_ALIGNED_OPERATOR_NEW"}
                 ]
+            },
+            {
+                "type": "struct",
+                "identifier": "_RGB",
+                "members": [
+                    {"type": "macro", "identifier": "PCL_ADD_RGB;"}
+                ]
+            },
+            {
+                "type": "operator",
+                "operatortype": "std::ostream&",
+                "identifier": "<<",
+                "meta": ["PCL_EXPORTS"],
+                "parameters": ["std::ostream& os", "const RGB& p"]
             },
             {
                 "type": "struct",
