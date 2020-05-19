@@ -11,10 +11,10 @@
 [license-image]: https://img.shields.io/badge/license-BSD-green.svg?style=flat
 [license]: https://github.com/PointCloudLibrary/pcl/blob/master/LICENSE.txt
 
-:bangbang:Website:bangbang:
+Website
 -------
 
-The original website (http://pointclouds.org) is down currently :broken_heart:, but a new one is back up https://pointcloudlibrary.github.io/ :heart: and open to [contributions](https://github.com/PointCloudLibrary/PointCloudLibrary.github.io) :hammer_and_wrench:.
+The new website is now online at http://pointclouds.org and is open to [contributions](https://github.com/PointCloudLibrary/PointCloudLibrary.github.io) :hammer_and_wrench:.
 
 If you really need access to the old website, please use [the copy made by the internet archive](https://web.archive.org/web/20191017164724/http://www.pointclouds.org/). Please be aware that the website was hacked before and could still be hosting some malicious code.
 
@@ -44,7 +44,7 @@ Community
 [discord-image]: https://img.shields.io/discord/694824801977630762?color=7289da&label=community%20chat&logo=discord&style=plastic
 [discord-server]: https://discord.gg/JFFMAXS
 [website-status]: https://img.shields.io/website/https/pointcloudlibrary.github.io.svg?down_color=red&down_message=is%20down&up_color=green&up_message=is%20new
-[website]: https://pointcloudlibrary.github.io/
+[website]: https://pointclouds.org/
 
 [so-question-count]: https://img.shields.io/stackexchange/stackoverflow/t/point-cloud-library.svg?logo=stackoverflow
 [stackoverflow]: https://stackoverflow.com/questions/tagged/point-cloud-library
@@ -73,14 +73,14 @@ PCL is released under the terms of the BSD license, and thus free for commercial
 Compiling
 ---------
 Please refer to the platform specific tutorials:
- - [Linux](http://www.pointclouds.org/documentation/tutorials/compiling_pcl_posix.php)
- - [Mac OS X](http://www.pointclouds.org/documentation/tutorials/compiling_pcl_macosx.php)
- - [Microsoft Windows](http://www.pointclouds.org/documentation/tutorials/compiling_pcl_windows.php)
+ - [Linux](https://pcl-tutorials.readthedocs.io/en/latest/compiling_pcl_posix.html)
+ - [Mac OS X](https://pcl-tutorials.readthedocs.io/en/latest/compiling_pcl_macosx.html)
+ - [Microsoft Windows](https://pcl-tutorials.readthedocs.io/en/latest/compiling_pcl_windows.html)
 
 Documentation
 -------------
-- [Tutorials](http://www.pointclouds.org/documentation/tutorials/)
-- [PCL trunk documentation](https://pointcloudlibrary.github.io/documentation/) (updated nightly)
+- [Tutorials](https://pcl-tutorials.readthedocs.io/)
+- [PCL trunk documentation](https://pointclouds.org/documentation/)
 
 Contributing
 ------------
@@ -96,14 +96,3 @@ for Q&A as well as support for troubleshooting, installation and debugging. Do
 remember to tag your questions with the tag `point-cloud-library`.
 * [Discord Server](https://discord.gg/JFFMAXS) for live chat with
 other members of the PCL community and casual discussions
-
-<!-- 
-  * Mailing list: The [PCL Google Group](https://groups.google.com/forum/#!forum/point-cloud-library)
--->
-
-<!-- There's an option of creating our own compatibility tracker
-
-API/ABI Compatibility Report
-------
-For details about API/ABI changes over the timeline please check PCL's page at [ABI Laboratory](https://abi-laboratory.pro/tracker/timeline/pcl/).
--->
