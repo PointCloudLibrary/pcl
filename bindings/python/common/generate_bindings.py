@@ -7,7 +7,7 @@ def read_json(filename):
 
 
 def write_to_cpp(filename, linelist):
-    with open(filename, 'w') as f:
+    with open(filename, "w") as f:
         for line in linelist:
             f.writelines(line)
             f.writelines("\n")
@@ -56,6 +56,7 @@ def handle_operator(item):
 
 
 def handle_namespace(item):
+    global namespace
     namespace = item["identifier"]
     for sub_item in item["members"]:
         type_functions[sub_item["type"]](sub_item)
@@ -63,7 +64,8 @@ def handle_namespace(item):
 
 
 def handle_struct(item):
-    in_struct=True
+    global in_struct
+    in_struct = True
     name_decl = item["identifier"]
     check_namespace(item)
     name_impl = item["identifier"]
@@ -74,7 +76,7 @@ def handle_struct(item):
     for sub_item in item["members"]:
         type_functions[sub_item["type"]](sub_item)
     module_linelist.append(";")
-    in_struct=False
+    in_struct = False
 
 
 def handle_macro(item):
@@ -96,7 +98,7 @@ def main():
     header_info = read_json("point_types.json")
     for item in header_info:
         type_functions[item["type"]](item)
-    lines_to_write=handle_final(filename="pcl/point_types.h", module_name="pcl")
+    lines_to_write = handle_final(filename="pcl/point_types.h", module_name="pcl")
     write_to_cpp(filename="py_point_types.cpp", linelist=lines_to_write)
 
 
