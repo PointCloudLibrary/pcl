@@ -110,7 +110,7 @@
                 "type": "struct",
                 "identifier": "PointXYZ",
                 "meta": ["EIGEN_ALIGN16"],
-                "implements": "public _PointXYZ",
+                "parent": "public _PointXYZ",
                 "members": [
                     {
                         "type": "constructor",
@@ -163,7 +163,7 @@
                 "type": "struct",
                 "identifier": "RGB",
                 "meta": [],
-                "implements": "public _RGB",
+                "parent": "public _RGB",
                 "members": [
                     {
                         "type": "constructor",
