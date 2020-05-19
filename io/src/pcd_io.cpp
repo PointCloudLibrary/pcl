@@ -61,7 +61,7 @@ pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
 {
   pcl::utils::ignore(file_name);
   pcl::utils::ignore(lock);
-#ifndef WIN32
+#ifndef _WIN32
 #ifndef NO_MANDATORY_LOCKING
   // Attempt to lock the file.
   // For mandatory locking, the filesystem must be mounted with the "mand" option in Linux (see http://www.hackinglinuxexposed.com/articles/20030623.html)
@@ -91,7 +91,7 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
 {
   pcl::utils::ignore(file_name);
   pcl::utils::ignore(lock);
-#ifndef WIN32
+#ifndef _WIN32
 #ifndef NO_MANDATORY_LOCKING
   namespace fs = boost::filesystem;
   try

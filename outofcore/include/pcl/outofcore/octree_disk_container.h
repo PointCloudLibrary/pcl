@@ -54,7 +54,7 @@
 #include <pcl/PCLPointCloud2.h>
 
 //allows operation on POSIX
-#if !defined WIN32
+#if !defined _WIN32
 #define _fseeki64 fseeko
 #elif defined __MINGW32__
 #define _fseeki64 fseeko64
