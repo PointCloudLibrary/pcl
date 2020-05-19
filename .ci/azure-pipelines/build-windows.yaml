@@ -16,7 +16,7 @@ jobs:
     timeoutInMinutes: 0
     variables:
       BUILD_DIR: '$(Agent.WorkFolder)\build'
-      CONFIGURATION: 'Release'
+      CONFIGURATION: 'MinSizeRel'
       VCPKG_ROOT: 'C:\vcpkg'
     steps:
       - checkout: self
@@ -42,7 +42,7 @@ jobs:
           mkdir %BUILD_DIR% && cd %BUILD_DIR%
           cmake $(Build.SourcesDirectory) ^
             -G"%GENERATOR%" ^
-            -DCMAKE_BUILD_TYPE="Release" ^
+            -DCMAKE_BUILD_TYPE="MinSizeRel" ^
             -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake ^
             -DVCPKG_APPLOCAL_DEPS=ON ^
             -DPCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32=ON ^
