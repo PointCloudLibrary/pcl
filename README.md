@@ -91,7 +91,3 @@ for Q&A as well as support for troubleshooting, installation and debugging. Do
 remember to tag your questions with the tag `point-cloud-library`.
 * [Discord Server](https://discord.gg/JFFMAXS) for live chat with
 other members of the PCL community and casual discussions
-
-<!-- 
-  * Mailing list: The [PCL Google Group](https://groups.google.com/forum/#!forum/point-cloud-library)
--->
