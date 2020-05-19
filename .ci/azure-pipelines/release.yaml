@@ -16,6 +16,7 @@ variables:
   dockerHub: "PointCloudLibrary@hub.docker.com"
   dockerHubID: "pointcloudlibrary"
   isPreRelease: 0  # number of pre-release
+  # version needs to be provided via the UI
 
 stages:
 - stage: Info
@@ -195,7 +196,7 @@ stages:
         isPreRelease: $(isPreRelease)
         gitHubConnection: 'Release to GitHub'
         releaseNotesFilePath: '$(DOWNLOAD_LOCATION)/changelog/changelog.md'
-        repositoryName: 'kunaltyagi/pcl'
+        repositoryName: $(Build.Repository.Name)
         tagSource: 'userSpecifiedTag'
         tag: "pcl-${{variables.version}}-rc${{variables.isPreRelease}}"
         tagPattern: 'pcl-*'
