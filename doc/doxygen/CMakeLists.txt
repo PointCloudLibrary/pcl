@@ -35,6 +35,7 @@ else()
   set(SHORT_NAMES NO)
 endif()
 
+set(COMPILATION_DB_PATH ${COMPILATION_DB_PATH})
 set(STRIPPED_HEADERS "${PCL_SOURCE_DIR}/${PCL_MODULES_NAMES}/include")
 string(REPLACE ";" "/include \\\n                         ${PCL_SOURCE_DIR}/" STRIPPED_HEADERS "${STRIPPED_HEADERS}")
 set(DOC_SOURCE_DIR "${PCL_SOURCE_DIR}")

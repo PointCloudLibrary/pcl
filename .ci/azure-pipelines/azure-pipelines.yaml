@@ -7,7 +7,7 @@ resources:
     - container: env2004
       image: pointcloudlibrary/env:20.04
     - container: doc
-      image: pointcloudlibrary/doc
+      image: aponza/doc:experimental
 
 stages:
   - stage: formatting

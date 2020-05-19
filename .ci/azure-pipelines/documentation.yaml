@@ -26,14 +26,37 @@ jobs:
       - script: |
           mkdir $BUILD_DIR && cd $BUILD_DIR
           cmake $(Build.SourcesDirectory) \
+            -DCMAKE_C_COMPILER=$(which clang) \
+            -DCMAKE_CXX_COMPILER=$(which clang++) \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DBUILD_CUDA=ON \
+            -DBUILD_GPU=ON \
+            -DBUILD_apps=ON \
+            -DBUILD_apps_3d_rec_framework=ON \
+            -DBUILD_apps_cloud_composer=ON \
+            -DBUILD_apps_in_hand_scanner=ON \
+            -DBUILD_apps_modeler=ON \
+            -DBUILD_apps_point_cloud_editor=ON \
+            -DBUILD_examples=ON \
+            -DBUILD_global_tests=ON \
+            -DBUILD_outofcore=ON \
+            -DBUILD_people=ON \
+            -DBUILD_simulation=ON \
+            -DBUILD_surface_on_nurbs=ON \
+            -DBUILD_visualization=ON
+        displayName: 'CMake Configuration for compilation database'
+      - script: |
+          cd $BUILD_DIR
+          cmake $(Build.SourcesDirectory) \
+            -DCOMPILATION_DB_PATH=$BUILD_DIR \
             -DDOXYGEN_USE_SHORT_NAMES=OFF \
             -DSPHINX_HTML_FILE_SUFFIX=php \
             -DWITH_DOCS=ON \
             -DWITH_TUTORIALS=ON
-        displayName: 'CMake Configuration'
+        displayName: 'CMake Configuration for documentation'
       - script: |
           cd $BUILD_DIR
-          cmake --build . -- doc tutorials advanced
+          cmake --build . --parallel $(nproc) -- doc tutorials advanced
         displayName: 'Build Documentation'
       - script: |
           cd $BUILD_DIR

@@ -165,6 +165,9 @@ VERBATIM_HEADERS       = YES
 ALPHABETICAL_INDEX     = YES
 COLS_IN_ALPHA_INDEX    = 5
 IGNORE_PREFIX          =
+CLANG_ASSISTED_PARSING = YES
+CLANG_OPTIONS          =
+CLANG_DATABASE_PATH    = "@COMPILATION_DB_PATH@"
 
 #---------------------------------------------------------------------------
 # Configuration options related to the HTML output
