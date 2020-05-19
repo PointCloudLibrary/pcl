@@ -16,7 +16,7 @@ jobs:
     timeoutInMinutes: 0
     variables:
       BUILD_DIR: '$(Agent.WorkFolder)\build'
-      CONFIGURATION: 'MinSizeRel'
+      CONFIGURATION: 'Release'
       VCPKG_ROOT: 'C:\vcpkg'
     steps:
       - checkout: self
