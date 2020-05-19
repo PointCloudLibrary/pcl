@@ -5,6 +5,7 @@ if [ $# != 1 ]; then
     exit 3
 fi
 
+# Mac users either use gsed or add "" after -i
 new_version="$1"
 if ls | grep README -q; then
     sed -i "s,[0-9]\+\.[0-9]\+\.[0-9]\+,${new_version}," README.md
