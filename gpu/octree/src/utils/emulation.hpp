@@ -37,6 +37,8 @@
 #ifndef PCL_GPU_EMULATION
 #define PCL_GPU_EMULATION
 
+#include <pcl/common/utils.h> // pcl::utils::ignore
+
 #include "utils/warp_reduce.hpp"
 
 namespace pcl
@@ -47,7 +49,7 @@ namespace pcl
 		{
 			static __forceinline__ __device__ int Ballot(int predicate, volatile int* cta_buffer)
 			{
-				(void)cta_buffer;
+				pcl::utils::ignore(cta_buffer);
 				return __ballot(predicate);
 			}
 		};

@@ -139,7 +139,7 @@ class PeoplePCDApp
     }
 
     void
-    writeXMLFile(std::string& filename)
+    writeXMLFile(std::string& filename) const
     {
       filebuf fb;
       fb.open (filename.c_str(), ios::out);
@@ -149,7 +149,7 @@ class PeoplePCDApp
     }
 
     void
-    readXMLFile(std::string& filename)
+    readXMLFile(std::string& filename) const
     {
       filebuf fb;
       fb.open (filename.c_str(), ios::in);

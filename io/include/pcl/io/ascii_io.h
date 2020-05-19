@@ -37,9 +37,11 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/io/file_io.h>
 #include <pcl/PCLPointField.h>
 #include <pcl/common/io.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 
 
 namespace pcl
@@ -116,10 +118,10 @@ namespace pcl
         * \param[in] p  a point type
         */
       template<typename PointT>
-      [[deprecated("use parameterless setInputFields<PointT>() instead")]]
+      PCL_DEPRECATED(1, 12, "use parameterless setInputFields<PointT>() instead")
       inline void setInputFields (const PointT p)
       {
-        (void) p;
+        pcl::utils::ignore(p);
         setInputFields<PointT> ();
       }
 

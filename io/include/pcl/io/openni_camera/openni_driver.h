@@ -42,7 +42,8 @@
 #include "openni.h"
 #include "openni_exception.h"
 #include "openni_device.h"
-#include <pcl/io/boost.h>
+
+#include <pcl/memory.h> // for pcl::weak_ptr
 #include <pcl/pcl_macros.h>
 
 #include <map>
@@ -68,7 +69,7 @@ namespace openni_wrapper
      * @author Suat Gedikli
      * @brief virtual Destructor that never throws an exception
      */
-    ~OpenNIDriver () throw ();
+    ~OpenNIDriver () noexcept;
 
     /**
      * @author Suat Gedikli
@@ -217,7 +218,7 @@ namespace openni_wrapper
       std::shared_ptr<xn::NodeInfo> image_node;
       std::shared_ptr<xn::NodeInfo> depth_node;
       std::shared_ptr<xn::NodeInfo> ir_node;
-      boost::weak_ptr<OpenNIDevice> device;
+      pcl::weak_ptr<OpenNIDevice> device;
     } ;
 
     OpenNIDriver ();
@@ -225,7 +226,7 @@ namespace openni_wrapper
 
 #ifndef _WIN32
     // workaround to get additional device nformation like serial number, vendor and product name, until Primesense fix this
-    void getDeviceInfos () throw ();
+    void getDeviceInfos () noexcept;
 #endif
 
     mutable std::vector<DeviceContext> device_context_;
@@ -248,5 +249,8 @@ namespace openni_wrapper
   {
     return static_cast<unsigned> (device_context_.size ());
   }
-} // namespace
+
+} // namespace openni_wrapper
+
 #endif
+

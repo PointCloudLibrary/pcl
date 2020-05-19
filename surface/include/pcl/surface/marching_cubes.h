@@ -35,6 +35,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/surface/boost.h>
 #include <pcl/surface/reconstruction.h>
@@ -363,8 +364,8 @@ namespace pcl
   class MarchingCubes : public SurfaceReconstruction<PointNT>
   {
     public:
-      using Ptr = boost::shared_ptr<MarchingCubes<PointNT> >;
-      using ConstPtr = boost::shared_ptr<const MarchingCubes<PointNT> >;
+      using Ptr = shared_ptr<MarchingCubes<PointNT> >;
+      using ConstPtr = shared_ptr<const MarchingCubes<PointNT> >;
 
       using SurfaceReconstruction<PointNT>::input_;
       using SurfaceReconstruction<PointNT>::tree_;
@@ -438,7 +439,7 @@ namespace pcl
       std::vector<float> grid_;
 
       /** \brief The grid resolution */
-      int res_x_, res_y_, res_z_;
+      int res_x_ = 32, res_y_ = 32, res_z_ = 32;
 
       /** \brief bounding box */
       Eigen::Array3f upper_boundary_;

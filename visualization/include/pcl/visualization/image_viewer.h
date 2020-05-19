@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/console/print.h>
@@ -117,8 +118,8 @@ namespace pcl
     class PCL_EXPORTS ImageViewer
     {
       public:
-        using Ptr = boost::shared_ptr<ImageViewer>;
-        using ConstPtr = boost::shared_ptr<const ImageViewer>;
+        using Ptr = shared_ptr<ImageViewer>;
+        using ConstPtr = shared_ptr<const ImageViewer>;
 
         /** \brief Constructor.
           * \param[in] window_title the title of the window

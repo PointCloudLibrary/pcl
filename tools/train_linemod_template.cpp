@@ -65,8 +65,8 @@ printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input1.pcd input2.pcd input3.pcd (etc.)\n", argv[0]);
   print_info ("  where options are:\n");
-  print_info ("           -min_depth z_min   = the depth of the near clipping plane\n"); 
-  print_info ("           -max_depth z_max   = the depth of the far clipping plane\n"); 
+  print_info ("           -min_depth z_min   = the depth of the near clipping plane\n");
+  print_info ("           -max_depth z_max   = the depth of the far clipping plane\n");
   print_info ("           -max_height y_max  = the height of the vertical clipping plane\n");
   print_info ("Two new template files will be created for each input file.  They will append ");
   print_info ("the following suffixes to the original filename:\n");
@@ -77,7 +77,7 @@ printHelp (int, char **argv)
 
 void printElapsedTimeAndNumberOfPoints (double t, int w, int h=1)
 {
-  print_info ("[done, "); print_value ("%g", t); print_info (" ms : "); 
+  print_info ("[done, "); print_value ("%g", t); print_info (" ms : ");
   print_value ("%d", w*h); print_info (" points]\n");
 }
 
@@ -104,7 +104,7 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
                       float min_depth, float max_depth, float max_height)
 {
   std::vector<bool> foreground_mask (input->size (), false);
-  
+
   // Mask off points outside the specified near and far depth thresholds
   pcl::IndicesPtr indices (new std::vector<int>);
   for (std::size_t i = 0; i < input->size (); ++i)
@@ -130,8 +130,8 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
   seg.setIndices (indices);
   pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
   pcl::PointIndices::Ptr inliers (new pcl::PointIndices ());
-  seg.segment (*inliers, *coefficients);  
-  
+  seg.segment (*inliers, *coefficients);
+
   // Mask off the plane inliers
   for (const int &index : inliers->indices)
     foreground_mask[index] = false;
@@ -152,13 +152,13 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
 }
 
 void
-trainTemplate (const PointCloudXYZRGBA::ConstPtr & input, const std::vector<bool> &foreground_mask, 
+trainTemplate (const PointCloudXYZRGBA::ConstPtr & input, const std::vector<bool> &foreground_mask,
                pcl::LINEMOD & linemod)
 {
   pcl::ColorGradientModality<pcl::PointXYZRGBA> color_grad_mod;
   color_grad_mod.setInputCloud (input);
   color_grad_mod.processInputData ();
-  
+
   pcl::SurfaceNormalModality<pcl::PointXYZRGBA> surface_norm_mod;
   surface_norm_mod.setInputCloud (input);
   surface_norm_mod.processInputData ();
@@ -223,10 +223,7 @@ compute (const PointCloudXYZRGBA::ConstPtr & input, float min_depth, float max_d
   trainTemplate (input, foreground_mask, linemod);
 
   // Save the LINEMOD template
-  std::ofstream file_stream;
-  file_stream.open (template_sqmmt_filename.c_str (), std::ofstream::out | std::ofstream::binary);
-  linemod.getTemplate (0).serialize (file_stream);
-  file_stream.close ();
+  linemod.saveTemplates (template_sqmmt_filename.c_str());
 }
 
 /* ---[ */
@@ -261,14 +258,34 @@ main (int argc, char** argv)
   float max_height = std::numeric_limits<float>::max ();
   parse_argument (argc, argv, "-max_height", max_height);
 
+  int error_code = 0;
+  bool processed_at_least_one_pcd = false;
+
   // Segment and create templates for each input file
   for (const int &p_file_index : p_file_indices)
   {
     // Load input file
     const std::string input_filename = argv[p_file_index];
     PointCloudXYZRGBA::Ptr cloud (new PointCloudXYZRGBA);
-    if (!loadCloud (input_filename, *cloud)) 
-      return (-1);
+
+    if (!loadCloud (input_filename, *cloud))
+    {
+      error_code = -1;
+      std::string warn_msg = "Could not load point cloud from file: " + input_filename + "\n";
+      print_warn (warn_msg.c_str ());
+      continue;
+    }
+
+    if (!cloud->isOrganized())
+    {
+      std::string warn_msg = "Unorganized point cloud detected. Skipping file " + input_filename + "\n";
+      print_warn(warn_msg.c_str());
+      continue;
+    }
+    else
+    {
+      processed_at_least_one_pcd = true;
+    }
 
     // Construct output filenames
     std::string sqmmt_filename = input_filename;
@@ -284,5 +301,10 @@ main (int argc, char** argv)
     compute (cloud, min_depth, max_depth, max_height, pcd_filename, sqmmt_filename);
   }
 
-}
+  if (!processed_at_least_one_pcd)
+  {
+    print_error("All input pcd files are unorganized.\n");
+  }
 
+  return error_code;
+}

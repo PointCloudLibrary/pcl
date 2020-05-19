@@ -18,7 +18,7 @@ public:
   std::vector<pcl::Vertices> faces;
 };
 
-typedef boost::shared_ptr<Mesh> MeshPtr;
+using MeshPtr = std::shared_ptr<Mesh>;
 
 PointCloudPtr
 smoothPointCloud (const PointCloudPtr & input, float radius, int polynomial_order)

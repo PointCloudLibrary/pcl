@@ -71,7 +71,7 @@ namespace pcl
 
       /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
       
-      ~VLPGrabber () throw ();
+      ~VLPGrabber () noexcept;
 
       /** \brief Obtains the name of this I/O Grabber
        *  \return The name of the grabber

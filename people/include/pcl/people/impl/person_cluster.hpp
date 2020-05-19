@@ -177,7 +177,7 @@ pcl::people::PersonCluster<PointT>::init (
     float min_z = c_z_;
     float max_x = c_x_;
     float max_z = c_z_;
-    for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); pit++)
+    for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); ++pit)
     {
       PointT* p = &input_cloud->points[*pit];
 
@@ -216,7 +216,7 @@ pcl::people::PersonCluster<PointT>::init (
     float min_z = c_z_;
     float max_y = c_y_;
     float max_z = c_z_;
-    for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); pit++)
+    for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); ++pit)
     {
       PointT* p = &input_cloud->points[*pit];
 

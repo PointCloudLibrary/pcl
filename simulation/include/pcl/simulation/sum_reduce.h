@@ -7,17 +7,16 @@
 
 #pragma once
 
-#include <GL/glew.h>
-
+#include <pcl/simulation/glsl_shader.h>
+#include <pcl/simulation/model.h>
 #include <pcl/pcl_config.h>
+
+#include <GL/glew.h>
 #ifdef OPENGL_IS_A_FRAMEWORK
 #include <OpenGL/gl.h>
 #else
 #include <GL/gl.h>
 #endif
-
-#include <pcl/simulation/glsl_shader.h>
-#include <pcl/simulation/model.h>
 
 namespace pcl {
 namespace simulation {

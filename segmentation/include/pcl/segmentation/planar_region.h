@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/segmentation/region_3d.h>
 #include <pcl/geometry/planar_polygon.h>

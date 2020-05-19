@@ -7,11 +7,9 @@
 
 #pragma once
 
-#include <boost/shared_ptr.hpp>
-
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 //#include <pcl/win32_macros.h>
-
 #include <pcl/simulation/camera.h>
 #include <pcl/simulation/model.h>
 
@@ -20,8 +18,8 @@ namespace simulation {
 
 class PCL_EXPORTS Scene {
 public:
-  using Ptr = boost::shared_ptr<Scene>;
-  using ConstPtr = boost::shared_ptr<Scene>;
+  using Ptr = shared_ptr<Scene>;
+  using ConstPtr = shared_ptr<Scene>;
 
   void
   draw();

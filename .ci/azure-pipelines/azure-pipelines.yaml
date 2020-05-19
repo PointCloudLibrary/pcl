@@ -1,0 +1,42 @@
+resources:
+  containers:
+    - container: fmt
+      image: pointcloudlibrary/fmt
+    - container: env1604
+      image: pointcloudlibrary/env:16.04
+    - container: env2004
+      image: pointcloudlibrary/env:20.04
+    - container: doc
+      image: pointcloudlibrary/doc
+
+stages:
+  - stage: formatting
+    displayName: Formatting
+    jobs:
+      - template: formatting.yaml
+  - stage: build_ubuntu
+    displayName: Build Ubuntu
+    dependsOn: formatting
+    jobs:
+      - template: build-ubuntu.yaml
+  - stage: build_osx
+    displayName: Build macOS
+    dependsOn: formatting
+    jobs:
+      - template: build-macos.yaml
+  - stage: build_windows
+    displayName: Build Windows
+    dependsOn: formatting
+    jobs:
+      - template: build-windows.yaml
+  - stage: documentation
+    displayName: Documentation
+    dependsOn: []
+    jobs:
+      - template: documentation.yaml
+  - stage: tutorials
+    displayName: Tutorials
+    dependsOn: build_ubuntu
+    jobs:
+      - template: tutorials.yaml
+      

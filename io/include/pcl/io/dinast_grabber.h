@@ -68,7 +68,7 @@ namespace pcl
       DinastGrabber (const int device_position=1);
 
       /** \brief Destructor. It never throws. */
-      ~DinastGrabber () throw ();
+      ~DinastGrabber () noexcept;
 
       /** \brief Check if the grabber is running
         * \return true if grabber is running / streaming. False otherwise.

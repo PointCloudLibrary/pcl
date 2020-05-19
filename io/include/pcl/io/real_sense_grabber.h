@@ -38,12 +38,17 @@
 #pragma once
 
 #include <pcl/io/grabber.h>
+#include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/time.h>
 
+#include <cstddef>
 #include <memory>
+#include <mutex>
+#include <string>
 #include <thread>
+#include <vector>
 
 namespace pcl
 {
@@ -65,8 +70,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr<RealSenseGrabber>;
-      using ConstPtr = boost::shared_ptr<const RealSenseGrabber>;
+      using Ptr = shared_ptr<RealSenseGrabber>;
+      using ConstPtr = shared_ptr<const RealSenseGrabber>;
 
       using sig_cb_real_sense_point_cloud = void(const pcl::PointCloud<pcl::PointXYZ>::ConstPtr&);
       using sig_cb_real_sense_point_cloud_rgba = void(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&);
@@ -139,7 +144,7 @@ namespace pcl
       RealSenseGrabber (const std::string& device_id = "", const Mode& mode = Mode (), bool strict = false);
 
       virtual
-      ~RealSenseGrabber () throw ();
+      ~RealSenseGrabber () noexcept;
 
       virtual void
       start ();
@@ -268,7 +273,5 @@ namespace pcl
 
       /// Depth buffer to perform temporal filtering of the depth images
       std::shared_ptr<pcl::io::Buffer<unsigned short> > depth_buffer_;
-
   };
-
 }

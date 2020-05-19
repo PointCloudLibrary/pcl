@@ -35,9 +35,9 @@
  *
  */
 
+#include <pcl/stereo/stereo_grabber.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/stereo/stereo_grabber.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberImplementation //////////////////////
@@ -152,7 +152,7 @@ pcl::StereoGrabberBase::StereoGrabberBase(
 {}
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::StereoGrabberBase::~StereoGrabberBase() throw()
+pcl::StereoGrabberBase::~StereoGrabberBase() noexcept
 {
   stop();
   delete impl_;

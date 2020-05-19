@@ -52,8 +52,6 @@ OutofcoreCloud::PcdQueue OutofcoreCloud::pcd_queue;
 void
 OutofcoreCloud::pcdReaderThread ()
 {
-
-  std::string pcd_file;
   std::size_t timestamp = 0;
 
   while (true)

@@ -1,5 +1,13 @@
 #pragma once
 
+#include <pcl/io/pcd_io.h>
+#include <pcl/simulation/glsl_shader.h>
+#include <pcl/PolygonMesh.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_config.h>
+#include <pcl/pcl_macros.h>
+#include <pcl/point_types.h>
+
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__)
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
@@ -7,7 +15,6 @@
 
 #include <GL/glew.h>
 
-#include <pcl/pcl_config.h>
 #ifdef OPENGL_IS_A_FRAMEWORK
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -15,13 +22,6 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #endif
-
-#include <boost/shared_ptr.hpp>
-#include <pcl/PolygonMesh.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/pcl_macros.h>
-#include <pcl/point_types.h>
-#include <pcl/simulation/glsl_shader.h>
 
 namespace pcl {
 namespace simulation {
@@ -60,14 +60,14 @@ public:
   virtual void
   draw() = 0;
 
-  using Ptr = boost::shared_ptr<Model>;
-  using ConstPtr = boost::shared_ptr<const Model>;
+  using Ptr = shared_ptr<Model>;
+  using ConstPtr = shared_ptr<const Model>;
 };
 
 class PCL_EXPORTS TriangleMeshModel : public Model {
 public:
-  using Ptr = boost::shared_ptr<TriangleMeshModel>;
-  using ConstPtr = boost::shared_ptr<const TriangleMeshModel>;
+  using Ptr = shared_ptr<TriangleMeshModel>;
+  using ConstPtr = shared_ptr<const TriangleMeshModel>;
 
   TriangleMeshModel(pcl::PolygonMesh::Ptr plg);
 
@@ -91,8 +91,8 @@ public:
   void
   draw() override;
 
-  using Ptr = boost::shared_ptr<PolygonMeshModel>;
-  using ConstPtr = boost::shared_ptr<const PolygonMeshModel>;
+  using Ptr = shared_ptr<PolygonMeshModel>;
+  using ConstPtr = shared_ptr<const PolygonMeshModel>;
 
 private:
   std::vector<SinglePoly> polygons;
@@ -114,8 +114,8 @@ private:
 
 class PCL_EXPORTS PointCloudModel : public Model {
 public:
-  using Ptr = boost::shared_ptr<PointCloudModel>;
-  using ConstPtr = boost::shared_ptr<const PointCloudModel>;
+  using Ptr = shared_ptr<PointCloudModel>;
+  using ConstPtr = shared_ptr<const PointCloudModel>;
 
   PointCloudModel(GLenum mode, pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc);
 
@@ -161,7 +161,7 @@ public:
 
   /** Render the quad. */
   void
-  render();
+  render() const;
 
 private:
   GLuint quad_vbo_;
@@ -169,14 +169,14 @@ private:
 
 class PCL_EXPORTS TexturedQuad {
 public:
-  using Ptr = boost::shared_ptr<TexturedQuad>;
-  using ConstPtr = boost::shared_ptr<const TexturedQuad>;
+  using Ptr = shared_ptr<TexturedQuad>;
+  using ConstPtr = shared_ptr<const TexturedQuad>;
 
   TexturedQuad(int width, int height);
   ~TexturedQuad();
 
   void
-  setTexture(const std::uint8_t* data);
+  setTexture(const std::uint8_t* data) const;
 
   void
   render();

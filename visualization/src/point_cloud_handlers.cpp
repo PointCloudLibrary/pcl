@@ -686,12 +686,17 @@ pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::getGeometry 
 
   vtkSmartPointer<vtkFloatArray> data = vtkSmartPointer<vtkFloatArray>::New ();
   data->SetNumberOfComponents (3);
+  
   vtkIdType nr_points = cloud_->width * cloud_->height;
+  
+  if (!data->Resize(nr_points))
+  {
+    PCL_ERROR("[point_cloud_handlers::getGeometry] Failed to allocate space for points in VTK array.");
+    throw std::bad_alloc();
+  }
+    
 
   // Add all points
-  float dim;
-  vtkIdType j = 0;    // true point index
-  float* pts = static_cast<float*> (malloc (nr_points * 3 * sizeof (float)));
   int point_offset = 0;
 
   // If the dataset has no invalid values, just copy all of them
@@ -699,43 +704,36 @@ pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::getGeometry 
   {
     for (vtkIdType i = 0; i < nr_points; ++i, point_offset+=cloud_->point_step)
     {
-      // Copy the value at the specified field
-      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_x_idx_].offset], sizeof (float));
-      pts[i * 3 + 0] = dim;
+      const float* ptr = reinterpret_cast<const float*>(&cloud_->data[point_offset + cloud_->fields[field_x_idx_].offset]);
+      data->InsertNextValue(*ptr);
 
-      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_y_idx_].offset], sizeof (float));
-      pts[i * 3 + 1] = dim;
+      ptr = reinterpret_cast<const float*>(&cloud_->data[point_offset + cloud_->fields[field_y_idx_].offset]);
+      data->InsertNextValue(*ptr);
 
-      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_z_idx_].offset], sizeof (float));
-      pts[i * 3 + 2] = dim;
+      ptr = reinterpret_cast<const float*>(&cloud_->data[point_offset + cloud_->fields[field_z_idx_].offset]);
+      data->InsertNextValue(*ptr);
     }
-    data->SetArray (&pts[0], nr_points * 3, 0);
     points->SetData (data);
   }
   else
   {
     for (vtkIdType i = 0; i < nr_points; ++i, point_offset+=cloud_->point_step)
     {
-      // Copy the value at the specified field
-      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_x_idx_].offset], sizeof (float));
-      if (!std::isfinite (dim))
+      const float* ptr = reinterpret_cast<const float*>(&cloud_->data[point_offset + cloud_->fields[field_x_idx_].offset]);
+      if (!std::isfinite (*ptr))
         continue;
-      pts[j * 3 + 0] = dim;
+      data->InsertNextValue(*ptr);
 
-      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_y_idx_].offset], sizeof (float));
-      if (!std::isfinite (dim))
+      ptr = reinterpret_cast<const float*>(&cloud_->data[point_offset + cloud_->fields[field_y_idx_].offset]);
+      if (!std::isfinite (*ptr))
         continue;
-      pts[j * 3 + 1] = dim;
+      data->InsertNextValue(*ptr);
 
-      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_z_idx_].offset], sizeof (float));
-      if (!std::isfinite (dim))
+      ptr = reinterpret_cast<const float*>(&cloud_->data[point_offset + cloud_->fields[field_z_idx_].offset]);
+      if (!std::isfinite (*ptr))
         continue;
-      pts[j * 3 + 2] = dim;
-
-      // Set j and increment
-      j++;
+      data->InsertNextValue(*ptr);
     }
-    data->SetArray (&pts[0], j * 3, 0);
     points->SetData (data);
   }
 }

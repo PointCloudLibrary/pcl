@@ -6,7 +6,7 @@
 #include <pcl/apps/cloud_composer/cloud_view.h>
 #include <pcl/apps/cloud_composer/merge_selection.h>
 #include <pcl/apps/cloud_composer/transform_clouds.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 #include <QAction>
 #include <QFileDialog>

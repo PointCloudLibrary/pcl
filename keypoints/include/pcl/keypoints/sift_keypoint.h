@@ -93,8 +93,8 @@ namespace pcl
   class SIFTKeypoint : public Keypoint<PointInT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<SIFTKeypoint<PointInT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const SIFTKeypoint<PointInT, PointOutT> >;
+      using Ptr = shared_ptr<SIFTKeypoint<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const SIFTKeypoint<PointInT, PointOutT> >;
 
       using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
       using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;

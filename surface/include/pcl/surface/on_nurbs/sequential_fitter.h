@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * 
+ *
  *
  */
 
@@ -50,6 +50,7 @@
 #include <pcl/surface/on_nurbs/fitting_surface_pdm.h>
 #include <pcl/surface/on_nurbs/nurbs_data.h>
 
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
@@ -105,18 +106,18 @@ namespace pcl
         void
         compute_quadfit ();
         void
-        compute_refinement (FittingSurface* fitting);
+        compute_refinement (FittingSurface* fitting) const;
         void
-        compute_boundary (FittingSurface* fitting);
+        compute_boundary (FittingSurface* fitting) const;
         void
-        compute_interior (FittingSurface* fitting);
+        compute_interior (FittingSurface* fitting) const;
 
         Eigen::Vector2d
         project (const Eigen::Vector3d &pt);
 
         bool
-        is_back_facing (const Eigen::Vector3d &v0, 
-                        const Eigen::Vector3d &v1, 
+        is_back_facing (const Eigen::Vector3d &v0,
+                        const Eigen::Vector3d &v1,
                         const Eigen::Vector3d &v2,
                         const Eigen::Vector3d &v3);
 
@@ -149,7 +150,7 @@ namespace pcl
          *  \param[in] intrinsic The camera projection matrix.
          *  \param[in] intrinsic The world matrix.*/
         void
-        setProjectionMatrix (const Eigen::Matrix4d &intrinsic, 
+        setProjectionMatrix (const Eigen::Matrix4d &intrinsic,
                              const Eigen::Matrix4d &extrinsic);
 
         /** \brief Compute point cloud and fit (multiple) models */
@@ -175,27 +176,27 @@ namespace pcl
 
         /** \brief Get error of each interior point (L2-norm of point to closest point on surface) and square-error */
         void
-        getInteriorError (std::vector<double> &error);
+        getInteriorError (std::vector<double> &error) const;
 
         /** \brief Get error of each boundary point (L2-norm of point to closest point on surface) and square-error */
         void
-        getBoundaryError (std::vector<double> &error);
+        getBoundaryError (std::vector<double> &error) const;
 
         /** \brief Get parameter of each interior point */
         void
-        getInteriorParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params);
+        getInteriorParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params) const;
 
         /** \brief Get parameter of each boundary point */
         void
-        getBoundaryParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params);
+        getBoundaryParams (std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d> > &params) const;
 
         /** \brief get the normals to the interior points given by setInterior() */
         void
-        getInteriorNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normal);
+        getInteriorNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normal) const;
 
         /** \brief get the normals to the boundary points given by setBoundary() */
         void
-        getBoundaryNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals);
+        getBoundaryNormals (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > &normals) const;
 
         /** \brief Get the closest point on a NURBS from a point pt in parameter space
          *  \param[in] nurbs  The NURBS surface
@@ -204,9 +205,9 @@ namespace pcl
          *  \param[in] maxSteps Maximum iteration steps
          *  \param[in] accuracy Accuracy below which the iterations stop */
         static void
-        getClosestPointOnNurbs (ON_NurbsSurface nurbs, 
-                                const Eigen::Vector3d &pt, 
-                                Eigen::Vector2d& params, 
+        getClosestPointOnNurbs (ON_NurbsSurface nurbs,
+                                const Eigen::Vector3d &pt,
+                                Eigen::Vector2d& params,
                                 int maxSteps = 100,
                                 double accuracy = 1e-4);
 

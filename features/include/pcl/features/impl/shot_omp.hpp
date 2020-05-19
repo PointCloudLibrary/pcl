@@ -37,12 +37,14 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_SHOT_OMP_H_
-#define PCL_FEATURES_IMPL_SHOT_OMP_H_
+#pragma once
 
 #include <pcl/features/shot_omp.h>
+
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/common/time.h>
 #include <pcl/features/shot_lrf_omp.h>
+
 
 template<typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> bool
 pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::initCompute ()
@@ -146,14 +148,13 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
 
   assert(descLength_ == 352);
 
-  int data_size = static_cast<int> (indices_->size ());
-
   output.is_dense = true;
   // Iterating over the entire index vector
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads_)
-#endif
-  for (int idx = 0; idx < data_size; ++idx)
+#pragma omp parallel for \
+  default(none) \
+  shared(output) \
+  num_threads(threads_)
+  for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
   {
 
     Eigen::VectorXf shot;
@@ -234,14 +235,13 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
   radius1_4_ = search_radius_ / 4;
   radius1_2_ = search_radius_ / 2;
 
-  int data_size = static_cast<int> (indices_->size ());
-
   output.is_dense = true;
   // Iterating over the entire index vector
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads_)
-#endif
-  for (int idx = 0; idx < data_size; ++idx)
+#pragma omp parallel for \
+  default(none) \
+  shared(output) \
+  num_threads(threads_)
+  for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
   {
     Eigen::VectorXf shot;
     shot.setZero (descLength_);
@@ -294,4 +294,3 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
 #define PCL_INSTANTIATE_SHOTEstimationOMP(T,NT,OutT,RFT) template class PCL_EXPORTS pcl::SHOTEstimationOMP<T,NT,OutT,RFT>;
 #define PCL_INSTANTIATE_SHOTColorEstimationOMP(T,NT,OutT,RFT) template class PCL_EXPORTS pcl::SHOTColorEstimationOMP<T,NT,OutT,RFT>;
 
-#endif    // PCL_FEATURES_IMPL_SHOT_OMP_H_

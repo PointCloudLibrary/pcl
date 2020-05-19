@@ -37,7 +37,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/io/pcd_io.h>
@@ -371,7 +371,7 @@ struct SHOTShapeTest<SHOTEstimationOMP<PointXYZ, Normal, SHOT352> >
 using SHOTEstimatorTypes = ::testing::Types
         <SHOTEstimation<PointXYZ, Normal, SHOT352>,
          SHOTEstimationOMP<PointXYZ, Normal, SHOT352> >;
-TYPED_TEST_CASE (SHOTShapeTest, SHOTEstimatorTypes);
+TYPED_TEST_SUITE (SHOTShapeTest, SHOTEstimatorTypes);
 
 // This is a copy of the old SHOTShapeEstimation test which will now
 // be applied to both SHOTEstimation and SHOTEstimationOMP
@@ -560,7 +560,7 @@ struct SHOTShapeAndColorTest<SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT13
 using SHOTColorEstimatorTypes= ::testing::Types
         <SHOTColorEstimation<PointXYZRGBA, Normal, SHOT1344>,
          SHOTColorEstimationOMP<PointXYZRGBA, Normal, SHOT1344> >;
-TYPED_TEST_CASE (SHOTShapeAndColorTest, SHOTColorEstimatorTypes);
+TYPED_TEST_SUITE (SHOTShapeAndColorTest, SHOTColorEstimatorTypes);
 
 // This is a copy of the old SHOTShapeAndColorEstimation test which will now
 // be applied to both SHOTColorEstimation and SHOTColorEstimationOMP

@@ -151,7 +151,7 @@ namespace pcl
       // It may make the file too big though, so we truncate before returning.
 
       // Try to allocate contiguous space first.
-      ::fstore_t store = {F_ALLOCATEALL | F_ALLOCATECONTIG, F_PEOFPOSMODE, 0, length};
+      ::fstore_t store = {F_ALLOCATEALL | F_ALLOCATECONTIG, F_PEOFPOSMODE, 0, length, 0};
       if (::fcntl(fd, F_PREALLOCATE, &store) != -1)
         return raw_ftruncate(fd, length);
 

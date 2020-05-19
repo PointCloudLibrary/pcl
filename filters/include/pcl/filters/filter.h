@@ -83,11 +83,8 @@ namespace pcl
   class Filter : public PCLBase<PointT>
   {
     public:
-      using PCLBase<PointT>::indices_;
-      using PCLBase<PointT>::input_;
-
-      using Ptr = boost::shared_ptr<Filter<PointT> >;
-      using ConstPtr = boost::shared_ptr<const Filter<PointT> >;
+      using Ptr = shared_ptr<Filter<PointT> >;
+      using ConstPtr = shared_ptr<const Filter<PointT> >;
 
 
       using PointCloud = pcl::PointCloud<PointT>;
@@ -103,9 +100,6 @@ namespace pcl
         extract_removed_indices_ (extract_removed_indices)
       {
       }
-
-      /** \brief Empty destructor */
-      ~Filter () {}
 
       /** \brief Get the point indices being removed */
       inline IndicesConstPtr const
@@ -154,6 +148,9 @@ namespace pcl
 
     protected:
 
+      using PCLBase<PointT>::indices_;
+      using PCLBase<PointT>::input_;
+
       using PCLBase<PointT>::initCompute;
       using PCLBase<PointT>::deinitCompute;
 
@@ -192,8 +189,8 @@ namespace pcl
   class PCL_EXPORTS Filter<pcl::PCLPointCloud2> : public PCLBase<pcl::PCLPointCloud2>
   {
     public:
-      using Ptr = boost::shared_ptr<Filter<pcl::PCLPointCloud2> >;
-      using ConstPtr = boost::shared_ptr<const Filter<pcl::PCLPointCloud2> >;
+      using Ptr = shared_ptr<Filter<pcl::PCLPointCloud2> >;
+      using ConstPtr = shared_ptr<const Filter<pcl::PCLPointCloud2> >;
 
       using PCLPointCloud2 = pcl::PCLPointCloud2;
       using PCLPointCloud2Ptr = PCLPointCloud2::Ptr;
@@ -208,9 +205,6 @@ namespace pcl
         extract_removed_indices_ (extract_removed_indices)
       {
       }
-
-      /** \brief Empty destructor */
-      ~Filter () {}
 
       /** \brief Get the point indices being removed */
       inline IndicesConstPtr const

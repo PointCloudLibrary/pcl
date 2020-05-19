@@ -305,10 +305,6 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
       const PointIHS&          pt_d_t_4 = cloud_data_transformed->operator [] (ind_4);
 
       VertexIndex& vi_0 = vertex_indices [ind_0];
-      VertexIndex& vi_1 = vertex_indices [ind_1];
-      VertexIndex& vi_2 = vertex_indices [ind_2];
-      VertexIndex& vi_3 = vertex_indices [ind_3];
-      VertexIndex& vi_4 = vertex_indices [ind_4];
 
       const float weight = -pt_d_0.normal_z; // weight = -dot (normal, [0; 0; 1])
 
@@ -372,6 +368,12 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
       // 4 - 2   1  //
       //   \   \    //
       // *   3 - 0  //
+
+      VertexIndex& vi_1 = vertex_indices [ind_1];
+      VertexIndex& vi_2 = vertex_indices [ind_2];
+      VertexIndex& vi_3 = vertex_indices [ind_3];
+      VertexIndex& vi_4 = vertex_indices [ind_4];
+
       this->addToMesh (pt_d_t_0,pt_d_t_1,pt_d_t_2,pt_d_t_3, vi_0,vi_1,vi_2,vi_3, mesh_model);
       if (Mesh::IsManifold::value) // Only needed for the manifold mesh
       {

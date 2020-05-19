@@ -42,6 +42,7 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/exceptions.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/console/print.h>
 
 #include <fstream>
@@ -367,7 +368,7 @@ namespace pcl
     void
     OutofcoreOctreeBaseMetadata::writeMetadataString (std::vector<char>& buf)
     {
-      (void)buf;
+      pcl::utils::ignore(buf);
       PCL_THROW_EXCEPTION (PCLException, "Not implemented\n");
     }
 
@@ -376,7 +377,7 @@ namespace pcl
     std::ostream& 
     operator<<(std::ostream& os, const OutofcoreOctreeBaseMetadata& metadata_arg)
     {
-      (void) metadata_arg;
+      pcl::utils::ignore(metadata_arg);
       return (os);
     }
 

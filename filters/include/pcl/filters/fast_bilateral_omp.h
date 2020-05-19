@@ -67,8 +67,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr<FastBilateralFilterOMP<PointT> >;
-      using ConstPtr = boost::shared_ptr<const FastBilateralFilterOMP<PointT> >;
+      using Ptr = shared_ptr<FastBilateralFilterOMP<PointT> >;
+      using ConstPtr = shared_ptr<const FastBilateralFilterOMP<PointT> >;
 
       /** \brief Empty constructor. */
       FastBilateralFilterOMP (unsigned int nr_threads = 0)

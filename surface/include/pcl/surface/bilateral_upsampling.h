@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/surface/processing.h>
 
@@ -62,8 +63,8 @@ namespace pcl
   class BilateralUpsampling: public CloudSurfaceProcessing<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<BilateralUpsampling<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const BilateralUpsampling<PointInT, PointOutT> > ConstPtr;
+      typedef shared_ptr<BilateralUpsampling<PointInT, PointOutT> > Ptr;
+      typedef shared_ptr<const BilateralUpsampling<PointInT, PointOutT> > ConstPtr;
 
       using PCLBase<PointInT>::input_;
       using PCLBase<PointInT>::indices_;

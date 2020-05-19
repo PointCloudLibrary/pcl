@@ -62,8 +62,8 @@ namespace pcl
       class PCL_EXPORTS PeopleDetector
       {
         public:
-          using Ptr = boost::shared_ptr<PeopleDetector>;                              
-          using ConstPtr = boost::shared_ptr<const PeopleDetector>;
+          using Ptr = shared_ptr<PeopleDetector>;                              
+          using ConstPtr = shared_ptr<const PeopleDetector>;
 
           using PointTC = pcl::PointXYZRGBA;
           using PointT = pcl::PointXYZ;

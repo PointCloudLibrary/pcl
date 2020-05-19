@@ -175,13 +175,13 @@ namespace pcl
         using DepthFirstIterator = OutofcoreDepthFirstIterator<PointT, ContainerT>;
         using DepthFirstConstIterator = const OutofcoreDepthFirstIterator<PointT, ContainerT>;
 
-        using Ptr = boost::shared_ptr<OutofcoreOctreeBase<ContainerT, PointT> >;
-        using ConstPtr = boost::shared_ptr<const OutofcoreOctreeBase<ContainerT, PointT> >;
+        using Ptr = shared_ptr<OutofcoreOctreeBase<ContainerT, PointT> >;
+        using ConstPtr = shared_ptr<const OutofcoreOctreeBase<ContainerT, PointT> >;
 
         using PointCloud = pcl::PointCloud<PointT>;
 
-        using IndicesPtr = boost::shared_ptr<std::vector<int> >;
-        using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
+        using IndicesPtr = shared_ptr<std::vector<int> >;
+        using IndicesConstPtr = shared_ptr<const std::vector<int> >;
 
         using PointCloudPtr = typename PointCloud::Ptr;
         using PointCloudConstPtr = typename PointCloud::ConstPtr;
@@ -611,22 +611,15 @@ namespace pcl
         bool
         checkExtension (const boost::filesystem::path& path_name);
 
-
-        /** \brief DEPRECATED - Flush all nodes' cache 
-         *  \deprecated this was moved to the octree_node class
-         */
+        /** \brief Flush all nodes' cache */
         void
         flushToDisk ();
 
-        /** \brief DEPRECATED - Flush all non leaf nodes' cache 
-         *  \deprecated
-         */
+        /** \brief Flush all non leaf nodes' cache */
         void
         flushToDiskLazy ();
 
-        /** \brief DEPRECATED - Flush empty nodes only 
-         *  \deprecated
-         */
+        /** \brief Flush empty nodes only */
         void
         DeAllocEmptyNodeCache ();
 

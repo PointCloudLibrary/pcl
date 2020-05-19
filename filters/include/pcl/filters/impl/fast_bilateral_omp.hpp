@@ -91,9 +91,10 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
     PCL_WARN ("[pcl::FastBilateralFilterOMP] Given an empty cloud. Doing nothing.\n");
     return;
   }
-#ifdef _OPENMP
-#pragma omp parallel for num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(base_min, base_max, output) \
+  num_threads(threads_)
   for (long int i = 0; i < static_cast<long int> (output.size ()); ++i)
     if (!std::isfinite (output.at(i).z))
       output.at(i).z = base_max;
@@ -108,8 +109,16 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
   const std::size_t small_depth  = static_cast<std::size_t> (base_delta / sigma_r_)   + 1 + 2 * padding_z;
 
   Array3D data (small_width, small_height, small_depth);
-#ifdef _OPENMP
-#pragma omp parallel for num_threads (threads_)
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  shared(base_min, data, output) \
+  num_threads(threads_)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(base_min, data, output, small_height, small_width) \
+  num_threads(threads_)	
 #endif
   for (long int i = 0; i < static_cast<long int> (small_width * small_height); ++i)
   {
@@ -149,8 +158,16 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
     {
       Array3D* current_buffer = (n_iter % 2 == 1 ? &buffer : &data);
       Array3D* current_data =(n_iter % 2 == 1 ? &data : &buffer);
-#ifdef _OPENMP
-#pragma omp parallel for num_threads (threads_)
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
+#pragma omp parallel for \
+  default(none) \
+  shared(current_buffer, current_data, dim, offset) \
+  num_threads(threads_)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(current_buffer, current_data, dim, offset, small_depth, small_height, small_width) \
+  num_threads(threads_)
 #endif
       for(long int i = 0; i < static_cast<long int> ((small_width - 2)*(small_height - 2)); ++i)
       {
@@ -174,9 +191,10 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
     for (std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >::iterator d = data.begin (); d != data.end (); ++d)
       *d /= ((*d)[0] != 0) ? (*d)[1] : 1;
 
-#ifdef _OPENMP
-#pragma omp parallel for num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(base_min, data, output) \
+  num_threads(threads_)
     for (long int i = 0; i < static_cast<long int> (input_->size ()); ++i)
     {
       std::size_t x = static_cast<std::size_t> (i % input_->width);
@@ -190,9 +208,10 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
   }
   else
   {
-#ifdef _OPENMP
-#pragma omp parallel for num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(base_min, data, output) \
+  num_threads(threads_)
     for (long i = 0; i < static_cast<long int> (input_->size ()); ++i)
     {
       std::size_t x = static_cast<std::size_t> (i % input_->width);

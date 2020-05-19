@@ -44,11 +44,14 @@
 #include <pcl/registration/boost.h>
 #include <pcl/correspondence.h>
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
 template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud (
-    const PointCloudSource &input, 
-    PointCloudSource &output, 
+IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud (
+    const PointCloudSource &input,
+    PointCloudSource &output,
     const Matrix4 &transform)
 {
   Eigen::Vector4f pt (0.0f, 0.0f, 0.0f, 1.0f), pt_t;
@@ -111,12 +114,11 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud (
       memcpy (data_out + z_idx_offset_, &pt_t[2], sizeof (float));
     }
   }
-  
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation (
+IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformation (
     PointCloudSource &output, const Matrix4 &guess)
 {
   // Point cloud containing the correspondences of each point in <input, indices>
@@ -137,7 +139,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
   }
   else
     *input_transformed = *input_;
- 
+
   transformation_ = Matrix4::Identity ();
 
   // Make blobs if necessary
@@ -224,7 +226,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
     // Transform the data
     transformCloud (*input_transformed, *input_transformed, transformation_);
 
-    // Obtain the final transformation    
+    // Obtain the final transformation
     final_transformation_ = transformation_ * final_transformation_;
 
     ++nr_iterations_;
@@ -250,8 +252,9 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
   transformCloud (*input_, output, final_transformation_);
 }
 
+
 template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::determineRequiredBlobData ()
+IterativeClosestPoint<PointSource, PointTarget, Scalar>::determineRequiredBlobData ()
 {
   need_source_blob_ = false;
   need_target_blob_ = false;
@@ -286,15 +289,17 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::determineRequiredB
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>::transformCloud (
-    const PointCloudSource &input, 
-    PointCloudSource &output, 
+IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>::transformCloud (
+    const PointCloudSource &input,
+    PointCloudSource &output,
     const Matrix4 &transform)
 {
   pcl::transformPointCloudWithNormals (input, output, transform);
 }
 
+} // namespace pcl
 
 #endif /* PCL_REGISTRATION_IMPL_ICP_HPP_ */
+

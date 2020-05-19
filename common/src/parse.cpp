@@ -2,8 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *  Copyright (c) 2012-, Open Perception, Inc.
+ *  Copyright (c) 2020-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -37,17 +36,16 @@
  */
 
 #include <cctype>
+#include <cerrno>
+#include <complex>
 #include <cstdio>
+#include <limits>
+#include <type_traits>
+
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
-#include <boost/algorithm/string.hpp>
 
-////////////////////////////////////////////////////////////////////////////////
-bool
-pcl::console::find_switch (int argc, const char * const * argv, const char * argument_name)
-{
-  return (find_argument (argc, argv, argument_name) != -1);
-}
+#include <boost/algorithm/string.hpp>
 
 ////////////////////////////////////////////////////////////////////////////////
 int
@@ -65,6 +63,13 @@ pcl::console::find_argument (int argc, const char * const * argv, const char * a
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::console::find_switch (int argc, const char * const * argv, const char * argument_name)
+{
+  return (find_argument (argc, argv, argument_name) != -1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 int
 pcl::console::parse_argument (int argc, const char * const * argv, const char * str, std::string &val)
 {
@@ -76,63 +81,143 @@ pcl::console::parse_argument (int argc, const char * const * argv, const char * 
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-int
-pcl::console::parse_argument (int argc, const char * const * argv, const char * str, bool &val)
+namespace pcl
 {
+namespace console
+{
+template <class T, class V = T(*)(const char*, const char**)> int
+parse_generic (V convert_func, int argc, const char* const* argv, const char* str, T& val)
+{
+  char *endptr = nullptr;
   int index = find_argument (argc, argv, str) + 1;
+  errno = 0;
 
   if (index > 0 && index < argc )
-    val = atoi (argv[index]) == 1;
+  {
+    val = convert_func (argv[index], &endptr);  // similar to strtol, strtod, strtof
+    // handle out-of-range, junk at the end and no conversion
+    if (errno == ERANGE || *endptr != '\0' || str == endptr)
+    {
+      return -1;
+    }
+  }
 
   return (index - 1);
+}
+
+int
+parse_argument (int argc, const char * const * argv, const char * str, long int &val) noexcept
+{
+  const auto strtol_10 = [](const char *str, char **str_end){ return strtol(str, str_end, 10); };
+  return parse_generic(strtol_10, argc, argv, str, val);
+}
+
+int
+parse_argument (int argc, const char * const * argv, const char * str, long long int &val) noexcept
+{
+  const auto strtoll_10 = [](const char *str, char **str_end){ return strtoll(str, str_end, 10); };
+  return parse_generic(strtoll_10, argc, argv, str, val);
+}
+
+int
+parse_argument (int argc, const char * const * argv, const char * str, unsigned long long int &val) noexcept
+{
+  long long int dummy;
+  const auto ret = parse_argument (argc, argv, str, dummy);
+  if ((ret == -1) || dummy < 0)
+  {
+      return -1;
+  }
+  val = dummy;
+  return ret;
+}
+
+namespace detail
+{
+template <typename T, typename U>
+constexpr auto legally_representable_v = (std::numeric_limits<T>::max () >= std::numeric_limits<U>::max ()) &&
+                                       (std::numeric_limits<T>::lowest () <= std::numeric_limits<U>::lowest ());
+template <typename T, typename U>
+struct legally_representable {
+    constexpr static bool value = legally_representable_v<T, U>;
+};
+
+// assumptions:
+// * either long int or long long int is a valid type for storing Integral
+// * unsigned long long int is handled specially
+template <typename Integral>
+using primary_legal_input_type = std::conditional_t<legally_representable_v<long int, Integral>,
+                                                    long int, long long int>;
+
+// special handling if unsigned [long] int is of same size as long long int
+template <typename Integral>
+using legal_input_type = std::conditional_t<(std::is_unsigned<Integral>::value &&
+                                             (sizeof (Integral) == sizeof (long long int))),
+                                            unsigned long long int,
+                                            primary_legal_input_type<Integral>>;
+}
+
+template <typename T>
+using IsIntegral = std::enable_if_t<std::is_integral<T>::value, bool>;
+
+template <typename T, IsIntegral<T> = true> int
+parse_argument (int argc, const char * const * argv, const char * str, T &val) noexcept
+{
+  using InputType = detail::legal_input_type<T>;
+  InputType dummy;
+  const auto ret = parse_argument (argc, argv, str, dummy);
+  if ((ret == -1) ||
+      (dummy < static_cast<InputType> (std::numeric_limits<T>::min ())) ||
+      (dummy > static_cast<InputType> (std::numeric_limits<T>::max ())))
+  {
+    return -1;
+  }
+
+  val = static_cast<T> (dummy);
+  return ret;
+}
+}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 int
 pcl::console::parse_argument (int argc, const char * const * argv, const char * str, double &val)
 {
-  int index = find_argument (argc, argv, str) + 1;
-
-  if (index > 0 && index < argc )
-    val = atof (argv[index]);
-
-  return (index - 1);
+  return parse_generic(strtod, argc, argv, str, val);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 int
 pcl::console::parse_argument (int argc, const char * const * argv, const char * str, float &val)
 {
-  int index = find_argument (argc, argv, str) + 1;
-
-  if (index > 0 && index < argc )
-    val = static_cast<float> (atof (argv[index]));
-
-  return (index - 1);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-int
-pcl::console::parse_argument (int argc, const char * const * argv, const char * str, int &val)
-{
-  int index = find_argument (argc, argv, str) + 1;
-
-  if (index > 0 && index < argc )
-    val = atoi (argv[index]);
-
-  return (index - 1);
+  return parse_generic(strtof, argc, argv, str, val);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 int
 pcl::console::parse_argument (int argc, const char * const * argv, const char * str, unsigned int &val)
 {
-  int index = find_argument (argc, argv, str) + 1;
+  return parse_argument<unsigned int> (argc, argv, str, val);
+}
 
-  if (index > 0 && index < argc )
-    val = atoi (argv[index]);
+////////////////////////////////////////////////////////////////////////////////
+int
+pcl::console::parse_argument (int argc, const char * const * argv, const char * str, int &val)
+{
+  return parse_argument<int> (argc, argv, str, val);
+}
 
-  return (index - 1);
+////////////////////////////////////////////////////////////////////////////////
+int
+pcl::console::parse_argument (int argc, const char * const * argv, const char * str, bool &val)
+{
+  long int dummy;
+  const auto ret = parse_argument (argc, argv, str, dummy);
+  if (ret != -1)
+  {
+    val = static_cast<bool> (dummy);
+  }
+  return ret;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

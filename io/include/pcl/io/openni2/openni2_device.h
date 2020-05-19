@@ -30,24 +30,24 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
-#include "openni.h"
-#include "pcl/io/openni2/openni2_video_mode.h"
-#include "pcl/io/io_exception.h"
-
-#include <boost/shared_ptr.hpp>
 
 // Template frame wrappers
 #include <pcl/io/image.h>
 #include <pcl/io/image_depth.h>
 #include <pcl/io/image_ir.h>
 
+#include <pcl/io/io_exception.h>
+#include <pcl/io/openni2/openni2_video_mode.h>
+
+#include "openni.h"
+
 #include <cstdint>
 #include <functional>
 #include <memory>
 #include <string>
 #include <vector>
-
 
 
 namespace openni
@@ -73,8 +73,8 @@ namespace pcl
       class PCL_EXPORTS OpenNI2Device
       {
         public:
-          using Ptr = boost::shared_ptr<OpenNI2Device>;
-          using ConstPtr = boost::shared_ptr<const OpenNI2Device>;
+          using Ptr = shared_ptr<OpenNI2Device>;
+          using ConstPtr = shared_ptr<const OpenNI2Device>;
 
           using ImageCallbackFunction = std::function<void(Image::Ptr, void* cookie) >;
           using DepthImageCallbackFunction = std::function<void(DepthImage::Ptr, void* cookie) >;

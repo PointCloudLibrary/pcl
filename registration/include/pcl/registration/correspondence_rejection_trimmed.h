@@ -67,8 +67,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        using Ptr = boost::shared_ptr<CorrespondenceRejectorTrimmed>;
-        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorTrimmed>;
+        using Ptr = shared_ptr<CorrespondenceRejectorTrimmed>;
+        using ConstPtr = shared_ptr<const CorrespondenceRejectorTrimmed>;
 
         /** \brief Empty constructor. */
         CorrespondenceRejectorTrimmed () : 
@@ -91,7 +91,7 @@ namespace pcl
 
         /** \brief Get the maximum distance used for thresholding in correspondence rejection. */
         inline float 
-        getOverlapRatio () { return overlap_ratio_; };
+        getOverlapRatio () const { return overlap_ratio_; };
 
         /** \brief Set a minimum number of correspondences. If the specified overlap ratio causes to have
           * less correspondences,  \a CorrespondenceRejectorTrimmed will try to return at least
@@ -104,7 +104,7 @@ namespace pcl
 
         /** \brief Get the minimum number of correspondences. */
         inline unsigned int 
-        getMinCorrespondences () { return nr_min_correspondences_; };
+        getMinCorrespondences () const { return nr_min_correspondences_; };
 
 
         /** \brief Get a list of valid correspondences after rejection from the original set of correspondences.

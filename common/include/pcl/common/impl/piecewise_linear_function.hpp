@@ -35,6 +35,14 @@
 
 /* \author Bastian Steder */
 
+#pragma once
+
+#include <pcl/common/piecewise_linear_function.h>
+
+#include <algorithm>
+#include <cmath>
+// #include <iostream>
+
 
 namespace pcl {
 
@@ -53,4 +61,4 @@ inline float PiecewiseLinearFunction::getValue(float point) const
   return data_points_[data_point_before]+interpolation_size*(data_points_[data_point_before+1]-data_points_[data_point_before]);
 }
 
-}  // end namespace pcl
+}  // namespace pcl

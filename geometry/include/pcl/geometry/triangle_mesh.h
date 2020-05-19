@@ -42,6 +42,7 @@
 
 #include <utility>
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/geometry/mesh_base.h>
 
@@ -65,8 +66,8 @@ namespace pcl
         using Base = pcl::geometry::MeshBase <TriangleMesh <MeshTraitsT>, MeshTraitsT, TriangleMeshTag>;
 
         using Self = TriangleMesh<MeshTraitsT>;
-        using Ptr = boost::shared_ptr<Self>;
-        using ConstPtr = boost::shared_ptr<const Self>;
+        using Ptr = shared_ptr<Self>;
+        using ConstPtr = shared_ptr<const Self>;
 
         using VertexData = typename Base::VertexData;
         using HalfEdgeData = typename Base::HalfEdgeData;

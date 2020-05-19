@@ -90,11 +90,7 @@ pcl::FieldComparison<PointT>::FieldComparison (
 template <typename PointT>
 pcl::FieldComparison<PointT>::~FieldComparison () 
 {
-  if (point_data_ != nullptr)
-  {
-    delete point_data_;
-    point_data_ = nullptr;
-  }
+  delete point_data_;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -689,36 +685,38 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
   output.points.resize (input_->points.size ());
   removed_indices_->resize (input_->points.size ());
 
-  int nr_p = 0;
   int nr_removed_p = 0;
 
   if (!keep_organized_)
   {
-    for (std::size_t cp = 0; cp < Filter<PointT>::indices_->size (); ++cp)
+    int nr_p = 0;
+    for (std::size_t index: (*Filter<PointT>::indices_))
     {
+
+      const PointT& point = input_->points[index];
       // Check if the point is invalid
-      if (!std::isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].x)
-          || !std::isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].y)
-          || !std::isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].z))
+      if (!std::isfinite (point.x)
+          || !std::isfinite (point.y)
+          || !std::isfinite (point.z))
       {
         if (extract_removed_indices_)
         {
-          (*removed_indices_)[nr_removed_p] = (*Filter<PointT>::indices_)[cp];
+          (*removed_indices_)[nr_removed_p] = index;
           nr_removed_p++;
         }
         continue;
       }
 
-      if (condition_->evaluate (input_->points[(*Filter < PointT > ::indices_)[cp]]))
+      if (condition_->evaluate (point))
       {
-        copyPoint (input_->points[(*Filter < PointT > ::indices_)[cp]], output.points[nr_p]);
+        copyPoint (point, output.points[nr_p]);
         nr_p++;
       }
       else
       {
         if (extract_removed_indices_)
         {
-          (*removed_indices_)[nr_removed_p] = (*Filter<PointT>::indices_)[cp];
+          (*removed_indices_)[nr_removed_p] = index;
           nr_removed_p++;
         }
       }

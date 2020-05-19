@@ -58,7 +58,7 @@ pcl::VLPGrabber::VLPGrabber (const boost::asio::ip::address& ipAddress,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-pcl::VLPGrabber::~VLPGrabber () throw ()
+pcl::VLPGrabber::~VLPGrabber () noexcept
 {
 }
 

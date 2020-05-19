@@ -39,7 +39,9 @@
 
 #pragma once
 
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/keypoints/agast_2d.h>
+
 
 namespace pcl
 {
@@ -71,8 +73,8 @@ namespace pcl
   class BriskKeypoint2D: public Keypoint<PointInT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<BriskKeypoint2D<PointInT, PointOutT, IntensityT> >;
-      using ConstPtr = boost::shared_ptr<const BriskKeypoint2D<PointInT, PointOutT, IntensityT> >;
+      using Ptr = shared_ptr<BriskKeypoint2D<PointInT, PointOutT, IntensityT> >;
+      using ConstPtr = shared_ptr<const BriskKeypoint2D<PointInT, PointOutT, IntensityT> >;
 
       using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
       using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;

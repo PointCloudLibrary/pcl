@@ -39,32 +39,39 @@
 #ifndef PCL_COMMON_FILE_IO_IMPL_HPP_
 #define PCL_COMMON_FILE_IO_IMPL_HPP_
 
+#include <boost/filesystem.hpp>
+#include <boost/range/iterator_range.hpp>
+
+#include <algorithm>
+#include <cstddef>
+#include <iostream>
+#include <string>
+#include <vector>
+
 namespace pcl
 {
 
-#ifndef _WIN32
-  void getAllPcdFilesInDirectory(const std::string& directory, std::vector<std::string>& file_names)
+void getAllPcdFilesInDirectory(const std::string& directory, std::vector<std::string>& file_names)
+{
+  boost::filesystem::path p(directory);
+  if(boost::filesystem::is_directory(p))
   {
-    DIR *dp;
-    struct dirent *dirp;
-    if((dp  = opendir(directory.c_str())) == nullptr) {
-      std::cerr << "Could not open directory.\n";
-      return;
-    }
-    while ((dirp = readdir(dp)) != nullptr) {
-      if (dirp->d_type == DT_REG)  // Only regular files
+    for(const auto& entry : boost::make_iterator_range(boost::filesystem::directory_iterator(p), {}))
+    {
+      if (boost::filesystem::is_regular_file(entry))
       {
-        std::string file_name = dirp->d_name;
-        if (file_name.substr(file_name.size()-4, 4)==".pcd")
-          file_names.emplace_back(dirp->d_name);
+        if (entry.path().extension() == ".pcd")
+          file_names.emplace_back(entry.path().filename().string());
       }
     }
-    closedir(dp);
-    std::sort(file_names.begin(), file_names.end());
-    //for (unsigned int i=0; i<file_names.size(); ++i)
-      //std::cout << file_names[i]<<"\n";
   }
-#endif
+  else
+  {
+    std::cerr << "Given path is not a directory\n";
+    return;
+  }
+  std::sort(file_names.begin(), file_names.end());
+}
 
 std::string getFilenameWithoutPath(const std::string& input)
 {
@@ -87,4 +94,3 @@ std::string getFileExtension(const std::string& input)
 }  // namespace end
 
 #endif
-

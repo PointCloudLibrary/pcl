@@ -68,7 +68,7 @@
 #include "evaluation.h"
 
 #include <pcl/common/angles.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 #include "tsdf_volume.h"
 #include "tsdf_volume.hpp"
@@ -116,8 +116,8 @@ namespace pcl
       using RgbCloudConstPtr = pcl::PointCloud<RGB>::ConstPtr;
 
       public:
-        using Ptr = boost::shared_ptr<PointCloudColorHandlerRGBCloud<PointT> >;
-        using ConstPtr = boost::shared_ptr<const PointCloudColorHandlerRGBCloud<PointT> >;
+        using Ptr = pcl::shared_ptr<PointCloudColorHandlerRGBCloud<PointT> >;
+        using ConstPtr = pcl::shared_ptr<const PointCloudColorHandlerRGBCloud<PointT> >;
         
         /** \brief Constructor. */
         PointCloudColorHandlerRGBCloud (const PointCloudConstPtr& cloud, const RgbCloudConstPtr& colors)
@@ -307,8 +307,8 @@ pcl::PolygonMesh::Ptr convertToMesh(const DeviceArray<PointXYZ>& triangles)
 
 struct CurrentFrameCloudView
 {
-  using Ptr = boost::shared_ptr<CurrentFrameCloudView>;
-  using ConstPtr = boost::shared_ptr<const CurrentFrameCloudView>;
+  using Ptr = pcl::shared_ptr<CurrentFrameCloudView>;
+  using ConstPtr = pcl::shared_ptr<const CurrentFrameCloudView>;
 
   CurrentFrameCloudView() : cloud_device_ (480, 640), cloud_viewer_ ("Frame Cloud Viewer")
   {
@@ -404,7 +404,7 @@ struct ImageView
   }
 
   void
-  showDepth (const PtrStepSz<const unsigned short>& depth) 
+  showDepth (const PtrStepSz<const unsigned short>& depth) const 
   { 
      if (viz_)
        viewerDepth_->showShortImage (depth.data, depth.cols, depth.rows, 0, 5000, true, "short_image"); 
@@ -582,7 +582,7 @@ struct SceneCloudView
   }
 
   void
-  clearClouds (bool print_message = false)
+  clearClouds (bool print_message = false) const
   {
     if (!viz_)
         return;

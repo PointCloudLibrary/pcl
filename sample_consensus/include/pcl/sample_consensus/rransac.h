@@ -58,8 +58,8 @@ namespace pcl
     using SampleConsensusModelPtr = typename SampleConsensusModel<PointT>::Ptr;
 
     public:
-      using Ptr = boost::shared_ptr<RandomizedRandomSampleConsensus<PointT> >;
-      using ConstPtr = boost::shared_ptr<const RandomizedRandomSampleConsensus<PointT> >;
+      using Ptr = shared_ptr<RandomizedRandomSampleConsensus<PointT> >;
+      using ConstPtr = shared_ptr<const RandomizedRandomSampleConsensus<PointT> >;
 
       using SampleConsensus<PointT>::max_iterations_;
       using SampleConsensus<PointT>::threshold_;

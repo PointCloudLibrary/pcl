@@ -78,8 +78,8 @@ namespace pcl
         using PointCloudConstPtr = typename OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::PointCloudConstPtr;
 
         // Boost shared pointers
-        using Ptr = boost::shared_ptr<OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT> >;
-        using ConstPtr = boost::shared_ptr<const OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT> >;
+        using Ptr = shared_ptr<OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT> >;
+        using ConstPtr = shared_ptr<const OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT> >;
 
         using LeafNode = typename OctreeT::LeafNode;
         using BranchNode = typename OctreeT::BranchNode;

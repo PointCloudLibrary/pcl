@@ -477,9 +477,7 @@ namespace pcl
         void
         loadFromFile (const boost::filesystem::path &path, OutofcoreOctreeBaseNode* super);
 
-        /** \brief Recursively converts data files to ascii XZY files
-         *  \note This will be deprecated soon
-         */
+        /** \brief Recursively converts data files to ascii XZY files */
         void
         convertToXYZRecursive ();
 

@@ -78,8 +78,8 @@ namespace pcl
     public:
       using typename Feature<PointInT, PointOutT>::PointCloudIn;
       using typename Feature<PointInT, PointOutT>::PointCloudOut;
-      using Ptr = boost::shared_ptr<GASDEstimation<PointInT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const GASDEstimation<PointInT, PointOutT> >;
+      using Ptr = shared_ptr<GASDEstimation<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const GASDEstimation<PointInT, PointOutT> >;
 
       /** \brief Constructor.
        * \param[in] view_direction view direction
@@ -139,8 +139,8 @@ namespace pcl
         shape_interp_ = interp;
       }
 
-      /** \brief Returns the transformation aligning the point cloud to the canonical coordinate system
-       * \param[out] trans transformation
+      /**
+       * \brief Returns the transformation aligning the point cloud to the canonical coordinate system
        */
       const Eigen::Matrix4f&
       getTransform () const
@@ -259,8 +259,8 @@ namespace pcl
   {
     public:
       using typename Feature<PointInT, PointOutT>::PointCloudOut;
-      using Ptr = boost::shared_ptr<GASDColorEstimation<PointInT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const GASDColorEstimation<PointInT, PointOutT> >;
+      using Ptr = shared_ptr<GASDColorEstimation<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const GASDColorEstimation<PointInT, PointOutT> >;
 
       /** \brief Constructor.
        * \param[in] view_direction view direction
@@ -338,7 +338,7 @@ namespace pcl
       /** \brief copy computed color histograms to output descriptor point cloud
        * \param[in] grid_size size of the regular grid used to compute the descriptor
        * \param[in] hists_size size of the color histograms
-       * \param[in,out] hists color histograms, which are finalized, since they are circular 
+       * \param[in,out] hists color histograms, which are finalized, since they are circular
        * \param[out] output output descriptor point cloud
        * \param[in,out] pos current position of output descriptor point cloud
        */

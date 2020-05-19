@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/common/eigen.h>
 #include <pcl/filters/filter.h>
@@ -89,8 +90,8 @@ namespace pcl
   class ComparisonBase
   {
     public:
-      using Ptr = boost::shared_ptr<ComparisonBase<PointT> >;
-      using ConstPtr = boost::shared_ptr<const ComparisonBase<PointT> >;
+      using Ptr = shared_ptr<ComparisonBase<PointT> >;
+      using ConstPtr = shared_ptr<const ComparisonBase<PointT> >;
 
       /** \brief Constructor. */
       ComparisonBase () : capable_ (false), offset_ (), op_ () {}
@@ -133,8 +134,8 @@ namespace pcl
     using ComparisonBase<PointT>::capable_;
 
     public:
-      using Ptr = boost::shared_ptr<FieldComparison<PointT> >;
-      using ConstPtr = boost::shared_ptr<const FieldComparison<PointT> >;
+      using Ptr = shared_ptr<FieldComparison<PointT> >;
+      using ConstPtr = shared_ptr<const FieldComparison<PointT> >;
 
 
       /** \brief Construct a FieldComparison
@@ -197,8 +198,8 @@ namespace pcl
     using ComparisonBase<PointT>::op_;
 
     public:
-      using Ptr = boost::shared_ptr<PackedRGBComparison<PointT> >;
-      using ConstPtr = boost::shared_ptr<const PackedRGBComparison<PointT> >;
+      using Ptr = shared_ptr<PackedRGBComparison<PointT> >;
+      using ConstPtr = shared_ptr<const PackedRGBComparison<PointT> >;
 
       /** \brief Construct a PackedRGBComparison
         * \param component_name either "r", "g" or "b"
@@ -244,8 +245,8 @@ namespace pcl
     using ComparisonBase<PointT>::op_;
 
     public:
-      using Ptr = boost::shared_ptr<PackedHSIComparison<PointT> >;
-      using ConstPtr = boost::shared_ptr<const PackedHSIComparison<PointT> >;
+      using Ptr = shared_ptr<PackedHSIComparison<PointT> >;
+      using ConstPtr = shared_ptr<const PackedHSIComparison<PointT> >;
  
       /** \brief Construct a PackedHSIComparison 
         * \param component_name either "h", "s" or "i"
@@ -312,8 +313,8 @@ namespace pcl
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW  // needed whenever there is a fixed size Eigen:: vector or matrix in a class
 
-      using Ptr = boost::shared_ptr<TfQuadraticXYZComparison<PointT> >;
-      using ConstPtr = boost::shared_ptr<const TfQuadraticXYZComparison<PointT> >;
+      using Ptr = shared_ptr<TfQuadraticXYZComparison<PointT> >;
+      using ConstPtr = shared_ptr<const TfQuadraticXYZComparison<PointT> >;
 
       /** \brief Constructor.
        */
@@ -450,8 +451,8 @@ namespace pcl
       using ComparisonBasePtr = typename ComparisonBase::Ptr;
       using ComparisonBaseConstPtr = typename ComparisonBase::ConstPtr;
 
-      using Ptr = boost::shared_ptr<ConditionBase<PointT> >;
-      using ConstPtr = boost::shared_ptr<const ConditionBase<PointT> >;
+      using Ptr = shared_ptr<ConditionBase<PointT> >;
+      using ConstPtr = shared_ptr<const ConditionBase<PointT> >;
 
       /** \brief Constructor. */
       ConditionBase () : capable_ (true), comparisons_ (), conditions_ ()
@@ -506,8 +507,8 @@ namespace pcl
     using ConditionBase<PointT>::comparisons_;
 
     public:
-      using Ptr = boost::shared_ptr<ConditionAnd<PointT> >;
-      using ConstPtr = boost::shared_ptr<const ConditionAnd<PointT> >;
+      using Ptr = shared_ptr<ConditionAnd<PointT> >;
+      using ConstPtr = shared_ptr<const ConditionAnd<PointT> >;
 
       /** \brief Constructor. */
       ConditionAnd () :
@@ -534,8 +535,8 @@ namespace pcl
     using ConditionBase<PointT>::comparisons_;
 
     public:
-      using Ptr = boost::shared_ptr<ConditionOr<PointT> >;
-      using ConstPtr = boost::shared_ptr<const ConditionOr<PointT> >;
+      using Ptr = shared_ptr<ConditionOr<PointT> >;
+      using ConstPtr = shared_ptr<const ConditionOr<PointT> >;
 
       /** \brief Constructor. */
       ConditionOr () :

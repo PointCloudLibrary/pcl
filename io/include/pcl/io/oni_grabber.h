@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_config.h>
 #include <pcl/pcl_macros.h>
 
@@ -88,34 +89,34 @@ namespace pcl
       ONIGrabber (const std::string& file_name, bool repeat, bool stream);
 
       /** \brief destructor never throws an exception */
-      ~ONIGrabber () throw ();
+      ~ONIGrabber () noexcept;
 
       /** \brief For devices that are streaming, the streams are started by calling this method.
         *        Trigger-based devices, just trigger the device once for each call of start.
         */
-      void 
+      void
       start () override;
 
       /** \brief For devices that are streaming, the streams are stopped.
         *        This method has no effect for triggered devices.
         */
-      void 
+      void
       stop () override;
 
       /** \brief returns the name of the concrete subclass.
         * \return the name of the concrete driver.
         */
-      std::string 
+      std::string
       getName () const override;
 
       /** \brief Indicates whether the grabber is streaming or not. This value is not defined for triggered devices.
         * \return true if grabber is running / streaming. False otherwise.
         */
-      bool 
+      bool
       isRunning () const override;
 
       /** \brief returns the frames pre second. 0 if it is trigger based. */
-      float 
+      float
       getFramesPerSecond () const override;
 
       /** \brief Check if there is any data left in the ONI file to process. */

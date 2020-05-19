@@ -42,7 +42,7 @@
   #define PCL_NO_PRECOMPILE
 #endif
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
 #include <pcl/features/pfh.h>
 #include <pcl/features/fpfh.h>
@@ -294,7 +294,7 @@ struct FPFHTest<FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >
 using FPFHEstimatorTypes = ::testing::Types
         <FPFHEstimation<PointT, PointT, FPFHSignature33>,
          FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >;
-TYPED_TEST_CASE (FPFHTest, FPFHEstimatorTypes);
+TYPED_TEST_SUITE (FPFHTest, FPFHEstimatorTypes);
 
 // This is a copy of the old FPFHEstimation test which will now
 // be applied to both FPFHEstimation and FPFHEstimationOMP

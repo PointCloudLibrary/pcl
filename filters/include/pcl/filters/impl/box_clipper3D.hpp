@@ -53,7 +53,7 @@ pcl::BoxClipper3D<PointT>::BoxClipper3D (const Eigen::Vector3f& rodrigues, const
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT>
-pcl::BoxClipper3D<PointT>::~BoxClipper3D () throw ()
+pcl::BoxClipper3D<PointT>::~BoxClipper3D () noexcept
 {
 }
 

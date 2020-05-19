@@ -150,13 +150,10 @@ namespace pcl
             }
 
             virtual ~Node ()
-            {
-              if ( children_[0] )
               {
                 delete children_[0];
                 delete children_[1];
               }
-            }
 
             bool
             hasChildren () const
@@ -249,13 +246,10 @@ namespace pcl
         /** \brief Frees the memory allocated by this object. After that, you have to call build to use the tree again. */
         void
         clear()
-        {
-          if ( root_ )
           {
             delete root_;
             root_ = nullptr;
           }
-        }
 
         inline const std::vector<BoundedObject*>*
         getInputObjects () const

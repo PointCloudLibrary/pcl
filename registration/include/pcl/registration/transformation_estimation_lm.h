@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/warp_point_rigid.h>
@@ -69,8 +70,8 @@ namespace pcl
       using PointIndicesConstPtr = PointIndices::ConstPtr;
 
       public:
-        using Ptr = boost::shared_ptr<TransformationEstimationLM<PointSource, PointTarget, MatScalar> >;
-        using ConstPtr = boost::shared_ptr<const TransformationEstimationLM<PointSource, PointTarget, MatScalar> >;
+        using Ptr = shared_ptr<TransformationEstimationLM<PointSource, PointTarget, MatScalar> >;
+        using ConstPtr = shared_ptr<const TransformationEstimationLM<PointSource, PointTarget, MatScalar> >;
 
         using VectorX = Eigen::Matrix<MatScalar, Eigen::Dynamic, 1>;
         using Vector4 = Eigen::Matrix<MatScalar, 4, 1>;

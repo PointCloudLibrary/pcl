@@ -35,6 +35,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/surface/boost.h>
 #include <pcl/surface/marching_cubes.h>
@@ -52,8 +53,8 @@ namespace pcl
   class MarchingCubesHoppe : public MarchingCubes<PointNT>
   {
     public:
-      using Ptr = boost::shared_ptr<MarchingCubesHoppe<PointNT> >;
-      using ConstPtr = boost::shared_ptr<const MarchingCubesHoppe<PointNT> >;
+      using Ptr = shared_ptr<MarchingCubesHoppe<PointNT> >;
+      using ConstPtr = shared_ptr<const MarchingCubesHoppe<PointNT> >;
 
       using SurfaceReconstruction<PointNT>::input_;
       using SurfaceReconstruction<PointNT>::tree_;
@@ -91,7 +92,7 @@ namespace pcl
       /** \brief Method that sets the distance for ignoring voxels which are far from point cloud.
         * If the distance is negative, then the distance functions would be calculated in all voxels;
         * otherwise, only voxels with distance lower than dist_ignore would be involved in marching cube.
-        * \param[in] threshold of distance. Default value is -1.0. Set to negative if all voxels are
+        * \param[in] dist_ignore threshold of distance. Default value is -1.0. Set to negative if all voxels are
         * to be involved.
         */
       inline void

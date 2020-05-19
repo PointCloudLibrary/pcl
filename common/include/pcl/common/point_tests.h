@@ -67,7 +67,7 @@ namespace pcl
 
   template<> inline bool isFinite<pcl::Axis>(const pcl::Axis&) { return (true); }
   template<> inline bool isFinite<pcl::BRISKSignature512>(const pcl::BRISKSignature512&) { return (true); }
-  template<> inline bool isFinite<pcl::BorderDescription>(const pcl::BorderDescription &p) { return true; }
+  template<> inline bool isFinite<pcl::BorderDescription>(const pcl::BorderDescription &) { return true; }
   template<> inline bool isFinite<pcl::Boundary>(const pcl::Boundary&) { return (true); }
   template<> inline bool isFinite<pcl::ESFSignature640>(const pcl::ESFSignature640&) { return (true); }
   template<> inline bool isFinite<pcl::FPFHSignature33>(const pcl::FPFHSignature33&) { return (true); }

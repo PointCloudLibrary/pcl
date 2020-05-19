@@ -1,15 +1,11 @@
 #pragma once
 
-#ifdef USE_ROS
-   #error USE_ROS setup requires PCL to compile against ROS message headers, which is now deprecated
-#endif
-
 #include <ostream>
 #include <vector>
 
 #include <boost/predef/other/endian.h>
 
-// Include the correct Header path here
+#include <pcl/pcl_macros.h>  // for PCL_EXPORTS
 #include <pcl/PCLHeader.h>
 #include <pcl/PCLPointField.h>
 
@@ -35,8 +31,8 @@ namespace pcl
     std::uint8_t is_dense = 0;
 
   public:
-    using Ptr = boost::shared_ptr< ::pcl::PCLPointCloud2>;
-    using ConstPtr = boost::shared_ptr<const ::pcl::PCLPointCloud2>;
+    using Ptr = shared_ptr< ::pcl::PCLPointCloud2>;
+    using ConstPtr = shared_ptr<const ::pcl::PCLPointCloud2>;
 
     //////////////////////////////////////////////////////////////////////////
     /** \brief Inplace concatenate two pcl::PCLPointCloud2
@@ -122,7 +118,7 @@ namespace pcl
     }
     s << "is_dense: ";
     s << "  " << v.is_dense << std::endl;
-    
+
     return (s);
   }
 

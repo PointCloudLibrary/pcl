@@ -288,7 +288,6 @@ set(incs
   ${DSSDK_GRABBER_INCLUDES}
   ${RSSDK_GRABBER_INCLUDES}
   ${RSSDK2_GRABBER_INCLUDES}
-  "include/pcl/${SUBSYS_NAME}/pxc_grabber.h"  # contains only depreciation note
 )
 
 set(compression_incs

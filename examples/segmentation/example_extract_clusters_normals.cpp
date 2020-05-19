@@ -38,17 +38,11 @@
  *
  */
 
-// STL
 #include <iostream>
 
-// PCL
-#include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/kdtree/kdtree.h>
 #include <pcl/segmentation/extract_clusters.h>
-
 
 int 
 main (int, char **argv)
@@ -79,7 +73,6 @@ main (int, char **argv)
   tree_ec->setInputCloud (cloud_ptr);
   
   // Extracting Euclidean clusters using cloud and its normals
-  std::vector<int> indices;
   std::vector<pcl::PointIndices> cluster_indices;
   const float tolerance = 0.5f; // 50cm tolerance in (x, y, z) coordinate system
   const double eps_angle = 5 * (M_PI / 180.0); // 5degree tolerance in normals

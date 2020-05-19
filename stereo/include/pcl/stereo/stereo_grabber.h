@@ -38,10 +38,10 @@
 #pragma once
 
 #include <pcl/common/time_trigger.h>
-#include <pcl/conversions.h>
 #include <pcl/io/grabber.h>
-#include <pcl/point_cloud.h>
 #include <pcl/stereo/stereo_matching.h>
+#include <pcl/conversions.h>
+#include <pcl/point_cloud.h>
 
 namespace pcl {
 
@@ -72,23 +72,8 @@ public:
                     float frames_per_second,
                     bool repeat);
 
-  /** \brief Copy constructor.
-   * \param[in] src the Stereo Grabber base object to copy into this
-   */
-  StereoGrabberBase(const StereoGrabberBase& src) : impl_() { *this = src; }
-
-  /** \brief Copy operator.
-   * \param[in] src the Stereo Grabber base object to copy into this
-   */
-  StereoGrabberBase&
-  operator=(const StereoGrabberBase& src)
-  {
-    impl_ = src.impl_;
-    return (*this);
-  }
-
   /** \brief Virtual destructor. */
-  ~StereoGrabberBase() throw();
+  ~StereoGrabberBase() noexcept;
 
   /** \brief Starts playing the list of Stereo images if frames_per_second is > 0.
    * Otherwise it works as a trigger: publishes only the next pair in the list. */

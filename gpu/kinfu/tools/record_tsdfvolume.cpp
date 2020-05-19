@@ -77,8 +77,8 @@ class DeviceVolume
 {
 public:
 
-  using Ptr = boost::shared_ptr<DeviceVolume>;
-  using ConstPtr = boost::shared_ptr<const DeviceVolume>;
+  using Ptr = shared_ptr<DeviceVolume>;
+  using ConstPtr = shared_ptr<const DeviceVolume>;
 
   /** \brief Constructor
    * param[in] volume_size size of the volume in mm
@@ -181,7 +181,9 @@ DeviceVolume::getVolume (pcl::TSDFVolume<VoxelT, WeightT>::Ptr &volume)
 
   device_volume_.download (&volume_vec[0], device_volume_.cols() * sizeof(int));
 
-  #pragma omp parallel for
+  #pragma omp parallel for \
+    default(none) \
+    shared(volume, volume_vec, weights_vec)
   for(int i = 0; i < (int) volume->size(); ++i)
   {
     short2 *elem = (short2*)&volume_vec[i];

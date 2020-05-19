@@ -192,7 +192,7 @@ openni_wrapper::OpenNIDriver::updateDeviceList ()
 
     getDeviceType(device.device_node.GetCreationInfo (), vendor_id, product_id );
 
-#if _WIN32
+#ifdef _WIN32
     if (vendor_id == 0x45e)
     {
       strcpy (const_cast<char*> (device_context_[device].device_node.GetDescription ().strVendor), "Microsoft");
@@ -218,7 +218,7 @@ openni_wrapper::OpenNIDriver::stopAll ()
     THROW_OPENNI_EXCEPTION ("stopping all streams failed. Reason: %s", xnGetStatusString (status));
 }
 
-openni_wrapper::OpenNIDriver::~OpenNIDriver () throw ()
+openni_wrapper::OpenNIDriver::~OpenNIDriver () noexcept
 {
   // no exception during destuctor
   try
@@ -331,7 +331,7 @@ openni_wrapper::OpenNIDriver::getDeviceByAddress (unsigned char bus, unsigned ch
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-openni_wrapper::OpenNIDriver::getDeviceInfos () throw ()
+openni_wrapper::OpenNIDriver::getDeviceInfos () noexcept
 {
   libusb_context *context = nullptr;
   int result;
@@ -428,7 +428,7 @@ openni_wrapper::OpenNIDriver::getSerialNumber (unsigned index) const throw ()
 void 
 openni_wrapper::OpenNIDriver::getDeviceType (const std::string& connectionString, unsigned short& vendorId, unsigned short& productId)
 {
-#if _WIN32
+#ifdef _WIN32
     // expected format: "\\?\usb#vid_[ID]&pid_[ID]#[SERIAL]#{GUID}"
     using tokenizer = boost::tokenizer<boost::char_separator<char> >;
     boost::char_separator<char> separators("#&_");

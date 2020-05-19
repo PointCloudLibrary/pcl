@@ -83,25 +83,17 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
   std::vector<float> window_sizes;
   std::vector<int> half_sizes;
   int iteration = 0;
-  int half_size = 0.0f;
-  float window_size = 0.0f;
-  float height_threshold = 0.0f;
+  float window_size = 0.0f;	
 
   while (window_size < max_window_size_)
   {
     // Determine the initial window size.
-    if (exponential_)
-      half_size = static_cast<int> (std::pow (static_cast<float> (base_), iteration));
-    else
-      half_size = (iteration+1) * base_;
+    int half_size = (exponential_) ? (static_cast<int> (std::pow (static_cast<float> (base_), iteration))) : ((iteration+1) * base_);
 
     window_size = 2 * half_size + 1;
 
     // Calculate the height threshold to be used in the next iteration.
-    if (iteration == 0)
-      height_threshold = initial_distance_;
-    else
-      height_threshold = slope_ * (window_size - window_sizes[iteration-1]) * cell_size_ + initial_distance_;
+    float height_threshold = (iteration == 0) ? (initial_distance_) : (slope_ * (window_size - window_sizes[iteration-1]) * cell_size_ + initial_distance_);
 
     // Enforce max distance on height threshold
     if (height_threshold > max_distance_)
@@ -133,9 +125,10 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
   Eigen::MatrixXf Zf (rows, cols);
   Zf.setConstant (std::numeric_limits<float>::quiet_NaN ());
 
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(A, global_min) \
+  num_threads(threads_)
   for (int i = 0; i < (int)input_->points.size (); ++i)
   {
     // ...then test for lower points within the cell
@@ -164,9 +157,10 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
     pcl::copyPointCloud<PointT> (*input_, ground, *cloud);
 
     // Apply the morphological opening operation at the current window size.
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(A, cols, half_sizes, i, rows, Z) \
+  num_threads(threads_)
     for (int row = 0; row < rows; ++row)
     {
       int rs, re;
@@ -198,9 +192,10 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
       }
     }
 
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(cols, half_sizes, i, rows, Z, Zf) \
+  num_threads(threads_)
     for (int row = 0; row < rows; ++row)
     {
       int rs, re;

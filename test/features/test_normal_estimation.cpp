@@ -37,10 +37,12 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/normal_3d_omp.h>
+#include <pcl/features/integral_image_normal.h>
 #include <pcl/io/pcd_io.h>
 
 using namespace pcl;
@@ -182,6 +184,66 @@ TEST (PCL, NormalEstimation)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// There was an issue where the vectors for the indices and the
+// distances of the neighbor search weren't initialized correctly
+// due to a wrong usage of OpenMP.
+// See PR #3614 for details.
+// This tests if the vectors are initialized correctly.
+template<typename PointT>
+class DummySearch : public pcl::search::Search<PointT>
+{
+  public:
+    virtual int nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices,
+                                std::vector<float> &k_sqr_distances ) const
+    {
+      pcl::utils::ignore(point);
+
+      EXPECT_GE (k_indices.size(), k);
+      EXPECT_GE (k_sqr_distances.size(), k);
+
+	  return k;
+    }
+
+    virtual int radiusSearch (const PointT& point, double radius, std::vector<int>& k_indices,
+                              std::vector<float>& k_sqr_distances, unsigned int max_nn = 0 ) const
+    {
+      pcl::utils::ignore(point);
+      pcl::utils::ignore(radius);
+      pcl::utils::ignore(k_indices);
+      pcl::utils::ignore(k_sqr_distances);
+
+      return max_nn;
+    }
+};
+
+
+TEST (PCL, NormalEstimationOpenMPInitVectors)
+{
+  NormalEstimationOMP<PointXYZ, Normal> n (4); // instantiate 4 threads
+
+  DummySearch<PointXYZ>::Ptr dummy (new DummySearch<PointXYZ>);
+
+  // Object
+  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
+
+  // set parameters
+  PointCloud<PointXYZ>::Ptr cloudptr = cloud.makeShared ();
+  n.setInputCloud (cloudptr);
+  EXPECT_EQ (n.getInputCloud (), cloudptr);
+  pcl::IndicesPtr indicesptr (new pcl::Indices (indices));
+  n.setIndices (indicesptr);
+  EXPECT_EQ (n.getIndices (), indicesptr);
+  n.setSearchMethod (dummy);
+  EXPECT_EQ (n.getSearchMethod (), dummy);
+  n.setKSearch (static_cast<int> (indices.size ()));
+
+  // This will cause a call to DummySearch::nearestKSearch
+  // which checks if the vectors for the indices and the
+  // distances are correctly set up. See PR #3614.
+  n.compute (*normals);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, NormalEstimationOpenMP)
 {
   NormalEstimationOMP<PointXYZ, Normal> n (4); // instantiate 4 threads
@@ -210,6 +272,83 @@ TEST (PCL, NormalEstimationOpenMP)
     EXPECT_NEAR (point.normal[1], -0.369596, 1e-4);
     EXPECT_NEAR (point.normal[2], -0.928511, 1e-4);
     EXPECT_NEAR (point.curvature, 0.0693136, 1e-4);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// This tests the indexing issue from #3573
+// In certain cases when you used a subset of the indices
+// and set the depth dependent smoothing to false the
+// IntegralImageNormalEstimation could crash or produce
+// incorrect normals.
+// This test reproduces the issue.
+TEST (PCL, IntegralImageNormalEstimationIndexingIssue)
+{
+  PointCloud<PointXYZ>::Ptr cloudptr(new PointCloud<PointXYZ>());
+
+  cloudptr->width = 100;
+  cloudptr->height = 100;
+  cloudptr->points.clear();
+  cloudptr->points.resize(cloudptr->width * cloudptr->height);
+
+  int centerX = cloudptr->width >> 1;
+  int centerY = cloudptr->height >> 1;
+
+  int idx = 0;
+  for (int ypos = -centerY; ypos < centerY; ypos++)
+  {
+    for (int xpos = -centerX; xpos < centerX; xpos++)
+	{
+      double z = xpos < 0.0 ? 1.0 : 0.0;
+      double y = ypos;
+      double x = xpos;
+
+      cloudptr->points[idx++] = PointXYZ(float(x), float(y), float(z));
+    }
+  }
+
+  pcl::IndicesPtr indicesptr (new pcl::Indices ());
+  indicesptr->resize(cloudptr->size() / 2);
+  for (std::size_t i = 0; i < cloudptr->size() / 2; ++i)
+  {
+    (*indicesptr)[i] = i + cloudptr->size() / 2;
+  }
+
+  IntegralImageNormalEstimation<PointXYZ, Normal> n;
+
+  // Object
+  PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
+
+  // set parameters
+  n.setInputCloud (cloudptr);
+  n.setIndices (indicesptr);
+  n.setDepthDependentSmoothing (false);
+
+  // estimate
+  n.compute (*normals);
+
+  std::vector<PointXYZ> normalsVec;
+  normalsVec.resize(normals->size());
+  for(std::size_t i = 0; i < normals->size(); ++i )
+  {
+    normalsVec[i].x = normals->points[i].normal_x;
+    normalsVec[i].y = normals->points[i].normal_y;
+    normalsVec[i].z = normals->points[i].normal_z;
+  }
+
+  for (const auto &point : normals->points)
+  {
+  if (std::isnan( point.normal_x ) ||
+	  std::isnan( point.normal_y ) ||
+	  std::isnan( point.normal_z ))
+    {
+      continue;
+	}
+
+    EXPECT_NEAR (point.normal[0], 0.0, 1e-4);
+    EXPECT_NEAR (point.normal[1], 0.0, 1e-4);
+    EXPECT_NEAR (point.normal[2], -1.0, 1e-4);
+    EXPECT_TRUE (std::isnan(point.curvature));
   }
 }
 

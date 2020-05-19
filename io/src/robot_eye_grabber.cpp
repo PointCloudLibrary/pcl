@@ -36,6 +36,7 @@
  */
 
 #include <pcl/io/robot_eye_grabber.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/console/print.h>
 
 /////////////////////////////////////////////////////////////////////////////
@@ -61,7 +62,7 @@ pcl::RobotEyeGrabber::RobotEyeGrabber (const boost::asio::ip::address& ipAddress
 }
 
 /////////////////////////////////////////////////////////////////////////////
-pcl::RobotEyeGrabber::~RobotEyeGrabber () throw ()
+pcl::RobotEyeGrabber::~RobotEyeGrabber () noexcept
 {
   stop ();
   disconnect_all_slots<sig_cb_robot_eye_point_cloud_xyzi> ();

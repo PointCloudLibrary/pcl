@@ -39,6 +39,7 @@
 #pragma once
 
 #include "pcl/pcl_config.h"
+#include <pcl/pcl_macros.h>
 
 #include <pcl/io/grabber.h>
 #include <pcl/io/impl/synchronized_queue.hpp>
@@ -70,7 +71,7 @@ namespace pcl
        */
       using sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba = void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &, float, float);
 
-      using sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb [[deprecated("use sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba instead")]]
+      using sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb PCL_DEPRECATED(1, 12, "use sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba instead")
               = sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba;
 
       /** \brief Signal used for a single sector
@@ -96,7 +97,7 @@ namespace pcl
        */
       using sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba = void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &);
 
-      using sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb [[deprecated("use sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba instead")]]
+      using sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb PCL_DEPRECATED(1, 12, "use sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba instead")
               = sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba;
 
       /** \brief Constructor taking an optional path to an HDL corrections file.  The Grabber will listen on the default IP/port for data packets [192.168.3.255/2368]
@@ -117,7 +118,7 @@ namespace pcl
 
       /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
       
-      ~HDLGrabber () throw ();
+      ~HDLGrabber () noexcept;
 
       /** \brief Starts processing the Velodyne packets, either from the network or PCAP file. */
       void
@@ -269,7 +270,7 @@ namespace pcl
       computeXYZI (pcl::PointXYZI& pointXYZI,
                    std::uint16_t azimuth,
                    HDLLaserReturn laserReturn,
-                   HDLLaserCorrection correction);
+                   HDLLaserCorrection correction) const;
 
 
     private:

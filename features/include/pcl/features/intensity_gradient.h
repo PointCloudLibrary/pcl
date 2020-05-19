@@ -56,8 +56,8 @@ namespace pcl
   class IntensityGradientEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelectorT> >;
-      using ConstPtr = boost::shared_ptr<const IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelectorT> >;
+      using Ptr = shared_ptr<IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelectorT> >;
+      using ConstPtr = shared_ptr<const IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelectorT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;

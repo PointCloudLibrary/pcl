@@ -35,10 +35,10 @@
  *
  */
 
-#ifndef PCL_FILTERS_IMPL_FILTER_H_
-#define PCL_FILTERS_IMPL_FILTER_H_
+#pragma once
 
 #include <pcl/pcl_macros.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/filters/filter.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -112,12 +112,17 @@ pcl::removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   index.resize (cloud_in.points.size ());
   std::size_t j = 0;
 
+  // Assume cloud is dense
+  cloud_out.is_dense = true;
+
   for (std::size_t i = 0; i < cloud_in.points.size (); ++i)
   {
     if (!std::isfinite (cloud_in.points[i].normal_x) ||
         !std::isfinite (cloud_in.points[i].normal_y) ||
         !std::isfinite (cloud_in.points[i].normal_z))
       continue;
+    if (cloud_out.is_dense && !pcl::isFinite(cloud_in.points[i]))
+      cloud_out.is_dense = false;
     cloud_out.points[j] = cloud_in.points[i];
     index[j] = static_cast<int>(i);
     j++;
@@ -136,6 +141,4 @@ pcl::removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 
 #define PCL_INSTANTIATE_removeNaNFromPointCloud(T) template PCL_EXPORTS void pcl::removeNaNFromPointCloud<T>(const pcl::PointCloud<T>&, pcl::PointCloud<T>&, std::vector<int>&);
 #define PCL_INSTANTIATE_removeNaNNormalsFromPointCloud(T) template PCL_EXPORTS void pcl::removeNaNNormalsFromPointCloud<T>(const pcl::PointCloud<T>&, pcl::PointCloud<T>&, std::vector<int>&);
-
-#endif    // PCL_FILTERS_IMPL_FILTER_H_
 

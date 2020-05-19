@@ -102,7 +102,6 @@ pcl::cloud_composer::CloudView::rowsInserted (const QModelIndex& parent, int sta
     parent_item = model_->invisibleRootItem();
   else
     parent_item = model_->itemFromIndex (parent);
-  QString project_name = model_->getName ();
   for (int row = start; row <= end; ++row)
   {
     QStandardItem* new_item = parent_item->child(row);
@@ -129,7 +128,6 @@ pcl::cloud_composer::CloudView::rowsAboutToBeRemoved (const QModelIndex& parent,
     parent_item = model_->invisibleRootItem();
   else
     parent_item = model_->itemFromIndex (parent);
-  QString project_name = model_->getName ();
   //qDebug () << "Rows about to be removed, parent = "<<parent_item->text ()<<" start="<<start<<" end="<<end;
   for (int row = start; row <= end; ++row)
   {

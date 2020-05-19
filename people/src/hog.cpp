@@ -41,12 +41,13 @@
 
 #include <pcl/people/hog.h>
 
-#include <cstring>
+#include <cstring> // for memcpy
+#include <algorithm> // for std::min
 
 #if defined(__SSE2__)
-#include <pcl/sse.h>
+  #include <pcl/sse.h> // sse methods
 #else
-#include <cstdlib>
+  #include <cstdlib>
 #endif
 
 /** \brief Constructor. */
@@ -170,30 +171,32 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
 {
   const int hb=h/bin_size, wb=w/bin_size, h0=hb*bin_size, w0=wb*bin_size, nb=wb*hb;
   const float s=(float)bin_size, sInv=1/s, sInv2=1/s/s;
-  float *H0, *H1, *M0, *M1; int x, y; int *O0, *O1;
+  float *H0, *H1, *M0, *M1; int *O0, *O1;
   O0=(int*)alMalloc(h*sizeof(int),16); M0=(float*) alMalloc(h*sizeof(float),16);
   O1=(int*)alMalloc(h*sizeof(int),16); M1=(float*) alMalloc(h*sizeof(float),16);
 
   // main loop
   float xb = 0;
   float init = 0;
-  for( x=0; x<w0; x++ ) {
+  for(int x=0; x<w0; x++ ) {
     // compute target orientation bins for entire column - very fast
     gradQuantize( O+x*h, M+x*h, O0, O1, M0, M1, n_orients, nb, h0, sInv2 );
 
     if( !soft_bin || bin_size==1 ) {
       // interpolate w.r.t. orientation only, not spatial bin_size
-      H1=H+(x/bin_size)*hb;
-      const auto GH = [&H1, &O0, &O1, &y, &M0, &M1]()
-      {
-          H1[O0[y]]+=M0[y]; H1[O1[y]]+=M1[y]; y++;
-      };
-      if( bin_size==1 )      for(y=0; y<h0;) { GH(); H1++; }
-      else if( bin_size==2 ) for(y=0; y<h0;) { GH(); GH(); H1++; }
-      else if( bin_size==3 ) for(y=0; y<h0;) { GH(); GH(); GH(); H1++; }
-      else if( bin_size==4 ) for(y=0; y<h0;) { GH(); GH(); GH(); GH(); H1++; }
-      else for( y=0; y<h0;) { for( int y1=0; y1<bin_size; y1++ ) { GH(); } H1++; }
+      H1 = H + (x / bin_size) * hb;
 
+      const auto GH = [&H1, &O0, &O1, &M0, &M1](int y) {
+        H1[O0[y]] += M0[y];
+        H1[O1[y]] += M1[y];
+      };
+
+      for (int y = 0; y < h0;) {
+        for (int inner_loop = 0; inner_loop < bin_size; ++inner_loop, ++y) {
+          GH(y);
+        }
+        H1++;
+      }
     } else {
       // interpolate using trilinear interpolation
 #if defined(__SSE2__)
@@ -201,7 +204,8 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
       bool hasLf, hasRt; int xb0, yb0;
       if( x==0 ) { init=(0+.5f)*sInv-0.5f; xb=init; }
       hasLf = xb>=0; xb0 = hasLf?(int)xb:-1; hasRt = xb0 < wb-1;
-      xd=xb-xb0; xb+=sInv; yb=init; y=0;
+      xd=xb-xb0; xb+=sInv; yb=init;
+      int y=0;
       // lambda for code conciseness
       // @TODO: remove the very generic closure for specific variable one
       const auto GHinit = [&]()
@@ -247,7 +251,7 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
       bool hasLf, hasRt; int xb0, yb0;
       if( x==0 ) { init=(0+.5f)*sInv-0.5f; xb=init; }
       hasLf = xb>=0; xb0 = hasLf?(int)xb:-1; hasRt = xb0 < wb-1;
-      xd=xb-xb0; xb+=sInv; yb=init; y=0;
+      xd=xb-xb0; xb+=sInv; yb=init; int y=0;
       // lambda for code conciseness
       const auto GHinit = [&]()
       {

@@ -35,11 +35,13 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_IMPL_SEGMENT_DIFFERENCES_H_
-#define PCL_SEGMENTATION_IMPL_SEGMENT_DIFFERENCES_H_
+#pragma once
 
 #include <pcl/segmentation/segment_differences.h>
+
 #include <pcl/common/io.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
+
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -121,4 +123,3 @@ pcl::SegmentDifferences<PointT>::segment (PointCloud &output)
 #define PCL_INSTANTIATE_SegmentDifferences(T) template class PCL_EXPORTS pcl::SegmentDifferences<T>;
 #define PCL_INSTANTIATE_getPointCloudDifference(T) template PCL_EXPORTS void pcl::getPointCloudDifference<T>(const pcl::PointCloud<T> &, double, const typename pcl::search::Search<T>::Ptr &, pcl::PointCloud<T> &);
 
-#endif        // PCL_SEGMENTATION_IMPL_SEGMENT_DIFFERENCES_H_

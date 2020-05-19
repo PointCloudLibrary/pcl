@@ -60,8 +60,8 @@ namespace pcl
       class PCL_EXPORTS ProbabilityProcessor
       {        
         public:
-          using Ptr = boost::shared_ptr<ProbabilityProcessor>;
-          using ConstPtr = boost::shared_ptr<const ProbabilityProcessor>;
+          using Ptr = shared_ptr<ProbabilityProcessor>;
+          using ConstPtr = shared_ptr<const ProbabilityProcessor>;
           using Depth = DeviceArray2D<unsigned short>;
           using Labels = DeviceArray2D<unsigned char>;
 

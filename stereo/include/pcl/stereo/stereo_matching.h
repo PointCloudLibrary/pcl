@@ -40,7 +40,50 @@
 #include <pcl/conversions.h>
 #include <pcl/point_types.h>
 
+#include <algorithm>
+
 namespace pcl {
+template <class T>
+short int
+doStereoRatioFilter(const T* const acc,
+                    short int dbest,
+                    T sad_min,
+                    int ratio_filter,
+                    int maxdisp,
+                    int precision = 100)
+{
+  const auto sad_min_1st_part_it = std::min_element(acc, acc + dbest - 1);
+  const auto sad_min_2nd_part_it = std::min_element(acc + dbest + 2, acc + maxdisp);
+
+  const auto sad_second_min = std::min(*sad_min_1st_part_it, *sad_min_2nd_part_it);
+
+  if ((sad_min * precision) > ((precision - ratio_filter) * sad_second_min)) {
+    return -2;
+  }
+  return dbest;
+}
+
+template <class T>
+inline short int
+doStereoPeakFilter(const T* const acc, short int dbest, int peak_filter, int maxdisp)
+{
+  // da and db = acc[index] - acc[dbest],
+  // where index = (dbest + 2) or (dbest - 2)
+  //   =>  index = dbest + 2 - (0 or 4)           = dbest - 2 + (0 or 4)
+  //   =>  index = dbest + 2 - (0 << 2 or 1 << 2) = dbest - 2 + (0 << 2 or 1 << 2)
+  //   =>  index = dbest + 2 - (condition << 2)   = dbest - 2 + (condition << 2)
+  const auto da_condition = (dbest > 1);
+  const auto db_condition = (dbest < maxdisp - 2);
+  const auto da_index = dbest + 2 - (da_condition << 2);
+  const auto db_index = dbest - 2 + (db_condition << 2);
+
+  const auto da = acc[da_index] - acc[dbest];
+  const auto db = acc[db_index] - acc[dbest];
+  if ((da + db) < peak_filter) {
+    return -4;
+  }
+  return dbest;
+}
 
 /** \brief Stereo Matching abstract class
  *
@@ -314,79 +357,6 @@ protected:
       return (static_cast<short int>(16 * dbest +
                                      std::floor(.5 + (((s1 - s3) * 8) / den))));
     return (static_cast<short int>(dbest * 16));
-  }
-
-  inline short int
-  doStereoRatioFilter(int* acc,
-                      short int dbest,
-                      int sad_min,
-                      int ratio_filter,
-                      int maxdisp,
-                      int precision = 100)
-  {
-    int sad_second_min = std::numeric_limits<int>::max();
-
-    for (int d = 0; d < dbest - 1; d++)
-      if (acc[d] < sad_second_min)
-        sad_second_min = acc[d];
-
-    for (int d = dbest + 2; d < maxdisp; d++)
-      if (acc[d] < sad_second_min)
-        sad_second_min = acc[d];
-
-    if (sad_min * precision > (precision - ratio_filter) * sad_second_min)
-      return (-2);
-    return (dbest);
-  }
-
-  inline short int
-  doStereoRatioFilter(float* acc,
-                      short int dbest,
-                      float sad_min,
-                      int ratio_filter,
-                      int maxdisp,
-                      int precision = 100)
-  {
-    float sad_second_min = std::numeric_limits<float>::max();
-
-    for (int d = 0; d < dbest - 1; d++)
-      if (acc[d] < sad_second_min)
-        sad_second_min = acc[d];
-
-    for (int d = dbest + 2; d < maxdisp; d++)
-      if (acc[d] < sad_second_min)
-        sad_second_min = acc[d];
-
-    if (sad_min * static_cast<float>(precision) >
-        static_cast<float>(precision - ratio_filter) * sad_second_min)
-      return (-2);
-    return (dbest);
-  }
-
-  inline short int
-  doStereoPeakFilter(int* acc, short int dbest, int peak_filter, int maxdisp)
-  {
-    int da =
-        (dbest > 1) ? (acc[dbest - 2] - acc[dbest]) : (acc[dbest + 2] - acc[dbest]);
-    int db = (dbest < maxdisp - 2) ? (acc[dbest + 2] - acc[dbest])
-                                   : (acc[dbest - 2] - acc[dbest]);
-
-    if (da + db < peak_filter)
-      return (-4);
-    return (dbest);
-  }
-
-  inline short int
-  doStereoPeakFilter(float* acc, short int dbest, int peak_filter, int maxdisp)
-  {
-    float da =
-        (dbest > 1) ? (acc[dbest - 2] - acc[dbest]) : (acc[dbest + 2] - acc[dbest]);
-    float db = (dbest < maxdisp - 2) ? (acc[dbest + 2] - acc[dbest])
-                                     : (acc[dbest - 2] - acc[dbest]);
-
-    if (da + db < peak_filter)
-      return (-4);
-    return (dbest);
   }
 };
 

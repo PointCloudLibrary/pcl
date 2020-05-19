@@ -39,6 +39,7 @@
 
 #include <vector>
 
+#include <pcl/memory.h>
 #include <pcl/point_types.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
@@ -64,8 +65,8 @@ namespace pcl
             virtual ~Octree();
 
             /** \brief Types */
-            using Ptr = boost::shared_ptr<Octree>;
-            using ConstPtr = boost::shared_ptr<const Octree>;
+            using Ptr = shared_ptr<Octree>;
+            using ConstPtr = shared_ptr<const Octree>;
 
             /** \brief Point typwe supported */
             using PointType = pcl::PointXYZ;
@@ -94,7 +95,7 @@ namespace pcl
 			void build();
 
             /** \brief Returns true if tree has been built */
-            bool isBuilt();
+            bool isBuilt() const;
 
             /** \brief Downloads Octree from GPU to search using CPU function. It use useful for single (not-batch) search */
             void internalDownload();

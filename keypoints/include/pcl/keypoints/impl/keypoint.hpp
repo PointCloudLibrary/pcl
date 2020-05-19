@@ -35,12 +35,16 @@
  *
  */
 
+
 #ifndef PCL_KEYPOINT_IMPL_H_
 #define PCL_KEYPOINT_IMPL_H_
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
 template <typename PointInT, typename PointOutT> bool
-pcl::Keypoint<PointInT, PointOutT>::initCompute ()
+Keypoint<PointInT, PointOutT>::initCompute ()
 {
   if (!PCLBase<PointInT>::initCompute ())
     return (false);
@@ -124,9 +128,9 @@ pcl::Keypoint<PointInT, PointOutT>::initCompute ()
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointInT, typename PointOutT> inline void
-pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
+Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
 {
   if (!initCompute ())
   {
@@ -143,6 +147,8 @@ pcl::Keypoint<PointInT, PointOutT>::compute (PointCloudOut &output)
   if (input_ == surface_)
     surface_.reset ();
 }
+
+} // namespace pcl
 
 #endif  //#ifndef PCL_KEYPOINT_IMPL_H_
 

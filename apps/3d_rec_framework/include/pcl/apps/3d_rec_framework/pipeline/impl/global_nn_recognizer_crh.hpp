@@ -203,14 +203,12 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           nearestKSearch (flann_index_, histogram, NN_, indices, distances);
 
           //gather NN-search results
-          double score = 0;
           for (int i = 0; i < NN_; ++i)
           {
-            score = distances[0][i];
             index_score is;
             is.idx_models_ = indices[0][i];
             is.idx_input_ = static_cast<int> (idx);
-            is.score_ = score;
+            is.score_ = distances[0][i];
             indices_scores.push_back (is);
           }
         }
@@ -322,7 +320,10 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         voxel_grid_icp.filter (*cloud_voxelized_icp);
         source_->voxelizeAllModels (VOXEL_SIZE_ICP_);
 
-#pragma omp parallel for num_threads(omp_get_num_procs())
+#pragma omp parallel for \
+  default(none) \
+  shared(VOXEL_SIZE_ICP_, cloud_voxelized_icp) \
+  num_threads(omp_get_num_procs())
         for (int i = 0; i < static_cast<int> (models_->size ()); i++)
         {
 

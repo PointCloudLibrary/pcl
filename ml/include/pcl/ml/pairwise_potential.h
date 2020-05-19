@@ -39,9 +39,9 @@
 
 #pragma once
 
-#include <vector>
-
 #include <pcl/ml/permutohedral.h>
+
+#include <vector>
 
 namespace pcl {
 

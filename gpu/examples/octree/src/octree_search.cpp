@@ -3,10 +3,11 @@
 
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <boost/shared_ptr.hpp>
 #include <pcl/visualization/cloud_viewer.h>
+
 #include <iostream>
 
 int main (int argc, char** argv)

@@ -43,6 +43,7 @@
 // PCL includes
 #include <pcl/pcl_base.h>
 #include <pcl/common/transforms.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/registration/boost.h>
@@ -67,8 +68,8 @@ namespace pcl
       using PCLBase<PointSource>::input_;
       using PCLBase<PointSource>::indices_;
 
-      using Ptr = boost::shared_ptr< Registration<PointSource, PointTarget, Scalar> >;
-      using ConstPtr = boost::shared_ptr< const Registration<PointSource, PointTarget, Scalar> >;
+      using Ptr = shared_ptr< Registration<PointSource, PointTarget, Scalar> >;
+      using ConstPtr = shared_ptr< const Registration<PointSource, PointTarget, Scalar> >;
 
       using CorrespondenceRejectorPtr = pcl::registration::CorrespondenceRejector::Ptr;
       using KdTree = pcl::search::KdTree<PointTarget>;
@@ -608,6 +609,19 @@ namespace pcl
     private:
       /** \brief The point representation used (internal). */
       PointRepresentationConstPtr point_representation_;
+
+      /**
+       * \brief Remove from public API in favor of \ref setInputSource
+       *
+       * Still gives the correct result (with a warning)
+       */
+      void setInputCloud (const PointCloudSourceConstPtr &cloud) override
+      {
+          PCL_WARN ("[pcl::registration::Registration] setInputCloud is deprecated."
+                    "Please use setInputSource instead.\n");
+          setInputSource (cloud);
+      }
+
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW
    };

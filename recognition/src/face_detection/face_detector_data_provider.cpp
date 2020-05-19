@@ -1,5 +1,6 @@
 #include "pcl/recognition/face_detection/face_detector_data_provider.h"
 #include "pcl/recognition/face_detection/face_common.h"
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/common/time.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/io/pcd_io.h>

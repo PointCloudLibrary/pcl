@@ -235,7 +235,7 @@ void
 pcl::DenseCrf::expAndNormalize(std::vector<float>& out,
                                const std::vector<float>& in,
                                float scale,
-                               float relax)
+                               float relax) const
 {
   std::vector<float> V(N_ + 10);
   for (int i = 0; i < N_; i++) {

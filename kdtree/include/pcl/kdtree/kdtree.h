@@ -39,6 +39,7 @@
 #pragma once
 
 #include <climits>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>
@@ -55,8 +56,8 @@ namespace pcl
   class KdTree
   {
     public:
-      using IndicesPtr = boost::shared_ptr<std::vector<int> >;
-      using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
+      using IndicesPtr = shared_ptr<std::vector<int> >;
+      using IndicesConstPtr = shared_ptr<const std::vector<int> >;
 
       using PointCloud = pcl::PointCloud<PointT>;
       using PointCloudPtr = typename PointCloud::Ptr;
@@ -66,8 +67,8 @@ namespace pcl
       using PointRepresentationConstPtr = typename PointRepresentation::ConstPtr;
 
       // Boost shared pointers
-      using Ptr = boost::shared_ptr<KdTree<PointT> >;
-      using ConstPtr = boost::shared_ptr<const KdTree<PointT> >;
+      using Ptr = shared_ptr<KdTree<PointT> >;
+      using ConstPtr = shared_ptr<const KdTree<PointT> >;
 
       /** \brief Empty constructor for KdTree. Sets some internal values to their defaults. 
         * \param[in] sorted set to true if the application that the tree will be used for requires sorted nearest neighbor indices (default). False otherwise. 

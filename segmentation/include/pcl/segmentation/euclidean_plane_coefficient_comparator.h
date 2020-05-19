@@ -60,8 +60,8 @@ namespace pcl
       using PointCloudNPtr = typename PointCloudN::Ptr;
       using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
       
-      using Ptr = boost::shared_ptr<EuclideanPlaneCoefficientComparator<PointT, PointNT> >;
-      using ConstPtr = boost::shared_ptr<const EuclideanPlaneCoefficientComparator<PointT, PointNT> >;
+      using Ptr = shared_ptr<EuclideanPlaneCoefficientComparator<PointT, PointNT> >;
+      using ConstPtr = shared_ptr<const EuclideanPlaneCoefficientComparator<PointT, PointNT> >;
 
       using pcl::Comparator<PointT>::input_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;

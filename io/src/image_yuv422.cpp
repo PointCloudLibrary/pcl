@@ -57,7 +57,7 @@ pcl::io::ImageYUV422::ImageYUV422 (FrameWrapper::Ptr image_metadata, Timestamp t
 {}
 
 
-pcl::io::ImageYUV422::~ImageYUV422 () throw ()
+pcl::io::ImageYUV422::~ImageYUV422 () noexcept
 {}
 
 bool

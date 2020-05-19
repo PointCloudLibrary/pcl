@@ -39,10 +39,10 @@
 #pragma once
 
 #ifdef __GNUC__
-#pragma GCC system_header 
+#pragma GCC system_header
 #endif
 
-#include <boost/shared_ptr.hpp>
+#include <pcl/memory.h>
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
 #include <pcl/pcl_exports.h>
@@ -50,7 +50,7 @@
 
 namespace pcl
 {
-  /** \brief Correspondence represents a match between two entities (e.g., points, descriptors, etc). This is 
+  /** \brief Correspondence represents a match between two entities (e.g., points, descriptors, etc). This is
     * represented via the indices of a \a source point and a \a target point, and the distance between them.
     *
     * \author Dirk Holz, Radu B. Rusu, Bastian Steder
@@ -68,14 +68,14 @@ namespace pcl
       float distance = std::numeric_limits<float>::max();
       float weight;
     };
-    
-    /** \brief Standard constructor. 
+
+    /** \brief Standard constructor.
       * Sets \ref index_query to 0, \ref index_match to -1, and \ref distance to FLT_MAX.
       */
     inline Correspondence () = default;
 
     /** \brief Constructor. */
-    inline Correspondence (int _index_query, int _index_match, float _distance) : 
+    inline Correspondence (int _index_query, int _index_match, float _distance) :
       index_query (_index_query), index_match (_index_match), distance (_distance)
     {}
 
@@ -86,8 +86,8 @@ namespace pcl
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const Correspondence& c);
 
   using Correspondences = std::vector< pcl::Correspondence, Eigen::aligned_allocator<pcl::Correspondence> >;
-  using CorrespondencesPtr = boost::shared_ptr<Correspondences>;
-  using CorrespondencesConstPtr = boost::shared_ptr<const Correspondences >;
+  using CorrespondencesPtr = shared_ptr<Correspondences>;
+  using CorrespondencesConstPtr = shared_ptr<const Correspondences >;
 
   /**
     * \brief Get the query points of correspondences that are present in

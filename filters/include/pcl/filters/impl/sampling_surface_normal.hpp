@@ -41,6 +41,7 @@
 #include <iostream>
 #include <vector>
 #include <pcl/common/eigen.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/filters/sampling_surface_normal.h>
 
 ///////////////////////////////////////////////////////////////////////////////

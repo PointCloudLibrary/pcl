@@ -212,7 +212,7 @@ namespace pcl
 
                 __syncthreads();
 
-                while (tasks_beg < tasks_end)
+                while (tasks_beg < tasks_end && level < Morton::levels)
                 {                  
                     int task_count = tasks_end - tasks_beg;                    
                     int iters = divUp(task_count, CTA_SIZE);
@@ -245,7 +245,7 @@ namespace pcl
                                     octree.begs [offset + i] = cell_begs[i];
                                     octree.ends [offset + i] = cell_begs[i + 1];
                                     octree.codes[offset + i] = parent_code_shifted + cell_code[i];
-
+                                    octree.nodes[offset + i] = 0;
                                     octree.parent[offset + i] = task;
                                     mask |= (1 << cell_code[i]);
                                 }

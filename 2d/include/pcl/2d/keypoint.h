@@ -45,10 +45,11 @@
 
 namespace pcl {
 
+template <typename ImageType>
 class Keypoint {
 private:
-  Edge edge_detection;
-  Convolution conv_2d;
+  Edge<ImageType, ImageType> edge_detection;
+  Convolution<ImageType> conv_2d;
 
 public:
   Keypoint() {}

@@ -65,8 +65,8 @@ namespace pcl
         using PointCloudPtr = typename PointCloud::Ptr;
         using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-        using Ptr = boost::shared_ptr<PointCloudGeometryHandler<PointT> >;
-        using ConstPtr = boost::shared_ptr<const PointCloudGeometryHandler<PointT> >;
+        using Ptr = shared_ptr<PointCloudGeometryHandler<PointT> >;
+        using ConstPtr = shared_ptr<const PointCloudGeometryHandler<PointT> >;
 
         /** \brief Constructor. */
         PointCloudGeometryHandler (const PointCloudConstPtr &cloud) :
@@ -143,8 +143,8 @@ namespace pcl
         using PointCloudPtr = typename PointCloud::Ptr;
         using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-        using Ptr = boost::shared_ptr<PointCloudGeometryHandlerXYZ<PointT> >;
-        using ConstPtr = boost::shared_ptr<const PointCloudGeometryHandlerXYZ<PointT> >;
+        using Ptr = shared_ptr<PointCloudGeometryHandlerXYZ<PointT> >;
+        using ConstPtr = shared_ptr<const PointCloudGeometryHandlerXYZ<PointT> >;
 
         /** \brief Constructor. */
         PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud);
@@ -191,8 +191,8 @@ namespace pcl
         using PointCloudPtr = typename PointCloud::Ptr;
         using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-        using Ptr = boost::shared_ptr<PointCloudGeometryHandlerSurfaceNormal<PointT> >;
-        using ConstPtr = boost::shared_ptr<const PointCloudGeometryHandlerSurfaceNormal<PointT> >;
+        using Ptr = shared_ptr<PointCloudGeometryHandlerSurfaceNormal<PointT> >;
+        using ConstPtr = shared_ptr<const PointCloudGeometryHandlerSurfaceNormal<PointT> >;
 
         /** \brief Constructor. */
         PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr &cloud);
@@ -236,8 +236,8 @@ namespace pcl
         using PointCloudPtr = typename PointCloud::Ptr;
         using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-        using Ptr = boost::shared_ptr<PointCloudGeometryHandlerCustom<PointT> >;
-        using ConstPtr = boost::shared_ptr<const PointCloudGeometryHandlerCustom<PointT> >;
+        using Ptr = shared_ptr<PointCloudGeometryHandlerCustom<PointT> >;
+        using ConstPtr = shared_ptr<const PointCloudGeometryHandlerCustom<PointT> >;
 
         /** \brief Constructor. */
         PointCloudGeometryHandlerCustom (const PointCloudConstPtr &cloud,
@@ -327,8 +327,8 @@ namespace pcl
         using PointCloudPtr = PointCloud::Ptr;
         using PointCloudConstPtr = PointCloud::ConstPtr;
 
-        using Ptr = boost::shared_ptr<PointCloudGeometryHandler<PointCloud> >;
-        using ConstPtr = boost::shared_ptr<const PointCloudGeometryHandler<PointCloud> >;
+        using Ptr = shared_ptr<PointCloudGeometryHandler<PointCloud> >;
+        using ConstPtr = shared_ptr<const PointCloudGeometryHandler<PointCloud> >;
 
         /** \brief Constructor. */
         PointCloudGeometryHandler (const PointCloudConstPtr &cloud, const Eigen::Vector4f & = Eigen::Vector4f::Zero ())
@@ -407,8 +407,8 @@ namespace pcl
         using PointCloudPtr = PointCloud::Ptr;
         using PointCloudConstPtr = PointCloud::ConstPtr;
 
-        using Ptr = boost::shared_ptr<PointCloudGeometryHandlerXYZ<PointCloud> >;
-        using ConstPtr = boost::shared_ptr<const PointCloudGeometryHandlerXYZ<PointCloud> >;
+        using Ptr = shared_ptr<PointCloudGeometryHandlerXYZ<PointCloud> >;
+        using ConstPtr = shared_ptr<const PointCloudGeometryHandlerXYZ<PointCloud> >;
 
         /** \brief Constructor. */
         PointCloudGeometryHandlerXYZ (const PointCloudConstPtr &cloud);
@@ -440,8 +440,8 @@ namespace pcl
         using PointCloudPtr = PointCloud::Ptr;
         using PointCloudConstPtr = PointCloud::ConstPtr;
 
-        using Ptr = boost::shared_ptr<PointCloudGeometryHandlerSurfaceNormal<PointCloud> >;
-        using ConstPtr = boost::shared_ptr<const PointCloudGeometryHandlerSurfaceNormal<PointCloud> >;
+        using Ptr = shared_ptr<PointCloudGeometryHandlerSurfaceNormal<PointCloud> >;
+        using ConstPtr = shared_ptr<const PointCloudGeometryHandlerSurfaceNormal<PointCloud> >;
 
         /** \brief Constructor. */
         PointCloudGeometryHandlerSurfaceNormal (const PointCloudConstPtr &cloud);

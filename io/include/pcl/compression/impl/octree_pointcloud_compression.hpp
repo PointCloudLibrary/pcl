@@ -509,7 +509,6 @@ namespace pcl
     OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT>::deserializeTreeCallback (LeafT&,
         const OctreeKey& key_arg)
     {
-      double lowerVoxelCorner[3];
       PointT newPoint;
 
       std::size_t pointCount = 1;
@@ -528,6 +527,7 @@ namespace pcl
           output_->points.push_back (newPoint);
 
         // calculcate position of lower voxel corner
+        double lowerVoxelCorner[3];
         lowerVoxelCorner[0] = static_cast<double> (key_arg.x) * this->resolution_ + this->min_x_;
         lowerVoxelCorner[1] = static_cast<double> (key_arg.y) * this->resolution_ + this->min_y_;
         lowerVoxelCorner[2] = static_cast<double> (key_arg.z) * this->resolution_ + this->min_z_;

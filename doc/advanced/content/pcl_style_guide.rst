@@ -167,27 +167,20 @@ variant of the GNU style formatting.
 2.1. Namespaces
 ^^^^^^^^^^^^^^^
 
-In a header file, the contets of a namespace should be indented, e.g.:
+In both header and implementation files, namespaces are to be explicitly
+declared, and their contents should not be indented, like clang-format
+enforces in the Formatting CI job, e.g.:
 
 .. code-block:: cpp
 
   namespace pcl
   {
-    class Foo
-    {
-      ...
-    };
-  }
 
-In an implementation file, the namespace must be added to each individual
-method or function definition, e.g.:
-
-.. code-block:: cpp
-
-  void
-  pcl::Foo::bar ()
+  class Foo
   {
     ...
+  };
+
   }
 
 
@@ -281,19 +274,6 @@ function/method, e.g.:
    int 
    exampleMethod (int example_arg);
 
-If multiple namespaces are declared within header files, always use **2
-spaces** to indent them, e.g.:
-
-.. code-block:: cpp
-
-   namespace foo
-   {
-     namespace bar
-     {
-        void
-        method (int my_var);
-      }
-   }
 
 Class and struct members are indented by **2 spaces**. Access qualifiers (public, private and protected) are put at the
 indentation level of the class body and members affected by these qualifiers are indented by one more level, i.e. 2 spaces. E.g.:
@@ -302,79 +282,98 @@ indentation level of the class body and members affected by these qualifiers are
 
    namespace foo
    {
-     class Bar
-     {
-       int i;
-       public:
-         int j;
-       protected:
-         void
-         baz ();
-     }
+
+   class Bar
+   {
+     int i;
+     public:
+       int j;
+     protected:
+       void
+       baz ();
+   };
    }
 
 
 2.6. Automatic code formatting
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The following set of rules can be automatically used by various different IDEs,
-editors, etc.
+We currently use clang-format-10 as the tool for auto-formatting our C++ code.
+Please note that different versions of clang-format can result in slightly different outputs.
 
-2.6.1. Emacs
-""""""""""""
+The style rules mentioned in this document are enforced via `PCL's .clang-format file
+<https://github.com/PointCloudLibrary/pcl/blob/master/.clang-format>`_.
+The style files which were previously distributed should now be considered deprecated.
 
-You can use the following `PCL C/C++ style file
-<https://raw.githubusercontent.com/PointCloudLibrary/pcl/master/doc/advanced/content/files/pcl-c-style.el>`_,
-download it to some known location and then:
+For the integration of clang-format with various text editors and IDE's, refer to this `page
+<https://clang.llvm.org/docs/ClangFormat.html>`_.
 
-* open .emacs 
-* add the following before any C/C++ custom hooks
+Details about the style options used can be found `here
+<https://clang.llvm.org/docs/ClangFormatStyleOptions.html>`_.
 
-::
+2.6.1. Script usage
+"""""""""""""""""""
 
-   (load-file "/location/to/pcl-c-style.el")
-   (add-hook 'c-mode-common-hook 'pcl-set-c-style)
+PCL also creates a build target 'format' to format the whitelisted directories using clang-format.
 
-2.6.2. Uncrustify
-"""""""""""""""""
+Command line usage:
 
-You can find a semi-finished config for `Uncrustify <http://uncrustify.sourceforge.net/>`_ `here
-<http://dev.pointclouds.org/attachments/download/537/uncrustify.cfg>`_
+.. code-block:: shell
 
-2.6.3 Eclipse
-"""""""""""""
+   $ make format
 
-| You can find a PCL code style file for Eclipse `on GitHub <https://github.com/PointCloudLibrary/pcl/tree/master/doc/advanced/content/files>`_.
-| To add the new formatting style go to: Windows > Preferences > C/C++ > Code Style > Formatter
 
-| To format portion of codes, select the code and press Ctrl + Shift + F.
-| If you want to format the whole code in your project go to the tree and right click on the project: Source > Format.
+2.7. Includes
+^^^^^^^^^^^^^
 
-Note that the Eclipse formatter style is configured to wrap all arguments in a function, feel free to re-arange the arguments if you feel the need; for example,
-this improves readability:
+For consistent usage, headers should be included in the following order with alphabetical grouping ensured:
 
-.. code-block:: cpp
+1.  PCL headers
 
-   int
-   displayPoint (float x, float y, float z,
-                 float r, float g, float b
-                );
+    i.  All modular PCL includes, except main includes of common module.
+        
+        Examples:
 
-This eclipse formatter fails to add a space before brackets when using PCL macros:
+        .. code-block:: cpp
 
-.. code-block:: cpp
+           #include <pcl/common/common.h>
+           #include <pcl/simulation/camera.h>
+           #include <pcl/ml/dt/decision_forest.h>
 
-   PCL_ERROR("Text\n");
+    #.  The main PCL includes of common module. These are the header files in the ``pcl/common/include/pcl/`` directory.
+    
+        Examples:
 
-should be
+        .. code-block:: cpp
 
-.. code-block:: cpp
+           #include <pcl/memory.h>
+           #include <pcl/pcl_macros.h>
+           #include <pcl/point_cloud.h>
 
-   PCL_ERROR ("Text\n");
+2.  Major 3rd-Party components of tests and modules
 
-.. note::
+    i.  gtest
+    #.  boost
+    #.  Eigen
+    #.  flann
+3.  Major 3rd-Party components of apps
 
-   This style sheet is not perfect, please mention errors on the user mailing list and feel free to patch!
+    i.  Qt
+    #.  ui-files
+    #.  vtk
+4.  Minor 3rd-Party components
+
+    i.  librealsense
+    #.  ros/message_filters
+    #.  opencv/opencv2
+    #.  tide
+    #.  thrust
+    #.  OpenGL, GL & GLUT
+5.  C++ standard library headers (alphabetical)
+6.  Others
+
+This style can also be enforced via clang-format. For usage instructions, refer `2.6. Automatic code formatting`_.
+
 
 3. Structuring
 ==============
@@ -410,3 +409,18 @@ For the compute, filter, segment, etc. type methods the following rules apply:
   size.
 * The output arguments will always be passed by reference.
 
+3.3. Object declaration
+^^^^^^^^^^^^^^^^^^^^^^^
+
+3.3.1 Use of auto
+"""""""""""""""""
+* For Iterators auto must be used as much as possible 
+* In all the other cases auto can be used at the author's discretion
+* Use const auto references by default in range loops. Drop the const if the item needs to be modified.
+
+3.3.2 Type qualifiers of variables
+""""""""""""""""""""""""""""""""""
+* Declare variables const when they don't need to be modified.
+* Use const references whenever you don't need a copy of the variable. 
+* Use of unsigned variables if the value is sure to not go negative by 
+  use and by definition of the variable

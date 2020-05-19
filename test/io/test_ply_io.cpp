@@ -40,7 +40,7 @@
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PLYReaderWriter)
@@ -288,7 +288,7 @@ TEST_F (PLYColorTest, LoadPLYFileColoredASCIIIntoPolygonMesh)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> class PLYPointCloudTest : public PLYColorTest { };
 using RGBPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_RGB_POINT_TYPES)>;
-TYPED_TEST_CASE (PLYPointCloudTest, RGBPointTypes);
+TYPED_TEST_SUITE (PLYPointCloudTest, RGBPointTypes);
 TYPED_TEST (PLYPointCloudTest, LoadPLYFileColoredASCIIIntoPointCloud)
 {
   int res;
@@ -316,7 +316,7 @@ template<typename T>
 struct PLYCoordinatesIsDenseTest : public PLYTest {};
 
 using XYZPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_XYZ_POINT_TYPES)>;
-TYPED_TEST_CASE (PLYCoordinatesIsDenseTest, XYZPointTypes);
+TYPED_TEST_SUITE (PLYCoordinatesIsDenseTest, XYZPointTypes);
 
 TYPED_TEST (PLYCoordinatesIsDenseTest, NaNInCoordinates)
 {
@@ -410,7 +410,7 @@ template<typename T>
 struct PLYNormalsIsDenseTest : public PLYTest {};
 
 using NormalPointTypes = ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_NORMAL_POINT_TYPES)>;
-TYPED_TEST_CASE (PLYNormalsIsDenseTest, NormalPointTypes);
+TYPED_TEST_SUITE (PLYNormalsIsDenseTest, NormalPointTypes);
 
 TYPED_TEST (PLYNormalsIsDenseTest, NaNInNormals)
 {
@@ -470,6 +470,65 @@ TEST_F (PLYTest, NaNInIntensity)
 
   // cloud has proper structure
   EXPECT_FALSE (cloud.is_dense);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F (PLYTest, NoEndofLine)
+{
+  // create file
+  std::ofstream fs;
+  fs.open (mesh_file_ply_.c_str ());
+  fs << "ply\n"
+        "format ascii 1.0\n"
+        "element vertex 4\n"
+        "property float x\n"
+        "property float y\n"
+        "property float z\n"
+        "property float intensity\n"
+        "end_header\n"
+        "4.23607 0 1.61803 3.13223\n"
+        "2.61803 2.61803 0 3.13223\n"
+        "0 1.61803 4.23607 NaN\n"
+        "0 -1.61803 4.23607 3.13223";
+  fs.close ();
+
+  // Set up cloud
+  pcl::PointCloud<pcl::PointXYZI> cloud;
+
+  pcl::PLYReader Reader;
+  Reader.read(PLYTest::mesh_file_ply_, cloud);
+
+  ASSERT_EQ (cloud.empty(), false);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F (PLYTest, CommentAtTheEnd)
+{
+  // create file
+  std::ofstream fs;
+  fs.open (mesh_file_ply_.c_str ());
+  fs << "ply\n"
+        "format ascii 1.0\n"
+        "element vertex 4\n"
+        "property float x\n"
+        "property float y\n"
+        "property float z\n"
+        "property float intensity\n"
+        "end_header\n"
+        "4.23607 0 1.61803 3.13223\n"
+        "2.61803 2.61803 0 3.13223\n"
+        "0 1.61803 4.23607 NaN\n"
+        "0 -1.61803 4.23607 3.13223\n"
+        "comment hi\n";
+  fs.close ();
+
+  // Set up cloud
+  pcl::PointCloud<pcl::PointXYZI> cloud;
+
+  pcl::PLYReader Reader;
+  Reader.read(PLYTest::mesh_file_ply_, cloud);
+
+  ASSERT_EQ (cloud.empty(), false);
 }
 
 /* ---[ */

@@ -1,15 +1,10 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <ostream>
+#include <string>   // for string
+#include <vector>   // for vector
+#include <ostream>  // for ostream
 
-#ifdef USE_ROS
-   #error USE_ROS setup requires PCL to compile against ROS message headers, which is now deprecated
-#endif   
-
-// Include the correct Header path here
-#include <pcl/PCLHeader.h>
+#include <pcl/PCLHeader.h>   // for PCLHeader
 
 namespace pcl
 {
@@ -26,8 +21,8 @@ namespace pcl
 
     std::vector<std::uint8_t> data;
 
-    using Ptr = boost::shared_ptr< ::pcl::PCLImage>;
-    using ConstPtr = boost::shared_ptr<const ::pcl::PCLImage>;
+    using Ptr = shared_ptr< ::pcl::PCLImage>;
+    using ConstPtr = shared_ptr<const ::pcl::PCLImage>;
   }; // struct PCLImage
 
   using PCLImagePtr = PCLImage::Ptr;

@@ -35,49 +35,52 @@
  *
  */
 
-#ifndef __PCL_ORGANIZED_PROJECTION_MATRIX_HPP__
-#define __PCL_ORGANIZED_PROJECTION_MATRIX_HPP__
+#pragma once
 
+#include <pcl/common/projection_matrix.h>
 #include <pcl/cloud_iterator.h>
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 namespace pcl
 {
-  namespace common
+
+namespace common
+{
+
+namespace internal
+{
+
+template <typename MatrixT> void
+makeSymmetric (MatrixT& matrix, bool use_upper_triangular = true)
+{
+  if (use_upper_triangular && (MatrixT::Flags & Eigen::RowMajorBit))
   {
-    namespace internal
-    {
-      template <typename MatrixT> void
-      makeSymmetric (MatrixT& matrix, bool use_upper_triangular = true)
-      {
-        if (use_upper_triangular && (MatrixT::Flags & Eigen::RowMajorBit))
-        {
-          matrix.coeffRef (4) = matrix.coeff (1);
-          matrix.coeffRef (8) = matrix.coeff (2);
-          matrix.coeffRef (9) = matrix.coeff (6);
-          matrix.coeffRef (12) = matrix.coeff (3);
-          matrix.coeffRef (13) = matrix.coeff (7);
-          matrix.coeffRef (14) = matrix.coeff (11);
-        }
-        else
-        {
-          matrix.coeffRef (1) = matrix.coeff (4);
-          matrix.coeffRef (2) = matrix.coeff (8);
-          matrix.coeffRef (6) = matrix.coeff (9);
-          matrix.coeffRef (3) = matrix.coeff (12);
-          matrix.coeffRef (7) = matrix.coeff (13);
-          matrix.coeffRef (11) = matrix.coeff (14);
-        }
-      }
-    }
+    matrix.coeffRef (4) = matrix.coeff (1);
+    matrix.coeffRef (8) = matrix.coeff (2);
+    matrix.coeffRef (9) = matrix.coeff (6);
+    matrix.coeffRef (12) = matrix.coeff (3);
+    matrix.coeffRef (13) = matrix.coeff (7);
+    matrix.coeffRef (14) = matrix.coeff (11);
+  }
+  else
+  {
+    matrix.coeffRef (1) = matrix.coeff (4);
+    matrix.coeffRef (2) = matrix.coeff (8);
+    matrix.coeffRef (6) = matrix.coeff (9);
+    matrix.coeffRef (3) = matrix.coeff (12);
+    matrix.coeffRef (7) = matrix.coeff (13);
+    matrix.coeffRef (11) = matrix.coeff (14);
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
-template <typename PointT> double 
-pcl::estimateProjectionMatrix (
-    typename pcl::PointCloud<PointT>::ConstPtr cloud, 
-    Eigen::Matrix<float, 3, 4, Eigen::RowMajor>& projection_matrix, 
+} // namespace internal
+} // namespace common
+
+
+template <typename PointT> double
+estimateProjectionMatrix (
+    typename pcl::PointCloud<PointT>::ConstPtr cloud,
+    Eigen::Matrix<float, 3, 4, Eigen::RowMajor>& projection_matrix,
     const std::vector<int>& indices)
 {
   // internally we calculate with double but store the result into float matrices.
@@ -88,19 +91,19 @@ pcl::estimateProjectionMatrix (
     PCL_ERROR ("[pcl::estimateProjectionMatrix] Input dataset is not organized!\n");
     return (-1.0);
   }
-  
+
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> A = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> B = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> C = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> D = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
 
   pcl::ConstCloudIterator <PointT> pointIt (*cloud, indices);
-  
+
   while (pointIt)
   {
     unsigned yIdx = pointIt.getCurrentPointIndex () / cloud->width;
     unsigned xIdx = pointIt.getCurrentPointIndex () % cloud->width;
-    
+
     const PointT& point = *pointIt;
     if (std::isfinite (point.x))
     {
@@ -167,14 +170,14 @@ pcl::estimateProjectionMatrix (
 
       D.coeffRef (15) += xx_yy;
     }
-    
+
     ++pointIt;
-  } // while  
-  
-  pcl::common::internal::makeSymmetric (A);
-  pcl::common::internal::makeSymmetric (B);
-  pcl::common::internal::makeSymmetric (C);
-  pcl::common::internal::makeSymmetric (D);
+  } // while
+
+  common::internal::makeSymmetric (A);
+  common::internal::makeSymmetric (B);
+  common::internal::makeSymmetric (C);
+  common::internal::makeSymmetric (D);
 
   Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor> X = Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor>::Zero ();
   X.topLeftCorner<4,4> ().matrix () = A;
@@ -190,7 +193,7 @@ pcl::estimateProjectionMatrix (
 
   // check whether the residual MSE is low. If its high, the cloud was not captured from a projective device.
   Eigen::Matrix<Scalar, 1, 1> residual_sqr = eigen_vectors.col (0).transpose () * X *  eigen_vectors.col (0);
-  
+
   double residual = residual_sqr.coeff (0);
 
   projection_matrix.coeffRef (0) = static_cast <float> (eigen_vectors.coeff (0));
@@ -212,4 +215,5 @@ pcl::estimateProjectionMatrix (
   return (residual);
 }
 
-#endif
+} // namespace pcl
+

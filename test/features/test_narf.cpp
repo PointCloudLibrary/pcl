@@ -36,7 +36,7 @@
 
 #include <iostream> 
 #include <sstream> 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/features/narf.h>
 #include <pcl/common/eigen.h>
 

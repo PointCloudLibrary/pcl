@@ -88,9 +88,9 @@ See the API documentation for additional details.
 
 To create the final PFH representation for the query point, the set of all
 quadruplets is binned into a histogram. The binning process divides each
-features’s value range into **b** subdivisions, and counts the number of
+feature’s value range into **b** subdivisions, and counts the number of
 occurrences in each subinterval. Since three out of the four features presented
-above are measure of the angles between normals, their values can easily be
+above are measures of the angles between normals, their values can easily be
 normalized to the same interval on the trigonometric circle. A binning example
 is to divide each feature interval into the same number of equal parts, and
 therefore create a histogram with :math:`b^4` bins in a fully correlated space.
@@ -196,7 +196,7 @@ resultant histogram as an array of float values.
 
 .. note::
   
-  For efficiency reasons, the **compute** method in **PFHEstimation** does not check if the normals contains NaN or infinite values.
+  For efficiency reasons, the **compute** method in **PFHEstimation** does not check if the normals contain NaN or infinite values.
   Passing such values to **compute()** will result in undefined output.
   It is advisable to check the normals, at least during the design of the processing chain or when setting the parameters.
   This can be done by inserting the following code before the call to **compute()**:

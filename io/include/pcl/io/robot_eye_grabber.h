@@ -43,6 +43,7 @@
 #include <pcl/io/impl/synchronized_queue.hpp>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <pcl/memory.h>
 #include <boost/asio.hpp>
 
 #include <memory>
@@ -71,7 +72,7 @@ namespace pcl
       RobotEyeGrabber (const boost::asio::ip::address& ipAddress, unsigned short port=443);
 
       /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
-      ~RobotEyeGrabber () throw ();
+      ~RobotEyeGrabber () noexcept;
 
       /** \brief Starts the RobotEye grabber.
        * The grabber runs on a separate thread, this call will return without blocking. */

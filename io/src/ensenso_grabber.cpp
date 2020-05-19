@@ -85,7 +85,7 @@ pcl::EnsensoGrabber::EnsensoGrabber () :
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::EnsensoGrabber::~EnsensoGrabber () throw ()
+pcl::EnsensoGrabber::~EnsensoGrabber () noexcept
 {
   try
   {
@@ -290,7 +290,7 @@ pcl::EnsensoGrabber::configureCapture (const bool auto_exposure,
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::EnsensoGrabber::grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud)
+pcl::EnsensoGrabber::grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud) const
 {
   if (!device_open_)
     return (false);
@@ -575,7 +575,7 @@ bool
 pcl::EnsensoGrabber::setExtrinsicCalibration (const double euler_angle,
                                               Eigen::Vector3d &rotation_axis,
                                               const Eigen::Vector3d &translation,
-                                              const std::string target)
+                                              const std::string target) const
 {
   if (!device_open_)
     return (false);
@@ -963,7 +963,7 @@ pcl::EnsensoGrabber::processGrabbing ()
       if (num_slots<sig_cb_ensenso_point_cloud> () > 0 || num_slots<sig_cb_ensenso_images> () > 0 || num_slots<sig_cb_ensenso_point_cloud_images> () > 0)
       {
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-        boost::shared_ptr<PairOfImages> images (new PairOfImages);
+        shared_ptr<PairOfImages> images (new PairOfImages);
 
         fps_mutex_.lock ();
         frequency_.event ();

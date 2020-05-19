@@ -36,13 +36,12 @@
  *  $Id$
  */
 
-#include <pcl/point_types.h>
-
 #include <pcl/2d/convolution.h>
 #include <pcl/2d/edge.h>
 #include <pcl/2d/kernel.h>
 #include <pcl/2d/morphology.h>
 #include <pcl/pcl_base.h>
+#include <pcl/point_types.h>
 
 using namespace pcl;
 

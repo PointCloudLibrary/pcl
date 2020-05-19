@@ -38,7 +38,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
 #include <pcl/features/grsd.h>
 #include <pcl/features/normal_3d.h>

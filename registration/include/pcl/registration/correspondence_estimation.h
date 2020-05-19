@@ -45,6 +45,7 @@
 #include <pcl/pcl_base.h>
 #include <pcl/common/transforms.h>
 #include <pcl/search/kdtree.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 #include <pcl/registration/correspondence_types.h>
@@ -62,8 +63,8 @@ namespace pcl
     class CorrespondenceEstimationBase: public PCLBase<PointSource>
     {
       public:
-        using Ptr = boost::shared_ptr<CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> >;
-        using ConstPtr = boost::shared_ptr<const CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> >;
+        using Ptr = shared_ptr<CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> >;
+        using ConstPtr = shared_ptr<const CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> >;
 
         // using PCLBase<PointSource>::initCompute;
         using PCLBase<PointSource>::deinitCompute;
@@ -361,8 +362,8 @@ namespace pcl
     class CorrespondenceEstimation : public CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>
     {
       public:
-        using Ptr = boost::shared_ptr<CorrespondenceEstimation<PointSource, PointTarget, Scalar> >;
-        using ConstPtr = boost::shared_ptr<const CorrespondenceEstimation<PointSource, PointTarget, Scalar> >;
+        using Ptr = shared_ptr<CorrespondenceEstimation<PointSource, PointTarget, Scalar> >;
+        using ConstPtr = shared_ptr<const CorrespondenceEstimation<PointSource, PointTarget, Scalar> >;
 
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::point_representation_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_transformed_;

@@ -37,13 +37,8 @@
  *
  */
 
-// STL
 #include <iostream>
-#include <limits>
 
-// PCL
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/filters/filter.h>
 
 int

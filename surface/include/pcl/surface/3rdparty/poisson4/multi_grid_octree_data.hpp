@@ -8,14 +8,14 @@ are permitted provided that the following conditions are met:
 Redistributions of source code must retain the above copyright notice, this list of
 conditions and the following disclaimer. Redistributions in binary form must reproduce
 the above copyright notice, this list of conditions and the following disclaimer
-in the documentation and/or other materials provided with the distribution. 
+in the documentation and/or other materials provided with the distribution.
 
 Neither the name of the Johns Hopkins University nor the names of its contributors
 may be used to endorse or promote products derived from this software without specific
-prior written permission. 
+prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES 
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES
 OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
 SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
@@ -77,16 +77,16 @@ namespace pcl
       maxDepth=0;
     }
     SortedTreeNodes::~SortedTreeNodes(void){
-      if( nodeCount ) delete[] nodeCount;
-      if( treeNodes ) delete[] treeNodes;
+      delete[] nodeCount;
+      delete[] treeNodes;
       nodeCount = NULL;
       treeNodes = NULL;
     }
 
     void SortedTreeNodes::set( TreeOctNode& root )
     {
-      if( nodeCount ) delete[] nodeCount;
-      if( treeNodes ) delete[] treeNodes;
+      delete[] nodeCount;
+      delete[] treeNodes;
       maxDepth = root.maxDepth()+1;
       nodeCount = new int[ maxDepth+1 ];
       treeNodes = new TreeOctNode*[ root.nodes() ];
@@ -1128,6 +1128,7 @@ namespace pcl
     }
     template< int Degree >
     int Octree< Degree >::GetMatrixRowSize( const OctNode< TreeNodeData , Real >::Neighbors5& neighbors5 ) const { return GetMatrixRowSize( neighbors5 , 0 , 5 , 0 , 5 , 0 , 5 ); }
+
     template< int Degree >
     int Octree< Degree >::GetMatrixRowSize( const OctNode< TreeNodeData , Real >::Neighbors5& neighbors5 , int xStart , int xEnd , int yStart , int yEnd , int zStart , int zEnd ) const
     {
@@ -1141,11 +1142,13 @@ namespace pcl
               count++;
       return count;
     }
+
     template< int Degree >
     int Octree< Degree >::SetMatrixRow( const OctNode< TreeNodeData , Real >::Neighbors5& neighbors5 , MatrixEntry< float >* row , int offset , const double stencil[5][5][5] ) const
     {
       return SetMatrixRow( neighbors5 , row , offset , stencil , 0 , 5 , 0 , 5 , 0 , 5 );
     }
+
     template< int Degree >
     int Octree< Degree >::SetMatrixRow( const OctNode< TreeNodeData , Real >::Neighbors5& neighbors5 , MatrixEntry< float >* row , int offset , const double stencil[5][5][5] , int xStart , int xEnd , int yStart , int yEnd , int zStart , int zEnd ) const
     {
@@ -1226,6 +1229,7 @@ namespace pcl
             }
       return count;
     }
+
     template< int Degree >
     void Octree< Degree >::SetDivergenceStencil( int depth , Point3D< double > *stencil , bool scatter ) const
     {
@@ -1284,6 +1288,7 @@ namespace pcl
 #endif // GRADIENT_DOMAIN_SOLUTION
       }
     }
+
     template< int Degree >
     void Octree< Degree >::SetLaplacianStencil( int depth , double stencil[5][5][5] ) const
     {
@@ -1304,6 +1309,7 @@ namespace pcl
         stencil[x][y][z] = GetLaplacian( symIndex );
       }
     }
+
     template< int Degree >
     void Octree< Degree >::SetLaplacianStencils( int depth , Stencil< double , 5 > stencils[2][2][2] ) const
     {
@@ -1328,6 +1334,7 @@ namespace pcl
         }
       }
     }
+
     template< int Degree >
     void Octree< Degree >::SetDivergenceStencils( int depth , Stencil< Point3D< double > ,  5 > stencils[2][2][2] , bool scatter ) const
     {
@@ -1380,6 +1387,7 @@ namespace pcl
         }
       }
     }
+
     template< int Degree >
     void Octree< Degree >::SetEvaluationStencils( int depth , Stencil< double ,  3 > stencil1[8] , Stencil< double , 3 > stencil2[8][8] ) const
     {
@@ -1421,6 +1429,7 @@ namespace pcl
           }
         }
     }
+
     template< int Degree >
     void Octree< Degree >::UpdateCoarserSupportBounds( const TreeOctNode* node , int& startX , int& endX , int& startY , int& endY , int& startZ , int& endZ )
     {
@@ -1497,6 +1506,7 @@ namespace pcl
         UpSampleData( void ) { start = 0 , v[0] = v[1] = 0.; }
         UpSampleData( int s , double v1 , double v2 ) { start = s , v[0] = v1 , v[1] = v2; }
     };
+
     template< int Degree >
     void Octree< Degree >::UpSampleCoarserSolution( int depth , const SortedTreeNodes& sNodes , Vector< Real >& Solution ) const
     {
@@ -1672,6 +1682,7 @@ namespace pcl
         constraints[i] += cSum;
       }
     }
+
     template< int Degree >
     template< class C >
     void Octree< Degree >::UpSample( int depth , const SortedTreeNodes& sNodes , C* coefficients ) const
@@ -1727,6 +1738,7 @@ namespace pcl
         }
       }
     }
+
     template< int Degree >
     void Octree< Degree >::SetCoarserPointValues( int depth , const SortedTreeNodes& sNodes , Real* metSolution )
     {
@@ -1748,6 +1760,7 @@ namespace pcl
         }
       }
     }
+
     template< int Degree >
     Real Octree< Degree >::WeightedCoarserFunctionValue( const OctNode< TreeNodeData , Real >::NeighborKey3& neighborKey , const TreeOctNode* pointNode , Real* metSolution ) const
     {
@@ -1781,6 +1794,7 @@ namespace pcl
       }
       return Real( pointValue * weight );
     }
+
     template<int Degree>
     int Octree<Degree>::GetFixedDepthLaplacian( SparseSymmetricMatrix< Real >& matrix , int depth , const SortedTreeNodes& sNodes , Real* metSolution )
     {
@@ -1825,6 +1839,7 @@ namespace pcl
       }
       return 1;
     }
+
     template<int Degree>
     int Octree<Degree>::GetRestrictedFixedDepthLaplacian( SparseSymmetricMatrix< Real >& matrix,int depth,const int* entries,int entryCount,
                                                           const TreeOctNode* rNode , Real radius ,
@@ -1962,6 +1977,7 @@ namespace pcl
 
       return iter;
     }
+
     template<int Degree>
     int Octree<Degree>::SolveFixedDepthMatrix( int depth , const SortedTreeNodes& sNodes , Real* metSolution , int startingDepth , bool showResidual , int minIters , double accuracy )
     {
@@ -2092,6 +2108,7 @@ namespace pcl
       delete[] asf.adjacencies;
       return tIter;
     }
+
     template<int Degree>
     int Octree<Degree>::HasNormals(TreeOctNode* node,Real epsilon)
     {
@@ -2101,6 +2118,7 @@ namespace pcl
 
       return hasNormals;
     }
+
     template<int Degree>
     void Octree<Degree>::ClipTree( void )
     {
@@ -2114,6 +2132,7 @@ namespace pcl
         }
       MemoryUsage();
     }
+
     template<int Degree>
     void Octree<Degree>::SetLaplacianConstraints( void )
     {
@@ -2312,15 +2331,19 @@ namespace pcl
       delete normals;
       normals = NULL;
     }
+
     template<int Degree>
     void Octree<Degree>::AdjacencyCountFunction::Function(const TreeOctNode* node1,const TreeOctNode* node2){adjacencyCount++;}
+
     template<int Degree>
     void Octree<Degree>::AdjacencySetFunction::Function(const TreeOctNode* node1,const TreeOctNode* node2){adjacencies[adjacencyCount++]=node1->nodeData.nodeIndex;}
+
     template<int Degree>
     void Octree<Degree>::RefineFunction::Function( TreeOctNode* node1 , const TreeOctNode* node2 )
     {
       if( !node1->children && node1->depth()<depth ) node1->initChildren();
     }
+
     template< int Degree >
     void Octree< Degree >::FaceEdgesFunction::Function( const TreeOctNode* node1 , const TreeOctNode* node2 )
     {
@@ -2421,6 +2444,7 @@ namespace pcl
       _sNodes.set( tree );
       MemoryUsage();
     }
+
     template<int Degree>
     void Octree<Degree>::GetMCIsoTriangles( Real isoValue , int subdivideDepth , CoredMeshData* mesh , int fullDepthIso , int nonLinearFit , bool addBarycenter , bool polygonMesh )
     {
@@ -2592,6 +2616,7 @@ namespace pcl
       delete[] coarseRootData.cornerValuesSet  , delete[] coarseRootData.cornerNormalsSet;
       delete rootData.boundaryValues;
     }
+
     template<int Degree>
     Real Octree<Degree>::getCenterValue( const OctNode< TreeNodeData , Real >::ConstNeighborKey3& neighborKey , const TreeOctNode* node){
       int idx[3];
@@ -2634,6 +2659,7 @@ namespace pcl
       }
       return value;
     }
+
     template< int Degree >
     Real Octree< Degree >::getCornerValue( const OctNode< TreeNodeData , Real >::ConstNeighborKey3& neighborKey3 , const TreeOctNode* node , int corner , const Real* metSolution )
     {
@@ -2694,6 +2720,7 @@ namespace pcl
       }
       return Real( value );
     }
+
     template< int Degree >
     Real Octree< Degree >::getCornerValue( const OctNode< TreeNodeData , Real >::ConstNeighborKey3& neighborKey3 , const TreeOctNode* node , int corner , const Real* metSolution , const double stencil1[3][3][3] , const double stencil2[3][3][3] )
     {
@@ -2733,6 +2760,7 @@ namespace pcl
       }
       return Real( value );
     }
+
     template< int Degree >
     Point3D< Real > Octree< Degree >::getCornerNormal( const OctNode< TreeNodeData , Real >::ConstNeighborKey5& neighborKey5 , const TreeOctNode* node , int corner , const Real* metSolution )
     {
@@ -2784,6 +2812,7 @@ namespace pcl
       }
       return normal;
     }
+
     template< int Degree >
     Real Octree<Degree>::GetIsoValue( void )
     {
@@ -2865,7 +2894,6 @@ namespace pcl
       }
     }
 
-
     template<int Degree>
     int Octree<Degree>::InteriorFaceRootCount(const TreeOctNode* node,const int &faceIndex,int maxDepth){
       int c1,c2,e1,e2,dir,off,cnt=0;
@@ -2945,6 +2973,7 @@ namespace pcl
       if(finest->children) return EdgeRootCount(&finest->children[c1],eIndex,maxDepth)+EdgeRootCount(&finest->children[c2],eIndex,maxDepth);
       else return MarchingCubes::HasEdgeRoots(finest->nodeData.mcIndex,eIndex);
     }
+
     template<int Degree>
     int Octree<Degree>::IsBoundaryFace(const TreeOctNode* node,int faceIndex,int subdivideDepth){
       int dir,offset,d,o[3],idx;
@@ -2957,12 +2986,14 @@ namespace pcl
       idx=(int(o[dir])<<1) + (offset<<1);
       return !(idx%(2<<(int(node->d)-subdivideDepth)));
     }
+
     template<int Degree>
     int Octree<Degree>::IsBoundaryEdge(const TreeOctNode* node,int edgeIndex,int subdivideDepth){
       int dir,x,y;
       Cube::FactorEdgeIndex(edgeIndex,dir,x,y);
       return IsBoundaryEdge(node,dir,x,y,subdivideDepth);
     }
+
     template<int Degree>
     int Octree<Degree>::IsBoundaryEdge( const TreeOctNode* node , int dir , int x , int y , int subdivideDepth )
     {
@@ -2990,6 +3021,7 @@ namespace pcl
       mask = 1<<( int(node->d) - subdivideDepth );
       return !(idx1%(mask)) || !(idx2%(mask));
     }
+
     template< int Degree >
     void Octree< Degree >::GetRootSpan( const RootInfo& ri , Point3D< float >& start , Point3D< float >& end )
     {
@@ -3021,6 +3053,7 @@ namespace pcl
         break;
       }
     }
+
     //////////////////////////////////////////////////////////////////////////////////////
     // The assumption made when calling this code is that the edge has at most one root //
     //////////////////////////////////////////////////////////////////////////////////////
@@ -3154,6 +3187,7 @@ namespace pcl
       position[o] = Real(center-width/2+width*averageRoot);
       return 1;
     }
+
     template< int Degree >
     int Octree< Degree >::GetRootIndex( const TreeOctNode* node , int edgeIndex , int maxDepth , int sDepth,RootInfo& ri )
     {
@@ -3235,6 +3269,7 @@ namespace pcl
         return 1;
       }
     }
+
     template<int Degree>
     int Octree<Degree>::GetRootIndex( const TreeOctNode* node , int edgeIndex , int maxDepth , RootInfo& ri )
     {
@@ -3313,6 +3348,7 @@ namespace pcl
         return 1;
       }
     }
+
     template<int Degree>
     int Octree<Degree>::GetRootPair(const RootInfo& ri,int maxDepth,RootInfo& pair){
       const TreeOctNode* node=ri.node;
@@ -3328,8 +3364,8 @@ namespace pcl
         node=node->parent;
       }
       return 0;
-
     }
+
     template<int Degree>
     int Octree< Degree >::GetRootIndex( const RootInfo& ri , RootData& rootData , CoredPointIndex& index )
     {
@@ -3353,6 +3389,7 @@ namespace pcl
       }
       return 0;
     }
+
     template< int Degree >
     int Octree< Degree >::SetMCRootPositions( TreeOctNode* node , int sDepth , Real isoValue , TreeOctNode::ConstNeighborKey5& neighborKey5 , RootData& rootData ,
                                               std::vector< Point3D< float > >* interiorPositions , CoredMeshData* mesh , const Real* metSolution , int nonLinearFit )
@@ -3420,6 +3457,7 @@ namespace pcl
       }
       return count;
     }
+
     template<int Degree>
     int Octree< Degree >::SetBoundaryMCRootPositions( int sDepth , Real isoValue , RootData& rootData , CoredMeshData* mesh , int nonLinearFit )
     {
@@ -3461,6 +3499,7 @@ namespace pcl
       }
       return count;
     }
+
     template<int Degree>
     void Octree< Degree >::GetMCIsoEdges( TreeOctNode* node , int sDepth , std::vector< std::pair< RootInfo , RootInfo > >& edges )
     {
@@ -3558,6 +3597,7 @@ namespace pcl
         }
       }
     }
+
     template<int Degree>
 #if MISHA_DEBUG
     int Octree< Degree >::GetMCIsoTriangles( TreeOctNode* node , CoredMeshData* mesh , RootData& rootData , std::vector< Point3D< float > >* interiorPositions , int offSet , int sDepth , bool polygonMesh , std::vector< Point3D< float > >* barycenters )
@@ -3636,6 +3676,7 @@ namespace pcl
       }
       return int(loops.size());
     }
+
     template<int Degree>
 #if MISHA_DEBUG
     int Octree<Degree>::AddTriangles( CoredMeshData* mesh , std::vector<CoredPointIndex>& edges , std::vector<Point3D<float> >* interiorPositions , int offSet , bool polygonMesh , std::vector< Point3D< float > >* barycenters )
@@ -3758,6 +3799,7 @@ namespace pcl
       }
       return int(edges.size())-2;
     }
+
     template< int Degree >
     Real* Octree< Degree >::GetSolutionGrid( int& res , float isoValue , int depth )
     {
@@ -3802,6 +3844,7 @@ namespace pcl
 
       return values;
     }
+
     template< int Degree >
     Real* Octree< Degree >::GetWeightGrid( int& res , int depth )
     {
@@ -3847,20 +3890,24 @@ namespace pcl
       int idx[DIMENSION];
       return CenterIndex(node,maxDepth,idx);
     }
+
     long long VertexData::CenterIndex(const TreeOctNode* node,int maxDepth,int idx[DIMENSION]){
       int d,o[3];
       node->depthAndOffset(d,o);
       for(int i=0;i<DIMENSION;i++){idx[i]=BinaryNode<Real>::CornerIndex(maxDepth+1,d+1,o[i]<<1,1);}
       return (long long)(idx[0]) | (long long)(idx[1])<<15 | (long long)(idx[2])<<30;
     }
+
     long long VertexData::CenterIndex(int depth,const int offSet[DIMENSION],int maxDepth,int idx[DIMENSION]){
       for(int i=0;i<DIMENSION;i++){idx[i]=BinaryNode<Real>::CornerIndex(maxDepth+1,depth+1,offSet[i]<<1,1);}
       return (long long)(idx[0]) | (long long)(idx[1])<<15 | (long long)(idx[2])<<30;
     }
+
     long long VertexData::CornerIndex(const TreeOctNode* node,int cIndex,int maxDepth){
       int idx[DIMENSION];
       return CornerIndex(node,cIndex,maxDepth,idx);
     }
+
     long long VertexData::CornerIndex( const TreeOctNode* node , int cIndex , int maxDepth , int idx[DIMENSION] )
     {
       int x[DIMENSION];
@@ -3870,6 +3917,7 @@ namespace pcl
       for( int i=0 ; i<DIMENSION ; i++ ) idx[i] = BinaryNode<Real>::CornerIndex( maxDepth+1 , d , o[i] , x[i] );
       return CornerIndexKey( idx );
     }
+
     long long VertexData::CornerIndex( int depth , const int offSet[DIMENSION] , int cIndex , int maxDepth , int idx[DIMENSION] )
     {
       int x[DIMENSION];
@@ -3877,14 +3925,17 @@ namespace pcl
       for( int i=0 ; i<DIMENSION ; i++ ) idx[i] = BinaryNode<Real>::CornerIndex( maxDepth+1 , depth , offSet[i] , x[i] );
       return CornerIndexKey( idx );
     }
+
     long long VertexData::CornerIndexKey( const int idx[DIMENSION] )
     {
       return (long long)(idx[0]) | (long long)(idx[1])<<15 | (long long)(idx[2])<<30;
     }
+
     long long VertexData::FaceIndex(const TreeOctNode* node,int fIndex,int maxDepth){
       int idx[DIMENSION];
       return FaceIndex(node,fIndex,maxDepth,idx);
     }
+
     long long VertexData::FaceIndex(const TreeOctNode* node,int fIndex,int maxDepth,int idx[DIMENSION]){
       int dir,offset;
       Cube::FactorFaceIndex(fIndex,dir,offset);
@@ -3894,10 +3945,12 @@ namespace pcl
       idx[dir]=BinaryNode<Real>::CornerIndex(maxDepth+1,d,o[dir],offset);
       return (long long)(idx[0]) | (long long)(idx[1])<<15 | (long long)(idx[2])<<30;
     }
+
     long long VertexData::EdgeIndex(const TreeOctNode* node,int eIndex,int maxDepth){
       int idx[DIMENSION];
       return EdgeIndex(node,eIndex,maxDepth,idx);
     }
+
     long long VertexData::EdgeIndex(const TreeOctNode* node,int eIndex,int maxDepth,int idx[DIMENSION]){
       int o,i1,i2;
       int d,off[3];
@@ -3920,9 +3973,5 @@ namespace pcl
       };
       return (long long)(idx[0]) | (long long)(idx[1])<<15 | (long long)(idx[2])<<30;
     }
-
-    
   }
 }
-
-

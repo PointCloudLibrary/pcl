@@ -77,8 +77,8 @@ namespace pcl
       using PointCloudPtr = typename SampleConsensusModelPlane<PointT>::PointCloudPtr;
       using PointCloudConstPtr = typename SampleConsensusModelPlane<PointT>::PointCloudConstPtr;
 
-      using Ptr = boost::shared_ptr<SampleConsensusModelPerpendicularPlane<PointT> >;
-      using ConstPtr = boost::shared_ptr<const SampleConsensusModelPerpendicularPlane<PointT>>;
+      using Ptr = shared_ptr<SampleConsensusModelPerpendicularPlane<PointT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelPerpendicularPlane<PointT>>;
 
       /** \brief Constructor for base SampleConsensusModelPerpendicularPlane.
         * \param[in] cloud the input point cloud dataset
@@ -101,7 +101,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelPerpendicularPlane (const PointCloudConstPtr &cloud, 
-                                              const std::vector<int> &indices,
+                                              const Indices &indices,
                                               bool random = false) 
         : SampleConsensusModelPlane<PointT> (cloud, indices, random)
         , axis_ (Eigen::Vector3f::Zero ())
@@ -144,7 +144,7 @@ namespace pcl
       void 
       selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
                             const double threshold, 
-                            std::vector<int> &inliers) override;
+                            Indices &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers. 
         * 

@@ -1,18 +1,18 @@
 #pragma once
 
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
+
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
-#include <boost/shared_ptr.hpp>
-
-#include <pcl/pcl_macros.h>
 
 namespace pcl {
 namespace simulation {
 
 class PCL_EXPORTS Camera {
 public:
-  using Ptr = boost::shared_ptr<Camera>;
-  using ConstPtr = boost::shared_ptr<const Camera>;
+  using Ptr = shared_ptr<Camera>;
+  using ConstPtr = shared_ptr<const Camera>;
 
   Camera() : x_(0), y_(0), z_(0), roll_(0), pitch_(0), yaw_(0)
   {
@@ -138,7 +138,7 @@ public:
 
   // Return the pose of the camera:
   Eigen::Vector3d
-  getYPR()
+  getYPR() const
   {
     return Eigen::Vector3d(yaw_, pitch_, roll_);
   }

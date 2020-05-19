@@ -238,11 +238,10 @@ pcl::MinCutSegmentation<PointT>::extract (std::vector <pcl::PointIndices>& clust
   }
 
   clusters_.clear ();
-  bool success = true;
 
   if ( !graph_is_valid_ )
   {
-    success = buildGraph ();
+    bool success = buildGraph ();
     if (!success)
     {
       deinitCompute ();
@@ -255,7 +254,7 @@ pcl::MinCutSegmentation<PointT>::extract (std::vector <pcl::PointIndices>& clust
 
   if ( !unary_potentials_are_valid_ )
   {
-    success = recalculateUnaryPotentials ();
+    bool success = recalculateUnaryPotentials ();
     if (!success)
     {
       deinitCompute ();
@@ -266,7 +265,7 @@ pcl::MinCutSegmentation<PointT>::extract (std::vector <pcl::PointIndices>& clust
 
   if ( !binary_potentials_are_valid_ )
   {
-    success = recalculateBinaryPotentials ();
+    bool success = recalculateBinaryPotentials ();
     if (!success)
     {
       deinitCompute ();
@@ -339,7 +338,7 @@ pcl::MinCutSegmentation<PointT>::buildGraph ()
 
   for (int i_point = 0; i_point < number_of_indices; i_point++)
   {
-    int point_index = (*indices_)[i_point];
+    index_t point_index = (*indices_)[i_point];
     double source_weight = 0.0;
     double sink_weight = 0.0;
     calculateUnaryPotential (point_index, source_weight, sink_weight);
@@ -352,7 +351,7 @@ pcl::MinCutSegmentation<PointT>::buildGraph ()
   search_->setInputCloud (input_, indices_);
   for (int i_point = 0; i_point < number_of_indices; i_point++)
   {
-    int point_index = (*indices_)[i_point];
+    index_t point_index = (*indices_)[i_point];
     search_->nearestKSearch (i_point, number_of_neighbours_, neighbours, distances);
     for (std::size_t i_nghbr = 1; i_nghbr < neighbours.size (); i_nghbr++)
     {
@@ -373,8 +372,6 @@ pcl::MinCutSegmentation<PointT>::calculateUnaryPotential (int point, double& sou
 {
   double min_dist_to_foreground = std::numeric_limits<double>::max ();
   //double min_dist_to_background = std::numeric_limits<double>::max ();
-  double closest_foreground_point[2];
-  closest_foreground_point[0] = closest_foreground_point[1] = 0;
   //double closest_background_point[] = {0.0, 0.0};
   double initial_point[] = {0.0, 0.0};
 
@@ -389,8 +386,6 @@ pcl::MinCutSegmentation<PointT>::calculateUnaryPotential (int point, double& sou
     if (min_dist_to_foreground > dist)
     {
       min_dist_to_foreground = dist;
-      closest_foreground_point[0] = foreground_points_[i_point].x;
-      closest_foreground_point[1] = foreground_points_[i_point].y;
     }
   }
 
@@ -587,10 +582,9 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
     colored_cloud->is_dense = input_->is_dense;
 
     pcl::PointXYZRGB point;
-    int point_index = 0;
     for (int i_point = 0; i_point < num_of_pts_in_first_cluster; i_point++)
     {
-      point_index = clusters_[0].indices[i_point];
+      index_t point_index = clusters_[0].indices[i_point];
       point.x = *(input_->points[point_index].data);
       point.y = *(input_->points[point_index].data + 1);
       point.z = *(input_->points[point_index].data + 2);
@@ -602,7 +596,7 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
 
     for (int i_point = 0; i_point < num_of_pts_in_second_cluster; i_point++)
     {
-      point_index = clusters_[1].indices[i_point];
+      index_t point_index = clusters_[1].indices[i_point];
       point.x = *(input_->points[point_index].data);
       point.y = *(input_->points[point_index].data + 1);
       point.z = *(input_->points[point_index].data + 2);

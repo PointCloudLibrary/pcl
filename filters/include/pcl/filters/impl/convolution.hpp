@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -37,14 +38,20 @@
  *
  */
 
-#ifndef PCL_FILTERS_CONVOLUTION_IMPL_HPP
-#define PCL_FILTERS_CONVOLUTION_IMPL_HPP
+#pragma once
 
 #include <pcl/pcl_config.h>
 #include <pcl/common/distances.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
+
+
+namespace pcl
+{
+namespace filters
+{
 
 template <typename PointIn, typename PointOut>
-pcl::filters::Convolution<PointIn, PointOut>::Convolution ()
+Convolution<PointIn, PointOut>::Convolution ()
   : borders_policy_ (BORDERS_POLICY_IGNORE)
   , distance_threshold_ (std::numeric_limits<float>::infinity ())
   , input_ ()
@@ -54,7 +61,7 @@ pcl::filters::Convolution<PointIn, PointOut>::Convolution ()
 {}
 
 template <typename PointIn, typename PointOut> void
-pcl::filters::Convolution<PointIn, PointOut>::initCompute (PointCloud<PointOut>& output)
+Convolution<PointIn, PointOut>::initCompute (PointCloud<PointOut>& output)
 {
   if (borders_policy_ != BORDERS_POLICY_IGNORE &&
       borders_policy_ != BORDERS_POLICY_MIRROR &&
@@ -85,7 +92,7 @@ pcl::filters::Convolution<PointIn, PointOut>::initCompute (PointCloud<PointOut>&
 }
 
 template <typename PointIn, typename PointOut> inline void
-pcl::filters::Convolution<PointIn, PointOut>::convolveRows (PointCloudOut& output)
+Convolution<PointIn, PointOut>::convolveRows (PointCloudOut& output)
 {
   try
   {
@@ -105,7 +112,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolveRows (PointCloudOut& outpu
 }
 
 template <typename PointIn, typename PointOut> inline void
-pcl::filters::Convolution<PointIn, PointOut>::convolveCols (PointCloudOut& output)
+Convolution<PointIn, PointOut>::convolveCols (PointCloudOut& output)
 {
   try
   {
@@ -125,9 +132,9 @@ pcl::filters::Convolution<PointIn, PointOut>::convolveCols (PointCloudOut& outpu
 }
 
 template <typename PointIn, typename PointOut> inline void
-pcl::filters::Convolution<PointIn, PointOut>::convolve (const Eigen::ArrayXf& h_kernel,
-                                                       const Eigen::ArrayXf& v_kernel,
-                                                       PointCloud<PointOut>& output)
+Convolution<PointIn, PointOut>::convolve (const Eigen::ArrayXf& h_kernel,
+                                          const Eigen::ArrayXf& v_kernel,
+                                          PointCloud<PointOut>& output)
 {
   try
   {
@@ -146,7 +153,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve (const Eigen::ArrayXf& h_
 }
 
 template <typename PointIn, typename PointOut> inline void
-pcl::filters::Convolution<PointIn, PointOut>::convolve (PointCloud<PointOut>& output)
+Convolution<PointIn, PointOut>::convolve (PointCloud<PointOut>& output)
 {
   try
   {
@@ -163,7 +170,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve (PointCloud<PointOut>& ou
 }
 
 template <typename PointIn, typename PointOut> inline PointOut
-pcl::filters::Convolution<PointIn, PointOut>::convolveOneRowDense (int i, int j)
+Convolution<PointIn, PointOut>::convolveOneRowDense (int i, int j)
 {
   using namespace pcl::common;
   PointOut result;
@@ -173,7 +180,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolveOneRowDense (int i, int j)
 }
 
 template <typename PointIn, typename PointOut> inline PointOut
-pcl::filters::Convolution<PointIn, PointOut>::convolveOneColDense (int i, int j)
+Convolution<PointIn, PointOut>::convolveOneColDense (int i, int j)
 {
   using namespace pcl::common;
   PointOut result;
@@ -183,7 +190,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolveOneColDense (int i, int j)
 }
 
 template <typename PointIn, typename PointOut> inline PointOut
-pcl::filters::Convolution<PointIn, PointOut>::convolveOneRowNonDense (int i, int j)
+Convolution<PointIn, PointOut>::convolveOneRowNonDense (int i, int j)
 {
   using namespace pcl::common;
   PointOut result;
@@ -209,7 +216,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolveOneRowNonDense (int i, int
 }
 
 template <typename PointIn, typename PointOut> inline PointOut
-pcl::filters::Convolution<PointIn, PointOut>::convolveOneColNonDense (int i, int j)
+Convolution<PointIn, PointOut>::convolveOneColNonDense (int i, int j)
 {
   using namespace pcl::common;
   PointOut result;
@@ -234,174 +241,44 @@ pcl::filters::Convolution<PointIn, PointOut>::convolveOneColNonDense (int i, int
   return (result);
 }
 
-namespace pcl
+template<> pcl::PointXYZRGB
+Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowDense (int i, int j);
+
+template<> pcl::PointXYZRGB
+Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColDense (int i, int j);
+
+template<> pcl::PointXYZRGB
+Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowNonDense (int i, int j);
+
+template<> pcl::PointXYZRGB
+Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColNonDense (int i, int j);
+
+template<> pcl::RGB
+Convolution<pcl::RGB, pcl::RGB>::convolveOneRowDense (int i, int j);
+
+template<> pcl::RGB
+Convolution<pcl::RGB, pcl::RGB>::convolveOneColDense (int i, int j);
+
+template<> inline pcl::RGB
+Convolution<pcl::RGB, pcl::RGB>::convolveOneRowNonDense (int i, int j)
 {
-  namespace filters
-  {
-    template<> pcl::PointXYZRGB
-    Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowDense (int i, int j)
-    {
-      pcl::PointXYZRGB result;
-      float r = 0, g = 0, b = 0;
-      for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
-      {
-        result.x += (*input_) (l,j).x * kernel_[k];
-        result.y += (*input_) (l,j).y * kernel_[k];
-        result.z += (*input_) (l,j).z * kernel_[k];
-        r += kernel_[k] * static_cast<float> ((*input_) (l,j).r);
-        g += kernel_[k] * static_cast<float> ((*input_) (l,j).g);
-        b += kernel_[k] * static_cast<float> ((*input_) (l,j).b);
-      }
-      result.r = static_cast<std::uint8_t> (r);
-      result.g = static_cast<std::uint8_t> (g);
-      result.b = static_cast<std::uint8_t> (b);
-      return (result);
-    }
+  return (convolveOneRowDense (i,j));
+}
 
-    template<> pcl::PointXYZRGB
-    Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColDense (int i, int j)
-    {
-      pcl::PointXYZRGB result;
-      float r = 0, g = 0, b = 0;
-      for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
-      {
-        result.x += (*input_) (i,l).x * kernel_[k];
-        result.y += (*input_) (i,l).y * kernel_[k];
-        result.z += (*input_) (i,l).z * kernel_[k];
-        r += kernel_[k] * static_cast<float> ((*input_) (i,l).r);
-        g += kernel_[k] * static_cast<float> ((*input_) (i,l).g);
-        b += kernel_[k] * static_cast<float> ((*input_) (i,l).b);
-      }
-      result.r = static_cast<std::uint8_t> (r);
-      result.g = static_cast<std::uint8_t> (g);
-      result.b = static_cast<std::uint8_t> (b);
-      return (result);
-    }
+template<> inline pcl::RGB
+Convolution<pcl::RGB, pcl::RGB>::convolveOneColNonDense (int i, int j)
+{
+  return (convolveOneColDense (i,j));
+}
 
-    template<> pcl::PointXYZRGB
-    Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowNonDense (int i, int j)
-    {
-      pcl::PointXYZRGB result;
-      float weight = 0;
-      float r = 0, g = 0, b = 0;
-      for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
-      {
-        if (!isFinite ((*input_) (l,j)))
-          continue;
-        if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (l,j)) < distance_threshold_)
-        {
-          result.x += (*input_) (l,j).x * kernel_[k]; result.y += (*input_) (l,j).y * kernel_[k]; result.z += (*input_) (l,j).z * kernel_[k];
-          r+= kernel_[k] * static_cast<float> ((*input_) (l,j).r);
-          g+= kernel_[k] * static_cast<float> ((*input_) (l,j).g);
-          b+= kernel_[k] * static_cast<float> ((*input_) (l,j).b);
-          weight += kernel_[k];
-        }
-      }
-
-      if (weight == 0)
-        result.x = result.y = result.z = std::numeric_limits<float>::quiet_NaN ();
-      else
-      {
-        weight = 1.f/weight;
-        r*= weight; g*= weight; b*= weight;
-        result.x*= weight; result.y*= weight; result.z*= weight;
-        result.r = static_cast<std::uint8_t> (r);
-        result.g = static_cast<std::uint8_t> (g);
-        result.b = static_cast<std::uint8_t> (b);
-      }
-      return (result);
-    }
-
-    template<> pcl::PointXYZRGB
-    Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColNonDense (int i, int j)
-    {
-      pcl::PointXYZRGB result;
-      float weight = 0;
-      float r = 0, g = 0, b = 0;
-      for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
-      {
-        if (!isFinite ((*input_) (i,l)))
-          continue;
-        if (pcl::squaredEuclideanDistance ((*input_) (i,j), (*input_) (i,l)) < distance_threshold_)
-        {
-          result.x += (*input_) (i,l).x * kernel_[k]; result.y += (*input_) (i,l).y * kernel_[k]; result.z += (*input_) (i,l).z * kernel_[k];
-          r+= kernel_[k] * static_cast<float> ((*input_) (i,l).r);
-          g+= kernel_[k] * static_cast<float> ((*input_) (i,l).g);
-          b+= kernel_[k] * static_cast<float> ((*input_) (i,l).b);
-          weight+= kernel_[k];
-        }
-      }
-      if (weight == 0)
-        result.x = result.y = result.z = std::numeric_limits<float>::quiet_NaN ();
-      else
-      {
-        weight = 1.f/weight;
-        r*= weight; g*= weight; b*= weight;
-        result.x*= weight; result.y*= weight; result.z*= weight;
-        result.r = static_cast<std::uint8_t> (r);
-        result.g = static_cast<std::uint8_t> (g);
-        result.b = static_cast<std::uint8_t> (b);
-      }
-      return (result);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-    template<> pcl::RGB
-    Convolution<pcl::RGB, pcl::RGB>::convolveOneRowDense (int i, int j)
-    {
-      pcl::RGB result;
-      float r = 0, g = 0, b = 0;
-      for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l)
-      {
-        r += kernel_[k] * static_cast<float> ((*input_) (l,j).r);
-        g += kernel_[k] * static_cast<float> ((*input_) (l,j).g);
-        b += kernel_[k] * static_cast<float> ((*input_) (l,j).b);
-      }
-      result.r = static_cast<std::uint8_t> (r);
-      result.g = static_cast<std::uint8_t> (g);
-      result.b = static_cast<std::uint8_t> (b);
-      return (result);
-    }
-
-    template<> pcl::RGB
-    Convolution<pcl::RGB, pcl::RGB>::convolveOneColDense (int i, int j)
-    {
-      pcl::RGB result;
-      float r = 0, g = 0, b = 0;
-      for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l)
-      {
-        r += kernel_[k] * static_cast<float> ((*input_) (i,l).r);
-        g += kernel_[k] * static_cast<float> ((*input_) (i,l).g);
-        b += kernel_[k] * static_cast<float> ((*input_) (i,l).b);
-      }
-      result.r = static_cast<std::uint8_t> (r);
-      result.g = static_cast<std::uint8_t> (g);
-      result.b = static_cast<std::uint8_t> (b);
-      return (result);
-    }
-
-    template<> pcl::RGB
-    Convolution<pcl::RGB, pcl::RGB>::convolveOneRowNonDense (int i, int j)
-    {
-      return (convolveOneRowDense (i,j));
-    }
-
-    template<> pcl::RGB
-    Convolution<pcl::RGB, pcl::RGB>::convolveOneColNonDense (int i, int j)
-    {
-      return (convolveOneColDense (i,j));
-    }
-
-    template<> void
-    Convolution<pcl::RGB, pcl::RGB>::makeInfinite (pcl::RGB& p)
-    {
-      p.r = 0; p.g = 0; p.b = 0;
-    }    
-  }
+template<> inline void
+Convolution<pcl::RGB, pcl::RGB>::makeInfinite (pcl::RGB& p)
+{
+  p.r = 0; p.g = 0; p.b = 0;
 }
 
 template <typename PointIn, typename PointOut> void
-pcl::filters::Convolution<PointIn, PointOut>::convolve_rows (PointCloudOut& output)
+Convolution<PointIn, PointOut>::convolve_rows (PointCloudOut& output)
 {
   using namespace pcl::common;
 
@@ -410,9 +287,10 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows (PointCloudOut& outp
   int last = input_->width - half_width_;
   if (input_->is_dense)
   {
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(height, last, output, width) \
+  num_threads(threads_)
     for(int j = 0; j < height; ++j)
     {
       for (int i = 0; i < half_width_; ++i)
@@ -427,9 +305,10 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows (PointCloudOut& outp
   }
   else
   {
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(height, last, output, width) \
+  num_threads(threads_)
     for(int j = 0; j < height; ++j)
     {
       for (int i = 0; i < half_width_; ++i)
@@ -445,7 +324,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows (PointCloudOut& outp
 }
 
 template <typename PointIn, typename PointOut> void
-pcl::filters::Convolution<PointIn, PointOut>::convolve_rows_duplicate (PointCloudOut& output)
+Convolution<PointIn, PointOut>::convolve_rows_duplicate (PointCloudOut& output)
 {
   using namespace pcl::common;
 
@@ -455,9 +334,10 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows_duplicate (PointClou
   int w = last - 1;
   if (input_->is_dense)
   {
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(height, last, output, w, width) \
+  num_threads(threads_)
     for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
@@ -472,9 +352,10 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows_duplicate (PointClou
   }
   else
   {
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(height, last, output, w, width) \
+  num_threads(threads_)
     for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
@@ -490,7 +371,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows_duplicate (PointClou
 }
 
 template <typename PointIn, typename PointOut> void
-pcl::filters::Convolution<PointIn, PointOut>::convolve_rows_mirror (PointCloudOut& output)
+Convolution<PointIn, PointOut>::convolve_rows_mirror (PointCloudOut& output)
 {
   using namespace pcl::common;
 
@@ -500,9 +381,10 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows_mirror (PointCloudOu
   int w = last - 1;
   if (input_->is_dense)
   {
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(height, last, output, w, width) \
+  num_threads(threads_)
     for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
@@ -517,9 +399,10 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows_mirror (PointCloudOu
   }
   else
   {
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(height, last, output, w, width) \
+  num_threads(threads_)
     for(int j = 0; j < height; ++j)
     {
       for (int i = half_width_; i < last; ++i)
@@ -535,7 +418,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_rows_mirror (PointCloudOu
 }
 
 template <typename PointIn, typename PointOut> void
-pcl::filters::Convolution<PointIn, PointOut>::convolve_cols (PointCloudOut& output)
+Convolution<PointIn, PointOut>::convolve_cols (PointCloudOut& output)
 {
   using namespace pcl::common;
 
@@ -544,9 +427,10 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols (PointCloudOut& outp
   int last = input_->height - half_width_;
   if (input_->is_dense)
   {
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(height, last, output, width) \
+  num_threads(threads_)
     for(int i = 0; i < width; ++i)
     {
       for (int j = 0; j < half_width_; ++j)
@@ -561,9 +445,10 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols (PointCloudOut& outp
   }
   else
   {
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(height, last, output, width) \
+  num_threads(threads_)
     for(int i = 0; i < width; ++i)
     {
       for (int j = 0; j < half_width_; ++j)
@@ -579,7 +464,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols (PointCloudOut& outp
 }
 
 template <typename PointIn, typename PointOut> void
-pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_duplicate (PointCloudOut& output)
+Convolution<PointIn, PointOut>::convolve_cols_duplicate (PointCloudOut& output)
 {
   using namespace pcl::common;
 
@@ -589,9 +474,10 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_duplicate (PointClou
   int h = last -1;
   if (input_->is_dense)
   {
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(h, height, last, output, width) \
+  num_threads(threads_)
     for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
@@ -606,9 +492,10 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_duplicate (PointClou
   }
   else
   {
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(h, height, last, output, width) \
+  num_threads(threads_)
     for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
@@ -624,7 +511,7 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_duplicate (PointClou
 }
 
 template <typename PointIn, typename PointOut> void
-pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOut& output)
+Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOut& output)
 {
   using namespace pcl::common;
 
@@ -634,9 +521,10 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOu
   int h = last -1;
   if (input_->is_dense)
   {
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(h, height, last, output, width) \
+  num_threads(threads_)
     for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
@@ -651,9 +539,10 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOu
   }
   else
   {
-#ifdef _OPENMP
-#pragma omp parallel for shared (output) num_threads (threads_)
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(h, height, last, output, width) \
+  num_threads(threads_)
     for(int i = 0; i < width; ++i)
     {
       for (int j = half_width_; j < last; ++j)
@@ -668,4 +557,6 @@ pcl::filters::Convolution<PointIn, PointOut>::convolve_cols_mirror (PointCloudOu
   }
 }
 
-#endif //PCL_FILTERS_CONVOLUTION_IMPL_HPP
+} // namespace filters
+} // namespace pcl
+

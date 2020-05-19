@@ -20,8 +20,8 @@ namespace pcl
     std::vector<float> values;
 
   public:
-    using Ptr = boost::shared_ptr< ::pcl::ModelCoefficients>;
-    using ConstPtr = boost::shared_ptr<const ::pcl::ModelCoefficients>;
+    using Ptr = shared_ptr< ::pcl::ModelCoefficients>;
+    using ConstPtr = shared_ptr<const ::pcl::ModelCoefficients>;
   }; // struct ModelCoefficients
 
   using ModelCoefficientsPtr = ModelCoefficients::Ptr;

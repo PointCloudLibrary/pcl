@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/cJSON.h>
@@ -84,8 +85,8 @@ namespace pcl
 
       public:
         //public typedefs
-        using Ptr = boost::shared_ptr<OutofcoreOctreeNodeMetadata>;
-        using ConstPtr = boost::shared_ptr<const OutofcoreOctreeNodeMetadata>;
+        using Ptr = shared_ptr<OutofcoreOctreeNodeMetadata>;
+        using ConstPtr = shared_ptr<const OutofcoreOctreeNodeMetadata>;
   
         /** \brief Empty constructor */
         OutofcoreOctreeNodeMetadata ();

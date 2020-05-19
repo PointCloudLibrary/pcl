@@ -1,11 +1,12 @@
-FROM ubuntu:19.04
+# Azure needs node shadow, sudo and the label
+FROM node:lts-alpine
 
-ENV DEBIAN_FRONTEND=noninteractive
-ARG CLANG_FORMAT_VERSION=8
+# clang-10 needed alpine edge as of 2020-Apr-28
+RUN apk add \
+        --no-cache \
+        --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main \
+        bash clang git shadow sudo
 
-RUN apt-get update \
- && apt-get install -y \
-      clang-format-${CLANG_FORMAT_VERSION} \
-      bash \
-      git \
- && rm -rf /var/lib/apt/lists/*
+LABEL "com.azure.dev.pipelines.agent.handler.node.path"="/usr/local/bin/node"
+
+CMD [ "bash" ]

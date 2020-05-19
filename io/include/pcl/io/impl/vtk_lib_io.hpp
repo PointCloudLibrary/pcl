@@ -37,14 +37,14 @@
  *
  */
 
-#ifndef PCL_IO_VTK_IO_IMPL_H_
-#define PCL_IO_VTK_IO_IMPL_H_
+#pragma once
 
 // PCL
 #include <pcl/common/io.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-#include <pcl/point_traits.h>
+#include <pcl/type_traits.h>
 
 // VTK
 // Ignore warnings in the above headers
@@ -511,6 +511,4 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
 #undef InsertNextTupleValue
 #undef GetTupleValue
 #endif
-
-#endif  //#ifndef PCL_IO_VTK_IO_H_
 

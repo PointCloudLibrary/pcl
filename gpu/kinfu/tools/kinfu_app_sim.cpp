@@ -84,7 +84,7 @@
 #include "evaluation.h"
 
 #include <pcl/common/angles.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 #include "tsdf_volume.h"
 #include "tsdf_volume.hpp"
@@ -101,7 +101,7 @@ using ScopeTimeT = pcl::ScopeTime;
 #include <Eigen/Dense>
 #include <cmath>
 #include <iostream>
-#include <boost/shared_ptr.hpp>
+#include <pcl/memory.h>
 #ifdef _WIN32
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
@@ -112,8 +112,6 @@ using ScopeTimeT = pcl::ScopeTime;
 #include "pcl/common/common.h"
 #include "pcl/common/transforms.h"
 #include <pcl/console/print.h>
-// define the following in order to eliminate the deprecated headers warning
-#define VTK_EXCLUDE_STRSTREAM_HEADERS
 #include <pcl/io/vtk_lib_io.h>
 //
 #include <pcl/simulation/camera.h>
@@ -574,8 +572,8 @@ pcl::PolygonMesh::Ptr convertToMesh(const DeviceArray<PointXYZ>& triangles)
 
 struct CurrentFrameCloudView
 {
-  using Ptr = boost::shared_ptr<CurrentFrameCloudView>;
-  using ConstPtr = boost::shared_ptr<const CurrentFrameCloudView>;
+  using Ptr = shared_ptr<CurrentFrameCloudView>;
+  using ConstPtr = shared_ptr<const CurrentFrameCloudView>;
 
   CurrentFrameCloudView() : cloud_device_ (480, 640), cloud_viewer_ ("Frame Cloud Viewer")
   {

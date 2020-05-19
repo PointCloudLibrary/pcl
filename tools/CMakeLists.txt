@@ -183,9 +183,6 @@ else()
   PCL_ADD_EXECUTABLE(pcl_pcd2png COMPONENT ${SUBSYS_NAME} SOURCES pcd2png.cpp)
   target_link_libraries(pcl_pcd2png pcl_common pcl_io)
 
-  PCL_ADD_EXECUTABLE(pcl_organized_pcd_to_png COMPONENT ${SUBSYS_NAME} SOURCES organized_pcd_to_png.cpp)
-  target_link_libraries (pcl_organized_pcd_to_png pcl_common pcl_io)
-
   PCL_ADD_EXECUTABLE(pcl_tiff2pcd COMPONENT ${SUBSYS_NAME} SOURCES tiff2pcd.cpp)
   target_link_libraries(pcl_tiff2pcd pcl_common pcl_io)
 

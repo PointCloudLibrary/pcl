@@ -36,14 +36,21 @@
  *
  *
  */
+
 #ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_DQ_HPP_
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_DQ_HPP_
 
 #include <pcl/common/eigen.h>
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
+namespace registration
+{
+
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
-pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
+TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     Matrix4 &transformation_matrix) const
@@ -60,9 +67,9 @@ pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarg
   estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
+TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const std::vector<int> &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
@@ -79,9 +86,9 @@ pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarg
   estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
-pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
+TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const std::vector<int> &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
@@ -99,9 +106,9 @@ pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarg
   estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
+TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     const pcl::Correspondences &correspondences,
@@ -112,9 +119,9 @@ pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarg
   estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
-pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
+TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
     ConstCloudIterator<PointSource>& source_it,
     ConstCloudIterator<PointTarget>& target_it,
     Matrix4 &transformation_matrix) const
@@ -204,4 +211,8 @@ pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarg
   transformation_matrix (2, 3) = - t.z ();
 }
 
+} // namespace registration
+} // namespace pcl
+
 #endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_DQ_HPP_ */
+

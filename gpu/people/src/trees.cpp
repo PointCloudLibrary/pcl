@@ -65,7 +65,7 @@ namespace pcl
         {
 	  	  Tex2Dfetcher( const std::uint16_t* dmap, int W, int H ) : m_dmap(dmap), m_W(W), m_H(H) {}
 
-          inline std::uint16_t operator () ( float uf, float vf ) 
+          inline std::uint16_t operator () ( float uf, float vf ) const 
           {
             int u = static_cast<int>(uf);
             int v = static_cast<int>(vf);

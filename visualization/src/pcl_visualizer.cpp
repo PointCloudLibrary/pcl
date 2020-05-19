@@ -106,6 +106,7 @@
 #include <boost/uuid/sha1.hpp>
 #endif
 #include <boost/filesystem.hpp>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/console/parse.h>
 
 // Support for VTK 7.1 upwards
@@ -1107,7 +1108,7 @@ getDefaultScalarInterpolationForDataSet (vtkDataSet* data)
 void
 pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
                                                               vtkSmartPointer<vtkLODActor> &actor,
-                                                              bool use_scalars)
+                                                              bool use_scalars) const
 {
   // If actor is not initialized, initialize it here
   if (!actor)
@@ -1185,7 +1186,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
 void
 pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPointer<vtkDataSet> &data,
                                                               vtkSmartPointer<vtkActor> &actor,
-                                                              bool use_scalars)
+                                                              bool use_scalars) const
 {
   // If actor is not initialized, initialize it here
   if (!actor)
@@ -1926,10 +1927,10 @@ pcl::visualization::PCLVisualizer::getCameraFile () const
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+PCL_DEPRECATED(1, 12, "This method can safely not be called anymore as we're just re-rendering all scenes now.")
 void
 pcl::visualization::PCLVisualizer::updateCamera ()
 {
-  PCL_WARN ("[pcl::visualization::PCLVisualizer::updateCamera()] This method was deprecated, just re-rendering all scenes now.");
   rens_->InitTraversal ();
   // Update the camera parameters
   win_->Render ();
@@ -4382,6 +4383,7 @@ pcl::visualization::PCLVisualizer::setUseVbos (bool use_vbos)
   style_->setUseVbos (use_vbos_);
 #else
   PCL_WARN ("[PCLVisualizer::setUseVbos] Has no effect when OpenGL version is ≥ 2\n");
+  pcl::utils::ignore(use_vbos);
 #endif
 }
 

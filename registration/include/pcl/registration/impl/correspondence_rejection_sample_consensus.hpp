@@ -37,15 +37,22 @@
  * $Id$
  *
  */
+
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
 
 #include <unordered_map>
 
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void 
-pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences (
-    const pcl::Correspondences& original_correspondences, 
+
+namespace pcl
+{
+
+namespace registration
+{
+
+template <typename PointT> void
+CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences (
+    const pcl::Correspondences& original_correspondences,
     pcl::Correspondences& remaining_correspondences)
 {
   if (!input_)
@@ -74,9 +81,6 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
     target_indices[i] = original_correspondences[i].index_match;
   }
 
-   // from pcl/registration/icp.hpp:
-   std::vector<int> source_indices_good;
-   std::vector<int> target_indices_good;
    {
      // From the set of correspondences found, attempt to remove outliers
      // Create the registration model
@@ -136,4 +140,8 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
    }
 }
 
+} // namespace registration
+} // namespace pcl
+
 #endif    // PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
+

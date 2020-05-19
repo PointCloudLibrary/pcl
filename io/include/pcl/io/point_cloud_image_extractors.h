@@ -80,8 +80,8 @@ namespace pcl
       public:
         using PointCloud = pcl::PointCloud<PointT>;
 
-        using Ptr = boost::shared_ptr<PointCloudImageExtractor<PointT> >;
-        using ConstPtr = boost::shared_ptr<const PointCloudImageExtractor<PointT> >;
+        using Ptr = shared_ptr<PointCloudImageExtractor<PointT> >;
+        using ConstPtr = shared_ptr<const PointCloudImageExtractor<PointT> >;
 
         /** \brief Constructor. */
         PointCloudImageExtractor ()
@@ -133,8 +133,8 @@ namespace pcl
       using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
 
       public:
-        using Ptr = boost::shared_ptr<PointCloudImageExtractorWithScaling<PointT> >;
-        using ConstPtr = boost::shared_ptr<const PointCloudImageExtractorWithScaling<PointT> >;
+        using Ptr = shared_ptr<PointCloudImageExtractorWithScaling<PointT> >;
+        using ConstPtr = shared_ptr<const PointCloudImageExtractorWithScaling<PointT> >;
 
         /** \brief Different scaling methods.
           * <ul>
@@ -205,8 +205,8 @@ namespace pcl
       using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
 
       public:
-        using Ptr = boost::shared_ptr<PointCloudImageExtractorFromNormalField<PointT> >;
-        using ConstPtr = boost::shared_ptr<const PointCloudImageExtractorFromNormalField<PointT> >;
+        using Ptr = shared_ptr<PointCloudImageExtractorFromNormalField<PointT> >;
+        using ConstPtr = shared_ptr<const PointCloudImageExtractorFromNormalField<PointT> >;
 
         /** \brief Constructor. */
         PointCloudImageExtractorFromNormalField () {}
@@ -232,8 +232,8 @@ namespace pcl
       using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
 
       public:
-        using Ptr = boost::shared_ptr<PointCloudImageExtractorFromRGBField<PointT> >;
-        using ConstPtr = boost::shared_ptr<const PointCloudImageExtractorFromRGBField<PointT> >;
+        using Ptr = shared_ptr<PointCloudImageExtractorFromRGBField<PointT> >;
+        using ConstPtr = shared_ptr<const PointCloudImageExtractorFromRGBField<PointT> >;
 
         /** \brief Constructor. */
         PointCloudImageExtractorFromRGBField () {}
@@ -261,8 +261,8 @@ namespace pcl
       using PointCloud = typename PointCloudImageExtractor<PointT>::PointCloud;
 
       public:
-        using Ptr = boost::shared_ptr<PointCloudImageExtractorFromLabelField<PointT> >;
-        using ConstPtr = boost::shared_ptr<const PointCloudImageExtractorFromLabelField<PointT> >;
+        using Ptr = shared_ptr<PointCloudImageExtractorFromLabelField<PointT> >;
+        using ConstPtr = shared_ptr<const PointCloudImageExtractorFromLabelField<PointT> >;
 
         /** \brief Different modes for color mapping. */
         enum ColorMode
@@ -319,8 +319,8 @@ namespace pcl
       using ScalingMethod = typename PointCloudImageExtractorWithScaling<PointT>::ScalingMethod;
 
       public:
-        using Ptr = boost::shared_ptr<PointCloudImageExtractorFromZField<PointT> >;
-        using ConstPtr = boost::shared_ptr<const PointCloudImageExtractorFromZField<PointT> >;
+        using Ptr = shared_ptr<PointCloudImageExtractorFromZField<PointT> >;
+        using ConstPtr = shared_ptr<const PointCloudImageExtractorFromZField<PointT> >;
 
         /** \brief Constructor.
           * \param[in] scaling_factor a scaling factor to apply to each depth value (default 10000)
@@ -361,8 +361,8 @@ namespace pcl
       using ScalingMethod = typename PointCloudImageExtractorWithScaling<PointT>::ScalingMethod;
 
       public:
-        using Ptr = boost::shared_ptr<PointCloudImageExtractorFromCurvatureField<PointT> >;
-        using ConstPtr = boost::shared_ptr<const PointCloudImageExtractorFromCurvatureField<PointT> >;
+        using Ptr = shared_ptr<PointCloudImageExtractorFromCurvatureField<PointT> >;
+        using ConstPtr = shared_ptr<const PointCloudImageExtractorFromCurvatureField<PointT> >;
 
         /** \brief Constructor.
           * \param[in] scaling_method a scaling method to use (default SCALING_FULL_RANGE)
@@ -403,8 +403,8 @@ namespace pcl
       using ScalingMethod = typename PointCloudImageExtractorWithScaling<PointT>::ScalingMethod;
 
       public:
-        using Ptr = boost::shared_ptr<PointCloudImageExtractorFromIntensityField<PointT> >;
-        using ConstPtr = boost::shared_ptr<const PointCloudImageExtractorFromIntensityField<PointT> >;
+        using Ptr = shared_ptr<PointCloudImageExtractorFromIntensityField<PointT> >;
+        using ConstPtr = shared_ptr<const PointCloudImageExtractorFromIntensityField<PointT> >;
 
         /** \brief Constructor.
           * \param[in] scaling_method a scaling method to use (default SCALING_NO)

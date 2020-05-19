@@ -66,8 +66,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        using Ptr = boost::shared_ptr<CorrespondenceRejectorFeatures>;
-        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorFeatures>;
+        using Ptr = shared_ptr<CorrespondenceRejectorFeatures>;
+        using ConstPtr = shared_ptr<const CorrespondenceRejectorFeatures>;
 
         /** \brief Empty constructor. */
         CorrespondenceRejectorFeatures () : max_distance_ (std::numeric_limits<float>::max ())
@@ -162,7 +162,7 @@ namespace pcl
             virtual double getCorrespondenceScore (int index) = 0;
             virtual bool isCorrespondenceValid (int index) = 0;
 
-            using Ptr = boost::shared_ptr<FeatureContainerInterface>;
+            using Ptr = shared_ptr<FeatureContainerInterface>;
         };
 
         using FeaturesMap = std::unordered_map<std::string, FeatureContainerInterface::Ptr>;

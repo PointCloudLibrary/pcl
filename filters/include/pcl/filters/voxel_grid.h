@@ -188,8 +188,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr<VoxelGrid<PointT> >;
-      using ConstPtr = boost::shared_ptr<const VoxelGrid<PointT> >;
+      using Ptr = shared_ptr<VoxelGrid<PointT> >;
+      using ConstPtr = shared_ptr<const VoxelGrid<PointT> >;
 
       /** \brief Empty constructor. */
       VoxelGrid () :

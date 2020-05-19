@@ -251,7 +251,6 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   std::vector<int> qhid_to_pcidx (max_vertex_id);
 
   int num_facets = qh num_facets;
-  int dd = 0;
 
   if (dim_ == 3)
   {
@@ -268,7 +267,6 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
         vertexT *anyVertex = static_cast<vertexT*> (facet->vertices->e[0].p);
         double *center = facet->center;
         double r = qh_pointdist (anyVertex->point,center,dim_);
-        facetT *neighb;
 
         if (voronoi_centers_)
         {
@@ -288,7 +286,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
           ridgeT *ridge, **ridgep;
           FOREACHridge_ (facet->ridges)
           {
-            neighb = otherfacet_ (ridge, facet);
+            facetT *neighb = otherfacet_ (ridge, facet);
             if ((neighb->visitid != qh visit_id))
               qh_setappend (&triangles_set, ridge);
           }
@@ -386,6 +384,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     if (voronoi_centers_)
       voronoi_centers_->points.resize (num_facets);
 
+    int dd = 0;
     FORALLfacets
     {
       // Facets are the delaunay triangles (2d)
@@ -469,7 +468,6 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 
     alpha_shape.points.resize (vertices);
 
-    std::vector<std::vector<int> > connected;
     PointCloud alpha_shape_sorted;
     alpha_shape_sorted.points.resize (vertices);
 

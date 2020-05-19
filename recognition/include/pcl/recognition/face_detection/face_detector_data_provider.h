@@ -7,17 +7,18 @@
 
 #pragma once
 
+#include <pcl/memory.h>
+#include <pcl/common/common.h>
+#include <pcl/ml/dt/decision_tree_data_provider.h>
+#include <pcl/recognition/face_detection/face_common.h>
+
+#include <boost/algorithm/string.hpp>
+#include <boost/filesystem/operations.hpp>
+
 #include <iostream>
 #include <fstream>
 #include <string>
 
-#include <boost/filesystem/operations.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/algorithm/string.hpp>
-
-#include <pcl/common/common.h>
-#include <pcl/recognition/face_detection/face_common.h>
-#include <pcl/ml/dt/decision_tree_data_provider.h>
 
 namespace bf = boost::filesystem;
 
@@ -111,8 +112,8 @@ namespace pcl
 
       public:
 
-        using Ptr = boost::shared_ptr<FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>>;
-        using ConstPtr = boost::shared_ptr<const FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>>;
+        using Ptr = shared_ptr<FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>>;
+        using ConstPtr = shared_ptr<const FaceDetectorDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>>;
 
         FaceDetectorDataProvider()
         {

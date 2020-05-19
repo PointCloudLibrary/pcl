@@ -38,12 +38,13 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/geometry/triangle_mesh.h>
 #include <pcl/geometry/quad_mesh.h>
 #include <pcl/geometry/polygon_mesh.h>
 #include <pcl/geometry/mesh_conversion.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -152,7 +153,7 @@ using NonManifoldMeshTraits = MeshTraits<false>;
 
 using MeshTraitsTypes = testing::Types <ManifoldMeshTraits, NonManifoldMeshTraits>;
 
-TYPED_TEST_CASE (TestMeshConversion, MeshTraitsTypes);
+TYPED_TEST_SUITE (TestMeshConversion, MeshTraitsTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 

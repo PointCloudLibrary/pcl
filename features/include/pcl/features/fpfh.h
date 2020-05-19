@@ -79,8 +79,8 @@ namespace pcl
   class FPFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<FPFHEstimation<PointInT, PointNT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const FPFHEstimation<PointInT, PointNT, PointOutT> >;
+      using Ptr = shared_ptr<FPFHEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = shared_ptr<const FPFHEstimation<PointInT, PointNT, PointOutT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;

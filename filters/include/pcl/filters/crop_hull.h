@@ -61,8 +61,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr<CropHull<PointT> >;
-      using ConstPtr = boost::shared_ptr<const CropHull<PointT> >;
+      using Ptr = shared_ptr<CropHull<PointT> >;
+      using ConstPtr = shared_ptr<const CropHull<PointT> >;
 
       /** \brief Empty Constructor. */
       CropHull () :

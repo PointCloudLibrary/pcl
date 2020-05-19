@@ -121,7 +121,7 @@ pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& dep
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::OpenNIGrabber::~OpenNIGrabber () throw ()
+pcl::OpenNIGrabber::~OpenNIGrabber () noexcept
 {
   try
   {

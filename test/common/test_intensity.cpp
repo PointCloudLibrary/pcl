@@ -37,10 +37,9 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/pcl_tests.h>
 #include <pcl/point_types.h>
-#include <pcl/common/point_operators.h>
 #include <pcl/common/intensity.h>
 
 using namespace pcl;

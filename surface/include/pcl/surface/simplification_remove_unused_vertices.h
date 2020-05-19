@@ -39,6 +39,7 @@
 
 #include <pcl/surface/boost.h>
 #include <pcl/PolygonMesh.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl
@@ -48,8 +49,8 @@ namespace pcl
     class PCL_EXPORTS SimplificationRemoveUnusedVertices
     {
       public:
-        using Ptr = boost::shared_ptr<SimplificationRemoveUnusedVertices>;
-        using ConstPtr = boost::shared_ptr<const SimplificationRemoveUnusedVertices>;
+        using Ptr = shared_ptr<SimplificationRemoveUnusedVertices>;
+        using ConstPtr = shared_ptr<const SimplificationRemoveUnusedVertices>;
 
         /** \brief Constructor. */
         SimplificationRemoveUnusedVertices () {};

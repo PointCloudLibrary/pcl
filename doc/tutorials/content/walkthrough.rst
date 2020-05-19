@@ -112,13 +112,7 @@ Features
 	
 	.. image:: images/features_normal.jpg
 
-	An example of two of the most widely used geometric point features are the underlying surface's estimated curvature and normal at a query point ``p``. Both of them are considered local features, as they characterize a point using the information provided by its ``k`` closest point neighbors. For determining these neighbors efficiently, the input dataset is usually split into smaller chunks using spatial decomposition techniques such as octrees or kD-trees (see the figure below - left: kD-tree, right: octree), and then closest point searches are performed in that space. Depending on the application one can opt for either determining a fixed number of ``k`` points in the vicinity of ``p``, or all points which are found inside of a sphere of radius ``r`` centered at ``p``. Unarguably, one the easiest methods for estimating the surface normals and curvature changes at a point ``p`` is to perform an eigendecomposition (i.e., compute the eigenvectors and eigenvalues) of the k-neighborhood point surface patch. Thus, the eigenvector corresponding to the smallest eigenvalue will approximate the surface normal ``n`` at point ``p``, while the surface curvature change will be estimated from the eigenvalues as:
-
-	.. image:: images/form_0.png
-	
-	.. image:: images/form_1.png
-	
-	|
+	An example of two of the most widely used geometric point features are the underlying surface's estimated curvature and normal at a query point ``p``. Both of them are considered local features, as they characterize a point using the information provided by its ``k`` closest point neighbors. For determining these neighbors efficiently, the input dataset is usually split into smaller chunks using spatial decomposition techniques such as octrees or kD-trees, and then closest point searches are performed in that space. Depending on the application one can opt for either determining a fixed number of ``k`` points in the vicinity of ``p``, or all points which are found inside of a sphere of radius ``r`` centered at ``p``. Unarguably, one the easiest methods for estimating the surface normals and curvature changes at a point ``p`` is to perform an eigendecomposition (i.e., compute the eigenvectors and eigenvalues) of the k-neighborhood point surface patch. Thus, the eigenvector corresponding to the smallest eigenvalue will approximate the surface normal ``n`` at point ``p``, while the surface curvature change will be estimated from the eigenvalues as :math:`\frac{\lambda_0}{\lambda_0+\lambda_1+\lambda_2}` with :math:`\lambda_0<\lambda_1<\lambda_2`.
 
 	.. image:: images/features_bunny.jpg
 	
@@ -789,4 +783,3 @@ This section provides a quick reference for some of the common tools in PCL.
 		__ Octree_
 
 Top_
-

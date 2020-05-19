@@ -36,6 +36,7 @@
  *
  */
 #include <pcl/pcl_config.h>
+#include <pcl/memory.h>
 #ifdef HAVE_OPENNI
 
 #ifdef __GNUC__
@@ -91,7 +92,7 @@ openni_wrapper::DeviceKinect::DeviceKinect (xn::Context& context, const xn::Node
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::DeviceKinect::~DeviceKinect () throw ()
+openni_wrapper::DeviceKinect::~DeviceKinect () noexcept
 {
   depth_mutex_.lock ();
   depth_generator_.UnregisterFromNewDataAvailable (depth_callback_handle_);
@@ -111,7 +112,7 @@ openni_wrapper::DeviceKinect::isImageResizeSupported (unsigned input_width, unsi
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-openni_wrapper::DeviceKinect::enumAvailableModes () throw ()
+openni_wrapper::DeviceKinect::enumAvailableModes () noexcept
 {
   XnMapOutputMode output_mode;
   available_image_modes_.clear();
@@ -131,7 +132,7 @@ openni_wrapper::DeviceKinect::enumAvailableModes () throw ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::Image::Ptr 
-openni_wrapper::DeviceKinect::getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_data) const throw ()
+openni_wrapper::DeviceKinect::getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_data) const throw ()
 {
   return (Image::Ptr (new ImageBayerGRBG (image_data, debayering_method_)));
 }

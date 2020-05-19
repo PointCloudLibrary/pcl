@@ -35,26 +35,25 @@
  *
  */
 
-#include <pcl_cuda/time_cpu.h>
-#include <pcl_cuda/time_gpu.h>
-#include <pcl_cuda/io/cloud_to_pcl.h>
-#include <pcl_cuda/io/extract_indices.h>
-#include <pcl_cuda/io/disparity_to_cloud.h>
-#include <pcl_cuda/io/host_device.h>
-#include <pcl_cuda/sample_consensus/sac_model_1point_plane.h>
-#include <pcl_cuda/sample_consensus/ransac.h>
-
+#include <pcl/memory.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/cuda/time_cpu.h>
+#include <pcl/cuda/time_gpu.h>
+#include <pcl/cuda/io/cloud_to_pcl.h>
+#include <pcl/cuda/io/disparity_to_cloud.h>
+#include <pcl/cuda/io/extract_indices.h>
+#include <pcl/cuda/io/host_device.h>
+#include <pcl/cuda/sample_consensus/ransac.h>
+#include <pcl/cuda/sample_consensus/sac_model_1point_plane.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-
-#include <boost/shared_ptr.hpp>
 
 #include <functional>
 #include <iostream>
 #include <mutex>
+
 
 using namespace pcl_cuda;
 
@@ -98,8 +97,8 @@ class SimpleKinectTool
         }
         else
         {
-          typename SampleConsensusModel1PointPlane<Storage>::IndicesPtr inliers_stencil;
-          inliers_stencil = sac.getInliersStencil ();
+          //typename SampleConsensusModel1PointPlane<Storage>::IndicesPtr inliers_stencil;
+          //inliers_stencil = sac.getInliersStencil ();
 
       //    OpenNIRGB color;
       //    color.r = 253; color.g = 0; color.b = 0;
@@ -158,63 +157,60 @@ class SimpleKinectTool
     run (bool use_device)
     {
 #if 1
-      pcl::Grabber* filegrabber = 0;
 
       float frames_per_second = 1;
       bool repeat = false;
 
       std::string path = "./frame_0.pcd";
-      filegrabber = new pcl::PCDGrabber<pcl::PointXYZRGB > (path, frames_per_second, repeat);
+      pcl::PCDGrabber<pcl::PointXYZRGB > filegrabber (path, frames_per_second, repeat);
       
       if (use_device)
       {
         std::cerr << "[RANSAC] Using GPU..." << std::endl;
         std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = std::bind (&SimpleKinectTool::file_cloud_cb<pcl_cuda::Device>, this, _1);
-        filegrabber->registerCallback (f);
+        filegrabber.registerCallback (f);
       }
       else
       {
         std::cerr << "[RANSAC] Using CPU..." << std::endl;
         std::function<void (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr&)> f = std::bind (&SimpleKinectTool::file_cloud_cb<pcl_cuda::Host>, this, _1);
-        filegrabber->registerCallback (f);
+        filegrabber.registerCallback (f);
       }
 
-      filegrabber->start ();
+      filegrabber.start ();
       while (go_on)//!viewer.wasStopped () && go_on)
       {
         sleep (1);
       }
-      filegrabber->stop ();
+      filegrabber.stop ();
 
       
       //------- END --------- load pcl logo file
 #else
-
-      pcl::Grabber* interface = new pcl::OpenNIGrabber();
-
+      pcl::OpenNIGrabber interface {};
 
       boost::signals2::connection c;
       if (use_device)
       {
         std::cerr << "[RANSAC] Using GPU..." << std::endl;
         std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&SimpleKinectTool::cloud_cb<pcl_cuda::Device>, this, _1, _2, _3);
-        c = interface->registerCallback (f);
+        c = interface.registerCallback (f);
       }
       else
       {
         std::cerr << "[RANSAC] Using CPU..." << std::endl;
         std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&SimpleKinectTool::cloud_cb<pcl_cuda::Host>, this, _1, _2, _3);
-        c = interface->registerCallback (f);
+        c = interface.registerCallback (f);
       }
 
       //viewer.runOnVisualizationThread (fn, "viz_cb");
-      interface->start ();
+      interface.start ();
       while (!viewer.wasStopped ())
       {
         sleep (1);
       }
 
-      interface->stop ();
+      interface.stop ();
 #endif 
     }
 

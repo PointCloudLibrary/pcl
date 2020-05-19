@@ -39,6 +39,7 @@
 #pragma once
  
 #include <pcl/pcl_config.h>
+#include <pcl/memory.h>
 #ifdef HAVE_OPENNI
 
 #include "openni.h"
@@ -56,8 +57,8 @@ namespace openni_wrapper
   class PCL_EXPORTS DepthImage
   {
     public:
-      using Ptr = boost::shared_ptr<DepthImage>;
-      using ConstPtr = boost::shared_ptr<const DepthImage>;
+      using Ptr = pcl::shared_ptr<DepthImage>;
+      using ConstPtr = pcl::shared_ptr<const DepthImage>;
 
       /** \brief Constructor
         * \param[in] depth_meta_data the actual data from the OpenNI library
@@ -68,10 +69,10 @@ namespace openni_wrapper
         * \param[in] no_sample_value defines which values in the depth data are indicating that no depth (disparity) could be determined .
         * \attention The focal length may change, depending whether the depth stream is registered/mapped to the RGB stream or not.
         */
-      inline DepthImage (boost::shared_ptr<xn::DepthMetaData> depth_meta_data, float baseline, float focal_length, XnUInt64 shadow_value, XnUInt64 no_sample_value) throw ();
+      inline DepthImage (pcl::shared_ptr<xn::DepthMetaData> depth_meta_data, float baseline, float focal_length, XnUInt64 shadow_value, XnUInt64 no_sample_value) noexcept;
 
       /** \brief Destructor. Never throws an exception. */
-      inline virtual ~DepthImage () throw ();
+      inline virtual ~DepthImage () noexcept;
 
       /** \brief method to access the internal data structure from OpenNI. If the data is accessed just read-only, then this method is faster than a fillXXX method
         * \return the actual depth data of type xn::DepthMetaData.
@@ -155,21 +156,21 @@ namespace openni_wrapper
       getTimeStamp () const throw ();
 
     protected:
-      boost::shared_ptr<xn::DepthMetaData> depth_md_;
+      pcl::shared_ptr<xn::DepthMetaData> depth_md_;
       float baseline_;
       float focal_length_;
       XnUInt64 shadow_value_;
       XnUInt64 no_sample_value_;
   } ;
 
-  DepthImage::DepthImage (boost::shared_ptr<xn::DepthMetaData> depth_meta_data, float baseline, float focal_length, XnUInt64 shadow_value, XnUInt64 no_sample_value) throw ()
+  DepthImage::DepthImage (pcl::shared_ptr<xn::DepthMetaData> depth_meta_data, float baseline, float focal_length, XnUInt64 shadow_value, XnUInt64 no_sample_value) noexcept
   : depth_md_ (std::move(depth_meta_data))
   , baseline_ (baseline)
   , focal_length_ (focal_length)
   , shadow_value_ (shadow_value)
   , no_sample_value_ (no_sample_value) { }
 
-  DepthImage::~DepthImage () throw () { }
+  DepthImage::~DepthImage () noexcept { }
 
   const xn::DepthMetaData&
   DepthImage::getDepthMetaData () const throw ()

@@ -360,7 +360,10 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
 
   {
     pcl::ScopeTime tcues ("Computing clutter cues");
-#pragma omp parallel for schedule(dynamic, 4) num_threads(omp_get_num_procs())
+#pragma omp parallel for \
+  default(none) \
+  schedule(dynamic, 4) \
+  num_threads(omp_get_num_procs())
     for (int j = 0; j < static_cast<int> (recognition_models_.size ()); j++)
       computeClutterCue (recognition_models_[j]);
   }
@@ -564,7 +567,6 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
   std::vector<int> explained_indices;
   std::vector<float> outliers_weight;
   std::vector<float> explained_indices_distances;
-  std::vector<float> unexplained_indices_weights;
 
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;

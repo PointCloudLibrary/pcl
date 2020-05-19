@@ -68,8 +68,8 @@ namespace pcl
                              public FeatureWithLocalReferenceFrames<PointInT, PointRFT>
   {
     public:
-      using Ptr = boost::shared_ptr<SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT> >;
-      using ConstPtr = boost::shared_ptr<const SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT> >;
+      using Ptr = shared_ptr<SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT> >;
+      using ConstPtr = shared_ptr<const SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::input_;
@@ -219,8 +219,8 @@ namespace pcl
   class SHOTEstimation : public SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>
   {
     public:
-      using Ptr = boost::shared_ptr<SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> >;
-      using ConstPtr = boost::shared_ptr<const SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> >;
+      using Ptr = shared_ptr<SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> >;
+      using ConstPtr = shared_ptr<const SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT> >;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::feature_name_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::getClassName;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::indices_;
@@ -297,8 +297,8 @@ namespace pcl
   class SHOTColorEstimation : public SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>
   {
     public:
-      using Ptr = boost::shared_ptr<SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> >;
-      using ConstPtr = boost::shared_ptr<const SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> >;
+      using Ptr = shared_ptr<SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> >;
+      using ConstPtr = shared_ptr<const SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT> >;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::feature_name_;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::getClassName;
       using SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::indices_;

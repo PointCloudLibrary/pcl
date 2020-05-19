@@ -58,8 +58,8 @@ namespace pcl
     class CorrespondenceRejector
     {
       public:
-        using Ptr = boost::shared_ptr<CorrespondenceRejector>;
-        using ConstPtr = boost::shared_ptr<const CorrespondenceRejector>;
+        using Ptr = shared_ptr<CorrespondenceRejector>;
+        using ConstPtr = shared_ptr<const CorrespondenceRejector>;
 
         /** \brief Empty constructor. */
         CorrespondenceRejector () 
@@ -69,7 +69,7 @@ namespace pcl
         virtual ~CorrespondenceRejector () {}
 
         /** \brief Provide a pointer to the vector of the input correspondences.
-          * \param[in] correspondences the const boost shared pointer to a correspondence vector
+          * \param[in] correspondences the const shared pointer to a correspondence vector
           */
         virtual inline void 
         setInputCorrespondences (const CorrespondencesConstPtr &correspondences) 
@@ -78,7 +78,7 @@ namespace pcl
         };
 
         /** \brief Get a pointer to the vector of the input correspondences.
-          * \return correspondences the const boost shared pointer to a correspondence vector
+          * \return correspondences the const shared pointer to a correspondence vector
           */
         inline CorrespondencesConstPtr 
         getInputCorrespondences () { return input_correspondences_; };
@@ -199,8 +199,8 @@ namespace pcl
     class DataContainerInterface
     {
       public:
-        using Ptr = boost::shared_ptr<DataContainerInterface>;
-        using ConstPtr = boost::shared_ptr<const DataContainerInterface>;
+        using Ptr = shared_ptr<DataContainerInterface>;
+        using ConstPtr = shared_ptr<const DataContainerInterface>;
 
         virtual ~DataContainerInterface () = default;
         virtual double getCorrespondenceScore (int index) = 0;

@@ -39,6 +39,7 @@
 
 #include <pcl/2d/convolution.h>
 #include <pcl/2d/kernel.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 
@@ -88,8 +89,8 @@ private:
                     float tLow);
 
 public:
-  using Ptr = boost::shared_ptr<Edge<PointInT, PointOutT>>;
-  using ConstPtr = boost::shared_ptr<const Edge<PointInT, PointOutT>>;
+  using Ptr = shared_ptr<Edge<PointInT, PointOutT>>;
+  using ConstPtr = shared_ptr<const Edge<PointInT, PointOutT>>;
 
   enum OUTPUT_TYPE {
     OUTPUT_Y,

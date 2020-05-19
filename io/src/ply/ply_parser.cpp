@@ -47,10 +47,10 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   std::string line;
   line_number_ = 0;
 
-  std::size_t number_of_format_statements = 0; 
-  std::size_t number_of_element_statements = 0; 
-  std::size_t number_of_property_statements = 0; 
-  std::size_t number_of_obj_info_statements = 0; 
+  std::size_t number_of_format_statements = 0;
+  std::size_t number_of_element_statements = 0;
+  std::size_t number_of_property_statements = 0;
+  std::size_t number_of_obj_info_statements = 0;
   std::size_t number_of_comment_statements = 0;
 
   format_type format = pcl::io::ply::unknown;
@@ -74,21 +74,19 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   ++line_number_;
   if (!istream)
   {
-    if (error_callback_)
-      error_callback_ (line_number_, "parse error: couldn't read the magic string");
+    error_callback_ (line_number_, "parse error: couldn't read the magic string");
     return false;
   }
 
   if ((magic[0] != 'p') || (magic[1] != 'l') || (magic[2] != 'y'))
   {
-    if (error_callback_)
-      error_callback_ (line_number_, "parse error: wrong magic string");
+    error_callback_ (line_number_, "parse error: wrong magic string");
     return false;
   }
 
-  if (magic_callback_)
-    magic_callback_ ();
+  magic_callback_ ();
 
+  // parse header
   while (std::getline (istream, line, line_delim))
   {
     istream.ignore (char_ignore_count);
@@ -99,434 +97,362 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
     stringstream >> std::ws;
     if (stringstream.eof ())
     {
-      if (warning_callback_)
-        warning_callback_ (line_number_, "ignoring line '" + line + "'");
+      warning_callback_ (line_number_, "ignoring line '" + line + "'");
+      continue;
     }
-    else
+
+    std::string keyword;
+    stringstream >> keyword;
+
+    // format
+    if (keyword == "format")
     {
-      std::string keyword;
-      stringstream >> keyword;
-
-      // format
-      if (keyword == "format")
+      std::string format_string, version;
+      char space_format_format_string, space_format_string_version;
+      stringstream >> space_format_format_string >> std::ws >> format_string >> space_format_string_version >> std::ws >> version;
+      if (!stringstream ||
+          !stringstream.eof () ||
+          !isspace (space_format_format_string) ||
+          !isspace (space_format_string_version))
       {
-        std::string format_string, version;
-        char space_format_format_string, space_format_string_version;
-        stringstream >> space_format_format_string >> std::ws >> format_string >> space_format_string_version >> std::ws >> version;
-        if (!stringstream || 
-            !stringstream.eof () || 
-            !isspace (space_format_format_string) || 
-            !isspace (space_format_string_version))
-        {
-          if (error_callback_)
-            error_callback_ (line_number_, "parse error: failed to parse the format statement");
-          return false;
-        }
-        if (format_string == "ascii")
-        {
-          format = ascii_format;
-        }
-        else if (format_string == "binary_big_endian")
-        {
-          format = binary_big_endian_format;
-        }
-        else if (format_string == "binary_little_endian")
-        {
-          format = binary_little_endian_format;
-        }
-        else
-        {
-          if (error_callback_)
-          {
-            error_callback_ (line_number_, "parse error: unknown format");
-          }
-          return false;
-        }
-        if (version != "1.0")
-        {
-          if (error_callback_)
-          {
-            error_callback_ (line_number_, "version '" + version + "' is not supported");
-          }
-          return false;
-        }
-        if (number_of_format_statements > 0)
-        {
-          if (error_callback_)
-          {
-            error_callback_ (line_number_, "parse error: more than 1 format statement");
-          }
-          return false;
-        }
-        ++number_of_format_statements;
-        if (format_callback_)
-        {
-          format_callback_ (format, version);
-        }
+        error_callback_ (line_number_, "parse error: invalid format statement");
+        return false;
       }
-      // element
-      else if (keyword == "element")
+      if (format_string == "ascii")
       {
-        std::string name;
-        std::size_t count;
-        char space_element_name, space_name_count;
-        stringstream >> space_element_name >> std::ws >> name >> space_name_count >> std::ws >> count;
-        if (!stringstream || 
-            !stringstream.eof () || 
-            !isspace (space_element_name) || 
-            !isspace (space_name_count))
-        {
-          if (error_callback_)
-          {
-            error_callback_ (line_number_, "parse error: invalid element statement");
-          }
-          return false;
-        }
-        auto iterator = elements.cbegin ();
-        while (iterator != elements.cend ())
-        {
-          if ((*iterator)->name == name)
-            break;
-          ++iterator;
-        }
-        if (iterator != elements.end ())
-        {
-          if (error_callback_)
-          {
-            error_callback_ (line_number_, "parse error: invalid elements");
-          }
-          return false;
-        }
-        ++number_of_element_statements;
-        element_callbacks_type element_callbacks;
-        if (element_definition_callbacks_)
-        {
-          element_callbacks = element_definition_callbacks_ (name, count);
-        }
-        elements.emplace_back(new element (name, count, std::get<0>(element_callbacks), std::get<1>(element_callbacks)));
-        current_element_ = elements.back ().get ();
+        format = ascii_format;
       }
-
-      // property
-      else if (keyword == "property")
+      else if (format_string == "binary_big_endian")
       {
-        std::string type_or_list;
-        char space_property_type_or_list;
-        stringstream >> space_property_type_or_list >> std::ws >> type_or_list;
-        if (!stringstream || !isspace (space_property_type_or_list))
-        {
-          if (error_callback_)
-          {
-            error_callback_ (line_number_, "parse error: invalid property statement");
-          }
-          return false;
-        }
-        if (type_or_list != "list") {
-          std::string name;
-          std::string& type = type_or_list;
-          char space_type_name;
-          stringstream >> space_type_name >> std::ws >> name;
-          if (!stringstream || !isspace (space_type_name))
-          {
-            if (error_callback_)
-            {
-              error_callback_ (line_number_, "parse error");
-            }
-            return false;
-          }
-          if (number_of_element_statements == 0)
-          {
-            if (error_callback_)
-            {
-              error_callback_ (line_number_, "parse error");
-            }
-            return false;
-          }
-          auto iterator = current_element_->properties.cbegin ();
-          while (iterator != current_element_->properties.cend ())
-          {
-            if ((*iterator)->name == name)
-              break;
-            ++iterator;
-          }
-          if (iterator != current_element_->properties.end ())
-          {
-            if (error_callback_)
-              error_callback_ (line_number_, "parse error");
-            return false;
-          }
-          if ((type == type_traits<int8>::name ()) || (type == type_traits<int8>::old_name ()))
-          {
-            parse_scalar_property_definition<int8>(name);
-          }
-          else if ((type == type_traits<int16>::name ()) || (type == type_traits<int16>::old_name ()))
-          {
-            parse_scalar_property_definition<int16>(name);
-          }
-          else if ((type == type_traits<int32>::name ()) || (type == type_traits<int32>::old_name ()))
-          {
-            parse_scalar_property_definition<int32>(name);
-          }
-          else if ((type == type_traits<uint8>::name ()) || (type == type_traits<uint8>::old_name ()))
-          {
-            parse_scalar_property_definition<uint8>(name);
-          }
-          else if ((type == type_traits<uint16>::name ()) || (type == type_traits<uint16>::old_name ()))
-          {
-            parse_scalar_property_definition<uint16>(name);
-          }
-          else if ((type == type_traits<uint32>::name ()) || (type == type_traits<uint32>::old_name ()))
-          {
-            parse_scalar_property_definition<uint32>(name);
-          }
-          else if ((type == type_traits<float32>::name ()) || (type == type_traits<float32>::old_name ()))
-          {
-            parse_scalar_property_definition<float32>(name);
-          }
-          else if ((type == type_traits<float64>::name ()) || (type == type_traits<float64>::old_name ()))
-          {
-            parse_scalar_property_definition<float64>(name);
-          }
-          else
-          {
-            if (error_callback_)
-            {
-              error_callback_ (line_number_, "parse error: unknown type");
-            }
-            return false;
-          }
-          ++number_of_property_statements;
-        }
-        else
-        {
-          std::string name;
-          std::string size_type_string, scalar_type_string;
-          char space_list_size_type, space_size_type_scalar_type, space_scalar_type_name;
-          stringstream >> space_list_size_type >> std::ws >> size_type_string >> space_size_type_scalar_type >> std::ws >> scalar_type_string >> space_scalar_type_name >> std::ws >> name;
-          if (!stringstream || 
-              !isspace (space_list_size_type) || 
-              !isspace (space_size_type_scalar_type) || 
-              !isspace (space_scalar_type_name))
-          {
-            if (error_callback_)
-              error_callback_ (line_number_, "parse error: invalid list statement");
-            return false;
-          }
-          if (number_of_element_statements == 0)
-          {
-            if (error_callback_)
-              error_callback_ (line_number_, "parse error");
-            return false;
-          }
-          auto iterator = current_element_->properties.cbegin ();
-          while (iterator != current_element_->properties.cend ())
-          {
-            if ((*iterator)->name == name)
-              break;
-            ++iterator;
-          }
-          if (iterator != current_element_->properties.end ())
-          {
-            if (error_callback_)
-              error_callback_ (line_number_, "parse error");
-            return false;
-          }
-          if ((size_type_string == type_traits<uint8>::name ()) || (size_type_string == type_traits<uint8>::old_name ()))
-          {
-            using size_type = uint8;
-            if ((scalar_type_string == type_traits<int8>::name ()) || (scalar_type_string == type_traits<int8>::old_name ()))
-            {
-              parse_list_property_definition<size_type, int8>(name);
-            }
-            else if ((scalar_type_string == type_traits<int16>::name ()) || (scalar_type_string == type_traits<int16>::old_name ()))
-            {
-              parse_list_property_definition<size_type, int16>(name);
-            }
-            else if ((scalar_type_string == type_traits<int32>::name ()) || (scalar_type_string == type_traits<int32>::old_name ()))
-            {
-              parse_list_property_definition<size_type, int32>(name);
-            }
-            else if ((scalar_type_string == type_traits<uint8>::name ()) || (scalar_type_string == type_traits<uint8>::old_name ()))
-            {
-              parse_list_property_definition<size_type, uint8>(name);
-            }
-            else if ((scalar_type_string == type_traits<uint16>::name ()) || (scalar_type_string == type_traits<uint16>::old_name ()))
-            {
-              parse_list_property_definition<size_type, uint16>(name);
-            }
-            else if ((scalar_type_string == type_traits<uint32>::name ()) || (scalar_type_string == type_traits<uint32>::old_name ()))
-            {
-              parse_list_property_definition<size_type, uint32>(name);
-            }
-            else if ((scalar_type_string == type_traits<float32>::name ()) || (scalar_type_string == type_traits<float32>::old_name ()))
-            {
-              parse_list_property_definition<size_type, float32>(name);
-            }
-            else if ((scalar_type_string == type_traits<float64>::name ()) || (scalar_type_string == type_traits<float64>::old_name ()))
-            {
-              parse_list_property_definition<size_type, float64>(name);
-            }
-            else
-            {
-              if (error_callback_)
-              {
-                error_callback_ (line_number_, "parse error: unknown scalar type");
-              }
-              return false;
-            }
-          }
-          else if ((size_type_string == type_traits<uint16>::name ()) || (size_type_string == type_traits<uint16>::old_name ()))
-          {
-            using size_type = uint16;
-            if ((scalar_type_string == type_traits<int8>::name ()) || (scalar_type_string == type_traits<int8>::old_name ()))
-            {
-              parse_list_property_definition<size_type, int8>(name);
-            }
-            else if ((scalar_type_string == type_traits<int16>::name ()) || (scalar_type_string == type_traits<int16>::old_name ()))
-            {
-              parse_list_property_definition<size_type, int16>(name);
-            }
-            else if ((scalar_type_string == type_traits<int32>::name ()) || (scalar_type_string == type_traits<int32>::old_name ()))
-            {
-              parse_list_property_definition<size_type, int32>(name);
-            }
-            else if ((scalar_type_string == type_traits<uint8>::name ()) || (scalar_type_string == type_traits<uint8>::old_name ()))
-            {
-              parse_list_property_definition<size_type, uint8>(name);
-            }
-            else if ((scalar_type_string == type_traits<uint16>::name ()) || (scalar_type_string == type_traits<uint16>::old_name ()))
-            {
-              parse_list_property_definition<size_type, uint16>(name);
-            }
-            else if ((scalar_type_string == type_traits<uint32>::name ()) || (scalar_type_string == type_traits<uint32>::old_name ()))
-            {
-              parse_list_property_definition<size_type, uint32>(name);
-            }
-            else if ((scalar_type_string == type_traits<float32>::name ()) || (scalar_type_string == type_traits<float32>::old_name ()))
-            {
-              parse_list_property_definition<size_type, float32>(name);
-            }
-            else if ((scalar_type_string == type_traits<float64>::name ()) || (scalar_type_string == type_traits<float64>::old_name ()))
-            {
-              parse_list_property_definition<size_type, float64>(name);
-            }
-            else
-            {
-              if (error_callback_)
-                error_callback_ (line_number_, "parse error: unknown scalar type");
-              return false;
-            }
-          }
-          else if ((size_type_string == type_traits<uint32>::name ()) || (size_type_string == type_traits<uint32>::old_name ()))
-          {
-            using size_type = uint32;
-            if ((scalar_type_string == type_traits<int8>::name ()) || (scalar_type_string == type_traits<int8>::old_name ()))
-            {
-              parse_list_property_definition<size_type, int8>(name);
-            }
-            else if ((scalar_type_string == type_traits<int16>::name ()) || (scalar_type_string == type_traits<int16>::old_name ()))
-            {
-              parse_list_property_definition<size_type, int16>(name);
-            }
-            else if ((scalar_type_string == type_traits<int32>::name ()) || (scalar_type_string == type_traits<int32>::old_name ()))
-            {
-              parse_list_property_definition<size_type, int32>(name);
-            }
-            else if ((scalar_type_string == type_traits<uint8>::name ()) || (scalar_type_string == type_traits<uint8>::old_name ()))
-            {
-              parse_list_property_definition<size_type, uint8>(name);
-            }
-            else if ((scalar_type_string == type_traits<uint16>::name ()) || (scalar_type_string == type_traits<uint16>::old_name ()))
-            {
-              parse_list_property_definition<size_type, uint16>(name);
-            }
-            else if ((scalar_type_string == type_traits<uint32>::name ()) || (scalar_type_string == type_traits<uint32>::old_name ()))
-            {
-              parse_list_property_definition<size_type, uint32>(name);
-            }
-            else if ((scalar_type_string == type_traits<float32>::name ()) || (scalar_type_string == type_traits<float32>::old_name ()))
-            {
-              parse_list_property_definition<size_type, float32>(name);
-            }
-            else if ((scalar_type_string == type_traits<float64>::name ()) || (scalar_type_string == type_traits<float64>::old_name ()))
-            {
-              parse_list_property_definition<size_type, float64>(name);
-            }
-            else
-            {
-              if (error_callback_)
-                error_callback_ (line_number_, "parse error: unknown scalar type");
-              return false;
-            }
-          }
-          else
-          {
-            if (error_callback_)
-              error_callback_ (line_number_, "parse error");
-            return false;
-          }
-          ++number_of_property_statements;
-        }
+        format = binary_big_endian_format;
       }
-
-      // comment
-      else if (keyword == "comment")
+      else if (format_string == "binary_little_endian")
       {
-        if (comment_callback_)
-          comment_callback_ (line);
-        ++number_of_comment_statements;
+        format = binary_little_endian_format;
       }
-
-      // obj_info
-      else if (keyword == "obj_info")
-      {
-        if (obj_info_callback_)
-          obj_info_callback_ (line);
-        ++number_of_obj_info_statements;
-      }
-
-      // end_header
-      else if (keyword == "end_header")
-      {
-        if (end_header_callback_)
-        {
-          if (!end_header_callback_ ())
-            return true;
-        }
-        break;
-      }
-      // unknown keyword
       else
       {
-        if (warning_callback_)
-          warning_callback_ (line_number_, "ignoring line '" + line + "'");
+        error_callback_ (line_number_, "parse error: unknown format");
+        return false;
       }
+      if (version != "1.0")
+      {
+        error_callback_ (line_number_, "version '" + version + "' is not supported");
+        return false;
+      }
+      if (number_of_format_statements > 0)
+      {
+        error_callback_ (line_number_, "parse error: more than 1 format statement");
+        return false;
+      }
+      ++number_of_format_statements;
+      format_callback_ (format, version);
+    }
+    // element
+    else if (keyword == "element")
+    {
+      std::string name;
+      std::size_t count;
+      char space_element_name, space_name_count;
+      stringstream >> space_element_name >> std::ws >> name >> space_name_count >> std::ws >> count;
+      if (!stringstream ||
+          !stringstream.eof () ||
+          !isspace (space_element_name) ||
+          !isspace (space_name_count))
+      {
+        error_callback_ (line_number_, "parse error: invalid element statement");
+        return false;
+      }
+      const auto iterator = std::find_if (elements.cbegin (), elements.cend (),
+            [&name](const auto& ptr) { return ptr->name == name;});
+      if (iterator != elements.cend ())
+      {
+        error_callback_ (line_number_, "parse error: invalid elements");
+        return false;
+      }
+      ++number_of_element_statements;
+      const element_callbacks_type element_callbacks =
+          element_definition_callbacks_ (name, count);
+      elements.emplace_back(new element (name, count, std::get<0>(element_callbacks), std::get<1>(element_callbacks)));
+      current_element_ = elements.back ().get ();
+    }
+
+    // property
+    else if (keyword == "property")
+    {
+      if (number_of_element_statements == 0)
+      {
+        error_callback_ (line_number_, "parse error: property specified without any element declaration");
+        return false;
+      }
+      std::string type_or_list;
+      char space_property_type_or_list;
+      stringstream >> space_property_type_or_list >> std::ws >> type_or_list;
+      if (!stringstream || !isspace (space_property_type_or_list))
+      {
+        error_callback_ (line_number_, "parse error: invalid property statement");
+        return false;
+      }
+      if (type_or_list != "list") {
+        std::string name;
+        std::string& type = type_or_list;
+        char space_type_name;
+        stringstream >> space_type_name >> std::ws >> name;
+        if (!stringstream || !isspace (space_type_name))
+        {
+          error_callback_ (line_number_, "parse error: invalid variable property statement");
+          return false;
+        }
+        const auto iterator =
+            std::find_if (current_element_->properties.cbegin (),
+                          current_element_->properties.cend (),
+                          [&name](const auto& ptr) { return ptr->name == name;});
+        if (iterator != current_element_->properties.cend ())
+        {
+          error_callback_ (line_number_, "parse error: duplicate property found");
+          return false;
+        }
+        if ((type == type_traits<int8>::name ()) || (type == type_traits<int8>::old_name ()))
+        {
+          parse_scalar_property_definition<int8>(name);
+        }
+        else if ((type == type_traits<int16>::name ()) || (type == type_traits<int16>::old_name ()))
+        {
+          parse_scalar_property_definition<int16>(name);
+        }
+        else if ((type == type_traits<int32>::name ()) || (type == type_traits<int32>::old_name ()))
+        {
+          parse_scalar_property_definition<int32>(name);
+        }
+        else if ((type == type_traits<uint8>::name ()) || (type == type_traits<uint8>::old_name ()))
+        {
+          parse_scalar_property_definition<uint8>(name);
+        }
+        else if ((type == type_traits<uint16>::name ()) || (type == type_traits<uint16>::old_name ()))
+        {
+          parse_scalar_property_definition<uint16>(name);
+        }
+        else if ((type == type_traits<uint32>::name ()) || (type == type_traits<uint32>::old_name ()))
+        {
+          parse_scalar_property_definition<uint32>(name);
+        }
+        else if ((type == type_traits<float32>::name ()) || (type == type_traits<float32>::old_name ()))
+        {
+          parse_scalar_property_definition<float32>(name);
+        }
+        else if ((type == type_traits<float64>::name ()) || (type == type_traits<float64>::old_name ()))
+        {
+          parse_scalar_property_definition<float64>(name);
+        }
+        else
+        {
+          error_callback_ (line_number_, "parse error: unknown type");
+          return false;
+        }
+        ++number_of_property_statements;
+      }
+      else
+      {
+        std::string name;
+        std::string size_type_string, scalar_type_string;
+        char space_list_size_type, space_size_type_scalar_type, space_scalar_type_name;
+        stringstream >> space_list_size_type >> std::ws >> size_type_string >> space_size_type_scalar_type >> std::ws >> scalar_type_string >> space_scalar_type_name >> std::ws >> name;
+        if (!stringstream ||
+            !isspace (space_list_size_type) ||
+            !isspace (space_size_type_scalar_type) ||
+            !isspace (space_scalar_type_name))
+        {
+          error_callback_ (line_number_, "parse error: invalid list statement");
+          return false;
+        }
+        const auto iterator =
+            std::find_if (current_element_->properties.cbegin (),
+                          current_element_->properties.cend (),
+                          [&name](const auto& ptr) { return ptr->name == name;});
+        if (iterator != current_element_->properties.cend ())
+        {
+          error_callback_ (line_number_, "parse error: duplicate property found");
+          return false;
+        }
+        if ((size_type_string == type_traits<uint8>::name ()) || (size_type_string == type_traits<uint8>::old_name ()))
+        {
+          using size_type = uint8;
+          if ((scalar_type_string == type_traits<int8>::name ()) || (scalar_type_string == type_traits<int8>::old_name ()))
+          {
+            parse_list_property_definition<size_type, int8>(name);
+          }
+          else if ((scalar_type_string == type_traits<int16>::name ()) || (scalar_type_string == type_traits<int16>::old_name ()))
+          {
+            parse_list_property_definition<size_type, int16>(name);
+          }
+          else if ((scalar_type_string == type_traits<int32>::name ()) || (scalar_type_string == type_traits<int32>::old_name ()))
+          {
+            parse_list_property_definition<size_type, int32>(name);
+          }
+          else if ((scalar_type_string == type_traits<uint8>::name ()) || (scalar_type_string == type_traits<uint8>::old_name ()))
+          {
+            parse_list_property_definition<size_type, uint8>(name);
+          }
+          else if ((scalar_type_string == type_traits<uint16>::name ()) || (scalar_type_string == type_traits<uint16>::old_name ()))
+          {
+            parse_list_property_definition<size_type, uint16>(name);
+          }
+          else if ((scalar_type_string == type_traits<uint32>::name ()) || (scalar_type_string == type_traits<uint32>::old_name ()))
+          {
+            parse_list_property_definition<size_type, uint32>(name);
+          }
+          else if ((scalar_type_string == type_traits<float32>::name ()) || (scalar_type_string == type_traits<float32>::old_name ()))
+          {
+            parse_list_property_definition<size_type, float32>(name);
+          }
+          else if ((scalar_type_string == type_traits<float64>::name ()) || (scalar_type_string == type_traits<float64>::old_name ()))
+          {
+            parse_list_property_definition<size_type, float64>(name);
+          }
+          else
+          {
+            error_callback_ (line_number_, "parse error: unknown scalar type");
+            return false;
+          }
+        }
+        else if ((size_type_string == type_traits<uint16>::name ()) || (size_type_string == type_traits<uint16>::old_name ()))
+        {
+          using size_type = uint16;
+          if ((scalar_type_string == type_traits<int8>::name ()) || (scalar_type_string == type_traits<int8>::old_name ()))
+          {
+            parse_list_property_definition<size_type, int8>(name);
+          }
+          else if ((scalar_type_string == type_traits<int16>::name ()) || (scalar_type_string == type_traits<int16>::old_name ()))
+          {
+            parse_list_property_definition<size_type, int16>(name);
+          }
+          else if ((scalar_type_string == type_traits<int32>::name ()) || (scalar_type_string == type_traits<int32>::old_name ()))
+          {
+            parse_list_property_definition<size_type, int32>(name);
+          }
+          else if ((scalar_type_string == type_traits<uint8>::name ()) || (scalar_type_string == type_traits<uint8>::old_name ()))
+          {
+            parse_list_property_definition<size_type, uint8>(name);
+          }
+          else if ((scalar_type_string == type_traits<uint16>::name ()) || (scalar_type_string == type_traits<uint16>::old_name ()))
+          {
+            parse_list_property_definition<size_type, uint16>(name);
+          }
+          else if ((scalar_type_string == type_traits<uint32>::name ()) || (scalar_type_string == type_traits<uint32>::old_name ()))
+          {
+            parse_list_property_definition<size_type, uint32>(name);
+          }
+          else if ((scalar_type_string == type_traits<float32>::name ()) || (scalar_type_string == type_traits<float32>::old_name ()))
+          {
+            parse_list_property_definition<size_type, float32>(name);
+          }
+          else if ((scalar_type_string == type_traits<float64>::name ()) || (scalar_type_string == type_traits<float64>::old_name ()))
+          {
+            parse_list_property_definition<size_type, float64>(name);
+          }
+          else
+          {
+            error_callback_ (line_number_, "parse error: unknown scalar type");
+            return false;
+          }
+        }
+        else if ((size_type_string == type_traits<uint32>::name ()) || (size_type_string == type_traits<uint32>::old_name ()))
+        {
+          using size_type = uint32;
+          if ((scalar_type_string == type_traits<int8>::name ()) || (scalar_type_string == type_traits<int8>::old_name ()))
+          {
+            parse_list_property_definition<size_type, int8>(name);
+          }
+          else if ((scalar_type_string == type_traits<int16>::name ()) || (scalar_type_string == type_traits<int16>::old_name ()))
+          {
+            parse_list_property_definition<size_type, int16>(name);
+          }
+          else if ((scalar_type_string == type_traits<int32>::name ()) || (scalar_type_string == type_traits<int32>::old_name ()))
+          {
+            parse_list_property_definition<size_type, int32>(name);
+          }
+          else if ((scalar_type_string == type_traits<uint8>::name ()) || (scalar_type_string == type_traits<uint8>::old_name ()))
+          {
+            parse_list_property_definition<size_type, uint8>(name);
+          }
+          else if ((scalar_type_string == type_traits<uint16>::name ()) || (scalar_type_string == type_traits<uint16>::old_name ()))
+          {
+            parse_list_property_definition<size_type, uint16>(name);
+          }
+          else if ((scalar_type_string == type_traits<uint32>::name ()) || (scalar_type_string == type_traits<uint32>::old_name ()))
+          {
+            parse_list_property_definition<size_type, uint32>(name);
+          }
+          else if ((scalar_type_string == type_traits<float32>::name ()) || (scalar_type_string == type_traits<float32>::old_name ()))
+          {
+            parse_list_property_definition<size_type, float32>(name);
+          }
+          else if ((scalar_type_string == type_traits<float64>::name ()) || (scalar_type_string == type_traits<float64>::old_name ()))
+          {
+            parse_list_property_definition<size_type, float64>(name);
+          }
+          else
+          {
+            error_callback_ (line_number_, "parse error: unknown scalar type");
+            return false;
+          }
+        }
+        else
+        {
+          error_callback_ (line_number_, "parse error: unknown list size type");
+          return false;
+        }
+        ++number_of_property_statements;
+      }
+    }
+
+    // comment
+    else if (keyword == "comment")
+    {
+      comment_callback_ (line);
+      ++number_of_comment_statements;
+    }
+
+    // obj_info
+    else if (keyword == "obj_info")
+    {
+      obj_info_callback_ (line);
+      ++number_of_obj_info_statements;
+    }
+
+    // end_header
+    else if (keyword == "end_header")
+    {
+      if (!end_header_callback_ ())
+          return true;
+      break;
+    }
+    // unknown keyword
+    else
+    {
+      warning_callback_ (line_number_, "ignoring line '" + line + "'");
     }
   }
 
   if (number_of_format_statements == 0)
   {
-    if (error_callback_) 
-     error_callback_ (line_number_, "parse error: a format statement is required");
+    error_callback_ (line_number_, "parse error: a format statement is required");
     return false;
   }
 
   // ascii
   if (format == ascii_format)
   {
-    for (auto element_iterator = elements.cbegin ();
-         element_iterator != elements.cend ();
-         ++element_iterator)
+    for (const auto element_ptr: elements)
     {
-      struct element& element = *(element_iterator->get ());
+      auto& element = *(element_ptr.get ());
       for (std::size_t element_index = 0; element_index < element.count; ++element_index)
       {
-        if (element.begin_element_callback) 
+        if (element.begin_element_callback)
           element.begin_element_callback ();
         if (!std::getline (istream, line, line_delim))
         {
-          if (error_callback_)
-            error_callback_ (line_number_, "parse error");
+          error_callback_ (line_number_, "parse error: found less elements than declared in the header");
           return false;
         }
         istream.ignore (char_ignore_count);
@@ -534,18 +460,19 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         std::istringstream stringstream (line);
         stringstream.unsetf (std::ios_base::skipws);
         stringstream >> std::ws;
-        for (auto property_iterator = element.properties.cbegin ();
-             property_iterator != element.properties.cend ();
-             ++property_iterator)
+
+        for (const auto property_ptr: element.properties)
         {
-          struct property& property = *(property_iterator->get ());
+          auto& property = *(property_ptr.get ());
           if (!property.parse (*this, format, stringstream))
+          {
+            error_callback_ (line_number_, "parse error: element property count doesn't match the declaration in the header");
             return false;
+          }
         }
         if (!stringstream.eof ())
         {
-          if (error_callback_)
-            error_callback_ (line_number_, "parse error");
+          error_callback_ (line_number_, "parse error: element contains more properties than declared");
           return false;
         }
         if (element.end_element_callback)
@@ -553,11 +480,13 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
       }
     }
     istream >> std::ws;
-    if (istream.fail () || !istream.eof () || istream.bad ())
+    if (istream.fail ())
     {
-      if (error_callback_)
-        error_callback_ (line_number_, "parse error");
-      return false;
+      warning_callback_ (line_number_, "no newline at the end of file");
+    }
+    if (!istream.eof ())
+    {
+      warning_callback_ (line_number_, "ignoring extra data at the end of ascii stream");
     }
     return true;
   }
@@ -568,44 +497,33 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   istream.open (filename.c_str (), std::ios::in | std::ios::binary);
   istream.seekg (data_start);
 
-  for (auto element_iterator = elements.cbegin ();
-       element_iterator != elements.cend ();
-       ++element_iterator)
+  for (const auto element_ptr: elements)
   {
-    struct element& element = *(element_iterator->get ());
+    auto& element = *(element_ptr.get ());
     for (std::size_t element_index = 0; element_index < element.count; ++element_index)
     {
-      if (element.begin_element_callback) {
+      if (element.begin_element_callback)
         element.begin_element_callback ();
-      }
-      for (auto property_iterator = element.properties.cbegin ();
-           property_iterator != element.properties.cend ();
-           ++property_iterator)
+      for (const auto property_ptr: element.properties)
       {
-        struct property& property = *(property_iterator->get ());
+        auto& property = *(property_ptr.get ());
         if (!property.parse (*this, format, istream))
         {
           return false;
         }
       }
       if (element.end_element_callback)
-      {
         element.end_element_callback ();
-      }
     }
   }
   if (istream.fail () || istream.bad ())
   {
-    if (error_callback_)
-    {
-      error_callback_ (line_number_, "parse error: failed to read from the binary stream");
-    }
+    error_callback_ (line_number_, "parse error: failed to read from the binary stream");
     return false;
   }
   if (istream.rdbuf ()->sgetc () != std::char_traits<char>::eof ())
   {
-    if (warning_callback_)
-      warning_callback_ (line_number_, "ignoring extra data at the end of binary stream");
+    warning_callback_ (line_number_, "ignoring extra data at the end of binary stream");
   }
   return true;
 }

@@ -67,7 +67,7 @@ namespace pcl
           unsigned line_number,
           const std::string& message);
 
-        ~IOException () throw ();
+        ~IOException () noexcept;
 
         IOException&
         operator= (const IOException& exception);

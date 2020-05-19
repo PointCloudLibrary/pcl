@@ -39,9 +39,10 @@
 #ifndef PCL_SVM_WRAPPER_HPP_
 #define PCL_SVM_WRAPPER_HPP_
 
+#include <pcl/ml/svm_wrapper.h>
+
 #include <cassert>
 #include <fstream>
-#include <pcl/ml/svm_wrapper.h>
 
 char*
 pcl::SVM::readline(FILE* input)
@@ -145,7 +146,7 @@ pcl::SVMTrain::scaleFactors(std::vector<SVMData> training_set, svm_scaling& scal
 };
 
 void
-pcl::SVM::adaptLibSVMToInput(std::vector<SVMData>& training_set, svm_problem prob)
+pcl::SVM::adaptLibSVMToInput(std::vector<SVMData>& training_set, svm_problem prob) const
 {
   training_set.clear(); // Reset input
 

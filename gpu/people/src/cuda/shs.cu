@@ -178,7 +178,6 @@ void optimized_shs5(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
 
     //  omp_set_num_threads(1);
     // Process all points in the indices vector
-    //#pragma omp parallel for
     for (int k = 0; k < static_cast<int> (indices_in.indices.size ()); ++k)
     {
         int i = indices_in.indices[k];

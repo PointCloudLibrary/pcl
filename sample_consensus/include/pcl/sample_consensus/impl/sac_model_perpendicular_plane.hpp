@@ -46,7 +46,7 @@
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelPerpendicularPlane<PointT>::selectWithinDistance (
-      const Eigen::VectorXf &model_coefficients, const double threshold, std::vector<int> &inliers)
+      const Eigen::VectorXf &model_coefficients, const double threshold, Indices &inliers)
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
@@ -65,7 +65,9 @@ pcl::SampleConsensusModelPerpendicularPlane<PointT>::countWithinDistance (
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
+  {
     return (0);
+  }
 
   return (SampleConsensusModelPlane<PointT>::countWithinDistance (model_coefficients, threshold));
 }
@@ -90,21 +92,25 @@ template <typename PointT> bool
 pcl::SampleConsensusModelPerpendicularPlane<PointT>::isModelValid (const Eigen::VectorXf &model_coefficients) const
 {
   if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
+  {
     return (false);
+  }
 
   // Check against template, if given
   if (eps_angle_ > 0.0)
   {
     // Obtain the plane normal
     Eigen::Vector4f coeff = model_coefficients;
-    coeff[3] = 0;
+    coeff[3] = 0.0f;
 
-    Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0);
+    Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0.0f);
     double angle_diff = std::abs (getAngle3D (axis, coeff));
     angle_diff = (std::min) (angle_diff, M_PI - angle_diff);
     // Check whether the current plane model satisfies our angle threshold criterion with respect to the given axis
     if (angle_diff > eps_angle_)
+    {
       return (false);
+    }
   }
 
   return (true);

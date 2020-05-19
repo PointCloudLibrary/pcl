@@ -128,11 +128,11 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
         if (!found_invalid_neighbor)
         {
           // Every neighboring points are valid
-          std::vector<float>::iterator min_itr = std::min_element (nghr_dist.begin (), nghr_dist.end ());
-          std::vector<float>::iterator max_itr = std::max_element (nghr_dist.begin (), nghr_dist.end ());
+          std::vector<float>::const_iterator min_itr, max_itr;
+          std::tie (min_itr, max_itr) = std::minmax_element (nghr_dist.cbegin (), nghr_dist.cend ());
           float nghr_dist_min = *min_itr;
           float nghr_dist_max = *max_itr;
-          float dist_dominant = std::abs (nghr_dist_min) > std::abs (nghr_dist_max) ? nghr_dist_min : nghr_dist_max;
+          float dist_dominant = std::max(std::abs (nghr_dist_min),std::abs (nghr_dist_max));
           if (std::abs (dist_dominant) > th_depth_discon_*std::abs (curr_depth))
           {
             // Found a depth discontinuity

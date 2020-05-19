@@ -96,8 +96,8 @@ namespace pcl
     std::vector<pcl::TexMaterial>               tex_materials;    // define texture material
 
     public:
-      using Ptr = boost::shared_ptr<pcl::TextureMesh>;
-      using ConstPtr = boost::shared_ptr<const pcl::TextureMesh>;
+      using Ptr = shared_ptr<pcl::TextureMesh>;
+      using ConstPtr = shared_ptr<const pcl::TextureMesh>;
    }; // struct TextureMesh
 
    using TextureMeshPtr = TextureMesh::Ptr;

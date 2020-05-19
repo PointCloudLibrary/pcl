@@ -33,21 +33,21 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
+
 #pragma once
 
-#include <chrono>
-
-#include <pcl/pcl_config.h>
-#include <pcl/pcl_exports.h>
 #include <pcl/io/boost.h>
-
 #include <pcl/io/image_metadata_wrapper.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_config.h>
+#include <pcl/pcl_macros.h>
+
+#include <chrono>
 
 namespace pcl
 {
   namespace io
-  { 
+  {
 
     /**
     * @brief Image interface class providing an interface to fill a RGB or Grayscale image buffer.
@@ -57,8 +57,8 @@ namespace pcl
     class PCL_EXPORTS Image
     {
       public:
-        using Ptr = boost::shared_ptr<Image>;
-        using ConstPtr = boost::shared_ptr<const Image>;
+        using Ptr = shared_ptr<Image>;
+        using ConstPtr = shared_ptr<const Image>;
 
         using Clock = std::chrono::high_resolution_clock;
         using Timestamp = std::chrono::high_resolution_clock::time_point;
@@ -212,3 +212,4 @@ namespace pcl
 
   } // namespace
 }
+

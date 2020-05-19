@@ -35,7 +35,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/pcl_tests.h>
 #include <pcl/PolygonMesh.h>

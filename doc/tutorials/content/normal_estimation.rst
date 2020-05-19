@@ -9,7 +9,7 @@ correct light sources that generate shadings and other visual effects.
 
 Given a geometric surface, it's usually trivial to infer the direction of the
 normal at a certain point on the surface as the vector perpendicular to the
-surface in that point. However, since the point cloud datasets that we acquire
+surface at that point. However, since the point cloud datasets that we acquire
 represent a set of point samples on the real surface, there are two
 possibilities:
 
@@ -133,7 +133,7 @@ the surrounding point neighborhood support of the point (also called
 **k-neighborhood**).
 
 The specifics of the nearest-neighbor estimation problem raise the question of
-the *right scale factor*: given a sampled point cloud dataset , what are the
+the *right scale factor*: given a sampled point cloud dataset, what are the
 correct **k** (given via **pcl::Feature::setKSearch**) or **r** (given via
 **pcl::Feature::setRadiusSearch**) values that should be used in determining
 the set of nearest neighbors of a point? 
@@ -143,7 +143,7 @@ automatic estimation (i.e., without user given thresholds) of a point feature
 representation. To better illustrate this issue, the figure below presents the
 effects of selecting a smaller scale (i.e., small **r** or **k**) versus a
 larger scale (i.e., large **r** or **k**). The left part of the figures depicts
-a reasonable well chosen scale factor, with estimated surface normals
+a reasonable well-chosen scale factor, with estimated surface normals
 approximately perpendicular for the two planar surfaces and small edges
 visible all across the table. If the scale factor however is too big (right
 part), and thus the set of neighbors is larger covering points from adjacent

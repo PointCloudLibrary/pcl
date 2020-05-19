@@ -53,8 +53,8 @@ namespace pcl
   class HarrisKeypoint2D : public Keypoint<PointInT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<HarrisKeypoint2D<PointInT, PointOutT, IntensityT> >;
-      using ConstPtr = boost::shared_ptr<const HarrisKeypoint2D<PointInT, PointOutT, IntensityT> >;
+      using Ptr = shared_ptr<HarrisKeypoint2D<PointInT, PointOutT, IntensityT> >;
+      using ConstPtr = shared_ptr<const HarrisKeypoint2D<PointInT, PointOutT, IntensityT> >;
 
       using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
       using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;

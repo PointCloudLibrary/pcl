@@ -41,7 +41,7 @@
 #include <vector>
 #include <typeinfo>
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/geometry/quad_mesh.h>
 
@@ -80,7 +80,7 @@ class TestQuadMesh : public testing::Test
     using Mesh = MeshT;
 };
 
-TYPED_TEST_CASE (TestQuadMesh, QuadMeshTypes);
+TYPED_TEST_SUITE (TestQuadMesh, QuadMeshTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
@@ -63,7 +64,7 @@ namespace pcl
     };
     PCL_MAKE_ALIGNED_OPERATOR_NEW
 
-    inline bool operator< (const GradientXY & rhs)
+    inline bool operator< (const GradientXY & rhs) const
     {
       return (magnitude > rhs.magnitude);
     }

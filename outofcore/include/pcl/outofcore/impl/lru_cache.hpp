@@ -2,8 +2,11 @@
 #ifndef __PCL_OUTOFCORE_LRU_CACHE__
 #define __PCL_OUTOFCORE_LRU_CACHE__
 
+#include <cstddef>
 #include <cassert>
 #include <list>
+#include <map>
+#include <utility>
 
 template<typename T>
 class LRUCacheItem
@@ -103,8 +106,8 @@ public:
       }
 
       size -= tail_size;
-      key_it++;
-      evict_count++;
+      ++key_it;
+      ++evict_count;
     }
 
     // Evict enough items to make room for the new item

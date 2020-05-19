@@ -94,8 +94,8 @@ namespace pcl
     }
 
   public:
-    using Ptr = boost::shared_ptr< ::pcl::PolygonMesh>;
-    using ConstPtr = boost::shared_ptr<const ::pcl::PolygonMesh>;
+    using Ptr = shared_ptr< ::pcl::PolygonMesh>;
+    using ConstPtr = shared_ptr<const ::pcl::PolygonMesh>;
   }; // struct PolygonMesh
 
   using PolygonMeshPtr = PolygonMesh::Ptr;

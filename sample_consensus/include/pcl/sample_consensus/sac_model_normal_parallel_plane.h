@@ -42,6 +42,7 @@
 
 #include <pcl/sample_consensus/sac_model_normal_plane.h>
 #include <pcl/sample_consensus/model_types.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl
@@ -99,8 +100,8 @@ namespace pcl
       using PointCloudNPtr = typename SampleConsensusModelFromNormals<PointT, PointNT>::PointCloudNPtr;
       using PointCloudNConstPtr = typename SampleConsensusModelFromNormals<PointT, PointNT>::PointCloudNConstPtr;
 
-      using Ptr = boost::shared_ptr<SampleConsensusModelNormalParallelPlane<PointT, PointNT> >;
-      using ConstPtr = boost::shared_ptr<const SampleConsensusModelNormalParallelPlane<PointT, PointNT>>;
+      using Ptr = shared_ptr<SampleConsensusModelNormalParallelPlane<PointT, PointNT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelNormalParallelPlane<PointT, PointNT>>;
 
       /** \brief Constructor for base SampleConsensusModelNormalParallelPlane.
         * \param[in] cloud the input point cloud dataset
@@ -126,7 +127,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud, 
-                                               const std::vector<int> &indices,
+                                               const Indices &indices,
                                                bool random = false) 
         : SampleConsensusModelNormalPlane<PointT, PointNT> (cloud, indices, random)
         , axis_ (Eigen::Vector4f::Zero ())

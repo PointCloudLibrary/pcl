@@ -1,11 +1,10 @@
-#include <ctime>
-#include <random>
+#include <pcl/common/time.h>
+#include <pcl/simulation/range_likelihood.h>
+#include <pcl/pcl_config.h>
 
 #include <boost/math/distributions/normal.hpp>
 
 #include <GL/glew.h>
-
-#include <pcl/pcl_config.h>
 #ifdef OPENGL_IS_A_FRAMEWORK
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -14,8 +13,8 @@
 #include <GL/glu.h>
 #endif
 
-#include <pcl/common/time.h>
-#include <pcl/simulation/range_likelihood.h>
+#include <ctime>
+#include <random>
 
 // For adding noise:
 static std::minstd_rand rng(std::random_device{}());
@@ -512,7 +511,7 @@ pcl::simulation::RangeLikelihood::sampleNormal(double sigma)
 }
 
 void
-pcl::simulation::RangeLikelihood::setupProjectionMatrix()
+pcl::simulation::RangeLikelihood::setupProjectionMatrix() const
 {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();

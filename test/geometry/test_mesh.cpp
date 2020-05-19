@@ -40,7 +40,7 @@
 
 #include <vector>
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 // Needed for one test. Must be defined before including the mesh.
 #define PCL_GEOMETRY_MESH_BASE_TEST_DELETE_FACE_MANIFOLD_2

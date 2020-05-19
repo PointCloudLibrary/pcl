@@ -28,9 +28,10 @@ Please visit http://www.pointclouds.org for more information.
 
 <h1>Quick Links</h1>
 <ul>
-  <li>Main website: http://www.pointclouds.org</li>
-  <li>Developer Zone: https://github.com/PointCloudLibrary</li>
-  <li>Build farm: https://travis-ci.org/PointCloudLibrary/pcl</li>
+  <li>Main Website: http://www.pointclouds.org</li>
+  <li>GitHub Repository: https://github.com/PointCloudLibrary</li>
+  <li>Continuous Integration: https://dev.azure.com/PointCloudLibrary/pcl/_build</li>
+  <li>Changelog: https://pointcloudlibrary.github.io/documentation/changelog.html</li>
 </ul>
 
 <h1>References</h1>

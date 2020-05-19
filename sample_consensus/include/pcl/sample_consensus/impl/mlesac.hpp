@@ -59,8 +59,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   double d_best_penalty = std::numeric_limits<double>::max();
   double k = 1.0;
 
-  std::vector<int> best_model;
-  std::vector<int> selection;
+  Indices selection;
   Eigen::VectorXf model_coefficients;
   std::vector<double> distances;
 
@@ -179,7 +178,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
 
   // Iterate through the 3d points and calculate the distances from them to the model again
   sac_model_->getDistancesToModel (model_coefficients_, distances);
-  std::vector<int> &indices = *sac_model_->getIndices ();
+  Indices &indices = *sac_model_->getIndices ();
   if (distances.size () != indices.size ())
   {
     PCL_ERROR ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Estimated distances (%lu) differs than the normal of indices (%lu).\n", distances.size (), indices.size ());

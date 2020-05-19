@@ -585,8 +585,6 @@ pcl::SupervoxelClustering<PointT>::getLabeledCloud () const
   pcl::copyPointCloud (*input_,*labeled_cloud);
   
   typename pcl::PointCloud <PointT>::const_iterator i_input = input_->begin ();
-  std::vector <int> indices;
-  std::vector <float> sqr_distances;
   for (auto i_labeled = labeled_cloud->begin (); i_labeled != labeled_cloud->end (); ++i_labeled,++i_input)
   {
     if ( !pcl::isFinite<PointT> (*i_input))

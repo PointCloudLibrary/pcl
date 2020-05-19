@@ -37,9 +37,9 @@
 
 #pragma once
 
-#include <boost/shared_ptr.hpp>
-
 #include <pcl/common/common.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h> // for PCL_EXPORTS
 
 namespace pcl {
 template <class FeatureType,
@@ -55,16 +55,16 @@ class PCL_EXPORTS DecisionTreeTrainerDataProvider {
   std::vector<LabelType> label_data_;
 
 public:
-  using Ptr = boost::shared_ptr<DecisionTreeTrainerDataProvider<FeatureType,
-                                                                DataSet,
-                                                                LabelType,
-                                                                ExampleIndex,
-                                                                NodeType>>;
-  using ConstPtr = boost::shared_ptr<const DecisionTreeTrainerDataProvider<FeatureType,
-                                                                           DataSet,
-                                                                           LabelType,
-                                                                           ExampleIndex,
-                                                                           NodeType>>;
+  using Ptr = shared_ptr<DecisionTreeTrainerDataProvider<FeatureType,
+                                                         DataSet,
+                                                         LabelType,
+                                                         ExampleIndex,
+                                                         NodeType>>;
+  using ConstPtr = shared_ptr<const DecisionTreeTrainerDataProvider<FeatureType,
+                                                                    DataSet,
+                                                                    LabelType,
+                                                                    ExampleIndex,
+                                                                    NodeType>>;
 
   /** Constructor. */
   DecisionTreeTrainerDataProvider() {}

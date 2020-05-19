@@ -39,6 +39,8 @@
 #ifndef PCL_GPU_KINFU_CUDA_UTILS_HPP_
 #define PCL_GPU_KINFU_CUDA_UTILS_HPP_
 
+#include <pcl/common/utils.h> // pcl::utils::ignore
+
 #include <limits>
 
 #include <cuda.h>
@@ -579,27 +581,25 @@ namespace pcl
           return ptr[tid - lane];
         }
 
-            static __forceinline__ __device__ int 
+        static __forceinline__ __device__ int 
         Ballot(int predicate, volatile int* cta_buffer)
-            {
+        {
+          pcl::utils::ignore(cta_buffer);
   #if CUDA_VERSION >= 9000
-              (void)cta_buffer;
-                  return __ballot_sync (__activemask (), predicate);
+          return __ballot_sync (__activemask (), predicate);
   #else
-              (void)cta_buffer;
-                  return __ballot (predicate);
+          return __ballot (predicate);
   #endif
         }
 
         static __forceinline__ __device__ bool
         All(int predicate, volatile int* cta_buffer)
         {
+          pcl::utils::ignore(cta_buffer);
   #if CUDA_VERSION >= 9000
-              (void)cta_buffer;
-                  return __all_sync (__activemask (), predicate);
+          return __all_sync (__activemask (), predicate);
   #else
-              (void)cta_buffer;
-                  return __all (predicate);
+          return __all (predicate);
   #endif
         }
       };

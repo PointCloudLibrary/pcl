@@ -40,7 +40,6 @@
 #pragma once
 
 #include <pcl/common/eigen.h>
-#include <pcl/common/point_operators.h>
 #include <pcl/point_cloud.h>
 #include <pcl/exceptions.h>
 #include <pcl/pcl_base.h>
@@ -80,8 +79,8 @@ namespace pcl
         using PointCloudInPtr = typename PointCloudIn::Ptr;
         using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
         using PointCloudOut = pcl::PointCloud<PointOut>;
-        using Ptr = boost::shared_ptr< Convolution<PointIn, PointOut> >;
-        using ConstPtr = boost::shared_ptr< const Convolution<PointIn, PointOut> >;
+        using Ptr = shared_ptr< Convolution<PointIn, PointOut> >;
+        using ConstPtr = shared_ptr< const Convolution<PointIn, PointOut> >;
 
 
         /// The borders policy available

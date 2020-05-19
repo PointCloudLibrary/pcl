@@ -38,9 +38,10 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/geometry/triangle_mesh.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 #include "test_mesh_common_functions.h"

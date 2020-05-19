@@ -139,7 +139,7 @@ pcl::io::OpenNI2Grabber::OpenNI2Grabber (const std::string& device_id, const Mod
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::io::OpenNI2Grabber::~OpenNI2Grabber () throw ()
+pcl::io::OpenNI2Grabber::~OpenNI2Grabber () noexcept
 {
   try
   {

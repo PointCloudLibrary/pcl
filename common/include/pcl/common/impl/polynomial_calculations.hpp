@@ -35,24 +35,27 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#ifndef PCL_POLYNOMIAL_CALCULATIONS_HPP_
-#define PCL_POLYNOMIAL_CALCULATIONS_HPP_
 
-////////////////////////////////////
+#pragma once
+
+#include <pcl/common/polynomial_calculations.h>
+
+
+namespace pcl
+{
 
 template <typename real>
 inline void
-  pcl::PolynomialCalculationsT<real>::Parameters::setZeroValue (real new_zero_value)
+PolynomialCalculationsT<real>::Parameters::setZeroValue (real new_zero_value)
 {
   zero_value = new_zero_value;
   sqr_zero_value = zero_value*zero_value;
 }
 
-////////////////////////////////////
 
 template <typename real>
 inline void
-  pcl::PolynomialCalculationsT<real>::solveLinearEquation (real a, real b, std::vector<real>& roots) const
+PolynomialCalculationsT<real>::solveLinearEquation (real a, real b, std::vector<real>& roots) const
 {
   //std::cout << "Trying to solve "<<a<<"x + "<<b<<" = 0\n";
 
@@ -81,11 +84,10 @@ inline void
 #endif
 }
 
-////////////////////////////////////
 
 template <typename real>
 inline void
-  pcl::PolynomialCalculationsT<real>::solveQuadraticEquation (real a, real b, real c, std::vector<real>& roots) const
+PolynomialCalculationsT<real>::solveQuadraticEquation (real a, real b, real c, std::vector<real>& roots) const
 {
   //std::cout << "Trying to solve "<<a<<"x^2 + "<<b<<"x + "<<c<<" = 0\n";
 
@@ -137,11 +139,10 @@ inline void
 #endif
 }
 
-////////////////////////////////////
 
 template<typename real>
 inline void
-  pcl::PolynomialCalculationsT<real>::solveCubicEquation (real a, real b, real c, real d, std::vector<real>& roots) const
+PolynomialCalculationsT<real>::solveCubicEquation (real a, real b, real c, real d, std::vector<real>& roots) const
 {
   //std::cout << "Trying to solve "<<a<<"x^3 + "<<b<<"x^2 + "<<c<<"x + "<<d<<" = 0\n";
 
@@ -239,12 +240,11 @@ inline void
 #endif
 }
 
-////////////////////////////////////
 
 template<typename real>
 inline void
-  pcl::PolynomialCalculationsT<real>::solveQuarticEquation (real a, real b, real c, real d, real e,
-                                                            std::vector<real>& roots) const
+PolynomialCalculationsT<real>::solveQuarticEquation (real a, real b, real c, real d, real e,
+                                                     std::vector<real>& roots) const
 {
   //std::cout << "Trying to solve "<<a<<"x^4 + "<<b<<"x^3 + "<<c<<"x^2 + "<<d<<"x + "<<e<<" = 0\n";
 
@@ -267,8 +267,7 @@ inline void
     return;
   }
 
-  double root1, root2, root3, root4,
-         a2 = a*a,
+  double a2 = a*a,
          a3 = a2*a,
          a4 = a2*a2,
          b2 = b*b,
@@ -297,7 +296,7 @@ inline void
       }
       else if (quadraticRoot > 0.0)
       {
-        root1 = sqrt (quadraticRoot);
+        double root1 = sqrt (quadraticRoot);
         roots.push_back (root1 - resubValue);
         roots.push_back (-root1 - resubValue);
       }
@@ -346,28 +345,28 @@ inline void
     if (tmp1 > 0)
     {
       tmp1 = sqrt (tmp1);
-      root1 = - (b/ (4.0*a)) + 0.5* (w+tmp1);
-      root2 = - (b/ (4.0*a)) + 0.5* (w-tmp1);
+      double root1 = - (b/ (4.0*a)) + 0.5* (w+tmp1);
+      double root2 = - (b/ (4.0*a)) + 0.5* (w-tmp1);
       roots.push_back (root1);
       roots.push_back (root2);
     }
     else if (isNearlyZero (tmp1))
     {
-      root1 = - (b/ (4.0*a)) + 0.5*w;
+      double root1 = - (b/ (4.0*a)) + 0.5*w;
       roots.push_back (root1);
     }
 
    if (tmp2 > 0)
    {
       tmp2 = sqrt (tmp2);
-      root3 = - (b/ (4.0*a)) + 0.5* (-w+tmp2);
-      root4 = - (b/ (4.0*a)) + 0.5* (-w-tmp2);
+      double root3 = - (b/ (4.0*a)) + 0.5* (-w+tmp2);
+      double root4 = - (b/ (4.0*a)) + 0.5* (-w-tmp2);
       roots.push_back (root3);
       roots.push_back (root4);
     }
     else if (isNearlyZero (tmp2))
     {
-      root3 = - (b/ (4.0*a)) - 0.5*w;
+      double root3 = - (b/ (4.0*a)) - 0.5*w;
       roots.push_back (root3);
     }
 
@@ -392,25 +391,23 @@ inline void
 #endif
 }
 
-////////////////////////////////////
 
 template<typename real>
 inline pcl::BivariatePolynomialT<real>
-  pcl::PolynomialCalculationsT<real>::bivariatePolynomialApproximation (
-      std::vector<Eigen::Matrix<real, 3, 1>, Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1> > >& samplePoints, unsigned int polynomial_degree, bool& error) const
+PolynomialCalculationsT<real>::bivariatePolynomialApproximation (
+  std::vector<Eigen::Matrix<real, 3, 1>, Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1> > >& samplePoints, unsigned int polynomial_degree, bool& error) const
 {
   pcl::BivariatePolynomialT<real> ret;
   error = bivariatePolynomialApproximation (samplePoints, polynomial_degree, ret);
   return ret;
 }
 
-////////////////////////////////////
 
 template<typename real>
 inline bool
-  pcl::PolynomialCalculationsT<real>::bivariatePolynomialApproximation (
-      std::vector<Eigen::Matrix<real, 3, 1>, Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1> > >& samplePoints, unsigned int polynomial_degree,
-      pcl::BivariatePolynomialT<real>& ret) const
+PolynomialCalculationsT<real>::bivariatePolynomialApproximation (
+  std::vector<Eigen::Matrix<real, 3, 1>, Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1> > >& samplePoints, unsigned int polynomial_degree,
+  pcl::BivariatePolynomialT<real>& ret) const
 {
   const auto parameters_size = BivariatePolynomialT<real>::getNoOfParametersFromDegree (polynomial_degree);
 
@@ -506,5 +503,5 @@ inline bool
   return true;
 }
 
-#endif      // PCL_POLYNOMIAL_CALCULATIONS_HPP_
+} // namespace pcl
 

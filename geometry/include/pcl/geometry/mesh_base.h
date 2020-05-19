@@ -46,6 +46,7 @@
 #include <pcl/geometry/mesh_indices.h>
 #include <pcl/geometry/mesh_elements.h>
 #include <pcl/geometry/mesh_traits.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 
@@ -101,8 +102,8 @@ namespace pcl
       public:
 
         using Self = MeshBase <DerivedT, MeshTraitsT, MeshTagT>;
-        using Ptr = boost::shared_ptr<Self>;
-        using ConstPtr = boost::shared_ptr<const Self>;
+        using Ptr = shared_ptr<Self>;
+        using ConstPtr = shared_ptr<const Self>;
 
         using Derived = DerivedT;
 

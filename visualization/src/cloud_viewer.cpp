@@ -38,7 +38,7 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/boost.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 
 #include <mutex>
 #include <thread>
@@ -50,15 +50,15 @@ namespace pcl
     virtual ~cloud_show_base() = default;
     virtual void pop () = 0;
     virtual bool popped () const = 0;
-    using Ptr = boost::shared_ptr<cloud_show_base>;
-    using ConstPtr = boost::shared_ptr<const cloud_show_base>;
+    using Ptr = shared_ptr<cloud_show_base>;
+    using ConstPtr = shared_ptr<const cloud_show_base>;
   };
 
   template <typename CloudT> 
   struct cloud_show : cloud_show_base
   {
-    using Ptr = boost::shared_ptr<cloud_show>;
-    using ConstPtr = boost::shared_ptr<const cloud_show>;
+    using Ptr = shared_ptr<cloud_show>;
+    using ConstPtr = shared_ptr<const cloud_show>;
 
     cloud_show (const std::string &cloud_name, typename CloudT::ConstPtr cloud,
       pcl::visualization::PCLVisualizer::Ptr viewer) :

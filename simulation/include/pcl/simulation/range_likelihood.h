@@ -1,8 +1,18 @@
 #pragma once
 
-#include <GL/glew.h>
-
+#include <pcl/common/transforms.h>
+#include <pcl/range_image/range_image_planar.h>
+#include <pcl/simulation/camera.h>
+#include <pcl/simulation/glsl_shader.h>
+#include <pcl/simulation/scene.h>
+#include <pcl/simulation/sum_reduce.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_config.h>
+#include <pcl/pcl_macros.h>
+
+#include <Eigen/StdVector>
+
+#include <GL/glew.h>
 #ifdef OPENGL_IS_A_FRAMEWORK
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
@@ -11,24 +21,13 @@
 #include <GL/glu.h>
 #endif
 
-//#include <math.h>
-#include <Eigen/StdVector>
-
-#include <pcl/pcl_macros.h>
-//#include <pcl/win32_macros.h>
-#include <pcl/common/transforms.h>
-#include <pcl/range_image/range_image_planar.h>
-#include <pcl/simulation/camera.h>
-#include <pcl/simulation/glsl_shader.h>
-#include <pcl/simulation/scene.h>
-#include <pcl/simulation/sum_reduce.h>
-
 namespace pcl {
 namespace simulation {
+
 class PCL_EXPORTS RangeLikelihood {
 public:
-  using Ptr = boost::shared_ptr<RangeLikelihood>;
-  using ConstPtr = boost::shared_ptr<const RangeLikelihood>;
+  using Ptr = shared_ptr<RangeLikelihood>;
+  using ConstPtr = shared_ptr<const RangeLikelihood>;
 
 public:
   /** Create a new object to compute range image likelihoods.
@@ -252,7 +251,7 @@ private:
   applyCameraTransform(const Camera& camera);
 
   void
-  setupProjectionMatrix();
+  setupProjectionMatrix() const;
 
   Scene::Ptr scene_;
   int rows_;

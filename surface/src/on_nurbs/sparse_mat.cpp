@@ -207,9 +207,6 @@ SparseMat::nonzeros ()
 void
 SparseMat::printLong ()
 {
-  std::map<int, std::map<int, double> >::iterator it_row;
-  std::map<int, double>::iterator it_col;
-
   int si, sj;
   size (si, sj);
 

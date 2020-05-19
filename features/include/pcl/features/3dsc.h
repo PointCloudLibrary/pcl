@@ -73,8 +73,8 @@ namespace pcl
   class ShapeContext3DEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<ShapeContext3DEstimation<PointInT, PointNT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const ShapeContext3DEstimation<PointInT, PointNT, PointOutT> >;
+      using Ptr = shared_ptr<ShapeContext3DEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = shared_ptr<const ShapeContext3DEstimation<PointInT, PointNT, PointOutT> >;
 
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;

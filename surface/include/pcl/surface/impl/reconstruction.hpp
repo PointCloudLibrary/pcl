@@ -39,16 +39,20 @@
 
 #ifndef PCL_SURFACE_RECONSTRUCTION_IMPL_H_
 #define PCL_SURFACE_RECONSTRUCTION_IMPL_H_
+
 #include <pcl/search/pcl_search.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
 template <typename PointInT> void
-pcl::SurfaceReconstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
+SurfaceReconstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
 {
   // Copy the header
   output.header = input_->header;
 
-  if (!initCompute ()) 
+  if (!initCompute ())
   {
     output.cloud.width = output.cloud.height = 0;
     output.cloud.data.clear ();
@@ -81,15 +85,15 @@ pcl::SurfaceReconstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
   deinitCompute ();
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointInT> void
-pcl::SurfaceReconstruction<PointInT>::reconstruct (pcl::PointCloud<PointInT> &points,
-                                                   std::vector<pcl::Vertices> &polygons)
+SurfaceReconstruction<PointInT>::reconstruct (pcl::PointCloud<PointInT> &points,
+                                              std::vector<pcl::Vertices> &polygons)
 {
   // Copy the header
   points.header = input_->header;
 
-  if (!initCompute ()) 
+  if (!initCompute ())
   {
     points.width = points.height = 0;
     points.clear ();
@@ -121,14 +125,14 @@ pcl::SurfaceReconstruction<PointInT>::reconstruct (pcl::PointCloud<PointInT> &po
   deinitCompute ();
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointInT> void
-pcl::MeshConstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
+MeshConstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
 {
   // Copy the header
   output.header = input_->header;
 
-  if (!initCompute ()) 
+  if (!initCompute ())
   {
     output.cloud.width = output.cloud.height = 1;
     output.cloud.data.clear ();
@@ -161,11 +165,11 @@ pcl::MeshConstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
   deinitCompute ();
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointInT> void
-pcl::MeshConstruction<PointInT>::reconstruct (std::vector<pcl::Vertices> &polygons)
+MeshConstruction<PointInT>::reconstruct (std::vector<pcl::Vertices> &polygons)
 {
-  if (!initCompute ()) 
+  if (!initCompute ())
   {
     polygons.clear ();
     return;
@@ -195,6 +199,7 @@ pcl::MeshConstruction<PointInT>::reconstruct (std::vector<pcl::Vertices> &polygo
   deinitCompute ();
 }
 
+} // namespace pcl
 
 #endif  // PCL_SURFACE_RECONSTRUCTION_IMPL_H_
 

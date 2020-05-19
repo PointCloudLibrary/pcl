@@ -158,6 +158,16 @@ namespace pcl
       * \return index of found argument or -1 if arguments do not appear in list
       */
     PCL_EXPORTS int
+    parse_argument (int argc, const char * const * argv, const char * str, long int &val) noexcept;
+
+    /** \brief Parse for a specific given command line argument.
+      * \param[in] argc the number of command line arguments
+      * \param[in] argv the command line arguments
+      * \param[in] str the string value to search for
+      * \param[out] val the resultant value
+      * \return index of found argument or -1 if arguments do not appear in list
+      */
+    PCL_EXPORTS int
     parse_argument (int argc, const char * const * argv, const char * str, char &val);
 
     /** \brief Parse for specific given command line arguments (2x values comma

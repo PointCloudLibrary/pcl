@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <pcl/common/common.h>
+#include <pcl/memory.h>
 #include <pcl/console/print.h>
 #include <pcl/io/ensenso_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
@@ -28,7 +29,7 @@ typedef pcl::PointCloud<PointT> PointCloudT;
 
 /** @brief Convenience typdef for the Ensenso grabber callback */
 typedef std::pair<pcl::PCLImage, pcl::PCLImage> PairOfImages;
-typedef boost::shared_ptr<PairOfImages> PairOfImagesPtr;
+typedef pcl::shared_ptr<PairOfImages> PairOfImagesPtr;
 
 /** @brief CloudViewer pointer */
 pcl::visualization::CloudViewer::Ptr viewer_ptr;

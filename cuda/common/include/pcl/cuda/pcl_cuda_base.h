@@ -35,8 +35,9 @@
 
 #pragma once
 
-#include <boost/shared_ptr.hpp>
+#include <pcl/memory.h>
 #include <pcl/cuda/point_cloud.h>
+
 
 namespace pcl
 {

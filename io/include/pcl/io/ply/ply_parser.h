@@ -40,14 +40,6 @@
 
 #pragma once
 
-#ifdef BUILD_Maintainer
-#  if defined __GNUC__
-#    pragma GCC system_header 
-#  elif defined _MSC_VER
-#    pragma warning(push, 1)
-#  endif
-#endif
-
 #include <pcl/io/boost.h>
 #include <pcl/io/ply/ply.h>
 #include <pcl/io/ply/io_operators.h>
@@ -383,18 +375,23 @@ namespace pcl
             std::vector<std::shared_ptr<property>> properties;
           };
           
-          info_callback_type info_callback_;
-          warning_callback_type warning_callback_;
-          error_callback_type error_callback_;
+          info_callback_type info_callback_ = [](std::size_t, const std::string&){};
+          warning_callback_type warning_callback_ = [](std::size_t, const std::string&){};
+          error_callback_type error_callback_ = [](std::size_t, const std::string&){};
           
-          magic_callback_type magic_callback_;
-          format_callback_type format_callback_;
-          element_definition_callback_type element_definition_callbacks_;
+          magic_callback_type magic_callback_ = [](){};
+          format_callback_type format_callback_ = [](format_type, const std::string&){};
+          comment_callback_type comment_callback_ = [](const std::string&){};
+          obj_info_callback_type obj_info_callback_ = [](const std::string&){};
+          end_header_callback_type end_header_callback_ = [](){return true;};
+
+          element_definition_callback_type element_definition_callbacks_ = 
+              [](const std::string&, std::size_t)
+              {
+                  return std::make_tuple([](){}, [](){});
+              };
           scalar_property_definition_callbacks_type scalar_property_definition_callbacks_;
           list_property_definition_callbacks_type list_property_definition_callbacks_;
-          comment_callback_type comment_callback_;
-          obj_info_callback_type obj_info_callback_;
-          end_header_callback_type end_header_callback_;
           
           template <typename ScalarType> inline void 
           parse_scalar_property_definition (const std::string& property_name);
@@ -700,14 +697,3 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
   }
   return (true);
 }
-
-#ifdef BUILD_Maintainer
-#  if defined __GNUC__
-#    if __GNUC__ == 4 && __GNUC_MINOR__ > 3
-#      pragma GCC diagnostic warning "-Weffc++"
-#      pragma GCC diagnostic warning "-pedantic"
-#    endif
-#  elif defined _MSC_VER
-#    pragma warning(pop)
-#  endif
-#endif

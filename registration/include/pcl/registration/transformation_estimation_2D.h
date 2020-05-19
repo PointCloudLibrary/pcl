@@ -59,8 +59,8 @@ namespace pcl
     class TransformationEstimation2D : public TransformationEstimation<PointSource, PointTarget, Scalar>
     {
       public:
-        using Ptr = boost::shared_ptr<TransformationEstimation2D<PointSource, PointTarget, Scalar> >;
-        using ConstPtr = boost::shared_ptr<const TransformationEstimation2D<PointSource, PointTarget, Scalar> >;
+        using Ptr = shared_ptr<TransformationEstimation2D<PointSource, PointTarget, Scalar> >;
+        using ConstPtr = shared_ptr<const TransformationEstimation2D<PointSource, PointTarget, Scalar> >;
 
         using Matrix4 = typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4;
 

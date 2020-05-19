@@ -34,7 +34,7 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/time.h> //fps calculations
@@ -85,8 +85,8 @@ class MapsBuffer
     
     struct MapsRgb
     {
-      using Ptr = boost::shared_ptr<MapsRgb>;
-      using ConstPtr = boost::shared_ptr<const MapsRgb>;
+      using Ptr = pcl::shared_ptr<MapsRgb>;
+      using ConstPtr = pcl::shared_ptr<const MapsRgb>;
 
       pcl::gpu::PtrStepSz<const PixelRGB> rgb_;
       pcl::gpu::PtrStepSz<const unsigned short> depth_;      

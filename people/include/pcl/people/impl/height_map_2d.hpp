@@ -85,7 +85,7 @@ pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& c
     buckets_.resize(std::size_t((cluster.getMax()(1) - cluster.getMin()(1)) / bin_size_) + 1, 0);
   buckets_cloud_indices_.resize(buckets_.size(), 0);
 
-  for(std::vector<int>::const_iterator pit = cluster.getIndices().indices.begin(); pit != cluster.getIndices().indices.end(); pit++)
+  for(std::vector<int>::const_iterator pit = cluster.getIndices().indices.begin(); pit != cluster.getIndices().indices.end(); ++pit)
   {
     PointT* p = &cloud_->points[*pit];
     int index;
@@ -121,7 +121,6 @@ pcl::people::HeightMap2D<PointT>::searchLocalMaxima ()
   // Search for local maxima:
   maxima_number_ = 0;
   int left = buckets_[0];         // current left element
-  int right = 0;              // current right element
   float offset = 0;           // used to center the maximum to the right place
   maxima_indices_.resize(std::size_t(buckets_.size()), 0);
   maxima_cloud_indices_.resize(std::size_t(buckets_.size()), 0);
@@ -138,7 +137,7 @@ pcl::people::HeightMap2D<PointT>::searchLocalMaxima ()
   int i = 1;
   while (i < (static_cast<int> (buckets_.size()) - 1))
   {
-    right = buckets_[i+1];
+    int right = buckets_[i+1]; // current right element
     if ((buckets_[i] > left) && (buckets_[i] > right))
     {
       // Search where to insert the new element (in an ordered array):
@@ -211,7 +210,6 @@ pcl::people::HeightMap2D<PointT>::filterMaxima ()
     for (int i = 0; i < maxima_number_; i++)
     {
       bool good_maximum = true;
-      float distance = 0;
 
       PointT* p_current = &cloud_->points[maxima_cloud_indices_[i]];  // pointcloud point referring to the current maximum
       Eigen::Vector3f p_current_eigen(p_current->x, p_current->y, p_current->z);  // conversion to eigen
@@ -227,7 +225,7 @@ pcl::people::HeightMap2D<PointT>::filterMaxima ()
         p_previous_eigen -= ground_coeffs_.head(3) * t;         // projection of the point on the groundplane
 
         // distance of the projection of the points on the groundplane:
-        distance = (p_current_eigen-p_previous_eigen).norm();
+        float distance = (p_current_eigen-p_previous_eigen).norm();
         if (distance < min_dist_between_maxima_)
         {
           good_maximum = false;

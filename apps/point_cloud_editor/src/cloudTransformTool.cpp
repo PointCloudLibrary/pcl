@@ -114,7 +114,7 @@ CloudTransformTool::getZTranslateMatrix (int dy, float* matrix)
 }
 
 void
-CloudTransformTool::getScaleMatrix (int dy, float* matrix)
+CloudTransformTool::getScaleMatrix (int dy, float* matrix) const
 {
   setIdentity(matrix);
   float scale = dy > 0 ? scale_factor_ : 1.0 / scale_factor_;

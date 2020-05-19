@@ -31,7 +31,7 @@
 
 #pragma once
 
-#include <pcl/make_shared.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/io/openni2/openni2_device.h>
 #include <pcl/io/openni2/openni2_device_info.h>
@@ -58,7 +58,7 @@ namespace pcl
 
         // This may not actually be a singleton yet. Need to work out cross-dll incerface.
         // Based on http://stackoverflow.com/a/13431981/1789618
-        static boost::shared_ptr<OpenNI2DeviceManager> getInstance ()
+        static shared_ptr<OpenNI2DeviceManager> getInstance ()
         {
           static auto instance = pcl::make_shared<OpenNI2DeviceManager>();
           return (instance);
@@ -80,7 +80,7 @@ namespace pcl
         getDevice (const std::string& device_URI);
 
         OpenNI2Device::Ptr
-        getDeviceByIndex (int index);
+        getDeviceByIndex (int index) const;
 
         OpenNI2Device::Ptr
         getFileDevice (const std::string& path);

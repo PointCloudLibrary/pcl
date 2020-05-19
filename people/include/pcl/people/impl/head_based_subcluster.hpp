@@ -178,7 +178,7 @@ pcl::people::HeadBasedSubclustering<PointT>::mergeClustersCloseInFloorCoordinate
           {
             used_clusters[cluster] = true;
             for(std::vector<int>::const_iterator points_iterator = input_clusters[cluster].getIndices().indices.begin();
-                points_iterator != input_clusters[cluster].getIndices().indices.end(); points_iterator++)
+                points_iterator != input_clusters[cluster].getIndices().indices.end(); ++points_iterator)
             {
               point_indices.indices.push_back(*points_iterator);
             }
@@ -214,7 +214,7 @@ pcl::people::HeadBasedSubclustering<PointT>::createSubClusters (pcl::people::Per
   }
 
   // Associate cluster points to one of the maximum:
-  for(std::vector<int>::const_iterator points_iterator = cluster.getIndices().indices.begin(); points_iterator != cluster.getIndices().indices.end(); points_iterator++)
+  for(std::vector<int>::const_iterator points_iterator = cluster.getIndices().indices.begin(); points_iterator != cluster.getIndices().indices.end(); ++points_iterator)
   {
     PointT* current_point = &cloud_->points[*points_iterator];        // current point cloud point
     Eigen::Vector3f p_current_eigen(current_point->x, current_point->y, current_point->z);  // conversion to eigen

@@ -36,6 +36,7 @@
  *
  */
 #include <pcl/pcl_config.h>
+#include <pcl/memory.h>
 #ifdef HAVE_OPENNI
 
 #ifdef __GNUC__
@@ -82,7 +83,7 @@ openni_wrapper::DevicePrimesense::DevicePrimesense (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::DevicePrimesense::~DevicePrimesense () throw ()
+openni_wrapper::DevicePrimesense::~DevicePrimesense () noexcept
 {
   setDepthRegistration (false);
   setSynchronization (false);
@@ -109,7 +110,7 @@ openni_wrapper::DevicePrimesense::isImageResizeSupported (
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-openni_wrapper::DevicePrimesense::enumAvailableModes () throw ()
+openni_wrapper::DevicePrimesense::enumAvailableModes () noexcept
 {
   XnMapOutputMode output_mode;
   available_image_modes_.clear ();
@@ -170,7 +171,7 @@ openni_wrapper::DevicePrimesense::enumAvailableModes () throw ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::Image::Ptr 
-openni_wrapper::DevicePrimesense::getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_data) const throw ()
+openni_wrapper::DevicePrimesense::getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_data) const throw ()
 {
   return (openni_wrapper::Image::Ptr (new ImageYUV422 (image_data)));
 }

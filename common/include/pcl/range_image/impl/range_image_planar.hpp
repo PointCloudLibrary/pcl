@@ -36,11 +36,11 @@
  *
  */
 
-#ifndef PCL_RANGE_IMAGE_PLANAR_IMPL_HPP_
-#define PCL_RANGE_IMAGE_PLANAR_IMPL_HPP_
+#pragma once
 
-#include <pcl/pcl_macros.h>
 #include <pcl/common/eigen.h>
+#include <pcl/range_image/range_image_planar.h>
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
@@ -116,7 +116,5 @@ RangeImagePlanar::getImagePoint (const Eigen::Vector3f& point, float& image_x, f
   image_y = center_y_ + focal_length_y_*transformedPoint[1]/transformedPoint[2] - static_cast<float> (image_offset_y_);
 }
 
-}  // namespace end
-
-#endif
+}  // namespace pcl
 

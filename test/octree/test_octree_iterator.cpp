@@ -40,7 +40,7 @@
 #include <pcl/octree/octree_iterator.h>
 #include <pcl/common/projection_matrix.h>
 #include <pcl/point_types.h>
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 using pcl::octree::OctreeBase;
 using pcl::octree::OctreeIteratorBase;
@@ -154,7 +154,7 @@ using OctreeIteratorTypes = testing::Types
          OctreeLeafNodeDepthFirstIterator<OctreeBase<int> >,
          OctreeFixedDepthIterator<OctreeBase<int> >,
          OctreeLeafNodeBreadthFirstIterator<OctreeBase<int> > >;
-TYPED_TEST_CASE (OctreeIteratorTest, OctreeIteratorTypes);
+TYPED_TEST_SUITE (OctreeIteratorTest, OctreeIteratorTypes);
 
 TYPED_TEST (OctreeIteratorTest, CopyConstructor)
 {

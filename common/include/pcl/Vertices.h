@@ -1,10 +1,11 @@
 #pragma once
 
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
+
 #include <string>
 #include <vector>
 #include <ostream>
-#include <boost/shared_ptr.hpp>
-#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
@@ -19,8 +20,8 @@ namespace pcl
     std::vector<std::uint32_t> vertices;
 
   public:
-    using Ptr = boost::shared_ptr<Vertices>;
-    using ConstPtr = boost::shared_ptr<const Vertices>;
+    using Ptr = shared_ptr<Vertices>;
+    using ConstPtr = shared_ptr<const Vertices>;
   }; // struct Vertices
 
 

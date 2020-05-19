@@ -62,7 +62,7 @@ pcl::DinastGrabber::DinastGrabber (const int device_position)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::DinastGrabber::~DinastGrabber () throw ()
+pcl::DinastGrabber::~DinastGrabber () noexcept
 {
   try
   {

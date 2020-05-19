@@ -132,8 +132,8 @@ namespace pcl
   class GreedyProjectionTriangulation : public MeshConstruction<PointInT>
   {
     public:
-      using Ptr = boost::shared_ptr<GreedyProjectionTriangulation<PointInT> >;
-      using ConstPtr = boost::shared_ptr<const GreedyProjectionTriangulation<PointInT> >;
+      using Ptr = shared_ptr<GreedyProjectionTriangulation<PointInT> >;
+      using ConstPtr = shared_ptr<const GreedyProjectionTriangulation<PointInT> >;
 
       using MeshConstruction<PointInT>::tree_;
       using MeshConstruction<PointInT>::input_;

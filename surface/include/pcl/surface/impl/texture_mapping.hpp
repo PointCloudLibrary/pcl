@@ -40,6 +40,7 @@
 
 #include <pcl/common/distances.h>
 #include <pcl/surface/texture_mapping.h>
+#include <unordered_set>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >
@@ -254,11 +255,10 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh)
     // processing for each face
     for (std::size_t i = 0; i < tex_mesh.tex_polygons[m].size (); ++i)
     {
-      std::size_t idx;
       Eigen::Vector2f tmp_VT;
       for (std::size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
       {
-        idx = tex_mesh.tex_polygons[m][i].vertices[j];
+        std::size_t idx = tex_mesh.tex_polygons[m][i].vertices[j];
         memcpy (&x_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[0].offset], sizeof(float));
         memcpy (&y_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[1].offset], sizeof(float));
         memcpy (&z_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[2].offset], sizeof(float));
@@ -301,9 +301,6 @@ pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &te
 
   // convert mesh's cloud to pcl format for ease
   pcl::fromPCLPointCloud2 (tex_mesh.cloud, *originalCloud);
-
-  // texture coordinates for each mesh
-  std::vector<std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > > texture_map;
 
   for (std::size_t m = 0; m < cams.size (); ++m)
   {
@@ -415,13 +412,13 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_
   double maxDeltaZ = octree_voxel_size;
 
   // create an octree to perform rayTracing
-  OctreePtr octree (new Octree (octree_voxel_size));
+  Octree octree (octree_voxel_size);
   // create octree structure
-  octree->setInputCloud (input_cloud);
+  octree.setInputCloud (input_cloud);
   // update bounding box automatically
-  octree->defineBoundingBox ();
+  octree.defineBoundingBox ();
   // add points in the tree
-  octree->addPointsFromInputCloud ();
+  octree.addPointsFromInputCloud ();
 
   visible_indices.clear ();
 
@@ -435,7 +432,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_
     direction (2) = input_cloud->points[i].z;
 
     // if point is not occluded
-    octree->getIntersectedVoxelIndices (direction, -direction, indices);
+    octree.getIntersectedVoxelIndices (direction, -direction, indices);
 
     int nbocc = static_cast<int> (indices.size ());
     for (const int &index : indices)
@@ -583,6 +580,9 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
     removeOccludedPoints (transformed_cloud, filtered_cloud, octree_voxel_size, visible, occluded);
     visible_pts = *filtered_cloud;
 
+    // pushing occluded idxs into a set for faster lookup
+    std::unordered_set<index_t> occluded_set(occluded.cbegin(), occluded.cend());
+
     // find visible faces => add them to polygon N for camera N
     // add polygon group for current camera in clean
     std::vector<pcl::Vertices> visibleFaces_currentCam;
@@ -590,32 +590,18 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
     for (std::size_t faces = 0; faces < tex_mesh.tex_polygons[0].size (); ++faces)
     {
       // check if all the face's points are visible
-      bool faceIsVisible = true;
-      std::vector<int>::iterator it;
-
       // iterate over face's vertex
-      for (std::size_t current_pt_indice = 0; faceIsVisible && current_pt_indice < tex_mesh.tex_polygons[0][faces].vertices.size (); ++current_pt_indice)
+      const auto faceIsVisible = std::all_of(tex_mesh.tex_polygons[0][faces].vertices.cbegin(),
+                                             tex_mesh.tex_polygons[0][faces].vertices.cend(),
+                                             [&](const auto& vertex)
       {
-        // TODO this is far too long! Better create an helper function that raycasts here.
-        it = find (occluded.begin (), occluded.end (), tex_mesh.tex_polygons[0][faces].vertices[current_pt_indice]);
-
-        if (it == occluded.end ())
-        {
-          // point is not occluded
-          // does it land on the camera's image plane?
-          PointInT pt = transformed_cloud->points[tex_mesh.tex_polygons[0][faces].vertices[current_pt_indice]];
-          Eigen::Vector2f dummy_UV;
-          if (!getPointUVCoordinates (pt, camera, dummy_UV))
-          {
-            // point is not visible by the camera
-            faceIsVisible = false;
+          if (occluded_set.find(vertex) != occluded_set.cend()) {
+            return false;  // point is occluded
           }
-        }
-        else
-        {
-          faceIsVisible = false;
-        }
-      }
+          // is the point visible to the camera?
+          Eigen::Vector2f dummy_UV;
+          return this->getPointUVCoordinates ((*transformed_cloud)[vertex], camera, dummy_UV);
+      });
 
       if (faceIsVisible)
       {
@@ -647,14 +633,13 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
   double maxDeltaZ = octree_voxel_size * 2.0;
 
   // create an octree to perform rayTracing
-  pcl::octree::OctreePointCloudSearch<PointInT> *octree;
-  octree = new pcl::octree::OctreePointCloudSearch<PointInT> (octree_voxel_size);
+  Octree octree (octree_voxel_size);
   // create octree structure
-  octree->setInputCloud (input_cloud);
+  octree.setInputCloud (input_cloud);
   // update bounding box automatically
-  octree->defineBoundingBox ();
+  octree.defineBoundingBox ();
   // add points in the tree
-  octree->addPointsFromInputCloud ();
+  octree.addPointsFromInputCloud ();
 
   // ray direction
   Eigen::Vector3f direction;
@@ -677,7 +662,7 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
 
     // get number of occlusions for that point
     indices.clear ();
-    int nbocc = octree->getIntersectedVoxelIndices (direction, -direction, indices);
+    int nbocc = octree.getIntersectedVoxelIndices (direction, -direction, indices);
 
     nbocc = static_cast<int> (indices.size ());
 
@@ -1104,4 +1089,3 @@ pcl::TextureMapping<PointInT>::isFaceProjected (const Camera &camera, const Poin
     template class PCL_EXPORTS pcl::TextureMapping<T>;
 
 #endif /* TEXTURE_MAPPING_HPP_ */
-

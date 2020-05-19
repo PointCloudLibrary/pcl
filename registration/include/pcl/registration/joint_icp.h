@@ -72,8 +72,8 @@ namespace pcl
       using PointIndicesPtr = PointIndices::Ptr;
       using PointIndicesConstPtr = PointIndices::ConstPtr;
 
-      using Ptr = boost::shared_ptr<JointIterativeClosestPoint<PointSource, PointTarget, Scalar> >;
-      using ConstPtr = boost::shared_ptr<const JointIterativeClosestPoint<PointSource, PointTarget, Scalar> >;
+      using Ptr = shared_ptr<JointIterativeClosestPoint<PointSource, PointTarget, Scalar> >;
+      using ConstPtr = shared_ptr<const JointIterativeClosestPoint<PointSource, PointTarget, Scalar> >;
 
       using CorrespondenceEstimation = pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>;
       using CorrespondenceEstimationPtr = typename CorrespondenceEstimation::Ptr;

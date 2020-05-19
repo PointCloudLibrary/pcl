@@ -7,6 +7,7 @@
 #include <thread>
 
 // PCL
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 
@@ -207,7 +208,7 @@ class OutofcoreCloud : public Object
     }
 
     int
-    getLodPixelThreshold ()
+    getLodPixelThreshold () const
     {
       return lod_pixel_threshold_;
     }

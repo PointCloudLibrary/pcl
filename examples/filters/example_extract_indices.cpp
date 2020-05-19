@@ -37,11 +37,8 @@
  *
  */
 
-// STL
 #include <iostream>
 
-// PCL
-#include <pcl/point_types.h>
 #include <pcl/filters/extract_indices.h>
 
 int
@@ -65,7 +62,7 @@ main (int, char**)
   indices.indices.push_back (2);
 
   pcl::ExtractIndices<PointType> extract_indices;
-  extract_indices.setIndices (boost::make_shared<const pcl::PointIndices> (indices));
+  extract_indices.setIndices (pcl::make_shared<const pcl::PointIndices> (indices));
   extract_indices.setInputCloud (cloud);
   pcl::PointCloud<pcl::PointXYZ>::Ptr output (new pcl::PointCloud<pcl::PointXYZ>);
   extract_indices.filter (*output);

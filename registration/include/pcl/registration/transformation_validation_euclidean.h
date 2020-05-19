@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_representation.h>
 #include <pcl/search/kdtree.h>
@@ -76,8 +77,8 @@ namespace pcl
       public:
         using Matrix4 = typename TransformationValidation<PointSource, PointTarget, Scalar>::Matrix4;
         
-        using Ptr = boost::shared_ptr<TransformationValidation<PointSource, PointTarget, Scalar> >;
-        using ConstPtr = boost::shared_ptr<const TransformationValidation<PointSource, PointTarget, Scalar> >;
+        using Ptr = shared_ptr<TransformationValidation<PointSource, PointTarget, Scalar> >;
+        using ConstPtr = shared_ptr<const TransformationValidation<PointSource, PointTarget, Scalar> >;
 
         using KdTree = pcl::search::KdTree<PointTarget>;
         using KdTreePtr = typename KdTree::Ptr;
@@ -237,8 +238,8 @@ namespace pcl
           using pcl::PointRepresentation<PointTarget>::nr_dimensions_;
           using pcl::PointRepresentation<PointTarget>::trivial_;
           public:
-            using Ptr = boost::shared_ptr<MyPointRepresentation>;
-            using ConstPtr = boost::shared_ptr<const MyPointRepresentation>;
+            using Ptr = shared_ptr<MyPointRepresentation>;
+            using ConstPtr = shared_ptr<const MyPointRepresentation>;
             
             MyPointRepresentation ()
             {

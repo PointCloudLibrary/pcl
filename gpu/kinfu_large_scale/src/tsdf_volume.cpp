@@ -367,7 +367,6 @@ pcl::gpu::kinfuLS::TsdfVolume::convertToTsdfCloud ( pcl::PointCloud<pcl::PointXY
   cloud->reserve (std::min (cloud_size/10, 500000));
 
   int volume_idx = 0, cloud_idx = 0;
-  // #pragma omp parallel for // if used, increment over idx not possible! use index calculation
   for (int z = 0; z < sz; z+=step)
     for (int y = 0; y < sy; y+=step)
       for (int x = 0; x < sx; x+=step, ++cloud_idx)
@@ -393,7 +392,9 @@ pcl::gpu::kinfuLS::TsdfVolume::downloadTsdf (std::vector<float>& tsdf) const
   tsdf.resize (volume_.cols() * volume_.rows());
   volume_.download(&tsdf[0], volume_.cols() * sizeof(int));
 
-#pragma omp parallel for
+#pragma omp parallel for \
+  default(none) \
+  shared(tsdf)
   for(int i = 0; i < (int) tsdf.size(); ++i)
   {
     float tmp = reinterpret_cast<short2*>(&tsdf[i])->x;
@@ -418,7 +419,9 @@ pcl::gpu::kinfuLS::TsdfVolume::downloadTsdfAndWeights (std::vector<float>& tsdf,
   weights.resize (volumeSize);
   volume_.download(&tsdf[0], volume_.cols() * sizeof(int));
   
-  #pragma omp parallel for
+  #pragma omp parallel for \
+    default(none) \
+    shared(tsdf, weights)
   for(int i = 0; i < (int) tsdf.size(); ++i)
   {
     short2 elem = *reinterpret_cast<short2*>(&tsdf[i]);
