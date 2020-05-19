@@ -40,6 +40,8 @@
 #include <pcl/point_types.h>
 #include <pcl/Vertices.h>
 #include <pcl/filters/filter_indices.h>
+#include <pcl/filters/crop_box.h>
+#include <pcl/common/common.h>
 
 namespace pcl
 {
@@ -54,7 +56,10 @@ namespace pcl
     using Filter<PointT>::filter_name_;
     using Filter<PointT>::indices_;
     using Filter<PointT>::input_;
-    
+    using Filter<PointT>::removed_indices_;
+    using Filter<PointT>::extract_removed_indices_;
+    using FilterIndices<PointT>::negative_;
+
     using PointCloud = typename Filter<PointT>::PointCloud;
     using PointCloudPtr = typename PointCloud::Ptr;
     using PointCloudConstPtr = typename PointCloud::ConstPtr;
@@ -64,11 +69,20 @@ namespace pcl
       using Ptr = shared_ptr<CropHull<PointT> >;
       using ConstPtr = shared_ptr<const CropHull<PointT> >;
 
-      /** \brief Empty Constructor. */
-      CropHull () :
+      /** \brief Default constructor.
+        * \note set extract_removed_indices as false.
+        */
+      CropHull() : CropHull(false) {}
+
+      /** \brief Constructor.
+        * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed.
+        */
+      explicit CropHull (bool extract_removed_indices) :
+        FilterIndices<PointT>(extract_removed_indices),
         hull_cloud_(),
         dim_(3),
-        crop_outside_(true)
+        crop_outside_(true),
+        crop_box_(true)
       {
         filter_name_ = "CropHull";
       }
@@ -90,23 +104,37 @@ namespace pcl
       {
         return (hull_polygons_);
       }
-      
+
       /** \brief Set the point cloud that the hull indices refer to
         * \param[in] points the point cloud that the hull indices refer to
         */
       inline void
-      setHullCloud (PointCloudPtr points)
+      setHullCloud (PointCloudConstPtr points)
       {
         hull_cloud_ = points;
+        Eigen::Vector4f minPt, maxPt;
+        pcl::getMinMax3D(*hull_cloud_, minPt, maxPt);
+        crop_box_.setMin(minPt);
+        crop_box_.setMax(maxPt);
+      }
+
+      /** \brief Provide a pointer to the input dataset. Chain call Base::setInputCloud
+        * \param[in] points the point cloud that the input for filter processing
+        */
+      inline void
+      setInputCloud(PointCloudConstPtr const & cloud) override
+      {
+        crop_box_.setInputCloud(cloud);
+        FilterIndices<PointT>::setInputCloud(cloud);
       }
 
       /** \brief Get the point cloud that the hull indices refer to. */
-      PointCloudPtr
+      PointCloudConstPtr
       getHullCloud () const
       {
         return (hull_cloud_);
       }
-    
+
       /** \brief Set the dimensionality of the hull to be used.
         * This should be set to correspond to the dimensionality of the
         * convex/concave hull produced by the pcl::ConvexHull and
@@ -118,7 +146,7 @@ namespace pcl
       {
         dim_ = dim;
       }
-      
+
       /** \brief Remove points outside the hull (default), or those inside the hull.
         * \param[in] crop_outside If true, the filter will remove points
         * outside the hull. If false, those inside will be removed.
@@ -131,33 +159,18 @@ namespace pcl
 
     protected:
       /** \brief Filter the input points using the 2D or 3D polygon hull.
-        * \param[out] output The set of points that passed the filter
-        */
-      void
-      applyFilter (PointCloud &output) override;
-
-      /** \brief Filter the input points using the 2D or 3D polygon hull.
         * \param[out] indices the indices of the set of points that passed the filter.
         */
-      void        
-      applyFilter (std::vector<int> &indices) override;
+      void
+      applyFilter (pcl::Indices &indices) override;
 
-    private:  
+    private:
       /** \brief Return the size of the hull point cloud in line with coordinate axes.
         * This is used to choose the 2D projection to use when cropping to a 2d
         * polygon.
         */
       Eigen::Vector3f
       getHullCloudRange ();
-      
-      /** \brief Apply the two-dimensional hull filter.
-        * All points are assumed to lie in the same plane as the 2D hull, an
-        * axis-aligned 2D coordinate system using the two dimensions specified
-        * (PlaneDim1, PlaneDim2) is used for calculations.
-        * \param[out] output The set of points that pass the 2D polygon filter.
-        */
-      template<unsigned PlaneDim1, unsigned PlaneDim2> void
-      applyFilter2D (PointCloud &output); 
 
       /** \brief Apply the two-dimensional hull filter.
         * All points are assumed to lie in the same plane as the 2D hull, an
@@ -167,18 +180,7 @@ namespace pcl
         *                     2D polygon filter.
         */
       template<unsigned PlaneDim1, unsigned PlaneDim2> void
-      applyFilter2D (std::vector<int> &indices);
-
-       /** \brief Apply the three-dimensional hull filter.
-         * Polygon-ray crossings are used for three rays cast from each point
-         * being tested, and a  majority vote of the resulting
-         * polygon-crossings is used to decide  whether the point lies inside
-         * or outside the hull.
-         * \param[out] output The set of points that pass the 3D polygon hull
-         *                    filter.
-         */
-      void
-      applyFilter3D (PointCloud &output);
+      applyFilter2D (pcl::Indices &indices);
 
       /** \brief Apply the three-dimensional hull filter.
         *  Polygon-ray crossings are used for three rays cast from each point
@@ -189,7 +191,7 @@ namespace pcl
         *                     polygon hull filter.
         */
       void
-      applyFilter3D (std::vector<int> &indices);
+      applyFilter3D (pcl::Indices &indices);
 
       /** \brief Test an individual point against a 2D polygon.
         * PlaneDim1 and PlaneDim2 specify the x/y/z coordinate axes to use.
@@ -221,7 +223,7 @@ namespace pcl
       std::vector<pcl::Vertices> hull_polygons_;
 
       /** \brief The point cloud that the hull indices refer to. */
-      PointCloudPtr hull_cloud_;
+      PointCloudConstPtr hull_cloud_;
 
       /** \brief The dimensionality of the hull to be used. */
       int dim_;
@@ -230,6 +232,9 @@ namespace pcl
        * false, those inside will be removed.
        */
       bool crop_outside_;
+
+      /** \brief The CropBox filter for speedup. */
+      pcl::CropBox<PointT> crop_box_;
   };
 
 } // namespace pcl
