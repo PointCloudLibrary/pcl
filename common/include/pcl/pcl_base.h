@@ -125,7 +125,7 @@ namespace pcl
       setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols);
 
       /** \brief Get a pointer to the vector of indices used. */
-      inline IndicesPtr const
+      inline IndicesPtr
       getIndices () { return (indices_); }
 
       /** \brief Get a pointer to the vector of indices used. */
