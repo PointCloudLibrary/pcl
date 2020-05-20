@@ -133,9 +133,9 @@ namespace pcl
         {
           for( int i=0 ; i<this->size() ; i++ )
           {
-            printf( "%d]" , i );
-            for( int j=0 ; j<=Degree ; j++ ) printf( " %d" , (*this)[i][j] );
-            printf( " (%d)\n" , denominator );
+            fprintf(fp, "%d]" , i );
+            for( int j=0 ; j<=Degree ; j++ ) fprintf(fp, " %d" , (*this)[i][j] );
+            fprintf(fp, " (%d)\n" , denominator );
           }
         }
     };
