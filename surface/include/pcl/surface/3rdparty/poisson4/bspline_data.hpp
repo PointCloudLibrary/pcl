@@ -26,6 +26,8 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
+#include <pcl/common/utils.h>
+
 #include "poisson_exceptions.h"
 #include "binary_node.h"
 
@@ -58,6 +60,7 @@ namespace pcl
     // <=>		i < r + 0.5 * Degree
     template< int Degree > inline bool LeftOverlap( unsigned int depth , int offset )
     {
+      pcl::utils::ignore(depth);
       offset <<= 1;
       if( Degree & 1 ) return (offset < 1+Degree) && (offset > -1-Degree );
       else             return (offset <   Degree) && (offset > -2-Degree );
@@ -65,12 +68,13 @@ namespace pcl
     template< int Degree > inline bool RightOverlap( unsigned int depth , int offset )
     {
       offset <<= 1;
-      int r = 1<<(depth+1);
+      pcl::utils::ignore(depth);
       if( Degree & 1 ) return (offset > 2-1-Degree) && (offset < 2+1+Degree );
       else             return (offset > 2-2-Degree) && (offset < 2+  Degree );
     }
     template< int Degree > inline int ReflectLeft( unsigned int depth , int offset )
     {
+      pcl::utils::ignore(depth);
       if( Degree&1 ) return   -offset;
       else           return -1-offset;
     }
@@ -447,6 +451,7 @@ namespace pcl
     template< int Degree >
     void BSplineElements< Degree >::upSample( BSplineElements< Degree >& high ) const
     {
+      pcl::utils::ignore(high);
       POISSON_THROW_EXCEPTION (pcl::poisson::PoissonBadArgumentException, "B-spline up-sampling not supported for degree " << Degree);
     }
     template<>
