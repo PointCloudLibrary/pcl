@@ -100,7 +100,7 @@ pcl::getMeanStd (const std::vector<float> &values, double &mean, double &stddev)
 template <typename PointT> inline void
 pcl::getPointsInBox (const pcl::PointCloud<PointT> &cloud, 
                      Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt,
-                     std::vector<int> &indices)
+                     Indices &indices)
 {
   indices.resize (cloud.points.size ());
   int l = 0;
@@ -188,7 +188,7 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> inline void
-pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
+pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
                      const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt)
 {
   float max_dist = -FLT_MAX;
@@ -352,7 +352,7 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const pcl::PointIndices 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline void
-pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
+pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
                   Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt)
 {
   min_pt.setConstant (FLT_MAX);

@@ -49,6 +49,7 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/type_traits.h>
+#include <pcl/types.h>
 
 #include <algorithm>
 #include <utility>
@@ -204,7 +205,7 @@ namespace pcl
         * \param[in] indices the subset to copy
         */
       PointCloud (const PointCloud<PointT> &pc,
-                  const std::vector<int> &indices) :
+                  const Indices &indices) :
         header (pc.header), points (indices.size ()), width (indices.size ()), height (1), is_dense (pc.is_dense),
         sensor_origin_ (pc.sensor_origin_), sensor_orientation_ (pc.sensor_orientation_)
       {

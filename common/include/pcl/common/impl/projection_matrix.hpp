@@ -81,7 +81,7 @@ template <typename PointT> double
 estimateProjectionMatrix (
     typename pcl::PointCloud<PointT>::ConstPtr cloud,
     Eigen::Matrix<float, 3, 4, Eigen::RowMajor>& projection_matrix,
-    const std::vector<int>& indices)
+    const Indices& indices)
 {
   // internally we calculate with double but store the result into float matrices.
   using Scalar = double;

@@ -39,6 +39,7 @@
 
 #include <limits>
 
+#include <pcl/types.h>
 #include <pcl/common/common.h>
 
 /**
@@ -139,7 +140,7 @@ namespace pcl
     * \ingroup common
     */
   template <typename PointT> double inline
-  getMaxSegment (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
+  getMaxSegment (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
                  PointT &pmin, PointT &pmax)
   {
     double max_dist = std::numeric_limits<double>::min ();
