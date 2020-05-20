@@ -256,7 +256,10 @@ endif()
 ### ---[ Find universal dependencies
 
 # OpenMP (optional)
-find_package(OpenMP COMPONENTS C CXX)
+option(WITH_OPENMP "Build with parallelization using OpenMP" TRUE)
+if(WITH_OPENMP)
+  find_package(OpenMP COMPONENTS C CXX)
+endif()
 if(OpenMP_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
