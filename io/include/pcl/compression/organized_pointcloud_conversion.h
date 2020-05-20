@@ -239,13 +239,10 @@ struct OrganizedConversion<PointT, false>
 
         if (pixel_depth)
         {
-          // Inverse depth decoding
-          float depth = focalLength_arg / pixel_depth;
-
           // Generate new points
-          newPoint.x = static_cast<float> (x) * depth * fl_const;
-          newPoint.y = static_cast<float> (y) * depth * fl_const;
-          newPoint.z = depth;
+          newPoint.x = static_cast<float> (x) * pixel_depth * fl_const;
+          newPoint.y = static_cast<float> (y) * pixel_depth * fl_const;
+          newPoint.z = pixel_depth;
 
         }
         else
@@ -508,14 +505,12 @@ struct OrganizedConversion<PointT, true>
 
         const float& pixel_depth = depthData_arg[i];
 
-        if (pixel_depth==pixel_depth)
+        if (pixel_depth)
         {
-          float depth = focalLength_arg / pixel_depth;
-
           // Define point location
-          newPoint.z = depth;
-          newPoint.x = static_cast<float> (x) * depth * fl_const;
-          newPoint.y = static_cast<float> (y) * depth * fl_const;
+          newPoint.z = pixel_depth;
+          newPoint.x = static_cast<float> (x) * pixel_depth * fl_const;
+          newPoint.y = static_cast<float> (y) * pixel_depth * fl_const;
 
           if (hasColor)
           {
