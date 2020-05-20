@@ -56,6 +56,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/transformation_estimation.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_2D.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_svd.h"
+  "include/pcl/${SUBSYS_NAME}/transformation_estimation_fs3r.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_svd_scale.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_dual_quaternion.h"
   "include/pcl/${SUBSYS_NAME}/transformation_estimation_lm.h"
@@ -114,6 +115,7 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/registration.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_2D.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_fs3r.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_svd_scale.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_dual_quaternion.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_lm.hpp"
@@ -162,6 +164,7 @@ set(srcs
   src/ndt_2d.cpp
   src/transformation_estimation_2D.cpp
   src/transformation_estimation_svd.cpp
+  src/transformation_estimation_fs3r.cpp
   src/transformation_estimation_svd_scale.cpp
   src/transformation_estimation_dual_quaternion.cpp
   src/transformation_estimation_lm.cpp
