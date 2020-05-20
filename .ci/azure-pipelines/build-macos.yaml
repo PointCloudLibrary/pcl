@@ -29,7 +29,7 @@ jobs:
         displayName: 'Install Dependencies'
       - script: |
           mkdir $BUILD_DIR && cd $BUILD_DIR
-          # Surface switched off due to OpenGL deprecation on Mac
+          # Simulation switched off due to OpenGL deprecation on Mac
           cmake $(Build.SourcesDirectory) \
             -DCMAKE_BUILD_TYPE="Release" \
             -DCMAKE_OSX_SYSROOT="/Library/Developer/CommandLineTools/SDKs/MacOSX$(OSX_VERSION).sdk" \
