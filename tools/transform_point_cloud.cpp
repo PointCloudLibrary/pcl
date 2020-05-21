@@ -204,33 +204,27 @@ scaleInPlace (pcl::PCLPointCloud2 &cloud, double* multiplier)
     // Assume all 3 fields are the same (XYZ)
     assert ((cloud.fields[x_idx].datatype == cloud.fields[y_idx].datatype));
     assert ((cloud.fields[x_idx].datatype == cloud.fields[z_idx].datatype));
+#define MULTIPLY(CASE_LABEL)                                                           \
+  case CASE_LABEL:                                                                     \
+    for (int i = 0; i < 3; ++i)                                                        \
+      multiply<pcl::traits::asType_t<CASE_LABEL>>(                                     \
+          cloud, xyz_offset[i], multiplier[i]);                                        \
+    break;
     switch (cloud.fields[x_idx].datatype)
     {
-      case pcl::PCLPointField::INT8:
-        for (int i = 0; i < 3; ++i) multiply<std::int8_t> (cloud, xyz_offset[i], multiplier[i]);
-        break;
-      case pcl::PCLPointField::UINT8:
-        for (int i = 0; i < 3; ++i) multiply<std::uint8_t> (cloud, xyz_offset[i], multiplier[i]);
-        break;
-      case pcl::PCLPointField::INT16:
-        for (int i = 0; i < 3; ++i) multiply<std::int16_t> (cloud, xyz_offset[i], multiplier[i]);
-        break;
-      case pcl::PCLPointField::UINT16:
-        for (int i = 0; i < 3; ++i) multiply<std::uint16_t> (cloud, xyz_offset[i], multiplier[i]);
-        break;
-      case pcl::PCLPointField::INT32:
-        for (int i = 0; i < 3; ++i) multiply<std::int32_t> (cloud, xyz_offset[i], multiplier[i]);
-        break;
-      case pcl::PCLPointField::UINT32:
-        for (int i = 0; i < 3; ++i) multiply<std::uint32_t> (cloud, xyz_offset[i], multiplier[i]);
-        break;
-      case pcl::PCLPointField::FLOAT32:
-        for (int i = 0; i < 3; ++i) multiply<float> (cloud, xyz_offset[i], multiplier[i]);
-        break;
-      case pcl::PCLPointField::FLOAT64:
-        for (int i = 0; i < 3; ++i) multiply<double> (cloud, xyz_offset[i], multiplier[i]);
-        break;
+      MULTIPLY(pcl::PCLPointField::BOOL)
+      MULTIPLY(pcl::PCLPointField::INT8)
+      MULTIPLY(pcl::PCLPointField::UINT8)
+      MULTIPLY(pcl::PCLPointField::INT16)
+      MULTIPLY(pcl::PCLPointField::UINT16)
+      MULTIPLY(pcl::PCLPointField::INT32)
+      MULTIPLY(pcl::PCLPointField::UINT32)
+      MULTIPLY(pcl::PCLPointField::INT64)
+      MULTIPLY(pcl::PCLPointField::UINT64)
+      MULTIPLY(pcl::PCLPointField::FLOAT32)
+      MULTIPLY(pcl::PCLPointField::FLOAT64)
     }
+#undef MULTIPLY
     xyz_offset += cloud.point_step;
   }
 }
