@@ -72,18 +72,13 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
   float base_max = -std::numeric_limits<float>::max (),
         base_min = std::numeric_limits<float>::max ();
   bool found_finite = false;
-  for (std::size_t x = 0; x < output.width; ++x)
+  for (const auto& pt: output)
   {
-    for (std::size_t y = 0; y < output.height; ++y)
+    if (std::isfinite(pt.z))
     {
-      if (std::isfinite (output (x, y).z))
-      {
-        if (base_max < output (x, y).z)
-          base_max = output (x, y).z;
-        if (base_min > output (x, y).z)
-          base_min = output (x, y).z;
-        found_finite = true;
-      }
+      base_max = std::max<float>(pt.z, base_max);
+      base_min = std::min<float>(pt.z, base_min);
+      found_finite = true;
     }
   }
   if (!found_finite)
