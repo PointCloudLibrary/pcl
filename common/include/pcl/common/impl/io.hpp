@@ -117,6 +117,9 @@ getFieldsList (const pcl::PointCloud<PointT> &)
 }
 
 namespace detail {
+/**
+ * @brief copies the header from cloud_in and returns a new point cloud
+ */
 template <typename PointTOut, typename PointTIn> pcl::PointCloud<PointTOut>
 copyPrelude (const pcl::PointCloud<PointTIn>& cloud_in)
 {
@@ -158,6 +161,30 @@ copyPrelude(const pcl::PointCloud<PointT>& cloud_in,
 {
   return detail::copyPrelude<PointT, PointT>(cloud_in, size);
 }
+
+/**
+ * @brief copies the header from cloud_in without affecting points
+ */
+template <typename PointInT, typename PointOutT>
+void
+copyPreludeOnly(const pcl::PointCloud<PointInT>& cloud_in,
+                pcl::PointCloud<PointOutT>& cloud_out)
+{
+  pcl::PointCloud<PointOutT> temp = std::move(cloud_out);
+  cloud_out = detail::copyPrelude<PointInT, PointOutT>(cloud_in);
+  cloud_out.points = std::move(temp.points);
+}
+
+template <typename PointInT, typename PointOutT>
+void
+copyPreludeOnly(const pcl::PointCloud<PointInT>& cloud_in,
+                pcl::index_t size,
+                pcl::PointCloud<PointOutT>& cloud_out)
+{
+  pcl::PointCloud<PointOutT> temp = std::move(cloud_out);
+  cloud_out = detail::copyPrelude<PointInT, PointOutT>(cloud_in, size);
+  cloud_out.points = std::move(temp.points);
+}
 } // namespace detail
 
 template <typename PointT>
@@ -178,7 +205,7 @@ copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   }
 
   // Copy the headers and allocate enough space
-  cloud_out = detail::copyPrelude<PointOutT>(cloud_in);
+  detail::copyPreludeOnly(cloud_in, cloud_out);
   cloud_out.points.resize (cloud_in.points.size ());
 
   // Iterate over each point
@@ -215,14 +242,13 @@ copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
                 pcl::PointCloud<PointOutT> &cloud_out)
 {
   // Copy the headers and allocate enough space
-  cloud_out = detail::copyPrelude<PointOutT>(cloud_in, static_cast<index_t>(indices.size()));
-  cloud_out.points.resize (indices.size ());
+  detail::copyPreludeOnly(cloud_in, static_cast<index_t>(indices.size()), cloud_out);
+  cloud_out.points.resize(indices.size());
 
   // Iterate over each point
-  for (std::size_t i = 0; i < indices.size (); ++i)
-    copyPoint (cloud_in.points[indices[i]], cloud_out.points[i]);
+  for (std::size_t i = 0; i < indices.size(); ++i)
+    copyPoint(cloud_in.points[indices[i]], cloud_out.points[i]);
 }
-
 
 template <typename PointT> void
 copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
@@ -293,7 +319,7 @@ copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   }
 
   // Copy the headers and allocate enough space
-  cloud_out = detail::copyPrelude<PointOutT>(cloud_in, static_cast<index_t>(nr_p));
+  detail::copyPreludeOnly(cloud_in, static_cast<index_t>(nr_p), cloud_out);
   cloud_out.points.resize (nr_p);
 
   // Iterate over each cluster
