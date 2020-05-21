@@ -95,11 +95,11 @@ type_functions = {
 
 
 def main():
-    header_info = read_json("point_types.json")
+    header_info = read_json("common/point_types.json")
     for item in header_info:
         type_functions[item["type"]](item)
     lines_to_write = handle_final(filename="pcl/point_types.h", module_name="pcl")
-    write_to_cpp(filename="py_point_types.cpp", linelist=lines_to_write)
+    write_to_cpp(filename="common/py_point_types.cpp", linelist=lines_to_write)
 
 
 if __name__ == "__main__":
