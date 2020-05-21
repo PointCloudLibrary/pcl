@@ -440,10 +440,20 @@ namespace pcl
       // iterators
       using iterator = typename VectorType::iterator;
       using const_iterator = typename VectorType::const_iterator;
-      inline iterator begin () { return (points.begin ()); }
-      inline iterator end ()   { return (points.end ()); }
-      inline const_iterator begin () const { return (points.begin ()); }
-      inline const_iterator end () const  { return (points.end ()); }
+      using reverse_iterator = typename VectorType::reverse_iterator;
+      using const_reverse_iterator = typename VectorType::const_reverse_iterator;
+      inline iterator begin () noexcept { return (points.begin ()); }
+      inline iterator end () noexcept { return (points.end ()); }
+      inline const_iterator begin () const noexcept { return (points.begin ()); }
+      inline const_iterator end () const noexcept { return (points.end ()); }
+      inline const_iterator cbegin () const noexcept { return (points.cbegin ()); }
+      inline const_iterator cend () const noexcept { return (points.cend ()); }
+      inline reverse_iterator rbegin () noexcept { return (points.rbegin ()); }
+      inline reverse_iterator rend () noexcept { return (points.rend ()); }
+      inline const_reverse_iterator rbegin () const noexcept { return (points.rbegin ()); }
+      inline const_reverse_iterator rend () const noexcept { return (points.rend ()); }
+      inline const_reverse_iterator crbegin () const noexcept { return (points.crbegin ()); }
+      inline const_reverse_iterator crend () const noexcept { return (points.crend ()); }
 
       //capacity
       inline std::size_t size () const { return (points.size ()); }
