@@ -101,7 +101,7 @@ pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &clou
   pcl::utils::ignore(nr_threads);
 #pragma omp parallel for \
   default(none) \
-  shared(tree, cloud, indices) \
+  shared(tree, cloud, indices, max_dist_sqr, s) \
   private(ids, dists_sqr) \
   reduction(+:mean_dist, num) \
   firstprivate(s, max_dist_sqr) \
