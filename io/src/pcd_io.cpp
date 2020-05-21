@@ -1110,16 +1110,16 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
     break;                                                                             \
   }
         switch (cloud.fields[d].datatype) {
-          COPY_STRING(pcl::PCLPointField::BOOL)
-          COPY_STRING(pcl::PCLPointField::INT8)
-          COPY_STRING(pcl::PCLPointField::UINT8)
-          COPY_STRING(pcl::PCLPointField::INT16)
-          COPY_STRING(pcl::PCLPointField::UINT16)
-          COPY_STRING(pcl::PCLPointField::INT32)
-          COPY_STRING(pcl::PCLPointField::UINT32)
-          COPY_STRING(pcl::PCLPointField::INT64)
-          COPY_STRING(pcl::PCLPointField::UINT64)
-          COPY_STRING(pcl::PCLPointField::FLOAT64)
+          COPY_VALUE(pcl::PCLPointField::BOOL)
+          COPY_VALUE(pcl::PCLPointField::INT8)
+          COPY_VALUE(pcl::PCLPointField::UINT8)
+          COPY_VALUE(pcl::PCLPointField::INT16)
+          COPY_VALUE(pcl::PCLPointField::UINT16)
+          COPY_VALUE(pcl::PCLPointField::INT32)
+          COPY_VALUE(pcl::PCLPointField::UINT32)
+          COPY_VALUE(pcl::PCLPointField::INT64)
+          COPY_VALUE(pcl::PCLPointField::UINT64)
+          COPY_VALUE(pcl::PCLPointField::FLOAT64)
 
         case pcl::PCLPointField::FLOAT32: {
           /*
@@ -1141,6 +1141,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
                    cloud.fields[d].datatype);
           break;
         }
+#undef COPY_VALUE
 
         if (d < cloud.fields.size() - 1 ||
             c < static_cast<int>(cloud.fields[d].count) - 1)
