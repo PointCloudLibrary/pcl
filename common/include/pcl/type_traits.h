@@ -73,32 +73,40 @@ namespace pcl
         static const std::uint8_t INT8 = 1,    UINT8 = 2,
                                   INT16 = 3,   UINT16 = 4,
                                   INT32 = 5,   UINT32 = 6,
-                                  FLOAT32 = 7, FLOAT64 = 8;
+                                  FLOAT32 = 7, FLOAT64 = 8,
+                                  INT64 = 9,   UINT64 = 10,
+                                  BOOL = 11;
     };
-    }
+    }  // namespace detail
 
     // Metafunction to return enum value representing a type
     template<typename T> struct asEnum {};
+    template<> struct asEnum<bool>          { static const std::uint8_t value = detail::PointFieldTypes::BOOL; };
     template<> struct asEnum<std::int8_t>   { static const std::uint8_t value = detail::PointFieldTypes::INT8;    };
     template<> struct asEnum<std::uint8_t>  { static const std::uint8_t value = detail::PointFieldTypes::UINT8;   };
     template<> struct asEnum<std::int16_t>  { static const std::uint8_t value = detail::PointFieldTypes::INT16;   };
     template<> struct asEnum<std::uint16_t> { static const std::uint8_t value = detail::PointFieldTypes::UINT16;  };
     template<> struct asEnum<std::int32_t>  { static const std::uint8_t value = detail::PointFieldTypes::INT32;   };
     template<> struct asEnum<std::uint32_t> { static const std::uint8_t value = detail::PointFieldTypes::UINT32;  };
-    template<> struct asEnum<float>    { static const std::uint8_t value = detail::PointFieldTypes::FLOAT32; };
-    template<> struct asEnum<double>   { static const std::uint8_t value = detail::PointFieldTypes::FLOAT64; };
+    template<> struct asEnum<std::int64_t>  { static const std::uint8_t value = detail::PointFieldTypes::INT64;   };
+    template<> struct asEnum<std::uint64_t> { static const std::uint8_t value = detail::PointFieldTypes::UINT64;  };
+    template<> struct asEnum<float>         { static const std::uint8_t value = detail::PointFieldTypes::FLOAT32; };
+    template<> struct asEnum<double>        { static const std::uint8_t value = detail::PointFieldTypes::FLOAT64; };
 
     template<typename T>
     static constexpr std::uint8_t asEnum_v = asEnum<T>::value;
 
     // Metafunction to return type of enum value
     template<int> struct asType {};
+    template<> struct asType<detail::PointFieldTypes::BOOL>    { using type = bool; };
     template<> struct asType<detail::PointFieldTypes::INT8>    { using type = std::int8_t; };
     template<> struct asType<detail::PointFieldTypes::UINT8>   { using type = std::uint8_t; };
     template<> struct asType<detail::PointFieldTypes::INT16>   { using type = std::int16_t; };
     template<> struct asType<detail::PointFieldTypes::UINT16>  { using type = std::uint16_t; };
     template<> struct asType<detail::PointFieldTypes::INT32>   { using type = std::int32_t; };
     template<> struct asType<detail::PointFieldTypes::UINT32>  { using type = std::uint32_t; };
+    template<> struct asType<detail::PointFieldTypes::INT64>   { using type = std::int64_t; };
+    template<> struct asType<detail::PointFieldTypes::UINT64>  { using type = std::uint64_t; };
     template<> struct asType<detail::PointFieldTypes::FLOAT32> { using type = float; };
     template<> struct asType<detail::PointFieldTypes::FLOAT64> { using type = double; };
 

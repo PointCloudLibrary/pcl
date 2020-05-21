@@ -120,6 +120,7 @@ namespace pcl
   {
     switch (datatype)
     {
+      case pcl::PCLPointField::BOOL:
       case pcl::PCLPointField::INT8:
       case pcl::PCLPointField::UINT8:
         return (1);
@@ -133,6 +134,8 @@ namespace pcl
       case pcl::PCLPointField::FLOAT32:
         return (4);
 
+      case pcl::PCLPointField::INT64:
+      case pcl::PCLPointField::UINT64:
       case pcl::PCLPointField::FLOAT64:
         return (8);
 
@@ -151,7 +154,7 @@ namespace pcl
 
   /** \brief Obtains the type of the PCLPointField from a specific size and type
     * \param[in] size the size in bytes of the data field
-    * \param[in] type a char describing the type of the field  ('F' = float, 'I' = signed, 'U' = unsigned)
+    * \param[in] type a char describing the type of the field  ('B' = bool, 'F' = float, 'I' = signed, 'U' = unsigned)
     * \ingroup common
     */
   inline int
@@ -161,6 +164,8 @@ namespace pcl
     switch (size)
     {
       case 1:
+        if (type == 'B')
+          return (pcl::PCLPointField::BOOL);
         if (type == 'I')
           return (pcl::PCLPointField::INT8);
         if (type == 'U')
@@ -184,6 +189,10 @@ namespace pcl
         break;
 
       case 8:
+        if (type == 'I')
+          return (pcl::PCLPointField::INT64);
+        if (type == 'U')
+          return (pcl::PCLPointField::UINT64);
         if (type == 'F')
           return (pcl::PCLPointField::FLOAT64);
         break;
@@ -200,19 +209,25 @@ namespace pcl
   {
     switch (type)
     {
+      case pcl::PCLPointField::BOOL:
+        return 'B';
+
       case pcl::PCLPointField::INT8:
       case pcl::PCLPointField::INT16:
       case pcl::PCLPointField::INT32:
+      case pcl::PCLPointField::INT64:
         return ('I');
 
       case pcl::PCLPointField::UINT8:
       case pcl::PCLPointField::UINT16:
       case pcl::PCLPointField::UINT32:
+      case pcl::PCLPointField::UINT64:
         return ('U');
 
       case pcl::PCLPointField::FLOAT32:
       case pcl::PCLPointField::FLOAT64:
         return ('F');
+
       default:
         return ('?');
     }

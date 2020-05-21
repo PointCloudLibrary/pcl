@@ -76,6 +76,7 @@ pcl::PCLBase<pcl::PCLPointCloud2>::setInputCloud (const PCLPointCloud2ConstPtr &
   {
     switch (datatype)
     {
+      case pcl::PCLPointField::BOOL:
       case pcl::PCLPointField::INT8:
       case pcl::PCLPointField::UINT8: return 1;
 
@@ -86,6 +87,8 @@ pcl::PCLBase<pcl::PCLPointCloud2>::setInputCloud (const PCLPointCloud2ConstPtr &
       case pcl::PCLPointField::UINT32:
       case pcl::PCLPointField::FLOAT32: return 4;
 
+      case pcl::PCLPointField::INT64:
+      case pcl::PCLPointField::UINT64:
       case pcl::PCLPointField::FLOAT64: return 8;
 
       default:
@@ -94,12 +97,12 @@ pcl::PCLBase<pcl::PCLPointCloud2>::setInputCloud (const PCLPointCloud2ConstPtr &
     }
   };
 
-  // Restrict size of a field to be at-max sizeof(FLOAT32) for now
+  // Restrict size of a field to be at-max sizeof(FLOAT64) now to support {U}INT64
   field_sizes_.resize(input_->fields.size());
   std::transform(input_->fields.begin(), input_->fields.end(), field_sizes_.begin(),
                  [&sizeofDatatype](const auto& field)
                  {
-                   return std::min(sizeofDatatype(field.datatype), static_cast<int>(sizeof(float)));
+                   return std::min(sizeofDatatype(field.datatype), static_cast<int>(sizeof(double)));
                  });
 }
 
