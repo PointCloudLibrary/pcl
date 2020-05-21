@@ -46,7 +46,7 @@ namespace pcl
       * distance, starting with a random point, utilizing a naive method.
       * \author Haritha Jayasinghe
       * \ingroup filters
-      * @TODO: add support to export/import distance metric
+      * \todo add support to export/import distance metric
       */
     template<typename PointT>
     class FarthestPointSampling : public FilterIndices<PointT>
