@@ -41,7 +41,8 @@ RUN apt-get update \
 # Eigen patch (https://eigen.tuxfamily.org/bz/show_bug.cgi?id=1462) to fix issue metioned
 # in https://github.com/PointCloudLibrary/pcl/issues/3729 is available in Eigen 3.3.7
 # Not needed from 20.04 since it is the default version from apt
-RUN wget -qO- https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.gz | tar xz \
+RUN if [ `apt show libeigen3-dev 2>/dev/null | grep '^version' -i | awk -F'[ -.]' '{print $4}'` -lt 7 ]; then \
+ && wget -qO- https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.gz | tar xz \
  && apt install -y libblas-dev \
  && cd eigen-3.3.7 \
  && mkdir build \
