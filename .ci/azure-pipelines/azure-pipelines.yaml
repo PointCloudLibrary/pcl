@@ -14,29 +14,94 @@ stages:
     displayName: Formatting
     jobs:
       - template: formatting.yaml
-  - stage: build_ubuntu
-    displayName: Build Ubuntu
+
+  - stage: build_gcc
+    displayName: Build GCC
     dependsOn: formatting
     jobs:
-      - template: build-ubuntu.yaml
-  - stage: build_osx
-    displayName: Build macOS
+      - job: ubuntu
+        displayName: Ubuntu
+        pool:
+          vmImage: 'Ubuntu 16.04'
+        strategy:
+          matrix:
+            16.04 GCC:
+              CONTAINER: env1604
+              CC: gcc
+              CXX: g++
+              CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
+            20.04 GCC:
+              CONTAINER: env2004
+              CC: gcc
+              CXX: g++
+              CMAKE_ARGS: ''
+        container: $[ variables['CONTAINER'] ]
+        timeoutInMinutes: 0
+        variables:
+          BUILD_DIR: '$(Agent.BuildDirectory)/build'
+          CMAKE_CXX_FLAGS: '-Wall -Wextra'
+        steps:
+          - template: build/build-ubuntu.yaml
+
+  - stage: build_clang
+    displayName: Build Clang
     dependsOn: formatting
     jobs:
-      - template: build-macos.yaml
-  - stage: build_windows
-    displayName: Build Windows
+      - job: osx
+        displayName: macOS
+        pool:
+          vmImage: '$(VMIMAGE)'
+        strategy:
+          matrix:
+            Catalina 10.15:
+              VMIMAGE: 'macOS-10.15'
+              OSX_VERSION: '10.15'
+            Mojave 10.14:
+              VMIMAGE: 'macOS-10.14'
+              OSX_VERSION: '10.14'
+        timeoutInMinutes: 0
+        variables:
+          BUILD_DIR: '$(Agent.WorkFolder)/build'
+          GOOGLE_TEST_DIR: '$(Agent.WorkFolder)/googletest'
+          CMAKE_CXX_FLAGS: '-Wall -Wextra -Werror -Wabi'
+        steps:
+          - template: build/build-macos.yaml
+
+  - stage: build_msvc
+    displayName: Build MSVC
     dependsOn: formatting
     jobs:
-      - template: build-windows.yaml
+      - job: vs2017
+        displayName: Windows VS2017 Build
+        pool:
+          vmImage: 'vs2017-win2016'
+        strategy:
+          matrix:
+            x86:
+              PLATFORM: 'x86'
+              ARCHITECTURE: 'x86'
+              GENERATOR: 'Visual Studio 15 2017'
+            x64:
+              PLATFORM: 'x64'
+              ARCHITECTURE: 'x86_amd64'
+              GENERATOR: 'Visual Studio 15 2017 Win64'
+        timeoutInMinutes: 0
+        variables:
+          BUILD_DIR: '$(Agent.WorkFolder)\build'
+          CONFIGURATION: 'Release'
+          VCPKG_ROOT: 'C:\vcpkg'
+        steps:
+          - template: build/build-windows.yaml
+
   - stage: documentation
     displayName: Documentation
     dependsOn: []
     jobs:
       - template: documentation.yaml
+
   - stage: tutorials
     displayName: Tutorials
-    dependsOn: build_ubuntu
+    dependsOn: build_gcc
     jobs:
       - template: tutorials.yaml
       
