@@ -38,7 +38,6 @@
 #ifndef PCL_RECOGNITION_LINEMOD_LINE_RGBD_IMPL_HPP_
 #define PCL_RECOGNITION_LINEMOD_LINE_RGBD_IMPL_HPP_
 
-// #include <pcl/recognition/linemod/line_rgbd.h>
 #include <pcl/io/pcd_io.h>
 #include <fcntl.h>
 #include <pcl/point_cloud.h>
@@ -165,17 +164,14 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBoxAndCenterTemplatePointClo
 {
   BoundingBoxXYZ bb;
   bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
-  bb.width = bb.height = bb.depth = 0.0f;
 
   Eigen::Vector3f geometric_center = Eigen::Vector3f::Zero ();
   Eigen::Vector3f min_pos, max_pos;
   min_pos.fill (std::numeric_limits<float>::max ());
   max_pos.fill (std::numeric_limits<float>::lowest ());
   std::size_t counter = 0;
-  for (std::size_t j = 0; j < template_point_cloud.size (); ++j) 
+  for (const PointXYZRGBA & p : template_point_cloud.points)
   {
-    const PointXYZRGBA & p = template_point_cloud.points[j];
-
     if (!isXYZFinite(p))
       continue;
 
@@ -198,16 +194,12 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBoxAndCenterTemplatePointClo
   bb.y = diff_pos[1];
   bb.z = diff_pos[2];
 
-  for (std::size_t j = 0; j < template_point_cloud.size (); ++j) 
+  for (PointXYZRGBA & p : template_point_cloud.points)
   {
-    PointXYZRGBA p = template_point_cloud.points[j];
-
     if (!isXYZFinite(p))
       continue;
 
     p.getVector3fMap () -= geometric_center;
-
-    template_point_cloud.points[j] = p;
   }
 
   return bb;
