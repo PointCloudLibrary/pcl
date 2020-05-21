@@ -280,11 +280,6 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
       ++current;
     }
 
-    for (std::size_t i = 0; i < cloudSearchBruteforce.size (); i++) 
-      for (std::size_t j = 0; j < cloudNWRSearch.size (); j++) 
-        if (cloudNWRSearch[i]== cloudSearchBruteforce[j])
-          break;
-
     ASSERT_EQ (cloudNWRRadius.size() , cloudSearchBruteforce.size ());
 
     // check if result limitation works

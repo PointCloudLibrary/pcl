@@ -33,4 +33,9 @@ if(BUILD_io)
                FILES test_search.cpp
                LINK_WITH pcl_gtest pcl_search pcl_io pcl_kdtree
                ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd")
+
+  PCL_ADD_TEST(organized_index test_organized_index
+          FILES test_organized_index.cpp
+          LINK_WITH pcl_gtest pcl_search pcl_common pcl_io
+          ARGUMENTS "${PCL_SOURCE_DIR}/test/office1.pcd")
 endif()
