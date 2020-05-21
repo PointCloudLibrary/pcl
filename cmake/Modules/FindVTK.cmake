@@ -43,14 +43,13 @@ set(PCL_VTK_COMPONENTS
     RenderingLOD
     RenderingFreeType
     RenderingOpenGL2
-    RenderingUI
     ViewsCore
     ViewsContext2D
   )
 
   # If not prepend vtk to names
   if(${VTK_VERSION} VERSION_LESS 9.0)
-    list(TRANSFORM PCL_VTK_COMPONENTS PREPEND vtk PCL_VTK_COMPONENTS)
+    list(TRANSFORM PCL_VTK_COMPONENTS PREPEND "vtk")
   endif()
 
 if(NOT DEFINED VTK_RENDERING_BACKEND)
@@ -62,7 +61,12 @@ if(${VTK_VERSION} VERSION_LESS 8.1)
   endif()
 endif()
 
-list(APPEND PCL_VTK_COMPONENTS RenderingContext${VTK_RENDERING_BACKEND})
+if(${VTK_VERSION} VERSION_LESS 9.0)
+  list(APPEND PCL_VTK_COMPONENTS vtkRenderingContext${VTK_RENDERING_BACKEND})
+else()
+  list(APPEND PCL_VTK_COMPONENTS RenderingUI) # not available < 9.0 so append here.
+  list(APPEND PCL_VTK_COMPONENTS RenderingContext${VTK_RENDERING_BACKEND})
+endif()
 
 if(WITH_QT)
   if(";${VTK_MODULES_ENABLED};" MATCHES ";vtkGUISupportQt;" AND ";${VTK_MODULES_ENABLED};" MATCHES ";vtkRenderingQt;")
