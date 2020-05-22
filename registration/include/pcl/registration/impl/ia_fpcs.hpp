@@ -105,7 +105,7 @@ pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &clou
   shared(tree, cloud, indices) \
   private(ids, dists_sqr) \
   reduction(+:mean_dist, num) \
-  privatefirst(s, max_dist_sqr) \
+  firstprivate(s, max_dist_sqr) \
   num_threads(nr_threads)
 #else
 #pragma omp parallel for \
@@ -115,7 +115,6 @@ pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &clou
   reduction(+:mean_dist, num) \
   num_threads(nr_threads)
 #endif
-
   for (int i = 0; i < 1000; i++)
   {
     tree.nearestKSearch (cloud->points[indices[rand () % s]], 2, ids, dists_sqr);
