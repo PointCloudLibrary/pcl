@@ -104,7 +104,7 @@
                 "operatortype": "std::ostream&",
                 "identifier": "<<",
                 "meta": ["PCL_EXPORTS"],
-                "parameters": ["std::ostream& os", "const PointXYZ& p"]
+                "parameters_type": ["std::ostream&", "const PointXYZ&"]
             },
             {
                 "type": "struct",
@@ -115,19 +115,19 @@
                     {
                         "type": "constructor",
                         "meta": ["inline"],
-                        "parameters": ["const _PointXYZ &p"],
+                        "parameters_type": ["const _PointXYZ &"],
                         "initializers": ["PointXYZ(p.x, p.y, p.z)"]
                     },
                     {
                         "type": "constructor",
                         "meta": ["inline"],
-                        "parameters": [],
+                        "parameters_type": [],
                         "initializers": ["PointXYZ(0.f, 0.f, 0.f)"]
                     },
                     {
                         "type": "constructor",
                         "meta": ["inline"],
-                        "parameters": ["float _x", "float _y", "float _z"],
+                        "parameters_type": ["float", "float", "float"],
                         "members": [
                             {
                                 "type": "statements",
@@ -140,7 +140,7 @@
                         "operatortype": "std::ostream&",
                         "identifier": "<<",
                         "meta": ["friend"],
-                        "parameters": ["std::ostream& os", "const PointXYZ& p"]
+                        "parameters_type": ["std::ostream&", "const PointXYZ&"]
                     },
                     {"type": "macro", "identifier": "PCL_MAKE_ALIGNED_OPERATOR_NEW"}
                 ]
@@ -157,7 +157,7 @@
                 "operatortype": "std::ostream&",
                 "identifier": "<<",
                 "meta": ["PCL_EXPORTS"],
-                "parameters": ["std::ostream& os", "const RGB& p"]
+                "parameters_type": ["std::ostream&", "const RGB&"]
             },
             {
                 "type": "struct",
@@ -168,22 +168,22 @@
                     {
                         "type": "constructor",
                         "meta": ["inline"],
-                        "parameters": ["const _RGB &p"],
+                        "parameters_type": ["const _RGB"],
                         "members": [{"type": "statement", "execute": "rgba = p.rgba"}]
                     },
                     {
                         "type": "constructor",
                         "meta": ["inline"],
-                        "parameters": [],
+                        "parameters_type": [],
                         "initializers": ["RGB(0, 0, 0)"]
                     },
                     {
                         "type": "constructor",
                         "meta": ["inline"],
-                        "parameters": [
-                            "std::uint8_t _r",
-                            "std::uint8_t _g",
-                            "std::uint8_t _b"
+                        "parameters_type": [
+                            "std::uint8_t",
+                            "std::uint8_t",
+                            "std::uint8_t"
                         ],
                         "members": [
                             {
@@ -197,7 +197,7 @@
                         "operatortype": "std::ostream&",
                         "identifier": "<<",
                         "meta": ["friend"],
-                        "parameters": ["std::ostream& os", "const RGB& p"]
+                        "parameters_type": ["std::ostream&", "const RGB&"]
                     }
                 ]
             }
