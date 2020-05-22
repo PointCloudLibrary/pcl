@@ -10,8 +10,10 @@ if(NOT VTK_FOUND)
 else()
   set(DEFAULT TRUE)
   set(REASON)
-  set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
-  include("${VTK_USE_FILE}")
+  if(${VTK_VERSION} VERSION_LESS 9.0)
+    set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
+    include("${VTK_USE_FILE}")
+  endif()
 endif()
 
 # QT5 Found?

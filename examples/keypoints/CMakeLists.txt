@@ -6,12 +6,14 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS visualization)
 
 ## Find VTK
 if(NOT VTK_FOUND)
-    set(DEFAULT FALSE)
-    set(REASON "VTK was not found.")
+  set(DEFAULT FALSE)
+  set(REASON "VTK was not found.")
 else()
-    set(DEFAULT TRUE)
-    set(REASON)
+  set(DEFAULT TRUE)
+  set(REASON)
+  if(${VTK_VERSION} VERSION_LESS 9.0)
     include(${VTK_USE_FILE})
+  endif()
 endif()
 
 PCL_ADD_EXAMPLE(pcl_example_sift_keypoint_estimation FILES example_sift_keypoint_estimation.cpp

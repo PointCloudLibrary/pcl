@@ -34,7 +34,9 @@ if(LIBUSB_1_FOUND)
 endif()
 
 if(VTK_FOUND)
-  include("${VTK_USE_FILE}")
+  if(${VTK_VERSION} VERSION_LESS 9.0)
+    include(${VTK_USE_FILE})
+  endif()
 
   set(incs "include/pcl/${SUBSYS_NAME}/render_views_tesselated_sphere.h")
   set(srcs "src/render_views_tesselated_sphere.cpp")
