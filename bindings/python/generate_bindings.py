@@ -51,8 +51,9 @@ def handle_constructor(item):
 
 
 def handle_operator(item):
-    if in_struct:
-        module_linelist.append(f'.def(py::self {item["identifier"]} py::self)')
+    pass
+    # if in_struct:
+    #     module_linelist.append(f'.def(py::self {item["identifier"]} py::self)')
 
 
 def handle_namespace(item):
