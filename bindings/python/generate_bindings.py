@@ -13,14 +13,8 @@ def write_to_cpp(filename, linelist):
             f.writelines("\n")
 
 
-namespace = None
 in_struct = False
 module_linelist = []
-
-
-def check_namespace(item):
-    if namespace:
-        item["identifier"] = f"{namespace}::{item['identifier']}"
 
 
 def handle_final(filename, module_name):
@@ -28,8 +22,14 @@ def handle_final(filename, module_name):
     linelist.append(f"#include <{filename}>")
     linelist.append("#include <pybind11/pybind11.h>")
     linelist.append("namespace py = pybind11;")
-    linelist.append(f"PYBIND11_MODULE({module_name}, m)")
-    linelist.append("{")
+    for i in range(len(module_linelist)):
+        if module_linelist[i].startswith("namespace"):
+            continue
+        else:
+            module_linelist[i] = "".join(
+                (f"PYBIND11_MODULE({module_name}, m)", "{", module_linelist[i])
+            )
+            break
     for line in module_linelist:
         linelist.append(line)
     linelist.append("}")
@@ -56,18 +56,17 @@ def handle_operator(item):
 
 
 def handle_namespace(item):
-    global namespace
     namespace = item["identifier"]
+    module_linelist.append(f"namespace {namespace}" + "{")
     for sub_item in item["members"]:
         type_functions[sub_item["type"]](sub_item)
-    namespace = None
+    module_linelist.append("}")
 
 
 def handle_struct(item):
     global in_struct
     in_struct = True
     name_decl = item["identifier"]
-    check_namespace(item)
     name_impl = item["identifier"]
     if "parent" in item.keys():
         name_impl = f'{item["identifier"]}, {item["parent"]}'
