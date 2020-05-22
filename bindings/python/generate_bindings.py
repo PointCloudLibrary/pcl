@@ -45,9 +45,9 @@ def handle_alias(item):
 
 
 def handle_constructor(item):
-    parameters = ""
-    parameters = ",".join(params for params in item["parameters"])
-    module_linelist.append(f".def(py::init<{parameters}>())")
+    parameters_type = ""
+    parameters_type = ",".join(params for params in item["parameters_type"])
+    module_linelist.append(f".def(py::init<{parameters_type}>())")
 
 
 def handle_operator(item):
