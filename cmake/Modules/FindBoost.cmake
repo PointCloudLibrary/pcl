@@ -1,3 +1,9 @@
+# use static Boost in Windows
+if(WIN32)
+    set(Boost_USE_STATIC_LIBS @Boost_USE_STATIC_LIBS@)
+    set(Boost_USE_STATIC @Boost_USE_STATIC@)
+    set(Boost_USE_MULTITHREAD @Boost_USE_MULTITHREAD@)
+endif()
 
 # If we would like to compile against a dynamically linked Boost
 if(PCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32 AND WIN32)
@@ -10,13 +16,6 @@ else()
         set(Boost_USE_STATIC_LIBS ON)
         set(Boost_USE_STATIC ON)
     endif()
-endif()
-
-# use static Boost in Windows
-if(WIN32)
-    set(Boost_USE_STATIC_LIBS @Boost_USE_STATIC_LIBS@)
-    set(Boost_USE_STATIC @Boost_USE_STATIC@)
-    set(Boost_USE_MULTITHREAD @Boost_USE_MULTITHREAD@)
 endif()
 
 set(Boost_ADDITIONAL_VERSIONS
