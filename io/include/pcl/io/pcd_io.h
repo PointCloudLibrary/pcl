@@ -83,7 +83,7 @@ namespace pcl
         PCD_V6 = 0,
         PCD_V7 = 1
       };
-
+  
       /** \brief Read a point cloud data header from a PCD-formatted, binary istream.
         *
         * Load only the meta information (number of points, their types, etc),
@@ -599,21 +599,33 @@ namespace pcl
       void
       resetLockingPermissions (const std::string &file_name,
                                boost::interprocess::file_lock &lock);
-   
-      /** \brief Check point cloud size before writing
-        * \param[in] cloud the pcl::PointCloud data
-        * returns 1 if point cloud is empty, 2 if (width*height != size), 0 otherwise  
-        */
-      template<typename PointT> inline int
-      checkCloudSize (const pcl::PointCloud<PointT> &cloud);
+
+      /** \brief potential errors in the size of the cloud to be written to disk
+       * success = no discrepancy detected)
+       * empty_cloud = the input point cloud has zero points)
+       * size_mismatch = the number of points in the cloud do not match height*width)
+       */
+       enum
+      {
+        success = 0,
+        empty_cloud = 1, 
+        size_mismatch = 2
+      };
 
       /** \brief Check point cloud size before writing
         * \param[in] cloud the pcl::PointCloud data
-        * returns 1 if point cloud or indices are empty, 2 if (width*height != size), 0 otherwise  
+        * returns {0 = success, 1 = empty_cloud, 2 = size_mismatch} 
+        */
+      template<typename PointT> inline int
+      checkCloudSize (const pcl::PointCloud<PointT> &cloud)  const;
+
+      /** \brief Check point cloud size before writing
+        * \param[in] cloud the pcl::PointCloud data
+        * returns {0 = success, 1 = empty_cloud, 2 = size_mismatch} 
         */
       template<typename PointT> inline int
       checkCloudSize (const pcl::PointCloud<PointT> &cloud,
-                      const std::vector<int> &indices);
+                      const std::vector<int> &indices) const;
 
     private:
       /** \brief Set to true if msync() should be called before munmap(). Prevents data loss on NFS systems. */
