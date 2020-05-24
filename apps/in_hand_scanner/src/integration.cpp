@@ -375,10 +375,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
       VertexIndex& vi_4 = vertex_indices [ind_4];
 
       this->addToMesh (pt_d_t_0,pt_d_t_1,pt_d_t_2,pt_d_t_3, vi_0,vi_1,vi_2,vi_3, mesh_model);
-      if (Mesh::IsManifold::value) // Only needed for the manifold mesh
-      {
-        this->addToMesh (pt_d_t_0,pt_d_t_2,pt_d_t_4,pt_d_t_3, vi_0,vi_2,vi_4,vi_3, mesh_model);
-      }
+      this->addToMesh (pt_d_t_0, pt_d_t_2, pt_d_t_4, pt_d_t_3, vi_0, vi_2, vi_4, vi_3, mesh_model);
     }
   }
 
