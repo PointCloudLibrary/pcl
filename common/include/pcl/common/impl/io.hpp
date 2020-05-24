@@ -133,13 +133,30 @@ copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   if (cloud_in.points.empty ())
     return;
 
-  if (isSamePointType<PointInT, PointOutT> ())
-    // Copy the whole memory block
-    memcpy (&cloud_out.points[0], &cloud_in.points[0], cloud_in.points.size () * sizeof (PointInT));
-  else
-    // Iterate over each point
-    for (std::size_t i = 0; i < cloud_in.points.size (); ++i)
-      copyPoint (cloud_in.points[i], cloud_out.points[i]);
+  // Iterate over each point
+  for (std::size_t i = 0; i < cloud_in.points.size (); ++i)
+    copyPoint (cloud_in.points[i], cloud_out.points[i]);
+}
+
+template <typename PointInT, typename PointOutT> void
+copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
+                pcl::PointCloud<PointInT> &cloud_out)
+{
+  // Allocate enough space and copy the basics
+  cloud_out.header   = cloud_in.header;
+  cloud_out.width    = cloud_in.width;
+  cloud_out.height   = cloud_in.height;
+  cloud_out.is_dense = cloud_in.is_dense;
+  cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
+  cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
+  cloud_out.points.resize (cloud_in.points.size ());
+
+  if (cloud_in.points.empty ())
+    return;
+
+  // Copy the whole memory block
+  cloud_out.points = cloud_in.points;
+
 }
 
 
