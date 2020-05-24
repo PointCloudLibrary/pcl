@@ -158,15 +158,17 @@ PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${i
 
 target_link_libraries("${LIB_NAME}" pcl_common pcl_search pcl_kdtree pcl_octree ${ON_NURBS_LIBRARIES})
 
-if(${VTK_VERSION} VERSION_LESS 9.0)
-  include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
-  link_directories(${VTK_LIBRARY_DIRS})
-  target_link_libraries("${LIB_NAME}" ${VTK_LIBRARIES})
-else()
-  target_link_libraries("${LIB_NAME}" VTK::CommonDataModel
-                                      VTK::CommonExecutionModel
-                                      VTK::FiltersModeling
-                                      VTK::FiltersCore)
+if(VTK_FOUND)
+  if(${VTK_VERSION} VERSION_LESS 9.0)
+    include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
+    link_directories(${VTK_LIBRARY_DIRS})
+    target_link_libraries("${LIB_NAME}" ${VTK_LIBRARIES})
+  else()
+    target_link_libraries("${LIB_NAME}" VTK::CommonDataModel
+                                        VTK::CommonExecutionModel
+                                        VTK::FiltersModeling
+                                        VTK::FiltersCore)
+  endif()
 endif()
 
 if(QHULL_FOUND)
