@@ -71,6 +71,7 @@ stages:
       - job: ubuntu
         displayName: Ubuntu
         dependsOn: osx
+        condition: succeededOrFailed()
         pool:
           vmImage: 'Ubuntu 16.04'
         strategy:
