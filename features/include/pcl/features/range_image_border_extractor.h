@@ -171,10 +171,10 @@ namespace pcl
       getBorderDirections() { calculateBorderDirections(); return border_directions_.get(); }
 
       float*
-      getSurfaceChangeScores () { calculateSurfaceChanges (); return surface_change_scores_; }
+      getSurfaceChangeScores () { calculateSurfaceChanges (); return surface_change_scores_.data(); }
 
       Eigen::Vector3f*
-      getSurfaceChangeDirections() { calculateSurfaceChanges(); return surface_change_directions_; }
+      getSurfaceChangeDirections() { calculateSurfaceChanges(); return surface_change_directions_.get(); }
 
 
     protected:
@@ -188,8 +188,8 @@ namespace pcl
       std::unique_ptr<PointCloudOut> border_descriptions_;
       std::unique_ptr<ShadowBorderIndices*[]> shadow_border_informations_;
       std::unique_ptr<Eigen::Vector3f*[]> border_directions_;
-      float* surface_change_scores_;
-      Eigen::Vector3f* surface_change_directions_;
+      std::vector<float> surface_change_scores_;
+      std::unique_ptr<Eigen::Vector3f[]> surface_change_directions_;
       
       
       // =====PROTECTED METHODS=====
