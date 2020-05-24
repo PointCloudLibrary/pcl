@@ -120,10 +120,10 @@ namespace detail {
 /**
  * @brief copies the header from cloud_in and returns a new point cloud
  */
-template <typename PointTOut, typename PointTIn> pcl::PointCloud<PointTOut>
-copyPrelude (const pcl::PointCloud<PointTIn>& cloud_in)
+template <typename PointOutT, typename PointInT> pcl::PointCloud<PointOutT>
+copyPrelude (const pcl::PointCloud<PointInT>& cloud_in)
 {
-  pcl::PointCloud<PointTOut> cloud_out;
+  pcl::PointCloud<PointOutT> cloud_out;
   cloud_out.header   = cloud_in.header;
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
@@ -133,11 +133,11 @@ copyPrelude (const pcl::PointCloud<PointTIn>& cloud_in)
   return cloud_out;
 }
 
-template <typename PointTOut, typename PointTIn>
-pcl::PointCloud<PointTOut>
-copyPrelude(const pcl::PointCloud<PointTIn>& cloud_in, pcl::index_t size)
+template <typename PointOutT, typename PointInT>
+pcl::PointCloud<PointOutT>
+copyPrelude(const pcl::PointCloud<PointInT>& cloud_in, pcl::index_t size)
 {
-  pcl::PointCloud<PointTOut> cloud_out;
+  pcl::PointCloud<PointOutT> cloud_out;
   cloud_out.header = cloud_in.header;
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
@@ -151,7 +151,7 @@ template <typename PointT>
 pcl::PointCloud<PointT>
 copyPrelude(const pcl::PointCloud<PointT>& cloud_in)
 {
-  return detail::copyPrelude<PointT, PointT>(cloud_in);
+  return copyPrelude<PointT, PointT>(cloud_in);
 }
 
 template <typename PointT>
@@ -159,7 +159,7 @@ pcl::PointCloud<PointT>
 copyPrelude(const pcl::PointCloud<PointT>& cloud_in,
             pcl::index_t size)
 {
-  return detail::copyPrelude<PointT, PointT>(cloud_in, size);
+  return copyPrelude<PointT, PointT>(cloud_in, size);
 }
 
 /**
@@ -171,7 +171,7 @@ copyPreludeOnly(const pcl::PointCloud<PointInT>& cloud_in,
                 pcl::PointCloud<PointOutT>& cloud_out)
 {
   pcl::PointCloud<PointOutT> temp = std::move(cloud_out);
-  cloud_out = detail::copyPrelude<PointInT, PointOutT>(cloud_in);
+  cloud_out = copyPrelude<PointOutT>(cloud_in);
   cloud_out.points = std::move(temp.points);
 }
 
@@ -182,7 +182,7 @@ copyPreludeOnly(const pcl::PointCloud<PointInT>& cloud_in,
                 pcl::PointCloud<PointOutT>& cloud_out)
 {
   pcl::PointCloud<PointOutT> temp = std::move(cloud_out);
-  cloud_out = detail::copyPrelude<PointInT, PointOutT>(cloud_in, size);
+  cloud_out = copyPrelude<PointOutT>(cloud_in, size);
   cloud_out.points = std::move(temp.points);
 }
 } // namespace detail
