@@ -337,15 +337,16 @@ PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${c
 target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply)
-
-if(${VTK_VERSION} VERSION_LESS 9.0)
-  link_directories(${VTK_LINK_DIRECTORIES})
-  target_link_libraries("${LIB_NAME}" ${VTK_LIBRARIES})
-else()
-  target_link_libraries("${LIB_NAME}" 
-                        VTK::IOImage
-                        VTK::IOGeometry
-                        VTK::IOPLY)
+if(VTK_FOUND)
+  if(${VTK_VERSION} VERSION_LESS 9.0)
+    link_directories(${VTK_LINK_DIRECTORIES})
+    target_link_libraries("${LIB_NAME}" ${VTK_LIBRARIES})
+  else()
+    target_link_libraries("${LIB_NAME}" 
+                          VTK::IOImage
+                          VTK::IOGeometry
+                          VTK::IOPLY)
+  endif()
 endif()
 
 if(PNG_FOUND)
