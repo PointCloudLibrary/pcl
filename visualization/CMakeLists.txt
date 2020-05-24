@@ -194,7 +194,7 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/common/impl" ${common_impl_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/vtk" ${vtk_incs})
 
-if(${VTK_VERSION} VERSION_GREATER_EQUAL 9.0)
+if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
   vtk_module_autoinit(TARGETS "${LIB_NAME}" 
                       MODULES VTK::RenderingOpenGL2
                               VTK::RenderingFreeType)

@@ -200,7 +200,7 @@ else()
 
   PCL_ADD_EXECUTABLE(pcl_obj2pcd COMPONENT ${SUBSYS_NAME} SOURCES obj2pcd.cpp)
   target_link_libraries(pcl_obj2pcd pcl_common pcl_io)
-  if(${VTK_VERSION} GREATER_EQUAL 9.0)
+  if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
     target_link_libraries(pcl_obj2pcd VTK::FiltersCore)
   endif()
 
@@ -209,7 +209,7 @@ else()
 
   PCL_ADD_EXECUTABLE(pcl_vtk2pcd COMPONENT ${SUBSYS_NAME} SOURCES vtk2pcd.cpp)
   target_link_libraries(pcl_vtk2pcd pcl_common pcl_io)
-  if(${VTK_VERSION} GREATER_EQUAL 9.0)
+  if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
     target_link_libraries(pcl_vtk2pcd VTK::FiltersCore)
   endif()
 

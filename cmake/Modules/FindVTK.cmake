@@ -12,45 +12,64 @@ if("${VTK_VERSION}" VERSION_LESS 6.2)
   return()
 endif()
 
-# assume VTK version >= 9.0
+#Change to use list Transform when cmake is >= 3.12
+if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
 set(PCL_VTK_COMPONENTS
-    ChartsCore
-    CommonColor
-    CommonCore
-    CommonDataModel
-    CommonExecutionModel
-    CommonMath
-    CommonMisc
-    CommonTransforms
-    FiltersCore
-    FiltersExtraction
-    FiltersGeneral
-    FiltersGeometry
-    FiltersModeling
-    FiltersSources
-    ImagingCore
-    ImagingSources
-    InteractionStyle
-    InteractionWidgets
-    IOCore
-    IOGeometry
-    IOImage
-    IOLegacy
-    IOPLY
-    RenderingAnnotation
-    RenderingCore
-    RenderingContext2D
-    RenderingLOD
-    RenderingFreeType
-    RenderingOpenGL2
-    ViewsCore
-    ViewsContext2D
-  )
-
-  # If not prepend vtk to names
-  if(${VTK_VERSION} VERSION_LESS 9.0)
-    list(TRANSFORM PCL_VTK_COMPONENTS PREPEND "vtk")
-  endif()
+  ChartsCore
+  CommonColor
+  CommonCore
+  CommonDataModel
+  CommonExecutionModel
+  CommonMath
+  CommonMisc
+  CommonTransforms
+  FiltersCore
+  FiltersExtraction
+  FiltersGeneral
+  FiltersGeometry
+  FiltersModeling
+  FiltersSources
+  ImagingCore
+  ImagingSources
+  InteractionStyle
+  InteractionWidgets
+  IOCore
+  IOGeometry
+  IOImage
+  IOLegacy
+  IOPLY
+  RenderingAnnotation
+  RenderingCore
+  RenderingContext2D
+  RenderingLOD
+  RenderingFreeType
+  RenderingOpenGL2
+  ViewsCore
+  ViewsContext2D
+)
+else()
+set(PCL_VTK_COMPONENTS
+  vtkChartsCore
+  vtkCommonCore
+  vtkCommonDataModel
+  vtkCommonExecutionModel
+  vtkFiltersCore
+  vtkFiltersExtraction
+  vtkFiltersModeling
+  vtkImagingCore
+  vtkImagingSources
+  vtkInteractionStyle
+  vtkInteractionWidgets
+  vtkIOCore
+  vtkIOGeometry
+  vtkIOImage
+  vtkIOLegacy
+  vtkIOPLY
+  vtkRenderingAnnotation
+  vtkRenderingLOD
+  vtkViewsContext2D
+)
+endif()
 
 if(NOT DEFINED VTK_RENDERING_BACKEND)
 # Use OpenGL backend pre 8.1, else use OpenGL2
