@@ -143,7 +143,7 @@ copyPrelude(const pcl::PointCloud<PointInT>& cloud_in, pcl::index_t size)
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
   cloud_out.width = static_cast<std::uint32_t>(size);
   cloud_out.height = 1;
-  cloud_out.is_dense = false;
+  cloud_out.is_dense = cloud_in.is_dense;
   return cloud_out;
 }
 
