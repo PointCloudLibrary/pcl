@@ -167,7 +167,7 @@ PointCloudColorHandlerRGBField<PointT>::getColor () const
   {
     int j = 0;
     // Color every point
-      for (vtkIdType cp = 0; cp < nr_points; ++cp)
+    for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
       // Copy the value at the specified field
       if (!std::isfinite (cloud_->points[cp].x) ||
