@@ -70,6 +70,9 @@ stages:
           - template: build/macos.yaml
       - job: ubuntu
         displayName: Ubuntu
+        # Placement of Ubuntu Clang job after macOS ensures an extra parallel job doesn't need to be created.
+        # Total time per run remains same since macOS is quicker so it finishes earlier, and remaining time is used by this job
+        # Therefore, number of parallel jobs and total run time of entire pipeline remains unchanged even after addition of this job
         dependsOn: osx
         condition: succeededOrFailed()
         pool:
