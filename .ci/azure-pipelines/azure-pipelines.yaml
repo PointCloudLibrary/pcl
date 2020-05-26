@@ -43,7 +43,7 @@ stages:
           BUILD_DIR: '$(Agent.BuildDirectory)/build'
           CMAKE_CXX_FLAGS: '-Wall -Wextra'
         steps:
-          - template: build/build-ubuntu.yaml
+          - template: build/ubuntu.yaml
 
   - stage: build_clang
     displayName: Build Clang
@@ -67,7 +67,7 @@ stages:
           GOOGLE_TEST_DIR: '$(Agent.WorkFolder)/googletest'
           CMAKE_CXX_FLAGS: '-Wall -Wextra -Werror -Wabi'
         steps:
-          - template: build/build-macos.yaml
+          - template: build/macos.yaml
       - job: ubuntu
         displayName: Ubuntu
         dependsOn: osx
@@ -87,7 +87,7 @@ stages:
           BUILD_DIR: '$(Agent.BuildDirectory)/build'
           CMAKE_CXX_FLAGS: '-Wall -Wextra'
         steps:
-          - template: build/build-ubuntu.yaml
+          - template: build/ubuntu.yaml
 
   - stage: build_msvc
     displayName: Build MSVC
@@ -113,7 +113,7 @@ stages:
           CONFIGURATION: 'Release'
           VCPKG_ROOT: 'C:\vcpkg'
         steps:
-          - template: build/build-windows.yaml
+          - template: build/windows.yaml
 
   - stage: documentation
     displayName: Documentation
