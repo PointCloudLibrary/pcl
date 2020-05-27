@@ -366,7 +366,7 @@ endif()
 # Find VTK
 option(WITH_VTK "Build VTK-Visualizations" TRUE)
 if(WITH_VTK AND NOT ANDROID)
-  find_package(VTK)
+  include("${PCL_SOURCE_DIR}/cmake/pcl_find_vtk.cmake")
 else()
   set(VTK_FOUND OFF)
 endif()

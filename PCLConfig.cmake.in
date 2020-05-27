@@ -429,8 +429,6 @@ else()
 endif()
 
 set(PCL_INCLUDE_DIRS "${PCL_CONF_INCLUDE_DIR}")
-#Used in FindVTK to avoid linking static PCL with shared VTK.
-set(PCL_SHARED_LIBS @PCL_SHARED_LIBS@)
 
 #set a suffix for debug libraries
 set(PCL_DEBUG_SUFFIX "@CMAKE_DEBUG_POSTFIX@")
