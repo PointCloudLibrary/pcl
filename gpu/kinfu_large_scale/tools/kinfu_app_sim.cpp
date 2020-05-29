@@ -1082,11 +1082,14 @@ struct KinFuApp
 	if (integrate_colors_)
 	    image_view_.colors_device_.upload (rgb24.data, rgb24.step, rgb24.rows, rgb24.cols);
 	
+  {
 	  SampledScopeTime fps(time_ms, i);
+
     //run kinfu algorithm
     bool has_image = (integrate_colors_) ? kinfu_ (depth_device_, image_view_.colors_device_) : kinfu_ (depth_device_);              
     
-  else{ //simulate:
+	}
+  }else{ //simulate:
 
 	std::cout << " color: " << integrate_colors_ << "\n"; // integrate_colors_ seems to be zero
 	depth_device_.upload (depth_sim.data, depth_sim.step, depth_sim.rows, depth_sim.cols);
@@ -1096,13 +1099,16 @@ struct KinFuApp
 	
 	tic_toc.push_back (getTime ());
 
+  {
 	  SampledScopeTime fps(time_ms, i);
 	  //run kinfu algorithm
     bool has_image = (integrate_colors_) ? kinfu_ (depth_device_, image_view_.colors_device_) : kinfu_ (depth_device_);                  
 
+	}
+	
       }
       
-      tic_toc.push_back (getTime ());
+       tic_toc.push_back (getTime ());
       
       Eigen::Affine3f k_aff = kinfu_.getCameraPose();
       Eigen::Matrix3f k_m;

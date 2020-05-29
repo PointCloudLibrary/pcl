@@ -1084,9 +1084,11 @@ struct KinFuApp
 
       tic_toc.push_back (getTime ());
 
+      {
       SampledScopeTime fps(time_ms, i);
       //run kinfu algorithm
       bool has_image = (integrate_colors_) ? kinfu_ (depth_device_, image_view_.colors_device_) : kinfu_ (depth_device_);
+      }
 
       tic_toc.push_back (getTime ());
 
