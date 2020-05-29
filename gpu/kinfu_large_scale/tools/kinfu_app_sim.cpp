@@ -1108,7 +1108,7 @@ struct KinFuApp
 	
       }
 
-       tic_toc.push_back (getTime ());
+      tic_toc.push_back (getTime ());
       
       Eigen::Affine3f k_aff = kinfu_.getCameraPose();
       Eigen::Matrix3f k_m;
