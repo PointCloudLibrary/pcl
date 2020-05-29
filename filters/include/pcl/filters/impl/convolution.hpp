@@ -241,23 +241,156 @@ Convolution<PointIn, PointOut>::convolveOneColNonDense (int i, int j)
   return (result);
 }
 
-template<> pcl::PointXYZRGB
-Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowDense (int i, int j);
+template <>
+inline pcl::PointXYZRGB
+Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowDense(int i, int j)
+{
+  pcl::PointXYZRGB result;
+  float r = 0, g = 0, b = 0;
+  for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l) {
+    result.x += (*input_)(l, j).x * kernel_[k];
+    result.y += (*input_)(l, j).y * kernel_[k];
+    result.z += (*input_)(l, j).z * kernel_[k];
+    r += kernel_[k] * static_cast<float>((*input_)(l, j).r);
+    g += kernel_[k] * static_cast<float>((*input_)(l, j).g);
+    b += kernel_[k] * static_cast<float>((*input_)(l, j).b);
+  }
+  result.r = static_cast<std::uint8_t>(r);
+  result.g = static_cast<std::uint8_t>(g);
+  result.b = static_cast<std::uint8_t>(b);
+  return (result);
+}
 
-template<> pcl::PointXYZRGB
-Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColDense (int i, int j);
+template <>
+inline pcl::PointXYZRGB
+Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColDense(int i, int j)
+{
+  pcl::PointXYZRGB result;
+  float r = 0, g = 0, b = 0;
+  for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l) {
+    result.x += (*input_)(i, l).x * kernel_[k];
+    result.y += (*input_)(i, l).y * kernel_[k];
+    result.z += (*input_)(i, l).z * kernel_[k];
+    r += kernel_[k] * static_cast<float>((*input_)(i, l).r);
+    g += kernel_[k] * static_cast<float>((*input_)(i, l).g);
+    b += kernel_[k] * static_cast<float>((*input_)(i, l).b);
+  }
+  result.r = static_cast<std::uint8_t>(r);
+  result.g = static_cast<std::uint8_t>(g);
+  result.b = static_cast<std::uint8_t>(b);
+  return (result);
+}
 
-template<> pcl::PointXYZRGB
-Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowNonDense (int i, int j);
+template <>
+inline pcl::PointXYZRGB
+Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowNonDense(int i, int j)
+{
+  pcl::PointXYZRGB result;
+  float weight = 0;
+  float r = 0, g = 0, b = 0;
+  for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l) {
+    if (!isFinite((*input_)(l, j)))
+      continue;
+    if (pcl::squaredEuclideanDistance((*input_)(i, j), (*input_)(l, j)) <
+        distance_threshold_) {
+      result.x += (*input_)(l, j).x * kernel_[k];
+      result.y += (*input_)(l, j).y * kernel_[k];
+      result.z += (*input_)(l, j).z * kernel_[k];
+      r += kernel_[k] * static_cast<float>((*input_)(l, j).r);
+      g += kernel_[k] * static_cast<float>((*input_)(l, j).g);
+      b += kernel_[k] * static_cast<float>((*input_)(l, j).b);
+      weight += kernel_[k];
+    }
+  }
 
-template<> pcl::PointXYZRGB
-Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColNonDense (int i, int j);
+  if (weight == 0)
+    result.x = result.y = result.z = std::numeric_limits<float>::quiet_NaN();
+  else {
+    weight = 1.f / weight;
+    r *= weight;
+    g *= weight;
+    b *= weight;
+    result.x *= weight;
+    result.y *= weight;
+    result.z *= weight;
+    result.r = static_cast<std::uint8_t>(r);
+    result.g = static_cast<std::uint8_t>(g);
+    result.b = static_cast<std::uint8_t>(b);
+  }
+  return (result);
+}
 
-template<> pcl::RGB
-Convolution<pcl::RGB, pcl::RGB>::convolveOneRowDense (int i, int j);
+template <>
+inline pcl::PointXYZRGB
+Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColNonDense(int i, int j)
+{
+  pcl::PointXYZRGB result;
+  float weight = 0;
+  float r = 0, g = 0, b = 0;
+  for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l) {
+    if (!isFinite((*input_)(i, l)))
+      continue;
+    if (pcl::squaredEuclideanDistance((*input_)(i, j), (*input_)(i, l)) <
+        distance_threshold_) {
+      result.x += (*input_)(i, l).x * kernel_[k];
+      result.y += (*input_)(i, l).y * kernel_[k];
+      result.z += (*input_)(i, l).z * kernel_[k];
+      r += kernel_[k] * static_cast<float>((*input_)(i, l).r);
+      g += kernel_[k] * static_cast<float>((*input_)(i, l).g);
+      b += kernel_[k] * static_cast<float>((*input_)(i, l).b);
+      weight += kernel_[k];
+    }
+  }
+  if (weight == 0)
+    result.x = result.y = result.z = std::numeric_limits<float>::quiet_NaN();
+  else {
+    weight = 1.f / weight;
+    r *= weight;
+    g *= weight;
+    b *= weight;
+    result.x *= weight;
+    result.y *= weight;
+    result.z *= weight;
+    result.r = static_cast<std::uint8_t>(r);
+    result.g = static_cast<std::uint8_t>(g);
+    result.b = static_cast<std::uint8_t>(b);
+  }
+  return (result);
+}
 
-template<> pcl::RGB
-Convolution<pcl::RGB, pcl::RGB>::convolveOneColDense (int i, int j);
+template <>
+inline pcl::RGB
+Convolution<pcl::RGB, pcl::RGB>::convolveOneRowDense(int i, int j)
+{
+  pcl::RGB result;
+  float r = 0, g = 0, b = 0;
+  for (int k = kernel_width_, l = i - half_width_; k > -1; --k, ++l) {
+    r += kernel_[k] * static_cast<float>((*input_)(l, j).r);
+    g += kernel_[k] * static_cast<float>((*input_)(l, j).g);
+    b += kernel_[k] * static_cast<float>((*input_)(l, j).b);
+  }
+  result.r = static_cast<std::uint8_t>(r);
+  result.g = static_cast<std::uint8_t>(g);
+  result.b = static_cast<std::uint8_t>(b);
+  return (result);
+}
+
+template <>
+inline pcl::RGB
+Convolution<pcl::RGB, pcl::RGB>::convolveOneColDense(int i, int j)
+{
+  pcl::RGB result;
+  float r = 0, g = 0, b = 0;
+  for (int k = kernel_width_, l = j - half_width_; k > -1; --k, ++l) {
+    r += kernel_[k] * static_cast<float>((*input_)(i, l).r);
+    g += kernel_[k] * static_cast<float>((*input_)(i, l).g);
+    b += kernel_[k] * static_cast<float>((*input_)(i, l).b);
+  }
+  result.r = static_cast<std::uint8_t>(r);
+  result.g = static_cast<std::uint8_t>(g);
+  result.b = static_cast<std::uint8_t>(b);
+  return (result);
+}
 
 template<> inline pcl::RGB
 Convolution<pcl::RGB, pcl::RGB>::convolveOneRowNonDense (int i, int j)
