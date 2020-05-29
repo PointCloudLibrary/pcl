@@ -94,7 +94,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2
   int nr_removed_p = 0;
   for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
-    bool remove_point = (negative_) ? (distances[cp] <= distance_threshold) : (distances[cp] > distance_threshold);
+    bool remove_point = negative_ != (distances[cp] > distance_threshold); // negative XOR threshold_check
 
     if (remove_point)
     {
@@ -255,4 +255,3 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double&
 PCL_INSTANTIATE(StatisticalOutlierRemoval, PCL_XYZ_POINT_TYPES)
 
 #endif    // PCL_NO_PRECOMPILE
-
