@@ -247,8 +247,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   remove (const std::string &key)
   {
     std::lock_guard<std::mutex> lock (c_mtx);
-    if (callables.find (key) != callables.end ())
-      callables.erase (key);
+    callables.erase (key);
   }
 
   std::string window_name_;
