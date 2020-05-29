@@ -353,14 +353,12 @@ pcl::GridProjection<PointNT>::getVectorAtPoint (const Eigen::Vector4f &p,
   std::vector <double> pt_union_weight (pt_union_indices.size ());
   Eigen::Vector3f out_vector (0, 0, 0);
   double sum = 0.0;
-  double mag = 0.0;
 
   for (std::size_t i = 0; i < pt_union_indices.size (); ++i)
   {
     Eigen::Vector4f pp (data_->points[pt_union_indices[i]].x, data_->points[pt_union_indices[i]].y, data_->points[pt_union_indices[i]].z, 0);
     pt_union_dist[i] = (pp - p).squaredNorm ();
     pt_union_weight[i] = pow (M_E, -pow (pt_union_dist[i], 2.0) / gaussian_scale_);
-    mag += pow (M_E, -pow (sqrt (pt_union_dist[i]), 2.0) / gaussian_scale_);
     sum += pt_union_weight[i];
   }
 
@@ -430,7 +428,6 @@ pcl::GridProjection<PointNT>::getMagAtPoint (const Eigen::Vector4f &p,
                                              const std::vector <int> &pt_union_indices)
 {
   std::vector <double> pt_union_dist (pt_union_indices.size ());
-  std::vector <double> pt_union_weight (pt_union_indices.size ());
   double sum = 0.0;
   for (std::size_t i = 0; i < pt_union_indices.size (); ++i)
   {

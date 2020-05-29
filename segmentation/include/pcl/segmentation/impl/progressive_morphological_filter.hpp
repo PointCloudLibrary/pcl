@@ -82,7 +82,6 @@ pcl::ProgressiveMorphologicalFilter<PointT>::extract (std::vector<int>& ground)
   std::vector<float> window_sizes;
   int iteration = 0;
   float window_size = 0.0f;
-  float height_threshold = 0.0f;
 
   while (window_size < max_window_size_)
   {
@@ -93,10 +92,7 @@ pcl::ProgressiveMorphologicalFilter<PointT>::extract (std::vector<int>& ground)
       window_size = cell_size_ * (2.0f * (iteration+1) * base_ + 1.0f);
 
     // Calculate the height threshold to be used in the next iteration.
-    if (iteration == 0)
-      height_threshold = initial_distance_;
-    else
-      height_threshold = slope_ * (window_size - window_sizes[iteration-1]) * cell_size_ + initial_distance_;
+    float height_threshold = (iteration == 0) ? initial_distance_ : slope_ * (window_size - window_sizes[iteration-1]) * cell_size_ + initial_distance_;
 
     // Enforce max distance on height threshold
     if (height_threshold > max_distance_)

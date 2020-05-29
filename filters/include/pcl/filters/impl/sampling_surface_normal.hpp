@@ -212,7 +212,7 @@ pcl::SamplingSurfaceNormal<PointT>::computeNormal (const PointCloud& cloud, Eige
 
   if (computeMeanAndCovarianceMatrix (cloud, covariance_matrix, xyz_centroid) == 0)
   {
-    nx = ny = nz = curvature = std::numeric_limits<float>::quiet_NaN ();
+    curvature = std::numeric_limits<float>::quiet_NaN ();
     return;
   }
 

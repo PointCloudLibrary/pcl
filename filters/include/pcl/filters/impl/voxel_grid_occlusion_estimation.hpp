@@ -232,8 +232,6 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayBoxIntersection (const Eigen::Vect
 
   if (tzmin > tmin)
     tmin = tzmin;
-  if (tzmax < tmax)
-    tmax = tzmax;
 
   return tmin;
 }

@@ -839,8 +839,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
                                                                              const float &bad_point,
                                                                              PointCloudOut &output)
 {
-  unsigned index = 0;
-
   if (border_policy_ == BORDER_POLICY_IGNORE)
   {
     // Set all normals that we do not touch to NaN
@@ -876,7 +874,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
 
     if (use_depth_dependent_smoothing_)
     {
-      index = border + input_->width * border;
+      unsigned index = border + input_->width * border;
       unsigned skip = (border << 1);
       for (unsigned ri = border; ri < input_->height - border; ++ri, index += skip)
       {
@@ -911,7 +909,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     {
       float smoothing_constant = normal_smoothing_size_;
 
-      index = border + input_->width * border;
+      unsigned index = border + input_->width * border;
       unsigned skip = (border << 1);
       for (unsigned ri = border; ri < input_->height - border; ++ri, index += skip)
       {
@@ -956,7 +954,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
         //for (unsigned ci = 0; ci < input_->width; ++ci, ++index)
         for (unsigned ci = 0; ci < input_->width; ++ci)
         {
-          index = ri * input_->width + ci;
+          unsigned index = ri * input_->width + ci;
 
           const float depth = input_->points[index].z;
           if (!std::isfinite (depth))
@@ -993,7 +991,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
         //for (unsigned ci = border; ci < input_->width - border; ++ci, ++index)
         for (unsigned ci = 0; ci < input_->width; ++ci)
         {
-          index = ri * input_->width + ci;
+          unsigned index = ri * input_->width + ci;
 
           if (!std::isfinite (input_->points[index].z))
           {

@@ -92,13 +92,9 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2
   // Build a new cloud by neglecting outliers
   int nr_p = 0;
   int nr_removed_p = 0;
-  bool remove_point = false;
   for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
-    if (negative_)
-      remove_point = (distances[cp] <= distance_threshold);
-    else
-      remove_point = (distances[cp] > distance_threshold);
+    bool remove_point = (negative_) ? (distances[cp] <= distance_threshold) : (distances[cp] > distance_threshold);
 
     if (remove_point)
     {
