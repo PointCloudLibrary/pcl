@@ -1975,6 +1975,17 @@ namespace pcl
       protected:
         /** \brief The render window interactor. */
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
+       /** \brief Adds a vtk actor to screen.
+          * \param[in] actor a pointer to the vtk actor object
+          * \param[in] viewport port where the actor should be added to (default: 0/all)
+          *
+          * \note If viewport is set to 0, the actor will be added to all existing
+          * renders. To select a specific viewport use an integer between 1 and N.
+          */
+        void
+        addActorToRenderer (const vtkSmartPointer<vtkProp> &actor,
+                            int viewport = 0);
+
       private:
         /** \brief Internal function for renderer setup
          * \param[in] vtk renderer
@@ -2109,17 +2120,7 @@ namespace pcl
         removeActorFromRenderer (const vtkSmartPointer<vtkActor> &actor,
                                  int viewport = 0);
 
-        /** \brief Internal method. Adds a vtk actor to screen.
-          * \param[in] actor a pointer to the vtk actor object
-          * \param[in] viewport port where the actor should be added to (default: 0/all)
-          *
-          * \note If viewport is set to 0, the actor will be added to all existing
-          * renders. To select a specific viewport use an integer between 1 and N.
-          */
-        void
-        addActorToRenderer (const vtkSmartPointer<vtkProp> &actor,
-                            int viewport = 0);
-
+       
         /** \brief Internal method. Adds a vtk actor to screen.
           * \param[in] actor a pointer to the vtk actor object
           * \param[in] viewport the view port where the actor should be added to (default: all)
