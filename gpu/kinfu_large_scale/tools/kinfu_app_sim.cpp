@@ -1082,7 +1082,7 @@ struct KinFuApp
 	if (integrate_colors_)
 	    image_view_.colors_device_.upload (rgb24.data, rgb24.step, rgb24.rows, rgb24.cols);
 	
-  {
+	{
 	  SampledScopeTime fps(time_ms, i);
 
     //run kinfu algorithm
@@ -1107,7 +1107,7 @@ struct KinFuApp
 	}
 	
       }
-      
+
        tic_toc.push_back (getTime ());
       
       Eigen::Affine3f k_aff = kinfu_.getCameraPose();
