@@ -92,6 +92,7 @@ pcl::OrganizedFastMesh<PointInT>::makeQuadMesh (std::vector<pcl::Vertices>& poly
   int last_column = input_->width - triangle_pixel_size_columns_;
   int last_row = input_->height - triangle_pixel_size_rows_;
 
+  int idx = 0;
   int y_big_incr = triangle_pixel_size_rows_ * input_->width,
       x_big_incr = y_big_incr + triangle_pixel_size_columns_;
   // Reserve enough space
@@ -128,6 +129,7 @@ pcl::OrganizedFastMesh<PointInT>::makeRightCutMesh (std::vector<pcl::Vertices>& 
   int last_column = input_->width - triangle_pixel_size_columns_;
   int last_row = input_->height - triangle_pixel_size_rows_;
 
+  int idx = 0;
   int y_big_incr = triangle_pixel_size_rows_ * input_->width,
       x_big_incr = y_big_incr + triangle_pixel_size_columns_;
   // Reserve enough space
@@ -168,6 +170,7 @@ pcl::OrganizedFastMesh<PointInT>::makeLeftCutMesh (std::vector<pcl::Vertices>& p
   int last_column = input_->width - triangle_pixel_size_columns_;
   int last_row = input_->height - triangle_pixel_size_rows_;
 
+  int idx = 0;
   int y_big_incr = triangle_pixel_size_rows_ * input_->width,
       x_big_incr = y_big_incr + triangle_pixel_size_columns_;
   // Reserve enough space
@@ -208,6 +211,7 @@ pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices
   int last_column = input_->width - triangle_pixel_size_columns_;
   int last_row = input_->height - triangle_pixel_size_rows_;
 
+  int idx = 0;
   int y_big_incr = triangle_pixel_size_rows_ * input_->width,
       x_big_incr = y_big_incr + triangle_pixel_size_columns_;
   // Reserve enough space
