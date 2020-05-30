@@ -31,11 +31,13 @@ stages:
               CONTAINER: env1604
               CC: gcc
               CXX: g++
+              BUILD_GPU: OFF
               CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
             20.04 GCC:
               CONTAINER: env2004
               CC: gcc
               CXX: g++
+              BUILD_GPU: OFF
               CMAKE_ARGS: ''
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
@@ -83,6 +85,7 @@ stages:
               CONTAINER: env1804
               CC: clang
               CXX: clang++
+              BUILD_GPU: ON
               CMAKE_ARGS: ''
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0

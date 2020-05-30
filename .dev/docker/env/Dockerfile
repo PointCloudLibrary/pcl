@@ -54,7 +54,7 @@ RUN if [ `pkg-config --modversion eigen3 | cut -d. -f3` -lt 7 ]; then \
      && rm -f eigen-3.3.7.tar.gz ; \
     fi
 
-# CUDA 9.2 supports GCC 7
+# To avoid CUDA build errors on CUDA 9.2+ GCC 7 is required
 RUN if [ `gcc -dumpversion | cut -d. -f1` -lt 7 ]; then add-apt-repository ppa:ubuntu-toolchain-r/test \
      && apt update \
      && apt install g++-7 -y \
