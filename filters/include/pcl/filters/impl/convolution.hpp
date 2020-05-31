@@ -241,6 +241,9 @@ Convolution<PointIn, PointOut>::convolveOneColNonDense (int i, int j)
   return (result);
 }
 
+/*
+\todo Move this function to a cpp file considering issue #4082
+*/
 template <>
 inline pcl::PointXYZRGB
 Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowDense(int i, int j)
@@ -261,6 +264,9 @@ Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowDense(int i, int 
   return (result);
 }
 
+/*
+\todo Move this function to a cpp file considering issue #4082
+*/
 template <>
 inline pcl::PointXYZRGB
 Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColDense(int i, int j)
@@ -281,6 +287,9 @@ Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColDense(int i, int 
   return (result);
 }
 
+/*
+\todo Move this function to a cpp file considering issue #4082
+*/
 template <>
 inline pcl::PointXYZRGB
 Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowNonDense(int i, int j)
@@ -320,6 +329,9 @@ Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneRowNonDense(int i, i
   return (result);
 }
 
+/*
+\todo Move this function to a cpp file considering issue #4082
+*/
 template <>
 inline pcl::PointXYZRGB
 Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColNonDense(int i, int j)
@@ -358,6 +370,9 @@ Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB>::convolveOneColNonDense(int i, i
   return (result);
 }
 
+/*
+\todo Move this function to a cpp file considering issue #4082
+*/
 template <>
 inline pcl::RGB
 Convolution<pcl::RGB, pcl::RGB>::convolveOneRowDense(int i, int j)
@@ -375,6 +390,9 @@ Convolution<pcl::RGB, pcl::RGB>::convolveOneRowDense(int i, int j)
   return (result);
 }
 
+/*
+\todo Move this function to a cpp file considering issue #4082
+*/
 template <>
 inline pcl::RGB
 Convolution<pcl::RGB, pcl::RGB>::convolveOneColDense(int i, int j)

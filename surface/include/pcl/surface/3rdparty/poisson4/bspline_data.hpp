@@ -449,6 +449,9 @@ namespace pcl
     {
       POISSON_THROW_EXCEPTION (pcl::poisson::PoissonBadArgumentException, "B-spline up-sampling not supported for degree " << Degree);
     }
+    /*
+    \todo Move this function to a cpp file considering issue #4082
+    */
     template <>
     inline void
     BSplineElements<1>::upSample(BSplineElements<1>& high) const
@@ -468,6 +471,9 @@ namespace pcl
       }
       high.denominator = denominator * 2;
     }
+    /*
+    \todo Move this function to a cpp file considering issue #4082
+    */
     template <>
     inline void
     BSplineElements<2>::upSample(BSplineElements<2>& high) const
