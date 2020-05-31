@@ -89,26 +89,26 @@ pcl::OrganizedFastMesh<PointInT>::reconstructPolygons (std::vector<pcl::Vertices
 template <typename PointInT> void
 pcl::OrganizedFastMesh<PointInT>::makeQuadMesh (std::vector<pcl::Vertices>& polygons)
 {
-  int last_column = input_->width - triangle_pixel_size_columns_;
-  int last_row = input_->height - triangle_pixel_size_rows_;
+  index_t last_column = input_->width - triangle_pixel_size_columns_;
+  index_t last_row = input_->height - triangle_pixel_size_rows_;
 
-  int idx = 0;
-  int y_big_incr = triangle_pixel_size_rows_ * input_->width,
+  std::size_t idx = 0;
+  std::size_t y_big_incr = triangle_pixel_size_rows_ * input_->width,
       x_big_incr = y_big_incr + triangle_pixel_size_columns_;
   // Reserve enough space
   polygons.resize (input_->width * input_->height);
 
   // Go over the rows first
-  for (int y = 0; y < last_row; y += triangle_pixel_size_rows_)
+  for (index_t y = 0; y < last_row; y += triangle_pixel_size_rows_)
   {
     // Initialize a new row
-    int i = y * input_->width;
-    int index_right = i + triangle_pixel_size_columns_;
-    int index_down = i + y_big_incr;
-    int index_down_right = i + x_big_incr;
+    std::size_t i = y * input_->width;
+    std::size_t index_right = i + triangle_pixel_size_columns_;
+    std::size_t index_down = i + y_big_incr;
+    std::size_t index_down_right = i + x_big_incr;
 
     // Go over the columns
-    for (int x = 0; x < last_column; x += triangle_pixel_size_columns_,
+    for (index_t x = 0; x < last_column; x += triangle_pixel_size_columns_,
                                      i += triangle_pixel_size_columns_,
                                      index_right += triangle_pixel_size_columns_,
                                      index_down += triangle_pixel_size_columns_,
