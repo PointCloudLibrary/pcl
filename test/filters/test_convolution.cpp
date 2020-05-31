@@ -45,39 +45,18 @@
 using namespace pcl;
 using namespace pcl::test;
 
-PointCloud<PointXYZI>::Ptr input (new PointCloud<PointXYZI> ());
-Eigen::ArrayXf filter(7);
 
 TEST (Convolution, convolveRows)
 {
   using namespace pcl::common;
   using namespace pcl::filters;
+
+  PointCloud<PointXYZI>::Ptr input (new PointCloud<PointXYZI> ());
+  Eigen::ArrayXf filter(7);
   pcl::filters::Convolution<PointXYZI, PointXYZI> convolve;
   PointCloud<PointXYZI>::Ptr output;
-  output.reset (new PointCloud<PointXYZI> ());
-  convolve.setInputCloud (input);
-  convolve.setKernel (filter);
-  convolve.convolveRows (*output);
-
-  // first output row
-  Eigen::ArrayXf output_0 (64);
-  output_0[0] = 0; output_0[1] = 0; output_0[2] = 0; output_0[3] = 94.1702; output_0[4] = 93.3588; output_0[5] = 92.8969; output_0[6] = 92.8653; output_0[7] = 92.484; output_0[8] = 92.0451; output_0[9] = 91.6455; output_0[10] = 90.9415; output_0[11] = 90.0539; output_0[12] = 89.3048; output_0[13] = 88.7623; output_0[14] = 88.3004; output_0[15] = 88.0044; output_0[16] = 87.7579; output_0[17] = 87.5424; output_0[18] = 87.4441; output_0[19] = 87.0711; output_0[20] = 86.1525; output_0[21] = 84.9014; output_0[22] = 84.1213; output_0[23] = 83.7668; output_0[24] = 83.5469; output_0[25] = 83.5159; output_0[26] = 83.538; output_0[27] = 83.641; output_0[28] = 83.3946; output_0[29] = 82.7889; output_0[30] = 82.3278; output_0[31] = 82.0983; output_0[32] = 82.2605; output_0[33] = 82.376; output_0[34] = 82.1481; output_0[35] = 81.5513; output_0[36] = 81.1708; output_0[37] = 81.3049; output_0[38] = 81.6366; output_0[39] = 81.5826; output_0[40] = 80.9955; output_0[41] = 80.3633; output_0[42] = 80.1213; output_0[43] = 80.3048; output_0[44] = 80.695; output_0[45] = 80.8831; output_0[46] = 80.6995; output_0[47] = 80.3633; output_0[48] = 80.435; output_0[49] = 81.278; output_0[50] = 83.3201; output_0[51] = 86.7523; output_0[52] = 88.1634; output_0[53] = 83.7249; output_0[54] = 77.6666; output_0[55] = 75.8489; output_0[56] = 77.8468; output_0[57] = 79.8108; output_0[58] = 80.4707; output_0[59] = 80.9244; output_0[60] = 81.8518; output_0[61] = 0; output_0[62] = 0; output_0[63] = 0;
-
-  // last output row
-  Eigen::ArrayXf output_47 (64);
-  output_47[0] = 0; output_47[1] = 0; output_47[2] = 0; output_47[3] = 121.887; output_47[4] = 121.395; output_47[5] = 120.547; output_47[6] = 119.866; output_47[7] = 119.493; output_47[8] = 119.153; output_47[9] = 118.484; output_47[10] = 117.753; output_47[11] = 117.009; output_47[12] = 116.35; output_47[13] = 115.941; output_47[14] = 115.349; output_47[15] = 114.35; output_47[16] = 113.588; output_47[17] = 112.99; output_47[18] = 111.645; output_47[19] = 110.009; output_47[20] = 109.13; output_47[21] = 108.771; output_47[22] = 108.592; output_47[23] = 108.641; output_47[24] = 108.345; output_47[25] = 107.592; output_47[26] = 107.063; output_47[27] = 106.767; output_47[28] = 106.592; output_47[29] = 106.645; output_47[30] = 106.399; output_47[31] = 105.843; output_47[32] = 105.57; output_47[33] = 105.502; output_47[34] = 105.557; output_47[35] = 105.672; output_47[36] = 105.56; output_47[37] = 104.897; output_47[38] = 104.642; output_47[39] = 104.708; output_47[40] = 104.054; output_47[41] = 103.556; output_47[42] = 103.982; output_47[43] = 104.43; output_47[44] = 104.682; output_47[45] = 104.596; output_47[46] = 104.104; output_47[47] = 103.852; output_47[48] = 103.964; output_47[49] = 103.91; output_47[50] = 103.556; output_47[51] = 102.614; output_47[52] = 102.126; output_47[53] = 102.762; output_47[54] = 103.466; output_47[55] = 103.273; output_47[56] = 102.292; output_47[57] = 101.363; output_47[58] = 100.821; output_47[59] = 100.538; output_47[60] = 100.332; output_47[61] = 0; output_47[62] = 0; output_47[63] = 0;
-
-  std::uint32_t j = 0;
-  for (std::uint32_t i = 0; i < output->width ; ++i)
-    EXPECT_NEAR ((*output) (i,j).intensity, output_0[i], 1e-3);
-  j = 47;
-  for (std::uint32_t i = 0; i < output->width ; ++i)
-    EXPECT_NEAR ((*output) (i,j).intensity, output_47[i], 1e-3);
-}
-
-int
-main (int argc, char** argv)
-{
+  
+  // input
   filter << 0.00443305, 0.0540056, 0.242036, 0.39905, 0.242036, 0.0540056, 0.00443305;
   input->width = 64;
   input->height = 48;
@@ -3155,6 +3134,105 @@ main (int argc, char** argv)
   (*input) (61,47).intensity = 100;
   (*input) (62,47).intensity = 98;
   (*input) (63,47).intensity = 96;
+
+  // filter
+  output.reset (new PointCloud<PointXYZI> ());
+  convolve.setInputCloud (input);
+  convolve.setKernel (filter);
+  convolve.convolveRows (*output);
+
+  // first output row
+  Eigen::ArrayXf output_0 (64);
+  output_0[0] = 0; output_0[1] = 0; output_0[2] = 0; output_0[3] = 94.1702; output_0[4] = 93.3588; output_0[5] = 92.8969; output_0[6] = 92.8653; output_0[7] = 92.484; output_0[8] = 92.0451; output_0[9] = 91.6455; output_0[10] = 90.9415; output_0[11] = 90.0539; output_0[12] = 89.3048; output_0[13] = 88.7623; output_0[14] = 88.3004; output_0[15] = 88.0044; output_0[16] = 87.7579; output_0[17] = 87.5424; output_0[18] = 87.4441; output_0[19] = 87.0711; output_0[20] = 86.1525; output_0[21] = 84.9014; output_0[22] = 84.1213; output_0[23] = 83.7668; output_0[24] = 83.5469; output_0[25] = 83.5159; output_0[26] = 83.538; output_0[27] = 83.641; output_0[28] = 83.3946; output_0[29] = 82.7889; output_0[30] = 82.3278; output_0[31] = 82.0983; output_0[32] = 82.2605; output_0[33] = 82.376; output_0[34] = 82.1481; output_0[35] = 81.5513; output_0[36] = 81.1708; output_0[37] = 81.3049; output_0[38] = 81.6366; output_0[39] = 81.5826; output_0[40] = 80.9955; output_0[41] = 80.3633; output_0[42] = 80.1213; output_0[43] = 80.3048; output_0[44] = 80.695; output_0[45] = 80.8831; output_0[46] = 80.6995; output_0[47] = 80.3633; output_0[48] = 80.435; output_0[49] = 81.278; output_0[50] = 83.3201; output_0[51] = 86.7523; output_0[52] = 88.1634; output_0[53] = 83.7249; output_0[54] = 77.6666; output_0[55] = 75.8489; output_0[56] = 77.8468; output_0[57] = 79.8108; output_0[58] = 80.4707; output_0[59] = 80.9244; output_0[60] = 81.8518; output_0[61] = 0; output_0[62] = 0; output_0[63] = 0;
+
+  // last output row
+  Eigen::ArrayXf output_47 (64);
+  output_47[0] = 0; output_47[1] = 0; output_47[2] = 0; output_47[3] = 121.887; output_47[4] = 121.395; output_47[5] = 120.547; output_47[6] = 119.866; output_47[7] = 119.493; output_47[8] = 119.153; output_47[9] = 118.484; output_47[10] = 117.753; output_47[11] = 117.009; output_47[12] = 116.35; output_47[13] = 115.941; output_47[14] = 115.349; output_47[15] = 114.35; output_47[16] = 113.588; output_47[17] = 112.99; output_47[18] = 111.645; output_47[19] = 110.009; output_47[20] = 109.13; output_47[21] = 108.771; output_47[22] = 108.592; output_47[23] = 108.641; output_47[24] = 108.345; output_47[25] = 107.592; output_47[26] = 107.063; output_47[27] = 106.767; output_47[28] = 106.592; output_47[29] = 106.645; output_47[30] = 106.399; output_47[31] = 105.843; output_47[32] = 105.57; output_47[33] = 105.502; output_47[34] = 105.557; output_47[35] = 105.672; output_47[36] = 105.56; output_47[37] = 104.897; output_47[38] = 104.642; output_47[39] = 104.708; output_47[40] = 104.054; output_47[41] = 103.556; output_47[42] = 103.982; output_47[43] = 104.43; output_47[44] = 104.682; output_47[45] = 104.596; output_47[46] = 104.104; output_47[47] = 103.852; output_47[48] = 103.964; output_47[49] = 103.91; output_47[50] = 103.556; output_47[51] = 102.614; output_47[52] = 102.126; output_47[53] = 102.762; output_47[54] = 103.466; output_47[55] = 103.273; output_47[56] = 102.292; output_47[57] = 101.363; output_47[58] = 100.821; output_47[59] = 100.538; output_47[60] = 100.332; output_47[61] = 0; output_47[62] = 0; output_47[63] = 0;
+
+  std::uint32_t j = 0;
+  for (std::uint32_t i = 0; i < output->width ; ++i)
+    EXPECT_NEAR ((*output) (i,j).intensity, output_0[i], 1e-3);
+  j = 47;
+  for (std::uint32_t i = 0; i < output->width ; ++i)
+    EXPECT_NEAR ((*output) (i,j).intensity, output_47[i], 1e-3);
+}
+
+TEST (Convolution, convolveRowsRGB)
+{
+  using namespace pcl::common;
+  using namespace pcl::filters;
+  
+  PointCloud<RGB>::Ptr input(new PointCloud<RGB>());
+  Eigen::ArrayXf filter(7);
+  pcl::filters::Convolution<RGB, RGB> convolve;
+  PointCloud<RGB>::Ptr output;
+  
+  struct color
+  {
+    float z;
+    float r;
+    float g;
+    float b;
+  } gradient[5] = {
+    { -1.6000f, 0.2902f, 0.0784f, 0.5490f },
+    { -0.8000f, 0.1176f, 0.5333f, 0.8980f },
+    {  0.0000f, 0.5451f, 0.7647f, 0.2902f },
+    {  0.8000f, 1.0000f, 0.7569f, 0.0275f },
+    {  1.6000f, 1.0000f, 0.9216f, 0.2314f },
+  };
+  
+  // input
+  filter << 0.00443305, 0.0540056, 0.242036, 0.39905, 0.242036, 0.0540056, 0.00443305;
+  input->width = 48;
+  input->height = 48;
+  input->resize(input->width * input->height);
+  for (std::uint32_t r = 0; r < input->height; r++)
+    for (std::uint32_t c = 0; c < input->width; c++)
+    {
+      float x1 = -2.0f + (4.0f / (float)input->width) * (float)c;
+      float y1 = -2.0f + (4.0f / (float)input->height) * (float)r;
+      float x2 = -M_PI + (2.0f * M_PI / (float)input->width) * (float)c;
+      float y2 = -2.0f + (4.0f / (float)input->height) * (float)r;
+      float z = x1 * exp(-(x1 * x1 + y1 * y1)) * 2.5f + sin(x2) * sin(y2);
+      if (z < -1.6f) z = -1.6f;
+      if (z > 1.6f) z = 1.6f;
+      for (int i = 1; i < 5; i++)
+      {
+        if (gradient[i - 1].z <= z && z <= gradient[i].z)
+        {
+          (*input) (r, c).r = (uint8_t)(255.0f * (gradient[i - 1].r + (0.8f / (gradient[i].r - gradient[i - 1].r))*(z - gradient[i - 1].z)));
+          (*input) (r, c).g = (uint8_t)(255.0f * (gradient[i - 1].g + (0.8f / (gradient[i].g - gradient[i - 1].g))*(z - gradient[i - 1].z)));
+          (*input) (r, c).b = (uint8_t)(255.0f * (gradient[i - 1].b + (0.8f / (gradient[i].b - gradient[i - 1].b))*(z - gradient[i - 1].z)));
+          break;
+        }
+      }
+    }
+  
+  // filter
+  output.reset(new PointCloud<RGB>());
+  convolve.setInputCloud(input);
+  convolve.setKernel(filter);
+  convolve.convolveRows(*output);
+  
+  std::uint32_t i = 0;
+  for (std::uint32_t j = 0; j < output->width; ++j)
+  {
+    EXPECT_NEAR((*output) (i, j).r, 0, 1e-3);
+    EXPECT_NEAR((*output) (i, j).g, 0, 1e-3);
+    EXPECT_NEAR((*output) (i, j).b, 0, 1e-3);
+  }
+  i = output->height - 1;
+  for (std::uint32_t j = 0; j < output->width; ++j)
+  {
+    EXPECT_NEAR((*output) (i, j).r, 0, 1e-3);
+    EXPECT_NEAR((*output) (i, j).g, 0, 1e-3);
+    EXPECT_NEAR((*output) (i, j).b, 0, 1e-3);
+  }
+}
+
+int
+main (int argc, char** argv)
+{
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }
