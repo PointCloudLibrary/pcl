@@ -146,9 +146,9 @@ namespace pcl
 
           //processed[nn_indices[j]] = true;
           // [-1;1]
-          double dot_p = normals.points[i].normal[0] * normals.points[nn_indices[j]].normal[0] +
-                         normals.points[i].normal[1] * normals.points[nn_indices[j]].normal[1] +
-                         normals.points[i].normal[2] * normals.points[nn_indices[j]].normal[2];
+          double dot_p = normals.points[seed_queue[sq_idx]].normal[0] * normals.points[nn_indices[j]].normal[0] +
+                         normals.points[seed_queue[sq_idx]].normal[1] * normals.points[nn_indices[j]].normal[1] +
+                         normals.points[seed_queue[sq_idx]].normal[2] * normals.points[nn_indices[j]].normal[2];
           if ( std::abs (std::acos (dot_p)) < eps_angle )
           {
             processed[nn_indices[j]] = true;
@@ -251,10 +251,9 @@ namespace pcl
 
           //processed[nn_indices[j]] = true;
           // [-1;1]
-          double dot_p =
-            normals.points[indices[i]].normal[0] * normals.points[indices[nn_indices[j]]].normal[0] +
-            normals.points[indices[i]].normal[1] * normals.points[indices[nn_indices[j]]].normal[1] +
-            normals.points[indices[i]].normal[2] * normals.points[indices[nn_indices[j]]].normal[2];
+          double dot_p = normals.points[seed_queue[sq_idx]].normal[0] * normals.points[nn_indices[j]].normal[0] +
+                         normals.points[seed_queue[sq_idx]].normal[1] * normals.points[nn_indices[j]].normal[1] +
+                         normals.points[seed_queue[sq_idx]].normal[2] * normals.points[nn_indices[j]].normal[2];
           if ( std::abs (std::acos (dot_p)) < eps_angle )
           {
             processed[nn_indices[j]] = true;
