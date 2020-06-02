@@ -27,7 +27,6 @@ jobs:
           mkdir $BUILD_DIR && cd $BUILD_DIR
           cmake $(Build.SourcesDirectory) \
             -DDOXYGEN_USE_SHORT_NAMES=OFF \
-            -DSPHINX_HTML_FILE_SUFFIX=php \
             -DWITH_DOCS=ON \
             -DWITH_TUTORIALS=ON
         displayName: 'CMake Configuration'
