@@ -149,7 +149,7 @@ namespace pcl
           double dot_p = normals.points[i].normal[0] * normals.points[nn_indices[j]].normal[0] +
                          normals.points[i].normal[1] * normals.points[nn_indices[j]].normal[1] +
                          normals.points[i].normal[2] * normals.points[nn_indices[j]].normal[2];
-          if ( std::abs (std::acos (dot_p)) < eps_angle )
+          if ( std::acos (std::abs (dot_p)) < eps_angle )
           {
             processed[nn_indices[j]] = true;
             seed_queue.push_back (nn_indices[j]);
@@ -255,7 +255,7 @@ namespace pcl
             normals.points[indices[i]].normal[0] * normals.points[indices[nn_indices[j]]].normal[0] +
             normals.points[indices[i]].normal[1] * normals.points[indices[nn_indices[j]]].normal[1] +
             normals.points[indices[i]].normal[2] * normals.points[indices[nn_indices[j]]].normal[2];
-          if ( std::abs (std::acos (dot_p)) < eps_angle )
+          if ( std::acos (std::abs (dot_p)) < eps_angle )
           {
             processed[nn_indices[j]] = true;
             seed_queue.push_back (nn_indices[j]);
