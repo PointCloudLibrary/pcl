@@ -45,28 +45,27 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-if(LIBUSB_1_LIBRARIES AND LIBUSB_1_INCLUDE_DIRS)
+if(libusb-1.0_LIBRARIES AND libusb-1.0_INCLUDE_DIRS)
   # in cache already
-  set(LIBUSB_FOUND TRUE)
-  set(LIBUSB_1_FOUND TRUE)
+  set(libusb-1.0_FOUND TRUE)
 else()
-  find_path(LIBUSB_1_INCLUDE_DIR
+  find_path(libusb-1.0_INCLUDE_DIR
             NAMES libusb-1.0/libusb.h
             PATHS /usr/include /usr/local/include /opt/local/include /sw/include
             PATH_SUFFIXES libusb-1.0)
 
   # We need to look for libusb-1.0 too because find_library does not attempt to find
   # library files with a "lib" prefix implicitly on Windows
-  find_library(LIBUSB_1_LIBRARY
+  find_library(libusb-1.0_LIBRARY
                NAMES usb-1.0 libusb-1.0
                PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
 
-  set(LIBUSB_1_INCLUDE_DIRS ${LIBUSB_1_INCLUDE_DIR})
-  set(LIBUSB_1_LIBRARIES ${LIBUSB_1_LIBRARY})
+  set(libusb-1.0_INCLUDE_DIRS ${libusb-1.0_INCLUDE_DIR})
+  set(libusb-1.0_LIBRARIES ${libusb-1.0_LIBRARY})
 
   include(FindPackageHandleStandardArgs)
-  find_package_handle_standard_args(LIBUSB_1 DEFAULT_MSG LIBUSB_1_LIBRARY LIBUSB_1_INCLUDE_DIR)
+  find_package_handle_standard_args(libusb-1.0 DEFAULT_MSG libusb-1.0_LIBRARY libusb-1.0_INCLUDE_DIR)
 
-  # show the LIBUSB_1_INCLUDE_DIRS and LIBUSB_1_LIBRARIES variables only in the advanced view
-  mark_as_advanced(LIBUSB_1_INCLUDE_DIRS LIBUSB_1_LIBRARIES)
+  # show the libusb-1.0_INCLUDE_DIRS and libusb-1.0_LIBRARIES variables only in the advanced view
+  mark_as_advanced(libusb-1.0_INCLUDE_DIRS libusb-1.0_LIBRARIES)
 endif()
