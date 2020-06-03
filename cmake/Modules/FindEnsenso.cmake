@@ -5,44 +5,44 @@
 #
 # Variables defined by this module:
 #
-#  ENSENSO_FOUND               True if Ensenso SDK was found
-#  ENSENSO_INCLUDE_DIRS        The location(s) of Ensenso SDK headers
-#  ENSENSO_LIBRARIES           Libraries needed to use Ensenso SDK
+#  Ensenso_FOUND               True if Ensenso SDK was found
+#  Ensenso_INCLUDE_DIRS        The location(s) of Ensenso SDK headers
+#  Ensenso_LIBRARIES           Libraries needed to use Ensenso SDK
 
-find_path(ENSENSO_INCLUDE_DIR nxLib.h
+find_path(Ensenso_INCLUDE_DIR nxLib.h
           HINTS "${ENSENSO_ABI_HINT}"
                 "/opt/ensenso/development/c"
                 "$ENV{PROGRAMFILES}/Ensenso/development/c"
                 "$ENV{PROGRAMW6432}/Ensenso/development/c"
           PATH_SUFFIXES include/)
 
-find_library(ENSENSO_LIBRARY QUIET
+find_library(Ensenso_LIBRARY QUIET
              NAMES NxLib64 NxLib32 nxLib64 nxLib32
              HINTS "${ENSENSO_ABI_HINT}"
                    "$ENV{PROGRAMFILES}/Ensenso/development/c"
                    "$ENV{PROGRAMW6432}/Ensenso/development/c"
              PATH_SUFFIXES lib/)
 
-if(ENSENSO_INCLUDE_DIR AND ENSENSO_LIBRARY)
+if(Ensenso_INCLUDE_DIR AND Ensenso_LIBRARY)
 
   # Include directories
-  set(ENSENSO_INCLUDE_DIRS ${ENSENSO_INCLUDE_DIR})
-  unset(ENSENSO_INCLUDE_DIR)
-  mark_as_advanced(ENSENSO_INCLUDE_DIRS)
+  set(Ensenso_INCLUDE_DIRS ${Ensenso_INCLUDE_DIR})
+  unset(Ensenso_INCLUDE_DIR)
+  mark_as_advanced(Ensenso_INCLUDE_DIRS)
 
   # Libraries
-  set(ENSENSO_LIBRARIES ${ENSENSO_LIBRARY})
-  unset(ENSENSO_LIBRARY)
-  mark_as_advanced(ENSENSO_LIBRARIES)
+  set(Ensenso_LIBRARIES ${Ensenso_LIBRARY})
+  unset(Ensenso_LIBRARY)
+  mark_as_advanced(Ensenso_LIBRARIES)
 
 endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(ENSENSO
-  FOUND_VAR ENSENSO_FOUND
-  REQUIRED_VARS ENSENSO_LIBRARIES ENSENSO_INCLUDE_DIRS
+find_package_handle_standard_args(Ensenso
+  FOUND_VAR Ensenso_FOUND
+  REQUIRED_VARS Ensenso_LIBRARIES Ensenso_INCLUDE_DIRS
 )
 
-if(ENSENSO_FOUND)
-  message(STATUS "Ensenso found (include: ${ENSENSO_INCLUDE_DIRS}, lib: ${ENSENSO_LIBRARIES})")
+if(Ensenso_FOUND)
+  message(STATUS "Ensenso found (include: ${Ensenso_INCLUDE_DIRS}, lib: ${Ensenso_LIBRARIES})")
 endif()
