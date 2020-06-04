@@ -165,8 +165,8 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBoxAndCenterTemplatePointClo
   BoundingBoxXYZ bb;
   bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
 
-  Eigen::Vector3f geometric_center = Eigen::Vector3f::Zero ();
-  Eigen::Vector3f min_pos, max_pos;
+  Eigen::Vector4f geometric_center = Eigen::Vector3f::Zero ();
+  Eigen::Vector4f min_pos, max_pos;
   min_pos.fill (std::numeric_limits<float>::max ());
   max_pos.fill (std::numeric_limits<float>::lowest ());
   std::size_t counter = 0;
@@ -175,21 +175,21 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBoxAndCenterTemplatePointClo
     if (!isXYZFinite(p))
       continue;
 
-    min_pos = min_pos.cwiseMin (p.getVector3fMap ());
-    max_pos = max_pos.cwiseMax (p.getVector3fMap ());
+    min_pos = min_pos.cwiseMin (p.getVector4fMap ());
+    max_pos = max_pos.cwiseMax (p.getVector4fMap ());
 
-    geometric_center += p.getVector3fMap ();
+    geometric_center += p.getVector4fMap ();
 
     ++counter;
   }
   geometric_center /= static_cast<float> (counter);
 
-  Eigen::Vector3f bb_dim = max_pos - min_pos;
+  Eigen::Vector4f bb_dim = max_pos - min_pos;
   bb.width  = bb_dim[0];
   bb.height = bb_dim[1];
   bb.depth  = bb_dim[2];
 
-  Eigen::Vector3f diff_pos = min_pos - geometric_center;
+  Eigen::Vector4f diff_pos = min_pos - geometric_center;
   bb.x = diff_pos[0];
   bb.y = diff_pos[1];
   bb.z = diff_pos[2];
@@ -199,7 +199,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBoxAndCenterTemplatePointClo
     if (!isXYZFinite(p))
       continue;
 
-    p.getVector3fMap () -= geometric_center;
+    p.getVector4fMap () -= geometric_center;
   }
 
   return bb;
