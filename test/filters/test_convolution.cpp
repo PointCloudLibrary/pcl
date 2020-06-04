@@ -59,20 +59,20 @@ std::array<RGB, 5> colormap {
   RGB(255, 0, 0),
 };
 
-RGB get_color(float fmin, float fmax, float value)
+RGB interpolate_color(float fmin, float fmax, float value)
 {
   if (value <= fmin) return colormap[0];
   if (value >= fmax) return colormap[colormap.size() - 1];
-  float f = (fmax - fmin) / (float)(colormap.size() - 1);
-  size_t low_index = static_cast<size_t>((value - fmin) / f);
-  if(value == fmin + (float)low_index * f) return colormap[low_index];
-  auto channelInterpolation = [](uint8_t c0, uint8_t c1, float f, float value, float offset) {
+  float step_size = (fmax - fmin) / (float)(colormap.size() - 1);
+  size_t low_index = static_cast<size_t>((value - fmin) / step_size);
+  if(value == fmin + (float)low_index * step_size) return colormap[low_index];
+  auto interpolate_channel = [](uint8_t c0, uint8_t c1, float f, float value, float offset) {
     return (c0 == c1) ? c0 : (uint8_t)((float)c0 + (((float)c1 - (float)c0) / f) * (value - offset));
   };
   return RGB(
-    channelInterpolation(colormap[low_index].r, colormap[low_index + 1].r, f, value, fmin + (float)low_index * f),
-    channelInterpolation(colormap[low_index].g, colormap[low_index + 1].g, f, value, fmin + (float)low_index * f),
-    channelInterpolation(colormap[low_index].b, colormap[low_index + 1].b, f, value, fmin + (float)low_index * f)
+    interpolate_channel(colormap[low_index].r, colormap[low_index + 1].r, step_size, value, fmin + (float)low_index * step_size),
+    interpolate_channel(colormap[low_index].g, colormap[low_index + 1].g, step_size, value, fmin + (float)low_index * step_size),
+    interpolate_channel(colormap[low_index].b, colormap[low_index + 1].b, step_size, value, fmin + (float)low_index * step_size)
   );
 }
 
@@ -3327,7 +3327,7 @@ TEST (Convolution, convolveRowsRGB)
       float x2 = -M_PI + (2.0f * M_PI / (float)input->width) * (float)c;
       float y2 = -2.0f + (4.0f / (float)input->height) * (float)r;
       float z = x1 * exp(-(x1 * x1 + y1 * y1)) * 2.5f + sin(x2) * sin(y2);
-      (*input) (r, c) = get_color(-1.6f, 1.6f, z);
+      (*input) (r, c) = interpolate_color(-1.6f, 1.6f, z);
     }
 
   // filter
@@ -3375,7 +3375,7 @@ TEST (Convolution, convolveRowsXYZRGB)
       float x2 = -M_PI + (2.0f * M_PI / (float)input->width) * (float)c;
       float y2 = -2.0f + (4.0f / (float)input->height) * (float)r;
       float z = x1 * exp(-(x1 * x1 + y1 * y1)) * 2.5f + sin(x2) * sin(y2);
-      RGB color = get_color(-1.6f, 1.6f, z);
+      RGB color = interpolate_color(-1.6f, 1.6f, z);
       (*input) (r, c).x = x1;
       (*input) (r, c).y = y1;
       (*input) (r, c).z = z;
