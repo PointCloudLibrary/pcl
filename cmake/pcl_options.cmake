@@ -66,12 +66,7 @@ option(BUILD_tools "Useful PCL-based command line tools" ON)
 option(WITH_DOCS "Build doxygen documentation" OFF)
 
 # set indices type
-set(PCL_INDICES_TYPE int CACHE STRING "Set indices type. Available options are: int size_t")
-if(${PCL_INDICES_TYPE} STREQUAL int)
-  set(PCL_INDICES_TYPE_INT 1)
-else()
-  set(PCL_INDICES_TYPE_SIZE_T 1)
-endif()
+set(PCL_INDEX_SIZE 32 CACHE STRING "Set index size. Available options are: 8 16 32 64")
 
 #set whether indices are signed or unsigned
 option(PCL_INDEX_SIGNED "Set whether indices need to be signed or unsigned. Signed by default." ON)

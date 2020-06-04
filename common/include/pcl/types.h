@@ -43,8 +43,8 @@
  * \ingroup common
  */
 
+#include <pcl/pcl_config.h>
 #include <pcl/pcl_macros.h>
-
 #include <vector>
 
 #include <cstdint>
