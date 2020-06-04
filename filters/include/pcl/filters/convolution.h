@@ -72,7 +72,7 @@ namespace pcl
       */
 
     template <typename PointIn, typename PointOut>
-    class PCL_EXPORTS Convolution
+    class Convolution
     {
       public:
         using PointCloudIn = pcl::PointCloud<PointIn>;

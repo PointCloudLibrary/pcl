@@ -42,41 +42,37 @@
 #include <pcl/filters/convolution.h>
 #include <pcl/point_types.h>
 #include <cmath>
+#include <array>
+#include <algorithm>
 
 using namespace pcl;
+using namespace pcl::common;
+using namespace pcl::filters;
 using namespace pcl::test;
 
-typedef struct
-{
-  float r;
-  float g;
-  float b;
-} COLOR;
-
-static const COLOR basemap[6] = {
-  { 0.2902f, 0.0784f, 0.5490f },
-  { 0.1176f, 0.5333f, 0.8980f },
-  { 0.5451f, 0.7647f, 0.2902f },
-  { 1.0000f, 0.9216f, 0.2314f },
-  { 1.0000f, 0.0000f, 0.0000f },
+std::array<RGB, 5> colormap {
+  RGB(74, 19, 139),
+  RGB(29, 135, 228),
+  RGB(139, 194, 74),
+  RGB(255, 235, 59),
+  RGB(255, 0, 0),
 };
 
-COLOR get_color(COLOR* colormap, size_t color_count, float fmin, float fmax, float value)
+RGB get_color(float fmin, float fmax, float value)
 {
-  float* steps = new float[color_count];
-  float f = (fmax - fmin) / (float)(color_count - 1);
-  for (int i = 0; i < (int)color_count; i++)
+  std::array<float, 5> steps;
+  float f = (fmax - fmin) / (float)(colormap.size() - 1);
+  for (size_t i = 0; i < colormap.size(); i++)
     steps[i] = fmin + f * (float)i;
-  COLOR result = { 0, 0, 0 };
-  if (value < fmin) value = fmin;
-  if (value > fmax) value = fmax;
-  for (size_t i = 1; i < color_count; i++)
+  value = std::min<float>(fmax, std::max<float>(value, fmin));
+  RGB result;
+  for (size_t i = 1; i < colormap.size(); i++)
   {
     if (steps[i - 1] <= value && value <= steps[i])
     {
-      result.r = (colormap[i - 1].r == colormap[i].r) ? colormap[i].r : (colormap[i - 1].r + ((colormap[i].r - colormap[i - 1].r) / (steps[i] - steps[i - 1])) * (value - steps[i - 1]));
-      result.g = (colormap[i - 1].g == colormap[i].g) ? colormap[i].g : (colormap[i - 1].g + ((colormap[i].g - colormap[i - 1].g) / (steps[i] - steps[i - 1])) * (value - steps[i - 1]));
-      result.b = (colormap[i - 1].b == colormap[i].b) ? colormap[i].b : (colormap[i - 1].b + ((colormap[i].b - colormap[i - 1].b) / (steps[i] - steps[i - 1])) * (value - steps[i - 1]));
+      result.r = (colormap[i - 1].r == colormap[i].r) ? colormap[i].r : (uint8_t)((float)colormap[i - 1].r + (((float)colormap[i].r - (float)colormap[i - 1].r) / (steps[i] - steps[i - 1])) * (value - steps[i - 1]));
+      result.g = (colormap[i - 1].g == colormap[i].g) ? colormap[i].g : (uint8_t)((float)colormap[i - 1].g + (((float)colormap[i].g - (float)colormap[i - 1].g) / (steps[i] - steps[i - 1])) * (value - steps[i - 1]));
+      result.b = (colormap[i - 1].b == colormap[i].b) ? colormap[i].b : (uint8_t)((float)colormap[i - 1].b + (((float)colormap[i].b - (float)colormap[i - 1].b) / (steps[i] - steps[i - 1])) * (value - steps[i - 1]));
       break;
     }
   }
@@ -85,16 +81,10 @@ COLOR get_color(COLOR* colormap, size_t color_count, float fmin, float fmax, flo
 
 TEST (Convolution, convolveRowsXYZI)
 {
-  using namespace pcl::common;
-  using namespace pcl::filters;
-
-  PointCloud<PointXYZI>::Ptr input (new PointCloud<PointXYZI> ());
-  Eigen::ArrayXf filter(7);
-  pcl::filters::Convolution<PointXYZI, PointXYZI> convolve;
-  PointCloud<PointXYZI>::Ptr output;
-
   // input
+  Eigen::ArrayXf filter(7);
   filter << 0.00443305, 0.0540056, 0.242036, 0.39905, 0.242036, 0.0540056, 0.00443305;
+  PointCloud<PointXYZI>::Ptr input (new PointCloud<PointXYZI> ());
   input->width = 64;
   input->height = 48;
   input->resize (64 * 48);
@@ -3173,18 +3163,146 @@ TEST (Convolution, convolveRowsXYZI)
   (*input) (63,47).intensity = 96;
 
   // filter
+  PointCloud<PointXYZI>::Ptr output;
   output.reset(new PointCloud<PointXYZI>());
+  pcl::filters::Convolution<PointXYZI, PointXYZI> convolve;
   convolve.setInputCloud(input);
   convolve.setKernel(filter);
   convolve.convolveRows(*output);
 
   // first output row
   Eigen::ArrayXf output_0 (64);
-  output_0[0] = 0; output_0[1] = 0; output_0[2] = 0; output_0[3] = 94.1702; output_0[4] = 93.3588; output_0[5] = 92.8969; output_0[6] = 92.8653; output_0[7] = 92.484; output_0[8] = 92.0451; output_0[9] = 91.6455; output_0[10] = 90.9415; output_0[11] = 90.0539; output_0[12] = 89.3048; output_0[13] = 88.7623; output_0[14] = 88.3004; output_0[15] = 88.0044; output_0[16] = 87.7579; output_0[17] = 87.5424; output_0[18] = 87.4441; output_0[19] = 87.0711; output_0[20] = 86.1525; output_0[21] = 84.9014; output_0[22] = 84.1213; output_0[23] = 83.7668; output_0[24] = 83.5469; output_0[25] = 83.5159; output_0[26] = 83.538; output_0[27] = 83.641; output_0[28] = 83.3946; output_0[29] = 82.7889; output_0[30] = 82.3278; output_0[31] = 82.0983; output_0[32] = 82.2605; output_0[33] = 82.376; output_0[34] = 82.1481; output_0[35] = 81.5513; output_0[36] = 81.1708; output_0[37] = 81.3049; output_0[38] = 81.6366; output_0[39] = 81.5826; output_0[40] = 80.9955; output_0[41] = 80.3633; output_0[42] = 80.1213; output_0[43] = 80.3048; output_0[44] = 80.695; output_0[45] = 80.8831; output_0[46] = 80.6995; output_0[47] = 80.3633; output_0[48] = 80.435; output_0[49] = 81.278; output_0[50] = 83.3201; output_0[51] = 86.7523; output_0[52] = 88.1634; output_0[53] = 83.7249; output_0[54] = 77.6666; output_0[55] = 75.8489; output_0[56] = 77.8468; output_0[57] = 79.8108; output_0[58] = 80.4707; output_0[59] = 80.9244; output_0[60] = 81.8518; output_0[61] = 0; output_0[62] = 0; output_0[63] = 0;
+  output_0[0] = 0;
+  output_0[1] = 0;
+  output_0[2] = 0;
+  output_0[3] = 94.1702;
+  output_0[4] = 93.3588;
+  output_0[5] = 92.8969;
+  output_0[6] = 92.8653;
+  output_0[7] = 92.484;
+  output_0[8] = 92.0451;
+  output_0[9] = 91.6455;
+  output_0[10] = 90.9415;
+  output_0[11] = 90.0539;
+  output_0[12] = 89.3048;
+  output_0[13] = 88.7623;
+  output_0[14] = 88.3004;
+  output_0[15] = 88.0044;
+  output_0[16] = 87.7579;
+  output_0[17] = 87.5424;
+  output_0[18] = 87.4441;
+  output_0[19] = 87.0711;
+  output_0[20] = 86.1525;
+  output_0[21] = 84.9014;
+  output_0[22] = 84.1213;
+  output_0[23] = 83.7668;
+  output_0[24] = 83.5469;
+  output_0[25] = 83.5159;
+  output_0[26] = 83.538;
+  output_0[27] = 83.641;
+  output_0[28] = 83.3946;
+  output_0[29] = 82.7889;
+  output_0[30] = 82.3278;
+  output_0[31] = 82.0983;
+  output_0[32] = 82.2605;
+  output_0[33] = 82.376;
+  output_0[34] = 82.1481;
+  output_0[35] = 81.5513;
+  output_0[36] = 81.1708;
+  output_0[37] = 81.3049;
+  output_0[38] = 81.6366;
+  output_0[39] = 81.5826;
+  output_0[40] = 80.9955;
+  output_0[41] = 80.3633;
+  output_0[42] = 80.1213;
+  output_0[43] = 80.3048;
+  output_0[44] = 80.695;
+  output_0[45] = 80.8831;
+  output_0[46] = 80.6995;
+  output_0[47] = 80.3633;
+  output_0[48] = 80.435;
+  output_0[49] = 81.278;
+  output_0[50] = 83.3201;
+  output_0[51] = 86.7523;
+  output_0[52] = 88.1634;
+  output_0[53] = 83.7249;
+  output_0[54] = 77.6666;
+  output_0[55] = 75.8489;
+  output_0[56] = 77.8468;
+  output_0[57] = 79.8108;
+  output_0[58] = 80.4707;
+  output_0[59] = 80.9244;
+  output_0[60] = 81.8518;
+  output_0[61] = 0;
+  output_0[62] = 0;
+  output_0[63] = 0;
 
   // last output row
   Eigen::ArrayXf output_47 (64);
-  output_47[0] = 0; output_47[1] = 0; output_47[2] = 0; output_47[3] = 121.887; output_47[4] = 121.395; output_47[5] = 120.547; output_47[6] = 119.866; output_47[7] = 119.493; output_47[8] = 119.153; output_47[9] = 118.484; output_47[10] = 117.753; output_47[11] = 117.009; output_47[12] = 116.35; output_47[13] = 115.941; output_47[14] = 115.349; output_47[15] = 114.35; output_47[16] = 113.588; output_47[17] = 112.99; output_47[18] = 111.645; output_47[19] = 110.009; output_47[20] = 109.13; output_47[21] = 108.771; output_47[22] = 108.592; output_47[23] = 108.641; output_47[24] = 108.345; output_47[25] = 107.592; output_47[26] = 107.063; output_47[27] = 106.767; output_47[28] = 106.592; output_47[29] = 106.645; output_47[30] = 106.399; output_47[31] = 105.843; output_47[32] = 105.57; output_47[33] = 105.502; output_47[34] = 105.557; output_47[35] = 105.672; output_47[36] = 105.56; output_47[37] = 104.897; output_47[38] = 104.642; output_47[39] = 104.708; output_47[40] = 104.054; output_47[41] = 103.556; output_47[42] = 103.982; output_47[43] = 104.43; output_47[44] = 104.682; output_47[45] = 104.596; output_47[46] = 104.104; output_47[47] = 103.852; output_47[48] = 103.964; output_47[49] = 103.91; output_47[50] = 103.556; output_47[51] = 102.614; output_47[52] = 102.126; output_47[53] = 102.762; output_47[54] = 103.466; output_47[55] = 103.273; output_47[56] = 102.292; output_47[57] = 101.363; output_47[58] = 100.821; output_47[59] = 100.538; output_47[60] = 100.332; output_47[61] = 0; output_47[62] = 0; output_47[63] = 0;
+  output_47[0] = 0;
+  output_47[1] = 0;
+  output_47[2] = 0;
+  output_47[3] = 121.887;
+  output_47[4] = 121.395;
+  output_47[5] = 120.547;
+  output_47[6] = 119.866;
+  output_47[7] = 119.493;
+  output_47[8] = 119.153;
+  output_47[9] = 118.484;
+  output_47[10] = 117.753;
+  output_47[11] = 117.009;
+  output_47[12] = 116.35;
+  output_47[13] = 115.941;
+  output_47[14] = 115.349;
+  output_47[15] = 114.35;
+  output_47[16] = 113.588;
+  output_47[17] = 112.99;
+  output_47[18] = 111.645;
+  output_47[19] = 110.009;
+  output_47[20] = 109.13;
+  output_47[21] = 108.771;
+  output_47[22] = 108.592;
+  output_47[23] = 108.641;
+  output_47[24] = 108.345;
+  output_47[25] = 107.592;
+  output_47[26] = 107.063;
+  output_47[27] = 106.767;
+  output_47[28] = 106.592;
+  output_47[29] = 106.645;
+  output_47[30] = 106.399;
+  output_47[31] = 105.843;
+  output_47[32] = 105.57;
+  output_47[33] = 105.502;
+  output_47[34] = 105.557;
+  output_47[35] = 105.672;
+  output_47[36] = 105.56;
+  output_47[37] = 104.897;
+  output_47[38] = 104.642;
+  output_47[39] = 104.708;
+  output_47[40] = 104.054;
+  output_47[41] = 103.556;
+  output_47[42] = 103.982;
+  output_47[43] = 104.43;
+  output_47[44] = 104.682;
+  output_47[45] = 104.596;
+  output_47[46] = 104.104;
+  output_47[47] = 103.852;
+  output_47[48] = 103.964;
+  output_47[49] = 103.91;
+  output_47[50] = 103.556;
+  output_47[51] = 102.614;
+  output_47[52] = 102.126;
+  output_47[53] = 102.762;
+  output_47[54] = 103.466;
+  output_47[55] = 103.273;
+  output_47[56] = 102.292;
+  output_47[57] = 101.363;
+  output_47[58] = 100.821;
+  output_47[59] = 100.538;
+  output_47[60] = 100.332;
+  output_47[61] = 0;
+  output_47[62] = 0;
+  output_47[63] = 0;
 
   std::uint32_t j = 0;
   for (std::uint32_t i = 0; i < output->width ; ++i)
@@ -3197,16 +3315,10 @@ TEST (Convolution, convolveRowsXYZI)
 /// \todo Correct input values and filter factors required to test the function and not just detect compiler errors.
 TEST (Convolution, convolveRowsRGB)
 {
-  using namespace pcl::common;
-  using namespace pcl::filters;
-
-  PointCloud<RGB>::Ptr input (new PointCloud<RGB> ());
-  Eigen::ArrayXf filter(7);
-  pcl::filters::Convolution<RGB, RGB> convolve;
-  PointCloud<RGB>::Ptr output;
-
   // input
+  Eigen::ArrayXf filter(7);
   filter << 0.00443305, 0.0540056, 0.242036, 0.39905, 0.242036, 0.0540056, 0.00443305;
+  PointCloud<RGB>::Ptr input (new PointCloud<RGB> ());
   input->width = 48;
   input->height = 48;
   input->resize(input->width * input->height);
@@ -3218,14 +3330,13 @@ TEST (Convolution, convolveRowsRGB)
       float x2 = -M_PI + (2.0f * M_PI / (float)input->width) * (float)c;
       float y2 = -2.0f + (4.0f / (float)input->height) * (float)r;
       float z = x1 * exp(-(x1 * x1 + y1 * y1)) * 2.5f + sin(x2) * sin(y2);
-      COLOR color = get_color((COLOR*)basemap, 5, -1.6f, 1.6f, z);
-      (*input) (r, c).r = (uint8_t)(255.0f * color.r);
-      (*input) (r, c).g = (uint8_t)(255.0f * color.g);
-      (*input) (r, c).b = (uint8_t)(255.0f * color.b);
+      (*input) (r, c) = get_color(-1.6f, 1.6f, z);
     }
 
   // filter
+  PointCloud<RGB>::Ptr output;
   output.reset (new PointCloud<RGB> ());
+  pcl::filters::Convolution<RGB, RGB> convolve;
   convolve.setInputCloud (input);
   convolve.setKernel (filter);
   convolve.convolveRows (*output);
@@ -3234,34 +3345,28 @@ TEST (Convolution, convolveRowsRGB)
   std::uint32_t i = 0;
   for (std::uint32_t j = 0; j < output->width; ++j)
   {
-    EXPECT_NEAR((*output) (i, j).r, 0, 1e-3);
-    EXPECT_NEAR((*output) (i, j).g, 0, 1e-3);
-    EXPECT_NEAR((*output) (i, j).b, 0, 1e-3);
+    EXPECT_FLOAT_EQ((*output) (i, j).r, 0);
+    EXPECT_FLOAT_EQ((*output) (i, j).g, 0);
+    EXPECT_FLOAT_EQ((*output) (i, j).b, 0);
   }
 
   // last output row
   i = output->height - 1;
   for (std::uint32_t j = 0; j < output->width; ++j)
   {
-    EXPECT_NEAR((*output) (i, j).r, 0, 1e-3);
-    EXPECT_NEAR((*output) (i, j).g, 0, 1e-3);
-    EXPECT_NEAR((*output) (i, j).b, 0, 1e-3);
+    EXPECT_FLOAT_EQ((*output) (i, j).r, 0);
+    EXPECT_FLOAT_EQ((*output) (i, j).g, 0);
+    EXPECT_FLOAT_EQ((*output) (i, j).b, 0);
   }
 }
 
 /// \todo Correct input values and filter factors required to test the function and not just detect compiler errors.
 TEST (Convolution, convolveRowsXYZRGB)
 {
-  using namespace pcl::common;
-  using namespace pcl::filters;
-
-  PointCloud<PointXYZRGB>::Ptr input (new PointCloud<PointXYZRGB> ());
-  Eigen::ArrayXf filter(7);
-  pcl::filters::Convolution<PointXYZRGB, PointXYZRGB> convolve;
-  PointCloud<PointXYZRGB>::Ptr output;
-
   // input
+  Eigen::ArrayXf filter(7);
   filter << 0.00443305, 0.0540056, 0.242036, 0.39905, 0.242036, 0.0540056, 0.00443305;
+  PointCloud<PointXYZRGB>::Ptr input (new PointCloud<PointXYZRGB> ());
   input->width = 48;
   input->height = 48;
   input->resize(input->width * input->height);
@@ -3273,7 +3378,7 @@ TEST (Convolution, convolveRowsXYZRGB)
       float x2 = -M_PI + (2.0f * M_PI / (float)input->width) * (float)c;
       float y2 = -2.0f + (4.0f / (float)input->height) * (float)r;
       float z = x1 * exp(-(x1 * x1 + y1 * y1)) * 2.5f + sin(x2) * sin(y2);
-      COLOR color = get_color((COLOR*)basemap, 5, -1.6f, 1.6f, z);
+      RGB color = get_color(-1.6f, 1.6f, z);
       (*input) (r, c).x = x1;
       (*input) (r, c).y = y1;
       (*input) (r, c).z = z;
@@ -3283,7 +3388,9 @@ TEST (Convolution, convolveRowsXYZRGB)
     }
 
   // filter
+  PointCloud<PointXYZRGB>::Ptr output;
   output.reset (new PointCloud<PointXYZRGB> ());
+  pcl::filters::Convolution<PointXYZRGB, PointXYZRGB> convolve;
   convolve.setInputCloud (input);
   convolve.setKernel (filter);
   convolve.convolveRows (*output);
@@ -3295,9 +3402,9 @@ TEST (Convolution, convolveRowsXYZRGB)
     EXPECT_TRUE(std::isnan((*output) (i, j).x));
     EXPECT_TRUE(std::isnan((*output) (i, j).y));
     EXPECT_TRUE(std::isnan((*output) (i, j).z));
-    EXPECT_NEAR((*output) (i, j).r, 0, 1e-3);
-    EXPECT_NEAR((*output) (i, j).g, 0, 1e-3);
-    EXPECT_NEAR((*output) (i, j).b, 0, 1e-3);
+    EXPECT_FLOAT_EQ((*output) (i, j).r, 0);
+    EXPECT_FLOAT_EQ((*output) (i, j).g, 0);
+    EXPECT_FLOAT_EQ((*output) (i, j).b, 0);
   }
 
   // last output row
@@ -3307,9 +3414,9 @@ TEST (Convolution, convolveRowsXYZRGB)
     EXPECT_TRUE(std::isnan((*output) (i, j).x));
     EXPECT_TRUE(std::isnan((*output) (i, j).y));
     EXPECT_TRUE(std::isnan((*output) (i, j).z));
-    EXPECT_NEAR((*output) (i, j).r, 0, 1e-3);
-    EXPECT_NEAR((*output) (i, j).g, 0, 1e-3);
-    EXPECT_NEAR((*output) (i, j).b, 0, 1e-3);
+    EXPECT_FLOAT_EQ((*output) (i, j).r, 0);
+    EXPECT_FLOAT_EQ((*output) (i, j).g, 0);
+    EXPECT_FLOAT_EQ((*output) (i, j).b, 0);
   }
 }
 
