@@ -33,7 +33,6 @@ set(BOOST_REQUIRED_MODULES filesystem date_time iostreams system)
 find_package(Boost 1.55.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
 
 if(Boost_FOUND)
-  set(BOOST_FOUND TRUE)
   # Obtain diagnostic information about Boost's automatic linking outputted
   # during compilation time.
   add_definitions(${Boost_LIB_DIAGNOSTIC_DEFINITIONS})
