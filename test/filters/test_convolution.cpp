@@ -44,6 +44,7 @@
 #include <cmath>
 #include <array>
 #include <algorithm>
+#include <functional>
 
 using namespace pcl;
 using namespace pcl::common;
@@ -60,23 +61,19 @@ std::array<RGB, 5> colormap {
 
 RGB get_color(float fmin, float fmax, float value)
 {
-  std::array<float, 5> steps;
+  if (value <= fmin) return colormap[0];
+  if (value >= fmax) return colormap[colormap.size() - 1];
   float f = (fmax - fmin) / (float)(colormap.size() - 1);
-  for (size_t i = 0; i < colormap.size(); i++)
-    steps[i] = fmin + f * (float)i;
-  value = std::min<float>(fmax, std::max<float>(value, fmin));
-  RGB result;
-  for (size_t i = 1; i < colormap.size(); i++)
-  {
-    if (steps[i - 1] <= value && value <= steps[i])
-    {
-      result.r = (colormap[i - 1].r == colormap[i].r) ? colormap[i].r : (uint8_t)((float)colormap[i - 1].r + (((float)colormap[i].r - (float)colormap[i - 1].r) / (steps[i] - steps[i - 1])) * (value - steps[i - 1]));
-      result.g = (colormap[i - 1].g == colormap[i].g) ? colormap[i].g : (uint8_t)((float)colormap[i - 1].g + (((float)colormap[i].g - (float)colormap[i - 1].g) / (steps[i] - steps[i - 1])) * (value - steps[i - 1]));
-      result.b = (colormap[i - 1].b == colormap[i].b) ? colormap[i].b : (uint8_t)((float)colormap[i - 1].b + (((float)colormap[i].b - (float)colormap[i - 1].b) / (steps[i] - steps[i - 1])) * (value - steps[i - 1]));
-      break;
-    }
-  }
-  return result;
+  size_t low_index = static_cast<size_t>((value - fmin) / f);
+  if(value == fmin + (float)low_index * f) return colormap[low_index];
+  auto channelInterpolation = [](uint8_t c0, uint8_t c1, float f, float value, float offset) {
+    return (c0 == c1) ? c0 : (uint8_t)((float)c0 + (((float)c1 - (float)c0) / f) * (value - offset));
+  };
+  return RGB(
+    channelInterpolation(colormap[low_index].r, colormap[low_index + 1].r, f, value, fmin + (float)low_index * f),
+    channelInterpolation(colormap[low_index].g, colormap[low_index + 1].g, f, value, fmin + (float)low_index * f),
+    channelInterpolation(colormap[low_index].b, colormap[low_index + 1].b, f, value, fmin + (float)low_index * f)
+  );
 }
 
 TEST (Convolution, convolveRowsXYZI)
