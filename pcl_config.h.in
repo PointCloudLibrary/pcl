@@ -54,6 +54,12 @@
 /* Do not precompile for any point types at all. */
 #cmakedefine PCL_NO_PRECOMPILE
 
+/* Set point index size. */
+#cmakedefine PCL_INDEX_SIZE
+
+/* Set whether point indices should be signed or unsigned. */
+#cmakedefine PCL_INDEX_SIGNED
+
 #ifdef DISABLE_OPENNI
 #undef HAVE_OPENNI
 #endif
