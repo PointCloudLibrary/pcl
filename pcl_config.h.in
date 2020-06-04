@@ -54,9 +54,10 @@
 /* Do not precompile for any point types at all. */
 #cmakedefine PCL_NO_PRECOMPILE
 
-/* indices type defined by user. */
-#cmakedefine INDICES_TYPE_INT
-#cmakedefine INDICES_TYPE_SIZE_T
+/* indices type/sign defined by user. */
+#cmakedefine PCL_INDICES_TYPE_INT
+#cmakedefine PCL_INDICES_TYPE_SIZE_T
+
 
 #ifdef DISABLE_OPENNI
 #undef HAVE_OPENNI
