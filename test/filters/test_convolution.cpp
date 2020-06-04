@@ -44,7 +44,6 @@
 #include <cmath>
 #include <array>
 #include <algorithm>
-#include <functional>
 
 using namespace pcl;
 using namespace pcl::common;
@@ -59,20 +58,21 @@ std::array<RGB, 5> colormap {
   RGB(255, 0, 0),
 };
 
-RGB interpolate_color(float fmin, float fmax, float value)
+RGB interpolate_color(float lower_bound, float upper_bound, float value)
 {
-  if (value <= fmin) return colormap[0];
-  if (value >= fmax) return colormap[colormap.size() - 1];
-  float step_size = (fmax - fmin) / (float)(colormap.size() - 1);
-  size_t low_index = static_cast<size_t>((value - fmin) / step_size);
-  if(value == fmin + (float)low_index * step_size) return colormap[low_index];
-  auto interpolate_channel = [](uint8_t c0, uint8_t c1, float f, float value, float offset) {
-    return (c0 == c1) ? c0 : (uint8_t)((float)c0 + (((float)c1 - (float)c0) / f) * (value - offset));
+  if (value <= lower_bound) return colormap[0];
+  if (value >= upper_bound) return colormap[colormap.size() - 1];
+  float step_size = (upper_bound - lower_bound) / static_cast<float>(colormap.size() - 1);
+  std::size_t lower_index = static_cast<std::size_t>((value - lower_bound) / step_size);
+  value -= (lower_bound + static_cast<float>(lower_index) * step_size);
+  if (value == 0) return colormap[lower_index];
+  auto interpolate = [](std::uint8_t lower, std::uint8_t upper, float step_size, float value) {
+    return (lower == upper) ? lower : static_cast<std::uint8_t>(static_cast<float>(lower) + ((static_cast<float>(upper) - static_cast<float>(lower)) / step_size) * value);
   };
   return RGB(
-    interpolate_channel(colormap[low_index].r, colormap[low_index + 1].r, step_size, value, fmin + (float)low_index * step_size),
-    interpolate_channel(colormap[low_index].g, colormap[low_index + 1].g, step_size, value, fmin + (float)low_index * step_size),
-    interpolate_channel(colormap[low_index].b, colormap[low_index + 1].b, step_size, value, fmin + (float)low_index * step_size)
+    interpolate(colormap[lower_index].r, colormap[lower_index + 1].r, step_size, value),
+    interpolate(colormap[lower_index].g, colormap[lower_index + 1].g, step_size, value),
+    interpolate(colormap[lower_index].b, colormap[lower_index + 1].b, step_size, value)
   );
 }
 
@@ -3393,6 +3393,7 @@ TEST (Convolution, convolveRowsXYZRGB)
   convolve.convolveRows (*output);
 
   // first output row
+  // note: this is because of border policy ignore which sets the border of width = filter_size/2 as NaN for xyz and 0 for rgb values
   std::uint32_t i = 1;
   for (std::uint32_t j = 0; j < output->width; ++j)
   {
