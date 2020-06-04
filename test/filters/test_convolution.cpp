@@ -41,7 +41,7 @@
 #include <pcl/pcl_tests.h>
 #include <pcl/filters/convolution.h>
 #include <pcl/point_types.h>
-#include <limits>
+#include <cmath>
 
 using namespace pcl;
 using namespace pcl::test;
@@ -3292,9 +3292,9 @@ TEST (Convolution, convolveRowsXYZRGB)
   std::uint32_t i = 1;
   for (std::uint32_t j = 0; j < output->width; ++j)
   {
-    EXPECT_TRUE(std::isnan<float>((*output) (i, j).x));
-    EXPECT_TRUE(std::isnan<float>((*output) (i, j).y));
-    EXPECT_TRUE(std::isnan<float>((*output) (i, j).z));
+    EXPECT_TRUE(std::isnan((*output) (i, j).x));
+    EXPECT_TRUE(std::isnan((*output) (i, j).y));
+    EXPECT_TRUE(std::isnan((*output) (i, j).z));
     EXPECT_NEAR((*output) (i, j).r, 0, 1e-3);
     EXPECT_NEAR((*output) (i, j).g, 0, 1e-3);
     EXPECT_NEAR((*output) (i, j).b, 0, 1e-3);
@@ -3304,9 +3304,9 @@ TEST (Convolution, convolveRowsXYZRGB)
   i = output->height - 1;
   for (std::uint32_t j = 0; j < output->width; ++j)
   {
-    EXPECT_TRUE(std::isnan<float>((*output) (i, j).x));
-    EXPECT_TRUE(std::isnan<float>((*output) (i, j).y));
-    EXPECT_TRUE(std::isnan<float>((*output) (i, j).z));
+    EXPECT_TRUE(std::isnan((*output) (i, j).x));
+    EXPECT_TRUE(std::isnan((*output) (i, j).y));
+    EXPECT_TRUE(std::isnan((*output) (i, j).z));
     EXPECT_NEAR((*output) (i, j).r, 0, 1e-3);
     EXPECT_NEAR((*output) (i, j).g, 0, 1e-3);
     EXPECT_NEAR((*output) (i, j).b, 0, 1e-3);
