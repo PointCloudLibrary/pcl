@@ -12,7 +12,6 @@
 
 find_package(PkgConfig QUIET)
 
-message("Libusb-1.0_FOUND is ${libusb-1.0_FOUND}")
 #Search for libusb-1.0 beforehand
 if(NOT libusb-1.0_FOUND)
   message(STATUS "OpenNI 2 disabled because libusb-1.0 not found.")
