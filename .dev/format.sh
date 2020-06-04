@@ -8,7 +8,7 @@
 
 format() {
     # don't use a directory with whitespace
-    local whitelist="apps/modeler 2d ml octree simulation stereo tracking"
+    local whitelist="apps/modeler 2d common/include/pcl/common/fft ml octree simulation stereo tracking"
 
     local PCL_DIR="${2}"
     local formatter="${1}"
