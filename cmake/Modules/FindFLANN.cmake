@@ -41,10 +41,9 @@ if(TARGET FLANN::FLANN)
 endif()
 
 # First try to locate FLANN using modern config
-find_package(flann NO_MODULE ${FLANN_FIND_VERSION} QUIET)
-if(flann_FOUND)
-  unset(flann_FOUND)
-  set(FLANN_FOUND ON)
+find_package(FLANN NO_MODULE ${FLANN_FIND_VERSION} QUIET)
+
+if(FLANN_FOUND)
   # Create interface library that effectively becomes an alias for the appropriate (static/dynamic) imported FLANN target
   add_library(FLANN::FLANN INTERFACE IMPORTED)
   if(FLANN_USE_STATIC)
@@ -56,7 +55,7 @@ if(flann_FOUND)
   get_filename_component(_config_dir "${flann_CONFIG}" DIRECTORY)
   get_filename_component(FLANN_ROOT "${_config_dir}/../../.." ABSOLUTE)
   unset(_config_dir)
-  message(STATUS "Found flann version ${flann_VERSION}")
+  message(STATUS "Found flann version ${FLANN_VERSION}")
   return()
 endif()
 
