@@ -64,3 +64,11 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(BUILD_tools "Useful PCL-based command line tools" ON)
 
 option(WITH_DOCS "Build doxygen documentation" OFF)
+
+# set indices type
+set(INDICES_TYPE int CACHE STRING "Set indices type. Available options are: int size_t")
+if(${PCL_VERBOSITY_LEVEL} STREQUAL int)
+  set(INDICES_TYPE_INT 1)
+else()
+  set(INDICES_TYPE_SIZE_T 1)
+endif()
