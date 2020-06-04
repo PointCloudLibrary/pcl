@@ -447,7 +447,7 @@ endif()
 #Find PCAP
 option(WITH_PCAP "pcap file capabilities in Velodyne HDL driver" TRUE)
 if(WITH_PCAP)
-  find_package(Pcap)
+  find_package(PCAP)
 endif()
 
 # OpenGL and GLUT
