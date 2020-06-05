@@ -30,6 +30,8 @@
 #define PCL_INDEX_SIZE ${PCL_INDEX_SIZE}
 #endif 
 
+#cmakedefine HAVE_TBB 1
+
 #cmakedefine HAVE_OPENNI 1
 
 #cmakedefine HAVE_OPENNI2 1
