@@ -15,12 +15,14 @@ resources:
 variables:
   dockerHub: "PointCloudLibrary@hub.docker.com"
   dockerHubID: "pointcloudlibrary"
-  isPreRelease: 0  # number of pre-release
-  # version needs to be provided via the UI
+  # version and isPreRelease need to be provided via the UI
+  # UI priority is the lowest and can't override the file data
+  # isPreRelease: 0  # number of pre-release
+  # version: 1.99
 
 stages:
 - stage: Info
-  displayName: "PCL-rc${{variables.isPreRelease}}"
+  displayName: "Version"
   jobs:
   - job: additional_info
     displayName: "More Info"
@@ -32,8 +34,8 @@ stages:
       fetchDepth: 10
     - script: |
         echo "Prev release: $(git tag | sort -rV | head -1 | cut -d- -f 2)"
-        echo "Current release: "$(version)
-        # can't test easily if version variable is empty or not
+        echo "Current release: "$(version)-rc$(isPreRelease)
+        # @TODO: test if variables are empty or not
       displayName: "Test for and display version info"
 - stage: Debian
   dependsOn: ["Info"]
@@ -197,7 +199,7 @@ stages:
         releaseNotesFilePath: '$(DOWNLOAD_LOCATION)/changelog/changelog.md'
         repositoryName: $(Build.Repository.Name)
         tagSource: 'userSpecifiedTag'
-        tag: "pcl-${{variables.version}}-rc${{variables.isPreRelease}}"
+        tag: "pcl-$(version)-rc$(isPreRelease)"
         tagPattern: 'pcl-*'
         target: '$(Build.SourceVersion)'
         title: 'PCL $(version)'
