@@ -15,10 +15,10 @@ resources:
 variables:
   dockerHub: "PointCloudLibrary@hub.docker.com"
   dockerHubID: "pointcloudlibrary"
-  # version and isPreRelease need to be provided via the UI
+  # VERSION and RC need to be provided via the UI
   # UI priority is the lowest and can't override the file data
-  # isPreRelease: 0  # number of pre-release
-  # version: 1.99
+  # RC: 0  # number of pre-release
+  # VERSION: 1.99
 
 stages:
 - stage: Info
@@ -34,8 +34,11 @@ stages:
       fetchDepth: 10
     - script: |
         echo "Prev release: $(git tag | sort -rV | head -1 | cut -d- -f 2)"
-        echo "Current release: "$(version)-rc$(isPreRelease)
-        # @TODO: test if variables are empty or not
+        echo "Current release: "$(VERSION)-rc$(RC)
+        if [ -z $VERSION ] || [ -z $RC ]; then
+          echo "Bad version and release candidate number"
+          exit 3
+        fi
       displayName: "Test for and display version info"
 - stage: Debian
   dependsOn: ["Info"]
@@ -159,7 +162,7 @@ stages:
         <Insert Summary Here>
 
         For an exhustive list of newly added features, deprecations and other changes
-        in PCL $(version), please see [CHANGES.md](https://github.com/PointCloudLibrary/pcl/blob/master/CHANGES.md). <Remember to edit the URL>
+        in PCL $(VERSION), please see [CHANGES.md](https://github.com/PointCloudLibrary/pcl/blob/master/CHANGES.md). <Remember to edit the URL>
         EOF
       displayName: 'Generate Changelog'
     - task: PublishBuildArtifacts@1
@@ -182,6 +185,9 @@ stages:
     - checkout: self
       # find the commit hash on a quick non-forced update too
       fetchDepth: 10
+    - bash: |
+        if [ -z $RC ] || [ $RC -eq 0 ]; then isPreRelease=false; else isPreRelease=true; fi
+        echo "##vso[task.setvariable variable=isPreRelease]${isPreRelease}"
     - task: DownloadBuildArtifacts@0
       inputs:
         downloadType: 'all'  # can be anything except single
@@ -199,7 +205,7 @@ stages:
         releaseNotesFilePath: '$(DOWNLOAD_LOCATION)/changelog/changelog.md'
         repositoryName: $(Build.Repository.Name)
         tagSource: 'userSpecifiedTag'
-        tag: "pcl-$(version)-rc$(isPreRelease)"
+        tag: "pcl-$(VERSION)-rc$(RC)"
         tagPattern: 'pcl-*'
         target: '$(Build.SourceVersion)'
-        title: 'PCL $(version)'
+        title: 'PCL $(VERSION)'
