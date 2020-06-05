@@ -41,34 +41,24 @@
 
 #include <pcl/filters/filter_indices.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/type_traits.h> // for is_invocable
 
 #ifndef __cpp_lib_is_invocable
 #include <boost/hof/is_invocable.hpp>
 #endif
 
 #include <type_traits>
+
 #include <utility>
 
 namespace pcl {
 namespace detail {
-#ifndef __cpp_lib_is_invocable
-template <typename F, typename... Args>
-constexpr bool is_invocable_v = boost::is_invocable<F, Args...>();
-#else
-using std::is_invocable_v;
-#endif
-
-#ifndef __cpp_lib_remove_cvref
-template <typename T>
-using remove_cvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
-#else
-using std::remove_cvref_t;
-#endif
-
 template <typename PointT, typename Function>
 using PointFilterLambda = std::enable_if_t<
-    is_invocable_v<Function, const remove_cvref_t<std::PointT>&, pcl::index_t> &&
-        std::is_convertible<decltype(Function(const remove_cvref_t<std::PointT>&,
+    pcl::is_invocable_v<Function,
+                        const pcl::remove_cvref_t<std::PointT>&,
+                        pcl::index_t> &&
+        std::is_convertible<decltype(Function(const pcl::remove_cvref_t<std::PointT>&,
                                               pcl::index_t)),
                             bool>::value,
     bool>;
@@ -78,7 +68,7 @@ using PointFilterLambda = std::enable_if_t<
 template <class Base, Derived>
 constexpr auto IsValidLambdaFilter = std::enable_if_t<
     std::is_base_of<Base, Derived>::value &&
-        is_invocable_v<std::declval<Derived>().get_lambda, void> &&
+        pcl::is_invocable_v<std::declval<Derived>().get_lambda, void> &&
         std::is_same<PointFilterLambda<std::declval<Derived>().get_lambda()>, bool>,
     bool>;
 

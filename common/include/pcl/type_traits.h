@@ -39,9 +39,14 @@
 
 #include <pcl/point_struct_traits.h>  // for pcl::traits::POD, pcl::traits::name, pcl::traits::datatype, pcl::traits::offset
 
+#ifndef __cpp_lib_is_invocable
+#include <boost/hof/is_invocable.hpp>  // for is_invocable_v till C++17
+#endif
+
 #include <cstddef>  // for std::size_t
 #include <cstdint>  // for std::uint8_t
-#include <string>  // for std::string
+
+#include <string>       // for std::string
 #include <type_traits>  // for std::false_type, std::true_type
 
 namespace pcl
@@ -260,5 +265,24 @@ namespace pcl
   template <typename T> struct has_custom_allocator<T, void_t<typename T::_custom_allocator_type_trait>> : std::true_type {};
 
 #endif
-}
 
+  /**
+   * \todo: Remove in C++17
+   */
+#ifndef __cpp_lib_is_invocable
+  template <typename F, typename... Args>
+  constexpr bool is_invocable_v = boost::hof::is_invocable<F, Args...>();
+#else
+  using std::is_invocable_v;
+#endif
+
+  /**
+   * \todo: Remove in C++17
+   */
+#ifndef __cpp_lib_remove_cvref
+  template <typename T>
+  using remove_cvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
+#else
+  using std::remove_cvref_t;
+#endif
+}
