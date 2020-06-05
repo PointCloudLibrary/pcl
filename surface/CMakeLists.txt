@@ -4,7 +4,7 @@ set(SUBSYS_DEPS common search kdtree octree)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
-PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS qhull)
+PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS Qhull)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
@@ -12,7 +12,7 @@ if(NOT build)
   return()
 endif()
 
-if(QHULL_FOUND)
+if(Qhull_FOUND)
   set(HULL_INCLUDES
     "include/pcl/${SUBSYS_NAME}/concave_hull.h"
     "include/pcl/${SUBSYS_NAME}/convex_hull.h"
@@ -159,8 +159,8 @@ include_directories(SYSTEM
 link_directories(${VTK_LIBRARY_DIRS})
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${impl_incs} ${VTK_SMOOTHING_INCLUDES} ${POISSON_INCLUDES} ${OPENNURBS_INCLUDES} ${ON_NURBS_INCLUDES})
 target_link_libraries("${LIB_NAME}" pcl_common pcl_search pcl_kdtree pcl_octree ${VTK_LIBRARIES} ${ON_NURBS_LIBRARIES})
-if(QHULL_FOUND)
-  target_link_libraries("${LIB_NAME}" ${QHULL_LIBRARIES})
+if(Qhull_FOUND)
+  target_link_libraries("${LIB_NAME}" ${Qhull_LIBRARIES})
 endif()
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC} PCL_DEPS ${SUBSYS_DEPS})
 
