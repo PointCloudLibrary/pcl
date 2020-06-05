@@ -66,7 +66,12 @@ option(BUILD_tools "Useful PCL-based command line tools" ON)
 option(WITH_DOCS "Build doxygen documentation" OFF)
 
 # set index size
-set(PCL_SIZE_INDEX 32 CACHE STRING "Set index size. Available options are: 8 16 32 64")
+set(PCL_INDEX_SIZE 32 CACHE STRING "Set index size. Only available from PCL 1.12 or greater. Available options are: 8 16 32 64")
 
 #set whether indices are signed or unsigned
-set(PCL_SIGNED_INDEX true CACHE STRING "Set whether indices need to be signed or unsigned. Signed by default.")
+set(PCL_INDEX_SIGNED true CACHE BOOL "Set whether indices need to be signed or unsigned. Signed by default.")
+if (PCL_INDEX_SIGNED)
+  set(PCL_INDEX_SIGNED "true")
+else()
+  set (PCL_INDEX_SIGNED "false")
+endif()
