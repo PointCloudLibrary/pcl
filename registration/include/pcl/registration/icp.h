@@ -154,6 +154,11 @@ namespace pcl
         convergence_criteria_.reset(new pcl::registration::DefaultConvergenceCriteria<Scalar> (nr_iterations_, transformation_, *correspondences_));
       };
 
+      IterativeClosestPoint(const IterativeClosestPoint&) = delete;
+      IterativeClosestPoint(IterativeClosestPoint&&) = delete;
+      IterativeClosestPoint& operator=(const IterativeClosestPoint&) = delete;
+      IterativeClosestPoint& operator=(IterativeClosestPoint&&) = delete;
+
       /** \brief Empty destructor */
       ~IterativeClosestPoint () {}
 
