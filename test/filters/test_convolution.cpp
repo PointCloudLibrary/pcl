@@ -81,7 +81,7 @@ TEST (Convolution, convolveRowsXYZI)
   // input
   Eigen::ArrayXf filter(7);
   filter << 0.00443305, 0.0540056, 0.242036, 0.39905, 0.242036, 0.0540056, 0.00443305;
-  PointCloud<PointXYZI>::Ptr input (new PointCloud<PointXYZI> ());
+  auto input = pcl::make_shared<PointCloud<PointXYZI>>();
   input->width = 64;
   input->height = 48;
   input->resize (64 * 48);
@@ -3160,7 +3160,7 @@ TEST (Convolution, convolveRowsXYZI)
   (*input) (63,47).intensity = 96;
 
   // filter
-  PointCloud<PointXYZI>::Ptr output(new PointCloud<PointXYZI>());
+  auto output = pcl::make_shared<PointCloud<PointXYZI>>();
   pcl::filters::Convolution<PointXYZI, PointXYZI> convolve;
   convolve.setInputCloud(input);
   convolve.setKernel(filter);
@@ -3314,7 +3314,7 @@ TEST (Convolution, convolveRowsRGB)
   // input
   Eigen::ArrayXf filter(7);
   filter << 0.00443305, 0.0540056, 0.242036, 0.39905, 0.242036, 0.0540056, 0.00443305;
-  PointCloud<RGB>::Ptr input (new PointCloud<RGB> ());
+  auto input = pcl::make_shared<PointCloud<RGB>>();
   input->width = 48;
   input->height = 48;
   input->resize(input->width * input->height);
@@ -3330,7 +3330,7 @@ TEST (Convolution, convolveRowsRGB)
     }
 
   // filter
-  PointCloud<RGB>::Ptr output (new PointCloud<RGB> ());
+  auto output = pcl::make_shared<PointCloud<RGB>>();
   pcl::filters::Convolution<RGB, RGB> convolve;
   convolve.setInputCloud (input);
   convolve.setKernel (filter);
@@ -3361,7 +3361,7 @@ TEST (Convolution, convolveRowsXYZRGB)
   // input
   Eigen::ArrayXf filter(7);
   filter << 0.00443305, 0.0540056, 0.242036, 0.39905, 0.242036, 0.0540056, 0.00443305;
-  PointCloud<PointXYZRGB>::Ptr input (new PointCloud<PointXYZRGB> ());
+  auto input = pcl::make_shared<PointCloud<PointXYZRGB>>();
   input->width = 48;
   input->height = 48;
   input->resize(input->width * input->height);
@@ -3383,7 +3383,7 @@ TEST (Convolution, convolveRowsXYZRGB)
     }
 
   // filter
-  PointCloud<PointXYZRGB>::Ptr output (new PointCloud<PointXYZRGB> ());
+  auto output = pcl::make_shared<PointCloud<PointXYZRGB>>();
   pcl::filters::Convolution<PointXYZRGB, PointXYZRGB> convolve;
   convolve.setInputCloud (input);
   convolve.setKernel (filter);
