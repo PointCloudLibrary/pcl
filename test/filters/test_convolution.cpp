@@ -85,11 +85,11 @@ TEST (Convolution, convolveRowsXYZI)
   input->width = 64;
   input->height = 48;
   input->resize (input->width * input->height);
-  for (int r = 0; r < input->height; r++)
+  for (std::uint32_t r = 0; r < input->height; r++)
   {
     float y = 40.0f + 40.0f / 65.0f * static_cast<float>(r);
     float z = (r % 2 == 0) ? 1.0f : -1.0f;
-    for(int c = 0; c < input->width; c++)
+    for(std::uint32_t c = 0; c < input->width; c++)
     {
       float x = 65.0f - 30.0f / 65.0f * static_cast<float>(c);
       z += (c % 2 == 0) ? 1.0f : -1.0f;
