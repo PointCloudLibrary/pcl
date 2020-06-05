@@ -30,7 +30,8 @@ steps:
         -DPCL_BUILD_WITH_QHULL_DYNAMIC_LINKING_WIN32=ON ^
         -DBUILD_global_tests=ON ^
         -DBUILD_tools=OFF ^
-        -DBUILD_surface_on_nurbs=ON
+        -DBUILD_surface_on_nurbs=ON ^
+        -DWITH_SUMMARY=ON
     displayName: 'CMake Configuration'
   - script: cd %BUILD_DIR% && cmake --build . --config %CONFIGURATION%
     displayName: 'Build Library'

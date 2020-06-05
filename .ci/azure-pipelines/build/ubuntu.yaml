@@ -24,7 +24,8 @@ steps:
       -DBUILD_cuda_io=$BUILD_GPU \
       -DBUILD_gpu_tracking=$BUILD_GPU \
       -DBUILD_gpu_surface=$BUILD_GPU \
-      -DBUILD_gpu_people=$BUILD_GPU
+      -DBUILD_gpu_people=$BUILD_GPU \
+      -DWITH_SUMMARY=ON
       # Temporary fix to ensure no tests are skipped
       cmake $(Build.SourcesDirectory)
     displayName: 'CMake Configuration'

@@ -1,6 +1,8 @@
 ### ---[ PCL global CMake
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
+include(FeatureSummary)
+
 if(POLICY CMP0074)
   # 1. Remove with 3.12.4.
   # 2. Remove search paths with *_ROOT since they will be automatically checked
@@ -17,6 +19,7 @@ if(CMAKE_VERSION VERSION_LESS 3.8)
   set(PCL_CXX_COMPILE_FEATURES cxx_attribute_deprecated)
 else()
   set(PCL_CXX_COMPILE_FEATURES cxx_std_14)
+  add_feature_info(c++14 TRUE "is enabled")
 endif()
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
@@ -52,12 +55,16 @@ set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
 # Note: CMake automatically defines one for GNUCXX, nothing to do in this case.
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   set(CMAKE_COMPILER_IS_CLANG 1)
+  add_feature_info(COMPILER TRUE "is Clang")
 elseif(__COMPILER_PATHSCALE)
   set(CMAKE_COMPILER_IS_PATHSCALE 1)
+  add_feature_info(COMPILER TRUE "is Pathscale")
 elseif(MSVC)
   set(CMAKE_COMPILER_IS_MSVC 1)
+  add_feature_info(COMPILER TRUE "is Visual studio")
 elseif(MINGW)
   set(CMAKE_COMPILER_IS_MINGW 1)
+  add_feature_info(COMPILER TRUE "is Mingw")
 endif()
 
 # Create a variable with expected default CXX flags
@@ -162,6 +169,7 @@ if(CMAKE_COMPILER_IS_MSVC)
       elseif(MSVC_MP GREATER 1)
         add_compile_options($<$<OR:$<COMPILE_LANGUAGE:C>,$<COMPILE_LANGUAGE:CXX>>:/MP${MSVC_MP}>)
       endif()
+	  add_feature_info(CORE_COUNT TRUE "Core count is ${MSVC_MP}")
     endif()
   endif()
 
@@ -288,6 +296,7 @@ if(OpenMP_FOUND)
 else()
   message(STATUS "Not found OpenMP")
 endif()
+add_feature_info(OpenMP OpenMP_FOUND "is enabled")
 
 # Threads (required)
 find_package(Threads REQUIRED)
@@ -493,6 +502,16 @@ endif()
 ### ---[ Make a pretty picture of the dependency graph
 include("${PCL_SOURCE_DIR}/cmake/dep_graph.cmake")
 MAKE_DEP_GRAPH()
+
+option(WITH_SUMMARY "Shows complete build summary" FALSE)				
+if(WITH_SUMMARY)
+  feature_summary(WHAT ALL
+                  INCLUDE_QUIET_PACKAGES
+                  DESCRIPTION "Enabled Features:"
+                  VAR enabledFeaturesText)
+				
+  message(STATUS "${enabledFeaturesText}")
+endif()
 
 ### ---[ Finish up
 PCL_WRITE_STATUS_REPORT()
