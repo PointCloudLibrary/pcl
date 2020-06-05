@@ -3160,8 +3160,7 @@ TEST (Convolution, convolveRowsXYZI)
   (*input) (63,47).intensity = 96;
 
   // filter
-  PointCloud<PointXYZI>::Ptr output;
-  output.reset(new PointCloud<PointXYZI>());
+  PointCloud<PointXYZI>::Ptr output(new PointCloud<PointXYZI>());
   pcl::filters::Convolution<PointXYZI, PointXYZI> convolve;
   convolve.setInputCloud(input);
   convolve.setKernel(filter);
@@ -3331,8 +3330,7 @@ TEST (Convolution, convolveRowsRGB)
     }
 
   // filter
-  PointCloud<RGB>::Ptr output;
-  output.reset (new PointCloud<RGB> ());
+  PointCloud<RGB>::Ptr output (new PointCloud<RGB> ());
   pcl::filters::Convolution<RGB, RGB> convolve;
   convolve.setInputCloud (input);
   convolve.setKernel (filter);
@@ -3385,8 +3383,7 @@ TEST (Convolution, convolveRowsXYZRGB)
     }
 
   // filter
-  PointCloud<PointXYZRGB>::Ptr output;
-  output.reset (new PointCloud<PointXYZRGB> ());
+  PointCloud<PointXYZRGB>::Ptr output (new PointCloud<PointXYZRGB> ());
   pcl::filters::Convolution<PointXYZRGB, PointXYZRGB> convolve;
   convolve.setInputCloud (input);
   convolve.setKernel (filter);
