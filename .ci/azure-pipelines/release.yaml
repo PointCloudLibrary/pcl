@@ -144,22 +144,21 @@ stages:
         PathtoPublish: '$(PUBLISH_LOCATION)/'
         ArtifactName: 'source'
         publishLocation: 'Container'
-  - job: documentation
-    displayName: Generate Documentation
-    container:
-      image: pointcloudlibrary/doc
+  - job: changelog
+    displayName: Generate Change Log
     pool:
       vmImage: 'ubuntu-latest'
     variables:
-      BUILD_DIR: '$(Agent.BuildDirectory)/build'
       CHANGELOG: '$(Build.ArtifactStagingDirectory)/changelog.md'
     steps:
-    - checkout: self
-      # find the commit hash on a quick non-forced update too
-      fetchDepth: 10
+    - checkout: none
     - script: |
-        $(Build.SourcesDirectory)/.dev/scripts/generate_changelog.py > $(CHANGELOG)
-        pandoc -f markdown -t plain --wrap=none $(CHANGELOG)
+        cat > $(CHANGELOG) <<EOF
+        <Insert Summary Here>
+
+        For an exhustive list of newly added features, deprecations and other changes
+        in PCL $(version), please see [CHANGES.md](https://github.com/PointCloudLibrary/pcl/blob/master/CHANGES.md). <Remember to edit the URL>
+        EOF
       displayName: 'Generate Changelog'
     - task: PublishBuildArtifacts@1
       displayName: "Publish Changelog"
