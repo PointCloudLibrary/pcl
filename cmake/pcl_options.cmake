@@ -71,7 +71,7 @@ set(PCL_INDEX_SIZE 32 CACHE STRING "Set index size. Only available from PCL 1.12
 #set whether indices are signed or unsigned
 set(PCL_INDEX_SIGNED true CACHE BOOL "Set whether indices need to be signed or unsigned. Signed by default.")
 if (PCL_INDEX_SIGNED)
-  set(PCL_INDEX_SIGNED "true")
+  set(PCL_INDEX_SIGNED_STR "true")
 else()
-  set (PCL_INDEX_SIGNED "false")
+  set (PCL_INDEX_SIGNED_STR "false")
 endif()

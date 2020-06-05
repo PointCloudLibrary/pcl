@@ -21,7 +21,7 @@
     (PCL_VERSION*10+PCL_DEV_VERSION OP PCL_VERSION_CALC(MAJ, MIN, PATCH)*10)
 
 /* Index type and signed/unsigned property */
-#define PCL_INDEX_SIGNED ${PCL_INDEX_SIGNED}
+#define PCL_INDEX_SIGNED ${PCL_INDEX_SIGNED_STR}
 
 #if PCL_MINOR_VERSION <= 11
 // sizeof returns bytes, while we measure size by bits in the template
