@@ -54,40 +54,48 @@
 namespace pcl {
 namespace detail {
 template <typename PointT, typename Function>
-using PointFilterLambda = std::enable_if_t<
-    pcl::is_invocable_v<Function,
-                        const pcl::remove_cvref_t<std::PointT>&,
-                        pcl::index_t> &&
-        std::is_convertible<decltype(Function(const pcl::remove_cvref_t<std::PointT>&,
-                                              pcl::index_t)),
-                            bool>::value,
-    bool>;
+using PointFilterLambda =
+    std::enable_if_t<pcl::is_invocable_r_v<bool,
+                                           Function,
+                                           const pcl::remove_cvref_t<PointT>&,
+                                           pcl::index_t>,
+                     bool>;
 
 // can't use this for SFINAE since Derived isn't properly defined
 // but this can be used after the class definition to test it
-template <class Base, Derived>
+/*
+template <class Base, class Derived>
 constexpr auto IsValidLambdaFilter = std::enable_if_t<
     std::is_base_of<Base, Derived>::value &&
         pcl::is_invocable_v<std::declval<Derived>().get_lambda, void> &&
-        std::is_same<PointFilterLambda<std::declval<Derived>().get_lambda()>, bool>,
-    bool>;
+        std::is_same<PointFilterLambda<std::declval<Derived>().get_lambda()>,
+bool>, bool>;
+*/
 
 /**
- * \brief LambdaFilterIndices filters point clouds and indices based on a function
- *        pointer passed to filter command
- * \ingroup filters
+ * \brief LambdaFilterIndices filters point clouds and indices based on a
+ * function pointer passed to filter command \ingroup filters
  */
 template <typename PointT, typename Derived>
 struct LambdaFilterIndicesImpl : public FilterIndices<PointT> {
+private:
+  using Base = FilterIndices<PointT>;
+  using PCLBase = pcl::PCLBase<PointT>;
+
 protected:
   using PointCloud = typename FilterIndices<PointT>::PointCloud;
   using PointCloudPtr = typename PointCloud::Ptr;
   using PointCloudConstPtr = typename PointCloud::ConstPtr;
   using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
+  using Base::extract_removed_indices_;
+  using Base::removed_indices_;
+  using PCLBase::indices_;
+  using PCLBase::input_;
+
 protected:
   // to prevent instantiation of impl class
-  LambdaFilterIndices(bool extract_removed_indices)
+  LambdaFilterIndicesImpl(bool extract_removed_indices)
   : FilterIndices<PointT>(extract_removed_indices)
   {}
   /** \brief Filtered results are indexed by an indices array.
@@ -99,11 +107,11 @@ protected:
     indices.clear();
     indices.reserve(input_->points.size());
     if (extract_removed_indices_) {
-      reserved_indices_->clear();
-      reserved_indices_->reserve(input_->points.size());
+      removed_indices_->clear();
+      removed_indices_->reserve(input_->points.size());
     }
 
-    const auto& lambda = static_cast<Derived>(this)->get_lambda();
+    const auto& lambda = static_cast<Derived*>(this)->get_lambda();
 
     for (const auto index : *indices_) {
       // lambda returns true for points that shoud be selected
@@ -112,7 +120,7 @@ protected:
       }
       else {
         if (extract_removed_indices_) {
-          reserved_indices_.push_back(index);
+          removed_indices_->push_back(index);
         }
       }
     }
@@ -122,70 +130,37 @@ protected:
 
 template <typename PointT, typename Functor>
 struct LambdaFilterIndices
-: public detail::LambdaFilterIndicesImpl<LambdaFilterIndices<PointT, Functor>> {
-protected:
-  // using in type would complicate signature
-  static_assert(std::is_same<detail::PointFilterLambda<PointT, Functor>, bool>::value,
-                "Functor needs to be able to satisfy the callable constraint");
-
+: public detail::LambdaFilterIndicesImpl<PointT, LambdaFilterIndices<PointT, Functor>> {
+private:
   using Self = LambdaFilterIndices<PointT, Functor>;
-  using Base = detail::LambdaFilterIndicesImpl<Self>;
+  using Base = detail::LambdaFilterIndicesImpl<PointT, Self>;
 
 public:
   using FunctorT = Functor;
-
-  /** \brief Constructor.
-   * \param[in] extract_removed_indices Set to true if you want to be able to extract
-   * the indices of points being removed (default = false).
-   */
-  LambdaFilterIndices(FunctorT lambda, bool extract_removed_indices = false)
-  : Base(extract_removed_indices),
-  {
-    filter_name_ = "lambda_filter_indices";
-  }
+  // using in type would complicate signature
+  static_assert(std::is_same<detail::PointFilterLambda<PointT, FunctorT>, bool>::value,
+                "Functor needs to be able to satisfy the callable constraint");
 
 protected:
-  FunctorT&
-  get_lambda() const noexcept
-  {
-    static auto lambda = FunctorT{};
-    return lambda;
-  }
-};
-
-// version specialized to hold a callable of the right type
-template <typename PointT>
-struct LambdaFilterIndices<PointT, std::function<bool(const PointT&, index_t)>>
-: public LambdaFilterIndicesImpl<
-      LambdaFilterIndices<PointT, std::function<bool(const PointT&, index_t)>>> {
-protected:
-  static_assert(
-      std::is_same <
-          PointFilterLambda<std::function<bool(const PointT&, index_t)>, bool>::value,
-      "Specialized version needs to satisfy the base criteria");
-  using Self = LambdaFilterIndices<PointT>;
-  using Base = detail::LambdaFilterIndicesImpl<Self>;
+  using Base::filter_name_;
+  // need to hold a value because lambdas can only be copy or move constructed
+  const FunctorT lambda_;
 
 public:
-  using FunctorT = std::function<bool(const PointT&, index_t)>;
-  /**
-   * \brief Constructor
-   * \param[in] functor functor which is used for evaluating condition in loop
-   * \param[in] extract_removed_indices Set to true if you want to be able to extract
-   * the indices of points being removed (default = false).
+  /** \brief Constructor.
+   * \param[in] extract_removed_indices Set to true if you want to be able to
+   * extract the indices of points being removed (default = false).
    */
-  LambdaFilterIndices(FunctorT functor, bool extract_removed_indices = false)
-  : Base(extract_removed_indices),
+  LambdaFilterIndices(FunctorT lambda, bool extract_removed_indices = false)
+  : Base(extract_removed_indices), lambda_(lambda)
   {
     filter_name_ = "lambda_filter_indices";
   }
 
-protected:
-  FunctorT&
+  const FunctorT&
   get_lambda() const noexcept
   {
     return lambda_;
   }
-
-  FunctorT lambda_;
 };
+} // namespace pcl

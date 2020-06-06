@@ -272,8 +272,14 @@ namespace pcl
 #ifndef __cpp_lib_is_invocable
   template <typename F, typename... Args>
   constexpr bool is_invocable_v = boost::hof::is_invocable<F, Args...>();
+
+  template <typename R, typename F, typename... Args>
+  constexpr bool is_invocable_r_v =
+      std::is_constructible<std::function<R(Args...)>,
+                            std::reference_wrapper<std::remove_reference_t<F>>>::value;
 #else
   using std::is_invocable_v;
+  using std::is_invocable_r_v;
 #endif
 
   /**
