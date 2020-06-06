@@ -39,13 +39,10 @@
 
 #include <pcl/point_struct_traits.h>  // for pcl::traits::POD, pcl::traits::name, pcl::traits::datatype, pcl::traits::offset
 
-#ifndef __cpp_lib_is_invocable
-#include <boost/hof/is_invocable.hpp>  // for is_invocable_v till C++17
-#endif
-
 #include <cstddef>  // for std::size_t
 #include <cstdint>  // for std::uint8_t
 
+#include <functional>   // for std::function, needed till C++17
 #include <string>       // for std::string
 #include <type_traits>  // for std::false_type, std::true_type
 
@@ -271,7 +268,9 @@ namespace pcl
    */
 #ifndef __cpp_lib_is_invocable
   template <typename F, typename... Args>
-  constexpr bool is_invocable_v = boost::hof::is_invocable<F, Args...>();
+  constexpr bool is_invocable_v =
+      std::is_constructible<std::function<void(Args...)>,
+                            std::reference_wrapper<std::remove_reference_t<F>>>::value;
 
   template <typename R, typename F, typename... Args>
   constexpr bool is_invocable_r_v =
