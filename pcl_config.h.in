@@ -34,6 +34,7 @@
     #define PCL_INDEX_SIZE 32
   #endif //PCL_MINOR_VERSION
 #endif //PCL_INDEX_SIZE_TEMP
+#undef PCL_INDEX_SIZE_TEMP
 
 #cmakedefine HAVE_TBB 1
 
