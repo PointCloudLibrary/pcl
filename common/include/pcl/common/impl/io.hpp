@@ -225,6 +225,48 @@ copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   copyPointCloud (cloud_in, indices.indices, cloud_out);
 }
 
+template <typename PointT, typename IndexClusterIt> void
+copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
+                IndexClusterIt first,
+                IndexClusterIt last,
+                pcl::PointCloud<PointT> &cloud_out)
+{
+  const auto nr_p =
+      std::accumulate(first, last, 0, [](const auto& acc, const auto& index) {
+        return index.size() + acc;
+      });
+  // Do we want to copy everything? Remember we assume UNIQUE indices
+  if (nr_p == cloud_in.size ())
+  {
+    cloud_out = cloud_in;
+    return;
+  }
+
+  // Copy the headers and allocate enough space
+  cloud_out = detail::copyPrelude(cloud_in, static_cast<index_t>(nr_p));
+  // no need to clear because cloud_out is a new copy
+  cloud_out.reserve (nr_p);
+
+  // Iterate over each cluster
+  for (auto cluster_it = first; cluster_it != last; ++cluster_it)
+  {
+    // Iterate over each idx
+    for (const auto &index : *cluster_it)
+    {
+      // Iterate over each dimension
+      cloud_out.push_back(cloud_in[index]);
+    }
+  }
+}
+
+template <typename PointT> void
+copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
+                const std::vector<Indices> &indices,
+                pcl::PointCloud<PointT> &cloud_out)
+{
+  copyPointCloud(cloud_in, indices.cbegin(), indices.cend(), cloud_out);
+}
+
 
 template <typename PointT> void
 copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
