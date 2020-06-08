@@ -105,8 +105,8 @@ protected:
     const auto& lambda = static_cast<Derived*>(this)->get_lambda();
 
     for (const auto index : *indices_) {
-      // lambda returns true for points that shoud be selected
-      if ((!negative_) == lambda(input_->[index], index)) {
+      // lambda returns true for points that should be selected
+      if (negative_ != lambda(input_->[index], index)) {
         indices.push_back(index);
       }
       else if (extract_removed_indices_) {
