@@ -105,7 +105,7 @@ protected:
   applyFilter(std::vector<int>& indices) override
   {
     indices.clear();
-    indices.reserve(input_->points.size());
+    indices.reserve(input_->size());
     if (extract_removed_indices_) {
       removed_indices_->clear();
       removed_indices_->reserve(input_->points.size());
