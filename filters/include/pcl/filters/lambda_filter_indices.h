@@ -106,7 +106,7 @@ protected:
 
     for (const auto index : *indices_) {
       // lambda returns true for points that should be selected
-      if (negative_ != lambda(input_->[index], index)) {
+      if (negative_ != lambda((*input_)[index], index)) {
         indices.push_back(index);
       }
       else if (extract_removed_indices_) {
