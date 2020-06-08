@@ -48,7 +48,7 @@
 namespace pcl {
 namespace detail {
 template <typename PointT, typename Function>
-constexpr bool is_lambda_point_filter_v = pcl::
+constexpr static bool is_lambda_point_filter_v = pcl::
     is_invocable_r_v<bool, Function, const pcl::remove_cvref_t<PointT>&, pcl::index_t>;
 
 // can't use this for SFINAE since Derived isn't properly defined
