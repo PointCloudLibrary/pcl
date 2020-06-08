@@ -83,7 +83,7 @@ private:
   using PCLBase = pcl::PCLBase<PointT>;
 
 protected:
-  using PointCloud = typename FilterIndices<PointT>::PointCloud;
+  using FilterIndices<PointT>::PointCloud;
   using PointCloudPtr = typename PointCloud::Ptr;
   using PointCloudConstPtr = typename PointCloud::ConstPtr;
   using FieldList = typename pcl::traits::fieldList<PointT>::type;
