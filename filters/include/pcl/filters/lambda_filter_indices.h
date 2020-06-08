@@ -43,23 +43,13 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/type_traits.h> // for is_invocable
 
-#ifndef __cpp_lib_is_invocable
-#include <boost/hof/is_invocable.hpp>
-#endif
-
-#include <type_traits>
-
 #include <utility>
 
 namespace pcl {
 namespace detail {
 template <typename PointT, typename Function>
-using PointFilterLambda =
-    std::enable_if_t<pcl::is_invocable_r_v<bool,
-                                           Function,
-                                           const pcl::remove_cvref_t<PointT>&,
-                                           pcl::index_t>,
-                     bool>;
+constexpr bool is_lambda_point_filter_v = pcl::
+    is_invocable_r_v<bool, Function, const pcl::remove_cvref_t<PointT>&, pcl::index_t>;
 
 // can't use this for SFINAE since Derived isn't properly defined
 // but this can be used after the class definition to test it
@@ -68,8 +58,8 @@ template <class Base, class Derived>
 constexpr auto IsValidLambdaFilter = std::enable_if_t<
     std::is_base_of<Base, Derived>::value &&
         pcl::is_invocable_v<std::declval<Derived>().get_lambda, void> &&
-        std::is_same<PointFilterLambda<std::declval<Derived>().get_lambda()>,
-bool>, bool>;
+        is_lambda_point_filter_v<std::declval<Derived>().get_lambda()>,
+    bool>, bool>;
 */
 
 /**
@@ -77,7 +67,7 @@ bool>, bool>;
  * function pointer passed to filter command \ingroup filters
  */
 template <typename PointT, typename Derived>
-struct LambdaFilterIndicesImpl : public FilterIndices<PointT> {
+class LambdaFilterIndicesImpl : public FilterIndices<PointT> {
 private:
   using Base = FilterIndices<PointT>;
   using PCLBase = pcl::PCLBase<PointT>;
@@ -89,39 +79,38 @@ protected:
   using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
   using Base::extract_removed_indices_;
+  using Base::negative_;
   using Base::removed_indices_;
   using PCLBase::indices_;
   using PCLBase::input_;
 
-protected:
   // to prevent instantiation of impl class
   LambdaFilterIndicesImpl(bool extract_removed_indices)
   : FilterIndices<PointT>(extract_removed_indices)
   {}
+
   /** \brief Filtered results are indexed by an indices array.
    * \param[out] indices The resultant indices.
    */
   void
-  applyFilter(std::vector<int>& indices) override
+  applyFilter(Indices& indices) override
   {
     indices.clear();
     indices.reserve(input_->size());
     if (extract_removed_indices_) {
       removed_indices_->clear();
-      removed_indices_->reserve(input_->points.size());
+      removed_indices_->reserve(input_->size());
     }
 
     const auto& lambda = static_cast<Derived*>(this)->get_lambda();
 
     for (const auto index : *indices_) {
       // lambda returns true for points that shoud be selected
-      if (!(this->negative_) == lambda(input_->points[index], index)) {
+      if ((!negative_) == lambda(input_->[index], index)) {
         indices.push_back(index);
       }
-      else {
-        if (extract_removed_indices_) {
+      else if (extract_removed_indices_) {
           removed_indices_->push_back(index);
-        }
       }
     }
   }
@@ -129,7 +118,7 @@ protected:
 } // namespace detail
 
 template <typename PointT, typename Functor>
-struct LambdaFilterIndices
+class LambdaFilterIndices
 : public detail::LambdaFilterIndicesImpl<PointT, LambdaFilterIndices<PointT, Functor>> {
 private:
   using Self = LambdaFilterIndices<PointT, Functor>;
@@ -138,8 +127,8 @@ private:
 public:
   using FunctorT = Functor;
   // using in type would complicate signature
-  static_assert(std::is_same<detail::PointFilterLambda<PointT, FunctorT>, bool>::value,
-                "Functor needs to be able to satisfy the callable constraint");
+  static_assert(is_lambda_point_filter_v<PointT, FunctorT>,
+                "Functor signature must be similar to `bool(const PointT&, index_t)`");
 
 protected:
   using Base::filter_name_;
@@ -152,7 +141,7 @@ public:
    * extract the indices of points being removed (default = false).
    */
   LambdaFilterIndices(FunctorT lambda, bool extract_removed_indices = false)
-  : Base(extract_removed_indices), lambda_(lambda)
+  : Base(extract_removed_indices), lambda_(std::move(lambda))
   {
     filter_name_ = "lambda_filter_indices";
   }
