@@ -6,7 +6,16 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update  -y \
  && apt-get install -y tzdata git cmake vim make wget gnupg libz-dev
 
-RUN apt-get update -y && apt-get install -y llvm-10 llvm-10-dev clang-10 libclang-10-dev
+RUN apt-get update -y && apt-get install -y llvm-10 llvm-10-dev clang-10 libclang-10-dev \
+python-clang-9
+
+RUN apt-get update -y && apt-get install -y black
+
+RUN apt-get update -y && apt-get install -y libboost-all-dev \
+libeigen3-dev libflann-dev libvtk7-dev libvtk7-qt-dev libqhull-dev \
+libopenni2-dev libpcl-dev
+
+RUN apt-get update -y && apt-get install -y python3-clang-10
 
 ENV C clang-10
 ENV CXX clang++-10
