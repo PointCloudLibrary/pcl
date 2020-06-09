@@ -1982,10 +1982,7 @@ namespace pcl
           */
         bool
 		    removeCustomActorFromRenderer(const vtkSmartPointer<vtkLODActor> &actor,
-                                 int viewport = 0)
-        {
-          removeActorFromRenderer (actor,viewport);
-		    }
+                                 int viewport = 0);
 
 
         /** \brief Removes a vtk actor from the screen.
@@ -1994,10 +1991,8 @@ namespace pcl
           */
         bool
 		    removeCustomActorFromRenderer (const vtkSmartPointer<vtkActor> &actor,
-                                 int viewport = 0)
-		    {
-          removeActorFromRenderer (actor,viewport);
-		    }
+                                 int viewport = 0);
+
 
 		    /** \brief Adds a vtk actor to screen.
           * \param[in] actor a pointer to the vtk actor object
@@ -2005,10 +2000,8 @@ namespace pcl
           */
         bool
         removeCustomActorFromRenderer (const vtkSmartPointer<vtkProp> &actor,
-                                 int viewport = 0)
-		    {
-			    removeActorFromRenderer (actor,viewport);
-		    }
+                                 int viewport = 0);
+
 
         /** \brief  Adds a vtk actor to screen.
           * \param[in] actor a pointer to the vtk actor object
@@ -2019,10 +2012,7 @@ namespace pcl
           */
         void
 		    addCustomActorToRenderer(const vtkSmartPointer<vtkProp> &actor,
-                            int viewport = 0)
-		    {
-          addActorToRenderer (actor, viewport);
-		    }
+                            int viewport = 0);
 
 
 
@@ -2158,7 +2148,13 @@ namespace pcl
 		    PCL_DEPRECATED(1, 14, "deprecated function. Use removeCustomActorFromRenderer instead");
         bool
         removeActorFromRenderer (const vtkSmartPointer<vtkLODActor> &actor,
-                                 int viewport = 0);
+                                 int viewport = 0)
+
+        {
+          removeCustomActorFromRenderer (actor,viewport);
+        }
+
+
 
         /** \brief Internal method. Removes a vtk actor from the screen.
           * \param[in] actor a pointer to the vtk actor object
@@ -2167,7 +2163,11 @@ namespace pcl
 		    PCL_DEPRECATED(1, 14, "deprecated function. Use removeCustomActorFromRenderer instead");
         bool
         removeActorFromRenderer (const vtkSmartPointer<vtkActor> &actor,
-                                 int viewport = 0);
+                                 int viewport = 0)
+        {
+          removeCustomActorFromRenderer (actor,viewport);
+        }
+
 
         /** \brief Internal method. Adds a vtk actor to screen.
           * \param[in] actor a pointer to the vtk actor object
@@ -2179,7 +2179,11 @@ namespace pcl
 		    PCL_DEPRECATED(1, 14, "deprecated function. Use addCustomActorToRenderer instead");
         void
         addActorToRenderer (const vtkSmartPointer<vtkProp> &actor,
-                            int viewport = 0);
+                            int viewport = 0)
+        {
+          addCustomActorToRenderer (actor, viewport);
+        }
+
 
         /** \brief Internal method. Adds a vtk actor to screen.
           * \param[in] actor a pointer to the vtk actor object
@@ -2188,7 +2192,11 @@ namespace pcl
 		    PCL_DEPRECATED(1, 14, "deprecated function. Use removeCustomActorFromRenderer instead");
         bool
         removeActorFromRenderer (const vtkSmartPointer<vtkProp> &actor,
-                                 int viewport = 0);
+                                 int viewport = 0)
+        {
+          removeCustomActorFromRenderer (actor,viewport);
+        }
+
 
         /** \brief Internal method. Creates a vtk actor from a vtk polydata object.
           * \param[in] data the vtk polydata object to create an actor for
