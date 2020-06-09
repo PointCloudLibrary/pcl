@@ -5,6 +5,17 @@ import sys
 import clang.cindex as clang
 
 
+class bcolors:
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+
+
 class Filter(object):
     def __init__(self, pattern):
         self.pattern = re.compile(pattern)
@@ -22,15 +33,23 @@ class Filter(object):
 
 
 def print_match(cursor, lines, more_than_one_file):
-    file = '{0}:'.format(cursor.location.file) if more_than_one_file else ''
+    file = "{0}:".format(cursor.location.file) if more_than_one_file else ""
     line, column = cursor.location.line, cursor.location.column
-    pretty = '\033[1;91m{0}\033[0m'.format(cursor.spelling)
-    before = lines[line - 1][:column - 1]
-    after = lines[line - 1][column + len(cursor.spelling) - 1:]
-    text = before + pretty + after
+    # pretty = '\033[1;91m{0}\033[0m'.format(cursor.spelling)
+    # before = lines[line - 1][:column - 1]
+    # after = lines[line - 1][column + len(cursor.spelling) - 1:]
+    # text = before + pretty + after
+    print(
+        file,
+        line,
+        column,
+        bcolors.OKBLUE + cursor.spelling + bcolors.ENDC,
+        bcolors.OKGREEN + cursor.displayname + bcolors.ENDC,
+    )
 
-    diagnostic = '\033[1m{0}{1}:{2}:\033[0m {3}'
-    print(diagnostic.format(file, line, column, text.rstrip()))
+    # diagnostic = '\033[1m{0}{1}:{2}:\033[0m {3}'
+    # print(diagnostic.format(file, line, column, text.rstrip()))
+
 
 def walk(cursor, filter, lines, more_than_one_file):
     if filter.matches(cursor):
