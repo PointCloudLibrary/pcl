@@ -160,7 +160,7 @@ namespace pcl
        * can result in subtle bugs and to prevent them, these operations for ICP have
        * been disabled.
        *
-       * \todo: remove deleted ctors and assignments operations after resolving the issueh
+       * \todo: remove deleted ctors and assignments operations after resolving the issue
        */
       IterativeClosestPoint(const IterativeClosestPoint&) = delete;
       IterativeClosestPoint(IterativeClosestPoint&&) = delete;
