@@ -97,8 +97,8 @@ namespace pcl
     /**
      * \brief number of bits in PCL's index type
      *
-     * For PCL 1.11, please use PCL_INDEX_SIZE to choose a size best suited for your needs.
-     * PCL 1.12 will come with default 32, along with client code compile time choice
+     * Please use PCL_INDEX_SIZE when building PCL to choose a size best suited for your needs.
+     * PCL 1.12 will come with default 32
      *
      * PCL 1.11 has a default size = sizeof(int)
      */
@@ -106,8 +106,7 @@ namespace pcl
 
     /**
      * \brief signed/unsigned nature of PCL's index type
-     * For PCL 1.11, please use PCL_INDEX_SIGNED to choose a type best suited for your needs.
-     * PCL 1.12 will come with default signed, along with client code compile time choice
+     * Please use PCL_INDEX_SIGNED when building PCL to choose a type best suited for your needs.
      * Default: signed
      */
     constexpr bool index_type_signed = PCL_INDEX_SIGNED;
