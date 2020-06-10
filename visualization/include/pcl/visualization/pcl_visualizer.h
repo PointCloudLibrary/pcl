@@ -2151,7 +2151,7 @@ namespace pcl
                                  int viewport = 0)
 
         {
-          removeCustomActorFromRenderer (actor,viewport);
+          return removeCustomActorFromRenderer (actor,viewport);
         }
 
 
@@ -2165,7 +2165,7 @@ namespace pcl
         removeActorFromRenderer (const vtkSmartPointer<vtkActor> &actor,
                                  int viewport = 0)
         {
-          removeCustomActorFromRenderer (actor,viewport);
+          return removeCustomActorFromRenderer (actor,viewport);
         }
 
 
@@ -2181,7 +2181,7 @@ namespace pcl
         addActorToRenderer (const vtkSmartPointer<vtkProp> &actor,
                             int viewport = 0)
         {
-          addCustomActorToRenderer (actor, viewport);
+          return addCustomActorToRenderer (actor, viewport);
         }
 
 
@@ -2194,7 +2194,7 @@ namespace pcl
         removeActorFromRenderer (const vtkSmartPointer<vtkProp> &actor,
                                  int viewport = 0)
         {
-          removeCustomActorFromRenderer (actor,viewport);
+          return removeCustomActorFromRenderer (actor,viewport);
         }
 
 
