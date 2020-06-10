@@ -84,25 +84,39 @@ def make_filter(args):
 
 
 def parse_arguments(args):
-    parser = argparse.ArgumentParser(description='C++-savy grep')
-    parser.add_argument('pattern',
-                        help='The regular expression pattern')
-    parser.add_argument('files', nargs='+', help='The source files to search')
-    parser.add_argument('-f', '--function',
-                        action='store_true',
-                        help='Whether to include functions in the search')
-    parser.add_argument('-v', '--variable',
-                        action='store_true',
-                        help='Whether to include variables in the search')
-    parser.add_argument('-p', '--parameter',
-                        action='store_true',
-                        help='Whether to include parameters in the search')
-    parser.add_argument('-r', '--record',
-                        action='store_true',
-                        help='Whether to include parameters in the search')
-    parser.add_argument('-m', '--member',
-                        action='store_true',
-                        help='Whether to include members in the search')
+    parser = argparse.ArgumentParser(description="C++-savy grep")
+    parser.add_argument("pattern", help="The regular expression pattern")
+    parser.add_argument("files", nargs="+", help="The source files to search")
+    parser.add_argument(
+        "-f",
+        "--function",
+        action="store_true",
+        help="Whether to include functions in the search",
+    )
+    parser.add_argument(
+        "-v",
+        "--variable",
+        action="store_true",
+        help="Whether to include variables in the search",
+    )
+    parser.add_argument(
+        "-p",
+        "--parameter",
+        action="store_true",
+        help="Whether to include parameters in the search",
+    )
+    parser.add_argument(
+        "-r",
+        "--record",
+        action="store_true",
+        help="Whether to include parameters in the search",
+    )
+    parser.add_argument(
+        "-m",
+        "--member",
+        action="store_true",
+        help="Whether to include members in the search",
+    )
 
     return parser.parse_args(args)
 
@@ -120,5 +134,6 @@ def main():
         tu = index.parse(source)
         walk(tu.cursor, filter, lines, more_than_one_file)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

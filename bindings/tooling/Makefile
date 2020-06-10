@@ -17,7 +17,8 @@ CLANG_LIBS := \
 	-lclangAnalysis \
 	-lclangAST \
 	-lclangLex \
-	-lclangBasic
+	-lclangBasic \
+	-lclangRewriteCore
 
 LIBS := $(CLANG_LIBS) `llvm-config --libs --system-libs`
 
