@@ -96,7 +96,7 @@ TEST (PCL, copyPointCloud)
     EXPECT_EQ (cloud_xyz_rgba[i].rgba, cloud_xyz_rgb_normal[i].rgba);
   }
 
-  std::vector<int> indices;
+  Indices indices;
   indices.push_back (0); indices.push_back (1); 
   pcl::copyPointCloud (cloud_xyz_rgba, indices, cloud_xyz_rgb_normal);
   ASSERT_EQ (int (cloud_xyz_rgb_normal.size ()), 2);
@@ -107,7 +107,7 @@ TEST (PCL, copyPointCloud)
     EXPECT_EQ (cloud_xyz_rgba[i].rgba, cloud_xyz_rgb_normal[i].rgba);
   }
 
-  std::vector<int, Eigen::aligned_allocator<int> > indices_aligned;
+  IndicesAllocator< Eigen::aligned_allocator<int> > indices_aligned;
   indices_aligned.push_back (1); indices_aligned.push_back (2); indices_aligned.push_back (3); 
   pcl::copyPointCloud (cloud_xyz_rgba, indices_aligned, cloud_xyz_rgb_normal);
   ASSERT_EQ (int (cloud_xyz_rgb_normal.size ()), 3);
@@ -440,7 +440,7 @@ TEST (PCL, CopyPointCloudWithIndicesAndRGBToRGBA)
   CloudXYZRGB cloud_xyz_rgb;
   CloudXYZRGBA cloud_xyz_rgba (5, 1, pt_xyz_rgba);
 
-  std::vector<int> indices;
+  Indices indices;
   indices.push_back (2);
   indices.push_back (3);
 
