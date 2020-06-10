@@ -43,8 +43,8 @@
  * \ingroup common
  */
 
+#include <pcl/pcl_config.h>
 #include <pcl/pcl_macros.h>
-
 #include <vector>
 
 #include <cstdint>
@@ -60,21 +60,6 @@ namespace pcl
   using uint64_t PCL_DEPRECATED(1, 12, "use std::uint64_t instead of pcl::uint64_t") = std::uint64_t;
   using int64_t PCL_DEPRECATED(1, 12, "use std::int64_t instead of pcl::int64_t") = std::int64_t;
   using int_fast16_t PCL_DEPRECATED(1, 12, "use std::int_fast16_t instead of pcl::int_fast16_t") = std::int_fast16_t;
-
-// temporary macros for customization. Only use for PCL < 1.12
-// Aim is to remove macros and instead allow multiple index types to coexist together
-#ifndef PCL_INDEX_SIZE
-#if PCL_MINOR_VERSION <= 11
-// sizeof returns bytes, while we measure size by bits in the template
-#define PCL_INDEX_SIZE (sizeof(int) * 8)
-#else
-#define PCL_INDEX_SIZE 32
-#endif  // PCL_MINOR_VERSION
-#endif  // PCL_INDEX_SIZE
-
-#ifndef PCL_INDEX_SIGNED
-#define PCL_INDEX_SIGNED true
-#endif
 
   namespace detail {
     /**
@@ -112,8 +97,8 @@ namespace pcl
     /**
      * \brief number of bits in PCL's index type
      *
-     * For PCL 1.11, please use PCL_INDEX_SIZE to choose a size best suited for your needs.
-     * PCL 1.12 will come with default 32, along with client code compile time choice
+     * Please use PCL_INDEX_SIZE when building PCL to choose a size best suited for your needs.
+     * PCL 1.12 will come with default 32
      *
      * PCL 1.11 has a default size = sizeof(int)
      */
@@ -121,8 +106,7 @@ namespace pcl
 
     /**
      * \brief signed/unsigned nature of PCL's index type
-     * For PCL 1.11, please use PCL_INDEX_SIGNED to choose a type best suited for your needs.
-     * PCL 1.12 will come with default signed, along with client code compile time choice
+     * Please use PCL_INDEX_SIGNED when building PCL to choose a type best suited for your needs.
      * Default: signed
      */
     constexpr bool index_type_signed = PCL_INDEX_SIGNED;
