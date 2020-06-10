@@ -22,7 +22,7 @@ class Filter(object):
         self.predicates = []
 
     def matches(self, cursor):
-        if self.pattern.search(cursor.displayname) is None:
+        if self.pattern.fullmatch(cursor.displayname) is None:
             return False
         if not self.predicates:
             return True
@@ -74,8 +74,8 @@ def make_filter(args):
             allowed.append(clang.CursorKind.CXX_METHOD)
         filter.by_kind(allowed)
 
-    if args.record:
-        filter.by_kind(clang.CursorKind.RECORD_DECL)
+    if args.struct:
+        filter.by_kind(clang.CursorKind.STRUCT_DECL)
 
     if args.parameter:
         filter.by_kind(clang.CursorKind.PARM_DECL)
@@ -106,8 +106,8 @@ def parse_arguments(args):
         help="Whether to include parameters in the search",
     )
     parser.add_argument(
-        "-r",
-        "--record",
+        "-s",
+        "--struct",
         action="store_true",
         help="Whether to include parameters in the search",
     )
