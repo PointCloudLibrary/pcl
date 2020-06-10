@@ -2145,7 +2145,7 @@ namespace pcl
           * \param[in] actor a pointer to the vtk actor object
           * \param[in] viewport the view port where the actor should be removed from (default: all)
           */
-		    PCL_DEPRECATED(1, 14, "deprecated function. Use removeCustomActorFromRenderer instead");
+		    PCL_DEPRECATED(1, 14, "deprecated function. Use removeCustomActorFromRenderer instead")
         bool
         removeActorFromRenderer (const vtkSmartPointer<vtkLODActor> &actor,
                                  int viewport = 0)
@@ -2160,7 +2160,7 @@ namespace pcl
           * \param[in] actor a pointer to the vtk actor object
           * \param[in] viewport the view port where the actor should be removed from (default: all)
           */
-		    PCL_DEPRECATED(1, 14, "deprecated function. Use removeCustomActorFromRenderer instead");
+		    PCL_DEPRECATED(1, 14, "deprecated function. Use removeCustomActorFromRenderer instead")
         bool
         removeActorFromRenderer (const vtkSmartPointer<vtkActor> &actor,
                                  int viewport = 0)
@@ -2176,7 +2176,7 @@ namespace pcl
           * \note If viewport is set to 0, the actor will be added to all existing
           * renders. To select a specific viewport use an integer between 1 and N.
           */
-		    PCL_DEPRECATED(1, 14, "deprecated function. Use addCustomActorToRenderer instead");
+		    PCL_DEPRECATED(1, 14, "deprecated function. Use addCustomActorToRenderer instead")
         void
         addActorToRenderer (const vtkSmartPointer<vtkProp> &actor,
                             int viewport = 0)
@@ -2189,7 +2189,7 @@ namespace pcl
           * \param[in] actor a pointer to the vtk actor object
           * \param[in] viewport the view port where the actor should be added to (default: all)
           */
-		    PCL_DEPRECATED(1, 14, "deprecated function. Use removeCustomActorFromRenderer instead");
+		    PCL_DEPRECATED(1, 14, "deprecated function. Use removeCustomActorFromRenderer instead")
         bool
         removeActorFromRenderer (const vtkSmartPointer<vtkProp> &actor,
                                  int viewport = 0)
