@@ -14,7 +14,6 @@
 #include <pcl/type_traits.h> // for is_invocable
 
 namespace pcl {
-namespace detail {
 template <typename PointT, typename Function>
 constexpr static bool is_lambda_point_filter_v =
     pcl::is_invocable_r_v<bool,
@@ -22,6 +21,7 @@ constexpr static bool is_lambda_point_filter_v =
                           const pcl::remove_cvref_t<pcl::PointCloud<PointT>>&,
                           pcl::index_t>;
 
+namespace detail {
 /**
  * \brief LambdaFilterIndices filters point clouds and indices based on a
  * function pointer passed to filter command \ingroup filters
@@ -86,7 +86,7 @@ private:
 public:
   using FunctorT = Functor;
   // using in type would complicate signature
-  static_assert(detail::is_lambda_point_filter_v<PointT, FunctorT>,
+  static_assert(is_lambda_point_filter_v<PointT, FunctorT>,
                 "Functor signature must be similar to `bool(const PointT&, index_t)`");
 
 protected:
