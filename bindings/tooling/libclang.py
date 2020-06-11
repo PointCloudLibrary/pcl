@@ -1,5 +1,5 @@
 import argparse
-import re
+import typing
 import sys
 
 import clang.cindex as clang
@@ -16,29 +16,9 @@ class bcolors:
     UNDERLINE = "\033[4m"
 
 
-class Filter(object):
-    def __init__(self, pattern):
-        self.pattern = re.compile(pattern)
-        self.predicates = []
-
-    def matches(self, cursor):
-        if self.pattern.fullmatch(cursor.displayname) is None:
-            return False
-        if not self.predicates:
-            return True
-        return any(predicate(cursor) for predicate in self.predicates)
-
-    def by_kind(self, allowed):
-        self.predicates.append(lambda cursor: cursor.kind in allowed)
-
-
-def print_match(cursor, lines, more_than_one_file):
+def print_node(cursor, lines, more_than_one_file):
     file = "{0}:".format(cursor.location.file) if more_than_one_file else ""
     line, column = cursor.location.line, cursor.location.column
-    # pretty = '\033[1;91m{0}\033[0m'.format(cursor.spelling)
-    # before = lines[line - 1][:column - 1]
-    # after = lines[line - 1][column + len(cursor.spelling) - 1:]
-    # text = before + pretty + after
     print(
         file,
         line,
@@ -47,83 +27,85 @@ def print_match(cursor, lines, more_than_one_file):
         bcolors.OKGREEN + cursor.displayname + bcolors.ENDC,
     )
 
-    # diagnostic = '\033[1m{0}{1}:{2}:\033[0m {3}'
-    # print(diagnostic.format(file, line, column, text.rstrip()))
+
+def node_in_this_file(node, file_name):
+    if node.location.file and node.location.file.name == file_name:
+        return True
+    return False
 
 
-def walk(cursor, filter, lines, more_than_one_file):
-    if filter.matches(cursor):
-        print_match(cursor, lines, more_than_one_file)
+def walk(cursor, filter, lines, more_than_one_file, this_filename):
+    print_node(cursor, lines, more_than_one_file)
 
     for child in cursor.get_children():
-        walk(child, filter, lines, more_than_one_file)
+        if node_in_this_file(child, this_filename):
+            walk(child, filter, lines, more_than_one_file, this_filename)
 
 
-def make_filter(args):
-    filter = Filter(args.pattern)
+# def make_filter(args):
+#     filter = []
 
-    if args.function:
-        allowed = [clang.CursorKind.FUNCTION_DECL]
-        if args.member:
-            allowed.append(clang.CursorKind.CXX_METHOD)
-        filter.by_kind(allowed)
+#     if args.function:
+#         allowed = [clang.CursorKind.FUNCTION_DECL]
+#         if args.member:
+#             allowed.append(clang.CursorKind.CXX_METHOD)
+#         filter.by_kind(allowed)
 
-    if args.variable:
-        allowed = [clang.CursorKind.FUNCTION_DECL]
-        if args.member:
-            allowed.append(clang.CursorKind.CXX_METHOD)
-        filter.by_kind(allowed)
+#     if args.variable:
+#         allowed = [clang.CursorKind.FUNCTION_DECL]
+#         if args.member:
+#             allowed.append(clang.CursorKind.CXX_METHOD)
+#         filter.by_kind(allowed)
 
-    if args.struct:
-        filter.by_kind(clang.CursorKind.STRUCT_DECL)
+#     if args.struct:
+#         filter.by_kind(clang.CursorKind.STRUCT_DECL)
 
-    if args.parameter:
-        filter.by_kind(clang.CursorKind.PARM_DECL)
+#     if args.parameter:
+#         filter.by_kind(clang.CursorKind.PARM_DECL)
 
-    return filter
+#     return filter
 
 
 def parse_arguments(args):
     parser = argparse.ArgumentParser(description="C++-savy grep")
-    parser.add_argument("pattern", help="The regular expression pattern")
     parser.add_argument("files", nargs="+", help="The source files to search")
-    parser.add_argument(
-        "-f",
-        "--function",
-        action="store_true",
-        help="Whether to include functions in the search",
-    )
-    parser.add_argument(
-        "-v",
-        "--variable",
-        action="store_true",
-        help="Whether to include variables in the search",
-    )
-    parser.add_argument(
-        "-p",
-        "--parameter",
-        action="store_true",
-        help="Whether to include parameters in the search",
-    )
-    parser.add_argument(
-        "-s",
-        "--struct",
-        action="store_true",
-        help="Whether to include parameters in the search",
-    )
-    parser.add_argument(
-        "-m",
-        "--member",
-        action="store_true",
-        help="Whether to include members in the search",
-    )
+    # parser.add_argument(
+    #     "-f",
+    #     "--function",
+    #     action="store_true",
+    #     help="Whether to include functions in the search",
+    # )
+    # parser.add_argument(
+    #     "-v",
+    #     "--variable",
+    #     action="store_true",
+    #     help="Whether to include variables in the search",
+    # )
+    # parser.add_argument(
+    #     "-p",
+    #     "--parameter",
+    #     action="store_true",
+    #     help="Whether to include parameters in the search",
+    # )
+    # parser.add_argument(
+    #     "-s",
+    #     "--struct",
+    #     action="store_true",
+    #     help="Whether to include parameters in the search",
+    # )
+    # parser.add_argument(
+    #     "-m",
+    #     "--member",
+    #     action="store_true",
+    #     help="Whether to include members in the search",
+    # )
 
     return parser.parse_args(args)
 
 
 def main():
     args = parse_arguments(sys.argv[1:])
-    filter = make_filter(args)
+    # filter = make_filter(args)
     index = clang.Index.create()
     more_than_one_file = len(args.files) > 1
 
@@ -132,7 +114,7 @@ def main():
             lines = input_file.readlines()
 
         tu = index.parse(source)
-        walk(tu.cursor, filter, lines, more_than_one_file)
+        walk(tu.cursor, filter, lines, more_than_one_file, tu.spelling)
 
 
 if __name__ == "__main__":
