@@ -87,7 +87,8 @@ public:
   using FunctorT = Functor;
   // using in type would complicate signature
   static_assert(is_lambda_point_filter_v<PointT, FunctorT>,
-                "Functor signature must be similar to `bool(const PointT&, index_t)`");
+                "Functor signature must be similar to `bool(const PointCloud<PointT>&, "
+                "index_t)`");
 
 protected:
   using Base::filter_name_;
