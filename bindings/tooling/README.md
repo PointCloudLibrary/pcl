@@ -20,5 +20,5 @@
 - Using python libclang to parse cpp code, for generation of metadata by static analysis.
 - Run:
 	```py
-	python3 libclang.py <options>
+	python3 libclang.py <filepath>
 	```
