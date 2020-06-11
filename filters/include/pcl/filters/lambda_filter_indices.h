@@ -43,7 +43,7 @@ private:
 protected:
   using FilterIndices<PointT>::PointCloud;
   using FilterIndices<PointT>::PointCloudPtr;
-  using FilterIndices<PointT>::PointCloudComnstPtr;
+  using FilterIndices<PointT>::PointCloudConstPtr;
 
   using Base::extract_removed_indices_;
   using Base::negative_;
