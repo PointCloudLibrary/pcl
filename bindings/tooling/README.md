@@ -2,11 +2,11 @@
 ### Tooling is currently being developed under a docker container:
 - Build:
 	```sh
-	sudo docker build -t clang .
+	docker build -t clang .
 	```
 - Run:
 	```sh
-	sudo docker run -it -v $PWD:/home clang
+	docker run -it -v $PWD:/home clang
 	```
 	This sets the PWD as the home and launches the container
 	(To exit and return to your shell: `[Ctrl+P Ctrl+Q]`)
