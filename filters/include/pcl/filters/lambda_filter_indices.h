@@ -16,19 +16,11 @@
 namespace pcl {
 namespace detail {
 template <typename PointT, typename Function>
-constexpr static bool is_lambda_point_filter_v = pcl::
-    is_invocable_r_v<bool, Function, const pcl::remove_cvref_t<PointT>&, pcl::index_t>;
-
-// can't use this for SFINAE since Derived isn't properly defined
-// but this can be used after the class definition to test it
-/*
-template <class Base, class Derived>
-constexpr auto IsValidLambdaFilter = std::enable_if_t<
-    std::is_base_of<Base, Derived>::value &&
-        pcl::is_invocable_v<std::declval<Derived>().get_lambda, void> &&
-        is_lambda_point_filter_v<std::declval<Derived>().get_lambda()>,
-    bool>, bool>;
-*/
+constexpr static bool is_lambda_point_filter_v =
+    pcl::is_invocable_r_v<bool,
+                          Function,
+                          const pcl::remove_cvref_t<pcl::PointCloud<PointT>>&,
+                          pcl::index_t>;
 
 /**
  * \brief LambdaFilterIndices filters point clouds and indices based on a
@@ -73,11 +65,11 @@ protected:
 
     for (const auto index : *indices_) {
       // lambda returns true for points that should be selected
-      if (negative_ != lambda((*input_)[index], index)) {
+      if (negative_ != lambda(*input_, index)) {
         indices.push_back(index);
       }
       else if (extract_removed_indices_) {
-          removed_indices_->push_back(index);
+        removed_indices_->push_back(index);
       }
     }
   }
