@@ -16,10 +16,11 @@ class bcolors:
     UNDERLINE = "\033[4m"
 
 
-def print_node(cursor, lines, more_than_one_file):
+def print_node(cursor, lines, more_than_one_file, depth):
     file = "{0}:".format(cursor.location.file) if more_than_one_file else ""
     line, column = cursor.location.line, cursor.location.column
     print(
+        bcolors.BOLD + f"depth={depth}" + bcolors.ENDC,
         file,
         line,
         column,
@@ -34,12 +35,16 @@ def node_in_this_file(node, file_name):
     return False
 
 
-def walk(cursor, filter, lines, more_than_one_file, this_filename):
-    print_node(cursor, lines, more_than_one_file)
+def walk(cursor, filter, lines, more_than_one_file, this_filename, depth):
+    if cursor.spelling:
+        # if cursor.kind is clang.CursorKind.CONSTRUCTOR:
+        # if cursor.is_default_constructor():
+        # if cursor.kind is clang.CursorKind.STRUCT_DECL:
+        print_node(cursor, lines, more_than_one_file, depth)
 
     for child in cursor.get_children():
         if node_in_this_file(child, this_filename):
-            walk(child, filter, lines, more_than_one_file, this_filename)
+            walk(child, filter, lines, more_than_one_file, this_filename, depth + 1)
 
 
 # def make_filter(args):
@@ -113,8 +118,8 @@ def main():
         with open(source) as input_file:
             lines = input_file.readlines()
 
-        tu = index.parse(source)
-        walk(tu.cursor, filter, lines, more_than_one_file, tu.spelling)
+        tu = index.parse(source, args=['-I/usr/include/pcl-1.8/'])
+        walk(tu.cursor, filter, lines, more_than_one_file, tu.spelling, depth=0)
 
 
 if __name__ == "__main__":
