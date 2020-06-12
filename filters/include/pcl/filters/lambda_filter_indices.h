@@ -26,7 +26,6 @@ constexpr static bool is_lambda_filter_functor_v =
  */
 template <typename PointT, typename Functor>
 class LambdaFilter : public FilterIndices<PointT> {
-  using Self = LambdaFilter<PointT, Functor>;
   using Base = FilterIndices<PointT>;
   using PCLBase = pcl::PCLBase<PointT>;
 
@@ -38,10 +37,6 @@ public:
                 "index_t)`");
 
 protected:
-  using Base::PointCloud;
-  using Base::PointCloudConstPtr;
-  using Base::PointCloudPtr;
-
   using Base::extract_removed_indices_;
   using Base::filter_name_;
   using Base::negative_;
