@@ -10,7 +10,6 @@
 #pragma once
 
 #include <pcl/filters/filter_indices.h>
-#include <pcl/pcl_macros.h>
 #include <pcl/type_traits.h> // for is_invocable
 
 namespace pcl {
@@ -21,67 +20,16 @@ constexpr static bool is_lambda_point_filter_v =
                           const pcl::remove_cvref_t<pcl::PointCloud<PointT>>&,
                           pcl::index_t>;
 
-namespace detail {
 /**
- * \brief LambdaFilterIndices filters point clouds and indices based on a
- * function pointer passed to filter command \ingroup filters
+ * \brief Filter point clouds and indices based on a functor passed in the ctor
+ * \ingroup filters
  */
-template <typename PointT, typename Derived>
-class LambdaFilterIndicesImpl : public FilterIndices<PointT> {
-private:
-  using Base = FilterIndices<PointT>;
-  using PCLBase = pcl::PCLBase<PointT>;
-
-protected:
-  using FilterIndices<PointT>::PointCloud;
-  using FilterIndices<PointT>::PointCloudPtr;
-  using FilterIndices<PointT>::PointCloudConstPtr;
-
-  using Base::extract_removed_indices_;
-  using Base::negative_;
-  using Base::removed_indices_;
-  using PCLBase::indices_;
-  using PCLBase::input_;
-
-  // to prevent instantiation of impl class
-  LambdaFilterIndicesImpl(bool extract_removed_indices)
-  : FilterIndices<PointT>(extract_removed_indices)
-  {}
-
-  /** \brief Filtered results are indexed by an indices array.
-   * \param[out] indices The resultant indices.
-   */
-  void
-  applyFilter(Indices& indices) override
-  {
-    indices.clear();
-    indices.reserve(input_->size());
-    if (extract_removed_indices_) {
-      removed_indices_->clear();
-      removed_indices_->reserve(input_->size());
-    }
-
-    const auto& lambda = static_cast<Derived*>(this)->get_lambda();
-
-    for (const auto index : *indices_) {
-      // lambda returns true for points that should be selected
-      if (negative_ != lambda(*input_, index)) {
-        indices.push_back(index);
-      }
-      else if (extract_removed_indices_) {
-        removed_indices_->push_back(index);
-      }
-    }
-  }
-};
-} // namespace detail
-
 template <typename PointT, typename Functor>
-class LambdaFilterIndices
-: public detail::LambdaFilterIndicesImpl<PointT, LambdaFilterIndices<PointT, Functor>> {
+class LambdaFilterIndices : public FilterIndices<PointT> {
 private:
   using Self = LambdaFilterIndices<PointT, Functor>;
-  using Base = detail::LambdaFilterIndicesImpl<PointT, Self>;
+  using Base = FilterIndices<PointT>;
+  using PCLBase = pcl::PCLBase<PointT>;
 
 public:
   using FunctorT = Functor;
@@ -91,7 +39,17 @@ public:
                 "index_t)`");
 
 protected:
+  using Base::PointCloud;
+  using Base::PointCloudConstPtr;
+  using Base::PointCloudPtr;
+
+  using Base::extract_removed_indices_;
   using Base::filter_name_;
+  using Base::negative_;
+  using Base::removed_indices_;
+  using PCLBase::indices_;
+  using PCLBase::input_;
+
   // need to hold a value because lambdas can only be copy or move constructed
   const FunctorT lambda_;
 
@@ -110,6 +68,33 @@ public:
   get_lambda() const noexcept
   {
     return lambda_;
+  }
+
+  /**
+   * \brief Filtered results are indexed by an indices array.
+   * \param[out] indices The resultant indices.
+   */
+  void
+  applyFilter(Indices& indices) override
+  {
+    indices.clear();
+    indices.reserve(input_->size());
+    if (extract_removed_indices_) {
+      removed_indices_->clear();
+      removed_indices_->reserve(input_->size());
+    }
+
+    const auto& lambda = get_lambda();
+
+    for (const auto index : *indices_) {
+      // lambda returns true for points that should be selected
+      if (negative_ != lambda(*input_, index)) {
+        indices.push_back(index);
+      }
+      else if (extract_removed_indices_) {
+        removed_indices_->push_back(index);
+      }
+    }
   }
 };
 } // namespace pcl
