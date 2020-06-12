@@ -78,8 +78,8 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     addPointsFromInputCloud()
 {
   if (indices_) {
-    for (const int& index : *indices_) {
-      assert((index >= 0) && (index < static_cast<int>(input_->points.size())));
+    for (const auto& index : *indices_) {
+      assert((index >= 0) && (index < static_cast<index_t>(input_->points.size())));
 
       if (isFinite(input_->points[index])) {
         // add points to octree
@@ -91,7 +91,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     for (std::size_t i = 0; i < input_->points.size(); i++) {
       if (isFinite(input_->points[i])) {
         // add points to octree
-        this->addPointIdx(static_cast<unsigned int>(i));
+        this->addPointIdx(static_cast<unsigned index_t>(i));
       }
     }
   }
@@ -104,7 +104,7 @@ template <typename PointT,
           typename OctreeT>
 void
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
-    addPointFromCloud(const int point_idx_arg, IndicesPtr indices_arg)
+    addPointFromCloud(const index_t point_idx_arg, IndicesPtr indices_arg)
 {
   this->addPointIdx(point_idx_arg);
   if (indices_arg)
@@ -124,7 +124,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
   cloud_arg->push_back(point_arg);
 
-  this->addPointIdx(static_cast<const int>(cloud_arg->points.size()) - 1);
+  this->addPointIdx(static_cast<const index_t>(cloud_arg->points.size()) - 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -143,7 +143,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
   cloud_arg->push_back(point_arg);
 
-  this->addPointFromCloud(static_cast<const int>(cloud_arg->points.size()) - 1,
+  this->addPointFromCloud(static_cast<const index_t>(cloud_arg->points.size()) - 1,
                           indices_arg);
 }
 
@@ -176,7 +176,7 @@ template <typename PointT,
           typename OctreeT>
 bool
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
-    isVoxelOccupiedAtPoint(const int& point_idx_arg) const
+    isVoxelOccupiedAtPoint(const index_t& point_idx_arg) const
 {
   // retrieve point from input cloud
   const PointT& point = this->input_->points[point_idx_arg];
@@ -234,7 +234,7 @@ template <typename PointT,
           typename OctreeT>
 void
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
-    deleteVoxelAtPoint(const int& point_idx_arg)
+    deleteVoxelAtPoint(const index_t& point_idx_arg)
 {
   // retrieve point from input cloud
   const PointT& point = this->input_->points[point_idx_arg];
@@ -613,7 +613,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     std::size_t leaf_obj_count = (*leaf_node)->getSize();
 
     // copy leaf data
-    std::vector<int> leafIndices;
+    Indices leafIndices;
     leafIndices.reserve(leaf_obj_count);
 
     (*leaf_node)->getPointIndices(leafIndices);
@@ -629,7 +629,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     // add data to new branch
     OctreeKey new_index_key;
 
-    for (const int& leafIndex : leafIndices) {
+    for (const auto& leafIndex : leafIndices) {
 
       const PointT& point_from_index = input_->points[leafIndex];
       // generate key
@@ -652,11 +652,11 @@ template <typename PointT,
           typename OctreeT>
 void
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
-    addPointIdx(const int point_idx_arg)
+    addPointIdx(const index_t point_idx_arg)
 {
   OctreeKey key;
 
-  assert(point_idx_arg < static_cast<int>(input_->points.size()));
+  assert(point_idx_arg < static_cast<index_t>(input_->points.size()));
 
   const PointT& point = input_->points[point_idx_arg];
 
@@ -700,10 +700,10 @@ template <typename PointT,
           typename OctreeT>
 const PointT&
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
-    getPointByIndex(const unsigned int index_arg) const
+    getPointByIndex(const index_t index_arg) const
 {
   // retrieve point from input cloud
-  assert(index_arg < static_cast<unsigned int>(input_->points.size()));
+  assert(index_arg < static_cast<unsigned index_t>(input_->points.size()));
   return (this->input_->points[index_arg]);
 }
 
@@ -834,7 +834,7 @@ template <typename PointT,
           typename OctreeT>
 bool
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
-    genOctreeKeyForDataT(const int& data_arg, OctreeKey& key_arg) const
+    genOctreeKeyForDataT(const index_t& data_arg, OctreeKey& key_arg) const
 {
   const PointT temp_point = getPointByIndex(data_arg);
 

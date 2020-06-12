@@ -77,7 +77,7 @@ public:
   /** \brief Read input data. Only an internal counter is increased.
    */
   void
-  addPointIndex(int)
+  addPointIndex(index_t)
   {
     point_counter_++;
   }
