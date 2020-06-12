@@ -312,13 +312,13 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseHarris (PointCloudOut
 #pragma omp parallel for      \
   default(none)               \
   shared(output)              \
-  private(covar)              \
+  firstprivate(covar)              \
   num_threads(threads_)
 #else
 #pragma omp parallel for      \
   default(none)               \
   shared(output, output_size) \
-  private(covar)              \
+  firstprivate(covar)              \
   num_threads(threads_)
 #endif
   for (int index = 0; index < output_size; ++index)
@@ -358,13 +358,13 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseNoble (PointCloudOut 
 #pragma omp parallel for      \
   default(none)               \
   shared(output)              \
-  private(covar)              \
+  firstprivate(covar)              \
   num_threads(threads_)
 #else
 #pragma omp parallel for      \
   default(none)               \
   shared(output, output_size) \
-  private(covar)              \
+  firstprivate(covar)              \
   num_threads(threads_)
 #endif
   for (int index = 0; index < output_size; ++index)
@@ -404,13 +404,13 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseLowe (PointCloudOut &
 #pragma omp parallel for      \
   default(none)               \
   shared(output)              \
-  private(covar)              \
+  firstprivate(covar)              \
   num_threads(threads_)
 #else
 #pragma omp parallel for      \
   default(none)               \
   shared(output, output_size) \
-  private(covar)              \
+  firstprivate(covar)              \
   num_threads(threads_)
 #endif
   for (int index = 0; index < output_size; ++index)
@@ -450,13 +450,13 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseTomasi (PointCloudOut
 #pragma omp parallel for      \
   default(none)               \
   shared(output)              \
-  private(covar)              \
+  firstprivate(covar)              \
   num_threads(threads_)
 #else
 #pragma omp parallel for      \
   default(none)               \
   shared(output, output_size) \
-  private(covar)              \
+  firstprivate(covar)              \
   num_threads(threads_)
 #endif
   for (int index = 0; index < output_size; ++index)

@@ -96,7 +96,7 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
   }
 
 #if OPENMP_AVAILABLE_RANSAC
-#pragma omp parallel if(threads > 0) num_threads(threads) shared(k, skipped_count, n_best_inliers_count) private(selection, model_coefficients, n_inliers_count) // would be nice to have a default(none)-clause here, but then some compilers complain about the shared const variables
+#pragma omp parallel if(threads > 0) num_threads(threads) shared(k, skipped_count, n_best_inliers_count) firstprivate(selection, model_coefficients, n_inliers_count) // would be nice to have a default(none)-clause here, but then some compilers complain about the shared const variables
 #endif
   {
 #if OPENMP_AVAILABLE_RANSAC
