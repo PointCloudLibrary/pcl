@@ -13,24 +13,24 @@
 
 using namespace pcl;
 
-TEST(LambdaFilterIndices, CheckCompatibility)
+TEST(LambdaFilter, CheckCompatibility)
 {
   const auto copy_all = [](PointCloud<PointXYZ>, index_t) { return 0; };
-  EXPECT_TRUE((is_lambda_point_filter_v<PointXYZ, decltype(copy_all)>));
+  EXPECT_TRUE((is_lambda_filter_functor_v<PointXYZ, decltype(copy_all)>));
 
   const auto ref_all = [](PointCloud<PointXYZ>&, index_t&) { return 0; };
-  EXPECT_FALSE((is_lambda_point_filter_v<PointXYZ, decltype(ref_all)>));
+  EXPECT_FALSE((is_lambda_filter_functor_v<PointXYZ, decltype(ref_all)>));
 
   const auto ref_cloud = [](PointCloud<PointXYZ>&, index_t) { return 0; };
-  EXPECT_FALSE((is_lambda_point_filter_v<PointXYZ, decltype(ref_cloud)>));
+  EXPECT_FALSE((is_lambda_filter_functor_v<PointXYZ, decltype(ref_cloud)>));
 
   const auto const_ref_cloud = [](const PointCloud<PointXYZ>&, index_t) { return 0; };
-  EXPECT_TRUE((is_lambda_point_filter_v<PointXYZ, decltype(const_ref_cloud)>));
+  EXPECT_TRUE((is_lambda_filter_functor_v<PointXYZ, decltype(const_ref_cloud)>));
 
   const auto const_ref_all = [](const PointCloud<PointXYZ>&, const index_t&) {
     return 0;
   };
-  EXPECT_TRUE((is_lambda_point_filter_v<PointXYZ, decltype(const_ref_all)>));
+  EXPECT_TRUE((is_lambda_filter_functor_v<PointXYZ, decltype(const_ref_all)>));
 }
 
 int

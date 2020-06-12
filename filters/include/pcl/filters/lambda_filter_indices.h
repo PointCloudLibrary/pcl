@@ -14,7 +14,7 @@
 
 namespace pcl {
 template <typename PointT, typename Function>
-constexpr static bool is_lambda_point_filter_v =
+constexpr static bool is_lambda_filter_functor_v =
     pcl::is_invocable_r_v<bool,
                           Function,
                           const pcl::remove_cvref_t<pcl::PointCloud<PointT>>&,
@@ -25,16 +25,15 @@ constexpr static bool is_lambda_point_filter_v =
  * \ingroup filters
  */
 template <typename PointT, typename Functor>
-class LambdaFilterIndices : public FilterIndices<PointT> {
-private:
-  using Self = LambdaFilterIndices<PointT, Functor>;
+class LambdaFilter : public FilterIndices<PointT> {
+  using Self = LambdaFilter<PointT, Functor>;
   using Base = FilterIndices<PointT>;
   using PCLBase = pcl::PCLBase<PointT>;
 
 public:
   using FunctorT = Functor;
   // using in type would complicate signature
-  static_assert(is_lambda_point_filter_v<PointT, FunctorT>,
+  static_assert(is_lambda_filter_functor_v<PointT, FunctorT>,
                 "Functor signature must be similar to `bool(const PointCloud<PointT>&, "
                 "index_t)`");
 
@@ -58,14 +57,14 @@ public:
    * \param[in] extract_removed_indices Set to true if you want to be able to
    * extract the indices of points being removed (default = false).
    */
-  LambdaFilterIndices(FunctorT lambda, bool extract_removed_indices = false)
+  LambdaFilter(FunctorT lambda, bool extract_removed_indices = false)
   : Base(extract_removed_indices), lambda_(std::move(lambda))
   {
     filter_name_ = "lambda_filter_indices";
   }
 
   const FunctorT&
-  get_lambda() const noexcept
+  getLambda() const noexcept
   {
     return lambda_;
   }
@@ -84,11 +83,9 @@ public:
       removed_indices_->reserve(input_->size());
     }
 
-    const auto& lambda = get_lambda();
-
     for (const auto index : *indices_) {
       // lambda returns true for points that should be selected
-      if (negative_ != lambda(*input_, index)) {
+      if (negative_ != lambda_(*input_, index)) {
         indices.push_back(index);
       }
       else if (extract_removed_indices_) {
