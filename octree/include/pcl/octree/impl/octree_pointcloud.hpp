@@ -91,7 +91,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     for (std::size_t i = 0; i < input_->points.size(); i++) {
       if (isFinite(input_->points[i])) {
         // add points to octree
-        this->addPointIdx(static_cast<unsigned index_t>(i));
+        this->addPointIdx(static_cast<index_t>(i));
       }
     }
   }
@@ -703,7 +703,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     getPointByIndex(const index_t index_arg) const
 {
   // retrieve point from input cloud
-  assert(index_arg < static_cast<unsigned index_t>(input_->points.size()));
+  assert(index_arg < static_cast<index_t>(input_->points.size()));
   return (this->input_->points[index_arg]);
 }
 

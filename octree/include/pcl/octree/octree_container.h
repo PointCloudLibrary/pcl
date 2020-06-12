@@ -38,6 +38,8 @@
 
 #pragma once
 
+#include <pcl/types.h>
+
 #include <cassert>
 #include <cstddef>
 #include <vector>

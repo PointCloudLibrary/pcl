@@ -39,6 +39,7 @@
 #pragma once
 
 #include <pcl/octree/octree_base.h>
+#include <pcl/pcl_base.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
