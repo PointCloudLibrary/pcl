@@ -156,11 +156,11 @@ public:
    * \param pointIdx_arg
    */
   void
-  addPointIdx(const int pointIdx_arg) override
+  addPointIdx(const index_t pointIdx_arg) override
   {
     OctreeKey key;
 
-    assert(pointIdx_arg < static_cast<int>(this->input_->points.size()));
+    assert(pointIdx_arg < static_cast<index_t>(this->input_->points.size()));
 
     const PointT& point = this->input_->points[pointIdx_arg];
 
@@ -190,7 +190,7 @@ public:
    * \return "true" if voxel is found; "false" otherwise
    */
   inline bool
-  getVoxelCentroidAtPoint(const int& point_idx_arg, PointT& voxel_centroid_arg) const
+  getVoxelCentroidAtPoint(const index_t& point_idx_arg, PointT& voxel_centroid_arg) const
   {
     // get centroid at point
     return (this->getVoxelCentroidAtPoint(this->input_->points[point_idx_arg],

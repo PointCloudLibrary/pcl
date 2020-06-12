@@ -154,11 +154,11 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
 template <typename PointT, typename LeafContainerT, typename BranchContainerT>
 void
 pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>::
-    addPointIdx(const int pointIdx_arg)
+    addPointIdx(const index_t pointIdx_arg)
 {
   OctreeKey key;
 
-  assert(pointIdx_arg < static_cast<int>(this->input_->points.size()));
+  assert(pointIdx_arg < static_cast<index_t>(this->input_->points.size()));
 
   const PointT& point = this->input_->points[pointIdx_arg];
   if (!pcl::isFinite(point))

@@ -91,7 +91,7 @@ public:
    * \return number of point indices
    */
   std::size_t
-  getPointIndicesFromNewVoxels(std::vector<int>& indicesVector_arg,
+  getPointIndicesFromNewVoxels(Indices& indicesVector_arg,
                                const int minPointsPerLeaf_arg = 0)
   {
 

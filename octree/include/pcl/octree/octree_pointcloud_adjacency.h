@@ -197,7 +197,7 @@ protected:
    * \note This virtual implementation allows the use of a transform function to compute
    * keys. */
   void
-  addPointIdx(const int point_idx_arg) override;
+  addPointIdx(const index_t point_idx_arg) override;
 
   /** \brief Fills in the neighbors fields for new voxels.
    *
