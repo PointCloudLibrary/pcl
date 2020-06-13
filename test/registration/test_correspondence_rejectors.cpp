@@ -130,7 +130,8 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
    * but not too many
    */
   EXPECT_GE(accepted_frac, ground_truth_frac);
-  // Factor 1.5 raised to 1.6 see #2995 for details
+  // Factor 1.5 raised to 1.6 as there is a variance in the noise added from the various standard implementations
+  // See #2995 for details
   EXPECT_LE(accepted_frac, 1.6f*ground_truth_frac);
 
   /*
