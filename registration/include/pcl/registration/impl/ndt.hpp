@@ -636,7 +636,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT (con
   double g_u = auxilaryFunction_dPsiMT (d_phi_0, d_phi_0, mu);
 
   // Check used to allow More-Thuente step length calculation to be skipped by making step_min == step_max
-  bool interval_converged = (step_max - step_min) > 0, open_interval = true;
+  bool interval_converged = (step_max - step_min) < 0, open_interval = true;
 
   double a_t = step_init;
   a_t = std::min (a_t, step_max);
