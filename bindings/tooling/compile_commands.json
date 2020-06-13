@@ -1,0 +1,12 @@
+[
+    {
+        "directory": "",
+        "command": "/usr/bin/clang++ -I/usr/include/pcl-1.8/ -I/usr/include/pcl-1.8/common/include -std=c++14",
+        "file": "common/include/pcl/implpoint_types.hpp"
+    },
+    {
+        "directory": "",
+        "command": "/usr/bin/clang++ -I/usr/include/pcl-1.8/ -I/usr/include/pcl-1.8/common/include -std=c++14",
+        "file": "parse2.cpp"
+    }
+]
