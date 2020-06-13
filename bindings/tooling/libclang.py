@@ -114,9 +114,8 @@ def main():
     index = clang.Index.create()
     more_than_one_file = len(args.files) > 1
 
-    compdb = clang.CompilationDatabase.fromDirectory(
-        "."
-    )  # location of `compile_commands.json`
+    # `""`: `compile_commands.json` located at this level
+    compdb = clang.CompilationDatabase.fromDirectory("")
 
     for source in args.files:
         with open(source) as input_file:
