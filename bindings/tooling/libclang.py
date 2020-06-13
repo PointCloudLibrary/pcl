@@ -20,10 +20,10 @@ def print_node(cursor, lines, more_than_one_file, depth):
     file = "{0}:".format(cursor.location.file) if more_than_one_file else ""
     line, column = cursor.location.line, cursor.location.column
     print(
-        bcolors.BOLD + f"depth={depth}" + bcolors.ENDC,
+        "-" * depth,
         file,
-        line,
-        column,
+        f"L{line} C{column}",
+        bcolors.BOLD + cursor.kind.name + bcolors.ENDC,
         bcolors.OKBLUE + cursor.spelling + bcolors.ENDC,
         bcolors.OKGREEN + cursor.displayname + bcolors.ENDC,
     )
