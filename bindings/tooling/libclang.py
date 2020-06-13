@@ -114,11 +114,16 @@ def main():
     index = clang.Index.create()
     more_than_one_file = len(args.files) > 1
 
+    compdb = clang.CompilationDatabase.fromDirectory(
+        "."
+    )  # location of `compile_commands.json`
+
     for source in args.files:
         with open(source) as input_file:
             lines = input_file.readlines()
 
-        tu = index.parse(source, args=['-I/usr/include/pcl-1.8/'])
+        compile_args = compdb.getCompileCommands(source)
+        tu = index.parse(source, compile_args)
         walk(tu.cursor, filter, lines, more_than_one_file, tu.spelling, depth=0)
 
 
