@@ -8,7 +8,7 @@
  */
 
 #include <pcl/common/generate.h>
-#include <pcl/filters/lambda_filter_indices.h>
+#include <pcl/filters/functor_filter.h>
 #include <pcl/test/gtest.h>
 #include <pcl/point_types.h>
 
@@ -16,27 +16,27 @@
 
 using namespace pcl;
 
-TEST(LambdaFilterTrait, CheckCompatibility)
+TEST(FunctorFilterTrait, CheckCompatibility)
 {
   const auto copy_all = [](PointCloud<PointXYZ>, index_t) { return 0; };
-  EXPECT_TRUE((is_lambda_filter_functor_v<PointXYZ, decltype(copy_all)>));
+  EXPECT_TRUE((is_functor_for_filter_v<PointXYZ, decltype(copy_all)>));
 
   const auto ref_all = [](PointCloud<PointXYZ>&, index_t&) { return 0; };
-  EXPECT_FALSE((is_lambda_filter_functor_v<PointXYZ, decltype(ref_all)>));
+  EXPECT_FALSE((is_functor_for_filter_v<PointXYZ, decltype(ref_all)>));
 
   const auto ref_cloud = [](PointCloud<PointXYZ>&, index_t) { return 0; };
-  EXPECT_FALSE((is_lambda_filter_functor_v<PointXYZ, decltype(ref_cloud)>));
+  EXPECT_FALSE((is_functor_for_filter_v<PointXYZ, decltype(ref_cloud)>));
 
   const auto const_ref_cloud = [](const PointCloud<PointXYZ>&, index_t) { return 0; };
-  EXPECT_TRUE((is_lambda_filter_functor_v<PointXYZ, decltype(const_ref_cloud)>));
+  EXPECT_TRUE((is_functor_for_filter_v<PointXYZ, decltype(const_ref_cloud)>));
 
   const auto const_ref_all = [](const PointCloud<PointXYZ>&, const index_t&) {
     return 0;
   };
-  EXPECT_TRUE((is_lambda_filter_functor_v<PointXYZ, decltype(const_ref_all)>));
+  EXPECT_TRUE((is_functor_for_filter_v<PointXYZ, decltype(const_ref_all)>));
 }
 
-TEST(LambdaFilterTest, implementation)
+TEST(FunctorFilterTest, implementation)
 {
   auto cloud = make_shared<PointCloud<PointXYZ>>();
   auto out_cloud = make_shared<PointCloud<PointXYZ>>();
@@ -52,7 +52,7 @@ TEST(LambdaFilterTest, implementation)
   };
 
   for (const auto& keep_removed : {true, false}) {
-    LambdaFilter<PointXYZ, decltype(lambda)> filter{lambda, keep_removed};
+    FunctorFilter<PointXYZ, decltype(lambda)> filter{lambda, keep_removed};
     filter.setInputCloud(cloud);
     const auto removed_size = filter.getRemovedIndices()->size();
 
@@ -90,7 +90,7 @@ free_func(const PointCloud<PointXYZ>&, const index_t& idx)
   return idx % 2;
 }
 
-TEST(LambdaFilterTest, functor_types)
+TEST(FunctorFilterTest, functor_types)
 {
   PointCloud<PointXYZ> cloud;
   cloud.resize(2);
@@ -98,18 +98,18 @@ TEST(LambdaFilterTest, functor_types)
   const auto lambda = [](const PointCloud<PointXYZ>& cloud, index_t idx) {
     return free_func(cloud, idx);
   };
-  LambdaFilter<PointXYZ, decltype(lambda)> filter_lambda{lambda};
-  EXPECT_EQ(filter_lambda.getLambda()(cloud, 0), 0);
-  EXPECT_EQ(filter_lambda.getLambda()(cloud, 1), 1);
+  FunctorFilter<PointXYZ, decltype(lambda)> filter_lambda{lambda};
+  EXPECT_EQ(filter_lambda.getFunctor()(cloud, 0), 0);
+  EXPECT_EQ(filter_lambda.getFunctor()(cloud, 1), 1);
 
   std::function<bool(PointCloud<PointXYZ>, index_t)> func = lambda;
-  LambdaFilter<PointXYZ, decltype(func)> filter_func{func};
-  EXPECT_EQ(filter_func.getLambda()(cloud, 0), 0);
-  EXPECT_EQ(filter_func.getLambda()(cloud, 1), 1);
+  FunctorFilter<PointXYZ, decltype(func)> filter_func{func};
+  EXPECT_EQ(filter_func.getFunctor()(cloud, 0), 0);
+  EXPECT_EQ(filter_func.getFunctor()(cloud, 1), 1);
 
-  LambdaFilter<PointXYZ, decltype(free_func)*> filter_free_func{free_func};
-  EXPECT_EQ(filter_free_func.getLambda()(cloud, 0), 0);
-  EXPECT_EQ(filter_free_func.getLambda()(cloud, 1), 1);
+  FunctorFilter<PointXYZ, decltype(free_func)*> filter_free_func{free_func};
+  EXPECT_EQ(filter_free_func.getFunctor()(cloud, 0), 0);
+  EXPECT_EQ(filter_free_func.getFunctor()(cloud, 1), 1);
 
   struct StaticFunctor {
     static int
@@ -117,21 +117,31 @@ TEST(LambdaFilterTest, functor_types)
     {
       return free_func(cloud, idx);
     }
-    // const is needed due to current implementation
     int
     operator()(PointCloud<PointXYZ> cloud, index_t idx)
     {
       return free_func(cloud, idx);
     }
   };
-  LambdaFilter<PointXYZ, decltype(StaticFunctor::functor)*> filter_static_func{
+  FunctorFilter<PointXYZ, decltype(StaticFunctor::functor)*> filter_static_func{
       StaticFunctor::functor};
-  EXPECT_EQ(filter_static_func.getLambda()(cloud, 0), 0);
-  EXPECT_EQ(filter_static_func.getLambda()(cloud, 1), 1);
+  EXPECT_EQ(filter_static_func.getFunctor()(cloud, 0), 0);
+  EXPECT_EQ(filter_static_func.getFunctor()(cloud, 1), 1);
 
-  LambdaFilter<PointXYZ, StaticFunctor> filter_class_func{{}};
-  EXPECT_EQ(filter_class_func.getLambda()(cloud, 0), 0);
-  EXPECT_EQ(filter_class_func.getLambda()(cloud, 1), 1);
+  FunctorFilter<PointXYZ, StaticFunctor> filter_class_func{{}};
+  EXPECT_EQ(filter_class_func.getFunctor()(cloud, 0), 0);
+  EXPECT_EQ(filter_class_func.getFunctor()(cloud, 1), 1);
+
+  struct StaticFunctorConst {
+    int
+    operator()(PointCloud<PointXYZ> cloud, index_t idx) const
+    {
+      return free_func(cloud, idx);
+    }
+  };
+  FunctorFilter<PointXYZ, StaticFunctorConst> filter_class_const_func{{}};
+  EXPECT_EQ(filter_class_func.getFunctor()(cloud, 0), 0);
+  EXPECT_EQ(filter_class_func.getFunctor()(cloud, 1), 1);
 }
 
 int

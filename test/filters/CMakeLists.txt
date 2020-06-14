@@ -21,8 +21,8 @@ PCL_ADD_TEST(filters_morphological test_morphological
              FILES test_morphological.cpp
              LINK_WITH pcl_gtest pcl_common pcl_filters)
 
-PCL_ADD_TEST(filters_lambda test_filters_lambda_indices
-             FILES test_lambda_indices.cpp
+PCL_ADD_TEST(filters_functor test_filters_functor
+             FILES test_functor_filter.cpp
              LINK_WITH pcl_gtest pcl_common pcl_filters)
 
 PCL_ADD_TEST(filters_local_maximum test_filters_local_maximum

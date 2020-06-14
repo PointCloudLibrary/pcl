@@ -267,6 +267,7 @@ namespace pcl
    * \todo: Remove in C++17
    */
 #ifndef __cpp_lib_is_invocable
+  // Implementation taken from: https://stackoverflow.com/a/51188325
   template <typename F, typename... Args>
   constexpr bool is_invocable_v =
       std::is_constructible<std::function<void(Args...)>,
