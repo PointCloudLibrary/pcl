@@ -94,6 +94,29 @@ stages:
           CMAKE_CXX_FLAGS: '-Wall -Wextra'
         steps:
           - template: build/ubuntu.yaml
+      - job: ubuntu_indices
+        displayName: Ubuntu Indices
+        # Test 64 bit & unsigned indices
+        dependsOn: ubuntu
+        condition: succeededOrFailed()
+        pool:
+          vmImage: 'Ubuntu 16.04'
+        strategy:
+          matrix:
+            18.04 Clang:
+              CONTAINER: env1804
+              CC: clang
+              CXX: clang++
+              INDEX_SIGNED: OFF
+              INDEX_SIZE: 64
+              CMAKE_ARGS: ''
+        container: $[ variables['CONTAINER'] ]
+        timeoutInMinutes: 0
+        variables:
+          BUILD_DIR: '$(Agent.BuildDirectory)/build'
+          CMAKE_CXX_FLAGS: '-Wall -Wextra'
+        steps:
+          - template: build/ubuntu_indices.yaml
 
   - stage: build_msvc
     displayName: Build MSVC
