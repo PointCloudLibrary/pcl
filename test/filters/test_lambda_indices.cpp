@@ -119,7 +119,7 @@ TEST(LambdaFilterTest, functor_types)
     }
     // const is needed due to current implementation
     int
-    operator()(PointCloud<PointXYZ> cloud, index_t idx) const
+    operator()(PointCloud<PointXYZ> cloud, index_t idx)
     {
       return free_func(cloud, idx);
     }

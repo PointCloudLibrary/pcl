@@ -45,7 +45,7 @@ protected:
   using PCLBase::input_;
 
   // need to hold a value because lambdas can only be copy or move constructed
-  const FunctorT lambda_;
+  FunctorT lambda_;
 
 public:
   /** \brief Constructor.
