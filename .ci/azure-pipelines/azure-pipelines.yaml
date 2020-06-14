@@ -107,7 +107,8 @@ stages:
               CONTAINER: env1804
               CC: clang
               CXX: clang++
-              BUILD_GPU: OFF
+              INDEX_SIGNED: OFF
+              INDEX_SIZE: 64
               CMAKE_ARGS: ''
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
