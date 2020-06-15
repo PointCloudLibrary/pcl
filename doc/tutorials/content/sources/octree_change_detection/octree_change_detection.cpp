@@ -23,7 +23,7 @@ main (int argc, char** argv)
   cloudA->height = 1;
   cloudA->points.resize (cloudA->width * cloudA->height);
 
-  for (std::size_t i = 0; i < cloudA->points.size (); ++i)
+  for (std::size_t i = 0; i < cloudA->size (); ++i)
   {
     (*cloudA)[i].x = 64.0f * rand () / (RAND_MAX + 1.0f);
     (*cloudA)[i].y = 64.0f * rand () / (RAND_MAX + 1.0f);
@@ -44,7 +44,7 @@ main (int argc, char** argv)
   cloudB->height = 1;
   cloudB->points.resize (cloudB->width * cloudB->height);
 
-  for (std::size_t i = 0; i < cloudB->points.size (); ++i)
+  for (std::size_t i = 0; i < cloudB->size (); ++i)
   {
     (*cloudB)[i].x = 64.0f * rand () / (RAND_MAX + 1.0f);
     (*cloudB)[i].y = 64.0f * rand () / (RAND_MAX + 1.0f);

@@ -50,7 +50,7 @@
 template <typename PointT> bool
 pcl::io::PointCloudImageExtractor<PointT>::extract (const PointCloud& cloud, pcl::PCLImage& img) const
 {
-  if (!cloud.isOrganized () || cloud.points.size () != cloud.width * cloud.height)
+  if (!cloud.isOrganized () || cloud.size () != cloud.width * cloud.height)
     return (false);
 
   bool result = this->extractImpl (cloud, img);
@@ -58,7 +58,7 @@ pcl::io::PointCloudImageExtractor<PointT>::extract (const PointCloud& cloud, pcl
   if (paint_nans_with_black_ && result)
   {
     std::size_t size = img.encoding == "mono16" ? 2 : 3;
-    for (std::size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
       if (!pcl::isFinite (cloud[i]))
         std::memset (&img.data[i * size], 0, size);
   }
@@ -86,7 +86,7 @@ pcl::io::PointCloudImageExtractorFromNormalField<PointT>::extractImpl (const Poi
   img.step = img.width * sizeof (unsigned char) * 3;
   img.data.resize (img.step * img.height);
 
-  for (std::size_t i = 0; i < cloud.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud.size (); ++i)
   {
     float x;
     float y;
@@ -122,7 +122,7 @@ pcl::io::PointCloudImageExtractorFromRGBField<PointT>::extractImpl (const PointC
   img.step = img.width * sizeof (unsigned char) * 3;
   img.data.resize (img.step * img.height);
 
-  for (std::size_t i = 0; i < cloud.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud.size (); ++i)
   {
     std::uint32_t val;
     pcl::getFieldValue<PointT, std::uint32_t> (cloud[i], offset, val);
@@ -154,7 +154,7 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       img.step = img.width * sizeof (unsigned short);
       img.data.resize (img.step * img.height);
       unsigned short* data = reinterpret_cast<unsigned short*>(&img.data[0]);
-      for (std::size_t i = 0; i < cloud.points.size (); ++i)
+      for (std::size_t i = 0; i < cloud.size (); ++i)
       {
         std::uint32_t val;
         pcl::getFieldValue<PointT, std::uint32_t> (cloud[i], offset, val);
@@ -173,7 +173,7 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       std::srand(std::time(nullptr));
       std::map<std::uint32_t, std::size_t> colormap;
 
-      for (std::size_t i = 0; i < cloud.points.size (); ++i)
+      for (std::size_t i = 0; i < cloud.size (); ++i)
       {
         std::uint32_t val;
         pcl::getFieldValue<PointT, std::uint32_t> (cloud[i], offset, val);
@@ -204,7 +204,7 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       std::map<std::uint32_t, std::size_t> colormap;
 
       // First pass: find unique labels
-      for (std::size_t i = 0; i < cloud.points.size (); ++i)
+      for (std::size_t i = 0; i < cloud.size (); ++i)
       {
         // If we need to paint NaN points with black do not waste colors on them
         if (paint_nans_with_black_ && !pcl::isFinite (cloud[i]))
@@ -225,7 +225,7 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       }
 
       // Second pass: copy colors from the LUT
-      for (std::size_t i = 0; i < cloud.points.size (); ++i)
+      for (std::size_t i = 0; i < cloud.size (); ++i)
       {
         std::uint32_t val;
         pcl::getFieldValue<PointT, std::uint32_t> (cloud[i], offset, val);
@@ -262,7 +262,7 @@ pcl::io::PointCloudImageExtractorWithScaling<PointT>::extractImpl (const PointCl
   {
     float min = std::numeric_limits<float>::infinity();
     float max = -std::numeric_limits<float>::infinity();
-    for (std::size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
       float val;
       pcl::getFieldValue<PointT, float> (cloud[i], offset, val);
@@ -275,7 +275,7 @@ pcl::io::PointCloudImageExtractorWithScaling<PointT>::extractImpl (const PointCl
     data_min = min;
   }
 
-  for (std::size_t i = 0; i < cloud.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud.size (); ++i)
   {
     float val;
     pcl::getFieldValue<PointT, float> (cloud[i], offset, val);

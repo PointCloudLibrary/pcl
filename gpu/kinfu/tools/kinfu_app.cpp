@@ -142,12 +142,12 @@ namespace pcl
             scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
           scalars->SetNumberOfComponents (3);
             
-          vtkIdType nr_points = vtkIdType (cloud_->points.size ());
+          vtkIdType nr_points = vtkIdType (cloud_->size ());
           reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
           unsigned char* colors = reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->GetPointer (0);
             
           // Color every point
-          if (nr_points != int (rgb_->points.size ()))
+          if (nr_points != int (rgb_->size ()))
             std::fill (colors, colors + nr_points * 3, static_cast<unsigned char> (0xFF));
           else
             for (vtkIdType cp = 0; cp < nr_points; ++cp)
@@ -504,7 +504,7 @@ struct SceneCloudView
         kinfu.volume().fetchNormals (extracted, normals_device_);
         pcl::gpu::mergePointNormal (extracted, normals_device_, combined_device_);
         combined_device_.download (combined_ptr_->points);
-        combined_ptr_->width = (int)combined_ptr_->points.size ();
+        combined_ptr_->width = (int)combined_ptr_->size ();
         combined_ptr_->height = 1;
 
         valid_combined_ = true;
@@ -512,7 +512,7 @@ struct SceneCloudView
       else
       {
         extracted.download (cloud_ptr_->points);
-        cloud_ptr_->width = (int)cloud_ptr_->points.size ();
+        cloud_ptr_->width = (int)cloud_ptr_->size ();
         cloud_ptr_->height = 1;
       }
 
@@ -520,14 +520,14 @@ struct SceneCloudView
       {
         kinfu.colorVolume().fetchColors(extracted, point_colors_device_);
         point_colors_device_.download(point_colors_ptr_->points);
-        point_colors_ptr_->width = (int)point_colors_ptr_->points.size ();
+        point_colors_ptr_->width = (int)point_colors_ptr_->size ();
         point_colors_ptr_->height = 1;
       }
       else
         point_colors_ptr_->points.clear();
     }
-    std::size_t points_size = valid_combined_ ? combined_ptr_->points.size () : cloud_ptr_->points.size ();
-    std::cout << "Done.  Cloud size: " << points_size / 1000 << "K" << std::endl;
+    std::size_t size = valid_combined_ ? combined_ptr_->size () : cloud_ptr_->size ();
+    std::cout << "Done.  Cloud size: " << size / 1000 << "K" << std::endl;
 
     if (viz_)
     {

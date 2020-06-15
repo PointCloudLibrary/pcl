@@ -111,7 +111,7 @@ TEST (FastBilateralFilterOMP, Filters_Bilateral)
     fbf_omp.filter (*cloud_filtered_omp);
     PCL_INFO ("[FastBilateralFilterOMP] filtering took %f ms\n", tt.toc ());
 
-    EXPECT_EQ (cloud_filtered_omp->points.size (), cloud_filtered->points.size ());
+    EXPECT_EQ (cloud_filtered_omp->size (), cloud_filtered->size ());
     for (std::size_t j = 0; j < cloud_filtered_omp->size (); ++j)
     {
       if (std::isnan (cloud_filtered_omp->at (j).x))

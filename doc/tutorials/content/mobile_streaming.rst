@@ -164,7 +164,7 @@ that lie outside of the predefined bounding box or contain NaN values.
     void
     CopyPointCloudToBuffers (pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud, PointCloudBuffers& cloud_buffers)
     {
-      const std::size_t nr_points = cloud->points.size ();
+      const std::size_t nr_points = cloud->size ();
 
       cloud_buffers.points.resize (nr_points*3);
       cloud_buffers.rgb.resize (nr_points*3);
@@ -236,7 +236,7 @@ After a successful connection, the program enters the main server loop:
 
         PointCloudBuffers::Ptr buffers_to_send = getLatestBuffers ();
 
-        nr_points = static_cast<unsigned int> (buffers_to_send->points.size()/3);
+        nr_points = static_cast<unsigned int> (buffers_to_send->size()/3);
         boost::asio::write (socket, boost::asio::buffer (&nr_points, sizeof (nr_points)));
 
         if (nr_points)
@@ -279,7 +279,7 @@ callback function, and sends information about the buffer's number of points to 
 
     PointCloudBuffers::Ptr buffers_to_send = getLatestBuffers ();
 
-    nr_points = static_cast<unsigned int> (buffers_to_send->points.size()/3);
+    nr_points = static_cast<unsigned int> (buffers_to_send->size()/3);
     boost::asio::write (socket, boost::asio::buffer (&nr_points, sizeof (nr_points)));
 
 Next, if there is a non-zero number of points, the server sends the xyz and rgb

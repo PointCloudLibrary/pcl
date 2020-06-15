@@ -55,10 +55,10 @@ TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::estima
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     Matrix4 &transformation_matrix) const
 {
-  std::size_t nr_points = cloud_src.points.size ();
-  if (cloud_tgt.points.size () != nr_points)
+  std::size_t nr_points = cloud_src.size ();
+  if (cloud_tgt.size () != nr_points)
   {
-    PCL_ERROR ("[pcl::TransformationEstimationDualQuaternion::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", nr_points, cloud_tgt.points.size ());
+    PCL_ERROR ("[pcl::TransformationEstimationDualQuaternion::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", nr_points, cloud_tgt.size ());
     return;
   }
 
@@ -75,9 +75,9 @@ TransformationEstimationDualQuaternion<PointSource, PointTarget, Scalar>::estima
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     Matrix4 &transformation_matrix) const
 {
-  if (indices_src.size () != cloud_tgt.points.size ())
+  if (indices_src.size () != cloud_tgt.size ())
   {
-    PCL_ERROR ("[pcl::TransformationDQ::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", indices_src.size (), cloud_tgt.points.size ());
+    PCL_ERROR ("[pcl::TransformationDQ::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", indices_src.size (), cloud_tgt.size ());
     return;
   }
 

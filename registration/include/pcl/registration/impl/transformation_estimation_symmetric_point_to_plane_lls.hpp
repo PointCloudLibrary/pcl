@@ -52,10 +52,10 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              const pcl::PointCloud<PointTarget> &cloud_tgt,
                              Matrix4 &transformation_matrix) const
 {
-  const auto nr_points = cloud_src.points.size ();
-  if (cloud_tgt.points.size () != nr_points)
+  const auto nr_points = cloud_src.size ();
+  if (cloud_tgt.size () != nr_points)
   {
-    PCL_ERROR ("[pcl::TransformationEstimationSymmetricPointToPlaneLLS::estimateRigidTransformation] Number or points in source (%lu) differs from target (%lu)!\n", nr_points, cloud_tgt.points.size ());
+    PCL_ERROR ("[pcl::TransformationEstimationSymmetricPointToPlaneLLS::estimateRigidTransformation] Number or points in source (%lu) differs from target (%lu)!\n", nr_points, cloud_tgt.size ());
     return;
   }
 
@@ -73,9 +73,9 @@ estimateRigidTransformation (const pcl::PointCloud<PointSource> &cloud_src,
                              Matrix4 &transformation_matrix) const
 {
   const auto nr_points = indices_src.size ();
-  if (cloud_tgt.points.size () != nr_points)
+  if (cloud_tgt.size () != nr_points)
   {
-    PCL_ERROR ("[pcl::TransformationEstimationSymmetricPointToPlaneLLS::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", indices_src.size (), cloud_tgt.points.size ());
+    PCL_ERROR ("[pcl::TransformationEstimationSymmetricPointToPlaneLLS::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", indices_src.size (), cloud_tgt.size ());
     return;
   }
 

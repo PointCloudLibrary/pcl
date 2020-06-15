@@ -233,7 +233,7 @@ pcl::KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud)
     return;
   }
 
-  int original_no_of_points = static_cast<int> (cloud.points.size ());
+  int original_no_of_points = static_cast<int> (cloud.size ());
 
   cloud_.reset (new float[original_no_of_points * dim_], std::default_delete<float[]> ());
   float* cloud_ptr = cloud_.get ();

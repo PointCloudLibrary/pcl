@@ -62,7 +62,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
   // If dense, no need to check for NaNs
   if (cloud->is_dense)
   {
-    for (std::size_t i = 0; i < cloud->points.size (); ++i)
+    for (std::size_t i = 0; i < cloud->size (); ++i)
     {
       // Get the distance value
       const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud)[i]);
@@ -88,7 +88,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
   }
   else
   {
-    for (std::size_t i = 0; i < cloud->points.size (); ++i)
+    for (std::size_t i = 0; i < cloud->size (); ++i)
     {
       // Get the distance value
       const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud)[i]);
@@ -430,7 +430,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
      
     ++index;
   }
-  output.width = static_cast<std::uint32_t> (output.points.size ());
+  output.width = static_cast<std::uint32_t> (output.size ());
 }
 
 #define PCL_INSTANTIATE_VoxelGrid(T) template class PCL_EXPORTS pcl::VoxelGrid<T>;

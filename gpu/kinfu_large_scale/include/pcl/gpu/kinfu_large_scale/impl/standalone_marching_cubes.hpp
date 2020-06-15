@@ -194,7 +194,7 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::convertTsdfVectors (const Po
 #pragma omp parallel for \
   default(none) \
   shared(cloud, output) 	
-	for(int i = 0; i < (int) cloud.points.size (); ++i)
+	for(int i = 0; i < (int) cloud.size (); ++i)
 	{
 	  int x = cloud[i].x;
 	  int y = cloud[i].y;

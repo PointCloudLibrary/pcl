@@ -70,8 +70,8 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   this->getProjectedRadiusSearchBox (query, static_cast<float> (squared_radius), left, right, top, bottom);
 
   // iterate over search box
-  if (max_nn == 0 || max_nn >= static_cast<unsigned int> (input_->points.size ()))
-    max_nn = static_cast<unsigned int> (input_->points.size ());
+  if (max_nn == 0 || max_nn >= static_cast<unsigned int> (input_->size ()))
+    max_nn = static_cast<unsigned int> (input_->size ());
 
   k_indices.reserve (max_nn);
   k_sqr_distances.reserve (max_nn);

@@ -80,7 +80,7 @@ displayCurvature(pcl::PointCloud<PointT>& cloud,
                  const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   pcl::PointCloud<pcl::PointXYZRGBA> curvature_cloud = cloud;
-  for (std::size_t i = 0; i < cloud.points.size(); i++) {
+  for (std::size_t i = 0; i < cloud.size(); i++) {
     if (normals[i].curvature < 0.04) {
       curvature_cloud[i].r = 0;
       curvature_cloud[i].g = 255;
@@ -103,7 +103,7 @@ displayDistanceMap(pcl::PointCloud<PointT>& cloud,
                    const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   pcl::PointCloud<pcl::PointXYZRGBA> distance_map_cloud = cloud;
-  for (std::size_t i = 0; i < cloud.points.size(); i++) {
+  for (std::size_t i = 0; i < cloud.size(); i++) {
     if (distance_map[i] < 5.0) {
       distance_map_cloud[i].r = 255;
       distance_map_cloud[i].g = 0;

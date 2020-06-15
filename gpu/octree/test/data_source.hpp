@@ -131,7 +131,7 @@ struct DataGenerator
             float query_radius = radius > 0 ? radius : radiuses[i];
             const PointType& query = queries[i];
 
-            for(std::size_t ind = 0; ind < points.size(); ++ind)
+            for(std::size_t ind = 0; ind < size(); ++ind)
             {
                 const PointType& point = points[ind];
 

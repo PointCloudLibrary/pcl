@@ -128,7 +128,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
       PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n", getClassName ().c_str (), distance_idx);
 
     // First pass: go over all points and insert them into the right leaf
-    for (std::size_t cp = 0; cp < input_->points.size (); ++cp)
+    for (std::size_t cp = 0; cp < input_->size (); ++cp)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
@@ -205,7 +205,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   else
   {
     // First pass: go over all points and insert them into the right leaf
-    for (std::size_t cp = 0; cp < input_->points.size (); ++cp)
+    for (std::size_t cp = 0; cp < input_->size (); ++cp)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
@@ -366,7 +366,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
     }
   }
 
-  output.width = static_cast<std::uint32_t> (output.points.size ());
+  output.width = static_cast<std::uint32_t> (output.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

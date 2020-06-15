@@ -45,13 +45,13 @@ template <typename PointT>
 void 
 pcl::kinfuLS::WorldModel<PointT>::addSlice ( PointCloudPtr new_cloud)
 {
-  PCL_DEBUG ("Adding new cloud. Current world contains %d points.\n", world_->points.size ());
+  PCL_DEBUG ("Adding new cloud. Current world contains %d points.\n", world_->size ());
 
-  PCL_DEBUG ("New slice contains %d points.\n", new_cloud->points.size ());
+  PCL_DEBUG ("New slice contains %d points.\n", new_cloud->size ());
 
   *world_ += *new_cloud;
 
-  PCL_DEBUG ("World now contains  %d points.\n", world_->points.size ());
+  PCL_DEBUG ("World now contains  %d points.\n", world_->size ());
 }
 
 
@@ -139,14 +139,14 @@ pcl::kinfuLS::WorldModel<PointT>::getWorldAsCubes (const double size, std::vecto
 	return;
   }
 
-  PCL_INFO ("Getting world as cubes. World contains %d points.\n", world_->points.size ());
+  PCL_INFO ("Getting world as cubes. World contains %d points.\n", world_->size ());
 
   // remove nans from world cloud
   world_->is_dense = false;
   std::vector<int> indices;
   pcl::removeNaNFromPointCloud ( *world_, *world_, indices);
 	
-  PCL_INFO ("World contains %d points after nan removal.\n", world_->points.size ());
+  PCL_INFO ("World contains %d points after nan removal.\n", world_->size ());
   
 
   // check cube size value

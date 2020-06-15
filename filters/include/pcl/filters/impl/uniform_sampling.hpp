@@ -50,7 +50,7 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
   {
     PCL_WARN ("[pcl::%s::detectKeypoints] No input dataset given!\n", getClassName ().c_str ());
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -130,12 +130,12 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
   }
 
   // Second pass: go over all leaves and copy data
-  output.points.resize (leaves_.size ());
+  output.resize (leaves_.size ());
   int cp = 0;
 
   for (const auto& leaf : leaves_)
     output[cp++] = (*input_)[leaf.second.idx];
-  output.width = static_cast<std::uint32_t> (output.points.size ());
+  output.width = static_cast<std::uint32_t> (output.size ());
 }
 
 #define PCL_INSTANTIATE_UniformSampling(T) template class PCL_EXPORTS pcl::UniformSampling<T>;

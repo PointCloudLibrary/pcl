@@ -55,15 +55,15 @@ void extractMask (const typename PointCloudAOS<Storage>::Ptr &input,
   if (!output)
     output.reset (new PointCloudAOS<Storage>);
 
-  output->points.resize (input->points.size ());
+  output->points.resize (input->size ());
 
-  typename Storage<T>::type mask_device (input->points.size());
-  thrust::copy (mask, (T*)(&mask[input->points.size()]), mask_device.begin ());
+  typename Storage<T>::type mask_device (input->size());
+  thrust::copy (mask, (T*)(&mask[input->size()]), mask_device.begin ());
 
   typename PointCloudAOS<Storage>::iterator it = thrust::copy_if (input->points.begin (), input->points.end (), mask_device.begin (), output->points.begin (), isNotZero<T> ());
   output->points.resize (it - output->points.begin ());
 
-  output->width = (unsigned int) output->points.size();
+  output->width = (unsigned int) output->size();
   output->height = 1;
   output->is_dense = false;
 }
@@ -94,12 +94,12 @@ void extractIndices (const typename PointCloudAOS<Storage>::Ptr &input,
   if (!output)
     output.reset (new PointCloudAOS<Storage>);
 
-  output->points.resize (input->points.size ());
+  output->points.resize (input->size ());
 
   typename PointCloudAOS<Storage>::iterator it = thrust::copy_if (input->points.begin (), input->points.end (), indices.begin (), output->points.begin (), isInlier ());
   output->points.resize (it - output->points.begin ());
 
-  output->width = (unsigned int) output->points.size();
+  output->width = (unsigned int) output->size();
   output->height = 1;
   output->is_dense = false;
 }
@@ -112,12 +112,12 @@ void removeIndices  (const typename PointCloudAOS<Storage>::Ptr &input,
   if (!output)
     output.reset (new PointCloudAOS<Storage>);
 
-  output->points.resize (input->points.size ());
+  output->points.resize (input->size ());
 
   typename PointCloudAOS<Storage>::iterator it = thrust::copy_if (input->points.begin (), input->points.end (), indices.begin (), output->points.begin (), isNotInlier ());
   output->points.resize (it - output->points.begin ());
 
-  output->width = (unsigned int) output->points.size();
+  output->width = (unsigned int) output->size();
   output->height = 1;
   output->is_dense = false;
 }

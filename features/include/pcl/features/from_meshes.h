@@ -16,7 +16,7 @@ namespace pcl
     template <typename PointT, typename PointNT> inline void
     computeApproximateNormals(const pcl::PointCloud<PointT>& cloud, const std::vector<pcl::Vertices>& polygons, pcl::PointCloud<PointNT>& normals)
     {
-      const auto nr_points = cloud.points.size();
+      const auto nr_points = cloud.size();
 
       normals.header = cloud.header;
       normals.width = cloud.width;
@@ -65,9 +65,9 @@ namespace pcl
                                   std::vector<Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> >& covariances,
                                   double epsilon = 0.001)
     {
-      assert(cloud.points.size() == normals.points.size());
+      assert(cloud.size() == normals.size());
 
-      const auto nr_points = cloud.points.size();
+      const auto nr_points = cloud.size();
       covariances.clear ();
       covariances.reserve (nr_points);
       for (const auto& point: normals.points)

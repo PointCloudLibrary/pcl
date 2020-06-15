@@ -113,7 +113,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
   label_index = pcl::getFieldIndex<PointXYZRGBL> ("label", fields);
 
   std::vector<cloud_point_index_idx> index_vector;
-  index_vector.reserve(input_->points.size());
+  index_vector.reserve(input_->size());
 
   // If we don't want to process the entire cloud, but rather filter points far away from the viewpoint first...
   if (!filter_field_name_.empty ())
@@ -127,7 +127,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
     // First pass: go over all points and insert them into the index_vector vector
     // with calculated idx. Points with the same idx value will contribute to the
     // same point of resulting CloudPoint
-    for (unsigned int cp = 0; cp < static_cast<unsigned int> (input_->points.size ()); ++cp)
+    for (unsigned int cp = 0; cp < static_cast<unsigned int> (input_->size ()); ++cp)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
@@ -169,7 +169,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
     // First pass: go over all points and insert them into the index_vector vector
     // with calculated idx. Points with the same idx value will contribute to the
     // same point of resulting CloudPoint
-    for (unsigned int cp = 0; cp < static_cast<unsigned int> (input_->points.size ()); ++cp)
+    for (unsigned int cp = 0; cp < static_cast<unsigned int> (input_->size ()); ++cp)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
@@ -348,6 +348,6 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
     cp = i;
     ++index;
   }
-  output.width = static_cast<std::uint32_t> (output.points.size ());
+  output.width = static_cast<std::uint32_t> (output.size ());
 }
 

@@ -81,7 +81,7 @@ TransformationValidationEuclidean<PointSource, PointTarget, Scalar>::validateTra
 
   // For each point in the source dataset
   int nr = 0;
-  for (std::size_t i = 0; i < input_transformed.points.size (); ++i)
+  for (std::size_t i = 0; i < input_transformed.size (); ++i)
   {
     // Find its nearest neighbor in the target
     tree_->nearestKSearch (input_transformed[i], 1, nn_indices, nn_dists);

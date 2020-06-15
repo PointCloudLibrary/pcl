@@ -252,7 +252,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::initCompute ()
   }
 
   // Check if the size of normals is the same as the size of the surface
-  if (input_normals_->points.size () != input_->points.size ())
+  if (input_normals_->size () != input_->size ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] ", getClassName ().c_str ());
     PCL_ERROR ("The number of points in the input dataset differs from ");

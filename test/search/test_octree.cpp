@@ -117,7 +117,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     k_sqr_distances_bruteforce.clear ();
 
     // push all points and their distance to the search point into a priority queue - bruteforce approach.
-    for (std::size_t i = 0; i < cloudIn->points.size (); i++)
+    for (std::size_t i = 0; i < cloudIn->size (); i++)
     {
       double pointDist = (((*cloudIn)[i].x - searchPoint.x) * ((*cloudIn)[i].x - searchPoint.x) +
                           ((*cloudIn)[i].y - searchPoint.y) * ((*cloudIn)[i].y - searchPoint.y) +
@@ -200,7 +200,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
     double BFdistance = std::numeric_limits<double>::max ();
     int BFindex = 0;
 
-    for (std::size_t i = 0; i < cloudIn->points.size (); i++)
+    for (std::size_t i = 0; i < cloudIn->size (); i++)
     {
       pointDist = (((*cloudIn)[i].x - searchPoint.x) * ((*cloudIn)[i].x - searchPoint.x)
           + ((*cloudIn)[i].y - searchPoint.y) * ((*cloudIn)[i].y - searchPoint.y) + ((*cloudIn)[i].z
@@ -305,7 +305,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     
     // bruteforce radius search
     std::vector<int> cloudSearchBruteforce;
-    for (std::size_t i = 0; i < cloudIn->points.size (); i++)
+    for (std::size_t i = 0; i < cloudIn->size (); i++)
     {
       pointDist = sqrt (
                         ((*cloudIn)[i].x - searchPoint.x) * ((*cloudIn)[i].x - searchPoint.x)

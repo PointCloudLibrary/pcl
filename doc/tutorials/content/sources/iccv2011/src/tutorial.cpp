@@ -246,14 +246,14 @@ void ICCVTutorial<FeatureType>::detectKeypoints (typename pcl::PointCloud<pcl::P
   keypoint_detector_->setInputCloud(input);
   keypoint_detector_->setSearchSurface(input);
   keypoint_detector_->compute(*keypoints);
-  std::cout << "OK. keypoints found: " << keypoints->points.size() << std::endl;
+  std::cout << "OK. keypoints found: " << keypoints->size() << std::endl;
 }
 
 template<typename FeatureType>
 void ICCVTutorial<FeatureType>::extractDescriptors (typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr input, typename pcl::PointCloud<pcl::PointXYZI>::Ptr keypoints, typename pcl::PointCloud<FeatureType>::Ptr features)
 {
   typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr kpts(new pcl::PointCloud<pcl::PointXYZRGB>);
-  kpts->points.resize(keypoints->points.size());
+  kpts->points.resize(keypoints->size());
 
   pcl::copyPointCloud(*keypoints, *kpts);
 

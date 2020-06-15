@@ -291,7 +291,7 @@ void pcl::device::OctreeImpl::build()
     using namespace pcl::device;
     host_octree.downloaded = false;
 
-    int points_num = (int)points.size();
+    int points_num = (int)size();
 
     //allocatations
     {
@@ -339,7 +339,7 @@ void pcl::device::OctreeImpl::build()
         //ScopeTimer timer("reduce-morton-sort-permutations"); 
     	
         device_ptr<PointType> beg(points.ptr());
-        device_ptr<PointType> end = beg + points.size();
+        device_ptr<PointType> end = beg + size();
 
         {
             PointType atmax, atmin;

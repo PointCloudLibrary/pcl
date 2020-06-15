@@ -53,9 +53,9 @@ seededHueSegmentation (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr  &host_cloud
 
   // Create a bool vector of processed point indices, and initialize it to false
   // cloud is a DeviceArray<PointType>
-  std::vector<bool> processed (host_cloud_->points.size (), false);
+  std::vector<bool> processed (host_cloud_->size (), false);
 
-  int max_answers = host_cloud_->points.size();
+  int max_answers = host_cloud_->size();
 
   // Process all points in the indices vector
   for (std::size_t k = 0; k < indices_in.indices.size (); ++k)
@@ -152,7 +152,7 @@ pcl::gpu::SeededHueSegmentation::segment (PointIndices &indices_in, PointIndices
     tree_->build();
   }
 /*
-  if(tree_->cloud_.size() != host_cloud.points.size ())
+  if(tree_->cloud_.size() != host_cloud.size ())
   {
     PCL_ERROR("[pcl::gpu::SeededHueSegmentation] size of host cloud and device cloud don't match!\n");
     return;

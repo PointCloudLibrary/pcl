@@ -152,7 +152,7 @@ TEST (PCL, NormalEstimation)
 
   // estimate
   n.compute (*normals);
-  EXPECT_EQ (normals->points.size (), indices.size ());
+  EXPECT_EQ (normals->size (), indices.size ());
 
   for (const auto &point : normals->points)
   {
@@ -172,14 +172,14 @@ TEST (PCL, NormalEstimation)
   surfaceptr->points.resize (640 * 480);
   surfaceptr->width = 640;
   surfaceptr->height = 480;
-  EXPECT_EQ (surfaceptr->points.size (), surfaceptr->width * surfaceptr->height);
+  EXPECT_EQ (surfaceptr->size (), surfaceptr->width * surfaceptr->height);
   n.setSearchSurface (surfaceptr);
   tree.reset ();
   n.setSearchMethod (tree);
 
   // estimate
   n.compute (*normals);
-  EXPECT_EQ (normals->points.size (), indices.size ());
+  EXPECT_EQ (normals->size (), indices.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -263,7 +263,7 @@ TEST (PCL, NormalEstimationOpenMP)
 
   // estimate
   n.compute (*normals);
-  EXPECT_EQ (normals->points.size (), indices.size ());
+  EXPECT_EQ (normals->size (), indices.size ());
 
   for (const auto &point : normals->points)
   {
@@ -367,7 +367,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  indices.resize (cloud.points.size ());
+  indices.resize (cloud.size ());
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
     indices[i] = i;
 

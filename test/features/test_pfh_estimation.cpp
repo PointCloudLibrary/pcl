@@ -214,7 +214,7 @@ TEST (PCL, PFHEstimation)
 
   // estimate
   pfh.compute (*pfhs);
-  EXPECT_EQ (pfhs->points.size (), indices.size ());
+  EXPECT_EQ (pfhs->size (), indices.size ());
 
   for (const auto &point : pfhs->points)
   {
@@ -402,7 +402,7 @@ TYPED_TEST (FPFHTest, Estimation)
 
   // estimate
   fpfh.compute (*fpfhs);
-  EXPECT_EQ (fpfhs->points.size (), indices.size ());
+  EXPECT_EQ (fpfhs->size (), indices.size ());
 
   EXPECT_NEAR ((*fpfhs)[0].histogram[0],  1.58591, 1e-2);
   EXPECT_NEAR ((*fpfhs)[0].histogram[1],  1.68365, 1e-2);
@@ -467,7 +467,7 @@ TEST (PCL, VFHEstimation)
 
   // estimate
   vfh.compute (*vfhs);
-  EXPECT_EQ (int (vfhs->points.size ()), 1);
+  EXPECT_EQ (int (vfhs->size ()), 1);
 
   //for (std::size_t d = 0; d < 308; ++d)
   //  std::cerr << vfhs[0].histogram[d] << std::endl;
@@ -498,7 +498,7 @@ TEST (PCL, GFPFH)
         p.z = static_cast<float> (z);
         cloud->points.push_back (p);
       }
-  cloud->width = static_cast<std::uint32_t> (cloud->points.size ());
+  cloud->width = static_cast<std::uint32_t> (cloud->size ());
   cloud->height = 1;
 
   pcl::GFPFHEstimation<PointXYZL, PointXYZL, GFPFHSignature16> gfpfh;
@@ -511,7 +511,7 @@ TEST (PCL, GFPFH)
 
   const float ref_values[] = { 1877, 6375, 5361, 14393, 6674, 2471, 2248, 2753, 3117, 4585, 14388, 32407, 15122, 3061, 3202, 794 };
 
-  EXPECT_EQ (descriptor.points.size (), 1);
+  EXPECT_EQ (descriptor.size (), 1);
   for (std::size_t i = 0; i < std::size_t (descriptor[0].descriptorSize ()); ++i)
   {
     EXPECT_EQ (descriptor[0].histogram[i], ref_values[i]);

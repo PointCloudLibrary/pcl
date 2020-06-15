@@ -62,12 +62,12 @@ pcl::CPPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 {
   // Initialize output container
   output.points.clear ();
-  output.points.reserve (indices_->size () * input_->points.size ());
+  output.points.reserve (indices_->size () * input_->size ());
   output.is_dense = true;
   // Compute point pair features for every pair of points in the cloud
   for (const auto& i: *indices_)
   {
-    for (std::size_t j = 0 ; j < input_->points.size (); ++j)
+    for (std::size_t j = 0 ; j < input_->size (); ++j)
     {
       PointOutT p;
       // No need to calculate feature for identity pair (i, j) as they aren't used in future calculations
@@ -115,7 +115,7 @@ pcl::CPPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   }
   // overwrite the sizes done by Feature::initCompute ()
   output.height = 1;
-  output.width = static_cast<std::uint32_t> (output.points.size ());
+  output.width = static_cast<std::uint32_t> (output.size ());
 }
 
 #define PCL_INSTANTIATE_CPPFEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::CPPFEstimation<T,NT,OutT>;

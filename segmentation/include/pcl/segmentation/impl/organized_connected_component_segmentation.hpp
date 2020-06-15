@@ -122,7 +122,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   unsigned invalid_label = std::numeric_limits<unsigned>::max ();
   PointLT invalid_pt;
   invalid_pt.label = std::numeric_limits<unsigned>::max ();
-  labels.points.resize (input_->points.size (), invalid_pt);
+  labels.points.resize (input_->size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;
   std::size_t clust_id = 0;
@@ -216,7 +216,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   }
 
   label_indices.resize (max_id + 1);
-  for (std::size_t idx = 0; idx < input_->points.size (); idx++)
+  for (std::size_t idx = 0; idx < input_->size (); idx++)
   {
     if (labels[idx].label != invalid_label)
     {

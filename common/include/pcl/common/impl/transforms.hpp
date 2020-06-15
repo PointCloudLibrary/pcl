@@ -229,11 +229,11 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     cloud_out.is_dense = cloud_in.is_dense;
     cloud_out.width    = cloud_in.width;
     cloud_out.height   = cloud_in.height;
-    cloud_out.points.reserve (cloud_in.points.size ());
+    cloud_out.points.reserve (cloud_in.size ());
     if (copy_all_fields)
       cloud_out.points.assign (cloud_in.points.begin (), cloud_in.points.end ());
     else
-      cloud_out.points.resize (cloud_in.points.size ());
+      cloud_out.points.resize (cloud_in.size ());
     cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
     cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
   }
@@ -242,14 +242,14 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   if (cloud_in.is_dense)
   {
     // If the dataset is dense, simply transform it!
-    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_out.size (); ++i)
       tf.se3 (cloud_in[i].data, cloud_out[i].data);
   }
   else
   {
     // Dataset might contain NaNs and Infs, so check for them first,
     // otherwise we get errors during the multiplication (?)
-    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_out.size (); ++i)
     {
       if (!std::isfinite (cloud_in[i].x) ||
           !std::isfinite (cloud_in[i].y) ||
@@ -321,11 +321,11 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
     cloud_out.width    = cloud_in.width;
     cloud_out.height   = cloud_in.height;
     cloud_out.is_dense = cloud_in.is_dense;
-    cloud_out.points.reserve (cloud_out.points.size ());
+    cloud_out.points.reserve (cloud_out.size ());
     if (copy_all_fields)
       cloud_out.points.assign (cloud_in.points.begin (), cloud_in.points.end ());
     else
-      cloud_out.points.resize (cloud_in.points.size ());
+      cloud_out.points.resize (cloud_in.size ());
     cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
     cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
   }
@@ -334,7 +334,7 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   // If the data is dense, we don't need to check for NaN
   if (cloud_in.is_dense)
   {
-    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_out.size (); ++i)
     {
       tf.se3 (cloud_in[i].data, cloud_out[i].data);
       tf.so3 (cloud_in[i].data_n, cloud_out[i].data_n);
@@ -343,7 +343,7 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   // Dataset might contain NaNs and Infs, so check for them first.
   else
   {
-    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_out.size (); ++i)
     {
       if (!std::isfinite (cloud_in[i].x) ||
           !std::isfinite (cloud_in[i].y) ||
@@ -377,7 +377,7 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   // If the data is dense, we don't need to check for NaN
   if (cloud_in.is_dense)
   {
-    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_out.size (); ++i)
     {
       // Copy fields first, then transform
       if (copy_all_fields)
@@ -389,7 +389,7 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   // Dataset might contain NaNs and Infs, so check for them first.
   else
   {
-    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_out.size (); ++i)
     {
       // Copy fields first, then transform
       if (copy_all_fields)

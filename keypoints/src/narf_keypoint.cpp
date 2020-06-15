@@ -863,7 +863,7 @@ NarfKeypoint::calculateInterestPoints ()
     if (range_image.isValid (image_x, image_y))
       is_interest_point_image_[image_y*width + image_x] = true;
   }
-  interest_points_->width = static_cast<std::uint32_t> (interest_points_->points.size ());
+  interest_points_->width = static_cast<std::uint32_t> (interest_points_->size ());
   interest_points_->height = 1;
   interest_points_->is_dense = true;
 }

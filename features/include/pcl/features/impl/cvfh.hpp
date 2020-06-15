@@ -81,24 +81,24 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSmoot
     unsigned int min_pts_per_cluster,
     unsigned int max_pts_per_cluster)
 {
-  if (tree->getInputCloud ()->points.size () != cloud.points.size ())
+  if (tree->getInputCloud ()->size () != cloud.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->size (), cloud.size ());
     return;
   }
-  if (cloud.points.size () != normals.points.size ())
+  if (cloud.size () != normals.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%lu) different than normals (%lu)!\n", cloud.points.size (), normals.points.size ());
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%lu) different than normals (%lu)!\n", cloud.size (), normals.size ());
     return;
   }
 
   // Create a bool vector of processed point indices, and initialize it to false
-  std::vector<bool> processed (cloud.points.size (), false);
+  std::vector<bool> processed (cloud.size (), false);
 
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
-  for (std::size_t i = 0; i < cloud.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud.size (); ++i)
   {
     if (processed[i])
       continue;
@@ -159,8 +159,8 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::filterNormalsWithHighCurvatur
     std::vector<int> &indices_in,
     float threshold)
 {
-  indices_out.resize (cloud.points.size ());
-  indices_in.resize (cloud.points.size ());
+  indices_out.resize (cloud.size ());
+  indices_in.resize (cloud.size ());
 
   std::size_t in, out;
   in = out = 0;
@@ -195,7 +195,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
     output.points.clear ();
     return;
   }
-  if (normals_->points.size () != surface_->points.size ())
+  if (normals_->size () != surface_->size ())
   {
     PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!\n", getClassName ().c_str ());
     output.width = output.height = 0;
@@ -224,7 +224,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 
   std::vector<pcl::PointIndices> clusters;
 
-  if(normals_filtered_cloud->points.size() >= min_points_)
+  if(normals_filtered_cloud->size() >= min_points_)
   {
     //recompute normals and use them for clustering
     KdTreePtr normals_tree_filtered (new pcl::search::KdTree<pcl::PointNormal> (false));

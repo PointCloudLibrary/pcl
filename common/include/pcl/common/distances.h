@@ -107,9 +107,9 @@ namespace pcl
     const auto token = std::numeric_limits<std::size_t>::max();
     std::size_t i_min = token, i_max = token;
 
-    for (std::size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
-      for (std::size_t j = i; j < cloud.points.size (); ++j)
+      for (std::size_t j = i; j < cloud.size (); ++j)
       {
         // Compute the distance 
         double dist = (cloud[i].getVector4fMap () - 

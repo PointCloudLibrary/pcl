@@ -344,7 +344,7 @@ namespace pcl
       {
         int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
-        if (idx >= points.size)
+        if (idx >= size)
           return;
         constexpr float qnan = std::numeric_limits<float>::quiet_NaN ();
         float3 n = make_float3 (qnan, qnan, qnan);
@@ -442,7 +442,7 @@ pcl::device::extractNormals (const PtrStep<short2>& volume, const float3& volume
   en.output = output;
 
   dim3 block (256);
-  dim3 grid (divUp (points.size, block.x));
+  dim3 grid (divUp (size, block.x));
 
   extractNormalsKernel<<<grid, block>>>(en);
   cudaSafeCall ( cudaGetLastError () );

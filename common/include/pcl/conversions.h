@@ -243,18 +243,18 @@ namespace pcl
     // Ease the user's burden on specifying width/height for unorganized datasets
     if (cloud.width == 0 && cloud.height == 0)
     {
-      msg.width  = static_cast<std::uint32_t>(cloud.points.size ());
+      msg.width  = static_cast<std::uint32_t>(cloud.size ());
       msg.height = 1;
     }
     else
     {
-      assert (cloud.points.size () == cloud.width * cloud.height);
+      assert (cloud.size () == cloud.width * cloud.height);
       msg.height = cloud.height;
       msg.width  = cloud.width;
     }
 
     // Fill point cloud binary data (padding and all)
-    std::size_t data_size = sizeof (PointT) * cloud.points.size ();
+    std::size_t data_size = sizeof (PointT) * cloud.size ();
     msg.data.resize (data_size);
     if (data_size)
     {
@@ -286,7 +286,7 @@ namespace pcl
       throw std::runtime_error("Needs to be a dense like cloud!!");
     else
     {
-      if (cloud.points.size () != cloud.width * cloud.height)
+      if (cloud.size () != cloud.width * cloud.height)
         throw std::runtime_error("The width and height do not match the cloud size!");
       msg.height = cloud.height;
       msg.width = cloud.width;

@@ -413,9 +413,9 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
   else
   {
     output.points.clear ();
-    output.points.reserve (response->points.size());
+    output.points.reserve (response->size());
     
-    for (int idx = 0; idx < static_cast<int> (response->points.size ()); ++idx)
+    for (int idx = 0; idx < static_cast<int> (response->size ()); ++idx)
     {
       const PointOutT& point_in = response->points [idx];
       const NormalT& normal_in = normals_->points [idx];
@@ -444,7 +444,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
     }
     
     output.height = 1;
-    output.width = static_cast<std::uint32_t> (output.points.size());
+    output.width = static_cast<std::uint32_t> (output.size());
     output.is_dense = true;
   }
 }

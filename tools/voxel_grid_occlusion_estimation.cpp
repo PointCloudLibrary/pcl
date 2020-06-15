@@ -220,12 +220,12 @@ int main (int argc, char** argv)
   }
 
   CloudT::Ptr cloud_centroids (new CloudT);
-  cloud_centroids->width = static_cast<int> (input_cloud->points.size ());
+  cloud_centroids->width = static_cast<int> (input_cloud->size ());
   cloud_centroids->height = 1;
   cloud_centroids->is_dense = false;
-  cloud_centroids->points.resize (input_cloud->points.size ());
+  cloud_centroids->points.resize (input_cloud->size ());
 
-  for (std::size_t i = 0; i < input_cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < input_cloud->size (); ++i)
   {
     float x = (*input_cloud)[i].x;
     float y = (*input_cloud)[i].y;

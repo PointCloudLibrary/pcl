@@ -17,7 +17,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel(pcl::PolygonMesh::Ptr plg)
 
     PCL_DEBUG("RGB Triangle mesh: ");
     PCL_DEBUG("Mesh polygons: %ld", plg->polygons.size());
-    PCL_DEBUG("Mesh points: %ld", newcloud.points.size());
+    PCL_DEBUG("Mesh points: %ld", newcloud.size());
 
     Eigen::Vector4f tmp;
     for (const auto& polygon : plg->polygons) {
@@ -205,11 +205,11 @@ pcl::simulation::PointCloudModel::PointCloudModel(
     GLenum mode, pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc)
 : mode_(mode)
 {
-  nvertices_ = pc->points.size();
+  nvertices_ = pc->size();
   vertices_ = new float[3 * nvertices_];
   colors_ = new float[4 * nvertices_];
 
-  for (std::size_t i = 0; i < pc->points.size(); ++i) {
+  for (std::size_t i = 0; i < pc->size(); ++i) {
     vertices_[3 * i + 0] = (*pc)[i].x;
     vertices_[3 * i + 1] = (*pc)[i].y;
     vertices_[3 * i + 2] = (*pc)[i].z;

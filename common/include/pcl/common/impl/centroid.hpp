@@ -681,7 +681,7 @@ demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 {
   cloud_out.header = cloud_in.header;
   cloud_out.is_dense = cloud_in.is_dense;
-  if (indices.size () == cloud_in.points.size ())
+  if (indices.size () == cloud_in.size ())
   {
     cloud_out.width    = cloud_in.width;
     cloud_out.height   = cloud_in.height;

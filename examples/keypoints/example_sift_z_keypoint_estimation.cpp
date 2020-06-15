@@ -72,7 +72,7 @@ main(int, char** argv)
     PCL_ERROR ("Couldn't read file");
     return -1;
   }
-  std::cout << "points: " << cloud_xyz->points.size () <<std::endl;
+  std::cout << "points: " << cloud_xyz->size () <<std::endl;
   
   // Parameters for sift computation
   const float min_scale = 0.005f;
@@ -90,13 +90,13 @@ main(int, char** argv)
   sift.setInputCloud(cloud_xyz);
   sift.compute(result);
 
-  std::cout << "No of SIFT points in the result are " << result.points.size () << std::endl;
+  std::cout << "No of SIFT points in the result are " << result.size () << std::endl;
 
 /*
   // Copying the pointwithscale to pointxyz so as visualize the cloud
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_temp (new pcl::PointCloud<pcl::PointXYZ>);
   copyPointCloud(result, *cloud_temp);
-  std::cout << "SIFT points in the result are " << cloud_temp->points.size () << std::endl;
+  std::cout << "SIFT points in the result are " << cloud_temp->size () << std::endl;
   // Visualization of keypoints along with the original cloud
   pcl::visualization::PCLVisualizer viewer("PCL Viewer");
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> keypoints_color_handler (cloud_temp, 0, 255, 0);

@@ -60,10 +60,10 @@ createPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
   vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
   vtkSmartPointer<vtkPolygon> polygon    = vtkSmartPointer<vtkPolygon>::New ();
 
-  poly_points->SetNumberOfPoints (cloud->points.size ());
-  polygon->GetPointIds ()->SetNumberOfIds (cloud->points.size ());
+  poly_points->SetNumberOfPoints (cloud->size ());
+  polygon->GetPointIds ()->SetNumberOfIds (cloud->size ());
 
-  for (std::size_t i = 0; i < cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud->size (); ++i)
   {
     poly_points->SetPoint (i, (*cloud)[i].x, (*cloud)[i].y, (*cloud)[i].z);
     polygon->GetPointIds ()->SetId (i, i);

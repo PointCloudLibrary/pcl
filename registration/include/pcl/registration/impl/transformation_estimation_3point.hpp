@@ -47,10 +47,10 @@ pcl::registration::TransformationEstimation3Point<PointSource, PointTarget, Scal
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     Matrix4 &transformation_matrix) const
 {
-  if (cloud_src.points.size () != 3 || cloud_tgt.points.size () != 3)
+  if (cloud_src.size () != 3 || cloud_tgt.size () != 3)
   {
     PCL_ERROR ("[pcl::TransformationEstimation3Point::estimateRigidTransformation] Number of points in source (%lu) and target (%lu) must be 3!\n", 
-      cloud_src.points.size (), cloud_tgt.points.size ());
+      cloud_src.size (), cloud_tgt.size ());
     return;
   }
 
@@ -67,10 +67,10 @@ pcl::registration::TransformationEstimation3Point<PointSource, PointTarget, Scal
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     Matrix4 &transformation_matrix) const
 {
-  if (indices_src.size () != 3 || cloud_tgt.points.size () != 3)
+  if (indices_src.size () != 3 || cloud_tgt.size () != 3)
   {
     PCL_ERROR ("[pcl::TransformationEstimation3Point::estimateRigidTransformation] Number of indices in source (%lu) and points in target (%lu) must be 3!\n", 
-      indices_src.size (), cloud_tgt.points.size ());
+      indices_src.size (), cloud_tgt.size ());
     return;
   }
 

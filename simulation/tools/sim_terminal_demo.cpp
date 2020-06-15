@@ -61,7 +61,7 @@ write_sim_output(const std::string& fname_root)
   // TODO: what to do when there are more than one simulated view?
 
   if (!pc_out->points.empty()) {
-    std::cout << pc_out->points.size() << " points written to file\n";
+    std::cout << pc_out->size() << " points written to file\n";
 
     pcl::PCDWriter writer;
     // writer.write ( string (fname_root + ".pcd"), *pc_out,	false);  /// ASCII
@@ -69,7 +69,7 @@ write_sim_output(const std::string& fname_root)
     // std::cout << "finished writing file\n";
   }
   else {
-    std::cout << pc_out->points.size() << " points in cloud, not written\n";
+    std::cout << pc_out->size() << " points in cloud, not written\n";
   }
 
   // simexample->write_score_image (simexample->rl_->getScoreBuffer (),

@@ -49,7 +49,7 @@ template<typename PointT> void
 pcl::SamplingSurfaceNormal<PointT>::applyFilter (PointCloud &output)
 {
   std::vector <int> indices;
-  std::size_t npts = input_->points.size ();
+  std::size_t npts = input_->size ();
   for (std::size_t i = 0; i < npts; i++)
     indices.push_back (i);
 
@@ -134,7 +134,7 @@ pcl::SamplingSurfaceNormal<PointT>::samplePartition (
     pt.x = data[indices[i]].x;
     pt.y = data[indices[i]].y;
     pt.z = data[indices[i]].z;
-    cloud.points.push_back (pt);
+    cloud.push_back (pt);
   }
   cloud.height = 1;
   cloud.width = cloud.size ();
@@ -145,7 +145,7 @@ pcl::SamplingSurfaceNormal<PointT>::samplePartition (
 
   computeNormal (cloud, normal, curvature);
 
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.size (); i++)
   {
     // TODO: change to Boost random number generators!
     const float r = float (std::rand ()) / float (RAND_MAX);
@@ -158,7 +158,7 @@ pcl::SamplingSurfaceNormal<PointT>::samplePartition (
       pt.normal[2] = normal (2);
       pt.curvature = curvature;
 
-      output.points.push_back (pt);
+      output.push_back (pt);
     }
   }
 }
@@ -199,7 +199,7 @@ pcl::SamplingSurfaceNormal<PointT>::computeMeanAndCovarianceMatrix (const pcl::P
   // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
   Eigen::Matrix<float, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<float, 1, 9, Eigen::RowMajor>::Zero ();
   std::size_t point_count = 0;
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.size (); i++)
   {
     if (!isFinite (cloud[i]))
     {

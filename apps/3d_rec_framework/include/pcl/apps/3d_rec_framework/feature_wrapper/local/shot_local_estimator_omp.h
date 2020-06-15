@@ -85,7 +85,7 @@ public:
     }
 
     this->computeKeypoints(processed, keypoints, normals);
-    std::cout << " " << normals->points.size() << " " << processed->points.size()
+    std::cout << " " << normals->size() << " " << processed->size()
               << std::endl;
 
     if (keypoints->points.empty()) {
@@ -112,8 +112,8 @@ public:
       shot_estimate.compute(*shots);
     }
 
-    signatures->resize(shots->points.size());
-    signatures->width = static_cast<int>(shots->points.size());
+    signatures->resize(shots->size());
+    signatures->width = static_cast<int>(shots->size());
     signatures->height = 1;
 
     int size_feat = sizeof((*signatures)[0].histogram) / sizeof(float);
@@ -135,7 +135,6 @@ public:
         good++;
       }
     }
-
     signatures->resize(good);
     signatures->width = good;
 

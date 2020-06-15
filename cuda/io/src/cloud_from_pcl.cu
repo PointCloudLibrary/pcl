@@ -48,8 +48,8 @@ namespace cuda
 void
 fromPCL (const pcl::PointCloud<pcl::PointXYZRGB> &input, PointCloudAOS<Host> &output)
 {
-//  output.points.resize (input.points.size());
-//  for (std::size_t i = 0; i < input.points.size (); ++i)
+//  output.points.resize (input.size());
+//  for (std::size_t i = 0; i < input.size (); ++i)
 //  {
 //    output[i].x = input[i].x;
 //    output[i].y = input[i].y;

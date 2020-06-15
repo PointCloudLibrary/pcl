@@ -34,9 +34,9 @@ class PreProcessorAndNormalEstimator {
     std::vector<int> src_indices;
 
     float sum_distances = 0.0;
-    std::vector<float> avg_distances(input->points.size());
+    std::vector<float> avg_distances(input->size());
     // Iterate through the source data set
-    for (std::size_t i = 0; i < input->points.size(); ++i) {
+    for (std::size_t i = 0; i < input->size(); ++i) {
       tree->nearestKSearch((*input)[i], 9, nn_indices, nn_distances);
 
       float avg_dist_neighbours = 0.0;
@@ -187,17 +187,16 @@ public:
       // check nans before computing normals
       {
         pcl::ScopeTime t("check nans...");
-        int j = 0;
-        for (std::size_t i = 0; i < out->points.size(); ++i) {
-          if (!std::isfinite((*out)[i].x) || !std::isfinite((*out)[i].y) ||
-              !std::isfinite((*out)[i].z))
+        std::size_t j = 0;
+        for (const auto& point: *out) {
+          if (!isXYZFinite(point))
             continue;
 
-          (*out)[j] = (*out)[i];
+          (*out)[j] = point;
           j++;
         }
 
-        if (j != static_cast<int>(out->points.size())) {
+        if (j != static_cast<int>(out->size())) {
           PCL_ERROR("Contain nans...");
         }
 
@@ -223,10 +222,8 @@ public:
     if (!out->isOrganized()) {
       pcl::ScopeTime t("check nans...");
       int j = 0;
-      for (std::size_t i = 0; i < normals->points.size(); ++i) {
-        if (!std::isfinite((*normals)[i].normal_x) ||
-            !std::isfinite((*normals)[i].normal_y) ||
-            !std::isfinite((*normals)[i].normal_z))
+      for (std::size_t i = 0; i < normals->size(); ++i) {
+        if (!isNormalFinite((*normals)[i])
           continue;
 
         (*normals)[j] = (*normals)[i];
@@ -246,10 +243,8 @@ public:
       // is is organized, we set the xyz points to NaN
       pcl::ScopeTime t("check nans organized...");
       bool NaNs = false;
-      for (std::size_t i = 0; i < normals->points.size(); ++i) {
-        if (std::isfinite((*normals)[i].normal_x) &&
-            std::isfinite((*normals)[i].normal_y) &&
-            std::isfinite((*normals)[i].normal_z))
+      for (std::size_t i = 0; i < normals->size(); ++i) {
+        if (!isNormalFinite((*normals)[i])
           continue;
 
         NaNs = true;

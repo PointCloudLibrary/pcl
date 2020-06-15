@@ -190,8 +190,8 @@ template <typename PointT> void
 pcl::MinCutSegmentation<PointT>::setForegroundPoints (typename pcl::PointCloud<PointT>::Ptr foreground_points)
 {
   foreground_points_.clear ();
-  foreground_points_.reserve (foreground_points->points.size ());
-  for (std::size_t i_point = 0; i_point < foreground_points->points.size (); i_point++)
+  foreground_points_.reserve (foreground_points->size ());
+  for (std::size_t i_point = 0; i_point < foreground_points->size (); i_point++)
     foreground_points_.push_back ((*foreground_points)[i_point]);
 
   unary_potentials_are_valid_ = false;
@@ -209,8 +209,8 @@ template <typename PointT> void
 pcl::MinCutSegmentation<PointT>::setBackgroundPoints (typename pcl::PointCloud<PointT>::Ptr background_points)
 {
   background_points_.clear ();
-  background_points_.reserve (background_points->points.size ());
-  for (std::size_t i_point = 0; i_point < background_points->points.size (); i_point++)
+  background_points_.reserve (background_points->size ());
+  for (std::size_t i_point = 0; i_point < background_points->size (); i_point++)
     background_points_.push_back ((*background_points)[i_point]);
 
   unary_potentials_are_valid_ = false;
@@ -305,7 +305,7 @@ pcl::MinCutSegmentation<PointT>::getGraph () const
 template <typename PointT> bool
 pcl::MinCutSegmentation<PointT>::buildGraph ()
 {
-  int number_of_points = static_cast<int> (input_->points.size ());
+  int number_of_points = static_cast<int> (input_->size ());
   int number_of_indices = static_cast<int> (indices_->size ());
 
   if (input_->points.empty () || number_of_points == 0 || foreground_points_.empty () == true )
@@ -540,7 +540,7 @@ template <typename PointT> void
 pcl::MinCutSegmentation<PointT>::assembleLabels (ResidualCapacityMap& residual_capacity)
 {
   std::vector<int> labels;
-  labels.resize (input_->points.size (), 0);
+  labels.resize (input_->size (), 0);
   int number_of_indices = static_cast<int> (indices_->size ());
   for (int i_point = 0; i_point < number_of_indices; i_point++)
     labels[(*indices_)[i_point]] = 1;

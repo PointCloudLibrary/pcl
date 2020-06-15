@@ -225,7 +225,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::prepareForSegmentation ()
   if (normal_flag_)
   {
     // if user forgot to pass normals or the sizes of point and normal cloud are different
-    if ( !normals_ || input_->points.size () != normals_->points.size () )
+    if ( !normals_ || input_->size () != normals_->size () )
       return (false);
   }
 
@@ -275,8 +275,8 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findPointNeighbours ()
   std::vector<int> neighbours;
   std::vector<float> distances;
 
-  point_neighbours_.resize (input_->points.size (), neighbours);
-  point_distances_.resize (input_->points.size (), distances);
+  point_neighbours_.resize (input_->size (), neighbours);
+  point_distances_.resize (input_->size (), distances);
 
   for (int i_point = 0; i_point < point_number; i_point++)
   {

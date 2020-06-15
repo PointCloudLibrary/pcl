@@ -151,7 +151,7 @@ namespace pcl
         {
           points   = rhs.points;
           // TODO: Test speed on operator () = vs resize+copy
-          //points.resize (rhs.points.size ());
+          //points.resize (rhs.size ());
           //thrust::copy (rhs.points.begin (), rhs.points.end (), points.begin ());
           width    = rhs.width;
           height   = rhs.height;

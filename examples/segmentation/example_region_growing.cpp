@@ -67,14 +67,14 @@ main (int argc, char** av)
     return -1;
   }
 
-  pcl::console::print_highlight ("Loaded cloud %s of size %lu\n", av[1], cloud_ptr->points.size ());
+  pcl::console::print_highlight ("Loaded cloud %s of size %lu\n", av[1], cloud_ptr->size ());
 
   // Remove the nans
   cloud_ptr->is_dense = false;
   cloud_no_nans->is_dense = false;
   std::vector<int> indices;
   pcl::removeNaNFromPointCloud (*cloud_ptr, *cloud_no_nans, indices);
-  pcl::console::print_highlight ("Removed nans from %lu to %lu\n", cloud_ptr->points.size (), cloud_no_nans->points.size ());
+  pcl::console::print_highlight ("Removed nans from %lu to %lu\n", cloud_ptr->size (), cloud_no_nans->size ());
 
   // Estimate the normals
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
@@ -83,7 +83,7 @@ main (int argc, char** av)
   ne.setSearchMethod (tree_n);
   ne.setRadiusSearch (0.03);
   ne.compute (*cloud_normals);
-  pcl::console::print_highlight ("Normals are computed and size is %lu\n", cloud_normals->points.size ());
+  pcl::console::print_highlight ("Normals are computed and size is %lu\n", cloud_normals->size ());
 
   // Region growing
   pcl::RegionGrowing<pcl::PointXYZ, pcl::Normal> rg;

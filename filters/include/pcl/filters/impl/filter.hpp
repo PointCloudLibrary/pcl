@@ -51,25 +51,25 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   if (&cloud_in != &cloud_out)
   {
     cloud_out.header = cloud_in.header;
-    cloud_out.points.resize (cloud_in.points.size ());
+    cloud_out.points.resize (cloud_in.size ());
     cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
     cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   }
   // Reserve enough space for the indices
-  index.resize (cloud_in.points.size ());
+  index.resize (cloud_in.size ());
 
   // If the data is dense, we don't need to check for NaN
   if (cloud_in.is_dense)
   {
     // Simply copy the data
     cloud_out = cloud_in;
-    for (std::size_t j = 0; j < cloud_out.points.size (); ++j)
+    for (std::size_t j = 0; j < cloud_out.size (); ++j)
       index[j] = static_cast<int>(j);
   }
   else
   {
     std::size_t j = 0;
-    for (std::size_t i = 0; i < cloud_in.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud_in.size (); ++i)
     {
       if (!std::isfinite (cloud_in[i].x) ||
           !std::isfinite (cloud_in[i].y) ||
@@ -79,7 +79,7 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
       index[j] = static_cast<int>(i);
       j++;
     }
-    if (j != cloud_in.points.size ())
+    if (j != cloud_in.size ())
     {
       // Resize to the correct size
       cloud_out.points.resize (j);
@@ -104,18 +104,18 @@ pcl::removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   if (&cloud_in != &cloud_out)
   {
     cloud_out.header = cloud_in.header;
-    cloud_out.points.resize (cloud_in.points.size ());
+    cloud_out.points.resize (cloud_in.size ());
     cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
     cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   }
   // Reserve enough space for the indices
-  index.resize (cloud_in.points.size ());
+  index.resize (cloud_in.size ());
   std::size_t j = 0;
 
   // Assume cloud is dense
   cloud_out.is_dense = true;
 
-  for (std::size_t i = 0; i < cloud_in.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud_in.size (); ++i)
   {
     if (!std::isfinite (cloud_in[i].normal_x) ||
         !std::isfinite (cloud_in[i].normal_y) ||
@@ -127,7 +127,7 @@ pcl::removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     index[j] = static_cast<int>(i);
     j++;
   }
-  if (j != cloud_in.points.size ())
+  if (j != cloud_in.size ())
   {
     // Resize to the correct size
     cloud_out.points.resize (j);

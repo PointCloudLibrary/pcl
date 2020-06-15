@@ -84,16 +84,15 @@ public:
 
     // compute keypoints
     this->computeKeypoints(processed, keypoints, normals);
-    std::cout << " " << normals->points.size() << " " << processed->points.size()
-              << std::endl;
+    std::cout << " " << normals->size() << " " << processed->size() << std::endl;
 
     if (keypoints->points.empty()) {
       PCL_WARN("SHOTLocalEstimation :: No keypoints were found\n");
       return false;
     }
 
-    std::cout << keypoints->points.size() << " " << normals->points.size() << " "
-              << processed->points.size() << std::endl;
+    std::cout << keypoints->size() << " " << normals->size() << " " << processed->size()
+              << std::endl;
     // compute signatures
     using SHOTEstimator = pcl::SHOTEstimation<PointInT, pcl::Normal, pcl::SHOT352>;
     typename pcl::search::KdTree<PointInT>::Ptr tree(new pcl::search::KdTree<PointInT>);

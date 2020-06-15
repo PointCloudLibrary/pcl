@@ -50,13 +50,13 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>          &cloud,
                             PointIndices                           &indices_out,
                             float                                  delta_hue)
 {
-  if (tree->getInputCloud ()->points.size () != cloud.points.size ())
+  if (tree->getInputCloud ()->size () != cloud.size ())
   {
-    PCL_ERROR ("[pcl::seededHueSegmentation] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
+    PCL_ERROR ("[pcl::seededHueSegmentation] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->size (), cloud.size ());
     return;
   }
   // Create a bool vector of processed point indices, and initialize it to false
-  std::vector<bool> processed (cloud.points.size (), false);
+  std::vector<bool> processed (cloud.size (), false);
 
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
@@ -125,13 +125,13 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>            &cloud,
                             PointIndices                             &indices_out,
                             float                                    delta_hue)
 {
-  if (tree->getInputCloud ()->points.size () != cloud.points.size ())
+  if (tree->getInputCloud ()->size () != cloud.size ())
   {
-    PCL_ERROR ("[pcl::seededHueSegmentation] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
+    PCL_ERROR ("[pcl::seededHueSegmentation] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->size (), cloud.size ());
     return;
   }
   // Create a bool vector of processed point indices, and initialize it to false
-  std::vector<bool> processed (cloud.points.size (), false);
+  std::vector<bool> processed (cloud.size (), false);
 
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;

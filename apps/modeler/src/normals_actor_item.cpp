@@ -78,7 +78,7 @@ pcl::modeler::NormalsActorItem::createNormalLines()
 
   if (cloud->is_dense) {
     vtkIdType nr_normals =
-        static_cast<vtkIdType>((cloud->points.size() - 1) / level_ + 1);
+        static_cast<vtkIdType>((cloud->size() - 1) / level_ + 1);
     data->SetNumberOfValues(2 * 3 * nr_normals);
     for (vtkIdType i = 0, j = 0; j < nr_normals;
          j++, i = static_cast<vtkIdType>(j * level_)) {

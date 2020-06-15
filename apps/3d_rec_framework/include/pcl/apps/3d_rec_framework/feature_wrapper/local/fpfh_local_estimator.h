@@ -50,7 +50,7 @@ public:
     normal_estimator_->estimate(in, processed, normals);
 
     this->computeKeypoints(processed, keypoints, normals);
-    std::cout << " " << normals->points.size() << " " << processed->points.size()
+    std::cout << " " << normals->size() << " " << processed->size()
               << std::endl;
 
     if (keypoints->points.empty()) {
@@ -58,7 +58,7 @@ public:
       return false;
     }
 
-    assert(processed->points.size() == normals->points.size());
+    assert(processed->size() == normals->size());
 
     // compute signatures
     using FPFHEstimator =
@@ -75,12 +75,12 @@ public:
     fpfh_estimate.setRadiusSearch(support_radius_);
     fpfh_estimate.compute(*fpfhs);
 
-    signatures->resize(fpfhs->points.size());
-    signatures->width = static_cast<int>(fpfhs->points.size());
+    signatures->resize(fpfhs->size());
+    signatures->width = static_cast<int>(fpfhs->size());
     signatures->height = 1;
 
     int size_feat = 33;
-    for (std::size_t k = 0; k < fpfhs->points.size(); k++)
+    for (std::size_t k = 0; k < fpfhs->size(); k++)
       for (int i = 0; i < size_feat; i++)
         (*signatures)[k].histogram[i] = (*fpfhs)[k].histogram[i];
 

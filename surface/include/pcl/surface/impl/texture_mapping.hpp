@@ -425,7 +425,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_
   // for each point of the cloud, raycast toward camera and check intersected voxels.
   Eigen::Vector3f direction;
   std::vector<int> indices;
-  for (std::size_t i = 0; i < input_cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < input_cloud->size (); ++i)
   {
     direction (0) = (*input_cloud)[i].x;
     direction (1) = (*input_cloud)[i].y;
@@ -651,7 +651,7 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
   std::vector<double> zDist;
   std::vector<double> ptDist;
   // for each point of the cloud, ray-trace toward the camera and check intersected voxels.
-  for (std::size_t i = 0; i < input_cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < input_cloud->size (); ++i)
   {
     direction (0) = (*input_cloud)[i].x;
     pt.x = (*input_cloud)[i].x;

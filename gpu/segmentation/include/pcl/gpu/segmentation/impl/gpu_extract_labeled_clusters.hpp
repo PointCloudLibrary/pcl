@@ -52,12 +52,12 @@ pcl::gpu::extractLabeledEuclideanClusters (const typename pcl::PointCloud<PointT
 
   // Create a bool vector of processed point indices, and initialize it to false
   // cloud is a DeviceArray<PointType>
-  std::vector<bool> processed (host_cloud_->points.size (), false);
+  std::vector<bool> processed (host_cloud_->size (), false);
 
   int max_answers;
 
-  if(max_pts_per_cluster > host_cloud_->points.size ())
-    max_answers = static_cast<int> (host_cloud_->points.size ());
+  if(max_pts_per_cluster > host_cloud_->size ())
+    max_answers = static_cast<int> (host_cloud_->size ());
   else
     max_answers = max_pts_per_cluster;
 
@@ -65,7 +65,7 @@ pcl::gpu::extractLabeledEuclideanClusters (const typename pcl::PointCloud<PointT
   pcl::PointIndices r;
 
   // Process all points in the cloud
-  for (std::size_t i = 0; i < host_cloud_->points.size (); ++i)
+  for (std::size_t i = 0; i < host_cloud_->size (); ++i)
   {
     // if we already processed this point continue with the next one
     if (processed[i])
@@ -161,7 +161,7 @@ pcl::gpu::EuclideanLabeledClusterExtraction<PointT>::extract (std::vector<PointI
     tree_->build();
   }
 /*
-  if(tree_->cloud_.size() != host_cloud.points.size ())
+  if(tree_->cloud_.size() != host_cloud.size ())
   {
     PCL_ERROR("[pcl::gpu::EuclideanClusterExtraction] size of host cloud and device cloud don't match!\n");
     return;
