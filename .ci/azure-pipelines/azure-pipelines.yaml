@@ -97,7 +97,7 @@ stages:
       - job: ubuntu_indices
         displayName: Ubuntu Indices
         # Test 64 bit & unsigned indices
-        dependsOn: ubuntu
+        dependsOn: osx
         condition: succeededOrFailed()
         pool:
           vmImage: 'Ubuntu 16.04'
