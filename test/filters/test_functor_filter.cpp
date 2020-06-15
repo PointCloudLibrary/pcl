@@ -96,65 +96,96 @@ INSTANTIATE_TEST_SUITE_P(RandomSeed,
                          FunctorFilterRandom,
                          testing::Values(123, 456, 789));
 
+namespace type_test {
 int
 free_func(const PointCloud<PointXYZ>&, const index_t& idx)
 {
   return idx % 2;
 }
 
-TEST(FunctorFilterCheck, functor_types)
-{
-  PointCloud<PointXYZ> cloud;
-  cloud.resize(2);
+static const auto lambda_func = [](const PointCloud<PointXYZ>& cloud, index_t idx) {
+  return free_func(cloud, idx);
+};
 
-  const auto lambda = [](const PointCloud<PointXYZ>& cloud, index_t idx) {
+struct StaticFunctor {
+  static int
+  functor(PointCloud<PointXYZ> cloud, index_t idx)
+  {
     return free_func(cloud, idx);
-  };
-  FunctorFilter<PointXYZ, decltype(lambda)> filter_lambda{lambda};
-  EXPECT_EQ(filter_lambda.getFunctor()(cloud, 0), 0);
-  EXPECT_EQ(filter_lambda.getFunctor()(cloud, 1), 1);
+  }
+  int
+  operator()(PointCloud<PointXYZ> cloud, index_t idx)
+  {
+    return free_func(cloud, idx);
+  }
+};
+struct StaticFunctorConst {
+  int
+  operator()(PointCloud<PointXYZ> cloud, index_t idx) const
+  {
+    return free_func(cloud, idx);
+  }
+};
 
-  std::function<bool(PointCloud<PointXYZ>, index_t)> func = lambda;
-  FunctorFilter<PointXYZ, decltype(func)> filter_func{func};
-  EXPECT_EQ(filter_func.getFunctor()(cloud, 0), 0);
-  EXPECT_EQ(filter_func.getFunctor()(cloud, 1), 1);
+using LambdaT = decltype(lambda_func);
+using StdFunctorBoolT = std::function<bool(PointCloud<PointXYZ>, index_t)>;
+using StdFunctorIntT = std::function<int(PointCloud<PointXYZ>, index_t)>;
+using FreeFuncT = decltype(free_func)*;
+using StaticFunctorT = decltype(StaticFunctor::functor)*;
+using NonConstFuntorT = StaticFunctor;
+using ConstFuntorT = StaticFunctorConst;
 
-  FunctorFilter<PointXYZ, decltype(free_func)*> filter_free_func{free_func};
-  EXPECT_EQ(filter_free_func.getFunctor()(cloud, 0), 0);
-  EXPECT_EQ(filter_free_func.getFunctor()(cloud, 1), 1);
+template <typename FunctorT>
+struct Helper {};
 
-  struct StaticFunctor {
-    static int
-    functor(PointCloud<PointXYZ> cloud, index_t idx)
-    {
-      return free_func(cloud, idx);
-    }
-    int
-    operator()(PointCloud<PointXYZ> cloud, index_t idx)
-    {
-      return free_func(cloud, idx);
-    }
-  };
-  FunctorFilter<PointXYZ, decltype(StaticFunctor::functor)*> filter_static_func{
-      StaticFunctor::functor};
-  EXPECT_EQ(filter_static_func.getFunctor()(cloud, 0), 0);
-  EXPECT_EQ(filter_static_func.getFunctor()(cloud, 1), 1);
+#define HELPER_MACRO(TYPE, VALUE)                                                      \
+  template <>                                                                          \
+  struct Helper<TYPE> {                                                                \
+    using type = TYPE;                                                                 \
+    static type value;                                                                 \
+  };                                                                                   \
+  TYPE Helper<TYPE>::value = VALUE
 
-  FunctorFilter<PointXYZ, StaticFunctor> filter_class_func{{}};
-  EXPECT_EQ(filter_class_func.getFunctor()(cloud, 0), 0);
-  EXPECT_EQ(filter_class_func.getFunctor()(cloud, 1), 1);
+HELPER_MACRO(LambdaT, lambda_func);
+HELPER_MACRO(StdFunctorBoolT, lambda_func);
+HELPER_MACRO(StdFunctorIntT, lambda_func);
+HELPER_MACRO(FreeFuncT, free_func);
+HELPER_MACRO(StaticFunctorT, StaticFunctor::functor);
+HELPER_MACRO(NonConstFuntorT, {});
+HELPER_MACRO(ConstFuntorT, {});
 
-  struct StaticFunctorConst {
-    int
-    operator()(PointCloud<PointXYZ> cloud, index_t idx) const
-    {
-      return free_func(cloud, idx);
-    }
-  };
-  FunctorFilter<PointXYZ, StaticFunctorConst> filter_class_const_func{{}};
-  EXPECT_EQ(filter_class_func.getFunctor()(cloud, 0), 0);
-  EXPECT_EQ(filter_class_func.getFunctor()(cloud, 1), 1);
+using types = ::testing::Types<LambdaT,
+                               StdFunctorBoolT,
+                               StdFunctorIntT,
+                               FreeFuncT,
+                               StaticFunctorT,
+                               NonConstFuntorT,
+                               ConstFuntorT>;
+} // namespace type_test
+
+template <typename T>
+struct FunctorFilterFunctor : public ::testing::Test {
+  void
+  SetUp() override
+  {
+    cloud.resize(2);
+  }
+  PointCloud<PointXYZ> cloud;
+};
+TYPED_TEST_SUITE_P(FunctorFilterFunctor);
+
+TYPED_TEST_P(FunctorFilterFunctor, type_check)
+{
+  using FunctorT = TypeParam;
+  const auto& functor = type_test::Helper<FunctorT>::value;
+
+  FunctorFilter<PointXYZ, FunctorT> filter_lambda{functor};
+  EXPECT_EQ(filter_lambda.getFunctor()(this->cloud, 0), 0);
+  EXPECT_EQ(filter_lambda.getFunctor()(this->cloud, 1), 1);
 }
+
+REGISTER_TYPED_TEST_SUITE_P(FunctorFilterFunctor, type_check);
+INSTANTIATE_TYPED_TEST_SUITE_P(pcl, FunctorFilterFunctor, type_test::types);
 
 int
 main(int argc, char** argv)
