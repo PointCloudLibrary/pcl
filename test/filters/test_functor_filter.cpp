@@ -39,16 +39,19 @@ TEST(FunctorFilterTrait, CheckCompatibility)
 TEST(FunctorFilterTest, implementation)
 {
   auto cloud = make_shared<PointCloud<PointXYZ>>();
-  auto out_cloud = make_shared<PointCloud<PointXYZ>>();
+  PointCloud<PointXYZ> out_cloud, negative_cloud, positive_cloud;
 
   std::uint32_t seed = 123;
   common::CloudGenerator<PointXYZ, common::UniformGenerator<float>> generator{
-      {-10., 10., seed}};
-  generator.fill(480, 640, *cloud);
+      {-10., 0., seed}};
+  generator.fill(20, 20, negative_cloud);
+  generator.setParameters({0., 10., seed});
+  generator.fill(10, 10, positive_cloud);
+  *cloud = negative_cloud + positive_cloud;
 
   const auto lambda = [](const PointCloud<PointXYZ>& cloud, index_t idx) {
     const auto& pt = cloud[idx];
-    return (pt.getArray3fMap() < 5).all() && (pt.getArray3fMap() > -5).all();
+    return (pt.getArray3fMap() < 0).all();
   };
 
   for (const auto& keep_removed : {true, false}) {
@@ -57,26 +60,22 @@ TEST(FunctorFilterTest, implementation)
     const auto removed_size = filter.getRemovedIndices()->size();
 
     filter.setNegative(false);
-    filter.filter(*out_cloud);
+    filter.filter(out_cloud);
 
-    // expect 1/8 the size due to uniform generator
-    EXPECT_GT(cloud->size(), (out_cloud->size() * 0.8) * 8);
-    EXPECT_LT(cloud->size(), (out_cloud->size() * 1.2) * 8);
+    EXPECT_EQ(out_cloud.size(), negative_cloud.size());
     if (keep_removed) {
-      EXPECT_EQ(filter.getRemovedIndices()->size() + out_cloud->size(), cloud->size());
+      EXPECT_EQ(filter.getRemovedIndices()->size() + out_cloud.size(), cloud->size());
     }
     else {
       EXPECT_EQ(filter.getRemovedIndices()->size(), removed_size);
     }
 
     filter.setNegative(true);
-    filter.filter(*out_cloud);
+    filter.filter(out_cloud);
 
-    // expect 7/8 the size due to uniform generator
-    EXPECT_GT(cloud->size(), (out_cloud->size() * 0.8) * 8 / 7);
-    EXPECT_LT(cloud->size(), (out_cloud->size() * 1.2) * 8 / 7);
+    EXPECT_EQ(out_cloud.size(), positive_cloud.size());
     if (keep_removed) {
-      EXPECT_EQ(filter.getRemovedIndices()->size() + out_cloud->size(), cloud->size());
+      EXPECT_EQ(filter.getRemovedIndices()->size() + out_cloud.size(), cloud->size());
     }
     else {
       EXPECT_EQ(filter.getRemovedIndices()->size(), removed_size);
