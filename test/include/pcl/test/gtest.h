@@ -55,6 +55,15 @@
 #endif
 
 /**
+ * \brief Macro choose between TYPED_TEST_CASE_P and TYPED_TEST_SUITE_P depending on the GTest version
+ *
+ * \ingroup test
+ */
+#if !defined(TYPED_TEST_SUITE_P)
+  #define TYPED_TEST_SUITE_P TYPED_TEST_CASE_P
+#endif
+
+/**
  * \brief Macro choose between INSTANTIATE_TEST_CASE_P and INSTANTIATE_TEST_SUITE_P depending on the GTest version
  *
  * \ingroup test
