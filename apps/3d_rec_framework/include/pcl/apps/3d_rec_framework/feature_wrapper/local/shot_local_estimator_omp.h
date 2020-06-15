@@ -85,8 +85,7 @@ public:
     }
 
     this->computeKeypoints(processed, keypoints, normals);
-    std::cout << " " << normals->size() << " " << processed->size()
-              << std::endl;
+    std::cout << " " << normals->size() << " " << processed->size() << std::endl;
 
     if (keypoints->points.empty()) {
       PCL_WARN("SHOTLocalEstimationOMP :: No keypoints were found\n");

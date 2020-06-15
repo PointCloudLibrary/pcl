@@ -51,8 +51,7 @@ public:
 
     // compute keypoints
     computeKeypoints(processed, keypoints, normals);
-    std::cout << " " << normals->size() << " " << processed->size()
-              << std::endl;
+    std::cout << " " << normals->size() << " " << processed->size() << std::endl;
 
     if (keypoints->size() == 0) {
       PCL_WARN("FPFHLocalEstimation :: No keypoints were found\n");
