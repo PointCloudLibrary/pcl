@@ -133,7 +133,7 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size
          "[%f, %f]\n", min.x, max.x, min.y, max.y, min.z, max.z);
 #endif
 
-  std::size_t num_points = size ();
+  std::size_t num_points = points.size ();
 
   // Fill the leaves with the points
   for (std::size_t i = 0 ; i < num_points ; ++i )
