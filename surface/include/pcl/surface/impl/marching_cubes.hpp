@@ -263,7 +263,7 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
 
   points.swap (intermediate_cloud);
 
-  polygons.resize (size () / 3);
+  polygons.resize (points.size () / 3);
   for (std::size_t i = 0; i < polygons.size (); ++i)
   {
     pcl::Vertices v;
