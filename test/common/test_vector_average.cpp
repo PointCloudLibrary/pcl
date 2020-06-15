@@ -64,7 +64,7 @@ TEST (PCL, VectorAverage_mean)
   correct_mean /= weigth_sum;
   
   pcl::VectorAverage<float, 3> va;
-  for (std::size_t i = 0; i < size(); ++i)
+  for (std::size_t i = 0; i < points.size(); ++i)
     va.add(points[i], weights[i]);
   Eigen::Vector3f mean = va.getMean();
   //std::cout << "Correct: "<<correct_mean <<"\n"<< "Result: "<<mean<<"\n";
