@@ -154,7 +154,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
 #pragma omp parallel for \
   default(none) \
   shared(output) \
-  private(nn_indices, nn_dists) \
+  firstprivate(nn_indices, nn_dists) \
   num_threads(threads_)
     // Iterating over the entire index vector
     for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
@@ -194,7 +194,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
 #pragma omp parallel for \
   default(none) \
   shared(output) \
-  private(nn_indices, nn_dists) \
+  firstprivate(nn_indices, nn_dists) \
   num_threads(threads_)
     // Iterating over the entire index vector
     for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)

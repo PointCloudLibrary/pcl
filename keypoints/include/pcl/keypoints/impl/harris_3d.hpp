@@ -325,7 +325,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseHarris (PointCloudO
 #pragma omp parallel for \
   default(none) \
   shared(output) \
-  private(covar) \
+  firstprivate(covar) \
   num_threads(threads_)
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
@@ -366,7 +366,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseNoble (PointCloudOu
 #pragma omp parallel \
   for default(none) \
   shared(output) \
-  private(covar) \
+  firstprivate(covar) \
   num_threads(threads_)
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
@@ -406,7 +406,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseLowe (PointCloudOut
 #pragma omp parallel for \
   default(none) \
   shared(output) \
-  private(covar) \
+  firstprivate(covar) \
   num_threads(threads_)
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
@@ -465,7 +465,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
 #pragma omp parallel for \
   default(none) \
   shared(output) \
-  private(covar, covariance_matrix) \
+  firstprivate(covar, covariance_matrix) \
   num_threads(threads_)
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
@@ -513,7 +513,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
 #pragma omp parallel for \
   default(none) \
   shared(corners) \
-  private(nnT, NNT, NNTInv, NNTp, diff) \
+  firstprivate(nnT, NNT, NNTInv, NNTp, diff) \
   num_threads(threads_)
   for (int cIdx = 0; cIdx < static_cast<int> (corners.size ()); ++cIdx)
   {

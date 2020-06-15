@@ -115,7 +115,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudI
 #pragma omp parallel for \
   default(none) \
   shared(angle_threshold, boundary_estimator, border_radius, edge_points, input) \
-  private(u, v) \
+  firstprivate(u, v) \
   num_threads(threads_)
   for (int index = 0; index < int (input.points.size ()); index++)
   {
