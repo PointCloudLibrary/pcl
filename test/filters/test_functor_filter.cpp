@@ -36,18 +36,27 @@ TEST(FunctorFilterTrait, CheckCompatibility)
   EXPECT_TRUE((is_functor_for_filter_v<PointXYZ, decltype(const_ref_all)>));
 }
 
-TEST(FunctorFilterTest, implementation)
-{
-  auto cloud = make_shared<PointCloud<PointXYZ>>();
-  PointCloud<PointXYZ> out_cloud, negative_cloud, positive_cloud;
+struct FunctorFilterRandom : public testing::TestWithParam<std::uint32_t> {
+  void
+  SetUp() override
+  {
+    cloud = make_shared<PointCloud<PointXYZ>>();
 
-  std::uint32_t seed = 123;
-  common::CloudGenerator<PointXYZ, common::UniformGenerator<float>> generator{
-      {-10., 0., seed}};
-  generator.fill(20, 20, negative_cloud);
-  generator.setParameters({0., 10., seed});
-  generator.fill(10, 10, positive_cloud);
-  *cloud = negative_cloud + positive_cloud;
+    std::uint32_t seed = GetParam();
+    common::CloudGenerator<PointXYZ, common::UniformGenerator<float>> generator{
+        {-10., 0., seed}};
+    generator.fill(20, 20, negative_cloud);
+    generator.setParameters({0., 10., seed});
+    generator.fill(10, 10, positive_cloud);
+    *cloud = negative_cloud + positive_cloud;
+  }
+
+  shared_ptr<PointCloud<PointXYZ>> cloud;
+  PointCloud<PointXYZ> out_cloud, negative_cloud, positive_cloud;
+};
+
+TEST_P(FunctorFilterRandom, functioning)
+{
 
   const auto lambda = [](const PointCloud<PointXYZ>& cloud, index_t idx) {
     const auto& pt = cloud[idx];
@@ -83,13 +92,17 @@ TEST(FunctorFilterTest, implementation)
   }
 }
 
+INSTANTIATE_TEST_SUITE_P(RandomSeed,
+                         FunctorFilterRandom,
+                         testing::Values(123, 456, 789));
+
 int
 free_func(const PointCloud<PointXYZ>&, const index_t& idx)
 {
   return idx % 2;
 }
 
-TEST(FunctorFilterTest, functor_types)
+TEST(FunctorFilterCheck, functor_types)
 {
   PointCloud<PointXYZ> cloud;
   cloud.resize(2);
