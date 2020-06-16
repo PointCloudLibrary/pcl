@@ -62,15 +62,15 @@ namespace pcl
 
             __device__ __forceinline__ void operator()() const
             {
-                int total = size * indices.size;
+                int total = points.size * indices.size;
                 int idx = blockIdx.x * CTA_SIZE + threadIdx.x;
 
                 if (idx > total)
                     return;
 
-                int index_i = idx / size; // indices
+                int index_i = idx / points.size; // indices
 
-                int j = idx % size; // points            
+                int j = idx % points.size; // points            
                 int i = indices.data[index_i];
 
                 PPFSignature out;
@@ -122,15 +122,15 @@ namespace pcl
 
             __device__ __forceinline__ void operator()() const
             {
-                int total = size * indices.size;
+                int total = points.size * indices.size;
                 int idx = blockIdx.x * CTA_SIZE + threadIdx.x;
 
                 if (idx > total)
                     return;
 
-                int index_i = idx / size; // indices
+                int index_i = idx / points.size; // indices
 
-                int j = idx % size; // points            
+                int j = idx % points.size; // points            
                 int i = indices.data[index_i];
 
                 PPFRGBSignature out;
