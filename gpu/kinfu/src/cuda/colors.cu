@@ -243,7 +243,7 @@ namespace pcl
     {
       int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
-      if (idx < size)
+      if (idx < points.size)
       {
         int3 v;
         float3 p = *(const float3*)(points.data + idx);
@@ -263,7 +263,7 @@ pcl::device::exctractColors (const PtrStep<uchar4>& color_volume, const float3& 
 {
   const int block = 256;
   float3 cell_size = make_float3 (volume_size.x / VOLUME_X, volume_size.y / VOLUME_Y, volume_size.z / VOLUME_Z);
-  extractColorsKernel<<<divUp (size, block), block>>>(cell_size, color_volume, points, colors);
+  extractColorsKernel<<<divUp (points.size, block), block>>>(cell_size, color_volume, points, colors);
   cudaSafeCall ( cudaGetLastError () );
   cudaSafeCall (cudaDeviceSynchronize ());
 };
