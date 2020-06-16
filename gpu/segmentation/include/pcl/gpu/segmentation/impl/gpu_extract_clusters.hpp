@@ -36,13 +36,12 @@
  * @author: Koen Buys
  */
 
-#ifndef PCL_GPU_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
-#define PCL_GPU_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
-
+#pragma once
+#include <pcl/common/copy_point.h>
 #include <pcl/gpu/segmentation/gpu_extract_clusters.h>
 
-void
-pcl::gpu::extractEuclideanClusters (const pcl::PointCloud<pcl::PointXYZ>::Ptr  &host_cloud_,
+template <typename PointT> void
+pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr  &host_cloud_,
                                     const pcl::gpu::Octree::Ptr                &tree,
                                     float                                      tolerance,
                                     std::vector<PointIndices>                  &clusters,
@@ -80,9 +79,14 @@ pcl::gpu::extractEuclideanClusters (const pcl::PointCloud<pcl::PointXYZ>::Ptr  &
     // Create the query queue on the device, point based not indices
     pcl::gpu::Octree::Queries queries_device;
     // Create the query queue on the host
-	pcl::PointCloud<pcl::PointXYZ>::VectorType queries_host;
+    pcl::PointCloud<pcl::PointXYZ>::VectorType queries_host;
+
+    // Buffer in a new PointXYZ type
+    PointXYZ p;
+    pcl::copyPoint((*host_cloud_)[i], p);
+
     // Push the starting point in the vector
-    queries_host.push_back ((*host_cloud_)[i]);
+    queries_host.push_back (p);
     // Clear vector
     r.indices.clear();
     // Push the starting point in
@@ -123,7 +127,12 @@ pcl::gpu::extractEuclideanClusters (const pcl::PointCloud<pcl::PointXYZ>::Ptr  &
           if(processed[data[i]])
             continue;
           processed[data[i]] = true;
-          queries_host.push_back ((*host_cloud_)[data[i]]);
+          
+          // Buffer in a new PointXYZ type
+          PointXYZ p;
+          pcl::copyPoint((*host_cloud_)[data[i]], p);
+
+          queries_host.push_back (p);
           found_points++;
           r.indices.push_back(data[i]);
         }
@@ -153,7 +162,11 @@ pcl::gpu::extractEuclideanClusters (const pcl::PointCloud<pcl::PointXYZ>::Ptr  &
             if(processed[data[qp_r + qp * max_answers]])
               continue;
             processed[data[qp_r + qp * max_answers]] = true;
-            queries_host.push_back ((*host_cloud_)[data[qp_r + qp * max_answers]]);
+            // Buffer in a new PointXYZ type
+            PointXYZ p;
+            pcl::copyPoint((*host_cloud_)[data[qp_r + qp * max_answers]], p);
+
+            queries_host.push_back (p);
             found_points++;
             r.indices.push_back(data[qp_r + qp * max_answers]);
           }
@@ -176,8 +189,8 @@ pcl::gpu::extractEuclideanClusters (const pcl::PointCloud<pcl::PointXYZ>::Ptr  &
   }
 }
 
-void 
-pcl::gpu::EuclideanClusterExtraction::extract (std::vector<pcl::PointIndices> &clusters)
+template <typename PointT> void
+pcl::gpu::EuclideanClusterExtraction<PointT>::extract (std::vector<pcl::PointIndices> &clusters)
 {
 /*
   // Initialize the GPU search tree
@@ -200,10 +213,11 @@ pcl::gpu::EuclideanClusterExtraction::extract (std::vector<pcl::PointIndices> &c
   }
 */
   // Extract the actual clusters
-  extractEuclideanClusters (host_cloud_, tree_, cluster_tolerance_, clusters, min_pts_per_cluster_, max_pts_per_cluster_);
+  extractEuclideanClusters<PointT> (host_cloud_, tree_, cluster_tolerance_, clusters, min_pts_per_cluster_, max_pts_per_cluster_);
   std::cout << "INFO: end of extractEuclideanClusters " << std::endl;
   // Sort the clusters based on their size (largest one first)
   //std::sort (clusters.rbegin (), clusters.rend (), comparePointClusters);
 }
 
-#endif //PCL_GPU_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
+#define PCL_INSTANTIATE_extractEuclideanClusters(T) template void PCL_EXPORTS pcl::gpu::extractEuclideanClusters<T> (const typename pcl::PointCloud<T>::Ptr  &, const pcl::gpu::Octree::Ptr &,float, std::vector<PointIndices> &, unsigned int, unsigned int);
+#define PCL_INSTANTIATE_EuclideanClusterExtraction(T) template class PCL_EXPORTS pcl::gpu::EuclideanClusterExtraction<T>;
