@@ -53,10 +53,14 @@ TEST (TypeTraits, HasCustomAllocatorTrait)
     // operators added by Eigen for C++14 or lower standards
     /** \todo Remove for C++17 (or future standards)
      */
+    #ifdef __clang__
     #pragma clang diagnostic push
     #pragma clang diagnostic ignored "-Wunused-local-typedef"
+    #endif
     PCL_MAKE_ALIGNED_OPERATOR_NEW
+    #ifdef __clang__
     #pragma clang diagnostic pop
+    #endif
   };
 
   struct Bar
