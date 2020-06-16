@@ -301,7 +301,6 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::optimizeModelCoefficients (
   optimized_coefficients[4] = line_dir[1];
   optimized_coefficients[5] = line_dir[2];
 }
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
@@ -317,8 +316,8 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
   projected_points.header = input_->header;
   projected_points.is_dense = input_->is_dense;
 
-  Eigen::Vector4f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2], 0.0f);
-  Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0.0f);
+  Eigen::Vector3f line_pt  (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
+  Eigen::Vector3f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5]);
   float ptdotdir = line_pt.dot (line_dir);
   float dirdotdir = 1.0f / line_dir.dot (line_dir);
 
@@ -335,26 +334,6 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
     for (std::size_t i = 0; i < projected_points.points.size (); ++i)
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
-
-    // Iterate through the 3d points and calculate the distances from them to the cylinder
-    for (const auto &inlier : inliers)
-    {
-      Eigen::Vector4f p (input_->points[inlier].x,
-                         input_->points[inlier].y,
-                         input_->points[inlier].z,
-                         1);
-
-      float k = (p.dot (line_dir) - ptdotdir) * dirdotdir;
-
-      pcl::Vector4fMap pp = projected_points.points[inlier].getVector4fMap ();
-      pp.matrix () = line_pt + k * line_dir;
-
-      Eigen::Vector4f dir = p - pp;
-      dir.normalize ();
-
-      // Calculate the projection of the point onto the cylinder
-      pp += dir * model_coefficients[6];
-    }
   }
   else
   {
@@ -368,23 +347,24 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
     for (std::size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension
       pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+  }
+  // Iterate through the 3d points and calculate the distances from them to the cylinder
+  for (std::size_t i = 0; i < inliers.size (); ++i)
+  {
+    pcl::Vector3fMap pp = projected_points.points[i].getVector3fMap();
+    Eigen::Vector3f p(input_->points[inliers[i]].x,
+                      input_->points[inliers[i]].y,
+                      input_->points[inliers[i]].z);
 
-    // Iterate through the 3d points and calculate the distances from them to the cylinder
-    for (std::size_t i = 0; i < inliers.size (); ++i)
-    {
-      pcl::Vector4fMap pp = projected_points.points[i].getVector4fMap ();
-      pcl::Vector4fMapConst p = input_->points[inliers[i]].getVector4fMap ();
+    float k = (p.dot (line_dir) - ptdotdir) * dirdotdir;
+    // Calculate the projection of the point on the line
+    pp.matrix () = line_pt + k * line_dir;
 
-      float k = (p.dot (line_dir) - ptdotdir) * dirdotdir;
-      // Calculate the projection of the point on the line
-      pp.matrix () = line_pt + k * line_dir;
+    Eigen::Vector3f dir = p - pp;
+    dir.normalize ();
 
-      Eigen::Vector4f dir = p - pp;
-      dir.normalize ();
-
-      // Calculate the projection of the point onto the cylinder
-      pp += dir * model_coefficients[6];
-    }
+    // Calculate the projection of the point onto the cylinder
+    pp += dir * model_coefficients[6];
   }
 }
 
@@ -472,4 +452,3 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::isModelValid (const Eigen::V
 #define PCL_INSTANTIATE_SampleConsensusModelCylinder(PointT, PointNT)	template class PCL_EXPORTS pcl::SampleConsensusModelCylinder<PointT, PointNT>;
 
 #endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CYLINDER_H_
-
