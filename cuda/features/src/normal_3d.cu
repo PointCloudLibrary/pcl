@@ -70,7 +70,7 @@ namespace pcl
       shared_ptr<typename Storage<float4>::type> computeFastPointNormals (const typename PointCloudAOS<Storage>::ConstPtr &input)
     {
       shared_ptr<typename Storage<float4>::type> normals (new typename Storage<float4>::type);
-      normals->resize (input->size());
+      normals->resize (input->points.size());
       computeFastPointNormals<typename Storage<float4>::type::iterator, Storage> (normals->begin(), input);
       return normals;
     }

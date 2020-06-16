@@ -132,9 +132,9 @@ namespace pcl
                               radius_min_ (-DBL_MAX), radius_max_ (DBL_MAX) 
       
         {
-          if (indices_->size () > input_->size ())
+          if (indices_->size () > input_->points.size ())
           {
-            ROS_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %lu while the input PointCloud has size %lu!", (unsigned long) indices_->size (), (unsigned long) input_->size ());
+            ROS_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %lu while the input PointCloud has size %lu!", (unsigned long) indices_->size (), (unsigned long) input_->points.size ());
             indices_->clear ();
           }
         };*/

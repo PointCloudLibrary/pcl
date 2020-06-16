@@ -91,7 +91,7 @@ namespace pcl
       if (!indices_stencil_)
         indices_stencil_.reset (new Indices);
 
-      indices_stencil_->resize (input_->size());
+      indices_stencil_->resize (input_->points.size());
       thrust::sequence (indices_stencil_->begin (), indices_stencil_->end ());
 
       thrust::replace_if (indices_stencil_->begin (), indices_stencil_->end (),
@@ -102,12 +102,12 @@ namespace pcl
       if (!indices_)
         indices_.reset (new Indices);
 
-      indices_->resize (input_->size());
+      indices_->resize (input_->points.size());
       typename Indices::iterator it;
       it = thrust::copy_if (indices_stencil_->begin (), indices_stencil_->end (), indices_->begin (), isInlier ());
       indices_->erase (it, indices_->end ());
 
-      std::cerr << "setInputCloud :" << indices_->size () << " valid points ( " << indices_->size () / (float) input_->size () << " %)" << std::endl;
+      std::cerr << "setInputCloud :" << indices_->size () << " valid points ( " << indices_->size () / (float) input_->points.size () << " %)" << std::endl;
 
     }
 
