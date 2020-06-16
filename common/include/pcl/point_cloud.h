@@ -220,7 +220,7 @@ namespace pcl
         * \param[in] height_ the cloud height
         * \param[in] value_ default value
         */
-      PointCloud (std::uint32_t width_, std::uint32_t height_, const PointT& value_ = PointT ())
+      PointCloud (index_t width_, index_t height_, const PointT& value_ = PointT ())
         : points (width_ * height_, value_)
         , width (width_)
         , height (height_)
@@ -260,7 +260,7 @@ namespace pcl
         // This causes a drastic performance hit. Prefer not to use reserve with libstdc++ (default on clang)
         cloud1.points.insert (cloud1.points.end (), cloud2.points.begin (), cloud2.points.end ());
 
-        cloud1.width    = static_cast<std::uint32_t>(cloud1.points.size ());
+        cloud1.width    = static_cast<index_t>(cloud1.points.size ());
         cloud1.height   = 1;
         cloud1.is_dense = cloud1.is_dense && cloud2.is_dense;
         return true;
@@ -411,9 +411,9 @@ namespace pcl
       std::vector<PointT, Eigen::aligned_allocator<PointT> > points;
 
       /** \brief The point cloud width (if organized as an image-structure). */
-      std::uint32_t width = 0;
+      index_t width = 0;
       /** \brief The point cloud height (if organized as an image-structure). */
-      std::uint32_t height = 0;
+      index_t height = 0;
 
       /** \brief True if no points are invalid (e.g., have NaN or Inf values in any of their floating point fields). */
       bool is_dense = true;
@@ -468,7 +468,7 @@ namespace pcl
         points.resize (n);
         if (width * height != n)
         {
-          width = static_cast<std::uint32_t> (n);
+          width = static_cast<index_t> (n);
           height = 1;
         }
       }
@@ -491,7 +491,7 @@ namespace pcl
       push_back (const PointT& pt)
       {
         points.push_back (pt);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = static_cast<index_t> (points.size ());
         height = 1;
       }
 
@@ -504,7 +504,7 @@ namespace pcl
       emplace_back (Args&& ...args)
       {
         points.emplace_back (std::forward<Args> (args)...);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = static_cast<index_t> (points.size ());
         height = 1;
         return points.back();
       }
@@ -519,7 +519,7 @@ namespace pcl
       insert (iterator position, const PointT& pt)
       {
         iterator it = points.insert (position, pt);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = static_cast<index_t> (points.size ());
         height = 1;
         return (it);
       }
@@ -534,7 +534,7 @@ namespace pcl
       insert (iterator position, std::size_t n, const PointT& pt)
       {
         points.insert (position, n, pt);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = static_cast<index_t> (points.size ());
         height = 1;
       }
 
@@ -548,7 +548,7 @@ namespace pcl
       insert (iterator position, InputIterator first, InputIterator last)
       {
         points.insert (position, first, last);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = static_cast<index_t> (points.size ());
         height = 1;
       }
 
@@ -562,7 +562,7 @@ namespace pcl
       emplace (iterator position, Args&& ...args)
       {
         iterator it = points.emplace (position, std::forward<Args> (args)...);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = static_cast<index_t> (points.size ());
         height = 1;
         return (it);
       }
@@ -576,7 +576,7 @@ namespace pcl
       erase (iterator position)
       {
         iterator it = points.erase (position);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = static_cast<index_t> (points.size ());
         height = 1;
         return (it);
       }
@@ -591,7 +591,7 @@ namespace pcl
       erase (iterator first, iterator last)
       {
         iterator it = points.erase (first, last);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = static_cast<index_t> (points.size ());
         height = 1;
         return (it);
       }
