@@ -40,6 +40,12 @@
 
 namespace pcl
 {
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Map of label and associated clusters
+  */
+  using labeled_cluster_map_t = std::map<std::uint32_t, std::vector<pcl::Indices>>;
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the Euclidean distance between points
     * \param[in] cloud the point cloud message
@@ -58,6 +64,25 @@ namespace pcl
       float tolerance, std::vector<std::vector<PointIndices> > &labeled_clusters,
       unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = std::numeric_limits<unsigned int>::max (),
       unsigned int max_label = std::numeric_limits<unsigned int>::max ());
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Decompose a region of space into clusters based on the Euclidean distance between points
+    * \param[in] cloud the point cloud message
+    * \param[in] tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching
+    * \note the tree has to be created as a spatial locator on \a cloud
+    * \param[in] tolerance the spatial cluster tolerance as a measure in L2 Euclidean space
+    * \param[out] labeled_clusters a map of the resultant clusters, grouped by label
+    * \param[in] min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
+    * \param[in] max_pts_per_cluster maximum number of points that a cluster may contain (default: max uint)
+    * \param[in] max_label the maximum number of labels to extract (default: max uint)
+    * \ingroup segmentation
+    */
+  template <typename PointT> void 
+  extractLabeledEuclideanClusters (
+      const PointCloud<PointT> &cloud, const typename search::Search<PointT>::Ptr &tree,
+      float tolerance, labeled_cluster_map_t &labeled_clusters,
+      unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = std::numeric_limits<unsigned int>::max (),
+      unsigned int max_labels = std::numeric_limits<unsigned int>::max ());
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,6 +172,12 @@ namespace pcl
         */
       void 
       extract (std::vector<std::vector<PointIndices> > &labeled_clusters);
+
+      /** \brief Cluster extraction in a PointCloud given by <setInputCloud (), setIndices ()>
+        * \param[out] labeled_clusters the resultant point clusters keyed by label
+        */
+      void 
+      extract ( labeled_cluster_map_t &labeled_clusters);
 
     protected:
       // Members derived from the base class
