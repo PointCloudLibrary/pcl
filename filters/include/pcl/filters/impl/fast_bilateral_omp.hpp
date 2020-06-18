@@ -127,9 +127,9 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
       std::max ((static_cast<float> (small_y) - static_cast<float> (padding_xy) - 0.5f) * sigma_s_ + 1, 0.f));
     std::size_t end_y = static_cast<std::size_t>( 
       std::max ((static_cast<float> (small_y) - static_cast<float> (padding_xy) + 0.5f) * sigma_s_ + 1, 0.f));
-    for (std::size_t x = start_x; x < end_x && x < input_->width; ++x)
+    for (std::size_t x = start_x; x < end_x && x < static_cast<uindex_t>(input_->width); ++x)
     {
-      for (std::size_t y = start_y; y < end_y && y < input_->height; ++y)
+      for (std::size_t y = start_y; y < end_y && y < static_cast<uindex_t>(input_->height); ++y)
       {
         const float z = output (x,y).z - base_min;
         const std::size_t small_z = static_cast<std::size_t> (static_cast<float> (z) / sigma_r_ + 0.5f) + padding_z;

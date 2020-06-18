@@ -211,14 +211,14 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     //crop images to remove as many NaNs as possible and reduce the memory footprint
     {
-      std::size_t min_col, min_row;
-      std::size_t max_col, max_row;
-      min_col = min_row = std::numeric_limits<std::size_t>::max ();
+      index_t min_col, min_row;
+      index_t max_col, max_row;
+      min_col = min_row = std::numeric_limits<index_t>::max ();
       max_col = max_row = 0;
 
-      for (std::size_t col = 0; col < loaded_cloud->width; col++)
+      for (index_t col = 0; col < loaded_cloud->width; col++)
       {
-        for (std::size_t row = 0; row < loaded_cloud->height; row++)
+        for (index_t row = 0; row < loaded_cloud->height; row++)
         {
           if (pcl::isFinite (loaded_cloud->at (col, row)))
           {
@@ -296,16 +296,16 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     //Using cloud labels estimate a 2D window from where to extract positive samples
     //Rest can be used to extract negative samples
-    std::size_t min_col, min_row;
-    std::size_t max_col, max_row;
-    min_col = min_row = std::numeric_limits<std::size_t>::max ();
+    index_t min_col, min_row;
+    index_t max_col, max_row;
+    min_col = min_row = std::numeric_limits<index_t>::max ();
     max_col = max_row = 0;
 
     //std::cout << cloud_labels->width << " " << cloud_labels->height << std::endl;
 
-    for (std::size_t col = 0; col < cloud_labels->width; col++)
+    for (index_t col = 0; col < cloud_labels->width; col++)
     {
-      for (std::size_t row = 0; row < cloud_labels->height; row++)
+      for (index_t row = 0; row < cloud_labels->height; row++)
       {
         if (cloud_labels->at (col, row).label == 1)
         {

@@ -106,8 +106,8 @@ RangeImageBorderExtractor::extractLocalSurfaceStructure ()
   //std::cerr << __PRETTY_FUNCTION__<<" called (this="<<(void*)this<<").\n";
   //MEASURE_FUNCTION_TIME;
 
-  const auto width  = range_image_->width;
-  const auto height = range_image_->height;
+  const uindex_t width  = static_cast<uindex_t>(range_image_->width);
+  const uindex_t height = static_cast<uindex_t>(range_image_->height);
   range_image_size_during_extraction_ = width*height;
   const auto array_size = range_image_size_during_extraction_;
   surface_structure_ = new LocalSurface*[array_size];

@@ -94,10 +94,10 @@ FastBilateralFilter<PointT>::applyFilter (PointCloud &output)
 
 
   Array3D data (small_width, small_height, small_depth);
-  for (std::size_t x = 0; x < input_->width; ++x)
+  for (index_t x = 0; x < input_->width; ++x)
   {
     const std::size_t small_x = static_cast<std::size_t> (static_cast<float> (x) / sigma_s_ + 0.5f) + padding_xy;
-    for (std::size_t y = 0; y < input_->height; ++y)
+    for (index_t y = 0; y < input_->height; ++y)
     {
       const float z = output (x,y).z - base_min;
 
@@ -141,8 +141,8 @@ FastBilateralFilter<PointT>::applyFilter (PointCloud &output)
     for (std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >::iterator d = data.begin (); d != data.end (); ++d)
       *d /= ((*d)[0] != 0) ? (*d)[1] : 1;
 
-    for (std::size_t x = 0; x < input_->width; x++)
-      for (std::size_t y = 0; y < input_->height; y++)
+    for (index_t x = 0; x < input_->width; x++)
+      for (index_t y = 0; y < input_->height; y++)
       {
         const float z = output (x,y).z - base_min;
         const Eigen::Vector2f D = data.trilinear_interpolation (static_cast<float> (x) / sigma_s_ + padding_xy,
@@ -153,8 +153,8 @@ FastBilateralFilter<PointT>::applyFilter (PointCloud &output)
   }
   else
   {
-    for (std::size_t x = 0; x < input_->width; ++x)
-      for (std::size_t y = 0; y < input_->height; ++y)
+    for (index_t x = 0; x < input_->width; ++x)
+      for (index_t y = 0; y < input_->height; ++y)
       {
         const float z = output (x,y).z - base_min;
         const Eigen::Vector2f D = data.trilinear_interpolation (static_cast<float> (x) / sigma_s_ + padding_xy,

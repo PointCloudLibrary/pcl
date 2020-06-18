@@ -47,9 +47,9 @@ void checkSimpleLine8 (unsigned x_start, unsigned y_start, unsigned x_end, unsig
 {
   PointXYZ point;
   point.x = point.y = point.z = 0.0f;
-  for (unsigned yIdx = 0; yIdx < cloud.height; ++yIdx)
+  for (index_t yIdx = 0; yIdx < cloud.height; ++yIdx)
   {
-    for (unsigned xIdx = 0; xIdx < cloud.width; ++xIdx)
+    for (index_t xIdx = 0; xIdx < cloud.width; ++xIdx)
     {
       PointT& point = cloud.points [yIdx * cloud.width + xIdx];
       point.x = float(xIdx);
@@ -110,9 +110,9 @@ void checkSimpleLine8 (unsigned x_start, unsigned y_start, unsigned x_end, unsig
     point.z = 0.0;
   }
   // now all z-values should be 0 again!
-  for (unsigned yIdx = 0; yIdx < cloud.height; ++yIdx)
+  for (index_t yIdx = 0; yIdx < cloud.height; ++yIdx)
   {
-    for (unsigned xIdx = 0; xIdx < cloud.width; ++xIdx)
+    for (index_t xIdx = 0; xIdx < cloud.width; ++xIdx)
     {
       //std::cout << "testing  point: " << xIdx << " , " << yIdx << std::endl;
       PointT& point = cloud.points [yIdx * cloud.width + xIdx];
@@ -128,9 +128,9 @@ void checkGeneralLine (unsigned x_start, unsigned y_start, unsigned x_end, unsig
 {
   PointXYZ point;
   point.x = point.y = point.z = 0.0f;
-  for (unsigned yIdx = 0; yIdx < cloud.height; ++yIdx)
+  for (index_t yIdx = 0; yIdx < cloud.height; ++yIdx)
   {
-    for (unsigned xIdx = 0; xIdx < cloud.width; ++xIdx)
+    for (index_t xIdx = 0; xIdx < cloud.width; ++xIdx)
     {
       PointT& point = cloud.points [yIdx * cloud.width + xIdx];
       point.x = float(xIdx);

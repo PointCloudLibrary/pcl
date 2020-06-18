@@ -184,7 +184,7 @@ TEST (PCL, PointCloud)
   EXPECT_EQ (cloud.isOrganized (), false);
 
   cloud.width = 10;
-  for (std::uint32_t i = 0; i < cloud.width*cloud.height; ++i)
+  for (index_t i = 0; i < cloud.width*cloud.height; ++i)
   {
     float j = static_cast<float> (i);
     cloud.points.emplace_back(3.0f * j + 0.0f, 3.0f * j + 1.0f, 3.0f * j + 2.0f);
@@ -226,8 +226,8 @@ TEST (PCL, PointCloud)
     EXPECT_EQ (mat_yz.rows (), cloud.width);
     EXPECT_EQ (mat_yz (0, 0), 1);
     EXPECT_EQ (mat_yz (cloud.width - 1, 1), 3 * cloud.width - 1);
-    std::uint32_t j = 1;
-    for (std::uint32_t i = 1; i < cloud.width*cloud.height; i+=4, j+=3)
+    index_t j = 1;
+    for (index_t i = 1; i < cloud.width*cloud.height; i+=4, j+=3)
     {
       Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, i);
       EXPECT_EQ (mat_yz.cols (), 2);
@@ -242,8 +242,8 @@ TEST (PCL, PointCloud)
     EXPECT_EQ (mat_yz.rows (), 2);
     EXPECT_EQ (mat_yz (0, 0), 1);
     EXPECT_EQ (mat_yz (1, cloud.width - 1), 3 * cloud.width - 1);
-    std::uint32_t j = 1;
-    for (std::uint32_t i = 1; i < cloud.width*cloud.height; i+=4, j+=3)
+    index_t j = 1;
+    for (index_t i = 1; i < cloud.width*cloud.height; i+=4, j+=3)
     {
       Eigen::MatrixXf mat_yz = cloud.getMatrixXfMap (2, 4, i);
       EXPECT_EQ (mat_yz.cols (), cloud.width);

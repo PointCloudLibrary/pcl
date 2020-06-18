@@ -92,9 +92,9 @@ LZFDepth16ImageReader::read (
   int depth_idx = 0, point_idx = 0;
   double constant_x = 1.0 / parameters_.focal_length_x,
          constant_y = 1.0 / parameters_.focal_length_y;
-  for (std::uint32_t v = 0; v < cloud.height; ++v)
+  for (index_t v = 0; v < cloud.height; ++v)
   {
-    for (std::uint32_t u = 0; u < cloud.width; ++u, ++point_idx, depth_idx += 2)
+    for (index_t u = 0; u < cloud.width; ++u, ++point_idx, depth_idx += 2)
     {
       PointT &pt = cloud.points[point_idx];
       unsigned short val;

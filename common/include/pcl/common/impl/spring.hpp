@@ -109,8 +109,8 @@ duplicateColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::common::duplicateColumns] error: amount must be ]0.."
                          << (input.width/2) << "] !");
-
-  if (!input.isOrganized () || amount > (input.width/2))
+                         
+  if (!input.isOrganized () || amount > (static_cast<uindex_t>(input.width/2)))
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::common::duplicateColumns] error: "
                          << "columns expansion requires organised point cloud");
@@ -138,7 +138,7 @@ template <typename PointT> void
 duplicateRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
                const std::size_t& amount)
 {
-  if (amount <= 0 || amount > (input.height/2))
+  if (amount <= 0 || amount > (static_cast<uindex_t>(input.height)/2))
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::common::duplicateRows] error: amount must be ]0.."
                          << (input.height/2) << "] !");
@@ -168,7 +168,7 @@ mirrorColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
                          "[pcl::common::mirrorColumns] error: amount must be ]0.."
                          << (input.width/2) << "] !");
 
-  if (!input.isOrganized () || amount > (input.width/2))
+  if (!input.isOrganized () || amount > (static_cast<uindex_t>(input.width)/2))
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::common::mirrorColumns] error: "
                          << "columns expansion requires organised point cloud");
@@ -195,7 +195,7 @@ template <typename PointT> void
 mirrorRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
             const std::size_t& amount)
 {
-  if (amount <= 0 || amount > (input.height/2))
+  if (amount <= 0 || amount > (static_cast<uindex_t>(input.height)/2))
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::common::mirrorRows] error: amount must be ]0.."
                          << (input.height/2) << "] !");
@@ -222,7 +222,7 @@ template <typename PointT> void
 deleteRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
             const std::size_t& amount)
 {
-  if (amount <= 0 || amount > (input.height/2))
+  if (amount <= 0 || amount > (static_cast<uindex_t>(input.height)/2))
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::common::deleteRows] error: amount must be ]0.."
                          << (input.height/2) << "] !");
@@ -239,7 +239,7 @@ template <typename PointT> void
 deleteCols (const PointCloud<PointT>& input, PointCloud<PointT>& output,
             const std::size_t& amount)
 {
-  if (amount <= 0 || amount > (input.width/2))
+  if (amount <= 0 || amount > (static_cast<uindex_t>(input.width)/2))
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::common::deleteCols] error: amount must be in ]0.."
                          << (input.width/2) << "] !");

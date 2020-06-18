@@ -1524,7 +1524,7 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
     Eigen::Vector3f d = Eigen::Vector3f (pt.x, pt.y, pt.z) - o;
     float min_dist = d.norm ();
 
-    for (unsigned int i = 0; i < cloudIn->width * cloudIn->height; i++)
+    for (index_t i = 0; i < cloudIn->width * cloudIn->height; i++)
     {
       pt = cloudIn->points[i];
       d = Eigen::Vector3f (pt.x, pt.y, pt.z) - o;

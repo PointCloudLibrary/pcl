@@ -439,8 +439,8 @@ pcl::GrayStereoMatching::compute(pcl::PointCloud<pcl::RGB>& ref,
   }
 
   float divider = 1.0f / 3.0f;
-  for (unsigned int j = 0; j < ref.height; j++) {
-    for (unsigned int i = 0; i < ref.width; i++) {
+  for (index_t j = 0; j < ref.height; j++) {
+    for (index_t i = 0; i < ref.width; i++) {
       ref_img_[j * ref.width + i] = static_cast<unsigned char>(
           static_cast<float>(ref[j * ref.width + i].r + ref[j * ref.width + i].g +
                              ref[j * ref.width + i].b) *
