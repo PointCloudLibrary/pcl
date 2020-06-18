@@ -126,6 +126,7 @@ namespace pcl
    * Unsigned index that mirrors the type of the index_t
    */
   using uindex_t = detail::int_type_t<detail::index_type_size, false>;
+  static_assert(!std::is_signed<uindex_t>::value, "`uindex_t` must be unsigned");
 
   /**
    * \brief Type used for indices in PCL
