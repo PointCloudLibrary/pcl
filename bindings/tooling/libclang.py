@@ -1,7 +1,7 @@
 import os
 import argparse
-import typing
 import sys
+import json
 
 import clang.cindex as clang
 
@@ -31,40 +31,77 @@ def print_node(cursor, lines, more_than_one_file, depth):
 
 
 def node_in_this_file(node, file_name):
-    if node.location.file and node.location.file.name == file_name:
-        return True
-    return False
+    return node.location.file and node.location.file.name == file_name
 
 
-def walk(cursor, filter, lines, more_than_one_file, this_filename, depth):
+def walk_and_print(cursor, filter, lines, more_than_one_file, this_filename, depth):
     if cursor.spelling:
         print_node(cursor, lines, more_than_one_file, depth)
 
     for child in cursor.get_children():
         if node_in_this_file(child, this_filename):
-            walk(child, filter, lines, more_than_one_file, this_filename, depth + 1)
+            walk_and_print(
+                child, filter, lines, more_than_one_file, this_filename, depth + 1
+            )
 
 
+def dump_json(filepath, parsed_list):
+    with open(filepath, "w") as f:
+        json.dump(parsed_list, f, indent=2)
 
-#     if args.variable:
-#         allowed = [clang.CursorKind.FUNCTION_DECL]
-#         if args.member:
-#             allowed.append(clang.CursorKind.CXX_METHOD)
-#         filter.by_kind(allowed)
 
-#     if args.struct:
-#         filter.by_kind(clang.CursorKind.STRUCT_DECL)
+def generate_parsed_info(
+    cursor, filter, lines, more_than_one_file, this_filename, depth, parsed_list
+):
+    if cursor.spelling:
+        parsed_list.append(
+            {
+                "depth": depth,
+                "line": cursor.location.line,
+                "column": cursor.location.column,
+                "kind": cursor.kind.name,
+                "name": cursor.spelling,
+                "members": [],
+            }
+        )
 
-#     if args.parameter:
-#         filter.by_kind(clang.CursorKind.PARM_DECL)
-
-#     return filter
+    for child in cursor.get_children():
+        if node_in_this_file(child, this_filename):
+            child_list = []
+            generate_parsed_info(
+                child,
+                filter,
+                lines,
+                more_than_one_file,
+                this_filename,
+                depth + 1,
+                child_list,
+            )
+            if child_list and parsed_list:
+                if len(parsed_list[0]["members"]):
+                    parsed_list[0]["members"].append(child_list[0])
+                else:
+                    parsed_list[0]["members"] = child_list
 
 
 def parse_arguments(args):
     parser = argparse.ArgumentParser(description="C++-savy grep")
     parser.add_argument("files", nargs="+", help="The source files to search")
     return parser.parse_args(args)
+
+
+def get_output_path(filepath):
+    filepath = filepath.split("pcl/", 1)[-1]
+    filepath = filepath.split("/")
+    extra = ["pcl", "include"]
+    dir = "/".join(f for f in filepath[:-1] if f not in extra)
+    filename = filepath[-1].split(".")[0]
+
+    # ensure directory exists
+    if not os.path.exists(dir):
+        os.makedirs(os.cwd() + dir)
+
+    return f"{dir}/{filename}.json"
 
 
 def main():
@@ -84,6 +121,24 @@ def main():
         # compile_commands = list(compile_commands[0].arguments)[1:-2]
         # tu = index.parse(source, args=compile_commands)
         tu = index.parse(source)
+
+        # walk_and_print(
+        #     tu.cursor, filter, lines, more_than_one_file, tu.spelling, depth=0
+        # )
+
+        parsed_list = []
+        generate_parsed_info(
+            tu.cursor,
+            filter,
+            lines,
+            more_than_one_file,
+            tu.spelling,
+            depth=0,
+            parsed_list=parsed_list,
+        )
+
+        output_filepath = get_output_path(os.path.realpath(source))
+        dump_json(output_filepath, parsed_list)
 
 
 if __name__ == "__main__":
