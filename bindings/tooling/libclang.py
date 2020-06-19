@@ -90,16 +90,18 @@ def parse_arguments(args):
     return parser.parse_args(args)
 
 
-def get_output_path(filepath):
-    filepath = filepath.split("pcl/", 1)[-1]
-    filepath = filepath.split("/")
+def get_output_path(source, output_dir):
+    x_list = source.split("pcl/", 1)[-1]
+    x_list = x_list.split("/")
     extra = ["pcl", "include"]
-    dir = "/".join(f for f in filepath[:-1] if f not in extra)
-    filename = filepath[-1].split(".")[0]
 
-    # ensure directory exists
+    filename = x_list[-1].split(".")[0]
+    relative_dir = "/".join(x for x in x_list[:-1] if x not in extra)
+    dir = os.path.join(output_dir, relative_dir)
+
+    # ensure the new directory exists
     if not os.path.exists(dir):
-        os.makedirs(os.cwd() + dir)
+        os.makedirs(dir)
 
     return f"{dir}/{filename}.json"
 
@@ -137,7 +139,9 @@ def main():
             parsed_list=parsed_list,
         )
 
-        output_filepath = get_output_path(os.path.realpath(source))
+        output_filepath = get_output_path(
+            os.path.realpath(source), output_dir=f"json/{os.path.dirname(__file__)}"
+        )
         dump_json(output_filepath, parsed_list)
 
 
