@@ -38,9 +38,6 @@ def node_in_this_file(node, file_name):
 
 def walk(cursor, filter, lines, more_than_one_file, this_filename, depth):
     if cursor.spelling:
-        # if cursor.kind is clang.CursorKind.CONSTRUCTOR:
-        # if cursor.is_default_constructor():
-        # if cursor.kind is clang.CursorKind.STRUCT_DECL:
         print_node(cursor, lines, more_than_one_file, depth)
 
     for child in cursor.get_children():
@@ -48,14 +45,6 @@ def walk(cursor, filter, lines, more_than_one_file, this_filename, depth):
             walk(child, filter, lines, more_than_one_file, this_filename, depth + 1)
 
 
-# def make_filter(args):
-#     filter = []
-
-#     if args.function:
-#         allowed = [clang.CursorKind.FUNCTION_DECL]
-#         if args.member:
-#             allowed.append(clang.CursorKind.CXX_METHOD)
-#         filter.by_kind(allowed)
 
 #     if args.variable:
 #         allowed = [clang.CursorKind.FUNCTION_DECL]
@@ -75,43 +64,11 @@ def walk(cursor, filter, lines, more_than_one_file, this_filename, depth):
 def parse_arguments(args):
     parser = argparse.ArgumentParser(description="C++-savy grep")
     parser.add_argument("files", nargs="+", help="The source files to search")
-    # parser.add_argument(
-    #     "-f",
-    #     "--function",
-    #     action="store_true",
-    #     help="Whether to include functions in the search",
-    # )
-    # parser.add_argument(
-    #     "-v",
-    #     "--variable",
-    #     action="store_true",
-    #     help="Whether to include variables in the search",
-    # )
-    # parser.add_argument(
-    #     "-p",
-    #     "--parameter",
-    #     action="store_true",
-    #     help="Whether to include parameters in the search",
-    # )
-    # parser.add_argument(
-    #     "-s",
-    #     "--struct",
-    #     action="store_true",
-    #     help="Whether to include parameters in the search",
-    # )
-    # parser.add_argument(
-    #     "-m",
-    #     "--member",
-    #     action="store_true",
-    #     help="Whether to include members in the search",
-    # )
-
     return parser.parse_args(args)
 
 
 def main():
     args = parse_arguments(sys.argv[1:])
-    # filter = make_filter(args)
     index = clang.Index.create()
     more_than_one_file = len(args.files) > 1
 
