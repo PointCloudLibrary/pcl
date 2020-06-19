@@ -1,12 +1,12 @@
 [
     {
-        "directory": "",
-        "command": "/usr/bin/clang++ -I/usr/include/pcl-1.8/ -std=c++14",
-        "file": "common/include/pcl/implpoint_types.hpp"
+        "directory": "/home/divyanshu/Projects/active/pcl/bindings/tooling/",
+        "command": "/usr/bin/clang++ -I/usr/include/pcl-1.8/ -std=c++14 /home/divyanshu/Projects/active/pcl/common/include/pcl/impl/point_types.hpp",
+        "file": "/home/divyanshu/Projects/active/pcl/common/include/pcl/impl/point_types.hpp"
     },
     {
-        "directory": "",
-        "command": "/usr/bin/clang++ -I/usr/include/pcl-1.8/ -std=c++14",
-        "file": "parse2.cpp"
+        "directory": "/home/divyanshu/Projects/active/pcl/bindings/tooling/",
+        "command": "/usr/bin/clang++ -I/usr/include/pcl-1.8/ -std=c++14 /home/divyanshu/Projects/active/pcl/bindings/tooling/parse2.cpp",
+        "file": "/home/divyanshu/Projects/active/pcl/bindings/tooling/parse2.cpp"
     }
 ]
