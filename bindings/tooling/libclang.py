@@ -115,18 +115,18 @@ def main():
     index = clang.Index.create()
     more_than_one_file = len(args.files) > 1
 
-    # `""`: `compile_commands.json` located at this level
-    compile_db_path = os.path.dirname("./compile_commands.json")
-    compdb = clang.CompilationDatabase.fromDirectory(compile_db_path)
+    # compile_db_path = os.path.dirname("./compile_commands.json")
+    # compdb = clang.CompilationDatabase.fromDirectory(compile_db_path)
 
     for source in args.files:
         with open(source) as input_file:
             lines = input_file.readlines()
 
-        compile_commands = compdb.getCompileCommands(source)
-        # extracting argument list from the command's generator object
-        compile_commands = list(compile_commands[0].arguments)[1:-2]
-        tu = index.parse(source, args=compile_commands)
+        # compile_commands = compdb.getCompileCommands(source)
+        # # extracting argument list from the command's generator object
+        # compile_commands = list(compile_commands[0].arguments)[1:-2]
+        # tu = index.parse(source, args=compile_commands)
+        tu = index.parse(source)
 
 
 if __name__ == "__main__":
