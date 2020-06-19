@@ -36,7 +36,8 @@
  *
  */
 
-#include <pcl/test/gtest.h>
+#include <pcl/common/centroid.h>
+
 #include <pcl/common/common.h>
 #include <pcl/common/distances.h>
 #include <pcl/common/intersections.h>
@@ -45,9 +46,9 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/pcl_tests.h>
+#include <pcl/test/gtest.h>
+#include <pcl/test/pcl_tests.h>
 
-#include <pcl/common/centroid.h>
 
 using namespace pcl;
 using pcl::test::EXPECT_EQ_VECTORS;

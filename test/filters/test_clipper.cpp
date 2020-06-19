@@ -41,7 +41,7 @@
 #include <pcl/test/gtest.h>
 #include <pcl/memory.h>  // for pcl::make_shared
 #include <pcl/pcl_base.h>  // for pcl::Indices
-#include <pcl/pcl_tests.h>
+#include <pcl/test/pcl_tests.h>
 #include <pcl/point_types.h>
 #include <pcl/filters/box_clipper3D.h>
 #include <pcl/filters/crop_box.h>

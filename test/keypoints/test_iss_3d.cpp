@@ -35,7 +35,7 @@
 /** \author Gioia Ballin */
 
 #include <pcl/test/gtest.h>
-#include <pcl/pcl_tests.h>
+#include <pcl/test/pcl_tests.h>
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/iss_3d.h>
