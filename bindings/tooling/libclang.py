@@ -1,3 +1,4 @@
+import os
 import argparse
 import typing
 import sys
@@ -115,15 +116,17 @@ def main():
     more_than_one_file = len(args.files) > 1
 
     # `""`: `compile_commands.json` located at this level
-    compdb = clang.CompilationDatabase.fromDirectory("")
+    compile_db_path = os.path.dirname("./compile_commands.json")
+    compdb = clang.CompilationDatabase.fromDirectory(compile_db_path)
 
     for source in args.files:
         with open(source) as input_file:
             lines = input_file.readlines()
 
-        compile_args = compdb.getCompileCommands(source)
-        tu = index.parse(source, compile_args)
-        walk(tu.cursor, filter, lines, more_than_one_file, tu.spelling, depth=0)
+        compile_commands = compdb.getCompileCommands(source)
+        # extracting argument list from the command's generator object
+        compile_commands = list(compile_commands[0].arguments)[1:-2]
+        tu = index.parse(source, args=compile_commands)
 
 
 if __name__ == "__main__":
