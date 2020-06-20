@@ -122,7 +122,7 @@ def main():
         # # extracting argument list from the command's generator object
         # compile_commands = list(compile_commands[0].arguments)[1:-2]
         # tu = index.parse(source, args=compile_commands)
-        tu = index.parse(source)
+        tu = index.parse(source, args=["-std=c++14"])
 
         # walk_and_print(
         #     tu.cursor, filter, lines, more_than_one_file, tu.spelling, depth=0
