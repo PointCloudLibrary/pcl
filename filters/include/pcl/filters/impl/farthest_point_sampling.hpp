@@ -46,7 +46,7 @@
 #include <random>
 
 template<typename PointT> void
-pcl::FarthestPointSampling<PointT>::applyFilter (std::vector<int> &indices)
+pcl::FarthestPointSampling<PointT>::applyFilter (Indices &indices)
 {
   const std::size_t size = input_->size();
   //if requested number of point is equal to the point cloud size, copy original cloud
@@ -61,26 +61,25 @@ pcl::FarthestPointSampling<PointT>::applyFilter (std::vector<int> &indices)
   {
     PCL_THROW_EXCEPTION (BadArgumentException,
                         "Requested number of points is greater than point cloud size!");
-    return;
   }
 
   std::vector<float> distances_to_selected_points (size, std::numeric_limits<float>::max ());
   
   //set random seed
   std::mt19937 random_gen(seed_);
-  std::uniform_int_distribution<std::size_t> dis(0, size -1);
+  std::uniform_int_distribution<index_t> dis(0, size -1);
 
   //pick the first point at random
-  int max_index = dis(random_gen);
+  index_t max_index = dis(random_gen);
   distances_to_selected_points[max_index] = -1.0;
   indices.push_back(max_index);
   
   for (int j = 1; j < sample_size_; j++)
   {
-    int next_max_index = 0;
+    index_t next_max_index = 0;
     
     //recompute distances
-    for (int i = 0; i < size; i++)
+    for (index_t i = 0; i < size; i++)
     {
       if (distances_to_selected_points[i] != -1.0)
         distances_to_selected_points[i] = std::min(distances_to_selected_points[i], geometry::distance((*input_)[i], (*input_)[max_index]));
