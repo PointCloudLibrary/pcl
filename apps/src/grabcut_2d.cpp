@@ -531,11 +531,11 @@ main(int argc, char** argv)
       new pcl::PointCloud<pcl::PointXYZRGB>(scene->width, scene->height));
 
   if (scene->isOrganized()) {
-    std::uint32_t height_1 = scene->height - 1;
-    for (std::size_t i = 0; i < scene->height; ++i) {
-      for (std::size_t j = 0; j < scene->width; ++j) {
+    pcl::index_t height_1 = scene->height - 1;
+    for (pcl::index_t i = 0; i < scene->height; ++i) {
+      for (pcl::index_t j = 0; j < scene->width; ++j) {
         const pcl::PointXYZRGB& p = (*scene)(j, i);
-        std::size_t reverse_index = (height_1 - i) * scene->width + j;
+        pcl::index_t reverse_index = (height_1 - i) * scene->width + j;
         display_image->points[reverse_index].r = static_cast<float>(p.r) / 255.0;
         display_image->points[reverse_index].g = static_cast<float>(p.g) / 255.0;
         display_image->points[reverse_index].b = static_cast<float>(p.b) / 255.0;

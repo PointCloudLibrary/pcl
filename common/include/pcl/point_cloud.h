@@ -174,6 +174,85 @@ namespace pcl
     *   - \b sensor_origin_ - specifies the sensor acquisition pose (origin/translation). \a Optional.
     *   - \b sensor_orientation_ - specifies the sensor acquisition pose (rotation). \a Optional.
     *
+    * \todo: remove casting of the return value of size() to index_t
+    * 
+    * \note API of the following functions (where index_t variables are compared with unsigned variables) must be modified;
+    * 
+    * common/include/pcl/common/impl/io.hpp -  
+    * copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT> &cloud_out,
+    *                 int top, int bottom, int left, int right, pcl::InterpolationType border_type, const PointT& value)
+    * 
+    * common/include/pcl/common/impl/spring.hpp -
+    * duplicateColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
+    *                   const std::size_t& amount)
+    * duplicateRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
+    *                const std::size_t& amount)
+    * mirrorColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
+    *           const std::size_t& amount)
+    * mirrorRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
+    *        const std::size_t& amount)
+    * mirrorRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
+    *        const std::size_t& amount)
+    * deleteCols (const PointCloud<PointT>& input, PointCloud<PointT>& output,
+    *        const std::size_t& amount)
+    * 
+    * common/include/pcl/impl/pcl_base.hpp -
+    * pcl::PCLBase<PointT>::setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols)
+    * 
+    * common/src/gaussian.cpp - 
+    * pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
+    *                               const Eigen::VectorXf& kernel,
+    *                               pcl::PointCloud<float>& output)
+    * pcl::GaussianKernel::convolveCols (const pcl::PointCloud<float>& input,
+    *                               const Eigen::VectorXf& kernel,
+    *                               pcl::PointCloud<float>& output)
+    * 
+    * features/include/pcl/features/impl/integral_image_normal.hpp - 
+    * pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initSimple3DGradientMethod ()
+    * pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCovarianceMatrixMethod ()
+    * pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverage3DGradientMethod ()
+    * pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
+    *     const int pos_x, const int pos_y, const unsigned point_index, PointOutT &normal)
+    * 
+    * features/include/pcl/features/impl/moment_of_inertia_estimation.hpp
+    * pcl::MomentOfInertiaEstimation<PointT>::setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols)
+    * 
+    * features/src/range_image_border_extractor.cpp - 
+    * RangeImageBorderExtractor::extractLocalSurfaceStructure ()
+    * 
+    * filters/impl/fast_bilateral_omp.hpp - 
+    * pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
+    * 
+    * io/include/pcl/io/impl/pcd_io.hpp - 
+    * pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<PointT> &cloud, 
+    *                        const int precision)
+    * pcl::PCDWriter::writeASCII (const std::string &file_name, 
+    *                        const pcl::PointCloud<PointT> &cloud, 
+    *                        const std::vector<int> &indices,
+    *                        const int precision)
+    * 
+    * io/include/pcl/io/impl/point_cloud_image_extractors.hpp - 
+    * pcl::io::PointCloudImageExtractor<PointT>::extract (const PointCloud& cloud, pcl::PCLImage& img)
+    * 
+    * visualization/include/pcl/visualization/impl/image_viewer.hpp - 
+    * pcl::visualization::ImageViewer::addRGBImage (const pcl::PointCloud<T> &cloud,
+    *                                          const std::string &layer_id,
+    *                                          double opacity)
+    * 
+    * visualization/src/image_viewer.cpp - 
+    * pcl::visualization::ImageViewer::addMonoImage (
+    *     const pcl::PointCloud<pcl::Intensity> &cloud,
+    *     const std::string &layer_id, double opacity)
+    * pcl::visualization::ImageViewer::addMonoImage (
+    *     const pcl::PointCloud<pcl::Intensity8u> &cloud,
+    *     const std::string &layer_id, double opacity)
+    *     
+    * suggested process for modification;
+    *  1. Add API for index_t
+    *  2. Deprecate + SFINAE out existing function
+    *  3. Later remove deprecation
+    * 
+    * 
     * \author Patrick Mihelich, Radu B. Rusu
     */
   template <typename PointT>
@@ -227,7 +306,6 @@ namespace pcl
       {}
 
       //TODO: check if copy/move contructors/assignment operators are needed
-      //TODO: remove casting of the return value of size() to index_t
 
       /** \brief Add a point cloud to the current cloud.
         * \param[in] rhs the cloud to add to the current cloud

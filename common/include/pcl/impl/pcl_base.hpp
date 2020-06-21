@@ -126,9 +126,9 @@ pcl::PCLBase<PointT>::setIndices (std::size_t row_start, std::size_t col_start, 
 
   indices_.reset (new Indices);
   indices_->reserve (nb_cols * nb_rows);
-  for(index_t i = row_start; i < row_end; i++)
-    for(index_t j = col_start; j < col_end; j++)
-      indices_->push_back ((i * input_->width) + j);
+  for(std::size_t i = row_start; i < row_end; i++)
+    for(std::size_t j = col_start; j < col_end; j++)
+      indices_->push_back ((i * static_cast<uindex_t>(input_->width)) + j);
   fake_indices_ = false;
   use_indices_  = true;
 }

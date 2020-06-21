@@ -77,9 +77,9 @@ pcl::visualization::RangeImageVisualizer::visualizeBorders (
     const pcl::PointCloud<pcl::BorderDescription>& border_descriptions)
 {  
   showRangeImage(range_image, min_value, max_value, grayscale);
-  for (std::size_t y=0; y<range_image.height; ++y)
+  for (index_t y=0; y<range_image.height; ++y)
   {
-    for (std::size_t x=0; x<range_image.width; ++x)
+    for (index_t x=0; x<range_image.width; ++x)
     {
       const pcl::BorderDescription& border_description = border_descriptions.points[y*range_image.width + x];
       const pcl::BorderTraits& border_traits = border_description.traits;

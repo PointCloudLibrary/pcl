@@ -378,9 +378,9 @@ TEST (PCL, IINormalEstimationCovariance)
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
-  for (std::size_t v = 0; v < static_cast<unsigned int>(cloud.height); ++v)
+  for (index_t v = 0; v < cloud.height; ++v)
   {
-    for (std::size_t u = 0; u < static_cast<unsigned int>(cloud.width); ++u)
+    for (index_t u = 0; u < cloud.width; ++u)
     {
       if (!std::isfinite(output (u, v).normal_x) &&
           !std::isfinite(output (u, v).normal_y) &&

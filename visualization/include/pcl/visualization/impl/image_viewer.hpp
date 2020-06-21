@@ -71,7 +71,7 @@ pcl::visualization::ImageViewer::addRGBImage (const pcl::PointCloud<T> &cloud,
                                               const std::string &layer_id,
                                               double opacity)
 {
-  if (data_size_ < cloud.width * cloud.height)
+  if (data_size_ < static_cast<uindex_t>(cloud.width * cloud.height))
   {
     data_size_ = cloud.width * cloud.height * 3;
     data_.reset (new unsigned char[data_size_]);

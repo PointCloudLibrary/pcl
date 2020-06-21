@@ -50,7 +50,7 @@
 template <typename PointT> bool
 pcl::io::PointCloudImageExtractor<PointT>::extract (const PointCloud& cloud, pcl::PCLImage& img) const
 {
-  if (!cloud.isOrganized () || cloud.points.size () != static_cast<uindex_t>(cloud.width) * static_cast<uindex_t>(cloud.height))
+  if (!cloud.isOrganized () || cloud.points.size () != static_cast<uindex_t>(cloud.width * cloud.height))
     return (false);
 
   bool result = this->extractImpl (cloud, img);

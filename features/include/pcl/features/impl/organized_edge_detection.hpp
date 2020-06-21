@@ -247,7 +247,7 @@ pcl::OrganizedEdgeFromRGB<PointT, PointLT>::extractEdges (pcl::PointCloud<PointL
     pcl::PointCloud<PointXYZI>::Ptr gray (new pcl::PointCloud<PointXYZI>);
     gray->width = input_->width;
     gray->height = input_->height;
-    gray->resize (static_cast<uindex_t>(input_->height)*static_cast<uindex_t>(input_->width));
+    gray->resize (input_->height*input_->width);
 
     for (std::size_t i = 0; i < input_->size (); ++i)
       (*gray)[i].intensity = float (((*input_)[i].r + (*input_)[i].g + (*input_)[i].b) / 3);
