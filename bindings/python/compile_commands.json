@@ -1,17 +1,17 @@
 [
     {
         "directory": "/home/divyanshu/Projects/active/pcl/bindings/python/",
-        "command": "/usr/bin/clang++ -I/usr/include/pcl-1.8/ -std=c++14 /home/divyanshu/Projects/active/pcl/common/include/pcl/impl/point_types.hpp",
+        "command": "/usr/bin/clang++ -std=c++14 /home/divyanshu/Projects/active/pcl/common/include/pcl/impl/point_types.hpp",
         "file": "/home/divyanshu/Projects/active/pcl/common/include/pcl/impl/point_types.hpp"
     },
     {
         "directory": "/home/divyanshu/Projects/active/pcl/bindings/python/",
-        "command": "/usr/bin/clang++ -I/usr/include/pcl-1.8/ -std=c++14 /home/divyanshu/Projects/active/pcl/bindings/tooling/parse2.cpp",
+        "command": "/usr/bin/clang++ -std=c++14 /home/divyanshu/Projects/active/pcl/bindings/tooling/parse2.cpp",
         "file": "/home/divyanshu/Projects/active/pcl/bindings/tooling/parse2.cpp"
     },
     {
         "directory": "/home/divyanshu/Projects/active/pcl/bindings/python/",
-        "command": "/usr/bin/clang++ -I/usr/include/pcl-1.8/ -std=c++14 /home/divyanshu/Projects/active/pcl/common/include/pcl/point_types.h",
+        "command": "/usr/bin/clang++ -std=c++14 /home/divyanshu/Projects/active/pcl/common/include/pcl/point_types.h",
         "file": "/home/divyanshu/Projects/active/pcl/common/include/pcl/point_types.h"
     },
 ]
