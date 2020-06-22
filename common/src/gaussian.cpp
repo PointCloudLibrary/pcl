@@ -157,19 +157,19 @@ pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
   }
   
   std::size_t i;
-  for (std::size_t j = 0; j < unaliased_input->height; j++)
+  for (std::size_t j = 0; j < static_cast<uindex_t>(unaliased_input->height); j++)
   {
     for (i = 0 ; i < radius ; i++)
       output (i,j) = 0;
 
-    for ( ; i < unaliased_input->width - radius ; i++)
+    for ( ; i < static_cast<uindex_t>(unaliased_input->width) - radius ; i++)
     {
       output (i,j) = 0;
       for (int k = static_cast<int>(kernel_width), l = static_cast<int>(i - radius); k >= 0 ; k--, l++)
         output (i,j) += (*unaliased_input) (l,j) * kernel[k];
     }
 
-    for ( ; i < unaliased_input->width ; i++)
+    for ( ; i < static_cast<uindex_t>(unaliased_input->width) ; i++)
       output (i,j) = 0;
   }
 }
@@ -201,12 +201,12 @@ pcl::GaussianKernel::convolveCols (const pcl::PointCloud<float>& input,
   }
 
   std::size_t j;
-  for (std::size_t i = 0; i < unaliased_input->width; i++)
+  for (std::size_t i = 0; i < static_cast<uindex_t>(unaliased_input->width); i++)
   {
     for (j = 0 ; j < radius ; j++)
       output (i,j) = 0;
 
-    for ( ; j < unaliased_input->height - radius ; j++)  {
+    for ( ; j < static_cast<uindex_t>(unaliased_input->height) - radius ; j++)  {
       output (i,j) = 0;
       for (int k = static_cast<int>(kernel_width), l = static_cast<int>(j - radius) ; k >= 0 ; k--, l++)
       {
@@ -214,7 +214,7 @@ pcl::GaussianKernel::convolveCols (const pcl::PointCloud<float>& input,
       }
     }
 
-    for ( ; j < unaliased_input->height ; j++)
+    for ( ; j < static_cast<uindex_t>(unaliased_input->height) ; j++)
       output (i,j) = 0;
   }
 }

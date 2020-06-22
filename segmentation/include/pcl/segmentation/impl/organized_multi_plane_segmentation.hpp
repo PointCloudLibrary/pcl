@@ -343,12 +343,12 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
   refinement_compare_->setLabelToModel (label_to_model);
 
   //Do a first pass over the image, top to bottom, left to right
-  unsigned int current_row = 0;
-  unsigned int next_row = labels->width;
-  for (std::size_t rowIdx = 0; rowIdx < labels->height - 1; ++rowIdx, current_row = next_row, next_row += labels->width)
+  index_t current_row = 0;
+  index_t next_row = labels->width;
+  for (index_t rowIdx = 0; rowIdx < labels->height - 1; ++rowIdx, current_row = next_row, next_row += labels->width)
   {
 
-    for (unsigned colIdx = 0; colIdx < labels->width - 1; ++colIdx)
+    for (index_t colIdx = 0; colIdx < labels->width - 1; ++colIdx)
     {
       int current_label = (*labels)[current_row+colIdx].label;
       int right_label = (*labels)[current_row+colIdx+1].label;
@@ -382,10 +382,10 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
 
   //Do a second pass over the image
   current_row = labels->width * (labels->height - 1);
-  unsigned int prev_row = current_row - labels->width;
-  for (std::size_t rowIdx = 0; rowIdx < labels->height - 1; ++rowIdx, current_row = prev_row, prev_row -= labels->width)
+  index_t prev_row = current_row - labels->width;
+  for (index_t rowIdx = 0; rowIdx < labels->height - 1; ++rowIdx, current_row = prev_row, prev_row -= labels->width)
   {
-    for (int colIdx = labels->width - 1; colIdx >= 0; --colIdx)
+    for (index_t colIdx = labels->width - 1; colIdx >= 0; --colIdx)
     {
       int current_label = (*labels)[current_row+colIdx].label;
       int left_label    = (*labels)[current_row+colIdx-1].label;

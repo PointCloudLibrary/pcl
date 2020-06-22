@@ -358,13 +358,13 @@ GrabCut<PointT>::computeNLinksNonOrganized ()
 template <typename PointT> void
 GrabCut<PointT>::computeNLinksOrganized ()
 {
-	for( unsigned int y = 0; y < image_->height; ++y )
+	for(index_t y = 0; y < image_->height; ++y )
 	{
-    for( unsigned int x = 0; x < image_->width; ++x )
+    for(index_t x = 0; x < image_->width; ++x )
     {
       // We saved the color and euclidean distance previously at the computeBeta stage for
       // optimization purpose but here we compute the real weight
-      std::size_t point_index = y * input_->width + x;
+      index_t point_index = y * input_->width + x;
       NLinks &links = n_links_[point_index];
 
       if( x > 0 && y < image_->height-1 )
@@ -427,11 +427,11 @@ GrabCut<PointT>::computeBetaOrganized ()
   float result = 0;
   std::size_t edges = 0;
 
-  for (unsigned int y = 0; y < input_->height; ++y)
+  for (index_t y = 0; y < input_->height; ++y)
   {
-    for (unsigned int x = 0; x < input_->width; ++x)
+    for (index_t x = 0; x < input_->width; ++x)
     {
-      std::size_t point_index = y * input_->width + x;
+      index_t point_index = y * input_->width + x;
       NLinks &links = n_links_[point_index];
       links.nb_links = 4;
       links.weights.resize (links.nb_links, 0);
@@ -440,7 +440,7 @@ GrabCut<PointT>::computeBetaOrganized ()
 
       if (x > 0 && y < input_->height-1)
       {
-        std::size_t upleft = (y+1)  * input_->width + x - 1;
+        index_t upleft = (y+1)  * input_->width + x - 1;
         links.indices[0] = upleft;
         links.dists[0] = std::sqrt (2.f);
         float color_dist =  squaredEuclideanDistance (image_->points[point_index],
@@ -452,7 +452,7 @@ GrabCut<PointT>::computeBetaOrganized ()
 
       if (y < input_->height-1)
       {
-        std::size_t up = (y+1) * input_->width + x;
+        index_t up = (y+1) * input_->width + x;
         links.indices[1] = up;
         links.dists[1] = 1;
         float color_dist =  squaredEuclideanDistance (image_->points[point_index],
@@ -464,7 +464,7 @@ GrabCut<PointT>::computeBetaOrganized ()
 
       if (x < input_->width-1 && y < input_->height-1)
       {
-        std::size_t upright = (y+1) * input_->width + x + 1;
+        index_t upright = (y+1) * input_->width + x + 1;
         links.indices[2] = upright;
         links.dists[2] = std::sqrt (2.f);
         float color_dist =  squaredEuclideanDistance (image_->points[point_index],
@@ -476,7 +476,7 @@ GrabCut<PointT>::computeBetaOrganized ()
 
       if (x < input_->width-1)
       {
-        std::size_t right = y * input_->width + x + 1;
+        index_t right = y * input_->width + x + 1;
         links.indices[3] = right;
         links.dists[3] = 1;
         float color_dist =  squaredEuclideanDistance (image_->points[point_index],

@@ -9,6 +9,7 @@
 #include <thread>
 #include <vector>
 
+using namespace pcl;
 using namespace std;
 using namespace std::chrono_literals;
 
@@ -409,9 +410,9 @@ TEST (PCL, ImageGrabberSetIntrinsicsTIFF)
   {
     EXPECT_EQ (pcds_[i]->width, tiff_clouds[i]->width);
     EXPECT_EQ (pcds_[i]->height, tiff_clouds[i]->height);
-    for (std::uint32_t x = 0; x < pcds_[i]->width; x++)
+    for (index_t x = 0; x < pcds_[i]->width; x++)
     {
-      for (std::uint32_t y = 0; y < pcds_[i]->height; y++)
+      for (index_t y = 0; y < pcds_[i]->height; y++)
       {
         const PointT &pcd_pt = pcds_[i]->operator()(x,y);
         const PointT &tiff_pt = tiff_clouds[i]->operator()(x,y);
@@ -481,9 +482,9 @@ TEST (PCL, ImageGrabberSetIntrinsicsPCLZF)
   {
     EXPECT_EQ (pcds_[i]->width, pclzf_clouds[i]->width);
     EXPECT_EQ (pcds_[i]->height, pclzf_clouds[i]->height);
-    for (std::uint32_t x = 0; x < pcds_[i]->width; x++)
+    for (index_t x = 0; x < pcds_[i]->width; x++)
     {
-      for (std::uint32_t y = 0; y < pcds_[i]->height; y++)
+      for (index_t y = 0; y < pcds_[i]->height; y++)
       {
         const PointT &pcd_pt = pcds_[i]->operator()(x,y);
         const PointT &pclzf_pt = pclzf_clouds[i]->operator()(x,y);

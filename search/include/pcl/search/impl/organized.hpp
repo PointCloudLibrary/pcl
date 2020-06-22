@@ -344,15 +344,15 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
     return;
   }
   
-  const unsigned ySkip = (std::max) (input_->height >> pyramid_level_, unsigned (1));
-  const unsigned xSkip = (std::max) (input_->width >> pyramid_level_, unsigned (1));
-
+  const index_t ySkip = std::max(input_->height >> pyramid_level_, static_cast<index_t>(1));
+  const index_t xSkip = std::max(input_->width >> pyramid_level_, static_cast<index_t>(1));
+  
   Indices indices;
   indices.reserve (input_->size () >> (pyramid_level_ << 1));
   
-  for (unsigned yIdx = 0, idx = 0; yIdx < input_->height; yIdx += ySkip, idx += input_->width * ySkip)
+  for (index_t yIdx = 0, idx = 0; yIdx < input_->height; yIdx += ySkip, idx += input_->width * ySkip)
   {
-    for (unsigned xIdx = 0, idx2 = idx; xIdx < input_->width; xIdx += xSkip, idx2 += xSkip)
+    for (index_t xIdx = 0, idx2 = idx; xIdx < input_->width; xIdx += xSkip, idx2 += xSkip)
     {
       if (!mask_ [idx2])
         continue;

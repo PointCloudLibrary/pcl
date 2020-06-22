@@ -167,11 +167,11 @@ trainTemplate (const PointCloudXYZRGBA::ConstPtr & input, const std::vector<bool
   modalities[0] = &color_grad_mod;
   modalities[1] = &surface_norm_mod;
 
-  std::size_t min_x (input->width), min_y (input->height), max_x (0), max_y (0);
+  index_t min_x (input->width), min_y (input->height), max_x (0), max_y (0);
   pcl::MaskMap mask_map (input->width, input->height);
-  for (std::size_t j = 0; j < input->height; ++j)
+  for (index_t j = 0; j < input->height; ++j)
   {
-    for (std::size_t i = 0; i < input->width; ++i)
+    for (index_t i = 0; i < input->width; ++i)
     {
       mask_map (i,j) = foreground_mask[j*input->width+i];
       if (foreground_mask[j*input->width+i])

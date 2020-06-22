@@ -151,9 +151,9 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   }
   
   // Everything else
-  unsigned int current_row = input_->width;
-  unsigned int previous_row = 0;
-  for (std::size_t rowIdx = 1; rowIdx < input_->height; ++rowIdx, previous_row = current_row, current_row += input_->width)
+  index_t current_row = input_->width;
+  index_t previous_row = 0;
+  for (index_t rowIdx = 1; rowIdx < input_->height; ++rowIdx, previous_row = current_row, current_row += input_->width)
   {
     // First pixel
     if (std::isfinite (input_->points[current_row].x))

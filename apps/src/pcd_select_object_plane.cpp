@@ -574,7 +574,7 @@ public:
         int poff = fields[rgba_index].offset;
         // BGR to RGB
         rgb_data_ = new unsigned char[cloud_->width * cloud_->height * 3];
-        for (std::uint32_t i = 0; i < cloud_->width * cloud_->height; ++i) {
+        for (index_t i = 0; i < cloud_->width * cloud_->height; ++i) {
           RGB rgb;
           memcpy(&rgb,
                  reinterpret_cast<unsigned char*>(&cloud_->points[i]) + poff,

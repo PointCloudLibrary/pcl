@@ -427,9 +427,9 @@ void
 Narf::extractForEveryRangeImagePointAndAddToList (const RangeImage& range_image, int descriptor_size, float support_size,
                                                   bool rotation_invariant, std::vector<Narf*>& feature_list)
 {
-  for (unsigned int y=0; y<range_image.height; ++y)
+  for (index_t y=0; y < range_image.height; ++y)
   {
-    for (unsigned int x=0; x<range_image.width; ++x)
+    for (index_t x=0; x < range_image.width; ++x)
     {
       extractFromRangeImageAndAddToList(range_image, static_cast<float> (x), static_cast<float> (y), descriptor_size, support_size,
                                         rotation_invariant, feature_list);
@@ -664,9 +664,9 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
   }
   else
   {
-    for (unsigned int y=0; y<range_image_->height; ++y)
+    for (index_t y=0; y < range_image_->height; ++y)
     {
-      for (unsigned int x=0; x<range_image_->width; ++x)
+      for (index_t x=0; x < range_image_->width; ++x)
       {
         Narf::extractFromRangeImageAndAddToList(*range_image_, static_cast<float> (x), static_cast<float> (y), 36, parameters_.support_size,
                                                 parameters_.rotation_invariant, feature_list);

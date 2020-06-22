@@ -174,6 +174,85 @@ namespace pcl
     *   - \b sensor_origin_ - specifies the sensor acquisition pose (origin/translation). \a Optional.
     *   - \b sensor_orientation_ - specifies the sensor acquisition pose (rotation). \a Optional.
     *
+    * \todo: remove casting of the return value of size() to index_t
+    * 
+    * \note API of the following functions (where index_t variables are compared with unsigned variables) must be modified;
+    * 
+    * common/include/pcl/common/impl/io.hpp -  
+    * copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT> &cloud_out,
+    *                 int top, int bottom, int left, int right, pcl::InterpolationType border_type, const PointT& value)
+    * 
+    * common/include/pcl/common/impl/spring.hpp -
+    * duplicateColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
+    *                   const std::size_t& amount)
+    * duplicateRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
+    *                const std::size_t& amount)
+    * mirrorColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
+    *           const std::size_t& amount)
+    * mirrorRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
+    *        const std::size_t& amount)
+    * mirrorRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
+    *        const std::size_t& amount)
+    * deleteCols (const PointCloud<PointT>& input, PointCloud<PointT>& output,
+    *        const std::size_t& amount)
+    * 
+    * common/include/pcl/impl/pcl_base.hpp -
+    * pcl::PCLBase<PointT>::setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols)
+    * 
+    * common/src/gaussian.cpp - 
+    * pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
+    *                               const Eigen::VectorXf& kernel,
+    *                               pcl::PointCloud<float>& output)
+    * pcl::GaussianKernel::convolveCols (const pcl::PointCloud<float>& input,
+    *                               const Eigen::VectorXf& kernel,
+    *                               pcl::PointCloud<float>& output)
+    * 
+    * features/include/pcl/features/impl/integral_image_normal.hpp - 
+    * pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initSimple3DGradientMethod ()
+    * pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCovarianceMatrixMethod ()
+    * pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverage3DGradientMethod ()
+    * pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
+    *     const int pos_x, const int pos_y, const unsigned point_index, PointOutT &normal)
+    * 
+    * features/include/pcl/features/impl/moment_of_inertia_estimation.hpp
+    * pcl::MomentOfInertiaEstimation<PointT>::setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols)
+    * 
+    * features/src/range_image_border_extractor.cpp - 
+    * RangeImageBorderExtractor::extractLocalSurfaceStructure ()
+    * 
+    * filters/impl/fast_bilateral_omp.hpp - 
+    * pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
+    * 
+    * io/include/pcl/io/impl/pcd_io.hpp - 
+    * pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<PointT> &cloud, 
+    *                        const int precision)
+    * pcl::PCDWriter::writeASCII (const std::string &file_name, 
+    *                        const pcl::PointCloud<PointT> &cloud, 
+    *                        const std::vector<int> &indices,
+    *                        const int precision)
+    * 
+    * io/include/pcl/io/impl/point_cloud_image_extractors.hpp - 
+    * pcl::io::PointCloudImageExtractor<PointT>::extract (const PointCloud& cloud, pcl::PCLImage& img)
+    * 
+    * visualization/include/pcl/visualization/impl/image_viewer.hpp - 
+    * pcl::visualization::ImageViewer::addRGBImage (const pcl::PointCloud<T> &cloud,
+    *                                          const std::string &layer_id,
+    *                                          double opacity)
+    * 
+    * visualization/src/image_viewer.cpp - 
+    * pcl::visualization::ImageViewer::addMonoImage (
+    *     const pcl::PointCloud<pcl::Intensity> &cloud,
+    *     const std::string &layer_id, double opacity)
+    * pcl::visualization::ImageViewer::addMonoImage (
+    *     const pcl::PointCloud<pcl::Intensity8u> &cloud,
+    *     const std::string &layer_id, double opacity)
+    *     
+    * suggested process for modification;
+    *  1. Add API for index_t
+    *  2. Deprecate + SFINAE out existing function
+    *  3. Later remove deprecation
+    * 
+    * 
     * \author Patrick Mihelich, Radu B. Rusu
     */
   template <typename PointT>
@@ -220,7 +299,7 @@ namespace pcl
         * \param[in] height_ the cloud height
         * \param[in] value_ default value
         */
-      PointCloud (std::uint32_t width_, std::uint32_t height_, const PointT& value_ = PointT ())
+      PointCloud (index_t width_, index_t height_, const PointT& value_ = PointT ())
         : points (width_ * height_, value_)
         , width (width_)
         , height (height_)
@@ -260,7 +339,7 @@ namespace pcl
         // This causes a drastic performance hit. Prefer not to use reserve with libstdc++ (default on clang)
         cloud1.points.insert (cloud1.points.end (), cloud2.points.begin (), cloud2.points.end ());
 
-        cloud1.width    = static_cast<std::uint32_t>(cloud1.points.size ());
+        cloud1.width    = static_cast<index_t>(cloud1.size ());
         cloud1.height   = 1;
         cloud1.is_dense = cloud1.is_dense && cloud2.is_dense;
         return true;
@@ -352,9 +431,9 @@ namespace pcl
       getMatrixXfMap (int dim, int stride, int offset)
       {
         if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
-          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(&points[0])+offset, size (), dim, Eigen::OuterStride<> (stride)));
         else
-          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(&points[0])+offset, dim, points.size (), Eigen::OuterStride<> (stride)));
+          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(&points[0])+offset, dim, size (), Eigen::OuterStride<> (stride)));
       }
 
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
@@ -375,9 +454,9 @@ namespace pcl
       getMatrixXfMap (int dim, int stride, int offset) const
       {
         if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
-          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(const_cast<PointT*>(&points[0]))+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(const_cast<PointT*>(&points[0]))+offset, size (), dim, Eigen::OuterStride<> (stride)));
         else
-          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(const_cast<PointT*>(&points[0]))+offset, dim, points.size (), Eigen::OuterStride<> (stride)));
+          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(const_cast<PointT*>(&points[0]))+offset, dim, size (), Eigen::OuterStride<> (stride)));
       }
 
       /**
@@ -411,9 +490,9 @@ namespace pcl
       std::vector<PointT, Eigen::aligned_allocator<PointT> > points;
 
       /** \brief The point cloud width (if organized as an image-structure). */
-      std::uint32_t width = 0;
+      index_t width = 0;
       /** \brief The point cloud height (if organized as an image-structure). */
-      std::uint32_t height = 0;
+      index_t height = 0;
 
       /** \brief True if no points are invalid (e.g., have NaN or Inf values in any of their floating point fields). */
       bool is_dense = true;
@@ -468,7 +547,7 @@ namespace pcl
         points.resize (n);
         if (width * height != n)
         {
-          width = static_cast<std::uint32_t> (n);
+          width = static_cast<index_t> (n);
           height = 1;
         }
       }
@@ -491,7 +570,7 @@ namespace pcl
       push_back (const PointT& pt)
       {
         points.push_back (pt);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = static_cast<index_t> (size ());
         height = 1;
       }
 
@@ -504,7 +583,7 @@ namespace pcl
       emplace_back (Args&& ...args)
       {
         points.emplace_back (std::forward<Args> (args)...);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = static_cast<index_t> (size ());
         height = 1;
         return points.back();
       }
@@ -519,7 +598,7 @@ namespace pcl
       insert (iterator position, const PointT& pt)
       {
         iterator it = points.insert (position, pt);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = static_cast<index_t> (size ());
         height = 1;
         return (it);
       }
@@ -534,7 +613,7 @@ namespace pcl
       insert (iterator position, std::size_t n, const PointT& pt)
       {
         points.insert (position, n, pt);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = static_cast<index_t> (size ());
         height = 1;
       }
 
@@ -548,7 +627,7 @@ namespace pcl
       insert (iterator position, InputIterator first, InputIterator last)
       {
         points.insert (position, first, last);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = static_cast<index_t> (size ());
         height = 1;
       }
 
@@ -562,7 +641,7 @@ namespace pcl
       emplace (iterator position, Args&& ...args)
       {
         iterator it = points.emplace (position, std::forward<Args> (args)...);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = static_cast<index_t> (size ());
         height = 1;
         return (it);
       }
@@ -576,7 +655,7 @@ namespace pcl
       erase (iterator position)
       {
         iterator it = points.erase (position);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = static_cast<index_t> (size ());
         height = 1;
         return (it);
       }
@@ -591,7 +670,7 @@ namespace pcl
       erase (iterator first, iterator last)
       {
         iterator it = points.erase (first, last);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = static_cast<index_t> (size ());
         height = 1;
         return (it);
       }
@@ -653,7 +732,7 @@ namespace pcl
   operator << (std::ostream& s, const pcl::PointCloud<PointT> &p)
   {
     s << "header: " << p.header << std::endl;
-    s << "points[]: " << p.points.size () << std::endl;
+    s << "points[]: " << p.size () << std::endl;
     s << "width: " << p.width << std::endl;
     s << "height: " << p.height << std::endl;
     s << "is_dense: " << p.is_dense << std::endl;

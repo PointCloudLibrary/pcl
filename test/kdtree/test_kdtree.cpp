@@ -83,7 +83,7 @@ init ()
   cloud_big.height = 480;
   srand (static_cast<unsigned int> (time (nullptr)));
   // Randomly create a new point cloud
-  for (std::size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
+  for (index_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
     cloud_big.points.emplace_back(static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
                                          static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)),
                                          static_cast<float> (1024 * rand () / (RAND_MAX + 1.0)));
