@@ -17,8 +17,8 @@ class bcolors:
     UNDERLINE = "\033[4m"
 
 
-def print_node(cursor, lines, more_than_one_file, depth):
-    file = "{0}:".format(cursor.location.file) if more_than_one_file else ""
+def print_node(cursor, lines, depth):
+    file = cursor.location.file
     line, column = cursor.location.line, cursor.location.column
     print(
         "-" * depth,
@@ -34,15 +34,13 @@ def node_in_this_file(node, file_name):
     return node.location.file and node.location.file.name == file_name
 
 
-def walk_and_print(cursor, filter, lines, more_than_one_file, this_filename, depth):
+def walk_and_print(cursor, filter, lines, this_filename, depth):
     if cursor.spelling:
-        print_node(cursor, lines, more_than_one_file, depth)
+        print_node(cursor, lines, depth)
 
     for child in cursor.get_children():
         if node_in_this_file(child, this_filename):
-            walk_and_print(
-                child, filter, lines, more_than_one_file, this_filename, depth + 1
-            )
+            walk_and_print(child, filter, lines, this_filename, depth + 1)
 
 
 def dump_json(filepath, parsed_list):
@@ -50,9 +48,7 @@ def dump_json(filepath, parsed_list):
         json.dump(parsed_list, f, indent=2)
 
 
-def generate_parsed_info(
-    cursor, filter, lines, more_than_one_file, this_filename, depth, parsed_list
-):
+def generate_parsed_info(cursor, filter, lines, this_filename, depth, parsed_list):
     if cursor.spelling:
         parsed_list.append(
             {
@@ -69,13 +65,7 @@ def generate_parsed_info(
         if node_in_this_file(child, this_filename):
             child_list = []
             generate_parsed_info(
-                child,
-                filter,
-                lines,
-                more_than_one_file,
-                this_filename,
-                depth + 1,
-                child_list,
+                child, filter, lines, this_filename, depth + 1, child_list,
             )
             if child_list and parsed_list:
                 if len(parsed_list[0]["members"]):
@@ -85,7 +75,7 @@ def generate_parsed_info(
 
 
 def parse_arguments(args):
-    parser = argparse.ArgumentParser(description="C++-savy grep")
+    parser = argparse.ArgumentParser(description="C++ libclang parser")
     parser.add_argument("files", nargs="+", help="The source files to search")
     return parser.parse_args(args)
 
@@ -109,7 +99,6 @@ def get_output_path(source, output_dir):
 def main():
     args = parse_arguments(sys.argv[1:])
     index = clang.Index.create()
-    more_than_one_file = len(args.files) > 1
 
     compile_db_path = os.path.dirname("./compile_commands.json")
     compdb = clang.CompilationDatabase.fromDirectory(compile_db_path)
@@ -124,18 +113,12 @@ def main():
         tu = index.parse(source, args=compile_commands)
 
         # walk_and_print(
-        #     tu.cursor, filter, lines, more_than_one_file, tu.spelling, depth=0
+        #     tu.cursor, filter, lines, tu.spelling, depth=0
         # )
 
         parsed_list = []
         generate_parsed_info(
-            tu.cursor,
-            filter,
-            lines,
-            more_than_one_file,
-            tu.spelling,
-            depth=0,
-            parsed_list=parsed_list,
+            tu.cursor, filter, lines, tu.spelling, depth=0, parsed_list=parsed_list,
         )
 
         output_filepath = get_output_path(
