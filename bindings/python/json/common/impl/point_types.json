@@ -26,6 +26,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -34,6 +36,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -42,6 +46,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -50,6 +56,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -58,6 +66,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -66,6 +76,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -74,6 +86,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -82,6 +96,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -92,6 +108,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -109,6 +126,8 @@
             "column": 24,
             "kind": "STRUCT_DECL",
             "name": "PointXYZ",
+            "brief_comment": "A point structure representing Euclidean xyz coordinates. (SSE friendly)",
+            "raw_comment": "/** \\brief A point structure representing Euclidean xyz coordinates. (SSE friendly)\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -116,6 +135,7 @@
                 "column": 42,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_PointXYZ",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -133,6 +153,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZ",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -227,6 +249,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZ",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -252,6 +276,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZ",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -294,6 +320,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector3i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector3i",
                 "members": [
                   {
                     "depth": 4,
@@ -319,6 +347,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector3i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector3i",
                 "members": [
                   {
                     "depth": 4,
@@ -344,6 +374,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -369,6 +401,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -394,6 +428,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBAVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -419,6 +455,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBAVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -444,6 +482,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRVector3cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -452,6 +492,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRVector3cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -460,6 +502,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRAVector4cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -468,6 +512,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRAVector4cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -478,6 +524,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -495,6 +542,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "RGB",
+            "brief_comment": "A structure representing RGB color information.",
+            "raw_comment": "/** \\brief A structure representing RGB color information.\n    *\n    * The RGBA information is available either as separate r, g, b, or as a\n    * packed std::uint32_t rgba value. To pack it, use:\n    *\n    * \\code\n    * int rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);\n    * \\endcode\n    *\n    * To unpack it use:\n    *\n    * \\code\n    * int rgb = ...;\n    * std::uint8_t r = (rgb >> 16) & 0x0000ff;\n    * std::uint8_t g = (rgb >> 8)  & 0x0000ff;\n    * std::uint8_t b = (rgb)     & 0x0000ff;\n    * \\endcode\n    *\n    */",
             "members": [
               {
                 "depth": 3,
@@ -502,6 +551,7 @@
                 "column": 22,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_RGB",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -519,6 +569,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "RGB",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -545,6 +597,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "RGB",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -570,6 +624,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "RGB",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -664,6 +720,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -681,6 +738,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "Intensity",
+            "brief_comment": "A point structure representing the grayscale intensity in single-channel images. Intensity is represented as a float value.",
+            "raw_comment": "/** \\brief A point structure representing the grayscale intensity in single-channel images.\n    * Intensity is represented as a float value.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -688,6 +747,7 @@
                 "column": 28,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_Intensity",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -705,6 +765,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "Intensity",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -731,6 +793,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "Intensity",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -758,6 +822,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -775,6 +840,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "Intensity8u",
+            "brief_comment": "A point structure representing the grayscale intensity in single-channel images. Intensity is represented as a std::uint8_t value.",
+            "raw_comment": "/** \\brief A point structure representing the grayscale intensity in single-channel images.\n    * Intensity is represented as a std::uint8_t value.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -782,6 +849,7 @@
                 "column": 30,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_Intensity8u",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -799,6 +867,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "Intensity8u",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -825,6 +895,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "Intensity8u",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -869,6 +941,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -886,6 +959,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "Intensity32u",
+            "brief_comment": "A point structure representing the grayscale intensity in single-channel images. Intensity is represented as a std::uint32_t value.",
+            "raw_comment": "/** \\brief A point structure representing the grayscale intensity in single-channel images.\n    * Intensity is represented as a std::uint32_t value.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -893,6 +968,7 @@
                 "column": 31,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_Intensity32u",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -910,6 +986,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "Intensity32u",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -936,6 +1014,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "Intensity32u",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -972,6 +1052,8 @@
             "column": 24,
             "kind": "STRUCT_DECL",
             "name": "_PointXYZI",
+            "brief_comment": "A point structure representing Euclidean xyz coordinates, and the intensity value.",
+            "raw_comment": "/** \\brief A point structure representing Euclidean xyz coordinates, and the intensity value.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -979,6 +1061,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -987,6 +1071,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -995,6 +1081,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1003,6 +1091,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1011,6 +1101,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1019,6 +1111,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1027,6 +1121,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1035,6 +1131,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -1045,6 +1143,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -1069,6 +1168,7 @@
                 "column": 29,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_PointXYZI",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -1086,6 +1186,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZI",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -1112,6 +1214,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZI",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -1163,6 +1267,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZI",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -1213,6 +1319,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1221,6 +1329,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1229,6 +1339,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1237,6 +1349,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1245,6 +1359,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1253,6 +1369,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1261,6 +1379,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1269,6 +1389,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1277,6 +1399,7 @@
                 "column": 19,
                 "kind": "FIELD_DECL",
                 "name": "label",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -1304,6 +1427,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -1328,6 +1452,7 @@
                 "column": 29,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_PointXYZL",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -1345,6 +1470,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZL",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -1371,6 +1498,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZL",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -1439,6 +1568,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZL",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -1499,6 +1630,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -1523,6 +1655,7 @@
                 "column": 19,
                 "kind": "FIELD_DECL",
                 "name": "label",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -1548,6 +1681,8 @@
                 "column": 5,
                 "kind": "CONSTRUCTOR",
                 "name": "Label",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -1616,6 +1751,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1624,6 +1761,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1632,6 +1771,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1640,6 +1781,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1648,6 +1791,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1656,6 +1801,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1664,6 +1811,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1672,6 +1821,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1680,6 +1831,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector3i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector3i",
                 "members": [
                   {
                     "depth": 4,
@@ -1705,6 +1858,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector3i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector3i",
                 "members": [
                   {
                     "depth": 4,
@@ -1730,6 +1885,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -1755,6 +1912,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -1780,6 +1939,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBAVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -1805,6 +1966,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBAVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -1830,6 +1993,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRVector3cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1838,6 +2003,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRVector3cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1846,6 +2013,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRAVector4cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -1854,6 +2023,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRAVector4cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -1864,6 +2035,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -1881,6 +2053,8 @@
             "column": 24,
             "kind": "STRUCT_DECL",
             "name": "PointXYZRGBA",
+            "brief_comment": "A point structure representing Euclidean xyz coordinates, and the RGBA color.",
+            "raw_comment": "/** \\brief A point structure representing Euclidean xyz coordinates, and the RGBA color.\n    *\n    * The RGBA information is available either as separate r, g, b, or as a\n    * packed std::uint32_t rgba value. To pack it, use:\n    *\n    * \\code\n    * int rgb = ((int)r) << 16 | ((int)g) << 8 | ((int)b);\n    * \\endcode\n    *\n    * To unpack it use:\n    *\n    * \\code\n    * int rgb = ...;\n    * std::uint8_t r = (rgb >> 16) & 0x0000ff;\n    * std::uint8_t g = (rgb >> 8)  & 0x0000ff;\n    * std::uint8_t b = (rgb)     & 0x0000ff;\n    * \\endcode\n    *\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -1888,6 +2062,7 @@
                 "column": 46,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_PointXYZRGBA",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -1905,6 +2080,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGBA",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -1931,6 +2108,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGBA",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -1956,6 +2135,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGBA",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -2150,6 +2331,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGBA",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -2251,6 +2434,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGBA",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -2393,6 +2578,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2401,6 +2588,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2409,6 +2598,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2417,6 +2608,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2425,6 +2618,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2433,6 +2628,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2441,6 +2638,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2449,6 +2648,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2457,6 +2658,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector3i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector3i",
                 "members": [
                   {
                     "depth": 4,
@@ -2482,6 +2685,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector3i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector3i",
                 "members": [
                   {
                     "depth": 4,
@@ -2507,6 +2712,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -2532,6 +2739,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -2557,6 +2766,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBAVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -2582,6 +2793,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBAVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -2607,6 +2820,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRVector3cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2615,6 +2830,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRVector3cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2623,6 +2840,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRAVector4cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2631,6 +2850,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRAVector4cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -2648,6 +2869,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2656,6 +2879,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2664,6 +2889,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2672,6 +2899,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2680,6 +2909,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2688,6 +2919,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2696,6 +2929,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2704,6 +2939,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2712,6 +2949,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector3i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector3i",
                 "members": [
                   {
                     "depth": 4,
@@ -2737,6 +2976,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector3i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector3i",
                 "members": [
                   {
                     "depth": 4,
@@ -2762,6 +3003,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -2787,6 +3030,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -2812,6 +3057,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBAVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -2837,6 +3084,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBAVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -2862,6 +3111,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRVector3cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2870,6 +3121,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRVector3cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2878,6 +3131,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRAVector4cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2886,6 +3141,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRAVector4cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -2894,6 +3151,7 @@
                 "column": 19,
                 "kind": "FIELD_DECL",
                 "name": "label",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -2921,6 +3179,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -2938,6 +3197,8 @@
             "column": 24,
             "kind": "STRUCT_DECL",
             "name": "PointXYZRGB",
+            "brief_comment": "A point structure representing Euclidean xyz coordinates, and the RGB color.",
+            "raw_comment": "/** \\brief A point structure representing Euclidean xyz coordinates, and the RGB color.\n    *\n    * Due to historical reasons (PCL was first developed as a ROS package), the\n    * RGB information is packed into an integer and casted to a float. This is\n    * something we wish to remove in the near future, but in the meantime, the\n    * following code snippet should help you pack and unpack RGB colors in your\n    * PointXYZRGB structure:\n    *\n    * \\code\n    * // pack r/g/b into rgb\n    * std::uint8_t r = 255, g = 0, b = 0;    // Example: Red color\n    * std::uint32_t rgb = ((std::uint32_t)r << 16 | (std::uint32_t)g << 8 | (std::uint32_t)b);\n    * p.rgb = *reinterpret_cast<float*>(&rgb);\n    * \\endcode\n    *\n    * To unpack the data into separate values, use:\n    *\n    * \\code\n    * PointXYZRGB p;\n    * // unpack rgb into r/g/b\n    * std::uint32_t rgb = *reinterpret_cast<int*>(&p.rgb);\n    * std::uint8_t r = (rgb >> 16) & 0x0000ff;\n    * std::uint8_t g = (rgb >> 8)  & 0x0000ff;\n    * std::uint8_t b = (rgb)       & 0x0000ff;\n    * \\endcode\n    *\n    *\n    * Alternatively, from 1.1.0 onwards, you can use p.r, p.g, and p.b directly.\n    *\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -2945,6 +3206,7 @@
                 "column": 45,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_PointXYZRGB",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -2962,6 +3224,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGB",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -2988,6 +3252,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGB",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -3013,6 +3279,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGB",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -3165,6 +3433,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGB",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -3266,6 +3536,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGB",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -3376,6 +3648,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -3400,6 +3673,7 @@
                 "column": 46,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_PointXYZRGBL",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -3417,6 +3691,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGBL",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -3443,6 +3719,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGBL",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -3511,6 +3789,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGBL",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -3663,6 +3943,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGBL",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -3764,6 +4046,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGBL",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -3906,6 +4190,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -3914,6 +4200,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -3922,6 +4210,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -3930,6 +4220,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -3938,6 +4230,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -3946,6 +4240,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -3954,6 +4250,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -3962,6 +4260,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -3972,6 +4272,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -3996,6 +4297,7 @@
                 "column": 45,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_PointXYZHSV",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -4013,6 +4315,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZHSV",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -4039,6 +4343,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZHSV",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -4064,6 +4370,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZHSV",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -4165,6 +4473,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZHSV",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -4224,6 +4534,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -4241,6 +4552,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "PointXY",
+            "brief_comment": "A 2D point structure representing Euclidean xy coordinates.",
+            "raw_comment": "/** \\brief A 2D point structure representing Euclidean xy coordinates.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -4248,6 +4561,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "x",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -4256,6 +4570,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "y",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -4264,6 +4579,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXY",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               },
               {
@@ -4272,6 +4589,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXY",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -4349,6 +4668,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -4366,6 +4686,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "PointUV",
+            "brief_comment": "A 2D point structure representing pixel image coordinates.",
+            "raw_comment": "/** \\brief A 2D point structure representing pixel image coordinates.\n    * \\note We use float to be able to represent subpixels.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -4373,6 +4695,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "u",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -4381,6 +4704,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "v",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -4389,6 +4713,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointUV",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               },
               {
@@ -4397,6 +4723,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointUV",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -4474,6 +4802,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -4498,6 +4827,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4506,6 +4837,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4514,6 +4847,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4522,6 +4857,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4530,6 +4867,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4538,6 +4877,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4546,6 +4887,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4554,6 +4897,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -4571,6 +4916,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4579,6 +4926,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4587,6 +4936,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4595,6 +4946,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -4605,6 +4958,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -4622,6 +4976,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "Normal",
+            "brief_comment": "A point structure representing normal coordinates and the surface curvature estimate. (SSE friendly)",
+            "raw_comment": "/** \\brief A point structure representing normal coordinates and the surface curvature estimate. (SSE friendly)\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -4629,6 +4985,7 @@
                 "column": 26,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_Normal",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -4646,6 +5003,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "Normal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -4672,6 +5031,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "Normal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -4723,6 +5084,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "Normal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -4773,6 +5136,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4781,6 +5146,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4789,6 +5156,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4797,6 +5166,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -4807,6 +5178,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -4824,6 +5196,8 @@
             "column": 24,
             "kind": "STRUCT_DECL",
             "name": "Axis",
+            "brief_comment": "A point structure representing an Axis using its normal coordinates. (SSE friendly)",
+            "raw_comment": "/** \\brief A point structure representing an Axis using its normal coordinates. (SSE friendly)\n    *  \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -4831,6 +5205,7 @@
                 "column": 38,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_Axis",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -4848,6 +5223,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "Axis",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -4874,6 +5251,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "Axis",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -4899,6 +5278,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "Axis",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -4941,6 +5322,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4949,6 +5332,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4957,6 +5342,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4965,6 +5352,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4973,6 +5362,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4981,6 +5372,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4989,6 +5382,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -4997,6 +5392,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5005,6 +5402,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5013,6 +5412,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5021,6 +5422,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5029,6 +5432,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -5039,6 +5444,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -5056,6 +5462,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "PointNormal",
+            "brief_comment": "A point structure representing Euclidean xyz coordinates, together with normal coordinates and the surface curvature estimate. (SSE friendly)",
+            "raw_comment": "/** \\brief A point structure representing Euclidean xyz coordinates, together with normal coordinates and the surface curvature estimate. (SSE friendly)\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -5063,6 +5471,7 @@
                 "column": 31,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_PointNormal",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -5080,6 +5489,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointNormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -5106,6 +5517,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointNormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -5157,6 +5570,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointNormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -5258,6 +5673,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointNormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -5332,6 +5749,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5340,6 +5759,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5348,6 +5769,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5356,6 +5779,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5364,6 +5789,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5372,6 +5799,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5380,6 +5809,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5388,6 +5819,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5396,6 +5829,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5404,6 +5839,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5412,6 +5849,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5420,6 +5859,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5428,6 +5869,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector3i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector3i",
                 "members": [
                   {
                     "depth": 4,
@@ -5453,6 +5896,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector3i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector3i",
                 "members": [
                   {
                     "depth": 4,
@@ -5478,6 +5923,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -5503,6 +5950,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -5528,6 +5977,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBAVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -5553,6 +6004,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBAVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -5578,6 +6031,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRVector3cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5586,6 +6041,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRVector3cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5594,6 +6051,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRAVector4cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -5602,6 +6061,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRAVector4cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -5612,6 +6073,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -5629,6 +6091,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "PointXYZRGBNormal",
+            "brief_comment": "A point structure representing Euclidean xyz coordinates, and the RGB color, together with normal coordinates and the surface curvature estimate. Due to historical reasons (PCL was first developed as a ROS package), the RGB information is packed into an integer and casted to a float. This is something we wish to remove in the near future, but in the meantime, the following code snippet should help you pack and unpack RGB colors in your PointXYZRGB structure:",
+            "raw_comment": "/** \\brief A point structure representing Euclidean xyz coordinates, and the RGB color, together with normal coordinates and the surface curvature estimate.\n    * Due to historical reasons (PCL was first developed as a ROS package), the\n    * RGB information is packed into an integer and casted to a float. This is\n    * something we wish to remove in the near future, but in the meantime, the\n    * following code snippet should help you pack and unpack RGB colors in your\n    * PointXYZRGB structure:\n    *\n    * \\code\n    * // pack r/g/b into rgb\n    * std::uint8_t r = 255, g = 0, b = 0;    // Example: Red color\n    * std::uint32_t rgb = ((std::uint32_t)r << 16 | (std::uint32_t)g << 8 | (std::uint32_t)b);\n    * p.rgb = *reinterpret_cast<float*>(&rgb);\n    * \\endcode\n    *\n    * To unpack the data into separate values, use:\n    *\n    * \\code\n    * PointXYZRGB p;\n    * // unpack rgb into r/g/b\n    * std::uint32_t rgb = *reinterpret_cast<int*>(&p.rgb);\n    * std::uint8_t r = (rgb >> 16) & 0x0000ff;\n    * std::uint8_t g = (rgb >> 8)  & 0x0000ff;\n    * std::uint8_t b = (rgb)       & 0x0000ff;\n    * \\endcode\n    *\n    *\n    * Alternatively, from 1.1.0 onwards, you can use p.r, p.g, and p.b directly.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -5636,6 +6100,7 @@
                 "column": 37,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_PointXYZRGBNormal",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -5653,6 +6118,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGBNormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -5679,6 +6146,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGBNormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -5730,6 +6199,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGBNormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -5831,6 +6302,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGBNormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -5983,6 +6456,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGBNormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -6210,6 +6685,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZRGBNormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -6359,6 +6836,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6367,6 +6846,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6375,6 +6856,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6383,6 +6866,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6391,6 +6876,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6399,6 +6886,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6407,6 +6896,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6415,6 +6906,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6423,6 +6916,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6431,6 +6926,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6439,6 +6936,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6447,6 +6946,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -6457,6 +6958,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -6474,6 +6976,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "PointXYZINormal",
+            "brief_comment": "A point structure representing Euclidean xyz coordinates, intensity, together with normal coordinates and the surface curvature estimate.",
+            "raw_comment": "/** \\brief A point structure representing Euclidean xyz coordinates, intensity, together with normal coordinates and the surface curvature estimate.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -6481,6 +6985,7 @@
                 "column": 35,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_PointXYZINormal",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -6498,6 +7003,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZINormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -6524,6 +7031,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZINormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -6575,6 +7084,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZINormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -6701,6 +7212,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZINormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -6783,6 +7296,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6791,6 +7306,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6799,6 +7316,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6807,6 +7326,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6815,6 +7336,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6823,6 +7346,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6831,6 +7356,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6839,6 +7366,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6847,6 +7376,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6855,6 +7386,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6863,6 +7396,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -6871,6 +7406,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -6881,6 +7418,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -6898,6 +7436,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "PointXYZLNormal",
+            "brief_comment": "A point structure representing Euclidean xyz coordinates, a label, together with normal coordinates and the surface curvature estimate.",
+            "raw_comment": "/** \\brief A point structure representing Euclidean xyz coordinates, a label, together with normal coordinates and the surface curvature estimate.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -6905,6 +7445,7 @@
                 "column": 35,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_PointXYZLNormal",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -6922,6 +7463,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZLNormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -6948,6 +7491,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZLNormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -7016,6 +7561,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZLNormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -7159,6 +7706,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointXYZLNormal",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -7258,6 +7807,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -7266,6 +7817,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -7274,6 +7827,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -7282,6 +7837,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -7290,6 +7847,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -7298,6 +7857,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -7306,6 +7867,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -7314,6 +7877,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -7324,6 +7889,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -7341,6 +7907,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "PointWithRange",
+            "brief_comment": "A point structure representing Euclidean xyz coordinates, padded with an extra range float.",
+            "raw_comment": "/** \\brief A point structure representing Euclidean xyz coordinates, padded with an extra range float.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -7348,6 +7916,7 @@
                 "column": 34,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_PointWithRange",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -7365,6 +7934,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointWithRange",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -7391,6 +7962,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointWithRange",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -7442,6 +8015,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointWithRange",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -7492,6 +8067,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -7500,6 +8077,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -7508,6 +8087,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -7516,6 +8097,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -7524,6 +8107,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -7532,6 +8117,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -7540,6 +8127,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -7548,6 +8137,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -7558,6 +8149,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -7575,6 +8167,8 @@
             "column": 24,
             "kind": "STRUCT_DECL",
             "name": "PointWithViewpoint",
+            "brief_comment": "A point structure representing Euclidean xyz coordinates together with the viewpoint from which it was seen.",
+            "raw_comment": "/** \\brief A point structure representing Euclidean xyz coordinates together with the viewpoint from which it was seen.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -7582,6 +8176,7 @@
                 "column": 52,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_PointWithViewpoint",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -7599,6 +8194,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointWithViewpoint",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -7625,6 +8222,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointWithViewpoint",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               },
               {
@@ -7633,6 +8232,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "PCL_DEPRECATED",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -7643,6 +8244,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -7660,6 +8262,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "MomentInvariants",
+            "brief_comment": "A point structure representing the three moment invariants.",
+            "raw_comment": "/** \\brief A point structure representing the three moment invariants.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -7667,6 +8271,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "j1",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -7675,6 +8280,7 @@
                 "column": 21,
                 "kind": "FIELD_DECL",
                 "name": "j2",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -7683,6 +8289,7 @@
                 "column": 31,
                 "kind": "FIELD_DECL",
                 "name": "j3",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -7691,6 +8298,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "MomentInvariants",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               },
               {
@@ -7699,6 +8308,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "MomentInvariants",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -7809,6 +8420,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -7826,6 +8438,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "PrincipalRadiiRSD",
+            "brief_comment": "A point structure representing the minimum and maximum surface radii (in meters) computed using RSD.",
+            "raw_comment": "/** \\brief A point structure representing the minimum and maximum surface radii (in meters) computed using RSD.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -7833,6 +8447,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "r_min",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -7841,6 +8456,7 @@
                 "column": 24,
                 "kind": "FIELD_DECL",
                 "name": "r_max",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -7849,6 +8465,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PrincipalRadiiRSD",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               },
               {
@@ -7857,6 +8475,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PrincipalRadiiRSD",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -7934,6 +8554,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -7951,6 +8572,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "Boundary",
+            "brief_comment": "A point structure representing a description of whether a point is lying on a surface boundary or not.",
+            "raw_comment": "/** \\brief A point structure representing a description of whether a point is lying on a surface boundary or not.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -7958,6 +8581,7 @@
                 "column": 18,
                 "kind": "FIELD_DECL",
                 "name": "boundary_point",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -7983,6 +8607,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "Boundary",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -8044,6 +8670,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -8061,6 +8688,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "PrincipalCurvatures",
+            "brief_comment": "A point structure representing the principal curvatures and their magnitudes.",
+            "raw_comment": "/** \\brief A point structure representing the principal curvatures and their magnitudes.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -8068,6 +8697,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "pc1",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8076,6 +8706,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "pc2",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8084,6 +8715,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PrincipalCurvatures",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -8109,6 +8742,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PrincipalCurvatures",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -8185,6 +8820,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PrincipalCurvatures",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -8286,6 +8923,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PrincipalCurvatures",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -8462,6 +9101,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -8479,6 +9119,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "PFHSignature125",
+            "brief_comment": "A point structure representing the Point Feature Histogram (PFH).",
+            "raw_comment": "/** \\brief A point structure representing the Point Feature Histogram (PFH).\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -8486,6 +9128,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "histogram",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8494,6 +9137,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -8502,6 +9147,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PFHSignature125",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -8512,6 +9159,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -8529,6 +9177,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "PFHRGBSignature250",
+            "brief_comment": "A point structure representing the Point Feature Histogram with colors (PFHRGB).",
+            "raw_comment": "/** \\brief A point structure representing the Point Feature Histogram with colors (PFHRGB).\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -8536,6 +9186,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "histogram",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8544,6 +9195,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -8552,6 +9205,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PFHRGBSignature250",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -8562,6 +9217,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -8579,6 +9235,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "PPFSignature",
+            "brief_comment": "A point structure for storing the Point Pair Feature (PPF) values",
+            "raw_comment": "/** \\brief A point structure for storing the Point Pair Feature (PPF) values\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -8586,6 +9244,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "f1",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8594,6 +9253,7 @@
                 "column": 21,
                 "kind": "FIELD_DECL",
                 "name": "f2",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8602,6 +9262,7 @@
                 "column": 31,
                 "kind": "FIELD_DECL",
                 "name": "f3",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8610,6 +9271,7 @@
                 "column": 41,
                 "kind": "FIELD_DECL",
                 "name": "f4",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8618,6 +9280,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "alpha_m",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8626,6 +9289,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PPFSignature",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -8677,6 +9342,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PPFSignature",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -8853,6 +9520,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -8870,6 +9538,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "CPPFSignature",
+            "brief_comment": "A point structure for storing the Point Pair Feature (CPPF) values",
+            "raw_comment": "/** \\brief A point structure for storing the Point Pair Feature (CPPF) values\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -8877,6 +9547,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "f1",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8885,6 +9556,7 @@
                 "column": 15,
                 "kind": "FIELD_DECL",
                 "name": "f2",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8893,6 +9565,7 @@
                 "column": 19,
                 "kind": "FIELD_DECL",
                 "name": "f3",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8901,6 +9574,7 @@
                 "column": 23,
                 "kind": "FIELD_DECL",
                 "name": "f4",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8909,6 +9583,7 @@
                 "column": 27,
                 "kind": "FIELD_DECL",
                 "name": "f5",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8917,6 +9592,7 @@
                 "column": 31,
                 "kind": "FIELD_DECL",
                 "name": "f6",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8925,6 +9601,7 @@
                 "column": 35,
                 "kind": "FIELD_DECL",
                 "name": "f7",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8933,6 +9610,7 @@
                 "column": 39,
                 "kind": "FIELD_DECL",
                 "name": "f8",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8941,6 +9619,7 @@
                 "column": 43,
                 "kind": "FIELD_DECL",
                 "name": "f9",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8949,6 +9628,7 @@
                 "column": 47,
                 "kind": "FIELD_DECL",
                 "name": "f10",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8957,6 +9637,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "alpha_m",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -8965,6 +9646,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "CPPFSignature",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -9016,6 +9699,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "CPPFSignature",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -9390,6 +10075,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -9407,6 +10093,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "PPFRGBSignature",
+            "brief_comment": "A point structure for storing the Point Pair Color Feature (PPFRGB) values",
+            "raw_comment": "/** \\brief A point structure for storing the Point Pair Color Feature (PPFRGB) values\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -9414,6 +10102,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "f1",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -9422,6 +10111,7 @@
                 "column": 21,
                 "kind": "FIELD_DECL",
                 "name": "f2",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -9430,6 +10120,7 @@
                 "column": 31,
                 "kind": "FIELD_DECL",
                 "name": "f3",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -9438,6 +10129,7 @@
                 "column": 41,
                 "kind": "FIELD_DECL",
                 "name": "f4",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -9446,6 +10138,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "r_ratio",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -9454,6 +10147,7 @@
                 "column": 26,
                 "kind": "FIELD_DECL",
                 "name": "g_ratio",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -9462,6 +10156,7 @@
                 "column": 41,
                 "kind": "FIELD_DECL",
                 "name": "b_ratio",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -9470,6 +10165,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "alpha_m",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -9478,6 +10174,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PPFRGBSignature",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -9529,6 +10227,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PPFRGBSignature",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -9680,6 +10380,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PPFRGBSignature",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -9955,6 +10657,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -9972,6 +10675,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "NormalBasedSignature12",
+            "brief_comment": "A point structure representing the Normal Based Signature for a feature matrix of 4-by-3",
+            "raw_comment": "/** \\brief A point structure representing the Normal Based Signature for\n    * a feature matrix of 4-by-3\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -9979,6 +10684,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "values",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -9987,6 +10693,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "NormalBasedSignature12",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -9997,6 +10705,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -10014,6 +10723,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "ShapeContext1980",
+            "brief_comment": "A point structure representing a Shape Context.",
+            "raw_comment": "/** \\brief A point structure representing a Shape Context.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -10021,6 +10732,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "descriptor",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10029,6 +10741,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "rf",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10037,6 +10750,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10045,6 +10760,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "ShapeContext1980",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -10055,6 +10772,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -10072,6 +10790,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "UniqueShapeContext1960",
+            "brief_comment": "A point structure representing a Unique Shape Context.",
+            "raw_comment": "/** \\brief A point structure representing a Unique Shape Context.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -10079,6 +10799,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "descriptor",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10087,6 +10808,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "rf",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10095,6 +10817,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10103,6 +10827,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "UniqueShapeContext1960",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -10113,6 +10839,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -10130,6 +10857,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "SHOT352",
+            "brief_comment": "A point structure representing the generic Signature of Histograms of OrienTations (SHOT) - shape only.",
+            "raw_comment": "/** \\brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT) - shape only.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -10137,6 +10866,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "descriptor",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10145,6 +10875,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "rf",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10153,6 +10884,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10161,6 +10894,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "SHOT352",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -10171,6 +10906,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -10188,6 +10924,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "SHOT1344",
+            "brief_comment": "A point structure representing the generic Signature of Histograms of OrienTations (SHOT) - shape+color.",
+            "raw_comment": "/** \\brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT) - shape+color.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -10195,6 +10933,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "descriptor",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10203,6 +10942,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "rf",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10211,6 +10951,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10219,6 +10961,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "SHOT1344",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -10229,6 +10973,8 @@
             "column": 24,
             "kind": "STRUCT_DECL",
             "name": "_ReferenceFrame",
+            "brief_comment": "A structure representing the Local Reference Frame of a point.",
+            "raw_comment": "/** \\brief A structure representing the Local Reference Frame of a point.\n    *  \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -10236,6 +10982,8 @@
                 "column": 40,
                 "kind": "CXX_METHOD",
                 "name": "getXAxisVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10244,6 +10992,8 @@
                 "column": 52,
                 "kind": "CXX_METHOD",
                 "name": "getXAxisVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "const int",
                 "members": []
               },
               {
@@ -10252,6 +11002,8 @@
                 "column": 40,
                 "kind": "CXX_METHOD",
                 "name": "getYAxisVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10260,6 +11012,8 @@
                 "column": 52,
                 "kind": "CXX_METHOD",
                 "name": "getYAxisVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "const int",
                 "members": []
               },
               {
@@ -10268,6 +11022,8 @@
                 "column": 40,
                 "kind": "CXX_METHOD",
                 "name": "getZAxisVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10276,6 +11032,8 @@
                 "column": 52,
                 "kind": "CXX_METHOD",
                 "name": "getZAxisVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "const int",
                 "members": []
               },
               {
@@ -10284,6 +11042,8 @@
                 "column": 40,
                 "kind": "CXX_METHOD",
                 "name": "getMatrix3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10292,6 +11052,8 @@
                 "column": 52,
                 "kind": "CXX_METHOD",
                 "name": "getMatrix3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "const int",
                 "members": []
               }
             ]
@@ -10302,6 +11064,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -10326,6 +11089,7 @@
                 "column": 48,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_ReferenceFrame",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -10343,6 +11107,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "ReferenceFrame",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -10369,6 +11135,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "ReferenceFrame",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -10379,6 +11147,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -10396,6 +11165,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "FPFHSignature33",
+            "brief_comment": "A point structure representing the Fast Point Feature Histogram (FPFH).",
+            "raw_comment": "/** \\brief A point structure representing the Fast Point Feature Histogram (FPFH).\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -10403,6 +11174,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "histogram",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10411,6 +11183,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10419,6 +11193,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "FPFHSignature33",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -10429,6 +11205,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -10446,6 +11223,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "VFHSignature308",
+            "brief_comment": "A point structure representing the Viewpoint Feature Histogram (VFH).",
+            "raw_comment": "/** \\brief A point structure representing the Viewpoint Feature Histogram (VFH).\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -10453,6 +11232,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "histogram",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10461,6 +11241,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10469,6 +11251,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "VFHSignature308",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -10479,6 +11263,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -10496,6 +11281,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "GRSDSignature21",
+            "brief_comment": "A point structure representing the Global Radius-based Surface Descriptor (GRSD).",
+            "raw_comment": "/** \\brief A point structure representing the Global Radius-based Surface Descriptor (GRSD).\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -10503,6 +11290,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "histogram",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10511,6 +11299,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10519,6 +11309,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "GRSDSignature21",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -10529,6 +11321,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -10546,6 +11339,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "BRISKSignature512",
+            "brief_comment": "A point structure representing the Binary Robust Invariant Scalable Keypoints (BRISK).",
+            "raw_comment": "/** \\brief A point structure representing the Binary Robust Invariant Scalable Keypoints (BRISK).\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -10553,6 +11348,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "scale",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10561,6 +11357,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "orientation",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10569,6 +11366,7 @@
                 "column": 19,
                 "kind": "FIELD_DECL",
                 "name": "descriptor",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10577,6 +11375,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10585,6 +11385,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "BRISKSignature512",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               },
               {
@@ -10593,6 +11395,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "BRISKSignature512",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -10670,6 +11474,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -10687,6 +11492,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "ESFSignature640",
+            "brief_comment": "A point structure representing the Ensemble of Shape Functions (ESF).",
+            "raw_comment": "/** \\brief A point structure representing the Ensemble of Shape Functions (ESF).\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -10694,6 +11501,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "histogram",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10702,6 +11510,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10710,6 +11520,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "ESFSignature640",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -10720,6 +11532,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -10737,6 +11550,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "GASDSignature512",
+            "brief_comment": "A point structure representing the Globally Aligned Spatial Distribution (GASD) shape descriptor.",
+            "raw_comment": "/** \\brief A point structure representing the Globally Aligned Spatial Distribution (GASD) shape descriptor.\n  * \\ingroup common\n  */",
             "members": [
               {
                 "depth": 3,
@@ -10744,6 +11559,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "histogram",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10752,6 +11568,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10760,6 +11578,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "GASDSignature512",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -10770,6 +11590,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -10787,6 +11608,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "GASDSignature984",
+            "brief_comment": "A point structure representing the Globally Aligned Spatial Distribution (GASD) shape and color descriptor.",
+            "raw_comment": "/** \\brief A point structure representing the Globally Aligned Spatial Distribution (GASD) shape and color descriptor.\n  * \\ingroup common\n  */",
             "members": [
               {
                 "depth": 3,
@@ -10794,6 +11617,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "histogram",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10802,6 +11626,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10810,6 +11636,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "GASDSignature984",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -10820,6 +11648,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -10837,6 +11666,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "GASDSignature7992",
+            "brief_comment": "A point structure representing the Globally Aligned Spatial Distribution (GASD) shape and color descriptor.",
+            "raw_comment": "/** \\brief A point structure representing the Globally Aligned Spatial Distribution (GASD) shape and color descriptor.\n  * \\ingroup common\n  */",
             "members": [
               {
                 "depth": 3,
@@ -10844,6 +11675,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "histogram",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10852,6 +11684,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10860,6 +11694,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "GASDSignature7992",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -10870,6 +11706,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -10887,6 +11724,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "GFPFHSignature16",
+            "brief_comment": "A point structure representing the GFPFH descriptor with 16 bins.",
+            "raw_comment": "/** \\brief A point structure representing the GFPFH descriptor with 16 bins.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -10894,6 +11733,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "histogram",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10902,6 +11742,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -10910,6 +11752,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "GFPFHSignature16",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -10920,6 +11764,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -10937,6 +11782,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "Narf36",
+            "brief_comment": "A point structure representing the Narf descriptor.",
+            "raw_comment": "/** \\brief A point structure representing the Narf descriptor.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -10944,6 +11791,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "x",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10952,6 +11800,7 @@
                 "column": 20,
                 "kind": "FIELD_DECL",
                 "name": "y",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10960,6 +11809,7 @@
                 "column": 29,
                 "kind": "FIELD_DECL",
                 "name": "z",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10968,6 +11818,7 @@
                 "column": 38,
                 "kind": "FIELD_DECL",
                 "name": "roll",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10976,6 +11827,7 @@
                 "column": 50,
                 "kind": "FIELD_DECL",
                 "name": "pitch",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10984,6 +11836,7 @@
                 "column": 63,
                 "kind": "FIELD_DECL",
                 "name": "yaw",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -10992,6 +11845,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "descriptor",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -11000,6 +11854,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11008,6 +11864,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "Narf36",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               },
               {
@@ -11016,6 +11874,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "Narf36",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -11117,6 +11977,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "Narf36",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -11326,6 +12188,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -11343,6 +12206,9 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "BorderDescription",
+            "access_specifier": "PUBLIC",
+            "brief_comment": "A structure to store if a point in a range image lies on a border between an obstacle and the background.",
+            "raw_comment": "/** \\brief A structure to store if a point in a range image lies on a border between an obstacle and the background.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -11350,6 +12216,7 @@
                 "column": 9,
                 "kind": "FIELD_DECL",
                 "name": "x",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -11358,6 +12225,7 @@
                 "column": 16,
                 "kind": "FIELD_DECL",
                 "name": "y",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -11366,6 +12234,7 @@
                 "column": 18,
                 "kind": "FIELD_DECL",
                 "name": "traits",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -11374,6 +12243,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "BorderDescription",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -11384,6 +12255,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -11401,6 +12273,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "IntensityGradient",
+            "brief_comment": "A point structure representing the intensity gradient of an XYZI point cloud.",
+            "raw_comment": "/** \\brief A point structure representing the intensity gradient of an XYZI point cloud.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -11408,6 +12282,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "IntensityGradient",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -11433,6 +12309,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "IntensityGradient",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -11543,6 +12421,8 @@
             "column": 10,
             "kind": "CLASS_TEMPLATE",
             "name": "Histogram",
+            "brief_comment": "A point structure representing an N-D histogram.",
+            "raw_comment": "/** \\brief A point structure representing an N-D histogram.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -11550,6 +12430,7 @@
                 "column": 17,
                 "kind": "TEMPLATE_NON_TYPE_PARAMETER",
                 "name": "N",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -11558,6 +12439,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "histogram",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -11575,6 +12457,8 @@
                 "column": 16,
                 "kind": "CXX_METHOD",
                 "name": "descriptorSize",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -11592,6 +12476,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11600,6 +12486,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11608,6 +12496,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11616,6 +12506,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11624,6 +12516,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11632,6 +12526,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11640,6 +12536,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11648,6 +12546,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11656,6 +12556,9 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "angle",
+                "access_specifier": "PUBLIC",
+                "brief_comment": "Computed orientation of the keypoint (-1 if not applicable).",
+                "raw_comment": "/** \\brief Computed orientation of the keypoint (-1 if not applicable). */",
                 "members": []
               },
               {
@@ -11664,6 +12567,9 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "response",
+                "access_specifier": "PUBLIC",
+                "brief_comment": "The response by which the most strong keypoints have been selected.",
+                "raw_comment": "/** \\brief The response by which the most strong keypoints have been selected. */",
                 "members": []
               },
               {
@@ -11672,6 +12578,9 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "octave",
+                "access_specifier": "PUBLIC",
+                "brief_comment": "octave (pyramid layer) from which the keypoint has been extracted.",
+                "raw_comment": "/** \\brief octave (pyramid layer) from which the keypoint has been extracted. */",
                 "members": []
               }
             ]
@@ -11682,6 +12591,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -11699,6 +12609,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "PointWithScale",
+            "brief_comment": "A point structure representing a 3-D position and scale.",
+            "raw_comment": "/** \\brief A point structure representing a 3-D position and scale.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -11706,6 +12618,7 @@
                 "column": 34,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_PointWithScale",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -11723,6 +12636,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointWithScale",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -11749,6 +12664,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointWithScale",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -11774,6 +12691,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointWithScale",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -11848,6 +12767,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11856,6 +12777,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11864,6 +12787,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11872,6 +12797,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11880,6 +12807,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11888,6 +12817,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11896,6 +12827,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11904,6 +12837,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11912,6 +12847,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11920,6 +12857,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11928,6 +12867,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11936,6 +12877,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getNormalVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -11944,6 +12887,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector3i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector3i",
                 "members": [
                   {
                     "depth": 4,
@@ -11969,6 +12914,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector3i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector3i",
                 "members": [
                   {
                     "depth": 4,
@@ -11994,6 +12941,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -12019,6 +12968,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -12044,6 +12995,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBAVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -12069,6 +13022,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getRGBAVector4i",
+                "access_specifier": "PUBLIC",
+                "result_type": "const Eigen::Vector4i",
                 "members": [
                   {
                     "depth": 4,
@@ -12094,6 +13049,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRVector3cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -12102,6 +13059,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRVector3cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -12110,6 +13069,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRAVector4cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -12118,6 +13079,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getBGRAVector4cMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               }
             ]
@@ -12128,6 +13091,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -12145,6 +13109,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "PointSurfel",
+            "brief_comment": "A surfel, that is, a point structure representing Euclidean xyz coordinates, together with normal coordinates, a RGBA color, a radius, a confidence value and the surface curvature estimate.",
+            "raw_comment": "/** \\brief A surfel, that is, a point structure representing Euclidean xyz coordinates, together with normal coordinates, a RGBA color, a radius, a confidence value and the surface curvature estimate.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -12152,6 +13118,7 @@
                 "column": 31,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_PointSurfel",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -12169,6 +13136,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointSurfel",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -12195,6 +13164,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointSurfel",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": []
               }
             ]
@@ -12212,6 +13183,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -12220,6 +13193,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -12228,6 +13203,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -12236,6 +13213,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getVector4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -12244,6 +13223,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -12252,6 +13233,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray3fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -12260,6 +13243,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -12268,6 +13253,8 @@
                 "column": 5,
                 "kind": "CXX_METHOD",
                 "name": "getArray4fMap",
+                "access_specifier": "PUBLIC",
+                "result_type": "int",
                 "members": []
               },
               {
@@ -12276,6 +13263,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "intensity",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -12284,6 +13272,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "intensity_variance",
+                "access_specifier": "PUBLIC",
                 "members": []
               },
               {
@@ -12292,6 +13281,7 @@
                 "column": 11,
                 "kind": "FIELD_DECL",
                 "name": "height_variance",
+                "access_specifier": "PUBLIC",
                 "members": []
               }
             ]
@@ -12302,6 +13292,7 @@
             "column": 20,
             "kind": "VAR_DECL",
             "name": "ostream",
+            "access_specifier": "PUBLIC",
             "members": [
               {
                 "depth": 3,
@@ -12319,6 +13310,8 @@
             "column": 10,
             "kind": "STRUCT_DECL",
             "name": "PointDEM",
+            "brief_comment": "A point structure representing Digital Elevation Map.",
+            "raw_comment": "/** \\brief A point structure representing Digital Elevation Map.\n    * \\ingroup common\n    */",
             "members": [
               {
                 "depth": 3,
@@ -12326,6 +13319,7 @@
                 "column": 28,
                 "kind": "CXX_BASE_SPECIFIER",
                 "name": "struct pcl::_PointDEM",
+                "access_specifier": "PUBLIC",
                 "members": [
                   {
                     "depth": 4,
@@ -12343,6 +13337,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointDEM",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -12369,6 +13365,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointDEM",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -12394,6 +13392,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointDEM",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -12495,6 +13495,8 @@
                 "column": 12,
                 "kind": "CONSTRUCTOR",
                 "name": "PointDEM",
+                "access_specifier": "PUBLIC",
+                "result_type": "void",
                 "members": [
                   {
                     "depth": 4,
@@ -12554,6 +13556,8 @@
             "column": 3,
             "kind": "FUNCTION_TEMPLATE",
             "name": "operator<<",
+            "access_specifier": "PUBLIC",
+            "result_type": "int &",
             "members": [
               {
                 "depth": 3,
@@ -12561,6 +13565,7 @@
                 "column": 17,
                 "kind": "TEMPLATE_NON_TYPE_PARAMETER",
                 "name": "N",
+                "access_specifier": "PUBLIC",
                 "members": []
               }
             ]
