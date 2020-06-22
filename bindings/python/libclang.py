@@ -20,13 +20,18 @@ class bcolors:
 def print_node(cursor, lines, depth):
     file = cursor.location.file
     line, column = cursor.location.line, cursor.location.column
+    result_type = (
+        cursor.result_type.spelling if cursor.result_type.spelling is not "" else "None"
+    )
     print(
         "-" * depth,
         file,
         f"L{line} C{column}",
         bcolors.BOLD + cursor.kind.name + bcolors.ENDC,
         bcolors.OKBLUE + cursor.spelling + bcolors.ENDC,
-        bcolors.OKGREEN + cursor.displayname + bcolors.ENDC,
+        bcolors.OKGREEN + cursor.access_specifier.name + bcolors.ENDC,
+        bcolors.OKGREEN + "->" + bcolors.ENDC,
+        bcolors.OKGREEN + result_type + bcolors.ENDC,
     )
 
 
@@ -50,16 +55,24 @@ def dump_json(filepath, parsed_list):
 
 def generate_parsed_info(cursor, filter, lines, this_filename, depth, parsed_list):
     if cursor.spelling:
-        parsed_list.append(
-            {
-                "depth": depth,
-                "line": cursor.location.line,
-                "column": cursor.location.column,
-                "kind": cursor.kind.name,
-                "name": cursor.spelling,
-                "members": [],
-            }
-        )
+        holder = {
+            "depth": depth,
+            "line": cursor.location.line,
+            "column": cursor.location.column,
+            "kind": cursor.kind.name,
+            "name": cursor.spelling,
+        }
+        if cursor.access_specifier.name is not "INVALID":
+            holder["access_specifier"] = cursor.access_specifier.name
+        if cursor.result_type.spelling is not "":
+            holder["result_type"] = cursor.result_type.spelling
+        if cursor.brief_comment:
+            holder["brief_comment"] = cursor.brief_comment
+        if cursor.raw_comment:
+            holder["raw_comment"] = cursor.raw_comment
+        holder["members"] = []
+
+        parsed_list.append(holder)
 
     for child in cursor.get_children():
         if node_in_this_file(child, this_filename):
