@@ -120,7 +120,6 @@ namespace pcl
   using index_t = detail::int_type_t<detail::index_type_size, detail::index_type_signed>;
   static_assert(!std::is_void<index_t>::value, "`index_t` can't have type `void`");
 
-<<<<<<< HEAD
    /**
    * \brief Type used for an unsigned index in PCL
    *
@@ -129,8 +128,6 @@ namespace pcl
   using uindex_t = detail::int_type_t<detail::index_type_size, false>;
   static_assert(!std::is_signed<uindex_t>::value, "`uindex_t` must be unsigned");
 
-=======
->>>>>>> remove uindex_t
   /**
    * \brief Type used for indices in PCL
    * \todo Remove with C++20
