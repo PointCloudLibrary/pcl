@@ -743,13 +743,13 @@ pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PCLPointCloud2>::PointClou
 : pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::PointCloudGeometryHandler (cloud)
 {
   field_x_idx_ = pcl::getFieldIndex (*cloud, "x");
-  if (field_x_idx_ == -1)
+  if (field_x_idx_ == UNAVAILABLE)
     return;
   field_y_idx_ = pcl::getFieldIndex (*cloud, "y");
-  if (field_y_idx_ == -1)
+  if (field_y_idx_ == UNAVAILABLE)
     return;
   field_z_idx_ = pcl::getFieldIndex (*cloud, "z");
-  if (field_z_idx_ == -1)
+  if (field_z_idx_ == UNAVAILABLE)
     return;
   capable_ = true;
 }
@@ -759,13 +759,13 @@ pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<pcl::PCLPointCloud2>:
 : pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::PointCloudGeometryHandler (cloud)
 {
   field_x_idx_ = pcl::getFieldIndex (*cloud, "normal_x");
-  if (field_x_idx_ == -1)
+  if (field_x_idx_ == UNAVAILABLE)
     return;
   field_y_idx_ = pcl::getFieldIndex (*cloud, "normal_y");
-  if (field_y_idx_ == -1)
+  if (field_y_idx_ == UNAVAILABLE)
     return;
   field_z_idx_ = pcl::getFieldIndex (*cloud, "normal_z");
-  if (field_z_idx_ == -1)
+  if (field_z_idx_ == UNAVAILABLE)
     return;
   capable_ = true;
 }
@@ -776,13 +776,13 @@ pcl::visualization::PointCloudGeometryHandlerCustom<pcl::PCLPointCloud2>::PointC
 : pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::PointCloudGeometryHandler (cloud)
 {
   field_x_idx_ = pcl::getFieldIndex (*cloud, x_field_name);
-  if (field_x_idx_ == -1)
+  if (field_x_idx_ == UNAVAILABLE)
     return;
   field_y_idx_ = pcl::getFieldIndex (*cloud, y_field_name);
-  if (field_y_idx_ == -1)
+  if (field_y_idx_ == UNAVAILABLE)
     return;
   field_z_idx_ = pcl::getFieldIndex (*cloud, z_field_name);
-  if (field_z_idx_ == -1)
+  if (field_z_idx_ == UNAVAILABLE)
     return;
   field_name_ = x_field_name + y_field_name + z_field_name;
   capable_ = true;
