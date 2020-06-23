@@ -82,9 +82,9 @@ CopyPointCloudToBuffers(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& clou
 
     const int conversion_factor = 500;
 
-    cloud_buffers[j * 3 + 0] = static_cast<short>(point.x * conversion_factor);
-    cloud_buffers[j * 3 + 1] = static_cast<short>(point.y * conversion_factor);
-    cloud_buffers[j * 3 + 2] = static_cast<short>(point.z * conversion_factor);
+    cloud_buffers.points[j * 3 + 0] = static_cast<short>(point.x * conversion_factor);
+    cloud_buffers.points[j * 3 + 1] = static_cast<short>(point.y * conversion_factor);
+    cloud_buffers.points[j * 3 + 2] = static_cast<short>(point.z * conversion_factor);
 
     cloud_buffers.rgb[j * 3 + 0] = point.r;
     cloud_buffers.rgb[j * 3 + 1] = point.g;
