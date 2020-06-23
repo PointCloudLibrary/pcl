@@ -174,13 +174,13 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
       centroid.setZero ();
       for (const int &nn_index : nn_indices)
       {
-        centroid += surface_->points[nn_index].getVector3fMap ();
-        mean_intensity += intensity_ (surface_->points[nn_index]);
+        centroid += (*surface_)[nn_index].getVector3fMap ();
+        mean_intensity += intensity_ ((*surface_)[nn_index]);
       }
       centroid /= static_cast<float> (nn_indices.size ());
       mean_intensity /= static_cast<float> (nn_indices.size ());
 
-      Eigen::Vector3f normal = Eigen::Vector3f::Map (normals_->points[(*indices_) [idx]].normal);
+      Eigen::Vector3f normal = Eigen::Vector3f::Map ((*normals_)[(*indices_) [idx]].normal);
       Eigen::Vector3f gradient;
       computePointIntensityGradient (*surface_, nn_indices, centroid, mean_intensity, normal, gradient);
 
@@ -224,7 +224,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
       }
       centroid /= static_cast<float> (cp);
       mean_intensity /= static_cast<float> (cp);
-      Eigen::Vector3f normal = Eigen::Vector3f::Map (normals_->points[(*indices_) [idx]].normal);
+      Eigen::Vector3f normal = Eigen::Vector3f::Map ((*normals_)[(*indices_) [idx]].normal);
       Eigen::Vector3f gradient;
       computePointIntensityGradient (*surface_, nn_indices, centroid, mean_intensity, normal, gradient);
 

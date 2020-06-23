@@ -34,10 +34,10 @@ pcl::rec_3d_framework::GlobalNNPipeline<Distance, PointInT, FeatureT>::
 
         flann_model descr_model;
         descr_model.first = models->at(i);
-        int size_feat = sizeof(signature->points[0].histogram) / sizeof(float);
+        int size_feat = sizeof((*signature)[0].histogram) / sizeof(float);
         descr_model.second.resize(size_feat);
         memcpy(&descr_model.second[0],
-               &signature->points[0].histogram[0],
+               &(*signature)[0].histogram[0],
                size_feat * sizeof(float));
 
         flann_models_.push_back(descr_model);

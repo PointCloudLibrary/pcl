@@ -69,9 +69,9 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &in
   int valid_distances = 0;
   for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
   {
-    if (!std::isfinite (input_->points[(*indices_)[iii]].x) ||
-        !std::isfinite (input_->points[(*indices_)[iii]].y) ||
-        !std::isfinite (input_->points[(*indices_)[iii]].z))
+    if (!std::isfinite ((*input_)[(*indices_)[iii]].x) ||
+        !std::isfinite ((*input_)[(*indices_)[iii]].y) ||
+        !std::isfinite ((*input_)[(*indices_)[iii]].z))
     {
       distances[iii] = 0.0;
       continue;

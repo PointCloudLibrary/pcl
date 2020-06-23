@@ -484,7 +484,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     unsigned int scale;
     if (scale_invariance_enabled_)
     {
-      scale = std::max (static_cast<int> (float (scales_) / lb_scalerange * (std::log2 (keypoints_->points[k].size / (basic_size_06))) + 0.5f), 0);
+      scale = std::max (static_cast<int> (float (scales_) / lb_scalerange * (std::log2 ((*keypoints_)[k].size / (basic_size_06))) + 0.5f), 0);
       // saturate
       if (scale >= scales_) scale = scales_ - 1;
       kscales[k] = scale;
@@ -499,7 +499,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     const int border_x = width - border;
     const int border_y = height - border;
 
-    if (RoiPredicate (float (border), float (border), float (border_x), float (border_y), keypoints_->points[k]))
+    if (RoiPredicate (float (border), float (border), float (border_x), float (border_y), (*keypoints_)[k]))
     {
       //std::cerr << "remove keypoint" << std::endl;
       keypoints_->points.erase (beginning + k);
@@ -558,7 +558,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     unsigned char* ptr = &output[k].descriptor[0];
 
     int theta;
-    KeypointT &kp    = keypoints_->points[k];
+    KeypointT &kp    = (*keypoints_)[k];
     const int& scale = kscales[k];
     int shifter = 0;
     int* pvalues = values;

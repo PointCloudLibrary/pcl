@@ -230,8 +230,8 @@ public:
     std::size_t j = 0;
     for (std::size_t i = 0; i < keypoints->size(); ++i) {
       const PointT& pt =
-          (*cloud)(static_cast<long unsigned int>(keypoints->points[i].u),
-                   static_cast<long unsigned int>(keypoints->points[i].v));
+          (*cloud)(static_cast<long unsigned int>((*keypoints)[i].u),
+                   static_cast<long unsigned int>((*keypoints)[i].v));
       if (!std::isfinite(pt.x) || !std::isfinite(pt.y) || !std::isfinite(pt.z))
         continue;
 
@@ -298,8 +298,8 @@ public:
         if (keypoints && !keypoints->empty()) {
           image_viewer_.removeLayer(getStrBool(keypts));
           for (std::size_t i = 0; i < keypoints->size(); ++i) {
-            int u = int(keypoints->points[i].u);
-            int v = int(keypoints->points[i].v);
+            int u = int((*keypoints)[i].u);
+            int v = int((*keypoints)[i].v);
             image_viewer_.markPoint(u,
                                     v,
                                     visualization::red_color,

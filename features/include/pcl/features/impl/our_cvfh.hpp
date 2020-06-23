@@ -207,7 +207,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
 
   grid->points.resize (processed->points.size ());
   for (std::size_t k = 0; k < processed->points.size (); k++)
-    grid->points[k].getVector4fMap () = processed->points[k].getVector4fMap ();
+    (*grid)[k].getVector4fMap () = (*processed)[k].getVector4fMap ();
 
   pcl::transformPointCloud (*grid, *grid, transformPC);
 
@@ -239,7 +239,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
 
   for (const int &index : indices.indices)
   {
-    Eigen::Vector3f pvector = grid->points[index].getVector3fMap ();
+    Eigen::Vector3f pvector = (*grid)[index].getVector3fMap ();
     float d_k = (pvector).norm ();
     float w = (max_dist - d_k);
     Eigen::Vector3f diff = (pvector);
@@ -580,10 +580,10 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
   for (std::size_t i = 0; i < indices_in.size (); ++i)
   {
-    normals_filtered_cloud->points[i].x = surface_->points[indices_in[i]].x;
-    normals_filtered_cloud->points[i].y = surface_->points[indices_in[i]].y;
-    normals_filtered_cloud->points[i].z = surface_->points[indices_in[i]].z;
-    //normals_filtered_cloud->points[i].getNormalVector4fMap() = normals_->points[indices_in[i]].getNormalVector4fMap();
+    (*normals_filtered_cloud)[i].x = (*surface_)[indices_in[i]].x;
+    (*normals_filtered_cloud)[i].y = (*surface_)[indices_in[i]].y;
+    (*normals_filtered_cloud)[i].z = (*surface_)[indices_in[i]].z;
+    //(*normals_filtered_cloud)[i].getNormalVector4fMap() = (*normals_)[indices_in[i]].getNormalVector4fMap();
     indices_from_nfc_to_indices[i] = indices_in[i];
   }
 
@@ -625,8 +625,8 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
       for (const auto &index : cluster.indices)
       {
-        avg_normal += normals_filtered_cloud->points[index].getNormalVector4fMap ();
-        avg_centroid += normals_filtered_cloud->points[index].getVector4fMap ();
+        avg_normal += (*normals_filtered_cloud)[index].getNormalVector4fMap ();
+        avg_centroid += (*normals_filtered_cloud)[index].getVector4fMap ();
       }
 
       avg_normal /= static_cast<float> (cluster.indices.size ());
@@ -639,7 +639,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
       for (const auto &index : cluster.indices)
       {
         //decide if normal should be added
-        double dot_p = avg_normal.dot (normals_filtered_cloud->points[index].getNormalVector4fMap ());
+        double dot_p = avg_normal.dot ((*normals_filtered_cloud)[index].getNormalVector4fMap ());
         if (std::abs (std::acos (dot_p)) < (eps_angle_threshold_ * refine_clusters_))
         {
           clusters_[cluster_filtered_idx].indices.push_back (indices_from_nfc_to_indices[index]);
@@ -681,8 +681,8 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
       for (const auto &index : cluster.indices)
       {
-        avg_normal += normals_filtered_cloud->points[index].getNormalVector4fMap ();
-        avg_centroid += normals_filtered_cloud->points[index].getVector4fMap ();
+        avg_normal += (*normals_filtered_cloud)[index].getNormalVector4fMap ();
+        avg_centroid += (*normals_filtered_cloud)[index].getVector4fMap ();
       }
 
       avg_normal /= static_cast<float> (cluster.indices.size ());

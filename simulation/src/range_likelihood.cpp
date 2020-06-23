@@ -858,24 +858,24 @@ pcl::simulation::RangeLikelihood::getPointCloud(
         // screen, The Z-buffer is natively -1 (far) to 1 (near). But in this class we
         // invert this to be 0 (near, 0.7m) and 1 (far, 20m), so by negating y we get to
         // a right-hand computer vision system which is also used by PCL and OpenNi.
-        pc->points[idx].z = z;
-        pc->points[idx].x =
+        (*pc)[idx].z = z;
+        (*pc)[idx].x =
             (static_cast<float>(x) - camera_cx_) * z * (-camera_fx_reciprocal_);
-        pc->points[idx].y =
+        (*pc)[idx].y =
             (static_cast<float>(y) - camera_cy_) * z * (-camera_fy_reciprocal_);
 
         int rgb_idx = y * col_width_ + x;                  // camera_width_
-        pc->points[idx].b = color_buffer[rgb_idx * 3 + 2]; // blue
-        pc->points[idx].g = color_buffer[rgb_idx * 3 + 1]; // green
-        pc->points[idx].r = color_buffer[rgb_idx * 3];     // red
+        (*pc)[idx].b = color_buffer[rgb_idx * 3 + 2]; // blue
+        (*pc)[idx].g = color_buffer[rgb_idx * 3 + 1]; // green
+        (*pc)[idx].r = color_buffer[rgb_idx * 3];     // red
         points_added++;
       }
       else if (organized) {
         pc->is_dense = false;
-        pc->points[idx].z = std::numeric_limits<float>::quiet_NaN();
-        pc->points[idx].x = std::numeric_limits<float>::quiet_NaN();
-        pc->points[idx].y = std::numeric_limits<float>::quiet_NaN();
-        pc->points[idx].rgba = 0;
+        (*pc)[idx].z = std::numeric_limits<float>::quiet_NaN();
+        (*pc)[idx].x = std::numeric_limits<float>::quiet_NaN();
+        (*pc)[idx].y = std::numeric_limits<float>::quiet_NaN();
+        (*pc)[idx].rgba = 0;
       }
     }
   }

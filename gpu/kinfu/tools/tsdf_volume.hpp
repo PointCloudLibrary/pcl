@@ -173,7 +173,7 @@ pcl::TSDFVolume<VoxelT, WeightT>::convertToTsdfCloud (pcl::PointCloud<pcl::Point
       for (int x = 0; x < sx; x+=step, ++cloud_idx)
       {
         volume_idx = sx*sy*z + sx*y + x;
-        // pcl::PointXYZI &point = cloud->points[cloud_idx];
+        // pcl::PointXYZI &point = (*cloud)[cloud_idx];
 
         if (weights_->at(volume_idx) == 0 || volume_->at(volume_idx) > 0.98 )
           continue;

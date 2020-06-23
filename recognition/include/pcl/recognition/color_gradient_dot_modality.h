@@ -187,17 +187,17 @@ computeMaxColorGradients ()
       const int index_c = row_index*width+col_index+2;
       const int index_r = (row_index+2)*width+col_index;
 
-      const unsigned char r0 = input_->points[index0].r;
-      const unsigned char g0 = input_->points[index0].g;
-      const unsigned char b0 = input_->points[index0].b;
+      const unsigned char r0 = (*input_)[index0].r;
+      const unsigned char g0 = (*input_)[index0].g;
+      const unsigned char b0 = (*input_)[index0].b;
 
-      const unsigned char r_c = input_->points[index_c].r;
-      const unsigned char g_c = input_->points[index_c].g;
-      const unsigned char b_c = input_->points[index_c].b;
+      const unsigned char r_c = (*input_)[index_c].r;
+      const unsigned char g_c = (*input_)[index_c].g;
+      const unsigned char b_c = (*input_)[index_c].b;
 
-      const unsigned char r_r = input_->points[index_r].r;
-      const unsigned char g_r = input_->points[index_r].g;
-      const unsigned char b_r = input_->points[index_r].b;
+      const unsigned char r_r = (*input_)[index_r].r;
+      const unsigned char g_r = (*input_)[index_r].g;
+      const unsigned char b_r = (*input_)[index_r].b;
 
       const float r_dx = static_cast<float> (r_c) - static_cast<float> (r0);
       const float g_dx = static_cast<float> (g_c) - static_cast<float> (g0);

@@ -134,7 +134,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudI
 
       if (n_neighbors >= min_neighbors_)
       {
-	boundary_estimator.getCoordinateSystemOnPlane (normals_->points[index], u, v);
+	boundary_estimator.getCoordinateSystemOnPlane ((*normals_)[index], u, v);
 
 	if (boundary_estimator.isBoundaryPoint (input, static_cast<int> (index), nn_indices, u, v, angle_threshold))
 	  edge_points[index] = true;
@@ -306,7 +306,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   for (int index = 0; index < int (input_->size ()); index++)
   {
     borders[index] = false;
-    PointInT current_point = input_->points[index];
+    PointInT current_point = (*input_)[index];
 
     if ((border_radius_ > 0.0) && (pcl::isFinite(current_point)))
     {
@@ -354,7 +354,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 #else
     int tid = 0;
 #endif
-    PointInT current_point = input_->points[index];
+    PointInT current_point = (*input_)[index];
 
     if ((!borders[index]) && pcl::isFinite(current_point))
     {
@@ -405,7 +405,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   for (int index = 0; index < int (input_->size ()); index++)
   {
     feat_max [index] = false;
-    PointInT current_point = input_->points[index];
+    PointInT current_point = (*input_)[index];
 
     if ((third_eigen_value_[index] > 0.0) && (pcl::isFinite(current_point)))
     {
@@ -440,7 +440,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 #pragma omp critical
     {
       PointOutT p;
-      p.getVector3fMap () = input_->points[index].getVector3fMap ();
+      p.getVector3fMap () = (*input_)[index].getVector3fMap ();
       output.points.push_back(p);
       keypoints_indices_->indices.push_back (index);
     }

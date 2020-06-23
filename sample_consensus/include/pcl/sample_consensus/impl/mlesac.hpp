@@ -216,7 +216,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedianAbsoluteDeviation (
 
   for (std::size_t i = 0; i < indices->size (); ++i)
   {
-    pcl::Vector4fMapConst pt = cloud->points[(*indices)[i]].getVector4fMap ();
+    pcl::Vector4fMapConst pt = (*cloud)[(*indices)[i]].getVector4fMap ();
     Eigen::Vector4f ptdiff = pt - median;
     ptdiff[3] = 0;
     distances[i] = ptdiff.dot (ptdiff);
@@ -248,13 +248,13 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::getMinMax (
 
   for (std::size_t i = 0; i < indices->size (); ++i)
   {
-    if (cloud->points[(*indices)[i]].x < min_p[0]) min_p[0] = cloud->points[(*indices)[i]].x;
-    if (cloud->points[(*indices)[i]].y < min_p[1]) min_p[1] = cloud->points[(*indices)[i]].y;
-    if (cloud->points[(*indices)[i]].z < min_p[2]) min_p[2] = cloud->points[(*indices)[i]].z;
+    if ((*cloud)[(*indices)[i]].x < min_p[0]) min_p[0] = (*cloud)[(*indices)[i]].x;
+    if ((*cloud)[(*indices)[i]].y < min_p[1]) min_p[1] = (*cloud)[(*indices)[i]].y;
+    if ((*cloud)[(*indices)[i]].z < min_p[2]) min_p[2] = (*cloud)[(*indices)[i]].z;
 
-    if (cloud->points[(*indices)[i]].x > max_p[0]) max_p[0] = cloud->points[(*indices)[i]].x;
-    if (cloud->points[(*indices)[i]].y > max_p[1]) max_p[1] = cloud->points[(*indices)[i]].y;
-    if (cloud->points[(*indices)[i]].z > max_p[2]) max_p[2] = cloud->points[(*indices)[i]].z;
+    if ((*cloud)[(*indices)[i]].x > max_p[0]) max_p[0] = (*cloud)[(*indices)[i]].x;
+    if ((*cloud)[(*indices)[i]].y > max_p[1]) max_p[1] = (*cloud)[(*indices)[i]].y;
+    if ((*cloud)[(*indices)[i]].z > max_p[2]) max_p[2] = (*cloud)[(*indices)[i]].z;
   }
 }
 
@@ -271,9 +271,9 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedian (
   std::vector<float> z (indices->size ());
   for (std::size_t i = 0; i < indices->size (); ++i)
   {
-    x[i] = cloud->points[(*indices)[i]].x;
-    y[i] = cloud->points[(*indices)[i]].y;
-    z[i] = cloud->points[(*indices)[i]].z;
+    x[i] = (*cloud)[(*indices)[i]].x;
+    y[i] = (*cloud)[(*indices)[i]].y;
+    z[i] = (*cloud)[(*indices)[i]].z;
   }
   std::sort (x.begin (), x.end ());
   std::sort (y.begin (), y.end ());

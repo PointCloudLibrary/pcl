@@ -92,7 +92,7 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
       output[idx].normal_y = n[1];
       output[idx].normal_z = n[2];
 
-      flipNormalTowardsViewpoint (input_->points[(*indices_)[idx]], vpx_, vpy_, vpz_,
+      flipNormalTowardsViewpoint ((*input_)[(*indices_)[idx]], vpx_, vpy_, vpz_,
                                   output[idx].normal[0], output[idx].normal[1], output[idx].normal[2]);
 
     }
@@ -122,7 +122,7 @@ pcl::NormalEstimationOMP<PointInT, PointOutT>::computeFeature (PointCloudOut &ou
       output[idx].normal_y = n[1];
       output[idx].normal_z = n[2];
 
-      flipNormalTowardsViewpoint (input_->points[(*indices_)[idx]], vpx_, vpy_, vpz_,
+      flipNormalTowardsViewpoint ((*input_)[(*indices_)[idx]], vpx_, vpy_, vpz_,
                                   output[idx].normal[0], output[idx].normal[1], output[idx].normal[2]);
 
     }

@@ -50,7 +50,7 @@ createColorCloud (pcl::PointCloud<pcl::PointXYZRGBA> &colorCloud)
   for (std::size_t i = 0; i < cloud->points.size (); ++i)
   {
     pcl::PointXYZRGBA p;
-    p.getVector3fMap () = cloud->points[i].getVector3fMap ();
+    p.getVector3fMap () = (*cloud)[i].getVector3fMap ();
 
     p.rgba = ( (i % 255) << 16) + ( ( (255 - i) % 255) << 8) + ( (i * 37) % 255);
     colorCloud.push_back (p);

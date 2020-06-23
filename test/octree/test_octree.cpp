@@ -341,12 +341,12 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
 
       for (const int &i : tmpVector)
       {
-        ASSERT_GE (cloud->points[i].x, min_pt(0));
-        ASSERT_GE (cloud->points[i].y, min_pt(1));
-        ASSERT_GE (cloud->points[i].z, min_pt(2));
-        ASSERT_LE (cloud->points[i].x, max_pt(0));
-        ASSERT_LE (cloud->points[i].y, max_pt(1));
-        ASSERT_LE (cloud->points[i].z, max_pt(2));
+        ASSERT_GE ((*cloud)[i].x, min_pt(0));
+        ASSERT_GE ((*cloud)[i].y, min_pt(1));
+        ASSERT_GE ((*cloud)[i].z, min_pt(2));
+        ASSERT_LE ((*cloud)[i].x, max_pt(0));
+        ASSERT_LE ((*cloud)[i].y, max_pt(1));
+        ASSERT_LE ((*cloud)[i].z, max_pt(2));
       }
 
       leaf_count++;
@@ -795,7 +795,7 @@ TEST (PCL, Octree_Pointcloud_Test)
     for (std::size_t i = 0; i < cloudB->points.size (); i++)
     {
       std::vector<int> pointIdxVec;
-      octreeB.voxelSearch (cloudB->points[i], pointIdxVec);
+      octreeB.voxelSearch ((*cloudB)[i], pointIdxVec);
 
       bool bIdxFound = false;
       std::vector<int>::const_iterator current = pointIdxVec.begin ();
@@ -948,7 +948,7 @@ TEST(PCL, Octree_Pointcloud_Occupancy_Test)
     // generate point data for point cloud
     for (std::size_t i = 0; i < 1000; i++)
     {
-      cloudIn->points[i] = PointXYZ (static_cast<float> (5.0  * rand () / RAND_MAX),
+      (*cloudIn)[i] = PointXYZ (static_cast<float> (5.0  * rand () / RAND_MAX),
                                      static_cast<float> (10.0 * rand () / RAND_MAX),
                                      static_cast<float> (10.0 * rand () / RAND_MAX));
     }
@@ -960,9 +960,9 @@ TEST(PCL, Octree_Pointcloud_Occupancy_Test)
     // check occupancy of voxels
     for (std::size_t i = 0; i < 1000; i++)
     {
-      ASSERT_TRUE (octree.isVoxelOccupiedAtPoint (cloudIn->points[i]));
-      octree.deleteVoxelAtPoint (cloudIn->points[i]);
-      ASSERT_FALSE (octree.isVoxelOccupiedAtPoint (cloudIn->points[i]));
+      ASSERT_TRUE (octree.isVoxelOccupiedAtPoint ((*cloudIn)[i]));
+      octree.deleteVoxelAtPoint ((*cloudIn)[i]);
+      ASSERT_FALSE (octree.isVoxelOccupiedAtPoint ((*cloudIn)[i]));
     }
   }
 }
@@ -984,7 +984,7 @@ TEST (PCL, Octree_Pointcloud_Change_Detector_Test)
   // generate point data for point cloud
   for (std::size_t i = 0; i < 1000; i++)
   {
-    cloudIn->points[i] = PointXYZ (static_cast<float> (5.0  * rand () / RAND_MAX),
+    (*cloudIn)[i] = PointXYZ (static_cast<float> (5.0  * rand () / RAND_MAX),
                                    static_cast<float> (10.0 * rand () / RAND_MAX),
                                    static_cast<float> (10.0 * rand () / RAND_MAX));
   }
@@ -1046,9 +1046,9 @@ TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
   for (std::size_t i = 0; i < 10; i++)
   {
     // these three points should always be assigned to the same voxel in the octree
-    cloudIn->points[i * 3 + 0] = PointXYZ (static_cast<float> (i) + 0.2f, static_cast<float> (i) + 0.2f, static_cast<float> (i) + 0.2f);
-    cloudIn->points[i * 3 + 1] = PointXYZ (static_cast<float> (i) + 0.4f, static_cast<float> (i) + 0.4f, static_cast<float> (i) + 0.4f);
-    cloudIn->points[i * 3 + 2] = PointXYZ (static_cast<float> (i) + 0.6f, static_cast<float> (i) + 0.6f, static_cast<float> (i) + 0.6f);
+    (*cloudIn)[i * 3 + 0] = PointXYZ (static_cast<float> (i) + 0.2f, static_cast<float> (i) + 0.2f, static_cast<float> (i) + 0.2f);
+    (*cloudIn)[i * 3 + 1] = PointXYZ (static_cast<float> (i) + 0.4f, static_cast<float> (i) + 0.4f, static_cast<float> (i) + 0.4f);
+    (*cloudIn)[i * 3 + 2] = PointXYZ (static_cast<float> (i) + 0.6f, static_cast<float> (i) + 0.6f, static_cast<float> (i) + 0.6f);
   }
 
   // assign point cloud to octree
@@ -1077,9 +1077,9 @@ TEST (PCL, Octree_Pointcloud_Voxel_Centroid_Test)
   for (std::size_t i = 0; i < 10; i++)
   {
     // these three points should always be assigned to the same voxel in the octree
-    cloudIn->points[i * 3 + 0] = PointXYZ (static_cast<float> (i) + 0.1f, static_cast<float> (i) + 0.1f, static_cast<float> (i) + 0.1f);
-    cloudIn->points[i * 3 + 1] = PointXYZ (static_cast<float> (i) + 0.4f, static_cast<float> (i) + 0.4f, static_cast<float> (i) + 0.4f);
-    cloudIn->points[i * 3 + 2] = PointXYZ (static_cast<float> (i) + 0.7f, static_cast<float> (i) + 0.7f, static_cast<float> (i) + 0.7f);
+    (*cloudIn)[i * 3 + 0] = PointXYZ (static_cast<float> (i) + 0.1f, static_cast<float> (i) + 0.1f, static_cast<float> (i) + 0.1f);
+    (*cloudIn)[i * 3 + 1] = PointXYZ (static_cast<float> (i) + 0.4f, static_cast<float> (i) + 0.4f, static_cast<float> (i) + 0.4f);
+    (*cloudIn)[i * 3 + 2] = PointXYZ (static_cast<float> (i) + 0.7f, static_cast<float> (i) + 0.7f, static_cast<float> (i) + 0.7f);
   }
 
   // add points from new cloud to octree
@@ -1162,7 +1162,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
     for (std::size_t i = 0; i < 1000; i++)
     {
-      cloudIn->points[i] = PointXYZ (static_cast<float> (5.0  * rand () / RAND_MAX),
+      (*cloudIn)[i] = PointXYZ (static_cast<float> (5.0  * rand () / RAND_MAX),
                                      static_cast<float> (10.0 * rand () / RAND_MAX),
                                      static_cast<float> (10.0 * rand () / RAND_MAX));
     }
@@ -1176,11 +1176,11 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     // push all points and their distance to the search point into a priority queue - bruteforce approach.
     for (std::size_t i = 0; i < cloudIn->points.size (); i++)
     {
-      double pointDist = ((cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x) +
-                          (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y) +
-                          (cloudIn->points[i].z - searchPoint.z) * (cloudIn->points[i].z - searchPoint.z));
+      double pointDist = (((*cloudIn)[i].x - searchPoint.x) * ((*cloudIn)[i].x - searchPoint.x) +
+                          ((*cloudIn)[i].y - searchPoint.y) * ((*cloudIn)[i].y - searchPoint.y) +
+                          ((*cloudIn)[i].z - searchPoint.z) * ((*cloudIn)[i].z - searchPoint.z));
 
-      prioPointQueueEntry pointEntry (cloudIn->points[i], pointDist, static_cast<int> (i));
+      prioPointQueueEntry pointEntry ((*cloudIn)[i], pointDist, static_cast<int> (i));
 
       pointCandidates.push (pointEntry);
     }
@@ -1273,7 +1273,7 @@ TEST (PCL, Octree_Pointcloud_Box_Search)
     {
       bool inBox;
       bool idxInResults;
-      const PointXYZ& pt = cloudIn->points[i];
+      const PointXYZ& pt = (*cloudIn)[i];
 
       inBox = (pt.x >= lowerBoxCorner (0)) && (pt.x <= upperBoxCorner (0)) &&
               (pt.y >= lowerBoxCorner (1)) && (pt.y <= upperBoxCorner (1)) &&
@@ -1322,7 +1322,7 @@ TEST(PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
     cloudIn->points.resize (cloudIn->width * cloudIn->height);
     for (std::size_t i = 0; i < 1000; i++)
     {
-      cloudIn->points[i] = PointXYZ (static_cast<float> (5.0  * rand () / RAND_MAX),
+      (*cloudIn)[i] = PointXYZ (static_cast<float> (5.0  * rand () / RAND_MAX),
                                      static_cast<float> (10.0 * rand () / RAND_MAX),
                                      static_cast<float> (10.0 * rand () / RAND_MAX));
     }
@@ -1333,9 +1333,9 @@ TEST(PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
 
     for (std::size_t i = 0; i < cloudIn->points.size (); i++)
     {
-      double pointDist = ((cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x) +
-                          (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y) +
-                          (cloudIn->points[i].z - searchPoint.z) * (cloudIn->points[i].z - searchPoint.z));
+      double pointDist = (((*cloudIn)[i].x - searchPoint.x) * ((*cloudIn)[i].x - searchPoint.x) +
+                          ((*cloudIn)[i].y - searchPoint.y) * ((*cloudIn)[i].y - searchPoint.y) +
+                          ((*cloudIn)[i].z - searchPoint.z) * ((*cloudIn)[i].z - searchPoint.z));
 
       if (pointDist < BFdistance)
       {
@@ -1389,7 +1389,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     // generate point cloud data
     for (std::size_t i = 0; i < 1000; i++)
     {
-      cloudIn->points[i] = PointXYZ (static_cast<float> (10.0 * rand () / RAND_MAX),
+      (*cloudIn)[i] = PointXYZ (static_cast<float> (10.0 * rand () / RAND_MAX),
                                      static_cast<float> (10.0 * rand () / RAND_MAX),
                                      static_cast<float> (5.0  * rand () / RAND_MAX));
     }
@@ -1408,9 +1408,9 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     for (std::size_t i = 0; i < cloudIn->points.size (); i++)
     {
       pointDist = sqrt (
-          (cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x)
-              + (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y)
-              + (cloudIn->points[i].z - searchPoint.z) * (cloudIn->points[i].z - searchPoint.z));
+          ((*cloudIn)[i].x - searchPoint.x) * ((*cloudIn)[i].x - searchPoint.x)
+              + ((*cloudIn)[i].y - searchPoint.y) * ((*cloudIn)[i].y - searchPoint.y)
+              + ((*cloudIn)[i].z - searchPoint.z) * ((*cloudIn)[i].z - searchPoint.z));
 
       if (pointDist <= searchRadius)
       {
@@ -1432,9 +1432,9 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     while (current != cloudNWRSearch.end ())
     {
       pointDist = sqrt (
-          (cloudIn->points[*current].x - searchPoint.x) * (cloudIn->points[*current].x - searchPoint.x)
-              + (cloudIn->points[*current].y - searchPoint.y) * (cloudIn->points[*current].y - searchPoint.y)
-              + (cloudIn->points[*current].z - searchPoint.z) * (cloudIn->points[*current].z - searchPoint.z));
+          ((*cloudIn)[*current].x - searchPoint.x) * ((*cloudIn)[*current].x - searchPoint.x)
+              + ((*cloudIn)[*current].y - searchPoint.y) * ((*cloudIn)[*current].y - searchPoint.y)
+              + ((*cloudIn)[*current].z - searchPoint.z) * ((*cloudIn)[*current].z - searchPoint.z));
 
       ASSERT_TRUE (pointDist <= searchRadius);
 
@@ -1487,7 +1487,7 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
                        static_cast<float> (12.0 * rand () / RAND_MAX),
                        static_cast<float> (12.0 * rand () / RAND_MAX));
 
-    cloudIn->points[0] = pcl::PointXYZ (p[0], p[1], p[2]);
+    (*cloudIn)[0] = pcl::PointXYZ (p[0], p[1], p[2]);
 
     // direction vector
     Eigen::Vector3f dir (p - o);
@@ -1497,7 +1497,7 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
     {
       tmin -= 0.25f;
       Eigen::Vector3f n_p = o + (tmin * dir);
-      cloudIn->points[j] = pcl::PointXYZ (n_p[0], n_p[1], n_p[2]);
+      (*cloudIn)[j] = pcl::PointXYZ (n_p[0], n_p[1], n_p[2]);
     }
 
     // insert cloud point into octree
@@ -1520,13 +1520,13 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
     ASSERT_EQ (1u, indicesInRay2.size ());
 
     // check if this point is the closest point to the origin
-    pcl::PointXYZ pt = cloudIn->points[ indicesInRay2[0] ];
+    pcl::PointXYZ pt = (*cloudIn)[ indicesInRay2[0] ];
     Eigen::Vector3f d = Eigen::Vector3f (pt.x, pt.y, pt.z) - o;
     float min_dist = d.norm ();
 
     for (unsigned int i = 0; i < cloudIn->width * cloudIn->height; i++)
     {
-      pt = cloudIn->points[i];
+      pt = (*cloudIn)[i];
       d = Eigen::Vector3f (pt.x, pt.y, pt.z) - o;
       ASSERT_GE (d.norm (), min_dist);
     }

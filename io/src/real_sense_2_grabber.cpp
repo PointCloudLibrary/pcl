@@ -299,7 +299,7 @@ namespace pcl
     {
       const auto ptr = cloud_vertices_ptr + index;
       const auto uvptr = cloud_texture_ptr + index;
-      auto& p = cloud->points[index];
+      auto& p = (*cloud)[index];
 
       p.x = ptr->x;
       p.y = ptr->y;

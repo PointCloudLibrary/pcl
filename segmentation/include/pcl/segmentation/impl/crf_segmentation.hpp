@@ -225,7 +225,7 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
         if (index != -1)
         {
           data_.push_back (Eigen::Vector3i (i, j, k));
-          color_.push_back (input_cloud_->points[index].getRGBVector3i ());
+          color_.push_back ((*input_cloud_)[index].getRGBVector3i ());
         }
       }
     }
@@ -275,15 +275,15 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
   // fill the data vector
   for (std::size_t i = 0; i < filtered_cloud_->points.size (); i++)
   {
-    Eigen::Vector3f p (filtered_anno_->points[i].x,
-                       filtered_anno_->points[i].y,
-                       filtered_anno_->points[i].z);
+    Eigen::Vector3f p ((*filtered_anno_)[i].x,
+                       (*filtered_anno_)[i].y,
+                       (*filtered_anno_)[i].z);
     Eigen::Vector3i c = voxel_grid_.getGridCoordinates (p.x (), p.y (), p.y ());
     data_[i] = c;
 
     if (color_data)
     {    
-      std::uint32_t rgb = *reinterpret_cast<int*>(&filtered_cloud_->points[i].rgba);
+      std::uint32_t rgb = *reinterpret_cast<int*>(&(*filtered_cloud_)[i].rgba);
       std::uint8_t r = (rgb >> 16) & 0x0000ff;
       std::uint8_t g = (rgb >> 8)  & 0x0000ff;
       std::uint8_t b = (rgb)       & 0x0000ff;
@@ -293,9 +293,9 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
 /*
     if (normal_data)
     {
-      float n_x = filtered_cloud_->points[i].normal_x;
-      float n_y = filtered_cloud_->points[i].normal_y;
-      float n_z = filtered_cloud_->points[i].normal_z;
+      float n_x = (*filtered_cloud_)[i].normal_x;
+      float n_y = (*filtered_cloud_)[i].normal_y;
+      float n_z = (*filtered_cloud_)[i].normal_z;
       normal_[i] = Eigen::Vector3f (n_x, n_y, n_z);
     }
 */
@@ -304,9 +304,9 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
   normal_.resize (filtered_normal_->points.size ());
   for (std::size_t i = 0; i < filtered_normal_->points.size (); i++)
   {
-    float n_x = filtered_normal_->points[i].normal_x;
-    float n_y = filtered_normal_->points[i].normal_y;
-    float n_z = filtered_normal_->points[i].normal_z;
+    float n_x = (*filtered_normal_)[i].normal_x;
+    float n_y = (*filtered_normal_)[i].normal_y;
+    float n_z = (*filtered_normal_)[i].normal_z;
     normal_[i] = Eigen::Vector3f (n_x, n_y, n_z);
   }
   
@@ -331,7 +331,7 @@ pcl::CrfSegmentation<PointT>::createUnaryPotentials (std::vector<float> &unary,
 
   for (std::size_t k = 0; k < filtered_anno_->points.size (); k++)
   {
-    int label = filtered_anno_->points[k].label;
+    int label = (*filtered_anno_)[k].label;
 
     if (labels.empty () && label > 0)
       labels.push_back (label);

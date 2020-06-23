@@ -176,7 +176,7 @@ that lie outside of the predefined bounding box or contain NaN values.
       for (std::size_t i = 0; i < nr_points; ++i)
       {
 
-        const pcl::PointXYZRGBA& point = cloud->points[i];
+        const pcl::PointXYZRGBA& point = (*cloud)[i];
 
         if (!pcl_isfinite (point.x) || 
             !pcl_isfinite (point.y) || 

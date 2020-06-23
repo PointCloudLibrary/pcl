@@ -197,9 +197,9 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
       output[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 3; ++d)
     {
-      output[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
-      output[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
-      output[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
+      output[idx].rf[d + 0] = (*frames_)[idx].x_axis[d];
+      output[idx].rf[d + 3] = (*frames_)[idx].y_axis[d];
+      output[idx].rf[d + 6] = (*frames_)[idx].z_axis[d];
     }
   }
 }
@@ -284,9 +284,9 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
       output[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 3; ++d)
     {
-      output[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
-      output[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
-      output[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
+      output[idx].rf[d + 0] = (*frames_)[idx].x_axis[d];
+      output[idx].rf[d + 3] = (*frames_)[idx].y_axis[d];
+      output[idx].rf[d + 6] = (*frames_)[idx].z_axis[d];
     }
   }
 }

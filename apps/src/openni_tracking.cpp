@@ -441,10 +441,10 @@ public:
     result.is_dense = cloud->is_dense;
     for (std::size_t i = 0; i < cloud->points.size(); i++) {
       RefPointType point;
-      point.x = cloud->points[i].x;
-      point.y = cloud->points[i].y;
-      point.z = cloud->points[i].z;
-      point.rgba = cloud->points[i].rgba;
+      point.x = (*cloud)[i].x;
+      point.y = (*cloud)[i].y;
+      point.z = (*cloud)[i].z;
+      point.rgba = (*cloud)[i].rgba;
       result.points.push_back(point);
     }
   }
@@ -473,7 +473,7 @@ public:
   removeZeroPoints(const CloudConstPtr& cloud, Cloud& result)
   {
     for (std::size_t i = 0; i < cloud->points.size(); i++) {
-      PointType point = cloud->points[i];
+      PointType point = (*cloud)[i];
       if (!(std::abs(point.x) < 0.01 && std::abs(point.y) < 0.01 &&
             std::abs(point.z) < 0.01) &&
           !std::isnan(point.x) && !std::isnan(point.y) && !std::isnan(point.z))
@@ -493,7 +493,7 @@ public:
   {
     pcl::PointIndices segmented_indices = cluster_indices[segment_index];
     for (const int& index : segmented_indices.indices) {
-      PointType point = cloud->points[index];
+      PointType point = (*cloud)[index];
       result.points.push_back(point);
     }
     result.width = std::uint32_t(result.points.size());

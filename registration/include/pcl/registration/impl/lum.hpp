@@ -319,8 +319,8 @@ LUM<PointT>::computeEdge (const Edge &e)
   for (int ici = 0; ici != static_cast<int> (corrs->size ()); ++ici)  // ici = input correspondence iterator
   {
     // Compound the point pair onto the current pose
-    Eigen::Vector3f source_compounded = pcl::getTransformation (source_pose (0), source_pose (1), source_pose (2), source_pose (3), source_pose (4), source_pose (5)) * source_cloud->points[(*corrs)[ici].index_query].getVector3fMap ();
-    Eigen::Vector3f target_compounded = pcl::getTransformation (target_pose (0), target_pose (1), target_pose (2), target_pose (3), target_pose (4), target_pose (5)) * target_cloud->points[(*corrs)[ici].index_match].getVector3fMap ();
+    Eigen::Vector3f source_compounded = pcl::getTransformation (source_pose (0), source_pose (1), source_pose (2), source_pose (3), source_pose (4), source_pose (5)) * (*source_cloud)[(*corrs)[ici].index_query].getVector3fMap ();
+    Eigen::Vector3f target_compounded = pcl::getTransformation (target_pose (0), target_pose (1), target_pose (2), target_pose (3), target_pose (4), target_pose (5)) * (*target_cloud)[(*corrs)[ici].index_match].getVector3fMap ();
 
     // NaN points can not be passed to the remaining computational pipeline
     if (!std::isfinite (source_compounded (0)) || !std::isfinite (source_compounded (1)) || !std::isfinite (source_compounded (2)) || !std::isfinite (target_compounded (0)) || !std::isfinite (target_compounded (1)) || !std::isfinite (target_compounded (2)))

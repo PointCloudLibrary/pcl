@@ -214,7 +214,7 @@ int main (int argc, char *argv[])
   {
     pcl::PointCloud<PointOutT>::Ptr cloud_cluster_don (new pcl::PointCloud<PointOutT>);
     for (const int &index : it->indices){
-      cloud_cluster_don->points.push_back (doncloud->points[index]);
+      cloud_cluster_don->points.push_back ((*doncloud)[index]);
     }
 
     cloud_cluster_don->width = int (cloud_cluster_don->points.size ());

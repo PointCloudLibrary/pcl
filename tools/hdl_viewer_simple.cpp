@@ -105,7 +105,7 @@ class SimpleHDLViewer
       FPS_CALC ("cloud callback");
       std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
-      //std::cout << cloud->points[0] << " " << cloud->size () << std::endl;
+      //std::cout << (*cloud)[0] << " " << cloud->size () << std::endl;
     }
 
     void 

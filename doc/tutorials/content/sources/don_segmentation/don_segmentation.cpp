@@ -174,7 +174,7 @@ main (int argc, char *argv[])
     pcl::PointCloud<PointNormal>::Ptr cloud_cluster_don (new pcl::PointCloud<PointNormal>);
     for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
     {
-      cloud_cluster_don->points.push_back (doncloud->points[*pit]);
+      cloud_cluster_don->points.push_back ((*doncloud)[*pit]);
     }
 
     cloud_cluster_don->width = int (cloud_cluster_don->points.size ());

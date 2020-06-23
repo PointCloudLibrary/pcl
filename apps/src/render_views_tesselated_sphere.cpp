@@ -338,12 +338,12 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
 
           worldPicker->Pick(x, y, value, renderer);
           worldPicker->GetPickPosition(coords);
-          cloud->points[count_valid_depth_pixels].x = static_cast<float>(coords[0]);
-          cloud->points[count_valid_depth_pixels].y = static_cast<float>(coords[1]);
-          cloud->points[count_valid_depth_pixels].z = static_cast<float>(coords[2]);
-          cloud->points[count_valid_depth_pixels].getVector4fMap() =
+          (*cloud)[count_valid_depth_pixels].x = static_cast<float>(coords[0]);
+          (*cloud)[count_valid_depth_pixels].y = static_cast<float>(coords[1]);
+          (*cloud)[count_valid_depth_pixels].z = static_cast<float>(coords[2]);
+          (*cloud)[count_valid_depth_pixels].getVector4fMap() =
               backToRealScale_eigen *
-              cloud->points[count_valid_depth_pixels].getVector4fMap();
+              (*cloud)[count_valid_depth_pixels].getVector4fMap();
           count_valid_depth_pixels++;
         }
       }

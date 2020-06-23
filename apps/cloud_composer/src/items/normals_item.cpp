@@ -51,8 +51,8 @@ pcl::cloud_composer::NormalsItem::paintView (pcl::visualization::PCLVisualizer::
     vis->removePointCloud (getId ().toStdString ());
     qDebug () << QString("Adding point cloud normals, level=%1, scale=%2").arg(level).arg(scale);
     vis->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud, normals_ptr_, level, scale, getId ().toStdString ());
-    std::cout << cloud->points[0]<<std::endl;
-    std::cout << normals_ptr_->points[0]<<std::endl;
+    std::cout << (*cloud)[0]<<std::endl;
+    std::cout << (*normals_ptr_)[0]<<std::endl;
     
   }
   else

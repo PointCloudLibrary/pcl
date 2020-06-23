@@ -102,7 +102,7 @@ private:
 
     for (std::size_t i = 0; i < keypoints_cloud->points.size(); i++) {
 
-      if (tree->radiusSearch(keypoints_cloud->points[i],
+      if (tree->radiusSearch((*keypoints_cloud)[i],
                              radius_,
                              (*neighborhood_indices_)[good],
                              (*neighborhood_dist_)[good])) {
@@ -125,7 +125,7 @@ private:
         if ((std::abs(eigenValues[0] - eigenValues[1]) < 1.5e-4) ||
             (eigsum != 0 && std::abs(eigenValues[0] / eigsum) > 1.e-2)) {
           // region is not planar, add to filtered keypoint
-          keypoints_cloud->points[good] = keypoints_cloud->points[i];
+          (*keypoints_cloud)[good] = (*keypoints_cloud)[i];
           good++;
         }
       }
@@ -226,9 +226,9 @@ public:
     input_cloud->height = input_->height;
     input_cloud->points.resize(input_->width * input_->height);
     for (std::size_t i = 0; i < input_->points.size(); i++) {
-      input_cloud->points[i].getVector3fMap() = input_->points[i].getVector3fMap();
-      input_cloud->points[i].getNormalVector3fMap() =
-          normals_->points[i].getNormalVector3fMap();
+      (*input_cloud)[i].getVector3fMap() = (*input_)[i].getVector3fMap();
+      (*input_cloud)[i].getNormalVector3fMap() =
+          (*normals_)[i].getNormalVector3fMap();
     }
 
     typename pcl::PointCloud<pcl::PointXYZI>::Ptr intensity_keypoints(

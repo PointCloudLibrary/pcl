@@ -216,7 +216,7 @@ int main (int argc, char** argv)
     point.x = xyz[0];
     point.y = xyz[1];
     point.z = xyz[2];
-    occ_centroids->points[i] = point;
+    (*occ_centroids)[i] = point;
   }
 
   CloudT::Ptr cloud_centroids (new CloudT);
@@ -227,16 +227,16 @@ int main (int argc, char** argv)
 
   for (std::size_t i = 0; i < input_cloud->points.size (); ++i)
   {
-    float x = input_cloud->points[i].x;
-    float y = input_cloud->points[i].y;
-    float z = input_cloud->points[i].z;
+    float x = (*input_cloud)[i].x;
+    float y = (*input_cloud)[i].y;
+    float z = (*input_cloud)[i].z;
     Eigen::Vector3i c = vg.getGridCoordinates (x, y, z);
     Eigen::Vector4f xyz = vg.getCentroidCoordinate (c);
     PointT point;
     point.x = xyz[0];
     point.y = xyz[1];
     point.z = xyz[2];
-    cloud_centroids->points[i] = point;
+    (*cloud_centroids)[i] = point;
   }
 
   // visualization

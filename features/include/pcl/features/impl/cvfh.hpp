@@ -217,9 +217,9 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 
   for (std::size_t i = 0; i < indices_in.size (); ++i)
   {
-    normals_filtered_cloud->points[i].x = surface_->points[indices_in[i]].x;
-    normals_filtered_cloud->points[i].y = surface_->points[indices_in[i]].y;
-    normals_filtered_cloud->points[i].z = surface_->points[indices_in[i]].z;
+    (*normals_filtered_cloud)[i].x = (*surface_)[indices_in[i]].x;
+    (*normals_filtered_cloud)[i].y = (*surface_)[indices_in[i]].y;
+    (*normals_filtered_cloud)[i].z = (*surface_)[indices_in[i]].z;
   }
 
   std::vector<pcl::PointIndices> clusters;
@@ -273,8 +273,8 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 
       for (const auto &index : cluster.indices)
       {
-        avg_normal += normals_filtered_cloud->points[index].getNormalVector4fMap ();
-        avg_centroid += normals_filtered_cloud->points[index].getVector4fMap ();
+        avg_normal += (*normals_filtered_cloud)[index].getNormalVector4fMap ();
+        avg_centroid += (*normals_filtered_cloud)[index].getVector4fMap ();
       }
 
       avg_normal /= static_cast<float> (cluster.indices.size ());

@@ -87,8 +87,8 @@ pcl::DifferenceOfNormalsEstimation<PointInT, PointNT, PointOutT>::computeFeature
   //perform DoN subtraction and return results
   for (std::size_t point_id = 0; point_id < input_->points.size (); ++point_id)
   {
-    output[point_id].getNormalVector3fMap () =  (input_normals_small_->points[point_id].getNormalVector3fMap ()
-    		- input_normals_large_->points[point_id].getNormalVector3fMap ()) / 2.0;
+    output[point_id].getNormalVector3fMap () =  ((*input_normals_small_)[point_id].getNormalVector3fMap ()
+    		- (*input_normals_large_)[point_id].getNormalVector3fMap ()) / 2.0;
     if(!std::isfinite (output[point_id].normal_x) ||
         !std::isfinite (output[point_id].normal_y) ||
         !std::isfinite (output[point_id].normal_z)){

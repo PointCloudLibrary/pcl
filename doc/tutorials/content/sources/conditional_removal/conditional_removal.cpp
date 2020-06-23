@@ -15,16 +15,16 @@ int
 
   for (std::size_t i = 0; i < cloud->points.size (); ++i)
   {
-    cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
-    cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
-    cloud->points[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
   }
 
   std::cerr << "Cloud before filtering: " << std::endl;
   for (std::size_t i = 0; i < cloud->points.size (); ++i)
-    std::cerr << "    " << cloud->points[i].x << " "
-                        << cloud->points[i].y << " "
-                        << cloud->points[i].z << std::endl;
+    std::cerr << "    " << (*cloud)[i].x << " "
+                        << (*cloud)[i].y << " "
+                        << (*cloud)[i].z << std::endl;
   // build the condition
   pcl::ConditionAnd<pcl::PointXYZ>::Ptr range_cond (new
                   pcl::ConditionAnd<pcl::PointXYZ> ());
@@ -45,8 +45,8 @@ int
   // display pointcloud after filtering
   std::cerr << "Cloud after filtering: " << std::endl;
   for (std::size_t i = 0; i < cloud_filtered->points.size (); ++i)
-    std::cerr << "    " << cloud_filtered->points[i].x << " "
-                        << cloud_filtered->points[i].y << " "
-                        << cloud_filtered->points[i].z << std::endl;
+    std::cerr << "    " << (*cloud_filtered)[i].x << " "
+                        << (*cloud_filtered)[i].y << " "
+                        << (*cloud_filtered)[i].z << std::endl;
   return (0);
 }

@@ -137,12 +137,12 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClou
       }
 
       // Obtain a coordinate system on the least-squares plane
-      //v = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().unitOrthogonal ();
-      //u = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().cross3 (v);
-      getCoordinateSystemOnPlane (normals_->points[(*indices_)[idx]], u, v);
+      //v = (*normals_)[(*indices_)[idx]].getNormalVector4fMap ().unitOrthogonal ();
+      //u = (*normals_)[(*indices_)[idx]].getNormalVector4fMap ().cross3 (v);
+      getCoordinateSystemOnPlane ((*normals_)[(*indices_)[idx]], u, v);
 
       // Estimate whether the point is lying on a boundary surface or not
-      output[idx].boundary_point = isBoundaryPoint (*surface_, input_->points[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
+      output[idx].boundary_point = isBoundaryPoint (*surface_, (*input_)[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
     }
   }
   else
@@ -159,12 +159,12 @@ pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClou
       }
 
       // Obtain a coordinate system on the least-squares plane
-      //v = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().unitOrthogonal ();
-      //u = normals_->points[(*indices_)[idx]].getNormalVector4fMap ().cross3 (v);
-      getCoordinateSystemOnPlane (normals_->points[(*indices_)[idx]], u, v);
+      //v = (*normals_)[(*indices_)[idx]].getNormalVector4fMap ().unitOrthogonal ();
+      //u = (*normals_)[(*indices_)[idx]].getNormalVector4fMap ().cross3 (v);
+      getCoordinateSystemOnPlane ((*normals_)[(*indices_)[idx]], u, v);
 
       // Estimate whether the point is lying on a boundary surface or not
-      output[idx].boundary_point = isBoundaryPoint (*surface_, input_->points[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
+      output[idx].boundary_point = isBoundaryPoint (*surface_, (*input_)[(*indices_)[idx]], nn_indices, u, v, angle_threshold_);
     }
   }
 }
