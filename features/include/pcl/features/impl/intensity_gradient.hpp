@@ -62,7 +62,7 @@ pcl::IntensityGradientEstimation <PointInT, PointNT, PointOutT, IntensitySelecto
 
   for (const int &nn_index : indices)
   {
-    PointInT p = cloud.points[nn_index];
+    PointInT p = cloud[nn_index];
     if (!std::isfinite (p.x) ||
         !std::isfinite (p.y) ||
         !std::isfinite (p.z) ||
@@ -159,7 +159,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
     // Iterating over the entire index vector
     for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
     {
-      PointOutT &p_out = output.points[idx];
+      PointOutT &p_out = output[idx];
 
       if (!this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists))
       {
@@ -199,7 +199,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
     // Iterating over the entire index vector
     for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
     {
-      PointOutT &p_out = output.points[idx];
+      PointOutT &p_out = output[idx];
       if (!isFinite ((*surface_) [(*indices_)[idx]]) ||
           !this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists))
       {

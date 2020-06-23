@@ -52,7 +52,7 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
       float &pcx, float &pcy, float &pcz, float &pc1, float &pc2)
 {
   EIGEN_ALIGN16 Eigen::Matrix3f I = Eigen::Matrix3f::Identity ();
-  Eigen::Vector3f n_idx (normals.points[p_idx].normal[0], normals.points[p_idx].normal[1], normals.points[p_idx].normal[2]);
+  Eigen::Vector3f n_idx (normals[p_idx].normal[0], normals[p_idx].normal[1], normals[p_idx].normal[2]);
   EIGEN_ALIGN16 Eigen::Matrix3f M = I - n_idx * n_idx.transpose ();    // projection matrix (into tangent plane)
 
   // Project normals into the tangent plane
@@ -61,9 +61,9 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computePointPr
   xyz_centroid_.setZero ();
   for (std::size_t idx = 0; idx < indices.size(); ++idx)
   {
-    normal[0] = normals.points[indices[idx]].normal[0];
-    normal[1] = normals.points[indices[idx]].normal[1];
-    normal[2] = normals.points[indices[idx]].normal[2];
+    normal[0] = normals[indices[idx]].normal[0];
+    normal[1] = normals[indices[idx]].normal[1];
+    normal[2] = normals[indices[idx]].normal[2];
 
     projected_normals_[idx] = M * normal;
     xyz_centroid_ += projected_normals_[idx];
@@ -128,16 +128,16 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
     {
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        output.points[idx].principal_curvature[0] = output.points[idx].principal_curvature[1] = output.points[idx].principal_curvature[2] =
-          output.points[idx].pc1 = output.points[idx].pc2 = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].principal_curvature[0] = output[idx].principal_curvature[1] = output[idx].principal_curvature[2] =
+          output[idx].pc1 = output[idx].pc2 = std::numeric_limits<float>::quiet_NaN ();
         output.is_dense = false;
         continue;
       }
 
       // Estimate the principal curvatures at each patch
       computePointPrincipalCurvatures (*normals_, (*indices_)[idx], nn_indices,
-                                       output.points[idx].principal_curvature[0], output.points[idx].principal_curvature[1], output.points[idx].principal_curvature[2],
-                                       output.points[idx].pc1, output.points[idx].pc2);
+                                       output[idx].principal_curvature[0], output[idx].principal_curvature[1], output[idx].principal_curvature[2],
+                                       output[idx].pc1, output[idx].pc2);
     }
   }
   else
@@ -148,16 +148,16 @@ pcl::PrincipalCurvaturesEstimation<PointInT, PointNT, PointOutT>::computeFeature
       if (!isFinite ((*input_)[(*indices_)[idx]]) ||
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
-        output.points[idx].principal_curvature[0] = output.points[idx].principal_curvature[1] = output.points[idx].principal_curvature[2] =
-          output.points[idx].pc1 = output.points[idx].pc2 = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].principal_curvature[0] = output[idx].principal_curvature[1] = output[idx].principal_curvature[2] =
+          output[idx].pc1 = output[idx].pc2 = std::numeric_limits<float>::quiet_NaN ();
         output.is_dense = false;
         continue;
       }
 
       // Estimate the principal curvatures at each patch
       computePointPrincipalCurvatures (*normals_, (*indices_)[idx], nn_indices,
-                                       output.points[idx].principal_curvature[0], output.points[idx].principal_curvature[1], output.points[idx].principal_curvature[2],
-                                       output.points[idx].pc1, output.points[idx].pc2);
+                                       output[idx].principal_curvature[0], output[idx].principal_curvature[1], output[idx].principal_curvature[2],
+                                       output[idx].pc1, output[idx].pc2);
     }
   }
 }

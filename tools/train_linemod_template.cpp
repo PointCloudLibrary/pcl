@@ -212,7 +212,7 @@ compute (const PointCloudXYZRGBA::ConstPtr & input, float min_depth, float max_d
   {
     if (!foreground_mask[i])
     {
-      pcl::PointXYZRGBA & p = template_cloud.points[i];
+      pcl::PointXYZRGBA & p = template_cloud[i];
       p.x = p.y = p.z = std::numeric_limits<float>::quiet_NaN ();
     }
   }

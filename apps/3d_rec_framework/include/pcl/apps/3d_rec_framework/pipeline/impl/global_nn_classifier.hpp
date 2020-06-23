@@ -97,8 +97,8 @@ pcl::rec_3d_framework::GlobalNNPipeline<Distance, PointInT, FeatureT>::classify(
 
   if (!signatures.empty()) {
     for (std::size_t idx = 0; idx < signatures.size(); idx++) {
-      float* hist = signatures[idx].points[0].histogram;
-      int size_feat = sizeof(signatures[idx].points[0].histogram) / sizeof(float);
+      float* hist = signatures[idx][0].histogram;
+      int size_feat = sizeof(signatures[idx][0].histogram) / sizeof(float);
       std::vector<float> std_hist(hist, hist + size_feat);
       ModelT empty;
 

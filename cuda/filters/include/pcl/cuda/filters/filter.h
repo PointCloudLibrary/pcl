@@ -43,7 +43,7 @@ namespace pcl_cuda
   /** \brief Removes points with x, y, or z equal to NaN
     * \param cloud_in the input point cloud
     * \param cloud_out the input point cloud
-    * \param index the mapping (ordered): cloud_out.points[i] = cloud_in.points[index[i]]
+    * \param index the mapping (ordered): cloud_out[i] = cloud_in[index[i]]
     * \note The density of the point cloud is lost.
     * \note Can be called with cloud_in == cloud_out
     */
