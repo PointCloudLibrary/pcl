@@ -143,8 +143,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
   cloud_arg->push_back(point_arg);
 
-  this->addPointFromCloud(static_cast<const int>(cloud_arg->size()) - 1,
-                          indices_arg);
+  this->addPointFromCloud(static_cast<const int>(cloud_arg->size()) - 1, indices_arg);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

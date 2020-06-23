@@ -228,8 +228,7 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
     processed_ = processed;
   }
 
-  std::cout << "Number of keypoints:" << keypoints_pointcloud->size()
-            << std::endl;
+  std::cout << "Number of keypoints:" << keypoints_pointcloud->size() << std::endl;
 
   int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);
 

@@ -139,8 +139,7 @@ ParticleFilterTracker<PointInT, StateT>::normalizeWeight()
   }
   else {
     for (std::size_t i = 0; i < particles_->size(); i++)
-      particles_->points[i].weight =
-          1.0f / static_cast<float>(particles_->size());
+      particles_->points[i].weight = 1.0f / static_cast<float>(particles_->size());
   }
 
   double sum = 0.0;
@@ -154,8 +153,7 @@ ParticleFilterTracker<PointInT, StateT>::normalizeWeight()
   }
   else {
     for (std::size_t i = 0; i < particles_->size(); i++)
-      particles_->points[i].weight =
-          1.0f / static_cast<float>(particles_->size());
+      particles_->points[i].weight = 1.0f / static_cast<float>(particles_->size());
   }
 }
 
