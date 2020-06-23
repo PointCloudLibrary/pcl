@@ -562,8 +562,8 @@ namespace pcl
       coefficients.w = model_coefficients[3];
 
       return (int) count_if (
-          make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
-          make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
+          make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())),
+          make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())) + 
                              indices_->size (),
           CountPlanarInlier (coefficients, threshold));
     }
@@ -578,8 +578,8 @@ namespace pcl
 
       return (int)
         (thrust::count_if (
-          thrust::make_zip_iterator (thrust::make_tuple (input_->points.begin (), indices_->begin ())),
-          thrust::make_zip_iterator (thrust::make_tuple (input_->points.begin (), indices_->begin ())) + 
+          thrust::make_zip_iterator (thrust::make_tuple (input_->begin (), indices_->begin ())),
+          thrust::make_zip_iterator (thrust::make_tuple (input_->begin (), indices_->begin ())) + 
                              indices_->size (),
           CountPlanarInlier (h[idx], threshold)));
      }
@@ -617,8 +617,8 @@ namespace pcl
     //  pcl::ScopeTime t ("transform");
       // Send the data to the device
       transform (
-          make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
-          make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
+          make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())),
+          make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())) + 
                              nr_points,
           inliers_stencil->begin (), 
           CheckPlanarInlier (coefficients, threshold));
@@ -678,8 +678,8 @@ namespace pcl
     //  pcl::ScopeTime t ("transform");
       // Send the data to the device
       transform (
-          make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
-          make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
+          make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())),
+          make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())) + 
                              nr_points,
           inliers_stencil->begin (), 
           CheckPlanarInlier (coefficients, threshold));
@@ -749,16 +749,16 @@ namespace pcl
 
       //ORIG
       //  transform (
-      //      make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
-      //      make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
+      //      make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())),
+      //      make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())) + 
       //                         nr_points,
       //      inliers_stencil->begin (), 
       //      CheckPlanarInlier (coefficients, threshold));
 
       // this is just as fast as the ORIG version, but requires initialization to -1 (see above) --> much slower
       //  transform_if (
-      //      make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
-      //      make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
+      //      make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())),
+      //      make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())) + 
       //                         nr_points,
       //      indices_->begin(),
       //      inliers_stencil->begin (), 
@@ -778,7 +778,7 @@ namespace pcl
 #ifdef KINECT
       // NOTE: this performs inlier checks with kinect disparity error model, without normal check
       transform (
-          input_->points.begin (), input_->points.end (),
+          input_->begin (), input_->end (),
           indices_stencil_->begin (),
           inliers_stencil->begin (), 
           CheckPlanarInlierKinectIndices (coefficients, threshold, angle_threshold));
@@ -787,8 +787,8 @@ namespace pcl
 #ifdef KINECT_NORMALS
       // NOTE: this performs inlier checks with kinect disparity error model, with normal check
       transform (
-          make_zip_iterator (make_tuple (input_->points.begin (), normals_->begin())),
-          make_zip_iterator (make_tuple (input_->points.begin (), normals_->begin())) + nr_points,
+          make_zip_iterator (make_tuple (input_->begin (), normals_->begin())),
+          make_zip_iterator (make_tuple (input_->begin (), normals_->begin())) + nr_points,
           indices_stencil_->begin (),
           inliers_stencil->begin (), 
           CheckPlanarInlierKinectNormalIndices (coefficients, threshold, angle_threshold));
@@ -814,8 +814,8 @@ namespace pcl
       do {
         nr_inliers_before_refit = nr_inliers_after_refit;
 
-        compute3DCentroid (make_permutation_iterator (input_->points.begin (), inliers.begin ()),
-                         make_permutation_iterator (input_->points.begin (), inliers.end ()),
+        compute3DCentroid (make_permutation_iterator (input_->begin (), inliers.begin ()),
+                         make_permutation_iterator (input_->begin (), inliers.end ()),
                          centroid);
 
         if (isnan (centroid.x) | isnan (centroid.y) | isnan (centroid.z))
@@ -838,8 +838,8 @@ namespace pcl
 
         CovarianceMatrix covariance_matrix;
 
-        computeCovariance (make_permutation_iterator (input_->points.begin (), inliers.begin ()),
-                           make_permutation_iterator (input_->points.begin (), inliers.end ()),
+        computeCovariance (make_permutation_iterator (input_->begin (), inliers.begin ()),
+                           make_permutation_iterator (input_->begin (), inliers.end ()),
                            covariance_matrix, centroid);
 
         if (isnan (covariance_matrix.data[0].x))
@@ -890,11 +890,11 @@ namespace pcl
         // finally, another inlier check:
 #ifdef KINECT
         transform (
-          input_->points.begin (), input_->points.end (),
-          //make_zip_iterator (make_tuple (input_->points.begin (), normals_.begin())),
-          //make_zip_iterator (make_tuple (input_->points.begin (), normals_.begin())) + nr_points,
-    //        input_->points.begin (),
-    //        input_->points.end (),
+          input_->begin (), input_->end (),
+          //make_zip_iterator (make_tuple (input_->begin (), normals_.begin())),
+          //make_zip_iterator (make_tuple (input_->begin (), normals_.begin())) + nr_points,
+    //        input_->begin (),
+    //        input_->end (),
             indices_stencil_->begin (),
             inliers_stencil->begin (), 
             CheckPlanarInlierKinectIndices (coefficients, threshold, angle_threshold));
@@ -902,8 +902,8 @@ namespace pcl
 
 #ifdef KINECT_NORMALS
         transform (
-            make_zip_iterator (make_tuple (input_->points.begin (), normals_->begin())),
-            make_zip_iterator (make_tuple (input_->points.begin (), normals_->begin())) + nr_points,
+            make_zip_iterator (make_tuple (input_->begin (), normals_->begin())),
+            make_zip_iterator (make_tuple (input_->begin (), normals_->begin())) + nr_points,
             indices_stencil_->begin (),
             inliers_stencil->begin (), 
             CheckPlanarInlierKinectNormalIndices (coefficients, threshold, angle_threshold));
@@ -916,8 +916,8 @@ namespace pcl
 
         nr_inliers_after_refit = (int) inliers.size ();
 
-        compute3DCentroid (make_permutation_iterator (input_->points.begin (), inliers.begin ()),
-                         make_permutation_iterator (input_->points.begin (), inliers.end ()),
+        compute3DCentroid (make_permutation_iterator (input_->begin (), inliers.begin ()),
+                         make_permutation_iterator (input_->begin (), inliers.end ()),
                          centroid);
 
         if (nr_inliers_after_refit > best_nr_inliers)

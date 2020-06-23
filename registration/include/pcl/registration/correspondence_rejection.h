@@ -352,7 +352,7 @@ namespace pcl
         inline double
         getCorrespondenceScoreFromNormals (const pcl::Correspondence &corr) override
         {
-          //assert ( (input_normals_->points.size () != 0) && (target_normals_->points.size () != 0) && "Normals are not set for the input and target point clouds");
+          //assert ( (input_normals_->size () != 0) && (target_normals_->size () != 0) && "Normals are not set for the input and target point clouds");
           assert (input_normals_ && target_normals_ && "Normals are not set for the input and target point clouds");
           const NormalT &src = input_normals_->points[corr.index_query];
           const NormalT &tgt = target_normals_->points[corr.index_match];

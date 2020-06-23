@@ -75,10 +75,10 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
 
   PoseWithVotesList voted_poses;
   std::vector <std::vector <unsigned int> > accumulator_array;
-  accumulator_array.resize (input_->points.size ());
+  accumulator_array.resize (input_->size ());
 
   std::size_t aux_size = static_cast<std::size_t> (std::floor (2 * M_PI / search_method_->getAngleDiscretizationStep ()));
-  for (std::size_t i = 0; i < input_->points.size (); ++i)
+  for (std::size_t i = 0; i < input_->size (); ++i)
   {
     std::vector<unsigned int> aux (aux_size);
     accumulator_array[i] = aux;
@@ -87,7 +87,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
 
   // Consider every <scene_reference_point_sampling_rate>-th point as the reference point => fix s_r
   float f1, f2, f3, f4;
-  for (std::size_t scene_reference_index = 0; scene_reference_index < target_->points.size (); scene_reference_index += scene_reference_point_sampling_rate_)
+  for (std::size_t scene_reference_index = 0; scene_reference_index < target_->size (); scene_reference_index += scene_reference_point_sampling_rate_)
   {
     Eigen::Vector3f scene_reference_point = target_->points[scene_reference_index].getVector3fMap (),
         scene_reference_normal = target_->points[scene_reference_index].getNormalVector3fMap ();
@@ -106,7 +106,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
                                      indices,
                                      distances);
     for(const std::size_t &scene_point_index : indices)
-//    for(std::size_t i = 0; i < target_->points.size (); ++i)
+//    for(std::size_t i = 0; i < target_->size (); ++i)
     {
       //size_t scene_point_index = i;
       if (scene_reference_index != scene_point_index)

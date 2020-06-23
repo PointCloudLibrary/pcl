@@ -529,7 +529,7 @@ pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_im
   cloud->width = depth_width_;
   cloud->is_dense = false;
 
-  cloud->points.resize (cloud->height * cloud->width);
+  cloud->resize (cloud->height * cloud->width);
 
   float constant_x = 1.0f / device_->getDepthFocalLength ();
   float constant_y = 1.0f / device_->getDepthFocalLength ();
@@ -608,7 +608,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
   cloud->width = std::max (image_width_, depth_width_);
   cloud->is_dense = false;
 
-  cloud->points.resize (cloud->height * cloud->width);
+  cloud->resize (cloud->height * cloud->width);
 
   // Generate default camera parameters
   float fx = device_->getDepthFocalLength (); // Horizontal focal length
@@ -661,7 +661,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
     pt.x = pt.y = pt.z = bad_point;
     pt.b = pt.g = pt.r = 0;
     pt.a = 255; // point has no color info -> alpha = max => transparent
-    cloud->points.assign (cloud->points.size (), pt);
+    cloud->assign (cloud->size (), pt);
   }
 
   // fill in XYZ values
@@ -735,7 +735,7 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
   cloud->width = depth_width_;
   cloud->is_dense = false;
 
-  cloud->points.resize (cloud->height * cloud->width);
+  cloud->resize (cloud->height * cloud->width);
 
 
   float fx = device_->getDepthFocalLength (); // Horizontal focal length

@@ -396,7 +396,7 @@ pcl::rec_3d_framework::GlobalNNCRHRecognizer<Distance, PointInT, FeatureT>::init
           std::mt19937 rng(rd());
           std::normal_distribution<float> nd(0.0f, noise_);
           // Noisify each point in the dataset
-          for (std::size_t cp = 0; cp < view->points.size(); ++cp)
+          for (std::size_t cp = 0; cp < view->size(); ++cp)
             view->points[cp].z += nd(rng);
         }
 

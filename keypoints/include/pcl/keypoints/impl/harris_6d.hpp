@@ -210,7 +210,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
   }
 
   typename pcl::PointCloud<PointOutT>::Ptr response (new pcl::PointCloud<PointOutT>);
-  response->points.reserve (input_->points.size());
+  response->reserve (input_->size());
   responseTomasi(*response);
 
   // just return the response
@@ -225,12 +225,12 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
   else
   {
     output.points.clear ();
-    output.points.reserve (response->points.size());
+    output.points.reserve (response->size());
 
 #pragma omp parallel for \
   default(none) \
   num_threads(threads_)
-    for (std::size_t idx = 0; idx < response->points.size (); ++idx)
+    for (std::size_t idx = 0; idx < response->size (); ++idx)
     {
       if (!isFinite (response->points[idx]) || response->points[idx].intensity < threshold_)
         continue;

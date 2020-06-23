@@ -55,8 +55,8 @@ TEST(PCL_FeaturesGPU, vfh1)
     source.estimateNormals();
     source.generateIndices(3);
                    
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
+    std::transform(source.normals->begin(), source.normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
     
     //uploading data to GPU
 
@@ -127,8 +127,8 @@ TEST(PCL_FeaturesGPU, vfh_norm_bins_false)
     source.estimateNormals();
     source.generateIndices(3);
                    
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
+    std::transform(source.normals->begin(), source.normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
     
     //uploading data to GPU
 
@@ -194,8 +194,8 @@ TEST(PCL_FeaturesGPU, vfh_norm_distance_true)
     source.estimateNormals();
     source.generateIndices(3);
                    
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
+    std::transform(source.normals->begin(), source.normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
     
     //uploading data to GPU
 
@@ -262,8 +262,8 @@ TEST(PCL_FeaturesGPU, vfh_fill_size_component_true)
     source.estimateNormals();
     source.generateIndices(3);
                    
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
+    std::transform(source.normals->begin(), source.normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
     
     //uploading data to GPU
 

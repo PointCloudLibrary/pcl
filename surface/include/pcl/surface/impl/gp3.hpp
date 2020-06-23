@@ -126,7 +126,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
   // Saving coordinates and point to index mapping
   coords_.clear ();
   coords_.reserve (indices_->size ());
-  std::vector<int> point2index (input_->points.size (), -1);
+  std::vector<int> point2index (input_->size (), -1);
   for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
     coords_.push_back(input_->points[(*indices_)[cp]].getVector3fMap());

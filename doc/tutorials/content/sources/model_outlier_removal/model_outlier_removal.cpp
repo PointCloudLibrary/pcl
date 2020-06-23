@@ -13,7 +13,7 @@ main ()
   int sphere_data_size = 10;
   cloud->width = noise_size + sphere_data_size;
   cloud->height = 1;
-  cloud->points.resize (cloud->width * cloud->height);
+  cloud->resize (cloud->width * cloud->height);
   // 1.1 Add noise
   for (std::size_t i = 0; i < noise_size; ++i)
   {
@@ -41,7 +41,7 @@ main ()
   }
 
   std::cerr << "Cloud before filtering: " << std::endl;
-  for (std::size_t i = 0; i < cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud->size (); ++i)
     std::cout << "    " << cloud->points[i].x << " " << cloud->points[i].y << " " << cloud->points[i].z << std::endl;
 
   // 2. filter sphere:
@@ -63,7 +63,7 @@ main ()
   sphere_filter.filter (*cloud_sphere_filtered);
 
   std::cerr << "Sphere after filtering: " << std::endl;
-  for (std::size_t i = 0; i < cloud_sphere_filtered->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud_sphere_filtered->size (); ++i)
     std::cout << "    " << cloud_sphere_filtered->points[i].x << " " << cloud_sphere_filtered->points[i].y << " " << cloud_sphere_filtered->points[i].z
         << std::endl;
 

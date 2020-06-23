@@ -59,7 +59,7 @@ main (int, char** argv)
     return -1;
   }
 
-  std::cout << "points: " << cloud->points.size () << std::endl;
+  std::cout << "points: " << cloud->size () << std::endl;
 
   // Estimate the surface normals
   pcl::PointCloud<pcl::Normal>::Ptr cloud_n (new pcl::PointCloud<pcl::Normal>);
@@ -71,7 +71,7 @@ main (int, char** argv)
   norm_est.compute(*cloud_n);
 
   std::cout<<" Surface normals estimated";
-  std::cout<<" with size "<< cloud_n->points.size() <<std::endl;
+  std::cout<<" with size "<< cloud_n->size() <<std::endl;
  
   // Estimate the Intensity Gradient
   pcl::PointCloud<pcl::IntensityGradient>::Ptr cloud_ig (new pcl::PointCloud<pcl::IntensityGradient>);
@@ -83,7 +83,7 @@ main (int, char** argv)
   gradient_est.setRadiusSearch(0.25);
   gradient_est.compute(*cloud_ig);
   std::cout<<" Intensity Gradient estimated";
-  std::cout<<" with size "<< cloud_ig->points.size() <<std::endl;
+  std::cout<<" with size "<< cloud_ig->size() <<std::endl;
 
 
   // Estimate the RIFT feature

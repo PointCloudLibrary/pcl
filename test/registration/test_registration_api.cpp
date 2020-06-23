@@ -489,9 +489,9 @@ TEST (PCL, TransformationEstimationPointToPlaneLLS)
       ny /= magnitude;
       nz /= magnitude;
 
-      src->points.push_back (p);
+      src->push_back (p);
     }
-  src->width = static_cast<std::uint32_t> (src->points.size ());
+  src->width = static_cast<std::uint32_t> (src->size ());
 
   // Create a test matrix
   Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
@@ -623,9 +623,9 @@ TEST (PCL, TransformationEstimationPointToPlane)
       ny /= magnitude;
       nz /= magnitude;
 
-      src->points.push_back (p);
+      src->push_back (p);
     }
-  src->width = static_cast<std::uint32_t> (src->points.size ());
+  src->width = static_cast<std::uint32_t> (src->size ());
 
   // Create a test matrix
   Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
@@ -683,9 +683,9 @@ TEST (PCL, TransformationEstimationSymmetricPointToPlaneLLS)
       ny /= magnitude;
       nz /= magnitude;
 
-      src->points.push_back (p);
+      src->push_back (p);
     }
-  src->width = static_cast<std::uint32_t> (src->points.size ());
+  src->width = static_cast<std::uint32_t> (src->size ());
 
   // Create a test matrix
   // (alpha, beta, gamma) = (-0.0180524, 0.0525268, -0.0999635)

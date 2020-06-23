@@ -399,7 +399,7 @@ public:
   resetTracking()
   {
     if (particles_)
-      particles_->points.clear();
+      particles_->clear();
   }
 
 protected:

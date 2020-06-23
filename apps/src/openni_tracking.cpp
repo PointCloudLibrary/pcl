@@ -205,7 +205,7 @@ public:
         pcl::PointCloud<pcl::PointXYZ>::Ptr particle_cloud(
             new pcl::PointCloud<pcl::PointXYZ>());
         for (const auto& point : particles->points) {
-          particle_cloud->points.emplace_back(point.x, point.y, point.z);
+          particle_cloud->emplace_back(point.x, point.y, point.z);
         }
 
         {
@@ -277,12 +277,12 @@ public:
         // draw some texts
         viz.removeShape("N");
         viz.addText((boost::format("number of Reference PointClouds: %d") %
-                     tracker_->getReferenceCloud()->points.size()).str(),
+                     tracker_->getReferenceCloud()->size()).str(),
                     10, 20, 20, 1.0, 1.0, 1.0, "N");
 
         viz.removeShape("M");
         viz.addText((boost::format("number of Measured PointClouds:  %d") %
-                     cloud_pass_downsampled_->points.size()).str(),
+                     cloud_pass_downsampled_->size()).str(),
                     10, 40, 20, 1.0, 1.0, 1.0, "M");
 
         viz.removeShape("tracking");
@@ -299,7 +299,7 @@ public:
 
         viz.removeShape("particles");
         viz.addText((boost::format("particles:     %d") %
-                     tracker_->getParticles()->points.size()).str(),
+                     tracker_->getParticles()->size()).str(),
                     10, 120, 20, 1.0, 1.0, 1.0, "particles");
         // clang-format on
       }
@@ -439,7 +439,7 @@ public:
     result.width = cloud->width;
     result.height = cloud->height;
     result.is_dense = cloud->is_dense;
-    for (std::size_t i = 0; i < cloud->points.size(); i++) {
+    for (std::size_t i = 0; i < cloud->size(); i++) {
       RefPointType point;
       point.x = cloud->points[i].x;
       point.y = cloud->points[i].y;
@@ -472,7 +472,7 @@ public:
   void
   removeZeroPoints(const CloudConstPtr& cloud, Cloud& result)
   {
-    for (std::size_t i = 0; i < cloud->points.size(); i++) {
+    for (std::size_t i = 0; i < cloud->size(); i++) {
       PointType point = cloud->points[i];
       if (!(std::abs(point.x) < 0.01 && std::abs(point.y) < 0.01 &&
             std::abs(point.z) < 0.01) &&
@@ -584,7 +584,7 @@ public:
           tracker_->setReferenceCloud(transed_ref_downsampled);
           tracker_->setTrans(trans);
           reference_ = transed_ref;
-          tracker_->setMinIndices(int(ref_cloud->points.size()) / 2);
+          tracker_->setMinIndices(int(ref_cloud->size()) / 2);
         }
         else {
           PCL_WARN("euclidean segmentation failed\n");

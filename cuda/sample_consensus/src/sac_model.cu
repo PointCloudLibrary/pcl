@@ -82,8 +82,8 @@ namespace pcl
       //typename Storage<int>::type stencil (new_w * new_h);
       //create_scatter_stencil<Storage> (new_w, new_h, skip, cloud->width, cloud->height, stencil);
       //
-      //input_->points.resize (stencil.size ());
-      //thrust::gather (stencil.begin (), stencil.end (), cloud->points.begin (), input_->points.begin ());
+      //input_->resize (stencil.size ());
+      //thrust::gather (stencil.begin (), stencil.end (), cloud->begin (), input_->begin ());
       // TODO pcl_cuda::ScopeTime t ("setInputCloud"); 
       input_ = cloud;
 
@@ -91,23 +91,23 @@ namespace pcl
       if (!indices_stencil_)
         indices_stencil_.reset (new Indices);
 
-      indices_stencil_->resize (input_->points.size());
+      indices_stencil_->resize (input_->size());
       thrust::sequence (indices_stencil_->begin (), indices_stencil_->end ());
 
       thrust::replace_if (indices_stencil_->begin (), indices_stencil_->end (),
-          input_->points.begin (), isNaNPoint (),
+          input_->begin (), isNaNPoint (),
           -1);
 
       // copy all non-(-1) values from indices_stencil_ to indices_
       if (!indices_)
         indices_.reset (new Indices);
 
-      indices_->resize (input_->points.size());
+      indices_->resize (input_->size());
       typename Indices::iterator it;
       it = thrust::copy_if (indices_stencil_->begin (), indices_stencil_->end (), indices_->begin (), isInlier ());
       indices_->erase (it, indices_->end ());
 
-      std::cerr << "setInputCloud :" << indices_->size () << " valid points ( " << indices_->size () / (float) input_->points.size () << " %)" << std::endl;
+      std::cerr << "setInputCloud :" << indices_->size () << " valid points ( " << indices_->size () / (float) input_->size () << " %)" << std::endl;
 
     }
 

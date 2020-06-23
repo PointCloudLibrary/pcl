@@ -46,7 +46,7 @@ namespace pcl
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
 Registration<PointSource, PointTarget, Scalar>::setInputTarget (const PointCloudTargetConstPtr &cloud)
 {
-  if (cloud->points.empty ())
+  if (cloud->empty ())
   {
     PCL_ERROR ("[pcl::%s::setInputTarget] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
     return;
@@ -170,7 +170,7 @@ Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &output,
   // Copy the header
   output.header   = input_->header;
   // Check if the output will be computed for all points or only a subset
-  if (indices_->size () != input_->points.size ())
+  if (indices_->size () != input_->size ())
   {
     output.width    = static_cast<std::uint32_t> (indices_->size ());
     output.height   = 1;

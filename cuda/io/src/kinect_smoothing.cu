@@ -99,7 +99,7 @@ namespace pcl
     //  output->height = depth_image->height;
     //  output->width  = depth_image->width;
     //  output->is_dense = false;
-    //  output->points.resize (output->width * output->height);
+    //  output->resize (output->width * output->height);
     //
     //  // Copy the depth data and the RGB data on the card
     //  device_vector<float> depth (depth_image->data.size () / sizeof (float));
@@ -120,7 +120,7 @@ namespace pcl
     //        make_zip_iterator (make_tuple (depth.begin (), rgb.begin (), counting_iterator<int>(0))),
     //        make_zip_iterator (make_tuple (depth.begin (), rgb.begin (), counting_iterator<int>(0))) + 
     //                           depth_image->width * depth_image->height,
-    //        output->points.begin (), 
+    //        output->begin (), 
     //        ComputeXYZRGB (depth_image->width, depth_image->height, 
     //                       depth_image->width >> 1, depth_image->height >> 1, 1.0 / info->P[0]));
     //  }
@@ -131,7 +131,7 @@ namespace pcl
     //        make_zip_iterator (make_tuple (depth.begin (), counting_iterator<int>(0))),
     //        make_zip_iterator (make_tuple (depth.begin (), counting_iterator<int>(0))) + 
     //                           depth_image->width * depth_image->height,
-    //        output->points.begin (), 
+    //        output->begin (), 
     //        ComputeXYZ (depth_image->width, depth_image->height, 
     //                    depth_image->width >> 1, depth_image->height >> 1, 1.0 / info->P[0]));
     //  }
@@ -204,7 +204,7 @@ namespace pcl
       }
     
       output->is_dense = false;
-      output->points.resize (output->width * output->height);
+      output->resize (output->width * output->height);
     
       // Copy the depth data and the RGB data on the card
       typename Storage<float>::type depth (output->width * output->height);
@@ -264,7 +264,7 @@ namespace pcl
             make_zip_iterator (make_tuple (depth.begin (), rgb.begin (), counting_iterator<int>(0))),
             make_zip_iterator (make_tuple (depth.begin (), rgb.begin (), counting_iterator<int>(0))) + 
                                output->width * output->height,
-            output->points.begin (), 
+            output->begin (), 
             ComputeXYZRGB (output->width, output->height, 
                            output->width >> 1, output->height >> 1, constant));
       }
@@ -275,7 +275,7 @@ namespace pcl
             make_zip_iterator (make_tuple (depth.begin (), counting_iterator<int>(0))),
             make_zip_iterator (make_tuple (depth.begin (), counting_iterator<int>(0))) + 
                                output->width * output->height,
-            output->points.begin (), 
+            output->begin (), 
             ComputeXYZ (output->width, output->height, 
                         output->width >> 1, output->height >> 1, constant));
       }

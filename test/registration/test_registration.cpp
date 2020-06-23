@@ -616,7 +616,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (src->points.size ()));
+  EXPECT_EQ (int (output.points.size ()), int (src->size ()));
   EXPECT_LT (reg.getFitnessScore (), 0.003);
 
   // Check again, for all possible caching schemes
@@ -637,7 +637,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
 
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (src->points.size ()));
+    EXPECT_EQ (int (output.points.size ()), int (src->size ()));
     EXPECT_LT (reg.getFitnessScore (), 0.003);
   }
 }

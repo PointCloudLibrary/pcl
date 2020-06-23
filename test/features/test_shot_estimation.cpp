@@ -327,9 +327,9 @@ testSHOTLocalReferenceFrame (const typename PointCloud<PointT>::Ptr & points,
   // Check frames
   pcl::PointCloud<pcl::ReferenceFrame>::ConstPtr f = est.getInputReferenceFrames ();
   pcl::PointCloud<pcl::ReferenceFrame>::ConstPtr f2 = est2.getInputReferenceFrames ();
-  ASSERT_EQ (frames->points.size (), f->points.size ());
-  ASSERT_EQ (f2->points.size (), f->points.size ());
-  for (int i = 0; i < static_cast<int> (frames->points.size ()); ++i)
+  ASSERT_EQ (frames->size (), f->size ());
+  ASSERT_EQ (f2->size (), f->size ());
+  for (int i = 0; i < static_cast<int> (frames->size ()); ++i)
   {
     for (unsigned j = 0; j < 9; ++j)
       ASSERT_EQ (frames->points[i].rf[j], f->points[i].rf[j]);
@@ -416,7 +416,7 @@ TYPED_TEST (SHOTShapeTest, Estimation)
 
   // estimate
   shot.compute (*shots);
-  EXPECT_EQ (shots->points.size (), indices.size ());
+  EXPECT_EQ (shots->size (), indices.size ());
 
   EXPECT_NEAR (shots->points[103].descriptor[9 ], 0.0072018504, 1e-4);
   EXPECT_NEAR (shots->points[103].descriptor[10], 0.0023103887, 1e-4);
@@ -446,7 +446,7 @@ TYPED_TEST (SHOTShapeTest, Estimation)
 
   // estimate
   shot352.compute (*shots352);
-  EXPECT_EQ (shots352->points.size (), indices.size ());
+  EXPECT_EQ (shots352->size (), indices.size ());
 
   EXPECT_NEAR (shots352->points[103].descriptor[9 ], 0.0072018504, 1e-4);
   EXPECT_NEAR (shots352->points[103].descriptor[10], 0.0023103887, 1e-4);
@@ -508,7 +508,7 @@ TEST (PCL, GenericSHOTShapeEstimation)
 
   // estimate
   shot.compute (*shots);
-  EXPECT_EQ (shots->points.size (), indices.size ());
+  EXPECT_EQ (shots->size (), indices.size ());
 
   EXPECT_NEAR (shots->points[103].descriptor[18], 0.0077019366, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[19], 0.0024708188, 1e-5);
@@ -611,7 +611,7 @@ TYPED_TEST (SHOTShapeAndColorTest, Estimation)
 
   // estimate
   shot.compute (*shots);
-  EXPECT_EQ (shots->points.size (), indices.size ());
+  EXPECT_EQ (shots->size (), indices.size ());
 
   EXPECT_NEAR (shots->points[103].descriptor[10], 0.0020453099, 1e-5);
   EXPECT_NEAR (shots->points[103].descriptor[11], 0.0021887729, 1e-5);
@@ -651,7 +651,7 @@ TYPED_TEST (SHOTShapeAndColorTest, Estimation)
 
   // estimate
   shot1344.compute (*shots1344);
-  EXPECT_EQ (shots1344->points.size (), indices.size ());
+  EXPECT_EQ (shots1344->size (), indices.size ());
 
   EXPECT_NEAR (shots1344->points[103].descriptor[10], 0.0020453099, 1e-5);
   EXPECT_NEAR (shots1344->points[103].descriptor[11], 0.0021887729, 1e-5);

@@ -205,11 +205,11 @@ pcl::simulation::PointCloudModel::PointCloudModel(
     GLenum mode, pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc)
 : mode_(mode)
 {
-  nvertices_ = pc->points.size();
+  nvertices_ = pc->size();
   vertices_ = new float[3 * nvertices_];
   colors_ = new float[4 * nvertices_];
 
-  for (std::size_t i = 0; i < pc->points.size(); ++i) {
+  for (std::size_t i = 0; i < pc->size(); ++i) {
     vertices_[3 * i + 0] = pc->points[i].x;
     vertices_[3 * i + 1] = pc->points[i].y;
     vertices_[3 * i + 2] = pc->points[i].z;

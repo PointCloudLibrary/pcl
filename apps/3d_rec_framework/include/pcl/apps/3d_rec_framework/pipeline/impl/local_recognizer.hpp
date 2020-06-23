@@ -67,7 +67,7 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
 
         int size_feat = sizeof(signature->points[0].histogram) / sizeof(float);
 
-        for (std::size_t dd = 0; dd < signature->points.size(); dd++) {
+        for (std::size_t dd = 0; dd < signature->size(); dd++) {
           descr_model.keypoint_id = static_cast<int>(dd);
           descr_model.descr.resize(size_feat);
 
@@ -208,7 +208,7 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
   PointInTPtr keypoints_pointcloud;
 
   if (signatures_ != nullptr && processed_ != nullptr &&
-      (signatures_->size() == keypoints_pointcloud->points.size())) {
+      (signatures_->size() == keypoints_pointcloud->size())) {
     keypoints_pointcloud = keypoints_input_;
     signatures = signatures_;
     processed = processed_;
@@ -228,7 +228,7 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
     processed_ = processed;
   }
 
-  std::cout << "Number of keypoints:" << keypoints_pointcloud->points.size()
+  std::cout << "Number of keypoints:" << keypoints_pointcloud->size()
             << std::endl;
 
   int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);
@@ -236,7 +236,7 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
   // feature matching and object hypotheses
   std::map<std::string, ObjectHypothesis> object_hypotheses;
   {
-    for (std::size_t idx = 0; idx < signatures->points.size(); idx++) {
+    for (std::size_t idx = 0; idx < signatures->size(); idx++) {
       float* hist = signatures->points[idx].histogram;
       std::vector<float> std_hist(hist, hist + size_feat);
       flann_model histogram;
@@ -269,9 +269,9 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
                flann_models_.at(indices[0][0]).model.id_)) != object_hypotheses.end()) {
         // if the object hypothesis already exists, then add information
         ObjectHypothesis oh = (*it_map).second;
-        oh.correspondences_pointcloud->points.push_back(model_keypoint);
+        oh.correspondences_pointcloud->push_back(model_keypoint);
         oh.correspondences_to_inputcloud->push_back(pcl::Correspondence(
-            static_cast<int>(oh.correspondences_pointcloud->points.size() - 1),
+            static_cast<int>(oh.correspondences_pointcloud->size() - 1),
             static_cast<int>(idx),
             distances[0][0]));
         oh.feature_distances_->push_back(distances[0][0]);
@@ -282,7 +282,7 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
 
         typename pcl::PointCloud<PointInT>::Ptr correspondences_pointcloud(
             new pcl::PointCloud<PointInT>());
-        correspondences_pointcloud->points.push_back(model_keypoint);
+        correspondences_pointcloud->push_back(model_keypoint);
 
         oh.model_ = flann_models_.at(indices[0][0]).model;
         oh.correspondences_pointcloud = correspondences_pointcloud;

@@ -80,8 +80,8 @@ estimateNormals(pcl::PointCloud<PointT>::Ptr cloud, pcl::PointCloud<pcl::Normal>
       // Compute the features
       ne.compute (*cloud_normals);
 
-      // cloud_normals->points.size () should have the same size as the input cloud->points.size ()*
-      return cloud_normals->points.size();
+      // cloud_normals->size () should have the same size as the input cloud->size ()*
+      return cloud_normals->size();
 }
 
 
@@ -134,7 +134,7 @@ int
     return (-1);
   }
 
-  if (!estimateNormals(model_cloud, model_cloud_normals) == model_cloud->points.size())
+  if (!estimateNormals(model_cloud, model_cloud_normals) == model_cloud->size())
   {
     std::cerr << "Failed to estimate normals" << std::endl;
     return (-1);

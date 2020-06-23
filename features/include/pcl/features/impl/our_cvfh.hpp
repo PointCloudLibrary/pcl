@@ -80,9 +80,9 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSm
                                                                                         unsigned int min_pts_per_cluster,
                                                                                         unsigned int max_pts_per_cluster)
 {
-  if (tree->getInputCloud ()->points.size () != cloud.points.size ())
+  if (tree->getInputCloud ()->size () != cloud.points.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->size (), cloud.points.size ());
     return;
   }
   if (cloud.points.size () != normals.points.size ())
@@ -205,8 +205,8 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
 
   Eigen::Affine3f transformPC (Eigen::AngleAxisf (static_cast<float> (rotation), axis));
 
-  grid->points.resize (processed->points.size ());
-  for (std::size_t k = 0; k < processed->points.size (); k++)
+  grid->resize (processed->size ());
+  for (std::size_t k = 0; k < processed->size (); k++)
     grid->points[k].getVector4fMap () = processed->points[k].getVector4fMap ();
 
   pcl::transformPointCloud (*grid, *grid, transformPC);
@@ -411,7 +411,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
 
       float hist_incr;
       if (normalize_bins_)
-        hist_incr = 100.0f / static_cast<float> (grid->points.size () - 1);
+        hist_incr = 100.0f / static_cast<float> (grid->size () - 1);
       else
         hist_incr = 1.0f;
 
@@ -552,7 +552,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     output.points.clear ();
     return;
   }
-  if (normals_->points.size () != surface_->points.size ())
+  if (normals_->size () != surface_->size ())
   {
     PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!\n", getClassName ().c_str ());
     output.width = output.height = 0;
@@ -573,7 +573,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   pcl::PointCloud<pcl::PointNormal>::Ptr normals_filtered_cloud (new pcl::PointCloud<pcl::PointNormal> ());
   normals_filtered_cloud->width = static_cast<std::uint32_t> (indices_in.size ());
   normals_filtered_cloud->height = 1;
-  normals_filtered_cloud->points.resize (normals_filtered_cloud->width);
+  normals_filtered_cloud->resize (normals_filtered_cloud->width);
 
   std::vector<int> indices_from_nfc_to_indices;
   indices_from_nfc_to_indices.resize (indices_in.size ());
@@ -589,7 +589,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
   std::vector<pcl::PointIndices> clusters;
 
-  if (normals_filtered_cloud->points.size () >= min_points_)
+  if (normals_filtered_cloud->size () >= min_points_)
   {
     //recompute normals and use them for clustering
     {

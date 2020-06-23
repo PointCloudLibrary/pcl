@@ -1038,7 +1038,7 @@ pcl::EnsensoGrabber::processGrabbing ()
 
           // Copy point cloud and convert in meters
           cloud->header.stamp = getPCLStamp (timestamp);
-          cloud->points.resize (height * width);
+          cloud->resize (height * width);
           cloud->width = width;
           cloud->height = height;
           cloud->is_dense = false;

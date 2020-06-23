@@ -243,8 +243,8 @@ namespace pcl
       coefficients.w = model_coefficients[3];
 
       return (int) count_if (
-          make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
-          make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
+          make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())),
+          make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())) + 
                              indices_->size (),
           CountPlanarInlier (coefficients, threshold));
     }
@@ -259,8 +259,8 @@ namespace pcl
 
       return (int)
         (thrust::count_if (
-          thrust::make_zip_iterator (thrust::make_tuple (input_->points.begin (), indices_->begin ())),
-          thrust::make_zip_iterator (thrust::make_tuple (input_->points.begin (), indices_->begin ())) + 
+          thrust::make_zip_iterator (thrust::make_tuple (input_->begin (), indices_->begin ())),
+          thrust::make_zip_iterator (thrust::make_tuple (input_->begin (), indices_->begin ())) + 
                              indices_->size (),
           CountPlanarInlier (h[idx], threshold)));
     }
@@ -293,8 +293,8 @@ namespace pcl
 
       // Send the data to the device
       transform (
-          make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
-          make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
+          make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())),
+          make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())) + 
                              nr_points,
           inliers_stencil->begin (), 
           CheckPlanarInlier (coefficients, threshold));
@@ -340,8 +340,8 @@ namespace pcl
 
       // Send the data to the device
       transform (
-          make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
-          make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
+          make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())),
+          make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())) + 
                              nr_points,
           inliers_stencil->begin (), 
           CheckPlanarInlier (coefficients, threshold));
@@ -383,8 +383,8 @@ namespace pcl
       coefficients.w = ((float4)h[idx]).w;
 
       transform (
-          make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())),
-          make_zip_iterator (make_tuple (input_->points.begin (), indices_->begin ())) + 
+          make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())),
+          make_zip_iterator (make_tuple (input_->begin (), indices_->begin ())) + 
                              nr_points,
           inliers_stencil->begin (), 
           CheckPlanarInlier (coefficients, threshold));

@@ -289,7 +289,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
             float(backToRealScale->GetMatrix()->GetElement(x, y));
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    cloud->points.resize(resolution_ * resolution_);
+    cloud->resize(resolution_ * resolution_);
 
     if (gen_organized_) {
       cloud->width = resolution_;
@@ -350,7 +350,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews()
 
       delete[] depth;
 
-      cloud->points.resize(count_valid_depth_pixels);
+      cloud->resize(count_valid_depth_pixels);
       cloud->width = count_valid_depth_pixels;
     }
 

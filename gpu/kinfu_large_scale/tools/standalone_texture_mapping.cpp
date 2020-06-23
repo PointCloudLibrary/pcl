@@ -422,7 +422,7 @@ main (int argc, char** argv)
     polygon_1[i] = triangles.polygons[i];
   }
   mesh.tex_polygons.push_back(polygon_1);
-  PCL_INFO ("\tInput mesh contains %d faces and %d vertices\n", mesh.tex_polygons[0].size (), cloud->points.size ());
+  PCL_INFO ("\tInput mesh contains %d faces and %d vertices\n", mesh.tex_polygons[0].size (), cloud->size ());
   PCL_INFO ("...Done.\n");
   
   // Load textures and cameras poses and intrinsics

@@ -425,7 +425,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_
   // for each point of the cloud, raycast toward camera and check intersected voxels.
   Eigen::Vector3f direction;
   std::vector<int> indices;
-  for (std::size_t i = 0; i < input_cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < input_cloud->size (); ++i)
   {
     direction (0) = input_cloud->points[i].x;
     direction (1) = input_cloud->points[i].y;
@@ -454,7 +454,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_
     if (nbocc == 0)
     {
       // point is added in the filtered mesh
-      filtered_cloud->points.push_back (input_cloud->points[i]);
+      filtered_cloud->push_back (input_cloud->points[i]);
       visible_indices.push_back (static_cast<int> (i));
     }
     else
@@ -651,7 +651,7 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
   std::vector<double> zDist;
   std::vector<double> ptDist;
   // for each point of the cloud, ray-trace toward the camera and check intersected voxels.
-  for (std::size_t i = 0; i < input_cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < input_cloud->size (); ++i)
   {
     direction (0) = input_cloud->points[i].x;
     pt.x = input_cloud->points[i].x;
@@ -691,7 +691,7 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
     else
       (nbocc == 0) ? (pt.intensity = 0) : (pt.intensity = 1);
 
-    colored_cloud->points.push_back (pt);
+    colored_cloud->push_back (pt);
   }
 
   if (zDist.size () >= 2)
@@ -769,9 +769,9 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
         // face is in the camera's FOV
 
         // add UV coordinates
-        projections->points.push_back (uv_coord1);
-        projections->points.push_back (uv_coord2);
-        projections->points.push_back (uv_coord3);
+        projections->push_back (uv_coord1);
+        projections->push_back (uv_coord2);
+        projections->push_back (uv_coord3);
 
         // remember corresponding face
         UvIndex u1, u2, u3;
@@ -788,9 +788,9 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
       }
       else
       {
-        projections->points.push_back (nan_point);
-        projections->points.push_back (nan_point);
-        projections->points.push_back (nan_point);
+        projections->push_back (nan_point);
+        projections->push_back (nan_point);
+        projections->push_back (nan_point);
         indexes_uv_to_points.push_back (u_null);
         indexes_uv_to_points.push_back (u_null);
         indexes_uv_to_points.push_back (u_null);

@@ -150,7 +150,7 @@ class MultiRansac
         ScopeTimeCPU time ("Normal Estimation");
         //normals = computeFastPointNormals<Storage> (data);
         float focallength = 580/2.0;
-        //normals = computePointNormals<Storage> (data->points.begin (), data->points.end (), focallength, data, 0.11f, 36);
+        //normals = computePointNormals<Storage> (data->begin (), data->end (), focallength, data, 0.11f, 36);
         normals = computeFastPointNormals<Storage> (data);
       }
 

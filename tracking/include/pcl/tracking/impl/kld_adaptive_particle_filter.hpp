@@ -28,7 +28,7 @@ KLDAdaptiveParticleFilterTracker<PointInT, StateT>::initCompute()
     change_detector_.reset(new pcl::octree::OctreePointCloudChangeDetector<PointInT>(
         change_detector_resolution_));
 
-  if (!particles_ || particles_->points.empty())
+  if (!particles_ || particles_->empty())
     initParticles(true);
   return (true);
 }
@@ -56,8 +56,8 @@ KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample()
   std::vector<std::vector<int>> bins;
 
   // initializing for sampling without replacement
-  std::vector<int> a(particles_->points.size());
-  std::vector<double> q(particles_->points.size());
+  std::vector<int> a(particles_->size());
+  std::vector<double> q(particles_->size());
   this->genAliasTable(a, q, particles_);
 
   const std::vector<double> zero_mean(StateT::stateDimension(), 0.0);
@@ -72,7 +72,7 @@ KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample()
     if (rand() / double(RAND_MAX) < motion_ratio_)
       x_t = x_t + motion_;
 
-    S->points.push_back(x_t);
+    S->push_back(x_t);
     // calc bin
     std::vector<int> new_bin(StateT::stateDimension());
     for (int i = 0; i < StateT::stateDimension(); i++)
@@ -85,7 +85,7 @@ KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample()
   } while (n < maximum_particle_number_ && (k < 2 || n < calcKLBound(k)));
 
   particles_ = S; // swap
-  particle_num_ = static_cast<int>(particles_->points.size());
+  particle_num_ = static_cast<int>(particles_->size());
 }
 } // namespace tracking
 } // namespace pcl

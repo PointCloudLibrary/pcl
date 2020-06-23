@@ -304,7 +304,7 @@ pcl::DinastGrabber::getXYZIPointCloud ()
 {
   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI>);
   
-  cloud->points.resize (image_size_);
+  cloud->resize (image_size_);
   cloud->width = image_width_;
   cloud->height = image_height_;
   cloud->is_dense = false;

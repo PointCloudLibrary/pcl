@@ -81,9 +81,9 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSmoot
     unsigned int min_pts_per_cluster,
     unsigned int max_pts_per_cluster)
 {
-  if (tree->getInputCloud ()->points.size () != cloud.points.size ())
+  if (tree->getInputCloud ()->size () != cloud.points.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->size (), cloud.points.size ());
     return;
   }
   if (cloud.points.size () != normals.points.size ())
@@ -195,7 +195,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
     output.points.clear ();
     return;
   }
-  if (normals_->points.size () != surface_->points.size ())
+  if (normals_->size () != surface_->size ())
   {
     PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!\n", getClassName ().c_str ());
     output.width = output.height = 0;
@@ -213,7 +213,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   pcl::PointCloud<pcl::PointNormal>::Ptr normals_filtered_cloud (new pcl::PointCloud<pcl::PointNormal> ());
   normals_filtered_cloud->width = static_cast<std::uint32_t> (indices_in.size ());
   normals_filtered_cloud->height = 1;
-  normals_filtered_cloud->points.resize (normals_filtered_cloud->width);
+  normals_filtered_cloud->resize (normals_filtered_cloud->width);
 
   for (std::size_t i = 0; i < indices_in.size (); ++i)
   {
@@ -224,7 +224,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 
   std::vector<pcl::PointIndices> clusters;
 
-  if(normals_filtered_cloud->points.size() >= min_points_)
+  if(normals_filtered_cloud->size() >= min_points_)
   {
     //recompute normals and use them for clustering
     KdTreePtr normals_tree_filtered (new pcl::search::KdTree<pcl::PointNormal> (false));

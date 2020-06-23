@@ -60,7 +60,7 @@ void
 CopyPointCloudToBuffers(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud,
                         PointCloudBuffers& cloud_buffers)
 {
-  const std::size_t nr_points = cloud->points.size();
+  const std::size_t nr_points = cloud->size();
 
   cloud_buffers.points.resize(nr_points * 3);
   cloud_buffers.rgb.resize(nr_points * 3);
@@ -179,12 +179,12 @@ public:
 
       PointCloudBuffers::Ptr buffers_to_send = getLatestBuffers();
 
-      nr_points = static_cast<unsigned int>(buffers_to_send->points.size() / 3);
+      nr_points = static_cast<unsigned int>(buffers_to_send->size() / 3);
       boost::asio::write(socket, boost::asio::buffer(&nr_points, sizeof(nr_points)));
 
       if (nr_points) {
         boost::asio::write(socket,
-                           boost::asio::buffer(&buffers_to_send->points.front(),
+                           boost::asio::buffer(&buffers_to_send->front(),
                                                nr_points * 3 * sizeof(short)));
         boost::asio::write(socket,
                            boost::asio::buffer(&buffers_to_send->rgb.front(),

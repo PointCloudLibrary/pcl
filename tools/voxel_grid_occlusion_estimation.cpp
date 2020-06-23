@@ -208,7 +208,7 @@ int main (int argc, char** argv)
   occ_centroids->width = static_cast<int> (occluded_voxels.size ());
   occ_centroids->height = 1;
   occ_centroids->is_dense = false;
-  occ_centroids->points.resize (occluded_voxels.size ());
+  occ_centroids->resize (occluded_voxels.size ());
   for (std::size_t i = 0; i < occluded_voxels.size (); ++i)
   {
     Eigen::Vector4f xyz = vg.getCentroidCoordinate (occluded_voxels[i]);
@@ -220,12 +220,12 @@ int main (int argc, char** argv)
   }
 
   CloudT::Ptr cloud_centroids (new CloudT);
-  cloud_centroids->width = static_cast<int> (input_cloud->points.size ());
+  cloud_centroids->width = static_cast<int> (input_cloud->size ());
   cloud_centroids->height = 1;
   cloud_centroids->is_dense = false;
-  cloud_centroids->points.resize (input_cloud->points.size ());
+  cloud_centroids->resize (input_cloud->size ());
 
-  for (std::size_t i = 0; i < input_cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < input_cloud->size (); ++i)
   {
     float x = input_cloud->points[i].x;
     float y = input_cloud->points[i].y;

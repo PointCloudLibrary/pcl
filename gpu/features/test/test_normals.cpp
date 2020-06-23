@@ -50,7 +50,7 @@ using namespace pcl::gpu;
 TEST(PCL_FeaturesGPU, normals_lowlevel)
 {       
     DataSource source;
-    std::cout << "Cloud size: " << source.cloud->points.size() << std::endl;
+    std::cout << "Cloud size: " << source.cloud->size() << std::endl;
     std::cout << "Radius: " << source.radius << std::endl;
     std::cout << "K: " << source.k << std::endl;
 
@@ -99,7 +99,7 @@ TEST(PCL_FeaturesGPU, normals_lowlevel)
 TEST(PCL_FeaturesGPU, normals_highlevel_1)
 {       
     DataSource source;
-    std::cout << "Cloud size: " << source.cloud->points.size() << std::endl;
+    std::cout << "Cloud size: " << source.cloud->size() << std::endl;
     std::cout << "Radius: " << source.radius << std::endl;
     std::cout << "Max_elems: " <<  source.max_elements << std::endl;
 
@@ -163,7 +163,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_1)
 TEST(PCL_FeaturesGPU, normals_highlevel_2)
 {       
     DataSource source;
-    std::cout << "Cloud size: " << source.cloud->points.size() << std::endl;
+    std::cout << "Cloud size: " << source.cloud->size() << std::endl;
     std::cout << "Radius: " << source.radius << std::endl;
     std::cout << "Max_elems: " <<  source.max_elements << std::endl;    
 
@@ -228,7 +228,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_2)
 TEST(PCL_FeaturesGPU, normals_highlevel_3)
 {       
     DataSource source;
-    std::cout << "Cloud size: " << source.cloud->points.size() << std::endl;
+    std::cout << "Cloud size: " << source.cloud->size() << std::endl;
     std::cout << "Radius: " << source.radius << std::endl;
     std::cout << "Max_elems: " <<  source.max_elements << std::endl;
 
@@ -302,7 +302,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_3)
 TEST(PCL_FeaturesGPU, normals_highlevel_4)
 {       
     DataSource source;
-    std::cout << "Cloud size: " << source.cloud->points.size() << std::endl;
+    std::cout << "Cloud size: " << source.cloud->size() << std::endl;
     std::cout << "Radius: " << source.radius << std::endl;
     std::cout << "Max_elems: " <<  source.max_elements << std::endl;
     

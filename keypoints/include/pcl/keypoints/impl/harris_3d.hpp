@@ -242,7 +242,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 {
   typename pcl::PointCloud<PointOutT>::Ptr response (new pcl::PointCloud<PointOutT>);
 
-  response->points.reserve (input_->points.size());
+  response->reserve (input_->size());
 
   switch (method_)
   {
@@ -274,13 +274,13 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
   else
   {
     output.points.clear ();
-    output.points.reserve (response->points.size());
+    output.points.reserve (response->size());
 
 #pragma omp parallel for \
   default(none) \
   shared(output, response) \
   num_threads(threads_)
-    for (int idx = 0; idx < static_cast<int> (response->points.size ()); ++idx)
+    for (int idx = 0; idx < static_cast<int> (response->size ()); ++idx)
     {
       if (!isFinite (response->points[idx]) ||
           !std::isfinite (response->points[idx].intensity) ||
@@ -442,7 +442,7 @@ template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseCurvature (PointCloudOut &output) const
 {
   PointOutT point;
-  for (std::size_t idx = 0; idx < input_->points.size(); ++idx)
+  for (std::size_t idx = 0; idx < input_->size(); ++idx)
   {
     point.x = input_->points[idx].x;
     point.y = input_->points[idx].y;

@@ -68,8 +68,8 @@ class SimpleKinectTool
       pcl::ScopeTime ttt ("all");
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (new pcl::PointCloud<pcl::PointXYZRGB>);
       PointCloudAOS<Host> data_host;
-      data_host.points.resize (cloud->points.size());
-      for (std::size_t i = 0; i < cloud->points.size (); ++i)
+      data_host.points.resize (cloud->size());
+      for (std::size_t i = 0; i < cloud->size (); ++i)
       {
         PointXYZRGB pt;
         pt.x = cloud->points[i].x;
@@ -102,7 +102,7 @@ class SimpleKinectTool
 
       //    OpenNIRGB color;
       //    color.r = 253; color.g = 0; color.b = 0;
-      //    std::cerr << data->points.size() << " =?= " << inliers_stencil->size () << std::endl;
+      //    std::cerr << data->size() << " =?= " << inliers_stencil->size () << std::endl;
       //    colorIndices<Storage> (data, inliers_stencil, color);
         }
       }

@@ -142,12 +142,12 @@ namespace pcl
             scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
           scalars->SetNumberOfComponents (3);
             
-          vtkIdType nr_points = vtkIdType (cloud_->points.size ());
+          vtkIdType nr_points = vtkIdType (cloud_->size ());
           reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
           unsigned char* colors = reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->GetPointer (0);
             
           // Color every point
-          if (nr_points != int (rgb_->points.size ()))
+          if (nr_points != int (rgb_->size ()))
             std::fill (colors, colors + nr_points * 3, static_cast<unsigned char> (0xFF));
           else
             for (vtkIdType cp = 0; cp < nr_points; ++cp)
@@ -504,7 +504,7 @@ struct SceneCloudView
         kinfu.volume().fetchNormals (extracted, normals_device_);
         pcl::gpu::mergePointNormal (extracted, normals_device_, combined_device_);
         combined_device_.download (combined_ptr_->points);
-        combined_ptr_->width = (int)combined_ptr_->points.size ();
+        combined_ptr_->width = (int)combined_ptr_->size ();
         combined_ptr_->height = 1;
 
         valid_combined_ = true;
@@ -512,7 +512,7 @@ struct SceneCloudView
       else
       {
         extracted.download (cloud_ptr_->points);
-        cloud_ptr_->width = (int)cloud_ptr_->points.size ();
+        cloud_ptr_->width = (int)cloud_ptr_->size ();
         cloud_ptr_->height = 1;
       }
 
@@ -520,13 +520,13 @@ struct SceneCloudView
       {
         kinfu.colorVolume().fetchColors(extracted, point_colors_device_);
         point_colors_device_.download(point_colors_ptr_->points);
-        point_colors_ptr_->width = (int)point_colors_ptr_->points.size ();
+        point_colors_ptr_->width = (int)point_colors_ptr_->size ();
         point_colors_ptr_->height = 1;
       }
       else
-        point_colors_ptr_->points.clear();
+        point_colors_ptr_->clear();
     }
-    std::size_t points_size = valid_combined_ ? combined_ptr_->points.size () : cloud_ptr_->points.size ();
+    std::size_t points_size = valid_combined_ ? combined_ptr_->size () : cloud_ptr_->size ();
     std::cout << "Done.  Cloud size: " << points_size / 1000 << "K" << std::endl;
 
     if (viz_)
@@ -588,8 +588,8 @@ struct SceneCloudView
         return;
 
     cloud_viewer_->removeAllPointClouds ();
-    cloud_ptr_->points.clear ();
-    normals_ptr_->points.clear ();    
+    cloud_ptr_->clear ();
+    normals_ptr_->clear ();    
     if (print_message)
       std::cout << "Clouds/Meshes were cleared" << std::endl;
   }
@@ -1031,13 +1031,13 @@ struct KinFuApp
 
     // Points to export are either in cloud_ptr_ or combined_ptr_.
     // If none have points, we have nothing to export.
-    if (view.cloud_ptr_->points.empty () && view.combined_ptr_->points.empty ())
+    if (view.cloud_ptr_->empty () && view.combined_ptr_->empty ())
     {
       std::cout << "Not writing cloud: Cloud is empty" << std::endl;
     }
     else
     {
-      if(view.point_colors_ptr_->points.empty()) // no colors
+      if(view.point_colors_ptr_->empty()) // no colors
       {
         if (view.valid_combined_)
           writeCloudFile (format, view.combined_ptr_);

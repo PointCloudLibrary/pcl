@@ -119,7 +119,7 @@ compute (ConstCloudPtr &input, Cloud &output, int max_window_size, float slope, 
 
   if (approximate)
   {
-    PCL_DEBUG ("approx with %d points\n", input->points.size ());
+    PCL_DEBUG ("approx with %d points\n", input->size ());
     ApproximateProgressiveMorphologicalFilter<PointType> pmf;
     pmf.setInputCloud (input);
     pmf.setMaxWindowSize (max_window_size);

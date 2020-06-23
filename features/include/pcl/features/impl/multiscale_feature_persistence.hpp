@@ -100,7 +100,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::computeFeaturesAtA
 
     // Vectorize each feature and insert it into the vectorized feature storage
     std::vector<std::vector<float> > feature_cloud_vectorized;
-    feature_cloud_vectorized.reserve (feature_cloud->points.size ());
+    feature_cloud_vectorized.reserve (feature_cloud->size ());
 
     for (const auto& feature: feature_cloud->points)
     {
@@ -185,8 +185,8 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::extractUniqueFeatu
 
     // Select only points outside (mean +/- alpha * standard_dev)
     std::list<std::size_t> indices_per_scale;
-    std::vector<bool> indices_table_per_scale (features_at_scale_[scale_i]->points.size (), false);
-    for (std::size_t point_i = 0; point_i < features_at_scale_[scale_i]->points.size (); ++point_i)
+    std::vector<bool> indices_table_per_scale (features_at_scale_[scale_i]->size (), false);
+    for (std::size_t point_i = 0; point_i < features_at_scale_[scale_i]->size (); ++point_i)
     {
       if (diff_vector[point_i] > alpha_ * standard_dev)
       {

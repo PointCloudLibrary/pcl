@@ -202,7 +202,7 @@ namespace pcl
       {
         if (indices_ == nullptr)
         {
-          assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in nearestKSearch!");
+          assert (index >= 0 && index < static_cast<int> (input_->size ()) && "Out-of-bounds error in nearestKSearch!");
           return (nearestKSearch (input_->points[index], k, k_indices, k_sqr_distances));
         }
         assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in nearestKSearch!");
@@ -293,7 +293,7 @@ namespace pcl
       {
         if (indices_ == nullptr)
         {
-          assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in radiusSearch!");
+          assert (index >= 0 && index < static_cast<int> (input_->size ()) && "Out-of-bounds error in radiusSearch!");
           return (radiusSearch (input_->points[index], radius, k_indices, k_sqr_distances, max_nn));
         }
         assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in radiusSearch!");

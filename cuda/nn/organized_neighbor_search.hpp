@@ -392,7 +392,7 @@ namespace pcl
     OrganizedNeighborSearch<PointT>::getPointByIndex (const unsigned int index_arg) const
     {
       // retrieve point from input cloud
-      assert (index_arg < (unsigned int)input_->points.size ());
+      assert (index_arg < (unsigned int)input_->size ());
       return this->input_->points[index_arg];
 
     }

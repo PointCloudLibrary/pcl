@@ -79,7 +79,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 {
   if (indices_) {
     for (const int& index : *indices_) {
-      assert((index >= 0) && (index < static_cast<int>(input_->points.size())));
+      assert((index >= 0) && (index < static_cast<int>(input_->size())));
 
       if (isFinite(input_->points[index])) {
         // add points to octree
@@ -88,7 +88,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     }
   }
   else {
-    for (std::size_t i = 0; i < input_->points.size(); i++) {
+    for (std::size_t i = 0; i < input_->size(); i++) {
       if (isFinite(input_->points[i])) {
         // add points to octree
         this->addPointIdx(static_cast<unsigned int>(i));
@@ -124,7 +124,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
   cloud_arg->push_back(point_arg);
 
-  this->addPointIdx(static_cast<const int>(cloud_arg->points.size()) - 1);
+  this->addPointIdx(static_cast<const int>(cloud_arg->size()) - 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -143,7 +143,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
   cloud_arg->push_back(point_arg);
 
-  this->addPointFromCloud(static_cast<const int>(cloud_arg->points.size()) - 1,
+  this->addPointFromCloud(static_cast<const int>(cloud_arg->size()) - 1,
                           indices_arg);
 }
 
@@ -656,7 +656,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 {
   OctreeKey key;
 
-  assert(point_idx_arg < static_cast<int>(input_->points.size()));
+  assert(point_idx_arg < static_cast<int>(input_->size()));
 
   const PointT& point = input_->points[point_idx_arg];
 
@@ -703,7 +703,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     getPointByIndex(const unsigned int index_arg) const
 {
   // retrieve point from input cloud
-  assert(index_arg < static_cast<unsigned int>(input_->points.size()));
+  assert(index_arg < static_cast<unsigned int>(input_->size()));
   return (this->input_->points[index_arg]);
 }
 

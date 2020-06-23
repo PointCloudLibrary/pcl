@@ -60,7 +60,7 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   // Initialize output container - overwrite the sizes done by Feature::initCompute ()
-  output.points.resize (indices_->size () * input_->points.size ());
+  output.points.resize (indices_->size () * input_->size ());
   output.height = 1;
   output.width = static_cast<std::uint32_t> (output.points.size ());
   output.is_dense = true;
@@ -69,7 +69,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   for (std::size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {
     std::size_t i = (*indices_)[index_i];
-    for (std::size_t j = 0 ; j < input_->points.size (); ++j)
+    for (std::size_t j = 0 ; j < input_->size (); ++j)
     {
       PointOutT p;
       if (i != j)
@@ -112,7 +112,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
         output.is_dense = false;
       }
 
-      output.points[index_i*input_->points.size () + j] = p;
+      output.points[index_i*input_->size () + j] = p;
     }
   }
 }

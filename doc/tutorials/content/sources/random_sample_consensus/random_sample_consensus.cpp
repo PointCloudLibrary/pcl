@@ -38,8 +38,8 @@ main(int argc, char** argv)
   cloud->width    = 500;
   cloud->height   = 1;
   cloud->is_dense = false;
-  cloud->points.resize (cloud->width * cloud->height);
-  for (std::size_t i = 0; i < cloud->points.size (); ++i)
+  cloud->resize (cloud->width * cloud->height);
+  for (std::size_t i = 0; i < cloud->size (); ++i)
   {
     if (pcl::console::find_argument (argc, argv, "-s") >= 0 || pcl::console::find_argument (argc, argv, "-sf") >= 0)
     {

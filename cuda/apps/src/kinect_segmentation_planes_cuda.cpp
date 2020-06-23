@@ -123,8 +123,8 @@ class Segmentation
     {
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (new pcl::PointCloud<pcl::PointXYZRGB>);
       PointCloudAOS<Host> data_host;
-      data_host.points.resize (cloud->points.size());
-      for (std::size_t i = 0; i < cloud->points.size (); ++i)
+      data_host.points.resize (cloud->size());
+      for (std::size_t i = 0; i < cloud->size (); ++i)
       {
         PointXYZRGB pt;
         pt.x = cloud->points[i].x;
@@ -145,7 +145,7 @@ class Segmentation
       {
         ScopeTimeCPU time ("TIMING: Normal Estimation");
         constexpr float focallength = 580/2.0;
-        normals = computePointNormals<Storage, typename PointIterator<Storage,PointXYZRGB>::type > (data->points.begin (), data->points.end (), focallength, data, 0.05, 30);
+        normals = computePointNormals<Storage, typename PointIterator<Storage,PointXYZRGB>::type > (data->begin (), data->end (), focallength, data, 0.05, 30);
       }
       go_on = false;
 

@@ -227,8 +227,8 @@ namespace pcl
             {
               if (!source_features_ || !target_features_)
                 return (false);
-              return (source_features_->points.size () > 0 && 
-                      target_features_->points.size () > 0);
+              return (source_features_->size () > 0 && 
+                      target_features_->size () > 0);
             }
 
             /** \brief Provide a boost shared pointer to a PointRepresentation to be used when comparing features

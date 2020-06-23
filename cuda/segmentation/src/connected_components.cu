@@ -84,7 +84,7 @@ namespace pcl
     template <template <typename> class Storage>
     void markInliers (const typename PointCloudAOS<Storage>::ConstPtr &input, typename Storage<int>::type &region_mask, std::vector<shared_ptr<typename Storage<int>::type> > inlier_stencils)
     {
-      region_mask.resize (input->points.size());
+      region_mask.resize (input->size());
       //int** stencils = new int*[inlier_stencils.size()];
       thrust::host_vector<int*> stencils_host (inlier_stencils.size ());
       for (int i = 0; i < inlier_stencils.size (); ++i)

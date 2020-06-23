@@ -256,7 +256,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   {
     setT *triangles_set = qh_settemp (4 * num_facets);
     if (voronoi_centers_)
-      voronoi_centers_->points.resize (num_facets);
+      voronoi_centers_->resize (num_facets);
 
     int non_upper = 0;
     FORALLfacets
@@ -327,7 +327,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     }
 
     if (voronoi_centers_)
-      voronoi_centers_->points.resize (non_upper);
+      voronoi_centers_->resize (non_upper);
 
     // filter, add points to alpha_shape and create polygon structure
 
@@ -382,7 +382,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     // Filters the delaunay triangles
     setT *edges_set = qh_settemp (3 * num_facets);
     if (voronoi_centers_)
-      voronoi_centers_->points.resize (num_facets);
+      voronoi_centers_->resize (num_facets);
 
     int dd = 0;
     FORALLfacets
@@ -534,7 +534,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     }
 
     if (voronoi_centers_)
-      voronoi_centers_->points.resize (dd);
+      voronoi_centers_->resize (dd);
   }
 
   qh_freeqhull (!qh_ALL);

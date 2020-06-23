@@ -34,9 +34,9 @@ class PreProcessorAndNormalEstimator {
     std::vector<int> src_indices;
 
     float sum_distances = 0.0;
-    std::vector<float> avg_distances(input->points.size());
+    std::vector<float> avg_distances(input->size());
     // Iterate through the source data set
-    for (std::size_t i = 0; i < input->points.size(); ++i) {
+    for (std::size_t i = 0; i < input->size(); ++i) {
       tree->nearestKSearch(input->points[i], 9, nn_indices, nn_distances);
 
       float avg_dist_neighbours = 0.0;
@@ -132,7 +132,7 @@ public:
       out = in;
     }
 
-    if (out->points.empty()) {
+    if (out->empty()) {
       PCL_WARN("NORMAL estimator: Cloud has no points after voxel grid, "
                "won't be able to compute normals!\n");
       return;
@@ -159,7 +159,7 @@ public:
       out = out2;
     }
 
-    if (out->points.empty()) {
+    if (out->empty()) {
       PCL_WARN("NORMAL estimator: Cloud has no points after removing outliers...!\n");
       return;
     }
@@ -188,7 +188,7 @@ public:
       {
         pcl::ScopeTime t("check nans...");
         int j = 0;
-        for (std::size_t i = 0; i < out->points.size(); ++i) {
+        for (std::size_t i = 0; i < out->size(); ++i) {
           if (!std::isfinite(out->points[i].x) || !std::isfinite(out->points[i].y) ||
               !std::isfinite(out->points[i].z))
             continue;
@@ -197,11 +197,11 @@ public:
           j++;
         }
 
-        if (j != static_cast<int>(out->points.size())) {
+        if (j != static_cast<int>(out->size())) {
           PCL_ERROR("Contain nans...");
         }
 
-        out->points.resize(j);
+        out->resize(j);
         out->width = j;
         out->height = 1;
       }
@@ -223,7 +223,7 @@ public:
     if (!out->isOrganized()) {
       pcl::ScopeTime t("check nans...");
       int j = 0;
-      for (std::size_t i = 0; i < normals->points.size(); ++i) {
+      for (std::size_t i = 0; i < normals->size(); ++i) {
         if (!std::isfinite(normals->points[i].normal_x) ||
             !std::isfinite(normals->points[i].normal_y) ||
             !std::isfinite(normals->points[i].normal_z))
@@ -234,11 +234,11 @@ public:
         j++;
       }
 
-      normals->points.resize(j);
+      normals->resize(j);
       normals->width = j;
       normals->height = 1;
 
-      out->points.resize(j);
+      out->resize(j);
       out->width = j;
       out->height = 1;
     }
@@ -246,7 +246,7 @@ public:
       // is is organized, we set the xyz points to NaN
       pcl::ScopeTime t("check nans organized...");
       bool NaNs = false;
-      for (std::size_t i = 0; i < normals->points.size(); ++i) {
+      for (std::size_t i = 0; i < normals->size(); ++i) {
         if (std::isfinite(normals->points[i].normal_x) &&
             std::isfinite(normals->points[i].normal_y) &&
             std::isfinite(normals->points[i].normal_z))

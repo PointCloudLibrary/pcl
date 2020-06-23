@@ -60,7 +60,7 @@ PointCloudColorHandlerCustom<PointT>::getColor () const
   auto scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
   scalars->SetNumberOfComponents (3);
 
-  vtkIdType nr_points = cloud_->points.size ();
+  vtkIdType nr_points = cloud_->size ();
   scalars->SetNumberOfTuples (nr_points);
 
   // Get a random color
@@ -87,7 +87,7 @@ PointCloudColorHandlerRandom<PointT>::getColor () const
   auto scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
   scalars->SetNumberOfComponents (3);
 
-  vtkIdType nr_points = cloud_->points.size ();
+  vtkIdType nr_points = cloud_->size ();
   scalars->SetNumberOfTuples (nr_points);
 
   // Get a random color
@@ -152,7 +152,7 @@ PointCloudColorHandlerRGBField<PointT>::getColor () const
   auto scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
   scalars->SetNumberOfComponents (3);
 
-  vtkIdType nr_points = cloud_->points.size ();
+  vtkIdType nr_points = cloud_->size ();
   scalars->SetNumberOfTuples (nr_points);
   unsigned char* colors = scalars->GetPointer (0);
 
@@ -238,7 +238,7 @@ PointCloudColorHandlerHSVField<PointT>::getColor () const
   auto scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
   scalars->SetNumberOfComponents (3);
 
-  vtkIdType nr_points = cloud_->points.size ();
+  vtkIdType nr_points = cloud_->size ();
   scalars->SetNumberOfTuples (nr_points);
   unsigned char* colors = scalars->GetPointer (0);
 
@@ -388,7 +388,7 @@ PointCloudColorHandlerGenericField<PointT>::getColor () const
   auto scalars = vtkSmartPointer<vtkFloatArray>::New ();
   scalars->SetNumberOfComponents (1);
 
-  vtkIdType nr_points = cloud_->points.size ();
+  vtkIdType nr_points = cloud_->size ();
   scalars->SetNumberOfTuples (nr_points);
 
   using FieldList = typename pcl::traits::fieldList<PointT>::type;
@@ -462,7 +462,7 @@ PointCloudColorHandlerRGBAField<PointT>::getColor () const
   auto scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
   scalars->SetNumberOfComponents (4);
 
-  vtkIdType nr_points = cloud_->points.size ();
+  vtkIdType nr_points = cloud_->size ();
   scalars->SetNumberOfTuples (nr_points);
   unsigned char* colors = scalars->GetPointer (0);
 
@@ -529,7 +529,7 @@ PointCloudColorHandlerLabelField<PointT>::getColor () const
   auto scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
   scalars->SetNumberOfComponents (3);
 
-  vtkIdType nr_points = cloud_->points.size ();
+  vtkIdType nr_points = cloud_->size ();
   scalars->SetNumberOfTuples (nr_points);
   unsigned char* colors = scalars->GetPointer (0);
 

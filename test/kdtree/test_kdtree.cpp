@@ -227,16 +227,16 @@ class MyPointRepresentationXY : public PointRepresentation<MyPoint>
 TEST (PCL, KdTreeFLANN_setPointRepresentation)
 {
   PointCloud<MyPoint>::Ptr random_cloud (new PointCloud<MyPoint> ());
-  random_cloud->points.emplace_back(86.6f, 42.1f, 92.4f);
-  random_cloud->points.emplace_back(63.1f, 18.4f, 22.3f);
-  random_cloud->points.emplace_back(35.5f, 72.5f, 37.3f);
-  random_cloud->points.emplace_back(99.7f, 37.0f,  8.7f);
-  random_cloud->points.emplace_back(22.4f, 84.1f, 64.0f);
-  random_cloud->points.emplace_back(65.2f, 73.4f, 18.0f);
-  random_cloud->points.emplace_back(60.4f, 57.1f,  4.5f);
-  random_cloud->points.emplace_back(38.7f, 17.6f, 72.3f);
-  random_cloud->points.emplace_back(14.2f, 95.7f, 34.7f);
-  random_cloud->points.emplace_back( 2.5f, 26.5f, 66.0f);
+  random_cloud->emplace_back(86.6f, 42.1f, 92.4f);
+  random_cloud->emplace_back(63.1f, 18.4f, 22.3f);
+  random_cloud->emplace_back(35.5f, 72.5f, 37.3f);
+  random_cloud->emplace_back(99.7f, 37.0f,  8.7f);
+  random_cloud->emplace_back(22.4f, 84.1f, 64.0f);
+  random_cloud->emplace_back(65.2f, 73.4f, 18.0f);
+  random_cloud->emplace_back(60.4f, 57.1f,  4.5f);
+  random_cloud->emplace_back(38.7f, 17.6f, 72.3f);
+  random_cloud->emplace_back(14.2f, 95.7f, 34.7f);
+  random_cloud->emplace_back( 2.5f, 26.5f, 66.0f);
 
   KdTreeFLANN<MyPoint> kdtree;
   kdtree.setInputCloud (random_cloud);

@@ -51,7 +51,7 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
   }
 
   // Validity checks
-  if (!initCompute () || input_->points.empty () || indices_->empty () || !condition_function_)
+  if (!initCompute () || input_->empty () || indices_->empty () || !condition_function_)
     return;
 
   // Initialize the search class
@@ -70,7 +70,7 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
 
   // Create a bool vector of processed point indices, and initialize it to false
   // Need to have it contain all possible points because radius search can not return indices into indices
-  std::vector<bool> processed (input_->points.size (), false);
+  std::vector<bool> processed (input_->size (), false);
 
   // Process all points indexed by indices_
   for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator

@@ -60,7 +60,7 @@ template <typename PointT>
 void
 Kmeans<PointT>::cluster(std::vector<PointIndices>& clusters)
 {
-  if (!initCompute() || (input_ != 0 && input_->points.empty()) ||
+  if (!initCompute() || (input_ != 0 && input_->empty()) ||
       (indices_ != 0 && indices_->empty())) {
     clusters.clear();
     return;
@@ -88,7 +88,7 @@ Kmeans<PointT>::cluster(std::vector<PointIndices>& clusters)
     PCL_INFO("Use X Y Z as input data\n");
     // create input data
     /*
-        for (std::size_t i = 0; i < input_->points.size (); i++)
+        for (std::size_t i = 0; i < input_->size (); i++)
         {
           DataPoint data (3);
           data[0] = input_->points[i].data[0];

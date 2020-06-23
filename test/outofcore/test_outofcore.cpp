@@ -528,16 +528,16 @@ TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
                  static_cast<float> (i % 1024), 
                  static_cast<float> (i % 1024));
     
-    test_cloud->points.push_back (tmp);
+    test_cloud->push_back (tmp);
   }
 
-  EXPECT_EQ (numPts, test_cloud->points.size ());
+  EXPECT_EQ (numPts, test_cloud->size ());
   
   octree_disk pcl_cloud (4, min, max, outofcore_path, "ECEF");
 
   pcl_cloud.addPointCloud (test_cloud);
   
-  EXPECT_EQ (test_cloud->points.size (), pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ()));
+  EXPECT_EQ (test_cloud->size (), pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ()));
   
   cleanUpFilesystem ();
 }
@@ -561,7 +561,7 @@ TEST_F (OutofcoreTest, Outofcore_PointsOnBoundaries)
     tmp.y = static_cast<float> (pow (-1.0, i+1)) * 1.0f;
     tmp.z = static_cast<float> (pow (-1.0, 3*i)) * 1.0f;
     
-    cloud->points.push_back (tmp);
+    cloud->push_back (tmp);
   }
 
   octree_disk octree (4, min, max, outofcore_path, "ECEF");
@@ -614,7 +614,7 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
                  static_cast<float> (i % 1024), 
                  static_cast<float> (i % 1024));
     
-    test_cloud->points.push_back (tmp);
+    test_cloud->push_back (tmp);
   }
 
   for (std::size_t i=0; i < numPts; i++)
@@ -623,12 +623,12 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
                  static_cast<float> (i % 1024), 
                  static_cast<float> (i % 1024));
     
-    second_cloud->points.push_back (tmp);
+    second_cloud->push_back (tmp);
   }
 
   octree_disk pcl_cloud (4, min, max, outofcore_path, "ECEF");
 
-  ASSERT_EQ (test_cloud->points.size (), pcl_cloud.addPointCloud (test_cloud)) << "Points lost when adding the first cloud to the tree\n";
+  ASSERT_EQ (test_cloud->size (), pcl_cloud.addPointCloud (test_cloud)) << "Points lost when adding the first cloud to the tree\n";
 
   ASSERT_EQ (numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ())) << "Book keeping of number of points at query depth does not match number of points inserted to the leaves\n";
 
@@ -677,7 +677,7 @@ TEST_F (OutofcoreTest, Outofcore_PointCloudInput_LOD)
                  static_cast<float> (i % 1024), 
                  static_cast<float> (i % 1024));
     
-    test_cloud->points.push_back (tmp);
+    test_cloud->push_back (tmp);
   }
 
   for (std::size_t i=0; i < numPts; i++)
@@ -686,7 +686,7 @@ TEST_F (OutofcoreTest, Outofcore_PointCloudInput_LOD)
                  static_cast<float> (i % 1024), 
                  static_cast<float> (i % 1024));
     
-    second_cloud->points.push_back (tmp);
+    second_cloud->push_back (tmp);
   }
 
   octree_disk pcl_cloud (4, min, max, outofcore_path, "ECEF");
@@ -721,7 +721,7 @@ TEST_F (OutofcoreTest, PointCloud2_Constructors)
                  static_cast<float> (i % 200) - 99, 
                  static_cast<float> (i % 200) - 99);
     
-    test_cloud->points.push_back (tmp);
+    test_cloud->push_back (tmp);
   }
 
   pcl::PCLPointCloud2::Ptr point_cloud (new pcl::PCLPointCloud2);
@@ -795,7 +795,7 @@ TEST_F (OutofcoreTest, PointCloud2_MultiplePointCloud)
                 static_cast<float> (i % 50),
                  static_cast<float> (i % 50));
     
-    first_cloud->points.push_back (tmp);
+    first_cloud->push_back (tmp);
   }
 
   for (std::size_t i=0; i < numPts; i++)
@@ -804,7 +804,7 @@ TEST_F (OutofcoreTest, PointCloud2_MultiplePointCloud)
                  static_cast<float> (i % 50), 
                  static_cast<float> (i % 50));
     
-    second_cloud->points.push_back (tmp);
+    second_cloud->push_back (tmp);
   }
 
   pcl::PCLPointCloud2::Ptr first_cloud_ptr (new pcl::PCLPointCloud2 ());
@@ -852,7 +852,7 @@ TEST_F (OutofcoreTest, PointCloud2_QueryBoundingBox)
                  static_cast<float> (i % 50) - 50, 
                  static_cast<float> (i % 50) - 50);
     
-    test_cloud->points.push_back (tmp);
+    test_cloud->push_back (tmp);
   }
 
   pcl::PCLPointCloud2::Ptr dst_blob (new pcl::PCLPointCloud2 ());
@@ -904,7 +904,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
                  static_cast<float> (i % 50) - 50, 
                  static_cast<float> (i % 50) - 50);
     
-    test_cloud->points.push_back (tmp);
+    test_cloud->push_back (tmp);
   }
 
   pcl::PCLPointCloud2::Ptr dst_blob (new pcl::PCLPointCloud2 ());

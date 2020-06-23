@@ -187,12 +187,12 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeSPFHSignatures (std::v
   std::vector<float> nn_dists (k_);
 
   std::set<int> spfh_indices;
-  spfh_hist_lookup.resize (surface_->points.size ());
+  spfh_hist_lookup.resize (surface_->size ());
 
   // Build a list of (unique) indices for which we will need to compute SPFH signatures
   // (We need an SPFH signature for every point that is a neighbor of any point in input_[indices_])
   if (surface_ != input_ ||
-      indices_->size () != surface_->points.size ())
+      indices_->size () != surface_->size ())
   {
     for (const auto& p_idx: *indices_)
     {

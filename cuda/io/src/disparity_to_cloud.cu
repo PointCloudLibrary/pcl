@@ -108,7 +108,7 @@ ComputeXYZRGB::operator () (const Tuple &t)
 //  output->height = depth_image->height;
 //  output->width  = depth_image->width;
 //  output->is_dense = false;
-//  output->points.resize (output->width * output->height);
+//  output->resize (output->width * output->height);
 //
 //  // Copy the depth data and the RGB data on the card
 //  device_vector<float> depth (depth_image->data.size () / sizeof (float));
@@ -129,7 +129,7 @@ ComputeXYZRGB::operator () (const Tuple &t)
 //        make_zip_iterator (make_tuple (depth.begin (), rgb.begin (), counting_iterator<int>(0))),
 //        make_zip_iterator (make_tuple (depth.begin (), rgb.begin (), counting_iterator<int>(0))) + 
 //                           depth_image->width * depth_image->height,
-//        output->points.begin (), 
+//        output->begin (), 
 //        ComputeXYZRGB (depth_image->width, depth_image->height, 
 //                       depth_image->width >> 1, depth_image->height >> 1, 1.0 / info->P[0]));
 //  }
@@ -140,7 +140,7 @@ ComputeXYZRGB::operator () (const Tuple &t)
 //        make_zip_iterator (make_tuple (depth.begin (), counting_iterator<int>(0))),
 //        make_zip_iterator (make_tuple (depth.begin (), counting_iterator<int>(0))) + 
 //                           depth_image->width * depth_image->height,
-//        output->points.begin (), 
+//        output->begin (), 
 //        ComputeXYZ (depth_image->width, depth_image->height, 
 //                    depth_image->width >> 1, depth_image->height >> 1, 1.0 / info->P[0]));
 //  }
@@ -203,7 +203,7 @@ DisparityToCloud::compute (const std::uint16_t* depth_image,
   output->width  = width;
 
   output->is_dense = false;
-  output->points.resize (output_size);
+  output->resize (output_size);
 
   // copy to float
   typename Storage<float>::type depth (output_size);
@@ -235,7 +235,7 @@ DisparityToCloud::compute (const std::uint16_t* depth_image,
     transform (
         make_zip_iterator (make_tuple (depth.begin (), rgb.begin(), counting_iterator<int>(0))),
         make_zip_iterator (make_tuple (depth.begin (), rgb.begin(), counting_iterator<int>(0))) + output_size,
-        output->points.begin (), 
+        output->begin (), 
         ComputeXYZRGB (width, height, 
                        width >> 1, height >> 1, constant));
   }
@@ -244,7 +244,7 @@ DisparityToCloud::compute (const std::uint16_t* depth_image,
     transform (
         make_zip_iterator (make_tuple (depth.begin(), rgb.begin(), counting_iterator<int>(0))),
         make_zip_iterator (make_tuple (depth.begin(), rgb.begin(), counting_iterator<int>(0))) + output_size,
-        output->points.begin (), 
+        output->begin (), 
         ComputeXYZRGB (width, height, 
                        width >> 1, height >> 1, constant));
   }
@@ -280,7 +280,7 @@ DisparityToCloud::compute (const openni_wrapper::DepthImage::Ptr& depth_image,
   }
 
   output->is_dense = false;
-  output->points.resize (output->width * output->height);
+  output->resize (output->width * output->height);
 
   // Copy the depth data and the RGB data on the card
   typename Storage<float>::type depth (output->width * output->height);
@@ -371,7 +371,7 @@ DisparityToCloud::compute (const openni_wrapper::DepthImage::Ptr& depth_image,
     transform (
         make_zip_iterator (make_tuple (depth.begin (), rgb.begin (), counting_iterator<int>(0))),
         make_zip_iterator (make_tuple (depth.begin (), rgb.begin (), counting_iterator<int>(0))) + output_size,
-        output->points.begin (), 
+        output->begin (), 
         ComputeXYZRGB (output->width, output->height, 
                        output->width >> 1, output->height >> 1, constant));
 #else 
@@ -401,7 +401,7 @@ DisparityToCloud::compute (const openni_wrapper::DepthImage::Ptr& depth_image,
 //      transform (
 //          make_zip_iterator (make_tuple (smooth_depth1.begin (), rgb.begin (), counting_iterator<int>(0))),
 //          make_zip_iterator (make_tuple (smooth_depth1.begin (), rgb.begin (), counting_iterator<int>(0))) + output_size,
-//          output->points.begin (), 
+//          output->begin (), 
 //          ComputeXYZRGB (output->width, output->height, 
 //                         output->width >> 1, output->height >> 1, constant));
 #endif
@@ -412,7 +412,7 @@ DisparityToCloud::compute (const openni_wrapper::DepthImage::Ptr& depth_image,
       transform (
           make_zip_iterator (make_tuple (depth.begin (), rgb.begin (), counting_iterator<int>(0))),
           make_zip_iterator (make_tuple (depth.begin (), rgb.begin (), counting_iterator<int>(0))) + output_size,
-          output->points.begin (), 
+          output->begin (), 
           ComputeXYZRGB (output->width, output->height, 
                          output->width >> 1, output->height >> 1, constant));
     }
@@ -424,7 +424,7 @@ DisparityToCloud::compute (const openni_wrapper::DepthImage::Ptr& depth_image,
         make_zip_iterator (make_tuple (depth.begin (), counting_iterator<int>(0))),
         make_zip_iterator (make_tuple (depth.begin (), counting_iterator<int>(0))) + 
                            output->width * output->height,
-        output->points.begin (), 
+        output->begin (), 
         ComputeXYZ (output->width, output->height, 
                     output->width >> 1, output->height >> 1, constant));
   }

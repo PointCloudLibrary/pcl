@@ -217,7 +217,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::buildListOfPointsTriangles ()
 
   std::vector <unsigned int> dummy;
   dummy.reserve (100);
-  triangles_of_the_point_.resize (surface_->points. size (), dummy);
+  triangles_of_the_point_.resize (surface_-> size (), dummy);
 
   for (std::size_t i_triangle = 0; i_triangle < triangles_.size (); i_triangle++)
     for (const auto& vertex: triangles_[i_triangle].vertices)
