@@ -207,8 +207,7 @@ public:
                std::vector<float>& k_sqr_distances,
                unsigned int max_nn = 0)
   {
-    return (
-        radiusSearch(cloud[index], radius, k_indices, k_sqr_distances, max_nn));
+    return (radiusSearch(cloud[index], radius, k_indices, k_sqr_distances, max_nn));
   }
 
   /** \brief Search for all neighbors of query point that are within a given radius.

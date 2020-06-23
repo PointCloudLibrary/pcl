@@ -485,10 +485,8 @@ PyramidalKLTTracker<PointInT, IntensityT>::spatialGradient(
 
   for (int y = 0; y < track_height_; y++) {
     const float* img_ptr = &(img[0]) + (y + location[1]) * step + location[0];
-    const float* grad_x_ptr =
-        &(grad_x[0]) + (y + location[1]) * step + location[0];
-    const float* grad_y_ptr =
-        &(grad_y[0]) + (y + location[1]) * step + location[0];
+    const float* grad_x_ptr = &(grad_x[0]) + (y + location[1]) * step + location[0];
+    const float* grad_y_ptr = &(grad_y[0]) + (y + location[1]) * step + location[0];
 
     float* win_ptr = win.data() + y * win.cols();
     float* grad_x_win_ptr = grad_x_win.data() + y * grad_x_win.cols();
