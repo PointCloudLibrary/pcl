@@ -44,9 +44,11 @@
 #include <pcl/common/io.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::PassThrough<PointT>::applyFilterIndices (std::vector<int> &indices)
+template <typename PointT, typename Executor>
+void
+pcl::PassThrough<PointT, Executor>::applyFilterIndices (std::vector<int> &indices)
 {
+  std::cout<<"Running Executor: "<<Executor{}.name()<<std::endl;
   // The arrays to be used
   indices.resize (indices_->size ());
   removed_indices_->resize (indices_->size ());

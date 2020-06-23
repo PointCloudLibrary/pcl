@@ -275,6 +275,18 @@ TEST (ExtractIndices, Filters)
   */
 }
 
+TEST (PassThrough, Executor)
+{
+    PointCloud<PointXYZ> output;
+    PassThrough<PointXYZ, inline_executor<oneway_t, single_t, blocking_t::always_t>> in_pt;
+    in_pt.setInputCloud (cloud);
+    in_pt.filter (output);
+
+    PassThrough<PointXYZ, omp_executor<oneway_t, single_t, blocking_t::always_t>> omp_pt;
+    omp_pt.setInputCloud (cloud);
+    omp_pt.filter (output);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PassThrough, Filters)
 {

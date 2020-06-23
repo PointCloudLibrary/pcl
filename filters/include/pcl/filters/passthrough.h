@@ -40,6 +40,7 @@
 #pragma once
 
 #include <pcl/pcl_macros.h>
+#include <pcl/experimental/execution/executor.hpp>
 #include <pcl/filters/filter_indices.h>
 
 namespace pcl
@@ -76,7 +77,7 @@ namespace pcl
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */
-  template <typename PointT>
+  template <typename PointT, typename Executor = inline_executor<oneway_t, single_t, blocking_t::always_t>>
   class PassThrough : public FilterIndices<PointT>
   {
     protected:
