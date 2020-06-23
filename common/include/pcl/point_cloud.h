@@ -459,6 +459,8 @@ namespace pcl
       inline std::size_t size () const { return (points.size ()); }
       inline void reserve (std::size_t n) { points.reserve (n); }
       inline bool empty () const { return points.empty (); }
+      PointT* data() noexcept { return points.data(); }
+      const PointT* data() const noexcept { return points.data(); }
 
       /** \brief Resize the cloud
         * \param[in] n the new cloud size
