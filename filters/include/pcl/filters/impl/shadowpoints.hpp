@@ -60,14 +60,14 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter (PointCloud &output)
     const float val = std::abs (normal.normal_x * pt.x + normal.normal_y * pt.y + normal.normal_z * pt.z);
 
     if ( (val >= threshold_) ^ negative_)
-      output.points[cp++] = pt;
+      output[cp++] = pt;
     else 
     {
       if (extract_removed_indices_)
         (*removed_indices_)[ri++] = i;
       if (keep_organized_)
       {
-        PointT &pt_new = output.points[cp++] = pt;
+        PointT &pt_new = output[cp++] = pt;
         pt_new.x = pt_new.y = pt_new.z = user_filter_value_;
       }
 

@@ -331,7 +331,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClo
     {
       for (Eigen::Index iCol = 0; iCol < res.cols () ; iCol++)
       {
-        output.points[i_input].histogram[ iRow*res.cols () + iCol ] = static_cast<float> (res (iRow, iCol));
+        output[i_input].histogram[ iRow*res.cols () + iCol ] = static_cast<float> (res (iRow, iCol));
       }
     }   
   } 

@@ -114,9 +114,9 @@ uniform_sampling(const vtkSmartPointer<vtkPolyData>& polydata,
   for (i = 0; i < n_samples; i++) {
     Eigen::Vector4f p(0.f, 0.f, 0.f, 0.f);
     randPSurface(polydata, &cumulativeAreas, totalArea, p);
-    cloud_out.points[i].x = static_cast<float>(p[0]);
-    cloud_out.points[i].y = static_cast<float>(p[1]);
-    cloud_out.points[i].z = static_cast<float>(p[2]);
+    cloud_out[i].x = static_cast<float>(p[0]);
+    cloud_out[i].y = static_cast<float>(p[1]);
+    cloud_out[i].z = static_cast<float>(p[2]);
   }
 }
 
@@ -167,9 +167,9 @@ getVerticesAsPointCloud(const vtkSmartPointer<vtkPolyData>& polydata,
   for (vtkIdType i = 0; i < points->GetNumberOfPoints(); i++) {
     double p[3];
     points->GetPoint(i, p);
-    cloud_out.points[i].x = static_cast<float>(p[0]);
-    cloud_out.points[i].y = static_cast<float>(p[1]);
-    cloud_out.points[i].z = static_cast<float>(p[2]);
+    cloud_out[i].x = static_cast<float>(p[0]);
+    cloud_out[i].y = static_cast<float>(p[1]);
+    cloud_out[i].z = static_cast<float>(p[2]);
   }
 }
 

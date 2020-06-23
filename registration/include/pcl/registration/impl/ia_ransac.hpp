@@ -98,7 +98,7 @@ SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::selectSampl
     bool valid_sample = true;
     for (const int &sample_idx : sample_indices)
     {
-      float distance_between_samples = euclideanDistance (cloud.points[sample_index], cloud.points[sample_idx]);
+      float distance_between_samples = euclideanDistance (cloud[sample_index], cloud[sample_idx]);
 
       if (sample_index == sample_idx || distance_between_samples < min_sample_distance)
       {
@@ -142,7 +142,7 @@ SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::findSimilar
   corresponding_indices.resize (sample_indices.size ());
   for (std::size_t i = 0; i < sample_indices.size (); ++i)
   {
-    // Find the k features nearest to input_features.points[sample_indices[i]]
+    // Find the k features nearest to input_features[sample_indices[i]]
     feature_tree_->nearestKSearch (input_features, sample_indices[i], k_correspondences_, nn_indices, nn_distances);
 
     // Select one at random and add it to corresponding_indices
@@ -164,7 +164,7 @@ SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::computeErro
 
   for (int i = 0; i < static_cast<int> (cloud.points.size ()); ++i)
   {
-    // Find the distance between cloud.points[i] and its nearest neighbor in the target point cloud
+    // Find the distance between cloud[i] and its nearest neighbor in the target point cloud
     tree_->nearestKSearch (cloud, i, 1, nn_index, nn_distance);
 
     // Compute the error

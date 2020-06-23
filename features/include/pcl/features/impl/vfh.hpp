@@ -133,8 +133,8 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
   for (const int &index : indices)
   {
     // Compute the pair P to NNi
-    if (!computePairFeatures (centroid_p, centroid_n, cloud.points[index].getVector4fMap (),
-                              normals.points[index].getNormalVector4fMap (), pfh_tuple[0], pfh_tuple[1],
+    if (!computePairFeatures (centroid_p, centroid_n, cloud[index].getVector4fMap (),
+                              normals[index].getNormalVector4fMap (), pfh_tuple[0], pfh_tuple[1],
                               pfh_tuple[2], pfh_tuple[3]))
       continue;
 
@@ -239,7 +239,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   output.height = 1;
 
   // Estimate the FPFH at nn_indices[0] using the entire cloud and copy the resultant signature
-  auto outPtr = std::begin (output.points[0].histogram);
+  auto outPtr = std::begin (output[0].histogram);
 
   for (int i = 0; i < 4; ++i)
   {

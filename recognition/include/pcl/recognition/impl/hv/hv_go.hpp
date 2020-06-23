@@ -82,7 +82,7 @@ inline void extractEuclideanClustersSmooth(const typename pcl::PointCloud<PointT
     while (sq_idx < static_cast<int> (seed_queue.size ()))
     {
 
-      if (normals.points[seed_queue[sq_idx]].curvature > curvature_threshold)
+      if (normals[seed_queue[sq_idx]].curvature > curvature_threshold)
       {
         sq_idx++;
         continue;
@@ -100,7 +100,7 @@ inline void extractEuclideanClustersSmooth(const typename pcl::PointCloud<PointT
         if (processed[nn_indices[j]]) // Has this point been processed before ?
           continue;
 
-        if (normals.points[nn_indices[j]].curvature > curvature_threshold)
+        if (normals[nn_indices[j]].curvature > curvature_threshold)
         {
           continue;
         }
@@ -108,9 +108,9 @@ inline void extractEuclideanClustersSmooth(const typename pcl::PointCloud<PointT
         //processed[nn_indices[j]] = true;
         // [-1;1]
 
-        double dot_p = normals.points[seed_queue[sq_idx]].normal[0] * normals.points[nn_indices[j]].normal[0]
-            + normals.points[seed_queue[sq_idx]].normal[1] * normals.points[nn_indices[j]].normal[1]
-            + normals.points[seed_queue[sq_idx]].normal[2] * normals.points[nn_indices[j]].normal[2];
+        double dot_p = normals[seed_queue[sq_idx]].normal[0] * normals[nn_indices[j]].normal[0]
+            + normals[seed_queue[sq_idx]].normal[1] * normals[nn_indices[j]].normal[1]
+            + normals[seed_queue[sq_idx]].normal[2] * normals[nn_indices[j]].normal[2];
 
         if (std::abs (std::acos (dot_p)) < eps_angle)
         {

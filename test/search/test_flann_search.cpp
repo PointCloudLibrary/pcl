@@ -83,7 +83,7 @@ TEST (PCL, FlannSearch_nearestKSearch)
   multimap<float, int> sorted_brute_force_result;
   for (std::size_t i = 0; i < cloud.points.size (); ++i)
   {
-    float distance = euclideanDistance (cloud.points[i], test_point);
+    float distance = euclideanDistance (cloud[i], test_point);
     sorted_brute_force_result.insert (make_pair (distance, int (i)));
   }
   float max_dist = 0.0f;
@@ -108,7 +108,7 @@ TEST (PCL, FlannSearch_nearestKSearch)
   // Check if all found neighbors have distance smaller than max_dist
   for (const int &k_index : k_indices)
   {
-    const PointXYZ& point = cloud.points[k_index];
+    const PointXYZ& point = cloud[k_index];
     bool ok = euclideanDistance (test_point, point) <= max_dist;
     if (!ok)
     ok = (std::abs (euclideanDistance (test_point, point)) - max_dist) <= 1e-6;
@@ -159,8 +159,8 @@ TEST (PCL, FlannSearch_differentPointT)
 
   for (std::size_t i = 0; i < cloud_rgb.points.size (); ++i)
   {
-    //FlannSearch.nearestKSearchT (cloud_rgb.points[i], no_of_neighbors, k_indices_t, k_distances_t);
-    FlannSearch.nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
+    //FlannSearch.nearestKSearchT (cloud_rgb[i], no_of_neighbors, k_indices_t, k_distances_t);
+    FlannSearch.nearestKSearch (cloud_big[i], no_of_neighbors, k_indices, k_distances);
     EXPECT_EQ (k_indices.size (), indices[i].size ());
     EXPECT_EQ (k_distances.size (), dists[i].size ());
     for (std::size_t j = 0; j< no_of_neighbors; j++)
@@ -195,7 +195,7 @@ TEST (PCL, FlannSearch_multipointKnnSearch)
 
   for (std::size_t i = 0; i < cloud_big.points.size (); ++i)
   {
-    FlannSearch.nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
+    FlannSearch.nearestKSearch (cloud_big[i], no_of_neighbors, k_indices, k_distances);
     EXPECT_EQ (k_indices.size (), indices[i].size ());
     EXPECT_EQ (k_distances.size (), dists[i].size ());
     for (std::size_t j = 0; j< no_of_neighbors; j++ )

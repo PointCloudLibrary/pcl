@@ -97,13 +97,13 @@ TEST (PCL, BoundaryEstimation)
   EXPECT_EQ (pt, true);
 
   // isBoundaryPoint (points)
-  pt = b.isBoundaryPoint (cloud, cloud.points[0], indices, u, v, float (M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud[0], indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, false);
-  pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () / 3], indices, u, v, float (M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud[indices.size () / 3], indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, false);
-  pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () / 2], indices, u, v, float (M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud[indices.size () / 2], indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, false);
-  pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () - 1], indices, u, v, float (M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud[indices.size () - 1], indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, true);
 
   // Object

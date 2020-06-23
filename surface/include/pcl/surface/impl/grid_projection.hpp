@@ -336,7 +336,7 @@ pcl::GridProjection<PointNT>::getProjectionWithPlaneFit (const Eigen::Vector4f &
   model_coefficients[3] = -1 * model_coefficients.dot (xyz_centroid);
 
   // Projected point
-  Eigen::Vector3f point (p.x (), p.y (), p.z ());     //= Eigen::Vector3f::MapAligned (&output.points[cp].x, 3);
+  Eigen::Vector3f point (p.x (), p.y (), p.z ());     //= Eigen::Vector3f::MapAligned (&output[cp].x, 3);
   float distance = point.dot (model_coefficients.head <3> ()) + model_coefficients[3];
   point -= distance * model_coefficients.head < 3 > ();
 
@@ -737,9 +737,9 @@ pcl::GridProjection<PointNT>::performReconstruction (pcl::PolygonMesh &output)
   // Copy the data from surface_ to cloud
   for (std::size_t i = 0; i < cloud.points.size (); ++i)
   {
-    cloud.points[i].x = surface_[i].x ();
-    cloud.points[i].y = surface_[i].y ();
-    cloud.points[i].z = surface_[i].z ();
+    cloud[i].x = surface_[i].x ();
+    cloud[i].y = surface_[i].y ();
+    cloud[i].z = surface_[i].z ();
   }
   pcl::toPCLPointCloud2 (cloud, output.cloud);
 }

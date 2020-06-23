@@ -158,7 +158,7 @@ namespace pcl
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
       {
         assert (index >= 0 && index < static_cast<int> (cloud.points.size ()) && "Out-of-bounds error in nearestKSearch!");
-        return (nearestKSearch (cloud.points[index], k, k_indices, k_sqr_distances));
+        return (nearestKSearch (cloud[index], k, k_indices, k_sqr_distances));
       }
 
       /** \brief Search for k-nearest neighbors for the given query point. 
@@ -246,7 +246,7 @@ namespace pcl
                     unsigned int max_nn = 0) const
       {
         assert (index >= 0 && index < static_cast<int> (cloud.points.size ()) && "Out-of-bounds error in radiusSearch!");
-        return (radiusSearch(cloud.points[index], radius, k_indices, k_sqr_distances, max_nn));
+        return (radiusSearch(cloud[index], radius, k_indices, k_sqr_distances, max_nn));
       }
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.

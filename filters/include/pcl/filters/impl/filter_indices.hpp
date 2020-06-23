@@ -59,9 +59,9 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     int j = 0;
     for (int i = 0; i < static_cast<int> (cloud_in.points.size ()); ++i)
     {
-      if (!std::isfinite (cloud_in.points[i].x) || 
-          !std::isfinite (cloud_in.points[i].y) || 
-          !std::isfinite (cloud_in.points[i].z))
+      if (!std::isfinite (cloud_in[i].x) || 
+          !std::isfinite (cloud_in[i].y) || 
+          !std::isfinite (cloud_in[i].z))
         continue;
       index[j] = i;
       j++;

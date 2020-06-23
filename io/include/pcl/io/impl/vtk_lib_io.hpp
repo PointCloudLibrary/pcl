@@ -101,9 +101,9 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
     {
       double coordinate[3];
       polydata->GetPoint (i, coordinate);
-      pcl::setFieldValue<PointT, float> (cloud.points[i], x_idx, coordinate[0]);
-      pcl::setFieldValue<PointT, float> (cloud.points[i], y_idx, coordinate[1]);
-      pcl::setFieldValue<PointT, float> (cloud.points[i], z_idx, coordinate[2]);
+      pcl::setFieldValue<PointT, float> (cloud[i], x_idx, coordinate[0]);
+      pcl::setFieldValue<PointT, float> (cloud[i], y_idx, coordinate[1]);
+      pcl::setFieldValue<PointT, float> (cloud[i], z_idx, coordinate[2]);
     }
   }
 
@@ -126,9 +126,9 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
     {
       float normal[3];
       normals->GetTupleValue (i, normal);
-      pcl::setFieldValue<PointT, float> (cloud.points[i], normal_x_idx, normal[0]);
-      pcl::setFieldValue<PointT, float> (cloud.points[i], normal_y_idx, normal[1]);
-      pcl::setFieldValue<PointT, float> (cloud.points[i], normal_z_idx, normal[2]);
+      pcl::setFieldValue<PointT, float> (cloud[i], normal_x_idx, normal[0]);
+      pcl::setFieldValue<PointT, float> (cloud[i], normal_y_idx, normal[1]);
+      pcl::setFieldValue<PointT, float> (cloud[i], normal_z_idx, normal[2]);
     }
   }
 
@@ -152,7 +152,7 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
       colors->GetTupleValue (i, color);
       pcl::RGB rgb;
       rgb.r = color[0]; rgb.g = color[1]; rgb.b = color[2];
-      pcl::setFieldValue<PointT, std::uint32_t> (cloud.points[i], rgb_idx, rgb.rgba);
+      pcl::setFieldValue<PointT, std::uint32_t> (cloud[i], rgb_idx, rgb.rgba);
     }
   }
 }

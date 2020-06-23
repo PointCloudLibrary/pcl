@@ -313,20 +313,20 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
     // Do we need to process all the fields?
     if (!downsample_all_data_) 
     {
-      output.points[index].x = centroid[0];
-      output.points[index].y = centroid[1];
-      output.points[index].z = centroid[2];
+      output[index].x = centroid[0];
+      output[index].y = centroid[1];
+      output[index].z = centroid[2];
     }
     else 
     {
-      pcl::for_each_type<FieldList> (pcl::NdCopyEigenPointFunctor <pcl::PointXYZRGBL> (centroid, output.points[index]));
+      pcl::for_each_type<FieldList> (pcl::NdCopyEigenPointFunctor <pcl::PointXYZRGBL> (centroid, output[index]));
       // ---[ RGB special case
       if (rgba_index >= 0) 
       {
         // pack r/g/b into rgb
         float r = centroid[centroid_size-3], g = centroid[centroid_size-2], b = centroid[centroid_size-1];
         int rgb = (static_cast<int> (r) << 16) | (static_cast<int> (g) << 8) | static_cast<int> (b);
-        memcpy (reinterpret_cast<char*> (&output.points[index]) + rgba_index, &rgb, sizeof (float));
+        memcpy (reinterpret_cast<char*> (&output[index]) + rgba_index, &rgb, sizeof (float));
       }
 
       if (label_index >= 0)
@@ -342,7 +342,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
             best_label = label.first;
           }
         }
-        output.points[index].label = best_label;
+        output[index].label = best_label;
       }
     }
     cp = i;

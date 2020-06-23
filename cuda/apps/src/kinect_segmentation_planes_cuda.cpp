@@ -132,7 +132,7 @@ class Segmentation
         pt.z = cloud->points[i].z;
         // Pack RGB into a float
         pt.rgb = *(float*)(&cloud->points[i].rgb);
-        data_host.points[i] = pt;
+        data_host[i] = pt;
       }
       data_host.width = cloud->width;
       data_host.height = cloud->height;

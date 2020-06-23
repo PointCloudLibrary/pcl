@@ -315,7 +315,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness (std
     // Find its nearest neighbor in the target
     std::vector<int> nn_indices (1);
     std::vector<float> nn_dists (1);
-    tree_->nearestKSearch (input_transformed.points[i], 1, nn_indices, nn_dists);
+    tree_->nearestKSearch (input_transformed[i], 1, nn_indices, nn_dists);
 
     // Check if point is an inlier
     if (nn_dists[0] < max_range)

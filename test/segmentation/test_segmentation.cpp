@@ -421,7 +421,7 @@ main (int argc, char** argv)
   // Tranpose the cloud
   cloud_t = cloud;
   for (std::size_t i = 0; i < cloud.points.size (); ++i)
-    cloud_t.points[i].x += 0.01f;
+    cloud_t[i].x += 0.01f;
 
   cloud_   = cloud.makeShared ();
   cloud_t_ = cloud_t.makeShared ();

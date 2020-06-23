@@ -191,7 +191,7 @@ class PeoplePCDApp
         people_detector_.depth_device1_.download(depth_host_.points, c);        
       }      
       
-      depth_view_.showShortImage(&depth_host_.points[0], depth_host_.width, depth_host_.height, 0, 5000, true);      
+      depth_view_.showShortImage(&depth_host_[0], depth_host_.width, depth_host_.height, 0, 5000, true);      
       depth_view_.spinOnce(1, true);
 
       if (write_)
@@ -238,7 +238,7 @@ class PeoplePCDApp
         depth_host_.points.resize(w *h);
         depth_host_.width = w;
         depth_host_.height = h;
-        std::copy(data, data + w * h, &depth_host_.points[0]);
+        std::copy(data, data + w * h, &depth_host_[0]);
                       
         //getting image
         w = image_wrapper->getWidth();
@@ -256,12 +256,12 @@ class PeoplePCDApp
         for(std::size_t i = 0; i < rgba_host_.size(); ++i)
         {
           const unsigned char *pixel = &rgb_host_[i * 3];
-          pcl::RGB& rgba = rgba_host_.points[i];         
+          pcl::RGB& rgba = rgba_host_[i];         
           rgba.r = pixel[0];
           rgba.g = pixel[1];
           rgba.b = pixel[2];
         }
-        image_device_.upload(&rgba_host_.points[0], s, h, w);       
+        image_device_.upload(&rgba_host_[0], s, h, w);       
       }
       data_ready_cond_.notify_one();
     }

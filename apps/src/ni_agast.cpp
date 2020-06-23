@@ -235,9 +235,9 @@ public:
       if (!std::isfinite(pt.x) || !std::isfinite(pt.y) || !std::isfinite(pt.z))
         continue;
 
-      keypoints3d.points[j].x = pt.x;
-      keypoints3d.points[j].y = pt.y;
-      keypoints3d.points[j].z = pt.z;
+      keypoints3d[j].x = pt.x;
+      keypoints3d[j].y = pt.y;
+      keypoints3d[j].z = pt.z;
       ++j;
     }
 

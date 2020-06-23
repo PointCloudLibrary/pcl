@@ -178,7 +178,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
       for (std::size_t j = 0; j < M_prime_; ++j)
         feature_point.values[i*M_prime_ + j] = final_matrix (i, j);
 
-    output.points[index_i] = feature_point;
+    output[index_i] = feature_point;
   }
 }
 

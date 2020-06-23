@@ -157,7 +157,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
     while (sq_idx < static_cast<int> (seed_queue.size ()))
     {
       // Search for sq_idx
-      int ret = tree->radiusSearch (cloud.points[seed_queue[sq_idx]], tolerance, nn_indices, nn_distances);
+      int ret = tree->radiusSearch (cloud[seed_queue[sq_idx]], tolerance, nn_indices, nn_distances);
       if( ret == -1)
       {
         PCL_ERROR("[pcl::extractEuclideanClusters] Received error code -1 from radiusSearch\n");
