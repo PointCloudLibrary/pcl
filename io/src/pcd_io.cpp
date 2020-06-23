@@ -971,12 +971,12 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
          "\nFIELDS";
 
   // Compute the total size of the fields
-  index_t fsize = 0;
+  unsigned int fsize = 0;
   for (const auto &field : cloud.fields)
     fsize += field.count * getFieldSize (field.datatype);
 
   // The size of the fields cannot be larger than point_step
-  if (fsize > cloud.point_step)
+  if (fsize > static_cast<uindex_t>(cloud.point_step))
   {
     PCL_ERROR ("[pcl::PCDWriter::generateHeaderBinary] The size of the fields (%d) is larger than point_step (%d)! Something is wrong here...\n", fsize, cloud.point_step);
     return ("");
@@ -1053,12 +1053,12 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (std::ostream &os,
          "\nFIELDS";
 
   // Compute the total size of the fields
-  index_t fsize = 0;
+  unsigned int fsize = 0;
   for (const auto &field : cloud.fields)
     fsize += field.count * getFieldSize (field.datatype);
 
   // The size of the fields cannot be larger than point_step
-  if (fsize > cloud.point_step)
+  if (fsize > static_cast<uindex_t>(cloud.point_step))
   {
     PCL_ERROR ("[pcl::PCDWriter::generateHeaderBinaryCompressed] The size of the fields (%d) is larger than point_step (%d)! Something is wrong here...\n", fsize, cloud.point_step);
     return (-1);

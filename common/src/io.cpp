@@ -274,7 +274,7 @@ pcl::concatenatePointCloud (const pcl::PCLPointCloud2 &cloud1,
       fields2.push_back (field);
     }
 
-    cloud_out.data.resize (nrpts + static_cast<uindex_t>((cloud2.width * cloud2.height)) * cloud_out.point_step);
+    cloud_out.data.resize (nrpts + (cloud2.width * cloud2.height) * cloud_out.point_step);
 
     // Copy the second cloud
     for (std::size_t cp = 0; cp < static_cast<uindex_t>(cloud2.width * cloud2.height); ++cp)
