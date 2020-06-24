@@ -507,7 +507,7 @@ namespace pcl
       void
       assign(InputIt first, InputIt last)
       {
-        points.assign(first, last);
+        points.assign(std::move(first), std::move(last));
         width = static_cast<std::uint32_t>(size());
         height = 1;
       }
