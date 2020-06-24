@@ -203,12 +203,12 @@ Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   output.header = input_->header;
 
   // Resize the output dataset
-  if (output.size () != indices_->size ())
+  if (output.points.size () != indices_->size ())
     output.points.resize (indices_->size ());
 
   // Check if the output will be computed for all points or only a subset
   // If the input width or height are not set, set output width as size
-  if (indices_->size () != input_->size () || input_->width * input_->height == 0)
+  if (indices_->size () != input_->points.size () || input_->width * input_->height == 0)
   {
     output.width = static_cast<std::uint32_t> (indices_->size ());
     output.height = 1;
@@ -245,11 +245,11 @@ FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ()
   }
 
   // Check if the size of normals is the same as the size of the surface
-  if (normals_->size () != surface_->size ())
+  if (normals_->points.size () != surface_->points.size ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] ", getClassName ().c_str ());
-    PCL_ERROR ("The number of points in the input dataset (%u) differs from ", surface_->size ());
-    PCL_ERROR ("the number of points in the dataset containing the normals (%u)!\n", normals_->size ());
+    PCL_ERROR ("The number of points in the input dataset (%u) differs from ", surface_->points.size ());
+    PCL_ERROR ("the number of points in the dataset containing the normals (%u)!\n", normals_->points.size ());
     Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }
@@ -276,7 +276,7 @@ FeatureFromLabels<PointInT, PointLT, PointOutT>::initCompute ()
   }
 
   // Check if the size of normals is the same as the size of the surface
-  if (labels_->size () != surface_->size ())
+  if (labels_->points.size () != surface_->points.size ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] The number of points in the input dataset differs from the number of points in the dataset containing the labels!\n", getClassName ().c_str ());
     Feature<PointInT, PointOutT>::deinitCompute ();
@@ -311,7 +311,7 @@ FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFrames (c
   }
 
   // Check if the size of frames is the same as the size of the input cloud
-  if (frames_->size () != indices_size)
+  if (frames_->points.size () != indices_size)
   {
     if (!lrf_estimation)
     {

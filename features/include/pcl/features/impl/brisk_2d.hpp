@@ -463,7 +463,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     image_data[i] = static_cast<unsigned char> (intensity_ ((*input_cloud_)[i]));
 
   // Remove keypoints very close to the border
-  std::size_t ksize = keypoints_->size ();
+  auto ksize = keypoints_->size ();
   std::vector<int> kscales; // remember the scale per keypoint
   kscales.resize (ksize);
 
@@ -666,7 +666,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   }
 
   // we do not change the denseness
-  output.width = int (output.size ());
+  output.width = output.size ();
   output.height = 1;
   output.is_dense = true;
 

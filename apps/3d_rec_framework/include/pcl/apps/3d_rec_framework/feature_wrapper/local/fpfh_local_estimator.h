@@ -75,7 +75,7 @@ public:
     fpfh_estimate.compute(*fpfhs);
 
     signatures->resize(fpfhs->size());
-    signatures->width = static_cast<int>(fpfhs->size());
+    signatures->width = fpfhs->size();
     signatures->height = 1;
 
     int size_feat = 33;

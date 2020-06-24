@@ -112,7 +112,7 @@ public:
     }
 
     signatures->resize(shots->size());
-    signatures->width = static_cast<int>(shots->size());
+    signatures->width = shots->size();
     signatures->height = 1;
 
     int size_feat = sizeof((*signatures)[0].histogram) / sizeof(float);
