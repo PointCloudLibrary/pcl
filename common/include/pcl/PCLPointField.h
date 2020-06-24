@@ -13,9 +13,9 @@ namespace pcl
   {
     std::string name;
 
-    index_t offset = 0;
+    uindex_t offset = 0;
     std::uint8_t datatype = 0;
-    index_t count = 0;
+    uindex_t count = 0;
 
     enum PointFieldTypes { INT8 = traits::asEnum_v<std::int8_t>,
                            UINT8 = traits::asEnum_v<std::uint8_t>,
