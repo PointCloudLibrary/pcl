@@ -80,7 +80,7 @@ TEST(PCL_FeaturesGPU, normals_lowlevel)
 
     for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
-        Normal n = source.(*normals)[i];
+        Normal n = (*source.normals)[i];
 
         PointXYZ xyz = downloaded[i];
         float curvature = xyz.data[3];               

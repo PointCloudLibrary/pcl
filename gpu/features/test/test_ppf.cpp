@@ -149,7 +149,7 @@ TEST(PCL_FeaturesGPU, ppfrgb)
     cloud_XYZRGB->points.clear();
     for(std::size_t i = 0; i < source.cloud->points.size(); ++i)               
     {
-        const PointXYZ& p = source.(*cloud)[i];        
+        const PointXYZ& p = (*source.cloud)[i];        
         int color = *(int*)&p.data[3];
         int r =  color        & 0xFF;
         int g = (color >>  8) & 0xFF;
@@ -239,7 +239,7 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
     cloud_XYZRGB->points.clear();
     for(std::size_t i = 0; i < source.cloud->points.size(); ++i)               
     {
-        const PointXYZ& p = source.(*cloud)[i];        
+        const PointXYZ& p = (*source.cloud)[i];        
         int color = *(int*)&p.data[3];
         int r =  color        & 0xFF;
         int g = (color >>  8) & 0xFF;

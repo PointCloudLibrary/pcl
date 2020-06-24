@@ -179,7 +179,7 @@ class PCL_EXPORTS LocalRecognitionPipeline {
     for (std::size_t kk = 0; kk < correspondences.size(); kk++) {
       pcl::PointXYZ p;
       p.getVector4fMap() =
-          oh.(*correspondences_pointcloud)[correspondences[kk].index_query]
+          (*oh.correspondences_pointcloud)[correspondences[kk].index_query]
               .getVector4fMap();
       pcl::PointXYZ p_scene;
       p_scene.getVector4fMap() =
