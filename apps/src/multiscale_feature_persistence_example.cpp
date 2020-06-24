@@ -86,8 +86,8 @@ main(int argc, char** argv)
   subsampleAndCalculateNormals(cloud_scene, cloud_subsampled, cloud_subsampled_normals);
 
   PCL_INFO("STATS:\ninitial point cloud size: %u\nsubsampled point cloud size: %u\n",
-           cloud_scene->points.size(),
-           cloud_subsampled->points.size());
+           cloud_scene->size(),
+           cloud_subsampled->size());
   visualization::CloudViewer viewer(
       "Multiscale Feature Persistence Example Visualization");
   viewer.showCloud(cloud_scene, "scene");
@@ -111,7 +111,7 @@ main(int argc, char** argv)
   auto output_indices = pcl::make_shared<std::vector<int>>();
   feature_persistence.determinePersistentFeatures(*output_features, output_indices);
 
-  PCL_INFO("persistent features cloud size: %u\n", output_features->points.size());
+  PCL_INFO("persistent features cloud size: %u\n", output_features->size());
 
   ExtractIndices<PointXYZ> extract_indices_filter;
   extract_indices_filter.setInputCloud(cloud_subsampled);

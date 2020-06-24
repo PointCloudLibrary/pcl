@@ -139,8 +139,8 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
 
   Eigen::MatrixXf intensity_spin_image (nr_intensity_bins_, nr_distance_bins_);
   // Allocate enough space to hold the radiusSearch results
-  std::vector<int> nn_indices (surface_->points.size ());
-  std::vector<float> nn_dist_sqr (surface_->points.size ());
+  std::vector<int> nn_indices (surface_->size ());
+  std::vector<float> nn_dist_sqr (surface_->size ());
  
   output.is_dense = true;
   // Iterating over the entire index vector

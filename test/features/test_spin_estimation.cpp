@@ -99,7 +99,7 @@ TEST (PCL, SpinImageEstimation)
 
   // estimate
   spin_est.compute (*spin_images);
-  EXPECT_EQ (spin_images->points.size (), indices.size ());
+  EXPECT_EQ (spin_images->size (), indices.size ());
 
   EXPECT_NEAR (spin_images->points[100].histogram[0], 0, 1e-4);
   EXPECT_NEAR (spin_images->points[100].histogram[12], 0, 1e-4);
@@ -133,7 +133,7 @@ TEST (PCL, SpinImageEstimation)
 
   // estimate
   spin_est.compute (*spin_images);
-  EXPECT_EQ (spin_images->points.size (), indices.size ());
+  EXPECT_EQ (spin_images->size (), indices.size ());
 
   EXPECT_NEAR (spin_images->points[100].histogram[0], 0, 1e-4);
   EXPECT_NEAR (spin_images->points[100].histogram[12], 0, 1e-4);
@@ -168,7 +168,7 @@ TEST (PCL, SpinImageEstimation)
 
   // estimate
   spin_est.compute (*spin_images);
-  EXPECT_EQ (spin_images->points.size (), indices.size ());
+  EXPECT_EQ (spin_images->size (), indices.size ());
 
   EXPECT_NEAR (spin_images->points[100].histogram[0], 0, 1e-4);
   EXPECT_NEAR (spin_images->points[100].histogram[12], 0, 1e-4);
@@ -202,7 +202,7 @@ TEST (PCL, SpinImageEstimation)
 
   // estimate
   spin_est.compute (*spin_images);
-  EXPECT_EQ (spin_images->points.size (), indices.size ());
+  EXPECT_EQ (spin_images->size (), indices.size ());
 
   EXPECT_NEAR (spin_images->points[100].histogram[0], 0, 1e-4);
   EXPECT_NEAR (spin_images->points[100].histogram[12], 0, 1e-4);

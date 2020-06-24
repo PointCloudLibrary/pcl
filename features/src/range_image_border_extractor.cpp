@@ -397,7 +397,7 @@ RangeImageBorderExtractor::classifyBorders ()
   border_descriptions_->width = width;
   border_descriptions_->height = height;
   border_descriptions_->is_dense = true;
-  border_descriptions_->points.resize(size, initial_border_description);
+  border_descriptions_->resize(size, initial_border_description);
 
   for (int y = 0; y < static_cast<int> (height); ++y)
   {

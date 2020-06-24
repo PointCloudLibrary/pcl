@@ -320,7 +320,7 @@ TEST (PCL, ConvexHull_2dsquare)
   pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
   input_cloud->width = 1000000;
   input_cloud->height = 1;
-  input_cloud->points.resize (input_cloud->width * input_cloud->height);
+  input_cloud->resize (input_cloud->width * input_cloud->height);
   
   //rng
   std::mt19937 rng(12345u);
@@ -379,7 +379,7 @@ TEST (PCL, ConvexHull_3dcube)
   pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
   input_cloud->width = 10000000;
   input_cloud->height = 1;
-  input_cloud->points.resize (input_cloud->width * input_cloud->height);
+  input_cloud->resize (input_cloud->width * input_cloud->height);
   
   //rd
   std::mt19937 gen(12345u);

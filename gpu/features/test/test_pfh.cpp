@@ -61,8 +61,8 @@ TEST(PCL_FeaturesGPU, pfh_low_level)
                    
     std::vector<int> data;
     source.getNeghborsArray(data);
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
+    std::transform(source.normals->begin(), source.normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
     pcl::gpu::PFHEstimation::PointCloud cloud_gpu;
@@ -128,8 +128,8 @@ TEST(PCL_FeaturesGPU, pfh_high_level1)
 
     PointCloud<Normal>::Ptr& normals = source.normals;
 
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(normals->points.begin(), normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
+    std::transform(normals->begin(), normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
 
     //uploading data to GPU
     pcl::gpu::PFHEstimation::PointCloud cloud_gpu;
@@ -206,8 +206,8 @@ TEST(PCL_FeaturesGPU, pfh_high_level2)
 
     PointCloud<Normal>::Ptr& normals = source.normals;
 
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(normals->points.begin(), normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
+    std::transform(normals->begin(), normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
 
     //uploading data to GPU
     pcl::gpu::PFHEstimation::PointCloud cloud_gpu;
@@ -284,8 +284,8 @@ TEST(PCL_FeaturesGPU, pfh_high_level3)
 
     PointCloud<Normal>::Ptr& normals = source.normals_surface;
 
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(normals->points.begin(), normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
+    std::transform(normals->begin(), normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
 
     //uploading data to GPU
     pcl::gpu::PFHEstimation::PointCloud cloud_gpu;
@@ -362,8 +362,8 @@ TEST(PCL_FeaturesGPU, pfh_high_level4)
 
     PointCloud<Normal>::Ptr& normals = source.normals_surface;
 
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(normals->points.begin(), normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
+    std::transform(normals->begin(), normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
 
     //uploading data to GPU
     pcl::gpu::PFHEstimation::PointCloud cloud_gpu;
@@ -440,8 +440,8 @@ TEST(PCL_FeaturesGPU, pfhrgb)
 
     PointCloud<Normal>::Ptr& normals = source.normals;
 
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(normals->points.begin(), normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
+    std::transform(normals->begin(), normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
 
     //uploading data to GPU
     pcl::gpu::PFHRGBEstimation::PointCloud cloud_gpu;
@@ -471,8 +471,8 @@ TEST(PCL_FeaturesGPU, pfhrgb)
     pcl::PFHRGBEstimation<PointXYZRGB, Normal, PFHRGBSignature250> fe;
 
     PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB>());
-    cloud_XYZRGB->points.clear();
-    for(std::size_t i = 0; i < source.cloud->points.size(); ++i)               
+    cloud_XYZRGB->clear();
+    for(std::size_t i = 0; i < source.cloud->size(); ++i)               
     {
         const PointXYZ& p = source.cloud->points[i];
         PointXYZRGB o;
@@ -485,9 +485,9 @@ TEST(PCL_FeaturesGPU, pfhrgb)
         o.x = p.x; o.y = p.y; o.z = p.z;
         o.r = r; o.g = g; o.b = b;
         
-        cloud_XYZRGB->points.push_back(o);
+        cloud_XYZRGB->push_back(o);
     }
-    cloud_XYZRGB->width = cloud_XYZRGB->points.size();
+    cloud_XYZRGB->width = cloud_XYZRGB->size();
     cloud_XYZRGB->height = 1;
             
     fe.setInputCloud (cloud_XYZRGB);

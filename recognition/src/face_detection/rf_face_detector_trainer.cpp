@@ -328,8 +328,8 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
     face_detection::PoseClassRegressionVarianceStatsEstimator<float, NodeType, std::vector<face_detection::TrainingExample>, int> rse (btt);
 
     std::vector<float> weights;
-    weights.resize (cloud->points.size ());
-    for (std::size_t i = 0; i < cloud->points.size (); i++)
+    weights.resize (cloud->size ());
+    for (std::size_t i = 0; i < cloud->size (); i++)
       weights[i] = 0;
 
     int w_size_2 = static_cast<int> (w_size_ / 2);
@@ -413,12 +413,12 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
     if (face_heat_map_)
     {
       face_heat_map_.reset (new pcl::PointCloud<pcl::PointXYZI>);
-      face_heat_map_->resize (cloud->points.size ());
+      face_heat_map_->resize (cloud->size ());
       face_heat_map_->height = 1;
-      face_heat_map_->width = static_cast<unsigned int>(cloud->points.size ());
+      face_heat_map_->width = static_cast<unsigned int>(cloud->size ());
       face_heat_map_->is_dense = false;
 
-      for (std::size_t i = 0; i < cloud->points.size (); i++)
+      for (std::size_t i = 0; i < cloud->size (); i++)
       {
         face_heat_map_->points[i].getVector4fMap () = cloud->points[i].getVector4fMap ();
         face_heat_map_->points[i].intensity = weights[i];

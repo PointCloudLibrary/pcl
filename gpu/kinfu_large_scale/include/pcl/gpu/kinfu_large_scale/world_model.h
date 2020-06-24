@@ -89,10 +89,10 @@ namespace pcl
           */
         void reset()
         {
-          if(!world_->points.empty ())
+          if(!world_->empty ())
           {
             PCL_WARN("Clearing world model\n");
-            world_->points.clear ();
+            world_->clear ();
           }
         }
 
@@ -153,7 +153,7 @@ namespace pcl
           */      
         std::size_t getWorldSize () 
         { 
-          return (world_->points.size () );
+          return (world_->size () );
         }
 
         /** \brief Returns the world as two vectors of cubes of size "size" (pointclouds) and transforms

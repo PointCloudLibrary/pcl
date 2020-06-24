@@ -129,7 +129,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
   default(none) \
   shared(A, global_min) \
   num_threads(threads_)
-  for (int i = 0; i < (int)input_->points.size (); ++i)
+  for (int i = 0; i < (int)input_->size (); ++i)
   {
     // ...then test for lower points within the cell
     PointT p = input_->points[i];

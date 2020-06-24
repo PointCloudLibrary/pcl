@@ -155,9 +155,9 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
     return;
   }
 
-  if (static_cast<int> (planar_hull_->points.size ()) < min_pts_hull_)
+  if (static_cast<int> (planar_hull_->size ()) < min_pts_hull_)
   {
-    PCL_ERROR ("[pcl::%s::segment] Not enough points (%lu) in the hull!\n", getClassName ().c_str (), planar_hull_->points.size ());
+    PCL_ERROR ("[pcl::%s::segment] Not enough points (%lu) in the hull!\n", getClassName ().c_str (), planar_hull_->size ());
     output.indices.clear ();
     return;
   }
@@ -212,8 +212,8 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   k2 = (k0 + 2) % 3;
   // Project the convex hull
   pcl::PointCloud<PointT> polygon;
-  polygon.points.resize (planar_hull_->points.size ());
-  for (std::size_t i = 0; i < planar_hull_->points.size (); ++i)
+  polygon.points.resize (planar_hull_->size ());
+  for (std::size_t i = 0; i < planar_hull_->size (); ++i)
   {
     Eigen::Vector4f pt (planar_hull_->points[i].x, planar_hull_->points[i].y, planar_hull_->points[i].z, 0);
     polygon.points[i].x = pt[k1];

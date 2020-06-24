@@ -145,7 +145,7 @@ public:
       // Visualize the object in 3D...
       CloudPtr plane_inliers(new Cloud);
       pcl::copyPointCloud(*search_.getInputCloud(), inliers.indices, *plane_inliers);
-      if (plane_inliers->points.empty()) {
+      if (plane_inliers->empty()) {
         PCL_ERROR("No planar model found. Select the object again to continue.\n");
         first_frame_ = true;
         return;
@@ -229,8 +229,8 @@ public:
 
     // Remove the plane indices from the data
     PointIndices::Ptr everything_but_the_plane(new PointIndices);
-    if (indices_fullset_.size() != cloud->points.size()) {
-      indices_fullset_.resize(cloud->points.size());
+    if (indices_fullset_.size() != cloud->size()) {
+      indices_fullset_.resize(cloud->size());
       for (int p_it = 0; p_it < static_cast<int>(indices_fullset_.size()); ++p_it)
         indices_fullset_[p_it] = p_it;
     }
@@ -336,8 +336,8 @@ public:
     PCL_DEBUG("Number of planar regions detected: %lu for a cloud of %lu points and "
               "%lu normals.\n",
               regions.size(),
-              search_.getInputCloud()->points.size(),
-              normal_cloud->points.size());
+              search_.getInputCloud()->size(),
+              normal_cloud->size());
 
     double max_dist = std::numeric_limits<double>::max();
     // Compute the distances from all the planar regions to the picked point, and select

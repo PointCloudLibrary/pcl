@@ -68,7 +68,7 @@ TEST (PCL, Organized)
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_organized (new pcl::PointCloud<pcl::PointXYZ> ());
   cloud_organized->width = 5;
   cloud_organized->height = 10;
-  cloud_organized->points.resize (cloud_organized->width * cloud_organized->height);
+  cloud_organized->resize (cloud_organized->width * cloud_organized->height);
 
   int npoints = 0;
   for (std::size_t i = 0; i < cloud_organized->height; i++)
@@ -77,7 +77,7 @@ TEST (PCL, Organized)
     {
       cloud_organized->points[npoints].x = static_cast<float> (i);
       cloud_organized->points[npoints].y = static_cast<float> (j);
-      cloud_organized->points[npoints].z = static_cast<float> (cloud_organized->points.size ()); // to avoid shadowing
+      cloud_organized->points[npoints].z = static_cast<float> (cloud_organized->size ()); // to avoid shadowing
       npoints++;
     }
   }

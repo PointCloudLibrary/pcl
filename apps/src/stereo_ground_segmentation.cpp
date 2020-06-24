@@ -275,7 +275,7 @@ public:
           pcl::PointXYZ ground_pt(cloud->points[region_index.indices[j]].x,
                                   cloud->points[region_index.indices[j]].y,
                                   cloud->points[region_index.indices[j]].z);
-          ground_cloud->points.push_back(ground_pt);
+          ground_cloud->push_back(ground_pt);
           ground_image->points[region_index.indices[j]].g = static_cast<std::uint8_t>(
               (cloud->points[region_index.indices[j]].g + 255) / 2);
           label_image->points[region_index.indices[j]].r = 0;
@@ -359,7 +359,7 @@ public:
             pcl::PointXYZ ground_pt(cloud->points[region_index.indices[j]].x,
                                     cloud->points[region_index.indices[j]].y,
                                     cloud->points[region_index.indices[j]].z);
-            ground_cloud->points.push_back(ground_pt);
+            ground_cloud->push_back(ground_pt);
             ground_image->points[region_index.indices[j]].r = static_cast<std::uint8_t>(
                 (cloud->points[region_index.indices[j]].r + 255) / 2);
             ground_image->points[region_index.indices[j]].g = static_cast<std::uint8_t>(
@@ -376,7 +376,7 @@ public:
     Eigen::Vector4f ground_plane_params(1.0, 0.0, 0.0, 1.0);
     Eigen::Vector4f ground_centroid(0.0, 0.0, 0.0, 0.0);
 
-    if (!ground_cloud->points.empty()) {
+    if (!ground_cloud->empty()) {
       ground_centroid = centroids[0];
       ground_plane_params = Eigen::Vector4f(model_coefficients[0].values[0],
                                             model_coefficients[0].values[1],
@@ -386,7 +386,7 @@ public:
 
     if (detect_obstacles) {
       pcl::PointCloud<PointT>::CloudVectorType clusters;
-      if (!ground_cloud->points.empty()) {
+      if (!ground_cloud->empty()) {
         pcl::EuclideanClusterComparator<PointT, pcl::Label>::ExcludeLabelSetPtr
             plane_labels(
                 new pcl::EuclideanClusterComparator<PointT,
@@ -444,7 +444,7 @@ public:
     }
 
     // note the NAN points in the image as well
-    for (std::size_t i = 0; i < cloud->points.size(); i++) {
+    for (std::size_t i = 0; i < cloud->size(); i++) {
       if (!pcl::isFinite(cloud->points[i])) {
         ground_image->points[i].b =
             static_cast<std::uint8_t>((cloud->points[i].b + 255) / 2);
@@ -494,7 +494,7 @@ public:
         if (!viewer->updatePointCloud(prev_ground_image, "cloud"))
           viewer->addPointCloud(prev_ground_image, "cloud");
 
-        if (prev_normal_cloud->points.size() > 1000 && display_normals) {
+        if (prev_normal_cloud->size() > 1000 && display_normals) {
           viewer->removePointCloud("normals");
           viewer->addPointCloudNormals<PointT, pcl::Normal>(
               prev_ground_image, prev_normal_cloud, 10, 0.15f, "normals");
@@ -502,7 +502,7 @@ public:
               pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "normals");
         }
 
-        if (prev_cloud->points.size() > 1000) {
+        if (prev_cloud->size() > 1000) {
           image_viewer->addRGBImage<PointT>(prev_ground_image, "rgb_image", 0.3);
         }
 

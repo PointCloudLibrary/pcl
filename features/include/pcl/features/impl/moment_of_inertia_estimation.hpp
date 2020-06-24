@@ -380,7 +380,7 @@ pcl::MomentOfInertiaEstimation<PointT>::computeCovarianceMatrix (PointCloudConst
 {
   covariance_matrix.setZero ();
 
-  unsigned int number_of_points = static_cast <unsigned int> (cloud->points.size ());
+  unsigned int number_of_points = static_cast <unsigned int> (cloud->size ());
   float factor = 1.0f / static_cast <float> ((number_of_points - 1 > 0)?(number_of_points - 1):1);
   Eigen::Vector3f current_point;
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
@@ -504,7 +504,7 @@ pcl::MomentOfInertiaEstimation<PointT>::getProjectedCloud (const Eigen::Vector3f
   const float D = - normal_vector.dot (point);
 
   unsigned int number_of_points = static_cast <unsigned int> (indices_->size ());
-  projected_cloud->points.resize (number_of_points, PointT ());
+  projected_cloud->resize (number_of_points, PointT ());
 
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
   {

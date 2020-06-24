@@ -273,7 +273,7 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
   }
   qDebug () << "Images loaded, making cloud";
   PointCloud<PointXYZRGB>::Ptr cloud (new PointCloud<PointXYZRGB>);
-  cloud->points.reserve (depth_dims[0] * depth_dims[1]);
+  cloud->reserve (depth_dims[0] * depth_dims[1]);
   cloud->width = depth_dims[0];
   cloud->height = depth_dims[1];
   cloud->is_dense = false;
@@ -312,7 +312,7 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
       new_point.r = color_pixel[0];
       new_point.g = color_pixel[1];
       new_point.b = color_pixel[2];
-      cloud->points.push_back (new_point);
+      cloud->push_back (new_point);
       //   qDebug () << "depth = "<<depth << "x,y,z="<<data[0]<<","<<data[1]<<","<<data[2];
       //qDebug() << "r ="<<color_pixel[0]<<" g="<<color_pixel[1]<<" b="<<color_pixel[2];
       

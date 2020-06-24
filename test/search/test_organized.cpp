@@ -107,8 +107,8 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
     // generate point cloud
     cloudIn->width = 128;
     cloudIn->height = 32;
-    cloudIn->points.clear();
-    cloudIn->points.reserve (cloudIn->width * cloudIn->height);
+    cloudIn->clear();
+    cloudIn->reserve (cloudIn->width * cloudIn->height);
 
     int centerX = cloudIn->width >> 1;
     int centerY = cloudIn->height >> 1;
@@ -120,7 +120,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
         double y = ypos * oneOverFocalLength * z;
         double x = xpos * oneOverFocalLength * z;
 
-        cloudIn->points.emplace_back(float (x), float (y), float (z));
+        cloudIn->emplace_back(float (x), float (y), float (z));
       }
 
     unsigned int searchIdx = rand()%(cloudIn->width * cloudIn->height);
@@ -140,7 +140,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
 
 
     // push all points and their distance to the search point into a priority queue - bruteforce approach.
-    for (std::size_t i = 0; i < cloudIn->points.size (); i++)
+    for (std::size_t i = 0; i < cloudIn->size (); i++)
     {
       double pointDist = ((cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x) +
                           (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y) +
@@ -199,8 +199,8 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
 
     cloudIn->width = 640;
     cloudIn->height = 480;
-    cloudIn->points.clear();
-    cloudIn->points.resize (cloudIn->width * cloudIn->height);
+    cloudIn->clear();
+    cloudIn->resize (cloudIn->width * cloudIn->height);
 
     int centerX = cloudIn->width >> 1;
     int centerY = cloudIn->height >> 1;
@@ -227,7 +227,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
     std::vector<int> cloudSearchBruteforce;
     cloudSearchBruteforce.clear();
 
-    for (std::size_t i = 0; i < cloudIn->points.size (); i++)
+    for (std::size_t i = 0; i < cloudIn->size (); i++)
     {
       pointDist = sqrt (
                         (cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x)

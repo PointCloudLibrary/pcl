@@ -2989,9 +2989,9 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
   vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
   pcl::PointCloud<pcl::PointXYZ>::Ptr point_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
   pcl::fromPCLPointCloud2 (poly_mesh.cloud, *point_cloud);
-  poly_points->SetNumberOfPoints (point_cloud->points.size ());
+  poly_points->SetNumberOfPoints (point_cloud->size ());
 
-  for (std::size_t i = 0; i < point_cloud->points.size (); ++i) 
+  for (std::size_t i = 0; i < point_cloud->size (); ++i) 
   {
     const pcl::PointXYZ& p = point_cloud->points[i];
     poly_points->InsertPoint (i, p.x, p.y, p.z);
@@ -3119,7 +3119,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
     return (false);
   vtkSmartPointer<vtkPoints> points = polydata->GetPoints ();
   // Copy the new point array in
-  vtkIdType nr_points = cloud->points.size ();
+  vtkIdType nr_points = cloud->size ();
   points->SetNumberOfPoints (nr_points);
 
   // Get a pointer to the beginning of the data array
@@ -3341,14 +3341,14 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> ());
     pcl::fromPCLPointCloud2 (mesh.cloud, *cloud);
     // no points --> exit
-    if (cloud->points.empty ())
+    if (cloud->empty ())
     {
       PCL_ERROR ("[PCLVisualizer::addTextureMesh] Cloud is empty!\n");
       return (false);
     }
     convertToVtkMatrix (cloud->sensor_origin_, cloud->sensor_orientation_, transformation);
-    poly_points->SetNumberOfPoints (cloud->points.size ());
-    for (std::size_t i = 0; i < cloud->points.size (); ++i)
+    poly_points->SetNumberOfPoints (cloud->size ());
+    for (std::size_t i = 0; i < cloud->size (); ++i)
     {
       const pcl::PointXYZ &p = cloud->points[i];
       poly_points->InsertPoint (i, p.x, p.y, p.z);
@@ -3790,7 +3790,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
-    cloud->points.resize (xres * yres);
+    cloud->resize (xres * yres);
     cloud->width = xres * yres;
     cloud->height = 1;
 
@@ -3886,7 +3886,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 
     enthropies.push_back (static_cast<float> (visible_area / totalArea));
 
-    cloud->points.resize (count_valid_depth_pixels);
+    cloud->resize (count_valid_depth_pixels);
     cloud->width = count_valid_depth_pixels;
 
     //transform cloud to give camera coordinates instead of world coordinates!
@@ -3959,7 +3959,7 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
   float dwidth = 2.0f / float (xres),
         dheight = 2.0f / float (yres);
 
-  cloud->points.resize (xres * yres);
+  cloud->resize (xres * yres);
   cloud->width = xres;
   cloud->height = yres;
 

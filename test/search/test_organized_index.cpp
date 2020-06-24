@@ -103,8 +103,8 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
     // generate point cloud
     cloudIn->width = 128;
     cloudIn->height = 32;
-    cloudIn->points.clear();
-    cloudIn->points.reserve (cloudIn->width * cloudIn->height);
+    cloudIn->clear();
+    cloudIn->reserve (cloudIn->width * cloudIn->height);
 
     int centerX = cloudIn->width >> 1;
     int centerY = cloudIn->height >> 1;
@@ -116,7 +116,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search)
         double y = (double)ypos*oneOverFocalLength*(double)z;
         double x = (double)xpos*oneOverFocalLength*(double)z;
 
-        cloudIn->points.emplace_back(x, y, z);
+        cloudIn->emplace_back(x, y, z);
       }
 
     unsigned int searchIdx = rand()%(cloudIn->width * cloudIn->height);
@@ -271,8 +271,8 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
 
     cloudIn->width = 640;
     cloudIn->height = 480;
-    cloudIn->points.clear();
-    cloudIn->points.resize (cloudIn->width * cloudIn->height);
+    cloudIn->clear();
+    cloudIn->resize (cloudIn->width * cloudIn->height);
 
     int centerX = cloudIn->width >> 1;
     int centerY = cloudIn->height >> 1;
@@ -298,14 +298,14 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     std::vector<int> cloudSearchBruteforce;
     cloudSearchBruteforce.clear();
 
-    for (auto it = cloudIn->points.cbegin(); it != cloudIn->points.cend(); ++it)
+    for (auto it = cloudIn->cbegin(); it != cloudIn->cend(); ++it)
     {
       const auto pointDist = geometry::distance(*it, searchPoint);
 
       if (pointDist <= searchRadius)
       {
         // add point candidates to vector list
-        cloudSearchBruteforce.push_back (std::distance(cloudIn->points.cbegin(), it));
+        cloudSearchBruteforce.push_back (std::distance(cloudIn->cbegin(), it));
       }
     }
 
@@ -368,8 +368,8 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
 
     cloudIn->width = 1024;
     cloudIn->height = 768;
-    cloudIn->points.clear();
-    cloudIn->points.resize (cloudIn->width * cloudIn->height);
+    cloudIn->clear();
+    cloudIn->resize (cloudIn->width * cloudIn->height);
 
     int centerX = cloudIn->width >> 1;
     int centerY = cloudIn->height >> 1;
@@ -395,14 +395,14 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     std::vector<int> cloudSearchBruteforce;
     cloudSearchBruteforce.clear();
 
-    for (auto it = cloudIn->points.cbegin(); it != cloudIn->points.cend(); ++it)
+    for (auto it = cloudIn->cbegin(); it != cloudIn->cend(); ++it)
     {
       const auto pointDist = geometry::distance(*it, searchPoint);
 
       if (pointDist <= searchRadius)
       {
         // add point candidates to vector list
-        cloudSearchBruteforce.push_back (std::distance(cloudIn->points.cbegin(), it));
+        cloudSearchBruteforce.push_back (std::distance(cloudIn->cbegin(), it));
       }
     }
 
@@ -509,14 +509,14 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     std::vector<int> cloudSearchBruteforce;
     cloudSearchBruteforce.clear();
 
-    for (auto it = cloudIn->points.cbegin(); it != cloudIn->points.cend(); ++it)
+    for (auto it = cloudIn->cbegin(); it != cloudIn->cend(); ++it)
     {
       const auto pointDist = geometry::distance(*it, searchPoint);
 
       if (pointDist <= searchRadius)
       {
         // add point candidates to vector list
-        cloudSearchBruteforce.push_back (std::distance(cloudIn->points.cbegin(), it));
+        cloudSearchBruteforce.push_back (std::distance(cloudIn->cbegin(), it));
       }
     }
 

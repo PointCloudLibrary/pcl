@@ -66,12 +66,12 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   std::vector<int> spfh_indices_vec;
-  std::vector<int> spfh_hist_lookup (surface_->points.size ());
+  std::vector<int> spfh_hist_lookup (surface_->size ());
 
   // Build a list of (unique) indices for which we will need to compute SPFH signatures
   // (We need an SPFH signature for every point that is a neighbor of any point in input_[indices_])
   if (surface_ != input_ ||
-      indices_->size () != surface_->points.size ())
+      indices_->size () != surface_->size ())
   { 
     std::vector<int> nn_indices (k_); // \note These resizes are irrelevant for a radiusSearch ().
     std::vector<float> nn_dists (k_); 

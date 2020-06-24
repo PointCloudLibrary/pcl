@@ -79,10 +79,10 @@ namespace pcl
       typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
 
       std::vector<int> indices_to_keep;
-      indices_to_keep.resize (to_be_filtered->points.size ());
+      indices_to_keep.resize (to_be_filtered->size ());
 
       int keep = 0;
-      for (std::size_t i = 0; i < to_be_filtered->points.size (); i++)
+      for (std::size_t i = 0; i < to_be_filtered->size (); i++)
       {
         float x = to_be_filtered->points[i].x;
         float y = to_be_filtered->points[i].y;
@@ -123,10 +123,10 @@ namespace pcl
       typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
 
       std::vector<int> indices_to_keep;
-      indices_to_keep.resize (to_be_filtered->points.size ());
+      indices_to_keep.resize (to_be_filtered->size ());
 
       int keep = 0;
-      for (std::size_t i = 0; i < to_be_filtered->points.size (); i++)
+      for (std::size_t i = 0; i < to_be_filtered->size (); i++)
       {
         float x = to_be_filtered->points[i].x;
         float y = to_be_filtered->points[i].y;
@@ -170,10 +170,10 @@ namespace pcl
       typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
 
       std::vector<int> indices_to_keep;
-      indices_to_keep.resize (to_be_filtered->points.size ());
+      indices_to_keep.resize (to_be_filtered->size ());
 
       int keep = 0;
-      for (std::size_t i = 0; i < to_be_filtered->points.size (); i++)
+      for (std::size_t i = 0; i < to_be_filtered->size (); i++)
       {
         float x = to_be_filtered->points[i].x;
         float y = to_be_filtered->points[i].y;

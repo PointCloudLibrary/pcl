@@ -61,7 +61,7 @@ main (int argc, char** argv)
   // Load the input point cloud
   std::cerr << "Loading...\n", tt.tic ();
   pcl::io::loadPCDFile ("Statues_4.pcd", *cloud_in);
-  std::cerr << ">> Done: " << tt.toc () << " ms, " << cloud_in->points.size () << " points\n";
+  std::cerr << ">> Done: " << tt.toc () << " ms, " << cloud_in->size () << " points\n";
 
   // Downsample the cloud using a Voxel Grid class
   std::cerr << "Downsampling...\n", tt.tic ();
@@ -70,7 +70,7 @@ main (int argc, char** argv)
   vg.setLeafSize (80.0, 80.0, 80.0);
   vg.setDownsampleAllData (true);
   vg.filter (*cloud_out);
-  std::cerr << ">> Done: " << tt.toc () << " ms, " << cloud_out->points.size () << " points\n";
+  std::cerr << ">> Done: " << tt.toc () << " ms, " << cloud_out->size () << " points\n";
 
   // Set up a Normal Estimation class and merge data in cloud_with_normals
   std::cerr << "Computing normals...\n", tt.tic ();
@@ -88,8 +88,8 @@ main (int argc, char** argv)
   cec.setInputCloud (cloud_with_normals);
   cec.setConditionFunction (&customRegionGrowing);
   cec.setClusterTolerance (500.0);
-  cec.setMinClusterSize (cloud_with_normals->points.size () / 1000);
-  cec.setMaxClusterSize (cloud_with_normals->points.size () / 5);
+  cec.setMinClusterSize (cloud_with_normals->size () / 1000);
+  cec.setMaxClusterSize (cloud_with_normals->size () / 5);
   cec.segment (*clusters);
   cec.getRemovedClusters (small_clusters, large_clusters);
   std::cerr << ">> Done: " << tt.toc () << " ms\n";

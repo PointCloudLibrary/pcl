@@ -194,11 +194,11 @@ public:
                 << std::endl;
       typename pcl::PointCloud<PointT>::ConstPtr approx_contour_const = approx_contour;
 
-      for (std::size_t idx = 0; idx < approx_contour->points.size(); ++idx) {
+      for (std::size_t idx = 0; idx < approx_contour->size(); ++idx) {
         sprintf(name, "approx_plane_%02d_%03d", int(i), int(idx));
         viewer.addLine(
             approx_contour->points[idx],
-            approx_contour->points[(idx + 1) % approx_contour->points.size()],
+            approx_contour->points[(idx + 1) % approx_contour->size()],
             0.5 * red[i],
             0.5 * grn[i],
             0.5 * blu[i],

@@ -59,7 +59,7 @@ pcl::ExtractIndices<PointT>::filterDirectly (PointCloudPtr &cloud)
   for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
   {
     std::size_t pt_index = (std::size_t) (*removed_indices_)[rii];
-    if (pt_index >= input_->points.size ())
+    if (pt_index >= input_->size ())
     {
       PCL_ERROR ("[pcl::%s::filterDirectly] The index exceeds the size of the input. Do nothing.\n",
                  getClassName ().c_str ());
@@ -92,7 +92,7 @@ pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
     for (const auto ri : *removed_indices_)  // ri = removed index
     {
       std::size_t pt_index = (std::size_t)ri;
-      if (pt_index >= input_->points.size ())
+      if (pt_index >= input_->size ())
       {
         PCL_ERROR ("[pcl::%s::applyFilter] The index exceeds the size of the input. Do nothing.\n",
                    getClassName ().c_str ());
@@ -117,7 +117,7 @@ pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
 template <typename PointT> void
 pcl::ExtractIndices<PointT>::applyFilterIndices (std::vector<int> &indices)
 {
-  if (indices_->size () > input_->points.size ())
+  if (indices_->size () > input_->size ())
   {
     PCL_ERROR ("[pcl::%s::applyFilter] The indices size exceeds the size of the input.\n", getClassName ().c_str ());
     indices.clear ();
@@ -132,7 +132,7 @@ pcl::ExtractIndices<PointT>::applyFilterIndices (std::vector<int> &indices)
     if (extract_removed_indices_)
     {
       // Set up the full indices set
-      std::vector<int> full_indices (input_->points.size ());
+      std::vector<int> full_indices (input_->size ());
       for (int fii = 0; fii < static_cast<int> (full_indices.size ()); ++fii)  // fii = full indices iterator
         full_indices[fii] = fii;
 
@@ -148,7 +148,7 @@ pcl::ExtractIndices<PointT>::applyFilterIndices (std::vector<int> &indices)
   else  // Inverted functionality
   {
     // Set up the full indices set
-    std::vector<int> full_indices (input_->points.size ());
+    std::vector<int> full_indices (input_->size ());
     for (int fii = 0; fii < static_cast<int> (full_indices.size ()); ++fii)  // fii = full indices iterator
       full_indices[fii] = fii;
 

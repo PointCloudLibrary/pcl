@@ -82,9 +82,9 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_table_plane()
   pass_.setInputCloud(input_);
   pass_.filter(*cloud_filtered_);
 
-  if (int(cloud_filtered_->points.size()) < k_) {
+  if (int(cloud_filtered_->size()) < k_) {
     PCL_WARN("[DominantPlaneSegmentation] Filtering returned %lu points! Aborting.",
-             cloud_filtered_->points.size());
+             cloud_filtered_->size());
     return;
   }
 
@@ -213,9 +213,9 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast(
   pass_.setInputCloud(input_);
   pass_.filter(*cloud_filtered_);
 
-  if (int(cloud_filtered_->points.size()) < k_) {
+  if (int(cloud_filtered_->size()) < k_) {
     PCL_WARN("[DominantPlaneSegmentation] Filtering returned %lu points! Aborting.",
-             cloud_filtered_->points.size());
+             cloud_filtered_->size());
     return;
   }
 
@@ -299,7 +299,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast(
   {
     binary_cloud->width = input_->width;
     binary_cloud->height = input_->height;
-    binary_cloud->points.resize(input_->points.size());
+    binary_cloud->resize(input_->size());
     binary_cloud->is_dense = input_->is_dense;
 
     for (const int& idx : cloud_object_indices.indices) {
@@ -578,9 +578,9 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute(
   pass_.setInputCloud(input_);
   pass_.filter(*cloud_filtered_);
 
-  if (int(cloud_filtered_->points.size()) < k_) {
+  if (int(cloud_filtered_->size()) < k_) {
     PCL_WARN("[DominantPlaneSegmentation] Filtering returned %lu points! Aborting.",
-             cloud_filtered_->points.size());
+             cloud_filtered_->size());
     return;
   }
 
@@ -594,15 +594,15 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute(
            "(%f -> %f): %lu out of %lu\n",
            min_z_bounds_,
            max_z_bounds_,
-           cloud_downsampled_->points.size(),
-           input_->points.size());
+           cloud_downsampled_->size(),
+           input_->size());
 
   // ---[ Estimate the point normals
   n3d_.setInputCloud(cloud_downsampled_);
   n3d_.compute(*cloud_normals_);
 
   PCL_INFO("[DominantPlaneSegmentation] %lu normals estimated. \n",
-           cloud_normals_->points.size());
+           cloud_normals_->size());
 
   // ---[ Perform segmentation
   seg_.setInputCloud(cloud_downsampled_);
@@ -666,7 +666,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute(
       pcl::make_shared<const pcl::PointIndices>(cloud_object_indices));
   extract_object_indices.filter(*cloud_objects_);
 
-  if (cloud_objects_->points.empty())
+  if (cloud_objects_->empty())
     return;
 
   // down_.reset(new Cloud(*cloud_downsampled_));
@@ -747,9 +747,9 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full(
   pass_.setInputCloud(input_);
   pass_.filter(*cloud_filtered_);
 
-  if (int(cloud_filtered_->points.size()) < k_) {
+  if (int(cloud_filtered_->size()) < k_) {
     PCL_WARN("[DominantPlaneSegmentation] Filtering returned %lu points! Aborting.",
-             cloud_filtered_->points.size());
+             cloud_filtered_->size());
     return;
   }
 
@@ -763,15 +763,15 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full(
            "filtering&downsampling (%f -> %f): %lu out of %lu\n",
            min_z_bounds_,
            max_z_bounds_,
-           cloud_downsampled_->points.size(),
-           input_->points.size());
+           cloud_downsampled_->size(),
+           input_->size());
 
   // ---[ Estimate the point normals
   n3d_.setInputCloud(cloud_downsampled_);
   n3d_.compute(*cloud_normals_);
 
   PCL_INFO("[DominantPlaneSegmentation] %lu normals estimated. \n",
-           cloud_normals_->points.size());
+           cloud_normals_->size());
 
   // ---[ Perform segmentation
   seg_.setInputCloud(cloud_downsampled_);
@@ -835,7 +835,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full(
       pcl::make_shared<const pcl::PointIndices>(cloud_object_indices));
   extract_object_indices.filter(*cloud_objects_);
 
-  if (cloud_objects_->points.empty())
+  if (cloud_objects_->empty())
     return;
 
   // ---[ Split the objects into Euclidean clusters

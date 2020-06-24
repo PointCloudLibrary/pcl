@@ -41,8 +41,8 @@ subsampleAndCalculateNormals(const PointCloud<PointXYZ>::Ptr& cloud)
       *cloud_subsampled, *cloud_subsampled_normals, *cloud_subsampled_with_normals);
 
   PCL_INFO("Cloud dimensions before / after subsampling: %u / %u\n",
-           cloud->points.size(),
-           cloud_subsampled->points.size());
+           cloud->size(),
+           cloud_subsampled->size());
   return cloud_subsampled_with_normals;
 }
 
@@ -83,8 +83,8 @@ main(int argc, char** argv)
   extract.setNegative(true);
   pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients());
   pcl::PointIndices::Ptr inliers(new pcl::PointIndices());
-  unsigned nr_points = unsigned(cloud_scene->points.size());
-  while (cloud_scene->points.size() > 0.3 * nr_points) {
+  unsigned nr_points = unsigned(cloud_scene->size());
+  while (cloud_scene->size() > 0.3 * nr_points) {
     seg.setInputCloud(cloud_scene);
     seg.segment(*inliers, *coefficients);
     PCL_INFO("Plane inliers: %u\n", inliers->indices.size());
@@ -140,7 +140,7 @@ main(int argc, char** argv)
 
     PointCloud<PointXYZ>::Ptr cloud_output_subsampled_xyz(new PointCloud<PointXYZ>());
     for (const auto& point : cloud_output_subsampled.points)
-      cloud_output_subsampled_xyz->points.emplace_back(point.x, point.y, point.z);
+      cloud_output_subsampled_xyz->emplace_back(point.x, point.y, point.z);
 
     Eigen::Matrix4f mat = ppf_registration.getFinalTransformation();
     Eigen::Affine3f final_transformation(mat);

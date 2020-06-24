@@ -21,9 +21,9 @@ main (int argc, char** argv)
   // Generate pointcloud data for cloudA
   cloudA->width = 128;
   cloudA->height = 1;
-  cloudA->points.resize (cloudA->width * cloudA->height);
+  cloudA->resize (cloudA->width * cloudA->height);
 
-  for (std::size_t i = 0; i < cloudA->points.size (); ++i)
+  for (std::size_t i = 0; i < cloudA->size (); ++i)
   {
     cloudA->points[i].x = 64.0f * rand () / (RAND_MAX + 1.0f);
     cloudA->points[i].y = 64.0f * rand () / (RAND_MAX + 1.0f);
@@ -42,9 +42,9 @@ main (int argc, char** argv)
   // Generate pointcloud data for cloudB 
   cloudB->width = 128;
   cloudB->height = 1;
-  cloudB->points.resize (cloudB->width * cloudB->height);
+  cloudB->resize (cloudB->width * cloudB->height);
 
-  for (std::size_t i = 0; i < cloudB->points.size (); ++i)
+  for (std::size_t i = 0; i < cloudB->size (); ++i)
   {
     cloudB->points[i].x = 64.0f * rand () / (RAND_MAX + 1.0f);
     cloudB->points[i].y = 64.0f * rand () / (RAND_MAX + 1.0f);

@@ -1398,7 +1398,7 @@ struct OctreePointCloudSierpinskiTest
         float y = y_min + (rand () / ((float)(RAND_MAX) + 1)) * (y_max - y_min);
         float z = z_min + (rand () / ((float)(RAND_MAX) + 1)) * (z_max - z_min);
 
-        cloud->points.emplace_back(x, y, z);
+        cloud->emplace_back(x, y, z);
       }
     }
 

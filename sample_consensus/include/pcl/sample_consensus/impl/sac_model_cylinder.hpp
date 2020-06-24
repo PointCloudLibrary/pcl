@@ -326,7 +326,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
   if (copy_data_fields)
   {
     // Allocate enough space and copy the basics
-    projected_points.points.resize (input_->points.size ());
+    projected_points.points.resize (input_->size ());
     projected_points.width    = input_->width;
     projected_points.height   = input_->height;
 

@@ -822,7 +822,7 @@ pcl::simulation::RangeLikelihood::getPointCloud(
   // pc->height   = camera_height_;
 
   pc->is_dense = true;
-  pc->points.resize(pc->width * pc->height);
+  pc->resize(pc->width * pc->height);
 
   int points_added = 0;
 
@@ -883,7 +883,7 @@ pcl::simulation::RangeLikelihood::getPointCloud(
   if (!organized) {
     pc->width = 1;
     pc->height = points_added;
-    pc->points.resize(points_added);
+    pc->resize(points_added);
   }
 
   if (make_global) {

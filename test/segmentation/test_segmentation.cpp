@@ -139,8 +139,8 @@ TEST (RegionGrowingTest, SegmentWithDifferentNormalAndCloudSize)
   rg.setInputCloud (another_cloud_);
   rg.setInputNormals (normals_);
 
-  int first_cloud_size = static_cast<int> (cloud_->points.size ());
-  int second_cloud_size = static_cast<int> (another_cloud_->points.size ());
+  int first_cloud_size = static_cast<int> (cloud_->size ());
+  int second_cloud_size = static_cast<int> (another_cloud_->size ());
   ASSERT_NE (first_cloud_size, second_cloud_size);
 
   std::vector <pcl::PointIndices> clusters;
@@ -221,7 +221,7 @@ TEST (MinCutSegmentationTest, Segment)
   neighbor_number = 14;
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr foreground_points(new pcl::PointCloud<pcl::PointXYZ> ());
-  foreground_points->points.push_back (object_center);
+  foreground_points->push_back (object_center);
 
   mcSeg.setForegroundPoints (foreground_points);
   mcSeg.setInputCloud (another_cloud_);
@@ -283,7 +283,7 @@ TEST (MinCutSegmentationTest, SegmentWithWrongParameters)
   object_center.y = -64.73f;
   object_center.z = -6.18f;
   pcl::PointCloud<pcl::PointXYZ>::Ptr foreground_points(new pcl::PointCloud<pcl::PointXYZ> ());
-  foreground_points->points.push_back (object_center);
+  foreground_points->push_back (object_center);
   mcSeg.setForegroundPoints (foreground_points);
 
   unsigned int prev_neighbor_number = mcSeg.getNumberOfNeighbours ();
@@ -367,9 +367,9 @@ TEST (SegmentDifferences, Segmentation)
 TEST (ExtractPolygonalPrism, Segmentation)
 {
   PointCloud<PointXYZ>::Ptr hull (new PointCloud<PointXYZ>);
-  hull->points.resize (5);
+  hull->resize (5);
 
-  for (std::size_t i = 0; i < hull->points.size (); ++i)
+  for (std::size_t i = 0; i < hull->size (); ++i)
   {
     hull->points[i].x = hull->points[i].y = static_cast<float> (i);
     hull->points[i].z = 0.0f;

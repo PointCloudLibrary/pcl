@@ -101,8 +101,8 @@ TEST(PCL_OctreeGPU, performance)
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host(new pcl::PointCloud<pcl::PointXYZ>);	
     cloud_host->width = data.points.size();
     cloud_host->height = 1;
-    cloud_host->points.resize (cloud_host->width * cloud_host->height);    
-    std::transform(data.points.begin(), data.points.end(), cloud_host->points.begin(), DataGenerator::ConvPoint<pcl::PointXYZ>());
+    cloud_host->resize (cloud_host->width * cloud_host->height);    
+    std::transform(data.points.begin(), data.points.end(), cloud_host->begin(), DataGenerator::ConvPoint<pcl::PointXYZ>());
 
     float host_octree_resolution = 25.f;    
     

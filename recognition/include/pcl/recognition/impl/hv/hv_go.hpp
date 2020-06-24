@@ -50,7 +50,7 @@ inline void extractEuclideanClustersSmooth(const typename pcl::PointCloud<PointT
     unsigned int min_pts_per_cluster, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ())
 {
 
-  if (tree->getInputCloud ()->points.size () != cloud.points.size ())
+  if (tree->getInputCloud ()->size () != cloud.points.size ())
   {
     PCL_ERROR("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset\n");
     return;
@@ -215,7 +215,7 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
 
   //check nans...
   int j = 0;
-  for (std::size_t i = 0; i < scene_normals_->points.size (); ++i)
+  for (std::size_t i = 0; i < scene_normals_->size (); ++i)
   {
     if (!std::isfinite (scene_normals_->points[i].normal_x) || !std::isfinite (scene_normals_->points[i].normal_y)
         || !std::isfinite (scene_normals_->points[i].normal_z))
@@ -227,17 +227,17 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
     j++;
   }
 
-  scene_normals_->points.resize (j);
+  scene_normals_->resize (j);
   scene_normals_->width = j;
   scene_normals_->height = 1;
 
-  scene_cloud_downsampled_->points.resize (j);
+  scene_cloud_downsampled_->resize (j);
   scene_cloud_downsampled_->width = j;
   scene_cloud_downsampled_->height = 1;
 
-  explained_by_RM_.resize (scene_cloud_downsampled_->points.size (), 0);
-  explained_by_RM_distance_weighted.resize (scene_cloud_downsampled_->points.size (), 0.f);
-  unexplained_by_RM_neighboorhods.resize (scene_cloud_downsampled_->points.size (), 0.f);
+  explained_by_RM_.resize (scene_cloud_downsampled_->size (), 0);
+  explained_by_RM_distance_weighted.resize (scene_cloud_downsampled_->size (), 0.f);
+  unexplained_by_RM_neighboorhods.resize (scene_cloud_downsampled_->size (), 0.f);
 
   //compute segmentation of the scene if detect_clutter_
   if (detect_clutter_)
@@ -255,11 +255,11 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
         clusters, eps_angle_threshold, curvature_threshold, min_points);
 
     clusters_cloud_.reset (new pcl::PointCloud<pcl::PointXYZI>);
-    clusters_cloud_->points.resize (scene_cloud_downsampled_->points.size ());
+    clusters_cloud_->resize (scene_cloud_downsampled_->size ());
     clusters_cloud_->width = scene_cloud_downsampled_->width;
     clusters_cloud_->height = 1;
 
-    for (std::size_t i = 0; i < scene_cloud_downsampled_->points.size (); i++)
+    for (std::size_t i = 0; i < scene_cloud_downsampled_->size (); i++)
     {
       pcl::PointXYZI p;
       p.getVector3fMap () = scene_cloud_downsampled_->points[i].getVector3fMap ();
@@ -340,7 +340,7 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
     std::map<int, bool> banned;
     std::map<int, bool>::iterator banned_it;
 
-    for (std::size_t j = 0; j < complete_models_[indices_[i]]->points.size (); j++)
+    for (std::size_t j = 0; j < complete_models_[indices_[i]]->size (); j++)
     {
       int pos_x, pos_y, pos_z;
       pos_x = static_cast<int> (std::floor ((complete_models_[indices_[i]]->points[j].x - min_pt_all.x) / res_occupancy_grid_));
@@ -512,7 +512,7 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
   {
     //check nans...
     int j = 0;
-    for (std::size_t i = 0; i < recog_model->cloud_->points.size (); ++i)
+    for (std::size_t i = 0; i < recog_model->cloud_->size (); ++i)
     {
       if (!std::isfinite (recog_model->cloud_->points[i].x) || !std::isfinite (recog_model->cloud_->points[i].y)
           || !std::isfinite (recog_model->cloud_->points[i].z))
@@ -522,12 +522,12 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
       j++;
     }
 
-    recog_model->cloud_->points.resize (j);
+    recog_model->cloud_->resize (j);
     recog_model->cloud_->width = j;
     recog_model->cloud_->height = 1;
   }
 
-  if (recog_model->cloud_->points.empty ())
+  if (recog_model->cloud_->empty ())
   {
     PCL_WARN("The model cloud has no points..\n");
     return false;
@@ -545,7 +545,7 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
 
   //check nans...
   int j = 0;
-  for (std::size_t i = 0; i < recog_model->normals_->points.size (); ++i)
+  for (std::size_t i = 0; i < recog_model->normals_->size (); ++i)
   {
     if (!std::isfinite (recog_model->normals_->points[i].normal_x) || !std::isfinite (recog_model->normals_->points[i].normal_y)
         || !std::isfinite (recog_model->normals_->points[i].normal_z))
@@ -556,11 +556,11 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
     j++;
   }
 
-  recog_model->normals_->points.resize (j);
+  recog_model->normals_->resize (j);
   recog_model->normals_->width = j;
   recog_model->normals_->height = 1;
 
-  recog_model->cloud_->points.resize (j);
+  recog_model->cloud_->resize (j);
   recog_model->cloud_->width = j;
   recog_model->cloud_->height = 1;
 
@@ -573,11 +573,11 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
 
   std::map<int, std::shared_ptr<std::vector<std::pair<int, float>>>> model_explains_scene_points; //which point i from the scene is explained by a points j_k with dist d_k from the model
 
-  outliers_weight.resize (recog_model->cloud_->points.size ());
-  recog_model->outlier_indices_.resize (recog_model->cloud_->points.size ());
+  outliers_weight.resize (recog_model->cloud_->size ());
+  recog_model->outlier_indices_.resize (recog_model->cloud_->size ());
 
   std::size_t o = 0;
-  for (std::size_t i = 0; i < recog_model->cloud_->points.size (); i++)
+  for (std::size_t i = 0; i < recog_model->cloud_->size (); i++)
   {
     if (!scene_downsampled_tree_->radiusSearch (recog_model->cloud_->points[i], inliers_threshold_, nn_indices, nn_distances, std::numeric_limits<int>::max ()))
     {

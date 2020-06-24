@@ -67,7 +67,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
     normals_->header = input_->header;
     // Clear the fields in case the method exits before computation
     normals_->width = normals_->height = 0;
-    normals_->points.clear ();
+    normals_->clear ();
   }
 
   // Copy the header

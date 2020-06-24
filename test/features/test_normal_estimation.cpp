@@ -153,7 +153,7 @@ TEST (PCL, NormalEstimation)
 
   // estimate
   n.compute (*normals);
-  EXPECT_EQ (normals->points.size (), indices.size ());
+  EXPECT_EQ (normals->size (), indices.size ());
 
   for (const auto &point : normals->points)
   {
@@ -170,17 +170,17 @@ TEST (PCL, NormalEstimation)
   // Additional test for searchForNeigbhors
   surfaceptr.reset (new PointCloud<PointXYZ>);
   *surfaceptr = *cloudptr;
-  surfaceptr->points.resize (640 * 480);
+  surfaceptr->resize (640 * 480);
   surfaceptr->width = 640;
   surfaceptr->height = 480;
-  EXPECT_EQ (surfaceptr->points.size (), surfaceptr->width * surfaceptr->height);
+  EXPECT_EQ (surfaceptr->size (), surfaceptr->width * surfaceptr->height);
   n.setSearchSurface (surfaceptr);
   tree.reset ();
   n.setSearchMethod (tree);
 
   // estimate
   n.compute (*normals);
-  EXPECT_EQ (normals->points.size (), indices.size ());
+  EXPECT_EQ (normals->size (), indices.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -264,7 +264,7 @@ TEST (PCL, NormalEstimationOpenMP)
 
   // estimate
   n.compute (*normals);
-  EXPECT_EQ (normals->points.size (), indices.size ());
+  EXPECT_EQ (normals->size (), indices.size ());
 
   for (const auto &point : normals->points)
   {
@@ -288,8 +288,8 @@ TEST (PCL, IntegralImageNormalEstimationIndexingIssue)
 
   cloudptr->width = 100;
   cloudptr->height = 100;
-  cloudptr->points.clear();
-  cloudptr->points.resize(cloudptr->width * cloudptr->height);
+  cloudptr->clear();
+  cloudptr->resize(cloudptr->width * cloudptr->height);
 
   int centerX = cloudptr->width >> 1;
   int centerY = cloudptr->height >> 1;

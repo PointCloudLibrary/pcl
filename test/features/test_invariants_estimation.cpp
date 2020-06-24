@@ -83,7 +83,7 @@ TEST (PCL, MomentInvariantsEstimation)
 
   // estimate
   mi.compute (*moments);
-  EXPECT_EQ (moments->points.size (), indices.size ());
+  EXPECT_EQ (moments->size (), indices.size ());
 
   for (const auto &point : moments->points)
   {

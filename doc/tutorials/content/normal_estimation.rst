@@ -203,7 +203,7 @@ points in the input dataset.
      // Compute the features
      ne.compute (*cloud_normals);
 
-     // cloud_normals->points.size () should have the same size as the input cloud->points.size ()*
+     // cloud_normals->size () should have the same size as the input cloud->size ()*
    }
 
 The actual **compute** call from the **NormalEstimation** class does nothing internally but::

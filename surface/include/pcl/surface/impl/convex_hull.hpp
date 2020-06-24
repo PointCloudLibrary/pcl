@@ -332,7 +332,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   // 0 if no error from qhull
   if (exitcode != 0)
   {
-    PCL_ERROR ("[pcl::%s::performReconstrution3D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%lu)!\n", getClassName ().c_str (), input_->points.size ());
+    PCL_ERROR ("[pcl::%s::performReconstrution3D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%lu)!\n", getClassName ().c_str (), input_->size ());
 
     hull.points.resize (0);
     hull.width = hull.height = 0;
@@ -436,7 +436,7 @@ template <typename PointInT> void
 pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points)
 {
   points.header = input_->header;
-  if (!initCompute () || input_->points.empty () || indices_->empty ())
+  if (!initCompute () || input_->empty () || indices_->empty ())
   {
     points.points.clear ();
     return;
@@ -479,7 +479,7 @@ template <typename PointInT> void
 pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points, std::vector<pcl::Vertices> &polygons)
 {
   points.header = input_->header;
-  if (!initCompute () || input_->points.empty () || indices_->empty ())
+  if (!initCompute () || input_->empty () || indices_->empty ())
   {
     points.points.clear ();
     return;

@@ -86,7 +86,7 @@ TEST (PCL, CVFHEstimation)
 
   // estimate
   cvfh.compute (*vfhs);
-  EXPECT_EQ (static_cast<int>(vfhs->points.size ()), 1);
+  EXPECT_EQ (static_cast<int>(vfhs->size ()), 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,7 +116,7 @@ TEST (PCL, CVFHEstimationMilk)
 
   // estimate
   cvfh.compute (*vfhs);
-  EXPECT_EQ (static_cast<int>(vfhs->points.size ()), 2);
+  EXPECT_EQ (static_cast<int>(vfhs->size ()), 2);
 }
 
 /* ---[ */

@@ -55,7 +55,7 @@ template <typename PointSource, typename PointTarget, typename Scalar> void
 CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::setInputTarget (
     const PointCloudTargetConstPtr &cloud)
 {
-  if (cloud->points.empty ())
+  if (cloud->empty ())
   {
     PCL_ERROR ("[pcl::registration::%s::setInputTarget] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
     return;

@@ -215,7 +215,7 @@ private:
     //remove NaN Points
     std::vector<int> nanIndexes;
     pcl::removeNaNFromPointCloud(*cloud, *cloud, nanIndexes);
-    std::cout << "Loaded " << cloud->points.size() << " points" << std::endl;
+    std::cout << "Loaded " << cloud->size() << " points" << std::endl;
 
     //create octree structure
     octree.setInputCloud(cloud);
@@ -251,7 +251,7 @@ private:
 
     viz.removeShape ("level_t2");
     sprintf (level, "Voxel size: %.4fm [%lu voxels]", std::sqrt (octree.getVoxelSquaredSideLen (displayedDepth)),
-             cloudVoxel->points.size ());
+             cloudVoxel->size ());
     viz.addText (level, 0, 15, 1.0, 0.0, 0.0, "level_t2");
   }
 
@@ -368,8 +368,8 @@ private:
    */
   void extractPointsAtLevel(int depth)
   {
-    displayCloud->points.clear();
-    cloudVoxel->points.clear();
+    displayCloud->clear();
+    cloudVoxel->clear();
 
     pcl::PointXYZ pt_voxel_center;
     pcl::PointXYZ pt_centroid;
@@ -387,7 +387,7 @@ private:
       pt_voxel_center.x = (voxel_min.x () + voxel_max.x ()) / 2.0f;
       pt_voxel_center.y = (voxel_min.y () + voxel_max.y ()) / 2.0f;
       pt_voxel_center.z = (voxel_min.z () + voxel_max.z ()) / 2.0f;
-      cloudVoxel->points.push_back (pt_voxel_center);
+      cloudVoxel->push_back (pt_voxel_center);
 
       // If the asked depth is the depth of the octree, retrieve the centroid at this LeafNode
       if (octree.getTreeDepth () == (unsigned int) depth)
@@ -413,12 +413,12 @@ private:
         centroid.get (pt_centroid);
       }
 
-      displayCloud->points.push_back (pt_centroid);
+      displayCloud->push_back (pt_centroid);
     }
 
     double end = pcl::getTime ();
-    printf("%lu pts, %.4gs. %.4gs./pt. =====\n", displayCloud->points.size (), end - start,
-           (end - start) / static_cast<double> (displayCloud->points.size ()));
+    printf("%lu pts, %.4gs. %.4gs./pt. =====\n", displayCloud->size (), end - start,
+           (end - start) / static_cast<double> (displayCloud->size ()));
 
     update();
   }

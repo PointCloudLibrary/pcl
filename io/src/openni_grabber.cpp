@@ -547,7 +547,7 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const openni_wrapper::DepthImage::Pt
   cloud->width = depth_width_;
   cloud->is_dense = false;
 
-  cloud->points.resize (cloud->height * cloud->width);
+  cloud->resize (cloud->height * cloud->width);
 
   float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
   float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
@@ -623,7 +623,7 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const openni_wrapper::Image::Ptr 
   cloud->width = std::max (image_width_, depth_width_);
   cloud->is_dense = false;
 
-  cloud->points.resize (cloud->height * cloud->width);
+  cloud->resize (cloud->height * cloud->width);
 
   //float constant = 1.0f / device_->getImageFocalLength (depth_width_);
   float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
@@ -673,7 +673,7 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const openni_wrapper::Image::Ptr 
     pt.x = pt.y = pt.z = bad_point;
     pt.b = pt.g = pt.r = 0;
     pt.a = 0; // point has no color info -> alpha = min => transparent
-    cloud->points.assign (cloud->points.size (), pt);
+    cloud->assign (cloud->size (), pt);
   }
   
   // fill in XYZ values
@@ -738,7 +738,7 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const openni_wrapper::IRImage::Ptr 
   cloud->width = depth_width_;
   cloud->is_dense = false;
 
-  cloud->points.resize (cloud->height * cloud->width);
+  cloud->resize (cloud->height * cloud->width);
 
   //float constant = 1.0f / device_->getImageFocalLength (cloud->width);
   float constant_x = 1.0f / device_->getImageFocalLength (cloud->width);

@@ -194,7 +194,7 @@ main (int argc, char ** argv)
       return (1);
     }
  
-    cloud->points.reserve (depth_dims[0] * depth_dims[1]);
+    cloud->reserve (depth_dims[0] * depth_dims[1]);
     cloud->width = depth_dims[0];
     cloud->height = depth_dims[1];
     cloud->is_dense = false;
@@ -232,7 +232,7 @@ main (int argc, char ** argv)
         new_point.r = color_pixel[0];
         new_point.g = color_pixel[1];
         new_point.b = color_pixel[2];
-        cloud->points.push_back (new_point);
+        cloud->push_back (new_point);
         
       }
     }

@@ -463,14 +463,14 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     image_data[i] = static_cast<unsigned char> (intensity_ ((*input_cloud_)[i]));
 
   // Remove keypoints very close to the border
-  std::size_t ksize = keypoints_->points.size ();
+  std::size_t ksize = keypoints_->size ();
   std::vector<int> kscales; // remember the scale per keypoint
   kscales.resize (ksize);
 
   // initialize constants
   static const float lb_scalerange = std::log2 (scalerange_);
 
-  typename std::vector<KeypointT, Eigen::aligned_allocator<KeypointT> >::iterator beginning = keypoints_->points.begin ();
+  typename std::vector<KeypointT, Eigen::aligned_allocator<KeypointT> >::iterator beginning = keypoints_->begin ();
   std::vector<int>::iterator beginningkscales = kscales.begin ();
 
   static const float basic_size_06 = basic_size_ * 0.6f;
@@ -502,11 +502,11 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     if (RoiPredicate (float (border), float (border), float (border_x), float (border_y), keypoints_->points[k]))
     {
       //std::cerr << "remove keypoint" << std::endl;
-      keypoints_->points.erase (beginning + k);
+      keypoints_->erase (beginning + k);
       kscales.erase (beginningkscales + k);
       if (k == 0)
       {
-        beginning = keypoints_->points.begin ();
+        beginning = keypoints_->begin ();
         beginningkscales = kscales.begin ();
       }
       ksize--;

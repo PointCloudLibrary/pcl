@@ -47,7 +47,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 void
 createColorCloud (pcl::PointCloud<pcl::PointXYZRGBA> &colorCloud)
 {
-  for (std::size_t i = 0; i < cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud->size (); ++i)
   {
     pcl::PointXYZRGBA p;
     p.getVector3fMap () = cloud->points[i].getVector3fMap ();

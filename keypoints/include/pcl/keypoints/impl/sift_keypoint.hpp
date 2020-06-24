@@ -129,7 +129,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
 
     // Make sure the downsampled cloud still has enough points
     const std::size_t min_nr_points = 25;
-    if (cloud->points.size () < min_nr_points)
+    if (cloud->size () < min_nr_points)
       break;
 
     // Update the KdTree with the downsampled points

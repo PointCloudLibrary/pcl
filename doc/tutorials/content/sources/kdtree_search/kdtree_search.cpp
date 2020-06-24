@@ -15,9 +15,9 @@ main (int argc, char** argv)
   // Generate pointcloud data
   cloud->width = 1000;
   cloud->height = 1;
-  cloud->points.resize (cloud->width * cloud->height);
+  cloud->resize (cloud->width * cloud->height);
 
-  for (std::size_t i = 0; i < cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud->size (); ++i)
   {
     cloud->points[i].x = 1024.0f * rand () / (RAND_MAX + 1.0f);
     cloud->points[i].y = 1024.0f * rand () / (RAND_MAX + 1.0f);

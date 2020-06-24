@@ -353,7 +353,7 @@ ONIGrabber::convertToXYZPointCloud(const openni_wrapper::DepthImage::Ptr& depth_
   cloud->width = depth_width_;
   cloud->is_dense = false;
 
-  cloud->points.resize (cloud->height * cloud->width);
+  cloud->resize (cloud->height * cloud->width);
 
   float constant = 1.0f / device_->getDepthFocalLength (depth_width_);
 
@@ -422,7 +422,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr ONIGrabber::convertToXYZRGBPointCloud (
   cloud->width = depth_width_;
   cloud->is_dense = false;
 
-  cloud->points.resize(cloud->height * cloud->width);
+  cloud->resize(cloud->height * cloud->width);
 
   float constant = 1.0f / device_->getImageFocalLength(cloud->width);
   int centerX = (cloud->width >> 1);
@@ -506,7 +506,7 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr ONIGrabber::convertToXYZRGBAPointCloud (
   cloud->width = depth_width_;
   cloud->is_dense = false;
 
-  cloud->points.resize(cloud->height * cloud->width);
+  cloud->resize(cloud->height * cloud->width);
 
   float constant = 1.0f / device_->getImageFocalLength(cloud->width);
   int centerX = (cloud->width >> 1);
@@ -585,7 +585,7 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr ONIGrabber::convertToXYZIPointCloud(const o
   cloud->width = depth_width_;
   cloud->is_dense = false;
 
-  cloud->points.resize(cloud->height * cloud->width);
+  cloud->resize(cloud->height * cloud->width);
 
   float constant = 1.0f / device_->getImageFocalLength(cloud->width);
   int centerX = (cloud->width >> 1);

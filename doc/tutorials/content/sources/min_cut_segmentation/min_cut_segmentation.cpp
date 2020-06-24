@@ -31,7 +31,7 @@ int main (int argc, char** argv)
   point.x = 68.97;
   point.y = -18.55;
   point.z = 0.57;
-  foreground_points->points.push_back(point);
+  foreground_points->push_back(point);
   seg.setForegroundPoints (foreground_points);
 
   seg.setSigma (0.25);
