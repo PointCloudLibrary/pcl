@@ -485,6 +485,48 @@ namespace pcl
       inline const PointT& back () const { return (points.back ()); }
       inline PointT& back () { return (points.back ()); }
 
+      /**
+       * \brief Replaces the points with `count` copies of `value`
+       * \note This breaks the organized structure of the cloud by setting the height to
+       * 1!
+       */
+      void
+      assign(index_t count, const PointT& value)
+      {
+        points.assign(count, value);
+        width = static_cast<std::uint32_t>(size());
+        height = 1;
+      }
+
+      /**
+       * \brief Replaces the points with copies of those in the range `[first, last)`
+       * \details The behavior is undefined if either argument is an iterator into
+       * `*this`
+       * \note This breaks the organized structure of the cloud by setting the height to
+       * 1!
+       */
+      template <class InputIt>
+      void
+      assign(InputIt first, InputIt last)
+      {
+        points.assign(std::move(first), std::move(last));
+        width = static_cast<std::uint32_t>(size());
+        height = 1;
+      }
+
+      /**
+       * \brief Replaces the points with the elements from the initializer list `ilist`
+       * \note This breaks the organized structure of the cloud by setting the height to
+       * 1!
+       */
+      void
+      assign(std::initializer_list<PointT> ilist)
+      {
+        points.assign(std::move(ilist));
+        width = static_cast<std::uint32_t>(size());
+        height = 1;
+      }
+
       /** \brief Insert a new point in the cloud, at the end of the container.
         * \note This breaks the organized structure of the cloud by setting the height to 1!
         * \param[in] pt the point to insert
