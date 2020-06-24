@@ -988,7 +988,7 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
   for (std::size_t i = 0; i < cloud.fields.size (); ++i)
   {
     // If field offsets do not match, then we need to create fake fields
-    if (toffset != static_cast<uindex_t>(cloud.fields[i].offset))
+    if (toffset != cloud.fields[i].offset)
     {
       // If we're at the last "valid" field
       int fake_offset = (i == 0) ?
