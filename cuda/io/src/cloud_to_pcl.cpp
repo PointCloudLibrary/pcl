@@ -50,8 +50,8 @@ toPCL (const PointCloudAOS<Host> &input,
                  const thrust::host_vector<float4> &normals,
                  pcl::PointCloud<pcl::PointXYZRGBNormal> &output)
 {
-  output.resize (input.size ());
-  for (std::size_t i = 0; i < input.size (); ++i)
+  output.resize (input.points.size ());
+  for (std::size_t i = 0; i < input.points.size (); ++i)
   {
     output[i].x = input.points[i].x;
     output[i].y = input.points[i].y;
@@ -88,8 +88,8 @@ void
 toPCL (const PointCloudAOS<Host> &input, 
                  pcl::PointCloud<pcl::PointXYZRGB> &output)
 {
-  output.resize (input.size ());
-  for (std::size_t i = 0; i < input.size (); ++i)
+  output.resize (input.points.size ());
+  for (std::size_t i = 0; i < input.points.size (); ++i)
   {
     output[i].x = input.points[i].x;
     output[i].y = input.points[i].y;
