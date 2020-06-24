@@ -53,11 +53,11 @@ toPCL (const PointCloudAOS<Host> &input,
   output.points.resize (input.points.size ());
   for (std::size_t i = 0; i < input.points.size (); ++i)
   {
-    output[i].x = input[i].x;
-    output[i].y = input[i].y;
-    output[i].z = input[i].z;
+    output[i].x = input.points[i].x;
+    output[i].y = input.points[i].y;
+    output[i].z = input.points[i].z;
     // Pack RGB into a float
-    output[i].rgb = *(float*)(&input[i].rgb);
+    output[i].rgb = *(float*)(&input.points[i].rgb);
 
     output[i].normal_x  = normals[i].x;
     output[i].normal_y  = normals[i].y;
@@ -80,23 +80,7 @@ toPCL (const PointCloudAOS<Device> &d_input,
   input << d_input;
   thrust::host_vector<float4> normals = d_normals;
 
-  output.points.resize (input.points.size ());
-  for (std::size_t i = 0; i < input.points.size (); ++i)
-  {
-    output[i].x = input[i].x;
-    output[i].y = input[i].y;
-    output[i].z = input[i].z;
-    // Pack RGB into a float
-    output[i].rgb = *(float*)(&input[i].rgb);
-
-    output[i].normal_x  = normals[i].x;
-    output[i].normal_y  = normals[i].y;
-    output[i].normal_z  = normals[i].z;
-    output[i].curvature = normals[i].w;
-  }
-  output.width    = input.width;
-  output.height   = input.height;
-  output.is_dense = input.is_dense;
+  toPCL(input, normals, output);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -107,11 +91,11 @@ toPCL (const PointCloudAOS<Host> &input,
   output.points.resize (input.points.size ());
   for (std::size_t i = 0; i < input.points.size (); ++i)
   {
-    output[i].x = input[i].x;
-    output[i].y = input[i].y;
-    output[i].z = input[i].z;
+    output[i].x = input.points[i].x;
+    output[i].y = input.points[i].y;
+    output[i].z = input.points[i].z;
     // Pack RGB into a float
-    output[i].rgb = *(float*)(&input[i].rgb);
+    output[i].rgb = *(float*)(&input.points[i].rgb);
   }
 
   output.width    = input.width;
@@ -133,27 +117,8 @@ toPCL (const PointCloudAOS<Device> &input,
   PointCloudAOS<Host> cloud;
   cloud << input;
 
-  output.points.resize (cloud.points.size ());
-  for (std::size_t i = 0; i < cloud.points.size (); ++i)
-  {
-    output[i].x = cloud[i].x;
-    output[i].y = cloud[i].y;
-    output[i].z = cloud[i].z;
-    // Pack RGB into a float
-    output[i].rgb = *(float*)(&cloud[i].rgb);
-  }
-
-  output.width    = cloud.width;
-  output.height   = cloud.height;
-  output.is_dense = cloud.is_dense;
-
-/*  for (std::size_t i = 0; i < output.points.size (); ++i)
-  std::cerr << 
-    output[i].x << " " <<
-    output[i].y << " " <<
-    output[i].z << " " << std::endl;*/
+  toPCL(cloud, output);
 }
-
 } // namespace
 } // namespace
 
