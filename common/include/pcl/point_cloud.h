@@ -647,7 +647,7 @@ namespace pcl
       swap (PointCloud<PointT> &rhs)
       {
         std::swap (header, rhs.header);
-        this->swap (rhs.points);
+        this->points.swap (rhs.points);
         std::swap (width, rhs.width);
         std::swap (height, rhs.height);
         std::swap (is_dense, rhs.is_dense);
