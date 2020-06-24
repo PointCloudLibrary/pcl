@@ -864,7 +864,7 @@ pcl::simulation::RangeLikelihood::getPointCloud(
         (*pc)[idx].y =
             (static_cast<float>(y) - camera_cy_) * z * (-camera_fy_reciprocal_);
 
-        int rgb_idx = y * col_width_ + x;                  // camera_width_
+        int rgb_idx = y * col_width_ + x;             // camera_width_
         (*pc)[idx].b = color_buffer[rgb_idx * 3 + 2]; // blue
         (*pc)[idx].g = color_buffer[rgb_idx * 3 + 1]; // green
         (*pc)[idx].r = color_buffer[rgb_idx * 3];     // red

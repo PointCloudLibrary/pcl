@@ -227,8 +227,7 @@ public:
     input_cloud->points.resize(input_->width * input_->height);
     for (std::size_t i = 0; i < input_->points.size(); i++) {
       (*input_cloud)[i].getVector3fMap() = (*input_)[i].getVector3fMap();
-      (*input_cloud)[i].getNormalVector3fMap() =
-          (*normals_)[i].getNormalVector3fMap();
+      (*input_cloud)[i].getNormalVector3fMap() = (*normals_)[i].getNormalVector3fMap();
     }
 
     typename pcl::PointCloud<pcl::PointXYZI>::Ptr intensity_keypoints(

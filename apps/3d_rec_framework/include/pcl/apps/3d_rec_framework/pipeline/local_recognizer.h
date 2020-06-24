@@ -183,8 +183,7 @@ class PCL_EXPORTS LocalRecognitionPipeline {
               .getVector4fMap();
       pcl::PointXYZ p_scene;
       p_scene.getVector4fMap() =
-          (*keypoints_pointcloud)[correspondences[kk].index_match]
-              .getVector4fMap();
+          (*keypoints_pointcloud)[correspondences[kk].index_match].getVector4fMap();
 
       std::stringstream line_name;
       line_name << "line_" << kk;

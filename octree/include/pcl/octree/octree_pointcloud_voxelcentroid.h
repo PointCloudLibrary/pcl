@@ -162,7 +162,7 @@ public:
 
     assert(pointIdx_arg < static_cast<int>(this->input_->points.size()));
 
-    const PointT& point = this->input_[pointIdx_arg];
+    const PointT& point = (*this->input_)[pointIdx_arg];
 
     // make sure bounding box is big enough
     this->adoptBoundingBoxToPoint(point);
@@ -193,8 +193,8 @@ public:
   getVoxelCentroidAtPoint(const int& point_idx_arg, PointT& voxel_centroid_arg) const
   {
     // get centroid at point
-    return (this->getVoxelCentroidAtPoint(this->input_[point_idx_arg],
-                                          voxel_centroid_arg));
+    return (
+        this->getVoxelCentroidAtPoint(this->input_[point_idx_arg], voxel_centroid_arg));
   }
 
   /** \brief Get PointT vector of centroids for all occupied voxels.

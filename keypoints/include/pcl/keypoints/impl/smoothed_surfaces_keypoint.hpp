@@ -85,8 +85,8 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
     diffs[cloud_i].resize (input_->points.size ());
     PCL_INFO ("cloud_i %u cloud_i_minus_one %u\n", cloud_i, cloud_i_minus_one);
     for (std::size_t point_i = 0; point_i < input_->points.size (); ++point_i)
-      diffs[cloud_i][point_i] = cloud_normals_[cloud_i](*)[point_i].getNormalVector3fMap ().dot (
-          clouds_[cloud_i](*)[point_i].getVector3fMap () - clouds_[cloud_i_minus_one](*)[point_i].getVector3fMap ());
+      diffs[cloud_i][point_i] = (*cloud_normals_[cloud_i])[point_i].getNormalVector3fMap ().dot (
+          (*clouds_[cloud_i])[point_i].getVector3fMap () - (*clouds_[cloud_i_minus_one])[point_i].getVector3fMap ());
 
     // Setup kdtree for this cloud
     cloud_trees_[cloud_i]->setInputCloud (clouds_[cloud_i]);

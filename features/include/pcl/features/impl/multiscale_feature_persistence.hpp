@@ -244,7 +244,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::determinePersisten
 
     if (present_in_all)
     {
-      output_features.points.emplace_back (features_at_scale_.front ()(*)[feature]);
+      output_features.points.emplace_back ((*features_at_scale_.front ())[feature]);
       output_indices->emplace_back (feature_estimator_->getIndices ()->at (feature));
     }
   }

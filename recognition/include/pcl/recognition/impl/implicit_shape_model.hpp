@@ -961,12 +961,12 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::calculateS
     for (unsigned int i_point = 0; i_point < number_of_points - 1; i_point++)
       for (unsigned int j_point = i_point + 1; j_point < number_of_points; j_point++)
       {
-        float curr_distance = 0.0f;
-        curr_distance += training_clouds_[i_object](*)[i_point].x * training_clouds_[i_object](*)[j_point].x;
-        curr_distance += training_clouds_[i_object](*)[i_point].y * training_clouds_[i_object](*)[j_point].y;
-        curr_distance += training_clouds_[i_object](*)[i_point].z * training_clouds_[i_object](*)[j_point].z;
-        if (curr_distance > max_distance)
-          max_distance = curr_distance;
+         float curr_distance = 0.0f;
+         curr_distance += (*training_clouds_[i_object])[i_point].x * (*training_clouds_[i_object])[j_point].x;
+         curr_distance += (*training_clouds_[i_object])[i_point].y * (*training_clouds_[i_object])[j_point].y;
+         curr_distance += (*training_clouds_[i_object])[i_point].z * (*training_clouds_[i_object])[j_point].z;
+         if (curr_distance > max_distance)
+           max_distance = curr_distance;
       }
     max_distance = static_cast<float> (sqrt (max_distance));
     unsigned int i_class = training_classes_[i_object];
