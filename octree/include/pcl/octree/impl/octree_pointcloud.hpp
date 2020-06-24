@@ -179,7 +179,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     isVoxelOccupiedAtPoint(const int& point_idx_arg) const
 {
   // retrieve point from input cloud
-  const PointT& point = this->(*input_)[point_idx_arg];
+  const PointT& point = this->input_[point_idx_arg];
 
   // search for voxel at point in octree
   return (this->isVoxelOccupiedAtPoint(point));
@@ -237,7 +237,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     deleteVoxelAtPoint(const int& point_idx_arg)
 {
   // retrieve point from input cloud
-  const PointT& point = this->(*input_)[point_idx_arg];
+  const PointT& point = this->input_[point_idx_arg];
 
   // delete leaf at point
   this->deleteVoxelAtPoint(point);
@@ -704,7 +704,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 {
   // retrieve point from input cloud
   assert(index_arg < static_cast<unsigned int>(input_->points.size()));
-  return (this->(*input_)[index_arg]);
+  return (this->input_[index_arg]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

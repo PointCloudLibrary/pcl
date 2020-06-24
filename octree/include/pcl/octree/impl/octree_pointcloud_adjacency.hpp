@@ -160,7 +160,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
 
   assert(pointIdx_arg < static_cast<int>(this->input_->points.size()));
 
-  const PointT& point = this->(*input_)[pointIdx_arg];
+  const PointT& point = this->input_[pointIdx_arg];
   if (!pcl::isFinite(point))
     return;
 
