@@ -514,11 +514,11 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
     int j = 0;
     for (std::size_t i = 0; i < recog_model->cloud_->points.size (); ++i)
     {
-      if (!std::isfinite (recog_model->(*cloud_)[i].x) || !std::isfinite (recog_model->(*cloud_)[i].y)
-          || !std::isfinite (recog_model->(*cloud_)[i].z))
+      if (!std::isfinite (recog_model->cloud_[i].x) || !std::isfinite (recog_model->cloud_[i].y)
+          || !std::isfinite (recog_model->cloud_[i].z))
         continue;
 
-      recog_model->(*cloud_)[j] = recog_model->(*cloud_)[i];
+      recog_model->cloud_[j] = recog_model->cloud_[i];
       j++;
     }
 
@@ -547,12 +547,12 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
   int j = 0;
   for (std::size_t i = 0; i < recog_model->normals_->points.size (); ++i)
   {
-    if (!std::isfinite (recog_model->(*normals_)[i].normal_x) || !std::isfinite (recog_model->(*normals_)[i].normal_y)
-        || !std::isfinite (recog_model->(*normals_)[i].normal_z))
+    if (!std::isfinite (recog_model->normals_[i].normal_x) || !std::isfinite (recog_model->normals_[i].normal_y)
+        || !std::isfinite (recog_model->normals_[i].normal_z))
       continue;
 
-    recog_model->(*normals_)[j] = recog_model->(*normals_)[i];
-    recog_model->(*cloud_)[j] = recog_model->(*cloud_)[i];
+    recog_model->normals_[j] = recog_model->normals_[i];
+    recog_model->cloud_[j] = recog_model->cloud_[i];
     j++;
   }
 
@@ -579,7 +579,7 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
   std::size_t o = 0;
   for (std::size_t i = 0; i < recog_model->cloud_->points.size (); i++)
   {
-    if (!scene_downsampled_tree_->radiusSearch (recog_model->(*cloud_)[i], inliers_threshold_, nn_indices, nn_distances, std::numeric_limits<int>::max ()))
+    if (!scene_downsampled_tree_->radiusSearch (recog_model->cloud_[i], inliers_threshold_, nn_indices, nn_distances, std::numeric_limits<int>::max ()))
     {
       //outlier
       outliers_weight[o] = regularizer_;
@@ -635,7 +635,7 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
     //it->first is index to scene point
     //using normals to weight inliers
     Eigen::Vector3f scene_p_normal = (*scene_normals_)[it->first].getNormalVector3fMap ();
-    Eigen::Vector3f model_p_normal = recog_model->(*normals_)[it->second->at (closest).first].getNormalVector3fMap ();
+    Eigen::Vector3f model_p_normal = recog_model->normals_[it->second->at (closest).first].getNormalVector3fMap ();
     float dotp = scene_p_normal.dot (model_p_normal) * 1.f; //[-1,1] from antiparallel trough perpendicular to parallel
 
     if (dotp < 0.f)
