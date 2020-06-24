@@ -37,10 +37,6 @@
 
 #pragma once
 
-#if defined __GNUC__
-#  pragma GCC system_header
-#endif
-
 #include <Eigen/Core>
 #include <pcl/console/print.h>
 
@@ -83,7 +79,7 @@ namespace pcl
     {
       Eigen::Vector3f po = point - plane_origin;
       const Eigen::Vector3f normal = plane_normal.getVector3fMapConst ();
-      float lambda = normal.dot(po);
+      float lambda = normal.dot(std::move(po));
       projected.getVector3fMap () = point.getVector3fMapConst () - (lambda * normal);
     }
 
@@ -98,7 +94,7 @@ namespace pcl
              const Eigen::Vector3f& plane_normal, Eigen::Vector3f& projected)
     {
       Eigen::Vector3f po = point - plane_origin;
-      float lambda = plane_normal.dot(po);
+      float lambda = plane_normal.dot(std::move(po));
       projected = point - (lambda * plane_normal);
     }
 

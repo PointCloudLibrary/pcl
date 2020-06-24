@@ -66,11 +66,6 @@ pcl::FeatureHistogram::FeatureHistogram (std::size_t const number_of_bins,
   number_of_bins_ = number_of_bins;
 }
 
-pcl::FeatureHistogram::~FeatureHistogram ()
-{
-  
-}
-
 float
 pcl::FeatureHistogram::getThresholdMin () const
 {
@@ -111,7 +106,7 @@ pcl::FeatureHistogram::addValue (float value)
 }
 
 float
-pcl::FeatureHistogram::getMeanValue ()
+pcl::FeatureHistogram::getMeanValue () const
 {
     // Check, if the histogram is empty.
   if (number_of_elements_ == 0)
@@ -148,7 +143,7 @@ pcl::FeatureHistogram::getMeanValue ()
 }
 
 float
-pcl::FeatureHistogram::getVariance (float mean)
+pcl::FeatureHistogram::getVariance (float mean) const
 {
   // Check, if the histogram is empty.
   if (number_of_elements_ == 0)

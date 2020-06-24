@@ -362,9 +362,9 @@ namespace pcl
       getMatrixXfMap (int dim, int stride, int offset)
       {
         if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
-          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(data())+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
         else
-          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(&points[0])+offset, dim, points.size (), Eigen::OuterStride<> (stride)));
+          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(data())+offset, dim, points.size (), Eigen::OuterStride<> (stride)));
       }
 
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
@@ -385,9 +385,9 @@ namespace pcl
       getMatrixXfMap (int dim, int stride, int offset) const
       {
         if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
-          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(const_cast<PointT*>(&points[0]))+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(const_cast<PointT*>(data()))+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
         else
-          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(const_cast<PointT*>(&points[0]))+offset, dim, points.size (), Eigen::OuterStride<> (stride)));
+          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(const_cast<PointT*>(data()))+offset, dim, points.size (), Eigen::OuterStride<> (stride)));
       }
 
       /**
@@ -469,8 +469,6 @@ namespace pcl
       inline std::size_t size () const { return (points.size ()); }
       inline void reserve (std::size_t n) { points.reserve (n); }
       inline bool empty () const { return points.empty (); }
-      PointT* data() noexcept { return points.data(); }
-      const PointT* data() const noexcept { return points.data(); }
 
       /** \brief Resize the cloud
         * \param[in] n the new cloud size
@@ -494,6 +492,8 @@ namespace pcl
       inline PointT& front () { return (points.front ()); }
       inline const PointT& back () const { return (points.back ()); }
       inline PointT& back () { return (points.back ()); }
+      PointT* data() noexcept { return points.data(); }
+      const PointT* data() const noexcept { return points.data(); }
 
       /**
        * \brief Replaces the points with `count` copies of `value`

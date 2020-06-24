@@ -46,9 +46,7 @@
 #define NOMINMAX
 #endif
 
-#if defined __GNUC__
-#  pragma GCC system_header
-#elif defined __SUNPRO_CC
+#if defined __SUNPRO_CC
 #  pragma disable_warn
 #endif
 

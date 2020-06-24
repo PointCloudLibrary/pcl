@@ -40,10 +40,6 @@
 
 #pragma once
 
-#ifdef __GNUC__
-#pragma GCC system_header
-#endif
-
 #if defined _MSC_VER
   #pragma warning (push, 2)
   // 4244 : conversion from 'type1' to 'type2', possible loss of data

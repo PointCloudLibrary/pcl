@@ -1024,8 +1024,6 @@ namespace pcl
 
     public:
 
-      CentroidPoint () = default;
-
       /** Add a new point to the centroid computation.
         *
         * In this function only the accumulators and point counter are updated,
