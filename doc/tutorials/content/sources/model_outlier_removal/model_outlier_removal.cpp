@@ -41,8 +41,8 @@ main ()
   }
 
   std::cerr << "Cloud before filtering: " << std::endl;
-  for (std::size_t i = 0; i < cloud->size (); ++i)
-    std::cout << "    " << (*cloud)[i].x << " " << (*cloud)[i].y << " " << (*cloud)[i].z << std::endl;
+  for (const auto& point: *cloud)
+    std::cout << "    " << point.x << " " << point.y << " " << point.z << std::endl;
 
   // 2. filter sphere:
   // 2.1 generate model:
@@ -63,9 +63,8 @@ main ()
   sphere_filter.filter (*cloud_sphere_filtered);
 
   std::cerr << "Sphere after filtering: " << std::endl;
-  for (std::size_t i = 0; i < cloud_sphere_filtered->size (); ++i)
-    std::cout << "    " << (*cloud_sphere_filtered)[i].x << " " << (*cloud_sphere_filtered)[i].y << " " << (*cloud_sphere_filtered)[i].z
-        << std::endl;
+  for (const auto& point: *cloud_sphere_filtered)
+    std::cout << "    " << point.x << " " << point.y << " " << point.z << std::endl;
 
   return (0);
 }

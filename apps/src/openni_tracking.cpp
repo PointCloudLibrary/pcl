@@ -472,8 +472,7 @@ public:
   void
   removeZeroPoints(const CloudConstPtr& cloud, Cloud& result)
   {
-    for (std::size_t i = 0; i < cloud->size(); i++) {
-      PointType point = (*cloud)[i];
+    for (const auto& point: *cloud) {
       if (!(std::abs(point.x) < 0.01 && std::abs(point.y) < 0.01 &&
             std::abs(point.z) < 0.01) &&
           !std::isnan(point.x) && !std::isnan(point.y) && !std::isnan(point.z))
