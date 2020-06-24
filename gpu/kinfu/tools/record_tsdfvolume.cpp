@@ -208,7 +208,7 @@ DeviceVolume::getCloud (pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud)
 
   // write into point cloud structure
   device_cloud_buffer.download (cloud->points);
-  cloud->width = (int)cloud->size ();
+  cloud->width = cloud->size ();
   cloud->height = 1;
 
   return true;

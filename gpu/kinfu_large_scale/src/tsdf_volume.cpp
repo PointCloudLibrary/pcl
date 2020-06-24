@@ -271,7 +271,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, boo
     }
   }
 #undef FETCH
-  cloud.width  = (int)cloud.size ();
+  cloud.width  = cloud.size ();
   cloud.height = 1;
 }
 

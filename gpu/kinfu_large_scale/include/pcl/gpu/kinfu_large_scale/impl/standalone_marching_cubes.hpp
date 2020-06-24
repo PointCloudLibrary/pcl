@@ -223,7 +223,7 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::convertTrianglesToMesh (cons
   }
 
   pcl::PointCloud<pcl::PointXYZ> cloud;
-  cloud.width  = (int)triangles.size ();
+  cloud.width  = triangles.size ();
   cloud.height = 1;
   triangles.download (cloud.points);
 
