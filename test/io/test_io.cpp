@@ -121,7 +121,7 @@ TEST (PCL, ComplexPCDFileASCII)
   int fpfh_idx = pcl::getFieldIndex (blob, "fpfh");
   EXPECT_EQ (fpfh_idx, 0);
   float val[33];
-  for (std::size_t i = 0; i < blob.fields[fpfh_idx].count; ++i)
+  for (index_t i = 0; i < blob.fields[fpfh_idx].count; ++i)
     memcpy (&val[i], &blob.data[0 * blob.point_step + blob.fields[fpfh_idx + 0].offset + i * sizeof (float)], sizeof (float));
 
   EXPECT_EQ (val[0], 0); 
