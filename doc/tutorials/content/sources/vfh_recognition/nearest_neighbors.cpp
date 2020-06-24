@@ -229,7 +229,7 @@ main (int argc, char** argv)
       break;
 
     pcl::console::print_info ("[done, "); 
-    pcl::console::print_value ("%d", (int)cloud_xyz.size ()); 
+    pcl::console::print_value ("%zu", static_cast<std::size_t>(cloud_xyz.size ()));
     pcl::console::print_info (" points]\n");
     pcl::console::print_info ("Available dimensions: "); 
     pcl::console::print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());

@@ -77,9 +77,9 @@ main(int argc, char** argv)
   ppf_estimator.setInputNormals(cloud_subsampled_with_normals_b);
   ppf_estimator.compute(*ppf_signature_b);
 
-  PCL_INFO("Feature cloud sizes: %u , %u\n",
-           ppf_signature_a->size(),
-           ppf_signature_b->size());
+  PCL_INFO("Feature cloud sizes: %zu , %zu\n",
+           static_cast<std::size_t>(ppf_signature_a->size()),
+           static_cast<std::size_t>(ppf_signature_b->size()));
 
   PCL_INFO("Finished calculating the features ...\n");
   std::vector<std::pair<float, float>> dim_range_input, dim_range_target;

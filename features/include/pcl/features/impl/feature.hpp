@@ -248,8 +248,10 @@ FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ()
   if (normals_->points.size () != surface_->points.size ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] ", getClassName ().c_str ());
-    PCL_ERROR ("The number of points in the input dataset (%u) differs from ", surface_->points.size ());
-    PCL_ERROR ("the number of points in the dataset containing the normals (%u)!\n", normals_->points.size ());
+    PCL_ERROR("The number of points in the input dataset (%zu) differs from ",
+              static_cast<std::size_t>(surface_->points.size()));
+    PCL_ERROR("the number of points in the dataset containing the normals (%zu)!\n",
+              static_cast<std::size_t>(normals_->points.size()));
     Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }

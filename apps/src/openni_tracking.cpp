@@ -276,12 +276,12 @@ public:
         // clang-format off
         // draw some texts
         viz.removeShape("N");
-        viz.addText((boost::format("number of Reference PointClouds: %d") %
+        viz.addText((boost::format("number of Reference PointClouds: %1%") %
                      tracker_->getReferenceCloud()->size()).str(),
                     10, 20, 20, 1.0, 1.0, 1.0, "N");
 
         viz.removeShape("M");
-        viz.addText((boost::format("number of Measured PointClouds:  %d") %
+        viz.addText((boost::format("number of Measured PointClouds:  %1%") %
                      cloud_pass_downsampled_->size()).str(),
                     10, 40, 20, 1.0, 1.0, 1.0, "M");
 
@@ -298,7 +298,7 @@ public:
                     10, 100, 20, 1.0, 1.0, 1.0, "computation");
 
         viz.removeShape("particles");
-        viz.addText((boost::format("particles:     %d") %
+        viz.addText((boost::format("particles:     %1%") %
                      tracker_->getParticles()->size()).str(),
                     10, 120, 20, 1.0, 1.0, 1.0, "particles");
         // clang-format on

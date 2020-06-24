@@ -156,7 +156,8 @@ ManualRegistration::confirmSrcPointPressed()
 {
   if (src_point_selected_) {
     src_pc_.points.push_back(src_point_);
-    PCL_INFO("Selected %d source points\n", src_pc_.size());
+    PCL_INFO("Selected %zu source points\n",
+             static_cast<std::size_t>(src_pc_.size()));
     src_point_selected_ = false;
     src_pc_.width = src_pc_.size();
   }
@@ -170,7 +171,8 @@ ManualRegistration::confirmDstPointPressed()
 {
   if (dst_point_selected_) {
     dst_pc_.points.push_back(dst_point_);
-    PCL_INFO("Selected %d destination points\n", dst_pc_.size());
+    PCL_INFO("Selected %zu destination points\n",
+             static_cast<std::size_t>(dst_pc_.size()));
     dst_point_selected_ = false;
     dst_pc_.width = dst_pc_.size();
   }

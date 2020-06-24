@@ -39,9 +39,9 @@ subsampleAndCalculateNormals(const PointCloud<PointXYZ>::Ptr& cloud)
   concatenateFields(
       *cloud_subsampled, *cloud_subsampled_normals, *cloud_subsampled_with_normals);
 
-  PCL_INFO("Cloud dimensions before / after subsampling: %u / %u\n",
-           cloud->size(),
-           cloud_subsampled->size());
+  PCL_INFO("Cloud dimensions before / after subsampling: %zu / %zu\n",
+           static_cast<std::size_t>(cloud->size()),
+           static_cast<std::size_t>(cloud_subsampled->size()));
   return cloud_subsampled_with_normals;
 }
 
@@ -86,7 +86,8 @@ main(int argc, char** argv)
   while (cloud_scene->size() > 0.3 * nr_points) {
     seg.setInputCloud(cloud_scene);
     seg.segment(*inliers, *coefficients);
-    PCL_INFO("Plane inliers: %u\n", inliers->indices.size());
+    PCL_INFO("Plane inliers: %zu\n",
+             static_cast<std::size_t>(inliers->indices.size()));
     if (inliers->indices.size() < 50000)
       break;
 
