@@ -57,7 +57,7 @@ init ()
     for (float y = -0.5f; y <= 0.5f; y += resolution)
       for (float x = -0.5f; x <= 0.5f; x += resolution)
         cloud.points.emplace_back(x, y, z);
-  cloud.width = int (cloud.size ());
+  cloud.width = cloud.size ();
   cloud.height = 1;
 
   cloud_big.width = 640;

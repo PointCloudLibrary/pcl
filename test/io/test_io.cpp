@@ -751,7 +751,7 @@ TEST (PCL, PCDReaderWriterASCIIColorPrecision)
             cloud.push_back (p);
           }
   cloud.height = 1;
-  cloud.width = std::uint32_t (cloud.size ());
+  cloud.width = cloud.size ();
   cloud.is_dense = true;
 
   io::savePCDFile ("temp_binary_color.pcd", cloud, true);

@@ -243,7 +243,7 @@ namespace pcl
     // Ease the user's burden on specifying width/height for unorganized datasets
     if (cloud.width == 0 && cloud.height == 0)
     {
-      msg.width  = static_cast<std::uint32_t>(cloud.size ());
+      msg.width  = cloud.size ();
       msg.height = 1;
     }
     else

@@ -253,7 +253,7 @@ TEST (PCL, IntensitySpinEstimation)
       cloud_xyzi.points.push_back (p);
     }
   }
-  cloud_xyzi.width = static_cast<std::uint32_t> (cloud_xyzi.size ());
+  cloud_xyzi.width = cloud_xyzi.size ();
 
   // Compute the intensity-domain spin features
   using IntensitySpin = Histogram<20>;

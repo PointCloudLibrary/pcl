@@ -128,7 +128,7 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
       flush (output, op++, hhe, rgba_index, centroid_size);
   }
   output.points.resize (op);
-  output.width = static_cast<std::uint32_t> (output.size ());
+  output.width = output.size ();
   output.height       = 1;                    // downsampling breaks the organized structure
   output.is_dense     = false;                 // we filter out invalid points
 }

@@ -211,7 +211,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   filterNormalsWithHighCurvature (*normals_, *indices_, indices_out, indices_in, curv_threshold_);
 
   pcl::PointCloud<pcl::PointNormal>::Ptr normals_filtered_cloud (new pcl::PointCloud<pcl::PointNormal> ());
-  normals_filtered_cloud->width = static_cast<std::uint32_t> (indices_in.size ());
+  normals_filtered_cloud->width = indices_in.size ();
   normals_filtered_cloud->height = 1;
   normals_filtered_cloud->points.resize (normals_filtered_cloud->width);
 
@@ -294,7 +294,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 
     //compute modified VFH for all dominant clusters and add them to the list!
     output.points.resize (dominant_normals_.size ());
-    output.width = static_cast<std::uint32_t> (dominant_normals_.size ());
+    output.width = dominant_normals_.size ();
 
     for (std::size_t i = 0; i < dominant_normals_.size (); ++i)
     {

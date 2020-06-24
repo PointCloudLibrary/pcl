@@ -415,7 +415,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
       face_heat_map_.reset (new pcl::PointCloud<pcl::PointXYZI>);
       face_heat_map_->resize (cloud->size ());
       face_heat_map_->height = 1;
-      face_heat_map_->width = static_cast<unsigned int>(cloud->size ());
+      face_heat_map_->width = cloud->size ();
       face_heat_map_->is_dense = false;
 
       for (std::size_t i = 0; i < cloud->size (); i++)

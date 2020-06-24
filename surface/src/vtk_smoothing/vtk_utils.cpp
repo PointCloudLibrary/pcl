@@ -128,7 +128,7 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
       (*cloud_temp)[i].g = point_color[1];
       (*cloud_temp)[i].b = point_color[2];
     }
-    cloud_temp->width = static_cast<std::uint32_t> (cloud_temp->size ());
+    cloud_temp->width = cloud_temp->size ();
     cloud_temp->height = 1;
     cloud_temp->is_dense = true;
 
@@ -146,7 +146,7 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
       (*cloud_temp)[i].y = static_cast<float> (point_xyz[1]);
       (*cloud_temp)[i].z = static_cast<float> (point_xyz[2]);
     }
-    cloud_temp->width = static_cast<std::uint32_t> (cloud_temp->size ());
+    cloud_temp->width = cloud_temp->size ();
     cloud_temp->height = 1;
     cloud_temp->is_dense = true;
 

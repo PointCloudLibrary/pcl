@@ -89,7 +89,7 @@ pcl::UnaryClassifier<PointT>::convertCloud (typename pcl::PointCloud<PointT>::Pt
 {
   // resize points of output cloud
   out->points.resize (in->size ());
-  out->width = static_cast<int> (out->size ());
+  out->width = out->size ();
   out->height = 1;
   out->is_dense = false;
 
@@ -112,7 +112,7 @@ pcl::UnaryClassifier<PointT>::convertCloud (typename pcl::PointCloud<PointT>::Pt
 
   // resize points of output cloud
   out->points.resize (in->size ());
-  out->width = static_cast<int> (out->size ());
+  out->width = out->size ();
   out->height = 1;
   out->is_dense = false;
 
@@ -195,7 +195,7 @@ pcl::UnaryClassifier<PointT>::getCloudWithLabel (typename pcl::PointCloud<PointT
         out->points.push_back (point);
       }
     }
-    out->width = static_cast<int> (out->size ());
+    out->width = out->size ();
     out->height = 1;
     out->is_dense = false;
   }
@@ -255,7 +255,7 @@ pcl::UnaryClassifier<PointT>::kmeansClustering (pcl::PointCloud<pcl::FPFHSignatu
   pcl::Kmeans::Centroids centroids = kmeans.get_centroids ();
 
   // initialize output cloud
-  out->width = static_cast<int> (centroids.size ());
+  out->width = centroids.size ();
   out->height = 1;
   out->is_dense = false;
   out->points.resize (static_cast<int> (centroids.size ()));

@@ -429,7 +429,7 @@ main (int argc, char** argv)
     }
     else
     {
-      cloud.width = static_cast<std::uint32_t> (cloud.size ());
+      cloud.width = cloud.size ();
       cloud.height = 1;
     }
 

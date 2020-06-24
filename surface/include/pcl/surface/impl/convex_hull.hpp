@@ -278,7 +278,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   int curlong, totlong;
   qh_memfreeshort (&curlong, &totlong);
 
-  hull.width = static_cast<std::uint32_t> (hull.size ());
+  hull.width = hull.size ();
   hull.height = 1;
   hull.is_dense = false;
   return;
@@ -408,7 +408,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   int curlong, totlong;
   qh_memfreeshort (&curlong, &totlong);
 
-  hull.width = static_cast<std::uint32_t> (hull.size ());
+  hull.width = hull.size ();
   hull.height = 1;
   hull.is_dense = false;
 }
@@ -446,7 +446,7 @@ pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points)
   std::vector<pcl::Vertices> polygons;
   performReconstruction (points, polygons, false);
 
-  points.width = static_cast<std::uint32_t> (points.size ());
+  points.width = points.size ();
   points.height = 1;
   points.is_dense = true;
 
@@ -488,7 +488,7 @@ pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points, std::vector<pcl::Ver
   // Perform the actual surface reconstruction
   performReconstruction (points, polygons, true);
 
-  points.width = static_cast<std::uint32_t> (points.size ());
+  points.width = points.size ();
   points.height = 1;
   points.is_dense = true;
 

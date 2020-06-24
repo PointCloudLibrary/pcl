@@ -729,7 +729,7 @@ pcl::GridProjection<PointNT>::performReconstruction (pcl::PolygonMesh &output)
   output.header = input_->header;
 
   pcl::PointCloud<pcl::PointXYZ> cloud;
-  cloud.width = static_cast<std::uint32_t> (surface_.size ());
+  cloud.width = surface_.size ();
   cloud.height = 1;
   cloud.is_dense = true;
 
@@ -754,7 +754,7 @@ pcl::GridProjection<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &p
 
   // The mesh surface is held in surface_. Copy it to the output format
   points.header = input_->header;
-  points.width = static_cast<std::uint32_t> (surface_.size ());
+  points.width = surface_.size ();
   points.height = 1;
   points.is_dense = true;
 

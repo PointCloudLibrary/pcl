@@ -448,7 +448,7 @@ TEST (PCL, ConvexHull_4points)
   cloud_4->push_back (p);
 
   cloud_4->height = 1;
-  cloud_4->width = std::uint32_t (cloud_4->size ());
+  cloud_4->width = cloud_4->size ();
 
   ConvexHull<PointXYZ> convex_hull;
   convex_hull.setComputeAreaVolume (true);

@@ -480,7 +480,7 @@ public:
         result.points.push_back(point);
     }
 
-    result.width = static_cast<std::uint32_t>(result.size());
+    result.width = result.size();
     result.height = 1;
     result.is_dense = true;
   }
@@ -496,7 +496,7 @@ public:
       PointType point = (*cloud)[index];
       result.points.push_back(point);
     }
-    result.width = std::uint32_t(result.size());
+    result.width = result.size();
     result.height = 1;
     result.is_dense = true;
   }
@@ -584,7 +584,7 @@ public:
           tracker_->setReferenceCloud(transed_ref_downsampled);
           tracker_->setTrans(trans);
           reference_ = transed_ref;
-          tracker_->setMinIndices(int(ref_cloud->size()) / 2);
+          tracker_->setMinIndices(ref_cloud->size() / 2);
         }
         else {
           PCL_WARN("euclidean segmentation failed\n");

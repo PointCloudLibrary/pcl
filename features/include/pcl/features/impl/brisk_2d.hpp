@@ -514,7 +514,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     }
   }
 
-  keypoints_->width = std::uint32_t (keypoints_->size ());
+  keypoints_->width = keypoints_->size ();
   keypoints_->height = 1;
 
   // first, calculate the integral image over the whole image:

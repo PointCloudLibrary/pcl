@@ -260,7 +260,7 @@ namespace pcl
         // This causes a drastic performance hit. Prefer not to use reserve with libstdc++ (default on clang)
         cloud1.points.insert (cloud1.points.end (), cloud2.points.begin (), cloud2.points.end ());
 
-        cloud1.width    = static_cast<std::uint32_t>(cloud1.size ());
+        cloud1.width    = cloud1.size ();
         cloud1.height   = 1;
         cloud1.is_dense = cloud1.is_dense && cloud2.is_dense;
         return true;
@@ -566,7 +566,7 @@ namespace pcl
       push_back (const PointT& pt)
       {
         points.push_back (pt);
-        width = static_cast<std::uint32_t> (size ());
+        width = size ();
         height = 1;
       }
 
@@ -579,7 +579,7 @@ namespace pcl
       emplace_back (Args&& ...args)
       {
         points.emplace_back (std::forward<Args> (args)...);
-        width = static_cast<std::uint32_t> (size ());
+        width = size ();
         height = 1;
         return points.back();
       }
@@ -594,7 +594,7 @@ namespace pcl
       insert (iterator position, const PointT& pt)
       {
         iterator it = points.insert (position, pt);
-        width = static_cast<std::uint32_t> (size ());
+        width = size ();
         height = 1;
         return (it);
       }
@@ -609,7 +609,7 @@ namespace pcl
       insert (iterator position, std::size_t n, const PointT& pt)
       {
         points.insert (position, n, pt);
-        width = static_cast<std::uint32_t> (size ());
+        width = size ();
         height = 1;
       }
 
@@ -623,7 +623,7 @@ namespace pcl
       insert (iterator position, InputIterator first, InputIterator last)
       {
         points.insert (position, first, last);
-        width = static_cast<std::uint32_t> (size ());
+        width = size ();
         height = 1;
       }
 
@@ -637,7 +637,7 @@ namespace pcl
       emplace (iterator position, Args&& ...args)
       {
         iterator it = points.emplace (position, std::forward<Args> (args)...);
-        width = static_cast<std::uint32_t> (size ());
+        width = size ();
         height = 1;
         return (it);
       }
@@ -651,7 +651,7 @@ namespace pcl
       erase (iterator position)
       {
         iterator it = points.erase (position);
-        width = static_cast<std::uint32_t> (size ());
+        width = size ();
         height = 1;
         return (it);
       }
@@ -666,7 +666,7 @@ namespace pcl
       erase (iterator first, iterator last)
       {
         iterator it = points.erase (first, last);
-        width = static_cast<std::uint32_t> (size ());
+        width = size ();
         height = 1;
         return (it);
       }

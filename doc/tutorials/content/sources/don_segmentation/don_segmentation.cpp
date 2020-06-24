@@ -176,7 +176,7 @@ main (int argc, char *argv[])
       cloud_cluster_don->points.push_back ((*doncloud)[*pit]);
     }
 
-    cloud_cluster_don->width = int (cloud_cluster_don->size ());
+    cloud_cluster_don->width = cloud_cluster_don->size ();
     cloud_cluster_don->height = 1;
     cloud_cluster_don->is_dense = true;
 

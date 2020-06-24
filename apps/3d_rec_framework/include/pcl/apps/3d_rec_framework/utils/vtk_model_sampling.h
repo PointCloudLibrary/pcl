@@ -157,8 +157,8 @@ getVerticesAsPointCloud(const vtkSmartPointer<vtkPolyData>& polydata,
                         pcl::PointCloud<pcl::PointXYZ>& cloud_out)
 {
   vtkPoints* points = polydata->GetPoints();
-  cloud_out.points.resize(points->GetNumberOfPoints());
-  cloud_out.width = static_cast<int>(cloud_out.size());
+  cloud_out.resize(points->GetNumberOfPoints());
+  cloud_out.width = cloud_out.size();
   cloud_out.height = 1;
   cloud_out.is_dense = false;
 

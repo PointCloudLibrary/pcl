@@ -400,7 +400,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
   }
   
   response->height = 1;
-  response->width = static_cast<std::uint32_t> (response->size ());
+  response->width = response->size ();
   
   if (!nonmax_)
   {
@@ -444,7 +444,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
     }
     
     output.height = 1;
-    output.width = static_cast<std::uint32_t> (output.size());
+    output.width = output.size();
     output.is_dense = true;
   }
 }

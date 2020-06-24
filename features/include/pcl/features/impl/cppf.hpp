@@ -115,7 +115,7 @@ pcl::CPPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   }
   // overwrite the sizes done by Feature::initCompute ()
   output.height = 1;
-  output.width = static_cast<std::uint32_t> (output.size ());
+  output.width = output.size ();
 }
 
 #define PCL_INSTANTIATE_CPPFEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::CPPFEstimation<T,NT,OutT>;

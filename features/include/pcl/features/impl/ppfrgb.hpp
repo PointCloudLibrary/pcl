@@ -60,7 +60,7 @@ pcl::PPFRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
   // Initialize output container - overwrite the sizes done by Feature::initCompute ()
   output.points.resize (indices_->size () * input_->size ());
   output.height = 1;
-  output.width = static_cast<std::uint32_t> (output.size ());
+  output.width = output.size ();
 
   // Compute point pair features for every pair of points in the cloud
   for (std::size_t index_i = 0; index_i < indices_->size (); ++index_i)

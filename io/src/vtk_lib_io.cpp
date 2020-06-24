@@ -252,7 +252,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
   // First get the xyz information
   pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
   xyz_cloud->points.resize (nr_points);
-  xyz_cloud->width = static_cast<std::uint32_t> (xyz_cloud->size ());
+  xyz_cloud->width = xyz_cloud->size ();
   xyz_cloud->height = 1;
   xyz_cloud->is_dense = true;
   double point_xyz[3];
@@ -288,7 +288,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
   {
     pcl::PointCloud<pcl::RGB>::Ptr rgb_cloud (new pcl::PointCloud<pcl::RGB> ());
     rgb_cloud->points.resize (nr_points);
-    rgb_cloud->width = static_cast<std::uint32_t> (rgb_cloud->size ());
+    rgb_cloud->width = rgb_cloud->size ();
     rgb_cloud->height = 1;
     rgb_cloud->is_dense = true;
 
@@ -319,7 +319,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
   {
     pcl::PointCloud<pcl::Normal>::Ptr normal_cloud (new pcl::PointCloud<pcl::Normal> ());
     normal_cloud->resize (nr_points);
-    normal_cloud->width = static_cast<std::uint32_t> (xyz_cloud->size ());
+    normal_cloud->width = xyz_cloud->size ();
     normal_cloud->height = 1;
     normal_cloud->is_dense = true;
 

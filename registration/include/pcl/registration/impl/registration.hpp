@@ -172,7 +172,7 @@ Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &output,
   // Check if the output will be computed for all points or only a subset
   if (indices_->size () != input_->size ())
   {
-    output.width    = static_cast<std::uint32_t> (indices_->size ());
+    output.width    = indices_->size ();
     output.height   = 1;
   }
   else

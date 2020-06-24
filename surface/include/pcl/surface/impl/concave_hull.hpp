@@ -76,7 +76,7 @@ pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output)
   std::vector<pcl::Vertices> polygons;
   performReconstruction (output, polygons);
 
-  output.width = static_cast<std::uint32_t> (output.size ());
+  output.width = output.size ();
   output.height = 1;
   output.is_dense = true;
 
@@ -104,7 +104,7 @@ pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output, std::vector<pcl::Ve
   // Perform the actual surface reconstruction
   performReconstruction (output, polygons);
 
-  output.width = static_cast<std::uint32_t> (output.size ());
+  output.width = output.size ();
   output.height = 1;
   output.is_dense = true;
 
@@ -373,7 +373,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     }
 
     alpha_shape.points.resize (vertices);
-    alpha_shape.width = static_cast<std::uint32_t> (alpha_shape.size ());
+    alpha_shape.width = alpha_shape.size ();
     alpha_shape.height = 1;
   }
   else

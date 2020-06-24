@@ -259,7 +259,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
       refineCorners (output);
 
     output.height = 1;
-    output.width = static_cast<std::uint32_t> (output.size());
+    output.width = output.size();
     output.is_dense = true;
   }
 }

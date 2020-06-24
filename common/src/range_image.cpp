@@ -855,7 +855,7 @@ RangeImage::extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data,
       far_ranges.points.push_back (point);
     }
   }
-  far_ranges.width= static_cast<std::uint32_t> (far_ranges.size ());  far_ranges.height = 1;
+  far_ranges.width= far_ranges.size ();  far_ranges.height = 1;
   far_ranges.is_dense = false;
 }
 

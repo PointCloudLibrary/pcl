@@ -409,7 +409,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
   {
     // Allocate enough space and copy the basics
     projected_points.points.resize (inliers.size ());
-    projected_points.width    = static_cast<std::uint32_t> (inliers.size ());
+    projected_points.width    = inliers.size ();
     projected_points.height   = 1;
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;

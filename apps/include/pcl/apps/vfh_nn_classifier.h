@@ -185,8 +185,7 @@ public:
                                         training_features->points.end());
       training_features_->header = training_features->header;
       training_features_->height = 1;
-      training_features_->width =
-          static_cast<std::uint32_t>(training_features_->size());
+      training_features_->width = training_features_->size();
       training_features_->is_dense &= training_features->is_dense;
       training_features_->sensor_origin_ = training_features->sensor_origin_;
       training_features_->sensor_orientation_ = training_features->sensor_orientation_;

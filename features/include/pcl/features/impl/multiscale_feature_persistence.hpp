@@ -252,7 +252,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::determinePersisten
   // Consider that output cloud is unorganized
   output_features.header = feature_estimator_->getInputCloud ()->header;
   output_features.is_dense = feature_estimator_->getInputCloud ()->is_dense;
-  output_features.width = static_cast<std::uint32_t> (output_features.size ());
+  output_features.width = output_features.size ();
   output_features.height = 1;
 }
 

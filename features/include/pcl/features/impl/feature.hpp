@@ -210,7 +210,7 @@ Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   // If the input width or height are not set, set output width as size
   if (indices_->size () != input_->points.size () || input_->width * input_->height == 0)
   {
-    output.width = static_cast<std::uint32_t> (indices_->size ());
+    output.width = indices_->size ();
     output.height = 1;
   }
   else

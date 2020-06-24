@@ -222,7 +222,7 @@ namespace pcl
 
       // assign point cloud properties
       output_->height = 1;
-      output_->width = static_cast<std::uint32_t> (cloud_arg->size ());
+      output_->width = cloud_arg->size ();
       output_->is_dense = false;
 
       if (b_show_statistics_)

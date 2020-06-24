@@ -348,6 +348,6 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
     cp = i;
     ++index;
   }
-  output.width = static_cast<std::uint32_t> (output.size ());
+  output.width = output.size ();
 }
 

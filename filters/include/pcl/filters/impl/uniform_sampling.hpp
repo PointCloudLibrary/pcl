@@ -135,7 +135,7 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
 
   for (const auto& leaf : leaves_)
     output[cp++] = (*input_)[leaf.second.idx];
-  output.width = static_cast<std::uint32_t> (output.size ());
+  output.width = output.size ();
 }
 
 #define PCL_INSTANTIATE_UniformSampling(T) template class PCL_EXPORTS pcl::UniformSampling<T>;

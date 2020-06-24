@@ -178,7 +178,7 @@ namespace pcl
       void getVotes(pcl::PointCloud<pcl::PointXYZ>::Ptr & votes_cloud)
       {
         votes_cloud->points.resize (head_center_votes_.size ());
-        votes_cloud->width = static_cast<int>(head_center_votes_.size ());
+        votes_cloud->width = head_center_votes_.size ();
         votes_cloud->height = 1;
 
         for (std::size_t i = 0; i < head_center_votes_.size (); i++)
@@ -190,7 +190,7 @@ namespace pcl
       void getVotes(pcl::PointCloud<pcl::PointXYZI>::Ptr & votes_cloud)
       {
         votes_cloud->points.resize (head_center_votes_.size ());
-        votes_cloud->width = static_cast<int>(head_center_votes_.size ());
+        votes_cloud->width = head_center_votes_.size ();
         votes_cloud->height = 1;
 
         int p = 0;
@@ -209,7 +209,7 @@ namespace pcl
       void getVotes2(pcl::PointCloud<pcl::PointXYZI>::Ptr & votes_cloud)
       {
         votes_cloud->points.resize (head_center_votes_.size ());
-        votes_cloud->width = static_cast<int>(head_center_votes_.size ());
+        votes_cloud->width = head_center_votes_.size ();
         votes_cloud->height = 1;
 
         int p = 0;
