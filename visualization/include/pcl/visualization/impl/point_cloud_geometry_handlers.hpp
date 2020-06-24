@@ -54,13 +54,13 @@ PointCloudGeometryHandlerXYZ<PointT>::PointCloudGeometryHandlerXYZ (const PointC
   : PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
 {
   field_x_idx_ = pcl::getFieldIndex<PointT> ("x", fields_);
-  if (field_x_idx_ == -1)
+  if (field_x_idx_ == UNAVAILABLE)
     return;
   field_y_idx_ = pcl::getFieldIndex<PointT> ("y", fields_);
-  if (field_y_idx_ == -1)
+  if (field_y_idx_ == UNAVAILABLE)
     return;
   field_z_idx_ = pcl::getFieldIndex<PointT> ("z", fields_);
-  if (field_z_idx_ == -1)
+  if (field_z_idx_ == UNAVAILABLE)
     return;
   capable_ = true;
 }
@@ -122,13 +122,13 @@ PointCloudGeometryHandlerSurfaceNormal<PointT>::PointCloudGeometryHandlerSurface
   : PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
 {
   field_x_idx_ = pcl::getFieldIndex<PointT> ("normal_x", fields_);
-  if (field_x_idx_ == -1)
+  if (field_x_idx_ == UNAVAILABLE)
     return;
   field_y_idx_ = pcl::getFieldIndex<PointT> ("normal_y", fields_);
-  if (field_y_idx_ == -1)
+  if (field_y_idx_ == UNAVAILABLE)
     return;
   field_z_idx_ = pcl::getFieldIndex<PointT> ("normal_z", fields_);
-  if (field_z_idx_ == -1)
+  if (field_z_idx_ == UNAVAILABLE)
     return;
   capable_ = true;
 }
