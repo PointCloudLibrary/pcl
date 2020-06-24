@@ -39,10 +39,6 @@
 
 #pragma once
 
-#ifdef __GNUC__
-#pragma GCC system_header 
-#endif
-
 #ifndef Q_MOC_RUN
 #include <boost/mpl/is_sequence.hpp>
 #include <boost/mpl/begin_end.hpp>

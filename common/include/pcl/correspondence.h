@@ -38,10 +38,6 @@
 
 #pragma once
 
-#ifdef __GNUC__
-#pragma GCC system_header
-#endif
-
 #include <pcl/memory.h>
 #include <pcl/types.h>
 #include <Eigen/StdVector>

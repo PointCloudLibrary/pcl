@@ -1,3 +1,11 @@
+/*
+ * SPDX-License-Identifier: BSD-3-Clause
+ *
+ * Point CLoud Library (PCL) - www.pointclouds.org
+ * Copyright (c) 2020-, Open Perception
+ *
+ * All rights reserved
+ */
 #pragma once
 
 #include <algorithm>
@@ -14,14 +22,11 @@ namespace pcl
 {
   struct PolygonMesh
   {
-    PolygonMesh ()
-    {}
+    PCLHeader header;
 
-    ::pcl::PCLHeader  header;
+    PCLPointCloud2 cloud;
 
-    ::pcl::PCLPointCloud2 cloud;
-
-    std::vector< ::pcl::Vertices>  polygons;
+    std::vector<Vertices> polygons;
 
     /** \brief Inplace concatenate two pcl::PolygonMesh
       * \param[in,out] mesh1 the first input and output mesh

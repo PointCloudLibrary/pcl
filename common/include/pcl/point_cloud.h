@@ -38,10 +38,6 @@
 
 #pragma once
 
-#ifdef __GNUC__
-#pragma GCC system_header
-#endif
-
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
 #include <pcl/PCLHeader.h>
@@ -180,6 +176,17 @@ namespace pcl
   class PCL_EXPORTS PointCloud
   {
     public:
+
+      // Ignore unknown pragma warning on MSVC (4996)
+      #pragma warning(push)
+      #pragma warning(disable: 4068)
+      // Ignore deprecated warning on clang compilers
+      #pragma clang diagnostic push
+      #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      // Ignore deprecated warning on GCC compilers
+      #pragma GCC diagnostic push
+      #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
       /** \brief Default constructor. Sets \ref is_dense to true, \ref width
         * and \ref height to 0, and the \ref sensor_origin_ and \ref
         * sensor_orientation_ to identity.
@@ -190,15 +197,13 @@ namespace pcl
         * \param[in] pc the cloud to copy into this
         * \todo Erase once mapping_ is removed.
         */
-      // Ignore unknown pragma warning on MSVC (4996)
-      #pragma warning(push)
-      #pragma warning(disable: 4068)
-      // Ignore deprecated warning on clang compilers
-      #pragma clang diagnostic push
-      #pragma clang diagnostic ignored "-Wdeprecated-declarations"
       PointCloud (const PointCloud<PointT> &pc) = default;
-      #pragma clang diagnostic pop
-      #pragma warning(pop)
+
+      /** \brief Default destructor
+        * Created to suppress mapping_ deprecation errors
+        * \todo Erase once mapping_ is removed.
+        */
+      ~PointCloud () = default;
 
       /** \brief Copy constructor from point cloud subset
         * \param[in] pc the cloud to copy into this
@@ -225,6 +230,11 @@ namespace pcl
         , width (width_)
         , height (height_)
       {}
+
+      #pragma GCC diagnostic pop
+      #pragma clang diagnostic pop
+      #pragma warning(pop)
+
 
       //TODO: check if copy/move contructors/assignment operators are needed
 
@@ -674,7 +684,7 @@ namespace pcl
 
     protected:
       /** \brief This is motivated by ROS integration. Users should not need to access mapping_.
-        * \todo Once mapping_ is removed, erase the explicitly defined copy constructor in PointCloud.
+        * \todo Once mapping_ is removed, erase the explicitly defined copy constructor and destructor in PointCloud.
         */
       PCL_DEPRECATED(1, 12, "rewrite your code to avoid using this protected field") shared_ptr<MsgFieldMap> mapping_;
 

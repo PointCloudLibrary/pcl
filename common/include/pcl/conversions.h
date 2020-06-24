@@ -63,7 +63,8 @@ namespace pcl
 
       template<typename U> void operator() ()
       {
-        fields_.emplace_back(PCLPointField{
+        // \todo construct in-place with C++20
+        fields_.push_back(PCLPointField{
           traits::name<PointT, U>::value,     // name
           traits::offset<PointT, U>::value,   // offset
           traits::datatype<PointT, U>::value, // datatype
@@ -91,7 +92,8 @@ namespace pcl
         {
           if (FieldMatches<PointT, Tag>()(field))
           {
-            map_.emplace_back(FieldMapping{
+            // \todo construct in-place with C++20
+            map_.push_back(FieldMapping{
               field.offset,                                         // serialized_offset
               traits::offset<PointT, Tag>::value,                   // struct_offset
               sizeof (typename traits::datatype<PointT, Tag>::type) // size
@@ -173,7 +175,7 @@ namespace pcl
     // Copy point data
     std::uint32_t num_points = msg.width * msg.height;
     cloud.resize (num_points);
-    std::uint8_t* cloud_data = reinterpret_cast<std::uint8_t*>(&cloud.front ());
+    std::uint8_t* cloud_data = reinterpret_cast<std::uint8_t*>(cloud.data());
 
     // Check if we can copy adjacent points in a single memcpy.  We can do so if there
     // is exactly one field to copy and it is the same size as the source and destination
@@ -239,22 +241,22 @@ namespace pcl
     // Ease the user's burden on specifying width/height for unorganized datasets
     if (cloud.width == 0 && cloud.height == 0)
     {
-      msg.width  = static_cast<std::uint32_t>(cloud.size ());
+      msg.width  = static_cast<std::uint32_t>(cloud.points.size ());
       msg.height = 1;
     }
     else
     {
-      assert (cloud.size () == cloud.width * cloud.height);
+      assert (cloud.points.size () == cloud.width * cloud.height);
       msg.height = cloud.height;
       msg.width  = cloud.width;
     }
 
     // Fill point cloud binary data (padding and all)
-    std::size_t data_size = sizeof (PointT) * cloud.size ();
+    std::size_t data_size = sizeof (PointT) * cloud.points.size ();
     msg.data.resize (data_size);
     if (data_size)
     {
-      memcpy(&msg.data[0], &cloud.front (), data_size);
+      memcpy(&msg.data[0], cloud.data(), data_size);
     }
 
     // Fill fields metadata

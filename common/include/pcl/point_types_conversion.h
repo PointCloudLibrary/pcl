@@ -250,7 +250,7 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (const auto &point : in.points)
+    for (const auto &point : in)
     {
       Intensity p;
       PointRGBtoI (point, p);
@@ -268,7 +268,7 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (const auto &point : in.points)
+    for (const auto &point : in)
     {
       Intensity8u p;
       PointRGBtoI (point, p);
@@ -286,7 +286,7 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (const auto &point : in.points)
+    for (const auto &point : in)
     {
       Intensity32u p;
       PointRGBtoI (point, p);
@@ -304,7 +304,7 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (const auto &point : in.points)
+    for (const auto &point : in)
     {
       PointXYZHSV p;
       PointXYZRGBtoXYZHSV (point, p);
@@ -322,7 +322,7 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (const auto &point : in.points)
+    for (const auto &point : in)
     {
       PointXYZHSV p;
       PointXYZRGBAtoXYZHSV (point, p);
@@ -340,7 +340,7 @@ namespace pcl
   {
     out.width   = in.width;
     out.height  = in.height;
-    for (const auto &point : in.points)
+    for (const auto &point : in)
     {
       PointXYZI p;
       PointXYZRGBtoXYZI (point, p);
