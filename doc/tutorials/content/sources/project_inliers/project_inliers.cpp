@@ -15,18 +15,18 @@ int
   cloud->height = 1;
   cloud->points.resize (cloud->width * cloud->height);
 
-  for (std::size_t i = 0; i < cloud->size (); ++i)
+  for (auto& point: *cloud)
   {
-    (*cloud)[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
-    (*cloud)[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
-    (*cloud)[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
+    point.x = 1024 * rand () / (RAND_MAX + 1.0f);
+    point.y = 1024 * rand () / (RAND_MAX + 1.0f);
+    point.z = 1024 * rand () / (RAND_MAX + 1.0f);
   }
 
   std::cerr << "Cloud before projection: " << std::endl;
-  for (std::size_t i = 0; i < cloud->points.size (); ++i)
-    std::cerr << "    " << (*cloud)[i].x << " " 
-                        << (*cloud)[i].y << " " 
-                        << (*cloud)[i].z << std::endl;
+  for (const auto& point: *cloud)
+    std::cerr << "    " << point.x << " "
+                        << point.y << " "
+                        << point.z << std::endl;
 
   // Create a set of planar coefficients with X=Y=0,Z=1
   pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
@@ -43,22 +43,10 @@ int
   proj.filter (*cloud_projected);
 
   std::cerr << "Cloud after projection: " << std::endl;
-<<<<<<< HEAD
-  for (std::size_t i = 0; i < cloud_projected->points.size (); ++i)
-    std::cerr << "    " << (*cloud_projected)[i].x << " " 
-                        << (*cloud_projected)[i].y << " " 
-                        << (*cloud_projected)[i].z << std::endl;
-||||||| parent of 344e99522... sed -i 's/\([^a-zA-Z0-9_]\)points.size/\1size/g'
-  for (std::size_t i = 0; i < cloud_projected->points.size (); ++i)
-    std::cerr << "    " << cloud_projected->points[i].x << " " 
-                        << cloud_projected->points[i].y << " " 
-                        << cloud_projected->points[i].z << std::endl;
-=======
-  for (std::size_t i = 0; i < cloud_projected->size (); ++i)
-    std::cerr << "    " << cloud_projected->points[i].x << " " 
-                        << cloud_projected->points[i].y << " " 
-                        << cloud_projected->points[i].z << std::endl;
->>>>>>> 344e99522... sed -i 's/\([^a-zA-Z0-9_]\)points.size/\1size/g'
+  for (const auto& point: *cloud_projected)
+    std::cerr << "    " << point.x << " "
+                        << point.y << " "
+                        << point.z << std::endl;
 
   return (0);
 }

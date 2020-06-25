@@ -13,7 +13,7 @@ int
   cloud->height = 1;
   cloud->points.resize (cloud->width * cloud->height);
 
-  for (const auto& point: *cloud)
+  for (auto& point: *cloud)
   {
     point.x = 1024 * rand () / (RAND_MAX + 1.0f);
     point.y = 1024 * rand () / (RAND_MAX + 1.0f);
