@@ -2,44 +2,55 @@
 
 Configuring your PC to use your Nvidia GPU with PCL
 ---------------------------------------------------
+
 In this tutorial you will learn how to make your configure your system to make it compatible to run the GPU methods provided by PCL.
 This tutorial is for Ubuntu, other Linux distrubutions can follow a similar process to set it up.  
 
-Windows is nto currently officialy supported for the GPU methods.
+Windows is **not** currently officialy supported for the GPU methods.
 
-The Explanation
+Checking CUDA Version
 ---------------
 
 In order to run the code you will need a system with an Nvidia GPU, having CUDA Toolkit v9.2+ installed. 
 We will not be covering CUDA toolkit installation in this tutorial as there alredy exists many great tutorials for the same.
-You can check your CUDA toolkit version using the following command:
+You can check your CUDA toolkit version using the following command::
+
  $ nvcc --version | grep "release" | awk '{print $6}' | cut -c2-
+ 
+Installing GCC
+--------------- 
 
 The GPU methods in PCL only work with GCC 7 onwards. This will not be a problem if you are running Ubuntu 18+, in case you are running Ubuntu 16, you will need to install GCC 7 as the default one available is GCC 5.
-You can check your GCC version using the following command:
+You can check your GCC version using the following command::
 
  $ gcc -dumpversion
  
-To install GCC 7 run the following commands
+To install GCC 7 run the following commands::
  
- $ sudo add-apt-repository ppa:ubuntu-toolchain-r/tesT
- $ sudo apt update && apt install g++-7 -y
+$ sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+$ sudo apt update && apt install g++-7 -y
  
-Set it as the default version:
+Set it as the default version::
  
- $ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7 \
- $ sudo update-alternatives --config gcc ; \
+$ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7
+$ sudo update-alternatives --config gcc
+
+Installing Eigen
+--------------- 
 
 You will also need Eigen v3.3.7+, since the previous versions are incompatible with the latest CUDA versions. 
 If you are on Ubuntu 29+, then there is no issue since Eigen 3.3.7 is shipped by default. 
-On older versions Eigen v3.3.7 will need to be installed manually:
+On older versions Eigen v3.3.7 will need to be installed manually::
 
- $ wget -qO- https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.gz | tar xz 
- $ sudo apt install -y libblas-dev \
- $ cd eigen-3.3.7 && mkdir build && cd build 
- $ cmake ..
- $ sudo make install 
- $ cd ../.. && rm -rf eigen-3.3.7/ && rm -f eigen-3.3.7.tar.gz ; 
+$ wget -qO- https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.gz | tar xz 
+$ sudo apt install -y libblas-dev 
+$ cd eigen-3.3.7 && mkdir build && cd build 
+$ cmake ..
+$ sudo make install 
+$ cd ../.. && rm -rf eigen-3.3.7/ && rm -f eigen-3.3.7.tar.gz
+
+Building PCL
+--------------- 
 
 Now you can get the latest git master (or another one) of PCL and configure your
 installation to use the CUDA functions.
