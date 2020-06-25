@@ -56,7 +56,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
   unsigned int sample_size = 20000;
   // @TODO: Replace with c++ stdlib uniform_random_generator
   srand (static_cast<unsigned int> (time (nullptr)));
-  int maxindex = static_cast<int> (pc.size ());
+  const auto maxindex = pc.size ();
 
   std::vector<float> d2v, d1v, d3v, wt_d3;
   std::vector<int> wt_d2;

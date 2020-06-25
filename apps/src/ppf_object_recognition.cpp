@@ -82,7 +82,7 @@ main(int argc, char** argv)
   extract.setNegative(true);
   pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients());
   pcl::PointIndices::Ptr inliers(new pcl::PointIndices());
-  unsigned nr_points = unsigned(cloud_scene->size());
+  const auto nr_points = cloud_scene->size();
   while (cloud_scene->size() > 0.3 * nr_points) {
     seg.setInputCloud(cloud_scene);
     seg.segment(*inliers, *coefficients);

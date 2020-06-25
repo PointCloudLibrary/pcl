@@ -124,8 +124,8 @@ main (int argc, char** argv)
   {
     for (unsigned int x=0; x<range_image.width; ++x)
     {
-      int index = y*range_image.width+x;
-      int percentage = (int) ((100*index) / range_image.size ());
+      const auto index = y*range_image.width+x;
+      const auto percentage = ((100*index) / range_image.size ());
       if (percentage > last_percentage)
       {
         std::cout << percentage<<"% "<<std::flush;
