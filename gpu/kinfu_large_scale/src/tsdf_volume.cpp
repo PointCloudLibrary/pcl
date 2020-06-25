@@ -366,12 +366,12 @@ pcl::gpu::kinfuLS::TsdfVolume::convertToTsdfCloud ( pcl::PointCloud<pcl::PointXY
   cloud->clear();
   cloud->reserve (std::min (cloud_size/10, 500000));
 
-  int volume_idx = 0, cloud_idx = 0;
+  index_t cloud_idx = 0;
   for (int z = 0; z < sz; z+=step)
     for (int y = 0; y < sy; y+=step)
       for (int x = 0; x < sx; x+=step, ++cloud_idx)
       {
-        volume_idx = sx*sy*z + sx*y + x;
+        index_t volume_idx = sx*sy*z + sx*y + x;
         // pcl::PointXYZI &point = cloud->points[cloud_idx];
 
         if (weights_host_->at(volume_idx) == 0 || volume_host_->at(volume_idx) > 0.98 )

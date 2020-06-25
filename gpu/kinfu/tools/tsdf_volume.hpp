@@ -167,12 +167,12 @@ pcl::TSDFVolume<VoxelT, WeightT>::convertToTsdfCloud (pcl::PointCloud<pcl::Point
   cloud->clear();
   cloud->reserve (std::min (cloud_size/10, 500000));
 
-  int volume_idx = 0, cloud_idx = 0;
+  index_t cloud_idx = 0;
   for (int z = 0; z < sz; z+=step)
     for (int y = 0; y < sy; y+=step)
       for (int x = 0; x < sx; x+=step, ++cloud_idx)
       {
-        volume_idx = sx*sy*z + sx*y + x;
+        index_t volume_idx = sx*sy*z + sx*y + x;
         // pcl::PointXYZI &point = cloud->points[cloud_idx];
 
         if (weights_->at(volume_idx) == 0 || volume_->at(volume_idx) > 0.98 )
@@ -254,8 +254,8 @@ pcl::TSDFVolume<VoxelT, WeightT>::extractNeighborhood (const Eigen::Vector3i &vo
       {
         // linear voxel index in volume and index in descriptor vector
         Eigen::Vector3i point (x,y,z);
-        int volume_idx = getLinearVoxelIndex (point);
-        int descr_idx  = offset_vector * (point - min_index);
+        index_t volume_idx = getLinearVoxelIndex (point);
+        index_t descr_idx  = offset_vector * (point - min_index);
 
 /*        std::cout << "linear index " << volume_idx << std::endl;
         std::cout << "weight " << weights_->at (volume_idx) << std::endl;
@@ -295,7 +295,6 @@ pcl::TSDFVolume<VoxelT, WeightT>::addNeighborhood (const Eigen::Vector3i &voxel_
   // static const int descriptor_size = neighborhood_size*neighborhood_size*neighborhood_size;
   const Eigen::RowVector3i offset_vector (1, neighborhood_size, neighborhood_size*neighborhood_size);
 
-  Eigen::Vector3i index = min_index;
   // loop over all voxels in 3D neighborhood
   #pragma omp parallel for \
     default(none)
@@ -307,8 +306,8 @@ pcl::TSDFVolume<VoxelT, WeightT>::addNeighborhood (const Eigen::Vector3i &voxel_
       {
         // linear voxel index in volume and index in descriptor vector
         Eigen::Vector3i point (x,y,z);
-        int volume_idx = getLinearVoxelIndex (point);
-        int descr_idx  = offset_vector * (point - min_index);
+        index_t volume_idx = getLinearVoxelIndex (point);
+        index_t descr_idx  = offset_vector * (point - min_index);
 
         // add the descriptor entry to the volume
         VoxelT &voxel = volume_->at (volume_idx);

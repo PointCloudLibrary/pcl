@@ -39,7 +39,6 @@ Grid::Grid (std::string name, int size/*=10*/, double spacing/*=1.0*/) :
 
   grid_mapper->SetInputData(grid_);
 
-  vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New ();
   grid_actor_->SetMapper (grid_mapper);
 
   grid_actor_->GetProperty ()->SetRepresentationToWireframe ();

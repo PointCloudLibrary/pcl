@@ -977,7 +977,6 @@ struct KinFuApp
     PtrStepSz<const unsigned short> depth;
     PtrStepSz<const KinfuTracker::PixelRGB> rgb24;
     int time_ms = 0;
-    bool has_image = false;
 
     // Create simulation environment:
     int width = 640;
@@ -1085,14 +1084,12 @@ struct KinFuApp
 	
 	{
 	  SampledScopeTime fps(time_ms, i);
-	
-	  //run kinfu algorithm
-	  if (integrate_colors_)
-	    has_image = kinfu_ (depth_device_, image_view_.colors_device_);
-	  else
-	    has_image = kinfu_ (depth_device_);                  
+
+    //run kinfu algorithm
+    bool has_image = (integrate_colors_) ? kinfu_ (depth_device_, image_view_.colors_device_) : kinfu_ (depth_device_);              
+    
 	}
-      }else{ //simulate:
+  }else{ //simulate:
 
 	std::cout << " color: " << integrate_colors_ << "\n"; // integrate_colors_ seems to be zero
 	depth_device_.upload (depth_sim.data, depth_sim.step, depth_sim.rows, depth_sim.cols);
@@ -1101,18 +1098,16 @@ struct KinFuApp
 	}
 	
 	tic_toc.push_back (getTime ());
-	
-	{
+
+  {
 	  SampledScopeTime fps(time_ms, i);
 	  //run kinfu algorithm
-	  if (integrate_colors_)
-	    has_image = kinfu_ (depth_device_, image_view_.colors_device_);
-	  else
-	    has_image = kinfu_ (depth_device_);                  
+    bool has_image = (integrate_colors_) ? kinfu_ (depth_device_, image_view_.colors_device_) : kinfu_ (depth_device_);                  
+
 	}
 	
       }
-      
+
       tic_toc.push_back (getTime ());
       
       Eigen::Affine3f k_aff = kinfu_.getCameraPose();

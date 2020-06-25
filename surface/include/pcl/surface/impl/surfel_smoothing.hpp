@@ -92,7 +92,6 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothCloudIteration (PointCloudInPtr &ou
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
 
-  std::vector<float> diffs (interm_cloud_->points.size ());
   float total_residual = 0.0f;
 
   for (std::size_t i = 0; i < interm_cloud_->points.size (); ++i)
@@ -159,7 +158,6 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothPoint (std::size_t &point_index,
                                                     PointT &output_point,
                                                     PointNT &output_normal)
 {
-  Eigen::Vector4f average_normal = Eigen::Vector4f::Zero ();
   Eigen::Vector4f result_point = input_->points[point_index].getVector4fMap ();
   result_point(3) = 0.0f;
 
@@ -177,7 +175,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothPoint (std::size_t &point_index,
   while (std::fabs (error_residual) < std::fabs (last_error_residual) -error_residual_threshold_ &&
          big_iterations < max_big_iterations)
   {
-    average_normal = Eigen::Vector4f::Zero ();
+    Eigen::Vector4f average_normal = Eigen::Vector4f::Zero ();
     big_iterations ++;
     PointT aux_point; aux_point.x = result_point(0); aux_point.y = result_point(1); aux_point.z = result_point(2);
     tree_->radiusSearch (aux_point, 5*scale_, nn_indices, nn_distances);

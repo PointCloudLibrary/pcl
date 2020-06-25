@@ -110,7 +110,6 @@ namespace pcl
             static __device__ __forceinline__ OutIt transform(InIt beg, InIt end, OutIt out, UnOp op)
             {
                 unsigned int lane = laneId();
-                InIt  t = beg + lane;
                 OutIt o = out + lane;
 
                 for(InIt t = beg + laneId(); t < end; t += STRIDE, o += STRIDE)

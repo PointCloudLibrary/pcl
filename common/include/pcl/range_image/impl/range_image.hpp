@@ -814,7 +814,6 @@ RangeImage::get1dPointAverage (int x, int y, int delta_x, int delta_y, int no_of
   }
   
   int x2=x, y2=y;
-  Vector4fMap average_point_eigen = average_point.getVector4fMap ();
   //std::cout << PVARN (no_of_points);
   for (int step=1; step<no_of_points; ++step)
   {
@@ -823,7 +822,7 @@ RangeImage::get1dPointAverage (int x, int y, int delta_x, int delta_y, int no_of
     if (!isValid (x2, y2))
       continue;
     const PointWithRange& p = getPointNoCheck (x2, y2);
-    average_point_eigen+=p.getVector4fMap (); average_point.range+=p.range;
+    average_point.range+=p.range;
     weight_sum += 1.0f;
   }
   if (weight_sum<= 0.0f)
@@ -832,7 +831,6 @@ RangeImage::get1dPointAverage (int x, int y, int delta_x, int delta_y, int no_of
     return;
   }
   float normalization_factor = 1.0f/weight_sum;
-  average_point_eigen *= normalization_factor;
   average_point.range *= normalization_factor;
   //std::cout << PVARN (average_point);
 }

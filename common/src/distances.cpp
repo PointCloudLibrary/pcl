@@ -50,11 +50,9 @@ pcl::lineToLineSegment (const Eigen::VectorXf &line_a, const Eigen::VectorXf &li
 
   // point + direction = 2nd point
   Eigen::Vector4f q1 = Eigen::Vector4f::Zero ();
-  Eigen::Vector4f q2 = Eigen::Vector4f::Zero ();
   Eigen::Vector4f dir2 = Eigen::Vector4f::Zero ();
   q1.head<3> () = line_b.head<3> ();
   dir2.head<3> () = line_b.segment<3> (3);
-  q2 = q1 + dir2;
 
   // a = x2 - x1 = line_a[1] - line_a[0]
   Eigen::Vector4f u = dir1;

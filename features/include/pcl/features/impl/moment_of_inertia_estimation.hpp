@@ -409,28 +409,27 @@ pcl::MomentOfInertiaEstimation<PointT>::computeEigenVectors (const Eigen::Matrix
   eigen_vectors = eigen_solver.eigenvectors ();
   eigen_values = eigen_solver.eigenvalues ();
 
-  unsigned int temp = 0;
   unsigned int major_index = 0;
   unsigned int middle_index = 1;
   unsigned int minor_index = 2;
 
   if (eigen_values.real () (major_index) < eigen_values.real () (middle_index))
   {
-    temp = major_index;
+    unsigned int temp = major_index;
     major_index = middle_index;
     middle_index = temp;
   }
 
   if (eigen_values.real () (major_index) < eigen_values.real () (minor_index))
   {
-    temp = major_index;
+    unsigned int temp = major_index;
     major_index = minor_index;
     minor_index = temp;
   }
 
   if (eigen_values.real () (middle_index) < eigen_values.real () (minor_index))
   {
-    temp = minor_index;
+    unsigned int temp = minor_index;
     minor_index = middle_index;
     middle_index = temp;
   }
