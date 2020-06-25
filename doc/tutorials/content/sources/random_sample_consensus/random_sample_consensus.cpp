@@ -39,29 +39,29 @@ main(int argc, char** argv)
   cloud->height   = 1;
   cloud->is_dense = false;
   cloud->points.resize (cloud->width * cloud->height);
-  for (auto& point: *cloud)
+  for (pcl::index_t i = 0; i < cloud->size (); ++i)
   {
     if (pcl::console::find_argument (argc, argv, "-s") >= 0 || pcl::console::find_argument (argc, argv, "-sf") >= 0)
     {
-      point.x = 1024 * rand () / (RAND_MAX + 1.0);
-      point.y = 1024 * rand () / (RAND_MAX + 1.0);
+      (*cloud)[i].x = 1024 * rand () / (RAND_MAX + 1.0);
+      (*cloud)[i].y = 1024 * rand () / (RAND_MAX + 1.0);
       if (i % 5 == 0)
-        point.z = 1024 * rand () / (RAND_MAX + 1.0);
+        (*cloud)[i].z = 1024 * rand () / (RAND_MAX + 1.0);
       else if(i % 2 == 0)
-        point.z =  sqrt( 1 - (point.x * point.x)
-                           - (point.y * point.y));
+        (*cloud)[i].z =  sqrt( 1 - ((*cloud)[i].x * (*cloud)[i].x)
+                                      - ((*cloud)[i].y * (*cloud)[i].y));
       else
-        point.z =  - sqrt( 1 - (point.x * point.x)
-                             - (point.y * point.y));
+        (*cloud)[i].z =  - sqrt( 1 - ((*cloud)[i].x * (*cloud)[i].x)
+                                        - ((*cloud)[i].y * (*cloud)[i].y));
     }
     else
     {
-      point.x = 1024 * rand () / (RAND_MAX + 1.0);
-      point.y = 1024 * rand () / (RAND_MAX + 1.0);
+      (*cloud)[i].x = 1024 * rand () / (RAND_MAX + 1.0);
+      (*cloud)[i].y = 1024 * rand () / (RAND_MAX + 1.0);
       if( i % 2 == 0)
-        point.z = 1024 * rand () / (RAND_MAX + 1.0);
+        (*cloud)[i].z = 1024 * rand () / (RAND_MAX + 1.0);
       else
-        point.z = -1 * (point.x + point.y);
+        (*cloud)[i].z = -1 * ((*cloud)[i].x + (*cloud)[i].y);
     }
   }
 
