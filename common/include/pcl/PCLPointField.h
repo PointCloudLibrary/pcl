@@ -1,3 +1,11 @@
+/*
+ * SPDX-License-Identifier: BSD-3-Clause
+ *
+ * Point CLoud Library (PCL) - www.pointclouds.org
+ * Copyright (c) 2020-, Open Perception
+ *
+ * All rights reserved
+ */
 #pragma once
 
 #include <pcl/memory.h>       // for shared_ptr

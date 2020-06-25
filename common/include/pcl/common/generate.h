@@ -61,7 +61,7 @@ namespace pcl
       using GeneratorParameters = typename GeneratorT::Parameters;
 
       /// Default constructor
-      CloudGenerator ();
+      CloudGenerator () = default;
 
       /** Constructor with single generator to ensure all X, Y and Z values are within same range
         * \param params parameters for X, Y and Z values generation. Uniqueness is ensured through
@@ -145,7 +145,7 @@ namespace pcl
       public:
       using GeneratorParameters = typename GeneratorT::Parameters;
       
-      CloudGenerator ();
+      CloudGenerator () = default;
       
       CloudGenerator (const GeneratorParameters& params);
 

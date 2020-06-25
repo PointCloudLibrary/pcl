@@ -151,11 +151,9 @@ namespace pcl
                 const Eigen::VectorXf &vert_kernel,
                 pcl::PointCloud<float> &output) const
       {
-        std::cout << ">>> convolve cpp" << std::endl;
         pcl::PointCloud<float> tmp (input.width, input.height) ;
         convolveRows (input, horiz_kernel, tmp);        
-        convolveCols (tmp, vert_kernel, output);
-        std::cout << "<<< convolve cpp" << std::endl;
+        convolveCols (std::move(tmp), vert_kernel, output);
       }
 
       /** Convolve a float image in the 2 directions
@@ -174,11 +172,9 @@ namespace pcl
                 const Eigen::VectorXf &vert_kernel,
                 pcl::PointCloud<float> &output) const
       {
-        std::cout << ">>> convolve hpp" << std::endl;
         pcl::PointCloud<float> tmp (input.width, input.height);
         convolveRows<PointT>(input, field_accessor, horiz_kernel, tmp);
-        convolveCols(tmp, vert_kernel, output);
-        std::cout << "<<< convolve hpp" << std::endl;
+        convolveCols(std::move(tmp), vert_kernel, output);
       }
       
       /** Computes float image gradients using a gaussian kernel and gaussian kernel

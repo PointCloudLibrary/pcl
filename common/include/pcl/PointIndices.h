@@ -1,3 +1,11 @@
+/*
+ * SPDX-License-Identifier: BSD-3-Clause
+ *
+ * Point CLoud Library (PCL) - www.pointclouds.org
+ * Copyright (c) 2020-, Open Perception
+ *
+ * All rights reserved
+ */
 #pragma once
 
 #include <string>
@@ -15,10 +23,7 @@ namespace pcl
     using Ptr = shared_ptr< ::pcl::PointIndices>;
     using ConstPtr = shared_ptr<const ::pcl::PointIndices>;
 
-    PointIndices ()
-    {}
-
-    ::pcl::PCLHeader header;
+    PCLHeader header;
 
     Indices indices;
   }; // struct PointIndices

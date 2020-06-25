@@ -1,3 +1,11 @@
+/*
+ * SPDX-License-Identifier: BSD-3-Clause
+ *
+ * Point CLoud Library (PCL) - www.pointclouds.org
+ * Copyright (c) 2020-, Open Perception
+ *
+ * All rights reserved
+ */
 #pragma once
 
 #include <ostream>
@@ -14,12 +22,12 @@ namespace pcl
 
   struct PCL_EXPORTS PCLPointCloud2
   {
-    ::pcl::PCLHeader header;
+    PCLHeader header;
 
     std::uint32_t height = 0;
     std::uint32_t width = 0;
 
-    std::vector<::pcl::PCLPointField>  fields;
+    std::vector<PCLPointField> fields;
 
     static_assert(BOOST_ENDIAN_BIG_BYTE || BOOST_ENDIAN_LITTLE_BYTE, "unable to determine system endianness");
     std::uint8_t is_bigendian = BOOST_ENDIAN_BIG_BYTE;

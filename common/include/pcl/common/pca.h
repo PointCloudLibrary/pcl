@@ -62,11 +62,11 @@ namespace pcl
   {
     public:
       using Base = pcl::PCLBase<PointT>;
-      using PointCloud = typename Base::PointCloud;
-      using PointCloudPtr = typename Base::PointCloudPtr;
-      using PointCloudConstPtr = typename Base::PointCloudConstPtr;
-      using PointIndicesPtr = typename Base::PointIndicesPtr;
-      using PointIndicesConstPtr = typename Base::PointIndicesConstPtr;
+      using typename Base::PointCloud;
+      using typename Base::PointCloudPtr;
+      using typename Base::PointCloudConstPtr;
+      using typename Base::PointIndicesPtr;
+      using typename Base::PointIndicesConstPtr;
 
       using Base::input_;
       using Base::indices_;
@@ -91,32 +91,6 @@ namespace pcl
         , basis_only_ (basis_only) 
       {}
 
-      /** Copy Constructor
-        * \param[in] pca PCA object
-        */
-      PCA (PCA const & pca) 
-        : Base (pca)
-        , compute_done_ (pca.compute_done_)
-        , basis_only_ (pca.basis_only_) 
-        , eigenvectors_ (pca.eigenvectors_)
-        , coefficients_ (pca.coefficients_)
-        , mean_ (pca.mean_)
-        , eigenvalues_  (pca.eigenvalues_)
-      {}
-
-      /** Assignment operator
-        * \param[in] pca PCA object
-        */
-      inline PCA& 
-      operator= (PCA const & pca) 
-      {
-        eigenvectors_ = pca.eigenvectors_;
-        coefficients_ = pca.coefficients_;
-        eigenvalues_  = pca.eigenvalues_;
-        mean_         = pca.mean_;
-        return (*this);
-      }
-      
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message
         */
@@ -278,6 +252,8 @@ namespace pcl
       Eigen::MatrixXf coefficients_;
       Eigen::Vector4f mean_;
       Eigen::Vector3f eigenvalues_;
+
+      PCL_MAKE_ALIGNED_OPERATOR_NEW
   }; // class PCA
 } // namespace pcl
 

@@ -11,23 +11,19 @@ namespace pcl
 {
   struct ModelCoefficients
   {
-    ModelCoefficients ()
-    {
-    }
-
-    ::pcl::PCLHeader header;
+    PCLHeader header;
 
     std::vector<float> values;
 
   public:
-    using Ptr = shared_ptr< ::pcl::ModelCoefficients>;
-    using ConstPtr = shared_ptr<const ::pcl::ModelCoefficients>;
+    using Ptr = shared_ptr<ModelCoefficients>;
+    using ConstPtr = shared_ptr<const ModelCoefficients>;
   }; // struct ModelCoefficients
 
   using ModelCoefficientsPtr = ModelCoefficients::Ptr;
   using ModelCoefficientsConstPtr = ModelCoefficients::ConstPtr;
 
-  inline std::ostream& operator<<(std::ostream& s, const  ::pcl::ModelCoefficients & v)
+  inline std::ostream& operator<<(std::ostream& s, const ModelCoefficients& v)
   {
     s << "header: " << std::endl;
     s << v.header;

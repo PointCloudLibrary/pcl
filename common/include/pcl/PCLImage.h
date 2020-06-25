@@ -1,3 +1,11 @@
+/*
+ * SPDX-License-Identifier: BSD-3-Clause
+ *
+ * Point CLoud Library (PCL) - www.pointclouds.org
+ * Copyright (c) 2020-, Open Perception
+ *
+ * All rights reserved
+ */
 #pragma once
 
 #include <string>   // for string
@@ -10,7 +18,7 @@ namespace pcl
 {
   struct PCLImage
   {
-     ::pcl::PCLHeader  header;
+    PCLHeader  header;
 
     std::uint32_t height = 0;
     std::uint32_t width = 0;
@@ -21,14 +29,14 @@ namespace pcl
 
     std::vector<std::uint8_t> data;
 
-    using Ptr = shared_ptr< ::pcl::PCLImage>;
-    using ConstPtr = shared_ptr<const ::pcl::PCLImage>;
+    using Ptr = shared_ptr<PCLImage>;
+    using ConstPtr = shared_ptr<const PCLImage>;
   }; // struct PCLImage
 
   using PCLImagePtr = PCLImage::Ptr;
   using PCLImageConstPtr = PCLImage::ConstPtr;
 
-  inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PCLImage & v)
+  inline std::ostream& operator<<(std::ostream& s, const PCLImage& v)
   {
     s << "header: " << std::endl;
     s << v.header;

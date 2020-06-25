@@ -58,9 +58,6 @@ namespace pcl
       FeatureHistogram (const std::size_t number_of_bins, const float min,
           const float max);
 
-      /** \brief Public destructor. */
-      virtual ~FeatureHistogram ();
-
       /** \brief Get the lower threshold.
         * \return lower threshold.
         */
@@ -95,13 +92,13 @@ namespace pcl
         * \return mean value of the greatest bin.
         */
       float
-      getMeanValue ();
+      getMeanValue () const;
 
       /** \brief Get variance of the value.
         * \return variance of the greatest bin.
         */
       float
-      getVariance (float mean);
+      getVariance (float mean) const;
 
     protected:
       /** \brief Vector, that contain the histogram. */

@@ -87,17 +87,17 @@ namespace pcl
   /** \author Khai Tran */
   struct TextureMesh
   {
-    pcl::PCLPointCloud2  cloud;
-    pcl::PCLHeader  header;
+    PCLPointCloud2  cloud;
+    PCLHeader  header;
 
 
-    std::vector<std::vector<pcl::Vertices> >    tex_polygons;     // polygon which is mapped with specific texture defined in TexMaterial
+    std::vector<std::vector<Vertices> >    tex_polygons;     // polygon which is mapped with specific texture defined in TexMaterial
     std::vector<std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > > tex_coordinates;  // UV coordinates
-    std::vector<pcl::TexMaterial>               tex_materials;    // define texture material
+    std::vector<TexMaterial>               tex_materials;    // define texture material
 
     public:
-      using Ptr = shared_ptr<pcl::TextureMesh>;
-      using ConstPtr = shared_ptr<const pcl::TextureMesh>;
+      using Ptr = shared_ptr<TextureMesh>;
+      using ConstPtr = shared_ptr<const TextureMesh>;
    }; // struct TextureMesh
 
    using TextureMeshPtr = TextureMesh::Ptr;

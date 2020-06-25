@@ -48,15 +48,6 @@ namespace pcl
 
 namespace common
 {
-
-template <typename PointT, typename GeneratorT>
-CloudGenerator<PointT, GeneratorT>::CloudGenerator ()
-  : x_generator_ ()
-  , y_generator_ ()
-  , z_generator_ ()
-{}
-
-
 template <typename PointT, typename GeneratorT>
 CloudGenerator<PointT, GeneratorT>::CloudGenerator (const GeneratorParameters& params)
 {
@@ -179,13 +170,6 @@ CloudGenerator<PointT, GeneratorT>::fill (int width, int height, pcl::PointCloud
   }
   return (0);
 }
-
-
-template <typename GeneratorT>
-CloudGenerator<pcl::PointXY, GeneratorT>::CloudGenerator ()
-  : x_generator_ ()
-  , y_generator_ ()
-{}
 
 
 template <typename GeneratorT>
