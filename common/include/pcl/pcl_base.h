@@ -237,7 +237,7 @@ namespace pcl
       bool fake_indices_;
 
       /** \brief The size of each individual field. */
-      std::vector<uindex_t> field_sizes_;
+      std::vector<int> field_sizes_;
 
       /** \brief The x-y-z fields indices. */
       index_t x_idx_, y_idx_, z_idx_;
