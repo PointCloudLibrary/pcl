@@ -170,7 +170,7 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
     average_feature_nn.b_ratio /= normalization_factor;
     output[index_i] = average_feature_nn;
   }
-  PCL_INFO ("Output size: %u\n", output.size ());
+  PCL_INFO ("Output size: %zu\n", static_cast<std::size_t>(output.size ()));
 }
 
 

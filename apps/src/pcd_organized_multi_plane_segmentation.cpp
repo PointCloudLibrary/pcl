@@ -180,11 +180,11 @@ public:
       pcl::PointXYZ pt2 = pcl::PointXYZ(centroid[0] + (0.5f * model[0]),
                                         centroid[1] + (0.5f * model[1]),
                                         centroid[2] + (0.5f * model[2]));
-      std::snprintf(name, sizeof(name), "normal_%zu", static_cast<std::size_t>(i));
+      std::snprintf(name, sizeof(name), "normal_%zu", i);
       viewer.addArrow(pt2, pt1, 1.0, 0, 0, std::string(name));
 
       contour->points = regions[i].getContour();
-      std::snprintf(name, sizeof(name), "plane_%02zu", static_cast<std::size_t>(i));
+      std::snprintf(name, sizeof(name), "plane_%02zu", i);
       pcl::visualization::PointCloudColorHandlerCustom<PointT> color(
           contour, red[i], grn[i], blu[i]);
       viewer.addPointCloud(contour, color, name);
