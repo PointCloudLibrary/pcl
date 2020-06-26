@@ -154,6 +154,8 @@ HELPER_MACRO(StaticFunctorT, StaticFunctor::functor);
 HELPER_MACRO(NonConstFuntorT, {});
 HELPER_MACRO(ConstFuntorT, {});
 
+#undef HELPER_MACRO
+
 using types = ::testing::Types<LambdaT,
                                StdFunctorBoolT,
                                StdFunctorIntT,
