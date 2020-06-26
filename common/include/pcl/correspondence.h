@@ -42,6 +42,7 @@
 #pragma GCC system_header
 #endif
 
+#include <pcl/pcl_base.h>
 #include <pcl/memory.h>
 #include <pcl/types.h>
 #include <Eigen/StdVector>
@@ -60,9 +61,9 @@ namespace pcl
   struct Correspondence
   {
     /** \brief Index of the query (source) point. */
-    int index_query = 0;
+    index_t index_query = 0;
     /** \brief Index of the matching (target) point. Set to -1 if no correspondence found. */
-    int index_match = -1;
+    index_t index_match = UNAVAILABLE;
     /** \brief Distance between the corresponding points, or the weight denoting the confidence in correspondence estimation */
     union
     {
@@ -76,8 +77,15 @@ namespace pcl
     inline Correspondence () = default;
 
     /** \brief Constructor. */
-    inline Correspondence (int _index_query, int _index_match, float _distance) :
+    inline Correspondence (index_t _index_query, index_t _index_match, float _distance) :
       index_query (_index_query), index_match (_index_match), distance (_distance)
+    {}
+
+    /** \brief Constructor. */
+    template <typename T = pcl::index_t, typename std::enable_if_t<!std::is_same<T, int>::value, pcl::index_t> = 0>
+    PCL_DEPRECATED(1, 13, "use  constructor that accepts index_t parameters instead")
+    inline Correspondence (int _index_query, int _index_match, float _distance) :
+      index_query (static_cast<index_t>(_index_query)), index_match (static_cast<index_t>(_index_match)), distance (_distance)
     {}
 
     PCL_MAKE_ALIGNED_OPERATOR_NEW
