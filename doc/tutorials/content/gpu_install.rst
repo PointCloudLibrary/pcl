@@ -13,18 +13,28 @@ Checking CUDA Version
 
 In order to run the code you will need a system with an Nvidia GPU, having CUDA Toolkit v9.2+ installed. 
 We will not be covering CUDA toolkit installation in this tutorial as there alredy exists many great tutorials for the same.
+
 You can check your CUDA toolkit version using the following command::
 
  $ nvcc --version | grep "release" | awk '{print $6}' | cut -c2-
  
-Installing GCC
---------------- 
+ 
+Checking GCC or Clang Version
+---------------
 
-The GPU methods in PCL only work with GCC 7 onwards. This will not be a problem if you are running Ubuntu 18+, in case you are running Ubuntu 16, you will need to install GCC 7 as the default one available is GCC 5.
-You can check your GCC version using the following command::
+The GPU methods in PCL require a min version of GCC 7 and work on Clang 6 onwards (min version unknown). 
+This will not be a problem if you are running Ubuntu 18+, in case you are running Ubuntu 16, you will need to install GCC 7 as the default one available is GCC 5.
+
+You can check your GCC and Clang version using the following commands::
 
  $ gcc -dumpversion
  
+ $ clang --version
+ 
+ 
+Installing GCC
+--------------- 
+
 To install GCC 7 run the following commands::
  
 $ sudo add-apt-repository ppa:ubuntu-toolchain-r/test
