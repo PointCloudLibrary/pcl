@@ -463,7 +463,7 @@ namespace pcl
       const PointT* data() const noexcept { return points.data(); }
 
       /**
-       * \brief Resize the cloud
+       * \brief Resizes the container to contain `count` elements
        * \details
        * * If the current size is greater than `count`, the pointcloud is reduced to its
        * first `count` elements
@@ -471,14 +471,14 @@ namespace pcl
        * are appended
        * \note This potentially breaks the organized structure of the cloud by setting
        * the height to 1 IFF `width * height != count`!
-       * \param[in] n the new cloud size
+       * \param[in] count new size of the point cloud
        */
       inline void
-      resize(std::size_t n)
+      resize(std::size_t count)
       {
-        points.resize(n);
-        if (width * height != n) {
-          width = static_cast<std::uint32_t>(n);
+        points.resize(count);
+        if (width * height != count) {
+          width = static_cast<std::uint32_t>(count);
           height = 1;
         }
       }
