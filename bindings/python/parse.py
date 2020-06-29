@@ -64,9 +64,9 @@ def generate_parsed_info(cursor, filter, lines, this_filename, depth, parsed_lis
         }
         if cursor.type.kind.spelling != "Invalid":
             holder["element_type"] = cursor.type.kind.spelling
-        if cursor.access_specifier.name is not "INVALID":
-            holder["element_type"] = cursor.type.kind.spelling
-        if cursor.result_type.spelling is not "":
+        if cursor.access_specifier.name != "INVALID":
+            holder["access_specifier"] = cursor.access_specifier.name
+        if cursor.result_type.spelling != "":
             holder["result_type"] = cursor.result_type.spelling
         if cursor.brief_comment:
             holder["brief_comment"] = cursor.brief_comment
