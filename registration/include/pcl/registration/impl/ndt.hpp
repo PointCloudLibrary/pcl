@@ -201,7 +201,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeDerivatives (Eige
   // Update gradient and hessian for each point, line 17 in Algorithm 2 [Magnusson 2009]
   for (std::size_t idx = 0; idx < input_->points.size (); idx++)
   {
-    x_trans_pt = trans_cloud.points[idx];
+    x_trans_pt = trans_cloud[idx];
 
     // Find nieghbors (Radius search has been experimentally faster than direct neighbor checking.
     std::vector<TargetGridLeafConstPtr> neighborhood;
@@ -416,7 +416,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeHessian (Eigen::M
   // Update hessian for each point, line 17 in Algorithm 2 [Magnusson 2009]
   for (std::size_t idx = 0; idx < input_->points.size (); idx++)
   {
-    x_trans_pt = trans_cloud.points[idx];
+    x_trans_pt = trans_cloud[idx];
 
     // Find nieghbors (Radius search has been experimentally faster than direct neighbor checking.
     std::vector<TargetGridLeafConstPtr> neighborhood;

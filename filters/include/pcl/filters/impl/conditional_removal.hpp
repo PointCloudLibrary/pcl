@@ -709,7 +709,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
 
       if (condition_->evaluate (point))
       {
-        copyPoint (point, output.points[nr_p]);
+        copyPoint (point, output[nr_p]);
         nr_p++;
       }
       else
@@ -743,11 +743,11 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
         }
 
         // copy all the fields
-        copyPoint (input_->points[cp], output.points[cp]);
+        copyPoint (input_->points[cp], output[cp]);
 
         if (!condition_->evaluate (input_->points[cp]))
         {
-          output.points[cp].getVector4fMap ().setConstant (user_filter_value_);
+          output[cp].getVector4fMap ().setConstant (user_filter_value_);
           removed_p = true;
 
           if (extract_removed_indices_)
@@ -759,7 +759,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
       }
       else
       {
-        output.points[cp].getVector4fMap ().setConstant (user_filter_value_);
+        output[cp].getVector4fMap ().setConstant (user_filter_value_);
         removed_p = true;
         //as for !keep_organized_: removed points due to setIndices are not considered as removed_indices_
       }

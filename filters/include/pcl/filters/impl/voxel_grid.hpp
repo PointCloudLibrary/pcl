@@ -415,7 +415,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
         centroid += input_->points[index_vector[li].cloud_point_index].getVector4fMap ();
 
       centroid /= static_cast<float> (last_index - first_index);
-      output.points[index].getVector4fMap () = centroid;
+      output[index].getVector4fMap () = centroid;
     }
     else
     {
@@ -425,7 +425,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
       for (unsigned int li = first_index; li < last_index; ++li)
         centroid.add (input_->points[index_vector[li].cloud_point_index]);  
 
-      centroid.get (output.points[index]);
+      centroid.get (output[index]);
     }
      
     ++index;

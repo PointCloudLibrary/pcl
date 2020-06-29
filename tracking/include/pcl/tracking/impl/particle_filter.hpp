@@ -309,7 +309,7 @@ ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithNormal(
   // destructively assigns to cloud
   pcl::transformPointCloudWithNormals<PointInT>(*ref_, cloud, trans);
   for (std::size_t i = 0; i < cloud.points.size(); i++) {
-    PointInT input_point = cloud.points[i];
+    PointInT input_point = cloud[i];
 
     if (!std::isfinite(input_point.x) || !std::isfinite(input_point.y) ||
         !std::isfinite(input_point.z))

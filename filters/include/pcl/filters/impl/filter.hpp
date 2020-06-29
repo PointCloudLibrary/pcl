@@ -71,11 +71,11 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     std::size_t j = 0;
     for (std::size_t i = 0; i < cloud_in.points.size (); ++i)
     {
-      if (!std::isfinite (cloud_in.points[i].x) ||
-          !std::isfinite (cloud_in.points[i].y) ||
-          !std::isfinite (cloud_in.points[i].z))
+      if (!std::isfinite (cloud_in[i].x) ||
+          !std::isfinite (cloud_in[i].y) ||
+          !std::isfinite (cloud_in[i].z))
         continue;
-      cloud_out.points[j] = cloud_in.points[i];
+      cloud_out[j] = cloud_in[i];
       index[j] = static_cast<int>(i);
       j++;
     }
@@ -117,13 +117,13 @@ pcl::removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 
   for (std::size_t i = 0; i < cloud_in.points.size (); ++i)
   {
-    if (!std::isfinite (cloud_in.points[i].normal_x) ||
-        !std::isfinite (cloud_in.points[i].normal_y) ||
-        !std::isfinite (cloud_in.points[i].normal_z))
+    if (!std::isfinite (cloud_in[i].normal_x) ||
+        !std::isfinite (cloud_in[i].normal_y) ||
+        !std::isfinite (cloud_in[i].normal_z))
       continue;
-    if (cloud_out.is_dense && !pcl::isFinite(cloud_in.points[i]))
+    if (cloud_out.is_dense && !pcl::isFinite(cloud_in[i]))
       cloud_out.is_dense = false;
-    cloud_out.points[j] = cloud_in.points[i];
+    cloud_out[j] = cloud_in[i];
     index[j] = static_cast<int>(i);
     j++;
   }

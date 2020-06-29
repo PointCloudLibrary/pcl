@@ -212,7 +212,7 @@ namespace pcl
         // Copy the obvious
         assert (indices.size () <= pc.size ());
         for (std::size_t i = 0; i < indices.size (); i++)
-          points[i] = pc.points[indices[i]];
+          points[i] = pc[indices[i]];
       }
 
       /** \brief Allocate constructor from point cloud subset

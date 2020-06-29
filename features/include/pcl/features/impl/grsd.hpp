@@ -118,7 +118,7 @@ pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   int nrf = 0;
   for (int i = 0; i < NR_CLASS + 1; i++)
     for (int j = i; j < NR_CLASS + 1; j++)
-      output.points[0].histogram[nrf++] = transition_matrix (i, j) + transition_matrix (j, i);
+      output[0].histogram[nrf++] = transition_matrix (i, j) + transition_matrix (j, i);
 }
 
 #define PCL_INSTANTIATE_GRSDEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::GRSDEstimation<T,NT,OutT>;

@@ -297,7 +297,7 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
     // Iterate over each point
     for (std::size_t i = 0; i < input_->points.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the plane
     for (const auto &inlier : inliers)
@@ -310,7 +310,7 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
       // use normalized coefficients to calculate the scalar projection
       float distance_to_plane = tmp_mc.dot (p);
 
-      pcl::Vector4fMap pp = projected_points.points[inlier].getVector4fMap ();
+      pcl::Vector4fMap pp = projected_points[inlier].getVector4fMap ();
       pp.matrix () = p - mc * distance_to_plane;        // mc[3] = 0, therefore the 3rd coordinate is safe
     }
   }
@@ -326,7 +326,7 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
     for (std::size_t i = 0; i < inliers.size (); ++i)
     {
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points[i]));
     }
 
     // Iterate through the 3d points and calculate the distances from them to the plane
@@ -340,7 +340,7 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
       // use normalized coefficients to calculate the scalar projection
       float distance_to_plane = tmp_mc.dot (p);
 
-      pcl::Vector4fMap pp = projected_points.points[i].getVector4fMap ();
+      pcl::Vector4fMap pp = projected_points[i].getVector4fMap ();
       pp.matrix () = p - mc * distance_to_plane;        // mc[3] = 0, therefore the 3rd coordinate is safe
     }
   }

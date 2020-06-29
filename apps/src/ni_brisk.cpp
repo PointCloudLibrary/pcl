@@ -185,9 +185,9 @@ public:
       PointT pt =
           bilinearInterpolation(cloud, keypoints->points[i].x, keypoints->points[i].y);
 
-      keypoints3d.points[j].x = pt.x;
-      keypoints3d.points[j].y = pt.y;
-      keypoints3d.points[j].z = pt.z;
+      keypoints3d[j].x = pt.x;
+      keypoints3d[j].y = pt.y;
+      keypoints3d[j].z = pt.z;
       ++j;
     }
 

@@ -56,7 +56,7 @@ TEST (PointCloud, size)
 TEST (PointCloud, sq_brackets_wrapper)
 {
   for (std::uint32_t i = 0; i < size; ++i)
-    EXPECT_EQ_VECTORS (cloud.points[i].getVector3fMap (),
+    EXPECT_EQ_VECTORS (cloud[i].getVector3fMap (),
                        cloud[i].getVector3fMap ());
 }
 

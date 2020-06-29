@@ -136,7 +136,7 @@ public:
       vfh_signature.points.resize(1);
       vfh_signature.width = vfh_signature.height = 1;
       for (int d = 0; d < 308; ++d)
-        vfh_signature.points[0].histogram[d] = cvfh_signatures.points[i].histogram[d];
+        vfh_signature[0].histogram[d] = cvfh_signatures[i].histogram[d];
 
       signatures.push_back(vfh_signature);
     }

@@ -125,14 +125,14 @@ TEST (PCL, NormalEstimation)
   EXPECT_NEAR (curvature,            0.0693136, 1e-4);
 
   // flipNormalTowardsViewpoint (Vector)
-  flipNormalTowardsViewpoint (cloud.points[0], 0, 0, 0, plane_parameters);
+  flipNormalTowardsViewpoint (cloud[0], 0, 0, 0, plane_parameters);
   EXPECT_NEAR (plane_parameters[0], -0.035592,  1e-4);
   EXPECT_NEAR (plane_parameters[1], -0.369596,  1e-4);
   EXPECT_NEAR (plane_parameters[2], -0.928511,  1e-4);
   EXPECT_NEAR (plane_parameters[3],  0.0799743, 1e-4);
 
   // flipNormalTowardsViewpoint
-  flipNormalTowardsViewpoint (cloud.points[0], 0, 0, 0, nx, ny, nz);
+  flipNormalTowardsViewpoint (cloud[0], 0, 0, 0, nx, ny, nz);
   EXPECT_NEAR (nx, -0.035592, 1e-4);
   EXPECT_NEAR (ny, -0.369596, 1e-4);
   EXPECT_NEAR (nz, -0.928511, 1e-4);

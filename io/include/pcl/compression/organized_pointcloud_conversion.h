@@ -108,7 +108,7 @@ struct OrganizedConversion<PointT, false>
     for (std::size_t i = 0; i < cloud_size; ++i)
     {
       // Get point from cloud
-      const PointT& point = cloud_arg.points[i];
+      const PointT& point = cloud_arg[i];
 
       if (pcl::isFinite (point))
       {
@@ -296,7 +296,7 @@ struct OrganizedConversion<PointT, true>
 
     for (std::size_t i = 0; i < cloud_size; ++i)
     {
-      const PointT& point = cloud_arg.points[i];
+      const PointT& point = cloud_arg[i];
 
       if (pcl::isFinite (point))
       {

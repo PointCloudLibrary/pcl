@@ -3212,7 +3212,7 @@ pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (
   poly_points->SetNumberOfPoints (point_cloud.points.size ());
 
   for (std::size_t i = 0; i < point_cloud.points.size (); ++i)
-    poly_points->InsertPoint (i, point_cloud.points[i].x, point_cloud.points[i].y, point_cloud.points[i].z);
+    poly_points->InsertPoint (i, point_cloud[i].x, point_cloud[i].y, point_cloud[i].z);
 
   // Create a cell array to store the lines in and add the lines to it
   vtkSmartPointer <vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New ();
@@ -3330,7 +3330,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
     poly_points->SetNumberOfPoints (cloud.size ());
     for (std::size_t i = 0; i < cloud.points.size (); ++i)
     {
-      const pcl::PointXYZRGB &p = cloud.points[i];
+      const pcl::PointXYZRGB &p = cloud[i];
       poly_points->InsertPoint (i, p.x, p.y, p.z);
       const unsigned char color[3] = { p.r, p.g, p.b };
       colors->InsertNextTupleValue (color);

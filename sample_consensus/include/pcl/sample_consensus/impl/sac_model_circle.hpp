@@ -255,7 +255,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
     // Iterate over each point
     for (std::size_t i = 0; i < projected_points.points.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points[i]));
 
     // Iterate through the points and project them to the circle
     for (const auto &inlier : inliers)
@@ -264,8 +264,8 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
       float dy = input_->points[inlier].y - model_coefficients[1];
       float a = std::sqrt ( (model_coefficients[2] * model_coefficients[2]) / (dx * dx + dy * dy) );
 
-      projected_points.points[inlier].x = a * dx + model_coefficients[0];
-      projected_points.points[inlier].y = a * dy + model_coefficients[1];
+      projected_points[inlier].x = a * dx + model_coefficients[0];
+      projected_points[inlier].y = a * dy + model_coefficients[1];
     }
   }
   else
@@ -279,7 +279,7 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
     // Iterate over each point
     for (std::size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points[i]));
 
     // Iterate through the points and project them to the circle
     for (std::size_t i = 0; i < inliers.size (); ++i)
@@ -288,8 +288,8 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
       float dy = input_->points[inliers[i]].y - model_coefficients[1];
       float a = std::sqrt ( (model_coefficients[2] * model_coefficients[2]) / (dx * dx + dy * dy) );
 
-      projected_points.points[i].x = a * dx + model_coefficients[0];
-      projected_points.points[i].y = a * dy + model_coefficients[1];
+      projected_points[i].x = a * dx + model_coefficients[0];
+      projected_points[i].y = a * dy + model_coefficients[1];
     }
   }
 }

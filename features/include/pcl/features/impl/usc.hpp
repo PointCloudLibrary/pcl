@@ -239,23 +239,23 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
         !std::isfinite (current_frame.y_axis[0]) ||
         !std::isfinite (current_frame.z_axis[0])  )
     {
-      std::fill (output.points[point_index].descriptor, output.points[point_index].descriptor + descriptor_length_,
+      std::fill (output[point_index].descriptor, output[point_index].descriptor + descriptor_length_,
                  std::numeric_limits<float>::quiet_NaN ());
-      std::fill (output.points[point_index].rf, output.points[point_index].rf + 9, 0);
+      std::fill (output[point_index].rf, output[point_index].rf + 9, 0);
       output.is_dense = false;
       continue;
     }
 
     for (int d = 0; d < 3; ++d)
     {
-      output.points[point_index].rf[0 + d] = current_frame.x_axis[d];
-      output.points[point_index].rf[3 + d] = current_frame.y_axis[d];
-      output.points[point_index].rf[6 + d] = current_frame.z_axis[d];
+      output[point_index].rf[0 + d] = current_frame.x_axis[d];
+      output[point_index].rf[3 + d] = current_frame.y_axis[d];
+      output[point_index].rf[6 + d] = current_frame.z_axis[d];
     }
 
     std::vector<float> descriptor (descriptor_length_);
     computePointDescriptor (point_index, descriptor);
-    std::copy (descriptor.begin (), descriptor.end (), output.points[point_index].descriptor);
+    std::copy (descriptor.begin (), descriptor.end (), output[point_index].descriptor);
   }
 }
 

@@ -3062,7 +3062,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 * added new templated methods for `nearestKSearch` and `radiusSearch` for situations when PointT is different than the one the KdTree object was created with (e.g., KdTree<PointT1> vs nearestKSearch (PointT2 &p...)
 * added two new methods for `getApproximateIndices` where given a reference cloud of point type T1 we're trying to find the corresponding indices in a different cloud of point type T2
 * refactorized a lot of code in search and octree to make it look more consistent with the rest of the API
-* fixed a bug in octree_search which was semantically doing something bad: for each `radiusSearch`/`nearestKSearch`/`approxNearestSearch` call with a PointCloudConstPtr, the octree was getting recreated. Changed the API to be consistent with the rest of PCL (including pcl_search and pcl_kdtree) where we pass in a PointCloud instead of a PointCloudConstPtr which simply calls searchMethod (cloud.points[i], ...)
+* fixed a bug in octree_search which was semantically doing something bad: for each `radiusSearch`/`nearestKSearch`/`approxNearestSearch` call with a PointCloudConstPtr, the octree was getting recreated. Changed the API to be consistent with the rest of PCL (including pcl_search and pcl_kdtree) where we pass in a PointCloud instead of a PointCloudConstPtr which simply calls searchMethod (cloud[i], ...)
 * minor code optimizations
 * renamed organized_neighbor.h header in pcl_search (unreleased, therefore API changes OK!) to organized.h
 * disabled the auto-search tuning as it wasn't really working. must clean this up further
@@ -3117,7 +3117,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 * added unit test for `getIntersectedVoxelCentersRecursive`
 * added method `getIntersectedVoxelIndices` for getting indices of intersected voxels and updated unit test
 * refactorized a lot of code in search and octree to make it look more consistent with the rest of the API
-* fixed a bug in octree_search which was semantically doing something bad: for each `radiusSearch`/`nearestKSearch`/`approxNearestSearch` call with a PointCloudConstPtr, the octree was getting recreated. Changed the API to be consistent with the rest of PCL (including pcl_search and pcl_kdtree) where we pass in a PointCloud instead of a PointCloudConstPtr which simply calls searchMethod (cloud.points[i], ...)
+* fixed a bug in octree_search which was semantically doing something bad: for each `radiusSearch`/`nearestKSearch`/`approxNearestSearch` call with a PointCloudConstPtr, the octree was getting recreated. Changed the API to be consistent with the rest of PCL (including pcl_search and pcl_kdtree) where we pass in a PointCloud instead of a PointCloudConstPtr which simply calls searchMethod (cloud[i], ...)
 * minor code optimizations
 * renamed organized_neighbor.h header in pcl_search (unreleased, therefore API changes OK!) to organized.h
 * disabled the auto-search tuning as it wasn't really working. must clean this up further

@@ -69,7 +69,7 @@ PCLHistogramVisualizer::addFeatureHistogram (
   for (int d = 0; d < hsize; ++d)
   {
     xy[0] = d;
-    xy[1] = cloud.points[0].histogram[d];
+    xy[1] = cloud[0].histogram[d];
     xy_array->SetTuple (d, xy);
   }
   RenWinInteract renwinint;
@@ -121,9 +121,9 @@ PCLHistogramVisualizer::addFeatureHistogram (
   for (std::uint32_t d = 0; d < fields[field_idx].count; ++d)
   {
     xy[0] = d;
-    //xy[1] = cloud.points[index].histogram[d];
+    //xy[1] = cloud[index].histogram[d];
     float data;
-    memcpy (&data, reinterpret_cast<const char*> (&cloud.points[index]) + fields[field_idx].offset + d * sizeof (float), sizeof (float));
+    memcpy (&data, reinterpret_cast<const char*> (&cloud[index]) + fields[field_idx].offset + d * sizeof (float), sizeof (float));
     xy[1] = data;
     xy_array->SetTuple (d, xy);
   }
@@ -158,7 +158,7 @@ PCLHistogramVisualizer::updateFeatureHistogram (
   for (int d = 0; d < hsize; ++d)
   {
     xy[0] = d;
-    xy[1] = cloud.points[0].histogram[d];
+    xy[1] = cloud[0].histogram[d];
     xy_array->SetTuple (d, xy);
   }
   reCreateActor (xy_array, renwinupd, hsize);
@@ -204,9 +204,9 @@ PCLHistogramVisualizer::updateFeatureHistogram (
   for (std::uint32_t d = 0; d < fields[field_idx].count; ++d)
   {
     xy[0] = d;
-    //xy[1] = cloud.points[index].histogram[d];
+    //xy[1] = cloud[index].histogram[d];
     float data;
-    memcpy (&data, reinterpret_cast<const char*> (&cloud.points[index]) + fields[field_idx].offset + d * sizeof (float), sizeof (float));
+    memcpy (&data, reinterpret_cast<const char*> (&cloud[index]) + fields[field_idx].offset + d * sizeof (float), sizeof (float));
     xy[1] = data;
     xy_array->SetTuple (d, xy);
   }

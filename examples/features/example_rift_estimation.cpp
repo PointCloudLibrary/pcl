@@ -102,7 +102,7 @@ main (int, char** argv)
   std::cout<<" with size "<<rift_output.points.size()<<std::endl;
   
   // Display and retrieve the rift descriptor vector for the first point
-  pcl::Histogram<32> first_descriptor = rift_output.points[0];
+  pcl::Histogram<32> first_descriptor = rift_output[0];
   std::cout << first_descriptor << std::endl;
   return 0;
 }

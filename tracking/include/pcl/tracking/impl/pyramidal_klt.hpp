@@ -196,15 +196,15 @@ PyramidalKLTTracker<PointInT, IntensityT>::derivatives(const FloatImage& src,
   ++trow0;
   float* trow1 = row1;
   ++trow1;
-  const float* src_ptr = &(src.points[0]);
+  const float* src_ptr = &(src[0]);
 
   for (int y = 0; y < height; y++) {
     const float* srow0 = src_ptr + (y > 0 ? y - 1 : height > 1 ? 1 : 0) * width;
     const float* srow1 = src_ptr + y * width;
     const float* srow2 =
         src_ptr + (y < height - 1 ? y + 1 : height > 1 ? height - 2 : 0) * width;
-    float* grad_x_row = &(grad_x.points[y * width]);
-    float* grad_y_row = &(grad_y.points[y * width]);
+    float* grad_x_row = &(grad_x[y * width]);
+    float* grad_y_row = &(grad_y[y * width]);
 
     // do vertical convolution
     for (int x = 0; x < width; x++) {
@@ -484,11 +484,9 @@ PyramidalKLTTracker<PointInT, IntensityT>::spatialGradient(
   covariance.setZero();
 
   for (int y = 0; y < track_height_; y++) {
-    const float* img_ptr = &(img.points[0]) + (y + location[1]) * step + location[0];
-    const float* grad_x_ptr =
-        &(grad_x.points[0]) + (y + location[1]) * step + location[0];
-    const float* grad_y_ptr =
-        &(grad_y.points[0]) + (y + location[1]) * step + location[0];
+    const float* img_ptr = &(img[0]) + (y + location[1]) * step + location[0];
+    const float* grad_x_ptr = &(grad_x[0]) + (y + location[1]) * step + location[0];
+    const float* grad_y_ptr = &(grad_y[0]) + (y + location[1]) * step + location[0];
 
     float* win_ptr = win.data() + y * win.cols();
     float* grad_x_win_ptr = grad_x_win.data() + y * grad_x_win.cols();
@@ -527,7 +525,7 @@ PyramidalKLTTracker<PointInT, IntensityT>::mismatchVector(
   const int step = next.width;
   b.setZero();
   for (int y = 0; y < track_height_; y++) {
-    const float* next_ptr = &(next.points[0]) + (y + location[1]) * step + location[0];
+    const float* next_ptr = &(next[0]) + (y + location[1]) * step + location[0];
     const float* prev_ptr = prev.data() + y * prev.cols();
     const float* prev_grad_x_ptr = prev_grad_x.data() + y * prev_grad_x.cols();
     const float* prev_grad_y_ptr = prev_grad_y.data() + y * prev_grad_y.cols();

@@ -253,8 +253,8 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::rec
         for (std::size_t c = 0; c < categories_to_be_searched_.size(); c++) {
           std::cout << "Using category:" << categories_to_be_searched_[c] << std::endl;
           for (std::size_t idx = 0; idx < signatures.size(); idx++) {
-            float* hist = signatures[idx].points[0].histogram;
-            int size_feat = sizeof(signatures[idx].points[0].histogram) / sizeof(float);
+            float* hist = signatures[idx][0].histogram;
+            int size_feat = sizeof(signatures[idx][0].histogram) / sizeof(float);
             std::vector<float> std_hist(hist, hist + size_feat);
 
             flann_model histogram;
@@ -293,8 +293,8 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::rec
       else {
         for (std::size_t idx = 0; idx < signatures.size(); idx++) {
 
-          float* hist = signatures[idx].points[0].histogram;
-          int size_feat = sizeof(signatures[idx].points[0].histogram) / sizeof(float);
+          float* hist = signatures[idx][0].histogram;
+          int size_feat = sizeof(signatures[idx][0].histogram) / sizeof(float);
           std::vector<float> std_hist(hist, hist + size_feat);
 
           flann_model histogram;

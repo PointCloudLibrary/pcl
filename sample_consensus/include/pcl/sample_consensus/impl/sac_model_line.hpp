@@ -265,7 +265,7 @@ pcl::SampleConsensusModelLine<PointT>::projectPoints (
     // Iterate over each point
     for (std::size_t i = 0; i < projected_points.points.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the line
     for (const auto &inlier : inliers)
@@ -276,9 +276,9 @@ pcl::SampleConsensusModelLine<PointT>::projectPoints (
 
       Eigen::Vector4f pp = line_pt + k * line_dir;
       // Calculate the projection of the point on the line (pointProj = A + k * B)
-      projected_points.points[inlier].x = pp[0];
-      projected_points.points[inlier].y = pp[1];
-      projected_points.points[inlier].z = pp[2];
+      projected_points[inlier].x = pp[0];
+      projected_points[inlier].y = pp[1];
+      projected_points[inlier].z = pp[2];
     }
   }
   else
@@ -292,7 +292,7 @@ pcl::SampleConsensusModelLine<PointT>::projectPoints (
     // Iterate over each point
     for (std::size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the line
     for (std::size_t i = 0; i < inliers.size (); ++i)
@@ -303,9 +303,9 @@ pcl::SampleConsensusModelLine<PointT>::projectPoints (
 
       Eigen::Vector4f pp = line_pt + k * line_dir;
       // Calculate the projection of the point on the line (pointProj = A + k * B)
-      projected_points.points[i].x = pp[0];
-      projected_points.points[i].y = pp[1];
-      projected_points.points[i].z = pp[2];
+      projected_points[i].x = pp[0];
+      projected_points[i].y = pp[1];
+      projected_points[i].z = pp[2];
     }
   }
 }

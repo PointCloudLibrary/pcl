@@ -250,16 +250,16 @@ pcl::io::depth_sense::DepthSenseGrabberImpl::computeXYZ (PointCloud<Point>& clou
       point.depth = (*depth_buffer_)[i];
       if (std::isnan (point.depth))
       {
-        cloud.points[i].x = nan;
-        cloud.points[i].y = nan;
-        cloud.points[i].z = nan;
+        cloud[i].x = nan;
+        cloud[i].y = nan;
+        cloud[i].z = nan;
       }
       else
       {
         projection_->get3DCoordinates (&point, &vertex, 1);
-        cloud.points[i].x = vertex.x;
-        cloud.points[i].y = vertex.y;
-        cloud.points[i].z = vertex.z;
+        cloud[i].x = vertex.x;
+        cloud[i].y = vertex.y;
+        cloud[i].z = vertex.z;
       }
       point.point.x += 1;
       ++i;
