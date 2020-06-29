@@ -37,9 +37,9 @@
  *
  */
 
-#ifndef PCL_GAUSSIAN_KERNEL_IMPL
-#define PCL_GAUSSIAN_KERNEL_IMPL
+#pragma once
 
+#include <pcl/common/gaussian.h>
 #include <pcl/exceptions.h>
 
 namespace pcl
@@ -114,6 +114,4 @@ GaussianKernel::convolveCols(const pcl::PointCloud<PointT> &input,
 }
 
 } // namespace pcl
-
-#endif
 

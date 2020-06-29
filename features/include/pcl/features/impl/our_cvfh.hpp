@@ -125,9 +125,9 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSm
         //processed[nn_indices[j]] = true;
         // [-1;1]
 
-        double dot_p = normals.points[seed_queue[sq_idx]].normal[0] * normals.points[nn_indices[j]].normal[0]
-            + normals.points[seed_queue[sq_idx]].normal[1] * normals.points[nn_indices[j]].normal[1] + normals.points[seed_queue[sq_idx]].normal[2]
-            * normals.points[nn_indices[j]].normal[2];
+        double dot_p = normals[seed_queue[sq_idx]].normal[0] * normals[nn_indices[j]].normal[0]
+            + normals[seed_queue[sq_idx]].normal[1] * normals[nn_indices[j]].normal[1] + normals[seed_queue[sq_idx]].normal[2]
+            * normals[nn_indices[j]].normal[2];
 
         if (std::abs (std::acos (dot_p)) < eps_angle)
         {
@@ -171,7 +171,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::filterNormalsWithHighCurva
 
   for (const int &index : indices_to_use)
   {
-    if (cloud.points[index].curvature > threshold)
+    if (cloud[index].curvature > threshold)
     {
       indices_out[out] = index;
       out++;
@@ -513,18 +513,18 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
       vfh_signature.points.resize (1);
       vfh_signature.width = vfh_signature.height = 1;
       for (int d = 0; d < 308; ++d)
-        vfh_signature.points[0].histogram[d] = output.points[i].histogram[d];
+        vfh_signature[0].histogram[d] = output[i].histogram[d];
 
       int pos = 45 * 3;
       for (int k = 0; k < num_hists; k++)
       {
         for (int ii = 0; ii < size_hists; ii++, pos++)
         {
-          vfh_signature.points[0].histogram[pos] = quadrants[k][ii];
+          vfh_signature[0].histogram[pos] = quadrants[k][ii];
         }
       }
 
-      ourcvfh_output.points.push_back (vfh_signature.points[0]);
+      ourcvfh_output.points.push_back (vfh_signature[0]);
       ourcvfh_output.width = ourcvfh_output.points.size ();
       delete[] weights;
     }
@@ -705,7 +705,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
       vfh.setCentroidToUse (centroids_dominant_orientations_[i]);
       pcl::PointCloud<pcl::VFHSignature308> vfh_signature;
       vfh.compute (vfh_signature);
-      output.points[i] = vfh_signature.points[0];
+      output[i] = vfh_signature[0];
     }
 
     //finish filling the descriptor with the shape distribution
@@ -732,7 +732,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     output.points.resize (1);
     output.width = 1;
 
-    output.points[0] = vfh_signature.points[0];
+    output[0] = vfh_signature[0];
     Eigen::Matrix4f id = Eigen::Matrix4f::Identity ();
     transforms_.push_back (id);
     valid_transforms_.push_back (false);

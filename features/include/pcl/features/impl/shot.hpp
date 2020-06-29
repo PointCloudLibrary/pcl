@@ -798,9 +798,9 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
     {
       // Copy into the resultant cloud
       for (int d = 0; d < descLength_; ++d)
-        output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
       for (int d = 0; d < 9; ++d)
-        output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
 
       output.is_dense = false;
       continue;
@@ -811,12 +811,12 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
 
     // Copy into the resultant cloud
     for (int d = 0; d < descLength_; ++d)
-      output.points[idx].descriptor[d] = shot_[d];
+      output[idx].descriptor[d] = shot_[d];
     for (int d = 0; d < 3; ++d)
     {
-      output.points[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
-      output.points[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
-      output.points[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
+      output[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
+      output[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
+      output[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
     }
   }
 }
@@ -870,9 +870,9 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
     {
       // Copy into the resultant cloud
       for (int d = 0; d < descLength_; ++d)
-        output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
       for (int d = 0; d < 9; ++d)
-        output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
 
       output.is_dense = false;
       continue;
@@ -883,12 +883,12 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
 
     // Copy into the resultant cloud
     for (int d = 0; d < descLength_; ++d)
-      output.points[idx].descriptor[d] = shot_[d];
+      output[idx].descriptor[d] = shot_[d];
     for (int d = 0; d < 3; ++d)
     {
-      output.points[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
-      output.points[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
-      output.points[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
+      output[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
+      output[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
+      output[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
     }
   }
 }

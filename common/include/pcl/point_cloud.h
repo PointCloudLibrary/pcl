@@ -49,6 +49,7 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/type_traits.h>
+#include <pcl/types.h>
 
 #include <algorithm>
 #include <utility>
@@ -204,14 +205,14 @@ namespace pcl
         * \param[in] indices the subset to copy
         */
       PointCloud (const PointCloud<PointT> &pc,
-                  const std::vector<int> &indices) :
+                  const Indices &indices) :
         header (pc.header), points (indices.size ()), width (indices.size ()), height (1), is_dense (pc.is_dense),
         sensor_origin_ (pc.sensor_origin_), sensor_orientation_ (pc.sensor_orientation_)
       {
         // Copy the obvious
         assert (indices.size () <= pc.size ());
         for (std::size_t i = 0; i < indices.size (); i++)
-          points[i] = pc.points[indices[i]];
+          points[i] = pc[indices[i]];
       }
 
       /** \brief Allocate constructor from point cloud subset
@@ -439,25 +440,67 @@ namespace pcl
       // iterators
       using iterator = typename VectorType::iterator;
       using const_iterator = typename VectorType::const_iterator;
-      inline iterator begin () { return (points.begin ()); }
-      inline iterator end ()   { return (points.end ()); }
-      inline const_iterator begin () const { return (points.begin ()); }
-      inline const_iterator end () const  { return (points.end ()); }
+      using reverse_iterator = typename VectorType::reverse_iterator;
+      using const_reverse_iterator = typename VectorType::const_reverse_iterator;
+      inline iterator begin () noexcept { return (points.begin ()); }
+      inline iterator end () noexcept { return (points.end ()); }
+      inline const_iterator begin () const noexcept { return (points.begin ()); }
+      inline const_iterator end () const noexcept { return (points.end ()); }
+      inline const_iterator cbegin () const noexcept { return (points.cbegin ()); }
+      inline const_iterator cend () const noexcept { return (points.cend ()); }
+      inline reverse_iterator rbegin () noexcept { return (points.rbegin ()); }
+      inline reverse_iterator rend () noexcept { return (points.rend ()); }
+      inline const_reverse_iterator rbegin () const noexcept { return (points.rbegin ()); }
+      inline const_reverse_iterator rend () const noexcept { return (points.rend ()); }
+      inline const_reverse_iterator crbegin () const noexcept { return (points.crbegin ()); }
+      inline const_reverse_iterator crend () const noexcept { return (points.crend ()); }
 
       //capacity
       inline std::size_t size () const { return (points.size ()); }
       inline void reserve (std::size_t n) { points.reserve (n); }
       inline bool empty () const { return points.empty (); }
+      PointT* data() noexcept { return points.data(); }
+      const PointT* data() const noexcept { return points.data(); }
 
-      /** \brief Resize the cloud
-        * \param[in] n the new cloud size
-        */
-      inline void resize (std::size_t n)
+      /**
+       * \brief Resizes the container to contain `count` elements
+       * \details
+       * * If the current size is greater than `count`, the pointcloud is reduced to its
+       * first `count` elements
+       * * If the current size is less than `count`, additional default-inserted points
+       * are appended
+       * \note This potentially breaks the organized structure of the cloud by setting
+       * the height to 1 IFF `width * height != count`!
+       * \param[in] count new size of the point cloud
+       */
+      inline void
+      resize(std::size_t count)
       {
-        points.resize (n);
-        if (width * height != n)
-        {
-          width = static_cast<std::uint32_t> (n);
+        points.resize(count);
+        if (width * height != count) {
+          width = static_cast<std::uint32_t>(count);
+          height = 1;
+        }
+      }
+
+      /**
+       * \brief Resizes the container to contain count elements
+       * \details
+       * * If the current size is greater than `count`, the pointcloud is reduced to its
+       * first `count` elements
+       * * If the current size is less than `count`, additional copies of `value` are
+       * appended
+       * \note This potentially breaks the organized structure of the cloud by setting
+       * the height to 1 IFF `width * height != count`!
+       * \param[in] count new size of the point cloud
+       * \param[in] value the value to initialize the new points with
+       */
+      void
+      resize(index_t count, const PointT& value)
+      {
+        points.resize(count, value);
+        if (width * height != count) {
+          width = count;
           height = 1;
         }
       }
@@ -471,6 +514,48 @@ namespace pcl
       inline PointT& front () { return (points.front ()); }
       inline const PointT& back () const { return (points.back ()); }
       inline PointT& back () { return (points.back ()); }
+
+      /**
+       * \brief Replaces the points with `count` copies of `value`
+       * \note This breaks the organized structure of the cloud by setting the height to
+       * 1!
+       */
+      void
+      assign(index_t count, const PointT& value)
+      {
+        points.assign(count, value);
+        width = static_cast<std::uint32_t>(size());
+        height = 1;
+      }
+
+      /**
+       * \brief Replaces the points with copies of those in the range `[first, last)`
+       * \details The behavior is undefined if either argument is an iterator into
+       * `*this`
+       * \note This breaks the organized structure of the cloud by setting the height to
+       * 1!
+       */
+      template <class InputIt>
+      void
+      assign(InputIt first, InputIt last)
+      {
+        points.assign(std::move(first), std::move(last));
+        width = static_cast<std::uint32_t>(size());
+        height = 1;
+      }
+
+      /**
+       * \brief Replaces the points with the elements from the initializer list `ilist`
+       * \note This breaks the organized structure of the cloud by setting the height to
+       * 1!
+       */
+      void
+      assign(std::initializer_list<PointT> ilist)
+      {
+        points.assign(std::move(ilist));
+        width = static_cast<std::uint32_t>(size());
+        height = 1;
+      }
 
       /** \brief Insert a new point in the cloud, at the end of the container.
         * \note This breaks the organized structure of the cloud by setting the height to 1!

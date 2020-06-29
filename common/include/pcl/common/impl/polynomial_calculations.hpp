@@ -36,8 +36,9 @@
  *
  */
 
-#ifndef PCL_POLYNOMIAL_CALCULATIONS_HPP_
-#define PCL_POLYNOMIAL_CALCULATIONS_HPP_
+#pragma once
+
+#include <pcl/common/polynomial_calculations.h>
 
 
 namespace pcl
@@ -503,6 +504,4 @@ PolynomialCalculationsT<real>::bivariatePolynomialApproximation (
 }
 
 } // namespace pcl
-
-#endif      // PCL_POLYNOMIAL_CALCULATIONS_HPP_
 

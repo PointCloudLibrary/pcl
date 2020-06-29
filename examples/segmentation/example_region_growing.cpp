@@ -37,17 +37,12 @@
  *
  */
 
-// STL
 #include <iostream>
 
-// PCL
 #include <pcl/filters/filter.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/point_types.h>
-#include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/segmentation/region_growing.h>
-#include <pcl/kdtree/kdtree.h>
 #include <pcl/common/time.h>
 #include <pcl/console/parse.h>
 

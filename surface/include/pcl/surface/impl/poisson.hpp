@@ -195,16 +195,16 @@ pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
   for (int i = 0; i < int (mesh.inCorePoints.size ()); i++)
   {
     p = mesh.inCorePoints[i];
-    cloud.points[i].x = p.coords[0]*scale+center.coords[0];
-    cloud.points[i].y = p.coords[1]*scale+center.coords[1];
-    cloud.points[i].z = p.coords[2]*scale+center.coords[2];
+    cloud[i].x = p.coords[0]*scale+center.coords[0];
+    cloud[i].y = p.coords[1]*scale+center.coords[1];
+    cloud[i].z = p.coords[2]*scale+center.coords[2];
   }
   for (int i = int (mesh.inCorePoints.size ()); i < int (mesh.outOfCorePointCount () + mesh.inCorePoints.size ()); i++)
   {
     mesh.nextOutOfCorePoint (p);
-    cloud.points[i].x = p.coords[0]*scale+center.coords[0];
-    cloud.points[i].y = p.coords[1]*scale+center.coords[1];
-    cloud.points[i].z = p.coords[2]*scale+center.coords[2];
+    cloud[i].x = p.coords[0]*scale+center.coords[0];
+    cloud[i].y = p.coords[1]*scale+center.coords[1];
+    cloud[i].z = p.coords[2]*scale+center.coords[2];
   }
   pcl::toPCLPointCloud2 (cloud, output.cloud);
   output.polygons.resize (mesh.polygonCount ());
@@ -276,16 +276,16 @@ pcl::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
   for (int i = 0; i < int(mesh.inCorePoints.size ()); i++)
   {
     p = mesh.inCorePoints[i];
-    points.points[i].x = p.coords[0]*scale+center.coords[0];
-    points.points[i].y = p.coords[1]*scale+center.coords[1];
-    points.points[i].z = p.coords[2]*scale+center.coords[2];
+    points[i].x = p.coords[0]*scale+center.coords[0];
+    points[i].y = p.coords[1]*scale+center.coords[1];
+    points[i].z = p.coords[2]*scale+center.coords[2];
   }
   for (int i = int(mesh.inCorePoints.size()); i < int (mesh.outOfCorePointCount() + mesh.inCorePoints.size ()); i++)
   {
     mesh.nextOutOfCorePoint (p);
-    points.points[i].x = p.coords[0]*scale+center.coords[0];
-    points.points[i].y = p.coords[1]*scale+center.coords[1];
-    points.points[i].z = p.coords[2]*scale+center.coords[2];
+    points[i].x = p.coords[0]*scale+center.coords[0];
+    points[i].y = p.coords[1]*scale+center.coords[1];
+    points[i].z = p.coords[2]*scale+center.coords[2];
   }
 
   polygons.resize (mesh.polygonCount ());

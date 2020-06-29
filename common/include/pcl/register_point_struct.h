@@ -52,18 +52,17 @@
 
 //https://bugreports.qt-project.org/browse/QTBUG-22829
 #ifndef Q_MOC_RUN
-#include <pcl/pcl_macros.h>
-#include <pcl/type_traits.h>
-#include <boost/mpl/vector.hpp>
-#include <boost/preprocessor/seq/enum.hpp>
-#include <boost/preprocessor/seq/for_each.hpp>
-#include <boost/preprocessor/seq/transform.hpp>
-#include <boost/preprocessor/cat.hpp>
-#include <boost/preprocessor/comparison.hpp>
+#include <pcl/point_struct_traits.h> // for pcl::traits::POD, POINT_CLOUD_REGISTER_FIELD_(NAME, OFFSET, DATATYPE), POINT_CLOUD_REGISTER_POINT_FIELD_LIST
+#include <boost/mpl/assert.hpp>  // for BOOST_MPL_ASSERT_MSG
+#include <boost/preprocessor/seq/for_each.hpp>  // for BOOST_PP_SEQ_FOR_EACH
+#include <boost/preprocessor/seq/transform.hpp>  // for BOOST_PP_SEQ_TRANSFORM
+#include <boost/preprocessor/tuple/elem.hpp>  // for BOOST_PP_TUPLE_ELEM
+#include <boost/preprocessor/cat.hpp>  // for BOOST_PP_CAT
 #endif
 
-#include <cstddef> //offsetof
-#include <type_traits>
+#include <cstddef> // for offsetof
+#include <cstdint>  // for std::uint32_t
+#include <type_traits>  // for std::enable_if_t, std::is_array, std::remove_const_t, std::remove_all_extents_t
 
 // Must be used in global namespace with name fully qualified
 #define POINT_CLOUD_REGISTER_POINT_STRUCT(name, fseq)               \
@@ -313,47 +312,9 @@ namespace pcl
   struct BOOST_PP_TUPLE_ELEM(3, 2, elem);               \
   /***/
 
-#define POINT_CLOUD_REGISTER_FIELD_NAME(r, point, elem)                 \
-  template<int dummy>                                                   \
-  struct name<point, pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem), dummy> \
-  {                                                                     \
-    static const char value[];                                          \
-  };                                                                    \
-                                                                        \
-  template<int dummy>                                                   \
-  const char name<point,                                                \
-                  pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem),         \
-                  dummy>::value[] =                                     \
-    BOOST_PP_STRINGIZE(BOOST_PP_TUPLE_ELEM(3, 2, elem));
-  /***/
-
-#define POINT_CLOUD_REGISTER_FIELD_OFFSET(r, name, elem)                \
-  template<> struct offset<name, pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem)> \
-  {                                                                     \
-    static const std::size_t value = offsetof(name, BOOST_PP_TUPLE_ELEM(3, 1, elem)); \
-  };
-  /***/
-
-#define POINT_CLOUD_REGISTER_FIELD_DATATYPE(r, name, elem)              \
-  template<> struct datatype<name, pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem)> \
-  {                                                                     \
-    using type = boost::mpl::identity<BOOST_PP_TUPLE_ELEM(3, 0, elem)>::type; \
-    using decomposed = decomposeArray<type>;                            \
-    static const std::uint8_t value = asEnum<decomposed::type>::value;       \
-    static const std::uint32_t size = decomposed::value;                     \
-  };
-  /***/
-
 #define POINT_CLOUD_TAG_OP(s, data, elem) pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem)
 
 #define POINT_CLOUD_EXTRACT_TAGS(seq) BOOST_PP_SEQ_TRANSFORM(POINT_CLOUD_TAG_OP, _, seq)
-
-#define POINT_CLOUD_REGISTER_POINT_FIELD_LIST(name, seq)        \
-  template<> struct fieldList<name>                             \
-  {                                                             \
-    using type = boost::mpl::vector<BOOST_PP_SEQ_ENUM(seq)>;    \
-  };
-  /***/
 
 #if defined _MSC_VER
   #pragma warning (pop)

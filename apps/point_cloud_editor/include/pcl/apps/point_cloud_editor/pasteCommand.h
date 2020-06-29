@@ -43,9 +43,14 @@
 #include <pcl/apps/point_cloud_editor/command.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 
+#include <pcl/memory.h>  // for pcl::shared_ptr
+
 class PasteCommand : public Command
 {
   public:
+    /// The type for shared pointer pointing to a selection buffer
+    using SelectionPtr = pcl::shared_ptr<Selection>;
+
     /// @brief Constructor
     /// @param copy_buffer_ptr a shared pointer pointing to the copy buffer.
     /// @param selection_ptr a shared pointer pointing to the selection object.

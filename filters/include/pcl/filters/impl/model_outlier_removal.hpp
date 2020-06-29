@@ -35,11 +35,11 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_FILTERS_IMPL_MODEL_OUTLIER_REMOVAL_HPP_
-#define PCL_FILTERS_IMPL_MODEL_OUTLIER_REMOVAL_HPP_
+#pragma once
 
 #include <pcl/filters/model_outlier_removal.h>
 #include <pcl/common/io.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/sample_consensus/sac_model_circle.h>
 #include <pcl/sample_consensus/sac_model_cylinder.h>
 #include <pcl/sample_consensus/sac_model_cone.h>
@@ -239,4 +239,3 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
 
 #define PCL_INSTANTIATE_ModelOutlierRemoval(T) template class PCL_EXPORTS pcl::ModelOutlierRemoval<T>;
 
-#endif  // PCL_FILTERS_IMPL_MODEL_OUTLIER_REMOVAL_HPP_

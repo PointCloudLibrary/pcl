@@ -30,18 +30,18 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *	
+ *
  */
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include <pcl/common/time.h>
+#include <pcl/console/parse.h>
+#include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/surface/organized_fast_mesh.h>
-#include <pcl/console/parse.h>
-#include <pcl/common/time.h>
 #include <pcl/visualization/cloud_viewer.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
 #include <mutex>
 #include <thread>
@@ -51,122 +51,129 @@ using namespace pcl::visualization;
 using namespace std;
 using namespace std::chrono_literals;
 
-#define FPS_CALC(_WHAT_) \
-do \
-{ \
-    static unsigned count = 0;\
-    static double last = pcl::getTime ();\
-    if (++count == 100) \
-    { \
-      double now = pcl::getTime (); \
-      std::cout << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
-      count = 0; \
-      last = now; \
-    } \
-}while(false)
+// clang-format off
+#define FPS_CALC(_WHAT_)                                                               \
+  do {                                                                                 \
+    static unsigned count = 0;                                                         \
+    static double last = pcl::getTime();                                               \
+    if (++count == 100) {                                                              \
+      double now = pcl::getTime();                                                     \
+      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
+                << double(count) / double(now - last) << " Hz" << std::endl;           \
+      count = 0;                                                                       \
+      last = now;                                                                      \
+    }                                                                                  \
+  } while (false)
+// clang-format on
 
 template <typename PointType>
-class OpenNIFastMesh
-{
-  public:
-    using Cloud = pcl::PointCloud<PointType>;
-    using CloudPtr = typename Cloud::Ptr;
-    using CloudConstPtr = typename Cloud::ConstPtr;
+class OpenNIFastMesh {
+public:
+  using Cloud = pcl::PointCloud<PointType>;
+  using CloudPtr = typename Cloud::Ptr;
+  using CloudConstPtr = typename Cloud::ConstPtr;
 
-    OpenNIFastMesh (const std::string& device_id = "")
-      : device_id_(device_id)
+  OpenNIFastMesh(const std::string& device_id = "") : device_id_(device_id)
+  {
+    ofm.setTrianglePixelSize(3);
+    ofm.setTriangulationType(pcl::OrganizedFastMesh<PointType>::QUAD_MESH);
+  }
+
+  void
+  cloud_cb(const CloudConstPtr& cloud)
+  {
+    // Computation goes here
+    FPS_CALC("computation");
+
+    // Prepare input
+    ofm.setInputCloud(cloud);
+
+    // Store the results in a temporary object
+    std::vector<pcl::Vertices> temp_verts;
+    ofm.reconstruct(temp_verts);
+
+    // Lock and copy
     {
-      ofm.setTrianglePixelSize (3);
-      ofm.setTriangulationType (pcl::OrganizedFastMesh<PointType>::QUAD_MESH);
+      std::lock_guard<std::mutex> lock(mtx_);
+      vertices_ = std::move(temp_verts);
+      cloud_ = cloud; // reset (new Cloud (*cloud));
     }
-    
-    void 
-    cloud_cb (const CloudConstPtr& cloud)
-    {
-      // Computation goes here
-      FPS_CALC ("computation");
-     
-      // Prepare input
-      ofm.setInputCloud (cloud);
+  }
 
-      // Store the results in a temporary object
-      std::vector<pcl::Vertices> temp_verts;
-      ofm.reconstruct (temp_verts);
+  void
+  run(int argc, char** argv)
+  {
+    pcl::OpenNIGrabber interface{device_id_};
 
-      // Lock and copy
-      {
-        std::lock_guard<std::mutex> lock (mtx_);
-        vertices_ = std::move (temp_verts);
-        cloud_ = cloud;//reset (new Cloud (*cloud));
-      }
-    }
+    std::function<void(const CloudConstPtr&)> f = [this](const CloudConstPtr& cloud) {
+      cloud_cb(cloud);
+    };
+    boost::signals2::connection c = interface.registerCallback(f);
 
-    void
-    run (int argc, char **argv)
-    {
-      pcl::OpenNIGrabber interface {device_id_};
+    view.reset(
+        new pcl::visualization::PCLVisualizer(argc, argv, "PCL OpenNI Mesh Viewer"));
 
-      std::function<void (const CloudConstPtr&)> f = [this] (const CloudConstPtr& cloud) { cloud_cb (cloud); };
-      boost::signals2::connection c = interface.registerCallback (f);
+    interface.start();
 
-      view.reset (new pcl::visualization::PCLVisualizer (argc, argv, "PCL OpenNI Mesh Viewer"));
+    CloudConstPtr temp_cloud;
+    std::vector<pcl::Vertices> temp_verts;
 
-      interface.start ();
-      
-      CloudConstPtr temp_cloud;
-      std::vector<pcl::Vertices> temp_verts;
-
-      while (!view->wasStopped ())
-      {
-        if (!cloud_ || !mtx_.try_lock ())
-        {
-          std::this_thread::sleep_for(1ms);
-          continue;
-        }
-
-        temp_cloud = cloud_;
-        temp_verts = std::move (vertices_);
-        mtx_.unlock ();
-
-        if (!view->updatePolygonMesh<PointType> (temp_cloud, temp_verts, "surface"))
-        {
-          view->addPolygonMesh<PointType> (temp_cloud, temp_verts, "surface");
-          view->resetCameraViewpoint ("surface");
-        }
-
-        FPS_CALC ("visualization");
-        view->spinOnce (1);
+    while (!view->wasStopped()) {
+      if (!cloud_ || !mtx_.try_lock()) {
+        std::this_thread::sleep_for(1ms);
+        continue;
       }
 
-      interface.stop ();
+      temp_cloud = cloud_;
+      temp_verts = std::move(vertices_);
+      mtx_.unlock();
+
+      if (!view->updatePolygonMesh<PointType>(temp_cloud, temp_verts, "surface")) {
+        view->addPolygonMesh<PointType>(temp_cloud, temp_verts, "surface");
+        view->resetCameraViewpoint("surface");
+      }
+
+      FPS_CALC("visualization");
+      view->spinOnce(1);
     }
 
-    pcl::OrganizedFastMesh<PointType> ofm;
-    std::string device_id_;
-    std::mutex mtx_;
-    // Data
-    CloudConstPtr cloud_;
-    std::vector<pcl::Vertices> vertices_;
-    pcl::PolygonMesh::Ptr mesh_;
+    interface.stop();
+  }
 
-    pcl::visualization::PCLVisualizer::Ptr view;
+  pcl::OrganizedFastMesh<PointType> ofm;
+  std::string device_id_;
+  std::mutex mtx_;
+  // Data
+  CloudConstPtr cloud_;
+  std::vector<pcl::Vertices> vertices_;
+  pcl::PolygonMesh::Ptr mesh_;
+
+  pcl::visualization::PCLVisualizer::Ptr view;
 };
 
 void
-usage (char ** argv)
+usage(char** argv)
 {
   std::cout << "usage: " << argv[0] << " <device_id> <options>\n\n";
 
-  openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
-  if (driver.getNumberDevices () > 0)
-  {
-    for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices (); ++deviceIdx)
-    {
-      std::cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
-              << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << std::endl;
-      std::cout << "device_id may be #1, #2, ... for the first second etc device in the list or" << std::endl
-           << "                 bus@address for the device connected to a specific usb-bus / address combination (works only in Linux) or" << std::endl
-           << "                 <serial-number> (only in Linux and for devices which provide serial numbers)"  << std::endl;
+  openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance();
+  if (driver.getNumberDevices() > 0) {
+    for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices(); ++deviceIdx) {
+      std::cout << "Device: " << deviceIdx + 1
+                << ", vendor: " << driver.getVendorName(deviceIdx)
+                << ", product: " << driver.getProductName(deviceIdx)
+                << ", connected: " << driver.getBus(deviceIdx) << " @ "
+                << driver.getAddress(deviceIdx) << ", serial number: \'"
+                << driver.getSerialNumber(deviceIdx) << "\'" << std::endl;
+      std::cout << "device_id may be #1, #2, ... for the first second etc device in "
+                   "the list or"
+                << std::endl
+                << "                 bus@address for the device connected to a "
+                   "specific usb-bus / address combination (works only in Linux) or"
+                << std::endl
+                << "                 <serial-number> (only in Linux and for devices "
+                   "which provide serial numbers)"
+                << std::endl;
     }
   }
   else
@@ -174,30 +181,27 @@ usage (char ** argv)
 }
 
 int
-main (int argc, char ** argv)
+main(int argc, char** argv)
 {
   std::string arg;
   if (argc > 1)
-    arg = std::string (argv[1]);
-  
-  if (arg == "--help" || arg == "-h")
-  {
-    usage (argv);
+    arg = std::string(argv[1]);
+
+  if (arg == "--help" || arg == "-h") {
+    usage(argv);
     return 1;
   }
 
-  pcl::OpenNIGrabber grabber ("");
-  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba> ())
-  {
-    PCL_INFO ("PointXYZRGBA mode enabled.\n");
-    OpenNIFastMesh<pcl::PointXYZRGBA> v ("");
-    v.run (argc, argv);
+  pcl::OpenNIGrabber grabber("");
+  if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgba>()) {
+    PCL_INFO("PointXYZRGBA mode enabled.\n");
+    OpenNIFastMesh<pcl::PointXYZRGBA> v("");
+    v.run(argc, argv);
   }
-  else
-  {
-    PCL_INFO ("PointXYZ mode enabled.\n");
-    OpenNIFastMesh<pcl::PointXYZ> v ("");
-    v.run (argc, argv);
+  else {
+    PCL_INFO("PointXYZ mode enabled.\n");
+    OpenNIFastMesh<pcl::PointXYZ> v("");
+    v.run(argc, argv);
   }
-  return (0);
+  return 0;
 }

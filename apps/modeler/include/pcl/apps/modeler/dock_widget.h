@@ -38,24 +38,27 @@
 
 #include <QDockWidget>
 
-namespace pcl
-{
-  namespace modeler
-  {
-    class DockWidget : public QDockWidget
-    {
-      public:
-        explicit DockWidget(const QString &title, QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags()); 
-        explicit DockWidget(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags()); 
-        ~DockWidget();
+namespace pcl {
+namespace modeler {
 
-        void
-        setFocusBasedStyle(bool focused);
-      protected:
-        void
-        focusInEvent ( QFocusEvent * event ) override;
+class DockWidget : public QDockWidget {
+public:
+  explicit DockWidget(const QString& title,
+                      QWidget* parent = nullptr,
+                      Qt::WindowFlags flags = Qt::WindowFlags());
+  explicit DockWidget(QWidget* parent = nullptr,
+                      Qt::WindowFlags flags = Qt::WindowFlags());
+  ~DockWidget();
 
-      private:
-    };
-  }
-}
+  void
+  setFocusBasedStyle(bool focused);
+
+protected:
+  void
+  focusInEvent(QFocusEvent* event) override;
+
+private:
+};
+
+} // namespace modeler
+} // namespace pcl

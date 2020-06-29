@@ -8,7 +8,7 @@
 
 format() {
     # don't use a directory with whitespace
-    local whitelist="2d ml octree simulation stereo"
+    local whitelist="apps/3d_rec_framework apps/modeler 2d ml octree simulation stereo tracking"
 
     local PCL_DIR="${2}"
     local formatter="${1}"

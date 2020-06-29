@@ -88,10 +88,10 @@ pcl::isPointIn2DPolygon (const PointT &point, const pcl::PointCloud<PointT> &pol
   xy_polygon.points.resize (polygon.points.size ());
   for (std::size_t i = 0; i < polygon.points.size (); ++i)
   {
-    Eigen::Vector4f pt (polygon.points[i].x, polygon.points[i].y, polygon.points[i].z, 0);
-    xy_polygon.points[i].x = pt[k1];
-    xy_polygon.points[i].y = pt[k2];
-    xy_polygon.points[i].z = 0;
+    Eigen::Vector4f pt (polygon[i].x, polygon[i].y, polygon[i].z, 0);
+    xy_polygon[i].x = pt[k1];
+    xy_polygon[i].y = pt[k2];
+    xy_polygon[i].z = 0;
   }
   PointT xy_point;
   xy_point.z = 0;
@@ -111,12 +111,12 @@ pcl::isXYPointIn2DXYPolygon (const PointT &point, const pcl::PointCloud<PointT> 
 
   int nr_poly_points = static_cast<int> (polygon.points.size ());
   // start with the last point to make the check last point<->first point the first one
-  double xold = polygon.points[nr_poly_points - 1].x;
-  double yold = polygon.points[nr_poly_points - 1].y;
+  double xold = polygon[nr_poly_points - 1].x;
+  double yold = polygon[nr_poly_points - 1].y;
   for (int i = 0; i < nr_poly_points; i++)
   {
-    double xnew = polygon.points[i].x;
-    double ynew = polygon.points[i].y;
+    double xnew = polygon[i].x;
+    double ynew = polygon[i].y;
     if (xnew > xold)
     {
       x1 = xold;
@@ -216,9 +216,9 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   for (std::size_t i = 0; i < planar_hull_->points.size (); ++i)
   {
     Eigen::Vector4f pt (planar_hull_->points[i].x, planar_hull_->points[i].y, planar_hull_->points[i].z, 0);
-    polygon.points[i].x = pt[k1];
-    polygon.points[i].y = pt[k2];
-    polygon.points[i].z = 0;
+    polygon[i].x = pt[k1];
+    polygon[i].y = pt[k2];
+    polygon[i].z = 0;
   }
 
   PointT pt_xy;
@@ -234,9 +234,9 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
       continue;
 
     // Check what points are inside the hull
-    Eigen::Vector4f pt (projected_points.points[i].x,
-                         projected_points.points[i].y,
-                         projected_points.points[i].z, 0);
+    Eigen::Vector4f pt (projected_points[i].x,
+                         projected_points[i].y,
+                         projected_points[i].z, 0);
     pt_xy.x = pt[k1];
     pt_xy.y = pt[k2];
 

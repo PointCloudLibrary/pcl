@@ -36,76 +36,78 @@
 
 #pragma once
 
-#include <QTreeWidgetItem>
-
 #include <pcl/apps/modeler/abstract_item.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
 
-namespace pcl
-{
-  namespace modeler
+#include <QTreeWidgetItem>
+
+namespace pcl {
+namespace modeler {
+
+class CloudMesh;
+class DoubleParameter;
+
+class CloudMeshItem : public QTreeWidgetItem, public AbstractItem {
+public:
+  CloudMeshItem(QTreeWidgetItem* parent, const std::string& filename);
+  CloudMeshItem(QTreeWidgetItem* parent, CloudMesh::PointCloudPtr cloud);
+  CloudMeshItem(QTreeWidgetItem* parent, const CloudMeshItem& cloud_mesh_item);
+  ~CloudMeshItem();
+
+  inline CloudMesh::Ptr&
+  getCloudMesh()
   {
-    class CloudMesh;
-    class DoubleParameter;
-
-    class CloudMeshItem : public QTreeWidgetItem, public AbstractItem
-    {
-      public:
-        CloudMeshItem(QTreeWidgetItem* parent, const std::string& filename);
-        CloudMeshItem(QTreeWidgetItem* parent, CloudMesh::PointCloudPtr cloud);
-        CloudMeshItem(QTreeWidgetItem* parent, const CloudMeshItem& cloud_mesh_item);
-        ~CloudMeshItem();
-
-        inline CloudMesh::Ptr&
-        getCloudMesh()
-        {
-          return cloud_mesh_;
-        }
-
-        inline const CloudMesh::Ptr&
-        getCloudMesh() const
-        {
-          return cloud_mesh_;
-        }
-
-        static bool
-        savePointCloud(const QList<CloudMeshItem*>& items, const QString& filename);
-
-        bool
-        open();
-
-        void
-        createChannels();
-
-        void
-        updateChannels();
-
-        std::string
-        getItemName() const override {return "Cloud Mesh Item";}
-
-        void
-        updateRenderWindow();
-
-      protected:
-        void
-        prepareContextMenu(QMenu* menu) const override;
-
-        void
-        prepareProperties(ParameterDialog* parameter_dialog) override;
-
-        void
-        setProperties() override;
-
-      private:
-        std::string                           filename_;
-        CloudMesh::Ptr                        cloud_mesh_;
-
-        DoubleParameter*                      translation_x_;
-        DoubleParameter*                      translation_y_;
-        DoubleParameter*                      translation_z_;
-        DoubleParameter*                      rotation_x_;
-        DoubleParameter*                      rotation_y_;
-        DoubleParameter*                      rotation_z_;
-    };
+    return cloud_mesh_;
   }
-}
+
+  inline const CloudMesh::Ptr&
+  getCloudMesh() const
+  {
+    return cloud_mesh_;
+  }
+
+  static bool
+  savePointCloud(const QList<CloudMeshItem*>& items, const QString& filename);
+
+  bool
+  open();
+
+  void
+  createChannels();
+
+  void
+  updateChannels();
+
+  std::string
+  getItemName() const override
+  {
+    return "Cloud Mesh Item";
+  }
+
+  void
+  updateRenderWindow();
+
+protected:
+  void
+  prepareContextMenu(QMenu* menu) const override;
+
+  void
+  prepareProperties(ParameterDialog* parameter_dialog) override;
+
+  void
+  setProperties() override;
+
+private:
+  std::string filename_;
+  CloudMesh::Ptr cloud_mesh_;
+
+  DoubleParameter* translation_x_;
+  DoubleParameter* translation_y_;
+  DoubleParameter* translation_z_;
+  DoubleParameter* rotation_x_;
+  DoubleParameter* rotation_y_;
+  DoubleParameter* rotation_z_;
+};
+
+} // namespace modeler
+} // namespace pcl

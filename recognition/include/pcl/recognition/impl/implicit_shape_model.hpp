@@ -1147,7 +1147,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::simplifyCl
       continue;
 
     PointT pt_1 = in_point_cloud->points[i_point];
-    PointT pt_2 = temp_cloud.points[index];
+    PointT pt_2 = temp_cloud[index];
 
     float distance = (pt_1.x - pt_2.x) * (pt_1.x - pt_2.x) + (pt_1.y - pt_2.y) * (pt_1.y - pt_2.y) + (pt_1.z - pt_2.z) * (pt_1.z - pt_2.z);
     if (distance < dist_to_grid_center[index])

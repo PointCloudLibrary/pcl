@@ -40,6 +40,7 @@
 
 #include <pcl/common/distances.h>
 #include <pcl/surface/texture_mapping.h>
+#include <unordered_set>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT> std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >
@@ -579,6 +580,9 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
     removeOccludedPoints (transformed_cloud, filtered_cloud, octree_voxel_size, visible, occluded);
     visible_pts = *filtered_cloud;
 
+    // pushing occluded idxs into a set for faster lookup
+    std::unordered_set<index_t> occluded_set(occluded.cbegin(), occluded.cend());
+
     // find visible faces => add them to polygon N for camera N
     // add polygon group for current camera in clean
     std::vector<pcl::Vertices> visibleFaces_currentCam;
@@ -586,32 +590,18 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
     for (std::size_t faces = 0; faces < tex_mesh.tex_polygons[0].size (); ++faces)
     {
       // check if all the face's points are visible
-      bool faceIsVisible = true;
-      std::vector<int>::iterator it;
-
       // iterate over face's vertex
-      for (std::size_t current_pt_indice = 0; faceIsVisible && current_pt_indice < tex_mesh.tex_polygons[0][faces].vertices.size (); ++current_pt_indice)
+      const auto faceIsVisible = std::all_of(tex_mesh.tex_polygons[0][faces].vertices.cbegin(),
+                                             tex_mesh.tex_polygons[0][faces].vertices.cend(),
+                                             [&](const auto& vertex)
       {
-        // TODO this is far too long! Better create an helper function that raycasts here.
-        it = find (occluded.begin (), occluded.end (), tex_mesh.tex_polygons[0][faces].vertices[current_pt_indice]);
-
-        if (it == occluded.end ())
-        {
-          // point is not occluded
-          // does it land on the camera's image plane?
-          PointInT pt = transformed_cloud->points[tex_mesh.tex_polygons[0][faces].vertices[current_pt_indice]];
-          Eigen::Vector2f dummy_UV;
-          if (!getPointUVCoordinates (pt, camera, dummy_UV))
-          {
-            // point is not visible by the camera
-            faceIsVisible = false;
+          if (occluded_set.find(vertex) != occluded_set.cend()) {
+            return false;  // point is occluded
           }
-        }
-        else
-        {
-          faceIsVisible = false;
-        }
-      }
+          // is the point visible to the camera?
+          Eigen::Vector2f dummy_UV;
+          return this->getPointUVCoordinates ((*transformed_cloud)[vertex], camera, dummy_UV);
+      });
 
       if (faceIsVisible)
       {
@@ -1099,4 +1089,3 @@ pcl::TextureMapping<PointInT>::isFaceProjected (const Camera &camera, const Poin
     template class PCL_EXPORTS pcl::TextureMapping<T>;
 
 #endif /* TEXTURE_MAPPING_HPP_ */
-

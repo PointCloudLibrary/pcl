@@ -39,6 +39,7 @@
 #define PCL_LZF_IMAGE_IO_HPP_
 
 #include <pcl/console/print.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/io/debayer.h>
 
 #include <cstddef>
@@ -95,7 +96,7 @@ LZFDepth16ImageReader::read (
   {
     for (std::uint32_t u = 0; u < cloud.width; ++u, ++point_idx, depth_idx += 2)
     {
-      PointT &pt = cloud.points[point_idx];
+      PointT &pt = cloud[point_idx];
       unsigned short val;
       memcpy (&val, &uncompressed_data[depth_idx], sizeof (unsigned short));
       if (val == 0)
@@ -162,13 +163,13 @@ LZFDepth16ImageReader::readOMP (const std::string &filename,
   shared(cloud, constant_x, constant_y, uncompressed_data) \
   num_threads(num_threads)
 #else
-  (void) num_threads; // suppress warning if OMP is not present
+  pcl::utils::ignore(num_threads); // suppress warning if OMP is not present
 #endif
   for (int i = 0; i < static_cast< int> (cloud.size ()); ++i)
   {
     int u = i % cloud.width;
     int v = i / cloud.width;
-    PointT &pt = cloud.points[i];
+    PointT &pt = cloud[i];
     int depth_idx = 2*i;
     unsigned short val;
     memcpy (&val, &uncompressed_data[depth_idx], sizeof (unsigned short));
@@ -241,7 +242,7 @@ LZFRGB24ImageReader::read (
 
   for (std::size_t i = 0; i < cloud.size (); ++i, ++rgb_idx)
   {
-    PointT &pt = cloud.points[i];
+    PointT &pt = cloud[i];
 
     pt.b = color_b[rgb_idx];
     pt.g = color_g[rgb_idx];
@@ -293,11 +294,11 @@ LZFRGB24ImageReader::readOMP (
   shared(cloud, color_b, color_g, color_r) \
   num_threads(num_threads)
 #else
-  (void) num_threads; // suppress warning if OMP is not present
+  pcl::utils::ignore(num_threads); // suppress warning if OMP is not present
 #endif//_OPENMP
   for (long int i = 0; i < cloud.size (); ++i)
   {
-    PointT &pt = cloud.points[i];
+    PointT &pt = cloud[i];
 
     pt.b = color_b[i];
     pt.g = color_g[i];
@@ -350,12 +351,12 @@ LZFYUV422ImageReader::read (
     int v = color_v[i] - 128;
     int u = color_u[i] - 128;
 
-    PointT &pt1 = cloud.points[y_idx + 0];
+    PointT &pt1 = cloud[y_idx + 0];
     pt1.r =  CLIP_CHAR (color_y[y_idx + 0] + ((v * 18678 + 8192 ) >> 14));
     pt1.g =  CLIP_CHAR (color_y[y_idx + 0] + ((v * -9519 - u * 6472 + 8192) >> 14));
     pt1.b =  CLIP_CHAR (color_y[y_idx + 0] + ((u * 33292 + 8192 ) >> 14));
 
-    PointT &pt2 = cloud.points[y_idx + 1];
+    PointT &pt2 = cloud[y_idx + 1];
     pt2.r =  CLIP_CHAR (color_y[y_idx + 1] + ((v * 18678 + 8192 ) >> 14));
     pt2.g =  CLIP_CHAR (color_y[y_idx + 1] + ((v * -9519 - u * 6472 + 8192) >> 14));
     pt2.b =  CLIP_CHAR (color_y[y_idx + 1] + ((u * 33292 + 8192 ) >> 14));
@@ -408,7 +409,7 @@ LZFYUV422ImageReader::readOMP (
   shared(cloud, color_u, color_v, color_y, wh2) \
   num_threads(num_threads)
 #else
-  (void) num_threads; //suppress warning if OMP is not present
+  pcl::utils::ignore(num_threads); //suppress warning if OMP is not present
 #endif//_OPENMP
   for (int i = 0; i < wh2; ++i)
   {
@@ -416,12 +417,12 @@ LZFYUV422ImageReader::readOMP (
     int v = color_v[i] - 128;
     int u = color_u[i] - 128;
 
-    PointT &pt1 = cloud.points[y_idx + 0];
+    PointT &pt1 = cloud[y_idx + 0];
     pt1.r =  CLIP_CHAR (color_y[y_idx + 0] + ((v * 18678 + 8192 ) >> 14));
     pt1.g =  CLIP_CHAR (color_y[y_idx + 0] + ((v * -9519 - u * 6472 + 8192) >> 14));
     pt1.b =  CLIP_CHAR (color_y[y_idx + 0] + ((u * 33292 + 8192 ) >> 14));
 
-    PointT &pt2 = cloud.points[y_idx + 1];
+    PointT &pt2 = cloud[y_idx + 1];
     pt2.r =  CLIP_CHAR (color_y[y_idx + 1] + ((v * 18678 + 8192 ) >> 14));
     pt2.g =  CLIP_CHAR (color_y[y_idx + 1] + ((v * -9519 - u * 6472 + 8192) >> 14));
     pt2.b =  CLIP_CHAR (color_y[y_idx + 1] + ((u * 33292 + 8192 ) >> 14));
@@ -471,7 +472,7 @@ LZFBayer8ImageReader::read (
   int rgb_idx = 0;
   for (std::size_t i = 0; i < cloud.size (); ++i, rgb_idx += 3)
   {
-    PointT &pt = cloud.points[i];
+    PointT &pt = cloud[i];
 
     pt.b = rgb_buffer[rgb_idx + 2];
     pt.g = rgb_buffer[rgb_idx + 1];
@@ -523,11 +524,11 @@ LZFBayer8ImageReader::readOMP (
   default(none)          \
   num_threads(num_threads)
 #else
-  (void) num_threads; //suppress warning if OMP is not present
+  pcl::utils::ignore(num_threads); //suppress warning if OMP is not present
 #endif//_OPENMP
   for (long int i = 0; i < cloud.size (); ++i)
   {
-    PointT &pt = cloud.points[i];
+    PointT &pt = cloud[i];
     long int rgb_idx = 3*i;
     pt.b = rgb_buffer[rgb_idx + 2];
     pt.g = rgb_buffer[rgb_idx + 1];

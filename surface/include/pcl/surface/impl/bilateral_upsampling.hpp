@@ -123,24 +123,24 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut 
             }
           }
 
-        output.points[y*input_->width + x].r = input_->points[y*input_->width + x].r;
-        output.points[y*input_->width + x].g = input_->points[y*input_->width + x].g;
-        output.points[y*input_->width + x].b = input_->points[y*input_->width + x].b;
+        output[y*input_->width + x].r = input_->points[y*input_->width + x].r;
+        output[y*input_->width + x].g = input_->points[y*input_->width + x].g;
+        output[y*input_->width + x].b = input_->points[y*input_->width + x].b;
 
         if (norm_sum != 0.0f)
         {
           float depth = sum / norm_sum;
           Eigen::Vector3f pc (static_cast<float> (x) * depth, static_cast<float> (y) * depth, depth);
           Eigen::Vector3f pw (unprojection_matrix_ * pc);
-          output.points[y*input_->width + x].x = pw[0];
-          output.points[y*input_->width + x].y = pw[1];
-          output.points[y*input_->width + x].z = pw[2];
+          output[y*input_->width + x].x = pw[0];
+          output[y*input_->width + x].y = pw[1];
+          output[y*input_->width + x].z = pw[2];
         }
         else
         {
-          output.points[y*input_->width + x].x = nan;
-          output.points[y*input_->width + x].y = nan;
-          output.points[y*input_->width + x].z = nan;
+          output[y*input_->width + x].x = nan;
+          output[y*input_->width + x].y = nan;
+          output[y*input_->width + x].z = nan;
         }
       }
 

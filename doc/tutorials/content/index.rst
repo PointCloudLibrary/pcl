@@ -1,5 +1,9 @@
 .. toctree::
-  
+
+
+Introduction
+-----------
+
 The following links describe a set of basic PCL tutorials. Please note that
 their source codes may already be provided as part of the PCL regular releases,
 so check there before you start copy & pasting the code. The list of tutorials
@@ -11,27 +15,6 @@ below is automatically generated from reST files located in our git repository.
 
 As always, we would be happy to hear your comments and receive your
 contributions on any tutorial.
-
-Table of contents
------------------
-
-  * :ref:`basic_usage`
-  * :ref:`advanced_usage`
-  * :ref:`applications_tutorial`
-  * :ref:`features_tutorial`
-  * :ref:`filtering_tutorial`
-  * :ref:`i_o`
-  * :ref:`keypoints_tutorial`
-  * :ref:`kdtree_tutorial`
-  * :ref:`octree_tutorial`
-  * :ref:`range_images`
-  * :ref:`recognition_tutorial`
-  * :ref:`registration_tutorial`
-  * :ref:`sample_consensus`
-  * :ref:`segmentation_tutorial`
-  * :ref:`surface_tutorial`
-  * :ref:`visualization_tutorial`
-  * :ref:`gpu`
 
 .. _basic_usage:
 

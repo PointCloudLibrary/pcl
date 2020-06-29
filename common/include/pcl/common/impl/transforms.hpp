@@ -37,6 +37,10 @@
  *
  */
 
+#pragma once
+
+#include <pcl/common/transforms.h>
+
 #if defined(__SSE2__)
 #include <xmmintrin.h>
 #endif
@@ -49,6 +53,7 @@
 #include <cmath>
 #include <cstddef>
 #include <vector>
+
 
 namespace pcl
 {
@@ -246,9 +251,9 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     // otherwise we get errors during the multiplication (?)
     for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
     {
-      if (!std::isfinite (cloud_in.points[i].x) ||
-          !std::isfinite (cloud_in.points[i].y) ||
-          !std::isfinite (cloud_in.points[i].z))
+      if (!std::isfinite (cloud_in[i].x) ||
+          !std::isfinite (cloud_in[i].y) ||
+          !std::isfinite (cloud_in[i].z))
         continue;
       tf.se3 (cloud_in[i].data, cloud_out[i].data);
     }
@@ -258,7 +263,7 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 
 template <typename PointT, typename Scalar> void
 transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                     const std::vector<int> &indices,
+                     const Indices &indices,
                      pcl::PointCloud<PointT> &cloud_out,
                      const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
                      bool copy_all_fields)
@@ -281,7 +286,7 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     {
       // Copy fields first, then transform xyz data
       if (copy_all_fields)
-        cloud_out.points[i] = cloud_in.points[indices[i]];
+        cloud_out[i] = cloud_in[indices[i]];
       tf.se3 (cloud_in[indices[i]].data, cloud_out[i].data);
     }
   }
@@ -292,10 +297,10 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     for (std::size_t i = 0; i < npts; ++i)
     {
       if (copy_all_fields)
-        cloud_out.points[i] = cloud_in.points[indices[i]];
-      if (!std::isfinite (cloud_in.points[indices[i]].x) ||
-          !std::isfinite (cloud_in.points[indices[i]].y) ||
-          !std::isfinite (cloud_in.points[indices[i]].z))
+        cloud_out[i] = cloud_in[indices[i]];
+      if (!std::isfinite (cloud_in[indices[i]].x) ||
+          !std::isfinite (cloud_in[indices[i]].y) ||
+          !std::isfinite (cloud_in[indices[i]].z))
         continue;
       tf.se3 (cloud_in[indices[i]].data, cloud_out[i].data);
     }
@@ -340,9 +345,9 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   {
     for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
     {
-      if (!std::isfinite (cloud_in.points[i].x) ||
-          !std::isfinite (cloud_in.points[i].y) ||
-          !std::isfinite (cloud_in.points[i].z))
+      if (!std::isfinite (cloud_in[i].x) ||
+          !std::isfinite (cloud_in[i].y) ||
+          !std::isfinite (cloud_in[i].z))
         continue;
       tf.se3 (cloud_in[i].data, cloud_out[i].data);
       tf.so3 (cloud_in[i].data_n, cloud_out[i].data_n);
@@ -353,7 +358,7 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
 
 template <typename PointT, typename Scalar> void
 transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
-                                const std::vector<int> &indices,
+                                const Indices &indices,
                                 pcl::PointCloud<PointT> &cloud_out,
                                 const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
                                 bool copy_all_fields)
@@ -376,7 +381,7 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
     {
       // Copy fields first, then transform
       if (copy_all_fields)
-        cloud_out.points[i] = cloud_in.points[indices[i]];
+        cloud_out[i] = cloud_in[indices[i]];
       tf.se3 (cloud_in[indices[i]].data, cloud_out[i].data);
       tf.so3 (cloud_in[indices[i]].data_n, cloud_out[i].data_n);
     }
@@ -388,11 +393,11 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
     {
       // Copy fields first, then transform
       if (copy_all_fields)
-        cloud_out.points[i] = cloud_in.points[indices[i]];
+        cloud_out[i] = cloud_in[indices[i]];
 
-      if (!std::isfinite (cloud_in.points[indices[i]].x) ||
-          !std::isfinite (cloud_in.points[indices[i]].y) ||
-          !std::isfinite (cloud_in.points[indices[i]].z))
+      if (!std::isfinite (cloud_in[indices[i]].x) ||
+          !std::isfinite (cloud_in[indices[i]].y) ||
+          !std::isfinite (cloud_in[indices[i]].z))
         continue;
 
       tf.se3 (cloud_in[indices[i]].data, cloud_out[i].data);

@@ -55,7 +55,7 @@ projectToPlaneFromViewpoint (pcl::PointCloud<PointT>& cloud, Eigen::Vector4f& no
   projected_cloud.resize (cloud.points.size ());
   for (std::size_t i = 0; i < cloud.points.size (); i++)
   {
-    Eigen::Vector3f pt (cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
+    Eigen::Vector3f pt (cloud[i].x, cloud[i].y, cloud[i].z);
     //Eigen::Vector3f intersection = (vp, pt, norm, centroid);
     float u = norm.dot ((centroid - vp)) / norm.dot ((pt - vp));
     Eigen::Vector3f intersection (vp + u * (pt - vp));
@@ -212,7 +212,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
     pcl::OrganizedConnectedComponentSegmentation<PointT,PointLT>::findLabeledRegionBoundary (inlier_indices[i].indices[0], labels, boundary_indices[i]);
     boundary_cloud.points.resize (boundary_indices[i].indices.size ());
     for (std::size_t j = 0; j < boundary_indices[i].indices.size (); j++)
-      boundary_cloud.points[j] = input_->points[boundary_indices[i].indices[j]];
+      boundary_cloud[j] = input_->points[boundary_indices[i].indices[j]];
     
     Eigen::Vector3f centroid = Eigen::Vector3f (centroids[i][0],centroids[i][1],centroids[i][2]);
     Eigen::Vector4f model = Eigen::Vector4f (model_coefficients[i].values[0],
@@ -251,7 +251,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
     pcl::OrganizedConnectedComponentSegmentation<PointT,PointLT>::findLabeledRegionBoundary (inlier_indices[i].indices[max_inlier_idx], labels, boundary_indices[i]);
     boundary_cloud.points.resize (boundary_indices[i].indices.size ());
     for (std::size_t j = 0; j < boundary_indices[i].indices.size (); j++)
-      boundary_cloud.points[j] = input_->points[boundary_indices[i].indices[j]];
+      boundary_cloud[j] = input_->points[boundary_indices[i].indices[j]];
     
     Eigen::Vector3f centroid = Eigen::Vector3f (centroids[i][0],centroids[i][1],centroids[i][2]);
     Eigen::Vector4f model = Eigen::Vector4f (model_coefficients[i].values[0],
@@ -295,7 +295,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
     pcl::OrganizedConnectedComponentSegmentation<PointT,PointLT>::findLabeledRegionBoundary (inlier_indices[i].indices[max_inlier_idx], labels, boundary_indices[i]);
     boundary_cloud.points.resize (boundary_indices[i].indices.size ());
     for (std::size_t j = 0; j < boundary_indices[i].indices.size (); j++)
-      boundary_cloud.points[j] = input_->points[boundary_indices[i].indices[j]];
+      boundary_cloud[j] = input_->points[boundary_indices[i].indices[j]];
 
     Eigen::Vector3f centroid = Eigen::Vector3f (centroids[i][0],centroids[i][1],centroids[i][2]);
     Eigen::Vector4f model = Eigen::Vector4f (model_coefficients[i].values[0],

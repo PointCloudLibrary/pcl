@@ -41,77 +41,75 @@
 
 #include <pcl/point_types.h>
 
-namespace pcl
-{
-  namespace tracking
-  {
-    /* state definition */
-    struct ParticleXYZRPY;
-    struct ParticleXYR;
+namespace pcl {
+namespace tracking {
+/* state definition */
+struct ParticleXYZRPY;
+struct ParticleXYR;
 
-    /* \brief return the value of normal distribution */
-    PCL_EXPORTS double
-    sampleNormal (double mean, double sigma);
-  }
-}
+/* \brief return the value of normal distribution */
+PCL_EXPORTS double
+sampleNormal(double mean, double sigma);
+} // namespace tracking
+} // namespace pcl
 
 #include <pcl/tracking/impl/tracking.hpp>
 
 // ==============================
 // =====POINT_CLOUD_REGISTER=====
 // ==============================
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::tracking::_ParticleXYZRPY,
-    (float, x, x)
-    (float, y, y)
-    (float, z, z)
-    (float, roll, roll)
-    (float, pitch, pitch)
-    (float, yaw, yaw)
-)
-POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYZRPY, pcl::tracking::_ParticleXYZRPY)
 
+// clang-format off
+POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::tracking::_ParticleXYZRPY,
+                                  (float, x, x)
+                                  (float, y, y)
+                                  (float, z, z)
+                                  (float, roll, roll)
+                                  (float, pitch, pitch)
+                                  (float, yaw, yaw))
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYZRPY,
+                                   pcl::tracking::_ParticleXYZRPY)
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::tracking::_ParticleXYRPY,
-    (float, x, x)
-    (float, y, y)
-    (float, z, z)
-    (float, roll, roll)
-    (float, pitch, pitch)
-    (float, yaw, yaw)
-)
-POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYRPY, pcl::tracking::_ParticleXYRPY)
+POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::tracking::_ParticleXYRPY,
+                                  (float, x, x)
+                                  (float, y, y)
+                                  (float, z, z)
+                                  (float, roll, roll)
+                                  (float, pitch, pitch)
+                                  (float, yaw, yaw))
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYRPY,
+                                   pcl::tracking::_ParticleXYRPY)
 
+POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::tracking::_ParticleXYRP,
+                                  (float, x, x)
+                                  (float, y, y)
+                                  (float, z, z)
+                                  (float, roll, roll)
+                                  (float, pitch, pitch)
+                                  (float, yaw, yaw))
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYRP,
+                                   pcl::tracking::_ParticleXYRP)
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::tracking::_ParticleXYRP,
-    (float, x, x)
-    (float, y, y)
-    (float, z, z)
-    (float, roll, roll)
-    (float, pitch, pitch)
-    (float, yaw, yaw)
-)
-POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYRP, pcl::tracking::_ParticleXYRP)
+POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::tracking::_ParticleXYR,
+                                  (float, x, x)
+                                  (float, y, y)
+                                  (float, z, z)
+                                  (float, roll, roll)
+                                  (float, pitch, pitch)
+                                  (float, yaw, yaw))
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYR,
+                                   pcl::tracking::_ParticleXYR)
 
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::tracking::_ParticleXYR,
-    (float, x, x)
-    (float, y, y)
-    (float, z, z)
-    (float, roll, roll)
-    (float, pitch, pitch)
-    (float, yaw, yaw)
-)
-POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYR, pcl::tracking::_ParticleXYR)
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::tracking::_ParticleXYZR,
-    (float, x, x)
-    (float, y, y)
-    (float, z, z)
-    (float, roll, roll)
-    (float, pitch, pitch)
-    (float, yaw, yaw)
-)
-POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYZR, pcl::tracking::_ParticleXYZR)
+POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::tracking::_ParticleXYZR,
+                                  (float, x, x)
+                                  (float, y, y)
+                                  (float, z, z)
+                                  (float, roll, roll)
+                                  (float, pitch, pitch)
+                                  (float, yaw, yaw))
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::tracking::ParticleXYZR,
+                                   pcl::tracking::_ParticleXYZR)
+// clang-format on
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/tracking/impl/tracking.hpp>

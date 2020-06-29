@@ -106,6 +106,7 @@
 #include <boost/uuid/sha1.hpp>
 #endif
 #include <boost/filesystem.hpp>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/console/parse.h>
 
 // Support for VTK 7.1 upwards
@@ -1926,10 +1927,10 @@ pcl::visualization::PCLVisualizer::getCameraFile () const
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+PCL_DEPRECATED(1, 12, "This method can safely not be called anymore as we're just re-rendering all scenes now.")
 void
 pcl::visualization::PCLVisualizer::updateCamera ()
 {
-  PCL_WARN ("[pcl::visualization::PCLVisualizer::updateCamera()] This method was deprecated, just re-rendering all scenes now.");
   rens_->InitTraversal ();
   // Update the camera parameters
   win_->Render ();
@@ -3211,7 +3212,7 @@ pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (
   poly_points->SetNumberOfPoints (point_cloud.points.size ());
 
   for (std::size_t i = 0; i < point_cloud.points.size (); ++i)
-    poly_points->InsertPoint (i, point_cloud.points[i].x, point_cloud.points[i].y, point_cloud.points[i].z);
+    poly_points->InsertPoint (i, point_cloud[i].x, point_cloud[i].y, point_cloud[i].z);
 
   // Create a cell array to store the lines in and add the lines to it
   vtkSmartPointer <vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New ();
@@ -3329,7 +3330,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
     poly_points->SetNumberOfPoints (cloud.size ());
     for (std::size_t i = 0; i < cloud.points.size (); ++i)
     {
-      const pcl::PointXYZRGB &p = cloud.points[i];
+      const pcl::PointXYZRGB &p = cloud[i];
       poly_points->InsertPoint (i, p.x, p.y, p.z);
       const unsigned char color[3] = { p.r, p.g, p.b };
       colors->InsertNextTupleValue (color);
@@ -4382,7 +4383,7 @@ pcl::visualization::PCLVisualizer::setUseVbos (bool use_vbos)
   style_->setUseVbos (use_vbos_);
 #else
   PCL_WARN ("[PCLVisualizer::setUseVbos] Has no effect when OpenGL version is ≥ 2\n");
-  (void) use_vbos;
+  pcl::utils::ignore(use_vbos);
 #endif
 }
 

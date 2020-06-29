@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>libpcl-all-dev</name>
+  <version>0.1.0</version>
+  <description>
+    Standalone, large scale, open project for 2D/3D image and point cloud processing
+  </description>
+
+  <!-- One maintainer tag required, multiple allowed, one person per tag -->
+  <maintainer email="tyagi.kunal@live.com">kunal_tyagi</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://github.com/PointCloudLibrary/pcl</url>
+
+  <author email="tyagi.kunal@live.com">kunal_tyagi</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>libeigen3-dev</build_depend>
+  <build_depend>libflann-dev</build_depend>
+      <!--libvtk6-dev -->
+  <test_depend>gtest</test_depend>
+  <doc_depend>doxygen</doc_depend>
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+  </export>
+</package>

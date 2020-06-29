@@ -41,7 +41,9 @@
 #pragma once
 
 #include <pcl/common/angles.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/surface/reconstruction.h>
+
 
 namespace pcl
 {

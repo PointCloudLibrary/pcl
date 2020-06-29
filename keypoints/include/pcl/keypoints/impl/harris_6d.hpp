@@ -275,7 +275,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
 
 #pragma omp parallel for \
   default(none) \
-  private(pointOut, covar, covariance, solver) \
+  firstprivate(pointOut, covar, covariance, solver) \
   num_threads(threads_)
   for (unsigned pIdx = 0; pIdx < input_->size (); ++pIdx)
   {

@@ -35,12 +35,13 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_IMPL_GRABCUT_HPP
-#define PCL_SEGMENTATION_IMPL_GRABCUT_HPP
+#pragma once
 
+#include <pcl/common/distances.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/search/organized.h>
 #include <pcl/search/kdtree.h>
-#include <pcl/common/distances.h>
+
 
 namespace pcl
 {
@@ -515,6 +516,4 @@ GrabCut<PointT>::extract (std::vector<pcl::PointIndices>& clusters)
 }
 
 } // namespace pcl
-
-#endif
 

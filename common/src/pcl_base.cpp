@@ -46,9 +46,9 @@ pcl::PCLBase<pcl::PCLPointCloud2>::PCLBase ()
   : use_indices_ (false)
   , fake_indices_ (false)
   , field_sizes_ (0)
-  , x_idx_ (-1)
-  , y_idx_ (-1)
-  , z_idx_ (-1)
+  , x_idx_ (UNAVAILABLE)
+  , y_idx_ (UNAVAILABLE)
+  , z_idx_ (UNAVAILABLE)
   , x_field_name_ ("x")
   , y_field_name_ ("y")
   , z_field_name_ ("z")
@@ -122,7 +122,7 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
   if (!indices_)
   {
     fake_indices_ = true;
-    indices_.reset (new std::vector<int>);
+    indices_.reset (new Indices);
   }
 
   // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
@@ -157,7 +157,7 @@ pcl::PCLBase<pcl::PCLPointCloud2>::setIndices (const IndicesPtr &indices)
 void
 pcl::PCLBase<pcl::PCLPointCloud2>::setIndices (const PointIndicesConstPtr &indices)
 {
-  indices_.reset (new std::vector<int> (indices->indices));
+  indices_.reset (new Indices(indices->indices));
   fake_indices_ = false;
   use_indices_  = true;
 }

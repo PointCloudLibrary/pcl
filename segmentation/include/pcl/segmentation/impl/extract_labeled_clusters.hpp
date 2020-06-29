@@ -88,7 +88,7 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
       {
         if (processed[nn_indices[j]])                             // Has this point been processed before ?
           continue;
-        if (cloud.points[i].label == cloud.points[nn_indices[j]].label)
+        if (cloud[i].label == cloud[nn_indices[j]].label)
         {
           // Perform a simple Euclidean clustering
           seed_queue.push_back (nn_indices[j]);
@@ -111,7 +111,7 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
       r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
 
       r.header = cloud.header;
-      labeled_clusters[cloud.points[i].label].push_back (r);   // We could avoid a copy by working directly in the vector
+      labeled_clusters[cloud[i].label].push_back (r);   // We could avoid a copy by working directly in the vector
     }
   }
 }

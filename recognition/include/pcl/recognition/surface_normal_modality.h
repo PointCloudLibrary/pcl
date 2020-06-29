@@ -601,10 +601,10 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals ()
 
       if (std::isnan(px) || pz > 2.0f) 
       {
-        surface_normals_.points[index].normal_x = bad_point;
-        surface_normals_.points[index].normal_y = bad_point;
-        surface_normals_.points[index].normal_z = bad_point;
-        surface_normals_.points[index].curvature = bad_point;
+        surface_normals_[index].normal_x = bad_point;
+        surface_normals_[index].normal_y = bad_point;
+        surface_normals_[index].normal_z = bad_point;
+        surface_normals_[index].curvature = bad_point;
 
         quantized_surface_normals_ (x, y) = 0;
 
@@ -660,10 +660,10 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals ()
 
       if (length <= 0.0f)
       {
-        surface_normals_.points[index].normal_x = bad_point;
-        surface_normals_.points[index].normal_y = bad_point;
-        surface_normals_.points[index].normal_z = bad_point;
-        surface_normals_.points[index].curvature = bad_point;
+        surface_normals_[index].normal_x = bad_point;
+        surface_normals_[index].normal_y = bad_point;
+        surface_normals_[index].normal_z = bad_point;
+        surface_normals_[index].curvature = bad_point;
 
         quantized_surface_normals_ (x, y) = 0;
       }
@@ -675,10 +675,10 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals ()
         const float normal_y = ny * normInv;
         const float normal_z = nz * normInv;
 
-        surface_normals_.points[index].normal_x = normal_x;
-        surface_normals_.points[index].normal_y = normal_y;
-        surface_normals_.points[index].normal_z = normal_z;
-        surface_normals_.points[index].curvature = bad_point;
+        surface_normals_[index].normal_x = normal_x;
+        surface_normals_[index].normal_y = normal_y;
+        surface_normals_[index].normal_z = normal_z;
+        surface_normals_[index].curvature = bad_point;
 
         float angle = 11.25f + std::atan2 (normal_y, normal_x)*180.0f/3.14f;
 

@@ -110,8 +110,8 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
   {
     for (int j = 0; j < ndims; ++j)
     {
-      ASSERT_EQ (output0.points[i].histogram[j], output1.points[i].histogram[j]);
-      ASSERT_EQ (output1.points[i].histogram[j], output2.points[i].histogram[j]);
+      ASSERT_EQ (output0[i].histogram[j], output1[i].histogram[j]);
+      ASSERT_EQ (output1[i].histogram[j], output2[i].histogram[j]);
     }
   }
 
@@ -143,7 +143,7 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
   {
     for (int j = 0; j < ndims; ++j)
     {
-      ASSERT_EQ (output3.points[i].histogram[j], output4.points[i].histogram[j]);
+      ASSERT_EQ (output3[i].histogram[j], output4[i].histogram[j]);
     }
   }
 }
@@ -470,7 +470,7 @@ TEST (PCL, VFHEstimation)
   EXPECT_EQ (int (vfhs->points.size ()), 1);
 
   //for (std::size_t d = 0; d < 308; ++d)
-  //  std::cerr << vfhs.points[0].histogram[d] << std::endl;
+  //  std::cerr << vfhs[0].histogram[d] << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -512,9 +512,9 @@ TEST (PCL, GFPFH)
   const float ref_values[] = { 1877, 6375, 5361, 14393, 6674, 2471, 2248, 2753, 3117, 4585, 14388, 32407, 15122, 3061, 3202, 794 };
 
   EXPECT_EQ (descriptor.points.size (), 1);
-  for (std::size_t i = 0; i < std::size_t (descriptor.points[0].descriptorSize ()); ++i)
+  for (std::size_t i = 0; i < std::size_t (descriptor[0].descriptorSize ()); ++i)
   {
-    EXPECT_EQ (descriptor.points[0].histogram[i], ref_values[i]);
+    EXPECT_EQ (descriptor[0].histogram[i], ref_values[i]);
   }
 }
 

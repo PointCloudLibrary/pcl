@@ -34,49 +34,51 @@
  *
  */
 
-#include <pcl/apps/modeler/cloud_mesh_item.h>
-#include <pcl/apps/modeler/render_window.h>
-#include <pcl/apps/modeler/render_window_item.h>
-#include <pcl/apps/modeler/points_actor_item.h>
-#include <pcl/apps/modeler/normals_actor_item.h>
-#include <pcl/apps/modeler/surface_actor_item.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
+#include <pcl/apps/modeler/cloud_mesh_item.h>
 #include <pcl/apps/modeler/main_window.h>
+#include <pcl/apps/modeler/normals_actor_item.h>
 #include <pcl/apps/modeler/parameter.h>
 #include <pcl/apps/modeler/parameter_dialog.h>
+#include <pcl/apps/modeler/points_actor_item.h>
+#include <pcl/apps/modeler/render_window.h>
+#include <pcl/apps/modeler/render_window_item.h>
+#include <pcl/apps/modeler/surface_actor_item.h>
 #include <pcl/common/common.h>
+
 #include <vtkRenderWindow.h>
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::CloudMeshItem::CloudMeshItem (QTreeWidgetItem* parent, const std::string& filename)
-  :QTreeWidgetItem(parent),
-  filename_(filename),
-  cloud_mesh_(new CloudMesh),
-  translation_x_(new DoubleParameter("Translation X", "Translation X", 0.0, -1.0, 1.0)),
-  translation_y_(new DoubleParameter("Translation Y", "Translation Y", 0.0, -1.0, 1.0)),
-  translation_z_(new DoubleParameter("Translation Z", "Translation Z", 0.0, -1.0, 1.0)),
-  rotation_x_(new DoubleParameter("Rotation X", "Rotation X", 0.0, -180.0, 180.0)),
-  rotation_y_(new DoubleParameter("Rotation Y", "Rotation Y", 0.0, -180.0, 180.0)),
-  rotation_z_(new DoubleParameter("Rotation Z", "Rotation Z", 0.0, -180.0, 180.0))
+pcl::modeler::CloudMeshItem::CloudMeshItem(QTreeWidgetItem* parent,
+                                           const std::string& filename)
+: QTreeWidgetItem(parent)
+, filename_(filename)
+, cloud_mesh_(new CloudMesh)
+, translation_x_(new DoubleParameter("Translation X", "Translation X", 0.0, -1.0, 1.0))
+, translation_y_(new DoubleParameter("Translation Y", "Translation Y", 0.0, -1.0, 1.0))
+, translation_z_(new DoubleParameter("Translation Z", "Translation Z", 0.0, -1.0, 1.0))
+, rotation_x_(new DoubleParameter("Rotation X", "Rotation X", 0.0, -180.0, 180.0))
+, rotation_y_(new DoubleParameter("Rotation Y", "Rotation Y", 0.0, -180.0, 180.0))
+, rotation_z_(new DoubleParameter("Rotation Z", "Rotation Z", 0.0, -180.0, 180.0))
 {
-  setFlags(flags()&(~Qt::ItemIsDropEnabled));
+  setFlags(flags() & (~Qt::ItemIsDropEnabled));
   setText(0, QString(filename.c_str()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::CloudMeshItem::CloudMeshItem (QTreeWidgetItem* parent, CloudMesh::PointCloudPtr cloud)
-  :QTreeWidgetItem(parent),
-  filename_("unnamed point cloud"),
-  cloud_mesh_(new CloudMesh (std::move(cloud))),
-  translation_x_(new DoubleParameter("Translation X", "Translation X", 0.0, -1.0, 1.0)),
-  translation_y_(new DoubleParameter("Translation Y", "Translation Y", 0.0, -1.0, 1.0)),
-  translation_z_(new DoubleParameter("Translation Z", "Translation Z", 0.0, -1.0, 1.0)),
-  rotation_x_(new DoubleParameter("Rotation X", "Rotation X", 0.0, -180.0, 180.0)),
-  rotation_y_(new DoubleParameter("Rotation Y", "Rotation Y", 0.0, -180.0, 180.0)),
-  rotation_z_(new DoubleParameter("Rotation Z", "Rotation Z", 0.0, -180.0, 180.0))
+pcl::modeler::CloudMeshItem::CloudMeshItem(QTreeWidgetItem* parent,
+                                           CloudMesh::PointCloudPtr cloud)
+: QTreeWidgetItem(parent)
+, filename_("unnamed point cloud")
+, cloud_mesh_(new CloudMesh(std::move(cloud)))
+, translation_x_(new DoubleParameter("Translation X", "Translation X", 0.0, -1.0, 1.0))
+, translation_y_(new DoubleParameter("Translation Y", "Translation Y", 0.0, -1.0, 1.0))
+, translation_z_(new DoubleParameter("Translation Z", "Translation Z", 0.0, -1.0, 1.0))
+, rotation_x_(new DoubleParameter("Rotation X", "Rotation X", 0.0, -180.0, 180.0))
+, rotation_y_(new DoubleParameter("Rotation Y", "Rotation Y", 0.0, -180.0, 180.0))
+, rotation_z_(new DoubleParameter("Rotation Z", "Rotation Z", 0.0, -180.0, 180.0))
 {
-  setFlags(flags()&(~Qt::ItemIsDropEnabled));
+  setFlags(flags() & (~Qt::ItemIsDropEnabled));
   setText(0, QString(filename_.c_str()));
 
   createChannels();
@@ -85,18 +87,19 @@ pcl::modeler::CloudMeshItem::CloudMeshItem (QTreeWidgetItem* parent, CloudMesh::
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::CloudMeshItem::CloudMeshItem(QTreeWidgetItem* parent,  const CloudMeshItem& cloud_mesh_item)
-  :QTreeWidgetItem(parent),
-  filename_(cloud_mesh_item.filename_),
-  cloud_mesh_(cloud_mesh_item.cloud_mesh_),
-  translation_x_(new DoubleParameter("Translation X", "Translation X", 0.0, -1.0, 1.0)),
-  translation_y_(new DoubleParameter("Translation Y", "Translation Y", 0.0, -1.0, 1.0)),
-  translation_z_(new DoubleParameter("Translation Z", "Translation Z", 0.0, -1.0, 1.0)),
-  rotation_x_(new DoubleParameter("Rotation X", "Rotation X", 0.0, -180.0, 180.0)),
-  rotation_y_(new DoubleParameter("Rotation Y", "Rotation Y", 0.0, -180.0, 180.0)),
-  rotation_z_(new DoubleParameter("Rotation Z", "Rotation Z", 0.0, -180.0, 180.0))
+pcl::modeler::CloudMeshItem::CloudMeshItem(QTreeWidgetItem* parent,
+                                           const CloudMeshItem& cloud_mesh_item)
+: QTreeWidgetItem(parent)
+, filename_(cloud_mesh_item.filename_)
+, cloud_mesh_(cloud_mesh_item.cloud_mesh_)
+, translation_x_(new DoubleParameter("Translation X", "Translation X", 0.0, -1.0, 1.0))
+, translation_y_(new DoubleParameter("Translation Y", "Translation Y", 0.0, -1.0, 1.0))
+, translation_z_(new DoubleParameter("Translation Z", "Translation Z", 0.0, -1.0, 1.0))
+, rotation_x_(new DoubleParameter("Rotation X", "Rotation X", 0.0, -180.0, 180.0))
+, rotation_y_(new DoubleParameter("Rotation Y", "Rotation Y", 0.0, -180.0, 180.0))
+, rotation_z_(new DoubleParameter("Rotation Z", "Rotation Z", 0.0, -180.0, 180.0))
 {
-  setFlags(flags()&(~Qt::ItemIsDropEnabled));
+  setFlags(flags() & (~Qt::ItemIsDropEnabled));
   setText(0, QString(filename_.c_str()));
 
   createChannels();
@@ -105,38 +108,36 @@ pcl::modeler::CloudMeshItem::CloudMeshItem(QTreeWidgetItem* parent,  const Cloud
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::CloudMeshItem::~CloudMeshItem ()
-{
-}
+pcl::modeler::CloudMeshItem::~CloudMeshItem() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::modeler::CloudMeshItem::savePointCloud(const QList<CloudMeshItem*>& items, const QString& filename)
+pcl::modeler::CloudMeshItem::savePointCloud(const QList<CloudMeshItem*>& items,
+                                            const QString& filename)
 {
   if (items.size() == 1)
-    return (items.first()->getCloudMesh()->save(filename.toStdString()));
+    return items.first()->getCloudMesh()->save(filename.toStdString());
 
   std::vector<const CloudMesh*> cloud_meshes;
-  for (const auto &item : items)
-  {
+  for (const auto& item : items) {
     cloud_meshes.push_back(item->getCloudMesh().get());
   }
 
-  return (CloudMesh::save(cloud_meshes, filename.toStdString()));
+  return CloudMesh::save(cloud_meshes, filename.toStdString());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::modeler::CloudMeshItem::open()
 {
-  if(!cloud_mesh_->open(filename_))
-    return (false);
+  if (!cloud_mesh_->open(filename_))
+    return false;
 
   createChannels();
 
   treeWidget()->expandItem(this);
 
-  return (true);
+  return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -155,21 +156,20 @@ void
 pcl::modeler::CloudMeshItem::createChannels()
 {
   RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
-  addChild(new PointsActorItem(this, cloud_mesh_, render_window_item->getRenderWindow()->GetRenderWindow()));
-  addChild(new NormalsActorItem(this, cloud_mesh_, render_window_item->getRenderWindow()->GetRenderWindow()));
-  addChild(new SurfaceActorItem(this, cloud_mesh_, render_window_item->getRenderWindow()->GetRenderWindow()));
-  for (int i = 0, i_end = childCount(); i < i_end; ++ i)
-  {
+  addChild(new PointsActorItem(
+      this, cloud_mesh_, render_window_item->getRenderWindow()->GetRenderWindow()));
+  addChild(new NormalsActorItem(
+      this, cloud_mesh_, render_window_item->getRenderWindow()->GetRenderWindow()));
+  addChild(new SurfaceActorItem(
+      this, cloud_mesh_, render_window_item->getRenderWindow()->GetRenderWindow()));
+  for (int i = 0, i_end = childCount(); i < i_end; ++i) {
     ChannelActorItem* child_item = dynamic_cast<ChannelActorItem*>(child(i));
     child_item->init();
   }
 
   render_window_item->getRenderWindow()->updateAxes();
   render_window_item->getRenderWindow()->resetCamera();
-
-  return;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -178,16 +178,13 @@ pcl::modeler::CloudMeshItem::updateChannels()
   cloud_mesh_->updateVtkPoints();
   cloud_mesh_->updateVtkPolygons();
 
-  for (int i = 0, i_end = childCount(); i < i_end; ++ i)
-  {
+  for (int i = 0, i_end = childCount(); i < i_end; ++i) {
     ChannelActorItem* child_item = dynamic_cast<ChannelActorItem*>(child(i));
     child_item->update();
   }
 
   RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
   render_window_item->getRenderWindow()->updateAxes();
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,23 +209,27 @@ pcl::modeler::CloudMeshItem::prepareProperties(ParameterDialog* parameter_dialog
   double x_range = max_pt.x() - min_pt.x();
   double y_range = max_pt.y() - min_pt.y();
   double z_range = max_pt.z() - min_pt.z();
-  translation_x_->setLow(-x_range/2);
-  translation_x_->setHigh(x_range/2);
-  translation_x_->setStep(x_range/1000);
-  translation_y_->setLow(-y_range/2);
-  translation_y_->setHigh(y_range/2);
-  translation_y_->setStep(y_range/1000);
-  translation_z_->setLow(-z_range/2);
-  translation_z_->setHigh(z_range/2);
-  translation_z_->setStep(z_range/1000);
+  translation_x_->setLow(-x_range / 2);
+  translation_x_->setHigh(x_range / 2);
+  translation_x_->setStep(x_range / 1000);
+  translation_y_->setLow(-y_range / 2);
+  translation_y_->setHigh(y_range / 2);
+  translation_y_->setStep(y_range / 1000);
+  translation_z_->setLow(-z_range / 2);
+  translation_z_->setHigh(z_range / 2);
+  translation_z_->setStep(z_range / 1000);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::CloudMeshItem::setProperties()
 {
-  cloud_mesh_->transform(*translation_x_, *translation_y_, *translation_z_,
-    *rotation_x_, *rotation_y_, *rotation_z_);
+  cloud_mesh_->transform(*translation_x_,
+                         *translation_y_,
+                         *translation_z_,
+                         *rotation_x_,
+                         *rotation_y_,
+                         *rotation_z_);
 
   updateChannels();
 }
@@ -238,14 +239,12 @@ void
 pcl::modeler::CloudMeshItem::updateRenderWindow()
 {
   RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(parent());
-  for (int i = 0, i_end = childCount(); i < i_end; ++ i)
-  {
+  for (int i = 0, i_end = childCount(); i < i_end; ++i) {
     ChannelActorItem* child_item = dynamic_cast<ChannelActorItem*>(child(i));
-    child_item->switchRenderWindow(render_window_item->getRenderWindow()->GetRenderWindow());
+    child_item->switchRenderWindow(
+        render_window_item->getRenderWindow()->GetRenderWindow());
   }
 
   render_window_item->getRenderWindow()->updateAxes();
   render_window_item->getRenderWindow()->resetCamera();
-
-  return;
 }

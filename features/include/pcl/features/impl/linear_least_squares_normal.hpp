@@ -245,19 +245,19 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
 
       if (length <= 0.0f)
       {
-        output.points[index].normal_x = bad_point;
-        output.points[index].normal_y = bad_point;
-        output.points[index].normal_z = bad_point;
-        output.points[index].curvature = bad_point;
+        output[index].normal_x = bad_point;
+        output[index].normal_y = bad_point;
+        output[index].normal_z = bad_point;
+        output[index].curvature = bad_point;
       }
       else
       {
         const float normInv = 1.0f / std::sqrt (length);
 
-        output.points[index].normal_x = nx * normInv;
-        output.points[index].normal_y = ny * normInv;
-        output.points[index].normal_z = nz * normInv;
-        output.points[index].curvature = bad_point;
+        output[index].normal_x = nx * normInv;
+        output[index].normal_y = ny * normInv;
+        output[index].normal_z = nz * normInv;
+        output[index].curvature = bad_point;
       }
     }
   }

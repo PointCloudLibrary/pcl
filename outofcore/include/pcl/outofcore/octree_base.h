@@ -611,22 +611,15 @@ namespace pcl
         bool
         checkExtension (const boost::filesystem::path& path_name);
 
-
-        /** \brief DEPRECATED - Flush all nodes' cache 
-         *  \deprecated this was moved to the octree_node class
-         */
+        /** \brief Flush all nodes' cache */
         void
         flushToDisk ();
 
-        /** \brief DEPRECATED - Flush all non leaf nodes' cache 
-         *  \deprecated
-         */
+        /** \brief Flush all non leaf nodes' cache */
         void
         flushToDiskLazy ();
 
-        /** \brief DEPRECATED - Flush empty nodes only 
-         *  \deprecated
-         */
+        /** \brief Flush empty nodes only */
         void
         DeAllocEmptyNodeCache ();
 

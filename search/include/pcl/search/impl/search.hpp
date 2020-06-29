@@ -87,7 +87,7 @@ pcl::search::Search<PointT>::nearestKSearch (
     Indices &k_indices, std::vector<float> &k_sqr_distances) const
 {
   assert (index >= 0 && index < static_cast<index_t> (cloud.points.size ()) && "Out-of-bounds error in nearestKSearch!");
-  return (nearestKSearch (cloud.points[index], k, k_indices, k_sqr_distances));
+  return (nearestKSearch (cloud[index], k, k_indices, k_sqr_distances));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -139,7 +139,7 @@ pcl::search::Search<PointT>::radiusSearch (
     unsigned int max_nn) const
 {
   assert (index >= 0 && index < static_cast<index_t> (cloud.points.size ()) && "Out-of-bounds error in radiusSearch!");
-  return (radiusSearch(cloud.points[index], radius, k_indices, k_sqr_distances, max_nn));
+  return (radiusSearch(cloud[index], radius, k_indices, k_sqr_distances, max_nn));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

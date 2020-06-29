@@ -264,6 +264,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
 
       std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
       j++;
+      ptr += 3;
     }
     nr_points = j;
     points->SetNumberOfPoints (nr_points);
@@ -1477,6 +1478,8 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
     return (false);
 
   vtkSmartPointer<vtkPolyData> polydata = reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ();
+  if (!polydata)
+      return false;
   // Convert the PointCloud to VTK PolyData
   convertPointCloudToVTKPolyData<PointT> (cloud, polydata, am_it->second.cells);
 
@@ -1584,6 +1587,8 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
 
   // Set the cells and the vertices
   vertices->SetCells (nr_points, cells);
+  // Set the cell count explicitly as the array doesn't get modified enough so the above method updates accordingly. See #4001 and #3452
+  vertices->SetNumberOfCells(nr_points);
 
   // Get the colors from the handler
   bool has_colors = false;

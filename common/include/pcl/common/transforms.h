@@ -82,14 +82,14 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> void 
   transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                       const std::vector<int> &indices, 
+                       const Indices &indices,
                        pcl::PointCloud<PointT> &cloud_out, 
                        const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
                        bool copy_all_fields = true);
 
   template <typename PointT> void 
   transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                       const std::vector<int> &indices, 
+                       const Indices &indices,
                        pcl::PointCloud<PointT> &cloud_out, 
                        const Eigen::Affine3f &transform,
                        bool copy_all_fields = true)
@@ -108,7 +108,7 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> void 
   transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                       const pcl::PointIndices &indices, 
+                       const pcl::PointIndices &indices,
                        pcl::PointCloud<PointT> &cloud_out, 
                        const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
                        bool copy_all_fields = true)
@@ -118,7 +118,7 @@ namespace pcl
 
   template <typename PointT> void 
   transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                       const pcl::PointIndices &indices, 
+                       const pcl::PointIndices &indices,
                        pcl::PointCloud<PointT> &cloud_out, 
                        const Eigen::Affine3f &transform,
                        bool copy_all_fields = true)
@@ -161,14 +161,14 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> void 
   transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
-                                  const std::vector<int> &indices, 
+                                  const Indices &indices,
                                   pcl::PointCloud<PointT> &cloud_out, 
                                   const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
                                   bool copy_all_fields = true);
 
   template <typename PointT> void 
   transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
-                                  const std::vector<int> &indices, 
+                                  const Indices &indices,
                                   pcl::PointCloud<PointT> &cloud_out, 
                                   const Eigen::Affine3f &transform,
                                   bool copy_all_fields = true)
@@ -187,7 +187,7 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> void 
   transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
-                                  const pcl::PointIndices &indices, 
+                                  const pcl::PointIndices &indices,
                                   pcl::PointCloud<PointT> &cloud_out, 
                                   const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
                                   bool copy_all_fields = true)
@@ -198,7 +198,7 @@ namespace pcl
 
   template <typename PointT> void 
   transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
-                                  const pcl::PointIndices &indices, 
+                                  const pcl::PointIndices &indices,
                                   pcl::PointCloud<PointT> &cloud_out, 
                                   const Eigen::Affine3f &transform,
                                   bool copy_all_fields = true)
@@ -245,7 +245,7 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> void 
   transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                       const std::vector<int> &indices, 
+                       const Indices &indices,
                        pcl::PointCloud<PointT> &cloud_out, 
                        const Eigen::Matrix<Scalar, 4, 4> &transform,
                        bool copy_all_fields = true)
@@ -256,7 +256,7 @@ namespace pcl
 
   template <typename PointT> void 
   transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                       const std::vector<int> &indices, 
+                       const Indices &indices,
                        pcl::PointCloud<PointT> &cloud_out, 
                        const Eigen::Matrix4f &transform,
                        bool copy_all_fields = true)
@@ -275,7 +275,7 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> void 
   transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                       const pcl::PointIndices &indices, 
+                       const pcl::PointIndices &indices,
                        pcl::PointCloud<PointT> &cloud_out, 
                        const Eigen::Matrix<Scalar, 4, 4> &transform,
                        bool copy_all_fields = true)
@@ -285,7 +285,7 @@ namespace pcl
 
   template <typename PointT> void 
   transformPointCloud (const pcl::PointCloud<PointT> &cloud_in, 
-                       const pcl::PointIndices &indices, 
+                       const pcl::PointIndices &indices,
                        pcl::PointCloud<PointT> &cloud_out, 
                        const Eigen::Matrix4f &transform,
                        bool copy_all_fields = true)
@@ -336,7 +336,7 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> void 
   transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
-                                  const std::vector<int> &indices, 
+                                  const Indices &indices,
                                   pcl::PointCloud<PointT> &cloud_out, 
                                   const Eigen::Matrix<Scalar, 4, 4> &transform,
                                   bool copy_all_fields = true)
@@ -348,7 +348,7 @@ namespace pcl
 
   template <typename PointT> void 
   transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
-                                  const std::vector<int> &indices, 
+                                  const Indices &indices,
                                   pcl::PointCloud<PointT> &cloud_out, 
                                   const Eigen::Matrix4f &transform,
                                   bool copy_all_fields = true)
@@ -369,7 +369,7 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> void 
   transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
-                                  const pcl::PointIndices &indices, 
+                                  const pcl::PointIndices &indices,
                                   pcl::PointCloud<PointT> &cloud_out, 
                                   const Eigen::Matrix<Scalar, 4, 4> &transform,
                                   bool copy_all_fields = true)
@@ -381,7 +381,7 @@ namespace pcl
 
   template <typename PointT> void 
   transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in, 
-                                  const pcl::PointIndices &indices, 
+                                  const pcl::PointIndices &indices,
                                   pcl::PointCloud<PointT> &cloud_out, 
                                   const Eigen::Matrix4f &transform,
                                   bool copy_all_fields = true)

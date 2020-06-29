@@ -178,7 +178,7 @@ namespace pcl
         {
           for(int i = 0 ; i < nb_values_ ; ++i)
           {
-            cloud_.points[0].histogram[i] = values_[i];
+            cloud_[0].histogram[i] = values_[i];
           }  
         }
     

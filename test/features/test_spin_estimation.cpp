@@ -270,7 +270,7 @@ TEST (PCL, IntensitySpinEstimation)
   ispin_est.compute (ispin_output);
 
   // Compare to independently verified values
-  const IntensitySpin &ispin = ispin_output.points[220];
+  const IntensitySpin &ispin = ispin_output[220];
   const float correct_ispin_feature_values[20] = {2.4387f, 9.4737f, 21.3232f, 28.3025f, 22.5639f, 13.2426f, 35.7026f, 60.0755f,
                                                   66.9240f, 50.4225f, 42.7086f, 83.5818f, 105.4513f, 97.8454f, 67.3801f,
                                                   75.7127f, 119.4726f, 120.9649f, 93.4829f, 55.4045f};

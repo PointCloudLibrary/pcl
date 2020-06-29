@@ -839,7 +839,7 @@ main (int argc, char** argv)
   // Tranpose the cloud_model
   /*for (std::size_t i = 0; i < cloud_model.points.size (); ++i)
   {
-  //  cloud_model.points[i].z += 1;
+  //  cloud_model[i].z += 1;
   }*/
 }
 /* ]--- */

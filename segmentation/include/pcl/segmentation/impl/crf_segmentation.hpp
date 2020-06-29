@@ -450,7 +450,7 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
 
   for (std::size_t i = 0; i < N; i++)
   {
-    tmp_cloud_OLD.points[i].label = map[i];
+    tmp_cloud_OLD[i].label = map[i];
   }
 
 
@@ -479,9 +479,6 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
 
   // ----------------------------------//
   // --------      -------------------//
-
-  pcl::PointCloud<pcl::PointXYZRGBL> tmp_cloud;
-  tmp_cloud = *filtered_anno_;
 
   // create dense CRF
   DenseCrf crf (N, n_labels);
@@ -544,18 +541,21 @@ pcl::CrfSegmentation<PointT>::segmentPoints (pcl::PointCloud<pcl::PointXYZRGBL> 
 
   for (int i = 0; i < N; i++)
   {
-    output.points[i].label = labels[r[i]];
+    output[i].label = labels[r[i]];
   }
 
 
 /*
+  pcl::PointCloud<pcl::PointXYZRGBL> tmp_cloud;	
+  tmp_cloud = *filtered_anno_;
+
   bool c = true;
   for (std::size_t i = 0; i < tmp_cloud.points.size (); i++)
   {
-    if (tmp_cloud.points[i].label != tmp_cloud_OLD.points[i].label)
+    if (tmp_cloud[i].label != tmp_cloud_OLD[i].label)
     {
       
-      std::cout << "idx: " << i << " =  " <<tmp_cloud.points[i].label << " |  " << tmp_cloud_OLD.points[i].label << std::endl;
+      std::cout << "idx: " << i << " =  " <<tmp_cloud[i].label << " |  " << tmp_cloud_OLD[i].label << std::endl;
       c = false;
       break;
     }

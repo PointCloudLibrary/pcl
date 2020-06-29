@@ -36,13 +36,13 @@
  * $Id$
  */
 
-#ifndef PCL_PCA_IMPL_HPP
-#define PCL_PCA_IMPL_HPP
+#pragma once
 
-#include <pcl/point_types.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
+#include <pcl/common/pca.h>
 #include <pcl/common/transforms.h>
+#include <pcl/point_types.h>
 #include <pcl/exceptions.h>
 
 
@@ -244,6 +244,4 @@ PCA<PointT>::reconstruct (const PointCloud& projection, PointCloud& input)
 }
 
 } // namespace pcl
-
-#endif
 

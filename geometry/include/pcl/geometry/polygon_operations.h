@@ -33,8 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: point_operators.h 4389 2012-02-10 10:10:26Z nizar $
- *
  */
 
 #pragma once
