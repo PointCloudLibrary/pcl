@@ -153,8 +153,8 @@
       _PCL_COMPAT_MINOR_VERSION(                                                       \
           Minor,                                                                       \
           _PCL_DEPRECATED_IMPL(_PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Message)),   \
-          "unneeded_deprecation"),                                                       \
-      "major_version_mismatch")
+          unneeded_deprecation),                                                       \
+      major_version_mismatch)
 
 /**
  * \brief macro for compatibility across compilers and help remove old deprecated
