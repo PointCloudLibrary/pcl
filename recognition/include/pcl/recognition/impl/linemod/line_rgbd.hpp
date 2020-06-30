@@ -165,7 +165,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeBoundingBoxAndCenterTemplatePointClo
   BoundingBoxXYZ bb;
   bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
 
-  Eigen::Vector4f geometric_center = Eigen::Vector3f::Zero ();
+  Eigen::Vector4f geometric_center = Eigen::Vector4f::Zero ();
   Eigen::Vector4f min_pos, max_pos;
   min_pos.fill (std::numeric_limits<float>::max ());
   max_pos.fill (std::numeric_limits<float>::lowest ());
