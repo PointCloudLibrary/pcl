@@ -283,7 +283,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplatePCD (
     }
     
     template_point_clouds_.resize (template_point_clouds_.size () + 1);
-    pcd_reader.read (file_name, template_point_clouds_[template_point_clouds_.size () - 1]);
+    pcd_reader.read (file, template_point_clouds_[template_point_clouds_.size () - 1]);
 
     ++file_loaded;
   }
