@@ -39,7 +39,9 @@
 
 #pragma once
 
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/keypoints/agast_2d.h>
+
 
 namespace pcl
 {

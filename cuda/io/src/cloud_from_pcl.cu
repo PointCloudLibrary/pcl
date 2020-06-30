@@ -51,11 +51,11 @@ fromPCL (const pcl::PointCloud<pcl::PointXYZRGB> &input, PointCloudAOS<Host> &ou
 //  output.points.resize (input.points.size());
 //  for (std::size_t i = 0; i < input.points.size (); ++i)
 //  {
-//    output.points[i].x = input.points[i].x;
-//    output.points[i].y = input.points[i].y;
-//    output.points[i].z = input.points[i].z;
+//    output[i].x = input[i].x;
+//    output[i].y = input[i].y;
+//    output[i].z = input[i].z;
 //    // Pack RGB into a float
-//    output.points[i].rgb = *(float*)(&input.points[i].rgb);
+//    output[i].rgb = *(float*)(&input[i].rgb);
 //  }
 //  thrust::copy (output.points.begin(), output.points.end (), input.points.begin());
 //  output.width    = input.width;

@@ -343,7 +343,7 @@ namespace pcl
     */
   PCL_EXPORTS void
   copyPointCloud (const pcl::PCLPointCloud2 &cloud_in,
-                  const std::vector<int> &indices,
+                  const Indices &indices,
                   pcl::PCLPointCloud2 &cloud_out);
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
@@ -355,7 +355,7 @@ namespace pcl
     */
   PCL_EXPORTS void
   copyPointCloud (const pcl::PCLPointCloud2 &cloud_in,
-                  const std::vector<int, Eigen::aligned_allocator<int> > &indices,
+                  const IndicesAllocator< Eigen::aligned_allocator<int> > &indices,
                   pcl::PCLPointCloud2 &cloud_out);
 
   /** \brief Copy fields and point cloud data from \a cloud_in to \a cloud_out
@@ -383,7 +383,7 @@ namespace pcl
     */
   template <typename PointT, typename IndicesVectorAllocator = std::allocator<int>> void
   copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                  const std::vector<int, IndicesVectorAllocator> &indices,
+                  const IndicesAllocator< IndicesVectorAllocator> &indices,
                   pcl::PointCloud<PointT> &cloud_out);
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
@@ -428,7 +428,7 @@ namespace pcl
     */
   template <typename PointInT, typename PointOutT, typename IndicesVectorAllocator = std::allocator<int>> void
   copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
-                  const std::vector<int, IndicesVectorAllocator> &indices,
+                  const IndicesAllocator<IndicesVectorAllocator> &indices,
                   pcl::PointCloud<PointOutT> &cloud_out);
 
   /** \brief Extract the indices of a given point cloud as a new point cloud

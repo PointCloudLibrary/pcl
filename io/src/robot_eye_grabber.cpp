@@ -36,6 +36,7 @@
  */
 
 #include <pcl/io/robot_eye_grabber.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/console/print.h>
 
 /////////////////////////////////////////////////////////////////////////////

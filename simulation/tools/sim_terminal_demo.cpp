@@ -10,16 +10,18 @@
  * pcl_sim_terminal_demo 2 ../../../../kmcl/models/table_models/meta_model.ply
  */
 
+#include <pcl/memory.h>
+
 #include <Eigen/Dense>
-#include <boost/shared_ptr.hpp>
+
+#include "simulation_io.hpp"
+
 #include <cmath>
 #include <iostream>
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
-
-#include "simulation_io.hpp"
 
 using namespace Eigen;
 using namespace pcl;

@@ -314,7 +314,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::projectPoints (
     // Iterate over each point
     for (std::size_t i = 0; i < projected_points.points.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the plane
     for (std::size_t i = 0; i < inliers.size (); ++i)
@@ -340,9 +340,9 @@ pcl::SampleConsensusModelCircle3D<PointT>::projectPoints (
       // K : Point on Circle
       Eigen::Vector3d K = C + r * helper_vectorP_projC.normalized ();
 
-      projected_points.points[i].x = static_cast<float> (K[0]);
-      projected_points.points[i].y = static_cast<float> (K[1]);
-      projected_points.points[i].z = static_cast<float> (K[2]);
+      projected_points[i].x = static_cast<float> (K[0]);
+      projected_points[i].y = static_cast<float> (K[1]);
+      projected_points[i].z = static_cast<float> (K[2]);
     }
   }
   else
@@ -356,7 +356,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::projectPoints (
     // Iterate over each point
     for (std::size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the plane
     for (std::size_t i = 0; i < inliers.size (); ++i)
@@ -381,9 +381,9 @@ pcl::SampleConsensusModelCircle3D<PointT>::projectPoints (
       // K : Point on Circle
       Eigen::Vector3d K = C + r * helper_vectorP_projC.normalized ();
 
-      projected_points.points[i].x = static_cast<float> (K[0]);
-      projected_points.points[i].y = static_cast<float> (K[1]);
-      projected_points.points[i].z = static_cast<float> (K[2]);
+      projected_points[i].x = static_cast<float> (K[0]);
+      projected_points[i].y = static_cast<float> (K[1]);
+      projected_points[i].z = static_cast<float> (K[2]);
     }
   }
 }

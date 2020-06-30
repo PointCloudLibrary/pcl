@@ -85,7 +85,7 @@ SORT_MEMBERS_CTORS_1ST = NO
 SORT_GROUP_NAMES       = NO
 SORT_BY_SCOPE_NAME     = NO
 STRICT_PROTO_MATCHING  = NO
-GENERATE_TODOLIST      = NO
+GENERATE_TODOLIST      = YES
 GENERATE_TESTLIST      = NO
 GENERATE_BUGLIST       = NO
 GENERATE_DEPRECATEDLIST= YES
@@ -312,7 +312,7 @@ PREDEFINED =           = "HAVE_QHULL=1" \
                          "HAVE_RSSDK=1" \
                          "DOXYGEN_ONLY=1" \
                          "_WIN32=1" \
-                         "PCL_DEPRECATED(1, 12, x)=/** \deprecated x */"
+                         "PCL_DEPRECATED(major,minor,message)=/** \deprecated Scheduled for removal in version major.\ minor: message */"
 EXPAND_AS_DEFINED      =
 SKIP_FUNCTION_MACROS   = YES
 

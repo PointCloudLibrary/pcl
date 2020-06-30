@@ -3,6 +3,7 @@ set(SUBSYS_DESC "Point cloud library global unit tests")
 
 set(DEFAULT OFF)
 set(build TRUE)
+set(REASON "Disabled by default")
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
@@ -22,7 +23,7 @@ if(MSVC)
   add_custom_target(tests "${CMAKE_CTEST_COMMAND}" -C $<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release> -V -T Test VERBATIM)
 else()
   add_custom_target(tests "${CMAKE_CTEST_COMMAND}" -V -T Test VERBATIM)
-endif()  
+endif()
 
 set_target_properties(tests PROPERTIES FOLDER "Tests")
 

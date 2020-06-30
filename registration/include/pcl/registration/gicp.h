@@ -109,6 +109,8 @@ namespace pcl
         , rotation_epsilon_(2e-3)
         , mahalanobis_(0)
         , max_inner_iterations_(20)
+        ,translation_gradient_tolerance_(1e-2)
+        ,rotation_gradient_tolerance_(1e-2) 
       {
         min_number_correspondences_ = 4;
         reg_name_ = "GeneralizedIterativeClosestPoint";
@@ -222,7 +224,7 @@ namespace pcl
         * consecutive rotations) as set by the user.
         */
       inline double
-      getRotationEpsilon () { return (rotation_epsilon_); }
+      getRotationEpsilon () const { return rotation_epsilon_; }
 
       /** \brief Set the number of neighbors used when selecting a point neighbourhood
         * to compute covariances.
@@ -237,17 +239,40 @@ namespace pcl
         * the user
         */
       int
-      getCorrespondenceRandomness () { return (k_correspondences_); }
+      getCorrespondenceRandomness () const { return k_correspondences_; }
 
-      /** set maximum number of iterations at the optimization step
+      /** \brief Set maximum number of iterations at the optimization step
         * \param[in] max maximum number of iterations for the optimizer
         */
       void
       setMaximumOptimizerIterations (int max) { max_inner_iterations_ = max; }
 
-      ///\return maximum number of iterations at the optimization step
+      /** \brief Return maximum number of iterations at the optimization step
+	  */
       int
-      getMaximumOptimizerIterations () { return (max_inner_iterations_); }
+      getMaximumOptimizerIterations () const { return max_inner_iterations_; }
+
+	  /** \brief Set the minimal translation gradient threshold for early optimization stop
+        * \param[in] translation gradient threshold in meters
+        */
+      void
+      setTranslationGradientTolerance (double tolerance) { translation_gradient_tolerance_ = tolerance; }
+
+      /** \brief Return the minimal translation gradient threshold for early optimization stop
+	  */
+      double
+      getTranslationGradientTolerance () const { return translation_gradient_tolerance_; }
+
+	  /** \brief Set the minimal rotation gradient threshold for early optimization stop
+        * \param[in] rotation gradient threshold in radians
+        */
+      void
+      setRotationGradientTolerance (double tolerance) { rotation_gradient_tolerance_ = tolerance; }
+
+      /** \brief Return the minimal rotation gradient threshold for early optimization stop
+	  */
+      double
+      getRotationGradientTolerance () const { return rotation_gradient_tolerance_; }
 
     protected:
 
@@ -283,7 +308,6 @@ namespace pcl
       /** \brief Temporary pointer to the target dataset indices. */
       const std::vector<int> *tmp_idx_tgt_;
 
-
       /** \brief Input cloud points covariances. */
       MatricesVectorPtr input_covariances_;
 
@@ -295,6 +319,12 @@ namespace pcl
 
       /** \brief maximum number of optimizations */
       int max_inner_iterations_;
+
+	  /** \brief minimal translation gradient for early optimization stop */
+	  double translation_gradient_tolerance_;
+
+	  /** \brief minimal rotation gradient for early optimization stop */
+	  double rotation_gradient_tolerance_;
 
       /** \brief compute points covariances matrices according to the K nearest
         * neighbors. K is set via setCorrespondenceRandomness() method.
@@ -355,6 +385,7 @@ namespace pcl
         double operator() (const Vector6d& x) override;
         void  df(const Vector6d &x, Vector6d &df) override;
         void fdf(const Vector6d &x, double &f, Vector6d &df) override;
+        BFGSSpace::Status checkGradient(const Vector6d& g) override;
 
         const GeneralizedIterativeClosestPoint *gicp_;
       };

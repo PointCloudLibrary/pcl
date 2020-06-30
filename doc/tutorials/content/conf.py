@@ -1,8 +1,6 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
-
 # -- General configuration -----------------------------------------------------
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
@@ -10,7 +8,7 @@ extensions = ['sphinx.ext.imgmath', 'sphinxcontrib.doxylink.doxylink']
 imgmath_dvipng_args = ['-gamma', '1.5', '-D', '110', '-bg', 'Transparent']
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+# templates_path = ['_templates']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -19,7 +17,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'PCL'
+project = u'Point Cloud Library'
 copyright = ''
 
 # The version info for the project you're documenting, acts as replacement for
@@ -72,7 +70,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
-html_theme = 'sphinxdoc'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -107,7 +105,7 @@ html_static_path = ['_static']
 html_use_modindex = False
 
 # If false, no index is generated.
-html_use_index = False
+html_use_index = True
 
 # If true, the index is split into individual pages for each letter.
 html_split_index = False
@@ -122,13 +120,8 @@ html_show_sourcelink = False
 
 # If nonempty, this is the file name suffix for HTML files (e.g. ".xhtml").
 html_file_suffix = '.html'
-
-html_sidebars = {
-    '**': [],
-    'using/windows': [],
-}
-html_show_copyright = False
-html_show_sphinx = False
+html_show_copyright = True
+html_show_sphinx = True
 html_add_permalinks = u''
 needs_sphinx = u'1.1'
 file_insertion_enabled = True

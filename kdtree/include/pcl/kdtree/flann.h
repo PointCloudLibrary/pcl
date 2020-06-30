@@ -40,7 +40,7 @@
 
 #include <pcl/pcl_macros.h>
 
-PCL_PRAGMA_WARNING("This header is deprecated and will be removed in an upcoming release.")
+PCL_DEPRECATED_HEADER(1, 12, "")
 
 #if defined _MSC_VER
 #  pragma warning(disable: 4267 4244)

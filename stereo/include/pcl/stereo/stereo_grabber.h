@@ -38,10 +38,10 @@
 #pragma once
 
 #include <pcl/common/time_trigger.h>
-#include <pcl/conversions.h>
 #include <pcl/io/grabber.h>
-#include <pcl/point_cloud.h>
 #include <pcl/stereo/stereo_matching.h>
+#include <pcl/conversions.h>
+#include <pcl/point_cloud.h>
 
 namespace pcl {
 

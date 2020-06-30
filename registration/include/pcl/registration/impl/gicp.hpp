@@ -37,18 +37,22 @@
  * $Id$
  *
  */
+
 #ifndef PCL_REGISTRATION_IMPL_GICP_HPP_
 #define PCL_REGISTRATION_IMPL_GICP_HPP_
 
 #include <pcl/registration/boost.h>
 #include <pcl/registration/exceptions.h>
 
-////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
 template <typename PointSource, typename PointTarget>
 template<typename PointT> void
-pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovariances(typename pcl::PointCloud<PointT>::ConstPtr cloud,
-                                                                                    const typename pcl::search::KdTree<PointT>::Ptr kdtree,
-                                                                                    MatricesVector& cloud_covariances)
+GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovariances(typename pcl::PointCloud<PointT>::ConstPtr cloud,
+                                                                               const typename pcl::search::KdTree<PointT>::Ptr kdtree,
+                                                                               MatricesVector& cloud_covariances)
 {
   if (k_correspondences_ > int (cloud->size ()))
   {
@@ -121,9 +125,9 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovarian
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget> void
-pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeRDerivative(const Vector6d &x, const Eigen::Matrix3d &R, Vector6d& g) const
+GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeRDerivative(const Vector6d &x, const Eigen::Matrix3d &R, Vector6d& g) const
 {
   Eigen::Matrix3d dR_dPhi;
   Eigen::Matrix3d dR_dTheta;
@@ -176,13 +180,13 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeRDerivat
   g[5] = matricesInnerProd(dR_dPsi, R);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget> void
-pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationBFGS (const PointCloudSource &cloud_src,
-                                                                                                  const std::vector<int> &indices_src,
-                                                                                                  const PointCloudTarget &cloud_tgt,
-                                                                                                  const std::vector<int> &indices_tgt,
-                                                                                                  Eigen::Matrix4f &transformation_matrix)
+GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationBFGS (const PointCloudSource &cloud_src,
+                                                                                             const std::vector<int> &indices_src,
+                                                                                             const PointCloudTarget &cloud_tgt,
+                                                                                             const std::vector<int> &indices_tgt,
+                                                                                             Eigen::Matrix4f &transformation_matrix)
 {
   if (indices_src.size () < 4)     // need at least 4 samples
   {
@@ -192,9 +196,12 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTr
   }
   // Set the initial solution
   Vector6d x = Vector6d::Zero ();
+  // translation part
   x[0] = transformation_matrix (0,3);
   x[1] = transformation_matrix (1,3);
   x[2] = transformation_matrix (2,3);
+  // rotation part (Z Y X euler angles convention)
+  // see: https://en.wikipedia.org/wiki/Rotation_matrix#General_rotations
   x[3] = std::atan2 (transformation_matrix (2,1), transformation_matrix (2,2));
   x[4] = asin (-transformation_matrix (2,0));
   x[5] = std::atan2 (transformation_matrix (1,0), transformation_matrix (0,0));
@@ -206,7 +213,6 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTr
   tmp_idx_tgt_ = &indices_tgt;
 
   // Optimize using forward-difference approximation LM
-  const double gradient_tol = 1e-2;
   OptimizationFunctorWithIndices functor(this);
   BFGS<OptimizationFunctorWithIndices> bfgs (functor);
   bfgs.parameters.sigma = 0.01;
@@ -227,7 +233,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTr
     {
       break;
     }
-    result = bfgs.testGradient(gradient_tol);
+    result = bfgs.testGradient();
   } while(result == BFGSSpace::Running && inner_iterations_ < max_inner_iterations_);
   if(result == BFGSSpace::NoProgress || result == BFGSSpace::Success || inner_iterations_ == max_inner_iterations_)
   {
@@ -241,9 +247,9 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTr
                         "[pcl::" << getClassName () << "::TransformationEstimationBFGS::estimateRigidTransformation] BFGS solver didn't converge!");
 }
 
-////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget> inline double
-pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFunctorWithIndices::operator() (const Vector6d& x)
+GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFunctorWithIndices::operator() (const Vector6d& x)
 {
   Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
   gicp_->applyState(transformation_matrix, x);
@@ -266,9 +272,9 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFun
   return f/m;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget> inline void
-pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFunctorWithIndices::df (const Vector6d& x, Vector6d& g)
+GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFunctorWithIndices::df (const Vector6d& x, Vector6d& g)
 {
   Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
   gicp_->applyState(transformation_matrix, x);
@@ -302,9 +308,9 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFun
   gicp_->computeRDerivative(x, R, g);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget> inline void
-pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFunctorWithIndices::fdf (const Vector6d& x, double& f, Vector6d& g)
+GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFunctorWithIndices::fdf (const Vector6d& x, double& f, Vector6d& g)
 {
   Eigen::Matrix4f transformation_matrix = gicp_->base_transformation_;
   gicp_->applyState(transformation_matrix, x);
@@ -339,9 +345,29 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFun
   gicp_->computeRDerivative(x, R, g);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget> inline BFGSSpace::Status
+GeneralizedIterativeClosestPoint<PointSource, PointTarget>::OptimizationFunctorWithIndices::checkGradient(const Vector6d& g)
+{
+  auto translation_epsilon = gicp_->translation_gradient_tolerance_;
+  auto rotation_epsilon = gicp_->rotation_gradient_tolerance_;
+
+  if ((translation_epsilon < 0.) || (rotation_epsilon < 0.))
+    return BFGSSpace::NegativeGradientEpsilon;
+
+  // express translation gradient as norm of translation parameters
+  auto translation_grad = g.head<3>().norm();
+
+  // express rotation gradient as a norm of rotation parameters
+  auto rotation_grad = g.tail<3>().norm();
+
+  if ((translation_grad < translation_epsilon) && (rotation_grad < rotation_epsilon))
+	return BFGSSpace::Success;
+
+  return BFGSSpace::Running;
+}
+
 template <typename PointSource, typename PointTarget> inline void
-pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess)
+GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess)
 {
   pcl::IterativeClosestPoint<PointSource, PointTarget>::initComputeReciprocal ();
   using namespace std;
@@ -354,7 +380,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
   // Compute target cloud covariance matrices
   if ((!target_covariances_) || (target_covariances_->empty ()))
   {
-    target_covariances_.reset (new MatricesVector);  
+    target_covariances_.reset (new MatricesVector);
     computeCovariances<PointTarget> (target_, tree_, *target_covariances_);
   }
   // Compute input cloud covariance matrices
@@ -463,10 +489,11 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
   pcl::transformPointCloud (*input_, output, final_transformation_);
 }
 
+
 template <typename PointSource, typename PointTarget> void
-pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::applyState(Eigen::Matrix4f &t, const Vector6d& x) const
+GeneralizedIterativeClosestPoint<PointSource, PointTarget>::applyState(Eigen::Matrix4f &t, const Vector6d& x) const
 {
-  // !!! CAUTION Stanford GICP uses the Z Y X euler angles convention
+  // Z Y X euler angles convention
   Eigen::Matrix3f R;
   R = Eigen::AngleAxisf (static_cast<float> (x[5]), Eigen::Vector3f::UnitZ ())
     * Eigen::AngleAxisf (static_cast<float> (x[4]), Eigen::Vector3f::UnitY ())
@@ -476,4 +503,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::applyState(Eige
   t.col (3) += T;
 }
 
+} // namespace pcl
+
 #endif //PCL_REGISTRATION_IMPL_GICP_HPP_
+

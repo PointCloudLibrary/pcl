@@ -35,18 +35,20 @@
  *
  */
 
-#ifndef PCL_COMMON_INTERSECTIONS_IMPL_HPP_
-#define PCL_COMMON_INTERSECTIONS_IMPL_HPP_
+#pragma once
 
+#include <pcl/common/intersections.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/console/print.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
 
 bool
-pcl::lineWithLineIntersection (const Eigen::VectorXf &line_a, 
-                               const Eigen::VectorXf &line_b, 
-                               Eigen::Vector4f &point, double sqr_eps)
+lineWithLineIntersection (const Eigen::VectorXf &line_a,
+                          const Eigen::VectorXf &line_b,
+                          Eigen::Vector4f &point, double sqr_eps)
 {
   Eigen::Vector4f p1, p2;
   lineToLineSegment (line_a, line_b, p1, p2);
@@ -62,21 +64,22 @@ pcl::lineWithLineIntersection (const Eigen::VectorXf &line_a,
   return (false);
 }
 
+
 bool
-pcl::lineWithLineIntersection (const pcl::ModelCoefficients &line_a, 
-                               const pcl::ModelCoefficients &line_b, 
-                               Eigen::Vector4f &point, double sqr_eps)
+lineWithLineIntersection (const pcl::ModelCoefficients &line_a,
+                          const pcl::ModelCoefficients &line_b,
+                          Eigen::Vector4f &point, double sqr_eps)
 {
   Eigen::VectorXf coeff1 = Eigen::VectorXf::Map (&line_a.values[0], line_a.values.size ());
   Eigen::VectorXf coeff2 = Eigen::VectorXf::Map (&line_b.values[0], line_b.values.size ());
   return (lineWithLineIntersection (coeff1, coeff2, point, sqr_eps));
 }
 
-template <typename Scalar> bool 
-pcl::planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a, 
-                                 const Eigen::Matrix<Scalar, 4, 1> &plane_b,
-                                 Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line,
-                                 double angular_tolerance)
+template <typename Scalar> bool
+planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
+                            const Eigen::Matrix<Scalar, 4, 1> &plane_b,
+                            Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line,
+                            double angular_tolerance)
 {
   using Vector3 = Eigen::Matrix<Scalar, 3, 1>;
   using Vector4 = Eigen::Matrix<Scalar, 4, 1>;
@@ -104,7 +107,7 @@ pcl::planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
 
   // Construct system of equations using lagrange multipliers with one objective function and two constraints
   Matrix5 langrange_coefs;
-  langrange_coefs << 2,0,0, plane_a[0], plane_b[0],  
+  langrange_coefs << 2,0,0, plane_a[0], plane_b[0],
                      0,2,0, plane_a[1], plane_b[1],
                      0,0,2, plane_a[2], plane_b[2],
                      plane_a[0], plane_a[1], plane_a[2], 0, 0,
@@ -121,11 +124,11 @@ pcl::planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
 }
 
 template <typename Scalar> bool
-pcl::threePlanesIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a, 
-                              const Eigen::Matrix<Scalar, 4, 1> &plane_b,
-                              const Eigen::Matrix<Scalar, 4, 1> &plane_c,
-                              Eigen::Matrix<Scalar, 3, 1> &intersection_point,
-                              double determinant_tolerance)
+threePlanesIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
+                         const Eigen::Matrix<Scalar, 4, 1> &plane_b,
+                         const Eigen::Matrix<Scalar, 4, 1> &plane_c,
+                         Eigen::Matrix<Scalar, 3, 1> &intersection_point,
+                         double determinant_tolerance)
 {
   using Vector3 = Eigen::Matrix<Scalar, 3, 1>;
   using Matrix3 = Eigen::Matrix<Scalar, 3, 3>;
@@ -168,4 +171,5 @@ pcl::threePlanesIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
   return (true);
 }
 
-#endif  //PCL_COMMON_INTERSECTIONS_IMPL_HPP
+} // namespace pcl
+

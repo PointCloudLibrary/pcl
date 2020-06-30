@@ -355,13 +355,13 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
   {
     if ( static_cast<int> (id) == inliers->indices[i] )
     {
-      plane_points.points[i] = all_points->points[id];
+      plane_points[i] = all_points->points[id];
       ++i;
     }
     else
     {
-      non_plane_points.points[j] = all_points->points[id];
-      non_plane_normals.points[j] = all_normals->points[id];
+      non_plane_points[j] = all_points->points[id];
+      non_plane_normals[j] = all_normals->points[id];
       ++j;
     }
     ++id;
@@ -370,8 +370,8 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
   // Just copy the rest of the non-plane points
   for ( std::size_t id = inliers->indices.size (); id < all_points->size () ; ++id, ++j )
   {
-    non_plane_points.points[j] = all_points->points[id];
-    non_plane_normals.points[j] = all_normals->points[id];
+    non_plane_points[j] = all_points->points[id];
+    non_plane_normals[j] = all_normals->points[id];
   }
 
   return true;

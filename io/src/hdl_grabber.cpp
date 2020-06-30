@@ -507,7 +507,7 @@ pcl::HDLGrabber::start ()
         }
         hdl_read_socket_ = new udp::socket (hdl_read_socket_service_, udp_listener_endpoint_);
       }
-      catch (const std::exception& bind)
+      catch (const std::exception&)
       {
         delete hdl_read_socket_;
         hdl_read_socket_ = new udp::socket (hdl_read_socket_service_, udp::endpoint (boost::asio::ip::address_v4::any (), udp_listener_endpoint_.port ()));
@@ -550,11 +550,8 @@ pcl::HDLGrabber::stop ()
     queue_consumer_thread_ = nullptr;
   }
 
-  if (hdl_read_socket_ != nullptr)
-  {
-    delete hdl_read_socket_;
-    hdl_read_socket_ = nullptr;
-  }
+  delete hdl_read_socket_;
+  hdl_read_socket_ = nullptr;
 }
 
 /////////////////////////////////////////////////////////////////////////////

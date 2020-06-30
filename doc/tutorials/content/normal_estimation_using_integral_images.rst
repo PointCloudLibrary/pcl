@@ -10,71 +10,33 @@ cloud using integral images.
 The code
 --------
 
-First, create a file, let's say, ``normal_estimation_using_integral_images.cpp`` in your favorite
+First, download the dataset `table_scene_mug_stereo_textured.pcd
+<https://github.com/PointCloudLibrary/pcl/raw/master/test/table_scene_mug_stereo_textured.pcd>`_
+and save it somewhere to disk.
+
+Then, create a file, let's say, ``normal_estimation_using_integral_images.cpp`` in your favorite
 editor, and place the following inside it:
 
-.. code-block:: cpp
+.. literalinclude:: sources/normal_estimation_using_integral_images/normal_estimation_using_integral_images.cpp
+   :language: cpp
    :linenos:
-
-	#include <pcl/io/io.h>
-	#include <pcl/io/pcd_io.h>
-	#include <pcl/features/integral_image_normal.h>
-	#include <pcl/visualization/cloud_viewer.h>
-		
-	int 
-	main ()
-	{
-		// load point cloud
-		pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-		pcl::io::loadPCDFile ("table_scene_mug_stereo_textured.pcd", *cloud);
-		
-		// estimate normals
-		pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
-
-		pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
-		ne.setNormalEstimationMethod (ne.AVERAGE_3D_GRADIENT);
-		ne.setMaxDepthChangeFactor(0.02f);
-		ne.setNormalSmoothingSize(10.0f);
-		ne.setInputCloud(cloud);
-		ne.compute(*normals);
-
-		// visualize normals
-		pcl::visualization::PCLVisualizer viewer("PCL Viewer");
-		viewer.setBackgroundColor (0.0, 0.0, 0.5);
-		viewer.addPointCloudNormals<pcl::PointXYZ,pcl::Normal>(cloud, normals);
-		
-		while (!viewer.wasStopped ())
-		{
-		  viewer.spinOnce ();
-		}
-		return 0;
-	}
-
+   
 The explanation
 ---------------
 
 Now, let's break down the code piece by piece. In the first part we load a
 point cloud from a file:
 
-.. code-block:: cpp
-
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-	pcl::io::loadPCDFile ("table_scene_mug_stereo_textured.pcd", *cloud);
+.. literalinclude:: sources/normal_estimation_using_integral_images/normal_estimation_using_integral_images.cpp
+   :language: cpp
+   :lines: 11-12
 
 In the second part we create an object for the normal estimation and compute
 the normals:
 
-.. code-block:: cpp
-
-	// estimate normals
-	pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal>);
-
-	pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
-	ne.setNormalEstimationMethod (ne.AVERAGE_3D_GRADIENT);
-	ne.setMaxDepthChangeFactor(0.02f);
-	ne.setNormalSmoothingSize(10.0f);
-	ne.setInputCloud(cloud);
-	ne.compute(*normals);
+.. literalinclude:: sources/normal_estimation_using_integral_images/normal_estimation_using_integral_images.cpp
+   :language: cpp
+   :lines: 14-22
 
 The following normal estimation methods are available:
 
@@ -97,16 +59,7 @@ depth changes.
 
 In the last part we visualize the point cloud and the corresponding normals:
 
-.. code-block:: cpp
-
-	// visualize normals
-	pcl::visualization::PCLVisualizer viewer("PCL Viewer");
-	viewer.setBackgroundColor (0.0, 0.0, 0.5);
-	viewer.addPointCloudNormals<pcl::PointXYZ,pcl::Normal>(cloud, normals);
-	
-	while (!viewer.wasStopped ())
-	{
-	  viewer.spinOnce ();
-	}
-
+.. literalinclude:: sources/normal_estimation_using_integral_images/normal_estimation_using_integral_images.cpp
+   :language: cpp
+   :lines: 24-32
 

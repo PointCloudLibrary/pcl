@@ -52,7 +52,7 @@ namespace pcl
     * \note This function does not modify the input point cloud!
     *
     * \param cloud_in the input point cloud
-    * \param index the mapping (ordered): filtered_cloud.points[i] = cloud_in.points[index[i]]
+    * \param index the mapping (ordered): filtered_cloud[i] = cloud_in[index[i]]
     *
     * \see removeNaNFromPointCloud
     * \ingroup filters

@@ -100,7 +100,7 @@ set(CMAKE_REQUIRED_LIBRARIES ${PCAP_LIBRARIES})
 
 #Is pcap found ?
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(PCAP DEFAULT_MSG
+find_package_handle_standard_args(Pcap DEFAULT_MSG
                                   PCAP_LIBRARIES PCAP_INCLUDE_DIRS)
 
 mark_as_advanced(

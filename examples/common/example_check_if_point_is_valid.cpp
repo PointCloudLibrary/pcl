@@ -37,10 +37,8 @@
  *
  */
 
-#include <iostream>
-#include <limits>
-
 #include <pcl/point_types.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 
 int
 main ()

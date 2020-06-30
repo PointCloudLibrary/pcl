@@ -7,11 +7,12 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
 
 #include <Eigen/Core>
+
 #include <GL/glew.h>
-#include <pcl/memory.h>
 
 namespace pcl {
 namespace simulation {

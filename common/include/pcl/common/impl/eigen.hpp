@@ -36,17 +36,21 @@
  *
  */
 
-#ifndef PCL_COMMON_EIGEN_IMPL_HPP_
-#define PCL_COMMON_EIGEN_IMPL_HPP_
+#pragma once
+
+#include <pcl/common/eigen.h>
+#include <pcl/console/print.h>
 
 #include <array>
 #include <algorithm>
 #include <cmath>
-#include <pcl/console/print.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
 template <typename Scalar, typename Roots> inline void
-pcl::computeRoots2 (const Scalar& b, const Scalar& c, Roots& roots)
+computeRoots2 (const Scalar& b, const Scalar& c, Roots& roots)
 {
   roots (0) = Scalar (0);
   Scalar d = Scalar (b * b - 4.0 * c);
@@ -59,9 +63,9 @@ pcl::computeRoots2 (const Scalar& b, const Scalar& c, Roots& roots)
   roots (1) = 0.5f * (b - sd);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Matrix, typename Roots> inline void
-pcl::computeRoots (const Matrix& m, Roots& roots)
+computeRoots (const Matrix& m, Roots& roots)
 {
   using Scalar = typename Matrix::Scalar;
 
@@ -124,9 +128,9 @@ pcl::computeRoots (const Matrix& m, Roots& roots)
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Matrix, typename Vector> inline void
-pcl::eigen22 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
+eigen22 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
 {
   // if diagonal matrix, the eigenvalues are the diagonal elements
   // and the eigenvectors are not unique, thus set to Identity
@@ -163,9 +167,9 @@ pcl::eigen22 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& ei
   eigenvector.normalize ();
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Matrix, typename Vector> inline void
-pcl::eigen22 (const Matrix& mat, Matrix& eigenvectors, Vector& eigenvalues)
+eigen22 (const Matrix& mat, Matrix& eigenvectors, Vector& eigenvalues)
 {
   // if diagonal matrix, the eigenvalues are the diagonal elements
   // and the eigenvectors are not unique, thus set to Identity
@@ -217,9 +221,9 @@ pcl::eigen22 (const Matrix& mat, Matrix& eigenvectors, Vector& eigenvalues)
   eigenvectors.coeffRef (3) = -eigenvectors.coeffRef (0);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Matrix, typename Vector> inline void
-pcl::computeCorrespondingEigenVector (const Matrix& mat, const typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
+computeCorrespondingEigenVector (const Matrix& mat, const typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
 {
   using Scalar = typename Matrix::Scalar;
   // Scale the matrix so its entries are in [-1,1].  The scaling is applied
@@ -249,8 +253,9 @@ pcl::computeCorrespondingEigenVector (const Matrix& mat, const typename Matrix::
     eigenvector = vec3 / std::sqrt (len3);
 }
 
-namespace pcl {
-namespace detail{
+namespace detail
+{
+
 template <typename Vector, typename Scalar>
 struct EigenVector {
   Vector vector;
@@ -283,12 +288,12 @@ getLargest3x3Eigenvector (const Matrix scaledMatrix)
   return EigenVector<Vector, Scalar> {crossProduct.row (index) / length,
                                       length};
 }
-}  // namespace detail
-}  // namespace pcl
 
-//////////////////////////////////////////////////////////////////////////////////////////
+}  // namespace detail
+
+
 template <typename Matrix, typename Vector> inline void
-pcl::eigen33 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
+eigen33 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
 {
   using Scalar = typename Matrix::Scalar;
   // Scale the matrix so its entries are in [-1,1].  The scaling is applied
@@ -310,9 +315,9 @@ pcl::eigen33 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& ei
   eigenvector = detail::getLargest3x3Eigenvector<Vector> (scaledMat).vector;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Matrix, typename Vector> inline void
-pcl::eigen33 (const Matrix& mat, Vector& evals)
+eigen33 (const Matrix& mat, Vector& evals)
 {
   using Scalar = typename Matrix::Scalar;
   Scalar scale = mat.cwiseAbs ().maxCoeff ();
@@ -324,9 +329,9 @@ pcl::eigen33 (const Matrix& mat, Vector& evals)
   evals *= scale;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Matrix, typename Vector> inline void
-pcl::eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
+eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
 {
   using Scalar = typename Matrix::Scalar;
   // Scale the matrix so its entries are in [-1,1].  The scaling is applied
@@ -395,9 +400,9 @@ pcl::eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
   evals *= scale;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Matrix> inline typename Matrix::Scalar
-pcl::invert2x2 (const Matrix& matrix, Matrix& inverse)
+invert2x2 (const Matrix& matrix, Matrix& inverse)
 {
   using Scalar = typename Matrix::Scalar;
   Scalar det = matrix.coeff (0) * matrix.coeff (3) - matrix.coeff (1) * matrix.coeff (2);
@@ -414,9 +419,9 @@ pcl::invert2x2 (const Matrix& matrix, Matrix& inverse)
   return det;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Matrix> inline typename Matrix::Scalar
-pcl::invert3x3SymMatrix (const Matrix& matrix, Matrix& inverse)
+invert3x3SymMatrix (const Matrix& matrix, Matrix& inverse)
 {
   using Scalar = typename Matrix::Scalar;
   // elements
@@ -449,9 +454,9 @@ pcl::invert3x3SymMatrix (const Matrix& matrix, Matrix& inverse)
   return det;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Matrix> inline typename Matrix::Scalar
-pcl::invert3x3Matrix (const Matrix& matrix, Matrix& inverse)
+invert3x3Matrix (const Matrix& matrix, Matrix& inverse)
 {
   using Scalar = typename Matrix::Scalar;
 
@@ -482,9 +487,9 @@ pcl::invert3x3Matrix (const Matrix& matrix, Matrix& inverse)
   return det;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Matrix> inline typename Matrix::Scalar
-pcl::determinant3x3Matrix (const Matrix& matrix)
+determinant3x3Matrix (const Matrix& matrix)
 {
   // result is independent of Row/Col Major storage!
   return matrix.coeff (0) * (matrix.coeff (4) * matrix.coeff (8) - matrix.coeff (5) * matrix.coeff (7)) +
@@ -492,11 +497,11 @@ pcl::determinant3x3Matrix (const Matrix& matrix)
          matrix.coeff (2) * (matrix.coeff (3) * matrix.coeff (7) - matrix.coeff (4) * matrix.coeff (6)) ;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 void
-pcl::getTransFromUnitVectorsZY (const Eigen::Vector3f& z_axis,
-                                const Eigen::Vector3f& y_direction,
-                                Eigen::Affine3f& transformation)
+getTransFromUnitVectorsZY (const Eigen::Vector3f& z_axis,
+                           const Eigen::Vector3f& y_direction,
+                           Eigen::Affine3f& transformation)
 {
   Eigen::Vector3f tmp0 = (y_direction.cross(z_axis)).normalized();
   Eigen::Vector3f tmp1 = (z_axis.cross(tmp0)).normalized();
@@ -508,21 +513,21 @@ pcl::getTransFromUnitVectorsZY (const Eigen::Vector3f& z_axis,
   transformation(3,0)=0.0f;    transformation(3,1)=0.0f;    transformation(3,2)=0.0f;    transformation(3,3)=1.0f;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 Eigen::Affine3f
-pcl::getTransFromUnitVectorsZY (const Eigen::Vector3f& z_axis,
-                                const Eigen::Vector3f& y_direction)
+getTransFromUnitVectorsZY (const Eigen::Vector3f& z_axis,
+                           const Eigen::Vector3f& y_direction)
 {
   Eigen::Affine3f transformation;
   getTransFromUnitVectorsZY (z_axis, y_direction, transformation);
   return (transformation);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 void
-pcl::getTransFromUnitVectorsXY (const Eigen::Vector3f& x_axis,
-                                const Eigen::Vector3f& y_direction,
-                                Eigen::Affine3f& transformation)
+getTransFromUnitVectorsXY (const Eigen::Vector3f& x_axis,
+                           const Eigen::Vector3f& y_direction,
+                           Eigen::Affine3f& transformation)
 {
   Eigen::Vector3f tmp2 = (x_axis.cross(y_direction)).normalized();
   Eigen::Vector3f tmp1 = (tmp2.cross(x_axis)).normalized();
@@ -534,60 +539,61 @@ pcl::getTransFromUnitVectorsXY (const Eigen::Vector3f& x_axis,
   transformation(3,0)=0.0f;    transformation(3,1)=0.0f;    transformation(3,2)=0.0f;    transformation(3,3)=1.0f;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 Eigen::Affine3f
-pcl::getTransFromUnitVectorsXY (const Eigen::Vector3f& x_axis,
-                                const Eigen::Vector3f& y_direction)
+getTransFromUnitVectorsXY (const Eigen::Vector3f& x_axis,
+                           const Eigen::Vector3f& y_direction)
 {
   Eigen::Affine3f transformation;
   getTransFromUnitVectorsXY (x_axis, y_direction, transformation);
   return (transformation);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 void
-pcl::getTransformationFromTwoUnitVectors (const Eigen::Vector3f& y_direction,
-                                          const Eigen::Vector3f& z_axis,
-                                          Eigen::Affine3f& transformation)
+getTransformationFromTwoUnitVectors (const Eigen::Vector3f& y_direction,
+                                     const Eigen::Vector3f& z_axis,
+                                     Eigen::Affine3f& transformation)
 {
   getTransFromUnitVectorsZY (z_axis, y_direction, transformation);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 Eigen::Affine3f
-pcl::getTransformationFromTwoUnitVectors (const Eigen::Vector3f& y_direction,
-                                          const Eigen::Vector3f& z_axis)
+getTransformationFromTwoUnitVectors (const Eigen::Vector3f& y_direction,
+                                     const Eigen::Vector3f& z_axis)
 {
   Eigen::Affine3f transformation;
   getTransformationFromTwoUnitVectors (y_direction, z_axis, transformation);
   return (transformation);
 }
 
+
 void
-pcl::getTransformationFromTwoUnitVectorsAndOrigin (const Eigen::Vector3f& y_direction,
-                                                   const Eigen::Vector3f& z_axis,
-                                                   const Eigen::Vector3f& origin,
-                                                   Eigen::Affine3f& transformation)
+getTransformationFromTwoUnitVectorsAndOrigin (const Eigen::Vector3f& y_direction,
+                                              const Eigen::Vector3f& z_axis,
+                                              const Eigen::Vector3f& origin,
+                                              Eigen::Affine3f& transformation)
 {
   getTransformationFromTwoUnitVectors(y_direction, z_axis, transformation);
   Eigen::Vector3f translation = transformation*origin;
   transformation(0,3)=-translation[0];  transformation(1,3)=-translation[1];  transformation(2,3)=-translation[2];
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Scalar> void
-pcl::getEulerAngles (const Eigen::Transform<Scalar, 3, Eigen::Affine> &t, Scalar &roll, Scalar &pitch, Scalar &yaw)
+getEulerAngles (const Eigen::Transform<Scalar, 3, Eigen::Affine> &t, Scalar &roll, Scalar &pitch, Scalar &yaw)
 {
   roll = std::atan2 (t (2, 1), t (2, 2));
   pitch = asin (-t (2, 0));
   yaw = std::atan2 (t (1, 0), t (0, 0));
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Scalar> void
-pcl::getTranslationAndEulerAngles (const Eigen::Transform<Scalar, 3, Eigen::Affine> &t,
-                                  Scalar &x, Scalar &y, Scalar &z,
-                                  Scalar &roll, Scalar &pitch, Scalar &yaw)
+getTranslationAndEulerAngles (const Eigen::Transform<Scalar, 3, Eigen::Affine> &t,
+                              Scalar &x, Scalar &y, Scalar &z,
+                              Scalar &roll, Scalar &pitch, Scalar &yaw)
 {
   x = t (0, 3);
   y = t (1, 3);
@@ -597,11 +603,11 @@ pcl::getTranslationAndEulerAngles (const Eigen::Transform<Scalar, 3, Eigen::Affi
   yaw = std::atan2 (t (1, 0), t (0, 0));
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Scalar> void
-pcl::getTransformation (Scalar x, Scalar y, Scalar z,
-                        Scalar roll, Scalar pitch, Scalar yaw,
-                        Eigen::Transform<Scalar, 3, Eigen::Affine> &t)
+getTransformation (Scalar x, Scalar y, Scalar z,
+                   Scalar roll, Scalar pitch, Scalar yaw,
+                   Eigen::Transform<Scalar, 3, Eigen::Affine> &t)
 {
   Scalar A = std::cos (yaw),  B = sin (yaw),  C  = std::cos (pitch), D  = sin (pitch),
          E = std::cos (roll), F = sin (roll), DE = D*E,         DF = D*F;
@@ -612,9 +618,9 @@ pcl::getTransformation (Scalar x, Scalar y, Scalar z,
   t (3, 0) = 0;    t (3, 1) = 0;           t (3, 2) = 0;           t (3, 3) = 1;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Derived> void
-pcl::saveBinary (const Eigen::MatrixBase<Derived>& matrix, std::ostream& file)
+saveBinary (const Eigen::MatrixBase<Derived>& matrix, std::ostream& file)
 {
   std::uint32_t rows = static_cast<std::uint32_t> (matrix.rows ()), cols = static_cast<std::uint32_t> (matrix.cols ());
   file.write (reinterpret_cast<char*> (&rows), sizeof (rows));
@@ -627,9 +633,9 @@ pcl::saveBinary (const Eigen::MatrixBase<Derived>& matrix, std::ostream& file)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Derived> void
-pcl::loadBinary (Eigen::MatrixBase<Derived> const & matrix_, std::istream& file)
+loadBinary (Eigen::MatrixBase<Derived> const & matrix_, std::istream& file)
 {
   Eigen::MatrixBase<Derived> &matrix = const_cast<Eigen::MatrixBase<Derived> &> (matrix_);
 
@@ -648,10 +654,10 @@ pcl::loadBinary (Eigen::MatrixBase<Derived> const & matrix_, std::istream& file)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Derived, typename OtherDerived>
 typename Eigen::internal::umeyama_transform_matrix_type<Derived, OtherDerived>::type
-pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<OtherDerived>& dst, bool with_scaling)
+umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<OtherDerived>& dst, bool with_scaling)
 {
 #if EIGEN_VERSION_AT_LEAST (3, 3, 0)
   return Eigen::umeyama (src, dst, with_scaling);
@@ -725,11 +731,11 @@ pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<Oth
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Scalar> bool
-pcl::transformLine (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_in,
-                          Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_out,
-                    const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
+transformLine (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_in,
+                     Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_out,
+               const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
 {
   if (line_in.innerSize () != 6 || line_out.innerSize () != 6)
   {
@@ -747,11 +753,11 @@ pcl::transformLine (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_in,
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Scalar> void
-pcl::transformPlane (const Eigen::Matrix<Scalar, 4, 1> &plane_in,
-                           Eigen::Matrix<Scalar, 4, 1> &plane_out,
-                     const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
+transformPlane (const Eigen::Matrix<Scalar, 4, 1> &plane_in,
+                      Eigen::Matrix<Scalar, 4, 1> &plane_out,
+                const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
 {
   Eigen::Hyperplane < Scalar, 3 > plane;
   plane.coeffs () << plane_in;
@@ -764,11 +770,11 @@ pcl::transformPlane (const Eigen::Matrix<Scalar, 4, 1> &plane_in,
   #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Scalar> void
-pcl::transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
-                           pcl::ModelCoefficients::Ptr plane_out,
-                     const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
+transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
+                      pcl::ModelCoefficients::Ptr plane_out,
+                const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
 {
   std::vector<Scalar> values (plane_in->values.begin (), plane_in->values.end ());
   Eigen::Matrix < Scalar, 4, 1 > v_plane_in (values.data ());
@@ -777,12 +783,12 @@ pcl::transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
   std::copy_n(v_plane_in.data (), 4, plane_in->values.begin ());
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Scalar> bool
-pcl::checkCoordinateSystem (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_x,
-                            const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_y,
-                            const Scalar norm_limit,
-                            const Scalar dot_limit)
+checkCoordinateSystem (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_x,
+                       const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_y,
+                       const Scalar norm_limit,
+                       const Scalar dot_limit)
 {
   if (line_x.innerSize () != 6 || line_y.innerSize () != 6)
   {
@@ -843,13 +849,13 @@ pcl::checkCoordinateSystem (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename Scalar> bool
-pcl::transformBetween2CoordinateSystems (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> from_line_x,
-                                         const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> from_line_y,
-                                         const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> to_line_x,
-                                         const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> to_line_y,
-                                         Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
+transformBetween2CoordinateSystems (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> from_line_x,
+                                    const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> from_line_y,
+                                    const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> to_line_x,
+                                    const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> to_line_y,
+                                    Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
 {
   if (from_line_x.innerSize () != 6 || from_line_y.innerSize () != 6 || to_line_x.innerSize () != 6 || to_line_y.innerSize () != 6)
   {
@@ -901,4 +907,5 @@ pcl::transformBetween2CoordinateSystems (const Eigen::Matrix<Scalar, Eigen::Dyna
   return (true);
 }
 
-#endif  //PCL_COMMON_EIGEN_IMPL_HPP_
+} // namespace pcl
+

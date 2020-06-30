@@ -56,5 +56,11 @@ namespace pcl
     {
       return (std::fabs (val1 - val2) < eps);
     }
-  }
-}
+
+   /** \brief Utility function to eliminate unused variable warnings. */
+    template<typename T> void
+    ignore(const T&)
+    {
+    }
+  } // namespace utils
+} // namespace pcl

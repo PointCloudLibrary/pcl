@@ -39,9 +39,10 @@
 #ifndef PCL_SVM_WRAPPER_HPP_
 #define PCL_SVM_WRAPPER_HPP_
 
+#include <pcl/ml/svm_wrapper.h>
+
 #include <cassert>
 #include <fstream>
-#include <pcl/ml/svm_wrapper.h>
 
 char*
 pcl::SVM::readline(FILE* input)

@@ -552,7 +552,7 @@ TEST (PCL, GetMaxDistance)
   test::EXPECT_EQ_VECTORS (max_exp_pt, max_pt);
 
   // Specifying indices
-  std::vector<int> idx (2);
+  Indices idx (2);
   idx[0] = 1; idx[1] = 2;
   max_exp_pt = cloud[2].getVector4fMap ();
   getMaxDistance (cloud, idx, pivot_pt, max_pt);

@@ -38,6 +38,7 @@
 #pragma once
 
 #include <pcl/common/common.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/ml/stats_estimator.h>
 
 #include <istream>
@@ -98,7 +99,7 @@ public:
                      const float threshold,
                      unsigned char& branch_index) const override
   {
-    (void)flag;
+    pcl::utils::ignore(flag);
     branch_index = (result > threshold) ? 1 : 0;
   }
 };

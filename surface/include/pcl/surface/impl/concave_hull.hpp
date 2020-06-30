@@ -187,11 +187,11 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 
   for (std::size_t i = 0; i < cloud_transformed.points.size (); ++i)
   {
-    points[i * dim_ + 0] = static_cast<coordT> (cloud_transformed.points[i].x);
-    points[i * dim_ + 1] = static_cast<coordT> (cloud_transformed.points[i].y);
+    points[i * dim_ + 0] = static_cast<coordT> (cloud_transformed[i].x);
+    points[i * dim_ + 1] = static_cast<coordT> (cloud_transformed[i].y);
 
     if (dim_ > 2)
-      points[i * dim_ + 2] = static_cast<coordT> (cloud_transformed.points[i].z);
+      points[i * dim_ + 2] = static_cast<coordT> (cloud_transformed[i].z);
   }
 
   // Compute concave hull
@@ -207,9 +207,9 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       bool NaNvalues = false;
       for (std::size_t i = 0; i < cloud_transformed.size (); ++i)
       {
-        if (!std::isfinite (cloud_transformed.points[i].x) ||
-            !std::isfinite (cloud_transformed.points[i].y) ||
-            !std::isfinite (cloud_transformed.points[i].z))
+        if (!std::isfinite (cloud_transformed[i].x) ||
+            !std::isfinite (cloud_transformed[i].y) ||
+            !std::isfinite (cloud_transformed[i].z))
         {
           NaNvalues = true;
           break;
@@ -355,9 +355,9 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
         {
           if (!added_vertices[vertex->id])
           {
-            alpha_shape.points[vertices].x = static_cast<float> (vertex->point[0]);
-            alpha_shape.points[vertices].y = static_cast<float> (vertex->point[1]);
-            alpha_shape.points[vertices].z = static_cast<float> (vertex->point[2]);
+            alpha_shape[vertices].x = static_cast<float> (vertex->point[0]);
+            alpha_shape[vertices].y = static_cast<float> (vertex->point[1]);
+            alpha_shape[vertices].z = static_cast<float> (vertex->point[2]);
 
             qhid_to_pcidx[vertex->id] = vertices;   //map the vertex id of qhull to the point cloud index
             added_vertices[vertex->id] = true;
@@ -439,13 +439,13 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
         {
           if (!added_vertices[vertex->id])
           {
-            alpha_shape.points[vertices].x = static_cast<float> (vertex->point[0]);
-            alpha_shape.points[vertices].y = static_cast<float> (vertex->point[1]);
+            alpha_shape[vertices].x = static_cast<float> (vertex->point[0]);
+            alpha_shape[vertices].y = static_cast<float> (vertex->point[1]);
 
             if (dim_ > 2)
-              alpha_shape.points[vertices].z = static_cast<float> (vertex->point[2]);
+              alpha_shape[vertices].z = static_cast<float> (vertex->point[2]);
             else
-              alpha_shape.points[vertices].z = 0;
+              alpha_shape[vertices].z = 0;
 
             qhid_to_pcidx[vertex->id] = vertices;   //map the vertex id of qhull to the point cloud index
             added_vertices[vertex->id] = true;
@@ -482,7 +482,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     int sorted_idx = 0;
     while (!edges.empty ())
     {
-      alpha_shape_sorted.points[sorted_idx] = alpha_shape.points[(*curr).first];
+      alpha_shape_sorted[sorted_idx] = alpha_shape[(*curr).first];
       // check where we can go from (*curr).first
       for (const int &i : (*curr).second)
       {
@@ -573,7 +573,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 
     for (std::size_t i = 0; i < alpha_shape.points.size (); i++)
     {
-      tree.nearestKSearch (alpha_shape.points[i], 1, neighbor, distances);
+      tree.nearestKSearch (alpha_shape[i], 1, neighbor, distances);
       hull_indices_.indices.push_back (neighbor[0]);
     }
 

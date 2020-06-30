@@ -47,7 +47,7 @@ template <typename PointT> void
 pcl::ApproximateVoxelGrid<PointT>::flush (PointCloud &output, std::size_t op, he *hhe, int rgba_index, int centroid_size)
 {
   hhe->centroid /= static_cast<float> (hhe->count);
-  pcl::for_each_type <FieldList> (pcl::xNdCopyEigenPointFunctor <PointT> (hhe->centroid, output.points[op]));
+  pcl::for_each_type <FieldList> (pcl::xNdCopyEigenPointFunctor <PointT> (hhe->centroid, output[op]));
   // ---[ RGB special case
   if (rgba_index >= 0)
   {
@@ -56,7 +56,7 @@ pcl::ApproximateVoxelGrid<PointT>::flush (PointCloud &output, std::size_t op, he
           g = hhe->centroid[centroid_size-2], 
           b = hhe->centroid[centroid_size-1];
     int rgb = (static_cast<int> (r)) << 16 | (static_cast<int> (g)) << 8 | (static_cast<int> (b));
-    memcpy (reinterpret_cast<char*> (&output.points[op]) + rgba_index, &rgb, sizeof (float));
+    memcpy (reinterpret_cast<char*> (&output[op]) + rgba_index, &rgb, sizeof (float));
   }
 }
 

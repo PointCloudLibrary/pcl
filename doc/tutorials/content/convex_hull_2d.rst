@@ -37,7 +37,7 @@ gets created and the reconstruction is performed:
 
 .. literalinclude:: sources/convex_hull_2d/convex_hull_2d.cpp
    :language: cpp
-   :lines: 48-51
+   :lines: 49-52
 
 
 Compiling and running the program

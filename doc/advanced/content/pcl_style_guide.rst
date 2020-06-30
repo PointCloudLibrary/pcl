@@ -167,27 +167,20 @@ variant of the GNU style formatting.
 2.1. Namespaces
 ^^^^^^^^^^^^^^^
 
-In a header file, the contets of a namespace should be indented, e.g.:
+In both header and implementation files, namespaces are to be explicitly
+declared, and their contents should not be indented, like clang-format
+enforces in the Formatting CI job, e.g.:
 
 .. code-block:: cpp
 
   namespace pcl
   {
-    class Foo
-    {
-      ...
-    };
-  }
 
-In an implementation file, the namespace must be added to each individual
-method or function definition, e.g.:
-
-.. code-block:: cpp
-
-  void
-  pcl::Foo::bar ()
+  class Foo
   {
     ...
+  };
+
   }
 
 
@@ -281,19 +274,6 @@ function/method, e.g.:
    int 
    exampleMethod (int example_arg);
 
-If multiple namespaces are declared within header files, always use **2
-spaces** to indent them, e.g.:
-
-.. code-block:: cpp
-
-   namespace foo
-   {
-     namespace bar
-     {
-        void
-        method (int my_var);
-      }
-   }
 
 Class and struct members are indented by **2 spaces**. Access qualifiers (public, private and protected) are put at the
 indentation level of the class body and members affected by these qualifiers are indented by one more level, i.e. 2 spaces. E.g.:
@@ -302,25 +282,28 @@ indentation level of the class body and members affected by these qualifiers are
 
    namespace foo
    {
-     class Bar
-     {
-       int i;
-       public:
-         int j;
-       protected:
-         void
-         baz ();
-     }
+
+   class Bar
+   {
+     int i;
+     public:
+       int j;
+     protected:
+       void
+       baz ();
+   };
    }
 
 
 2.6. Automatic code formatting
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We currently use clang-format as the tool for auto-formatting our C++ code. The style files which were previously distributed should now be considered deprecated.
+We currently use clang-format-10 as the tool for auto-formatting our C++ code.
+Please note that different versions of clang-format can result in slightly different outputs.
 
 The style rules mentioned in this document are enforced via `PCL's .clang-format file
 <https://github.com/PointCloudLibrary/pcl/blob/master/.clang-format>`_.
+The style files which were previously distributed should now be considered deprecated.
 
 For the integration of clang-format with various text editors and IDE's, refer to this `page
 <https://clang.llvm.org/docs/ClangFormat.html>`_.
@@ -338,6 +321,58 @@ Command line usage:
 .. code-block:: shell
 
    $ make format
+
+
+2.7. Includes
+^^^^^^^^^^^^^
+
+For consistent usage, headers should be included in the following order with alphabetical grouping ensured:
+
+1.  PCL headers
+
+    i.  All modular PCL includes, except main includes of common module.
+        
+        Examples:
+
+        .. code-block:: cpp
+
+           #include <pcl/common/common.h>
+           #include <pcl/simulation/camera.h>
+           #include <pcl/ml/dt/decision_forest.h>
+
+    #.  The main PCL includes of common module. These are the header files in the ``pcl/common/include/pcl/`` directory.
+    
+        Examples:
+
+        .. code-block:: cpp
+
+           #include <pcl/memory.h>
+           #include <pcl/pcl_macros.h>
+           #include <pcl/point_cloud.h>
+
+2.  Major 3rd-Party components of tests and modules
+
+    i.  gtest
+    #.  boost
+    #.  Eigen
+    #.  flann
+3.  Major 3rd-Party components of apps
+
+    i.  Qt
+    #.  ui-files
+    #.  vtk
+4.  Minor 3rd-Party components
+
+    i.  librealsense
+    #.  ros/message_filters
+    #.  opencv/opencv2
+    #.  tide
+    #.  thrust
+    #.  OpenGL, GL & GLUT
+5.  C++ standard library headers (alphabetical)
+6.  Others
+
+This style can also be enforced via clang-format. For usage instructions, refer `2.6. Automatic code formatting`_.
 
 
 3. Structuring
@@ -373,3 +408,19 @@ For the compute, filter, segment, etc. type methods the following rules apply:
 * The output arguments are preferably non-pointer type, regardless of data
   size.
 * The output arguments will always be passed by reference.
+
+3.3. Object declaration
+^^^^^^^^^^^^^^^^^^^^^^^
+
+3.3.1 Use of auto
+"""""""""""""""""
+* For Iterators auto must be used as much as possible 
+* In all the other cases auto can be used at the author's discretion
+* Use const auto references by default in range loops. Drop the const if the item needs to be modified.
+
+3.3.2 Type qualifiers of variables
+""""""""""""""""""""""""""""""""""
+* Declare variables const when they don't need to be modified.
+* Use const references whenever you don't need a copy of the variable. 
+* Use of unsigned variables if the value is sure to not go negative by 
+  use and by definition of the variable

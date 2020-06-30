@@ -1,15 +1,15 @@
 /*
  * Software License Agreement (BSD License)
- * 
+ *
  * Point Cloud Library (PCL) - www.pointclouds.org
  * Copyright (c) 2012-, Open Perception, Inc.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
- * are met: 
- * 
+ * are met:
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  *  * Redistributions in binary form must reproduce the above
@@ -19,7 +19,7 @@
  *  * Neither the name of the copyright holder(s) nor the names of its
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -34,132 +34,127 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <ui_pcd_video_player.h>
-
-#include <iostream>
-#include <ctime>
-
-// QT4
-#include <QMainWindow>
-#include <QMutex>
-#include <QTimer>
-
-// Boost
-#include <boost/filesystem.hpp>
-
-// PCL
-#include <pcl/console/print.h>
-#include <pcl/console/parse.h>
-
-#include <pcl/common/common.h>
 #include <pcl/common/angles.h>
+#include <pcl/common/common.h>
 #include <pcl/common/time.h>
 #include <pcl/common/transforms.h>
-
+#include <pcl/console/parse.h>
+#include <pcl/console/print.h>
+#include <pcl/io/pcd_grabber.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/registration/transformation_estimation_svd.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <pcl/io/pcd_grabber.h>
-#include <pcl/io/pcd_io.h>
+#include <boost/filesystem.hpp>
 
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/point_cloud_handlers.h>
+#include <QMainWindow>
+#include <QMutex>
+#include <QTimer>
+#include <ui_pcd_video_player.h>
 
-#include <pcl/registration/transformation_estimation_svd.h>
+#include <ctime>
+#include <iostream>
 
 #define CURRENT_VERSION 0.2
 
 // Useful macros
-#define FPS_CALC(_WHAT_) \
-do \
-{ \
-    static unsigned count = 0;\
-    static double last = pcl::getTime ();\
-    double now = pcl::getTime (); \
-    ++count; \
-    if (now - last >= 1.0) \
-    { \
-      std::cout << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz" <<  std::endl; \
-      count = 0; \
-      last = now; \
-    } \
-}while(false)
+// clang-format off
+#define FPS_CALC(_WHAT_)                                                               \
+  do {                                                                                 \
+    static unsigned count = 0;                                                         \
+    static double last = pcl::getTime();                                               \
+    double now = pcl::getTime();                                                       \
+    ++count;                                                                           \
+    if (now - last >= 1.0) {                                                           \
+      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
+                << double(count) / double(now - last) << " Hz" << std::endl;           \
+      count = 0;                                                                       \
+      last = now;                                                                      \
+    }                                                                                  \
+  } while (false)
+// clang-format on
 
-namespace Ui
-{
-  class MainWindow;
+namespace Ui {
+class MainWindow;
 }
 
-class PCDVideoPlayer : public QMainWindow
-{
+class PCDVideoPlayer : public QMainWindow {
   Q_OBJECT
-  public:
-    using Cloud = pcl::PointCloud<pcl::PointXYZRGBA>;
-    using CloudPtr = Cloud::Ptr;
-    using CloudConstPtr = Cloud::ConstPtr;
+public:
+  using Cloud = pcl::PointCloud<pcl::PointXYZRGBA>;
+  using CloudPtr = Cloud::Ptr;
+  using CloudConstPtr = Cloud::ConstPtr;
 
-    PCDVideoPlayer ();
+  PCDVideoPlayer();
 
-    ~PCDVideoPlayer () {}
+  ~PCDVideoPlayer() {}
 
-  protected:
-    pcl::visualization::PCLVisualizer::Ptr vis_;
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_;
+protected:
+  pcl::visualization::PCLVisualizer::Ptr vis_;
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_;
 
-    QMutex mtx_;
-    QMutex vis_mtx_;
-    Ui::MainWindow *ui_;
-    QTimer *vis_timer_;
+  QMutex mtx_;
+  QMutex vis_mtx_;
+  Ui::MainWindow* ui_;
+  QTimer* vis_timer_;
 
-    QString dir_;
+  QString dir_;
 
-    std::vector<std::string> pcd_files_;
-    std::vector<boost::filesystem::path> pcd_paths_;
+  std::vector<std::string> pcd_files_;
+  std::vector<boost::filesystem::path> pcd_paths_;
 
+  /** \brief The current displayed frame */
+  unsigned int current_frame_;
+  /** \brief Store the number of loaded frames */
+  unsigned int nr_of_frames_;
 
-    /** \brief The current displayed frame */
-    unsigned int current_frame_;
-    /** \brief Store the number of loaded frames */
-    unsigned int nr_of_frames_;
+  /** \brief Indicate that pointclouds were loaded */
+  bool cloud_present_;
+  /** \brief Indicate that the timeoutSlot needs to reload the pointcloud */
+  bool cloud_modified_;
 
-    /** \brief Indicate that pointclouds were loaded */
-    bool cloud_present_;
-    /** \brief Indicate that the timeoutSlot needs to reload the pointcloud */
-    bool cloud_modified_;
+  /** \brief Indicate that files should play continuously */
+  bool play_mode_;
+  /** \brief In play mode only update if speed_counter_ == speed_value */
+  unsigned int speed_counter_;
+  /**
+   * \brief Fixes the speed in steps of 5ms, default 5, gives 5+1 * 5ms = 30ms = 33,3
+   * Hz playback speed
+   */
+  unsigned int speed_value_;
 
-    /** \brief Indicate that files should play continuously */
-    bool play_mode_;
-    /** \brief In play mode only update if speed_counter_ == speed_value */
-    unsigned int speed_counter_;
-    /** \brief Fixes the speed in steps of 5ms, default 5, gives 5+1 * 5ms = 30ms = 33,3 Hz playback speed */
-    unsigned int speed_value_;
+public Q_SLOTS:
+  void
+  playButtonPressed()
+  {
+    play_mode_ = true;
+  }
 
-  public Q_SLOTS:
-    void 
-    playButtonPressed ()
-    { play_mode_ = true; }
+  void
+  stopButtonPressed()
+  {
+    play_mode_ = false;
+  }
 
-    void 
-    stopButtonPressed()
-    { play_mode_ = false; }
+  void
+  backButtonPressed();
 
-    void
-    backButtonPressed ();
+  void
+  nextButtonPressed();
 
-    void
-    nextButtonPressed ();
+  void
+  selectFolderButtonPressed();
 
-    void
-    selectFolderButtonPressed ();
+  void
+  selectFilesButtonPressed();
 
-    void
-    selectFilesButtonPressed ();
+  void
+  indexSliderValueChanged(int value);
 
-    void
-    indexSliderValueChanged (int value);
-
-  private Q_SLOTS:
-    void
-    timeoutSlot ();
-
+private Q_SLOTS:
+  void
+  timeoutSlot();
 };

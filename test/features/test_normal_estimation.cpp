@@ -39,6 +39,7 @@
 
 #include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/features/integral_image_normal.h>
@@ -124,14 +125,14 @@ TEST (PCL, NormalEstimation)
   EXPECT_NEAR (curvature,            0.0693136, 1e-4);
 
   // flipNormalTowardsViewpoint (Vector)
-  flipNormalTowardsViewpoint (cloud.points[0], 0, 0, 0, plane_parameters);
+  flipNormalTowardsViewpoint (cloud[0], 0, 0, 0, plane_parameters);
   EXPECT_NEAR (plane_parameters[0], -0.035592,  1e-4);
   EXPECT_NEAR (plane_parameters[1], -0.369596,  1e-4);
   EXPECT_NEAR (plane_parameters[2], -0.928511,  1e-4);
   EXPECT_NEAR (plane_parameters[3],  0.0799743, 1e-4);
 
   // flipNormalTowardsViewpoint
-  flipNormalTowardsViewpoint (cloud.points[0], 0, 0, 0, nx, ny, nz);
+  flipNormalTowardsViewpoint (cloud[0], 0, 0, 0, nx, ny, nz);
   EXPECT_NEAR (nx, -0.035592, 1e-4);
   EXPECT_NEAR (ny, -0.369596, 1e-4);
   EXPECT_NEAR (nz, -0.928511, 1e-4);
@@ -195,7 +196,7 @@ class DummySearch : public pcl::search::Search<PointT>
     virtual int nearestKSearch (const PointT &point, int k, std::vector<int> &k_indices,
                                 std::vector<float> &k_sqr_distances ) const
     {
-      (void)point;
+      pcl::utils::ignore(point);
 
       EXPECT_GE (k_indices.size(), k);
       EXPECT_GE (k_sqr_distances.size(), k);
@@ -206,10 +207,10 @@ class DummySearch : public pcl::search::Search<PointT>
     virtual int radiusSearch (const PointT& point, double radius, std::vector<int>& k_indices,
                               std::vector<float>& k_sqr_distances, unsigned int max_nn = 0 ) const
     {
-      (void)point;
-      (void)radius;
-      (void)k_indices;
-      (void)k_sqr_distances;
+      pcl::utils::ignore(point);
+      pcl::utils::ignore(radius);
+      pcl::utils::ignore(k_indices);
+      pcl::utils::ignore(k_sqr_distances);
 
       return max_nn;
     }
@@ -308,7 +309,7 @@ TEST (PCL, IntegralImageNormalEstimationIndexingIssue)
 
   pcl::IndicesPtr indicesptr (new pcl::Indices ());
   indicesptr->resize(cloudptr->size() / 2);
-  for (int i = 0; i < cloudptr->size() / 2; ++i)
+  for (std::size_t i = 0; i < cloudptr->size() / 2; ++i)
   {
     (*indicesptr)[i] = i + cloudptr->size() / 2;
   }
@@ -328,7 +329,7 @@ TEST (PCL, IntegralImageNormalEstimationIndexingIssue)
 
   std::vector<PointXYZ> normalsVec;
   normalsVec.resize(normals->size());
-  for( int i = 0; i < normals->size(); ++i )
+  for(std::size_t i = 0; i < normals->size(); ++i )
   {
     normalsVec[i].x = normals->points[i].normal_x;
     normalsVec[i].y = normals->points[i].normal_y;

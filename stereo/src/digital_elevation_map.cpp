@@ -34,10 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <pcl/stereo/digital_elevation_map.h>
-
 #include <pcl/common/feature_histogram.h>
 #include <pcl/console/print.h>
+#include <pcl/stereo/digital_elevation_map.h>
 
 pcl::DigitalElevationMapBuilder::DigitalElevationMapBuilder()
 : resolution_column_(64), resolution_disparity_(32), min_points_in_cell_(1)

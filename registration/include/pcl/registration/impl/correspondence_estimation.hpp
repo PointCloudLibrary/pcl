@@ -37,15 +37,22 @@
  * $Id$
  *
  */
+
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_
 
 #include <pcl/common/io.h>
 #include <pcl/common/copy_point.h>
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
+namespace registration
+{
+
 template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::setInputTarget (
+CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::setInputTarget (
     const PointCloudTargetConstPtr &cloud)
 {
   if (cloud->points.empty ())
@@ -62,9 +69,9 @@ pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar
   target_cloud_updated_ = true;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> bool
-pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute ()
+CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute ()
 {
   if (!target_)
   {
@@ -87,9 +94,9 @@ pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar
   return (PCLBase<PointSource>::initCompute ());
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> bool
-pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeReciprocal ()
+CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeReciprocal ()
 {
   // Only update source kd-tree if a new target cloud was set
   if (source_cloud_updated_ && !force_no_recompute_reciprocal_)
@@ -108,9 +115,9 @@ pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar
   return (true);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorrespondences (
+CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorrespondences (
     pcl::Correspondences &correspondences, double max_distance)
 {
   if (!initCompute ())
@@ -124,7 +131,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
   std::vector<float> distance (1);
   pcl::Correspondence corr;
   unsigned int nr_valid_correspondences = 0;
-  
+
   // Check if the template types are the same. If true, avoid a copy.
   // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
   if (isSamePointType<PointSource, PointTarget> ())
@@ -145,7 +152,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
   else
   {
     PointTarget pt;
-    
+
     // Iterate over the input set of source indices
     for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
     {
@@ -166,9 +173,9 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
   deinitCompute ();
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineReciprocalCorrespondences (
+CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineReciprocalCorrespondences (
     pcl::Correspondences &correspondences, double max_distance)
 {
   if (!initCompute ())
@@ -216,7 +223,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
   {
     PointTarget pt_src;
     PointSource pt_tgt;
-   
+
     // Iterate over the input set of source indices
     for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
     {
@@ -246,6 +253,10 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
   deinitCompute ();
 }
 
+} // namespace registration
+} // namespace pcl
+
 //#define PCL_INSTANTIATE_CorrespondenceEstimation(T,U) template class PCL_EXPORTS pcl::registration::CorrespondenceEstimation<T,U>;
 
 #endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_ */
+

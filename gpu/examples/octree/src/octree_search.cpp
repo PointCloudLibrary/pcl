@@ -3,10 +3,11 @@
 
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <boost/shared_ptr.hpp>
 #include <pcl/visualization/cloud_viewer.h>
+
 #include <iostream>
 
 int main (int argc, char** argv)
@@ -89,7 +90,7 @@ int main (int argc, char** argv)
 
       for (std::size_t j = 0; j < sizes[i] ; ++j)
       {
-        cloud_result.points.push_back(cloud.points[data[j + i * max_answers]]);
+        cloud_result.points.push_back(cloud[data[j + i * max_answers]]);
         std::cout << "INFO: data : " << j << " " << j + i * max_answers << " data " << data[j+ i * max_answers] << std::endl;
       }
       std::stringstream ss;

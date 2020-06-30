@@ -3,6 +3,7 @@ set(SUBSYS_DESC "Application examples/samples that show how PCL works")
 set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition ml stereo 2d)
 
 set(DEFAULT FALSE)
+set(REASON "Disabled by default")
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
 
@@ -51,7 +52,7 @@ if(VTK_FOUND)
   target_link_libraries(pcl_feature_matching pcl_common pcl_io pcl_registration pcl_keypoints pcl_sample_consensus pcl_visualization pcl_search pcl_features pcl_kdtree pcl_surface pcl_segmentation)
 
   PCL_ADD_EXECUTABLE(pcl_convolve COMPONENT ${SUBSYS_NAME} SOURCES src/convolve.cpp)
-  target_link_libraries(pcl_convolve pcl_common pcl_io pcl_visualization)
+  target_link_libraries(pcl_convolve pcl_common pcl_filters pcl_io pcl_visualization)
 
   PCL_ADD_EXECUTABLE(pcl_pcd_organized_multi_plane_segmentation COMPONENT ${SUBSYS_NAME} SOURCES src/pcd_organized_multi_plane_segmentation.cpp)
   target_link_libraries(pcl_pcd_organized_multi_plane_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features)
@@ -227,4 +228,3 @@ else()
 endif()
 add_custom_target(${SUBSYS_TARGET_NAME} DEPENDS ${PCL_APPS_ALL_TARGETS})
 set_target_properties(${SUBSYS_TARGET_NAME} PROPERTIES FOLDER "Apps")
-

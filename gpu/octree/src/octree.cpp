@@ -78,7 +78,6 @@ pcl::gpu::Octree::~Octree() { clear(); }
 
 void pcl::gpu::Octree::clear()
 {
-    if (impl)
         delete static_cast<OctreeImpl*>(impl);
 }
 

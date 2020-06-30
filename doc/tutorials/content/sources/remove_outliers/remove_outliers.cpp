@@ -32,6 +32,7 @@ int
     outrem.setInputCloud(cloud);
     outrem.setRadiusSearch(0.8);
     outrem.setMinNeighborsInRadius (2);
+    outrem.setKeepOrganized(true);
     // apply filter
     outrem.filter (*cloud_filtered);
   }

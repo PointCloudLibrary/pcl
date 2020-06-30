@@ -112,8 +112,6 @@ using ScopeTimeT = pcl::ScopeTime;
 #include "pcl/common/common.h"
 #include "pcl/common/transforms.h"
 #include <pcl/console/print.h>
-// define the following in order to eliminate the deprecated headers warning
-#define VTK_EXCLUDE_STRSTREAM_HEADERS
 #include <pcl/io/vtk_lib_io.h>
 //
 #include <pcl/simulation/camera.h>
@@ -535,7 +533,7 @@ typename PointCloud<MergedT>::Ptr merge(const PointCloud<PointT>& points, const 
   //pcl::concatenateFields (points, colors, *merged_ptr); why error?
 
   for (std::size_t i = 0; i < colors.size (); ++i)
-    merged_ptr->points[i].rgba = colors.points[i].rgba;
+    merged_ptr->points[i].rgba = colors[i].rgba;
 
   return merged_ptr;
 }

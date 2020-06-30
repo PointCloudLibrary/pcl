@@ -47,17 +47,18 @@
 //#include <stdlib.h>
 //#include <time.h>
 
+namespace pcl {
 template <typename PointT>
-pcl::Kmeans<PointT>::Kmeans() : cluster_field_name_("")
+Kmeans<PointT>::Kmeans() : cluster_field_name_("")
 {}
 
 template <typename PointT>
-pcl::Kmeans<PointT>::~Kmeans()
+Kmeans<PointT>::~Kmeans()
 {}
 
 template <typename PointT>
 void
-pcl::Kmeans<PointT>::cluster(std::vector<PointIndices>& clusters)
+Kmeans<PointT>::cluster(std::vector<PointIndices>& clusters)
 {
   if (!initCompute() || (input_ != 0 && input_->points.empty()) ||
       (indices_ != 0 && indices_->empty())) {
@@ -150,12 +151,13 @@ pcl::Kmeans<PointT>::cluster(std::vector<PointIndices>& clusters)
     for (std::size_t i = 0; i < fields[vfh_idx].count; ++i)
     {
 
-      //vfh.second[i] = point.points[0].histogram[i];
+      //vfh.second[i] = point[0].histogram[i];
 
     }
   */
 
   deinitCompute();
 }
+} // namespace pcl
 
 #define PCL_INSTANTIATE_Kmeans(T) template class PCL_EXPORTS pcl::Kmeans<T>;

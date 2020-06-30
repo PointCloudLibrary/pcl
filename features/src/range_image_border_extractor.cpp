@@ -89,9 +89,9 @@ RangeImageBorderExtractor::clearData ()
       delete border_directions_[i];
   }
   delete[] surface_structure_; surface_structure_ = nullptr;
-  delete border_descriptions_; border_descriptions_ = nullptr;
   delete[] shadow_border_informations_; shadow_border_informations_ = nullptr;
   delete[] border_directions_; border_directions_ = nullptr;
+  delete border_descriptions_; border_descriptions_ = nullptr;
 
   delete[] surface_change_scores_;  surface_change_scores_ = nullptr;
   delete[] surface_change_directions_;  surface_change_directions_ = nullptr;

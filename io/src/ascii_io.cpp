@@ -35,6 +35,7 @@
  *
  */
 
+#include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/io/ascii_io.h>
 #include <istream>
 #include <fstream>
@@ -88,7 +89,7 @@ pcl::ASCIIReader::readHeader (const std::string& file_name,
   Eigen::Quaternionf& orientation, int& file_version, int& data_type,
   unsigned int& data_idx, const int offset)
 {
-	(void)offset; //offset is not used for ascii file implementation
+  pcl::utils::ignore(offset); //offset is not used for ascii file implementation
 	
   boost::filesystem::path fpath = file_name;
 

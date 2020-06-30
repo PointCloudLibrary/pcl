@@ -36,13 +36,13 @@
  * $Id$
  */
 
-#ifndef PCL_OCTREE_POINTCLOUD_HPP_
-#define PCL_OCTREE_POINTCLOUD_HPP_
-
-#include <cassert>
+#pragma once
 
 #include <pcl/common/common.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/octree/impl/octree_base.hpp>
+
+#include <cassert>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT,
@@ -1052,5 +1052,3 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
       pcl::octree::OctreeContainerEmpty,                                               \
       pcl::octree::Octree2BufBase<pcl::octree::OctreeContainerEmpty,                   \
                                   pcl::octree::OctreeContainerEmpty>>;
-
-#endif /* OCTREE_POINTCLOUD_HPP_ */

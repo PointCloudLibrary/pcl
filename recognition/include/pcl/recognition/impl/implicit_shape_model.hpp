@@ -43,6 +43,8 @@
 
 #include "../implicit_shape_model.h"
 
+#include <pcl/memory.h>  // for dynamic_pointer_cast
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 pcl::features::ISMVoteList<PointT>::ISMVoteList () :
@@ -1145,7 +1147,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::simplifyCl
       continue;
 
     PointT pt_1 = in_point_cloud->points[i_point];
-    PointT pt_2 = temp_cloud.points[index];
+    PointT pt_2 = temp_cloud[index];
 
     float distance = (pt_1.x - pt_2.x) * (pt_1.x - pt_2.x) + (pt_1.y - pt_2.y) * (pt_1.y - pt_2.y) + (pt_1.z - pt_2.z) * (pt_1.z - pt_2.z);
     if (distance < dist_to_grid_center[index])
@@ -1243,11 +1245,11 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::estimateFe
   feature_estimator_->setSearchMethod (tree);
 
 //  typename pcl::SpinImageEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<FeatureSize> >::Ptr feat_est_norm =
-//    boost::dynamic_pointer_cast<pcl::SpinImageEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<FeatureSize> > > (feature_estimator_);
+//    dynamic_pointer_cast<pcl::SpinImageEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<FeatureSize> > > (feature_estimator_);
 //  feat_est_norm->setInputNormals (normal_cloud);
 
   typename pcl::FeatureFromNormals<pcl::PointXYZ, pcl::Normal, pcl::Histogram<FeatureSize> >::Ptr feat_est_norm =
-    boost::dynamic_pointer_cast<pcl::FeatureFromNormals<pcl::PointXYZ, pcl::Normal, pcl::Histogram<FeatureSize> > > (feature_estimator_);
+    dynamic_pointer_cast<pcl::FeatureFromNormals<pcl::PointXYZ, pcl::Normal, pcl::Histogram<FeatureSize> > > (feature_estimator_);
   feat_est_norm->setInputNormals (normal_cloud);
 
   feature_estimator_->compute (*feature_cloud);

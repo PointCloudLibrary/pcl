@@ -22,11 +22,11 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel(pcl::PolygonMesh::Ptr plg)
     Eigen::Vector4f tmp;
     for (const auto& polygon : plg->polygons) {
       for (const unsigned int& point : polygon.vertices) {
-        tmp = newcloud.points[point].getVector4fMap();
+        tmp = newcloud[point].getVector4fMap();
         vertices.push_back(Vertex(Eigen::Vector3f(tmp(0), tmp(1), tmp(2)),
-                                  Eigen::Vector3f(newcloud.points[point].r / 255.0f,
-                                                  newcloud.points[point].g / 255.0f,
-                                                  newcloud.points[point].b / 255.0f)));
+                                  Eigen::Vector3f(newcloud[point].r / 255.0f,
+                                                  newcloud[point].g / 255.0f,
+                                                  newcloud[point].b / 255.0f)));
         indices.push_back(indices.size());
       }
     }
@@ -37,7 +37,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel(pcl::PolygonMesh::Ptr plg)
     Eigen::Vector4f tmp;
     for (const auto& polygon : plg->polygons) {
       for (const unsigned int& point : polygon.vertices) {
-        tmp = newcloud.points[point].getVector4fMap();
+        tmp = newcloud[point].getVector4fMap();
         vertices.push_back(Vertex(Eigen::Vector3f(tmp(0), tmp(1), tmp(2)),
                                   Eigen::Vector3f(1.0, 1.0, 1.0)));
         indices.push_back(indices.size());
@@ -132,15 +132,15 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel(GLenum mode,
 
       for (std::size_t j = 0; j < apoly_in.vertices.size(); j++) { // each point
         std::uint32_t pt = apoly_in.vertices[j];
-        tmp = newcloud.points[pt].getVector4fMap();
+        tmp = newcloud[pt].getVector4fMap();
         // x,y,z
         apoly.vertices_[3 * j + 0] = tmp(0);
         apoly.vertices_[3 * j + 1] = tmp(1);
         apoly.vertices_[3 * j + 2] = tmp(2);
         // r,g,b: input is ints 0->255, opengl wants floats 0->1
-        apoly.colors_[4 * j + 0] = newcloud.points[pt].r / 255.0f; // Red
-        apoly.colors_[4 * j + 1] = newcloud.points[pt].g / 255.0f; // Green
-        apoly.colors_[4 * j + 2] = newcloud.points[pt].b / 255.0f; // Blue
+        apoly.colors_[4 * j + 0] = newcloud[pt].r / 255.0f; // Red
+        apoly.colors_[4 * j + 1] = newcloud[pt].g / 255.0f; // Green
+        apoly.colors_[4 * j + 2] = newcloud[pt].b / 255.0f; // Blue
         apoly.colors_[4 * j + 3] = 1.0f; // transparency? unnecessary?
       }
       polygons.push_back(apoly);
@@ -158,7 +158,7 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel(GLenum mode,
 
       for (std::size_t j = 0; j < apoly_in.vertices.size(); j++) { // each point
         std::uint32_t pt = apoly_in.vertices[j];
-        tmp = newcloud.points[pt].getVector4fMap();
+        tmp = newcloud[pt].getVector4fMap();
         // x,y,z
         apoly.vertices_[3 * j + 0] = tmp(0);
         apoly.vertices_[3 * j + 1] = tmp(1);

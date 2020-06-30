@@ -37,9 +37,9 @@
 
 #pragma once
 
-#include <boost/shared_ptr.hpp>
-
 #include <pcl/common/common.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h> // for PCL_EXPORTS
 
 namespace pcl {
 template <class FeatureType,

@@ -37,14 +37,18 @@
  * $Id$
  *
  */
+
 #ifndef PCL_FILTERS_IMPL_FAST_BILATERAL_HPP_
 #define PCL_FILTERS_IMPL_FAST_BILATERAL_HPP_
 
 #include <pcl/common/io.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
 template <typename PointT> void
-pcl::FastBilateralFilter<PointT>::applyFilter (PointCloud &output)
+FastBilateralFilter<PointT>::applyFilter (PointCloud &output)
 {
   if (!input_->isOrganized ())
   {
@@ -56,18 +60,13 @@ pcl::FastBilateralFilter<PointT>::applyFilter (PointCloud &output)
   float base_max = -std::numeric_limits<float>::max (),
         base_min = std::numeric_limits<float>::max ();
   bool found_finite = false;
-  for (std::size_t x = 0; x < output.width; ++x)
+  for (const auto& pt: output)
   {
-    for (std::size_t y = 0; y < output.height; ++y)
+    if (std::isfinite(pt.z))
     {
-      if (std::isfinite (output (x, y).z))
-      {
-        if (base_max < output (x, y).z)
-          base_max = output (x, y).z;
-        if (base_min > output (x, y).z)
-          base_min = output (x, y).z;
-        found_finite = true;
-      }
+      base_max = std::max<float>(pt.z, base_max);
+      base_min = std::min<float>(pt.z, base_min);
+      found_finite = true;
     }
   }
   if (!found_finite)
@@ -76,10 +75,13 @@ pcl::FastBilateralFilter<PointT>::applyFilter (PointCloud &output)
     return;
   }
 
-  for (std::size_t x = 0; x < output.width; ++x)
-      for (std::size_t y = 0; y < output.height; ++y)
-        if (!std::isfinite (output (x, y).z))
-          output (x, y).z = base_max;
+  for (auto& pt: output)
+  {
+    if (!std::isfinite(pt.z))
+    {
+      pt.z = base_max;
+    }
+  }
 
   const float base_delta = base_max - base_min;
 
@@ -164,12 +166,10 @@ pcl::FastBilateralFilter<PointT>::applyFilter (PointCloud &output)
 }
 
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> std::size_t
-pcl::FastBilateralFilter<PointT>::Array3D::clamp (const std::size_t min_value,
-                                                  const std::size_t max_value,
-                                                  const std::size_t x)
+FastBilateralFilter<PointT>::Array3D::clamp (const std::size_t min_value,
+                                             const std::size_t max_value,
+                                             const std::size_t x)
 {
   if (x >= min_value && x <= max_value)
   {
@@ -182,11 +182,11 @@ pcl::FastBilateralFilter<PointT>::Array3D::clamp (const std::size_t min_value,
   return (max_value);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> Eigen::Vector2f
-pcl::FastBilateralFilter<PointT>::Array3D::trilinear_interpolation (const float x,
-                                                                    const float y,
-                                                                    const float z)
+FastBilateralFilter<PointT>::Array3D::trilinear_interpolation (const float x,
+                                                               const float y,
+                                                               const float z)
 {
   const std::size_t x_index  = clamp (0, x_dim_ - 1, static_cast<std::size_t> (x));
   const std::size_t xx_index = clamp (0, x_dim_ - 1, x_index + 1);
@@ -212,4 +212,7 @@ pcl::FastBilateralFilter<PointT>::Array3D::trilinear_interpolation (const float 
       x_alpha        * y_alpha        * z_alpha        * (*this)(xx_index, yy_index, zz_index);
 }
 
+} // namespace pcl
+
 #endif /* PCL_FILTERS_IMPL_FAST_BILATERAL_HPP_ */
+

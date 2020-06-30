@@ -35,18 +35,18 @@
  *
  */
 
-#include <pcl_cuda/io/cloud_to_pcl.h>
-#include <pcl_cuda/io/debayering.h>
-#include <pcl_cuda/time_cpu.h>
+#include <pcl/memory.h>
+#include <pcl/cuda/io/cloud_to_pcl.h>
+#include <pcl/cuda/io/debayering.h>
+#include <pcl/cuda/time_cpu.h>
 #include <pcl/io/kinect_grabber.h>
 
 #include <opencv2/opencv.hpp>
 
-#include <boost/shared_ptr.hpp>
-
 #include <functional>
 #include <iostream>
 #include <mutex>
+
 
 class SimpleKinectTool
 {
@@ -75,7 +75,7 @@ class SimpleKinectTool
 
       std::function<void (const openni_wrapper::Image::Ptr& image)> f = std::bind (&SimpleKinectTool::cloud_cb_, this, _1);
 
-      boost::signals2::connection c = interface->registerCallback (f);
+      interface->registerCallback (f);
 
       interface->start ();
       

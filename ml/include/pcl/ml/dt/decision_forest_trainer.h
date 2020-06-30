@@ -38,7 +38,6 @@
 #pragma once
 
 #include <pcl/common/common.h>
-
 #include <pcl/ml/dt/decision_forest.h>
 #include <pcl/ml/dt/decision_tree.h>
 #include <pcl/ml/dt/decision_tree_trainer.h>

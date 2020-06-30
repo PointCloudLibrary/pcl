@@ -36,11 +36,19 @@
  *
  */
 
+
 #ifndef PCL_RECOGNITION_VOXEL_STRUCTURE_HPP_
 #define PCL_RECOGNITION_VOXEL_STRUCTURE_HPP_
 
+
+namespace pcl
+{
+
+namespace recognition
+{
+
 template<class T, typename REAL> inline void
-pcl::recognition::VoxelStructure<T,REAL>::build (const REAL bounds[6], int num_of_voxels[3])
+VoxelStructure<T,REAL>::build (const REAL bounds[6], int num_of_voxels[3])
 {
   this->clear();
 
@@ -72,10 +80,9 @@ pcl::recognition::VoxelStructure<T,REAL>::build (const REAL bounds[6], int num_o
   min_center_[2] = bounds_[4] + static_cast<REAL> (0.5)*spacing_[2];
 }
 
-//================================================================================================================================
 
 template<class T, typename REAL> inline T*
-pcl::recognition::VoxelStructure<T,REAL>::getVoxel (const REAL p[3])
+VoxelStructure<T,REAL>::getVoxel (const REAL p[3])
 {
   if ( p[0] < bounds_[0] || p[0] >= bounds_[1] || p[1] < bounds_[2] || p[1] >= bounds_[3] || p[2] < bounds_[4] || p[2] >= bounds_[5] )
     return nullptr;
@@ -87,10 +94,9 @@ pcl::recognition::VoxelStructure<T,REAL>::getVoxel (const REAL p[3])
   return &voxels_[z*num_of_voxels_xy_plane_ + y*num_of_voxels_[0] + x];
 }
 
-//================================================================================================================================
 
 template<class T, typename REAL> inline T*
-pcl::recognition::VoxelStructure<T,REAL>::getVoxel (int x, int y, int z) const
+VoxelStructure<T,REAL>::getVoxel (int x, int y, int z) const
 {
   if ( x < 0 || x >= num_of_voxels_[0] ) return nullptr;
   if ( y < 0 || y >= num_of_voxels_[1] ) return nullptr;
@@ -99,10 +105,9 @@ pcl::recognition::VoxelStructure<T,REAL>::getVoxel (int x, int y, int z) const
   return &voxels_[z*num_of_voxels_xy_plane_ + y*num_of_voxels_[0] + x];
 }
 
-//================================================================================================================================
 
 template<class T, typename REAL> inline int
-pcl::recognition::VoxelStructure<T,REAL>::getNeighbors (const REAL* p, T **neighs) const
+VoxelStructure<T,REAL>::getNeighbors (const REAL* p, T **neighs) const
 {
   if ( p[0] < bounds_[0] || p[0] >= bounds_[1] || p[1] < bounds_[2] || p[1] >= bounds_[3] || p[2] < bounds_[4] || p[2] >= bounds_[5] )
     return 0;
@@ -151,6 +156,8 @@ pcl::recognition::VoxelStructure<T,REAL>::getNeighbors (const REAL* p, T **neigh
   return num_neighs;
 }
 
-//================================================================================================================================
+} // namespace recognition
+} // namespace pcl
 
 #endif // PCL_RECOGNITION_VOXEL_STRUCTURE_HPP_
+

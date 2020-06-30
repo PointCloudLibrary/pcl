@@ -127,8 +127,8 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSmoot
 
         //processed[nn_indices[j]] = true;
         // [-1;1]
-        const double dot_p = normals.points[seed_queue[idx]].getNormalVector3fMap().dot(
-                        normals.points[nn_indices[j]].getNormalVector3fMap());
+        const double dot_p = normals[seed_queue[idx]].getNormalVector3fMap().dot(
+                        normals[nn_indices[j]].getNormalVector3fMap());
 
         if (std::acos (dot_p) < eps_angle)
         {
@@ -167,7 +167,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::filterNormalsWithHighCurvatur
 
   for (const int &index : indices_to_use)
   {
-    if (cloud.points[index].curvature > threshold)
+    if (cloud[index].curvature > threshold)
     {
       indices_out[out] = index;
       out++;
@@ -303,7 +303,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
       vfh.setCentroidToUse (centroids_dominant_orientations_[i]);
       pcl::PointCloud<pcl::VFHSignature308> vfh_signature;
       vfh.compute (vfh_signature);
-      output.points[i] = vfh_signature.points[0];
+      output[i] = vfh_signature[0];
     }
   }
   else
@@ -323,7 +323,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
     output.points.resize (1);
     output.width = 1;
 
-    output.points[0] = vfh_signature.points[0];
+    output[0] = vfh_signature[0];
   }
 }
 

@@ -37,15 +37,11 @@
  *
  */
 
-
 #include <iostream>
-#include <vector>
 
 #include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/principal_curvatures.h>
-
 
 int
 main (int, char** argv)

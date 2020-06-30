@@ -227,7 +227,7 @@ Cloud::drawWithRGB () const
 {
   glEnableClientState(GL_COLOR_ARRAY);
   glColorPointer(3, GL_UNSIGNED_BYTE, sizeof(Point3D),
-                 &(cloud_.points[0].b));
+                 &(cloud_[0].b));
   draw();
 }
 
@@ -267,7 +267,7 @@ Cloud::draw (bool disable_highlight) const
         glTranslatef(-center_xyz_[0], -center_xyz_[1], -center_xyz_[2]);
 
         glEnableClientState(GL_VERTEX_ARRAY);
-        glVertexPointer(3, GL_FLOAT, sizeof(Point3D), &(cloud_.points[0].x));
+        glVertexPointer(3, GL_FLOAT, sizeof(Point3D), &(cloud_[0].x));
 
         if (disable_highlight || (!selection_ptr) || selection_ptr->empty())
         {
@@ -328,7 +328,7 @@ Cloud::remove(const Selection& selection)
 {
   unsigned int pos = cloud_.size();
   for (auto rit = selection.rbegin(); rit != selection.rend(); ++rit)
-    std::swap(cloud_.points[--pos], cloud_.points[*rit]);
+    std::swap(cloud_[--pos], cloud_[*rit]);
   resize(cloud_.size()-selection.size());
 }
 
@@ -439,7 +439,7 @@ Cloud::restore (const CopyBuffer& copy_buffer, const Selection& selection)
   append(copied_cloud);
   unsigned int pos = cloud_.size();
   for (auto rit = selection.rbegin(); rit != selection.rend(); ++rit)
-    std::swap(cloud_.points[--pos], cloud_.points[*rit]);
+    std::swap(cloud_[--pos], cloud_[*rit]);
 }
 
 std::string
@@ -459,15 +459,15 @@ Cloud::updateCloudMembers ()
 
   std::fill_n(min_xyz_, XYZ_SIZE, 0.0f);
   std::fill_n(max_xyz_, XYZ_SIZE, 0.0f);
-  float *pt = &(cloud_.points[0].data[X]);
+  float *pt = &(cloud_[0].data[X]);
   std::copy(pt, pt+XYZ_SIZE, max_xyz_);
   std::copy(max_xyz_, max_xyz_+XYZ_SIZE, min_xyz_);
   for (std::size_t i = 1; i < cloud_.size(); ++i)
   {
     for (unsigned int j = 0; j < XYZ_SIZE; ++j)
     {
-      min_xyz_[j] = std::min(min_xyz_[j], cloud_.points[i].data[j]);
-      max_xyz_[j] = std::max(max_xyz_[j], cloud_.points[i].data[j]);
+      min_xyz_[j] = std::min(min_xyz_[j], cloud_[i].data[j]);
+      max_xyz_[j] = std::max(max_xyz_[j], cloud_[i].data[j]);
     }
   }
   float range = 0.0f;
@@ -493,7 +493,7 @@ Cloud::enableTexture () const
   glEnable(GL_TEXTURE_1D);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glTexCoordPointer(1, GL_FLOAT, sizeof(Point3D),
-                    &(cloud_.points[0].data[color_ramp_axis_]));
+                    &(cloud_[0].data[color_ramp_axis_]));
   glMatrixMode(GL_TEXTURE);
   glPushMatrix();
   glLoadIdentity();

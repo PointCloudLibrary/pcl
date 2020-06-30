@@ -81,48 +81,103 @@
 #include <boost/preprocessor/control/if.hpp>
 #include <boost/preprocessor/stringize.hpp>
 
-// It seems that __has_cpp_attribute doesn't work correctly
-// when compiling with some versions of nvcc so we
-// additionally check if nvcc is used before setting the
-// PCL_DEPRECATED_IMPL macro to [[deprecated]].
-#if defined(__has_cpp_attribute) && __has_cpp_attribute(deprecated) && !defined(__CUDACC__)
-  #define PCL_DEPRECATED_IMPL(message) [[deprecated(message)]]
-#elif defined(__GNUC__) || defined(__clang__)
-  #define PCL_DEPRECATED_IMPL(message) __attribute__((deprecated(message)))
-#elif defined(_MSC_VER)
-  // Until Visual Studio 2013 you had to use __declspec(deprecated).
-  // However, we decided to ignore the deprecation for these version because
-  // of simplicity reasons. See PR #3634 for the details.
-  #define PCL_DEPRECATED_IMPL(message)
+// MSVC < 2019 have issues:
+// * can't short-circuiting logic in macros
+// * don't define standard macros
+// => this leads to annyoing C4067 warnings (see https://developercommunity.visualstudio.com/content/problem/327796/-has-cpp-attribute-emits-warning-is-wrong-highligh.html)
+#if defined(_MSC_VER)
+  // nvcc on msvc can't work with [[deprecated]]
+  #if !defined(__CUDACC__)
+    #define _PCL_DEPRECATED_IMPL(Message) [[deprecated(Message)]]
+  #else
+    #define _PCL_DEPRECATED_IMPL(Message)
+  #endif
+#elif __has_cpp_attribute(deprecated)
+  #define _PCL_DEPRECATED_IMPL(Message) [[deprecated(Message)]]
 #else
-  #warning "You need to implement PCL_DEPRECATED_IMPL for this compiler"
-  #define PCL_DEPRECATED_IMPL(message)
+  #warning "You need to implement _PCL_DEPRECATED_IMPL for this compiler"
+  #define _PCL_DEPRECATED_IMPL(Message)
 #endif
 
-#define PCL_DEPRECATED_MODIFY_MSG(major, minor, msg) \
-    msg " (It will be removed in PCL " \
-    BOOST_PP_STRINGIZE(major.minor) ")"
+// Macro for pragma operator
+#if (defined (__GNUC__) || defined(__clang__))
+  #define PCL_PRAGMA(x) _Pragma (#x)
+#elif _MSC_VER
+  #define PCL_PRAGMA(x) __pragma (#x)
+#else
+  #define PCL_PRAGMA
+#endif
 
-#define PCL_DEPRECATED_MINOR(Minor, Msg)                      \
-    BOOST_PP_IF(BOOST_PP_LESS(PCL_MINOR_VERSION, Minor),  \
-                PCL_DEPRECATED_IMPL(Msg),           \
-                unneeded_deprecation)
+// Macro for emitting pragma warning for deprecated headers
+#if (defined (__GNUC__) || defined(__clang__))
+  #define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA (GCC warning Message)
+#elif _MSC_VER
+  #define _PCL_DEPRECATED_HEADER_IMPL(Message) PCL_PRAGMA (warning (Message))
+#else
+  #warning "You need to implement _PCL_DEPRECATED_HEADER_IMPL for this compiler"
+  #define _PCL_DEPRECATED_HEADER_IMPL(Message)
+#endif
+
+/**
+ * \brief A handy way to inform the user of the removal deadline
+ */
+#define _PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Msg)                                 \
+  Msg " (It will be removed in PCL " BOOST_PP_STRINGIZE(Major.Minor) ")"
+
+/**
+ * \brief Tests for Minor < PCL_MINOR_VERSION
+ */
+#define _PCL_COMPAT_MINOR_VERSION(Minor, IfPass, IfFail)                                \
+  BOOST_PP_IF(BOOST_PP_LESS(PCL_MINOR_VERSION, Minor), IfPass, IfFail)
+
+/**
+ * \brief Tests for Major == PCL_MAJOR_VERSION
+ */
+#define _PCL_COMPAT_MAJOR_VERSION(Major, IfPass, IfFail)                                \
+  BOOST_PP_IF(BOOST_PP_EQUAL(PCL_MAJOR_VERSION, Major), IfPass, IfFail)
 
 /**
  * \brief macro for compatibility across compilers and help remove old deprecated
  *        items for the Major.Minor release
  *
- * \detail compiler errors of `unneeded_deprecation` and `major_version_mismatch`
+ * \details compiler errors of `unneeded_deprecation` and `major_version_mismatch`
  * are hints to the developer that those items can be safely removed.
- * Warning message with PCL_DEPRECATED(1, 99, "Not needed anymore") till PCL 1.98:
- * "Slated for removal in PCL 1.99: Not needed anymore"
+ * Behavior of PCL_DEPRECATED(1, 99, "Not needed anymore")
+ *   * till PCL 1.98: "Not needed anymore (It will be removed in PCL 1.99)"
+ *   * PCL 1.99 onwards: compiler error with "unneeded_deprecation"
+ *   * PCL 2.0 onwards: compiler error with "major_version_mismatch"
  */
-#define PCL_DEPRECATED(Major, Minor, Message)                           \
-    BOOST_PP_IF(BOOST_PP_EQUAL(PCL_MAJOR_VERSION, Major),               \
-                PCL_DEPRECATED_MINOR(Minor,                             \
-                    PCL_DEPRECATED_MODIFY_MSG(Major, Minor, Message)),  \
-                major_version_mismatch)
+#define PCL_DEPRECATED(Major, Minor, Message)                                          \
+  _PCL_COMPAT_MAJOR_VERSION(                                                           \
+      Major,                                                                           \
+      _PCL_COMPAT_MINOR_VERSION(                                                       \
+          Minor,                                                                       \
+          _PCL_DEPRECATED_IMPL(_PCL_PREPARE_REMOVAL_MESSAGE(Major, Minor, Message)),   \
+          unneeded_deprecation),                                                       \
+      major_version_mismatch)
 
+/**
+ * \brief macro for compatibility across compilers and help remove old deprecated
+ *        headers for the Major.Minor release
+ *
+ * \details compiler errors of `unneeded_header` and `major_version_mismatch`
+ * are hints to the developer that those items can be safely removed.
+ * Behavior of PCL_DEPRECATED_HEADER(1, 99, "Use file <newfile.h> instead.")
+ *   * till PCL 1.98: "This header is deprecated. Use file <newfile.h> instead. (It will be removed in PCL 1.99)"
+ *   * PCL 1.99 onwards: compiler error with "unneeded_header"
+ *   * PCL 2.0 onwards: compiler error with "major_version_mismatch"
+ */
+#define PCL_DEPRECATED_HEADER(Major, Minor, Message)                                   \
+  _PCL_COMPAT_MAJOR_VERSION(                                                           \
+      Major,                                                                           \
+      _PCL_COMPAT_MINOR_VERSION(                                                       \
+          Minor,                                                                       \
+          _PCL_DEPRECATED_HEADER_IMPL(_PCL_PREPARE_REMOVAL_MESSAGE(                    \
+              Major,                                                                   \
+              Minor,                                                                   \
+              "This header is deprecated. " Message)),                                 \
+          unneeded_header),                                                            \
+      major_version_mismatch)
 
 #if defined _WIN32
 // Define math constants, without including math.h, to prevent polluting global namespace with old math methods
@@ -291,24 +346,6 @@ pcl_round (float number)
     #define PCLAPI(rettype) PCL_EXTERN_C PCL_EXPORTS rettype PCL_CDECL
 #endif
 
-// Macro for pragma operator
-#if (defined (__GNUC__) || defined(__clang__))
-  #define PCL_PRAGMA(x) _Pragma (#x)
-#elif _MSC_VER
-  #define PCL_PRAGMA(x) __pragma (#x)
-#else
-  #define PCL_PRAGMA
-#endif
-
-// Macro for emitting pragma warning
-#if (defined (__GNUC__) || defined(__clang__))
-  #define PCL_PRAGMA_WARNING(x) PCL_PRAGMA (GCC warning x)
-#elif _MSC_VER
-  #define PCL_PRAGMA_WARNING(x) PCL_PRAGMA (warning (x))
-#else
-  #define PCL_PRAGMA_WARNING
-#endif
-
 //for clang cf. http://clang.llvm.org/docs/LanguageExtensions.html
 #ifndef __has_extension
   #define __has_extension(x) 0 // Compatibility with pre-3.0 compilers.
@@ -409,4 +446,3 @@ aligned_free (void* ptr)
 #else
   #define PCL_NODISCARD
 #endif
-

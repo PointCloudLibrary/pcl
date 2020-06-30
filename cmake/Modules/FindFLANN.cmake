@@ -56,6 +56,7 @@ if(flann_FOUND)
   get_filename_component(_config_dir "${flann_CONFIG}" DIRECTORY)
   get_filename_component(FLANN_ROOT "${_config_dir}/../../.." ABSOLUTE)
   unset(_config_dir)
+  message(STATUS "Found flann version ${flann_VERSION}")
   return()
 endif()
 

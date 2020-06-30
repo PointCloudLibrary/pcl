@@ -41,6 +41,7 @@
 #include <pcl/registration/ia_fpcs.h>
 #include <pcl/common/time.h>
 #include <pcl/common/distances.h>
+#include <pcl/common/utils.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/registration/transformation_estimation_3point.h>
 
@@ -59,10 +60,11 @@ pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &clou
   std::vector <int> ids (2);
   std::vector <float> dists_sqr (2);
 
+  pcl::utils::ignore(nr_threads);
 #pragma omp parallel for \
   default(none) \
   shared(tree, cloud) \
-  private(ids, dists_sqr) \
+  firstprivate(ids, dists_sqr) \
   reduction(+:mean_dist, num) \
   firstprivate(s, max_dist_sqr) \
   num_threads(nr_threads)
@@ -96,13 +98,22 @@ pcl::getMeanPointDensity (const typename pcl::PointCloud<PointT>::ConstPtr &clou
   std::vector <int> ids (2);
   std::vector <float> dists_sqr (2);
 
+  pcl::utils::ignore(nr_threads);
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
 #pragma omp parallel for \
   default(none) \
   shared(tree, cloud, indices) \
-  private(ids, dists_sqr) \
+  firstprivate(ids, dists_sqr) \
   reduction(+:mean_dist, num) \
-  firstprivate(s, max_dist_sqr) \
   num_threads(nr_threads)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(tree, cloud, indices, s, max_dist_sqr) \
+  firstprivate(ids, dists_sqr) \
+  reduction(+:mean_dist, num) \
+  num_threads(nr_threads)
+#endif
   for (int i = 0; i < 1000; i++)
   {
     tree.nearestKSearch (cloud->points[indices[rand () % s]], 2, ids, dists_sqr);

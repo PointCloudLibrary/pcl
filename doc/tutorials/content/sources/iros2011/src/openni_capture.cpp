@@ -24,7 +24,6 @@ OpenNICapture::~OpenNICapture ()
 {
   // Stop the grabber when shutting down
   grabber_.stop ();
-  if (preview_)
     delete preview_;
 }
 

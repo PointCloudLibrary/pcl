@@ -38,13 +38,13 @@
 
 #pragma once
 
-#include <vector>
-
 #include <pcl/octree/octree_container.h>
 #include <pcl/octree/octree_iterator.h>
 #include <pcl/octree/octree_key.h>
 #include <pcl/octree/octree_nodes.h>
 #include <pcl/pcl_macros.h>
+
+#include <vector>
 
 namespace pcl {
 namespace octree {
@@ -139,16 +139,32 @@ public:
   }
 
   /** \brief Get const pointer to container */
-  const ContainerT* operator->() const { return &container_; }
+  const ContainerT*
+  operator->() const
+  {
+    return &container_;
+  }
 
   /** \brief Get pointer to container */
-  ContainerT* operator->() { return &container_; }
+  ContainerT*
+  operator->()
+  {
+    return &container_;
+  }
 
   /** \brief Get const reference to container */
-  const ContainerT& operator*() const { return container_; }
+  const ContainerT&
+  operator*() const
+  {
+    return container_;
+  }
 
   /** \brief Get reference to container */
-  ContainerT& operator*() { return container_; }
+  ContainerT&
+  operator*()
+  {
+    return container_;
+  }
 
   /** \brief Get const reference to container */
   const ContainerT&

@@ -39,6 +39,9 @@
 #ifndef _LIBSVM_HPP_
 #define _LIBSVM_HPP_
 
+#include <pcl/common/utils.h> // pcl::utils::ignore
+#include <pcl/ml/svm.h>
+
 #include <cctype>
 #include <cfloat>
 #include <climits>
@@ -48,7 +51,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
-#include <pcl/ml/svm.h>
 int libsvm_version = LIBSVM_VERSION;
 using Qfloat = float;
 using schar = signed char;
@@ -3303,7 +3305,7 @@ svm_load_model(const char* model_file_name)
       free(model);
       return nullptr;
     }
-    (void)res; // to inform clang-tidy to ignore the dead-stores
+    pcl::utils::ignore(res); // to inform clang-tidy to ignore the dead-stores
   }
 
   // read sv_coef and SV

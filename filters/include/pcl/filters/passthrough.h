@@ -150,6 +150,7 @@ namespace pcl
         * \warning This method will be removed in the future. Use setNegative() instead.
         * \param[in] limit_negative return data inside the interval (false) or outside (true)
         */
+      PCL_DEPRECATED(1, 13, "use inherited FilterIndices::setNegative() instead")
       inline void
       setFilterLimitsNegative (const bool limit_negative)
       {
@@ -160,6 +161,7 @@ namespace pcl
         * \warning This method will be removed in the future. Use getNegative() instead.
         * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
+      PCL_DEPRECATED(1, 13, "use inherited FilterIndices::getNegative() instead")
       inline void
       getFilterLimitsNegative (bool &limit_negative) const
       {

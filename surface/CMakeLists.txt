@@ -82,6 +82,7 @@ set(POISSON_INCLUDES
 )
 
 set(POISSON_SOURCES
+  src/3rdparty/poisson4/bspline_data.cpp
   src/3rdparty/poisson4/factor.cpp
   src/3rdparty/poisson4/geometry.cpp
   src/3rdparty/poisson4/marching_cubes_poisson.cpp

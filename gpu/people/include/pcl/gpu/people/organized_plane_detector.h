@@ -36,6 +36,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -45,7 +46,6 @@
 #include <pcl/common/transforms.h>
 #include <pcl/gpu/people/label_common.h>
 
-#include <boost/shared_ptr.hpp>
 #include <string>
 #include <vector>
 

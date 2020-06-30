@@ -101,7 +101,7 @@ TEST(PCL_FeaturesGPU, vfh1)
     }
 
     VFHSignature308& gpu = downloaded[0];
-    VFHSignature308& cpu = vfh.points[0];
+    VFHSignature308& cpu = vfh[0];
         
     std::size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
         
@@ -168,7 +168,7 @@ TEST(PCL_FeaturesGPU, vfh_norm_bins_false)
     fe.compute (vfh);
 
     VFHSignature308& gpu = downloaded[0];
-    VFHSignature308& cpu = vfh.points[0];
+    VFHSignature308& cpu = vfh[0];
         
     std::size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
         
@@ -235,7 +235,7 @@ TEST(PCL_FeaturesGPU, vfh_norm_distance_true)
     fe.compute (vfh);
 
     VFHSignature308& gpu = downloaded[0];
-    VFHSignature308& cpu = vfh.points[0];
+    VFHSignature308& cpu = vfh[0];
         
     std::size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
         
@@ -303,7 +303,7 @@ TEST(PCL_FeaturesGPU, vfh_fill_size_component_true)
     fe.compute (vfh);
 
     VFHSignature308& gpu = downloaded[0];
-    VFHSignature308& cpu = vfh.points[0];
+    VFHSignature308& cpu = vfh[0];
         
     std::size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
         

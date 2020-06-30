@@ -416,7 +416,7 @@ pcl::getEigenAsPointCloud (Eigen::MatrixXf &in, pcl::PCLPointCloud2 &out)
 void 
 pcl::copyPointCloud (
     const pcl::PCLPointCloud2 &cloud_in,
-    const std::vector<int> &indices, 
+    const Indices &indices,
     pcl::PCLPointCloud2 &cloud_out)
 {
   cloud_out.header       = cloud_in.header;
@@ -439,7 +439,7 @@ pcl::copyPointCloud (
 void 
 pcl::copyPointCloud (
     const pcl::PCLPointCloud2 &cloud_in,
-    const std::vector<int, Eigen::aligned_allocator<int> > &indices, 
+    const IndicesAllocator< Eigen::aligned_allocator<int> > &indices,
     pcl::PCLPointCloud2 &cloud_out)
 {
   cloud_out.header       = cloud_in.header;

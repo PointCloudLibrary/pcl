@@ -101,7 +101,7 @@ pcl::PPFRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
       else
          p.f1 = p.f2 = p.f3 = p.f4 = p.alpha_m = p.r_ratio = p.g_ratio = p.b_ratio = 0.f;
 
-      output.points[index_i*input_->points.size () + j] = p;
+      output[index_i*input_->points.size () + j] = p;
     }
   }
 }
@@ -168,7 +168,7 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
     average_feature_nn.r_ratio /= normalization_factor;
     average_feature_nn.g_ratio /= normalization_factor;
     average_feature_nn.b_ratio /= normalization_factor;
-    output.points[index_i] = average_feature_nn;
+    output[index_i] = average_feature_nn;
   }
   PCL_INFO ("Output size: %u\n", output.points.size ());
 }

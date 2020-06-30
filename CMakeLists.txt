@@ -26,7 +26,7 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "build type default to RelWithDebInfo, set to Release to improve performance" FORCE)
 endif()
 
-project(PCL VERSION 1.10.1.99)
+project(PCL VERSION 1.11.0.99)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 ### ---[ Find universal dependencies
@@ -42,29 +42,9 @@ if(WIN32 AND NOT MINGW)
   set(CMAKE_MINSIZEREL_POSTFIX "s" CACHE STRING "Add postfix to target for MinSizeRel build")
 endif()
 
-# ---[ special maintainer mode
-set(CMAKE_CXX_FLAGS_MAINTAINER "-pedantic -Wno-variadic-macros -Weffc++ -Wno-long-long" CACHE STRING
-    "Flags used by the C++ compiler during maintainer builds."
-    FORCE)
-set(CMAKE_C_FLAGS_MAINTAINER "-pedantic -Wno-variadic-macros -Weffc++ -Wno-long-long" CACHE STRING
-    "Flags used by the C compiler during maintainer builds."
-    FORCE)
-set(CMAKE_EXE_LINKER_FLAGS_MAINTAINER
-    "-Wl,--warn-unresolved-symbols,--warn-once" CACHE STRING
-    "Flags used for linking binaries during maintainer builds."
-    FORCE)
-set(CMAKE_SHARED_LINKER_FLAGS_MAINTAINER
-    "-Wl,--warn-unresolved-symbols,--warn-once" CACHE STRING
-    "Flags used by the shared libraries linker during maintainer builds."
-    FORCE)
-mark_as_advanced(
-    CMAKE_CXX_FLAGS_MAINTAINER
-    CMAKE_C_FLAGS_MAINTAINER
-    CMAKE_EXE_LINKER_FLAGS_MAINTAINER
-    CMAKE_SHARED_LINKER_FLAGS_MAINTAINER)
 # Update the documentation string of CMAKE_BUILD_TYPE for GUIs
 set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
-    "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Maintainer."
+    "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
     FORCE)
 
 # Compiler identification
@@ -274,7 +254,12 @@ set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 endif()
 
 ### ---[ Find universal dependencies
-find_package(OpenMP COMPONENTS C CXX)
+
+# OpenMP (optional)
+option(WITH_OPENMP "Build with parallelization using OpenMP" TRUE)
+if(WITH_OPENMP)
+  find_package(OpenMP COMPONENTS C CXX)
+endif()
 if(OpenMP_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
@@ -442,6 +427,9 @@ if(WITH_VTK AND NOT ANDROID)
       endif()
       if(${VTK_RENDERING_BACKEND} STREQUAL "OpenGL")
         set(VTK_RENDERING_BACKEND_OPENGL_VERSION "1")
+        message(DEPRECATION "The rendering backend OpenGL is deprecated and not available anymore since VTK 8.2."
+                            "Please switch to the OpenGL2 backend instead, which is available since VTK 6.2."
+                            "Support of the deprecated backend will be dropped with PCL 1.13.")
       elseif(${VTK_RENDERING_BACKEND} STREQUAL "OpenGL2")
         set(VTK_RENDERING_BACKEND_OPENGL_VERSION "2")
       endif()
@@ -477,9 +465,6 @@ set(pcl_config_h "${CMAKE_CURRENT_BINARY_DIR}/include/pcl/pcl_config.h")
 configure_file("${pcl_config_h_in}" "${pcl_config_h}")
 PCL_ADD_INCLUDES(common "" "${pcl_config_h}")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
-
-### ---[ Add the libraries subdirectories
-include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")
 
 collect_subproject_directory_names("${PCL_SOURCE_DIR}" "CMakeLists.txt" PCL_MODULES_NAMES PCL_MODULES_DIRS doc)
 set(PCL_MODULES_NAMES_UNSORTED ${PCL_MODULES_NAMES})

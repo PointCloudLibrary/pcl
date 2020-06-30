@@ -41,6 +41,8 @@
 #pragma once
 
 #include <pcl/registration/correspondence_rejection.h>
+#include <pcl/memory.h>  // for static_pointer_cast
+
 
 namespace pcl
 {
@@ -101,13 +103,14 @@ namespace pcl
           * data!), used to compute the correspondence distance.  
           * \param[in] cloud a cloud containing XYZ data
           */
-        template <typename PointT> inline void 
+        template <typename PointT>
+        PCL_DEPRECATED(1, 12, "pcl::registration::CorrespondenceRejectorDistance::setInputCloud is deprecated. Please use setInputSource instead")
+        inline void 
         setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
         {
-          PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n", getClassName ().c_str ());
           if (!data_container_)
             data_container_.reset (new DataContainer<PointT>);
-          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
+          static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
         }
 
         /** \brief Provide a source point cloud dataset (must contain XYZ
@@ -119,7 +122,7 @@ namespace pcl
         {
           if (!data_container_)
             data_container_.reset (new DataContainer<PointT>);
-          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
+          static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
         }
 
         /** \brief Provide a target point cloud dataset (must contain XYZ
@@ -131,7 +134,7 @@ namespace pcl
         {
           if (!data_container_)
             data_container_.reset (new DataContainer<PointT>);
-          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputTarget (target);
+          static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputTarget (target);
         }
 
 
@@ -174,7 +177,7 @@ namespace pcl
         setSearchMethodTarget (const typename pcl::search::KdTree<PointT>::Ptr &tree,
                                bool force_no_recompute = false)
         { 
-          boost::static_pointer_cast< DataContainer<PointT> > 
+          static_pointer_cast< DataContainer<PointT> > 
             (data_container_)->setSearchMethodTarget (tree, force_no_recompute );
         }
 

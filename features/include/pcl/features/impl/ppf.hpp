@@ -112,7 +112,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
         output.is_dense = false;
       }
 
-      output.points[index_i*input_->points.size () + j] = p;
+      output[index_i*input_->points.size () + j] = p;
     }
   }
 }

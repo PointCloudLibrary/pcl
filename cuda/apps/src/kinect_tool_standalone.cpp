@@ -35,19 +35,19 @@
  *
  */
 
+#include <pcl/memory.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 #include <pcl/cuda/io/cloud_to_pcl.h>
 #include <pcl/cuda/io/disparity_to_cloud.h>
 #include <pcl/cuda/time_cpu.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-
-#include <boost/shared_ptr.hpp>
 
 #include <functional>
 #include <iostream>
 #include <mutex>
+
 
 using pcl::cuda::PointCloudAOS;
 using pcl::cuda::Device;
@@ -80,7 +80,7 @@ class SimpleKinectTool
 
       std::function<void (const openni_wrapper::Image::Ptr& image, const openni_wrapper::DepthImage::Ptr& depth_image, float)> f = std::bind (&SimpleKinectTool::cloud_cb_, this, _1, _2, _3);
 
-      boost::signals2::connection c = interface->registerCallback (f);
+      interface->registerCallback (f);
 
       //viewer.runOnVisualizationThread (fn, "viz_cb");
       interface->start ();

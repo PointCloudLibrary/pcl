@@ -5,9 +5,10 @@
  *      Author: hordurj
  */
 
+#include <pcl/simulation/glsl_shader.h>
+
 #include <fstream>
 #include <iostream>
-#include <pcl/simulation/glsl_shader.h>
 
 using namespace pcl::simulation::gllib;
 

@@ -37,12 +37,19 @@
  * $Id$
  *
  */
+
 #ifndef PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_IMPL_H_
 #define PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_IMPL_H_
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
+namespace registration
+{
+
 template <typename PointSource, typename PointTarget, typename Scalar> double
-pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget, Scalar>::validateTransformation (
+TransformationValidationEuclidean<PointSource, PointTarget, Scalar>::validateTransformation (
   const PointCloudSourceConstPtr &cloud_src,
   const PointCloudTargetConstPtr &cloud_tgt,
   const Matrix4 &transformation_matrix) const
@@ -56,7 +63,7 @@ pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget, S
   for (std::size_t i = 0; i < cloud_src->size (); ++i)
   {
     const PointSource &src = cloud_src->points[i];
-    PointTarget &tgt = input_transformed.points[i];
+    PointTarget &tgt = input_transformed[i];
     tgt.x = static_cast<float> (transformation_matrix (0, 0) * src.x + transformation_matrix (0, 1) * src.y + transformation_matrix (0, 2) * src.z + transformation_matrix (0, 3));
     tgt.y = static_cast<float> (transformation_matrix (1, 0) * src.x + transformation_matrix (1, 1) * src.y + transformation_matrix (1, 2) * src.z + transformation_matrix (1, 3));
     tgt.z = static_cast<float> (transformation_matrix (2, 0) * src.x + transformation_matrix (2, 1) * src.y + transformation_matrix (2, 2) * src.z + transformation_matrix (2, 3));
@@ -77,8 +84,8 @@ pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget, S
   for (std::size_t i = 0; i < input_transformed.points.size (); ++i)
   {
     // Find its nearest neighbor in the target
-    tree_->nearestKSearch (input_transformed.points[i], 1, nn_indices, nn_dists);
-    
+    tree_->nearestKSearch (input_transformed[i], 1, nn_indices, nn_dists);
+
     // Deal with occlusions (incomplete targets)
     if (nn_dists[0] > max_range_)
       continue;
@@ -92,6 +99,9 @@ pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget, S
     return (fitness_score / nr);
   return (std::numeric_limits<double>::max ());
 }
+
+} // namespace registration
+} // namespace pcl
 
 #endif    // PCL_REGISTRATION_TRANSFORMATION_VALIDATION_EUCLIDEAN_IMPL_H_
 

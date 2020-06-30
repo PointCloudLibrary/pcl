@@ -334,7 +334,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
     // Iterate over each point
     for (std::size_t i = 0; i < projected_points.points.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the cylinder
     for (const auto &inlier : inliers)
@@ -346,7 +346,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
 
       float k = (p.dot (line_dir) - ptdotdir) * dirdotdir;
 
-      pcl::Vector4fMap pp = projected_points.points[inlier].getVector4fMap ();
+      pcl::Vector4fMap pp = projected_points[inlier].getVector4fMap ();
       pp.matrix () = line_pt + k * line_dir;
 
       Eigen::Vector4f dir = p - pp;
@@ -367,12 +367,12 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::projectPoints (
     // Iterate over each point
     for (std::size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the cylinder
     for (std::size_t i = 0; i < inliers.size (); ++i)
     {
-      pcl::Vector4fMap pp = projected_points.points[i].getVector4fMap ();
+      pcl::Vector4fMap pp = projected_points[i].getVector4fMap ();
       pcl::Vector4fMapConst p = input_->points[inliers[i]].getVector4fMap ();
 
       float k = (p.dot (line_dir) - ptdotdir) * dirdotdir;

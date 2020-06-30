@@ -10,4 +10,3 @@ add_definitions(${PCL_DEFINITIONS})
 
 add_executable (narf_descriptor_visualization narf_descriptor_visualization.cpp)
 target_link_libraries (narf_descriptor_visualization ${PCL_LIBRARIES})
-

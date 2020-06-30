@@ -49,11 +49,11 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeRGBPairFeatures (
     int p_idx, int q_idx,
     float &f1, float &f2, float &f3, float &f4, float &f5, float &f6, float &f7)
 {
-  Eigen::Vector4i colors1 (cloud.points[p_idx].r, cloud.points[p_idx].g, cloud.points[p_idx].b, 0),
-      colors2 (cloud.points[q_idx].r, cloud.points[q_idx].g, cloud.points[q_idx].b, 0);
-  pcl::computeRGBPairFeatures (cloud.points[p_idx].getVector4fMap (), normals.points[p_idx].getNormalVector4fMap (),
+  Eigen::Vector4i colors1 (cloud[p_idx].r, cloud[p_idx].g, cloud[p_idx].b, 0),
+      colors2 (cloud[q_idx].r, cloud[q_idx].g, cloud[q_idx].b, 0);
+  pcl::computeRGBPairFeatures (cloud[p_idx].getVector4fMap (), normals[p_idx].getNormalVector4fMap (),
                                colors1,
-                               cloud.points[q_idx].getVector4fMap (), normals.points[q_idx].getNormalVector4fMap (),
+                               cloud[q_idx].getVector4fMap (), normals[q_idx].getNormalVector4fMap (),
                                colors2,
                                f1, f2, f3, f4, f5, f6, f7);
   return (true);
@@ -152,7 +152,7 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
     computePointPFHRGBSignature (*surface_, *normals_, nn_indices, nr_subdiv_, pfhrgb_histogram_);
 
     std::copy_n (pfhrgb_histogram_.data (), pfhrgb_histogram_.size (),
-                 output.points[idx].histogram);
+                 output[idx].histogram);
   }
 }
 

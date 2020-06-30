@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+
 #include <pcl/io/pcd_io.h>
 #include <pcl/registration/transforms.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -13,6 +14,7 @@
 #  include <pcl/keypoints/harris_3d.h>
 #endif
 
+#include <pcl/memory.h>  // for pcl::dynamic_pointer_cast
 #include <pcl/ModelCoefficients.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
@@ -43,7 +45,7 @@ class ICCVTutorial
                   pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal>::Ptr surface_reconstructor,
                   typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr source,
                   typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr target);
-    
+
     /**
      * @brief starts the event loop for the visualizer
      */
@@ -55,14 +57,14 @@ class ICCVTutorial
      * @param segmented the resulting segmented point cloud containing only points of the largest cluster
      */
     void segmentation (typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr input, typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr segmented) const;
-    
+
     /**
      * @brief Detects key points in the input point cloud
      * @param input the input point cloud
      * @param keypoints the resulting key points. Note that they are not necessarily a subset of the input cloud
      */
     void detectKeypoints (typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr input, pcl::PointCloud<pcl::PointXYZI>::Ptr keypoints) const;
-    
+
     /**
      * @brief extract descriptors for given key points
      * @param input point cloud to be used for descriptor extraction
@@ -70,25 +72,25 @@ class ICCVTutorial
      * @param features resulting descriptors
      */
     void extractDescriptors (typename pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr input, typename pcl::PointCloud<pcl::PointXYZI>::Ptr keypoints, typename pcl::PointCloud<FeatureType>::Ptr features);
-    
+
     /**
      * @brief find corresponding features based on some metric
      * @param source source feature descriptors
-     * @param target target feature descriptors 
+     * @param target target feature descriptors
      * @param correspondences indices out of the target descriptors that correspond (nearest neighbor) to the source descriptors
-     */    
+     */
     void findCorrespondences (typename pcl::PointCloud<FeatureType>::Ptr source, typename pcl::PointCloud<FeatureType>::Ptr target, std::vector<int>& correspondences) const;
-    
+
     /**
      * @brief  remove non-consistent correspondences
      */
     void filterCorrespondences ();
-    
+
     /**
      * @brief calculate the initial rigid transformation from filtered corresponding keypoints
      */
     void determineInitialTransformation ();
-    
+
     /**
      * @brief calculate the final rigid transformation using ICP over all points
      */
@@ -105,7 +107,7 @@ class ICCVTutorial
      * @param cookie user defined data passed during registration of the callback
      */
     void keyboard_callback (const pcl::visualization::KeyboardEvent& event, void* cookie);
-    
+
   private:
     pcl::visualization::PCLVisualizer visualizer_;
     pcl::PointCloud<pcl::PointXYZI>::Ptr source_keypoints_;
@@ -157,24 +159,24 @@ ICCVTutorial<FeatureType>::ICCVTutorial(pcl::Keypoint<pcl::PointXYZRGB, pcl::Poi
 , show_correspondences (false)
 {
   visualizer_.registerKeyboardCallback(&ICCVTutorial::keyboard_callback, *this, 0);
-  
+
   segmentation (source_, source_segmented_);
-  segmentation (target_, target_segmented_);  
-  
+  segmentation (target_, target_segmented_);
+
   detectKeypoints (source_segmented_, source_keypoints_);
   detectKeypoints (target_segmented_, target_keypoints_);
-  
+
   extractDescriptors (source_segmented_, source_keypoints_, source_features_);
   extractDescriptors (target_segmented_, target_keypoints_, target_features_);
-  
+
   findCorrespondences (source_features_, target_features_, source2target_);
   findCorrespondences (target_features_, source_features_, target2source_);
-  
+
   filterCorrespondences ();
-  
+
   determineInitialTransformation ();
   determineFinalTransformation ();
-  
+
   reconstructSurface ();
 }
 
@@ -196,7 +198,7 @@ void ICCVTutorial<FeatureType>::segmentation (typename pcl::PointCloud<pcl::Poin
 
   seg.setInputCloud (source);
   seg.segment (*inliers, *coefficients);
-  
+
   pcl::ExtractIndices<pcl::PointXYZRGB> extract;
   extract.setInputCloud (source);
   extract.setIndices (inliers);
@@ -206,7 +208,7 @@ void ICCVTutorial<FeatureType>::segmentation (typename pcl::PointCloud<pcl::Poin
   std::vector<int> indices;
   pcl::removeNaNFromPointCloud(*segmented, *segmented, indices);
   std::cout << "OK" << std::endl;
-  
+
   std::cout << "clustering..." << std::flush;
   // euclidean clustering
   typename pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGB>);
@@ -220,7 +222,7 @@ void ICCVTutorial<FeatureType>::segmentation (typename pcl::PointCloud<pcl::Poin
   clustering.setSearchMethod (tree);
   clustering.setInputCloud(segmented);
   clustering.extract (cluster_indices);
-  
+
   if (cluster_indices.size() > 0)//use largest cluster
   {
     std::cout << cluster_indices.size() << " clusters found";
@@ -252,16 +254,16 @@ void ICCVTutorial<FeatureType>::extractDescriptors (typename pcl::PointCloud<pcl
 {
   typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr kpts(new pcl::PointCloud<pcl::PointXYZRGB>);
   kpts->points.resize(keypoints->points.size());
-  
+
   pcl::copyPointCloud(*keypoints, *kpts);
-          
-  typename pcl::FeatureFromNormals<pcl::PointXYZRGB, pcl::Normal, FeatureType>::Ptr feature_from_normals = boost::dynamic_pointer_cast<pcl::FeatureFromNormals<pcl::PointXYZRGB, pcl::Normal, FeatureType> > (feature_extractor_);
-  
+
+  typename pcl::FeatureFromNormals<pcl::PointXYZRGB, pcl::Normal, FeatureType>::Ptr feature_from_normals = pcl::dynamic_pointer_cast<pcl::FeatureFromNormals<pcl::PointXYZRGB, pcl::Normal, FeatureType> > (feature_extractor_);
+
   feature_extractor_->setSearchSurface(input);
   feature_extractor_->setInputCloud(kpts);
-  
+
   if (feature_from_normals)
-  //if (boost::dynamic_pointer_cast<typename pcl::FeatureFromNormals<pcl::PointXYZRGB, pcl::Normal, FeatureType> > (feature_extractor_))
+  //if (pcl::dynamic_pointer_cast<typename pcl::FeatureFromNormals<pcl::PointXYZRGB, pcl::Normal, FeatureType> > (feature_extractor_))
   {
     std::cout << "normal estimation..." << std::flush;
     typename pcl::PointCloud<pcl::Normal>::Ptr normals (new  pcl::PointCloud<pcl::Normal>);
@@ -309,14 +311,14 @@ void ICCVTutorial<FeatureType>::filterCorrespondences ()
   for (unsigned cIdx = 0; cIdx < source2target_.size (); ++cIdx)
     if (target2source_[source2target_[cIdx]] == cIdx)
       correspondences.push_back(std::make_pair(cIdx, source2target_[cIdx]));
-  
+
   correspondences_->resize (correspondences.size());
   for (unsigned cIdx = 0; cIdx < correspondences.size(); ++cIdx)
   {
     (*correspondences_)[cIdx].index_query = correspondences[cIdx].first;
     (*correspondences_)[cIdx].index_match = correspondences[cIdx].second;
   }
-  
+
   pcl::registration::CorrespondenceRejectorSampleConsensus<pcl::PointXYZI> rejector;
   rejector.setInputSource(source_keypoints_);
   rejector.setInputTarget(target_keypoints_);
@@ -330,9 +332,9 @@ void ICCVTutorial<FeatureType>::determineInitialTransformation ()
 {
   std::cout << "initial alignment..." << std::flush;
   pcl::registration::TransformationEstimation<pcl::PointXYZI, pcl::PointXYZI>::Ptr transformation_estimation (new pcl::registration::TransformationEstimationSVD<pcl::PointXYZI, pcl::PointXYZI>);
-  
+
   transformation_estimation->estimateRigidTransformation (*source_keypoints_, *target_keypoints_, *correspondences_, initial_transformation_matrix_);
-  
+
   pcl::transformPointCloud(*source_segmented_, *source_transformed_, initial_transformation_matrix_);
   std::cout << "OK" << std::endl;
 }
@@ -342,7 +344,7 @@ void ICCVTutorial<FeatureType>::determineFinalTransformation ()
 {
   std::cout << "final registration..." << std::flush;
   pcl::Registration<pcl::PointXYZRGB, pcl::PointXYZRGB>::Ptr registration (new pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB>);
-  registration->setInputCloud(source_transformed_);
+  registration->setInputSource(source_transformed_);
   //registration->setInputCloud(source_segmented_);
   registration->setInputTarget (target_segmented_);
   registration->setMaxCorrespondenceDistance(0.05);
@@ -362,7 +364,7 @@ void ICCVTutorial<FeatureType>::reconstructSurface ()
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr merged (new pcl::PointCloud<pcl::PointXYZRGB>);
   *merged = *source_transformed_;
   *merged += *target_segmented_;
-  
+
   // apply grid filtering to reduce amount of points as well as to make them uniform distributed
   pcl::VoxelGrid<pcl::PointXYZRGB> voxel_grid;
   voxel_grid.setInputCloud(merged);
@@ -378,7 +380,7 @@ void ICCVTutorial<FeatureType>::reconstructSurface ()
   normal_estimation.setRadiusSearch (0.01);
   normal_estimation.setInputCloud (merged);
   normal_estimation.compute (*vertices);
-  
+
   pcl::search::KdTree<pcl::PointXYZRGBNormal>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGBNormal>);
   tree->setInputCloud (vertices);
 
@@ -407,28 +409,28 @@ void ICCVTutorial<FeatureType>::keyboard_callback (const pcl::visualization::Key
           visualizer_.addPointCloud(source_, "source_points");
         }
         break;
-        
+
       case '2':
         if (!visualizer_.removePointCloud("target_points"))
         {
           visualizer_.addPointCloud(target_, "target_points");
         }
         break;
-      
+
       case '3':
         if (!visualizer_.removePointCloud("source_segmented"))
         {
           visualizer_.addPointCloud(source_segmented_, "source_segmented");
         }
         break;
-        
+
       case '4':
         if (!visualizer_.removePointCloud("target_segmented"))
         {
           visualizer_.addPointCloud(target_segmented_, "target_segmented");
         }
         break;
-        
+
       case '5':
         if (!visualizer_.removePointCloud("source_keypoints"))
         {
@@ -437,7 +439,7 @@ void ICCVTutorial<FeatureType>::keyboard_callback (const pcl::visualization::Key
           visualizer_.addPointCloud(source_keypoints_, keypoint_color, "source_keypoints");
         }
         break;
-      
+
       case '6':
         if (!visualizer_.removePointCloud("target_keypoints"))
         {
@@ -452,7 +454,7 @@ void ICCVTutorial<FeatureType>::keyboard_callback (const pcl::visualization::Key
           visualizer_.addCorrespondences<pcl::PointXYZI>(source_keypoints_, target_keypoints_, source2target_, "source2target");
         else
           visualizer_.removeCorrespondences("source2target");
-          
+
         show_source2target_ = !show_source2target_;
         break;
 
@@ -464,7 +466,7 @@ void ICCVTutorial<FeatureType>::keyboard_callback (const pcl::visualization::Key
 
         show_target2source_ = !show_target2source_;
         break;
-        
+
       case '9':
         if (!show_correspondences)
           visualizer_.addCorrespondences<pcl::PointXYZI>(source_keypoints_, target_keypoints_, *correspondences_, "correspondences");
@@ -472,7 +474,7 @@ void ICCVTutorial<FeatureType>::keyboard_callback (const pcl::visualization::Key
           visualizer_.removeCorrespondences("correspondences");
         show_correspondences = !show_correspondences;
         break;
-        
+
       case 'i':
       case 'I':
         if (!visualizer_.removePointCloud("transformed"))
@@ -484,7 +486,7 @@ void ICCVTutorial<FeatureType>::keyboard_callback (const pcl::visualization::Key
         if (!visualizer_.removePointCloud("registered"))
           visualizer_.addPointCloud(source_registered_, "registered");
         break;
-        
+
       case 't':
       case 'T':
           visualizer_.addPolygonMesh(surface_, "surface");
@@ -493,10 +495,10 @@ void ICCVTutorial<FeatureType>::keyboard_callback (const pcl::visualization::Key
   }
 }
 
-int 
+int
 main (int argc, char ** argv)
 {
-  if (argc < 6) 
+  if (argc < 6)
   {
     pcl::console::print_info ("Syntax is: %s <source-pcd-file> <target-pcd-file> <keypoint-method> <descriptor-type> <surface-reconstruction-method>\n", argv[0]);
     pcl::console::print_info ("available <keypoint-methods>: 1 = Sift3D\n");
@@ -511,7 +513,7 @@ main (int argc, char ** argv)
     pcl::console::print_info ("                              4 = PFHRGB\n\n");
     pcl::console::print_info ("available <surface-methods>:  1 = Greedy Projection\n");
     pcl::console::print_info ("                              2 = Marching Cubes\n");    
-    
+
     return (1);
   }
   pcl::console::print_info ("== MENU ==\n");
@@ -529,19 +531,19 @@ main (int argc, char ** argv)
   pcl::console::print_info ("t - show/hide triangulation (surface reconstruction)\n");
   pcl::console::print_info ("h - show visualizer options\n");
   pcl::console::print_info ("q - quit\n");
-  
+
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr source (new pcl::PointCloud<pcl::PointXYZRGB>);
   pcl::io::loadPCDFile (argv[1], *source);
-  
+
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr target (new pcl::PointCloud<pcl::PointXYZRGB>);
   pcl::io::loadPCDFile (argv[2], *target);
-  
+
   int keypoint_type   = atoi (argv[3]);
   int descriptor_type = atoi (argv[4]);
   int surface_type    = atoi (argv[5]);
-  
+
   pcl::Keypoint<pcl::PointXYZRGB, pcl::PointXYZI>::Ptr keypoint_detector;
-  
+
   if (keypoint_type == 1)
   {
     pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointXYZI>* sift3D = new pcl::SIFTKeypoint<pcl::PointXYZRGB, pcl::PointXYZI>;
@@ -569,7 +571,7 @@ main (int argc, char ** argv)
       case 4:
         harris3D->setMethod(pcl::HarrisKeypoint3D<pcl::PointXYZRGB,pcl::PointXYZI>::NOBLE);
       break;
-      
+
       case 5:
         harris3D->setMethod(pcl::HarrisKeypoint3D<pcl::PointXYZRGB,pcl::PointXYZI>::LOWE);
       break;
@@ -582,11 +584,10 @@ main (int argc, char ** argv)
         exit (1);
         break;
     }
-    
   }
-  
+
   pcl::PCLSurfaceBase<pcl::PointXYZRGBNormal>::Ptr surface_reconstruction;
-  
+
   if (surface_type == 1)
   {
     pcl::GreedyProjectionTriangulation<pcl::PointXYZRGBNormal>* gp3 = new pcl::GreedyProjectionTriangulation<pcl::PointXYZRGBNormal>;
@@ -615,7 +616,7 @@ main (int argc, char ** argv)
     pcl::console::print_error("unknown surface reconstruction method %d\n expecting values between 1 and 2", surface_type);
     exit (1);
   }
-  
+
   switch (descriptor_type)
   {
     case 1:
@@ -627,7 +628,7 @@ main (int argc, char ** argv)
       tutorial.run ();
     }
     break;
-    
+
     case 2:
     {
       pcl::SHOTColorEstimationOMP<pcl::PointXYZRGB, pcl::Normal, pcl::SHOT1344>* shot = new pcl::SHOTColorEstimationOMP<pcl::PointXYZRGB, pcl::Normal, pcl::SHOT1344>;
@@ -637,7 +638,7 @@ main (int argc, char ** argv)
       tutorial.run ();
     }
     break;
-    
+
     case 3:
     {
       pcl::Feature<pcl::PointXYZRGB, pcl::PFHSignature125>::Ptr feature_extractor (new pcl::PFHEstimation<pcl::PointXYZRGB, pcl::Normal, pcl::PFHSignature125>);
@@ -646,7 +647,7 @@ main (int argc, char ** argv)
       tutorial.run ();
     }
     break;
-    
+
     case 4:
     {
       pcl::Feature<pcl::PointXYZRGB, pcl::PFHRGBSignature250>::Ptr feature_extractor (new pcl::PFHRGBEstimation<pcl::PointXYZRGB, pcl::Normal, pcl::PFHRGBSignature250>);
@@ -655,12 +656,12 @@ main (int argc, char ** argv)
       tutorial.run ();
     }
     break;
-    
+
     default:
       pcl::console::print_error("unknown descriptor type %d\n expecting values between 1 and 4", descriptor_type);
       exit (1);
       break;
-  }  
-  
+  }
+
   return (0);
 }

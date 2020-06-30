@@ -11,38 +11,40 @@
 #include <algorithm>
 #include <cmath>
 
-//===============================================================================================================================
+
+namespace pcl
+{
+
+namespace recognition
+{
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::Node ()
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::Node ()
 : data_ (nullptr),
   parent_ (nullptr),
   children_(nullptr)
 {}
 
-//===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::~Node ()
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::~Node ()
 {
   this->deleteChildren ();
   this->deleteData ();
 }
 
-//===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline void
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::setCenter (const Scalar *c)
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::setCenter (const Scalar *c)
 {
   center_[0] = c[0];
   center_[1] = c[1];
   center_[2] = c[2];
 }
 
-//===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline void
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::setBounds (const Scalar *b)
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::setBounds (const Scalar *b)
 {
   bounds_[0] = b[0];
   bounds_[1] = b[1];
@@ -52,10 +54,9 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::setBoun
   bounds_[5] = b[5];
 }
 
-//===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline void
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::computeRadius ()
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::computeRadius ()
 {
   Scalar v[3] = {static_cast<Scalar> (0.5)*(bounds_[1]-bounds_[0]),
                  static_cast<Scalar> (0.5)*(bounds_[3]-bounds_[2]),
@@ -64,10 +65,9 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::compute
   radius_ = static_cast<Scalar> (std::sqrt (v[0]*v[0] + v[1]*v[1] + v[2]*v[2]));
 }
 
-//===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline bool
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::createChildren ()
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::createChildren ()
 {
   if ( children_ )
     return (false);
@@ -152,34 +152,25 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::createC
   return (true);
 }
 
-//===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline void
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::deleteChildren ()
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::deleteChildren ()
 {
-  if ( children_ )
-  {
-    delete[] children_;
-    children_ = nullptr;
-  }
+  delete[] children_;
+  children_ = nullptr;
 }
 
-//===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline void
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::deleteData ()
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::deleteData ()
 {
-  if ( data_ )
-  {
-    delete data_;
-    data_ = nullptr;
-  }
+  delete data_;
+  data_ = nullptr;
 }
 
-//===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline void
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::makeNeighbors (Node* node)
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::makeNeighbors (Node* node)
 {
   if ( !this->hasData () || !node->hasData () )
     return;
@@ -188,41 +179,34 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node::makeNei
   node->full_leaf_neighbors_.insert (this);
 }
 
-//===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::SimpleOctree ()
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::SimpleOctree ()
 : tree_levels_ (0),
   root_ (nullptr)
 {
 }
 
-//===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::~SimpleOctree ()
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::~SimpleOctree ()
 {
   this->clear ();
 }
 
-//===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline void
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::clear ()
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::clear ()
 {
-  if ( root_ )
-  {
-    delete root_;
-    root_ = nullptr;
-  }
+  delete root_;
+  root_ = nullptr;
 
   full_leaves_.clear();
 }
 
-//===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline void
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::build (const Scalar* bounds, Scalar voxel_size,
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::build (const Scalar* bounds, Scalar voxel_size,
     NodeDataCreator* node_data_creator)
 {
   if ( voxel_size <= 0 )
@@ -265,11 +249,10 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::build (const 
   root_->computeRadius ();
 }
 
-//===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline
-typename pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node*
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::createLeaf (Scalar x, Scalar y, Scalar z)
+typename SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node*
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::createLeaf (Scalar x, Scalar y, Scalar z)
 {
   // Make sure that the input point is within the octree bounds
   if ( x < bounds_[0] || x > bounds_[1] ||
@@ -305,11 +288,10 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::createLeaf (S
   return (node);
 }
 
-//===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline
-typename pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node*
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::getFullLeaf (int i, int j, int k)
+typename SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node*
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::getFullLeaf (int i, int j, int k)
 {
   Scalar offset = 0.5f*voxel_size_;
   Scalar p[3] = {bounds_[0] + offset + static_cast<Scalar> (i)*voxel_size_,
@@ -319,11 +301,10 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::getFullLeaf (
   return (this->getFullLeaf (p[0], p[1], p[2]));
 }
 
-//===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline
-typename pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node*
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::getFullLeaf (Scalar x, Scalar y, Scalar z)
+typename SimpleOctree<NodeData, NodeDataCreator, Scalar>::Node*
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::getFullLeaf (Scalar x, Scalar y, Scalar z)
 {
   // Make sure that the input point is within the octree bounds
   if ( x < bounds_[0] || x > bounds_[1] ||
@@ -357,10 +338,9 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::getFullLeaf (
   return (node);
 }
 
-//===============================================================================================================================
 
 template<typename NodeData, typename NodeDataCreator, typename Scalar> inline void
-pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::insertNeighbors (Node* node)
+SimpleOctree<NodeData, NodeDataCreator, Scalar>::insertNeighbors (Node* node)
 {
   const Scalar* c = node->getCenter ();
   Scalar s = static_cast<Scalar> (0.5)*voxel_size_;
@@ -397,6 +377,8 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::insertNeighbo
   neigh = this->getFullLeaf (c[0]-s, c[1]-s, c[2]-s); if ( neigh ) node->makeNeighbors (neigh);
 }
 
-//===============================================================================================================================
+} // namespace recognition
+} // namespace pcl
 
 #endif /* SIMPLE_OCTREE_HPP_ */
+

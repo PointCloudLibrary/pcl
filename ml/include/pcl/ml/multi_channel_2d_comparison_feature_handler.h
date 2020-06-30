@@ -38,7 +38,6 @@
 #pragma once
 
 #include <pcl/common/common.h>
-
 #include <pcl/ml/feature_handler.h>
 #include <pcl/ml/multi_channel_2d_comparison_feature.h>
 #include <pcl/ml/multi_channel_2d_data_set.h>

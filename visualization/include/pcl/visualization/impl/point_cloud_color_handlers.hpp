@@ -35,18 +35,24 @@
  *
  */
 
-#ifndef PCL_POINT_CLOUD_COLOR_HANDLERS_IMPL_HPP_
-#define PCL_POINT_CLOUD_COLOR_HANDLERS_IMPL_HPP_
+#pragma once
 
 #include <set>
 #include <map>
 
 #include <pcl/pcl_macros.h>
 #include <pcl/common/colors.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
+namespace visualization
+{
+
 template <typename PointT> vtkSmartPointer<vtkDataArray>
-pcl::visualization::PointCloudColorHandlerCustom<PointT>::getColor () const
+PointCloudColorHandlerCustom<PointT>::getColor () const
 {
   if (!capable_ || !cloud_)
     return nullptr;
@@ -71,9 +77,9 @@ pcl::visualization::PointCloudColorHandlerCustom<PointT>::getColor () const
   return scalars;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> vtkSmartPointer<vtkDataArray>
-pcl::visualization::PointCloudColorHandlerRandom<PointT>::getColor () const
+PointCloudColorHandlerRandom<PointT>::getColor () const
 {
   if (!capable_ || !cloud_)
     return nullptr;
@@ -89,8 +95,8 @@ pcl::visualization::PointCloudColorHandlerRandom<PointT>::getColor () const
   double r, g, b;
   pcl::visualization::getRandomColors (r, g, b);
 
-  int r_ = static_cast<int> (pcl_lrint (r * 255.0)), 
-      g_ = static_cast<int> (pcl_lrint (g * 255.0)), 
+  int r_ = static_cast<int> (pcl_lrint (r * 255.0)),
+      g_ = static_cast<int> (pcl_lrint (g * 255.0)),
       b_ = static_cast<int> (pcl_lrint (b * 255.0));
 
   // Color every point
@@ -104,9 +110,9 @@ pcl::visualization::PointCloudColorHandlerRandom<PointT>::getColor () const
   return scalars;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> void
-pcl::visualization::PointCloudColorHandlerRGBField<PointT>::setInputCloud (
+PointCloudColorHandlerRGBField<PointT>::setInputCloud (
     const PointCloudConstPtr &cloud)
 {
   PointCloudColorHandler<PointT>::setInputCloud (cloud);
@@ -127,9 +133,9 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::setInputCloud (
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> vtkSmartPointer<vtkDataArray>
-pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor () const
+PointCloudColorHandlerRGBField<PointT>::getColor () const
 {
   if (!capable_ || !cloud_)
     return nullptr;
@@ -165,7 +171,7 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor () const
     {
       // Copy the value at the specified field
       if (!std::isfinite (cloud_->points[cp].x) ||
-          !std::isfinite (cloud_->points[cp].y) || 
+          !std::isfinite (cloud_->points[cp].y) ||
           !std::isfinite (cloud_->points[cp].z))
         continue;
 
@@ -191,10 +197,10 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor () const
   return scalars;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT>
-pcl::visualization::PointCloudColorHandlerHSVField<PointT>::PointCloudColorHandlerHSVField (const PointCloudConstPtr &cloud) : 
-  pcl::visualization::PointCloudColorHandler<PointT>::PointCloudColorHandler (cloud)
+PointCloudColorHandlerHSVField<PointT>::PointCloudColorHandlerHSVField (const PointCloudConstPtr &cloud) :
+  PointCloudColorHandler<PointT>::PointCloudColorHandler (cloud)
 {
   // Check for the presence of the "H" field
   field_idx_ = pcl::getFieldIndex<PointT> ("h", fields_);
@@ -222,9 +228,9 @@ pcl::visualization::PointCloudColorHandlerHSVField<PointT>::PointCloudColorHandl
   capable_ = true;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> vtkSmartPointer<vtkDataArray>
-pcl::visualization::PointCloudColorHandlerHSVField<PointT>::getColor () const
+PointCloudColorHandlerHSVField<PointT>::getColor () const
 {
   if (!capable_ || !cloud_)
     return nullptr;
@@ -359,9 +365,9 @@ pcl::visualization::PointCloudColorHandlerHSVField<PointT>::getColor () const
   return scalars;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> void
-pcl::visualization::PointCloudColorHandlerGenericField<PointT>::setInputCloud (
+PointCloudColorHandlerGenericField<PointT>::setInputCloud (
     const PointCloudConstPtr &cloud)
 {
   PointCloudColorHandler<PointT>::setInputCloud (cloud);
@@ -372,9 +378,9 @@ pcl::visualization::PointCloudColorHandlerGenericField<PointT>::setInputCloud (
     capable_ = false;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> vtkSmartPointer<vtkDataArray>
-pcl::visualization::PointCloudColorHandlerGenericField<PointT>::getColor () const
+PointCloudColorHandlerGenericField<PointT>::getColor () const
 {
   if (!capable_ || !cloud_)
     return nullptr;
@@ -432,9 +438,9 @@ pcl::visualization::PointCloudColorHandlerGenericField<PointT>::getColor () cons
   return scalars;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> void
-pcl::visualization::PointCloudColorHandlerRGBAField<PointT>::setInputCloud (
+PointCloudColorHandlerRGBAField<PointT>::setInputCloud (
     const PointCloudConstPtr &cloud)
 {
   PointCloudColorHandler<PointT>::setInputCloud (cloud);
@@ -446,9 +452,9 @@ pcl::visualization::PointCloudColorHandlerRGBAField<PointT>::setInputCloud (
     capable_ = false;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> vtkSmartPointer<vtkDataArray>
-pcl::visualization::PointCloudColorHandlerRGBAField<PointT>::getColor () const
+PointCloudColorHandlerRGBAField<PointT>::getColor () const
 {
   if (!capable_ || !cloud_)
     return nullptr;
@@ -500,9 +506,9 @@ pcl::visualization::PointCloudColorHandlerRGBAField<PointT>::getColor () const
   return scalars;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> void
-pcl::visualization::PointCloudColorHandlerLabelField<PointT>::setInputCloud (const PointCloudConstPtr &cloud)
+PointCloudColorHandlerLabelField<PointT>::setInputCloud (const PointCloudConstPtr &cloud)
 {
   PointCloudColorHandler<PointT>::setInputCloud (cloud);
   field_idx_ = pcl::getFieldIndex<PointT> ("label", fields_);
@@ -513,9 +519,9 @@ pcl::visualization::PointCloudColorHandlerLabelField<PointT>::setInputCloud (con
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT> vtkSmartPointer<vtkDataArray>
-pcl::visualization::PointCloudColorHandlerLabelField<PointT>::getColor () const
+PointCloudColorHandlerLabelField<PointT>::getColor () const
 {
   if (!capable_ || !cloud_)
     return nullptr;
@@ -558,5 +564,6 @@ pcl::visualization::PointCloudColorHandlerLabelField<PointT>::getColor () const
   return scalars;
 }
 
-#endif      // PCL_POINT_CLOUD_COLOR_HANDLERS_IMPL_HPP_
+} // namespace visualization
+} // namespace pcl
 
