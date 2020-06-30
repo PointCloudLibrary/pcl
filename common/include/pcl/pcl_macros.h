@@ -88,7 +88,7 @@
 #if defined(_MSC_VER)
   // nvcc on msvc can't work with [[deprecated]]
   #if !defined(__CUDACC__)
-    #define _PCL_DEPRECATED_IMPL(Message) __declspec(deprecated(Message))
+    #define _PCL_DEPRECATED_IMPL(Message) [[deprecated(Message)]]
   #else
     #define _PCL_DEPRECATED_IMPL(Message)
   #endif
