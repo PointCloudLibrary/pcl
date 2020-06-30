@@ -49,7 +49,7 @@ pcl::FeatureHistogram::FeatureHistogram (std::size_t const number_of_bins,
   {
     threshold_min_ = min;
     threshold_max_ = max;
-    step_ = (max - min) / static_cast<float> (number_of_bins_);
+    step_ = (max - min) / static_cast<float> (number_of_bins);
   }
   else
   {
