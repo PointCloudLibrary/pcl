@@ -43,6 +43,7 @@
 #endif
 
 #include <pcl/memory.h>
+#include <pcl/types.h>
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
 #include <pcl/pcl_exports.h>
@@ -105,7 +106,7 @@ namespace pcl
   void
   getRejectedQueryIndices (const pcl::Correspondences &correspondences_before,
                            const pcl::Correspondences &correspondences_after,
-                           std::vector<int>& indices,
+                           Indices& indices,
                            bool presorting_required = true);
 
   /**

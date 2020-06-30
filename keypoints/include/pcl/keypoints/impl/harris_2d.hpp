@@ -41,6 +41,7 @@
 #ifndef PCL_HARRIS_KEYPOINT_2D_IMPL_H_
 #define PCL_HARRIS_KEYPOINT_2D_IMPL_H_
 
+#include <pcl/common/point_tests.h>
 
 namespace pcl
 {
@@ -272,7 +273,7 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOu
     {
       int idx = indices_->at (i);
       const PointOutT& point_out = response_->points [idx];
-      if (occupency_map[idx] || point_out.intensity < threshold || !isFinite (point_out))
+      if (occupency_map[idx] || point_out.intensity < threshold || !isXYZFinite (point_out))
         continue;
 
 #pragma omp critical
@@ -312,13 +313,13 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseHarris (PointCloudOut
 #pragma omp parallel for      \
   default(none)               \
   shared(output)              \
-  private(covar)              \
+  firstprivate(covar)              \
   num_threads(threads_)
 #else
 #pragma omp parallel for      \
   default(none)               \
   shared(output, output_size) \
-  private(covar)              \
+  firstprivate(covar)              \
   num_threads(threads_)
 #endif
   for (int index = 0; index < output_size; ++index)
@@ -329,7 +330,7 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseHarris (PointCloudOut
     out_point.x = in_point.x;
     out_point.y = in_point.y;
     out_point.z = in_point.z;
-    if (isFinite (in_point))
+    if (isXYZFinite (in_point))
     {
       computeSecondMomentMatrix (index, covar);
       float trace = covar [0] + covar [2];
@@ -358,13 +359,13 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseNoble (PointCloudOut 
 #pragma omp parallel for      \
   default(none)               \
   shared(output)              \
-  private(covar)              \
+  firstprivate(covar)              \
   num_threads(threads_)
 #else
 #pragma omp parallel for      \
   default(none)               \
   shared(output, output_size) \
-  private(covar)              \
+  firstprivate(covar)              \
   num_threads(threads_)
 #endif
   for (int index = 0; index < output_size; ++index)
@@ -375,7 +376,7 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseNoble (PointCloudOut 
     out_point.y = in_point.y;
     out_point.z = in_point.z;
     out_point.intensity = 0;
-    if (isFinite (in_point))
+    if (isXYZFinite (in_point))
     {
       computeSecondMomentMatrix (index, covar);
       float trace = covar [0] + covar [2];
@@ -404,13 +405,13 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseLowe (PointCloudOut &
 #pragma omp parallel for      \
   default(none)               \
   shared(output)              \
-  private(covar)              \
+  firstprivate(covar)              \
   num_threads(threads_)
 #else
 #pragma omp parallel for      \
   default(none)               \
   shared(output, output_size) \
-  private(covar)              \
+  firstprivate(covar)              \
   num_threads(threads_)
 #endif
   for (int index = 0; index < output_size; ++index)
@@ -421,7 +422,7 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseLowe (PointCloudOut &
     out_point.y = in_point.y;
     out_point.z = in_point.z;
     out_point.intensity = 0;
-    if (isFinite (in_point))
+    if (isXYZFinite (in_point))
     {
       computeSecondMomentMatrix (index, covar);
       float trace = covar [0] + covar [2];
@@ -450,13 +451,13 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseTomasi (PointCloudOut
 #pragma omp parallel for      \
   default(none)               \
   shared(output)              \
-  private(covar)              \
+  firstprivate(covar)              \
   num_threads(threads_)
 #else
 #pragma omp parallel for      \
   default(none)               \
   shared(output, output_size) \
-  private(covar)              \
+  firstprivate(covar)              \
   num_threads(threads_)
 #endif
   for (int index = 0; index < output_size; ++index)
@@ -467,7 +468,7 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseTomasi (PointCloudOut
     out_point.y = in_point.y;
     out_point.z = in_point.z;
     out_point.intensity = 0;
-    if (isFinite (in_point))
+    if (isXYZFinite (in_point))
     {
       computeSecondMomentMatrix (index, covar);
       // min egenvalue

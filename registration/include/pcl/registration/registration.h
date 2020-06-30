@@ -609,6 +609,19 @@ namespace pcl
     private:
       /** \brief The point representation used (internal). */
       PointRepresentationConstPtr point_representation_;
+
+      /**
+       * \brief Remove from public API in favor of \ref setInputSource
+       *
+       * Still gives the correct result (with a warning)
+       */
+      void setInputCloud (const PointCloudSourceConstPtr &cloud) override
+      {
+          PCL_WARN ("[pcl::registration::Registration] setInputCloud is deprecated."
+                    "Please use setInputSource instead.\n");
+          setInputSource (cloud);
+      }
+
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW
    };

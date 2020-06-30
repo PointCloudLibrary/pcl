@@ -150,10 +150,10 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
     for (std::size_t i = 0; i < output.size (); ++i)
     {
       using FieldList = typename pcl::traits::fieldList<PointOutT>::type;
-      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_x", normals_->points[i].normal_x));
-      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_y", normals_->points[i].normal_y));
-      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_z", normals_->points[i].normal_z));
-      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "curvature", normals_->points[i].curvature));
+      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output[i], "normal_x", normals_->points[i].normal_x));
+      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output[i], "normal_y", normals_->points[i].normal_y));
+      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output[i], "normal_z", normals_->points[i].normal_z));
+      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output[i], "curvature", normals_->points[i].curvature));
     }
 
   }
@@ -738,7 +738,7 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
   model_coefficients.head<3> ().matrix () = eigen_vector;
   model_coefficients[3] = -1 * model_coefficients.dot (xyz_centroid);
 
-  query_point = cloud.points[index].getVector3fMap ().template cast<double> ();
+  query_point = cloud[index].getVector3fMap ().template cast<double> ();
 
   if (!std::isfinite(eigen_vector[0]) || !std::isfinite(eigen_vector[1]) || !std::isfinite(eigen_vector[2]))
   {
@@ -790,9 +790,9 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
       std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > de_meaned (num_neighbors);
       for (std::size_t ni = 0; ni < static_cast<std::size_t>(num_neighbors); ++ni)
       {
-        de_meaned[ni][0] = cloud.points[nn_indices[ni]].x - mean[0];
-        de_meaned[ni][1] = cloud.points[nn_indices[ni]].y - mean[1];
-        de_meaned[ni][2] = cloud.points[nn_indices[ni]].z - mean[2];
+        de_meaned[ni][0] = cloud[nn_indices[ni]].x - mean[0];
+        de_meaned[ni][1] = cloud[nn_indices[ni]].y - mean[1];
+        de_meaned[ni][2] = cloud[nn_indices[ni]].z - mean[2];
         weight_vec (ni) = weight_func (de_meaned[ni].dot (de_meaned[ni]));
       }
 

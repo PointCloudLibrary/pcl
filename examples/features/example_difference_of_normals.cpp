@@ -5,20 +5,13 @@
  * @author Yani Ioannou
  * @date 2012-03-11
  */
+
 #include <string>
 
-#include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/common/point_operators.h>
-#include <pcl/common/io.h>
-#include <pcl/search/organized.h>
-#include <pcl/search/octree.h>
-#include <pcl/search/kdtree.h>
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/filters/conditional_removal.h>
-#include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/segmentation/extract_clusters.h>
-#include <pcl/io/vtk_io.h>
 #include <pcl/filters/voxel_grid.h>
 
 #include <pcl/features/don.h>

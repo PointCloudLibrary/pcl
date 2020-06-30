@@ -35,14 +35,14 @@
  *
  */
 
-#ifndef PCL_POINT_CLOUD_COLOR_HANDLERS_IMPL_HPP_
-#define PCL_POINT_CLOUD_COLOR_HANDLERS_IMPL_HPP_
+#pragma once
 
 #include <set>
 #include <map>
 
 #include <pcl/pcl_macros.h>
 #include <pcl/common/colors.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 
 
 namespace pcl
@@ -566,6 +566,4 @@ PointCloudColorHandlerLabelField<PointT>::getColor () const
 
 } // namespace visualization
 } // namespace pcl
-
-#endif      // PCL_POINT_CLOUD_COLOR_HANDLERS_IMPL_HPP_
 

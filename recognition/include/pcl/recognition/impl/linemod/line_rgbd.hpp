@@ -52,7 +52,7 @@ template <typename PointXYZT, typename PointRGBT> bool
 LineRGBD<PointXYZT, PointRGBT>::readLTMHeader (int fd, pcl::io::TARHeader &header)
 {
   // Read in the header
-  int result = static_cast<int> (::read (fd, reinterpret_cast<char*> (&header.file_name[0]), 512));
+  int result = static_cast<int> (io::raw_read (fd, reinterpret_cast<char*> (&header.file_name[0]), 512));
   if (result == -1)
     return (false);
 
@@ -118,7 +118,7 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
 
       unsigned int fsize = ltm_header.getFileSize ();
       char *buffer = new char[fsize];
-      int result = static_cast<int> (::read (ltm_fd, reinterpret_cast<char*> (&buffer[0]), fsize));
+      int result = static_cast<int> (io::raw_read (ltm_fd, reinterpret_cast<char*> (&buffer[0]), fsize));
       if (result == -1)
       {
         delete [] buffer;
@@ -273,7 +273,7 @@ LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModTempla
     std::size_t counter = 0;
     for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
     {
-      const PointXYZRGBA & p = template_point_cloud.points[j];
+      const PointXYZRGBA & p = template_point_cloud[j];
 
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
@@ -306,7 +306,7 @@ LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModTempla
 
     for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
     {
-      PointXYZRGBA p = template_point_cloud.points[j];
+      PointXYZRGBA p = template_point_cloud[j];
 
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
@@ -315,7 +315,7 @@ LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModTempla
       p.y -= center_y;
       p.z -= center_z;
 
-      template_point_cloud.points[j] = p;
+      template_point_cloud[j] = p;
     }
   }
 
@@ -558,13 +558,13 @@ LineRGBD<PointXYZT, PointRGBT>::computeTransformedTemplatePoints (
   cloud.height = template_point_cloud.height;
   for (std::size_t point_index = 0; point_index < nr_points; ++point_index)
   {
-    pcl::PointXYZRGBA point = template_point_cloud.points[point_index];
+    pcl::PointXYZRGBA point = template_point_cloud[point_index];
 
     point.x += translation_x;
     point.y += translation_y;
     point.z += translation_z;
 
-    cloud.points[point_index] = point;
+    cloud[point_index] = point;
   }
 }
 

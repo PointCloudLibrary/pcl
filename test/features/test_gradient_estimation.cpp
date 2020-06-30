@@ -94,7 +94,7 @@ TEST (PCL, IntensityGradientEstimation)
     const PointXYZI &p = cloud_ptr->points[i];
 
     // A pointer to the estimated gradient values
-    const float * g_est = gradient.points[i].gradient;
+    const float * g_est = gradient[i].gradient;
 
     // Compute the surface normal analytically.
     float nx = -0.2f * p.x;

@@ -52,7 +52,7 @@ if(VTK_FOUND)
   target_link_libraries(pcl_feature_matching pcl_common pcl_io pcl_registration pcl_keypoints pcl_sample_consensus pcl_visualization pcl_search pcl_features pcl_kdtree pcl_surface pcl_segmentation)
 
   PCL_ADD_EXECUTABLE(pcl_convolve COMPONENT ${SUBSYS_NAME} SOURCES src/convolve.cpp)
-  target_link_libraries(pcl_convolve pcl_common pcl_io pcl_visualization)
+  target_link_libraries(pcl_convolve pcl_common pcl_filters pcl_io pcl_visualization)
 
   PCL_ADD_EXECUTABLE(pcl_pcd_organized_multi_plane_segmentation COMPONENT ${SUBSYS_NAME} SOURCES src/pcd_organized_multi_plane_segmentation.cpp)
   target_link_libraries(pcl_pcd_organized_multi_plane_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features)

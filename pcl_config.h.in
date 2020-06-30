@@ -20,6 +20,20 @@
 #define PCL_VERSION_COMPARE(OP, MAJ, MIN, PATCH) \
     (PCL_VERSION*10+PCL_DEV_VERSION OP PCL_VERSION_CALC(MAJ, MIN, PATCH)*10)
 
+/* Index type and signed/unsigned property */
+#define PCL_INDEX_SIGNED ${PCL_INDEX_SIGNED_STR}
+
+#if (${PCL_INDEX_SIZE} > 0)
+  #define PCL_INDEX_SIZE ${PCL_INDEX_SIZE}
+#else
+  #if PCL_MINOR_VERSION <= 11
+    // sizeof returns bytes, while we measure size by bits in the template
+    #define PCL_INDEX_SIZE (sizeof(int) * 8)
+  #else
+    #define PCL_INDEX_SIZE 32
+  #endif //PCL_MINOR_VERSION
+#endif 
+
 #cmakedefine HAVE_TBB 1
 
 #cmakedefine HAVE_OPENNI 1

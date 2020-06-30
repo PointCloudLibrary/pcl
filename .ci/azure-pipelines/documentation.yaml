@@ -9,6 +9,9 @@ jobs:
       DOC_DIR: '$(Agent.BuildDirectory)/documentation'
       CHANGELOG: '$(Agent.TempDirectory)/changelog'
     steps:
+      - checkout: self
+        # find the commit hash on a quick non-forced update too
+        fetchDepth: 10
       - task: InstallSSHKey@0
         inputs:
           hostName: github.com
@@ -24,7 +27,6 @@ jobs:
           mkdir $BUILD_DIR && cd $BUILD_DIR
           cmake $(Build.SourcesDirectory) \
             -DDOXYGEN_USE_SHORT_NAMES=OFF \
-            -DSPHINX_HTML_FILE_SUFFIX=php \
             -DWITH_DOCS=ON \
             -DWITH_TUTORIALS=ON
         displayName: 'CMake Configuration'

@@ -138,7 +138,7 @@ and save the results to disk.
           W += weight;
         }
 
-        outcloud.points[point_id].intensity = BF / W;
+        outcloud[point_id].intensity = BF / W;
       }
 
       // Save filtered output
@@ -631,7 +631,7 @@ There're two methods that we need to implement here, namely `applyFilter` and
       {
         tree_->radiusSearch (point_id, sigma_s_ * 2, k_indices, k_distances);
 
-        output.points[point_id].intensity = computePointWeight (point_id, k_indices, k_distances);
+        output[point_id].intensity = computePointWeight (point_id, k_indices, k_distances);
       }
       
     }
@@ -764,7 +764,7 @@ The implementation file header thus becomes:
       {
         tree_->radiusSearch (point_id, sigma_s_ * 2, k_indices, k_distances);
 
-        output.points[point_id].intensity = computePointWeight (point_id, k_indices, k_distances);
+        output[point_id].intensity = computePointWeight (point_id, k_indices, k_distances);
       }
     }
      
@@ -879,7 +879,7 @@ The implementation file header thus becomes:
       {
         tree_->radiusSearch ((*indices_)[i], sigma_s_ * 2, k_indices, k_distances);
 
-        output.points[(*indices_)[i]].intensity = computePointWeight ((*indices_)[i], k_indices, k_distances);
+        output[(*indices_)[i]].intensity = computePointWeight ((*indices_)[i], k_indices, k_distances);
       }
     }
      
@@ -1243,7 +1243,7 @@ And the *bilateral.hpp* likes:
         tree_->radiusSearch ((*indices_)[i], sigma_s_ * 2, k_indices, k_distances);
 
         // Overwrite the intensity value with the computed average
-        output.points[(*indices_)[i]].intensity = computePointWeight ((*indices_)[i], k_indices, k_distances);
+        output[(*indices_)[i]].intensity = computePointWeight ((*indices_)[i], k_indices, k_distances);
       }
     }
      

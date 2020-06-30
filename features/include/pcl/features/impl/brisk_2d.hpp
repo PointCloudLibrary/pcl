@@ -248,7 +248,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
     const int r_x_1 = (1024 - r_x);
     const int r_y_1 = (1024 - r_y);
 
-    //+const unsigned char* ptr = static_cast<const unsigned char*> (&image.points[0].r) + x + y * imagecols;
+    //+const unsigned char* ptr = static_cast<const unsigned char*> (&image[0].r) + x + y * imagecols;
     const unsigned char* ptr = static_cast<const unsigned char*>(&image[0]) + x + y * imagecols;
 
     // just interpolate:
@@ -311,7 +311,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
   {
     // now the calculation:
 
-    //+const unsigned char* ptr = static_cast<const unsigned char*> (&image.points[0].r) + x_left + imagecols * y_top;
+    //+const unsigned char* ptr = static_cast<const unsigned char*> (&image[0].r) + x_left + imagecols * y_top;
     const unsigned char* ptr = static_cast<const unsigned char*>(&image[0]) + x_left + imagecols * y_top;
 
     // first the corners:
@@ -373,7 +373,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedIntensity
 
   // now the calculation:
 
-  //const unsigned char* ptr = static_cast<const unsigned char*> (&image.points[0].r) + x_left + imagecols * y_top;
+  //const unsigned char* ptr = static_cast<const unsigned char*> (&image[0].r) + x_left + imagecols * y_top;
   const unsigned char* ptr = static_cast<const unsigned char*>(&image[0]) + x_left + imagecols * y_top;
 
   // first row:
@@ -555,7 +555,7 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   //output.height = 1;
   for (std::size_t k = 0; k < ksize; k++)
   {
-    unsigned char* ptr = &output.points[k].descriptor[0];
+    unsigned char* ptr = &output[k].descriptor[0];
 
     int theta;
     KeypointT &kp    = keypoints_->points[k];
@@ -661,8 +661,8 @@ BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     //ptr += strings_;
 
     //// Account for the scale + orientation;
-    //ptr += sizeof (output.points[0].scale);
-    //ptr += sizeof (output.points[0].orientation);
+    //ptr += sizeof (output[0].scale);
+    //ptr += sizeof (output[0].orientation);
   }
 
   // we do not change the denseness

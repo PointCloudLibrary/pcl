@@ -32,6 +32,9 @@ DAMAGE.
 
 #include "ppolynomial.h"
 
+#include <cstdio>
+#include <cstring>
+
 namespace pcl
 {
   namespace poisson

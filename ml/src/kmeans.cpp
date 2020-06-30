@@ -276,7 +276,7 @@ if (user_index == -1)
   for (std::size_t i = 0; i < fields[vfh_idx].count; ++i)
   {
 
-    //vfh.second[i] = point.points[0].histogram[i];
+    //vfh.second[i] = point[0].histogram[i];
 
   }
 */

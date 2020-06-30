@@ -22,6 +22,7 @@
 #pragma once
 
 #include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 
 #include "vtkMapper.h"
 #include "vtkSmartPointer.h"
@@ -34,7 +35,8 @@ class vtkShader2;
 class vtkShaderProgram2;
 class vtkVertexBufferObject;
 
-class PCL_EXPORTS vtkVertexBufferObjectMapper : public vtkMapper
+class PCL_DEPRECATED(1, 13, "The OpenGL backend of VTK is deprecated. Please switch to the OpenGL2 backend.")
+PCL_EXPORTS vtkVertexBufferObjectMapper : public vtkMapper
 {
 public:
   static vtkVertexBufferObjectMapper *New();

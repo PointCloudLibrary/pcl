@@ -323,6 +323,58 @@ Command line usage:
    $ make format
 
 
+2.7. Includes
+^^^^^^^^^^^^^
+
+For consistent usage, headers should be included in the following order with alphabetical grouping ensured:
+
+1.  PCL headers
+
+    i.  All modular PCL includes, except main includes of common module.
+        
+        Examples:
+
+        .. code-block:: cpp
+
+           #include <pcl/common/common.h>
+           #include <pcl/simulation/camera.h>
+           #include <pcl/ml/dt/decision_forest.h>
+
+    #.  The main PCL includes of common module. These are the header files in the ``pcl/common/include/pcl/`` directory.
+    
+        Examples:
+
+        .. code-block:: cpp
+
+           #include <pcl/memory.h>
+           #include <pcl/pcl_macros.h>
+           #include <pcl/point_cloud.h>
+
+2.  Major 3rd-Party components of tests and modules
+
+    i.  gtest
+    #.  boost
+    #.  Eigen
+    #.  flann
+3.  Major 3rd-Party components of apps
+
+    i.  Qt
+    #.  ui-files
+    #.  vtk
+4.  Minor 3rd-Party components
+
+    i.  librealsense
+    #.  ros/message_filters
+    #.  opencv/opencv2
+    #.  tide
+    #.  thrust
+    #.  OpenGL, GL & GLUT
+5.  C++ standard library headers (alphabetical)
+6.  Others
+
+This style can also be enforced via clang-format. For usage instructions, refer `2.6. Automatic code formatting`_.
+
+
 3. Structuring
 ==============
 

@@ -39,6 +39,7 @@
 #include <pcl/io/image_grabber.h>
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/common/utils.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_config.h>
 #include <pcl/pcl_macros.h>
@@ -630,10 +631,13 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (std::size_t idx,
 
   return (true);
 #else
-    PCL_ERROR ("[pcl::ImageGrabber::loadNextCloudVTK] Attempted to read image files, but PCL was not built with VTK [no -DPCL_BUILT_WITH_VTK]. \n");
-    return (false);
+  pcl::utils::ignore(idx);
+  pcl::utils::ignore(blob);
+  pcl::utils::ignore(origin);
+  pcl::utils::ignore(orientation);
+  PCL_ERROR ("[pcl::ImageGrabber::loadNextCloudVTK] Attempted to read image files, but PCL was not built with VTK [no -DPCL_BUILT_WITH_VTK]. \n");
+  return false;
 #endif //PCL_BUILT_WITH_VTK
-
 }
 
 bool

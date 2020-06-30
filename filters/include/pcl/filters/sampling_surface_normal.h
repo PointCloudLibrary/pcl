@@ -162,11 +162,11 @@ namespace pcl
         operator () (const int& p0, const int& p1)
         {
           if (dim == 0)
-            return (cloud.points[p0].x < cloud.points[p1].x);
+            return (cloud[p0].x < cloud[p1].x);
           if (dim == 1)
-            return (cloud.points[p0].y < cloud.points[p1].y);
+            return (cloud[p0].y < cloud[p1].y);
           if (dim == 2)
-            return (cloud.points[p0].z < cloud.points[p1].z);
+            return (cloud[p0].z < cloud[p1].z);
           return (false);
         }
       };

@@ -344,7 +344,7 @@ void ICCVTutorial<FeatureType>::determineFinalTransformation ()
 {
   std::cout << "final registration..." << std::flush;
   pcl::Registration<pcl::PointXYZRGB, pcl::PointXYZRGB>::Ptr registration (new pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB>);
-  registration->setInputCloud(source_transformed_);
+  registration->setInputSource(source_transformed_);
   //registration->setInputCloud(source_segmented_);
   registration->setInputTarget (target_segmented_);
   registration->setMaxCorrespondenceDistance(0.05);

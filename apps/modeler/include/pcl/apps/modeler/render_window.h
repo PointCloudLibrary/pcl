@@ -36,61 +36,65 @@
 
 #pragma once
 
-#include <vtkSmartPointer.h>
-
 #include <QVTKWidget.h>
+
+#include <vtkSmartPointer.h>
 
 class vtkCubeAxesActor;
 
-namespace pcl
-{
-  namespace modeler
+namespace pcl {
+namespace modeler {
+
+class RenderWindowItem;
+
+class RenderWindow : public QVTKWidget {
+public:
+  RenderWindow(RenderWindowItem* render_window_item,
+               QWidget* parent = nullptr,
+               Qt::WindowFlags flags = nullptr);
+  ~RenderWindow();
+
+  QSize
+  sizeHint() const override
   {
-    class RenderWindowItem;
-
-    class RenderWindow : public QVTKWidget
-    {
-      public:
-        RenderWindow(RenderWindowItem* render_window_item, QWidget *parent = nullptr, Qt::WindowFlags flags = nullptr);
-        ~RenderWindow();
-
-        QSize
-        sizeHint() const override {return {512, 512};}
-
-        void
-        setActive(bool flag);
-
-        void
-        setTitle(const QString& title);
-
-        void
-        render();
-
-        void
-        resetCamera();
-
-        void
-        updateAxes();
-
-        void
-        getBackground(double& r, double& g, double& b);
-
-        void
-        setBackground(double r, double g, double b);
-
-        void
-        setShowAxes(bool flag);
-
-      protected:
-        void
-        focusInEvent(QFocusEvent * event) override;
-
-      private:
-        void
-        initRenderer();
-
-        vtkSmartPointer<vtkCubeAxesActor>   axes_;
-        RenderWindowItem*     render_window_item_;
-    };
+    return {512, 512};
   }
-}
+
+  void
+  setActive(bool flag);
+
+  void
+  setTitle(const QString& title);
+
+  void
+  render();
+
+  void
+  resetCamera();
+
+  void
+  updateAxes();
+
+  void
+  getBackground(double& r, double& g, double& b);
+
+  void
+  setBackground(double r, double g, double b);
+
+  void
+  setShowAxes(bool flag);
+
+protected:
+  void
+  focusInEvent(QFocusEvent* event) override;
+
+private:
+  void
+  initRenderer();
+
+  vtkSmartPointer<vtkCubeAxesActor> axes_;
+  RenderWindowItem* render_window_item_;
+};
+
+} // namespace modeler
+} // namespace pcl

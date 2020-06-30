@@ -71,8 +71,8 @@ checkDesc(const pcl::PointCloud<PointT>& d0, const pcl::PointCloud<PointT>& d1)
 {
   ASSERT_EQ (d0.size (), d1.size ());
   for (std::size_t i = 0; i < d1.size (); ++i)
-    for (std::size_t j = 0; j < d0.points[i].descriptor.size(); ++j)
-      ASSERT_EQ (d0.points[i].descriptor[j], d1.points[i].descriptor[j]);
+    for (std::size_t j = 0; j < d0[i].descriptor.size(); ++j)
+      ASSERT_EQ (d0[i].descriptor[j], d1[i].descriptor[j]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ checkDesc<SHOT352>(const pcl::PointCloud<SHOT352>& d0, const pcl::PointCloud<SHO
   ASSERT_EQ (d0.size (), d1.size ());
   for (std::size_t i = 0; i < d1.size (); ++i)
     for (std::size_t j = 0; j < 352; ++j)
-      ASSERT_EQ (d0.points[i].descriptor[j], d1.points[i].descriptor[j]);
+      ASSERT_EQ (d0[i].descriptor[j], d1[i].descriptor[j]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -92,7 +92,7 @@ checkDesc<SHOT1344>(const pcl::PointCloud<SHOT1344>& d0, const pcl::PointCloud<S
   ASSERT_EQ (d0.size (), d1.size ());
   for (std::size_t i = 0; i < d1.size (); ++i)
     for (std::size_t j = 0; j < 1344; ++j)
-      ASSERT_EQ (d0.points[i].descriptor[j], d1.points[i].descriptor[j]);
+      ASSERT_EQ (d0[i].descriptor[j], d1[i].descriptor[j]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -102,7 +102,7 @@ checkDesc<ShapeContext1980>(const pcl::PointCloud<ShapeContext1980>& d0, const p
   ASSERT_EQ (d0.size (), d1.size ());
   for (std::size_t i = 0; i < d1.size (); ++i)
     for (std::size_t j = 0; j < 1980; ++j)
-      ASSERT_EQ (d0.points[i].descriptor[j], d1.points[i].descriptor[j]);
+      ASSERT_EQ (d0[i].descriptor[j], d1[i].descriptor[j]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ checkDesc<UniqueShapeContext1960>(const pcl::PointCloud<UniqueShapeContext1960>&
   ASSERT_EQ (d0.size (), d1.size ());
   for (std::size_t i = 0; i < d1.size (); ++i)
     for (std::size_t j = 0; j < 1960; ++j)
-      ASSERT_EQ (d0.points[i].descriptor[j], d1.points[i].descriptor[j]);
+      ASSERT_EQ (d0[i].descriptor[j], d1[i].descriptor[j]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -586,9 +586,9 @@ TYPED_TEST (SHOTShapeAndColorTest, Estimation)
   for (int i = 0; i < static_cast<int> (cloud.points.size ()); ++i)
   {
     PointXYZRGBA p;
-    p.x = cloud.points[i].x;
-    p.y = cloud.points[i].y;
-    p.z = cloud.points[i].z;
+    p.x = cloud[i].x;
+    p.y = cloud[i].y;
+    p.z = cloud[i].z;
 
     p.rgba = ( (i%255) << 16 ) + ( ( (255 - i ) %255) << 8) + ( ( i*37 ) %255);
     cloudWithColors.push_back(p);

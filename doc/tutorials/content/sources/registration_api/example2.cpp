@@ -120,7 +120,7 @@ rejectBadCorrespondences (const CorrespondencesPtr &all_correspondences,
                           Correspondences &remaining_correspondences)
 {
   CorrespondenceRejectorDistance rej;
-  rej.setInputCloud<PointXYZ> (keypoints_src);
+  rej.setInputSource<PointXYZ> (keypoints_src);
   rej.setInputTarget<PointXYZ> (keypoints_tgt);
   rej.setMaximumDistance (1);    // 1m
   rej.setInputCorrespondences (all_correspondences);

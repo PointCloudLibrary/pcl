@@ -37,8 +37,9 @@
  *
  */
 
-#ifndef PCL_COMMON_RANDOM_HPP_
-#define PCL_COMMON_RANDOM_HPP_
+#pragma once
+
+#include <pcl/common/random.h>
 
 
 namespace pcl
@@ -167,4 +168,3 @@ NormalGenerator<T>::setParameters (const Parameters& parameters)
 } // namespace common
 } // namespace pcl
 
-#endif

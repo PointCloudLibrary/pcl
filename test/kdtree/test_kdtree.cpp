@@ -36,17 +36,21 @@
  *
  */
 
-#include <pcl/test/gtest.h>
-#include <iostream>  // For debug
-#include <map>
-#include <pcl/common/time.h>
+#include <pcl/kdtree/impl/kdtree_flann.hpp>
+
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/distances.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
+#include <pcl/common/time.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/kdtree/impl/kdtree_flann.hpp>
+#include <pcl/test/gtest.h>
+
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+
+#include <iostream>  // For debug
+#include <map>
 
 
 using namespace std;
@@ -94,7 +98,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   double max_dist = 0.15;
   set<int> brute_force_result;
   for (std::size_t i=0; i < cloud.points.size(); ++i)
-    if (euclideanDistance(cloud.points[i], test_point) < max_dist)
+    if (euclideanDistance(cloud[i], test_point) < max_dist)
       brute_force_result.insert(i);
   std::vector<int> k_indices;
   std::vector<float> k_distances;
@@ -164,7 +168,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   multimap<float, int> sorted_brute_force_result;
   for (std::size_t i = 0; i < cloud.points.size (); ++i)
   {
-    float distance = euclideanDistance (cloud.points[i], test_point);
+    float distance = euclideanDistance (cloud[i], test_point);
     sorted_brute_force_result.insert (make_pair (distance, static_cast<int> (i)));
   }
   float max_dist = 0.0f;
@@ -186,7 +190,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   // Check if all found neighbors have distance smaller than max_dist
   for (const int &k_index : k_indices)
   {
-    const MyPoint& point = cloud.points[k_index];
+    const MyPoint& point = cloud[k_index];
     bool ok = euclideanDistance (test_point, point) <= max_dist;
     if (!ok)
       ok = (std::abs (euclideanDistance (test_point, point)) - max_dist) <= 1e-6;

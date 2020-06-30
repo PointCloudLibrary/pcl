@@ -379,7 +379,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
     // Iterate over each point
     for (std::size_t i = 0; i < projected_points.points.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the cone
     for (const auto &inlier : inliers)
@@ -391,7 +391,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
 
       float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;
 
-      pcl::Vector4fMap pp = projected_points.points[inlier].getVector4fMap ();
+      pcl::Vector4fMap pp = projected_points[inlier].getVector4fMap ();
       pp.matrix () = apex + k * axis_dir;
 
       Eigen::Vector4f dir = pt - pp;
@@ -416,12 +416,12 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
     // Iterate over each point
     for (std::size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the cone
     for (std::size_t i = 0; i < inliers.size (); ++i)
     {
-      pcl::Vector4fMap pp = projected_points.points[i].getVector4fMap ();
+      pcl::Vector4fMap pp = projected_points[i].getVector4fMap ();
       pcl::Vector4fMapConst pt = input_->points[inliers[i]].getVector4fMap ();
 
       float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;

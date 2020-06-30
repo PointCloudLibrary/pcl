@@ -49,3 +49,7 @@ PCL_ADD_TEST(point_cloud_image_extractors test_point_cloud_image_extractors
 PCL_ADD_TEST(buffers test_buffers
              FILES test_buffers.cpp
              LINK_WITH pcl_gtest pcl_common)
+
+PCL_ADD_TEST(io_octree_compression test_octree_compression
+        FILES test_octree_compression.cpp
+        LINK_WITH pcl_gtest pcl_common pcl_io pcl_octree)
