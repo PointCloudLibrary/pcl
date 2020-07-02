@@ -500,7 +500,7 @@ namespace pcl
       inline const_reverse_iterator crend () const noexcept { return (points.crend ()); }
 
       //capacity
-      inline std::size_t size () const { return (points.size ()); }
+      inline index_t size () const { return points.size (); }
       inline void reserve (index_t n) { points.reserve (n); }
 
       template <typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0>

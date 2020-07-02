@@ -242,18 +242,18 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   if (cloud_in.is_dense)
   {
     // If the dataset is dense, simply transform it!
-    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (index_t i = 0; i < cloud_out.size (); ++i)
       tf.se3 (cloud_in[i].data, cloud_out[i].data);
   }
   else
   {
     // Dataset might contain NaNs and Infs, so check for them first,
     // otherwise we get errors during the multiplication (?)
-    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (index_t i = 0; i < cloud_out.size (); ++i)
     {
-      if (!std::isfinite (cloud_in.points[i].x) ||
-          !std::isfinite (cloud_in.points[i].y) ||
-          !std::isfinite (cloud_in.points[i].z))
+      if (!std::isfinite (cloud_in[i].x) ||
+          !std::isfinite (cloud_in[i].y) ||
+          !std::isfinite (cloud_in[i].z))
         continue;
       tf.se3 (cloud_in[i].data, cloud_out[i].data);
     }
@@ -268,11 +268,11 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                      const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
                      bool copy_all_fields)
 {
-  std::size_t npts = indices.size ();
+  auto npts = indices.size ();
   // In order to transform the data, we need to remove NaNs
   cloud_out.is_dense = cloud_in.is_dense;
   cloud_out.header   = cloud_in.header;
-  cloud_out.width    = static_cast<int> (npts);
+  cloud_out.width    = npts;
   cloud_out.height   = 1;
   cloud_out.points.resize (npts);
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
@@ -282,11 +282,11 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   if (cloud_in.is_dense)
   {
     // If the dataset is dense, simply transform it!
-    for (std::size_t i = 0; i < npts; ++i)
+    for (index_t i = 0; i < npts; ++i)
     {
       // Copy fields first, then transform xyz data
       if (copy_all_fields)
-        cloud_out.points[i] = cloud_in.points[indices[i]];
+        cloud_out[i] = cloud_in[indices[i]];
       tf.se3 (cloud_in[indices[i]].data, cloud_out[i].data);
     }
   }
@@ -294,13 +294,13 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   {
     // Dataset might contain NaNs and Infs, so check for them first,
     // otherwise we get errors during the multiplication (?)
-    for (std::size_t i = 0; i < npts; ++i)
+    for (index_t i = 0; i < npts; ++i)
     {
       if (copy_all_fields)
-        cloud_out.points[i] = cloud_in.points[indices[i]];
-      if (!std::isfinite (cloud_in.points[indices[i]].x) ||
-          !std::isfinite (cloud_in.points[indices[i]].y) ||
-          !std::isfinite (cloud_in.points[indices[i]].z))
+        cloud_out[i] = cloud_in[indices[i]];
+      if (!std::isfinite (cloud_in[indices[i]].x) ||
+          !std::isfinite (cloud_in[indices[i]].y) ||
+          !std::isfinite (cloud_in[indices[i]].z))
         continue;
       tf.se3 (cloud_in[indices[i]].data, cloud_out[i].data);
     }

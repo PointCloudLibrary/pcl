@@ -42,6 +42,7 @@
 #include <pcl/pcl_tests.h>
 
 using namespace pcl::test;
+using pcl::index_t;
 
 pcl::PointCloud<pcl::PointXYZ> cloud;
 pcl::PCA<pcl::PointXYZ> pca;
@@ -84,7 +85,7 @@ TEST(PCA, cloud_projection)
     EXPECT_EQ (cloud.size (), cloud_projected.size ());
     pca.reconstruct (cloud_projected, cloud_reconstructed);
     EXPECT_EQ (cloud_reconstructed.size (), cloud_projected.size ());
-    for(std::size_t i = 0; i < cloud.size(); i++)
+    for(index_t i = 0; i < static_cast<index_t>(cloud.size()); i++)
       EXPECT_NEAR_VECTORS (cloud[i].getVector3fMap (),
                            cloud_reconstructed[i].getVector3fMap (),
                            2.5e-4);

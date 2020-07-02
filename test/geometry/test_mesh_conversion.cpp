@@ -163,18 +163,21 @@ TYPED_TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
   using Mesh = pcl::geometry::PolygonMesh<Traits>;
   using VertexIndex = typename Mesh::VertexIndex;
   using VertexIndices = typename Mesh::VertexIndices;
+  using pcl::index_t;
 
   const std::vector <std::vector <std::uint32_t> > faces =
       Mesh::IsManifold::value ? this->manifold_faces_ :
                                 this->non_manifold_faces_;
+
 
   // Generate the mesh
   Mesh half_edge_mesh;
   VertexIndices vi;
 
   for (std::size_t i=0; i<this->vertices_.size (); ++i)
+  for (const auto& vertex : this->vertices_)
   {
-    half_edge_mesh.addVertex (this->vertices_ [i]);
+    half_edge_mesh.addVertex (vertex);
   }
 
   for (std::size_t i=0; i<faces.size (); ++i)
@@ -196,7 +199,7 @@ TYPED_TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
   pcl::PointCloud <pcl::PointXYZRGBNormal> converted_cloud;
   pcl::fromPCLPointCloud2 (face_vertex_mesh.cloud, converted_cloud);
   ASSERT_EQ (this->vertices_.size (), converted_cloud.size ());
-  for (std::size_t i=0; i<this->vertices_.size (); ++i)
+  for (index_t i=0; i < static_cast<index_t> (this->vertices_.size ()); ++i)
   {
     const pcl::PointXYZRGBNormal& expected_pt = this->vertices_ [i];
     const pcl::PointXYZRGBNormal& actual_pt   = converted_cloud [i];
@@ -230,6 +233,7 @@ TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
   using Mesh = pcl::geometry::PolygonMesh<Traits>;
   using FaceIndex = typename Mesh::FaceIndex;
   using VAFC = typename Mesh::VertexAroundFaceCirculator;
+  using pcl::index_t;
 
   // Generate the mesh
   pcl::PolygonMesh face_vertex_mesh;
@@ -250,7 +254,7 @@ TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
 
   // Check if the cloud got copied correctly.
   ASSERT_EQ (this->vertices_.size (), half_edge_mesh.getVertexDataCloud ().size ());
-  for (std::size_t i=0; i<this->vertices_.size (); ++i)
+  for (index_t i = 0; i < static_cast<index_t>(this->vertices_.size ()); ++i)
   {
     const pcl::PointXYZRGBNormal& expected_pt = this->vertices_ [i];
     const pcl::PointXYZRGBNormal& actual_pt   = half_edge_mesh.getVertexDataCloud () [i];

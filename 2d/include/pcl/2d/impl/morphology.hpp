@@ -353,8 +353,8 @@ Morphology<PointT>::structuringElementRectangle(pcl::PointCloud<PointT>& kernel,
   kernel.height = height;
   kernel.width = width;
   kernel.resize(height * width);
-  for (std::size_t i = 0; i < kernel.size(); ++i)
-    kernel[i].intensity = 1;
+  for(auto& k : kernel)
+    k.intensity = 1;
 }
 
 template <typename PointT>

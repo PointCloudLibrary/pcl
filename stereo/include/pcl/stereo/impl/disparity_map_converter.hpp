@@ -261,7 +261,7 @@ pcl::DisparityMapConverter<PointT>::compute(PointCloud& out_cloud)
   for (std::size_t row = 0; row < disparity_map_height_; ++row) {
     for (std::size_t column = 0; column < disparity_map_width_; ++column) {
       // ID of current disparity point.
-      std::size_t disparity_point = column + row * disparity_map_width_;
+      index_t disparity_point = column + row * disparity_map_width_;
 
       // Disparity value.
       float disparity = disparity_map_[disparity_point];

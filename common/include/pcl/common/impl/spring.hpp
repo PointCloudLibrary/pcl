@@ -115,14 +115,14 @@ duplicateColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
                          "[pcl::common::duplicateColumns] error: "
                          << "columns expansion requires organised point cloud");
 
-  std::size_t old_height = input.height;
-  std::size_t old_width = input.width;
-  std::size_t new_width = old_width + 2*amount;
+  auto old_height = input.height;
+  auto old_width = input.width;
+  index_t new_width = old_width + 2*amount;
   if (&input != &output)
     output = input;
   output.reserve (new_width * old_height);
-  for (std::size_t j = 0; j < old_height; ++j)
-    for(std::size_t i = 0; i < amount; ++i)
+  for (index_t j = 0; j < old_height; ++j)
+    for(index_t i = 0; i < amount; ++i)
     {
       typename PointCloud<PointT>::iterator start = output.begin () + (j * new_width);
       output.insert (start, *start);

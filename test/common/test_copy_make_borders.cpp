@@ -163,8 +163,10 @@ TEST (CopyPointCloud, reflect)
 int
 main (int argc, char** argv)
 {
-  for (std::size_t i = 0, j = 10; i < cloud.size (); ++j, ++i)
+  std::size_t j = 10;
+  for (index_t i = 0; i < cloud.size (); ++j, ++i)
     cloud[i] = pcl::PointXYZ (j, j*10, j*100);
+
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

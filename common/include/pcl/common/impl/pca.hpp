@@ -183,7 +183,7 @@ PCA<PointT>::project (const PointCloud& input, PointCloud& projection)
   if (input.is_dense)
   {
     projection.resize (input.size ());
-    for (std::size_t i = 0; i < input.size (); ++i)
+    for (index_t i = 0; i < input.size (); ++i)
       project (input[i], projection[i]);
   }
   else
@@ -225,13 +225,13 @@ PCA<PointT>::reconstruct (const PointCloud& projection, PointCloud& input)
   if (input.is_dense)
   {
     input.resize (projection.size ());
-    for (std::size_t i = 0; i < projection.size (); ++i)
+    for (index_t i = 0; i < projection.size (); ++i)
       reconstruct (projection[i], input[i]);
   }
   else
   {
     PointT p;
-    for (std::size_t i = 0; i < input.size (); ++i)
+    for (index_t i = 0; i < input.size (); ++i)
     {
       if (!std::isfinite (input[i].x) ||
           !std::isfinite (input[i].y) ||

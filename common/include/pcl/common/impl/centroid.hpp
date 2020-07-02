@@ -691,10 +691,10 @@ demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     cloud_out.width    = static_cast<std::uint32_t> (indices.size ());
     cloud_out.height   = 1;
   }
-  cloud_out.resize (indices.size ());
+  cloud_out.resize (static_cast<index_t>(indices.size ()));
 
   // Subtract the centroid from cloud_in
-  for (std::size_t i = 0; i < indices.size (); ++i)
+  for (index_t i = 0; i < indices.size (); ++i)
   {
     cloud_out[i].x = static_cast<float> (cloud_in[indices[i]].x - centroid[0]);
     cloud_out[i].y = static_cast<float> (cloud_in[indices[i]].y - centroid[1]);
@@ -749,11 +749,11 @@ demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                   const Eigen::Matrix<Scalar, 4, 1> &centroid,
                   Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_out)
 {
-  std::size_t npts = cloud_in.size ();
+  auto npts = cloud_in.size ();
 
   cloud_out = Eigen::Matrix<Scalar, 4, Eigen::Dynamic>::Zero (4, npts);        // keep the data aligned
 
-  for (std::size_t i = 0; i < npts; ++i)
+  for (index_t i = 0; i < npts; ++i)
   {
     cloud_out (0, i) = cloud_in[i].x - centroid[0];
     cloud_out (1, i) = cloud_in[i].y - centroid[1];

@@ -113,8 +113,8 @@ kernel<PointT>::gaussianKernel(pcl::PointCloud<PointT>& kernel)
   }
 
   // Normalizing the kernel
-  for (std::size_t i = 0; i < kernel.size(); ++i)
-    kernel[i].intensity /= sum;
+  for (auto& k : kernel)
+    k.intensity /= sum;
 }
 
 template <typename PointT>
@@ -140,7 +140,8 @@ kernel<PointT>::loGKernel(pcl::PointCloud<PointT>& kernel)
 
   // Normalizing the kernel
   for (std::size_t i = 0; i < kernel.size(); ++i)
-    kernel[i].intensity /= sum;
+  for (auto& k : kernel)
+    k.intensity /= sum;
 }
 
 template <typename PointT>

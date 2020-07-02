@@ -69,7 +69,7 @@ Edge<PointInT, PointOutT>::detectEdgeSobel(pcl::PointCloud<PointOutT>& output)
   output.height = height;
   output.width = width;
 
-  for (std::size_t i = 0; i < output.size(); ++i) {
+  for (index_t i = 0; i < output.size(); ++i) {
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude =
@@ -148,7 +148,7 @@ Edge<PointInT, PointOutT>::detectEdgePrewitt(pcl::PointCloud<PointOutT>& output)
   output.height = height;
   output.width = width;
 
-  for (std::size_t i = 0; i < output.size(); ++i) {
+  for (index_t i = 0; i < output.size(); ++i) {
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude =
@@ -363,7 +363,7 @@ Edge<PointInT, PointOutT>::detectEdgeCanny(pcl::PointCloud<PointOutT>& output)
   }
 
   // Final thresholding
-  for (std::size_t i = 0; i < input_->size(); ++i) {
+  for (index_t i = 0; i < input_->size(); ++i) {
     if ((*maxima)[i].intensity == std::numeric_limits<float>::max())
       output[i].magnitude = 255;
     else

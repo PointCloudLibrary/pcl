@@ -818,7 +818,7 @@ namespace pcl
         reserveVertices (const std::size_t n)
         {
           vertices_.reserve (n);
-          this->reserveData (vertex_data_cloud_, n, HasVertexData ());
+          this->reserveData (vertex_data_cloud_, static_cast<index_t> (n), HasVertexData ());
         }
 
         /** \brief Reserve storage space for n edges (2*n storage space is reserved for the half-edges). */
@@ -1932,10 +1932,19 @@ namespace pcl
         ////////////////////////////////////////////////////////////////////////
 
         /** \brief Reserve storage space for the mesh data. */
-        template <class DataCloudT> inline void
-        reserveData (DataCloudT& cloud, const std::size_t n, std::true_type /*has_data*/) const
+        template <class DataCloudT>
+        inline void
+        reserveData (DataCloudT& cloud, const index_t n, std::true_type /*has_data*/) const
         {
           cloud.reserve (n);
+        }
+
+        template <class DataCloudT, typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0>
+        PCL_DEPRECATED(1, 13, "use reserveData method that accepts index_t for parameter n instead")
+        inline void
+        reserveData (DataCloudT& cloud, const std::size_t n, std::true_type /*has_data*/) const
+        {
+          reserveData (cloud, static_cast<index_t>(n), std::true_type{});
         }
 
         /** \brief Does nothing */

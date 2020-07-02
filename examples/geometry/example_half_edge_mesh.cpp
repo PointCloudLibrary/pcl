@@ -97,9 +97,9 @@ void
 printVertices (const Mesh& mesh)
 {
   std::cout << "Vertices:\n   ";
-  for (std::size_t i=0; i<mesh.sizeVertices (); ++i)
+  for (const auto& pt : mesh.getVertexDataCloud ())
   {
-    std::cout << mesh.getVertexDataCloud () [i] << " ";
+    std::cout << pt << " ";
   }
   std::cout << std::endl;
 }
