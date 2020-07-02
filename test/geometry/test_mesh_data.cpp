@@ -67,6 +67,8 @@ using VertexIndices = std::vector<VertexIndex>;
 using HalfEdgeIndices = std::vector<HalfEdgeIndex>;
 using FaceIndices = std::vector<FaceIndex>;
 
+using pcl::index_t;
+
 ////////////////////////////////////////////////////////////////////////////////
 
 /** \brief Check if the size of the mesh elements is correct. */
@@ -406,10 +408,10 @@ TEST (TestMesh, MeshData)
     EXPECT_EQ (edc.size () , edc_new.size ());
     EXPECT_EQ (fdc.size () , fdc_new.size ());
 
-    for (std::size_t i = 0; i < vdc_new.size  (); ++i) EXPECT_EQ (vdc  [i], vdc_new  [i]) << "Index " << i;
-    for (std::size_t i = 0; i < hedc_new.size (); ++i) EXPECT_EQ (hedc [i], hedc_new [i]) << "Index " << i;
-    for (std::size_t i = 0; i < edc_new.size  (); ++i) EXPECT_EQ (edc  [i], edc_new  [i]) << "Index " << i;
-    for (std::size_t i = 0; i < fdc_new.size  (); ++i) EXPECT_EQ (fdc  [i], fdc_new  [i]) << "Index " << i;
+    for (index_t i = 0; i < static_cast<index_t>(vdc_new.size  ()); ++i) EXPECT_EQ (vdc  [i], vdc_new  [i]) << "Index " << i;
+    for (index_t i = 0; i < static_cast<index_t>(hedc_new.size ()); ++i) EXPECT_EQ (hedc [i], hedc_new [i]) << "Index " << i;
+    for (index_t i = 0; i < static_cast<index_t>(edc_new.size  ()); ++i) EXPECT_EQ (edc  [i], edc_new  [i]) << "Index " << i;
+    for (index_t i = 0; i < static_cast<index_t>(fdc_new.size  ()); ++i) EXPECT_EQ (fdc  [i], fdc_new  [i]) << "Index " << i;
 
     vdc_new  [0] = 0;
     hedc_new [0] = 1;

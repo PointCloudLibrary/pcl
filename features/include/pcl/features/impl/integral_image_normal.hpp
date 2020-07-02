@@ -105,14 +105,14 @@ template <typename PointInT, typename PointOutT> void
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initSimple3DGradientMethod ()
 {
   // number of DataType entries per element (equal or bigger than dimensions)
-  int element_stride = sizeof (PointInT) / sizeof (float);
+  index_t element_stride = sizeof (PointInT) / sizeof (float);
   // number of DataType entries per row (equal or bigger than element_stride number of elements per row)
-  int row_stride     = element_stride * static_cast<uindex_t>(input_->width);
+  index_t row_stride     = element_stride * static_cast<uindex_t>(input_->width);
 
   const float *data_ = reinterpret_cast<const float*> (&input_->points[0]);
 
   integral_image_XYZ_.setSecondOrderComputation (false);
-  integral_image_XYZ_.setInput (data_, static_cast<uindex_t>(input_->width), static_cast<uindex_t>(input_->height), element_stride, row_stride);
+  integral_image_XYZ_.setInput (data_, input_->width, input_->height, element_stride, row_stride);
 
   init_simple_3d_gradient_ = true;
   init_covariance_matrix_ = init_average_3d_gradient_ = init_depth_change_ = false;
@@ -123,14 +123,14 @@ template <typename PointInT, typename PointOutT> void
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCovarianceMatrixMethod ()
 {
   // number of DataType entries per element (equal or bigger than dimensions)
-  int element_stride = sizeof (PointInT) / sizeof (float);
+  index_t element_stride = sizeof (PointInT) / sizeof (float);
   // number of DataType entries per row (equal or bigger than element_stride number of elements per row)
-  int row_stride     = element_stride * static_cast<uindex_t>(input_->width);
+  index_t row_stride     = element_stride * static_cast<uindex_t>(input_->width);
 
   const float *data_ = reinterpret_cast<const float*> (&input_->points[0]);
 
   integral_image_XYZ_.setSecondOrderComputation (true);
-  integral_image_XYZ_.setInput (data_, static_cast<uindex_t>(input_->width), static_cast<uindex_t>(input_->height), element_stride, row_stride);
+  integral_image_XYZ_.setInput (data_, input_->width, input_->height, element_stride, row_stride);
 
   init_covariance_matrix_ = true;
   init_average_3d_gradient_ = init_depth_change_ = init_simple_3d_gradient_ = false;
@@ -179,8 +179,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverage3DGradientMe
   }
 
   // Compute integral images
-  integral_image_DX_.setInput (diff_x_, static_cast<uindex_t>(input_->width), static_cast<uindex_t>(input_->height), 4, static_cast<uindex_t>(input_->width) << 2);
-  integral_image_DY_.setInput (diff_y_, static_cast<uindex_t>(input_->width), static_cast<uindex_t>(input_->height), 4, static_cast<uindex_t>(input_->width) << 2);
+  integral_image_DX_.setInput (diff_x_, input_->width, input_->height, 4, input_->width << 2);
+  integral_image_DY_.setInput (diff_y_, input_->width, input_->height, 4, input_->width << 2);
   init_covariance_matrix_ = init_depth_change_ = init_simple_3d_gradient_ = false;
   init_average_3d_gradient_ = true;
 }
@@ -190,9 +190,9 @@ template <typename PointInT, typename PointOutT> void
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverageDepthChangeMethod ()
 {
   // number of DataType entries per element (equal or bigger than dimensions)
-  int element_stride = sizeof (PointInT) / sizeof (float);
+  index_t element_stride = sizeof (PointInT) / sizeof (float);
   // number of DataType entries per row (equal or bigger than element_stride number of elements per row)
-  int row_stride     = element_stride * input_->width;
+  index_t row_stride     = element_stride * input_->width;
 
   const float *data_ = reinterpret_cast<const float*> (&input_->points[0]);
 

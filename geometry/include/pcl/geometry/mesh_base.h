@@ -290,7 +290,7 @@ namespace pcl
                 *it_ed_new++ = *it_ed_old;
               }
             }
-            edge_data_cloud_.resize (this->sizeEdges ());
+            edge_data_cloud_.resize (static_cast<index_t>(this->sizeEdges ()));
           }
 
           // Adjust the indices

@@ -299,7 +299,7 @@ namespace pcl
         * \param[in] row the row coordinate
         */
       inline const PointT&
-      at (int column, int row) const
+      at (index_t column, index_t row) const
       {
         if (this->height > 1)
           return (points.at (row * this->width + column));
@@ -313,7 +313,7 @@ namespace pcl
         * \param[in] row the row coordinate
         */
       inline PointT&
-      at (int column, int row)
+      at (index_t column, index_t row)
       {
         if (this->height > 1)
           return (points.at (row * this->width + column));
@@ -327,7 +327,7 @@ namespace pcl
         * \param[in] row the row coordinate
         */
       inline const PointT&
-      operator () (std::size_t column, std::size_t row) const
+      operator () (index_t column, index_t row) const
       {
         return (points[row * this->width + column]);
       }
@@ -337,10 +337,36 @@ namespace pcl
         * \param[in] column the column coordinate
         * \param[in] row the row coordinate
         */
+      template <typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0>
+      PCL_DEPRECATED(1, 13, "use  operator method that accepts index_t parameters instead")
+      inline const PointT&
+      operator () (std::size_t column, std::size_t row) const
+      {
+        return (operator() (static_cast<index_t>(column), static_cast<index_t>(row)));
+      }
+
+      /** \brief Obtain the point given by the (column, row) coordinates. Only works on organized
+        * datasets (those that have height != 1).
+        * \param[in] column the column coordinate
+        * \param[in] row the row coordinate
+        */
+      inline PointT&
+      operator () (index_t column, index_t row)
+      {
+        return (points[row * this->width + column]);
+      }
+
+      /** \brief Obtain the point given by the (column, row) coordinates. Only works on organized
+        * datasets (those that have height != 1).
+        * \param[in] column the column coordinate
+        * \param[in] row the row coordinate
+        */
+      template <typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0>
+      PCL_DEPRECATED(1, 13, "use  operator method that accepts index_t parameters instead")
       inline PointT&
       operator () (std::size_t column, std::size_t row)
       {
-        return (points[row * this->width + column]);
+        return (operator() (static_cast<index_t>(column), static_cast<index_t>(row)));
       }
 
       /** \brief Return whether a dataset is organized (e.g., arranged in a structured grid).
@@ -414,7 +440,7 @@ namespace pcl
        * \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud.
        * \note This method is for advanced users only! Use with care!
        * \attention PointT types are most of the time aligned, so the offsets are not continuous!
-       * \overload const Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> > pcl::PointCloud::getMatrixXfMap () constcomputeCentroid
+       * \overload const Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> > pcl::PointCloud::getMatrixXfMap () const
        */
       inline const Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >
       getMatrixXfMap () const
@@ -470,12 +496,17 @@ namespace pcl
       inline reverse_iterator rend () noexcept { return (points.rend ()); }
       inline const_reverse_iterator rbegin () const noexcept { return (points.rbegin ()); }
       inline const_reverse_iterator rend () const noexcept { return (points.rend ()); }
-      inline const_reverse_iterator crbegin () const noexcept { return ( points.crbegin ()); }
+      inline const_reverse_iterator crbegin () const noexcept { return (points.crbegin ()); }
       inline const_reverse_iterator crend () const noexcept { return (points.crend ()); }
 
       //capacity
       inline std::size_t size () const { return (points.size ()); }
-      inline void reserve (std::size_t n) { points.reserve (n); }
+      inline void reserve (index_t n) { points.reserve (n); }
+
+      template <typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0>
+      PCL_DEPRECATED(1, 13, "use reserve method that accepts index_t parameters instead")
+      inline void reserve (std::size_t n) { reserve(static_cast<index_t>(n)); }
+
       inline bool empty () const { return points.empty (); }
 
       /** \brief Resize the cloud
@@ -498,19 +529,34 @@ namespace pcl
       PCL_DEPRECATED(1, 13, "use  resize method that accepts index_t parameters instead")
       inline void resize (std::size_t n)
       {
-        points.resize (n);
-        if (width * height != n)
-        {
-          width = static_cast<std::uint32_t> (n);
-          height = 1;
-        }
+        resize(static_cast<index_t>(n));
       }
 
       //element access
-      inline const PointT& operator[] (std::size_t n) const { return (points[n]); }
-      inline PointT& operator[] (std::size_t n) { return (points[n]); }
-      inline const PointT& at (std::size_t n) const { return (points.at (n)); }
-      inline PointT& at (std::size_t n) { return (points.at (n)); }
+      inline const PointT& operator[] (index_t n) const { return (points[n]); }
+
+      template <typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0>
+      PCL_DEPRECATED(1, 13, "use operator[] method that accepts index_t parameters instead")
+      inline const PointT& operator[] (std::size_t n) const { return operator[] (static_cast<index_t>(n)); }
+
+      inline PointT& operator[] (index_t n) { return (points[n]); }
+
+      template <typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0>
+      PCL_DEPRECATED(1, 13, "use operator[] method that accepts index_t parameters instead")
+      inline PointT& operator[] (std::size_t n) { return operator[] (static_cast<index_t>(n));}
+
+      inline const PointT& at (index_t n) const { return (points.at (n)); }
+
+      template <typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0>
+      PCL_DEPRECATED(1, 13, "use at method that accepts index_t parameters instead")
+      inline const PointT& at (std::size_t n) const { return at(static_cast<index_t>(n)); }
+
+      inline PointT& at (index_t n) { return (points.at (n)); }
+
+      template <typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0>
+      PCL_DEPRECATED(1, 13, "use at method that accepts index_t parameters instead")
+      inline PointT& at (std::size_t n) { return at(static_cast<index_t>(n)); }
+
       inline const PointT& front () const { return (points.front ()); }
       inline PointT& front () { return (points.front ()); }
       inline const PointT& back () const { return (points.back ()); }
@@ -564,11 +610,25 @@ namespace pcl
         * \param[in] pt the point to insert
         */
       inline void
-      insert (iterator position, std::size_t n, const PointT& pt)
+      insert (iterator position, index_t n, const PointT& pt)
       {
         points.insert (position, n, pt);
-        width = static_cast<index_t> (size ());
+        width = size ();
         height = 1;
+      }
+
+      /** \brief Insert a new point in the cloud N times, given an iterator.
+        * \note This breaks the organized structure of the cloud by setting the height to 1!
+        * \param[in] position where to insert the point
+        * \param[in] n the number of times to insert the point
+        * \param[in] pt the point to insert
+        */
+      template <typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0>
+      PCL_DEPRECATED(1, 13, "use insert method that accepts index_t parameters instead")
+      inline void
+      insert (iterator position, std::size_t n, const PointT& pt)
+      {
+        insert(std::move(position), static_cast<index_t>(n), pt);
       }
 
       /** \brief Insert a new range of points in the cloud, at a certain position.

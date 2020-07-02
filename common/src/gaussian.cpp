@@ -137,7 +137,7 @@ pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
 {
   assert (kernel.size () % 2 == 1);
   std::size_t kernel_width = kernel.size () -1;
-  std::size_t radius = kernel.size () / 2;
+  index_t radius = kernel.size () / 2;
   pcl::PointCloud<float> copied_input;
   const pcl::PointCloud<float>* unaliased_input;
   if (&input != &output)
@@ -156,20 +156,19 @@ pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
     unaliased_input = &copied_input;
   }
   
-  std::size_t i;
-  for (std::size_t j = 0; j < static_cast<uindex_t>(unaliased_input->height); j++)
+  for (index_t j = 0, i = 0; j < unaliased_input->height; ++j)
   {
-    for (i = 0 ; i < radius ; i++)
+    for (i = 0 ; i < radius ; ++i)
       output (i,j) = 0;
 
-    for ( ; i < static_cast<uindex_t>(unaliased_input->width) - radius ; i++)
+    for ( ; i < unaliased_input->width - radius ; ++i)
     {
       output (i,j) = 0;
-      for (int k = static_cast<int>(kernel_width), l = static_cast<int>(i - radius); k >= 0 ; k--, l++)
+      for (int k = static_cast<int>(kernel_width), l = static_cast<index_t>(i - radius); k >= 0 ; k--, l++)
         output (i,j) += (*unaliased_input) (l,j) * kernel[k];
     }
 
-    for ( ; i < static_cast<uindex_t>(unaliased_input->width) ; i++)
+    for ( ; i < unaliased_input->width ; ++i)
       output (i,j) = 0;
   }
 }
@@ -181,7 +180,7 @@ pcl::GaussianKernel::convolveCols (const pcl::PointCloud<float>& input,
 {
   assert (kernel.size () % 2 == 1);
   std::size_t kernel_width = kernel.size () -1;
-  std::size_t radius = kernel.size () / 2;
+  index_t radius = kernel.size () / 2;
   pcl::PointCloud<float> copied_input;
   const pcl::PointCloud<float>* unaliased_input;
   if (&input != &output)
@@ -200,21 +199,20 @@ pcl::GaussianKernel::convolveCols (const pcl::PointCloud<float>& input,
     unaliased_input = &copied_input;
   }
 
-  std::size_t j;
-  for (std::size_t i = 0; i < static_cast<uindex_t>(unaliased_input->width); i++)
+  for (index_t i = 0, j = 0; i < unaliased_input->width; ++i)
   {
     for (j = 0 ; j < radius ; j++)
       output (i,j) = 0;
 
-    for ( ; j < static_cast<uindex_t>(unaliased_input->height) - radius ; j++)  {
+    for ( ; j < unaliased_input->height - radius ; ++j)  {
       output (i,j) = 0;
-      for (int k = static_cast<int>(kernel_width), l = static_cast<int>(j - radius) ; k >= 0 ; k--, l++)
+      for (int k = static_cast<int>(kernel_width), l = static_cast<index_t>(j - radius) ; k >= 0 ; k--, l++)
       {
         output (i,j) += (*unaliased_input) (i,l) * kernel[k];
       }
     }
 
-    for ( ; j < static_cast<uindex_t>(unaliased_input->height) ; j++)
+    for ( ; j < unaliased_input->height ; ++j)
       output (i,j) = 0;
   }
 }

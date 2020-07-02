@@ -57,7 +57,7 @@ IntegralImage2D<DataType, Dimension>::setSecondOrderComputation (bool compute_se
 template <typename DataType, unsigned Dimension> void
 IntegralImage2D<DataType, Dimension>::setInput (const DataType * data, index_t width,index_t height, index_t element_stride, index_t row_stride)
 {
-  if ((width + 1) * (height + 1) > first_order_integral_image_.size () )
+  if (static_cast<uindex_t>((width + 1) * (height + 1)) > first_order_integral_image_.size () )
   {
     width_  = width;
     height_ = height;
@@ -69,20 +69,12 @@ IntegralImage2D<DataType, Dimension>::setInput (const DataType * data, index_t w
   computeIntegralImages (data, row_stride, element_stride);
 }
 
+
 template <typename DataType, unsigned Dimension>
 template <typename T, std::enable_if_t<!std::is_same<T, unsigned>::value, pcl::index_t>> void
 IntegralImage2D<DataType, Dimension>::setInput (const DataType * data, unsigned width,unsigned height, unsigned element_stride, unsigned row_stride)
 {
-  if ((width + 1) * (height + 1) > first_order_integral_image_.size () )
-  {
-    width_  = width;
-    height_ = height;
-    first_order_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
-    finite_values_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
-    if (compute_second_order_integral_images_)
-      second_order_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
-  }
-  computeIntegralImages (data, row_stride, element_stride);
+  setInput (data, static_cast<index_t>(width), static_cast<index_t>(height), static_cast<index_t>(element_stride), static_cast<index_t>(row_stride));
 }
 
 
@@ -240,6 +232,22 @@ IntegralImage2D<DataType, Dimension>::computeIntegralImages (
 
 
 template <typename DataType> void
+IntegralImage2D<DataType, 1>::setInput (const DataType * data, index_t width,index_t height, index_t element_stride, index_t row_stride)
+{
+  if (static_cast<uindex_t>((width + 1) * (height + 1)) > first_order_integral_image_.size () )
+  {
+    width_  = width;
+    height_ = height;
+    first_order_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
+    finite_values_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
+    if (compute_second_order_integral_images_)
+      second_order_integral_image_.resize ( (width_ + 1) * (height_ + 1) );
+  }
+  computeIntegralImages (data, row_stride, element_stride);
+}
+
+template <typename DataType>
+template <typename T, std::enable_if_t<!std::is_same<T, unsigned>::value, pcl::index_t>> void
 IntegralImage2D<DataType, 1>::setInput (const DataType * data, unsigned width,unsigned height, unsigned element_stride, unsigned row_stride)
 {
   if ((width + 1) * (height + 1) > first_order_integral_image_.size () )
@@ -253,7 +261,6 @@ IntegralImage2D<DataType, 1>::setInput (const DataType * data, unsigned width,un
   }
   computeIntegralImages (data, row_stride, element_stride);
 }
-
 
 template <typename DataType> typename pcl::IntegralImage2D<DataType, 1>::ElementType
 IntegralImage2D<DataType, 1>::getFirstOrderSum (
