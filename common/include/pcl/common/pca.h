@@ -166,12 +166,30 @@ namespace pcl
         * \param[in] nb_cols the number of columns to be considered col_start included
         */
       void
-      setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols) override
+      setIndices (index_t row_start, index_t col_start, index_t nb_rows, index_t nb_cols) override
       {
         Base::setIndices (row_start, col_start, nb_rows, nb_cols);
         compute_done_ = false;
       }
 
+      /** \brief Set the indices for the points laying within an interest region of
+        * the point cloud.
+        * \note you shouldn't call this method on unorganized point clouds!
+        * \param[in] row_start the offset on rows
+        * \param[in] col_start the offset on columns
+        * \param[in] nb_rows the number of rows to be considered row_start included
+        * \param[in] nb_cols the number of columns to be considered col_start included
+        */
+      
+      template <typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0>
+      PCL_DEPRECATED(1, 13, "use  setIndices overload which accepts index_t parameters instead")
+      void
+      setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols)
+      {
+        Base::setIndices (row_start, col_start, nb_rows, nb_cols);
+        compute_done_ = false;
+      }
+      
       /** \brief Mean accessor
         * \throw InitFailedException
         */

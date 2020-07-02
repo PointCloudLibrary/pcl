@@ -265,6 +265,19 @@ namespace pcl
         */
       void
       setInput (const DataType * data,
+                index_t width, index_t height, index_t element_stride, index_t row_stride);
+
+      /** \brief Set the input data to compute the integral image for
+        * \param[in] data the input data
+        * \param[in] width the width of the data
+        * \param[in] height the height of the data
+        * \param[in] element_stride the element stride of the data
+        * \param[in] row_stride the row stride of the data
+        */
+      template <typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, unsigned>::value, pcl::index_t> = 0>
+      PCL_DEPRECATED(1, 13, "use  setInput overload which accepts index_t parameters instead")
+      void
+      setInput (const DataType * data,
                 unsigned width, unsigned height, unsigned element_stride, unsigned row_stride);
 
       /** \brief Compute the first order sum within a given rectangle

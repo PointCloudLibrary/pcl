@@ -176,83 +176,6 @@ namespace pcl
     *
     * \todo: remove casting of the return value of size() to index_t
     * 
-    * \note API of the following functions (where index_t variables are compared with unsigned variables) must be modified;
-    * 
-    * common/include/pcl/common/impl/io.hpp -  
-    * copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT> &cloud_out,
-    *                 int top, int bottom, int left, int right, pcl::InterpolationType border_type, const PointT& value)
-    * 
-    * common/include/pcl/common/impl/spring.hpp -
-    * duplicateColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
-    *                   const std::size_t& amount)
-    * duplicateRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
-    *                const std::size_t& amount)
-    * mirrorColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
-    *           const std::size_t& amount)
-    * mirrorRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
-    *        const std::size_t& amount)
-    * mirrorRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
-    *        const std::size_t& amount)
-    * deleteCols (const PointCloud<PointT>& input, PointCloud<PointT>& output,
-    *        const std::size_t& amount)
-    * 
-    * common/include/pcl/impl/pcl_base.hpp -
-    * pcl::PCLBase<PointT>::setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols)
-    * 
-    * common/src/gaussian.cpp - 
-    * pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
-    *                               const Eigen::VectorXf& kernel,
-    *                               pcl::PointCloud<float>& output)
-    * pcl::GaussianKernel::convolveCols (const pcl::PointCloud<float>& input,
-    *                               const Eigen::VectorXf& kernel,
-    *                               pcl::PointCloud<float>& output)
-    * 
-    * features/include/pcl/features/impl/integral_image_normal.hpp - 
-    * pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initSimple3DGradientMethod ()
-    * pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCovarianceMatrixMethod ()
-    * pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverage3DGradientMethod ()
-    * pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
-    *     const int pos_x, const int pos_y, const unsigned point_index, PointOutT &normal)
-    * 
-    * features/include/pcl/features/impl/moment_of_inertia_estimation.hpp
-    * pcl::MomentOfInertiaEstimation<PointT>::setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols)
-    * 
-    * features/src/range_image_border_extractor.cpp - 
-    * RangeImageBorderExtractor::extractLocalSurfaceStructure ()
-    * 
-    * filters/impl/fast_bilateral_omp.hpp - 
-    * pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
-    * 
-    * io/include/pcl/io/impl/pcd_io.hpp - 
-    * pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<PointT> &cloud, 
-    *                        const int precision)
-    * pcl::PCDWriter::writeASCII (const std::string &file_name, 
-    *                        const pcl::PointCloud<PointT> &cloud, 
-    *                        const std::vector<int> &indices,
-    *                        const int precision)
-    * 
-    * io/include/pcl/io/impl/point_cloud_image_extractors.hpp - 
-    * pcl::io::PointCloudImageExtractor<PointT>::extract (const PointCloud& cloud, pcl::PCLImage& img)
-    * 
-    * visualization/include/pcl/visualization/impl/image_viewer.hpp - 
-    * pcl::visualization::ImageViewer::addRGBImage (const pcl::PointCloud<T> &cloud,
-    *                                          const std::string &layer_id,
-    *                                          double opacity)
-    * 
-    * visualization/src/image_viewer.cpp - 
-    * pcl::visualization::ImageViewer::addMonoImage (
-    *     const pcl::PointCloud<pcl::Intensity> &cloud,
-    *     const std::string &layer_id, double opacity)
-    * pcl::visualization::ImageViewer::addMonoImage (
-    *     const pcl::PointCloud<pcl::Intensity8u> &cloud,
-    *     const std::string &layer_id, double opacity)
-    *     
-    * suggested process for modification;
-    *  1. Add API for index_t
-    *  2. Deprecate + SFINAE out existing function
-    *  3. Later remove deprecation
-    * 
-    * 
     * \author Patrick Mihelich, Radu B. Rusu
     */
   template <typename PointT>
@@ -303,6 +226,22 @@ namespace pcl
         : points (width_ * height_, value_)
         , width (width_)
         , height (height_)
+      {}
+
+      /** \brief Allocate constructor from point cloud subset
+        * \param[in] width_ the cloud width
+        * \param[in] height_ the cloud height
+        * \param[in] value_ default value
+        */
+      template <typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::uint32_t>::value, pcl::index_t> = 0>
+      #if defined(_MSC_VER)
+      inline
+      #endif
+      PCL_DEPRECATED(1, 13, "use  constructor that accepts index_t parameters instead")  
+      PointCloud (std::uint32_t width_, std::uint32_t height_, const PointT& value_ = PointT ())
+        : points (static_cast<index_t>(width_ * height_), value_)
+        , width (static_cast<index_t>(width_))
+        , height (static_cast<index_t>(height_))
       {}
 
       //TODO: check if copy/move contructors/assignment operators are needed
@@ -475,7 +414,7 @@ namespace pcl
        * \brief Return an Eigen MatrixXf (assumes float values) mapped to the PointCloud.
        * \note This method is for advanced users only! Use with care!
        * \attention PointT types are most of the time aligned, so the offsets are not continuous!
-       * \overload const Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> > pcl::PointCloud::getMatrixXfMap () const
+       * \overload const Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> > pcl::PointCloud::getMatrixXfMap () constcomputeCentroid
        */
       inline const Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >
       getMatrixXfMap () const
@@ -531,7 +470,7 @@ namespace pcl
       inline reverse_iterator rend () noexcept { return (points.rend ()); }
       inline const_reverse_iterator rbegin () const noexcept { return (points.rbegin ()); }
       inline const_reverse_iterator rend () const noexcept { return (points.rend ()); }
-      inline const_reverse_iterator crbegin () const noexcept { return (points.crbegin ()); }
+      inline const_reverse_iterator crbegin () const noexcept { return ( points.crbegin ()); }
       inline const_reverse_iterator crend () const noexcept { return (points.crend ()); }
 
       //capacity
@@ -542,12 +481,27 @@ namespace pcl
       /** \brief Resize the cloud
         * \param[in] n the new cloud size
         */
+      inline void resize (index_t n)
+      {
+        points.resize (n);
+        if (width * height != n)
+        {
+          width = n;
+          height = 1;
+        }
+      }
+
+      /** \brief Resize the cloud
+        * \param[in] n the new cloud size
+        */
+      template <typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0>
+      PCL_DEPRECATED(1, 13, "use  resize method that accepts index_t parameters instead")
       inline void resize (std::size_t n)
       {
         points.resize (n);
         if (width * height != n)
         {
-          width = static_cast<index_t> (n);
+          width = static_cast<std::uint32_t> (n);
           height = 1;
         }
       }

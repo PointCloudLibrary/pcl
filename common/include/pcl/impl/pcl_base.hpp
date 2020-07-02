@@ -96,6 +96,46 @@ pcl::PCLBase<PointT>::setIndices (const PointIndicesConstPtr &indices)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
+pcl::PCLBase<PointT>::setIndices (index_t row_start, index_t col_start, index_t nb_rows, index_t nb_cols)
+{
+  if ((nb_rows > input_->height) || (row_start > input_->height))
+  {
+    PCL_ERROR ("[PCLBase::setIndices] cloud is only %d height", input_->height);
+    return;
+  }
+
+  if ((nb_cols > input_->width) || (col_start > input_->width))
+  {
+    PCL_ERROR ("[PCLBase::setIndices] cloud is only %d width", input_->width);
+    return;
+  }
+
+  index_t row_end = row_start + nb_rows;
+  if (row_end > input_->height)
+  {
+    PCL_ERROR ("[PCLBase::setIndices] %d is out of rows range %d", row_end, input_->height);
+    return;
+  }
+
+  index_t col_end = col_start + nb_cols;
+  if (col_end > input_->width)
+  {
+    PCL_ERROR ("[PCLBase::setIndices] %d is out of columns range %d", col_end, input_->width);
+    return;
+  }
+
+  indices_.reset (new Indices);
+  indices_->reserve (nb_cols * nb_rows);
+  for(index_t i = row_start; i < row_end; i++)
+    for(index_t j = col_start; j < col_end; j++)
+      indices_->push_back ((i * input_->width) + j);
+  fake_indices_ = false;
+  use_indices_  = true;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+template <typename T, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t>> void
 pcl::PCLBase<PointT>::setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols)
 {
   if ((nb_rows > static_cast<uindex_t>(input_->height)) || (row_start > static_cast<uindex_t>(input_->height)))
