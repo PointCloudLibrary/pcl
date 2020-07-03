@@ -111,12 +111,10 @@ uniform_sampling(const vtkSmartPointer<vtkPolyData>& polydata,
   cloud_out.width = static_cast<int>(n_samples);
   cloud_out.height = 1;
 
-  for (i = 0; i < n_samples; i++) {
+  for (auto& point : cloud_out) {
     Eigen::Vector4f p(0.f, 0.f, 0.f, 0.f);
     randPSurface(polydata, &cumulativeAreas, totalArea, p);
-    cloud_out[i].x = static_cast<float>(p[0]);
-    cloud_out[i].y = static_cast<float>(p[1]);
-    cloud_out[i].z = static_cast<float>(p[2]);
+    point.getVector3fMap() = p.head<3>();
   }
 }
 
