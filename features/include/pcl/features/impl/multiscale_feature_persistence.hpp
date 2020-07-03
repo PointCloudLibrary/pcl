@@ -230,7 +230,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::determinePersisten
     {
       if (unique_features_table_[scale_i][*feature_it] == true)
       {
-        output_features.points.push_back (features_at_scale[scale_i](*)[*feature_it]);
+        output_features.points.push_back ((*features_at_scale_[scale_i])[*feature_it]);
         output_indices->push_back (feature_estimator_->getIndices ()->at (*feature_it));
       }
     }
