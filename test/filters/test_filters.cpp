@@ -1780,7 +1780,7 @@ TEST (SamplingSurfaceNormal, Filters)
     }
   }
   incloud->height = 1;
-  incloud->width = std::uint32_t (incloud->size ());
+  incloud->width = incloud->size ();
 
   pcl::SamplingSurfaceNormal <pcl::PointNormal> ssn_filter;
   ssn_filter.setInputCloud (incloud);
@@ -1814,7 +1814,7 @@ TEST (ShadowPoints, Filters)
   input->points.push_back (pt);
 
   input->height = 1;
-  input->width = static_cast<std::uint32_t> (input->size ());
+  input->width = input->size ();
 
 	NormalEstimation<PointXYZ, PointNormal> ne;
 	ne.setInputCloud (input);
@@ -1881,7 +1881,7 @@ TEST (FrustumCulling, Filters)
     }
   }
   input->height = 1;
-  input->width = static_cast<std::uint32_t> (input->size ());
+  input->width = input->size ();
 
   pcl::FrustumCulling<pcl::PointXYZ> fc (true); // Extract removed indices
   fc.setInputCloud (input);

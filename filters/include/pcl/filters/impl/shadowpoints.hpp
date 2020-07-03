@@ -76,7 +76,7 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter (PointCloud &output)
   output.points.resize (cp);
   removed_indices_->resize (ri);
   output.height = 1;
-  output.width = static_cast<std::uint32_t> (output.size ());
+  output.width = output.size ();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
