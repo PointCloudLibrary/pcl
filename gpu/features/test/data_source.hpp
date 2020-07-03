@@ -94,11 +94,8 @@ namespace pcl
 
             void generateColor()
             {
-                std::size_t cloud_size = cloud->size();
-                for(std::size_t i = 0; i < cloud_size; ++i)
+                for (auto& p: *cloud)
                 {
-                    PointXYZ& p = (*cloud)[i];
-
                     int r = std::max(1, std::min(255, static_cast<int>((double(rand())/RAND_MAX)*255)));
                     int g = std::max(1, std::min(255, static_cast<int>((double(rand())/RAND_MAX)*255)));
                     int b = std::max(1, std::min(255, static_cast<int>((double(rand())/RAND_MAX)*255)));
@@ -130,7 +127,7 @@ namespace pcl
                 KdTreeFLANN<PointXYZ>::Ptr kdtree(new KdTreeFLANN<PointXYZ>);
                 kdtree->setInputCloud(cloud);                
                 
-                std::size_t cloud_size = cloud->size();
+                const auto cloud_size = cloud->size();
 
                 std::vector<float> dists;
                 neighbors_all.resize(cloud_size);
@@ -149,7 +146,7 @@ namespace pcl
                 KdTreeFLANN<PointXYZ>::Ptr kdtree(new KdTreeFLANN<PointXYZ>);
                 kdtree->setInputCloud(cloud);                
                 
-                std::size_t cloud_size = cloud->size();
+                const auto cloud_size = cloud->size();
 
                 std::vector<float> dists;
                 neighbors_all.resize(cloud_size);
