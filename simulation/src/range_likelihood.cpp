@@ -881,8 +881,8 @@ pcl::simulation::RangeLikelihood::getPointCloud(
   }
 
   if (!organized) {
-    pc->width = 1;
-    pc->height = points_added;
+    pc->height = 1;
+    pc->width = points_added;
     pc->points.resize(points_added);
   }
 

@@ -58,8 +58,8 @@ pcl::SamplingSurfaceNormal<PointT>::applyFilter (PointCloud &output)
   findXYZMaxMin (*input_, max_vec, min_vec);
   PointCloud data = *input_;
   partition (data, 0, npts, min_vec, max_vec, indices, output);
-  output.width = 1;
-  output.height = std::uint32_t (output.points.size ());
+  output.height = 1;
+  output.width = std::uint32_t (output.size ());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -173,8 +173,8 @@ pcl::SamplingSurfaceNormal<PointT>::samplePartition (
     pt.z = data[indices[i]].z;
     cloud.points.push_back (pt);
   }
-  cloud.width = 1;
-  cloud.height = std::uint32_t (cloud.points.size ());
+  cloud.height = 1;
+  cloud.width = std::uint32_t (cloud.size ());
 
   Eigen::Vector4f normal;
   float curvature = 0;
