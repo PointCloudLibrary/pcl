@@ -66,56 +66,19 @@ pcl::SamplingSurfaceNormal<PointT>::applyFilter (PointCloud &output)
 template<typename PointT> void 
 pcl::SamplingSurfaceNormal<PointT>::findXYZMaxMin (const PointCloud& cloud, Vector& max_vec, Vector& min_vec)
 {
-  float maxval = cloud[0].x;
-  float minval = cloud[0].x;
+  // 4f to ease vectorization
+  Eigen::Array4f min_array =
+      Eigen::Vector4f::Ones() * std::numeric_limits<float>::max();
+  Eigen::Array4f max_array =
+      Eigen::Vector4f::Ones() * std::numeric_limits<float>::lowest();
 
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
-  {
-    if (cloud[i].x > maxval)
-    {
-      maxval = cloud[i].x;
-    }
-    if (cloud[i].x < minval)
-    {
-      minval = cloud[i].x;
-    }
+  for (const auto& point : cloud) {
+    min_array = min_array.min(point.getArray4fMap());
+    max_array = max_array.max(point.getArray4fMap());
   }
-  max_vec (0) = maxval;
-  min_vec (0) = minval;
 
-  maxval = cloud[0].y;
-  minval = cloud[0].y;
-
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
-  {
-    if (cloud[i].y > maxval)
-    {
-      maxval = cloud[i].y;
-    }
-    if (cloud[i].y < minval)
-    {
-      minval = cloud[i].y;
-    }
-  }
-  max_vec (1) = maxval;
-  min_vec (1) = minval;
-
-  maxval = cloud[0].z;
-  minval = cloud[0].z;
-
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
-  {
-    if (cloud[i].z > maxval)
-    {
-      maxval = cloud[i].z;
-    }
-    if (cloud[i].z < minval)
-    {
-      minval = cloud[i].z;
-    }
-  }
-  max_vec (2) = maxval;
-  min_vec (2) = minval;
+  max_vec = max_array.head<3>();
+  min_vec = min_array.head<3>();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
