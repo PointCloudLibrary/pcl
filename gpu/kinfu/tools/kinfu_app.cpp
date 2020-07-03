@@ -526,7 +526,7 @@ struct SceneCloudView
       else
         point_colors_ptr_->points.clear();
     }
-    std::size_t size = valid_combined_ ? combined_ptr_->size () : cloud_ptr_->size ();
+    const auto size = valid_combined_ ? combined_ptr_->size () : cloud_ptr_->size ();
     std::cout << "Done.  Cloud size: " << size / 1000 << "K" << std::endl;
 
     if (viz_)
