@@ -50,7 +50,7 @@ const std::size_t size = 10 * 480;
 
 TEST (PointCloud, size)
 {
-  EXPECT_EQ(cloud.size (), cloud.size ());
+  EXPECT_EQ(cloud.points.size (), cloud.size ());
 }
 
 TEST (PointCloud, sq_brackets_wrapper)
