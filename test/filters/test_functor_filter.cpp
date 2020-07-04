@@ -73,7 +73,7 @@ TEST_P(FunctorFilterRandom, functioning)
 
     EXPECT_EQ(out_cloud.size(), negative_cloud.size());
     if (keep_removed) {
-      EXPECT_EQ(filter.getRemovedIndices()->size() + out_cloud.size(), cloud->size());
+      EXPECT_EQ(filter.getRemovedIndices()->size(), positive_cloud.size());
     }
     else {
       EXPECT_EQ(filter.getRemovedIndices()->size(), removed_size);
@@ -84,7 +84,7 @@ TEST_P(FunctorFilterRandom, functioning)
 
     EXPECT_EQ(out_cloud.size(), positive_cloud.size());
     if (keep_removed) {
-      EXPECT_EQ(filter.getRemovedIndices()->size() + out_cloud.size(), cloud->size());
+      EXPECT_EQ(filter.getRemovedIndices()->size(), negative_cloud.size());
     }
     else {
       EXPECT_EQ(filter.getRemovedIndices()->size(), removed_size);
