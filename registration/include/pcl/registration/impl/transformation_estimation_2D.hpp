@@ -51,10 +51,13 @@ TransformationEstimation2D<PointSource, PointTarget, Scalar>::estimateRigidTrans
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     Matrix4 &transformation_matrix) const
 {
-  std::size_t nr_points = cloud_src.size ();
+  const auto nr_points = cloud_src.size ();
   if (cloud_tgt.size () != nr_points)
   {
-    PCL_ERROR ("[pcl::TransformationEstimation2D::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", nr_points, cloud_tgt.size ());
+    PCL_ERROR("[pcl::TransformationEstimation2D::estimateRigidTransformation] Number "
+              "or points in source (%zu) differs than target (%zu)!\n",
+              static_cast<std::size_t>(nr_points),
+              static_cast<std::size_t>(cloud_tgt.size()));
     return;
   }
 
@@ -73,7 +76,10 @@ TransformationEstimation2D<PointSource, PointTarget, Scalar>::estimateRigidTrans
 {
   if (indices_src.size () != cloud_tgt.size ())
   {
-    PCL_ERROR ("[pcl::Transformation2D::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", indices_src.size (), cloud_tgt.size ());
+    PCL_ERROR("[pcl::Transformation2D::estimateRigidTransformation] Number or points "
+              "in source (%zu) differs than target (%zu)!\n",
+              indices_src.size(),
+              static_cast<std::size_t>(cloud_tgt.size()));
     return;
   }
 

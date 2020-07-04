@@ -50,7 +50,10 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 {
   if (tree->getInputCloud ()->size () != cloud.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->size (), cloud.size ());
+    PCL_ERROR("[pcl::extractEuclideanClusters] Tree built for a different point cloud "
+              "dataset (%zu) than the input cloud (%zu)!\n",
+              static_cast<std::size_t>(tree->getInputCloud()->size()),
+              static_cast<std::size_t>(cloud.size()));
     return;
   }
   // Check if the tree is sorted -- if it is we don't need to check the first element
@@ -124,14 +127,18 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 {
   // \note If the tree was created over <cloud, indices>, we guarantee a 1-1 mapping between what the tree returns
   //and indices[i]
-  if (tree->getInputCloud ()->size () != cloud.size ())
-  {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->size (), cloud.size ());
+  if (tree->getInputCloud()->size() != cloud.size()) {
+    PCL_ERROR("[pcl::extractEuclideanClusters] Tree built for a different point cloud "
+              "dataset (%zu) than the input cloud (%zu)!\n",
+              static_cast<std::size_t>(tree->getInputCloud()->size()),
+              static_cast<std::size_t>(cloud.size()));
     return;
   }
-  if (tree->getIndices ()->size () != indices.size ())
-  {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of indices (%lu) than the input set (%lu)!\n", tree->getIndices ()->size (), indices.size ());
+  if (tree->getIndices()->size() != indices.size()) {
+    PCL_ERROR("[pcl::extractEuclideanClusters] Tree built for a different set of "
+              "indices (%zu) than the input set (%zu)!\n",
+              static_cast<std::size_t>(tree->getIndices()->size()),
+              indices.size());
     return;
   }
   // Check if the tree is sorted -- if it is we don't need to check the first element

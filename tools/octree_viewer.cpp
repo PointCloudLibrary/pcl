@@ -250,8 +250,10 @@ private:
     viz.addText (level, 0, 30, 1.0, 0.0, 0.0, "level_t1");
 
     viz.removeShape ("level_t2");
-    sprintf (level, "Voxel size: %.4fm [%lu voxels]", std::sqrt (octree.getVoxelSquaredSideLen (displayedDepth)),
-             cloudVoxel->size ());
+    sprintf(level,
+            "Voxel size: %.4fm [%zu voxels]",
+            std::sqrt(octree.getVoxelSquaredSideLen(displayedDepth)),
+            static_cast<std::size_t>(cloudVoxel->size()));
     viz.addText (level, 0, 15, 1.0, 0.0, 0.0, "level_t2");
   }
 

@@ -209,13 +209,17 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::initCompute ()
   {
     if (clouds_[cloud_i]->size () != input_->size ())
     {
-      PCL_ERROR ("[pcl::SmoothedSurfacesKeypoints::initCompute] Cloud %d does not have the same number of points as the input cloud\n", cloud_i);
+      PCL_ERROR("[pcl::SmoothedSurfacesKeypoints::initCompute] Cloud %zu does not have "
+                "the same number of points as the input cloud\n",
+                static_cast<std::size_t>(cloud_i));
       return false;
     }
 
     if (cloud_normals_[cloud_i]->size () != input_->size ())
     {
-      PCL_ERROR ("[pcl::SmoothedSurfacesKeypoints::initCompute] Normals for cloud %d do not have the same number of points as the input cloud\n", cloud_i);
+      PCL_ERROR("[pcl::SmoothedSurfacesKeypoints::initCompute] Normals for cloud %zu "
+                "do not have the same number of points as the input cloud\n",
+                static_cast<std::size_t>(cloud_i));
       return false;
     }
   }

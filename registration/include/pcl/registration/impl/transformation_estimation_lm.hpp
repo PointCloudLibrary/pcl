@@ -69,15 +69,17 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
   if (cloud_src.size () != cloud_tgt.size ())
   {
     PCL_ERROR ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation] ");
-    PCL_ERROR ("Number or points in source (%lu) differs than target (%lu)!\n", 
-               cloud_src.size (), cloud_tgt.size ());
+    PCL_ERROR("Number or points in source (%zu) differs than target (%zu)!\n",
+              static_cast<std::size_t>(cloud_src.size()),
+              static_cast<std::size_t>(cloud_tgt.size()));
     return;
   }
   if (cloud_src.size () < 4)     // need at least 4 samples
   {
     PCL_ERROR ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation] ");
-    PCL_ERROR ("Need at least 4 points to estimate a transform! Source and target have %lu points!\n", 
-               cloud_src.size ());
+    PCL_ERROR("Need at least 4 points to estimate a transform! Source and target have "
+              "%zu points!\n",
+              static_cast<std::size_t>(cloud_src.size()));
     return;
   }
 
@@ -121,7 +123,11 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
 {
   if (indices_src.size () != cloud_tgt.size ())
   {
-    PCL_ERROR ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", indices_src.size (), cloud_tgt.size ());
+    PCL_ERROR(
+        "[pcl::registration::TransformationEstimationLM::estimateRigidTransformation] "
+        "Number or points in source (%zu) differs than target (%zu)!\n",
+        indices_src.size(),
+        static_cast<std::size_t>(cloud_tgt.size()));
     return;
   }
 

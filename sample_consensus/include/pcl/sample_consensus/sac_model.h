@@ -147,7 +147,10 @@ namespace pcl
 
         if (indices_->size () > input_->size ())
         {
-          PCL_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %lu while the input PointCloud has size %lu!\n", indices_->size (), input_->size ());
+          PCL_ERROR("[pcl::SampleConsensusModel] Invalid index vector given with size "
+                    "%zu while the input PointCloud has size %zu!\n",
+                    indices_->size(),
+                    static_cast<std::size_t>(input_->size()));
           indices_->clear ();
         }
         shuffled_indices_ = *indices_;

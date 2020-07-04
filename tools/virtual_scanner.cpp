@@ -434,7 +434,11 @@ main (int argc, char** argv)
     }
 
     pcl::PCDWriter writer;
-    PCL_INFO ("Wrote %lu points (%d x %d) to %s\n", cloud.size (), cloud.width, cloud.height, fname.c_str ());
+    PCL_INFO("Wrote %zu points (%d x %d) to %s\n",
+             static_cast<std::size_t>(cloud.size()),
+             cloud.width,
+             cloud.height,
+             fname.c_str());
     writer.writeBinaryCompressed (fname, cloud);
   } // sphere
   return (0);

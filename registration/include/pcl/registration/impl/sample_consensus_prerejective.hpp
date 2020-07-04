@@ -77,8 +77,10 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamples (
   if (nr_samples > static_cast<int> (cloud.size ()))
   {
     PCL_ERROR ("[pcl::%s::selectSamples] ", getClassName ().c_str ());
-    PCL_ERROR ("The number of samples (%d) must not be greater than the number of points (%lu)!\n",
-               nr_samples, cloud.size ());
+    PCL_ERROR("The number of samples (%d) must not be greater than the number of "
+              "points (%zu)!\n",
+              nr_samples,
+              static_cast<std::size_t>(cloud.size()));
     return;
   }
 

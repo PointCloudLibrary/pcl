@@ -332,7 +332,10 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   // 0 if no error from qhull
   if (exitcode != 0)
   {
-    PCL_ERROR ("[pcl::%s::performReconstrution3D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%lu)!\n", getClassName ().c_str (), input_->size ());
+    PCL_ERROR("[pcl::%s::performReconstrution3D] ERROR: qhull was unable to compute a "
+              "convex hull for the given point cloud (%zu)!\n",
+              getClassName().c_str(),
+              static_cast<std::size_t>(input_->size()));
 
     hull.points.resize (0);
     hull.width = hull.height = 0;

@@ -17,7 +17,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel(pcl::PolygonMesh::Ptr plg)
 
     PCL_DEBUG("RGB Triangle mesh: ");
     PCL_DEBUG("Mesh polygons: %ld", plg->polygons.size());
-    PCL_DEBUG("Mesh points: %ld", newcloud.size());
+    PCL_DEBUG("Mesh points: %zu", static_cast<std::size_t>(newcloud.size()));
 
     Eigen::Vector4f tmp;
     for (const auto& polygon : plg->polygons) {

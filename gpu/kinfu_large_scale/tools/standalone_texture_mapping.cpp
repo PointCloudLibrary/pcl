@@ -422,7 +422,9 @@ main (int argc, char** argv)
     polygon_1[i] = triangles.polygons[i];
   }
   mesh.tex_polygons.push_back(polygon_1);
-  PCL_INFO ("\tInput mesh contains %d faces and %d vertices\n", mesh.tex_polygons[0].size (), cloud->size ());
+  PCL_INFO("\tInput mesh contains %zu faces and %zu vertices\n",
+           mesh.tex_polygons[0].size(),
+           static_cast<std::size_t>(cloud->size()));
   PCL_INFO ("...Done.\n");
   
   // Load textures and cameras poses and intrinsics
@@ -441,7 +443,7 @@ main (int argc, char** argv)
       my_cams.push_back (cam);
     }
   }
-  PCL_INFO ("\tLoaded %d textures.\n", my_cams.size ());
+  PCL_INFO ("\tLoaded %zu textures.\n", my_cams.size ());
   PCL_INFO ("...Done.\n");
   
   // Display cameras to user
@@ -492,7 +494,7 @@ main (int argc, char** argv)
   PCL_INFO ("Sorting faces by cameras done.\n");
   for(std::size_t i = 0 ; i <= my_cams.size() ; ++i)
   {
-    PCL_INFO ("\tSub mesh %d contains %d faces and %d UV coordinates.\n", i, mesh.tex_polygons[i].size (), mesh.tex_coordinates[i].size ());
+    PCL_INFO ("\tSub mesh %zu contains %zu faces and %zu UV coordinates.\n", i, mesh.tex_polygons[i].size (), mesh.tex_coordinates[i].size ());
   }
 
 
