@@ -68,9 +68,9 @@ pcl::SamplingSurfaceNormal<PointT>::findXYZMaxMin (const PointCloud& cloud, Vect
 {
   // 4f to ease vectorization
   Eigen::Array4f min_array =
-      Eigen::Vector4f::Ones() * std::numeric_limits<float>::max();
+      Eigen::Array4f::Constant(std::numeric_limits<float>::max());
   Eigen::Array4f max_array =
-      Eigen::Vector4f::Ones() * std::numeric_limits<float>::lowest();
+      Eigen::Array4f::Constant(std::numeric_limits<float>::lowest());
 
   for (const auto& point : cloud) {
     min_array = min_array.min(point.getArray4fMap());
