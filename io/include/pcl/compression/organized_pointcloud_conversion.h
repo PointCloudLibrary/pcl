@@ -98,7 +98,7 @@ struct OrganizedConversion<PointT, false>
                       typename std::vector<std::uint16_t>& disparityData_arg,
                       typename std::vector<std::uint8_t>&)
   {
-    std::size_t cloud_size = cloud_arg.size ();
+    const auto cloud_size = cloud_arg.size ();
 
     // Clear image data
     disparityData_arg.clear ();
@@ -278,7 +278,7 @@ struct OrganizedConversion<PointT, true>
                       typename std::vector<std::uint16_t>& disparityData_arg,
                       typename std::vector<std::uint8_t>& rgbData_arg)
   {
-    std::size_t cloud_size = cloud_arg.size ();
+    const auto cloud_size = cloud_arg.size ();
 
     // Reset output vectors
     disparityData_arg.clear ();

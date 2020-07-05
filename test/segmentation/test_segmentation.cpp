@@ -139,8 +139,8 @@ TEST (RegionGrowingTest, SegmentWithDifferentNormalAndCloudSize)
   rg.setInputCloud (another_cloud_);
   rg.setInputNormals (normals_);
 
-  int first_cloud_size = static_cast<int> (cloud_->size ());
-  int second_cloud_size = static_cast<int> (another_cloud_->size ());
+  const auto first_cloud_size = cloud_->size ();
+  const auto second_cloud_size = another_cloud_->size ();
   ASSERT_NE (first_cloud_size, second_cloud_size);
 
   std::vector <pcl::PointIndices> clusters;

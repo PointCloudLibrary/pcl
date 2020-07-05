@@ -516,7 +516,7 @@ namespace pcl
       if (!do_voxel_grid_enDecoding_)
       {
         // get current cloud size
-        std::size_t cloudSize = output_->size ();
+        const auto cloudSize = output_->size ();
 
         // get amount of point to be decoded
         pointCount = *point_count_data_vector_iterator_;

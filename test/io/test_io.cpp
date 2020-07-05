@@ -364,7 +364,7 @@ TEST (PCL, IO)
   cloud.is_dense = true;
 
   srand (static_cast<unsigned int> (time (nullptr)));
-  std::size_t nr_p = cloud.size ();
+  const auto nr_p = cloud.size ();
   // Randomly create a new point cloud
   for (std::size_t i = 0; i < nr_p; ++i)
   {
@@ -674,7 +674,7 @@ TEST (PCL, PCDReaderWriter)
   cloud.is_dense = true;
 
   srand (static_cast<unsigned int> (time (nullptr)));
-  std::size_t nr_p = cloud.size ();
+  const auto nr_p = cloud.size ();
   // Randomly create a new point cloud
   for (std::size_t i = 0; i < nr_p; ++i)
   {
@@ -794,7 +794,7 @@ TEST (PCL, ASCIIRead)
   afile<< std::setprecision(10);
 
   srand (static_cast<unsigned int> (time (nullptr)));
-  std::size_t nr_p = cloud.size ();
+  const auto nr_p = cloud.size ();
   // Randomly create a new point cloud
   for (std::size_t i = 0; i < nr_p; ++i)
   {
@@ -1067,7 +1067,7 @@ TEST (PCL, LZF)
   cloud.is_dense = true;
 
   srand (static_cast<unsigned int> (time (nullptr)));
-  std::size_t nr_p = cloud.size ();
+  const auto nr_p = cloud.size ();
   // Randomly create a new point cloud
   for (std::size_t i = 0; i < nr_p; ++i)
   {
@@ -1125,7 +1125,7 @@ TEST (PCL, LZFExtended)
   cloud.is_dense = true;
 
   srand (static_cast<unsigned int> (time (nullptr)));
-  std::size_t nr_p = cloud.size ();
+  const auto nr_p = cloud.size ();
   // Randomly create a new point cloud
   for (std::size_t i = 0; i < nr_p; ++i)
   {
@@ -1178,7 +1178,7 @@ TEST (PCL, LZFInMem)
   cloud.is_dense = true;
 
   srand (static_cast<unsigned int> (time (nullptr)));
-  std::size_t nr_p = cloud.size ();
+  const auto nr_p = cloud.size ();
   // Randomly create a new point cloud
   for (std::size_t i = 0; i < nr_p; ++i)
   {
@@ -1249,7 +1249,7 @@ TEST (PCL, Locale)
     cloud.is_dense = true;
 
     srand (static_cast<unsigned int> (time (nullptr)));
-    std::size_t nr_p = cloud.size ();
+    const auto nr_p = cloud.size ();
     // Randomly create a new point cloud
     cloud[0].x = std::numeric_limits<float>::quiet_NaN ();
     cloud[0].y = std::numeric_limits<float>::quiet_NaN ();

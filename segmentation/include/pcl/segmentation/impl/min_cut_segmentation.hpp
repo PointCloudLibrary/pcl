@@ -305,8 +305,8 @@ pcl::MinCutSegmentation<PointT>::getGraph () const
 template <typename PointT> bool
 pcl::MinCutSegmentation<PointT>::buildGraph ()
 {
-  int number_of_points = static_cast<int> (input_->size ());
-  int number_of_indices = static_cast<int> (indices_->size ());
+  const auto number_of_points = input_->size ();
+  const auto number_of_indices = indices_->size ();
 
   if (input_->points.empty () || number_of_points == 0 || foreground_points_.empty () == true )
     return (false);

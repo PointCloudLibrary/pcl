@@ -55,7 +55,7 @@ seededHueSegmentation (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr  &host_cloud
   // cloud is a DeviceArray<PointType>
   std::vector<bool> processed (host_cloud_->size (), false);
 
-  int max_answers = host_cloud_->size();
+  const auto max_answers = host_cloud_->size();
 
   // Process all points in the indices vector
   for (std::size_t k = 0; k < indices_in.indices.size (); ++k)

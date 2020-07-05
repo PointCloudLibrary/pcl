@@ -538,8 +538,8 @@ pcl::RegionGrowing<PointT, NormalT>::validatePoint (int initial_seed, int point,
 template <typename PointT, typename NormalT> void
 pcl::RegionGrowing<PointT, NormalT>::assembleRegions ()
 {
-  int number_of_segments = static_cast<int> (num_pts_in_segment_.size ());
-  int number_of_points = static_cast<int> (input_->size ());
+  const auto number_of_segments = num_pts_in_segment_.size ();
+  const auto number_of_points = input_->size ();
 
   pcl::PointIndices segment;
   clusters_.resize (number_of_segments, segment);

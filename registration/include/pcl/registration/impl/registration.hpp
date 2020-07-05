@@ -165,8 +165,7 @@ Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &output,
     return;
 
   // Resize the output dataset
-  if (output.size () != indices_->size ())
-    output.points.resize (indices_->size ());
+  output.resize (indices_->size ());
   // Copy the header
   output.header   = input_->header;
   // Check if the output will be computed for all points or only a subset

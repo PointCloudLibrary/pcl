@@ -302,7 +302,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchNormals (const DeviceArray<PointType>& cloud
 void 
 pcl::gpu::kinfuLS::TsdfVolume::pushSlice (PointCloud<PointXYZI>::Ptr existing_data_cloud, const pcl::gpu::kinfuLS::tsdf_buffer* buffer) const
 {
-  std::size_t gpu_array_size = existing_data_cloud->size ();
+  const auto gpu_array_size = existing_data_cloud->size ();
 
   if(gpu_array_size == 0)
   {

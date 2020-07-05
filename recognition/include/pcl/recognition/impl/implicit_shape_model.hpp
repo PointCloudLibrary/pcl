@@ -860,7 +860,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
   {
     //compute the center of the training object
     Eigen::Vector3f models_center (0.0f, 0.0f, 0.0f);
-    const std::size_t num_of_points =  training_clouds_[i_cloud]->size ();
+    const auto num_of_points =  training_clouds_[i_cloud]->size ();
     for (auto point_j = training_clouds_[i_cloud]->begin (); point_j != training_clouds_[i_cloud]->end (); point_j++)
       models_center += point_j->getVector3fMap ();
     models_center /= static_cast<float> (num_of_points);
@@ -957,7 +957,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::calculateS
   for (unsigned int i_object = 0; i_object < number_of_objects; i_object++)
   {
     float max_distance = 0.0f;
-    unsigned int number_of_points = static_cast<unsigned int> (training_clouds_[i_object]->size ());
+    const auto number_of_points = static_cast<unsigned int> (training_clouds_[i_object]->size ());
     for (unsigned int i_point = 0; i_point < number_of_points - 1; i_point++)
       for (unsigned int j_point = i_point + 1; j_point < number_of_points; j_point++)
       {
@@ -1134,8 +1134,8 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::simplifyCl
   //extract indices of points from source cloud which are closest to grid points
   const float max_value = std::numeric_limits<float>::max ();
 
-  const std::size_t num_source_points = in_point_cloud->size ();
-  const std::size_t num_sample_points = temp_cloud.size ();
+  const auto num_source_points = in_point_cloud->size ();
+  const auto num_sample_points = temp_cloud.size ();
 
   std::vector<float> dist_to_grid_center (num_sample_points, max_value);
   std::vector<int> sampling_indices (num_sample_points, -1);

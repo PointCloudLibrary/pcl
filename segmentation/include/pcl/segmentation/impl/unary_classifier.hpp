@@ -287,7 +287,7 @@ pcl::UnaryClassifier<PointT>::queryFeatureDistances (std::vector<pcl::PointCloud
   for (std::size_t k = 0; k < trained_features.size (); k++)
   {
     pcl::PointCloud<pcl::FPFHSignature33>::Ptr hist = trained_features[k];
-    std::size_t c = hist->size ();
+    const auto c = hist->size ();
     for (std::size_t i = 0; i < c; ++i)
       for (std::size_t j = 0; j < data.cols; ++j)
         data[(k * c) + i][j] = (*hist)[i].histogram[j];
@@ -421,7 +421,7 @@ pcl::UnaryClassifier<PointT>::segment (pcl::PointCloud<pcl::PointXYZRGBL>::Ptr &
     queryFeatureDistances (trained_features_, input_cloud_features, indices, distance);
 
     // assign a label to each point of the input point cloud
-    int n_feature_means = static_cast<int> (trained_features_[0]->size ());
+    const auto n_feature_means = trained_features_[0]->size ();
     convertCloud (input_cloud_, out);
     assignLabels (indices, distance, n_feature_means, feature_threshold_, out);
     //std::cout << "Assign labels - DONE" << std::endl;

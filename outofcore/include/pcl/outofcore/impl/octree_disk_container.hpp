@@ -641,7 +641,7 @@ namespace pcl
       }
       else //otherwise create the pcd file
       {
-        tmp_cloud->width = writebuff_.size ();
+        tmp_cloud->width = count + writebuff_.size ();
         tmp_cloud->height = 1;
       }            
 

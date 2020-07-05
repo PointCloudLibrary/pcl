@@ -89,7 +89,7 @@ SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::selectSampl
 
   // Iteratively draw random samples until nr_samples is reached
   int iterations_without_a_sample = 0;
-  int max_iterations_without_a_sample = static_cast<int> (3 * cloud.size ());
+  const auto max_iterations_without_a_sample = 3 * cloud.size ();
   sample_indices.clear ();
   while (static_cast<int> (sample_indices.size ()) < nr_samples)
   {
