@@ -110,6 +110,7 @@ set(common_incs
   include/pcl/common/point_tests.h
   include/pcl/common/synchronizer.h
   include/pcl/common/utils.h
+  include/pcl/common/tuple.h
   include/pcl/common/geometry.h
   include/pcl/common/gaussian.h
   include/pcl/common/spring.h
@@ -171,9 +172,42 @@ set(kissfft_srcs
   src/fft/kiss_fftr.c
 )
 
+set(executor_incs
+  include/pcl/experimental/executor/executor.h
+  include/pcl/experimental/executor/property.h
+  include/pcl/experimental/executor/type_trait.h
+  include/pcl/experimental/executor/cuda_executor.hpp
+  include/pcl/experimental/executor/omp_executor.hpp
+  include/pcl/experimental/executor/inline_executor.hpp
+  include/pcl/experimental/executor/sse_executor.hpp
+  include/pcl/experimental/executor/best_fit.hpp
+)
+
+set(executor_property_incs_impl
+  include/pcl/experimental/executor/property/base_property.hpp
+  include/pcl/experimental/executor/property/allocator.hpp
+  include/pcl/experimental/executor/property/blocking.hpp
+)
+
+set(executor_trait_incs_impl
+  include/pcl/experimental/executor/trait/common_traits.hpp
+  include/pcl/experimental/executor/trait/can_prefer.hpp
+  include/pcl/experimental/executor/trait/can_query.hpp
+  include/pcl/experimental/executor/trait/can_require.hpp
+  include/pcl/experimental/executor/trait/is_executor.hpp
+  include/pcl/experimental/executor/trait/is_executor_available.hpp
+  include/pcl/experimental/executor/trait/index.hpp
+  include/pcl/experimental/executor/trait/shape.hpp
+)
+
+
+set(executor_srcs
+  include/pcl/experimental/executor/blocking.cpp
+)
+
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
+PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${kissfft_srcs} ${executor_srcs} ${incs} ${common_incs} ${impl_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
 
 if(MSVC AND NOT (MSVC_VERSION LESS 1915))
   # MSVC resolved a byte alignment issue in compiler version 15.9
@@ -193,3 +227,6 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" impl ${impl_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" console ${tools_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" range_image ${range_image_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" range_image/impl ${range_image_incs_impl})
+PCL_ADD_INCLUDES("${SUBSYS_NAME}" experimental/executor ${executor_incs})
+PCL_ADD_INCLUDES("${SUBSYS_NAME}" experimental/executor/property ${executor_property_incs_impl})
+PCL_ADD_INCLUDES("${SUBSYS_NAME}" experimental/executor/trait ${executor_trait_incs_impl})
