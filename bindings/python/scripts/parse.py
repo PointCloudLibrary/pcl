@@ -1,145 +1,89 @@
-import os
-import argparse
 import sys
-import json
-
 import clang.cindex as clang
 
-
-class bcolors:
-    HEADER = "\033[95m"
-    OKBLUE = "\033[94m"
-    OKGREEN = "\033[92m"
-    WARNING = "\033[93m"
-    FAIL = "\033[91m"
-    ENDC = "\033[0m"
-    BOLD = "\033[1m"
-    UNDERLINE = "\033[4m"
+import utils
 
 
-def print_node(cursor, lines, depth):
-    file = cursor.location.file
-    line, column = cursor.location.line, cursor.location.column
-    result_type = (
-        cursor.result_type.spelling if cursor.result_type.spelling is not "" else "None"
-    )
-    print(
-        "-" * depth,
-        file,
-        f"L{line} C{column}",
-        bcolors.BOLD + cursor.kind.name + bcolors.ENDC,
-        bcolors.OKBLUE + cursor.spelling + bcolors.ENDC,
-        bcolors.OKGREEN + cursor.access_specifier.name + bcolors.ENDC,
-        bcolors.OKGREEN + "->" + bcolors.ENDC,
-        bcolors.OKGREEN + result_type + bcolors.ENDC,
-    )
+def print_node(cursor, depth):
+    print("-" * depth, cursor.location.file, f"L{cursor.location.line} C{cursor.location.column}", cursor.kind.name, cursor.spelling)
 
 
-def node_in_this_file(node, file_name):
-    return node.location.file and node.location.file.name == file_name
+def node_in_this_file(node, filename):
+    return node.location.file and node.location.file.name == filename
 
 
-def walk_and_print(cursor, filter, lines, this_filename, depth):
+def walk_and_print(cursor, this_filename, depth):
     if cursor.spelling:
-        print_node(cursor, lines, depth)
+        print_node(cursor=cursor, depth=depth)
 
     for child in cursor.get_children():
-        if node_in_this_file(child, this_filename):
-            walk_and_print(child, filter, lines, this_filename, depth + 1)
+        if node_in_this_file(node=child, filename=this_filename):
+            walk_and_print(cursor=child, this_filename=this_filename, depth=depth + 1)
 
 
-def dump_json(filepath, parsed_list):
-    with open(filepath, "w") as f:
-        json.dump(parsed_list, f, indent=2)
+def generate_parsed_info(cursor, this_filename, depth):
+    parsed_info = dict()
 
-
-def generate_parsed_info(cursor, filter, lines, this_filename, depth, parsed_list):
     if cursor.spelling:
-        holder = {
-            "depth": depth,
-            "line": cursor.location.line,
-            "column": cursor.location.column,
-            "kind": cursor.kind.name,
-            "name": cursor.spelling,
-        }
+        parsed_info["depth"] = depth
+        parsed_info["line"] = cursor.location.line
+        parsed_info["column"] = cursor.location.column
+        parsed_info["kind"] = cursor.kind.name
+        parsed_info["name"] = cursor.spelling
         if cursor.type.kind.spelling != "Invalid":
-            holder["element_type"] = cursor.type.kind.spelling
+            parsed_info["element_type"] = cursor.type.kind.spelling
         if cursor.access_specifier.name != "INVALID":
-            holder["access_specifier"] = cursor.access_specifier.name
+            parsed_info["access_specifier"] = cursor.access_specifier.name
         if cursor.result_type.spelling != "":
-            holder["result_type"] = cursor.result_type.spelling
+            parsed_info["result_type"] = cursor.result_type.spelling
         if cursor.brief_comment:
-            holder["brief_comment"] = cursor.brief_comment
+            parsed_info["brief_comment"] = cursor.brief_comment
         if cursor.raw_comment:
-            holder["raw_comment"] = cursor.raw_comment
-        holder["members"] = []
-
-        parsed_list.append(holder)
+            parsed_info["raw_comment"] = cursor.raw_comment
+        parsed_info["members"] = []
 
     for child in cursor.get_children():
-        if node_in_this_file(child, this_filename):
-            child_list = []
-            generate_parsed_info(
-                child, filter, lines, this_filename, depth + 1, child_list,
-            )
-            if child_list and parsed_list:
-                if len(parsed_list[0]["members"]):
-                    parsed_list[0]["members"].append(child_list[0])
-                else:
-                    parsed_list[0]["members"] = child_list
+        if node_in_this_file(node=child, filename=this_filename):
+            child_parsed_info = generate_parsed_info(cursor=child, this_filename=this_filename, depth=depth + 1,)
+            if child_parsed_info and parsed_info:
+                parsed_info["members"].append(child_parsed_info)
+
+    return parsed_info
 
 
-def parse_arguments(args):
-    parser = argparse.ArgumentParser(description="C++ libclang parser")
-    parser.add_argument("files", nargs="+", help="The source files to search")
-    return parser.parse_args(args)
+def create_index():
+    return clang.Index.create()
 
 
-def get_output_path(source, output_dir):
-    x_list = source.split("pcl/", 1)[-1]
-    x_list = x_list.split("/")
-    extra = ["pcl", "include"]
+def get_compilation_database(compile_db_path):
+    return clang.CompilationDatabase.fromDirectory(buildDir=compile_db_path)
 
-    filename = x_list[-1].split(".")[0]
-    relative_dir = "/".join(x for x in x_list[:-1] if x not in extra)
-    dir = os.path.join(output_dir, relative_dir)
 
-    # ensure the new directory exists
-    if not os.path.exists(dir):
-        os.makedirs(dir)
-
-    return f"{dir}/{filename}.json"
+def get_compile_commands(compdb, filename):
+    compile_commands = compdb.getCompileCommands(filename=filename)
+    # extracting argument list from the command's generator object
+    return list(compile_commands[0].arguments)[1:-1]
 
 
 def main():
-    args = parse_arguments(sys.argv[1:])
-    index = clang.Index.create()
-
-    compile_db_path = os.path.dirname("./compile_commands.json")
-    compdb = clang.CompilationDatabase.fromDirectory(compile_db_path)
-
+    args = utils.parse_arguments(args=sys.argv[1:], script=__file__)
     for source in args.files:
-        with open(source) as input_file:
-            lines = input_file.readlines()
+        source = utils.get_realpath(path=source)
 
-        compile_commands = compdb.getCompileCommands(source)
-        # extracting argument list from the command's generator object
-        compile_commands = list(compile_commands[0].arguments)[1:-1]
-        tu = index.parse(source, args=compile_commands)
+        index = create_index()
 
-        # walk_and_print(
-        #     tu.cursor, filter, lines, tu.spelling, depth=0
-        # )
+        compile_db_path = utils.get_dirname(path="../compile_commands.json")
+        compdb = get_compilation_database(compile_db_path=compile_db_path)
+        compile_commands = get_compile_commands(compdb=compdb, filename=source)
 
-        parsed_list = []
-        generate_parsed_info(
-            tu.cursor, filter, lines, tu.spelling, depth=0, parsed_list=parsed_list,
-        )
+        tu = index.parse(path=source, args=compile_commands)
 
-        output_filepath = get_output_path(
-            os.path.realpath(source), output_dir=f"json/{os.path.dirname(__file__)}"
-        )
-        dump_json(output_filepath, parsed_list)
+        # walk_and_print(cursor=tu.cursor, this_filename=tu.spelling, depth=0)
+
+        parsed_info = generate_parsed_info(cursor=tu.cursor, this_filename=tu.spelling, depth=0)
+
+        output_filepath = utils.get_json_output_path(source=source, output_dir="../json")
+        utils.dump_json(filepath=output_filepath, info=parsed_info)
 
 
 if __name__ == "__main__":
