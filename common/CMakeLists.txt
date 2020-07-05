@@ -171,9 +171,19 @@ set(kissfft_srcs
   src/fft/kiss_fftr.c
 )
 
+set(executor_incs
+  include/pcl/experimental/executor/type_trait.h
+  include/pcl/experimental/executor/property.h
+  include/pcl/experimental/executor/executor.h
+)
+
+set(executor_srcs
+  include/pcl/experimental/executor/blocking.cpp
+)
+
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
+PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${kissfft_srcs} ${executor_srcs} ${incs} ${common_incs} ${impl_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl} ${executor_incs})
 
 if(MSVC AND NOT (MSVC_VERSION LESS 1915))
   # MSVC resolved a byte alignment issue in compiler version 15.9
@@ -193,3 +203,4 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" impl ${impl_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" console ${tools_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" range_image ${range_image_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" range_image/impl ${range_image_incs_impl})
+PCL_ADD_INCLUDES("${SUBSYS_NAME}" execution ${executor_incs})
