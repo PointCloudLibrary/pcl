@@ -331,7 +331,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<se
         default(none)
       for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
       {
-        search_methods [sIdx]->nearestKSearch (point_cloud->points[query_index], knn, indices [sIdx], distances [sIdx]);
+        search_methods [sIdx]->nearestKSearch ((*point_cloud)[query_index], knn, indices [sIdx], distances [sIdx]);
         passed [sIdx] = passed [sIdx] && testUniqueness (indices [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testOrder (distances [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testResultValidity<PointT>(point_cloud, indices_mask, nan_mask, indices [sIdx], input_indices, search_methods [sIdx]->getName ());
@@ -410,7 +410,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector
         shared(distances, indices, indices_mask, input_indices, nan_mask, passed, point_cloud, radius, query_index, search_methods)
       for (int sIdx = 0; sIdx < static_cast<int> (search_methods.size ()); ++sIdx)
       {
-        search_methods [sIdx]->radiusSearch (point_cloud->points[query_index], radius, indices [sIdx], distances [sIdx], 0);
+        search_methods [sIdx]->radiusSearch ((*point_cloud)[query_index], radius, indices [sIdx], distances [sIdx], 0);
         passed [sIdx] = passed [sIdx] && testUniqueness (indices [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testOrder (distances [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testResultValidity<PointT>(point_cloud, indices_mask, nan_mask, indices [sIdx], input_indices, search_methods [sIdx]->getName ());

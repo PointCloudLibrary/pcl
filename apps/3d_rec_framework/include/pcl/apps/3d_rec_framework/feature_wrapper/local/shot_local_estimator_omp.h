@@ -116,7 +116,7 @@ public:
     signatures->width = static_cast<int>(shots->points.size());
     signatures->height = 1;
 
-    int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);
+    int size_feat = sizeof((*signatures)[0].histogram) / sizeof(float);
 
     int good = 0;
     for (const auto& point : shots->points) {
@@ -129,7 +129,7 @@ public:
 
       if (NaNs == 0) {
         for (int i = 0; i < size_feat; i++) {
-          signatures->points[good].histogram[i] = point.descriptor[i];
+          (*signatures)[good].histogram[i] = point.descriptor[i];
         }
 
         good++;

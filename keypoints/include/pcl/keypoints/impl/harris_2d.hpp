@@ -248,7 +248,7 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOu
   else
   {
     std::sort (indices_->begin (), indices_->end (), [this] (int p1, int p2) { return greaterIntensityAtIndices (p1, p2); });
-    const float threshold = threshold_ * response_->points[indices_->front ()].intensity;
+    const float threshold = threshold_ * (*response_)[indices_->front ()].intensity;
     output.clear ();
     output.reserve (response_->size());
     std::vector<bool> occupency_map (response_->size (), false);

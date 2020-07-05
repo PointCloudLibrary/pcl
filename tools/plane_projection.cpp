@@ -101,7 +101,7 @@ project (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   for(std::size_t i = 0; i < xyz->points.size(); ++i)
   {
     pcl::PointXYZ projection;
-    pcl::projectPoint<PointXYZ> (xyz->points[i], coeffs, projection);
+    pcl::projectPoint<PointXYZ> ((*xyz)[i], coeffs, projection);
     projected_cloud_pcl->points.push_back(projection);
   }
 

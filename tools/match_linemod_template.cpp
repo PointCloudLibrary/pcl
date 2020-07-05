@@ -129,7 +129,7 @@ compute (const PointCloudXYZRGBA::ConstPtr & input, const char * templates_filen
   {
     for (std::size_t x = 0; x < image.get_width (); ++x)
     {
-      const pcl::PointXYZRGBA & p = input->points[i++];
+      const pcl::PointXYZRGBA & p = (*input)[i++];
       image[y][x] = png::rgb_pixel(p.r, p.g, p.b);
     }
   }

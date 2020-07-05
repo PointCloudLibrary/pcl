@@ -97,7 +97,7 @@ namespace pcl
                 std::size_t cloud_size = cloud->points.size();
                 for(std::size_t i = 0; i < cloud_size; ++i)
                 {
-                    PointXYZ& p = cloud->points[i];
+                    PointXYZ& p = (*cloud)[i];
 
                     int r = std::max(1, std::min(255, static_cast<int>((double(rand())/RAND_MAX)*255)));
                     int g = std::max(1, std::min(255, static_cast<int>((double(rand())/RAND_MAX)*255)));
@@ -136,7 +136,7 @@ namespace pcl
                 neighbors_all.resize(cloud_size);
                 for(std::size_t i = 0; i < cloud_size; ++i)
                 {
-                    kdtree->nearestKSearch(cloud->points[i], k, neighbors_all[i], dists);
+                    kdtree->nearestKSearch((*cloud)[i], k, neighbors_all[i], dists);
                     sizes.push_back((int)neighbors_all[i].size());        
                 }
                 max_nn_size = *max_element(sizes.begin(), sizes.end());
@@ -155,7 +155,7 @@ namespace pcl
                 neighbors_all.resize(cloud_size);
                 for(std::size_t i = 0; i < cloud_size; ++i)
                 {
-                    kdtree->radiusSearch(cloud->points[i], radius, neighbors_all[i], dists);
+                    kdtree->radiusSearch((*cloud)[i], radius, neighbors_all[i], dists);
                     sizes.push_back((int)neighbors_all[i].size());        
                 }
                 max_nn_size = *max_element(sizes.begin(), sizes.end());
@@ -173,7 +173,7 @@ namespace pcl
             {
                 surface->points.clear();
                 for(std::size_t i = 0; i < cloud->points.size(); i+= 10)               
-                    surface->points.push_back(cloud->points[i]);
+                    surface->points.push_back((*cloud)[i]);
                 surface->width = surface->points.size();
                 surface->height = 1;
                   
@@ -181,7 +181,7 @@ namespace pcl
                 {
                     normals_surface->points.clear();
                     for(std::size_t i = 0; i < normals->points.size(); i+= 10)               
-                        normals_surface->points.push_back(normals->points[i]);
+                        normals_surface->points.push_back((*normals)[i]);
 
                     normals_surface->width = surface->points.size();
                     normals_surface->height = 1;

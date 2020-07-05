@@ -179,21 +179,21 @@ namespace pcl
         float euclidean_dist_threshold = euclidean_distance_threshold_;
         if (depth_dependent_)
         {
-          Eigen::Vector3f vec = input_->points[idx1].getVector3fMap ();
+          Eigen::Vector3f vec = (*input_)[idx1].getVector3fMap ();
           float z = vec.dot (z_axis_);
           dist_threshold *= z * z;
           euclidean_dist_threshold *= z * z;
         }
 
-        float dx = input_->points[idx1].x - input_->points[idx2].x;
-        float dy = input_->points[idx1].y - input_->points[idx2].y;
-        float dz = input_->points[idx1].z - input_->points[idx2].z;
+        float dx = (*input_)[idx1].x - (*input_)[idx2].x;
+        float dy = (*input_)[idx1].y - (*input_)[idx2].y;
+        float dz = (*input_)[idx1].z - (*input_)[idx2].z;
         float dist = std::sqrt (dx*dx + dy*dy + dz*dz);
 
-        bool normal_ok = (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ );
+        bool normal_ok = ((*normals_)[idx1].getNormalVector3fMap ().dot ((*normals_)[idx2].getNormalVector3fMap () ) > angular_threshold_ );
         bool dist_ok = (dist < euclidean_dist_threshold);
 
-        bool curvature_ok = normals_->points[idx1].curvature < curvature_threshold_;
+        bool curvature_ok = (*normals_)[idx1].curvature < curvature_threshold_;
         bool plane_d_ok = std::abs ((*plane_coeff_d_)[idx1] - (*plane_coeff_d_)[idx2]) < dist_threshold;
 
         if (distance_map_[idx1] < distance_map_threshold_)

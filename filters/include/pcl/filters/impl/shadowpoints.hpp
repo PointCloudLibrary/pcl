@@ -55,8 +55,8 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter (PointCloud &output)
   std::size_t ri = 0;
   for (std::size_t i = 0; i < input_->points.size (); i++)
   {
-    const NormalT &normal = input_normals_->points[i];
-    const PointT &pt = input_->points[i];
+    const NormalT &normal = (*input_normals_)[i];
+    const PointT &pt = (*input_)[i];
     const float val = std::abs (normal.normal_x * pt.x + normal.normal_y * pt.y + normal.normal_z * pt.z);
 
     if ( (val >= threshold_) ^ negative_)
@@ -92,8 +92,8 @@ pcl::ShadowPoints<PointT, NormalT>::applyFilter (std::vector<int> &indices)
   unsigned int z = 0;
   for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
   {
-    const NormalT &normal = input_normals_->points[*idx];
-    const PointT &pt = input_->points[*idx];
+    const NormalT &normal = (*input_normals_)[*idx];
+    const PointT &pt = (*input_)[*idx];
     
     float val = std::abs (normal.normal_x * pt.x + normal.normal_y * pt.y + normal.normal_z * pt.z);
 

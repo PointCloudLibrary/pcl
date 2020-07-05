@@ -256,7 +256,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const std:
   std::vector<std::uint32_t> counts (getNumberOfClasses () + 1, 0);
   for (const int &nn_index : indices)
   {
-    std::uint32_t label = labels_->points[nn_index].label;
+    std::uint32_t label = (*labels_)[nn_index].label;
     counts[label] += 1;
   }
 

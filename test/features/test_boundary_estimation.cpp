@@ -119,13 +119,13 @@ TEST (PCL, BoundaryEstimation)
   b.compute (*bps);
   EXPECT_EQ (bps->points.size (), indices.size ());
 
-  pt = bps->points[0].boundary_point;
+  pt = (*bps)[0].boundary_point;
   EXPECT_EQ (pt, false);
-  pt = bps->points[indices.size () / 3].boundary_point;
+  pt = (*bps)[indices.size () / 3].boundary_point;
   EXPECT_EQ (pt, false);
-  pt = bps->points[indices.size () / 2].boundary_point;
+  pt = (*bps)[indices.size () / 2].boundary_point;
   EXPECT_EQ (pt, false);
-  pt = bps->points[indices.size () - 1].boundary_point;
+  pt = (*bps)[indices.size () - 1].boundary_point;
   EXPECT_EQ (pt, true);
 }
 

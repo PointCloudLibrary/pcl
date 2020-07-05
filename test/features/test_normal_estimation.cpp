@@ -303,7 +303,7 @@ TEST (PCL, IntegralImageNormalEstimationIndexingIssue)
       double y = ypos;
       double x = xpos;
 
-      cloudptr->points[idx++] = PointXYZ(float(x), float(y), float(z));
+      (*cloudptr)[idx++] = PointXYZ(float(x), float(y), float(z));
     }
   }
 
@@ -331,9 +331,9 @@ TEST (PCL, IntegralImageNormalEstimationIndexingIssue)
   normalsVec.resize(normals->size());
   for(std::size_t i = 0; i < normals->size(); ++i )
   {
-    normalsVec[i].x = normals->points[i].normal_x;
-    normalsVec[i].y = normals->points[i].normal_y;
-    normalsVec[i].z = normals->points[i].normal_z;
+    normalsVec[i].x = (*normals)[i].normal_x;
+    normalsVec[i].y = (*normals)[i].normal_y;
+    normalsVec[i].z = (*normals)[i].normal_z;
   }
 
   for (const auto &point : normals->points)

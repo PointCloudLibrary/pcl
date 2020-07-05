@@ -183,7 +183,7 @@ public:
     std::size_t j = 0;
     for (std::size_t i = 0; i < keypoints->size(); ++i) {
       PointT pt =
-          bilinearInterpolation(cloud, keypoints->points[i].x, keypoints->points[i].y);
+          bilinearInterpolation(cloud, (*keypoints)[i].x, (*keypoints)[i].y);
 
       keypoints3d[j].x = pt.x;
       keypoints3d[j].y = pt.y;
@@ -245,8 +245,8 @@ public:
 
         image_viewer_.removeLayer(getStrBool(keypts));
         for (std::size_t i = 0; i < keypoints->size(); ++i) {
-          int u = int(keypoints->points[i].x);
-          int v = int(keypoints->points[i].y);
+          int u = int((*keypoints)[i].x);
+          int v = int((*keypoints)[i].y);
           image_viewer_.markPoint(u,
                                   v,
                                   visualization::red_color,

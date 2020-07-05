@@ -139,7 +139,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
     // Iterate over the input set of source indices
     for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
     {
-      tree_->nearestKSearch (input_->points[*idx], 1, index, distance);
+      tree_->nearestKSearch ((*input_)[*idx], 1, index, distance);
       if (distance[0] > max_dist_sqr)
         continue;
 
@@ -157,7 +157,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
     for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
     {
       // Copy the source data to a target PointTarget format so we can search in the tree
-      copyPoint (input_->points[*idx], pt);
+      copyPoint ((*input_)[*idx], pt);
 
       tree_->nearestKSearch (pt, 1, index, distance);
       if (distance[0] > max_dist_sqr)
@@ -203,13 +203,13 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineReciprocalC
     // Iterate over the input set of source indices
     for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
     {
-      tree_->nearestKSearch (input_->points[*idx], 1, index, distance);
+      tree_->nearestKSearch ((*input_)[*idx], 1, index, distance);
       if (distance[0] > max_dist_sqr)
         continue;
 
       target_idx = index[0];
 
-      tree_reciprocal_->nearestKSearch (target_->points[target_idx], 1, index_reciprocal, distance_reciprocal);
+      tree_reciprocal_->nearestKSearch ((*target_)[target_idx], 1, index_reciprocal, distance_reciprocal);
       if (distance_reciprocal[0] > max_dist_sqr || *idx != index_reciprocal[0])
         continue;
 
@@ -228,7 +228,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineReciprocalC
     for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
     {
       // Copy the source data to a target PointTarget format so we can search in the tree
-      copyPoint (input_->points[*idx], pt_src);
+      copyPoint ((*input_)[*idx], pt_src);
 
       tree_->nearestKSearch (pt_src, 1, index, distance);
       if (distance[0] > max_dist_sqr)
@@ -237,7 +237,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineReciprocalC
       target_idx = index[0];
 
       // Copy the target data to a target PointSource format so we can search in the tree_reciprocal
-      copyPoint (target_->points[target_idx], pt_tgt);
+      copyPoint ((*target_)[target_idx], pt_tgt);
 
       tree_reciprocal_->nearestKSearch (pt_tgt, 1, index_reciprocal, distance_reciprocal);
       if (distance_reciprocal[0] > max_dist_sqr || *idx != index_reciprocal[0])

@@ -184,7 +184,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     {
       for (const auto& index: *indices_)
       {
-        normal_centroid.noalias () += normals_->points[index].getNormalVector4fMap ();
+        normal_centroid.noalias () += (*normals_)[index].getNormalVector4fMap ();
       }
       cp = indices_->size();
     }
@@ -193,11 +193,11 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     {
       for (const auto& index: *indices_)
       {
-        if (!std::isfinite (normals_->points[index].normal[0]) ||
-            !std::isfinite (normals_->points[index].normal[1]) ||
-            !std::isfinite (normals_->points[index].normal[2]))
+        if (!std::isfinite ((*normals_)[index].normal[0]) ||
+            !std::isfinite ((*normals_)[index].normal[1]) ||
+            !std::isfinite ((*normals_)[index].normal[2]))
           continue;
-        normal_centroid.noalias () += normals_->points[index].getNormalVector4fMap ();
+        normal_centroid.noalias () += (*normals_)[index].getNormalVector4fMap ();
         cp++;
       }
     }
@@ -221,9 +221,9 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   for (const auto& index: *indices_)
   {
-    Eigen::Vector4f normal (normals_->points[index].normal[0],
-                            normals_->points[index].normal[1],
-                            normals_->points[index].normal[2], 0);
+    Eigen::Vector4f normal ((*normals_)[index].normal[0],
+                            (*normals_)[index].normal[1],
+                            (*normals_)[index].normal[2], 0);
     // Normalize
     double alpha = (normal.dot (d_vp_p) + 1.0) * 0.5;
     std::size_t fi = static_cast<std::size_t> (std::floor (alpha * hist_vp_.size ()));

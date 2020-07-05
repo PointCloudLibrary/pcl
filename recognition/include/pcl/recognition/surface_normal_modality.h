@@ -595,9 +595,9 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals ()
     {
       const int index = y * width + x;
 
-      const float px = input_->points[index].x;
-      const float py = input_->points[index].y;
-      const float pz = input_->points[index].z;
+      const float px = (*input_)[index].x;
+      const float py = (*input_)[index].y;
+      const float pz = (*input_)[index].z;
 
       if (std::isnan(px) || pz > 2.0f) 
       {
@@ -628,9 +628,9 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals ()
 
           const std::size_t index2 = v * width + u;
 
-          const float qx = input_->points[index2].x;
-          const float qy = input_->points[index2].y;
-          const float qz = input_->points[index2].z;
+          const float qx = (*input_)[index2].x;
+          const float qy = (*input_)[index2].y;
+          const float qz = (*input_)[index2].z;
 
           if (std::isnan(qx)) continue;
 
@@ -735,7 +735,7 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
   {
     for (int col_index = 0; col_index < width; ++col_index)
     {
-      const float value = input_->points[row_index*width + col_index].z;
+      const float value = (*input_)[row_index*width + col_index].z;
       if (std::isfinite (value))
       {
         lp_depth[row_index*width + col_index] = static_cast<unsigned short> (value * 1000.0f);
@@ -790,9 +790,9 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
     for (int l_x = l_r; l_x < l_W - l_r - 1; ++l_x)
     {
       long l_d = lp_line[0];
-      //float l_d = input_->points[(l_y * l_W + l_r) + l_x].z;
-      //float px = input_->points[(l_y * l_W + l_r) + l_x].x;
-      //float py = input_->points[(l_y * l_W + l_r) + l_x].y;
+      //float l_d = (*input_)[(l_y * l_W + l_r) + l_x].z;
+      //float px = (*input_)[(l_y * l_W + l_r) + l_x].x;
+      //float py = (*input_)[(l_y * l_W + l_r) + l_x].y;
 
       if (l_d < distance_threshold)
       {
@@ -834,11 +834,11 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
         //  //b[1] += fj * delta;
 
 
-        //  const double delta = 1000.0f * (input_->points[(l_y * l_W + l_r) + l_x + offsets[index]].z - l_d);
+        //  const double delta = 1000.0f * ((*input_)[(l_y * l_W + l_r) + l_x + offsets[index]].z - l_d);
         //  const double i = offsets_i[index];
         //  const double j = offsets_j[index];
-        //  //const float i = input_->points[(l_y * l_W + l_r) + l_x + offsets[index]].x - px;//offsets_i[index];
-        //  //const float j = input_->points[(l_y * l_W + l_r) + l_x + offsets[index]].y - py;//offsets_j[index];
+        //  //const float i = (*input_)[(l_y * l_W + l_r) + l_x + offsets[index]].x - px;//offsets_i[index];
+        //  //const float j = (*input_)[(l_y * l_W + l_r) + l_x + offsets[index]].y - py;//offsets_j[index];
         //  double * A = l_A;
         //  double * b = l_b;
         //  const double threshold = difference_threshold;

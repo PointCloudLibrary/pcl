@@ -132,7 +132,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_table_plane()
   // Need to flip the plane normal towards the viewpoint
   Eigen::Vector4f vp(0, 0, 0, 0);
   // See if we need to flip any plane normals
-  vp -= table_hull->points[0].getVector4fMap();
+  vp -= (*table_hull)[0].getVector4fMap();
   vp[3] = 0;
   // Dot product between the (viewpoint - point) and the plane normal
   float cos_theta = vp.dot(model_coefficients);
@@ -142,7 +142,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_table_plane()
     model_coefficients[3] = 0;
     // Hessian form (D = nc . p_plane (centroid here) + p)
     model_coefficients[3] =
-        -1 * (model_coefficients.dot(table_hull->points[0].getVector4fMap()));
+        -1 * (model_coefficients.dot((*table_hull)[0].getVector4fMap()));
   }
 
   // Set table_coeffs
@@ -263,7 +263,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast(
   // Need to flip the plane normal towards the viewpoint
   Eigen::Vector4f vp(0, 0, 0, 0);
   // See if we need to flip any plane normals
-  vp -= table_hull->points[0].getVector4fMap();
+  vp -= (*table_hull)[0].getVector4fMap();
   vp[3] = 0;
   // Dot product between the (viewpoint - point) and the plane normal
   float cos_theta = vp.dot(model_coefficients);
@@ -273,7 +273,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast(
     model_coefficients[3] = 0;
     // Hessian form (D = nc . p_plane (centroid here) + p)
     model_coefficients[3] =
-        -1 * (model_coefficients.dot(table_hull->points[0].getVector4fMap()));
+        -1 * (model_coefficients.dot((*table_hull)[0].getVector4fMap()));
   }
 
   // Set table_coeffs
@@ -303,8 +303,8 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast(
     binary_cloud->is_dense = input_->is_dense;
 
     for (const int& idx : cloud_object_indices.indices) {
-      binary_cloud->points[idx].getVector4fMap() = input_->points[idx].getVector4fMap();
-      binary_cloud->points[idx].intensity = 1.0;
+      (*binary_cloud)[idx].getVector4fMap() = (*input_)[idx].getVector4fMap();
+      (*binary_cloud)[idx].intensity = 1.0;
     }
   }
 
@@ -638,7 +638,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute(
   // Need to flip the plane normal towards the viewpoint
   Eigen::Vector4f vp(0, 0, 0, 0);
   // See if we need to flip any plane normals
-  vp -= table_hull->points[0].getVector4fMap();
+  vp -= (*table_hull)[0].getVector4fMap();
   vp[3] = 0;
   // Dot product between the (viewpoint - point) and the plane normal
   float cos_theta = vp.dot(model_coefficients);
@@ -648,7 +648,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute(
     model_coefficients[3] = 0;
     // Hessian form (D = nc . p_plane (centroid here) + p)
     model_coefficients[3] =
-        -1 * (model_coefficients.dot(table_hull->points[0].getVector4fMap()));
+        -1 * (model_coefficients.dot((*table_hull)[0].getVector4fMap()));
   }
 
   // Set table_coeffs
@@ -807,7 +807,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full(
   // Need to flip the plane normal towards the viewpoint
   Eigen::Vector4f vp(0, 0, 0, 0);
   // See if we need to flip any plane normals
-  vp -= table_hull->points[0].getVector4fMap();
+  vp -= (*table_hull)[0].getVector4fMap();
   vp[3] = 0;
   // Dot product between the (viewpoint - point) and the plane normal
   float cos_theta = vp.dot(model_coefficients);
@@ -817,7 +817,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full(
     model_coefficients[3] = 0;
     // Hessian form (D = nc . p_plane (centroid here) + p)
     model_coefficients[3] =
-        -1 * (model_coefficients.dot(table_hull->points[0].getVector4fMap()));
+        -1 * (model_coefficients.dot((*table_hull)[0].getVector4fMap()));
   }
 
   // Set table_coeffs

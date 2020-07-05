@@ -533,7 +533,7 @@ typename PointCloud<MergedT>::Ptr merge(const PointCloud<PointT>& points, const 
   //pcl::concatenateFields (points, colors, *merged_ptr); why error?
 
   for (std::size_t i = 0; i < colors.size (); ++i)
-    merged_ptr->points[i].rgba = colors[i].rgba;
+    (*merged_ptr)[i].rgba = colors[i].rgba;
 
   return merged_ptr;
 }

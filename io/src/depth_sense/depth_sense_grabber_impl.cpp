@@ -220,7 +220,7 @@ pcl::io::depth_sense::DepthSenseGrabberImpl::onDepthDataReceived (DepthSense::De
       int col = static_cast<int> (uv.u * COLOR_WIDTH);
       int pixel = row * COLOR_WIDTH + col;
       if (pixel >=0 && pixel < COLOR_WIDTH * COLOR_HEIGHT)
-        memcpy (&xyzrgba_cloud->points[i].rgba, &color_data_[pixel * 3], 3);
+        memcpy (&(*xyzrgba_cloud)[i].rgba, &color_data_[pixel * 3], 3);
     }
 
     point_cloud_rgba_signal_->operator () (xyzrgba_cloud);

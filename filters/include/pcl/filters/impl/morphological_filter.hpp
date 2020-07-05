@@ -80,11 +80,11 @@ applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr &cl
       {
         Eigen::Vector3f bbox_min, bbox_max;
         std::vector<int> pt_indices;
-        float minx = cloud_in->points[p_idx].x - half_res;
-        float miny = cloud_in->points[p_idx].y - half_res;
+        float minx = (*cloud_in)[p_idx].x - half_res;
+        float miny = (*cloud_in)[p_idx].y - half_res;
         float minz = -std::numeric_limits<float>::max ();
-        float maxx = cloud_in->points[p_idx].x + half_res;
-        float maxy = cloud_in->points[p_idx].y + half_res;
+        float maxx = (*cloud_in)[p_idx].x + half_res;
+        float maxy = (*cloud_in)[p_idx].y + half_res;
         float maxz = std::numeric_limits<float>::max ();
         bbox_min = Eigen::Vector3f (minx, miny, minz);
         bbox_max = Eigen::Vector3f (maxx, maxy, maxz);

@@ -47,7 +47,7 @@ run(pcl::RFFaceDetectorTrainer& fdrf,
   float rgb_m;
   bool exists_m;
   pcl::for_each_type<FieldListM>(pcl::CopyIfFieldExists<PointInT, float>(
-      scene_vis->points[0], "rgb", exists_m, rgb_m));
+      (*scene_vis)[0], "rgb", exists_m, rgb_m));
 
   std::cout << "Color exists:" << static_cast<int>(exists_m) << std::endl;
   if (exists_m) {

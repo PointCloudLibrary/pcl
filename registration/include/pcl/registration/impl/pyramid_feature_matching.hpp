@@ -278,7 +278,7 @@ PyramidFeatureHistogram<PointFeature>::compute ()
   for (std::size_t feature_i = 0; feature_i < input_->points.size (); ++feature_i)
   {
     std::vector<float> feature_vector;
-    convertFeatureToVector (input_->points[feature_i], feature_vector);
+    convertFeatureToVector ((*input_)[feature_i], feature_vector);
     addFeature (feature_vector);
   }
 

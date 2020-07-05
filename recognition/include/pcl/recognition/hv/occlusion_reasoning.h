@@ -84,9 +84,9 @@ namespace pcl
       int keep = 0;
       for (std::size_t i = 0; i < to_be_filtered->points.size (); i++)
       {
-        float x = to_be_filtered->points[i].x;
-        float y = to_be_filtered->points[i].y;
-        float z = to_be_filtered->points[i].z;
+        float x = (*to_be_filtered)[i].x;
+        float y = (*to_be_filtered)[i].y;
+        float z = (*to_be_filtered)[i].z;
         int u = static_cast<int> (f * x / z + cx);
         int v = static_cast<int> (f * y / z + cy);
 
@@ -128,9 +128,9 @@ namespace pcl
       int keep = 0;
       for (std::size_t i = 0; i < to_be_filtered->points.size (); i++)
       {
-        float x = to_be_filtered->points[i].x;
-        float y = to_be_filtered->points[i].y;
-        float z = to_be_filtered->points[i].z;
+        float x = (*to_be_filtered)[i].x;
+        float y = (*to_be_filtered)[i].y;
+        float z = (*to_be_filtered)[i].z;
         int u = static_cast<int> (f * x / z + cx);
         int v = static_cast<int> (f * y / z + cy);
 
@@ -175,9 +175,9 @@ namespace pcl
       int keep = 0;
       for (std::size_t i = 0; i < to_be_filtered->points.size (); i++)
       {
-        float x = to_be_filtered->points[i].x;
-        float y = to_be_filtered->points[i].y;
-        float z = to_be_filtered->points[i].z;
+        float x = (*to_be_filtered)[i].x;
+        float y = (*to_be_filtered)[i].y;
+        float z = (*to_be_filtered)[i].z;
         int u = static_cast<int> (f * x / z + cx);
         int v = static_cast<int> (f * y / z + cy);
 

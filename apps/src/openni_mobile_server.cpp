@@ -71,7 +71,7 @@ CopyPointCloudToBuffers(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& clou
   std::size_t j = 0;
   for (std::size_t i = 0; i < nr_points; ++i) {
 
-    const pcl::PointXYZRGBA& point = cloud->points[i];
+    const pcl::PointXYZRGBA& point = (*cloud)[i];
 
     if (!std::isfinite(point.x) || !std::isfinite(point.y) || !std::isfinite(point.z))
       continue;

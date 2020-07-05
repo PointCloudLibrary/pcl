@@ -65,7 +65,7 @@ createPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
 
   for (std::size_t i = 0; i < cloud->points.size (); ++i)
   {
-    poly_points->SetPoint (i, cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
+    poly_points->SetPoint (i, (*cloud)[i].x, (*cloud)[i].y, (*cloud)[i].z);
     polygon->GetPointIds ()->SetId (i, i);
   }
 

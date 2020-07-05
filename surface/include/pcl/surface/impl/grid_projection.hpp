@@ -75,9 +75,9 @@ pcl::GridProjection<PointNT>::scaleInputDataPoint (double scale_factor)
 {
   for (std::size_t i = 0; i < data_->points.size(); ++i)
   {
-    data_->points[i].x /= static_cast<float> (scale_factor);
-    data_->points[i].y /= static_cast<float> (scale_factor);
-    data_->points[i].z /= static_cast<float> (scale_factor);
+    (*data_)[i].x /= static_cast<float> (scale_factor);
+    (*data_)[i].y /= static_cast<float> (scale_factor);
+    (*data_)[i].z /= static_cast<float> (scale_factor);
   }
   max_p_ /= static_cast<float> (scale_factor);
   min_p_ /= static_cast<float> (scale_factor);
@@ -357,7 +357,7 @@ pcl::GridProjection<PointNT>::getVectorAtPoint (const Eigen::Vector4f &p,
 
   for (std::size_t i = 0; i < pt_union_indices.size (); ++i)
   {
-    Eigen::Vector4f pp (data_->points[pt_union_indices[i]].x, data_->points[pt_union_indices[i]].y, data_->points[pt_union_indices[i]].z, 0);
+    Eigen::Vector4f pp ((*data_)[pt_union_indices[i]].x, (*data_)[pt_union_indices[i]].y, (*data_)[pt_union_indices[i]].z, 0);
     pt_union_dist[i] = (pp - p).squaredNorm ();
     pt_union_weight[i] = pow (M_E, -pow (pt_union_dist[i], 2.0) / gaussian_scale_);
     mag += pow (M_E, -pow (sqrt (pt_union_dist[i]), 2.0) / gaussian_scale_);
@@ -367,16 +367,16 @@ pcl::GridProjection<PointNT>::getVectorAtPoint (const Eigen::Vector4f &p,
   pcl::VectorAverage3f vector_average;
 
   Eigen::Vector3f v (
-      data_->points[pt_union_indices[0]].normal[0],
-      data_->points[pt_union_indices[0]].normal[1],
-      data_->points[pt_union_indices[0]].normal[2]);
+      (*data_)[pt_union_indices[0]].normal[0],
+      (*data_)[pt_union_indices[0]].normal[1],
+      (*data_)[pt_union_indices[0]].normal[2]);
 
   for (std::size_t i = 0; i < pt_union_weight.size (); ++i)
   {
     pt_union_weight[i] /= sum;
-    Eigen::Vector3f vec (data_->points[pt_union_indices[i]].normal[0],
-                  data_->points[pt_union_indices[i]].normal[1],
-                  data_->points[pt_union_indices[i]].normal[2]);
+    Eigen::Vector3f vec ((*data_)[pt_union_indices[i]].normal[0],
+                  (*data_)[pt_union_indices[i]].normal[1],
+                  (*data_)[pt_union_indices[i]].normal[2]);
     if (vec.dot (v) < 0)
       vec = -vec;
     vector_average.add (vec, static_cast<float> (pt_union_weight[i]));
@@ -411,9 +411,9 @@ pcl::GridProjection<PointNT>::getVectorAtPointKNN (const Eigen::Vector4f &p,
   for (int i = 0; i < k_; i++)
   {
     k_weight[i] /= sum;
-    Eigen::Vector3f vec (data_->points[k_indices[i]].normal[0],
-                         data_->points[k_indices[i]].normal[1],
-                         data_->points[k_indices[i]].normal[2]);
+    Eigen::Vector3f vec ((*data_)[k_indices[i]].normal[0],
+                         (*data_)[k_indices[i]].normal[1],
+                         (*data_)[k_indices[i]].normal[2]);
     vector_average.add (vec, k_weight[i]);
   }
   vector_average.getEigenVector1 (out_vector);
@@ -434,7 +434,7 @@ pcl::GridProjection<PointNT>::getMagAtPoint (const Eigen::Vector4f &p,
   double sum = 0.0;
   for (std::size_t i = 0; i < pt_union_indices.size (); ++i)
   {
-    Eigen::Vector4f pp (data_->points[pt_union_indices[i]].x, data_->points[pt_union_indices[i]].y, data_->points[pt_union_indices[i]].z, 0);
+    Eigen::Vector4f pp ((*data_)[pt_union_indices[i]].x, (*data_)[pt_union_indices[i]].y, (*data_)[pt_union_indices[i]].z, 0);
     pt_union_dist[i] = (pp - p).norm ();
     sum += pow (M_E, -pow (pt_union_dist[i], 2.0) / gaussian_scale_);
   }
@@ -630,13 +630,13 @@ pcl::GridProjection<PointNT>::reconstructPolygons (std::vector<pcl::Vertices> &p
   for (int cp = 0; cp < static_cast<int> (data_->points.size ()); ++cp)
   {
     // Check if the point is invalid
-    if (!std::isfinite (data_->points[cp].x) ||
-        !std::isfinite (data_->points[cp].y) ||
-        !std::isfinite (data_->points[cp].z))
+    if (!std::isfinite ((*data_)[cp].x) ||
+        !std::isfinite ((*data_)[cp].y) ||
+        !std::isfinite ((*data_)[cp].z))
       continue;
 
     Eigen::Vector3i index_3d;
-    getCellIndex (data_->points[cp].getVector4fMap (), index_3d);
+    getCellIndex ((*data_)[cp].getVector4fMap (), index_3d);
     int index_1d = getIndexIn1D (index_3d);
     if (cell_hash_map_.find (index_1d) == cell_hash_map_.end ())
     {

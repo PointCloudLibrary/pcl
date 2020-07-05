@@ -185,7 +185,7 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   // Need to flip the plane normal towards the viewpoint
   Eigen::Vector4f vp (vpx_, vpy_, vpz_, 0);
   // See if we need to flip any plane normals
-  vp -= planar_hull_->points[0].getVector4fMap ();
+  vp -= (*planar_hull_)[0].getVector4fMap ();
   vp[3] = 0;
   // Dot product between the (viewpoint - point) and the plane normal
   float cos_theta = vp.dot (model_coefficients);
@@ -195,7 +195,7 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
     model_coefficients *= -1;
     model_coefficients[3] = 0;
     // Hessian form (D = nc . p_plane (centroid here) + p)
-    model_coefficients[3] = -1 * (model_coefficients.dot (planar_hull_->points[0].getVector4fMap ()));
+    model_coefficients[3] = -1 * (model_coefficients.dot ((*planar_hull_)[0].getVector4fMap ()));
   }
 
   // Project all points
@@ -215,7 +215,7 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   polygon.points.resize (planar_hull_->points.size ());
   for (std::size_t i = 0; i < planar_hull_->points.size (); ++i)
   {
-    Eigen::Vector4f pt (planar_hull_->points[i].x, planar_hull_->points[i].y, planar_hull_->points[i].z, 0);
+    Eigen::Vector4f pt ((*planar_hull_)[i].x, (*planar_hull_)[i].y, (*planar_hull_)[i].z, 0);
     polygon[i].x = pt[k1];
     polygon[i].y = pt[k2];
     polygon[i].z = 0;
@@ -229,7 +229,7 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   for (std::size_t i = 0; i < projected_points.points.size (); ++i)
   {
     // Check the distance to the user imposed limits from the table planar model
-    double distance = pointToPlaneDistanceSigned (input_->points[(*indices_)[i]], model_coefficients);
+    double distance = pointToPlaneDistanceSigned ((*input_)[(*indices_)[i]], model_coefficients);
     if (distance < height_limit_min_ || distance > height_limit_max_)
       continue;
 

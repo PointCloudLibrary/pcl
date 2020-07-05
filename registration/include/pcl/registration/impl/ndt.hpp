@@ -211,7 +211,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeDerivatives (Eige
     for (typename std::vector<TargetGridLeafConstPtr>::iterator neighborhood_it = neighborhood.begin (); neighborhood_it != neighborhood.end (); ++neighborhood_it)
     {
       cell = *neighborhood_it;
-      x_pt = input_->points[idx];
+      x_pt = (*input_)[idx];
       x = Eigen::Vector3d (x_pt.x, x_pt.y, x_pt.z);
 
       x_trans = Eigen::Vector3d (x_trans_pt.x, x_trans_pt.y, x_trans_pt.z);
@@ -428,7 +428,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeHessian (Eigen::M
       cell = *neighborhood_it;
 
       {
-        x_pt = input_->points[idx];
+        x_pt = (*input_)[idx];
         x = Eigen::Vector3d (x_pt.x, x_pt.y, x_pt.z);
 
         x_trans = Eigen::Vector3d (x_trans_pt.x, x_trans_pt.y, x_trans_pt.z);

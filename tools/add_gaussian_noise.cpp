@@ -100,9 +100,9 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
 
   for (std::size_t point_i = 0; point_i < xyz_cloud->points.size (); ++point_i)
   {
-    xyz_cloud_filtered->points[point_i].x = xyz_cloud->points[point_i].x + nd (rng);
-    xyz_cloud_filtered->points[point_i].y = xyz_cloud->points[point_i].y + nd (rng);
-    xyz_cloud_filtered->points[point_i].z = xyz_cloud->points[point_i].z + nd (rng);
+    (*xyz_cloud_filtered)[point_i].x = (*xyz_cloud)[point_i].x + nd (rng);
+    (*xyz_cloud_filtered)[point_i].y = (*xyz_cloud)[point_i].y + nd (rng);
+    (*xyz_cloud_filtered)[point_i].z = (*xyz_cloud)[point_i].z + nd (rng);
   }
 
   pcl::PCLPointCloud2 input_xyz_filtered;

@@ -115,9 +115,9 @@ compute (const CloudT::Ptr &cloud,
   cloud_normals->points.resize (cloud->points.size ());
   for (std::size_t i = 0; i < cloud->points.size (); i++)
   {
-    cloud_normals->points[i].x = cloud->points[i].x;
-    cloud_normals->points[i].y = cloud->points[i].y;
-    cloud_normals->points[i].z = cloud->points[i].z;
+    (*cloud_normals)[i].x = (*cloud)[i].x;
+    (*cloud_normals)[i].y = (*cloud)[i].y;
+    (*cloud_normals)[i].z = (*cloud)[i].z;
   }
 
   // estimate surface normals

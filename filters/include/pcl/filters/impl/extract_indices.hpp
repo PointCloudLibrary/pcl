@@ -66,7 +66,7 @@ pcl::ExtractIndices<PointT>::filterDirectly (PointCloudPtr &cloud)
       *cloud = *input_;
       return;
     }
-    std::uint8_t* pt_data = reinterpret_cast<std::uint8_t*> (&cloud->points[pt_index]);
+    std::uint8_t* pt_data = reinterpret_cast<std::uint8_t*> (&(*cloud)[pt_index]);
     for (const auto &field : fields)
       memcpy (pt_data + field.offset, &user_filter_value_, sizeof (float));
   }
