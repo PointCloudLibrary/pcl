@@ -8,7 +8,7 @@ def print_node(cursor, depth):
     print("-" * depth, cursor.location.file, f"L{cursor.location.line} C{cursor.location.column}", cursor.kind.name, cursor.spelling)
 
 
-def node_in_this_file(node, filename):
+def is_node_in_this_file(node, filename):
     return node.location.file and node.location.file.name == filename
 
 
@@ -17,7 +17,7 @@ def walk_and_print(cursor, this_filename, depth):
         print_node(cursor=cursor, depth=depth)
 
     for child in cursor.get_children():
-        if node_in_this_file(node=child, filename=this_filename):
+        if is_node_in_this_file(node=child, filename=this_filename):
             walk_and_print(cursor=child, this_filename=this_filename, depth=depth + 1)
 
 
@@ -43,7 +43,7 @@ def generate_parsed_info(cursor, this_filename, depth):
         parsed_info["members"] = []
 
     for child in cursor.get_children():
-        if node_in_this_file(node=child, filename=this_filename):
+        if is_node_in_this_file(node=child, filename=this_filename):
             child_parsed_info = generate_parsed_info(cursor=child, this_filename=this_filename, depth=depth + 1,)
             if child_parsed_info and parsed_info:
                 parsed_info["members"].append(child_parsed_info)
