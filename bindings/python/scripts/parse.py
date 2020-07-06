@@ -55,11 +55,8 @@ def create_index():
     return clang.Index.create()
 
 
-def get_compilation_database(compilation_database_path):
-    return clang.CompilationDatabase.fromDirectory(buildDir=compilation_database_path)
-
-
-def get_compilation_commands(compilation_database, filename):
+def get_compilation_commands(compilation_database_path, filename):
+    compilation_database = clang.CompilationDatabase.fromDirectory(buildDir=compilation_database_path)
     compilation_commands = compilation_database.getCompileCommands(filename=filename)
     # extracting argument list from the command's generator object
     return list(compilation_commands[0].arguments)[1:-1]
@@ -72,9 +69,9 @@ def main():
 
         index = create_index()
 
-        compilation_database_path = utils.get_dirname(path="../compile_commands.json")
-        compilation_database = get_compilation_database(compilation_database_path=compilation_database_path)
-        compilation_commands = get_compilation_commands(compilation_database=compilation_database, filename=source)
+        compilation_commands = get_compilation_commands(
+            compilation_database_path="/home/divyanshu/Projects/active/pcl/bindings/python", filename=source
+        )
 
         tu = index.parse(path=source, args=compilation_commands)
 
