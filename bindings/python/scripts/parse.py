@@ -79,7 +79,7 @@ def main():
 
         parsed_info = generate_parsed_info(cursor=tu.cursor, this_filename=tu.spelling, depth=0)
 
-        output_filepath = utils.get_json_output_path(source=source, output_dir="../json")
+        output_filepath = utils.get_json_output_path(source=source, output_dir="/home/divyanshu/Projects/active/pcl/bindings/python/json",)
         utils.dump_json(filepath=output_filepath, info=parsed_info)
 
 
