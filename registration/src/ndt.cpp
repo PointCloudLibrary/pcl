@@ -37,6 +37,7 @@
  *
  */
 
+#ifndef PCL_NO_PRECOMPILE
 
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
@@ -47,3 +48,5 @@
 template class PCL_EXPORTS pcl::NormalDistributionsTransform<pcl::PointXYZ, pcl::PointXYZ>;
 template class PCL_EXPORTS pcl::NormalDistributionsTransform<pcl::PointXYZI, pcl::PointXYZI>;
 template class PCL_EXPORTS pcl::NormalDistributionsTransform<pcl::PointXYZRGB, pcl::PointXYZRGB>;
+
+#endif
