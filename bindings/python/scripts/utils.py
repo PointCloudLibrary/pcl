@@ -36,7 +36,7 @@ def dump_json(filepath, info):
 
 
 def parse_arguments(args, script):
-    if script == "parse.py":
+    if script == "parse":
         parser = argparse.ArgumentParser(description="C++ libclang parser")
         parser.add_argument("files", nargs="+", help="The source files to parse")
         return parser.parse_args(args)

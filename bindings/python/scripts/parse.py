@@ -63,7 +63,7 @@ def get_compilation_commands(compilation_database_path, filename):
 
 
 def main():
-    args = utils.parse_arguments(args=sys.argv[1:], script=__file__)
+    args = utils.parse_arguments(args=sys.argv[1:], script="parse")
     for source in args.files:
         source = utils.get_realpath(path=source)
 
