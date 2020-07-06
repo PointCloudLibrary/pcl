@@ -14,7 +14,11 @@ def is_node_in_this_file(cursor, filename):
 def print_ast(cursor, this_filename, depth):
     if cursor.spelling:
         print(
-            "-" * depth, cursor.location.file, f"L{cursor.location.line} C{cursor.location.column}", cursor.kind.name, cursor.spelling,
+            "-" * depth,
+            cursor.location.file,
+            f"L{cursor.location.line} C{cursor.location.column}",
+            cursor.kind.name,
+            cursor.spelling,
         )
 
     for child in cursor.get_children():
@@ -45,7 +49,9 @@ def generate_parsed_info(cursor, this_filename, depth):
 
     for child in cursor.get_children():
         if is_node_in_this_file(cursor=child, filename=this_filename):
-            child_parsed_info = generate_parsed_info(cursor=child, this_filename=this_filename, depth=depth + 1,)
+            child_parsed_info = generate_parsed_info(
+                cursor=child, this_filename=this_filename, depth=depth + 1,
+            )
             if child_parsed_info and parsed_info:
                 parsed_info["members"].append(child_parsed_info)
 
@@ -57,7 +63,9 @@ def create_index():
 
 
 def get_compilation_commands(compilation_database_path, filename):
-    compilation_database = clang.CompilationDatabase.fromDirectory(buildDir=compilation_database_path)
+    compilation_database = clang.CompilationDatabase.fromDirectory(
+        buildDir=compilation_database_path
+    )
     compilation_commands = compilation_database.getCompileCommands(filename=filename)
     # extracting argument list from the command's generator object
     return list(compilation_commands[0].arguments)[1:-1]
@@ -71,16 +79,22 @@ def main():
         index = create_index()
 
         compilation_commands = get_compilation_commands(
-            compilation_database_path="/home/divyanshu/Projects/active/pcl/bindings/python", filename=source
+            compilation_database_path="/home/divyanshu/Projects/active/pcl/bindings/python",
+            filename=source,
         )
 
         tu = index.parse(path=source, args=compilation_commands)
 
         # print_ast(cursor=tu.cursor, this_filename=tu.spelling, depth=0)
 
-        parsed_info = generate_parsed_info(cursor=tu.cursor, this_filename=tu.spelling, depth=0)
+        parsed_info = generate_parsed_info(
+            cursor=tu.cursor, this_filename=tu.spelling, depth=0
+        )
 
-        output_filepath = utils.get_json_output_path(source=source, output_dir="/home/divyanshu/Projects/active/pcl/bindings/python/json",)
+        output_filepath = utils.get_json_output_path(
+            source=source,
+            output_dir="/home/divyanshu/Projects/active/pcl/bindings/python/json",
+        )
         utils.dump_json(filepath=output_filepath, info=parsed_info)
 
 
