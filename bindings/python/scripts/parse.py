@@ -58,10 +58,6 @@ def generate_parsed_info(cursor, this_filename, depth):
     return parsed_info
 
 
-def create_index():
-    return clang.Index.create()
-
-
 def get_compilation_commands(compilation_database_path, filename):
     compilation_database = clang.CompilationDatabase.fromDirectory(
         buildDir=compilation_database_path
@@ -76,7 +72,7 @@ def main():
     for source in args.files:
         source = utils.get_realpath(path=source)
 
-        index = create_index()
+        index = clang.Index.create()
 
         compilation_commands = get_compilation_commands(
             compilation_database_path="/home/divyanshu/Projects/active/pcl/bindings/python",
