@@ -12,10 +12,6 @@ def ensure_dir_exists(dir):
         os.makedirs(dir)
 
 
-def get_dirname(path):
-    return get_realpath(os.path.dirname(path))
-
-
 def get_json_output_path(source, output_dir):
     x_list = source.split("pcl/", 1)[-1]
     x_list = x_list.split("/")
