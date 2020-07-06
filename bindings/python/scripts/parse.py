@@ -4,24 +4,22 @@ import clang.cindex as clang
 import utils
 
 
-def print_node(cursor, depth):
-    print("-" * depth, cursor.location.file, f"L{cursor.location.line} C{cursor.location.column}", cursor.kind.name, cursor.spelling)
-
-
-def is_node_in_this_file(node, filename):
-    if node.location.file and node.location.file.name == filename:
+def is_node_in_this_file(cursor, filename):
+    if cursor.location.file and cursor.location.file.name == filename:
         return True
     else:
         return False
 
 
-def walk_and_print(cursor, this_filename, depth):
+def print_ast(cursor, this_filename, depth):
     if cursor.spelling:
-        print_node(cursor=cursor, depth=depth)
+        print(
+            "-" * depth, cursor.location.file, f"L{cursor.location.line} C{cursor.location.column}", cursor.kind.name, cursor.spelling,
+        )
 
     for child in cursor.get_children():
-        if is_node_in_this_file(node=child, filename=this_filename):
-            walk_and_print(cursor=child, this_filename=this_filename, depth=depth + 1)
+        if is_node_in_this_file(cursor=child, filename=this_filename):
+            print_ast(cursor=child, this_filename=this_filename, depth=depth + 1)
 
 
 def generate_parsed_info(cursor, this_filename, depth):
@@ -46,7 +44,7 @@ def generate_parsed_info(cursor, this_filename, depth):
         parsed_info["members"] = []
 
     for child in cursor.get_children():
-        if is_node_in_this_file(node=child, filename=this_filename):
+        if is_node_in_this_file(cursor=child, filename=this_filename):
             child_parsed_info = generate_parsed_info(cursor=child, this_filename=this_filename, depth=depth + 1,)
             if child_parsed_info and parsed_info:
                 parsed_info["members"].append(child_parsed_info)
@@ -78,7 +76,7 @@ def main():
 
         tu = index.parse(path=source, args=compilation_commands)
 
-        # walk_and_print(cursor=tu.cursor, this_filename=tu.spelling, depth=0)
+        # print_ast(cursor=tu.cursor, this_filename=tu.spelling, depth=0)
 
         parsed_info = generate_parsed_info(cursor=tu.cursor, this_filename=tu.spelling, depth=0)
 
