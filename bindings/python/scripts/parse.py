@@ -9,7 +9,10 @@ def print_node(cursor, depth):
 
 
 def is_node_in_this_file(node, filename):
-    return node.location.file and node.location.file.name == filename
+    if node.location.file and node.location.file.name == filename:
+        return True
+    else:
+        return False
 
 
 def walk_and_print(cursor, this_filename, depth):
