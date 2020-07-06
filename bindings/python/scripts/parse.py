@@ -55,14 +55,14 @@ def create_index():
     return clang.Index.create()
 
 
-def get_compilation_database(compile_db_path):
-    return clang.CompilationDatabase.fromDirectory(buildDir=compile_db_path)
+def get_compilation_database(compilation_database_path):
+    return clang.CompilationDatabase.fromDirectory(buildDir=compilation_database_path)
 
 
-def get_compile_commands(compdb, filename):
-    compile_commands = compdb.getCompileCommands(filename=filename)
+def get_compilation_commands(compilation_database, filename):
+    compilation_commands = compilation_database.getCompileCommands(filename=filename)
     # extracting argument list from the command's generator object
-    return list(compile_commands[0].arguments)[1:-1]
+    return list(compilation_commands[0].arguments)[1:-1]
 
 
 def main():
@@ -72,11 +72,11 @@ def main():
 
         index = create_index()
 
-        compile_db_path = utils.get_dirname(path="../compile_commands.json")
-        compdb = get_compilation_database(compile_db_path=compile_db_path)
-        compile_commands = get_compile_commands(compdb=compdb, filename=source)
+        compilation_database_path = utils.get_dirname(path="../compile_commands.json")
+        compilation_database = get_compilation_database(compilation_database_path=compilation_database_path)
+        compilation_commands = get_compilation_commands(compilation_database=compilation_database, filename=source)
 
-        tu = index.parse(path=source, args=compile_commands)
+        tu = index.parse(path=source, args=compilation_commands)
 
         # walk_and_print(cursor=tu.cursor, this_filename=tu.spelling, depth=0)
 
