@@ -126,12 +126,12 @@ def main():
             compilation_database_path=args.compilation_database_path, filename=source,
         )
 
-        tu = index.parse(path=source, args=compilation_commands)
+        source_ast = index.parse(path=source, args=compilation_commands)
 
-        # print_ast(cursor=tu.cursor, this_filename=tu.spelling, depth=0)
+        # print_ast(cursor=source_ast.cursor, this_filename=source_ast.spelling, depth=0)
 
         parsed_info = generate_parsed_info(
-            cursor=tu.cursor, this_filename=tu.spelling, depth=0
+            cursor=source_ast.cursor, this_filename=source_ast.spelling, depth=0
         )
 
         output_filepath = utils.get_json_output_path(
