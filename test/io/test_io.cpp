@@ -322,18 +322,18 @@ TEST (PCL, ConcatenateFields)
   cloud_a.points.resize (cloud_a.width * cloud_a.height);
   cloud_b.points.resize (cloud_b.width * cloud_b.height);
 
-  for (std::size_t i = 0; i < cloud_a.size (); ++i)
+  for (auto& point: cloud_a)
   {
-    cloud_a[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-    cloud_a[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-    cloud_a[i].z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    point.x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    point.y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    point.z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
   }
 
-  for (std::size_t i = 0; i < cloud_b.size (); ++i)
+  for (auto& point: cloud_b)
   {
-    cloud_b[i].normal_x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-    cloud_b[i].normal_y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
-    cloud_b[i].normal_z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    point.normal_x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    point.normal_y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    point.normal_z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
   }
 
   pcl::concatenateFields (cloud_a, cloud_b, cloud_c);

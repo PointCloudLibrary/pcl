@@ -96,11 +96,11 @@ pcl::features::ISMVoteList<PointT>::getColoredCloud (typename pcl::PointCloud<Po
     point.r = 255;
     point.g = 255;
     point.b = 255;
-    for (std::size_t i_point = 0; i_point < cloud->size (); i_point++)
+    for (const auto& i_point: *cloud)
     {
-      point.x = (*cloud)[i_point].x;
-      point.y = (*cloud)[i_point].y;
-      point.z = (*cloud)[i_point].z;
+      point.x = i_point.x;
+      point.y = i_point.y;
+      point.z = i_point.z;
       colored_cloud->points.push_back (point);
     }
   }

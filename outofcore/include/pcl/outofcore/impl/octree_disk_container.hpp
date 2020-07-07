@@ -256,8 +256,7 @@ namespace pcl
       pcl::utils::ignore(res);
       assert (res == 0);
       
-      for (std::size_t i=0; i < cloud->size (); i++)
-        dst.push_back ((*cloud)[i]);
+      dst.insert(dst.end(), cloud->begin(), cloud->end());
       
     }
     ////////////////////////////////////////////////////////////////////////////////

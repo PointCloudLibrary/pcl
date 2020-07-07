@@ -657,12 +657,12 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloud ()
     colored_cloud->width = input_->width;
     colored_cloud->height = input_->height;
     colored_cloud->is_dense = input_->is_dense;
-    for (std::size_t i_point = 0; i_point < input_->size (); i_point++)
+    for (const auto& i_point: *input_)
     {
       pcl::PointXYZRGB point;
-      point.x = *((*input_)[i_point].data);
-      point.y = *((*input_)[i_point].data + 1);
-      point.z = *((*input_)[i_point].data + 2);
+      point.x = *(i_point.data);
+      point.y = *(i_point.data + 1);
+      point.z = *(i_point.data + 2);
       point.r = 255;
       point.g = 0;
       point.b = 0;
@@ -709,12 +709,12 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
     colored_cloud->width = input_->width;
     colored_cloud->height = input_->height;
     colored_cloud->is_dense = input_->is_dense;
-    for (std::size_t i_point = 0; i_point < input_->size (); i_point++)
+    for (const auto& i_point: *input_)
     {
       pcl::PointXYZRGBA point;
-      point.x = *((*input_)[i_point].data);
-      point.y = *((*input_)[i_point].data + 1);
-      point.z = *((*input_)[i_point].data + 2);
+      point.x = *(i_point.data);
+      point.y = *(i_point.data + 1);
+      point.z = *(i_point.data + 2);
       point.r = 255;
       point.g = 0;
       point.b = 0;

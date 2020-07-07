@@ -73,11 +73,8 @@ pcl::GridProjection<PointNT>::~GridProjection ()
 template <typename PointNT> void
 pcl::GridProjection<PointNT>::scaleInputDataPoint (double scale_factor)
 {
-  for (std::size_t i = 0; i < data_->size(); ++i)
-  {
-    (*data_)[i].x /= static_cast<float> (scale_factor);
-    (*data_)[i].y /= static_cast<float> (scale_factor);
-    (*data_)[i].z /= static_cast<float> (scale_factor);
+  for (auto& point: *data_) {
+    point.getVector3fMap() /= static_cast<float> (scale_factor);
   }
   max_p_ /= static_cast<float> (scale_factor);
   min_p_ /= static_cast<float> (scale_factor);

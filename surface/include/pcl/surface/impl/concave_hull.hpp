@@ -574,9 +574,9 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     hull_indices_.indices.clear ();
     hull_indices_.indices.reserve (alpha_shape.size ());
 
-    for (std::size_t i = 0; i < alpha_shape.size (); i++)
+    for (const auto& point: alpha_shape)
     {
-      tree.nearestKSearch (alpha_shape[i], 1, neighbor, distances);
+      tree.nearestKSearch (point, 1, neighbor, distances);
       hull_indices_.indices.push_back (neighbor[0]);
     }
 

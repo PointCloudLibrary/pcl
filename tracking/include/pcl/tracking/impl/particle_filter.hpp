@@ -120,8 +120,8 @@ ParticleFilterTracker<PointInT, StateT>::normalizeWeight()
   // apply exponential function
   double w_min = std::numeric_limits<double>::max();
   double w_max = -std::numeric_limits<double>::max();
-  for (std::size_t i = 0; i < particles_->size(); i++) {
-    double weight = (*particles_)[i].weight;
+  for (const auto& point : *particles_) {
+    double weight = point.weight;
     if (w_min > weight)
       w_min = weight;
     if (weight != 0.0 && w_max < weight)
@@ -130,30 +130,30 @@ ParticleFilterTracker<PointInT, StateT>::normalizeWeight()
 
   fit_ratio_ = w_min;
   if (w_max != w_min) {
-    for (std::size_t i = 0; i < particles_->size(); i++) {
-      if ((*particles_)[i].weight != 0.0) {
-        (*particles_)[i].weight = static_cast<float>(
-            normalizeParticleWeight((*particles_)[i].weight, w_min, w_max));
+    for (auto& point : *particles_) {
+      if (point.weight != 0.0) {
+        point.weight =
+            static_cast<float>(normalizeParticleWeight(point.weight, w_min, w_max));
       }
     }
   }
   else {
-    for (std::size_t i = 0; i < particles_->size(); i++)
-      (*particles_)[i].weight = 1.0f / static_cast<float>(particles_->size());
+    for (auto& point : *particles_)
+      point.weight = 1.0f / static_cast<float>(particles_->size());
   }
 
   double sum = 0.0;
-  for (std::size_t i = 0; i < particles_->size(); i++) {
-    sum += (*particles_)[i].weight;
+  for (const auto& point : *particles_) {
+    sum += point.weight;
   }
 
   if (sum != 0.0) {
-    for (std::size_t i = 0; i < particles_->size(); i++)
-      (*particles_)[i].weight /= static_cast<float>(sum);
+    for (auto& point : *particles_)
+      point.weight /= static_cast<float>(sum);
   }
   else {
-    for (std::size_t i = 0; i < particles_->size(); i++)
-      (*particles_)[i].weight = 1.0f / static_cast<float>(particles_->size());
+    for (auto& point : *particles_)
+      point.weight = 1.0f / static_cast<float>(particles_->size());
   }
 }
 
@@ -379,8 +379,8 @@ ParticleFilterTracker<PointInT, StateT>::update()
   StateT orig_representative = representative_state_;
   representative_state_.zero();
   representative_state_.weight = 0.0;
-  for (std::size_t i = 0; i < particles_->size(); i++) {
-    StateT p = (*particles_)[i];
+  for (const auto& point : *particles_) {
+    StateT p = point;
     representative_state_ = representative_state_ + p * p.weight;
   }
   representative_state_.weight = 1.0f / static_cast<float>(particles_->size());

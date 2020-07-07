@@ -120,11 +120,11 @@ public:
   void
   setOccupiedVoxelsAtPointsFromCloud(PointCloudPtr cloud_arg)
   {
-    for (std::size_t i = 0; i < cloud_arg->size(); i++) {
+    for (const auto& point : *cloud_arg) {
       // check for NaNs
-      if (isFinite((*cloud_arg)[i])) {
+      if (isFinite(point)) {
         // set voxel at point
-        this->setOccupiedVoxelAtPoint((*cloud_arg)[i]);
+        this->setOccupiedVoxelAtPoint(point);
       }
     }
   }

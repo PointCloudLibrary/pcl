@@ -130,10 +130,10 @@ Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max_rang
 
   // For each point in the source dataset
   int nr = 0;
-  for (std::size_t i = 0; i < input_transformed.size (); ++i)
+  for (const auto& point: input_transformed)
   {
     // Find its nearest neighbor in the target
-    tree_->nearestKSearch (input_transformed[i], 1, nn_indices, nn_dists);
+    tree_->nearestKSearch (point, 1, nn_indices, nn_dists);
 
     // Deal with occlusions (incomplete targets)
     if (nn_dists[0] <= max_range)

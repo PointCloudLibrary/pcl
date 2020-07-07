@@ -204,13 +204,13 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       std::map<std::uint32_t, std::size_t> colormap;
 
       // First pass: find unique labels
-      for (std::size_t i = 0; i < cloud.size (); ++i)
+      for (const auto& point: cloud)
       {
         // If we need to paint NaN points with black do not waste colors on them
-        if (paint_nans_with_black_ && !pcl::isFinite (cloud[i]))
+        if (paint_nans_with_black_ && !pcl::isFinite (point))
           continue;
         std::uint32_t val;
-        pcl::getFieldValue<PointT, std::uint32_t> (cloud[i], offset, val);
+        pcl::getFieldValue<PointT, std::uint32_t> (point, offset, val);
         labels.insert (val);
       }
 
@@ -262,10 +262,10 @@ pcl::io::PointCloudImageExtractorWithScaling<PointT>::extractImpl (const PointCl
   {
     float min = std::numeric_limits<float>::infinity();
     float max = -std::numeric_limits<float>::infinity();
-    for (std::size_t i = 0; i < cloud.size (); ++i)
+    for (const auto& point: cloud)
     {
       float val;
-      pcl::getFieldValue<PointT, float> (cloud[i], offset, val);
+      pcl::getFieldValue<PointT, float> (point, offset, val);
       if (val < min)
         min = val;
       if (val > max)

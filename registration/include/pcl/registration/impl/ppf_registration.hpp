@@ -73,18 +73,15 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
     PCL_ERROR("[pcl::PPFRegistration::computeTransformation] setting initial transform (guess) not implemented!\n");
   }
 
-  PoseWithVotesList voted_poses;
-  std::vector <std::vector <unsigned int> > accumulator_array;
-  accumulator_array.resize (input_->size ());
+  const auto aux_size = static_cast<std::size_t>(
+      std::floor(2 * M_PI / search_method_->getAngleDiscretizationStep()));
 
-  std::size_t aux_size = static_cast<std::size_t> (std::floor (2 * M_PI / search_method_->getAngleDiscretizationStep ()));
-  for (std::size_t i = 0; i < input_->size (); ++i)
-  {
-    std::vector<unsigned int> aux (aux_size);
-    accumulator_array[i] = aux;
-  }
+  const std::vector<unsigned int> tmp_vec(aux_size, 0);
+  std::vector<std::vector<unsigned int>> accumulator_array(input_->size(), tmp_vec);
+
   PCL_INFO ("Accumulator array size: %u x %u.\n", accumulator_array.size (), accumulator_array.back ().size ());
 
+  PoseWithVotesList voted_poses;
   // Consider every <scene_reference_point_sampling_rate>-th point as the reference point => fix s_r
   float f1, f2, f3, f4;
   for (std::size_t scene_reference_index = 0; scene_reference_index < target_->size (); scene_reference_index += scene_reference_point_sampling_rate_)

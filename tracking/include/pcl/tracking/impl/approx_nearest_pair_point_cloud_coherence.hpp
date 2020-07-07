@@ -13,11 +13,11 @@ ApproxNearestPairPointCloudCoherence<PointInT>::computeCoherence(
 {
   double val = 0.0;
   // for (std::size_t i = 0; i < indices->size (); i++)
-  for (std::size_t i = 0; i < cloud->size(); i++) {
+  for (const auto& point : *cloud) {
     int k_index = 0;
     float k_distance = 0.0;
-    // PointInT input_point = (*cloud)[(*indices)[i]];
-    PointInT input_point = (*cloud)[i];
+    // PointInT input_point = cloud->points[(*indices)[i]];
+    PointInT input_point = point;
     search_->approxNearestSearch(input_point, k_index, k_distance);
     if (k_distance < maximum_distance_ * maximum_distance_) {
       PointInT target_point = (*target_input_)[k_index];

@@ -327,10 +327,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
     pcl::TernaryTreeMissingDataBranchEstimator * btt = new pcl::TernaryTreeMissingDataBranchEstimator ();
     face_detection::PoseClassRegressionVarianceStatsEstimator<float, NodeType, std::vector<face_detection::TrainingExample>, int> rse (btt);
 
-    std::vector<float> weights;
-    weights.resize (cloud->size ());
-    for (std::size_t i = 0; i < cloud->size (); i++)
-      weights[i] = 0;
+    std::vector<float> weights(cloud->size(), 0.f);
 
     int w_size_2 = static_cast<int> (w_size_ / 2);
 

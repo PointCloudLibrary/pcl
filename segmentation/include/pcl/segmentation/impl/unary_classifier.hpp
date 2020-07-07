@@ -143,11 +143,11 @@ pcl::UnaryClassifier<PointT>::findClusters (typename pcl::PointCloud<PointT>::Pt
 
   if (label_idx != -1)
   {
-    for (std::size_t i = 0; i < in->size (); i++)
+    for (const auto& point: *in)
     {
       // get the 'label' field                                                                       
       std::uint32_t label;      
-      memcpy (&label, reinterpret_cast<char*> (&(*in)[i]) + fields[label_idx].offset, sizeof(std::uint32_t));
+      memcpy (&label, reinterpret_cast<const char*> (&point) + fields[label_idx].offset, sizeof(std::uint32_t));
 
       // check if label exist
       bool exist = false;

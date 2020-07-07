@@ -340,14 +340,13 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
     std::map<int, bool> banned;
     std::map<int, bool>::iterator banned_it;
 
-    for (std::size_t j = 0; j < complete_models_[indices_[i]]->size (); j++)
+    for (const auto& point: *complete_models_[indices_[i]])
     {
-      int pos_x, pos_y, pos_z;
-      pos_x = static_cast<int> (std::floor (((*complete_models_[indices_[i]])[j].x - min_pt_all.x) / res_occupancy_grid_));
-      pos_y = static_cast<int> (std::floor (((*complete_models_[indices_[i]])[j].y - min_pt_all.y) / res_occupancy_grid_));
-      pos_z = static_cast<int> (std::floor (((*complete_models_[indices_[i]])[j].z - min_pt_all.z) / res_occupancy_grid_));
+      const int pos_x = static_cast<int> (std::floor ((point.x - min_pt_all.x) / res_occupancy_grid_));
+      const int pos_y = static_cast<int> (std::floor ((point.y - min_pt_all.y) / res_occupancy_grid_));
+      const int pos_z = static_cast<int> (std::floor ((point.z - min_pt_all.z) / res_occupancy_grid_));
 
-      int idx = pos_z * size_x * size_y + pos_y * size_x + pos_x;
+      const int idx = pos_z * size_x * size_y + pos_y * size_x + pos_x;
       banned_it = banned.find (idx);
       if (banned_it == banned.end ())
       {
@@ -512,12 +511,12 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
   {
     //check nans...
     int j = 0;
-    for (std::size_t i = 0; i < recog_model->cloud_->size (); ++i)
+    for (auto& point: *(recog_model->cloud_))
     {
-      if (!isXYZFinite((*(recog_model->cloud_))[i]))
+      if (!isXYZFinite (point))
         continue;
 
-      (*recog_model->cloud_)[j] = (*recog_model->cloud_)[i];
+      (*recog_model->cloud_)[j] = point;
       j++;
     }
 

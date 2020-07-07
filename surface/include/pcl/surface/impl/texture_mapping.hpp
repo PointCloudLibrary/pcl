@@ -652,13 +652,9 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
   std::vector<double> ptDist;
   // for each point of the cloud, ray-trace toward the camera and check intersected voxels.
   for (std::size_t i = 0; i < input_cloud->size (); ++i)
+  for (const auto& point: *input_cloud)
   {
-    direction (0) = (*input_cloud)[i].x;
-    pt.x = (*input_cloud)[i].x;
-    direction (1) = (*input_cloud)[i].y;
-    pt.y = (*input_cloud)[i].y;
-    direction (2) = (*input_cloud)[i].z;
-    pt.z = (*input_cloud)[i].z;
+    direction = pt.getVector3fMap() = point.getVector3fMap();
 
     // get number of occlusions for that point
     indices.clear ();

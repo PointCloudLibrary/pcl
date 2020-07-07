@@ -57,11 +57,11 @@ pcl::visualization::ImageViewer::convertRGBCloudToUChar (
     boost::shared_array<unsigned char> &data)
 {
   int j = 0;
-  for (std::size_t i = 0; i < cloud.size (); ++i)
+  for (const auto& point: cloud)
   {
-    data[j++] = cloud[i].r;
-    data[j++] = cloud[i].g;
-    data[j++] = cloud[i].b;
+    data[j++] = point.r;
+    data[j++] = point.g;
+    data[j++] = point.b;
   }
 }
 

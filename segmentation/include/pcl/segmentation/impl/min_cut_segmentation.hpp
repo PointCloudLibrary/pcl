@@ -190,9 +190,8 @@ template <typename PointT> void
 pcl::MinCutSegmentation<PointT>::setForegroundPoints (typename pcl::PointCloud<PointT>::Ptr foreground_points)
 {
   foreground_points_.clear ();
-  foreground_points_.reserve (foreground_points->size ());
-  for (std::size_t i_point = 0; i_point < foreground_points->size (); i_point++)
-    foreground_points_.push_back ((*foreground_points)[i_point]);
+  foreground_points_.insert(
+      foreground_points_.end(), foreground_points->begin(), foreground_points->end());
 
   unary_potentials_are_valid_ = false;
 }
@@ -209,9 +208,8 @@ template <typename PointT> void
 pcl::MinCutSegmentation<PointT>::setBackgroundPoints (typename pcl::PointCloud<PointT>::Ptr background_points)
 {
   background_points_.clear ();
-  background_points_.reserve (background_points->size ());
-  for (std::size_t i_point = 0; i_point < background_points->size (); i_point++)
-    background_points_.push_back ((*background_points)[i_point]);
+  background_points_.insert(
+      background_points_.end(), background_points->begin(), background_points->end());
 
   unary_potentials_are_valid_ = false;
 }
