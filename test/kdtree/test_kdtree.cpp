@@ -296,12 +296,12 @@ TEST (PCL, KdTreeFLANN_32_vs_64_bit)
   tree.setInputCloud (cloud_in);
 
   std::vector<std::vector<int> > nn_indices_vector;
-  for (std::size_t i = 0; i < cloud_in->size (); ++i)
-    if (isFinite ((*cloud_in)[i]))
+  for (const auto& pt : *cloud_in)
+    if (isFinite (pt))
     {
       std::vector<int> nn_indices;
       std::vector<float> nn_dists;
-      tree.radiusSearch ((*cloud_in)[i], 0.02, nn_indices, nn_dists);
+      tree.radiusSearch (pt, 0.02, nn_indices, nn_dists);
 
       nn_indices_vector.push_back (nn_indices);
     }

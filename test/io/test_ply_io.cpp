@@ -47,6 +47,7 @@ TEST (PCL, PLYReaderWriter)
 {
   using pcl::PointXYZI;
   using pcl::PointXYZ;
+  using pcl::index_t;
 
   pcl::PCLPointCloud2 cloud_blob, cloud_blob2;
   pcl::PointCloud<PointXYZI> cloud, cloud2;
@@ -57,9 +58,9 @@ TEST (PCL, PLYReaderWriter)
   cloud.is_dense = true;
 
   srand (static_cast<unsigned int> (time (nullptr)));
-  std::size_t nr_p = cloud.size ();
+  index_t nr_p = cloud.size ();
   // Randomly create a new point cloud
-  for (std::size_t i = 0; i < nr_p; ++i)
+  for (index_t i = 0; i < nr_p; ++i)
   {
     cloud[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
     cloud[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
@@ -96,7 +97,7 @@ TEST (PCL, PLYReaderWriter)
   EXPECT_EQ (cloud.is_dense, cloud2.is_dense);   // test for fromPCLPointCloud2 ()
   EXPECT_EQ (cloud.size (), cloud2.size ());         // test for fromPCLPointCloud2 ()
 
-  for (std::size_t counter = 0; counter < cloud.size (); ++counter)
+  for (index_t counter = 0; counter < cloud.size (); ++counter)
   {
     EXPECT_FLOAT_EQ (cloud[counter].x, cloud2[counter].x);     // test for fromPCLPointCloud2 ()
     EXPECT_FLOAT_EQ (cloud[counter].y, cloud2[counter].y);     // test for fromPCLPointCloud2 ()

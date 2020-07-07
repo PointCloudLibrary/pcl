@@ -63,7 +63,7 @@ IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud (
     Eigen::Vector3f nt, nt_t;
     Eigen::Matrix3f rot = tr.block<3, 3> (0, 0);
 
-    for (std::size_t i = 0; i < input.size (); ++i)
+    for (index_t i = 0; i < input.size (); ++i)
     {
       const std::uint8_t* data_in = reinterpret_cast<const std::uint8_t*> (&input[i]);
       std::uint8_t* data_out = reinterpret_cast<std::uint8_t*> (&output[i]);
@@ -96,7 +96,7 @@ IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformCloud (
   }
   else
   {
-    for (std::size_t i = 0; i < input.size (); ++i)
+    for (index_t i = 0; i < input.size (); ++i)
     {
       const std::uint8_t* data_in = reinterpret_cast<const std::uint8_t*> (&input[i]);
       std::uint8_t* data_out = reinterpret_cast<std::uint8_t*> (&output[i]);

@@ -340,7 +340,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   double *prg_local_mem = new double[input_->size () * 3];
   double **prg_mem = new double * [input_->size ()];
 
-  for (std::size_t i = 0; i < input_->size (); i++)
+  for (index_t i = 0; i < input_->size (); i++)
     prg_mem[i] = prg_local_mem + 3 * i;
 
 #pragma omp parallel for \

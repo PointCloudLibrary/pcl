@@ -211,15 +211,15 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled
 template<typename PointT, typename PointNT> void
 pcl::CovarianceSampling<PointT, PointNT>::applyFilter (Cloud &output)
 {
-  std::vector<int> sampled_indices;
+  Indices sampled_indices;
   applyFilter (sampled_indices);
 
-  output.resize (sampled_indices.size ());
+  output.resize (static_cast<index_t>(sampled_indices.size ()));
   output.header = input_->header;
   output.height = 1;
-  output.width = std::uint32_t (output.size ());
+  output.width = output.size ();
   output.is_dense = true;
-  for (std::size_t i = 0; i < sampled_indices.size (); ++i)
+  for (index_t i = 0; i < static_cast<index_t>(sampled_indices.size ()); ++i)
     output[i] = (*input_)[sampled_indices[i]];
 }
 

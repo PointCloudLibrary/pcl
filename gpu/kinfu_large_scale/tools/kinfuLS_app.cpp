@@ -219,8 +219,8 @@ typename PointCloud<MergedT>::Ptr merge(const PointCloud<PointT>& points, const 
   typename PointCloud<MergedT>::Ptr merged_ptr(new PointCloud<MergedT>());
 
   pcl::copyPointCloud (points, *merged_ptr);      
-  for (std::size_t i = 0; i < colors.size (); ++i)
-    merged_ptr->points[i].rgba = colors.points[i].rgba;
+  for (index_t i = 0; i < colors.size (); ++i)
+    merged_ptr->points[i].rgba = colors[i].rgba;
 
   return merged_ptr;
 }

@@ -257,7 +257,7 @@ public:
 
         std::vector<float> markers;
         markers.reserve(keypoints_->size() * 2);
-        for (std::size_t i = 0; i < keypoints_->size(); ++i) {
+        for (pcl::index_t i = 0; i < keypoints_->size(); ++i) {
           if (points_status_->indices[i] < 0)
             continue;
           const pcl::PointUV& uv = keypoints_->points[i];

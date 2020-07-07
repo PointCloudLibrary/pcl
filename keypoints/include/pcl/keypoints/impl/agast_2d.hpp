@@ -74,7 +74,7 @@ AgastKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
   // destination for intensity data; will be forwarded to AGAST
   std::vector<unsigned char> image_data (width*height);
 
-  for (std::size_t i = 0; i < image_data.size (); ++i)
+  for (index_t i = 0; i < static_cast<index_t>(image_data.size ()); ++i)
     image_data[i] = static_cast<unsigned char> (intensity_ ((*input_)[i]));
 
   if (!detector_)

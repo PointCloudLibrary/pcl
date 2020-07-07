@@ -216,7 +216,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   }
 
   label_indices.resize (max_id + 1);
-  for (std::size_t idx = 0; idx < input_->points.size (); idx++)
+  for (index_t idx = 0; idx < input_->size (); idx++)
   {
     if (labels[idx].label != invalid_label)
     {

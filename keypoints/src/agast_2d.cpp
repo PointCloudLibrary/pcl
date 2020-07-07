@@ -40,18 +40,20 @@
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 
+using pcl::index_t;
+
 /////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::AgastKeypoint2D<pcl::PointXYZ, pcl::PointUV>::detectKeypoints (pcl::PointCloud<pcl::PointUV> &output)
 {
   // image size
-  const std::size_t width = input_->width;
-  const std::size_t height = input_->height;
+  const index_t width = input_->width;
+  const index_t height = input_->height;
 
   // destination for intensity data; will be forwarded to AGAST
   std::vector<float> image_data (width * height);
 
-  for (std::size_t i = 0; i < image_data.size (); ++i)
+  for (index_t i = 0; i < static_cast<index_t>(image_data.size ()); ++i)
     image_data[i] = static_cast<float> (intensity_ ((*input_)[i]));
 
   if (!detector_)
@@ -256,7 +258,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
     // Need to copy the points
     pcl::PointCloud<pcl::PointUV> best_input;
     best_input.resize (nr_max_keypoints_);
-    for (std::size_t i = 0; i < scores.size (); ++i)
+    for (index_t i = 0; i < static_cast<index_t>(scores.size ()); ++i)
       best_input[i] = input[scores[i].idx];
     applyNonMaxSuppression (best_input, scores, output);
   }
@@ -284,7 +286,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
     // Need to copy the points
     pcl::PointCloud<pcl::PointUV> best_input;
     best_input.resize (nr_max_keypoints_);
-    for (std::size_t i = 0; i < scores.size (); ++i)
+    for (index_t i = 0; i < static_cast<index_t>(scores.size ()); ++i)
       best_input[i] = input[scores[i].idx];
     applyNonMaxSuppression (best_input, scores, output);
   }

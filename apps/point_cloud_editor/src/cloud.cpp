@@ -45,6 +45,8 @@
 #include <pcl/apps/point_cloud_editor/common.h>
 #include <pcl/apps/point_cloud_editor/copyBuffer.h>
 
+using pcl::index_t;
+
 const float Cloud::DEFAULT_POINT_DISPLAY_SIZE_ = 2.0f;
 const float Cloud::DEFAULT_POINT_HIGHLIGHT_SIZE_ = 4.0f;
 
@@ -416,7 +418,7 @@ Cloud::getDisplaySpacePoint (unsigned int index) const
 void
 Cloud::getDisplaySpacePoints (Point3DVector& pts) const
 {
-  for(std::size_t i = 0; i < cloud_.size(); ++i)
+  for(index_t i = 0; i < cloud_.size(); ++i)
     pts.push_back(getDisplaySpacePoint(i));
 }
 
@@ -462,12 +464,12 @@ Cloud::updateCloudMembers ()
   float *pt = &(cloud_.points[0].data[X]);
   std::copy(pt, pt+XYZ_SIZE, max_xyz_);
   std::copy(max_xyz_, max_xyz_+XYZ_SIZE, min_xyz_);
-  for (std::size_t i = 1; i < cloud_.size(); ++i)
+  for (const auto& pt : cloud_)
   {
     for (unsigned int j = 0; j < XYZ_SIZE; ++j)
     {
-      min_xyz_[j] = std::min(min_xyz_[j], cloud_.points[i].data[j]);
-      max_xyz_[j] = std::max(max_xyz_[j], cloud_.points[i].data[j]);
+      min_xyz_[j] = std::min(min_xyz_[j], pt.data[j]);
+      max_xyz_[j] = std::max(max_xyz_[j], pt.data[j]);
     }
   }
   float range = 0.0f;

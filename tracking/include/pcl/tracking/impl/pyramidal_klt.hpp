@@ -59,11 +59,11 @@ inline void
 PyramidalKLTTracker<PointInT, IntensityT>::setPointsToTrack(
     const pcl::PointCloud<pcl::PointUV>::ConstPtr& keypoints)
 {
-  if (keypoints->size() <= keypoints_nbr_)
+  if (keypoints->size() <= static_cast<index_t>(keypoints_nbr_))
     keypoints_ = keypoints;
   else {
     pcl::PointCloud<pcl::PointUV>::Ptr p(new pcl::PointCloud<pcl::PointUV>);
-    p->reserve(keypoints_nbr_);
+    p->reserve(static_cast<index_t>(keypoints_nbr_));
     for (std::size_t i = 0; i < keypoints_nbr_; ++i)
       p->push_back(keypoints->points[i]);
     keypoints_ = p;
@@ -82,7 +82,7 @@ PyramidalKLTTracker<PointInT, IntensityT>::setPointsToTrack(
   assert((input_ || ref_) && "[PyramidalKLTTracker] CALL setInputCloud FIRST!");
 
   pcl::PointCloud<pcl::PointUV>::Ptr keypoints(new pcl::PointCloud<pcl::PointUV>);
-  keypoints->reserve(keypoints_nbr_);
+  keypoints->reserve(static_cast<index_t>(keypoints_nbr_));
   for (std::size_t i = 0; i < keypoints_nbr_; ++i) {
     pcl::PointUV uv;
     uv.u = points->indices[i] % input_->width;

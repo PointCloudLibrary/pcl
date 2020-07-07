@@ -53,7 +53,7 @@ TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
   keypoints_indices_.reset (new pcl::PointIndices);
   keypoints_indices_->indices.reserve (input_->size ());
 
-  if (indices_->size () != input_->size ())
+  if (indices_->size () != static_cast<uindex_t>(input_->size ()))
   {
     PCL_ERROR ("[pcl::%s::initCompute] %s doesn't support setting indices!\n", name_.c_str ());
     return (false);

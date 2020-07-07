@@ -972,7 +972,7 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (
   line_2_colors->SetName ("Colors");
 
   // Create the first sets of lines
-  for (std::size_t i = 0; i < cloud->points.size (); i+=level)
+  for (index_t i = 0; i < cloud->size (); i+=level)
   {
     PointT p = cloud->points[i];
     p.x += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[0]) * scale;
@@ -991,7 +991,7 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (
   line_1_data->GetCellData ()->SetScalars (line_1_colors);
 
   // Create the second sets of lines
-  for (std::size_t i = 0; i < cloud->points.size (); i += level)
+  for (index_t i = 0; i < cloud->size (); i += level)
   {
     Eigen::Vector3f pc (pcs->points[i].principal_curvature[0],
                         pcs->points[i].principal_curvature[1],
@@ -1642,7 +1642,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     colors->SetNumberOfComponents (3);
     colors->SetName ("Colors");
     std::uint32_t offset = fields[rgb_idx].offset;
-    for (std::size_t i = 0; i < cloud->size (); ++i)
+    for (index_t i = 0; i < cloud->size (); ++i)
     {
       if (!isFinite (cloud->points[i]))
         continue;
@@ -1857,7 +1857,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   {
     int j = 0;
     std::uint32_t offset = fields[rgb_idx].offset;
-    for (std::size_t i = 0; i < cloud->size (); ++i)
+    for (index_t i = 0; i < cloud->size (); ++i)
     {
       if (!isFinite (cloud->points[i]))
         continue;

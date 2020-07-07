@@ -174,7 +174,6 @@ TYPED_TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
   Mesh half_edge_mesh;
   VertexIndices vi;
 
-  for (std::size_t i=0; i<this->vertices_.size (); ++i)
   for (const auto& vertex : this->vertices_)
   {
     half_edge_mesh.addVertex (vertex);

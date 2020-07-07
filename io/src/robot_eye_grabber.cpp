@@ -205,7 +205,7 @@ pcl::RobotEyeGrabber::convertPacketData (unsigned char *data_packet, std::size_t
     }
   }
 
-  if (point_cloud_xyzi_->size () > signal_point_cloud_size_)
+  if (point_cloud_xyzi_->size () > static_cast<index_t>(signal_point_cloud_size_))
   {
     if (point_cloud_signal_->num_slots () > 0)
       point_cloud_signal_->operator() (point_cloud_xyzi_);

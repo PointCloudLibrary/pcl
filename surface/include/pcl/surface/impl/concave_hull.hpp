@@ -185,7 +185,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   // Array of coordinates for each point
   coordT *points = reinterpret_cast<coordT*> (calloc (cloud_transformed.points.size () * dim_, sizeof(coordT)));
 
-  for (std::size_t i = 0; i < cloud_transformed.points.size (); ++i)
+  for (index_t i = 0; i < cloud_transformed.size (); ++i)
   {
     points[i * dim_ + 0] = static_cast<coordT> (cloud_transformed.points[i].x);
     points[i * dim_ + 1] = static_cast<coordT> (cloud_transformed.points[i].y);
@@ -205,7 +205,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     if (!cloud_transformed.is_dense)
     {
       bool NaNvalues = false;
-      for (std::size_t i = 0; i < cloud_transformed.size (); ++i)
+      for (index_t i = 0; i < cloud_transformed.size (); ++i)
       {
         if (!std::isfinite (cloud_transformed.points[i].x) ||
             !std::isfinite (cloud_transformed.points[i].y) ||
@@ -571,9 +571,9 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     hull_indices_.indices.clear ();
     hull_indices_.indices.reserve (alpha_shape.points.size ());
 
-    for (std::size_t i = 0; i < alpha_shape.points.size (); i++)
+    for (index_t i = 0; i < alpha_shape.size (); i++)
     {
-      tree.nearestKSearch (alpha_shape.points[i], 1, neighbor, distances);
+      tree.nearestKSearch (alpha_shape[i], 1, neighbor, distances);
       hull_indices_.indices.push_back (neighbor[0]);
     }
 

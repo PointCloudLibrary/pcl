@@ -481,7 +481,7 @@ TEST (PCL, unorganized_grid_cloud_Complete_Radius)
   query_indices.reserve (query_count);
   
   unsigned skip = static_cast<unsigned> (unorganized_grid_cloud->size ()) / query_count;
-  for (unsigned idx = 0; idx < unorganized_grid_cloud->size () && query_indices.size () < query_count; ++idx)
+  for (index_t idx = 0; idx < unorganized_grid_cloud->size () && query_indices.size () < query_count; ++idx)
      if ((rand () % skip) == 0 && isFinite (unorganized_grid_cloud->points [idx]))
        query_indices.push_back (idx);
   
@@ -551,7 +551,7 @@ void createQueryIndices (std::vector<int>& query_indices, PointCloud<PointXYZ>::
   query_indices.reserve (query_count);
   
   unsigned skip = static_cast<unsigned> (point_cloud->size ()) / query_count;
-  for (unsigned idx = 0; idx < point_cloud->size () && query_indices.size () < query_count; ++idx)
+  for (index_t idx = 0; idx < point_cloud->size () && query_indices.size () < query_count; ++idx)
      if ((rand () % skip) == 0 && isFinite (point_cloud->points [idx]))
        query_indices.push_back (idx);
 }

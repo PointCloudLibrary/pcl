@@ -51,8 +51,9 @@
 #include <locale>
 #include <stdexcept>
 
-std::string mesh_file_vtk_;
+using pcl::index_t;
 
+std::string mesh_file_vtk_;
 
 TEST (PCL, PLYPolygonMeshIO)
 {
@@ -83,7 +84,7 @@ TEST (PCL, PLYPolygonMeshIO)
   EXPECT_EQ (verts_binary_vtk.size (), verts.size ());
   EXPECT_EQ (verts_ascii_pcl.size (), verts.size ());
   EXPECT_EQ (verts_binary_pcl.size (), verts.size ());
-  for (std::size_t i = 0; i < verts.size (); i++)
+  for (index_t i = 0; i < verts.size (); i++)
   {
     EXPECT_NEAR (verts_ascii_vtk.at (i).x, verts.at (i).x, 1E-2);
     EXPECT_NEAR (verts_ascii_vtk.at (i).y, verts.at (i).y, 1E-2);
@@ -134,7 +135,7 @@ TEST (PCL, PLYPolygonMeshColoredIO)
   pcl::fromPCLPointCloud2 (mesh.cloud, vertices_rgba);
   mesh_rgb.polygons = mesh.polygons;
   mesh_rgba.polygons = mesh.polygons;
-  for (std::size_t i = 0; i < vertices_rgb.size (); ++i)
+  for (index_t i = 0; i < vertices_rgb.size (); ++i)
   {
     pcl::PointXYZRGB &pt_rgb = vertices_rgb.at (i);
     pcl::PointXYZRGBA &pt_rgba = vertices_rgba.at (i);
@@ -190,7 +191,7 @@ TEST (PCL, PLYPolygonMeshColoredIO)
   ASSERT_EQ (verts_rgba_ascii_pcl.size (), vertices_rgba.size ());
   ASSERT_EQ (verts_rgb_binary_pcl.size (), vertices_rgba.size ());
   ASSERT_EQ (verts_rgba_binary_pcl.size (), vertices_rgba.size ());
-  for (std::size_t i = 0; i < vertices_rgba.size (); i++)
+  for (index_t i = 0; i < vertices_rgba.size (); i++)
   {
     EXPECT_NEAR (verts_rgba_ascii_vtk.at (i).x, vertices_rgba.at (i).x, 1E-2);
     EXPECT_NEAR (verts_rgba_ascii_vtk.at (i).y, vertices_rgba.at (i).y, 1E-2);

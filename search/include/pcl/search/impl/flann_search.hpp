@@ -153,7 +153,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (
 
     if (! cloud.is_dense) // remove this check as soon as FLANN does NaN checks internally
     {
-      for (std::size_t i = 0; i < cloud.size(); i++)
+      for (index_t i = 0; i < cloud.size(); i++)
       {
         assert (point_representation_->isValid (cloud[i]) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
       }
@@ -166,7 +166,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::nearestKSearch (
     if (!can_cast)
     {
       data = new float[dim_*cloud.size ()];
-      for (std::size_t i = 0; i < cloud.size (); ++i)
+      for (index_t i = 0; i < cloud.size (); ++i)
       {
         float* out = data+i*dim_;
         point_representation_->vectorize (cloud[i],out);
@@ -282,7 +282,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::radiusSearch (
 
     if (! cloud.is_dense) // remove this check as soon as FLANN does NaN checks internally
     {
-      for (std::size_t i = 0; i < cloud.size(); i++)
+      for (index_t i = 0; i < cloud.size(); i++)
       {
         assert (point_representation_->isValid (cloud[i]) && "Invalid (NaN, Inf) point coordinates given to radiusSearch!");
       }
@@ -294,7 +294,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::radiusSearch (
     if (!can_cast)
     {
       data = new float[dim_*cloud.size ()];
-      for (std::size_t i = 0; i < cloud.size (); ++i)
+      for (index_t i = 0; i < cloud.size (); ++i)
       {
         float* out = data+i*dim_;
         point_representation_->vectorize (cloud[i],out);
@@ -361,7 +361,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::radiusSearch (
 template <typename PointT, typename FlannDistance> void
 pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
 {
-  std::size_t original_no_of_points = indices_ && !indices_->empty () ? indices_->size () : input_->size ();
+  index_t original_no_of_points = indices_ && !indices_->empty () ? indices_->size () : input_->size ();
 
   if (input_copied_for_flann_)
     delete input_flann_->ptr();
@@ -386,7 +386,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
     {
       input_flann_ = MatrixPtr (new flann::Matrix<float> (new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ()));
       float* cloud_ptr = input_flann_->ptr();
-      for (std::size_t i = 0; i < original_no_of_points; ++i)
+      for (index_t i = 0; i < original_no_of_points; ++i)
       {
         const PointT& point = (*input_)[i];
         // Check if the point is invalid
@@ -396,7 +396,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
           continue;
         }
 
-        index_mapping_.push_back (static_cast<index_t> (i));  // If the returned index should be for the indices vector
+        index_mapping_.push_back (i);  // If the returned index should be for the indices vector
 
         point_representation_->vectorize (point, cloud_ptr);
         cloud_ptr += dim_;
@@ -408,7 +408,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
   {
     input_flann_ = MatrixPtr (new flann::Matrix<float> (new float[original_no_of_points*point_representation_->getNumberOfDimensions ()], original_no_of_points, point_representation_->getNumberOfDimensions ()));
     float* cloud_ptr = input_flann_->ptr();
-    for (std::size_t indices_index = 0; indices_index < original_no_of_points; ++indices_index)
+    for (index_t indices_index = 0; indices_index < original_no_of_points; ++indices_index)
     {
       index_t cloud_index = (*indices_)[indices_index];
       const PointT&  point = (*input_)[cloud_index];
@@ -419,7 +419,7 @@ pcl::search::FlannSearch<PointT, FlannDistance>::convertInputToFlannMatrix ()
         continue;
       }
 
-      index_mapping_.push_back (static_cast<index_t> (indices_index));  // If the returned index should be for the indices vector
+      index_mapping_.push_back (indices_index);  // If the returned index should be for the indices vector
 
       point_representation_->vectorize (point, cloud_ptr);
       cloud_ptr += dim_;

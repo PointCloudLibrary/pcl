@@ -75,7 +75,7 @@ BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOut
   // destination for intensity data; will be forwarded to BRISK
   std::vector<unsigned char> image_data (width*height);
 
-  for (std::size_t i = 0; i < image_data.size (); ++i)
+  for (index_t i = 0; i < static_cast<index_t>(image_data.size ()); ++i)
     image_data[i] = static_cast<unsigned char> (intensity_ ((*input_)[i]));
 
   pcl::keypoints::brisk::ScaleSpace brisk_scale_space (octaves_);
@@ -93,15 +93,15 @@ BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOut
   if (remove_invalid_3D_keypoints_)
   {
     PointCloudOut output_clean;
-    for (std::size_t i = 0; i < output.size (); ++i)
+    for (const auto& point : output)
     {
       PointOutT pt;
       // Interpolate its position in 3D, as the "u" and "v" are subpixel accurate
-      bilinearInterpolation (input_, output[i].x, output[i].y, pt);
+      bilinearInterpolation (input_, point.x, point.y, pt);
 
       // Check if the point is finite
       if (pcl::isFinite (pt))
-        output_clean.push_back (output[i]);
+        output_clean.push_back (point);
     }
     output = output_clean;
     output.is_dense = true;      // set to true as there's no keypoint at an invalid XYZ

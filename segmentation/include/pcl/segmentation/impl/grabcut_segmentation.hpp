@@ -102,7 +102,7 @@ GrabCut<PointT>::initCompute ()
 
   // Initialize the working image
   image_.reset (new Image (input_->width, input_->height));
-  for (std::size_t i = 0; i < input_->size (); ++i)
+  for (index_t i = 0; i < input_->size (); ++i)
   {
     (*image_) [i] = Color (input_->points[i]);
   }

@@ -252,7 +252,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computeFeature (Poi
 
   output.is_dense = true;
   // Iterate over all points and compute the descriptors
-	for (std::size_t point_index = 0; point_index < indices_->size (); point_index++)
+	for (index_t point_index = 0; point_index < static_cast<index_t>(indices_->size ()); point_index++)
   {
     //output[point_index].descriptor.resize (descriptor_length_);
 

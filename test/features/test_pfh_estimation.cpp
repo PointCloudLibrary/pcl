@@ -54,6 +54,7 @@
 using PointT = pcl::PointNormal;
 using KdTreePtr = pcl::search::KdTree<PointT>::Ptr;
 using pcl::PointCloud;
+using pcl::index_t;
 
 static PointCloud<PointT>::Ptr cloud (new PointCloud<PointT> ());
 static std::vector<int> indices;
@@ -106,7 +107,7 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
   // All three of the above cases should produce equivalent results
   ASSERT_EQ (output0.size (), output1.size ());
   ASSERT_EQ (output1.size (), output2.size ());
-  for (std::size_t i = 0; i < output1.size (); ++i)
+  for (index_t i = 0; i < output1.size (); ++i)
   {
     for (int j = 0; j < ndims; ++j)
     {
@@ -139,7 +140,7 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
 
   // The two cases above should produce equivalent results
   ASSERT_EQ (output3.size (), output4.size ());
-  for (std::size_t i = 0; i < output3.size (); ++i)
+  for (index_t i = 0; i < output3.size (); ++i)
   {
     for (int j = 0; j < ndims; ++j)
     {
@@ -252,7 +253,7 @@ TEST (PCL, PFHEstimation)
   // Test results when setIndices and/or setSearchSurface are used
 
   pcl::IndicesPtr test_indices (new pcl::Indices (0));
-  for (std::size_t i = 0; i < cloud->size (); i+=3)
+  for (index_t i = 0; i < cloud->size (); i+=3)
     test_indices->push_back (static_cast<int> (i));
 
   testIndicesAndSearchSurface<pcl::PFHEstimation, PointT, PointT, PFHSignature125>
@@ -441,7 +442,7 @@ TYPED_TEST (FPFHTest, Estimation)
   // Test results when setIndices and/or setSearchSurface are used
 
   pcl::IndicesPtr test_indices (new pcl::Indices (0));
-  for (std::size_t i = 0; i < cloud->size (); i+=3)
+  for (index_t i = 0; i < cloud->size (); i+=3)
     test_indices->push_back (static_cast<int> (i));
 
   testIndicesAndSearchSurface<FPFHEstimation, PointT, PointT, FPFHSignature33>
@@ -536,7 +537,7 @@ main (int argc, char** argv)
 
 
   indices.reserve (cloud->size ());
-  for (std::size_t i = 0; i < cloud->size (); ++i)
+  for (index_t i = 0; i < cloud->size (); ++i)
     indices.push_back (static_cast<int> (i));
 
   tree.reset (new pcl::search::KdTree<PointT> (false));

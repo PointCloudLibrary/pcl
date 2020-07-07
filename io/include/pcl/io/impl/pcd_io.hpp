@@ -439,7 +439,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
     return (-1);
   }
 
-  if (static_cast<uindex_t>(cloud.width * cloud.height) != cloud.points.size ())
+  if ((cloud.width * cloud.height) != cloud.points.size ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Number of points different than width * height!");
     return (-1);
@@ -722,7 +722,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
     return (-1);
   }
 
-  if (static_cast<uindex_t>(cloud.width * cloud.height) != cloud.points.size ())
+  if ((cloud.width * cloud.height) != cloud.size ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Number of points different than width * height!");
     return (-1);

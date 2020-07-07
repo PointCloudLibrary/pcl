@@ -122,7 +122,7 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   PCL_INFO ("before computing output size: %u\n", output.size ());
-  output.resize (indices_->size ());
+  output.resize (static_cast<index_t>(indices_->size ()));
   for (std::size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {
     int i = (*indices_)[index_i];

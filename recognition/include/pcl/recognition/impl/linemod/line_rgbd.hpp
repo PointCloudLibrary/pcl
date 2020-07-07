@@ -166,10 +166,11 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
     float max_x = -std::numeric_limits<float>::max ();
     float max_y = -std::numeric_limits<float>::max ();
     float max_z = -std::numeric_limits<float>::max ();
-    std::size_t counter = 0;
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
+
+    index_t counter = 0;
+    for (const auto& pt : template_point_cloud)
     {
-      const PointXYZRGBA & p = template_point_cloud.points[j];
+      const PointXYZRGBA & p = pt;
 
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
@@ -200,9 +201,9 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
     bb.y = (min_y + bb.height / 2.0f) - center_y - bb.height / 2.0f;
     bb.z = (min_z + bb.depth / 2.0f) - center_z - bb.depth / 2.0f;
 
-    for (std::size_t j = 0; j < template_point_cloud.size (); ++j)
+    for (auto& pt : template_point_cloud)
     {
-      PointXYZRGBA p = template_point_cloud.points[j];
+      PointXYZRGBA p = pt;
 
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
@@ -211,7 +212,7 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
       p.y -= center_y;
       p.z -= center_z;
 
-      template_point_cloud.points[j] = p;
+      pt = p;
     }
   }
 
@@ -430,11 +431,11 @@ LineRGBD<PointXYZT, PointRGBT>::detect (
     const pcl::SparseQuantizedMultiModTemplate & linemod_template =
       linemod_.getTemplate (linemod_detection.template_id);
 
-    const std::size_t start_x = std::max (linemod_detection.x, 0);
-    const std::size_t start_y = std::max (linemod_detection.y, 0);
-    const std::size_t end_x = std::min (static_cast<std::size_t> (start_x + linemod_template.region.width),
+    const index_t start_x = std::max (linemod_detection.x, 0);
+    const index_t start_y = std::max (linemod_detection.y, 0);
+    const index_t end_x = std::min (static_cast<std::size_t> (start_x + linemod_template.region.width),
                                    static_cast<std::size_t> (cloud_xyz_->width));
-    const std::size_t end_y = std::min (static_cast<std::size_t> (start_y + linemod_template.region.height),
+    const index_t end_y = std::min (static_cast<std::size_t> (start_y + linemod_template.region.height),
                                    static_cast<std::size_t> (cloud_xyz_->height));
 
     detection.region.x = linemod_detection.x;
@@ -450,10 +451,10 @@ LineRGBD<PointXYZT, PointRGBT>::detect (
     float center_x = 0.0f;
     float center_y = 0.0f;
     float center_z = 0.0f;
-    std::size_t counter = 0;
-    for (std::size_t row_index = start_y; row_index < end_y; ++row_index)
+    index_t counter = 0;
+    for (index_t row_index = start_y; row_index < end_y; ++row_index)
     {
-      for (std::size_t col_index = start_x; col_index < end_x; ++col_index)
+      for (index_t col_index = start_x; col_index < end_x; ++col_index)
       {
         const PointXYZT & point = (*cloud_xyz_) (col_index, row_index);
 
@@ -652,19 +653,19 @@ LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
     typename LineRGBD<PointXYZT, PointRGBT>::Detection & detection = detections_[detection_index];
 
     // find depth with most valid points
-    const std::size_t start_x = std::max (detection.region.x, 0);
-    const std::size_t start_y = std::max (detection.region.y, 0);
-    const std::size_t end_x = std::min (static_cast<std::size_t> (detection.region.x + detection.region.width),
-                                   static_cast<std::size_t> (cloud_xyz_->width));
-    const std::size_t end_y = std::min (static_cast<std::size_t> (detection.region.y + detection.region.height),
-                                   static_cast<std::size_t> (cloud_xyz_->height));
+    const index_t start_x = std::max (detection.region.x, 0);
+    const index_t start_y = std::max (detection.region.y, 0);
+    const index_t end_x = std::min (static_cast<index_t> (detection.region.x + detection.region.width),
+                                   static_cast<index_t> (cloud_xyz_->width));
+    const index_t end_y = std::min (static_cast<index_t> (detection.region.y + detection.region.height),
+                                   static_cast<index_t> (cloud_xyz_->height));
 
 
     float min_depth = std::numeric_limits<float>::max ();
     float max_depth = -std::numeric_limits<float>::max ();
-    for (std::size_t row_index = start_y; row_index < end_y; ++row_index)
+    for (index_t row_index = start_y; row_index < end_y; ++row_index)
     {
-      for (std::size_t col_index = start_x; col_index < end_x; ++col_index)
+      for (index_t col_index = start_x; col_index < end_x; ++col_index)
       {
         const PointXYZT & point = (*cloud_xyz_) (col_index, row_index);
 
@@ -679,9 +680,9 @@ LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
     const std::size_t nr_bins = 1000;
     const float step_size = (max_depth - min_depth) / static_cast<float> (nr_bins-1);
     std::vector<std::size_t> depth_bins (nr_bins, 0);
-    for (std::size_t row_index = start_y; row_index < end_y; ++row_index)
+    for (index_t row_index = start_y; row_index < end_y; ++row_index)
     {
-      for (std::size_t col_index = start_x; col_index < end_x; ++col_index)
+      for (index_t col_index = start_x; col_index < end_x; ++col_index)
       {
         const PointXYZT & point = (*cloud_xyz_) (col_index, row_index);
 

@@ -45,6 +45,7 @@
 using pcl::octree::OctreeBase;
 using pcl::octree::OctreeIteratorBase;
 using pcl::octree::OctreeKey;
+using pcl::index_t;
 
 ////////////////////////////////////////////////////////
 //                  OctreeIteratorBase
@@ -1149,7 +1150,7 @@ struct OctreePointCloudAdjacencyBeginEndIteratorsTest
     // Generate Point Cloud
     typename PointCloudT::Ptr cloud (new PointCloudT (100, 1));
     const float max_inv = 1.f / float (RAND_MAX);
-    for (std::size_t i = 0; i < 100; ++i)
+    for (index_t i = 0; i < 100; ++i)
     {
       const PointT pt (10.f * (float (std::rand ()) * max_inv - .5f),
                        10.f * (float (std::rand ()) * max_inv - .5f),

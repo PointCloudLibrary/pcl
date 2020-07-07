@@ -208,7 +208,7 @@ template <typename PointT> void
 pcl::SupervoxelClustering<PointT>::computeVoxelData ()
 {
   voxel_centroid_cloud_.reset (new PointCloudT);
-  voxel_centroid_cloud_->resize (adjacency_octree_->getLeafCount ());
+  voxel_centroid_cloud_->resize (static_cast<index_t>(adjacency_octree_->getLeafCount ()));
   typename LeafVectorT::iterator leaf_itr = adjacency_octree_->begin ();
   typename PointCloudT::iterator cent_cloud_itr = voxel_centroid_cloud_->begin ();
   for (int idx = 0 ; leaf_itr != adjacency_octree_->end (); ++leaf_itr, ++cent_cloud_itr, ++idx)
@@ -609,7 +609,7 @@ template <typename PointT> pcl::PointCloud<pcl::PointNormal>::Ptr
 pcl::SupervoxelClustering<PointT>::makeSupervoxelNormalCloud (std::map<std::uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters)
 {
   pcl::PointCloud<pcl::PointNormal>::Ptr normal_cloud (new pcl::PointCloud<pcl::PointNormal>);
-  normal_cloud->resize (supervoxel_clusters.size ());
+  normal_cloud->resize (static_cast<index_t>(supervoxel_clusters.size ()));
   pcl::PointCloud<pcl::PointNormal>::iterator normal_cloud_itr = normal_cloud->begin ();
   for (auto sv_itr = supervoxel_clusters.cbegin (), sv_itr_end = supervoxel_clusters.cend ();
        sv_itr != sv_itr_end; ++sv_itr, ++normal_cloud_itr)
@@ -892,7 +892,7 @@ pcl::SupervoxelClustering<PointT>::SupervoxelHelper::getVoxels (typename pcl::Po
 {
   voxels.reset (new pcl::PointCloud<PointT>);
   voxels->clear ();
-  voxels->resize (leaves_.size ());
+  voxels->resize (static_cast<index_t>(leaves_.size ()));
   typename pcl::PointCloud<PointT>::iterator voxel_itr = voxels->begin ();
   for (auto leaf_itr = leaves_.cbegin (); leaf_itr != leaves_.cend (); ++leaf_itr, ++voxel_itr)
   {
@@ -907,7 +907,7 @@ pcl::SupervoxelClustering<PointT>::SupervoxelHelper::getNormals (typename pcl::P
 {
   normals.reset (new pcl::PointCloud<Normal>);
   normals->clear ();
-  normals->resize (leaves_.size ());
+  normals->resize (static_cast<index_t>(leaves_.size ()));
   typename pcl::PointCloud<Normal>::iterator normal_itr = normals->begin ();
   for (auto leaf_itr = leaves_.cbegin (); leaf_itr != leaves_.cend (); ++leaf_itr, ++normal_itr)
   {

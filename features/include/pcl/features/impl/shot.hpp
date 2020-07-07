@@ -779,7 +779,7 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
 
   output.is_dense = true;
   // Iterating over the entire index vector
-  for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+  for (index_t idx = 0; idx < static_cast<index_t>(indices_->size ()); ++idx)
   {
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];
@@ -851,7 +851,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
 
   output.is_dense = true;
   // Iterating over the entire index vector
-  for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+  for (index_t idx = 0; idx < static_cast<index_t>(indices_->size ()); ++idx)
   {
     bool lrf_is_nan = false;
     const PointRFT& current_frame = (*frames_)[idx];

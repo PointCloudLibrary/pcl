@@ -141,8 +141,8 @@ namespace pcl
         }
         PointCloudSource input = *cloud;
         // Set all the point.data[3] values to 1 to aid the rigid transformation
-        for (std::size_t i = 0; i < input.size (); ++i)
-          input[i].data[3] = 1.0;
+        for (auto& pt : input)
+          pt.data[3] = 1.0;
 
         pcl::IterativeClosestPoint<PointSource, PointTarget>::setInputSource (cloud);
         input_covariances_.reset ();

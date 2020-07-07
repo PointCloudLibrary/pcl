@@ -147,7 +147,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
     normals_->height = 1;
     normals_->width = static_cast<std::uint32_t> (normals_->size ());
 
-    for (std::size_t i = 0; i < output.size (); ++i)
+    for (index_t i = 0; i < output.size (); ++i)
     {
       using FieldList = typename pcl::traits::fieldList<PointOutT>::type;
       pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output.points[i], "normal_x", normals_->points[i].normal_x));
@@ -314,7 +314,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
 #ifdef _OPENMP
         const int tn = omp_get_thread_num ();
         // Size of projected points before computeMLSPointNormal () adds points
-        std::size_t pp_size = projected_points[tn].size ();
+        index_t pp_size = projected_points[tn].size ();
 #else
         PointCloudOut projected_points;
         NormalCloud projected_points_normals;
@@ -331,7 +331,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
         computeMLSPointNormal (index, nn_indices, projected_points[tn], projected_points_normals[tn], corresponding_input_indices[tn], mls_results_[mls_result_index]);
 
         // Copy all information from the input cloud to the output points (not doing any interpolation)
-        for (std::size_t pp = pp_size; pp < projected_points[tn].size (); ++pp)
+        for (index_t pp = pp_size; pp < projected_points[tn].size (); ++pp)
           copyMissingFields (input_->points[(*indices_)[cp]], projected_points[tn][pp]);
 #else
         computeMLSPointNormal (index, nn_indices, projected_points, projected_points_normals, *corresponding_input_indices_, mls_results_[mls_result_index]);
@@ -369,7 +369,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
   if (upsample_method_ == DISTINCT_CLOUD)
   {
     corresponding_input_indices_.reset (new PointIndices);
-    for (std::size_t dp_i = 0; dp_i < distinct_cloud_->size (); ++dp_i) // dp_i = distinct_point_i
+    for (index_t dp_i = 0; dp_i < distinct_cloud_->size (); ++dp_i) // dp_i = distinct_point_i
     {
       // Distinct cloud may have nan points, skip them
       if (!std::isfinite (distinct_cloud_->points[dp_i].x))

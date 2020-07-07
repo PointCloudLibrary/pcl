@@ -109,7 +109,7 @@ pcl::search::BruteForce<PointT>::denseKSearch (
     queue = std::priority_queue<Entry> (result.begin (), result.end ());
 
     // add the rest
-    for (; entry.index < static_cast<pcl::index_t>(input_->size ()); ++entry.index)
+    for (; entry.index < input_->size (); ++entry.index)
     {
       entry.distance = getDistSqr (input_->points[entry.index], point);
       if (queue.top ().distance > entry.distance)
@@ -226,7 +226,7 @@ pcl::search::BruteForce<PointT>::denseRadiusSearch (
   if (reserve == 0)
   {
     if (indices_)
-      reserve = std::min (indices_->size (), input_->size ());
+      reserve = std::min (static_cast<index_t>(indices_->size ()), input_->size ());
     else
       reserve = input_->size ();
   }
@@ -249,7 +249,7 @@ pcl::search::BruteForce<PointT>::denseRadiusSearch (
   }
   else
   {
-    for (std::size_t index = 0; index < input_->size (); ++index)
+    for (index_t index = 0; index < input_->size (); ++index)
     {
       distance = getDistSqr (input_->points[index], point);
       if (distance <= radius)
@@ -281,7 +281,7 @@ pcl::search::BruteForce<PointT>::sparseRadiusSearch (
   if (reserve == 0)
   {
     if (indices_)
-      reserve = std::min (indices_->size (), input_->size ());
+      reserve = std::min (static_cast<index_t>(indices_->size ()), input_->size ());
     else
       reserve = input_->size ();
   }
@@ -308,7 +308,7 @@ pcl::search::BruteForce<PointT>::sparseRadiusSearch (
   }
   else
   {
-    for (std::size_t index = 0; index < input_->size (); ++index)
+    for (index_t index = 0; index < input_->size (); ++index)
     {
       if (!std::isfinite (input_->points[index].x))
         continue;

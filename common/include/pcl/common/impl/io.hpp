@@ -357,7 +357,7 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in, pcl::PointCloud<PointT>
     cloud_out.header   = cloud_in.header;
     cloud_out.width    = cloud_in.width + left + right;
     cloud_out.height   = cloud_in.height + top + bottom;
-    if (cloud_out.size () != static_cast<uindex_t>(cloud_out.width * cloud_out.height))
+    if (cloud_out.size () != cloud_out.width * cloud_out.height)
       cloud_out.resize (cloud_out.width * cloud_out.height);
     cloud_out.is_dense = cloud_in.is_dense;
     cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;

@@ -186,8 +186,7 @@ namespace pcl
       void
       setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols)
       {
-        Base::setIndices (row_start, col_start, nb_rows, nb_cols);
-        compute_done_ = false;
+        setIndices(static_cast<index_t>(row_start), static_cast<index_t>(col_start), static_cast<index_t>(nb_rows), static_cast<index_t>(nb_cols));
       }
       
       /** \brief Mean accessor

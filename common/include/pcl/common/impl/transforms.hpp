@@ -268,7 +268,7 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                      const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform,
                      bool copy_all_fields)
 {
-  auto npts = indices.size ();
+  index_t npts = indices.size ();
   // In order to transform the data, we need to remove NaNs
   cloud_out.is_dense = cloud_in.is_dense;
   cloud_out.header   = cloud_in.header;
@@ -334,7 +334,7 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   // If the data is dense, we don't need to check for NaN
   if (cloud_in.is_dense)
   {
-    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (index_t i = 0; i < cloud_out.size (); ++i)
     {
       tf.se3 (cloud_in[i].data, cloud_out[i].data);
       tf.so3 (cloud_in[i].data_n, cloud_out[i].data_n);
@@ -343,11 +343,11 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   // Dataset might contain NaNs and Infs, so check for them first.
   else
   {
-    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (index_t i = 0; i < cloud_out.size (); ++i)
     {
-      if (!std::isfinite (cloud_in.points[i].x) ||
-          !std::isfinite (cloud_in.points[i].y) ||
-          !std::isfinite (cloud_in.points[i].z))
+      if (!std::isfinite (cloud_in[i].x) ||
+          !std::isfinite (cloud_in[i].y) ||
+          !std::isfinite (cloud_in[i].z))
         continue;
       tf.se3 (cloud_in[i].data, cloud_out[i].data);
       tf.so3 (cloud_in[i].data_n, cloud_out[i].data_n);
@@ -377,11 +377,11 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   // If the data is dense, we don't need to check for NaN
   if (cloud_in.is_dense)
   {
-    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (index_t i = 0; i < cloud_out.size (); ++i)
     {
       // Copy fields first, then transform
       if (copy_all_fields)
-        cloud_out.points[i] = cloud_in.points[indices[i]];
+        cloud_out[i] = cloud_in[indices[i]];
       tf.se3 (cloud_in[indices[i]].data, cloud_out[i].data);
       tf.so3 (cloud_in[indices[i]].data_n, cloud_out[i].data_n);
     }
@@ -389,15 +389,15 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   // Dataset might contain NaNs and Infs, so check for them first.
   else
   {
-    for (std::size_t i = 0; i < cloud_out.points.size (); ++i)
+    for (index_t i = 0; i < cloud_out.size (); ++i)
     {
       // Copy fields first, then transform
       if (copy_all_fields)
-        cloud_out.points[i] = cloud_in.points[indices[i]];
+        cloud_out[i] = cloud_in[indices[i]];
 
-      if (!std::isfinite (cloud_in.points[indices[i]].x) ||
-          !std::isfinite (cloud_in.points[indices[i]].y) ||
-          !std::isfinite (cloud_in.points[indices[i]].z))
+      if (!std::isfinite (cloud_in[indices[i]].x) ||
+          !std::isfinite (cloud_in[indices[i]].y) ||
+          !std::isfinite (cloud_in[indices[i]].z))
         continue;
 
       tf.se3 (cloud_in[indices[i]].data, cloud_out[i].data);

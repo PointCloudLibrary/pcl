@@ -463,7 +463,7 @@ TEST (PCL, CopyPointCloudWithSameTypes)
   pcl::copyPointCloud (cloud_in, cloud_out);
 
   ASSERT_EQ (cloud_in.size (), cloud_out.size ());
-  for (std::size_t i = 0; i < cloud_out.size (); ++i)
+  for (index_t i = 0; i < cloud_out.size (); ++i)
     EXPECT_XYZ_EQ (cloud_in[i], cloud_out[i]);
 
   pcl::copyPointCloud (cloud_in_empty, cloud_out);

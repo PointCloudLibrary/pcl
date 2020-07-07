@@ -236,23 +236,23 @@ pcl::SamplingSurfaceNormal<PointT>::computeMeanAndCovarianceMatrix (const pcl::P
   // create the buffer on the stack which is much faster than using cloud.points[indices[i]] and centroid as a buffer
   Eigen::Matrix<float, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<float, 1, 9, Eigen::RowMajor>::Zero ();
   std::size_t point_count = 0;
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
+  for (const auto& pt : cloud)
   {
-    if (!isFinite (cloud[i]))
+    if (!isFinite (pt))
     {
       continue;
     }
 
     ++point_count;
-    accu [0] += cloud[i].x * cloud[i].x;
-    accu [1] += cloud[i].x * cloud[i].y;
-    accu [2] += cloud[i].x * cloud[i].z;
-    accu [3] += cloud[i].y * cloud[i].y; // 4
-    accu [4] += cloud[i].y * cloud[i].z; // 5
-    accu [5] += cloud[i].z * cloud[i].z; // 8
-    accu [6] += cloud[i].x;
-    accu [7] += cloud[i].y;
-    accu [8] += cloud[i].z;
+    accu [0] += pt.x * pt.x;
+    accu [1] += pt.x * pt.y;
+    accu [2] += pt.x * pt.z;
+    accu [3] += pt.y * pt.y; // 4
+    accu [4] += pt.y * pt.z; // 5
+    accu [5] += pt.z * pt.z; // 8
+    accu [6] += pt.x;
+    accu [7] += pt.y;
+    accu [8] += pt.z;
   }
 
   accu /= static_cast<float> (point_count);

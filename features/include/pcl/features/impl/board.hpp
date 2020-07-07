@@ -579,7 +579,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computeFe
   }
 
   this->resetData ();
-  for (std::size_t point_idx = 0; point_idx < indices_->size (); ++point_idx)
+  for (index_t point_idx = 0; point_idx < static_cast<index_t>(indices_->size ()); ++point_idx)
   {
     Eigen::Matrix3f currentLrf;
     PointOutT &rf = output[point_idx];

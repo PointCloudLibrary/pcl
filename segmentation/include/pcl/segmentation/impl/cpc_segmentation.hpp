@@ -140,14 +140,14 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (std::uint32_t depth_levels_left
   for (const auto &seg_to_edge_points : seg_to_edge_points_map)
   {
     // if too small do not process
-    if (seg_to_edge_points.second->size () < min_segment_size_for_cutting_)
+    if (seg_to_edge_points.second->size () < static_cast<index_t>(min_segment_size_for_cutting_))
     {
       continue;
     }
 
     std::vector<double> weights;
     weights.resize (seg_to_edge_points.second->size ());
-    for (std::size_t cp = 0; cp < seg_to_edge_points.second->size (); ++cp)
+    for (index_t cp = 0; cp < seg_to_edge_points.second->size (); ++cp)
     {
       float& cur_weight = seg_to_edge_points.second->points[cp].intensity;
       cur_weight = cur_weight < concavity_tolerance_threshold_ ? 0 : 1;

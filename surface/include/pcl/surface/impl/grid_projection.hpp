@@ -758,9 +758,9 @@ pcl::GridProjection<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &p
   points.height = 1;
   points.is_dense = true;
 
-  points.resize (surface_.size ());
+  points.resize (static_cast<index_t>(surface_.size ()));
   // Copy the data from surface_ to cloud
-  for (std::size_t i = 0; i < points.size (); ++i)
+  for (index_t i = 0; i < points.size (); ++i)
   {
     points[i].x = surface_[i].x ();
     points[i].y = surface_[i].y ();

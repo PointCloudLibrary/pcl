@@ -604,29 +604,29 @@ pcl::MomentOfInertiaEstimation<PointT>::setIndices (const PointIndicesConstPtr& 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::MomentOfInertiaEstimation<PointT>::setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols)
+pcl::MomentOfInertiaEstimation<PointT>::setIndices (index_t row_start, index_t col_start, index_t nb_rows, index_t nb_cols)
 {
-  if ((nb_rows > static_cast<uindex_t>(input_->height)) || (row_start > static_cast<uindex_t>(input_->height)))
+  if ((nb_rows > input_->height) || (row_start > input_->height))
   {
     PCL_ERROR ("[PCLBase::setIndices] cloud is only %d height", input_->height);
     return;
   }
 
-  if ((nb_cols > static_cast<uindex_t>(input_->width)) || (col_start > static_cast<uindex_t>(input_->width)))
+  if ((nb_cols > input_->width) || (col_start > input_->width))
   {
     PCL_ERROR ("[PCLBase::setIndices] cloud is only %d width", input_->width);
     return;
   }
 
-  const std::size_t row_end = row_start + nb_rows;
-  if (row_end > static_cast<uindex_t>(input_->height))
+  const index_t row_end = row_start + nb_rows;
+  if (row_end > input_->height)
   {
     PCL_ERROR ("[PCLBase::setIndices] %d is out of rows range %d", row_end, input_->height);
     return;
   }
 
-  const std::size_t col_end = col_start + nb_cols;
-  if (col_end > static_cast<uindex_t>(input_->width))
+  const index_t col_end = col_start + nb_cols;
+  if (col_end > input_->width)
   {
     PCL_ERROR ("[PCLBase::setIndices] %d is out of columns range %d", col_end, input_->width);
     return;
@@ -634,13 +634,21 @@ pcl::MomentOfInertiaEstimation<PointT>::setIndices (std::size_t row_start, std::
 
   indices_.reset (new std::vector<int>);
   indices_->reserve (nb_cols * nb_rows);
-  for(std::size_t i = row_start; i < row_end; i++)
-    for(std::size_t j = col_start; j < col_end; j++)
-      indices_->push_back ((i * static_cast<uindex_t>(input_->width)) + j);
+  for(index_t i = row_start; i < row_end; i++)
+    for(index_t j = col_start; j < col_end; j++)
+      indices_->push_back ((i * input_->width) + j);
   fake_indices_ = false;
   use_indices_  = true;
 
   is_valid_ = false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT>
+template <typename T, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t>> void
+pcl::MomentOfInertiaEstimation<PointT>::setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols)
+{
+  setIndices(static_cast<index_t>(row_start), static_cast<index_t>(col_start), static_cast<index_t>(nb_rows), static_cast<index_t>(nb_cols));
 }
 
 #endif    // PCL_MOMENT_OF_INERTIA_ESTIMATION_HPP_

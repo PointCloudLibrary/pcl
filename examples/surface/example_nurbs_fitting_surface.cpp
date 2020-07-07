@@ -183,7 +183,7 @@ visualizeCurve (ON_NurbsCurve &curve, ON_NurbsSurface &surface, pcl::visualizati
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr curve_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
 
   pcl::on_nurbs::Triangulation::convertCurve2PointCloud (curve, surface, curve_cloud, 4);
-  for (std::size_t i = 0; i < curve_cloud->size () - 1; i++)
+  for (pcl::index_t i = 0; i < curve_cloud->size () - 1; i++)
   {
     pcl::PointXYZRGB &p1 = curve_cloud->at (i);
     pcl::PointXYZRGB &p2 = curve_cloud->at (i + 1);

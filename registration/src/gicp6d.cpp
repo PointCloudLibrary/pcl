@@ -117,7 +117,7 @@ namespace pcl
   {
     out.resize (in.size ());
 
-    for (std::size_t i = 0; i < in.size (); ++i)
+    for (index_t i = 0; i < in.size (); ++i)
     {
       out[i].x = in[i].x;
       out[i].y = in[i].y;
@@ -229,7 +229,7 @@ namespace pcl
 
       Eigen::Matrix3d R = transform_R.topLeftCorner<3, 3> ();
 
-      for (std::size_t i = 0; i < N; i++)
+      for (index_t i = 0; i < static_cast<index_t>(N); i++)
       {
         // MODIFICATION: take point from the CIELAB cloud instead
         PointXYZLAB query = (*cloud_lab_)[i];

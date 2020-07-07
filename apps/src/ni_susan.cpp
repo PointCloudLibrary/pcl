@@ -151,7 +151,7 @@ public:
 
         if (keypoints && !keypoints->empty()) {
           image_viewer_.removeLayer(getStrBool(keypts));
-          for (std::size_t i = 0; i < keypoints->size(); ++i) {
+          for (index_t i = 0; i < keypoints->size(); ++i) {
             int u = int(keypoints->points[i].label % cloud->width);
             int v = cloud->height - int(keypoints->points[i].label / cloud->width);
             image_viewer_.markPoint(u,

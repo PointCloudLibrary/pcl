@@ -110,7 +110,7 @@ Edge<PointInT, PointOutT>::sobelMagnitudeDirection(
   output.height = height;
   output.width = width;
 
-  for (std::size_t i = 0; i < output.size(); ++i) {
+  for (index_t i = 0; i < output.size(); ++i) {
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude =

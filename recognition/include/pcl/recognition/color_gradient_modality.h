@@ -355,16 +355,16 @@ processInputData ()
 
   pcl::PointCloud<pcl::RGB>::Ptr rgb_input_ (new pcl::PointCloud<pcl::RGB>());
   
-  const std::uint32_t width = input_->width;
-  const std::uint32_t height = input_->height;
+  const index_t width = input_->width;
+  const index_t height = input_->height;
 
   rgb_input_->resize (width*height);
   rgb_input_->width = width;
   rgb_input_->height = height;
   rgb_input_->is_dense = input_->is_dense;
-  for (std::size_t row_index = 0; row_index < height; ++row_index)
+  for (index_t row_index = 0; row_index < height; ++row_index)
   {
-    for (std::size_t col_index = 0; col_index < width; ++col_index)
+    for (index_t col_index = 0; col_index < width; ++col_index)
     {
       (*rgb_input_) (col_index, row_index).r = (*input_) (col_index, row_index).r;
       (*rgb_input_) (col_index, row_index).g = (*input_) (col_index, row_index).g;
@@ -412,8 +412,8 @@ void pcl::ColorGradientModality<PointInT>::
 extractFeatures (const MaskMap & mask, const std::size_t nr_features, const std::size_t modality_index,
                  std::vector<QuantizedMultiModFeature> & features) const
 {
-  const std::size_t width = mask.getWidth ();
-  const std::size_t height = mask.getHeight ();
+  const index_t width = mask.getWidth ();
+  const index_t height = mask.getHeight ();
   
   std::list<Candidate> list1;
   std::list<Candidate> list2;
@@ -421,9 +421,9 @@ extractFeatures (const MaskMap & mask, const std::size_t nr_features, const std:
 
   if (feature_selection_method_ == DISTANCE_MAGNITUDE_SCORE)
   {
-    for (std::size_t row_index = 0; row_index < height; ++row_index)
+    for (index_t row_index = 0; row_index < height; ++row_index)
     {
-      for (std::size_t col_index = 0; col_index < width; ++col_index)
+      for (index_t col_index = 0; col_index < width; ++col_index)
       {
         if (mask (col_index, row_index) != 0)
         {
@@ -608,9 +608,9 @@ extractFeatures (const MaskMap & mask, const std::size_t nr_features, const std:
 
     auto diff_mask = MaskMap::getDifferenceMask (mask, eroded_mask);
 
-    for (std::size_t row_index = 0; row_index < height; ++row_index)
+    for (index_t row_index = 0; row_index < height; ++row_index)
     {
-      for (std::size_t col_index = 0; col_index < width; ++col_index)
+      for (index_t col_index = 0; col_index < width; ++col_index)
       {
         if (diff_mask (col_index, row_index) != 0)
         {
@@ -698,16 +698,16 @@ pcl::ColorGradientModality<PointInT>::
 extractAllFeatures (const MaskMap & mask, const std::size_t, const std::size_t modality_index,
                  std::vector<QuantizedMultiModFeature> & features) const
 {
-  const std::size_t width = mask.getWidth ();
-  const std::size_t height = mask.getHeight ();
+  const index_t width = mask.getWidth ();
+  const index_t height = mask.getHeight ();
   
   std::list<Candidate> list1;
   std::list<Candidate> list2;
 
 
-  for (std::size_t row_index = 0; row_index < height; ++row_index)
+  for (index_t row_index = 0; row_index < height; ++row_index)
   {
-    for (std::size_t col_index = 0; col_index < width; ++col_index)
+    for (index_t col_index = 0; col_index < width; ++col_index)
     {
       if (mask (col_index, row_index) != 0)
       {
@@ -968,8 +968,8 @@ quantizeColorGradients ()
   //}
 
 
-  const std::size_t width = input_->width;
-  const std::size_t height = input_->height;
+  const index_t width = input_->width;
+  const index_t height = input_->height;
 
   quantized_color_gradients_.resize (width, height);
 
@@ -977,9 +977,9 @@ quantizeColorGradients ()
 
   //float min_angle = std::numeric_limits<float>::max ();
   //float max_angle = -std::numeric_limits<float>::max ();
-  for (std::size_t row_index = 0; row_index < height; ++row_index)
+  for (index_t row_index = 0; row_index < height; ++row_index)
   {
-    for (std::size_t col_index = 0; col_index < width; ++col_index)
+    for (index_t col_index = 0; col_index < width; ++col_index)
     {
       if (color_gradients_ (col_index, row_index).magnitude < gradient_magnitude_threshold_) 
       {

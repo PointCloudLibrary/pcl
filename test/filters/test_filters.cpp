@@ -2039,7 +2039,7 @@ TEST (MedianFilter, Filters)
   cloud_manual.is_dense = false;
   cloud_manual.resize (5 * 5);
 
-  for (std::size_t i = 0; i < 5; ++i)
+  for (index_t i = 0; i < 5; ++i)
   {
     cloud_manual (i, 0).z = static_cast<float> (i + 1);
     cloud_manual (i, 1).z = static_cast<float> (i + 6);
@@ -2099,7 +2099,7 @@ TEST (MedianFilter, Filters)
   out_1_correct (3, 4).z = 100.f;
   out_1_correct (4, 4).z = 100.f;
 
-  for (std::size_t i = 0; i < 5 * 5; ++i)
+  for (index_t i = 0; i < 5 * 5; ++i)
     EXPECT_NEAR (out_1_correct[i].z, out_1[i].z, 1e-5);
 
 
@@ -2119,7 +2119,7 @@ TEST (MedianFilter, Filters)
   out_2_correct = out_1_correct;
   out_2_correct (2, 4).z = 450.f;
 
-  for (std::size_t i = 0; i < 5 * 5; ++i)
+  for (index_t i = 0; i < 5 * 5; ++i)
     EXPECT_NEAR (out_2_correct[i].z, out_2[i].z, 1e-5);
 
 
@@ -2186,7 +2186,7 @@ TEST (NormalRefinement, Filters)
   // Run estimation
   pcl::NormalEstimation<pcl::PointXYZRGB, pcl::PointXYZRGBNormal> ne;
   cloud_organized_normal.reserve (cloud_organized_nonan.size ());
-  for (std::size_t i = 0; i < cloud_organized_nonan.size (); ++i)
+  for (index_t i = 0; i < cloud_organized_nonan.size (); ++i)
   {
     // Output point
     pcl::PointXYZRGBNormal normali;

@@ -107,7 +107,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initSimple3DGradientMet
   // number of DataType entries per element (equal or bigger than dimensions)
   index_t element_stride = sizeof (PointInT) / sizeof (float);
   // number of DataType entries per row (equal or bigger than element_stride number of elements per row)
-  index_t row_stride     = element_stride * static_cast<uindex_t>(input_->width);
+  index_t row_stride     = element_stride * input_->width;
 
   const float *data_ = reinterpret_cast<const float*> (&input_->points[0]);
 
@@ -125,7 +125,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCovarianceMatrixMet
   // number of DataType entries per element (equal or bigger than dimensions)
   index_t element_stride = sizeof (PointInT) / sizeof (float);
   // number of DataType entries per row (equal or bigger than element_stride number of elements per row)
-  index_t row_stride     = element_stride * static_cast<uindex_t>(input_->width);
+  index_t row_stride     = element_stride * input_->width;
 
   const float *data_ = reinterpret_cast<const float*> (&input_->points[0]);
 
@@ -312,8 +312,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 
     PointInT pointL = input_->points[point_index - rect_width_4_ - 1];
     PointInT pointR = input_->points[point_index + rect_width_4_ + 1];
-    PointInT pointU = input_->points[point_index - rect_height_4_ * static_cast<uindex_t>(input_->width) - 1];
-    PointInT pointD = input_->points[point_index + rect_height_4_ * static_cast<uindex_t>(input_->width) + 1];
+    PointInT pointU = input_->points[point_index - rect_height_4_ * input_->width - 1];
+    PointInT pointD = input_->points[point_index + rect_height_4_ * input_->width + 1];
 
     const float mean_x_z = mean_R_z - mean_L_z;
     const float mean_y_z = mean_D_z - mean_U_z;
@@ -825,7 +825,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
     current_row -= input_->width;
   }
 
-  if (indices_->size () < input_->size ())
+  if (indices_->size () < static_cast<uindex_t>(input_->size ()))
     computeFeaturePart (distanceMap, bad_point, output);
   else
     computeFeatureFull (distanceMap, bad_point, output);
@@ -1035,7 +1035,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
     if (use_depth_dependent_smoothing_)
     {
       // Iterating over the entire index vector
-      for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+      for (index_t idx = 0; idx < static_cast<index_t>(indices_->size ()); ++idx)
       {
         index_t pt_index = (*indices_)[idx];
         index_t u = pt_index % input_->width;
@@ -1079,7 +1079,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
     {
       float smoothing_constant = normal_smoothing_size_;
       // Iterating over the entire index vector
-      for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+      for (index_t idx = 0; idx < static_cast<index_t>(indices_->size ()); ++idx)
       {
         index_t pt_index = (*indices_)[idx];
         index_t u = pt_index % input_->width;
@@ -1126,7 +1126,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
 
     if (use_depth_dependent_smoothing_)
     {
-      for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+      for (index_t idx = 0; idx < static_cast<index_t>(indices_->size ()); ++idx)
       {
         index_t pt_index = (*indices_)[idx];
         index_t u = pt_index % input_->width;
@@ -1157,7 +1157,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
     else
     {
       float smoothing_constant = normal_smoothing_size_;
-      for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+      for (index_t idx = 0; idx < static_cast<index_t>(indices_->size ()); ++idx)
       {
         index_t pt_index = (*indices_)[idx];
         index_t u = pt_index % input_->width;

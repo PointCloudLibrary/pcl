@@ -119,8 +119,8 @@ pcl::search::Search<PointT>::nearestKSearch (
   {
     k_indices.resize (cloud.size ());
     k_sqr_distances.resize (cloud.size ());
-    for (std::size_t i = 0; i < cloud.size (); i++)
-      nearestKSearch (cloud, static_cast<index_t> (i), k, k_indices[i], k_sqr_distances[i]);
+    for (index_t i = 0; i < cloud.size (); i++)
+      nearestKSearch (cloud, i, k, k_indices[i], k_sqr_distances[i]);
   }
   else
   {
@@ -171,8 +171,8 @@ pcl::search::Search<PointT>::radiusSearch (
   {
     k_indices.resize (cloud.size ());
     k_sqr_distances.resize (cloud.size ());
-    for (std::size_t i = 0; i < cloud.size (); i++)
-      radiusSearch (cloud, static_cast<index_t> (i), radius,k_indices[i], k_sqr_distances[i], max_nn);
+    for (index_t i = 0; i < cloud.size (); i++)
+      radiusSearch (cloud, i, radius,k_indices[i], k_sqr_distances[i], max_nn);
   }
   else
   {

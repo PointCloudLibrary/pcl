@@ -230,7 +230,7 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
   std::vector<std::uint32_t> out_idx;
   pcl::on_nurbs::vector_vec2d out_pc;
 
-  for (std::size_t i = 0; i < cloud->size (); i++)
+  for (index_t i = 0; i < cloud->size (); i++)
   {
     double err;
     Eigen::Vector2d pc, tc;
@@ -352,7 +352,7 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
   pcl::on_nurbs::NurbsTools::computeBoundingBox (curve, a0, a1);
   double rScale = 1.0 / pcl::on_nurbs::NurbsTools::computeRScale (a0, a1);
 
-  for (std::size_t i = 0; i < cloud->size (); i++)
+  for (index_t i = 0; i < cloud->size (); i++)
   {
     double err, param;
     Eigen::Vector2d pc, tc;

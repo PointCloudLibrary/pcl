@@ -54,7 +54,7 @@ TEST (PCL, PCDGrabber)
     CloudT::ConstPtr cloud_from_file_grabber = grabber[i];
     EXPECT_EQ (grabbed_clouds[i]->size (), pcds_[i]->size ());
     EXPECT_EQ (cloud_from_file_grabber->size (), pcds_[i]->size ());
-    for (std::size_t j = 0; j < pcds_[i]->size (); j++)
+    for (index_t j = 0; j < pcds_[i]->size (); j++)
     {
       const PointT &pcd_pt = pcds_[i]->at(j);
       const PointT &grabbed_pt = grabbed_clouds[i]->at(j);
@@ -139,7 +139,7 @@ TEST (PCL, ImageGrabberTIFF)
   {
     // Also compare against dynamically loaded cloud
     CloudT::ConstPtr cloud_from_file_grabber = grabber[i];
-    for (std::size_t j = 0; j < pcds_[i]->size (); j++)
+    for (index_t j = 0; j < pcds_[i]->size (); j++)
     {
       const PointT &pcd_pt = pcds_[i]->at(j);
       const PointT &tiff_pt = tiff_clouds[i]->at(j);
@@ -218,7 +218,7 @@ TEST (PCL, ImageGrabberPCLZF)
   for (std::size_t i = 0; i < pcds_.size (); i++)
   {
     CloudT::ConstPtr cloud_from_file_grabber = grabber[i];
-    for (std::size_t j = 0; j < pcds_[i]->size (); j++)
+    for (index_t j = 0; j < pcds_[i]->size (); j++)
     {
       const PointT &pcd_pt = pcds_[i]->at(j);
       const PointT &pclzf_pt = pclzf_clouds[i]->at(j);
@@ -298,7 +298,7 @@ TEST (PCL, ImageGrabberOMP)
   for (std::size_t i = 0; i < pcds_.size (); i++)
   {
     CloudT::ConstPtr cloud_from_file_grabber = grabber[i];
-    for (std::size_t j = 0; j < pcds_[i]->size (); j++)
+    for (index_t j = 0; j < pcds_[i]->size (); j++)
     {
       const PointT &pcd_pt = pcds_[i]->at(j);
       const PointT &pclzf_pt = pclzf_clouds[i]->at(j);

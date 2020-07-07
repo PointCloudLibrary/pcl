@@ -227,17 +227,16 @@ public:
     keypoints3d.height = keypoints->height;
     keypoints3d.is_dense = true;
 
-    std::size_t j = 0;
-    for (std::size_t i = 0; i < keypoints->size(); ++i) {
+    index_t j = 0;
+    for (const auto& point : *keypoints) {
       const PointT& pt =
-          (*cloud)(static_cast<long unsigned int>(keypoints->points[i].u),
-                   static_cast<long unsigned int>(keypoints->points[i].v));
+          (*cloud)(point.u, point.v);
       if (!std::isfinite(pt.x) || !std::isfinite(pt.y) || !std::isfinite(pt.z))
         continue;
 
-      keypoints3d.points[j].x = pt.x;
-      keypoints3d.points[j].y = pt.y;
-      keypoints3d.points[j].z = pt.z;
+      keypoints3d[j].x = pt.x;
+      keypoints3d[j].y = pt.y;
+      keypoints3d[j].z = pt.z;
       ++j;
     }
 
@@ -297,9 +296,9 @@ public:
 
         if (keypoints && !keypoints->empty()) {
           image_viewer_.removeLayer(getStrBool(keypts));
-          for (std::size_t i = 0; i < keypoints->size(); ++i) {
-            int u = int(keypoints->points[i].u);
-            int v = int(keypoints->points[i].v);
+          for (const auto& pt : *keypoints) {
+            int u = int(pt.u);
+            int v = int(pt.v);
             image_viewer_.markPoint(u,
                                     v,
                                     visualization::red_color,

@@ -208,7 +208,7 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
   PointInTPtr keypoints_pointcloud;
 
   if (signatures_ != nullptr && processed_ != nullptr &&
-      (signatures_->size() == keypoints_pointcloud->points.size())) {
+      (signatures_->size() == keypoints_pointcloud->size())) {
     keypoints_pointcloud = keypoints_input_;
     signatures = signatures_;
     processed = processed_;

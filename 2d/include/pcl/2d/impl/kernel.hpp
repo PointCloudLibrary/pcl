@@ -139,7 +139,6 @@ kernel<PointT>::loGKernel(pcl::PointCloud<PointT>& kernel)
   }
 
   // Normalizing the kernel
-  for (std::size_t i = 0; i < kernel.size(); ++i)
   for (auto& k : kernel)
     k.intensity /= sum;
 }

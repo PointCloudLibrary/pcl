@@ -128,7 +128,7 @@ public:
 
     for (auto i = pt_indices_.cbegin (); i != pt_indices_.cend (); i++)
     {
-      Eigen::Vector2d p (cloud[*i]. x, cloud[*i]. y);
+      Eigen::Vector2d p (cloud[static_cast<index_t>(*i)]. x, cloud[static_cast<index_t>(*i)]. y);
       sx  += p;
       sxx += p * p.transpose ();
     }
@@ -235,8 +235,8 @@ public:
         normal_distributions_ (cells_[0], cells_[1])
   {
     // sort through all points, assigning them to distributions:
-    std::size_t used_points = 0;
-    for (std::size_t i = 0; i < cloud->size (); i++)
+    index_t used_points = 0;
+    for (index_t i = 0; i < cloud->size (); i++)
     if (NormalDist* n = normalDistForPoint (cloud->at (i)))
     {
       n->addIdx (i);
@@ -422,8 +422,8 @@ NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransformation 
     previous_transformation_ = transformation;
 
     ndt2d::ValueAndDerivatives<3, double> score = ndt2d::ValueAndDerivatives<3, double>::Zero ();
-    for (std::size_t i = 0; i < intm_cloud.size (); i++)
-      score += target_ndt.test (intm_cloud[i], cos_theta, sin_theta);
+    for (const auto& pt : intm_cloud)
+      score += target_ndt.test (pt, cos_theta, sin_theta);
 
     PCL_DEBUG ("[pcl::NormalDistributionsTransform2D::computeTransformation] NDT score %f (x=%f,y=%f,r=%f)\n",
       float (score.value), xytheta_transformation[0], xytheta_transformation[1], xytheta_transformation[2]

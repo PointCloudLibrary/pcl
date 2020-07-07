@@ -65,7 +65,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovariances(t
   std::vector<float> nn_dist_sq; nn_dist_sq.reserve (k_correspondences_);
 
   // We should never get there but who knows
-  if(cloud_covariances.size () < cloud->size ())
+  if(cloud_covariances.size () < static_cast<uindex_t>(cloud->size ()))
     cloud_covariances.resize (cloud->size ());
 
   MatricesVector::iterator matrices_iterator = cloud_covariances.begin ();
@@ -414,7 +414,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
 
     Eigen::Matrix3d R = transform_R.topLeftCorner<3,3> ();
 
-    for (std::size_t i = 0; i < N; i++)
+    for (index_t i = 0; i < static_cast<index_t>(N); i++)
     {
       PointSource query = output[i];
       query.getVector4fMap () = transformation_ * query.getVector4fMap ();

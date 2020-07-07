@@ -143,7 +143,7 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
     return (false);
   }
 
-  if (indices_->size () != input_->size ())
+  if (indices_->size () != static_cast<uindex_t>(input_->size ()))
   {
     PCL_ERROR ("[pcl::%s::initCompute] %s doesn't support setting indices!\n", name_.c_str ());
     return (false);
@@ -242,7 +242,7 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOu
   if (!nonmax_)
   {
     output = *response_;
-    for (std::size_t i = 0; i < response_->size (); ++i)
+    for (index_t i = 0; i < response_->size (); ++i)
       keypoints_indices_->indices.push_back (i);
   }
   else

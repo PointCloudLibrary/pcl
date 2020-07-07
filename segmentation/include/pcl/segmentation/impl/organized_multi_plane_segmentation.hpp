@@ -46,16 +46,18 @@
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
 
+using pcl::index_t;
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> pcl::PointCloud<PointT>
 projectToPlaneFromViewpoint (pcl::PointCloud<PointT>& cloud, Eigen::Vector4f& normal, Eigen::Vector3f& centroid, Eigen::Vector3f& vp)
 {
   Eigen::Vector3f norm (normal[0], normal[1], normal[2]); //(region.coefficients_[0], region.coefficients_[1], region.coefficients_[2]); 
   pcl::PointCloud<PointT> projected_cloud;
-  projected_cloud.resize (cloud.points.size ());
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
+  projected_cloud.resize (cloud.size ());
+  for (index_t i = 0; i < cloud.size (); i++)
   {
-    Eigen::Vector3f pt (cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
+    Eigen::Vector3f pt (cloud[i].x, cloud[i].y, cloud[i].z);
     //Eigen::Vector3f intersection = (vp, pt, norm, centroid);
     float u = norm.dot ((centroid - vp)) / norm.dot ((pt - vp));
     Eigen::Vector3f intersection (vp + u * (pt - vp));
@@ -116,9 +118,9 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   }
 
   // Calculate range part of planes' hessian normal form
-  std::vector<float> plane_d (input_->points.size ());
+  std::vector<float> plane_d (input_->size ());
   
-  for (std::size_t i = 0; i < input_->size (); ++i)
+  for (index_t i = 0; i < input_->size (); ++i)
     plane_d[i] = input_->points[i].getVector3fMap ().dot (normals_->points[i].getNormalVector3fMap ());
   
   // Make a comparator

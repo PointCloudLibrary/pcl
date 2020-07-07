@@ -50,7 +50,7 @@
 template <typename PointT> bool
 pcl::io::PointCloudImageExtractor<PointT>::extract (const PointCloud& cloud, pcl::PCLImage& img) const
 {
-  if (!cloud.isOrganized () || cloud.points.size () != static_cast<uindex_t>(cloud.width * cloud.height))
+  if (!cloud.isOrganized () || cloud.size () != (cloud.width * cloud.height))
     return (false);
 
   bool result = this->extractImpl (cloud, img);
@@ -58,7 +58,7 @@ pcl::io::PointCloudImageExtractor<PointT>::extract (const PointCloud& cloud, pcl
   if (paint_nans_with_black_ && result)
   {
     std::size_t size = img.encoding == "mono16" ? 2 : 3;
-    for (std::size_t i = 0; i < cloud.points.size (); ++i)
+    for (index_t i = 0; i < cloud.size (); ++i)
       if (!pcl::isFinite (cloud[i]))
         std::memset (&img.data[i * size], 0, size);
   }

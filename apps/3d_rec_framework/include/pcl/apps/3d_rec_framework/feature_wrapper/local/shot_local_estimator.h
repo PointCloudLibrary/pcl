@@ -107,8 +107,8 @@ public:
     shot_estimate.setInputNormals(normals);
     shot_estimate.setRadiusSearch(support_radius_);
     shot_estimate.compute(*shots);
-    signatures->resize(shots->points.size());
-    signatures->width = static_cast<int>(shots->points.size());
+    signatures->resize(shots->size());
+    signatures->width = static_cast<int>(shots->size());
     signatures->height = 1;
 
     int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);

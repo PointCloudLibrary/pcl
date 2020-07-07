@@ -344,9 +344,9 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
   }
 
   // Copy the non-planar points
-  non_plane_points.resize (all_points->size () - inliers->indices.size ());
-  non_plane_normals.resize (all_points->size () - inliers->indices.size ());
-  plane_points.resize (inliers->indices.size ());
+  non_plane_points.resize (static_cast<index_t>(all_points->size () - inliers->indices.size ()));
+  non_plane_normals.resize (static_cast<index_t>(all_points->size () - inliers->indices.size ()));
+  plane_points.resize (static_cast<index_t>(inliers->indices.size ()));
 
   // Make sure that the ids are sorted
   sort (inliers->indices.begin (), inliers->indices.end ());
@@ -368,7 +368,7 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
   }
 
   // Just copy the rest of the non-plane points
-  for ( std::size_t id = inliers->indices.size (); id < all_points->size () ; ++id, ++j )
+  for ( index_t id = static_cast<index_t>(inliers->indices.size ()); id < all_points->size () ; ++id, ++j )
   {
     non_plane_points.points[j] = all_points->points[id];
     non_plane_normals.points[j] = all_normals->points[id];

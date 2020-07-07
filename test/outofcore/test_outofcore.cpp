@@ -70,7 +70,7 @@ using namespace pcl::outofcore;
 
 // For doing exhaustive checks this is set low remove those, and this can be
 // set much higher
-const static std::uint64_t numPts (10000);
+const static pcl::index_t numPts (10000);
 
 constexpr std::uint32_t rngseed = 0xAAFF33DD;
 
@@ -746,7 +746,7 @@ TEST_F (OutofcoreTest, PointCloud2_Insertion)
   pcl::PointCloud<pcl::PointXYZ> point_cloud;
 
   point_cloud.points.reserve (numPts);
-  point_cloud.width = static_cast<std::uint32_t> (numPts);
+  point_cloud.width = numPts;
   point_cloud.height = 1;
 
   for (std::size_t i=0; i < numPts; i++)

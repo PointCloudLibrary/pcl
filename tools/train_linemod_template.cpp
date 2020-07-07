@@ -107,7 +107,7 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
 
   // Mask off points outside the specified near and far depth thresholds
   pcl::IndicesPtr indices (new std::vector<int>);
-  for (std::size_t i = 0; i < input->size (); ++i)
+  for (index_t i = 0; i < input->size (); ++i)
   {
     const float z = input->points[i].z;
     if (min_depth < z && z < max_depth)
@@ -138,7 +138,7 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
 
   // Mask off any foreground points that are too high above the detected plane
   const std::vector<float> & c = coefficients->values;
-  for (std::size_t i = 0; i < input->size (); ++i)
+  for (index_t i = 0; i < input->size (); ++i)
   {
     if (foreground_mask[i])
     {

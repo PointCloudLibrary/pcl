@@ -117,10 +117,10 @@ pcl::visualization::ImageViewer::addMask (
   search.setInputCloud (image);
   std::vector<float> xy;
   xy.reserve (mask.size () * 2);
-  for (std::size_t i = 0; i < mask.size (); ++i)
+  for (const auto& pt : mask)
   {
     pcl::PointXY p_projected;
-    search.projectPoint (mask[i], p_projected);
+    search.projectPoint (pt, p_projected);
 
     xy.push_back (p_projected.x);
     xy.push_back (static_cast<float> (image->height) - p_projected.y);

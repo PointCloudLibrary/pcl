@@ -178,7 +178,7 @@ pcl::SHOTLocalReferenceFrameEstimation<PointInT, PointOutT>::computeFeature (Poi
   }
   tree_->setSortedResults (true);
 
-  for (std::size_t i = 0; i < indices_->size (); ++i)
+  for (index_t i = 0; i < static_cast<index_t>(indices_->size ()); ++i)
   {
     // point result
     Eigen::Matrix3f rf;

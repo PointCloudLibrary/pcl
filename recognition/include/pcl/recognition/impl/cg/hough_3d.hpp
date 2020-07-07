@@ -110,14 +110,14 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::tr
 
   // compute model centroid
   Eigen::Vector3f centroid (0, 0, 0);
-  for (std::size_t i = 0; i < input_->size (); ++i)
+  for (index_t i = 0; i < input_->size (); ++i)
   {
     centroid += input_->at (i).getVector3fMap ();
   }
   centroid /= static_cast<float> (input_->size ());
 
   // compute model votes
-  for (std::size_t i = 0; i < input_->size (); ++i)
+  for (index_t i = 0; i < input_->size (); ++i)
   {
     Eigen::Vector3f x_ax ((*input_rf_)[i].x_axis[0], (*input_rf_)[i].x_axis[1], (*input_rf_)[i].x_axis[2]);
     Eigen::Vector3f y_ax ((*input_rf_)[i].y_axis[0], (*input_rf_)[i].y_axis[1], (*input_rf_)[i].y_axis[2]);

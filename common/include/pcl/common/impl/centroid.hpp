@@ -694,7 +694,7 @@ demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   cloud_out.resize (static_cast<index_t>(indices.size ()));
 
   // Subtract the centroid from cloud_in
-  for (index_t i = 0; i < indices.size (); ++i)
+  for (index_t i = 0; i < static_cast<index_t>(indices.size ()); ++i)
   {
     cloud_out[i].x = static_cast<float> (cloud_in[indices[i]].x - centroid[0]);
     cloud_out[i].y = static_cast<float> (cloud_in[indices[i]].y - centroid[1]);

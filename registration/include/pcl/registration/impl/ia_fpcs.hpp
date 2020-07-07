@@ -647,7 +647,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
 
   // loop over first point pair correspondences and store intermediate points 'e' in new point cloud
   PointCloudSourcePtr cloud_e (new PointCloudSource);
-  cloud_e->resize (pairs_a.size () * 2);
+  cloud_e->resize (static_cast<index_t>(pairs_a.size () * 2));
   PointCloudSourceIterator it_pt = cloud_e->begin ();
   for (const auto &pair : pairs_a)
   {

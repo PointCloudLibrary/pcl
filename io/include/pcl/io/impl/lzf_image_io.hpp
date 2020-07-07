@@ -240,13 +240,13 @@ LZFRGB24ImageReader::read (
   unsigned char *color_g = reinterpret_cast<unsigned char*> (&uncompressed_data[getWidth () * getHeight ()]);
   unsigned char *color_b = reinterpret_cast<unsigned char*> (&uncompressed_data[2 * getWidth () * getHeight ()]);
 
-  for (std::size_t i = 0; i < cloud.size (); ++i, ++rgb_idx)
+  for (auto& pt : cloud)
   {
-    PointT &pt = cloud.points[i];
-
     pt.b = color_b[rgb_idx];
     pt.g = color_g[rgb_idx];
     pt.r = color_r[rgb_idx];
+
+    rgb_idx++;
   }
   return (true);
 }
@@ -470,7 +470,7 @@ LZFBayer8ImageReader::read (
   cloud.height = getHeight ();
   cloud.resize (getWidth () * getHeight ());
   int rgb_idx = 0;
-  for (std::size_t i = 0; i < cloud.size (); ++i, rgb_idx += 3)
+  for (index_t i = 0; i < cloud.size (); ++i, rgb_idx += 3)
   {
     PointT &pt = cloud.points[i];
 

@@ -180,10 +180,10 @@ public:
     keypoints3d.height = keypoints->height;
     keypoints3d.is_dense = true;
 
-    std::size_t j = 0;
-    for (std::size_t i = 0; i < keypoints->size(); ++i) {
+    index_t j = 0;
+    for (const auto& point : keypoints->points) {
       PointT pt =
-          bilinearInterpolation(cloud, keypoints->points[i].x, keypoints->points[i].y);
+          bilinearInterpolation(cloud, point.x, point.y);
 
       keypoints3d.points[j].x = pt.x;
       keypoints3d.points[j].y = pt.y;
@@ -244,9 +244,9 @@ public:
         image_viewer_.showRGBImage<PointT>(cloud);
 
         image_viewer_.removeLayer(getStrBool(keypts));
-        for (std::size_t i = 0; i < keypoints->size(); ++i) {
-          int u = int(keypoints->points[i].x);
-          int v = int(keypoints->points[i].y);
+        for(const auto& pt : keypoints->points) {
+          int u = int(pt.x);
+          int v = int(pt.y);
           image_viewer_.markPoint(u,
                                   v,
                                   visualization::red_color,

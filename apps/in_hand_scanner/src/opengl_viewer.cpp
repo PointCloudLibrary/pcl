@@ -926,7 +926,7 @@ pcl::ihs::OpenGLViewer::drawMeshes ()
         }
         case COL_VISCONF:
         {
-          for (std::size_t i=0; i<mesh.vertices.size (); ++i)
+          for (index_t i=0; i<mesh.vertices.size (); ++i)
           {
             const unsigned int n = pcl::ihs::countDirections (mesh.vertices [i].directions);
             const unsigned int index = static_cast <unsigned int> (
