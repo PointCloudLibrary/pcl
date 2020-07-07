@@ -373,27 +373,27 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
 template<typename PointT> int
 pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint(const Eigen::MatrixXi& relative_coordinates, const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const
 {
-  neighbors.clear();
+  neighbors.clear ();
 
   // Find displacement coordinates
   Eigen::Vector4i ijk = (reference_point.getArray4fMap() / leaf_size_.array()).template cast<int>();
   ijk[3] = 0;
   Eigen::Array4i diff2min = min_b_ - ijk;
   Eigen::Array4i diff2max = max_b_ - ijk;
-  neighbors.reserve(relative_coordinates.cols());
+  neighbors.reserve (relative_coordinates.cols ());
 
   // Check each neighbor to see if it is occupied and contains sufficient points
-  for (Eigen::Index ni = 0; ni < relative_coordinates.cols(); ni++)
+  for (Eigen::Index ni = 0; ni < relative_coordinates.cols (); ni++)
   {
-    Eigen::Vector4i displacement = (Eigen::Vector4i() << relative_coordinates.col(ni), 0).finished();
+    Eigen::Vector4i displacement = (Eigen::Vector4i () << relative_coordinates.col (ni), 0).finished ();
     // Checking if the specified cell is in the grid
-    if ((diff2min <= displacement.array ()).all() && (diff2max >= displacement.array ()).all())
+    if ((diff2min <= displacement.array ()).all () && (diff2max >= displacement.array ()).all ())
     {
       typename std::map<std::size_t, Leaf>::const_iterator leaf_iter = leaves_.find (((ijk + displacement - min_b_).dot (divb_mul_)));
-      if (leaf_iter != leaves_.end() && leaf_iter->second.nr_points >= min_points_per_voxel_)
+      if (leaf_iter != leaves_.end () && leaf_iter->second.nr_points >= min_points_per_voxel_)
       {
         LeafConstPtr leaf = &(leaf_iter->second);
-        neighbors.push_back(leaf);
+        neighbors.push_back (leaf);
       }
     }
   }
