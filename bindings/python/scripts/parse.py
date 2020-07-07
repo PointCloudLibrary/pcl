@@ -135,7 +135,7 @@ def main():
         )
 
         output_filepath = utils.get_json_output_path(
-            source=source, output_dir=f"{args.json_output_path}/json",
+            source=source, output_dir=utils.join_path(args.json_output_path, "json"),
         )
         utils.dump_json(filepath=output_filepath, info=parsed_info)
 
