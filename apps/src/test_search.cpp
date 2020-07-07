@@ -45,10 +45,10 @@ main(int argc, char** argv)
     pcl::io::loadPCDFile(pcd_path, *cloud);
   else {
     cloud->resize(1000000);
-    for (auto& pt : (*cloud)) {
-      (pt.x = static_cast<float>(rand() / RAND_MAX);
-      (pt.y = static_cast<float>(rand() / RAND_MAX);
-      (pt.z = static_cast<float>(rand() / RAND_MAX);
+    for (auto& pt : *cloud) {
+      pt.x = static_cast<float>(rand() / RAND_MAX);
+      pt.y = static_cast<float>(rand() / RAND_MAX);
+      pt.z = static_cast<float>(rand() / RAND_MAX);
     }
   }
 
