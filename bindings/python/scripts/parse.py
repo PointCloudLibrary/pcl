@@ -5,6 +5,17 @@ import utils
 
 
 def is_node_in_this_file(cursor, filename):
+    """
+    Checks if the node in the AST belongs to the file
+    
+    Arguments:
+        - cursor : The cursor pointing to the node
+        - filename : The file's name to check the node against
+        
+    Returns:
+        - True/False (bool)
+    """
+
     if cursor.location.file and cursor.location.file.name == filename:
         return True
     else:
@@ -12,6 +23,18 @@ def is_node_in_this_file(cursor, filename):
 
 
 def print_ast(cursor, this_filename, depth):
+    """
+    Prints the AST by recursively traversing the AST
+
+    Arguments:
+        - cursor: The cursor pointing to a node
+        - this_filename: The file's name to check if the node belongs to it
+        - depth: The depth of the node (root=0)
+    
+    Returns:
+        - None
+    """
+
     if cursor.spelling:
         print(
             "-" * depth,
@@ -27,6 +50,20 @@ def print_ast(cursor, this_filename, depth):
 
 
 def generate_parsed_info(cursor, this_filename, depth):
+    """
+    Generates parsed information by recursively traversing the AST
+
+    Arguments:
+        - cursor: The cursor pointing to a node
+        - this_filename: The file's name to check if the node belongs to it
+        - depth: The depth of the node (root=0)
+
+    Returns:
+        - parsed_info (dict): 
+            - Contains key-value pairs of various traits of a node
+            - The key 'members' contains the node's children's `parsed_info`
+    """
+
     parsed_info = dict()
 
     if cursor.spelling:
@@ -59,6 +96,17 @@ def generate_parsed_info(cursor, this_filename, depth):
 
 
 def get_compilation_commands(compilation_database_path, filename):
+    """
+    Returns the compilation commands extracted from the the compile command
+
+    Arguments:
+        - compilation_database_path: The path to `compile_commands.json`
+        - filename: The file's name to get it's compilation commands
+
+    Returns:
+        - compilation commands (list): The arguments passed to the compiler
+    """
+
     compilation_database = clang.CompilationDatabase.fromDirectory(
         buildDir=compilation_database_path
     )
