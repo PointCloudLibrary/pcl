@@ -12,6 +12,10 @@ def ensure_dir_exists(dir):
         os.makedirs(dir)
 
 
+def get_parent_directory(file):
+    return os.path.dirname(os.path.dirname(file))
+
+
 def get_json_output_path(source, output_dir):
     x_list = source.split("pcl/", 1)[-1]
     x_list = x_list.split("/")
@@ -34,6 +38,16 @@ def dump_json(filepath, info):
 def parse_arguments(args, script):
     if script == "parse":
         parser = argparse.ArgumentParser(description="C++ libclang parser")
+        parser.add_argument(
+            "--compilation_database_path",
+            default=get_parent_directory(file=__file__),
+            help="Path to compilation database (json)",
+        )
+        parser.add_argument(
+            "--json_output_path",
+            default=get_parent_directory(file=__file__),
+            help="Output path for generated json",
+        )
         parser.add_argument("files", nargs="+", help="The source files to parse")
         return parser.parse_args(args)
 
