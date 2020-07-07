@@ -363,13 +363,13 @@ namespace pcl
 
       /** \brief Get the voxels surrounding point p designated by #relative_coordinates.
        * \note Only voxels containing a sufficient number of points are used.
-       * \param[in] relative_coordinates relative coordinates of neighboring voxels
+       * \param[in] relative_coordinates 3xN matrix that represents relative coordinates of N neighboring voxels with respect to the center voxel
        * \param[in] reference_point the point to get the leaf structure at
        * \param[out] neighbors
        * \return number of neighbors found
        */
       int
-      getNeighborhoodAtPoint (const Eigen::MatrixXi& relative_coordinates, const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
+      getNeighborhoodAtPoint (const Eigen::Matrix<int, 3, Eigen::Dynamic>& relative_coordinates, const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
 
       /** \brief Get the voxels surrounding point p, not including the voxel containing point p.
        * \note Only voxels containing a sufficient number of points are used.
@@ -456,7 +456,6 @@ namespace pcl
         {
           auto voxel = leaves_.find(voxel_centroids_leaf_indices_[k_index]);
           if (voxel == leaves_.end()) {
-            PCL_WARN("Accessing to non-existent voxel");
             continue;
           }
 
@@ -516,7 +515,6 @@ namespace pcl
         {
           auto voxel = leaves_.find(voxel_centroids_leaf_indices_[k_index]);
           if(voxel == leaves_.end()) {
-            PCL_WARN("Accessing to non-existent voxel");
             continue;
           }
 

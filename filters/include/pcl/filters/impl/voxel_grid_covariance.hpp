@@ -371,7 +371,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
-pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint (const Eigen::MatrixXi& relative_coordinates, const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const
+pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint (const Eigen::Matrix<int, 3, Eigen::Dynamic>& relative_coordinates, const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const
 {
   neighbors.clear ();
 
@@ -389,7 +389,7 @@ pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint (const Eigen::MatrixXi&
     // Checking if the specified cell is in the grid
     if ((diff2min <= displacement.array ()).all () && (diff2max >= displacement.array ()).all ())
     {
-      typename std::map<std::size_t, Leaf>::const_iterator leaf_iter = leaves_.find (((ijk + displacement - min_b_).dot (divb_mul_)));
+      const auto leaf_iter = leaves_.find (((ijk + displacement - min_b_).dot (divb_mul_)));
       if (leaf_iter != leaves_.end () && leaf_iter->second.nr_points >= min_points_per_voxel_)
       {
         LeafConstPtr leaf = &(leaf_iter->second);
