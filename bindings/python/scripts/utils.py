@@ -16,18 +16,23 @@ def get_parent_directory(file):
     return os.path.dirname(os.path.dirname(file))
 
 
+def join_path(*args):
+    return os.path.join(*args)
+
+
 def get_json_output_path(source, output_dir):
-    x_list = source.split("pcl/", 1)[-1]
-    x_list = x_list.split("/")
+    delimiter = "/" if "/" in source else "\\"
+    x_list = source.split(f"pcl{delimiter}", 1)[-1]
+    x_list = x_list.split(delimiter)
     extra = ["pcl", "include"]
 
     filename = x_list[-1].split(".")[0]
-    relative_dir = "/".join(x for x in x_list[:-1] if x not in extra)
-    dir = os.path.join(output_dir, relative_dir)
+    relative_dir = delimiter.join(x for x in x_list[:-1] if x not in extra)
+    dir = join_path(output_dir, relative_dir)
 
     ensure_dir_exists(dir)
 
-    return get_realpath(f"{dir}/{filename}.json")
+    return get_realpath(join_path(dir, f"{filename}.json"))
 
 
 def dump_json(filepath, info):
@@ -50,4 +55,3 @@ def parse_arguments(args, script):
         )
         parser.add_argument("files", nargs="+", help="The source files to parse")
         return parser.parse_args(args)
-
