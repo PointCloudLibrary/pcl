@@ -123,8 +123,7 @@ def main():
         index = clang.Index.create()
 
         compilation_commands = get_compilation_commands(
-            compilation_database_path="/home/divyanshu/Projects/active/pcl/bindings/python",
-            filename=source,
+            compilation_database_path=args.compilation_database_path, filename=source,
         )
 
         tu = index.parse(path=source, args=compilation_commands)
@@ -136,8 +135,7 @@ def main():
         )
 
         output_filepath = utils.get_json_output_path(
-            source=source,
-            output_dir="/home/divyanshu/Projects/active/pcl/bindings/python/json",
+            source=source, output_dir=f"{args.json_output_path}/json",
         )
         utils.dump_json(filepath=output_filepath, info=parsed_info)
 
