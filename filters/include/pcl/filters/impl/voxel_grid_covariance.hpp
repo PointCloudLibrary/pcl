@@ -371,7 +371,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
-pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint(const Eigen::MatrixXi& relative_coordinates, const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const
+pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint (const Eigen::MatrixXi& relative_coordinates, const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const
 {
   neighbors.clear ();
 
