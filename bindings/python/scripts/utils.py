@@ -40,7 +40,7 @@ def dump_json(filepath, info):
         json.dump(info, f, indent=2)
 
 
-def parse_arguments(args, script):
+def parse_arguments(script):
     if script == "parse":
         parser = argparse.ArgumentParser(description="C++ libclang parser")
         parser.add_argument(
@@ -54,4 +54,4 @@ def parse_arguments(args, script):
             help="Output path for generated json",
         )
         parser.add_argument("files", nargs="+", help="The source files to parse")
-        return parser.parse_args(args)
+        return parser.parse_args()
