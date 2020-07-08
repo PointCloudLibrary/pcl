@@ -2,6 +2,7 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/types.h>
 
 #include <string>
 #include <vector>
@@ -17,7 +18,7 @@ namespace pcl
     Vertices ()
     {}
 
-    std::vector<std::uint32_t> vertices;
+    std::vector<index_t> vertices;
 
   public:
     using Ptr = shared_ptr<Vertices>;

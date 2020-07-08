@@ -53,6 +53,8 @@
 
 #include <type_traits>
 
+using pcl::index_t;
+
 ////////////////////////////////////////////////////////////////////////////////
 
 template <class MeshTraitsT>
@@ -90,7 +92,7 @@ class TestMeshConversion : public ::testing::Test
       }
 
       // Faces
-      std::vector <std::uint32_t> face;
+      std::vector <index_t> face;
 
       face.push_back (0);
       face.push_back (1);
@@ -131,8 +133,8 @@ class TestMeshConversion : public ::testing::Test
     }
 
     pcl::PointCloud <pcl::PointXYZRGBNormal> vertices_;
-    std::vector <std::vector <std::uint32_t> >    non_manifold_faces_;
-    std::vector <std::vector <std::uint32_t> >    manifold_faces_;
+    std::vector <std::vector <index_t> >    non_manifold_faces_;
+    std::vector <std::vector <index_t> >    manifold_faces_;
 
   public:
     PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -164,7 +166,7 @@ TYPED_TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
   using VertexIndex = typename Mesh::VertexIndex;
   using VertexIndices = typename Mesh::VertexIndices;
 
-  const std::vector <std::vector <std::uint32_t> > faces =
+  const std::vector <std::vector <index_t> > faces =
       Mesh::IsManifold::value ? this->manifold_faces_ :
                                 this->non_manifold_faces_;
 
@@ -269,13 +271,13 @@ TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
   }
 
   // Check the faces
-  const std::vector <std::vector <std::uint32_t> > expected_faces =
+  const std::vector <std::vector <index_t> > expected_faces =
       Mesh::IsManifold::value ? this->manifold_faces_ :
                                 this->non_manifold_faces_;
 
   ASSERT_EQ (expected_faces.size (), half_edge_mesh.sizeFaces ());
 
-  std::vector <std::uint32_t> converted_face;
+  std::vector <index_t> converted_face;
   for (std::size_t i=0; i<half_edge_mesh.sizeFaces (); ++i)
   {
     VAFC       circ     = half_edge_mesh.getVertexAroundFaceCirculator (FaceIndex (i));
@@ -283,7 +285,7 @@ TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
     converted_face.clear ();
     do
     {
-      converted_face.push_back (static_cast <std::uint32_t> (circ.getTargetIndex ().get ()));
+      converted_face.push_back (static_cast <index_t> (circ.getTargetIndex ().get ()));
     } while (++circ != circ_end);
 
     EXPECT_TRUE (isCircularPermutation (expected_faces [i], converted_face)) << "Face number " << i;
