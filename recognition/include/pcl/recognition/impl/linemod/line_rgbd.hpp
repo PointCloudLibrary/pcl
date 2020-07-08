@@ -235,7 +235,8 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
   const size_t object_id,
   const MaskMap & mask_xyz,
   const MaskMap & mask_rgb,
-  const RegionXY & region)
+  const RegionXY & region,
+  const size_t nr_features_per_modality)
 {
   // add point cloud
   template_point_clouds_.resize (template_point_clouds_.size () + 1);
@@ -320,7 +321,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
   masks.push_back (const_cast<MaskMap*> (&mask_rgb));
   masks.push_back (const_cast<MaskMap*> (&mask_xyz));
 
-  return (linemod_.createAndAddTemplate (modalities, masks, region));
+  return (linemod_.createAndAddTemplate (modalities, masks, region, nr_features_per_modality));
 }
 
 

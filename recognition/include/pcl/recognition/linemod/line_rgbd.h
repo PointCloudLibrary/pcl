@@ -200,7 +200,8 @@ namespace pcl
         const size_t object_id,
         const MaskMap & mask_xyz,
         const MaskMap & mask_rgb,
-        const RegionXY & region);
+        const RegionXY & region,
+        const size_t nr_features_per_modality = 63);
 
 
       /** \brief Applies the detection process and fills the supplied vector with the detection instances. 
