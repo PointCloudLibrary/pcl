@@ -147,7 +147,7 @@ pcl::EarClipping::area (const Indices& vertices)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::uint32_t>::value, pcl::index_t> = 0> float
+template <typename PointT, typename T, std::enable_if_t<!std::is_same<T, std::uint32_t>::value, pcl::index_t>> float
 pcl::EarClipping::area (const std::vector<std::uint32_t>& vertices)
 {
   return area(Indices (vertices.cbegin(), vertices.cend()));
@@ -186,7 +186,7 @@ pcl::EarClipping::isEar (int u, int v, int w, const Indices& vertices)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::uint32_t>::value, pcl::index_t> = 0> bool
+template <typename PointT, typename T, std::enable_if_t<!std::is_same<T, std::uint32_t>::value, pcl::index_t>> bool
 pcl::EarClipping::isEar (int u, int v, int w, const std::vector<std::uint32_t>& vertices)
 {
   return isEar(u, v, w, Indices (vertices.cbegin(), vertices.cend()));
