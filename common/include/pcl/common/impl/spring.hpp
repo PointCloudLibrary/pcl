@@ -80,7 +80,7 @@ expandColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
   output.height = old_height;
 }
 
-template <typename PointT, typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0> void
+template <typename PointT, typename T, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t>> void
 expandColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
                const PointT& val, const std::size_t& amount)
 {
@@ -109,7 +109,7 @@ expandRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
   output.height = new_height;
 }
 
-template <typename PointT, typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0> void
+template <typename PointT, typename T, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t>> void
 expandRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
             const PointT& val, const std::size_t& amount)
 {
@@ -149,7 +149,7 @@ duplicateColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
   output.height = old_height;
 }
 
-template <typename PointT, typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0> void
+template <typename PointT, typename T, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t>> void
 duplicateColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
                   const std::size_t& amount)
 {
@@ -181,7 +181,7 @@ duplicateRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
   output.height = new_height;
 }
 
-template <typename PointT, typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0> void
+template <typename PointT, typename T, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t>> void
 duplicateRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
                const std::size_t& amount)
 {
@@ -220,7 +220,7 @@ mirrorColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
   output.height = old_height;
 }
 
-template <typename PointT, typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0> void
+template <typename PointT, typename T, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t>> void
 mirrorColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
                const std::size_t& amount)
 {
@@ -254,7 +254,7 @@ mirrorRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
   output.height = new_height;
 }
 
-template <typename PointT, typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0> void
+template <typename PointT, typename T, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t>> void
 mirrorRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
             const std::size_t& amount)
 {
@@ -278,7 +278,7 @@ deleteRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
   output.width = old_width;
 }
 
-template <typename PointT, typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0> void
+template <typename PointT, typename T, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t>> void
 deleteRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
             const std::size_t& amount)
 {
@@ -313,7 +313,7 @@ deleteCols (const PointCloud<PointT>& input, PointCloud<PointT>& output,
   output.width = new_width;
 }
 
-template <typename PointT, typename T = pcl::index_t, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t> = 0> void
+template <typename PointT, typename T, std::enable_if_t<!std::is_same<T, std::size_t>::value, pcl::index_t>> void
 deleteCols (const PointCloud<PointT>& input, PointCloud<PointT>& output,
             const std::size_t& amount)
 {
