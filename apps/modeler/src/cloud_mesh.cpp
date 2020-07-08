@@ -117,8 +117,8 @@ pcl::modeler::CloudMesh::save(const std::vector<const CloudMesh*>& cloud_meshes,
     if (filename.rfind(".obj") == (filename.length() - 4)) {
       std::size_t delta = cloud_mesh.cloud_->size();
       for (auto polygon : mesh->polygons_) {
-        for (unsigned int& vertice : polygon.vertices)
-          vertice += static_cast<unsigned int>(delta);
+        for (index_t& vertice : polygon.vertices)
+          vertice += static_cast<index_t>(delta);
         cloud_mesh.polygons_.push_back(polygon);
       }
     }

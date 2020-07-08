@@ -5,7 +5,6 @@
 #include <pcl/types.h>
 
 #include <string>
-#include <vector>
 #include <ostream>
 
 namespace pcl
@@ -18,7 +17,7 @@ namespace pcl
     Vertices ()
     {}
 
-    std::vector<index_t> vertices;
+    Indices vertices;
 
   public:
     using Ptr = shared_ptr<Vertices>;
