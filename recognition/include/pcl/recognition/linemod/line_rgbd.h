@@ -245,6 +245,19 @@ namespace pcl
         return (vec);
       }
 
+      /** \brief Resize the templates storage. */
+      void
+      resizeTemplates (size_t n)
+      {
+        linemod_.resizeTemplates (n);
+      }
+
+      /** \brief Returns the number of stored/trained templates. */
+      inline size_t
+      getNumOfTemplates () const
+      {
+        return (linemod_.getNumOfTemplates ());
+      }
 
     protected:
 
