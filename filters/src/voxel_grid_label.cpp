@@ -37,7 +37,6 @@
  */
 
 #include <map>
-#include <pcl/common/io.h>
 #include <pcl/filters/voxel_grid_label.h>
 #include <pcl/filters/impl/voxel_grid.hpp>
 

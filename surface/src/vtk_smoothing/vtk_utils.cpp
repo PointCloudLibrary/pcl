@@ -39,6 +39,7 @@
 
 #include <pcl/surface/vtk_smoothing/vtk_utils.h>
 
+#include <pcl/PolygonMesh.h>
 #include <pcl/conversions.h>
 #include <pcl/common/common.h>
 #include <vtkVersion.h>

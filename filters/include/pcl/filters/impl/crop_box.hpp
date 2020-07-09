@@ -42,7 +42,6 @@
 #define PCL_FILTERS_IMPL_CROP_BOX_H_
 
 #include <pcl/filters/crop_box.h>
-#include <pcl/common/io.h>
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void

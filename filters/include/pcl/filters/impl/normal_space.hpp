@@ -39,7 +39,6 @@
 #define PCL_FILTERS_IMPL_NORMAL_SPACE_SAMPLE_H_
 
 #include <pcl/filters/normal_space.h>
-#include <pcl/common/io.h>
 
 #include <vector>
 #include <list>

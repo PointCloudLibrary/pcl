@@ -39,7 +39,6 @@
 #define PCL_FILTERS_IMPL_FRUSTUM_CULLING_HPP_
 
 #include <pcl/filters/frustum_culling.h>
-#include <pcl/common/io.h>
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////

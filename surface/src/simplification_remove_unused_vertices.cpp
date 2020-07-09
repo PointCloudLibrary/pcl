@@ -36,11 +36,11 @@
  */
 
 #include <pcl/surface/simplification_remove_unused_vertices.h>
+#include <pcl/PolygonMesh.h>
 
 #include <cstring>
 #include <vector>
 #include <iostream>
-#include <cstdio>
 
 void
 pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMesh& input, pcl::PolygonMesh& output, std::vector<int>& indices)

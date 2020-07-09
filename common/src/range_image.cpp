@@ -34,13 +34,10 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cstddef>
 #include <iostream>
 #include <cmath>
-#include <set>
 #include <pcl/common/eigen.h>
 #include <pcl/range_image/range_image.h>
-#include <pcl/common/transformation_from_correspondences.h>
 
 namespace pcl 
 {

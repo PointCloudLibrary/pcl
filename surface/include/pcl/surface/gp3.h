@@ -45,15 +45,15 @@
 
 #include <pcl/conversions.h>
 #include <pcl/kdtree/kdtree.h>
-#include <pcl/PolygonMesh.h>
 
 #include <fstream>
-#include <iostream>
 
 
 
 namespace pcl
 {
+  struct PolygonMesh;
+
   /** \brief Returns if a point X is visible from point R (or the origin)
     * when taking into account the segment between the points S1 and S2
     * \param X 2D coordinate of the point

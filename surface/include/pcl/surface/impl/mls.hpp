@@ -43,6 +43,7 @@
 #include <pcl/type_traits.h>
 #include <pcl/surface/mls.h>
 #include <pcl/common/io.h>
+#include <pcl/common/common.h> // for getMinMax3D
 #include <pcl/common/copy_point.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
