@@ -375,7 +375,7 @@ namespace pcl
        * \note Only voxels containing a sufficient number of points are used.
        * \param[in] reference_point the point to get the leaf structure at
        * \param[out] neighbors
-       * \return number of neighbors found
+       * \return number of neighbors found (up to 26)
        */
       int
       getNeighborhoodAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
@@ -384,7 +384,7 @@ namespace pcl
        * \note Only voxels containing a sufficient number of points are used.
        * \param[in] reference_point the point to get the leaf structure at
        * \param[out] neighbors
-       * \return number of neighbors found
+       * \return number of neighbors found (up to 1)
        */
       int
       getVoxelAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
@@ -393,7 +393,7 @@ namespace pcl
        * \note Only voxels containing a sufficient number of points are used.
        * \param[in] reference_point the point to get the leaf structure at
        * \param[out] neighbors
-       * \return number of neighbors found
+       * \return number of neighbors found (up to 7)
        */
       int
       getAdjacentVoxelsAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
@@ -461,7 +461,7 @@ namespace pcl
 
           k_leaves.push_back(&voxel->second);
         }
-        return k;
+        return k_leaves.size();
       }
 
       /** \brief Search for the k-nearest occupied voxels for the given query point.
@@ -520,7 +520,7 @@ namespace pcl
 
           k_leaves.push_back(&voxel->second);
         }
-        return k;
+        return k_leaves.size();
       }
 
       /** \brief Search for all the nearest occupied voxels of the query point in a given radius.

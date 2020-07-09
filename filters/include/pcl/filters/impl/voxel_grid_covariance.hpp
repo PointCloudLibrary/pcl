@@ -376,7 +376,7 @@ pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint (const Eigen::Matrix<in
   neighbors.clear ();
 
   // Find displacement coordinates
-  Eigen::Vector4i ijk = (reference_point.getArray4fMap() / leaf_size_.array()).template cast<int>();
+  Eigen::Vector4i ijk = (reference_point.getArray4fMap() * inverse_leaf_size_).template cast<int>();
   ijk[3] = 0;
   Eigen::Array4i diff2min = min_b_ - ijk;
   Eigen::Array4i diff2max = max_b_ - ijk;
@@ -413,14 +413,14 @@ pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint (const PointT& referenc
 template<typename PointT> int
 pcl::VoxelGridCovariance<PointT>::getVoxelAtPoint(const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const
 {
-  return getNeighborhoodAtPoint(Eigen::MatrixXi::Zero(3,1), reference_point, neighbors);
+  return getNeighborhoodAtPoint(Eigen::Matrix<int, 3, Eigen::Dynamic>::Zero(3,1), reference_point, neighbors);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
 pcl::VoxelGridCovariance<PointT>::getAdjacentVoxelsAtPoint(const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const
 {
-  Eigen::MatrixXi relative_coordinates(3, 7);
+  Eigen::Matrix<int, 3, Eigen::Dynamic> relative_coordinates(3, 7);
   relative_coordinates.setZero();
   relative_coordinates(0, 1) = 1;
   relative_coordinates(0, 2) = -1;
