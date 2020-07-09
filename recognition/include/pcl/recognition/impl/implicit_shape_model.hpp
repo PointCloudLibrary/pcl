@@ -92,7 +92,7 @@ pcl::features::ISMVoteList<PointT>::getColoredCloud (typename pcl::PointCloud<Po
 
   if (cloud != nullptr)
   {
-    colored_cloud->height += static_cast<std::uint32_t> (cloud->size ());
+    colored_cloud->height += cloud->size ();
     point.r = 255;
     point.g = 255;
     point.b = 255;
@@ -115,7 +115,7 @@ pcl::features::ISMVoteList<PointT>::getColoredCloud (typename pcl::PointCloud<Po
     point.z = i_vote.z;
     colored_cloud->points.push_back (point);
   }
-  colored_cloud->height += static_cast<std::uint32_t> (votes_->size ());
+  colored_cloud->height += votes_->size ();
 
   return (colored_cloud);
 }

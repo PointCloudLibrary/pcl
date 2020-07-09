@@ -208,7 +208,7 @@ TEST (PCL, IterativeClosestPoint)
 
   // Register
   reg.align (cloud_reg);
-  EXPECT_EQ (int (cloud_reg.size ()), int (cloud_source.size ()));
+  EXPECT_EQ (cloud_reg.size (), cloud_source.size ());
 
   Eigen::Matrix4f transformation = reg.getFinalTransformation ();
   EXPECT_NEAR (transformation (0, 0), 0.8806,  1e-3);
@@ -382,7 +382,7 @@ TEST (PCL, IterativeClosestPointNonLinear)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.size ()), int (cloud_source.size ()));
+  EXPECT_EQ (output.size (), cloud_source.size ());
   // We get different results on 32 vs 64-bit systems.  To address this, we've removed the explicit output test
   // on the transformation matrix.  Instead, we're testing to make sure the algorithm converges to a sufficiently
   // low error by checking the fitness score.
@@ -429,7 +429,7 @@ TEST (PCL, IterativeClosestPointNonLinear)
 
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.size ()), int (cloud_source.size ()));
+    EXPECT_EQ (output.size (), cloud_source.size ());
     EXPECT_LT (reg.getFitnessScore (), 0.001);
   }
 
@@ -469,7 +469,7 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.size ()), int (cloud_source.size ()));
+  EXPECT_EQ (output.size (), cloud_source.size ());
   EXPECT_LT (reg.getFitnessScore (), 0.005);
 
   // Check again, for all possible caching schemes
@@ -490,7 +490,7 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
 
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.size ()), int (cloud_source.size ()));
+    EXPECT_EQ (output.size (), cloud_source.size ());
     EXPECT_LT (reg.getFitnessScore (), 0.005);
   }
 
@@ -542,7 +542,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.size ()), int (cloud_source.size ()));
+  EXPECT_EQ (output.size (), cloud_source.size ());
   EXPECT_LT (reg.getFitnessScore (), 0.0001);
 
   // Check again, for all possible caching schemes
@@ -563,7 +563,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
 
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.size ()), int (cloud_source.size ()));
+    EXPECT_EQ (output.size (), cloud_source.size ());
     EXPECT_LT (reg.getFitnessScore (), 0.001);
   }
 
@@ -581,7 +581,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
   reg_guess.setMaximumIterations (50);
   reg_guess.setTransformationEpsilon (1e-8);
   reg_guess.align (output, transform.matrix ());
-  EXPECT_EQ (int (output.size ()), int (cloud_source.size ()));
+  EXPECT_EQ (output.size (), cloud_source.size ());
   EXPECT_LT (reg.getFitnessScore (), 0.0001);
 }
 
@@ -615,7 +615,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.size ()), int (src->size ()));
+  EXPECT_EQ (output.size (), src->size ());
   EXPECT_LT (reg.getFitnessScore (), 0.003);
 
   // Check again, for all possible caching schemes
@@ -636,7 +636,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
 
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.size ()), int (src->size ()));
+    EXPECT_EQ (output.size (), src->size ());
     EXPECT_LT (reg.getFitnessScore (), 0.003);
   }
 }
