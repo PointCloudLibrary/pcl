@@ -73,6 +73,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
 
     if (selection.empty ())
     {
+      PCL_ERROR ("[pcl::LeastMedianSquares::computeModel] No samples could be selected!\n");
       break;
     }
 
@@ -81,6 +82,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
     {
       //iterations_++;
       ++skipped_count;
+      PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] The function computeModelCoefficients failed, so continue with next iteration.\n");
       continue;
     }
 
