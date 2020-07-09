@@ -386,6 +386,16 @@ namespace pcl
         max_radius = radius_max_;
       }
 
+      /** \brief This can be used to impose any kind of constraint on the model,
+        * e.g. that it has a specific direction, size, or anything else.
+        * \param[in] function A function that gets model coefficients and returns whether the model is acceptable or not.
+        */
+      inline void
+      setIsModelValidUserDefined(std::function<bool(const Eigen::VectorXf &)> function)
+      {
+        is_model_valid_user_defined_ = function;
+      }
+
       /** \brief Set the maximum distance allowed when drawing random samples
         * \param[in] radius the maximum distance (L2 norm)
         * \param search
@@ -511,6 +521,11 @@ namespace pcl
           PCL_ERROR ("[pcl::%s::isModelValid] Invalid number of model coefficients given (is %lu, should be %lu)!\n", getClassName ().c_str (), model_coefficients.size (), model_size_);
           return (false);
         }
+        if (is_model_valid_user_defined_ && !is_model_valid_user_defined_(model_coefficients))
+        {
+          PCL_DEBUG ("[pcl::%s::isModelValid] The user defined isModelValid function returned false.\n", getClassName ().c_str ());
+          return (false);
+        }
         return (true);
       }
 
@@ -571,6 +586,9 @@ namespace pcl
       {
         return ((*rng_gen_) ());
       }
+
+      /** \brief A user defined function that takes model coefficients and returns whether the model is acceptable or not. */
+      std::function<bool(const Eigen::VectorXf &)> is_model_valid_user_defined_;
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW
  };
