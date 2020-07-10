@@ -21,18 +21,36 @@ def join_path(*args):
 
 
 def get_json_output_path(source, output_dir):
-    delimiter = "/" if "/" in source else "\\"
-    x_list = source.split(f"pcl{delimiter}", 1)[-1]
-    x_list = x_list.split(delimiter)
-    extra = ["pcl", "include"]
+    """
+    Returns json output path after manipulation of the source file's path
 
-    filename = x_list[-1].split(".")[0]
-    relative_dir = delimiter.join(x for x in x_list[:-1] if x not in extra)
+    Arguments:
+        - source: The source's file name
+        - output_dir: The output_directory to write the json output
+    
+    Returns:
+        - json_output_path: The json output's realpath
+    """
+    # pcl_path: contains the path as seen in the pcl directory
+    _, pcl_path = source.split(f"pcl{os.sep}", 1)
+
+    # relative_dir: contains the relative output path for the json file
+    # source_filename: contains the source's file name
+    relative_dir, source_filename = os.path.split(pcl_path)
+
+    # filename: contains the output json's file name
+    filename, _ = source_filename.split(".")
+    filename = f"{filename}.json"
+
+    # dir: final output path
     dir = join_path(output_dir, relative_dir)
 
+    # make the output directory if it doesn't exist
     ensure_dir_exists(dir)
 
-    return get_realpath(join_path(dir, f"{filename}.json"))
+    json_output_path = get_realpath(join_path(dir, filename))
+
+    return json_output_path
 
 
 def dump_json(filepath, info):
