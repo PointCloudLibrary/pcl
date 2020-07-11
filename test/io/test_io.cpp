@@ -295,13 +295,13 @@ TEST (PCL, ConcatenatePoints)
   EXPECT_EQ (cloud_c.width, cloud_a.width + cloud_b.width);
   EXPECT_EQ (int (cloud_c.height), 1);
 
-  for (index_t i = 0; i < cloud_a.size (); ++i)
+  for (std::size_t i = 0; i < cloud_a.size (); ++i)
   {
     EXPECT_FLOAT_EQ (cloud_c[i].x, cloud_a[i].x);
     EXPECT_FLOAT_EQ (cloud_c[i].y, cloud_a[i].y);
     EXPECT_FLOAT_EQ (cloud_c[i].z, cloud_a[i].z);
   }
-  for (index_t i = cloud_a.size (); i < cloud_c.size (); ++i)
+  for (std::size_t i = cloud_a.size (); i < cloud_c.size (); ++i)
   {
     EXPECT_FLOAT_EQ (cloud_c[i].x, cloud_b[i - cloud_a.size ()].x);
     EXPECT_FLOAT_EQ (cloud_c[i].y, cloud_b[i - cloud_a.size ()].y);
@@ -341,7 +341,7 @@ TEST (PCL, ConcatenateFields)
   EXPECT_EQ (cloud_c.width, cloud_a.width);
   EXPECT_EQ (cloud_c.height, cloud_a.height);
 
-  for (index_t i = 0; i < cloud_a.size (); ++i)
+  for (std::size_t i = 0; i < cloud_a.size (); ++i)
   {
     EXPECT_FLOAT_EQ (cloud_c[i].x, cloud_a[i].x);
     EXPECT_FLOAT_EQ (cloud_c[i].y, cloud_a[i].y);
@@ -366,7 +366,7 @@ TEST (PCL, IO)
   srand (static_cast<unsigned int> (time (nullptr)));
   const auto nr_p = cloud.size ();
   // Randomly create a new point cloud
-  for (index_t i = 0; i < nr_p; ++i)
+  for (std::size_t i = 0; i < nr_p; ++i)
   {
     cloud[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
     cloud[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
@@ -676,7 +676,7 @@ TEST (PCL, PCDReaderWriter)
   srand (static_cast<unsigned int> (time (nullptr)));
   const auto nr_p = cloud.size ();
   // Randomly create a new point cloud
-  for (index_t i = 0; i < nr_p; ++i)
+  for (std::size_t i = 0; i < nr_p; ++i)
   {
     cloud[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
     cloud[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
@@ -757,7 +757,7 @@ TEST (PCL, PCDReaderWriterASCIIColorPrecision)
   io::savePCDFile ("temp_binary_color.pcd", cloud, true);
   PointCloud<PointXYZRGB> cloud_binary;
   io::loadPCDFile ("temp_binary_color.pcd", cloud_binary);
-  for (index_t i = 0; i < cloud.size (); ++i)
+  for (std::size_t i = 0; i < cloud.size (); ++i)
   {
     EXPECT_EQ (cloud[i].r, cloud_binary[i].r);
     EXPECT_EQ (cloud[i].g, cloud_binary[i].g);
@@ -767,7 +767,7 @@ TEST (PCL, PCDReaderWriterASCIIColorPrecision)
   io::savePCDFile ("temp_ascii_color.pcd", cloud, false);
   PointCloud<PointXYZRGB> cloud_ascii;
   io::loadPCDFile ("temp_ascii_color.pcd", cloud_ascii);
-  for (index_t i = 0; i < cloud.size (); ++i)
+  for (std::size_t i = 0; i < cloud.size (); ++i)
   {
     EXPECT_EQ (cloud[i].r, cloud_ascii[i].r);
     EXPECT_EQ (cloud[i].g, cloud_ascii[i].g);
@@ -796,7 +796,7 @@ TEST (PCL, ASCIIRead)
   srand (static_cast<unsigned int> (time (nullptr)));
   const auto nr_p = cloud.size ();
   // Randomly create a new point cloud
-  for (index_t i = 0; i < nr_p; ++i)
+  for (std::size_t i = 0; i < nr_p; ++i)
   {
     cloud[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
     cloud[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
@@ -985,7 +985,7 @@ TEST (PCL, EigenConversions)
   EXPECT_EQ (mat.cols (), static_cast<Eigen::Index>(cloud.size ()));
   EXPECT_EQ (mat.rows (), 4);
   
-  for (index_t i = 0; i < cloud.size (); ++i)
+  for (std::size_t i = 0; i < cloud.size (); ++i)
   {
     EXPECT_EQ (mat (0, i), cloud[i].x);
     EXPECT_EQ (mat (1, i), cloud[i].y);
@@ -995,7 +995,7 @@ TEST (PCL, EigenConversions)
   
   getEigenAsPointCloud (mat, blob);
   fromPCLPointCloud2 (blob, cloud);
-  for (index_t i = 0; i < cloud.size (); ++i)
+  for (std::size_t i = 0; i < cloud.size (); ++i)
   {
     EXPECT_EQ (cloud[i].x, i);
     EXPECT_EQ (cloud[i].y, i);
@@ -1006,7 +1006,7 @@ TEST (PCL, EigenConversions)
   EXPECT_EQ (mat.cols (), static_cast<Eigen::Index>(cloud.size ()));
   EXPECT_EQ (mat.rows (), 4);
   
-  for (index_t i = 0; i < cloud.size (); ++i)
+  for (std::size_t i = 0; i < cloud.size (); ++i)
   {
     EXPECT_EQ (mat (0, i), cloud[i].x);
     EXPECT_EQ (mat (1, i), cloud[i].y);
@@ -1027,7 +1027,7 @@ TEST (PCL, CopyPointCloud)
   cloud_a.points.resize (cloud_a.width * cloud_a.height);
   cloud_b.points.resize (cloud_b.width * cloud_b.height);
 
-  for (index_t i = 0; i < cloud_a.size (); ++i)
+  for (std::size_t i = 0; i < cloud_a.size (); ++i)
   {
     cloud_a[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
     cloud_a[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
@@ -1037,7 +1037,7 @@ TEST (PCL, CopyPointCloud)
 
   pcl::copyPointCloud (cloud_a, cloud_b);
 
-  for (index_t i = 0; i < cloud_a.size (); ++i)
+  for (std::size_t i = 0; i < cloud_a.size (); ++i)
   {
     EXPECT_EQ (cloud_b[i].x, cloud_a[i].x);
     EXPECT_EQ (cloud_b[i].y, cloud_a[i].y);
@@ -1048,7 +1048,7 @@ TEST (PCL, CopyPointCloud)
 
   pcl::copyPointCloud (cloud_b, cloud_a);
 
-  for (index_t i = 0; i < cloud_a.size (); ++i)
+  for (std::size_t i = 0; i < cloud_a.size (); ++i)
   {
     EXPECT_EQ (cloud_b[i].x, cloud_a[i].x);
     EXPECT_EQ (cloud_b[i].y, cloud_a[i].y);
@@ -1069,7 +1069,7 @@ TEST (PCL, LZF)
   srand (static_cast<unsigned int> (time (nullptr)));
   const auto nr_p = cloud.size ();
   // Randomly create a new point cloud
-  for (index_t i = 0; i < nr_p; ++i)
+  for (std::size_t i = 0; i < nr_p; ++i)
   {
     cloud[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
     cloud[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
@@ -1088,7 +1088,7 @@ TEST (PCL, LZF)
   EXPECT_EQ (cloud2.is_dense, cloud.is_dense);
   EXPECT_EQ (cloud2.size (), cloud.size ());
 
-  for (index_t i = 0; i < cloud2.size (); ++i)
+  for (std::size_t i = 0; i < cloud2.size (); ++i)
   {
     ASSERT_EQ (cloud2[i].x, cloud[i].x);
     ASSERT_EQ (cloud2[i].y, cloud[i].y);
@@ -1107,7 +1107,7 @@ TEST (PCL, LZF)
   EXPECT_EQ (cloud2.is_dense, cloud.is_dense);
   EXPECT_EQ (cloud2.size (), cloud.size ());
 
-  for (index_t i = 0; i < cloud2.size (); ++i)
+  for (std::size_t i = 0; i < cloud2.size (); ++i)
   {
     EXPECT_EQ (cloud2[i].x, cloud[i].x);
     EXPECT_EQ (cloud2[i].y, cloud[i].y);
@@ -1127,7 +1127,7 @@ TEST (PCL, LZFExtended)
   srand (static_cast<unsigned int> (time (nullptr)));
   const auto nr_p = cloud.size ();
   // Randomly create a new point cloud
-  for (index_t i = 0; i < nr_p; ++i)
+  for (std::size_t i = 0; i < nr_p; ++i)
   {
     cloud[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
     cloud[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
@@ -1154,7 +1154,7 @@ TEST (PCL, LZFExtended)
   EXPECT_EQ (cloud2.is_dense, cloud.is_dense);
   EXPECT_EQ (cloud2.size (), cloud.size ());
 
-  for (index_t i = 0; i < cloud2.size (); ++i)
+  for (std::size_t i = 0; i < cloud2.size (); ++i)
   {
     EXPECT_EQ (cloud2[i].x, cloud[i].x);
     EXPECT_EQ (cloud2[i].y, cloud[i].y);
@@ -1180,7 +1180,7 @@ TEST (PCL, LZFInMem)
   srand (static_cast<unsigned int> (time (nullptr)));
   const auto nr_p = cloud.size ();
   // Randomly create a new point cloud
-  for (index_t i = 0; i < nr_p; ++i)
+  for (std::size_t i = 0; i < nr_p; ++i)
   {
     cloud[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
     cloud[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
@@ -1224,7 +1224,7 @@ TEST (PCL, LZFInMem)
   EXPECT_EQ (cloud2.is_dense, cloud.is_dense);
   EXPECT_EQ (cloud2.size (), cloud.size ());
 
-  for (index_t i = 0; i < cloud2.size (); ++i)
+  for (std::size_t i = 0; i < cloud2.size (); ++i)
   {
     EXPECT_EQ (cloud2[i].x, cloud[i].x);
     EXPECT_EQ (cloud2[i].y, cloud[i].y);
@@ -1255,7 +1255,7 @@ TEST (PCL, Locale)
     cloud[0].y = std::numeric_limits<float>::quiet_NaN ();
     cloud[0].z = std::numeric_limits<float>::quiet_NaN ();
   
-    for (index_t i = 1; i < nr_p; ++i)
+    for (std::size_t i = 1; i < nr_p; ++i)
     {
       cloud[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
       cloud[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
