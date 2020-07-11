@@ -112,7 +112,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
     bool ok = brute_force_result_it != brute_force_result.end ();
     //if (!ok)  std::cerr << k_indices[i] << " is not correct...\n";
     //else      std::cerr << k_indices[i] << " is correct...\n";
-    EXPECT_EQ (ok, true);
+    EXPECT_TRUE (ok);
     if (ok)
       brute_force_result.erase (brute_force_result_it);
   }
@@ -121,7 +121,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   
   bool error = !brute_force_result.empty ();
   //if (error)  std::cerr << "Missed too many neighbors!\n";
-  EXPECT_EQ (error, false);
+  EXPECT_FALSE (error);
 
   {
     KdTreeFLANN<MyPoint> kdtree;
@@ -196,7 +196,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
       ok = (std::abs (euclideanDistance (test_point, point)) - max_dist) <= 1e-6;
     //if (!ok)  std::cerr << k_index << " is not correct...\n";
     //else      std::cerr << k_index << " is correct...\n";
-    EXPECT_EQ (ok, true);
+    EXPECT_TRUE (ok);
   }
 
   ScopeTime scopeTime ("FLANN nearestKSearch");
