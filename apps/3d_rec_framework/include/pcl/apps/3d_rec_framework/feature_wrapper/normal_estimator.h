@@ -188,7 +188,7 @@ public:
       {
         pcl::ScopeTime t("check nans...");
         std::size_t j = 0;
-        for (const auto& point: *out) {
+        for (const auto& point : *out) {
           if (!isXYZFinite(point))
             continue;
 

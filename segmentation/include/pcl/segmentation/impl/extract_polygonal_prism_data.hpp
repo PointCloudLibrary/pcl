@@ -113,7 +113,7 @@ pcl::isXYPointIn2DXYPolygon (const PointT &point, const pcl::PointCloud<PointT> 
   // start with the last point to make the check last point<->first point the first one
   double xold = polygon[nr_poly_points - 1].x;
   double yold = polygon[nr_poly_points - 1].y;
-  for (int i = 0; i < nr_poly_points; i++)
+  for (std::size_t i = 0; i < nr_poly_points; i++)
   {
     double xnew = polygon[i].x;
     double ynew = polygon[i].y;

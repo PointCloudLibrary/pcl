@@ -119,11 +119,11 @@ SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::selectSampl
       ++iterations_without_a_sample;
 
     // If no valid samples can be found, relax the inter-sample distance requirements
-    if (iterations_without_a_sample >= max_iterations_without_a_sample)
+    if (static_cast<std::size_t>(iterations_without_a_sample) >= max_iterations_without_a_sample)
     {
       PCL_WARN ("[pcl::%s::selectSamples] ", getClassName ().c_str ());
-      PCL_WARN ("No valid sample found after %d iterations. Relaxing min_sample_distance_ to %f\n",
-                iterations_without_a_sample, 0.5*min_sample_distance);
+      PCL_WARN ("No valid sample found after %zu iterations. Relaxing min_sample_distance_ to %f\n",
+                static_cast<std::size_t>(iterations_without_a_sample), 0.5*min_sample_distance);
 
       min_sample_distance_ *= 0.5f;
       min_sample_distance = min_sample_distance_;

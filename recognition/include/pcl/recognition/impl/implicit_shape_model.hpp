@@ -148,10 +148,8 @@ pcl::features::ISMVoteList<PointT>::findStrongestPeaks (
   for (int i = 0; i < NUM_INIT_PTS; i++)
   {
     Eigen::Vector3f old_center;
-    Eigen::Vector3f curr_center;
-    curr_center (0) = (*votes_)[votes_->size () * i / NUM_INIT_PTS].x;
-    curr_center (1) = (*votes_)[votes_->size () * i / NUM_INIT_PTS].y;
-    curr_center (2) = (*votes_)[votes_->size () * i / NUM_INIT_PTS].z;
+    const auto idx = votes_->size() * i / NUM_INIT_PTS;
+    Eigen::Vector3f curr_center = (*votes_)[idx].getVector3fMap();
 
     do
     {

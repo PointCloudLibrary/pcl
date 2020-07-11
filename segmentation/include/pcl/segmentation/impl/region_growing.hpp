@@ -544,20 +544,19 @@ pcl::RegionGrowing<PointT, NormalT>::assembleRegions ()
   pcl::PointIndices segment;
   clusters_.resize (number_of_segments, segment);
 
-  for (int i_seg = 0; i_seg < number_of_segments; i_seg++)
+  for (std::size_t i_seg = 0; i_seg < number_of_segments; i_seg++)
   {
     clusters_[i_seg].indices.resize ( num_pts_in_segment_[i_seg], 0);
   }
 
-  std::vector<int> counter;
-  counter.resize (number_of_segments, 0);
+  std::vector<int> counter(number_of_segments, 0);
 
-  for (int i_point = 0; i_point < number_of_points; i_point++)
+  for (std::size_t i_point = 0; i_point < number_of_points; i_point++)
   {
-    int segment_index = point_labels_[i_point];
+    const auto segment_index = point_labels_[i_point];
     if (segment_index != -1)
     {
-      int point_index = counter[segment_index];
+      const auto point_index = counter[segment_index];
       clusters_[segment_index].indices[point_index] = i_point;
       counter[segment_index] = point_index + 1;
     }

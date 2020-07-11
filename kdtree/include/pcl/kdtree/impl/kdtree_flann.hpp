@@ -240,7 +240,7 @@ pcl::KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud)
   index_mapping_.reserve (original_no_of_points);
   identity_mapping_ = true;
 
-  for (int cloud_index = 0; cloud_index < original_no_of_points; ++cloud_index)
+  for (std::size_t cloud_index = 0; cloud_index < original_no_of_points; ++cloud_index)
   {
     // Check if the point is invalid
     if (!point_representation_->isValid (cloud[cloud_index]))
