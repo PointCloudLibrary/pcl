@@ -178,7 +178,7 @@ TEST (PCL, PointCloud)
   cloud.width = 640;
   cloud.height = 480;
 
-  EXPECT_EQ (cloud.isOrganized (), true);
+  EXPECT_TRUE (cloud.isOrganized ());
 
   cloud.height = 1;
   EXPECT_EQ (cloud.isOrganized (), false);
@@ -378,7 +378,7 @@ TEST (PCL, Intersections)
   yline[0] = 0.493479f; yline[1] = 0.169246f;  yline[2] = 1.22677f; yline[3] = 0.5992f;    yline[4] = 0.0505085f; yline[5] = 0.405749f;
 
   Eigen::Vector4f pt;
-  EXPECT_EQ ((pcl::lineWithLineIntersection (zline, yline, pt)), true);
+  EXPECT_TRUE (pcl::lineWithLineIntersection (zline, yline, pt));
   EXPECT_NEAR (pt[0], 0.574544, 1e-3);
   EXPECT_NEAR (pt[1], 0.175526, 1e-3);
   EXPECT_NEAR (pt[2], 1.27636,  1e-3);
@@ -409,27 +409,27 @@ TEST (PCL, CopyIfFieldExists)
   rgb_val = std::numeric_limits<float>::quiet_NaN ();
 
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "x", is_x, x_val));
-  EXPECT_EQ (is_x, true);
+  EXPECT_TRUE (is_x);
   EXPECT_EQ (x_val, 1.0);
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "y", is_y, y_val));
-  EXPECT_EQ (is_y, true);
+  EXPECT_TRUE (is_y);
   EXPECT_EQ (y_val, 2.0);
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "z", is_z, z_val));
-  EXPECT_EQ (is_z, true);
+  EXPECT_TRUE (is_z);
   EXPECT_EQ (z_val, 3.0);
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "rgb", is_rgb, rgb_val));
-  EXPECT_EQ (is_rgb, true);
+  EXPECT_TRUE (is_rgb);
   std::uint32_t rgb;
   std::memcpy (&rgb, &rgb_val, sizeof(rgb_val));
   EXPECT_EQ (rgb, 0xff7f40fe);      // alpha is 255
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_x", is_normal_x, normal_x_val));
-  EXPECT_EQ (is_normal_x, true);
+  EXPECT_TRUE (is_normal_x);
   EXPECT_EQ (normal_x_val, 1.0);
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_y", is_normal_y, normal_y_val));
-  EXPECT_EQ (is_normal_y, true);
+  EXPECT_TRUE (is_normal_y);
   EXPECT_EQ (normal_y_val, 0.0);
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_z", is_normal_z, normal_z_val));
-  EXPECT_EQ (is_normal_z, true);
+  EXPECT_TRUE (is_normal_z);
   EXPECT_EQ (normal_z_val, 0.0);
 
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "x", x_val));

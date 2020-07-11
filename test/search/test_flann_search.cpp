@@ -114,7 +114,7 @@ TEST (PCL, FlannSearch_nearestKSearch)
     ok = (std::abs (euclideanDistance (test_point, point)) - max_dist) <= 1e-6;
     //if (!ok)  std::cerr << k_indices[i] << " is not correct...\n";
     //else      std::cerr << k_indices[i] << " is correct...\n";
-    EXPECT_EQ (ok, true);
+    EXPECT_TRUE (ok);
   }
 
   ScopeTime scopeTime ("FLANN nearestKSearch");

@@ -94,7 +94,7 @@ TEST (PCL, BoundaryEstimation)
   pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) / 2, indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, false);
   pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) - 1, indices, u, v, float (M_PI) / 2.0);
-  EXPECT_EQ (pt, true);
+  EXPECT_TRUE (pt);
 
   // isBoundaryPoint (points)
   pt = b.isBoundaryPoint (cloud, cloud[0], indices, u, v, float (M_PI) / 2.0);
@@ -104,7 +104,7 @@ TEST (PCL, BoundaryEstimation)
   pt = b.isBoundaryPoint (cloud, cloud[indices.size () / 2], indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, false);
   pt = b.isBoundaryPoint (cloud, cloud[indices.size () - 1], indices, u, v, float (M_PI) / 2.0);
-  EXPECT_EQ (pt, true);
+  EXPECT_TRUE (pt);
 
   // Object
   PointCloud<Boundary>::Ptr bps (new PointCloud<Boundary> ());
@@ -126,7 +126,7 @@ TEST (PCL, BoundaryEstimation)
   pt = (*bps)[indices.size () / 2].boundary_point;
   EXPECT_EQ (pt, false);
   pt = (*bps)[indices.size () - 1].boundary_point;
-  EXPECT_EQ (pt, true);
+  EXPECT_TRUE (pt);
 }
 
 /* ---[ */
