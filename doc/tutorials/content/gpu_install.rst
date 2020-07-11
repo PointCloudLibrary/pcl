@@ -23,7 +23,7 @@ Checking C++ Version
 ---------------
 
 The GPU methods in PCL require a min version of GCC 7 or Clang 6 onwards (min version unknown). 
-This will not be a problem if you are running Ubuntu 18+, in case you are running Ubuntu 16, you will need to install GCC 7 or Clang 6 (lower versions not tested) as the default one available is GCC 5 and Clang 3.8.
+This will not be a problem if you are running Ubuntu 18.04 or later. However on Ubuntu 16.04, you will need to install GCC 7 or Clang 6 (lower versions not tested) manually because the versions available by default are: GCC 5 and Clang 3.8
 
 You can check your GCC and Clang version using the following commands::
 
