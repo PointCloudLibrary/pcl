@@ -134,10 +134,10 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
   // <cloud_src,cloud_src> is the source dataset
   transformation_matrix.setIdentity ();
 
-  const auto nr_correspondences = static_cast<const int> (cloud_tgt.size ());
+  const auto nr_correspondences = cloud_tgt.size ();
   std::vector<int> indices_tgt;
   indices_tgt.resize(nr_correspondences);
-  for (int i = 0; i < nr_correspondences; ++i)
+  for (std::size_t i = 0; i < nr_correspondences; ++i)
     indices_tgt[i] = i;
 
   estimateRigidTransformation(cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
@@ -206,10 +206,10 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
     const pcl::Correspondences &correspondences,
     Matrix4 &transformation_matrix) const
 {
-  const int nr_correspondences = static_cast<int> (correspondences.size ());
+  const auto nr_correspondences = correspondences.size ();
   std::vector<int> indices_src (nr_correspondences);
   std::vector<int> indices_tgt (nr_correspondences);
-  for (int i = 0; i < nr_correspondences; ++i)
+  for (std::size_t i = 0; i < nr_correspondences; ++i)
   {
     indices_src[i] = correspondences[i].index_query;
     indices_tgt[i] = correspondences[i].index_match;

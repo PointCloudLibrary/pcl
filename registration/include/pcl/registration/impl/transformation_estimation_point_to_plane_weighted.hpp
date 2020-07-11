@@ -152,10 +152,10 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
   // <cloud_src,cloud_src> is the source dataset
   transformation_matrix.setIdentity ();
 
-  const auto nr_correspondences = static_cast<const int> (cloud_tgt.size ());
+  const auto nr_correspondences = cloud_tgt.size ();
   std::vector<int> indices_tgt;
   indices_tgt.resize(nr_correspondences);
-  for (int i = 0; i < nr_correspondences; ++i)
+  for (std::size_t i = 0; i < nr_correspondences; ++i)
     indices_tgt[i] = i;
 
   estimateRigidTransformation(cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);

@@ -256,7 +256,7 @@ namespace pcl
       pcl::utils::ignore(res);
       assert (res == 0);
       
-      dst.insert(dst.end(), cloud->begin(), cloud->end());
+      dst.insert(dst.end(), cloud->cbegin(), cloud->cend());
       
     }
     ////////////////////////////////////////////////////////////////////////////////

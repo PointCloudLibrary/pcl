@@ -419,8 +419,10 @@ private:
     }
 
     double end = pcl::getTime ();
-    printf("%lu pts, %.4gs. %.4gs./pt. =====\n", displayCloud->size (), end - start,
-           (end - start) / static_cast<double> (displayCloud->size ()));
+    printf("%zu pts, %.4gs. %.4gs./pt. =====\n",
+           static_cast<std::size_t>(displayCloud->size()),
+           end - start,
+           (end - start) / static_cast<double>(displayCloud->size()));
 
     update();
   }

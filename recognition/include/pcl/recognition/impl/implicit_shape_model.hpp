@@ -957,7 +957,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::calculateS
   for (unsigned int i_object = 0; i_object < number_of_objects; i_object++)
   {
     float max_distance = 0.0f;
-    const auto number_of_points = static_cast<unsigned int> (training_clouds_[i_object]->size ());
+    const auto number_of_points = training_clouds_[i_object]->size ();
     for (unsigned int i_point = 0; i_point < number_of_points - 1; i_point++)
       for (unsigned int j_point = i_point + 1; j_point < number_of_points; j_point++)
       {

@@ -147,7 +147,7 @@ namespace pcl
           unsigned char* colors = reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->GetPointer (0);
             
           // Color every point
-          if (nr_points != int (rgb_->size ()))
+          if (nr_points != static_cast<vtkIdType>(rgb_->size ()))
             std::fill (colors, colors + nr_points * 3, static_cast<unsigned char> (0xFF));
           else
             for (vtkIdType cp = 0; cp < nr_points; ++cp)

@@ -191,7 +191,7 @@ pcl::MinCutSegmentation<PointT>::setForegroundPoints (typename pcl::PointCloud<P
 {
   foreground_points_.clear ();
   foreground_points_.insert(
-      foreground_points_.end(), foreground_points->begin(), foreground_points->end());
+      foreground_points_.end(), foreground_points->cbegin(), foreground_points->cend());
 
   unary_potentials_are_valid_ = false;
 }
@@ -209,7 +209,7 @@ pcl::MinCutSegmentation<PointT>::setBackgroundPoints (typename pcl::PointCloud<P
 {
   background_points_.clear ();
   background_points_.insert(
-      background_points_.end(), background_points->begin(), background_points->end());
+      background_points_.end(), background_points->cbegin(), background_points->cend());
 
   unary_potentials_are_valid_ = false;
 }
