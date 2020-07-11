@@ -3,7 +3,7 @@
 Configuring your PC to use your Nvidia GPU with PCL
 ---------------------------------------------------
 
-In this tutorial you will learn how to make your configure your system to make it compatible to run the GPU methods provided by PCL.
+In this tutorial you will learn how to configure your system to make it compatible to run the GPU methods provided by PCL.
 This tutorial is for Ubuntu, other Linux distrubutions can follow a similar process to set it up.  
 
 Windows is **not** currently officialy supported for the GPU methods.
@@ -19,11 +19,11 @@ You can check your CUDA toolkit version using the following command::
  $ nvcc --version | grep "release" | awk '{print $6}' | cut -c2-
  
  
-Checking GCC or Clang Version
+Checking C++ Version
 ---------------
 
-The GPU methods in PCL require a min version of GCC 7 and work on Clang 6 onwards (min version unknown). 
-This will not be a problem if you are running Ubuntu 18+, in case you are running Ubuntu 16, you will need to install GCC 7 as the default one available is GCC 5.
+The GPU methods in PCL require a min version of GCC 7 or Clang 6 onwards (min version unknown). 
+This will not be a problem if you are running Ubuntu 18+, in case you are running Ubuntu 16, you will need to install GCC 7 or Clang 6 (lower versions not tested) as the default one available is GCC 5 and Clang 3.8.
 
 You can check your GCC and Clang version using the following commands::
 
