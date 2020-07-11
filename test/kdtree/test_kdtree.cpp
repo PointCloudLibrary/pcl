@@ -121,7 +121,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   
   bool error = !brute_force_result.empty ();
   //if (error)  std::cerr << "Missed too many neighbors!\n";
-  EXPECT_EQ (error, false);
+  EXPECT_FALSE (error);
 
   {
     KdTreeFLANN<MyPoint> kdtree;

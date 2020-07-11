@@ -1295,7 +1295,7 @@ TEST (PCL, Locale)
 
     EXPECT_EQ (cloud2.width, cloud.width);
     EXPECT_EQ (cloud2.height, cloud.height);
-    EXPECT_EQ (cloud2.is_dense, false);
+    EXPECT_FALSE (cloud2.is_dense);
     EXPECT_EQ (cloud2.points.size (), cloud.points.size ());
   
     EXPECT_TRUE (std::isnan(cloud2[0].x));

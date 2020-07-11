@@ -121,10 +121,10 @@ TEST(PCL, isFinite)
 {
   PointXYZ p;
   p.x = std::numeric_limits<float>::quiet_NaN ();
-  EXPECT_EQ (isFinite (p), false);
+  EXPECT_FALSE (isFinite (p));
   Normal n;
   n.normal_x = std::numeric_limits<float>::quiet_NaN ();
-  EXPECT_EQ (isFinite (n), false);
+  EXPECT_FALSE (isFinite (n));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -181,7 +181,7 @@ TEST (PCL, PointCloud)
   EXPECT_TRUE (cloud.isOrganized ());
 
   cloud.height = 1;
-  EXPECT_EQ (cloud.isOrganized (), false);
+  EXPECT_FALSE (cloud.isOrganized ());
 
   cloud.width = 10;
   for (std::uint32_t i = 0; i < cloud.width*cloud.height; ++i)
@@ -260,27 +260,27 @@ TEST (PCL, PointCloud)
   cloud.height = 480;
 
   cloud.insert (cloud.end (), PointXYZ (1, 1, 1));
-  EXPECT_EQ (cloud.isOrganized (), false);
+  EXPECT_FALSE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 1);
 
   cloud.insert (cloud.end (), 5, PointXYZ (1, 1, 1));
-  EXPECT_EQ (cloud.isOrganized (), false);
+  EXPECT_FALSE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 6);
 
   cloud.erase (cloud.end () - 1);
-  EXPECT_EQ (cloud.isOrganized (), false);
+  EXPECT_FALSE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 5);
 
   cloud.erase (cloud.begin (), cloud.end ());
-  EXPECT_EQ (cloud.isOrganized (), false);
+  EXPECT_FALSE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 0);
 
   cloud.emplace (cloud.end (), 1, 1, 1);
-  EXPECT_EQ (cloud.isOrganized (), false);
+  EXPECT_FALSE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 1);
 
   auto& new_point = cloud.emplace_back (1, 1, 1);
-  EXPECT_EQ (cloud.isOrganized (), false);
+  EXPECT_FALSE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 2);
   EXPECT_EQ (&new_point, &cloud.back ());
 }
@@ -386,7 +386,7 @@ TEST (PCL, Intersections)
 
   zline << 0.545203f, -0.514419f, 1.31967f, 0.0243372f, 0.597946f, -0.0413579f;
   yline << 0.492706f,  0.164196f, 1.23192f, 0.598704f,  0.0442014f, 0.411328f;
-  EXPECT_EQ ((pcl::lineWithLineIntersection (zline, yline, pt)), false);
+  EXPECT_FALSE (pcl::lineWithLineIntersection (zline, yline, pt));
   //intersection: [ 3.06416e+08    15.2237     3.06416e+08       4.04468e-34 ]
 }
 
@@ -440,7 +440,7 @@ TEST (PCL, CopyIfFieldExists)
   EXPECT_EQ (xx_val, -1.0);
   bool is_xx = true;
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "xx", is_xx, xx_val));
-  EXPECT_EQ (is_xx, false);
+  EXPECT_FALSE (is_xx);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
