@@ -1,7 +1,7 @@
 import sys
 import clang.cindex as clang
 
-import utils
+import scripts.utils as utils
 
 
 def is_node_in_this_file(cursor, filename):
@@ -115,28 +115,38 @@ def get_compilation_commands(compilation_database_path, filename):
     return list(compilation_commands[0].arguments)[1:-1]
 
 
+def parse_source(source, compilation_database_path=None):
+    index = clang.Index.create()
+
+    # Is this check needed?
+    if compilation_database_path is None:
+        compilation_commands = ["-std=c++14"]
+    else:
+        compilation_commands = get_compilation_commands(
+            compilation_database_path=compilation_database_path, filename=source,
+        )
+
+    source_ast = index.parse(path=source, args=compilation_commands)
+
+    parsed_info = generate_parsed_info(
+        cursor=source_ast.cursor, this_filename=source_ast.spelling, depth=0
+    )
+    return parsed_info
+
+
 def main():
     args = utils.parse_arguments(script="parse")
     for source in args.files:
         source = utils.get_realpath(path=source)
 
-        index = clang.Index.create()
-
-        compilation_commands = get_compilation_commands(
-            compilation_database_path=args.compilation_database_path, filename=source,
-        )
-
-        source_ast = index.parse(path=source, args=compilation_commands)
-
         # print_ast(cursor=source_ast.cursor, this_filename=source_ast.spelling, depth=0)
 
-        parsed_info = generate_parsed_info(
-            cursor=source_ast.cursor, this_filename=source_ast.spelling, depth=0
-        )
+        parsed_info = parse_source(source, args.compilation_database_path)
 
         output_filepath = utils.get_json_output_path(
             source=source, output_dir=utils.join_path(args.json_output_path, "json"),
         )
+
         utils.dump_json(filepath=output_filepath, info=parsed_info)
 
 
