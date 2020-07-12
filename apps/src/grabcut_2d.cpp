@@ -177,7 +177,7 @@ void
 GrabCutHelper::buildImages()
 {
   using namespace pcl::segmentation::grabcut;
-  memset(&n_links_image_->points[0], 0, sizeof(float) * n_links_image_->size());
+  memset(&(*n_links_image_)[0], 0, sizeof(float) * n_links_image_->size());
   for (int y = 0; y < static_cast<int>(image_->height); ++y) {
     for (int x = 0; x < static_cast<int>(image_->width); ++x) {
       std::size_t index = y * image_->width + x;
@@ -203,9 +203,9 @@ GrabCutHelper::buildImages()
       }
 
       // TLinks cloud
-      pcl::segmentation::grabcut::Color& tlink_point = t_links_image_->points[index];
-      pcl::segmentation::grabcut::Color& gmm_point = gmm_image_->points[index];
-      float& alpha_point = alpha_image_->points[index];
+      pcl::segmentation::grabcut::Color& tlink_point = (*t_links_image_)[index];
+      pcl::segmentation::grabcut::Color& gmm_point = (*gmm_image_)[index];
+      float& alpha_point = (*alpha_image_)[index];
       double red = pow(graph_.getSourceEdgeCapacity(index) / L_, 0.25);   // red
       double green = pow(graph_.getTargetEdgeCapacity(index) / L_, 0.25); // green
       tlink_point.r = static_cast<float>(red);
@@ -232,7 +232,7 @@ GrabCutHelper::display(int display_type)
 {
   switch (display_type) {
   case 0:
-    glDrawPixels(image_->width, image_->height, GL_RGB, GL_FLOAT, &(image_->points[0]));
+    glDrawPixels(image_->width, image_->height, GL_RGB, GL_FLOAT, &((*image_)[0]));
     break;
 
   case 1:
@@ -240,7 +240,7 @@ GrabCutHelper::display(int display_type)
                  gmm_image_->height,
                  GL_RGB,
                  GL_FLOAT,
-                 &(gmm_image_->points[0]));
+                 &((*gmm_image_)[0]));
     break;
 
   case 2:
@@ -248,7 +248,7 @@ GrabCutHelper::display(int display_type)
                  n_links_image_->height,
                  GL_LUMINANCE,
                  GL_FLOAT,
-                 &(n_links_image_->points[0]));
+                 &((*n_links_image_)[0]));
     break;
 
   case 3:
@@ -256,7 +256,7 @@ GrabCutHelper::display(int display_type)
                  t_links_image_->height,
                  GL_RGB,
                  GL_FLOAT,
-                 &(t_links_image_->points[0]));
+                 &((*t_links_image_)[0]));
     break;
 
   default:
@@ -273,7 +273,7 @@ GrabCutHelper::overlayAlpha()
                alpha_image_->height,
                GL_ALPHA,
                GL_FLOAT,
-               &(alpha_image_->points[0]));
+               &((*alpha_image_)[0]));
 }
 
 /* GUI interface */
@@ -300,7 +300,7 @@ display()
                  display_image->height,
                  GL_RGB,
                  GL_FLOAT,
-                 &(display_image->points[0]));
+                 &((*display_image)[0]));
   else
     grabcut.display(display_type);
 
@@ -536,10 +536,10 @@ main(int argc, char** argv)
       for (std::size_t j = 0; j < scene->width; ++j) {
         const pcl::PointXYZRGB& p = (*scene)(j, i);
         std::size_t reverse_index = (height_1 - i) * scene->width + j;
-        display_image->points[reverse_index].r = static_cast<float>(p.r) / 255.0;
-        display_image->points[reverse_index].g = static_cast<float>(p.g) / 255.0;
-        display_image->points[reverse_index].b = static_cast<float>(p.b) / 255.0;
-        tmp->points[reverse_index] = p;
+        (*display_image)[reverse_index].r = static_cast<float>(p.r) / 255.0;
+        (*display_image)[reverse_index].g = static_cast<float>(p.g) / 255.0;
+        (*display_image)[reverse_index].b = static_cast<float>(p.b) / 255.0;
+        (*tmp)[reverse_index] = p;
       }
     }
   }

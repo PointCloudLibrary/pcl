@@ -56,8 +56,6 @@
 #include <vector>
 #include <string>
 
-using namespace std;
-
 #define SHOW_FPS 1
 #if SHOW_FPS
 #define FPS_CALC(_WHAT_) \
@@ -168,8 +166,8 @@ class SimpleOpenNIViewer
     {
       //pcl::Grabber* interface = new pcl::OpenNIGrabber(device_id_, pcl::OpenNIGrabber::OpenNI_QQVGA_30Hz, pcl::OpenNIGrabber::OpenNI_VGA_30Hz);
 
-      string mouseMsg3D("Mouse coordinates in PCL Visualizer");
-      string keyMsg3D("Key event for PCL Visualizer");
+      std::string mouseMsg3D("Mouse coordinates in PCL Visualizer");
+      std::string keyMsg3D("Key event for PCL Visualizer");
       cloud_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg3D));    
       cloud_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg3D));
       std::function<void (const CloudConstPtr&)> cloud_cb = [this] (const CloudConstPtr& cloud) { cloud_callback (cloud); };
@@ -178,8 +176,8 @@ class SimpleOpenNIViewer
       boost::signals2::connection image_connection;
       if (grabber_.providesCallback<void (const openni_wrapper::Image::Ptr&)>())
       {
-          string mouseMsg2D("Mouse coordinates in image viewer");
-          string keyMsg2D("Key event for image viewer");
+          std::string mouseMsg2D("Mouse coordinates in image viewer");
+          std::string keyMsg2D("Key event for image viewer");
           image_viewer_.registerMouseCallback (&SimpleOpenNIViewer::mouse_callback, *this, (void*)(&mouseMsg2D));
           image_viewer_.registerKeyboardCallback(&SimpleOpenNIViewer::keyboard_callback, *this, (void*)(&keyMsg2D));
           std::function<void (const openni_wrapper::Image::Ptr&)> image_cb = [this] (const openni_wrapper::Image::Ptr& img) { image_callback (img); };

@@ -41,7 +41,9 @@
 
 #include <cstddef>  // for std::size_t
 #include <cstdint>  // for std::uint8_t
-#include <string>  // for std::string
+
+#include <functional>   // for std::function, needed till C++17
+#include <string>       // for std::string
 #include <type_traits>  // for std::false_type, std::true_type
 
 namespace pcl
@@ -260,5 +262,33 @@ namespace pcl
   template <typename T> struct has_custom_allocator<T, void_t<typename T::_custom_allocator_type_trait>> : std::true_type {};
 
 #endif
-}
 
+  /**
+   * \todo: Remove in C++17
+   */
+#ifndef __cpp_lib_is_invocable
+  // Implementation taken from: https://stackoverflow.com/a/51188325
+  template <typename F, typename... Args>
+  constexpr bool is_invocable_v =
+      std::is_constructible<std::function<void(Args...)>,
+                            std::reference_wrapper<std::remove_reference_t<F>>>::value;
+
+  template <typename R, typename F, typename... Args>
+  constexpr bool is_invocable_r_v =
+      std::is_constructible<std::function<R(Args...)>,
+                            std::reference_wrapper<std::remove_reference_t<F>>>::value;
+#else
+  using std::is_invocable_v;
+  using std::is_invocable_r_v;
+#endif
+
+  /**
+   * \todo: Remove in C++17
+   */
+#ifndef __cpp_lib_remove_cvref
+  template <typename T>
+  using remove_cvref_t = std::remove_cv_t<std::remove_reference_t<T>>;
+#else
+  using std::remove_cvref_t;
+#endif
+}

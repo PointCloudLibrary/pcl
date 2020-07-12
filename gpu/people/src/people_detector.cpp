@@ -53,7 +53,6 @@
 #define CLUST_TOL_SHS   0.05
 #define DELTA_HUE_SHS   5
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::gpu::people;
 
@@ -162,13 +161,13 @@ pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<PointTC>::Const
 
   for(std::size_t i = 0; i < cloud->points.size(); ++i)
   {
-    cloud_host_[i].x = cloud->points[i].x;
-    cloud_host_[i].y = cloud->points[i].y;
-    cloud_host_[i].z = cloud->points[i].z;
+    cloud_host_[i].x = (*cloud)[i].x;
+    cloud_host_[i].y = (*cloud)[i].y;
+    cloud_host_[i].z = (*cloud)[i].z;
 
     bool valid = isFinite(cloud_host_[i]);
 
-    hue_host_[i] = !valid ? qnan : device::computeHue(cloud->points[i].rgba);
+    hue_host_[i] = !valid ? qnan : device::computeHue((*cloud)[i].rgba);
     depth_host_[i] = !valid ? 0 : static_cast<unsigned short>(cloud_host_[i].z * 1000); //m -> mm
   }
   cloud_device_.upload(cloud_host_.points, cloud_host_.width);
@@ -249,14 +248,14 @@ pcl::gpu::people::PeopleDetector::processProb (const pcl::PointCloud<PointTC>::C
 
   for(std::size_t i = 0; i < cloud->points.size(); ++i)
   {
-    cloud_host_color_[i].x  = cloud_host_[i].x = cloud->points[i].x;
-    cloud_host_color_[i].y  = cloud_host_[i].y = cloud->points[i].y;
-    cloud_host_color_[i].z  = cloud_host_[i].z = cloud->points[i].z;
-    cloud_host_color_[i].rgba = cloud->points[i].rgba;
+    cloud_host_color_[i].x  = cloud_host_[i].x = (*cloud)[i].x;
+    cloud_host_color_[i].y  = cloud_host_[i].y = (*cloud)[i].y;
+    cloud_host_color_[i].z  = cloud_host_[i].z = (*cloud)[i].z;
+    cloud_host_color_[i].rgba = (*cloud)[i].rgba;
 
     bool valid = isFinite(cloud_host_[i]);
 
-    hue_host_[i] = !valid ? qnan : device::computeHue(cloud->points[i].rgba);
+    hue_host_[i] = !valid ? qnan : device::computeHue((*cloud)[i].rgba);
     depth_host_[i] = !valid ? 0 : static_cast<unsigned short>(cloud_host_[i].z * 1000); //m -> mm
   }
   cloud_device_.upload(cloud_host_.points, cloud_host_.width);

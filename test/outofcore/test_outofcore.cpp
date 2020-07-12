@@ -48,7 +48,6 @@
 #include <cstdio>
 #include <iostream>
 #include <random>
-using namespace std;
 
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>

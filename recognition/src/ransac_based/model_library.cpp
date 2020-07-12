@@ -42,7 +42,6 @@
 #include <pcl/console/print.h>
 #include <cmath>
 
-using namespace std;
 using namespace pcl;
 using namespace console;
 using namespace pcl::recognition;
@@ -109,7 +108,7 @@ ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, 
 #endif
 
   // Try to insert a new model entry
-  pair<map<string,Model*>::iterator, bool> result = models_.insert (pair<string,Model*> (object_name, static_cast<Model*> (nullptr)));
+  std::pair<std::map<std::string,Model*>::iterator, bool> result = models_.insert (std::pair<std::string,Model*> (object_name, static_cast<Model*> (nullptr)));
 
   // Check if 'object_name' is unique
   if (!result.second)
@@ -124,7 +123,7 @@ ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, 
 
   const ORROctree& octree = new_model->getOctree ();
   const std::vector<ORROctree::Node*> &full_leaves = octree.getFullLeaves ();
-  list<ORROctree::Node*> inter_leaves;
+  std::list<ORROctree::Node*> inter_leaves;
   int num_of_pairs = 0;
 
   // Run through all full leaves

@@ -38,7 +38,6 @@
 #include <vector>
 #include "internal.h"
 
-using namespace std;
 using namespace pcl::gpu::people;
 
 pcl::RGB pcl::gpu::people::getLColor (unsigned char l)

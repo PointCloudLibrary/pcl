@@ -132,10 +132,10 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::
         descr_model.view_id = view_id;
         descr_model.descriptor_id = descriptor_id;
 
-        int size_feat = sizeof(signature->points[0].histogram) / sizeof(float);
+        int size_feat = sizeof((*signature)[0].histogram) / sizeof(float);
         descr_model.descr.resize(size_feat);
         memcpy(&descr_model.descr[0],
-               &signature->points[0].histogram[0],
+               &(*signature)[0].histogram[0],
                size_feat * sizeof(float));
 
         if (use_single_categories_) {
@@ -592,7 +592,7 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::ini
           std::normal_distribution<float> nd(0.0f, noise_);
           // Noisify each point in the dataset
           for (std::size_t cp = 0; cp < view->points.size(); ++cp)
-            view->points[cp].z += nd(rng);
+            (*view)[cp].z += nd(rng);
         }
 
         // pro view, compute signatures

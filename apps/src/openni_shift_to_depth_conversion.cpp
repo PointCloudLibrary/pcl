@@ -56,7 +56,6 @@ using boost::asio::ip::tcp;
 using namespace pcl;
 using namespace pcl::io;
 
-using namespace std;
 using namespace std::chrono_literals;
 
 class SimpleOpenNIViewer {

@@ -87,8 +87,8 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   for (std::size_t i = 0; i < indices_->size (); i++)
   {
-    grid[i].getVector4fMap () = surface_->points[(*indices_)[i]].getVector4fMap ();
-    grid[i].getNormalVector4fMap () = normals_->points[(*indices_)[i]].getNormalVector4fMap ();
+    grid[i].getVector4fMap () = (*surface_)[(*indices_)[i]].getVector4fMap ();
+    grid[i].getNormalVector4fMap () = (*normals_)[(*indices_)[i]].getNormalVector4fMap ();
   }
 
   pcl::transformPointCloudWithNormals (grid, grid, transformPC);

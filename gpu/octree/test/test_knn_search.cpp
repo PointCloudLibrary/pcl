@@ -59,8 +59,6 @@
 #include "data_source.hpp"
 
 using namespace pcl::gpu;
-using namespace std;
-
 
 struct PriorityPair
 {    

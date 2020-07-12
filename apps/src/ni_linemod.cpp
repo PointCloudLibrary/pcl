@@ -65,7 +65,6 @@
 #include <thread>
 
 using namespace pcl;
-using namespace std;
 using namespace std::chrono_literals;
 
 using PointT = PointXYZRGBA;
@@ -264,7 +263,7 @@ public:
     PointCloud<Label>::Ptr scene(new PointCloud<Label>(cloud->width, cloud->height, l));
     // Mask the objects that we want to split into clusters
     for (const int& index : points_above_plane->indices)
-      scene->points[index].label = 1;
+      (*scene)[index].label = 1;
     euclidean_cluster_comparator->setLabels(scene);
 
     OrganizedConnectedComponentSegmentation<PointT, Label> euclidean_segmentation(
@@ -400,7 +399,7 @@ public:
     event.getPoint(picked_pt.x, picked_pt.y, picked_pt.z);
 
     // Add a sphere to it in the PCLVisualizer window
-    stringstream ss;
+    std::stringstream ss;
     ss << "sphere_" << idx;
     cloud_viewer_.addSphere(picked_pt, 0.01, 1.0, 0.0, 0.0, ss.str());
 
@@ -477,7 +476,7 @@ public:
     // Compute the min/max of the object
     PointT min_pt, max_pt;
     getMinMax3D(*object, min_pt, max_pt);
-    stringstream ss2;
+    std::stringstream ss2;
     ss2 << "cube_" << idx;
     // Visualize the bounding box in 3D...
     cloud_viewer_.addCube(min_pt.x,
@@ -587,7 +586,7 @@ private:
 int
 main(int, char**)
 {
-  string device_id("#1");
+  std::string device_id("#1");
   OpenNIGrabber grabber(device_id);
   NILinemod openni_viewer(grabber);
 

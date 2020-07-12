@@ -15,7 +15,7 @@ NearestPairPointCloudCoherence<PointInT>::computeCoherence(
   double val = 0.0;
   // for (std::size_t i = 0; i < indices->size (); i++)
   for (std::size_t i = 0; i < cloud->points.size(); i++) {
-    PointInT input_point = cloud->points[i];
+    PointInT input_point = (*cloud)[i];
     std::vector<int> k_indices(1);
     std::vector<float> k_distances(1);
     search_->nearestKSearch(input_point, 1, k_indices, k_distances);
@@ -24,7 +24,7 @@ NearestPairPointCloudCoherence<PointInT>::computeCoherence(
     if (k_distance < maximum_distance_ * maximum_distance_) {
       // nearest_targets.push_back (k_index);
       // nearest_inputs.push_back (i);
-      PointInT target_point = target_input_->points[k_index];
+      PointInT target_point = (*target_input_)[k_index];
       double coherence_val = 1.0;
       for (std::size_t i = 0; i < point_coherences_.size(); i++) {
         PointCoherencePtr coherence = point_coherences_[i];

@@ -693,7 +693,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
     for (std::size_t index: (*Filter<PointT>::indices_))
     {
 
-      const PointT& point = input_->points[index];
+      const PointT& point = (*input_)[index];
       // Check if the point is invalid
       if (!std::isfinite (point.x)
           || !std::isfinite (point.y)
@@ -743,9 +743,9 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
         }
 
         // copy all the fields
-        copyPoint (input_->points[cp], output[cp]);
+        copyPoint ((*input_)[cp], output[cp]);
 
-        if (!condition_->evaluate (input_->points[cp]))
+        if (!condition_->evaluate ((*input_)[cp]))
         {
           output[cp].getVector4fMap ().setConstant (user_filter_value_);
           removed_p = true;

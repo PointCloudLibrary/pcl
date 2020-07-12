@@ -371,8 +371,8 @@ TEST (ExtractPolygonalPrism, Segmentation)
 
   for (std::size_t i = 0; i < hull->points.size (); ++i)
   {
-    hull->points[i].x = hull->points[i].y = static_cast<float> (i);
-    hull->points[i].z = 0.0f;
+    (*hull)[i].x = (*hull)[i].y = static_cast<float> (i);
+    (*hull)[i].z = 0.0f;
   }
 
   ExtractPolygonalPrismData<PointXYZ> ex;

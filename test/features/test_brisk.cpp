@@ -45,7 +45,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 using PointT = PointXYZRGBA;
 using KeyPointT = PointWithScale;

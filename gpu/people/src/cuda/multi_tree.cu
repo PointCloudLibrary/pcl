@@ -54,7 +54,6 @@ using pcl::gpu::people::trees::Attrib;
 using pcl::gpu::people::trees::focal;
 using pcl::gpu::people::trees::NUM_LABELS;
 
-using namespace std;
 using uint = unsigned int;
 
 #ifdef __CDT_PARSER__ // This is an eclipse specific hack, does nothing to the code

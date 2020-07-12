@@ -46,7 +46,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ> ());
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> ());
@@ -65,9 +64,9 @@ TEST (PCL, RSDEstimation)
   n.setRadiusSearch (rad);
   n.compute (*normals);
 
-  EXPECT_NEAR (normals->points[103].normal_x, 0.694, 0.1);
-  EXPECT_NEAR (normals->points[103].normal_y, -0.562, 0.1);
-  EXPECT_NEAR (normals->points[103].normal_z, -0.448, 0.1);
+  EXPECT_NEAR ((*normals)[103].normal_x, 0.694, 0.1);
+  EXPECT_NEAR ((*normals)[103].normal_y, -0.562, 0.1);
+  EXPECT_NEAR ((*normals)[103].normal_z, -0.448, 0.1);
   
   // RSDEstimation
   double max_plane_radius = 0.1;

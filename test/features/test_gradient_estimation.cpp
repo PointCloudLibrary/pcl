@@ -44,7 +44,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, IntensityGradientEstimation)
@@ -91,7 +90,7 @@ TEST (PCL, IntensityGradientEstimation)
   // Compare to gradient estimates to actual values
   for (std::size_t i = 0; i < cloud_ptr->points.size (); ++i)
   {
-    const PointXYZI &p = cloud_ptr->points[i];
+    const PointXYZI &p = (*cloud_ptr)[i];
 
     // A pointer to the estimated gradient values
     const float * g_est = gradient[i].gradient;

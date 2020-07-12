@@ -87,7 +87,7 @@ pcl::people::PersonCluster<PointT>::init (
 
   for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); pit++)
   {
-    PointT* p = &input_cloud->points[*pit];
+    PointT* p = &(*input_cloud)[*pit];
 
     min_x_ = std::min(p->x, min_x_);
     max_x_ = std::max(p->x, max_x_);
@@ -138,7 +138,7 @@ pcl::people::PersonCluster<PointT>::init (
       head_threshold_value = min_y_ + height_ / 8.0f;    // head is suppose to be 1/8 of the human height
       for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); pit++)
       {
-        PointT* p = &input_cloud->points[*pit];
+        PointT* p = &(*input_cloud)[*pit];
 
         if(p->y < head_threshold_value)
         {
@@ -154,7 +154,7 @@ pcl::people::PersonCluster<PointT>::init (
       head_threshold_value = max_x_ - height_ / 8.0f;    // head is suppose to be 1/8 of the human height
       for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); pit++)
       {
-        PointT* p = &input_cloud->points[*pit];
+        PointT* p = &(*input_cloud)[*pit];
 
         if(p->x > head_threshold_value)
         {
@@ -179,7 +179,7 @@ pcl::people::PersonCluster<PointT>::init (
     float max_z = c_z_;
     for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); ++pit)
     {
-      PointT* p = &input_cloud->points[*pit];
+      PointT* p = &(*input_cloud)[*pit];
 
       min_x = std::min(p->x, min_x);
       max_x = std::max(p->x, max_x);
@@ -218,7 +218,7 @@ pcl::people::PersonCluster<PointT>::init (
     float max_z = c_z_;
     for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); ++pit)
     {
-      PointT* p = &input_cloud->points[*pit];
+      PointT* p = &(*input_cloud)[*pit];
 
       min_y = std::min(p->y, min_y);
       max_y = std::max(p->y, max_y);

@@ -120,7 +120,6 @@ using ScopeTimeT = pcl::ScopeTime;
 #include <opencv/highgui.h>
 //SIMENDSIMENDSIMENDSIMENDSIMENDSIMENDSIMEND
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 using namespace Eigen;
@@ -130,7 +129,6 @@ namespace pc = pcl::console;
 using namespace pcl::console;
 using namespace pcl::io;
 using namespace pcl::simulation;
-using namespace std;
 std::uint16_t t_gamma[2048];
 Scene::Ptr scene_;
 Camera::Ptr camera_;
@@ -364,7 +362,7 @@ write_depth_image_uint(unsigned short* depth_img)
 // timestamps and displays the elapsed time between them as
 // a fraction and time used [for profiling]
 void
-display_tic_toc (vector<double> &tic_toc,const string &fun_name)
+display_tic_toc (vector<double> &tic_toc,const std::string &fun_name)
 {
   std::size_t tic_toc_size = tic_toc.size ();
 
@@ -530,7 +528,7 @@ typename PointCloud<MergedT>::Ptr merge(const PointCloud<PointT>& points, const 
   //pcl::concatenateFields (points, colors, *merged_ptr); why error? 
     
   for (std::size_t i = 0; i < colors.size (); ++i)
-    merged_ptr->points[i].rgba = colors[i].rgba;
+    (*merged_ptr)[i].rgba = colors[i].rgba;
       
   return merged_ptr;
 }
@@ -730,7 +728,7 @@ struct SceneCloudView
     viewer_pose_ = kinfu.getCameraPose();
 
     ScopeTimeT time ("PointCloud Extraction");
-    std::cout << "\nGetting cloud... " << flush;
+    std::cout << "\nGetting cloud... " << std::flush;
 
     valid_combined_ = false;
 
@@ -832,7 +830,7 @@ struct SceneCloudView
   showMesh(KinfuTracker& kinfu, bool /*integrate_colors*/)
   {
     ScopeTimeT time ("Mesh Extraction");
-    std::cout << "\nGetting mesh... " << flush;
+    std::cout << "\nGetting mesh... " << std::flush;
 
     if (!marching_cubes_)
       marching_cubes_ = MarchingCubes::Ptr( new MarchingCubes() );
@@ -960,7 +958,7 @@ struct KinFuApp
   }
   
   void
-  toggleEvaluationMode(const string& eval_folder, const string& match_file = string())
+  toggleEvaluationMode(const std::string& eval_folder, const std::string& match_file = std::string())
   {
     evaluation_ptr_ = Evaluation::Ptr( new Evaluation(eval_folder) );
     if (!match_file.empty())
@@ -1145,7 +1143,7 @@ struct KinFuApp
 	    // download tsdf volume
 	    {
 	      ScopeTimeT time ("tsdf volume download");
-	      std::cout << "Downloading TSDF volume from device ... " << flush;
+	      std::cout << "Downloading TSDF volume from device ... " << std::flush;
 	      // kinfu_.volume().downloadTsdfAndWeighs (tsdf_volume_.volumeWriteable (), tsdf_volume_.weightsWriteable ());
               kinfu_.volume ().downloadTsdfAndWeighsLocal ();
 	      // tsdf_volume_.setHeader (Eigen::Vector3i (pcl::device::VOLUME_X, pcl::device::VOLUME_Y, pcl::device::VOLUME_Z), kinfu_.volume().getSize ());
@@ -1155,7 +1153,7 @@ struct KinFuApp
 	    }
 	    {
 	      ScopeTimeT time ("converting");
-	      std::cout << "Converting volume to TSDF cloud ... " << flush;
+	      std::cout << "Converting volume to TSDF cloud ... " << std::flush;
 	      // tsdf_volume_.convertToTsdfCloud (tsdf_cloud_ptr_);
               kinfu_.volume ().convertToTsdfCloud (tsdf_cloud_ptr_);
 	      std::cout << "done [" << tsdf_cloud_ptr_->size () << " points]" << std::endl << std::endl;
@@ -1307,12 +1305,12 @@ struct KinFuApp
         std::cout << std::endl << "Volume scan: " << (app->scan_volume_ ? "enabled" : "disabled") << std::endl << std::endl;
         break;
       case (int)'v': case (int)'V':
-        std::cout << "Saving TSDF volume to tsdf_volume.dat ... " << flush;
+        std::cout << "Saving TSDF volume to tsdf_volume.dat ... " << std::flush;
         // app->tsdf_volume_.save ("tsdf_volume.dat", true);
         app->kinfu_.volume ().save ("tsdf_volume.dat", true);
         //std::cout << "done [" << app->tsdf_volume_.size () << " voxels]" << std::endl;
         std::cout << "done [" << app->app->kinfu_.volume ().size () << " voxels]" << std::endl;
-        std::cout << "Saving TSDF volume cloud to tsdf_cloud.pcd ... " << flush;
+        std::cout << "Saving TSDF volume cloud to tsdf_cloud.pcd ... " << std::flush;
         pcl::io::savePCDFile<pcl::PointXYZI> ("tsdf_cloud.pcd", *app->tsdf_cloud_ptr_, true);
         std::cout << "done [" << app->tsdf_cloud_ptr_->size () << " points]" << std::endl;
         break;
@@ -1330,18 +1328,18 @@ writeCloudFile (int format, const CloudPtr& cloud_prt)
 {
   if (format == KinFuApp::PCD_BIN)
   {
-    std::cout << "Saving point cloud to 'cloud_bin.pcd' (binary)... " << flush;
+    std::cout << "Saving point cloud to 'cloud_bin.pcd' (binary)... " << std::flush;
     pcl::io::savePCDFile ("cloud_bin.pcd", *cloud_prt, true);
   }
   else
   if (format == KinFuApp::PCD_ASCII)
   {
-    std::cout << "Saving point cloud to 'cloud.pcd' (ASCII)... " << flush;
+    std::cout << "Saving point cloud to 'cloud.pcd' (ASCII)... " << std::flush;
     pcl::io::savePCDFile ("cloud.pcd", *cloud_prt, false);
   }
   else   /* if (format == KinFuApp::PLY) */
   {
-    std::cout << "Saving point cloud to 'cloud.ply' (ASCII)... " << flush;
+    std::cout << "Saving point cloud to 'cloud.ply' (ASCII)... " << std::flush;
     pcl::io::savePLYFileASCII ("cloud.ply", *cloud_prt);
   
   }
@@ -1357,12 +1355,12 @@ writePolygonMeshFile (int format, const pcl::PolygonMesh& mesh)
 
   if (format == KinFuApp::MESH_PLY)
   {
-    std::cout << "Saving mesh to to 'mesh.ply'... " << flush;
+    std::cout << "Saving mesh to to 'mesh.ply'... " << std::flush;
     pcl::io::savePLYFile("mesh.ply", mesh);		
   }
   else /* if (format == KinFuApp::MESH_VTK) */
   {
-    std::cout << "Saving mesh to to 'mesh.vtk'... " << flush;
+    std::cout << "Saving mesh to to 'mesh.vtk'... " << std::flush;
     pcl::io::saveVTKFile("mesh.vtk", mesh);    
   }  
   std::cout << "Done" << std::endl;

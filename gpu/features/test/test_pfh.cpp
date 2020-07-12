@@ -46,7 +46,6 @@
 #include "data_source.hpp"
 #include <pcl/search/search.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 
@@ -474,7 +473,7 @@ TEST(PCL_FeaturesGPU, pfhrgb)
     cloud_XYZRGB->points.clear();
     for(std::size_t i = 0; i < source.cloud->points.size(); ++i)               
     {
-        const PointXYZ& p = source.cloud->points[i];
+        const PointXYZ& p = (*source.cloud)[i];
         PointXYZRGB o;
 
         int color = *(int*)&p.data[3];

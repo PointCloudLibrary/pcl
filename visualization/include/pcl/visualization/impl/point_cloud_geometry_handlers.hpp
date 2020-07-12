@@ -89,9 +89,9 @@ PointCloudGeometryHandlerXYZ<PointT>::getGeometry (vtkSmartPointer<vtkPoints> &p
   {
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
-      pts[i * 3 + 0] = cloud_->points[i].x;
-      pts[i * 3 + 1] = cloud_->points[i].y;
-      pts[i * 3 + 2] = cloud_->points[i].z;
+      pts[i * 3 + 0] = (*cloud_)[i].x;
+      pts[i * 3 + 1] = (*cloud_)[i].y;
+      pts[i * 3 + 2] = (*cloud_)[i].z;
     }
     data->SetArray (&pts[0], nr_points * 3, 0);
     points->SetData (data);
@@ -102,12 +102,12 @@ PointCloudGeometryHandlerXYZ<PointT>::getGeometry (vtkSmartPointer<vtkPoints> &p
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
       // Check if the point is invalid
-      if (!std::isfinite (cloud_->points[i].x) || !std::isfinite (cloud_->points[i].y) || !std::isfinite (cloud_->points[i].z))
+      if (!std::isfinite ((*cloud_)[i].x) || !std::isfinite ((*cloud_)[i].y) || !std::isfinite ((*cloud_)[i].z))
         continue;
 
-      pts[j * 3 + 0] = cloud_->points[i].x;
-      pts[j * 3 + 1] = cloud_->points[i].y;
-      pts[j * 3 + 2] = cloud_->points[i].z;
+      pts[j * 3 + 0] = (*cloud_)[i].x;
+      pts[j * 3 + 1] = (*cloud_)[i].y;
+      pts[j * 3 + 2] = (*cloud_)[i].z;
       // Set j and increment
       j++;
     }
@@ -149,9 +149,9 @@ PointCloudGeometryHandlerSurfaceNormal<PointT>::getGeometry (vtkSmartPointer<vtk
   double p[3];
   for (vtkIdType i = 0; i < static_cast<vtkIdType> (cloud_->points.size ()); ++i)
   {
-    p[0] = cloud_->points[i].normal[0];
-    p[1] = cloud_->points[i].normal[1];
-    p[2] = cloud_->points[i].normal[2];
+    p[0] = (*cloud_)[i].normal[0];
+    p[1] = (*cloud_)[i].normal[1];
+    p[2] = (*cloud_)[i].normal[2];
 
     points->SetPoint (i, p);
   }

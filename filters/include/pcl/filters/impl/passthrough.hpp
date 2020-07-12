@@ -58,9 +58,9 @@ pcl::PassThrough<PointT>::applyFilterIndices (std::vector<int> &indices)
     for (const auto ii : *indices_)  // ii = input index
     {
       // Non-finite entries are always passed to removed indices
-      if (!std::isfinite (input_->points[ii].x) ||
-          !std::isfinite (input_->points[ii].y) ||
-          !std::isfinite (input_->points[ii].z))
+      if (!std::isfinite ((*input_)[ii].x) ||
+          !std::isfinite ((*input_)[ii].y) ||
+          !std::isfinite ((*input_)[ii].z))
       {
         if (extract_removed_indices_)
           (*removed_indices_)[rii++] = ii;
@@ -86,9 +86,9 @@ pcl::PassThrough<PointT>::applyFilterIndices (std::vector<int> &indices)
     for (const auto ii : *indices_)  // ii = input index
     {
       // Non-finite entries are always passed to removed indices
-      if (!std::isfinite (input_->points[ii].x) ||
-          !std::isfinite (input_->points[ii].y) ||
-          !std::isfinite (input_->points[ii].z))
+      if (!std::isfinite ((*input_)[ii].x) ||
+          !std::isfinite ((*input_)[ii].y) ||
+          !std::isfinite ((*input_)[ii].z))
       {
         if (extract_removed_indices_)
           (*removed_indices_)[rii++] = ii;
@@ -96,7 +96,7 @@ pcl::PassThrough<PointT>::applyFilterIndices (std::vector<int> &indices)
       }
 
       // Get the field's value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&input_->points[ii]);
+      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*input_)[ii]);
       float field_value = 0;
       memcpy (&field_value, pt_data + fields[distance_idx].offset, sizeof (float));
 

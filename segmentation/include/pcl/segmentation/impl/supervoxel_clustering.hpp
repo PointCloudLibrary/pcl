@@ -277,7 +277,7 @@ pcl::SupervoxelClustering<PointT>::computeVoxelData ()
       }
       //Compute normal
       pcl::computePointNormal (*voxel_centroid_cloud_, indices, new_voxel_data.normal_, new_voxel_data.curvature_);
-      pcl::flipNormalTowardsViewpoint (voxel_centroid_cloud_->points[new_voxel_data.idx_], 0.0f,0.0f,0.0f, new_voxel_data.normal_);
+      pcl::flipNormalTowardsViewpoint ((*voxel_centroid_cloud_)[new_voxel_data.idx_], 0.0f,0.0f,0.0f, new_voxel_data.normal_);
       new_voxel_data.normal_[3] = 0.0f;
       new_voxel_data.normal_.normalize ();
       new_voxel_data.owner_ = nullptr;
@@ -861,7 +861,7 @@ pcl::SupervoxelClustering<PointT>::SupervoxelHelper::refineNormals ()
     }
     //Compute normal
     pcl::computePointNormal (*parent_->voxel_centroid_cloud_, indices, voxel_data.normal_, voxel_data.curvature_);
-    pcl::flipNormalTowardsViewpoint (parent_->voxel_centroid_cloud_->points[voxel_data.idx_], 0.0f,0.0f,0.0f, voxel_data.normal_);
+    pcl::flipNormalTowardsViewpoint ((*parent_->voxel_centroid_cloud_)[voxel_data.idx_], 0.0f,0.0f,0.0f, voxel_data.normal_);
     voxel_data.normal_[3] = 0.0f;
     voxel_data.normal_.normalize ();
   }

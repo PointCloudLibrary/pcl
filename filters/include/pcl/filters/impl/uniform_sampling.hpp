@@ -86,9 +86,9 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
     if (!input_->is_dense)
     {
       // Check if the point is invalid
-      if (!std::isfinite (input_->points[(*indices_)[cp]].x) || 
-          !std::isfinite (input_->points[(*indices_)[cp]].y) || 
-          !std::isfinite (input_->points[(*indices_)[cp]].z))
+      if (!std::isfinite ((*input_)[(*indices_)[cp]].x) || 
+          !std::isfinite ((*input_)[(*indices_)[cp]].y) || 
+          !std::isfinite ((*input_)[(*indices_)[cp]].z))
       {
         if (extract_removed_indices_)
           removed_indices_->push_back ((*indices_)[cp]);
@@ -97,9 +97,9 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
     }
 
     Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
-    ijk[0] = static_cast<int> (std::floor (input_->points[(*indices_)[cp]].x * inverse_leaf_size_[0]));
-    ijk[1] = static_cast<int> (std::floor (input_->points[(*indices_)[cp]].y * inverse_leaf_size_[1]));
-    ijk[2] = static_cast<int> (std::floor (input_->points[(*indices_)[cp]].z * inverse_leaf_size_[2]));
+    ijk[0] = static_cast<int> (std::floor ((*input_)[(*indices_)[cp]].x * inverse_leaf_size_[0]));
+    ijk[1] = static_cast<int> (std::floor ((*input_)[(*indices_)[cp]].y * inverse_leaf_size_[1]));
+    ijk[2] = static_cast<int> (std::floor ((*input_)[(*indices_)[cp]].z * inverse_leaf_size_[2]));
 
     // Compute the leaf index
     int idx = (ijk - min_b_).dot (divb_mul_);
@@ -112,8 +112,8 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
     }
 
     // Check to see if this point is closer to the leaf center than the previous one we saved
-    float diff_cur   = (input_->points[(*indices_)[cp]].getVector4fMap () - ijk.cast<float> ()).squaredNorm ();
-    float diff_prev  = (input_->points[leaf.idx].getVector4fMap ()        - ijk.cast<float> ()).squaredNorm ();
+    float diff_cur   = ((*input_)[(*indices_)[cp]].getVector4fMap () - ijk.cast<float> ()).squaredNorm ();
+    float diff_prev  = ((*input_)[leaf.idx].getVector4fMap ()        - ijk.cast<float> ()).squaredNorm ();
 
     // If current point is closer, copy its index instead
     if (diff_cur < diff_prev)
@@ -134,7 +134,7 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
   int cp = 0;
 
   for (const auto& leaf : leaves_)
-    output[cp++] = input_->points[leaf.second.idx];
+    output[cp++] = (*input_)[leaf.second.idx];
   output.width = static_cast<std::uint32_t> (output.points.size ());
 }
 

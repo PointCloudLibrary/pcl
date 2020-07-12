@@ -47,7 +47,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 struct KeypointT
 {
@@ -158,7 +157,7 @@ TEST (PCL, SIFTKeypoint_radiusSearch)
   tree.radiusSearch (i_point, max_radius, nn_indices, nn_dist);
 
   // Are they all unique?
-  set<int> unique_indices;
+  std::set<int> unique_indices;
   for (const int &nn_index : nn_indices)
   {
     unique_indices.insert (nn_index);

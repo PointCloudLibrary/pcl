@@ -784,9 +784,9 @@ namespace pcl
       while (cnt != input_->size ())
       {
         Point3D< Real > p;
-        p[0] = input_->points[cnt].x;
-        p[1] = input_->points[cnt].y;
-        p[2] = input_->points[cnt].z;
+        p[0] = (*input_)[cnt].x;
+        p[1] = (*input_)[cnt].y;
+        p[2] = (*input_)[cnt].z;
 
         for (i = 0; i < DIMENSION; i++)
         {
@@ -806,12 +806,12 @@ namespace pcl
         cnt = 0;
         while (cnt != input_->size ())
         {
-          position[0] = input_->points[cnt].x;
-          position[1] = input_->points[cnt].y;
-          position[2] = input_->points[cnt].z;
-          normal[0] = input_->points[cnt].normal_x;
-          normal[1] = input_->points[cnt].normal_y;
-          normal[2] = input_->points[cnt].normal_z;
+          position[0] = (*input_)[cnt].x;
+          position[1] = (*input_)[cnt].y;
+          position[2] = (*input_)[cnt].z;
+          normal[0] = (*input_)[cnt].normal_x;
+          normal[1] = (*input_)[cnt].normal_y;
+          normal[2] = (*input_)[cnt].normal_z;
 
           for( i=0 ; i<DIMENSION ; i++ ) position[i] = ( position[i]-center[i] ) / scale;
           myCenter[0] = myCenter[1] = myCenter[2] = Real(0.5);
@@ -846,12 +846,12 @@ namespace pcl
       cnt=0;
       while (cnt != input_->size ())
       {
-        position[0] = input_->points[cnt].x;
-        position[1] = input_->points[cnt].y;
-        position[2] = input_->points[cnt].z;
-        normal[0] = input_->points[cnt].normal_x;
-        normal[1] = input_->points[cnt].normal_y;
-        normal[2] = input_->points[cnt].normal_z;
+        position[0] = (*input_)[cnt].x;
+        position[1] = (*input_)[cnt].y;
+        position[2] = (*input_)[cnt].z;
+        normal[0] = (*input_)[cnt].normal_x;
+        normal[1] = (*input_)[cnt].normal_y;
+        normal[2] = (*input_)[cnt].normal_z;
         cnt ++;
         for( i=0 ; i<DIMENSION ; i++ ) position[i] = ( position[i]-center[i] ) / scale;
         myCenter[0] = myCenter[1] = myCenter[2] = Real(0.5);

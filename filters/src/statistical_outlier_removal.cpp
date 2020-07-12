@@ -41,8 +41,6 @@
 #include <pcl/filters/impl/statistical_outlier_removal.hpp>
 #include <pcl/conversions.h>
 
-using namespace std;
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
@@ -137,7 +135,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (vector<int>& indices)
+pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (std::vector<int>& indices)
 {
   // If fields x/y/z are not present, we cannot filter
   if (x_idx_ == UNAVAILABLE || y_idx_ == UNAVAILABLE || z_idx_ == UNAVAILABLE)
@@ -214,9 +212,9 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double&
   // Go over all the points and calculate the mean or smallest distance
   for (std::size_t cp = 0; cp < indices_->size (); ++cp)
   {
-    if (!std::isfinite (cloud->points[(*indices_)[cp]].x) || 
-        !std::isfinite (cloud->points[(*indices_)[cp]].y) ||
-        !std::isfinite (cloud->points[(*indices_)[cp]].z))
+    if (!std::isfinite ((*cloud)[(*indices_)[cp]].x) || 
+        !std::isfinite ((*cloud)[(*indices_)[cp]].y) ||
+        !std::isfinite ((*cloud)[(*indices_)[cp]].z))
     {
       distances[cp] = 0;
       continue;

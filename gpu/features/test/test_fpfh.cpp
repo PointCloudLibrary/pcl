@@ -45,7 +45,6 @@
 #include "data_source.hpp"
 #include <pcl/search/pcl_search.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 

@@ -210,13 +210,13 @@ pcl::simulation::PointCloudModel::PointCloudModel(
   colors_ = new float[4 * nvertices_];
 
   for (std::size_t i = 0; i < pc->points.size(); ++i) {
-    vertices_[3 * i + 0] = pc->points[i].x;
-    vertices_[3 * i + 1] = pc->points[i].y;
-    vertices_[3 * i + 2] = pc->points[i].z;
+    vertices_[3 * i + 0] = (*pc)[i].x;
+    vertices_[3 * i + 1] = (*pc)[i].y;
+    vertices_[3 * i + 2] = (*pc)[i].z;
 
-    colors_[4 * i + 0] = pc->points[i].r / 255.0f;
-    colors_[4 * i + 1] = pc->points[i].g / 255.0f;
-    colors_[4 * i + 2] = pc->points[i].b / 255.0f;
+    colors_[4 * i + 0] = (*pc)[i].r / 255.0f;
+    colors_[4 * i + 1] = (*pc)[i].g / 255.0f;
+    colors_[4 * i + 2] = (*pc)[i].b / 255.0f;
     colors_[4 * i + 3] = 1.0;
   }
 }

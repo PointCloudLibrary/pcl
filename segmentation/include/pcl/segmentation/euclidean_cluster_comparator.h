@@ -153,7 +153,7 @@ namespace pcl
           float dist_threshold = distance_threshold_;
           if (depth_dependent_)
           {
-            Eigen::Vector3f vec = input_->points[idx1].getVector3fMap ();
+            Eigen::Vector3f vec = (*input_)[idx1].getVector3fMap ();
             float z = vec.dot (z_axis_);
             dist_threshold *= z * z;
           }

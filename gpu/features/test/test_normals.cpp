@@ -42,7 +42,6 @@
 #include <pcl/gpu/containers/initialization.h>
 #include <pcl/search/search.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 
@@ -80,7 +79,7 @@ TEST(PCL_FeaturesGPU, normals_lowlevel)
 
     for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
-        Normal n = source.normals->points[i];
+        Normal n = (*source.normals)[i];
 
         PointXYZ xyz = downloaded[i];
         float curvature = xyz.data[3];               
@@ -144,7 +143,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_1)
 
     for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
-        Normal n = normals->points[i];
+        Normal n = (*normals)[i];
 
         PointXYZ xyz = downloaded[i];
         float curvature = xyz.data[3];                        
@@ -209,7 +208,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_2)
 
     for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
-        Normal n = normals->points[i];
+        Normal n = (*normals)[i];
 
         PointXYZ xyz = downloaded[i];
         float curvature = xyz.data[3];                        
@@ -274,7 +273,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_3)
 
     for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
-        Normal n = normals->points[i];
+        Normal n = (*normals)[i];
 
         PointXYZ xyz = downloaded[i];
         float curvature = xyz.data[3];
@@ -348,7 +347,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_4)
 
    for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
-        Normal n = normals->points[i];
+        Normal n = (*normals)[i];
 
         PointXYZ xyz = downloaded[i];
         float curvature = xyz.data[3];

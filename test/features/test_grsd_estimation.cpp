@@ -46,7 +46,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ> ());
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> ());
@@ -65,9 +64,9 @@ TEST (PCL, GRSDEstimation)
   n.setRadiusSearch (rad);
   n.compute (*normals);
 
-  EXPECT_NEAR (normals->points[103].normal_x, 0.694, 0.1);
-  EXPECT_NEAR (normals->points[103].normal_y, -0.562, 0.1);
-  EXPECT_NEAR (normals->points[103].normal_z, -0.448, 0.1);
+  EXPECT_NEAR ((*normals)[103].normal_x, 0.694, 0.1);
+  EXPECT_NEAR ((*normals)[103].normal_y, -0.562, 0.1);
+  EXPECT_NEAR ((*normals)[103].normal_z, -0.448, 0.1);
   
   // GRSDEstimation
   double rsd_radius = 0.03;
@@ -79,16 +78,16 @@ TEST (PCL, GRSDEstimation)
   grsd.setRadiusSearch (rsd_radius);
   grsd.compute (*grsd_desc);
   
-  EXPECT_EQ (12, grsd_desc->points[0].histogram[2]);
-  EXPECT_EQ (104, grsd_desc->points[0].histogram[4]);
-  EXPECT_EQ (0, grsd_desc->points[0].histogram[6]);
-  EXPECT_EQ (0, grsd_desc->points[0].histogram[8]);
-  EXPECT_EQ (0, grsd_desc->points[0].histogram[10]);
-  EXPECT_EQ (34, grsd_desc->points[0].histogram[12]);
-  EXPECT_EQ (167, grsd_desc->points[0].histogram[14]);
-  EXPECT_EQ (68, grsd_desc->points[0].histogram[16]);
-  EXPECT_EQ (204, grsd_desc->points[0].histogram[18]);
-  EXPECT_EQ (0, grsd_desc->points[0].histogram[20]);
+  EXPECT_EQ (12, (*grsd_desc)[0].histogram[2]);
+  EXPECT_EQ (104, (*grsd_desc)[0].histogram[4]);
+  EXPECT_EQ (0, (*grsd_desc)[0].histogram[6]);
+  EXPECT_EQ (0, (*grsd_desc)[0].histogram[8]);
+  EXPECT_EQ (0, (*grsd_desc)[0].histogram[10]);
+  EXPECT_EQ (34, (*grsd_desc)[0].histogram[12]);
+  EXPECT_EQ (167, (*grsd_desc)[0].histogram[14]);
+  EXPECT_EQ (68, (*grsd_desc)[0].histogram[16]);
+  EXPECT_EQ (204, (*grsd_desc)[0].histogram[18]);
+  EXPECT_EQ (0, (*grsd_desc)[0].histogram[20]);
   
 }
 

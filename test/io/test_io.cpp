@@ -79,7 +79,7 @@ TEST (PCL, ComplexPCDFileASCII)
   EXPECT_NE (int (res), -1);
   EXPECT_EQ (blob.width, 1);
   EXPECT_EQ (blob.height, 1);
-  EXPECT_EQ (blob.is_dense, true);
+  EXPECT_TRUE (blob.is_dense);
   EXPECT_EQ (blob.data.size (), 4 * 33 + 10 * 1 + 4 * 3);
 
   // Check fields
@@ -186,7 +186,7 @@ TEST (PCL, AllTypesPCDFile)
   EXPECT_EQ (blob.width, 1);
   EXPECT_EQ (blob.height, 1);
   EXPECT_EQ (blob.data.size (), 1 + 1 * 2 + 2 * 1 + 2 * 2 + 4 * 1 + 4 * 2 + 4 * 1 + 8 * 2);
-  EXPECT_EQ (blob.is_dense, true);
+  EXPECT_TRUE (blob.is_dense);
 
   EXPECT_EQ (blob.fields.size (), 8);
   // Check fields
@@ -571,7 +571,7 @@ TEST (PCL, IO)
   EXPECT_NE (int (res), -1);                               // test for loadPCDFile ()
   EXPECT_EQ (std::uint32_t (cloud_blob.width), cloud.width);    // test for loadPCDFile ()
   EXPECT_EQ (std::uint32_t (cloud_blob.height), cloud.height);  // test for loadPCDFile ()
-  EXPECT_EQ (bool (cloud_blob.is_dense), true);
+  EXPECT_TRUE (cloud_blob.is_dense);
   EXPECT_EQ (std::size_t (cloud_blob.data.size () * 2),         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
               cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPCDFile ()
 
@@ -640,7 +640,7 @@ TEST (PCL, IO)
   EXPECT_NE (int (res), -1);                               // test for loadPCDFile ()
   EXPECT_EQ (std::uint32_t (cloud_blob.width), cloud.width * cloud.height / 2);    // test for loadPCDFile ()
   EXPECT_EQ (std::uint32_t (cloud_blob.height), 1);  // test for loadPCDFile ()
-  EXPECT_EQ (bool (cloud_blob.is_dense), true);
+  EXPECT_TRUE (cloud_blob.is_dense);
   EXPECT_EQ (std::size_t (cloud_blob.data.size () * 2),         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
               cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPCDFile ()
 
@@ -875,7 +875,7 @@ TEST(PCL, OBJRead)
   EXPECT_NE (int (res), -1);
   EXPECT_EQ (blob.width, 8);
   EXPECT_EQ (blob.height, 1);
-  EXPECT_EQ (blob.is_dense, true);
+  EXPECT_TRUE (blob.is_dense);
   EXPECT_EQ (blob.data.size (), 8 * 6 * 4); // 8 verts, 6 values per vertex (vx,vy,vz,vnx,vny,vnz), 4 byte per value
 
   // Check fields
@@ -953,7 +953,7 @@ TEST (PCL, ExtendedIO)
 
   EXPECT_EQ (int (cloud.width), 2);
   EXPECT_EQ (int (cloud.height), 1);
-  EXPECT_EQ (cloud.is_dense, true);
+  EXPECT_TRUE (cloud.is_dense);
   EXPECT_EQ (int (cloud.points.size ()), 2);
   
   EXPECT_EQ (cloud[0].x, 1); EXPECT_EQ (cloud[0].y, 1); EXPECT_EQ (cloud[0].z, 1);
@@ -1295,7 +1295,7 @@ TEST (PCL, Locale)
 
     EXPECT_EQ (cloud2.width, cloud.width);
     EXPECT_EQ (cloud2.height, cloud.height);
-    EXPECT_EQ (cloud2.is_dense, false);
+    EXPECT_FALSE (cloud2.is_dense);
     EXPECT_EQ (cloud2.points.size (), cloud.points.size ());
   
     EXPECT_TRUE (std::isnan(cloud2[0].x));

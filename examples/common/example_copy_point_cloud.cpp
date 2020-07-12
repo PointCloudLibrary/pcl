@@ -80,7 +80,7 @@ sameType ()
   CloudType::Ptr cloud2(new CloudType);
   copyPointCloud(*cloud, *cloud2);
 
-  CloudType::PointType p_retrieved = cloud2->points[0];
+  CloudType::PointType p_retrieved = (*cloud2)[0];
   std::cout << p_retrieved.x << " " << p_retrieved.y << " " << p_retrieved.z << std::endl;
 }
 
@@ -99,7 +99,7 @@ differenceType ()
   CloudType2::Ptr cloud2(new CloudType2);
   copyPointCloud(*cloud, *cloud2);
 
-  CloudType2::PointType p_retrieved = cloud2->points[0];
+  CloudType2::PointType p_retrieved = (*cloud2)[0];
   std::cout << p_retrieved.x << " " << p_retrieved.y << " " << p_retrieved.z << std::endl;
 }
 
@@ -122,7 +122,7 @@ badConversion ()
   CloudType2::Ptr cloud2(new CloudType2);
   copyPointCloud(*cloud, *cloud2);
   
-  CloudType2::PointType p_retrieved = cloud2->points[0];
+  CloudType2::PointType p_retrieved = (*cloud2)[0];
   std::cout << p_retrieved.x << " " << p_retrieved.y << " " << p_retrieved.z << std::endl;
 }
 

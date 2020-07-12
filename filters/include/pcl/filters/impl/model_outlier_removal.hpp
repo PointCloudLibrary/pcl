@@ -177,7 +177,7 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
     for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
     {
       // Non-finite entries are always passed to removed indices
-      if (!isFinite (input_->points[ (*indices_)[iii]]))
+      if (!isFinite ((*input_)[ (*indices_)[iii]]))
       {
         if (extract_removed_indices_)
           (*removed_indices_)[rii++] = (*indices_)[iii];
@@ -199,7 +199,7 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
   for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
   {
     // Non-finite entries are always passed to removed indices
-    if (!isFinite (input_->points[ (*indices_)[iii]]))
+    if (!isFinite ((*input_)[ (*indices_)[iii]]))
     {
       if (extract_removed_indices_)
         (*removed_indices_)[rii++] = (*indices_)[iii];

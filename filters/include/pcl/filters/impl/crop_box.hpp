@@ -71,11 +71,11 @@ pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
   {
     if (!input_->is_dense)
       // Check if the point is invalid
-      if (!isFinite (input_->points[index]))
+      if (!isFinite ((*input_)[index]))
         continue;
 
     // Get local point
-    PointT local_pt = input_->points[index];
+    PointT local_pt = (*input_)[index];
 
     // Transform point to world space
     if (!transform_matrix_is_identity)

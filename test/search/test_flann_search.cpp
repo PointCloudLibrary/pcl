@@ -45,7 +45,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-using namespace std;
 using namespace pcl;
 
 PointCloud<PointXYZ> cloud, cloud_big;
@@ -80,18 +79,18 @@ TEST (PCL, FlannSearch_nearestKSearch)
   FlannSearch.setInputCloud (cloud.makeShared ());
   PointXYZ test_point (0.01f, 0.01f, 0.01f);
   unsigned int no_of_neighbors = 20;
-  multimap<float, int> sorted_brute_force_result;
+  std::multimap<float, int> sorted_brute_force_result;
   for (std::size_t i = 0; i < cloud.points.size (); ++i)
   {
     float distance = euclideanDistance (cloud[i], test_point);
-    sorted_brute_force_result.insert (make_pair (distance, int (i)));
+    sorted_brute_force_result.insert (std::make_pair (distance, int (i)));
   }
   float max_dist = 0.0f;
   unsigned int counter = 0;
-  for (multimap<float, int>::iterator it = sorted_brute_force_result.begin (); it != sorted_brute_force_result.end ()
+  for (std::multimap<float, int>::iterator it = sorted_brute_force_result.begin (); it != sorted_brute_force_result.end ()
       && counter < no_of_neighbors; ++it)
   {
-    max_dist = max (max_dist, it->first);
+    max_dist = std::max (max_dist, it->first);
     ++counter;
   }
 
@@ -114,7 +113,7 @@ TEST (PCL, FlannSearch_nearestKSearch)
     ok = (std::abs (euclideanDistance (test_point, point)) - max_dist) <= 1e-6;
     //if (!ok)  std::cerr << k_indices[i] << " is not correct...\n";
     //else      std::cerr << k_indices[i] << " is correct...\n";
-    EXPECT_EQ (ok, true);
+    EXPECT_TRUE (ok);
   }
 
   ScopeTime scopeTime ("FLANN nearestKSearch");
@@ -290,10 +289,10 @@ TEST (PCL, FlannSearch_compareToKdTreeFlann)
       kdtree_search->nearestKSearch (point, no_of_neighbors, k_indices, k_distances);
   }
 
-  std::vector<vector<int> > indices_flann;
-  std::vector<vector<float> > dists_flann;
-  std::vector<vector<int> > indices_tree;
-  std::vector<vector<float> > dists_tree;
+  std::vector<std::vector<int> > indices_flann;
+  std::vector<std::vector<float> > dists_flann;
+  std::vector<std::vector<int> > indices_tree;
+  std::vector<std::vector<float> > dists_tree;
   indices_flann.resize (cloud_big.size ());
   dists_flann.resize (cloud_big.size ());
   indices_tree.resize (cloud_big.size ());

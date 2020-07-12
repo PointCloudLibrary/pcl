@@ -44,7 +44,6 @@
 #include <iostream>
 
 using namespace pcl;
-using namespace std;
 
 using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 PointCloud<PointXYZ> cloud;

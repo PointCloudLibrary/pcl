@@ -321,9 +321,8 @@ namespace pcl
           for (int i = 0; i < values (); ++i)
           {
             // dist = f - r
-            Eigen::Vector4f pt (model_->input_->points[indices_[i]].x,
-                                model_->input_->points[indices_[i]].y,
-                                model_->input_->points[indices_[i]].z, 0);
+            Eigen::Vector4f pt = (*model_->input_)[indices_[i]].getVector4fMap();
+            pt[3] = 0;
 
             fvec[i] = static_cast<float> (pcl::sqrPointToLineDistance (pt, line_pt, line_dir) - x[6]*x[6]);
           }

@@ -402,7 +402,7 @@ RangeImageBorderExtractor::classifyBorders ()
     for (int x = 0; x < static_cast<int> (width); ++x)
     {
       int index = y*width+x;
-      BorderDescription& border_description = border_descriptions_->points[index];
+      BorderDescription& border_description = (*border_descriptions_)[index];
       border_description.x = x;
       border_description.y = y;
       BorderTraits& border_traits = border_description.traits;
@@ -414,12 +414,12 @@ RangeImageBorderExtractor::classifyBorders ()
       int shadow_border_index = shadow_border_indices->left;
       if (shadow_border_index >= 0 && checkIfMaximum(x, y, -1, 0, border_scores_left_.data (), shadow_border_index))
       {
-        BorderTraits& shadow_traits = border_descriptions_->points[shadow_border_index].traits;
+        BorderTraits& shadow_traits = (*border_descriptions_)[shadow_border_index].traits;
         border_traits[BORDER_TRAIT__OBSTACLE_BORDER] = border_traits[BORDER_TRAIT__OBSTACLE_BORDER_LEFT] = true;
         shadow_traits[BORDER_TRAIT__SHADOW_BORDER] = shadow_traits[BORDER_TRAIT__SHADOW_BORDER_RIGHT] = true;
         for (int index3=index-1; index3>shadow_border_index; --index3)
         {
-          BorderTraits& veil_point = border_descriptions_->points[index3].traits;
+          BorderTraits& veil_point = (*border_descriptions_)[index3].traits;
           veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_RIGHT] = true;
         }
       }
@@ -427,12 +427,12 @@ RangeImageBorderExtractor::classifyBorders ()
       shadow_border_index = shadow_border_indices->right;
       if (shadow_border_index >= 0 && checkIfMaximum(x, y, 1, 0, border_scores_right_.data (), shadow_border_index))
       {
-        BorderTraits& shadow_traits = border_descriptions_->points[shadow_border_index].traits;
+        BorderTraits& shadow_traits = (*border_descriptions_)[shadow_border_index].traits;
         border_traits[BORDER_TRAIT__OBSTACLE_BORDER] = border_traits[BORDER_TRAIT__OBSTACLE_BORDER_RIGHT] = true;
         shadow_traits[BORDER_TRAIT__SHADOW_BORDER] = shadow_traits[BORDER_TRAIT__SHADOW_BORDER_LEFT] = true;
         for (int index3=index+1; index3<shadow_border_index; ++index3)
         {
-          BorderTraits& veil_point = border_descriptions_->points[index3].traits;
+          BorderTraits& veil_point = (*border_descriptions_)[index3].traits;
           veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_LEFT] = true;
         }
       }
@@ -440,13 +440,13 @@ RangeImageBorderExtractor::classifyBorders ()
       shadow_border_index = shadow_border_indices->top;
       if (shadow_border_index >= 0 && checkIfMaximum(x, y, 0, -1, border_scores_top_.data (), shadow_border_index))
       {
-        BorderTraits& shadow_traits = border_descriptions_->points[shadow_border_index].traits;
+        BorderTraits& shadow_traits = (*border_descriptions_)[shadow_border_index].traits;
         border_traits[BORDER_TRAIT__OBSTACLE_BORDER] = border_traits[BORDER_TRAIT__OBSTACLE_BORDER_TOP] = true;
         shadow_traits[BORDER_TRAIT__SHADOW_BORDER] = shadow_traits[BORDER_TRAIT__SHADOW_BORDER_BOTTOM] = true;
         for (int index3=index-width; index3>shadow_border_index; index3-=width)
         {
           //std::cout << "Adding veil point at "<<(index3-index)%width<<","<<(index3-index)/width<<".\n";
-          BorderTraits& veil_point = border_descriptions_->points[index3].traits;
+          BorderTraits& veil_point = (*border_descriptions_)[index3].traits;
           veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_BOTTOM] = true;
         }
       }
@@ -454,13 +454,13 @@ RangeImageBorderExtractor::classifyBorders ()
       shadow_border_index = shadow_border_indices->bottom;
       if (shadow_border_index >= 0 && checkIfMaximum(x, y, 0, 1, border_scores_bottom_.data (), shadow_border_index))
       {
-        BorderTraits& shadow_traits = border_descriptions_->points[shadow_border_index].traits;
+        BorderTraits& shadow_traits = (*border_descriptions_)[shadow_border_index].traits;
         border_traits[BORDER_TRAIT__OBSTACLE_BORDER] = border_traits[BORDER_TRAIT__OBSTACLE_BORDER_BOTTOM] = true;
         shadow_traits[BORDER_TRAIT__SHADOW_BORDER] = shadow_traits[BORDER_TRAIT__SHADOW_BORDER_TOP] = true;
         for (int index3=index+width; index3<shadow_border_index; index3+=width)
         {
           //std::cout << "Adding veil point at "<<(index3-index)%width<<","<<(index3-index)/width<<".\n";
-          BorderTraits& veil_point = border_descriptions_->points[index3].traits;
+          BorderTraits& veil_point = (*border_descriptions_)[index3].traits;
           veil_point[BORDER_TRAIT__VEIL_POINT] = veil_point[BORDER_TRAIT__VEIL_POINT_TOP] = true;
         }
       }
@@ -586,7 +586,7 @@ RangeImageBorderExtractor::calculateSurfaceChanges ()
       Eigen::Vector3f& surface_change_direction = surface_change_directions_[index];
       surface_change_direction.setZero();
 
-      const BorderTraits& border_traits = border_descriptions_->points[index].traits;
+      const BorderTraits& border_traits = (*border_descriptions_)[index].traits;
       if (border_traits[BORDER_TRAIT__VEIL_POINT] || border_traits[BORDER_TRAIT__SHADOW_BORDER])
         continue;
       if (border_directions_[index]!=nullptr)
@@ -629,7 +629,7 @@ RangeImageBorderExtractor::blurSurfaceChanges ()
       new_score = 0.0f;
       if (!range_image.isValid(index))
         continue;
-      const BorderTraits& border_traits = border_descriptions_->points[index].traits;
+      const BorderTraits& border_traits = (*border_descriptions_)[index].traits;
       if (border_traits[BORDER_TRAIT__VEIL_POINT] || border_traits[BORDER_TRAIT__SHADOW_BORDER])
         continue;
       const Eigen::Vector3f& point = surface_change_directions_[index];

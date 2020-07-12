@@ -19,7 +19,6 @@
 
 #include <pcl/visualization/pcl_visualizer.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
@@ -180,7 +179,7 @@ void
 saveTransform (const std::string &file, const Eigen::Matrix4d &transform)
 {
   ofstream ofs;
-  ofs.open (file.c_str (), ios::trunc | ios::binary);
+  ofs.open (file.c_str (), std::ios::trunc | std::ios::binary);
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j)
       ofs.write (reinterpret_cast<const char*>(&transform (i, j)), sizeof (double));  

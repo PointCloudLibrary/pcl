@@ -84,7 +84,7 @@ main (int, char** argv)
   std::cout << "SI output points.size (): " << spin_images->points.size () << std::endl;
 
   // Display and retrieve the spin image descriptor vector for the first point.
-  pcl::Histogram<153> first_descriptor = spin_images->points[0];
+  pcl::Histogram<153> first_descriptor = (*spin_images)[0];
   std::cout << first_descriptor << std::endl;
 
   return 0;

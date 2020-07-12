@@ -58,7 +58,6 @@
 
 #include "data_source.hpp"
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 

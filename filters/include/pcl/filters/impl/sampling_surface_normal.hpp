@@ -58,64 +58,27 @@ pcl::SamplingSurfaceNormal<PointT>::applyFilter (PointCloud &output)
   findXYZMaxMin (*input_, max_vec, min_vec);
   PointCloud data = *input_;
   partition (data, 0, npts, min_vec, max_vec, indices, output);
-  output.width = 1;
-  output.height = std::uint32_t (output.points.size ());
+  output.height = 1;
+  output.width = output.size ();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void 
 pcl::SamplingSurfaceNormal<PointT>::findXYZMaxMin (const PointCloud& cloud, Vector& max_vec, Vector& min_vec)
 {
-  float maxval = cloud[0].x;
-  float minval = cloud[0].x;
+  // 4f to ease vectorization
+  Eigen::Array4f min_array =
+      Eigen::Array4f::Constant(std::numeric_limits<float>::max());
+  Eigen::Array4f max_array =
+      Eigen::Array4f::Constant(std::numeric_limits<float>::lowest());
 
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
-  {
-    if (cloud[i].x > maxval)
-    {
-      maxval = cloud[i].x;
-    }
-    if (cloud[i].x < minval)
-    {
-      minval = cloud[i].x;
-    }
+  for (const auto& point : cloud) {
+    min_array = min_array.min(point.getArray4fMap());
+    max_array = max_array.max(point.getArray4fMap());
   }
-  max_vec (0) = maxval;
-  min_vec (0) = minval;
 
-  maxval = cloud[0].y;
-  minval = cloud[0].y;
-
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
-  {
-    if (cloud[i].y > maxval)
-    {
-      maxval = cloud[i].y;
-    }
-    if (cloud[i].y < minval)
-    {
-      minval = cloud[i].y;
-    }
-  }
-  max_vec (1) = maxval;
-  min_vec (1) = minval;
-
-  maxval = cloud[0].z;
-  minval = cloud[0].z;
-
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
-  {
-    if (cloud[i].z > maxval)
-    {
-      maxval = cloud[i].z;
-    }
-    if (cloud[i].z < minval)
-    {
-      minval = cloud[i].z;
-    }
-  }
-  max_vec (2) = maxval;
-  min_vec (2) = minval;
+  max_vec = max_array.head<3>();
+  min_vec = min_array.head<3>();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -173,8 +136,8 @@ pcl::SamplingSurfaceNormal<PointT>::samplePartition (
     pt.z = data[indices[i]].z;
     cloud.points.push_back (pt);
   }
-  cloud.width = 1;
-  cloud.height = std::uint32_t (cloud.points.size ());
+  cloud.height = 1;
+  cloud.width = cloud.size ();
 
   Eigen::Vector4f normal;
   float curvature = 0;

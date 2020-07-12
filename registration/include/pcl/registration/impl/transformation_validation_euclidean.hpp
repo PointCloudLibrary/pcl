@@ -62,7 +62,7 @@ TransformationValidationEuclidean<PointSource, PointTarget, Scalar>::validateTra
   input_transformed.resize (cloud_src->size ());
   for (std::size_t i = 0; i < cloud_src->size (); ++i)
   {
-    const PointSource &src = cloud_src->points[i];
+    const PointSource &src = (*cloud_src)[i];
     PointTarget &tgt = input_transformed[i];
     tgt.x = static_cast<float> (transformation_matrix (0, 0) * src.x + transformation_matrix (0, 1) * src.y + transformation_matrix (0, 2) * src.z + transformation_matrix (0, 3));
     tgt.y = static_cast<float> (transformation_matrix (1, 0) * src.x + transformation_matrix (1, 1) * src.y + transformation_matrix (1, 2) * src.z + transformation_matrix (1, 3));

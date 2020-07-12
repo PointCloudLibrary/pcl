@@ -22,7 +22,6 @@
 #endif
 
 using namespace pcl;
-using namespace std;
 
 using PointT = pcl::PointXYZRGB;
 using PointNT = pcl::PointNormal;
@@ -52,10 +51,10 @@ int main (int argc, char *argv[])
   }
 
   ///The file to read from.
-  string infile = argv[1];
+  std::string infile = argv[1];
 
   ///The file to output to.
-  string outfile = argv[2];
+  std::string outfile = argv[2];
 
   // Load cloud in blob format
   pcl::PCLPointCloud2 blob;
@@ -214,7 +213,7 @@ int main (int argc, char *argv[])
   {
     pcl::PointCloud<PointOutT>::Ptr cloud_cluster_don (new pcl::PointCloud<PointOutT>);
     for (const int &index : it->indices){
-      cloud_cluster_don->points.push_back (doncloud->points[index]);
+      cloud_cluster_don->points.push_back ((*doncloud)[index]);
     }
 
     cloud_cluster_don->width = int (cloud_cluster_don->points.size ());

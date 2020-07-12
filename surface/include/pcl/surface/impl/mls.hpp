@@ -151,10 +151,10 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
     for (std::size_t i = 0; i < output.size (); ++i)
     {
       using FieldList = typename pcl::traits::fieldList<PointOutT>::type;
-      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output[i], "normal_x", normals_->points[i].normal_x));
-      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output[i], "normal_y", normals_->points[i].normal_y));
-      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output[i], "normal_z", normals_->points[i].normal_z));
-      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output[i], "curvature", normals_->points[i].curvature));
+      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output[i], "normal_x", (*normals_)[i].normal_x));
+      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output[i], "normal_y", (*normals_)[i].normal_y));
+      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output[i], "normal_z", (*normals_)[i].normal_z));
+      pcl::for_each_type<FieldList> (SetIfFieldExists<PointOutT, float> (output[i], "curvature", (*normals_)[i].curvature));
     }
 
   }
@@ -260,7 +260,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::addProjectedPointNormal (int index
   aux.z = static_cast<float> (point[2]);
 
   // Copy additional point information if available
-  copyMissingFields (input_->points[index], aux);
+  copyMissingFields ((*input_)[index], aux);
 
   projected_points.push_back (aux);
   corresponding_input_indices.indices.push_back (index);
@@ -333,7 +333,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
 
         // Copy all information from the input cloud to the output points (not doing any interpolation)
         for (std::size_t pp = pp_size; pp < projected_points[tn].size (); ++pp)
-          copyMissingFields (input_->points[(*indices_)[cp]], projected_points[tn][pp]);
+          copyMissingFields ((*input_)[(*indices_)[cp]], projected_points[tn][pp]);
 #else
         computeMLSPointNormal (index, nn_indices, projected_points, projected_points_normals, *corresponding_input_indices_, mls_results_[mls_result_index]);
 
@@ -373,14 +373,14 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
     for (std::size_t dp_i = 0; dp_i < distinct_cloud_->size (); ++dp_i) // dp_i = distinct_point_i
     {
       // Distinct cloud may have nan points, skip them
-      if (!std::isfinite (distinct_cloud_->points[dp_i].x))
+      if (!std::isfinite ((*distinct_cloud_)[dp_i].x))
         continue;
 
       // Get 3D position of point
-      //Eigen::Vector3f pos = distinct_cloud_->points[dp_i].getVector3fMap ();
+      //Eigen::Vector3f pos = (*distinct_cloud_)[dp_i].getVector3fMap ();
       std::vector<int> nn_indices;
       std::vector<float> nn_dists;
-      tree_->nearestKSearch (distinct_cloud_->points[dp_i], 1, nn_indices, nn_dists);
+      tree_->nearestKSearch ((*distinct_cloud_)[dp_i], 1, nn_indices, nn_dists);
       int input_index = nn_indices.front ();
 
       // If the closest point did not have a valid MLS fitting result
@@ -388,7 +388,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
       if (mls_results_[input_index].valid == false)
         continue;
 
-      Eigen::Vector3d add_point = distinct_cloud_->points[dp_i].getVector3fMap ().template cast<double> ();
+      Eigen::Vector3d add_point = (*distinct_cloud_)[dp_i].getVector3fMap ().template cast<double> ();
       MLSResult::MLSProjectionResults proj =  mls_results_[input_index].projectPoint (add_point, projection_method_,  5 * nr_coeff_);
       addProjectedPointNormal (input_index, proj.point, proj.normal, mls_results_[input_index].curvature, output, *normals_, *corresponding_input_indices_);
     }
@@ -844,10 +844,10 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::MLSVoxelGrid::MLSVoxelGrid (PointC
   // Put initial cloud in voxel grid
   data_size_ = static_cast<std::uint64_t> (1.5 * max_size / voxel_size_);
   for (std::size_t i = 0; i < indices->size (); ++i)
-    if (std::isfinite (cloud->points[(*indices)[i]].x))
+    if (std::isfinite ((*cloud)[(*indices)[i]].x))
     {
       Eigen::Vector3i pos;
-      getCellIndex (cloud->points[(*indices)[i]].getVector3fMap (), pos);
+      getCellIndex ((*cloud)[(*indices)[i]].getVector3fMap (), pos);
 
       std::uint64_t index_1d;
       getIndexIn1D (pos, index_1d);

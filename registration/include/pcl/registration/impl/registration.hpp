@@ -184,7 +184,7 @@ Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &output,
 
   // Copy the point data to output
   for (std::size_t i = 0; i < indices_->size (); ++i)
-    output[i] = input_->points[(*indices_)[i]];
+    output[i] = (*input_)[(*indices_)[i]];
 
   // Set the internal point representation of choice unless otherwise noted
   if (point_representation_ && !force_no_recompute_) 
