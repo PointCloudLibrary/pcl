@@ -42,8 +42,6 @@
 
 #include <cstdio>
 
-using namespace std;
-
 #include <pcl/common/time.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>

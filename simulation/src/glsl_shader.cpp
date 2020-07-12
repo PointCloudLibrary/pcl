@@ -15,15 +15,14 @@ using namespace pcl::simulation::gllib;
 char*
 readTextFile(const char* filename)
 {
-  using namespace std;
   char* buf = nullptr;
-  ifstream file;
-  file.open(filename, ios::in | ios::binary | ios::ate);
+  std::ifstream file;
+  file.open(filename, std::ios::in | std::ios::binary | std::ios::ate);
   if (file.is_open()) {
-    ifstream::pos_type size;
+    std::ifstream::pos_type size;
     size = file.tellg();
-    buf = new char[size + static_cast<ifstream::pos_type>(1)];
-    file.seekg(0, ios::beg);
+    buf = new char[size + static_cast<std::ifstream::pos_type>(1)];
+    file.seekg(0, std::ios::beg);
     file.read(buf, size);
     file.close();
     buf[size] = 0;

@@ -49,12 +49,10 @@
 #include "internal.h"
 #include "cuda_async_copy.h"
 
-using namespace std;
-
 const int MAX_CLUST_SIZE = 25000;
 const float CLUST_TOL = 0.05f;
 
-pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const std::vector<string>& tree_files, int rows, int cols)    
+pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector( const std::vector<std::string>& tree_files, int rows, int cols)
 : max_cluster_size_(MAX_CLUST_SIZE), cluster_tolerance_(CLUST_TOL)
 {
   PCL_DEBUG("[pcl::gpu::people::RDFBodyPartsDetector::RDFBodyPartsDetector] : (D) : Constructor called\n");

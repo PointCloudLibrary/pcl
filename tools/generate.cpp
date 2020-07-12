@@ -46,7 +46,6 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::common;

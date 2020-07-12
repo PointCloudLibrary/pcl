@@ -22,8 +22,6 @@ static std::minstd_rand rng(std::random_device{}());
 //#define SIMULATION_DEBUG 1
 #define DO_TIMING_PROFILE 0
 
-using namespace std;
-
 // 301 values, 0.0 uniform  1.0 normal. properly truncated/normalized
 float normal_sigma0x5_normal1x0_range0to3_step0x01[] = {
     1.59576912f, 1.59545000f, 1.59449302f, 1.59289932f, 1.59067083f, 1.58781019f,
@@ -250,7 +248,7 @@ max_level(int a, int b)
 // timestamps and displays the elapsed time between them as
 // a fraction and time used [for profiling]
 void
-display_tic_toc(vector<double>& tic_toc, const string& fun_name)
+display_tic_toc(std::vector<double>& tic_toc, const std::string& fun_name)
 {
   std::size_t tic_toc_size = tic_toc.size();
 

@@ -348,8 +348,8 @@ std::ifstream& GotoLine(std::ifstream& file, unsigned int num)
 /** \brief Helper function that reads a camera file outputted by Kinfu */
 bool readCamPoseFile(std::string filename, pcl::TextureMapping<pcl::PointXYZ>::Camera &cam)
 {
-  ifstream myReadFile;
-  myReadFile.open(filename.c_str (), ios::in);
+  std::ifstream myReadFile;
+  myReadFile.open(filename.c_str (), std::ios::in);
   if(!myReadFile.is_open ())
   {
     PCL_ERROR ("Error opening file %d\n", filename.c_str ());

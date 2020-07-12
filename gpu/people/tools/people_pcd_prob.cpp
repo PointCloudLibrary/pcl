@@ -59,7 +59,6 @@
 using namespace pcl::visualization;
 using namespace pcl::console;
 using namespace pcl::gpu;
-using namespace std;
 
 using PointT = pcl::PointXYZRGBA;
 
@@ -80,7 +79,7 @@ float estimateFocalLength(const pcl::PointCloud<PointT>::ConstPtr &cloud)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-string 
+std::string
 make_name(int counter, const char* suffix)
 {
   char buf[4096];
@@ -88,7 +87,7 @@ make_name(int counter, const char* suffix)
   return buf;
 }
 
-string
+std::string
 make_ext_name(int counter1, int counter2, const char* suffix)
 {
   char buf[4096];
@@ -141,8 +140,8 @@ class PeoplePCDApp
     void
     writeXMLFile(std::string& filename) const
     {
-      filebuf fb;
-      fb.open (filename.c_str(), ios::out);
+      std::filebuf fb;
+      fb.open (filename.c_str(), std::ios::out);
       ostream os(&fb);
       people_detector_.person_attribs_->writePersonXMLConfig(os);
       fb.close();
@@ -151,8 +150,8 @@ class PeoplePCDApp
     void
     readXMLFile(std::string& filename) const
     {
-      filebuf fb;
-      fb.open (filename.c_str(), ios::in);
+      std::filebuf fb;
+      fb.open (filename.c_str(), std::ios::in);
       istream is(&fb);
       people_detector_.person_attribs_->readPersonXMLConfig(is);
       fb.close();
@@ -341,7 +340,7 @@ int main(int argc, char** argv)
   // loading trees
   using pcl::gpu::people::RDFBodyPartsDetector;
 
-  std::vector<string> names_vector(treeFilenames, treeFilenames + numTrees);
+  std::vector<std::string> names_vector(treeFilenames, treeFilenames + numTrees);
   PCL_DEBUG("[Main] : (D) : Trees collected\n");
   RDFBodyPartsDetector::Ptr rdf(new RDFBodyPartsDetector(names_vector));
   PCL_DEBUG("[Main] : (D) : Loaded files into rdf\n");

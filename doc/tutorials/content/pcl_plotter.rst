@@ -18,9 +18,7 @@ The code for the visualization of a plot are usually as simple as the following 
     
     #include<pcl/visualization/pcl_plotter.h> 
     //...
-    
-    using namespace std;
-    
+
     int 
     main ()
     {
@@ -28,7 +26,7 @@ The code for the visualization of a plot are usually as simple as the following 
       pcl::visualization::PCLPlotter * plotter = new PCLPlotter ();      
       
       //defining the polynomial function, y = x^2. Index of x^2 is 1, rest is 0
-      vector<double> func1 (3,0);
+      std::vector<double> func1 (3,0);
       func1[2] = 1; 
   
       //adding the polynomial func1 to the plotter with [-10, 10] as the range in X axis and "y = x^2" as title
@@ -85,12 +83,12 @@ Have a look at the *addPlotData()* functions in the documentation for their deta
 
 Point-Correspondences
 ---------------------
-This the most fundamental way of providing input. Provide the point correspondences, that is (x,y) coordinates, for the plot using a vector<pair> in *addPlotData* 
+This the most fundamental way of providing input. Provide the point correspondences, that is (x,y) coordinates, for the plot using a std::vector<std::pair> in *addPlotData*
 
 .. code-block:: cpp
 
     ...
-    vector<pair<double, double> > data;
+    std::vector<std::pair<double, double> > data;
     populateData (data);
     plotter->addPlotData (data,"cos");
     ...
@@ -123,9 +121,9 @@ Polynomial are defined in terms of vector of coefficients and Rational functions
 .. code-block:: cpp
 
     ...
-    vector<double> func1 (1,0);
+    std::vector<double> func1 (1,0);
     func1[0] = 1; 
-    vector<double> func2 (2,0);
+    std::vector<double> func2 (2,0);
     func1[1] = 1; 
     
     plotter->addPlotData (std::make_pair (func1, func2),-10, 10, "y = 1/x");
@@ -180,7 +178,7 @@ PCLPlotter provides a very convenient MATLAB like histogram plotting function (`
     
     ...
     
-    vector<double> freqdata = generateNomalDistData ();
+    std::vector<double> freqdata = generateNomalDistData ();
     
     plotter->addHistogramData (freqdata,10); //number of bins are 10
     

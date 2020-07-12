@@ -18,7 +18,6 @@
 #include <pcl/features/don.h>
 
 using namespace pcl;
-using namespace std;
 
 int
 main (int argc, char *argv[])
@@ -42,13 +41,13 @@ main (int argc, char *argv[])
   }
 
   /// the file to read from.
-  string infile = argv[1];
+  std::string infile = argv[1];
   /// small scale
-  istringstream (argv[2]) >> scale1;
+  std::istringstream (argv[2]) >> scale1;
   /// large scale
-  istringstream (argv[3]) >> scale2;
-  istringstream (argv[4]) >> threshold;   // threshold for DoN magnitude
-  istringstream (argv[5]) >> segradius;   // threshold for radius segmentation
+  std::istringstream (argv[3]) >> scale2;
+  std::istringstream (argv[4]) >> threshold;   // threshold for DoN magnitude
+  std::istringstream (argv[5]) >> segradius;   // threshold for radius segmentation
 
   // Load cloud in blob format
   pcl::PCLPointCloud2 blob;
@@ -183,7 +182,7 @@ main (int argc, char *argv[])
 
     //Save cluster
     std::cout << "PointCloud representing the Cluster: " << cloud_cluster_don->points.size () << " data points." << std::endl;
-    stringstream ss;
+    std::stringstream ss;
     ss << "don_cluster_" << j << ".pcd";
     writer.write<pcl::PointNormal> (ss.str (), *cloud_cluster_don, false);
   }

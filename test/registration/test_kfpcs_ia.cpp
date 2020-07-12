@@ -46,7 +46,6 @@
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::registration;
-using namespace std;
 
 PointCloud<PointXYZI> cloud_source, cloud_target;
 

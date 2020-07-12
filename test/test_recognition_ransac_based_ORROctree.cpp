@@ -45,7 +45,6 @@
 #include <pcl/recognition/ransac_based/model_library.h>
 #include <pcl/features/normal_3d.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::recognition;

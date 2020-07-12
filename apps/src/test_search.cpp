@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 int
 main(int argc, char** argv)
 {
@@ -20,7 +18,7 @@ main(int argc, char** argv)
     return 1;
   }
 
-  string pcd_path;
+  std::string pcd_path;
   bool use_pcd_file = pcl::console::find_switch(argc, argv, "-pcd");
   if (use_pcd_file)
     pcl::console::parse(argc, argv, "-pcd", pcd_path);

@@ -62,7 +62,6 @@ namespace pc = pcl::console;
 using namespace pcl::visualization;
 using namespace pcl::gpu;
 using namespace pcl;
-using namespace std;
 
 struct SampledScopeTime : public StopWatch
 {
@@ -85,7 +84,7 @@ struct SampledScopeTime : public StopWatch
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-string 
+std::string
 make_name(int counter, const char* suffix)
 {
   char buf[4096];
@@ -329,7 +328,7 @@ int main(int argc, char** argv)
   pcl::Grabber::Ptr capture (new pcl::OpenNIGrabber());
 
   //selecting tree files
-  std::vector<string> tree_files;
+  std::vector<std::string> tree_files;
   tree_files.push_back("Data/forest1/tree_20.txt");
   tree_files.push_back("Data/forest2/tree_20.txt");
   tree_files.push_back("Data/forest3/tree_20.txt");

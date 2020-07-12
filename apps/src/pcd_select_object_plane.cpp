@@ -64,7 +64,6 @@
 
 using namespace pcl;
 using namespace pcl::console;
-using namespace std;
 using namespace std::chrono_literals;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -457,7 +456,7 @@ public:
                picked_pt.z);
 
     // Add a sphere to it in the PCLVisualizer window
-    stringstream ss;
+    std::stringstream ss;
     ss << "sphere_" << idx;
     cloud_viewer_->addSphere(picked_pt, 0.01, 1.0, 0.0, 0.0, ss.str());
 

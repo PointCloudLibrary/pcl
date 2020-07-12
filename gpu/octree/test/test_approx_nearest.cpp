@@ -60,7 +60,6 @@
 #include "data_source.hpp"
 
 using namespace pcl::gpu;
-using namespace std;
 
 //TEST(PCL_OctreeGPU, DISABLED_approxNearesSearch)
 TEST(PCL_OctreeGPU, approxNearesSearch)

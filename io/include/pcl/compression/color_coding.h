@@ -49,8 +49,6 @@ namespace pcl
 namespace octree
 {
 
-using namespace std;
-
 /** \brief @b ColorCoding class
  *  \note This class encodes 8-bit color information for octree-based point cloud compression.
  *  \note

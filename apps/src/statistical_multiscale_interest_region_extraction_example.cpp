@@ -41,7 +41,6 @@
 #include <pcl/io/pcd_io.h>
 
 using namespace pcl;
-using namespace std;
 
 const float subsampling_leaf_size = 0.003f;
 const float base_scale = 0.005f;

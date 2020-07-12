@@ -45,7 +45,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/search/pcl_search.h>
 
-using namespace std;
 using namespace pcl;
 
 std::string pcd_filename;
