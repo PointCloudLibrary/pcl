@@ -1972,16 +1972,14 @@ namespace pcl
         {
           return (style_);
         }
-      protected:
-        /** \brief The render window interactor. */
-        vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
 
-		    /** \brief Removes a vtk actor from the screen.
+
+        /** \brief Removes a vtk actor from the screen.
           * \param[in] actor a pointer to the vtk actor object
           * \param[in] viewport the view port where the actor should be removed from (default: all)
           */
         bool
-		    removeCustomActorFromRenderer(const vtkSmartPointer<vtkLODActor> &actor,
+        removeCustomActorFromRenderer(const vtkSmartPointer<vtkLODActor> &actor,
                                  int viewport = 0);
 
 
@@ -1990,11 +1988,11 @@ namespace pcl
           * \param[in] viewport the view port where the actor should be removed from (default: all)
           */
         bool
-		    removeCustomActorFromRenderer (const vtkSmartPointer<vtkActor> &actor,
+        removeCustomActorFromRenderer (const vtkSmartPointer<vtkActor> &actor,
                                  int viewport = 0);
 
 
-		    /** \brief Adds a vtk actor to screen.
+        /** \brief Adds a vtk actor to screen.
           * \param[in] actor a pointer to the vtk actor object
           * \param[in] viewport the view port where the actor should be added to (default: all)
           */
@@ -2011,10 +2009,17 @@ namespace pcl
           * renders. To select a specific viewport use an integer between 1 and N.
           */
         void
-		    addCustomActorToRenderer(const vtkSmartPointer<vtkProp> &actor,
+        addCustomActorToRenderer(const vtkSmartPointer<vtkProp> &actor,
                             int viewport = 0);
 
 
+
+
+
+
+      protected:
+        /** \brief The render window interactor. */
+        vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
 
 
 

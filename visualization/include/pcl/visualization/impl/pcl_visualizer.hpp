@@ -342,7 +342,7 @@ pcl::visualization::PCLVisualizer::addPolygon (
     actor->GetProperty ()->SetColor (r, g, b);
     actor->GetMapper ()->ScalarVisibilityOff ();
     removeCustomActorFromRenderer (am_it->second, viewport);
-    addCustomActorFromRenderer (actor, viewport);
+    addCustomActorToRenderer (actor, viewport);
 
     // Save the pointer/ID pair to the global actor map
     (*shape_actor_map_)[id] = actor;
@@ -355,7 +355,7 @@ pcl::visualization::PCLVisualizer::addPolygon (
     actor->GetProperty ()->SetRepresentationToWireframe ();
     actor->GetProperty ()->SetColor (r, g, b);
     actor->GetMapper ()->ScalarVisibilityOff ();
-    addCustomActorFromRenderer (actor, viewport);
+    addCustomActorToRenderer (actor, viewport);
 
     // Save the pointer/ID pair to the global actor map
     (*shape_actor_map_)[id] = actor;
@@ -397,7 +397,7 @@ pcl::visualization::PCLVisualizer::addPolygon (
     actor->GetMapper ()->ScalarVisibilityOn ();
     actor->GetProperty ()->BackfaceCullingOff ();
     removeCustomActorFromRenderer (am_it->second, viewport);
-    addCustomActorFromRenderer (actor, viewport);
+    addCustomActorToRenderer (actor, viewport);
 
     // Save the pointer/ID pair to the global actor map
     (*shape_actor_map_)[id] = actor;
@@ -411,7 +411,7 @@ pcl::visualization::PCLVisualizer::addPolygon (
     actor->GetProperty ()->SetColor (r, g, b);
     actor->GetMapper ()->ScalarVisibilityOn ();
     actor->GetProperty ()->BackfaceCullingOff ();
-    addCustomActorFromRenderer (actor, viewport);
+    addCustomActorToRenderer (actor, viewport);
 
     // Save the pointer/ID pair to the global actor map
     (*shape_actor_map_)[id] = actor;
@@ -446,7 +446,7 @@ pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, double
   actor->GetProperty ()->SetRepresentationToWireframe ();
   actor->GetProperty ()->SetColor (r, g, b);
   actor->GetMapper ()->ScalarVisibilityOff ();
-  addCustomActorFromRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -473,7 +473,7 @@ pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2, doubl
   leader->AutoLabelOn ();
 
   leader->GetProperty ()->SetColor (r, g, b);
-  addCustomActorFromRenderer (leader, viewport);
+  addCustomActorToRenderer (leader, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = leader;
@@ -504,7 +504,7 @@ pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2, doubl
     leader->AutoLabelOff ();
 
   leader->GetProperty ()->SetColor (r, g, b);
-  addCustomActorFromRenderer (leader, viewport);
+  addCustomActorToRenderer (leader, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = leader;
@@ -535,7 +535,7 @@ pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2,
   leader->GetLabelTextProperty()->SetColor(r_text, g_text, b_text);
 
   leader->GetProperty ()->SetColor (r_line, g_line, b_line);
-  addCustomActorFromRenderer (leader, viewport);
+  addCustomActorToRenderer (leader, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = leader;
@@ -584,7 +584,7 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
   actor->GetMapper ()->StaticOn ();
   actor->GetMapper ()->ScalarVisibilityOff ();
   actor->GetMapper ()->Update ();
-  addCustomActorFromRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
@@ -917,7 +917,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   actor->SetUserMatrix (transformation);
 
   // Add it to all renderers
-  addCustomActorFromRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*cloud_actor_map_)[id].actor = actor;
@@ -1029,7 +1029,7 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (
   actor->GetMapper ()->SetScalarModeToUseCellData ();
 
   // Add it to all renderers
-  addCustomActorFromRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   CloudActor act;
@@ -1103,7 +1103,7 @@ pcl::visualization::PCLVisualizer::addPointCloudIntensityGradients (
   actor->SetMapper (mapper);
 
   // Add it to all renderers
-  addCustomActorFromRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   (*cloud_actor_map_)[id].actor = actor;
@@ -1248,7 +1248,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
     createActorFromVTKDataSet (line_data, actor);
     actor->GetProperty ()->SetRepresentationToWireframe ();
     actor->GetProperty ()->SetOpacity (0.5);
-    addCustomActorFromRenderer (actor, viewport);
+    addCustomActorToRenderer (actor, viewport);
 
     // Save the pointer/ID pair to the global actor map
     (*shape_actor_map_)[id] = actor;
@@ -1323,7 +1323,7 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
     actor->GetMapper ()->SetScalarRange (minmax);
 
   // Add it to all renderers
-  addCustomActorFromRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   CloudActor& cloud_actor = (*cloud_actor_map_)[id];
@@ -1385,7 +1385,7 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
     actor->GetMapper ()->SetScalarRange (minmax);
 
   // Add it to all renderers
-  addCustomActorFromRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   CloudActor& cloud_actor = (*cloud_actor_map_)[id];
@@ -1448,7 +1448,7 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
     actor->GetMapper ()->SetScalarRange (minmax);
 
   // Add it to all renderers
-  addCustomActorFromRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
   CloudActor& cloud_actor = (*cloud_actor_map_)[id];
@@ -1765,7 +1765,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
 
     createActorFromVTKDataSet (poly_grid, actor, false);
   }
-  addCustomActorFromRenderer (actor, viewport);
+  addCustomActorToRenderer (actor, viewport);
   actor->GetProperty ()->SetRepresentationToSurface ();
   // Backface culling renders the visualization slower, but guarantees that we see all triangles
   actor->GetProperty ()->BackfaceCullingOff ();
