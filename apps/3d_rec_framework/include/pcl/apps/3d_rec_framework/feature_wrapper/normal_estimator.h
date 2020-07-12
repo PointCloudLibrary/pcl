@@ -223,7 +223,7 @@ public:
       pcl::ScopeTime t("check nans...");
       int j = 0;
       for (std::size_t i = 0; i < normals->size(); ++i) {
-        if (!isNormalFinite((*normals)[i])
+        if (!isNormalFinite((*normals)[i]))
           continue;
 
         (*normals)[j] = (*normals)[i];
@@ -244,7 +244,7 @@ public:
       pcl::ScopeTime t("check nans organized...");
       bool NaNs = false;
       for (std::size_t i = 0; i < normals->size(); ++i) {
-        if (!isNormalFinite((*normals)[i])
+        if (!isNormalFinite((*normals)[i]))
           continue;
 
         NaNs = true;
