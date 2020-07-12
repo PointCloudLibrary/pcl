@@ -181,8 +181,8 @@ namespace pcl
             // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
             float w = (float)((float)n_best_inliers_count / (float)nr_remaining_points);
             float p_no_outliers = 1.0f - pow (w, 1.0f);
-            p_no_outliers = (std::max) (std::numeric_limits<float>::epsilon (), p_no_outliers);       // Avoid division by -Inf
-            p_no_outliers = (std::min) (1.0f - std::numeric_limits<float>::epsilon (), p_no_outliers);   // Avoid division by 0.
+            p_no_outliers = max(std::numeric_limits<float>::epsilon (), p_no_outliers);       // Avoid division by -Inf
+            p_no_outliers = min(1.0f - std::numeric_limits<float>::epsilon (), p_no_outliers);   // Avoid division by 0.
             if (p_no_outliers == 1.0f)
               k++;
             else
@@ -208,8 +208,8 @@ namespace pcl
               // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
               float w = (float)((float)min_nr_in_shape / (float)nr_remaining_points);
               float p_no_outliers = 1.0f - pow (w, 1.0f);
-              p_no_outliers = (std::max) (std::numeric_limits<float>::epsilon (), p_no_outliers);       // Avoid division by -Inf
-              p_no_outliers = (std::min) (1.0f - std::numeric_limits<float>::epsilon (), p_no_outliers);   // Avoid division by 0.
+              p_no_outliers = max(std::numeric_limits<float>::epsilon (), p_no_outliers);       // Avoid division by -Inf
+              p_no_outliers = min(1.0f - std::numeric_limits<float>::epsilon (), p_no_outliers);   // Avoid division by 0.
               if (p_no_outliers != 1.0f)
               {
                 if (std::log (1.0f - probability_) / std::log (p_no_outliers) < valid_iterations) // we won't find a model with min_nr_in_shape points anymore...
@@ -300,8 +300,8 @@ namespace pcl
                   // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
                   float w = (float)((float)n_best_inliers_count / (float)nr_remaining_points);
                   float p_no_outliers = 1.0f - pow (w, 1.0f);
-                  p_no_outliers = (std::max) (std::numeric_limits<float>::epsilon (), p_no_outliers);       // Avoid division by -Inf
-                  p_no_outliers = (std::min) (1.0f - std::numeric_limits<float>::epsilon (), p_no_outliers);   // Avoid division by 0.
+                  p_no_outliers = max(std::numeric_limits<float>::epsilon (), p_no_outliers);       // Avoid division by -Inf
+                  p_no_outliers = min(1.0f - std::numeric_limits<float>::epsilon (), p_no_outliers);   // Avoid division by 0.
                   if (p_no_outliers == 1.0f)
                     k++;
                   else

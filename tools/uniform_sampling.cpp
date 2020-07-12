@@ -46,7 +46,6 @@
 #include <string>
 #include <pcl/io/vtk_io.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
@@ -65,7 +64,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const string &filename, pcl::PCLPointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -122,7 +121,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
 }
 
 void
-saveCloud (const string &filename, const pcl::PCLPointCloud2 &output)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();

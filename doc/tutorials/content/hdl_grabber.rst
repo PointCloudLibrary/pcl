@@ -93,7 +93,6 @@ So let's look at the code. The following represents a simplified version of *vis
    #include <pcl/visualization/cloud_viewer.h>
    #include <pcl/console/parse.h>
 
-   using namespace std;
    using namespace pcl::console;
    using namespace pcl::visualization;
 

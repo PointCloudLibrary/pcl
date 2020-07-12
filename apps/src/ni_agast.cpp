@@ -56,7 +56,6 @@
 #include <thread>
 
 using namespace pcl;
-using namespace std;
 using namespace std::chrono_literals;
 
 using KeyPointT = PointUV;
@@ -205,10 +204,10 @@ public:
   }
 
   /////////////////////////////////////////////////////////////////////////
-  string
+  std::string
   getStrBool(bool state)
   {
-    stringstream ss;
+    std::stringstream ss;
     ss << state;
     return ss.str();
   }
@@ -359,7 +358,7 @@ main(int argc, char** argv)
   else
     pcl::console::setVerbosityLevel(pcl::console::L_INFO);
 
-  string device_id("#1");
+  std::string device_id("#1");
   OpenNIGrabber grabber(device_id);
   AGASTDemo<PointXYZRGBA> openni_viewer(grabber);
 

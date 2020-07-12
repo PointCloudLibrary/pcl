@@ -40,8 +40,6 @@
 #include <pcl/pcl_config.h>
 #include <pcl/io/dinast_grabber.h>
 
-using namespace std;
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::DinastGrabber::DinastGrabber (const int device_position)
   : image_width_ (320)

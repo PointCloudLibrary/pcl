@@ -55,7 +55,6 @@
 
 #include "data_source.hpp"
 
-using namespace std;
 using namespace pcl::gpu;
 
 //TEST(PCL_OctreeGPU, DISABLED_batchRadiusSearch)

@@ -12,7 +12,6 @@
 #include <thread>
 
 using namespace pcl;
-using namespace std;
 using namespace std::chrono_literals;
 
 const Eigen::Vector4f subsampling_leaf_size(0.02f, 0.02f, 0.02f, 0.0f);
@@ -63,7 +62,7 @@ main(int argc, char** argv)
 
   PCL_INFO("Reading models ...\n");
   std::vector<PointCloud<PointXYZ>::Ptr> cloud_models;
-  ifstream pcd_file_list(argv[1]);
+  std::ifstream pcd_file_list(argv[1]);
   while (!pcd_file_list.eof()) {
     char str[512];
     pcd_file_list.getline(str, 512);
@@ -149,7 +148,7 @@ main(int argc, char** argv)
     pcl::transformPointCloud(
         *cloud_models[model_i], *cloud_output, final_transformation);
 
-    stringstream ss;
+    std::stringstream ss;
     ss << "model_" << model_i;
     visualization::PointCloudColorHandlerRandom<PointXYZ> random_color(
         cloud_output->makeShared());

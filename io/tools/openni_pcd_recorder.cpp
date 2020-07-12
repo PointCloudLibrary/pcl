@@ -47,7 +47,6 @@
 #include <memory>
 #include <thread>
 
-using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;
@@ -283,7 +282,7 @@ class Consumer
     void 
     writeToDisk (const typename PointCloud<PointT>::ConstPtr& cloud)
     {
-      stringstream ss;
+      std::stringstream ss;
       std::string time = boost::posix_time::to_iso_string (boost::posix_time::microsec_clock::local_time ());
       ss << "frame-" << time << ".pcd";
       writer_.writeBinaryCompressed (ss.str (), *cloud);

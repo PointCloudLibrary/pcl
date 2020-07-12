@@ -43,8 +43,6 @@
 #include <limits>
 #include <iostream>
 
-using namespace std;
-
 namespace openni_wrapper
 {
 void IRImage::fillRaw (unsigned width, unsigned height, unsigned short* ir_buffer, unsigned line_step) const

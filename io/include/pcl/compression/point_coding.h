@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -143,9 +144,9 @@ class PointCoding
         const PointT& idxPoint = (*inputCloud_arg)[idx];
 
         // differentially encode point coordinates and truncate overflow
-        diffX = static_cast<unsigned char> (max (-127, min<int>(127, static_cast<int> ((idxPoint.x - referencePoint_arg[0])  / pointCompressionResolution_))));
-        diffY = static_cast<unsigned char> (max (-127, min<int>(127, static_cast<int> ((idxPoint.y - referencePoint_arg[1])  / pointCompressionResolution_))));
-        diffZ = static_cast<unsigned char> (max (-127, min<int>(127, static_cast<int> ((idxPoint.z - referencePoint_arg[2])  / pointCompressionResolution_))));
+        diffX = static_cast<unsigned char> (std::max (-127, std::min<int>(127, static_cast<int> ((idxPoint.x - referencePoint_arg[0])  / pointCompressionResolution_))));
+        diffY = static_cast<unsigned char> (std::max (-127, std::min<int>(127, static_cast<int> ((idxPoint.y - referencePoint_arg[1])  / pointCompressionResolution_))));
+        diffZ = static_cast<unsigned char> (std::max (-127, std::min<int>(127, static_cast<int> ((idxPoint.z - referencePoint_arg[2])  / pointCompressionResolution_))));
 
         // store information in differential point vector
         pointDiffDataVector_.push_back (diffX);

@@ -2,7 +2,6 @@
 
 /* ---[ */
 #include <iostream>
-using namespace std;
 #include <pcl/io/openni_grabber.h>
 #include <pcl/range_image/range_image_planar.h>
 #include <pcl/common/common_headers.h>

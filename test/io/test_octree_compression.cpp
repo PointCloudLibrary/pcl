@@ -44,8 +44,6 @@
 #include <string>
 #include <exception>
 
-using namespace std;
-
 int total_runs = 0;
 
 char* pcd_file;

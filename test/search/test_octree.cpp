@@ -43,7 +43,6 @@
 #include <pcl/point_types.h>
 #include <pcl/search/pcl_search.h>
 
-using namespace std;
 using namespace pcl;
 using namespace octree;
 

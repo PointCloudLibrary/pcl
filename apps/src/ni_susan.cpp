@@ -55,7 +55,6 @@
 #include <thread>
 
 using namespace pcl;
-using namespace std;
 using namespace std::chrono_literals;
 
 using PointT = PointXYZRGBA;
@@ -101,10 +100,10 @@ public:
   }
 
   /////////////////////////////////////////////////////////////////////////
-  string
+  std::string
   getStrBool(bool state)
   {
-    stringstream ss;
+    std::stringstream ss;
     ss << state;
     return ss.str();
   }
@@ -200,7 +199,7 @@ private:
 int
 main(int, char**)
 {
-  string device_id("#1");
+  std::string device_id("#1");
   OpenNIGrabber grabber(device_id);
   SUSANDemo openni_viewer(grabber);
 

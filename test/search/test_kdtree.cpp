@@ -43,7 +43,6 @@
 #include <pcl/point_types.h>
 #include <pcl/common/distances.h>
 
-using namespace std;
 using namespace pcl;
 
 PointCloud<PointXYZ> cloud, cloud_big;
@@ -75,18 +74,18 @@ init ()
   kdtree.setInputCloud (cloud.makeShared ());
   PointXYZ test_point (0.01f, 0.01f, 0.01f);
   unsigned int no_of_neighbors = 20;
-  multimap<float, int> sorted_brute_force_result;
+  std::multimap<float, int> sorted_brute_force_result;
   for (std::size_t i = 0; i < cloud.points.size (); ++i)
   {
     float distance = euclideanDistance (cloud[i], test_point);
-    sorted_brute_force_result.insert (make_pair (distance, static_cast<int> (i)));
+    sorted_brute_force_result.insert (std::make_pair (distance, static_cast<int> (i)));
   }
   float max_dist = 0.0f;
   unsigned int counter = 0;
-  for (multimap<float, int>::iterator it = sorted_brute_force_result.begin (); it != sorted_brute_force_result.end ()
+  for (std::multimap<float, int>::iterator it = sorted_brute_force_result.begin (); it != sorted_brute_force_result.end ()
       && counter < no_of_neighbors; ++it)
   {
-    max_dist = max (max_dist, it->first);
+    max_dist = std::max (max_dist, it->first);
     ++counter;
   }
 

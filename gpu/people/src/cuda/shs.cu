@@ -91,10 +91,10 @@ namespace pcl
                 float y1 = (b - sqrt (det)) / a;
                 float y2 = (b + sqrt (det)) / a;
 
-                min = std::min (static_cast<int> (std::floor (y1)), static_cast<int> (std::floor (y2)));
-                max = std::max (static_cast<int> (std::ceil (y1)), static_cast<int> (std::ceil (y2)));
-                minY = std::min (rows - 1, std::max (0, min));
-                maxY = std::max (std::min (rows - 1, max), 0);
+                min = min (static_cast<int> (std::floor (y1)), static_cast<int> (std::floor (y2)));
+                max = max (static_cast<int> (std::ceil (y1)), static_cast<int> (std::ceil (y2)));
+                minY = min (rows - 1, max (0, min));
+                maxY = max (min (rows - 1, max), 0);
             }
 
             b = squared_radius * coeff6 - q.x * q.z;
@@ -111,10 +111,10 @@ namespace pcl
                 float x1 = (b - sqrt (det)) / a;
                 float x2 = (b + sqrt (det)) / a;
 
-                min = std::min (static_cast<int> (std::floor (x1)), static_cast<int> (std::floor (x2)));
-                max = std::max (static_cast<int> (std::ceil (x1)), static_cast<int> (std::ceil (x2)));
-                minX = std::min (cols- 1, std::max (0, min));
-                maxX = std::max (std::min (cols - 1, max), 0);
+                min = min (static_cast<int> (std::floor (x1)), static_cast<int> (std::floor (x2)));
+                max = max (static_cast<int> (std::ceil (x1)), static_cast<int> (std::ceil (x2)));
+                minX = min (cols- 1, max (0, min));
+                maxX = max (min (cols - 1, max), 0);
             }
         }
 

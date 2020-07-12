@@ -53,7 +53,6 @@
 #define CLUST_TOL_SHS   0.05
 #define DELTA_HUE_SHS   5
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::gpu::people;
 

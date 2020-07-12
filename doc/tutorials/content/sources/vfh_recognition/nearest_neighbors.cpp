@@ -88,7 +88,7 @@ nearestKSearch (flann::Index<flann::ChiSquareDistance<float> > &index, const vfh
 bool
 loadFileList (std::vector<vfh_model> &models, const std::string &filename)
 {
-  ifstream fs;
+  std::ifstream fs;
   fs.open (filename.c_str ());
   if (!fs.is_open () || fs.fail ())
     return (false);
@@ -96,7 +96,7 @@ loadFileList (std::vector<vfh_model> &models, const std::string &filename)
   std::string line;
   while (!fs.eof ())
   {
-    getline (fs, line);
+    std::getline (fs, line);
     if (line.empty ())
       continue;
     vfh_model m;

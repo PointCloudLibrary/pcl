@@ -28,7 +28,6 @@ using namespace pcl;
 using namespace pcl::console;
 using namespace pcl::io;
 using namespace pcl::simulation;
-using namespace std;
 
 SimExample::Ptr simexample;
 
@@ -41,7 +40,7 @@ printHelp(int, char** argv)
 
 // Output the simulated output to file:
 void
-write_sim_output(const string& fname_root)
+write_sim_output(const std::string& fname_root)
 {
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc_out(new pcl::PointCloud<pcl::PointXYZRGB>);
 

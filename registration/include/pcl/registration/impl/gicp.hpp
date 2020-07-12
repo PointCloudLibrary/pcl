@@ -370,7 +370,6 @@ template <typename PointSource, typename PointTarget> inline void
 GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess)
 {
   pcl::IterativeClosestPoint<PointSource, PointTarget>::initComputeReciprocal ();
-  using namespace std;
   // Difference between consecutive transforms
   double delta = 0;
   // Get the size of the target

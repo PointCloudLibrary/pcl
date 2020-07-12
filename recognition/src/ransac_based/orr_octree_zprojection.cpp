@@ -47,7 +47,6 @@
 #include <array>
 #include <vector>
 
-using namespace std;
 
 //=========================================================================================================================================
 
@@ -170,7 +169,7 @@ pcl::recognition::ORROctreeZProjection::build (const ORROctree& input, float eps
   for (const auto &full_set : full_sets_)
   {
     // Get the first node in the set
-    set<ORROctree::Node*, bool(*)(ORROctree::Node*,ORROctree::Node*)>::iterator node = full_set->get_nodes ().begin ();
+    std::set<ORROctree::Node*, bool(*)(ORROctree::Node*,ORROctree::Node*)>::iterator node = full_set->get_nodes ().begin ();
     // Initialize
     float best_min = (*node)->getBounds ()[4];
     float best_max = (*node)->getBounds ()[5];

@@ -46,7 +46,6 @@
 using namespace pcl;
 using namespace pcl::test;
 using namespace pcl::io;
-using namespace std;
 
 using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
