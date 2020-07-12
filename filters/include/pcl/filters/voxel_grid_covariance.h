@@ -389,15 +389,23 @@ namespace pcl
       int
       getVoxelAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
 
-      /** \brief Get the voxel at p and its adjacent voxels.
+      /** \brief Get the voxel at p and its facing voxels (up to 7 voxels).
        * \note Only voxels containing a sufficient number of points are used.
        * \param[in] reference_point the point to get the leaf structure at
        * \param[out] neighbors
        * \return number of neighbors found (up to 7)
        */
       int
-      getAdjacentVoxelsAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
+      getFaceNeighborsAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
 
+      /** \brief Get all 3x3x3 neighbor voxels of p (up to 27 voxels).
+       * \note Only voxels containing a sufficient number of points are used.
+       * \param[in] reference_point the point to get the leaf structure at
+       * \param[out] neighbors
+       * \return number of neighbors found (up to 27)
+       */
+      int
+      getAllNeighborsAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
 
       /** \brief Get the leaf structure map
        * \return a map contataining all leaves
@@ -507,13 +515,13 @@ namespace pcl
 
         // Find neighbors within radius in the occupied voxel centroid cloud
         std::vector<int> k_indices;
-        int k = kdtree_.radiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
+        const int k = kdtree_.radiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
 
         // Find leaves corresponding to neighbors
         k_leaves.reserve (k);
         for (const int &k_index : k_indices)
         {
-          auto voxel = leaves_.find(voxel_centroids_leaf_indices_[k_index]);
+          const auto voxel = leaves_.find(voxel_centroids_leaf_indices_[k_index]);
           if(voxel == leaves_.end()) {
             continue;
           }

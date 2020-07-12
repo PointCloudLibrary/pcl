@@ -378,14 +378,14 @@ pcl::VoxelGridCovariance<PointT>::getNeighborhoodAtPoint (const Eigen::Matrix<in
   // Find displacement coordinates
   Eigen::Vector4i ijk = (reference_point.getArray4fMap() * inverse_leaf_size_).template cast<int>();
   ijk[3] = 0;
-  Eigen::Array4i diff2min = min_b_ - ijk;
-  Eigen::Array4i diff2max = max_b_ - ijk;
+  const Eigen::Array4i diff2min = min_b_ - ijk;
+  const Eigen::Array4i diff2max = max_b_ - ijk;
   neighbors.reserve (relative_coordinates.cols ());
 
   // Check each neighbor to see if it is occupied and contains sufficient points
   for (Eigen::Index ni = 0; ni < relative_coordinates.cols (); ni++)
   {
-    Eigen::Vector4i displacement = (Eigen::Vector4i () << relative_coordinates.col (ni), 0).finished ();
+    const Eigen::Vector4i displacement = (Eigen::Vector4i () << relative_coordinates.col (ni), 0).finished ();
     // Checking if the specified cell is in the grid
     if ((diff2min <= displacement.array ()).all () && (diff2max >= displacement.array ()).all ())
     {
@@ -418,7 +418,7 @@ pcl::VoxelGridCovariance<PointT>::getVoxelAtPoint(const PointT& reference_point,
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> int
-pcl::VoxelGridCovariance<PointT>::getAdjacentVoxelsAtPoint(const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const
+pcl::VoxelGridCovariance<PointT>::getFaceNeighborsAtPoint(const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const
 {
   Eigen::Matrix<int, 3, Eigen::Dynamic> relative_coordinates(3, 7);
   relative_coordinates.setZero();
@@ -428,6 +428,17 @@ pcl::VoxelGridCovariance<PointT>::getAdjacentVoxelsAtPoint(const PointT& referen
   relative_coordinates(1, 4) = -1;
   relative_coordinates(2, 5) = 1;
   relative_coordinates(2, 6) = -1;
+
+  return getNeighborhoodAtPoint(relative_coordinates, reference_point, neighbors);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT> int
+pcl::VoxelGridCovariance<PointT>::getAllNeighborsAtPoint(const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const
+{
+  Eigen::Matrix<int, 3, Eigen::Dynamic> relative_coordinates(3, 27);
+  relative_coordinates.col(0).setZero();
+  relative_coordinates.rightCols(26) = pcl::getAllNeighborCellIndices();
 
   return getNeighborhoodAtPoint(relative_coordinates, reference_point, neighbors);
 }
