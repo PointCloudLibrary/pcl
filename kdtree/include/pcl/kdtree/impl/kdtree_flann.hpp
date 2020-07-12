@@ -49,7 +49,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Dist>
 pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (bool sorted)
-  : pcl::KdTree<PointT> (sorted)
+  : Self (sorted)
   , flann_index_ ()
   , identity_mapping_ (false)
   , dim_ (0), total_nr_points_ (0)
@@ -61,7 +61,7 @@ pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (bool sorted)
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Dist>
 pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (const KdTreeFLANN<PointT, Dist> &k) 
-  : pcl::KdTree<PointT> (false)
+  : Self (false)
   , flann_index_ ()
   , identity_mapping_ (false)
   , dim_ (0), total_nr_points_ (0)
@@ -135,6 +135,17 @@ pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, int k,
                                                 std::vector<int> &k_indices, 
                                                 std::vector<float> &k_distances) const
 {
+  return nearestKSearch(executor::best_fit(), point, k, k_indices, k_distances);
+}
+
+template <typename PointT, typename Dist>
+template <typename Executor, typename executor::instance_of_base<executor::inline_executor, Executor>>
+int
+pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const Executor &exec,
+                                                const PointT &point, int k,
+                                                std::vector<int> &k_indices,
+                                                std::vector<float> &k_distances) const
+{
   assert (point_representation_->isValid (point) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
 
   if (k > total_nr_points_)
@@ -149,12 +160,12 @@ pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, int k,
   ::flann::Matrix<int> k_indices_mat (&k_indices[0], 1, k);
   ::flann::Matrix<float> k_distances_mat (&k_distances[0], 1, k);
   // Wrap the k_indices and k_distances vectors (no data copy)
-  flann_index_->knnSearch (::flann::Matrix<float> (&query[0], 1, dim_), 
+  flann_index_->knnSearch (::flann::Matrix<float> (&query[0], 1, dim_),
                            k_indices_mat, k_distances_mat,
                            k, param_k_);
 
   // Do mapping to original point cloud
-  if (!identity_mapping_) 
+  if (!identity_mapping_)
   {
     for (std::size_t i = 0; i < static_cast<std::size_t> (k); ++i)
     {
@@ -165,11 +176,21 @@ pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, int k,
 
   return (k);
 }
-
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename Dist> int 
+
+template <typename PointT, typename Dist> int
 pcl::KdTreeFLANN<PointT, Dist>::radiusSearch (const PointT &point, double radius, std::vector<int> &k_indices,
                                               std::vector<float> &k_sqr_dists, unsigned int max_nn) const
+{
+  return radiusSearch(executor::best_fit(), radius, k_indices, k_sqr_dists, max_nn);
+}
+
+template <typename PointT, typename Dist>
+template <typename Executor, typename executor::instance_of_base<executor::inline_executor, Executor>>
+int
+pcl::KdTreeFLANN<PointT, Dist>::radiusSearch (const Executor &exec, const PointT &point, double radius,
+                                              std::vector<int> &k_indices, std::vector<float> &k_sqr_dists,
+                                              unsigned int max_nn) const
 {
   assert (point_representation_->isValid (point) && "Invalid (NaN, Inf) point coordinates given to radiusSearch!");
 
@@ -197,7 +218,6 @@ pcl::KdTreeFLANN<PointT, Dist>::radiusSearch (const PointT &point, double radius
 
   k_indices = indices[0];
   k_sqr_dists = dists[0];
-
   // Do mapping to original point cloud
   if (!identity_mapping_) 
   {

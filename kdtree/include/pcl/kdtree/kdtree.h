@@ -45,6 +45,7 @@
 #include <pcl/point_representation.h>
 #include <pcl/common/io.h>
 #include <pcl/common/copy_point.h>
+#include <pcl/experimental/executor/executor.h>
 
 namespace pcl
 {
@@ -52,7 +53,7 @@ namespace pcl
     * \author Radu B Rusu, Bastian Steder, Michael Dixon
     * \ingroup kdtree
     */
-  template <typename PointT>
+  template <typename PointT, typename Derived>
   class KdTree
   {
     public:
@@ -67,8 +68,8 @@ namespace pcl
       using PointRepresentationConstPtr = typename PointRepresentation::ConstPtr;
 
       // Boost shared pointers
-      using Ptr = shared_ptr<KdTree<PointT> >;
-      using ConstPtr = shared_ptr<const KdTree<PointT> >;
+      using Ptr = shared_ptr<KdTree<PointT, Derived> >;
+      using ConstPtr = shared_ptr<const KdTree<PointT, Derived> >;
 
       /** \brief Empty constructor for KdTree. Sets some internal values to their defaults. 
         * \param[in] sorted set to true if the application that the tree will be used for requires sorted nearest neighbor indices (default). False otherwise. 
@@ -123,7 +124,7 @@ namespace pcl
       }
 
       /** \brief Destructor for KdTree. Deletes all allocated data arrays and destroys the kd-tree structures. */
-      virtual ~KdTree () {};
+      virtual ~KdTree () = default;;
 
       /** \brief Search for k-nearest neighbors for the given query point.
         * \param[in] p_q the given query point
@@ -137,7 +138,14 @@ namespace pcl
       nearestKSearch (const PointT &p_q, int k, 
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const = 0;
 
-      /** \brief Search for k-nearest neighbors for the given query point.
+      template <typename Executor>
+      int
+      nearestKSearch (const Executor &exec, const PointT &p_q, int k,
+                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const {
+        return static_cast<Derived&>(*this).nearestKSearch(exec, p_q, k, k_indices, k_sqr_distances);
+      }
+
+    /** \brief Search for k-nearest neighbors for the given query point.
         * 
         * \attention This method does not do any bounds checking for the input index
         * (i.e., index >= cloud.points.size () || index < 0), and assumes valid (i.e., finite) data.
@@ -157,11 +165,19 @@ namespace pcl
       nearestKSearch (const PointCloud &cloud, int index, int k, 
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
       {
-        assert (index >= 0 && index < static_cast<int> (cloud.points.size ()) && "Out-of-bounds error in nearestKSearch!");
-        return (nearestKSearch (cloud.points[index], k, k_indices, k_sqr_distances));
+        return nearestKSearch(executor::best_fit{}, cloud, index, k, k_indices, k_sqr_distances);
       }
 
-      /** \brief Search for k-nearest neighbors for the given query point. 
+      template <typename Executor>
+      int
+      nearestKSearch (const Executor &exec, const PointCloud &cloud, int index, int k,
+                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
+      {
+        assert (index >= 0 && index < static_cast<int> (cloud.points.size ()) && "Out-of-bounds error in nearestKSearch!");
+        return (nearestKSearch (exec, cloud.points[index], k, k_indices, k_sqr_distances));
+      }
+
+    /** \brief Search for k-nearest neighbors for the given query point.
         * This method accepts a different template parameter for the point type.
         * \param[in] point the given query point
         * \param[in] k the number of neighbors to search for
@@ -170,13 +186,20 @@ namespace pcl
         * a priori!)
         * \return number of neighbors found
         */
-      template <typename PointTDiff> inline int 
-      nearestKSearchT (const PointTDiff &point, int k, 
+      template <typename PointTDiff> inline int
+      nearestKSearchT (const PointTDiff &point, int k,
+                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
+      {
+        return nearestKSearch(executor::best_fit{}, point, k, k_indices, k_sqr_distances);
+      }
+
+      template <typename Executor, typename PointTDiff> inline int
+      nearestKSearchT (const Executor &exec, const PointTDiff &point, int k,
                        std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
       {
         PointT p;
         copyPoint (point, p);
-        return (nearestKSearch (p, k, k_indices, k_sqr_distances));
+        return (nearestKSearch (exec, p, k, k_indices, k_sqr_distances));
       }
 
       /** \brief Search for k-nearest neighbors for the given query point (zero-copy).
@@ -200,13 +223,21 @@ namespace pcl
       nearestKSearch (int index, int k, 
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
       {
+        return nearestKSearch(executor::best_fit{}, index, k, k_indices, k_sqr_distances);
+      }
+
+      template <typename Executor>
+      int
+      nearestKSearch (const Executor &exec, int index, int k,
+                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
+      {
         if (indices_ == nullptr)
         {
           assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in nearestKSearch!");
-          return (nearestKSearch (input_->points[index], k, k_indices, k_sqr_distances));
+          return (exec, nearestKSearch (input_->points[index], k, k_indices, k_sqr_distances));
         }
         assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in nearestKSearch!");
-        return (nearestKSearch (input_->points[(*indices_)[index]], k, k_indices, k_sqr_distances));
+        return (exec, nearestKSearch (input_->points[(*indices_)[index]], k, k_indices, k_sqr_distances));
       }
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
@@ -222,6 +253,14 @@ namespace pcl
       virtual int 
       radiusSearch (const PointT &p_q, double radius, std::vector<int> &k_indices,
                     std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const = 0;
+
+      template <typename Executor>
+      int
+      radiusSearch (const Executor &exec, const PointT &p_q, double radius, std::vector<int> &k_indices,
+                    std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
+      {
+        return static_cast<Derived&>(*this).radiusSearch(exec, p_q, radius, k_indices, k_sqr_distances, max_nn);
+      }
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
         * 
@@ -240,13 +279,23 @@ namespace pcl
         * 
         * \exception asserts in debug mode if the index is not between 0 and the maximum number of points
         */
-      virtual int 
-      radiusSearch (const PointCloud &cloud, int index, double radius, 
+
+      virtual int
+      radiusSearch (const PointCloud &cloud, int index, double radius,
+                    std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
+                    unsigned int max_nn = 0) const
+      {
+        return radiusSearch(executor::best_fit{}, cloud, index, radius, k_indices, k_sqr_distances, max_nn);
+      }
+
+      template <typename Executor>
+      int
+      radiusSearch (const Executor &exec, const PointCloud &cloud, int index, double radius,
                     std::vector<int> &k_indices, std::vector<float> &k_sqr_distances, 
                     unsigned int max_nn = 0) const
       {
         assert (index >= 0 && index < static_cast<int> (cloud.points.size ()) && "Out-of-bounds error in radiusSearch!");
-        return (radiusSearch(cloud.points[index], radius, k_indices, k_sqr_distances, max_nn));
+        return (radiusSearch(exec, cloud.points[index], radius, k_indices, k_sqr_distances, max_nn));
       }
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
@@ -259,13 +308,21 @@ namespace pcl
         * returned.
         * \return number of neighbors found in radius
         */
-      template <typename PointTDiff> inline int 
+      template <typename PointTDiff> inline int
       radiusSearchT (const PointTDiff &point, double radius, std::vector<int> &k_indices,
                      std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
       {
         PointT p;
         copyPoint (point, p);
-        return (radiusSearch (p, radius, k_indices, k_sqr_distances, max_nn));
+        return (radiusSearch (executor::best_fit{}, p, radius, k_indices, k_sqr_distances, max_nn));
+      }
+      template <typename PointTDiff, typename Executor> inline int
+      radiusSearchT (const Executor &exec, const PointTDiff &point, double radius, std::vector<int> &k_indices,
+                     std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
+      {
+        PointT p;
+        copyPoint (point, p);
+        return (radiusSearch (exec, p, radius, k_indices, k_sqr_distances, max_nn));
       }
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius (zero-copy).
@@ -287,17 +344,25 @@ namespace pcl
         * 
         * \exception asserts in debug mode if the index is not between 0 and the maximum number of points
         */
-      virtual int 
+      virtual int
       radiusSearch (int index, double radius, std::vector<int> &k_indices,
+                    std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
+      {
+        return radiusSearch(executor::best_fit{}, index, radius, k_indices, k_sqr_distances, max_nn);
+      }
+
+      template <typename Executor>
+      int
+      radiusSearch (const Executor &exec, int index, double radius, std::vector<int> &k_indices,
                     std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
       {
         if (indices_ == nullptr)
         {
           assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in radiusSearch!");
-          return (radiusSearch (input_->points[index], radius, k_indices, k_sqr_distances, max_nn));
+          return (radiusSearch (exec, input_->points[index], radius, k_indices, k_sqr_distances, max_nn));
         }
         assert (index >= 0 && index < static_cast<int> (indices_->size ()) && "Out-of-bounds error in radiusSearch!");
-        return (radiusSearch (input_->points[(*indices_)[index]], radius, k_indices, k_sqr_distances, max_nn));
+        return (radiusSearch (exec, input_->points[(*indices_)[index]], radius, k_indices, k_sqr_distances, max_nn));
       }
 
       /** \brief Set the search epsilon precision (error bound) for nearest neighbors searches.

@@ -64,19 +64,20 @@ namespace pcl
     * \ingroup kdtree 
     */
   template <typename PointT, typename Dist = ::flann::L2_Simple<float> >
-  class KdTreeFLANN : public pcl::KdTree<PointT>
+  class KdTreeFLANN : public pcl::KdTree<PointT, KdTreeFLANN<PointT>>
   {
+    using Self = KdTreeFLANN<PointT, KdTreeFLANN<PointT>>;
     public:
-      using KdTree<PointT>::input_;
-      using KdTree<PointT>::indices_;
-      using KdTree<PointT>::epsilon_;
-      using KdTree<PointT>::sorted_;
-      using KdTree<PointT>::point_representation_;
-      using KdTree<PointT>::nearestKSearch;
-      using KdTree<PointT>::radiusSearch;
+      using Self::input_;
+      using Self::indices_;
+      using Self::epsilon_;
+      using Self::sorted_;
+      using Self::point_representation_;
+      using Self::nearestKSearch;
+      using Self::radiusSearch;
 
-      using PointCloud = typename KdTree<PointT>::PointCloud;
-      using PointCloudConstPtr = typename KdTree<PointT>::PointCloudConstPtr;
+      using PointCloud = typename Self::PointCloud;
+      using PointCloudConstPtr = typename Self::PointCloudConstPtr;
 
       using IndicesPtr = shared_ptr<std::vector<int> >;
       using IndicesConstPtr = shared_ptr<const std::vector<int> >;
@@ -105,7 +106,7 @@ namespace pcl
       inline KdTreeFLANN<PointT, Dist>&
       operator = (const KdTreeFLANN<PointT, Dist>& k)
       {
-        KdTree<PointT>::operator=(k);
+        Self::operator=(k);
         flann_index_ = k.flann_index_;
         cloud_ = k.cloud_;
         index_mapping_ = k.index_mapping_;
@@ -161,6 +162,11 @@ namespace pcl
       nearestKSearch (const PointT &point, int k, 
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const override;
 
+      template <typename Executor, typename executor::instance_of_base<executor::inline_executor, Executor> = 0>
+      int
+      nearestKSearch (const Executor &exec, const PointT &point, int k,
+                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const;
+
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
         * 
         * \attention This method does not do any bounds checking for the input index
@@ -180,6 +186,11 @@ namespace pcl
       int 
       radiusSearch (const PointT &point, double radius, std::vector<int> &k_indices,
                     std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const override;
+
+      template <typename Executor, typename executor::instance_of_base<executor::inline_executor, Executor> = 0>
+      int
+      radiusSearch (const Executor &exec, const PointT &point, double radius, std::vector<int> &k_indices,
+                    std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const;
 
     private:
       /** \brief Internal cleanup method. */
