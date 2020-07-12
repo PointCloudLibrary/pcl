@@ -41,9 +41,7 @@
 
 // PCL includes
 #include <pcl/surface/reconstruction.h>
-#include <pcl/surface/boost.h>
 
-#include <pcl/conversions.h>
 #include <pcl/kdtree/kdtree.h>
 
 #include <fstream>

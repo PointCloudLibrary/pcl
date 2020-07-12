@@ -42,7 +42,6 @@
 #define PCL_FEATURES_IMPL_SPIN_IMAGE_H_
 
 #include <limits>
-#include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/exceptions.h>
 #include <pcl/features/spin_image.h>

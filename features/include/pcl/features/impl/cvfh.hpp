@@ -43,7 +43,6 @@
 
 #include <pcl/features/cvfh.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/features/pfh_tools.h>
 #include <pcl/common/centroid.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

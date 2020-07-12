@@ -40,7 +40,6 @@
 #ifndef PCL_FEATURES_IMPL_MULTISCALE_FEATURE_PERSISTENCE_H_
 #define PCL_FEATURES_IMPL_MULTISCALE_FEATURE_PERSISTENCE_H_
 
-#include <numeric>
 #include <pcl/features/multiscale_feature_persistence.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

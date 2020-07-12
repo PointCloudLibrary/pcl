@@ -43,7 +43,6 @@
 
 #include <pcl/features/crh.h>
 #include <pcl/common/fft/kiss_fftr.h>
-#include <pcl/common/common.h>
 #include <pcl/common/transforms.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

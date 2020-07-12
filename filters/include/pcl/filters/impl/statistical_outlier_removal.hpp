@@ -41,7 +41,6 @@
 #define PCL_FILTERS_IMPL_STATISTICAL_OUTLIER_REMOVAL_H_
 
 #include <pcl/filters/statistical_outlier_removal.h>
-#include <pcl/common/io.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

@@ -41,10 +41,8 @@
 #pragma once
 
 #include <pcl/memory.h>
-#include <pcl/pcl_macros.h>
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/warp_point_rigid.h>
-#include <pcl/registration/distances.h>
 
 namespace pcl
 {

@@ -39,7 +39,6 @@
 #include <pcl/features/narf_descriptor.h>
 
 #include <iostream>
-#include <fstream>
 #include <cmath>
 using std::cout;
 using std::cerr;
