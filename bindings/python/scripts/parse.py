@@ -1,16 +1,17 @@
 import sys
 import clang.cindex as clang
 
-import scripts.utils as utils
+import utils
 
 
-def is_node_in_this_file(cursor, filename):
+def is_node_in_this_file(cursor, filename, depth):
     """
     Checks if the node in the AST belongs to the file
     
     Arguments:
         - cursor : The cursor pointing to the node
         - filename : The file's name to check the node against
+        - depth: The depth of the node (root=0)
         
     Returns:
         - True/False (bool)
@@ -22,13 +23,13 @@ def is_node_in_this_file(cursor, filename):
         return False
 
 
-def print_ast(cursor, this_filename, depth):
+def print_ast(cursor, filename, depth):
     """
     Prints the AST by recursively traversing the AST
 
     Arguments:
         - cursor: The cursor pointing to a node
-        - this_filename: The file's name to check if the node belongs to it
+        - filename: The file's name to check if the node belongs to it
         - depth: The depth of the node (root=0)
     
     Returns:
@@ -45,17 +46,18 @@ def print_ast(cursor, this_filename, depth):
         )
 
     for child in cursor.get_children():
-        if is_node_in_this_file(cursor=child, filename=this_filename):
-            print_ast(cursor=child, this_filename=this_filename, depth=depth + 1)
+        child_node = {"cursor": child, "filename": filename, "depth": depth + 1}
+        if is_node_in_this_file(**child_node):
+            print_ast(**child_node)
 
 
-def generate_parsed_info(cursor, this_filename, depth):
+def generate_parsed_info(cursor, filename, depth):
     """
     Generates parsed information by recursively traversing the AST
 
     Arguments:
         - cursor: The cursor pointing to a node
-        - this_filename: The file's name to check if the node belongs to it
+        - filename: The file's name to check if the node belongs to it
         - depth: The depth of the node (root=0)
 
     Returns:
@@ -85,10 +87,9 @@ def generate_parsed_info(cursor, this_filename, depth):
         parsed_info["members"] = []
 
     for child in cursor.get_children():
-        if is_node_in_this_file(cursor=child, filename=this_filename):
-            child_parsed_info = generate_parsed_info(
-                cursor=child, this_filename=this_filename, depth=depth + 1,
-            )
+        child_node = {"cursor": child, "filename": filename, "depth": depth + 1}
+        if is_node_in_this_file(**child_node):
+            child_parsed_info = generate_parsed_info(**child_node)
             if child_parsed_info and parsed_info:
                 parsed_info["members"].append(child_parsed_info)
 
@@ -128,11 +129,16 @@ def parse_source(source, compilation_database_path=None):
 
     source_ast = index.parse(path=source, args=compilation_commands)
 
-    # print_ast(cursor=source_ast.cursor, this_filename=source_ast.spelling, depth=0)
+    root_node = {
+        "cursor": source_ast.cursor,
+        "filename": source_ast.spelling,
+        "depth": 0,
+    }
 
-    parsed_info = generate_parsed_info(
-        cursor=source_ast.cursor, this_filename=source_ast.spelling, depth=0
-    )
+    # print_ast(**root_node)
+
+    parsed_info = generate_parsed_info(**root_node)
+
     return parsed_info
 
 
