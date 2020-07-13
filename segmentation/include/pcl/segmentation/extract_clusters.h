@@ -182,11 +182,10 @@ namespace pcl
       return;
     }
 
+    auto cos_eps_angle = std::cos(eps_angle);
     auto additional_filter_criteria = [&](index_t i, index_t j, const Indices& nn_indices) -> bool {
-      double dot_p = normals[i].normal[0] * normals[nn_indices[j]].normal[0] +
-                     normals[i].normal[1] * normals[nn_indices[j]].normal[1] +
-                     normals[i].normal[2] * normals[nn_indices[j]].normal[2];
-      return std::acos (std::abs (dot_p)) < eps_angle;
+      double dot_p = normals[i].getNormalVector3fMap().dot(normals[nn_indices[j]].getNormalVector3fMap());
+      return std::abs(dot_p) < cos_eps_angle;
     };
     Indices indices;
     pcl::extractEuclideanClusters(cloud, indices, additional_filter_criteria, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
@@ -225,12 +224,11 @@ namespace pcl
     if (indices.empty())
       return;
 
+    auto cos_eps_angle = std::cos(eps_angle);
     auto additional_filter_criteria = [&](index_t i, index_t j, Indices& nn_indices) -> bool {
       double dot_p =
-          normals[indices[i]].normal[0] * normals[indices[nn_indices[j]]].normal[0] +
-          normals[indices[i]].normal[1] * normals[indices[nn_indices[j]]].normal[1] +
-          normals[indices[i]].normal[2] * normals[indices[nn_indices[j]]].normal[2];
-      return std::acos (std::abs (dot_p)) < eps_angle;
+          normals[indices[i]].getNormalVector3fMap().dot(normals[indices[nn_indices[j]]].getNormalVector3fMap());
+      return std::abs(dot_p) < cos_eps_angle;
     };
 
     pcl::extractEuclideanClusters(cloud, indices, additional_filter_criteria, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
