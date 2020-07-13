@@ -444,6 +444,8 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
   detections_.reserve (linemod_detections.size ());
   detections.clear ();
   detections.reserve (linemod_detections.size ());
+
+  #pragma omp parallel for
   for (size_t detection_id = 0; detection_id < linemod_detections.size (); ++detection_id)
   {
     pcl::LINEMODDetection & linemod_detection = linemod_detections[detection_id];
@@ -687,6 +689,7 @@ template <typename PointXYZT, typename PointRGBT> void
 pcl::LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
 {
   const size_t nr_detections = detections_.size ();
+  #pragma omp parallel for
   for (size_t detection_index = 0; detection_index < nr_detections; ++detection_index)
   {
     typename LineRGBD<PointXYZT, PointRGBT>::Detection & detection = detections_[detection_index];
