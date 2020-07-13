@@ -128,6 +128,8 @@ def parse_source(source, compilation_database_path=None):
 
     source_ast = index.parse(path=source, args=compilation_commands)
 
+    # print_ast(cursor=source_ast.cursor, this_filename=source_ast.spelling, depth=0)
+
     parsed_info = generate_parsed_info(
         cursor=source_ast.cursor, this_filename=source_ast.spelling, depth=0
     )
@@ -138,8 +140,6 @@ def main():
     args = utils.parse_arguments(script="parse")
     for source in args.files:
         source = utils.get_realpath(path=source)
-
-        # print_ast(cursor=source_ast.cursor, this_filename=source_ast.spelling, depth=0)
 
         parsed_info = parse_source(source, args.compilation_database_path)
 
