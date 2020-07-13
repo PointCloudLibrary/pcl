@@ -356,7 +356,7 @@ namespace pcl
                       const std::vector<MaskMap*> & masks,
                       const RegionXY & region,
                       SparseQuantizedMultiModTemplate & linemod_template,
-                      size_t nr_features_per_modality = 63);
+                      size_t nr_features_per_modality = 63) const;
 
       /** \brief Adds the specified template to the matching queue.
         * \param[in] linemod_template the template to add.
@@ -475,7 +475,7 @@ namespace pcl
         return (templates_[template_id]);
       }
 
-      void
+      inline void
       resizeTemplates (size_t n)
       {
         return templates_.resize(n);

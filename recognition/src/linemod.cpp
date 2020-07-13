@@ -90,7 +90,7 @@ pcl::LINEMOD::createTemplate (const std::vector<QuantizableModality*> & modaliti
                               const std::vector<MaskMap*> & masks,
                               const RegionXY & region,
                               SparseQuantizedMultiModTemplate & linemod_template,
-                              size_t nr_features_per_modality)
+                              size_t nr_features_per_modality) const
 {
   const size_t nr_modalities = modalities.size();
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)

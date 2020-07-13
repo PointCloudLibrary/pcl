@@ -246,7 +246,7 @@ namespace pcl
       }
 
       /** \brief Resize the templates storage. */
-      void
+      inline void
       resizeTemplates (size_t n)
       {
         linemod_.resizeTemplates (n);
