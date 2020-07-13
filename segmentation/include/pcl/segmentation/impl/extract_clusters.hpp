@@ -44,7 +44,7 @@ template <typename PointT, typename FunctorT> void
 pcl::extractEuclideanClusters (
     const PointCloud<PointT> &cloud,
     const Indices &indices,
-    FunctorT filter,
+    FunctorT additional_filter_criteria,
     const typename search::Search<PointT>::Ptr &tree,
     float tolerance, std::vector<PointIndices> &clusters,
     unsigned int min_pts_per_cluster,
@@ -100,7 +100,7 @@ pcl::extractEuclideanClusters (
         if (processed[nn_indices[j]])        // Has this point been processed before ?
           continue;
 
-        if (filter(it.getCurrentIndex(), j, nn_indices)) {
+        if (additional_filter_criteria(it.getCurrentIndex(), j, nn_indices)) {
           seed_queue.indices.push_back(nn_indices[j]);
           processed[nn_indices[j]] = true;
         }

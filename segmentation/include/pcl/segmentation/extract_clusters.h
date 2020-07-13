@@ -48,7 +48,7 @@ namespace pcl
   template <typename PointT, typename FunctorT> void
   extractEuclideanClusters (
       const PointCloud<PointT> &cloud, const Indices &indices,
-      FunctorT filter, const typename search::Search<PointT>::Ptr &tree,
+      FunctorT additional_filter_criteria, const typename search::Search<PointT>::Ptr &tree,
       float tolerance, std::vector<PointIndices> &clusters,
       unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = std::numeric_limits<int>::max());
 
