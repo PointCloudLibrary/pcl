@@ -6,7 +6,9 @@ import utils
 
 def is_node_in_this_file(cursor, filename, depth):
     """
-    Checks if the node in the AST belongs to the file
+    Checks if the node in the AST is a valid node:
+        - Check 1: The cursor's location should have file attribute (cursor.location.file -> not NoneType)
+        - Check 2: The cursor should belong to the file (cursor.location.file.name -> filename)
     
     Arguments:
         - cursor : The cursor pointing to the node
@@ -29,13 +31,16 @@ def print_ast(cursor, filename, depth):
 
     Arguments:
         - cursor: The cursor pointing to a node
-        - filename: The file's name to check if the node belongs to it
+        - filename: 
+            - The file's name to check if the node belongs to it
+            - Needed to ensure that only symbols belonging to the file gets parsed, not the included files' symbols
         - depth: The depth of the node (root=0)
     
     Returns:
         - None
     """
 
+    # Check if the cursor has spelling (cursor.spelling -> not NoneType)
     if cursor.spelling:
         print(
             "-" * depth,
@@ -45,8 +50,10 @@ def print_ast(cursor, filename, depth):
             cursor.spelling,
         )
 
+    # Get cursor's children and recursively print
     for child in cursor.get_children():
         child_node = {"cursor": child, "filename": filename, "depth": depth + 1}
+        # Check if the child belongs to the file
         if is_node_in_this_file(**child_node):
             print_ast(**child_node)
 
@@ -57,7 +64,9 @@ def generate_parsed_info(cursor, filename, depth):
 
     Arguments:
         - cursor: The cursor pointing to a node
-        - filename: The file's name to check if the node belongs to it
+        - filename: 
+            - The file's name to check if the node belongs to it
+            - Needed to ensure that only symbols belonging to the file gets parsed, not the included files' symbols
         - depth: The depth of the node (root=0)
 
     Returns:
@@ -68,6 +77,7 @@ def generate_parsed_info(cursor, filename, depth):
 
     parsed_info = dict()
 
+    # Check if the cursor has spelling (cursor.spelling -> not NoneType)
     if cursor.spelling:
         parsed_info["depth"] = depth
         parsed_info["line"] = cursor.location.line
@@ -86,10 +96,13 @@ def generate_parsed_info(cursor, filename, depth):
             parsed_info["raw_comment"] = cursor.raw_comment
         parsed_info["members"] = []
 
+    # Get cursor's children and recursively add their info to the dictionary, as members of the parent
     for child in cursor.get_children():
         child_node = {"cursor": child, "filename": filename, "depth": depth + 1}
+        # Check if the child belongs to the file
         if is_node_in_this_file(**child_node):
             child_parsed_info = generate_parsed_info(**child_node)
+            # If both child and parent's info is not empty, add child's info to parent's members
             if child_parsed_info and parsed_info:
                 parsed_info["members"].append(child_parsed_info)
 
@@ -108,51 +121,79 @@ def get_compilation_commands(compilation_database_path, filename):
         - compilation commands (list): The arguments passed to the compiler
     """
 
+    # Build a compilation database found in the given directory
     compilation_database = clang.CompilationDatabase.fromDirectory(
         buildDir=compilation_database_path
     )
+
+    # Get compiler arguments from the compilation database for the given file
     compilation_commands = compilation_database.getCompileCommands(filename=filename)
-    # extracting argument list from the command's generator object
-    return list(compilation_commands[0].arguments)[1:-1]
+
+    # Extracting argument list from the command's generator object
+    compilation_commands = list(compilation_commands[0].arguments)[1:-1]
+
+    return compilation_commands
 
 
 def parse_file(source, compilation_database_path=None):
+    """
+    Returns the parsed_info for a file
+
+    Arguments:
+        - source: Source to parse
+        - compilation_database_path: The path to `compile_commands.json`
+
+    Returns:
+        - parsed_info 
+    """
+
+    # Create a new index to start parsing
     index = clang.Index.create()
 
     # Is this check needed?
     if compilation_database_path is None:
+        # Default compiler argument
         compilation_commands = ["-std=c++14"]
     else:
+        # Get compiler arguments
         compilation_commands = get_compilation_commands(
             compilation_database_path=compilation_database_path, filename=source,
         )
 
+    # Parse the given source code file by running clang and generating the AST before loading
     source_ast = index.parse(path=source, args=compilation_commands)
 
+    # Dictionary to hold a node's information
     root_node = {
         "cursor": source_ast.cursor,
         "filename": source_ast.spelling,
         "depth": 0,
     }
 
+    # For testing purposes
     # print_ast(**root_node)
 
+    # Dictionary containing parsed information of the source file
     parsed_info = generate_parsed_info(**root_node)
 
     return parsed_info
 
 
 def main():
+    # Get command line arguments
     args = utils.parse_arguments(script="parse")
     for source in args.files:
         source = utils.get_realpath(path=source)
 
+        # Parse the source file
         parsed_info = parse_file(source, args.compilation_database_path)
 
+        # Output path for dumping the parsed info into a json file
         output_filepath = utils.get_json_output_path(
             source=source, output_dir=utils.join_path(args.json_output_path, "json"),
         )
 
+        # Dump the parsed info at output path
         utils.dump_json(filepath=output_filepath, info=parsed_info)
 
 
