@@ -55,7 +55,7 @@ namespace pcl
   {
     if (tree->getInputCloud ()->points.size () != cloud.points.size ())
     {
-      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
+      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built with a different point cloud size (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
       return;
     }
 
@@ -129,9 +129,9 @@ namespace pcl
   {
     // \note If the tree was created over <cloud, indices>, we guarantee a 1-1 mapping between what the tree returns
     //and indices[i]
-    if (!indices.empty() and tree->getIndices ()->size () != indices.size ())
+    if (tree->getIndices ()->size () != indices.size ())
     {
-      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of indices (%lu) than the input set (%lu)!\n", tree->getIndices ()->size (), indices.size ());
+      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built with a different size of indices (%lu) than the input set (%lu)!\n", tree->getIndices ()->size (), indices.size ());
       return;
     }
 
