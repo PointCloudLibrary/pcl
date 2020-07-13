@@ -69,8 +69,8 @@ main (int, char **argv)
   std::cout << "Estimated the normals" << std::endl;
 
   // Creating the kdtree object for the search method of the extraction
-  pcl::KdTree<pcl::PointXYZ>::Ptr tree_ec  (new pcl::KdTreeFLANN<pcl::PointXYZ> ());
-  tree_ec->setInputCloud (cloud_ptr);
+  pcl::search::KdTree<pcl::PointXYZ>::Ptr tree;
+  tree->setInputCloud (cloud_ptr);
   
   // Extracting Euclidean clusters using cloud and its normals
   std::vector<pcl::PointIndices> cluster_indices;
@@ -78,7 +78,7 @@ main (int, char **argv)
   const double eps_angle = 5 * (M_PI / 180.0); // 5degree tolerance in normals
   const unsigned int min_cluster_size = 50;
  
-  pcl::extractEuclideanClusters (*cloud_ptr, *cloud_normals, tolerance, tree_ec, cluster_indices, eps_angle, min_cluster_size);
+  pcl::extractEuclideanClusters (*cloud_ptr, *cloud_normals, tolerance, tree, cluster_indices, eps_angle, min_cluster_size);
 
   std::cout << "No of clusters formed are " << cluster_indices.size () << std::endl;
 
