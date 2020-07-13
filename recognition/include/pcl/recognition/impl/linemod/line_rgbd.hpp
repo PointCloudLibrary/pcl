@@ -520,6 +520,10 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
   // remove overlaps
   removeOverlappingDetections ();
 
+  // sort the detections
+  std::sort(detections_.begin(), detections_.end(), [](const typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & a,
+                                                       const typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & b) -> bool { return a.response > b.response; });
+
   for (size_t detection_index = 0; detection_index < detections_.size (); ++detection_index)
   {
     detections.push_back (detections_[detection_index]);
@@ -620,6 +624,10 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
 
   // remove overlaps
   removeOverlappingDetections ();
+
+  // sort the detections
+  std::sort(detections_.begin(), detections_.end(), [](const typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & a,
+                                                       const typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & b) -> bool { return a.response > b.response; });
 
   for (size_t detection_index = 0; detection_index < detections_.size (); ++detection_index)
   {
