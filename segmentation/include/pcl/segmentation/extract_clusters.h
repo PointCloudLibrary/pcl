@@ -51,7 +51,73 @@ namespace pcl
       const PointCloud<PointT> &cloud, const Indices &indices,
       FunctorT additional_filter_criteria, const typename search::Search<PointT>::Ptr &tree,
       float tolerance, std::vector<PointIndices> &clusters,
-      unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = std::numeric_limits<int>::max());
+      unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = std::numeric_limits<int>::max())
+  {
+    if (tree->getInputCloud ()->points.size () != cloud.points.size ())
+    {
+      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
+      return;
+    }
+
+    // \note If the tree was created over <cloud, indices>, we guarantee a 1-1 mapping between what the tree returns
+    //and indices[i]
+    if (!indices.empty() and tree->getIndices ()->size () != indices.size ())
+    {
+      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of indices (%lu) than the input set (%lu)!\n", tree->getIndices ()->size (), indices.size ());
+      return;
+    }
+
+    // Check if the tree is sorted -- if it is we don't need to check the first element
+    index_t nn_start_idx = tree->getSortedResults () ? 1 : 0;
+    // Create a bool vector of processed point indices, and initialize it to false
+    std::vector<bool> processed (cloud.points.size (), false);
+
+    auto it = indices.empty() ? ConstCloudIterator<PointT>(cloud) : ConstCloudIterator<PointT>(cloud, indices);
+
+    for (; it.isValid(); ++it) {
+      if (processed[it.getCurrentIndex()])
+        continue;
+
+      index_t sq_idx = 0;
+      clusters.emplace_back();
+      auto& seed_queue = clusters.back();
+      seed_queue.indices.push_back (it.getCurrentIndex());
+
+      processed[it.getCurrentIndex()] = true;
+
+      while (sq_idx < static_cast<index_t> (seed_queue.indices.size()))
+      {
+        Indices nn_indices;
+        std::vector<float> nn_distances;
+
+        // Search for sq_idx
+        if (!tree->radiusSearch (seed_queue.indices[sq_idx], tolerance, nn_indices, nn_distances))
+        {
+          sq_idx++;
+          continue;
+        }
+
+        for (index_t j = nn_start_idx; j < nn_indices.size (); ++j) // can't assume sorted (default isn't!)
+        {
+          if (processed[nn_indices[j]]) // Has this point been processed before ?
+            continue;
+
+          if (additional_filter_criteria(it.getCurrentIndex(), j, nn_indices)) {
+            seed_queue.indices.push_back(nn_indices[j]);
+            processed[nn_indices[j]] = true;
+          }
+        }
+
+        sq_idx++;
+      }
+
+      // If this queue is satisfactory, add to the clusters
+      if (seed_queue.indices.size () >= min_pts_per_cluster && seed_queue.indices.size () <= max_pts_per_cluster)
+        seed_queue.header = cloud.header;
+      else
+        clusters.pop_back();
+    }
+  }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the Euclidean distance between points
@@ -68,7 +134,7 @@ namespace pcl
   extractEuclideanClusters (
       const PointCloud<PointT> &cloud, const typename search::Search<PointT>::Ptr &tree,
       float tolerance, std::vector<PointIndices> &clusters,
-      unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
+      unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = std::numeric_limits<int>::max ());
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the Euclidean distance between points
