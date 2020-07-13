@@ -87,13 +87,13 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
   }
   Eigen::VectorXf scratch = Eigen::VectorXf::Zero (centroid_size);
 
-  output.points.resize (input_->points.size ());   // size output for worst case
+  output.points.resize (input_->size ());   // size output for worst case
   std::size_t op = 0;    // output pointer
-  for (std::size_t cp = 0; cp < input_->points.size (); ++cp) 
+  for (const auto& point: *input_)
   {
-    int ix = static_cast<int> (std::floor ((*input_)[cp].x * inverse_leaf_size_[0]));
-    int iy = static_cast<int> (std::floor ((*input_)[cp].y * inverse_leaf_size_[1]));
-    int iz = static_cast<int> (std::floor ((*input_)[cp].z * inverse_leaf_size_[2]));
+    int ix = static_cast<int> (std::floor (point.x * inverse_leaf_size_[0]));
+    int iy = static_cast<int> (std::floor (point.y * inverse_leaf_size_[1]));
+    int iz = static_cast<int> (std::floor (point.z * inverse_leaf_size_[2]));
     unsigned int hash = static_cast<unsigned int> ((ix * 7171 + iy * 3079 + iz * 4231) & (histsize_ - 1));
     he *hhe = &history_[hash];
     if (hhe->count && ((ix != hhe->ix) || (iy != hhe->iy) || (iz != hhe->iz))) 
@@ -113,12 +113,12 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
     {
       // fill r/g/b data
       pcl::RGB rgb;
-      memcpy (&rgb, (reinterpret_cast<const char *> (&(*input_)[cp])) + rgba_index, sizeof (RGB));
+      memcpy (&rgb, (reinterpret_cast<const char *> (&point)) + rgba_index, sizeof (RGB));
       scratch[centroid_size-3] = rgb.r;
       scratch[centroid_size-2] = rgb.g;
       scratch[centroid_size-1] = rgb.b;
     }
-    pcl::for_each_type <FieldList> (xNdCopyPointEigenFunctor <PointT> ((*input_)[cp], scratch));
+    pcl::for_each_type <FieldList> (xNdCopyPointEigenFunctor <PointT> (point, scratch));
     hhe->centroid += scratch;
   }
   for (std::size_t i = 0; i < histsize_; i++) 
@@ -128,7 +128,7 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
       flush (output, op++, hhe, rgba_index, centroid_size);
   }
   output.points.resize (op);
-  output.width = static_cast<std::uint32_t> (output.points.size ());
+  output.width = output.size ();
   output.height       = 1;                    // downsampling breaks the organized structure
   output.is_dense     = false;                 // we filter out invalid points
 }

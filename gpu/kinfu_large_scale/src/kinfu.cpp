@@ -189,7 +189,7 @@ pcl::gpu::kinfuLS::KinfuTracker::extractAndSaveWorld ()
   
   int cloud_size = 0;
   
-  cloud_size = cyclical_.getWorldModel ()->getWorld ()->points.size();
+  cloud_size = cyclical_.getWorldModel ()->getWorld ()->size();
   
   if (cloud_size <= 0)
   {

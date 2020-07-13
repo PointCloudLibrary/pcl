@@ -19,15 +19,15 @@ PCLViewer::PCLViewer (QWidget *parent) :
   blue  = 128;
 
   // Fill the cloud with some points
-  for (std::size_t i = 0; i < cloud->points.size (); ++i)
+  for (auto& point: *cloud)
   {
-    (*cloud)[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
-    (*cloud)[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
-    (*cloud)[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
+    point.x = 1024 * rand () / (RAND_MAX + 1.0f);
+    point.y = 1024 * rand () / (RAND_MAX + 1.0f);
+    point.z = 1024 * rand () / (RAND_MAX + 1.0f);
 
-    (*cloud)[i].r = red;
-    (*cloud)[i].g = green;
-    (*cloud)[i].b = blue;
+    point.r = red;
+    point.g = green;
+    point.b = blue;
   }
 
   // Set up the QVTK window
@@ -62,11 +62,11 @@ PCLViewer::randomButtonPressed ()
   printf ("Random button was pressed\n");
 
   // Set the new color
-  for (std::size_t i = 0; i < cloud->size(); i++)
+  for (auto& point: *cloud)
   {
-    (*cloud)[i].r = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
-    (*cloud)[i].g = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
-    (*cloud)[i].b = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
+    point.r = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
+    point.g = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
+    point.b = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
   }
 
   viewer->updatePointCloud (cloud, "cloud");
@@ -77,11 +77,11 @@ void
 PCLViewer::RGBsliderReleased ()
 {
   // Set the new color
-  for (std::size_t i = 0; i < cloud->size (); i++)
+  for (auto& point: *cloud)
   {
-    (*cloud)[i].r = red;
-    (*cloud)[i].g = green;
-    (*cloud)[i].b = blue;
+    point.r = red;
+    point.g = green;
+    point.b = blue;
   }
   viewer->updatePointCloud (cloud, "cloud");
   ui->qvtkWidget->update ();

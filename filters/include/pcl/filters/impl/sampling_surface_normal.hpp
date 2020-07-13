@@ -49,7 +49,7 @@ template<typename PointT> void
 pcl::SamplingSurfaceNormal<PointT>::applyFilter (PointCloud &output)
 {
   std::vector <int> indices;
-  std::size_t npts = input_->points.size ();
+  std::size_t npts = input_->size ();
   for (std::size_t i = 0; i < npts; i++)
     indices.push_back (i);
 
@@ -134,7 +134,7 @@ pcl::SamplingSurfaceNormal<PointT>::samplePartition (
     pt.x = data[indices[i]].x;
     pt.y = data[indices[i]].y;
     pt.z = data[indices[i]].z;
-    cloud.points.push_back (pt);
+    cloud.push_back (pt);
   }
   cloud.height = 1;
   cloud.width = cloud.size ();
@@ -145,20 +145,20 @@ pcl::SamplingSurfaceNormal<PointT>::samplePartition (
 
   computeNormal (cloud, normal, curvature);
 
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
+  for (const auto& point: cloud)
   {
     // TODO: change to Boost random number generators!
     const float r = float (std::rand ()) / float (RAND_MAX);
 
     if (r < ratio_)
     {
-      PointT pt = cloud[i];
+      PointT pt = point;
       pt.normal[0] = normal (0);
       pt.normal[1] = normal (1);
       pt.normal[2] = normal (2);
       pt.curvature = curvature;
 
-      output.points.push_back (pt);
+      output.push_back (pt);
     }
   }
 }
@@ -199,23 +199,23 @@ pcl::SamplingSurfaceNormal<PointT>::computeMeanAndCovarianceMatrix (const pcl::P
   // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
   Eigen::Matrix<float, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<float, 1, 9, Eigen::RowMajor>::Zero ();
   std::size_t point_count = 0;
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
+  for (const auto& point: cloud)
   {
-    if (!isFinite (cloud[i]))
+    if (!isXYZFinite (point))
     {
       continue;
     }
 
     ++point_count;
-    accu [0] += cloud[i].x * cloud[i].x;
-    accu [1] += cloud[i].x * cloud[i].y;
-    accu [2] += cloud[i].x * cloud[i].z;
-    accu [3] += cloud[i].y * cloud[i].y; // 4
-    accu [4] += cloud[i].y * cloud[i].z; // 5
-    accu [5] += cloud[i].z * cloud[i].z; // 8
-    accu [6] += cloud[i].x;
-    accu [7] += cloud[i].y;
-    accu [8] += cloud[i].z;
+    accu [0] += point.x * point.x;
+    accu [1] += point.x * point.y;
+    accu [2] += point.x * point.z;
+    accu [3] += point.y * point.y; // 4
+    accu [4] += point.y * point.z; // 5
+    accu [5] += point.z * point.z; // 8
+    accu [6] += point.x;
+    accu [7] += point.y;
+    accu [8] += point.z;
   }
 
   accu /= static_cast<float> (point_count);

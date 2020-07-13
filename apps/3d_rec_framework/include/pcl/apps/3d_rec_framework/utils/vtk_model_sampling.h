@@ -107,8 +107,8 @@ uniform_sampling(const vtkSmartPointer<vtkPolyData>& polydata,
     cumulativeAreas[i] = totalArea;
   }
 
-  cloud_out.points.resize(n_samples);
-  cloud_out.width = static_cast<int>(n_samples);
+  cloud_out.resize(n_samples);
+  cloud_out.width = n_samples;
   cloud_out.height = 1;
 
   for (auto& point : cloud_out) {
@@ -157,8 +157,8 @@ getVerticesAsPointCloud(const vtkSmartPointer<vtkPolyData>& polydata,
                         pcl::PointCloud<pcl::PointXYZ>& cloud_out)
 {
   vtkPoints* points = polydata->GetPoints();
-  cloud_out.points.resize(points->GetNumberOfPoints());
-  cloud_out.width = static_cast<int>(cloud_out.points.size());
+  cloud_out.resize(points->GetNumberOfPoints());
+  cloud_out.width = cloud_out.size();
   cloud_out.height = 1;
   cloud_out.is_dense = false;
 

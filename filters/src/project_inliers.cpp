@@ -117,7 +117,7 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     {
       // Copy everything
       output.height       = 1;
-      output.width        = static_cast<std::uint32_t> (indices_->size ());
+      output.width        = indices_->size ();
       output.point_step   = input_->point_step;
       output.data.resize (output.width * output.point_step);
       output.is_bigendian = input_->is_bigendian;

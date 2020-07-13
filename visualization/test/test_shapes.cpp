@@ -12,7 +12,7 @@ main (int , char **)
   PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 
   cloud->points.resize (5);
-  for (std::size_t i = 0; i < cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud->size (); ++i)
   {
     (*cloud)[i].x = float (i); 
     (*cloud)[i].y = float (i / 2);

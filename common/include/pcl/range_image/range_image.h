@@ -816,7 +816,7 @@ namespace pcl
   {
     os << "header: " << std::endl;
     os << r.header;
-    os << "points[]: " << r.points.size () << std::endl;
+    os << "points[]: " << r.size () << std::endl;
     os << "width: " << r.width << std::endl;
     os << "height: " << r.height << std::endl;
     os << "sensor_origin_: "

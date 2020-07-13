@@ -17,7 +17,7 @@ main (int argc, char** argv)
   cloud->height = 1;
   cloud->points.resize (cloud->width * cloud->height);
 
-  for (std::size_t i = 0; i < cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud->size (); ++i)
   {
     (*cloud)[i].x = 1024.0f * rand () / (RAND_MAX + 1.0f);
     (*cloud)[i].y = 1024.0f * rand () / (RAND_MAX + 1.0f);

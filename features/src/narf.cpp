@@ -377,7 +377,7 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
   schedule(dynamic, 10) \
   num_threads(max_no_of_threads)
   //!!! nizar 20110408 : for OpenMP sake on MSVC this must be kept signed
-  for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t>(interest_points.points.size ()); ++idx)
+  for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t>(interest_points.size ()); ++idx)
   {
     const auto& interest_point = interest_points[idx];
     Vector3fMapConst point = interest_point.getVector3fMap ();

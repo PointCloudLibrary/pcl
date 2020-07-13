@@ -84,16 +84,15 @@ public:
 
     // compute keypoints
     this->computeKeypoints(processed, keypoints, normals);
-    std::cout << " " << normals->points.size() << " " << processed->points.size()
-              << std::endl;
+    std::cout << " " << normals->size() << " " << processed->size() << std::endl;
 
     if (keypoints->points.empty()) {
       PCL_WARN("SHOTLocalEstimation :: No keypoints were found\n");
       return false;
     }
 
-    std::cout << keypoints->points.size() << " " << normals->points.size() << " "
-              << processed->points.size() << std::endl;
+    std::cout << keypoints->size() << " " << normals->size() << " " << processed->size()
+              << std::endl;
     // compute signatures
     using SHOTEstimator = pcl::SHOTEstimation<PointInT, pcl::Normal, pcl::SHOT352>;
     typename pcl::search::KdTree<PointInT>::Ptr tree(new pcl::search::KdTree<PointInT>);
@@ -107,13 +106,13 @@ public:
     shot_estimate.setInputNormals(normals);
     shot_estimate.setRadiusSearch(support_radius_);
     shot_estimate.compute(*shots);
-    signatures->resize(shots->points.size());
-    signatures->width = static_cast<int>(shots->points.size());
+    signatures->resize(shots->size());
+    signatures->width = shots->size();
     signatures->height = 1;
 
     int size_feat = sizeof((*signatures)[0].histogram) / sizeof(float);
 
-    for (std::size_t k = 0; k < shots->points.size(); k++)
+    for (std::size_t k = 0; k < shots->size(); k++)
       for (int i = 0; i < size_feat; i++)
         (*signatures)[k].histogram[i] = (*shots)[k].descriptor[i];
 

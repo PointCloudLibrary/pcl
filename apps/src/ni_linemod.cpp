@@ -228,8 +228,8 @@ public:
 
     // Remove the plane indices from the data
     PointIndices::Ptr everything_but_the_plane(new PointIndices);
-    if (indices_fullset_.size() != cloud->points.size()) {
-      indices_fullset_.resize(cloud->points.size());
+    if (indices_fullset_.size() != cloud->size()) {
+      indices_fullset_.resize(cloud->size());
       for (int p_it = 0; p_it < static_cast<int>(indices_fullset_.size()); ++p_it)
         indices_fullset_[p_it] = p_it;
     }
@@ -332,11 +332,11 @@ public:
                           labels,
                           label_indices,
                           boundary_indices);
-    PCL_DEBUG("Number of planar regions detected: %lu for a cloud of %lu points and "
-              "%lu normals.\n",
-              regions.size(),
-              search_.getInputCloud()->points.size(),
-              normal_cloud->points.size());
+    PCL_DEBUG("Number of planar regions detected: %zu for a cloud of %zu points and "
+              "%zu normals.\n",
+              static_cast<std::size_t>(regions.size()),
+              static_cast<std::size_t>(search_.getInputCloud()->size()),
+              static_cast<std::size_t>(normal_cloud->size()));
 
     double max_dist = std::numeric_limits<double>::max();
     // Compute the distances from all the planar regions to the picked point, and select
@@ -448,9 +448,9 @@ public:
 
     PlanarRegion<PointT> refined_region;
     pcl::approximatePolygon(region, refined_region, 0.01, false, true);
-    PCL_INFO("Planar region: %lu points initial, %lu points after refinement.\n",
-             region.getContour().size(),
-             refined_region.getContour().size());
+    PCL_INFO("Planar region: %zu points initial, %zu points after refinement.\n",
+             static_cast<std::size_t>(region.getContour().size()),
+             static_cast<std::size_t>(refined_region.getContour().size()));
     cloud_viewer_.addPolygon(refined_region, 0.0, 0.0, 1.0, "refined_region");
     cloud_viewer_.setShapeRenderingProperties(
         visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "refined_region");

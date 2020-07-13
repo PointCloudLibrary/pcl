@@ -163,7 +163,7 @@ pcl::modeler::CloudMesh::updateVtkPoints()
 
   // If the dataset has no invalid values, just copy all of them
   if (cloud_->is_dense) {
-    vtkIdType nr_points = cloud_->points.size();
+    vtkIdType nr_points = cloud_->size();
     data->SetNumberOfValues(3 * nr_points);
 
     for (vtkIdType i = 0; i < nr_points; ++i) {

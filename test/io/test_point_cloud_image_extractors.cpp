@@ -170,7 +170,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldMono)
   cloud.height = 2;
   cloud.is_dense = true;
   cloud.points.resize (cloud.width * cloud.height);
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.size (); i++)
     cloud[i].label = i;
 
   pcl::PCLImage image;
@@ -184,7 +184,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldMono)
   EXPECT_EQ (cloud.width, image.width);
   EXPECT_EQ (cloud.height, image.height);
 
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.size (); i++)
     EXPECT_EQ (i, data[i]);
 }
 
@@ -197,7 +197,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldRGB)
   cloud.height = 2;
   cloud.is_dense = true;
   cloud.points.resize (cloud.width * cloud.height);
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.size (); i++)
     cloud[i].label = i % 2;
 
   pcl::PCLImage image;
@@ -235,7 +235,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldGlasbey)
   cloud.height = 2;
   cloud.is_dense = true;
   cloud.points.resize (cloud.width * cloud.height);
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.size (); i++)
     cloud[i].label = i % 2;
 
   pcl::PCLImage image;
@@ -249,7 +249,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldGlasbey)
   EXPECT_EQ (cloud.height, image.height);
 
   // Fill in different labels and extract another image
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.size (); i++)
     cloud[i].label = i % 2 + 10;
   pcl::PCLImage image2;
   ASSERT_TRUE (pcie.extract (cloud, image2));
@@ -272,7 +272,7 @@ TEST (PCL, PointCloudImageExtractorFromZField)
   cloud.height = 2;
   cloud.is_dense = true;
   cloud.points.resize (cloud.width * cloud.height);
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.size (); i++)
     cloud[i].z = 1.0 + i;
 
   pcl::PCLImage image;
@@ -286,7 +286,7 @@ TEST (PCL, PointCloudImageExtractorFromZField)
   EXPECT_EQ (cloud.height, image.height);
 
   // by default Z field extractor scales with factor 10000
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.size (); i++)
     EXPECT_EQ (10000 * (i + 1), data[i]);
 }
 
@@ -348,7 +348,7 @@ TEST (PCL, PointCloudImageExtractorFromIntensityField)
   EXPECT_EQ (cloud.height, image.height);
 
   // by default Intensity field extractor does not apply scaling
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
+  for (std::size_t i = 0; i < cloud.size (); i++)
     EXPECT_EQ (static_cast<unsigned short> (cloud[i].intensity), data[i]);
 }
 

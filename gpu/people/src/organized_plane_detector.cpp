@@ -153,12 +153,12 @@ int
 pcl::gpu::people::OrganizedPlaneDetector::copyHostLabelProbability(HostLabelProbability& src,
                                                                    HostLabelProbability& dst)
 {
-  if(src.points.size() != dst.points.size())
+  if(src.size() != dst.size())
   {
     PCL_ERROR("[pcl::gpu::people::OrganizedPlaneDetector::copyHostLabelProbability] : (E) : Sizes don't match\n");
     return -1;
   }
-  for(std::size_t hist = 0; hist < src.points.size(); hist++)
+  for(std::size_t hist = 0; hist < src.size(); hist++)
   {
     for(int label = 0; label < pcl::gpu::people::NUM_LABELS; label++)
     {
@@ -172,12 +172,12 @@ int
 pcl::gpu::people::OrganizedPlaneDetector::copyAndClearHostLabelProbability(HostLabelProbability& src,
                                                                            HostLabelProbability& dst)
 {
-  if(src.points.size() != dst.points.size())
+  if(src.size() != dst.size())
   {
     PCL_ERROR("[pcl::gpu::people::OrganizedPlaneDetector::copyHostLabelProbability] : (E) : Sizes don't match\n");
     return -1;
   }
-  for(std::size_t hist = 0; hist < src.points.size(); hist++)
+  for(std::size_t hist = 0; hist < src.size(); hist++)
   {
     for(int label = 0; label < pcl::gpu::people::NUM_LABELS; label++)
     {

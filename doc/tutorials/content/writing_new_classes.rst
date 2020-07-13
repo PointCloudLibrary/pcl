@@ -627,7 +627,7 @@ There're two methods that we need to implement here, namely `applyFilter` and
 
       output = *input_;
 
-      for (std::size_t point_id = 0; point_id < input_->points.size (); ++point_id)
+      for (std::size_t point_id = 0; point_id < input_->size (); ++point_id)
       {
         tree_->radiusSearch (point_id, sigma_s_ * 2, k_indices, k_distances);
 
@@ -760,7 +760,7 @@ The implementation file header thus becomes:
 
       output = *input_;
 
-      for (std::size_t point_id = 0; point_id < input_->points.size (); ++point_id)
+      for (std::size_t point_id = 0; point_id < input_->size (); ++point_id)
       {
         tree_->radiusSearch (point_id, sigma_s_ * 2, k_indices, k_distances);
 

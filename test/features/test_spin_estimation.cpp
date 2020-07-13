@@ -98,7 +98,7 @@ TEST (PCL, SpinImageEstimation)
 
   // estimate
   spin_est.compute (*spin_images);
-  EXPECT_EQ (spin_images->points.size (), indices.size ());
+  EXPECT_EQ (spin_images->size (), indices.size ());
 
   EXPECT_NEAR ((*spin_images)[100].histogram[0], 0, 1e-4);
   EXPECT_NEAR ((*spin_images)[100].histogram[12], 0, 1e-4);
@@ -132,7 +132,7 @@ TEST (PCL, SpinImageEstimation)
 
   // estimate
   spin_est.compute (*spin_images);
-  EXPECT_EQ (spin_images->points.size (), indices.size ());
+  EXPECT_EQ (spin_images->size (), indices.size ());
 
   EXPECT_NEAR ((*spin_images)[100].histogram[0], 0, 1e-4);
   EXPECT_NEAR ((*spin_images)[100].histogram[12], 0, 1e-4);
@@ -167,7 +167,7 @@ TEST (PCL, SpinImageEstimation)
 
   // estimate
   spin_est.compute (*spin_images);
-  EXPECT_EQ (spin_images->points.size (), indices.size ());
+  EXPECT_EQ (spin_images->size (), indices.size ());
 
   EXPECT_NEAR ((*spin_images)[100].histogram[0], 0, 1e-4);
   EXPECT_NEAR ((*spin_images)[100].histogram[12], 0, 1e-4);
@@ -201,7 +201,7 @@ TEST (PCL, SpinImageEstimation)
 
   // estimate
   spin_est.compute (*spin_images);
-  EXPECT_EQ (spin_images->points.size (), indices.size ());
+  EXPECT_EQ (spin_images->size (), indices.size ());
 
   EXPECT_NEAR ((*spin_images)[100].histogram[0], 0, 1e-4);
   EXPECT_NEAR ((*spin_images)[100].histogram[12], 0, 1e-4);
@@ -253,7 +253,7 @@ TEST (PCL, IntensitySpinEstimation)
       cloud_xyzi.points.push_back (p);
     }
   }
-  cloud_xyzi.width = static_cast<std::uint32_t> (cloud_xyzi.points.size ());
+  cloud_xyzi.width = cloud_xyzi.size ();
 
   // Compute the intensity-domain spin features
   using IntensitySpin = Histogram<20>;
@@ -295,7 +295,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  indices.resize (cloud.points.size ());
+  indices.resize (cloud.size ());
   for (std::size_t i = 0; i < indices.size (); ++i)
     indices[i] = static_cast<int> (i);
 

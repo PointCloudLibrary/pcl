@@ -100,7 +100,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input,
       xyz_cloud->push_back ((*xyz_cloud_pre)[i]);
   xyz_cloud->header = xyz_cloud_pre->header;
   xyz_cloud->height = 1;
-  xyz_cloud->width = static_cast<std::uint32_t> (xyz_cloud->size ());
+  xyz_cloud->width = xyz_cloud->size ();
   xyz_cloud->is_dense = false;
   
   

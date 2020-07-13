@@ -75,7 +75,7 @@ init ()
     for (float y = -0.5f; y <= 0.5f; y += resolution)
       for (float x = -0.5f; x <= 0.5f; x += resolution)
         cloud.points.emplace_back(x, y, z);
-  cloud.width  = static_cast<std::uint32_t> (cloud.points.size ());
+  cloud.width  = cloud.size ();
   cloud.height = 1;
 
   cloud_big.width  = 640;
@@ -96,7 +96,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   MyPoint test_point(0.0f, 0.0f, 0.0f);
   double max_dist = 0.15;
   std::set<int> brute_force_result;
-  for (std::size_t i=0; i < cloud.points.size(); ++i)
+  for (std::size_t i=0; i < cloud.size(); ++i)
     if (euclideanDistance(cloud[i], test_point) < max_dist)
       brute_force_result.insert(i);
   std::vector<int> k_indices;
@@ -165,7 +165,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   MyPoint test_point (0.01f, 0.01f, 0.01f);
   unsigned int no_of_neighbors = 20;
   std::multimap<float, int> sorted_brute_force_result;
-  for (std::size_t i = 0; i < cloud.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud.size (); ++i)
   {
     float distance = euclideanDistance (cloud[i], test_point);
     sorted_brute_force_result.insert (std::make_pair (distance, static_cast<int> (i)));

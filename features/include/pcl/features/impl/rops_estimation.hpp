@@ -423,7 +423,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::rotateCloud (const PointInT& axis, co
                      (1 - cosine) * y * x + sine * z,    cosine + (1 - cosine) * y * y,      (1 - cosine) * y * z - sine * x,
                      (1 - cosine) * z * x - sine * y,    (1 - cosine) * z * y + sine * x,    cosine + (1 - cosine) * z * z;
 
-  const auto number_of_points = cloud.points.size ();
+  const auto number_of_points = cloud.size ();
 
   rotated_cloud.header = cloud.header;
   rotated_cloud.width = number_of_points;
@@ -489,7 +489,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::getDistributionMatrix (const unsigned
     matrix (row, col) += 1.0f;
   }
 
-  matrix /= std::max<float> (1, cloud.points.size ());
+  matrix /= std::max<float> (1, cloud.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

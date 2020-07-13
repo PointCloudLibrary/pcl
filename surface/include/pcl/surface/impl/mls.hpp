@@ -145,7 +145,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
   if (compute_normals_)
   {
     normals_->height = 1;
-    normals_->width = static_cast<std::uint32_t> (normals_->size ());
+    normals_->width = normals_->size ();
 
     for (std::size_t i = 0; i < output.size (); ++i)
     {
@@ -160,7 +160,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
 
   // Set proper widths and heights for the clouds
   output.height = 1;
-  output.width = static_cast<std::uint32_t> (output.size ());
+  output.width = output.size ();
 
   deinitCompute ();
 }

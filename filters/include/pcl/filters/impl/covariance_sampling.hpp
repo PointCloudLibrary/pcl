@@ -217,7 +217,7 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (Cloud &output)
   output.resize (sampled_indices.size ());
   output.header = input_->header;
   output.height = 1;
-  output.width = std::uint32_t (output.size ());
+  output.width = output.size ();
   output.is_dense = true;
   for (std::size_t i = 0; i < sampled_indices.size (); ++i)
     output[i] = (*input_)[sampled_indices[i]];

@@ -682,8 +682,8 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
     output.width    = this->input_->width;
     output.is_dense = this->input_->is_dense;
   }
-  output.points.resize (input_->points.size ());
-  removed_indices_->resize (input_->points.size ());
+  output.points.resize (input_->size ());
+  removed_indices_->resize (input_->size ());
 
   int nr_removed_p = 0;
 
@@ -731,7 +731,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
     std::sort (indices.begin (), indices.end ());   //TODO: is this necessary or can we assume the indices to be sorted?
     bool removed_p = false;
     std::size_t ci = 0;
-    for (std::size_t cp = 0; cp < input_->points.size (); ++cp)
+    for (std::size_t cp = 0; cp < input_->size (); ++cp)
     {
       if (cp == static_cast<std::size_t> (indices[ci]))
       {

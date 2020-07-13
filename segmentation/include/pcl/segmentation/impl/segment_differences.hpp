@@ -59,7 +59,7 @@ pcl::getPointCloudDifference (
   std::vector<int> src_indices;
 
   // Iterate through the source data set
-  for (int i = 0; i < static_cast<int> (src.points.size ()); ++i)
+  for (int i = 0; i < static_cast<int> (src.size ()); ++i)
   {
     // Ignore invalid points in the inpout cloud
     if (!isFinite (src[i]))

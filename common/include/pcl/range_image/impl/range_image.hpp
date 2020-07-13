@@ -161,7 +161,7 @@ RangeImage::createFromPointCloudWithKnownSize (const PointCloudType& point_cloud
 {
   //MEASURE_FUNCTION_TIME;
   
-  //std::cout << "Starting to create range image from "<<point_cloud.points.size ()<<" points.\n";
+  //std::cout << "Starting to create range image from "<<point_cloud.size ()<<" points.\n";
   
   // If the sensor pose is inside of the sphere we have to calculate the image the normal way
   if ((point_cloud_center-sensor_pose.translation()).norm() <= point_cloud_radius) {

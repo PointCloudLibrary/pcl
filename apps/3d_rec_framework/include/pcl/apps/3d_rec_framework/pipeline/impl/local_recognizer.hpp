@@ -67,7 +67,7 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
 
         int size_feat = sizeof((*signature)[0].histogram) / sizeof(float);
 
-        for (std::size_t dd = 0; dd < signature->points.size(); dd++) {
+        for (std::size_t dd = 0; dd < signature->size(); dd++) {
           descr_model.keypoint_id = static_cast<int>(dd);
           descr_model.descr.resize(size_feat);
 
@@ -208,7 +208,7 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
   PointInTPtr keypoints_pointcloud;
 
   if (signatures_ != nullptr && processed_ != nullptr &&
-      (signatures_->size() == keypoints_pointcloud->points.size())) {
+      (signatures_->size() == keypoints_pointcloud->size())) {
     keypoints_pointcloud = keypoints_input_;
     signatures = signatures_;
     processed = processed_;
@@ -228,15 +228,14 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
     processed_ = processed;
   }
 
-  std::cout << "Number of keypoints:" << keypoints_pointcloud->points.size()
-            << std::endl;
+  std::cout << "Number of keypoints:" << keypoints_pointcloud->size() << std::endl;
 
   int size_feat = sizeof((*signatures)[0].histogram) / sizeof(float);
 
   // feature matching and object hypotheses
   std::map<std::string, ObjectHypothesis> object_hypotheses;
   {
-    for (std::size_t idx = 0; idx < signatures->points.size(); idx++) {
+    for (std::size_t idx = 0; idx < signatures->size(); idx++) {
       float* hist = (*signatures)[idx].histogram;
       std::vector<float> std_hist(hist, hist + size_feat);
       flann_model histogram;
@@ -271,7 +270,7 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
         ObjectHypothesis oh = (*it_map).second;
         oh.correspondences_pointcloud->points.push_back(model_keypoint);
         oh.correspondences_to_inputcloud->push_back(pcl::Correspondence(
-            static_cast<int>(oh.correspondences_pointcloud->points.size() - 1),
+            static_cast<int>(oh.correspondences_pointcloud->size() - 1),
             static_cast<int>(idx),
             distances[0][0]));
         oh.feature_distances_->push_back(distances[0][0]);

@@ -62,10 +62,10 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
   // If dense, no need to check for NaNs
   if (cloud->is_dense)
   {
-    for (std::size_t i = 0; i < cloud->points.size (); ++i)
+    for (const auto& point: *cloud)
     {
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud)[i]);
+      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
       if (limit_negative)
@@ -81,17 +81,17 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
           continue;
       }
       // Create the point structure and get the min/max
-      pcl::Array4fMapConst pt = (*cloud)[i].getArray4fMap ();
+      pcl::Array4fMapConst pt = point.getArray4fMap ();
       min_p = min_p.min (pt);
       max_p = max_p.max (pt);
     }
   }
   else
   {
-    for (std::size_t i = 0; i < cloud->points.size (); ++i)
+    for (const auto& point: *cloud)
     {
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud)[i]);
+      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&point);
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
       if (limit_negative)
@@ -108,12 +108,10 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
       }
 
       // Check if the point is invalid
-      if (!std::isfinite ((*cloud)[i].x) || 
-          !std::isfinite ((*cloud)[i].y) || 
-          !std::isfinite ((*cloud)[i].z))
+      if (!isXYZFinite (point))
         continue;
       // Create the point structure and get the min/max
-      pcl::Array4fMapConst pt = (*cloud)[i].getArray4fMap ();
+      pcl::Array4fMapConst pt = point.getArray4fMap ();
       min_p = min_p.min (pt);
       max_p = max_p.max (pt);
     }
@@ -430,7 +428,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
      
     ++index;
   }
-  output.width = static_cast<std::uint32_t> (output.points.size ());
+  output.width = output.size ();
 }
 
 #define PCL_INSTANTIATE_VoxelGrid(T) template class PCL_EXPORTS pcl::VoxelGrid<T>;

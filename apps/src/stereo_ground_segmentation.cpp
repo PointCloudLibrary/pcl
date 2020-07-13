@@ -444,7 +444,7 @@ public:
     }
 
     // note the NAN points in the image as well
-    for (std::size_t i = 0; i < cloud->points.size(); i++) {
+    for (std::size_t i = 0; i < cloud->size(); i++) {
       if (!pcl::isFinite((*cloud)[i])) {
         (*ground_image)[i].b =
             static_cast<std::uint8_t>(((*cloud)[i].b + 255) / 2);
@@ -494,7 +494,7 @@ public:
         if (!viewer->updatePointCloud(prev_ground_image, "cloud"))
           viewer->addPointCloud(prev_ground_image, "cloud");
 
-        if (prev_normal_cloud->points.size() > 1000 && display_normals) {
+        if (prev_normal_cloud->size() > 1000 && display_normals) {
           viewer->removePointCloud("normals");
           viewer->addPointCloudNormals<PointT, pcl::Normal>(
               prev_ground_image, prev_normal_cloud, 10, 0.15f, "normals");
@@ -502,7 +502,7 @@ public:
               pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "normals");
         }
 
-        if (prev_cloud->points.size() > 1000) {
+        if (prev_cloud->size() > 1000) {
           image_viewer->addRGBImage<PointT>(prev_ground_image, "rgb_image", 0.3);
         }
 

@@ -97,7 +97,7 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
   // Set the coordinates of the pcl::PointCloud (if the pcl::PointCloud supports coordinates)
   if (x_idx != -1 && y_idx != -1 && z_idx != -1)
   {
-    for (std::size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
       double coordinate[3];
       polydata->GetPoint (i, coordinate);
@@ -122,7 +122,7 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
   vtkFloatArray* normals = vtkFloatArray::SafeDownCast (polydata->GetPointData ()->GetNormals ());
   if (normal_x_idx != -1 && normal_y_idx != -1 && normal_z_idx != -1 && normals)
   {
-    for (std::size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
       float normal[3];
       normals->GetTupleValue (i, normal);
@@ -146,7 +146,7 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
 
   if (rgb_idx != -1 && colors)
   {
-    for (std::size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
       unsigned char color[3];
       colors->GetTupleValue (i, color);
@@ -292,7 +292,7 @@ pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyD
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
 
   // Coordinates (always must have coordinates)
-  vtkIdType nr_points = cloud.points.size ();
+  vtkIdType nr_points = cloud.size ();
   vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New ();
   points->SetNumberOfPoints (nr_points);
   // Get a pointer to the beginning of the data array

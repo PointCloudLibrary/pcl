@@ -90,7 +90,7 @@ TEST (PCL, KFPCSInitialAlignment)
       break;
   }
 
-  EXPECT_EQ (static_cast <int> (cloud_source_aligned.points.size ()), static_cast <int> (cloud_source.points.size ()));
+  EXPECT_EQ (cloud_source_aligned.size (), cloud_source.size ());
   EXPECT_NEAR (angle3d, 0.f, max_angle3d);
   EXPECT_NEAR (translation3d, 0.f, max_translation3d);
 }

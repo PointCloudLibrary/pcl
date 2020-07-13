@@ -412,7 +412,7 @@ namespace pcl
 
       // Ensure we have an organized point cloud
       assert((width>1) && (height>1));
-      assert(width*height == cloud_arg->points.size());
+      assert(width*height == cloud_arg->size());
 
       float maxDepth = 0;
       float focalLength = 0;

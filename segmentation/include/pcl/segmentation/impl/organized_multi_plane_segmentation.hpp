@@ -52,8 +52,8 @@ projectToPlaneFromViewpoint (pcl::PointCloud<PointT>& cloud, Eigen::Vector4f& no
 {
   Eigen::Vector3f norm (normal[0], normal[1], normal[2]); //(region.coefficients_[0], region.coefficients_[1], region.coefficients_[2]); 
   pcl::PointCloud<PointT> projected_cloud;
-  projected_cloud.resize (cloud.points.size ());
-  for (std::size_t i = 0; i < cloud.points.size (); i++)
+  projected_cloud.resize (cloud.size ());
+  for (std::size_t i = 0; i < cloud.size (); i++)
   {
     Eigen::Vector3f pt (cloud[i].x, cloud[i].y, cloud[i].z);
     //Eigen::Vector3f intersection = (vp, pt, norm, centroid);
@@ -99,11 +99,13 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   }
 
   // Check that we got the same number of points and normals
-  if (static_cast<int> (normals_->points.size ()) != static_cast<int> (input_->points.size ()))
+  if (normals_->size () != input_->size ())
   {
-    PCL_ERROR ("[pcl::%s::segment] Number of points in input cloud (%lu) and normal cloud (%lu) do not match!\n",
-               getClassName ().c_str (), input_->points.size (),
-               normals_->points.size ());
+    PCL_ERROR("[pcl::%s::segment] Number of points in input cloud (%zu) and normal "
+              "cloud (%zu) do not match!\n",
+              getClassName().c_str(),
+              static_cast<std::size_t>(input_->size()),
+              static_cast<std::size_t>(normals_->size()));
     return;
   }
 
@@ -116,7 +118,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   }
 
   // Calculate range part of planes' hessian normal form
-  std::vector<float> plane_d (input_->points.size ());
+  std::vector<float> plane_d (input_->size ());
   
   for (std::size_t i = 0; i < input_->size (); ++i)
     plane_d[i] = (*input_)[i].getVector3fMap ().dot ((*normals_)[i].getNormalVector3fMap ());

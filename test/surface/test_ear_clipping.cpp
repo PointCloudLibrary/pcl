@@ -71,10 +71,10 @@ TEST (PCL, EarClipping)
   cloud->points.emplace_back( 4.f, 7.f, 0.5f);
   cloud->points.emplace_back( 2.f, 5.f, 0.5f);
   cloud->points.emplace_back(-1.f, 8.f, 0.5f);
-  cloud->width = static_cast<std::uint32_t> (cloud->points.size ());
+  cloud->width = cloud->size ();
 
   Vertices vertices;
-  vertices.vertices.resize (cloud->points.size ());
+  vertices.vertices.resize (cloud->size ());
   for (int i = 0; i < static_cast<int> (vertices.vertices.size ()); ++i)
     vertices.vertices[i] = i;
 
@@ -119,7 +119,7 @@ TEST (PCL, EarClippingCubeTest)
   cloud->points.emplace_back( 1.f, 0.f, 1.f);
   cloud->points.emplace_back( 1.f, 1.f, 1.f);
   cloud->points.emplace_back( 0.f, 1.f, 1.f);
-  cloud->width = static_cast<std::uint32_t> (cloud->points.size ());
+  cloud->width = cloud->size ();
 
   Vertices vertices;
   vertices.vertices.resize(4);

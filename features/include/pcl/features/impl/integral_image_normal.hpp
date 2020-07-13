@@ -140,7 +140,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initCovarianceMatrixMet
 template <typename PointInT, typename PointOutT> void
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverage3DGradientMethod ()
 {
-  std::size_t data_size = (input_->points.size () << 2);
+  std::size_t data_size = (input_->size () << 2);
   diff_x_ = new float[data_size];
   diff_y_ = new float[data_size];
 
@@ -736,8 +736,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
   // compute depth-change map
-  unsigned char * depthChangeMap = new unsigned char[input_->points.size ()];
-  memset (depthChangeMap, 255, input_->points.size ());
+  unsigned char * depthChangeMap = new unsigned char[input_->size ()];
+  memset (depthChangeMap, 255, input_->size ());
 
   unsigned index = 0;
   for (unsigned int ri = 0; ri < input_->height-1; ++ri)
@@ -769,11 +769,11 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   }
 
   // compute distance map
-  //float *distanceMap = new float[input_->points.size ()];
+  //float *distanceMap = new float[input_->size ()];
   delete[] distance_map_;
-  distance_map_ = new float[input_->points.size ()];
+  distance_map_ = new float[input_->size ()];
   float *distanceMap = distance_map_;
-  for (std::size_t index = 0; index < input_->points.size (); ++index)
+  for (std::size_t index = 0; index < input_->size (); ++index)
   {
     if (depthChangeMap[index] == 0)
       distanceMap[index] = 0.0f;

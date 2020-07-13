@@ -24,7 +24,7 @@ main (int argc, char** argv)
   pass.setFilterLimits (0, 1.1);
   pass.filter (*cloud_filtered);
   std::cerr << "PointCloud after filtering has: "
-            << cloud_filtered->points.size () << " data points." << std::endl;
+            << cloud_filtered->size () << " data points." << std::endl;
 
   pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
   pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
@@ -50,7 +50,7 @@ main (int argc, char** argv)
   proj.setModelCoefficients (coefficients);
   proj.filter (*cloud_projected);
   std::cerr << "PointCloud after projection has: "
-            << cloud_projected->points.size () << " data points." << std::endl;
+            << cloud_projected->size () << " data points." << std::endl;
 
   // Create a Concave Hull representation of the projected inliers
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_hull (new pcl::PointCloud<pcl::PointXYZ>);
@@ -59,7 +59,7 @@ main (int argc, char** argv)
   chull.setAlpha (0.1);
   chull.reconstruct (*cloud_hull);
 
-  std::cerr << "Concave hull has: " << cloud_hull->points.size ()
+  std::cerr << "Concave hull has: " << cloud_hull->size ()
             << " data points." << std::endl;
 
   pcl::PCDWriter writer;

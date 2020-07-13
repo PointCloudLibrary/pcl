@@ -117,7 +117,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudI
   shared(angle_threshold, boundary_estimator, border_radius, edge_points, input) \
   firstprivate(u, v) \
   num_threads(threads_)
-  for (int index = 0; index < int (input.points.size ()); index++)
+  for (int index = 0; index < int (input.size ()); index++)
   {
     edge_points[index] = false;
     PointInT current_point = input[index];
@@ -447,7 +447,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   }
 
   output.header = input_->header;
-  output.width = static_cast<std::uint32_t> (output.points.size ());
+  output.width = output.size ();
   output.height = 1;
 
   // Clear the contents of variables and arrays before the beginning of the next computation.

@@ -143,7 +143,7 @@ The following code snippet will estimate a set of surface normals for all the po
      // Compute the features
      ne.compute (*cloud_normals);
 
-     // cloud_normals->points.size () should have the same size as the input cloud->points.size ()
+     // cloud_normals->size () should have the same size as the input cloud->size ()
    }
 
 The following code snippet will estimate a set of surface normals for a subset of the points in the input dataset.
@@ -160,7 +160,7 @@ The following code snippet will estimate a set of surface normals for a subset o
      ... read, pass in or create a point cloud ...
 
      // Create a set of indices to be used. For simplicity, we're going to be using the first 10% of the points in cloud
-     std::vector<int> indices (std::floor (cloud->points.size () / 10));
+     std::vector<int> indices (std::floor (cloud->size () / 10));
      for (std::size_t i = 0; i < indices.size (); ++i) indices[i] = i;
 
      // Create the normal estimation class, and pass the input dataset to it
@@ -185,7 +185,7 @@ The following code snippet will estimate a set of surface normals for a subset o
      // Compute the features
      ne.compute (*cloud_normals);
 
-     // cloud_normals->points.size () should have the same size as the input indicesptr->size ()
+     // cloud_normals->size () should have the same size as the input indicesptr->size ()
    }
 
 
@@ -226,7 +226,7 @@ Finally, the following code snippet will estimate a set of surface normals for a
      // Compute the features
      ne.compute (*cloud_normals);
 
-     // cloud_normals->points.size () should have the same size as the input cloud_downsampled->points.size ()
+     // cloud_normals->size () should have the same size as the input cloud_downsampled->size ()
    }
 
 .. [RusuDissertation] http://mediatum.ub.tum.de/doc/800632/941254.pdf

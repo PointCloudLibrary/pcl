@@ -233,14 +233,14 @@ pcl::KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud)
     return;
   }
 
-  int original_no_of_points = static_cast<int> (cloud.points.size ());
+  const auto original_no_of_points = cloud.size ();
 
   cloud_.reset (new float[original_no_of_points * dim_], std::default_delete<float[]> ());
   float* cloud_ptr = cloud_.get ();
   index_mapping_.reserve (original_no_of_points);
   identity_mapping_ = true;
 
-  for (int cloud_index = 0; cloud_index < original_no_of_points; ++cloud_index)
+  for (std::size_t cloud_index = 0; cloud_index < original_no_of_points; ++cloud_index)
   {
     // Check if the point is invalid
     if (!point_representation_->isValid (cloud[cloud_index]))

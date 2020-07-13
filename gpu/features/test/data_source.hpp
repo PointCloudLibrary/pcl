@@ -94,11 +94,8 @@ namespace pcl
 
             void generateColor()
             {
-                std::size_t cloud_size = cloud->points.size();
-                for(std::size_t i = 0; i < cloud_size; ++i)
+                for (auto& p: *cloud)
                 {
-                    PointXYZ& p = (*cloud)[i];
-
                     int r = std::max(1, std::min(255, static_cast<int>((double(rand())/RAND_MAX)*255)));
                     int g = std::max(1, std::min(255, static_cast<int>((double(rand())/RAND_MAX)*255)));
                     int b = std::max(1, std::min(255, static_cast<int>((double(rand())/RAND_MAX)*255)));
@@ -130,7 +127,7 @@ namespace pcl
                 KdTreeFLANN<PointXYZ>::Ptr kdtree(new KdTreeFLANN<PointXYZ>);
                 kdtree->setInputCloud(cloud);                
                 
-                std::size_t cloud_size = cloud->points.size();
+                const auto cloud_size = cloud->size();
 
                 std::vector<float> dists;
                 neighbors_all.resize(cloud_size);
@@ -149,7 +146,7 @@ namespace pcl
                 KdTreeFLANN<PointXYZ>::Ptr kdtree(new KdTreeFLANN<PointXYZ>);
                 kdtree->setInputCloud(cloud);                
                 
-                std::size_t cloud_size = cloud->points.size();
+                const auto cloud_size = cloud->size();
 
                 std::vector<float> dists;
                 neighbors_all.resize(cloud_size);
@@ -171,19 +168,19 @@ namespace pcl
 
             void generateSurface()
             {
-                surface->points.clear();
-                for(std::size_t i = 0; i < cloud->points.size(); i+= 10)               
-                    surface->points.push_back((*cloud)[i]);
-                surface->width = surface->points.size();
+                surface->clear();
+                for(std::size_t i = 0; i < cloud->size(); i+= 10)               
+                    surface->push_back((*cloud)[i]);
+                surface->width = surface->size();
                 surface->height = 1;
                   
-                if (!normals->points.empty())
+                if (!normals->empty())
                 {
-                    normals_surface->points.clear();
-                    for(std::size_t i = 0; i < normals->points.size(); i+= 10)               
-                        normals_surface->points.push_back((*normals)[i]);
+                    normals_surface->clear();
+                    for(std::size_t i = 0; i < normals->size(); i+= 10)               
+                        normals_surface->push_back((*normals)[i]);
 
-                    normals_surface->width = surface->points.size();
+                    normals_surface->width = surface->size();
                     normals_surface->height = 1;
                 }                                
             }
@@ -191,7 +188,7 @@ namespace pcl
             void generateIndices(std::size_t step = 100)
             {
                 indices->clear();
-                for(std::size_t i = 0; i < cloud->points.size(); i += step)
+                for(std::size_t i = 0; i < cloud->size(); i += step)
                     indices->push_back(i);                
             }
 

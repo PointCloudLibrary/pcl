@@ -88,7 +88,7 @@ Kmeans<PointT>::cluster(std::vector<PointIndices>& clusters)
     PCL_INFO("Use X Y Z as input data\n");
     // create input data
     /*
-        for (std::size_t i = 0; i < input_->points.size (); i++)
+        for (std::size_t i = 0; i < input_->size (); i++)
         {
           DataPoint data (3);
           data[0] = (*input_)[i].data[0];
