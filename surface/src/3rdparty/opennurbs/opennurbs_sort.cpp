@@ -46,11 +46,7 @@ ON__QSORT_FASTER_THAN_HSORT.
 void 
 ON_qsort( void *base, std::size_t nel, std::size_t width, int (*compar)(void*,const void *, const void *),void* context)
 {
-  pcl::utils::ignore(base);
-  pcl::utils::ignore(nel);
-  pcl::utils::ignore(width);
-  pcl::utils::ignore(compar);
-  pcl::utils::ignore(context);
+  pcl::utils::ignore(base, nel, width, compar, context);
 #if defined(ON__HAVE_RELIABLE_SYSTEM_CONTEXT_QSORT)
   // The call here must be a thread safe system qsort
   // that is faster than the alternative code in this function.
