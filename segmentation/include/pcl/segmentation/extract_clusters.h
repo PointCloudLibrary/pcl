@@ -114,12 +114,13 @@ namespace pcl
       PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%lu) different than normals (%lu)!\n", cloud.points.size (), normals.points.size ());
       return;
     }
+
     auto lambda = [&](int i, int j, const Indices& nn_indices) -> bool {
       //processed[nn_indices[j]] = true;
       // [-1;1]
-      double dot_p = normals.points[i].normal[0] * normals.points[nn_indices[j]].normal[0] +
-                     normals.points[i].normal[1] * normals.points[nn_indices[j]].normal[1] +
-                     normals.points[i].normal[2] * normals.points[nn_indices[j]].normal[2];
+      double dot_p = normals[i].normal[0] * normals[nn_indices[j]].normal[0] +
+                     normals[i].normal[1] * normals[nn_indices[j]].normal[1] +
+                     normals[i].normal[2] * normals[nn_indices[j]].normal[2];
       return std::acos (std::abs (dot_p)) < eps_angle;
     };
 
@@ -168,14 +169,13 @@ namespace pcl
       //processed[nn_indices[j]] = true;
       // [-1;1]
       double dot_p =
-          normals.points[indices[i]].normal[0] * normals.points[indices[nn_indices[j]]].normal[0] +
-          normals.points[indices[i]].normal[1] * normals.points[indices[nn_indices[j]]].normal[1] +
-          normals.points[indices[i]].normal[2] * normals.points[indices[nn_indices[j]]].normal[2];
+          normals[indices[i]].normal[0] * normals[indices[nn_indices[j]]].normal[0] +
+          normals[indices[i]].normal[1] * normals[indices[nn_indices[j]]].normal[1] +
+          normals[indices[i]].normal[2] * normals[indices[nn_indices[j]]].normal[2];
       return std::acos (std::abs (dot_p)) < eps_angle;
     };
 
     pcl::extractEuclideanClusters(cloud, indices, lambda, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
-
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
