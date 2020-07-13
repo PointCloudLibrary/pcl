@@ -55,7 +55,7 @@ pcl::extractEuclideanClusters (
     return;
   }
   // Check if the tree is sorted -- if it is we don't need to check the first element
-  int nn_start_idx = tree->getSortedResults () ? 1 : 0;
+  index_t nn_start_idx = tree->getSortedResults () ? 1 : 0;
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.points.size (), false);
 
@@ -68,16 +68,16 @@ pcl::extractEuclideanClusters (
 
   for (; it.isValid(); ++it) {
     if (processed[it.getCurrentIndex()])
-      return;
+      continue;
 
-    int sq_idx = 0;
+    index_t sq_idx = 0;
     clusters.emplace_back();
-    auto seed_queue = clusters.back();
+    auto& seed_queue = clusters.back();
     seed_queue.indices.push_back (it.getCurrentIndex());
 
     processed[it.getCurrentIndex()] = true;
 
-    while (sq_idx < static_cast<int> (seed_queue.indices.size()))
+    while (sq_idx < static_cast<index_t> (seed_queue.indices.size()))
     {
       // Search for sq_idx
       if (!tree->radiusSearch (seed_queue.indices[sq_idx], tolerance, nn_indices, nn_distances))
