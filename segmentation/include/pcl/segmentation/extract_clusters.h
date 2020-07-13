@@ -46,11 +46,11 @@
 
 namespace pcl
 {
+
   template <typename PointT, typename FunctorT> void
-  extractEuclideanClusters (
-      const PointCloud<PointT> &cloud, const Indices &indices,
-      FunctorT additional_filter_criteria, const typename search::Search<PointT>::Ptr &tree,
-      float tolerance, std::vector<PointIndices> &clusters,
+   extractEuclideanClusters(
+      ConstCloudIterator<PointT> &it, const PointCloud<PointT> &cloud, FunctorT additional_filter_criteria,
+      const typename search::Search<PointT>::Ptr &tree, float tolerance, std::vector<PointIndices> &clusters,
       unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = std::numeric_limits<int>::max())
   {
     if (tree->getInputCloud ()->points.size () != cloud.points.size ())
@@ -59,20 +59,10 @@ namespace pcl
       return;
     }
 
-    // \note If the tree was created over <cloud, indices>, we guarantee a 1-1 mapping between what the tree returns
-    //and indices[i]
-    if (!indices.empty() and tree->getIndices ()->size () != indices.size ())
-    {
-      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of indices (%lu) than the input set (%lu)!\n", tree->getIndices ()->size (), indices.size ());
-      return;
-    }
-
     // Check if the tree is sorted -- if it is we don't need to check the first element
     index_t nn_start_idx = tree->getSortedResults () ? 1 : 0;
     // Create a bool vector of processed point indices, and initialize it to false
     std::vector<bool> processed (cloud.points.size (), false);
-
-    auto it = indices.empty() ? ConstCloudIterator<PointT>(cloud) : ConstCloudIterator<PointT>(cloud, indices);
 
     for (; it.isValid(); ++it) {
       if (processed[it.getCurrentIndex()])
@@ -117,6 +107,36 @@ namespace pcl
       else
         clusters.pop_back();
     }
+  }
+
+  template <typename PointT, typename FunctorT> void
+  extractEuclideanClusters (
+      const PointCloud<PointT> &cloud,
+      FunctorT additional_filter_criteria, const typename search::Search<PointT>::Ptr &tree,
+      float tolerance, std::vector<PointIndices> &clusters,
+      unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = std::numeric_limits<int>::max())
+  {
+    auto it = ConstCloudIterator<PointT>(cloud);
+    extractEuclideanClusters(it, cloud, additional_filter_criteria, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
+  }
+
+  template <typename PointT, typename FunctorT> void
+  extractEuclideanClusters (
+      const PointCloud<PointT> &cloud, const Indices &indices,
+      FunctorT additional_filter_criteria, const typename search::Search<PointT>::Ptr &tree,
+      float tolerance, std::vector<PointIndices> &clusters,
+      unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = std::numeric_limits<int>::max())
+  {
+    // \note If the tree was created over <cloud, indices>, we guarantee a 1-1 mapping between what the tree returns
+    //and indices[i]
+    if (!indices.empty() and tree->getIndices ()->size () != indices.size ())
+    {
+      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of indices (%lu) than the input set (%lu)!\n", tree->getIndices ()->size (), indices.size ());
+      return;
+    }
+
+    auto it = ConstCloudIterator<PointT>(cloud, indices);
+    extractEuclideanClusters(it, cloud, additional_filter_criteria, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
