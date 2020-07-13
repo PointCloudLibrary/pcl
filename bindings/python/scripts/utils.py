@@ -31,6 +31,7 @@ def get_json_output_path(source, output_dir):
     Returns:
         - json_output_path: The json output's realpath
     """
+
     # pcl_path: contains the path as seen in the pcl directory
     _, pcl_path = source.split(f"pcl{os.sep}", 1)
 
@@ -59,6 +60,16 @@ def dump_json(filepath, info):
 
 
 def parse_arguments(script):
+    """
+    Returns parsed command line arguments for a given script
+
+    Arguments:
+        - script: The python script for which the custom command line arguments should be parsed
+
+    Return:
+        - args: Parsed command line arguments
+    """
+
     if script == "parse":
         parser = argparse.ArgumentParser(description="C++ libclang parser")
         parser.add_argument(
@@ -72,4 +83,6 @@ def parse_arguments(script):
             help="Output path for generated json",
         )
         parser.add_argument("files", nargs="+", help="The source files to parse")
-        return parser.parse_args()
+        args = parser.parse_args()
+
+        return args
