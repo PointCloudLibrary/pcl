@@ -238,6 +238,26 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
   const RegionXY & region,
   const size_t nr_features_per_modality)
 {
+  SparseQuantizedMultiModTemplate linemod_template;
+
+  createTemplate(cloud, object_id, mask_xyz, mask_rgb, region, linemod_template, nr_features_per_modality);
+
+  // add template to template storage
+  linemod_.addTemplate(linemod_template);
+
+  return static_cast<int> (getNumOfTemplates () - 1);
+}
+
+template <typename PointXYZT, typename PointRGBT> void
+pcl::LineRGBD<PointXYZT, PointRGBT>::createTemplate (
+  pcl::PointCloud<pcl::PointXYZRGBA> & cloud,
+  const size_t object_id,
+  const MaskMap & mask_xyz,
+  const MaskMap & mask_rgb,
+  const RegionXY & region,
+  SparseQuantizedMultiModTemplate &linemod_template,
+  const size_t nr_features_per_modality)
+{
   // add point cloud
   template_point_clouds_.resize (template_point_clouds_.size () + 1);
   pcl::copyPointCloud (cloud, template_point_clouds_[template_point_clouds_.size () - 1]);
@@ -321,7 +341,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
   masks.push_back (const_cast<MaskMap*> (&mask_rgb));
   masks.push_back (const_cast<MaskMap*> (&mask_xyz));
 
-  return (linemod_.createAndAddTemplate (modalities, masks, region, nr_features_per_modality));
+  linemod_.createTemplate (modalities, masks, region, linemod_template, nr_features_per_modality);
 }
 
 

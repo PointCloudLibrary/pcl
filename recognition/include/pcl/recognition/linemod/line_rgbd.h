@@ -203,6 +203,15 @@ namespace pcl
         const RegionXY & region,
         const size_t nr_features_per_modality = 63);
 
+      void
+      createTemplate (
+        pcl::PointCloud<pcl::PointXYZRGBA> & cloud,
+        const size_t object_id,
+        const MaskMap & mask_xyz,
+        const MaskMap & mask_rgb,
+        const RegionXY & region,
+        SparseQuantizedMultiModTemplate &linemod_template,
+        const size_t nr_features_per_modality = 63);
 
       /** \brief Applies the detection process and fills the supplied vector with the detection instances. 
         * \param[out] detections The storage for the detection instances.
@@ -245,11 +254,26 @@ namespace pcl
         return (vec);
       }
 
+      /** \brief Returns the template with the specified ID.
+        * \param[in] template_id the ID of the template to return.
+        */
+      inline const SparseQuantizedMultiModTemplate &
+      getTemplate (int template_id) const
+      {
+        return (linemod_.getTemplate (template_id));
+      }
+
+      inline SparseQuantizedMultiModTemplate &
+      getTemplate (int template_id)
+      {
+        return (linemod_.getTemplate (template_id));
+      }
+
       /** \brief Resize the templates storage. */
       inline void
       resizeTemplates (size_t n)
       {
-        linemod_.resizeTemplates (n);
+        return (linemod_.resizeTemplates (n));
       }
 
       /** \brief Returns the number of stored/trained templates. */
