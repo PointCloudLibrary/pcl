@@ -379,8 +379,7 @@ ParticleFilterTracker<PointInT, StateT>::update()
   StateT orig_representative = representative_state_;
   representative_state_.zero();
   representative_state_.weight = 0.0;
-  for (const auto& point : *particles_) {
-    StateT p = point;
+  for (const auto& p : *particles_) {
     representative_state_ = representative_state_ + p * p.weight;
   }
   representative_state_.weight = 1.0f / static_cast<float>(particles_->size());
