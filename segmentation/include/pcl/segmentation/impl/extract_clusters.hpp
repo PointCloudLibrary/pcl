@@ -48,12 +48,11 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
                                unsigned int min_pts_per_cluster,
                                unsigned int max_pts_per_cluster)
 {
-  auto noop = [&](int i, int j, const Indices& nn_indices) {
+  auto extract_all = [&](int i, int j, const Indices& nn_indices) {
     utils::ignore(i, j, nn_indices);
     return true;
   };
-  Indices indices;
-  pcl::extractEuclideanClusters<PointT, decltype(noop)>(cloud, indices, noop, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
+  pcl::extractEuclideanClusters<PointT>(cloud, extract_all, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,11 +68,11 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
   if (indices.empty())
     return;
 
-  auto noop = [&](index_t i, index_t j, const Indices& nn_indices) {
+  auto extract_all = [&](index_t i, index_t j, const Indices& nn_indices) {
     utils::ignore(i, j, nn_indices);
     return true;
   };
-  pcl::extractEuclideanClusters(cloud, indices, noop, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
+  pcl::extractEuclideanClusters(cloud, indices, extract_all, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
