@@ -62,16 +62,20 @@ pcl::extractEuclideanClusters (
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
-  auto lambda = [&](int &i) {
-    if (processed[i])
+
+
+  auto it = indices.empty() ? ConstCloudIterator<PointT>(cloud) : ConstCloudIterator<PointT>(cloud, indices);
+
+  for (; it.isValid(); ++it) {
+    if (processed[it.getCurrentIndex()])
       return;
 
     int sq_idx = 0;
     clusters.emplace_back();
     auto seed_queue = clusters.back();
-    seed_queue.indices.push_back (i);
+    seed_queue.indices.push_back (it.getCurrentIndex());
 
-    processed[i] = true;
+    processed[it.getCurrentIndex()] = true;
 
     while (sq_idx < static_cast<int> (seed_queue.indices.size()))
     {
@@ -84,10 +88,10 @@ pcl::extractEuclideanClusters (
 
       for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)             // can't assume sorted (default isn't!)
       {
-        if (nn_indices[j] == -1 || processed[nn_indices[j]])        // Has this point been processed before ?
+        if (processed[nn_indices[j]])        // Has this point been processed before ?
           continue;
 
-        if (filter(i, j, nn_indices)) {
+        if (filter(it.getCurrentIndex(), j, nn_indices)) {
           seed_queue.indices.push_back(nn_indices[j]);
           processed[nn_indices[j]] = true;
         }
@@ -101,12 +105,7 @@ pcl::extractEuclideanClusters (
       seed_queue.header = cloud.header;
     else
       clusters.pop_back();
-  };
-
-  if (indices.size() == 1 && indices.front() == - 1)
-    for (int i = 0; i < static_cast<int> (cloud.points.size ()); ++i) lambda(i);
-  else
-    for (const int &index : indices) lambda(index);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
