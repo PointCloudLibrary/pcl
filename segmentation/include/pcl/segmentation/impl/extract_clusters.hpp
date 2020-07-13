@@ -54,6 +54,15 @@ pcl::extractEuclideanClusters (
     PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
     return;
   }
+
+  // \note If the tree was created over <cloud, indices>, we guarantee a 1-1 mapping between what the tree returns
+  //and indices[i]
+  if (!indices.empty() and tree->getIndices ()->size () != indices.size ())
+  {
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of indices (%lu) than the input set (%lu)!\n", tree->getIndices ()->size (), indices.size ());
+    return;
+  }
+
   // Check if the tree is sorted -- if it is we don't need to check the first element
   index_t nn_start_idx = tree->getSortedResults () ? 1 : 0;
   // Create a bool vector of processed point indices, and initialize it to false
@@ -133,14 +142,6 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
                                unsigned int min_pts_per_cluster,
                                unsigned int max_pts_per_cluster)
 {
-  // \note If the tree was created over <cloud, indices>, we guarantee a 1-1 mapping between what the tree returns
-  //and indices[i]
-  if (tree->getIndices ()->size () != indices.size ())
-  {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of indices (%lu) than the input set (%lu)!\n", tree->getIndices ()->size (), indices.size ());
-    return;
-  }
-
   if (indices.empty())
     return;
 

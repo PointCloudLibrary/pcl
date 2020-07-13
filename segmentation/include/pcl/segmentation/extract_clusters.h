@@ -109,11 +109,6 @@ namespace pcl
       unsigned int min_pts_per_cluster = 1,
       unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ())
   {
-    if (tree->getInputCloud ()->points.size () != cloud.points.size ())
-    {
-      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
-      return;
-    }
     if (cloud.points.size () != normals.points.size ())
     {
       PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%lu) different than normals (%lu)!\n", cloud.points.size (), normals.points.size ());
@@ -157,18 +152,6 @@ namespace pcl
       unsigned int min_pts_per_cluster = 1,
       unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ())
   {
-    // \note If the tree was created over <cloud, indices>, we guarantee a 1-1 mapping between what the tree returns
-    //and indices[i]
-    if (tree->getInputCloud ()->points.size () != cloud.points.size ())
-    {
-      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
-      return;
-    }
-    if (tree->getIndices ()->size () != indices.size ())
-    {
-      PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of indices (%lu) than the input set (%lu)!\n", tree->getIndices ()->size (), indices.size ());
-      return;
-    }
     if (cloud.points.size () != normals.points.size ())
     {
       PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%lu) different than normals (%lu)!\n", cloud.points.size (), normals.points.size ());
