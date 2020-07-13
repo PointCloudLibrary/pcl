@@ -371,7 +371,7 @@ processInputData ()
 	//gaussian_kernel << 16.f/1600.f,  32.f/1600.f,  64.f/1600.f, 128.f/1600.f, 256.f/1600.f, 128.f/1600.f,  64.f/1600.f,  32.f/1600.f,  16.f/1600.f;
   gaussian_kernel << kernel_values[0], kernel_values[1], kernel_values[2], kernel_values[3], kernel_values[4], kernel_values[5], kernel_values[6];
 
-  printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 
   pcl::PointCloud<pcl::RGB>::Ptr rgb_input_ (new pcl::PointCloud<pcl::RGB>());
@@ -393,7 +393,7 @@ processInputData ()
     }
   }
 
-  printf("2 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("2 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 
 	convolution.setInputCloud (rgb_input_);
@@ -401,19 +401,19 @@ processInputData ()
 
   convolution.convolve (*smoothed_input_);
 
-  printf("3 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("3 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 
   // extract color gradients
   computeMaxColorGradientsSobel (smoothed_input_);
 
-  printf("4 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("4 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 
   // filter quantized gradients to get only dominants one + thresholding
   filterQuantizedColorGradients ();
 
-  printf("6 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("6 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 
   // spread filtered quantized gradients
@@ -422,7 +422,7 @@ processInputData ()
                                          spreaded_filtered_quantized_color_gradients_, 
                                          spreading_size_);
 
-  printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 }
 

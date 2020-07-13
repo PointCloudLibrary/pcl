@@ -959,7 +959,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 #endif
   }
 
-  printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
   // create linearized maps
   const size_t step_size = 8;
@@ -1049,7 +1049,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 #endif
   }
 
-  printf("2 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("2 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 
   // compute scores for templates
@@ -1431,7 +1431,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
     #endif
   } // #pragma omp parallel
 
-  printf("3 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("3 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 
   // release data
@@ -1453,7 +1453,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 #endif
     }
   }
-  printf("4 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("4 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 }
 
