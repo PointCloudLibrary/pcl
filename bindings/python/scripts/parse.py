@@ -116,7 +116,7 @@ def get_compilation_commands(compilation_database_path, filename):
     return list(compilation_commands[0].arguments)[1:-1]
 
 
-def parse_source(source, compilation_database_path=None):
+def parse_file(source, compilation_database_path=None):
     index = clang.Index.create()
 
     # Is this check needed?
@@ -147,7 +147,7 @@ def main():
     for source in args.files:
         source = utils.get_realpath(path=source)
 
-        parsed_info = parse_source(source, args.compilation_database_path)
+        parsed_info = parse_file(source, args.compilation_database_path)
 
         output_filepath = utils.get_json_output_path(
             source=source, output_dir=utils.join_path(args.json_output_path, "json"),
