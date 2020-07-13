@@ -123,7 +123,8 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
                                unsigned int min_pts_per_cluster,
                                unsigned int max_pts_per_cluster)
 {
-  auto noop = [&](__attribute__((unused)) int i, __attribute__((unused)) int j, __attribute__((unused)) const Indices& nn_indices) {
+  auto noop = [&](int i, int j, const Indices& nn_indices) {
+    utils::ignore(i, j, nn_indices);
     return true;
   };
   Indices indices;
@@ -143,7 +144,8 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
   if (indices.empty())
     return;
 
-  auto noop = [&](__attribute__((unused)) index_t i, __attribute__((unused)) index_t j, __attribute__((unused)) const Indices& nn_indices) {
+  auto noop = [&](index_t i, index_t j, const Indices& nn_indices) {
+    utils::ignore(i, j, nn_indices);
     return true;
   };
   pcl::extractEuclideanClusters(cloud, indices, noop, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);

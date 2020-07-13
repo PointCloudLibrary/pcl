@@ -41,6 +41,7 @@
 
 #include <pcl/pcl_base.h>
 
+#include <pcl/common/utils.h>
 #include <pcl/search/pcl_search.h>
 
 namespace pcl
