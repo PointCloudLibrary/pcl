@@ -68,11 +68,6 @@ pcl::extractEuclideanClusters (
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.points.size (), false);
 
-  Indices nn_indices;
-  std::vector<float> nn_distances;
-  // Process all points in the indices vector
-
-
   auto it = indices.empty() ? ConstCloudIterator<PointT>(cloud) : ConstCloudIterator<PointT>(cloud, indices);
 
   for (; it.isValid(); ++it) {
@@ -88,6 +83,9 @@ pcl::extractEuclideanClusters (
 
     while (sq_idx < static_cast<index_t> (seed_queue.indices.size()))
     {
+      Indices nn_indices;
+      std::vector<float> nn_distances;
+
       // Search for sq_idx
       if (!tree->radiusSearch (seed_queue.indices[sq_idx], tolerance, nn_indices, nn_distances))
       {
@@ -95,9 +93,9 @@ pcl::extractEuclideanClusters (
         continue;
       }
 
-      for (std::size_t j = nn_start_idx; j < nn_indices.size (); ++j)             // can't assume sorted (default isn't!)
+      for (index_t j = nn_start_idx; j < nn_indices.size (); ++j) // can't assume sorted (default isn't!)
       {
-        if (processed[nn_indices[j]])        // Has this point been processed before ?
+        if (processed[nn_indices[j]]) // Has this point been processed before ?
           continue;
 
         if (additional_filter_criteria(it.getCurrentIndex(), j, nn_indices)) {
@@ -145,7 +143,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
   if (indices.empty())
     return;
 
-  auto noop = [&](__attribute__((unused)) int i, __attribute__((unused)) int j, __attribute__((unused)) const Indices& nn_indices) {
+  auto noop = [&](__attribute__((unused)) index_t i, __attribute__((unused)) index_t j, __attribute__((unused)) const Indices& nn_indices) {
     return true;
   };
   pcl::extractEuclideanClusters(cloud, indices, noop, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);

@@ -85,7 +85,7 @@ namespace pcl
   extractEuclideanClusters (
       const PointCloud<PointT> &cloud, const Indices &indices,
       const typename search::Search<PointT>::Ptr &tree, float tolerance, std::vector<PointIndices> &clusters,
-      unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
+      unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = std::numeric_limits<int>::max());
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the euclidean distance between points, and the normal
@@ -115,18 +115,14 @@ namespace pcl
       return;
     }
 
-    auto lambda = [&](int i, int j, const Indices& nn_indices) -> bool {
-      //processed[nn_indices[j]] = true;
-      // [-1;1]
+    auto additional_filter_criteria = [&](index_t i, index_t j, const Indices& nn_indices) -> bool {
       double dot_p = normals[i].normal[0] * normals[nn_indices[j]].normal[0] +
                      normals[i].normal[1] * normals[nn_indices[j]].normal[1] +
                      normals[i].normal[2] * normals[nn_indices[j]].normal[2];
       return std::acos (std::abs (dot_p)) < eps_angle;
     };
-
     Indices indices;
-
-    pcl::extractEuclideanClusters(cloud, indices, lambda, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
+    pcl::extractEuclideanClusters(cloud, indices, additional_filter_criteria, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
   }
 
 
@@ -162,12 +158,7 @@ namespace pcl
     if (indices.empty())
       return;
 
-    // Create a bool vector of processed point indices, and initialize it to false
-    std::vector<bool> processed (cloud.points.size (), false);
-
-    auto lambda = [&](int &i, int &j, Indices& nn_indices) -> bool {
-      //processed[nn_indices[j]] = true;
-      // [-1;1]
+    auto additional_filter_criteria = [&](index_t i, index_t j, Indices& nn_indices) -> bool {
       double dot_p =
           normals[indices[i]].normal[0] * normals[indices[nn_indices[j]]].normal[0] +
           normals[indices[i]].normal[1] * normals[indices[nn_indices[j]]].normal[1] +
@@ -175,7 +166,7 @@ namespace pcl
       return std::acos (std::abs (dot_p)) < eps_angle;
     };
 
-    pcl::extractEuclideanClusters(cloud, indices, lambda, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
+    pcl::extractEuclideanClusters(cloud, indices, additional_filter_criteria, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
