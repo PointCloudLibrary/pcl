@@ -47,10 +47,10 @@ namespace pcl
 {
   template <typename PointT, typename FunctorT> void
   extractEuclideanClusters (
-      const PointCloud<PointT> &cloud, const std::vector<int> &indices,
+      const PointCloud<PointT> &cloud, const Indices &indices,
       FunctorT filter, const typename search::Search<PointT>::Ptr &tree,
       float tolerance, std::vector<PointIndices> &clusters,
-      unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
+      unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = std::numeric_limits<int>::max());
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the Euclidean distance between points
@@ -83,7 +83,7 @@ namespace pcl
     */
   template <typename PointT> void 
   extractEuclideanClusters (
-      const PointCloud<PointT> &cloud, const std::vector<int> &indices,
+      const PointCloud<PointT> &cloud, const Indices &indices,
       const typename search::Search<PointT>::Ptr &tree, float tolerance, std::vector<PointIndices> &clusters,
       unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ());
 
@@ -119,7 +119,7 @@ namespace pcl
       PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%lu) different than normals (%lu)!\n", cloud.points.size (), normals.points.size ());
       return;
     }
-    auto lambda = [&](int &i, int &j, std::vector<int>& nn_indices) -> bool {
+    auto lambda = [&](int i, int j, const Indices& nn_indices) -> bool {
       //processed[nn_indices[j]] = true;
       // [-1;1]
       double dot_p = normals.points[i].normal[0] * normals.points[nn_indices[j]].normal[0] +
@@ -128,7 +128,7 @@ namespace pcl
       return std::acos (std::abs (dot_p)) < eps_angle;
     };
 
-    std::vector<int> indices{-1};
+    std::vector<Indices> indices;
 
     pcl::extractEuclideanClusters(cloud, indices, lambda, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
   }
@@ -152,7 +152,7 @@ namespace pcl
   template <typename PointT, typename Normal> 
   void extractEuclideanClusters (
       const PointCloud<PointT> &cloud, const PointCloud<Normal> &normals,
-      const std::vector<int> &indices, const typename KdTree<PointT>::Ptr &tree,
+      const Indices &indices, const typename KdTree<PointT>::Ptr &tree,
       float tolerance, std::vector<PointIndices> &clusters, double eps_angle,
       unsigned int min_pts_per_cluster = 1,
       unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ())
@@ -174,10 +174,14 @@ namespace pcl
       PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%lu) different than normals (%lu)!\n", cloud.points.size (), normals.points.size ());
       return;
     }
+
+    if (indices.empty())
+      return;
+
     // Create a bool vector of processed point indices, and initialize it to false
     std::vector<bool> processed (cloud.points.size (), false);
 
-    auto lambda = [&](int &i, int &j, std::vector<int>& nn_indices) -> bool {
+    auto lambda = [&](int &i, int &j, Indices& nn_indices) -> bool {
       //processed[nn_indices[j]] = true;
       // [-1;1]
       double dot_p =

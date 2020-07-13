@@ -43,7 +43,7 @@
 template <typename PointT, typename FunctorT> void
 pcl::extractEuclideanClusters (
     const PointCloud<PointT> &cloud,
-    const std::vector<int> &indices,
+    const Indices &indices,
     FunctorT filter,
     const typename search::Search<PointT>::Ptr &tree,
     float tolerance, std::vector<PointIndices> &clusters,
@@ -59,7 +59,7 @@ pcl::extractEuclideanClusters (
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.points.size (), false);
 
-  std::vector<int> nn_indices;
+  Indices nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
 
@@ -116,8 +116,10 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
                                unsigned int min_pts_per_cluster,
                                unsigned int max_pts_per_cluster)
 {
-  const auto noop = []{};
-  std::vector<int> indices{-1};
+  auto noop = [&](__attribute__((unused)) int i, __attribute__((unused)) int j, __attribute__((unused)) const Indices& nn_indices) {
+    return true;
+  };
+  Indices indices;
   pcl::extractEuclideanClusters<PointT, decltype(noop)>(cloud, indices, noop, tree, clusters, min_pts_per_cluster, max_pts_per_cluster);
 }
 
@@ -125,7 +127,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 /** @todo: fix the return value, make sure the exit is not needed anymore*/
 template <typename PointT> void
 pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
-                               const std::vector<int> &indices,
+                               const Indices &indices,
                                const typename search::Search<PointT>::Ptr &tree,
                                float tolerance, std::vector<PointIndices> &clusters,
                                unsigned int min_pts_per_cluster,
@@ -139,7 +141,12 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
     return;
   }
 
-  const auto noop = [](){};
+  if (indices.empty())
+    return;
+
+  auto noop = [&](__attribute__((unused)) int i, __attribute__((unused)) int j, __attribute__((unused)) const Indices& nn_indices) {
+    return true;
+  };
   pcl::extractEuclideanClusters(cloud, indices, noop, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
 }
 
@@ -182,6 +189,6 @@ pcl::EuclideanClusterExtraction<PointT>::extract (std::vector<PointIndices> &clu
 
 #define PCL_INSTANTIATE_EuclideanClusterExtraction(T) template class PCL_EXPORTS pcl::EuclideanClusterExtraction<T>;
 #define PCL_INSTANTIATE_extractEuclideanClusters(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
-#define PCL_INSTANTIATE_extractEuclideanClusters_indices(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const std::vector<int> &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
+#define PCL_INSTANTIATE_extractEuclideanClusters_indices(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const Indices &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
 
 #endif        // PCL_EXTRACT_CLUSTERS_IMPL_H_
