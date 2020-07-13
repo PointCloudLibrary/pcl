@@ -129,7 +129,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
     return true;
   };
   Indices indices;
-  pcl::extractEuclideanClusters<PointT, decltype(noop)>(cloud, indices, noop, tree, clusters, min_pts_per_cluster, max_pts_per_cluster);
+  pcl::extractEuclideanClusters<PointT, decltype(noop)>(cloud, indices, noop, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

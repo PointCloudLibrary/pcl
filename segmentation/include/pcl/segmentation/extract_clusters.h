@@ -124,7 +124,7 @@ namespace pcl
       return std::acos (std::abs (dot_p)) < eps_angle;
     };
 
-    std::vector<Indices> indices;
+    Indices indices;
 
     pcl::extractEuclideanClusters(cloud, indices, lambda, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
   }
