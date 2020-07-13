@@ -207,10 +207,7 @@ class DummySearch : public pcl::search::Search<PointT>
     virtual int radiusSearch (const PointT& point, double radius, std::vector<int>& k_indices,
                               std::vector<float>& k_sqr_distances, unsigned int max_nn = 0 ) const
     {
-      pcl::utils::ignore(point);
-      pcl::utils::ignore(radius);
-      pcl::utils::ignore(k_indices);
-      pcl::utils::ignore(k_sqr_distances);
+      pcl::utils::ignore(point, radius, k_indices, k_sqr_distances);
 
       return max_nn;
     }

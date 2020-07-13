@@ -631,10 +631,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (std::size_t idx,
 
   return (true);
 #else
-  pcl::utils::ignore(idx);
-  pcl::utils::ignore(blob);
-  pcl::utils::ignore(origin);
-  pcl::utils::ignore(orientation);
+  pcl::utils::ignore(idx, blob, origin, orientation);
   PCL_ERROR ("[pcl::ImageGrabber::loadNextCloudVTK] Attempted to read image files, but PCL was not built with VTK [no -DPCL_BUILT_WITH_VTK]. \n");
   return false;
 #endif //PCL_BUILT_WITH_VTK
