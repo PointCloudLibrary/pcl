@@ -519,12 +519,12 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
   refineDetectionsAlongDepth ();
   //applyprojectivedepthicpondetections();
 
+  // remove overlaps
+  removeOverlappingDetections ();
+
   // sort the detections
   std::sort(detections_.begin(), detections_.end(), [](const typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & a,
                                                        const typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & b) -> bool { return a.response > b.response; });
-
-  // remove overlaps
-  removeOverlappingDetections ();
 
   for (size_t detection_index = 0; detection_index < detections_.size (); ++detection_index)
   {
@@ -624,11 +624,12 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
   //refineDetectionsAlongDepth ();
   //applyProjectiveDepthICPOnDetections();
 
+  // remove overlaps
+  removeOverlappingDetections ();
+
   // sort the detections
   std::sort(detections_.begin(), detections_.end(), [](const typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & a,
                                                        const typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & b) -> bool { return a.response > b.response; });
-  // remove overlaps
-  removeOverlappingDetections ();
 
   for (size_t detection_index = 0; detection_index < detections_.size (); ++detection_index)
   {
@@ -851,6 +852,11 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
 {
   // compute overlap between each detection
   const size_t nr_detections = detections_.size ();
+
+  // compute detection representatives for every cluster
+  std::vector<typename LineRGBD<PointXYZT, PointRGBT>::Detection> clustered_detections;
+
+  /*
   Eigen::MatrixXf overlaps (nr_detections, nr_detections);
   for (size_t detection_index_1 = 0; detection_index_1 < nr_detections; ++detection_index_1)
   {
@@ -904,14 +910,32 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
     clusters.push_back (cluster);
   }
 
-  // compute detection representatives for every cluster
-  std::vector<typename LineRGBD<PointXYZT, PointRGBT>::Detection> clustered_detections;
-
   const size_t nr_clusters = clusters.size ();
   for (size_t cluster_id = 0; cluster_id < nr_clusters; ++cluster_id)
   {
     std::vector<size_t> & cluster = clusters[cluster_id];
-    
+  */
+
+  typedef std::tuple<size_t, size_t, size_t, size_t, size_t> ClusteringKey;
+  std::map<ClusteringKey, std::vector<size_t>> clusters;
+  for (size_t detection_id = 0; detection_id < nr_detections; ++detection_id)
+  {
+    const ClusteringKey key = {
+      detections_[detection_id].object_id,
+      detections_[detection_id].region.x / clustering_threshold_,
+      detections_[detection_id].region.y / clustering_threshold_,
+      detections_[detection_id].region.width / clustering_threshold_,
+      detections_[detection_id].region.height / clustering_threshold_
+    };
+
+    clusters[key].push_back(detection_id);
+  }
+
+  size_t cluster_id;
+  std::map<ClusteringKey, std::vector<size_t>>::iterator it;
+  for (cluster_id = 0, it = clusters.begin(); it != clusters.end(); ++cluster_id, ++it)
+  {
+    const std::vector<size_t> & cluster = it->second;
     float average_center_x = 0.0f;
     float average_center_y = 0.0f;
     float average_center_z = 0.0f;

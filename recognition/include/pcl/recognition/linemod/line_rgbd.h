@@ -97,6 +97,7 @@ namespace pcl
       /** \brief Constructor */
       LineRGBD ()
         : intersection_volume_threshold_ (1.0f)
+        , clustering_threshold_ (1)
         , linemod_ ()
         , color_gradient_mod_ ()
         , surface_normal_mod_ ()
@@ -161,6 +162,12 @@ namespace pcl
       setIntersectionVolumeThreshold (const float threshold = 1.0f)
       {
         intersection_volume_threshold_ = threshold;
+      }
+
+      inline void
+      setClusteringThreshold (const size_t threshold = 1)
+      {
+        clustering_threshold_ = threshold;
       }
 
       /** \brief Sets the input cloud with xyz point coordinates. The cloud has to be organized. 
@@ -327,6 +334,7 @@ namespace pcl
 
       /** \brief Intersection volume threshold. */
       float intersection_volume_threshold_;
+      size_t clustering_threshold_;
 
       /** \brief LINEMOD instance. */
       public: pcl::LINEMOD linemod_;
