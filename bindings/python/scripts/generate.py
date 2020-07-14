@@ -11,11 +11,11 @@ class bind:
         self._skipped = []
         self.kind_functions = {
             "TRANSLATION_UNIT": [self.skip],
-            "NAMESPACE": [self.handle_namespace_0, self.handle_namespace_1],
+            "NAMESPACE": [self.handle_namespace_0], #self.handle_namespace_1],
             "NAMESPACE_REF": [self.skip],
-            "STRUCT_DECL": [self.handle_struct_decl_0, self.handle_struct_decl_1],
+            "STRUCT_DECL": [self.handle_struct_decl_0],# self.handle_struct_decl_1],
             "CXX_BASE_SPECIFIER": [self.skip],
-            "CXX_METHOD": [self.handle_cxx_method],
+            "CXX_METHOD": [self.skip],
             "VAR_DECL": [self.skip],
             "TYPE_REF": [self.skip],
             "CONSTRUCTOR": [self.handle_constructor],
@@ -26,7 +26,7 @@ class bind:
             "DECL_REF_EXPR": [self.skip],
             "FIELD_DECL": [self.handle_field_decl],
             "MEMBER_REF": [self.skip],
-            "CLASS_TEMPLATE": [self.handle_class_template_0, self.handle_class_template_1],
+            "CLASS_TEMPLATE": [self.handle_class_template_0],# self.handle_class_template_1],
             "TEMPLATE_NON_TYPE_PARAMETER": [self.skip],
             "FUNCTION_TEMPLATE": [self.skip],
         }
@@ -40,7 +40,23 @@ class bind:
         return
 
     def skip(self):
-        self._skipped.append({"line": self.item["line"], "column": self.item["line"], "kind": self.kind, "name": self.name})
+        self._skipped.append(
+            {
+                "line": self.item["line"],
+                "column": self.item["line"],
+                "kind": self.kind,
+                "name": self.name,
+            }
+        )
+
+    def close(self):
+        if self._state_stack[-1]["kind"] == "NAMESPACE":
+            self.linelist.append("}")
+        if self._state_stack[-1]["kind"] == "STRUCT_DECL":
+            self.linelist.append(";")
+        if self._state_stack[-1]["kind"] == "CLASS_TEMPLATE":
+            self.linelist.append(";")
+    
 
     def handle_node(self, item):
         self.item = item
@@ -49,7 +65,9 @@ class bind:
         self.members = self.item["members"]
         self.depth = self.item["depth"]
 
-        self._state_stack.append({"kind": self.kind, "name": self.name, "depth": self.depth})
+        self._state_stack.append(
+            {"kind": self.kind, "name": self.name, "depth": self.depth}
+        )
 
         self.kind_functions[self.kind][0]()
 
@@ -57,26 +75,35 @@ class bind:
             self.handle_node(sub_item)
 
         if len(self.kind_functions[self.kind]) > 1:
+            print("adf")
             self.kind_functions[self.kind][1]()
+
+        self.close()
 
         self._state_stack.pop()
 
     def handle_namespace_0(self):
         self.linelist.append(f"namespace {self.name}" + "{")
 
-    def handle_namespace_1(self):
-        self.linelist.append("}")
+    # def handle_namespace_1(self):
+    #     self.linelist.append("}")
 
     def handle_struct_decl_0(self):
-        cxx_base_specifier_list = [sub_item["name"] for sub_item in self.members if sub_item["kind"] == "CXX_BASE_SPECIFIER"]
+        cxx_base_specifier_list = [
+            sub_item["name"]
+            for sub_item in self.members
+            if sub_item["kind"] == "CXX_BASE_SPECIFIER"
+        ]
         if cxx_base_specifier_list:
             cxx_base_specifier_list = ",".join(cxx_base_specifier_list)
-            self.linelist.append(f'py::class_<{self.name, cxx_base_specifier_list}>(m, "{self.name}")')
+            self.linelist.append(
+                f'py::class_<{self.name}, {cxx_base_specifier_list}>(m, "{self.name}")'
+            )
         else:
             self.linelist.append(f'py::class_<{self.name}>(m, "{self.name}")')
 
-    def handle_struct_decl_1(self):
-        self.linelist.append(";")
+    # def handle_struct_decl_1(self):
+    #     self.linelist.append(";")
 
     def handle_cxx_method(self):
         prev_depth_node = self.get_prev_depth_node()
@@ -95,21 +122,27 @@ class bind:
                 if sub_item["element_type"] == "LValueReference":
                     for sub_sub_item in sub_item["members"]:
                         if sub_sub_item["kind"] == "TYPE_REF":
-                            argument_type_list.append(f'&{sub_sub_item["name"]}')
+                            argument_type_list.append(f'{sub_sub_item["name"]}')
                 else:
                     if sub_item["element_type"] in ["Float"]:
-                        argument_type_list.append(f'&{sub_item["element_type"].lower()}')
+                        argument_type_list.append(
+                            f'{sub_item["element_type"].lower()}'
+                        )
                     else:
                         argument_type_list.append(f'&{sub_item["element_type"]}')
         parameter_decl_list = ",".join([decl + "_a" for decl in parameter_decl_list])
         argument_type_list = ",".join(argument_type_list)
-        self.linelist.append(f".def(py::init<{argument_type_list}>(), {parameter_decl_list})")
+        self.linelist.append(
+            f".def(py::init<{argument_type_list}>())"#, {parameter_decl_list})"
+        )
 
     def handle_field_decl(self):
         prev_depth_node = self.get_prev_depth_node()
         if prev_depth_node:
             field_of = prev_depth_node["name"]
-            self.linelist.append(f'.def_readwrite("{self.name}", &{field_of}::{self.name})')
+            self.linelist.append(
+                f'.def_readwrite("{self.name}", &{field_of}::{self.name})'
+            )
         else:
             self.linelist.append(f'.def("{self.name}", &{self.name})')
 
@@ -117,14 +150,22 @@ class bind:
         flag = False
         for sub_item in self.members:
             if sub_item["kind"] == "TEMPLATE_NON_TYPE_PARAMETER":
-                self.linelist.append(f'template< {sub_item["element_type"].lower()} {sub_item["name"]} >')
+                self.linelist.append(
+                    f'template< {sub_item["element_type"].lower()} {sub_item["name"]} >'
+                )
                 flag = True
         if not flag:
             self.linelist.append(f"template<>")
-        cxx_base_specifier_list = [sub_item["name"] for sub_item in self.members if sub_item["kind"] == "CXX_BASE_SPECIFIER"]
+        cxx_base_specifier_list = [
+            sub_item["name"]
+            for sub_item in self.members
+            if sub_item["kind"] == "CXX_BASE_SPECIFIER"
+        ]
         if cxx_base_specifier_list:
             cxx_base_specifier_list = ",".join(cxx_base_specifier_list)
-            self.linelist.append(f'py::class_<{self.name, cxx_base_specifier_list}>(m, "{self.name}")')
+            self.linelist.append(
+                f'py::class_<{self.name, cxx_base_specifier_list}>(m, "{self.name}")'
+            )
         else:
             self.linelist.append(f'py::class_<{self.name}>(m, "{self.name}")')
 
@@ -141,7 +182,9 @@ class bind:
             if self.linelist[i].startswith("namespace"):
                 continue
             else:
-                self.linelist[i] = "".join((f"PYBIND11_MODULE({module_name}, m)", "{", self.linelist[i]))
+                self.linelist[i] = "".join(
+                    (f"PYBIND11_MODULE({module_name}, m)", "{", self.linelist[i])
+                )
                 break
         for line in self.linelist:
             final.append(line)
@@ -189,8 +232,13 @@ def main():
         header_info = read_json(source)
         if header_info:
             bind_object = bind(header_info[0])
-            lines_to_write = bind_object.handle_final(filename="pcl/point_types.h", module_name="pcl")
-            output_filepath = get_output_path(os.path.realpath(source), output_dir=f"pybind11/{os.path.dirname(__file__)}")
+            lines_to_write = bind_object.handle_final(
+                filename="pcl/point_types.h", module_name="pcl"
+            )
+            output_filepath = get_output_path(
+                os.path.realpath(source),
+                output_dir=f"pybind11/{os.path.dirname(__file__)}",
+            )
             write_to_cpp(filename=output_filepath, linelist=lines_to_write)
 
         else:
