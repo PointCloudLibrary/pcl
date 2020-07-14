@@ -12,7 +12,7 @@ Checking CUDA Version
 ---------------
 
 In order to run the code you will need a system with an Nvidia GPU, having CUDA Toolkit v9.2+ installed. 
-We will not be covering CUDA toolkit installation in this tutorial as there alredy exists many great tutorials for the same.
+We will not be covering CUDA toolkit installation in this tutorial as there already exists many great tutorials for the same.
 
 You can check your CUDA toolkit version using the following command::
 
