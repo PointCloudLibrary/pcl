@@ -243,7 +243,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
       // Check the distance threshold
       if (squared_distance [0] < squared_distance_threshold)
       {
-        if ((index_t) index [0] >= cloud_model_selected->size ())
+        if (static_cast<index_t>(index [0]) >= cloud_model_selected->size ())
         {
           std::cerr << "ERROR in icp.cpp: Segfault!\n";
           std::cerr << "  Trying to access index " << index [0] << " >= " << cloud_model_selected->size () << std::endl;

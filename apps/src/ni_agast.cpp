@@ -297,10 +297,8 @@ public:
         if (keypoints && !keypoints->empty()) {
           image_viewer_.removeLayer(getStrBool(keypts));
           for (const auto& pt : *keypoints) {
-            int u = int(pt.u);
-            int v = int(pt.v);
-            image_viewer_.markPoint(u,
-                                    v,
+            image_viewer_.markPoint(int(pt.u),
+                                    int(pt.v),
                                     visualization::red_color,
                                     visualization::blue_color,
                                     10,

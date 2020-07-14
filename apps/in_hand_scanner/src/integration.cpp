@@ -213,9 +213,8 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
   // Nearest neighbor search
   CloudXYZPtr xyz_model (new CloudXYZ ());
   xyz_model->reserve (static_cast<index_t>(mesh_model->sizeVertices ()));
-  for (const auto& point : mesh_model->getVertexDataCloud ())
+  for (const auto& pt : mesh_model->getVertexDataCloud ())
   {
-    const PointIHS& pt = point;
     xyz_model->push_back (PointXYZ (pt.x, pt.y, pt.z));
   }
   kd_tree_->setInputCloud (xyz_model);

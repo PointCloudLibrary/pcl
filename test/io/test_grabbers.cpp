@@ -9,10 +9,10 @@
 #include <thread>
 #include <vector>
 
-using namespace pcl;
 using namespace std;
 using namespace std::chrono_literals;
 
+using pcl::index_t;
 using PointT = pcl::PointXYZRGBA;
 using CloudT = pcl::PointCloud<PointT>;
 

@@ -52,7 +52,7 @@ template <typename PointT> void
 expandColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
                const PointT& val, const index_t& amount)
 {
-  if (amount = 0)
+  if (amount == 0)
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::common::expandColumns] error: amount must be ]0.."
                          << (input.width/2) << "] !");
@@ -92,7 +92,7 @@ template <typename PointT> void
 expandRows (const PointCloud<PointT>& input, PointCloud<PointT>& output,
             const PointT& val, const index_t& amount)
 {
-  if (amount = 0)
+  if (amount == 0)
     PCL_THROW_EXCEPTION (InitFailedException,
                          "[pcl::common::expandRows] error: amount must be ]0.."
                          << (input.height/2) << "] !");
@@ -130,8 +130,8 @@ duplicateColumns (const PointCloud<PointT>& input, PointCloud<PointT>& output,
                          "[pcl::common::duplicateColumns] error: "
                          << "columns expansion requires organised point cloud");
 
-  auto old_height = input.height;
-  auto old_width = input.width;
+  index_t old_height = input.height;
+  index_t old_width = input.width;
   index_t new_width = old_width + 2*amount;
   if (&input != &output)
     output = input;

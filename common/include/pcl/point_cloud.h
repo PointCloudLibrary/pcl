@@ -173,8 +173,6 @@ namespace pcl
     *
     *   - \b sensor_origin_ - specifies the sensor acquisition pose (origin/translation). \a Optional.
     *   - \b sensor_orientation_ - specifies the sensor acquisition pose (rotation). \a Optional.
-    *
-    * \todo: remove casting of the return value of size() to index_t
     * 
     * \author Patrick Mihelich, Radu B. Rusu
     */
@@ -239,10 +237,9 @@ namespace pcl
       #endif
       PCL_DEPRECATED(1, 13, "use  constructor that accepts index_t parameters instead")  
       PointCloud (std::uint32_t width_, std::uint32_t height_, const PointT& value_ = PointT ())
-        : points (static_cast<index_t>(width_ * height_), value_)
-        , width (static_cast<index_t>(width_))
-        , height (static_cast<index_t>(height_))
-      {}
+      {
+        PointCloud (static_cast<index_t>(width_), static_cast<index_t>(height_), value_);
+      }
 
       //TODO: check if copy/move contructors/assignment operators are needed
 
@@ -570,7 +567,7 @@ namespace pcl
       push_back (const PointT& pt)
       {
         points.push_back (pt);
-        width = static_cast<index_t> (size ());
+        width = size ();
         height = 1;
       }
 
@@ -583,7 +580,7 @@ namespace pcl
       emplace_back (Args&& ...args)
       {
         points.emplace_back (std::forward<Args> (args)...);
-        width = static_cast<index_t> (size ());
+        width = size ();
         height = 1;
         return points.back();
       }
@@ -598,7 +595,7 @@ namespace pcl
       insert (iterator position, const PointT& pt)
       {
         iterator it = points.insert (position, pt);
-        width = static_cast<index_t> (size ());
+        width = size ();
         height = 1;
         return (it);
       }
@@ -641,7 +638,7 @@ namespace pcl
       insert (iterator position, InputIterator first, InputIterator last)
       {
         points.insert (position, first, last);
-        width = static_cast<index_t> (size ());
+        width = size ();
         height = 1;
       }
 
@@ -655,7 +652,7 @@ namespace pcl
       emplace (iterator position, Args&& ...args)
       {
         iterator it = points.emplace (position, std::forward<Args> (args)...);
-        width = static_cast<index_t> (size ());
+        width = size ();
         height = 1;
         return (it);
       }
@@ -669,7 +666,7 @@ namespace pcl
       erase (iterator position)
       {
         iterator it = points.erase (position);
-        width = static_cast<index_t> (size ());
+        width = size ();
         height = 1;
         return (it);
       }
@@ -684,7 +681,7 @@ namespace pcl
       erase (iterator first, iterator last)
       {
         iterator it = points.erase (first, last);
-        width = static_cast<index_t> (size ());
+        width = size ();
         height = 1;
         return (it);
       }

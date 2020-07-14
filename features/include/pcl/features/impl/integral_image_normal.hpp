@@ -739,8 +739,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   unsigned char * depthChangeMap = new unsigned char[input_->points.size ()];
   memset (depthChangeMap, 255, input_->points.size ());
 
-  index_t index = 0;
-  for (index_t ri = 0; ri < input_->height-1; ++ri)
+  for (index_t index = 0, ri = 0; ri < input_->height-1; ++ri)
   {
     for (index_t ci = 0; ci < input_->width-1; ++ci, ++index)
     {
@@ -847,7 +846,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     // top and bottom borders
     // That sets the output density to false!
     output.is_dense = false;
-    index_t border = int(normal_smoothing_size_);
+    index_t border = normal_smoothing_size_;
     PointOutT* vec1 = &output [0];
     PointOutT* vec2 = vec1 + input_->width * (input_->height - border);
 

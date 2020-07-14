@@ -246,7 +246,7 @@ LZFRGB24ImageReader::read (
     pt.g = color_g[rgb_idx];
     pt.r = color_r[rgb_idx];
 
-    rgb_idx++;
+    ++rgb_idx;
   }
   return (true);
 }

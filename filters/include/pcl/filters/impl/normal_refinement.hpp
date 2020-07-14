@@ -67,7 +67,7 @@ pcl::NormalRefinement<NormalT>::applyFilter (PointCloud &output)
 
   // Check that correspondences are OK
   const unsigned int size = k_indices_.size ();
-  if (k_sqr_distances_.size () != size || static_cast<unsigned int>(input_->size ()) != size)
+  if (k_sqr_distances_.size () != size || static_cast<uindex_t>(input_->size ()) != size)
   {
     PCL_ERROR ("[pcl::%s::applyFilter] Inconsistency between size of correspondence indices/distances or input! Returning original input.\n",
                getClassName ().c_str ());

@@ -228,7 +228,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
 
   output.is_dense = true;
 
-	for (index_t point_index = 0; point_index < static_cast<index_t>(indices_->size ()); point_index++)
+  for (index_t point_index = 0; point_index < static_cast<index_t>(indices_->size ()); point_index++)
   {
     //output[point_index].descriptor.resize (descriptor_length_);
 

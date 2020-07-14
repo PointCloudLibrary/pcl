@@ -168,10 +168,8 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
     float max_z = -std::numeric_limits<float>::max ();
 
     index_t counter = 0;
-    for (const auto& pt : template_point_cloud)
+    for (const auto& p : template_point_cloud)
     {
-      const PointXYZRGBA & p = pt;
-
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
 
@@ -201,18 +199,14 @@ LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name, con
     bb.y = (min_y + bb.height / 2.0f) - center_y - bb.height / 2.0f;
     bb.z = (min_z + bb.depth / 2.0f) - center_z - bb.depth / 2.0f;
 
-    for (auto& pt : template_point_cloud)
+    for (auto& p : template_point_cloud)
     {
-      PointXYZRGBA p = pt;
-
       if (!std::isfinite (p.x) || !std::isfinite (p.y) || !std::isfinite (p.z))
         continue;
 
       p.x -= center_x;
       p.y -= center_y;
       p.z -= center_z;
-
-      pt = p;
     }
   }
 
@@ -433,10 +427,10 @@ LineRGBD<PointXYZT, PointRGBT>::detect (
 
     const index_t start_x = std::max (linemod_detection.x, 0);
     const index_t start_y = std::max (linemod_detection.y, 0);
-    const index_t end_x = std::min (static_cast<std::size_t> (start_x + linemod_template.region.width),
-                                   static_cast<std::size_t> (cloud_xyz_->width));
-    const index_t end_y = std::min (static_cast<std::size_t> (start_y + linemod_template.region.height),
-                                   static_cast<std::size_t> (cloud_xyz_->height));
+    const index_t end_x = std::min (static_cast<index_t> (start_x + linemod_template.region.width),
+                                   cloud_xyz_->width);
+    const index_t end_y = std::min (static_cast<index_t> (start_y + linemod_template.region.height),
+                                   cloud_xyz_->height);
 
     detection.region.x = linemod_detection.x;
     detection.region.y = linemod_detection.y;
@@ -534,10 +528,10 @@ LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
 
     const std::size_t start_x = std::max (linemod_detection.x, 0);
     const std::size_t start_y = std::max (linemod_detection.y, 0);
-    const std::size_t end_x = std::min (static_cast<std::size_t> (start_x + linemod_template.region.width * linemod_detection.scale),
-                                   static_cast<std::size_t> (cloud_xyz_->width));
-    const std::size_t end_y = std::min (static_cast<std::size_t> (start_y + linemod_template.region.height * linemod_detection.scale),
-                                   static_cast<std::size_t> (cloud_xyz_->height));
+    const std::size_t end_x = std::min (static_cast<index_t> (start_x + linemod_template.region.width * linemod_detection.scale),
+                                   cloud_xyz_->width);
+    const std::size_t end_y = std::min (static_cast<index_t> (start_y + linemod_template.region.height * linemod_detection.scale),
+                                   cloud_xyz_->height);
 
     detection.region.x = linemod_detection.x;
     detection.region.y = linemod_detection.y;
@@ -656,9 +650,9 @@ LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
     const index_t start_x = std::max (detection.region.x, 0);
     const index_t start_y = std::max (detection.region.y, 0);
     const index_t end_x = std::min (static_cast<index_t> (detection.region.x + detection.region.width),
-                                   static_cast<index_t> (cloud_xyz_->width));
+                                   cloud_xyz_->width);
     const index_t end_y = std::min (static_cast<index_t> (detection.region.y + detection.region.height),
-                                   static_cast<index_t> (cloud_xyz_->height));
+                                   cloud_xyz_->height);
 
 
     float min_depth = std::numeric_limits<float>::max ();
