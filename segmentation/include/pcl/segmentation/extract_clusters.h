@@ -47,6 +47,21 @@
 namespace pcl
 {
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/** \brief Decompose a region of space into clusters based on the Euclidean distance between points
+  * \param it cloud iterator for iterating over the points
+  * \param cloud the point cloud message
+  * \param additional_filter_criteria functor which is used as an additonal criteria that all points being added to the cluster must satisfy
+  * \param tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching
+  * \note the tree has to be created as a spatial locator on \a cloud and \a indices
+  * \param tolerance the spatial cluster tolerance as a measure in L2 Euclidean space
+  * \param clusters the resultant clusters containing point indices (as a vector of PointIndices)
+  * \param min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
+  * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
+  * \warning It is assumed that that the tree built on the same indices and cloud as passed here,
+  * if that is not the case then things can go very wrong. For speed reasons, we only check the sizes and not the content
+  * \ingroup segmentation
+  */
   template <typename PointT, typename FunctorT> void
    extractEuclideanClusters(
       ConstCloudIterator<PointT> &it, const PointCloud<PointT> &cloud, FunctorT additional_filter_criteria,
@@ -109,6 +124,20 @@ namespace pcl
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Decompose a region of space into clusters based on the Euclidean distance between points
+    * \param cloud the point cloud message
+    * \param additional_filter_criteria functor which is used as an additonal criteria that all points being added to the cluster must satisfy
+    * \param tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching
+    * \note the tree has to be created as a spatial locator on \a cloud and \a indices
+    * \param tolerance the spatial cluster tolerance as a measure in L2 Euclidean space
+    * \param clusters the resultant clusters containing point indices (as a vector of PointIndices)
+    * \param min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
+    * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
+    * \warning It is assumed that that the tree built on the same indices and cloud as passed here,
+    * if that is not the case then things can go very wrong. For speed reasons, we only check the sizes and not the content
+    * \ingroup segmentation
+    */
   template <typename PointT, typename FunctorT> void
   extractEuclideanClusters (
       const PointCloud<PointT> &cloud,
@@ -120,6 +149,21 @@ namespace pcl
     extractEuclideanClusters(it, cloud, additional_filter_criteria, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief Decompose a region of space into clusters based on the Euclidean distance between points
+    * \param cloud the point cloud message
+    * \param indices a list of point indices to use from \a cloud
+    * \param additional_filter_criteria functor which is used as an additonal criteria that all points being added to the cluster must satisfy
+    * \param tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching
+    * \note the tree has to be created as a spatial locator on \a cloud and \a indices
+    * \param tolerance the spatial cluster tolerance as a measure in L2 Euclidean space
+    * \param clusters the resultant clusters containing point indices (as a vector of PointIndices)
+    * \param min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
+    * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
+    * \warning It is assumed that that the tree built on the same indices and cloud as passed here,
+    * if that is not the case then things can go very wrong. For speed reasons, we only check the sizes and not the content
+    * \ingroup segmentation
+    */
   template <typename PointT, typename FunctorT> void
   extractEuclideanClusters (
       const PointCloud<PointT> &cloud, const Indices &indices,
@@ -202,6 +246,7 @@ namespace pcl
       return;
     }
 
+    eps_angle = std::max(std::abs(eps_angle), M_PI);
     auto cos_eps_angle = std::cos(eps_angle);
     auto normal_deviation_filter = [&](index_t i, index_t j, const Indices& nn_indices) -> bool {
       double dot_p = normals[i].getNormalVector3fMap().dot(normals[nn_indices[j]].getNormalVector3fMap());
@@ -243,6 +288,7 @@ namespace pcl
     if (indices.empty())
       return;
 
+    eps_angle = std::max(std::abs(eps_angle), M_PI);
     auto cos_eps_angle = std::cos(eps_angle);
     auto normal_deviation_filter = [&](index_t i, index_t j, Indices& nn_indices) -> bool {
       double dot_p =
