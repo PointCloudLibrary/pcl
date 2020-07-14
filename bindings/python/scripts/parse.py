@@ -1,7 +1,8 @@
 import sys
 import clang.cindex as clang
 
-import utils
+from context import scripts
+import scripts.utils as utils
 
 
 def is_node_in_this_file(cursor, filename, depth):
