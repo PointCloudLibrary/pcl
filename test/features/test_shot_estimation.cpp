@@ -464,7 +464,7 @@ TYPED_TEST (SHOTShapeTest, Estimation)
 
   pcl::IndicesPtr test_indices (new pcl::Indices (0));
   for (index_t i = 0; i < cloud.size (); i+=3)
-    test_indices->push_back (static_cast<int> (i));
+    test_indices->push_back (i);
 
   //testSHOTIndicesAndSearchSurface<SHOTEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
   //testSHOTLocalReferenceFrame<SHOTEstimation<PointXYZ, Normal, SHOT>, PointXYZ, Normal, SHOT> (cloud.makeShared (), normals, test_indices);
@@ -678,7 +678,7 @@ TYPED_TEST (SHOTShapeAndColorTest, Estimation)
   // Test results when setIndices and/or setSearchSurface are used
   pcl::IndicesPtr test_indices (new pcl::Indices (0));
   for (index_t i = 0; i < cloud.size (); i+=3)
-    test_indices->push_back (static_cast<int> (i));
+    test_indices->push_back (i);
 
   //testSHOTIndicesAndSearchSurface<SHOTEstimation<PointXYZRGBA, Normal, SHOT>, PointXYZRGBA, Normal, SHOT> (cloudWithColors.makeShared (), normals, test_indices);
   //testSHOTLocalReferenceFrame<SHOTEstimation<PointXYZRGBA, Normal, SHOT>, PointXYZRGBA, Normal, SHOT> (cloudWithColors.makeShared (), normals, test_indices);
@@ -763,7 +763,7 @@ TEST (PCL,3DSCEstimation)
   // Test results when setIndices and/or setSearchSurface are used
   pcl::IndicesPtr test_indices (new pcl::Indices (0));
   for (index_t i = 0; i < cloud.size (); i++)
-    test_indices->push_back (static_cast<int> (i));
+    test_indices->push_back (i);
 
   testSHOTIndicesAndSearchSurface<ShapeContext3DEstimation<PointXYZ, Normal, ShapeContext1980>, PointXYZ, Normal, ShapeContext1980> (cloudptr, normals, test_indices);
 }
@@ -816,7 +816,7 @@ TEST (PCL, USCEstimation)
   // Test results when setIndices and/or setSearchSurface are used
   pcl::IndicesPtr test_indices (new pcl::Indices (0));
   for (index_t i = 0; i < cloud.size (); i+=3)
-    test_indices->push_back (static_cast<int> (i));
+    test_indices->push_back (i);
 
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
   testSHOTIndicesAndSearchSurface<UniqueShapeContext<PointXYZ, UniqueShapeContext1960>, PointXYZ, Normal, UniqueShapeContext1960> (cloud.makeShared (), normals, test_indices);

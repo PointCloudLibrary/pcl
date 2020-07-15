@@ -749,7 +749,7 @@ demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                   const Eigen::Matrix<Scalar, 4, 1> &centroid,
                   Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_out)
 {
-  auto npts = cloud_in.size ();
+  const auto npts = cloud_in.size ();
 
   cloud_out = Eigen::Matrix<Scalar, 4, Eigen::Dynamic>::Zero (4, npts);        // keep the data aligned
 

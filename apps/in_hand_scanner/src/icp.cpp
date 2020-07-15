@@ -203,7 +203,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
   kd_tree_->setInputCloud (cloud_model_selected);
   t_build = sw.getTime ();
 
-  std::vector <int>   index (1);
+  Indices index (1);
   std::vector <float> squared_distance (1);
 
   // Clouds with one to one correspondences
@@ -243,7 +243,7 @@ pcl::ihs::ICP::findTransformation (const MeshConstPtr&              mesh_model,
       // Check the distance threshold
       if (squared_distance [0] < squared_distance_threshold)
       {
-        if (static_cast<index_t>(index [0]) >= cloud_model_selected->size ())
+        if (index [0] >= cloud_model_selected->size ())
         {
           std::cerr << "ERROR in icp.cpp: Segfault!\n";
           std::cerr << "  Trying to access index " << index [0] << " >= " << cloud_model_selected->size () << std::endl;
