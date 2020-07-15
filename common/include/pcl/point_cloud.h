@@ -237,9 +237,8 @@ namespace pcl
       #endif
       PCL_DEPRECATED(1, 13, "use  constructor that accepts index_t parameters instead")  
       PointCloud (std::uint32_t width_, std::uint32_t height_, const PointT& value_ = PointT ())
-      {
-        PointCloud (static_cast<index_t>(width_), static_cast<index_t>(height_), value_);
-      }
+        : PointCloud (static_cast<index_t>(width_), static_cast<index_t>(height_), value_)
+      {}
 
       //TODO: check if copy/move contructors/assignment operators are needed
 
