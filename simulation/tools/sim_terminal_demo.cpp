@@ -65,7 +65,7 @@ write_sim_output(const std::string& fname_root)
 
     pcl::PCDWriter writer;
     // writer.write ( string (fname_root + ".pcd"), *pc_out,	false);  /// ASCII
-    writer.writeBinary(string(fname_root + ".pcd"), *pc_out);
+    writer.writeBinary(std::string(fname_root + ".pcd"), *pc_out);
     // std::cout << "finished writing file\n";
   }
   else {
@@ -75,9 +75,9 @@ write_sim_output(const std::string& fname_root)
   // simexample->write_score_image (simexample->rl_->getScoreBuffer (),
   //                               string (fname_root + "_score.png") );
   simexample->write_rgb_image(simexample->rl_->getColorBuffer(),
-                              string(fname_root + "_rgb.png"));
+                              std::string(fname_root + "_rgb.png"));
   simexample->write_depth_image(simexample->rl_->getDepthBuffer(),
-                                string(fname_root + "_depth.png"));
+                                std::string(fname_root + "_depth.png"));
   // simexample->write_depth_image_uint (simexample->rl_->getDepthBuffer (),
   //                                    string (fname_root + "_depth_uint.png") );
 
