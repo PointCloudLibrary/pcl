@@ -212,13 +212,14 @@ namespace pcl
 
       void
       createTemplate (
-        pcl::PointCloud<pcl::PointXYZRGBA> & cloud,
         const size_t object_id,
         const MaskMap & mask_xyz,
         const MaskMap & mask_rgb,
         const RegionXY & region,
         SparseQuantizedMultiModTemplate &linemod_template,
-        const size_t nr_features_per_modality = 63);
+        BoundingBoxXYZ & bb,
+        pcl::PointCloud<pcl::PointXYZRGBA> & cloud,
+        const size_t nr_features_per_modality = 63) const;
 
       /** \brief Applies the detection process and fills the supplied vector with the detection instances. 
         * \param[out] detections The storage for the detection instances.
@@ -261,25 +262,37 @@ namespace pcl
         return (vec);
       }
 
-      /** \brief Returns the template with the specified ID.
-        * \param[in] template_id the ID of the template to return.
-        */
-      inline const SparseQuantizedMultiModTemplate &
-      getTemplate (int template_id) const
+      inline SparseQuantizedMultiModTemplate &
+      getTemplate (const int template_id)
       {
-        return (linemod_.getTemplate (template_id));
+        return linemod_.getTemplate (template_id);
       }
 
-      inline SparseQuantizedMultiModTemplate &
-      getTemplate (int template_id)
+      inline pcl::PointCloud<pcl::PointXYZRGBA> &
+      getTemplateCloud (const int template_id)
       {
-        return (linemod_.getTemplate (template_id));
+        return (template_point_clouds_[template_id]);
+      }
+
+      inline BoundingBoxXYZ &
+      getTemplateBBox (const int template_id)
+      {
+        return (bounding_boxes_[template_id]);
+      }
+
+      inline size_t &
+      getTemplateObjectID (const int template_id)
+      {
+        return (object_ids_[template_id]);
       }
 
       /** \brief Resize the templates storage. */
       inline void
       resizeTemplates (size_t n)
       {
+        object_ids_.resize (n);
+        bounding_boxes_.resize (n);
+        template_point_clouds_.resize (n);
         return (linemod_.resizeTemplates (n));
       }
 

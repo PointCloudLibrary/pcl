@@ -238,40 +238,39 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
   const RegionXY & region,
   const size_t nr_features_per_modality)
 {
-  SparseQuantizedMultiModTemplate linemod_template;
+  const size_t templateIndex = template_point_clouds_.size ();
 
-  createTemplate(cloud, object_id, mask_xyz, mask_rgb, region, linemod_template, nr_features_per_modality);
+  template_point_clouds_.resize (templateIndex + 1);
+  bounding_boxes_.resize (templateIndex + 1);
+
+  // add point cloud
+  pcl::copyPointCloud (cloud, template_point_clouds_[templateIndex]);
+
+  SparseQuantizedMultiModTemplate linemod_template;
+  createTemplate(object_id, mask_xyz, mask_rgb, region, linemod_template, bounding_boxes_[templateIndex], template_point_clouds_[templateIndex], nr_features_per_modality);
 
   // add template to template storage
   linemod_.addTemplate(linemod_template);
 
-  return static_cast<int> (getNumOfTemplates () - 1);
+  // add object_id
+  object_ids_.push_back (object_id);
+
+  return static_cast<int> (templateIndex);
 }
 
 template <typename PointXYZT, typename PointRGBT> void
 pcl::LineRGBD<PointXYZT, PointRGBT>::createTemplate (
-  pcl::PointCloud<pcl::PointXYZRGBA> & cloud,
   const size_t object_id,
   const MaskMap & mask_xyz,
   const MaskMap & mask_rgb,
   const RegionXY & region,
   SparseQuantizedMultiModTemplate &linemod_template,
-  const size_t nr_features_per_modality)
+  BoundingBoxXYZ & bb,
+  pcl::PointCloud<pcl::PointXYZRGBA> & template_point_cloud,
+  const size_t nr_features_per_modality) const
 {
-  // add point cloud
-  template_point_clouds_.resize (template_point_clouds_.size () + 1);
-  pcl::copyPointCloud (cloud, template_point_clouds_[template_point_clouds_.size () - 1]);
-
-  // add template
-  object_ids_.push_back (object_id);
-
   // Compute 3D bounding boxes from the template point clouds
-  bounding_boxes_.resize (template_point_clouds_.size ());
   {
-    const size_t i = template_point_clouds_.size () - 1;
-
-    PointCloud<PointXYZRGBA> & template_point_cloud = template_point_clouds_[i];
-    BoundingBoxXYZ & bb = bounding_boxes_[i];
     bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
     bb.width = bb.height = bb.depth = 0.0f;
 
@@ -334,8 +333,20 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createTemplate (
   }
 
   std::vector<pcl::QuantizableModality*> modalities;
-  modalities.push_back (&color_gradient_mod_);
-  modalities.push_back (&surface_normal_mod_);
+  {
+    typename pcl::PointCloud<PointRGBT>::Ptr pColors(&template_point_cloud);
+    pcl::ColorGradientModality<PointRGBT>* color_gradient_mod = new pcl::ColorGradientModality<PointRGBT>();
+    color_gradient_mod->setInputCloud (pColors);
+    color_gradient_mod->processInputData ();
+    modalities.push_back (color_gradient_mod);
+  }
+  {
+    typename pcl::PointCloud<PointXYZT>::Ptr pPoints(&template_point_cloud);
+    pcl::SurfaceNormalModality<PointXYZT>* surface_normal_mod = new pcl::SurfaceNormalModality<PointXYZT>();
+    surface_normal_mod->setInputCloud (pPoints);
+    surface_normal_mod->processInputData ();
+    modalities.push_back (surface_normal_mod);
+  }
 
   std::vector<MaskMap*> masks;
   masks.push_back (const_cast<MaskMap*> (&mask_rgb));
