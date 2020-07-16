@@ -132,7 +132,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
           std::tie (min_itr, max_itr) = std::minmax_element (nghr_dist.cbegin (), nghr_dist.cend ());
           float nghr_dist_min = *min_itr;
           float nghr_dist_max = *max_itr;
-          float dist_dominant = std::max(std::abs (nghr_dist_min),std::abs (nghr_dist_max));
+          float dist_dominant = std::abs (nghr_dist_min) > std::abs (nghr_dist_max) ? nghr_dist_min : nghr_dist_max;
           if (std::abs (dist_dominant) > th_depth_discon_*std::abs (curr_depth))
           {
             // Found a depth discontinuity
