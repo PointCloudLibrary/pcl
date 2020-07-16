@@ -48,9 +48,9 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
                                unsigned int min_pts_per_cluster,
                                unsigned int max_pts_per_cluster)
 {
-  auto extract_all = [&](int i, int j, const Indices& nn_indices) {
-    utils::ignore(i, j, nn_indices);
-    return true;
+  auto extract_all = [&](const PointCloud<PointT> &cloud, index_t i, const Indices& nn_indices, index_t j) {
+      utils::ignore(cloud, i, nn_indices, j);
+      return true;
   };
   pcl::extractEuclideanClusters<PointT>(cloud, extract_all, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
 }
@@ -68,8 +68,8 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
   if (indices.empty())
     return;
 
-  auto extract_all = [&](index_t i, index_t j, const Indices& nn_indices) {
-    utils::ignore(i, j, nn_indices);
+  auto extract_all = [&](const PointCloud<PointT> &cloud, index_t i, const Indices& nn_indices, index_t j) {
+    utils::ignore(cloud, i, nn_indices, j);
     return true;
   };
   pcl::extractEuclideanClusters(cloud, indices, extract_all, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);

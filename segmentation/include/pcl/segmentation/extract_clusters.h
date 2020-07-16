@@ -47,19 +47,30 @@
 namespace pcl
 {
 
+namespace detail {
+template <typename PointT, typename Function>
+constexpr static bool is_functor_for_additional_filter_criteria_v =
+    pcl::is_invocable_r_v<bool,
+                          Function,
+                          const pcl::remove_cvref_t<pcl::PointCloud<PointT>>&,
+                          pcl::index_t,
+                          const pcl::remove_cvref_t<Indices>&,
+                          pcl::index_t>;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Decompose a region of space into clusters based on the Euclidean distance between points
   * \param it cloud iterator for iterating over the points
   * \param cloud the point cloud message
-  * \param additional_filter_criteria functor which is used as an additonal criteria that all points being added to the cluster must satisfy
+  * \param additional_filter_criteria a functor specifying a criterion that must be satisfied by all point added to the cluster
   * \param tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching
   * \note the tree has to be created as a spatial locator on \a cloud and \a indices
   * \param tolerance the spatial cluster tolerance as a measure in L2 Euclidean space
   * \param clusters the resultant clusters containing point indices (as a vector of PointIndices)
   * \param min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
   * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
-  * \warning It is assumed that that the tree built on the same indices and cloud as passed here,
-  * if that is not the case then things can go very wrong. For speed reasons, we only check the sizes and not the content
+  * \warning The cloud/indices passed here must be the same ones used to build the tree.
+  *  For performance reasons PCL on warns if the sizes are not equal and no checks are performed to verify if the content is the same
   * \ingroup segmentation
   */
   template <typename PointT, typename FunctorT> void
@@ -68,6 +79,10 @@ namespace pcl
       const typename search::Search<PointT>::Ptr &tree, float tolerance, std::vector<PointIndices> &clusters,
       unsigned int min_pts_per_cluster = 1, unsigned int max_pts_per_cluster = std::numeric_limits<int>::max())
   {
+    static_assert(detail::is_functor_for_additional_filter_criteria_v<PointT, FunctorT>,
+                  "Functor signature must be similar to `bool(const PointCloud<PointT>&, "
+                  "index_t, const Indices&, index_t)`");
+
     if (tree->getInputCloud ()->points.size () != cloud.points.size ())
     {
       PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built with a different point cloud size (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
@@ -83,37 +98,31 @@ namespace pcl
       if (processed[it.getCurrentIndex()])
         continue;
 
-      index_t sq_idx = 0;
       clusters.emplace_back();
       auto& seed_queue = clusters.back();
       seed_queue.indices.push_back (it.getCurrentIndex());
 
       processed[it.getCurrentIndex()] = true;
 
-      while (sq_idx < static_cast<index_t> (seed_queue.indices.size()))
+      for (index_t sq_idx = 0; sq_idx < static_cast<index_t> (seed_queue.indices.size()); ++sq_idx)
       {
         Indices nn_indices;
         std::vector<float> nn_distances;
 
         // Search for sq_idx
         if (!tree->radiusSearch (seed_queue.indices[sq_idx], tolerance, nn_indices, nn_distances))
-        {
-          sq_idx++;
           continue;
-        }
 
         for (index_t j = nn_start_idx; j < nn_indices.size (); ++j) // can't assume sorted (default isn't!)
         {
           if (processed[nn_indices[j]]) // Has this point been processed before ?
             continue;
 
-          if (additional_filter_criteria(it.getCurrentIndex(), j, nn_indices)) {
+          if (additional_filter_criteria(cloud, it.getCurrentIndex(), nn_indices, j)) {
             seed_queue.indices.push_back(nn_indices[j]);
             processed[nn_indices[j]] = true;
           }
         }
-
-        sq_idx++;
       }
 
       // If this queue is satisfactory, add to the clusters
@@ -127,15 +136,15 @@ namespace pcl
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the Euclidean distance between points
     * \param cloud the point cloud message
-    * \param additional_filter_criteria functor which is used as an additonal criteria that all points being added to the cluster must satisfy
+    * \param additional_filter_criteria a functor specifying a criterion that must be satisfied by all point added to the cluster
     * \param tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching
     * \note the tree has to be created as a spatial locator on \a cloud and \a indices
     * \param tolerance the spatial cluster tolerance as a measure in L2 Euclidean space
     * \param clusters the resultant clusters containing point indices (as a vector of PointIndices)
     * \param min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
     * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
-    * \warning It is assumed that that the tree built on the same indices and cloud as passed here,
-    * if that is not the case then things can go very wrong. For speed reasons, we only check the sizes and not the content
+    * \warning The cloud/indices passed here must be the same ones used to build the tree.
+    *  For performance reasons PCL on warns if the sizes are not equal and no checks are performed to verify if the content is the same
     * \ingroup segmentation
     */
   template <typename PointT, typename FunctorT> void
@@ -153,15 +162,15 @@ namespace pcl
   /** \brief Decompose a region of space into clusters based on the Euclidean distance between points
     * \param cloud the point cloud message
     * \param indices a list of point indices to use from \a cloud
-    * \param additional_filter_criteria functor which is used as an additonal criteria that all points being added to the cluster must satisfy
+    * \param additional_filter_criteria a functor specifying a criterion that must be satisfied by all point added to the cluster
     * \param tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching
     * \note the tree has to be created as a spatial locator on \a cloud and \a indices
     * \param tolerance the spatial cluster tolerance as a measure in L2 Euclidean space
     * \param clusters the resultant clusters containing point indices (as a vector of PointIndices)
     * \param min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
     * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
-    * \warning It is assumed that that the tree built on the same indices and cloud as passed here,
-    * if that is not the case then things can go very wrong. For speed reasons, we only check the sizes and not the content
+    * \warning The cloud/indices passed here must be the same ones used to build the tree.
+    *  For performance reasons PCL on warns if the sizes are not equal and no checks are performed to verify if the content is the same
     * \ingroup segmentation
     */
   template <typename PointT, typename FunctorT> void
@@ -227,7 +236,7 @@ namespace pcl
     * \note the tree has to be created as a spatial locator on \a cloud
     * \param tolerance the spatial cluster tolerance as a measure in the L2 Euclidean space
     * \param clusters the resultant clusters containing point indices (as a vector of PointIndices)
-    * \param eps_angle the maximum allowed difference between normals in radians for cluster/region growing
+    * \param max_angle the maximum allowed difference between normals in radians for cluster/region growing
     * \param min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
     * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
     * \ingroup segmentation
@@ -236,7 +245,7 @@ namespace pcl
   extractEuclideanClusters (
       const PointCloud<PointT> &cloud, const PointCloud<Normal> &normals,
       float tolerance, const typename search::Search<PointT>::Ptr &tree,
-      std::vector<PointIndices> &clusters, double eps_angle,
+      std::vector<PointIndices> &clusters, double max_angle,
       unsigned int min_pts_per_cluster = 1,
       unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ())
   {
@@ -246,11 +255,11 @@ namespace pcl
       return;
     }
 
-    eps_angle = std::max(std::abs(eps_angle), M_PI);
-    auto cos_eps_angle = std::cos(eps_angle);
-    auto normal_deviation_filter = [&](index_t i, index_t j, const Indices& nn_indices) -> bool {
+    max_angle = std::min(std::abs(max_angle), M_PI);
+    auto cos_max_angle = std::cos(max_angle);
+    auto normal_deviation_filter = [&](const PointCloud<PointT> &cloud, index_t i, const Indices& nn_indices, index_t j) -> bool {
       double dot_p = normals[i].getNormalVector3fMap().dot(normals[nn_indices[j]].getNormalVector3fMap());
-      return std::abs(dot_p) < cos_eps_angle;
+      return std::abs(dot_p) < cos_max_angle;
     };
     pcl::extractEuclideanClusters(cloud, normal_deviation_filter, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
   }
@@ -266,7 +275,7 @@ namespace pcl
     * \note the tree has to be created as a spatial locator on \a cloud
     * \param tolerance the spatial cluster tolerance as a measure in the L2 Euclidean space
     * \param clusters the resultant clusters containing point indices (as PointIndices)
-    * \param eps_angle the maximum allowed difference between normals in degrees for cluster/region growing
+    * \param max_angle the maximum allowed difference between normals in degrees for cluster/region growing
     * \param min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
     * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
     * \ingroup segmentation
@@ -275,7 +284,7 @@ namespace pcl
   void extractEuclideanClusters (
       const PointCloud<PointT> &cloud, const PointCloud<Normal> &normals,
       const Indices &indices, const typename search::Search<PointT>::Ptr &tree,
-      float tolerance, std::vector<PointIndices> &clusters, double eps_angle,
+      float tolerance, std::vector<PointIndices> &clusters, double max_angle,
       unsigned int min_pts_per_cluster = 1,
       unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ())
   {
@@ -288,12 +297,12 @@ namespace pcl
     if (indices.empty())
       return;
 
-    eps_angle = std::max(std::abs(eps_angle), M_PI);
-    auto cos_eps_angle = std::cos(eps_angle);
-    auto normal_deviation_filter = [&](index_t i, index_t j, Indices& nn_indices) -> bool {
+    max_angle = std::min(std::abs(max_angle), M_PI);
+    auto cos_max_angle = std::cos(max_angle);
+    auto normal_deviation_filter = [&](const PointCloud<PointT> &cloud, index_t i, const Indices& nn_indices, index_t j) -> bool {
       double dot_p =
           normals[indices[i]].getNormalVector3fMap().dot(normals[indices[nn_indices[j]]].getNormalVector3fMap());
-      return std::abs(dot_p) < cos_eps_angle;
+      return std::abs(dot_p) < cos_max_angle;
     };
 
     pcl::extractEuclideanClusters(cloud, indices, normal_deviation_filter, tree, tolerance, clusters, min_pts_per_cluster, max_pts_per_cluster);
