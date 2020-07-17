@@ -10,27 +10,25 @@ class bind:
         self.linelist = []
         self._skipped = []
         self.kind_functions = {
-            "TRANSLATION_UNIT": [self.skip],
-            "NAMESPACE": [self.handle_namespace_0],  # self.handle_namespace_1],
-            "NAMESPACE_REF": [self.skip],
-            "STRUCT_DECL": [self.handle_struct_decl_0],  # self.handle_struct_decl_1],
-            "CXX_BASE_SPECIFIER": [self.skip],
-            "CXX_METHOD": [self.skip],  # [self.handle_cxx_method],
-            "VAR_DECL": [self.skip],
-            "TYPE_REF": [self.skip],
-            "CONSTRUCTOR": [self.handle_constructor],
-            "PARM_DECL": [self.skip],
-            "CALL_EXPR": [self.skip],
-            "UNEXPOSED_EXPR": [self.skip],
-            "MEMBER_REF_EXPR": [self.skip],
-            "DECL_REF_EXPR": [self.skip],
-            "FIELD_DECL": [self.skip],#[self.handle_field_decl],
-            "MEMBER_REF": [self.skip],
-            "CLASS_TEMPLATE": [
-                self.skip
-            ],  # [self.handle_class_template_0],# self.handle_class_template_1],
-            "TEMPLATE_NON_TYPE_PARAMETER": [self.skip],
-            "FUNCTION_TEMPLATE": [self.skip],
+            "TRANSLATION_UNIT": self.skip,
+            "NAMESPACE": self.handle_namespace,
+            "NAMESPACE_REF": self.skip,
+            "STRUCT_DECL": self.handle_struct_decl,
+            "CXX_BASE_SPECIFIER": self.skip,
+            "CXX_METHOD": self.skip,
+            "VAR_DECL": self.skip,
+            "TYPE_REF": self.skip,
+            "CONSTRUCTOR": self.handle_constructor,
+            "PARM_DECL": self.skip,
+            "CALL_EXPR": self.skip,
+            "UNEXPOSED_EXPR": self.skip,
+            "MEMBER_REF_EXPR": self.skip,
+            "DECL_REF_EXPR": self.skip,
+            "FIELD_DECL": self.skip,
+            "MEMBER_REF": self.skip,
+            "CLASS_TEMPLATE": self.skip,  # self.handle_class_template
+            "TEMPLATE_NON_TYPE_PARAMETER": self.skip,
+            "FUNCTION_TEMPLATE": self.skip,
         }
 
         self.handle_node(root)
@@ -70,27 +68,20 @@ class bind:
             {"kind": self.kind, "name": self.name, "depth": self.depth}
         )
 
-        self.kind_functions[self.kind][0]()
+        self.kind_functions[self.kind]()
 
-        if self.kind_functions[self.kind][0] is not self.skip:
+        if self.kind_functions[self.kind] is not self.skip:
             for sub_item in self.members:
                 self.handle_node(sub_item)
-
-        if len(self.kind_functions[self.kind]) > 1:
-            print("adf")
-            self.kind_functions[self.kind][1]()
 
         self.close()
 
         self._state_stack.pop()
 
-    def handle_namespace_0(self):
+    def handle_namespace(self):
         self.linelist.append(f"namespace {self.name}" + "{")
 
-    # def handle_namespace_1(self):
-    #     self.linelist.append("}")
-
-    def handle_struct_decl_0(self):
+    def handle_struct_decl(self):
         cxx_base_specifier_list = [
             sub_item["name"]
             for sub_item in self.members
@@ -108,9 +99,9 @@ class bind:
             if sub_item["kind"] == "FIELD_DECL":
                 if sub_item["element_type"] == "ConstantArray":
                     self.linelist.append(
-                        f'.def_property_readonly("{sub_item["name"]}", []({self.name}& obj) {{return obj.{sub_item["name"]}; }})'#float[ ' + f'obj.{sub_item["name"]}' + '.size()];} )'
+                        f'.def_property_readonly("{sub_item["name"]}", []({self.name}& obj) {{return obj.{sub_item["name"]}; }})'  # float[ ' + f'obj.{sub_item["name"]}' + '.size()];} )'
                     )
-                else:  
+                else:
                     self.linelist.append(
                         f'.def_readwrite("{sub_item["name"]}", &{self.name}::{sub_item["name"]})'
                     )
@@ -119,17 +110,6 @@ class bind:
             #     self.linelist.append(
             #         f'.def("{sub_item["name"]}", &{self.name}::{sub_item["name"]})'
             #     )
-
-    # def handle_struct_decl_1(self):
-    #     self.linelist.append(";")
-
-    def handle_cxx_method(self):
-        prev_depth_node = self.get_prev_depth_node()
-        if prev_depth_node:
-            method_of = prev_depth_node["name"]
-            self.linelist.append(f'.def("{self.name}", &{method_of}::{self.name})')
-        else:
-            self.linelist.append(f'.def("{self.name}", &{self.name})')
 
     def handle_constructor(self):
         argument_type_list = []
@@ -166,17 +146,7 @@ class bind:
             f".def(py::init<{argument_type_list}>())"  # , {parameter_decl_list})"
         )
 
-    def handle_field_decl(self):
-        prev_depth_node = self.get_prev_depth_node()
-        if prev_depth_node:
-            field_of = prev_depth_node["name"]
-            self.linelist.append(
-                f'.def_readwrite("{self.name}", &{field_of}::{self.name})'
-            )
-        else:
-            self.linelist.append(f'.def("{self.name}", &{self.name})')
-
-    def handle_class_template_0(self):
+    def handle_class_template(self):
         flag = False
         for sub_item in self.members:
             if sub_item["kind"] == "TEMPLATE_NON_TYPE_PARAMETER":
@@ -199,13 +169,12 @@ class bind:
         else:
             self.linelist.append(f'py::class_<{self.name}>(m, "{self.name}")')
 
-    def handle_class_template_1(self):
-        self.linelist.append(";")
-
     def handle_final(self, filename, module_name):
         final = []
         final.append(f"#include <{filename}>")
         final.append("#include <pybind11/pybind11.h>")
+        # final.append("#include<pybind11/stl.h>")
+        # final.append("#include<pybind11/stl_bind.h>")
         final.append("namespace py = pybind11;")
         final.append("using namespace py::literals;")
         for i in range(len(self.linelist)):
