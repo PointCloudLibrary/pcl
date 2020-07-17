@@ -106,9 +106,19 @@ class bind:
 
         for sub_item in self.members:
             if sub_item["kind"] == "FIELD_DECL":
-                self.linelist.append(
-                    f'.def_readwrite("{sub_item["name"]}", &{self.name}::{sub_item["name"]})'
-                )
+                if sub_item["element_type"] == "ConstantArray":
+                    self.linelist.append(
+                        f'.def_property_readonly("{sub_item["name"]}", []({self.name}& obj) {{return obj.{sub_item["name"]}; }})'#float[ ' + f'obj.{sub_item["name"]}' + '.size()];} )'
+                    )
+                else:  
+                    self.linelist.append(
+                        f'.def_readwrite("{sub_item["name"]}", &{self.name}::{sub_item["name"]})'
+                    )
+
+            # if sub_item["kind"] == "CXX_METHOD":
+            #     self.linelist.append(
+            #         f'.def("{sub_item["name"]}", &{self.name}::{sub_item["name"]})'
+            #     )
 
     # def handle_struct_decl_1(self):
     #     self.linelist.append(";")
