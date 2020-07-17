@@ -1,7 +1,5 @@
-import json
-import argparse
-import sys
-import os
+from context import scripts
+import scripts.utils as utils
 
 
 class bind:
@@ -191,54 +189,25 @@ class bind:
         return final
 
 
-def read_json(filename):
-    with open(filename, "r") as f:
-        return json.load(f)
-
-
-def write_to_cpp(filename, linelist):
-    with open(filename, "w") as f:
-        for line in linelist:
-            f.writelines(line)
-            f.writelines("\n")
-
-
-def get_output_path(source, output_dir):
-    x_list = source.split("json/", 1)[-1]
-    x_list = x_list.split("/")
-
-    filename = x_list[-1].split(".")[0]
-    relative_dir = "/".join(x for x in x_list[:-1])
-    dir = os.path.join(output_dir, relative_dir)
-
-    # ensure the new directory exists
-    if not os.path.exists(dir):
-        os.makedirs(dir)
-
-    return f"{dir}/{filename}.cpp"
-
-
-def parse_arguments(args):
-    parser = argparse.ArgumentParser(description="JSON to pybind11 generation")
-    parser.add_argument("files", nargs="+", help="JSON input")
-    return parser.parse_args(args)
-
-
 def main():
-    args = parse_arguments(sys.argv[1:])
+    args = utils.parse_arguments(script="generate")
 
     for source in args.files:
-        header_info = read_json(source)
+        source = utils.get_realpath(path=source)
+
+        header_info = utils.read_json(filename=source)
         if header_info:
-            bind_object = bind(header_info[0])
+            bind_object = bind(header_info)
             lines_to_write = bind_object.handle_final(
                 filename="pcl/point_types.h", module_name="pcl"
             )
-            output_filepath = get_output_path(
-                os.path.realpath(source),
-                output_dir=f"pybind11/{os.path.dirname(__file__)}",
+            output_filepath = utils.get_output_path(
+                source=source,
+                output_dir=utils.join_path(args.pybind11_output_path, "pybind11"),
+                split_from="json",
+                extension="cpp",
             )
-            write_to_cpp(filename=output_filepath, linelist=lines_to_write)
+            utils.write_to_file(filename=output_filepath, linelist=lines_to_write)
 
         else:
             raise Exception("Empty json")
