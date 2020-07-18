@@ -41,7 +41,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/features/normal_3d.h>
-#include <pcl/features/normal_3d_omp.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/io/pcd_io.h>
 
@@ -215,7 +214,7 @@ class DummySearch : public pcl::search::Search<PointT>
 
 TEST (PCL, NormalEstimationOpenMPInitVectors)
 {
-  NormalEstimationOMP<PointXYZ, Normal> n (4); // instantiate 4 threads
+  NormalEstimation<PointXYZ, Normal> n (4); // instantiate 4 threads
 
   DummySearch<PointXYZ>::Ptr dummy (new DummySearch<PointXYZ>);
 
@@ -242,7 +241,7 @@ TEST (PCL, NormalEstimationOpenMPInitVectors)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, NormalEstimationOpenMP)
 {
-  NormalEstimationOMP<PointXYZ, Normal> n (4); // instantiate 4 threads
+  NormalEstimation<PointXYZ, Normal> n (4); // instantiate 4 threads
 
   // Object
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());

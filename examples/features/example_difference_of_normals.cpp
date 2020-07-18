@@ -9,7 +9,7 @@
 #include <string>
 
 #include <pcl/io/pcd_io.h>
-#include <pcl/features/normal_3d_omp.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/filters/voxel_grid.h>
@@ -17,7 +17,7 @@
 #include <pcl/features/don.h>
 
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-#include <pcl/features/impl/normal_3d_omp.hpp>
+#include <pcl/features/impl/normal_3d.hpp>
 #include <pcl/segmentation/impl/extract_clusters.hpp>
 #endif
 
@@ -106,7 +106,7 @@ int main (int argc, char *argv[])
   }
 
   // Compute normals using both small and large scales at each point
-  pcl::NormalEstimationOMP<PointT, PointNT> ne;
+  pcl::NormalEstimation<PointT, PointNT> ne;
   ne.setInputCloud (cloud);
         ne.setSearchMethod (tree);
 

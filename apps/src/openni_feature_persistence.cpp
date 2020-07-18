@@ -39,7 +39,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/features/fpfh_omp.h>
 #include <pcl/features/multiscale_feature_persistence.h>
-#include <pcl/features/normal_3d_omp.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/openni_camera/openni_driver.h>
@@ -208,7 +208,7 @@ public:
   }
 
   pcl::VoxelGrid<PointType> subsampling_filter_;
-  pcl::NormalEstimationOMP<PointType, pcl::Normal> normal_estimation_filter_;
+  pcl::NormalEstimation<PointType, pcl::Normal> normal_estimation_filter_;
   typename pcl::FPFHEstimationOMP<PointType, pcl::Normal, pcl::FPFHSignature33>::Ptr
       fpfh_estimation_;
   pcl::MultiscaleFeaturePersistence<PointType, pcl::FPFHSignature33>

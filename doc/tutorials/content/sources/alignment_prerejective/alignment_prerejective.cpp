@@ -3,7 +3,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
-#include <pcl/features/normal_3d_omp.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/features/fpfh_omp.h>
 #include <pcl/filters/filter.h>
 #include <pcl/filters/voxel_grid.h>
@@ -60,7 +60,7 @@ main (int argc, char **argv)
   
   // Estimate normals for scene
   pcl::console::print_highlight ("Estimating scene normals...\n");
-  pcl::NormalEstimationOMP<PointNT,PointNT> nest;
+  pcl::NormalEstimation<PointNT,PointNT> nest;
   nest.setRadiusSearch (0.01);
   nest.setInputCloud (scene);
   nest.compute (*scene);
