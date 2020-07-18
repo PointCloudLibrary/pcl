@@ -46,7 +46,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/features/pfh.h>
 #include <pcl/features/fpfh.h>
-#include <pcl/features/fpfh_omp.h>
 #include <pcl/features/vfh.h>
 #include <pcl/features/gfpfh.h>
 #include <pcl/io/pcd_io.h>
@@ -262,46 +261,28 @@ TEST (PCL, PFHEstimation)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 using pcl::FPFHEstimation;
-using pcl::FPFHEstimationOMP;
 using pcl::FPFHSignature33;
 
-// "Placeholder" for the type specialized test fixture
-template<typename T>
-struct FPFHTest;
-
-// Template specialization test for FPFHEstimation
-template<>
-struct FPFHTest<FPFHEstimation<PointT, PointT, FPFHSignature33> >
-  : public ::testing::Test
+struct FPFHTest
+  : public ::testing::TestWithParam<int>
 {
   FPFHEstimation<PointT, PointT, FPFHSignature33> fpfh;
 };
 
-// Template specialization test for FPFHEstimationOMP
-template<>
-struct FPFHTest<FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >
-  : public ::testing::Test
-{
-  // Default Constructor is defined to instantiate 4 threads
-  FPFHTest<FPFHEstimationOMP<PointT, PointT, FPFHSignature33> > ()
-    : fpfh (4)
-  {}
-
-  FPFHEstimationOMP<PointT, PointT, FPFHSignature33> fpfh;
-};
-
-// Types which will be instantiated
-using FPFHEstimatorTypes = ::testing::Types
-        <FPFHEstimation<PointT, PointT, FPFHSignature33>,
-         FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >;
-TYPED_TEST_SUITE (FPFHTest, FPFHEstimatorTypes);
+INSTANTIATE_TEST_CASE_P(
+    FPFHEstimationTests,
+    FPFHTest,
+    ::testing::Values(
+        -1, 4
+    ));
 
 // This is a copy of the old FPFHEstimation test which will now
 // be applied to both FPFHEstimation and FPFHEstimationOMP
-TYPED_TEST (FPFHTest, Estimation)
+TEST_P (FPFHTest, Estimation)
 {
   // Create reference
-  TypeParam& fpfh = this->fpfh;
+  FPFHEstimation<PointT, PointT, FPFHSignature33>& fpfh = this->fpfh;
+  fpfh.setNumberOfThreads(GetParam());
   fpfh.setInputNormals (cloud);
   EXPECT_EQ (fpfh.getInputNormals (), cloud);
 
