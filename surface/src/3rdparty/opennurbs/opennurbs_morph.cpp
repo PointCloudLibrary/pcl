@@ -449,7 +449,7 @@ void ON_SpaceMorph::SetQuickPreview( bool bQuickPreview )
   m_bQuickPreview = bQuickPreview ? true : false;
 }
 
-bool ON_SpaceMorph::IsIdentity( const ON_BoundingBox& bbox ) const
+bool ON_SpaceMorph::IsIdentity( const ON_BoundingBox& ) const
 {
   return false;
 }

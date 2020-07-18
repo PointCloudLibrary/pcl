@@ -81,8 +81,8 @@ namespace pcl
   class PFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<PFHEstimation<PointInT, PointNT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const PFHEstimation<PointInT, PointNT, PointOutT> >;
+      using Ptr = shared_ptr<PFHEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = shared_ptr<const PFHEstimation<PointInT, PointNT, PointOutT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
       using Feature<PointInT, PointOutT>::indices_;
@@ -204,7 +204,7 @@ namespace pcl
       float d_pi_; 
 
       /** \brief Internal hashmap, used to optimize efficiency of redundant computations. */
-      std::map<std::pair<int, int>, Eigen::Vector4f, std::less<std::pair<int, int> >, Eigen::aligned_allocator<std::pair<const std::pair<int, int>, Eigen::Vector4f> > > feature_map_;
+      std::map<std::pair<int, int>, Eigen::Vector4f, std::less<>, Eigen::aligned_allocator<std::pair<const std::pair<int, int>, Eigen::Vector4f> > > feature_map_;
 
       /** \brief Queue of pairs saved, used to constrain memory usage. */
       std::queue<std::pair<int, int> > key_list_;

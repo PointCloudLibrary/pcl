@@ -188,8 +188,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr<VoxelGrid<PointT> >;
-      using ConstPtr = boost::shared_ptr<const VoxelGrid<PointT> >;
+      using Ptr = shared_ptr<VoxelGrid<PointT> >;
+      using ConstPtr = shared_ptr<const VoxelGrid<PointT> >;
 
       /** \brief Empty constructor. */
       VoxelGrid () :
@@ -317,9 +317,9 @@ namespace pcl
       inline int
       getCentroidIndex (const PointT &p) const
       {
-        return (leaf_layout_.at ((Eigen::Vector4i (static_cast<int> (floor (p.x * inverse_leaf_size_[0])),
-                                                   static_cast<int> (floor (p.y * inverse_leaf_size_[1])),
-                                                   static_cast<int> (floor (p.z * inverse_leaf_size_[2])), 0) - min_b_).dot (divb_mul_)));
+        return (leaf_layout_.at ((Eigen::Vector4i (static_cast<int> (std::floor (p.x * inverse_leaf_size_[0])),
+                                                   static_cast<int> (std::floor (p.y * inverse_leaf_size_[1])),
+                                                   static_cast<int> (std::floor (p.z * inverse_leaf_size_[2])), 0) - min_b_).dot (divb_mul_)));
       }
 
       /** \brief Returns the indices in the resulting downsampled cloud of the points at the specified grid coordinates,
@@ -331,9 +331,9 @@ namespace pcl
       inline std::vector<int>
       getNeighborCentroidIndices (const PointT &reference_point, const Eigen::MatrixXi &relative_coordinates) const
       {
-        Eigen::Vector4i ijk (static_cast<int> (floor (reference_point.x * inverse_leaf_size_[0])),
-                             static_cast<int> (floor (reference_point.y * inverse_leaf_size_[1])),
-                             static_cast<int> (floor (reference_point.z * inverse_leaf_size_[2])), 0);
+        Eigen::Vector4i ijk (static_cast<int> (std::floor (reference_point.x * inverse_leaf_size_[0])),
+                             static_cast<int> (std::floor (reference_point.y * inverse_leaf_size_[1])),
+                             static_cast<int> (std::floor (reference_point.z * inverse_leaf_size_[2])), 0);
         Eigen::Array4i diff2min = min_b_ - ijk;
         Eigen::Array4i diff2max = max_b_ - ijk;
         std::vector<int> neighbors (relative_coordinates.cols());
@@ -363,9 +363,9 @@ namespace pcl
       inline Eigen::Vector3i
       getGridCoordinates (float x, float y, float z) const
       {
-        return (Eigen::Vector3i (static_cast<int> (floor (x * inverse_leaf_size_[0])),
-                                 static_cast<int> (floor (y * inverse_leaf_size_[1])),
-                                 static_cast<int> (floor (z * inverse_leaf_size_[2]))));
+        return (Eigen::Vector3i (static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+                                 static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
+                                 static_cast<int> (std::floor (z * inverse_leaf_size_[2]))));
       }
 
       /** \brief Returns the index in the downsampled cloud corresponding to a given set of coordinates.
@@ -642,9 +642,9 @@ namespace pcl
       inline int
       getCentroidIndex (float x, float y, float z) const
       {
-        return (leaf_layout_.at ((Eigen::Vector4i (static_cast<int> (floor (x * inverse_leaf_size_[0])),
-                                                   static_cast<int> (floor (y * inverse_leaf_size_[1])),
-                                                   static_cast<int> (floor (z * inverse_leaf_size_[2])),
+        return (leaf_layout_.at ((Eigen::Vector4i (static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+                                                   static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
+                                                   static_cast<int> (std::floor (z * inverse_leaf_size_[2])),
                                                    0)
                 - min_b_).dot (divb_mul_)));
       }
@@ -660,9 +660,9 @@ namespace pcl
       inline std::vector<int>
       getNeighborCentroidIndices (float x, float y, float z, const Eigen::MatrixXi &relative_coordinates) const
       {
-        Eigen::Vector4i ijk (static_cast<int> (floor (x * inverse_leaf_size_[0])),
-                             static_cast<int> (floor (y * inverse_leaf_size_[1])),
-                             static_cast<int> (floor (z * inverse_leaf_size_[2])), 0);
+        Eigen::Vector4i ijk (static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+                             static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
+                             static_cast<int> (std::floor (z * inverse_leaf_size_[2])), 0);
         Eigen::Array4i diff2min = min_b_ - ijk;
         Eigen::Array4i diff2max = max_b_ - ijk;
         std::vector<int> neighbors (relative_coordinates.cols());
@@ -689,7 +689,7 @@ namespace pcl
       inline std::vector<int>
       getNeighborCentroidIndices (float x, float y, float z, const std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > &relative_coordinates) const
       {
-        Eigen::Vector4i ijk (static_cast<int> (floorf (x * inverse_leaf_size_[0])), static_cast<int> (floorf (y * inverse_leaf_size_[1])), static_cast<int> (floorf (z * inverse_leaf_size_[2])), 0);
+        Eigen::Vector4i ijk (static_cast<int> (std::floor (x * inverse_leaf_size_[0])), static_cast<int> (std::floor (y * inverse_leaf_size_[1])), static_cast<int> (std::floor (z * inverse_leaf_size_[2])), 0);
         std::vector<int> neighbors;
         neighbors.reserve (relative_coordinates.size ());
         for (const auto &relative_coordinate : relative_coordinates)
@@ -711,9 +711,9 @@ namespace pcl
       inline Eigen::Vector3i
       getGridCoordinates (float x, float y, float z) const
       {
-        return (Eigen::Vector3i (static_cast<int> (floor (x * inverse_leaf_size_[0])),
-                                 static_cast<int> (floor (y * inverse_leaf_size_[1])),
-                                 static_cast<int> (floor (z * inverse_leaf_size_[2]))));
+        return (Eigen::Vector3i (static_cast<int> (std::floor (x * inverse_leaf_size_[0])),
+                                 static_cast<int> (std::floor (y * inverse_leaf_size_[1])),
+                                 static_cast<int> (std::floor (z * inverse_leaf_size_[2]))));
       }
 
       /** \brief Returns the index in the downsampled cloud corresponding to a given set of coordinates.

@@ -601,8 +601,8 @@ pcl::io::DeBayer::debayerEdgeAware (
       //  line_step    g b g b
       // line_step2    r g r g
 
-      int dh = abs (bayer_pixel[0] - bayer_pixel[2]);
-      int dv = abs (bayer_pixel[-bayer_line_step + 1] - bayer_pixel[bayer_line_step + 1]);
+      int dh = std::abs (bayer_pixel[0] - bayer_pixel[2]);
+      int dv = std::abs (bayer_pixel[-bayer_line_step + 1] - bayer_pixel[bayer_line_step + 1]);
 
       if (dh > dv)
         rgb_buffer[4] = AVG (bayer_pixel[-bayer_line_step + 1], bayer_pixel[bayer_line_step + 1]);
@@ -623,8 +623,8 @@ pcl::io::DeBayer::debayerEdgeAware (
       rgb_buffer[rgb_line_step ] = AVG4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
       rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
 
-      dv = abs (bayer_pixel[0] - bayer_pixel[bayer_line_step2]);
-      dh = abs (bayer_pixel[bayer_line_step - 1] - bayer_pixel[bayer_line_step + 1]);
+      dv = std::abs (bayer_pixel[0] - bayer_pixel[bayer_line_step2]);
+      dh = std::abs (bayer_pixel[bayer_line_step - 1] - bayer_pixel[bayer_line_step + 1]);
 
       if (dv > dh)
         rgb_buffer[rgb_line_step + 1] = AVG (bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);
@@ -987,8 +987,8 @@ pcl::io::DeBayer::debayerEdgeAwareWeighted (
       //  line_step    g b g b
       // line_step2    r g r g
 
-      int dh = abs (bayer_pixel[0] - bayer_pixel[2]);
-      int dv = abs (bayer_pixel[-bayer_line_step + 1] - bayer_pixel[bayer_line_step + 1]);
+      int dh = std::abs (bayer_pixel[0] - bayer_pixel[2]);
+      int dv = std::abs (bayer_pixel[-bayer_line_step + 1] - bayer_pixel[bayer_line_step + 1]);
 
       if (dv == 0 && dh == 0)
         rgb_buffer[4] = AVG4 (bayer_pixel[1 - bayer_line_step], bayer_pixel[1 + bayer_line_step], bayer_pixel[0], bayer_pixel[2]);
@@ -1006,8 +1006,8 @@ pcl::io::DeBayer::debayerEdgeAwareWeighted (
       rgb_buffer[rgb_line_step ] = AVG4 (bayer_pixel[1], bayer_pixel[bayer_line_step2 + 1], bayer_pixel[-1], bayer_pixel[bayer_line_step2 - 1]);
       rgb_buffer[rgb_line_step + 2] = bayer_pixel[bayer_line_step];
 
-      dv = abs (bayer_pixel[0] - bayer_pixel[bayer_line_step2]);
-      dh = abs (bayer_pixel[bayer_line_step - 1] - bayer_pixel[bayer_line_step + 1]);
+      dv = std::abs (bayer_pixel[0] - bayer_pixel[bayer_line_step2]);
+      dh = std::abs (bayer_pixel[bayer_line_step - 1] - bayer_pixel[bayer_line_step + 1]);
 
       if (dv == 0 && dh == 0)
         rgb_buffer[rgb_line_step + 1] = AVG4 (bayer_pixel[0], bayer_pixel[bayer_line_step2], bayer_pixel[bayer_line_step - 1], bayer_pixel[bayer_line_step + 1]);

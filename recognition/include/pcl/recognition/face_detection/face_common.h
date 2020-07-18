@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pcl/features/integral_image2D.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 #include <Eigen/Core>
@@ -103,18 +104,18 @@ namespace pcl
           stream.write (reinterpret_cast<const char*> (&value), sizeof(value));
           stream.write (reinterpret_cast<const char*> (&variance), sizeof(variance));
 
-          for (size_t i = 0; i < 3; i++)
+          for (std::size_t i = 0; i < 3; i++)
             stream.write (reinterpret_cast<const char*> (&trans_mean_[i]), sizeof(trans_mean_[i]));
 
-          for (size_t i = 0; i < 3; i++)
+          for (std::size_t i = 0; i < 3; i++)
             stream.write (reinterpret_cast<const char*> (&rot_mean_[i]), sizeof(rot_mean_[i]));
 
-          for (size_t i = 0; i < 3; i++)
-            for (size_t j = 0; j < 3; j++)
+          for (std::size_t i = 0; i < 3; i++)
+            for (std::size_t j = 0; j < 3; j++)
               stream.write (reinterpret_cast<const char*> (&covariance_trans_ (i, j)), sizeof(covariance_trans_ (i, j)));
 
-          for (size_t i = 0; i < 3; i++)
-            for (size_t j = 0; j < 3; j++)
+          for (std::size_t i = 0; i < 3; i++)
+            for (std::size_t j = 0; j < 3; j++)
               stream.write (reinterpret_cast<const char*> (&covariance_rot_ (i, j)), sizeof(covariance_rot_ (i, j)));
 
           for (int sub_node_index = 0; sub_node_index < num_of_sub_nodes; ++sub_node_index)
@@ -137,18 +138,18 @@ namespace pcl
           stream.read (reinterpret_cast<char*> (&value), sizeof(value));
           stream.read (reinterpret_cast<char*> (&variance), sizeof(variance));
 
-          for (size_t i = 0; i < 3; i++)
+          for (std::size_t i = 0; i < 3; i++)
             stream.read (reinterpret_cast<char*> (&trans_mean_[i]), sizeof(trans_mean_[i]));
 
-          for (size_t i = 0; i < 3; i++)
+          for (std::size_t i = 0; i < 3; i++)
             stream.read (reinterpret_cast<char*> (&rot_mean_[i]), sizeof(rot_mean_[i]));
 
-          for (size_t i = 0; i < 3; i++)
-            for (size_t j = 0; j < 3; j++)
+          for (std::size_t i = 0; i < 3; i++)
+            for (std::size_t j = 0; j < 3; j++)
               stream.read (reinterpret_cast<char*> (&covariance_trans_ (i, j)), sizeof(covariance_trans_ (i, j)));
 
-          for (size_t i = 0; i < 3; i++)
-            for (size_t j = 0; j < 3; j++)
+          for (std::size_t i = 0; i < 3; i++)
+            for (std::size_t j = 0; j < 3; j++)
               stream.read (reinterpret_cast<char*> (&covariance_rot_ (i, j)), sizeof(covariance_rot_ (i, j)));
 
           sub_nodes.resize (num_of_sub_nodes);

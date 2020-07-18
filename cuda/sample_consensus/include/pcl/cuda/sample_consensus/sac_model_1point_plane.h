@@ -176,7 +176,8 @@ namespace pcl
         using Samples = typename SampleConsensusModel<Storage>::Samples;
 
 
-        using Ptr = boost::shared_ptr<SampleConsensusModel1PointPlane>;
+        using Ptr = shared_ptr<SampleConsensusModel1PointPlane>;
+        using ConstPtr = shared_ptr<const SampleConsensusModel1PointPlane>;
 
         /** \brief Constructor for base SampleConsensusModel1PointPlane.
           * \param cloud the input point cloud dataset

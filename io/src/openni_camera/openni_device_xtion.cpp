@@ -36,6 +36,7 @@
  *
  */
 #include <pcl/pcl_config.h>
+#include <pcl/memory.h>
 #ifdef HAVE_OPENNI
 
 #ifdef __GNUC__
@@ -64,7 +65,7 @@ openni_wrapper::DeviceXtionPro::DeviceXtionPro (xn::Context& context, const xn::
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::DeviceXtionPro::~DeviceXtionPro () throw ()
+openni_wrapper::DeviceXtionPro::~DeviceXtionPro () noexcept
 {
   depth_mutex_.lock ();
   depth_generator_.UnregisterFromNewDataAvailable (depth_callback_handle_);
@@ -80,7 +81,7 @@ openni_wrapper::DeviceXtionPro::isImageResizeSupported (unsigned, unsigned, unsi
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-openni_wrapper::DeviceXtionPro::enumAvailableModes () throw ()
+openni_wrapper::DeviceXtionPro::enumAvailableModes () noexcept
 {
   XnMapOutputMode output_mode;
   available_image_modes_.clear();
@@ -114,10 +115,10 @@ openni_wrapper::DeviceXtionPro::enumAvailableModes () throw ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-boost::shared_ptr<openni_wrapper::Image> 
-openni_wrapper::DeviceXtionPro::getCurrentImage (boost::shared_ptr<xn::ImageMetaData>) const throw ()
+openni_wrapper::Image::Ptr 
+openni_wrapper::DeviceXtionPro::getCurrentImage (pcl::shared_ptr<xn::ImageMetaData>) const throw ()
 {
-  return (boost::shared_ptr<Image> (reinterpret_cast<Image*> (0)));
+  return (Image::Ptr (reinterpret_cast<Image*> (0)));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

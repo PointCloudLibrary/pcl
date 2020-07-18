@@ -53,8 +53,8 @@
 #include <limits>
 #include <mutex>
 #include <thread>
+#include <memory>
 
-using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;
@@ -70,14 +70,14 @@ int nr_frames_total = 0;
 size_t 
 getTotalSystemMemory ()
 {
-  uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
-  uint64_t page_size = sysconf (_SC_PAGE_SIZE);
+  std::uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
+  std::uint64_t page_size = sysconf (_SC_PAGE_SIZE);
   print_info ("Total available memory size: %lluMB.\n", (pages * page_size) / 1048576);
-  if (pages * page_size > uint64_t (std::numeric_limits<size_t>::max ()))
+  if (pages * page_size > std::uint64_t (std::numeric_limits<std::size_t>::max ()))
   {
-    return std::numeric_limits<size_t>::max ();
+    return std::numeric_limits<std::size_t>::max ();
   }
-  return size_t (pages * page_size);
+  return std::size_t (pages * page_size);
 }
 
 const int BUFFER_SIZE = int (getTotalSystemMemory () / (640 * 480) / 2);
@@ -97,7 +97,7 @@ do \
     ++count; \
     if (now - last >= 1.0) \
     { \
-      cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff.getSize () << ", number of frames written so far: " << nr_frames_total << "\n"; \
+      std::cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff.getSize () << ", number of frames written so far: " << nr_frames_total << "\n"; \
       count = 0; \
       last = now; \
     } \
@@ -112,7 +112,7 @@ do \
     ++count; \
     if (now - last >= 1.0) \
     { \
-      cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff.getSize () << "\n"; \
+      std::cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff.getSize () << "\n"; \
       count = 0; \
       last = now; \
     } \
@@ -128,9 +128,9 @@ do \
     if (now - last >= 1.0) \
     { \
       if (visualize && global_visualize) \
-        cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff1.getSize () << " (w) / " << buff2.getSize () << " (v)\n"; \
+        std::cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff1.getSize () << " (w) / " << buff2.getSize () << " (v)\n"; \
       else \
-        cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff1.getSize () << " (w)\n"; \
+        std::cerr << "Average framerate("<< _WHAT_ << "): " << double(count)/double(now - last) << " Hz. Queue size: " << buff1.getSize () << " (w)\n"; \
       count = 0; \
       last = now; \
     } \
@@ -139,11 +139,11 @@ do \
 //////////////////////////////////////////////////////////////////////////////////////////
 struct Frame
 {
-  using Ptr = boost::shared_ptr<Frame>;
-  using ConstPtr = boost::shared_ptr<const Frame>;
+  using Ptr = std::shared_ptr<Frame>;
+  using ConstPtr = std::shared_ptr<const Frame>;
 
-  Frame (const boost::shared_ptr<openni_wrapper::Image> &_image,
-         const boost::shared_ptr<openni_wrapper::DepthImage> &_depth_image,
+  Frame (const openni_wrapper::Image::Ptr &_image,
+         const openni_wrapper::DepthImage::Ptr &_depth_image,
          const io::CameraParameters &_parameters_rgb,
          const io::CameraParameters &_parameters_depth,
          const boost::posix_time::ptime &_time)
@@ -154,8 +154,8 @@ struct Frame
     , time (_time) 
   {}
 
-  const boost::shared_ptr<openni_wrapper::Image> image;
-  const boost::shared_ptr<openni_wrapper::DepthImage> depth_image;
+  const openni_wrapper::Image::Ptr image;
+  const openni_wrapper::DepthImage::Ptr depth_image;
         
   io::CameraParameters parameters_rgb, parameters_depth;
 
@@ -194,7 +194,7 @@ class Buffer
             break;
           {
             std::lock_guard<std::mutex> io_lock (io_mutex);
-            //cerr << "No data in buffer_ yet or buffer is empty." << endl;
+            //std::cerr << "No data in buffer_ yet or buffer is empty." << std::endl;
           }
           buff_empty_.wait (buff_lock);
         }
@@ -268,9 +268,9 @@ class Writer
       FPS_CALC_WRITER ("data write   ", buf_);
       nr_frames_total++;
       
-      stringstream ss1, ss2, ss3;
+      std::stringstream ss1, ss2, ss3;
 
-      string time_string = boost::posix_time::to_iso_string (frame->time);
+      std::string time_string = boost::posix_time::to_iso_string (frame->time);
       // Save RGB data
       ss1 << "frame_" << time_string << "_rgb.pclzf";
       switch (frame->image->getEncoding ())
@@ -361,7 +361,7 @@ class Writer
 
   private:
     Buffer &buf_;
-    boost::shared_ptr<std::thread> thread_;
+    std::shared_ptr<std::thread> thread_;
 };
 
 
@@ -371,8 +371,8 @@ class Driver
   private:
     //////////////////////////////////////////////////////////////////////////
     void
-    image_callback (const boost::shared_ptr<openni_wrapper::Image> &image, 
-                    const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image, 
+    image_callback (const openni_wrapper::Image::Ptr &image, 
+                    const openni_wrapper::DepthImage::Ptr &depth_image, 
                     float)
     {
       boost::posix_time::ptime time = boost::posix_time::microsec_clock::local_time ();
@@ -451,7 +451,7 @@ class Driver
     
     OpenNIGrabber& grabber_;
     Buffer &buf_write_, &buf_vis_;
-    boost::shared_ptr<std::thread> thread_;
+    std::shared_ptr<std::thread> thread_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -462,8 +462,8 @@ class Viewer
     void 
     receiveAndView ()
     {
-      string mouseMsg2D ("Mouse coordinates in image viewer");
-      string keyMsg2D ("Key event for image viewer");
+      std::string mouseMsg2D ("Mouse coordinates in image viewer");
+      std::string keyMsg2D ("Key event for image viewer");
 
       image_viewer_->registerMouseCallback (&Viewer::mouse_callback, *this, static_cast<void*> (&mouseMsg2D));
       image_viewer_->registerKeyboardCallback(&Viewer::keyboard_callback, *this, static_cast<void*> (&keyMsg2D));
@@ -500,7 +500,7 @@ class Viewer
           if (frame->image)
           {
             // Copy RGB data for visualization
-            static vector<unsigned char> rgb_data (frame->image->getWidth () * frame->image->getHeight () * 3);
+            static std::vector<unsigned char> rgb_data (frame->image->getWidth () * frame->image->getHeight () * 3);
             if (frame->image->getEncoding () != openni_wrapper::Image::RGB)
             {
               frame->image->fillRGB (frame->image->getWidth (), 
@@ -523,9 +523,9 @@ class Viewer
             unsigned char* data = visualization::FloatImageUtils::getVisualImage (
                 reinterpret_cast<const unsigned short*> (&frame->depth_image->getDepthMetaData ().Data ()[0]),
                   frame->depth_image->getWidth (), frame->depth_image->getHeight (),
-                  numeric_limits<unsigned short>::min (), 
+                  std::numeric_limits<unsigned short>::min (), 
                   // Scale so that the colors look brigher on screen
-                  numeric_limits<unsigned short>::max () / 10, 
+                  std::numeric_limits<unsigned short>::max () / 10, 
                   true);
 
             depth_image_viewer_->addRGBImage (data, 
@@ -618,41 +618,41 @@ class Viewer
     }
 
     Buffer &buf_;
-    boost::shared_ptr<visualization::ImageViewer> image_viewer_;
-    boost::shared_ptr<visualization::ImageViewer> depth_image_viewer_;
+    visualization::ImageViewer::Ptr image_viewer_;
+    visualization::ImageViewer::Ptr depth_image_viewer_;
     bool image_cld_init_, depth_image_cld_init_;
 };
 
 void
 usage (char ** argv)
 {
-  cout << "usage: " << argv[0] << " [(<device_id> [-visualize | -imagemode <mode>] | [-depthmode <mode>] | [-depthformat <format>] | -l [<device_id>]| -h | --help)]\n";
-  cout << argv[0] << " -h | --help : shows this help\n";
-  cout << argv[0] << " -l : list all available devices\n";
-  cout << argv[0] << " -buf X         : use a buffer size of X frames (default: " << buff_size << ")\n";
-  cout << argv[0] << " -visualize 0/1 : turn the visualization off/on (WARNING: when visualization is disabled, data writing is enabled by default!)\n";
-  cout << argv[0] << " -l <device-id> : list all available modes for specified device\n";
+  std::cout << "usage: " << argv[0] << " [(<device_id> [-visualize | -imagemode <mode>] | [-depthmode <mode>] | [-depthformat <format>] | -l [<device_id>]| -h | --help)]\n";
+  std::cout << argv[0] << " -h | --help : shows this help\n";
+  std::cout << argv[0] << " -l : list all available devices\n";
+  std::cout << argv[0] << " -buf X         : use a buffer size of X frames (default: " << buff_size << ")\n";
+  std::cout << argv[0] << " -visualize 0/1 : turn the visualization off/on (WARNING: when visualization is disabled, data writing is enabled by default!)\n";
+  std::cout << argv[0] << " -l <device-id> : list all available modes for specified device\n";
 
-  cout << "                 device_id may be #1, #2, ... for the first, second etc device in the list"
+  std::cout << "                 device_id may be #1, #2, ... for the first, second etc device in the list"
 #ifndef _WIN32
-       << " or" << endl
-       << "                 bus@address for the device connected to a specific usb-bus / address combination or" << endl
+       << " or" << std::endl
+       << "                 bus@address for the device connected to a specific usb-bus / address combination or" << std::endl
        << "                 <serial-number>"
 #endif
-       << endl;
-  cout << endl;
-  cout << "examples:" << endl;
-  cout << argv[0] << " \"#1\"" << endl;
-  cout << "    uses the first device." << endl;
-  cout << argv[0] << " -l" << endl;
-  cout << "    lists all available devices." << endl;
-  cout << argv[0] << " -l \"#2\"" << endl;
-  cout << "    lists all available modes for the second device" << endl;
+       << std::endl;
+  std::cout << std::endl;
+  std::cout << "examples:" << std::endl;
+  std::cout << argv[0] << " \"#1\"" << std::endl;
+  std::cout << "    uses the first device." << std::endl;
+  std::cout << argv[0] << " -l" << std::endl;
+  std::cout << "    lists all available devices." << std::endl;
+  std::cout << argv[0] << " -l \"#2\"" << std::endl;
+  std::cout << "    lists all available modes for the second device" << std::endl;
 #ifndef _WIN32
-  cout << argv[0] << " A00361800903049A" << endl;
-  cout << "    uses the device with the serial number \'A00361800903049A\'." << endl;
-  cout << argv[0] << " 1@16" << endl;
-  cout << "    uses the device on address 16 at USB bus 1." << endl;
+  std::cout << argv[0] << " A00361800903049A" << std::endl;
+  std::cout << "    uses the device with the serial number \'A00361800903049A\'." << std::endl;
+  std::cout << argv[0] << " 1@16" << std::endl;
+  std::cout << "    uses the device on address 16 at USB bus 1." << std::endl;
 #endif
 }
 
@@ -680,7 +680,7 @@ main (int argc, char ** argv)
   else
     print_highlight ("Using default buffer size of %d frames.\n", buff_size);
 
-  string device_id;
+  std::string device_id;
   OpenNIGrabber::Mode image_mode = OpenNIGrabber::OpenNI_Default_Mode;
   OpenNIGrabber::Mode depth_mode = OpenNIGrabber::OpenNI_Default_Mode;
   
@@ -697,24 +697,24 @@ main (int argc, char ** argv)
       if (argc >= 3)
       {
         OpenNIGrabber grabber (argv[2]);
-        boost::shared_ptr<openni_wrapper::OpenNIDevice> device = grabber.getDevice ();
-        vector<pair<int, XnMapOutputMode> > modes;
+        auto device = grabber.getDevice ();
+        std::vector<std::pair<int, XnMapOutputMode> > modes;
 
         if (device->hasImageStream ())
         {
-          cout << endl << "Supported image modes for device: " << device->getVendorName () << " , " << device->getProductName () << endl;
+          std::cout << std::endl << "Supported image modes for device: " << device->getVendorName () << " , " << device->getProductName () << std::endl;
           modes = grabber.getAvailableImageModes ();
-          for (vector<pair<int, XnMapOutputMode> >::const_iterator it = modes.begin (); it != modes.end (); ++it)
+          for (std::vector<std::pair<int, XnMapOutputMode> >::const_iterator it = modes.begin (); it != modes.end (); ++it)
           {
-            cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
+            std::cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
           }
         if (device->hasDepthStream ())
         {
-          cout << endl << "Supported depth modes for device: " << device->getVendorName () << " , " << device->getProductName () << endl;
+          std::cout << std::endl << "Supported depth modes for device: " << device->getVendorName () << " , " << device->getProductName () << std::endl;
           modes = grabber.getAvailableDepthModes ();
-          for (vector<pair<int, XnMapOutputMode> >::const_iterator it = modes.begin (); it != modes.end (); ++it)
+          for (std::vector<std::pair<int, XnMapOutputMode> >::const_iterator it = modes.begin (); it != modes.end (); ++it)
           {
-            cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
+            std::cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
           }
         }
         }
@@ -726,15 +726,15 @@ main (int argc, char ** argv)
         {
           for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices (); ++deviceIdx)
           {
-            cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
-              << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
+            std::cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
+              << ", connected: " << driver.getBus (deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << std::endl;
           }
 
         }
         else
-          cout << "No devices connected." << endl;
+          std::cout << "No devices connected." << std::endl;
         
-        cout <<"Virtual Devices available: ONI player" << endl;
+        std::cout <<"Virtual Devices available: ONI player" << std::endl;
       }
       return (0);
     }
@@ -743,7 +743,7 @@ main (int argc, char ** argv)
   {
     openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
     if (driver.getNumberDevices() > 0)
-      cout << "Device Id not set, using first device." << endl;
+      std::cout << "Device Id not set, using first device." << std::endl;
   }
   
   unsigned mode;
@@ -771,7 +771,7 @@ main (int argc, char ** argv)
 
   Driver driver (ni_grabber, buf_write, buf_vis);
   Writer writer (buf_write);
-  boost::shared_ptr<Viewer> viewer;
+  std::shared_ptr<Viewer> viewer;
   if (global_visualize)
     viewer.reset (new Viewer (buf_vis));
   else

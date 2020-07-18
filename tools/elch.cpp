@@ -123,7 +123,7 @@ main (int argc, char **argv)
   pcd_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
 
   CloudVector clouds;
-  for (size_t i = 0; i < pcd_indices.size (); i++)
+  for (std::size_t i = 0; i < pcd_indices.size (); i++)
   {
     CloudPtr pc (new Cloud);
     pcl::io::loadPCDFile (argv[pcd_indices[i]], *pc);
@@ -134,7 +134,7 @@ main (int argc, char **argv)
 
   int first = 0, last = 0;
 
-  for (size_t i = 0; i < clouds.size (); i++)
+  for (std::size_t i = 0; i < clouds.size (); i++)
   {
 
     if (loopDetection (int (i), clouds, 3.0, first, last))
@@ -150,7 +150,7 @@ main (int argc, char **argv)
   {
     std::string result_filename (cloud.first);
     result_filename = result_filename.substr (result_filename.rfind ('/') + 1);
-    pcl::io::savePCDFileBinary (result_filename.c_str (), *(cloud.second));
+    pcl::io::savePCDFileBinary (result_filename, *(cloud.second));
     std::cout << "saving result to " << result_filename << std::endl;
   }
 

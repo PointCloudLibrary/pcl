@@ -79,8 +79,7 @@ namespace mets {
     /// moves.
     ///
     virtual void
-    search()
-      throw(no_moves_error);
+    search();
 
   protected:
     bool short_circuit_m;
@@ -107,7 +106,6 @@ mets::local_search<move_manager_t>::local_search(evaluable_solution& working,
 template<typename move_manager_t>
 void
 mets::local_search<move_manager_t>::search()
-  throw(no_moves_error)
 {
   using base_t = abstract_search<move_manager_t>;
   typename move_manager_t::iterator best_movit;

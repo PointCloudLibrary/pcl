@@ -50,9 +50,9 @@ const float SelectionTransformTool::DEFAULT_TRANSLATE_FACTOR_ = 0.001;
 SelectionTransformTool::SelectionTransformTool (ConstSelectionPtr selection_ptr,
                                                 CloudPtr cloud_ptr,
                                                 CommandQueuePtr command_queue_ptr)
-  : selection_ptr_(selection_ptr),
-    cloud_ptr_(cloud_ptr),
-    command_queue_ptr_(command_queue_ptr),
+  : selection_ptr_(std::move(selection_ptr)),
+    cloud_ptr_(std::move(cloud_ptr)),
+    command_queue_ptr_(std::move(command_queue_ptr)),
     translate_factor_(DEFAULT_TRANSLATE_FACTOR_)
 {
   std::fill_n(center_xyz_, XYZ_SIZE, 0);
@@ -97,7 +97,7 @@ SelectionTransformTool::update (int x, int y, BitMask, BitMask buttons)
                                          0.0f);
     return;
   }
-  else if (modifiers_ & ALT)
+  if (modifiers_ & ALT)
   {
     // selection motion is not applied directly (waits for end)
     // as such we can not update x and y immediately
@@ -134,21 +134,21 @@ SelectionTransformTool::end (int x, int y, BitMask modifiers, BitMask buttons)
   update(x, y, modifiers, buttons);
   if (modifiers_ & CTRL)
   {
-    boost::shared_ptr<TransformCommand> c(new TransformCommand(selection_ptr_,
+    std::shared_ptr<TransformCommand> c(new TransformCommand(selection_ptr_,
       cloud_ptr_, transform_matrix_, (float) dx * translate_factor_ * scale,
       (float) -dy * translate_factor_ * scale, 0.0f));
     command_queue_ptr_->execute(c);
   }
   else if (modifiers_ & ALT)
   {
-    boost::shared_ptr<TransformCommand> c(new TransformCommand(selection_ptr_,
+    std::shared_ptr<TransformCommand> c(new TransformCommand(selection_ptr_,
       cloud_ptr_, transform_matrix_, 0.0f, 0.0f,
       (float) dy * translate_factor_ * scale));
     command_queue_ptr_->execute(c);
   }
   else
   {
-    boost::shared_ptr<TransformCommand> c(new TransformCommand(selection_ptr_,
+    std::shared_ptr<TransformCommand> c(new TransformCommand(selection_ptr_,
       cloud_ptr_, transform_matrix_, 0.0f, 0.0f, 0.0f));
     command_queue_ptr_->execute(c);
   }

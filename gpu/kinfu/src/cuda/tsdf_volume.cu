@@ -83,11 +83,9 @@ namespace pcl
   {
     struct Tsdf
     {
-      enum
-      {
-        CTA_SIZE_X = 32, CTA_SIZE_Y = 8,
-        MAX_WEIGHT = 1 << 7
-      };
+      static constexpr int CTA_SIZE_X = 32;
+      static constexpr int CTA_SIZE_Y = 8;
+      static constexpr int MAX_WEIGHT = 1 << 7;
 
       mutable PtrStep<short2> volume;
       float3 cell_size;
@@ -451,7 +449,7 @@ namespace pcl
                     bool integrate = true;
                     if ((x > 0 &&  x < VOLUME_X-2) && (y > 0 && y < VOLUME_Y-2) && (z > 0 && z < VOLUME_Z-2))
                     {
-                        const float qnan = numeric_limits<float>::quiet_NaN();
+                        const float qnan = std::numeric_limits<float>::quiet_NaN();
                         float3 normal = make_float3(qnan, qnan, qnan);
 
                         float Fn, Fp;

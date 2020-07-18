@@ -158,7 +158,7 @@ ON_BOOL32 ON_Curve::SetDomain( double, double )
   return false;
 }
 
-ON_BOOL32 ON_Curve::ChangeClosedCurveSeam( double t )
+ON_BOOL32 ON_Curve::ChangeClosedCurveSeam( double )
 {
   // this virtual function is overridden by curves that can be closed
   return false;
@@ -216,8 +216,8 @@ ON_BOOL32 ON_Curve::GetParameterTolerance( // returns tminus < tplus: parameters
 }
 
 int ON_Curve::IsPolyline(
-      ON_SimpleArray<ON_3dPoint>* pline_points, // default = NULL
-      ON_SimpleArray<double>* pline_t // default = NULL
+      ON_SimpleArray<ON_3dPoint>*, // default = NULL
+      ON_SimpleArray<double>* // default = NULL
       ) const
 {
   // virtual function that is overridden
@@ -572,7 +572,7 @@ bool ON_Curve::GetNextDiscontinuity(
                 double t0,
                 double t1,
                 double* t,
-                int* hint,
+                int*,
                 int* dtype,
                 double cos_angle_tolerance,
                 double curvature_tolerance
@@ -905,12 +905,12 @@ ON_3dPoint ON_Curve::PointAtEnd() const
 }
 
 
-ON_BOOL32 ON_Curve::SetStartPoint(ON_3dPoint start_point)
+ON_BOOL32 ON_Curve::SetStartPoint(ON_3dPoint)
 {
   return false;
 }
 
-ON_BOOL32 ON_Curve::SetEndPoint(ON_3dPoint end_point)
+ON_BOOL32 ON_Curve::SetEndPoint(ON_3dPoint)
 {
   return false;
 }
@@ -1101,19 +1101,19 @@ ON_BOOL32 ON_Curve::EvPoint( // returns false if unable to evaluate
   return rc;
 }
 
-bool ON_Brep::EvaluatePoint( const class ON_ObjRef& objref, ON_3dPoint& P ) const
+bool ON_Brep::EvaluatePoint( const class ON_ObjRef&, ON_3dPoint& ) const
 {
   // TODO
   return false;
 }
 
-bool ON_Surface::EvaluatePoint( const class ON_ObjRef& objref, ON_3dPoint& P ) const
+bool ON_Surface::EvaluatePoint( const class ON_ObjRef&, ON_3dPoint& ) const
 {
   // TODO
   return false;
 }
 
-bool ON_PolyCurve::EvaluatePoint( const class ON_ObjRef& objref, ON_3dPoint& P ) const
+bool ON_PolyCurve::EvaluatePoint( const class ON_ObjRef&, ON_3dPoint& ) const
 {
   // TODO
   return false;
@@ -1406,7 +1406,6 @@ bool ON_MatchCurveEnds( ON_Curve* curve0,
     if ( !rc )
     {
       // try to close the gap
-      ON_Curve* seg[2] = {0,0};
       int fix[2] = {0,0};
       ON_3dPoint fixPoint[2];
       fixPoint[0] = ON_UNSET_POINT;
@@ -1432,7 +1431,6 @@ bool ON_MatchCurveEnds( ON_Curve* curve0,
             return false;
           ct = ON_CurveType(c);
         }
-        seg[i] = c;
         switch(ct)
         {
         case ON::ctArc: // arc
@@ -2040,7 +2038,7 @@ bool ON_NurbsCurve::SpanIsLinear(
   return false;
 }
 
-ON_BOOL32 ON_Curve::Trim( const ON_Interval& in )
+ON_BOOL32 ON_Curve::Trim( const ON_Interval& )
 {
   // TODO - make this pure virtual
   return false;
@@ -2048,7 +2046,7 @@ ON_BOOL32 ON_Curve::Trim( const ON_Interval& in )
 
 
 bool ON_Curve::Extend(
-  const ON_Interval& domain
+  const ON_Interval&
   )
 
 {
@@ -2152,9 +2150,9 @@ ON_BOOL32 ON_Curve::Split(
 
 // virtual
 int ON_Curve::GetNurbForm(
-      ON_NurbsCurve& nurbs_curve,
-      double tolerance,
-      const ON_Interval* subdomain
+      ON_NurbsCurve&,
+      double,
+      const ON_Interval*
       ) const
 {
   return 0;
@@ -2670,7 +2668,6 @@ ON_JoinCurves(const ON_SimpleArray<const ON_Curve*>& InCurves,
       }
       if (SArray[j].bRev) C->Reverse();
       if (PC->Count()){
-        bool bSet = true;
         if (!ON_ForceMatchCurveEnds(*PC, 1, *C, 0)) {
           ON_3dPoint P = PC->PointAtEnd();
           ON_3dPoint Q = C->PointAtStart();
@@ -2682,7 +2679,6 @@ ON_JoinCurves(const ON_SimpleArray<const ON_Curve*>& InCurves,
               C = NC;
             }
             else {
-              bSet = false;
               delete NC;
               if (PC->Count()) {
                 pc_added = true;

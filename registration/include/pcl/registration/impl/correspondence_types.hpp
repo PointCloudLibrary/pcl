@@ -37,15 +37,23 @@
  * $Id$
  *
  */
-#ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_TYPES_H_
-#define PCL_REGISTRATION_IMPL_CORRESPONDENCE_TYPES_H_
 
-#include <limits>
+#pragma once
+
 #include <pcl/registration/eigen.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////
+#include <cstddef>
+#include <vector>
+
+
+namespace pcl
+{
+
+namespace registration
+{
+
 inline void
-pcl::registration::getCorDistMeanStd (const pcl::Correspondences &correspondences, double &mean, double &stddev)
+getCorDistMeanStd (const pcl::Correspondences &correspondences, double &mean, double &stddev)
 {
   if (correspondences.empty ())
     return;
@@ -62,22 +70,23 @@ pcl::registration::getCorDistMeanStd (const pcl::Correspondences &correspondence
   stddev = sqrt (variance);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
 inline void
-pcl::registration::getQueryIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
+getQueryIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
 {
   indices.resize (correspondences.size ());
-  for (size_t i = 0; i < correspondences.size (); ++i)
+  for (std::size_t i = 0; i < correspondences.size (); ++i)
     indices[i] = correspondences[i].index_query;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
+
 inline void
-pcl::registration::getMatchIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
+getMatchIndices (const pcl::Correspondences& correspondences, std::vector<int>& indices)
 {
   indices.resize (correspondences.size ());
-  for (size_t i = 0; i < correspondences.size (); ++i)
+  for (std::size_t i = 0; i < correspondences.size (); ++i)
     indices[i] = correspondences[i].index_match;
 }
 
-#endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_TYPES_H_ */
+} // namespace registration
+} // namespace pcl
+

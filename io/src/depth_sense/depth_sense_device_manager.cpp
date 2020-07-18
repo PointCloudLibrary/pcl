@@ -75,7 +75,7 @@ pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice (DepthSenseGrabberI
   std::vector<DepthSense::Device> devices = context_.getDevices ();
   if (devices.size () == 0)
     THROW_IO_EXCEPTION ("no connected devices");
-  for (size_t i = 0; i < devices.size (); ++i)
+  for (std::size_t i = 0; i < devices.size (); ++i)
     if (!isCaptured (devices[i].getSerialNumber ()))
       return (captureDevice (grabber, devices[i]));
   THROW_IO_EXCEPTION ("all connected devices are captured by other grabbers");
@@ -83,7 +83,7 @@ pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice (DepthSenseGrabberI
 }
 
 std::string
-pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice (DepthSenseGrabberImpl* grabber, size_t index)
+pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice (DepthSenseGrabberImpl* grabber, std::size_t index)
 {
   std::lock_guard<std::mutex> lock (mutex_);
   if (index >= context_.getDevices ().size ())
@@ -98,7 +98,7 @@ pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice (DepthSenseGrabberI
 {
   std::lock_guard<std::mutex> lock (mutex_);
   std::vector<DepthSense::Device> devices = context_.getDevices ();
-  for (size_t i = 0; i < devices.size (); ++i)
+  for (std::size_t i = 0; i < devices.size (); ++i)
   {
     if (devices[i].getSerialNumber () == sn)
     {
@@ -175,7 +175,7 @@ pcl::io::depth_sense::DepthSenseDeviceManager::captureDevice (DepthSenseGrabberI
   CapturedDevice dev;
   dev.grabber = grabber;
   std::vector<DepthSense::Node> nodes = device.getNodes ();
-  for (size_t i = 0; i < nodes.size (); ++i)
+  for (std::size_t i = 0; i < nodes.size (); ++i)
   {
     if (nodes[i].is<DepthSense::DepthNode> ())
     {

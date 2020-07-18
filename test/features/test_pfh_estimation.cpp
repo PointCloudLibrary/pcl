@@ -42,7 +42,7 @@
   #define PCL_NO_PRECOMPILE
 #endif
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
 #include <pcl/features/pfh.h>
 #include <pcl/features/fpfh.h>
@@ -106,12 +106,12 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
   // All three of the above cases should produce equivalent results
   ASSERT_EQ (output0.size (), output1.size ());
   ASSERT_EQ (output1.size (), output2.size ());
-  for (size_t i = 0; i < output1.size (); ++i)
+  for (std::size_t i = 0; i < output1.size (); ++i)
   {
     for (int j = 0; j < ndims; ++j)
     {
-      ASSERT_EQ (output0.points[i].histogram[j], output1.points[i].histogram[j]);
-      ASSERT_EQ (output1.points[i].histogram[j], output2.points[i].histogram[j]);
+      ASSERT_EQ (output0[i].histogram[j], output1[i].histogram[j]);
+      ASSERT_EQ (output1[i].histogram[j], output2[i].histogram[j]);
     }
   }
 
@@ -121,7 +121,7 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
   PointCloud<OutputT> output3, output4;
 
   pcl::IndicesPtr indices2 (new pcl::Indices (0));
-  for (size_t i = 0; i < (indices->size ()/2); ++i)
+  for (std::size_t i = 0; i < (indices->size ()/2); ++i)
     indices2->push_back (static_cast<int> (i));
 
   // Compute with all points as search surface + the specified sub-cloud as "input" but for only a subset of indices
@@ -139,11 +139,11 @@ testIndicesAndSearchSurface (const typename PointCloud<PointT>::Ptr & points,
 
   // The two cases above should produce equivalent results
   ASSERT_EQ (output3.size (), output4.size ());
-  for (size_t i = 0; i < output3.size (); ++i)
+  for (std::size_t i = 0; i < output3.size (); ++i)
   {
     for (int j = 0; j < ndims; ++j)
     {
-      ASSERT_EQ (output3.points[i].histogram[j], output4.points[i].histogram[j]);
+      ASSERT_EQ (output3[i].histogram[j], output4[i].histogram[j]);
     }
   }
 }
@@ -214,7 +214,7 @@ TEST (PCL, PFHEstimation)
 
   // estimate
   pfh.compute (*pfhs);
-  EXPECT_EQ (pfhs->points.size (), indices.size ());
+  EXPECT_EQ (pfhs->size (), indices.size ());
 
   for (const auto &point : pfhs->points)
   {
@@ -246,13 +246,13 @@ TEST (PCL, PFHEstimation)
     EXPECT_NEAR (point.histogram[25], 0.223902  , 1e-4);
     EXPECT_NEAR (point.histogram[26], 0.07633   , 1e-4);
   }
-  //Eigen::Map<Eigen::VectorXf> h (&(pfhs->points[0].histogram[0]), 125);
+  //Eigen::Map<Eigen::VectorXf> h (&((*pfhs)[0].histogram[0]), 125);
   //std::cerr << h.head<27> () << std::endl;
 
   // Test results when setIndices and/or setSearchSurface are used
 
   pcl::IndicesPtr test_indices (new pcl::Indices (0));
-  for (size_t i = 0; i < cloud->size (); i+=3)
+  for (std::size_t i = 0; i < cloud->size (); i+=3)
     test_indices->push_back (static_cast<int> (i));
 
   testIndicesAndSearchSurface<pcl::PFHEstimation, PointT, PointT, PFHSignature125>
@@ -294,7 +294,7 @@ struct FPFHTest<FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >
 using FPFHEstimatorTypes = ::testing::Types
         <FPFHEstimation<PointT, PointT, FPFHSignature33>,
          FPFHEstimationOMP<PointT, PointT, FPFHSignature33> >;
-TYPED_TEST_CASE (FPFHTest, FPFHEstimatorTypes);
+TYPED_TEST_SUITE (FPFHTest, FPFHEstimatorTypes);
 
 // This is a copy of the old FPFHEstimation test which will now
 // be applied to both FPFHEstimation and FPFHEstimationOMP
@@ -352,7 +352,7 @@ TYPED_TEST (FPFHTest, Estimation)
   Eigen::VectorXf fpfh_histogram (nr_subdiv + nr_subdiv + nr_subdiv);
   fpfh_histogram.setZero ();
   std::vector<float> dists (indices.size ());
-  for (size_t i = 0; i < dists.size (); ++i) dists[i] = static_cast<float> (i);
+  for (std::size_t i = 0; i < dists.size (); ++i) dists[i] = static_cast<float> (i);
   fpfh.weightPointSPFHSignature (hist_f1, hist_f2, hist_f3, indices, dists, fpfh_histogram);
 
   EXPECT_NEAR (fpfh_histogram[0],  1.9798 ,  1e-2);
@@ -402,46 +402,46 @@ TYPED_TEST (FPFHTest, Estimation)
 
   // estimate
   fpfh.compute (*fpfhs);
-  EXPECT_EQ (fpfhs->points.size (), indices.size ());
+  EXPECT_EQ (fpfhs->size (), indices.size ());
 
-  EXPECT_NEAR (fpfhs->points[0].histogram[0],  1.58591, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[1],  1.68365, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[2],  6.71   , 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[3],  23.0717, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[4],  33.3844, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[5],  20.4002, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[6],  7.31067, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[7],  1.02635, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[8],  0.48591, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[9],  1.47069, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[10], 2.87061, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[11], 1.78321, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[12], 4.30795, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[13], 7.05514, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[14], 9.37615, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[15], 17.963 , 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[16], 18.2801, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[17], 14.2766, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[18], 10.8542, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[19], 6.07925, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[20], 5.28565, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[21], 4.73887, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[22], 0.56984, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[23], 3.29826, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[24], 5.28156, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[25], 5.26939, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[26], 3.13191, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[27], 1.74453, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[28], 9.41971, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[29], 21.5894, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[30], 24.6302, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[31], 17.7764, 1e-2);
-  EXPECT_NEAR (fpfhs->points[0].histogram[32], 7.28878, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[0],  1.58591, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[1],  1.68365, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[2],  6.71   , 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[3],  23.0717, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[4],  33.3844, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[5],  20.4002, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[6],  7.31067, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[7],  1.02635, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[8],  0.48591, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[9],  1.47069, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[10], 2.87061, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[11], 1.78321, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[12], 4.30795, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[13], 7.05514, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[14], 9.37615, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[15], 17.963 , 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[16], 18.2801, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[17], 14.2766, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[18], 10.8542, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[19], 6.07925, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[20], 5.28565, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[21], 4.73887, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[22], 0.56984, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[23], 3.29826, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[24], 5.28156, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[25], 5.26939, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[26], 3.13191, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[27], 1.74453, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[28], 9.41971, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[29], 21.5894, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[30], 24.6302, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[31], 17.7764, 1e-2);
+  EXPECT_NEAR ((*fpfhs)[0].histogram[32], 7.28878, 1e-2);
 
   // Test results when setIndices and/or setSearchSurface are used
 
   pcl::IndicesPtr test_indices (new pcl::Indices (0));
-  for (size_t i = 0; i < cloud->size (); i+=3)
+  for (std::size_t i = 0; i < cloud->size (); i+=3)
     test_indices->push_back (static_cast<int> (i));
 
   testIndicesAndSearchSurface<FPFHEstimation, PointT, PointT, FPFHSignature33>
@@ -467,10 +467,10 @@ TEST (PCL, VFHEstimation)
 
   // estimate
   vfh.compute (*vfhs);
-  EXPECT_EQ (int (vfhs->points.size ()), 1);
+  EXPECT_EQ (int (vfhs->size ()), 1);
 
-  //for (size_t d = 0; d < 308; ++d)
-  //  std::cerr << vfhs.points[0].histogram[d] << std::endl;
+  //for (std::size_t d = 0; d < 308; ++d)
+  //  std::cerr << vfhs[0].histogram[d] << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -498,7 +498,7 @@ TEST (PCL, GFPFH)
         p.z = static_cast<float> (z);
         cloud->points.push_back (p);
       }
-  cloud->width = static_cast<uint32_t> (cloud->points.size ());
+  cloud->width = cloud->size ();
   cloud->height = 1;
 
   pcl::GFPFHEstimation<PointXYZL, PointXYZL, GFPFHSignature16> gfpfh;
@@ -511,10 +511,10 @@ TEST (PCL, GFPFH)
 
   const float ref_values[] = { 1877, 6375, 5361, 14393, 6674, 2471, 2248, 2753, 3117, 4585, 14388, 32407, 15122, 3061, 3202, 794 };
 
-  EXPECT_EQ (descriptor.points.size (), 1);
-  for (size_t i = 0; i < size_t (descriptor.points[0].descriptorSize ()); ++i)
+  EXPECT_EQ (descriptor.size (), 1);
+  for (std::size_t i = 0; i < std::size_t (descriptor[0].descriptorSize ()); ++i)
   {
-    EXPECT_EQ (descriptor.points[0].histogram[i], ref_values[i]);
+    EXPECT_EQ (descriptor[0].histogram[i], ref_values[i]);
   }
 }
 
@@ -536,7 +536,7 @@ main (int argc, char** argv)
 
 
   indices.reserve (cloud->size ());
-  for (size_t i = 0; i < cloud->size (); ++i)
+  for (std::size_t i = 0; i < cloud->size (); ++i)
     indices.push_back (static_cast<int> (i));
 
   tree.reset (new pcl::search::KdTree<PointT> (false));

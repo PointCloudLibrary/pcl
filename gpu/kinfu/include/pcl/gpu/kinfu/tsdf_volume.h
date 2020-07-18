@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/point_types.h>
@@ -54,7 +55,8 @@ namespace pcl
     class PCL_EXPORTS TsdfVolume
     {
     public:
-      using Ptr = boost::shared_ptr<TsdfVolume>;
+      using Ptr = shared_ptr<TsdfVolume>;
+      using ConstPtr = shared_ptr<const TsdfVolume>;
 
       /** \brief Supported Point Types */
       using PointType = PointXYZ;

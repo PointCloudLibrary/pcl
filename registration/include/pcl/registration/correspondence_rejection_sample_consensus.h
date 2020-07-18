@@ -41,6 +41,7 @@
 #pragma once
 
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/registration/correspondence_rejection.h>
 
@@ -69,8 +70,8 @@ namespace pcl
         using CorrespondenceRejector::rejection_name_;
         using CorrespondenceRejector::getClassName;
 
-        using Ptr = boost::shared_ptr<CorrespondenceRejectorSampleConsensus<PointT> >;
-        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorSampleConsensus<PointT> >;
+        using Ptr = shared_ptr<CorrespondenceRejectorSampleConsensus<PointT> >;
+        using ConstPtr = shared_ptr<const CorrespondenceRejectorSampleConsensus<PointT> >;
 
         /** \brief Empty constructor. Sets the inlier threshold to 5cm (0.05m), 
           * and the maximum number of iterations to 1000. 

@@ -44,7 +44,7 @@ pcl::DepthSenseGrabber::DepthSenseGrabber (const std::string& device_id)
 {
 }
 
-pcl::DepthSenseGrabber::~DepthSenseGrabber () throw ()
+pcl::DepthSenseGrabber::~DepthSenseGrabber () noexcept
 {
   delete p_;
 }
@@ -80,7 +80,7 @@ pcl::DepthSenseGrabber::setConfidenceThreshold (int threshold)
 }
 
 void
-pcl::DepthSenseGrabber::enableTemporalFiltering (TemporalFilteringType type, size_t window_size)
+pcl::DepthSenseGrabber::enableTemporalFiltering (TemporalFilteringType type, std::size_t window_size)
 {
   p_->enableTemporalFiltering (type, window_size);
 }

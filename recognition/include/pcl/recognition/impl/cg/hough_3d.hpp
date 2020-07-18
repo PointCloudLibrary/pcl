@@ -110,14 +110,14 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::tr
 
   // compute model centroid
   Eigen::Vector3f centroid (0, 0, 0);
-  for (size_t i = 0; i < input_->size (); ++i)
+  for (std::size_t i = 0; i < input_->size (); ++i)
   {
     centroid += input_->at (i).getVector3fMap ();
   }
   centroid /= static_cast<float> (input_->size ());
 
   // compute model votes
-  for (size_t i = 0; i < input_->size (); ++i)
+  for (std::size_t i = 0; i < input_->size (); ++i)
   {
     Eigen::Vector3f x_ax ((*input_rf_)[i].x_axis[0], (*input_rf_)[i].x_axis[1], (*input_rf_)[i].x_axis[2]);
     Eigen::Vector3f y_ax ((*input_rf_)[i].y_axis[0], (*input_rf_)[i].y_axis[1], (*input_rf_)[i].y_axis[2]);
@@ -274,7 +274,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::cl
   // Insert maximas into result vector, after Ransac correspondence rejection
   // Temp copy of scene cloud with the type cast to ModelT in order to use Ransac
   PointCloudPtr temp_scene_cloud_ptr (new PointCloud);
-  pcl::copyPointCloud<PointSceneT, PointModelT> (*scene_, *temp_scene_cloud_ptr);
+  pcl::copyPointCloud (*scene_, *temp_scene_cloud_ptr);
 
   pcl::registration::CorrespondenceRejectorSampleConsensus<PointModelT> corr_rejector;
   corr_rejector.setMaximumIterations (10000);
@@ -282,7 +282,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::cl
   corr_rejector.setInputSource (input_);
   corr_rejector.setInputTarget (temp_scene_cloud_ptr);
 
-  for (size_t j = 0; j < max_values.size (); ++j)
+  for (std::size_t j = 0; j < max_values.size (); ++j)
   {
     Correspondences temp_corrs, filtered_corrs;
     for (const int &i : max_ids[j])
@@ -355,9 +355,9 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::re
 
   //// Temp copy of scene cloud with the type cast to ModelT in order to use Ransac
   //PointCloudPtr temp_scene_cloud_ptr (new PointCloud);
-  //pcl::copyPointCloud<PointSceneT, PointModelT> (*scene_, *temp_scene_cloud_ptr);
+  //pcl::copyPointCloud (*scene_, *temp_scene_cloud_ptr);
 
-  //for (size_t i = 0; i < model_instances.size (); ++i)
+  //for (std::size_t i = 0; i < model_instances.size (); ++i)
   //{
   //  Eigen::Matrix4f curr_transf;
   //  if (getTransformMatrix (temp_scene_cloud_ptr, model_instances[i], curr_transf))

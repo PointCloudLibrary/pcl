@@ -52,23 +52,22 @@
 
 //https://bugreports.qt-project.org/browse/QTBUG-22829
 #ifndef Q_MOC_RUN
-#include <pcl/pcl_macros.h>
-#include <pcl/point_traits.h>
-#include <boost/mpl/vector.hpp>
-#include <boost/preprocessor/seq/enum.hpp>
-#include <boost/preprocessor/seq/for_each.hpp>
-#include <boost/preprocessor/seq/transform.hpp>
-#include <boost/preprocessor/cat.hpp>
-#include <boost/preprocessor/comparison.hpp>
+#include <pcl/point_struct_traits.h> // for pcl::traits::POD, POINT_CLOUD_REGISTER_FIELD_(NAME, OFFSET, DATATYPE), POINT_CLOUD_REGISTER_POINT_FIELD_LIST
+#include <boost/mpl/assert.hpp>  // for BOOST_MPL_ASSERT_MSG
+#include <boost/preprocessor/seq/for_each.hpp>  // for BOOST_PP_SEQ_FOR_EACH
+#include <boost/preprocessor/seq/transform.hpp>  // for BOOST_PP_SEQ_TRANSFORM
+#include <boost/preprocessor/tuple/elem.hpp>  // for BOOST_PP_TUPLE_ELEM
+#include <boost/preprocessor/cat.hpp>  // for BOOST_PP_CAT
 #endif
 
-#include <cstddef> //offsetof
-#include <type_traits>
+#include <cstddef> // for offsetof
+#include <cstdint>  // for std::uint32_t
+#include <type_traits>  // for std::enable_if_t, std::is_array, std::remove_const_t, std::remove_all_extents_t
 
 // Must be used in global namespace with name fully qualified
 #define POINT_CLOUD_REGISTER_POINT_STRUCT(name, fseq)               \
   POINT_CLOUD_REGISTER_POINT_STRUCT_I(name,                         \
-    BOOST_PP_CAT(POINT_CLOUD_REGISTER_POINT_STRUCT_X fseq, 0))      \
+    BOOST_PP_CAT(POINT_CLOUD_REGISTER_POINT_STRUCT_X fseq, 0))
   /***/
 
 #define POINT_CLOUD_REGISTER_POINT_WRAPPER(wrapper, pod)    \
@@ -77,7 +76,7 @@
     namespace traits {                                      \
       template<> struct POD<wrapper> { using type = pod; }; \
     }                                                       \
-  }                                                         \
+  }
   /***/
 
 // These macros help transform the unusual data structure (type, name, tag)(type, name, tag)...
@@ -105,8 +104,8 @@ namespace pcl
     plus (std::remove_const_t<T> &l, const T &r)
     {
       using type = std::remove_all_extents_t<T>;
-      static const uint32_t count = sizeof (T) / sizeof (type);
-      for (int i = 0; i < count; ++i)
+      static const std::uint32_t count = sizeof (T) / sizeof (type);
+      for (std::uint32_t i = 0; i < count; ++i)
         l[i] += r[i];
     }
 
@@ -122,8 +121,8 @@ namespace pcl
     plusscalar (T1 &p, const T2 &scalar)
     {
       using type = std::remove_all_extents_t<T1>;
-      static const uint32_t count = sizeof (T1) / sizeof (type);
-      for (int i = 0; i < count; ++i)
+      static const std::uint32_t count = sizeof (T1) / sizeof (type);
+      for (std::uint32_t i = 0; i < count; ++i)
         p[i] += scalar;
     }
 
@@ -139,8 +138,8 @@ namespace pcl
     minus (std::remove_const_t<T> &l, const T &r)
     {
       using type = std::remove_all_extents_t<T>;
-      static const uint32_t count = sizeof (T) / sizeof (type);
-      for (int i = 0; i < count; ++i)
+      static const std::uint32_t count = sizeof (T) / sizeof (type);
+      for (std::uint32_t i = 0; i < count; ++i)
         l[i] -= r[i];
     }
 
@@ -156,8 +155,8 @@ namespace pcl
     minusscalar (T1 &p, const T2 &scalar)
     {
       using type = std::remove_all_extents_t<T1>;
-      static const uint32_t count = sizeof (T1) / sizeof (type);
-      for (int i = 0; i < count; ++i)
+      static const std::uint32_t count = sizeof (T1) / sizeof (type);
+      for (std::uint32_t i = 0; i < count; ++i)
         p[i] -= scalar;
     }
 
@@ -173,8 +172,8 @@ namespace pcl
     mulscalar (T1 &p, const T2 &scalar)
     {
       using type = std::remove_all_extents_t<T1>;
-      static const uint32_t count = sizeof (T1) / sizeof (type);
-      for (int i = 0; i < count; ++i)
+      static const std::uint32_t count = sizeof (T1) / sizeof (type);
+      for (std::uint32_t i = 0; i < count; ++i)
         p[i] *= scalar;
     }
 
@@ -190,8 +189,8 @@ namespace pcl
     divscalar (T1 &p, const T2 &scalar)
     {
       using type = std::remove_all_extents_t<T1>;
-      static const uint32_t count = sizeof (T1) / sizeof (type);
-      for (int i = 0; i < count; ++i)
+      static const std::uint32_t count = sizeof (T1) / sizeof (type);
+      for (std::uint32_t i = 0; i < count; ++i)
         p[i] /= scalar;
     }
   }
@@ -200,34 +199,34 @@ namespace pcl
 // Point operators
 #define PCL_PLUSEQ_POINT_TAG(r, data, elem)                \
   pcl::traits::plus (lhs.BOOST_PP_TUPLE_ELEM(3, 1, elem),  \
-                     rhs.BOOST_PP_TUPLE_ELEM(3, 1, elem)); \
+                     rhs.BOOST_PP_TUPLE_ELEM(3, 1, elem));
   /***/
 
 #define PCL_PLUSEQSC_POINT_TAG(r, data, elem)                 \
   pcl::traits::plusscalar (p.BOOST_PP_TUPLE_ELEM(3, 1, elem), \
-                           scalar);                           \
+                           scalar);
   /***/
-   //p.BOOST_PP_TUPLE_ELEM(3, 1, elem) += scalar;  \
+   //p.BOOST_PP_TUPLE_ELEM(3, 1, elem) += scalar;
 
 #define PCL_MINUSEQ_POINT_TAG(r, data, elem)                \
   pcl::traits::minus (lhs.BOOST_PP_TUPLE_ELEM(3, 1, elem),  \
-                      rhs.BOOST_PP_TUPLE_ELEM(3, 1, elem)); \
+                      rhs.BOOST_PP_TUPLE_ELEM(3, 1, elem));
   /***/
 
 #define PCL_MINUSEQSC_POINT_TAG(r, data, elem)                 \
   pcl::traits::minusscalar (p.BOOST_PP_TUPLE_ELEM(3, 1, elem), \
-                            scalar);                           \
+                            scalar);
   /***/
-   //p.BOOST_PP_TUPLE_ELEM(3, 1, elem) -= scalar;   \
+   //p.BOOST_PP_TUPLE_ELEM(3, 1, elem) -= scalar;
 
 #define PCL_MULEQSC_POINT_TAG(r, data, elem)                 \
   pcl::traits::mulscalar (p.BOOST_PP_TUPLE_ELEM(3, 1, elem), \
-                            scalar);                         \
+                            scalar);
   /***/
 
 #define PCL_DIVEQSC_POINT_TAG(r, data, elem)   \
   pcl::traits::divscalar (p.BOOST_PP_TUPLE_ELEM(3, 1, elem), \
-                            scalar);                         \
+                            scalar);
   /***/
 
 // Construct type traits given full sequence of (type, name, tag) triples
@@ -306,54 +305,16 @@ namespace pcl
       inline const name operator/ (const name& p, const float& scalar) \
       { name result = p; result /= scalar; return (result); }          \
     }                                                          \
-  }                                                            \
+  }
   /***/
 
 #define POINT_CLOUD_REGISTER_FIELD_TAG(r, name, elem)   \
   struct BOOST_PP_TUPLE_ELEM(3, 2, elem);               \
   /***/
 
-#define POINT_CLOUD_REGISTER_FIELD_NAME(r, point, elem)                 \
-  template<int dummy>                                                   \
-  struct name<point, pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem), dummy> \
-  {                                                                     \
-    static const char value[];                                          \
-  };                                                                    \
-                                                                        \
-  template<int dummy>                                                   \
-  const char name<point,                                                \
-                  pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem),         \
-                  dummy>::value[] =                                     \
-    BOOST_PP_STRINGIZE(BOOST_PP_TUPLE_ELEM(3, 2, elem));                \
-  /***/
-
-#define POINT_CLOUD_REGISTER_FIELD_OFFSET(r, name, elem)                \
-  template<> struct offset<name, pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem)> \
-  {                                                                     \
-    static const size_t value = offsetof(name, BOOST_PP_TUPLE_ELEM(3, 1, elem)); \
-  };                                                                    \
-  /***/
-
-#define POINT_CLOUD_REGISTER_FIELD_DATATYPE(r, name, elem)              \
-  template<> struct datatype<name, pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem)> \
-  {                                                                     \
-    using type = boost::mpl::identity<BOOST_PP_TUPLE_ELEM(3, 0, elem)>::type; \
-    using decomposed = decomposeArray<type>;                            \
-    static const uint8_t value = asEnum<decomposed::type>::value;       \
-    static const uint32_t size = decomposed::value;                     \
-  };                                                                    \
-  /***/
-
 #define POINT_CLOUD_TAG_OP(s, data, elem) pcl::fields::BOOST_PP_TUPLE_ELEM(3, 2, elem)
 
 #define POINT_CLOUD_EXTRACT_TAGS(seq) BOOST_PP_SEQ_TRANSFORM(POINT_CLOUD_TAG_OP, _, seq)
-
-#define POINT_CLOUD_REGISTER_POINT_FIELD_LIST(name, seq)        \
-  template<> struct fieldList<name>                             \
-  {                                                             \
-    using type = boost::mpl::vector<BOOST_PP_SEQ_ENUM(seq)>;    \
-  };                                                            \
-  /***/
 
 #if defined _MSC_VER
   #pragma warning (pop)

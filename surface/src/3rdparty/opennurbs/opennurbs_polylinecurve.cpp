@@ -23,7 +23,7 @@ ON_PolylineCurve::ON_PolylineCurve()
   m_dim = 3;
 }
 
-ON_PolylineCurve::ON_PolylineCurve( const ON_PolylineCurve& L )
+ON_PolylineCurve::ON_PolylineCurve( const ON_PolylineCurve& L ) : ON_Curve(L)
 {
   *this = L;
 }
@@ -385,7 +385,7 @@ ON_PolylineCurve::IsLinear( // true if curve locus is a line segment
   if ( nurbs_curve.m_cv_count >= 2 )
   {
     nurbs_curve.m_cv = const_cast<double*>(&m_pline[0].x);
-    nurbs_curve.m_cv_stride = (int)(&m_pline[1].x - nurbs_curve.m_cv); // the int converts 64 bit size_t
+    nurbs_curve.m_cv_stride = (int)(&m_pline[1].x - nurbs_curve.m_cv); // the int converts 64 bit std::size_t
     nurbs_curve.m_knot = const_cast<double*>(m_t.Array());
     // using ptr to make sure we go through vtable
     const ON_Curve* ptr = &nurbs_curve;
@@ -420,10 +420,10 @@ int ON_PolylineCurve::IsPolyline(
 
 ON_BOOL32
 ON_PolylineCurve::IsArc( // true if curve locus in an arc or circle
-      const ON_Plane* plane, // if not NULL, test is performed in this plane
-      ON_Arc* arc,         // if not NULL and true is returned, then arc
+      const ON_Plane*, // if not NULL, test is performed in this plane
+      ON_Arc*,         // if not NULL and true is returned, then arc
                               // arc parameters are filled in
-      double tolerance // tolerance to use when checking linearity
+      double // tolerance to use when checking linearity
       ) const
 {
   return false;
@@ -452,7 +452,7 @@ ON_PolylineCurve::IsPlanar(
     else
     {
       nurbs_curve.m_cv = const_cast<double*>(&m_pline[0].x);
-      nurbs_curve.m_cv_stride = (int)(&m_pline[1].x - nurbs_curve.m_cv); // the (int) converts 64 bit size_t
+      nurbs_curve.m_cv_stride = (int)(&m_pline[1].x - nurbs_curve.m_cv); // the (int) converts 64 bit std::size_t
       nurbs_curve.m_knot = const_cast<double*>(m_t.Array());
       // using ptr to make sure we go through vtable
       const ON_Curve* ptr = &nurbs_curve;
@@ -1218,7 +1218,7 @@ ON_BOOL32 ON_PolylineCurve::Split(
 
 int ON_PolylineCurve::GetNurbForm( 
                                   ON_NurbsCurve& nurb, 
-                                  double tol,
+                                  double,
                                   const ON_Interval* subdomain  // OPTIONAL subdomain of ON::ProxyCurve::Domain()
                                   ) const
 {

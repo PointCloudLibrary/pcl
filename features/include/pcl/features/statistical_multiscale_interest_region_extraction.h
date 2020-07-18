@@ -64,9 +64,9 @@ namespace pcl
   class StatisticalMultiscaleInterestRegionExtraction : public PCLBase<PointT>
   {
     public:
-      using IndicesPtr = boost::shared_ptr<std::vector<int> >;
-      using Ptr = boost::shared_ptr<StatisticalMultiscaleInterestRegionExtraction<PointT> >;
-      using ConstPtr = boost::shared_ptr<const StatisticalMultiscaleInterestRegionExtraction<PointT> >;
+      using IndicesPtr = shared_ptr<std::vector<int> >;
+      using Ptr = shared_ptr<StatisticalMultiscaleInterestRegionExtraction<PointT> >;
+      using ConstPtr = shared_ptr<const StatisticalMultiscaleInterestRegionExtraction<PointT> >;
 
 
       /** \brief Empty constructor */
@@ -102,7 +102,7 @@ namespace pcl
       initCompute ();
 
       void
-      geodesicFixedRadiusSearch (size_t &query_index,
+      geodesicFixedRadiusSearch (std::size_t &query_index,
                                  float &radius,
                                  std::vector<int> &result_indices);
 

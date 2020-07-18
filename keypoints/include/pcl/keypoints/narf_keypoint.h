@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -59,8 +60,8 @@ class RangeImageBorderExtractor;
 class PCL_EXPORTS NarfKeypoint : public Keypoint<PointWithRange, int>
 {
   public:
-    using Ptr = boost::shared_ptr<NarfKeypoint>;
-    using ConstPtr = boost::shared_ptr<const NarfKeypoint>;
+    using Ptr = shared_ptr<NarfKeypoint>;
+    using ConstPtr = shared_ptr<const NarfKeypoint>;
 
     // =====TYPEDEFS=====
     using BaseClass = Keypoint<PointWithRange, int>;

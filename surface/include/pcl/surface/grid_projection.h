@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/surface/boost.h>
 #include <pcl/surface/reconstruction.h>
@@ -74,8 +75,8 @@ namespace pcl
   class GridProjection : public SurfaceReconstruction<PointNT>
   {
     public:
-      using Ptr = boost::shared_ptr<GridProjection<PointNT> >;
-      using ConstPtr = boost::shared_ptr<const GridProjection<PointNT> >;
+      using Ptr = shared_ptr<GridProjection<PointNT> >;
+      using ConstPtr = shared_ptr<const GridProjection<PointNT> >;
 
       using SurfaceReconstruction<PointNT>::input_;
       using SurfaceReconstruction<PointNT>::tree_;
@@ -95,7 +96,7 @@ namespace pcl
         Eigen::Vector3f vect_at_grid_pt;
       };
 
-      typedef std::unordered_map<int, Leaf, std::hash<int>, std::equal_to<int>, Eigen::aligned_allocator<std::pair<const int, Leaf>>> HashMap;
+      typedef std::unordered_map<int, Leaf, std::hash<int>, std::equal_to<>, Eigen::aligned_allocator<std::pair<const int, Leaf>>> HashMap;
 
       /** \brief Constructor. */ 
       GridProjection ();

@@ -43,8 +43,6 @@
 #include <limits>
 #include <iostream>
 
-using namespace std;
-
 namespace openni_wrapper
 {
 
@@ -75,7 +73,7 @@ namespace openni_wrapper
     unsigned ySkip = (depth_md_->YRes () / height - 1) * depth_md_->XRes ();
 
     // Fill in the depth image data, converting mm to m
-    short bad_point = numeric_limits<short>::quiet_NaN ();
+    constexpr short bad_point = std::numeric_limits<short>::quiet_NaN ();
     unsigned depthIdx = 0;
 
     for (unsigned yIdx = 0; yIdx < height; ++yIdx, depthIdx += ySkip)
@@ -121,7 +119,7 @@ namespace openni_wrapper
     unsigned ySkip = (depth_md_->YRes () / height - 1) * depth_md_->XRes ();
 
     // Fill in the depth image data, converting mm to m
-    float bad_point = numeric_limits<float>::quiet_NaN ();
+    constexpr float bad_point = std::numeric_limits<float>::quiet_NaN ();
     unsigned depthIdx = 0;
 
     for (unsigned yIdx = 0; yIdx < height; ++yIdx, depthIdx += ySkip)

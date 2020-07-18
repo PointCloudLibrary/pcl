@@ -58,8 +58,8 @@ namespace pcl
   class IntensitySpinEstimation: public Feature<PointInT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<IntensitySpinEstimation<PointInT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const IntensitySpinEstimation<PointInT, PointOutT> >;
+      using Ptr = shared_ptr<IntensitySpinEstimation<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const IntensitySpinEstimation<PointInT, PointOutT> >;
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
 
@@ -100,7 +100,7 @@ namespace pcl
         * \param[in] nr_distance_bins the number of bins to use in the distance dimension of the spin image
         */
       inline void 
-      setNrDistanceBins (size_t nr_distance_bins) { nr_distance_bins_ = static_cast<int> (nr_distance_bins); };
+      setNrDistanceBins (std::size_t nr_distance_bins) { nr_distance_bins_ = static_cast<int> (nr_distance_bins); };
 
       /** \brief Returns the number of bins in the distance dimension of the spin image. */
       inline int 
@@ -110,7 +110,7 @@ namespace pcl
         * \param[in] nr_intensity_bins the number of bins to use in the intensity dimension of the spin image
         */
       inline void 
-      setNrIntensityBins (size_t nr_intensity_bins) { nr_intensity_bins_ = static_cast<int> (nr_intensity_bins); };
+      setNrIntensityBins (std::size_t nr_intensity_bins) { nr_intensity_bins_ = static_cast<int> (nr_intensity_bins); };
 
       /** \brief Returns the number of bins in the intensity dimension of the spin image. */
       inline int 

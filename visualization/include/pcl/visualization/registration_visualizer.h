@@ -142,7 +142,7 @@ namespace pcl
       }
 
       /** \brief Return maximum number of correspondence lines which are rendered. */
-      inline size_t
+      inline std::size_t
       getMaximumDisplayedCorrespondences()
       {
         return maximum_displayed_correspondences_;
@@ -155,7 +155,7 @@ namespace pcl
 
       /** \brief Return the string obtained by concatenating a root_name and an id */
       inline std::string
-      getIndexedName (std::string &root_name, size_t &id)
+      getIndexedName (std::string &root_name, std::size_t &id)
       {
         std::stringstream id_stream_;
         id_stream_ << id;
@@ -199,7 +199,7 @@ namespace pcl
       std::vector<int> cloud_target_indices_;
 
       /** \brief The maximum number of displayed correspondences. */
-      size_t maximum_displayed_correspondences_;
+      std::size_t maximum_displayed_correspondences_;
 
     };
 }

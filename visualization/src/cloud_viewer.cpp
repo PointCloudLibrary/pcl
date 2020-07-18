@@ -38,6 +38,7 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/boost.h>
+#include <pcl/memory.h>
 
 #include <mutex>
 #include <thread>
@@ -49,12 +50,16 @@ namespace pcl
     virtual ~cloud_show_base() = default;
     virtual void pop () = 0;
     virtual bool popped () const = 0;
-    using Ptr = boost::shared_ptr<cloud_show_base>;
+    using Ptr = shared_ptr<cloud_show_base>;
+    using ConstPtr = shared_ptr<const cloud_show_base>;
   };
 
   template <typename CloudT> 
   struct cloud_show : cloud_show_base
   {
+    using Ptr = shared_ptr<cloud_show>;
+    using ConstPtr = shared_ptr<const cloud_show>;
+
     cloud_show (const std::string &cloud_name, typename CloudT::ConstPtr cloud,
       pcl::visualization::PCLVisualizer::Ptr viewer) :
       cloud_name (cloud_name), cloud (cloud), viewer (viewer),popped_ (false)
@@ -178,7 +183,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   {
     using namespace pcl::visualization;
 
-    viewer_ = boost::shared_ptr<PCLVisualizer>(new PCLVisualizer (window_name_, true));
+    viewer_ = pcl::make_shared<PCLVisualizer> (window_name_, true);
     viewer_->setBackgroundColor (0.1, 0.1, 0.1);
     viewer_->addCoordinateSystem (0.1, "global");
 
@@ -194,7 +199,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
       }
       {
         std::lock_guard<std::mutex> lock (once_mtx);
-        BOOST_FOREACH (CallableList::value_type& x, callables_once)
+        for (CallableList::value_type& x : callables_once)
         {
           (x)(*viewer_);
         }
@@ -202,7 +207,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
       }
       {
         std::lock_guard<std::mutex> lock (c_mtx);
-        BOOST_FOREACH (CallableMap::value_type& x, callables)
+        for (CallableMap::value_type& x : callables)
         {
           (x.second)(*viewer_);
         }
@@ -242,8 +247,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   remove (const std::string &key)
   {
     std::lock_guard<std::mutex> lock (c_mtx);
-    if (callables.find (key) != callables.end ())
-      callables.erase (key);
+    callables.erase (key);
   }
 
   std::string window_name_;
@@ -252,7 +256,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   std::thread viewer_thread_;
   bool has_cloud_;
   bool quit_;
-  std::list<boost::shared_ptr<cloud_show_base> > cloud_shows_;
+  std::list<cloud_show_base::Ptr> cloud_shows_;
   using CallableMap = std::map<std::string, VizCallable>;
   CallableMap callables;
   using CallableList = std::list<VizCallable>;

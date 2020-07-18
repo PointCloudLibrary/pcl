@@ -49,7 +49,7 @@ using CloudViewer = pcl::visualization::CloudViewer;
 using PointCloudXYZ = pcl::PointCloud<pcl::PointXYZ>;
 
 /** @brief CloudViewer pointer */
-boost::shared_ptr<CloudViewer> viewer_ptr;
+CloudViewer::Ptr viewer_ptr;
 
 /** @brief PCL DavidSDK object pointer */
 pcl::DavidSDKGrabber::Ptr davidsdk_ptr;

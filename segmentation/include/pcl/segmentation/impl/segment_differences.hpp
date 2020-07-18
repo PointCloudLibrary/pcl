@@ -35,11 +35,13 @@
  *
  */
 
-#ifndef PCL_SEGMENTATION_IMPL_SEGMENT_DIFFERENCES_H_
-#define PCL_SEGMENTATION_IMPL_SEGMENT_DIFFERENCES_H_
+#pragma once
 
 #include <pcl/segmentation/segment_differences.h>
+
 #include <pcl/common/io.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
+
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -57,15 +59,15 @@ pcl::getPointCloudDifference (
   std::vector<int> src_indices;
 
   // Iterate through the source data set
-  for (int i = 0; i < static_cast<int> (src.points.size ()); ++i)
+  for (int i = 0; i < static_cast<int> (src.size ()); ++i)
   {
     // Ignore invalid points in the inpout cloud
-    if (!isFinite (src.points[i]))
+    if (!isFinite (src[i]))
       continue;
     // Search for the closest point in the target data set (number of neighbors to find = 1)
-    if (!tree->nearestKSearch (src.points[i], 1, nn_indices, nn_distances))
+    if (!tree->nearestKSearch (src[i], 1, nn_indices, nn_distances))
     {
-      PCL_WARN ("No neighbor found for point %lu (%f %f %f)!\n", i, src.points[i].x, src.points[i].y, src.points[i].z);
+      PCL_WARN ("No neighbor found for point %lu (%f %f %f)!\n", i, src[i].x, src[i].y, src[i].z);
       continue;
     }
     // Add points without a corresponding point in the target cloud to the output cloud
@@ -121,4 +123,3 @@ pcl::SegmentDifferences<PointT>::segment (PointCloud &output)
 #define PCL_INSTANTIATE_SegmentDifferences(T) template class PCL_EXPORTS pcl::SegmentDifferences<T>;
 #define PCL_INSTANTIATE_getPointCloudDifference(T) template PCL_EXPORTS void pcl::getPointCloudDifference<T>(const pcl::PointCloud<T> &, double, const typename pcl::search::Search<T>::Ptr &, pcl::PointCloud<T> &);
 
-#endif        // PCL_SEGMENTATION_IMPL_SEGMENT_DIFFERENCES_H_

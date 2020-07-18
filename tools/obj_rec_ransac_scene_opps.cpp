@@ -59,7 +59,6 @@
 #include <thread>
 #include <vector>
 
-using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace io;
@@ -102,7 +101,7 @@ main (int argc, char** argv)
 
   const int num_params = 3;
   float parameters[num_params] = {40.0f/*pair width*/, 5.0f/*voxel size*/, 15.0f/*max co-planarity angle*/};
-  string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle"};
+  std::string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle"};
 
   // Read the user input if any
   for ( int i = 0 ; i < argc-1 && i < num_params ; ++i )
@@ -117,8 +116,8 @@ main (int argc, char** argv)
 
   printf ("The following parameter values will be used:\n");
   for ( int i = 0 ; i < num_params ; ++i )
-    cout << "  " << parameter_names[i] << " = " << parameters[i] << endl;
-  cout << endl;
+    std::cout << "  " << parameter_names[i] << " = " << parameters[i] << std::endl;
+  std::cout << std::endl;
 
   run (parameters[0], parameters[1], parameters[2]);
 
@@ -137,14 +136,14 @@ void keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_vo
 
 void update (CallbackParameters* params)
 {
-  list<ObjRecRANSAC::Output> dummy_output;
+  std::list<ObjRecRANSAC::Output> dummy_output;
 
   // Run the recognition method
   params->objrec_.recognize (params->points_, params->normals_, dummy_output);
 
   // Build the vtk objects visualizing the lines between the opps
-  const list<ObjRecRANSAC::OrientedPointPair>& opps = params->objrec_.getSampledOrientedPointPairs ();
-  cout << "There is (are) " << opps.size () << " oriented point pair(s).\n";
+  const std::list<ObjRecRANSAC::OrientedPointPair>& opps = params->objrec_.getSampledOrientedPointPairs ();
+  std::cout << "There is (are) " << opps.size () << " oriented point pair(s).\n";
   // The opps points
   vtkSmartPointer<vtkPolyData> vtk_opps = vtkSmartPointer<vtkPolyData>::New ();
   vtkSmartPointer<vtkPoints> vtk_opps_points = vtkSmartPointer<vtkPoints>::New ();
@@ -180,12 +179,12 @@ void update (CallbackParameters* params)
   vtk_hh->Update ();
 
   // The lines
-  string lines_str_id = "opps";
+  std::string lines_str_id = "opps";
   params->viz_.removeShape(lines_str_id);
   params->viz_.addModelFromPolyData (vtk_opps, lines_str_id);
   params->viz_.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 0.0, 1.0, lines_str_id);
   // The normals
-  string normals_str_id = "opps normals";
+  std::string normals_str_id = "opps normals";
   params->viz_.removeShape(normals_str_id);
   params->viz_.addModelFromPolyData (vtk_hh->GetOutput (), normals_str_id);
   params->viz_.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, normals_str_id);
@@ -250,7 +249,7 @@ void run (float pair_width, float voxel_size, float max_coplanarity_angle)
 
 bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals)
 {
-  size_t len = strlen (file_name);
+  std::size_t len = strlen (file_name);
   if ( file_name[len-3] != 'v' || file_name[len-2] != 't' || file_name[len-1] != 'k' )
   {
     fprintf (stderr, "ERROR: we need a .vtk object!\n");

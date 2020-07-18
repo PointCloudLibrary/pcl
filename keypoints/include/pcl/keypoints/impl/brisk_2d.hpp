@@ -42,9 +42,12 @@
 
 #include <pcl/common/io.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
 template <typename PointInT, typename PointOutT, typename IntensityT> bool
-pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
+BriskKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
 {
   if (!pcl::Keypoint<PointInT, PointOutT>::initCompute ())
   {
@@ -53,7 +56,7 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
   }
 
   if (!input_->isOrganized ())
-  {    
+  {
     PCL_ERROR ("[pcl::%s::initCompute] %s doesn't support non organized clouds!\n", name_.c_str ());
     return (false);
   }
@@ -61,9 +64,9 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::initCompute ()
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointInT, typename PointOutT, typename IntensityT> void
-pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOut &output)
+BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOut &output)
 {
   // image size
   const int width = int (input_->width);
@@ -72,17 +75,17 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClo
   // destination for intensity data; will be forwarded to BRISK
   std::vector<unsigned char> image_data (width*height);
 
-  for (size_t i = 0; i < image_data.size (); ++i)
+  for (std::size_t i = 0; i < image_data.size (); ++i)
     image_data[i] = static_cast<unsigned char> (intensity_ ((*input_)[i]));
 
   pcl::keypoints::brisk::ScaleSpace brisk_scale_space (octaves_);
   brisk_scale_space.constructPyramid (image_data, width, height);
   pcl::PointCloud<pcl::PointWithScale> output_temp;
   brisk_scale_space.getKeypoints (threshold_, output_temp.points);
-  pcl::copyPointCloud<pcl::PointWithScale, PointOutT> (output_temp, output);
+  pcl::copyPointCloud (output_temp, output);
 
   // we do not change the denseness
-  output.width = int (output.points.size ());
+  output.width = output.size ();
   output.height = 1;
   output.is_dense = false;      // set to false to be sure
 
@@ -90,7 +93,7 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClo
   if (remove_invalid_3D_keypoints_)
   {
     PointCloudOut output_clean;
-    for (size_t i = 0; i < output.size (); ++i)
+    for (std::size_t i = 0; i < output.size (); ++i)
     {
       PointOutT pt;
       // Interpolate its position in 3D, as the "u" and "v" are subpixel accurate
@@ -105,4 +108,7 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClo
   }
 }
 
-#endif 
+} // namespace pcl
+
+#endif
+

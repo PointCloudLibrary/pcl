@@ -62,8 +62,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr<BilateralFilter<PointT> >;
-      using ConstPtr = boost::shared_ptr<const BilateralFilter<PointT> >;
+      using Ptr = shared_ptr<BilateralFilter<PointT> >;
+      using ConstPtr = shared_ptr<const BilateralFilter<PointT> >;
  
 
       /** \brief Constructor. 
@@ -130,7 +130,7 @@ namespace pcl
         */
       inline double
       kernel (double x, double sigma)
-      { return (exp (- (x*x)/(2*sigma*sigma))); }
+      { return (std::exp (- (x*x)/(2*sigma*sigma))); }
 
       /** \brief The half size of the Gaussian bilateral filter window (e.g., spatial extents in Euclidean). */
       double sigma_s_;

@@ -42,6 +42,8 @@
 #include <pcl/recognition/hv/hypotheses_verification.h>
 #include <boost/graph/adjacency_list.hpp>
 
+#include <memory>
+
 namespace pcl
 {
 
@@ -75,7 +77,7 @@ namespace pcl
         int id_;
     };
 
-    using RecognitionModelPtr = boost::shared_ptr<RecognitionModel>;
+    using RecognitionModelPtr = std::shared_ptr<RecognitionModel>;
 
     std::vector<int> explained_by_RM_; //represents the points of scene_cloud_ that are explained by the recognition models
     std::vector<RecognitionModelPtr> recognition_models_;

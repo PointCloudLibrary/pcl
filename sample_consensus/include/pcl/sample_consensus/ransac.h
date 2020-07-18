@@ -45,9 +45,10 @@
 
 namespace pcl
 {
-  /** \brief @b RandomSampleConsensus represents an implementation of the RANSAC (RAndom SAmple Consensus) algorithm, as 
+  /** \brief @b RandomSampleConsensus represents an implementation of the RANSAC (RANdom SAmple Consensus) algorithm, as 
     * described in: "Random Sample Consensus: A Paradigm for Model Fitting with Applications to Image Analysis and 
     * Automated Cartography", Martin A. Fischler and Robert C. Bolles, Comm. Of the ACM 24: 381–395, June 1981.
+    * A parallel variant is available, enable with setNumberOfThreads. Default is non-parallel.
     * \author Radu B. Rusu
     * \ingroup sample_consensus
     */
@@ -57,8 +58,8 @@ namespace pcl
     using SampleConsensusModelPtr = typename SampleConsensusModel<PointT>::Ptr;
 
     public:
-      using Ptr = boost::shared_ptr<RandomSampleConsensus<PointT> >;
-      using ConstPtr = boost::shared_ptr<const RandomSampleConsensus<PointT> >;
+      using Ptr = shared_ptr<RandomSampleConsensus<PointT> >;
+      using ConstPtr = shared_ptr<const RandomSampleConsensus<PointT> >;
 
       using SampleConsensus<PointT>::max_iterations_;
       using SampleConsensus<PointT>::threshold_;
@@ -68,6 +69,7 @@ namespace pcl
       using SampleConsensus<PointT>::model_coefficients_;
       using SampleConsensus<PointT>::inliers_;
       using SampleConsensus<PointT>::probability_;
+      using SampleConsensus<PointT>::threads_;
 
       /** \brief RANSAC (RAndom SAmple Consensus) main constructor
         * \param[in] model a Sample Consensus model

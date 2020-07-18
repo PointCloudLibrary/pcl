@@ -95,6 +95,7 @@ namespace pcl
         , eps_angle_ (0.0)
         , axis_ (Eigen::Vector3f::Zero ())
         , max_iterations_ (50)
+        , threads_ (-1)
         , probability_ (0.99)
         , random_ (random)
       {
@@ -160,6 +161,13 @@ namespace pcl
       /** \brief Get the probability of choosing at least one sample free from outliers. */
       inline double 
       getProbability () const { return (probability_); }
+
+      /** \brief Set the number of threads to use or turn off parallelization.
+        * \param[in] nr_threads the number of hardware threads to use (0 sets the value automatically, a negative number turns parallelization off)
+        * \note Not all SAC methods have a parallel implementation. Some will ignore this setting.
+        */
+      inline void
+      setNumberOfThreads (const int nr_threads = -1) { threads_ = nr_threads; }
 
       /** \brief Set to true if a coefficient refinement is required.
         * \param[in] optimize true for enabling model coefficient refinement, false otherwise
@@ -291,6 +299,9 @@ namespace pcl
       /** \brief Maximum number of iterations before giving up (user given parameter). */
       int max_iterations_;
 
+      /** \brief The number of threads the scheduler should use, or a negative number if no parallelization is wanted. */
+      int threads_;
+
       /** \brief Desired probability of choosing at least one sample free from outliers (user given parameter). */
       double probability_;
 
@@ -341,13 +352,13 @@ namespace pcl
         , normals_ ()
         , distance_weight_ (0.1)
         , distance_from_origin_ (0)
-        , min_angle_ ()
-        , max_angle_ ()
+        , min_angle_ (0.0)
+        , max_angle_ (M_PI_2)
       {};
 
       /** \brief Provide a pointer to the input dataset that contains the point normals of 
         * the XYZ dataset.
-        * \param[in] normals the const boost shared pointer to a PointCloud message
+        * \param[in] normals the const shared pointer to a PointCloud message
         */
       inline void 
       setInputNormals (const PointCloudNConstPtr &normals) { normals_ = normals; }
@@ -388,7 +399,7 @@ namespace pcl
       }
 
       /** \brief Set the distance we expect a plane model to be from the origin
-        * \param[in] d distance from the template plane modl to the origin
+        * \param[in] d distance from the template plane model to the origin
         */
       inline void
       setDistanceFromOrigin (const double d) { distance_from_origin_ = d; }

@@ -38,21 +38,27 @@
  *
  */
 
-#ifndef PCL_COMMON_IMPL_CENTROID_H_
-#define PCL_COMMON_IMPL_CENTROID_H_
+#pragma once
 
 #include <pcl/common/centroid.h>
 #include <pcl/conversions.h>
-#include <boost/mpl/size.hpp>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 
-///////////////////////////////////////////////////////////////////////////////////////////
+#include <boost/fusion/algorithm/transformation/filter_if.hpp> // for boost::fusion::filter_if
+#include <boost/fusion/algorithm/iteration/for_each.hpp> // for boost::fusion::for_each
+#include <boost/mpl/size.hpp> // for boost::mpl::size
+
+
+namespace pcl
+{
+
 template <typename PointT, typename Scalar> inline unsigned int
-pcl::compute3DCentroid (ConstCloudIterator<PointT> &cloud_iterator,
-                        Eigen::Matrix<Scalar, 4, 1> &centroid)
+compute3DCentroid (ConstCloudIterator<PointT> &cloud_iterator,
+                   Eigen::Matrix<Scalar, 4, 1> &centroid)
 {
   // Initialize to 0
   centroid.setZero ();
-  
+
   unsigned cp = 0;
 
   // For each point in the cloud
@@ -74,10 +80,10 @@ pcl::compute3DCentroid (ConstCloudIterator<PointT> &cloud_iterator,
   return (cp);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline unsigned int
-pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud, 
-                        Eigen::Matrix<Scalar, 4, 1> &centroid)
+compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
+                   Eigen::Matrix<Scalar, 4, 1> &centroid)
 {
   if (cloud.empty ())
     return (0);
@@ -88,11 +94,11 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    for (size_t i = 0; i < cloud.size (); ++i)
+    for (const auto& point: cloud)
     {
-      centroid[0] += cloud[i].x;
-      centroid[1] += cloud[i].y;
-      centroid[2] += cloud[i].z;
+      centroid[0] += point.x;
+      centroid[1] += point.y;
+      centroid[2] += point.z;
     }
     centroid /= static_cast<Scalar> (cloud.size ());
     centroid[3] = 1;
@@ -100,32 +106,29 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
     return (static_cast<unsigned int> (cloud.size ()));
   }
   // NaN or Inf values could exist => check for them
-  else
+  unsigned cp = 0;
+  for (const auto& point: cloud)
   {
-    unsigned cp = 0;
-    for (size_t i = 0; i < cloud.size (); ++i)
-    {
-      // Check if the point is invalid
-      if (!isFinite (cloud [i]))
-        continue;
+    // Check if the point is invalid
+    if (!isFinite (point))
+      continue;
 
-      centroid[0] += cloud[i].x;
-      centroid[1] += cloud[i].y;
-      centroid[2] += cloud[i].z;
-      ++cp;
-    }
-    centroid /= static_cast<Scalar> (cp);
-    centroid[3] = 1;
-
-    return (cp);
+    centroid[0] += point.x;
+    centroid[1] += point.y;
+    centroid[2] += point.z;
+    ++cp;
   }
+  centroid /= static_cast<Scalar> (cp);
+  centroid[3] = 1;
+
+  return (cp);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline unsigned int
-pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud, 
-                        const std::vector<int> &indices,
-                        Eigen::Matrix<Scalar, 4, 1> &centroid)
+compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
+                   const Indices &indices,
+                   Eigen::Matrix<Scalar, 4, 1> &centroid)
 {
   if (indices.empty ())
     return (0);
@@ -135,7 +138,7 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    for (const int &index : indices)
+    for (const int& index : indices)
     {
       centroid[0] += cloud[index].x;
       centroid[1] += cloud[index].y;
@@ -146,40 +149,37 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
     return (static_cast<unsigned int> (indices.size ()));
   }
   // NaN or Inf values could exist => check for them
-  else
-  {
     unsigned cp = 0;
-    for (const int &index : indices)
-    {
-      // Check if the point is invalid
-      if (!isFinite (cloud [index]))
-        continue;
+  for (const int& index : indices)
+  {
+    // Check if the point is invalid
+    if (!isFinite (cloud [index]))
+      continue;
 
-      centroid[0] += cloud[index].x;
-      centroid[1] += cloud[index].y;
-      centroid[2] += cloud[index].z;
-      ++cp;
-    }
-    centroid /= static_cast<Scalar> (cp);
-    centroid[3] = 1;
-    return (cp);
+    centroid[0] += cloud[index].x;
+    centroid[1] += cloud[index].y;
+    centroid[2] += cloud[index].z;
+    ++cp;
   }
+  centroid /= static_cast<Scalar> (cp);
+  centroid[3] = 1;
+  return (cp);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline unsigned int
-pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
-                        const pcl::PointIndices &indices,
-                        Eigen::Matrix<Scalar, 4, 1> &centroid)
+compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
+                   const pcl::PointIndices &indices,
+                   Eigen::Matrix<Scalar, 4, 1> &centroid)
 {
   return (pcl::compute3DCentroid (cloud, indices.indices, centroid));
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline unsigned
-pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                              const Eigen::Matrix<Scalar, 4, 1> &centroid,
-                              Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
+computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
+                         const Eigen::Matrix<Scalar, 4, 1> &centroid,
+                         Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
 {
   if (cloud.empty ())
     return (0);
@@ -193,12 +193,12 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   {
     point_count = static_cast<unsigned> (cloud.size ());
     // For each point in the cloud
-    for (size_t i = 0; i < point_count; ++i)
+    for (const auto& point: cloud)
     {
       Eigen::Matrix<Scalar, 4, 1> pt;
-      pt[0] = cloud[i].x - centroid[0];
-      pt[1] = cloud[i].y - centroid[1];
-      pt[2] = cloud[i].z - centroid[2];
+      pt[0] = point.x - centroid[0];
+      pt[1] = point.y - centroid[1];
+      pt[2] = point.z - centroid[2];
 
       covariance_matrix (1, 1) += pt.y () * pt.y ();
       covariance_matrix (1, 2) += pt.y () * pt.z ();
@@ -216,16 +216,16 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   {
     point_count = 0;
     // For each point in the cloud
-    for (size_t i = 0; i < cloud.size (); ++i)
+    for (const auto& point: cloud)
     {
       // Check if the point is invalid
-      if (!isFinite (cloud [i]))
+      if (!isFinite (point))
         continue;
 
       Eigen::Matrix<Scalar, 4, 1> pt;
-      pt[0] = cloud[i].x - centroid[0];
-      pt[1] = cloud[i].y - centroid[1];
-      pt[2] = cloud[i].z - centroid[2];
+      pt[0] = point.x - centroid[0];
+      pt[1] = point.y - centroid[1];
+      pt[2] = point.z - centroid[2];
 
       covariance_matrix (1, 1) += pt.y () * pt.y ();
       covariance_matrix (1, 2) += pt.y () * pt.z ();
@@ -246,11 +246,11 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   return (point_count);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline unsigned int
-pcl::computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
-                                        const Eigen::Matrix<Scalar, 4, 1> &centroid,
-                                        Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
+computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
+                                   const Eigen::Matrix<Scalar, 4, 1> &centroid,
+                                   Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
 {
   unsigned point_count = pcl::computeCovarianceMatrix (cloud, centroid, covariance_matrix);
   if (point_count != 0)
@@ -258,12 +258,12 @@ pcl::computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
   return (point_count);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline unsigned int
-pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                              const std::vector<int> &indices,
-                              const Eigen::Matrix<Scalar, 4, 1> &centroid,
-                              Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
+computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
+                         const Indices &indices,
+                         const Eigen::Matrix<Scalar, 4, 1> &centroid,
+                         Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
 {
   if (indices.empty ())
     return (0);
@@ -271,18 +271,18 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   // Initialize to 0
   covariance_matrix.setZero ();
 
-  size_t point_count;
+  std::size_t point_count;
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
     point_count = indices.size ();
     // For each point in the cloud
-    for (size_t i = 0; i < point_count; ++i)
+    for (const auto& idx: indices)
     {
       Eigen::Matrix<Scalar, 4, 1> pt;
-      pt[0] = cloud[indices[i]].x - centroid[0];
-      pt[1] = cloud[indices[i]].y - centroid[1];
-      pt[2] = cloud[indices[i]].z - centroid[2];
+      pt[0] = cloud[idx].x - centroid[0];
+      pt[1] = cloud[idx].y - centroid[1];
+      pt[2] = cloud[idx].z - centroid[2];
 
       covariance_matrix (1, 1) += pt.y () * pt.y ();
       covariance_matrix (1, 2) += pt.y () * pt.z ();
@@ -329,22 +329,22 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   return (static_cast<unsigned int> (point_count));
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline unsigned int
-pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                              const pcl::PointIndices &indices,
-                              const Eigen::Matrix<Scalar, 4, 1> &centroid,
-                              Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
+computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
+                         const pcl::PointIndices &indices,
+                         const Eigen::Matrix<Scalar, 4, 1> &centroid,
+                         Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
 {
   return (pcl::computeCovarianceMatrix (cloud, indices.indices, centroid, covariance_matrix));
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline unsigned int
-pcl::computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
-                                        const std::vector<int> &indices,
-                                        const Eigen::Matrix<Scalar, 4, 1> &centroid,
-                                        Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
+computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
+                                   const Indices &indices,
+                                   const Eigen::Matrix<Scalar, 4, 1> &centroid,
+                                   Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
 {
   unsigned point_count = pcl::computeCovarianceMatrix (cloud, indices, centroid, covariance_matrix);
   if (point_count != 0)
@@ -353,24 +353,20 @@ pcl::computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
   return (point_count);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT, typename Scalar> inline unsigned int
-pcl::computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
-                                        const pcl::PointIndices &indices,
-                                        const Eigen::Matrix<Scalar, 4, 1> &centroid,
-                                        Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
-{
-  unsigned int point_count = pcl::computeCovarianceMatrix (cloud, indices.indices, centroid, covariance_matrix);
-  if (point_count != 0)
-    covariance_matrix /= static_cast<Scalar> (point_count);
 
-  return point_count;
+template <typename PointT, typename Scalar> inline unsigned int
+computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
+                                   const pcl::PointIndices &indices,
+                                   const Eigen::Matrix<Scalar, 4, 1> &centroid,
+                                   Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
+{
+  return computeCovarianceMatrixNormalized(cloud, indices.indices, centroid, covariance_matrix);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline unsigned int
-pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                              Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
+computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
+                         Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
 {
   // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
   Eigen::Matrix<Scalar, 1, 6, Eigen::RowMajor> accu = Eigen::Matrix<Scalar, 1, 6, Eigen::RowMajor>::Zero ();
@@ -380,30 +376,30 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   {
     point_count = static_cast<unsigned int> (cloud.size ());
     // For each point in the cloud
-    for (size_t i = 0; i < point_count; ++i)
+    for (const auto& point: cloud)
     {
-      accu [0] += cloud[i].x * cloud[i].x;
-      accu [1] += cloud[i].x * cloud[i].y;
-      accu [2] += cloud[i].x * cloud[i].z;
-      accu [3] += cloud[i].y * cloud[i].y;
-      accu [4] += cloud[i].y * cloud[i].z;
-      accu [5] += cloud[i].z * cloud[i].z;
+      accu [0] += point.x * point.x;
+      accu [1] += point.x * point.y;
+      accu [2] += point.x * point.z;
+      accu [3] += point.y * point.y;
+      accu [4] += point.y * point.z;
+      accu [5] += point.z * point.z;
     }
   }
   else
   {
     point_count = 0;
-    for (size_t i = 0; i < cloud.size (); ++i)
+    for (const auto& point: cloud)
     {
-      if (!isFinite (cloud[i]))
+      if (!isFinite (point))
         continue;
 
-      accu [0] += cloud[i].x * cloud[i].x;
-      accu [1] += cloud[i].x * cloud[i].y;
-      accu [2] += cloud[i].x * cloud[i].z;
-      accu [3] += cloud[i].y * cloud[i].y;
-      accu [4] += cloud[i].y * cloud[i].z;
-      accu [5] += cloud[i].z * cloud[i].z;
+      accu [0] += point.x * point.x;
+      accu [1] += point.x * point.y;
+      accu [2] += point.x * point.z;
+      accu [3] += point.y * point.y;
+      accu [4] += point.y * point.z;
+      accu [5] += point.z * point.z;
       ++point_count;
     }
   }
@@ -421,11 +417,11 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   return (point_count);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline unsigned int
-pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                              const std::vector<int> &indices,
-                              Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
+computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
+                         const Indices &indices,
+                         Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
 {
   // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
   Eigen::Matrix<Scalar, 1, 6, Eigen::RowMajor> accu = Eigen::Matrix<Scalar, 1, 6, Eigen::RowMajor>::Zero ();
@@ -475,58 +471,58 @@ pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   return (point_count);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline unsigned int
-pcl::computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                              const pcl::PointIndices &indices,
-                              Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
+computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
+                         const pcl::PointIndices &indices,
+                         Eigen::Matrix<Scalar, 3, 3> &covariance_matrix)
 {
   return (computeCovarianceMatrix (cloud, indices.indices, covariance_matrix));
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline unsigned int
-pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                                     Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
-                                     Eigen::Matrix<Scalar, 4, 1> &centroid)
+computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
+                                Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
+                                Eigen::Matrix<Scalar, 4, 1> &centroid)
 {
   // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
   Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor>::Zero ();
-  size_t point_count;
+  std::size_t point_count;
   if (cloud.is_dense)
   {
     point_count = cloud.size ();
     // For each point in the cloud
-    for (size_t i = 0; i < point_count; ++i)
+    for (const auto& point: cloud)
     {
-      accu [0] += cloud[i].x * cloud[i].x;
-      accu [1] += cloud[i].x * cloud[i].y;
-      accu [2] += cloud[i].x * cloud[i].z;
-      accu [3] += cloud[i].y * cloud[i].y; // 4
-      accu [4] += cloud[i].y * cloud[i].z; // 5
-      accu [5] += cloud[i].z * cloud[i].z; // 8
-      accu [6] += cloud[i].x;
-      accu [7] += cloud[i].y;
-      accu [8] += cloud[i].z;
+      accu [0] += point.x * point.x;
+      accu [1] += point.x * point.y;
+      accu [2] += point.x * point.z;
+      accu [3] += point.y * point.y; // 4
+      accu [4] += point.y * point.z; // 5
+      accu [5] += point.z * point.z; // 8
+      accu [6] += point.x;
+      accu [7] += point.y;
+      accu [8] += point.z;
     }
   }
   else
   {
     point_count = 0;
-    for (size_t i = 0; i < cloud.size (); ++i)
+    for (const auto& point: cloud)
     {
-      if (!isFinite (cloud[i]))
+      if (!isFinite (point))
         continue;
 
-      accu [0] += cloud[i].x * cloud[i].x;
-      accu [1] += cloud[i].x * cloud[i].y;
-      accu [2] += cloud[i].x * cloud[i].z;
-      accu [3] += cloud[i].y * cloud[i].y;
-      accu [4] += cloud[i].y * cloud[i].z;
-      accu [5] += cloud[i].z * cloud[i].z;
-      accu [6] += cloud[i].x;
-      accu [7] += cloud[i].y;
-      accu [8] += cloud[i].z;
+      accu [0] += point.x * point.x;
+      accu [1] += point.x * point.y;
+      accu [2] += point.x * point.z;
+      accu [3] += point.y * point.y;
+      accu [4] += point.y * point.z;
+      accu [5] += point.z * point.z;
+      accu [6] += point.x;
+      accu [7] += point.y;
+      accu [8] += point.z;
       ++point_count;
     }
   }
@@ -549,16 +545,16 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   return (static_cast<unsigned int> (point_count));
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline unsigned int
-pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                                     const std::vector<int> &indices,
-                                     Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
-                                     Eigen::Matrix<Scalar, 4, 1> &centroid)
+computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
+                                const Indices &indices,
+                                Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
+                                Eigen::Matrix<Scalar, 4, 1> &centroid)
 {
   // create the buffer on the stack which is much faster than using cloud[indices[i]] and centroid as a buffer
   Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<Scalar, 1, 9, Eigen::RowMajor>::Zero ();
-  size_t point_count;
+  std::size_t point_count;
   if (cloud.is_dense)
   {
     point_count = indices.size ();
@@ -616,22 +612,22 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   return (static_cast<unsigned int> (point_count));
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline unsigned int
-pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                                     const pcl::PointIndices &indices,
-                                     Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
-                                     Eigen::Matrix<Scalar, 4, 1> &centroid)
+computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
+                                const pcl::PointIndices &indices,
+                                Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
+                                Eigen::Matrix<Scalar, 4, 1> &centroid)
 {
   return (computeMeanAndCovarianceMatrix (cloud, indices.indices, covariance_matrix, centroid));
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> void
-pcl::demeanPointCloud (ConstCloudIterator<PointT> &cloud_iterator,
-                       const Eigen::Matrix<Scalar, 4, 1> &centroid,
-                       pcl::PointCloud<PointT> &cloud_out,
-                       int npts)
+demeanPointCloud (ConstCloudIterator<PointT> &cloud_iterator,
+                  const Eigen::Matrix<Scalar, 4, 1> &centroid,
+                  pcl::PointCloud<PointT> &cloud_out,
+                  int npts)
 {
   // Calculate the number of points if not given
   if (npts == 0)
@@ -659,46 +655,46 @@ pcl::demeanPointCloud (ConstCloudIterator<PointT> &cloud_iterator,
   cloud_out.height = 1;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> void
-pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                       const Eigen::Matrix<Scalar, 4, 1> &centroid,
-                       pcl::PointCloud<PointT> &cloud_out)
+demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
+                  const Eigen::Matrix<Scalar, 4, 1> &centroid,
+                  pcl::PointCloud<PointT> &cloud_out)
 {
   cloud_out = cloud_in;
 
   // Subtract the centroid from cloud_in
-  for (size_t i = 0; i < cloud_in.points.size (); ++i)
+  for (auto& point: cloud_out)
   {
-    cloud_out[i].x -= static_cast<float> (centroid[0]);
-    cloud_out[i].y -= static_cast<float> (centroid[1]);
-    cloud_out[i].z -= static_cast<float> (centroid[2]);
+    point.x -= static_cast<float> (centroid[0]);
+    point.y -= static_cast<float> (centroid[1]);
+    point.z -= static_cast<float> (centroid[2]);
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> void
-pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                       const std::vector<int> &indices,
-                       const Eigen::Matrix<Scalar, 4, 1> &centroid,
-                       pcl::PointCloud<PointT> &cloud_out)
+demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
+                  const Indices &indices,
+                  const Eigen::Matrix<Scalar, 4, 1> &centroid,
+                  pcl::PointCloud<PointT> &cloud_out)
 {
   cloud_out.header = cloud_in.header;
   cloud_out.is_dense = cloud_in.is_dense;
-  if (indices.size () == cloud_in.points.size ())
+  if (indices.size () == cloud_in.size ())
   {
     cloud_out.width    = cloud_in.width;
     cloud_out.height   = cloud_in.height;
   }
   else
   {
-    cloud_out.width    = static_cast<uint32_t> (indices.size ());
+    cloud_out.width    = indices.size ();
     cloud_out.height   = 1;
   }
   cloud_out.resize (indices.size ());
 
   // Subtract the centroid from cloud_in
-  for (size_t i = 0; i < indices.size (); ++i)
+  for (std::size_t i = 0; i < indices.size (); ++i)
   {
     cloud_out[i].x = static_cast<float> (cloud_in[indices[i]].x - centroid[0]);
     cloud_out[i].y = static_cast<float> (cloud_in[indices[i]].y - centroid[1]);
@@ -706,22 +702,22 @@ pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> void
-pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                       const pcl::PointIndices& indices,
-                       const Eigen::Matrix<Scalar, 4, 1> &centroid,
-                       pcl::PointCloud<PointT> &cloud_out)
+demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
+                  const pcl::PointIndices& indices,
+                  const Eigen::Matrix<Scalar, 4, 1> &centroid,
+                  pcl::PointCloud<PointT> &cloud_out)
 {
   return (demeanPointCloud (cloud_in, indices.indices, centroid, cloud_out));
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> void
-pcl::demeanPointCloud (ConstCloudIterator<PointT> &cloud_iterator,
-                       const Eigen::Matrix<Scalar, 4, 1> &centroid,
-                       Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_out,
-                       int npts)
+demeanPointCloud (ConstCloudIterator<PointT> &cloud_iterator,
+                  const Eigen::Matrix<Scalar, 4, 1> &centroid,
+                  Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_out,
+                  int npts)
 {
   // Calculate the number of points if not given
   if (npts == 0)
@@ -747,67 +743,67 @@ pcl::demeanPointCloud (ConstCloudIterator<PointT> &cloud_iterator,
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> void
-pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                       const Eigen::Matrix<Scalar, 4, 1> &centroid,
-                       Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_out)
+demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
+                  const Eigen::Matrix<Scalar, 4, 1> &centroid,
+                  Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_out)
 {
-  size_t npts = cloud_in.size ();
+  std::size_t npts = cloud_in.size ();
 
   cloud_out = Eigen::Matrix<Scalar, 4, Eigen::Dynamic>::Zero (4, npts);        // keep the data aligned
 
-  for (size_t i = 0; i < npts; ++i)
+  for (std::size_t i = 0; i < npts; ++i)
   {
     cloud_out (0, i) = cloud_in[i].x - centroid[0];
     cloud_out (1, i) = cloud_in[i].y - centroid[1];
     cloud_out (2, i) = cloud_in[i].z - centroid[2];
     // One column at a time
-    //cloud_out.block<4, 1> (0, i) = cloud_in.points[i].getVector4fMap () - centroid;
+    //cloud_out.block<4, 1> (0, i) = cloud_in[i].getVector4fMap () - centroid;
   }
 
   // Make sure we zero the 4th dimension out (1 row, N columns)
   //cloud_out.block (3, 0, 1, npts).setZero ();
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> void
-pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                       const std::vector<int> &indices,
-                       const Eigen::Matrix<Scalar, 4, 1> &centroid,
-                       Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_out)
+demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
+                  const Indices &indices,
+                  const Eigen::Matrix<Scalar, 4, 1> &centroid,
+                  Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_out)
 {
-  size_t npts = indices.size ();
+  std::size_t npts = indices.size ();
 
   cloud_out = Eigen::Matrix<Scalar, 4, Eigen::Dynamic>::Zero (4, npts);        // keep the data aligned
 
-  for (size_t i = 0; i < npts; ++i)
+  for (std::size_t i = 0; i < npts; ++i)
   {
     cloud_out (0, i) = cloud_in[indices[i]].x - centroid[0];
     cloud_out (1, i) = cloud_in[indices[i]].y - centroid[1];
     cloud_out (2, i) = cloud_in[indices[i]].z - centroid[2];
     // One column at a time
-    //cloud_out.block<4, 1> (0, i) = cloud_in.points[indices[i]].getVector4fMap () - centroid;
+    //cloud_out.block<4, 1> (0, i) = cloud_in[indices[i]].getVector4fMap () - centroid;
   }
 
   // Make sure we zero the 4th dimension out (1 row, N columns)
   //cloud_out.block (3, 0, 1, npts).setZero ();
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> void
-pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                       const pcl::PointIndices &indices,
-                       const Eigen::Matrix<Scalar, 4, 1> &centroid,
-                       Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_out)
+demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
+                  const pcl::PointIndices &indices,
+                  const Eigen::Matrix<Scalar, 4, 1> &centroid,
+                  Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_out)
 {
   return (pcl::demeanPointCloud (cloud_in, indices.indices, centroid, cloud_out));
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline void
-pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
-                        Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid)
+computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
+                   Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid)
 {
   using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
@@ -816,21 +812,21 @@ pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
 
   if (cloud.empty ())
     return;
+
   // Iterate over each point
-  int size = static_cast<int> (cloud.size ());
-  for (int i = 0; i < size; ++i)
+  for (const auto& pt: cloud)
   {
     // Iterate over each dimension
-    pcl::for_each_type<FieldList> (NdCentroidFunctor<PointT, Scalar> (cloud[i], centroid));
+    pcl::for_each_type<FieldList> (NdCentroidFunctor<PointT, Scalar> (pt, centroid));
   }
-  centroid /= static_cast<Scalar> (size);
+  centroid /= static_cast<Scalar> (cloud.size ());
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline void
-pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
-                        const std::vector<int> &indices,
-                        Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid)
+computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
+                   const Indices &indices,
+                   Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid)
 {
   using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
@@ -839,27 +835,27 @@ pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
 
   if (indices.empty ())
     return;
+
   // Iterate over each point
-  int nr_points = static_cast<int> (indices.size ());
-  for (int i = 0; i < nr_points; ++i)
+  for (const auto& index: indices)
   {
     // Iterate over each dimension
-    pcl::for_each_type <FieldList> (NdCentroidFunctor<PointT, Scalar> (cloud[indices[i]], centroid));
+    pcl::for_each_type<FieldList> (NdCentroidFunctor<PointT, Scalar> (cloud[index], centroid));
   }
-  centroid /= static_cast<Scalar> (nr_points);
+  centroid /= static_cast<Scalar> (indices.size ());
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointT, typename Scalar> inline void
-pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
-                        const pcl::PointIndices &indices, 
-                        Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid)
+computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
+                   const pcl::PointIndices &indices,
+                   Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid)
 {
   return (pcl::computeNDCentroid (cloud, indices.indices, centroid));
 }
 
 template <typename PointT> void
-pcl::CentroidPoint<PointT>::add (const PointT& point)
+CentroidPoint<PointT>::add (const PointT& point)
 {
   // Invoke add point on each accumulator
   boost::fusion::for_each (accumulators_, detail::AddPoint<PointT> (point));
@@ -868,7 +864,7 @@ pcl::CentroidPoint<PointT>::add (const PointT& point)
 
 template <typename PointT>
 template <typename PointOutT> void
-pcl::CentroidPoint<PointT>::get (PointOutT& point) const
+CentroidPoint<PointT>::get (PointOutT& point) const
 {
   if (num_points_ != 0)
   {
@@ -880,27 +876,29 @@ pcl::CentroidPoint<PointT>::get (PointOutT& point) const
   }
 }
 
-template <typename PointInT, typename PointOutT> size_t
-pcl::computeCentroid (const pcl::PointCloud<PointInT>& cloud,
+
+template <typename PointInT, typename PointOutT> std::size_t
+computeCentroid (const pcl::PointCloud<PointInT>& cloud,
                       PointOutT& centroid)
 {
   pcl::CentroidPoint<PointInT> cp;
 
   if (cloud.is_dense)
-    for (size_t i = 0; i < cloud.size (); ++i)
-      cp.add (cloud[i]);
+    for (const auto& point: cloud)
+      cp.add (point);
   else
-    for (size_t i = 0; i < cloud.size (); ++i)
-      if (pcl::isFinite (cloud[i]))
-        cp.add (cloud[i]);
+    for (const auto& point: cloud)
+      if (pcl::isFinite (point))
+        cp.add (point);
 
   cp.get (centroid);
   return (cp.getSize ());
 }
 
-template <typename PointInT, typename PointOutT> size_t
-pcl::computeCentroid (const pcl::PointCloud<PointInT>& cloud,
-                      const std::vector<int>& indices,
+
+template <typename PointInT, typename PointOutT> std::size_t
+computeCentroid (const pcl::PointCloud<PointInT>& cloud,
+                      const Indices& indices,
                       PointOutT& centroid)
 {
   pcl::CentroidPoint<PointInT> cp;
@@ -917,5 +915,5 @@ pcl::computeCentroid (const pcl::PointCloud<PointInT>& cloud,
   return (cp.getSize ());
 }
 
-#endif  //#ifndef PCL_COMMON_IMPL_CENTROID_H_
+} // namespace pcl
 

@@ -62,11 +62,11 @@ namespace pcl
 
       public:
         using Coefficients = typename Storage<float>::type;
-        using CoefficientsPtr = boost::shared_ptr <Coefficients>;
-        using CoefficientsConstPtr = boost::shared_ptr <const Coefficients>;
+        using CoefficientsPtr = shared_ptr <Coefficients>;
+        using CoefficientsConstPtr = shared_ptr <const Coefficients>;
 
-        using Ptr = boost::shared_ptr<SampleConsensus>;
-        using ConstPtr = boost::shared_ptr<const SampleConsensus>;
+        using Ptr = shared_ptr<SampleConsensus>;
+        using ConstPtr = shared_ptr<const SampleConsensus>;
 
         /** \brief Constructor for base SAC.
           * \param model a Sample Consensus model
@@ -133,7 +133,7 @@ namespace pcl
           * \param indices_subset the resultant output set of randomly selected indices
           */
 /*      inline void
-        getRandomSamples (const IndicesPtr &indices, size_t nr_samples, 
+        getRandomSamples (const IndicesPtr &indices, std::size_t nr_samples, 
                           std::set<int> &indices_subset)
         {
           indices_subset.clear ();

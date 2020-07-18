@@ -563,7 +563,7 @@ int ON_InstanceDefinition::Dimension() const
 ON_BOOL32 ON_InstanceDefinition::GetBBox(
        double* boxmin,
        double* boxmax,
-       ON_BOOL32 bGrowBox
+       ON_BOOL32
        ) const
 {
   if ( boxmin )
@@ -582,7 +582,7 @@ ON_BOOL32 ON_InstanceDefinition::GetBBox(
 }
 
 ON_BOOL32 ON_InstanceDefinition::Transform( 
-       const ON_Xform& xform
+       const ON_Xform&
        )
 {
   // instance DEFs cannot be transformed
@@ -1050,7 +1050,7 @@ ON__IDefLayerSettingsUserData& ON__IDefLayerSettingsUserData::operator=(const ON
 }
 
 // virtual ON_Object override
-ON_BOOL32 ON__IDefLayerSettingsUserData::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON__IDefLayerSettingsUserData::IsValid( ON_TextLog* ) const
 {
   return true;
 }
@@ -1433,7 +1433,7 @@ void ON_InstanceDefinition::UpdateLinkedIdefLayerSettings( unsigned int layer_co
 
   // Apply any saved settings
   ON_Layer** ud_layers = ud->m_layers.Array();
-  size_t ud_layers_count = ud->m_layers.Count();
+  std::size_t ud_layers_count = ud->m_layers.Count();
   ON_Layer layerId;
   const ON_Layer* layerPtrId = &layerId;
   for ( unsigned int i = 0; i < layer_count; i++ )
@@ -1568,7 +1568,7 @@ ON__IDefAlternativePathUserData& ON__IDefAlternativePathUserData::operator=(cons
 }
 
 // virtual ON_Object override
-ON_BOOL32 ON__IDefAlternativePathUserData::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON__IDefAlternativePathUserData::IsValid( ON_TextLog* ) const
 {
   return !m_alternate_path.IsEmpty();
 }

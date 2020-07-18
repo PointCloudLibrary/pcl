@@ -104,7 +104,7 @@ pcl::gpu::people::ProbabilityProcessor::CreateGaussianKernel ( float sigma,
   float sum = 0;
   for(int i = 0; i < kernelSize; i++)
   {
-    f[i] = static_cast<float> (mult * exp (-(pow (i-mid,2.f)/2*sigma_sq)));
+    f[i] = static_cast<float> (mult * std::exp (-(pow (i-mid,2.f)/2*sigma_sq)));
     sum += f[i];
   }
 

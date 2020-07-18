@@ -38,20 +38,27 @@
 #ifndef PCL_VISUALUALIZATION_PCL_PLOTTER_IMPL_H_
 #define	PCL_VISUALUALIZATION_PCL_PLOTTER_IMPL_H_
 
+
+namespace pcl
+{
+
+namespace visualization
+{
+
 template <typename PointT> bool
-pcl::visualization::PCLPlotter::addFeatureHistogram (
-    const pcl::PointCloud<PointT> &cloud, int hsize, 
+PCLPlotter::addFeatureHistogram (
+    const pcl::PointCloud<PointT> &cloud, int hsize,
     const std::string &id, int win_width, int win_height)
 {
   std::vector<double> array_x(hsize), array_y(hsize);
-  
+
   // Parse the cloud data and store it in the array
   for (int i = 0; i < hsize; ++i)
   {
     array_x[i] = i;
-    array_y[i] = cloud.points[0].histogram[i];
+    array_y[i] = cloud[0].histogram[i];
   }
-  
+
   this->addPlotData(array_x, array_y, id.c_str(), vtkChart::LINE);
   setWindowSize (win_width, win_height);
   return true;
@@ -59,13 +66,13 @@ pcl::visualization::PCLPlotter::addFeatureHistogram (
 
 
 template <typename PointT> bool
-pcl::visualization::PCLPlotter::addFeatureHistogram (
-    const pcl::PointCloud<PointT> &cloud, 
+PCLPlotter::addFeatureHistogram (
+    const pcl::PointCloud<PointT> &cloud,
     const std::string &field_name,
-    const int index, 
+    const int index,
     const std::string &id, int win_width, int win_height)
 {
-  if (index < 0 || index >= cloud.points.size ())
+  if (index < 0 || index >= cloud.size ())
   {
     PCL_ERROR ("[addFeatureHistogram] Invalid point index (%d) given!\n", index);
     return (false);
@@ -83,20 +90,23 @@ pcl::visualization::PCLPlotter::addFeatureHistogram (
 
   int hsize = fields[field_idx].count;
   std::vector<double> array_x (hsize), array_y (hsize);
-  
+
   for (int i = 0; i < hsize; ++i)
   {
     array_x[i] = i;
     float data;
     // TODO: replace float with the real data type
-    memcpy (&data, reinterpret_cast<const char*> (&cloud.points[index]) + fields[field_idx].offset + i * sizeof (float), sizeof (float));
+    memcpy (&data, reinterpret_cast<const char*> (&cloud[index]) + fields[field_idx].offset + i * sizeof (float), sizeof (float));
     array_y[i] = data;
   }
-  
+
   this->addPlotData(array_x, array_y, id.c_str(), vtkChart::LINE);
   setWindowSize (win_width, win_height);
   return (true);
 }
+
+} // namespace visualization
+} // namespace pcl
 
 #endif	/* PCL_VISUALUALIZATION_PCL_PLOTTER_IMPL_H_ */
 

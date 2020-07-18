@@ -107,7 +107,7 @@ namespace pcl
       
     private:
       QStandardItem* 
-      addToolGroup (QString tool_group_name);
+      addToolGroup (const QString& tool_group_name);
       
       QTreeView* tool_view_;
       QTreeView* parameter_view_;

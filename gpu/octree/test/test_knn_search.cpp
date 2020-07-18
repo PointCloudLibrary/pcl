@@ -59,8 +59,6 @@
 #include "data_source.hpp"
 
 using namespace pcl::gpu;
-using namespace std;
-
 
 struct PriorityPair
 {    
@@ -95,7 +93,7 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
 
     //prepare host cloud
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host(new pcl::PointCloud<pcl::PointXYZ>);	
-    cloud_host->width = data.points.size();
+    cloud_host->width = data.size();
     cloud_host->height = 1;
     cloud_host->points.resize (cloud_host->width * cloud_host->height);    
     std::transform(data.points.begin(), data.points.end(), cloud_host->points.begin(), DataGenerator::ConvPoint<pcl::PointXYZ>());
@@ -118,9 +116,9 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
     pcl::gpu::NeighborIndices result_device(data.tests_num, k);    
 
     //prepare output buffers on host
-    vector<vector<  int> > result_host(data.tests_num);   
-    vector<vector<float> >  dists_host(data.tests_num);    
-    for(size_t i = 0; i < data.tests_num; ++i)
+    std::vector<vector<  int> > result_host(data.tests_num);   
+    std::vector<vector<float> >  dists_host(data.tests_num);    
+    for(std::size_t i = 0; i < data.tests_num; ++i)
     {
         result_host[i].reserve(k);
         dists_host[i].reserve(k);
@@ -132,29 +130,29 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
         octree_device.nearestKSearchBatch(queries_device, k, result_device);
     }
 
-    vector<int> downloaded, downloaded_cur;
+    std::vector<int> downloaded, downloaded_cur;
     result_device.data.download(downloaded);
                  
     {
         pcl::ScopeTime time("1nn-cpu");
-        for(size_t i = 0; i < data.tests_num; ++i)
+        for(std::size_t i = 0; i < data.tests_num; ++i)
             octree_host.nearestKSearch(data.queries[i], k, result_host[i], dists_host[i]);
     }
 
     //verify results    
-    for(size_t i = 0; i < data.tests_num; ++i)    
+    for(std::size_t i = 0; i < data.tests_num; ++i)    
     {           
-        //cout << i << endl;
-        vector<int>&   results_host_cur = result_host[i];
-        vector<float>&   dists_host_cur = dists_host[i];
+        //std::cout << i << std::endl;
+        std::vector<int>&   results_host_cur = result_host[i];
+        std::vector<float>&   dists_host_cur = dists_host[i];
                 
         int beg = i * k;
         int end = beg + k;
 
         downloaded_cur.assign(downloaded.begin() + beg, downloaded.begin() + end);
         
-        vector<PriorityPair> pairs_host;
-        vector<PriorityPair> pairs_gpu;
+        std::vector<PriorityPair> pairs_host;
+        std::vector<PriorityPair> pairs_gpu;
         for(int n = 0; n < k; ++n)
         {
             PriorityPair host;
@@ -165,7 +163,7 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
             PriorityPair gpu;
             gpu.index = downloaded_cur[n];
 
-            float dist = (data.queries[i].getVector3fMap() - data.points[gpu.index].getVector3fMap()).norm();
+            float dist = (data.queries[i].getVector3fMap() - data[gpu.index].getVector3fMap()).norm();
             gpu.dist2 = dist * dist;
             pairs_gpu.push_back(gpu);
         }

@@ -44,6 +44,7 @@
 #include <pcl/sample_consensus/sac_model_sphere.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/common/common.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl
@@ -56,10 +57,10 @@ namespace pcl
     *
     * The model coefficients are defined as:
     * <ul>
-    * <li><b>a</b> : the X coordinate of the plane's normal (normalized)
-    * <li><b>b</b> : the Y coordinate of the plane's normal (normalized)
-    * <li><b>c</b> : the Z coordinate of the plane's normal (normalized)
-    * <li><b>d</b> : radius of the sphere
+    * <li><b>center.x</b> : the X coordinate of the sphere's center
+    * <li><b>center.y</b> : the Y coordinate of the sphere's center
+    * <li><b>center.z</b> : the Z coordinate of the sphere's center
+    * <li><b>radius</b> : radius of the sphere
     * </ul>
     *
     * \author Stefan Schrandt
@@ -85,7 +86,8 @@ namespace pcl
       using PointCloudNPtr = typename SampleConsensusModelFromNormals<PointT, PointNT>::PointCloudNPtr;
       using PointCloudNConstPtr = typename SampleConsensusModelFromNormals<PointT, PointNT>::PointCloudNConstPtr;
 
-      using Ptr = boost::shared_ptr<SampleConsensusModelNormalSphere<PointT, PointNT> >;
+      using Ptr = shared_ptr<SampleConsensusModelNormalSphere<PointT, PointNT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelNormalSphere<PointT, PointNT>>;
 
       /** \brief Constructor for base SampleConsensusModelNormalSphere.
         * \param[in] cloud the input point cloud dataset
@@ -107,7 +109,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelNormalSphere (const PointCloudConstPtr &cloud, 
-                                        const std::vector<int> &indices,
+                                        const Indices &indices,
                                         bool random = false) 
         : SampleConsensusModelSphere<PointT> (cloud, indices, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
@@ -128,14 +130,14 @@ namespace pcl
       void 
       selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
                             const double threshold, 
-                            std::vector<int> &inliers) override;
+                            Indices &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers. 
         * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      int
+      std::size_t
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
                            const double threshold) const override;
 
@@ -147,7 +149,7 @@ namespace pcl
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
                            std::vector<double> &distances) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_NORMAL_SPHERE). */
+      /** \brief Return a unique id for this model (SACMODEL_NORMAL_SPHERE). */
       inline pcl::SacModel 
       getModelType () const override { return (SACMODEL_NORMAL_SPHERE); }
 
@@ -156,13 +158,7 @@ namespace pcl
     protected:
       using SampleConsensusModel<PointT>::sample_size_;
       using SampleConsensusModel<PointT>::model_size_;
-
-      /** \brief Check whether a model is valid given the user constraints.
-        * \param[in] model_coefficients the set of model coefficients
-        */
-      bool
-      isModelValid (const Eigen::VectorXf &model_coefficients) const override;
-
+      using SampleConsensusModelSphere<PointT>::isModelValid;
   };
 }
 

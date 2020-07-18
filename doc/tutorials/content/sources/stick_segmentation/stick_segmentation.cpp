@@ -2,6 +2,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/point_types.h>
+#include <pcl/memory.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/voxel_grid.h>
@@ -18,7 +19,7 @@ template <typename PointT>
 class ConditionThresholdHSV : public pcl::ConditionBase<PointT>
 {
   public:
-    typedef boost::shared_ptr<ConditionThresholdHSV<PointT> > Ptr;
+    typedef pcl::shared_ptr<ConditionThresholdHSV<PointT> > Ptr;
     
     ConditionThresholdHSV (float min_h, float max_h, float min_s, float max_s, float min_v, float max_v) :
       min_h_(min_h), max_h_(max_h), min_s_(min_s), max_s_(max_s), min_v_(min_v), max_v_(max_v)
@@ -42,7 +43,7 @@ class ConditionThresholdHSV : public pcl::ConditionBase<PointT>
               (min_v_ <= v) && (v <= max_v_));
     }
     
-    void rgb2hsv (uint8_t r, uint8_t g, uint8_t b, float & h, float & s, float & v) const
+    void rgb2hsv (std::uint8_t r, std::uint8_t g, std::uint8_t b, float & h, float & s, float & v) const
     {
       float maxval = (r > g) ? ((r > b) ? r : b) : ((g > b) ? g : b);
       float minval = (r < g) ? ((r < b) ? r : b) : ((g < b) ? g : b);
@@ -192,7 +193,7 @@ main (int argc, char** argv)
 
   std::vector<int> p_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
 
-  for (size_t i = 0; i < p_file_indices.size (); ++i)
+  for (std::size_t i = 0; i < p_file_indices.size (); ++i)
   {
     pcl::io::loadPCDFile (argv[p_file_indices[i]], *cloud);
     

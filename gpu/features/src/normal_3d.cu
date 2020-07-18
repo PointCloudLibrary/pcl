@@ -82,11 +82,10 @@ namespace pcl
                 int size = sizes[idx];
                 int lane = Warp::laneId();
 
-                if (size < MIN_NEIGHBOORS)
+                if ((size < MIN_NEIGHBOORS) && (lane == 0))
                 {
-                    const float NaN = numeric_limits<float>::quiet_NaN();
-                    if (lane == 0)
-                        normals.data[idx] = make_float4(NaN, NaN, NaN, NaN);
+                    constexpr float NaN = std::numeric_limits<float>::quiet_NaN();
+                    normals.data[idx] = make_float4(NaN, NaN, NaN, NaN);
                 }
 
                 const int *ibeg = indices.ptr(idx);
@@ -156,7 +155,7 @@ namespace pcl
 
                     // Compute the curvature surface change
                     float eig_sum = evals.x + evals.y + evals.z;
-                    float curvature = (eig_sum == 0) ? 0 : fabsf( evals.x / eig_sum );
+                    float curvature = (eig_sum == 0) ? 0 : std::abs( evals.x / eig_sum );
 
                     NormalType output;
                     output.w = curvature;

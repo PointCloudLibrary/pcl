@@ -81,7 +81,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   }
 
   if (sampled_tree_->getInputCloud () != sampled_surface_) // Make sure the tree searches the sampled surface
-    sampled_tree_->setInputCloud (sampled_surface_); 
+    sampled_tree_->setInputCloud (sampled_surface_);
 
   return (true);
 }
@@ -118,9 +118,10 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   //extract support points for the computation of Z axis
   std::vector<int> neighbours_indices;
   std::vector<float> neighbours_distances;
-  int n_neighbours = this->searchForNeighbors (index, search_parameter_, neighbours_indices, neighbours_distances);
 
-  if (n_neighbours < min_neighbors_for_normal_axis_)
+  const std::size_t n_normal_neighbours =
+      this->searchForNeighbors (index, search_parameter_, neighbours_indices, neighbours_distances);
+  if (n_normal_neighbours < static_cast<std::size_t>(min_neighbors_for_normal_axis_))
   {
     if (!pcl::isFinite ((*normals_)[index]))
     {
@@ -154,9 +155,10 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   //find X axis
 
   //extract support points for Rx radius
-  n_neighbours = sampled_tree_->radiusSearch ((*input_)[index], tangent_radius_, neighbours_indices, neighbours_distances);
+  const std::size_t n_tangent_neighbours =
+      sampled_tree_->radiusSearch ((*input_)[index], tangent_radius_, neighbours_indices, neighbours_distances);
 
-  if (n_neighbours < min_neighbors_for_tangent_axis_)
+  if (n_tangent_neighbours < static_cast<std::size_t>(min_neighbors_for_tangent_axis_))
   {
     //set X axis as a random axis
     x_axis = pcl::geometry::randomOrthogonalAxis (fitted_normal);
@@ -181,7 +183,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
   Vector3fMapConst feature_point = (*input_)[index].getVector3fMap ();
 
-  for (int curr_neigh = 0; curr_neigh < n_neighbours; ++curr_neigh)
+  for (std::size_t curr_neigh = 0; curr_neigh < n_tangent_neighbours; ++curr_neigh)
   {
     const int& curr_neigh_idx = neighbours_indices[curr_neigh];
     const float& neigh_distance_sqr = neighbours_distances[curr_neigh];
@@ -241,7 +243,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
   signed_distances_from_highest_points_.resize (indices_->size ());
 
-  for (size_t point_idx = 0; point_idx < indices_->size (); ++point_idx)
+  for (std::size_t point_idx = 0; point_idx < indices_->size (); ++point_idx)
   {
     Eigen::Matrix3f currentLrf;
     PointOutT &rf = output[point_idx];

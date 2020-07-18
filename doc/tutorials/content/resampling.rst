@@ -36,7 +36,7 @@ we obtain:
 
 To approximate the surface defined by a local neighborhood of points 
 **p1**, **p2** ... **pk** at a point **q** we use a bivariate polynomial height function
-defined on a on a robustly computed reference plane. 
+defined on a robustly computed reference plane. 
 
 .. raw:: html
 
@@ -45,7 +45,11 @@ defined on a on a robustly computed reference plane.
 The code
 --------
 
-First, create a file, let's say, ``resampling.cpp`` in your favorite
+First, download the dataset `bun0.pcd
+<https://raw.githubusercontent.com/PointCloudLibrary/pcl/master/test/bun0.pcd>`_
+and save it somewhere to disk.
+
+Then, create a file, let's say, ``resampling.cpp`` in your favorite
 editor, and place the following inside it:
 
 

@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/search/pcl_search.h>
@@ -46,7 +47,7 @@
 namespace pcl
 {
   using IndicesClusters = std::vector<pcl::PointIndices>;
-  using IndicesClustersPtr = boost::shared_ptr<std::vector<pcl::PointIndices> >;
+  using IndicesClustersPtr = shared_ptr<std::vector<pcl::PointIndices> >;
 
   /** \brief @b ConditionalEuclideanClustering performs segmentation based on Euclidean distance and a user-defined clustering condition.
     * \details The condition that need to hold is currently passed using a function pointer.
@@ -55,7 +56,7 @@ namespace pcl
     * bool
     * enforceIntensitySimilarity (const pcl::PointXYZI& point_a, const pcl::PointXYZI& point_b, float squared_distance)
     * {
-    *   if (fabs (point_a.intensity - point_b.intensity) < 0.1f)
+    *   if (std::abs (point_a.intensity - point_b.intensity) < 0.1f)
     *     return (true);
     *   else
     *     return (false);
@@ -109,18 +110,18 @@ namespace pcl
       /** \brief Provide a pointer to the search object.
         * \param[in] tree a pointer to the spatial search object.
         */
-      inline void 
-      setSearchMethod (const SearcherPtr &tree) 
-      { 
-        searcher_ = tree; 
+      inline void
+      setSearchMethod (const SearcherPtr &tree)
+      {
+        searcher_ = tree;
       }
 
-      /** \brief Get a pointer to the search method used. 
+      /** \brief Get a pointer to the search method used.
        */
-      inline const SearcherPtr& 
-      getSearchMethod () const 
-      { 
-        return searcher_; 
+      inline const SearcherPtr&
+      getSearchMethod () const
+      {
+        return searcher_;
       }
 
       /** \brief Set the condition that needs to hold for neighboring points to be considered part of the same cluster.
@@ -141,7 +142,7 @@ namespace pcl
         * \param[in] condition_function The condition function that needs to hold for clustering
         */
       inline void
-      setConditionFunction (bool (*condition_function) (const PointT&, const PointT&, float)) 
+      setConditionFunction (bool (*condition_function) (const PointT&, const PointT&, float))
       {
         condition_function_ = condition_function;
       }

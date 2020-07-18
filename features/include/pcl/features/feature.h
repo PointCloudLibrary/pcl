@@ -41,10 +41,11 @@
 #pragma once
 
 #if defined __GNUC__
-#  pragma GCC system_header 
+#  pragma GCC system_header
 #endif
 
 // PCL includes
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/search/search.h>
@@ -110,8 +111,8 @@ namespace pcl
 
       using BaseClass = PCLBase<PointInT>;
 
-      using Ptr = boost::shared_ptr< Feature<PointInT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr< const Feature<PointInT, PointOutT> >;
+      using Ptr = shared_ptr< Feature<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr< const Feature<PointInT, PointOutT> >;
 
       using KdTree = pcl::search::Search<PointInT>;
       using KdTreePtr = typename KdTree::Ptr;
@@ -122,8 +123,8 @@ namespace pcl
 
       using PointCloudOut = pcl::PointCloud<PointOutT>;
 
-      using SearchMethod = std::function<int (size_t, double, std::vector<int> &, std::vector<float> &)>;
-      using SearchMethodSurface = std::function<int (const PointCloudIn &cloud, size_t index, double, std::vector<int> &, std::vector<float> &)>;
+      using SearchMethod = std::function<int (std::size_t, double, std::vector<int> &, std::vector<float> &)>;
+      using SearchMethodSurface = std::function<int (const PointCloudIn &cloud, std::size_t index, double, std::vector<int> &, std::vector<float> &)>;
 
     public:
       /** \brief Empty constructor. */
@@ -133,7 +134,7 @@ namespace pcl
         search_parameter_(0), search_radius_(0), k_(0),
         fake_surface_(false)
       {}
-            
+
       /** \brief Empty destructor */
       virtual ~Feature () {}
 
@@ -267,7 +268,7 @@ namespace pcl
         * \return the number of neighbors found. If no neighbors are found or an error occurred, return 0.
         */
       inline int
-      searchForNeighbors (size_t index, double parameter,
+      searchForNeighbors (std::size_t index, double parameter,
                           std::vector<int> &indices, std::vector<float> &distances) const
       {
         return (search_method_surface_ (*input_, index, parameter, indices, distances));
@@ -285,7 +286,7 @@ namespace pcl
         * \return the number of neighbors found. If no neighbors are found or an error occurred, return 0.
         */
       inline int
-      searchForNeighbors (const PointCloudIn &cloud, size_t index, double parameter,
+      searchForNeighbors (const PointCloudIn &cloud, std::size_t index, double parameter,
                           std::vector<int> &indices, std::vector<float> &distances) const
       {
         return (search_method_surface_ (cloud, index, parameter, indices, distances));
@@ -319,8 +320,8 @@ namespace pcl
       using PointCloudNPtr = typename PointCloudN::Ptr;
       using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
 
-      using Ptr = boost::shared_ptr< FeatureFromNormals<PointInT, PointNT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr< const FeatureFromNormals<PointInT, PointNT, PointOutT> >;
+      using Ptr = shared_ptr< FeatureFromNormals<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = shared_ptr< const FeatureFromNormals<PointInT, PointNT, PointOutT> >;
 
       // Members derived from the base class
       using Feature<PointInT, PointOutT>::input_;
@@ -329,7 +330,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       FeatureFromNormals () : normals_ () {}
-      
+
       /** \brief Empty destructor */
       virtual ~FeatureFromNormals () {}
 
@@ -378,8 +379,8 @@ namespace pcl
     using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
     public:
-      using Ptr = boost::shared_ptr< FeatureFromLabels<PointInT, PointLT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr< const FeatureFromLabels<PointInT, PointLT, PointOutT> >;
+      using Ptr = shared_ptr< FeatureFromLabels<PointInT, PointLT, PointOutT> >;
+      using ConstPtr = shared_ptr< const FeatureFromLabels<PointInT, PointLT, PointOutT> >;
 
       // Members derived from the base class
       using Feature<PointInT, PointOutT>::input_;
@@ -392,7 +393,7 @@ namespace pcl
       {
         k_ = 1; // Search tree is not always used here.
       }
-      
+
       /** \brief Empty destructor */
       virtual ~FeatureFromLabels () {}
 
@@ -490,7 +491,7 @@ namespace pcl
         */
       using LRFEstimationPtr = typename Feature<PointInT, PointRFT>::Ptr;
       virtual bool
-      initLocalReferenceFrames (const size_t& indices_size,
+      initLocalReferenceFrames (const std::size_t& indices_size,
                                 const LRFEstimationPtr& lrf_estimation = LRFEstimationPtr());
   };
 }

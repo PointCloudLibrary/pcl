@@ -122,7 +122,7 @@ static bool ON_PrintErrorHeader(
 
 #if defined(ON_COMPILER_MSC)
   // use sprintf_s() ...
-  size_t sz = (sizeof(sMessage)/sizeof(sMessage[0])) - 1;
+  std::size_t sz = (sizeof(sMessage)/sizeof(sMessage[0])) - 1;
 #define ON_SPRINTF4(s,count,fname,ln,func) sprintf_s(sMessage,sz,s,count,fname,ln,func)
 #define ON_SPRINTF3(s,count,fname,ln) sprintf_s(sMessage,sz,s,count,fname,ln)
 #define ON_SPRINTF1(s,count) sprintf_s(sMessage,sz,s,count)

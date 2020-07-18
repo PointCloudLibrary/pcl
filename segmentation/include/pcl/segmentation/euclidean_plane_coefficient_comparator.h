@@ -60,8 +60,8 @@ namespace pcl
       using PointCloudNPtr = typename PointCloudN::Ptr;
       using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
       
-      using Ptr = boost::shared_ptr<EuclideanPlaneCoefficientComparator<PointT, PointNT> >;
-      using ConstPtr = boost::shared_ptr<const EuclideanPlaneCoefficientComparator<PointT, PointNT> >;
+      using Ptr = shared_ptr<EuclideanPlaneCoefficientComparator<PointT, PointNT> >;
+      using ConstPtr = shared_ptr<const EuclideanPlaneCoefficientComparator<PointT, PointNT> >;
 
       using pcl::Comparator<PointT>::input_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;
@@ -86,13 +86,13 @@ namespace pcl
       bool
       compare (int idx1, int idx2) const override
       {
-        float dx = input_->points[idx1].x - input_->points[idx2].x;
-        float dy = input_->points[idx1].y - input_->points[idx2].y;
-        float dz = input_->points[idx1].z - input_->points[idx2].z;
+        float dx = (*input_)[idx1].x - (*input_)[idx2].x;
+        float dy = (*input_)[idx1].y - (*input_)[idx2].y;
+        float dz = (*input_)[idx1].z - (*input_)[idx2].z;
         float dist = std::sqrt (dx*dx + dy*dy + dz*dz);
         
         return ( (dist < distance_threshold_)
-                 && (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ ) );
+                 && ((*normals_)[idx1].getNormalVector3fMap ().dot ((*normals_)[idx2].getNormalVector3fMap () ) > angular_threshold_ ) );
       }
   };
 }

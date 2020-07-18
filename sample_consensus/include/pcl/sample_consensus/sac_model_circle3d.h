@@ -70,8 +70,8 @@ namespace pcl
       using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
       using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
 
-      using Ptr = boost::shared_ptr<SampleConsensusModelCircle3D<PointT> >;
-      using ConstPtr = boost::shared_ptr<const SampleConsensusModelCircle3D<PointT> >;
+      using Ptr = shared_ptr<SampleConsensusModelCircle3D<PointT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelCircle3D<PointT> >;
 
       /** \brief Constructor for base SampleConsensusModelCircle3D.
         * \param[in] cloud the input point cloud dataset
@@ -92,7 +92,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelCircle3D (const PointCloudConstPtr &cloud, 
-                                    const std::vector<int> &indices,
+                                    const Indices &indices,
                                     bool random = false) 
         : SampleConsensusModel<PointT> (cloud, indices, random)
       {
@@ -130,7 +130,7 @@ namespace pcl
         * \param[out] model_coefficients the resultant model coefficients
         */
       bool
-      computeModelCoefficients (const std::vector<int> &samples,
+      computeModelCoefficients (const Indices &samples,
                                 Eigen::VectorXf &model_coefficients) const override;
 
       /** \brief Compute all distances from the cloud data to a given 3D circle model.
@@ -149,7 +149,7 @@ namespace pcl
       void
       selectWithinDistance (const Eigen::VectorXf &model_coefficients,
                             const double threshold,
-                            std::vector<int> &inliers) override;
+                            Indices &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers.
         *
@@ -157,7 +157,7 @@ namespace pcl
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      int
+      std::size_t
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
                            const double threshold) const override;
 
@@ -168,7 +168,7 @@ namespace pcl
         * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization
         */
       void
-      optimizeModelCoefficients (const std::vector<int> &inliers,
+      optimizeModelCoefficients (const Indices &inliers,
                                  const Eigen::VectorXf &model_coefficients,
                                  Eigen::VectorXf &optimized_coefficients) const override;
 
@@ -179,7 +179,7 @@ namespace pcl
         * \param[in] copy_data_fields set to true if we need to copy the other data fields
         */
       void
-      projectPoints (const std::vector<int> &inliers,
+      projectPoints (const Indices &inliers,
                      const Eigen::VectorXf &model_coefficients,
                      PointCloud &projected_points,
                      bool copy_data_fields = true) const override;
@@ -190,11 +190,11 @@ namespace pcl
         * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         */
       bool
-      doSamplesVerifyModel (const std::set<int> &indices,
+      doSamplesVerifyModel (const std::set<index_t> &indices,
                             const Eigen::VectorXf &model_coefficients,
                             const double threshold) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_CIRCLE3D). */
+      /** \brief Return a unique id for this model (SACMODEL_CIRCLE3D). */
       inline pcl::SacModel
       getModelType () const override { return (SACMODEL_CIRCLE3D); }
 
@@ -212,7 +212,7 @@ namespace pcl
         * \param[in] samples the resultant index samples
         */
       bool
-      isSampleGood(const std::vector<int> &samples) const override;
+      isSampleGood(const Indices &samples) const override;
 
     private:
       /** \brief Functor for the optimization function */
@@ -222,7 +222,7 @@ namespace pcl
           * \param[in] indices the indices of data points to evaluate
           * \param[in] estimator pointer to the estimator object
           */
-        OptimizationFunctor (const pcl::SampleConsensusModelCircle3D<PointT> *model, const std::vector<int>& indices) :
+        OptimizationFunctor (const pcl::SampleConsensusModelCircle3D<PointT> *model, const Indices& indices) :
           pcl::Functor<double> (indices.size ()), model_ (model), indices_ (indices) {}
 
        /** Cost function to be minimized
@@ -236,7 +236,8 @@ namespace pcl
           {
             // what i have:
             // P : Sample Point
-            Eigen::Vector3d P (model_->input_->points[indices_[i]].x, model_->input_->points[indices_[i]].y, model_->input_->points[indices_[i]].z);
+            Eigen::Vector3d P =
+                (*model_->input_)[indices_[i]].getVector3fMap().template cast<double>();
             // C : Circle Center
             Eigen::Vector3d C (x[0], x[1], x[2]);
             // N : Circle (Plane) Normal
@@ -262,7 +263,7 @@ namespace pcl
         }
 
         const pcl::SampleConsensusModelCircle3D<PointT> *model_;
-        const std::vector<int> &indices_;
+        const Indices &indices_;
       };
   };
 }

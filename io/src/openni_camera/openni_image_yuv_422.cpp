@@ -35,6 +35,7 @@
  *
  */
 #include <pcl/pcl_config.h>
+#include <pcl/memory.h>
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/openni_camera/openni_image_yuv_422.h>
@@ -43,16 +44,15 @@
 
 #define CLIP_CHAR(c) static_cast<unsigned char> ((c)>255?255:(c)<0?0:(c))
 
-using namespace std;
 namespace openni_wrapper
 {
 
-ImageYUV422::ImageYUV422 (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ()
-: Image (image_meta_data)
+ImageYUV422::ImageYUV422 (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noexcept
+: Image (std::move(image_meta_data))
 {
 }
 
-ImageYUV422::~ImageYUV422 () throw ()
+ImageYUV422::~ImageYUV422 () noexcept
 {
 }
 

@@ -37,15 +37,22 @@
  * $Id$
  *
  */
+
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
 
 #include <unordered_map>
 
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void 
-pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences (
-    const pcl::Correspondences& original_correspondences, 
+
+namespace pcl
+{
+
+namespace registration
+{
+
+template <typename PointT> void
+CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences (
+    const pcl::Correspondences& original_correspondences,
     pcl::Correspondences& remaining_correspondences)
 {
   if (!input_)
@@ -68,15 +75,12 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
   std::vector<int> target_indices (nr_correspondences);
 
   // Copy the query-match indices
-  for (size_t i = 0; i < original_correspondences.size (); ++i)
+  for (std::size_t i = 0; i < original_correspondences.size (); ++i)
   {
     source_indices[i] = original_correspondences[i].index_query;
     target_indices[i] = original_correspondences[i].index_match;
   }
 
-   // from pcl/registration/icp.hpp:
-   std::vector<int> source_indices_good;
-   std::vector<int> target_indices_good;
    {
      // From the set of correspondences found, attempt to remove outliers
      // Create the registration model
@@ -116,7 +120,7 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
        index_to_correspondence[original_correspondences[i].index_query] = i;
 
      remaining_correspondences.resize (inliers.size ());
-     for (size_t i = 0; i < inliers.size (); ++i)
+     for (std::size_t i = 0; i < inliers.size (); ++i)
        remaining_correspondences[i] = original_correspondences[index_to_correspondence[inliers[i]]];
 
      if (save_inliers_)
@@ -136,4 +140,8 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
    }
 }
 
+} // namespace registration
+} // namespace pcl
+
 #endif    // PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_SAMPLE_CONSENSUS_HPP_
+

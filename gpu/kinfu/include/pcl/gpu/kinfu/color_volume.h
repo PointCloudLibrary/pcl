@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/point_types.h>
@@ -56,7 +57,8 @@ namespace pcl
     {
     public:
       using PointType = PointXYZ;
-      using Ptr = boost::shared_ptr<ColorVolume>;
+      using Ptr = shared_ptr<ColorVolume>;
+      using ConstPtr = shared_ptr<const ColorVolume>;
 
       /** \brief Constructor
         * \param[in] tsdf tsdf volume to get parameters from

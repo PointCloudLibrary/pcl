@@ -42,6 +42,7 @@
 
 #include <pcl/sample_consensus/sac.h>
 #include <pcl/sample_consensus/sac_model.h>
+#include <pcl/pcl_base.h>
 
 namespace pcl
 {
@@ -59,8 +60,8 @@ namespace pcl
     using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr; 
 
     public:
-      using Ptr = boost::shared_ptr<MaximumLikelihoodSampleConsensus<PointT> >;
-      using ConstPtr = boost::shared_ptr<const MaximumLikelihoodSampleConsensus<PointT> >;
+      using Ptr = shared_ptr<MaximumLikelihoodSampleConsensus<PointT> >;
+      using ConstPtr = shared_ptr<const MaximumLikelihoodSampleConsensus<PointT> >;
 
       using SampleConsensus<PointT>::max_iterations_;
       using SampleConsensus<PointT>::threshold_;
@@ -123,7 +124,7 @@ namespace pcl
         */
       double 
       computeMedianAbsoluteDeviation (const PointCloudConstPtr &cloud, 
-                                      const boost::shared_ptr <std::vector<int> > &indices, 
+                                      const IndicesPtr &indices,
                                       double sigma) const;
 
       /** \brief Determine the minimum and maximum 3D bounding box coordinates for a given set of points
@@ -134,7 +135,7 @@ namespace pcl
         */
       void 
       getMinMax (const PointCloudConstPtr &cloud, 
-                 const boost::shared_ptr <std::vector<int> > &indices, 
+                 const IndicesPtr &indices,
                  Eigen::Vector4f &min_p, 
                  Eigen::Vector4f &max_p) const;
 
@@ -145,7 +146,7 @@ namespace pcl
         */
       void 
       computeMedian (const PointCloudConstPtr &cloud, 
-                     const boost::shared_ptr <std::vector<int> > &indices, 
+                     const IndicesPtr &indices,
                      Eigen::Vector4f &median) const;
 
     private:

@@ -239,7 +239,7 @@ void ON_wString::EmergencyDestroy()
 	Create();
 }
 
-void ON_wString::EnableReferenceCounting( bool bEnable )
+void ON_wString::EnableReferenceCounting( bool )
 {
   // TODO fill this in;
 }
@@ -271,7 +271,7 @@ void ON_wString::CopyArray()
   }
 }
 
-void ON_wString::ReserveArray( size_t array_capacity )
+void ON_wString::ReserveArray( std::size_t array_capacity )
 {
   ON_wStringHeader* p = Header();
   const int capacity = (int)array_capacity; // for 64 bit compiler
@@ -401,8 +401,8 @@ void ON_wString::AppendToArray( int size, const wchar_t* s )
 
 int ON_wString::Length( const char* s )
 {
-  size_t slen = s ? strlen(s) : 0;
-  int n = ((0 < slen && slen <= 2147483645) ?((int)slen) : 0); // the (int) cast is for 64 bit size_t conversion
+  std::size_t slen = s ? strlen(s) : 0;
+  int n = ((0 < slen && slen <= 2147483645) ?((int)slen) : 0); // the (int) cast is for 64 bit std::size_t conversion
   return n;
 }
 
@@ -413,8 +413,8 @@ int ON_wString::Length( const unsigned char* s )
 
 int ON_wString::Length( const wchar_t* s )
 {
-  size_t slen =  s ? wcslen(s) : 0;
-  int n = ((0 < slen && slen <= 2147483645) ?((int)slen) : 0); // the (int) cast is for 64 bit size_t conversion
+  std::size_t slen =  s ? wcslen(s) : 0;
+  int n = ((0 < slen && slen <= 2147483645) ?((int)slen) : 0); // the (int) cast is for 64 bit std::size_t conversion
   return n;
 }
 
@@ -458,7 +458,7 @@ ON_wString::ON_wString( const char* s )
 	Create();
   if ( s && s[0] ) 
   {
-    CopyToArray( (int)strlen(s), s ); // the (int) is for 64 bit size_t conversion
+    CopyToArray( (int)strlen(s), s ); // the (int) is for 64 bit std::size_t conversion
   }
 }
 
@@ -488,7 +488,7 @@ ON_wString::ON_wString( const unsigned char* s )
 {
 	Create();
   if ( s && s[0] ) {
-    CopyToArray( (int)strlen((const char*)s), (const char*)s ); // the (int) is for 64 bit size_t conversion
+    CopyToArray( (int)strlen((const char*)s), (const char*)s ); // the (int) is for 64 bit std::size_t conversion
   }
 }
 
@@ -519,7 +519,7 @@ ON_wString::ON_wString( const wchar_t* s )
 {
 	Create();
   if ( s && s[0] ) {
-    CopyToArray( (int)wcslen(s), s ); // the (int) is for 64 bit size_t conversion
+    CopyToArray( (int)wcslen(s), s ); // the (int) is for 64 bit std::size_t conversion
   }
 }
 
@@ -783,7 +783,7 @@ const ON_wString& ON_wString::operator+=( const wchar_t* s )
 	return *this;
 }
 
-void ON_wString::SetLength(size_t string_length)
+void ON_wString::SetLength(std::size_t string_length)
 {
   int length = (int)string_length; // for 64 bit compilers
   if ( length >= Header()->string_capacity ) {
@@ -814,7 +814,7 @@ Returns:
 */
 unsigned int ON_wString::SizeOf() const
 {
-  size_t sz = sizeof(*this);
+  std::size_t sz = sizeof(*this);
   if ( ((const void*)m_s) != ((const void*)pEmptywString) )
     sz += (sizeof(ON_wStringHeader) + sizeof(wchar_t)*(Header()->string_capacity+1));
   return ((unsigned int)sz);
@@ -1658,7 +1658,7 @@ int ON_wString::Find( const char* s ) const
 {
   int rc = -1;
   if ( s && s[0] && !IsEmpty() ) {
-    const int s_count = (int)strlen(s); // the (int) is for 64 bit size_t conversion
+    const int s_count = (int)strlen(s); // the (int) is for 64 bit std::size_t conversion
     wchar_t* w = (wchar_t*)onmalloc( (s_count+2)*sizeof(w[0]) );
     c2w( s_count, s, s_count+1, w );
     const wchar_t* p;
@@ -1685,7 +1685,7 @@ int ON_wString::Find( const wchar_t* s ) const
     p = wcsstr( m_s, s );
     if ( p )
     {
-      rc = ((int)(p-m_s)); // the (int) is for 64 bit size_t conversion
+      rc = ((int)(p-m_s)); // the (int) is for 64 bit std::size_t conversion
     }
   }
   return rc;

@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/common/eigen.h>
 #include <pcl/filters/filter.h>
@@ -62,7 +63,7 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      PointDataAtOffset (uint8_t datatype, uint32_t offset) :
+      PointDataAtOffset (std::uint8_t datatype, std::uint32_t offset) :
         datatype_ (datatype), offset_ (offset)
       {
       }
@@ -75,10 +76,10 @@ namespace pcl
       compare (const PointT& p, const double& val);
     protected:
       /** \brief The type of data. */
-      uint8_t datatype_;
+      std::uint8_t datatype_;
 
       /** \brief The data offset. */
-      uint32_t offset_;
+      std::uint32_t offset_;
     private:
       PointDataAtOffset () : datatype_ (), offset_ () {}
   };
@@ -89,8 +90,8 @@ namespace pcl
   class ComparisonBase
   {
     public:
-      using Ptr = boost::shared_ptr<ComparisonBase<PointT> >;
-      using ConstPtr = boost::shared_ptr<const ComparisonBase<PointT> >;
+      using Ptr = shared_ptr<ComparisonBase<PointT> >;
+      using ConstPtr = shared_ptr<const ComparisonBase<PointT> >;
 
       /** \brief Constructor. */
       ComparisonBase () : capable_ (false), offset_ (), op_ () {}
@@ -117,7 +118,7 @@ namespace pcl
       std::string field_name_;
 
       /** \brief The data offset. */
-      uint32_t offset_;
+      std::uint32_t offset_;
 
       /** \brief The comparison operator type. */
       ComparisonOps::CompareOp op_;
@@ -133,8 +134,8 @@ namespace pcl
     using ComparisonBase<PointT>::capable_;
 
     public:
-      using Ptr = boost::shared_ptr<FieldComparison<PointT> >;
-      using ConstPtr = boost::shared_ptr<const FieldComparison<PointT> >;
+      using Ptr = shared_ptr<FieldComparison<PointT> >;
+      using ConstPtr = shared_ptr<const FieldComparison<PointT> >;
 
 
       /** \brief Construct a FieldComparison
@@ -197,8 +198,8 @@ namespace pcl
     using ComparisonBase<PointT>::op_;
 
     public:
-      using Ptr = boost::shared_ptr<PackedRGBComparison<PointT> >;
-      using ConstPtr = boost::shared_ptr<const PackedRGBComparison<PointT> >;
+      using Ptr = shared_ptr<PackedRGBComparison<PointT> >;
+      using ConstPtr = shared_ptr<const PackedRGBComparison<PointT> >;
 
       /** \brief Construct a PackedRGBComparison
         * \param component_name either "r", "g" or "b"
@@ -222,7 +223,7 @@ namespace pcl
       std::string component_name_;
 
       /** \brief The offset of the component */
-      uint32_t component_offset_;
+      std::uint32_t component_offset_;
 
       /** \brief All types (that we care about) can be represented as a double. */
       double compare_val_;
@@ -244,8 +245,8 @@ namespace pcl
     using ComparisonBase<PointT>::op_;
 
     public:
-      using Ptr = boost::shared_ptr<PackedHSIComparison<PointT> >;
-      using ConstPtr = boost::shared_ptr<const PackedHSIComparison<PointT> >;
+      using Ptr = shared_ptr<PackedHSIComparison<PointT> >;
+      using ConstPtr = shared_ptr<const PackedHSIComparison<PointT> >;
  
       /** \brief Construct a PackedHSIComparison 
         * \param component_name either "h", "s" or "i"
@@ -282,7 +283,7 @@ namespace pcl
       double compare_val_;
 
       /** \brief The offset of the component */
-      uint32_t rgb_offset_;
+      std::uint32_t rgb_offset_;
 
     private:
       PackedHSIComparison () :
@@ -312,8 +313,8 @@ namespace pcl
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW  // needed whenever there is a fixed size Eigen:: vector or matrix in a class
 
-      using Ptr = boost::shared_ptr<TfQuadraticXYZComparison<PointT> >;
-      using ConstPtr = boost::shared_ptr<const TfQuadraticXYZComparison<PointT> >;
+      using Ptr = shared_ptr<TfQuadraticXYZComparison<PointT> >;
+      using ConstPtr = shared_ptr<const TfQuadraticXYZComparison<PointT> >;
 
       /** \brief Constructor.
        */
@@ -450,8 +451,8 @@ namespace pcl
       using ComparisonBasePtr = typename ComparisonBase::Ptr;
       using ComparisonBaseConstPtr = typename ComparisonBase::ConstPtr;
 
-      using Ptr = boost::shared_ptr<ConditionBase<PointT> >;
-      using ConstPtr = boost::shared_ptr<const ConditionBase<PointT> >;
+      using Ptr = shared_ptr<ConditionBase<PointT> >;
+      using ConstPtr = shared_ptr<const ConditionBase<PointT> >;
 
       /** \brief Constructor. */
       ConditionBase () : capable_ (true), comparisons_ (), conditions_ ()
@@ -459,14 +460,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~ConditionBase ()
-      {
-        // comparisons are boost::shared_ptr.will take care of themselves
-        comparisons_.clear ();
-
-        // conditions are boost::shared_ptr. will take care of themselves
-        conditions_.clear ();
-      }
+      virtual ~ConditionBase () = default;
 
       /** \brief Add a new comparison
         * \param comparison the comparison operator to add
@@ -513,8 +507,8 @@ namespace pcl
     using ConditionBase<PointT>::comparisons_;
 
     public:
-      using Ptr = boost::shared_ptr<ConditionAnd<PointT> >;
-      using ConstPtr = boost::shared_ptr<const ConditionAnd<PointT> >;
+      using Ptr = shared_ptr<ConditionAnd<PointT> >;
+      using ConstPtr = shared_ptr<const ConditionAnd<PointT> >;
 
       /** \brief Constructor. */
       ConditionAnd () :
@@ -541,8 +535,8 @@ namespace pcl
     using ConditionBase<PointT>::comparisons_;
 
     public:
-      using Ptr = boost::shared_ptr<ConditionOr<PointT> >;
-      using ConstPtr = boost::shared_ptr<const ConditionOr<PointT> >;
+      using Ptr = shared_ptr<ConditionOr<PointT> >;
+      using ConstPtr = shared_ptr<const ConditionOr<PointT> >;
 
       /** \brief Constructor. */
       ConditionOr () :
@@ -579,6 +573,7 @@ namespace pcl
     * hsi color space.
     *
     * Here is an example usage:
+    * \code
     *  // Build the condition
     *  pcl::ConditionAnd<PointT>::Ptr range_cond (new pcl::ConditionAnd<PointT> ());
     *  range_cond->addComparison (pcl::FieldComparison<PointT>::Ptr (new pcl::FieldComparison<PointT>("z", pcl::ComparisonOps::LT, 2.0)));
@@ -587,6 +582,7 @@ namespace pcl
     *  pcl::ConditionalRemoval<PointT> range_filt;
     *  range_filt.setCondition (range_cond);
     *  range_filt.setKeepOrganized (false);
+    * \endcode
     *
     * \author Louis LeGrand, Intel Labs Seattle
     * \ingroup filters

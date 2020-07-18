@@ -186,8 +186,7 @@ namespace pcl
         float offset = std::fabs(LUT_ideal_length[(int)parent.label][child_nr] - root);
         if(offset > LUT_max_length_offset[(int)parent.label][child_nr])
           return -1.0;
-        else
-          return offset;
+        return offset;
       }
 
       /**
@@ -211,8 +210,7 @@ namespace pcl
         float offset = std::fabs(person_attribs->part_ideal_length_[(int)parent.label][child_nr] - root);
         if(offset > person_attribs->max_length_offset_[(int)parent.label][child_nr])
           return -1.0;
-        else
-          return offset;
+        return offset;
       }
 
       /**
@@ -244,14 +242,14 @@ namespace pcl
           return 0;
         }
         // go over all parents in this vector
-        for(size_t p = 0; p < sorted[parent_label].size(); p++){
+        for(std::size_t p = 0; p < sorted[parent_label].size(); p++){
           float best_value = std::numeric_limits<float>::max(); 
           int best_child_id = NO_CHILD;
           int best_child_lid = 0;                               // this must be as low as possible, still overruled by id
           float value = 0.0;
 
           // go over all children in this vector
-          for(size_t c = 0; c < sorted[child_label].size(); c++){
+          for(std::size_t c = 0; c < sorted[child_label].size(); c++){
             value = evaluateBlobs(sorted[parent_label][p], sorted[child_label][c], child_number);
             // Value should contain offset from the ideal position
             // Is -1 if it goes above threshold
@@ -304,14 +302,14 @@ namespace pcl
           return 0;
         }
         // go over all parents in this vector
-        for(size_t p = 0; p < sorted[parent_label].size(); p++){
+        for(std::size_t p = 0; p < sorted[parent_label].size(); p++){
           float best_value = std::numeric_limits<float>::max();
           int best_child_id = NO_CHILD;
           int best_child_lid = 0;                               // this must be as low as possible, still overruled by id
           float value = 0.0;
 
           // go over all children in this vector
-          for(size_t c = 0; c < sorted[child_label].size(); c++){
+          for(std::size_t c = 0; c < sorted[child_label].size(); c++){
             value = evaluateBlobs(sorted[parent_label][p], sorted[child_label][c], child_number, person_attribs);
             // Value should contain offset from the ideal position
             // Is -1 if it goes above threshold
@@ -349,7 +347,7 @@ namespace pcl
           return (-1);
         }
         // Iterate over all parts
-        for(size_t p = 0; p < sorted.size(); p ++)
+        for(std::size_t p = 0; p < sorted.size(); p ++)
         {
           switch(p){
             // These are multinodes and end nodes ///
@@ -453,7 +451,7 @@ namespace pcl
           return (-1);
         }
         // Iterate over all parts
-        for(size_t p = 0; p < sorted.size(); p ++)
+        for(std::size_t p = 0; p < sorted.size(); p ++)
         {
           switch(p){
             // These are multinodes and end nodes ///

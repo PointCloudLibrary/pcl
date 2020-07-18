@@ -36,6 +36,7 @@
  *
  */
 #include <pcl/pcl_config.h>
+#include <pcl/memory.h>
 #ifdef HAVE_OPENNI
 
 #ifdef __GNUC__
@@ -273,7 +274,7 @@ openni_wrapper::OpenNIDevice::OpenNIDevice (xn::Context& context)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::OpenNIDevice::~OpenNIDevice () throw ()
+openni_wrapper::OpenNIDevice::~OpenNIDevice () noexcept
 {
   // stop streams
   if (image_generator_.IsValid() && image_generator_.IsGenerating ())
@@ -389,15 +390,15 @@ void openni_wrapper::OpenNIDevice::InitShiftToDepthConversion ()
     const double dPlanePixelSize = shift_conversion_parameters_.zero_plane_pixel_size_ * shift_conversion_parameters_.pixel_size_factor_;
     const double dPlaneDsr = shift_conversion_parameters_.zero_plane_distance_;
     const double dPlaneDcl = shift_conversion_parameters_.emitter_dcmos_distace_;
-    const pcl::int32_t nConstShift = (shift_conversion_parameters_.param_coeff_ *
+    const std::int32_t nConstShift = (shift_conversion_parameters_.param_coeff_ *
                                       shift_conversion_parameters_.const_shift_) /
                                       shift_conversion_parameters_.pixel_size_factor_;
 
     shift_to_depth_table_.resize(shift_conversion_parameters_.device_max_shift_+1);
 
-    for (pcl::uint32_t nIndex = 1; nIndex < shift_conversion_parameters_.device_max_shift_; nIndex++)
+    for (std::uint32_t nIndex = 1; nIndex < shift_conversion_parameters_.device_max_shift_; nIndex++)
     {
-      pcl::int32_t nShiftValue = (pcl::int32_t)nIndex;
+      std::int32_t nShiftValue = (std::int32_t)nIndex;
 
       double dFixedRefX = (double) (nShiftValue - nConstShift) /
                           (double) shift_conversion_parameters_.param_coeff_;
@@ -410,7 +411,7 @@ void openni_wrapper::OpenNIDevice::InitShiftToDepthConversion ()
       if ((dDepth > shift_conversion_parameters_.min_depth_) &&
           (dDepth < shift_conversion_parameters_.max_depth_))
       {
-        shift_to_depth_table_[nIndex] = (pcl::uint16_t)(dDepth);
+        shift_to_depth_table_[nIndex] = (std::uint16_t)(dDepth);
       }
     }
 
@@ -835,11 +836,11 @@ openni_wrapper::OpenNIDevice::ImageDataThreadFunction ()
     image_generator_.WaitAndUpdateData ();
     xn::ImageMetaData image_md;
     image_generator_.GetMetaData (image_md);
-    boost::shared_ptr<xn::ImageMetaData> image_data (new xn::ImageMetaData);
+    pcl::shared_ptr<xn::ImageMetaData> image_data (new xn::ImageMetaData);
     image_data->CopyFrom (image_md);
     image_lock.unlock ();
     
-    boost::shared_ptr<Image> image = getCurrentImage (image_data);
+    auto image = getCurrentImage (image_data);
     for (const auto &callback : image_callback_)
     {
       callback.second.operator()(image);
@@ -864,11 +865,11 @@ openni_wrapper::OpenNIDevice::DepthDataThreadFunction ()
     depth_generator_.WaitAndUpdateData ();
     xn::DepthMetaData depth_md;
     depth_generator_.GetMetaData (depth_md);    
-    boost::shared_ptr<xn::DepthMetaData> depth_data (new xn::DepthMetaData);
+    pcl::shared_ptr<xn::DepthMetaData> depth_data (new xn::DepthMetaData);
     depth_data->CopyFrom (depth_md);
     depth_lock.unlock ();
 
-    boost::shared_ptr<DepthImage> depth_image ( new DepthImage (depth_data, baseline_, getDepthFocalLength (), shadow_value_, no_sample_value_) );
+    DepthImage::Ptr depth_image ( new DepthImage (depth_data, baseline_, getDepthFocalLength (), shadow_value_, no_sample_value_) );
 
     for (const auto &callback : depth_callback_)
     {
@@ -894,11 +895,11 @@ openni_wrapper::OpenNIDevice::IRDataThreadFunction ()
     ir_generator_.WaitAndUpdateData ();
     xn::IRMetaData ir_md;
     ir_generator_.GetMetaData (ir_md);
-    boost::shared_ptr<xn::IRMetaData> ir_data (new xn::IRMetaData);
+    pcl::shared_ptr<xn::IRMetaData> ir_data (new xn::IRMetaData);
     ir_data->CopyFrom (ir_md);
     ir_lock.unlock ();
 
-    boost::shared_ptr<IRImage> ir_image ( new IRImage (ir_data) );
+    IRImage::Ptr ir_image ( new IRImage (ir_data) );
 
     for (const auto &callback : ir_callback_)
     {
@@ -909,7 +910,7 @@ openni_wrapper::OpenNIDevice::IRDataThreadFunction ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void __stdcall 
-openni_wrapper::OpenNIDevice::NewDepthDataAvailable (xn::ProductionNode&, void* cookie) throw ()
+openni_wrapper::OpenNIDevice::NewDepthDataAvailable (xn::ProductionNode&, void* cookie) noexcept
 {
   OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
   device->depth_condition_.notify_all ();
@@ -917,7 +918,7 @@ openni_wrapper::OpenNIDevice::NewDepthDataAvailable (xn::ProductionNode&, void* 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void __stdcall 
-openni_wrapper::OpenNIDevice::NewImageDataAvailable (xn::ProductionNode&, void* cookie) throw ()
+openni_wrapper::OpenNIDevice::NewImageDataAvailable (xn::ProductionNode&, void* cookie) noexcept
 {
   OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
   device->image_condition_.notify_all ();
@@ -925,7 +926,7 @@ openni_wrapper::OpenNIDevice::NewImageDataAvailable (xn::ProductionNode&, void* 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void __stdcall 
-openni_wrapper::OpenNIDevice::NewIRDataAvailable (xn::ProductionNode&, void* cookie) throw ()
+openni_wrapper::OpenNIDevice::NewIRDataAvailable (xn::ProductionNode&, void* cookie) noexcept
 {
   OpenNIDevice* device = reinterpret_cast<OpenNIDevice*>(cookie);
   device->ir_condition_.notify_all ();
@@ -933,7 +934,7 @@ openni_wrapper::OpenNIDevice::NewIRDataAvailable (xn::ProductionNode&, void* coo
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::OpenNIDevice::CallbackHandle 
-openni_wrapper::OpenNIDevice::registerImageCallback (const ImageCallbackFunction& callback, void* custom_data) throw ()
+openni_wrapper::OpenNIDevice::registerImageCallback (const ImageCallbackFunction& callback, void* custom_data) noexcept
 {
   image_callback_[image_callback_handle_counter_] = [=] (const Image::Ptr& img) { callback (img, custom_data); };
   return (image_callback_handle_counter_++);
@@ -941,14 +942,14 @@ openni_wrapper::OpenNIDevice::registerImageCallback (const ImageCallbackFunction
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-openni_wrapper::OpenNIDevice::unregisterImageCallback (const OpenNIDevice::CallbackHandle& callbackHandle) throw ()
+openni_wrapper::OpenNIDevice::unregisterImageCallback (const OpenNIDevice::CallbackHandle& callbackHandle) noexcept
 {
   return (image_callback_.erase (callbackHandle) != 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::OpenNIDevice::CallbackHandle 
-openni_wrapper::OpenNIDevice::registerDepthCallback (const DepthImageCallbackFunction& callback, void* custom_data) throw ()
+openni_wrapper::OpenNIDevice::registerDepthCallback (const DepthImageCallbackFunction& callback, void* custom_data) noexcept
 {
   depth_callback_[depth_callback_handle_counter_] = [=] (const DepthImage::Ptr& img) { callback (img, custom_data); };
   return (depth_callback_handle_counter_++);
@@ -956,14 +957,14 @@ openni_wrapper::OpenNIDevice::registerDepthCallback (const DepthImageCallbackFun
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-openni_wrapper::OpenNIDevice::unregisterDepthCallback (const OpenNIDevice::CallbackHandle& callbackHandle) throw ()
+openni_wrapper::OpenNIDevice::unregisterDepthCallback (const OpenNIDevice::CallbackHandle& callbackHandle) noexcept
 {
   return (depth_callback_.erase (callbackHandle) != 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::OpenNIDevice::CallbackHandle 
-openni_wrapper::OpenNIDevice::registerIRCallback (const IRImageCallbackFunction& callback, void* custom_data) throw ()
+openni_wrapper::OpenNIDevice::registerIRCallback (const IRImageCallbackFunction& callback, void* custom_data) noexcept
 {
   ir_callback_[ir_callback_handle_counter_] = [=] (const IRImage::Ptr& img) { callback (img, custom_data); };
   return (ir_callback_handle_counter_++);
@@ -971,7 +972,7 @@ openni_wrapper::OpenNIDevice::registerIRCallback (const IRImageCallbackFunction&
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-openni_wrapper::OpenNIDevice::unregisterIRCallback (const OpenNIDevice::CallbackHandle& callbackHandle) throw ()
+openni_wrapper::OpenNIDevice::unregisterIRCallback (const OpenNIDevice::CallbackHandle& callbackHandle) noexcept
 {
   return (ir_callback_.erase (callbackHandle) != 0);
 }

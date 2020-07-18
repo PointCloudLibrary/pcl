@@ -96,7 +96,7 @@ namespace pcl
               aux::mult3 (octree_center_of_mass_, 1.0f/static_cast<float> (num_octree_points));
 
               int num_points_for_registration = static_cast<int> (static_cast<float> (num_octree_points)*frac_of_points_for_registration);
-              points_for_registration_.resize (static_cast<size_t> (num_points_for_registration));
+              points_for_registration_.resize (static_cast<std::size_t> (num_points_for_registration));
 
               // Prepare for random point sampling
               std::vector<int> ids (num_octree_points);
@@ -104,7 +104,7 @@ namespace pcl
                 ids[i] = i;
 
               // The random generator
-              pcl::common::UniformGenerator<int> randgen (0, num_octree_points - 1, static_cast<uint32_t> (time (nullptr)));
+              pcl::common::UniformGenerator<int> randgen (0, num_octree_points - 1, static_cast<std::uint32_t> (time (nullptr)));
 
               // Randomly sample some points from the octree
               for ( int i = 0 ; i < num_points_for_registration ; ++i )

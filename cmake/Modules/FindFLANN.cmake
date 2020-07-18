@@ -21,6 +21,7 @@
 # ::
 #
 #   FLANN_FOUND               True in case FLANN is found, otherwise false
+#   FLANN_ROOT                Path to the root of found FLANN installation
 #
 # Example usage
 # ^^^^^^^^^^^^^
@@ -32,6 +33,12 @@
 #     add_executable(foo foo.cc)
 #     target_link_libraries(foo FLANN::FLANN)
 #
+
+# Early return if FLANN target is already defined. This makes it safe to run
+# this script multiple times.
+if(TARGET FLANN::FLANN)
+  return()
+endif()
 
 # First try to locate FLANN using modern config
 find_package(flann NO_MODULE ${FLANN_FIND_VERSION} QUIET)
@@ -45,6 +52,11 @@ if(flann_FOUND)
   else()
     set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES flann::flann_cpp)
   endif()
+  # Determine FLANN installation root based on the path to the processed Config file
+  get_filename_component(_config_dir "${flann_CONFIG}" DIRECTORY)
+  get_filename_component(FLANN_ROOT "${_config_dir}/../../.." ABSOLUTE)
+  unset(_config_dir)
+  message(STATUS "Found flann version ${flann_VERSION}")
   return()
 endif()
 
@@ -115,25 +127,31 @@ find_package_handle_standard_args(
 )
 
 if(FLANN_FOUND)
-  if(NOT TARGET FLANN::FLANN)
-    add_library(FLANN::FLANN ${FLANN_LIBRARY_TYPE} IMPORTED)
-    set_target_properties(FLANN::FLANN PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${FLANN_INCLUDE_DIR}")
-    set_target_properties(FLANN::FLANN PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${PC_FLANN_CFLAGS_OTHER}")
-    set_property(TARGET FLANN::FLANN APPEND PROPERTY IMPORTED_CONFIGURATIONS "RELEASE")
-    set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX")
+  add_library(FLANN::FLANN ${FLANN_LIBRARY_TYPE} IMPORTED)
+  set_target_properties(FLANN::FLANN PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${FLANN_INCLUDE_DIR}")
+  set_target_properties(FLANN::FLANN PROPERTIES INTERFACE_COMPILE_DEFINITIONS "${PC_FLANN_CFLAGS_OTHER}")
+  set_property(TARGET FLANN::FLANN APPEND PROPERTY IMPORTED_CONFIGURATIONS "RELEASE")
+  set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX")
+  if(WIN32 AND NOT FLANN_USE_STATIC)
+    set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_IMPLIB_RELEASE "${FLANN_LIBRARY}")
+  else()
+    set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_LOCATION_RELEASE "${FLANN_LIBRARY}")
+  endif()
+  if(FLANN_LIBRARY_DEBUG)
+    set_property(TARGET FLANN::FLANN APPEND PROPERTY IMPORTED_CONFIGURATIONS "DEBUG")
+    set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG "CXX")
     if(WIN32 AND NOT FLANN_USE_STATIC)
-      set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_IMPLIB_RELEASE "${FLANN_LIBRARY}")
+      set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_IMPLIB_DEBUG "${FLANN_LIBRARY_DEBUG}")
     else()
-      set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_LOCATION_RELEASE "${FLANN_LIBRARY}")
-    endif()
-    if(FLANN_LIBRARY_DEBUG)
-      set_property(TARGET FLANN::FLANN APPEND PROPERTY IMPORTED_CONFIGURATIONS "DEBUG")
-      set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG "CXX")
-      if(WIN32 AND NOT FLANN_USE_STATIC)
-        set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_IMPLIB_DEBUG "${FLANN_LIBRARY_DEBUG}")
-      else()
-        set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_LOCATION_DEBUG "${FLANN_LIBRARY_DEBUG}")
-      endif()
+      set_target_properties(FLANN::FLANN PROPERTIES IMPORTED_LOCATION_DEBUG "${FLANN_LIBRARY_DEBUG}")
     endif()
   endif()
+  # Pkgconfig may specify additional link libraries besides from FLANN itself
+  # in PC_FLANN_LIBRARIES, add them to the target link interface.
+  foreach(_library ${PC_FLANN_LIBRARIES})
+    if(NOT _library MATCHES "flann")
+      set_property(TARGET FLANN::FLANN APPEND PROPERTY INTERFACE_LINK_LIBRARIES "${_library}")
+    endif()
+  endforeach()
+  get_filename_component(FLANN_ROOT "${FLANN_INCLUDE_DIR}" PATH)
 endif()

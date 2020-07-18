@@ -178,7 +178,7 @@ namespace pcl
         {
           for(int i = 0 ; i < nb_values_ ; ++i)
           {
-            cloud_.points[0].histogram[i] = values_[i];
+            cloud_[0].histogram[i] = values_[i];
           }  
         }
     
@@ -191,8 +191,8 @@ namespace pcl
 
           handle_y_scale_ = false;      
 
-          min_ =  -1.0f; // numeric_limits<float>::max( );
-          max_ =  1.0f; // numeric_limits<float>::min( );  
+          min_ =  -1.0f; // std::numeric_limits<float>::max( );
+          max_ =  1.0f; // std::numeric_limits<float>::min( );  
         }
     
         /** \brief visualizer object */

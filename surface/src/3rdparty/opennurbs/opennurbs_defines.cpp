@@ -785,7 +785,7 @@ int on_MultiByteToWideChar(
   return count;
 }
 
-int on_vsnprintf( char *buffer, size_t count, const char *format, va_list argptr )
+int on_vsnprintf( char *buffer, std::size_t count, const char *format, va_list argptr )
 {
 #if defined(ON_OS_WINDOWS)
 
@@ -800,7 +800,7 @@ int on_vsnprintf( char *buffer, size_t count, const char *format, va_list argptr
 #endif
 }
 
-int on_vsnwprintf( wchar_t *buffer, size_t count, const wchar_t *format, va_list argptr )
+int on_vsnwprintf( wchar_t *buffer, std::size_t count, const wchar_t *format, va_list argptr )
 {
 #if defined(ON_OS_WINDOWS)
 

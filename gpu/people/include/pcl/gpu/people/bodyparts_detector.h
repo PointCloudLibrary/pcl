@@ -36,6 +36,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -44,7 +45,7 @@
 #include <pcl/gpu/people/label_blob2.h>
 #include <pcl/gpu/people/label_common.h>
 #include "pcl/gpu/people/person_attribs.h"
-#include <boost/shared_ptr.hpp>
+
 #include <string>
 #include <vector>
 
@@ -63,7 +64,8 @@ namespace pcl
       class PCL_EXPORTS RDFBodyPartsDetector
       {
         public:
-          using Ptr = boost::shared_ptr<RDFBodyPartsDetector>;          
+          using Ptr = shared_ptr<RDFBodyPartsDetector>;          
+          using ConstPtr = shared_ptr<const RDFBodyPartsDetector>;
           using BlobMatrix = std::vector<std::vector<Blob2, Eigen::aligned_allocator<Blob2> > >;
           
           using Labels = DeviceArray2D<unsigned char>;
@@ -111,7 +113,7 @@ namespace pcl
           const pcl::device::LabelProbability& getProbability2() const;
           const pcl::device::LabelProbability& getPrevProbability1() const;
           const pcl::device::LabelProbability& getPrevProbability2() const;
-          size_t getNumberTrees() const;
+          std::size_t getNumberTrees() const;
           const BlobMatrix& getBlobMatrix() const;
 
           
@@ -132,8 +134,8 @@ namespace pcl
           pcl::device::LabelProbability P_l_prev_2_;  // for the second iteration
 
         private:
-          boost::shared_ptr<device::MultiTreeLiveProc> impl_;
-          
+          std::shared_ptr<device::MultiTreeLiveProc> impl_;
+
           int max_cluster_size_;
           float cluster_tolerance_;
 

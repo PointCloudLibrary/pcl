@@ -207,7 +207,7 @@ FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector
     {
 
       cv (0) = rx * sin (dcv * j);
-      cv (1) = ry * cos (dcv * j);
+      cv (1) = ry * std::cos (dcv * j);
       cv (2) = _min (2) + dcu * (i - 1);
       cv_t = cv + mean;
       nurbs.SetCV (i, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
@@ -219,7 +219,7 @@ FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector
     //    cv (0) = 0.0;
     //    cv (1) = 0.0;
     cv (0) = 0.01 * rx * sin (dcv * j);
-    cv (1) = 0.01 * ry * cos (dcv * j);
+    cv (1) = 0.01 * ry * std::cos (dcv * j);
     cv (2) = _min (2);
     cv_t = cv + mean;
     nurbs.SetCV (0, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
@@ -230,7 +230,7 @@ FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector
     //    cv (0) = 0.0;
     //    cv (1) = 0.0;
     cv (0) = 0.01 * rx * sin (dcv * j);
-    cv (1) = 0.01 * ry * cos (dcv * j);
+    cv (1) = 0.01 * ry * std::cos (dcv * j);
     cv (2) = _max (2);
     cv_t = cv + mean;
     nurbs.SetCV (ncpsU - 1, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
@@ -409,6 +409,7 @@ FittingSphere::addCageBoundaryRegularisation (double weight, int side, unsigned 
   {
     case EAST:
       i = m_nurbs.m_cv_count[0] - 1;
+      PCL_FALLTHROUGH
     case WEST:
       for (j = 1; j < (m_nurbs.m_cv_count[1] - 2 * cp_red) + 1; j++)
       {
@@ -511,9 +512,9 @@ FittingSphere::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const V
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   double d_shortest = std::numeric_limits<double>::max ();
-  for (size_t i = 0; i < elementsU.size () - 1; i++)
+  for (std::size_t i = 0; i < elementsU.size () - 1; i++)
   {
-    for (size_t j = 0; j < elementsV.size () - 1; j++)
+    for (std::size_t j = 0; j < elementsV.size () - 1; j++)
     {
       double points[3];
 

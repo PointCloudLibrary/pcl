@@ -41,9 +41,12 @@
 
 #include <pcl/common/io.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
 template <typename PointInT, typename PointOutT, typename IntensityT> bool
-pcl::AgastKeypoint2DBase<PointInT, PointOutT, IntensityT>::initCompute ()
+AgastKeypoint2DBase<PointInT, PointOutT, IntensityT>::initCompute ()
 {
   if (!pcl::Keypoint<PointInT, PointOutT>::initCompute ())
   {
@@ -52,7 +55,7 @@ pcl::AgastKeypoint2DBase<PointInT, PointOutT, IntensityT>::initCompute ()
   }
 
   if (!input_->isOrganized ())
-  {    
+  {
     PCL_ERROR ("[pcl::%s::initCompute] %s doesn't support non organized clouds!\n", name_.c_str ());
     return (false);
   }
@@ -60,18 +63,18 @@ pcl::AgastKeypoint2DBase<PointInT, PointOutT, IntensityT>::initCompute ()
   return (true);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointInT, typename PointOutT> void
-pcl::AgastKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
+AgastKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
 {
   // image size
-  const size_t width = input_->width;
-  const size_t height = input_->height;
+  const std::size_t width = input_->width;
+  const std::size_t height = input_->height;
 
   // destination for intensity data; will be forwarded to AGAST
   std::vector<unsigned char> image_data (width*height);
 
-  for (size_t i = 0; i < image_data.size (); ++i)
+  for (std::size_t i = 0; i < image_data.size (); ++i)
     image_data[i] = static_cast<unsigned char> (intensity_ ((*input_)[i]));
 
   if (!detector_)
@@ -97,6 +100,9 @@ pcl::AgastKeypoint2D<PointInT, PointOutT>::detectKeypoints (PointCloudOut &outpu
   output.is_dense = true;
 }
 
+} // namespace pcl
 
 #define AgastKeypoint2D(T,I) template class PCL_EXPORTS pcl::AgastKeypoint2D<T,I>;
-#endif 
+
+#endif
+

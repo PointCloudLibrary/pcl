@@ -332,7 +332,7 @@ point cloud is added to the viewer.
 .. code-block:: cpp
 
     ...
-    viewer->addLine<pcl::PointXYZRGB> (cloud->points[0], cloud->points[cloud->size() - 1], "line");
+    viewer->addLine<pcl::PointXYZRGB> ((*cloud)[0], (*cloud)[cloud->size() - 1], "line");
     ...
 
 This line (of code) adds a line (in space) from the first point in the
@@ -345,7 +345,7 @@ shapes are available.
 .. code-block:: cpp
 
     ...
-    viewer->addSphere (cloud->points[0], 0.2, 0.5, 0.5, 0.0, "sphere");
+    viewer->addSphere ((*cloud)[0], 0.2, 0.5, 0.5, 0.0, "sphere");
     ...
 
 This next line adds a sphere centred on the first point in the cloud

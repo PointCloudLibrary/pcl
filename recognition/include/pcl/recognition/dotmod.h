@@ -51,9 +51,9 @@ namespace pcl
 
   struct DOTMODDetection
   {
-    size_t bin_x;
-    size_t bin_y;
-    size_t template_id;
+    std::size_t bin_x;
+    std::size_t bin_y;
+    std::size_t template_id;
     float score;
   };
 
@@ -65,8 +65,8 @@ namespace pcl
   {
     public:
       /** \brief Constructor */
-      DOTMOD (size_t template_width,
-              size_t template_height);
+      DOTMOD (std::size_t template_width,
+              std::size_t template_height);
 
       /** \brief Destructor */
       virtual ~DOTMOD ();
@@ -78,26 +78,26 @@ namespace pcl
         * \param template_anker_y
         * \param region
         */
-      size_t 
+      std::size_t 
       createAndAddTemplate (const std::vector<DOTModality*> & modalities,
                             const std::vector<MaskMap*> & masks,
-                            size_t template_anker_x,
-                            size_t template_anker_y,
+                            std::size_t template_anker_x,
+                            std::size_t template_anker_y,
                             const RegionXY & region);
 
       void
       detectTemplates (const std::vector<DOTModality*> & modalities,
                        float template_response_threshold,
                        std::vector<DOTMODDetection> & detections,
-                       const size_t bin_size) const;
+                       const std::size_t bin_size) const;
 
       inline const DenseQuantizedMultiModTemplate &
-      getTemplate (size_t template_id) const
+      getTemplate (std::size_t template_id) const
       { 
         return (templates_[template_id]);
       }
 
-      inline size_t
+      inline std::size_t
       getNumOfTemplates ()
       {
         return (templates_.size ());
@@ -118,9 +118,9 @@ namespace pcl
 
     private:
       /** template width */
-      size_t template_width_;
+      std::size_t template_width_;
       /** template height */
-      size_t template_height_;
+      std::size_t template_height_;
       /** template storage */
       std::vector<DenseQuantizedMultiModTemplate> templates_;
   };

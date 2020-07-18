@@ -286,13 +286,13 @@ FittingCurve2dATDM::assembleInterior (double wInt, double sigma2, double rScale,
 
     double w (wInt);
     if (z (2) > 0.0 && wFunction)
-      w = wInt * exp (-(error * error) * ds);
+      w = wInt * std::exp (-(error * error) * ds);
 
     n.normalize ();
     //    m_data->interior_line_start.push_back(pt);
     //    m_data->interior_line_end.push_back(pt + n * 0.01);
 
-    //      w = 0.5 * wInt * exp(-(error * error) * ds);
+    //      w = 0.5 * wInt * std::exp(-(error * error) * ds);
 
     // evaluate if this point is the closest point
     //    int idx = NurbsTools::getClosestPoint(pt, m_data->interior);
@@ -321,7 +321,7 @@ FittingCurve2dATDM::assembleClosestPoints (const std::vector<double> &elements, 
 
   double ds = 1.0 / (2.0 * sigma2);
 
-  for (size_t i = 0; i < elements.size (); i++)
+  for (std::size_t i = 0; i < elements.size (); i++)
   {
 
     int j = i % int (elements.size ());
@@ -359,7 +359,7 @@ FittingCurve2dATDM::assembleClosestPoints (const std::vector<double> &elements, 
     m_data->closest_points_error.push_back ((p3 - p1).squaredNorm ());
 
     double w (weight);
-    w = 0.5 * weight * exp (-(error2) * ds);
+    w = 0.5 * weight * std::exp (-(error2) * ds);
     //    w = weight * std::fabs(in.dot(p2-p1));
 
     //    if (weight > 0.0 && (std::fabs(xi2 - xi) < std::fabs(dxi)))

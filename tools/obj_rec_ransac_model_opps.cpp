@@ -58,7 +58,6 @@
 #include <thread>
 #include <vector>
 
-using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace io;
@@ -82,7 +81,7 @@ main (int argc, char** argv)
 
   const int num_params = 3;
   float parameters[num_params] = {10.0f/*pair width*/, 5.0f/*voxel size*/, 5.0f/*max co-planarity angle*/};
-  string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle"};
+  std::string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle"};
 
   // Read the user input if any
   for ( int i = 0 ; i < argc-1 && i < num_params ; ++i )
@@ -97,8 +96,8 @@ main (int argc, char** argv)
 
   printf ("The following parameter values will be used:\n");
   for ( int i = 0 ; i < num_params ; ++i )
-    cout << "  " << parameter_names[i] << " = " << parameters[i] << endl;
-  cout << endl;
+    std::cout << "  " << parameter_names[i] << " = " << parameters[i] << std::endl;
+  std::cout << std::endl;
 
   run (parameters[0], parameters[1], parameters[2]);
 
@@ -236,7 +235,7 @@ void showModelOpps (PCLVisualizer& viz, const ModelLibrary::HashTable& hash_tabl
 
 bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals)
 {
-  size_t len = strlen (file_name);
+  std::size_t len = strlen (file_name);
   if ( file_name[len-3] != 'v' || file_name[len-2] != 't' || file_name[len-1] != 'k' )
   {
     fprintf (stderr, "ERROR: we need a .vtk object!\n");

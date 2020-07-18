@@ -63,8 +63,8 @@ namespace pcl
     class TransformationEstimationPointToPlaneLLSWeighted : public TransformationEstimation<PointSource, PointTarget, Scalar>
     {
       public:
-        using Ptr = boost::shared_ptr<TransformationEstimationPointToPlaneLLSWeighted<PointSource, PointTarget, Scalar> >;
-        using ConstPtr = boost::shared_ptr<const TransformationEstimationPointToPlaneLLSWeighted<PointSource, PointTarget, Scalar> >;
+        using Ptr = shared_ptr<TransformationEstimationPointToPlaneLLSWeighted<PointSource, PointTarget, Scalar> >;
+        using ConstPtr = shared_ptr<const TransformationEstimationPointToPlaneLLSWeighted<PointSource, PointTarget, Scalar> >;
 
         using Matrix4 = typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4;
         

@@ -26,7 +26,7 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "build type default to RelWithDebInfo, set to Release to improve performance" FORCE)
 endif()
 
-project(PCL VERSION 1.9.1.99)
+project(PCL VERSION 1.11.0.99)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 ### ---[ Find universal dependencies
@@ -35,10 +35,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODUL
 # ---[ Include pkgconfig
 include(FindPkgConfig)
 
-# ---[ Release/Debug specific flags
-if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-  add_definitions("-DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG")
-endif()
 if(WIN32 AND NOT MINGW)
   set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Add postfix to target for Debug build.")
   set(CMAKE_RELEASE_POSTFIX "" CACHE STRING "Add postfix to target for Release build.")
@@ -46,29 +42,9 @@ if(WIN32 AND NOT MINGW)
   set(CMAKE_MINSIZEREL_POSTFIX "s" CACHE STRING "Add postfix to target for MinSizeRel build")
 endif()
 
-# ---[ special maintainer mode
-set(CMAKE_CXX_FLAGS_MAINTAINER "-pedantic -Wno-variadic-macros -Weffc++ -Wno-long-long" CACHE STRING
-    "Flags used by the C++ compiler during maintainer builds."
-    FORCE)
-set(CMAKE_C_FLAGS_MAINTAINER "-pedantic -Wno-variadic-macros -Weffc++ -Wno-long-long" CACHE STRING
-    "Flags used by the C compiler during maintainer builds."
-    FORCE)
-set(CMAKE_EXE_LINKER_FLAGS_MAINTAINER
-    "-Wl,--warn-unresolved-symbols,--warn-once" CACHE STRING
-    "Flags used for linking binaries during maintainer builds."
-    FORCE)
-set(CMAKE_SHARED_LINKER_FLAGS_MAINTAINER
-    "-Wl,--warn-unresolved-symbols,--warn-once" CACHE STRING
-    "Flags used by the shared libraries linker during maintainer builds."
-    FORCE)
-mark_as_advanced(
-    CMAKE_CXX_FLAGS_MAINTAINER
-    CMAKE_C_FLAGS_MAINTAINER
-    CMAKE_EXE_LINKER_FLAGS_MAINTAINER
-    CMAKE_SHARED_LINKER_FLAGS_MAINTAINER)
 # Update the documentation string of CMAKE_BUILD_TYPE for GUIs
 set(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
-    "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Maintainer."
+    "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
     FORCE)
 
 # Compiler identification
@@ -80,6 +56,8 @@ elseif(__COMPILER_PATHSCALE)
   set(CMAKE_COMPILER_IS_PATHSCALE 1)
 elseif(MSVC)
   set(CMAKE_COMPILER_IS_MSVC 1)
+elseif(MINGW)
+  set(CMAKE_COMPILER_IS_MINGW 1)
 endif()
 
 # Create a variable with expected default CXX flags
@@ -94,6 +72,11 @@ include("${PCL_SOURCE_DIR}/cmake/pcl_verbosity.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_options.cmake")
 include("${PCL_SOURCE_DIR}/cmake/clang-format.cmake")
+
+if(${PCL_ENABLE_CCACHE})
+  include (UseCompilerCache)
+  UseCompilerCache(ccache REQUIRED)
+endif()
 
 # Enable verbose timing display?
 if(CMAKE_TIMING_VERBOSE AND UNIX)
@@ -110,7 +93,15 @@ endif()
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
-    set(CMAKE_CXX_FLAGS "-Wabi -Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS_STR}")
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabi=11")
+    else()
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabi")
+    endif()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS_STR}")
+    if(PCL_WARNINGS_ARE_ERRORS)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+    endif()
   endif()
 
   if("${CMAKE_SHARED_LINKER_FLAGS}" STREQUAL "" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
@@ -131,18 +122,26 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 if(CMAKE_COMPILER_IS_MSVC)
-  add_definitions("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DPCL_ONLY_CORE_POINT_TYPES /bigobj ${SSE_DEFINITIONS}")
-
+  add_definitions("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DPCL_ONLY_CORE_POINT_TYPES ${SSE_DEFINITIONS}")
+  
+  add_compile_options(/bigobj)
+  
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS_STR}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS_STR}")
 
     # Add extra code generation/link optimizations
-    if(CMAKE_MSVC_CODE_LINK_OPTIMIZATION)
+    if(CMAKE_MSVC_CODE_LINK_OPTIMIZATION AND (NOT BUILD_CUDA) AND (NOT BUILD_GPU))
       set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")
       set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG /OPT:REF")
       set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
+    else()
+      message("Global optimizations /GL has been turned off, as it doesn't work with nvcc/thrust")
     endif()
     # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
+
+    if(PCL_WARNINGS_ARE_ERRORS)
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
+    endif()
 
     include(ProcessorCount)
     ProcessorCount(CPUCores)
@@ -194,6 +193,10 @@ if(CMAKE_COMPILER_IS_CLANG)
     endif()
   endif()
   set(CLANG_LIBRARIES "stdc++")
+endif()
+
+if(CMAKE_COMPILER_IS_MINGW)
+  add_definitions(-DPCL_ONLY_CORE_POINT_TYPES)
 endif()
 
 include("${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake")
@@ -253,11 +256,22 @@ set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
 endif()
 
 ### ---[ Find universal dependencies
-find_package(OpenMP)
-if(OPENMP_FOUND)
+
+# OpenMP (optional)
+option(WITH_OPENMP "Build with parallelization using OpenMP" TRUE)
+if(WITH_OPENMP)
+  find_package(OpenMP COMPONENTS C CXX)
+endif()
+if(OpenMP_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-  message(STATUS "Found OpenMP")
+  if(${CMAKE_VERSION} VERSION_LESS "3.7")
+    message(STATUS "Found OpenMP")
+  else()
+    # We could use OpenMP_CXX_VERSION starting from CMake 3.9, but this value is only available on first run of CMake (see https://gitlab.kitware.com/cmake/cmake/issues/19150),
+    # so we use always OpenMP_CXX_SPEC_DATE, which is available since CMake 3.7.
+    message(STATUS "Found OpenMP, spec date ${OpenMP_CXX_SPEC_DATE}")
+  endif()
   if(MSVC)
     if(MSVC_VERSION EQUAL 1900)
       set(OPENMP_DLL VCOMP140)
@@ -306,6 +320,7 @@ PCL_ADD_GRABBER_DEPENDENCY("Ensenso" "IDS-Imaging Ensenso camera support")
 PCL_ADD_GRABBER_DEPENDENCY("davidSDK" "David Vision Systems SDK support")
 PCL_ADD_GRABBER_DEPENDENCY("DSSDK" "DepthSense SDK support")
 PCL_ADD_GRABBER_DEPENDENCY("RSSDK" "RealSense SDK support")
+PCL_ADD_GRABBER_DEPENDENCY("RSSDK2" "RealSense SDK 2.0 (librealsense) support")
 
 # metslib
 if(PKG_CONFIG_FOUND)
@@ -414,20 +429,20 @@ if(WITH_VTK AND NOT ANDROID)
       endif()
       if(${VTK_RENDERING_BACKEND} STREQUAL "OpenGL")
         set(VTK_RENDERING_BACKEND_OPENGL_VERSION "1")
+        message(DEPRECATION "The rendering backend OpenGL is deprecated and not available anymore since VTK 8.2."
+                            "Please switch to the OpenGL2 backend instead, which is available since VTK 6.2."
+                            "Support of the deprecated backend will be dropped with PCL 1.13.")
       elseif(${VTK_RENDERING_BACKEND} STREQUAL "OpenGL2")
         set(VTK_RENDERING_BACKEND_OPENGL_VERSION "2")
       endif()
-      set(HAVE_VTK ON)
     else()
       set(VTK_FOUND OFF)
-      set(HAVE_VTK OFF)
       message("Warning: You are to build PCL in STATIC but VTK is SHARED!")
       message("Warning: VTK disabled!")
     endif()
   endif()
 else()
   set(VTK_FOUND OFF)
-  set(HAVE_VTK OFF)
 endif()
 
 
@@ -452,9 +467,6 @@ set(pcl_config_h "${CMAKE_CURRENT_BINARY_DIR}/include/pcl/pcl_config.h")
 configure_file("${pcl_config_h_in}" "${pcl_config_h}")
 PCL_ADD_INCLUDES(common "" "${pcl_config_h}")
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
-
-### ---[ Add the libraries subdirectories
-include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")
 
 collect_subproject_directory_names("${PCL_SOURCE_DIR}" "CMakeLists.txt" PCL_MODULES_NAMES PCL_MODULES_DIRS doc)
 set(PCL_MODULES_NAMES_UNSORTED ${PCL_MODULES_NAMES})

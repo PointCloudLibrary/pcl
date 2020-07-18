@@ -51,16 +51,16 @@ main (int argc, char** argv)
   if (pcl::console::find_argument (argc, argv, "-m") >= 0)
   {
     setUnseenToMaxRange = true;
-    cout << "Setting unseen values in range image to maximum range readings.\n";
+    std::cout << "Setting unseen values in range image to maximum range readings.\n";
   }
   int tmp_coordinate_frame;
   if (pcl::console::parse (argc, argv, "-c", tmp_coordinate_frame) >= 0)
   {
     coordinate_frame = pcl::RangeImage::CoordinateFrame (tmp_coordinate_frame);
-    cout << "Using coordinate frame "<< (int)coordinate_frame<<".\n";
+    std::cout << "Using coordinate frame "<< (int)coordinate_frame<<".\n";
   }
   if (pcl::console::parse (argc, argv, "-r", angular_resolution) >= 0)
-    cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
+    std::cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
   angular_resolution = pcl::deg2rad (angular_resolution);
   
   // ------------------------------------------------------------------
@@ -76,7 +76,7 @@ main (int argc, char** argv)
     std::string filename = argv[pcd_filename_indices[0]];
     if (pcl::io::loadPCDFile (filename, point_cloud) == -1)
     {
-      cout << "Was not able to open file \""<<filename<<"\".\n";
+      std::cout << "Was not able to open file \""<<filename<<"\".\n";
       printUsage (argv[0]);
       return 0;
     }
@@ -91,7 +91,7 @@ main (int argc, char** argv)
   }
   else
   {
-    cout << "\nNo *.pcd file given => Generating example point cloud.\n\n";
+    std::cout << "\nNo *.pcd file given => Generating example point cloud.\n\n";
     for (float x=-0.5f; x<=0.5f; x+=0.01f)
     {
       for (float y=-0.5f; y<=0.5f; y+=0.01f)
@@ -100,7 +100,7 @@ main (int argc, char** argv)
         point_cloud.points.push_back (point);
       }
     }
-    point_cloud.width = (int) point_cloud.points.size ();  point_cloud.height = 1;
+    point_cloud.width = point_cloud.size ();  point_cloud.height = 1;
   }
   
   // -----------------------------------------------
@@ -149,12 +149,12 @@ main (int argc, char** argv)
   {
     for (int x=0; x< (int)range_image.width; ++x)
     {
-      if (border_descriptions.points[y*range_image.width + x].traits[pcl::BORDER_TRAIT__OBSTACLE_BORDER])
-        border_points.points.push_back (range_image.points[y*range_image.width + x]);
-      if (border_descriptions.points[y*range_image.width + x].traits[pcl::BORDER_TRAIT__VEIL_POINT])
-        veil_points.points.push_back (range_image.points[y*range_image.width + x]);
-      if (border_descriptions.points[y*range_image.width + x].traits[pcl::BORDER_TRAIT__SHADOW_BORDER])
-        shadow_points.points.push_back (range_image.points[y*range_image.width + x]);
+      if (border_descriptions[y*range_image.width + x].traits[pcl::BORDER_TRAIT__OBSTACLE_BORDER])
+        border_points.points.push_back (range_image[y*range_image.width + x]);
+      if (border_descriptions[y*range_image.width + x].traits[pcl::BORDER_TRAIT__VEIL_POINT])
+        veil_points.points.push_back (range_image[y*range_image.width + x]);
+      if (border_descriptions[y*range_image.width + x].traits[pcl::BORDER_TRAIT__SHADOW_BORDER])
+        shadow_points.points.push_back (range_image[y*range_image.width + x]);
     }
   }
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointWithRange> border_points_color_handler (border_points_ptr, 0, 255, 0);

@@ -41,7 +41,7 @@
 #include <vector>
 #include <typeinfo>
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/geometry/quad_mesh.h>
 
@@ -80,7 +80,7 @@ class TestQuadMesh : public testing::Test
     using Mesh = MeshT;
 };
 
-TYPED_TEST_CASE (TestQuadMesh, QuadMeshTypes);
+TYPED_TEST_SUITE (TestQuadMesh, QuadMeshTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -344,7 +344,7 @@ TYPED_TEST (TestQuadMesh, NineQuads)
 
   ASSERT_EQ (order_vec.size (), non_manifold.size ());
   ASSERT_EQ (9, faces.size ());
-  for (size_t i=0; i<order_vec.size (); ++i)
+  for (std::size_t i=0; i<order_vec.size (); ++i)
   {
     std::stringstream ss;
     ss << "Configuration " << i;
@@ -356,16 +356,16 @@ TYPED_TEST (TestQuadMesh, NineQuads)
     if (9 != order.size ()) continue;
 
     Mesh mesh;
-    for (size_t j=0; j<16; ++j) mesh.addVertex (j);
+    for (std::size_t j=0; j<16; ++j) mesh.addVertex (j);
 
     std::vector <VertexIndices> ordered_faces;
 
-    for (size_t j=0; j<faces.size (); ++j)
+    for (std::size_t j=0; j<faces.size (); ++j)
     {
       ordered_faces.push_back (faces [order [j]]);
     }
     bool check_has_faces = true;
-    for (size_t j=0; j<faces.size (); ++j)
+    for (std::size_t j=0; j<faces.size (); ++j)
     {
       const FaceIndex index = mesh.addFace (ordered_faces [j]);
 

@@ -55,7 +55,7 @@ namespace pcl
       public:
 
         FPFHItem (QString name, 
-                     pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfh_ptr,
+                     const pcl::PointCloud<pcl::FPFHSignature33>::Ptr& fpfh_ptr,
                      double radius);
         FPFHItem (const FPFHItem& to_copy);
         ~FPFHItem ();

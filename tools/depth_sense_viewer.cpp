@@ -35,6 +35,7 @@
  *
  */
 
+#include <pcl/memory.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/time.h>
 #include <pcl/console/print.h>
@@ -43,7 +44,6 @@
 #include <pcl/io/depth_sense_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/format.hpp>
 
 #include <iostream>
@@ -92,15 +92,14 @@ printHelp (int, char **argv)
 void
 printDeviceList ()
 {
-  using DepthSenseGrabberPtr = boost::shared_ptr<pcl::DepthSenseGrabber>;
-  std::vector<DepthSenseGrabberPtr> grabbers;
+  std::vector<DepthSenseGrabber::Ptr> grabbers;
   std::cout << "Connected devices: ";
   boost::format fmt ("\n  #%i  %s");
   while (true)
   {
     try
     {
-      grabbers.push_back (DepthSenseGrabberPtr (new pcl::DepthSenseGrabber));
+      grabbers.push_back (DepthSenseGrabber::Ptr (new pcl::DepthSenseGrabber));
       std::cout << boost::str (fmt % grabbers.size () % grabbers.back ()->getDeviceSerialNumber ());
     }
     catch (pcl::io::IOException& e)
@@ -254,7 +253,7 @@ class DepthSenseViewer
       // Temporal filter settings
       std::string tfs = boost::str (boost::format (", window size %i") % window_);
       entries.push_back (boost::format ("temporal filtering: %s%s") % TF[temporal_filtering_] % (temporal_filtering_ == pcl::DepthSenseGrabber::DepthSense_None ? "" : tfs));
-      for (size_t i = 0; i < entries.size (); ++i)
+      for (std::size_t i = 0; i < entries.size (); ++i)
       {
         std::string name = boost::str (name_fmt % i);
         std::string entry = boost::str (entries[i]);

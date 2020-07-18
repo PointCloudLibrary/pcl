@@ -110,37 +110,37 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut 
                                                         static_cast<Eigen::MatrixXf::Index> (y - y_w + window_size_));
 
             Eigen::VectorXf::Index d_color = static_cast<Eigen::VectorXf::Index> (
-                abs (input_->points[y_w * input_->width + x_w].r - input_->points[y * input_->width + x].r) +
-                abs (input_->points[y_w * input_->width + x_w].g - input_->points[y * input_->width + x].g) +
-                abs (input_->points[y_w * input_->width + x_w].b - input_->points[y * input_->width + x].b));
+                std::abs ((*input_)[y_w * input_->width + x_w].r - (*input_)[y * input_->width + x].r) +
+                std::abs ((*input_)[y_w * input_->width + x_w].g - (*input_)[y * input_->width + x].g) +
+                std::abs ((*input_)[y_w * input_->width + x_w].b - (*input_)[y * input_->width + x].b));
 
             float val_exp_rgb = val_exp_rgb_vector (d_color);
 
-            if (std::isfinite (input_->points[y_w*input_->width + x_w].z))
+            if (std::isfinite ((*input_)[y_w*input_->width + x_w].z))
             {
-              sum += val_exp_depth * val_exp_rgb * input_->points[y_w*input_->width + x_w].z;
+              sum += val_exp_depth * val_exp_rgb * (*input_)[y_w*input_->width + x_w].z;
               norm_sum += val_exp_depth * val_exp_rgb;
             }
           }
 
-        output.points[y*input_->width + x].r = input_->points[y*input_->width + x].r;
-        output.points[y*input_->width + x].g = input_->points[y*input_->width + x].g;
-        output.points[y*input_->width + x].b = input_->points[y*input_->width + x].b;
+        output[y*input_->width + x].r = (*input_)[y*input_->width + x].r;
+        output[y*input_->width + x].g = (*input_)[y*input_->width + x].g;
+        output[y*input_->width + x].b = (*input_)[y*input_->width + x].b;
 
         if (norm_sum != 0.0f)
         {
           float depth = sum / norm_sum;
           Eigen::Vector3f pc (static_cast<float> (x) * depth, static_cast<float> (y) * depth, depth);
           Eigen::Vector3f pw (unprojection_matrix_ * pc);
-          output.points[y*input_->width + x].x = pw[0];
-          output.points[y*input_->width + x].y = pw[1];
-          output.points[y*input_->width + x].z = pw[2];
+          output[y*input_->width + x].x = pw[0];
+          output[y*input_->width + x].y = pw[1];
+          output[y*input_->width + x].z = pw[2];
         }
         else
         {
-          output.points[y*input_->width + x].x = nan;
-          output.points[y*input_->width + x].y = nan;
-          output.points[y*input_->width + x].z = nan;
+          output[y*input_->width + x].x = nan;
+          output[y*input_->width + x].y = nan;
+          output[y*input_->width + x].z = nan;
         }
       }
 
@@ -162,7 +162,7 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::computeDistances (Eigen::MatrixXf
     int i = 0;
     for (int dy = -window_size_; dy < window_size_+1; ++dy)
     {
-      float val_exp = expf (- (dx*dx + dy*dy) / (2.0f * static_cast<float> (sigma_depth_ * sigma_depth_)));
+      float val_exp = std::exp (- (dx*dx + dy*dy) / (2.0f * static_cast<float> (sigma_depth_ * sigma_depth_)));
       val_exp_depth(i,j) = val_exp;
       i++;
     }
@@ -171,7 +171,7 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::computeDistances (Eigen::MatrixXf
 
   for (int d_color = 0; d_color < 3*255+1; d_color++)
   {
-    float val_exp = expf (- d_color * d_color / (2.0f * sigma_color_ * sigma_color_));
+    float val_exp = std::exp (- d_color * d_color / (2.0f * sigma_color_ * sigma_color_));
     val_exp_rgb(d_color) = val_exp;
   }
 }

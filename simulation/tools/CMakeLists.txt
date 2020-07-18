@@ -1,3 +1,5 @@
+set(SUBSYS_NAME tools)
+
 find_package(GLEW)
 find_package(GLUT)
 

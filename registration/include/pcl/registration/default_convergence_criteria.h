@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/registration/eigen.h>
 #include <pcl/correspondence.h>
@@ -65,8 +66,8 @@ namespace pcl
     class DefaultConvergenceCriteria : public ConvergenceCriteria
     {
       public:
-        using Ptr = boost::shared_ptr<DefaultConvergenceCriteria<Scalar> >;
-        using ConstPtr = boost::shared_ptr<const DefaultConvergenceCriteria<Scalar> >;
+        using Ptr = shared_ptr<DefaultConvergenceCriteria<Scalar> >;
+        using ConstPtr = shared_ptr<const DefaultConvergenceCriteria<Scalar> >;
 
         using Matrix4 = Eigen::Matrix<Scalar, 4, 4>;
 

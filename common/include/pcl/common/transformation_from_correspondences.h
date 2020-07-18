@@ -50,16 +50,9 @@ namespace pcl
      public:
         //-----CONSTRUCTOR&DESTRUCTOR-----
         /** Constructor - dimension gives the size of the vectors to work with. */
-        TransformationFromCorrespondences () : 
-          no_of_samples_ (0), accumulated_weight_ (0), 
-          mean1_ (Eigen::Vector3f::Identity ()),
-          mean2_ (Eigen::Vector3f::Identity ()),
-          covariance_ (Eigen::Matrix<float, 3, 3>::Identity ())
+        TransformationFromCorrespondences () 
         { reset (); }
 
-        /** Destructor */
-        ~TransformationFromCorrespondences () { };
-        
         //-----METHODS-----
         /** Reset the object to work with a new data set */
         inline void 
@@ -71,7 +64,7 @@ namespace pcl
         
         /** Get the number of added vectors */
         inline unsigned int 
-        getNoOfSamples () { return no_of_samples_;}
+        getNoOfSamples () const { return no_of_samples_;}
         
         /** Add a new sample */
         inline void 
@@ -86,10 +79,11 @@ namespace pcl
      protected:
         //-----METHODS-----
         //-----VARIABLES-----
-        unsigned int no_of_samples_;
-        float accumulated_weight_;
-        Eigen::Vector3f mean1_, mean2_;
-        Eigen::Matrix<float, 3, 3> covariance_;
+        unsigned int no_of_samples_ = 0;
+        float accumulated_weight_ = 0;
+        Eigen::Vector3f mean1_ = Eigen::Vector3f::Identity ();
+        Eigen::Vector3f mean2_ = Eigen::Vector3f::Identity ();
+        Eigen::Matrix<float, 3, 3> covariance_ = Eigen::Matrix<float, 3, 3>::Identity ();
   };
 
 }  // END namespace

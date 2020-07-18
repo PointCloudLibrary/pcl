@@ -80,7 +80,7 @@ namespace pcl
       public:
         struct Parameters
         {
-            Parameters (T _min = 0, T _max = 1, pcl::uint32_t _seed = 1)
+            Parameters (T _min = 0, T _max = 1, std::uint32_t _seed = 1)
             : min (_min)
             , max (_max)
             , seed (_seed)
@@ -88,7 +88,7 @@ namespace pcl
 
           T min;
           T max;
-          pcl::uint32_t seed;
+          std::uint32_t seed;
         };
 
         /** Constructor
@@ -96,7 +96,7 @@ namespace pcl
           * \param max: included higher bound
           * \param seed: seeding value
           */
-        UniformGenerator(T min = 0, T max = 1, pcl::uint32_t seed = -1);
+        UniformGenerator(T min = 0, T max = 1, std::uint32_t seed = -1);
 
         /** Constructor
           * \param parameters uniform distribution parameters and generator seed
@@ -107,7 +107,7 @@ namespace pcl
           * \param[in] seed new generator seed value
           */
         void 
-        setSeed (pcl::uint32_t seed);
+        setSeed (std::uint32_t seed);
 
         /** Set the uniform number generator parameters
           * \param[in] min minimum allowed value
@@ -115,7 +115,7 @@ namespace pcl
           * \param[in] seed random number generator seed (applied if != -1)
           */
         void 
-        setParameters (T min, T max, pcl::uint32_t seed = -1);
+        setParameters (T min, T max, std::uint32_t seed = -1);
 
         /** Set generator parameters
           * \param parameters uniform distribution parameters and generator seed
@@ -152,7 +152,7 @@ namespace pcl
       public:
         struct Parameters
         {
-            Parameters (T _mean = 0, T _sigma = 1, pcl::uint32_t _seed = 1)
+            Parameters (T _mean = 0, T _sigma = 1, std::uint32_t _seed = 1)
             : mean (_mean)
             , sigma (_sigma)
             , seed (_seed)
@@ -160,7 +160,7 @@ namespace pcl
 
           T mean;
           T sigma;
-          pcl::uint32_t seed;
+          std::uint32_t seed;
         };
 
         /** Constructor
@@ -168,7 +168,7 @@ namespace pcl
           * \param[in] sigma normal variation
           * \param[in] seed seeding value
           */
-        NormalGenerator(T mean = 0, T sigma = 1, pcl::uint32_t seed = -1);
+        NormalGenerator(T mean = 0, T sigma = 1, std::uint32_t seed = -1);
 
         /** Constructor
           * \param parameters normal distribution parameters and seed
@@ -179,7 +179,7 @@ namespace pcl
           * \param[in] seed new seed value
           */
         void 
-        setSeed (pcl::uint32_t seed);
+        setSeed (std::uint32_t seed);
 
         /** Set the normal number generator parameters
           * \param[in] mean mean of the normal distribution
@@ -187,7 +187,7 @@ namespace pcl
           * \param[in] seed random number generator seed (applied if != -1)
           */
         void 
-        setParameters (T mean, T sigma, pcl::uint32_t seed = -1);
+        setParameters (T mean, T sigma, std::uint32_t seed = -1);
 
         /** Set generator parameters
           * \param parameters normal distribution parameters and seed

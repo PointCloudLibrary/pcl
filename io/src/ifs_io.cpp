@@ -58,9 +58,8 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   // By default, assume that there are _no_ invalid (e.g., NaN) points
   //cloud.is_dense = true;
 
-  uint32_t nr_points = 0;
+  std::uint32_t nr_points = 0;
   std::ifstream fs;
-  std::string line;
 
   if (file_name.empty() || !boost::filesystem::exists (file_name))
   {
@@ -77,8 +76,8 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   }
 
   //Read the magic
-  uint32_t length_of_magic;
-  fs.read ((char*)&length_of_magic, sizeof (uint32_t));
+  std::uint32_t length_of_magic;
+  fs.read ((char*)&length_of_magic, sizeof (std::uint32_t));
   char *magic = new char [length_of_magic];
   fs.read (magic, sizeof (char) * length_of_magic);
   if (strcmp (magic, "IFS"))
@@ -105,8 +104,8 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
     }
 
   //Read the name
-  uint32_t length_of_name;
-  fs.read ((char*)&length_of_name, sizeof (uint32_t));
+  std::uint32_t length_of_name;
+  fs.read ((char*)&length_of_name, sizeof (std::uint32_t));
   char *name = new char [length_of_name];
   fs.read (name, sizeof (char) * length_of_name);
   delete[] name;
@@ -117,14 +116,14 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
     while (!fs.eof ())
     {
       //Read the keyword
-      uint32_t length_of_keyword;
-      fs.read ((char*)&length_of_keyword, sizeof (uint32_t));
+      std::uint32_t length_of_keyword;
+      fs.read ((char*)&length_of_keyword, sizeof (std::uint32_t));
       char *keyword = new char [length_of_keyword];
       fs.read (keyword, sizeof (char) * length_of_keyword);
 
       if (strcmp (keyword, "VERTICES") == 0)
       {
-        fs.read ((char*)&nr_points, sizeof (uint32_t));
+        fs.read ((char*)&nr_points, sizeof (std::uint32_t));
         if ((nr_points == 0) || (nr_points > 10000000))
         {
           PCL_ERROR ("[pcl::IFSReader::readHeader] Bad number of vertices %lu!\n", nr_points);
@@ -189,7 +188,7 @@ pcl::IFSReader::read (const std::string &file_name,
 
   boost::iostreams::mapped_file_source mapped_file;
 
-  size_t data_size = data_idx + cloud.data.size ();
+  std::size_t data_size = data_idx + cloud.data.size ();
 
   try
   {
@@ -240,7 +239,7 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
 
   boost::iostreams::mapped_file_source mapped_file;
 
-  size_t data_size = data_idx + mesh.cloud.data.size ();
+  std::size_t data_size = data_idx + mesh.cloud.data.size ();
 
   try
   {
@@ -277,8 +276,8 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
   // Jump to the end of cloud data
   fs.seekg (data_size);
   // Read the TRIANGLES keyword
-  uint32_t length_of_keyword;
-  fs.read ((char*)&length_of_keyword, sizeof (uint32_t));
+  std::uint32_t length_of_keyword;
+  fs.read ((char*)&length_of_keyword, sizeof (std::uint32_t));
   char *keyword = new char [length_of_keyword];
   fs.read (keyword, sizeof (char) * length_of_keyword);
   if (strcmp (keyword, "TRIANGLES"))
@@ -289,8 +288,8 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
   }
   delete[] keyword;
   // Read the number of facets
-  uint32_t nr_facets;
-  fs.read ((char*)&nr_facets, sizeof (uint32_t));
+  std::uint32_t nr_facets;
+  fs.read ((char*)&nr_facets, sizeof (std::uint32_t));
   if ((nr_facets == 0) || (nr_facets > 10000000))
   {
     PCL_ERROR ("[pcl::IFSReader::read] Bad number of facets %lu!\n", nr_facets);
@@ -300,13 +299,13 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
   // Resize the mesh polygons
   mesh.polygons.resize (nr_facets);
   // Fill each polygon
-  for (uint32_t i = 0; i < nr_facets; ++i)
+  for (std::uint32_t i = 0; i < nr_facets; ++i)
   {
     pcl::Vertices &facet = mesh.polygons[i];
     facet.vertices.resize (3);
-    fs.read ((char*)&(facet.vertices[0]), sizeof (uint32_t));
-    fs.read ((char*)&(facet.vertices[1]), sizeof (uint32_t));
-    fs.read ((char*)&(facet.vertices[2]), sizeof (uint32_t));
+    fs.read ((char*)&(facet.vertices[0]), sizeof (std::uint32_t));
+    fs.read ((char*)&(facet.vertices[1]), sizeof (std::uint32_t));
+    fs.read ((char*)&(facet.vertices[2]), sizeof (std::uint32_t));
   }
   // We are done, close the file
   fs.close ();
@@ -336,32 +335,32 @@ pcl::IFSWriter::write (const std::string &file_name, const pcl::PCLPointCloud2 &
   const std::string magic = "IFS";
   const float version = 1.0f;
   const std::string vertices = "VERTICES";
-  std::vector<char> header (sizeof (uint32_t) + magic.size () + 1 +
+  std::vector<char> header (sizeof (std::uint32_t) + magic.size () + 1 +
                             sizeof (float) +
-                            sizeof (uint32_t) + cloud_name.size () + 1 +
-                            sizeof (uint32_t) + vertices.size () + 1 +
-                            sizeof (uint32_t));
+                            sizeof (std::uint32_t) + cloud_name.size () + 1 +
+                            sizeof (std::uint32_t) + vertices.size () + 1 +
+                            sizeof (std::uint32_t));
   char* addr = &(header[0]);
-  const uint32_t magic_size = static_cast<uint32_t> (magic.size ()) + 1;
-  memcpy (addr, &magic_size, sizeof (uint32_t));
-  addr+= sizeof (uint32_t);
+  const std::uint32_t magic_size = static_cast<std::uint32_t> (magic.size ()) + 1;
+  memcpy (addr, &magic_size, sizeof (std::uint32_t));
+  addr+= sizeof (std::uint32_t);
   memcpy (addr, magic.c_str (), magic_size * sizeof (char));
   addr+= magic_size * sizeof (char);
   memcpy (addr, &version, sizeof (float));
   addr+= sizeof (float);
-  const uint32_t cloud_name_size = static_cast<uint32_t> (cloud_name.size ()) + 1;
-  memcpy (addr, &cloud_name_size, sizeof (uint32_t));
-  addr+= sizeof (uint32_t);
+  const std::uint32_t cloud_name_size = static_cast<std::uint32_t> (cloud_name.size ()) + 1;
+  memcpy (addr, &cloud_name_size, sizeof (std::uint32_t));
+  addr+= sizeof (std::uint32_t);
   memcpy (addr, cloud_name.c_str (), cloud_name_size * sizeof (char));
   addr+= cloud_name_size * sizeof (char);
-  const uint32_t vertices_size = static_cast<uint32_t> (vertices.size ()) + 1;
-  memcpy (addr, &vertices_size, sizeof (uint32_t));
-  addr+= sizeof (uint32_t);
+  const std::uint32_t vertices_size = static_cast<std::uint32_t> (vertices.size ()) + 1;
+  memcpy (addr, &vertices_size, sizeof (std::uint32_t));
+  addr+= sizeof (std::uint32_t);
   memcpy (addr, vertices.c_str (), vertices_size * sizeof (char));
   addr+= vertices_size * sizeof (char);
-  const uint32_t nb_vertices = cloud.data.size () / cloud.point_step;
-  memcpy (addr, &nb_vertices, sizeof (uint32_t));
-  /*addr+= sizeof (uint32_t);*/
+  const std::uint32_t nb_vertices = cloud.data.size () / cloud.point_step;
+  memcpy (addr, &nb_vertices, sizeof (std::uint32_t));
+  /*addr+= sizeof (std::uint32_t);*/
 
   std::size_t data_idx = header.size ();
 

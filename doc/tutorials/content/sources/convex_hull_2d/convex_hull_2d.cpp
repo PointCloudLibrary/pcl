@@ -21,7 +21,7 @@ int
   pass.setFilterFieldName ("z");
   pass.setFilterLimits (0, 1.1);
   pass.filter (*cloud_filtered);
-  std::cerr << "PointCloud after filtering has: " << cloud_filtered->points.size () << " data points." << std::endl;
+  std::cerr << "PointCloud after filtering has: " << cloud_filtered->size () << " data points." << std::endl;
 
   pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
   pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
@@ -51,7 +51,7 @@ int
   chull.setInputCloud (cloud_projected);
   chull.reconstruct (*cloud_hull);
 
-  std::cerr << "Convex hull has: " << cloud_hull->points.size () << " data points." << std::endl;
+  std::cerr << "Convex hull has: " << cloud_hull->size () << " data points." << std::endl;
 
   pcl::PCDWriter writer;
   writer.write ("table_scene_mug_stereo_textured_hull.pcd", *cloud_hull, false);

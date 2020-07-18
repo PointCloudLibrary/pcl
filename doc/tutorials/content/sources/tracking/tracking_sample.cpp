@@ -82,17 +82,17 @@ drawParticles (pcl::visualization::PCLVisualizer& viz)
 {
   ParticleFilter::PointCloudStatePtr particles = tracker_->getParticles ();
   if (particles && new_cloud_)
-    {
+  {
       //Set pointCloud with particle's points
       pcl::PointCloud<pcl::PointXYZ>::Ptr particle_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-      for (size_t i = 0; i < particles->points.size (); i++)
+    for (const auto& particle: *particles)
 	{
 	  pcl::PointXYZ point;
           
-	  point.x = particles->points[i].x;
-	  point.y = particles->points[i].y;
-	  point.z = particles->points[i].z;
-	  particle_cloud->points.push_back (point);
+	  point.x = particle.x;
+	  point.y = particle.y;
+	  point.z = particle.z;
+	  particle_cloud->push_back (point);
 	}
 
       //Draw red particles 
@@ -275,11 +275,10 @@ main (int argc, char** argv)
   //Setup OpenNIGrabber and viewer
   pcl::visualization::CloudViewer* viewer_ = new pcl::visualization::CloudViewer("PCL OpenNI Tracking Viewer");
   pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id);
-  std::function<void (const CloudConstPtr&)> f =
-    boost::bind (&cloud_cb, _1);
+  std::function<void (const CloudConstPtr&)> f = cloud_cb;
   interface->registerCallback (f);
-    
-  viewer_->runOnVisualizationThread (boost::bind(&viz_cb, _1), "viz_cb");
+
+  viewer_->runOnVisualizationThread (viz_cb, "viz_cb");
 
   //Start viewer and object tracking
   interface->start();

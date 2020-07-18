@@ -60,7 +60,7 @@ namespace pcl
         getSelectedItems () { return selected_item_index_map_.keys ();}
         
         template <typename PointT> QList <CloudComposerItem*>
-        performTemplatedAction (QList <const CloudComposerItem*> input_data);
+        performTemplatedAction (const QList <const CloudComposerItem*>& input_data);
         
       private:
         QMap <const CloudItem*, pcl::PointIndices::ConstPtr > selected_item_index_map_;

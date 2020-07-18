@@ -26,3 +26,8 @@ PCL_ADD_TEST(test_2d test_2d FILES test_2d.cpp
                        "${PCL_SOURCE_DIR}/test/2d/opening_binary.pcd"
                        "${PCL_SOURCE_DIR}/test/2d/closing_binary.pcd"
                        "${PCL_SOURCE_DIR}/test/2d/canny.pcd")
+
+PCL_ADD_TEST(test_2d_keypoint_instantiation_with_precompile test_2d_keypoint_instantiation_with_precompile FILES keypoint_instantiation.cpp LINK_WITH pcl_gtest pcl_common)
+
+PCL_ADD_TEST(test_2d_keypoint_instantiation_without_precompile test_2d_keypoint_instantiation_without_precompile FILES keypoint_instantiation.cpp LINK_WITH pcl_gtest pcl_common)
+target_compile_definitions(test_2d_keypoint_instantiation_without_precompile PUBLIC PCL_NO_PRECOMPILE)

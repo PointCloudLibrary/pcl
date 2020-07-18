@@ -57,7 +57,7 @@ namespace pcl
     /** \brief y-position. */
     int y;
     /** \brief the index of the corresponding modality. */
-    size_t modality_index;
+    std::size_t modality_index;
     /** \brief the quantized value attached to the feature. */
     unsigned char quantized_value;
 
@@ -65,7 +65,7 @@ namespace pcl
       * \param[in] base the feature to compare to.
       */
     bool
-    compareForEquality (const QuantizedMultiModFeature & base)
+    compareForEquality (const QuantizedMultiModFeature & base) const
     {
       if (base.x != x)
         return false;

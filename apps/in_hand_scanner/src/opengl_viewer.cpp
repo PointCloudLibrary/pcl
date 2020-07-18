@@ -88,7 +88,7 @@ pcl::ihs::detail::FaceVertexMesh::FaceVertexMesh (const Mesh& mesh, const Eigen:
   triangles.reserve (mesh.sizeFaces ());
   pcl::ihs::detail::FaceVertexMesh::Triangle triangle;
 
-  for (size_t i=0; i<mesh.sizeFaces (); ++i)
+  for (std::size_t i=0; i<mesh.sizeFaces (); ++i)
   {
     Mesh::VertexAroundFaceCirculator circ = mesh.getVertexAroundFaceCirculator (Mesh::FaceIndex (i));
     triangle.first  = (circ++).getTargetIndex ().get ();
@@ -926,7 +926,7 @@ pcl::ihs::OpenGLViewer::drawMeshes ()
         }
         case COL_VISCONF:
         {
-          for (size_t i=0; i<mesh.vertices.size (); ++i)
+          for (std::size_t i=0; i<mesh.vertices.size (); ++i)
           {
             const unsigned int n = pcl::ihs::countDirections (mesh.vertices [i].directions);
             const unsigned int index = static_cast <unsigned int> (

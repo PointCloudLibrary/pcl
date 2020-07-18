@@ -44,8 +44,6 @@
 #include <algorithm>
 #include "NCV.hpp"
 
-using namespace std;
-
 
 //==============================================================================
 //
@@ -54,16 +52,16 @@ using namespace std;
 //==============================================================================
 
 
-static void stdDebugOutput(const string &msg)
+static void stdDebugOutput(const std::string &msg)
 {
-    cout << msg;
+    std::cout << msg;
 }
 
 
 static NCVDebugOutputHandler *debugOutputHandler = stdDebugOutput;
 
 
-void ncvDebugOutput(const string &msg)
+void ncvDebugOutput(const std::string &msg)
 {
     debugOutputHandler(msg);
 }
@@ -105,7 +103,7 @@ void NCVMemSegment::clear()
 }
 
 
-NCVStatus memSegCopyHelper(void *dst, NCVMemoryType dstType, const void *src, NCVMemoryType srcType, size_t sz, cudaStream_t cuStream)
+NCVStatus memSegCopyHelper(void *dst, NCVMemoryType dstType, const void *src, NCVMemoryType srcType, std::size_t sz, cudaStream_t cuStream)
 {
     NCVStatus ncvStat;
     switch (dstType)
@@ -267,7 +265,7 @@ NCVMemStackAllocator::NCVMemStackAllocator(Ncv32u alignment)
 }
 
 
-NCVMemStackAllocator::NCVMemStackAllocator(NCVMemoryType memT, size_t capacity, Ncv32u alignment, void *reusePtr)
+NCVMemStackAllocator::NCVMemStackAllocator(NCVMemoryType memT, std::size_t capacity, Ncv32u alignment, void *reusePtr)
     :
     currentSize(0),
     _maxSize(0),
@@ -345,18 +343,18 @@ NCVMemStackAllocator::~NCVMemStackAllocator()
 }
 
 
-NCVStatus NCVMemStackAllocator::alloc(NCVMemSegment &seg, size_t size)
+NCVStatus NCVMemStackAllocator::alloc(NCVMemSegment &seg, std::size_t size)
 {
     seg.clear();
     ncvAssertReturn(isInitialized(), NCV_ALLOCATOR_BAD_ALLOC);
 
     size = alignUp(size, this->_alignment);
     this->currentSize += size;
-    this->_maxSize = std::max(this->_maxSize, this->currentSize);
+    this->_maxSize = max(this->_maxSize, this->currentSize);
 
     if (!isCounting())
     {
-        size_t availSize = end - begin;
+        std::size_t availSize = end - begin;
         ncvAssertReturn(size <= availSize, NCV_ALLOCATOR_INSUFFICIENT_CAPACITY);
     }
 
@@ -441,7 +439,7 @@ NCVMemNativeAllocator::~NCVMemNativeAllocator()
 }
 
 
-NCVStatus NCVMemNativeAllocator::alloc(NCVMemSegment &seg, size_t size)
+NCVStatus NCVMemNativeAllocator::alloc(NCVMemSegment &seg, std::size_t size)
 {
     seg.clear();
     ncvAssertReturn(isInitialized(), NCV_ALLOCATOR_BAD_ALLOC);
@@ -461,7 +459,7 @@ NCVStatus NCVMemNativeAllocator::alloc(NCVMemSegment &seg, size_t size)
     }
 
     this->currentSize += alignUp(size, this->_alignment);
-    this->_maxSize = std::max(this->_maxSize, this->currentSize);
+    this->_maxSize = max(this->_maxSize, this->currentSize);
 
     seg.begin.memtype = this->_memType;
     seg.size = size;

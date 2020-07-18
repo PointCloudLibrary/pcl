@@ -101,7 +101,7 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
   PointT min_pt, max_pt;
 
   // Iterate over all pcd files resizing min/max
-  for (size_t i = 0; i < pcd_paths.size (); i++)
+  for (std::size_t i = 0; i < pcd_paths.size (); i++)
   {
 
     // Get cloud
@@ -176,7 +176,7 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
     outofcore_octree = new octree_disk (bounding_box_min, bounding_box_max, resolution, octree_path_on_disk, "ECEF");
   }
 
-  uint64_t total_pts = 0;
+  std::uint64_t total_pts = 0;
 
   // Iterate over all pcd files adding points to the octree
   for (const auto &pcd_path : pcd_paths)
@@ -184,7 +184,7 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
 
     PCLPointCloud2::Ptr cloud = getCloudFromFile (pcd_path);
 
-    boost::uint64_t pts = 0;
+    std::uint64_t pts = 0;
     
     if (gen_lod && !multiresolution)
     {

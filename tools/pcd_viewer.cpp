@@ -195,7 +195,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
   std::stringstream ss;
   ss << idx;
   // Get the cloud's fields
-  for (size_t i = 0; i < cloud->fields.size (); ++i)
+  for (std::size_t i = 0; i < cloud->fields.size (); ++i)
   {
     if (!isMultiDimensionalFeatureField (cloud->fields[i]))
       continue;
@@ -303,8 +303,8 @@ main (int argc, char** argv)
   {
     print_highlight ("Multi-viewport rendering enabled.\n");
 
-    int y_s = static_cast<int>(floor (sqrt (static_cast<float>(p_file_indices.size () + vtk_file_indices.size ()))));
-    x_s = y_s + static_cast<int>(ceil (double (p_file_indices.size () + vtk_file_indices.size ()) / double (y_s) - y_s));
+    int y_s = static_cast<int>(std::floor (sqrt (static_cast<float>(p_file_indices.size () + vtk_file_indices.size ()))));
+    x_s = y_s + static_cast<int>(std::ceil (double (p_file_indices.size () + vtk_file_indices.size ()) / double (y_s) - y_s));
 
     if (!p_file_indices.empty ())
     {
@@ -325,14 +325,14 @@ main (int argc, char** argv)
 
   // Fix invalid multiple arguments
   if (psize.size () != p_file_indices.size () && !psize.empty ())
-    for (size_t i = psize.size (); i < p_file_indices.size (); ++i)
+    for (std::size_t i = psize.size (); i < p_file_indices.size (); ++i)
       psize.push_back (1);
   if (opaque.size () != p_file_indices.size () && !opaque.empty ())
-    for (size_t i = opaque.size (); i < p_file_indices.size (); ++i)
+    for (std::size_t i = opaque.size (); i < p_file_indices.size (); ++i)
       opaque.push_back (1.0);
 
   if (shadings.size () != p_file_indices.size () && !shadings.empty ())
-    for (size_t i = shadings.size (); i < p_file_indices.size (); ++i)
+    for (std::size_t i = shadings.size (); i < p_file_indices.size (); ++i)
       shadings.emplace_back("flat");
 
   // Create the PCLPlotter object
@@ -348,7 +348,7 @@ main (int argc, char** argv)
   GeometryHandlerPtr geometry_handler;
 
   // Go through VTK files
-  for (size_t i = 0; i < vtk_file_indices.size (); ++i)
+  for (std::size_t i = 0; i < vtk_file_indices.size (); ++i)
   {
     // Load file
     tt.tic ();
@@ -417,7 +417,7 @@ main (int argc, char** argv)
 
   pcl::PCLPointCloud2::Ptr cloud;
   // Go through PCD files
-  for (size_t i = 0; i < p_file_indices.size (); ++i)
+  for (std::size_t i = 0; i < p_file_indices.size (); ++i)
   {
     tt.tic ();
     cloud.reset (new pcl::PCLPointCloud2);
@@ -610,7 +610,7 @@ main (int argc, char** argv)
       int rgb_idx = 0;
       int label_idx = 0;
       int invalid_fields_count = 0;
-      for (size_t f = 0; f < cloud->fields.size (); ++f)
+      for (std::size_t f = 0; f < cloud->fields.size (); ++f)
       {
         if (!isValidFieldName (cloud->fields[f].name))
         {
@@ -678,10 +678,10 @@ main (int argc, char** argv)
     else if (!vtk_file_indices.empty ())
       str = std::string (argv[vtk_file_indices.at (0)]);
 
-    for (size_t i = 1; i < p_file_indices.size (); ++i)
+    for (std::size_t i = 1; i < p_file_indices.size (); ++i)
       str += ", " + std::string (argv[p_file_indices.at (i)]);
 
-    for (size_t i = 1; i < vtk_file_indices.size (); ++i)
+    for (std::size_t i = 1; i < vtk_file_indices.size (); ++i)
       str += ", " + std::string (argv[vtk_file_indices.at (i)]);
 
     p->addText (str, 5, 5, 10, 1.0, 1.0, 1.0, "text_allnames");

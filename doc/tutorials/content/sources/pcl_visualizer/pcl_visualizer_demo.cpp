@@ -113,9 +113,9 @@ pcl::visualization::PCLVisualizer::Ptr shapesVis (pcl::PointCloud<pcl::PointXYZR
   //------------------------------------
   //-----Add shapes at cloud points-----
   //------------------------------------
-  viewer->addLine<pcl::PointXYZRGB> (cloud->points[0],
-                                     cloud->points[cloud->size() - 1], "line");
-  viewer->addSphere (cloud->points[0], 0.2, 0.5, 0.5, 0.0, "sphere");
+  viewer->addLine<pcl::PointXYZRGB> ((*cloud)[0],
+                                     (*cloud)[cloud->size() - 1], "line");
+  viewer->addSphere ((*cloud)[0], 0.2, 0.5, 0.5, 0.0, "sphere");
 
   //---------------------------------------
   //-----Add shapes at other locations-----
@@ -286,13 +286,13 @@ main (int argc, char** argv)
   std::cout << "Generating example point clouds.\n\n";
   // We're going to make an ellipse extruded along the z-axis. The colour for
   // the XYZRGB cloud will gradually go from red to green to blue.
-  uint8_t r(255), g(15), b(15);
+  std::uint8_t r(255), g(15), b(15);
   for (float z(-1.0); z <= 1.0; z += 0.05)
   {
     for (float angle(0.0); angle <= 360.0; angle += 5.0)
     {
       pcl::PointXYZ basic_point;
-      basic_point.x = 0.5 * cosf (pcl::deg2rad(angle));
+      basic_point.x = 0.5 * std::cos (pcl::deg2rad(angle));
       basic_point.y = sinf (pcl::deg2rad(angle));
       basic_point.z = z;
       basic_cloud_ptr->points.push_back(basic_point);
@@ -301,8 +301,8 @@ main (int argc, char** argv)
       point.x = basic_point.x;
       point.y = basic_point.y;
       point.z = basic_point.z;
-      uint32_t rgb = (static_cast<uint32_t>(r) << 16 |
-              static_cast<uint32_t>(g) << 8 | static_cast<uint32_t>(b));
+      std::uint32_t rgb = (static_cast<std::uint32_t>(r) << 16 |
+              static_cast<std::uint32_t>(g) << 8 | static_cast<std::uint32_t>(b));
       point.rgb = *reinterpret_cast<float*>(&rgb);
       point_cloud_ptr->points.push_back (point);
     }
@@ -317,9 +317,9 @@ main (int argc, char** argv)
       b += 12;
     }
   }
-  basic_cloud_ptr->width = (int) basic_cloud_ptr->points.size ();
+  basic_cloud_ptr->width = basic_cloud_ptr->size ();
   basic_cloud_ptr->height = 1;
-  point_cloud_ptr->width = (int) point_cloud_ptr->points.size ();
+  point_cloud_ptr->width = point_cloud_ptr->size ();
   point_cloud_ptr->height = 1;
 
   // ----------------------------------------------------------------

@@ -38,18 +38,11 @@
  *
  */
 
-// STL
 #include <iostream>
 
-// PCL
 #include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/common/io.h>
 #include <pcl/keypoints/sift_keypoint.h>
-#include <pcl/keypoints/impl/sift_keypoint.hpp>
-#include <pcl/features/normal_3d.h>
-// #include <pcl/visualization/pcl_visualizer.h>
-	
+
 int
 main(int, char** argv)
 {
@@ -61,7 +54,7 @@ main(int, char** argv)
   PCL_ERROR ("Couldn't read file");
   return -1;
   }
-  std::cout << "points: " << cloud->points.size () <<std::endl;
+  std::cout << "points: " << cloud->size () <<std::endl;
   
   // Parameters for sift computation
   const float min_scale = 0.1f;
@@ -85,7 +78,7 @@ main(int, char** argv)
   copyPointCloud(result, *cloud_temp);
 
   // Saving the resultant cloud 
-  std::cout << "Resulting sift points are of size: " << cloud_temp->points.size () <<std::endl;
+  std::cout << "Resulting sift points are of size: " << cloud_temp->size () <<std::endl;
   pcl::io::savePCDFileASCII("sift_points.pcd", *cloud_temp);
 
   

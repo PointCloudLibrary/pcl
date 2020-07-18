@@ -58,7 +58,7 @@ CommandQueue::enforceDequeLimit ()
 }
 
 void
-CommandQueue::execute (CommandPtr command_ptr)
+CommandQueue::execute (const CommandPtr& command_ptr)
 {
   if (!command_ptr)
     return;

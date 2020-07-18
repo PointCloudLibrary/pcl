@@ -64,8 +64,8 @@ namespace pcl
   class GFPFHEstimation : public FeatureFromLabels<PointInT, PointLT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<GFPFHEstimation<PointInT, PointLT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const GFPFHEstimation<PointInT, PointLT, PointOutT> >;
+      using Ptr = shared_ptr<GFPFHEstimation<PointInT, PointLT, PointOutT> >;
+      using ConstPtr = shared_ptr<const GFPFHEstimation<PointInT, PointLT, PointOutT> >;
       using FeatureFromLabels<PointInT, PointLT, PointOutT>::feature_name_;
       using FeatureFromLabels<PointInT, PointLT, PointOutT>::getClassName;
       using FeatureFromLabels<PointInT, PointLT, PointOutT>::indices_;
@@ -98,18 +98,18 @@ namespace pcl
       getOctreeLeafSize () { return (octree_leaf_size_); }
 
       /** \brief Return the empty label value. */
-      inline uint32_t
+      inline std::uint32_t
       emptyLabel () const { return 0; }
 
       /** \brief Return the number of different classes. */
-      inline uint32_t
+      inline std::uint32_t
       getNumberOfClasses () const { return number_of_classes_; }
 
       /** \brief Set the number of different classes.
        * \param n number of different classes.
        */
       inline void
-      setNumberOfClasses (uint32_t n) { number_of_classes_ = n; }
+      setNumberOfClasses (std::uint32_t n) { number_of_classes_ = n; }
 
       /** \brief Return the size of the descriptor. */
       inline int
@@ -132,7 +132,7 @@ namespace pcl
       computeFeature (PointCloudOut &output) override;
 
       /** \brief Return the dominant label of a set of points. */
-      uint32_t
+      std::uint32_t
       getDominantLabel (const std::vector<int>& indices);
 
       /** \brief Compute the fixed-length histograms of transitions. */
@@ -164,7 +164,7 @@ namespace pcl
       double octree_leaf_size_;
 
       /** \brief Number of possible classes/labels. */
-      uint32_t number_of_classes_;
+      std::uint32_t number_of_classes_;
 
       /** \brief Dimension of the descriptors. */
       int descriptor_size_;

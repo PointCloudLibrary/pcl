@@ -85,16 +85,19 @@ inline int _ConvertSMVer2CoresDrvApi(int major, int minor)
 // This function returns the best GPU based on performance
 inline int cutilDrvGetMaxGflopsDeviceId()
 {
-    CUdevice current_device = 0, max_perf_device = 0;
-    int device_count     = 0, sm_per_multiproc = 0;
-    int max_compute_perf = 0, best_SM_arch     = 0;
-    int major = 0, minor = 0, multiProcessorCount, clockRate;
+    CUdevice current_device = 0;
+    CUdevice max_perf_device = 0;
+    int device_count     = 0;
+    int max_compute_perf = 0;
+    int best_SM_arch     = 0;
 
     cuInit(0);
     cutilDrvSafeCallNoSync(cuDeviceGetCount(&device_count));
 
 	// Find the best major SM Architecture GPU device
 	while ( current_device < device_count ) {
+		int major = 0;
+	        int minor = 0;
 		cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, current_device));
 		cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
 		if (major > 0 && major < 9999) {
@@ -103,34 +106,35 @@ inline int cutilDrvGetMaxGflopsDeviceId()
 		current_device++;
 	}
 
-    // Find the best CUDA capable GPU device
+    	// Find the best CUDA capable GPU device
 	current_device = 0;
 	while( current_device < device_count ) {
+                int multiProcessorCount;
+                int clockRate;
+                int major = 0;
+                int minor = 0;              
 		cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &multiProcessorCount, 
                                                             CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT, 
                                                             current_device ) );
-        cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &clockRate, 
+        	cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &clockRate, 
                                                             CU_DEVICE_ATTRIBUTE_CLOCK_RATE, 
                                                             current_device ) );
-        cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, current_device));
-        cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
+        	cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, current_device));
+        	cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
 
-		if (major == 9999 && minor == 9999) {
-		    sm_per_multiproc = 1;
-		} else {
-		    sm_per_multiproc = _ConvertSMVer2CoresDrvApi(major, minor);
-		}
+        	int sm_per_multiproc = (major == 9999 && minor == 9999) ? 1 : _ConvertSMVer2CoresDrvApi(major, minor);
 
 		int compute_perf  = multiProcessorCount * sm_per_multiproc * clockRate;
 		if( compute_perf  > max_compute_perf ) {
-            // If we find GPU with SM major > 2, search only these
+            		// If we find GPU with SM major > 2, search only these
 			if ( best_SM_arch > 2 ) {
 				// If our device==dest_SM_arch, choose this, or else pass
 				if (major == best_SM_arch) {	
-                    max_compute_perf  = compute_perf;
-                    max_perf_device   = current_device;
+                    			max_compute_perf  = compute_perf;
+                    			max_perf_device   = current_device;
 				}
-			} else {
+			} 
+			else {
 				max_compute_perf  = compute_perf;
 				max_perf_device   = current_device;
 			}
@@ -143,18 +147,21 @@ inline int cutilDrvGetMaxGflopsDeviceId()
 // This function returns the best Graphics GPU based on performance
 inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
 {
-    CUdevice current_device = 0, max_perf_device = 0;
-    int device_count     = 0, sm_per_multiproc = 0;
-    int max_compute_perf = 0, best_SM_arch     = 0;
-    int major = 0, minor = 0, multiProcessorCount, clockRate;
-	int bTCC = 0;
-	char deviceName[256];
+    CUdevice current_device = 0;
+    CUdevice max_perf_device = 0;
+    int device_count     = 0;
+    int max_compute_perf = 0;
+    int best_SM_arch     = 0;
 
     cuInit(0);
     cutilDrvSafeCallNoSync(cuDeviceGetCount(&device_count));
 
 	// Find the best major SM Architecture GPU device that are graphics devices
 	while ( current_device < device_count ) {
+              	char deviceName[256];
+              	int major = 0;
+              	int minor = 0;
+              	int bTCC = 0;
 		cutilDrvSafeCallNoSync( cuDeviceGetName(deviceName, 256, current_device) );
 		cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, current_device));
 		cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
@@ -171,22 +178,23 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
     // Find the best CUDA capable GPU device
 	current_device = 0;
 	while( current_device < device_count ) {
+              	int multiProcessorCount;
+              	int clockRate;
+              	int major = 0;
+              	int minor = 0;
+              	int bTCC = 0;
 		cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &multiProcessorCount, 
                                                             CU_DEVICE_ATTRIBUTE_MULTIPROCESSOR_COUNT, 
                                                             current_device ) );
-        cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &clockRate, 
+        	cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &clockRate, 
                                                             CU_DEVICE_ATTRIBUTE_CLOCK_RATE, 
                                                             current_device ) );
-        cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, current_device));
-        cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
+        	cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR, current_device));
+        	cutilDrvSafeCallNoSync (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR, current_device));
 
 		cutilDrvSafeCallNoSync( cuDeviceGetAttribute( &bTCC,  CU_DEVICE_ATTRIBUTE_TCC_DRIVER, current_device ) );
 
-		if (major == 9999 && minor == 9999) {
-		    sm_per_multiproc = 1;
-		} else {
-		    sm_per_multiproc = _ConvertSMVer2CoresDrvApi(major, minor);
-		}
+              	int sm_per_multiproc = (major == 9999 && minor == 9999) ? 1 : _ConvertSMVer2CoresDrvApi(major, minor);
 
 		// If this is a Tesla based GPU and SM 2.0, and TCC is disabled, this is a contender
 		if (!bTCC) // Is this GPU running the TCC driver?  If so we pass on this
@@ -197,10 +205,11 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
 				if ( best_SM_arch > 2 ) {
 					// If our device = dest_SM_arch, then we pick this one
 					if (major == best_SM_arch) {	
-                        max_compute_perf  = compute_perf;
-                        max_perf_device   = current_device;
+                        			max_compute_perf  = compute_perf;
+                        			max_perf_device   = current_device;
 					}
-				} else {
+				} 
+				else {
 					max_compute_perf  = compute_perf;
 					max_perf_device   = current_device;
 				}
@@ -215,7 +224,7 @@ inline void __cuCheckMsg( const char * msg, const char *file, const int line )
 {
     CUresult err = cuCtxSynchronize();
     if( CUDA_SUCCESS != err) {
-		fprintf(stderr, "cutilDrvCheckMsg -> %s", msg);
+	fprintf(stderr, "cutilDrvCheckMsg -> %s", msg);
         fprintf(stderr, "cutilDrvCheckMsg -> cuCtxSynchronize API error = %04d in file <%s>, line %i.\n",
                 err, file, line );
         exit(-1);
@@ -241,11 +250,11 @@ inline void __cuCheckMsg( const char * msg, const char *file, const int line )
         cutGetCmdLineArgumenti(ARGC, (const char **) ARGV, "device", &dev);
         if (dev < 0) dev = 0;
         if (dev > deviceCount-1) {
-			fprintf(stderr, "\n");
-			fprintf(stderr, ">> %d CUDA capable GPU device(s) detected. <<\n", deviceCount);
-            fprintf(stderr, ">> cutilDeviceInit (-device=%d) is not a valid GPU device. <<\n", dev);
-			fprintf(stderr, "\n");
-            return -dev;
+		fprintf(stderr, "\n");
+		fprintf(stderr, ">> %d CUDA capable GPU device(s) detected. <<\n", deviceCount);
+            	fprintf(stderr, ">> cutilDeviceInit (-device=%d) is not a valid GPU device. <<\n", dev);
+		fprintf(stderr, "\n");
+            	return -dev;
         }
         cutilDrvSafeCallNoSync(cuDeviceGet(&cuDevice, dev));
         char name[100];
@@ -293,13 +302,13 @@ inline void cutilDrvCudaCheckCtxLost(const char *errorMessage, const char *file,
     CUresult err = cuCtxSynchronize();
     if( CUDA_ERROR_INVALID_CONTEXT != err) {
         fprintf(stderr, "Cuda error: %s in file '%s' in line %i\n",
-                errorMessage, file, line );
+        errorMessage, file, line );
         exit(-1);
     }
     err = cuCtxSynchronize();
     if( CUDA_SUCCESS != err) {
         fprintf(stderr, "Cuda error: %s in file '%s' in line %i\n",
-                errorMessage, file, line );
+        errorMessage, file, line );
         exit(-1);
     } 
 }

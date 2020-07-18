@@ -59,8 +59,8 @@ namespace pcl
   class ESFEstimation: public Feature<PointInT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<ESFEstimation<PointInT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const ESFEstimation<PointInT, PointOutT> >;
+      using Ptr = shared_ptr<ESFEstimation<PointInT, PointOutT> >;
+      using ConstPtr = shared_ptr<const ESFEstimation<PointInT, PointOutT> >;
 
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;

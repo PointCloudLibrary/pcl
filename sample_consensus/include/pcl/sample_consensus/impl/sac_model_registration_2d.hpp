@@ -39,20 +39,24 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_REGISTRATION_2D_HPP_
 
 #include <pcl/sample_consensus/sac_model_registration_2d.h>
-#include <pcl/common/point_operators.h>
 #include <pcl/common/eigen.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::SampleConsensusModelRegistration2D<PointT>::isSampleGood (const std::vector<int>&) const
+pcl::SampleConsensusModelRegistration2D<PointT>::isSampleGood (const Indices&samples) const
 {
+  if (samples.size () != sample_size_)
+  {
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration2D::isSampleGood] Wrong number of samples (is %lu, should be %lu)!\n", samples.size (), sample_size_);
+    return (false);
+  }
   return (true);
   //using namespace pcl::common;
   //using namespace pcl::traits;
 
-  //PointT p10 = input_->points[samples[1]] - input_->points[samples[0]];
-  //PointT p20 = input_->points[samples[2]] - input_->points[samples[0]];
-  //PointT p21 = input_->points[samples[2]] - input_->points[samples[1]];
+  //PointT p10 = (*input_)[samples[1]] - (*input_)[samples[0]];
+  //PointT p20 = (*input_)[samples[2]] - (*input_)[samples[0]];
+  //PointT p21 = (*input_)[samples[2]] - (*input_)[samples[1]];
 
   //return ((p10.x * p10.x + p10.y * p10.y + p10.z * p10.z) > sample_dist_thresh_ && 
   //        (p20.x * p20.x + p20.y * p20.y + p20.z * p20.z) > sample_dist_thresh_ && 
@@ -85,11 +89,11 @@ pcl::SampleConsensusModelRegistration2D<PointT>::getDistancesToModel (const Eige
   transform.row (2).matrix () = model_coefficients.segment<4>(8);
   transform.row (3).matrix () = model_coefficients.segment<4>(12);
 
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
-                            input_->points[(*indices_)[i]].y, 
-                            input_->points[(*indices_)[i]].z, 1); 
+    Eigen::Vector4f pt_src ((*input_)[(*indices_)[i]].x, 
+                            (*input_)[(*indices_)[i]].y, 
+                            (*input_)[(*indices_)[i]].z, 1.0f);
 
     Eigen::Vector4f p_tr (transform * pt_src);
 
@@ -97,23 +101,25 @@ pcl::SampleConsensusModelRegistration2D<PointT>::getDistancesToModel (const Eige
     Eigen::Vector3f p_tr3 (p_tr[0], p_tr[1], p_tr[2]);
     Eigen::Vector3f uv (projection_matrix_ * p_tr3);
 
-    if (uv[2] < 0)
+    if (uv[2] < 0.0f)
+    {
       continue;
+    }
 
     uv /= uv[2];
 
     // Calculate the distance from the transformed point to its correspondence
     // need to compute the real norm here to keep MSAC and friends general
-    distances[i] = std::sqrt ((uv[0] - target_->points[(*indices_tgt_)[i]].u) *
-                              (uv[0] - target_->points[(*indices_tgt_)[i]].u) +
-                              (uv[1] - target_->points[(*indices_tgt_)[i]].v) *
-                              (uv[1] - target_->points[(*indices_tgt_)[i]].v));
+    distances[i] = std::sqrt ((uv[0] - (*target_)[(*indices_tgt_)[i]].u) *
+                              (uv[0] - (*target_)[(*indices_tgt_)[i]].u) +
+                              (uv[1] - (*target_)[(*indices_tgt_)[i]].v) *
+                              (uv[1] - (*target_)[(*indices_tgt_)[i]].v));
   }
 }
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::SampleConsensusModelRegistration2D<PointT>::selectWithinDistance (const Eigen::VectorXf &model_coefficients, const double threshold, std::vector<int> &inliers) 
+pcl::SampleConsensusModelRegistration2D<PointT>::selectWithinDistance (const Eigen::VectorXf &model_coefficients, const double threshold, Indices &inliers)
 {
   if (indices_->size () != indices_tgt_->size ())
   {
@@ -129,9 +135,10 @@ pcl::SampleConsensusModelRegistration2D<PointT>::selectWithinDistance (const Eig
 
   double thresh = threshold * threshold;
 
-  int nr_p = 0;
-  inliers.resize (indices_->size ());
-  error_sqr_dists_.resize (indices_->size ());
+  inliers.clear ();
+  error_sqr_dists_.clear ();
+  inliers.reserve (indices_->size ());
+  error_sqr_dists_.reserve (indices_->size ());
 
   Eigen::Matrix4f transform;
   transform.row (0).matrix () = model_coefficients.segment<4>(0);
@@ -139,11 +146,11 @@ pcl::SampleConsensusModelRegistration2D<PointT>::selectWithinDistance (const Eig
   transform.row (2).matrix () = model_coefficients.segment<4>(8);
   transform.row (3).matrix () = model_coefficients.segment<4>(12);
 
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
-                            input_->points[(*indices_)[i]].y, 
-                            input_->points[(*indices_)[i]].z, 1); 
+    Eigen::Vector4f pt_src ((*input_)[(*indices_)[i]].x, 
+                            (*input_)[(*indices_)[i]].y, 
+                            (*input_)[(*indices_)[i]].z, 1.0f);
 
     Eigen::Vector4f p_tr (transform * pt_src);
 
@@ -151,30 +158,27 @@ pcl::SampleConsensusModelRegistration2D<PointT>::selectWithinDistance (const Eig
     Eigen::Vector3f p_tr3 (p_tr[0], p_tr[1], p_tr[2]);
     Eigen::Vector3f uv (projection_matrix_ * p_tr3);
 
-    if (uv[2] < 0)
+    if (uv[2] < 0.0f)
       continue;
 
     uv /= uv[2];
 
-    double distance = ((uv[0] - target_->points[(*indices_tgt_)[i]].u) *
-                       (uv[0] - target_->points[(*indices_tgt_)[i]].u) +
-                       (uv[1] - target_->points[(*indices_tgt_)[i]].v) *
-                       (uv[1] - target_->points[(*indices_tgt_)[i]].v));
+    double distance = ((uv[0] - (*target_)[(*indices_tgt_)[i]].u) *
+                       (uv[0] - (*target_)[(*indices_tgt_)[i]].u) +
+                       (uv[1] - (*target_)[(*indices_tgt_)[i]].v) *
+                       (uv[1] - (*target_)[(*indices_tgt_)[i]].v));
 
     // Calculate the distance from the transformed point to its correspondence
     if (distance < thresh)
     {
-      inliers[nr_p] = (*indices_)[i];
-      error_sqr_dists_[nr_p] = distance;
-      ++nr_p;
+      inliers.push_back ((*indices_)[i]);
+      error_sqr_dists_.push_back (distance);
     }
   }
-  inliers.resize (nr_p);
-  error_sqr_dists_.resize (nr_p);
 } 
 
 //////////////////////////////////////////////////////////////////////////
-template <typename PointT> int
+template <typename PointT> std::size_t
 pcl::SampleConsensusModelRegistration2D<PointT>::countWithinDistance (
     const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
@@ -197,13 +201,13 @@ pcl::SampleConsensusModelRegistration2D<PointT>::countWithinDistance (
   transform.row (2).matrix () = model_coefficients.segment<4>(8);
   transform.row (3).matrix () = model_coefficients.segment<4>(12);
 
-  int nr_p = 0; 
+  std::size_t nr_p = 0;
   
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    Eigen::Vector4f pt_src (input_->points[(*indices_)[i]].x, 
-                            input_->points[(*indices_)[i]].y, 
-                            input_->points[(*indices_)[i]].z, 1); 
+    Eigen::Vector4f pt_src ((*input_)[(*indices_)[i]].x, 
+                            (*input_)[(*indices_)[i]].y, 
+                            (*input_)[(*indices_)[i]].z, 1.0f);
 
     Eigen::Vector4f p_tr (transform * pt_src);
 
@@ -211,17 +215,21 @@ pcl::SampleConsensusModelRegistration2D<PointT>::countWithinDistance (
     Eigen::Vector3f p_tr3 (p_tr[0], p_tr[1], p_tr[2]);
     Eigen::Vector3f uv (projection_matrix_ * p_tr3);
 
-    if (uv[2] < 0)
+    if (uv[2] < 0.0f)
+    {
       continue;
+    }
 
     uv /= uv[2];
 
     // Calculate the distance from the transformed point to its correspondence
-    if (((uv[0] - target_->points[(*indices_tgt_)[i]].u) *
-         (uv[0] - target_->points[(*indices_tgt_)[i]].u) +
-         (uv[1] - target_->points[(*indices_tgt_)[i]].v) *
-         (uv[1] - target_->points[(*indices_tgt_)[i]].v)) < thresh)
+    if (((uv[0] - (*target_)[(*indices_tgt_)[i]].u) *
+         (uv[0] - (*target_)[(*indices_tgt_)[i]].u) +
+         (uv[1] - (*target_)[(*indices_tgt_)[i]].v) *
+         (uv[1] - (*target_)[(*indices_tgt_)[i]].v)) < thresh)
+    {
       ++nr_p;
+    }
   }
   return (nr_p);
 } 

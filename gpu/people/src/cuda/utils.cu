@@ -1,7 +1,8 @@
+#include <limits>
+
 #include "internal.h"
 #include <pcl/gpu/utils/safe_call.hpp>
 #include <pcl/gpu/utils/texture_binder.hpp>
-#include <pcl/gpu/utils/device/limits.hpp>
 #include "npp.h"
 
 #include <stdio.h>
@@ -151,7 +152,7 @@ namespace pcl
       if (x < depth1.cols && y < depth1.rows)
       {
         unsigned short d = depth1.ptr(y)[x];
-        depth2.ptr(y)[x] = inv_mask.ptr(y)[x] ? d : numeric_limits<unsigned short>::max();
+        depth2.ptr(y)[x] = inv_mask.ptr(y)[x] ? d : std::numeric_limits<unsigned short>::max();
       }
     }
   }
@@ -229,7 +230,7 @@ namespace pcl
 
       if (x < rgba.cols && y < rgba.rows)
       {
-        const float qnan = numeric_limits<float>::quiet_NaN();
+        constexpr float qnan = std::numeric_limits<float>::quiet_NaN();
 
         unsigned short d = depth.ptr(y)[x];            
         hue.ptr(y)[x] = (d == 0) ? qnan : computeHueFunc(rgba.ptr(y)[x]);           
@@ -264,10 +265,9 @@ namespace pcl
       int x = blockIdx.x * blockDim.x + threadIdx.x;
       int y = blockIdx.y * blockDim.y + threadIdx.y;
 
-      const float qnan = numeric_limits<float>::quiet_NaN();
-
       if (x < depth.cols && y < depth.rows)
       {
+        constexpr float qnan = std::numeric_limits<float>::quiet_NaN();
         float4 p = make_float4(qnan, qnan, qnan, qnan);
 
         int d = depth.ptr(y)[x];

@@ -8,7 +8,7 @@
 
 pcl::cloud_composer::TransformClouds::TransformClouds (QMap <QString, vtkSmartPointer<vtkMatrix4x4> > transform_map, QObject* parent)
   : ModifyItemTool (nullptr, parent)
-  , transform_map_ (transform_map)
+  , transform_map_ (std::move(transform_map))
 {
   
 }
@@ -23,7 +23,7 @@ pcl::cloud_composer::TransformClouds::performAction (ConstItemList input_data, P
 {
   if (type != PointTypeFlags::NONE)
   {
-    switch ((uint8_t) type)
+    switch ((std::uint8_t) type)
     {
       case (PointTypeFlags::XYZ):
         return this->performTemplatedAction<pcl::PointXYZ> (input_data);

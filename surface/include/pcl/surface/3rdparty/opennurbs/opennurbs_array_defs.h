@@ -466,15 +466,15 @@ void ON_SimpleArray<T>::Append( int count, const T* p )
 template <class T>
 void ON_SimpleArray<T>::Insert( int i, const T& x ) 
 {
-  if( i >= 0 && i <= m_count ) 
+  if( i >= 0 && i <= m_count )
   {
-    if ( m_count == m_capacity ) 
+    if ( m_count == m_capacity )
     {
       int newcapacity = NewCapacity();
       Reserve( newcapacity );
     }
 	  m_count++;
-    Move( i+1, i, m_count-1-i );
+    Move( i+1, i, static_cast<unsigned int>(m_count)-1-i );
 	  m_a[i] = x;
   }
 }
@@ -810,7 +810,7 @@ int ON_SimpleArray<T>::NewCapacity() const
   // Reserve() size and then wasting gigabytes of memory.
 
   // cap_size = 128 MB on 32-bit os, 256 MB on 64 bit os
-  const size_t cap_size = 32*sizeof(void*)*1024*1024;
+  const std::size_t cap_size = 32*sizeof(void*)*1024*1024;
   if (m_count*sizeof(T) <= cap_size || m_count < 8)
     return ((m_count <= 2) ? 4 : 2*m_count);
 
@@ -842,7 +842,7 @@ int ON_ClassArray<T>::NewCapacity() const
   // Reserve() size and then wasting gigabytes of memory.
 
   // cap_size = 128 MB on 32-bit os, 256 MB on 64 bit os
-  const size_t cap_size = 32*sizeof(void*)*1024*1024;
+  const std::size_t cap_size = 32*sizeof(void*)*1024*1024;
   if (m_count*sizeof(T) <= cap_size || m_count < 8)
     return ((m_count <= 2) ? 4 : 2*m_count);
 
@@ -1283,7 +1283,7 @@ void ON_ClassArray<T>::Move( int dest_i, int src_i, int ele_cnt )
 template <class T>
 void ON_ClassArray<T>::ConstructDefaultElement(T* p)
 {
-  // use placement ( new(size_t,void*) ) to construct
+  // use placement ( new(std::size_t,void*) ) to construct
   // T in supplied memory
   new(p) T;
 }
@@ -1372,7 +1372,7 @@ void ON_ClassArray<T>::Insert( int i, const T& x )
     DestroyElement( m_a[m_count] );
 	  m_count++;
     if ( i < m_count-1 ) {
-      Move( i+1, i, m_count-1-i );
+      Move( i+1, i, static_cast<unsigned int>(m_count)-1-i );
       // This call to memset is ok even when T has a vtable
       // because in-place construction is used later.
       memset( (void*)(&m_a[i]), 0, sizeof(T) );
@@ -1466,7 +1466,7 @@ int ON_ClassArray<T>::BinarySearch( const T* key, int (*compar)(const T*,const T
 {
   const T* found = (key&&m_a&&m_count>0) ? (const T*)bsearch( key, m_a, m_count, sizeof(T), (int(*)(const void*,const void*))compar ) : 0;
 #if defined(ON_COMPILER_MSC1300)
-  // for 32 and 64 bit compilers - the (int) converts 64 bit size_t 
+  // for 32 and 64 bit compilers - the (int) converts 64 bit std::size_t 
   return found ? ((int)(found - m_a)) : -1;
 #else
   // for lamer 64 bit compilers
@@ -1483,7 +1483,7 @@ int ON_ClassArray<T>::BinarySearch( const T* key, int (*compar)(const T*,const T
     return -1;
   const T* found = (key&&m_a&&m_count>0) ? (const T*)bsearch( key, m_a, count, sizeof(T), (int(*)(const void*,const void*))compar ) : 0;
 #if defined(ON_COMPILER_MSC1300)
-  // for 32 and 64 bit compilers - the (int) converts 64 bit size_t 
+  // for 32 and 64 bit compilers - the (int) converts 64 bit std::size_t 
   return found ? ((int)(found - m_a)) : -1;
 #else
   // for lamer 64 bit compilers

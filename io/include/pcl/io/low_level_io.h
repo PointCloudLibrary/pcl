@@ -61,6 +61,7 @@ using ssize_t = SSIZE_T;
 # include <sys/fcntl.h>
 # include <cerrno>
 #endif
+#include <cstddef>
 
 namespace pcl
 {
@@ -87,12 +88,12 @@ namespace pcl
       return ::_lseek(fd, offset, whence);
     }
 
-    inline int raw_read(int fd, void * buffer, size_t count)
+    inline int raw_read(int fd, void * buffer, std::size_t count)
     {
       return ::_read(fd, buffer, count);
     }
 
-    inline int raw_write(int fd, const void * buffer, size_t count)
+    inline int raw_write(int fd, const void * buffer, std::size_t count)
     {
       return ::_write(fd, buffer, count);
     }
@@ -128,12 +129,12 @@ namespace pcl
       return ::lseek(fd, offset, whence);
     }
 
-    inline ssize_t raw_read(int fd, void * buffer, size_t count)
+    inline ssize_t raw_read(int fd, void * buffer, std::size_t count)
     {
       return ::read(fd, buffer, count);
     }
 
-    inline ssize_t raw_write(int fd, const void * buffer, size_t count)
+    inline ssize_t raw_write(int fd, const void * buffer, std::size_t count)
     {
       return ::write(fd, buffer, count);
     }
@@ -150,7 +151,7 @@ namespace pcl
       // It may make the file too big though, so we truncate before returning.
 
       // Try to allocate contiguous space first.
-      ::fstore_t store = {F_ALLOCATEALL | F_ALLOCATECONTIG, F_PEOFPOSMODE, 0, length};
+      ::fstore_t store = {F_ALLOCATEALL | F_ALLOCATECONTIG, F_PEOFPOSMODE, 0, length, 0};
       if (::fcntl(fd, F_PREALLOCATE, &store) != -1)
         return raw_ftruncate(fd, length);
 

@@ -40,7 +40,7 @@
 
 #include <vector>
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 // Needed for one test. Must be defined before including the mesh.
 #define PCL_GEOMETRY_MESH_BASE_TEST_DELETE_FACE_MANIFOLD_2
@@ -291,7 +291,7 @@ TEST (TestAddDeleteFace, NonManifold2)
   vi.push_back (VI (0)); vi.push_back (VI (8)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear ();
   vi.push_back (VI (0)); vi.push_back (VI (2)); vi.push_back (VI (3)); faces.push_back (vi); vi.clear ();
   vi.push_back (VI (0)); vi.push_back (VI (6)); vi.push_back (VI (7)); faces.push_back (vi); vi.clear ();
-  for (size_t i = 4; i < faces.size (); ++i)
+  for (std::size_t i = 4; i < faces.size (); ++i)
   {
     EXPECT_TRUE (mesh.addFace (faces [i]).isValid ());
   }
@@ -307,10 +307,10 @@ TEST (TestAddDeleteFace, NonManifold2)
 
   // Copy vertex indices to data
   std::vector <std::vector <int> > expected (faces.size ());
-  for (size_t i = 0; i < faces.size (); ++i)
+  for (std::size_t i = 0; i < faces.size (); ++i)
   {
     std::vector <int> tmp (faces [i].size ());
-    for (size_t j = 0; j < faces [i].size (); ++j)
+    for (std::size_t j = 0; j < faces [i].size (); ++j)
     {
       tmp [j] = faces [i][j].get ();
     }
@@ -353,10 +353,10 @@ TEST (TestAddDeleteFace, Manifold1)
   vi.push_back (VI (0)); vi.push_back (VI (5)); vi.push_back (VI (6)); faces.push_back (vi); vi.clear ();
   vi.push_back (VI (0)); vi.push_back (VI (6)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear ();
 
-  for (size_t i = 0; i < faces.size (); ++i)
+  for (std::size_t i = 0; i < faces.size (); ++i)
   {
     std::vector <int> tmp (faces [i].size ());
-    for (size_t j = 0; j < faces [i].size (); ++j)
+    for (std::size_t j = 0; j < faces [i].size (); ++j)
     {
       tmp [j] = faces [i][j].get ();
     }
@@ -391,7 +391,7 @@ TEST (TestAddDeleteFace, Manifold1)
   vi.push_back (VI ( 8)); vi.push_back (VI (2)); vi.push_back (VI (9)); faces.push_back (vi); vi.clear ();
   vi.push_back (VI (10)); vi.push_back (VI (9)); vi.push_back (VI (2)); faces.push_back (vi); vi.clear ();
   vi.push_back (VI (10)); vi.push_back (VI (2)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear ();
-  for (size_t i = 0; i < faces.size (); ++i)
+  for (std::size_t i = 0; i < faces.size (); ++i)
   {
     ASSERT_TRUE (mesh.addFace (faces [i]).isValid ()) << "Face " << i;
   }
@@ -462,11 +462,11 @@ TEST (TestAddDeleteFace, Manifold2)
     vi.push_back (mesh_tmp.addVertex ());
   }
 
-  for (size_t i=0; i<permutations.size (); ++i) // first face
+  for (std::size_t i=0; i<permutations.size (); ++i) // first face
   {
-    for (size_t j=0; j<permutations.size (); ++j) // second face
+    for (std::size_t j=0; j<permutations.size (); ++j) // second face
     {
-      for (size_t k=0; k<permutations.size (); ++k) // third face
+      for (std::size_t k=0; k<permutations.size (); ++k) // third face
       {
         for (VI l (0); l < VI (3); ++l) // deleted vertex
         {
@@ -518,10 +518,10 @@ TEST (TestDelete, VertexAndEdge)
   vi.push_back (VI (0)); vi.push_back (VI (5)); vi.push_back (VI (6)); faces.push_back (vi); vi.clear ();
   vi.push_back (VI (0)); vi.push_back (VI (6)); vi.push_back (VI (1)); faces.push_back (vi); vi.clear ();
 
-  for (size_t i = 0; i < faces.size (); ++i)
+  for (std::size_t i = 0; i < faces.size (); ++i)
   {
     std::vector <int> tmp (faces [i].size ());
-    for (size_t j = 0; j < faces [i].size (); ++j)
+    for (std::size_t j = 0; j < faces [i].size (); ++j)
     {
       tmp [j] = faces [i][j].get ();
     }
@@ -609,7 +609,7 @@ TEST (TestMesh, IsBoundaryIsManifold)
   EXPECT_TRUE  (mesh.isManifold (VI (5)));
   ASSERT_FALSE (mesh.isManifold ());
 
-  for (size_t i = 0; i < mesh.sizeEdges (); ++i)
+  for (std::size_t i = 0; i < mesh.sizeEdges (); ++i)
   {
     ASSERT_TRUE (mesh.isBoundary (EdgeIndex (i)));
   }

@@ -5,9 +5,8 @@
 #include<iostream>
 #include<vector>
 #include<utility>
-#include<math.h>  //for abs()
+#include<cmath>  //for std::abs()
 
-using namespace std;
 using namespace pcl::visualization;
 
 void
@@ -17,7 +16,7 @@ generateData (double *ax, double *acos, double *asin, int numPoints)
   for (int i = 0; i < numPoints; ++i)
   {
     ax[i] = i*inc;
-    acos[i] = cos (i * inc);
+    acos[i] = std::cos (i * inc);
     asin[i] = sin (i * inc);
   }
 }
@@ -68,9 +67,9 @@ main (int argc, char * argv [])
   plotter->setYRange (-10, 10);
 
   //defining polynomials
-  vector<double> func1 (1, 0);
+  std::vector<double> func1 (1, 0);
   func1[0] = 1; //y = 1
-  vector<double> func2 (3, 0);
+  std::vector<double> func2 (3, 0);
   func2[2] = 1; //y = x^2
 
   plotter->addPlotData (std::make_pair (func1, func2), -10, 10, "y = 1/x^2", 100, vtkChart::POINTS);
@@ -83,7 +82,7 @@ main (int argc, char * argv [])
   plotter->addPlotData (identity, -10, 10, "identity");
   plotter->spinOnce (2000);
 
-  plotter->addPlotData (abs, -10, 10, "abs");
+  plotter->addPlotData (std::abs, -10, 10, "abs");
   plotter->spinOnce (2000);
 
   plotter->addPlotData (step, -10, 10, "step", 100, vtkChart::POINTS);
@@ -92,7 +91,7 @@ main (int argc, char * argv [])
   plotter->clearPlots ();
 
   //........................A simple animation..............................
-  vector<double> fsq (3, 0);
+  std::vector<double> fsq (3, 0);
   fsq[2] = -100; //y = x^2
   while (!plotter->wasStopped ())
   {

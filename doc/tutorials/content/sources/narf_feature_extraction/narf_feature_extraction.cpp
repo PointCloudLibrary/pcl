@@ -70,20 +70,20 @@ main (int argc, char** argv)
   if (pcl::console::find_argument (argc, argv, "-m") >= 0)
   {
     setUnseenToMaxRange = true;
-    cout << "Setting unseen values in range image to maximum range readings.\n";
+    std::cout << "Setting unseen values in range image to maximum range readings.\n";
   }
   if (pcl::console::parse (argc, argv, "-o", rotation_invariant) >= 0)
-    cout << "Switching rotation invariant feature version "<< (rotation_invariant ? "on" : "off")<<".\n";
+    std::cout << "Switching rotation invariant feature version "<< (rotation_invariant ? "on" : "off")<<".\n";
   int tmp_coordinate_frame;
   if (pcl::console::parse (argc, argv, "-c", tmp_coordinate_frame) >= 0)
   {
     coordinate_frame = pcl::RangeImage::CoordinateFrame (tmp_coordinate_frame);
-    cout << "Using coordinate frame "<< (int)coordinate_frame<<".\n";
+    std::cout << "Using coordinate frame "<< (int)coordinate_frame<<".\n";
   }
   if (pcl::console::parse (argc, argv, "-s", support_size) >= 0)
-    cout << "Setting support size to "<<support_size<<".\n";
+    std::cout << "Setting support size to "<<support_size<<".\n";
   if (pcl::console::parse (argc, argv, "-r", angular_resolution) >= 0)
-    cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
+    std::cout << "Setting angular resolution to "<<angular_resolution<<"deg.\n";
   angular_resolution = pcl::deg2rad (angular_resolution);
   
   // ------------------------------------------------------------------
@@ -99,7 +99,7 @@ main (int argc, char** argv)
     std::string filename = argv[pcd_filename_indices[0]];
     if (pcl::io::loadPCDFile (filename, point_cloud) == -1)
     {
-      cerr << "Was not able to open file \""<<filename<<"\".\n";
+      std::cerr << "Was not able to open file \""<<filename<<"\".\n";
       printUsage (argv[0]);
       return 0;
     }
@@ -114,7 +114,7 @@ main (int argc, char** argv)
   else
   {
     setUnseenToMaxRange = true;
-    cout << "\nNo *.pcd file given => Generating example point cloud.\n\n";
+    std::cout << "\nNo *.pcd file given => Generating example point cloud.\n\n";
     for (float x=-0.5f; x<=0.5f; x+=0.01f)
     {
       for (float y=-0.5f; y<=0.5f; y+=0.01f)
@@ -123,7 +123,7 @@ main (int argc, char** argv)
         point_cloud.points.push_back (point);
       }
     }
-    point_cloud.width = (int) point_cloud.points.size ();  point_cloud.height = 1;
+    point_cloud.width = point_cloud.size ();  point_cloud.height = 1;
   }
   
   // -----------------------------------------------
@@ -171,23 +171,23 @@ main (int argc, char** argv)
   
   pcl::PointCloud<int> keypoint_indices;
   narf_keypoint_detector.compute (keypoint_indices);
-  std::cout << "Found "<<keypoint_indices.points.size ()<<" key points.\n";
+  std::cout << "Found "<<keypoint_indices.size ()<<" key points.\n";
 
   // ----------------------------------------------
   // -----Show keypoints in range image widget-----
   // ----------------------------------------------
-  //for (size_t i=0; i<keypoint_indices.points.size (); ++i)
-    //range_image_widget.markPoint (keypoint_indices.points[i]%range_image.width,
-                                  //keypoint_indices.points[i]/range_image.width);
+  //for (std::size_t i=0; i<keypoint_indices.size (); ++i)
+    //range_image_widget.markPoint (keypoint_indices[i]%range_image.width,
+                                  //keypoint_indices[i]/range_image.width);
   
   // -------------------------------------
   // -----Show keypoints in 3D viewer-----
   // -------------------------------------
   pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints_ptr (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>& keypoints = *keypoints_ptr;
-  keypoints.points.resize (keypoint_indices.points.size ());
-  for (size_t i=0; i<keypoint_indices.points.size (); ++i)
-    keypoints.points[i].getVector3fMap () = range_image.points[keypoint_indices.points[i]].getVector3fMap ();
+  keypoints.resize (keypoint_indices.size ());
+  for (std::size_t i=0; i<keypoint_indices.size (); ++i)
+    keypoints[i].getVector3fMap () = range_image[keypoint_indices[i]].getVector3fMap ();
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> keypoints_color_handler (keypoints_ptr, 0, 255, 0);
   viewer.addPointCloud<pcl::PointXYZ> (keypoints_ptr, keypoints_color_handler, "keypoints");
   viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 7, "keypoints");
@@ -196,16 +196,16 @@ main (int argc, char** argv)
   // -----Extract NARF descriptors for interest points-----
   // ------------------------------------------------------
   std::vector<int> keypoint_indices2;
-  keypoint_indices2.resize (keypoint_indices.points.size ());
+  keypoint_indices2.resize (keypoint_indices.size ());
   for (unsigned int i=0; i<keypoint_indices.size (); ++i) // This step is necessary to get the right vector type
-    keypoint_indices2[i]=keypoint_indices.points[i];
+    keypoint_indices2[i]=keypoint_indices[i];
   pcl::NarfDescriptor narf_descriptor (&range_image, &keypoint_indices2);
   narf_descriptor.getParameters ().support_size = support_size;
   narf_descriptor.getParameters ().rotation_invariant = rotation_invariant;
   pcl::PointCloud<pcl::Narf36> narf_descriptors;
   narf_descriptor.compute (narf_descriptors);
-  cout << "Extracted "<<narf_descriptors.size ()<<" descriptors for "
-                      <<keypoint_indices.points.size ()<< " keypoints.\n";
+  std::cout << "Extracted "<<narf_descriptors.size ()<<" descriptors for "
+                      <<keypoint_indices.size ()<< " keypoints.\n";
   
   //--------------------
   // -----Main loop-----

@@ -38,9 +38,10 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
-#include <pcl/point_traits.h>
+#include <pcl/type_traits.h>
 #include <pcl/PointIndices.h>
 #include <pcl/cloud_iterator.h>
 
@@ -117,12 +118,12 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> inline unsigned int
   compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
-                     const std::vector<int> &indices, 
+                     const Indices &indices,
                      Eigen::Matrix<Scalar, 4, 1> &centroid);
 
   template <typename PointT> inline unsigned int
   compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
-                     const std::vector<int> &indices, 
+                     const Indices &indices,
                      Eigen::Vector4f &centroid)
   {
     return (compute3DCentroid <PointT, float> (cloud, indices, centroid));
@@ -130,7 +131,7 @@ namespace pcl
 
   template <typename PointT> inline unsigned int
   compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
-                     const std::vector<int> &indices, 
+                     const Indices &indices,
                      Eigen::Vector4d &centroid)
   {
     return (compute3DCentroid <PointT, double> (cloud, indices, centroid));
@@ -148,12 +149,12 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> inline unsigned int
   compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
-                     const pcl::PointIndices &indices, 
+                     const pcl::PointIndices &indices,
                      Eigen::Matrix<Scalar, 4, 1> &centroid);
 
   template <typename PointT> inline unsigned int
   compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
-                     const pcl::PointIndices &indices, 
+                     const pcl::PointIndices &indices,
                      Eigen::Vector4f &centroid)
   {
     return (compute3DCentroid <PointT, float> (cloud, indices, centroid));
@@ -161,7 +162,7 @@ namespace pcl
 
   template <typename PointT> inline unsigned int
   compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
-                     const pcl::PointIndices &indices, 
+                     const pcl::PointIndices &indices,
                      Eigen::Vector4d &centroid)
   {
     return (compute3DCentroid <PointT, double> (cloud, indices, centroid));
@@ -250,13 +251,13 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> inline unsigned int
   computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                           const std::vector<int> &indices,
+                           const Indices &indices,
                            const Eigen::Matrix<Scalar, 4, 1> &centroid,
                            Eigen::Matrix<Scalar, 3, 3> &covariance_matrix);
 
   template <typename PointT> inline unsigned int
   computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                           const std::vector<int> &indices,
+                           const Indices &indices,
                            const Eigen::Vector4f &centroid,
                            Eigen::Matrix3f &covariance_matrix)
   {
@@ -265,7 +266,7 @@ namespace pcl
 
   template <typename PointT> inline unsigned int
   computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                           const std::vector<int> &indices,
+                           const Indices &indices,
                            const Eigen::Vector4d &centroid,
                            Eigen::Matrix3d &covariance_matrix)
   {
@@ -326,13 +327,13 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> inline unsigned int
   computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
-                                     const std::vector<int> &indices,
+                                     const Indices &indices,
                                      const Eigen::Matrix<Scalar, 4, 1> &centroid,
                                      Eigen::Matrix<Scalar, 3, 3> &covariance_matrix);
 
   template <typename PointT> inline unsigned int
   computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
-                                     const std::vector<int> &indices,
+                                     const Indices &indices,
                                      const Eigen::Vector4f &centroid,
                                      Eigen::Matrix3f &covariance_matrix)
   {
@@ -341,7 +342,7 @@ namespace pcl
 
   template <typename PointT> inline unsigned int
   computeCovarianceMatrixNormalized (const pcl::PointCloud<PointT> &cloud,
-                                     const std::vector<int> &indices,
+                                     const Indices &indices,
                                      const Eigen::Vector4d &centroid,
                                      Eigen::Matrix3d &covariance_matrix)
   {
@@ -434,13 +435,13 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> inline unsigned int
   computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                                  const std::vector<int> &indices,
+                                  const Indices &indices,
                                   Eigen::Matrix<Scalar, 3, 3> &covariance_matrix,
                                   Eigen::Matrix<Scalar, 4, 1> &centroid);
 
   template <typename PointT> inline unsigned int
   computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                                  const std::vector<int> &indices,
+                                  const Indices &indices,
                                   Eigen::Matrix3f &covariance_matrix,
                                   Eigen::Vector4f &centroid)
   {
@@ -449,7 +450,7 @@ namespace pcl
 
   template <typename PointT> inline unsigned int
   computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                                  const std::vector<int> &indices,
+                                  const Indices &indices,
                                   Eigen::Matrix3d &covariance_matrix,
                                   Eigen::Vector4d &centroid)
   {
@@ -536,12 +537,12 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> inline unsigned int
   computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                           const std::vector<int> &indices,
+                           const Indices &indices,
                            Eigen::Matrix<Scalar, 3, 3> &covariance_matrix);
 
   template <typename PointT> inline unsigned int
   computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                           const std::vector<int> &indices,
+                           const Indices &indices,
                            Eigen::Matrix3f &covariance_matrix)
   {
     return (computeCovarianceMatrix<PointT, float> (cloud, indices, covariance_matrix));
@@ -549,7 +550,7 @@ namespace pcl
 
   template <typename PointT> inline unsigned int
   computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
-                           const std::vector<int> &indices,
+                           const Indices &indices,
                            Eigen::Matrix3d &covariance_matrix)
   {
     return (computeCovarianceMatrix<PointT, double> (cloud, indices, covariance_matrix));
@@ -655,13 +656,13 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> void
   demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                    const std::vector<int> &indices,
+                    const Indices &indices,
                     const Eigen::Matrix<Scalar, 4, 1> &centroid,
                     pcl::PointCloud<PointT> &cloud_out);
 
   template <typename PointT> void
   demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                    const std::vector<int> &indices,
+                    const Indices &indices,
                     const Eigen::Vector4f &centroid,
                     pcl::PointCloud<PointT> &cloud_out)
   {
@@ -670,7 +671,7 @@ namespace pcl
 
   template <typename PointT> void
   demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                    const std::vector<int> &indices,
+                    const Indices &indices,
                     const Eigen::Vector4d &centroid,
                     pcl::PointCloud<PointT> &cloud_out)
   {
@@ -781,13 +782,13 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> void
   demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                    const std::vector<int> &indices,
+                    const Indices &indices,
                     const Eigen::Matrix<Scalar, 4, 1> &centroid,
                     Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_out);
 
   template <typename PointT> void
   demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                    const std::vector<int> &indices,
+                    const Indices &indices,
                     const Eigen::Vector4f &centroid,
                     Eigen::MatrixXf &cloud_out)
   {
@@ -796,7 +797,7 @@ namespace pcl
 
   template <typename PointT> void
   demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                    const std::vector<int> &indices,
+                    const Indices &indices,
                     const Eigen::Vector4d &centroid,
                     Eigen::MatrixXd &cloud_out)
   {
@@ -850,7 +851,7 @@ namespace pcl
     template<typename Key> inline void operator() ()
     {
       using T = typename pcl::traits::datatype<PointT, Key>::type;
-      const uint8_t* raw_ptr = reinterpret_cast<const uint8_t*>(&p_) + pcl::traits::offset<PointT, Key>::value;
+      const std::uint8_t* raw_ptr = reinterpret_cast<const std::uint8_t*>(&p_) + pcl::traits::offset<PointT, Key>::value;
       const T* data_ptr = reinterpret_cast<const T*>(raw_ptr);
 
       // Check if the value is invalid
@@ -902,12 +903,12 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> inline void
   computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
-                     const std::vector<int> &indices, 
+                     const Indices &indices,
                      Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid);
 
   template <typename PointT> inline void
   computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
-                     const std::vector<int> &indices, 
+                     const Indices &indices,
                      Eigen::VectorXf &centroid)
   {
     return (computeNDCentroid<PointT, float> (cloud, indices, centroid));
@@ -915,7 +916,7 @@ namespace pcl
 
   template <typename PointT> inline void
   computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
-                     const std::vector<int> &indices, 
+                     const Indices &indices,
                      Eigen::VectorXd &centroid)
   {
     return (computeNDCentroid<PointT, double> (cloud, indices, centroid));
@@ -930,12 +931,12 @@ namespace pcl
     */
   template <typename PointT, typename Scalar> inline void
   computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
-                     const pcl::PointIndices &indices, 
+                     const pcl::PointIndices &indices,
                      Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid);
 
   template <typename PointT> inline void
   computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
-                     const pcl::PointIndices &indices, 
+                     const pcl::PointIndices &indices,
                      Eigen::VectorXf &centroid)
   {
     return (computeNDCentroid<PointT, float> (cloud, indices, centroid));
@@ -943,7 +944,7 @@ namespace pcl
 
   template <typename PointT> inline void
   computeNDCentroid (const pcl::PointCloud<PointT> &cloud, 
-                     const pcl::PointIndices &indices, 
+                     const pcl::PointIndices &indices,
                      Eigen::VectorXd &centroid)
   {
     return (computeNDCentroid<PointT, double> (cloud, indices, centroid));
@@ -1045,7 +1046,7 @@ namespace pcl
       get (PointOutT& point) const;
 
       /** Get the total number of points that were added. */
-      inline size_t
+      inline std::size_t
       getSize () const
       {
         return (num_points_);
@@ -1055,7 +1056,7 @@ namespace pcl
 
     private:
 
-      size_t num_points_ = 0;
+      std::size_t num_points_ = 0;
       typename pcl::detail::Accumulators<PointT>::type accumulators_;
 
   };
@@ -1076,7 +1077,7 @@ namespace pcl
     * not valid.
     *
     * \ingroup common */
-  template <typename PointInT, typename PointOutT> size_t
+  template <typename PointInT, typename PointOutT> std::size_t
   computeCentroid (const pcl::PointCloud<PointInT>& cloud,
                    PointOutT& centroid);
 
@@ -1088,9 +1089,9 @@ namespace pcl
     * documentation for computeCentroid().
     *
     * \ingroup common */
-  template <typename PointInT, typename PointOutT> size_t
+  template <typename PointInT, typename PointOutT> std::size_t
   computeCentroid (const pcl::PointCloud<PointInT>& cloud,
-                   const std::vector<int>& indices,
+                   const Indices& indices,
                    PointOutT& centroid);
 
 }

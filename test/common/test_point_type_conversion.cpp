@@ -37,7 +37,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/pcl_tests.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>

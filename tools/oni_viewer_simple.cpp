@@ -150,9 +150,9 @@ public:
 void
 usage(char ** argv)
 {
-  cout << "usage: " << argv[0] << " <path-to-oni-file> [framerate]\n";
-  cout << argv[0] << " -h | --help : shows this help\n";
-  cout << argv[0] << " -xyz        : enable just XYZ data display\n";
+  std::cout << "usage: " << argv[0] << " <path-to-oni-file> [framerate]\n";
+  std::cout << argv[0] << " -h | --help : shows this help\n";
+  std::cout << argv[0] << " -xyz        : enable just XYZ data display\n";
   return;
 }
 
@@ -185,24 +185,21 @@ main(int argc, char ** argv)
 
   pcl::TimeTrigger trigger;
   
-  pcl::ONIGrabber* grabber = nullptr;
-  if (frame_rate == 0)
-    grabber = new  pcl::ONIGrabber(arg, true, true);
-  else
+  pcl::ONIGrabber grabber (arg, true, frame_rate == 0);
+  if (frame_rate != 0)
   {
-    grabber = new  pcl::ONIGrabber(arg, true, false);
     trigger.setInterval (1.0 / static_cast<double> (frame_rate));
-    trigger.registerCallback ([=] { grabber->start (); });
+    trigger.registerCallback ([&] { grabber.start (); });
     trigger.start();
   }
-  if (grabber->providesCallback<pcl::ONIGrabber::sig_cb_openni_point_cloud_rgb > () && !pcl::console::find_switch (argc, argv, "-xyz"))
+  if (grabber.providesCallback<pcl::ONIGrabber::sig_cb_openni_point_cloud_rgb > () && !pcl::console::find_switch (argc, argv, "-xyz"))
   {
-    SimpleONIViewer<pcl::PointXYZRGBA> v(*grabber);
+    SimpleONIViewer<pcl::PointXYZRGBA> v(grabber);
     v.run();
   }
   else
   {
-    SimpleONIViewer<pcl::PointXYZ> v(*grabber);
+    SimpleONIViewer<pcl::PointXYZ> v(grabber);
     v.run();
   }
 

@@ -39,10 +39,11 @@
 
 #pragma once
 
-#include <pcl/common/angles.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/common/angles.h>
 #include <pcl/segmentation/comparator.h>
-#include <boost/make_shared.hpp>
+
 
 namespace pcl
 {
@@ -62,16 +63,16 @@ namespace pcl
       using PointCloudNPtr = typename PointCloudN::Ptr;
       using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
       
-      using Ptr = boost::shared_ptr<GroundPlaneComparator<PointT, PointNT> >;
-      using ConstPtr = boost::shared_ptr<const GroundPlaneComparator<PointT, PointNT> >;
+      using Ptr = shared_ptr<GroundPlaneComparator<PointT, PointNT> >;
+      using ConstPtr = shared_ptr<const GroundPlaneComparator<PointT, PointNT> >;
 
       using pcl::Comparator<PointT>::input_;
       
       /** \brief Empty constructor for GroundPlaneComparator. */
       GroundPlaneComparator ()
         : normals_ ()
-        , angular_threshold_ (cosf (pcl::deg2rad (2.0f)))
-        , road_angular_threshold_ ( cosf(pcl::deg2rad (10.0f)))
+        , angular_threshold_ (std::cos (pcl::deg2rad (2.0f)))
+        , road_angular_threshold_ ( std::cos(pcl::deg2rad (10.0f)))
         , distance_threshold_ (0.1f)
         , depth_dependent_ (true)
         , z_axis_ (Eigen::Vector3f (0.0, 0.0, 1.0) )
@@ -82,14 +83,14 @@ namespace pcl
       /** \brief Constructor for GroundPlaneComparator.
         * \param[in] plane_coeff_d a reference to a vector of d coefficients of plane equations.  Must be the same size as the input cloud and input normals.  a, b, and c coefficients are in the input normals.
         */
-      GroundPlaneComparator (boost::shared_ptr<std::vector<float> >& plane_coeff_d) 
+      GroundPlaneComparator (shared_ptr<std::vector<float> >& plane_coeff_d) 
         : normals_ ()
         , plane_coeff_d_ (plane_coeff_d)
-        , angular_threshold_ (cosf (pcl::deg2rad (3.0f)))
+        , angular_threshold_ (std::cos (pcl::deg2rad (3.0f)))
         , distance_threshold_ (0.1f)
         , depth_dependent_ (true)
         , z_axis_ (Eigen::Vector3f (0.0f, 0.0f, 1.0f))
-        , road_angular_threshold_ ( cosf(pcl::deg2rad (40.0f)))
+        , road_angular_threshold_ ( std::cos(pcl::deg2rad (40.0f)))
         , desired_road_axis_ (Eigen::Vector3f(0.0, -1.0, 0.0))
       {
       }
@@ -128,7 +129,7 @@ namespace pcl
         * \param[in] plane_coeff_d a pointer to the plane coefficients.
         */
       void
-      setPlaneCoeffD (boost::shared_ptr<std::vector<float> >& plane_coeff_d)
+      setPlaneCoeffD (shared_ptr<std::vector<float> >& plane_coeff_d)
       {
         plane_coeff_d_ = plane_coeff_d;
       }
@@ -139,7 +140,7 @@ namespace pcl
       void
       setPlaneCoeffD (std::vector<float>& plane_coeff_d)
       {
-        plane_coeff_d_ = boost::make_shared<std::vector<float> >(plane_coeff_d);
+        plane_coeff_d_ = pcl::make_shared<std::vector<float> >(plane_coeff_d);
       }
       
       /** \brief Get a pointer to the vector of the d-coefficient of the planes' hessian normal form. */
@@ -155,7 +156,7 @@ namespace pcl
       virtual void
       setAngularThreshold (float angular_threshold)
       {
-        angular_threshold_ = cosf (angular_threshold);
+        angular_threshold_ = std::cos (angular_threshold);
       }
 
       /** \brief Set the tolerance in radians for difference in normal direction between a point and the expected ground normal.
@@ -164,7 +165,7 @@ namespace pcl
       virtual void
       setGroundAngularThreshold (float angular_threshold)
       {
-        road_angular_threshold_ = cosf (angular_threshold);
+        road_angular_threshold_ = std::cos (angular_threshold);
       }
 
       /** \brief Set the expected ground plane normal with respect to the sensor.  Pixels labeled as ground must be within ground_angular_threshold radians of this normal to be labeled as ground.
@@ -181,7 +182,7 @@ namespace pcl
       inline float
       getAngularThreshold () const
       {
-        return (acosf (angular_threshold_) );
+        return (std::acos (angular_threshold_) );
       }
 
       /** \brief Set the tolerance in meters for difference in perpendicular distance (d component of plane equation) to the plane between neighboring points, to be considered part of the same plane.
@@ -216,24 +217,24 @@ namespace pcl
         float threshold = distance_threshold_;
         if (depth_dependent_)
         {
-          Eigen::Vector3f vec = input_->points[idx1].getVector3fMap ();
+          Eigen::Vector3f vec = (*input_)[idx1].getVector3fMap ();
           
           float z = vec.dot (z_axis_);
           threshold *= z * z;
         }
 
-        return ( (normals_->points[idx1].getNormalVector3fMap ().dot (desired_road_axis_) > road_angular_threshold_) &&
-                 (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ ));
+        return ( ((*normals_)[idx1].getNormalVector3fMap ().dot (desired_road_axis_) > road_angular_threshold_) &&
+                 ((*normals_)[idx1].getNormalVector3fMap ().dot ((*normals_)[idx2].getNormalVector3fMap () ) > angular_threshold_ ));
         
         // Euclidean proximity of neighbors does not seem to be required -- pixel adjacency handles this well enough 
-        //return ( (normals_->points[idx1].getNormalVector3fMap ().dot (desired_road_axis_) > road_angular_threshold_) &&
-        //          (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ ) &&
-        //         (pcl::euclideanDistance (input_->points[idx1], input_->points[idx2]) < distance_threshold_ ));
+        //return ( ((*normals_)[idx1].getNormalVector3fMap ().dot (desired_road_axis_) > road_angular_threshold_) &&
+        //          ((*normals_)[idx1].getNormalVector3fMap ().dot ((*normals_)[idx2].getNormalVector3fMap () ) > angular_threshold_ ) &&
+        //         (pcl::euclideanDistance ((*input_)[idx1], (*input_)[idx2]) < distance_threshold_ ));
       }
       
     protected:
       PointCloudNConstPtr normals_;
-      boost::shared_ptr<std::vector<float> > plane_coeff_d_;
+      shared_ptr<std::vector<float> > plane_coeff_d_;
       float angular_threshold_;
       float road_angular_threshold_;
       float distance_threshold_;

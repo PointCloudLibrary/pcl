@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <iosfwd>
-#include <boost/shared_ptr.hpp>
+#include <pcl/memory.h>
 
 #include <pcl/pcl_exports.h>
 
@@ -16,7 +16,8 @@ namespace pcl
       class PCL_EXPORTS PersonAttribs
       {
         public:
-          using Ptr = boost::shared_ptr<PersonAttribs>;
+          using Ptr = shared_ptr<PersonAttribs>;
+          using ConstPtr = shared_ptr<const PersonAttribs>;
 
           /** \brief Constructor creates generic values from **/
           PersonAttribs();

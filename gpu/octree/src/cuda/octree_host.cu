@@ -45,7 +45,6 @@
 
 using namespace pcl::gpu;
 using namespace pcl::device;
-using namespace std;
 
 namespace pcl
 {
@@ -144,7 +143,7 @@ namespace
 
 }
 
-void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float radius, vector<int>& out, int max_nn) const
+void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float radius, std::vector<int>& out, int max_nn) const
 {            
     out.clear();  
 
@@ -174,10 +173,10 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
             int beg = host_octree.begs[node_idx];
             int end = host_octree.ends[node_idx];
 
-            end = beg + min<int>((int)out.size() + end - beg, max_nn) - (int)out.size();
+            end = beg + std::min<int>((int)out.size() + end - beg, max_nn) - (int)out.size();
 
             out.insert(out.end(), host_octree.indices.begin() + beg, host_octree.indices.begin() + end);
-            if (out.size() == (size_t)max_nn)
+            if (out.size() == (std::size_t)max_nn)
                 return;
 
             ++iterator;
@@ -210,7 +209,7 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
                 if (dist2 < radius * radius)
                     out.push_back(index);
 
-                if (out.size() == (size_t)max_nn)
+                if (out.size() == (std::size_t)max_nn)
                     return;
             }               
             ++iterator;               

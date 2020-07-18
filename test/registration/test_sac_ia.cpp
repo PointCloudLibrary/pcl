@@ -38,7 +38,7 @@
 *
 */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
@@ -59,7 +59,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
   // Transform the source cloud by a large amount
   Eigen::Vector3f initial_offset (100, 0, 0);
   float angle = static_cast<float> (M_PI) / 2.0f;
-  Eigen::Quaternionf initial_rotation (cos (angle / 2), 0, 0, sin (angle / 2));
+  Eigen::Quaternionf initial_rotation (std::cos (angle / 2), 0, 0, sin (angle / 2));
   PointCloud<PointXYZ> cloud_source_transformed;
   transformPointCloud (cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
 
@@ -108,7 +108,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
 
   // Register
   reg.align (cloud_reg);
-  EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (cloud_reg.size (), cloud_source.size ());
   EXPECT_LT (reg.getFitnessScore (), 0.0005);
 
   // Check again, for all possible caching schemes
@@ -130,7 +130,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
 
     // Register
     reg.align (cloud_reg);
-    EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_EQ (cloud_reg.size (), cloud_source.size ());
     EXPECT_LT (reg.getFitnessScore (), 0.0005);
   }
 }
@@ -149,7 +149,7 @@ TEST (PCL, SampleConsensusPrerejective)
   // Transform the source cloud by a large amount
   Eigen::Vector3f initial_offset (100, 0, 0);
   float angle = static_cast<float> (M_PI) / 2.0f;
-  Eigen::Quaternionf initial_rotation (cos (angle / 2), 0, 0, sin (angle / 2));
+  Eigen::Quaternionf initial_rotation (std::cos (angle / 2), 0, 0, sin (angle / 2));
   PointCloud<PointXYZ> cloud_source_transformed;
   transformPointCloud (cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
 
@@ -204,8 +204,8 @@ TEST (PCL, SampleConsensusPrerejective)
   reg.align (cloud_reg);
 
   // Check output consistency and quality of alignment
-  EXPECT_EQ (static_cast<int> (cloud_reg.points.size ()), static_cast<int> (cloud_source.points.size ()));
-  float inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.points.size ());
+  EXPECT_EQ (cloud_reg.size (), cloud_source.size ());
+  float inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.size ());
   EXPECT_GT (inlier_fraction, 0.95f);
 
   // Check again, for all possible caching schemes
@@ -229,8 +229,8 @@ TEST (PCL, SampleConsensusPrerejective)
     reg.align (cloud_reg);
 
     // Check output consistency and quality of alignment
-    EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
-    inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.points.size ());
+    EXPECT_EQ (cloud_reg.size (), cloud_source.size ());
+    inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.size ());
     EXPECT_GT (inlier_fraction, 0.95f);
   }
 }

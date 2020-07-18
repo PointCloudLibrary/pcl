@@ -19,7 +19,6 @@
 
 #include <pcl/visualization/pcl_visualizer.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
@@ -77,7 +76,7 @@ rejectBadCorrespondences (const CorrespondencesPtr &all_correspondences,
 
   // Reject if the angle between the normals is really off
   CorrespondenceRejectorSurfaceNormal rej_normals;
-  rej_normals.setThreshold (acos (deg2rad (45.0)));
+  rej_normals.setThreshold (std::acos (deg2rad (45.0)));
   rej_normals.initializeDataContainer<PointT, PointT> ();
   rej_normals.setInputCloud<PointT> (src);
   rej_normals.setInputNormals<PointT, PointT> (src);
@@ -180,7 +179,7 @@ void
 saveTransform (const std::string &file, const Eigen::Matrix4d &transform)
 {
   ofstream ofs;
-  ofs.open (file.c_str (), ios::trunc | ios::binary);
+  ofs.open (file.c_str (), std::ios::trunc | std::ios::binary);
   for (int i = 0; i < 4; ++i)
     for (int j = 0; j < 4; ++j)
       ofs.write (reinterpret_cast<const char*>(&transform (i, j)), sizeof (double));  
@@ -235,7 +234,7 @@ main (int argc, char** argv)
 
   saveTransform (argv[p_tr_file_indices[0]], transform);
 
-  cerr.precision (15);
+  std::cerr.precision (15);
   std::cerr << transform << std::endl;
 }
 /* ]--- */

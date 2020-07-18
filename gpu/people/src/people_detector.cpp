@@ -53,7 +53,6 @@
 #define CLUST_TOL_SHS   0.05
 #define DELTA_HUE_SHS   5
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::gpu::people;
 
@@ -160,16 +159,16 @@ pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<PointTC>::Const
 
   const float qnan = std::numeric_limits<float>::quiet_NaN();
 
-  for(size_t i = 0; i < cloud->points.size(); ++i)
+  for(std::size_t i = 0; i < cloud->size(); ++i)
   {
-    cloud_host_.points[i].x = cloud->points[i].x;
-    cloud_host_.points[i].y = cloud->points[i].y;
-    cloud_host_.points[i].z = cloud->points[i].z;
+    cloud_host_[i].x = (*cloud)[i].x;
+    cloud_host_[i].y = (*cloud)[i].y;
+    cloud_host_[i].z = (*cloud)[i].z;
 
-    bool valid = isFinite(cloud_host_.points[i]);
+    bool valid = isFinite(cloud_host_[i]);
 
-    hue_host_.points[i] = !valid ? qnan : device::computeHue(cloud->points[i].rgba);
-    depth_host_.points[i] = !valid ? 0 : static_cast<unsigned short>(cloud_host_.points[i].z * 1000); //m -> mm
+    hue_host_[i] = !valid ? qnan : device::computeHue((*cloud)[i].rgba);
+    depth_host_[i] = !valid ? 0 : static_cast<unsigned short>(cloud_host_[i].z * 1000); //m -> mm
   }
   cloud_device_.upload(cloud_host_.points, cloud_host_.width);
   hue_device_.upload(hue_host_.points, hue_host_.width);
@@ -199,7 +198,7 @@ pcl::gpu::people::PeopleDetector::process ()
     std::fill(flowermat_host_.points.begin(), flowermat_host_.points.end(), 0);
     {
       //ScopeTime time("shs");    
-      shs5(cloud_host_, seed, &flowermat_host_.points[0]);
+      shs5(cloud_host_, seed, &flowermat_host_[0]);
     }
     
     int cols = cloud_device_.cols();
@@ -224,14 +223,14 @@ pcl::gpu::people::PeopleDetector::process ()
       {
         if(t2.parts_lid[f] == NO_CHILD)
         {
-          cerr << "1;";
+          std::cerr << "1;";
           par++;
         }
         else
-           cerr << "0;";
+           std::cerr << "0;";
       }*/
       //static int counter = 0; // TODO move this logging to PeopleApp
-      //cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;
+      //std::cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << std::endl;
       return 2;
     }
     return 1;
@@ -247,17 +246,17 @@ pcl::gpu::people::PeopleDetector::processProb (const pcl::PointCloud<PointTC>::C
 
   const float qnan = std::numeric_limits<float>::quiet_NaN();
 
-  for(size_t i = 0; i < cloud->points.size(); ++i)
+  for(std::size_t i = 0; i < cloud->size(); ++i)
   {
-    cloud_host_color_.points[i].x  = cloud_host_.points[i].x = cloud->points[i].x;
-    cloud_host_color_.points[i].y  = cloud_host_.points[i].y = cloud->points[i].y;
-    cloud_host_color_.points[i].z  = cloud_host_.points[i].z = cloud->points[i].z;
-    cloud_host_color_.points[i].rgba = cloud->points[i].rgba;
+    cloud_host_color_[i].x  = cloud_host_[i].x = (*cloud)[i].x;
+    cloud_host_color_[i].y  = cloud_host_[i].y = (*cloud)[i].y;
+    cloud_host_color_[i].z  = cloud_host_[i].z = (*cloud)[i].z;
+    cloud_host_color_[i].rgba = (*cloud)[i].rgba;
 
-    bool valid = isFinite(cloud_host_.points[i]);
+    bool valid = isFinite(cloud_host_[i]);
 
-    hue_host_.points[i] = !valid ? qnan : device::computeHue(cloud->points[i].rgba);
-    depth_host_.points[i] = !valid ? 0 : static_cast<unsigned short>(cloud_host_.points[i].z * 1000); //m -> mm
+    hue_host_[i] = !valid ? qnan : device::computeHue((*cloud)[i].rgba);
+    depth_host_[i] = !valid ? 0 : static_cast<unsigned short>(cloud_host_[i].z * 1000); //m -> mm
   }
   cloud_device_.upload(cloud_host_.points, cloud_host_.width);
   hue_device_.upload(hue_host_.points, hue_host_.width);
@@ -338,7 +337,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
     std::fill(flowermat_host_.points.begin(), flowermat_host_.points.end(), 0);
     {
       //ScopeTime time("shs");
-      shs5(cloud_host_, seed, &flowermat_host_.points[0]);
+      shs5(cloud_host_, seed, &flowermat_host_[0]);
     }
 
     int cols = cloud_device_.cols();
@@ -375,15 +374,15 @@ pcl::gpu::people::PeopleDetector::processProb ()
       {
         if(node_type == NO_CHILD)
         {
-          cerr << "1;";
+          std::cerr << "1;";
           //par++;
         }
         else
-           cerr << "0;";
+           std::cerr << "0;";
       }
       std::cerr << std::endl;
       //static int counter = 0; // TODO move this logging to PeopleApp
-      //cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << endl;
+      //std::cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << std::endl;
       first_iteration_ = false;
       return 2;
     }
@@ -436,8 +435,8 @@ namespace
       float y1 = (b - sqrt (det)) / a;
       float y2 = (b + sqrt (det)) / a;
 
-      min = (int)std::min(floor(y1), floor(y2));
-      max = (int)std::max( ceil(y1),  ceil(y2));
+      min = (int)std::min(std::floor(y1), std::floor(y2));
+      max = (int)std::max( std::ceil(y1),  std::ceil(y2));
       minY = std::min (rows - 1, std::max (0, min));
       maxY = std::max (std::min (rows - 1, max), 0);
     }
@@ -456,8 +455,8 @@ namespace
       float x1 = (b - sqrt (det)) / a;
       float x2 = (b + sqrt (det)) / a;
  
-      min = (int)std::min (floor(x1), floor(x2));
-      max = (int)std::max ( ceil(x1),  ceil(x2));
+      min = (int)std::min (std::floor(x1), std::floor(x2));
+      max = (int)std::max ( std::ceil(x1),  std::ceil(x2));
       minX = std::min (cols- 1, std::max (0, min));
       maxX = std::max (std::min (cols - 1, max), 0);
     }
@@ -479,16 +478,16 @@ pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT> &cloud, con
   pcl::device::Intr intr(fx_, fy_, cx_, cy_);
   intr.setDefaultPPIfIncorrect(cloud.width, cloud.height);
   
-  const float *hue = &hue_host_.points[0];
+  const float *hue = &hue_host_[0];
   double squared_radius = CLUST_TOL_SHS * CLUST_TOL_SHS;
 
   std::vector< std::vector<int> > storage(100);
 
   // Process all points in the indices vector
   int total = static_cast<int> (indices.size ());
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
+#pragma omp parallel for \
+  default(none) \
+  shared(cloud, intr, hue, indices, mask, squared_radius, storage, total)
   for (int k = 0; k < total; ++k)
   {
     int i = indices[k];
@@ -512,7 +511,7 @@ pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT> &cloud, con
     while (sq_idx < (int)seed_queue.size ())
     {
       int index = seed_queue[sq_idx];
-      const PointT& q = cloud.points[index];
+      const PointT& q = cloud[index];
 
       if(!pcl::isFinite (q))
         continue;
@@ -532,11 +531,11 @@ pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT> &cloud, con
           if (mask[idx])
             continue;
 
-          if (sqnorm(cloud.points[idx], q) <= squared_radius)
+          if (sqnorm(cloud[idx], q) <= squared_radius)
           {
             float h_l = hue[idx];
 
-            if (fabs(h_l - h) < DELTA_HUE_SHS)
+            if (std::abs(h_l - h) < DELTA_HUE_SHS)
             {                   
               seed_queue.push_back (idx);
               mask[idx] = 255;

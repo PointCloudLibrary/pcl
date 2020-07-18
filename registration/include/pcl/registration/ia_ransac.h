@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/registration/registration.h>
 #include <pcl/registration/transformation_estimation_svd.h>
@@ -82,14 +83,17 @@ namespace pcl
       using FeatureCloudPtr = typename FeatureCloud::Ptr;
       using FeatureCloudConstPtr = typename FeatureCloud::ConstPtr;
 
-      using Ptr = boost::shared_ptr<SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT> >;
-      using ConstPtr = boost::shared_ptr<const SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT> >;
+      using Ptr = shared_ptr<SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT> >;
 
 
       class ErrorFunctor
       {
         public:
-          virtual ~ErrorFunctor () {}
+          using Ptr = shared_ptr<ErrorFunctor>;
+          using ConstPtr = shared_ptr<const ErrorFunctor>;
+
+          virtual ~ErrorFunctor () = default;
           virtual float operator () (float d) const = 0;
       };
 
@@ -127,7 +131,7 @@ namespace pcl
           float threshold_;
       };
 
-      using ErrorFunctorPtr = boost::shared_ptr<ErrorFunctor>;
+      using ErrorFunctorPtr = typename ErrorFunctor::Ptr;
 
       using FeatureKdTreePtr = typename KdTreeFLANN<FeatureT>::Ptr; 
       /** \brief Constructor. */

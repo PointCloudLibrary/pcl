@@ -37,11 +37,11 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/gpu/kinfu_large_scale/pixel_rgb.h>
-#include <boost/shared_ptr.hpp>
 //#include <boost/graph/buffer_concepts.hpp>
 #include <Eigen/Geometry>
 
@@ -61,7 +61,8 @@ namespace pcl
       struct PCL_EXPORTS RayCaster
       {
       public:
-        using Ptr = boost::shared_ptr<RayCaster>;
+        using Ptr = shared_ptr<RayCaster>;
+        using ConstPtr = shared_ptr<const RayCaster>;
         using MapArr = pcl::gpu::DeviceArray2D<float>;
         using View = pcl::gpu::DeviceArray2D<PixelRGB>;
         using Depth = pcl::gpu::DeviceArray2D<unsigned short>;     

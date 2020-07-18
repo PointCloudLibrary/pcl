@@ -76,8 +76,8 @@ namespace pcl
     class PCL_EXPORTS PCLPlotter
     {
       public:
-        using Ptr = boost::shared_ptr<PCLPlotter>;
-        using ConstPtr = boost::shared_ptr<const PCLPlotter>;
+        using Ptr = shared_ptr<PCLPlotter>;
+        using ConstPtr = shared_ptr<const PCLPlotter>;
 
         /**\brief A representation of polynomial function. i'th element of the vector denotes the coefficient of x^i of the polynomial in variable x. 
          */
@@ -373,7 +373,7 @@ namespace pcl
           * \return[in] array containing the width and height of the window
           */
         int*
-        getWindowSize ();
+        getWindowSize () const;
 
         /** \brief Return a pointer to the underlying VTK RenderWindow used. */
         vtkSmartPointer<vtkRenderWindow>

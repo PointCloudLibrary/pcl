@@ -44,9 +44,16 @@
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/copyBuffer.h>
 
+#include <pcl/memory.h>  // for pcl::shared_ptr
+
+class Selection;
+
 class CopyCommand : public Command
 {
   public:
+    /// The type for shared pointer pointing to a constant selection buffer
+    using ConstSelectionPtr = pcl::shared_ptr<const Selection>;
+
     /// @brief Constructor
     /// @param copy_buffer_ptr a shared pointer pointing to the copy buffer.
     /// @param selection_ptr a shared pointer pointing to the selection object.
@@ -54,8 +61,8 @@ class CopyCommand : public Command
     CopyCommand (CopyBufferPtr copy_buffer_ptr,
                  ConstSelectionPtr selection_ptr,
                  ConstCloudPtr cloud_ptr)
-      : copy_buffer_ptr_(copy_buffer_ptr), selection_ptr_(selection_ptr),
-        cloud_ptr_(cloud_ptr)
+      : copy_buffer_ptr_(std::move(copy_buffer_ptr)), selection_ptr_(std::move(selection_ptr)),
+        cloud_ptr_(std::move(cloud_ptr))
     {
       has_undo_ = false;
     }

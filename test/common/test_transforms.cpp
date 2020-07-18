@@ -37,8 +37,9 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -72,7 +73,7 @@ class Transforms : public ::testing::Test
 
     p_xyz_normal.resize (CLOUD_SIZE);
     p_xyz_normal_trans.resize (CLOUD_SIZE);
-    for (size_t i = 0; i < CLOUD_SIZE; ++i)
+    for (std::size_t i = 0; i < CLOUD_SIZE; ++i)
     {
       Eigen::Vector3f xyz = Eigen::Vector3f::Random ();
       Eigen::Vector3f normal = Eigen::Vector3f::Random ().normalized ();
@@ -88,12 +89,12 @@ class Transforms : public ::testing::Test
     pcl::copyPointCloud(p_xyz_normal_trans, p_xyz_trans);
 
     indices.resize (CLOUD_SIZE / 2);
-    for (size_t i = 0; i < indices.size(); ++i)
+    for (std::size_t i = 0; i < indices.size(); ++i)
       indices[i] = i * 2;
   }
 
   const Scalar ABS_ERROR;
-  const size_t CLOUD_SIZE;
+  const std::size_t CLOUD_SIZE;
 
   Transform tf;
 
@@ -102,12 +103,12 @@ class Transforms : public ::testing::Test
   pcl::PointCloud<pcl::PointXYZRGBNormal> p_xyz_normal, p_xyz_normal_trans;
 
   // Indices, every second point
-  std::vector<int> indices;
+  Indices indices;
 
   PCL_MAKE_ALIGNED_OPERATOR_NEW;
 };
 
-TYPED_TEST_CASE (Transforms, TransformTypes);
+TYPED_TEST_SUITE (Transforms, TransformTypes);
 
 TYPED_TEST (Transforms, PointCloudXYZDense)
 {
@@ -115,7 +116,7 @@ TYPED_TEST (Transforms, PointCloudXYZDense)
   pcl::transformPointCloud (this->p_xyz, p, this->tf);
   ASSERT_METADATA_EQ (p, this->p_xyz);
   ASSERT_EQ (p.size (), this->p_xyz.size ());
-  for (size_t i = 0; i < p.size (); ++i)
+  for (std::size_t i = 0; i < p.size (); ++i)
     ASSERT_XYZ_NEAR (p[i], this->p_xyz_trans[i], this->ABS_ERROR);
 }
 
@@ -126,7 +127,7 @@ TYPED_TEST (Transforms, PointCloudXYZDenseIndexed)
   ASSERT_EQ (p.size (), this->indices.size ());
   ASSERT_EQ (p.width, this->indices.size ());
   ASSERT_EQ (p.height, 1);
-  for (size_t i = 0; i < p.size (); ++i)
+  for (std::size_t i = 0; i < p.size (); ++i)
     ASSERT_XYZ_NEAR (p[i], this->p_xyz_trans[i * 2], this->ABS_ERROR);
 }
 
@@ -141,7 +142,7 @@ TYPED_TEST (Transforms, PointCloudXYZSparse)
   ASSERT_METADATA_EQ (p, this->p_xyz);
   ASSERT_EQ (p.size (), this->p_xyz.size ());
   ASSERT_FALSE (pcl::isFinite (p[0]));
-  for (size_t i = 1; i < p.size (); ++i)
+  for (std::size_t i = 1; i < p.size (); ++i)
   {
     ASSERT_TRUE (pcl::isFinite (p[i]));
     ASSERT_XYZ_NEAR (p[i], this->p_xyz_trans[i], this->ABS_ERROR);
@@ -156,7 +157,7 @@ TYPED_TEST (Transforms, PointCloudXYZRGBNormalDense)
     pcl::transformPointCloudWithNormals (this->p_xyz_normal, p, this->tf, true);
     ASSERT_METADATA_EQ (p, this->p_xyz_normal);
     ASSERT_EQ (p.size (), this->p_xyz_normal.size ());
-    for (size_t i = 0; i < p.size (); ++i)
+    for (std::size_t i = 0; i < p.size (); ++i)
     {
       ASSERT_XYZ_NEAR (p[i], this->p_xyz_normal_trans[i], this->ABS_ERROR);
       ASSERT_NORMAL_NEAR (p[i], this->p_xyz_normal_trans[i], this->ABS_ERROR);
@@ -169,7 +170,7 @@ TYPED_TEST (Transforms, PointCloudXYZRGBNormalDense)
     pcl::transformPointCloudWithNormals (this->p_xyz_normal, p, this->tf, false);
     ASSERT_METADATA_EQ (p, this->p_xyz_normal);
     ASSERT_EQ (p.size (), this->p_xyz_normal.size ());
-    for (size_t i = 0; i < p.size (); ++i)
+    for (std::size_t i = 0; i < p.size (); ++i)
     {
       ASSERT_XYZ_NEAR (p[i], this->p_xyz_normal_trans[i], this->ABS_ERROR);
       ASSERT_NORMAL_NEAR (p[i], this->p_xyz_normal_trans[i], this->ABS_ERROR);
@@ -187,7 +188,7 @@ TYPED_TEST (Transforms, PointCloudXYZRGBNormalDenseIndexed)
     ASSERT_EQ (p.size (), this->indices.size ());
     ASSERT_EQ (p.width, this->indices.size ());
     ASSERT_EQ (p.height, 1);
-    for (size_t i = 0; i < p.size (); ++i)
+    for (std::size_t i = 0; i < p.size (); ++i)
     {
       ASSERT_XYZ_NEAR (p[i], this->p_xyz_normal_trans[i * 2], this->ABS_ERROR);
       ASSERT_NORMAL_NEAR (p[i], this->p_xyz_normal_trans[i * 2], this->ABS_ERROR);
@@ -201,7 +202,7 @@ TYPED_TEST (Transforms, PointCloudXYZRGBNormalDenseIndexed)
     ASSERT_EQ (p.size (), this->indices.size ());
     ASSERT_EQ (p.width, this->indices.size ());
     ASSERT_EQ (p.height, 1);
-    for (size_t i = 0; i < p.size (); ++i)
+    for (std::size_t i = 0; i < p.size (); ++i)
     {
       ASSERT_XYZ_NEAR (p[i], this->p_xyz_normal_trans[i * 2], this->ABS_ERROR);
       ASSERT_NORMAL_NEAR (p[i], this->p_xyz_normal_trans[i * 2], this->ABS_ERROR);
@@ -265,7 +266,7 @@ TEST (PCL, Matrix4Affine3Transform)
 
   affine = transformation;
 
-  std::vector<int> indices (1); indices[0] = 0;
+  Indices indices (1); indices[0] = 0;
 
   pcl::transformPointCloud (c, indices, ct, affine);
   EXPECT_NEAR (pt.x, ct[0].x, 1e-4);

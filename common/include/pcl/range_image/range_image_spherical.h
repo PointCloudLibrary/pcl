@@ -52,8 +52,8 @@ namespace pcl
     public:
       // =====TYPEDEFS=====
       using BaseClass = RangeImage;
-      using Ptr = boost::shared_ptr<RangeImageSpherical>;
-      using ConstPtr = boost::shared_ptr<const RangeImageSpherical>;
+      using Ptr = shared_ptr<RangeImageSpherical>;
+      using ConstPtr = shared_ptr<const RangeImageSpherical>;
 
       // =====CONSTRUCTOR & DESTRUCTOR=====
       /** Constructor */

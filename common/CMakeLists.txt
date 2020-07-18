@@ -34,6 +34,7 @@ set(range_image_srcs
 set(srcs
   src/point_types.cpp
   src/pcl_base.cpp
+  src/PCLPointCloud2.cpp
   src/io.cpp
   src/common.cpp
   src/correspondence.cpp
@@ -51,12 +52,16 @@ set(srcs
 
 set(incs
   include/pcl/correspondence.h
+  include/pcl/memory.h
   include/pcl/exceptions.h
   include/pcl/pcl_base.h
   include/pcl/pcl_exports.h
   include/pcl/pcl_macros.h
+  include/pcl/types.h
   include/pcl/point_cloud.h
+  include/pcl/point_struct_traits.h
   include/pcl/point_traits.h
+  include/pcl/type_traits.h
   include/pcl/point_types_conversion.h
   include/pcl/point_representation.h
   include/pcl/point_types.h
@@ -107,7 +112,6 @@ set(common_incs
   include/pcl/common/utils.h
   include/pcl/common/geometry.h
   include/pcl/common/gaussian.h
-  include/pcl/common/point_operators.h
   include/pcl/common/spring.h
   include/pcl/common/intensity.h
   include/pcl/common/random.h
@@ -170,6 +174,14 @@ set(kissfft_srcs
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
+
+if(MSVC AND NOT (MSVC_VERSION LESS 1915))
+  # MSVC resolved a byte alignment issue in compiler version 15.9
+  # We get this due to using Eigen objects and allocating those objects with make_shared
+  # It has to be public so that everything linking with common has this definition too
+  target_compile_definitions(${LIB_NAME} PUBLIC _ENABLE_EXTENDED_ALIGNED_STORAGE)
+endif()
+
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSYS_NAME} DESC ${SUBSYS_DESC})
 
 # Install include files

@@ -263,29 +263,29 @@ namespace pcl
   }
 
   template <> inline void
-  copyValueString<int8_t> (const pcl::PCLPointCloud2 &cloud,
+  copyValueString<std::int8_t> (const pcl::PCLPointCloud2 &cloud,
                            const unsigned int point_index, 
                            const int point_size, 
                            const unsigned int field_idx, 
                            const unsigned int fields_count, 
                            std::ostream &stream)
   {
-    int8_t value;
-    memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (int8_t)], sizeof (int8_t));
+    std::int8_t value;
+    memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (std::int8_t)], sizeof (std::int8_t));
     //Cast to int to prevent value is handled as char
     stream << boost::numeric_cast<int>(value);
   }
 
   template <> inline void
-  copyValueString<uint8_t> (const pcl::PCLPointCloud2 &cloud,
+  copyValueString<std::uint8_t> (const pcl::PCLPointCloud2 &cloud,
                             const unsigned int point_index, 
                             const int point_size, 
                             const unsigned int field_idx, 
                             const unsigned int fields_count, 
                             std::ostream &stream)
   {
-    uint8_t value;
-    memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (uint8_t)], sizeof (uint8_t));
+    std::uint8_t value;
+    memcpy (&value, &cloud.data[point_index * point_size + cloud.fields[field_idx].offset + fields_count * sizeof (std::uint8_t)], sizeof (std::uint8_t));
     //Cast to unsigned int to prevent value is handled as char
     stream << boost::numeric_cast<unsigned int>(value);
   }
@@ -359,13 +359,13 @@ namespace pcl
   }
 
   template <> inline void
-  copyStringValue<int8_t> (const std::string &st, pcl::PCLPointCloud2 &cloud,
+  copyStringValue<std::int8_t> (const std::string &st, pcl::PCLPointCloud2 &cloud,
                            unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
   {
-    int8_t value;
+    std::int8_t value;
     if (boost::iequals(st, "nan"))
     {
-      value = static_cast<int8_t> (std::numeric_limits<int>::quiet_NaN ());
+      value = static_cast<std::int8_t> (std::numeric_limits<int>::quiet_NaN ());
       cloud.is_dense = false;
     }
     else
@@ -376,22 +376,22 @@ namespace pcl
       //is >> val;  -- unfortunately this fails on older GCC versions and CLANG on MacOS
       if (!(is >> val))
         val = static_cast<int> (atof (st.c_str ()));
-      value = static_cast<int8_t> (val);
+      value = static_cast<std::int8_t> (val);
     }
 
     memcpy (&cloud.data[point_index * cloud.point_step + 
                         cloud.fields[field_idx].offset + 
-                        fields_count * sizeof (int8_t)], reinterpret_cast<char*> (&value), sizeof (int8_t));
+                        fields_count * sizeof (std::int8_t)], reinterpret_cast<char*> (&value), sizeof (std::int8_t));
   }
 
   template <> inline void
-  copyStringValue<uint8_t> (const std::string &st, pcl::PCLPointCloud2 &cloud,
+  copyStringValue<std::uint8_t> (const std::string &st, pcl::PCLPointCloud2 &cloud,
                            unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
   {
-    uint8_t value;
+    std::uint8_t value;
     if (boost::iequals(st, "nan"))
     {
-      value = static_cast<uint8_t> (std::numeric_limits<int>::quiet_NaN ());
+      value = static_cast<std::uint8_t> (std::numeric_limits<int>::quiet_NaN ());
       cloud.is_dense = false;
     }
     else
@@ -402,12 +402,12 @@ namespace pcl
       //is >> val;  -- unfortunately this fails on older GCC versions and CLANG on MacOS
       if (!(is >> val))
         val = static_cast<int> (atof (st.c_str ()));
-      value = static_cast<uint8_t> (val);
+      value = static_cast<std::uint8_t> (val);
     }
 
     memcpy (&cloud.data[point_index * cloud.point_step + 
                         cloud.fields[field_idx].offset + 
-                        fields_count * sizeof (uint8_t)], reinterpret_cast<char*> (&value), sizeof (uint8_t));
+                        fields_count * sizeof (std::uint8_t)], reinterpret_cast<char*> (&value), sizeof (std::uint8_t));
   }
 
 }

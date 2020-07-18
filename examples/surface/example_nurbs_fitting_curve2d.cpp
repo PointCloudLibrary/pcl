@@ -1,8 +1,6 @@
 #include <pcl/surface/on_nurbs/fitting_curve_2d.h>
 #include <pcl/surface/on_nurbs/triangulation.h>
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 
 #include <pcl/visualization/pcl_visualizer.h>
@@ -25,7 +23,7 @@ VisualizeCurve (ON_NurbsCurve &curve, double r, double g, double b, bool show_cp
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
   pcl::on_nurbs::Triangulation::convertCurve2PointCloud (curve, cloud, 8);
 
-  for (size_t i = 0; i < cloud->size () - 1; i++)
+  for (std::size_t i = 0; i < cloud->size () - 1; i++)
   {
     pcl::PointXYZRGB &p1 = cloud->at (i);
     pcl::PointXYZRGB &p2 = cloud->at (i + 1);

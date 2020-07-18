@@ -34,21 +34,16 @@
  *
  */
 
-#include <pcl/apps/modeler/cloud_mesh_item_updater.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::CloudMeshItemUpdater::CloudMeshItemUpdater (CloudMeshItem* cloud_mesh_item)
-  :cloud_mesh_item_(cloud_mesh_item)
-{
-}
+#include <pcl/apps/modeler/cloud_mesh_item_updater.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::CloudMeshItemUpdater::~CloudMeshItemUpdater ()
-{
+pcl::modeler::CloudMeshItemUpdater::CloudMeshItemUpdater(CloudMeshItem* cloud_mesh_item)
+: cloud_mesh_item_(cloud_mesh_item)
+{}
 
-}
+//////////////////////////////////////////////////////////////////////////////////////////////
+pcl::modeler::CloudMeshItemUpdater::~CloudMeshItemUpdater() {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void

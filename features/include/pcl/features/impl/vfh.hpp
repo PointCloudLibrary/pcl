@@ -50,7 +50,7 @@
 template<typename PointInT, typename PointNT, typename PointOutT> bool
 pcl::VFHEstimation<PointInT, PointNT, PointOutT>::initCompute ()
 {
-  if (input_->points.size () < 2 || (surface_ && surface_->points.size () < 2))
+  if (input_->size () < 2 || (surface_ && surface_->size () < 2))
   {
     PCL_ERROR ("[pcl::VFHEstimation::initCompute] Input dataset must have at least 2 points!\n");
     return (false);
@@ -97,10 +97,10 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
 {
   Eigen::Vector4f pfh_tuple;
   // Reset the whole thing
-  hist_f1_.setZero (nr_bins_f1_);
-  hist_f2_.setZero (nr_bins_f2_);
-  hist_f3_.setZero (nr_bins_f3_);
-  hist_f4_.setZero (nr_bins_f4_);
+  for (int i = 0; i < 4; ++i)
+  {
+    hist_f_[i].setZero (nr_bins_f_[i]);
+  }
 
   // Get the bounding box of the current cluster
   //Eigen::Vector4f min_pt, max_pt;
@@ -121,60 +121,42 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
   }
 
   // Factorization constant
-  float hist_incr;
+  float hist_incr = 1;
   if (normalize_bins_)
     hist_incr = 100.0f / static_cast<float> (indices.size () - 1);
-  else
-    hist_incr = 1.0f;
 
-  float hist_incr_size_component;
+  float hist_incr_size_component = 0;;
   if (size_component_)
     hist_incr_size_component = hist_incr;
-  else
-    hist_incr_size_component = 0.0;
 
   // Iterate over all the points in the neighborhood
   for (const int &index : indices)
   {
     // Compute the pair P to NNi
-    if (!computePairFeatures (centroid_p, centroid_n, cloud.points[index].getVector4fMap (),
-                              normals.points[index].getNormalVector4fMap (), pfh_tuple[0], pfh_tuple[1],
+    if (!computePairFeatures (centroid_p, centroid_n, cloud[index].getVector4fMap (),
+                              normals[index].getNormalVector4fMap (), pfh_tuple[0], pfh_tuple[1],
                               pfh_tuple[2], pfh_tuple[3]))
       continue;
 
     // Normalize the f1, f2, f3, f4 features and push them in the histogram
-    int h_index = static_cast<int> (floor (nr_bins_f1_ * ((pfh_tuple[0] + M_PI) * d_pi_)));
-    if (h_index < 0)
-      h_index = 0;
-    if (h_index >= nr_bins_f1_)
-      h_index = nr_bins_f1_ - 1;
-    hist_f1_ (h_index) += hist_incr;
+    for (int i = 0; i < 3; ++i)
+    {
+      const int raw_index = static_cast<int> (std::floor (nr_bins_f_[i] * ((pfh_tuple[i] + M_PI) * d_pi_)));
+      const int h_index = std::max(std::min(raw_index, nr_bins_f_[i] - 1), 0);
+      hist_f_[i] (h_index) += hist_incr;
+    }
 
-    h_index = static_cast<int> (floor (nr_bins_f2_ * ((pfh_tuple[1] + 1.0) * 0.5)));
-    if (h_index < 0)
-      h_index = 0;
-    if (h_index >= nr_bins_f2_)
-      h_index = nr_bins_f2_ - 1;
-    hist_f2_ (h_index) += hist_incr;
+    if (hist_incr_size_component)
+    {
+      int h_index;
+      if (normalize_distances_)
+        h_index = static_cast<int> (std::floor (nr_bins_f_[3] * (pfh_tuple[3] / distance_normalization_factor)));
+      else
+        h_index = static_cast<int> (pcl_round (pfh_tuple[3] * 100));
 
-    h_index = static_cast<int> (floor (nr_bins_f3_ * ((pfh_tuple[2] + 1.0) * 0.5)));
-    if (h_index < 0)
-      h_index = 0;
-    if (h_index >= nr_bins_f3_)
-      h_index = nr_bins_f3_ - 1;
-    hist_f3_ (h_index) += hist_incr;
-
-    if (normalize_distances_)
-      h_index = static_cast<int> (floor (nr_bins_f4_ * (pfh_tuple[3] / distance_normalization_factor)));
-    else
-      h_index = static_cast<int> (pcl_round (pfh_tuple[3] * 100));
-
-    if (h_index < 0)
-      h_index = 0;
-    if (h_index >= nr_bins_f4_)
-      h_index = nr_bins_f4_ - 1;
-
-    hist_f4_ (h_index) += hist_incr_size_component;
+      h_index = std::max (std::min (h_index, nr_bins_f_[3] - 1), 0);
+      hist_f_[3] (h_index) += hist_incr_size_component;
+    }
   }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -191,33 +173,31 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   // ---[ Step 1b : compute the centroid in normal space
   Eigen::Vector4f normal_centroid = Eigen::Vector4f::Zero ();
-  int cp = 0;
 
   // If the data is dense, we don't need to check for NaN
   if (use_given_normal_)
     normal_centroid = normal_to_use_;
   else
   {
+    std::size_t cp = 0;
     if (normals_->is_dense)
     {
-      for (size_t i = 0; i < indices_->size (); ++i)
+      for (const auto& index: *indices_)
       {
-        normal_centroid += normals_->points[(*indices_)[i]].getNormalVector4fMap ();
-        cp++;
+        normal_centroid.noalias () += (*normals_)[index].getNormalVector4fMap ();
       }
+      cp = indices_->size();
     }
     // NaN or Inf values could exist => check for them
     else
     {
-      for (size_t i = 0; i < indices_->size (); ++i)
+      for (const auto& index: *indices_)
       {
-        if (!std::isfinite (normals_->points[(*indices_)[i]].normal[0])
-            ||
-            !std::isfinite (normals_->points[(*indices_)[i]].normal[1])
-            ||
-            !std::isfinite (normals_->points[(*indices_)[i]].normal[2]))
+        if (!std::isfinite ((*normals_)[index].normal[0]) ||
+            !std::isfinite ((*normals_)[index].normal[1]) ||
+            !std::isfinite ((*normals_)[index].normal[2]))
           continue;
-        normal_centroid += normals_->points[(*indices_)[i]].getNormalVector4fMap ();
+        normal_centroid.noalias () += (*normals_)[index].getNormalVector4fMap ();
         cp++;
       }
     }
@@ -232,55 +212,40 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   // Estimate the SPFH at nn_indices[0] using the entire cloud
   computePointSPFHSignature (xyz_centroid, normal_centroid, *surface_, *normals_, *indices_);
 
+  // ---[ Step 2 : obtain the viewpoint component
+  hist_vp_.setZero (nr_bins_vp_);
+
+  float hist_incr = 1.0;
+  if (normalize_bins_)
+    hist_incr = 100.0 / static_cast<double> (indices_->size ());
+
+  for (const auto& index: *indices_)
+  {
+    Eigen::Vector4f normal ((*normals_)[index].normal[0],
+                            (*normals_)[index].normal[1],
+                            (*normals_)[index].normal[2], 0);
+    // Normalize
+    double alpha = (normal.dot (d_vp_p) + 1.0) * 0.5;
+    std::size_t fi = static_cast<std::size_t> (std::floor (alpha * hist_vp_.size ()));
+    fi = std::max<std::size_t> (0u, fi);
+    fi = std::min<std::size_t> (hist_vp_.size () - 1, fi);
+    // Bin into the histogram
+    hist_vp_ [fi] += hist_incr;
+  }
+
   // We only output _1_ signature
   output.points.resize (1);
   output.width = 1;
   output.height = 1;
 
   // Estimate the FPFH at nn_indices[0] using the entire cloud and copy the resultant signature
-  for (Eigen::Index d = 0; d < hist_f1_.size (); ++d)
-    output.points[0].histogram[d + 0] = hist_f1_[d];
+  auto outPtr = std::begin (output[0].histogram);
 
-  size_t data_size = hist_f1_.size ();
-  for (Eigen::Index d = 0; d < hist_f2_.size (); ++d)
-    output.points[0].histogram[d + data_size] = hist_f2_[d];
-
-  data_size += hist_f2_.size ();
-  for (Eigen::Index d = 0; d < hist_f3_.size (); ++d)
-    output.points[0].histogram[d + data_size] = hist_f3_[d];
-
-  data_size += hist_f3_.size ();
-  for (Eigen::Index d = 0; d < hist_f4_.size (); ++d)
-    output.points[0].histogram[d + data_size] = hist_f4_[d];
-
-  // ---[ Step 2 : obtain the viewpoint component
-  hist_vp_.setZero (nr_bins_vp_);
-
-  double hist_incr;
-  if (normalize_bins_)
-    hist_incr = 100.0 / static_cast<double> (indices_->size ());
-  else
-    hist_incr = 1.0;
-
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (int i = 0; i < 4; ++i)
   {
-    Eigen::Vector4f normal (normals_->points[(*indices_)[i]].normal[0],
-                            normals_->points[(*indices_)[i]].normal[1],
-                            normals_->points[(*indices_)[i]].normal[2], 0);
-    // Normalize
-    double alpha = (normal.dot (d_vp_p) + 1.0) * 0.5;
-    int fi = static_cast<int> (floor (alpha * static_cast<double> (hist_vp_.size ())));
-    if (fi < 0)
-      fi = 0;
-    if (fi > (static_cast<int> (hist_vp_.size ()) - 1))
-      fi = static_cast<int> (hist_vp_.size ()) - 1;
-    // Bin into the histogram
-    hist_vp_ [fi] += static_cast<float> (hist_incr);
+    outPtr = std::copy_n (hist_f_[i].data (), hist_f_[i].size (), outPtr);
   }
-  data_size += hist_f4_.size ();
-  // Copy the resultant signature
-  for (Eigen::Index d = 0; d < hist_vp_.size (); ++d)
-    output.points[0].histogram[d + data_size] = hist_vp_[d];
+  outPtr = std::copy_n (hist_vp_.data (), hist_vp_.size (), outPtr);
 }
 
 #define PCL_INSTANTIATE_VFHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::VFHEstimation<T,NT,OutT>;

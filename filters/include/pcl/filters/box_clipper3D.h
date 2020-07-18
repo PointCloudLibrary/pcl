@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include "clipper3D.h"
 
@@ -53,8 +54,8 @@ namespace pcl
   {
     public:
 
-      using Ptr = boost::shared_ptr<BoxClipper3D<PointT> >;
-      using ConstPtr = boost::shared_ptr<const BoxClipper3D<PointT> >;
+      using Ptr = shared_ptr<BoxClipper3D<PointT> >;
+      using ConstPtr = shared_ptr<const BoxClipper3D<PointT> >;
 
 
       /**
@@ -89,7 +90,7 @@ namespace pcl
       /**
         * \brief virtual destructor
         */
-      ~BoxClipper3D () throw ();
+      ~BoxClipper3D () noexcept;
 
       bool
       clipPoint3D (const PointT& point) const override;

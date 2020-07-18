@@ -1044,7 +1044,7 @@ bool ON_Matrix::IsColOrthoNormal() const
 bool ON_Matrix::Invert( double zero_tolerance )
 {
   ON_Workspace ws;
-  int i, j, k, ix, jx, rank;
+  int i, j, k, ix, jx;
   double x;
   const int n = MinCount();
   if ( n < 1 )
@@ -1055,7 +1055,6 @@ bool ON_Matrix::Invert( double zero_tolerance )
   int* col = ws.GetIntMemory(n);
 
   I.SetDiagonal(1.0);
-  rank = 0;
 
   double** this_m = ThisM();
 
@@ -1208,7 +1207,7 @@ int ON_RowReduce( int row_count,
   // returned A is identity, B = inverse of input A
   const int M = row_count;
   const int N = col_count;
-  const size_t sizeof_row = N*sizeof(A[0][0]);
+  const std::size_t sizeof_row = N*sizeof(A[0][0]);
   int i, j, ii;
   double a, p, p0, p1;
   const double* ptr0;

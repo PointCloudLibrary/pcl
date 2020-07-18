@@ -34,20 +34,20 @@
  *
  */
 
-#include <pcl/apps/modeler/statistical_outlier_removal_worker.h>
-#include <pcl/apps/modeler/parameter.h>
-#include <pcl/apps/modeler/parameter_dialog.h>
 #include <pcl/apps/modeler/cloud_mesh.h>
 #include <pcl/apps/modeler/cloud_mesh_item.h>
+#include <pcl/apps/modeler/parameter.h>
+#include <pcl/apps/modeler/parameter_dialog.h>
+#include <pcl/apps/modeler/statistical_outlier_removal_worker.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::StatisticalOutlierRemovalWorker::StatisticalOutlierRemovalWorker(const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent) :
-  AbstractWorker(cloud_mesh_items, parent),
-  mean_k_(nullptr), stddev_mul_thresh_(nullptr)
-{
-}
+pcl::modeler::StatisticalOutlierRemovalWorker::StatisticalOutlierRemovalWorker(
+    const QList<CloudMeshItem*>& cloud_mesh_items, QWidget* parent)
+: AbstractWorker(cloud_mesh_items, parent)
+, mean_k_(nullptr)
+, stddev_mul_thresh_(nullptr)
+{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::modeler::StatisticalOutlierRemovalWorker::~StatisticalOutlierRemovalWorker()
@@ -58,27 +58,35 @@ pcl::modeler::StatisticalOutlierRemovalWorker::~StatisticalOutlierRemovalWorker(
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::StatisticalOutlierRemovalWorker::initParameters(CloudMeshItem *)
-{
-  return;
-}
+pcl::modeler::StatisticalOutlierRemovalWorker::initParameters(CloudMeshItem*)
+{}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::modeler::StatisticalOutlierRemovalWorker::setupParameters()
 {
-  mean_k_ = new IntParameter("Mean K", "The number of nearest neighbors to use for mean distance estimation", 8, 1, 1024, 1);
-  stddev_mul_thresh_ = new DoubleParameter("Standard Deviation Multiplier", "The distance threshold will be equal to: mean + stddev_mult * stddev. Points will be classified as inlier or outlier if their average neighbor distance is below or above this threshold respectively.", 1.0, 0.1, 10, 0.1);
+  // clang-format off
+  mean_k_ = new IntParameter(
+      "Mean K",
+      "The number of nearest neighbors to use for mean distance estimation",
+      8, 1, 1024, 1);
+
+  stddev_mul_thresh_ = new DoubleParameter(
+      "Standard Deviation Multiplier",
+      "The distance threshold will be equal to: mean + stddev_mult * stddev. Points "
+      "will be classified as inlier or outlier if their average neighbor distance is "
+      "below or above this threshold respectively.",
+      1.0, 0.1, 10, 0.1);
+  // clang-format on
 
   parameter_dialog_->addParameter(mean_k_);
   parameter_dialog_->addParameter(stddev_mul_thresh_);
-
-  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::modeler::StatisticalOutlierRemovalWorker::processImpl(CloudMeshItem* cloud_mesh_item)
+pcl::modeler::StatisticalOutlierRemovalWorker::processImpl(
+    CloudMeshItem* cloud_mesh_item)
 {
   pcl::StatisticalOutlierRemoval<pcl::PointSurfel> sor;
   sor.setInputCloud(cloud_mesh_item->getCloudMesh()->getCloud());
@@ -91,6 +99,4 @@ pcl::modeler::StatisticalOutlierRemovalWorker::processImpl(CloudMeshItem* cloud_
   cloud_mesh_item->getCloudMesh()->getCloud() = cloud;
 
   emitDataUpdated(cloud_mesh_item);
-
-  return;
 }

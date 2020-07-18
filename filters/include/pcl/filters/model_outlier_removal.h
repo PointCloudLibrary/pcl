@@ -82,7 +82,7 @@ namespace pcl
        */
       inline
       ModelOutlierRemoval (bool extract_removed_indices = false) :
-          FilterIndices<PointT>::FilterIndices (extract_removed_indices)
+          FilterIndices<PointT> (extract_removed_indices)
       {
         thresh_ = 0;
         normals_distance_weight_ = 0;
@@ -95,7 +95,7 @@ namespace pcl
       setModelCoefficients (const pcl::ModelCoefficients model_coefficients)
       {
         model_coefficients_.resize (model_coefficients.values.size ());
-        for (size_t i = 0; i < model_coefficients.values.size (); i++)
+        for (std::size_t i = 0; i < model_coefficients.values.size (); i++)
         {
           model_coefficients_[i] = model_coefficients.values[i];
         }
@@ -108,7 +108,7 @@ namespace pcl
       {
         pcl::ModelCoefficients mc;
         mc.values.resize (model_coefficients_.size ());
-        for (size_t i = 0; i < mc.values.size (); i++)
+        for (std::size_t i = 0; i < mc.values.size (); i++)
           mc.values[i] = model_coefficients_[i];
         return (mc);
       }
@@ -185,7 +185,7 @@ namespace pcl
       template <typename T> void
       setThresholdFunction (bool (T::*thresh_function) (double), T& instance)
       {
-        setThresholdFunction (boost::bind (thresh_function, boost::ref (instance), _1));
+        setThresholdFunction ([=, &instance] (double threshold) { return (instance.*thresh_function) (threshold); });
       }
 
     protected:
@@ -198,12 +198,6 @@ namespace pcl
       using FilterIndices<PointT>::user_filter_value_;
       using FilterIndices<PointT>::extract_removed_indices_;
       using FilterIndices<PointT>::removed_indices_;
-
-      /** \brief Filtered results are stored in a separate point cloud.
-       * \param[out] output The resultant point cloud.
-       */
-      void
-      applyFilter (PointCloud &output) override;
 
       /** \brief Filtered results are indexed by an indices array.
        * \param[out] indices The resultant indices.

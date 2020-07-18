@@ -268,7 +268,7 @@ namespace pcl
 
       //load CJSON
       std::vector<char> idx_input;
-      boost::uintmax_t len = boost::filesystem::file_size (metadata_filename_);
+      std::uintmax_t len = boost::filesystem::file_size (metadata_filename_);
       idx_input.resize (len + 1);
       
       std::ifstream f (metadata_filename_.string ().c_str (), std::ios::in);

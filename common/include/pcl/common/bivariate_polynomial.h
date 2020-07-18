@@ -41,15 +41,16 @@
 
 #include <fstream>
 #include <iostream>
+#include <vector>
 
-namespace pcl 
+namespace pcl
 {
   /** \brief This represents a bivariate polynomial and provides some functionality for it
-    * \author Bastian Steder 
+    * \author Bastian Steder
     * \ingroup common
     */
   template<typename real>
-  class BivariatePolynomialT 
+  class BivariatePolynomialT
   {
     public:
       //-----CONSTRUCTOR&DESTRUCTOR-----
@@ -76,7 +77,7 @@ namespace pcl
 
       /** Calculate the value of the polynomial at the given point */
       real
-      getValue (real x, real y) const;  
+      getValue (real x, real y) const;
 
       /** Calculate the gradient of this polynomial
        *  If forceRecalc is false, it will do nothing when the gradient already exists */
@@ -91,7 +92,7 @@ namespace pcl
        *  !!Currently only implemented for degree 2!! */
       void
       findCriticalPoints (std::vector<real>& x_values, std::vector<real>& y_values, std::vector<int>& types) const;
-      
+
       /** write as binary to a stream */
       void
       writeBinary (std::ostream& os) const;
@@ -107,7 +108,7 @@ namespace pcl
       /** read binary from a file */
       void
       readBinary (const char* filename);
-      
+
       /** How many parameters has a bivariate polynomial of the given degree */
       static unsigned int
       getNoOfParametersFromDegree (int n) { return ((n+2)* (n+1))/2;}
@@ -116,7 +117,7 @@ namespace pcl
       int degree;
       real* parameters;
       BivariatePolynomialT<real>* gradient_x, * gradient_y;
-      
+
     protected:
       //-----METHODS-----
       /** Delete all members */

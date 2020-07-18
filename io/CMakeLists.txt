@@ -5,7 +5,7 @@ set(SUBSYS_DEPS common octree)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
-  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk pcap png vtk)
+  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk rssdk2 pcap png vtk)
 else()
   PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb-1.0)
 endif()
@@ -160,6 +160,16 @@ if(WITH_RSSDK)
   )
 endif()
 
+# RSSDK2 is restricted to Windows until it is functional under other OSs
+if(WIN32 AND WITH_RSSDK2)
+  set(RSSDK2_GRABBER_INCLUDES
+      include/pcl/io/real_sense_2_grabber.h
+  )
+  set(RSSDK2_GRABBER_SOURCES
+      src/real_sense_2_grabber.cpp
+  )
+endif()
+
 if(LIBUSB_1_FOUND)
   set(DINAST_GRABBER_INCLUDES
     include/pcl/io/dinast_grabber.h
@@ -226,6 +236,7 @@ set(srcs
   ${DAVIDSDK_GRABBER_SOURCES}
   ${DSSDK_GRABBER_SOURCES}
   ${RSSDK_GRABBER_SOURCES}
+  ${RSSDK2_GRABBER_SOURCES}
 )
 
 if(PNG_FOUND)
@@ -276,7 +287,7 @@ set(incs
   ${DAVIDSDK_GRABBER_INCLUDES}
   ${DSSDK_GRABBER_INCLUDES}
   ${RSSDK_GRABBER_INCLUDES}
-  "include/pcl/${SUBSYS_NAME}/pxc_grabber.h"  # contains only depreciation note
+  ${RSSDK2_GRABBER_INCLUDES}
 )
 
 set(compression_incs
@@ -361,6 +372,11 @@ endif()
 
 if(WITH_RSSDK)
   target_link_libraries(${LIB_NAME} ${RSSDK_LIBRARIES})
+endif()
+
+# RSSDK2 is restricted to Windows until it is functional under other OSs
+if(WIN32 AND WITH_RSSDK2)
+  target_link_libraries(${LIB_NAME} ${RSSDK2_LIBRARIES})
 endif()
 
 if(PCAP_FOUND)

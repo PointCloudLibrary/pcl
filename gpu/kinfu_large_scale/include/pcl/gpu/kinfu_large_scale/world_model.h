@@ -64,8 +64,8 @@ namespace pcl
     {
       public:
 
-        using Ptr = boost::shared_ptr<WorldModel<PointT> >;
-        using ConstPtr = boost::shared_ptr<const WorldModel<PointT> >;
+        using Ptr = shared_ptr<WorldModel<PointT> >;
+        using ConstPtr = shared_ptr<const WorldModel<PointT> >;
 
         using PointCloud = pcl::PointCloud<PointT>;
         using PointCloudPtr = typename PointCloud::Ptr;
@@ -151,9 +151,9 @@ namespace pcl
         
         /** \brief Returns the number of points contained in the world.
           */      
-        size_t getWorldSize () 
+        std::size_t getWorldSize () 
         { 
-          return (world_->points.size () );
+          return (world_->size () );
         }
 
         /** \brief Returns the world as two vectors of cubes of size "size" (pointclouds) and transforms

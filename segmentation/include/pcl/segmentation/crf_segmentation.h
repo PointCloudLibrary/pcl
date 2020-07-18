@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -58,9 +59,6 @@ namespace pcl
   class PCL_EXPORTS CrfSegmentation
   {
     public:
-
-    //using pcl::IndicesPtr = boost::shared_ptr<std::vector<int> >;
-    
 
       /** \brief Constructor that sets default values for member variables. */
       CrfSegmentation ();

@@ -561,16 +561,16 @@ static const unsigned char VIRIDIS_LUT[] =
 };
 
 /// Number of colors in Glasbey lookup table
-static const size_t GLASBEY_LUT_SIZE = sizeof (GLASBEY_LUT) / (sizeof (GLASBEY_LUT[0]) * 3);
+static const std::size_t GLASBEY_LUT_SIZE = sizeof (GLASBEY_LUT) / (sizeof (GLASBEY_LUT[0]) * 3);
 
 /// Number of colors in Viridis lookup table
-static const size_t VIRIDIS_LUT_SIZE = sizeof (VIRIDIS_LUT) / (sizeof (VIRIDIS_LUT[0]) * 3);
+static const std::size_t VIRIDIS_LUT_SIZE = sizeof (VIRIDIS_LUT) / (sizeof (VIRIDIS_LUT[0]) * 3);
 
 static const unsigned char* LUTS[] = { GLASBEY_LUT, VIRIDIS_LUT };
-static const size_t LUT_SIZES[] = { GLASBEY_LUT_SIZE, VIRIDIS_LUT_SIZE };
+static const std::size_t LUT_SIZES[] = { GLASBEY_LUT_SIZE, VIRIDIS_LUT_SIZE };
 
 template<typename pcl::ColorLUTName T> pcl::RGB
-pcl::ColorLUT<T>::at (size_t color_id)
+pcl::ColorLUT<T>::at (std::size_t color_id)
 {
   assert (color_id < LUT_SIZES[T]);
   pcl::RGB color;
@@ -580,7 +580,7 @@ pcl::ColorLUT<T>::at (size_t color_id)
   return (color);
 }
 
-template<typename pcl::ColorLUTName T> size_t
+template<typename pcl::ColorLUTName T> std::size_t
 pcl::ColorLUT<T>::size ()
 {
   return LUT_SIZES[T];
@@ -607,9 +607,9 @@ pcl::getRandomColor (double min, double max)
   }
   while (sum <= min || sum >= max);
   pcl::RGB color;
-  color.r = uint8_t (r * 255.0);
-  color.g = uint8_t (g * 255.0);
-  color.b = uint8_t (b * 255.0);
+  color.r = std::uint8_t (r * 255.0);
+  color.g = std::uint8_t (g * 255.0);
+  color.b = std::uint8_t (b * 255.0);
   return (color);
 }
 

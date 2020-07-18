@@ -136,7 +136,7 @@ namespace pcl
                 if(pos < buffer.tsdf_memory_start)
                     pos += size;
 
-                int nbSteps = abs(maxBounds.z);
+                int nbSteps = std::abs(maxBounds.z);
                 
             #pragma unroll				
                 for(int z = 0; z < nbSteps; ++z, pos+=z_step)
@@ -555,7 +555,7 @@ namespace pcl
                       bool integrate = true;
                       if ((x > 0 &&  x < VOLUME_X-2) && (y > 0 && y < VOLUME_Y-2) && (z > 0 && z < VOLUME_Z-2))
                       {
-                          const float qnan = numeric_limits<float>::quiet_NaN();
+                          constexpr float qnan = std::numeric_limits<float>::quiet_NaN();
                           float3 normal = make_float3(qnan, qnan, qnan);
 
                           float Fn, Fp;

@@ -132,8 +132,8 @@ namespace pcl
   class GreedyProjectionTriangulation : public MeshConstruction<PointInT>
   {
     public:
-      using Ptr = boost::shared_ptr<GreedyProjectionTriangulation<PointInT> >;
-      using ConstPtr = boost::shared_ptr<const GreedyProjectionTriangulation<PointInT> >;
+      using Ptr = shared_ptr<GreedyProjectionTriangulation<PointInT> >;
+      using ConstPtr = shared_ptr<const GreedyProjectionTriangulation<PointInT> >;
 
       using MeshConstruction<PointInT>::tree_;
       using MeshConstruction<PointInT>::input_;
@@ -448,7 +448,7 @@ namespace pcl
       /** \brief Get the list of containing triangles for each vertex in a PolygonMesh
         * \param[in] polygonMesh the input polygon mesh
         */
-      std::vector<std::vector<size_t> >
+      std::vector<std::vector<std::size_t> >
       getTriangleList (const pcl::PolygonMesh &input);
 
       /** \brief Add a new triangle to the current polygon mesh

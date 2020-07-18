@@ -45,14 +45,14 @@
 #include <boost/property_tree/info_parser.hpp>
 #include <boost/foreach.hpp>
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/segmentation/random_walker.h>
 
 std::string TEST_DATA_DIR;
 
 using Weight = float;
-using Color = uint32_t;
+using Color = std::uint32_t;
 using Graph = boost::adjacency_list
         <boost::vecS,
          boost::vecS,
@@ -70,8 +70,8 @@ using VertexColorMap = boost::property_map<Graph, boost::vertex_color_t>::type;
 using SparseMatrix = Eigen::SparseMatrix<Weight>;
 using Matrix = Eigen::Matrix<Weight, Eigen::Dynamic, Eigen::Dynamic>;
 using Vector = Eigen::Matrix<Weight, Eigen::Dynamic, 1>;
-using VertexDescriptorBimap = boost::bimap<size_t, VertexDescriptor>;
-using ColorBimap = boost::bimap<size_t, Color>;
+using VertexDescriptorBimap = boost::bimap<std::size_t, VertexDescriptor>;
+using ColorBimap = boost::bimap<std::size_t, Color>;
 using RandomWalker = pcl::segmentation::detail::RandomWalker<Graph, EdgeWeightMap, VertexColorMap>;
 
 
@@ -84,15 +84,15 @@ struct GraphInfo
     ptree pt;
     read_info (filename, pt);
 
-    size = pt.get<size_t> ("Size");
+    size = pt.get<std::size_t> ("Size");
     graph = Graph (size);
     segmentation.resize (size);
     color_map = boost::get (boost::vertex_color, graph);
 
     // Read graph topology
-    BOOST_FOREACH (ptree::value_type& v, pt.get_child ("Topology"))
+    for (ptree::value_type& v : pt.get_child ("Topology"))
     {
-      uint32_t source, target;
+      std::uint32_t source, target;
       float weight;
       std::stringstream (v.second.data ()) >> source >> target >> weight;
       boost::add_edge (source, target, weight, graph);
@@ -104,9 +104,9 @@ struct GraphInfo
       color_map[*vi] = 0;
 
     // Read seeds
-    BOOST_FOREACH (ptree::value_type& v, pt.get_child ("Seeds"))
+    for (ptree::value_type& v : pt.get_child ("Seeds"))
     {
-      uint32_t id, color;
+      std::uint32_t id, color;
       std::stringstream (v.second.data ()) >> id >> color;
       color_map[id] = color;
       colors.insert (color);
@@ -114,19 +114,19 @@ struct GraphInfo
 
     // Read expected cluster assignment
     std::stringstream ss (pt.get<std::string> ("Segmentation"));
-    for (size_t i = 0; i < size; ++i)
+    for (std::size_t i = 0; i < size; ++i)
       ss >> segmentation[i];
 
     // Read expected dimensions of matrices L and B
     std::stringstream (pt.get<std::string> ("Dimensions")) >> rows >> cols;
 
     // Read expected potentials
-    BOOST_FOREACH (ptree::value_type& v, pt.get_child ("Potentials"))
+    for (ptree::value_type& v : pt.get_child ("Potentials"))
     {
-      Color color = boost::lexical_cast<uint32_t> (v.first);
+      Color color = boost::lexical_cast<std::uint32_t> (v.first);
       potentials[color] = Vector::Zero (size);
       std::stringstream ss (v.second.data ());
-      for (size_t i = 0; i < size; ++i)
+      for (std::size_t i = 0; i < size; ++i)
         ss >> potentials[color] (i);
     }
   }
@@ -136,9 +136,9 @@ struct GraphInfo
   VertexColorMap color_map;
   std::map<Color, Vector> potentials;
   std::set<Color> colors;
-  size_t size; // number of vertices
-  size_t rows; // expected number of rows in matrices L and B
-  size_t cols; // expected number of cols in matrix B
+  std::size_t size; // number of vertices
+  std::size_t rows; // expected number of rows in matrices L and B
+  std::size_t cols; // expected number of cols in matrix B
 
 };
 
@@ -196,7 +196,7 @@ TEST_P (RandomWalkerTest, BuildLinearSystem)
       B_sums[it.row ()] += it.value ();
     }
   }
-  for (size_t i = 0; i < g.rows; ++i)
+  for (std::size_t i = 0; i < g.rows; ++i)
   {
     float sum = L_sums[i] + B_sums[i];
     EXPECT_FLOAT_EQ (degrees[i], sum);
@@ -215,7 +215,7 @@ TEST_P (RandomWalkerTest, Segment)
 TEST_P (RandomWalkerTest, GetPotentials)
 {
   Matrix p;
-  std::map<Color, size_t> map;
+  std::map<Color, std::size_t> map;
 
   pcl::segmentation::randomWalker (g.graph,
                                    boost::get (boost::edge_weight, g.graph),
@@ -228,14 +228,14 @@ TEST_P (RandomWalkerTest, GetPotentials)
   ASSERT_EQ (g.colors.size (), map.size ());
 
   for (const unsigned int &color : g.colors)
-    for (size_t i = 0; i < g.size; ++i)
+    for (std::size_t i = 0; i < g.size; ++i)
       if (g.potentials.count (color))
       {
         EXPECT_NEAR (g.potentials[color] (i), p (i, map[color]), 0.01);
       }
 }
 
-INSTANTIATE_TEST_CASE_P (VariousGraphs,
+INSTANTIATE_TEST_SUITE_P (VariousGraphs,
                          RandomWalkerTest,
                          ::testing::Values ("graph0.info",
                                             "graph1.info",

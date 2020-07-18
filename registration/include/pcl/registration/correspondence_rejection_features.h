@@ -66,8 +66,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        using Ptr = boost::shared_ptr<CorrespondenceRejectorFeatures>;
-        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorFeatures>;
+        using Ptr = shared_ptr<CorrespondenceRejectorFeatures>;
+        using ConstPtr = shared_ptr<const CorrespondenceRejectorFeatures>;
 
         /** \brief Empty constructor. */
         CorrespondenceRejectorFeatures () : max_distance_ (std::numeric_limits<float>::max ())
@@ -157,12 +157,12 @@ namespace pcl
         {
           public:
             /** \brief Empty destructor */
-            virtual ~FeatureContainerInterface () {}
+            virtual ~FeatureContainerInterface () = default;
             virtual bool isValid () = 0;
             virtual double getCorrespondenceScore (int index) = 0;
             virtual bool isCorrespondenceValid (int index) = 0;
 
-            using Ptr = boost::shared_ptr<FeatureContainerInterface>;
+            using Ptr = shared_ptr<FeatureContainerInterface>;
         };
 
         using FeaturesMap = std::unordered_map<std::string, FeatureContainerInterface::Ptr>;
@@ -227,8 +227,8 @@ namespace pcl
             {
               if (!source_features_ || !target_features_)
                 return (false);
-              return (source_features_->points.size () > 0 && 
-                      target_features_->points.size () > 0);
+              return (source_features_->size () > 0 && 
+                      target_features_->size () > 0);
             }
 
             /** \brief Provide a boost shared pointer to a PointRepresentation to be used when comparing features
@@ -252,8 +252,8 @@ namespace pcl
                 feature_representation_.reset (new DefaultFeatureRepresentation<FeatureT>);
 
               // Get the source and the target feature from the list
-              const FeatureT &feat_src = source_features_->points[index];
-              const FeatureT &feat_tgt = target_features_->points[index];
+              const FeatureT &feat_src = (*source_features_)[index];
+              const FeatureT &feat_tgt = (*target_features_)[index];
 
               // Check if the representations are valid
               if (!feature_representation_->isValid (feat_src) || !feature_representation_->isValid (feat_tgt))

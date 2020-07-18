@@ -37,9 +37,11 @@
 
 #pragma once
 
+#include <pcl/pcl_macros.h>
 #include <pcl/io/file_io.h>
 #include <pcl/PCLPointField.h>
 #include <pcl/common/io.h>
+#include <pcl/common/utils.h> // pcl::utils::ignore
 
 
 namespace pcl
@@ -116,10 +118,10 @@ namespace pcl
         * \param[in] p  a point type
         */
       template<typename PointT>
-      [[deprecated("use parameterless setInputFields<PointT>() instead")]]
+      PCL_DEPRECATED(1, 12, "use parameterless setInputFields<PointT>() instead")
       inline void setInputFields (const PointT p)
       {
-        (void) p;
+        pcl::utils::ignore(p);
         setInputFields<PointT> ();
       }
 
@@ -152,13 +154,13 @@ namespace pcl
         *  returns the size of the parsed point field in bytes
         */
       int 
-      parse (const std::string& token, const pcl::PCLPointField& field, uint8_t* data_target);
+      parse (const std::string& token, const pcl::PCLPointField& field, std::uint8_t* data_target);
 
       /** \brief Returns the size in bytes of a point field type.
         * \param[in] type   point field type
         *  returns the size of the type in bytes
         */
-      uint32_t 
+      std::uint32_t 
       typeSize (int type);
 	};
 }

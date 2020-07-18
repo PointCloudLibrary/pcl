@@ -57,7 +57,7 @@ namespace pcl
     {
       //boost::fusion::at_key<Key> (p2_) = p1_[f_idx_++];
       using T = typename pcl::traits::datatype<PointT, Key>::type;
-      uint8_t* data_ptr = reinterpret_cast<uint8_t*>(&p2_) + pcl::traits::offset<PointT, Key>::value;
+      std::uint8_t* data_ptr = reinterpret_cast<std::uint8_t*>(&p2_) + pcl::traits::offset<PointT, Key>::value;
       *reinterpret_cast<T*>(data_ptr) = static_cast<T> (p1_[f_idx_++]);
     }
 
@@ -80,7 +80,7 @@ namespace pcl
     {
       //p2_[f_idx_++] = boost::fusion::at_key<Key> (p1_);
       using T = typename pcl::traits::datatype<PointT, Key>::type;
-      const uint8_t* data_ptr = reinterpret_cast<const uint8_t*>(&p1_) + pcl::traits::offset<PointT, Key>::value;
+      const std::uint8_t* data_ptr = reinterpret_cast<const std::uint8_t*>(&p1_) + pcl::traits::offset<PointT, Key>::value;
       p2_[f_idx_++] = static_cast<float> (*reinterpret_cast<const T*>(data_ptr));
     }
 
@@ -118,8 +118,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr<ApproximateVoxelGrid<PointT> >;
-      using ConstPtr = boost::shared_ptr<const ApproximateVoxelGrid<PointT> >;
+      using Ptr = shared_ptr<ApproximateVoxelGrid<PointT> >;
+      using ConstPtr = shared_ptr<const ApproximateVoxelGrid<PointT> >;
 
 
       /** \brief Empty constructor. */
@@ -145,7 +145,7 @@ namespace pcl
         history_ ()
       {
         history_ = new he[histsize_];
-        for (size_t i = 0; i < histsize_; i++)
+        for (std::size_t i = 0; i < histsize_; i++)
           history_[i] = src.history_[i];
       }
 
@@ -169,7 +169,7 @@ namespace pcl
         downsample_all_data_ = src.downsample_all_data_;
         histsize_ = src.histsize_;
         history_ = new he[histsize_];
-        for (size_t i = 0; i < histsize_; i++)
+        for (std::size_t i = 0; i < histsize_; i++)
           history_[i] = src.history_[i];
         return (*this);
       }
@@ -222,7 +222,7 @@ namespace pcl
       bool downsample_all_data_;
 
       /** \brief history buffer size, power of 2 */
-      size_t histsize_;
+      std::size_t histsize_;
 
       /** \brief history buffer */
       struct he* history_;
@@ -238,7 +238,7 @@ namespace pcl
       /** \brief Write a single point from the hash to the output cloud
         */
       void 
-      flush (PointCloud &output, size_t op, he *hhe, int rgba_index, int centroid_size);
+      flush (PointCloud &output, std::size_t op, he *hhe, int rgba_index, int centroid_size);
   };
 }
 

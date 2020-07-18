@@ -36,6 +36,9 @@
  *
  */
 
+#include <algorithm>
+#include <numeric>
+
 #include <pcl/impl/pcl_base.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -43,9 +46,9 @@ pcl::PCLBase<pcl::PCLPointCloud2>::PCLBase ()
   : use_indices_ (false)
   , fake_indices_ (false)
   , field_sizes_ (0)
-  , x_idx_ (-1)
-  , y_idx_ (-1)
-  , z_idx_ (-1)
+  , x_idx_ (UNAVAILABLE)
+  , y_idx_ (UNAVAILABLE)
+  , z_idx_ (UNAVAILABLE)
   , x_field_name_ ("x")
   , y_field_name_ ("y")
   , z_field_name_ ("z")
@@ -58,7 +61,7 @@ pcl::PCLBase<pcl::PCLPointCloud2>::setInputCloud (const PCLPointCloud2ConstPtr &
 {
   input_ = cloud;
 
-  for (int d = 0; d < static_cast<int>(cloud->fields.size ()); ++d)
+  for (std::size_t d = 0; d < cloud->fields.size (); ++d)
   {
     if (cloud->fields[d].name == x_field_name_)
       x_idx_ = d;
@@ -68,50 +71,36 @@ pcl::PCLBase<pcl::PCLPointCloud2>::setInputCloud (const PCLPointCloud2ConstPtr &
       z_idx_ = d;
   }
 
-  // Obtain the size of all fields. Restrict to sizeof FLOAT32 for now
-  field_sizes_.resize (input_->fields.size ());
-  for (size_t d = 0; d < input_->fields.size (); ++d)
+  // Obtain the size of datatype
+  const auto sizeofDatatype = [](const auto& datatype) -> int
   {
-    int fsize;
-    switch (input_->fields[d].datatype)
+    switch (datatype)
     {
       case pcl::PCLPointField::INT8:
-      case pcl::PCLPointField::UINT8:
-      {
-        fsize = 1;
-        break;
-      }
+      case pcl::PCLPointField::UINT8: return 1;
 
       case pcl::PCLPointField::INT16:
-      case pcl::PCLPointField::UINT16:
-      {
-        fsize = 2;
-        break;
-      }
+      case pcl::PCLPointField::UINT16: return 2;
 
       case pcl::PCLPointField::INT32:
       case pcl::PCLPointField::UINT32:
-      case pcl::PCLPointField::FLOAT32:
-      {
-        fsize = 4;
-        break;
-      }
+      case pcl::PCLPointField::FLOAT32: return 4;
 
-      case pcl::PCLPointField::FLOAT64:
-      {
-        fsize = 8;
-        break;
-      }
+      case pcl::PCLPointField::FLOAT64: return 8;
 
       default:
-      {
-        PCL_ERROR ("[PCLBase::setInputCloud] Invalid field type (%d)!\n", input_->fields[d].datatype);
-        fsize = 0;
-        break;
-      }
+        PCL_ERROR("[PCLBase::setInputCloud] Invalid field type (%d)!\n", datatype);
+        return 0;
     }
-    field_sizes_[d] = (std::min) (fsize, static_cast<int>(sizeof (float)));
-  }
+  };
+
+  // Restrict size of a field to be at-max sizeof(FLOAT32) for now
+  field_sizes_.resize(input_->fields.size());
+  std::transform(input_->fields.begin(), input_->fields.end(), field_sizes_.begin(),
+                 [&sizeofDatatype](const auto& field)
+                 {
+                   return std::min(sizeofDatatype(field.datatype), static_cast<int>(sizeof(float)));
+                 });
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -133,7 +122,13 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
   if (!indices_)
   {
     fake_indices_ = true;
-    indices_.reset (new std::vector<int>);
+    indices_.reset (new Indices);
+  }
+
+  // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
+  if (fake_indices_ && indices_->size () != (input_->width * input_->height))
+  {
+    const auto indices_size = indices_->size ();
     try
     {
       indices_->resize (input_->width * input_->height);
@@ -142,14 +137,8 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
     {
       PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", (input_->width * input_->height));
     }
-    for (size_t i = 0; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
-  }
-  // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
-  if (fake_indices_ && indices_->size () != (input_->width * input_->height))
-  {
-    size_t indices_size = indices_->size ();
-    indices_->resize (input_->width * input_->height);
-    for (size_t i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
+    if (indices_size < indices_->size ())
+      std::iota(indices_->begin () + indices_size, indices_->end (), indices_size);
   }
 
   return (true);
@@ -168,7 +157,7 @@ pcl::PCLBase<pcl::PCLPointCloud2>::setIndices (const IndicesPtr &indices)
 void
 pcl::PCLBase<pcl::PCLPointCloud2>::setIndices (const PointIndicesConstPtr &indices)
 {
-  indices_.reset (new std::vector<int> (indices->indices));
+  indices_.reset (new Indices(indices->indices));
   fake_indices_ = false;
   use_indices_  = true;
 }

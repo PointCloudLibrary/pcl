@@ -96,7 +96,8 @@ namespace pcl
         using Hypotheses = typename SampleConsensusModel<Storage>::Hypotheses;
         using Samples = typename SampleConsensusModel<Storage>::Samples;
 
-        using Ptr = boost::shared_ptr<SampleConsensusModelPlane>;
+        using Ptr = shared_ptr<SampleConsensusModelPlane>;
+        using ConstPtr = shared_ptr<const SampleConsensusModelPlane>;
 
         /** \brief Constructor for base SampleConsensusModelPlane.
           * \param cloud the input point cloud dataset
@@ -132,7 +133,7 @@ namespace pcl
         virtual bool 
         generateModelHypotheses (Hypotheses &h, Samples &s, int max_iterations)
         {
-          // TODO: hack.. Samples should be vector<int>, not int..
+          // TODO: hack.. Samples should be std::vector<int>, not int..
           return generateModelHypotheses (h, max_iterations);
         };
 

@@ -33,7 +33,6 @@
 #include <PS1080.h> // For XN_STREAM_PROPERTY_EMITTER_DCMOS_DISTANCE property
 
 #include <boost/algorithm/string/replace.hpp>
-#include <boost/chrono.hpp>
 
 #include "pcl/io/openni2/openni2_device.h"
 #include "pcl/io/openni2/openni2_convert.h"
@@ -48,8 +47,6 @@ using namespace pcl::io::openni2;
 
 using openni::VideoMode;
 using std::vector;
-
-using hr_clock = boost::chrono::high_resolution_clock;
 
 pcl::io::openni2::OpenNI2Device::OpenNI2Device (const std::string& device_URI) :
   ir_video_started_(false),
@@ -139,13 +136,13 @@ pcl::io::openni2::OpenNI2Device::getName () const
   return (std::string (device_info_->getName ()));
 }
 
-uint16_t
+std::uint16_t
 pcl::io::openni2::OpenNI2Device::getUsbVendorId () const
 {
   return (device_info_->getUsbVendorId ());
 }
 
-uint16_t
+std::uint16_t
 pcl::io::openni2::OpenNI2Device::getUsbProductId () const
 {
   return (device_info_->getUsbProductId ());
@@ -208,7 +205,7 @@ pcl::io::openni2::OpenNI2Device::getBaseline()
   return (baseline_);
 }
 
-uint64_t
+std::uint64_t
 pcl::io::openni2::OpenNI2Device::getShadowValue()
 {
   return (shadow_value_);
@@ -498,7 +495,7 @@ OpenNI2VideoMode
 pcl::io::openni2::OpenNI2Device::getDefaultIRMode () const
 {
   // Search for and return VGA@30 Hz mode
-  vector<OpenNI2VideoMode> modeList = getSupportedIRVideoModes ();
+  std::vector<OpenNI2VideoMode> modeList = getSupportedIRVideoModes ();
   for (const auto &mode : modeList)
   {
     if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
@@ -511,7 +508,7 @@ OpenNI2VideoMode
 pcl::io::openni2::OpenNI2Device::getDefaultColorMode () const
 {
   // Search for and return VGA@30 Hz mode
-  vector<OpenNI2VideoMode> modeList = getSupportedColorVideoModes ();
+  std::vector<OpenNI2VideoMode> modeList = getSupportedColorVideoModes ();
   for (const auto &mode : modeList)
   {
     if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
@@ -524,7 +521,7 @@ OpenNI2VideoMode
 pcl::io::openni2::OpenNI2Device::getDefaultDepthMode () const
 {
   // Search for and return VGA@30 Hz mode
-  vector<OpenNI2VideoMode> modeList = getSupportedDepthVideoModes ();
+  std::vector<OpenNI2VideoMode> modeList = getSupportedDepthVideoModes ();
   for (const auto &mode : modeList)
   {
     if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
@@ -619,7 +616,7 @@ pcl::io::openni2::OpenNI2Device::findCompatibleDepthMode (const OpenNI2VideoMode
 
 // Generic support method for the above findCompatable...Mode calls above
 bool
-pcl::io::openni2::OpenNI2Device::findCompatibleVideoMode (const std::vector<OpenNI2VideoMode> supportedModes, const OpenNI2VideoMode& requested_mode, OpenNI2VideoMode& actual_mode) const
+pcl::io::openni2::OpenNI2Device::findCompatibleVideoMode (const std::vector<OpenNI2VideoMode>& supportedModes, const OpenNI2VideoMode& requested_mode, OpenNI2VideoMode& actual_mode) const
 {
   bool found = false;
   for (const auto &supportedMode : supportedModes)
@@ -643,7 +640,7 @@ pcl::io::openni2::OpenNI2Device::findCompatibleVideoMode (const std::vector<Open
 }
 
 bool
-pcl::io::openni2::OpenNI2Device::resizingSupported (size_t input_width, size_t input_height, size_t output_width, size_t output_height) const
+pcl::io::openni2::OpenNI2Device::resizingSupported (std::size_t input_width, std::size_t input_height, std::size_t output_width, std::size_t output_height) const
 {
   return (output_width <= input_width && output_height <= input_height && input_width % output_width == 0 && input_height % output_height == 0 );
 }
@@ -741,7 +738,7 @@ bool OpenNI2Device::setPlaybackSpeed (double speed)
     return openni_device_->getPlaybackControl ()->setSpeed (speed) == openni::STATUS_OK;
 }
 
-boost::shared_ptr<openni::VideoStream>
+std::shared_ptr<openni::VideoStream>
 pcl::io::openni2::OpenNI2Device::getIRVideoStream () const
 {
   if (ir_video_stream_.get () == nullptr)
@@ -758,7 +755,7 @@ pcl::io::openni2::OpenNI2Device::getIRVideoStream () const
   return (ir_video_stream_);
 }
 
-boost::shared_ptr<openni::VideoStream>
+std::shared_ptr<openni::VideoStream>
 pcl::io::openni2::OpenNI2Device::getColorVideoStream () const
 {
   if (color_video_stream_.get () == nullptr)
@@ -775,7 +772,7 @@ pcl::io::openni2::OpenNI2Device::getColorVideoStream () const
   return (color_video_stream_);
 }
 
-boost::shared_ptr<openni::VideoStream>
+std::shared_ptr<openni::VideoStream>
 pcl::io::openni2::OpenNI2Device::getDepthVideoStream () const
 {
   if (depth_video_stream_.get () == nullptr)
@@ -847,17 +844,17 @@ std::ostream& pcl::io::openni2::operator<< (std::ostream& stream, const OpenNI2D
 void
 pcl::io::openni2::OpenNI2Device::setColorCallback (StreamCallbackFunction color_callback)
 {
-  color_frame_listener->setCallback (color_callback);
+  color_frame_listener->setCallback (std::move(color_callback));
 }
 
 void
 pcl::io::openni2::OpenNI2Device::setDepthCallback (StreamCallbackFunction depth_callback)
 {
-  depth_frame_listener->setCallback (depth_callback);
+  depth_frame_listener->setCallback (std::move(depth_callback));
 }
 
 void
 pcl::io::openni2::OpenNI2Device::setIRCallback (StreamCallbackFunction ir_callback)
 {
-  ir_frame_listener->setCallback (ir_callback);
+  ir_frame_listener->setCallback (std::move(ir_callback));
 }

@@ -42,6 +42,7 @@
 
 #include <pcl/sample_consensus/sac_model_normal_plane.h>
 #include <pcl/sample_consensus/model_types.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl
@@ -51,7 +52,8 @@ namespace pcl
     * this means that checking for inliers will not only involve a "distance to
     * model" criterion, but also an additional "maximum angular deviation"
     * between the plane's normal and the inlier points normals. In addition,
-    * the plane normal must lie parallel to an user-specified axis.
+    * the plane <b>normal</b> must lie parallel to a user-specified axis.
+    * This means that the plane itself will lie perpendicular to that axis, similar to \link pcl::SampleConsensusModelPerpendicularPlane SACMODEL_PERPENDICULAR_PLANE \endlink.
     *
     * The model coefficients are defined as:
     *   - \b a : the X coordinate of the plane's normal (normalized)
@@ -98,7 +100,8 @@ namespace pcl
       using PointCloudNPtr = typename SampleConsensusModelFromNormals<PointT, PointNT>::PointCloudNPtr;
       using PointCloudNConstPtr = typename SampleConsensusModelFromNormals<PointT, PointNT>::PointCloudNConstPtr;
 
-      using Ptr = boost::shared_ptr<SampleConsensusModelNormalParallelPlane<PointT, PointNT> >;
+      using Ptr = shared_ptr<SampleConsensusModelNormalParallelPlane<PointT, PointNT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelNormalParallelPlane<PointT, PointNT>>;
 
       /** \brief Constructor for base SampleConsensusModelNormalParallelPlane.
         * \param[in] cloud the input point cloud dataset
@@ -124,7 +127,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelNormalParallelPlane (const PointCloudConstPtr &cloud, 
-                                               const std::vector<int> &indices,
+                                               const Indices &indices,
                                                bool random = false) 
         : SampleConsensusModelNormalPlane<PointT, PointNT> (cloud, indices, random)
         , axis_ (Eigen::Vector4f::Zero ())
@@ -156,7 +159,7 @@ namespace pcl
         * \note You need to specify an angle > 0 in order to activate the axis-angle constraint!
         */
       inline void
-      setEpsAngle (const double ea) { eps_angle_ = ea; cos_angle_ = fabs (cos (ea));}
+      setEpsAngle (const double ea) { eps_angle_ = ea; cos_angle_ = std::abs (std::cos (ea));}
 
       /** \brief Get the angle epsilon (delta) threshold. */
       inline double
@@ -182,7 +185,7 @@ namespace pcl
       inline double
       getEpsDist () const { return (eps_dist_); }
 
-      /** \brief Return an unique id for this model (SACMODEL_NORMAL_PARALLEL_PLANE). */
+      /** \brief Return a unique id for this model (SACMODEL_NORMAL_PARALLEL_PLANE). */
       inline pcl::SacModel
       getModelType () const override { return (SACMODEL_NORMAL_PARALLEL_PLANE); }
 

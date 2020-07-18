@@ -40,9 +40,11 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/common/time.h>
+#include <pcl/features/integral_image_normal.h>
 #include <pcl/apps/in_hand_scanner/common_types.h>
 #include <pcl/apps/in_hand_scanner/boost.h>
 #include <pcl/apps/in_hand_scanner/eigen.h>
@@ -58,9 +60,6 @@
 
 namespace pcl
 {
-  template <class PointInT, class PointOutT>
-  class IntegralImageNormalEstimation;
-
   namespace ihs
   {
     class Integration;
@@ -122,12 +121,12 @@ namespace pcl
         using MeshConstPtr = pcl::ihs::MeshConstPtr;
 
         using Integration = pcl::ihs::Integration;
-        using IntegrationPtr = boost::shared_ptr<Integration>;
-        using IntegrationConstPtr = boost::shared_ptr<const Integration>;
+        using IntegrationPtr = std::shared_ptr<Integration>;
+        using IntegrationConstPtr = std::shared_ptr<const Integration>;
 
         using NormalEstimation = pcl::IntegralImageNormalEstimation <PointXYZRGBA, PointXYZRGBNormal>;
-        using NormalEstimationPtr = boost::shared_ptr<NormalEstimation>;
-        using NormalEstimationConstPtr = boost::shared_ptr<const NormalEstimation>;
+        using NormalEstimationPtr = NormalEstimation::Ptr;
+        using NormalEstimationConstPtr = NormalEstimation::ConstPtr;
 
         /** \brief Helper object for the computation thread. Please have a look at the documentation of calcFPS. */
         class ComputationFPS : public Base::FPS
@@ -153,8 +152,8 @@ namespace pcl
           * \return True if success.
           */
         bool
-        getFilesFromDirectory (const std::string          path_dir,
-                               const std::string          extension,
+        getFilesFromDirectory (const std::string&          path_dir,
+                               const std::string&          extension,
                                std::vector <std::string>& files) const;
 
         /** \brief Load the transformation matrix from the given file.

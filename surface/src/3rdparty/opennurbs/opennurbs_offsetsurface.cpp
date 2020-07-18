@@ -125,7 +125,7 @@ const ON_Surface* ON_OffsetSurface::BaseSurface() const
 ON_BOOL32 ON_OffsetSurface::GetBBox(
        double* bbox_min,
        double* bbox_max,
-       ON_BOOL32 bGrowBox
+       ON_BOOL32
        ) const
 {
   ON_BOOL32 rc = ON_SurfaceProxy::GetBBox(bbox_min,bbox_max);

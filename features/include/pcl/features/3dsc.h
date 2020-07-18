@@ -73,8 +73,8 @@ namespace pcl
   class ShapeContext3DEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<ShapeContext3DEstimation<PointInT, PointNT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const ShapeContext3DEstimation<PointInT, PointNT, PointOutT> >;
+      using Ptr = shared_ptr<ShapeContext3DEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = shared_ptr<const ShapeContext3DEstimation<PointInT, PointNT, PointOutT> >;
 
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
@@ -122,24 +122,24 @@ namespace pcl
       ~ShapeContext3DEstimation() {}
 
       //inline void
-      //setAzimuthBins (size_t bins) { azimuth_bins_ = bins; }
+      //setAzimuthBins (std::size_t bins) { azimuth_bins_ = bins; }
 
       /** \return the number of bins along the azimuth */
-      inline size_t
+      inline std::size_t
       getAzimuthBins () { return (azimuth_bins_); }
 
       //inline void
-      //setElevationBins (size_t bins) { elevation_bins_ = bins; }
+      //setElevationBins (std::size_t bins) { elevation_bins_ = bins; }
 
       /** \return The number of bins along the elevation */
-      inline size_t
+      inline std::size_t
       getElevationBins () { return (elevation_bins_); }
 
       //inline void
-      //setRadiusBins (size_t bins) { radius_bins_ = bins; }
+      //setRadiusBins (std::size_t bins) { radius_bins_ = bins; }
 
       /** \return The number of bins along the radii direction */
-      inline size_t
+      inline std::size_t
       getRadiusBins () { return (radius_bins_); }
 
       /** \brief The minimal radius value for the search sphere (rmin) in the original paper
@@ -177,7 +177,7 @@ namespace pcl
         * (e.g. the nearest neighbor didn't return any neighbors)
         */
       bool
-      computePoint (size_t index, const pcl::PointCloud<PointNT> &normals, float rf[9], std::vector<float> &desc);
+      computePoint (std::size_t index, const pcl::PointCloud<PointNT> &normals, float rf[9], std::vector<float> &desc);
 
       /** \brief Estimate the actual feature.
         * \param[out] output the resultant feature
@@ -198,13 +198,13 @@ namespace pcl
       std::vector<float> volume_lut_;
 
       /** \brief Bins along the azimuth dimension */
-      size_t azimuth_bins_;
+      std::size_t azimuth_bins_;
 
       /** \brief Bins along the elevation dimension */
-      size_t elevation_bins_;
+      std::size_t elevation_bins_;
 
       /** \brief Bins along the radius dimension */
-      size_t radius_bins_;
+      std::size_t radius_bins_;
 
       /** \brief Minimal radius value */
       double min_radius_;
@@ -213,7 +213,7 @@ namespace pcl
       double point_density_radius_;
 
       /** \brief Descriptor length */
-      size_t descriptor_length_;
+      std::size_t descriptor_length_;
 
       /** \brief Random number generator algorithm. */
       std::mt19937 rng_;
@@ -227,7 +227,7 @@ namespace pcl
        *  shifted descriptor resized descriptor_length_ * azimuth_bins_
        */
       //void
-      //shiftAlongAzimuth (size_t block_size, std::vector<float>& desc);
+      //shiftAlongAzimuth (std::size_t block_size, std::vector<float>& desc);
 
       /** \brief Boost-based random number generator. */
       inline float

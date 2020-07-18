@@ -58,11 +58,10 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
   double d_best_penalty = std::numeric_limits<double>::max();
   double k = 1.0;
 
-  std::vector<int> best_model;
-  std::vector<int> selection;
+  Indices selection;
   Eigen::VectorXf model_coefficients;
   std::vector<double> distances;
-  std::set<int> indices_subset;
+  std::set<index_t> indices_subset;
 
   int n_inliers_count = 0;
   unsigned skipped_count = 0;
@@ -70,7 +69,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
   const unsigned max_skip = max_iterations_ * 10;
   
   // Number of samples to try randomly
-  size_t fraction_nr_points = pcl_lrint (static_cast<double>(sac_model_->getIndices ()->size ()) * fraction_nr_pretest_ / 100.0);
+  std::size_t fraction_nr_points = pcl_lrint (static_cast<double>(sac_model_->getIndices ()->size ()) * fraction_nr_pretest_ / 100.0);
 
   // Iterate
   while (iterations_ < k && skipped_count < max_skip)
@@ -127,17 +126,17 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
         if (distance <= threshold_)
           n_inliers_count++;
 
-      // Compute the k parameter (k=log(z)/log(1-w^n))
+      // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
       double w = static_cast<double> (n_inliers_count) / static_cast<double>(sac_model_->getIndices ()->size ());
-      double p_no_outliers = 1 - pow (w, static_cast<double> (selection.size ()));
+      double p_no_outliers = 1 - std::pow (w, static_cast<double> (selection.size ()));
       p_no_outliers = (std::max) (std::numeric_limits<double>::epsilon (), p_no_outliers);       // Avoid division by -Inf
       p_no_outliers = (std::min) (1 - std::numeric_limits<double>::epsilon (), p_no_outliers);   // Avoid division by 0.
-      k = log (1 - probability_) / log (p_no_outliers);
+      k = std::log (1 - probability_) / std::log (p_no_outliers);
     }
 
     ++iterations_;
     if (debug_verbosity_level > 1)
-      PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] Trial %d out of %d. Best penalty is %f.\n", iterations_, static_cast<int> (ceil (k)), d_best_penalty);
+      PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] Trial %d out of %d. Best penalty is %f.\n", iterations_, static_cast<int> (std::ceil (k)), d_best_penalty);
     if (iterations_ > max_iterations_)
     {
       if (debug_verbosity_level > 0)
@@ -155,7 +154,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
 
   // Iterate through the 3d points and calculate the distances from them to the model again
   sac_model_->getDistancesToModel (model_coefficients_, distances);
-  std::vector<int> &indices = *sac_model_->getIndices ();
+  Indices &indices = *sac_model_->getIndices ();
   if (distances.size () != indices.size ())
   {
     PCL_ERROR ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] Estimated distances (%lu) differs than the normal of indices (%lu).\n", distances.size (), indices.size ());
@@ -165,7 +164,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
   inliers_.resize (distances.size ());
   // Get the inliers for the best model found
   n_inliers_count = 0;
-  for (size_t i = 0; i < distances.size (); ++i)
+  for (std::size_t i = 0; i < distances.size (); ++i)
     if (distances[i] <= threshold_)
       inliers_[n_inliers_count++] = indices[i];
 

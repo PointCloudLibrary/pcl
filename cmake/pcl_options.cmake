@@ -42,6 +42,14 @@ mark_as_advanced(PCL_NO_PRECOMPILE)
 option(PCL_ENABLE_SSE "Enable or Disable SSE optimizations." ON)
 mark_as_advanced(PCL_ENABLE_SSE)
 
+# Allow the user to enable compiler cache
+option(PCL_ENABLE_CCACHE "Enable using compiler cache for compilation" OFF)
+mark_as_advanced(PCL_ENABLE_CCACHE)
+
+# Treat compiler warnings as errors
+option(PCL_WARNINGS_ARE_ERRORS "Treat warnings as errors" OFF)
+mark_as_advanced(PCL_WARNINGS_ARE_ERRORS)
+
 # Display timing information for each compiler instance on screen
 option(CMAKE_TIMING_VERBOSE "Enable the display of timing information for each compiler instance." OFF)
 mark_as_advanced(CMAKE_TIMING_VERBOSE)
@@ -56,3 +64,15 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(BUILD_tools "Useful PCL-based command line tools" ON)
 
 option(WITH_DOCS "Build doxygen documentation" OFF)
+
+# set index size
+set(PCL_INDEX_SIZE -1 CACHE STRING "Set index size. Available options are: 8 16 32 64. A negative value indicates default size (32 for PCL >= 1.12, 8*sizeof(int) i.e., the number of bits in int, otherwise)")
+set_property(CACHE PCL_INDEX_SIZE PROPERTY STRINGS -1 8 16 32 64)
+
+#set whether indices are signed or unsigned
+set(PCL_INDEX_SIGNED true CACHE BOOL "Set whether indices need to be signed or unsigned. Signed by default.")
+if (PCL_INDEX_SIGNED)
+  set(PCL_INDEX_SIGNED_STR "true")
+else()
+  set (PCL_INDEX_SIGNED_STR "false")
+endif()

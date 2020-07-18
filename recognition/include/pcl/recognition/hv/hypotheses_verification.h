@@ -246,7 +246,7 @@ namespace pcl
           zbuffer_scene.computeDepthMap (occlusion_cloud_, true);
         }
 
-        for (size_t i = 0; i < models.size (); i++)
+        for (std::size_t i = 0; i < models.size (); i++)
         {
 
           //self-occlusions

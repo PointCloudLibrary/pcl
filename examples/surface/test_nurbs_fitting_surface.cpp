@@ -1,6 +1,4 @@
 #include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-#include <pcl/common/io.h>
 
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/surface/on_nurbs/fitting_surface_tdm.h>
@@ -18,7 +16,7 @@ CreateCylinderPoints (pcl::PointCloud<Point>::Ptr cloud, pcl::on_nurbs::vector_v
     double dh = h * (double (rand ()) / RAND_MAX - 0.5);
 
     Point p;
-    p.x = float (r * cos (da));
+    p.x = float (r * std::cos (da));
     p.y = float (r * sin (da));
     p.z = float (dh);
 

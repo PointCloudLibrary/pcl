@@ -64,20 +64,20 @@ namespace openni_wrapper
       generateLookupTable ()
       {
         // lookup of 11 bit shift values
-        constexpr size_t table_size = 1 << 10;
+        constexpr std::size_t table_size = 1 << 10;
 
         lookupTable_.clear();
         lookupTable_.resize(table_size);
 
         // constants taken from openni driver
-        constexpr int16_t nConstShift = 800;
+        constexpr std::int16_t nConstShift = 800;
         constexpr double nParamCoeff = 4.000000;
         constexpr double dPlanePixelSize = 0.104200;
         constexpr double nShiftScale = 10.000000;
         constexpr double dPlaneDsr = 120.000000;
         constexpr double dPlaneDcl = 7.500000;
 
-        for (size_t i=0; i<table_size; ++i)
+        for (std::size_t i=0; i<table_size; ++i)
         {
           // shift to depth calculation from opnni
           double dFixedRefX = (static_cast<double>(i - nConstShift) / nParamCoeff)-0.375;
@@ -91,7 +91,7 @@ namespace openni_wrapper
       /** \brief Generate a look-up table for converting openni shift values to depth
          */
       inline float
-      shiftToDepth (uint16_t shift_val)
+      shiftToDepth (std::uint16_t shift_val)
       {
         assert (init_);
 

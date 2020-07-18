@@ -77,7 +77,8 @@ namespace pcl
       using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
       using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
 
-      using Ptr = boost::shared_ptr<SampleConsensusModelCylinder<PointT, PointNT> >;
+      using Ptr = shared_ptr<SampleConsensusModelCylinder<PointT, PointNT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelCylinder<PointT, PointNT>>;
 
       /** \brief Constructor for base SampleConsensusModelCylinder.
         * \param[in] cloud the input point cloud dataset
@@ -100,7 +101,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelCylinder (const PointCloudConstPtr &cloud, 
-                                    const std::vector<int> &indices,
+                                    const Indices &indices,
                                     bool random = false) 
         : SampleConsensusModel<PointT> (cloud, indices, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
@@ -168,7 +169,7 @@ namespace pcl
         * \param[out] model_coefficients the resultant model coefficients
         */
       bool
-      computeModelCoefficients (const std::vector<int> &samples,
+      computeModelCoefficients (const Indices &samples,
                                 Eigen::VectorXf &model_coefficients) const override;
 
       /** \brief Compute all distances from the cloud data to a given cylinder model.
@@ -187,7 +188,7 @@ namespace pcl
       void 
       selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
                             const double threshold, 
-                            std::vector<int> &inliers) override;
+                            Indices &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers. 
         * 
@@ -195,7 +196,7 @@ namespace pcl
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      int
+      std::size_t
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
                            const double threshold) const override;
 
@@ -206,7 +207,7 @@ namespace pcl
         * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization
         */
       void
-      optimizeModelCoefficients (const std::vector<int> &inliers,
+      optimizeModelCoefficients (const Indices &inliers,
                                  const Eigen::VectorXf &model_coefficients,
                                  Eigen::VectorXf &optimized_coefficients) const override;
 
@@ -218,7 +219,7 @@ namespace pcl
         * \param[in] copy_data_fields set to true if we need to copy the other data fields
         */
       void
-      projectPoints (const std::vector<int> &inliers,
+      projectPoints (const Indices &inliers,
                      const Eigen::VectorXf &model_coefficients,
                      PointCloud &projected_points,
                      bool copy_data_fields = true) const override;
@@ -229,11 +230,11 @@ namespace pcl
         * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         */
       bool
-      doSamplesVerifyModel (const std::set<int> &indices,
+      doSamplesVerifyModel (const std::set<index_t> &indices,
                             const Eigen::VectorXf &model_coefficients,
                             const double threshold) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_CYLINDER). */
+      /** \brief Return a unique id for this model (SACMODEL_CYLINDER). */
       inline pcl::SacModel 
       getModelType () const override { return (SACMODEL_CYLINDER); }
 
@@ -287,13 +288,13 @@ namespace pcl
         * \param[in] samples the resultant index samples
         */
       bool
-      isSampleGood (const std::vector<int> &samples) const override;
+      isSampleGood (const Indices &samples) const override;
 
     private:
-      /** \brief The axis along which we need to search for a plane perpendicular to. */
+      /** \brief The axis along which we need to search for a cylinder direction. */
       Eigen::Vector3f axis_;
     
-      /** \brief The maximum allowed difference between the plane normal and the given axis. */
+      /** \brief The maximum allowed difference between the cylinder direction and the given axis. */
       double eps_angle_;
 
       /** \brief Functor for the optimization function */
@@ -303,7 +304,7 @@ namespace pcl
           * \param[in] indices the indices of data points to evaluate
           * \param[in] estimator pointer to the estimator object
           */
-        OptimizationFunctor (const pcl::SampleConsensusModelCylinder<PointT, PointNT> *model, const std::vector<int>& indices) :
+        OptimizationFunctor (const pcl::SampleConsensusModelCylinder<PointT, PointNT> *model, const Indices& indices) :
           pcl::Functor<float> (indices.size ()), model_ (model), indices_ (indices) {}
 
         /** Cost function to be minimized
@@ -320,9 +321,8 @@ namespace pcl
           for (int i = 0; i < values (); ++i)
           {
             // dist = f - r
-            Eigen::Vector4f pt (model_->input_->points[indices_[i]].x,
-                                model_->input_->points[indices_[i]].y,
-                                model_->input_->points[indices_[i]].z, 0);
+            Eigen::Vector4f pt = (*model_->input_)[indices_[i]].getVector4fMap();
+            pt[3] = 0;
 
             fvec[i] = static_cast<float> (pcl::sqrPointToLineDistance (pt, line_pt, line_dir) - x[6]*x[6]);
           }
@@ -330,7 +330,7 @@ namespace pcl
         }
 
         const pcl::SampleConsensusModelCylinder<PointT, PointNT> *model_;
-        const std::vector<int> &indices_;
+        const Indices &indices_;
       };
   };
 }

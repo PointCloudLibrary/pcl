@@ -38,11 +38,11 @@
 
 #pragma once
 
-#include <pcl/pcl_config.h>
+#include <chrono>
 
+#include <pcl/pcl_config.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/io/boost.h>
-#include <boost/chrono.hpp>
 
 #include<pcl/io/image_metadata_wrapper.h>
 
@@ -55,11 +55,11 @@ namespace pcl
     class PCL_EXPORTS DepthImage
     {
       public:
-        using Ptr = boost::shared_ptr<DepthImage>;
-        using ConstPtr = boost::shared_ptr<const DepthImage>;
+        using Ptr = shared_ptr<DepthImage>;
+        using ConstPtr = shared_ptr<const DepthImage>;
 
-        using Clock = boost::chrono::high_resolution_clock;
-        using Timestamp = boost::chrono::high_resolution_clock::time_point;
+        using Clock = std::chrono::high_resolution_clock;
+        using Timestamp = std::chrono::high_resolution_clock::time_point;
 
         /** \brief Constructor
           * \param[in] depth_metadata the actual data from the OpenNI library
@@ -70,8 +70,8 @@ namespace pcl
           * \param[in] no_sample_value defines which values in the depth data are indicating that no depth (disparity) could be determined .
           * \attention The focal length may change, depending whether the depth stream is registered/mapped to the RGB stream or not.
           */
-        DepthImage (FrameWrapper::Ptr depth_metadata, float baseline, float focal_length, pcl::uint64_t shadow_value, pcl::uint64_t no_sample_value);
-        DepthImage (FrameWrapper::Ptr depth_metadata, float baseline, float focal_length, pcl::uint64_t shadow_value, pcl::uint64_t no_sample_value, Timestamp time);
+        DepthImage (FrameWrapper::Ptr depth_metadata, float baseline, float focal_length, std::uint64_t shadow_value, std::uint64_t no_sample_value);
+        DepthImage (FrameWrapper::Ptr depth_metadata, float baseline, float focal_length, std::uint64_t shadow_value, std::uint64_t no_sample_value, Timestamp time);
 
         /** \brief Destructor. Never throws an exception. */
         ~DepthImage ();
@@ -127,13 +127,13 @@ namespace pcl
         /** \brief method to access the shadow value, that indicates pixels lying in shadow in the depth image.
           * \return shadow value
           */
-        pcl::uint64_t
+        std::uint64_t
         getShadowValue () const;
 
         /** \brief method to access the no-sample value, that indicates pixels where no disparity could be determined for the depth image.
           * \return no-sample value
           */
-        pcl::uint64_t
+        std::uint64_t
         getNoSampleValue () const;
 
         /** \return the width of the depth image */
@@ -154,7 +154,7 @@ namespace pcl
           * \attention its not the system time, thus can not be used directly to synchronize different sensors.
           *            But definitely synchronized with other streams
           */
-        pcl::uint64_t
+        std::uint64_t
         getTimestamp () const;
 
         Timestamp
@@ -180,8 +180,8 @@ namespace pcl
 
         float baseline_;
         float focal_length_;
-        pcl::uint64_t shadow_value_;
-        pcl::uint64_t no_sample_value_;
+        std::uint64_t shadow_value_;
+        std::uint64_t no_sample_value_;
         Timestamp timestamp_;
     };
 

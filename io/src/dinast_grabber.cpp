@@ -40,8 +40,6 @@
 #include <pcl/pcl_config.h>
 #include <pcl/io/dinast_grabber.h>
 
-using namespace std;
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::DinastGrabber::DinastGrabber (const int device_position)
   : image_width_ (320)
@@ -62,7 +60,7 @@ pcl::DinastGrabber::DinastGrabber (const int device_position)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::DinastGrabber::~DinastGrabber () throw ()
+pcl::DinastGrabber::~DinastGrabber () noexcept
 {
   try
   {
@@ -330,28 +328,28 @@ pcl::DinastGrabber::getXYZIPointCloud ()
       if (pixel > A)
         pixel = A;
       double dy = y*0.1;
-      double dist = (log (static_cast<double> (pixel / A)) / B - dy) * (7E-07*r3 - 0.0001*r2 + 0.004*r1 + 0.9985) * 1.5;
+      double dist = (std::log (static_cast<double> (pixel / A)) / B - dy) * (7E-07*r3 - 0.0001*r2 + 0.004*r1 + 0.9985) * 1.5;
       double theta_colati = fov_ * r1 * dist_max_2d_;
-      double c_theta = cos (theta_colati);
+      double c_theta = std::cos (theta_colati);
       double s_theta = sin (theta_colati);
       double c_ksai = static_cast<double> (x - 160) / r1;
       double s_ksai = static_cast<double> (y - 120) / r1;
-      cloud->points[depth_idx].x = static_cast<float> ((dist * s_theta * c_ksai) / 500.0 + 0.5);
-      cloud->points[depth_idx].y = static_cast<float> ((dist * s_theta * s_ksai) / 500.0 + 0.5);
-      cloud->points[depth_idx].z = static_cast<float> (dist * c_theta);
-      if (cloud->points[depth_idx].z < 0.01f)
-        cloud->points[depth_idx].z = 0.01f;
-      cloud->points[depth_idx].z /= 500.0f;
-      cloud->points[depth_idx].intensity = static_cast<float> (pixel);
+      (*cloud)[depth_idx].x = static_cast<float> ((dist * s_theta * c_ksai) / 500.0 + 0.5);
+      (*cloud)[depth_idx].y = static_cast<float> ((dist * s_theta * s_ksai) / 500.0 + 0.5);
+      (*cloud)[depth_idx].z = static_cast<float> (dist * c_theta);
+      if ((*cloud)[depth_idx].z < 0.01f)
+        (*cloud)[depth_idx].z = 0.01f;
+      (*cloud)[depth_idx].z /= 500.0f;
+      (*cloud)[depth_idx].intensity = static_cast<float> (pixel);
 
       
       // Get rid of the noise
-      if(cloud->points[depth_idx].z > 0.8f || cloud->points[depth_idx].z < 0.02f)
+      if((*cloud)[depth_idx].z > 0.8f || (*cloud)[depth_idx].z < 0.02f)
       {
-        cloud->points[depth_idx].x = std::numeric_limits<float>::quiet_NaN ();
-      	cloud->points[depth_idx].y = std::numeric_limits<float>::quiet_NaN ();
-      	cloud->points[depth_idx].z = std::numeric_limits<float>::quiet_NaN ();
-        cloud->points[depth_idx].intensity = static_cast<float> (pixel);
+        (*cloud)[depth_idx].x = std::numeric_limits<float>::quiet_NaN ();
+      	(*cloud)[depth_idx].y = std::numeric_limits<float>::quiet_NaN ();
+      	(*cloud)[depth_idx].z = std::numeric_limits<float>::quiet_NaN ();
+        (*cloud)[depth_idx].intensity = static_cast<float> (pixel);
       }
     }
   }
@@ -367,15 +365,15 @@ pcl::DinastGrabber::USBRxControlData (const unsigned char req_code,
   // The direction of the transfer is inferred from the requesttype field of the setup packet.
   unsigned char requesttype = (LIBUSB_RECIPIENT_DEVICE | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_IN);
   // The value field for the setup packet
-  uint16_t value = 0x02;
+  std::uint16_t value = 0x02;
   // The index field for the setup packet
-  uint16_t index = 0x08;
+  std::uint16_t index = 0x08;
   // timeout (in ms) that this function should wait before giving up due to no response being received
   // For an unlimited timeout, use value 0.
-  uint16_t timeout = 1000;
+  std::uint16_t timeout = 1000;
   
   int nr_read = libusb_control_transfer (device_handle_, requesttype,
-                                         req_code, value, index, buffer, static_cast<uint16_t> (length), timeout);
+                                         req_code, value, index, buffer, static_cast<std::uint16_t> (length), timeout);
   if (nr_read != int(length))
     PCL_THROW_EXCEPTION (pcl::IOException, "[pcl::DinastGrabber::USBRxControlData] Control data error");
 
@@ -391,15 +389,15 @@ pcl::DinastGrabber::USBTxControlData (const unsigned char req_code,
   // The direction of the transfer is inferred from the requesttype field of the setup packet.
   unsigned char requesttype = (LIBUSB_RECIPIENT_DEVICE | LIBUSB_REQUEST_TYPE_VENDOR | LIBUSB_ENDPOINT_OUT);
   // The value field for the setup packet
-  uint16_t value = 0x01;
+  std::uint16_t value = 0x01;
   // The index field for the setup packet
-  uint16_t index = 0x00;
+  std::uint16_t index = 0x00;
   // timeout (in ms) that this function should wait before giving up due to no response being received
   // For an unlimited timeout, use value 0.
-  uint16_t timeout = 1000;
+  std::uint16_t timeout = 1000;
   
   int nr_read = libusb_control_transfer (device_handle_, requesttype,
-                                         req_code, value, index, buffer, static_cast<uint16_t> (length), timeout);
+                                         req_code, value, index, buffer, static_cast<std::uint16_t> (length), timeout);
   if (nr_read != int(length))
   {
     std::stringstream sstream;
@@ -421,7 +419,7 @@ pcl::DinastGrabber::checkHeader ()
 
   int data_ptr = -1;
 
-  for (size_t i = 0; i < g_buffer_.size (); ++i)
+  for (std::size_t i = 0; i < g_buffer_.size (); ++i)
   {
     if ((g_buffer_[i + 0] == 0xAA) && (g_buffer_[i + 1] == 0xAA) &&
         (g_buffer_[i + 2] == 0x44) && (g_buffer_[i + 3] == 0x44) &&

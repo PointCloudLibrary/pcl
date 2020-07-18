@@ -35,33 +35,17 @@
  *
  */
 
-// Stdlib
 #include <cstdlib>
-#include <cmath>
-#include <climits>
 #include <thread>
 
 #include <boost/format.hpp>
 
-
-// PCL input/output
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/point_cloud_color_handlers.h>
 
-//PCL other
-#include <pcl/filters/passthrough.h>
-#include <pcl/segmentation/supervoxel_clustering.h>
-
-// The segmentation class this example is for
 #include <pcl/segmentation/lccp_segmentation.h>
 
-// VTK
-#include <vtkImageReader2Factory.h>
-#include <vtkImageReader2.h>
-#include <vtkImageData.h>
-#include <vtkImageFlip.h>
 #include <vtkPolyLine.h>
 
 using namespace std::chrono_literals;
@@ -233,11 +217,11 @@ LCCPSegmentation Parameters: \n\
     if (outputname.empty () || (outputname.at (0) == '-'))
     {
       outputname = pcd_filename;
-      size_t sep = outputname.find_last_of ('/');
+      std::size_t sep = outputname.find_last_of ('/');
       if (sep != std::string::npos)
         outputname = outputname.substr (sep + 1, outputname.size () - sep - 1);
 
-      size_t dot = outputname.find_last_of ('.');
+      std::size_t dot = outputname.find_last_of ('.');
       if (dot != std::string::npos)
         outputname = outputname.substr (0, dot);
     }
@@ -258,7 +242,7 @@ LCCPSegmentation Parameters: \n\
   // LCCPSegmentation Stuff
   float concavity_tolerance_threshold = 10;
   float smoothness_threshold = 0.1;
-  uint32_t min_segment_size = 0;
+  std::uint32_t min_segment_size = 0;
   bool use_extended_convexity = false;
   bool use_sanity_criterion = false;
   
@@ -295,7 +279,7 @@ LCCPSegmentation Parameters: \n\
   super.setColorImportance (color_importance);
   super.setSpatialImportance (spatial_importance);
   super.setNormalImportance (normal_importance);
-  std::map<uint32_t, pcl::Supervoxel<PointT>::Ptr> supervoxel_clusters;
+  std::map<std::uint32_t, pcl::Supervoxel<PointT>::Ptr> supervoxel_clusters;
 
   PCL_INFO ("Extracting supervoxels\n");
   super.extract (supervoxel_clusters);
@@ -310,7 +294,7 @@ LCCPSegmentation Parameters: \n\
   PCL_INFO (temp.str ().c_str ());
 
   PCL_INFO ("Getting supervoxel adjacency\n");
-  std::multimap<uint32_t, uint32_t> supervoxel_adjacency;
+  std::multimap<std::uint32_t, std::uint32_t> supervoxel_adjacency;
   super.getSupervoxelAdjacency (supervoxel_adjacency);
 
   /// Get the cloud of supervoxel centroid with normals and the colored cloud with supervoxel coloring (this is used for visulization)
@@ -377,8 +361,6 @@ LCCPSegmentation Parameters: \n\
     using AdjacencyIterator = LCCPSegmentation<PointT>::AdjacencyIterator;
     using EdgeID = LCCPSegmentation<PointT>::EdgeID;
 
-    std::set<EdgeID> edge_drawn;
-
     const unsigned char convex_color [3] = {255, 255, 255};
     const unsigned char concave_color [3] = {255, 0, 0};
     const unsigned char* color;
@@ -400,7 +382,7 @@ LCCPSegmentation Parameters: \n\
     vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New ();
     for (VertexIterator itr = vertex_iterator_range.first; itr != vertex_iterator_range.second; ++itr)
     {
-      const uint32_t sv_label = sv_adjacency_list[*itr];
+      const std::uint32_t sv_label = sv_adjacency_list[*itr];
       std::pair<AdjacencyIterator, AdjacencyIterator> neighbors = boost::adjacent_vertices (*itr, sv_adjacency_list);
 
       for (AdjacencyIterator itr_neighbor = neighbors.first; itr_neighbor != neighbors.second; ++itr_neighbor)
@@ -424,7 +406,7 @@ LCCPSegmentation Parameters: \n\
         pcl::PointXYZRGBA vert_curr = supervoxel->centroid_;
         
         
-        const uint32_t sv_neighbor_label = sv_adjacency_list[*itr_neighbor];
+        const std::uint32_t sv_neighbor_label = sv_adjacency_list[*itr_neighbor];
         pcl::Supervoxel<PointT>::Ptr supervoxel_neigh = supervoxel_clusters.at (sv_neighbor_label);
         pcl::PointXYZRGBA vert_neigh = supervoxel_neigh->centroid_;
         

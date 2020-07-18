@@ -40,6 +40,7 @@
 #pragma once
 
 #include <pcl/registration/correspondence_rejection.h>
+#include <pcl/memory.h>  // for static_pointer_cast
 #include <pcl/point_cloud.h>
 
 #include <vector>
@@ -68,8 +69,8 @@ namespace pcl
       using CorrespondenceRejector::getClassName;
 
       public:
-        using Ptr = boost::shared_ptr<CorrespondenceRejectorVarTrimmed>;
-        using ConstPtr = boost::shared_ptr<const CorrespondenceRejectorVarTrimmed>;
+        using Ptr = shared_ptr<CorrespondenceRejectorVarTrimmed>;
+        using ConstPtr = shared_ptr<const CorrespondenceRejectorVarTrimmed>;
 
         /** \brief Empty constructor. */
         CorrespondenceRejectorVarTrimmed () : 
@@ -103,20 +104,21 @@ namespace pcl
         {
           if (!data_container_)
             data_container_.reset (new DataContainer<PointT>);
-          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
+          static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
         }
 
         /** \brief Provide a source point cloud dataset (must contain XYZ
           * data!), used to compute the correspondence distance.  
           * \param[in] cloud a cloud containing XYZ data
           */
-        template <typename PointT> inline void 
+        template <typename PointT>
+        PCL_DEPRECATED(1, 12, "pcl::registration::CorrespondenceRejectorVarTrimmed::setInputCloud is deprecated. Please use setInputSource instead")
+        inline void 
         setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
         {
-          PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n", getClassName ().c_str ());
           if (!data_container_)
             data_container_.reset (new DataContainer<PointT>);
-          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
+          static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
         }
 
         /** \brief Provide a target point cloud dataset (must contain XYZ
@@ -128,7 +130,7 @@ namespace pcl
         {
           if (!data_container_)
             data_container_.reset (new DataContainer<PointT>);
-          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputTarget (target);
+          static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputTarget (target);
         }
 
 
@@ -172,7 +174,7 @@ namespace pcl
         setSearchMethodTarget (const typename pcl::search::KdTree<PointT>::Ptr &tree,
                                bool force_no_recompute = false)
         { 
-          boost::static_pointer_cast< DataContainer<PointT> > 
+          static_pointer_cast< DataContainer<PointT> > 
             (data_container_)->setSearchMethodTarget (tree, force_no_recompute );
         }
 
@@ -235,7 +237,7 @@ namespace pcl
          */
         double lambda_;
 
-        using DataContainerPtr = boost::shared_ptr<DataContainerInterface>;
+        using DataContainerPtr = DataContainerInterface::Ptr;
 
         /** \brief A pointer to the DataContainer object containing the input and target point clouds */
         DataContainerPtr data_container_;
@@ -244,7 +246,7 @@ namespace pcl
 
         /** \brief finds the optimal inlier ratio. This is based on the paper 'Outlier Robust ICP for minimizing Fractional RMSD, J. M. Philips et al'
          */
-        inline float optimizeInlierRatio (std::vector <double> &dists);
+        inline float optimizeInlierRatio (std::vector <double> &dists) const;
     };
   }
 }

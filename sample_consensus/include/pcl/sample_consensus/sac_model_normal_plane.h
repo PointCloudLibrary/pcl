@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
@@ -91,7 +92,8 @@ namespace pcl
       using PointCloudNPtr = typename SampleConsensusModelFromNormals<PointT, PointNT>::PointCloudNPtr;
       using PointCloudNConstPtr = typename SampleConsensusModelFromNormals<PointT, PointNT>::PointCloudNConstPtr;
 
-      using Ptr = boost::shared_ptr<SampleConsensusModelNormalPlane<PointT, PointNT> >;
+      using Ptr = shared_ptr<SampleConsensusModelNormalPlane<PointT, PointNT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelNormalPlane<PointT, PointNT>>;
 
       /** \brief Constructor for base SampleConsensusModelNormalPlane.
         * \param[in] cloud the input point cloud dataset
@@ -113,7 +115,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelNormalPlane (const PointCloudConstPtr &cloud, 
-                                       const std::vector<int> &indices,
+                                       const Indices &indices,
                                        bool random = false) 
         : SampleConsensusModelPlane<PointT> (cloud, indices, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
@@ -134,7 +136,7 @@ namespace pcl
       void 
       selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
                             const double threshold, 
-                            std::vector<int> &inliers) override;
+                            Indices &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers. 
         * 
@@ -142,7 +144,7 @@ namespace pcl
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      int
+      std::size_t
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
                            const double threshold) const override;
 
@@ -154,7 +156,7 @@ namespace pcl
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
                            std::vector<double> &distances) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_NORMAL_PLANE). */
+      /** \brief Return a unique id for this model (SACMODEL_NORMAL_PLANE). */
       inline pcl::SacModel 
       getModelType () const override { return (SACMODEL_NORMAL_PLANE); }
 

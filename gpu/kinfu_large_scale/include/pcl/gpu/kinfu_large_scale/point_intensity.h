@@ -39,6 +39,7 @@
 
 #include <iostream>
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>

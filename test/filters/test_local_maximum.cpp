@@ -39,7 +39,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/filters/local_maximum.h>
 #include <pcl/point_types.h>
 

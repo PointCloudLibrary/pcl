@@ -37,7 +37,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
@@ -48,7 +48,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);

@@ -38,14 +38,13 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/recognition/ransac_based/model_library.h>
 #include <pcl/features/normal_3d.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::recognition;
@@ -80,8 +79,8 @@ estimateNormals(pcl::PointCloud<PointT>::Ptr cloud, pcl::PointCloud<pcl::Normal>
       // Compute the features
       ne.compute (*cloud_normals);
 
-      // cloud_normals->points.size () should have the same size as the input cloud->points.size ()*
-      return cloud_normals->points.size();
+      // cloud_normals->size () should have the same size as the input cloud->size ()*
+      return cloud_normals->size();
 }
 
 
@@ -94,14 +93,14 @@ TEST (ORROctreeTest, OctreeSphereIntersection)
   float frac_of_points_for_registration = 0.3f;
   std::string object_name = "test_object";
 
-  ModelLibrary::Model* new_model = new ModelLibrary::Model (*model_cloud, *model_cloud_normals, voxel_size, object_name, frac_of_points_for_registration);
+  ModelLibrary::Model new_model (*model_cloud, *model_cloud_normals, voxel_size, object_name, frac_of_points_for_registration);
 
-  const ORROctree& octree = new_model->getOctree ();
-  const vector<ORROctree::Node*> &full_leaves = octree.getFullLeaves ();
+  const ORROctree& octree = new_model.getOctree ();
+  const std::vector<ORROctree::Node*> &full_leaves = octree.getFullLeaves ();
   list<ORROctree::Node*> inter_leaves;
 
   // Run through all full leaves
-  for ( vector<ORROctree::Node*>::const_iterator leaf1 = full_leaves.begin () ; leaf1 != full_leaves.end () ; ++leaf1 )
+  for ( std::vector<ORROctree::Node*>::const_iterator leaf1 = full_leaves.begin () ; leaf1 != full_leaves.end () ; ++leaf1 )
   {
     const ORROctree::Node::Data* node_data1 = (*leaf1)->getData ();
     // Get all full leaves at the right distance to the current leaf
@@ -113,7 +112,6 @@ TEST (ORROctreeTest, OctreeSphereIntersection)
       EXPECT_NE(*leaf1, *leaf2);
     }
   }
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,7 +133,7 @@ int
     return (-1);
   }
 
-  if (!estimateNormals(model_cloud, model_cloud_normals) == model_cloud->points.size())
+  if (!estimateNormals(model_cloud, model_cloud_normals) == model_cloud->size())
   {
     std::cerr << "Failed to estimate normals" << std::endl;
     return (-1);

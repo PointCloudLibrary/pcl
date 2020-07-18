@@ -341,7 +341,7 @@ bool vtkVertexBufferObject::Upload(vtkCellArray *verts)
 
   verts->InitTraversal();
   while(verts->GetNextCell(npts, pts) != 0){
-    for (size_t i=0; i < static_cast<size_t>(npts); i++)
+    for (std::size_t i=0; i < static_cast<std::size_t>(npts); i++)
         indices.push_back(static_cast<unsigned int> (pts[i]));
   }
 

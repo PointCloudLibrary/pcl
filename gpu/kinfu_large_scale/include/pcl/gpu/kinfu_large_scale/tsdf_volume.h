@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <pcl/point_types.h>
@@ -61,7 +62,8 @@ namespace pcl
       class PCL_EXPORTS TsdfVolume
       {
       public:
-        using Ptr = boost::shared_ptr<TsdfVolume>;
+        using Ptr = shared_ptr<TsdfVolume>;
+        using ConstPtr = shared_ptr<const TsdfVolume>;
 
         /** \brief Supported Point Types */
         using PointType = PointXYZ;
@@ -89,7 +91,7 @@ namespace pcl
           {};
 
           /** \brief Get the size of data stored on host*/
-          inline size_t
+          inline std::size_t
           getVolumeSize () const { return resolution[0] * resolution[1] * resolution[2]; };
 
           friend inline std::ostream&
@@ -184,7 +186,7 @@ namespace pcl
           * \param[in] shiftZ Offset in indices.
           * \return DeviceArray with disabled reference counting that points to filled part of cloud_buffer.
           */
-        size_t
+        std::size_t
         fetchSliceAsCloud (DeviceArray<PointType>& cloud_buffer_xyz, DeviceArray<float>& cloud_buffer_intensity, const tsdf_buffer* buffer, int shiftX, int shiftY, int shiftZ ) const;
 
         /** \brief Computes normals as gradient of tsdf for given points
@@ -226,7 +228,7 @@ namespace pcl
         /** \brief Releases tsdf buffer on GPU */
         void releaseVolume () {volume_.release();}
 
-        void print_warn(const char* arg1, size_t size);
+        void print_warn(const char* arg1, std::size_t size);
 
         /** \brief Set the header for data stored on host directly. Useful if directly writing into volume and weights */
         inline void
@@ -237,13 +239,13 @@ namespace pcl
         }
 
         /** \brief Returns overall number of voxels in grid stored on host */
-        inline size_t
+        inline std::size_t
         size () const {
           return header_.getVolumeSize ();
         }
 
         /** \brief Converts volume stored on host to cloud of TSDF values
-          * \param[ou] cloud - the output point cloud
+          * \param[out] cloud - the output point cloud
           * \param[in] step - the decimation step to use
           */
         void
@@ -276,8 +278,8 @@ namespace pcl
         float tranc_dist_;
 
         // The following member are resulting from the merge of TSDFVolume with TsdfVolume class.
-        using VolumePtr = boost::shared_ptr<std::vector<float> >;
-        using WeightsPtr = boost::shared_ptr<std::vector<short> >;
+        using VolumePtr = shared_ptr<std::vector<float> >;
+        using WeightsPtr = shared_ptr<std::vector<short> >;
 
         Header header_;
         VolumePtr volume_host_;

@@ -63,12 +63,12 @@ namespace pcl
   class MultiscaleFeaturePersistence : public PCLBase<PointSource>
   {
     public:
-      using Ptr = boost::shared_ptr<MultiscaleFeaturePersistence<PointSource, PointFeature> >;
-      using ConstPtr = boost::shared_ptr<const MultiscaleFeaturePersistence<PointSource, PointFeature> >;
+      using Ptr = shared_ptr<MultiscaleFeaturePersistence<PointSource, PointFeature> >;
+      using ConstPtr = shared_ptr<const MultiscaleFeaturePersistence<PointSource, PointFeature> >;
       using FeatureCloud = pcl::PointCloud<PointFeature>;
       using FeatureCloudPtr = typename pcl::PointCloud<PointFeature>::Ptr;
       using FeatureEstimatorPtr = typename pcl::Feature<PointSource, PointFeature>::Ptr;
-      using FeatureRepresentationConstPtr = boost::shared_ptr<const pcl::PointRepresentation<PointFeature> >;
+      using FeatureRepresentationConstPtr = typename pcl::PointRepresentation<PointFeature>::ConstPtr;
 
       using pcl::PCLBase<PointSource>::input_;
 
@@ -89,7 +89,7 @@ namespace pcl
        */
       void
       determinePersistentFeatures (FeatureCloud &output_features,
-                                   boost::shared_ptr<std::vector<int> > &output_indices);
+                                   shared_ptr<std::vector<int> > &output_indices);
 
       /** \brief Method for setting the scale parameters for the algorithm
        * \param scale_values vector of scales to determine the characteristic of each scaling step
@@ -196,7 +196,7 @@ namespace pcl
       /** \brief Two structures in which to hold the results of the unique feature extraction process.
        * They are superfluous with respect to each other, but improve the time performance of the algorithm
        */
-      std::vector<std::list<size_t> > unique_features_indices_;
+      std::vector<std::list<std::size_t> > unique_features_indices_;
       std::vector<std::vector<bool> > unique_features_table_;
   };
 }

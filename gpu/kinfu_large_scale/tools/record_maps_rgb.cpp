@@ -34,6 +34,7 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/memory.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/time.h> //fps calculations
@@ -84,6 +85,9 @@ class MapsBuffer
     
     struct MapsRgb
     {
+      using Ptr = pcl::shared_ptr<MapsRgb>;
+      using ConstPtr = pcl::shared_ptr<const MapsRgb>;
+
       pcl::gpu::PtrStepSz<const PixelRGB> rgb_;
       pcl::gpu::PtrStepSz<const unsigned short> depth_;      
       double time_stamp_;
@@ -92,9 +96,9 @@ class MapsBuffer
     MapsBuffer () {}    
     
     bool 
-    pushBack (boost::shared_ptr<const MapsRgb>); // thread-save wrapper for push_back() method of ciruclar_buffer
+    pushBack (MapsRgb::ConstPtr); // thread-save wrapper for push_back() method of ciruclar_buffer
 
-    boost::shared_ptr<const MapsRgb>
+    MapsRgb::ConstPtr
     getFront (bool); // thread-save wrapper for front() method of ciruclar_buffer
                 
     inline bool 
@@ -137,14 +141,14 @@ class MapsBuffer
 
     std::mutex bmutex_;
     std::condition_variable buff_empty_;
-    boost::circular_buffer<boost::shared_ptr<const MapsRgb> > buffer_;                                     
+    boost::circular_buffer<MapsRgb::ConstPtr> buffer_;
 
 };
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
 bool 
-MapsBuffer::pushBack(boost::shared_ptr<const MapsRgb> maps_rgb )
+MapsBuffer::pushBack(MapsRgb::ConstPtr maps_rgb )
 {
   bool retVal = false;
   {
@@ -159,10 +163,10 @@ MapsBuffer::pushBack(boost::shared_ptr<const MapsRgb> maps_rgb )
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-boost::shared_ptr< const MapsBuffer::MapsRgb > 
+MapsBuffer::MapsRgb::ConstPtr
 MapsBuffer::getFront(bool print)
 {
-  boost::shared_ptr< const MapsBuffer::MapsRgb > depth_rgb;
+  MapsBuffer::MapsRgb::ConstPtr depth_rgb;
   {
     std::unique_lock<std::mutex> buff_lock (bmutex_);
     while (buffer_.empty ())
@@ -193,7 +197,7 @@ std::vector<MapsBuffer::PixelRGB> source_image_data_;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void 
-writeToDisk (const boost::shared_ptr<const MapsBuffer::MapsRgb>& map_rbg)
+writeToDisk (const MapsBuffer::MapsRgb::ConstPtr& map_rbg)
 {
   //save rgb
   std::stringstream ss;
@@ -216,8 +220,8 @@ writeToDisk (const boost::shared_ptr<const MapsBuffer::MapsRgb>& map_rbg)
 }
 
 void
-grabberMapsCallBack(const boost::shared_ptr<openni_wrapper::Image>& image_wrapper, const boost::shared_ptr<openni_wrapper::DepthImage>& depth_wrapper, float)
-{  
+grabberMapsCallBack(const openni_wrapper::Image::Ptr& image_wrapper, const openni_wrapper::DepthImage::Ptr& depth_wrapper, float)
+{
   MapsBuffer::MapsRgb rgb_depth;
   rgb_depth.time_stamp_ = pcl::getTime();  
   
@@ -236,12 +240,9 @@ grabberMapsCallBack(const boost::shared_ptr<openni_wrapper::Image>& image_wrappe
   source_image_data_.resize(rgb_depth.rgb_.cols * rgb_depth.rgb_.rows);
   image_wrapper->fillRGB(rgb_depth.rgb_.cols, rgb_depth.rgb_.rows, (unsigned char*)&source_image_data_[0]);
   rgb_depth.rgb_.data = &source_image_data_[0];    
-  
-  // make it a shared pointer
-  boost::shared_ptr<MapsBuffer::MapsRgb> ptr (new MapsBuffer::MapsRgb (rgb_depth));
-  
+
   // push to buffer
-  if (!buff.pushBack (ptr))
+  if (!buff.pushBack (pcl::make_shared<MapsBuffer::MapsRgb> (rgb_depth)))
   {
     {
       std::lock_guard<std::mutex> io_lock(io_mutex);

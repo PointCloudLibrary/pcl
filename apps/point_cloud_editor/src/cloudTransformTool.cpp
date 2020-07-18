@@ -48,7 +48,7 @@ const float CloudTransformTool::DEFAULT_TRANSLATE_FACTOR_ = 0.001f;
 
 
 CloudTransformTool::CloudTransformTool (CloudPtr cloud_ptr)
-  : cloud_ptr_(cloud_ptr), x_(0), y_(0), scale_factor_(DEFAULT_SCALE_FACTOR_),
+  : cloud_ptr_(std::move(cloud_ptr)), x_(0), y_(0), scale_factor_(DEFAULT_SCALE_FACTOR_),
     translate_factor_(DEFAULT_TRANSLATE_FACTOR_)
 {
   setIdentity(transform_matrix_);
@@ -114,7 +114,7 @@ CloudTransformTool::getZTranslateMatrix (int dy, float* matrix)
 }
 
 void
-CloudTransformTool::getScaleMatrix (int dy, float* matrix)
+CloudTransformTool::getScaleMatrix (int dy, float* matrix) const
 {
   setIdentity(matrix);
   float scale = dy > 0 ? scale_factor_ : 1.0 / scale_factor_;

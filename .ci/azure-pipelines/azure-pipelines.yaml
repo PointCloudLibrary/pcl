@@ -1,0 +1,158 @@
+resources:
+  containers:
+    - container: fmt
+      image: pointcloudlibrary/fmt
+    - container: env1604
+      image: pointcloudlibrary/env:16.04
+    - container: env1804
+      image: pointcloudlibrary/env:18.04
+    - container: env2004
+      image: pointcloudlibrary/env:20.04
+    - container: doc
+      image: pointcloudlibrary/doc
+
+stages:
+  - stage: formatting
+    displayName: Formatting
+    jobs:
+      - template: formatting.yaml
+
+  - stage: build_gcc
+    displayName: Build GCC
+    dependsOn: formatting
+    jobs:
+      - job: ubuntu
+        displayName: Ubuntu
+        pool:
+          vmImage: 'Ubuntu 16.04'
+        strategy:
+          matrix:
+            16.04 GCC:
+              CONTAINER: env1604
+              CC: gcc
+              CXX: g++
+              BUILD_GPU: OFF
+              CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
+            20.04 GCC:
+              CONTAINER: env2004
+              CC: gcc
+              CXX: g++
+              BUILD_GPU: OFF
+              CMAKE_ARGS: ''
+        container: $[ variables['CONTAINER'] ]
+        timeoutInMinutes: 0
+        variables:
+          BUILD_DIR: '$(Agent.BuildDirectory)/build'
+          CMAKE_CXX_FLAGS: '-Wall -Wextra'
+        steps:
+          - template: build/ubuntu.yaml
+
+  - stage: build_clang
+    displayName: Build Clang
+    dependsOn: formatting
+    jobs:
+      - job: osx
+        displayName: macOS
+        pool:
+          vmImage: '$(VMIMAGE)'
+        strategy:
+          matrix:
+            Catalina 10.15:
+              VMIMAGE: 'macOS-10.15'
+              OSX_VERSION: '10.15'
+            Mojave 10.14:
+              VMIMAGE: 'macOS-10.14'
+              OSX_VERSION: '10.14'
+        timeoutInMinutes: 0
+        variables:
+          BUILD_DIR: '$(Agent.WorkFolder)/build'
+          GOOGLE_TEST_DIR: '$(Agent.WorkFolder)/googletest'
+          CMAKE_CXX_FLAGS: '-Wall -Wextra -Werror -Wabi'
+        steps:
+          - template: build/macos.yaml
+      - job: ubuntu
+        displayName: Ubuntu
+        # Placement of Ubuntu Clang job after macOS ensures an extra parallel job doesn't need to be created.
+        # Total time per run remains same since macOS is quicker so it finishes earlier, and remaining time is used by this job
+        # Therefore, number of parallel jobs and total run time of entire pipeline remains unchanged even after addition of this job
+        dependsOn: osx
+        condition: succeededOrFailed()
+        pool:
+          vmImage: 'Ubuntu 16.04'
+        strategy:
+          matrix:
+            18.04 Clang:
+              CONTAINER: env1804
+              CC: clang
+              CXX: clang++
+              BUILD_GPU: ON
+              CMAKE_ARGS: ''
+        container: $[ variables['CONTAINER'] ]
+        timeoutInMinutes: 0
+        variables:
+          BUILD_DIR: '$(Agent.BuildDirectory)/build'
+          CMAKE_CXX_FLAGS: '-Wall -Wextra'
+        steps:
+          - template: build/ubuntu.yaml
+      - job: ubuntu_indices
+        displayName: Ubuntu Indices
+        # Test 64 bit & unsigned indices
+        dependsOn: osx
+        condition: succeededOrFailed()
+        pool:
+          vmImage: 'Ubuntu 16.04'
+        strategy:
+          matrix:
+            18.04 Clang:
+              CONTAINER: env1804
+              CC: clang
+              CXX: clang++
+              INDEX_SIGNED: OFF
+              INDEX_SIZE: 64
+              CMAKE_ARGS: ''
+        container: $[ variables['CONTAINER'] ]
+        timeoutInMinutes: 0
+        variables:
+          BUILD_DIR: '$(Agent.BuildDirectory)/build'
+          CMAKE_CXX_FLAGS: '-Wall -Wextra'
+        steps:
+          - template: build/ubuntu_indices.yaml
+
+  - stage: build_msvc
+    displayName: Build MSVC
+    dependsOn: formatting
+    jobs:
+      - job: vs2017
+        displayName: Windows VS2017 Build
+        pool:
+          vmImage: 'vs2017-win2016'
+        strategy:
+          matrix:
+            x86:
+              PLATFORM: 'x86'
+              ARCHITECTURE: 'x86'
+              GENERATOR: 'Visual Studio 15 2017'
+            x64:
+              PLATFORM: 'x64'
+              ARCHITECTURE: 'x86_amd64'
+              GENERATOR: 'Visual Studio 15 2017 Win64'
+        timeoutInMinutes: 0
+        variables:
+          BUILD_DIR: '$(Agent.WorkFolder)\build'
+          CONFIGURATION: 'Release'
+          VCPKG_ROOT: 'C:\vcpkg'
+        steps:
+          - template: build/windows.yaml
+
+  - stage: documentation
+    displayName: Documentation
+    dependsOn: []
+    jobs:
+      - template: documentation.yaml
+
+  - stage: tutorials
+    displayName: Tutorials
+    dependsOn: build_gcc
+    jobs:
+      - template: tutorials.yaml
+      

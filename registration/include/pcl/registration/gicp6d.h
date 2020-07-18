@@ -38,6 +38,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -169,8 +170,8 @@ namespace pcl
           using PointRepresentation<PointXYZLAB>::trivial_;
 
         public:
-          using Ptr = boost::shared_ptr<MyPointRepresentation>;
-          using ConstPtr = boost::shared_ptr<const MyPointRepresentation>;
+          using Ptr = shared_ptr<MyPointRepresentation>;
+          using ConstPtr = shared_ptr<const MyPointRepresentation>;
 
           MyPointRepresentation ()
           {

@@ -42,6 +42,7 @@
 #include <vector>
 #include <cmath>
 #include <pcl/features/feature.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/PointIndices.h>
 
@@ -101,7 +102,7 @@ namespace pcl
         * \param[in] nb_cols the number of columns to be considered col_start included
         */
       void
-      setIndices (size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols) override;
+      setIndices (std::size_t row_start, std::size_t col_start, std::size_t nb_rows, std::size_t nb_cols) override;
 
       /** \brief Constructor that sets default values for member variables. */
       MomentOfInertiaEstimation ();

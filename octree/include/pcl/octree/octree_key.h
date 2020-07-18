@@ -37,124 +37,121 @@
 
 #pragma once
 
-namespace pcl
-{
-  namespace octree
+#include <cstdint>
+#include <cstring> // for memcpy
+
+namespace pcl {
+namespace octree {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/** \brief @b Octree key class
+ *  \note Octree keys contain integer indices for each coordinate axis in order to
+ * address an octree leaf node.
+ * \author Julius Kammerl (julius@kammerl.de)
+ */
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class OctreeKey {
+public:
+  /** \brief Empty constructor. */
+  OctreeKey() : x(0), y(0), z(0) {}
+
+  /** \brief Constructor for key initialization. */
+  OctreeKey(unsigned int keyX, unsigned int keyY, unsigned int keyZ)
+  : x(keyX), y(keyY), z(keyZ)
+  {}
+
+  /** \brief Copy constructor. */
+  OctreeKey(const OctreeKey& source) { std::memcpy(key_, source.key_, sizeof(key_)); }
+
+  OctreeKey&
+  operator=(const OctreeKey&) = default;
+
+  /** \brief Operator== for comparing octree keys with each other.
+   *  \return "true" if leaf node indices are identical; "false" otherwise.
+   * */
+  bool
+  operator==(const OctreeKey& b) const
   {
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree key class
-     *  \note Octree keys contain integer indices for each coordinate axis in order to address an octree leaf node.
-     *  \author Julius Kammerl (julius@kammerl.de)
-     */
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    class OctreeKey
-    {
-    public:
-
-      /** \brief Empty constructor. */
-      OctreeKey () :
-          x (0), y (0), z (0)
-      {
-      }
-
-      /** \brief Constructor for key initialization. */
-      OctreeKey (unsigned int keyX, unsigned int keyY, unsigned int keyZ) :
-          x (keyX), y (keyY), z (keyZ)
-      {
-      }
-
-      /** \brief Copy constructor. */
-      OctreeKey (const OctreeKey& source)
-      {
-        memcpy(key_, source.key_, sizeof(key_));
-      }
-
-      /** \brief Operator== for comparing octree keys with each other.
-       *  \return "true" if leaf node indices are identical; "false" otherwise.
-       * */
-      bool
-      operator == (const OctreeKey& b) const
-      {
-        return ((b.x == this->x) && (b.y == this->y) && (b.z == this->z));
-      }
-
-      /** \brief Inequal comparison operator
-       * \param[in] other OctreeIteratorBase to compare with
-       * \return "true" if the current and other iterators are different ; "false" otherwise.
-       */
-      bool operator!= (const OctreeKey& other) const
-      {
-        return !operator== (other);
-      }
-
-      /** \brief Operator<= for comparing octree keys with each other.
-       *  \return "true" if key indices are not greater than the key indices of b  ; "false" otherwise.
-       * */
-      bool
-      operator <= (const OctreeKey& b) const
-      {
-        return ((b.x >= this->x) && (b.y >= this->y) && (b.z >= this->z));
-      }
-
-      /** \brief Operator>= for comparing octree keys with each other.
-       *  \return "true" if key indices are not smaller than the key indices of b  ; "false" otherwise.
-       * */
-      bool
-      operator >= (const OctreeKey& b) const
-      {
-        return ((b.x <= this->x) && (b.y <= this->y) && (b.z <= this->z));
-      }
-
-      /** \brief push a child node to the octree key
-       *  \param[in] childIndex index of child node to be added (0-7)
-       * */
-      inline void
-      pushBranch (unsigned char childIndex)
-      {
-        this->x = (this->x << 1) | (!!(childIndex & (1 << 2)));
-        this->y = (this->y << 1) | (!!(childIndex & (1 << 1)));
-        this->z = (this->z << 1) | (!!(childIndex & (1 << 0)));
-      }
-
-      /** \brief pop child node from octree key
-       * */
-      inline void
-      popBranch ()
-      {
-        this->x >>= 1;
-        this->y >>= 1;
-        this->z >>= 1;
-      }
-
-      /** \brief get child node index using depthMask
-       *  \param[in] depthMask bit mask with single bit set at query depth
-       *  \return child node index
-       * */
-      inline unsigned char
-      getChildIdxWithDepthMask (unsigned int depthMask) const
-      {
-        return static_cast<unsigned char> (((!!(this->x & depthMask)) << 2)
-                                         | ((!!(this->y & depthMask)) << 1)
-                                         |  (!!(this->z & depthMask)));
-      }
-
-      /* \brief maximum depth that can be addressed */
-      static const unsigned char maxDepth = static_cast<unsigned char>(sizeof(uint32_t)*8);
-
-      // Indices addressing a voxel at (X, Y, Z)
-
-      union
-      {
-        struct
-        {
-          uint32_t x;
-          uint32_t y;
-          uint32_t z;
-        };
-        uint32_t key_[3];
-      };
-
-
-    };
+    return ((b.x == this->x) && (b.y == this->y) && (b.z == this->z));
   }
-}
+
+  /** \brief Inequal comparison operator
+   * \param[in] other OctreeIteratorBase to compare with
+   * \return "true" if the current and other iterators are different ; "false"
+   * otherwise.
+   */
+  bool
+  operator!=(const OctreeKey& other) const
+  {
+    return !operator==(other);
+  }
+
+  /** \brief Operator<= for comparing octree keys with each other.
+   *  \return "true" if key indices are not greater than the key indices of b  ; "false"
+   * otherwise.
+   * */
+  bool
+  operator<=(const OctreeKey& b) const
+  {
+    return ((b.x >= this->x) && (b.y >= this->y) && (b.z >= this->z));
+  }
+
+  /** \brief Operator>= for comparing octree keys with each other.
+   *  \return "true" if key indices are not smaller than the key indices of b  ; "false"
+   * otherwise.
+   * */
+  bool
+  operator>=(const OctreeKey& b) const
+  {
+    return ((b.x <= this->x) && (b.y <= this->y) && (b.z <= this->z));
+  }
+
+  /** \brief push a child node to the octree key
+   *  \param[in] childIndex index of child node to be added (0-7)
+   * */
+  inline void
+  pushBranch(unsigned char childIndex)
+  {
+    this->x = (this->x << 1) | (!!(childIndex & (1 << 2)));
+    this->y = (this->y << 1) | (!!(childIndex & (1 << 1)));
+    this->z = (this->z << 1) | (!!(childIndex & (1 << 0)));
+  }
+
+  /** \brief pop child node from octree key
+   * */
+  inline void
+  popBranch()
+  {
+    this->x >>= 1;
+    this->y >>= 1;
+    this->z >>= 1;
+  }
+
+  /** \brief get child node index using depthMask
+   *  \param[in] depthMask bit mask with single bit set at query depth
+   *  \return child node index
+   * */
+  inline unsigned char
+  getChildIdxWithDepthMask(unsigned int depthMask) const
+  {
+    return static_cast<unsigned char>(((!!(this->x & depthMask)) << 2) |
+                                      ((!!(this->y & depthMask)) << 1) |
+                                      (!!(this->z & depthMask)));
+  }
+
+  /* \brief maximum depth that can be addressed */
+  static const unsigned char maxDepth =
+      static_cast<unsigned char>(sizeof(std::uint32_t) * 8);
+
+  // Indices addressing a voxel at (X, Y, Z)
+
+  union {
+    struct {
+      std::uint32_t x;
+      std::uint32_t y;
+      std::uint32_t z;
+    };
+    std::uint32_t key_[3];
+  };
+};
+} // namespace octree
+} // namespace pcl

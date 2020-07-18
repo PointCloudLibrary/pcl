@@ -37,11 +37,11 @@
  *
  */
 
-#ifndef PCL_SEARCH_IMPL_ORGANIZED_NEIGHBOR_SEARCH_H_
-#define PCL_SEARCH_IMPL_ORGANIZED_NEIGHBOR_SEARCH_H_
+#pragma once
 
 #include <pcl/search/organized.h>
 #include <pcl/common/eigen.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/common/time.h>
 #include <Eigen/Eigenvalues>
 
@@ -49,7 +49,7 @@
 template<typename PointT> int
 pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT &query,
                                                       const double        radius,
-                                                      std::vector<int>    &k_indices,
+                                                      Indices             &k_indices,
                                                       std::vector<float>  &k_sqr_distances,
                                                       unsigned int        max_nn) const
 {
@@ -70,8 +70,8 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   this->getProjectedRadiusSearchBox (query, static_cast<float> (squared_radius), left, right, top, bottom);
 
   // iterate over search box
-  if (max_nn == 0 || max_nn >= static_cast<unsigned int> (input_->points.size ()))
-    max_nn = static_cast<unsigned int> (input_->points.size ());
+  if (max_nn == 0 || max_nn >= static_cast<unsigned int> (input_->size ()))
+    max_nn = static_cast<unsigned int> (input_->size ());
 
   k_indices.reserve (max_nn);
   k_sqr_distances.reserve (max_nn);
@@ -85,14 +85,14 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   {
     for (; idx < xEnd; ++idx)
     {
-      if (!mask_[idx] || !isFinite (input_->points[idx]))
+      if (!mask_[idx] || !isFinite ((*input_)[idx]))
         continue;
 
-      float dist_x = input_->points[idx].x - query.x;
-      float dist_y = input_->points[idx].y - query.y;
-      float dist_z = input_->points[idx].z - query.z;
+      float dist_x = (*input_)[idx].x - query.x;
+      float dist_y = (*input_)[idx].y - query.y;
+      float dist_z = (*input_)[idx].z - query.z;
       squared_distance = dist_x * dist_x + dist_y * dist_y + dist_z * dist_z;
-      //squared_distance = (input_->points[idx].getVector3fMap () - query.getVector3fMap ()).squaredNorm ();
+      //squared_distance = ((*input_)[idx].getVector3fMap () - query.getVector3fMap ()).squaredNorm ();
       if (squared_distance <= squared_radius)
       {
         k_indices.push_back (idx);
@@ -116,7 +116,7 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
 template<typename PointT> int
 pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
                                                         int k,
-                                                        std::vector<int> &k_indices,
+                                                        Indices &k_indices,
                                                         std::vector<float> &k_sqr_distances) const
 {
   assert (isFinite (query) && "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
@@ -195,8 +195,8 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
       // if upper line of the rectangle is visible and x-extend is not 0
       if (yBegin >= 0 && yBegin < static_cast<int> (input_->height))
       {
-        int idx   = yBegin * input_->width + xFrom;
-        int idxTo = idx + xTo - xFrom;
+        index_t idx   = yBegin * input_->width + xFrom;
+        index_t idxTo = idx + xTo - xFrom;
         for (; idx < idxTo; ++idx)
           stop = testPoint (query, k, results, idx) || stop;
       }
@@ -206,8 +206,8 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
       // if lower line of the rectangle is visible
       if (yEnd > 0 && yEnd <= static_cast<int> (input_->height))
       {
-        int idx   = (yEnd - 1) * input_->width + xFrom;
-        int idxTo = idx + xTo - xFrom;
+        index_t idx   = (yEnd - 1) * input_->width + xFrom;
+        index_t idxTo = idx + xTo - xFrom;
 
         for (; idx < idxTo; ++idx)
           stop = testPoint (query, k, results, idx) || stop;
@@ -223,8 +223,8 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
       {
         if (xBegin >= 0 && xBegin < static_cast<int> (input_->width))
         {
-          int idx   = yFrom * input_->width + xBegin;
-          int idxTo = yTo * input_->width + xBegin;
+          index_t idx   = yFrom * input_->width + xBegin;
+          index_t idxTo = yTo * input_->width + xBegin;
 
           for (; idx < idxTo; idx += input_->width)
             stop = testPoint (query, k, results, idx) || stop;
@@ -232,8 +232,8 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
         
         if (xEnd > 0 && xEnd <= static_cast<int> (input_->width))
         {
-          int idx   = yFrom * input_->width + xEnd - 1;
-          int idxTo = yTo * input_->width + xEnd - 1;
+          index_t idx   = yFrom * input_->width + xEnd - 1;
+          index_t idxTo = yTo * input_->width + xEnd - 1;
 
           for (; idx < idxTo; idx += input_->width)
             stop = testPoint (query, k, results, idx) || stop;
@@ -256,7 +256,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
   
   k_indices.resize (results.size ());
   k_sqr_distances.resize (results.size ());
-  size_t idx = results.size () - 1;
+  std::size_t idx = results.size () - 1;
   while (!results.empty ())
   {
     k_indices [idx] = results.top ().index;
@@ -347,7 +347,7 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
   const unsigned ySkip = (std::max) (input_->height >> pyramid_level_, unsigned (1));
   const unsigned xSkip = (std::max) (input_->width >> pyramid_level_, unsigned (1));
 
-  std::vector<int> indices;
+  Indices indices;
   indices.reserve (input_->size () >> (pyramid_level_ << 1));
   
   for (unsigned yIdx = 0, idx = 0; yIdx < input_->height; yIdx += ySkip, idx += input_->width * ySkip)
@@ -363,9 +363,9 @@ pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
 
   double residual_sqr = pcl::estimateProjectionMatrix<PointT> (input_, projection_matrix_, indices);
   
-  if (fabs (residual_sqr) > eps_ * float (indices.size ()))
+  if (std::abs (residual_sqr) > eps_ * float (indices.size ()))
   {
-    PCL_ERROR ("[pcl::%s::radiusSearch] Input dataset is not from a projective device!\nResidual (MSE) %f, using %d valid points\n", this->getName ().c_str (), residual_sqr / double (indices.size()), indices.size ());
+    PCL_ERROR ("[pcl::%s::estimateProjectionMatrix] Input dataset is not from a projective device!\nResidual (MSE) %f, using %d valid points\n", this->getName ().c_str (), residual_sqr / double (indices.size()), indices.size ());
     return;
   }
 
@@ -388,4 +388,3 @@ pcl::search::OrganizedNeighbor<PointT>::projectPoint (const PointT& point, pcl::
 }
 #define PCL_INSTANTIATE_OrganizedNeighbor(T) template class PCL_EXPORTS pcl::search::OrganizedNeighbor<T>;
 
-#endif

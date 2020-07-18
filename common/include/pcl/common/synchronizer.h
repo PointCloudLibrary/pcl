@@ -35,8 +35,11 @@
 
 #pragma once
 
+#include <deque>
 #include <functional>
+#include <map>
 #include <mutex>
+#include <utility>
 
 namespace pcl
 {
@@ -62,10 +65,8 @@ namespace pcl
     using CallbackFunction = std::function<void(T1, T2, unsigned long, unsigned long)>;
 
     std::map<int, CallbackFunction> cb_;
-    int callback_counter;
+    int callback_counter = 0;
   public:
-
-    Synchronizer () : queueT1 (), queueT2 (), cb_ (), callback_counter (0) { };
 
     int
     addCallback (const CallbackFunction& callback)
@@ -108,11 +109,11 @@ namespace pcl
       std::unique_lock<std::mutex> lock1 (mutex1_);
       std::unique_lock<std::mutex> lock2 (mutex2_);
 
-      for (typename std::map<int, CallbackFunction>::iterator cb = cb_.begin (); cb != cb_.end (); ++cb)
+      for (const auto& cb: cb_)
       {
-        if (cb->second)
+        if (cb.second)
         {
-          cb->second.operator()(queueT1.front ().second, queueT2.front ().second, queueT1.front ().first, queueT2.front ().first);
+          cb.second.operator()(queueT1.front ().second, queueT2.front ().second, queueT1.front ().first, queueT2.front ().first);
         }
       }
 

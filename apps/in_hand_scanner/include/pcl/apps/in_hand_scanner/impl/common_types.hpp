@@ -43,6 +43,7 @@
 
 #include <limits>
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl
@@ -54,9 +55,9 @@ namespace pcl
       PCL_ADD_POINT4D
       PCL_ADD_NORMAL4D
       PCL_ADD_RGB
-      float        weight;
+      float weight;
       unsigned int age;
-      uint32_t     directions;
+      std::uint32_t directions;
 
       PCL_MAKE_ALIGNED_OPERATOR_NEW
     };

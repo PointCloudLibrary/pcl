@@ -174,4 +174,3 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/vtk" ${vtk_incs})
 if(BUILD_TESTS)
   add_subdirectory(test)
 endif()
-

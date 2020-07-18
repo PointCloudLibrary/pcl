@@ -41,7 +41,9 @@
 
 #include <pcl/segmentation/planar_region.h>
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/common/angles.h>
+#include <pcl/common/utils.h>
 #include <pcl/PointIndices.h>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/segmentation/plane_coefficient_comparator.h>
@@ -263,7 +265,19 @@ namespace pcl
                         PointCloudLPtr& labels,
                         std::vector<pcl::PointIndices>& label_indices,
                         std::vector<pcl::PointIndices>& boundary_indices);
-      
+
+      /** \brief Perform a refinement of an initial segmentation, by comparing points to adjacent regions detected by the initial segmentation.
+        * \param [in] model_coefficients The list of segmented model coefficients
+        * \param [in] inlier_indices The list of segmented inlier indices, corresponding to each model
+        * \param [in] labels The labels produced by the initial segmentation
+        * \param [in] label_indices The list of indices corresponding to each label
+        */
+      void
+      refine (std::vector<ModelCoefficients>& model_coefficients,
+              std::vector<PointIndices>& inlier_indices,
+              PointCloudLPtr& labels,
+              std::vector<pcl::PointIndices>& label_indices);
+
       /** \brief Perform a refinement of an initial segmentation, by comparing points to adjacent regions detected by the initial segmentation.
         * \param [in] model_coefficients The list of segmented model coefficients
         * \param [in] inlier_indices The list of segmented inlier indices, corresponding to each model
@@ -272,13 +286,18 @@ namespace pcl
         * \param [in] labels The labels produced by the initial segmentation
         * \param [in] label_indices The list of indices corresponding to each label
         */
+      PCL_DEPRECATED(1, 12, "centroids and covariances parameters are not used; they are deprecated and will be removed in future releases")
       void
       refine (std::vector<ModelCoefficients>& model_coefficients, 
               std::vector<PointIndices>& inlier_indices,
               std::vector<Eigen::Vector4f, Eigen::aligned_allocator<Eigen::Vector4f> >& centroids,
               std::vector <Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> >& covariances,
               PointCloudLPtr& labels,
-              std::vector<pcl::PointIndices>& label_indices);
+              std::vector<pcl::PointIndices>& label_indices)
+      {
+        pcl::utils::ignore(centroids, covariances);
+        refine(model_coefficients, inlier_indices, labels, label_indices);
+      }
 
     protected:
 

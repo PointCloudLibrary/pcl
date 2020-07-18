@@ -21,7 +21,7 @@ restrictions:
   * [Stack Overflow](https://stackoverflow.com/questions/tagged/point-cloud-library)
   for Q&A as well as support for troubleshooting, installation and debugging. Do
   remember to tag your questions with the tag `point-cloud-library`.
-  * [Gitter channel](https://gitter.im/PointCloudLibrary/pcl) for live chat with
+  * [Discord Server](https://discord.gg/JFFMAXS) for live chat with
   other members of the PCL community and casual discussions
 
 <!-- 

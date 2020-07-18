@@ -94,15 +94,11 @@ class SimpleOpenNIProcessor
       do
       {
         key = static_cast<char> (getchar ());
-        switch (key)
+        if (key == ' ')
         {
-          case ' ':
-            if (interface.isRunning ())
-              interface.stop ();
-            else
-              interface.start ();
+          interface.toggle ();
         }
-      } while (key != 27 && key != 'q' && key != 'Q');
+      } while ((key != 27) && (key != 'q') && (key != 'Q'));
 
       // stop the grabber
       interface.stop ();

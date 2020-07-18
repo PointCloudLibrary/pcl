@@ -81,7 +81,7 @@ ON_Annotation::ON_Annotation()
   Create();
 }
 
-ON_Annotation::ON_Annotation(const ON_Annotation& src)
+ON_Annotation::ON_Annotation(const ON_Annotation& src) : ON_Geometry(src)
 {
   Create();
   *this = src;

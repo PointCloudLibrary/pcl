@@ -48,7 +48,7 @@ pcl::registration::CorrespondenceRejectorFeatures::getRemainingCorrespondences (
   unsigned int number_valid_correspondences = 0;
   remaining_correspondences.resize (original_correspondences.size ());
   // For each set of features, go over each correspondence from input_correspondences_
-  for (size_t i = 0; i < input_correspondences_->size (); ++i)
+  for (std::size_t i = 0; i < input_correspondences_->size (); ++i)
   {
     // Go over the map of features
     for (FeaturesMap::const_iterator it = features_map_.begin (); it != features_map_.end (); ++it)

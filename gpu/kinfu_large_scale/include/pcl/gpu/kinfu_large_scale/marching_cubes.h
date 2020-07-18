@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/gpu/containers/device_array.h>
 #include <Eigen/Core>
@@ -69,8 +70,9 @@ namespace pcl
         using PointType = pcl::PointXYZ;
         
         /** \brief Smart pointer. */
-        using Ptr = boost::shared_ptr<MarchingCubes>;
-        
+        using Ptr = shared_ptr<MarchingCubes>;
+        using ConstPtr = shared_ptr<const MarchingCubes>;
+
         /** \brief Default constructor */
         MarchingCubes();
         

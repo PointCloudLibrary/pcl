@@ -29,7 +29,7 @@ main (int argc, char ** argv)
   bool threshold_depth = pcl::console::parse_2x_arguments (argc, argv, "-t", min_depth, max_depth) > 0;
   if (threshold_depth)
   {
-    size_t n = cloud->size ();
+    std::size_t n = cloud->size ();
     cloud = thresholdDepth (cloud, min_depth, max_depth);
     pcl::console::print_info ("Eliminated %lu points outside depth limits\n", n - cloud->size ());
   }
@@ -39,7 +39,7 @@ main (int argc, char ** argv)
   bool downsample_cloud = pcl::console::parse_argument (argc, argv, "-d", leaf_size) > 0;
   if (downsample_cloud)
   {
-    size_t n = cloud->size ();
+    std::size_t n = cloud->size ();
     cloud = downsample (cloud, leaf_size);
     pcl::console::print_info ("Downsampled from %lu to %lu points\n", n, cloud->size ());
   }
@@ -49,7 +49,7 @@ main (int argc, char ** argv)
   bool remove_outliers = pcl::console::parse_2x_arguments (argc, argv, "-r", radius, min_neighbors) > 0;
   if (remove_outliers)
   {
-    size_t n = cloud->size ();
+    std::size_t n = cloud->size ();
     cloud = removeOutliers (cloud, radius, (int)min_neighbors);
     pcl::console::print_info ("Removed %lu outliers\n", n - cloud->size ());
   }

@@ -63,12 +63,12 @@ namespace pcl
          * \param[in] num_of_features Number features to generated.
          * \param[out] features Generated features.
          */
-        /*void createRandomFeatures(const size_t num_of_features, std::vector<FT> & features)
+        /*void createRandomFeatures(const std::size_t num_of_features, std::vector<FT> & features)
          {
          srand (time(NULL));
          int min_s = 10;
          float range_d = 0.03f;
-         for (size_t i = 0; i < num_of_features; i++)
+         for (std::size_t i = 0; i < num_of_features; i++)
          {
          FT f;
 
@@ -91,7 +91,7 @@ namespace pcl
          }
          }*/
 
-        void createRandomFeatures(const size_t num_of_features, std::vector<FT> & features) override
+        void createRandomFeatures(const std::size_t num_of_features, std::vector<FT> & features) override
         {
           srand (static_cast<unsigned int>(time (nullptr)));
           int min_s = 20;
@@ -100,7 +100,7 @@ namespace pcl
 
           std::vector < FT > windows_and_functions;
 
-          for (size_t i = 0; i < num_of_features; i++)
+          for (std::size_t i = 0; i < num_of_features; i++)
           {
             FT f;
 
@@ -121,10 +121,10 @@ namespace pcl
             windows_and_functions.push_back (f);
           }
 
-          for (size_t i = 0; i < windows_and_functions.size (); i++)
+          for (std::size_t i = 0; i < windows_and_functions.size (); i++)
           {
             FT f = windows_and_functions[i];
-            for (size_t j = 0; j <= 10; j++)
+            for (std::size_t j = 0; j <= 10; j++)
             {
               f.threshold_ = -range_d + static_cast<float> (j) * incr_d;
               features.push_back (f);
@@ -143,7 +143,7 @@ namespace pcl
             std::vector<unsigned char> & flags) const override
         {
           results.resize (examples.size ());
-          for (size_t i = 0; i < examples.size (); i++)
+          for (std::size_t i = 0; i < examples.size (); i++)
           {
             evaluateFeature (feature, data_set, examples[i], results[i], flags[i]);
           }
@@ -209,7 +209,7 @@ namespace pcl
         }
 
         /** \brief Returns the number of branches the corresponding tree has. */
-        inline size_t getNumOfBranches() const override
+        inline std::size_t getNumOfBranches() const override
         {
           return branch_estimator_->getNumOfBranches ();
         }
@@ -234,7 +234,7 @@ namespace pcl
           Eigen::Matrix<double, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<double, 1, 9, Eigen::RowMajor>::Zero ();
           unsigned int point_count = static_cast<unsigned int> (examples.size ());
 
-          for (size_t i = 0; i < point_count; ++i)
+          for (std::size_t i = 0; i < point_count; ++i)
           {
             TrainingExample te = data_set[examples[i]];
             accu[0] += te.trans_[0] * te.trans_[0];
@@ -278,7 +278,7 @@ namespace pcl
           Eigen::Matrix<double, 1, 9, Eigen::RowMajor> accu = Eigen::Matrix<double, 1, 9, Eigen::RowMajor>::Zero ();
           unsigned int point_count = static_cast<unsigned int> (examples.size ());
 
-          for (size_t i = 0; i < point_count; ++i)
+          for (std::size_t i = 0; i < point_count; ++i)
           {
             TrainingExample te = data_set[examples[i]];
             accu[0] += te.rot_[0] * te.rot_[0];
@@ -321,21 +321,21 @@ namespace pcl
         float computeInformationGain(DataSet & data_set, std::vector<ExampleIndex> & examples, std::vector<LabelDataType> & label_data,
             std::vector<float> & results, std::vector<unsigned char> & flags, const float threshold) const override
         {
-          const size_t num_of_examples = examples.size ();
-          const size_t num_of_branches = getNumOfBranches ();
+          const std::size_t num_of_examples = examples.size ();
+          const std::size_t num_of_branches = getNumOfBranches ();
 
           // compute variance
           std::vector < LabelDataType > sums (num_of_branches + 1, 0.f);
           std::vector < LabelDataType > sqr_sums (num_of_branches + 1, 0.f);
-          std::vector < size_t > branch_element_count (num_of_branches + 1, 0.f);
+          std::vector < std::size_t > branch_element_count (num_of_branches + 1, 0.f);
 
-          for (size_t branch_index = 0; branch_index < num_of_branches; ++branch_index)
+          for (std::size_t branch_index = 0; branch_index < num_of_branches; ++branch_index)
           {
             branch_element_count[branch_index] = 1;
             ++branch_element_count[num_of_branches];
           }
 
-          for (size_t example_index = 0; example_index < num_of_examples; ++example_index)
+          for (std::size_t example_index = 0; example_index < num_of_examples; ++example_index)
           {
             unsigned char branch_index;
             computeBranchIndex (results[example_index], flags[example_index], threshold, branch_index);
@@ -350,7 +350,7 @@ namespace pcl
           }
 
           std::vector<float> hp (num_of_branches + 1, 0.f);
-          for (size_t branch_index = 0; branch_index < (num_of_branches + 1); ++branch_index)
+          for (std::size_t branch_index = 0; branch_index < (num_of_branches + 1); ++branch_index)
           {
             float pf = sums[branch_index] / static_cast<float> (branch_element_count[branch_index]);
             float pnf = (static_cast<LabelDataType>(branch_element_count[branch_index]) - sums[branch_index] + 1.f)
@@ -366,12 +366,12 @@ namespace pcl
           {
             //compute covariance matrices from translation offsets and angles for the whole set and children
             //consider only positive examples...
-            std::vector < size_t > branch_element_count (num_of_branches + 1, 0);
+            std::vector < std::size_t > branch_element_count (num_of_branches + 1, 0);
             std::vector < std::vector<ExampleIndex> > positive_examples;
             positive_examples.resize (num_of_branches + 1);
 
-            size_t pos = 0;
-            for (size_t example_index = 0; example_index < num_of_examples; ++example_index)
+            std::size_t pos = 0;
+            for (std::size_t example_index = 0; example_index < num_of_examples; ++example_index)
             {
               unsigned char branch_index;
               computeBranchIndex (results[example_index], flags[example_index], threshold, branch_index);
@@ -401,7 +401,7 @@ namespace pcl
             offset_centroids.resize (num_of_branches + 1);
             angle_centroids.resize (num_of_branches + 1);
 
-            for (size_t branch_index = 0; branch_index < (num_of_branches + 1); ++branch_index)
+            for (std::size_t branch_index = 0; branch_index < (num_of_branches + 1); ++branch_index)
             {
               computeMeanAndCovarianceOffset (data_set, positive_examples[branch_index], offset_covariances[branch_index],
                   offset_centroids[branch_index]);
@@ -411,22 +411,22 @@ namespace pcl
 
             //update information_gain
             std::vector<float> hr (num_of_branches + 1, 0.f);
-            for (size_t branch_index = 0; branch_index < (num_of_branches + 1); ++branch_index)
+            for (std::size_t branch_index = 0; branch_index < (num_of_branches + 1); ++branch_index)
             {
-              hr[branch_index] = static_cast<float>(0.5f * log (std::pow (2 * M_PI, 3)
+              hr[branch_index] = static_cast<float>(0.5f * std::log (std::pow (2 * M_PI, 3)
                                                     * offset_covariances[branch_index].determinant ())
-                                                    + 0.5f * log (std::pow (2 * M_PI, 3)
+                                                    + 0.5f * std::log (std::pow (2 * M_PI, 3)
                                                     * angle_covariances[branch_index].determinant ()));
             }
 
-            for (size_t branch_index = 0; branch_index < (num_of_branches + 1); ++branch_index)
+            for (std::size_t branch_index = 0; branch_index < (num_of_branches + 1); ++branch_index)
             {
               hp[branch_index] += std::max (sums[branch_index] / static_cast<float> (branch_element_count[branch_index]) - tp, 0.f) * hr[branch_index];
             }
           }
 
           float information_gain = hp[num_of_branches + 1];
-          for (size_t branch_index = 0; branch_index < (num_of_branches); ++branch_index)
+          for (std::size_t branch_index = 0; branch_index < (num_of_branches); ++branch_index)
           {
             information_gain -= static_cast<float> (branch_element_count[branch_index]) / static_cast<float> (branch_element_count[num_of_branches])
                 * hp[branch_index];
@@ -444,10 +444,10 @@ namespace pcl
         void computeBranchIndices(std::vector<float> & results, std::vector<unsigned char> & flags, const float threshold,
             std::vector<unsigned char> & branch_indices) const override
         {
-          const size_t num_of_results = results.size ();
+          const std::size_t num_of_results = results.size ();
 
           branch_indices.resize (num_of_results);
-          for (size_t result_index = 0; result_index < num_of_results; ++result_index)
+          for (std::size_t result_index = 0; result_index < num_of_results; ++result_index)
           {
             unsigned char branch_index;
             computeBranchIndex (results[result_index], flags[result_index], threshold, branch_index);
@@ -474,11 +474,11 @@ namespace pcl
          */
         void computeAndSetNodeStats(DataSet & data_set, std::vector<ExampleIndex> & examples, std::vector<LabelDataType> & label_data, NodeType & node) const override
         {
-          const size_t num_of_examples = examples.size ();
+          const std::size_t num_of_examples = examples.size ();
 
           LabelDataType sum = 0.0f;
           LabelDataType sqr_sum = 0.0f;
-          for (size_t example_index = 0; example_index < num_of_examples; ++example_index)
+          for (std::size_t example_index = 0; example_index < num_of_examples; ++example_index)
           {
             const LabelDataType label = label_data[example_index];
 
@@ -497,7 +497,7 @@ namespace pcl
           //set node stats regarding pose regression
           std::vector < ExampleIndex > positive_examples;
 
-          for (size_t example_index = 0; example_index < num_of_examples; ++example_index)
+          for (std::size_t example_index = 0; example_index < num_of_examples; ++example_index)
           {
             LabelDataType label = label_data[example_index];
 

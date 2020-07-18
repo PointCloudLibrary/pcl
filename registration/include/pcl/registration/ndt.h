@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/registration/registration.h>
 #include <pcl/filters/voxel_grid_covariance.h>
@@ -87,8 +88,8 @@ namespace pcl
 
     public:
 
-      using Ptr = boost::shared_ptr< NormalDistributionsTransform<PointSource, PointTarget> >;
-      using ConstPtr = boost::shared_ptr< const NormalDistributionsTransform<PointSource, PointTarget> >;
+      using Ptr = shared_ptr< NormalDistributionsTransform<PointSource, PointTarget> >;
+      using ConstPtr = shared_ptr< const NormalDistributionsTransform<PointSource, PointTarget> >;
 
 
       /** \brief Constructor.

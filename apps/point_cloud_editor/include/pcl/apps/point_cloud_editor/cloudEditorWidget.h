@@ -47,9 +47,13 @@
 #include <pcl/apps/point_cloud_editor/statisticsDialog.h>
 #include <pcl/apps/point_cloud_editor/toolInterface.h>
 
+#include <pcl/memory.h>  // for pcl::shared_ptr
+
 #include <QGLWidget>
 
 #include <functional>
+
+class Selection;
 
 /// @brief class declaration for the widget for editing and viewing
 /// point clouds.
@@ -57,6 +61,9 @@ class CloudEditorWidget : public QGLWidget
 {
   Q_OBJECT
   public:
+    /// The type for shared pointer pointing to a selection buffer
+    using SelectionPtr = pcl::shared_ptr<Selection>;
+
     /// @brief Constructor
     /// @param parent a pointer which points to the parent widget
     CloudEditorWidget (QWidget *parent = nullptr);
@@ -271,7 +278,7 @@ class CloudEditorWidget : public QGLWidget
 
     /// The transformation tool being used. Either a cloud transform tool or
     /// a selection transform tool is activated at a time.
-    boost::shared_ptr<ToolInterface> tool_ptr_;
+    std::shared_ptr<ToolInterface> tool_ptr_;
 
     /// a pointer to the selection object
     SelectionPtr selection_ptr_;

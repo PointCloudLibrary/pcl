@@ -59,16 +59,11 @@ namespace pcl
   {
     namespace people
     {
-      /*
-      struct OtherDetector
-      {
-          using Ptr = boost::shared_ptr<OtherDetector>;
-      };
-      */
       class PCL_EXPORTS PeopleDetector
       {
         public:
-          using Ptr = boost::shared_ptr<PeopleDetector>;                              
+          using Ptr = shared_ptr<PeopleDetector>;                              
+          using ConstPtr = shared_ptr<const PeopleDetector>;
 
           using PointTC = pcl::PointXYZRGBA;
           using PointT = pcl::PointXYZ;

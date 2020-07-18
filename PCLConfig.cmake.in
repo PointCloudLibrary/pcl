@@ -12,12 +12,15 @@
 #                                   www.pointclouds.org
 #------------------------------------------------------------------------------------
 
+# Set default policy behavior similar to minimum requirement version
+cmake_policy(VERSION 3.5)
+
+# explicitly set policies we already support in newer cmake versions
 if(POLICY CMP0074)
   # TODO: update *_ROOT variables to be PCL_*_ROOT or equivalent.
   # CMP0074 directly affects how Find* modules work and *_ROOT variables.  Since
   # this is a config file that will be consumed by parent projects with (likely)
   # NEW behavior, we need to push a policy stack.
-  cmake_policy(PUSH)
   cmake_policy(SET CMP0074 NEW)
 endif()
 
@@ -35,9 +38,6 @@ macro(pcl_report_not_found _reason)
     message(FATAL_ERROR ${_reason})
   elseif(NOT PCL_FIND_QUIETLY)
     message(WARNING ${_reason})
-  endif()
-  if(POLICY CMP0074)
-    cmake_policy(POP)
   endif()
   return()
 endmacro()
@@ -101,7 +101,7 @@ macro(find_boost)
   endif()
   set(Boost_ADDITIONAL_VERSIONS
     "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@.@Boost_SUBMINOR_VERSION@" "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@"
-    "1.70.0" "1.70"
+    "1.73.0" "1.73" "1.72.0" "1.72" "1.71.0" "1.71" "1.70.0" "1.70"
     "1.69.0" "1.69" "1.68.0" "1.68" "1.67.0" "1.67" "1.66.0" "1.66" "1.65.1" "1.65.0" "1.65"
     "1.64.0" "1.64" "1.63.0" "1.63" "1.62.0" "1.62" "1.61.0" "1.61" "1.60.0" "1.60"
     "1.59.0" "1.59" "1.58.0" "1.58" "1.57.0" "1.57" "1.56.0" "1.56" "1.55.0" "1.55")
@@ -217,12 +217,22 @@ macro(find_rssdk)
   find_package(RSSDK)
 endmacro()
 
+macro(find_rssdk2)
+  if(PCL_ALL_IN_ONE_INSTALLER)
+    set(realsense2_DIR "${PCL_ROOT}/3rdParty/librealsense2/lib/cmake/realsense2" CACHE PATH "The directory containing realsense2Config.cmake")
+  elseif(NOT realsense2_DIR)
+    get_filename_component(realsense2_DIR "@REALSENSE2_INCLUDE_DIRS@" PATH)
+    set(realsense2_DIR "${realsense2_DIR}/lib/cmake/realsense2" CACHE PATH "The directory containing realsense2Config.cmake")
+  endif()
+  find_package(RSSDK2)
+endmacro()
+
 #remove this as soon as flann is shipped with FindFlann.cmake
 macro(find_flann)
   if(PCL_ALL_IN_ONE_INSTALLER)
     set(FLANN_ROOT "${PCL_ROOT}/3rdParty/Flann")
   elseif(NOT FLANN_ROOT)
-    get_filename_component(FLANN_ROOT "@FLANN_INCLUDE_DIRS@" PATH)
+    set(FLANN_ROOT "@FLANN_ROOT@")
   endif()
 
   set(FLANN_USE_STATIC @FLANN_USE_STATIC@)
@@ -296,6 +306,8 @@ macro(find_external_library _component _lib _is_optional)
     find_dssdk()
   elseif("${_lib}" STREQUAL "rssdk")
     find_rssdk()
+  elseif("${_lib}" STREQUAL "rssdk2")
+    find_rssdk2()
   elseif("${_lib}" STREQUAL "vtk")
     find_VTK()
   elseif("${_lib}" STREQUAL "libusb-1.0")
@@ -393,7 +405,7 @@ endif()
 if(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl/pcl_config.h")
   # Found a PCL installation
   # pcl_message("Found a PCL installation")
-  set(PCL_INCLUDE_DIRS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
+  set(PCL_CONF_INCLUDE_DIR "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}")
   set(PCL_LIBRARY_DIRS "${PCL_ROOT}/@LIB_INSTALL_DIR@")
   if(EXISTS "${PCL_ROOT}/3rdParty")
     set(PCL_ALL_IN_ONE_INSTALLER ON)
@@ -401,7 +413,7 @@ if(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl
 elseif(EXISTS "${PCL_ROOT}/include/pcl/pcl_config.h")
   # Found a non-standard (likely ANDROID) PCL installation
   # pcl_message("Found a PCL installation")
-  set(PCL_INCLUDE_DIRS "${PCL_ROOT}/include")
+  set(PCL_CONF_INCLUDE_DIR "${PCL_ROOT}/include")
   set(PCL_LIBRARY_DIRS "${PCL_ROOT}/lib")
   if(EXISTS "${PCL_ROOT}/3rdParty")
     set(PCL_ALL_IN_ONE_INSTALLER ON)
@@ -409,12 +421,14 @@ elseif(EXISTS "${PCL_ROOT}/include/pcl/pcl_config.h")
 elseif(EXISTS "${PCL_DIR}/include/pcl/pcl_config.h")
   # Found PCLConfig.cmake in a build tree of PCL
   # pcl_message("PCL found into a build tree.")
-  set(PCL_INCLUDE_DIRS "${PCL_DIR}/include") # for pcl_config.h
+  set(PCL_CONF_INCLUDE_DIR "${PCL_DIR}/include") # for pcl_config.h
   set(PCL_LIBRARY_DIRS "${PCL_DIR}/@LIB_INSTALL_DIR@")
   set(PCL_SOURCES_TREE "@CMAKE_SOURCE_DIR@")
 else()
   pcl_report_not_found("PCL can not be found on this machine")
 endif()
+
+set(PCL_INCLUDE_DIRS "${PCL_CONF_INCLUDE_DIR}")
 
 #set a suffix for debug libraries
 set(PCL_DEBUG_SUFFIX "@CMAKE_DEBUG_POSTFIX@")
@@ -471,9 +485,6 @@ set(PCL_TO_FIND_COMPONENTS ${_PCL_TO_FIND_COMPONENTS})
 unset(_PCL_TO_FIND_COMPONENTS)
 
 if(NOT PCL_TO_FIND_COMPONENTS)
-  if(POLICY CMP0074)
-    cmake_policy(POP)
-  endif()
   return()
 endif()
 
@@ -605,32 +616,47 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
             IMPORTED_IMPLIB "${PCL_${COMPONENT}_LIBRARY}"
         )
       endif()
-      foreach(def ${PCL_DEFINITIONS})
-        string(REPLACE " " ";" def2 ${def})
-        string(REGEX REPLACE "^-D" "" def3 "${def2}")
-        list(APPEND definitions ${def3})
-      endforeach()
-      if(CMAKE_VERSION VERSION_LESS 3.3)
-        set_target_properties(${pcl_component}
-          PROPERTIES
-            INTERFACE_COMPILE_DEFINITIONS "${definitions}"
-            INTERFACE_COMPILE_OPTIONS "${PCL_COMPILE_OPTIONS}"
-            INTERFACE_COMPILE_FEATURES "@PCL_CXX_COMPILE_FEATURES@"
-            INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS}"
-            INTERFACE_LINK_LIBRARIES "${PCL_${COMPONENT}_LINK_LIBRARIES}"
-        )
-      else()
-        set_target_properties(${pcl_component}
-          PROPERTIES
-            INTERFACE_COMPILE_DEFINITIONS "${definitions}"
-            INTERFACE_COMPILE_OPTIONS "$<$<COMPILE_LANGUAGE:CXX>:${PCL_COMPILE_OPTIONS}>"
-            INTERFACE_COMPILE_FEATURES "@PCL_CXX_COMPILE_FEATURES@"
-            INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS}"
-            INTERFACE_LINK_LIBRARIES "${PCL_${COMPONENT}_LINK_LIBRARIES}"
-        )
-      endif()
-      set(PCL_${COMPONENT}_LIBRARIES ${pcl_component})
+    else() # header-only
+      add_library(${pcl_component} INTERFACE IMPORTED)
     endif()
+
+    foreach(def ${PCL_DEFINITIONS})
+      string(REPLACE " " ";" def2 ${def})
+      string(REGEX REPLACE "^-D" "" def3 "${def2}")
+      list(APPEND definitions ${def3})
+    endforeach()
+    if(CMAKE_VERSION VERSION_LESS 3.3)
+      set_target_properties(${pcl_component}
+        PROPERTIES
+          INTERFACE_COMPILE_DEFINITIONS "${definitions}"
+          INTERFACE_COMPILE_OPTIONS "${PCL_COMPILE_OPTIONS}"
+          INTERFACE_COMPILE_FEATURES "@PCL_CXX_COMPILE_FEATURES@"
+          INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS};${PCL_CONF_INCLUDE_DIR}"
+          INTERFACE_LINK_LIBRARIES "${PCL_${COMPONENT}_LINK_LIBRARIES}"
+      )
+    elseif(CMAKE_VERSION VERSION_LESS 3.11)
+      set_target_properties(${pcl_component}
+        PROPERTIES
+          INTERFACE_COMPILE_DEFINITIONS "${definitions}"
+          INTERFACE_COMPILE_OPTIONS "$<$<COMPILE_LANGUAGE:CXX>:${PCL_COMPILE_OPTIONS}>"
+          INTERFACE_COMPILE_FEATURES "@PCL_CXX_COMPILE_FEATURES@"
+          INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS};${PCL_CONF_INCLUDE_DIR}"
+          INTERFACE_LINK_LIBRARIES "${PCL_${COMPONENT}_LINK_LIBRARIES}"
+      )
+    else()
+      set_target_properties(${pcl_component}
+        PROPERTIES
+          INTERFACE_COMPILE_DEFINITIONS "${definitions}"
+          INTERFACE_COMPILE_OPTIONS "$<$<COMPILE_LANGUAGE:CXX>:${PCL_COMPILE_OPTIONS}>"
+          INTERFACE_COMPILE_FEATURES "@PCL_CXX_COMPILE_FEATURES@"
+          INTERFACE_INCLUDE_DIRECTORIES "${PCL_${COMPONENT}_INCLUDE_DIRS};${PCL_CONF_INCLUDE_DIR}"
+      )
+      # If possible, we use target_link_libraries to avoid problems with link-type keywords,
+      # see https://github.com/PointCloudLibrary/pcl/issues/2989
+      # target_link_libraries on imported libraries is supported only since CMake 3.11
+      target_link_libraries(${pcl_component} INTERFACE ${PCL_${COMPONENT}_LINK_LIBRARIES})
+    endif()
+    set(PCL_${COMPONENT}_LIBRARIES ${pcl_component})
   endif()
 endforeach()
 
@@ -649,14 +675,10 @@ endif()
 pcl_remove_duplicate_libraries(PCL_COMPONENTS PCL_LIBRARIES)
 
 # Add 3rd party libraries, as user code might include our .HPP implementations
-list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${ENSENSO_LIBRARIES} ${davidSDK_LIBRARIES} ${DSSDK_LIBRARIES} ${RSSDK_LIBRARIES} ${VTK_LIBRARIES})
+list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${ENSENSO_LIBRARIES} ${davidSDK_LIBRARIES} ${DSSDK_LIBRARIES} ${RSSDK_LIBRARIES} ${RSSDK2_LIBRARIES} ${VTK_LIBRARIES})
 if (TARGET FLANN::FLANN)
   list(APPEND PCL_LIBRARIES FLANN::FLANN)
 endif()
 
 find_package_handle_standard_args(PCL DEFAULT_MSG PCL_LIBRARIES PCL_INCLUDE_DIRS)
 mark_as_advanced(PCL_LIBRARIES PCL_INCLUDE_DIRS PCL_LIBRARY_DIRS)
-
-if(POLICY CMP0074)
-  cmake_policy(POP)
-endif()

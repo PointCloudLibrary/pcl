@@ -309,7 +309,7 @@ ON_Surface::IsIsoparametric( const ON_BoundingBox& bbox ) const
 }
 
 
-ON_BOOL32 ON_Surface::IsPlanar( ON_Plane* plane, double tolerance ) const
+ON_BOOL32 ON_Surface::IsPlanar( ON_Plane*, double ) const
 {
   return false;
 }
@@ -369,7 +369,7 @@ ON_Surface::IsClosed(int dir) const
   return false;
 }
 
-ON_BOOL32 ON_Surface::IsPeriodic(int dir) const
+ON_BOOL32 ON_Surface::IsPeriodic(int) const
 {
   return false;
 }
@@ -380,7 +380,7 @@ bool ON_Surface::GetNextDiscontinuity(
                 double t0,
                 double t1,
                 double* t,
-                int* hint,
+                int*,
                 int* dtype,
                 double cos_angle_tolerance,
                 double curvature_tolerance
@@ -795,7 +795,7 @@ bool ON_Surface::IsContinuous(
 }
 
 ON_BOOL32 
-ON_Surface::IsSingular(int side) const
+ON_Surface::IsSingular(int) const
 {
   return false;
 }
@@ -1241,11 +1241,11 @@ ON_Surface::EvNormal( // returns false if unable to evaluate
 
 //virtual
 ON_Curve* ON_Surface::IsoCurve(
-       int dir,    // 0 first parameter varies and second parameter is constant
+       int    ,    // 0 first parameter varies and second parameter is constant
                    //   e.g., point on IsoCurve(0,c) at t is srf(t,c) - Horizontal
                    // 1 first parameter is constant and second parameter varies
                    //   e.g., point on IsoCurve(1,c) at t is srf(c,t) - Vertical
-       double c    // value of constant parameter 
+       double      // value of constant parameter
        ) const
 {
   return NULL;
@@ -1253,8 +1253,8 @@ ON_Curve* ON_Surface::IsoCurve(
 
 //virtual
 ON_BOOL32 ON_Surface::Trim(
-       int dir,
-       const ON_Interval& domain
+       int,
+       const ON_Interval&
        )
 {
   return false;
@@ -1262,8 +1262,8 @@ ON_BOOL32 ON_Surface::Trim(
 
 //virtual
 bool ON_Surface::Extend(
-      int dir,
-      const ON_Interval& domain
+      int,
+      const ON_Interval&
       )
 {
   return false;
@@ -1271,10 +1271,10 @@ bool ON_Surface::Extend(
 
 //virtual
 ON_BOOL32 ON_Surface::Split(
-       int dir,
-       double c,
-       ON_Surface*& west_or_south_side,
-       ON_Surface*& east_or_north_side
+       int,
+       double,
+       ON_Surface*&,
+       ON_Surface*&
        ) const
 {
   return false;
@@ -1282,8 +1282,8 @@ ON_BOOL32 ON_Surface::Split(
 
 // virtual
 int ON_Surface::GetNurbForm(
-      ON_NurbsSurface& nurbs_surface,
-      double tolerance
+      ON_NurbsSurface&,
+      double
       ) const
 {
   return 0;
@@ -1321,8 +1321,8 @@ bool ON_Surface::GetNurbFormParameterFromSurfaceParameter(
 ON_NurbsSurface* ON_Surface::NurbsSurface(
       ON_NurbsSurface* pNurbsSurface,
       double tolerance,
-      const ON_Interval* s_subdomain,
-      const ON_Interval* t_subdomain
+      const ON_Interval*,
+      const ON_Interval*
       ) const
 {
   ON_NurbsSurface* nurbs_surface = pNurbsSurface;

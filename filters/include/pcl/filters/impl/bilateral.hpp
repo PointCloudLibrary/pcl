@@ -51,18 +51,18 @@ pcl::BilateralFilter<PointT>::computePointWeight (const int pid,
   double BF = 0, W = 0;
 
   // For each neighbor
-  for (size_t n_id = 0; n_id < indices.size (); ++n_id)
+  for (std::size_t n_id = 0; n_id < indices.size (); ++n_id)
   {
     int id = indices[n_id];
     // Compute the difference in intensity
-    double intensity_dist = fabs (input_->points[pid].intensity - input_->points[id].intensity);
+    double intensity_dist = std::abs ((*input_)[pid].intensity - (*input_)[id].intensity);
 
     // Compute the Gaussian intensity weights both in Euclidean and in intensity space
     double dist = std::sqrt (distances[n_id]);
     double weight = kernel (dist, sigma_s_) * kernel (intensity_dist, sigma_r_);
 
     // Calculate the bilateral filter response
-    BF += weight * input_->points[id].intensity;
+    BF += weight * (*input_)[id].intensity;
     W += weight;
   }
   return (BF / W);
@@ -97,13 +97,13 @@ pcl::BilateralFilter<PointT>::applyFilter (PointCloud &output)
   output = *input_;
 
   // For all the indices given (equal to the entire cloud if none given)
-  for (size_t i = 0; i < indices_->size (); ++i)
+  for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     // Perform a radius search to find the nearest neighbors
     tree_->radiusSearch ((*indices_)[i], sigma_s_ * 2, k_indices, k_distances);
 
     // Overwrite the intensity value with the computed average
-    output.points[(*indices_)[i]].intensity = static_cast<float> (computePointWeight ((*indices_)[i], k_indices, k_distances));
+    output[(*indices_)[i]].intensity = static_cast<float> (computePointWeight ((*indices_)[i], k_indices, k_distances));
   }
 }
  

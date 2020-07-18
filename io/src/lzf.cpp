@@ -4,7 +4,7 @@
  * Point Cloud Library (PCL) - www.pointclouds.org
  * Copyright (c) 2000-2010 Marc Alexander Lehmann <schmorp@schmorp.de>
  * Copyright (c) 2010-2011, Willow Garage, Inc.
- * 
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -17,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- * 
+ *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -35,11 +35,13 @@
  *
  */
 
-#include <pcl/io/lzf.h>
-#include <cstring>
-#include <climits>
 #include <pcl/console/print.h>
+#include <pcl/io/lzf.h>
+
 #include <cerrno>
+#include <climits>
+#include <cstddef>
+#include <cstring>
 
 /*
  * Size of hashtable is (1 << HLOG) * sizeof (char *)
@@ -114,25 +116,25 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
 
     hval = (hval << 8) | ip[2];
     hslot = htab + IDX (hval);
-    const unsigned char *ref = *hslot + (static_cast<const unsigned char*> (in_data)); 
+    const unsigned char *ref = *hslot + (static_cast<const unsigned char*> (in_data));
     *hslot = static_cast<unsigned int> (ip - (static_cast<const unsigned char*> (in_data)));
 
     // off requires a type wide enough to hold a general pointer difference.
-    // ISO C doesn't have that (size_t might not be enough and ptrdiff_t only
+    // ISO C doesn't have that (std::size_t might not be enough and ptrdiff_t only
     // works for differences within a single object). We also assume that no
     // no bit pattern traps. Since the only platform that is both non-POSIX
     // and fails to support both assumptions is windows 64 bit, we make a
     // special workaround for it.
-#if defined (WIN32) && defined (_M_X64) && defined (_MSC_VER)
+#if defined (_WIN32) && defined (_M_X64) && defined (_MSC_VER)
     // workaround for missing POSIX compliance
-    unsigned _int64 off; 
+    unsigned _int64 off;
 #else
     unsigned long off;
 #endif
 
     if (
         // The next test will actually take care of this, but this is faster if htab is initialized
-        ref < ip 
+        ref < ip
         && (off = ip - ref - 1) < (1 << 13)
         && ref > static_cast<const unsigned char *> (in_data)
         && ref[2] == ip[2]
@@ -145,7 +147,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
     {
       // Match found at *ref++
       unsigned int len = 2;
-      ptrdiff_t maxlen = in_end - ip - len;
+      std::ptrdiff_t maxlen = in_end - ip - len;
       maxlen = maxlen > ((1 << 8) + (1 << 3)) ? ((1 << 8) + (1 << 3)) : maxlen;
 
       // First a faster conservative test
@@ -248,7 +250,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
     }
   }
 
-  // At most 3 bytes can be missing here 
+  // At most 3 bytes can be missing here
   if (op + 3 > out_end)
     return (0);
 
@@ -274,7 +276,7 @@ pcl::lzfCompress (const void *const in_data, unsigned int in_len,
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-unsigned int 
+unsigned int
 pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
                     void             *out_data, unsigned int out_len)
 {
@@ -304,17 +306,8 @@ pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
         errno = EINVAL;
         return (0);
       }
-      switch (ctrl)
-      {
-        case 32: *op++ = *ip++; case 31: *op++ = *ip++; case 30: *op++ = *ip++; case 29: *op++ = *ip++;
-        case 28: *op++ = *ip++; case 27: *op++ = *ip++; case 26: *op++ = *ip++; case 25: *op++ = *ip++;
-        case 24: *op++ = *ip++; case 23: *op++ = *ip++; case 22: *op++ = *ip++; case 21: *op++ = *ip++;
-        case 20: *op++ = *ip++; case 19: *op++ = *ip++; case 18: *op++ = *ip++; case 17: *op++ = *ip++;
-        case 16: *op++ = *ip++; case 15: *op++ = *ip++; case 14: *op++ = *ip++; case 13: *op++ = *ip++;
-        case 12: *op++ = *ip++; case 11: *op++ = *ip++; case 10: *op++ = *ip++; case  9: *op++ = *ip++;
-        case  8: *op++ = *ip++; case  7: *op++ = *ip++; case  6: *op++ = *ip++; case  5: *op++ = *ip++;
-        case  4: *op++ = *ip++; case  3: *op++ = *ip++; case  2: *op++ = *ip++; case  1: *op++ = *ip++;
-      }
+      for (unsigned ctrl_c = ctrl; ctrl_c; --ctrl_c)
+        *op++ = *ip++;
     }
     // Back reference
     else
@@ -353,40 +346,27 @@ pcl::lzfDecompress (const void *const in_data,  unsigned int in_len,
         return (0);
       }
 
-      switch (len)
+      if (len > 9)
       {
-        default:
+        len += 2;
+
+        if (op >= ref + len)
         {
-          len += 2;
-
-          if (op >= ref + len)
-          {
-            // Disjunct areas
-            memcpy (op, ref, len);
-            op += len;
-          }
-          else
-          {
-            // Overlapping, use byte by byte copying
-            do
-              *op++ = *ref++;
-            while (--len);
-          }
-
-          break;
+          // Disjunct areas
+          memcpy (op, ref, len);
+          op += len;
         }
-        case 9: *op++ = *ref++;
-        case 8: *op++ = *ref++;
-        case 7: *op++ = *ref++;
-        case 6: *op++ = *ref++;
-        case 5: *op++ = *ref++;
-        case 4: *op++ = *ref++;
-        case 3: *op++ = *ref++;
-        case 2: *op++ = *ref++;
-        case 1: *op++ = *ref++;
-        case 0: *op++ = *ref++; // two octets more
-                *op++ = *ref++;
+        else
+        {
+          // Overlapping, use byte by byte copying
+          do
+            *op++ = *ref++;
+          while (--len);
+        }
       }
+      else
+        for (unsigned len_c = len + 2 /* case 0 iterates twice */; len_c; --len_c)
+          *op++ = *ref++;
     }
   }
   while (ip < in_end);

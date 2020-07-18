@@ -43,7 +43,7 @@
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
 
 template <typename PointT> QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::MergeSelection::performTemplatedAction (QList <const CloudComposerItem*> input_data)
+pcl::cloud_composer::MergeSelection::performTemplatedAction (const QList <const CloudComposerItem*>& input_data)
 {
   QList <CloudComposerItem*> output;  
   

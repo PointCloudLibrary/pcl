@@ -36,6 +36,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -58,8 +59,8 @@ namespace pcl
   {
   public:
 
-    using Ptr = boost::shared_ptr<TSDFVolume<VoxelT, WeightT> >;
-    using ConstPtr = boost::shared_ptr<const TSDFVolume<VoxelT, WeightT> >;
+    using Ptr = shared_ptr<TSDFVolume<VoxelT, WeightT> >;
+    using ConstPtr = shared_ptr<const TSDFVolume<VoxelT, WeightT> >;
 
     // using VoxelTVec = Eigen::Matrix<VoxelT, Eigen::Dynamic, 1>;
     using VoxelTVec = Eigen::VectorXf;
@@ -85,7 +86,7 @@ namespace pcl
           weights_element_size (sizeof(WeightT))
       {};
 
-      inline size_t
+      inline std::size_t
       getVolumeSize () const { return resolution[0] * resolution[1] * resolution[2]; };
 
       friend inline std::ostream&
@@ -183,7 +184,7 @@ public:
     save (const std::string &filename = "tsdf_volume.dat", bool binary = true) const;
 
     /** \brief Returns overall number of voxels in grid */
-    inline size_t
+    inline std::size_t
     size () const { return header_.getVolumeSize(); };
 
     /** \brief Returns the volume size in mm */
@@ -225,7 +226,7 @@ public:
     // Functionality
 
     /** \brief Converts volume to cloud of TSDF values
-      * \param[ou] cloud - the output point cloud
+      * \param[out] cloud - the output point cloud
       * \param[in] step - the decimation step to use
       */
     void
@@ -283,8 +284,8 @@ public:
   //  void
   //  integrateVolume (const Eigen::MatrixXf &depth_scaled, float tranc_dist, const Eigen::Matrix3f &R_inv, const Eigen::Vector3f &t, const Intr &intr);
 
-    using VolumePtr = boost::shared_ptr<std::vector<VoxelT> >;
-    using WeightsPtr = boost::shared_ptr<std::vector<WeightT> >;
+    using VolumePtr = shared_ptr<std::vector<VoxelT> >;
+    using WeightsPtr = shared_ptr<std::vector<WeightT> >;
 
     Header header_;
     VolumePtr volume_;

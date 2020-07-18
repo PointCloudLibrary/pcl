@@ -36,7 +36,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/pcl_tests.h>
 #include <pcl/io/pcd_io.h>
@@ -104,9 +104,9 @@ void verifyPlaneSac (ModelType& model,
   // Projection tests
   PointCloud<PointXYZ> proj_points;
   model->projectPoints (inliers, coeff_refined, proj_points);
-  EXPECT_XYZ_NEAR (PointXYZ (1.1266,  0.0152, -0.0156), proj_points.points[20], proj_tol);
-  EXPECT_XYZ_NEAR (PointXYZ (1.1843, -0.0635, -0.0201), proj_points.points[30], proj_tol);
-  EXPECT_XYZ_NEAR (PointXYZ (1.0749, -0.0586,  0.0587), proj_points.points[50], proj_tol);
+  EXPECT_XYZ_NEAR (PointXYZ (1.1266,  0.0152, -0.0156), proj_points[20], proj_tol);
+  EXPECT_XYZ_NEAR (PointXYZ (1.1843, -0.0635, -0.0201), proj_points[30], proj_tol);
+  EXPECT_XYZ_NEAR (PointXYZ (1.0749, -0.0586,  0.0587), proj_points[50], proj_tol);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -117,11 +117,11 @@ TEST (SampleConsensusModelPlane, Base)
 
   // Basic tests
   PointCloud<PointXYZ>::ConstPtr cloud = model->getInputCloud ();
-  ASSERT_EQ (cloud_->points.size (), cloud->points.size ());
+  ASSERT_EQ (cloud_->size (), cloud->size ());
 
   model->setInputCloud (cloud);
   cloud = model->getInputCloud ();
-  ASSERT_EQ (cloud_->points.size (), cloud->points.size ());
+  ASSERT_EQ (cloud_->size (), cloud->size ());
 
   auto indices = model->getIndices ();
   ASSERT_EQ (indices_.size (), indices->size ());
@@ -186,8 +186,8 @@ TEST (SampleConsensusModelPlane, RRANSAC)
   // Create the RRANSAC object
   RandomizedRandomSampleConsensus<PointXYZ> sac (model, 0.03);
 
-  sac.setFractionNrPretest (10.0);
-  ASSERT_EQ (10.0, sac.getFractionNrPretest ());
+  sac.setFractionNrPretest (0.1);
+  ASSERT_EQ (0.1, sac.getFractionNrPretest ());
 
   verifyPlaneSac (model, sac, 600, 1.0f, 1.0f, 0.01f);
 }
@@ -250,15 +250,15 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
   cloud.points.resize (10);
   normals.resize (10);
 
-  for (size_t idx = 0; idx < cloud.size (); ++idx)
+  for (std::size_t idx = 0; idx < cloud.size (); ++idx)
   {
-    cloud.points[idx].x = static_cast<float> ((rand () % 200) - 100);
-    cloud.points[idx].y = static_cast<float> ((rand () % 200) - 100);
-    cloud.points[idx].z = 0.0f;
+    cloud[idx].x = static_cast<float> ((rand () % 200) - 100);
+    cloud[idx].y = static_cast<float> ((rand () % 200) - 100);
+    cloud[idx].z = 0.0f;
 
-    normals.points[idx].normal_x = 0.0f;
-    normals.points[idx].normal_y = 0.0f;
-    normals.points[idx].normal_z = 1.0f;
+    normals[idx].normal_x = 0.0f;
+    normals[idx].normal_y = 0.0f;
+    normals[idx].normal_z = 1.0f;
   }
 
   // Create a shared plane model pointer directly
@@ -283,7 +283,7 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
 
   // test axis slightly in valid range
   {
-    model->setAxis (Eigen::Vector3f (0, sin (max_angle_rad * (1 - angle_eps)), cos (max_angle_rad * (1 - angle_eps))));
+    model->setAxis (Eigen::Vector3f (0, sin (max_angle_rad * (1 - angle_eps)), std::cos (max_angle_rad * (1 - angle_eps))));
     RandomSampleConsensus<PointXYZ> sac (model, 0.03);
     sac.computeModel ();
 
@@ -294,7 +294,7 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
 
   // test axis slightly out of valid range
   {
-    model->setAxis (Eigen::Vector3f (0, sin (max_angle_rad * (1 + angle_eps)), cos (max_angle_rad * (1 + angle_eps))));
+    model->setAxis (Eigen::Vector3f (0, sin (max_angle_rad * (1 + angle_eps)), std::cos (max_angle_rad * (1 + angle_eps))));
     RandomSampleConsensus<PointXYZ> sac (model, 0.03);
     sac.computeModel ();
 
@@ -325,8 +325,8 @@ main (int argc, char** argv)
   fromPCLPointCloud2 (cloud_blob, *cloud_);
   fromPCLPointCloud2 (cloud_blob, *normals_);
 
-  indices_.resize (cloud_->points.size ());
-  for (size_t i = 0; i < indices_.size (); ++i) { indices_[i] = int (i); }
+  indices_.resize (cloud_->size ());
+  for (std::size_t i = 0; i < indices_.size (); ++i) { indices_[i] = int (i); }
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

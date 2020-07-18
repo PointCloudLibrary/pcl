@@ -42,9 +42,15 @@
 
 #include <pcl/console/print.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
+namespace registration
+{
+
 template <typename Scalar> bool
-pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
+DefaultConvergenceCriteria<Scalar>::hasConverged ()
 {
   if (convergence_state_ != CONVERGENCE_CRITERIA_NOT_CONVERGED)
   {
@@ -52,7 +58,7 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
     iterations_similar_transforms_ = 0;
     convergence_state_ = CONVERGENCE_CRITERIA_NOT_CONVERGED;
   }
-  
+
   bool is_similar = false;
 
   PCL_DEBUG ("[pcl::DefaultConvergenceCriteria::hasConverged] Iteration %d out of %d.\n", iterations_, max_iterations_);
@@ -89,7 +95,7 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
 
   // 3. The relative sum of Euclidean squared errors is smaller than a user defined threshold
   // Absolute
-  if (fabs (correspondences_cur_mse_ - correspondences_prev_mse_) < mse_threshold_absolute_)
+  if (std::abs (correspondences_cur_mse_ - correspondences_prev_mse_) < mse_threshold_absolute_)
   {
     if (iterations_similar_transforms_ >= max_iterations_similar_transforms_)
     {
@@ -98,9 +104,9 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
     }
     is_similar = true;
   }
-  
+
   // Relative
-  if (fabs (correspondences_cur_mse_ - correspondences_prev_mse_) / correspondences_prev_mse_ < mse_threshold_relative_)
+  if (std::abs (correspondences_cur_mse_ - correspondences_prev_mse_) / correspondences_prev_mse_ < mse_threshold_relative_)
   {
     if (iterations_similar_transforms_ >= max_iterations_similar_transforms_)
     {
@@ -126,4 +132,8 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
   return (false);
 }
 
+} // namespace registration
+} // namespace pcl
+
 #endif    // PCL_REGISTRATION_DEFAULT_CONVERGENCE_CRITERIA_HPP_
+

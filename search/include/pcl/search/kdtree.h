@@ -64,9 +64,6 @@ namespace pcl
         using PointCloud = typename Search<PointT>::PointCloud;
         using PointCloudConstPtr = typename Search<PointT>::PointCloudConstPtr;
 
-        using IndicesPtr = boost::shared_ptr<std::vector<int> >;
-        using IndicesConstPtr = boost::shared_ptr<const std::vector<int> >;
-
         using pcl::search::Search<PointT>::indices_;
         using pcl::search::Search<PointT>::input_;
         using pcl::search::Search<PointT>::getIndices;
@@ -75,12 +72,12 @@ namespace pcl
         using pcl::search::Search<PointT>::radiusSearch;
         using pcl::search::Search<PointT>::sorted_results_;
 
-        using Ptr = boost::shared_ptr<KdTree<PointT, Tree> >;
-        using ConstPtr = boost::shared_ptr<const KdTree<PointT, Tree> >;
+        using Ptr = shared_ptr<KdTree<PointT, Tree> >;
+        using ConstPtr = shared_ptr<const KdTree<PointT, Tree> >;
 
-        using KdTreePtr = boost::shared_ptr<Tree>;
-        using KdTreeConstPtr = boost::shared_ptr<const Tree>;
-        using PointRepresentationConstPtr = boost::shared_ptr<const PointRepresentation<PointT> >;
+        using KdTreePtr = typename Tree::Ptr;
+        using KdTreeConstPtr = typename Tree::ConstPtr;
+        using PointRepresentationConstPtr = typename PointRepresentation<PointT>::ConstPtr;
 
         /** \brief Constructor for KdTree. 
           *
@@ -147,7 +144,7 @@ namespace pcl
           */
         int
         nearestKSearch (const PointT &point, int k, 
-                        std::vector<int> &k_indices, 
+                        Indices &k_indices,
                         std::vector<float> &k_sqr_distances) const override;
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
@@ -162,7 +159,7 @@ namespace pcl
           */
         int
         radiusSearch (const PointT& point, double radius, 
-                      std::vector<int> &k_indices, 
+                      Indices &k_indices,
                       std::vector<float> &k_sqr_distances,
                       unsigned int max_nn = 0) const override;
       protected:

@@ -36,7 +36,7 @@
 
 /**
   * \file bearing_angle_image.h
-  * \Created on: July 07, 2012
+  * Created on: July 07, 2012
   */
 
 #pragma once
@@ -59,8 +59,6 @@ namespace pcl
       // =====CONSTRUCTOR & DESTRUCTOR=====
       /** Constructor */
       BearingAngleImage ();
-      /** Destructor */
-      ~BearingAngleImage ();
 
     public:
       /** \brief Reset all values to an empty Bearing Angle image */

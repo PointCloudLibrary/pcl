@@ -104,9 +104,9 @@ pcl::CropHull<PointT>::getHullCloudRange ()
     -std::numeric_limits<float>::max (),
     -std::numeric_limits<float>::max ()
   );
-  for (size_t index = 0; index < indices_->size (); index++)
+  for (std::size_t index = 0; index < indices_->size (); index++)
   {
-    Eigen::Vector3f pt = input_->points[(*indices_)[index]].getVector3fMap ();
+    Eigen::Vector3f pt = (*input_)[(*indices_)[index]].getVector3fMap ();
     for (int i = 0; i < 3; i++)
     {
       if (pt[i] < cloud_min[i]) cloud_min[i] = pt[i];
@@ -121,19 +121,19 @@ pcl::CropHull<PointT>::getHullCloudRange ()
 template<typename PointT> template<unsigned PlaneDim1, unsigned PlaneDim2> void 
 pcl::CropHull<PointT>::applyFilter2D (PointCloud &output)
 {
-  for (size_t index = 0; index < indices_->size (); index++)
+  for (std::size_t index = 0; index < indices_->size (); index++)
   {
     // iterate over polygons faster than points because we expect this data
     // to be, in general, more cache-local - the point cloud might be huge
-    size_t poly;
+    std::size_t poly;
     for (poly = 0; poly < hull_polygons_.size (); poly++)
     {
       if (isPointIn2DPolyWithVertIndices<PlaneDim1,PlaneDim2> (
-              input_->points[(*indices_)[index]], hull_polygons_[poly], *hull_cloud_
+              (*input_)[(*indices_)[index]], hull_polygons_[poly], *hull_cloud_
          ))
       {
         if (crop_outside_)
-          output.push_back (input_->points[(*indices_)[index]]);
+          output.push_back ((*input_)[(*indices_)[index]]);
         // once a point has tested +ve for being inside one polygon, we can
         // stop checking the others:
         break;
@@ -142,7 +142,7 @@ pcl::CropHull<PointT>::applyFilter2D (PointCloud &output)
     // If we're removing points *inside* the hull, only remove points that
     // haven't been found inside any polygons
     if (poly == hull_polygons_.size () && !crop_outside_)
-      output.push_back (input_->points[(*indices_)[index]]);
+      output.push_back ((*input_)[(*indices_)[index]]);
   }
 }
 
@@ -151,13 +151,13 @@ template<typename PointT> template<unsigned PlaneDim1, unsigned PlaneDim2> void
 pcl::CropHull<PointT>::applyFilter2D (std::vector<int> &indices)
 {
   // see comments in (PointCloud& output) overload
-  for (size_t index = 0; index < indices_->size (); index++)
+  for (std::size_t index = 0; index < indices_->size (); index++)
   {
-    size_t poly;
+    std::size_t poly;
     for (poly = 0; poly < hull_polygons_.size (); poly++)
     {
       if (isPointIn2DPolyWithVertIndices<PlaneDim1,PlaneDim2> (
-              input_->points[(*indices_)[index]], hull_polygons_[poly], *hull_cloud_
+              (*input_)[(*indices_)[index]], hull_polygons_[poly], *hull_cloud_
          ))
       {
         if (crop_outside_)      
@@ -177,7 +177,7 @@ pcl::CropHull<PointT>::applyFilter3D (PointCloud &output)
   // This algorithm could definitely be sped up using kdtree/octree
   // information, if that is available!
 
-  for (size_t index = 0; index < indices_->size (); index++)
+  for (std::size_t index = 0; index < indices_->size (); index++)
   {
     // test ray-crossings for three random rays, and take vote of crossings
     // counts to determine if each point is inside the hull: the vote avoids
@@ -186,7 +186,7 @@ pcl::CropHull<PointT>::applyFilter3D (PointCloud &output)
     // 'random' rays are arbitrary - basically anything that is less likely to
     // hit the edge between polygons than coordinate-axis aligned rays would
     // be.
-    size_t crossings[3] = {0,0,0};
+    std::size_t crossings[3] = {0,0,0};
     Eigen::Vector3f rays[3] = 
     {
       Eigen::Vector3f (0.264882f,  0.688399f, 0.675237f),
@@ -194,15 +194,15 @@ pcl::CropHull<PointT>::applyFilter3D (PointCloud &output)
       Eigen::Vector3f (0.856514f,  0.508771f, 0.0868081f)
     };
 
-    for (size_t poly = 0; poly < hull_polygons_.size (); poly++)
-      for (size_t ray = 0; ray < 3; ray++)
+    for (std::size_t poly = 0; poly < hull_polygons_.size (); poly++)
+      for (std::size_t ray = 0; ray < 3; ray++)
         crossings[ray] += rayTriangleIntersect
-          (input_->points[(*indices_)[index]], rays[ray], hull_polygons_[poly], *hull_cloud_);
+          ((*input_)[(*indices_)[index]], rays[ray], hull_polygons_[poly], *hull_cloud_);
 
     if (crop_outside_ && (crossings[0]&1) + (crossings[1]&1) + (crossings[2]&1) > 1)
-      output.push_back (input_->points[(*indices_)[index]]);
+      output.push_back ((*input_)[(*indices_)[index]]);
     else if (!crop_outside_)
-      output.push_back (input_->points[(*indices_)[index]]);
+      output.push_back ((*input_)[(*indices_)[index]]);
   }
 }
 
@@ -211,9 +211,9 @@ template<typename PointT> void
 pcl::CropHull<PointT>::applyFilter3D (std::vector<int> &indices)
 {
   // see comments in applyFilter3D (PointCloud& output)
-  for (size_t index = 0; index < indices_->size (); index++)
+  for (std::size_t index = 0; index < indices_->size (); index++)
   {
-    size_t crossings[3] = {0,0,0};
+    std::size_t crossings[3] = {0,0,0};
     Eigen::Vector3f rays[3] = 
     {
       Eigen::Vector3f(0.264882f,  0.688399f, 0.675237f),
@@ -221,10 +221,10 @@ pcl::CropHull<PointT>::applyFilter3D (std::vector<int> &indices)
       Eigen::Vector3f(0.856514f,  0.508771f, 0.0868081f)
     };
 
-    for (size_t poly = 0; poly < hull_polygons_.size (); poly++)
-      for (size_t ray = 0; ray < 3; ray++)
+    for (std::size_t poly = 0; poly < hull_polygons_.size (); poly++)
+      for (std::size_t ray = 0; ray < 3; ray++)
         crossings[ray] += rayTriangleIntersect
-          (input_->points[(*indices_)[index]], rays[ray], hull_polygons_[poly], *hull_cloud_);
+          ((*input_)[(*indices_)[index]], rays[ray], hull_polygons_[poly], *hull_cloud_);
 
     if (crop_outside_ && (crossings[0]&1) + (crossings[1]&1) + (crossings[2]&1) > 1)
       indices.push_back ((*indices_)[index]);
@@ -241,7 +241,7 @@ pcl::CropHull<PointT>::isPointIn2DPolyWithVertIndices (
   bool in_poly = false;
   double x1, x2, y1, y2;
 
-  const int nr_poly_points = static_cast<const int>(verts.vertices.size ());
+  const int nr_poly_points = static_cast<int>(verts.vertices.size ());
   double xold = cloud[verts.vertices[nr_poly_points - 1]].getVector3fMap ()[PlaneDim1];
   double yold = cloud[verts.vertices[nr_poly_points - 1]].getVector3fMap ()[PlaneDim2];
   for (int i = 0; i < nr_poly_points; i++)

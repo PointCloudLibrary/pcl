@@ -177,7 +177,7 @@ saveCloud (const std::string &filename, std::vector<FeatureT, Eigen::aligned_all
   }
   else
   {
-    for (size_t i = 0; i < output.size (); i++)
+    for (std::size_t i = 0; i < output.size (); i++)
     {
       std::string fname (filename);
       std::string s = std::to_string(static_cast<int> (i) );

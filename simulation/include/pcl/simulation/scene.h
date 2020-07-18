@@ -7,39 +7,35 @@
 
 #pragma once
 
-#include <boost/shared_ptr.hpp>
-
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 //#include <pcl/win32_macros.h>
-
 #include <pcl/simulation/camera.h>
 #include <pcl/simulation/model.h>
 
-namespace pcl
-{
-  namespace simulation
-  {
-    class PCL_EXPORTS Scene
-    {
-    public:
-      using Ptr = boost::shared_ptr<Scene>;
-      using ConstPtr = boost::shared_ptr<Scene>;
+namespace pcl {
+namespace simulation {
 
-      void
-      draw ();
+class PCL_EXPORTS Scene {
+public:
+  using Ptr = shared_ptr<Scene>;
+  using ConstPtr = shared_ptr<Scene>;
 
-      void
-      add (Model::Ptr model);
+  void
+  draw();
 
-      void
-      addCompleteModel (std::vector<Model::Ptr> model);
+  void
+  add(Model::Ptr model);
 
-      void
-      clear ();
+  void
+  addCompleteModel(std::vector<Model::Ptr> model);
 
-    private:
-      std::vector<Model::Ptr> models_;
-    };
-  
-  } // namespace - simulation
-} // namespace - pcl
+  void
+  clear();
+
+private:
+  std::vector<Model::Ptr> models_;
+};
+
+} // namespace simulation
+} // namespace pcl

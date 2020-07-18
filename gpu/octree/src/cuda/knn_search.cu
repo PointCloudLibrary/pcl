@@ -34,8 +34,9 @@
 *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
 */
 
+#include <limits>
+
 #include "internal.hpp"
-#include "pcl/gpu/utils/device/limits.hpp"
 #include "pcl/gpu/utils/device/warp.hpp"
 
 #include "utils/copygen.hpp"
@@ -94,7 +95,7 @@ namespace pcl { namespace device { namespace knn_search
         OctreeIterator iterator;     
 
         __device__ __forceinline__ Warp_knnSearch(const Batch& batch_arg, int query_index_arg) 
-            : batch(batch_arg), query_index(query_index_arg), min_distance(numeric_limits<float>::max()), min_idx(0), iterator(batch.octree) { }
+            : batch(batch_arg), query_index(query_index_arg), min_distance(std::numeric_limits<float>::max()), min_idx(0), iterator(batch.octree) { }
 
         __device__ __forceinline__ void launch(bool active)
         {              
@@ -227,7 +228,7 @@ namespace pcl { namespace device { namespace knn_search
             __shared__ volatile int   index[CTA_SIZE];
 			
             int tid = threadIdx.x;
-			dist2[tid] = pcl::device::numeric_limits<float>::max();
+			dist2[tid] = std::numeric_limits<float>::max();
 
 			//serial step
             for (int idx = Warp::laneId(); idx < length; idx += Warp::STRIDE)

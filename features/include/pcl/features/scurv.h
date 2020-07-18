@@ -60,8 +60,8 @@ namespace pcl
 
       typedef typename Feature<PointInT, SCurVSignature210>::PointCloudIn PointCloudIn;
 
-      typedef boost::shared_ptr<SCurVEstimation<PointInT, PointNT> > Ptr;
-      typedef boost::shared_ptr<const SCurVEstimation<PointInT, PointNT> > ConstPtr;
+      typedef shared_ptr<SCurVEstimation<PointInT, PointNT> > Ptr;
+      typedef shared_ptr<const SCurVEstimation<PointInT, PointNT> > ConstPtr;
 
       /** \brief Default constructor. */
       SCurVEstimation ()

@@ -104,8 +104,8 @@ namespace pcl
       using FeatureCloudPtr = typename FeatureCloud::Ptr;
       using FeatureCloudConstPtr = typename FeatureCloud::ConstPtr;
 
-      using Ptr = boost::shared_ptr<SampleConsensusPrerejective<PointSource, PointTarget, FeatureT> >;
-      using ConstPtr = boost::shared_ptr<const SampleConsensusPrerejective<PointSource, PointTarget, FeatureT> >;
+      using Ptr = shared_ptr<SampleConsensusPrerejective<PointSource, PointTarget, FeatureT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusPrerejective<PointSource, PointTarget, FeatureT> >;
 
       using FeatureKdTreePtr = typename KdTreeFLANN<FeatureT>::Ptr;
       

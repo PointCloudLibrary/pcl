@@ -37,13 +37,8 @@
  *
  */
 
-// STL
 #include <iostream>
-#include <limits>
 
-// PCL
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/filters/filter.h>
 
 int
@@ -64,11 +59,11 @@ main (int, char**)
   p_valid.x = 1.0f;
   cloud->push_back(p_valid);
 
-  std::cout << "size: " << cloud->points.size () << std::endl;
+  std::cout << "size: " << cloud->size () << std::endl;
 
   std::vector<int> indices;
   pcl::removeNaNFromPointCloud(*cloud, *output_cloud, indices);
-  std::cout << "size: " << output_cloud->points.size () << std::endl;
+  std::cout << "size: " << output_cloud->size () << std::endl;
 
   return 0;
 }

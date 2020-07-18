@@ -57,7 +57,6 @@
 #include <string>
 #include <typeinfo>
 
-using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;
@@ -196,8 +195,8 @@ class SimpleVLPViewer
       cloud_connection.disconnect ();
     }
 
-    boost::shared_ptr<PCLVisualizer> cloud_viewer_;
-    boost::shared_ptr<ImageViewer> image_viewer_;
+    PCLVisualizer::Ptr cloud_viewer_;
+    ImageViewer::Ptr image_viewer_;
 
     Grabber& grabber_;
     std::mutex cloud_mutex_;
@@ -210,8 +209,8 @@ class SimpleVLPViewer
 void
 usage (char ** argv)
 {
-  cout << "usage: " << argv[0] << " [-pcapFile <path-to-pcap-file>] [-h | --help]" << endl;
-  cout << argv[0] << " -h | --help : shows this help" << endl;
+  std::cout << "usage: " << argv[0] << " [-pcapFile <path-to-pcap-file>] [-h | --help]" << std::endl;
+  std::cout << argv[0] << " -h | --help : shows this help" << std::endl;
   return;
 }
 

@@ -52,6 +52,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_exports.h>
 #include <limits>
+#include <pcl/recognition/ransac_based/auxiliary.h>
 
 namespace pcl
 {
@@ -124,7 +125,7 @@ namespace pcl
             for ( int i = 0 ; i < num_source_points ; ++i )
             {
               // Transform the i-th source point based on the current transform matrix
-              aux::transform (guess_and_result, source_points.points[i], transformed_source_point);
+              aux::transform (guess_and_result, source_points[i], transformed_source_point);
 
               // Perform the closest point search
               kdtree_.nearestKSearch (transformed_source_point, 1, target_index, sqr_dist_to_target);

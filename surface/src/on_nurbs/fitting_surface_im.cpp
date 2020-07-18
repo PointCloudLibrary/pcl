@@ -36,6 +36,8 @@
  */
 
 #include <pcl/surface/on_nurbs/fitting_surface_im.h>
+#include <pcl/pcl_macros.h>
+
 #include <stdexcept>
 
 using namespace pcl;
@@ -157,7 +159,7 @@ FittingSurfaceIM::refine ()
   {
     int dim = 0;
     std::vector<double> elements = getElementVector (m_nurbs, dim);
-    for (size_t i = 0; i < elements.size () - 1; i++)
+    for (std::size_t i = 0; i < elements.size () - 1; i++)
     {
       double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
       m_nurbs.InsertKnot (dim, xi, 1);
@@ -166,7 +168,7 @@ FittingSurfaceIM::refine ()
   {
     int dim = 1;
     std::vector<double> elements = getElementVector (m_nurbs, dim);
-    for (size_t i = 0; i < elements.size () - 1; i++)
+    for (std::size_t i = 0; i < elements.size () - 1; i++)
     {
       double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
       m_nurbs.InsertKnot (dim, xi, 1);
@@ -391,6 +393,7 @@ FittingSurfaceIM::addCageBoundaryRegularisation (double weight, int side, unsign
   {
     case SOUTH:
       j = m_nurbs.m_cv_count[1] - 1;
+      PCL_FALLTHROUGH
     case NORTH:
       for (i = 1; i < (m_nurbs.m_cv_count[0] - 1); i++)
       {
@@ -407,6 +410,7 @@ FittingSurfaceIM::addCageBoundaryRegularisation (double weight, int side, unsign
 
     case EAST:
       i = m_nurbs.m_cv_count[0] - 1;
+      PCL_FALLTHROUGH
     case WEST:
       for (j = 1; j < (m_nurbs.m_cv_count[1] - 1); j++)
       {
@@ -521,9 +525,9 @@ FittingSurfaceIM::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, cons
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   double d_shortest (DBL_MAX);
-  for (size_t i = 0; i < elementsU.size () - 1; i++)
+  for (std::size_t i = 0; i < elementsU.size () - 1; i++)
   {
-    for (size_t j = 0; j < elementsV.size () - 1; j++)
+    for (std::size_t j = 0; j < elementsV.size () - 1; j++)
     {
       double points[3];
       double d;

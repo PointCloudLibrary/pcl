@@ -69,7 +69,7 @@ RangeImage::createLookupTables ()
   for (int i=0; i<lookup_table_size; ++i) 
   {
     float value = static_cast<float> (i-(lookup_table_size-1)/2)/static_cast<float> ((lookup_table_size-1)/2);
-    atan_lookup_table[i] = atanf (value);
+    atan_lookup_table[i] = std::atan (value);
   }
   
   cos_lookup_table.resize (lookup_table_size);
@@ -77,7 +77,7 @@ RangeImage::createLookupTables ()
   for (int i = 0; i < lookup_table_size; ++i) 
   {
     float value = static_cast<float> (i) * 2.0f * static_cast<float> (M_PI) / static_cast<float> (lookup_table_size-1);
-    cos_lookup_table[i] = cosf (value);
+    cos_lookup_table[i] = std::cos (value);
   }
 }
 
@@ -118,11 +118,6 @@ RangeImage::RangeImage () :
 }
 
 /////////////////////////////////////////////////////////////////////////
-RangeImage::~RangeImage ()
-{
-}
-
-/////////////////////////////////////////////////////////////////////////
 void
 RangeImage::reset ()
 {
@@ -149,8 +144,8 @@ RangeImage::createEmpty (float angular_resolution_x, float angular_resolution_y,
                          RangeImage::CoordinateFrame coordinate_frame, float angle_width, float angle_height)
 {
   setAngularResolution(angular_resolution_x, angular_resolution_y);
-  width  = static_cast<uint32_t> (pcl_lrint (std::floor (angle_width * angular_resolution_x_reciprocal_)));
-  height = static_cast<uint32_t> (pcl_lrint (std::floor (angle_height * angular_resolution_y_reciprocal_)));
+  width  = static_cast<std::uint32_t> (pcl_lrint (std::floor (angle_width * angular_resolution_x_reciprocal_)));
+  height = static_cast<std::uint32_t> (pcl_lrint (std::floor (angle_height * angular_resolution_y_reciprocal_)));
 
   int full_width  = static_cast<int> (pcl_lrint (std::floor (pcl::deg2rad (360.0f)*angular_resolution_x_reciprocal_))),
       full_height = static_cast<int> (pcl_lrint (std::floor (pcl::deg2rad (180.0f)*angular_resolution_y_reciprocal_)));
@@ -252,17 +247,17 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
   //std::cout << oldRangeImage.width<<"x"<<oldRangeImage.height<<" -> "<<width<<"x"<<height<<"\n";
   
   // Copy points
-  for (int y=0, oldY=top; y< static_cast<int> (height); ++y,++oldY) 
+  for (int y=0, oldY=top; y< static_cast<int> (height); ++y,++oldY)
   {
-    for (int x=0, oldX=left; x< static_cast<int> (width); ++x,++oldX) 
+    for (int x=0, oldX=left; x< static_cast<int> (width); ++x,++oldX)
     {
       PointWithRange& currentPoint = points[y*width + x];
-      if (oldX<0 || oldX>= static_cast<int> (oldRangeImage.width) || oldY<0 || oldY>= static_cast<int> (oldRangeImage.height)) 
+      if (oldX<0 || oldX>= static_cast<int> (oldRangeImage.width) || oldY<0 || oldY>= static_cast<int> (oldRangeImage.height))
       {
         currentPoint = unobserved_point;
         continue;
       }
-      currentPoint = oldRangeImage.points[oldY*oldRangeImage.width + oldX];
+      currentPoint = oldRangeImage[oldY*oldRangeImage.width + oldX];
     }
   }
 }
@@ -271,9 +266,9 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
 void 
 RangeImage::recalculate3DPointPositions () 
 {
-  for (int y = 0; y < static_cast<int> (height); ++y) 
+  for (int y = 0; y < static_cast<int> (height); ++y)
   {
-    for (int x = 0; x < static_cast<int> (width); ++x) 
+    for (int x = 0; x < static_cast<int> (width); ++x)
     {
       PointWithRange& point = points[y*width + x];
       if (!std::isinf (point.range)) 
@@ -495,12 +490,12 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
         continue;
       getPoint (x, y, point1);
       point1 = pose*point1;
-      if (fabs (point1[2]) > max_dist)
+      if (std::abs (point1[2]) > max_dist)
         continue;
       
       getPoint (x+1, y+1, point2);
       point2 = pose*point2;
-      if (fabs (point2[2]) > max_dist)
+      if (std::abs (point2[2]) > max_dist)
         continue;
       
       for (int triangle_idx=0; triangle_idx<=1; ++triangle_idx)
@@ -518,7 +513,7 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
           getPoint (x+1, y, point3);
         }
         point3 = pose*point3;
-        if (fabs (point3[2]) > max_dist)
+        if (std::abs (point3[2]) > max_dist)
           continue;
         
         // Are all the points either left, right, on top or below the bottom of the surface patch?
@@ -543,11 +538,11 @@ RangeImage::getInterpolatedSurfaceProjection (const Eigen::Affine3f& pose, int p
               cell3_y = world2cell_factor*point3[1] + world2cell_offset,
               cell3_z = point3[2];
         
-        int min_cell_x = (std::max) (0, int (pcl_lrint (ceil ( (std::min) (cell1_x, (std::min) (cell2_x, cell3_x)))))),
-            max_cell_x = (std::min) (pixel_size-1, int (pcl_lrint (floor ( (std::max) (cell1_x,
+        int min_cell_x = (std::max) (0, int (pcl_lrint (std::ceil ( (std::min) (cell1_x, (std::min) (cell2_x, cell3_x)))))),
+            max_cell_x = (std::min) (pixel_size-1, int (pcl_lrint (std::floor ( (std::max) (cell1_x,
                                                                        (std::max) (cell2_x, cell3_x)))))),
-            min_cell_y = (std::max) (0, int (pcl_lrint (ceil ( (std::min) (cell1_y, (std::min) (cell2_y, cell3_y)))))),
-            max_cell_y = (std::min) (pixel_size-1, int (pcl_lrint (floor ( (std::max) (cell1_y,
+            min_cell_y = (std::max) (0, int (pcl_lrint (std::ceil ( (std::min) (cell1_y, (std::min) (cell2_y, cell3_y)))))),
+            max_cell_y = (std::min) (pixel_size-1, int (pcl_lrint (std::floor ( (std::max) (cell1_y,
                                                                        (std::max) (cell2_y, cell3_y))))));
         if (max_cell_x<min_cell_x || max_cell_y<min_cell_y)
           continue;
@@ -841,7 +836,7 @@ RangeImage::extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data,
       vp_z_offset = point_cloud_data.fields[vp_z_idx].offset,
       distance_offset = point_cloud_data.fields[distance_idx].offset;
   
-  for (size_t point_idx = 0; point_idx < point_cloud_data.width*point_cloud_data.height; ++point_idx)
+  for (std::size_t point_idx = 0; point_idx < point_cloud_data.width*point_cloud_data.height; ++point_idx)
   {
     float x = *reinterpret_cast<const float*> (data+x_offset), 
           y = *reinterpret_cast<const float*> (data+y_offset), 
@@ -860,7 +855,7 @@ RangeImage::extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data,
       far_ranges.points.push_back (point);
     }
   }
-  far_ranges.width= static_cast<uint32_t> (far_ranges.points.size ());  far_ranges.height = 1;
+  far_ranges.width= far_ranges.size ();  far_ranges.height = 1;
   far_ranges.is_dense = false;
 }
 
@@ -873,8 +868,13 @@ RangeImage::getOverlap (const RangeImage& other_range_image, const Eigen::Affine
   
   float max_distance_squared = max_distance*max_distance;
   
-  # pragma omp parallel for num_threads (max_no_of_threads) default (shared) schedule (dynamic, 1) \
-                        reduction (+ : valid_points_counter) reduction (+ : hits_counter)
+#pragma omp parallel for \
+  default(none) \
+  shared(max_distance_squared, other_range_image, pixel_step, relative_transformation, search_radius) \
+  schedule(dynamic, 1) \
+  reduction(+ : valid_points_counter) \
+  reduction(+ : hits_counter) \
+  num_threads(max_no_of_threads)
   for (int other_y=0; other_y<int (other_range_image.height); other_y+=pixel_step)
   {
     for (int other_x=0; other_x<int (other_range_image.width); other_x+=pixel_step)

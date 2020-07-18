@@ -55,15 +55,17 @@ else()
             PATHS /usr/include /usr/local/include /opt/local/include /sw/include
             PATH_SUFFIXES libusb-1.0)
 
+  # We need to look for libusb-1.0 too because find_library does not attempt to find
+  # library files with a "lib" prefix implicitly on Windows
   find_library(LIBUSB_1_LIBRARY
-               NAMES usb-1.0
+               NAMES usb-1.0 libusb-1.0
                PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
 
   set(LIBUSB_1_INCLUDE_DIRS ${LIBUSB_1_INCLUDE_DIR})
   set(LIBUSB_1_LIBRARIES ${LIBUSB_1_LIBRARY})
 
   include(FindPackageHandleStandardArgs)
-  find_package_handle_standard_args(LIBUSB_1 DEFAULT_MSG LIBUSB_1_LIBRARY LIBUSB_1_INCLUDE_DIR)
+  find_package_handle_standard_args(libusb-1.0 DEFAULT_MSG LIBUSB_1_LIBRARY LIBUSB_1_INCLUDE_DIR)
 
   # show the LIBUSB_1_INCLUDE_DIRS and LIBUSB_1_LIBRARIES variables only in the advanced view
   mark_as_advanced(LIBUSB_1_INCLUDE_DIRS LIBUSB_1_LIBRARIES)

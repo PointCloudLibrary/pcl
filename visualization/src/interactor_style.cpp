@@ -154,7 +154,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::saveCameraParameters (const st
   ofs_cam << clip[0]  << "," << clip[1]  << "/" << focal[0] << "," << focal[1] << "," << focal[2] << "/" <<
              pos[0]   << "," << pos[1]   << "," << pos[2]   << "/" << view[0]  << "," << view[1]  << "," << view[2] << "/" <<
              cam->GetViewAngle () / 180.0 * M_PI  << "/" << win_size[0] << "," << win_size[1] << "/" << win_pos[0] << "," << win_pos[1]
-          << endl;
+          << std::endl;
   ofs_cam.close ();
 
   return (true);
@@ -237,7 +237,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (const Eig
   window_size[1] = 2 * static_cast<int> (intrinsics (1, 2));
 
   // Compute the vertical field of view based on the focal length and image height
-  double fovy = 2 * atan (window_size[1] / (2. * intrinsics (1, 1))) * 180.0 / M_PI;
+  double fovy = 2 * std::atan (window_size[1] / (2. * intrinsics (1, 1))) * 180.0 / M_PI;
 
 
   rens_->InitTraversal ();
@@ -867,13 +867,13 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     case 'c': case 'C':
     {
       Camera cam (*CurrentRenderer->GetActiveCamera (), *Interactor->GetRenderWindow ());
-      std::cerr <<  "Clipping plane [near,far] "  << cam.clip[0] << ", " << cam.clip[1] << endl <<
-                    "Focal point [x,y,z] " << cam.focal[0] << ", " << cam.focal[1] << ", " << cam.focal[2] << endl <<
-                    "Position [x,y,z] " << cam.pos[0] << ", " << cam.pos[1] << ", " << cam.pos[2] << endl <<
-                    "View up [x,y,z] " << cam.view[0]  << ", " << cam.view[1]  << ", " << cam.view[2] << endl <<
-                    "Camera view angle [degrees] " << rad2deg (cam.fovy) << endl <<
-                    "Window size [x,y] " << cam.window_size[0] << ", " << cam.window_size[1] << endl <<
-                    "Window position [x,y] " << cam.window_pos[0] << ", " << cam.window_pos[1] << endl;
+      std::cerr <<  "Clipping plane [near,far] "  << cam.clip[0] << ", " << cam.clip[1] << std::endl <<
+                    "Focal point [x,y,z] " << cam.focal[0] << ", " << cam.focal[1] << ", " << cam.focal[2] << std::endl <<
+                    "Position [x,y,z] " << cam.pos[0] << ", " << cam.pos[1] << ", " << cam.pos[2] << std::endl <<
+                    "View up [x,y,z] " << cam.view[0]  << ", " << cam.view[1]  << ", " << cam.view[2] << std::endl <<
+                    "Camera view angle [degrees] " << rad2deg (cam.fovy) << std::endl <<
+                    "Window size [x,y] " << cam.window_size[0] << ", " << cam.window_size[1] << std::endl <<
+                    "Window position [x,y] " << cam.window_pos[0] << ", " << cam.window_pos[1] << std::endl;
       break;
     }
     case '=':

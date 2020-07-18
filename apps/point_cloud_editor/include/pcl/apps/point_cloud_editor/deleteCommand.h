@@ -45,13 +45,18 @@
 #include <pcl/apps/point_cloud_editor/copyBuffer.h>
 #include <pcl/apps/point_cloud_editor/selection.h>
 
+#include <pcl/memory.h>  // for pcl::shared_ptr
+
 class DeleteCommand : public Command
 {
   public:
+    /// The type for shared pointer pointing to a selection buffer
+    using SelectionPtr = pcl::shared_ptr<Selection>;
+
     /// @brief Constructor
     /// @param selection_ptr A shared pointer pointing to the selection object.
     /// @param cloud_ptr A shared pointer pointing to the cloud object.
-    DeleteCommand (SelectionPtr selection_ptr, CloudPtr cloud_ptr);
+    DeleteCommand (SelectionPtr selection_ptr, const CloudPtr& cloud_ptr);
 
     /// @brief Copy constructor - commands are non-copyable
     DeleteCommand (const DeleteCommand& c) = delete;

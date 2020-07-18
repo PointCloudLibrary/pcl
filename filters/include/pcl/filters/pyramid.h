@@ -39,8 +39,8 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/common/point_operators.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_config.h>
 
@@ -64,8 +64,8 @@ namespace pcl
       public:
         using PointCloudPtr = typename PointCloud<PointT>::Ptr;
         using PointCloudConstPtr = typename PointCloud<PointT>::ConstPtr;
-        using Ptr = boost::shared_ptr< Pyramid<PointT> >;
-        using ConstPtr = boost::shared_ptr< const Pyramid<PointT> >;
+        using Ptr = shared_ptr< Pyramid<PointT> >;
+        using ConstPtr = shared_ptr< const Pyramid<PointT> >;
  
         Pyramid (int levels = 4)
           : levels_ (levels)

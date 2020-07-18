@@ -35,7 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/model_outlier_removal.h>
 
@@ -80,7 +80,7 @@ TEST (ModelOutlierRemoval, Model_Outlier_Filter)
   filter.setInputCloud (cloud_in);
   filter.filter (*cloud_filter_out);
   //compare results
-  EXPECT_EQ (cloud_filter_out->points.size (), ransac_inliers.size ());
+  EXPECT_EQ (cloud_filter_out->size (), ransac_inliers.size ());
   //TODO: also compare content
 }
 

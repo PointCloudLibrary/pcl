@@ -37,9 +37,7 @@
 #pragma once
 
 #include <pcl/pcl_config.h>
-
 #include <pcl/pcl_macros.h>
-#include <boost/chrono.hpp>
 
 #include <pcl/io/image.h>
 
@@ -57,7 +55,7 @@ namespace pcl
 
         ImageRGB24 (FrameWrapper::Ptr image_metadata);
         ImageRGB24 (FrameWrapper::Ptr image_metadata, Timestamp timestamp);
-        ~ImageRGB24 () throw ();
+        ~ImageRGB24 () noexcept;
 
         inline Encoding
         getEncoding () const override
@@ -79,9 +77,9 @@ namespace pcl
         // Struct used for type conversion
         struct RGB888Pixel
         {
-          uint8_t r;
-          uint8_t g;
-          uint8_t b;
+          std::uint8_t r;
+          std::uint8_t g;
+          std::uint8_t b;
         };
     };
 

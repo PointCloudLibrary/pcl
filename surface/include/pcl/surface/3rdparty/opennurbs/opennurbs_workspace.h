@@ -81,7 +81,7 @@ public:
     ON_Workspace::GetPointMemory
     ON_Workspace::GetVectorMemory
   */
-  void* GetMemory( size_t sz );
+  void* GetMemory( std::size_t sz );
 
   /*
   Description:
@@ -104,7 +104,7 @@ public:
     ON_Workspace::KeepMemory
     ON_Workspace::GrowIntMemory
   */
-  int* GetIntMemory( size_t count );
+  int* GetIntMemory( std::size_t count );
 
   /*
   Description:
@@ -121,7 +121,7 @@ public:
   See Also:
     ON_Workspace::KeepMemory
   */
-  int** GetIntMemory( size_t row_count, size_t col_count );
+  int** GetIntMemory( std::size_t row_count, std::size_t col_count );
 
   /*
   Description:
@@ -144,7 +144,7 @@ public:
     ON_Workspace::KeepMemory
     ON_Workspace::GrowIntMemory
   */
-  double* GetDoubleMemory( size_t count );
+  double* GetDoubleMemory( std::size_t count );
 
   /*
   Description:
@@ -161,7 +161,7 @@ public:
   See Also:
     ON_Workspace::KeepMemory
   */
-  double** GetDoubleMemory( size_t row_count, size_t col_count );
+  double** GetDoubleMemory( std::size_t row_count, std::size_t col_count );
 
   /*
   Description:
@@ -184,7 +184,7 @@ public:
     ON_Workspace::KeepMemory
     ON_Workspace::GrowIntMemory
   */
-  ON_3dPoint* GetPointMemory( size_t count );
+  ON_3dPoint* GetPointMemory( std::size_t count );
 
   /*
   Description:
@@ -207,7 +207,7 @@ public:
     ON_Workspace::KeepMemory
     ON_Workspace::GrowIntMemory
   */
-  ON_3dVector* GetVectorMemory( size_t count );
+  ON_3dVector* GetVectorMemory( std::size_t count );
 
   /*
   Description:
@@ -237,7 +237,7 @@ public:
     ON_Workspace::GrowPointMemory
     ON_Workspace::GrowVectorMemory
   */
-  void* GrowMemory( void* ptr, size_t sz );
+  void* GrowMemory( void* ptr, std::size_t sz );
 
   /*
   Description:
@@ -262,7 +262,7 @@ public:
     ON_Workspace::GetIntMemory
     ON_Workspace::KeepMemory
   */
-  int* GrowIntMemory( int* ptr, size_t count );
+  int* GrowIntMemory( int* ptr, std::size_t count );
 
   /*
   Description:
@@ -287,7 +287,7 @@ public:
     ON_Workspace::GetDoubleMemory
     ON_Workspace::KeepMemory
   */
-  double* GrowDoubleMemory( double* ptr, size_t count );
+  double* GrowDoubleMemory( double* ptr, std::size_t count );
 
   /*
   Description:
@@ -312,7 +312,7 @@ public:
     ON_Workspace::GetPointMemory
     ON_Workspace::KeepMemory
   */
-  ON_3dPoint* GrowPointMemory( ON_3dPoint* ptr, size_t count );
+  ON_3dPoint* GrowPointMemory( ON_3dPoint* ptr, std::size_t count );
 
   /*
   Description:
@@ -337,7 +337,7 @@ public:
     ON_Workspace::GetVectorMemory
     ON_Workspace::KeepMemory
   */
-  ON_3dVector* GrowVectorMemory( ON_3dVector* ptr, size_t count );
+  ON_3dVector* GrowVectorMemory( ON_3dVector* ptr, std::size_t count );
 
   /*
   Description:

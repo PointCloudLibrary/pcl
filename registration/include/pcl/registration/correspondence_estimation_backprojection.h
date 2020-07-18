@@ -55,8 +55,8 @@ namespace pcl
     class CorrespondenceEstimationBackProjection : public CorrespondenceEstimationBase <PointSource, PointTarget, Scalar>
     {
       public:
-        using Ptr = boost::shared_ptr<CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar> >;
-        using ConstPtr = boost::shared_ptr<const CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar> >;
+        using Ptr = shared_ptr<CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar> >;
+        using ConstPtr = shared_ptr<const CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar> >;
 
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeReciprocal;

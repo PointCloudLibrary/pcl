@@ -39,7 +39,9 @@
 
 #pragma once
 
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/keypoints/agast_2d.h>
+
 
 namespace pcl
 {
@@ -71,8 +73,8 @@ namespace pcl
   class BriskKeypoint2D: public Keypoint<PointInT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<BriskKeypoint2D<PointInT, PointOutT, IntensityT> >;
-      using ConstPtr = boost::shared_ptr<const BriskKeypoint2D<PointInT, PointOutT, IntensityT> >;
+      using Ptr = shared_ptr<BriskKeypoint2D<PointInT, PointOutT, IntensityT> >;
+      using ConstPtr = shared_ptr<const BriskKeypoint2D<PointInT, PointOutT, IntensityT> >;
 
       using PointCloudIn = typename Keypoint<PointInT, PointOutT>::PointCloudIn;
       using PointCloudOut = typename Keypoint<PointInT, PointOutT>::PointCloudOut;
@@ -109,7 +111,7 @@ namespace pcl
       }
 
       /** \brief Get the threshold for corner detection, as set by the user. */
-      inline size_t
+      inline std::size_t
       getThreshold ()
       {
         return (threshold_);
@@ -275,7 +277,7 @@ namespace pcl
             * \param[out] keypoints the AGAST keypoints
             */
           void 
-          getAgastPoints (uint8_t threshold, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &keypoints);
+          getAgastPoints (std::uint8_t threshold, std::vector<pcl::PointUV, Eigen::aligned_allocator<pcl::PointUV> > &keypoints);
 
           // get scores - attention, this is in layer coordinates, not scale=1 coordinates!
           /** \brief Get the AGAST keypoint score for a given pixel using a threshold
@@ -283,23 +285,23 @@ namespace pcl
             * \param[in] y the V coordinate of the pixel
             * \param[in] threshold the threshold to use for cutting the response
             */
-          uint8_t 
-          getAgastScore (int x, int y, uint8_t threshold);
+          std::uint8_t 
+          getAgastScore (int x, int y, std::uint8_t threshold);
           /** \brief Get the AGAST keypoint score for a given pixel using a threshold
             * \param[in] x the U coordinate of the pixel
             * \param[in] y the V coordinate of the pixel
             * \param[in] threshold the threshold to use for cutting the response
             */
-          uint8_t 
-          getAgastScore_5_8 (int x, int y, uint8_t threshold);
+          std::uint8_t 
+          getAgastScore_5_8 (int x, int y, std::uint8_t threshold);
           /** \brief Get the AGAST keypoint score for a given pixel using a threshold
             * \param[in] xf the X coordinate of the pixel
             * \param[in] yf the Y coordinate of the pixel
             * \param[in] threshold the threshold to use for cutting the response
             * \param[in] scale the scale
             */
-          uint8_t 
-          getAgastScore (float xf, float yf, uint8_t threshold, float scale = 1.0f);
+          std::uint8_t 
+          getAgastScore (float xf, float yf, std::uint8_t threshold, float scale = 1.0f);
 
           /** \brief Access gray values (smoothed/interpolated) 
             * \param[in] mat the image
@@ -309,7 +311,7 @@ namespace pcl
             * \param[in] yf the y coordinate
             * \param[in] scale the scale
             */
-          uint8_t 
+          std::uint8_t 
           getValue (const std::vector<unsigned char>& mat, 
                     int width, int height, float xf, float yf, float scale);
          
@@ -417,7 +419,7 @@ namespace pcl
         protected:
           /** Nonmax suppression. */
           inline bool 
-          isMax2D (const uint8_t layer, const int x_layer, const int y_layer);
+          isMax2D (const std::uint8_t layer, const int x_layer, const int y_layer);
 
           /** 1D (scale axis) refinement: around octave */
           inline float 
@@ -440,37 +442,37 @@ namespace pcl
 
           /** 3D maximum refinement centered around (x_layer,y_layer) */
           inline float 
-          refine3D (const uint8_t layer,
+          refine3D (const std::uint8_t layer,
                     const int x_layer, const int y_layer,
                     float& x, float& y, float& scale, bool& ismax);
 
           /** interpolated score access with recalculation when needed */
           inline int 
-          getScoreAbove (const uint8_t layer, const int x_layer, const int y_layer);
+          getScoreAbove (const std::uint8_t layer, const int x_layer, const int y_layer);
           
           inline int 
-          getScoreBelow (const uint8_t layer, const int x_layer, const int y_layer);
+          getScoreBelow (const std::uint8_t layer, const int x_layer, const int y_layer);
 
           /** return the maximum of score patches above or below */
           inline float 
-          getScoreMaxAbove (const uint8_t layer,
+          getScoreMaxAbove (const std::uint8_t layer,
                             const int x_layer, const int y_layer,
                             const int threshold, bool& ismax,
                             float& dx, float& dy);
 
           inline float 
-          getScoreMaxBelow (const uint8_t layer,
+          getScoreMaxBelow (const std::uint8_t layer,
                             const int x_layer, const int y_layer,
                             const int threshold, bool& ismax,
                             float& dx, float& dy);
 
           // the image pyramids
-          uint8_t layers_;
+          std::uint8_t layers_;
           std::vector<pcl::keypoints::brisk::Layer> pyramid_;
 
           // Agast
-          uint8_t threshold_;
-          uint8_t safe_threshold_;
+          std::uint8_t threshold_;
+          std::uint8_t safe_threshold_;
 
           // some constant parameters
           float safety_factor_;

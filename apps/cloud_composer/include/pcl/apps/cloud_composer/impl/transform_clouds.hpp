@@ -44,7 +44,7 @@
 #include <pcl/common/transforms.h>
 
 template <typename PointT> QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::TransformClouds::performTemplatedAction (QList <const CloudComposerItem*> input_data)
+pcl::cloud_composer::TransformClouds::performTemplatedAction (const QList <const CloudComposerItem*>& input_data)
 {
   QList <CloudComposerItem*> output;  
   

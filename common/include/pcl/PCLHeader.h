@@ -1,38 +1,30 @@
 #pragma once
 
-#ifdef USE_ROS
-   #error USE_ROS setup requires PCL to compile against ROS message headers, which is now deprecated
-#endif 
+#include <pcl/memory.h>  // for shared_ptr
 
-#include <string>
-#include <vector>
-#include <boost/shared_ptr.hpp>
-#include <pcl/pcl_macros.h>
-#include <ostream>
+#include <string>   // for string
+#include <ostream>  // for ostream
 
 namespace pcl
 {
   struct PCLHeader
   {
-    PCLHeader (): seq (0), stamp ()
-    {}
-
     /** \brief Sequence number */
-    pcl::uint32_t seq;
+    std::uint32_t seq = 0;
     /** \brief A timestamp associated with the time when the data was acquired
       *
       * The value represents microseconds since 1970-01-01 00:00:00 (the UNIX epoch).
       */
-    pcl::uint64_t stamp;
+    std::uint64_t stamp = 0;
     /** \brief Coordinate frame ID */
     std::string frame_id;
 
-    using Ptr = boost::shared_ptr<PCLHeader>;
-    using ConstPtr = boost::shared_ptr<const PCLHeader>;
+    using Ptr = shared_ptr<PCLHeader>;
+    using ConstPtr = shared_ptr<const PCLHeader>;
   }; // struct PCLHeader
 
-  using HeaderPtr = boost::shared_ptr<PCLHeader>;
-  using HeaderConstPtr = boost::shared_ptr<const PCLHeader>;
+  using HeaderPtr = PCLHeader::Ptr;
+  using HeaderConstPtr = PCLHeader::ConstPtr;
 
   inline std::ostream& operator << (std::ostream& out, const PCLHeader &h)
   {
@@ -49,3 +41,4 @@ namespace pcl
   }
 
 } // namespace pcl
+

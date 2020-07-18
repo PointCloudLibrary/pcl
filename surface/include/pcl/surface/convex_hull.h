@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/pcl_config.h>
 #ifdef HAVE_QHULL 
@@ -78,8 +79,8 @@ namespace pcl
       using PCLBase<PointInT>::deinitCompute;
 
     public:
-      using Ptr = boost::shared_ptr<ConvexHull<PointInT> >;
-      using ConstPtr = boost::shared_ptr<const ConvexHull<PointInT> >;
+      using Ptr = shared_ptr<ConvexHull<PointInT> >;
+      using ConstPtr = shared_ptr<const ConvexHull<PointInT> >;
 
       using MeshConstruction<PointInT>::reconstruct;
 
@@ -89,7 +90,7 @@ namespace pcl
 
       /** \brief Empty constructor. */
       ConvexHull () : compute_area_ (false), total_area_ (0), total_volume_ (0), dimension_ (0), 
-                      projection_angle_thresh_ (cos (0.174532925) ), qhull_flags ("qhull "),
+                      projection_angle_thresh_ (std::cos (0.174532925) ), qhull_flags ("qhull "),
                       x_axis_ (1.0, 0.0, 0.0), y_axis_ (0.0, 1.0, 0.0), z_axis_ (0.0, 0.0, 1.0)
       {
       };

@@ -124,13 +124,13 @@ namespace pcl
         int3 g = getVoxel (point);
 
         if (g.x <= 0 || g.x >= VOLUME_X - 1)
-          return numeric_limits<float>::quiet_NaN ();
+          return std::numeric_limits<float>::quiet_NaN ();
 
         if (g.y <= 0 || g.y >= VOLUME_Y - 1)
-          return numeric_limits<float>::quiet_NaN ();
+          return std::numeric_limits<float>::quiet_NaN ();
 
         if (g.z <= 0 || g.z >= VOLUME_Z - 1)
-          return numeric_limits<float>::quiet_NaN ();
+          return std::numeric_limits<float>::quiet_NaN ();
 
         float vx = (g.x + 0.5f) * cell_size.x;
         float vy = (g.y + 0.5f) * cell_size.y;
@@ -163,8 +163,8 @@ namespace pcl
         if (x >= cols || y >= rows)
           return;
 
-        vmap.ptr (y)[x] = numeric_limits<float>::quiet_NaN ();
-        nmap.ptr (y)[x] = numeric_limits<float>::quiet_NaN ();
+        vmap.ptr (y)[x] = std::numeric_limits<float>::quiet_NaN ();
+        nmap.ptr (y)[x] = std::numeric_limits<float>::quiet_NaN ();
 
         float3 ray_start = tcurr;
         float3 ray_next = Rcurr * get_ray_next (x, y) + tcurr;

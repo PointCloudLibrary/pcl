@@ -39,9 +39,6 @@
 #pragma once
 
 #include <iostream>
-#ifndef _WIN32
-  #include <dirent.h>
-#endif
 #include <vector>
 #include <algorithm>
 

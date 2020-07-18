@@ -58,8 +58,8 @@ namespace pcl
     class CorrespondenceRejector
     {
       public:
-        using Ptr = boost::shared_ptr<CorrespondenceRejector>;
-        using ConstPtr = boost::shared_ptr<const CorrespondenceRejector>;
+        using Ptr = shared_ptr<CorrespondenceRejector>;
+        using ConstPtr = shared_ptr<const CorrespondenceRejector>;
 
         /** \brief Empty constructor. */
         CorrespondenceRejector () 
@@ -69,7 +69,7 @@ namespace pcl
         virtual ~CorrespondenceRejector () {}
 
         /** \brief Provide a pointer to the vector of the input correspondences.
-          * \param[in] correspondences the const boost shared pointer to a correspondence vector
+          * \param[in] correspondences the const shared pointer to a correspondence vector
           */
         virtual inline void 
         setInputCorrespondences (const CorrespondencesConstPtr &correspondences) 
@@ -78,7 +78,7 @@ namespace pcl
         };
 
         /** \brief Get a pointer to the vector of the input correspondences.
-          * \return correspondences the const boost shared pointer to a correspondence vector
+          * \return correspondences the const shared pointer to a correspondence vector
           */
         inline CorrespondencesConstPtr 
         getInputCorrespondences () { return input_correspondences_; };
@@ -199,7 +199,10 @@ namespace pcl
     class DataContainerInterface
     {
       public:
-        virtual ~DataContainerInterface () {}
+        using Ptr = shared_ptr<DataContainerInterface>;
+        using ConstPtr = shared_ptr<const DataContainerInterface>;
+
+        virtual ~DataContainerInterface () = default;
         virtual double getCorrespondenceScore (int index) = 0;
         virtual double getCorrespondenceScore (const pcl::Correspondence &) = 0;
         virtual double getCorrespondenceScoreFromNormals (const pcl::Correspondence &) = 0;
@@ -323,7 +326,7 @@ namespace pcl
           }
           std::vector<int> indices (1);
           std::vector<float> distances (1);
-          if (tree_->nearestKSearch (input_->points[index], 1, indices, distances))
+          if (tree_->nearestKSearch ((*input_)[index], 1, indices, distances))
             return (distances[0]);
           return (std::numeric_limits<double>::max ());
         }
@@ -335,8 +338,8 @@ namespace pcl
         getCorrespondenceScore (const pcl::Correspondence &corr) override
         {
           // Get the source and the target feature from the list
-          const PointT &src = input_->points[corr.index_query];
-          const PointT &tgt = target_->points[corr.index_match];
+          const PointT &src = (*input_)[corr.index_query];
+          const PointT &tgt = (*target_)[corr.index_match];
 
           return ((src.getVector4fMap () - tgt.getVector4fMap ()).squaredNorm ());
         }
@@ -349,10 +352,10 @@ namespace pcl
         inline double
         getCorrespondenceScoreFromNormals (const pcl::Correspondence &corr) override
         {
-          //assert ( (input_normals_->points.size () != 0) && (target_normals_->points.size () != 0) && "Normals are not set for the input and target point clouds");
+          //assert ( (input_normals_->size () != 0) && (target_normals_->size () != 0) && "Normals are not set for the input and target point clouds");
           assert (input_normals_ && target_normals_ && "Normals are not set for the input and target point clouds");
-          const NormalT &src = input_normals_->points[corr.index_query];
-          const NormalT &tgt = target_normals_->points[corr.index_match];
+          const NormalT &src = (*input_normals_)[corr.index_query];
+          const NormalT &tgt = (*target_normals_)[corr.index_match];
           return (double ((src.normal[0] * tgt.normal[0]) + (src.normal[1] * tgt.normal[1]) + (src.normal[2] * tgt.normal[2])));
         }
 

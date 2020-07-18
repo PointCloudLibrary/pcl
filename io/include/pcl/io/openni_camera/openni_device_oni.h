@@ -37,10 +37,13 @@
 #pragma once
 
 #include <pcl/pcl_config.h>
+#include <pcl/memory.h>
 #ifdef HAVE_OPENNI
 
 #include "openni_device.h"
 #include "openni_driver.h"
+
+#include <pcl/io/openni_camera/openni_image.h>
 
 #include <condition_variable>
 #include <mutex>
@@ -58,8 +61,12 @@ namespace openni_wrapper
   {
     friend class OpenNIDriver;
   public:
+
+    using Ptr = pcl::shared_ptr<DeviceONI>;
+    using ConstPtr = pcl::shared_ptr<const DeviceONI>;
+
     DeviceONI (xn::Context& context, const std::string& file_name, bool repeat = false, bool streaming = true);
-    ~DeviceONI () throw ();
+    ~DeviceONI () noexcept;
 
     void startImageStream () override;
     void stopImageStream () override;
@@ -92,12 +99,12 @@ namespace openni_wrapper
     }
 
   protected:
-    boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
+    Image::Ptr getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
 
     void PlayerThreadFunction ();
-    static void __stdcall NewONIDepthDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
-    static void __stdcall NewONIImageDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
-    static void __stdcall NewONIIRDataAvailable (xn::ProductionNode& node, void* cookie) throw ();
+    static void __stdcall NewONIDepthDataAvailable (xn::ProductionNode& node, void* cookie) noexcept;
+    static void __stdcall NewONIImageDataAvailable (xn::ProductionNode& node, void* cookie) noexcept;
+    static void __stdcall NewONIIRDataAvailable (xn::ProductionNode& node, void* cookie) noexcept;
 
     xn::Player player_;
     std::thread player_thread_;

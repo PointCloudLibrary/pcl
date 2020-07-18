@@ -62,7 +62,7 @@ namespace pcl
         /** This method is the allocators destructor. It frees up any of the memory that
           * it has allocated. */
         void reset(void){
-          for(size_t i=0;i<memory.size();i++){delete[] memory[i];}
+          for(std::size_t i=0;i<memory.size();i++){delete[] memory[i];}
           memory.clear();
           blockSize=index=remains=0;
         }
@@ -81,7 +81,7 @@ namespace pcl
           * in memory are no longer valid. */
         void rollBack(void){
           if(memory.size()){
-            for(size_t i=0;i<memory.size();i++){
+            for(std::size_t i=0;i<memory.size();i++){
               for(int j=0;j<blockSize;j++){
                 memory[i][j].~T();
                 new(&memory[i][j]) T();

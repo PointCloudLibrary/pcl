@@ -42,6 +42,7 @@
 
 #include <utility>
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/geometry/mesh_base.h>
 
@@ -65,8 +66,8 @@ namespace pcl
         using Base = pcl::geometry::MeshBase <TriangleMesh <MeshTraitsT>, MeshTraitsT, TriangleMeshTag>;
 
         using Self = TriangleMesh<MeshTraitsT>;
-        using Ptr = boost::shared_ptr<Self>;
-        using ConstPtr = boost::shared_ptr<const Self>;
+        using Ptr = shared_ptr<Self>;
+        using ConstPtr = shared_ptr<const Self>;
 
         using VertexData = typename Base::VertexData;
         using HalfEdgeData = typename Base::HalfEdgeData;
@@ -162,10 +163,7 @@ namespace pcl
           {
             return (std::make_pair (FaceIndex (), FaceIndex ()));
           }
-          else
-          {
-            return (this->addTrianglePair (vertices [0], vertices [1], vertices [2], vertices [3], face_data, edge_data, half_edge_data));
-          }
+          return (this->addTrianglePair (vertices [0], vertices [1], vertices [2], vertices [3], face_data, edge_data, half_edge_data));
         }
 
         /** \brief Add two triangles for the four given input vertices. When using a manifold triangle mesh it is not possible to connect two bounded regions without going through a non-manifold intermediate step. This method first tries to add the triangles individually and if this fails connects the whole configuration at once (if possible).
@@ -199,7 +197,7 @@ namespace pcl
           {
             return (std::make_pair (idx_face_0, idx_face_1));
           }
-          else if (idx_face_1.isValid ())
+          if (idx_face_1.isValid ())
           {
             idx_face_0 = this->addFace (idx_v_0, idx_v_1, idx_v_2, face_data); // might be possible to add now
             return (std::make_pair (idx_face_1, idx_face_0));
@@ -216,7 +214,7 @@ namespace pcl
           {
             return (std::make_pair (idx_face_0, idx_face_1));
           }
-          else if (idx_face_1.isValid ())
+          if (idx_face_1.isValid ())
           {
             idx_face_0 = this->addFace (idx_v_1, idx_v_2, idx_v_3, face_data); // might be possible to add now
             return (std::make_pair (idx_face_1, idx_face_0));
@@ -241,14 +239,11 @@ namespace pcl
           {
             return (this->connectTrianglePair (inner_he_atp_ [0], inner_he_atp_ [2], idx_v_0, idx_v_1, idx_v_2, idx_v_3, face_data, edge_data, half_edge_data));
           }
-          else if (is_new_atp_ [0] && !is_new_atp_ [1] && is_new_atp_ [2] && !is_new_atp_ [3])
+          if (is_new_atp_ [0] && !is_new_atp_ [1] && is_new_atp_ [2] && !is_new_atp_ [3])
           {
             return (this->connectTrianglePair (inner_he_atp_ [1], inner_he_atp_ [3], idx_v_1, idx_v_2, idx_v_3, idx_v_0, face_data, edge_data, half_edge_data));
           }
-          else
-          {
-            return (std::make_pair (FaceIndex (), FaceIndex ()));
-          }
+          return (std::make_pair (FaceIndex (), FaceIndex ()));
         }
 
       private:
@@ -265,8 +260,7 @@ namespace pcl
         {
           if (vertices.size () == 3)
             return (this->addFaceImplBase (vertices, face_data, edge_data, half_edge_data));
-          else
-            return (FaceIndex ());
+          return (FaceIndex ());
         }
 
         /** \brief Connect the triangles a-b-c and a-c-d. The edges a-b and c-d must be old and the edges b-c and d-a must be new. */

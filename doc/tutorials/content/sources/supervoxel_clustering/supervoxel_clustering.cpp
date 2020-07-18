@@ -81,7 +81,7 @@ main (int argc, char ** argv)
   super.setSpatialImportance (spatial_importance);
   super.setNormalImportance (normal_importance);
 
-  std::map <uint32_t, pcl::Supervoxel<PointT>::Ptr > supervoxel_clusters;
+  std::map <std::uint32_t, pcl::Supervoxel<PointT>::Ptr > supervoxel_clusters;
 
   pcl::console::print_highlight ("Extracting supervoxels!\n");
   super.extract (supervoxel_clusters);
@@ -104,13 +104,13 @@ main (int argc, char ** argv)
   //viewer->addPointCloudNormals<PointNormal> (sv_normal_cloud,1,0.05f, "supervoxel_normals");
 
   pcl::console::print_highlight ("Getting supervoxel adjacency\n");
-  std::multimap<uint32_t, uint32_t> supervoxel_adjacency;
+  std::multimap<std::uint32_t, std::uint32_t> supervoxel_adjacency;
   super.getSupervoxelAdjacency (supervoxel_adjacency);
   //To make a graph of the supervoxel adjacency, we need to iterate through the supervoxel adjacency multimap
   for (auto label_itr = supervoxel_adjacency.cbegin (); label_itr != supervoxel_adjacency.cend (); )
   {
     //First get the label
-    uint32_t supervoxel_label = label_itr->first;
+    std::uint32_t supervoxel_label = label_itr->first;
     //Now get the supervoxel corresponding to the label
     pcl::Supervoxel<PointT>::Ptr supervoxel = supervoxel_clusters.at (supervoxel_label);
 

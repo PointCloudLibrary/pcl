@@ -41,12 +41,13 @@
 
 #include <pcl/people/hog.h>
 
-#include <cstring>
+#include <cstring> // for memcpy
+#include <algorithm> // for std::min
 
 #if defined(__SSE2__)
-#include <pcl/sse.h>
+  #include <pcl/sse.h> // sse methods
 #else
-#include <cstdlib>
+  #include <cstdlib>
 #endif
 
 /** \brief Constructor. */
@@ -170,28 +171,32 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
 {
   const int hb=h/bin_size, wb=w/bin_size, h0=hb*bin_size, w0=wb*bin_size, nb=wb*hb;
   const float s=(float)bin_size, sInv=1/s, sInv2=1/s/s;
-  float *H0, *H1, *M0, *M1; int x, y; int *O0, *O1;
+  float *H0, *H1, *M0, *M1; int *O0, *O1;
   O0=(int*)alMalloc(h*sizeof(int),16); M0=(float*) alMalloc(h*sizeof(float),16);
   O1=(int*)alMalloc(h*sizeof(int),16); M1=(float*) alMalloc(h*sizeof(float),16);
 
   // main loop
   float xb = 0;
   float init = 0;
-  for( x=0; x<w0; x++ ) {
+  for(int x=0; x<w0; x++ ) {
     // compute target orientation bins for entire column - very fast
     gradQuantize( O+x*h, M+x*h, O0, O1, M0, M1, n_orients, nb, h0, sInv2 );
 
     if( !soft_bin || bin_size==1 ) {
       // interpolate w.r.t. orientation only, not spatial bin_size
-      H1=H+(x/bin_size)*hb;
-      #define GH H1[O0[y]]+=M0[y]; H1[O1[y]]+=M1[y]; y++;
-      if( bin_size==1 )      for(y=0; y<h0;) { GH; H1++; }
-      else if( bin_size==2 ) for(y=0; y<h0;) { GH; GH; H1++; }
-      else if( bin_size==3 ) for(y=0; y<h0;) { GH; GH; GH; H1++; }
-      else if( bin_size==4 ) for(y=0; y<h0;) { GH; GH; GH; GH; H1++; }
-      else for( y=0; y<h0;) { for( int y1=0; y1<bin_size; y1++ ) { GH; } H1++; }
-      #undef GH
+      H1 = H + (x / bin_size) * hb;
 
+      const auto GH = [&H1, &O0, &O1, &M0, &M1](int y) {
+        H1[O0[y]] += M0[y];
+        H1[O1[y]] += M1[y];
+      };
+
+      for (int y = 0; y < h0;) {
+        for (int inner_loop = 0; inner_loop < bin_size; ++inner_loop, ++y) {
+          GH(y);
+        }
+        H1++;
+      }
     } else {
       // interpolate using trilinear interpolation
 #if defined(__SSE2__)
@@ -199,20 +204,36 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
       bool hasLf, hasRt; int xb0, yb0;
       if( x==0 ) { init=(0+.5f)*sInv-0.5f; xb=init; }
       hasLf = xb>=0; xb0 = hasLf?(int)xb:-1; hasRt = xb0 < wb-1;
-      xd=xb-xb0; xb+=sInv; yb=init; y=0;
-      // macros for code conciseness
-      #define GHinit yd=yb-yb0; yb+=sInv; H0=H+xb0*hb+yb0; xyd=xd*yd; \
-      ms[0]=1-xd-yd+xyd; ms[1]=yd-xyd; ms[2]=xd-xyd; ms[3]=xyd;
-      #define GH(H,ma,mb) H1=H; pcl::sse_stru(*H1,pcl::sse_add(pcl::sse_ldu(*H1),pcl::sse_mul(ma,mb)));
+      xd=xb-xb0; xb+=sInv; yb=init;
+      int y=0;
+      // lambda for code conciseness
+      // @TODO: remove the very generic closure for specific variable one
+      const auto GHinit = [&]()
+      {
+          yd=yb-yb0;
+          yb+=sInv;
+          H0=H+xb0*hb+yb0;
+          xyd=xd*yd;
+
+          ms[0]=1-xd-yd+xyd;
+          ms[1]=yd-xyd;
+          ms[2]=xd-xyd;
+          ms[3]=xyd;
+      };
+      const auto GH = [&H1](const auto&H, const auto&ma, const auto&mb)
+      {
+          H1=H;
+          pcl::sse_stru(*H1, pcl::sse_add(pcl::sse_ldu(*H1), pcl::sse_mul(ma,mb)));
+      };
       // leading rows, no top bin_size
       for( ; y<bin_size/2; y++ ) {
-        yb0=-1; GHinit;
+        yb0=-1; GHinit();
         if(hasLf) { H0[O0[y]+1]+=ms[1]*M0[y]; H0[O1[y]+1]+=ms[1]*M1[y]; }
         if(hasRt) { H0[O0[y]+hb+1]+=ms[3]*M0[y]; H0[O1[y]+hb+1]+=ms[3]*M1[y]; }
       }
       // main rows, has top and bottom bins, use SSE for minor speedup
       for( ; ; y++ ) {
-        yb0 = (int) yb; if(yb0>=hb-1) break; GHinit;
+        yb0 = (int) yb; if(yb0>=hb-1) break; GHinit();
         _m0=pcl::sse_set(M0[y]); _m1=pcl::sse_set(M1[y]);
         if(hasLf) { _m=pcl::sse_set(0,0,ms[1],ms[0]);
         GH(H0+O0[y],_m,_m0); GH(H0+O1[y],_m,_m1); }
@@ -221,24 +242,32 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
       }      
       // final rows, no bottom bin_size
       for( ; y<h0; y++ ) {
-        yb0 = (int) yb; GHinit;
+        yb0 = (int) yb; GHinit();
         if(hasLf) { H0[O0[y]]+=ms[0]*M0[y]; H0[O1[y]]+=ms[0]*M1[y]; }
         if(hasRt) { H0[O0[y]+hb]+=ms[2]*M0[y]; H0[O1[y]+hb]+=ms[2]*M1[y]; }
       }       
-      #undef GHinit
-      #undef GH
 #else
       float ms[4], xyd, yb, xd, yd;  
       bool hasLf, hasRt; int xb0, yb0;
       if( x==0 ) { init=(0+.5f)*sInv-0.5f; xb=init; }
       hasLf = xb>=0; xb0 = hasLf?(int)xb:-1; hasRt = xb0 < wb-1;
-      xd=xb-xb0; xb+=sInv; yb=init; y=0;
-      // macros for code conciseness
-      #define GHinit yd=yb-yb0; yb+=sInv; H0=H+xb0*hb+yb0; xyd=xd*yd; \
-      ms[0]=1-xd-yd+xyd; ms[1]=yd-xyd; ms[2]=xd-xyd; ms[3]=xyd;
+      xd=xb-xb0; xb+=sInv; yb=init; int y=0;
+      // lambda for code conciseness
+      const auto GHinit = [&]()
+      {
+          yd=yb-yb0;
+          yb+=sInv;
+          H0=H+xb0*hb+yb0;
+          xyd=xd*yd;
+
+          ms[0]=1-xd-yd+xyd;
+          ms[1]=yd-xyd;
+          ms[2]=xd-xyd;
+          ms[3]=xyd;
+      };
       // leading rows, no top bin_size
       for( ; y<bin_size/2; y++ ) {
-        yb0=-1; GHinit;
+        yb0=-1; GHinit();
         if(hasLf) { H0[O0[y]+1]+=ms[1]*M0[y]; H0[O1[y]+1]+=ms[1]*M1[y]; }
         if(hasRt) { H0[O0[y]+hb+1]+=ms[3]*M0[y]; H0[O1[y]+hb+1]+=ms[3]*M1[y]; }
       }
@@ -247,7 +276,7 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
         yb0 = (int) yb;
         if(yb0>=hb-1) 
           break; 
-        GHinit;
+        GHinit();
   
         if(hasLf) 
         {
@@ -266,11 +295,10 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
       }      
       // final rows, no bottom bin_size
       for( ; y<h0; y++ ) {
-        yb0 = (int) yb; GHinit;
+        yb0 = (int) yb; GHinit();
         if(hasLf) { H0[O0[y]]+=ms[0]*M0[y]; H0[O1[y]]+=ms[0]*M1[y]; }
         if(hasRt) { H0[O0[y]+hb]+=ms[2]*M0[y]; H0[O1[y]+hb]+=ms[2]*M1[y]; }
       }       
-      #undef GHinit
 #endif     
     }
   }
@@ -289,9 +317,12 @@ pcl::people::HOG::normalization (float *H, int h, int w, int bin_size, int n_ori
   for( x=0; x<wb-1; x++ ) for( y=0; y<hb-1; y++ ) {
     N1=N+x*hb+y; *N1=1/float(std::sqrt( N1[0] + N1[1] + N1[hb] + N1[hb+1] +eps )); }
   // perform 4 normalizations per spatial block (handling boundary regions)
-  #define U(a,b) Gs[a][y]=H1[y]*N1[y-(b)]; if(Gs[a][y]>clip) Gs[a][y]=clip;
   for( o=0; o<n_orients; o++ ) for( x=0; x<wb; x++ ) {
     H1=H+o*nb+x*hb; N1=N+x*hb; float *Gs[4]; Gs[0]=G+o*nb+x*hb;
+    const auto U = [&Gs, &H1, &N1, &y, &clip](const auto&a, const auto&b)
+    {
+        Gs[a][y] = std::min(clip, H1[y] * N1[y - b]);
+    };
     for( y=1; y<4; y++ ) Gs[y]=Gs[y-1]+nb*n_orients;
     bool lf, md, rt; lf=(x==0); rt=(x==wb-1); md=(!lf && !rt);
     y=0; if(!rt) U(0,0); if(!lf) U(2,hb);
@@ -300,7 +331,6 @@ pcl::people::HOG::normalization (float *H, int h, int w, int bin_size, int n_ori
     if(rt) for( y=1; y<hb-1; y++ ) { U(2,hb); U(3,hb+1); }
     y=hb-1; if(!rt) U(1,1); if(!lf) U(3,hb+1);
   } free(N);
-  #undef U
 }
       
 void
@@ -372,7 +402,7 @@ pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) co
     r = 1;
     In -= h;
   }
-  if( h<4 || h%4>0 || (size_t(I)&15) || (size_t(Gx)&15) )
+  if( h<4 || h%4>0 || (std::size_t(I)&15) || (std::size_t(Gx)&15) )
   {
     for( y = 0; y < h; y++ )
       *Gx++ = (*In++ - *Ip++) * r;
@@ -385,11 +415,14 @@ pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) co
       *_G++ = pcl::sse_mul(pcl::sse_sub(*_In++,*_Ip++), _r);
   }
   // compute column of Gy
-  #define GRADY(r) *Gy++ = (*In++-*Ip++)*r;
+  const auto GRADY = [&Gy, &In, &Ip](const auto& r)
+  {
+      *Gy++ = (*In++ - *Ip++) * r;
+  };
   Ip = I;
   In = Ip + 1;
   // GRADY(1); Ip--; for(y = 1; y < h-1; y++) GRADY(.5f); In--; GRADY(1);
-  y1 = ((~((size_t) Gy) + 1) & 15)/4;
+  y1 = ((~((std::size_t) Gy) + 1) & 15)/4;
   if(y1 == 0) y1 = 4;
   if(y1 > h-1) y1 = h-1;
   GRADY(1);
@@ -402,7 +435,6 @@ pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) co
   for(; y < h-1; y++) GRADY(.5f);
   In--;
   GRADY(1);
-  #undef GRADY
 #else
   int y, y1;
   float *Ip, *In, r;
@@ -427,16 +459,18 @@ pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) co
     *Gx++=(*In++ - *Ip++)*r;
   
   // compute column of Gy
-  #define GRADY(r) *Gy++=(*In++-*Ip++)*r;
+  const auto GRADY = [&Gy, &In, &Ip](const auto& r)
+  {
+      *Gy++ = (*In++ - *Ip++) * r;
+  };
   Ip=I; In=Ip+1;
   // GRADY(1); Ip--; for(y=1; y<h-1; y++) GRADY(.5f); In--; GRADY(1);
-  y1=((~((size_t) Gy) + 1) & 15)/4; if(y1==0) y1=4; if(y1>h-1) y1=h-1;
+  y1=((~((std::size_t) Gy) + 1) & 15)/4; if(y1==0) y1=4; if(y1>h-1) y1=h-1;
   GRADY(1); Ip--; for(y=1; y<y1; y++) GRADY(.5f);
   
   r = 0.5f;
   for(; y<h-1; y++)
     GRADY(.5f); In--; GRADY(1);
-  #undef GRADY
 #endif
 }
       
@@ -513,12 +547,12 @@ pcl::people::HOG::gradQuantize (float *O, float *M, int *O0, int *O1, float *M0,
 }
 
 inline void* 
-pcl::people::HOG::alMalloc (size_t size, int alignment) const
+pcl::people::HOG::alMalloc (std::size_t size, int alignment) const
 {
-  const size_t pSize = sizeof(void*), a = alignment-1;
+  const std::size_t pSize = sizeof(void*), a = alignment-1;
   void *raw = malloc(size + a + pSize);
-  void *aligned = (void*) (((size_t) raw + pSize + a) & ~a);
-  *(void**) ((size_t) aligned-pSize) = raw;
+  void *aligned = (void*) (((std::size_t) raw + pSize + a) & ~a);
+  *(void**) ((std::size_t) aligned-pSize) = raw;
   return aligned;
 }
 

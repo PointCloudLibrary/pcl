@@ -58,8 +58,7 @@ pcl::MEstimatorSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
   double d_best_penalty = std::numeric_limits<double>::max();
   double k = 1.0;
 
-  std::vector<int> best_model;
-  std::vector<int> selection;
+  Indices selection;
   Eigen::VectorXf model_coefficients;
   std::vector<double> distances;
 
@@ -109,17 +108,17 @@ pcl::MEstimatorSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
         if (distance <= threshold_)
           ++n_inliers_count;
 
-      // Compute the k parameter (k=log(z)/log(1-w^n))
+      // Compute the k parameter (k=std::log(z)/std::log(1-w^n))
       double w = static_cast<double> (n_inliers_count) / static_cast<double> (sac_model_->getIndices ()->size ());
-      double p_no_outliers = 1.0 - pow (w, static_cast<double> (selection.size ()));
+      double p_no_outliers = 1.0 - std::pow (w, static_cast<double> (selection.size ()));
       p_no_outliers = (std::max) (std::numeric_limits<double>::epsilon (), p_no_outliers);       // Avoid division by -Inf
       p_no_outliers = (std::min) (1.0 - std::numeric_limits<double>::epsilon (), p_no_outliers);   // Avoid division by 0.
-      k = log (1.0 - probability_) / log (p_no_outliers);
+      k = std::log (1.0 - probability_) / std::log (p_no_outliers);
     }
 
     ++iterations_;
     if (debug_verbosity_level > 1)
-      PCL_DEBUG ("[pcl::MEstimatorSampleConsensus::computeModel] Trial %d out of %d. Best penalty is %f.\n", iterations_, static_cast<int> (ceil (k)), d_best_penalty);
+      PCL_DEBUG ("[pcl::MEstimatorSampleConsensus::computeModel] Trial %d out of %d. Best penalty is %f.\n", iterations_, static_cast<int> (std::ceil (k)), d_best_penalty);
     if (iterations_ > max_iterations_)
     {
       if (debug_verbosity_level > 0)
@@ -137,7 +136,7 @@ pcl::MEstimatorSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
 
   // Iterate through the 3d points and calculate the distances from them to the model again
   sac_model_->getDistancesToModel (model_coefficients_, distances);
-  std::vector<int> &indices = *sac_model_->getIndices ();
+  Indices &indices = *sac_model_->getIndices ();
 
   if (distances.size () != indices.size ())
   {
@@ -148,7 +147,7 @@ pcl::MEstimatorSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
   inliers_.resize (distances.size ());
   // Get the inliers for the best model found
   n_inliers_count = 0;
-  for (size_t i = 0; i < distances.size (); ++i)
+  for (std::size_t i = 0; i < distances.size (); ++i)
     if (distances[i] <= threshold_)
       inliers_[n_inliers_count++] = indices[i];
 

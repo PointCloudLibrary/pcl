@@ -38,7 +38,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include "test_mesh_common_functions.h"
 #include <pcl/geometry/polygon_mesh.h>
@@ -71,7 +71,7 @@ using FaceIndices = std::vector<FaceIndex>;
 
 /** \brief Check if the size of the mesh elements is correct. */
 template <class MeshT> void
-checkSizeElements (const MeshT& mesh, const size_t n_v, const size_t n_e, const size_t n_f)
+checkSizeElements (const MeshT& mesh, const std::size_t n_v, const std::size_t n_e, const std::size_t n_f)
 {
   ASSERT_EQ (n_v, mesh.sizeVertices ());
   ASSERT_EQ (n_e, mesh.sizeEdges ());
@@ -82,7 +82,7 @@ checkSizeElements (const MeshT& mesh, const size_t n_v, const size_t n_e, const 
 
 /** \brief Check if the size of the mesh data is correct. */
 template <class MeshT> void
-checkSizeData (const MeshT& mesh, const size_t n_v, const size_t n_he, const size_t n_e, const size_t n_f)
+checkSizeData (const MeshT& mesh, const std::size_t n_v, const std::size_t n_he, const std::size_t n_e, const std::size_t n_f)
 {
   ASSERT_EQ (n_v , mesh.getVertexDataCloud   ().size ());
   ASSERT_EQ (n_he, mesh.getHalfEdgeDataCloud ().size ());
@@ -406,10 +406,10 @@ TEST (TestMesh, MeshData)
     EXPECT_EQ (edc.size () , edc_new.size ());
     EXPECT_EQ (fdc.size () , fdc_new.size ());
 
-    for (size_t i = 0; i < vdc_new.size  (); ++i) EXPECT_EQ (vdc  [i], vdc_new  [i]) << "Index " << i;
-    for (size_t i = 0; i < hedc_new.size (); ++i) EXPECT_EQ (hedc [i], hedc_new [i]) << "Index " << i;
-    for (size_t i = 0; i < edc_new.size  (); ++i) EXPECT_EQ (edc  [i], edc_new  [i]) << "Index " << i;
-    for (size_t i = 0; i < fdc_new.size  (); ++i) EXPECT_EQ (fdc  [i], fdc_new  [i]) << "Index " << i;
+    for (std::size_t i = 0; i < vdc_new.size  (); ++i) EXPECT_EQ (vdc  [i], vdc_new  [i]) << "Index " << i;
+    for (std::size_t i = 0; i < hedc_new.size (); ++i) EXPECT_EQ (hedc [i], hedc_new [i]) << "Index " << i;
+    for (std::size_t i = 0; i < edc_new.size  (); ++i) EXPECT_EQ (edc  [i], edc_new  [i]) << "Index " << i;
+    for (std::size_t i = 0; i < fdc_new.size  (); ++i) EXPECT_EQ (fdc  [i], fdc_new  [i]) << "Index " << i;
 
     vdc_new  [0] = 0;
     hedc_new [0] = 1;

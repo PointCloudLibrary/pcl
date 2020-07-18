@@ -43,7 +43,7 @@
 #include <pcl/apps/point_cloud_editor/common.h>
 
 void
-CopyBuffer::set (ConstCloudPtr cloud_ptr, const Selection& selection)
+CopyBuffer::set (const ConstCloudPtr& cloud_ptr, const Selection& selection)
 {
   clean();
   if (!cloud_ptr)

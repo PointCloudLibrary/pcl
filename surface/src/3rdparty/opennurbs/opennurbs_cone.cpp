@@ -108,7 +108,7 @@ ON_3dPoint ON_Cone::PointAt( double radial_parameter, double height_parameter ) 
   return plane.PointAt(r*cos(radial_parameter),r*sin(radial_parameter)) + height_parameter*plane.zaxis;
 }
 
-ON_3dVector ON_Cone::NormalAt( double radial_parameter, double height_parameter ) const
+ON_3dVector ON_Cone::NormalAt( double radial_parameter, double ) const
 {
   double s = sin(radial_parameter);
   double c = cos(radial_parameter);

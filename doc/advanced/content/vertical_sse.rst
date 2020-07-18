@@ -129,7 +129,7 @@ For benchmarking, we define two very simple point cloud representations:
       float* x;
       float* y;
       float* z;
-      size_t size;
+      std::size_t size;
     };
 
 Computations considered
@@ -225,14 +225,14 @@ Vertical (SoA), SSE2-optimized:
 
 .. code-block:: cpp
 
-    void centroidSSE2 (const SOA& vectors, AOS& result, size_t size)
+    void centroidSSE2 (const SOA& vectors, AOS& result, std::size_t size)
     {
       __m128 X_sum = _mm_setzero_ps();
       __m128 Y_sum = _mm_setzero_ps();
       __m128 Z_sum = _mm_setzero_ps();
       __m128 X, Y, Z;
 
-      size_t i = 0;
+      std::size_t i = 0;
       for ( ; i < size - 3; i += 4)
       {
         // Load next 4 points
@@ -273,7 +273,7 @@ Horizontal (AoS), SSE2-optimized:
 
 .. code-block:: cpp
 
-    void centroidSSE2 (const AOS* vectors, AOS& result, size_t size)
+    void centroidSSE2 (const AOS* vectors, AOS& result, std::size_t size)
     {
       __m128 sum = _mm_setzero_ps();
 
@@ -443,8 +443,8 @@ simple:
 
     struct RlePair
     {
-      size_t good;
-      size_t skip;
+      std::size_t good;
+      std::size_t skip;
     };
     typedef std::vector<RlePair> RLE;
 
@@ -498,7 +498,7 @@ the whole cloud:
       // State
       float x_sum, y_sum, z_sum;
       __m128 X_sum, Y_sum, Z_sum;
-      size_t count;
+      std::size_t count;
       AOS result;
 
       void init()
@@ -558,7 +558,7 @@ case of point cloud. The dense version simply uses aligned loads:
     {
       kernel.init();
 
-      size_t i = 0;
+      std::size_t i = 0;
       for ( ; i < pts.size - 3; i += 4)
       {
         __m128 X = _mm_load_ps (pts.x + i);
@@ -585,7 +585,7 @@ The indexed version performs the necessary data gathering:
     {
       kernel.init();
 
-      size_t i = 0;
+      std::size_t i = 0;
       for ( ; i < indices.size() - 3; i += 4)
       {
         int i0 = indices[i + 0];
@@ -619,16 +619,16 @@ much of the computation as possible:
     {
       kernel.init();
 
-      size_t i = 0;
+      std::size_t i = 0;
       for (RLE::const_iterator rle_it = rle.begin(); rle_it != rle.end(); ++rle_it)
       {
         // Process current stretch of good pixels
-        size_t good = rle_it->good;
-        size_t skip = rle_it->skip;
-        size_t good_end = i + good;
+        std::size_t good = rle_it->good;
+        std::size_t skip = rle_it->skip;
+        std::size_t good_end = i + good;
 
         // Any unaligned points at start
-        size_t unaligned_end = std::min( (i + 3) & ~3, good_end );
+        std::size_t unaligned_end = std::min( (i + 3) & ~3, good_end );
         for ( ; i < unaligned_end; ++i)
           kernel(pts.x[i], pts.y[i], pts.z[i]);
         // Aligned SIMD point data

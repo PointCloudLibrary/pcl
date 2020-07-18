@@ -103,7 +103,7 @@ namespace pcl
 void
 pcl::ihs::addDirection (const Eigen::Vector4f& normal,
                         const Eigen::Vector4f& direction,
-                        uint32_t&              directions)
+                        std::uint32_t&         directions)
 {
   // Find the rotation that aligns the normal with [0; 0; 1]
   const float dot = normal.z ();
@@ -114,7 +114,7 @@ pcl::ihs::addDirection (const Eigen::Vector4f& normal,
   // TODO: The threshold is hard coded for a frequency=3.
   //       It can be calculated with
   //       - max_z = maximum z value of the dome vertices (excluding [0; 0; 1])
-  //       - thresh = cos (acos (max_z) / 2)
+  //       - thresh = std::cos (std::acos (max_z) / 2)
   //       - always round up!
   //       - with max_z = 0.939 -> thresh = 0.9847 ~ 0.985
   if (dot <= .985f)
@@ -133,8 +133,8 @@ pcl::ihs::addDirection (const Eigen::Vector4f& normal,
   }
 
   // Find the closest viewing direction
-  // NOTE: cos (0deg) = 1 = max
-  //       acos (angle) = dot (a, b) / (norm (a) * norm (b)
+  // NOTE: std::cos (0deg) = 1 = max
+  //       std::acos (angle) = dot (a, b) / (norm (a) * norm (b)
   //       m_sphere_vertices are already normalized
   unsigned int index = 0;
   aligned_direction.transpose ().lazyProduct (pcl::ihs::dome.getVertices ()).maxCoeff (&index);
@@ -147,7 +147,7 @@ pcl::ihs::addDirection (const Eigen::Vector4f& normal,
 ////////////////////////////////////////////////////////////////////////////////
 
 unsigned int
-pcl::ihs::countDirections (const uint32_t directions)
+pcl::ihs::countDirections (const std::uint32_t directions)
 {
   // http://stackoverflow.com/questions/109023/best-algorithm-to-count-the-number-of-set-bits-in-a-32-bit-integer/109025#109025
   unsigned int i = directions - ((directions >> 1) & 0x55555555);

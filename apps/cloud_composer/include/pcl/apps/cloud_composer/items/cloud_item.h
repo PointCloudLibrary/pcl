@@ -40,6 +40,7 @@
 #include <QDebug>
 
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/search/kdtree.h>
@@ -73,7 +74,7 @@ namespace pcl
         PCL_MAKE_ALIGNED_OPERATOR_NEW
         
         CloudItem (const QString name,
-                   const pcl::PCLPointCloud2::Ptr cloud_ptr,
+                   const pcl::PCLPointCloud2::Ptr& cloud_ptr,
                    const Eigen::Vector4f& origin = Eigen::Vector4f (),
                    const Eigen::Quaternionf& orientation = Eigen::Quaternionf (),
                    bool make_templated_cloud = true);
@@ -84,7 +85,7 @@ namespace pcl
         /** \brief This creates a CloudItem from a templated cloud type */
         template <typename PointT>
         static CloudItem*
-        createCloudItemFromTemplate (const QString name, typename PointCloud<PointT>::Ptr cloud_ptr);
+        createCloudItemFromTemplate (const QString& name, typename PointCloud<PointT>::Ptr cloud_ptr);
         
         /** \brief virtual data getter which calls QStandardItem::data; used to create template cloud if not created yet
          *    WARNING : This function modifies "this" - it sets up the templated type if you request one when it doesn't exist yet!

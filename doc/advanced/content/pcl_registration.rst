@@ -103,7 +103,7 @@ GlobalRegistration
          */
        void addPointCloud (PointCloud &pc, Pose &pose = 0)
        {
-         new_clouds_.push_back (make_pair (pc, pose));
+         new_clouds_.push_back (std::make_pair (pc, pose));
        }
 
        /**
@@ -146,7 +146,7 @@ LoopDetection
    {
      public:
        virtual ~LoopDetection () {}
-       virtual list<pair<PointCloud*, PointCloud*> > detectLoop(list<PosedPointCloud*> poses, list<PosedPointCloud*> query) {} = 0;
+       virtual list<std::pair<PointCloud*, PointCloud*> > detectLoop(list<PosedPointCloud*> poses, list<PosedPointCloud*> query) {} = 0;
    }
 
 GraphHandler
@@ -203,7 +203,7 @@ DistanceLoopDetection
    class DistanceLoopDetection : LoopDetection
    {
      public:
-       virtual list<pair<PointCloud*, PointCloud*> > detectLoop(list<PosedPointCloud*> poses, list<PosedPointCloud*> query)
+       virtual list<std::pair<PointCloud*, PointCloud*> > detectLoop(list<PosedPointCloud*> poses, list<PosedPointCloud*> query)
        {
          //I want a map reduce here ;)
          list<PosedPointCloud >::iterator poses_it;

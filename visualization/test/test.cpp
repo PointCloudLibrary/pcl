@@ -84,7 +84,7 @@ int
   while (!p.wasStopped())
   {
     static int counter = 0;
-    cout << "spinOnce was called "<<++counter<<" times.\n";
+    std::cout << "spinOnce was called "<<++counter<<" times.\n";
     p.spinOnce(1000);  // Give the GUI 1000ms to handle events, then return
   }
 

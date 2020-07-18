@@ -130,8 +130,8 @@ namespace pcl
 
                     float Vnx = V.x + cell_size.x;
 
-                    float d_inv = 1.f / (fabs (F) + fabs (Fn));
-                    p.x = (V.x * fabs (Fn) + Vnx * fabs (F)) * d_inv;
+                    float d_inv = 1.f / (std::abs (F) + std::abs (Fn));
+                    p.x = (V.x * std::abs (Fn) + Vnx * std::abs (F)) * d_inv;
 
                     points[local_count++] = p;
                   }
@@ -152,8 +152,8 @@ namespace pcl
 
                     float Vny = V.y + cell_size.y;
 
-                    float d_inv = 1.f / (fabs (F) + fabs (Fn));
-                    p.y = (V.y * fabs (Fn) + Vny * fabs (F)) * d_inv;
+                    float d_inv = 1.f / (std::abs (F) + std::abs (Fn));
+                    p.y = (V.y * std::abs (Fn) + Vny * std::abs (F)) * d_inv;
 
                     points[local_count++] = p;
                   }
@@ -174,8 +174,8 @@ namespace pcl
 
                     float Vnz = V.z + cell_size.z;
 
-                    float d_inv = 1.f / (fabs (F) + fabs (Fn));
-                    p.z = (V.z * fabs (Fn) + Vnz * fabs (F)) * d_inv;
+                    float d_inv = 1.f / (std::abs (F) + std::abs (Fn));
+                    p.z = (V.z * std::abs (Fn) + Vnz * std::abs (F)) * d_inv;
 
                     points[local_count++] = p;
                   }
@@ -292,7 +292,7 @@ pcl::device::extractCloud (const PtrStep<short2>& volume, const float3& volume_s
 
   int size;
   cudaSafeCall ( cudaMemcpyFromSymbol (&size, output_count, sizeof(size)) );
-  return (size_t)size;
+  return (std::size_t)size;
 }
 
 
@@ -346,7 +346,7 @@ namespace pcl
 
         if (idx >= points.size)
           return;
-        const float qnan = numeric_limits<float>::quiet_NaN ();
+        constexpr float qnan = std::numeric_limits<float>::quiet_NaN ();
         float3 n = make_float3 (qnan, qnan, qnan);
 
         float3 point = fetchPoint (idx);

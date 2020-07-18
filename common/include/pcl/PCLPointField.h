@@ -1,44 +1,37 @@
 #pragma once
 
-#ifdef USE_ROS
-   #error USE_ROS setup requires PCL to compile against ROS message headers, which is now deprecated
-#endif 
+#include <pcl/memory.h>       // for shared_ptr
+#include <pcl/type_traits.h>  // for asEnum_v
 
-#include <string>
-#include <vector>
-#include <ostream>
-#include <boost/shared_ptr.hpp>
-#include <pcl/pcl_macros.h>
+#include <string>   // for string
+#include <ostream>  // for ostream
 
 namespace pcl
 {
   struct PCLPointField
   {
-    PCLPointField () : offset (0), datatype (0), count (0)
-    {}
-
     std::string name;
 
-    pcl::uint32_t offset;
-    pcl::uint8_t datatype;
-    pcl::uint32_t count;
+    std::uint32_t offset = 0;
+    std::uint8_t datatype = 0;
+    std::uint32_t count = 0;
 
-    enum PointFieldTypes { INT8 = 1,
-                           UINT8 = 2,
-                           INT16 = 3,
-                           UINT16 = 4,
-                           INT32 = 5,
-                           UINT32 = 6,
-                           FLOAT32 = 7,
-                           FLOAT64 = 8 };
+    enum PointFieldTypes { INT8 = traits::asEnum_v<std::int8_t>,
+                           UINT8 = traits::asEnum_v<std::uint8_t>,
+                           INT16 = traits::asEnum_v<std::int16_t>,
+                           UINT16 = traits::asEnum_v<std::uint16_t>,
+                           INT32 = traits::asEnum_v<std::int32_t>,
+                           UINT32 = traits::asEnum_v<std::uint32_t>,
+                           FLOAT32 = traits::asEnum_v<float>,
+                           FLOAT64 = traits::asEnum_v<double>};
 
   public:
-    using Ptr = boost::shared_ptr< ::pcl::PCLPointField>;
-    using ConstPtr = boost::shared_ptr<const ::pcl::PCLPointField>;
+    using Ptr = shared_ptr< ::pcl::PCLPointField>;
+    using ConstPtr = shared_ptr<const ::pcl::PCLPointField>;
   }; // struct PCLPointField
 
-  using PCLPointFieldPtr = boost::shared_ptr< ::pcl::PCLPointField>;
-  using PCLPointFieldConstPtr = boost::shared_ptr<const ::pcl::PCLPointField>;
+  using PCLPointFieldPtr = PCLPointField::Ptr;
+  using PCLPointFieldConstPtr = PCLPointField::ConstPtr;
 
   inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PCLPointField & v)
   {
@@ -52,4 +45,20 @@ namespace pcl
     s << "  " << v.count << std::endl;
     return (s);
   }
+
+  // Return true if the PCLPointField matches the expected name and data type.
+  // Written as a struct to allow partially specializing on Tag.
+  template<typename PointT, typename Tag>
+  struct FieldMatches
+  {
+    bool operator() (const PCLPointField& field)
+    {
+      return ((field.name == traits::name<PointT, Tag>::value) &&
+              (field.datatype == traits::datatype<PointT, Tag>::value) &&
+              ((field.count == traits::datatype<PointT, Tag>::size) ||
+               (field.count == 0 && traits::datatype<PointT, Tag>::size == 1 /* see bug #821 */)));
+    }
+  };
+
 } // namespace pcl
+

@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
@@ -69,7 +70,7 @@ namespace pcl
           /// destructor
           virtual ~BoykovKolmogorov () {}
           /// get number of nodes in the graph
-          size_t
+          std::size_t
           numNodes () const { return nodes_.size (); }
           /// reset all edge capacities to zero (but don't free the graph)
           void
@@ -283,7 +284,7 @@ namespace pcl
         /// matrix of products (i.e. r*r, r*g, r*b), some values are duplicated.
         Eigen::Matrix3f accumulator_;
         /// count of color samples added to the gaussian
-        uint32_t count_;
+        std::uint32_t count_;
         /// small value to add to covariance matrix diagonal to avoid singular values
         float epsilon_;
         PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -327,7 +328,7 @@ namespace pcl
       using PCLBase<PointT>::fake_indices_;
 
       /// Constructor
-      GrabCut (uint32_t K = 5, float lambda = 50.f)
+      GrabCut (std::uint32_t K = 5, float lambda = 50.f)
         : K_ (K)
         , lambda_ (lambda)
         , nb_neighbours_ (9)
@@ -362,13 +363,13 @@ namespace pcl
       void
       setLambda (float lambda) { lambda_ = lambda; }
       /// \return the number of components in the GMM
-      uint32_t
+      std::uint32_t
       getK () { return (K_); }
       /** Set K parameter to user given value. Suggested value by the authors is 5
         * \param[in] K the number of components used in GMM
         */
       void
-      setK (uint32_t K) { K_ = K; }
+      setK (std::uint32_t K) { K_ = K; }
       /** \brief Provide a pointer to the search object.
         * \param tree a pointer to the spatial search object.
         */
@@ -443,12 +444,12 @@ namespace pcl
       inline bool
       isSource (vertex_descriptor v) { return (graph_.inSourceTree (v)); }
       /// image width
-      uint32_t width_;
+      std::uint32_t width_;
       /// image height
-      uint32_t height_;
+      std::uint32_t height_;
       // Variables used in formulas from the paper.
       /// Number of GMM components
-      uint32_t K_;
+      std::uint32_t K_;
       /// lambda = 50. This value was suggested the GrabCut paper.
       float lambda_;
       /// beta = 1/2 * average of the squared color distances between all pairs of 8-neighboring pixels.

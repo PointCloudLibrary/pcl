@@ -46,8 +46,8 @@
 PasteCommand::PasteCommand (ConstCopyBufferPtr copy_buffer_ptr,
                             SelectionPtr selection_ptr,
                             CloudPtr cloud_ptr)
-  : copy_buffer_ptr_(copy_buffer_ptr), selection_ptr_(selection_ptr),
-    cloud_ptr_(cloud_ptr)
+  : copy_buffer_ptr_(std::move(copy_buffer_ptr)), selection_ptr_(std::move(selection_ptr)),
+    cloud_ptr_(std::move(cloud_ptr))
 {
 }
 

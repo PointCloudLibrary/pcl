@@ -55,7 +55,7 @@ namespace pcl
     * represents the underlying surface more accurately.
     *
     * \author Radu Bogdan Rusu
-    * \ingroup keypoints
+    * \ingroup filters
     */
   template <typename PointT>
   class UniformSampling: public Filter<PointT>
@@ -65,11 +65,13 @@ namespace pcl
     using Filter<PointT>::filter_name_;
     using Filter<PointT>::input_;
     using Filter<PointT>::indices_;
+    using Filter<PointT>::removed_indices_;
+    using Filter<PointT>::extract_removed_indices_;
     using Filter<PointT>::getClassName;
 
     public:
-      using Ptr = boost::shared_ptr<UniformSampling<PointT> >;
-      using ConstPtr = boost::shared_ptr<const UniformSampling<PointT> >;
+      using Ptr = shared_ptr<UniformSampling<PointT> >;
+      using ConstPtr = shared_ptr<const UniformSampling<PointT> >;
 
       /** \brief Empty constructor. */
       UniformSampling (bool extract_removed_indices = false) :
@@ -116,7 +118,7 @@ namespace pcl
       };
 
       /** \brief The 3D grid leaves. */
-      std::unordered_map<size_t, Leaf> leaves_;
+      std::unordered_map<std::size_t, Leaf> leaves_;
 
       /** \brief The size of a leaf. */
       Eigen::Vector4f leaf_size_;

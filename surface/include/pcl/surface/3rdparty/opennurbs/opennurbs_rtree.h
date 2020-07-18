@@ -149,7 +149,7 @@ struct ON_RTreeSearchResult
 class ON_CLASS ON_RTreeMemPool
 {
 public:
-  ON_RTreeMemPool( ON_MEMORY_POOL* heap, size_t leaf_count );
+  ON_RTreeMemPool( ON_MEMORY_POOL* heap, std::size_t leaf_count );
   ~ON_RTreeMemPool();
 
   ON_RTreeNode* AllocNode();
@@ -164,13 +164,13 @@ public:
   Returns:
     Total number of bytes of heap memory allocated.
   */
-  size_t SizeOf() const;
+  std::size_t SizeOf() const;
 
   /*
   Returns:
     Number of bytes of heap memory not currently in use.
   */
-  size_t SizeOfUnusedBuffer() const;
+  std::size_t SizeOfUnusedBuffer() const;
 
 private:
   void GrowBuffer();
@@ -187,13 +187,13 @@ private:
 
   // buffer for new allocations
   unsigned char* m_buffer;
-  size_t m_buffer_capacity;
+  std::size_t m_buffer_capacity;
 
   struct Blk* m_blk_list;   // linked list used to free all allocated memory
-  size_t m_sizeof_blk;      // total amount of memory in each block.
+  std::size_t m_sizeof_blk;      // total amount of memory in each block.
 
   ON_MEMORY_POOL* m_heap;
-  size_t m_sizeof_heap; // total amount of heap memory in this rtree
+  std::size_t m_sizeof_heap; // total amount of heap memory in this rtree
 };
 
 ////////////////////////////////////////////////////////////////
@@ -378,7 +378,7 @@ private:
 class ON_CLASS ON_RTree
 {
 public:
-  ON_RTree( ON_MEMORY_POOL* heap = 0, size_t leaf_count = 0 );
+  ON_RTree( ON_MEMORY_POOL* heap = 0, std::size_t leaf_count = 0 );
   ~ON_RTree();
 
   /*
@@ -670,7 +670,7 @@ public:
   Returns:
     Number of bytes of heap memory used by this R-tree.
   */
-  size_t SizeOf() const;
+  std::size_t SizeOf() const;
 
 private:
   void SplitNode(ON_RTreeNode*, ON_RTreeBranch*, ON_RTreeNode**);
@@ -683,7 +683,7 @@ private:
   void ReInsert(ON_RTreeNode*, struct ON_RTreeListNode**);
   void RemoveAllRec(ON_RTreeNode*);
   ON_RTreeNode* m_root;
-  size_t m_reserved;
+  std::size_t m_reserved;
   ON_RTreeMemPool m_mem_pool;
 };
 

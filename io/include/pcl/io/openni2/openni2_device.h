@@ -30,22 +30,24 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
-#include "openni.h"
-#include "pcl/io/openni2/openni2_video_mode.h"
-#include "pcl/io/io_exception.h"
-
-#include <boost/shared_ptr.hpp>
-#include <boost/cstdint.hpp>
-#include <functional>
-#include <string>
-#include <vector>
 
 // Template frame wrappers
 #include <pcl/io/image.h>
 #include <pcl/io/image_depth.h>
 #include <pcl/io/image_ir.h>
 
+#include <pcl/io/io_exception.h>
+#include <pcl/io/openni2/openni2_video_mode.h>
+
+#include "openni.h"
+
+#include <cstdint>
+#include <functional>
+#include <memory>
+#include <string>
+#include <vector>
 
 
 namespace openni
@@ -71,10 +73,12 @@ namespace pcl
       class PCL_EXPORTS OpenNI2Device
       {
         public:
+          using Ptr = shared_ptr<OpenNI2Device>;
+          using ConstPtr = shared_ptr<const OpenNI2Device>;
 
-          using ImageCallbackFunction = std::function<void(boost::shared_ptr<Image>, void* cookie) >;
-          using DepthImageCallbackFunction = std::function<void(boost::shared_ptr<DepthImage>, void* cookie) >;
-          using IRImageCallbackFunction = std::function<void(boost::shared_ptr<IRImage>, void* cookie) >;
+          using ImageCallbackFunction = std::function<void(Image::Ptr, void* cookie) >;
+          using DepthImageCallbackFunction = std::function<void(DepthImage::Ptr, void* cookie) >;
+          using IRImageCallbackFunction = std::function<void(IRImage::Ptr, void* cookie) >;
           using CallbackHandle = unsigned;
 
           using StreamCallbackFunction = std::function<void(openni::VideoStream& stream)>;
@@ -88,9 +92,9 @@ namespace pcl
           getVendor () const;
           const std::string
           getName () const;
-          uint16_t
+          std::uint16_t
           getUsbVendorId () const;
-          uint16_t
+          std::uint16_t
           getUsbProductId () const;
 
           const std::string
@@ -191,7 +195,7 @@ namespace pcl
           getBaseline();
 
           // Value of pixels in shadow or that have no valid measurement
-          uint64_t
+          std::uint64_t
           getShadowValue();
 
           void
@@ -271,11 +275,11 @@ namespace pcl
         protected:
           void shutdown ();
 
-          boost::shared_ptr<openni::VideoStream>
+          std::shared_ptr<openni::VideoStream>
           getIRVideoStream () const;
-          boost::shared_ptr<openni::VideoStream>
+          std::shared_ptr<openni::VideoStream>
           getColorVideoStream () const;
-          boost::shared_ptr<openni::VideoStream>
+          std::shared_ptr<openni::VideoStream>
           getDepthVideoStream () const;
 
 
@@ -288,24 +292,24 @@ namespace pcl
 
 
           bool
-          findCompatibleVideoMode (const std::vector<OpenNI2VideoMode> supportedModes,
+          findCompatibleVideoMode (const std::vector<OpenNI2VideoMode>& supportedModes,
             const OpenNI2VideoMode& output_mode, OpenNI2VideoMode& mode) const;
 
           bool
-          resizingSupported (size_t input_width, size_t input_height, size_t output_width, size_t output_height) const;
+          resizingSupported (std::size_t input_width, std::size_t input_height, std::size_t output_width, std::size_t output_height) const;
 
           // Members
 
-          boost::shared_ptr<openni::Device> openni_device_;
-          boost::shared_ptr<openni::DeviceInfo> device_info_;
+          std::shared_ptr<openni::Device> openni_device_;
+          std::shared_ptr<openni::DeviceInfo> device_info_;
 
-          boost::shared_ptr<OpenNI2FrameListener> ir_frame_listener;
-          boost::shared_ptr<OpenNI2FrameListener> color_frame_listener;
-          boost::shared_ptr<OpenNI2FrameListener> depth_frame_listener;
+          std::shared_ptr<OpenNI2FrameListener> ir_frame_listener;
+          std::shared_ptr<OpenNI2FrameListener> color_frame_listener;
+          std::shared_ptr<OpenNI2FrameListener> depth_frame_listener;
 
-          mutable boost::shared_ptr<openni::VideoStream> ir_video_stream_;
-          mutable boost::shared_ptr<openni::VideoStream> color_video_stream_;
-          mutable boost::shared_ptr<openni::VideoStream> depth_video_stream_;
+          mutable std::shared_ptr<openni::VideoStream> ir_video_stream_;
+          mutable std::shared_ptr<openni::VideoStream> color_video_stream_;
+          mutable std::shared_ptr<openni::VideoStream> depth_video_stream_;
 
           mutable std::vector<OpenNI2VideoMode> ir_video_modes_;
           mutable std::vector<OpenNI2VideoMode> color_video_modes_;
@@ -318,9 +322,9 @@ namespace pcl
           /** \brief distance between the projector and the IR camera in meters*/
           float baseline_;
           /** the value for shadow (occluded pixels) */
-          uint64_t shadow_value_;
+          std::uint64_t shadow_value_;
           /** the value for pixels without a valid disparity measurement */
-          uint64_t no_sample_value_;
+          std::uint64_t no_sample_value_;
       };
 
       PCL_EXPORTS std::ostream& operator<< (std::ostream& stream, const OpenNI2Device& device);

@@ -63,9 +63,6 @@ namespace pcl
       {
       }
 
-      /** \brief Destructor. */
-      virtual ~StopWatch () = default;
-
       /** \brief Retrieve the time in milliseconds spent since the last call to \a reset(). */
       inline double
       getTime () const
@@ -143,7 +140,7 @@ namespace pcl
         *
         * \param[in] window_size number of most recent events that are
         * considered in frequency estimation (default: 30) */
-      EventFrequency (size_t window_size = 30)
+      EventFrequency (std::size_t window_size = 30)
       : window_size_ (window_size)
       {
         stop_watch_.reset ();
@@ -178,7 +175,7 @@ namespace pcl
 
       pcl::StopWatch stop_watch_;
       std::queue<double> event_time_queue_;
-      const size_t window_size_;
+      const std::size_t window_size_;
 
   };
 

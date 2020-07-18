@@ -39,10 +39,11 @@
 
 #include <random>
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/eigen.h>
+#include <pcl/common/random.h> // NormalGenerator
 #include <pcl/common/transforms.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/registration/correspondence_rejection_median_distance.h>
@@ -97,13 +98,12 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
   pcl::transformPointCloud (cloud, target, t, q);
   
   // Noisify the target with a known seed and N(0, 0.005) using deterministic sampling
-  std::mt19937 rng(1e6);
-  std::normal_distribution<> nd(0, 0.005);
+  pcl::common::NormalGenerator<float> nd(0, 0.005, 1e6);
   for (auto &point : target)
   {
-    point.x += static_cast<float> (nd(rng));
-    point.y += static_cast<float> (nd(rng));
-    point.z += static_cast<float> (nd(rng));
+    point.x += nd.run();
+    point.y += nd.run();
+    point.z += nd.run();
   }
   
   // Ensure deterministic sampling inside the rejector
@@ -130,17 +130,19 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
    * but not too many
    */
   EXPECT_GE(accepted_frac, ground_truth_frac);
-  EXPECT_LE(accepted_frac, 1.5f*ground_truth_frac);
-  
+  // Factor 1.5 raised to 1.6 as there is a variance in the noise added from the various standard implementations
+  // See #2995 for details
+  EXPECT_LE(accepted_frac, 1.6f*ground_truth_frac);
+
   /*
    * Test criterion 2: expect high precision/recall. The true positives are the unscrambled correspondences
    * where the query/match index are equal.
    */
-  size_t true_positives = 0;
+  std::size_t true_positives = 0;
   for (auto &i : result)
     if (i.index_query == i.index_match)
       ++true_positives;
-  const size_t false_positives = result.size() - true_positives;
+  const std::size_t false_positives = result.size() - true_positives;
 
   const double precision = double(true_positives) / double(true_positives+false_positives);
   const double recall = double(true_positives) / double(size-last);

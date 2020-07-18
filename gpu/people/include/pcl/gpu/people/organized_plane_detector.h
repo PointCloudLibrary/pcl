@@ -36,6 +36,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -45,7 +46,6 @@
 #include <pcl/common/transforms.h>
 #include <pcl/gpu/people/label_common.h>
 
-#include <boost/shared_ptr.hpp>
 #include <string>
 #include <vector>
 
@@ -58,7 +58,8 @@ namespace pcl
       class OrganizedPlaneDetector
       {
         public:
-          using Ptr = boost::shared_ptr<OrganizedPlaneDetector>;
+          using Ptr = shared_ptr<OrganizedPlaneDetector>;
+          using ConstPtr = shared_ptr<const OrganizedPlaneDetector>;
 
           using PointTC = pcl::PointXYZRGBA;
           using PointT = pcl::PointXYZ;

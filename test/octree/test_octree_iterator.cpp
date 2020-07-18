@@ -40,7 +40,7 @@
 #include <pcl/octree/octree_iterator.h>
 #include <pcl/common/projection_matrix.h>
 #include <pcl/point_types.h>
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 using pcl::octree::OctreeBase;
 using pcl::octree::OctreeIteratorBase;
@@ -131,7 +131,7 @@ struct OctreeIteratorTest : public OctreeIteratorBaseTest
     it_.reset ();
 
     // increment the iterator 4 times
-    for (uint8_t i = 0; i < 4; ++it_, ++i);
+    for (std::uint8_t i = 0; i < 4; ++it_, ++i);
   }
 
   // members
@@ -154,7 +154,7 @@ using OctreeIteratorTypes = testing::Types
          OctreeLeafNodeDepthFirstIterator<OctreeBase<int> >,
          OctreeFixedDepthIterator<OctreeBase<int> >,
          OctreeLeafNodeBreadthFirstIterator<OctreeBase<int> > >;
-TYPED_TEST_CASE (OctreeIteratorTest, OctreeIteratorTypes);
+TYPED_TEST_SUITE (OctreeIteratorTest, OctreeIteratorTypes);
 
 TYPED_TEST (OctreeIteratorTest, CopyConstructor)
 {
@@ -222,7 +222,7 @@ struct OctreeBaseBeginEndIteratorsTest : public testing::Test
     // 2 bits per key
     // The 3 LSBs of the id match the 1 LSB of the x, y and z keys
     // The 3 MSBs of the id match the 1 MSB of the x, y and z keys
-    for (size_t i = 0; i < 64u; ++i)
+    for (std::size_t i = 0; i < 64u; ++i)
     {
       const OctreeKey key (((i >> 4) & 0b10u) | ((i >> 2) & 1u), // x
                            ((i >> 3) & 0b10u) | ((i >> 1) & 1u), // y
@@ -1149,7 +1149,7 @@ struct OctreePointCloudAdjacencyBeginEndIteratorsTest
     // Generate Point Cloud
     typename PointCloudT::Ptr cloud (new PointCloudT (100, 1));
     const float max_inv = 1.f / float (RAND_MAX);
-    for (size_t i = 0; i < 100; ++i)
+    for (std::size_t i = 0; i < 100; ++i)
     {
       const PointT pt (10.f * (float (std::rand ()) * max_inv - .5f),
                        10.f * (float (std::rand ()) * max_inv - .5f),

@@ -25,7 +25,7 @@ pcl::cloud_composer::SupervoxelsTool::performAction (ConstItemList input_data, P
 {
   if (type != PointTypeFlags::NONE)
   {
-    switch ((uint8_t) type)
+    switch ((std::uint8_t) type)
     {
       case (PointTypeFlags::XYZ | PointTypeFlags::RGB):
         return this->performTemplatedAction<pcl::PointXYZRGB> (input_data);
@@ -41,8 +41,8 @@ pcl::cloud_composer::SupervoxelsTool::performAction (ConstItemList input_data, P
   return output;
 } 
 
-template QList <pcl::cloud_composer::CloudComposerItem*> pcl::cloud_composer::SupervoxelsTool::performTemplatedAction <pcl::PointXYZRGB> (QList <const CloudComposerItem*>);
-//template QList <pcl::cloud_composer::CloudComposerItem*> pcl::cloud_composer::SupervoxelsTool::performTemplatedAction <pcl::PointXYZRGBA> (QList <const CloudComposerItem*>);
+template QList <pcl::cloud_composer::CloudComposerItem*> pcl::cloud_composer::SupervoxelsTool::performTemplatedAction <pcl::PointXYZRGB> (const QList <const CloudComposerItem*>&);
+//template QList <pcl::cloud_composer::CloudComposerItem*> pcl::cloud_composer::SupervoxelsTool::performTemplatedAction <pcl::PointXYZRGBA> (const QList <const CloudComposerItem*>&);
 
 
 /////////////////// PARAMETER MODEL /////////////////////////////////

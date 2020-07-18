@@ -53,7 +53,7 @@ pcl::BoxClipper3D<PointT>::BoxClipper3D (const Eigen::Vector3f& rodrigues, const
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT>
-pcl::BoxClipper3D<PointT>::~BoxClipper3D () throw ()
+pcl::BoxClipper3D<PointT>::~BoxClipper3D () noexcept
 {
 }
 
@@ -128,8 +128,8 @@ pcl::BoxClipper3D<PointT>::clipLineSegment3D (PointT&, PointT&) const
   transformPoint (point2, pt2);
 
   //
-  bool pt1InBox = (fabs(pt1.x) <= 1.0 && fabs (pt1.y) <= 1.0 && fabs (pt1.z) <= 1.0);
-  bool pt2InBox = (fabs(pt2.x) <= 1.0 && fabs (pt2.y) <= 1.0 && fabs (pt2.z) <= 1.0);
+  bool pt1InBox = (std::abs(pt1.x) <= 1.0 && std::abs (pt1.y) <= 1.0 && std::abs (pt1.z) <= 1.0);
+  bool pt2InBox = (std::abs(pt2.x) <= 1.0 && std::abs (pt2.y) <= 1.0 && std::abs (pt2.z) <= 1.0);
 
   // one is outside the other one inside the box
   //if (pt1InBox ^ pt2InBox)
@@ -202,7 +202,7 @@ pcl::BoxClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& clou
   if (indices.empty ())
   {
     clipped.reserve (cloud_in.size ());
-    for (size_t pIdx = 0; pIdx < cloud_in.size (); ++pIdx)
+    for (std::size_t pIdx = 0; pIdx < cloud_in.size (); ++pIdx)
       if (clipPoint3D (cloud_in[pIdx]))
         clipped.push_back (pIdx);
   }

@@ -148,7 +148,7 @@ public:
     sizeof_element
       size of an element in bytes.
   */
-  void RandomPermutation(void* base, size_t nel, size_t sizeof_element );
+  void RandomPermutation(void* base, std::size_t nel, std::size_t sizeof_element );
 
 private:
   struct ON_RANDOM_NUMBER_CONTEXT m_rand_context;

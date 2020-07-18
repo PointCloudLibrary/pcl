@@ -136,7 +136,7 @@ namespace pcl
             // ignore invalid points
             if (otherDepth == 0)
               continue;
-            if (fabs(otherDepth - depth) > 200)
+            if (std::abs(otherDepth - depth) > 200)
               continue;
 
             ++counter;

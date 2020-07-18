@@ -52,8 +52,8 @@ namespace pcl
   class PCL_EXPORTS EarClipping : public MeshProcessing
   {
     public:
-      using Ptr = boost::shared_ptr<EarClipping>;
-      using ConstPtr = boost::shared_ptr<const EarClipping>;
+      using Ptr = shared_ptr<EarClipping>;
+      using ConstPtr = shared_ptr<const EarClipping>;
 
       using MeshProcessing::input_mesh_;
       using MeshProcessing::initCompute;
@@ -87,7 +87,7 @@ namespace pcl
         * \param[in] vertices the vertices representing the polygon 
         */
       float
-      area (const std::vector<uint32_t>& vertices);
+      area (const std::vector<std::uint32_t>& vertices);
 
       /** \brief Check if the triangle (u,v,w) is an ear. 
         * \param[in] u the first triangle vertex 
@@ -96,7 +96,7 @@ namespace pcl
         * \param[in] vertices a set of input vertices
         */
       bool
-      isEar (int u, int v, int w, const std::vector<uint32_t>& vertices);
+      isEar (int u, int v, int w, const std::vector<std::uint32_t>& vertices);
 
       /** \brief Check if p is inside the triangle (u,v,w). 
         * \param[in] u the first triangle vertex 

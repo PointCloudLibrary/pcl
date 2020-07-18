@@ -48,7 +48,7 @@ pcl::cloud_composer::ToolBoxModel::setSelectionModel (QItemSelectionModel* selec
 }
   
 QStandardItem*
-pcl::cloud_composer::ToolBoxModel::addToolGroup (QString tool_group_name)
+pcl::cloud_composer::ToolBoxModel::addToolGroup (const QString& tool_group_name)
 {
   QList <QStandardItem*> matches_name = findItems (tool_group_name);
   if (matches_name.empty ())
@@ -60,7 +60,7 @@ pcl::cloud_composer::ToolBoxModel::addToolGroup (QString tool_group_name)
 
     return new_group_item;
   }
-  else if (matches_name.size () > 1)
+  if (matches_name.size () > 1)
   {
     qWarning () << "Multiple tool groups with same name in ToolBoxModel!!";
   }
@@ -163,7 +163,7 @@ pcl::cloud_composer::ToolBoxModel::updateEnabledTools (const QItemSelection& cur
     }
   }
   enableAllTools ();
-  QList <QStandardItem*> enabled_tools = tool_items.toList (); 
+  QList <QStandardItem*> enabled_tools = tool_items.values (); 
   QMap <QStandardItem*,QString> disabled_tools;
   QMutableListIterator<QStandardItem*> enabled_itr(enabled_tools);
   //Go through tools, removing from enabled list if they fail to pass tests

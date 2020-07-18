@@ -35,8 +35,10 @@
  *
  */
 
-#include <stdexcept>
 #include <pcl/surface/on_nurbs/fitting_surface_pdm.h>
+#include <pcl/pcl_macros.h>
+
+#include <stdexcept>
 
 using namespace pcl;
 using namespace on_nurbs;
@@ -86,7 +88,7 @@ FittingSurface::refine (int dim)
   std::vector<double> xi;
   std::vector<double> elements = getElementVector (m_nurbs, dim);
 
-  for (size_t i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
   for (const double &i : xi)
@@ -106,7 +108,7 @@ FittingSurface::refine (ON_NurbsSurface &nurbs, int dim)
   std::vector<double> xi;
   std::vector<double> elements = getElementVector (nurbs, dim);
 
-  for (size_t i = 0; i < elements.size () - 1; i++)
+  for (std::size_t i = 0; i < elements.size () - 1; i++)
     xi.push_back (elements[i] + 0.5 * (elements[i + 1] - elements[i]));
 
   for (const double &i : xi)
@@ -638,6 +640,7 @@ FittingSurface::addCageBoundaryRegularisation (double weight, int side, unsigned
   {
     case SOUTH:
       j = m_nurbs.m_cv_count[1] - 1;
+      PCL_FALLTHROUGH
     case NORTH:
       for (i = 1; i < (m_nurbs.m_cv_count[0] - 1); i++)
       {
@@ -656,6 +659,7 @@ FittingSurface::addCageBoundaryRegularisation (double weight, int side, unsigned
 
     case EAST:
       i = m_nurbs.m_cv_count[0] - 1;
+      PCL_FALLTHROUGH
     case WEST:
       for (j = 1; j < (m_nurbs.m_cv_count[1] - 1); j++)
       {
@@ -1110,9 +1114,9 @@ FittingSurface::findClosestElementMidPoint (const ON_NurbsSurface &nurbs, const 
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   double d_shortest (DBL_MAX);
-  for (size_t i = 0; i < elementsU.size () - 1; i++)
+  for (std::size_t i = 0; i < elementsU.size () - 1; i++)
   {
-    for (size_t j = 0; j < elementsV.size () - 1; j++)
+    for (std::size_t j = 0; j < elementsV.size () - 1; j++)
     {
       double points[3];
       double d;
@@ -1154,20 +1158,20 @@ FittingSurface::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vect
   std::vector<double> elementsV = getElementVector (nurbs, 1);
 
   // NORTH - SOUTH
-  for (size_t i = 0; i < (elementsV.size () - 1); i++)
+  for (std::size_t i = 0; i < (elementsV.size () - 1); i++)
   {
     ini_points.emplace_back(WEST, elementsV[i] + 0.5 * (elementsV[i + 1] - elementsV[i]));
     ini_points.emplace_back(EAST, elementsV[i] + 0.5 * (elementsV[i + 1] - elementsV[i]));
   }
 
   // WEST - EAST
-  for (size_t i = 0; i < (elementsU.size () - 1); i++)
+  for (std::size_t i = 0; i < (elementsU.size () - 1); i++)
   {
     ini_points.emplace_back(NORTH, elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]));
     ini_points.emplace_back(SOUTH, elementsU[i] + 0.5 * (elementsU[i + 1] - elementsU[i]));
   }
 
-  for (size_t i = 0; i < ini_points.size (); i++)
+  for (std::size_t i = 0; i < ini_points.size (); i++)
   {
 
     Vector2d params = inverseMappingBoundary (nurbs, pt, ini_points[i].side, ini_points[i].hint, err_tmp, p_tmp,
@@ -1297,7 +1301,7 @@ FittingSurface::inverseMappingBoundary (const ON_NurbsSurface &nurbs, const Vect
 
     delta = -0.5 * r.dot (t) / t.dot (t);
 
-    if (fabs (delta) < accuracy)
+    if (std::abs (delta) < accuracy)
     {
 
       error = r.norm ();

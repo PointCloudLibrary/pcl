@@ -28,6 +28,9 @@ DAMAGE.
 
 #include "factor.h"
 
+#include <cstdio>
+#include <cstring>
+
 ////////////////////////
 // StartingPolynomial //
 ////////////////////////
@@ -114,7 +117,7 @@ namespace pcl
     int PPolynomial<Degree>::size(void) const{return int(sizeof(StartingPolynomial<Degree>)*polyCount);}
 
     template<int Degree>
-    void PPolynomial<Degree>::set( size_t size )
+    void PPolynomial<Degree>::set( std::size_t size )
     {
       if(polyCount){free(polys);}
       polyCount=0;
@@ -126,7 +129,7 @@ namespace pcl
       }
     }
     template<int Degree>
-    void PPolynomial<Degree>::reset( size_t newSize )
+    void PPolynomial<Degree>::reset( std::size_t newSize )
     {
       polyCount=newSize;
       polys=(StartingPolynomial<Degree>*)realloc(polys,sizeof(StartingPolynomial<Degree>)*newSize);
@@ -183,7 +186,7 @@ namespace pcl
     PPolynomial<Degree> PPolynomial<Degree>::operator + (const PPolynomial<Degree>& p) const{
       PPolynomial q;
       int i,j;
-      size_t idx=0;
+      std::size_t idx=0;
       q.set(polyCount+p.polyCount);
       i=j=-1;
 
@@ -200,7 +203,7 @@ namespace pcl
     PPolynomial<Degree> PPolynomial<Degree>::operator - (const PPolynomial<Degree>& p) const{
       PPolynomial q;
       int i,j;
-      size_t idx=0;
+      std::size_t idx=0;
       q.set(polyCount+p.polyCount);
       i=j=-1;
 
@@ -217,7 +220,7 @@ namespace pcl
     PPolynomial<Degree>& PPolynomial<Degree>::addScaled(const PPolynomial<Degree>& p,double scale){
       int i,j;
       StartingPolynomial<Degree>* oldPolys=polys;
-      size_t idx=0,cnt=0,oldPolyCount=polyCount;
+      std::size_t idx=0,cnt=0,oldPolyCount=polyCount;
       polyCount=0;
       polys=NULL;
       set(oldPolyCount+p.polyCount);
@@ -268,7 +271,7 @@ namespace pcl
     {
       PPolynomial q;
       q.set(polyCount);
-      for(size_t i=0;i<polyCount;i++){q.polys[i]=polys[i].scale(s);}
+      for(std::size_t i=0;i<polyCount;i++){q.polys[i]=polys[i].scale(s);}
       return q;
     }
     template<int Degree>
@@ -276,14 +279,14 @@ namespace pcl
     {
       PPolynomial q;
       q.set(polyCount);
-      for(size_t i=0;i<polyCount;i++){q.polys[i]=polys[i].shift(s);}
+      for(std::size_t i=0;i<polyCount;i++){q.polys[i]=polys[i].shift(s);}
       return q;
     }
     template<int Degree>
     PPolynomial<Degree-1> PPolynomial<Degree>::derivative(void) const{
       PPolynomial<Degree-1> q;
       q.set(polyCount);
-      for(size_t i=0;i<polyCount;i++){
+      for(std::size_t i=0;i<polyCount;i++){
         q.polys[i].start=polys[i].start;
         q.polys[i].p=polys[i].p.derivative();
       }
@@ -314,7 +317,7 @@ namespace pcl
     template<int Degree>
     PPolynomial<Degree>& PPolynomial<Degree>::operator  /= ( double s )
     {
-      for(size_t i=0;i<polyCount;i++){polys[i].p/=s;}
+      for(std::size_t i=0;i<polyCount;i++){polys[i].p/=s;}
       return *this;
     }
     template<int Degree>
@@ -355,7 +358,7 @@ namespace pcl
         printf("[-Infinity,Infinity]\n");
       }
       else{
-        for(size_t i=0;i<polyCount;i++){
+        for(std::size_t i=0;i<polyCount;i++){
           printf("[");
           if		(polys[i  ].start== DBL_MAX){printf("Infinity,");}
           else if	(polys[i  ].start==-DBL_MAX){printf("-Infinity,");}
@@ -370,7 +373,7 @@ namespace pcl
       }
       printf("\n");
     }
-    template< >
+    template< > inline
     PPolynomial< 0 > PPolynomial< 0 >::BSpline( double radius )
     {
       PPolynomial q;
@@ -414,12 +417,12 @@ namespace pcl
       std::vector<double> tempRoots;
 
       p.setZero();
-      for(size_t i=0;i<polyCount;i++){
+      for(std::size_t i=0;i<polyCount;i++){
         p+=polys[i].p;
         if(polys[i].start>max){break;}
         if(i<polyCount-1 && polys[i+1].start<min){continue;}
         p.getSolutions(c,tempRoots,EPS);
-        for(size_t j=0;j<tempRoots.size();j++){
+        for(std::size_t j=0;j<tempRoots.size();j++){
           if(tempRoots[j]>polys[i].start && (i+1==polyCount || tempRoots[j]<=polys[i+1].start)){
             if(tempRoots[j]>min && tempRoots[j]<max){roots.push_back(tempRoots[j]);}
           }

@@ -34,7 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-  
+
 #pragma once
 
 #include <pcl/common/common.h>
@@ -42,52 +42,53 @@
 #include <istream>
 #include <ostream>
 
-namespace pcl
-{
+namespace pcl {
 
-  /** \brief 2D point with float x- and y-coordinates. */ 
-  class PCL_EXPORTS PointXY32f
+/** 2D point with float x- and y-coordinates. */
+class PCL_EXPORTS PointXY32f {
+public:
+  /** Constructor. */
+  inline PointXY32f() : x(0.0f), y(0.0f) {}
+  /** Destructor. */
+  inline virtual ~PointXY32f() {}
+
+  /** Serializes the point to the specified stream.
+   *
+   * \param[out] stream the destination for the serialization
+   */
+  inline void
+  serialize(std::ostream& stream) const
   {
-    public:
-      /** \brief Constructor. */
-      inline PointXY32f () : x (0.0f), y (0.0f) {}
-      /** \brief Destructor. */
-      inline virtual ~PointXY32f () {}
+    stream.write(reinterpret_cast<const char*>(&x), sizeof(x));
+    stream.write(reinterpret_cast<const char*>(&y), sizeof(y));
+  }
 
-      /** \brief Serializes the point to the specified stream.
-        * \param[out] stream The destination for the serialization.
-        */
-      inline void 
-      serialize (std::ostream & stream) const
-      {
-        stream.write (reinterpret_cast<const char*> (&x), sizeof (x));
-        stream.write (reinterpret_cast<const char*> (&y), sizeof (y));
-      }
+  /** Deserializes the point from the specified stream.
+   *
+   * \param[in] stream the source for the deserialization
+   */
+  inline void
+  deserialize(std::istream& stream)
+  {
+    stream.read(reinterpret_cast<char*>(&x), sizeof(x));
+    stream.read(reinterpret_cast<char*>(&y), sizeof(y));
+  }
 
-      /** \brief Deserializes the point from the specified stream.
-        * \param[in] stream The source for the deserialization.
-        */
-      inline void 
-      deserialize (std::istream & stream)
-      {
-        stream.read (reinterpret_cast<char*> (&x), sizeof (x));
-        stream.read (reinterpret_cast<char*> (&y), sizeof (y));
-      }
+  /** Creates a random point within the specified window.
+   *
+   * \param[in] min_x the minimum value for the x-coordinate of the point
+   * \param[in] max_x the maximum value for the x-coordinate of the point
+   * \param[in] min_y the minimum value for the y-coordinate of the point
+   * \param[in] max_y the maximum value for the y-coordinate of the point
+   */
+  static PointXY32f
+  randomPoint(const int min_x, const int max_x, const int min_y, const int max_y);
 
-      /** \brief Creates a random point within the specified window.
-        * \param[in] min_x The minimum value for the x-coordinate of the point.
-        * \param[in] max_x The maximum value for the x-coordinate of the point.
-        * \param[in] min_y The minimum value for the y-coordinate of the point.
-        * \param[in] max_y The maximum value for the y-coordinate of the point.
-        */
-      static PointXY32f 
-      randomPoint (const int min_x, const int max_x, const int min_y, const int max_y);
+public:
+  /** The x-coordinate of the point. */
+  float x;
+  /** The y-coordinate of the point. */
+  float y;
+};
 
-    public:
-      /** \brief The x-coordinate of the point. */
-      float x;
-      /** \brief The y-coordinate of the point. */
-      float y;
-  };
-
-}
+} // namespace pcl

@@ -240,11 +240,11 @@ pcl::cloud_composer::SelectedTrackballStyleInteractor::Spin ()
                               disp_obj_center);
   
   double newAngle = 
-  vtkMath::DegreesFromRadians( atan2( rwi->GetEventPosition()[1] - disp_obj_center[1],
+  vtkMath::DegreesFromRadians( std::atan2( rwi->GetEventPosition()[1] - disp_obj_center[1],
                                       rwi->GetEventPosition()[0] - disp_obj_center[0] ) );
   
   double oldAngle = 
-  vtkMath::DegreesFromRadians( atan2( rwi->GetLastEventPosition()[1] - disp_obj_center[1],
+  vtkMath::DegreesFromRadians( std::atan2( rwi->GetLastEventPosition()[1] - disp_obj_center[1],
                                       rwi->GetLastEventPosition()[0] - disp_obj_center[0] ) );
   
   double scale[3];

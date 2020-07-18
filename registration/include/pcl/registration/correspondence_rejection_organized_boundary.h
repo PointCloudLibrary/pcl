@@ -39,7 +39,7 @@
 #pragma once
 
 #include <pcl/registration/correspondence_rejection.h>
-
+#include <pcl/memory.h>  // for static_pointer_cast
 
 namespace pcl
 {
@@ -79,7 +79,7 @@ namespace pcl
       {
         if (!data_container_)
           data_container_.reset (new pcl::registration::DataContainer<PointT>);
-        boost::static_pointer_cast<pcl::registration::DataContainer<PointT> > (data_container_)->setInputSource (cloud);
+        static_pointer_cast<pcl::registration::DataContainer<PointT> > (data_container_)->setInputSource (cloud);
       }
 
       template <typename PointT> inline void
@@ -87,7 +87,7 @@ namespace pcl
       {
         if (!data_container_)
           data_container_.reset (new pcl::registration::DataContainer<PointT>);
-        boost::static_pointer_cast<pcl::registration::DataContainer<PointT> > (data_container_)->setInputTarget (cloud);
+        static_pointer_cast<pcl::registration::DataContainer<PointT> > (data_container_)->setInputTarget (cloud);
       }
 
       /** \brief See if this rejector requires source points */
@@ -135,7 +135,7 @@ namespace pcl
       int window_size_;
       float depth_step_threshold_;
 
-      using DataContainerPtr = boost::shared_ptr<pcl::registration::DataContainerInterface>;
+      using DataContainerPtr = DataContainerInterface::Ptr;
       DataContainerPtr data_container_;
     };
   }

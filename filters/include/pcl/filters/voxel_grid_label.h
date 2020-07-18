@@ -51,8 +51,8 @@ namespace pcl
   {
     public:
 
-      using Ptr = boost::shared_ptr<VoxelGridLabel>;
-      using ConstPtr = boost::shared_ptr<const VoxelGridLabel>;
+      using Ptr = shared_ptr<VoxelGridLabel>;
+      using ConstPtr = shared_ptr<const VoxelGridLabel>;
 
 
       /** \brief Constructor.

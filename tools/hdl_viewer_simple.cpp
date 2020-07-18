@@ -54,7 +54,6 @@
 #include <typeinfo>
 #include <vector>
 
-using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;
@@ -105,7 +104,7 @@ class SimpleHDLViewer
       FPS_CALC ("cloud callback");
       std::lock_guard<std::mutex> lock (cloud_mutex_);
       cloud_ = cloud;
-      //std::cout << cloud->points[0] << " " << cloud->size () << std::endl;
+      //std::cout << (*cloud)[0] << " " << cloud->size () << std::endl;
     }
 
     void 
@@ -135,7 +134,7 @@ class SimpleHDLViewer
       if (mouse_event.getType () == MouseEvent::MouseButtonPress && 
           mouse_event.getButton () == MouseEvent::LeftButton)
       {
-        cout << mouse_event.getX () << " , " << mouse_event.getY () << endl;
+        std::cout << mouse_event.getX () << " , " << mouse_event.getY () << std::endl;
       }
     }
 
@@ -186,8 +185,8 @@ class SimpleHDLViewer
       cloud_connection.disconnect ();
     }
 
-    boost::shared_ptr<PCLVisualizer> cloud_viewer_;
-    boost::shared_ptr<ImageViewer> image_viewer_;
+    PCLVisualizer::Ptr cloud_viewer_;
+    ImageViewer::Ptr image_viewer_;
 
     Grabber& grabber_;
     std::mutex cloud_mutex_;
@@ -200,10 +199,10 @@ class SimpleHDLViewer
 void
 usage (char ** argv)
 {
-  cout << "usage: " << argv[0]
+  std::cout << "usage: " << argv[0]
       << " [-hdlCalibration <path-to-calibration-file>] [-pcapFile <path-to-pcap-file>] [-h | --help] [-format XYZ(default)|XYZI|XYZRGB]"
-      << endl;
-  cout << argv[0] << " -h | --help : shows this help" << endl;
+      << std::endl;
+  std::cout << argv[0] << " -h | --help : shows this help" << std::endl;
   return;
 }
 
@@ -225,7 +224,7 @@ main (int argc, char ** argv)
 
   HDLGrabber grabber (hdlCalibration, pcapFile);
 
-  cout << "viewer format:" << format << endl;
+  std::cout << "viewer format:" << format << std::endl;
   if (boost::iequals (format, std::string ("XYZ")))
   {
     std::vector<double> fcolor (3); fcolor[0] = fcolor[1] = fcolor[2] = 255.0;

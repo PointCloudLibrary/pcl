@@ -60,7 +60,6 @@
 #include "data_source.hpp"
 
 using namespace pcl::gpu;
-using namespace std;
 
 //TEST(PCL_OctreeGPU, DISABLED_approxNearesSearch)
 TEST(PCL_OctreeGPU, approxNearesSearch)
@@ -85,7 +84,7 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
 
     //prepare host cloud
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host(new pcl::PointCloud<pcl::PointXYZ>);	
-    cloud_host->width = data.points.size();
+    cloud_host->width = data.size();
     cloud_host->height = 1;
     cloud_host->points.resize (cloud_host->width * cloud_host->height);    
     std::transform(data.points.begin(), data.points.end(), cloud_host->points.begin(), DataGenerator::ConvPoint<pcl::PointXYZ>());
@@ -107,18 +106,18 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
         
     //prepare output buffers on device
     pcl::gpu::NeighborIndices result_device(data.tests_num, 1);
-    vector<int> result_host_pcl(data.tests_num);
-    vector<int> result_host_gpu(data.tests_num);
-    vector<float> dists_pcl(data.tests_num);
-    vector<float> dists_gpu(data.tests_num);
+    std::vector<int> result_host_pcl(data.tests_num);
+    std::vector<int> result_host_gpu(data.tests_num);
+    std::vector<float> dists_pcl(data.tests_num);
+    std::vector<float> dists_gpu(data.tests_num);
     
     //search GPU shared
     octree_device.approxNearestSearch(queries_device, result_device);
 
-    vector<int> downloaded;
+    std::vector<int> downloaded;
     result_device.data.download(downloaded);
                 
-    for(size_t i = 0; i < data.tests_num; ++i)
+    for(std::size_t i = 0; i < data.tests_num; ++i)
     {
         octree_host.approxNearestSearch(data.queries[i], result_host_pcl[i], dists_pcl[i]);
         octree_device.approxNearestSearchHost(data.queries[i], result_host_gpu[i], dists_gpu[i]);
@@ -129,7 +128,7 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
     int count_gpu_better = 0;
     int count_pcl_better = 0;
     float diff_pcl_better = 0;
-    for(size_t i = 0; i < data.tests_num; ++i)
+    for(std::size_t i = 0; i < data.tests_num; ++i)
     {
         float diff = dists_pcl[i] - dists_gpu[i];
         bool gpu_better = diff > 0;
@@ -137,13 +136,13 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
         ++(gpu_better ? count_gpu_better : count_pcl_better);
 
         if (!gpu_better)
-            diff_pcl_better +=fabs(diff);
+            diff_pcl_better +=std::abs(diff);
     }
 
     diff_pcl_better /=count_pcl_better;
 
-    cout << "count_gpu_better: " << count_gpu_better << endl;
-    cout << "count_pcl_better: " << count_pcl_better << endl;
-    cout << "avg_diff_pcl_better: " << diff_pcl_better << endl;    
+    std::cout << "count_gpu_better: " << count_gpu_better << std::endl;
+    std::cout << "count_pcl_better: " << count_pcl_better << std::endl;
+    std::cout << "avg_diff_pcl_better: " << diff_pcl_better << std::endl;    
 
 }

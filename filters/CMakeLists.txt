@@ -14,6 +14,7 @@ endif()
 
 set(srcs
   src/conditional_removal.cpp
+  src/convolution.cpp
   src/crop_box.cpp
   src/extract_indices.cpp
   src/filter.cpp
@@ -57,6 +58,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/extract_indices.h"
   "include/pcl/${SUBSYS_NAME}/filter.h"
   "include/pcl/${SUBSYS_NAME}/filter_indices.h"
+  "include/pcl/${SUBSYS_NAME}/functor_filter.h"
   "include/pcl/${SUBSYS_NAME}/passthrough.h"
   "include/pcl/${SUBSYS_NAME}/shadowpoints.h"
   "include/pcl/${SUBSYS_NAME}/project_inliers.h"

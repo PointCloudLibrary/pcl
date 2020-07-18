@@ -61,8 +61,8 @@ namespace pcl
       using PointCloudNPtr = typename PointCloudN::Ptr;
       using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
       
-      using Ptr = boost::shared_ptr<RGBPlaneCoefficientComparator<PointT, PointNT> >;
-      using ConstPtr = boost::shared_ptr<const RGBPlaneCoefficientComparator<PointT, PointNT> >;
+      using Ptr = shared_ptr<RGBPlaneCoefficientComparator<PointT, PointNT> >;
+      using ConstPtr = shared_ptr<const RGBPlaneCoefficientComparator<PointT, PointNT> >;
 
       using pcl::Comparator<PointT>::input_;
       using pcl::PlaneCoefficientComparator<PointT, PointNT>::normals_;
@@ -78,7 +78,7 @@ namespace pcl
       /** \brief Constructor for RGBPlaneCoefficientComparator.
         * \param[in] plane_coeff_d a reference to a vector of d coefficients of plane equations.  Must be the same size as the input cloud and input normals.  a, b, and c coefficients are in the input normals.
         */
-      RGBPlaneCoefficientComparator (boost::shared_ptr<std::vector<float> >& plane_coeff_d) 
+      RGBPlaneCoefficientComparator (shared_ptr<std::vector<float> >& plane_coeff_d) 
         : PlaneCoefficientComparator<PointT, PointNT> (plane_coeff_d), color_threshold_ (50.0f)
       {
       }
@@ -112,17 +112,17 @@ namespace pcl
       bool
       compare (int idx1, int idx2) const override
       {
-        float dx = input_->points[idx1].x - input_->points[idx2].x;
-        float dy = input_->points[idx1].y - input_->points[idx2].y;
-        float dz = input_->points[idx1].z - input_->points[idx2].z;
+        float dx = (*input_)[idx1].x - (*input_)[idx2].x;
+        float dy = (*input_)[idx1].y - (*input_)[idx2].y;
+        float dz = (*input_)[idx1].z - (*input_)[idx2].z;
         float dist = std::sqrt (dx*dx + dy*dy + dz*dz);
-        int dr = input_->points[idx1].r - input_->points[idx2].r;
-        int dg = input_->points[idx1].g - input_->points[idx2].g;
-        int db = input_->points[idx1].b - input_->points[idx2].b;
+        int dr = (*input_)[idx1].r - (*input_)[idx2].r;
+        int dg = (*input_)[idx1].g - (*input_)[idx2].g;
+        int db = (*input_)[idx1].b - (*input_)[idx2].b;
         //Note: This is not the best metric for color comparisons, we should probably use HSV space.
         float color_dist = static_cast<float> (dr*dr + dg*dg + db*db);
         return ( (dist < distance_threshold_)
-                 && (normals_->points[idx1].getNormalVector3fMap ().dot (normals_->points[idx2].getNormalVector3fMap () ) > angular_threshold_ )
+                 && ((*normals_)[idx1].getNormalVector3fMap ().dot ((*normals_)[idx2].getNormalVector3fMap () ) > angular_threshold_ )
                  && (color_dist < color_threshold_));
       }
       

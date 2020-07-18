@@ -34,20 +34,30 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 #ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_2D_HPP_
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_2D_HPP_
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
+namespace pcl
+{
+
+namespace registration
+{
+
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
-pcl::registration::TransformationEstimation2D<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
+TransformationEstimation2D<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     Matrix4 &transformation_matrix) const
 {
-  size_t nr_points = cloud_src.points.size ();
-  if (cloud_tgt.points.size () != nr_points)
+  const auto nr_points = cloud_src.size ();
+  if (cloud_tgt.size () != nr_points)
   {
-    PCL_ERROR ("[pcl::TransformationEstimation2D::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", nr_points, cloud_tgt.points.size ());
+    PCL_ERROR("[pcl::TransformationEstimation2D::estimateRigidTransformation] Number "
+              "or points in source (%zu) differs than target (%zu)!\n",
+              static_cast<std::size_t>(nr_points),
+              static_cast<std::size_t>(cloud_tgt.size()));
     return;
   }
 
@@ -56,17 +66,20 @@ pcl::registration::TransformationEstimation2D<PointSource, PointTarget, Scalar>:
   estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::registration::TransformationEstimation2D<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
+TransformationEstimation2D<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const std::vector<int> &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     Matrix4 &transformation_matrix) const
 {
-  if (indices_src.size () != cloud_tgt.points.size ())
+  if (indices_src.size () != cloud_tgt.size ())
   {
-    PCL_ERROR ("[pcl::Transformation2D::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", indices_src.size (), cloud_tgt.points.size ());
+    PCL_ERROR("[pcl::Transformation2D::estimateRigidTransformation] Number or points "
+              "in source (%zu) differs than target (%zu)!\n",
+              indices_src.size(),
+              static_cast<std::size_t>(cloud_tgt.size()));
     return;
   }
 
@@ -76,9 +89,8 @@ pcl::registration::TransformationEstimation2D<PointSource, PointTarget, Scalar>:
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
-pcl::registration::TransformationEstimation2D<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
+TransformationEstimation2D<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const std::vector<int> &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
@@ -96,9 +108,9 @@ pcl::registration::TransformationEstimation2D<PointSource, PointTarget, Scalar>:
   estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::registration::TransformationEstimation2D<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
+TransformationEstimation2D<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     const pcl::Correspondences &correspondences,
@@ -109,9 +121,9 @@ pcl::registration::TransformationEstimation2D<PointSource, PointTarget, Scalar>:
   estimateRigidTransformation (source_it, target_it, transformation_matrix);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
-pcl::registration::TransformationEstimation2D<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
+TransformationEstimation2D<PointSource, PointTarget, Scalar>::estimateRigidTransformation (
     ConstCloudIterator<PointSource>& source_it,
     ConstCloudIterator<PointTarget>& target_it,
     Matrix4 &transformation_matrix) const
@@ -135,9 +147,9 @@ pcl::registration::TransformationEstimation2D<PointSource, PointTarget, Scalar>:
   getTransformationFromCorrelation (cloud_src_demean, centroid_src, cloud_tgt_demean, centroid_tgt, transformation_matrix);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+
 template <typename PointSource, typename PointTarget, typename Scalar> void
-pcl::registration::TransformationEstimation2D<PointSource, PointTarget, Scalar>::getTransformationFromCorrelation (
+TransformationEstimation2D<PointSource, PointTarget, Scalar>::getTransformationFromCorrelation (
     const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_src_demean,
     const Eigen::Matrix<Scalar, 4, 1> &centroid_src,
     const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_tgt_demean,
@@ -148,9 +160,9 @@ pcl::registration::TransformationEstimation2D<PointSource, PointTarget, Scalar>:
 
   // Assemble the correlation matrix H = source * target'
   Eigen::Matrix<Scalar, 3, 3> H = (cloud_src_demean * cloud_tgt_demean.transpose ()).topLeftCorner (3, 3);
-  
-  float angle = atan2 ((H (0, 1) - H (1, 0)), (H(0, 0) + H (1, 1)));
-  
+
+  float angle = std::atan2 ((H (0, 1) - H (1, 0)), (H(0, 0) + H (1, 1)));
+
   Eigen::Matrix<Scalar, 3, 3> R (Eigen::Matrix<Scalar, 3, 3>::Identity ());
   R (0, 0) = R (1, 1) = std::cos (angle);
   R (0, 1) = -std::sin (angle);
@@ -162,4 +174,8 @@ pcl::registration::TransformationEstimation2D<PointSource, PointTarget, Scalar>:
   transformation_matrix.block (0, 3, 3, 1).matrix () = centroid_tgt.head (3) - Rc;
 }
 
+} // namespace registration
+} // namespace pcl
+
 #endif    // PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_2D_HPP_
+

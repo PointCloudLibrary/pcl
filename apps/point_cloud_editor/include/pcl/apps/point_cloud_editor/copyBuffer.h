@@ -66,7 +66,7 @@ class CopyBuffer : public Statistics
     /// copied
     /// @param selection a const reference to the selected points object
     void
-    set (ConstCloudPtr cloud_ptr, const Selection& selection);
+    set (const ConstCloudPtr& cloud_ptr, const Selection& selection);
 
     /// @brief Returns the points stored in the internal buffer as a const Cloud
     const Cloud&

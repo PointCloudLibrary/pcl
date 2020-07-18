@@ -41,7 +41,7 @@
 #include <vector>
 #include <typeinfo>
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/geometry/triangle_mesh.h>
 
@@ -80,7 +80,7 @@ class TestTriangleMesh : public testing::Test
     using Mesh = MeshT;
 };
 
-TYPED_TEST_CASE (TestTriangleMesh, TriangleMeshTypes);
+TYPED_TEST_SUITE (TestTriangleMesh, TriangleMeshTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -549,7 +549,7 @@ TEST (TestManifoldTriangleMesh, addTrianglePair)
     ASSERT_TRUE (fip.second.isValid ());
   }
 
-  for (size_t i=0; i < faces.size (); ++i)
+  for (std::size_t i=0; i < faces.size (); ++i)
   {
     VertexIndices actual_1, actual_2;
 

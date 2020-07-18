@@ -114,7 +114,7 @@ pcl::segmentation::grabcut::BoykovKolmogorov::preAugmentPaths ()
 }
 
 int
-pcl::segmentation::grabcut::BoykovKolmogorov::addNodes (size_t n)
+pcl::segmentation::grabcut::BoykovKolmogorov::addNodes (std::size_t n)
 {
   int node_id = (int)nodes_.size ();
   nodes_.resize (nodes_.size () + n);
@@ -655,7 +655,7 @@ pcl::segmentation::grabcut::GMM::probabilityDensity (std::size_t i, const Color 
                 g * (r*G.inverse (0,1) + g*G.inverse (1,1) + b*G.inverse (2,1)) +
                 b * (r*G.inverse (0,2) + g*G.inverse (1,2) + b*G.inverse (2,2));
 
-      result = static_cast<float> (1.0/(std::sqrt (G.determinant)) * exp (-0.5*d));
+      result = static_cast<float> (1.0/(std::sqrt (G.determinant)) * std::exp (-0.5*d));
     }
   }
 

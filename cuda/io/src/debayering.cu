@@ -166,7 +166,7 @@ namespace pcl
     /*unsigned char* DebayerEdgeAware::global_data = 0;
     unsigned DebayerEdgeAware::dataSize = 0;
     
-    DebayerEdgeAware::DebayerEdgeAware (const boost::shared_ptr<openni_wrapper::Image>& bayer_image)
+    DebayerEdgeAware::DebayerEdgeAware (const openni_wrapper::Image::Ptr& bayer_image)
     {
     	if (dataSize < bayer_image->getWidth () * bayer_image->getHeight ())
     	{
@@ -249,7 +249,7 @@ namespace pcl
     }*/
     
     template<template <typename> class Storage>
-    void Debayering<Storage>::computeBilinear (const boost::shared_ptr<openni_wrapper::Image>& bayer_image, RGBImageType& rgb_image) const
+    void Debayering<Storage>::computeBilinear (const openni_wrapper::Image::Ptr& bayer_image, RGBImageType& rgb_image) const
     {
     	//pcl::ScopeTime t ("computeBilinear");
     	typename Storage<unsigned char>::type bayer_data (bayer_image->getWidth () * bayer_image->getHeight ());
@@ -271,7 +271,7 @@ namespace pcl
     }
 
     template<template <typename> class Storage>
-    void YUV2RGB<Storage>::compute (const boost::shared_ptr<openni_wrapper::Image>& yuv_image, RGBImageType& rgb_image) const
+    void YUV2RGB<Storage>::compute (const openni_wrapper::Image::Ptr& yuv_image, RGBImageType& rgb_image) const
     {
     	typename Storage<unsigned char>::type yuv_data (yuv_image->getMetaData().DataSize());
     	thrust::copy ((unsigned char*)(yuv_image->getMetaData().Data()),
@@ -307,7 +307,7 @@ namespace pcl
     
     
     template<template <typename> class Storage>
-    void DebayeringDownsampling<Storage>::compute (const boost::shared_ptr<openni_wrapper::Image>& bayer_image, RGBImageType& rgb_image) const
+    void DebayeringDownsampling<Storage>::compute (const openni_wrapper::Image::Ptr& bayer_image, RGBImageType& rgb_image) const
     {
     	//pcl::ScopeTime t ("computeBilinear");
     	typename Storage<unsigned char>::type bayer_data (bayer_image->getWidth () * bayer_image->getHeight ());
@@ -330,14 +330,14 @@ namespace pcl
     	                   DebayerDownsample<Storage> (thrust::raw_pointer_cast (&bayer_data[0]), bayer_image->getWidth (), 2) );
     }
     /*
-    void Debayering::computeEdgeAware (const boost::shared_ptr<openni_wrapper::Image>& bayer_image, thrust::host_vector<OpenNIRGB>& rgb_image) const
+    void Debayering::computeEdgeAware (const openni_wrapper::Image::Ptr& bayer_image, thrust::host_vector<OpenNIRGB>& rgb_image) const
     {
     	thrust::device_vector<OpenNIRGB> image (bayer_image->getWidth () * bayer_image->getHeight ()) ;
     	computeEdgeAware (bayer_image, image );
     	rgb_image = image;
     }
     
-    void Debayering::computeEdgeAware (const boost::shared_ptr<openni_wrapper::Image>& bayer_image, thrust::device_vector<OpenNIRGB>& rgb_image) const
+    void Debayering::computeEdgeAware (const openni_wrapper::Image::Ptr& bayer_image, thrust::device_vector<OpenNIRGB>& rgb_image) const
     {
     	//pcl::ScopeTime t ("computeEdgeAware");
     	thrust::device_vector<int> indices(bayer_image->getWidth () * bayer_image->getHeight ());

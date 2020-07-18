@@ -56,7 +56,9 @@
 // PCL - visualziation
 //#include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/common/common.h>
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
+#endif
 
 //#include "vtkVBOPolyDataMapper.h"
 
@@ -158,7 +160,7 @@ public:
     std::string key (interactor->GetKeySym ());
     bool shift_down = interactor->GetShiftKey();
 
-    cout << "Key Pressed: " << key << endl;
+    std::cout << "Key Pressed: " << key << std::endl;
 
     Scene *scene = Scene::instance ();
     OutofcoreCloud *cloud = static_cast<OutofcoreCloud*> (scene->getObjectByName ("my_octree"));
@@ -225,7 +227,7 @@ renderEndCallback(vtkObject* vtkNotUsed(caller), unsigned long int vtkNotUsed(ev
 int
 outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octree=true, unsigned int gpu_cache_size=512)
 {
-  cout << boost::filesystem::absolute (tree_root) << endl;
+  std::cout << boost::filesystem::absolute (tree_root) << std::endl;
 
   // Create top level scene
   Scene *scene = Scene::instance ();

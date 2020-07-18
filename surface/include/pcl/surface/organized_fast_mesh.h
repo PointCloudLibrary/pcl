@@ -41,7 +41,9 @@
 #pragma once
 
 #include <pcl/common/angles.h>
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/surface/reconstruction.h>
+
 
 namespace pcl
 {
@@ -64,8 +66,8 @@ namespace pcl
   class OrganizedFastMesh : public MeshConstruction<PointInT>
   {
     public:
-      using Ptr = boost::shared_ptr<OrganizedFastMesh<PointInT> >;
-      using ConstPtr = boost::shared_ptr<const OrganizedFastMesh<PointInT> >;
+      using Ptr = shared_ptr<OrganizedFastMesh<PointInT> >;
+      using ConstPtr = shared_ptr<const OrganizedFastMesh<PointInT> >;
 
       using MeshConstruction<PointInT>::input_;
       using MeshConstruction<PointInT>::check_tree_;
@@ -94,7 +96,7 @@ namespace pcl
       , triangulation_type_ (QUAD_MESH)
       , viewpoint_ (Eigen::Vector3f::Zero ())
       , store_shadowed_faces_ (false)
-      , cos_angle_tolerance_ (fabsf (cosf (pcl::deg2rad (12.5f))))
+      , cos_angle_tolerance_ (std::abs (std::cos (pcl::deg2rad (12.5f))))
       , distance_tolerance_ (-1.0f)
       , distance_dependent_ (false)
       , use_depth_as_distance_(false)
@@ -203,7 +205,7 @@ namespace pcl
       setAngleTolerance(float angle_tolerance)
       {
         if (angle_tolerance > 0)
-          cos_angle_tolerance_ = fabsf (cosf (angle_tolerance));
+          cos_angle_tolerance_ = std::abs (std::cos (angle_tolerance));
         else
           cos_angle_tolerance_ = -1.0f;
       }
@@ -406,9 +408,9 @@ namespace pcl
       inline bool
       isValidTriangle (const int& a, const int& b, const int& c)
       {
-        if (!pcl::isFinite (input_->points[a])) return (false);
-        if (!pcl::isFinite (input_->points[b])) return (false);
-        if (!pcl::isFinite (input_->points[c])) return (false);
+        if (!pcl::isFinite ((*input_)[a])) return (false);
+        if (!pcl::isFinite ((*input_)[b])) return (false);
+        if (!pcl::isFinite ((*input_)[c])) return (false);
         return (true);
       }
 
@@ -420,9 +422,9 @@ namespace pcl
       inline bool
       isShadowedTriangle (const int& a, const int& b, const int& c)
       {
-        if (isShadowed (input_->points[a], input_->points[b])) return (true);
-        if (isShadowed (input_->points[b], input_->points[c])) return (true);
-        if (isShadowed (input_->points[c], input_->points[a])) return (true);
+        if (isShadowed ((*input_)[a], (*input_)[b])) return (true);
+        if (isShadowed ((*input_)[b], (*input_)[c])) return (true);
+        if (isShadowed ((*input_)[c], (*input_)[a])) return (true);
         return (false);
       }
 
@@ -435,10 +437,10 @@ namespace pcl
       inline bool
       isValidQuad (const int& a, const int& b, const int& c, const int& d)
       {
-        if (!pcl::isFinite (input_->points[a])) return (false);
-        if (!pcl::isFinite (input_->points[b])) return (false);
-        if (!pcl::isFinite (input_->points[c])) return (false);
-        if (!pcl::isFinite (input_->points[d])) return (false);
+        if (!pcl::isFinite ((*input_)[a])) return (false);
+        if (!pcl::isFinite ((*input_)[b])) return (false);
+        if (!pcl::isFinite ((*input_)[c])) return (false);
+        if (!pcl::isFinite ((*input_)[d])) return (false);
         return (true);
       }
 
@@ -451,10 +453,10 @@ namespace pcl
       inline bool
       isShadowedQuad (const int& a, const int& b, const int& c, const int& d)
       {
-        if (isShadowed (input_->points[a], input_->points[b])) return (true);
-        if (isShadowed (input_->points[b], input_->points[c])) return (true);
-        if (isShadowed (input_->points[c], input_->points[d])) return (true);
-        if (isShadowed (input_->points[d], input_->points[a])) return (true);
+        if (isShadowed ((*input_)[a], (*input_)[b])) return (true);
+        if (isShadowed ((*input_)[b], (*input_)[c])) return (true);
+        if (isShadowed ((*input_)[c], (*input_)[d])) return (true);
+        if (isShadowed ((*input_)[d], (*input_)[a])) return (true);
         return (false);
       }
 

@@ -7,6 +7,8 @@
 // PCL
 #include <pcl/outofcore/visualization/object.h>
 #include <pcl/common/eigen.h>
+#include <pcl/memory.h>
+#include <pcl/pcl_macros.h>
 
 // VTK
 #include <vtkActor.h>
@@ -129,6 +131,9 @@ public:
   //computeFrustum(double aspect);
   void
   printFrustum ();
+
+  // Aligned operator, because of Eigen members
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
 private:
 

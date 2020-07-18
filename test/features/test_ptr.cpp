@@ -37,7 +37,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
 #include <pcl/features/vfh.h>
 #include <pcl/features/usc.h>
@@ -48,7 +48,6 @@
 #include <pcl/features/normal_based_signature.h>
 
 using namespace pcl;
-using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, FeaturePtr)

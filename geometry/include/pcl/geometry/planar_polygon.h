@@ -40,6 +40,7 @@
 #pragma once
 
 #include <pcl/common/eigen.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/ModelCoefficients.h>
@@ -53,8 +54,8 @@ namespace pcl
   class PlanarPolygon
   {
     public:
-      using Ptr = boost::shared_ptr<PlanarPolygon<PointT> >;
-      using ConstPtr = boost::shared_ptr<const PlanarPolygon<PointT> >;
+      using Ptr = shared_ptr<PlanarPolygon<PointT> >;
+      using ConstPtr = shared_ptr<const PlanarPolygon<PointT> >;
 
        /** \brief Empty constructor for PlanarPolygon */
       PlanarPolygon () : contour_ ()

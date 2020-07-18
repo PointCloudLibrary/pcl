@@ -55,16 +55,16 @@ pcl::SampleConsensusModelNormalParallelPlane<PointT, PointNT>::isModelValid (con
   {
     // Obtain the plane normal
     Eigen::Vector4f coeff = model_coefficients;
-    coeff[3] = 0;
+    coeff[3] = 0.0f;
     coeff.normalize ();
 
-    if (fabs (axis_.dot (coeff)) < cos_angle_)
+    if (std::abs (axis_.dot (coeff)) < cos_angle_)
       return  (false);
   }
 
   if (eps_dist_ > 0.0)
   {
-    if (fabs (-model_coefficients[3] - distance_from_origin_) > eps_dist_)
+    if (std::abs (-model_coefficients[3] - distance_from_origin_) > eps_dist_)
       return (false);
   }
 

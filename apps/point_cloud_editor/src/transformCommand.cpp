@@ -42,13 +42,13 @@
 #include <pcl/apps/point_cloud_editor/selection.h>
 #include <pcl/apps/point_cloud_editor/common.h>
 
-TransformCommand::TransformCommand(ConstSelectionPtr selection_ptr,
+TransformCommand::TransformCommand(const ConstSelectionPtr& selection_ptr,
                                    CloudPtr cloud_ptr,
                                    const float *matrix,
                                    float translate_x,
                                    float translate_y,
                                    float translate_z)
-  : selection_ptr_(selection_ptr), cloud_ptr_(cloud_ptr),
+  : selection_ptr_(selection_ptr), cloud_ptr_(std::move(cloud_ptr)),
     translate_x_(translate_x), translate_y_(translate_y),
     translate_z_(translate_z)
 {
@@ -125,7 +125,7 @@ TransformCommand::undo()
 }
 
 void
-TransformCommand::applyTransform(ConstSelectionPtr sel_ptr)
+TransformCommand::applyTransform(const ConstSelectionPtr& sel_ptr)
 {
   // now modify the selected points' coordinates
   for(const unsigned int &index : *sel_ptr)

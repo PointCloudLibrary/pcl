@@ -40,7 +40,9 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/pcl_base.h>
 #include <pcl/sample_consensus/eigen.h>
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
@@ -68,7 +70,8 @@ namespace pcl
       using PointCloudPtr = typename SampleConsensusModel<PointT>::PointCloudPtr;
       using PointCloudConstPtr = typename SampleConsensusModel<PointT>::PointCloudConstPtr;
 
-      using Ptr = boost::shared_ptr<SampleConsensusModelRegistration<PointT> >;
+      using Ptr = shared_ptr<SampleConsensusModelRegistration<PointT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelRegistration<PointT>>;
 
       /** \brief Constructor for base SampleConsensusModelRegistration.
         * \param[in] cloud the input point cloud dataset
@@ -93,7 +96,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelRegistration (const PointCloudConstPtr &cloud,
-                                        const std::vector<int> &indices,
+                                        const Indices &indices,
                                         bool random = false) 
         : SampleConsensusModel<PointT> (cloud, indices, random)
         , target_ ()
@@ -127,7 +130,7 @@ namespace pcl
       setInputTarget (const PointCloudConstPtr &target)
       {
         target_ = target;
-        indices_tgt_.reset (new std::vector<int>);
+        indices_tgt_.reset (new Indices);
         // Cache the size and fill the target indices
         int target_size = static_cast<int> (target->size ());
         indices_tgt_->resize (target_size);
@@ -142,10 +145,10 @@ namespace pcl
         * \param[in] indices_tgt a vector of point indices to be used from \a target
         */
       inline void
-      setInputTarget (const PointCloudConstPtr &target, const std::vector<int> &indices_tgt)
+      setInputTarget (const PointCloudConstPtr &target, const Indices &indices_tgt)
       {
         target_ = target;
-        indices_tgt_.reset (new std::vector<int> (indices_tgt));
+        indices_tgt_.reset (new Indices (indices_tgt));
         computeOriginalIndexMapping ();
       }
 
@@ -154,7 +157,7 @@ namespace pcl
         * \param[out] model_coefficients the resultant model coefficients
         */
       bool
-      computeModelCoefficients (const std::vector<int> &samples,
+      computeModelCoefficients (const Indices &samples,
                                 Eigen::VectorXf &model_coefficients) const override;
 
       /** \brief Compute all distances from the transformed points to their correspondences
@@ -173,7 +176,7 @@ namespace pcl
       void
       selectWithinDistance (const Eigen::VectorXf &model_coefficients,
                             const double threshold,
-                            std::vector<int> &inliers) override;
+                            Indices &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers.
         *
@@ -181,7 +184,7 @@ namespace pcl
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      int
+      std::size_t
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
                            const double threshold) const override;
 
@@ -191,26 +194,26 @@ namespace pcl
         * \param[out] optimized_coefficients the resultant recomputed transformation
         */
       void
-      optimizeModelCoefficients (const std::vector<int> &inliers,
+      optimizeModelCoefficients (const Indices &inliers,
                                  const Eigen::VectorXf &model_coefficients,
                                  Eigen::VectorXf &optimized_coefficients) const override;
 
       void
-      projectPoints (const std::vector<int> &,
+      projectPoints (const Indices &,
                      const Eigen::VectorXf &,
                      PointCloud &, bool = true) const override
       {
       };
 
       bool
-      doSamplesVerifyModel (const std::set<int> &,
+      doSamplesVerifyModel (const std::set<index_t> &,
                             const Eigen::VectorXf &,
                             const double) const override
       {
         return (false);
       }
 
-      /** \brief Return an unique id for this model (SACMODEL_REGISTRATION). */
+      /** \brief Return a unique id for this model (SACMODEL_REGISTRATION). */
       inline pcl::SacModel
       getModelType () const override { return (SACMODEL_REGISTRATION); }
 
@@ -223,7 +226,7 @@ namespace pcl
         * \param[in] samples the resultant index samples
         */
       bool
-      isSampleGood (const std::vector<int> &samples) const override;
+      isSampleGood (const Indices &samples) const override;
 
       /** \brief Computes an "optimal" sample distance threshold based on the
         * principal directions of the input cloud.
@@ -260,7 +263,7 @@ namespace pcl
         */
       inline void
       computeSampleDistanceThreshold (const PointCloudConstPtr &cloud,
-                                      const std::vector<int> &indices)
+                                      const Indices &indices)
       {
         // Compute the principal directions via PCA
         Eigen::Vector4f xyz_centroid;
@@ -295,9 +298,9 @@ namespace pcl
       */
       void
       estimateRigidTransformationSVD (const pcl::PointCloud<PointT> &cloud_src,
-                                      const std::vector<int> &indices_src,
+                                      const Indices &indices_src,
                                       const pcl::PointCloud<PointT> &cloud_tgt,
-                                      const std::vector<int> &indices_tgt,
+                                      const Indices &indices_tgt,
                                       Eigen::VectorXf &transform) const;
 
       /** \brief Compute mappings between original indices of the input_/target_ clouds. */
@@ -306,7 +309,7 @@ namespace pcl
       {
         if (!indices_tgt_ || !indices_ || indices_->empty () || indices_->size () != indices_tgt_->size ())
           return;
-        for (size_t i = 0; i < indices_->size (); ++i)
+        for (std::size_t i = 0; i < indices_->size (); ++i)
           correspondences_[(*indices_)[i]] = (*indices_tgt_)[i];
       }
 
@@ -314,7 +317,7 @@ namespace pcl
       PointCloudConstPtr target_;
 
       /** \brief A pointer to the vector of target point indices to use. */
-      boost::shared_ptr <std::vector<int> > indices_tgt_;
+      IndicesPtr indices_tgt_;
 
       /** \brief Given the index in the original point cloud, give the matching original index in the target cloud */
       std::map<int, int> correspondences_;

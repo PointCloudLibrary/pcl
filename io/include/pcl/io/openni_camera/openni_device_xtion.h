@@ -37,11 +37,15 @@
 #pragma once
 
 #include <pcl/pcl_config.h>
+#include <pcl/memory.h>
 #ifdef HAVE_OPENNI
 
 #include "openni_device.h"
 #include "openni_driver.h"
 #include "openni_image_yuv_422.h"
+
+#include <pcl/io/openni_camera/openni_image.h>
+
 
 namespace openni_wrapper
 {
@@ -57,12 +61,12 @@ namespace openni_wrapper
     friend class OpenNIDriver;
   public:
     DeviceXtionPro (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
-    ~DeviceXtionPro () throw ();
+    ~DeviceXtionPro () noexcept;
     //virtual void setImageOutputMode (const XnMapOutputMode& output_mode);
 
   protected:
-    boost::shared_ptr<Image> getCurrentImage (boost::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
-    void enumAvailableModes () throw ();
+    Image::Ptr getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) const throw () override;
+    void enumAvailableModes () noexcept;
     bool isImageResizeSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const throw () override;
 
     void startDepthStream () override;

@@ -71,16 +71,16 @@ namespace pcl
 
     public:
       /** @cond */
-      using Ptr = boost::shared_ptr<EnsensoGrabber>;
-      using ConstPtr = boost::shared_ptr<const EnsensoGrabber>;
+      using Ptr = shared_ptr<EnsensoGrabber>;
+      using ConstPtr = shared_ptr<const EnsensoGrabber>;
 
       // Define callback signature typedefs
-      using sig_cb_ensenso_point_cloud = void() (const pcl::PointCloud<pcl::PointXYZ>::Ptr &);
+      using sig_cb_ensenso_point_cloud = void(const pcl::PointCloud<pcl::PointXYZ>::Ptr&);
 
-      using sig_cb_ensenso_images void() (const boost::shared_ptr<PairOfImages> &);
+      using sig_cb_ensenso_images = void(const shared_ptr<PairOfImages>&);
 
-      using sig_cb_ensenso_point_cloud_images = void()
-	    (const pcl::PointCloud<pcl::PointXYZ>::Ptr &, const boost::shared_ptr<PairOfImages> &);
+      using sig_cb_ensenso_point_cloud_images = void(const pcl::PointCloud<pcl::PointXYZ>::Ptr&,const shared_ptr<PairOfImages>&);
+
      /** @endcond */
 
       /** @brief Constructor */
@@ -88,7 +88,7 @@ namespace pcl
 
       /** @brief Destructor inherited from the Grabber interface. It never throws. */
       virtual
-      ~EnsensoGrabber () throw ();
+      ~EnsensoGrabber () noexcept;
 
       /** @brief Searches for available devices
        * @returns The number of Ensenso devices connected */
@@ -169,7 +169,7 @@ namespace pcl
        * @return True if successful, false otherwise
        * @warning A device must be opened and not running */
       bool
-      grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud);
+      grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud) const;
 
       /** @brief Set up the Ensenso sensor and API to do 3D extrinsic calibration using the Ensenso 2D patterns
        * @param[in] grid_spacing
@@ -256,7 +256,7 @@ namespace pcl
       setExtrinsicCalibration (const double euler_angle,
                                Eigen::Vector3d &rotation_axis,
                                const Eigen::Vector3d &translation,
-                               const std::string target = "Hand");
+                               const std::string target = "Hand") const;
 
       /** @brief Update Link node in NxLib tree with an identity matrix
        * @param[in] target "Hand" or "Workspace" for example
@@ -425,7 +425,7 @@ namespace pcl
       /** @brief Reference to the NxLib tree root
        * @warning You must handle NxLib exceptions manually when playing with @ref root_ !
        * See ensensoExceptionHandling in ensenso_grabber.cpp */
-      boost::shared_ptr<const NxLibItem> root_;
+      shared_ptr<const NxLibItem> root_;
 
       /** @brief Reference to the camera tree
        *  @warning You must handle NxLib exceptions manually when playing with @ref camera_ ! */
@@ -464,7 +464,7 @@ namespace pcl
        * @return PCL stamp
        * The Ensenso API returns the time elapsed from January 1st, 1601 (UTC); on Linux OS the reference time is January 1st, 1970 (UTC).
        * See [time-stamp page](http://www.ensenso.de/manual/index.html?json_types.htm) for more info about the time stamp conversion. */
-      pcl::uint64_t
+      std::uint64_t
       static
       getPCLStamp (const double ensenso_stamp);
 

@@ -55,7 +55,7 @@ namespace pcl
       class Openni2FrameWrapper : public pcl::io::FrameWrapper
       {
         public:
-          Openni2FrameWrapper (openni::VideoFrameRef metadata)
+          Openni2FrameWrapper (const openni::VideoFrameRef& metadata)
             : metadata_(metadata)
           {}
 
@@ -89,7 +89,7 @@ namespace pcl
             return (metadata_.getFrameIndex ());
           }
 
-          inline uint64_t
+          inline std::uint64_t
           getTimestamp () const override
           {
             return (metadata_.getTimestamp ());

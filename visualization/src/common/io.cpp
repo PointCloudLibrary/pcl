@@ -45,6 +45,7 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/eigen.h>
+#include <pcl/memory.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -54,22 +55,21 @@ pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src,
 {
   // Iterate through the points and copy the data in a pcl::PointCloud
   pcl::PointCloud<pcl::PointXYZ> cloud;
-  cloud.height = 1; cloud.width = static_cast<uint32_t> (src->GetNumberOfPoints ());
+  cloud.height = 1; cloud.width = static_cast<std::uint32_t> (src->GetNumberOfPoints ());
   cloud.is_dense = false;
   cloud.points.resize (cloud.width * cloud.height);
   for (vtkIdType i = 0; i < src->GetNumberOfPoints (); i++)
   {
     double p[3];
     src->GetPoint (i, p);
-    cloud.points[i].x = static_cast<float> (p[0]); 
-    cloud.points[i].y = static_cast<float> (p[1]); 
-    cloud.points[i].z = static_cast<float> (p[2]);
+    cloud[i].x = static_cast<float> (p[0]); 
+    cloud[i].y = static_cast<float> (p[1]); 
+    cloud[i].z = static_cast<float> (p[2]);
   }
 
   // Compute a kd-tree for tgt
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
-  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> > tgt_ptr (new pcl::PointCloud<pcl::PointXYZ> (tgt));
-  kdtree.setInputCloud (tgt_ptr);
+  kdtree.setInputCloud (make_shared<PointCloud<PointXYZ>> (tgt));
 
   std::vector<int> nn_indices (1);
   std::vector<float> nn_dists (1);
@@ -86,7 +86,7 @@ pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool 
-pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_file, const boost::shared_ptr<CloudActorMap> &actors)
+pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_file, const CloudActorMapPtr &actors)
 {
   // Clean the data (no duplicates!)
   vtkSmartPointer<vtkCleanPolyData> cleaner = vtkSmartPointer<vtkCleanPolyData>::New ();

@@ -38,12 +38,12 @@
 #pragma once
 
 #include <boost/utility.hpp>
-#include <boost/shared_ptr.hpp>
 
 #include <pcl/pcl_exports.h>
 
 #include <DepthSense.hxx>
 
+#include <memory>
 #include <thread>
 
 namespace pcl
@@ -64,7 +64,7 @@ namespace pcl
 
         public:
 
-          using Ptr = boost::shared_ptr<DepthSenseDeviceManager>;
+          using Ptr = std::shared_ptr<DepthSenseDeviceManager>;
 
           static Ptr&
           getInstance ()
@@ -80,7 +80,7 @@ namespace pcl
           }
 
           /** Get the number of connected DepthSense devices. */
-          inline size_t
+          inline std::size_t
           getNumDevices ()
           {
             return (context_.getDevices ().size ());
@@ -94,7 +94,7 @@ namespace pcl
           /** Capture the device with given index and associate it with a given
             * grabber instance. */
           std::string
-          captureDevice (DepthSenseGrabberImpl* grabber, size_t index);
+          captureDevice (DepthSenseGrabberImpl* grabber, std::size_t index);
 
           /** Capture the device with given serial number and associate it with
             * a given grabber instance. */

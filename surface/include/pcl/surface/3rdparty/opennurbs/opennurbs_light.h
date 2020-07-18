@@ -113,11 +113,11 @@ public:
   void SetStyle(ON::light_style);
   ON::light_style Style() const;
 
-  const ON_BOOL32 IsPointLight() const;
-  const ON_BOOL32 IsDirectionalLight() const;
-  const ON_BOOL32 IsSpotLight() const;
-  const ON_BOOL32 IsLinearLight() const;
-  const ON_BOOL32 IsRectangularLight() const;
+  ON_BOOL32 IsPointLight() const;
+  ON_BOOL32 IsDirectionalLight() const;
+  ON_BOOL32 IsSpotLight() const;
+  ON_BOOL32 IsLinearLight() const;
+  ON_BOOL32 IsRectangularLight() const;
 
   ON::coordinate_system CoordinateSystem() const; // determined by style
 

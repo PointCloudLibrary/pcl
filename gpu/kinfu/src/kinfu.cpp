@@ -53,7 +53,6 @@
   #include <opencv2/gpu/gpu.hpp>
 #endif
 
-using namespace std;
 using namespace pcl::device;
 using namespace pcl::gpu;
 
@@ -114,7 +113,7 @@ pcl::gpu::KinfuTracker::setDepthIntrinsics (float fx, float fy, float cx, float 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::getDepthIntrinsics (float& fx, float& fy, float& cx, float& cy)
+pcl::gpu::KinfuTracker::getDepthIntrinsics (float& fx, float& fy, float& cx, float& cy) const
 {
   fx = fx_;
   fy = fy_;
@@ -172,7 +171,7 @@ void
 pcl::gpu::KinfuTracker::reset()
 {
   if (global_time_)
-    cout << "Reset" << endl;
+    std::cout << "Reset" << std::endl;
 
   global_time_ = 0;
   rmats_.clear ();
@@ -340,9 +339,9 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw,
             //checking nullspace
             double det = A.determinant ();
 
-            if (fabs (det) < 1e-15 || std::isnan (det))
+            if (std::abs (det) < 1e-15 || std::isnan (det))
             {
-              if (std::isnan (det)) cout << "qnan" << endl;
+              if (std::isnan (det)) std::cout << "qnan" << std::endl;
 
               reset ();
               return (false);
@@ -567,7 +566,7 @@ namespace pcl
     PCL_EXPORTS void
     mergePointNormal(const DeviceArray<PointXYZ>& cloud, const DeviceArray<Normal>& normals, DeviceArray<PointNormal>& output)
     {
-      const size_t size = min(cloud.size(), normals.size());
+      const std::size_t size = std::min(cloud.size(), normals.size());
       output.create(size);
 
       const DeviceArray<float4>& c = (const DeviceArray<float4>&)cloud;
@@ -589,7 +588,7 @@ namespace pcl
       double c = (R.trace() - 1) * 0.5;
       c = c > 1. ? 1. : c < -1. ? -1. : c;
 
-      double theta = acos(c);
+      double theta = std::acos(c);
 
       if( s < 1e-5 )
       {
@@ -605,7 +604,7 @@ namespace pcl
           t = (R(2, 2) + 1)*0.5;
           rz = sqrt( std::max(t, 0.0) ) * (R(0, 2) < 0 ? -1.0 : 1.0);
 
-          if( fabs(rx) < fabs(ry) && fabs(rx) < fabs(rz) && (R(1, 2) > 0) != (ry*rz > 0) )
+          if( std::abs(rx) < std::abs(ry) && std::abs(rx) < std::abs(rz) && (R(1, 2) > 0) != (ry*rz > 0) )
             rz = -rz;
           theta /= sqrt(rx*rx + ry*ry + rz*rz);
           rx *= theta;

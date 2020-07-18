@@ -37,12 +37,14 @@
  *
  */
 
-#ifndef PCL_FEATURES_IMPL_SHOT_OMP_H_
-#define PCL_FEATURES_IMPL_SHOT_OMP_H_
+#pragma once
 
 #include <pcl/features/shot_omp.h>
+
+#include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/common/time.h>
 #include <pcl/features/shot_lrf_omp.h>
+
 
 template<typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> bool
 pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::initCompute ()
@@ -146,14 +148,13 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
 
   assert(descLength_ == 352);
 
-  int data_size = static_cast<int> (indices_->size ());
-
   output.is_dense = true;
   // Iterating over the entire index vector
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads_)
-#endif
-  for (int idx = 0; idx < data_size; ++idx)
+#pragma omp parallel for \
+  default(none) \
+  shared(output) \
+  num_threads(threads_)
+  for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
   {
 
     Eigen::VectorXf shot;
@@ -180,9 +181,9 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
     {
       // Copy into the resultant cloud
       for (Eigen::Index d = 0; d < shot.size (); ++d)
-        output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
       for (int d = 0; d < 9; ++d)
-        output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
 
       output.is_dense = false;
       continue;
@@ -193,12 +194,12 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
 
     // Copy into the resultant cloud
     for (Eigen::Index d = 0; d < shot.size (); ++d)
-      output.points[idx].descriptor[d] = shot[d];
+      output[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 3; ++d)
     {
-      output.points[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
-      output.points[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
-      output.points[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
+      output[idx].rf[d + 0] = (*frames_)[idx].x_axis[d];
+      output[idx].rf[d + 3] = (*frames_)[idx].y_axis[d];
+      output[idx].rf[d + 6] = (*frames_)[idx].z_axis[d];
     }
   }
 }
@@ -234,14 +235,13 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
   radius1_4_ = search_radius_ / 4;
   radius1_2_ = search_radius_ / 2;
 
-  int data_size = static_cast<int> (indices_->size ());
-
   output.is_dense = true;
   // Iterating over the entire index vector
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(threads_)
-#endif
-  for (int idx = 0; idx < data_size; ++idx)
+#pragma omp parallel for \
+  default(none) \
+  shared(output) \
+  num_threads(threads_)
+  for (std::ptrdiff_t idx = 0; idx < static_cast<std::ptrdiff_t> (indices_->size ()); ++idx)
   {
     Eigen::VectorXf shot;
     shot.setZero (descLength_);
@@ -268,9 +268,9 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
     {
       // Copy into the resultant cloud
       for (Eigen::Index d = 0; d < shot.size (); ++d)
-        output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
       for (int d = 0; d < 9; ++d)
-        output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
 
       output.is_dense = false;
       continue;
@@ -281,12 +281,12 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
 
     // Copy into the resultant cloud
     for (Eigen::Index d = 0; d < shot.size (); ++d)
-      output.points[idx].descriptor[d] = shot[d];
+      output[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 3; ++d)
     {
-      output.points[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
-      output.points[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
-      output.points[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
+      output[idx].rf[d + 0] = (*frames_)[idx].x_axis[d];
+      output[idx].rf[d + 3] = (*frames_)[idx].y_axis[d];
+      output[idx].rf[d + 6] = (*frames_)[idx].z_axis[d];
     }
   }
 }
@@ -294,4 +294,3 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
 #define PCL_INSTANTIATE_SHOTEstimationOMP(T,NT,OutT,RFT) template class PCL_EXPORTS pcl::SHOTEstimationOMP<T,NT,OutT,RFT>;
 #define PCL_INSTANTIATE_SHOTColorEstimationOMP(T,NT,OutT,RFT) template class PCL_EXPORTS pcl::SHOTColorEstimationOMP<T,NT,OutT,RFT>;
 
-#endif    // PCL_FEATURES_IMPL_SHOT_OMP_H_

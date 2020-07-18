@@ -25,17 +25,17 @@ To simplify the histogram feature computation, we proceed as follows:
     as described in :ref:`pfh_Estimation` - this will be called the Simplified
     Point Feature Histogram (SPFH);
 
-  * in a second step, for each point its k neighbors are re-determined, and the
-    neighboring SPFH values are used to weight the final histogram of pq
+  * in a second step, for each point its :math:`k` neighbors are re-determined, and the
+    neighboring SPFH values are used to weight the final histogram of :math:`p_q`
     (called FPFH) as follows:
 
 .. math::
 
-   FPFH(\boldsymbol{p}_q) = SPFH(\boldsymbol{p}_q) + {1 \over k} \sum_{i=1}^k {{1 \over \omega_k} \cdot SPFH(\boldsymbol{p}_k)}
+   FPFH(\boldsymbol{p}_q) = SPFH(\boldsymbol{p}_q) + {1 \over k} \sum_{i=1}^k {{1 \over \omega_i} \cdot SPFH(\boldsymbol{p}_i)}
 
-where the weight :math:`\omega_k` represents a distance between the query point
-:math:`p_q` and a neighbor point :math:`p_k` in some given metric space, thus
-scoring the (:math:`p_q, p_k`) pair, but could just as well be selected as a
+where the weight :math:`\omega_i` represents a distance between the query point
+:math:`p_q` and a neighbor point :math:`p_i` in some given metric space, thus
+scoring the (:math:`p_q, p_i`) pair, but could just as well be selected as a
 different measure if necessary.  To understand the importance of this weighting
 scheme, the figure below presents the influence region diagram for a
 k-neighborhood set centered at :math:`p_q`.
@@ -46,8 +46,8 @@ k-neighborhood set centered at :math:`p_q`.
 Thus, for a given query point :math:`p_q`, the algorithm first estimates its
 SPFH values by creating pairs between itself and its neighbors (illustrated
 using red lines). This is repeated for all the points in the dataset, followed
-by a re-weighting of the SPFH values of pq using the SPFH values of its
-:math:`p_k` neighbors, thus creating the FPFH for :math:`p_q`. The extra FPFH
+by a re-weighting of the SPFH values of :math:`p_q` using the SPFH values of its
+:math:`k` neighbors, thus creating the FPFH for :math:`p_q`. The extra FPFH
 connections, resultant due to the additional weighting scheme, are shown with
 black lines. As the diagram shows, some of the value pairs will be counted
 twice (marked with thicker lines in the figure).
@@ -131,7 +131,7 @@ points in the input dataset.
      // Compute the features
      fpfh.compute (*fpfhs);
 
-     // fpfhs->points.size () should have the same size as the input cloud->points.size ()*
+     // fpfhs->size () should have the same size as the input cloud->size ()*
    }
 
 The actual **compute** call from the **FPFHEstimation** class does nothing internally but::
@@ -142,7 +142,7 @@ The actual **compute** call from the **FPFHEstimation** class does nothing inter
       
       1. get the nearest neighbors of :math:`p`
 
-      2. for each pair of :math:`p, p_k` (where :math:`p_k` is a neighbor of :math:`p`, compute the three angular values
+      2. for each pair of :math:`p, p_i` (where :math:`p_i` is a neighbor of :math:`p`, compute the three angular values
 
       3. bin all the results in an output SPFH histogram
 
@@ -161,9 +161,9 @@ The actual **compute** call from the **FPFHEstimation** class does nothing inter
 
   .. code-block:: cpp
 
-     for (int i = 0; i < normals->points.size(); i++)
+     for (int i = 0; i < normals->size(); i++)
      {
-       if (!pcl::isFinite<pcl::Normal>(normals->points[i]))
+       if (!pcl::isFinite<pcl::Normal>((*normals)[i]))
        {
          PCL_WARN("normals[%d] is not finite\n", i);
        }

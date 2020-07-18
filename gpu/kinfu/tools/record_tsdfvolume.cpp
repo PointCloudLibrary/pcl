@@ -54,15 +54,14 @@
 #include "tsdf_volume.h"
 #include "tsdf_volume.hpp"
 
-using namespace std;
 namespace pc = pcl::console;
 
 using PointT = pcl::PointXYZ;
 using VoxelT = float;
 using WeightT = short;
 
-string cloud_file  = "cloud.pcd";
-string volume_file = "tsdf_volume.dat";
+std::string cloud_file  = "cloud.pcd";
+std::string volume_file = "tsdf_volume.dat";
 
 double min_trunc_dist = 30.0f;
 
@@ -77,8 +76,8 @@ class DeviceVolume
 {
 public:
 
-  using Ptr = boost::shared_ptr<DeviceVolume>;
-  using ConstPtr = boost::shared_ptr<const DeviceVolume>;
+  using Ptr = std::shared_ptr<DeviceVolume>;
+  using ConstPtr = std::shared_ptr<const DeviceVolume>;
 
   /** \brief Constructor
    * param[in] volume_size size of the volume in mm
@@ -93,7 +92,7 @@ public:
 
     // truncation distance
     Eigen::Vector3f voxel_size = volume_size.array() / volume_res.array().cast<float>();
-    trunc_dist_ = max ((float)min_trunc_dist, 2.1f * max (voxel_size[0], max (voxel_size[1], voxel_size[2])));
+    trunc_dist_ = std::max ((float)min_trunc_dist, 2.1f * std::max (voxel_size[0], std::max (voxel_size[1], voxel_size[2])));
   };
 
   /** \brief Creates the TSDF volume on the GPU
@@ -170,18 +169,20 @@ DeviceVolume::getVolume (pcl::TSDFVolume<VoxelT, WeightT>::Ptr &volume)
 {
   int volume_size = device_volume_.rows() * device_volume_.cols();
 
-  if ((size_t)volume_size != volume->size())
+  if ((std::size_t)volume_size != volume->size())
   {
     pc::print_error ("Device volume size (%d) and tsdf volume size (%d) don't match. ABORTING!\n", volume_size, volume->size());
     return false;
   }
 
-  vector<VoxelT>&  volume_vec  = volume->volumeWriteable();
-  vector<WeightT>& weights_vec = volume->weightsWriteable();
+  std::vector<VoxelT>&  volume_vec  = volume->volumeWriteable();
+  std::vector<WeightT>& weights_vec = volume->weightsWriteable();
 
   device_volume_.download (&volume_vec[0], device_volume_.cols() * sizeof(int));
 
-  #pragma omp parallel for
+  #pragma omp parallel for \
+    default(none) \
+    shared(volume, volume_vec, weights_vec)
   for(int i = 0; i < (int) volume->size(); ++i)
   {
     short2 *elem = (short2*)&volume_vec[i];
@@ -207,7 +208,7 @@ DeviceVolume::getCloud (pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud)
 
   // write into point cloud structure
   device_cloud_buffer.download (cloud->points);
-  cloud->width = (int)cloud->points.size ();
+  cloud->width = cloud->size ();
   cloud->height = 1;
 
   return true;
@@ -257,10 +258,10 @@ convertDepthRGBToCloud (const pcl::device::PtrStepSz<const unsigned short> &dept
       point.x = u * point.z;
       point.y = v * point.z;
 
-/*      uint8_t r = *(rgb24_row_ptr + 0);
-      uint8_t g = *(rgb24_row_ptr + 1);
-      uint8_t b = *(rgb24_row_ptr + 2);
-      uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
+/*      std::uint8_t r = *(rgb24_row_ptr + 0);
+      std::uint8_t g = *(rgb24_row_ptr + 1);
+      std::uint8_t b = *(rgb24_row_ptr + 2);
+      std::uint32_t rgb = ((std::uint32_t)r << 16 | (std::uint32_t)g << 8 | (std::uint32_t)b);
       point.rgb = *reinterpret_cast<float*>(&rgb);
 
       point.r = *((const char*)rgb24.data + y*rgb24.step + x*rgb24.elem_size);
@@ -320,11 +321,11 @@ keyboard_callback (const pcl::visualization::KeyboardEvent &event, void *cookie)
       case 27:
       case (int)'q': case (int)'Q':
       case (int)'e': case (int)'E':
-        cout << "Exiting program" << endl;
+        std::cout << "Exiting program" << std::endl;
         quit = true;
         break;
       case (int)'s': case (int)'S':
-        cout << "Saving volume and cloud" << endl;
+        std::cout << "Saving volume and cloud" << std::endl;
         save = true;
         break;
       default:
@@ -450,7 +451,7 @@ main (int argc, char* argv[])
 
 
   // integrate depth in device volume
-  pc::print_highlight ("Converting depth map to volume ... "); cout << flush;
+  pc::print_highlight ("Converting depth map to volume ... "); std::cout << std::flush;
   device_volume->createFromDepth (depth, intr);
 
   // get volume from device
@@ -463,7 +464,7 @@ main (int argc, char* argv[])
 
 
   // generating TSDF cloud
-  pc::print_highlight ("Generating tsdf volume cloud ... "); cout << flush;
+  pc::print_highlight ("Generating tsdf volume cloud ... "); std::cout << std::flush;
   pcl::PointCloud<pcl::PointXYZI>::Ptr tsdf_cloud (new pcl::PointCloud<pcl::PointXYZI>);
   volume->convertToTsdfCloud (tsdf_cloud);
   pc::print_info ("done [%d points]\n", tsdf_cloud->size());
@@ -473,7 +474,7 @@ main (int argc, char* argv[])
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_volume (new pcl::PointCloud<pcl::PointXYZ>);
   if (extract_cloud_volume)
   {
-    pc::print_highlight ("Generating cloud from volume ... "); cout << flush;
+    pc::print_highlight ("Generating cloud from volume ... "); std::cout << std::flush;
     if (!device_volume->getCloud (cloud_volume))
     {
       pc::print_error ("Cloudn't get cloud from device volume!\n");
@@ -493,7 +494,7 @@ main (int argc, char* argv[])
   pc::print_info ("Saving captured cloud to "); pc::print_value ("%s", cloud_file.c_str()); pc::print_info (" ... ");
   if (pcl::io::savePCDFile (cloud_file, *cloud, true) < 0)
   {
-    cout << endl;
+    std::cout << std::endl;
     pc::print_error ("Cloudn't save the point cloud to file %s.\n", cloud_file.c_str());
   }
   else
@@ -504,11 +505,11 @@ main (int argc, char* argv[])
     pc::print_error ("Cloudn't save the volume to file %s.\n", volume_file.c_str());
 
   // TSDF point cloud
-  string tsdf_cloud_file (pcl::getFilenameWithoutExtension(volume_file) + "_cloud.pcd");
+  std::string tsdf_cloud_file (pcl::getFilenameWithoutExtension(volume_file) + "_cloud.pcd");
   pc::print_info ("Saving volume cloud to "); pc::print_value ("%s", tsdf_cloud_file.c_str()); pc::print_info (" ... ");
   if (pcl::io::savePCDFile (tsdf_cloud_file, *tsdf_cloud, true) < 0)
   {
-    cout << endl;
+    std::cout << std::endl;
     pc::print_error ("Cloudn't save the volume point cloud to file %s.\n", tsdf_cloud_file.c_str());
   }
   else
@@ -517,11 +518,11 @@ main (int argc, char* argv[])
   // point cloud from volume
   if (extract_cloud_volume)
   {
-    string cloud_volume_file (pcl::getFilenameWithoutExtension(cloud_file) + "_from_volume.pcd");
+    std::string cloud_volume_file (pcl::getFilenameWithoutExtension(cloud_file) + "_from_volume.pcd");
     pc::print_info ("Saving cloud from volume to "); pc::print_value ("%s", cloud_volume_file.c_str()); pc::print_info (" ... ");
     if (pcl::io::savePCDFile (cloud_volume_file, *cloud_volume, true) < 0)
     {
-      cout << endl;
+      std::cout << std::endl;
       pc::print_error ("Cloudn't save the point cloud to file %s.\n", cloud_volume_file.c_str());
     }
     else

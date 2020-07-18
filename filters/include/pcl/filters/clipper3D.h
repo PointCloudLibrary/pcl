@@ -37,6 +37,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <vector>
@@ -53,13 +54,13 @@ namespace pcl
   class Clipper3D
   {
     public:
-      using Ptr = boost::shared_ptr<Clipper3D<PointT> >;
-      using ConstPtr = boost::shared_ptr<const Clipper3D<PointT> >;
+      using Ptr = shared_ptr<Clipper3D<PointT> >;
+      using ConstPtr = shared_ptr<const Clipper3D<PointT> >;
  
       /**
         * \brief virtual destructor. Never throws an exception.
         */
-      virtual ~Clipper3D () throw () {}
+      virtual ~Clipper3D () noexcept {}
 
       /**
         * \brief interface to clip a single point

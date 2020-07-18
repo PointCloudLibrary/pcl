@@ -63,8 +63,8 @@ namespace pcl
   class CVFHEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
     public:
-      using Ptr = boost::shared_ptr<CVFHEstimation<PointInT, PointNT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const CVFHEstimation<PointInT, PointNT, PointOutT> >;
+      using Ptr = shared_ptr<CVFHEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = shared_ptr<const CVFHEstimation<PointInT, PointNT, PointOutT> >;
 
       using Feature<PointInT, PointOutT>::feature_name_;
       using Feature<PointInT, PointOutT>::getClassName;
@@ -147,8 +147,8 @@ namespace pcl
       inline void
       getCentroidClusters (std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids)
       {
-        for (size_t i = 0; i < centroids_dominant_orientations_.size (); ++i)
-          centroids.push_back (centroids_dominant_orientations_[i]);
+        centroids.insert (centroids.cend (), centroids_dominant_orientations_.cbegin (),
+                          centroids_dominant_orientations_.cend ());
       }
 
       /** \brief Get the normal centroids used to compute different CVFH descriptors
@@ -157,8 +157,8 @@ namespace pcl
       inline void
       getCentroidNormalClusters (std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids)
       {
-        for (size_t i = 0; i < dominant_normals_.size (); ++i)
-          centroids.push_back (dominant_normals_[i]);
+        for (const auto& normal: dominant_normals_)
+          centroids.push_back (normal);
       }
 
       /** \brief Sets max. Euclidean distance between points to be added to the cluster 
@@ -193,7 +193,7 @@ namespace pcl
         * \param[in] min the minimum amount of points to be set 
         */
       inline void
-      setMinPoints (size_t min)
+      setMinPoints (std::size_t min)
       {
         min_points_ = min;
       }
@@ -239,7 +239,7 @@ namespace pcl
       /** \brief Minimum amount of points in a clustered region to be considered stable for CVFH
         * computation.
         */
-      size_t min_points_;
+      std::size_t min_points_;
 
       /** \brief Radius for the normals computation. */
       float radius_normals_;

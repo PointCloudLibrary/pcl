@@ -42,6 +42,7 @@
 
 #include <pcl/sample_consensus/boost.h>
 #include <pcl/sample_consensus/sac_model.h>
+#include <pcl/pcl_base.h>
 
 #include <ctime>
 #include <memory>
@@ -63,8 +64,9 @@ namespace pcl
       SampleConsensus () {};
 
     public:
-      using Ptr = boost::shared_ptr<SampleConsensus<T> >;
-      using ConstPtr = boost::shared_ptr<const SampleConsensus<T> >;
+      using Ptr = shared_ptr<SampleConsensus<T> >;
+      using ConstPtr = shared_ptr<const SampleConsensus<T> >;
+
 
       /** \brief Constructor for base SAC.
         * \param[in] model a Sample Consensus model
@@ -76,6 +78,7 @@ namespace pcl
         , iterations_ (0)
         , threshold_ (std::numeric_limits<double>::max ())
         , max_iterations_ (1000)
+        , threads_ (-1)
         , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
       {
          // Create a random number generator object
@@ -98,6 +101,7 @@ namespace pcl
         , iterations_ (0)
         , threshold_ (threshold)
         , max_iterations_ (1000)
+        , threads_ (-1)
         , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
       {
          // Create a random number generator object
@@ -157,6 +161,17 @@ namespace pcl
       inline double 
       getProbability () const { return (probability_); }
 
+      /** \brief Set the number of threads to use or turn off parallelization.
+        * \param[in] nr_threads the number of hardware threads to use (0 sets the value automatically, a negative number turns parallelization off)
+        * \note Not all SAC methods have a parallel implementation. Some will ignore this setting.
+        */
+      inline void
+      setNumberOfThreads (const int nr_threads = -1) { threads_ = nr_threads; }
+
+      /** \brief Get the number of threads, as set by the user. */
+      inline int
+      getNumberOfThreads () const { return (threads_); }
+
       /** \brief Compute the actual model. Pure virtual. */
       virtual bool 
       computeModel (int debug_verbosity_level = 0) = 0;
@@ -182,8 +197,8 @@ namespace pcl
         double sigma_sqr = sigma * sigma;
         unsigned int refine_iterations = 0;
         bool inlier_changed = false, oscillating = false;
-        std::vector<int> new_inliers, prev_inliers = inliers_;
-        std::vector<size_t> inliers_sizes;
+        Indices new_inliers, prev_inliers = inliers_;
+        std::vector<std::size_t> inliers_sizes;
         Eigen::VectorXf new_model_coefficients = model_coefficients_;
         do
         {
@@ -229,7 +244,7 @@ namespace pcl
           }
 
           // Check the values of the inlier set
-          for (size_t i = 0; i < prev_inliers.size (); ++i)
+          for (std::size_t i = 0; i < prev_inliers.size (); ++i)
           {
             // If the value of the inliers changed, then we are still optimizing
             if (prev_inliers[i] != new_inliers[i])
@@ -270,27 +285,27 @@ namespace pcl
         * \param[out] indices_subset the resultant output set of randomly selected indices
         */
       inline void
-      getRandomSamples (const boost::shared_ptr <std::vector<int> > &indices, 
-                        size_t nr_samples, 
-                        std::set<int> &indices_subset)
+      getRandomSamples (const IndicesPtr &indices,
+                        std::size_t nr_samples, 
+                        std::set<index_t> &indices_subset)
       {
         indices_subset.clear ();
         while (indices_subset.size () < nr_samples)
-          //indices_subset.insert ((*indices)[(int) (indices->size () * (rand () / (RAND_MAX + 1.0)))]);
-          indices_subset.insert ((*indices)[static_cast<int> (static_cast<double>(indices->size ()) * rnd ())]);
+          //indices_subset.insert ((*indices)[(index_t) (indices->size () * (rand () / (RAND_MAX + 1.0)))]);
+          indices_subset.insert ((*indices)[static_cast<index_t> (static_cast<double>(indices->size ()) * rnd ())]);
       }
 
       /** \brief Return the best model found so far. 
         * \param[out] model the resultant model
         */
       inline void 
-      getModel (std::vector<int> &model) const { model = model_; }
+      getModel (Indices &model) const { model = model_; }
 
       /** \brief Return the best set of inliers found so far for this model. 
         * \param[out] inliers the resultant set of inliers
         */
       inline void 
-      getInliers (std::vector<int> &inliers) const { inliers = inliers_; }
+      getInliers (Indices &inliers) const { inliers = inliers_; }
 
       /** \brief Return the model coefficients of the best model found so far. 
         * \param[out] model_coefficients the resultant model coefficients, as documented in \ref sample_consensus
@@ -303,10 +318,10 @@ namespace pcl
       SampleConsensusModelPtr sac_model_;
 
       /** \brief The model found after the last computeModel () as point cloud indices. */
-      std::vector<int> model_;
+      Indices model_;
 
       /** \brief The indices of the points that were chosen as inliers after the last computeModel () call. */
-      std::vector<int> inliers_;
+      Indices inliers_;
 
       /** \brief The coefficients of our model computed directly from the model found. */
       Eigen::VectorXf model_coefficients_;
@@ -322,6 +337,9 @@ namespace pcl
       
       /** \brief Maximum number of iterations before giving up. */
       int max_iterations_;
+
+      /** \brief The number of threads the scheduler should use, or a negative number if no parallelization is wanted. */
+      int threads_;
 
       /** \brief Boost-based random number generator algorithm. */
       boost::mt19937 rng_alg_;

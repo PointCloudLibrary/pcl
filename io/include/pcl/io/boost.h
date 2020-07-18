@@ -38,7 +38,7 @@
 #pragma once
 
 #if defined __GNUC__
-#  pragma GCC system_header 
+#  pragma GCC system_header
 #endif
 //https://bugreports.qt-project.org/browse/QTBUG-22829
 #ifndef Q_MOC_RUN
@@ -46,10 +46,6 @@
 #include <boost/version.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/cstdint.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
 #include <boost/mpl/fold.hpp>
 #include <boost/mpl/inherit.hpp>
 #include <boost/mpl/inherit_linearly.hpp>
@@ -57,7 +53,6 @@
 #include <boost/mpl/transform.hpp>
 #include <boost/mpl/vector.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/chrono.hpp>
 #include <boost/tokenizer.hpp>
 #include <boost/foreach.hpp>
 #include <boost/shared_array.hpp>

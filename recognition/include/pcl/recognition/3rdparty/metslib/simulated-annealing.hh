@@ -121,8 +121,7 @@ namespace mets {
     /// Remember that this is a minimization process.
     ///
     virtual void
-    search()
-      throw(no_moves_error);
+    search();
 
     void setApplyAndEvaluate(bool b) {
       apply_and_evaluate = b;
@@ -221,7 +220,6 @@ simulated_annealing(evaluable_solution& working,
 template<typename move_manager_t>
 void
 mets::simulated_annealing<move_manager_t>::search()
-  throw(no_moves_error)
 {
   using base_t = abstract_search<move_manager_t>;
 

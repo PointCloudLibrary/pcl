@@ -18,7 +18,7 @@ main (int argc, char** argv)
   pcl::PCDReader reader;
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>), cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
   reader.read ("table_scene_lms400.pcd", *cloud);
-  std::cout << "PointCloud before filtering has: " << cloud->points.size () << " data points." << std::endl; //*
+  std::cout << "PointCloud before filtering has: " << cloud->size () << " data points." << std::endl; //*
 
   // Create the filtering object: downsample the dataset using a leaf size of 1cm
   pcl::VoxelGrid<pcl::PointXYZ> vg;
@@ -26,7 +26,7 @@ main (int argc, char** argv)
   vg.setInputCloud (cloud);
   vg.setLeafSize (0.01f, 0.01f, 0.01f);
   vg.filter (*cloud_filtered);
-  std::cout << "PointCloud after filtering has: " << cloud_filtered->points.size ()  << " data points." << std::endl; //*
+  std::cout << "PointCloud after filtering has: " << cloud_filtered->size ()  << " data points." << std::endl; //*
 
   // Create the segmentation object for the planar model and set all the parameters
   pcl::SACSegmentation<pcl::PointXYZ> seg;
@@ -40,8 +40,8 @@ main (int argc, char** argv)
   seg.setMaxIterations (100);
   seg.setDistanceThreshold (0.02);
 
-  int i=0, nr_points = (int) cloud_filtered->points.size ();
-  while (cloud_filtered->points.size () > 0.3 * nr_points)
+  int i=0, nr_points = (int) cloud_filtered->size ();
+  while (cloud_filtered->size () > 0.3 * nr_points)
   {
     // Segment the largest planar component from the remaining cloud
     seg.setInputCloud (cloud_filtered);
@@ -60,7 +60,7 @@ main (int argc, char** argv)
 
     // Get the points associated with the planar surface
     extract.filter (*cloud_plane);
-    std::cout << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points." << std::endl;
+    std::cout << "PointCloud representing the planar component: " << cloud_plane->size () << " data points." << std::endl;
 
     // Remove the planar inliers, extract the rest
     extract.setNegative (true);
@@ -86,12 +86,12 @@ main (int argc, char** argv)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
     for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
-      cloud_cluster->points.push_back (cloud_filtered->points[*pit]); //*
-    cloud_cluster->width = cloud_cluster->points.size ();
+      cloud_cluster->push_back ((*cloud_filtered)[*pit]); //*
+    cloud_cluster->width = cloud_cluster->size ();
     cloud_cluster->height = 1;
     cloud_cluster->is_dense = true;
 
-    std::cout << "PointCloud representing the Cluster: " << cloud_cluster->points.size () << " data points." << std::endl;
+    std::cout << "PointCloud representing the Cluster: " << cloud_cluster->size () << " data points." << std::endl;
     std::stringstream ss;
     ss << "cloud_cluster_" << j << ".pcd";
     writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); //*

@@ -573,7 +573,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
           }
           ++point_idx;
         }
-        catch (const boost::bad_lexical_cast &e)
+        catch (const boost::bad_lexical_cast&)
         {
           PCL_ERROR ("Unable to convert %s to vertex coordinates!", line.c_str ());
           return (-1);
@@ -602,7 +602,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
           }
           ++normal_idx;
         }
-        catch (const boost::bad_lexical_cast &e)
+        catch (const boost::bad_lexical_cast&)
         {
           PCL_ERROR ("Unable to convert line %s to vertex normal!", line.c_str ());
           return (-1);
@@ -715,7 +715,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
           }
           ++v_idx;
         }
-        catch (const boost::bad_lexical_cast &e)
+        catch (const boost::bad_lexical_cast&)
         {
           PCL_ERROR ("Unable to convert %s to vertex coordinates!", line.c_str ());
           return (-1);
@@ -736,7 +736,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
           }
           ++vn_idx;
         }
-        catch (const boost::bad_lexical_cast &e)
+        catch (const boost::bad_lexical_cast&)
         {
           PCL_ERROR ("Unable to convert line %s to vertex normal!", line.c_str ());
           return (-1);
@@ -757,7 +757,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
             coordinates.emplace_back(c[0]/c[2], c[1]/c[2]);
           ++vt_idx;
         }
-        catch (const boost::bad_lexical_cast &e)
+        catch (const boost::bad_lexical_cast&)
         {
           PCL_ERROR ("Unable to convert line %s to texture coordinates!", line.c_str ());
           return (-1);
@@ -905,7 +905,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
           }
           ++v_idx;
         }
-        catch (const boost::bad_lexical_cast &e)
+        catch (const boost::bad_lexical_cast&)
         {
           PCL_ERROR ("Unable to convert %s to vertex coordinates!", line.c_str ());
           return (-1);
@@ -927,7 +927,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
           }
           ++vn_idx;
         }
-        catch (const boost::bad_lexical_cast &e)
+        catch (const boost::bad_lexical_cast&)
         {
           PCL_ERROR ("Unable to convert line %s to vertex normal!", line.c_str ());
           return (-1);
@@ -1014,7 +1014,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
     int xyz = 0;
     // "v" just be written one
     bool v_written = false;
-    for (size_t d = 0; d < tex_mesh.cloud.fields.size (); ++d)
+    for (std::size_t d = 0; d < tex_mesh.cloud.fields.size (); ++d)
     {
       // adding vertex
       if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
@@ -1051,7 +1051,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
     int xyz = 0;
     // "vn" just be written one
     bool v_written = false;
-    for (size_t d = 0; d < tex_mesh.cloud.fields.size (); ++d)
+    for (std::size_t d = 0; d < tex_mesh.cloud.fields.size (); ++d)
     {
       // adding vertex
       if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
@@ -1103,15 +1103,15 @@ pcl::io::saveOBJFile (const std::string &file_name,
     fs << "usemtl " <<  tex_mesh.tex_materials[m].tex_name << '\n';
     fs << "# Faces" << '\n';
 
-    for (size_t i = 0; i < tex_mesh.tex_polygons[m].size(); ++i)
+    for (std::size_t i = 0; i < tex_mesh.tex_polygons[m].size(); ++i)
     {
       // Write faces with "f"
       fs << "f";
       // There's one UV per vertex per face, i.e., the same vertex can have
       // different UV depending on the face.
-      for (size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
+      for (std::size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
       {
-        uint32_t idx = tex_mesh.tex_polygons[m][i].vertices[j] + 1;
+        std::uint32_t idx = tex_mesh.tex_polygons[m][i].vertices[j] + 1;
         fs << " " << idx
            << "/" << tex_mesh.tex_polygons[m][i].vertices.size () * (i+f_idx) +j+1
            << "/" << idx; // vertex index in obj file format starting with 1
@@ -1192,7 +1192,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
   for (int i = 0; i < nr_points; ++i)
   {
     int xyz = 0;
-    for (size_t d = 0; d < mesh.cloud.fields.size (); ++d)
+    for (std::size_t d = 0; d < mesh.cloud.fields.size (); ++d)
     {
       // adding vertex
       if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
@@ -1229,7 +1229,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
     for (int i = 0; i < nr_points; ++i)
     {
       int nxyz = 0;
-      for (size_t d = 0; d < mesh.cloud.fields.size (); ++d)
+      for (std::size_t d = 0; d < mesh.cloud.fields.size (); ++d)
       {
         // adding vertex
         if ((mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
@@ -1267,7 +1267,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
     for(unsigned i = 0; i < nr_faces; i++)
     {
       fs << "f ";      
-      for (size_t j = 0; j < mesh.polygons[i].vertices.size () - 1; ++j)
+      for (std::size_t j = 0; j < mesh.polygons[i].vertices.size () - 1; ++j)
         fs << mesh.polygons[i].vertices[j] + 1 << " ";
       fs << mesh.polygons[i].vertices.back() + 1 << '\n';
     }
@@ -1277,7 +1277,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
     for(unsigned i = 0; i < nr_faces; i++)
     {
       fs << "f ";
-      for (size_t j = 0; j < mesh.polygons[i].vertices.size () - 1; ++j)
+      for (std::size_t j = 0; j < mesh.polygons[i].vertices.size () - 1; ++j)
         fs << mesh.polygons[i].vertices[j] + 1 << "//" << mesh.polygons[i].vertices[j] + 1 << " ";
       fs << mesh.polygons[i].vertices.back() + 1 << "//" << mesh.polygons[i].vertices.back() + 1 << '\n';
     }

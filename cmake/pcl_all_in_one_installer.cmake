@@ -11,7 +11,6 @@ get_filename_component(BOOST_ROOT "${Boost_INCLUDE_DIR}" PATH)
 get_filename_component(BOOST_ROOT "${BOOST_ROOT}" PATH)
 get_filename_component(EIGEN_ROOT "${EIGEN_INCLUDE_DIRS}" PATH)
 get_filename_component(QHULL_ROOT "${QHULL_INCLUDE_DIRS}" PATH)
-get_filename_component(FLANN_ROOT "${FLANN_INCLUDE_DIRS}" PATH)
 get_filename_component(VTK_ROOT "${VTK_DIR}" PATH)
 get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)
 get_filename_component(VTK_ROOT "${VTK_ROOT}" PATH)
@@ -27,6 +26,17 @@ foreach(dep Eigen Boost Qhull FLANN VTK)
   )
   list(APPEND PCL_3RDPARTY_COMPONENTS ${dep})
 endforeach()
+
+if(WITH_RSSDK2)
+  get_filename_component(RSSDK2_ROOT "${RSSDK2_INCLUDE_DIRS}" PATH)
+  install(
+          DIRECTORY "${RSSDK2_ROOT}/"
+          DESTINATION 3rdParty/librealsense2
+          COMPONENT rssdk2
+          PATTERN "*/Uninstall.exe" EXCLUDE
+      )
+  list(APPEND PCL_3RDPARTY_COMPONENTS rssdk2)
+endif()
 
 if(WITH_OPENNI)
   if(CMAKE_CL_64)

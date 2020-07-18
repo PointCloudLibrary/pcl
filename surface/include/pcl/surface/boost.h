@@ -40,8 +40,7 @@
 #pragma once
 
 #if defined __GNUC__
-#  pragma GCC system_header 
+#  pragma GCC system_header
 #endif
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
-#include <boost/shared_ptr.hpp>

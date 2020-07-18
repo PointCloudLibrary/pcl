@@ -44,15 +44,22 @@
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 #include <pcl/apps/point_cloud_editor/cloud.h>
 
+#include <pcl/memory.h>  // for pcl::shared_ptr
+
+class Selection;
+
 class TransformCommand : public Command
 {
   public:
+    /// The type for shared pointer pointing to a constant selection buffer
+    using ConstSelectionPtr = pcl::shared_ptr<const Selection>;
+
     /// @brief Constructor
     /// @param selection_ptr a shared pointer pointing to the selection object.
     /// @param cloud_ptr a shared pointer pointing to the cloud object.
     /// @param matrix a (4x4) transform matrix following OpenGL's format.
     /// @pre Assumes the selection_ptr is valid, non-NULL.
-    TransformCommand (ConstSelectionPtr selection_ptr, CloudPtr cloud_ptr,
+    TransformCommand (const ConstSelectionPtr& selection_ptr, CloudPtr cloud_ptr,
                       const float* matrix, float translate_x,
                       float translate_y, float translate_z);
 
@@ -78,7 +85,7 @@ class TransformCommand : public Command
     /// @param sel_ptr A pointer to the selection object whose points are to be
     /// transformed.
     void
-    applyTransform(ConstSelectionPtr sel_ptr);
+    applyTransform(const ConstSelectionPtr& sel_ptr);
 
     /// pointers to constructor params
     ConstSelectionPtr selection_ptr_;

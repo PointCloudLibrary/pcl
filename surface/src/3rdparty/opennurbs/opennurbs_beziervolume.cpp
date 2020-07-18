@@ -15,6 +15,8 @@
 */
 
 #include "pcl/surface/3rdparty/opennurbs/opennurbs.h"
+#include <pcl/pcl_macros.h>
+
 
 bool ON_BezierCage::Read(ON_BinaryArchive& archive)
 {
@@ -549,7 +551,7 @@ ON_Interval ON_BezierCage::Domain(
 bool ON_BezierCage::Evaluate( // returns false if unable to evaluate
        double r, double s, double t,       // evaluation parameter
        int der_count,            // number of derivatives (>=0)
-       int v_stride,             // array stride (>=Dimension())
+       int,                      // array stride (>=Dimension())
        double* v                 // array of length stride*(ndir+1)*(ndir+2)/2
        ) const
 {  
@@ -870,7 +872,7 @@ bool ON_BezierCage::GetCV( int i, int j, int k, ON::point_style style, double* P
   switch(style) {
   case ON::euclidean_rational:
     Point[dim] = w;
-    // no break here
+    PCL_FALLTHROUGH
   case ON::not_rational:
     if ( w == 0.0 )
       return false;
@@ -1085,7 +1087,7 @@ bool ON_BezierCage::ReserveCVCapacity(
 
 
 bool ON_BezierCage::IsSingular(		 // true if surface side is collapsed to a point
-       int side														 // side of parameter space to test
+       int														 // side of parameter space to test
 																			// 0 = south, 1 = east, 2 = north, 3 = west, 4 = bottom, 5 =top
 				) const
 {

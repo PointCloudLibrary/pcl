@@ -120,6 +120,17 @@ namespace pcl
     PCL_EXPORTS bool 
     isVerbosityLevelEnabled (VERBOSITY_LEVEL severity);
 
+    /** \brief Enable or disable colored text output, overriding the default behavior.
+      *
+      * By default, colored output is enabled for interactive terminals or when the environment
+      * variable PCL_CLICOLOR_FORCE is set.
+      *
+      * \param stream the output stream (stdout, stderr, etc)
+      * \param enable whether to emit color codes when calling any of the color related methods
+      */
+    PCL_EXPORTS void
+    enableColoredOutput (FILE *stream, bool enable);
+
     /** \brief Change the text color (on either stdout or stderr) with an attr:fg:bg
       * \param stream the output stream (stdout, stderr, etc)
       * \param attribute the text attribute

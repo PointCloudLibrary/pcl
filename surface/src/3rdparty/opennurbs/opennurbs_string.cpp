@@ -86,7 +86,7 @@ void ON_String::EmergencyDestroy()
 	Create();
 }
 
-void ON_String::EnableReferenceCounting( bool bEnable )
+void ON_String::EnableReferenceCounting( bool )
 {
   // TODO fill this in;
 }
@@ -141,7 +141,7 @@ void ON_String::CopyArray()
   }
 }
 
-void ON_String::ReserveArray( size_t array_capacity )
+void ON_String::ReserveArray( std::size_t array_capacity )
 {
   ON_aStringHeader* p = Header();
   const int capacity = (int) array_capacity;
@@ -245,8 +245,8 @@ void ON_String::AppendToArray( int size, const unsigned char* s )
 
 int ON_String::Length( const char* s )
 {
-  size_t slen = s ? strlen(s) : 0;
-  int n = ((0 < slen && slen <= 2147483645) ?((int)slen) : 0); // the (int) cast is for 64 bit size_t conversion
+  std::size_t slen = s ? strlen(s) : 0;
+  int n = ((0 < slen && slen <= 2147483645) ?((int)slen) : 0); // the (int) cast is for 64 bit std::size_t conversion
   return n;
 }
 
@@ -288,7 +288,7 @@ ON_String::ON_String( const char* s )
 {
 	Create();
   if ( s && s[0] ) {
-    CopyToArray( (int)strlen(s), s ); // the (int) is for 64 bit size_t conversion
+    CopyToArray( (int)strlen(s), s ); // the (int) is for 64 bit std::size_t conversion
   }
 }
 
@@ -316,7 +316,7 @@ ON_String::ON_String( const unsigned char* s )
 	Create();
   if ( s && s[0] ) 
   {
-    CopyToArray( (int)strlen((const char*)s), (const char*)s ); // the (int) is for 64 bit size_t conversion
+    CopyToArray( (int)strlen((const char*)s), (const char*)s ); // the (int) is for 64 bit std::size_t conversion
   }
 }
 
@@ -561,7 +561,7 @@ const ON_String& ON_String::operator+=( const unsigned char* s )
 	return *this;
 }
 
-void ON_String::SetLength(size_t string_length)
+void ON_String::SetLength(std::size_t string_length)
 {
   int length = (int)string_length; // for 64 bit compilers
   if ( length >= Header()->string_capacity ) {
@@ -592,7 +592,7 @@ Returns:
 */
 unsigned int ON_String::SizeOf() const
 {
-  size_t sz = sizeof(*this);
+  std::size_t sz = sizeof(*this);
   if ( ((const void*)m_s) != ((const void*)pEmptyaString) )
     sz += (sizeof(ON_aStringHeader) + (Header()->string_capacity+1));
   return (unsigned int)sz;
@@ -925,7 +925,7 @@ int ON_String::Replace( char token1, char token2 )
 
 int ON_String::Replace( unsigned char token1, unsigned char token2 )
 {
-  return Replace((const char)token1, (const char)token2);
+  return Replace((char)token1, (char)token2);
 }
 
 
@@ -972,7 +972,7 @@ int ON_String::Find( const char* s ) const
     p = strstr( m_s, s );
     if ( p )
     {
-      rc = ((int)(p-m_s)); // the (int) is for 64 bit size_t conversion
+      rc = ((int)(p-m_s)); // the (int) is for 64 bit std::size_t conversion
     }
   }
   return rc;
@@ -1091,7 +1091,7 @@ int ON_String::Remove( const char chRemove)
   }
 
   *pstrDest = 0;
-  int nCount = (int)(pstrSource - pstrDest); // the (int) is for 64 bit size_t conversion
+  int nCount = (int)(pstrSource - pstrDest); // the (int) is for 64 bit std::size_t conversion
 
   Header()->string_length -= nCount;
 
@@ -1304,7 +1304,7 @@ bool ON_CheckSum::IsSet() const
 }
 
 bool ON_CheckSum::SetBufferCheckSum( 
-                size_t size, 
+                std::size_t size, 
                 const void* buffer,
                 time_t time
                )
@@ -1316,7 +1316,7 @@ bool ON_CheckSum::SetBufferCheckSum(
     m_size = (unsigned int)size;
 
     ON__INT32 crc = 0;
-    size_t sz, maxsize = 0x40000;
+    std::size_t sz, maxsize = 0x40000;
     const unsigned char* p = (const unsigned char*)buffer;
     for ( int i = 0; i < 7; i++ )
     {
@@ -1346,7 +1346,7 @@ bool ON_CheckSum::SetBufferCheckSum(
 }
 
 bool ON::GetFileStats( const wchar_t* filename,
-                       size_t* filesize,
+                       std::size_t* filesize,
                        time_t* create_time,
                        time_t* lastmodify_time
                       )
@@ -1374,7 +1374,7 @@ bool ON::GetFileStats( const wchar_t* filename,
 }
 
 bool ON::GetFileStats( FILE* fp,
-                       size_t* filesize,
+                       std::size_t* filesize,
                        time_t* create_time,
                        time_t* lastmodify_time
                       )
@@ -1398,7 +1398,7 @@ bool ON::GetFileStats( FILE* fp,
 #if (_MSC_VER >= 1400)
     // VC 8 (2005) 
     // works for file sizes > 4GB 
-    // when size_t is a 64 bit integer
+    // when std::size_t is a 64 bit integer
     struct _stat64 sb;
     memset(&sb,0,sizeof(sb));
     int fstat_rc = _fstat64(fd, &sb);
@@ -1422,7 +1422,7 @@ bool ON::GetFileStats( FILE* fp,
     if (0 == fstat_rc)
     {
       if (filesize)
-        *filesize = (size_t)sb.st_size;
+        *filesize = (std::size_t)sb.st_size;
       if (create_time)
         *create_time = (time_t)sb.st_ctime;
       if (lastmodify_time)
@@ -1565,7 +1565,7 @@ bool ON_CheckSum::SetFileCheckSum( FILE* fp )
   Zero();
   if ( fp )
   {
-    size_t filesize = 0;
+    std::size_t filesize = 0;
     time_t filetime = 0;
     if ( ON::GetFileStats(fp,&filesize,NULL,&filetime) )
     {
@@ -1575,14 +1575,14 @@ bool ON_CheckSum::SetFileCheckSum( FILE* fp )
     unsigned char buffer[1024];
     int count=1024;
     ON__INT32 crc = 0;
-    size_t sz0 = 0, maxsize = 0x40000;
+    std::size_t sz0 = 0, maxsize = 0x40000;
 
     for( int i = 0; i < 7; i++ )
     {
       sz0 += maxsize;
       while(1024 == count && m_size < sz0)
       {
-        count = (int)fread( buffer, 1, 1024, fp ); // the (int) is for 64 bit size_t conversion
+        count = (int)fread( buffer, 1, 1024, fp ); // the (int) is for 64 bit std::size_t conversion
         if ( count > 0 )
         {
           m_size += count;
@@ -1595,7 +1595,7 @@ bool ON_CheckSum::SetFileCheckSum( FILE* fp )
 
     while(1024 == count)
     {
-      count = (int)fread( buffer, 1, 1024, fp ); // the (int) is for 64 bit size_t conversion
+      count = (int)fread( buffer, 1, 1024, fp ); // the (int) is for 64 bit std::size_t conversion
       if ( count > 0 )
       {
         m_size += count;
@@ -1678,7 +1678,7 @@ bool ON_CheckSum::SetFileCheckSum( const wchar_t* filename )
 }
 
 bool ON_CheckSum::CheckBuffer( 
-  size_t size, 
+  std::size_t size, 
   const void* buffer
   ) const
 {
@@ -1690,7 +1690,7 @@ bool ON_CheckSum::CheckBuffer(
     return false;
 
   ON__UINT32 crc = 0;
-  size_t sz, maxsize = 0x40000;
+  std::size_t sz, maxsize = 0x40000;
   const unsigned char* p = (const unsigned char*)buffer;
   for ( int i = 0; i < 7; i++ )
   {
@@ -1723,7 +1723,7 @@ bool ON_CheckSum::CheckFile(
   if ( !fp )
     return false;
 
-  size_t filesize=0;
+  std::size_t filesize=0;
   time_t filetime=0;
   if ( ON::GetFileStats( fp, &filesize, NULL, &filetime ) )
   {
@@ -1741,15 +1741,15 @@ bool ON_CheckSum::CheckFile(
   unsigned char buffer[1024];
   int count=1024;
   ON__UINT32 crc = 0;
-  size_t sz0 = 0, maxsize = 0x40000;
-  size_t sz = 0;
+  std::size_t sz0 = 0, maxsize = 0x40000;
+  std::size_t sz = 0;
 
   for( int i = 0; i < 7; i++ )
   {
     sz0 += maxsize;
     while(1024 == count && sz < sz0)
     {
-      count = (int)fread( buffer, 1, 1024, fp ); // the (int) is for 64 bit size_t conversion
+      count = (int)fread( buffer, 1, 1024, fp ); // the (int) is for 64 bit std::size_t conversion
       if ( count > 0 )
       {
         sz += count;
@@ -1763,7 +1763,7 @@ bool ON_CheckSum::CheckFile(
 
   while(1024 == count)
   {
-    count = (int)fread( buffer, 1, 1024, fp ); // the (int) is for 64 bit size_t conversion
+    count = (int)fread( buffer, 1, 1024, fp ); // the (int) is for 64 bit std::size_t conversion
     if ( count > 0 )
     {
       sz += count;
@@ -1803,7 +1803,7 @@ void ON_CheckSum::Dump(ON_TextLog& text_log) const
   // builds on a wide range of compilers.
 
   unsigned long long u; // 8 bytes in windows and gcc - should be at least as big
-                        // as a size_t or time_t.
+                        // as a std::size_t or time_t.
 
   text_log.Print("Checksum:");
   if ( !IsSet() )

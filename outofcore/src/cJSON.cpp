@@ -23,6 +23,9 @@
 /* cJSON */
 /* JSON parser in C. */
 
+#include <pcl/outofcore/cJSON.h>
+#include <pcl/pcl_macros.h>
+
 #include <cstring>
 #include <cstdio>
 #include <cmath>
@@ -30,7 +33,6 @@
 #include <cfloat>
 #include <climits>
 #include <cctype>
-#include <pcl/outofcore/cJSON.h>
 
 static const char *ep;
 
@@ -38,17 +40,18 @@ const char *cJSON_GetErrorPtr() {return ep;}
 
 static int cJSON_strcasecmp(const char *s1,const char *s2)
 {
-	if (!s1) return (s1==s2)?0:1;if (!s2) return 1;
+	if (!s1) return (s1==s2)?0:1;
+	if (!s2) return 1;
 	for(; tolower(*s1) == tolower(*s2); ++s1, ++s2)	if(*s1 == 0)	return 0;
 	return tolower(* reinterpret_cast<const unsigned char *> (s1) ) - tolower(* reinterpret_cast<const unsigned char *> (s2) );
 }
 
-static void *(*cJSON_malloc)(size_t sz) = malloc;
+static void *(*cJSON_malloc)(std::size_t sz) = malloc;
 static void (*cJSON_free)(void *ptr) = free;
 
 static char* cJSON_strdup(const char* str)
 {
-      size_t len;
+      std::size_t len;
       char* copy;
 
       len = strlen(str) + 1;
@@ -124,7 +127,7 @@ static char *print_number(cJSON *item)
 {
 	char *str;
 	double d=item->valuedouble;
-	if (fabs((static_cast<double>(item->valueint)-d))<=DBL_EPSILON && d<=INT_MAX && d>=INT_MIN)
+	if (std::abs((static_cast<double>(item->valueint)-d))<=DBL_EPSILON && d<=INT_MAX && d>=INT_MIN)
 	{
 		str=static_cast<char*>(cJSON_malloc(21));	/* 2^64+1 can be represented in 21 chars. */
 		if (str) sprintf(str,"%d",item->valueint);
@@ -134,7 +137,7 @@ static char *print_number(cJSON *item)
 		str=static_cast<char*>(cJSON_malloc(64));	/* This is a nice tradeoff. */
 		if (str)
 		{
-			if (fabs(floor(d)-d)<=DBL_EPSILON)			sprintf(str,"%.0f",d);
+			if (std::abs(std::floor(d)-d)<=DBL_EPSILON)			sprintf(str,"%.0f",d);
 			else sprintf(str,"%.16g",d);
 		}
 	}
@@ -172,10 +175,12 @@ static const char *parse_string(cJSON *item,const char *str)
 					len=3;if (uc<0x80) len=1;else if (uc<0x800) len=2;ptr2+=len;
 					
 					switch (len) {
-						case 3: *--ptr2 = static_cast<char>(( (uc) | 0x80) & 0xBF ); 
+						case 3: *--ptr2 = static_cast<char>(( (uc) | 0x80) & 0xBF );
               uc >>= 6;
+              PCL_FALLTHROUGH
 						case 2: *--ptr2 = static_cast<char>(( (uc) | 0x80) & 0xBF );
               uc >>= 6;
+              PCL_FALLTHROUGH
 						case 1: *--ptr2 = static_cast<char>( (uc) | firstByteMark[len] );
 					}
 					ptr2+=len;ptr+=4;
@@ -335,7 +340,7 @@ static const char *parse_array(cJSON *item,const char *value)
 static char *print_array(cJSON *item,int depth,int fmt)
 {
 	char **entries;
-	char *out=nullptr,*ptr,*ret;size_t len=5;
+	char *out=nullptr,*ptr,*ret;std::size_t len=5;
 	cJSON *child=item->child;
 	int numentries=0,i=0,fail=0;
 	
@@ -422,9 +427,9 @@ static const char *parse_object(cJSON *item,const char *value)
 static char *print_object(cJSON *item,int depth,int fmt)
 {
 	char *out=nullptr;
-	size_t len=7;
+	std::size_t len=7;
 	cJSON *child=item->child;
-	size_t numentries=0,fail=0;
+	std::size_t numentries=0,fail=0;
 	/* Count the number of entries. */
 	while (child) numentries++,child=child->next;
 	/* Allocate space for the names and the objects */
@@ -455,7 +460,7 @@ static char *print_object(cJSON *item,int depth,int fmt)
 	/* Handle failure */
 	if (fail)
 	{
-		for (size_t i=0;i<numentries;i++) {if (names[i]) cJSON_free(names[i]);if (entries[i]) cJSON_free(entries[i]);}
+		for (std::size_t i=0;i<numentries;i++) {if (names[i]) cJSON_free(names[i]);if (entries[i]) cJSON_free(entries[i]);}
 		cJSON_free(names);cJSON_free(entries);
 		return nullptr;
 	}
@@ -465,14 +470,15 @@ static char *print_object(cJSON *item,int depth,int fmt)
 	char *ptr = out+1;
 	if (fmt)*ptr++='\n';
 	*ptr=0;
-	for (size_t i=0;i<numentries;i++)
+	for (std::size_t i=0;i<numentries;i++)
 	{
 		if (fmt) for (int j=0; j < depth; j++) *ptr++='\t';
 		strcpy(ptr,names[i]);ptr+=strlen(names[i]);
 		*ptr++=':';if (fmt) *ptr++='\t';
 		strcpy(ptr,entries[i]);ptr+=strlen(entries[i]);
 		if (i!=numentries-1) *ptr++=',';
-		if (fmt) *ptr++='\n';*ptr=0;
+		if (fmt) *ptr++='\n';
+		*ptr=0;
 		cJSON_free(names[i]);cJSON_free(entries[i]);
 	}
 	
@@ -498,8 +504,16 @@ void   cJSON_AddItemToObject(cJSON *object,const char *string,cJSON *item)	{if (
 void	cJSON_AddItemReferenceToArray(cJSON *array, cJSON *item)						{cJSON_AddItemToArray(array,create_reference(item));}
 void	cJSON_AddItemReferenceToObject(cJSON *object,const char *string,cJSON *item)	{cJSON_AddItemToObject(object,string,create_reference(item));}
 
-cJSON *cJSON_DetachItemFromArray(cJSON *array,int which)			{cJSON *c=array->child;while (c && which>0) c=c->next,which--;if (!c) return nullptr;
-	if (c->prev) c->prev->next=c->next;if (c->next) c->next->prev=c->prev;if (c==array->child) array->child=c->next;c->prev=c->next=nullptr;return c;}
+cJSON *cJSON_DetachItemFromArray(cJSON *array,int which)			{
+	cJSON *c=array->child;
+	while (c && which>0) c=c->next,which--;
+	if (!c) return nullptr;
+	if (c->prev) c->prev->next=c->next;
+	if (c->next) c->next->prev=c->prev;
+	if (c==array->child) array->child=c->next;
+	c->prev=c->next=nullptr;
+	return c;
+}
 void   cJSON_DeleteItemFromArray(cJSON *array,int which)			{cJSON_Delete(cJSON_DetachItemFromArray(array,which));}
 cJSON *cJSON_DetachItemFromObject(cJSON *object,const char *string) {int i=0;cJSON *c=object->child;while (c && cJSON_strcasecmp(c->string,string)) i++,c=c->next;if (c) return cJSON_DetachItemFromArray(object,i);return nullptr;}
 void   cJSON_DeleteItemFromObject(cJSON *object,const char *string) {cJSON_Delete(cJSON_DetachItemFromObject(object,string));}

@@ -69,6 +69,16 @@ namespace Eigen
   };
 }
 
+namespace BFGSSpace {
+  enum Status {
+    NegativeGradientEpsilon = -3,
+    NotStarted = -2,
+    Running = -1,
+    Success = 0,
+    NoProgress = 1
+  };
+}
+
 template<typename _Scalar, int NX=Eigen::Dynamic>
 struct BFGSDummyFunctor
 {
@@ -87,17 +97,8 @@ struct BFGSDummyFunctor
   virtual double operator() (const VectorType &x) = 0;
   virtual void  df(const VectorType &x, VectorType &df) = 0;
   virtual void fdf(const VectorType &x, Scalar &f, VectorType &df) = 0;
+  virtual BFGSSpace::Status checkGradient(const VectorType& g) { return BFGSSpace::NotStarted; };
 };
-
-namespace BFGSSpace {
-  enum Status {
-    NegativeGradientEpsilon = -3,
-    NotStarted = -2,
-    Running = -1,
-    Success = 0,
-    NoProgress = 1
-  };
-}
 
 /**
  * BFGS stands for Broyden–Fletcher–Goldfarb–Shanno (BFGS) method for solving 
@@ -148,7 +149,9 @@ public:
   BFGSSpace::Status minimize(FVectorType &x);
   BFGSSpace::Status minimizeInit(FVectorType &x);
   BFGSSpace::Status minimizeOneStep(FVectorType &x);
-  BFGSSpace::Status testGradient(Scalar epsilon);
+  BFGSSpace::Status testGradient();
+  PCL_DEPRECATED(1, 13, "Use `testGradient()` instead")
+  BFGSSpace::Status testGradient(Scalar) { return testGradient(); }
   void resetParameters(void) { parameters = Parameters(); }
   
   Parameters parameters;
@@ -340,11 +343,11 @@ BFGS<FunctorType>::minimizeOneStep(FVectorType  &x)
 
   if (delta_f < 0)
   {
-    Scalar del = std::max (-delta_f, 10 * std::numeric_limits<Scalar>::epsilon() * fabs(f0));
+    Scalar del = std::max (-delta_f, 10 * std::numeric_limits<Scalar>::epsilon() * std::abs(f0));
     alpha1 = std::min (1.0, 2.0 * del / (-fp0));
   }
   else
-    alpha1 = fabs(parameters.step_size);
+    alpha1 = std::abs(parameters.step_size);
 
   BFGSSpace::Status status = lineSearch(parameters.rho, parameters.sigma, 
                                         parameters.tau1, parameters.tau2, parameters.tau3, 
@@ -407,18 +410,11 @@ BFGS<FunctorType>::minimizeOneStep(FVectorType  &x)
   return BFGSSpace::Success;
 }
 
-template<typename FunctorType> typename BFGSSpace::Status 
-BFGS<FunctorType>::testGradient(Scalar epsilon)
+template <typename FunctorType>
+typename BFGSSpace::Status
+BFGS<FunctorType>::testGradient()
 {
-  if(epsilon < 0)
-    return BFGSSpace::NegativeGradientEpsilon;
-  else
-  {
-    if(gradient.norm () < epsilon)
-      return BFGSSpace::Success;
-    else
-      return BFGSSpace::Running;
-  }
+  return functor.checkGradient(gradient);
 }
 
 template<typename FunctorType> typename BFGS<FunctorType>::Scalar 
@@ -539,7 +535,7 @@ BFGS<FunctorType>::lineSearch(Scalar rho, Scalar sigma,
     fpalpha = applyDF (alpha);
 
     /* Fletcher's sigma test */
-    if (fabs (fpalpha) <= -sigma * fp0)
+    if (std::abs (fpalpha) <= -sigma * fp0)
     {
       alpha_new = alpha;
       return BFGSSpace::Success;
@@ -594,7 +590,7 @@ BFGS<FunctorType>::lineSearch(Scalar rho, Scalar sigma,
     {
       fpalpha = applyDF (alpha);
           
-      if (fabs(fpalpha) <= -sigma * fp0)
+      if (std::abs(fpalpha) <= -sigma * fp0)
       {
         alpha_new = alpha;
         return BFGSSpace::Success;  /* terminate */

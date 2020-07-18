@@ -36,11 +36,12 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
-#include <boost/shared_ptr.hpp>
+
 #include <string>
 #include <vector>
 
@@ -57,7 +58,8 @@ namespace pcl
       class FaceDetector
       {
         public:
-          using Ptr = boost::shared_ptr<FaceDetector>;
+          using Ptr = shared_ptr<FaceDetector>;
+          using ConstPtr = shared_ptr<const FaceDetector>;
           //using Labels = DeviceArray2D<unsigned char>;
           //using Depth = DeviceArray2D<unsigned short>;
           //using Image = DeviceArray2D<pcl::RGB>;
@@ -161,7 +163,7 @@ namespace pcl
 
           /** \brief Get the cuda GPU device id in use **/
           int
-          getDeviceId() {return cuda_dev_id_;}
+          getDeviceId() const {return cuda_dev_id_;}
 
         private:
           bool                largest_object_;      /** \brief only give back largest object **/

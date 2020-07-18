@@ -71,7 +71,8 @@ namespace pcl
       using PointCloudPtr = typename SampleConsensusModelLine<PointT>::PointCloudPtr;
       using PointCloudConstPtr = typename SampleConsensusModelLine<PointT>::PointCloudConstPtr;
 
-      using Ptr = boost::shared_ptr<SampleConsensusModelParallelLine<PointT> >;
+      using Ptr = shared_ptr<SampleConsensusModelParallelLine<PointT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelParallelLine<PointT>>;
 
       /** \brief Constructor for base SampleConsensusModelParallelLine.
         * \param[in] cloud the input point cloud dataset
@@ -94,7 +95,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelParallelLine (const PointCloudConstPtr &cloud,
-                                        const std::vector<int> &indices,
+                                        const Indices &indices,
                                         bool random = false)
         : SampleConsensusModelLine<PointT> (cloud, indices, random)
         , axis_ (Eigen::Vector3f::Zero ())
@@ -135,7 +136,7 @@ namespace pcl
       void
       selectWithinDistance (const Eigen::VectorXf &model_coefficients,
                             const double threshold,
-                            std::vector<int> &inliers) override;
+                            Indices &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers.
         *
@@ -143,7 +144,7 @@ namespace pcl
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      int
+      std::size_t
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
                            const double threshold) const override;
 
@@ -155,7 +156,7 @@ namespace pcl
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
                            std::vector<double> &distances) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_PARALLEL_LINE). */
+      /** \brief Return a unique id for this model (SACMODEL_PARALLEL_LINE). */
       inline pcl::SacModel
       getModelType () const override { return (SACMODEL_PARALLEL_LINE); }
 

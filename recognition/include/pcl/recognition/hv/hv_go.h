@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <random>
+
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/adjacency_list.hpp>
 
@@ -20,6 +22,8 @@
 #include <pcl/common/common.h>
 #include <pcl/recognition/3rdparty/metslib/mets.hh>
 #include <pcl/features/normal_3d.h>
+
+#include <memory>
 
 namespace pcl
 {
@@ -51,7 +55,7 @@ namespace pcl
           int id_;
       };
 
-      using RecognitionModelPtr = boost::shared_ptr<RecognitionModel>;
+      using RecognitionModelPtr = std::shared_ptr<RecognitionModel>;
 
       using SAOptimizerT = GlobalHypothesesVerification<ModelT, SceneT>;
       class SAModel: public mets::evaluable_solution
@@ -178,7 +182,7 @@ namespace pcl
 
           void refresh(mets::feasible_solution& /*s*/)
           {
-            std::random_shuffle (moves_m.begin (), moves_m.end ());
+            std::shuffle (moves_m.begin (), moves_m.end (), std::mt19937(std::random_device()()));
           }
 
       };
@@ -205,7 +209,7 @@ namespace pcl
       std::vector<float> explained_by_RM_distance_weighted; //represents the points of scene_cloud_ that are explained by the recognition models
       std::vector<float> unexplained_by_RM_neighboorhods; //represents the points of scene_cloud_ that are not explained by the active hypotheses in the neighboorhod of the recognition models
       std::vector<RecognitionModelPtr> recognition_models_;
-      std::vector<size_t> indices_;
+      std::vector<std::size_t> indices_;
 
       float regularizer_;
       float clutter_regularizer_;
@@ -283,7 +287,7 @@ namespace pcl
 
           float add_to_unexplained = 0.f;
 
-          for (size_t i = 0; i < unexplained_.size (); i++)
+          for (std::size_t i = 0; i < unexplained_.size (); i++)
           {
 
             bool prev_unexplained = (unexplained_by_RM[unexplained_[i]] > 0) && (explained_by_RM[unexplained_[i]] == 0);
@@ -333,7 +337,7 @@ namespace pcl
         float add_to_explained = 0.f;
         int add_to_duplicity_ = 0;
 
-        for (size_t i = 0; i < vec.size (); i++)
+        for (std::size_t i = 0; i < vec.size (); i++)
         {
           bool prev_dup = explained_[vec[i]] > 1;
 
@@ -385,7 +389,7 @@ namespace pcl
         float explained_info = 0;
         int duplicity = 0;
 
-        for (size_t i = 0; i < explained_.size (); i++)
+        for (std::size_t i = 0; i < explained_.size (); i++)
         {
           if (explained_[i] > 0)
             explained_info += explained_by_RM_distance_weighted[i];
@@ -402,7 +406,7 @@ namespace pcl
       float getTotalBadInformation(std::vector<RecognitionModelPtr> & recog_models)
       {
         float bad_info = 0;
-        for (size_t i = 0; i < recog_models.size (); i++)
+        for (std::size_t i = 0; i < recog_models.size (); i++)
           bad_info += recog_models[i]->outliers_weight_ * static_cast<float> (recog_models[i]->bad_information_);
 
         return bad_info;
@@ -411,7 +415,7 @@ namespace pcl
       float getUnexplainedInformationInNeighborhood(std::vector<float> & unexplained, std::vector<int> & explained)
       {
         float unexplained_sum = 0.f;
-        for (size_t i = 0; i < unexplained.size (); i++)
+        for (std::size_t i = 0; i < unexplained.size (); i++)
         {
           if (unexplained[i] > 0 && explained[i] == 0)
             unexplained_sum += unexplained[i];

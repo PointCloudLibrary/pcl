@@ -47,4 +47,7 @@ if(CUDA_FOUND)
 
   # Prevent compilation issues between recent gcc versions and old CUDA versions
   list(APPEND CUDA_NVCC_FLAGS "-D_FORCE_INLINES")
+  
+  # Allow calling a constexpr __host__ function from a __device__ function.
+  list(APPEND CUDA_NVCC_FLAGS "--expt-relaxed-constexpr")
 endif()

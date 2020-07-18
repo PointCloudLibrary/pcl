@@ -68,7 +68,7 @@ pcl::DavidSDKGrabber::DavidSDKGrabber () :
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::DavidSDKGrabber::~DavidSDKGrabber () throw ()
+pcl::DavidSDKGrabber::~DavidSDKGrabber () noexcept
 {
   try
   {
@@ -89,7 +89,7 @@ pcl::DavidSDKGrabber::~DavidSDKGrabber () throw ()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 david::ServerInfo
 pcl::DavidSDKGrabber::connect (const std::string &address,
-                               uint16_t port)
+                               std::uint16_t port)
 {
   david::ServerInfo server_info;
 
@@ -383,8 +383,8 @@ pcl::DavidSDKGrabber::processGrabbing ()
           image.reset (new pcl::PCLImage);
           int width, height;
           david_.sls ().GetLiveImage (image->data, width, height);
-          image->width = (uint32_t) width;
-          image->height = (uint32_t) height;
+          image->width = (std::uint32_t) width;
+          image->height = (std::uint32_t) height;
           image->encoding = "CV_8UC1";
         }
 

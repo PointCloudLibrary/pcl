@@ -39,21 +39,25 @@
   * \author Radu Bogdan Rusu
   *
   * @b virtual_scanner takes in a .ply or a .vtk file of an object model, and virtually scans it
-  * in a raytracing fashion, saving the end results as PCD (Point Cloud Data) files. In addition, 
-  * it noisifies the PCD models, and downsamples them. 
+  * in a raytracing fashion, saving the end results as PCD (Point Cloud Data) files. In addition,
+  * it noisifies the PCD models, and downsamples them.
   * The viewpoint can be set to 1 or multiple views on a sphere.
   */
 
 #include <random>
 #include <string>
+
 #include <pcl/register_point_struct.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/memory.h>  // for pcl::make_shared
 #include <pcl/point_types.h>
 #include <pcl/console/parse.h>
 #include <pcl/visualization/vtk.h>
-#include "boost.h"
+
+#include <boost/algorithm/string.hpp>  // for boost::is_any_of, boost::split, boost::token_compress_on, boost::trim
+#include <boost/filesystem.hpp>  // for boost::filesystem::create_directories, boost::filesystem::exists, boost::filesystem::extension, boost::filesystem::path
 
 using namespace pcl;
 
@@ -138,7 +142,7 @@ main (int argc, char** argv)
     PCL_ERROR ("Error: no .PLY or .VTK files given!\n");
     return (-1);
   }
-  
+
   std::stringstream filename_stream;
   if (!p_file_indices_ply.empty ())
     filename_stream << argv[p_file_indices_ply.at (0)];
@@ -146,9 +150,9 @@ main (int argc, char** argv)
     filename_stream << argv[p_file_indices_vtk.at (0)];
 
   filename = filename_stream.str ();
-  
+
   data = loadDataSet (filename.c_str ());
-  
+
   PCL_INFO ("Loaded model with %d vertices/points.\n", data->GetNumberOfPoints ());
 
   // Default scan parameters
@@ -174,7 +178,7 @@ main (int argc, char** argv)
 
   int subdiv_level = 1;
   double scan_dist = 3;
-  std::string fname, base;
+  std::string fname;
   char seq[256];
 
   // Compute start/stop for vertical and horizontal
@@ -207,7 +211,7 @@ main (int argc, char** argv)
   double temp_beam[3], beam[3], p[3];
   double p_coords[3], x[3], t;
   int subId;
- 
+
   // Create a Icosahedron at center in origin and radius of 1
   vtkSmartPointer<vtkPlatonicSolidSource> icosa = vtkSmartPointer<vtkPlatonicSolidSource>::New ();
   icosa->SetSolidTypeToIcosahedron ();
@@ -246,9 +250,9 @@ main (int argc, char** argv)
   for (int i = 0; i < number_of_points; i++)
   {
     sphere->GetPoint (i, eye);
-    if (fabs(eye[0]) < EPS) eye[0] = 0;
-    if (fabs(eye[1]) < EPS) eye[1] = 0;
-    if (fabs(eye[2]) < EPS) eye[2] = 0;
+    if (std::abs(eye[0]) < EPS) eye[0] = 0;
+    if (std::abs(eye[1]) < EPS) eye[1] = 0;
+    if (std::abs(eye[2]) < EPS) eye[2] = 0;
 
     viewray[0] = -eye[0];
     viewray[1] = -eye[1];
@@ -280,14 +284,14 @@ main (int argc, char** argv)
       vtkMath::Cross (viewray, x_axis, right);
     else
       vtkMath::Cross (viewray, z_axis, right);
-    if (fabs(right[0]) < EPS) right[0] = 0;
-    if (fabs(right[1]) < EPS) right[1] = 0;
-    if (fabs(right[2]) < EPS) right[2] = 0;
+    if (std::abs(right[0]) < EPS) right[0] = 0;
+    if (std::abs(right[1]) < EPS) right[1] = 0;
+    if (std::abs(right[2]) < EPS) right[2] = 0;
 
     vtkMath::Cross (viewray, right, up);
-    if (fabs(up[0]) < EPS) up[0] = 0;
-    if (fabs(up[1]) < EPS) up[1] = 0;
-    if (fabs(up[2]) < EPS) up[2] = 0;
+    if (std::abs(up[0]) < EPS) up[0] = 0;
+    if (std::abs(up[1]) < EPS) up[1] = 0;
+    if (std::abs(up[2]) < EPS) up[2] = 0;
 
     if (!object_coordinates)
     {
@@ -300,12 +304,12 @@ main (int argc, char** argv)
       up[0] /= up_len;
       up[1] /= up_len;
       up[2] /= up_len;
-    
+
       // Output resulting vectors
-      cerr << "Viewray Right Up:" << endl;
-      cerr << viewray[0] << " " << viewray[1] << " " << viewray[2] << " " << endl;
-      cerr << right[0] << " " << right[1] << " " << right[2] << " " << endl;
-      cerr << up[0] << " " << up[1] << " " << up[2] << " " << endl;
+      std::cerr << "Viewray Right Up:" << std::endl;
+      std::cerr << viewray[0] << " " << viewray[1] << " " << viewray[2] << " " << std::endl;
+      std::cerr << right[0] << " " << right[1] << " " << right[2] << " " << std::endl;
+      std::cerr << up[0] << " " << up[1] << " " << up[2] << " " << std::endl;
     }
 
     // Create a transformation
@@ -329,7 +333,7 @@ main (int argc, char** argv)
       for (double hor = hor_start; hor <= hor_end; hor += sp.hor_res)
       {
         pid ++;
-      
+
         // Create a beam vector with (lat,long) angles (vert, hor) with the viewray
         tr2->Identity ();
         tr2->RotateWXYZ (hor, up);
@@ -347,11 +351,11 @@ main (int argc, char** argv)
           pcl::PointWithViewpoint pt;
           if (object_coordinates)
           {
-            pt.x = static_cast<float> (x[0]); 
-            pt.y = static_cast<float> (x[1]); 
+            pt.x = static_cast<float> (x[0]);
+            pt.y = static_cast<float> (x[1]);
             pt.z = static_cast<float> (x[2]);
-            pt.vp_x = static_cast<float> (eye[0]); 
-            pt.vp_y = static_cast<float> (eye[1]); 
+            pt.vp_x = static_cast<float> (eye[0]);
+            pt.vp_y = static_cast<float> (eye[1]);
             pt.vp_z = static_cast<float> (eye[2]);
           }
           else
@@ -393,7 +397,7 @@ main (int argc, char** argv)
 
     // Downsample and remove silly point duplicates
     pcl::PointCloud<pcl::PointWithViewpoint> cloud_downsampled;
-    grid.setInputCloud (boost::make_shared<pcl::PointCloud<pcl::PointWithViewpoint> > (cloud));
+    grid.setInputCloud (pcl::make_shared<pcl::PointCloud<pcl::PointWithViewpoint> > (cloud));
     //grid.filter (cloud_downsampled);
 
     // Saves the point cloud data to disk
@@ -420,18 +424,22 @@ main (int argc, char** argv)
 
     if (organized)
     {
-      cloud.height = 1 + static_cast<uint32_t> ((vert_end - vert_start) / sp.vert_res);
-      cloud.width = 1 + static_cast<uint32_t> ((hor_end - hor_start) / sp.hor_res);
+      cloud.height = 1 + static_cast<std::uint32_t> ((vert_end - vert_start) / sp.vert_res);
+      cloud.width = 1 + static_cast<std::uint32_t> ((hor_end - hor_start) / sp.hor_res);
     }
     else
     {
-      cloud.width = static_cast<uint32_t> (cloud.points.size ());
+      cloud.width = cloud.size ();
       cloud.height = 1;
     }
 
     pcl::PCDWriter writer;
-    PCL_INFO ("Wrote %lu points (%d x %d) to %s\n", cloud.points.size (), cloud.width, cloud.height, fname.c_str ());
-    writer.writeBinaryCompressed (fname.c_str (), cloud);
+    PCL_INFO("Wrote %zu points (%d x %d) to %s\n",
+             static_cast<std::size_t>(cloud.size()),
+             cloud.width,
+             cloud.height,
+             fname.c_str());
+    writer.writeBinaryCompressed (fname, cloud);
   } // sphere
   return (0);
 }

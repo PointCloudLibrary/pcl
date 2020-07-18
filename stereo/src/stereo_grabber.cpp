@@ -41,25 +41,26 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberImplementation //////////////////////
-struct pcl::StereoGrabberBase::StereoGrabberImpl
-{
-  StereoGrabberImpl (pcl::StereoGrabberBase& grabber,
-                     const std::pair<std::string, std::string>& pair_files,
-                     float frames_per_second,
-                     bool repeat);
-  StereoGrabberImpl (pcl::StereoGrabberBase& grabber,
-                     const std::vector<std::pair<std::string, std::string> >& files,
-                     float frames_per_second,
-                     bool repeat);
-  void trigger ();
-  void readAhead ();
-  
+struct pcl::StereoGrabberBase::StereoGrabberImpl {
+  StereoGrabberImpl(pcl::StereoGrabberBase& grabber,
+                    const std::pair<std::string, std::string>& pair_files,
+                    float frames_per_second,
+                    bool repeat);
+  StereoGrabberImpl(pcl::StereoGrabberBase& grabber,
+                    const std::vector<std::pair<std::string, std::string>>& files,
+                    float frames_per_second,
+                    bool repeat);
+  void
+  trigger();
+  void
+  readAhead();
+
   pcl::StereoGrabberBase& grabber_;
   float frames_per_second_;
   bool repeat_;
   bool running_;
-  std::vector<std::pair<std::string, std::string> > pair_files_;
-  std::vector<std::pair<std::string, std::string> >::iterator pair_iterator_;
+  std::vector<std::pair<std::string, std::string>> pair_files_;
+  std::vector<std::pair<std::string, std::string>>::iterator pair_iterator_;
   TimeTrigger time_trigger_;
 
   pcl::PCLPointCloud2 next_cloud_;
@@ -69,154 +70,156 @@ struct pcl::StereoGrabberBase::StereoGrabberImpl
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::StereoGrabberBase::StereoGrabberImpl::StereoGrabberImpl (pcl::StereoGrabberBase& grabber,
-                                                              const std::pair<std::string, std::string>& pair_files,
-                                                              float frames_per_second,
-                                                              bool repeat)
-  : grabber_ (grabber)
-  , frames_per_second_ (frames_per_second)
-  , repeat_ (repeat)
-  , running_ (false)
-  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), [this]{ trigger (); })
-  , valid_ (false)
+pcl::StereoGrabberBase::StereoGrabberImpl::StereoGrabberImpl(
+    pcl::StereoGrabberBase& grabber,
+    const std::pair<std::string, std::string>& pair_files,
+    float frames_per_second,
+    bool repeat)
+: grabber_(grabber)
+, frames_per_second_(frames_per_second)
+, repeat_(repeat)
+, running_(false)
+, time_trigger_(1.0 / static_cast<double>(std::max(frames_per_second, 0.001f)),
+                [this] { trigger(); })
+, valid_(false)
 {
-  pair_files_.push_back (pair_files);
-  pair_iterator_ = pair_files_.begin ();
+  pair_files_.push_back(pair_files);
+  pair_iterator_ = pair_files_.begin();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::StereoGrabberBase::StereoGrabberImpl::StereoGrabberImpl (pcl::StereoGrabberBase& grabber,
-                                                              const std::vector<std::pair<std::string, std::string> >& files,
-                                                              float frames_per_second,
-                                                              bool repeat)
-  : grabber_ (grabber)
-  , frames_per_second_ (frames_per_second)
-  , repeat_ (repeat)
-  , running_ (false)
-  , time_trigger_ (1.0 / static_cast<double> (std::max (frames_per_second, 0.001f)), [this]{ trigger (); })
-  , valid_ (false)
+pcl::StereoGrabberBase::StereoGrabberImpl::StereoGrabberImpl(
+    pcl::StereoGrabberBase& grabber,
+    const std::vector<std::pair<std::string, std::string>>& files,
+    float frames_per_second,
+    bool repeat)
+: grabber_(grabber)
+, frames_per_second_(frames_per_second)
+, repeat_(repeat)
+, running_(false)
+, time_trigger_(1.0 / static_cast<double>(std::max(frames_per_second, 0.001f)),
+                [this] { trigger(); })
+, valid_(false)
 {
   pair_files_ = files;
-  pair_iterator_ = pair_files_.begin ();
+  pair_iterator_ = pair_files_.begin();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void 
-pcl::StereoGrabberBase::StereoGrabberImpl::readAhead ()
+void
+pcl::StereoGrabberBase::StereoGrabberImpl::readAhead()
 {
-  if (pair_iterator_ != pair_files_.end ())
-  {
+  if (pair_iterator_ != pair_files_.end()) {
     // read next image pair and produce a cloud
-    //valid_ = //(reader.read (*pair_iterator_, next_cloud_, origin_, orientation_, pcd_version) == 0);
+    // valid_ = //(reader.read (*pair_iterator_, next_cloud_, origin_, orientation_,
+    // pcd_version) == 0);
 
-    if (++pair_iterator_ == pair_files_.end () && repeat_)
-      pair_iterator_ = pair_files_.begin ();
+    if (++pair_iterator_ == pair_files_.end() && repeat_)
+      pair_iterator_ = pair_files_.begin();
   }
   else
     valid_ = false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void 
-pcl::StereoGrabberBase::StereoGrabberImpl::trigger ()
+void
+pcl::StereoGrabberBase::StereoGrabberImpl::trigger()
 {
-  // If the stereo image pair was successfully read and a cloud was produced, simply publish it
+  // If the stereo image pair was successfully read and a cloud was produced, simply
+  // publish it
   if (valid_)
-    grabber_.publish (next_cloud_, origin_, orientation_);
+    grabber_.publish(next_cloud_, origin_, orientation_);
 
   // use remaining time, if there is time left!
-  readAhead ();
+  readAhead();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// GrabberBase //////////////////////
-pcl::StereoGrabberBase::StereoGrabberBase (const std::pair<std::string, std::string>& pair_files,
-                                           float frames_per_second,
-                                           bool repeat)
-  : impl_ (new StereoGrabberImpl (*this, pair_files, frames_per_second, repeat))
-{
-}
+pcl::StereoGrabberBase::StereoGrabberBase(
+    const std::pair<std::string, std::string>& pair_files,
+    float frames_per_second,
+    bool repeat)
+: impl_(new StereoGrabberImpl(*this, pair_files, frames_per_second, repeat))
+{}
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::StereoGrabberBase::StereoGrabberBase (const std::vector<std::pair<std::string, std::string> >& files,
-                                           float frames_per_second,
-                                           bool repeat)
-  : impl_ (new StereoGrabberImpl (*this, files, frames_per_second, repeat))
-{
-}
+pcl::StereoGrabberBase::StereoGrabberBase(
+    const std::vector<std::pair<std::string, std::string>>& files,
+    float frames_per_second,
+    bool repeat)
+: impl_(new StereoGrabberImpl(*this, files, frames_per_second, repeat))
+{}
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::StereoGrabberBase::~StereoGrabberBase () throw ()
+pcl::StereoGrabberBase::~StereoGrabberBase() noexcept
 {
-  stop ();
+  stop();
   delete impl_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void 
-pcl::StereoGrabberBase::start ()
+void
+pcl::StereoGrabberBase::start()
 {
-  if (impl_->frames_per_second_ > 0)
-  {
+  if (impl_->frames_per_second_ > 0) {
     impl_->running_ = true;
-    impl_->time_trigger_.start ();
+    impl_->time_trigger_.start();
   }
   else // manual trigger
-    impl_->trigger ();
+    impl_->trigger();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void 
-pcl::StereoGrabberBase::stop ()
+void
+pcl::StereoGrabberBase::stop()
 {
-  if (impl_->frames_per_second_ > 0)
-  {
-    impl_->time_trigger_.stop ();
+  if (impl_->frames_per_second_ > 0) {
+    impl_->time_trigger_.stop();
     impl_->running_ = false;
   }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::StereoGrabberBase::trigger ()
+pcl::StereoGrabberBase::trigger()
 {
   if (impl_->frames_per_second_ > 0)
     return;
-  impl_->trigger ();
+  impl_->trigger();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-bool 
-pcl::StereoGrabberBase::isRunning () const
+bool
+pcl::StereoGrabberBase::isRunning() const
 {
   return (impl_->running_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-std::string 
-pcl::StereoGrabberBase::getName () const
+std::string
+pcl::StereoGrabberBase::getName() const
 {
   return ("StereoGrabber");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-void 
-pcl::StereoGrabberBase::rewind ()
+void
+pcl::StereoGrabberBase::rewind()
 {
-  impl_->pair_iterator_ = impl_->pair_files_.begin ();
+  impl_->pair_iterator_ = impl_->pair_files_.begin();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-float 
-pcl::StereoGrabberBase::getFramesPerSecond () const
+float
+pcl::StereoGrabberBase::getFramesPerSecond() const
 {
   return (impl_->frames_per_second_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-bool 
-pcl::StereoGrabberBase::isRepeatOn () const
+bool
+pcl::StereoGrabberBase::isRepeatOn() const
 {
   return (impl_->repeat_);
 }
-

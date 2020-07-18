@@ -39,6 +39,8 @@
 
 #pragma once
 
+#include <pcl/point_types.h>
+
 #ifdef _MSC_VER
 #include <Eigen/src/StlSupport/details.h>
 #endif
@@ -65,7 +67,7 @@ namespace pcl
 
   template<> inline bool isFinite<pcl::Axis>(const pcl::Axis&) { return (true); }
   template<> inline bool isFinite<pcl::BRISKSignature512>(const pcl::BRISKSignature512&) { return (true); }
-  template<> inline bool isFinite<pcl::BorderDescription>(const pcl::BorderDescription &p) { return true; }
+  template<> inline bool isFinite<pcl::BorderDescription>(const pcl::BorderDescription &) { return true; }
   template<> inline bool isFinite<pcl::Boundary>(const pcl::Boundary&) { return (true); }
   template<> inline bool isFinite<pcl::ESFSignature640>(const pcl::ESFSignature640&) { return (true); }
   template<> inline bool isFinite<pcl::FPFHSignature33>(const pcl::FPFHSignature33&) { return (true); }
@@ -100,5 +102,43 @@ namespace pcl
   isFinite<pcl::Normal> (const pcl::Normal &n)
   {
     return (std::isfinite (n.normal_x) && std::isfinite (n.normal_y) && std::isfinite (n.normal_z));
+  }
+
+  // generic fallback cases
+  template <typename PointT, traits::HasNoXY<PointT> = true> constexpr inline bool
+  isXYFinite (const PointT&) noexcept
+  {
+    return true;
+  }
+
+  template <typename PointT, traits::HasNoXYZ<PointT> = true> constexpr inline bool
+  isXYZFinite (const PointT&) noexcept
+  {
+    return true;
+  }
+
+  template <typename PointT, traits::HasNoNormal<PointT> = true> constexpr inline bool
+  isNormalFinite (const PointT&) noexcept
+  {
+    return true;
+  }
+
+  // special cases for checks
+  template <typename PointT, traits::HasXY<PointT> = true> inline bool
+  isXYFinite (const PointT& pt) noexcept
+  {
+    return std::isfinite(pt.x) && std::isfinite(pt.y);
+  }
+
+  template <typename PointT, traits::HasXYZ<PointT> = true> inline bool
+  isXYZFinite (const PointT& pt) noexcept
+  {
+    return std::isfinite(pt.x) && std::isfinite(pt.y) && std::isfinite(pt.z);
+  }
+
+  template <typename PointT, traits::HasNormal<PointT> = true> inline bool
+  isNormalFinite (const PointT& pt) noexcept
+  {
+    return std::isfinite(pt.normal_x) && std::isfinite(pt.normal_y) && std::isfinite(pt.normal_z);
   }
 }

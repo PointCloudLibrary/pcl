@@ -236,9 +236,6 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
   // Create grid
   grid_ = std::vector<float> (res_x_*res_y_*res_z_, NAN);
 
-  // Populate tree
-  tree_->setInputCloud (input_);
-
   // Compute bounding box and voxel size
   getBoundingBox ();
   size_voxel_ = (upper_boundary_ - lower_boundary_) 
@@ -251,7 +248,7 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
   // preallocate memory assuming a hull. suppose 6 point per voxel
   double size_reserve = std::min((double) intermediate_cloud.points.max_size (),
       2.0 * 6.0 * (double) (res_y_*res_z_ + res_x_*res_z_ + res_x_*res_y_));
-  intermediate_cloud.reserve ((size_t) size_reserve);
+  intermediate_cloud.reserve ((std::size_t) size_reserve);
 
   for (int x = 1; x < res_x_-1; ++x)
     for (int y = 1; y < res_y_-1; ++y)
@@ -267,7 +264,7 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
   points.swap (intermediate_cloud);
 
   polygons.resize (points.size () / 3);
-  for (size_t i = 0; i < polygons.size (); ++i)
+  for (std::size_t i = 0; i < polygons.size (); ++i)
   {
     pcl::Vertices v;
     v.vertices.resize (3);

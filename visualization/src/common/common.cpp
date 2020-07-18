@@ -75,9 +75,9 @@ pcl::visualization::getRandomColors (pcl::RGB &rgb, double min, double max)
     sum = r + g + b;
   }
   while (sum <= min || sum >= max);
-  rgb.r = uint8_t (r * 255.0);
-  rgb.g = uint8_t (g * 255.0);
-  rgb.b = uint8_t (b * 255.0);
+  rgb.r = std::uint8_t (r * 255.0);
+  rgb.g = std::uint8_t (g * 255.0);
+  rgb.b = std::uint8_t (b * 255.0);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,11 +107,11 @@ pcl::visualization::worldToView (const Eigen::Vector4d &world_pt, const Eigen::M
   world /= world.w ();
 
   // X/Y screen space coordinate
-  int screen_x = int (floor (double (((world.x () + 1) / 2.0) * width) + 0.5));
-  int screen_y = int (floor (double (((world.y () + 1) / 2.0) * height) + 0.5));
+  int screen_x = int (std::floor (double (((world.x () + 1) / 2.0) * width) + 0.5));
+  int screen_y = int (std::floor (double (((world.y () + 1) / 2.0) * height) + 0.5));
 
   // Calculate -world_pt.y () because the screen Y axis is oriented top->down, ie 0 is top-left
-  //int winY = (int) floor ( (double) (((1 - world_pt.y ()) / 2.0) * height) + 0.5); // top left
+  //int winY = (int) std::floor ( (double) (((1 - world_pt.y ()) / 2.0) * height) + 0.5); // top left
 
   return (Eigen::Vector2i (screen_x, screen_y));
 }
@@ -160,19 +160,19 @@ pcl::visualization::cullFrustum (double frustum[24], const Eigen::Vector3d &min_
     double c = frustum[(i*4)+2];
     double d = frustum[(i*4)+3];
 
-    //cout << i << ": " << a << "x + " << b << "y + " << c << "z + " << d << endl;
+    //std::cout << i << ": " << a << "x + " << b << "y + " << c << "z + " << d << std::endl;
 
     //  Basic VFC algorithm
     Eigen::Vector3d center ((max_bb.x () - min_bb.x ()) / 2 + min_bb.x (),
                             (max_bb.y () - min_bb.y ()) / 2 + min_bb.y (),
                             (max_bb.z () - min_bb.z ()) / 2 + min_bb.z ());
 
-    Eigen::Vector3d radius (fabs (static_cast<double> (max_bb.x () - center.x ())),
-                            fabs (static_cast<double> (max_bb.y () - center.y ())),
-                            fabs (static_cast<double> (max_bb.z () - center.z ())));
+    Eigen::Vector3d radius (std::abs (static_cast<double> (max_bb.x () - center.x ())),
+                            std::abs (static_cast<double> (max_bb.y () - center.y ())),
+                            std::abs (static_cast<double> (max_bb.z () - center.z ())));
 
     double m = (center.x () * a) + (center.y () * b) + (center.z () * c) + d;
-    double n = (radius.x () * fabs(a)) + (radius.y () * fabs(b)) + (radius.z () * fabs(c));
+    double n = (radius.x () * std::abs(a)) + (radius.y () * std::abs(b)) + (radius.z () * std::abs(c));
 
     if (m + n < 0){
       result = PCL_OUTSIDE_FRUSTUM;
@@ -291,54 +291,54 @@ pcl::visualization::viewScreenArea (
     //return 0.0;
 
 
-//  cout << "eye: " << eye.x() << " " << eye.y() << " " << eye.z() << endl;
-//  cout << "min: " << bounding_box[0].x() << " " << bounding_box[0].y() << " " << bounding_box[0].z() << endl;
+//  std::cout << "eye: " << eye.x() << " " << eye.y() << " " << eye.z() << std::endl;
+//  std::cout << "min: " << bounding_box[0].x() << " " << bounding_box[0].y() << " " << bounding_box[0].z() << std::endl;
 //
-//  cout << "pos: " << pos << " ";
+//  std::cout << "pos: " << pos << " ";
 //  switch(pos){
-//    case 0:  cout << "inside" << endl; break;
-//    case 1:  cout << "left" << endl; break;
-//    case 2:  cout << "right" << endl; break;
+//    case 0:  std::cout << "inside" << std::endl; break;
+//    case 1:  std::cout << "left" << std::endl; break;
+//    case 2:  std::cout << "right" << std::endl; break;
 //    case 3:
-//    case 4:  cout << "bottom" << endl; break;
-//    case 5:  cout << "bottom, left" << endl; break;
-//    case 6:  cout << "bottom, right" << endl; break;
+//    case 4:  std::cout << "bottom" << std::endl; break;
+//    case 5:  std::cout << "bottom, left" << std::endl; break;
+//    case 6:  std::cout << "bottom, right" << std::endl; break;
 //    case 7:
-//    case 8:  cout << "top" << endl; break;
-//    case 9:  cout << "top, left" << endl; break;
-//    case 10:  cout << "top, right" << endl; break;
+//    case 8:  std::cout << "top" << std::endl; break;
+//    case 9:  std::cout << "top, left" << std::endl; break;
+//    case 10:  std::cout << "top, right" << std::endl; break;
 //    case 11:
 //    case 12:
 //    case 13:
 //    case 14:
 //    case 15:
-//    case 16:  cout << "front" << endl; break;
-//    case 17:  cout << "front, left" << endl; break;
-//    case 18:  cout << "front, right" << endl; break;
+//    case 16:  std::cout << "front" << std::endl; break;
+//    case 17:  std::cout << "front, left" << std::endl; break;
+//    case 18:  std::cout << "front, right" << std::endl; break;
 //    case 19:
-//    case 20:  cout << "front, bottom" << endl; break;
-//    case 21:  cout << "front, bottom, left" << endl; break;
+//    case 20:  std::cout << "front, bottom" << std::endl; break;
+//    case 21:  std::cout << "front, bottom, left" << std::endl; break;
 //    case 22:
 //    case 23:
-//    case 24:  cout << "front, top" << endl; break;
-//    case 25:  cout << "front, top, left" << endl; break;
-//    case 26:  cout << "front, top, right" << endl; break;
+//    case 24:  std::cout << "front, top" << std::endl; break;
+//    case 25:  std::cout << "front, top, left" << std::endl; break;
+//    case 26:  std::cout << "front, top, right" << std::endl; break;
 //    case 27:
 //    case 28:
 //    case 29:
 //    case 30:
 //    case 31:
-//    case 32:  cout << "back" << endl; break;
-//    case 33:  cout << "back, left" << endl; break;
-//    case 34:  cout << "back, right" << endl; break;
+//    case 32:  std::cout << "back" << std::endl; break;
+//    case 33:  std::cout << "back, left" << std::endl; break;
+//    case 34:  std::cout << "back, right" << std::endl; break;
 //    case 35:
-//    case 36:  cout << "back, bottom" << endl; break;
-//    case 37:  cout << "back, bottom, left" << endl; break;
-//    case 38:  cout << "back, bottom, right" << endl; break;
+//    case 36:  std::cout << "back, bottom" << std::endl; break;
+//    case 37:  std::cout << "back, bottom, left" << std::endl; break;
+//    case 38:  std::cout << "back, bottom, right" << std::endl; break;
 //    case 39:
-//    case 40:  cout << "back, top" << endl; break;
-//    case 41:  cout << "back, top, left" << endl; break;
-//    case 42:  cout << "back, top, right" << endl; break;
+//    case 40:  std::cout << "back, top" << std::endl; break;
+//    case 41:  std::cout << "back, top, left" << std::endl; break;
+//    case 42:  std::cout << "back, top, right" << std::endl; break;
 //  }
 
   //return -1 if inside
@@ -347,7 +347,7 @@ pcl::visualization::viewScreenArea (
   {
     Eigen::Vector4d world_pt = bounding_box[hull_vertex_table[pos][i]];
     Eigen::Vector2i screen_pt = pcl::visualization::worldToView(world_pt, view_projection_matrix, width, height);
-//    cout << "point[" << i << "]: " << screen_pt.x() << " " << screen_pt.y() << endl;
+//    std::cout << "point[" << i << "]: " << screen_pt.x() << " " << screen_pt.y() << std::endl;
     dst[i] = Eigen::Vector2d(screen_pt.x (), screen_pt.y ());
   }
 
@@ -357,7 +357,7 @@ pcl::visualization::viewScreenArea (
     sum += (dst[i].x () - dst[(i+1) % num].x ()) * (dst[i].y () + dst[(i+1) % num].y ());
   }
 
-  return (fabsf (float (sum * 0.5f)));
+  return (std::abs (float (sum * 0.5f)));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -418,7 +418,7 @@ pcl::visualization::getColormapLUT (LookUpTableRepresentationProperties colormap
       double white[3] = {1.0, 1.0, 1.0};
       double blue[3]  = {0.0, 0.0, 1.0};
       
-      for (size_t i = 0; i < 128; i++)
+      for (std::size_t i = 0; i < 128; i++)
       {
         double weight = static_cast<double>(i) / 128.0;
         table->SetTableValue  ( i,
@@ -427,7 +427,7 @@ pcl::visualization::getColormapLUT (LookUpTableRepresentationProperties colormap
                                 white[2] * weight + blue[2] * (1 - weight)  );
       }
       
-      for (size_t i = 128; i < 256; i++)
+      for (std::size_t i = 128; i < 256; i++)
       {
         double weight = (static_cast<double>(i) -128.0) / 128.0;
         table->SetTableValue  ( i,
@@ -443,7 +443,7 @@ pcl::visualization::getColormapLUT (LookUpTableRepresentationProperties colormap
       table->SetSaturationRange (1, 1);
       table->SetAlphaRange (1, 1);
       table->SetNumberOfTableValues (pcl::ViridisLUT::size ());
-      for (size_t i = 0; i < pcl::ViridisLUT::size (); i++)
+      for (std::size_t i = 0; i < pcl::ViridisLUT::size (); i++)
       {
         pcl::RGB c = pcl::ViridisLUT::at (i);
         table->SetTableValue (i, static_cast<double> (c.r) / 255.0,

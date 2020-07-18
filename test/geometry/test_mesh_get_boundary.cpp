@@ -38,7 +38,7 @@
  *
  */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 
 #include <pcl/geometry/polygon_mesh.h>
 #include <pcl/geometry/get_boundary.h>
@@ -68,7 +68,7 @@ class TestGetBoundary : public testing::Test
     using Mesh = MeshT;
 };
 
-TYPED_TEST_CASE (TestGetBoundary, MeshTypes);
+TYPED_TEST_SUITE (TestGetBoundary, MeshTypes);
 
 ////////////////////////////////////////////////////////////////////////////////
 

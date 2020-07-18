@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/apps/in_hand_scanner/boost.h>
@@ -89,20 +90,20 @@ namespace pcl
         using Self = pcl::ihs::InHandScanner;
 
         using InputDataProcessing = pcl::ihs::InputDataProcessing;
-        using InputDataProcessingPtr = boost::shared_ptr<InputDataProcessing>;
-        using InputDataProcessingConstPtr = boost::shared_ptr<const InputDataProcessing>;
+        using InputDataProcessingPtr = std::shared_ptr<InputDataProcessing>;
+        using InputDataProcessingConstPtr = std::shared_ptr<const InputDataProcessing>;
 
         using ICP = pcl::ihs::ICP;
-        using ICPPtr = boost::shared_ptr<ICP>;
-        using ICPConstPtr = boost::shared_ptr<const ICP>;
+        using ICPPtr = std::shared_ptr<ICP>;
+        using ICPConstPtr = std::shared_ptr<const ICP>;
 
         using Integration = pcl::ihs::Integration;
-        using IntegrationPtr = boost::shared_ptr<Integration>;
-        using IntegrationConstPtr = boost::shared_ptr<const Integration>;
+        using IntegrationPtr = std::shared_ptr<Integration>;
+        using IntegrationConstPtr = std::shared_ptr<const Integration>;
 
         using MeshProcessing = pcl::ihs::MeshProcessing;
-        using MeshProcessingPtr = boost::shared_ptr<MeshProcessing>;
-        using MeshProcessingConstPtr = boost::shared_ptr<const MeshProcessing>;
+        using MeshProcessingPtr = std::shared_ptr<MeshProcessing>;
+        using MeshProcessingConstPtr = std::shared_ptr<const MeshProcessing>;
 
         /** \brief Switch between different branches of the scanning pipeline. */
         enum RunningMode
@@ -211,8 +212,8 @@ namespace pcl
         using MeshConstPtr = pcl::ihs::MeshConstPtr;
 
         using Grabber = pcl::OpenNIGrabber;
-        using GrabberPtr = boost::shared_ptr<Grabber>;
-        using GrabberConstPtr = boost::shared_ptr<const Grabber>;
+        using GrabberPtr = std::shared_ptr<Grabber>;
+        using GrabberConstPtr = std::shared_ptr<const Grabber>;
 
         /** \brief Helper object for the computation thread. Please have a look at the documentation of calcFPS. */
         class ComputationFPS : public Base::FPS

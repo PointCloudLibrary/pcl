@@ -69,7 +69,7 @@ namespace pcl
         toc_print () const
         {
           double milliseconds = toc ();
-          //int minutes = (int) floor ( seconds / 60.0 );
+          //int minutes = (int) std::floor ( seconds / 60.0 );
           //seconds -= minutes * 60.0;
           //if (minutes != 0)
           //{

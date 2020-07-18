@@ -81,7 +81,7 @@ namespace pcl
   PointRGBtoI (const RGB&    in,
                Intensity8u&  out)
   {
-    out.intensity = static_cast<uint8_t>(0.299f * static_cast <float> (in.r)
+    out.intensity = static_cast<std::uint8_t>(0.299f * static_cast <float> (in.r)
                       + 0.587f * static_cast <float> (in.g) + 0.114f * static_cast <float> (in.b));
   }
 
@@ -93,7 +93,7 @@ namespace pcl
   PointRGBtoI (const RGB&    in,
                Intensity32u& out)
   {
-    out.intensity = static_cast<uint32_t>(0.299f * static_cast <float> (in.r)
+    out.intensity = static_cast<std::uint32_t>(0.299f * static_cast <float> (in.r)
                       + 0.587f * static_cast <float> (in.g) + 0.114f * static_cast <float> (in.b));
   }
 
@@ -183,11 +183,11 @@ namespace pcl
     out.x = in.x; out.y = in.y; out.z = in.z;
     if (in.s == 0)
     {
-      out.r = out.g = out.b = static_cast<uint8_t> (255 * in.v);
+      out.r = out.g = out.b = static_cast<std::uint8_t> (255 * in.v);
       return;
     } 
     float a = in.h / 60;
-    int   i = static_cast<int> (floorf (a));
+    int   i = static_cast<int> (std::floor (a));
     float f = a - static_cast<float> (i);
     float p = in.v * (1 - in.s);
     float q = in.v * (1 - in.s * f);
@@ -197,44 +197,44 @@ namespace pcl
     {
       case 0:
       {
-        out.r = static_cast<uint8_t> (255 * in.v);
-        out.g = static_cast<uint8_t> (255 * t);
-        out.b = static_cast<uint8_t> (255 * p);
+        out.r = static_cast<std::uint8_t> (255 * in.v);
+        out.g = static_cast<std::uint8_t> (255 * t);
+        out.b = static_cast<std::uint8_t> (255 * p);
         break;
       }
       case 1:
       {
-        out.r = static_cast<uint8_t> (255 * q); 
-        out.g = static_cast<uint8_t> (255 * in.v); 
-        out.b = static_cast<uint8_t> (255 * p); 
+        out.r = static_cast<std::uint8_t> (255 * q); 
+        out.g = static_cast<std::uint8_t> (255 * in.v); 
+        out.b = static_cast<std::uint8_t> (255 * p); 
         break;
       }
       case 2:
       {
-        out.r = static_cast<uint8_t> (255 * p);
-        out.g = static_cast<uint8_t> (255 * in.v);
-        out.b = static_cast<uint8_t> (255 * t);
+        out.r = static_cast<std::uint8_t> (255 * p);
+        out.g = static_cast<std::uint8_t> (255 * in.v);
+        out.b = static_cast<std::uint8_t> (255 * t);
         break;
       }
       case 3:
       {
-        out.r = static_cast<uint8_t> (255 * p);
-        out.g = static_cast<uint8_t> (255 * q);
-        out.b = static_cast<uint8_t> (255 * in.v);
+        out.r = static_cast<std::uint8_t> (255 * p);
+        out.g = static_cast<std::uint8_t> (255 * q);
+        out.b = static_cast<std::uint8_t> (255 * in.v);
         break;
       }
       case 4:
       {
-        out.r = static_cast<uint8_t> (255 * t);
-        out.g = static_cast<uint8_t> (255 * p); 
-        out.b = static_cast<uint8_t> (255 * in.v); 
+        out.r = static_cast<std::uint8_t> (255 * t);
+        out.g = static_cast<std::uint8_t> (255 * p); 
+        out.b = static_cast<std::uint8_t> (255 * in.v); 
         break;
       }
       default:
       {
-        out.r = static_cast<uint8_t> (255 * in.v); 
-        out.g = static_cast<uint8_t> (255 * p); 
-        out.b = static_cast<uint8_t> (255 * q);
+        out.r = static_cast<std::uint8_t> (255 * in.v); 
+        out.g = static_cast<std::uint8_t> (255 * p); 
+        out.b = static_cast<std::uint8_t> (255 * q);
         break;
       }      
     }
@@ -361,13 +361,13 @@ namespace pcl
                                   PointCloud<PointXYZRGBA>&     out)
   {
     float bad_point = std::numeric_limits<float>::quiet_NaN();
-    size_t width_ = depth.width;
-    size_t height_ = depth.height;
+    std::size_t width_ = depth.width;
+    std::size_t height_ = depth.height;
     float constant_ = 1.0f / focal;
 
-    for (size_t v = 0; v < height_; v++)
+    for (std::size_t v = 0; v < height_; v++)
     {
-      for (size_t u = 0; u < width_; u++)
+      for (std::size_t u = 0; u < width_; u++)
       {
         PointXYZRGBA pt;
         float depth_ = depth.at (u, v).intensity;

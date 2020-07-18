@@ -5,7 +5,7 @@
 
 pcl::cloud_composer::CloudCommand::CloudCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent)
   : QUndoCommand (parent)
-  , original_data_ (input_data)
+  , original_data_ (std::move(input_data))
   , can_use_templates_(false)
   , template_type_ (-1)
 {
@@ -22,7 +22,6 @@ pcl::cloud_composer::CloudCommand::~CloudCommand ()
     QList <QStandardItem*> items_to_remove = removed_to_parent_map_.keys ();
     foreach (QStandardItem* to_remove, items_to_remove)
     {
-      if (to_remove)
         delete to_remove;
     }
   }
@@ -33,10 +32,10 @@ pcl::cloud_composer::CloudCommand::~CloudCommand ()
     {
       QList <CloudComposerItem*> new_items = output_pair.output_items_;
       foreach (CloudComposerItem* item, new_items)
-        if (item)
-          delete item;
+      {
+        delete item;
+      }
     }
-    
   }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,7 +114,7 @@ pcl::cloud_composer::CloudCommand::executeToolOnTemplateCloud (AbstractTool* too
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool 
-pcl::cloud_composer::CloudCommand::replaceOriginalWithNew (QList <const CloudComposerItem*> originals, QList <CloudComposerItem*> new_items)
+pcl::cloud_composer::CloudCommand::replaceOriginalWithNew (const QList <const CloudComposerItem*>& originals, const QList <CloudComposerItem*>& new_items)
 { 
   //Find the input item's parent
   if (originals.empty ())
@@ -161,7 +160,7 @@ pcl::cloud_composer::CloudCommand::replaceOriginalWithNew (QList <const CloudCom
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool 
-pcl::cloud_composer::CloudCommand::restoreOriginalRemoveNew (QList <const CloudComposerItem*> originals, QList <CloudComposerItem*> new_items)
+pcl::cloud_composer::CloudCommand::restoreOriginalRemoveNew (const QList <const CloudComposerItem*>& originals, const QList <CloudComposerItem*>& new_items)
 { 
   
   //Now remove all the new items
@@ -205,7 +204,7 @@ pcl::cloud_composer::CloudCommand::restoreOriginalRemoveNew (QList <const CloudC
 //////////// MODIFY CLOUD COMMAND
 
 pcl::cloud_composer::ModifyItemCommand::ModifyItemCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent)
-  : CloudCommand (input_data, parent)
+  : CloudCommand (std::move(input_data), parent)
 { 
   
 }
@@ -244,10 +243,7 @@ pcl::cloud_composer::ModifyItemCommand::runCommand (AbstractTool* tool)
     qDebug () << "Modify Item command generated "<<num_items_returned<<" which does not match input of "<<original_data_.size () <<" items";
     return true;
   }
-  else
-  {
-    return true;
-  }
+  return true;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -283,7 +279,7 @@ pcl::cloud_composer::ModifyItemCommand::redo ()
 //////////// New Item CLOUD COMMAND ///////////////////////////////////////////////////////////////////////////
 
 pcl::cloud_composer::NewItemCloudCommand::NewItemCloudCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent)
-  : CloudCommand (input_data, parent)
+  : CloudCommand (std::move(input_data), parent)
 {
   
 }
@@ -319,12 +315,8 @@ pcl::cloud_composer::NewItemCloudCommand::runCommand (AbstractTool* tool)
     qDebug () << "New Item command generated "<<num_new_items<<" new items";
     return true;
   }
-  else
-  {
-    qWarning () << "New Item command generated no new items!";
-    return false;
-  }
-   
+  qWarning () << "New Item command generated no new items!";
+  return false;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -390,7 +382,7 @@ pcl::cloud_composer::NewItemCloudCommand::redo ()
 //////////// Split CLOUD COMMAND ///////////////////////////////////////////////////////////////////////////
 
 pcl::cloud_composer::SplitCloudCommand::SplitCloudCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent)
-  : CloudCommand (input_data, parent)
+  : CloudCommand (std::move(input_data), parent)
 {
   
 }
@@ -427,12 +419,8 @@ pcl::cloud_composer::SplitCloudCommand::runCommand (AbstractTool* tool)
     qDebug () << "Split Item command generated "<<num_new_items<<" new items";
     return true;
   }
-  else
-  {
-    qWarning () << "Split Item command generated no new items!";
-    return false;
-  }
-
+  qWarning () << "Split Item command generated no new items!";
+  return false;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -469,7 +457,7 @@ pcl::cloud_composer::SplitCloudCommand::redo ()
 //////////// Delete CLOUD COMMAND ///////////////////////////////////////////////////////////////////////////
 
 pcl::cloud_composer::DeleteItemCommand::DeleteItemCommand (QList <const CloudComposerItem*> input_data, QUndoCommand* parent)
-  : CloudCommand (input_data, parent)
+  : CloudCommand (std::move(input_data), parent)
 {
   
 }
@@ -527,7 +515,7 @@ pcl::cloud_composer::DeleteItemCommand::redo ()
 //////////// MERGE CLOUD COMMAND ///////////////////////////////////////////////////////////////////////////
 
 pcl::cloud_composer::MergeCloudCommand::MergeCloudCommand (ConstItemList input_data, QUndoCommand* parent)
-  : CloudCommand (input_data, parent)
+  : CloudCommand (std::move(input_data), parent)
 {
   
 }

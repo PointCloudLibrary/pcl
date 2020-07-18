@@ -84,8 +84,8 @@ namespace pcl
       using PointCloudSignedDistance = pcl::PointCloud<SignedDistanceT>;
       using PointCloudSignedDistancePtr = typename PointCloudSignedDistance::Ptr;
 
-      using Ptr = boost::shared_ptr<FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> >;
-      using ConstPtr = boost::shared_ptr<const FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> >;
+      using Ptr = shared_ptr<FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> >;
+      using ConstPtr = shared_ptr<const FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> >;
 
     public:
       /** \brief Constructor. */

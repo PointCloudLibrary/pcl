@@ -79,14 +79,14 @@ pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMes
   output.cloud.point_step = input.cloud.point_step;
   output.cloud.is_bigendian = input.cloud.is_bigendian;
   output.cloud.height = 1; // cloud is no longer organized
-  output.cloud.width = static_cast<int> (indices.size ());
+  output.cloud.width = indices.size ();
   output.cloud.row_step = output.cloud.point_step * output.cloud.width;
   output.cloud.data.resize (output.cloud.width * output.cloud.height * output.cloud.point_step);
   output.cloud.is_dense = false;
   output.polygons.clear ();
 
   // copy (only!) used points
-  for (size_t i = 0; i < indices.size (); ++i)
+  for (std::size_t i = 0; i < indices.size (); ++i)
     memcpy (&output.cloud.data[i * output.cloud.point_step], &input.cloud.data[indices[i] * output.cloud.point_step], output.cloud.point_step);
 
   // copy mesh information (and update indices)
@@ -95,7 +95,7 @@ pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMes
   {
     pcl::Vertices corrected_polygon;
     corrected_polygon.vertices.resize (polygon.vertices.size ());
-    for (size_t point = 0; point < polygon.vertices.size(); ++point)
+    for (std::size_t point = 0; point < polygon.vertices.size(); ++point)
       corrected_polygon.vertices[point] = new_indices[polygon.vertices[point]];
     output.polygons.push_back (corrected_polygon);
   }

@@ -73,7 +73,7 @@ class CommandQueue
     /// @param command_ptr a shared pointer pointing to a command object whose
     /// execute function will be invoked by this object.
     void
-    execute (CommandPtr);
+    execute (const CommandPtr&);
 
     /// @brief Undoes the last command by popping the tail of the queue, invoke
     /// the undo function of the command.

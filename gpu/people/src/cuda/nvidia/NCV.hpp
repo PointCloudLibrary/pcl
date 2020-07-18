@@ -41,7 +41,7 @@
 #ifndef PCL_GPU_PEOPLE__NCV_HPP_
 #define PCL_GPU_PEOPLE__NCV_HPP_
 
-#if (defined WIN32 || defined _WIN32 || defined WINCE) && defined CVAPI_EXPORTS
+#if (defined _WIN32 || defined WINCE) && defined CVAPI_EXPORTS
     #define NCV_EXPORTS __declspec(dllexport)
 #else
     #define NCV_EXPORTS
@@ -111,7 +111,7 @@ using NcvBool = bool;
 using Ncv64s = long long;
 
 #if defined(__APPLE__) && !defined(__CUDACC__)
-    using Ncv64u = uint64_t;
+    using Ncv64u = std::uint64_t;
 #else
     using Ncv64u = unsigned long long;
 #endif
@@ -391,7 +391,7 @@ struct NCV_EXPORTS NCVMemPtr
 struct NCV_EXPORTS NCVMemSegment
 {
     NCVMemPtr begin;
-    size_t size;
+    std::size_t size;
     void clear();
 };
 
@@ -404,7 +404,7 @@ class NCV_EXPORTS INCVMemAllocator
 public:
     virtual ~INCVMemAllocator() = 0;
 
-    virtual NCVStatus alloc(NCVMemSegment &seg, size_t size) = 0;
+    virtual NCVStatus alloc(NCVMemSegment &seg, std::size_t size) = 0;
     virtual NCVStatus dealloc(NCVMemSegment &seg) = 0;
 
     virtual NcvBool isInitialized() const = 0;
@@ -412,7 +412,7 @@ public:
     
     virtual NCVMemoryType memType() const = 0;
     virtual Ncv32u alignment() const = 0;
-    virtual size_t maxSize() const = 0;
+    virtual std::size_t maxSize() const = 0;
 };
 
 inline INCVMemAllocator::~INCVMemAllocator() {}
@@ -429,10 +429,10 @@ class NCV_EXPORTS NCVMemStackAllocator : public INCVMemAllocator
 public:
 
     explicit NCVMemStackAllocator(Ncv32u alignment);
-    NCVMemStackAllocator(NCVMemoryType memT, size_t capacity, Ncv32u alignment, void *reusePtr=nullptr);
+    NCVMemStackAllocator(NCVMemoryType memT, std::size_t capacity, Ncv32u alignment, void *reusePtr=nullptr);
     virtual ~NCVMemStackAllocator();
 
-    virtual NCVStatus alloc(NCVMemSegment &seg, size_t size);
+    virtual NCVStatus alloc(NCVMemSegment &seg, std::size_t size);
     virtual NCVStatus dealloc(NCVMemSegment &seg);
 
     virtual NcvBool isInitialized() const;
@@ -440,7 +440,7 @@ public:
 
     virtual NCVMemoryType memType() const;
     virtual Ncv32u alignment() const;
-    virtual size_t maxSize() const;
+    virtual std::size_t maxSize() const;
 
 private:
 
@@ -449,8 +449,8 @@ private:
     Ncv8u *allocBegin;
     Ncv8u *begin;
     Ncv8u *end;
-    size_t currentSize;
-    size_t _maxSize;
+    std::size_t currentSize;
+    std::size_t _maxSize;
     NcvBool bReusesMemory;
 };
 
@@ -465,7 +465,7 @@ public:
     NCVMemNativeAllocator(NCVMemoryType memT, Ncv32u alignment);
     virtual ~NCVMemNativeAllocator();
 
-    virtual NCVStatus alloc(NCVMemSegment &seg, size_t size);
+    virtual NCVStatus alloc(NCVMemSegment &seg, std::size_t size);
     virtual NCVStatus dealloc(NCVMemSegment &seg);
 
     virtual NcvBool isInitialized() const;
@@ -473,7 +473,7 @@ public:
 
     virtual NCVMemoryType memType() const;
     virtual Ncv32u alignment() const;
-    virtual size_t maxSize() const;
+    virtual std::size_t maxSize() const;
 
 private:
 
@@ -482,8 +482,8 @@ private:
 
     NCVMemoryType _memType;
     Ncv32u _alignment;
-    size_t currentSize;
-    size_t _maxSize;
+    std::size_t currentSize;
+    std::size_t _maxSize;
 };
 
 
@@ -492,7 +492,7 @@ private:
 */
 NCV_EXPORTS NCVStatus memSegCopyHelper(void *dst, NCVMemoryType dstType,
                                        const void *src, NCVMemoryType srcType,
-                                       size_t sz, cudaStream_t cuStream);
+                                       std::size_t sz, cudaStream_t cuStream);
 
 
 NCV_EXPORTS NCVStatus memSegCopyHelper2D(void *dst, Ncv32u dstPitch, NCVMemoryType dstType,
@@ -524,7 +524,7 @@ public:
         _memtype = NCVMemoryTypeNone;
     }
 
-    NCVStatus copySolid(NCVVector<T> &dst, cudaStream_t cuStream, size_t howMuch=0) const
+    NCVStatus copySolid(NCVVector<T> &dst, cudaStream_t cuStream, std::size_t howMuch=0) const
     {
         if (howMuch == 0)
         {
@@ -552,13 +552,13 @@ public:
     }
 
     T *ptr() const {return this->_ptr;}
-    size_t length() const {return this->_length;}
+    std::size_t length() const {return this->_length;}
     NCVMemoryType memType() const {return this->_memtype;}
 
 protected:
 
     T *_ptr;
-    size_t _length;
+    std::size_t _length;
     NCVMemoryType _memtype;
 };
 
@@ -704,7 +704,7 @@ public:
     }
 
     //a side effect of this function is that it copies everything in a single chunk, so the "padding" will be overwritten
-    NCVStatus copySolid(NCVMatrix<T> &dst, cudaStream_t cuStream, size_t howMuch=0) const
+    NCVStatus copySolid(NCVMatrix<T> &dst, cudaStream_t cuStream, std::size_t howMuch=0) const
     {
         if (howMuch == 0)
         {

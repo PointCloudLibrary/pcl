@@ -47,7 +47,8 @@ namespace pcl
 {
   /** \brief @b SampleConsensusModelParallelPlane defines a model for 3D plane segmentation using additional
     * angular constraints. The plane must be parallel to a user-specified axis
-    * (\ref setAxis) within an user-specified angle threshold (\ref setEpsAngle).
+    * (\ref setAxis) within a user-specified angle threshold (\ref setEpsAngle).
+    * In other words, the plane <b>normal</b> must be (nearly) <b>perpendicular</b> to the specified axis.
     *
     * Code example for a plane model, parallel (within a 15 degrees tolerance) with the Z axis:
     * \code
@@ -71,7 +72,8 @@ namespace pcl
       using PointCloudPtr = typename SampleConsensusModelPlane<PointT>::PointCloudPtr;
       using PointCloudConstPtr = typename SampleConsensusModelPlane<PointT>::PointCloudConstPtr;
 
-      using Ptr = boost::shared_ptr<SampleConsensusModelParallelPlane<PointT> >;
+      using Ptr = shared_ptr<SampleConsensusModelParallelPlane<PointT> >;
+      using ConstPtr = shared_ptr<const SampleConsensusModelParallelPlane<PointT>>;
 
       /** \brief Constructor for base SampleConsensusModelParallelPlane.
         * \param[in] cloud the input point cloud dataset
@@ -95,7 +97,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelParallelPlane (const PointCloudConstPtr &cloud, 
-                                         const std::vector<int> &indices,
+                                         const Indices &indices,
                                          bool random = false) 
         : SampleConsensusModelPlane<PointT> (cloud, indices, random)
         , axis_ (Eigen::Vector3f::Zero ())
@@ -125,7 +127,7 @@ namespace pcl
         * \note You need to specify an angle > 0 in order to activate the axis-angle constraint!
         */
       inline void
-      setEpsAngle (const double ea) { eps_angle_ = ea; sin_angle_ = fabs (sin (ea));}
+      setEpsAngle (const double ea) { eps_angle_ = ea; sin_angle_ = std::abs (sin (ea));}
 
       /** \brief Get the angle epsilon (delta) threshold. */
       inline double
@@ -139,7 +141,7 @@ namespace pcl
       void
       selectWithinDistance (const Eigen::VectorXf &model_coefficients,
                             const double threshold,
-                            std::vector<int> &inliers) override;
+                            Indices &inliers) override;
 
       /** \brief Count all the points which respect the given model coefficients as inliers.
         *
@@ -147,7 +149,7 @@ namespace pcl
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
-      int
+      std::size_t
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
                            const double threshold) const override;
 
@@ -159,7 +161,7 @@ namespace pcl
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
                            std::vector<double> &distances) const override;
 
-      /** \brief Return an unique id for this model (SACMODEL_PARALLEL_PLANE). */
+      /** \brief Return a unique id for this model (SACMODEL_PARALLEL_PLANE). */
       inline pcl::SacModel
       getModelType () const override { return (SACMODEL_PARALLEL_PLANE); }
 

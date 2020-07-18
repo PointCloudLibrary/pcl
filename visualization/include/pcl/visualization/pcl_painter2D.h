@@ -98,7 +98,7 @@ namespace pcl
         this->transform_->SetMatrix (t->GetMatrix());
       }
       
-      void applyInternals (vtkContext2D *painter)
+      void applyInternals (vtkContext2D *painter) const
       {
         painter->ApplyPen (pen_);
         painter->ApplyBrush (brush_);
@@ -397,7 +397,7 @@ namespace pcl
        * \return[in] array containing the width and height of the window
        */
       int *
-      getWindowSize ();
+      getWindowSize () const;
 
       /** \brief displays all the figures added in a window.
        */    
@@ -413,7 +413,7 @@ namespace pcl
       void spin ();
 
     private:
-      //std::map< int, std::vector< std::vector<float> > > figures_; //FIG_TYPE -> vector<array>
+      //std::map< int, std::vector< std::vector<float> > > figures_; //FIG_TYPE -> std::vector<array>
 
       //All the figures drawn till now gets stored here
       std::vector<Figure2D *> figures_;

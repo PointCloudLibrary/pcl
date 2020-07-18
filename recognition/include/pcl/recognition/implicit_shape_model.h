@@ -39,6 +39,7 @@
 #include <fstream>
 #include <limits>
 #include <Eigen/src/Core/Matrix.h>
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
@@ -53,7 +54,7 @@
 namespace pcl
 {
   /** \brief This struct is used for storing peak. */
-  struct ISMPeak
+  struct EIGEN_ALIGN16 ISMPeak
   {
     /** \brief Point were this peak is located. */
     PCL_ADD_POINT4D;
@@ -65,7 +66,7 @@ namespace pcl
     int class_id;
 
     PCL_MAKE_ALIGNED_OPERATOR_NEW
-  } EIGEN_ALIGN16;
+  };
 
   namespace features
   {
@@ -76,7 +77,8 @@ namespace pcl
     {
       public:
 
-        using Ptr = boost::shared_ptr<ISMVoteList<PointT> >;
+        using Ptr = shared_ptr<ISMVoteList<PointT> >;
+        using ConstPtr = shared_ptr<const ISMVoteList<PointT>>;
 
         /** \brief Empty constructor with member variables initialization. */
         ISMVoteList ();
@@ -152,12 +154,15 @@ namespace pcl
         /** \brief Stores square distances to the corresponding neighbours. */
         std::vector<float> k_sqr_dist_;
     };
- 
+
     /** \brief The assignment of this structure is to store the statistical/learned weights and other information
       * of the trained Implict Shape Model algorithm.
       */
     struct PCL_EXPORTS ISMModel
     {
+      using Ptr = shared_ptr<ISMModel>;
+      using ConstPtr = shared_ptr<const ISMModel>;
+
       /** \brief Simple constructor that initializes the structure. */
       ISMModel ();
 
@@ -242,7 +247,7 @@ namespace pcl
     {
       public:
 
-        using ISMModelPtr = boost::shared_ptr<pcl::features::ISMModel>;
+        using ISMModelPtr = pcl::features::ISMModel::Ptr;
         using Feature = pcl::Feature<PointT, pcl::Histogram<FeatureSize>>;
         using FeaturePtr = typename Feature::Ptr;
 
@@ -549,7 +554,7 @@ namespace pcl
                                  int flags,
                                  Eigen::MatrixXf& cluster_centers);
 
-        /** \brief Generates centers for clusters as described in 
+        /** \brief Generates centers for clusters as described in
           * Arthur, David and Sergei Vassilvitski (2007) k-means++: The Advantages of Careful Seeding.
           * \param[in] data points to cluster
           * \param[out] out_centers it will contain generated centers

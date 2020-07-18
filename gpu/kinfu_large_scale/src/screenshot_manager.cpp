@@ -97,7 +97,7 @@ namespace pcl
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       
       void 
-      ScreenshotManager::writePose(const std::string &filename_pose, const Eigen::Vector3f &teVecs, const Eigen::Matrix<float, 3, 3, Eigen::RowMajor> &erreMats)
+      ScreenshotManager::writePose(const std::string &filename_pose, const Eigen::Vector3f &teVecs, const Eigen::Matrix<float, 3, 3, Eigen::RowMajor> &erreMats) const
       {
           std::ofstream poseFile;
           poseFile.open (filename_pose.c_str());

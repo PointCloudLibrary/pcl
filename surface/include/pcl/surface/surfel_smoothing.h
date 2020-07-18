@@ -49,8 +49,8 @@ namespace pcl
     using PCLBase<PointT>::initCompute;
 
     public:
-      typedef boost::shared_ptr<SurfelSmoothing<PointT, PointNT> > Ptr;
-      typedef boost::shared_ptr<const SurfelSmoothing<PointT, PointNT> > ConstPtr;
+      typedef shared_ptr<SurfelSmoothing<PointT, PointNT> > Ptr;
+      typedef shared_ptr<const SurfelSmoothing<PointT, PointNT> > ConstPtr;
 
       using PointCloudIn = pcl::PointCloud<PointT>;
       using PointCloudInPtr = typename pcl::PointCloud<PointT>::Ptr;
@@ -89,7 +89,7 @@ namespace pcl
 
 
       void
-      smoothPoint (size_t &point_index,
+      smoothPoint (std::size_t &point_index,
                    PointT &output_point,
                    PointNT &output_normal);
 

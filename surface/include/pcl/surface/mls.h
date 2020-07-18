@@ -44,6 +44,7 @@
 #include <random>
 
 // PCL includes
+#include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/search/pcl_search.h>
@@ -231,7 +232,7 @@ namespace pcl
         * \return The weight for a point at squared distance from the origin of the mls frame
         */
       inline
-      double computeMLSWeight (const double sq_dist, const double sq_mls_radius) { return (exp (-sq_dist / sq_mls_radius)); }
+      double computeMLSWeight (const double sq_dist, const double sq_mls_radius) { return (std::exp (-sq_dist / sq_mls_radius)); }
 
   };
 
@@ -252,8 +253,8 @@ namespace pcl
   class MovingLeastSquares : public CloudSurfaceProcessing<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<MovingLeastSquares<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const MovingLeastSquares<PointInT, PointOutT> > ConstPtr;
+      typedef shared_ptr<MovingLeastSquares<PointInT, PointOutT> > Ptr;
+      typedef shared_ptr<const MovingLeastSquares<PointInT, PointOutT> > ConstPtr;
 
       using PCLBase<PointInT>::input_;
       using PCLBase<PointInT>::indices_;
@@ -356,7 +357,7 @@ namespace pcl
       /** \brief Sets whether the surface and normal are approximated using a polynomial, or only via tangent estimation.
         * \param[in] polynomial_fit set to true for polynomial fit
         */
-      [[deprecated("use setPolynomialOrder() instead")]]
+      PCL_DEPRECATED(1, 12, "use setPolynomialOrder() instead")
       inline void
       setPolynomialFit (bool polynomial_fit)
       {
@@ -374,7 +375,7 @@ namespace pcl
       }
 
       /** \brief Get the polynomial_fit value (true if the surface and normal are approximated using a polynomial). */
-      [[deprecated("use getPolynomialOrder() instead")]]
+      PCL_DEPRECATED(1, 12, "use getPolynomialOrder() instead")
       inline bool
       getPolynomialFit () const { return (order_ > 1); }
 
@@ -485,7 +486,7 @@ namespace pcl
       getDilationIterations () const { return (dilation_iteration_num_); }
 
       /** \brief Set whether the mls results should be stored for each point in the input cloud
-        * \param[in] True if the mls results should be stored, otherwise false.
+        * \param[in] cache_mls_results True if the mls results should be stored, otherwise false.
         * \note The cache_mls_results_ is forced to true when using upsampling method VOXEL_GRID_DILATION or DISTINCT_CLOUD.
         * \note If memory consumption is a concern set to false when not using upsampling method VOXEL_GRID_DILATION or DISTINCT_CLOUD.
         */
@@ -612,14 +613,14 @@ namespace pcl
           dilate ();
 
           inline void
-          getIndexIn1D (const Eigen::Vector3i &index, uint64_t &index_1d) const
+          getIndexIn1D (const Eigen::Vector3i &index, std::uint64_t &index_1d) const
           {
             index_1d = index[0] * data_size_ * data_size_ +
                        index[1] * data_size_ + index[2];
           }
 
           inline void
-          getIndexIn3D (uint64_t index_1d, Eigen::Vector3i& index_3d) const
+          getIndexIn3D (std::uint64_t index_1d, Eigen::Vector3i& index_3d) const
           {
             index_3d[0] = static_cast<Eigen::Vector3i::Scalar> (index_1d / (data_size_ * data_size_));
             index_1d -= index_3d[0] * data_size_ * data_size_;
@@ -636,7 +637,7 @@ namespace pcl
           }
 
           inline void
-          getPosition (const uint64_t &index_1d, Eigen::Vector3f &point) const
+          getPosition (const std::uint64_t &index_1d, Eigen::Vector3f &point) const
           {
             Eigen::Vector3i index_3d;
             getIndexIn3D (index_1d, index_3d);
@@ -644,10 +645,10 @@ namespace pcl
               point[i] = static_cast<Eigen::Vector3f::Scalar> (index_3d[i]) * voxel_size_ + bounding_min_[i];
           }
 
-          typedef std::map<uint64_t, Leaf> HashMap;
+          typedef std::map<std::uint64_t, Leaf> HashMap;
           HashMap voxel_grid_;
           Eigen::Vector4f bounding_min_, bounding_max_;
-          uint64_t data_size_;
+          std::uint64_t data_size_;
           float voxel_size_;
           PCL_MAKE_ALIGNED_OPERATOR_NEW
       };
@@ -746,7 +747,7 @@ namespace pcl
   };
 
   template <typename PointInT, typename PointOutT>
-  using MovingLeastSquaresOMP [[deprecated("use MovingLeastSquares instead, it supports OpenMP now")]] = MovingLeastSquares<PointInT, PointOutT>;
+  using MovingLeastSquaresOMP PCL_DEPRECATED(1, 12, "use MovingLeastSquares instead, it supports OpenMP now") = MovingLeastSquares<PointInT, PointOutT>;
 }
 
 #ifdef PCL_NO_PRECOMPILE

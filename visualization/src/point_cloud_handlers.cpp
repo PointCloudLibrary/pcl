@@ -133,15 +133,15 @@ pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2>::getColo
   unsigned char* colors = new unsigned char[nr_points * 3];
 
   pcl::RGB rgb_data;
-  size_t point_offset = cloud_->fields[field_idx_].offset;
-  size_t j = 0;
+  std::size_t point_offset = cloud_->fields[field_idx_].offset;
+  std::size_t j = 0;
   
   // If XYZ present, check if the points are invalid
   int x_idx = pcl::getFieldIndex (*cloud_, "x");
   if (x_idx != -1)
   {
     float x_data, y_data, z_data;
-    size_t x_point_offset = cloud_->fields[x_idx].offset;
+    std::size_t x_point_offset = cloud_->fields[x_idx].offset;
     
     // Color every point
     for (vtkIdType cp = 0; cp < nr_points; ++cp, 
@@ -275,7 +275,7 @@ pcl::visualization::PointCloudColorHandlerHSVField<pcl::PCLPointCloud2>::getColo
         continue;   //skip to next point
       } 
       float a = h_data / 60;
-      int   i = static_cast<int> (floor (a));
+      int   i = static_cast<int> (std::floor (a));
       float f = a - static_cast<float> (i);
       float p = v_data * (1 - s_data);
       float q = v_data * (1 - s_data * f);
@@ -351,7 +351,7 @@ pcl::visualization::PointCloudColorHandlerHSVField<pcl::PCLPointCloud2>::getColo
         continue;   //skip to next point
       } 
       float a = h_data / 60;
-      int   i = static_cast<int> (floor (a));
+      int   i = static_cast<int> (std::floor (a));
       float f = a - static_cast<float> (i);
       float p = v_data * (1 - s_data);
       float q = v_data * (1 - s_data * f);
@@ -604,21 +604,21 @@ pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::getCo
   const int field_size = pcl::getFieldSize (cloud_->fields[field_idx_].datatype);
 
 
-  std::map<uint32_t, pcl::RGB> colormap;
+  std::map<std::uint32_t, pcl::RGB> colormap;
   if (!static_mapping_)
   {
-    std::set<uint32_t> labels;
+    std::set<std::uint32_t> labels;
     // First pass: find unique labels
     for (vtkIdType i = 0; i < nr_points; ++i, point_offset += cloud_->point_step)
     {
-      uint32_t label;
+      std::uint32_t label;
       memcpy (&label, &cloud_->data[point_offset], field_size);
       labels.insert (label);
     }
 
     // Assign Glasbey colors in ascending order of labels
-    size_t color = 0;
-    for (std::set<uint32_t>::iterator iter = labels.begin (); iter != labels.end (); ++iter, ++color)
+    std::size_t color = 0;
+    for (std::set<std::uint32_t>::iterator iter = labels.begin (); iter != labels.end (); ++iter, ++color)
       colormap[*iter] = GlasbeyLUT::at (color % GlasbeyLUT::size ());
   }
   // If XYZ present, check if the points are invalid
@@ -634,7 +634,7 @@ pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::getCo
                                            point_offset += cloud_->point_step,
                                            x_point_offset += cloud_->point_step)
     {
-      uint32_t label;
+      std::uint32_t label;
       memcpy (&label, &cloud_->data[point_offset], field_size);
 
       memcpy (&x_data, &cloud_->data[x_point_offset], sizeof (float));
@@ -656,7 +656,7 @@ pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::getCo
     // Color every point
     for (vtkIdType cp = 0; cp < nr_points; ++cp, point_offset += cloud_->point_step)
     {
-      uint32_t label;
+      std::uint32_t label;
       memcpy (&label, &cloud_->data[point_offset], field_size);
       const pcl::RGB& color = static_mapping_ ? GlasbeyLUT::at (label % GlasbeyLUT::size ()) : colormap[label];
       colors[j    ] = color.r;
@@ -686,12 +686,17 @@ pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::getGeometry 
 
   vtkSmartPointer<vtkFloatArray> data = vtkSmartPointer<vtkFloatArray>::New ();
   data->SetNumberOfComponents (3);
+  
   vtkIdType nr_points = cloud_->width * cloud_->height;
+  
+  if (!data->Resize(nr_points))
+  {
+    PCL_ERROR("[point_cloud_handlers::getGeometry] Failed to allocate space for points in VTK array.");
+    throw std::bad_alloc();
+  }
+    
 
   // Add all points
-  float dim;
-  vtkIdType j = 0;    // true point index
-  float* pts = static_cast<float*> (malloc (nr_points * 3 * sizeof (float)));
   int point_offset = 0;
 
   // If the dataset has no invalid values, just copy all of them
@@ -699,43 +704,36 @@ pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::getGeometry 
   {
     for (vtkIdType i = 0; i < nr_points; ++i, point_offset+=cloud_->point_step)
     {
-      // Copy the value at the specified field
-      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_x_idx_].offset], sizeof (float));
-      pts[i * 3 + 0] = dim;
+      const float* ptr = reinterpret_cast<const float*>(&cloud_->data[point_offset + cloud_->fields[field_x_idx_].offset]);
+      data->InsertNextValue(*ptr);
 
-      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_y_idx_].offset], sizeof (float));
-      pts[i * 3 + 1] = dim;
+      ptr = reinterpret_cast<const float*>(&cloud_->data[point_offset + cloud_->fields[field_y_idx_].offset]);
+      data->InsertNextValue(*ptr);
 
-      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_z_idx_].offset], sizeof (float));
-      pts[i * 3 + 2] = dim;
+      ptr = reinterpret_cast<const float*>(&cloud_->data[point_offset + cloud_->fields[field_z_idx_].offset]);
+      data->InsertNextValue(*ptr);
     }
-    data->SetArray (&pts[0], nr_points * 3, 0);
     points->SetData (data);
   }
   else
   {
     for (vtkIdType i = 0; i < nr_points; ++i, point_offset+=cloud_->point_step)
     {
-      // Copy the value at the specified field
-      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_x_idx_].offset], sizeof (float));
-      if (!std::isfinite (dim))
+      const float* ptr = reinterpret_cast<const float*>(&cloud_->data[point_offset + cloud_->fields[field_x_idx_].offset]);
+      if (!std::isfinite (*ptr))
         continue;
-      pts[j * 3 + 0] = dim;
+      data->InsertNextValue(*ptr);
 
-      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_y_idx_].offset], sizeof (float));
-      if (!std::isfinite (dim))
+      ptr = reinterpret_cast<const float*>(&cloud_->data[point_offset + cloud_->fields[field_y_idx_].offset]);
+      if (!std::isfinite (*ptr))
         continue;
-      pts[j * 3 + 1] = dim;
+      data->InsertNextValue(*ptr);
 
-      memcpy (&dim, &cloud_->data[point_offset + cloud_->fields[field_z_idx_].offset], sizeof (float));
-      if (!std::isfinite (dim))
+      ptr = reinterpret_cast<const float*>(&cloud_->data[point_offset + cloud_->fields[field_z_idx_].offset]);
+      if (!std::isfinite (*ptr))
         continue;
-      pts[j * 3 + 2] = dim;
-
-      // Set j and increment
-      j++;
+      data->InsertNextValue(*ptr);
     }
-    data->SetArray (&pts[0], j * 3, 0);
     points->SetData (data);
   }
 }
@@ -745,13 +743,13 @@ pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PCLPointCloud2>::PointClou
 : pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::PointCloudGeometryHandler (cloud)
 {
   field_x_idx_ = pcl::getFieldIndex (*cloud, "x");
-  if (field_x_idx_ == -1)
+  if (field_x_idx_ == UNAVAILABLE)
     return;
   field_y_idx_ = pcl::getFieldIndex (*cloud, "y");
-  if (field_y_idx_ == -1)
+  if (field_y_idx_ == UNAVAILABLE)
     return;
   field_z_idx_ = pcl::getFieldIndex (*cloud, "z");
-  if (field_z_idx_ == -1)
+  if (field_z_idx_ == UNAVAILABLE)
     return;
   capable_ = true;
 }
@@ -761,13 +759,13 @@ pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<pcl::PCLPointCloud2>:
 : pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::PointCloudGeometryHandler (cloud)
 {
   field_x_idx_ = pcl::getFieldIndex (*cloud, "normal_x");
-  if (field_x_idx_ == -1)
+  if (field_x_idx_ == UNAVAILABLE)
     return;
   field_y_idx_ = pcl::getFieldIndex (*cloud, "normal_y");
-  if (field_y_idx_ == -1)
+  if (field_y_idx_ == UNAVAILABLE)
     return;
   field_z_idx_ = pcl::getFieldIndex (*cloud, "normal_z");
-  if (field_z_idx_ == -1)
+  if (field_z_idx_ == UNAVAILABLE)
     return;
   capable_ = true;
 }
@@ -778,13 +776,13 @@ pcl::visualization::PointCloudGeometryHandlerCustom<pcl::PCLPointCloud2>::PointC
 : pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>::PointCloudGeometryHandler (cloud)
 {
   field_x_idx_ = pcl::getFieldIndex (*cloud, x_field_name);
-  if (field_x_idx_ == -1)
+  if (field_x_idx_ == UNAVAILABLE)
     return;
   field_y_idx_ = pcl::getFieldIndex (*cloud, y_field_name);
-  if (field_y_idx_ == -1)
+  if (field_y_idx_ == UNAVAILABLE)
     return;
   field_z_idx_ = pcl::getFieldIndex (*cloud, z_field_name);
-  if (field_z_idx_ == -1)
+  if (field_z_idx_ == UNAVAILABLE)
     return;
   field_name_ = x_field_name + y_field_name + z_field_name;
   capable_ = true;

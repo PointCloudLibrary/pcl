@@ -37,7 +37,7 @@
 *
 */
 
-#include <gtest/gtest.h>
+#include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_tests.h>
 #include <pcl/features/normal_3d.h>
@@ -165,7 +165,7 @@ main (int argc, char** argv)
   sampled_cloud.reset (new pcl::PointCloud<pcl::PointXYZ> ());
 
   std::vector<int> sampled_indices;
-  for (float sa = 0.0f; sa < (float)cloud->points.size (); sa += sampling_incr)
+  for (float sa = 0.0f; sa < (float)cloud->size (); sa += sampling_incr)
     sampled_indices.push_back (static_cast<int> (sa));
   copyPointCloud (*cloud, sampled_indices, *sampled_cloud);
 

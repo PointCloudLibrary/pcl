@@ -58,7 +58,6 @@
 
 #include "data_source.hpp"
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 
@@ -82,7 +81,7 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
 
     //prepare host cloud
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host(new pcl::PointCloud<pcl::PointXYZ>);	
-    cloud_host->width = data.points.size();
+    cloud_host->width = data.size();
     cloud_host->height = 1;
     cloud_host->points.resize (cloud_host->width * cloud_host->height);
     std::transform(data.points.begin(), data.points.end(),  cloud_host->points.begin(), DataGenerator::ConvPoint<pcl::PointXYZ>());
@@ -96,7 +95,7 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
 
     // build host octree
     float resolution = 25.f;
-    cout << "[!]Octree resolution: " << resolution << endl;
+    std::cout << "[!]Octree resolution: " << resolution << std::endl;
     pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree_host(resolution);
     octree_host.setInputCloud (cloud_host);
     octree_host.addPointsFromInputCloud ();
@@ -104,19 +103,19 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
     //perform bruteForceSearch    
     data.bruteForceSearch(true);    
     
-    vector<int> sizes;
+    std::vector<int> sizes;
     sizes.reserve(data.tests_num);
     octree_device.internalDownload();
              
-    for(size_t i = 0; i < data.tests_num; ++i)
+    for(std::size_t i = 0; i < data.tests_num; ++i)
     {
         //search host on octree that was built on device
-        vector<int> results_host_gpu; //host search
+        std::vector<int> results_host_gpu; //host search
         octree_device.radiusSearchHost(data.queries[i], data.radiuses[i], results_host_gpu);                        
         
         //search host
-        vector<float> dists;
-        vector<int> results_host;                
+        std::vector<float> dists;
+        std::vector<int> results_host;                
         octree_host.radiusSearch(pcl::PointXYZ(data.queries[i].x, data.queries[i].y, data.queries[i].z), data.radiuses[i], results_host, dists);                        
         
         std::sort(results_host_gpu.begin(), results_host_gpu.end());
@@ -129,7 +128,7 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
 
     float avg_size = std::accumulate(sizes.begin(), sizes.end(), 0) * (1.f/sizes.size());;
 
-    cout << "avg_result_size = " << avg_size << endl;
+    std::cout << "avg_result_size = " << avg_size << std::endl;
     ASSERT_GT(avg_size, 5);    
 }
 

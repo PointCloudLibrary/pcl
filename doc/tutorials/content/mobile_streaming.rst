@@ -100,7 +100,7 @@ few lines of the *run()* method:
 .. code-block:: cpp
 
     pcl::OpenNIGrabber grabber (device_id_);
-    std::function<void (const CloudConstPtr&)> handler_function = boost::bind (&PCLMobileServer::handleIncomingCloud, this, _1);
+    std::function<void (const CloudConstPtr&)> handler_function = [this] (const CloudConstPtr& cloud) { handleIncomingCloud (cloud); };
     grabber.registerCallback (handler_function);
     grabber.start ();
 
@@ -138,7 +138,7 @@ socket to the client:
 
     struct PointCloudBuffers
     {
-      typedef boost::shared_ptr<PointCloudBuffers> Ptr;
+      typedef pcl::shared_ptr<PointCloudBuffers> Ptr;
       std::vector<short> points;
       std::vector<unsigned char> rgb;
     };
@@ -164,7 +164,7 @@ that lie outside of the predefined bounding box or contain NaN values.
     void
     CopyPointCloudToBuffers (pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud, PointCloudBuffers& cloud_buffers)
     {
-      const size_t nr_points = cloud->points.size ();
+      const std::size_t nr_points = cloud->size ();
 
       cloud_buffers.points.resize (nr_points*3);
       cloud_buffers.rgb.resize (nr_points*3);
@@ -172,11 +172,11 @@ that lie outside of the predefined bounding box or contain NaN values.
       const pcl::PointXYZ  bounds_min (-0.9, -0.8, 1.0);
       const pcl::PointXYZ  bounds_max (0.9, 3.0, 3.3);
 
-      size_t j = 0;
-      for (size_t i = 0; i < nr_points; ++i)
+      std::size_t j = 0;
+      for (std::size_t i = 0; i < nr_points; ++i)
       {
 
-        const pcl::PointXYZRGBA& point = cloud->points[i];
+        const pcl::PointXYZRGBA& point = (*cloud)[i];
 
         if (!pcl_isfinite (point.x) || 
             !pcl_isfinite (point.y) || 
@@ -193,9 +193,9 @@ that lie outside of the predefined bounding box or contain NaN values.
 
         const int conversion_factor = 500;
 
-        cloud_buffers.points[j*3 + 0] = static_cast<short> (point.x * conversion_factor);
-        cloud_buffers.points[j*3 + 1] = static_cast<short> (point.y * conversion_factor);
-        cloud_buffers.points[j*3 + 2] = static_cast<short> (point.z * conversion_factor);
+        cloud_buffers[j*3 + 0] = static_cast<short> (point.x * conversion_factor);
+        cloud_buffers[j*3 + 1] = static_cast<short> (point.y * conversion_factor);
+        cloud_buffers[j*3 + 2] = static_cast<short> (point.z * conversion_factor);
 
         cloud_buffers.rgb[j*3 + 0] = point.r;
         cloud_buffers.rgb[j*3 + 1] = point.g;
@@ -236,7 +236,7 @@ After a successful connection, the program enters the main server loop:
 
         PointCloudBuffers::Ptr buffers_to_send = getLatestBuffers ();
 
-        nr_points = static_cast<unsigned int> (buffers_to_send->points.size()/3);
+        nr_points = static_cast<unsigned int> (buffers_to_send->size()/3);
         boost::asio::write (socket, boost::asio::buffer (&nr_points, sizeof (nr_points)));
 
         if (nr_points)
@@ -279,7 +279,7 @@ callback function, and sends information about the buffer's number of points to 
 
     PointCloudBuffers::Ptr buffers_to_send = getLatestBuffers ();
 
-    nr_points = static_cast<unsigned int> (buffers_to_send->points.size()/3);
+    nr_points = static_cast<unsigned int> (buffers_to_send->size()/3);
     boost::asio::write (socket, boost::asio::buffer (&nr_points, sizeof (nr_points)));
 
 Next, if there is a non-zero number of points, the server sends the xyz and rgb

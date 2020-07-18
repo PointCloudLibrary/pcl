@@ -69,9 +69,10 @@ namespace pcl
     public:
       using PCLBase<PointFeature>::input_;
 
-      using Ptr = boost::shared_ptr<PyramidFeatureHistogram<PointFeature> >;
+      using Ptr = shared_ptr<PyramidFeatureHistogram<PointFeature> >;
+      using ConstPtr = shared_ptr<const PyramidFeatureHistogram<PointFeature>>;
       using PyramidFeatureHistogramPtr = Ptr;
-      using FeatureRepresentationConstPtr = boost::shared_ptr<const pcl::PointRepresentation<PointFeature> >;
+      using FeatureRepresentationConstPtr = shared_ptr<const pcl::PointRepresentation<PointFeature> >;
 
 
       /** \brief Empty constructor that instantiates the feature representation variable */
@@ -128,7 +129,7 @@ namespace pcl
 
 
     private:
-      size_t nr_dimensions, nr_levels, nr_features;
+      std::size_t nr_dimensions, nr_levels, nr_features;
       std::vector<std::pair<float, float> > dimension_range_input_, dimension_range_target_;
       FeatureRepresentationConstPtr feature_representation_;
       bool is_computed_;
@@ -154,8 +155,8 @@ namespace pcl
        * \param level the level in the pyramid
        */
       inline unsigned int&
-      at (std::vector<size_t> &access,
-          size_t &level);
+      at (std::vector<std::size_t> &access,
+          std::size_t &level);
 
       /** \brief Access the pyramid bin given a feature vector and the pyramid level
        * \param feature the feature in vectorized form
@@ -163,7 +164,7 @@ namespace pcl
        */
       inline unsigned int&
       at (std::vector<float> &feature,
-          size_t &level);
+          std::size_t &level);
 
       /** \brief Structure for representing a single pyramid histogram level */
       struct PyramidFeatureHistogramLevel
@@ -172,7 +173,7 @@ namespace pcl
         {
         }
 
-        PyramidFeatureHistogramLevel (std::vector<size_t> &a_bins_per_dimension, std::vector<float> &a_bin_step) : 
+        PyramidFeatureHistogramLevel (std::vector<std::size_t> &a_bins_per_dimension, std::vector<float> &a_bin_step) : 
           bins_per_dimension (a_bins_per_dimension),
           bin_step (a_bin_step)
         {
@@ -183,7 +184,7 @@ namespace pcl
         initializeHistogramLevel ();
 
         std::vector<unsigned int> hist;
-        std::vector<size_t> bins_per_dimension;
+        std::vector<std::size_t> bins_per_dimension;
         std::vector<float> bin_step;
       };
       std::vector<PyramidFeatureHistogramLevel> hist_levels;
