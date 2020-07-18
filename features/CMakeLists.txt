@@ -42,6 +42,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/narf.h"
   "include/pcl/${SUBSYS_NAME}/narf_descriptor.h"
   "include/pcl/${SUBSYS_NAME}/normal_3d.h"
+  "include/pcl/${SUBSYS_NAME}/normal_3d_omp.h"
   "include/pcl/${SUBSYS_NAME}/normal_based_signature.h"
   "include/pcl/${SUBSYS_NAME}/organized_edge_detection.h"
   "include/pcl/${SUBSYS_NAME}/pfh.h"

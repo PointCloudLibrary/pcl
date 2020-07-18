@@ -407,6 +407,10 @@ namespace pcl
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
+
+  template <typename PointInT, typename PointOutT>
+  using NormalEstimationOMP PCL_DEPRECATED(1, 12, "use NormalEstimation instead") = NormalEstimation<PointInT, PointOutT>;
+
 }
 
 #ifdef PCL_NO_PRECOMPILE
