@@ -328,12 +328,12 @@ TEST (SampleConsensusModelPlane, SIMD_countWithinDistance) // Test if all countW
     // Generate a cloud with 1000 random points
     PointCloud<PointXYZ> cloud;
     std::vector<int> indices;
-    cloud.points.resize (1000);
+    cloud.resize (1000);
     for (std::size_t idx = 0; idx < cloud.size (); ++idx)
     {
-      cloud.points[idx].x = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
-      cloud.points[idx].y = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
-      cloud.points[idx].z = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud[idx].x = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud[idx].y = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud[idx].z = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
       if (rand () % 2 == 0)
       {
         indices.push_back (static_cast<int> (idx));
@@ -393,20 +393,20 @@ TEST (SampleConsensusModelNormalPlane, SIMD_countWithinDistance) // Test if all 
     PointCloud<PointXYZ> cloud;
     PointCloud<Normal> normal_cloud;
     std::vector<int> indices;
-    cloud.points.resize (10000);
+    cloud.resize (10000);
     normal_cloud.resize (10000);
     for (std::size_t idx = 0; idx < cloud.size (); ++idx)
     {
-      cloud.points[idx].x = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
-      cloud.points[idx].y = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
-      cloud.points[idx].z = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud[idx].x = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud[idx].y = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud[idx].z = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
       const double a = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
       const double b = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
       const double c = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
       const double factor = 1.0 / sqrt(a * a + b * b + c * c);
-      normal_cloud.points[idx].normal[0] = a * factor;
-      normal_cloud.points[idx].normal[1] = b * factor;
-      normal_cloud.points[idx].normal[2] = c * factor;
+      normal_cloud[idx].normal[0] = a * factor;
+      normal_cloud[idx].normal[1] = b * factor;
+      normal_cloud[idx].normal[2] = c * factor;
       if (rand () % 4 != 0)
       {
         indices.push_back (static_cast<int> (idx));

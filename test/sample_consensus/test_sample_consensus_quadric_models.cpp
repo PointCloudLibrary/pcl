@@ -131,12 +131,12 @@ TEST (SampleConsensusModelSphere, SIMD_countWithinDistance) // Test if all count
     // Generate a cloud with 1000 random points
     PointCloud<PointXYZ> cloud;
     std::vector<int> indices;
-    cloud.points.resize (1000);
+    cloud.resize (1000);
     for (std::size_t idx = 0; idx < cloud.size (); ++idx)
     {
-      cloud.points[idx].x = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
-      cloud.points[idx].y = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
-      cloud.points[idx].z = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud[idx].x = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud[idx].y = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud[idx].z = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
       if (rand () % 3 != 0)
       {
         indices.push_back (static_cast<int> (idx));
@@ -543,12 +543,12 @@ TEST (SampleConsensusModelCircle2D, SIMD_countWithinDistance) // Test if all cou
     // Generate a cloud with 1000 random points
     PointCloud<PointXYZ> cloud;
     std::vector<int> indices;
-    cloud.points.resize (1000);
+    cloud.resize (1000);
     for (std::size_t idx = 0; idx < cloud.size (); ++idx)
     {
-      cloud.points[idx].x = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
-      cloud.points[idx].y = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
-      cloud.points[idx].z = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud[idx].x = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud[idx].y = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
+      cloud[idx].z = 2.0 * static_cast<float> (rand ()) / RAND_MAX - 1.0;
       if (rand () % 2 == 0)
       {
         indices.push_back (static_cast<int> (idx));

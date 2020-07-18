@@ -109,8 +109,8 @@ pcl::SampleConsensusModelCircle2D<PointT>::computeModelCoefficients (const Indic
 // This function computes the squared distances (i.e. the distances without the square root) of 8 points to the center of the circle
 template <typename PointT> inline __m256 pcl::SampleConsensusModelCircle2D<PointT>::sqr_dist8 (const std::size_t i, const __m256 a_vec, const __m256 b_vec) const
 {
-  const __m256 tmp1 = _mm256_sub_ps (_mm256_set_ps (input_->points[(*indices_)[i  ]].x, input_->points[(*indices_)[i+1]].x, input_->points[(*indices_)[i+2]].x, input_->points[(*indices_)[i+3]].x, input_->points[(*indices_)[i+4]].x, input_->points[(*indices_)[i+5]].x, input_->points[(*indices_)[i+6]].x, input_->points[(*indices_)[i+7]].x), a_vec);
-  const __m256 tmp2 = _mm256_sub_ps (_mm256_set_ps (input_->points[(*indices_)[i  ]].y, input_->points[(*indices_)[i+1]].y, input_->points[(*indices_)[i+2]].y, input_->points[(*indices_)[i+3]].y, input_->points[(*indices_)[i+4]].y, input_->points[(*indices_)[i+5]].y, input_->points[(*indices_)[i+6]].y, input_->points[(*indices_)[i+7]].y), b_vec);
+  const __m256 tmp1 = _mm256_sub_ps (_mm256_set_ps ((*input_)[(*indices_)[i  ]].x, (*input_)[(*indices_)[i+1]].x, (*input_)[(*indices_)[i+2]].x, (*input_)[(*indices_)[i+3]].x, (*input_)[(*indices_)[i+4]].x, (*input_)[(*indices_)[i+5]].x, (*input_)[(*indices_)[i+6]].x, (*input_)[(*indices_)[i+7]].x), a_vec);
+  const __m256 tmp2 = _mm256_sub_ps (_mm256_set_ps ((*input_)[(*indices_)[i  ]].y, (*input_)[(*indices_)[i+1]].y, (*input_)[(*indices_)[i+2]].y, (*input_)[(*indices_)[i+3]].y, (*input_)[(*indices_)[i+4]].y, (*input_)[(*indices_)[i+5]].y, (*input_)[(*indices_)[i+6]].y, (*input_)[(*indices_)[i+7]].y), b_vec);
   return _mm256_add_ps (_mm256_mul_ps (tmp1, tmp1), _mm256_mul_ps (tmp2, tmp2));
 }
 #endif // ifdef __AVX__
@@ -119,8 +119,8 @@ template <typename PointT> inline __m256 pcl::SampleConsensusModelCircle2D<Point
 // This function computes the squared distances (i.e. the distances without the square root) of 4 points to the center of the circle
 template <typename PointT> inline __m128 pcl::SampleConsensusModelCircle2D<PointT>::sqr_dist4 (const std::size_t i, const __m128 a_vec, const __m128 b_vec) const
 {
-  const __m128 tmp1 = _mm_sub_ps (_mm_set_ps (input_->points[(*indices_)[i  ]].x, input_->points[(*indices_)[i+1]].x, input_->points[(*indices_)[i+2]].x, input_->points[(*indices_)[i+3]].x), a_vec);
-  const __m128 tmp2 = _mm_sub_ps (_mm_set_ps (input_->points[(*indices_)[i  ]].y, input_->points[(*indices_)[i+1]].y, input_->points[(*indices_)[i+2]].y, input_->points[(*indices_)[i+3]].y), b_vec);
+  const __m128 tmp1 = _mm_sub_ps (_mm_set_ps ((*input_)[(*indices_)[i  ]].x, (*input_)[(*indices_)[i+1]].x, (*input_)[(*indices_)[i+2]].x, (*input_)[(*indices_)[i+3]].x), a_vec);
+  const __m128 tmp2 = _mm_sub_ps (_mm_set_ps ((*input_)[(*indices_)[i  ]].y, (*input_)[(*indices_)[i+1]].y, (*input_)[(*indices_)[i+2]].y, (*input_)[(*indices_)[i+3]].y), b_vec);
   return _mm_add_ps (_mm_mul_ps (tmp1, tmp1), _mm_mul_ps (tmp2, tmp2));
 }
 #endif // ifdef __SSE__
