@@ -393,7 +393,7 @@ namespace pcl
       inline void
       setIsModelValidUserDefined(std::function<bool(const Eigen::VectorXf &)> function)
       {
-        is_model_valid_user_defined_ = function;
+        is_model_valid_user_defined_ = std::move (function);
       }
 
       /** \brief Set the maximum distance allowed when drawing random samples
