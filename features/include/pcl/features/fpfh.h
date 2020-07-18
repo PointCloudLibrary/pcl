@@ -93,9 +93,10 @@ namespace pcl
       using PointCloudOut = typename Feature<PointInT, PointOutT>::PointCloudOut;
 
       /** \brief Empty constructor. */
-      FPFHEstimation () : 
+      FPFHEstimation (unsigned int nr_threads = -1) :
         nr_bins_f1_ (11), nr_bins_f2_ (11), nr_bins_f3_ (11), 
-        d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI)))
+        d_pi_ (1.0f / (2.0f * static_cast<float> (M_PI))),
+        threads_(nr_threads)
       {
         feature_name_ = "FPFHEstimation";
       };
@@ -177,6 +178,21 @@ namespace pcl
         nr_bins_f3 = nr_bins_f3_;
       }
 
+    /** \brief Initialize the scheduler and set the number of threads to use.
+      * \param[in] nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+      */
+    void
+    setNumberOfThreads (unsigned int nr_threads = 0) {
+      if (nr_threads == 0)
+        #ifdef _OPENMP
+        threads_ = omp_get_num_procs();
+        #else
+        threads_ = 1;
+        #endif
+      else
+        threads_ = nr_threads;
+    }
+
     protected:
 
       /** \brief Estimate the set of all SPFH (Simple Point Feature Histograms) signatures for the input cloud
@@ -213,8 +229,15 @@ namespace pcl
       Eigen::VectorXf fpfh_histogram_;
 
       /** \brief Float constant = 1.0 / (2.0 * M_PI) */
-      float d_pi_; 
+      float d_pi_;
+
+      /** \brief The number of threads the scheduler should use. */
+      unsigned int threads_;
   };
+
+template <typename PointInT, typename PointNT, typename PointOutT>
+using FPFHEstimationOMP PCL_DEPRECATED(1, 12, "use FPFHEstimation instead") = FPFHEstimation<PointInT, PointNT, PointOutT>;
+
 }
 
 #ifdef PCL_NO_PRECOMPILE
