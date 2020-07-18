@@ -54,7 +54,7 @@
 
 #include <iostream>
 #include <string.h>
-#include <math.h>
+#include <cmath>
 #include <numeric>
 #include <algorithm>
 #include <functional>
@@ -64,15 +64,15 @@
 #include <utility>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT> double
-pcl::SCurVEstimation<PointInT, PointNT>::getNormalizedValue (double x, double low, double high)
+double
+pcl::getNormalizedValue (double x, double low, double high)
 {
   return (x - low) / (high - low);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT> double
-pcl::SCurVEstimation<PointInT, PointNT>::getHermiteDerivativeInterpolation(HermitePoint point0, HermitePoint point1, double xi)
+double
+pcl::getHermiteDerivativeInterpolation(HermitePoint point0, HermitePoint point1, double xi)
 {
   double h, delta, del0, del1, c2, c3, x;
   h = point1.x - point0.x;
@@ -86,75 +86,33 @@ pcl::SCurVEstimation<PointInT, PointNT>::getHermiteDerivativeInterpolation(Hermi
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT> void
-pcl::SCurVEstimation<PointInT, PointNT>::normalizeScale (pcl::PointCloud<pcl::PointNormal> &cloud, int min_range, int max_range)
+void
+pcl::normalizeScale (pcl::PointCloud<pcl::PointNormal> &cloud, int min_range, int max_range)
 {
   Eigen::Vector4f min_pt, max_pt;
-  Eigen::Vector3f min_coeff, max_coeff;
-  double minimum, maximum;
 
   pcl::getMinMax3D(cloud, min_pt, max_pt);
-  min_coeff << min_pt(0), min_pt(1), min_pt(2);
-  max_coeff << max_pt(0), max_pt(1), max_pt(2);
-  minimum = min_coeff.minCoeff();
-  maximum = max_coeff.maxCoeff();
+  const auto minimum = min_pt.head<3>().minCoeff();
+  const auto maximum = max_pt.head<3>().maxCoeff();
 
-  double factor = std::abs(minimum - maximum) / (max_range - min_range);
-  for (size_t k = 0; k < cloud.points.size(); k++)
-  {
-    cloud.points[k].x = (double)cloud.points[k].x / factor;
-    cloud.points[k].y = (double)cloud.points[k].y / factor;
-    cloud.points[k].z = (double)cloud.points[k].z / factor;
+  const auto factor = std::abs(minimum - maximum) / (max_range - min_range);
+  for (auto& point: cloud.points) {
+    point.getArray3fMap() /= factor;
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT> double
-pcl::SCurVEstimation<PointInT, PointNT>::signMultiplied (double arg1, double arg2)
+double
+pcl::signMultiplied (double arg1, double arg2)
 {
-  double value = NAN;
-
-  if ( std::fabs(arg1 - 0.0) < std::numeric_limits<double>::epsilon()  )
-  {
-    value = 0.0;
-  }
-  else if ( arg1 < 0.0 )
-  {
-    if ( std::fabs(arg2 - 0.0) < std::numeric_limits<double>::epsilon() )
-    {
-      value = 0.0;
-    }
-    else if ( arg2 < 0.0 )
-    {
-      value = 1.0;
-    }
-    else if ( 0.0 < arg2 )
-    {
-      value = -1.0;
-    }
-  }
-  else if ( 0.0 < arg1 )
-  {
-    if ( std::fabs(arg2 - 0.0) < std::numeric_limits<double>::epsilon() )
-    {
-      value = 0.0;
-    }
-    else if ( arg2 < 0.0 )
-    {
-      value = -1.0;
-    }
-    else if ( 0.0 < arg2 )
-    {
-      value = 1.0;
-    }
-  }
-
-  return value;
+  const auto sign1 = std::copysign(1, arg1);
+  const auto sign2 = std::copysign(1, arg2);
+  return sign1 * sign2;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointNT> void
-pcl::SCurVEstimation<PointInT, PointNT>::setSplinePchip (int n, std::vector<double> x, std::vector<double> f, std::vector<double> &d)
+void
+pcl::setSplinePchip (int n, std::vector<double> x, std::vector<double> f, std::vector<double> &d)
 {
   double del1, del2, dmax, dmin, drat1, drat2, dsave, h1, h2, hsum, hsumt3, temp, w1, w2;
   int i, ierr, nless1;
@@ -204,14 +162,14 @@ pcl::SCurVEstimation<PointInT, PointNT>::setSplinePchip (int n, std::vector<doub
   w2 = -h1 / hsum;
   d[0] = w1 * del1 + w2 * del2;
 
-  if ( this->signMultiplied ( d[0], del1 ) <= 0.0 )
+  if ( pcl::signMultiplied ( d[0], del1 ) <= 0.0 )
   {
     d[0] = 0.0;
   }
 //
 //  Need do this check only if monotonicity switches.
 //
-  else if ( this->signMultiplied ( del1, del2 ) < 0.0 )
+  else if ( pcl::signMultiplied ( del1, del2 ) < 0.0 )
   {
      dmax = 3.0 * del1;
 
@@ -239,7 +197,7 @@ pcl::SCurVEstimation<PointInT, PointNT>::setSplinePchip (int n, std::vector<doub
 //
     d[i-1] = 0.0;
 
-    temp = this->signMultiplied ( del1, del2 );
+    temp = pcl::signMultiplied ( del1, del2 );
 
 
 //
@@ -249,7 +207,7 @@ pcl::SCurVEstimation<PointInT, PointNT>::setSplinePchip (int n, std::vector<doub
     {
       if ( del2 != 0.0 )
       {
-        if ( this->signMultiplied ( dsave, del2 ) < 0.0 )
+        if ( pcl::signMultiplied ( dsave, del2 ) < 0.0 )
         {
           ierr = ierr + 1;
         }
@@ -284,11 +242,11 @@ pcl::SCurVEstimation<PointInT, PointNT>::setSplinePchip (int n, std::vector<doub
   w2 = ( h2 + hsum ) / hsum;
   d[n-1] = w1 * del1 + w2 * del2;
 
-  if ( this->signMultiplied ( d[n-1], del2 ) <= 0.0 )
+  if ( pcl::signMultiplied ( d[n-1], del2 ) <= 0.0 )
   {
     d[n-1] = 0.0;
   }
-  else if ( this->signMultiplied ( del1, del2 ) < 0.0 )
+  else if ( pcl::signMultiplied ( del1, del2 ) < 0.0 )
   {
 //
 //  Need do this check only if monotonicity switches.
@@ -368,7 +326,7 @@ pcl::SCurVEstimation<PointInT, PointNT>::computeFeature (pcl::PointCloud<pcl::SC
   Eigen::MatrixXd k2(input_cloud->points.size(),R_bins.size());
   
   // input cloud normalization
-  this->normalizeScale(*input_cloud, min_rad, max_rad);
+  pcl::normalizeScale(*input_cloud, min_rad, max_rad);
 
   // input cloud positioning at center
   Eigen::Vector4f centroid;
@@ -549,7 +507,7 @@ pcl::SCurVEstimation<PointInT, PointNT>::computeFeature (pcl::PointCloud<pcl::SC
           
           for (size_t k = 0; k < pos_ord2.size(); k++)
           {  
-            theKnotVect(k) = this->getNormalizedValue(pos_ord2[k],interval_begin,interval_end);
+            theKnotVect(k) = pcl::getNormalizedValue(pos_ord2[k],interval_begin,interval_end);
             theCurvatureValues(k) = k_aux2[k];
           }
         
@@ -583,7 +541,7 @@ pcl::SCurVEstimation<PointInT, PointNT>::computeFeature (pcl::PointCloud<pcl::SC
           std::vector<double> curv_sp;
           for (float k = 1; k <= pos_ord2[pos_ord2.size()-1]+iteration; k += iteration)
           {
-            curv_sp.push_back(*theSpline(this->getNormalizedValue(k,interval_begin,interval_end)).data());
+            curv_sp.push_back(*theSpline(pcl::getNormalizedValue(k,interval_begin,interval_end)).data());
           }
 
           // finding the max curvature
@@ -613,9 +571,9 @@ pcl::SCurVEstimation<PointInT, PointNT>::computeFeature (pcl::PointCloud<pcl::SC
           std::vector<double> derives_1(index.size() + 2);
           std::vector<double> derives_2(index.size() + 2);
           std::vector<double> derives_3(index.size() + 2);
-          this->setSplinePchip(index.size()+2, pos_ord2, pos_aux2_1, derives_1);
-          this->setSplinePchip(index.size()+2, pos_ord2, pos_aux2_2, derives_2);
-          this->setSplinePchip(index.size()+2, pos_ord2, pos_aux2_3, derives_3);
+          pcl::setSplinePchip(index.size()+2, pos_ord2, pos_aux2_1, derives_1);
+          pcl::setSplinePchip(index.size()+2, pos_ord2, pos_aux2_2, derives_2);
+          pcl::setSplinePchip(index.size()+2, pos_ord2, pos_aux2_3, derives_3);
           int c_numSamples = (float)(pos_ord2[pos_ord2.size()-1]-1+iteration) / iteration;
           std::vector<double> samples(c_numSamples), interpolations(c_numSamples);
           for (float k = 0; k < c_numSamples; k++) samples[k] = k*iteration + 1;
@@ -629,9 +587,9 @@ pcl::SCurVEstimation<PointInT, PointNT>::computeFeature (pcl::PointCloud<pcl::SC
                     if (k == c_numSamples - 1) {
               ind--;
             }
-            pos_spA.push_back(this->getHermiteDerivativeInterpolation({pos_ord2[ind],pos_aux2_1[ind],derives_1[ind]},{pos_ord2[ind+1],pos_aux2_1[ind+1],derives_1[ind+1]},xi));
-            pos_spB.push_back(this->getHermiteDerivativeInterpolation({pos_ord2[ind],pos_aux2_2[ind],derives_2[ind]},{pos_ord2[ind+1],pos_aux2_2[ind+1],derives_2[ind+1]},xi));
-            pos_spC.push_back(this->getHermiteDerivativeInterpolation({pos_ord2[ind],pos_aux2_3[ind],derives_3[ind]},{pos_ord2[ind+1],pos_aux2_3[ind+1],derives_3[ind+1]},xi));
+            pos_spA.push_back(pcl::getHermiteDerivativeInterpolation({pos_ord2[ind],pos_aux2_1[ind],derives_1[ind]},{pos_ord2[ind+1],pos_aux2_1[ind+1],derives_1[ind+1]},xi));
+            pos_spB.push_back(pcl::getHermiteDerivativeInterpolation({pos_ord2[ind],pos_aux2_2[ind],derives_2[ind]},{pos_ord2[ind+1],pos_aux2_2[ind+1],derives_2[ind+1]},xi));
+            pos_spC.push_back(pcl::getHermiteDerivativeInterpolation({pos_ord2[ind],pos_aux2_3[ind],derives_3[ind]},{pos_ord2[ind+1],pos_aux2_3[ind+1],derives_3[ind+1]},xi));
           }
           
           // get coordinates of max curv value

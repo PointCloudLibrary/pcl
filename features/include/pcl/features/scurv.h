@@ -83,67 +83,68 @@ namespace pcl
       using Feature<PointInT, SCurVSignature210>::k_;
       using FeatureFromNormals<PointInT, PointNT, SCurVSignature210>::normals_;
 
-      /** \brief Control point to be used for Piecewise Cubic Hermite Interpolating Polynomial (PCHIP)
-        * \param[in] x the x value of control point
-        * \param[in] f the functional value in control point
-        * \param[in] d the derivative value in control point
-        */
-      struct 
-      HermitePoint {
-        double x;
-        double f;
-        double d;
-      };
-
       /** \brief Estimate the SCurV descriptor at a set of points given by <setInputCloud (), setInputNormals ()>
         * \param[out] output the resultant point cloud model dataset that contains the SCurV feature estimates
         */
       void 
       computeFeature (pcl::PointCloud<pcl::SCurVSignature210> &output);
 
-      /** \brief Scale normalization of cloud based on range values
-        * \param[out] output the resultant scale normalized point cloud
-        * \param[in] min_range the minimum value of range to be scaled to
-        * \param[in] max_range the maximum value of range to be scaled to
-        */
-      void
-      normalizeScale (pcl::PointCloud<pcl::PointNormal> &cloud, int min_range, int max_range);
-      
-      /** \brief return scale normalized value of x
-        * \param[in] x the value to be normalized
-        * \param[in] low the minimum of range
-        * \param[in] hihg the maximum of range
-        */
-      double
-      getNormalizedValue (double x, double low, double high);
-
-      /** \brief Return the value of Piecewise Cubic Hermite Interpolating Polynomial (PCHIP) in xi between control points point1 and point2
-        * \param[in] point1 the left control point
-        * \param[in] point2 the right control point
-        * \param[in] xi the x value in which to compute the function value
-        */
-      double
-      getHermiteDerivativeInterpolation (HermitePoint point1, HermitePoint point2, double xi);
-
-      /** \brief Piecewise Cubic Hermite Interpolating Polynomial (PCHIP) sign-testing routine.
-        * This routine essentially computes the sign of arg1 * arg2.
-	* The object is to do this without multiplying arg1 * arg2, to avoid possible over/underflow problems.
-        * \param[in] arg1
-        * \param[in] arg2
-        */
-      double
-      signMultiplied (double arg1, double arg2);
-
-      /** \brief Set derivatives of Piecewise Cubic Hermite Interpolating Polynomial (PCHIP) control points
-        * \param[in] n the count of control points
-        * \param[in] x the vector of x values of all control points
-        * \param[in] f the vector of functional values of all control points
-        * \param[out] d the vector of derivative values of all control points
-        */
-      void
-      setSplinePchip (int n, std::vector<double> x, std::vector<double> f, std::vector<double> &d);
-
   };
+
+  /** \brief Control point to be used for Piecewise Cubic Hermite Interpolating Polynomial (PCHIP)
+    * \param[in] x the x value of control point
+    * \param[in] f the functional value in control point
+    * \param[in] d the derivative value in control point
+    */
+  struct
+  HermitePoint {
+    double x;
+    double f;
+    double d;
+  };
+
+  /** \brief Scale normalization of cloud based on range values
+    * \param[out] output the resultant scale normalized point cloud
+    * \param[in] min_range the minimum value of range to be scaled to
+    * \param[in] max_range the maximum value of range to be scaled to
+    */
+  void
+  normalizeScale (pcl::PointCloud<pcl::PointNormal> &cloud, int min_range, int max_range);
+
+  /** \brief return scale normalized value of x
+    * \param[in] x the value to be normalized
+    * \param[in] low the minimum of range
+    * \param[in] hihg the maximum of range
+  */
+  double
+  getNormalizedValue (double x, double low, double high);
+
+  /** \brief Return the value of Piecewise Cubic Hermite Interpolating Polynomial (PCHIP) in xi between control points point1 and point2
+    * \param[in] point1 the left control point
+    * \param[in] point2 the right control point
+    * \param[in] xi the x value in which to compute the function value
+    */
+  double
+  getHermiteDerivativeInterpolation (HermitePoint point1, HermitePoint point2, double xi);
+
+  /** \brief Piecewise Cubic Hermite Interpolating Polynomial (PCHIP) sign-testing routine.
+    * This routine essentially computes the sign of arg1 * arg2.
+    * The object is to do this without multiplying arg1 * arg2, to avoid possible over/underflow problems.
+    * \param[in] arg1
+    * \param[in] arg2
+    */
+  double
+  signMultiplied (double arg1, double arg2);
+
+  /** \brief Set derivatives of Piecewise Cubic Hermite Interpolating Polynomial (PCHIP) control points
+    * \param[in] n the count of control points
+    * \param[in] x the vector of x values of all control points
+    * \param[in] f the vector of functional values of all control points
+    * \param[out] d the vector of derivative values of all control points
+  */
+  void
+  setSplinePchip (int n, std::vector<double> x, std::vector<double> f, std::vector<double> &d);
+
 }
 
 #ifdef PCL_NO_PRECOMPILE
