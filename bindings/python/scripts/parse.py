@@ -5,20 +5,26 @@ from context import scripts
 import scripts.utils as utils
 
 
-def is_node_in_this_file(cursor, filename, depth):
+def is_node_in_this_file(node):
     """
     Checks if the node in the AST is a valid node:
         - Check 1: The cursor's location should have file attribute (cursor.location.file -> not NoneType)
         - Check 2: The cursor should belong to the file (cursor.location.file.name -> filename)
     
     Arguments:
-        - cursor : The cursor pointing to the node
-        - filename : The file's name to check the node against
-        - depth: The depth of the node (root=0)
+        - node (dict):
+            - The node in the AST
+            - Keys:
+                - cursor : The cursor pointing to the node
+                - filename : The file's name to check the node against
+                - depth: The depth of the node (root=0)
         
     Returns:
         - True/False (bool)
     """
+
+    cursor = node["cursor"]
+    filename = node["filename"]
 
     if cursor.location.file and cursor.location.file.name == filename:
         return True
@@ -26,20 +32,27 @@ def is_node_in_this_file(cursor, filename, depth):
         return False
 
 
-def print_ast(cursor, filename, depth):
+def print_ast(node):
     """
     Prints the AST by recursively traversing the AST
 
     Arguments:
-        - cursor: The cursor pointing to a node
-        - filename: 
-            - The file's name to check if the node belongs to it
-            - Needed to ensure that only symbols belonging to the file gets parsed, not the included files' symbols
-        - depth: The depth of the node (root=0)
+        - node (dict):
+            - The node in the AST
+            - Keys:
+                - cursor: The cursor pointing to a node
+                - filename: 
+                    - The file's name to check if the node belongs to it
+                    - Needed to ensure that only symbols belonging to the file gets parsed, not the included files' symbols
+                - depth: The depth of the node (root=0)
     
     Returns:
         - None
     """
+
+    cursor = node["cursor"]
+    filename = node["filename"]
+    depth = node["depth"]
 
     # Check if the cursor has spelling (cursor.spelling -> not NoneType)
     if cursor.spelling:
@@ -55,20 +68,23 @@ def print_ast(cursor, filename, depth):
     for child in cursor.get_children():
         child_node = {"cursor": child, "filename": filename, "depth": depth + 1}
         # Check if the child belongs to the file
-        if is_node_in_this_file(**child_node):
-            print_ast(**child_node)
+        if is_node_in_this_file(child_node):
+            print_ast(child_node)
 
 
-def generate_parsed_info(cursor, filename, depth):
+def generate_parsed_info(node):
     """
     Generates parsed information by recursively traversing the AST
 
     Arguments:
-        - cursor: The cursor pointing to a node
-        - filename: 
-            - The file's name to check if the node belongs to it
-            - Needed to ensure that only symbols belonging to the file gets parsed, not the included files' symbols
-        - depth: The depth of the node (root=0)
+        - node (dict):
+            - The node in the AST
+            - Keys:
+                - cursor: The cursor pointing to a node
+                - filename: 
+                    - The file's name to check if the node belongs to it
+                    - Needed to ensure that only symbols belonging to the file gets parsed, not the included files' symbols
+                - depth: The depth of the node (root=0)
 
     Returns:
         - parsed_info (dict): 
@@ -77,6 +93,10 @@ def generate_parsed_info(cursor, filename, depth):
     """
 
     parsed_info = dict()
+
+    cursor = node["cursor"]
+    filename = node["filename"]
+    depth = node["depth"]
 
     # Check if the cursor has spelling (cursor.spelling -> not NoneType)
     if cursor.spelling:
@@ -101,8 +121,8 @@ def generate_parsed_info(cursor, filename, depth):
     for child in cursor.get_children():
         child_node = {"cursor": child, "filename": filename, "depth": depth + 1}
         # Check if the child belongs to the file
-        if is_node_in_this_file(**child_node):
-            child_parsed_info = generate_parsed_info(**child_node)
+        if is_node_in_this_file(child_node):
+            child_parsed_info = generate_parsed_info(child_node)
             # If both child and parent's info is not empty, add child's info to parent's members
             if child_parsed_info and parsed_info:
                 parsed_info["members"].append(child_parsed_info)
@@ -172,10 +192,10 @@ def parse_file(source, compilation_database_path=None):
     }
 
     # For testing purposes
-    # print_ast(**root_node)
+    # print_ast(root_node)
 
     # Dictionary containing parsed information of the source file
-    parsed_info = generate_parsed_info(**root_node)
+    parsed_info = generate_parsed_info(root_node)
 
     return parsed_info
 
