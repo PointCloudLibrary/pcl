@@ -26,10 +26,38 @@ def is_node_in_this_file(node):
     cursor = node["cursor"]
     filename = node["filename"]
 
-    if cursor.location.file and cursor.location.file.name == filename:
-        return True
-    else:
-        return False
+    if cursor.location.file is not None:
+        return cursor.location.file.name == filename
+    return False
+
+
+def valid_children(node):
+    """
+    A generator function for yielding valid children nodes
+
+    Arguments:
+        - node (dict):
+            - The node in the AST
+            - Keys:
+                - cursor: The cursor pointing to a node
+                - filename: 
+                    - The file's name to check if the node belongs to it
+                    - Needed to ensure that only symbols belonging to the file gets parsed, not the included files' symbols
+                - depth: The depth of the node (root=0)
+
+    Yields:
+        - child_node (dict): Same structure as the argument
+    """
+
+    cursor = node["cursor"]
+    filename = node["filename"]
+    depth = node["depth"]
+
+    for child in cursor.get_children():
+        child_node = {"cursor": child, "filename": filename, "depth": depth + 1}
+        # Check if the child belongs to the file
+        if is_node_in_this_file(child_node):
+            yield (child_node)
 
 
 def print_ast(node):
@@ -51,11 +79,9 @@ def print_ast(node):
     """
 
     cursor = node["cursor"]
-    filename = node["filename"]
     depth = node["depth"]
 
-    # Check if the cursor has spelling (cursor.spelling -> not NoneType)
-    if cursor.spelling:
+    if cursor.spelling is not None:
         print(
             "-" * depth,
             cursor.location.file,
@@ -65,11 +91,8 @@ def print_ast(node):
         )
 
     # Get cursor's children and recursively print
-    for child in cursor.get_children():
-        child_node = {"cursor": child, "filename": filename, "depth": depth + 1}
-        # Check if the child belongs to the file
-        if is_node_in_this_file(child_node):
-            print_ast(child_node)
+    for child_node in valid_children(node):
+        print_ast(child_node)
 
 
 def generate_parsed_info(node):
@@ -95,11 +118,10 @@ def generate_parsed_info(node):
     parsed_info = dict()
 
     cursor = node["cursor"]
-    filename = node["filename"]
     depth = node["depth"]
 
-    # Check if the cursor has spelling (cursor.spelling -> not NoneType)
-    if cursor.spelling:
+    # @TODO: fix
+    if cursor.spelling != "":
         parsed_info["depth"] = depth
         parsed_info["line"] = cursor.location.line
         parsed_info["column"] = cursor.location.column
@@ -117,15 +139,12 @@ def generate_parsed_info(node):
             parsed_info["raw_comment"] = cursor.raw_comment
         parsed_info["members"] = []
 
-    # Get cursor's children and recursively add their info to the dictionary, as members of the parent
-    for child in cursor.get_children():
-        child_node = {"cursor": child, "filename": filename, "depth": depth + 1}
-        # Check if the child belongs to the file
-        if is_node_in_this_file(child_node):
-            child_parsed_info = generate_parsed_info(child_node)
-            # If both child and parent's info is not empty, add child's info to parent's members
-            if child_parsed_info and parsed_info:
-                parsed_info["members"].append(child_parsed_info)
+    # Get cursor's children and recursively add their info to a dictionary, as members of the parent
+    for child_node in valid_children(node):
+        child_parsed_info = generate_parsed_info(child_node)
+        # If both child and parent's info is not empty (opening check for dictionary population), add child's info to parent's members
+        if child_parsed_info and parsed_info:
+            parsed_info["members"].append(child_parsed_info)
 
     return parsed_info
 
@@ -149,6 +168,22 @@ def get_compilation_commands(compilation_database_path, filename):
 
     # Get compiler arguments from the compilation database for the given file
     compilation_commands = compilation_database.getCompileCommands(filename=filename)
+
+    """
+    - compilation_commands:
+        - An iterable object providing all the compilation commands available to build filename.
+        - type: <class 'clang.cindex.CompileCommands'>
+    - compilation_commands[0]:
+        - Since we have only one command per filename in the compile_commands.json, extract 0th element
+        - type: <class 'clang.cindex.CompileCommand'>
+    - compilation_commands[0].arguments:
+        - Get compiler arguments from the CompileCommand object
+        - type: <class 'generator'>
+    - list(compilation_commands[0].arguments)[1:-1]:
+        - Convert the generator object to list, and extract compiler arguments
+        - 0th element is the compiler name
+        - nth element is the filename
+    """
 
     # Extracting argument list from the command's generator object
     compilation_commands = list(compilation_commands[0].arguments)[1:-1]
