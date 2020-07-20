@@ -200,7 +200,7 @@ def parse_file(source, compilation_database_path=None):
         - compilation_database_path: The path to `compile_commands.json`
 
     Returns:
-        - parsed_info 
+        - parsed_info (dict)
     """
 
     # Create a new index to start parsing
@@ -229,10 +229,7 @@ def parse_file(source, compilation_database_path=None):
     # For testing purposes
     # print_ast(root_node)
 
-    # Dictionary containing parsed information of the source file
-    parsed_info = generate_parsed_info(root_node)
-
-    return parsed_info
+    return generate_parsed_info(root_node)
 
 
 def main():
