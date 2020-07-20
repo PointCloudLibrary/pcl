@@ -26,7 +26,7 @@ def get_output_path(source, output_dir, split_from, extension):
 
     Arguments:
         - source: The source's file name
-        - output_dir: The output_directory to write the json output
+        - output_dir: The output directory to write the json output
         - split_from: The folder from which to split the path
         - extension: Output extension
     
