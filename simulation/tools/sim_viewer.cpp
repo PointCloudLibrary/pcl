@@ -38,6 +38,7 @@
  */
 
 #include <pcl/common/common.h>
+#include <pcl/common/time.h> // for getTime
 #include <pcl/common/transforms.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>

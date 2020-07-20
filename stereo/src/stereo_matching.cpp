@@ -38,6 +38,8 @@
 
 #include "pcl/stereo/stereo_matching.h"
 
+#include <pcl/console/print.h> // for PCL_ERROR
+
 //////////////////////////////////////////////////////////////////////////////
 pcl::StereoMatching::StereoMatching()
 {

@@ -45,11 +45,8 @@
 #include <pcl/io/ply/io_operators.h>
 #include <pcl/pcl_macros.h>
 
-#include <fstream>
-#include <iostream>
 #include <istream>
 #include <memory>
-#include <sstream>
 #include <string>
 #include <tuple>
 #include <vector>

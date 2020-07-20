@@ -39,9 +39,7 @@
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/openni_camera/openni_depth_image.h>
-#include <sstream>
 #include <limits>
-#include <iostream>
 
 namespace openni_wrapper
 {

@@ -41,13 +41,8 @@
 #include <pcl/common/eigen.h>
 #include <pcl/ml/svm.h>
 
-#include <cctype>
-#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
-#include <fstream>
-#include <iostream>
 #include <vector>
 #define Malloc(type, n) static_cast<type*>(malloc((n) * sizeof(type)))
 

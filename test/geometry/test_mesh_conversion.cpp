@@ -45,7 +45,6 @@
 #include <pcl/geometry/polygon_mesh.h>
 #include <pcl/geometry/mesh_conversion.h>
 #include <pcl/memory.h>
-#include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 

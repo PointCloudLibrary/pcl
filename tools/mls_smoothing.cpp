@@ -43,6 +43,7 @@
 #include <pcl/console/time.h>
 #include <pcl/surface/mls.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 using namespace pcl;
 using namespace pcl::io;

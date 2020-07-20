@@ -42,6 +42,7 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_NORMAL_PLANE_H_
 
 #include <pcl/sample_consensus/sac_model_normal_plane.h>
+#include <pcl/common/common.h> // for getAngle3D
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void

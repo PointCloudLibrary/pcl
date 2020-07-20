@@ -10,6 +10,7 @@
 #include <pcl/keypoints/narf_keypoint.h>
 #include <pcl/features/narf_descriptor.h>
 #include <pcl/console/parse.h>
+#include <pcl/common/file_io.h> // for getFilenameWithoutExtension
 
 typedef pcl::PointXYZ PointType;
 

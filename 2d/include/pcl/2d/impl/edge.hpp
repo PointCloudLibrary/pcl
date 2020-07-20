@@ -39,7 +39,7 @@
 
 #include <pcl/2d/convolution.h>
 #include <pcl/2d/edge.h>
-#include <pcl/common/common_headers.h> // rad2deg()
+#include <pcl/common/angles.h> // for rad2deg
 
 namespace pcl {
 

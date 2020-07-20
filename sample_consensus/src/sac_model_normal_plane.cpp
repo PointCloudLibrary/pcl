@@ -37,7 +37,6 @@
  */
 
 #include <pcl/sample_consensus/impl/sac_model_normal_plane.hpp>
-#include <pcl/sample_consensus/impl/sac_model_plane.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>

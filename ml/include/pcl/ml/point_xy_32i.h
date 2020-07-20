@@ -40,7 +40,6 @@
 #include <pcl/common/common.h>
 
 #include <istream>
-#include <ostream>
 
 namespace pcl {
 

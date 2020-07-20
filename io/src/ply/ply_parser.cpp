@@ -40,6 +40,9 @@
 
 #include <pcl/io/ply/ply_parser.h>
 
+#include <fstream> // for ifstream
+#include <sstream> // for istringstream
+
 bool pcl::io::ply::ply_parser::parse (const std::string& filename)
 {
   std::ifstream istream (filename.c_str (), std::ios::in | std::ios::binary);

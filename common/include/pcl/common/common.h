@@ -38,7 +38,6 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
-#include <cfloat>
 
 /**
   * \file pcl/common/common.h

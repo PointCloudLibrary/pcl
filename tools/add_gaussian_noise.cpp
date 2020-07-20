@@ -43,7 +43,6 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
-#include "boost.h"
 
 using namespace pcl;
 using namespace pcl::io;

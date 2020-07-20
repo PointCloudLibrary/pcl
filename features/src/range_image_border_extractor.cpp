@@ -40,7 +40,6 @@ using std::cout;
 using std::cerr;
 #include <cmath>
 #include <pcl/pcl_macros.h>
-#include <pcl/common/common_headers.h>
 #include <pcl/range_image/range_image.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/vector_average.h>

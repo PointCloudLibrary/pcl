@@ -36,6 +36,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <pcl/common/time.h> // for MEASURE_FUNCTION_TIME
 #include <pcl/common/eigen.h>
 #include <pcl/range_image/range_image.h>
 
