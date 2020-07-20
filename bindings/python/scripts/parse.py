@@ -249,7 +249,7 @@ def main():
             source=source,
             output_dir=utils.join_path(args.json_output_path, "json"),
             split_from="pcl",
-            extension="json",
+            extension=".json",
         )
 
         # Dump the parsed info at output path
