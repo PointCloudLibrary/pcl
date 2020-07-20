@@ -1,5 +1,5 @@
 /*
- * Software License Agreement (BSD License)
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2018, University of Innsbruck (Antonio J Rodríguez-Sánchez, Tomas Turecek, Alex Melniciuc)
