@@ -27,12 +27,14 @@ def get_output_path(source, output_dir, split_from, extension):
     Arguments:
         - source: The source's file name
         - output_dir: The output_directory to write the json output
+        - split_from: The folder from which to split the path
+        - extension: Output extension
     
     Returns:
-        - json_output_path: The json output's realpath
+        - output_path: The output's realpath
     """
 
-    # pcl_path: contains the path as seen in the pcl directory
+    # split_path: contains the path after splitting. For split_path = pcl, contains the path as seen in the pcl directory
     _, split_path = source.split(f"{split_from}{os.sep}", 1)
 
     # relative_dir: contains the relative output path for the json file
@@ -41,7 +43,7 @@ def get_output_path(source, output_dir, split_from, extension):
 
     # filename: contains the output json's file name
     filename, _ = source_filename.split(".")
-    filename = f"{filename}.{extension}"
+    filename = f"{filename}{extension}"
 
     # dir: final output path
     dir = join_path(output_dir, relative_dir)
