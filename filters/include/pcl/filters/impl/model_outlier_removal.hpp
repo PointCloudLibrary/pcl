@@ -38,7 +38,6 @@
 #pragma once
 
 #include <pcl/filters/model_outlier_removal.h>
-#include <pcl/common/io.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/sample_consensus/sac_model_circle.h>
 #include <pcl/sample_consensus/sac_model_cylinder.h>

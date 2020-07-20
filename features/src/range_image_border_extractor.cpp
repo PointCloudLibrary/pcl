@@ -38,8 +38,6 @@
 #include <iostream>
 using std::cout;
 using std::cerr;
-#include <map>
-#include <set>
 #include <cmath>
 #include <pcl/pcl_macros.h>
 #include <pcl/common/common_headers.h>

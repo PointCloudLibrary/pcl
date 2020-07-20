@@ -44,7 +44,6 @@
 #include <pcl/features/our_cvfh.h>
 #include <pcl/features/vfh.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/features/pfh_tools.h>
 #include <pcl/common/transforms.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -39,10 +39,8 @@
 
 #pragma once
 
-#include <pcl/ModelCoefficients.h>
 #include <pcl/point_cloud.h>
 #include <pcl/visualization/eigen.h>
-#include <pcl/geometry/planar_polygon.h>
 
 template <typename T> class vtkSmartPointer;
 class vtkDataSet;
@@ -57,6 +55,9 @@ class vtkUnstructuredGrid;
 /*@{*/
 namespace pcl
 {
+  struct ModelCoefficients;
+  template <typename PointT> class PlanarPolygon;
+
   namespace visualization
   {
     /** \brief Create a 3d poly line from a set of points. 

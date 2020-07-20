@@ -43,7 +43,6 @@
 #include <pcl/point_cloud.h>
 
 #include <functional>
-#include <sstream>
 
 namespace pcl
 {

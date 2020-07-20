@@ -42,7 +42,6 @@
 #define PCL_FEATURES_IMPL_ESF_H_
 
 #include <pcl/features/esf.h>
-#include <pcl/common/common.h>
 #include <pcl/common/distances.h>
 #include <pcl/common/transforms.h>
 #include <vector>

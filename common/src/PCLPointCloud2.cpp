@@ -38,7 +38,6 @@
  *
  */
 
-#include <numeric>
 #include <vector>
 
 #include <pcl/common/io.h>
