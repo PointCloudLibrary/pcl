@@ -470,8 +470,10 @@ namespace pcl
   std::ostream& 
   operator << (std::ostream& os, const SCurVSignature210& p)
   {
-    for (int i = 0; i < 210; ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 209 ? ", " : ")");
+    os << "(";
+    for (int i = 0; i < 209; ++i)
+      os << p.histogram[i] << ", ";
+    os << p.histogram[209] << ")";
     return (os);
   }
 }
