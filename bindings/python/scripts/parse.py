@@ -151,11 +151,11 @@ def generate_parsed_info(node):
 
 def get_compilation_commands(compilation_database_path, filename):
     """
-    Returns the compilation commands extracted from the the compile command
+    Returns the compilation commands extracted from the compilation database
 
     Arguments:
         - compilation_database_path: The path to `compile_commands.json`
-        - filename: The file's name to get it's compilation commands
+        - filename: The file's name to get its compilation commands
 
     Returns:
         - compilation commands (list): The arguments passed to the compiler
@@ -185,10 +185,7 @@ def get_compilation_commands(compilation_database_path, filename):
         - nth element is the filename
     """
 
-    # Extracting argument list from the command's generator object
-    compilation_commands = list(compilation_commands[0].arguments)[1:-1]
-
-    return compilation_commands
+    return list(compilation_commands[0].arguments)[1:-1]
 
 
 def parse_file(source, compilation_database_path=None):
@@ -206,15 +203,10 @@ def parse_file(source, compilation_database_path=None):
     # Create a new index to start parsing
     index = clang.Index.create()
 
-    # Is this check needed?
-    if compilation_database_path is None:
-        # Default compiler argument
-        compilation_commands = ["-std=c++14"]
-    else:
-        # Get compiler arguments
-        compilation_commands = get_compilation_commands(
-            compilation_database_path=compilation_database_path, filename=source,
-        )
+    # Get compiler arguments
+    compilation_commands = get_compilation_commands(
+        compilation_database_path=compilation_database_path, filename=source,
+    )
 
     # Parse the given source code file by running clang and generating the AST before loading
     source_ast = index.parse(path=source, args=compilation_commands)
