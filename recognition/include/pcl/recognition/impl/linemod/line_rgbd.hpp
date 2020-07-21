@@ -528,10 +528,11 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
 
   // refine detections along depth
   refineDetectionsAlongDepth ();
-  //applyprojectivedepthicpondetections();
 
   // remove overlaps
   removeOverlappingDetections ();
+
+  // applyProjectiveDepthICPOnDetections();
 
   // sort the detections
   std::sort(detections_.begin(), detections_.end(), [](const typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & a,
@@ -781,6 +782,7 @@ template <typename PointXYZT, typename PointRGBT> void
 pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections ()
 {
   const size_t nr_detections = detections_.size ();
+  #pragma omp parallel for
   for (size_t detection_index = 0; detection_index < nr_detections; ++detection_index)
   {
     typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & detection = detections_[detection_index];
