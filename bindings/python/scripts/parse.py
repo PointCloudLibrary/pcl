@@ -81,14 +81,13 @@ def print_ast(node):
     cursor = node["cursor"]
     depth = node["depth"]
 
-    if cursor.spelling is not None:
-        print(
-            "-" * depth,
-            cursor.location.file,
-            f"L{cursor.location.line} C{cursor.location.column}",
-            cursor.kind.name,
-            cursor.spelling,
-        )
+    print(
+        "-" * depth,
+        cursor.location.file,
+        f"L{cursor.location.line} C{cursor.location.column}",
+        cursor.kind.name,
+        cursor.spelling,
+    )
 
     # Get cursor's children and recursively print
     for child_node in valid_children(node):
@@ -120,24 +119,22 @@ def generate_parsed_info(node):
     cursor = node["cursor"]
     depth = node["depth"]
 
-    # @TODO: fix
-    if cursor.spelling != "":
-        parsed_info["depth"] = depth
-        parsed_info["line"] = cursor.location.line
-        parsed_info["column"] = cursor.location.column
-        parsed_info["kind"] = cursor.kind.name
-        parsed_info["name"] = cursor.spelling
-        if cursor.type.kind.spelling != "Invalid":
-            parsed_info["element_type"] = cursor.type.kind.spelling
-        if cursor.access_specifier.name != "INVALID":
-            parsed_info["access_specifier"] = cursor.access_specifier.name
-        if cursor.result_type.spelling != "":
-            parsed_info["result_type"] = cursor.result_type.spelling
-        if cursor.brief_comment:
-            parsed_info["brief_comment"] = cursor.brief_comment
-        if cursor.raw_comment:
-            parsed_info["raw_comment"] = cursor.raw_comment
-        parsed_info["members"] = []
+    parsed_info["depth"] = depth
+    parsed_info["line"] = cursor.location.line
+    parsed_info["column"] = cursor.location.column
+    parsed_info["kind"] = cursor.kind.name
+    parsed_info["name"] = cursor.spelling
+    if cursor.type.kind.spelling != "Invalid":
+        parsed_info["element_type"] = cursor.type.kind.spelling
+    if cursor.access_specifier.name != "INVALID":
+        parsed_info["access_specifier"] = cursor.access_specifier.name
+    if cursor.result_type.spelling != "":
+        parsed_info["result_type"] = cursor.result_type.spelling
+    if cursor.brief_comment:
+        parsed_info["brief_comment"] = cursor.brief_comment
+    if cursor.raw_comment:
+        parsed_info["raw_comment"] = cursor.raw_comment
+    parsed_info["members"] = []
 
     # Get cursor's children and recursively add their info to a dictionary, as members of the parent
     for child_node in valid_children(node):
