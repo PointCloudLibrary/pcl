@@ -59,9 +59,9 @@ jobs:
 
     # Install clang and it's python inteface via apt
     - name: Install libclang-10
-      run: sudo apt-get update -y && sudo apt-get install -y libclang-10-dev
+      run: sudo apt-get update -y && sudo apt-get install -y libclang-11-dev
     - name: Install python3-clang-10
-      run: sudo apt-get update -y && sudo apt-get install -y python3-clang-10
+      run: sudo apt-get update -y && sudo apt-get install -y python3-clang-11
 
     # Add dist-package to path to enable apt installed python3-clang import
     - name: Add dist-packages to PYTHONPATH
