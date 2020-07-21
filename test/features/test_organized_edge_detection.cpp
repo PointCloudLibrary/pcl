@@ -12,27 +12,46 @@
 #include <pcl/features/organized_edge_detection.h>
 #include <pcl/io/pcd_io.h>
 
-pcl::PointCloud <pcl::PointXYZRGBA>::Ptr cloud;
-pcl::PointIndicesPtr indices;
-std::vector <pcl::Vertices> triangles;
-
-pcl::PointCloud<pcl::PointXYZRGBA>::Ptr GenerateSyntheticEdgeDetectionCloud(const float &disparity)
+namespace
 {
-	auto resolution = .005;
-	auto box_width = 50;
+  class OrganizedPlaneDetectionTestFixture : public ::testing::Test
+  {
+   protected:
+     static const int kExpectedOccludingEdgePoints = 395;
+     static const int kExpectedOccludedEdgePoints = 401;
+     static const int kSyntheticCloudDisparity = .03;
+     static const int kSyntheticCloudResolution = .005;
+     static const int kSyntheticCloudInnerBoxWidth = 50;
 
+     pcl::PointCloud <pcl::PointXYZRGBA>::Ptr cloud_;
+     pcl::PointIndicesPtr indices_;
+
+     OrganizedPlaneDetectionTestFixture() = default;
+     virtual ~OrganizedPlaneDetectionTestFixture() = default;
+     virtual void SetUp()
+     {
+       cloud_ = GenerateSyntheticEdgeDetectionCloud(kSyntheticCloudDisparity);
+     }
+     virtual void TearDown()
+     {
+       cloud_.reset();
+     }
+
+   private:
+     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr GenerateSyntheticEdgeDetectionCloud(const float &disparity)
+     {
 	auto organized_test_cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZRGBA>>();
-	organized_test_cloud->width = box_width * 4;
-	organized_test_cloud->height = box_width * 4;
+	organized_test_cloud->width = kSyntheticCloudInnerBoxWidth * 4;
+	organized_test_cloud->height = kSyntheticCloudInnerBoxWidth * 4;
 	organized_test_cloud->is_dense = false;
 	organized_test_cloud->points.resize(organized_test_cloud->height * organized_test_cloud->width);
-  
-	for(std::size_t i = 0; i < box_width * 2; i++)
+
+	for(std::size_t i = 0; i < kSyntheticCloudInnerBoxWidth * 2; i++)
 	{
-		for(std::size_t j = 0; j < box_width * 2; j++)
+		for(std::size_t j = 0; j < kSyntheticCloudInnerBoxWidth * 2; j++)
 		{
-			organized_test_cloud->at(j, i).x = i * resolution - (box_width / 2 * resolution);
-			organized_test_cloud->at(j, i).y = j * resolution;
+			organized_test_cloud->at(j, i).x = i * kSyntheticCloudResolution - (kSyntheticCloudInnerBoxWidth / 2 * kSyntheticCloudResolution);
+			organized_test_cloud->at(j, i).y = j * kSyntheticCloudResolution;
 			organized_test_cloud->at(j, i).z = 2.0 + (disparity * 4);
 			organized_test_cloud->at(j, i).r = 128;
 			organized_test_cloud->at(j, i).g = 128;
@@ -41,12 +60,12 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr GenerateSyntheticEdgeDetectionCloud(cons
 		}
 	}
 
-	for(std::size_t i = box_width / 2; i < box_width / 2 + box_width; i++)
+	for(std::size_t i = kSyntheticCloudInnerBoxWidth / 2; i < kSyntheticCloudInnerBoxWidth / 2 + kSyntheticCloudInnerBoxWidth; i++)
 	{
-		for(std::size_t j = box_width / 2; j < box_width / 2 + box_width; j++)
+		for(std::size_t j = kSyntheticCloudInnerBoxWidth / 2; j < kSyntheticCloudInnerBoxWidth / 2 + kSyntheticCloudInnerBoxWidth; j++)
 		{
-			organized_test_cloud->at(j, i).x = i * resolution - (box_width / 2 * resolution);
-			organized_test_cloud->at(j, i).y = j * resolution;
+			organized_test_cloud->at(j, i).x = i * kSyntheticCloudResolution - (kSyntheticCloudInnerBoxWidth / 2 * kSyntheticCloudResolution);
+			organized_test_cloud->at(j, i).y = j * kSyntheticCloudResolution;
 			organized_test_cloud->at(j, i).z = 2.0;
 			organized_test_cloud->at(j, i).r = 192;
 			organized_test_cloud->at(j, i).g = 192;
@@ -54,25 +73,23 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr GenerateSyntheticEdgeDetectionCloud(cons
 			organized_test_cloud->at(j, i).a = 255;
 		}
 	}
-	
 	return organized_test_cloud;
+     }
+
+
+  };
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (OrganizedPlaneDetection, OccludedAndOccludingEdges )
+TEST_F (OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
 {
-  float support_radius = 0.0285f;
-  unsigned int number_of_partition_bins = 5;
-  unsigned int number_of_rotations = 3;
-  auto MaxSearchNeighbors = 50; 
+  auto MaxSearchNeighbors = 50;
   auto DepthDiscontinuity = .02f;
-
-  cloud = GenerateSyntheticEdgeDetectionCloud(DepthDiscontinuity);
 
   auto oed = pcl::OrganizedEdgeFromRGB<pcl::PointXYZRGBA, pcl::Label>();
 
   oed.setEdgeType(oed.EDGELABEL_OCCLUDING | oed.EDGELABEL_OCCLUDED);
-  oed.setInputCloud(cloud);
+  oed.setInputCloud(cloud_);
   oed.setDepthDisconThreshold(DepthDiscontinuity);
   oed.setMaxSearchNeighbors(MaxSearchNeighbors);
 
