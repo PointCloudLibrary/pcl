@@ -92,7 +92,7 @@ regression detailed in PR 4275 (https://github.com/PointCloudLibrary/pcl/pull/42
 This test works by generating a synthetic cloud of one square slightly in front of
 another square, so that occluding edges and occluded edges are generated.  The
 regression introduced in PCL 1.10.1 was a logic bug that caused both occluding and
-occluded edges to erroneously be categorized as occluding edges.  This test should catch
+occluded edges to be miscategorized as occluding edges.  This test should catch
 this and similar bugs.
 */
 TEST_F(OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
