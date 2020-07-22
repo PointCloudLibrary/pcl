@@ -38,8 +38,8 @@
 #pragma once
 
 #include <pcl/types.h>
+#include <pcl/point_cloud.h> // for PointCloud
 #include <pcl/common/eigen.h>
-#include <pcl/console/print.h>
 
 /**
   * \file common/geometry.h
@@ -50,8 +50,6 @@
 /*@{*/
 namespace pcl
 {
-  template <typename T> class PointCloud;
-
   /** \brief Estimates the projection matrix P = K * (R|-R*t) from organized point clouds, with
     *        K = [[fx, s, cx], [0, fy, cy], [0, 0, 1]]
     *        R = rotation matrix and

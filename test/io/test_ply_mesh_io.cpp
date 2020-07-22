@@ -47,9 +47,6 @@
 #include <pcl/io/ply_io.h>
 #include <pcl/io/ascii_io.h>
 #include <pcl/io/vtk_lib_io.h>
-#include <fstream>
-#include <locale>
-#include <stdexcept>
 
 std::string mesh_file_vtk_;
 

@@ -8,14 +8,12 @@
 #pragma once
 
 #include <pcl/memory.h>
-#include <pcl/common/common.h>
 #include <pcl/ml/dt/decision_tree_data_provider.h>
 #include <pcl/recognition/face_detection/face_common.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem/operations.hpp>
 
-#include <iostream>
 #include <fstream>
 #include <string>
 

@@ -40,7 +40,8 @@
 #include <limits>
 
 #include <pcl/types.h>
-#include <pcl/common/common.h>
+#include <pcl/point_types.h> // for PointXY
+#include <Eigen/Core> // for VectorXf
 
 /**
   * \file pcl/common/distances.h
@@ -51,6 +52,8 @@
 /*@{*/
 namespace pcl
 {
+  template <typename PointT> class PointCloud;
+
   /** \brief Get the shortest 3D segment between two 3D lines
     * \param line_a the coefficients of the first line (point, direction)
     * \param line_b the coefficients of the second line (point, direction)

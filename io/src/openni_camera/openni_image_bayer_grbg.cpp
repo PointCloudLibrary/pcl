@@ -40,8 +40,6 @@
 #ifdef HAVE_OPENNI
 
 #include <pcl/io/openni_camera/openni_image_bayer_grbg.h>
-#include <sstream>
-#include <iostream>
 #include <pcl/io/debayer.h>
 
 #define AVG(a,b) static_cast<unsigned char>((int(a) + int(b)) >> 1)

@@ -41,7 +41,6 @@
 #include <pcl/compression/octree_pointcloud_compression.h>
 #include <pcl/compression/compression_profiles.h>
 
-#include <string>
 #include <exception>
 
 int total_runs = 0;

@@ -10,7 +10,6 @@
 #include "pcl/recognition/face_detection/face_detector_data_provider.h"
 #include "pcl/recognition/face_detection/rf_face_utils.h"
 #include "pcl/ml/dt/decision_forest.h"
-#include <pcl/features/integral_image2D.h>
 
 namespace pcl
 {

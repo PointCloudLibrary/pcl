@@ -42,7 +42,6 @@
 
 #include <pcl/features/board.h>
 #include <utility>
-#include <pcl/common/transforms.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> void

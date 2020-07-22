@@ -52,8 +52,6 @@
 #include <cstring>
 #include <cerrno>
 
-#include <boost/version.hpp>
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::PCDWriter::setLockingPermissions (const std::string &file_name,

@@ -8,6 +8,7 @@
 #include <pcl/range_image/range_image.h>
 #include <pcl/features/narf.h>
 #include <pcl/console/parse.h>
+#include <pcl/common/file_io.h> // for getFilenameWithoutExtension
 
 float angular_resolution = 0.5f;
 int rotation_invariant = 0;

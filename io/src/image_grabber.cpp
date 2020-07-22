@@ -41,8 +41,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/utils.h>
 #include <pcl/memory.h>
-#include <pcl/pcl_config.h>
-#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 

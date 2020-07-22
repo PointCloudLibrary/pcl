@@ -48,7 +48,6 @@
 #include <ctime>
 #include <string>
 #include <list>
-#include <set>
 #include <map>
 
 namespace pcl

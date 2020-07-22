@@ -10,6 +10,7 @@
  * pcl_sim_terminal_demo 2 ../../../../kmcl/models/table_models/meta_model.ply
  */
 
+#include <pcl/common/time.h> // for getTime
 #include <pcl/memory.h>
 
 #include <Eigen/Dense>
