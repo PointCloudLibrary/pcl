@@ -97,8 +97,6 @@ this and similar bugs.
 */
 TEST_F(OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
 {
-  pcl::io::savePCDFileBinaryCompressed("/home/perception/VagrantProjects/synthe.pcd", *cloud_);
-
   const auto MAX_SEARCH_NEIGHBORS = 50;
   const auto DEPTH_DISCONTINUITY_THRESHOLD = SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY / 2.1f;
 
