@@ -8,9 +8,9 @@
  */
 
 #include <pcl/features/organized_edge_detection.h>
-#include <pcl/point_cloud.h>
-#include <pcl/test/gtest.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/test/gtest.h>
+#include <pcl/point_cloud.h>
 
 namespace {
 class OrganizedPlaneDetectionTestFixture : public ::testing::Test {
@@ -21,7 +21,7 @@ protected:
   const float SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY = .02f;
   const float SYNTHETIC_CLOUD_RESOLUTION = 0.01f;
 
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_;
   pcl::PointIndicesPtr indices_;
 
   void
@@ -34,13 +34,13 @@ protected:
   {}
 
 private:
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
+  pcl::PointCloud<pcl::PointXYZ>::Ptr
   generateSyntheticEdgeDetectionCloud()
   {
-    auto organized_test_cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZRGBA>>(
+    auto organized_test_cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>>(
         OUTER_SQUARE_EDGE_LENGTH, OUTER_SQUARE_EDGE_LENGTH);
 
-    // Draw a smaller red square in front of a larger green square both centered on the
+    // Draw a smaller square in front of a larger square both centered on the
     // view axis to generate synthetic occluding and occluded edges based on depth
     // discontinuity between neighboring pixels.  The base depth and resolution are
     // arbitrary and useful for visualizing the cloud.  The discontinuity of the
@@ -55,8 +55,6 @@ private:
         const auto inner_square_ctr = INNER_SQUARE_EDGE_LENGTH / 2;
 
         auto depth = SYNTHETIC_CLOUD_BASE_DEPTH;
-        auto r = 0;
-        auto g = 255;
 
         // If pixels correspond to smaller box, then set depth and color appropriately
         if (col > outer_square_ctr - inner_square_ctr &&
@@ -64,18 +62,12 @@ private:
           if (row > outer_square_ctr - inner_square_ctr &&
               row < outer_square_ctr + inner_square_ctr) {
             depth = SYNTHETIC_CLOUD_BASE_DEPTH - SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY;
-            r = 255;
-            g = 0;
           }
         }
 
         organized_test_cloud->at(col, row).x = x * SYNTHETIC_CLOUD_RESOLUTION;
         organized_test_cloud->at(col, row).y = y * SYNTHETIC_CLOUD_RESOLUTION;
         organized_test_cloud->at(col, row).z = depth;
-        organized_test_cloud->at(col, row).r = r;
-        organized_test_cloud->at(col, row).g = g;
-        organized_test_cloud->at(col, row).b = 0;
-        organized_test_cloud->at(col, row).a = 255;
       }
     }
 
@@ -108,7 +100,7 @@ TEST_F(OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
   const int EXPECTED_OCCLUDING_EDGE_POINTS = INNER_SQUARE_EDGE_LENGTH * 4 - 8;
   const int EXPECTED_OCCLUDED_EDGE_POINTS = INNER_SQUARE_EDGE_LENGTH * 4;
 
-  auto oed = pcl::OrganizedEdgeFromRGB<pcl::PointXYZRGBA, pcl::Label>();
+  auto oed = pcl::OrganizedEdgeBase<pcl::PointXYZ, pcl::Label>();
   auto labels = pcl::PointCloud<pcl::Label>();
   auto label_indices = std::vector<pcl::PointIndices>();
 
