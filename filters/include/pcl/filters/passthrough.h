@@ -164,7 +164,7 @@ namespace pcl
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (std::vector<int> &indices) override
+      applyFilter (Indices &indices) override
       {
         indices.resize (indices_->size());
         removed_indices_->resize (indices_->size ());
@@ -203,6 +203,16 @@ namespace pcl
         filter.setNegative(negative_);
         filter.applyFilter(indices);
         removed_indices_ =  std::const_pointer_cast<Indices>(filter.getRemovedIndices());
+      }
+
+      /** \brief Filtered results are indexed by an indices array.
+        * \param[out] indices The resultant indices.
+        */
+      PCL_DEPRECATED(1, 13, "use inherited applyFilter(Indices &) instead")
+      void
+      applyFilterIndices (Indices &indices)
+      {
+        applyFilter(indices);
       }
 
     private:
@@ -330,7 +340,3 @@ namespace pcl
 
   };
 }
-
-#ifdef PCL_NO_PRECOMPILE
-#define PCL_INSTANTIATE_PassThrough(T) template class PCL_EXPORTS pcl::PassThrough<T>;
-#endif
