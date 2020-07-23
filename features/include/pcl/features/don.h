@@ -86,11 +86,6 @@ namespace pcl
         feature_name_ = "DifferenceOfNormalsEstimation";
       }
 
-      ~DifferenceOfNormalsEstimation ()
-      {
-        //
-      }
-
       /**
        * Set the normals calculated using a smaller search radius (scale) for the DoN operator.
        * @param normals the smaller radius (scale) of the DoN filter.

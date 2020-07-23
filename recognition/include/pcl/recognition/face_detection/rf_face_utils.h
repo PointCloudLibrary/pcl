@@ -205,8 +205,7 @@ namespace pcl
 
         /** \brief Destructor. */
         ~PoseClassRegressionVarianceStatsEstimator()
-        {
-        }
+        override = default;
 
         /** \brief Returns the number of branches the corresponding tree has. */
         inline std::size_t getNumOfBranches() const override

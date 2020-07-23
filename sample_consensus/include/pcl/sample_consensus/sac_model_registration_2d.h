@@ -105,7 +105,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~SampleConsensusModelRegistration2D () {}
+      ~SampleConsensusModelRegistration2D () override = default;
 
       /** \brief Compute all distances from the transformed points to their correspondences
         * \param[in] model_coefficients the 4x4 transformation matrix

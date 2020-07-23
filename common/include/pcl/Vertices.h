@@ -14,7 +14,7 @@ namespace pcl
   struct Vertices
   {
     Vertices ()
-    {}
+    = default;
 
     Indices vertices;
 

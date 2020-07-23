@@ -72,7 +72,7 @@ namespace pcl
       { }
       
       /** \brief Empty destructor */
-      ~FastBilateralFilter () {}
+      ~FastBilateralFilter () override = default;
 
       /** \brief Set the standard deviation of the Gaussian used by the bilateral filter for
         * the spatial neighborhood/window.

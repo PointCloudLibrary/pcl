@@ -55,7 +55,7 @@ public:
   OctreePointCloudVoxelCentroidContainer() { this->reset(); }
 
   /** \brief Empty class deconstructor. */
-  ~OctreePointCloudVoxelCentroidContainer() {}
+  ~OctreePointCloudVoxelCentroidContainer() override = default;
 
   /** \brief deep copy function */
   virtual OctreePointCloudVoxelCentroidContainer*
@@ -150,7 +150,7 @@ public:
 
   /** \brief Empty class deconstructor. */
 
-  ~OctreePointCloudVoxelCentroid() {}
+  ~OctreePointCloudVoxelCentroid() override = default;
 
   /** \brief Add DataT object to leaf node at octree key.
    * \param pointIdx_arg

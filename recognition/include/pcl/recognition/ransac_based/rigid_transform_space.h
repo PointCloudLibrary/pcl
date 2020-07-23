@@ -138,7 +138,7 @@ namespace pcl
         };// class Entry
 
       public:
-        RotationSpaceCell (){}
+        RotationSpaceCell ()= default;
         virtual ~RotationSpaceCell ()
         {
           model_to_entry_.clear ();
@@ -174,8 +174,8 @@ namespace pcl
     class RotationSpaceCellCreator
     {
       public:
-        RotationSpaceCellCreator (){}
-        virtual ~RotationSpaceCellCreator (){}
+        RotationSpaceCellCreator ()= default;
+        virtual ~RotationSpaceCellCreator ()= default;
 
         RotationSpaceCell* create (const SimpleOctree<RotationSpaceCell, RotationSpaceCellCreator, float>::Node* )
         {
@@ -297,7 +297,7 @@ namespace pcl
         : counter_ (0)
         {}
 
-        virtual ~RotationSpaceCreator(){}
+        virtual ~RotationSpaceCreator()= default;
 
         RotationSpace* create(const SimpleOctree<RotationSpace, RotationSpaceCreator, float>::Node* leaf)
         {
@@ -340,7 +340,7 @@ namespace pcl
     class PCL_EXPORTS RigidTransformSpace
     {
       public:
-        RigidTransformSpace (){}
+        RigidTransformSpace ()= default;
         virtual ~RigidTransformSpace (){ this->clear ();}
 
         inline void

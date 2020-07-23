@@ -962,7 +962,7 @@ namespace pcl
         /** \brief Internal structure describing a layer. */
         struct Layer
         {
-          Layer () {}
+          Layer () = default;
           vtkSmartPointer<vtkContextActor> actor;
           std::string layer_name;
         };

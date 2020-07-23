@@ -83,8 +83,7 @@ namespace pcl
       /** \brief Destructor for OrganizedEdgeBase */
 
       ~OrganizedEdgeBase ()
-      {
-      }
+      override = default;
 
       /** \brief Perform the 3D edge detection (edges from depth discontinuities)
         * \param[out] labels a PointCloud of edge labels
@@ -213,8 +212,7 @@ namespace pcl
       /** \brief Destructor for OrganizedEdgeFromRGB */
 
       ~OrganizedEdgeFromRGB ()
-      {
-      }
+      override = default;
 
       /** \brief Perform the 3D edge detection (edges from depth discontinuities and RGB Canny edge) and assign point indices for each edge label
         * \param[out] labels a PointCloud of edge labels
@@ -304,8 +302,7 @@ namespace pcl
       /** \brief Destructor for OrganizedEdgeFromNormals */
 
       ~OrganizedEdgeFromNormals ()
-      {
-      }
+      override = default;
 
       /** \brief Perform the 3D edge detection (edges from depth discontinuities and high curvature regions) and assign point indices for each edge label
         * \param[out] labels a PointCloud of edge labels
@@ -413,8 +410,7 @@ namespace pcl
       /** \brief Destructor for OrganizedEdgeFromRGBNormals */
 
       ~OrganizedEdgeFromRGBNormals ()
-      {
-      }
+      override = default;
 
       /** \brief Perform the 3D edge detection (edges from depth discontinuities, RGB Canny edge, and high curvature regions) and assign point indices for each edge label
         * \param[out] labels a PointCloud of edge labels

@@ -94,7 +94,7 @@ namespace pcl
       /** \brief Constructor. */
       ColorGradientModality ();
       /** \brief Destructor. */
-      ~ColorGradientModality ();
+      ~ColorGradientModality () override;
   
       /** \brief Sets the threshold for the gradient magnitude which is used when quantizing the data.
         *        Gradients with a smaller magnitude are ignored. 
@@ -287,8 +287,7 @@ ColorGradientModality ()
 template <typename PointInT>
 pcl::ColorGradientModality<PointInT>::
 ~ColorGradientModality ()
-{
-}
+= default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void

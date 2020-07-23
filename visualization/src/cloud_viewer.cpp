@@ -148,8 +148,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
   }
 
   ~CloudViewer_impl ()
-  {
-  }
+  = default;
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   template <typename T> void

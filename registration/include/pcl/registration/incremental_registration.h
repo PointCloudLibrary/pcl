@@ -82,7 +82,7 @@ public:
   IncrementalRegistration();
 
   /** \brief Empty destructor */
-  virtual ~IncrementalRegistration() {}
+        virtual ~IncrementalRegistration () = default;
 
   /** \brief Register new point cloud incrementally
    * \note You have to set a valid registration object with @ref setRegistration before

@@ -65,7 +65,7 @@ namespace pcl
           memcpy (rigid_transform_, rigid_transform, 12*sizeof (float));
         }
 
-        virtual  ~HypothesisBase (){}
+        virtual  ~HypothesisBase ()= default;
 
         void
         setModel (const ModelLibrary::Model* model)
@@ -95,7 +95,7 @@ namespace pcl
         {
         }
 
-        ~Hypothesis (){}
+        ~Hypothesis () override = default;
 
         const Hypothesis&
         operator =(const Hypothesis& src)

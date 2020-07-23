@@ -494,7 +494,7 @@ const ON_wString& ON_Light::LightName() const
 
 void ON_Light::SetAttenuation(double a,double b,double c)
 {
-  m_attenuation = ON_3dVector(a,b,c);;
+  m_attenuation = ON_3dVector(a,b,c);
 }
 
 void ON_Light::SetAttenuation(const ON_3dVector& att )
@@ -704,7 +704,7 @@ void ON_Light::SetDiffuse(  ON_Color c )
 
 void ON_Light::SetSpecular( ON_Color c )
 {
-  m_specular = c;;
+  m_specular = c;
 }
 
 ON_Color ON_Light::Ambient() const

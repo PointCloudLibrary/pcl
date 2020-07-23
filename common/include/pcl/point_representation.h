@@ -196,8 +196,6 @@ namespace pcl
         trivial_ = true;
       }
 
-      ~DefaultPointRepresentation () {}
-
       inline Ptr
       makeShared () const
       {

@@ -50,11 +50,6 @@ namespace pcl
   }
 
   /////////////////////////////////////////////////////////////////////////
-  RangeImagePlanar::~RangeImagePlanar ()
-  {
-  }
-
-  /////////////////////////////////////////////////////////////////////////
   void
   RangeImagePlanar::setDisparityImage (const float* disparity_image, int di_width, int di_height,
                                        float focal_length, float base_line, float desired_angular_resolution)

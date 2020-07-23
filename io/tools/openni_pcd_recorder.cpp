@@ -101,7 +101,7 @@ template <typename PointT>
 class PCDBuffer
 {
   public:
-    PCDBuffer () {}
+    PCDBuffer () = default;
 
     bool 
     pushBack (typename PointCloud<PointT>::ConstPtr); // thread-save wrapper for push_back() method of ciruclar_buffer

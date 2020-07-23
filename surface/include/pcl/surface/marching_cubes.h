@@ -383,7 +383,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~MarchingCubes ();
+      ~MarchingCubes () override;
 
 
       /** \brief Method that sets the iso level of the surface to be extracted.

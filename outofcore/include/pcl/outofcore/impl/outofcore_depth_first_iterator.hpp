@@ -58,8 +58,7 @@ namespace pcl
 
     template<typename PointT, typename ContainerT> 
     OutofcoreDepthFirstIterator<PointT, ContainerT>::~OutofcoreDepthFirstIterator ()
-    {
-    }
+    = default;
 
     ////////////////////////////////////////////////////////////////////////////////
 

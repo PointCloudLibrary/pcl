@@ -74,8 +74,7 @@ namespace pcl
             }
 
             virtual ~BoundedObject ()
-            {
-            }
+            = default;
 
             /** \brief This method is for std::sort. */
             inline static bool

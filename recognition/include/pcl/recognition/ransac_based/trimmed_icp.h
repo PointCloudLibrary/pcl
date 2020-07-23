@@ -73,7 +73,7 @@ namespace pcl
         {}
 
         ~TrimmedICP ()
-        {}
+        override = default;
 
         /** \brief Call this method before calling align().
           *

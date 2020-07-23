@@ -102,7 +102,7 @@ namespace pcl
       }
 
       /** \brief Empty destructor. */
-      ~SACSegmentation () { /*srv_.reset ();*/ };
+      ~SACSegmentation () override = default;
 
       /** \brief The type of model to use (user given parameter).
         * \param[in] model the model type (check \a model_types.h)

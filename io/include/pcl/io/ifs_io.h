@@ -52,11 +52,6 @@ namespace pcl
   class PCL_EXPORTS IFSReader
   {
     public:
-      /** Empty constructor */
-      IFSReader () {}
-      /** Empty destructor */
-      ~IFSReader () {}
-
       /** \brief we support two versions
         * 1.0 classic
         * 1.1 with texture coordinates addon
@@ -142,8 +137,8 @@ namespace pcl
   class PCL_EXPORTS IFSWriter
   {
     public:
-      IFSWriter() {}
-      ~IFSWriter() {}
+      IFSWriter() = default;
+      ~IFSWriter() = default;
 
       /** \brief Save point cloud data to an IFS file containing 3D points.
         * \param[in] file_name the output file name

@@ -81,7 +81,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~MarchingCubesHoppe ();
+      ~MarchingCubesHoppe () override;
 
       /** \brief Convert the point cloud into voxel data.
         */

@@ -58,7 +58,7 @@ namespace openni_wrapper
     friend class OpenNIDriver;
   public:
     DeviceKinect (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& image_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
-    ~DeviceKinect () noexcept;
+    ~DeviceKinect () noexcept override;
 
     inline void setDebayeringMethod (const ImageBayerGRBG::DebayeringMethod& debayering_method) noexcept;
     inline const ImageBayerGRBG::DebayeringMethod& getDebayeringMethod () const throw ();

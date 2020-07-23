@@ -89,7 +89,7 @@ namespace pcl
       /** \brief Data leaf. */
       struct Leaf
       {
-        Leaf () {}
+        Leaf () = default;
 
         std::vector<int> data_indices;
         Eigen::Vector4f pt_on_surface; 
@@ -107,7 +107,7 @@ namespace pcl
       GridProjection (double in_resolution);
 
       /** \brief Destructor. */
-      ~GridProjection ();
+      ~GridProjection () override;
 
       /** \brief Set the size of the grid cell
         * \param resolution  the size of the grid cell

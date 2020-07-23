@@ -28,6 +28,8 @@ endif()
 
 project(PCL VERSION 1.11.1.99)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
+### ---[ Generate compile_commands.json for clang-tidy
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 ### ---[ Find universal dependencies
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODULE_PATH})

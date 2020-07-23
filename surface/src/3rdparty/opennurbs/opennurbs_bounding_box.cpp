@@ -406,7 +406,7 @@ int ON_ClippingRegion::InClipPlaneRegion(
         if ( x < -clip_plane_tolerance )
           out |= cpbit;
         cpbit <<= 1;
-        cpeqn++;;
+        cpeqn++;
       }
     }
     some_out |= out;
@@ -470,7 +470,7 @@ int ON_ClippingRegion::InClipPlaneRegion(
         if ( x < -clip_plane_tolerance )
           out |= cpbit;
         cpbit <<= 1;
-        cpeqn++;;
+        cpeqn++;
       }
     }
     some_out |= out;
@@ -534,7 +534,7 @@ int ON_ClippingRegion::InClipPlaneRegion(
         if ( x < -clip_plane_tolerance )
           out |= cpbit;
         cpbit <<= 1;
-        cpeqn++;;
+        cpeqn++;
       }
     }
     some_out |= out;
@@ -620,7 +620,7 @@ int ON_ClippingRegion::IsVisible( int count, const ON_3fPoint* p ) const
         if ( x < -clip_plane_tolerance )
           out |= cpbit;
         cpbit <<= 1;
-        cpeqn++;;
+        cpeqn++;
       }
     }
     w = xform[12]*cv[0] + xform[13]*cv[1] + xform[14]*cv[2] + xform[15];
@@ -684,7 +684,7 @@ int ON_ClippingRegion::IsVisible( int count, const ON_3dPoint* p ) const
         if ( x < -clip_plane_tolerance )
           out |= cpbit;
         cpbit <<= 1;
-        cpeqn++;;
+        cpeqn++;
       }
     }
     w = xform[12]*cv[0] + xform[13]*cv[1] + xform[14]*cv[2] + xform[15];
@@ -927,7 +927,7 @@ int ON_ClippingRegion::TransformPoints( int count, ON_4dPoint* p, unsigned int* 
         if ( x < -clip_plane_tolerance )
           out |= cpbit;
         cpbit <<= 1;
-        cpeqn++;;
+        cpeqn++;
       }
     }
     w = xform[12]*cv[0] + xform[13]*cv[1] + xform[14]*cv[2] + xform[15]*cv[3];
@@ -992,7 +992,7 @@ int ON_ClippingRegion::TransformPoints( int count, ON_4dPoint* p ) const
         if ( x < -clip_plane_tolerance )
           out |= cpbit;
         cpbit <<= 1;
-        cpeqn++;;
+        cpeqn++;
       }
     }
     w = xform[12]*cv[0] + xform[13]*cv[1] + xform[14]*cv[2] + xform[15]*cv[3];

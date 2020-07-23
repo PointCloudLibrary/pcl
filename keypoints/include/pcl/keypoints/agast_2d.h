@@ -85,7 +85,7 @@ namespace pcl
           {}
 
           /** \brief Destructor. */
-          virtual ~AbstractAgastDetector () {}
+          virtual ~AbstractAgastDetector () = default;
 
           /** \brief Detects corner points. 
             * \param intensity_data
@@ -285,7 +285,7 @@ namespace pcl
           }
 
           /** \brief Destructor. */
-          ~AgastDetector7_12s () {}
+          ~AgastDetector7_12s () override = default;
 
           /** \brief Computes corner score. 
             * \param im 
@@ -356,7 +356,7 @@ namespace pcl
           }
 
           /** \brief Destructor. */
-          ~AgastDetector5_8 () {}
+          ~AgastDetector5_8 () override = default;
 
           /** \brief Computes corner score. 
             * \param im 
@@ -427,7 +427,7 @@ namespace pcl
           }
 
           /** \brief Destructor. */
-          ~OastDetector9_16 () {}
+          ~OastDetector9_16 () override = default;
 
           /** \brief Computes corner score. 
             * \param im 
@@ -580,8 +580,7 @@ namespace pcl
 
       /** \brief Destructor. */
       ~AgastKeypoint2DBase ()
-      {
-      }
+      override = default;
 
       /** \brief Sets the threshold for corner detection.
         * \param[in] threshold the threshold used for corner detection.
@@ -740,8 +739,7 @@ namespace pcl
 
       /** \brief Destructor. */
       ~AgastKeypoint2D ()
-      {
-      }
+      = default;
 
     protected:
       /** \brief Detects the keypoints.
@@ -791,8 +789,7 @@ namespace pcl
 
       /** \brief Destructor. */
       ~AgastKeypoint2D ()
-      {
-      }
+      override = default;
 
     protected:
       /** \brief Detects the keypoints.

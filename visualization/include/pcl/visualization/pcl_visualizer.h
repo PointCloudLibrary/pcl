@@ -2038,7 +2038,7 @@ namespace pcl
           static FPSCallback *New () { return (new FPSCallback); }
 
           FPSCallback () : actor (), pcl_visualizer (), decimated (), last_fps(0.0f) {}
-          FPSCallback (const FPSCallback& src) : vtkCommand (src), actor (src.actor), pcl_visualizer (src.pcl_visualizer), decimated (src.decimated), last_fps (src.last_fps) {}
+          FPSCallback (const FPSCallback& src)  = default;
           FPSCallback& operator = (const FPSCallback& src) { actor = src.actor; pcl_visualizer = src.pcl_visualizer; decimated = src.decimated; last_fps = src.last_fps; return (*this); }
 
           void

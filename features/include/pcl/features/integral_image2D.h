@@ -127,10 +127,6 @@ namespace pcl
       {
       }
 
-      /** \brief Destructor */
-      virtual
-      ~IntegralImage2D () { }
-
       /** \brief sets the computation for second order integral images on or off.
         * \param compute_second_order_integral_images
         */
@@ -251,10 +247,6 @@ namespace pcl
         compute_second_order_integral_images_ (compute_second_order_integral_images)
       {
       }
-
-      /** \brief Destructor */
-      virtual
-      ~IntegralImage2D () { }
 
       /** \brief Set the input data to compute the integral image for
         * \param[in] data the input data

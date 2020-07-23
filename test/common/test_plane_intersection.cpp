@@ -209,7 +209,7 @@ TEST (PCL, planeWithPlaneIntersection)
 
   // Testing nearly parallel planes, plane normal not normalized!
   plane_a << 1.0, 2.0, 3.0, -0.5;
-  plane_b << 1.0, 2.5, 3.0, 0.5;;
+  plane_b << 1.0, 2.5, 3.0, 0.5;
   plane_ad << 1.0, 2.0, 3.0, -0.5;
   plane_bd << 1.0, 2.5, 3.0, 0.5;
 

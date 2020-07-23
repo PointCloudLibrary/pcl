@@ -93,8 +93,7 @@ namespace pcl
       /** \brief Destructor for PlaneCoefficientComparator. */
 
       ~PlaneCoefficientComparator ()
-      {
-      }
+      override = default;
 
       void
       setInputCloud (const PointCloudConstPtr& cloud) override

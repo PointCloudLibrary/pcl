@@ -97,8 +97,7 @@ namespace pcl
         /** \brief Empty Destructor. */
         
         ~Octree ()
-        {
-        }
+        override = default;
 
         /** \brief Provide a pointer to the input dataset.
           * \param[in] cloud the const boost shared pointer to a PointCloud message

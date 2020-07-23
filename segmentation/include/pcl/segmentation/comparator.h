@@ -67,10 +67,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor for comparator. */
-      virtual
-      ~Comparator ()
-      {
-      }
+      virtual ~Comparator () = default;
       
       /** \brief Set the input cloud for the comparator.
         * \param[in] cloud the point cloud this comparator will operate on

@@ -49,7 +49,7 @@ namespace pcl
       /** \brief Constructor. */
       DistanceMap () : data_ (0), width_ (0), height_ (0) {}
       /** \brief Destructor. */
-      virtual ~DistanceMap () {}
+      virtual ~DistanceMap () = default;
 
       /** \brief Returns the width of the map. */
       inline std::size_t 

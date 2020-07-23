@@ -51,7 +51,7 @@ namespace mets {
   class solution_recorder {
   public:
     /// @brief Default ctor.
-    solution_recorder() {}
+    solution_recorder() = default;
     /// @brief Unimplemented copy ctor.
     solution_recorder(const solution_recorder&);
     /// @brief Unimplemented assignment operator.
@@ -109,9 +109,9 @@ namespace mets {
     abstract_search& operator==(const abstract_search<move_manager_type>&);
 
     /// @brief Virtual destructor.
-    virtual 
+    
     ~abstract_search() 
-    { };
+    override = default;;
 
     enum {
       /// @brief We just made a move.
@@ -220,14 +220,14 @@ namespace mets {
     /// @brief Accept is called at the end of each iteration for an
     /// opportunity to record the best solution found during the
     /// search.
-    bool accept(const feasible_solution& sol);
+    bool accept(const feasible_solution& sol) override;
 
     /// @brief Returns the best solution found since the beginning.
     const evaluable_solution& best_seen() const 
     { return best_ever_m; }
 
     /// @brief Best cost seen.
-    gol_type best_cost() const 
+    gol_type best_cost() const override 
     { return best_ever_m.cost_function(); }
   protected:
     /// @brief Records the best solution
@@ -255,7 +255,7 @@ namespace mets {
     /// @brief Virtual destructor
     virtual 
     ~search_listener() 
-    { }
+    = default;
 
     /// @brief This is the callback method called by searches
     /// when a move, an improvement or something else happens
@@ -336,7 +336,7 @@ namespace mets {
 }
 
 inline mets::solution_recorder::~solution_recorder() 
-{ }
+= default;
 
 inline bool
 mets::best_ever_solution::accept(const mets::feasible_solution& sol)

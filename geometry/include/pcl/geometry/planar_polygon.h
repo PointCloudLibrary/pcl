@@ -70,7 +70,7 @@ namespace pcl
       {}
       
       /** \brief Destructor. */
-      virtual ~PlanarPolygon () {}
+      virtual ~PlanarPolygon () = default;
 
       /** \brief Set the internal contour
         * \param[in] contour the new planar polygonal contour

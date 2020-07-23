@@ -42,7 +42,7 @@
 
 // PCL includes
 #include <pcl/registration/correspondence_estimation.h>
-#include <pcl/registration/default_convergence_criteria.h>
+#include <pcl/sample_consensus/ransac.h>
 #include <pcl/registration/registration.h>
 #include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
 #include <pcl/registration/transformation_estimation_svd.h>
@@ -180,7 +180,7 @@ public:
   operator=(IterativeClosestPoint&&) = delete;
 
   /** \brief Empty destructor */
-  ~IterativeClosestPoint() {}
+      ~IterativeClosestPoint () override = default;
 
   /** \brief Returns a pointer to the DefaultConvergenceCriteria used by the
    * IterativeClosestPoint class. This allows to check the convergence state after the
@@ -366,7 +366,7 @@ public:
   };
 
   /** \brief Empty destructor */
-  virtual ~IterativeClosestPointWithNormals() {}
+      ~IterativeClosestPointWithNormals () override = default;
 
   /** \brief Set whether to use a symmetric objective function or not
    *
@@ -441,7 +441,7 @@ protected:
   virtual void
   transformCloud(const PointCloudSource& input,
                  PointCloudSource& output,
-                 const Matrix4& transform);
+                      const Matrix4 &transform) override;
 
   /** \brief Type of objective function (asymmetric vs. symmetric) used for transform
    * estimation */

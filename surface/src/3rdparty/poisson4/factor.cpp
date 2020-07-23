@@ -29,8 +29,9 @@ DAMAGE.
 //////////////////////
 // Polynomial Roots //
 //////////////////////
-#include <math.h>
 #include <pcl/surface/3rdparty/poisson4/factor.h>
+
+#include <cmath>
 
 namespace pcl
 {

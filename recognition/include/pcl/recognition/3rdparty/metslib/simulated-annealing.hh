@@ -51,12 +51,12 @@ namespace mets {
   public:
     /// @brief Constructor
     abstract_cooling_schedule() 
-    { }
+    = default;
 
     /// @brief Virtual destructor
     virtual
     ~abstract_cooling_schedule() 
-    { }
+    = default;
 
     /// @brief The function that updates the SA temperature.
     ///
@@ -120,8 +120,8 @@ namespace mets {
     ///
     /// Remember that this is a minimization process.
     ///
-    virtual void
-    search();
+    void
+    search() override;
 
     void setApplyAndEvaluate(bool b) {
       apply_and_evaluate = b;
@@ -175,7 +175,7 @@ namespace mets {
       : abstract_cooling_schedule(), factor_m(alpha) 
     { if(alpha >= 1) throw std::runtime_error("alpha must be < 1"); }
     double
-    operator()(double temp, feasible_solution& /*fs*/)
+    operator()(double temp, feasible_solution& /*fs*/) override
     { return temp*factor_m; }
   protected:
     double factor_m;
@@ -190,7 +190,7 @@ namespace mets {
       : abstract_cooling_schedule(), decrement_m(delta)
     { if(delta <= 0) throw std::runtime_error("delta must be > 0"); }
     double
-    operator()(double temp, feasible_solution& /*fs*/)
+    operator()(double temp, feasible_solution& /*fs*/) override
     { return std::max(0.0, temp-decrement_m); }
   protected:
     double decrement_m;

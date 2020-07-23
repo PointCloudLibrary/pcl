@@ -50,7 +50,7 @@ namespace pcl
 
     public:
       typedef shared_ptr<SurfelSmoothing<PointT, PointNT> > Ptr;
-      typedef shared_ptr<const SurfelSmoothing<PointT, PointNT> > ConstPtr;
+      using ConstPtr = shared_ptr<const SurfelSmoothing<PointT, PointNT> >;
 
       using PointCloudIn = pcl::PointCloud<PointT>;
       using PointCloudInPtr = typename pcl::PointCloud<PointT>::Ptr;

@@ -53,8 +53,7 @@ pcl::CPCSegmentation<PointT>::CPCSegmentation () :
 
 template <typename PointT>
 pcl::CPCSegmentation<PointT>::~CPCSegmentation ()
-{
-}
+= default;
 
 template <typename PointT> void
 pcl::CPCSegmentation<PointT>::segment ()

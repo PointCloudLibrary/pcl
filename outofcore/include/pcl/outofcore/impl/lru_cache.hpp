@@ -20,7 +20,7 @@ public:
   }
 
   virtual
-  ~LRUCacheItem () { }
+  ~LRUCacheItem () = default;
 
   T item;
   std::size_t timestamp;

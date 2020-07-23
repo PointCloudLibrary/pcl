@@ -126,7 +126,7 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
         sizes.push_back(results_host.size());      
     }    
 
-    float avg_size = std::accumulate(sizes.begin(), sizes.end(), 0) * (1.f/sizes.size());;
+    float avg_size = std::accumulate(sizes.begin(), sizes.end(), 0) * (1.f/sizes.size());
 
     std::cout << "avg_result_size = " << avg_size << std::endl;
     ASSERT_GT(avg_size, 5);    

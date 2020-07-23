@@ -59,8 +59,6 @@ namespace pcl
       // =====CONSTRUCTOR & DESTRUCTOR=====
       /** Constructor */
       PCL_EXPORTS RangeImagePlanar ();
-      /** Destructor */
-      PCL_EXPORTS ~RangeImagePlanar ();
 
       /** Return a newly created RangeImagePlanar.
        *  Reimplementation to return an image of the same type. */

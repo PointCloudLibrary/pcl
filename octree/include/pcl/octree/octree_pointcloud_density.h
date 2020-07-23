@@ -53,7 +53,7 @@ public:
   OctreePointCloudDensityContainer() : point_counter_(0) {}
 
   /** \brief Empty class deconstructor. */
-  ~OctreePointCloudDensityContainer() {}
+  ~OctreePointCloudDensityContainer() override = default;
 
   /** \brief deep copy function */
   virtual OctreePointCloudDensityContainer*
@@ -126,7 +126,7 @@ public:
 
   /** \brief Empty class deconstructor. */
 
-  ~OctreePointCloudDensity() {}
+  ~OctreePointCloudDensity() = default;
 
   /** \brief Get the amount of points within a leaf node voxel which is addressed by a
    * point

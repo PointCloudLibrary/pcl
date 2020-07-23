@@ -211,9 +211,6 @@ namespace pcl
         /** \brief Constructor */
         Convolution3D ();
 
-        /** \brief Empty destructor */
-        ~Convolution3D () {}
-
         /** \brief Initialize the scheduler and set the number of threads to use.
           * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
           */

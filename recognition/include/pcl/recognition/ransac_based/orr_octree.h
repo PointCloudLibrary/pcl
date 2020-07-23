@@ -89,7 +89,7 @@ namespace pcl
                   n_[0] = n_[1] = n_[2] = p_[0] = p_[1] = p_[2] = 0.0f;
                 }
 
-                virtual~ Data (){}
+                virtual~ Data ()= default;
 
                 inline void
                 addToPoint (float x, float y, float z)

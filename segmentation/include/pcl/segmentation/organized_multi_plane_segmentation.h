@@ -103,8 +103,7 @@ namespace pcl
       /** \brief Destructor for OrganizedMultiPlaneSegmentation. */
       
       ~OrganizedMultiPlaneSegmentation ()
-      {
-      }
+      override = default;
 
       /** \brief Provide a pointer to the input normals.
         * \param[in] normals the input normal cloud

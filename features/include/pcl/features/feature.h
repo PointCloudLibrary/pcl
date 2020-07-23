@@ -136,7 +136,7 @@ namespace pcl
       {}
 
       /** \brief Empty destructor */
-      virtual ~Feature () {}
+      ~Feature() override = default;
 
       /** \brief Provide a pointer to a dataset to add additional information
         * to estimate the features for every point in the input dataset.  This
@@ -332,7 +332,7 @@ namespace pcl
       FeatureFromNormals () : normals_ () {}
 
       /** \brief Empty destructor */
-      virtual ~FeatureFromNormals () {}
+      ~FeatureFromNormals() override = default;
 
       /** \brief Provide a pointer to the input dataset that contains the point normals of
         * the XYZ dataset.
@@ -395,7 +395,7 @@ namespace pcl
       }
 
       /** \brief Empty destructor */
-      virtual ~FeatureFromLabels () {}
+      ~FeatureFromLabels() override = default;
 
       /** \brief Provide a pointer to the input dataset that contains the point labels of
         * the XYZ dataset.
@@ -456,7 +456,7 @@ namespace pcl
       FeatureWithLocalReferenceFrames () : frames_ (), frames_never_defined_ (true) {}
 
        /** \brief Empty destructor. */
-      virtual ~FeatureWithLocalReferenceFrames () {}
+      virtual ~FeatureWithLocalReferenceFrames() = default;
 
       /** \brief Provide a pointer to the input dataset that contains the local
         * reference frames of the XYZ dataset.

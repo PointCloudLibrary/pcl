@@ -54,7 +54,7 @@ typedef struct {
     kiss_fft_scalar i;
 }kiss_fft_cpx;
 
-typedef struct kiss_fft_state* kiss_fft_cfg;
+typedef struct kiss_fft_state* kiss_fft_cfg;    
 
 /* 
  *  kiss_fft_alloc

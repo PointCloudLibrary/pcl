@@ -56,10 +56,6 @@ namespace pcl
       {
       }
 
-      ~DefaultIterator ()
-      {
-      }
-
       void operator ++ ()
       {
         ++iterator_;
@@ -130,8 +126,6 @@ namespace pcl
       {
       }
 
-      virtual ~IteratorIdx () {}
-
       void operator ++ ()
       {
         ++iterator_;
@@ -193,10 +187,6 @@ namespace pcl
       DefaultConstIterator (const PointCloud<PointT>& cloud)
         : cloud_ (cloud)
         , iterator_ (cloud.begin ())
-      {
-      }
-
-      ~DefaultConstIterator ()
       {
       }
 
@@ -271,8 +261,6 @@ namespace pcl
         , iterator_ (indices_.begin ())
       {
       }
-
-      ~ConstIteratorIdx () {}
 
       void operator ++ () override
       {

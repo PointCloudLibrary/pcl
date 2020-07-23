@@ -119,11 +119,6 @@ namespace pcl
           rng_.seed (12345u);
       }
 
-      ~ShapeContext3DEstimation() {}
-
-      //inline void
-      //setAzimuthBins (std::size_t bins) { azimuth_bins_ = bins; }
-
       /** \return the number of bins along the azimuth */
       inline std::size_t
       getAzimuthBins () { return (azimuth_bins_); }

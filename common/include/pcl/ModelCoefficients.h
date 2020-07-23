@@ -10,10 +10,6 @@ namespace pcl
 {
   struct ModelCoefficients
   {
-    ModelCoefficients ()
-    {
-    }
-
     ::pcl::PCLHeader header;
 
     std::vector<float> values;

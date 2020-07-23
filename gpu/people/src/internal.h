@@ -133,8 +133,6 @@ namespace pcl
       public:
         /** \brief Constructor with default values, allocates multilmap device memory **/
         MultiTreeLiveProc(int def_rows = 480, int def_cols = 640) : multilmap (def_rows, def_cols) {}
-        /** \brief Empty destructor **/
-        ~MultiTreeLiveProc() {}
 
         void
         process (const Depth& dmap, Labels& lmap);

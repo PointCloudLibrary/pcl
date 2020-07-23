@@ -39,7 +39,10 @@
 
 #pragma once
 
+#include <pcl/common/eigen.h>
 #include <pcl/point_cloud.h>
+#include <pcl/exceptions.h>
+#include <pcl/pcl_base.h>
 
 namespace pcl
 {
@@ -89,8 +92,7 @@ namespace pcl
         };
         /// Constructor
         Convolution ();
-        /// Empty destructor
-        ~Convolution () {}
+
         /** \brief Provide a pointer to the input dataset
           * \param cloud the const boost shared pointer to a PointCloud message
           * \remark Will perform a deep copy

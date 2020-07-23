@@ -53,10 +53,8 @@ namespace pcl
   class PCL_EXPORTS PCDReader : public FileReader
   {
     public:
-      /** Empty constructor */
-      PCDReader () {}
       /** Empty destructor */
-      ~PCDReader () {}
+      ~PCDReader () override = default;
 
       /** \brief Various PCD file versions.
         *
@@ -297,7 +295,7 @@ namespace pcl
   {
     public:
       PCDWriter() : map_synchronization_(false) {}
-      ~PCDWriter() {}
+      ~PCDWriter() override = default;
 
       /** \brief Set whether mmap() synchornization via msync() is desired before munmap() calls.
         * Setting this to true could prevent NFS data loss (see

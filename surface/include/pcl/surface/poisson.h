@@ -76,7 +76,7 @@ namespace pcl
       Poisson ();
 
       /** \brief Destructor. */
-      ~Poisson ();
+      ~Poisson () override;
 
       /** \brief Create the surface.
         * \param[out] output the resultant polygonal mesh

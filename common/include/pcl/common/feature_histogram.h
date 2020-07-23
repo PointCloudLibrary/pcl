@@ -58,9 +58,6 @@ namespace pcl
       FeatureHistogram (const std::size_t number_of_bins, const float min,
           const float max);
 
-      /** \brief Public destructor. */
-      virtual ~FeatureHistogram ();
-
       /** \brief Get the lower threshold.
         * \return lower threshold.
         */

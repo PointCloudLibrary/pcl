@@ -73,9 +73,6 @@ namespace pcl
         feature_name_ = "BOARDLocalReferenceFrameEstimation";
         setCheckMarginArraySize (check_margin_array_size_);
       }
-      
-      /** \brief Empty destructor */
-      ~BOARDLocalReferenceFrameEstimation () {}
 
       //Getters/Setters
 

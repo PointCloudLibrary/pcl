@@ -121,7 +121,7 @@ main (int argc, char ** argv)
   bool ignore_provided_normals = pcl::console::find_switch (argc, argv, "--nonormals");
   bool has_normals = false;
   
-  std::string out_path = "test_output.png";;
+  std::string out_path = "test_output.png";
   pcl::console::parse (argc, argv, "-o", out_path);
   
   std::string out_label_path = "test_output_labels.png";
@@ -130,7 +130,7 @@ main (int argc, char ** argv)
   std::string refined_out_path = "refined_test_output.png";
   pcl::console::parse (argc, argv, "-O", refined_out_path);
   
-  std::string refined_out_label_path = "refined_test_output_labels.png";;
+  std::string refined_out_label_path = "refined_test_output_labels.png";
   pcl::console::parse (argc, argv, "-L", refined_out_label_path);
 
   float voxel_resolution = 0.008f;

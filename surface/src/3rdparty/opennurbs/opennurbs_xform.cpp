@@ -1954,7 +1954,7 @@ bool ON_Xform::IntervalChange(
     rc = true;
     if ( new_interval != old_interval )
     {
-      double s = new_interval.Length()/old_interval.Length();;
+      double s = new_interval.Length()/old_interval.Length();
       double d = (new_interval[0]*old_interval[1] - new_interval[1]*old_interval[0])/old_interval.Length();
       m_xform[dir][dir] = s;
       m_xform[dir][3] = d;

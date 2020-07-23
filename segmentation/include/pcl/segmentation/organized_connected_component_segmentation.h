@@ -86,8 +86,7 @@ namespace pcl
       /** \brief Destructor for OrganizedConnectedComponentSegmentation. */
       
       ~OrganizedConnectedComponentSegmentation ()
-      {
-      }
+      override = default;
 
       /** \brief Provide a pointer to the comparator to be used for segmentation.
         * \param[in] compare the comparator

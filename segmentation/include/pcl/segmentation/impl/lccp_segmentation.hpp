@@ -67,8 +67,7 @@ pcl::LCCPSegmentation<PointT>::LCCPSegmentation () :
 
 template <typename PointT>
 pcl::LCCPSegmentation<PointT>::~LCCPSegmentation ()
-{
-}
+= default;
 
 template <typename PointT> void
 pcl::LCCPSegmentation<PointT>::reset ()

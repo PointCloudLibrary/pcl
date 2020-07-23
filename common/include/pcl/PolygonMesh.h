@@ -13,9 +13,6 @@ namespace pcl
 {
   struct PolygonMesh
   {
-    PolygonMesh ()
-    {}
-
     ::pcl::PCLHeader  header;
 
     ::pcl::PCLPointCloud2 cloud;

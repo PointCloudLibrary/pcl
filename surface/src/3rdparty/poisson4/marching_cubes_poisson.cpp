@@ -27,6 +27,8 @@ DAMAGE.
 */
 #include <pcl/surface/3rdparty/poisson4/marching_cubes_poisson.h>
 
+#include <cmath>
+
 ////////////
 // Square //
 ////////////

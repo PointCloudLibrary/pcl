@@ -71,10 +71,7 @@ namespace pcl
           k_ = 1;
       };
 
-      /** \brief Destructor */
-      ~LinearLeastSquaresNormalEstimation ();
-
-      /** \brief Computes the normal at the specified position. 
+      /** \brief Computes the normal at the specified position.
         * \param[in] pos_x x position (pixel)
         * \param[in] pos_y y position (pixel)
         * \param[out] normal the output estimated normal 
