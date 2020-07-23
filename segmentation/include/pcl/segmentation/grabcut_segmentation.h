@@ -39,12 +39,13 @@
 
 #pragma once
 
+#include <deque> // for deque
+#include <map> // for map
 #include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
-#include <pcl/segmentation/boost.h>
 #include <pcl/search/search.h>
 
 namespace pcl

@@ -36,9 +36,9 @@
 
 #pragma once
 
+#include <cstdint> // uint8_t, uint16_t
 #include <vector>
-#include <pcl/common/common.h>
-#include <pcl/common/io.h>
+#include <pcl/pcl_exports.h> // for PCL_EXPORTS
 
 namespace pcl
 {

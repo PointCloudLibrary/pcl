@@ -35,7 +35,6 @@
  */
 
 #include <pcl/console/parse.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/octree/octree_pointcloud_changedetector.h>
 #include <pcl/visualization/cloud_viewer.h>

@@ -57,7 +57,6 @@
 #include <vtkGlyph3D.h>
 #include <cstdio>
 #include <thread>
-#include <vector>
 
 using namespace std::chrono_literals;
 using namespace pcl;

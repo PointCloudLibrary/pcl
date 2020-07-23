@@ -60,7 +60,6 @@
 #include <boost/preprocessor/cat.hpp>  // for BOOST_PP_CAT
 #endif
 
-#include <cstddef> // for offsetof
 #include <cstdint>  // for std::uint32_t
 #include <type_traits>  // for std::enable_if_t, std::is_array, std::remove_const_t, std::remove_all_extents_t
 

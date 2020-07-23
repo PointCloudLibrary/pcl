@@ -45,12 +45,10 @@
 #include <pcl/test/gtest.h>
 
 #include <vector>
-#include <cstdio>
 #include <iostream>
 #include <random>
 
 #include <pcl/common/time.h>
-#include <pcl/console/print.h>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>

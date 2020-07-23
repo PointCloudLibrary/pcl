@@ -37,7 +37,7 @@
 
 #pragma once
 
-#include <pcl/common/common.h>
+#include <pcl/pcl_exports.h> // for PCL_EXPORTS
 
 #include <istream>
 

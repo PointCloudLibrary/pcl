@@ -48,7 +48,6 @@ using std::vector;
 using Eigen::Vector3f;
 
 #include <pcl/range_image/range_image.h>
-#include <pcl/common/vector_average.h>
 
 namespace pcl 
 {

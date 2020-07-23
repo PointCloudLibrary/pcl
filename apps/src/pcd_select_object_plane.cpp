@@ -38,7 +38,6 @@
  */
 
 #include <pcl/common/angles.h>
-#include <pcl/common/common.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/console/time.h>

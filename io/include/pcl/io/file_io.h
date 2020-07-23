@@ -37,10 +37,13 @@
 
 #pragma once
 
-#include <pcl/common/io.h>
+#include <pcl/conversions.h> // for fromPCLPointCloud2, toPCLPointCloud2
+#include <pcl/point_cloud.h> // for PointCloud
+#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
 #include <pcl/io/boost.h>
 #include <cmath>
 #include <sstream>
+#include <Eigen/Geometry> // for Quaternionf
 
 namespace pcl
 {

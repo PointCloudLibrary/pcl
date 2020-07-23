@@ -44,8 +44,7 @@
 #include <pcl/io/vtk_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/surface/concave_hull.h>
-#include <pcl/common/common.h>
-#include <pcl/sample_consensus/sac_model_plane.h>
+#include <pcl/sample_consensus/model_types.h> // for SACMODEL_PLANE
 #include <pcl/filters/project_inliers.h>
 
 

@@ -39,7 +39,6 @@
 
 #include <pcl/pcl_macros.h>
 
-#include <cstring>
 #include <vector>
 
 namespace pcl {

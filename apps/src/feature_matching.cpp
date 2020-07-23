@@ -23,7 +23,6 @@
 #include <pcl/ModelCoefficients.h>
 #include <pcl/memory.h> // for pcl::dynamic_pointer_cast
 
-#include <sstream>
 #include <string>
 #include <vector>
 
