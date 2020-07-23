@@ -349,6 +349,8 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 
+#define PCL_INSTANTIATE_PassThrough(T) template class PCL_EXPORTS pcl::PassThrough<T>;
+
 // Instantiations of specific point types
 PCL_INSTANTIATE(PassThrough, PCL_XYZ_POINT_TYPES)
 
