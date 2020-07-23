@@ -8,9 +8,9 @@
  */
 
 #include <pcl/features/organized_edge_detection.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
 
 namespace {
 class OrganizedPlaneDetectionTestFixture : public ::testing::Test {
@@ -29,9 +29,6 @@ protected:
   {
     cloud_ = generateSyntheticEdgeDetectionCloud();
   }
-  void
-  TearDown() override
-  {}
 
 private:
   pcl::PointCloud<pcl::PointXYZ>::Ptr
@@ -90,7 +87,16 @@ this and similar bugs.
 TEST_F(OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
 {
   const auto MAX_SEARCH_NEIGHBORS = 50;
-  const auto DEPTH_DISCONTINUITY_THRESHOLD = SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY / 2.1f;
+
+  // The depth discontinuity check to determine whether an edge exists is linearly
+  // dependent on the depth of the points in the cloud (not a fixed distance).  The
+  // algorithm iterates through each point in the cloud and finding the neighboring
+  // point with largest discontinuity value.  That value is compared against a threshold
+  // multiplied by the actual depth value of the point. Therefore:
+  // abs(SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY) must be greater than
+  // DEPTH_DISCONTINUITY_THRESHOLD * abs(SYNTHETIC_CLOUD_BASE_DEPTH)
+  const auto DEPTH_DISCONTINUITY_THRESHOLD =
+      SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY / (SYNTHETIC_CLOUD_BASE_DEPTH * 1.1f);
 
   // The expected number of occluded edge points is the number of pixels along the
   // perimeter of the inner square, subject to certain conditions including that the
