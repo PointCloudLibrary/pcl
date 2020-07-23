@@ -38,7 +38,7 @@
  *
  */
 
-#include <pcl/filters/impl/passthrough.hpp>
+#include <pcl/filters/passthrough.h>
 
 //////////////////////////////////////////////////////////////////////////
 void

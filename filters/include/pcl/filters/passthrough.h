@@ -332,5 +332,5 @@ namespace pcl
 }
 
 #ifdef PCL_NO_PRECOMPILE
-#include <pcl/filters/impl/passthrough.hpp>
+#define PCL_INSTANTIATE_PassThrough(T) template class PCL_EXPORTS pcl::PassThrough<T>;
 #endif
