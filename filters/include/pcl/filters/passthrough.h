@@ -1,46 +1,17 @@
 /*
- * Software License Agreement (BSD License)
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2020-, Open Perception
  *
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of the copyright holder(s) nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id$
- *
+ *  All rights reserved
  */
 
 #pragma once
 
 #include <pcl/pcl_macros.h>
-#include <pcl/filters/filter_indices.h>
+#include <pcl/filters/functor_filter.h>
 
 namespace pcl
 {
@@ -97,8 +68,8 @@ namespace pcl
       PassThrough (bool extract_removed_indices = false) :
         FilterIndices<PointT> (extract_removed_indices),
         filter_field_name_ (""),
-        filter_limit_min_ (FLT_MIN),
-        filter_limit_max_ (FLT_MAX)
+        filter_limit_min_ (std::numeric_limits<float>::min()),
+        filter_limit_max_ (std::numeric_limits<float>::max())
       {
         filter_name_ = "PassThrough";
       }
@@ -195,14 +166,44 @@ namespace pcl
       void
       applyFilter (std::vector<int> &indices) override
       {
-        applyFilterIndices (indices);
-      }
+        indices.resize (indices_->size());
+        removed_indices_->resize (indices_->size ());
 
-      /** \brief Filtered results are indexed by an indices array.
-        * \param[out] indices The resultant indices.
-        */
-      void
-      applyFilterIndices (std::vector<int> &indices);
+        // Attempt to get the field name's index
+        std::vector<pcl::PCLPointField> fields;
+        int distance_idx = pcl::getFieldIndex<PointT> (filter_field_name_, fields);
+        if (!filter_field_name_.empty() && distance_idx == -1)
+        {
+          PCL_WARN ("[pcl::%s::applyFilter] Unable to find field name in point type.\n", getClassName ().c_str ());
+          indices.clear ();
+          removed_indices_->clear ();
+          return;
+        }
+
+        const auto condition = [&](const PointCloud& cloud, index_t idx) {
+          if (std::isfinite (cloud[idx].x) && std::isfinite (cloud[idx].y) && std::isfinite (cloud[idx].z)) {
+            // If a field name been specified, then filter non-finite entries
+            if (filter_field_name_.empty ())
+              return !negative_;
+
+            // Get the field's value
+            const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&cloud[idx]);
+            float field_value = 0;
+            memcpy (&field_value, pt_data + fields[distance_idx].offset, sizeof (float));
+            if (std::isfinite (field_value) && field_value >= filter_limit_min_ && field_value <= filter_limit_max_) {
+              return true;
+            }
+          }
+          return false;
+        };
+
+        pcl::FunctorFilter<PointT, decltype(condition)> filter{condition, extract_removed_indices_};
+        filter.setInputCloud(input_);
+        filter.setIndices(indices_);
+        filter.setNegative(negative_);
+        filter.applyFilter(indices);
+        removed_indices_ =  std::const_pointer_cast<Indices>(filter.getRemovedIndices());
+      }
 
     private:
       /** \brief The name of the field that will be used for filtering. */
