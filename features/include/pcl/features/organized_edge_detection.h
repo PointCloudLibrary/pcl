@@ -93,14 +93,18 @@ namespace pcl
       void
       compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const;
       
-      /** \brief Set the tolerance in meters for difference in depth values between neighboring points. */
+      /** \brief Set the tolerance in meters for difference in depth values between neighboring points.
+        * (The value is set for 1 meter and is adapted with respect to depth value linearly.
+        * (e.g. 2.0*th_depth_discon_ in 2 meter depth)) */
       inline void
       setDepthDisconThreshold (const float th)
       {
         th_depth_discon_ = th;
       }
 
-      /** \brief Get the tolerance in meters for difference in depth values between neighboring points. */
+      /** \brief Get the tolerance in meters for difference in depth values between neighboring points.
+        * (The value is set for 1 meter and is adapted with respect to depth value linearly.
+        * (e.g. 2.0*th_depth_discon_ in 2 meter depth)) */
       inline float
       getDepthDisconThreshold () const
       {
