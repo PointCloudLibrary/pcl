@@ -11,7 +11,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/search/organized.h>
 #include <pcl/search/kdtree.h>
-#include <pcl/features/normal_3d_omp.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/segmentation/extract_clusters.h>
 
@@ -76,7 +76,7 @@ main (int argc, char *argv[])
   }
 
   // Compute normals using both small and large scales at each point
-  pcl::NormalEstimationOMP<PointXYZRGB, PointNormal> ne;
+  pcl::NormalEstimation<PointXYZRGB, PointNormal> ne;
   ne.setInputCloud (cloud);
   ne.setSearchMethod (tree);
 

@@ -39,8 +39,8 @@
 
 #include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
-#include <pcl/features/normal_3d_omp.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/features/shot.h>
 #include <pcl/features/shot_omp.h>
 #include "pcl/features/shot_lrf.h"

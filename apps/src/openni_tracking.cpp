@@ -41,7 +41,6 @@
 #include <pcl/console/parse.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/features/normal_3d_omp.h>
 #include <pcl/filters/approximate_voxel_grid.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/passthrough.h>
@@ -635,7 +634,7 @@ public:
   std::string device_id_;
   std::mutex mtx_;
   bool new_cloud_;
-  pcl::NormalEstimationOMP<PointType, pcl::Normal> ne_; // to store threadpool
+  pcl::NormalEstimation<PointType, pcl::Normal> ne_; // to store threadpool
   ParticleFilter::Ptr tracker_;
   int counter_;
   bool use_convex_hull_;

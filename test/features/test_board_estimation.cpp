@@ -40,8 +40,8 @@
 #include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_tests.h>
-#include <pcl/features/normal_3d_omp.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/features/board.h>
 
 using namespace pcl;

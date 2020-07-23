@@ -93,7 +93,6 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/multiscale_feature_persistence.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/narf.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/normal_3d.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/normal_3d_omp.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/normal_based_signature.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/organized_edge_detection.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/pfh.hpp"

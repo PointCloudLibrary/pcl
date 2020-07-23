@@ -41,7 +41,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/common/transforms.h>
 #include <pcl/correspondence.h>
-#include <pcl/features/normal_3d_omp.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/features/shot_omp.h>
 #include <pcl/features/board.h>
 #include <pcl/filters/uniform_sampling.h>
@@ -182,7 +182,7 @@ main (int argc, char** argv)
   }
 
   //Normals
-  NormalEstimationOMP<PointType, NormalType> norm_est;
+  NormalEstimation<PointType, NormalType> norm_est;
   norm_est.setKSearch (10);
   norm_est.setInputCloud (model_);
   norm_est.compute (*model_normals_);
