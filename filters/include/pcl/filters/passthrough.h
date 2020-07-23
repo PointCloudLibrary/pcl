@@ -11,6 +11,7 @@
 #pragma once
 
 #include <pcl/pcl_macros.h>
+#include <pcl/common/point_tests.h>
 #include <pcl/filters/functor_filter.h>
 
 namespace pcl

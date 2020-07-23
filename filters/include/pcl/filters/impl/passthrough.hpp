@@ -15,8 +15,7 @@
 template <typename PointT> bool
 pcl::PassThrough<PointT>::condition(const PointCloud& cloud, index_t idx)
 {
-  if (std::isfinite(cloud[idx].x) && std::isfinite(cloud[idx].y) &&
-      std::isfinite(cloud[idx].z)) {
+    if (isXYZFinite(cloud[idx])) {
     // If a field name been specified, then filter non-finite entries
     if (filter_field_name_.empty())
       return !negative_;
