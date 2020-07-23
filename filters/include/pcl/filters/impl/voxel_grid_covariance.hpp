@@ -39,10 +39,14 @@
 #define PCL_VOXEL_GRID_COVARIANCE_IMPL_H_
 
 #include <pcl/common/common.h>
-#include <pcl/filters/boost.h>
+#include <pcl/common/point_tests.h> // for isXYZFinite
 #include <pcl/filters/voxel_grid_covariance.h>
 #include <Eigen/Dense>
 #include <Eigen/Cholesky>
+#include <boost/mpl/size.hpp> // for size
+#include <boost/random/mersenne_twister.hpp> // for mt19937
+#include <boost/random/normal_distribution.hpp> // for normal_distribution
+#include <boost/random/variate_generator.hpp> // for variate_generator
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void

@@ -37,11 +37,9 @@
 
 #pragma once
 
-#include <pcl/filters/boost.h>
 #include <pcl/filters/filter_indices.h>
-
+#include <boost/dynamic_bitset.hpp> // for dynamic_bitset
 #include <ctime>
-#include <climits>
 #include <random> // std::mt19937
 
 namespace pcl

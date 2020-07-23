@@ -40,6 +40,7 @@
 
 #include <pcl/common/io.h>
 #include <pcl/filters/approximate_voxel_grid.h>
+#include <boost/mpl/size.hpp> // for size
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

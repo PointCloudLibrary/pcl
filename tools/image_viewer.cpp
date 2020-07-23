@@ -43,7 +43,6 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
-#include <pcl/console/parse.h>
 #include <vector>
 
 int

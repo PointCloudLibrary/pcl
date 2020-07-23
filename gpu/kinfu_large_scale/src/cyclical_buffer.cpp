@@ -38,6 +38,7 @@
 
 #include <pcl/gpu/kinfu_large_scale/cyclical_buffer.h>
 #include <pcl/common/distances.h>
+#include <pcl/common/transforms.h> // for transformPoint, transformPointCloud
 #include "internal.h"
 
 

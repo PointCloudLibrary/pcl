@@ -42,6 +42,9 @@
 #define PCL_FILTERS_IMPL_CROP_BOX_H_
 
 #include <pcl/filters/crop_box.h>
+#include <pcl/common/eigen.h> // for getTransformation
+#include <pcl/common/point_tests.h> // for isFinite
+#include <pcl/common/transforms.h> // for transformPoint
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void

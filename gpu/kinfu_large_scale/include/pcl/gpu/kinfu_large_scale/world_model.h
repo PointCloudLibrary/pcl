@@ -41,7 +41,6 @@
 #include <pcl/common/impl/common.hpp>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/filter_indices.h>
-#include <pcl/filters/crop_box.h>
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>

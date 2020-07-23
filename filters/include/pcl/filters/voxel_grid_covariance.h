@@ -37,7 +37,6 @@
 
 #pragma once
 
-#include <pcl/filters/boost.h>
 #include <pcl/filters/voxel_grid.h>
 #include <map>
 #include <pcl/point_types.h>

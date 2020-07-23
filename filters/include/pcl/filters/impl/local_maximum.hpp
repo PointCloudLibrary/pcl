@@ -46,6 +46,8 @@
 #include <pcl/filters/local_maximum.h>
 #include <pcl/filters/project_inliers.h>
 #include <pcl/ModelCoefficients.h>
+#include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

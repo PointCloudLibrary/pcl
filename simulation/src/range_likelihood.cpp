@@ -13,7 +13,6 @@
 #include <GL/glu.h>
 #endif
 
-#include <ctime>
 #include <random>
 
 // For adding noise:

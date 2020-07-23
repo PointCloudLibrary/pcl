@@ -39,7 +39,6 @@
 
 #include <pcl/filters/filter.h>
 #include <ctime>
-#include <climits>
 
 namespace pcl
 {

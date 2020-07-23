@@ -40,6 +40,7 @@
 #define PCL_WORLD_MODEL_IMPL_HPP_
 
 #include <pcl/gpu/kinfu_large_scale/world_model.h>
+#include <pcl/common/transforms.h> // for transformPointCloud
 
 template <typename PointT>
 void 

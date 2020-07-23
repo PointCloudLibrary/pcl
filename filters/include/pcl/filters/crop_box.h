@@ -39,10 +39,7 @@
 
 #pragma once
 
-#include <pcl/point_types.h>
 #include <pcl/filters/filter_indices.h>
-#include <pcl/common/transforms.h>
-#include <pcl/common/eigen.h>
 
 namespace pcl
 {

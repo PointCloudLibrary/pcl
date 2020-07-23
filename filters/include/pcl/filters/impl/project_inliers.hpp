@@ -39,6 +39,18 @@
 #define PCL_FILTERS_IMPL_PROJECT_INLIERS_H_
 
 #include <pcl/filters/project_inliers.h>
+#include <pcl/sample_consensus/sac_model_circle.h>
+#include <pcl/sample_consensus/sac_model_cylinder.h>
+#include <pcl/sample_consensus/sac_model_cone.h>
+#include <pcl/sample_consensus/sac_model_line.h>
+#include <pcl/sample_consensus/sac_model_normal_plane.h>
+#include <pcl/sample_consensus/sac_model_normal_sphere.h>
+#include <pcl/sample_consensus/sac_model_parallel_plane.h>
+#include <pcl/sample_consensus/sac_model_normal_parallel_plane.h>
+#include <pcl/sample_consensus/sac_model_parallel_line.h>
+#include <pcl/sample_consensus/sac_model_perpendicular_plane.h>
+#include <pcl/sample_consensus/sac_model_plane.h>
+#include <pcl/sample_consensus/sac_model_sphere.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

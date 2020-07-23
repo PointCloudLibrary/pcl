@@ -47,7 +47,6 @@
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
 #include <pcl/pcl_exports.h>
-#include <pcl/pcl_macros.h>
 
 namespace pcl
 {

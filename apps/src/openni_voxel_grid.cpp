@@ -35,7 +35,6 @@
 
 #include <pcl/common/time.h>
 #include <pcl/console/parse.h>
-#include <pcl/filters/approximate_voxel_grid.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>

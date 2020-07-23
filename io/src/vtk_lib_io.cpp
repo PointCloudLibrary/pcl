@@ -38,7 +38,6 @@
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/io/impl/vtk_lib_io.hpp>
 #include <pcl/PCLPointCloud2.h>
-#include <vtkVersion.h>
 #include <vtkCellArray.h>
 #include <vtkCellData.h>
 #include <vtkDoubleArray.h>
