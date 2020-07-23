@@ -4,7 +4,6 @@
 #include <pcl/search/brute_force.h>
 #include <pcl/search/kdtree.h>
 
-#include <sstream>
 #include <string>
 #include <vector>
 

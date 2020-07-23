@@ -43,7 +43,7 @@
 
 #include <pcl/features/gfpfh.h>
 #include <pcl/octree/octree_search.h>
-#include <pcl/common/eigen.h>
+#include <Eigen/Core> // for Vector3f
 
 #include <algorithm>
 #include <fstream>

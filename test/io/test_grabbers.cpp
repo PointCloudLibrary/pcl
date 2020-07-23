@@ -1,6 +1,5 @@
 #include <pcl/test/gtest.h>
 #include <pcl/point_types.h>
-#include <pcl/common/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/io/image_grabber.h>

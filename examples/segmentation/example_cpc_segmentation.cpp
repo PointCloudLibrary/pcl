@@ -35,7 +35,6 @@
  *
  */
 
-#include <cstdlib>
 #include <thread>
 
 #include <boost/format.hpp>

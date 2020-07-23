@@ -39,7 +39,6 @@
 #include <pcl/io/image_grabber.h>
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/common/utils.h>
 #include <pcl/memory.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>

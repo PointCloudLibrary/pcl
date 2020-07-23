@@ -44,6 +44,7 @@
 #include <fcntl.h>
 #include <string>
 #include <cstdlib>
+#include <pcl/common/io.h> // for getFields, ...
 #include <pcl/console/print.h>
 #include <pcl/io/boost.h>
 #include <pcl/io/low_level_io.h>

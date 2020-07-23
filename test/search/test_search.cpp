@@ -45,7 +45,6 @@
 #include <pcl/search/octree.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
-#include <pcl/common/time.h>
 
 
 using namespace pcl;

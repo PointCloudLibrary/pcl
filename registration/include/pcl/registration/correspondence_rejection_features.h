@@ -43,7 +43,6 @@
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>
-#include <pcl/registration/boost.h>
 
 #include <unordered_map>
 

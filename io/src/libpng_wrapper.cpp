@@ -42,8 +42,8 @@
 
 #include <vector>
 #include <cstdlib>
-#include <cstdio>
 #include <cassert>
+#include <cstring> // for memcpy
 
 
 // user defined I/O callback methods for libPNG

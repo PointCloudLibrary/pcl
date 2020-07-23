@@ -40,12 +40,8 @@
 #define SHOW_FPS 1
 
 #include <pcl/apps/timer.h>
-#include <pcl/common/angles.h>
-#include <pcl/common/common.h>
-#include <pcl/common/time.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/agast_2d.h>

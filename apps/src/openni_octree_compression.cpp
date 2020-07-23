@@ -45,13 +45,9 @@
 
 #include <boost/asio.hpp>
 
-#include <cstdio>
-#include <cstdlib>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <thread>
-#include <vector>
 
 using boost::asio::ip::tcp;
 

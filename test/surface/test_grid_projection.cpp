@@ -44,7 +44,6 @@
 #include <pcl/io/vtk_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/surface/grid_projection.h>
-#include <pcl/common/common.h>
 
 using namespace pcl;
 using namespace pcl::io;

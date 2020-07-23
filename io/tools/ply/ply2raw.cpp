@@ -37,7 +37,6 @@
  *
  */
 
-#include <pcl/io/boost.h>
 #include <pcl/io/ply/ply_parser.h>
 
 #include <cstdlib>

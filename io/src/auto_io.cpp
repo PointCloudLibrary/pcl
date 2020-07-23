@@ -36,7 +36,6 @@
  */
 
 #include <pcl/io/auto_io.h>
-#include <pcl/io/boost.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/ifs_io.h>

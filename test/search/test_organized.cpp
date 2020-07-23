@@ -43,11 +43,9 @@
 #include <pcl/common/time.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/search/organized.h> // for OrganizedNeighbor
 
 using namespace pcl;
-
-#include <pcl/search/pcl_search.h>
-
 
 // helper class for priority queue
 class prioPointQueueEntry

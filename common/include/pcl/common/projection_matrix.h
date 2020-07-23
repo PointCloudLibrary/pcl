@@ -39,7 +39,7 @@
 
 #include <pcl/types.h>
 #include <pcl/point_cloud.h> // for PointCloud
-#include <pcl/common/eigen.h>
+#include <Eigen/Core> // for Matrix, RowMajor, Matrix3f
 
 /**
   * \file common/geometry.h

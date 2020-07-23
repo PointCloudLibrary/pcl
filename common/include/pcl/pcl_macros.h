@@ -59,10 +59,7 @@
   #define _USE_MATH_DEFINES
 #endif
 #include <cmath>
-#include <cstdarg>
-#include <cstdio>
 #include <cstdlib>
-#include <cstdint>
 #include <iostream>
 
 // We need to check for GCC version, because GCC releases before 9 were implementing an

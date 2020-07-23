@@ -40,8 +40,6 @@
 
 #include <pcl/keypoints/harris_6d.h>
 #include <pcl/common/io.h>
-#include <pcl/filters/passthrough.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/features/normal_3d.h>
 //#include <pcl/features/fast_intensity_gradient.h>
 #include <pcl/features/intensity_gradient.h>
