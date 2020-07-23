@@ -97,6 +97,7 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/extract_indices.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/filter.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/filter_indices.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/passthrough.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/shadowpoints.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/project_inliers.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/radius_outlier_removal.hpp"

@@ -69,7 +69,8 @@ namespace pcl
         FilterIndices<PointT> (extract_removed_indices),
         filter_field_name_ (""),
         filter_limit_min_ (std::numeric_limits<float>::min()),
-        filter_limit_max_ (std::numeric_limits<float>::max())
+        filter_limit_max_ (std::numeric_limits<float>::max()),
+        distance_idx_(-1)
       {
         filter_name_ = "PassThrough";
       }
@@ -82,6 +83,9 @@ namespace pcl
       setFilterFieldName (const std::string &field_name)
       {
         filter_field_name_ = field_name;
+        distance_idx_ = pcl::getFieldIndex<PointT> (filter_field_name_, fields_);
+        if (distance_idx_ == -1)
+          PCL_WARN ("[pcl::%s::applyFilter] Unable to find field name in point type.\n", getClassName ().c_str ());
       }
 
       /** \brief Retrieve the name of the field to be used for filtering data.
@@ -149,7 +153,9 @@ namespace pcl
         return (negative_);
       }
 
-    protected:
+    bool condition(const PointCloud& cloud, index_t idx);
+
+  protected:
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
       using Filter<PointT>::filter_name_;
@@ -164,46 +170,7 @@ namespace pcl
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (Indices &indices) override
-      {
-        indices.resize (indices_->size());
-        removed_indices_->resize (indices_->size ());
-
-        // Attempt to get the field name's index
-        std::vector<pcl::PCLPointField> fields;
-        int distance_idx = pcl::getFieldIndex<PointT> (filter_field_name_, fields);
-        if (!filter_field_name_.empty() && distance_idx == -1)
-        {
-          PCL_WARN ("[pcl::%s::applyFilter] Unable to find field name in point type.\n", getClassName ().c_str ());
-          indices.clear ();
-          removed_indices_->clear ();
-          return;
-        }
-
-        const auto condition = [&](const PointCloud& cloud, index_t idx) {
-          if (std::isfinite (cloud[idx].x) && std::isfinite (cloud[idx].y) && std::isfinite (cloud[idx].z)) {
-            // If a field name been specified, then filter non-finite entries
-            if (filter_field_name_.empty ())
-              return !negative_;
-
-            // Get the field's value
-            const auto* pt_data = reinterpret_cast<const std::uint8_t*> (&cloud[idx]);
-            float field_value = 0;
-            memcpy (&field_value, pt_data + fields[distance_idx].offset, sizeof (float));
-            if (std::isfinite (field_value) && field_value >= filter_limit_min_ && field_value <= filter_limit_max_) {
-              return true;
-            }
-          }
-          return false;
-        };
-
-        pcl::FunctorFilter<PointT, decltype(condition)> filter{condition, extract_removed_indices_};
-        filter.setInputCloud(input_);
-        filter.setIndices(indices_);
-        filter.setNegative(negative_);
-        filter.applyFilter(indices);
-        removed_indices_ =  std::const_pointer_cast<Indices>(filter.getRemovedIndices());
-      }
+      applyFilter (Indices &indices) override;
 
       /** \brief Filtered results are indexed by an indices array.
         * \param[out] indices The resultant indices.
@@ -224,6 +191,10 @@ namespace pcl
 
       /** \brief The maximum allowed field value (default = FLT_MIN). */
       float filter_limit_max_;
+
+      std::vector<pcl::PCLPointField> fields_;
+
+      int distance_idx_;
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////
@@ -340,3 +311,7 @@ namespace pcl
 
   };
 }
+
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/filters/impl/passthrough.hpp>
+#endif
