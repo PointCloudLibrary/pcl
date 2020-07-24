@@ -54,9 +54,9 @@ private:
         auto depth = SYNTHETIC_CLOUD_BASE_DEPTH;
 
         // If pixels correspond to smaller box, then set depth and color appropriately
-        if (col > outer_square_ctr - inner_square_ctr &&
+        if (col >= outer_square_ctr - inner_square_ctr &&
             col < outer_square_ctr + inner_square_ctr) {
-          if (row > outer_square_ctr - inner_square_ctr &&
+          if (row >= outer_square_ctr - inner_square_ctr &&
               row < outer_square_ctr + inner_square_ctr) {
             depth = SYNTHETIC_CLOUD_BASE_DEPTH - SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY;
           }
@@ -98,13 +98,8 @@ TEST_F(OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
   const auto DEPTH_DISCONTINUITY_THRESHOLD =
       SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY / (SYNTHETIC_CLOUD_BASE_DEPTH * 1.1f);
 
-  // The expected number of occluded edge points is the number of pixels along the
-  // perimeter of the inner square, subject to certain conditions including that the
-  // inner square edge length is an even number.  The expected number of occluding edge
-  // points is similar, but as empirically determined to be 8 less than the number
-  // of perimeter points.
-  const int EXPECTED_OCCLUDING_EDGE_POINTS = INNER_SQUARE_EDGE_LENGTH * 4 - 8;
-  const int EXPECTED_OCCLUDED_EDGE_POINTS = INNER_SQUARE_EDGE_LENGTH * 4;
+  const int EXPECTED_OCCLUDING_EDGE_POINTS = (INNER_SQUARE_EDGE_LENGTH - 1) * 4;
+  const int EXPECTED_OCCLUDED_EDGE_POINTS = (INNER_SQUARE_EDGE_LENGTH + 1) * 4;
 
   auto oed = pcl::OrganizedEdgeBase<pcl::PointXYZ, pcl::Label>();
   auto labels = pcl::PointCloud<pcl::Label>();
