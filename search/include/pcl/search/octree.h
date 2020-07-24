@@ -276,16 +276,16 @@ namespace pcl
           return (tree_->approxNearestSearch (query_index, result_index, sqr_distance));
         }
         /** \brief Search for points within rectangular search area
-		      * \param[in] min_pt lower corner of search area
-		      * \param[in] max_pt upper corner of search area
-		      * \param[out] k_indices the resultant point indices
-		      * \return number of points found within search area
-		      */
-		    inline int
-		    boxSearch(const Eigen::Vector3f &min_pt, const Eigen::Vector3f &max_pt, std::vector<int> &k_indices) const
-		    {
-			    return (tree_->boxSearch(min_pt, max_pt, k_indices));
-		    }
+	  * \param[in] min_pt lower corner of search area
+	  * \param[in] max_pt upper corner of search area
+	  * \param[out] k_indices the resultant point indices
+	  * \return number of points found within search area
+	*/
+	inline int
+	boxSearch(const Eigen::Vector3f &min_pt, const Eigen::Vector3f &max_pt, index_t &k_indices) const
+	{
+	  return (tree_->boxSearch(min_pt, max_pt, k_indices));
+	}
     };
   }
 }
