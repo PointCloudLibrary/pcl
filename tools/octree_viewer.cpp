@@ -47,7 +47,6 @@
 #include <pcl/common/centroid.h>
 
 #include <pcl/filters/filter.h>
-#include "boost.h"
 
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>

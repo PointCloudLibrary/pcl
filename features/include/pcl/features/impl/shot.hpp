@@ -42,7 +42,6 @@
 
 #include <pcl/features/shot.h>
 #include <pcl/features/shot_lrf.h>
-#include <utility>
 
 // Useful constants.
 #define PST_PI 3.1415926535897932384626433832795

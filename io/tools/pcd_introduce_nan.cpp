@@ -35,7 +35,6 @@
  *
  */
 
-#include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
 
 /** @brief PCL point object */

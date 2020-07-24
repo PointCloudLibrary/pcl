@@ -38,7 +38,7 @@
 
 #include <thread>
 
-#include <pcl/common/common_headers.h>
+#include <pcl/common/time.h> // for DO_EVERY
 #include <pcl/visualization/common/common.h>
 #include <vtkRenderWindowInteractor.h>
 #include <pcl/visualization/histogram_visualizer.h>

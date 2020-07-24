@@ -51,10 +51,8 @@
 #include <vtkTable.h>
 
 #include <fstream>
-#include <sstream>
 
 #include <pcl/visualization/pcl_plotter.h>
-#include <pcl/common/common_headers.h>
 
 #define VTK_CREATE(type, name) \
   vtkSmartPointer<type> name = vtkSmartPointer<type>::New()

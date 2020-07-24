@@ -41,7 +41,6 @@
 
 #include <pcl/features/gasd.h>
 #include <pcl/common/transforms.h>
-#include <pcl/point_types_conversion.h>
 
 #include <vector>
 

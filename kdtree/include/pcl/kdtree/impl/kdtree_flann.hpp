@@ -39,8 +39,6 @@
 #ifndef PCL_KDTREE_KDTREE_IMPL_FLANN_H_
 #define PCL_KDTREE_KDTREE_IMPL_FLANN_H_
 
-#include <cstdio>
-
 #include <flann/flann.hpp>
 
 #include <pcl/kdtree/kdtree_flann.h>

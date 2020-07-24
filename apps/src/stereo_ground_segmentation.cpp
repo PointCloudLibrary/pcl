@@ -33,12 +33,11 @@
  *
  */
 
+#include <pcl/common/centroid.h> // for computeMeanAndCovarianceMatrix
 #include <pcl/common/distances.h>
 #include <pcl/common/intersections.h>
 #include <pcl/common/time.h>
 #include <pcl/features/integral_image_normal.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/io/io.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_grabber.h>

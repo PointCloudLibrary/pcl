@@ -44,9 +44,7 @@
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
-#include <pcl/visualization/mouse_event.h>
 #include <vector>
-#include <string>
 
 int
 main (int, char ** argv)

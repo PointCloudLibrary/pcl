@@ -12,8 +12,6 @@
 #include <pcl/test/gtest.h>
 #include <pcl/point_types.h>
 
-#include <random>
-
 using namespace pcl;
 
 TEST(FunctorFilterTrait, CheckCompatibility)

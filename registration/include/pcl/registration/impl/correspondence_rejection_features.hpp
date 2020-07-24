@@ -42,6 +42,7 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_FEATURES_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_FEATURES_HPP_
 
+#include <boost/pointer_cast.hpp> // for static_pointer_cast
 
 namespace pcl
 {

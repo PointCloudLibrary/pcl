@@ -37,7 +37,6 @@
  */
 #include <pcl/io/obj_io.h>
 #include <fstream>
-#include <iostream>
 #include <pcl/common/io.h>
 #include <pcl/io/boost.h>
 #include <pcl/console/time.h>

@@ -41,7 +41,6 @@
   */
 
 #include <pcl/test/gtest.h>
-#include <iostream>
 #include <pcl/range_image/bearing_angle_image.h>
 
 pcl::BearingAngleImage bearing_angle_image;

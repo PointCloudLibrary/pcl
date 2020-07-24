@@ -41,7 +41,7 @@
 #define EIGEN_II_METHOD 1
 
 #include <pcl/features/linear_least_squares_normal.h>
-#include <pcl/common/time.h>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::~LinearLeastSquaresNormalEstimation ()

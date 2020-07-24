@@ -43,7 +43,6 @@
 #include <pcl/point_types.h>
 #include <cmath>
 #include <array>
-#include <algorithm>
 
 using namespace pcl;
 using namespace pcl::common;

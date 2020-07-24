@@ -37,13 +37,14 @@
 
 #pragma once
 
-#include <pcl/surface/boost.h>
-#include <pcl/PolygonMesh.h>
+#include <vector> // for vector
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
 namespace pcl
 {
+  struct PolygonMesh;
+
   namespace surface
   {
     class PCL_EXPORTS SimplificationRemoveUnusedVertices

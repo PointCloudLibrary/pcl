@@ -48,7 +48,6 @@
 
 
 #include <pcl/common/transforms.h>
-#include <pcl/common/eigen.h>
 
 using namespace pcl;
 

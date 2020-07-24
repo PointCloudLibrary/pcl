@@ -41,6 +41,7 @@
 #define PCL_MOMENT_OF_INERTIA_ESTIMATION_HPP_
 
 #include <pcl/features/moment_of_inertia_estimation.h>
+#include <pcl/features/feature.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>

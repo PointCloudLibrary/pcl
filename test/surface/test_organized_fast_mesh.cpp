@@ -44,7 +44,6 @@
 #include <pcl/io/vtk_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/surface/organized_fast_mesh.h>
-#include <pcl/common/common.h>
 
 using namespace pcl;
 using namespace pcl::io;

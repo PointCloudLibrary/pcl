@@ -38,10 +38,10 @@
 #include <iostream>
 #include <pcl/test/gtest.h>
 #include <pcl/common/time.h>
-#include <pcl/search/pcl_search.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/distances.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 using namespace pcl;
 
