@@ -282,7 +282,7 @@ namespace pcl
 	  * \return number of points found within search area
 	*/
 	inline int
-	boxSearch(const Eigen::Vector3f &min_pt, const Eigen::Vector3f &max_pt, index_t &k_indices) const
+	boxSearch(const Eigen::Vector3f &min_pt, const Eigen::Vector3f &max_pt, Indices &k_indices) const
 	{
 	  return (tree_->boxSearch(min_pt, max_pt, k_indices));
 	}
