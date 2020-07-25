@@ -81,16 +81,6 @@ namespace pcl
       index_query (_index_query), index_match (_index_match), distance (_distance)
     {}
 
-    /** \brief Constructor. */
-    template <typename T = pcl::index_t,  std::enable_if_t<!std::is_same<T, int>::value, index_t> = 0>
-    #if defined(_MSC_VER)
-    inline
-    #endif
-    PCL_DEPRECATED(1, 13, "use  constructor that accepts index_t parameters instead")
-    Correspondence (int _index_query, int _index_match, float _distance) :
-      index_query (static_cast<index_t>(_index_query)), index_match (static_cast<index_t>(_index_match)), distance (_distance)
-    {}
-
     PCL_MAKE_ALIGNED_OPERATOR_NEW
   };
 
