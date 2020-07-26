@@ -107,6 +107,11 @@ pcl::SampleConsensusModelPlane<PointT>::computeModelCoefficients (
   // ... + d = 0
   model_coefficients[3] = -1.0f * (model_coefficients.template head<4>().dot (p0.matrix ()));
 
+  // We want the coefficients to be unique/deterministic
+  if (model_coefficients[3] < 0.0f)
+  {
+    model_coefficients *= -1.0f;
+  }
   return (true);
 }
 
