@@ -179,3 +179,31 @@ def test_namespace_ref(tmp_path):
 
     assert namespace_ref["kind"] == "NAMESPACE_REF"
     assert namespace_ref["name"] == "std"
+
+
+def test_var_decl(tmp_path):
+    file_contents = "int anInt = 1;"
+    parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
+
+    var_decl = parsed_info["members"][0]
+
+    assert var_decl["kind"] == "VAR_DECL"
+    assert var_decl["element_type"] == "Int"
+    assert var_decl["name"] == "anInt"
+
+
+def test_call_expr(tmp_path):
+    file_contents = """
+    int aFunction() {
+        return 1;
+    }
+    int anInt = aFunction();
+    """
+    parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
+
+    var_decl = parsed_info["members"][1]
+    call_expr = var_decl["members"][0]
+
+    assert call_expr["kind"] == "CALL_EXPR"
+    assert call_expr["name"] == "aFunction"
+
