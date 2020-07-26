@@ -296,3 +296,60 @@ def test_member_ref(tmp_path):
     assert member_ref_2["element_type"] == "Int"
     assert member_ref_1["name"] == "firstMember"
     assert member_ref_2["name"] == "secondMember"
+
+
+def test_class_template(tmp_path):
+    file_contents = """
+    template <typename T>
+    struct AStruct {};
+    """
+    parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
+
+    class_template = parsed_info["members"][0]
+
+    assert class_template["kind"] == "CLASS_TEMPLATE"
+    assert class_template["name"] == "AStruct"
+
+
+def test_template_non_type_parameter(tmp_path):
+    file_contents = """
+    template <int N>
+    struct AStruct {};
+    """
+    parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
+
+    class_template = parsed_info["members"][0]
+    template_non_type_parameter = class_template["members"][0]
+
+    assert template_non_type_parameter["kind"] == "TEMPLATE_NON_TYPE_PARAMETER"
+    assert template_non_type_parameter["element_type"] == "Int"
+    assert template_non_type_parameter["name"] == "N"
+
+
+def test_function_template(tmp_path):
+    file_contents = """
+    template <typename T>
+    void aFunction() {}
+    """
+    parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
+
+    function_template = parsed_info["members"][0]
+
+    assert function_template["kind"] == "FUNCTION_TEMPLATE"
+    assert function_template["result_type"] == "void"
+    assert function_template["name"] == "aFunction"
+
+
+def test_template_type_parameter(tmp_path):
+    file_contents = """
+    template <typename T>
+    struct AStruct {};
+    """
+    parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
+
+    class_template = parsed_info["members"][0]
+    template_type_parameter = class_template["members"][0]
+
+    assert template_type_parameter["kind"] == "TEMPLATE_TYPE_PARAMETER"
+    assert template_type_parameter["element_type"] == "Unexposed"
+    assert template_type_parameter["name"] == "T"
