@@ -71,7 +71,8 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
   const unsigned max_skip = max_iterations_ * 10;
 
   // Number of samples to try randomly
-  const std::size_t fraction_nr_points = pcl_lrint (static_cast<double>(sac_model_->getIndices ()->size ()) * fraction_nr_pretest_ / 100.0);
+  const std::size_t fraction_nr_points = (fraction_nr_pretest_ < 0.0 ? nr_samples_pretest_ : pcl_lrint (static_cast<double>(sac_model_->getIndices ()->size ()) * fraction_nr_pretest_ / 100.0));
+  PCL_DEBUG ("[pcl::RandomizedRandomSampleConsensus::computeModel] Using %lu points for RRANSAC pre-test.\n", fraction_nr_points);
 
   // Iterate
   while (iterations_ < k)
