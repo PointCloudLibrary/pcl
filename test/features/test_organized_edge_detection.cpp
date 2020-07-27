@@ -22,8 +22,8 @@ protected:
   const float SYNTHETIC_CLOUD_RESOLUTION = 0.01f;
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_;
-  pcl::PointIndices small_outer_perimeter_;
-  pcl::PointIndices large_inner_perimeter_;
+  std::set<int> outer_perimeter_;
+  std::set<int> inner_perimeter_;
 
   void
   SetUp() override
@@ -66,31 +66,22 @@ private:
 
             depth = SYNTHETIC_CLOUD_BASE_DEPTH - SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY;
 
-            // Record outer perimeter points of small inner square that correspond to
-            // the occluding edge points
-            if ((col == outer_square_ctr - inner_square_ctr ||
-                 col == outer_square_ctr + inner_square_ctr - 1) ||
-                (row == outer_square_ctr - inner_square_ctr ||
-                 row == outer_square_ctr + inner_square_ctr - 1)) {
-              small_outer_perimeter_.indices.push_back(
-                  row * organized_test_cloud->width + col);
+            // Record indices of the outer perimeter points of small inner square that
+            // correspond to the occluding edge points
+            if ((col == left_col || col == right_col - 1) ||
+                (row == top_row || row == bottom_row - 1)) {
+              outer_perimeter_.insert(row * organized_test_cloud->width + col);
             }
           }
         }
 
-        // Record inner perimeter points of large outer square that correspond to the
-        // occluded edge points
-        if (row == top_row - 1 || row == bottom_row) {
-          if (col >= left_col - 1 && col <= right_col) {
-            large_inner_perimeter_.indices.push_back(row * organized_test_cloud->width +
-                                                     col);
-          }
-        }
-        else if (row >= top_row && row < bottom_row) {
-          if (col == left_col - 1 || col == right_col) {
-            large_inner_perimeter_.indices.push_back(row * organized_test_cloud->width +
-                                                     col);
-          }
+        // Record indices of the inner perimeter points of large outer square that
+        // correspond to the occluded edge points
+        if (((row == top_row - 1 || row == bottom_row) &&
+             (col >= left_col - 1 && col <= right_col)) ||
+            ((row >= top_row && row < bottom_row) &&
+             (col == left_col - 1 || col == right_col))) {
+          inner_perimeter_.insert(row * organized_test_cloud->width + col);
         }
 
         organized_test_cloud->at(col, row).x = x * SYNTHETIC_CLOUD_RESOLUTION;
@@ -139,15 +130,13 @@ TEST_F(OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
   oed.setMaxSearchNeighbors(MAX_SEARCH_NEIGHBORS);
   oed.compute(labels, label_indices);
 
-  EXPECT_EQ(label_indices[1].indices.size(), small_outer_perimeter_.indices.size());
-  for (auto i = 0; i < small_outer_perimeter_.indices.size(); ++i) {
-    EXPECT_EQ(label_indices[1].indices[i], small_outer_perimeter_.indices[i]);
-  }
+  auto occluding_indices =
+      std::set<int>(label_indices[1].indices.begin(), label_indices[1].indices.end());
+  EXPECT_EQ(occluding_indices, outer_perimeter_);
 
-  EXPECT_EQ(label_indices[2].indices.size(), large_inner_perimeter_.indices.size());
-  for (auto i = 0; i < large_inner_perimeter_.indices.size(); ++i) {
-    EXPECT_EQ(label_indices[2].indices[i], large_inner_perimeter_.indices[i]);
-  }
+  auto occluded_indices =
+      std::set<int>(label_indices[2].indices.begin(), label_indices[2].indices.end());
+  EXPECT_EQ(occluded_indices, inner_perimeter_);
 }
 
 /* ---[ */
