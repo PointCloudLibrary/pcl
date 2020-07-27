@@ -53,7 +53,7 @@ loadHist (const boost::filesystem::path &path, vfh_model &vfh)
 
   for (std::size_t i = 0; i < fields[vfh_idx].count; ++i)
   {
-    vfh.second[i] = point.points[0].histogram[i];
+    vfh.second[i] = point[0].histogram[i];
   }
   vfh.first = path.string ();
   return (true);
@@ -88,7 +88,7 @@ nearestKSearch (flann::Index<flann::ChiSquareDistance<float> > &index, const vfh
 bool
 loadFileList (std::vector<vfh_model> &models, const std::string &filename)
 {
-  ifstream fs;
+  std::ifstream fs;
   fs.open (filename.c_str ());
   if (!fs.is_open () || fs.fail ())
     return (false);
@@ -96,7 +96,7 @@ loadFileList (std::vector<vfh_model> &models, const std::string &filename)
   std::string line;
   while (!fs.eof ())
   {
-    getline (fs, line);
+    std::getline (fs, line);
     if (line.empty ())
       continue;
     vfh_model m;
@@ -225,11 +225,11 @@ main (int argc, char** argv)
     pcl::PointCloud<pcl::PointXYZ> cloud_xyz;
     pcl::fromPCLPointCloud2 (cloud, cloud_xyz);
 
-    if (cloud_xyz.points.size () == 0)
+    if (cloud_xyz.size () == 0)
       break;
 
     pcl::console::print_info ("[done, "); 
-    pcl::console::print_value ("%d", (int)cloud_xyz.points.size ()); 
+    pcl::console::print_value ("%zu", static_cast<std::size_t>(cloud_xyz.size ()));
     pcl::console::print_info (" points]\n");
     pcl::console::print_info ("Available dimensions: "); 
     pcl::console::print_value ("%s\n", pcl::getFieldsList (cloud).c_str ());

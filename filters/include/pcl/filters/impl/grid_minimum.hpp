@@ -121,13 +121,13 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
   {
     if (!input_->is_dense)
       // Check if the point is invalid
-      if (!std::isfinite (input_->points[*it].x) ||
-          !std::isfinite (input_->points[*it].y) ||
-          !std::isfinite (input_->points[*it].z))
+      if (!std::isfinite ((*input_)[*it].x) ||
+          !std::isfinite ((*input_)[*it].y) ||
+          !std::isfinite ((*input_)[*it].z))
         continue;
 
-    int ijk0 = static_cast<int> (std::floor (input_->points[*it].x * inverse_resolution_) - static_cast<float> (min_b[0]));
-    int ijk1 = static_cast<int> (std::floor (input_->points[*it].y * inverse_resolution_) - static_cast<float> (min_b[1]));
+    int ijk0 = static_cast<int> (std::floor ((*input_)[*it].x * inverse_resolution_) - static_cast<float> (min_b[0]));
+    int ijk1 = static_cast<int> (std::floor ((*input_)[*it].y * inverse_resolution_) - static_cast<float> (min_b[1]));
 
     // Compute the grid cell index
     int idx = ijk0 * divb_mul[0] + ijk1 * divb_mul[1];
@@ -170,13 +170,13 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
     unsigned int first_index = cp.first;
     unsigned int last_index = cp.second;
     unsigned int min_index = index_vector[first_index].cloud_point_index;
-    float min_z = input_->points[index_vector[first_index].cloud_point_index].z;
+    float min_z = (*input_)[index_vector[first_index].cloud_point_index].z;
 
     for (unsigned int i = first_index + 1; i < last_index; ++i)
     {
-      if (input_->points[index_vector[i].cloud_point_index].z < min_z)
+      if ((*input_)[index_vector[i].cloud_point_index].z < min_z)
       {
-        min_z = input_->points[index_vector[i].cloud_point_index].z;
+        min_z = (*input_)[index_vector[i].cloud_point_index].z;
         min_index = index_vector[i].cloud_point_index;
       }
     }

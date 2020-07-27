@@ -765,17 +765,17 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
 
       //const int index_d = (row_index+1)*width+col_index+1;
 
-      const unsigned char r0 = cloud->points[index0].r;
-      const unsigned char g0 = cloud->points[index0].g;
-      const unsigned char b0 = cloud->points[index0].b;
+      const unsigned char r0 = (*cloud)[index0].r;
+      const unsigned char g0 = (*cloud)[index0].g;
+      const unsigned char b0 = (*cloud)[index0].b;
 
-      const unsigned char r_c = cloud->points[index_c].r;
-      const unsigned char g_c = cloud->points[index_c].g;
-      const unsigned char b_c = cloud->points[index_c].b;
+      const unsigned char r_c = (*cloud)[index_c].r;
+      const unsigned char g_c = (*cloud)[index_c].g;
+      const unsigned char b_c = (*cloud)[index_c].b;
 
-      const unsigned char r_r = cloud->points[index_r].r;
-      const unsigned char g_r = cloud->points[index_r].g;
-      const unsigned char b_r = cloud->points[index_r].b;
+      const unsigned char r_r = (*cloud)[index_r].r;
+      const unsigned char g_r = (*cloud)[index_r].g;
+      const unsigned char b_r = (*cloud)[index_r].b;
 
       const float r_dx = static_cast<float> (r_c) - static_cast<float> (r0);
       const float g_dx = static_cast<float> (g_c) - static_cast<float> (g0);
@@ -846,30 +846,30 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
   {
     for (int col_index = 1; col_index < width-1; ++col_index)
     {
-      const int r7 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index-1)].r);
-      const int g7 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index-1)].g);
-      const int b7 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index-1)].b);
-      const int r8 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index)].r);
-      const int g8 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index)].g);
-      const int b8 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index)].b);
-      const int r9 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index+1)].r);
-      const int g9 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index+1)].g);
-      const int b9 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index+1)].b);
-      const int r4 = static_cast<int> (cloud->points[(row_index)*width + (col_index-1)].r);
-      const int g4 = static_cast<int> (cloud->points[(row_index)*width + (col_index-1)].g);
-      const int b4 = static_cast<int> (cloud->points[(row_index)*width + (col_index-1)].b);
-      const int r6 = static_cast<int> (cloud->points[(row_index)*width + (col_index+1)].r);
-      const int g6 = static_cast<int> (cloud->points[(row_index)*width + (col_index+1)].g);
-      const int b6 = static_cast<int> (cloud->points[(row_index)*width + (col_index+1)].b);
-      const int r1 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index-1)].r);
-      const int g1 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index-1)].g);
-      const int b1 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index-1)].b);
-      const int r2 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index)].r);
-      const int g2 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index)].g);
-      const int b2 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index)].b);
-      const int r3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1)].r);
-      const int g3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1)].g);
-      const int b3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1)].b);
+      const int r7 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index-1)].r);
+      const int g7 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index-1)].g);
+      const int b7 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index-1)].b);
+      const int r8 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index)].r);
+      const int g8 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index)].g);
+      const int b8 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index)].b);
+      const int r9 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index+1)].r);
+      const int g9 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index+1)].g);
+      const int b9 = static_cast<int> ((*cloud)[(row_index-1)*width + (col_index+1)].b);
+      const int r4 = static_cast<int> ((*cloud)[(row_index)*width + (col_index-1)].r);
+      const int g4 = static_cast<int> ((*cloud)[(row_index)*width + (col_index-1)].g);
+      const int b4 = static_cast<int> ((*cloud)[(row_index)*width + (col_index-1)].b);
+      const int r6 = static_cast<int> ((*cloud)[(row_index)*width + (col_index+1)].r);
+      const int g6 = static_cast<int> ((*cloud)[(row_index)*width + (col_index+1)].g);
+      const int b6 = static_cast<int> ((*cloud)[(row_index)*width + (col_index+1)].b);
+      const int r1 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index-1)].r);
+      const int g1 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index-1)].g);
+      const int b1 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index-1)].b);
+      const int r2 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index)].r);
+      const int g2 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index)].g);
+      const int b2 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index)].b);
+      const int r3 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index+1)].r);
+      const int g3 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index+1)].g);
+      const int b3 = static_cast<int> ((*cloud)[(row_index+1)*width + (col_index+1)].b);
 
       //const int r_tmp1 = - r7 + r3;
       //const int r_tmp2 = - r1 + r9;

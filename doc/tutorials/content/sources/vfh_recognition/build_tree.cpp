@@ -50,7 +50,7 @@ loadHist (const boost::filesystem::path &path, vfh_model &vfh)
 
   for (std::size_t i = 0; i < fields[vfh_idx].count; ++i)
   {
-    vfh.second[i] = point.points[0].histogram[i];
+    vfh.second[i] = point[0].histogram[i];
   }
   vfh.first = path.string ();
   return (true);

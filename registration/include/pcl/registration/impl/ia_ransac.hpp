@@ -77,28 +77,30 @@ SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::selectSampl
     const PointCloudSource &cloud, int nr_samples, float min_sample_distance,
     std::vector<int> &sample_indices)
 {
-  if (nr_samples > static_cast<int> (cloud.points.size ()))
+  if (nr_samples > static_cast<int> (cloud.size ()))
   {
     PCL_ERROR ("[pcl::%s::selectSamples] ", getClassName ().c_str ());
-    PCL_ERROR ("The number of samples (%d) must not be greater than the number of points (%lu)!\n",
-               nr_samples, cloud.points.size ());
+    PCL_ERROR("The number of samples (%d) must not be greater than the number of "
+              "points (%zu)!\n",
+              nr_samples,
+              static_cast<std::size_t>(cloud.size()));
     return;
   }
 
   // Iteratively draw random samples until nr_samples is reached
-  int iterations_without_a_sample = 0;
-  int max_iterations_without_a_sample = static_cast<int> (3 * cloud.points.size ());
+  index_t iterations_without_a_sample = 0;
+  const auto max_iterations_without_a_sample = 3 * cloud.size ();
   sample_indices.clear ();
   while (static_cast<int> (sample_indices.size ()) < nr_samples)
   {
     // Choose a sample at random
-    int sample_index = getRandomIndex (static_cast<int> (cloud.points.size ()));
+    int sample_index = getRandomIndex (static_cast<int> (cloud.size ()));
 
     // Check to see if the sample is 1) unique and 2) far away from the other samples
     bool valid_sample = true;
     for (const int &sample_idx : sample_indices)
     {
-      float distance_between_samples = euclideanDistance (cloud.points[sample_index], cloud.points[sample_idx]);
+      float distance_between_samples = euclideanDistance (cloud[sample_index], cloud[sample_idx]);
 
       if (sample_index == sample_idx || distance_between_samples < min_sample_distance)
       {
@@ -117,11 +119,11 @@ SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::selectSampl
       ++iterations_without_a_sample;
 
     // If no valid samples can be found, relax the inter-sample distance requirements
-    if (iterations_without_a_sample >= max_iterations_without_a_sample)
+    if (static_cast<std::size_t>(iterations_without_a_sample) >= max_iterations_without_a_sample)
     {
       PCL_WARN ("[pcl::%s::selectSamples] ", getClassName ().c_str ());
-      PCL_WARN ("No valid sample found after %d iterations. Relaxing min_sample_distance_ to %f\n",
-                iterations_without_a_sample, 0.5*min_sample_distance);
+      PCL_WARN ("No valid sample found after %zu iterations. Relaxing min_sample_distance_ to %f\n",
+                static_cast<std::size_t>(iterations_without_a_sample), 0.5*min_sample_distance);
 
       min_sample_distance_ *= 0.5f;
       min_sample_distance = min_sample_distance_;
@@ -142,7 +144,7 @@ SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::findSimilar
   corresponding_indices.resize (sample_indices.size ());
   for (std::size_t i = 0; i < sample_indices.size (); ++i)
   {
-    // Find the k features nearest to input_features.points[sample_indices[i]]
+    // Find the k features nearest to input_features[sample_indices[i]]
     feature_tree_->nearestKSearch (input_features, sample_indices[i], k_correspondences_, nn_indices, nn_distances);
 
     // Select one at random and add it to corresponding_indices
@@ -162,9 +164,9 @@ SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::computeErro
   const ErrorFunctor & compute_error = *error_functor_;
   float error = 0;
 
-  for (int i = 0; i < static_cast<int> (cloud.points.size ()); ++i)
+  for (int i = 0; i < static_cast<int> (cloud.size ()); ++i)
   {
-    // Find the distance between cloud.points[i] and its nearest neighbor in the target point cloud
+    // Find the distance between cloud[i] and its nearest neighbor in the target point cloud
     tree_->nearestKSearch (cloud, i, 1, nn_index, nn_distance);
 
     // Compute the error

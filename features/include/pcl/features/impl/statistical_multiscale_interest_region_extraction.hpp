@@ -61,7 +61,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::generateCloudGraph (
   using Graph = adjacency_list<vecS, vecS, undirectedS, no_property, Weight>;
   Graph cloud_graph;
 
-  for (std::size_t point_i = 0; point_i < input_->points.size (); ++point_i)
+  for (std::size_t point_i = 0; point_i < input_->size (); ++point_i)
   {
     std::vector<int> k_indices (16);
     std::vector<float> k_distances (16);
@@ -143,20 +143,20 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeF ()
 
   // declare and initialize data structure
   F_scales_.resize (scale_values_.size ());
-  std::vector<float> point_density (input_->points.size ()),
-          F (input_->points.size ());
-  std::vector<std::vector<float> > phi (input_->points.size ());
-  std::vector<float> phi_row (input_->points.size ());
+  std::vector<float> point_density (input_->size ()),
+          F (input_->size ());
+  std::vector<std::vector<float> > phi (input_->size ());
+  std::vector<float> phi_row (input_->size ());
 
   for (std::size_t scale_i = 0; scale_i < scale_values_.size (); ++scale_i)
   {
     float scale_squared = scale_values_[scale_i] * scale_values_[scale_i];
 
     // calculate point density for each point x_i
-    for (std::size_t point_i = 0; point_i < input_->points.size (); ++point_i)
+    for (std::size_t point_i = 0; point_i < input_->size (); ++point_i)
     {
       float point_density_i = 0.0;
-      for (std::size_t point_j = 0; point_j < input_->points.size (); ++point_j)
+      for (std::size_t point_j = 0; point_j < input_->size (); ++point_j)
       {
         float d_g = geodesic_distances_[point_i][point_j];
         float phi_i_j = 1.0f / std::sqrt (2.0f * static_cast<float> (M_PI) * scale_squared) * std::exp ( (-1) * d_g*d_g / (2.0f * scale_squared));
@@ -169,16 +169,16 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeF ()
     }
 
     // compute weights for each pair (x_i, x_j), evaluate the operator A_hat
-    for (std::size_t point_i = 0; point_i < input_->points.size (); ++point_i)
+    for (std::size_t point_i = 0; point_i < input_->size (); ++point_i)
     {
       float A_hat_normalization = 0.0;
       PointT A_hat; A_hat.x = A_hat.y = A_hat.z = 0.0;
-      for (std::size_t point_j = 0; point_j < input_->points.size (); ++point_j)
+      for (std::size_t point_j = 0; point_j < input_->size (); ++point_j)
       {
         float phi_hat_i_j = phi[point_i][point_j] / (point_density[point_i] * point_density[point_j]);
         A_hat_normalization += phi_hat_i_j;
 
-        PointT aux = input_->points[point_j];
+        PointT aux = (*input_)[point_j];
         aux.x *= phi_hat_i_j; aux.y *= phi_hat_i_j; aux.z *= phi_hat_i_j;
 
         A_hat.x += aux.x; A_hat.y += aux.y; A_hat.z += aux.z;
@@ -186,7 +186,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeF ()
       A_hat.x /= A_hat_normalization; A_hat.y /= A_hat_normalization; A_hat.z /= A_hat_normalization;
 
       // compute the invariant F
-      float aux = 2.0f / scale_values_[scale_i] * euclideanDistance<PointT, PointT> (A_hat, input_->points[point_i]);
+      float aux = 2.0f / scale_values_[scale_i] * euclideanDistance<PointT, PointT> (A_hat, (*input_)[point_i]);
       F[point_i] = aux * std::exp (-aux);
     }
 
@@ -205,9 +205,9 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::extractExtrema (std:
   // for each point, check if it is a local extrema on each scale
   for (std::size_t scale_i = 0; scale_i < scale_values_.size (); ++scale_i)
   {
-    std::vector<bool> is_min_scale (input_->points.size ()),
-        is_max_scale (input_->points.size ());
-    for (std::size_t point_i = 0; point_i < input_->points.size (); ++point_i)
+    std::vector<bool> is_min_scale (input_->size ()),
+        is_max_scale (input_->size ());
+    for (std::size_t point_i = 0; point_i < input_->size (); ++point_i)
     {
       std::vector<int> nn_indices;
       geodesicFixedRadiusSearch (point_i, scale_values_[scale_i], nn_indices);
@@ -229,7 +229,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::extractExtrema (std:
   // look for points that are min/max over three consecutive scales
   for (std::size_t scale_i = 1; scale_i < scale_values_.size () - 1; ++scale_i)
   {
-    for (std::size_t point_i = 0; point_i < input_->points.size (); ++point_i)
+    for (std::size_t point_i = 0; point_i < input_->size (); ++point_i)
       if ((is_min[scale_i - 1][point_i] && is_min[scale_i][point_i] && is_min[scale_i + 1][point_i]) ||
           (is_max[scale_i - 1][point_i] && is_max[scale_i][point_i] && is_max[scale_i + 1][point_i]))
         {

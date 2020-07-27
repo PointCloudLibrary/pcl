@@ -46,7 +46,6 @@
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::registration;
-using namespace std;
 
 PointCloud<PointXYZ> cloud_source, cloud_target;
 
@@ -78,7 +77,7 @@ TEST (PCL, FPCSInitialAlignment)
 
   // align
   fpcs_ia.align (source_aligned);
-  EXPECT_EQ (static_cast <int> (source_aligned.points.size ()), static_cast <int> (cloud_source.points.size ()));
+  EXPECT_EQ (source_aligned.size (), cloud_source.size ());
 
   // check for correct coarse transformation marix
   //Eigen::Matrix4f transform_res_from_fpcs = fpcs_ia.getFinalTransformation ();

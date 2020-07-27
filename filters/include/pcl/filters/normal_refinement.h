@@ -58,8 +58,7 @@ namespace pcl
                        const std::vector<int>& k_indices,
                        const std::vector<float>& k_sqr_distances)
   {
-    pcl::utils::ignore(cloud);
-    pcl::utils::ignore(index);
+    pcl::utils::ignore(cloud, index);
     // Check inputs
     if (k_indices.size () != k_sqr_distances.size ())
       PCL_ERROR("[pcl::assignNormalWeights] inequal size of neighbor indices and distances!\n");

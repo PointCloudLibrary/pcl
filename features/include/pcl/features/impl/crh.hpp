@@ -43,7 +43,6 @@
 
 #include <pcl/features/crh.h>
 #include <pcl/common/fft/kiss_fftr.h>
-#include <pcl/common/common.h>
 #include <pcl/common/transforms.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,7 +59,7 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     return;
   }
 
-  if (normals_->points.size () != surface_->points.size ())
+  if (normals_->size () != surface_->size ())
   {
     PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!\n", getClassName ().c_str ());
     output.width = output.height = 0;
@@ -88,8 +87,8 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   for (std::size_t i = 0; i < indices_->size (); i++)
   {
-    grid.points[i].getVector4fMap () = surface_->points[(*indices_)[i]].getVector4fMap ();
-    grid.points[i].getNormalVector4fMap () = normals_->points[(*indices_)[i]].getNormalVector4fMap ();
+    grid[i].getVector4fMap () = (*surface_)[(*indices_)[i]].getVector4fMap ();
+    grid[i].getNormalVector4fMap () = (*normals_)[(*indices_)[i]].getNormalVector4fMap ();
   }
 
   pcl::transformPointCloudWithNormals (grid, grid, transformPC);
@@ -123,15 +122,15 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   output.points.resize (1);
   output.width = output.height = 1;
 
-  output.points[0].histogram[0] = freq_data[0].r; //dc
+  output[0].histogram[0] = freq_data[0].r; //dc
   int k = 1;
   for (int i = 1; i < (nbins / 2); i++, k += 2)
   {
-    output.points[0].histogram[k] = freq_data[i].r;
-    output.points[0].histogram[k + 1] = freq_data[i].i;
+    output[0].histogram[k] = freq_data[i].r;
+    output[0].histogram[k + 1] = freq_data[i].i;
   }
 
-  output.points[0].histogram[nbins - 1] = freq_data[nbins / 2].r; //nyquist
+  output[0].histogram[nbins - 1] = freq_data[nbins / 2].r; //nyquist
 }
 
 #define PCL_INSTANTIATE_CRHEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::CRHEstimation<T,NT,OutT>;

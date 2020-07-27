@@ -42,7 +42,6 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
@@ -65,7 +64,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const string &filename, pcl::PCLPointCloud2 &cloud,
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud,
            Eigen::Vector4f &translation, Eigen::Quaternionf &orientation)
 {
   if (loadPCDFile (filename, cloud, translation, orientation) < 0)
@@ -102,7 +101,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
 }
 
 void
-saveCloud (const string &filename, const pcl::PCLPointCloud2 &output,
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output,
            const Eigen::Vector4f &translation, const Eigen::Quaternionf &orientation)
 {
   PCDWriter w;
@@ -110,7 +109,7 @@ saveCloud (const string &filename, const pcl::PCLPointCloud2 &output,
 }
 
 int
-batchProcess (const std::vector<string> &pcd_files, string &output_dir, float sigma_s, float sigma_r)
+batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir, float sigma_s, float sigma_r)
 {
 #pragma omp parallel for \
   default(none) \
@@ -129,13 +128,13 @@ batchProcess (const std::vector<string> &pcd_files, string &output_dir, float si
     compute (cloud, output, sigma_s, sigma_r);
 
     // Prepare output file name
-    string filename = pcd_files[i];
+    std::string filename = pcd_files[i];
     boost::trim (filename);
-    std::vector<string> st;
+    std::vector<std::string> st;
     boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
     
     // Save into the second file
-    stringstream ss;
+    std::stringstream ss;
     ss << output_dir << "/" << st.at (st.size () - 1);
     saveCloud (ss.str (), output, translation, rotation);
   }
@@ -161,7 +160,7 @@ main (int argc, char** argv)
   float sigma_r = default_sigma_r;
   parse_argument (argc, argv, "-sigma_s", sigma_s);
   parse_argument (argc, argv, "-sigma_r", sigma_r);
-  string input_dir, output_dir;
+  std::string input_dir, output_dir;
   if (parse_argument (argc, argv, "-input_dir", input_dir) != -1)
   {
     PCL_INFO ("Input directory given as %s. Batch process mode on.\n", input_dir.c_str ());
@@ -207,7 +206,7 @@ main (int argc, char** argv)
   {
     if (!input_dir.empty() && boost::filesystem::exists (input_dir))
     {
-      std::vector<string> pcd_files;
+      std::vector<std::string> pcd_files;
       boost::filesystem::directory_iterator end_itr;
       for (boost::filesystem::directory_iterator itr (input_dir); itr != end_itr; ++itr)
       {

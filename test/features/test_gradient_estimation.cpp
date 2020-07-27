@@ -44,7 +44,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, IntensityGradientEstimation)
@@ -66,7 +65,7 @@ TEST (PCL, IntensityGradientEstimation)
       cloud_xyzi.points.push_back (p);
     }
   }
-  cloud_xyzi.width = static_cast<std::uint32_t> (cloud_xyzi.points.size ());
+  cloud_xyzi.width = cloud_xyzi.size ();
   PointCloud<PointXYZI>::ConstPtr cloud_ptr = cloud_xyzi.makeShared ();
 
   // Estimate surface normals
@@ -89,12 +88,12 @@ TEST (PCL, IntensityGradientEstimation)
   grad_est.compute (gradient);
 
   // Compare to gradient estimates to actual values
-  for (std::size_t i = 0; i < cloud_ptr->points.size (); ++i)
+  for (std::size_t i = 0; i < cloud_ptr->size (); ++i)
   {
-    const PointXYZI &p = cloud_ptr->points[i];
+    const PointXYZI &p = (*cloud_ptr)[i];
 
     // A pointer to the estimated gradient values
-    const float * g_est = gradient.points[i].gradient;
+    const float * g_est = gradient[i].gradient;
 
     // Compute the surface normal analytically.
     float nx = -0.2f * p.x;

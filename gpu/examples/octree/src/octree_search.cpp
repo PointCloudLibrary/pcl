@@ -28,7 +28,7 @@ int main (int argc, char** argv)
   }
 
   pcl::io::savePCDFileASCII ("input.pcd", cloud);
-  std::cout << "INFO: Saved " << cloud.points.size () << " data points to test_pcd.pcd." << std::endl;
+  std::cout << "INFO: Saved " << cloud.size () << " data points to test_pcd.pcd." << std::endl;
   
   pcl::gpu::Octree::PointCloud cloud_device;
   cloud_device.upload(cloud.points);
@@ -90,14 +90,14 @@ int main (int argc, char** argv)
 
       for (std::size_t j = 0; j < sizes[i] ; ++j)
       {
-        cloud_result.points.push_back(cloud.points[data[j + i * max_answers]]);
+        cloud_result.points.push_back(cloud[data[j + i * max_answers]]);
         std::cout << "INFO: data : " << j << " " << j + i * max_answers << " data " << data[j+ i * max_answers] << std::endl;
       }
       std::stringstream ss;
       ss << "cloud_cluster_" << i << ".pcd";
-      cloud_result.width    = cloud_result.points.size();
+      cloud_result.width    = cloud_result.size();
       pcl::io::savePCDFileASCII (ss.str(), cloud_result);
-      std::cout << "INFO: Saved " << cloud_result.points.size () << " data points to " << ss.str() << std::endl;
+      std::cout << "INFO: Saved " << cloud_result.size () << " data points to " << ss.str() << std::endl;
     }
   }
   return 0;

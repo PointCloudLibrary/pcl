@@ -45,7 +45,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
@@ -115,32 +114,32 @@ TEST (PCL, PrincipalCurvaturesEstimation)
 
   // estimate
   pc.compute (*pcs);
-  EXPECT_EQ (pcs->points.size (), indices.size ());
+  EXPECT_EQ (pcs->size (), indices.size ());
 
   // Adjust for small numerical inconsitencies (due to nn_indices not being sorted)
-  EXPECT_NEAR (std::abs (pcs->points[0].principal_curvature[0]), 0.98509, 1e-4);
-  EXPECT_NEAR (std::abs (pcs->points[0].principal_curvature[1]), 0.10713, 1e-4);
-  EXPECT_NEAR (std::abs (pcs->points[0].principal_curvature[2]), 0.13462, 1e-4);
-  EXPECT_NEAR (std::abs (pcs->points[0].pc1), 0.23997458815574646, 1e-4);
-  EXPECT_NEAR (std::abs (pcs->points[0].pc2), 0.19400238990783691, 1e-4);
+  EXPECT_NEAR (std::abs ((*pcs)[0].principal_curvature[0]), 0.98509, 1e-4);
+  EXPECT_NEAR (std::abs ((*pcs)[0].principal_curvature[1]), 0.10713, 1e-4);
+  EXPECT_NEAR (std::abs ((*pcs)[0].principal_curvature[2]), 0.13462, 1e-4);
+  EXPECT_NEAR (std::abs ((*pcs)[0].pc1), 0.23997458815574646, 1e-4);
+  EXPECT_NEAR (std::abs ((*pcs)[0].pc2), 0.19400238990783691, 1e-4);
 
-  EXPECT_NEAR (pcs->points[2].principal_curvature[0], 0.98079, 1e-4);
-  EXPECT_NEAR (pcs->points[2].principal_curvature[1], -0.04019, 1e-4);
-  EXPECT_NEAR (pcs->points[2].principal_curvature[2], 0.19086, 1e-4);
-  EXPECT_NEAR (pcs->points[2].pc1, 0.27207502722740173, 1e-4);
-  EXPECT_NEAR (pcs->points[2].pc2, 0.1946497857570648,  1e-4);
+  EXPECT_NEAR ((*pcs)[2].principal_curvature[0], 0.98079, 1e-4);
+  EXPECT_NEAR ((*pcs)[2].principal_curvature[1], -0.04019, 1e-4);
+  EXPECT_NEAR ((*pcs)[2].principal_curvature[2], 0.19086, 1e-4);
+  EXPECT_NEAR ((*pcs)[2].pc1, 0.27207502722740173, 1e-4);
+  EXPECT_NEAR ((*pcs)[2].pc2, 0.1946497857570648,  1e-4);
 
-  EXPECT_NEAR (pcs->points[indices.size () - 3].principal_curvature[0], 0.86725, 1e-4);
-  EXPECT_NEAR (pcs->points[indices.size () - 3].principal_curvature[1], -0.37599, 1e-4);
-  EXPECT_NEAR (pcs->points[indices.size () - 3].principal_curvature[2], 0.32636, 1e-4);
-  EXPECT_NEAR (pcs->points[indices.size () - 3].pc1, 0.2590007483959198,  1e-4);
-  EXPECT_NEAR (pcs->points[indices.size () - 3].pc2, 0.17906941473484039, 1e-4);
+  EXPECT_NEAR ((*pcs)[indices.size () - 3].principal_curvature[0], 0.86725, 1e-4);
+  EXPECT_NEAR ((*pcs)[indices.size () - 3].principal_curvature[1], -0.37599, 1e-4);
+  EXPECT_NEAR ((*pcs)[indices.size () - 3].principal_curvature[2], 0.32636, 1e-4);
+  EXPECT_NEAR ((*pcs)[indices.size () - 3].pc1, 0.2590007483959198,  1e-4);
+  EXPECT_NEAR ((*pcs)[indices.size () - 3].pc2, 0.17906941473484039, 1e-4);
 
-  EXPECT_NEAR (pcs->points[indices.size () - 1].principal_curvature[0], 0.86725, 1e-4);
-  EXPECT_NEAR (pcs->points[indices.size () - 1].principal_curvature[1], -0.375851, 1e-3);
-  EXPECT_NEAR (pcs->points[indices.size () - 1].principal_curvature[2], 0.32636, 1e-4);
-  EXPECT_NEAR (pcs->points[indices.size () - 1].pc1, 0.25900065898895264, 1e-4);
-  EXPECT_NEAR (pcs->points[indices.size () - 1].pc2, 0.17906941473484039, 1e-4);
+  EXPECT_NEAR ((*pcs)[indices.size () - 1].principal_curvature[0], 0.86725, 1e-4);
+  EXPECT_NEAR ((*pcs)[indices.size () - 1].principal_curvature[1], -0.375851, 1e-3);
+  EXPECT_NEAR ((*pcs)[indices.size () - 1].principal_curvature[2], 0.32636, 1e-4);
+  EXPECT_NEAR ((*pcs)[indices.size () - 1].pc1, 0.25900065898895264, 1e-4);
+  EXPECT_NEAR ((*pcs)[indices.size () - 1].pc2, 0.17906941473484039, 1e-4);
 }
 
 /* ---[ */
@@ -159,7 +158,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  indices.resize (cloud.points.size ());
+  indices.resize (cloud.size ());
   for (std::size_t i = 0; i < indices.size (); ++i)
     indices[i] = static_cast<int> (i);
 

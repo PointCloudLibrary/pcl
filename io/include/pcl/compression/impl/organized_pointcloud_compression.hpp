@@ -412,7 +412,7 @@ namespace pcl
 
       // Ensure we have an organized point cloud
       assert((width>1) && (height>1));
-      assert(width*height == cloud_arg->points.size());
+      assert(width*height == cloud_arg->size());
 
       float maxDepth = 0;
       float focalLength = 0;
@@ -421,7 +421,7 @@ namespace pcl
       for (int y = -centerY; y < centerY; ++y )
         for (int x = -centerX; x < centerX; ++x )
         {
-          const PointT& point = cloud_arg->points[it++];
+          const PointT& point = (*cloud_arg)[it++];
 
           if (pcl::isFinite (point))
           {

@@ -177,7 +177,7 @@ namespace pcl
     // Copy point data
     std::uint32_t num_points = msg.width * msg.height;
     cloud.points.resize (num_points);
-    std::uint8_t* cloud_data = reinterpret_cast<std::uint8_t*>(&cloud.points[0]);
+    std::uint8_t* cloud_data = reinterpret_cast<std::uint8_t*>(&cloud[0]);
 
     // Check if we can copy adjacent points in a single memcpy.  We can do so if there
     // is exactly one field to copy and it is the same size as the source and destination
@@ -243,22 +243,22 @@ namespace pcl
     // Ease the user's burden on specifying width/height for unorganized datasets
     if (cloud.width == 0 && cloud.height == 0)
     {
-      msg.width  = static_cast<std::uint32_t>(cloud.points.size ());
+      msg.width  = cloud.size ();
       msg.height = 1;
     }
     else
     {
-      assert (cloud.points.size () == cloud.width * cloud.height);
+      assert (cloud.size () == cloud.width * cloud.height);
       msg.height = cloud.height;
       msg.width  = cloud.width;
     }
 
     // Fill point cloud binary data (padding and all)
-    std::size_t data_size = sizeof (PointT) * cloud.points.size ();
+    std::size_t data_size = sizeof (PointT) * cloud.size ();
     msg.data.resize (data_size);
     if (data_size)
     {
-      memcpy(&msg.data[0], &cloud.points[0], data_size);
+      memcpy(&msg.data[0], &cloud[0], data_size);
     }
 
     // Fill fields metadata
@@ -286,7 +286,7 @@ namespace pcl
       throw std::runtime_error("Needs to be a dense like cloud!!");
     else
     {
-      if (cloud.points.size () != cloud.width * cloud.height)
+      if (cloud.size () != cloud.width * cloud.height)
         throw std::runtime_error("The width and height do not match the cloud size!");
       msg.height = cloud.height;
       msg.width = cloud.width;

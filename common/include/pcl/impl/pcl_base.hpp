@@ -149,16 +149,16 @@ pcl::PCLBase<PointT>::initCompute ()
   }
 
   // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
-  if (fake_indices_ && indices_->size () != input_->points.size ())
+  if (fake_indices_ && indices_->size () != input_->size ())
   {
     const auto indices_size = indices_->size ();
     try
     {
-      indices_->resize (input_->points.size ());
+      indices_->resize (input_->size ());
     }
     catch (const std::bad_alloc&)
     {
-      PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", input_->points.size ());
+      PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", input_->size ());
     }
     for (auto i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
   }

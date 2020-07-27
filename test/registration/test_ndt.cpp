@@ -68,7 +68,7 @@ TEST (PCL, NormalDistributionsTransform)
   reg.setTransformationEpsilon (1e-8);
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (output.size (), cloud_source.size ());
   EXPECT_LT (reg.getFitnessScore (), 0.001);
 
   // Check again, for all possible caching schemes
@@ -89,7 +89,7 @@ TEST (PCL, NormalDistributionsTransform)
 
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_EQ (output.size (), cloud_source.size ());
     EXPECT_LT (reg.getFitnessScore (), 0.001);
   }
 }

@@ -163,13 +163,13 @@ pcl::modeler::CloudMesh::updateVtkPoints()
 
   // If the dataset has no invalid values, just copy all of them
   if (cloud_->is_dense) {
-    vtkIdType nr_points = cloud_->points.size();
+    vtkIdType nr_points = cloud_->size();
     data->SetNumberOfValues(3 * nr_points);
 
     for (vtkIdType i = 0; i < nr_points; ++i) {
-      data->SetValue(i * 3 + 0, cloud_->points[i].x);
-      data->SetValue(i * 3 + 1, cloud_->points[i].y);
-      data->SetValue(i * 3 + 2, cloud_->points[i].z);
+      data->SetValue(i * 3 + 0, (*cloud_)[i].x);
+      data->SetValue(i * 3 + 1, (*cloud_)[i].y);
+      data->SetValue(i * 3 + 2, (*cloud_)[i].z);
     }
   }
   // Need to check for NaNs, Infs, ec
@@ -181,9 +181,9 @@ pcl::modeler::CloudMesh::updateVtkPoints()
 
     for (vtkIdType i = 0, i_end = indices->size(); i < i_end; ++i) {
       vtkIdType idx = (*indices)[i];
-      data->SetValue(i * 3 + 0, cloud_->points[idx].x);
-      data->SetValue(i * 3 + 1, cloud_->points[idx].y);
-      data->SetValue(i * 3 + 2, cloud_->points[idx].z);
+      data->SetValue(i * 3 + 0, (*cloud_)[idx].x);
+      data->SetValue(i * 3 + 1, (*cloud_)[idx].y);
+      data->SetValue(i * 3 + 2, (*cloud_)[idx].z);
     }
   }
   data->Squeeze();

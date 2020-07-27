@@ -361,14 +361,51 @@ namespace pcl
 
       }
 
-      /** \brief Get the voxels surrounding point p, not including the voxel containing point p.
-       * \note Only voxels containing a sufficient number of points are used (slower than radius search in practice).
+      /** \brief Get the voxels surrounding point p designated by #relative_coordinates.
+       * \note Only voxels containing a sufficient number of points are used.
+       * \param[in] relative_coordinates 3xN matrix that represents relative coordinates of N neighboring voxels with respect to the center voxel
        * \param[in] reference_point the point to get the leaf structure at
        * \param[out] neighbors
        * \return number of neighbors found
        */
       int
-      getNeighborhoodAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors);
+      getNeighborhoodAtPoint (const Eigen::Matrix<int, 3, Eigen::Dynamic>& relative_coordinates, const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
+
+      /** \brief Get the voxels surrounding point p, not including the voxel containing point p.
+       * \note Only voxels containing a sufficient number of points are used.
+       * \param[in] reference_point the point to get the leaf structure at
+       * \param[out] neighbors
+       * \return number of neighbors found (up to 26)
+       */
+      int
+      getNeighborhoodAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
+
+      /** \brief Get the voxel at p.
+       * \note Only voxels containing a sufficient number of points are used.
+       * \param[in] reference_point the point to get the leaf structure at
+       * \param[out] neighbors
+       * \return number of neighbors found (up to 1)
+       */
+      int
+      getVoxelAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
+
+      /** \brief Get the voxel at p and its facing voxels (up to 7 voxels).
+       * \note Only voxels containing a sufficient number of points are used.
+       * \param[in] reference_point the point to get the leaf structure at
+       * \param[out] neighbors
+       * \return number of neighbors found (up to 7)
+       */
+      int
+      getFaceNeighborsAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
+
+      /** \brief Get all 3x3x3 neighbor voxels of p (up to 27 voxels).
+       * \note Only voxels containing a sufficient number of points are used.
+       * \param[in] reference_point the point to get the leaf structure at
+       * \param[out] neighbors
+       * \return number of neighbors found (up to 27)
+       */
+      int
+      getAllNeighborsAtPoint (const PointT& reference_point, std::vector<LeafConstPtr> &neighbors) const;
 
       /** \brief Get the leaf structure map
        * \return a map contataining all leaves
@@ -406,7 +443,7 @@ namespace pcl
        */
       int
       nearestKSearch (const PointT &point, int k,
-                      std::vector<LeafConstPtr> &k_leaves, std::vector<float> &k_sqr_distances)
+                      std::vector<LeafConstPtr> &k_leaves, std::vector<float> &k_sqr_distances) const
       {
         k_leaves.clear ();
 
@@ -425,9 +462,14 @@ namespace pcl
         k_leaves.reserve (k);
         for (const int &k_index : k_indices)
         {
-          k_leaves.push_back (&leaves_[voxel_centroids_leaf_indices_[k_index]]);
+          auto voxel = leaves_.find(voxel_centroids_leaf_indices_[k_index]);
+          if (voxel == leaves_.end()) {
+            continue;
+          }
+
+          k_leaves.push_back(&voxel->second);
         }
-        return k;
+        return k_leaves.size();
       }
 
       /** \brief Search for the k-nearest occupied voxels for the given query point.
@@ -441,11 +483,11 @@ namespace pcl
        */
       inline int
       nearestKSearch (const PointCloud &cloud, int index, int k,
-                      std::vector<LeafConstPtr> &k_leaves, std::vector<float> &k_sqr_distances)
+                      std::vector<LeafConstPtr> &k_leaves, std::vector<float> &k_sqr_distances) const
       {
-        if (index >= static_cast<int> (cloud.points.size ()) || index < 0)
+        if (index >= static_cast<int> (cloud.size ()) || index < 0)
           return (0);
-        return (nearestKSearch (cloud.points[index], k, k_leaves, k_sqr_distances));
+        return (nearestKSearch (cloud[index], k, k_leaves, k_sqr_distances));
       }
 
 
@@ -460,7 +502,7 @@ namespace pcl
        */
       int
       radiusSearch (const PointT &point, double radius, std::vector<LeafConstPtr> &k_leaves,
-                    std::vector<float> &k_sqr_distances, unsigned int max_nn = 0)
+                    std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
       {
         k_leaves.clear ();
 
@@ -473,15 +515,20 @@ namespace pcl
 
         // Find neighbors within radius in the occupied voxel centroid cloud
         std::vector<int> k_indices;
-        int k = kdtree_.radiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
+        const int k = kdtree_.radiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
 
         // Find leaves corresponding to neighbors
         k_leaves.reserve (k);
         for (const int &k_index : k_indices)
         {
-          k_leaves.push_back (&leaves_[voxel_centroids_leaf_indices_[k_index]]);
+          const auto voxel = leaves_.find(voxel_centroids_leaf_indices_[k_index]);
+          if(voxel == leaves_.end()) {
+            continue;
+          }
+
+          k_leaves.push_back(&voxel->second);
         }
-        return k;
+        return k_leaves.size();
       }
 
       /** \brief Search for all the nearest occupied voxels of the query point in a given radius.
@@ -497,11 +544,11 @@ namespace pcl
       inline int
       radiusSearch (const PointCloud &cloud, int index, double radius,
                     std::vector<LeafConstPtr> &k_leaves, std::vector<float> &k_sqr_distances,
-                    unsigned int max_nn = 0)
+                    unsigned int max_nn = 0) const
       {
-        if (index >= static_cast<int> (cloud.points.size ()) || index < 0)
+        if (index >= static_cast<int> (cloud.size ()) || index < 0)
           return (0);
-        return (radiusSearch (cloud.points[index], radius, k_leaves, k_sqr_distances, max_nn));
+        return (radiusSearch (cloud[index], radius, k_leaves, k_sqr_distances, max_nn));
       }
 
     protected:

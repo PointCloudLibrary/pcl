@@ -74,7 +74,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
   fromPCLPointCloud2 (*cloud_target, *xyz_target);
 
   PointCloud<PointXYZI>::Ptr output_xyzi (new PointCloud<PointXYZI> ());
-  output_xyzi->points.resize (xyz_source->points.size ());
+  output_xyzi->points.resize (xyz_source->size ());
   output_xyzi->height = cloud_source->height;
   output_xyzi->width = cloud_source->width;
 
@@ -84,29 +84,29 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
   {
 //    print_highlight (stderr, "Computing using the equal indices correspondence heuristic.\n");
 
-    if (xyz_source->points.size () != xyz_target->points.size ())
+    if (xyz_source->size () != xyz_target->size ())
     {
       print_error ("Source and target clouds do not have the same number of points.\n");
       return;
     }
 
-    for (std::size_t point_i = 0; point_i < xyz_source->points.size (); ++point_i)
+    for (std::size_t point_i = 0; point_i < xyz_source->size (); ++point_i)
     {
-      if (!std::isfinite (xyz_source->points[point_i].x) || !std::isfinite (xyz_source->points[point_i].y) || !std::isfinite (xyz_source->points[point_i].z))
+      if (!std::isfinite ((*xyz_source)[point_i].x) || !std::isfinite ((*xyz_source)[point_i].y) || !std::isfinite ((*xyz_source)[point_i].z))
         continue;
-      if (!std::isfinite (xyz_target->points[point_i].x) || !std::isfinite (xyz_target->points[point_i].y) || !std::isfinite (xyz_target->points[point_i].z))
+      if (!std::isfinite ((*xyz_target)[point_i].x) || !std::isfinite ((*xyz_target)[point_i].y) || !std::isfinite ((*xyz_target)[point_i].z))
         continue;
 
 
-      float dist = squaredEuclideanDistance (xyz_source->points[point_i], xyz_target->points[point_i]);
+      float dist = squaredEuclideanDistance ((*xyz_source)[point_i], (*xyz_target)[point_i]);
       rmse += dist;
 
-      output_xyzi->points[point_i].x = xyz_source->points[point_i].x;
-      output_xyzi->points[point_i].y = xyz_source->points[point_i].y;
-      output_xyzi->points[point_i].z = xyz_source->points[point_i].z;
-      output_xyzi->points[point_i].intensity = dist;
+      (*output_xyzi)[point_i].x = (*xyz_source)[point_i].x;
+      (*output_xyzi)[point_i].y = (*xyz_source)[point_i].y;
+      (*output_xyzi)[point_i].z = (*xyz_source)[point_i].z;
+      (*output_xyzi)[point_i].intensity = dist;
     }
-    rmse = std::sqrt (rmse / static_cast<float> (xyz_source->points.size ()));
+    rmse = std::sqrt (rmse / static_cast<float> (xyz_source->size ()));
   }
   else if (correspondence_type == "nn")
   {
@@ -115,26 +115,26 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
     KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> ());
     tree->setInputCloud (xyz_target);
 
-    for (std::size_t point_i = 0; point_i < xyz_source->points.size (); ++ point_i)
+    for (std::size_t point_i = 0; point_i < xyz_source->size (); ++ point_i)
     {
-      if (!std::isfinite (xyz_source->points[point_i].x) || !std::isfinite (xyz_source->points[point_i].y) || !std::isfinite (xyz_source->points[point_i].z))
+      if (!std::isfinite ((*xyz_source)[point_i].x) || !std::isfinite ((*xyz_source)[point_i].y) || !std::isfinite ((*xyz_source)[point_i].z))
         continue;
 
       std::vector<int> nn_indices (1);
       std::vector<float> nn_distances (1);
-      if (!tree->nearestKSearch (xyz_source->points[point_i], 1, nn_indices, nn_distances))
+      if (!tree->nearestKSearch ((*xyz_source)[point_i], 1, nn_indices, nn_distances))
         continue;
       std::size_t point_nn_i = nn_indices.front();
 
-      float dist = squaredEuclideanDistance (xyz_source->points[point_i], xyz_target->points[point_nn_i]);
+      float dist = squaredEuclideanDistance ((*xyz_source)[point_i], (*xyz_target)[point_nn_i]);
       rmse += dist;
 
-      output_xyzi->points[point_i].x = xyz_source->points[point_i].x;
-      output_xyzi->points[point_i].y = xyz_source->points[point_i].y;
-      output_xyzi->points[point_i].z = xyz_source->points[point_i].z;
-      output_xyzi->points[point_i].intensity = dist;
+      (*output_xyzi)[point_i].x = (*xyz_source)[point_i].x;
+      (*output_xyzi)[point_i].y = (*xyz_source)[point_i].y;
+      (*output_xyzi)[point_i].z = (*xyz_source)[point_i].z;
+      (*output_xyzi)[point_i].intensity = dist;
     }
-    rmse = std::sqrt (rmse / static_cast<float> (xyz_source->points.size ()));
+    rmse = std::sqrt (rmse / static_cast<float> (xyz_source->size ()));
 
   }
   else if (correspondence_type == "nnplane")
@@ -147,30 +147,30 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
     KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> ());
     tree->setInputCloud (xyz_target);
 
-    for (std::size_t point_i = 0; point_i < xyz_source->points.size (); ++ point_i)
+    for (std::size_t point_i = 0; point_i < xyz_source->size (); ++ point_i)
     {
-      if (!std::isfinite (xyz_source->points[point_i].x) || !std::isfinite (xyz_source->points[point_i].y) || !std::isfinite (xyz_source->points[point_i].z))
+      if (!std::isfinite ((*xyz_source)[point_i].x) || !std::isfinite ((*xyz_source)[point_i].y) || !std::isfinite ((*xyz_source)[point_i].z))
         continue;
 
       std::vector<int> nn_indices (1);
       std::vector<float> nn_distances (1);
-      if (!tree->nearestKSearch (xyz_source->points[point_i], 1, nn_indices, nn_distances))
+      if (!tree->nearestKSearch ((*xyz_source)[point_i], 1, nn_indices, nn_distances))
         continue;
       std::size_t point_nn_i = nn_indices.front();
 
-      Eigen::Vector3f normal_target = normals_target->points[point_nn_i].getNormalVector3fMap (),
-          point_source = xyz_source->points[point_i].getVector3fMap (),
-          point_target = xyz_target->points[point_nn_i].getVector3fMap ();
+      Eigen::Vector3f normal_target = (*normals_target)[point_nn_i].getNormalVector3fMap (),
+          point_source = (*xyz_source)[point_i].getVector3fMap (),
+          point_target = (*xyz_target)[point_nn_i].getVector3fMap ();
 
       float dist = normal_target.dot (point_source - point_target);
       rmse += dist * dist;
 
-      output_xyzi->points[point_i].x = xyz_source->points[point_i].x;
-      output_xyzi->points[point_i].y = xyz_source->points[point_i].y;
-      output_xyzi->points[point_i].z = xyz_source->points[point_i].z;
-      output_xyzi->points[point_i].intensity = dist * dist;
+      (*output_xyzi)[point_i].x = (*xyz_source)[point_i].x;
+      (*output_xyzi)[point_i].y = (*xyz_source)[point_i].y;
+      (*output_xyzi)[point_i].z = (*xyz_source)[point_i].z;
+      (*output_xyzi)[point_i].intensity = dist * dist;
     }
-    rmse = std::sqrt (rmse / static_cast<float> (xyz_source->points.size ()));
+    rmse = std::sqrt (rmse / static_cast<float> (xyz_source->size ()));
   }
   else
   {

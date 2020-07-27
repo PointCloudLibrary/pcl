@@ -236,7 +236,8 @@ namespace pcl
           {
             // what i have:
             // P : Sample Point
-            Eigen::Vector3d P (model_->input_->points[indices_[i]].x, model_->input_->points[indices_[i]].y, model_->input_->points[indices_[i]].z);
+            Eigen::Vector3d P =
+                (*model_->input_)[indices_[i]].getVector3fMap().template cast<double>();
             // C : Circle Center
             Eigen::Vector3d C (x[0], x[1], x[2]);
             // N : Circle (Plane) Normal

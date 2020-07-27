@@ -102,7 +102,7 @@ pcl::gpu::kinfuLS::CyclicalBuffer::performShift (const TsdfVolume::Ptr volume, c
 
   // Retrieving XYZ
   points.download (current_slice_xyz->points);
-  current_slice_xyz->width = (int) current_slice_xyz->points.size ();
+  current_slice_xyz->width = current_slice_xyz->size ();
   current_slice_xyz->height = 1;
 
   // Retrieving intensities
@@ -110,16 +110,16 @@ pcl::gpu::kinfuLS::CyclicalBuffer::performShift (const TsdfVolume::Ptr volume, c
   // when tried, this lead to wrong intenisty values being extracted by fetchSliceAsCloud () (padding pbls?)
   std::vector<float , Eigen::aligned_allocator<float> > intensities_vector;
   intensities.download (intensities_vector);
-  current_slice_intensities->points.resize (current_slice_xyz->points.size ());
-  for(std::size_t i = 0 ; i < current_slice_intensities->points.size () ; ++i)
-    current_slice_intensities->points[i].intensity = intensities_vector[i];
+  current_slice_intensities->resize (current_slice_xyz->size ());
+  for(std::size_t i = 0 ; i < current_slice_intensities->size () ; ++i)
+    (*current_slice_intensities)[i].intensity = intensities_vector[i];
 
-  current_slice_intensities->width = (int) current_slice_intensities->points.size ();
+  current_slice_intensities->width = current_slice_intensities->size ();
   current_slice_intensities->height = 1;
 
   // Concatenating XYZ and Intensities
   pcl::concatenateFields (*current_slice_xyz, *current_slice_intensities, *current_slice);
-  current_slice->width = (int) current_slice->points.size ();
+  current_slice->width = current_slice->size ();
   current_slice->height = 1;
 
   // transform the slice from local to global coordinates

@@ -113,9 +113,9 @@ pcl::visualization::PCLVisualizer::Ptr shapesVis (pcl::PointCloud<pcl::PointXYZR
   //------------------------------------
   //-----Add shapes at cloud points-----
   //------------------------------------
-  viewer->addLine<pcl::PointXYZRGB> (cloud->points[0],
-                                     cloud->points[cloud->size() - 1], "line");
-  viewer->addSphere (cloud->points[0], 0.2, 0.5, 0.5, 0.0, "sphere");
+  viewer->addLine<pcl::PointXYZRGB> ((*cloud)[0],
+                                     (*cloud)[cloud->size() - 1], "line");
+  viewer->addSphere ((*cloud)[0], 0.2, 0.5, 0.5, 0.0, "sphere");
 
   //---------------------------------------
   //-----Add shapes at other locations-----
@@ -317,9 +317,9 @@ main (int argc, char** argv)
       b += 12;
     }
   }
-  basic_cloud_ptr->width = (int) basic_cloud_ptr->points.size ();
+  basic_cloud_ptr->width = basic_cloud_ptr->size ();
   basic_cloud_ptr->height = 1;
-  point_cloud_ptr->width = (int) point_cloud_ptr->points.size ();
+  point_cloud_ptr->width = point_cloud_ptr->size ();
   point_cloud_ptr->height = 1;
 
   // ----------------------------------------------------------------

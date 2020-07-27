@@ -129,7 +129,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
 
     // Make sure the downsampled cloud still has enough points
     const std::size_t min_nr_points = 25;
-    if (cloud->points.size () < min_nr_points)
+    if (cloud->size () < min_nr_points)
       break;
 
     // Update the KdTree with the downsampled points
@@ -144,7 +144,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
 
   // Set final properties
   output.height = 1;
-  output.width = static_cast<std::uint32_t> (output.points.size ());
+  output.width = output.size ();
   output.header = input_->header;
   output.sensor_origin_ = input_->sensor_origin_;
   output.sensor_orientation_ = input_->sensor_orientation_;
@@ -170,7 +170,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
   std::vector<int> extrema_indices, extrema_scales;
   findScaleSpaceExtrema (input, tree, diff_of_gauss, extrema_indices, extrema_scales);
 
-  output.points.reserve (output.points.size () + extrema_indices.size ());
+  output.points.reserve (output.size () + extrema_indices.size ());
   // Save scale?
   if (scale_idx_ != -1)
   {
@@ -180,9 +180,9 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
       PointOutT keypoint;
       const int &keypoint_index = extrema_indices[i_keypoint];
    
-      keypoint.x = input.points[keypoint_index].x;
-      keypoint.y = input.points[keypoint_index].y;
-      keypoint.z = input.points[keypoint_index].z;
+      keypoint.x = input[keypoint_index].x;
+      keypoint.y = input[keypoint_index].y;
+      keypoint.z = input[keypoint_index].z;
       memcpy (reinterpret_cast<char*> (&keypoint) + out_fields_[scale_idx_].offset,
               &scales[extrema_scales[i_keypoint]], sizeof (float));
       output.points.push_back (keypoint); 
@@ -194,9 +194,9 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
     for (const int &keypoint_index : extrema_indices)
     {
       PointOutT keypoint;
-      keypoint.x = input.points[keypoint_index].x;
-      keypoint.y = input.points[keypoint_index].y;
-      keypoint.z = input.points[keypoint_index].z;
+      keypoint.x = input[keypoint_index].x;
+      keypoint.y = input[keypoint_index].y;
+      keypoint.z = input[keypoint_index].z;
 
       output.points.push_back (keypoint); 
     }
@@ -234,7 +234,7 @@ void pcl::SIFTKeypoint<PointInT, PointOutT>::computeScaleSpace (
       float denominator = 0.0f;
       for (std::size_t i_neighbor = 0; i_neighbor < nn_indices.size (); ++i_neighbor)
       {
-        const float &value = getFieldValue_ (input.points[nn_indices[i_neighbor]]);
+        const float &value = getFieldValue_ (input[nn_indices[i_neighbor]]);
         const float &dist_sqr = nn_dist[i_neighbor];
         if (dist_sqr <= 9*sigma_sqr)
         {

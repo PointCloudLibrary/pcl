@@ -54,7 +54,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& labe
 {
   pcl::Label invalid_pt;
   invalid_pt.label = unsigned (0);
-  labels.points.resize (input_->points.size (), invalid_pt);
+  labels.points.resize (input_->size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;
   
@@ -69,7 +69,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::assignLabelIndices (pcl::PointCloud<Poi
 {
   const unsigned invalid_label = unsigned (0);
   label_indices.resize (num_of_edgetype_);
-  for (std::size_t idx = 0; idx < input_->points.size (); idx++)
+  for (std::size_t idx = 0; idx < input_->size (); idx++)
   {
     if (labels[idx].label != invalid_label)
     {
@@ -104,10 +104,10 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
       for (int col = 1; col < int(input_->width) - 1; col++)
       {
         int curr_idx = row*int(input_->width) + col;
-        if (!std::isfinite (input_->points[curr_idx].z))
+        if (!std::isfinite ((*input_)[curr_idx].z))
           continue;
 
-        float curr_depth = std::abs (input_->points[curr_idx].z);
+        float curr_depth = std::abs ((*input_)[curr_idx].z);
 
         // Calculate depth distances between current point and neighboring points
         std::vector<float> nghr_dist;
@@ -116,13 +116,13 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
         for (int d_idx = 0; d_idx < num_of_ngbr; d_idx++)
         {
           int nghr_idx = curr_idx + directions[d_idx].d_index;
-          assert (nghr_idx >= 0 && nghr_idx < input_->points.size ());
-          if (!std::isfinite (input_->points[nghr_idx].z))
+          assert (nghr_idx >= 0 && nghr_idx < input_->size ());
+          if (!std::isfinite ((*input_)[nghr_idx].z))
           {
             found_invalid_neighbor = true;
             break;
           }
-          nghr_dist[d_idx] = curr_depth - std::abs (input_->points[nghr_idx].z);
+          nghr_dist[d_idx] = curr_depth - std::abs ((*input_)[nghr_idx].z);
         }
 
         if (!found_invalid_neighbor)
@@ -159,8 +159,8 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
           for (const auto &direction : directions)
           {
             int nghr_idx = curr_idx + direction.d_index;
-            assert (nghr_idx >= 0 && nghr_idx < input_->points.size ());
-            if (!std::isfinite (input_->points[nghr_idx].z))
+            assert (nghr_idx >= 0 && nghr_idx < input_->size ());
+            if (!std::isfinite ((*input_)[nghr_idx].z))
             {
               dx += direction.d_x;
               dy += direction.d_y;
@@ -183,9 +183,9 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::extractEdges (pcl::PointCloud<PointLT>&
             if (s_row < 0 || s_row >= int(input_->height) || s_col < 0 || s_col >= int(input_->width))
               break;
 
-            if (std::isfinite (input_->points[s_row*int(input_->width)+s_col].z))
+            if (std::isfinite ((*input_)[s_row*int(input_->width)+s_col].z))
             {
-              corr_depth = std::abs (input_->points[s_row*int(input_->width)+s_col].z);
+              corr_depth = std::abs ((*input_)[s_row*int(input_->width)+s_col].z);
               break;
             }
           }
@@ -228,7 +228,7 @@ pcl::OrganizedEdgeFromRGB<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& l
 {
   pcl::Label invalid_pt;
   invalid_pt.label = unsigned (0);
-  labels.points.resize (input_->points.size (), invalid_pt);
+  labels.points.resize (input_->size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;
 
@@ -276,7 +276,7 @@ pcl::OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::compute (pcl::PointClou
 {
   pcl::Label invalid_pt;
   invalid_pt.label = unsigned (0);
-  labels.points.resize (input_->points.size (), invalid_pt);
+  labels.points.resize (input_->size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;
   
@@ -306,8 +306,8 @@ pcl::OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::extractEdges (pcl::Poin
     {
       for (std::uint32_t col=0; col<normals_->width; col++)
       {
-        nx (col, row).intensity = normals_->points[row*normals_->width + col].normal_x;
-        ny (col, row).intensity = normals_->points[row*normals_->width + col].normal_y;
+        nx (col, row).intensity = (*normals_)[row*normals_->width + col].normal_x;
+        ny (col, row).intensity = (*normals_)[row*normals_->width + col].normal_y;
       }
     }
 
@@ -334,7 +334,7 @@ pcl::OrganizedEdgeFromRGBNormals<PointT, PointNT, PointLT>::compute (pcl::PointC
 {
   pcl::Label invalid_pt;
   invalid_pt.label = unsigned (0);
-  labels.points.resize (input_->points.size (), invalid_pt);
+  labels.points.resize (input_->size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;
   

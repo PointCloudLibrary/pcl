@@ -71,7 +71,7 @@ namespace pcl
         /** \brief Constructor. */
         PointCloudGeometryHandler (const PointCloudConstPtr &cloud) :
           cloud_ (cloud), capable_ (false),
-          field_x_idx_ (-1), field_y_idx_ (-1), field_z_idx_ (-1),
+          field_x_idx_ (UNAVAILABLE), field_y_idx_ (UNAVAILABLE), field_z_idx_ (UNAVAILABLE),
           fields_ ()
         {}
 
@@ -117,13 +117,13 @@ namespace pcl
         bool capable_;
 
         /** \brief The index of the field holding the X data. */
-        int field_x_idx_;
+        index_t field_x_idx_;
 
         /** \brief The index of the field holding the Y data. */
-        int field_y_idx_;
+        index_t field_y_idx_;
 
         /** \brief The index of the field holding the Z data. */
-        int field_z_idx_;
+        index_t field_z_idx_;
 
         /** \brief The list of fields available for this PointCloud. */
         std::vector<pcl::PCLPointField> fields_;
@@ -247,13 +247,13 @@ namespace pcl
           : pcl::visualization::PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
         {
           field_x_idx_ = pcl::getFieldIndex<PointT> (x_field_name, fields_);
-          if (field_x_idx_ == -1)
+          if (field_x_idx_ == UNAVAILABLE)
             return;
           field_y_idx_ = pcl::getFieldIndex<PointT> (y_field_name, fields_);
-          if (field_y_idx_ == -1)
+          if (field_y_idx_ == UNAVAILABLE)
             return;
           field_z_idx_ = pcl::getFieldIndex<PointT> (z_field_name, fields_);
-          if (field_z_idx_ == -1)
+          if (field_z_idx_ == UNAVAILABLE)
             return;
           field_name_ = x_field_name + y_field_name + z_field_name;
           capable_ = true;
@@ -279,15 +279,15 @@ namespace pcl
           if (!points)
             points = vtkSmartPointer<vtkPoints>::New ();
           points->SetDataTypeToFloat ();
-          points->SetNumberOfPoints (cloud_->points.size ());
+          points->SetNumberOfPoints (cloud_->size ());
 
           float data;
           // Add all points
           double p[3];
-          for (vtkIdType i = 0; i < static_cast<vtkIdType> (cloud_->points.size ()); ++i)
+          for (vtkIdType i = 0; i < static_cast<vtkIdType> (cloud_->size ()); ++i)
           {
             // Copy the value at the specified field
-            const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&cloud_->points[i]);
+            const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*cloud_)[i]);
             memcpy (&data, pt_data + fields_[field_x_idx_].offset, sizeof (float));
             p[0] = data;
 
@@ -334,9 +334,9 @@ namespace pcl
         PointCloudGeometryHandler (const PointCloudConstPtr &cloud, const Eigen::Vector4f & = Eigen::Vector4f::Zero ())
           : cloud_ (cloud)
           , capable_ (false)
-          , field_x_idx_ (-1)
-          , field_y_idx_ (-1)
-          , field_z_idx_ (-1)
+          , field_x_idx_ (UNAVAILABLE)
+          , field_y_idx_ (UNAVAILABLE)
+          , field_z_idx_ (UNAVAILABLE)
           , fields_ (cloud_->fields)
         {
         }
@@ -381,13 +381,13 @@ namespace pcl
         bool capable_;
 
         /** \brief The index of the field holding the X data. */
-        int field_x_idx_;
+        index_t field_x_idx_;
 
         /** \brief The index of the field holding the Y data. */
-        int field_y_idx_;
+        index_t field_y_idx_;
 
         /** \brief The index of the field holding the Z data. */
-        int field_z_idx_;
+        index_t field_z_idx_;
 
         /** \brief The list of fields available for this PointCloud. */
         std::vector<pcl::PCLPointField> fields_;

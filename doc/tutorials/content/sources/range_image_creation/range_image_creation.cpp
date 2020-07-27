@@ -13,7 +13,7 @@ int main (int argc, char** argv) {
       pointCloud.points.push_back(point);
     }
   }
-  pointCloud.width = (std::uint32_t) pointCloud.points.size();
+  pointCloud.width = pointCloud.size();
   pointCloud.height = 1;
   
   // We now want to create a range image from the above point cloud, with a 1deg angular resolution

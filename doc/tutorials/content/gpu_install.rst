@@ -2,85 +2,65 @@
 
 Configuring your PC to use your Nvidia GPU with PCL
 ---------------------------------------------------
-In this tutorial we will learn how to check if your PC is 
-suitable for use with the GPU methods provided within PCL.
-This tutorial has been tested on Ubuntu 11.04 and 12.04, let
-us know on the user mailing list if you have tested this on other
-distributions.
 
-The explanation
+In this tutorial you will learn how to configure your system to make it compatible to run the GPU methods provided by PCL.
+This tutorial is for Ubuntu, other Linux distrubutions can follow a similar process to set it up.  
+
+Windows is currently  **not** officially supported for the GPU methods.
+
+Checking CUDA Version
 ---------------
 
-In order to run the code you'll need a decent Nvidia GPU with Fermi or Kepler architecture you can check this by::
+In order to run the code you will need a system with an Nvidia GPU, having CUDA Toolkit v9.2+ installed. 
+We will not be covering CUDA toolkit installation in this tutorial as there already exists many great tutorials for the same.
 
- $ lspci | grep nVidia
+You can check your CUDA toolkit version using the following command::
 
-This should indicate which GPU you have on your system, if you don't have an Nvidia GPU, we're sorry, but you
-won't be able to use PCL GPU.
-The output of this you can compare with `this link <http://www.nvidia.co.uk/object/cuda-parallel-computing-uk.html>`_  
-on the Nvidia website, your card should mention compute capability of 2.x (Fermi) or 3.x (Kepler) or higher.
-If you want to run with a GUI, you can also run::
-
- $ nvidia-settings
-
-From either CLI or from your system settings menu. This should mention the same information.
-
-First you need to test if your CPU is 32 or 64 bit, if it is 64-bit, it is preferred to work in this mode.
-For this you can run::
-
-  $ lscpu | grep op-mode
-
-As a next step you will need a up to date version of the Cuda Toolkit. You can get this 
-`here <http://developer.nvidia.com/cuda/cuda-downloads>`_, at the time of writing the
-latest version was 4.2 and the beta release of version 5 was available as well.
-
-First you will need to install the latest video drivers, download the correct one from the site
-and run the install file, after this, download the toolkit and install it.
-At the moment of writing this was version 295.41, please choose the most up to date one::
-
-  $ wget http://developer.download.nvidia.com/compute/cuda/4_2/rel/drivers/devdriver_4.2_linux_64_295.41.run
-
-Make the driver executable::
-
- $ chmod +x devdriver_4.2_linux_64_295.41.run
-
-Run the driver::
-
- $ sudo ./devdriver_4.2_linux_64_295.41.run
-
-You need to run this script without your X-server running. You can shut your X-server down as follows:
-Go to a terminal by pressing Ctrl-Alt-F1 and typing::
-
- $ sudo service gdm stop
-
-Once you have installed you GPU device driver you will also need to install the CUDA Toolkit::
-
- $ wget http://developer.download.nvidia.com/compute/cuda/4_2/rel/toolkit/cudatoolkit_4.2.9_linux_64_ubuntu11.04.run
- $ chmod +x cudatoolkit_4.2.9_linux_64_ubuntu11.04.run
- $ sudo ./cudatoolkit_4.2.9_linux_64_ubuntu11.04.run
+ $ nvcc --version | grep "release" | awk '{print $6}' | cut -c2-
  
-You can get the SDK, but for PCL this is not needed, this provides you with general CUDA examples
-and some scripts to test the performance of your CPU as well as your hardware specifications.
+ 
+Checking C++ Version
+---------------
 
-CUDA only compiles with gcc 4.4 and lower, so if your default installed gcc is 4.5 or higher you'll need to install gcc 4.4:
+The GPU methods in PCL require a min version of GCC 7 or Clang 6 onwards (min version unknown). 
+This will not be a problem if you are running Ubuntu 18.04 or later. However on Ubuntu 16.04, you will need to install GCC 7 or Clang 6 (lower versions not tested) manually because the versions available by default are: GCC 5 and Clang 3.8
 
- $ sudo apt-get install gcc-4.4
+You can check your GCC and Clang version using the following commands::
 
-Now you need to force your gcc to use this version, you can remove the older version, the other option is to create a symlink in your home folder and include that in the beginning of your path:
+ $ gcc -dumpversion
+ 
+ $ clang --version
+ 
+ 
+Installing GCC
+--------------- 
 
- $ cd
- $ mkdir bin
+To install GCC 7 run the following commands::
+ 
+$ sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+$ sudo apt update && apt install g++-7 -y
+ 
+Set it as the default version::
+ 
+$ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7
+$ sudo update-alternatives --config gcc
 
-Add 'export PATH=$HOME/bin:$PATH as the last line to your ~/.bashrc file.
-Now create the symlinks in your bin folder:
+Installing Eigen
+--------------- 
 
- $ cd ~/bin
- $ ln -s <your_gcc_installation> c++
- $ ln -s <your_gcc_installation> cc
- $ ln -s <your_gcc_installation> g++
- $ ln -s <your_gcc_installation> gcc
+You will also need Eigen v3.3.7+, since the previous versions are incompatible with the latest CUDA versions. 
+If you are on Ubuntu 29+, then there is no issue since Eigen 3.3.7 is shipped by default. 
+On older versions Eigen v3.3.7 will need to be installed manually::
 
-If you use colorgcc these links all need to point to /usr/bin/colorgcc.
+$ wget -qO- https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.gz | tar xz 
+$ sudo apt install -y libblas-dev 
+$ cd eigen-3.3.7 && mkdir build && cd build 
+$ cmake ..
+$ sudo make install 
+$ cd ../.. && rm -rf eigen-3.3.7/ && rm -f eigen-3.3.7.tar.gz
+
+Building PCL
+--------------- 
 
 Now you can get the latest git master (or another one) of PCL and configure your
 installation to use the CUDA functions.
@@ -108,23 +88,3 @@ If you want to install your PCL installation for everybody to use::
  $ make install
 
 Now your installation is finished!
-
-Tested Hardware
----------------
-Please report us the hardware you have tested the following methods with.
-
-+-----------------------+----------------------------------------------------------------------+----------------+
-| Method                | Hardware                                                             | Reported FPS   |
-+=======================+======================================================================+================+
-| Kinfu                 | GTX680, Intel Xeon CPU E5620 @ 2.40Ghz x 8, 24Gb RAM                 | 20-27          |
-+-----------------------+----------------------------------------------------------------------+----------------+
-|                       | GTX480, Intel Xeon CPU W3550 @ 3.07GHz × 4, 7.8Gb RAM                | 40             |
-+-----------------------+----------------------------------------------------------------------+----------------+
-|                       | C2070, Intel Xeon CPU E5620 @ 2.40Ghz x 8, 24Gb RAM                  | 29             |
-+-----------------------+----------------------------------------------------------------------+----------------+
-| People Pose Detection | GTX680, Intel Xeon CPU E5620 @ 2.40Ghz x 8, 24Gb RAM                 | 20-23          |
-+-----------------------+----------------------------------------------------------------------+----------------+
-|                       | C2070, Intel Xeon CPU E5620 @ 2.40Ghz x 8, 24Gb RAM                  | 10-20          |
-+-----------------------+----------------------------------------------------------------------+----------------+
-
-

@@ -62,12 +62,12 @@ pcl::CPPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 {
   // Initialize output container
   output.points.clear ();
-  output.points.reserve (indices_->size () * input_->points.size ());
+  output.points.reserve (indices_->size () * input_->size ());
   output.is_dense = true;
   // Compute point pair features for every pair of points in the cloud
   for (const auto& i: *indices_)
   {
-    for (std::size_t j = 0 ; j < input_->points.size (); ++j)
+    for (std::size_t j = 0 ; j < input_->size (); ++j)
     {
       PointOutT p;
       // No need to calculate feature for identity pair (i, j) as they aren't used in future calculations
@@ -75,18 +75,18 @@ pcl::CPPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
       if (static_cast<std::size_t>(i) != j)
       {
         if (
-            pcl::computeCPPFPairFeature (input_->points[i].getVector4fMap (),
-                                      normals_->points[i].getNormalVector4fMap (),
-									  input_->points[i].getRGBVector4i (),
-                                      input_->points[j].getVector4fMap (),
-                                      normals_->points[j].getNormalVector4fMap (),
-									  input_->points[j].getRGBVector4i (),
+            pcl::computeCPPFPairFeature ((*input_)[i].getVector4fMap (),
+                                      (*normals_)[i].getNormalVector4fMap (),
+									  (*input_)[i].getRGBVector4i (),
+                                      (*input_)[j].getVector4fMap (),
+                                      (*normals_)[j].getNormalVector4fMap (),
+									  (*input_)[j].getRGBVector4i (),
                                       p.f1, p.f2, p.f3, p.f4, p.f5, p.f6, p.f7, p.f8, p.f9, p.f10))
         {
           // Calculate alpha_m angle
-          Eigen::Vector3f model_reference_point = input_->points[i].getVector3fMap (),
-                          model_reference_normal = normals_->points[i].getNormalVector3fMap (),
-                          model_point = input_->points[j].getVector3fMap ();
+          Eigen::Vector3f model_reference_point = (*input_)[i].getVector3fMap (),
+                          model_reference_normal = (*normals_)[i].getNormalVector3fMap (),
+                          model_point = (*input_)[j].getVector3fMap ();
           Eigen::AngleAxisf rotation_mg (std::acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ())),
                                          model_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
           Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
@@ -115,7 +115,7 @@ pcl::CPPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   }
   // overwrite the sizes done by Feature::initCompute ()
   output.height = 1;
-  output.width = static_cast<std::uint32_t> (output.points.size ());
+  output.width = output.size ();
 }
 
 #define PCL_INSTANTIATE_CPPFEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::CPPFEstimation<T,NT,OutT>;

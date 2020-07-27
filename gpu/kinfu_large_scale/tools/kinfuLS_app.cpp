@@ -94,7 +94,6 @@ using ScopeTimeT = pcl::ScopeTime;
 
 #include <pcl/gpu/kinfu_large_scale/screenshot_manager.h>
 
-using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace Eigen;
@@ -121,7 +120,7 @@ namespace pcl
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::vector<string> getPcdFilesInDir(const string& directory)
+std::vector<std::string> getPcdFilesInDir(const std::string& directory)
 {
   namespace fs = boost::filesystem;
   fs::path dir(directory);
@@ -130,7 +129,7 @@ std::vector<string> getPcdFilesInDir(const string& directory)
   if (directory.empty() || !fs::exists(dir) || !fs::is_directory(dir))
           PCL_THROW_EXCEPTION (pcl::IOException, "No valid PCD directory given!\n");
 
-  std::vector<string> result;
+  std::vector<std::string> result;
   fs::directory_iterator pos(dir);
   fs::directory_iterator end;           
 
@@ -220,7 +219,7 @@ typename PointCloud<MergedT>::Ptr merge(const PointCloud<PointT>& points, const 
 
   pcl::copyPointCloud (points, *merged_ptr);      
   for (std::size_t i = 0; i < colors.size (); ++i)
-    merged_ptr->points[i].rgba = colors.points[i].rgba;
+    (*merged_ptr)[i].rgba = colors[i].rgba;
 
   return merged_ptr;
 }
@@ -234,7 +233,7 @@ pcl::PolygonMesh::Ptr convertToMesh(const DeviceArray<PointXYZ>& triangles)
           return pcl::PolygonMesh::Ptr();
 
   pcl::PointCloud<pcl::PointXYZ> cloud;
-  cloud.width  = (int)triangles.size();
+  cloud.width  = triangles.size();
   cloud.height = 1;
   triangles.download(cloud.points);
 
@@ -417,7 +416,7 @@ struct SceneCloudView
   }
   
   inline void 
-  drawCamera (Eigen::Affine3f& pose, const string& name, double r, double g, double b)
+  drawCamera (Eigen::Affine3f& pose, const std::string& name, double r, double g, double b)
   {
     double focal = 575;
     double height = 480;
@@ -469,7 +468,7 @@ struct SceneCloudView
   }
   
   inline void 
-  removeCamera (const string& name)
+  removeCamera (const std::string& name)
   {
     cloud_viewer_.removeShape (name);
     std::stringstream ss;
@@ -502,8 +501,8 @@ struct SceneCloudView
   void
   displayICPState (KinfuTracker& kinfu, bool was_lost_)
   {
-    string name = "last_good_track";
-    string name_estimate = "last_good_estimate";
+    std::string name = "last_good_track";
+    std::string name_estimate = "last_good_estimate";
     if (was_lost_ && !kinfu.icpIsLost ()) //execute only when ICP just recovered (i.e. was_lost_ == true && icpIsLost == false)
     {
       removeCamera(name);
@@ -547,7 +546,7 @@ struct SceneCloudView
     viewer_pose_ = kinfu.getCameraPose();
 
     ScopeTimeT time ("PointCloud Extraction");
-    std::cout << "\nGetting cloud... " << flush;
+    std::cout << "\nGetting cloud... " << std::flush;
 
     valid_combined_ = false;
 
@@ -564,7 +563,7 @@ struct SceneCloudView
         kinfu.volume().fetchNormals (extracted, normals_device_);
         pcl::gpu::kinfuLS::mergePointNormal (extracted, normals_device_, combined_device_);
         combined_device_.download (combined_ptr_->points);
-        combined_ptr_->width = (int)combined_ptr_->points.size ();
+        combined_ptr_->width = combined_ptr_->size ();
         combined_ptr_->height = 1;
 
         valid_combined_ = true;
@@ -572,7 +571,7 @@ struct SceneCloudView
       else
       {
         extracted.download (cloud_ptr_->points);
-        cloud_ptr_->width = (int)cloud_ptr_->points.size ();
+        cloud_ptr_->width = cloud_ptr_->size ();
         cloud_ptr_->height = 1;
       }
 
@@ -580,14 +579,14 @@ struct SceneCloudView
       {
         kinfu.colorVolume().fetchColors(extracted, point_colors_device_);
         point_colors_device_.download(point_colors_ptr_->points);
-        point_colors_ptr_->width = (int)point_colors_ptr_->points.size ();
+        point_colors_ptr_->width = point_colors_ptr_->size ();
         point_colors_ptr_->height = 1;
       }
       else
         point_colors_ptr_->points.clear();
     }
-    std::size_t points_size = valid_combined_ ? combined_ptr_->points.size () : cloud_ptr_->points.size ();
-    std::cout << "Done.  Cloud size: " << points_size / 1000 << "K" << std::endl;
+    const auto size = valid_combined_ ? combined_ptr_->size () : cloud_ptr_->size ();
+    std::cout << "Done.  Cloud size: " << size / 1000 << "K" << std::endl;
 
     cloud_viewer_.removeAllPointClouds ();    
     if (valid_combined_)
@@ -647,7 +646,7 @@ struct SceneCloudView
   showMesh(KinfuTracker& kinfu, bool /*integrate_colors*/)
   {
     ScopeTimeT time ("Mesh Extraction");
-    std::cout << "\nGetting mesh... " << flush;
+    std::cout << "\nGetting mesh... " << std::flush;
 
     if (!marching_cubes_)
       marching_cubes_ = MarchingCubes::Ptr( new MarchingCubes() );
@@ -804,7 +803,7 @@ struct KinFuLSApp
   }
 
   void
-  toggleEvaluationMode(const string& eval_folder, const string& match_file = string())
+  toggleEvaluationMode(const std::string& eval_folder, const std::string& match_file = std::string())
   {
     evaluation_ptr_ = Evaluation::Ptr( new Evaluation(eval_folder) );
     if (!match_file.empty())
@@ -849,7 +848,7 @@ struct KinFuLSApp
 
       if (scan_volume_)
       {                
-        std::cout << "Downloading TSDF volume from device ... " << flush;
+        std::cout << "Downloading TSDF volume from device ... " << std::flush;
         // kinfu_->volume().downloadTsdfAndWeighs (tsdf_volume_.volumeWriteable (), tsdf_volume_.weightsWriteable ());
         kinfu_->volume ().downloadTsdfAndWeightsLocal ();
         // tsdf_volume_.setHeader (Eigen::Vector3i (pcl::device::kinfuLS::VOLUME_X, pcl::device::kinfuLS::VOLUME_Y, pcl::device::kinfuLS::VOLUME_Z), kinfu_->volume().getSize ());
@@ -857,7 +856,7 @@ struct KinFuLSApp
         // std::cout << "done [" << tsdf_volume_.size () << " voxels]" << std::endl << std::endl;
         std::cout << "done [" << kinfu_->volume ().size () << " voxels]" << std::endl << std::endl;
 
-        std::cout << "Converting volume to TSDF cloud ... " << flush;
+        std::cout << "Converting volume to TSDF cloud ... " << std::flush;
         // tsdf_volume_.convertToTsdfCloud (tsdf_cloud_ptr_);
         kinfu_->volume ().convertToTsdfCloud (tsdf_cloud_ptr_);
         // std::cout << "done [" << tsdf_cloud_ptr_->size () << " points]" << std::endl << std::endl;        
@@ -1233,12 +1232,12 @@ struct KinFuLSApp
         std::cout << std::endl << "Volume scan: " << (app->scan_volume_ ? "enabled" : "disabled") << std::endl << std::endl;
         break;
       case (int)'v': case (int)'V':
-        std::cout << "Saving TSDF volume to tsdf_volume.dat ... " << flush;
+        std::cout << "Saving TSDF volume to tsdf_volume.dat ... " << std::flush;
         // app->tsdf_volume_.save ("tsdf_volume.dat", true);
         app->kinfu_->volume ().save ("tsdf_volume.dat", true);
         // std::cout << "done [" << app->tsdf_volume_.size () << " voxels]" << std::endl;
         std::cout << "done [" << app->kinfu_->volume ().size () << " voxels]" << std::endl;
-        std::cout << "Saving TSDF volume cloud to tsdf_cloud.pcd ... " << flush;
+        std::cout << "Saving TSDF volume cloud to tsdf_cloud.pcd ... " << std::flush;
         pcl::io::savePCDFile<pcl::PointXYZI> ("tsdf_cloud.pcd", *app->tsdf_cloud_ptr_, true);
         std::cout << "done [" << app->tsdf_cloud_ptr_->size () << " points]" << std::endl;
         break;
@@ -1255,17 +1254,17 @@ writeCloudFile (int format, const CloudPtr& cloud_prt)
 {
   if (format == KinFuLSApp::PCD_BIN)
   {
-    std::cout << "Saving point cloud to 'cloud_bin.pcd' (binary)... " << flush;
+    std::cout << "Saving point cloud to 'cloud_bin.pcd' (binary)... " << std::flush;
     pcl::io::savePCDFile ("cloud_bin.pcd", *cloud_prt, true);
   }
   else if (format == KinFuLSApp::PCD_ASCII)
   {
-    std::cout << "Saving point cloud to 'cloud.pcd' (ASCII)... " << flush;
+    std::cout << "Saving point cloud to 'cloud.pcd' (ASCII)... " << std::flush;
     pcl::io::savePCDFile ("cloud.pcd", *cloud_prt, false);
   }
   else   /* if (format == KinFuLSApp::PLY) */
   {
-    std::cout << "Saving point cloud to 'cloud.ply' (ASCII)... " << flush;
+    std::cout << "Saving point cloud to 'cloud.ply' (ASCII)... " << std::flush;
     pcl::io::savePLYFileASCII ("cloud.ply", *cloud_prt);
 
   }
@@ -1279,12 +1278,12 @@ writePolygonMeshFile (int format, const pcl::PolygonMesh& mesh)
 {
   if (format == KinFuLSApp::MESH_PLY)
   {
-    std::cout << "Saving mesh to to 'mesh.ply'... " << flush;
+    std::cout << "Saving mesh to to 'mesh.ply'... " << std::flush;
     pcl::io::savePLYFile("mesh.ply", mesh);		
   }
   else /* if (format == KinFuLSApp::MESH_VTK) */
   {
-    std::cout << "Saving mesh to to 'mesh.vtk'... " << flush;
+    std::cout << "Saving mesh to to 'mesh.vtk'... " << std::flush;
     pcl::io::saveVTKFile("mesh.vtk", mesh);    
   }  
   std::cout << "Done" << std::endl;
@@ -1368,7 +1367,7 @@ main (int argc, char* argv[])
       float fps_pcd = 15.0f;
       pc::parse_argument (argc, argv, "-pcd_fps", fps_pcd);
 
-      std::vector<string> pcd_files = getPcdFilesInDir(pcd_dir);    
+      std::vector<std::string> pcd_files = getPcdFilesInDir(pcd_dir);
       // Sort the read files by name
       sort (pcd_files.begin (), pcd_files.end ());
       capture.reset (new pcl::PCDGrabber<pcl::PointXYZRGBA> (pcd_files, fps_pcd, false));

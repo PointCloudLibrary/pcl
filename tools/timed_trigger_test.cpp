@@ -4,7 +4,6 @@
 #include <pcl/common/time.h>
 #include <pcl/visualization/boost.h>
 
-using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 

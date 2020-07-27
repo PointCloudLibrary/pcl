@@ -62,7 +62,7 @@ public:
   void
   cloud_cb_(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& cloud)
   {
-    std::cerr << cloud->points.size() << " -- ";
+    std::cerr << cloud->size() << " -- ";
 
     // assign point cloud to octree
     octree->setInputCloud(cloud);
@@ -86,7 +86,7 @@ public:
       filtered_cloud->points.reserve(newPointIdxVector.size());
 
       for (const int& idx : newPointIdxVector)
-        filtered_cloud->points[idx].rgba = 255 << 16;
+        (*filtered_cloud)[idx].rgba = 255 << 16;
 
       if (!viewer.wasStopped())
         viewer.showCloud(filtered_cloud);
@@ -98,7 +98,7 @@ public:
       filtered_cloud->points.reserve(newPointIdxVector.size());
 
       for (const int& idx : newPointIdxVector)
-        filtered_cloud->points.push_back(cloud->points[idx]);
+        filtered_cloud->points.push_back((*cloud)[idx]);
 
       if (!viewer.wasStopped())
         viewer.showCloud(filtered_cloud);

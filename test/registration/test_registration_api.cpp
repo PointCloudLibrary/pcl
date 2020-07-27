@@ -491,7 +491,7 @@ TEST (PCL, TransformationEstimationPointToPlaneLLS)
 
       src->points.push_back (p);
     }
-  src->width = static_cast<std::uint32_t> (src->points.size ());
+  src->width = src->size ();
 
   // Create a test matrix
   Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
@@ -625,7 +625,7 @@ TEST (PCL, TransformationEstimationPointToPlane)
 
       src->points.push_back (p);
     }
-  src->width = static_cast<std::uint32_t> (src->points.size ());
+  src->width = src->size ();
 
   // Create a test matrix
   Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
@@ -685,7 +685,7 @@ TEST (PCL, TransformationEstimationSymmetricPointToPlaneLLS)
 
       src->points.push_back (p);
     }
-  src->width = static_cast<std::uint32_t> (src->points.size ());
+  src->width = src->size ();
 
   // Create a test matrix
   // (alpha, beta, gamma) = (-0.0180524, 0.0525268, -0.0999635)
@@ -735,9 +735,9 @@ main (int argc, char** argv)
   return (RUN_ALL_TESTS ());
 
   // Tranpose the cloud_model
-  /*for (std::size_t i = 0; i < cloud_model.points.size (); ++i)
+  /*for (std::size_t i = 0; i < cloud_model.size (); ++i)
   {
-  //  cloud_model.points[i].z += 1;
+  //  cloud_model[i].z += 1;
   }*/
 }
 /* ]--- */

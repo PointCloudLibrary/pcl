@@ -107,13 +107,13 @@ namespace pcl
     const auto token = std::numeric_limits<std::size_t>::max();
     std::size_t i_min = token, i_max = token;
 
-    for (std::size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
-      for (std::size_t j = i; j < cloud.points.size (); ++j)
+      for (std::size_t j = i; j < cloud.size (); ++j)
       {
         // Compute the distance 
-        double dist = (cloud.points[i].getVector4fMap () - 
-                       cloud.points[j].getVector4fMap ()).squaredNorm ();
+        double dist = (cloud[i].getVector4fMap () - 
+                       cloud[j].getVector4fMap ()).squaredNorm ();
         if (dist <= max_dist)
           continue;
 
@@ -126,8 +126,8 @@ namespace pcl
     if (i_min == token || i_max == token)
       return (max_dist = std::numeric_limits<double>::min ());
 
-    pmin = cloud.points[i_min];
-    pmax = cloud.points[i_max];
+    pmin = cloud[i_min];
+    pmax = cloud[i_max];
     return (std::sqrt (max_dist));
   }
  
@@ -152,8 +152,8 @@ namespace pcl
       for (std::size_t j = i; j < indices.size (); ++j)
       {
         // Compute the distance 
-        double dist = (cloud.points[indices[i]].getVector4fMap () - 
-                       cloud.points[indices[j]].getVector4fMap ()).squaredNorm ();
+        double dist = (cloud[indices[i]].getVector4fMap () - 
+                       cloud[indices[j]].getVector4fMap ()).squaredNorm ();
         if (dist <= max_dist)
           continue;
 
@@ -166,8 +166,8 @@ namespace pcl
     if (i_min == token || i_max == token)
       return (max_dist = std::numeric_limits<double>::min ());
 
-    pmin = cloud.points[indices[i_min]];
-    pmax = cloud.points[indices[i_max]];
+    pmin = cloud[indices[i_min]];
+    pmax = cloud[indices[i_max]];
     return (std::sqrt (max_dist));
   }
 

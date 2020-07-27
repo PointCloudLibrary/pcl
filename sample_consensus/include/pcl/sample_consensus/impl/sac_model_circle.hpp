@@ -55,9 +55,9 @@ pcl::SampleConsensusModelCircle2D<PointT>::isSampleGood(const Indices &samples) 
     return (false);
   }
   // Get the values at the two points
-  Eigen::Array2d p0 (input_->points[samples[0]].x, input_->points[samples[0]].y);
-  Eigen::Array2d p1 (input_->points[samples[1]].x, input_->points[samples[1]].y);
-  Eigen::Array2d p2 (input_->points[samples[2]].x, input_->points[samples[2]].y);
+  Eigen::Array2d p0 ((*input_)[samples[0]].x, (*input_)[samples[0]].y);
+  Eigen::Array2d p1 ((*input_)[samples[1]].x, (*input_)[samples[1]].y);
+  Eigen::Array2d p2 ((*input_)[samples[2]].x, (*input_)[samples[2]].y);
 
   // Compute the segment values (in 2d) between p1 and p0
   p1 -= p0;
@@ -82,9 +82,9 @@ pcl::SampleConsensusModelCircle2D<PointT>::computeModelCoefficients (const Indic
 
   model_coefficients.resize (model_size_);
 
-  Eigen::Vector2d p0 (input_->points[samples[0]].x, input_->points[samples[0]].y);
-  Eigen::Vector2d p1 (input_->points[samples[1]].x, input_->points[samples[1]].y);
-  Eigen::Vector2d p2 (input_->points[samples[2]].x, input_->points[samples[2]].y);
+  Eigen::Vector2d p0 ((*input_)[samples[0]].x, (*input_)[samples[0]].y);
+  Eigen::Vector2d p1 ((*input_)[samples[1]].x, (*input_)[samples[1]].y);
+  Eigen::Vector2d p2 ((*input_)[samples[2]].x, (*input_)[samples[2]].y);
 
   Eigen::Vector2d u = (p0 + p1) / 2.0;
   Eigen::Vector2d v = (p1 + p2) / 2.0;
@@ -122,11 +122,11 @@ pcl::SampleConsensusModelCircle2D<PointT>::getDistancesToModel (const Eigen::Vec
     // Calculate the distance from the point to the circle as the difference between
     // dist(point,circle_origin) and circle_radius
     distances[i] = std::abs (std::sqrt (
-                                    ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) *
-                                    ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) +
+                                    ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
+                                    ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
 
-                                    ( input_->points[(*indices_)[i]].y - model_coefficients[1] ) *
-                                    ( input_->points[(*indices_)[i]].y - model_coefficients[1] )
+                                    ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
+                                    ( (*input_)[(*indices_)[i]].y - model_coefficients[1] )
                                     ) - model_coefficients[2]);
 }
 
@@ -153,11 +153,11 @@ pcl::SampleConsensusModelCircle2D<PointT>::selectWithinDistance (
     // Calculate the distance from the point to the circle as the difference between
     // dist(point,circle_origin) and circle_radius
     float distance = std::abs (std::sqrt (
-                                      ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) *
-                                      ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) +
+                                      ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
+                                      ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
 
-                                      ( input_->points[(*indices_)[i]].y - model_coefficients[1] ) *
-                                      ( input_->points[(*indices_)[i]].y - model_coefficients[1] )
+                                      ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
+                                      ( (*input_)[(*indices_)[i]].y - model_coefficients[1] )
                                       ) - model_coefficients[2]);
     if (distance < threshold)
     {
@@ -184,11 +184,11 @@ pcl::SampleConsensusModelCircle2D<PointT>::countWithinDistance (
     // Calculate the distance from the point to the circle as the difference between
     // dist(point,circle_origin) and circle_radius
     float distance = std::abs (std::sqrt (
-                                      ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) *
-                                      ( input_->points[(*indices_)[i]].x - model_coefficients[0] ) +
+                                      ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
+                                      ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
 
-                                      ( input_->points[(*indices_)[i]].y - model_coefficients[1] ) *
-                                      ( input_->points[(*indices_)[i]].y - model_coefficients[1] )
+                                      ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
+                                      ( (*input_)[(*indices_)[i]].y - model_coefficients[1] )
                                       ) - model_coefficients[2]);
     if (distance < threshold)
       nr_p++;
@@ -247,49 +247,49 @@ pcl::SampleConsensusModelCircle2D<PointT>::projectPoints (
   if (copy_data_fields)
   {
     // Allocate enough space and copy the basics
-    projected_points.points.resize (input_->points.size ());
+    projected_points.points.resize (input_->size ());
     projected_points.width    = input_->width;
     projected_points.height   = input_->height;
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
-    for (std::size_t i = 0; i < projected_points.points.size (); ++i)
+    for (std::size_t i = 0; i < projected_points.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> ((*input_)[i], projected_points[i]));
 
     // Iterate through the points and project them to the circle
     for (const auto &inlier : inliers)
     {
-      float dx = input_->points[inlier].x - model_coefficients[0];
-      float dy = input_->points[inlier].y - model_coefficients[1];
+      float dx = (*input_)[inlier].x - model_coefficients[0];
+      float dy = (*input_)[inlier].y - model_coefficients[1];
       float a = std::sqrt ( (model_coefficients[2] * model_coefficients[2]) / (dx * dx + dy * dy) );
 
-      projected_points.points[inlier].x = a * dx + model_coefficients[0];
-      projected_points.points[inlier].y = a * dy + model_coefficients[1];
+      projected_points[inlier].x = a * dx + model_coefficients[0];
+      projected_points[inlier].y = a * dy + model_coefficients[1];
     }
   }
   else
   {
     // Allocate enough space and copy the basics
     projected_points.points.resize (inliers.size ());
-    projected_points.width    = static_cast<std::uint32_t> (inliers.size ());
+    projected_points.width    = inliers.size ();
     projected_points.height   = 1;
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
     for (std::size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> ((*input_)[inliers[i]], projected_points[i]));
 
     // Iterate through the points and project them to the circle
     for (std::size_t i = 0; i < inliers.size (); ++i)
     {
-      float dx = input_->points[inliers[i]].x - model_coefficients[0];
-      float dy = input_->points[inliers[i]].y - model_coefficients[1];
+      float dx = (*input_)[inliers[i]].x - model_coefficients[0];
+      float dy = (*input_)[inliers[i]].y - model_coefficients[1];
       float a = std::sqrt ( (model_coefficients[2] * model_coefficients[2]) / (dx * dx + dy * dy) );
 
-      projected_points.points[i].x = a * dx + model_coefficients[0];
-      projected_points.points[i].y = a * dy + model_coefficients[1];
+      projected_points[i].x = a * dx + model_coefficients[0];
+      projected_points[i].y = a * dy + model_coefficients[1];
     }
   }
 }
@@ -310,10 +310,10 @@ pcl::SampleConsensusModelCircle2D<PointT>::doSamplesVerifyModel (
     // Calculate the distance from the point to the circle as the difference between
     //dist(point,circle_origin) and circle_radius
     if (std::abs (std::sqrt (
-                         ( input_->points[index].x - model_coefficients[0] ) *
-                         ( input_->points[index].x - model_coefficients[0] ) +
-                         ( input_->points[index].y - model_coefficients[1] ) *
-                         ( input_->points[index].y - model_coefficients[1] )
+                         ( (*input_)[index].x - model_coefficients[0] ) *
+                         ( (*input_)[index].x - model_coefficients[0] ) +
+                         ( (*input_)[index].y - model_coefficients[1] ) *
+                         ( (*input_)[index].y - model_coefficients[1] )
                          ) - model_coefficients[2]) > threshold)
       return (false);
 

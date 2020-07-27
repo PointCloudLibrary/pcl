@@ -73,13 +73,13 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::computeModelCoefficients (
     return (false);
   }
 
-  Eigen::Vector4f p1 (input_->points[samples[0]].x, input_->points[samples[0]].y, input_->points[samples[0]].z, 0.0f);
-  Eigen::Vector4f p2 (input_->points[samples[1]].x, input_->points[samples[1]].y, input_->points[samples[1]].z, 0.0f);
-  Eigen::Vector4f p3 (input_->points[samples[2]].x, input_->points[samples[2]].y, input_->points[samples[2]].z, 0.0f);
+  Eigen::Vector4f p1 ((*input_)[samples[0]].x, (*input_)[samples[0]].y, (*input_)[samples[0]].z, 0.0f);
+  Eigen::Vector4f p2 ((*input_)[samples[1]].x, (*input_)[samples[1]].y, (*input_)[samples[1]].z, 0.0f);
+  Eigen::Vector4f p3 ((*input_)[samples[2]].x, (*input_)[samples[2]].y, (*input_)[samples[2]].z, 0.0f);
 
-  Eigen::Vector4f n1 (normals_->points[samples[0]].normal[0], normals_->points[samples[0]].normal[1], normals_->points[samples[0]].normal[2], 0.0f);
-  Eigen::Vector4f n2 (normals_->points[samples[1]].normal[0], normals_->points[samples[1]].normal[1], normals_->points[samples[1]].normal[2], 0.0f);
-  Eigen::Vector4f n3 (normals_->points[samples[2]].normal[0], normals_->points[samples[2]].normal[1], normals_->points[samples[2]].normal[2], 0.0f);
+  Eigen::Vector4f n1 ((*normals_)[samples[0]].normal[0], (*normals_)[samples[0]].normal[1], (*normals_)[samples[0]].normal[2], 0.0f);
+  Eigen::Vector4f n2 ((*normals_)[samples[1]].normal[0], (*normals_)[samples[1]].normal[1], (*normals_)[samples[1]].normal[2], 0.0f);
+  Eigen::Vector4f n3 ((*normals_)[samples[2]].normal[0], (*normals_)[samples[2]].normal[1], (*normals_)[samples[2]].normal[2], 0.0f);
 
   //calculate apex (intersection of the three planes defined by points and belonging normals
   Eigen::Vector4f ortho12 = n1.cross3(n2);
@@ -160,8 +160,8 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::getDistancesToModel (
   // Iterate through the 3d points and calculate the distances from them to the cone
   for (std::size_t i = 0; i  < indices_->size (); ++i)
   {
-    Eigen::Vector4f pt (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0.0f);
-    Eigen::Vector4f n  (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0.0f);
+    Eigen::Vector4f pt ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z, 0.0f);
+    Eigen::Vector4f n  ((*normals_)[(*indices_)[i]].normal[0], (*normals_)[(*indices_)[i]].normal[1], (*normals_)[(*indices_)[i]].normal[2], 0.0f);
 
     // Calculate the point's projection on the cone axis
     float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;
@@ -215,8 +215,8 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::selectWithinDistance (
   // Iterate through the 3d points and calculate the distances from them to the cone
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    Eigen::Vector4f pt (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0.0f);
-    Eigen::Vector4f n  (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0.0f);
+    Eigen::Vector4f pt ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z, 0.0f);
+    Eigen::Vector4f n  ((*normals_)[(*indices_)[i]].normal[0], (*normals_)[(*indices_)[i]].normal[1], (*normals_)[(*indices_)[i]].normal[2], 0.0f);
 
     // Calculate the point's projection on the cone axis
     float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;
@@ -274,8 +274,8 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::countWithinDistance (
   // Iterate through the 3d points and calculate the distances from them to the cone
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    Eigen::Vector4f pt (input_->points[(*indices_)[i]].x, input_->points[(*indices_)[i]].y, input_->points[(*indices_)[i]].z, 0.0f);
-    Eigen::Vector4f n  (normals_->points[(*indices_)[i]].normal[0], normals_->points[(*indices_)[i]].normal[1], normals_->points[(*indices_)[i]].normal[2], 0.0f);
+    Eigen::Vector4f pt ((*input_)[(*indices_)[i]].x, (*input_)[(*indices_)[i]].y, (*input_)[(*indices_)[i]].z, 0.0f);
+    Eigen::Vector4f n  ((*normals_)[(*indices_)[i]].normal[0], (*normals_)[(*indices_)[i]].normal[1], (*normals_)[(*indices_)[i]].normal[2], 0.0f);
 
     // Calculate the point's projection on the cone axis
     float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;
@@ -371,27 +371,27 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
   if (copy_data_fields)
   {
     // Allocate enough space and copy the basics
-    projected_points.points.resize (input_->points.size ());
+    projected_points.points.resize (input_->size ());
     projected_points.width    = input_->width;
     projected_points.height   = input_->height;
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
-    for (std::size_t i = 0; i < projected_points.points.size (); ++i)
+    for (std::size_t i = 0; i < projected_points.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> ((*input_)[i], projected_points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the cone
     for (const auto &inlier : inliers)
     {
-      Eigen::Vector4f pt (input_->points[inlier].x, 
-                          input_->points[inlier].y, 
-                          input_->points[inlier].z, 
+      Eigen::Vector4f pt ((*input_)[inlier].x, 
+                          (*input_)[inlier].y, 
+                          (*input_)[inlier].z, 
                           1);
 
       float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;
 
-      pcl::Vector4fMap pp = projected_points.points[inlier].getVector4fMap ();
+      pcl::Vector4fMap pp = projected_points[inlier].getVector4fMap ();
       pp.matrix () = apex + k * axis_dir;
 
       Eigen::Vector4f dir = pt - pp;
@@ -409,20 +409,20 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::projectPoints (
   {
     // Allocate enough space and copy the basics
     projected_points.points.resize (inliers.size ());
-    projected_points.width    = static_cast<std::uint32_t> (inliers.size ());
+    projected_points.width    = inliers.size ();
     projected_points.height   = 1;
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
     for (std::size_t i = 0; i < inliers.size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> ((*input_)[inliers[i]], projected_points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the cone
     for (std::size_t i = 0; i < inliers.size (); ++i)
     {
-      pcl::Vector4fMap pp = projected_points.points[i].getVector4fMap ();
-      pcl::Vector4fMapConst pt = input_->points[inliers[i]].getVector4fMap ();
+      pcl::Vector4fMap pp = projected_points[i].getVector4fMap ();
+      pcl::Vector4fMapConst pt = (*input_)[inliers[i]].getVector4fMap ();
 
       float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;
       // Calculate the projection of the point on the line
@@ -463,7 +463,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::doSamplesVerifyModel (
   // Iterate through the 3d points and calculate the distances from them to the cone
   for (const auto &index : indices)
   {
-    Eigen::Vector4f pt (input_->points[index].x, input_->points[index].y, input_->points[index].z, 0.0f);
+    Eigen::Vector4f pt ((*input_)[index].x, (*input_)[index].y, (*input_)[index].z, 0.0f);
 
     // Calculate the point's projection on the cone axis
     float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;

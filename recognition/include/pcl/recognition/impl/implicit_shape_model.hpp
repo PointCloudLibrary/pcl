@@ -92,15 +92,15 @@ pcl::features::ISMVoteList<PointT>::getColoredCloud (typename pcl::PointCloud<Po
 
   if (cloud != nullptr)
   {
-    colored_cloud->height += static_cast<std::uint32_t> (cloud->points.size ());
+    colored_cloud->height += cloud->size ();
     point.r = 255;
     point.g = 255;
     point.b = 255;
-    for (std::size_t i_point = 0; i_point < cloud->points.size (); i_point++)
+    for (const auto& i_point: *cloud)
     {
-      point.x = cloud->points[i_point].x;
-      point.y = cloud->points[i_point].y;
-      point.z = cloud->points[i_point].z;
+      point.x = i_point.x;
+      point.y = i_point.y;
+      point.z = i_point.z;
       colored_cloud->points.push_back (point);
     }
   }
@@ -115,7 +115,7 @@ pcl::features::ISMVoteList<PointT>::getColoredCloud (typename pcl::PointCloud<Po
     point.z = i_vote.z;
     colored_cloud->points.push_back (point);
   }
-  colored_cloud->height += static_cast<std::uint32_t> (votes_->points.size ());
+  colored_cloud->height += votes_->size ();
 
   return (colored_cloud);
 }
@@ -148,10 +148,8 @@ pcl::features::ISMVoteList<PointT>::findStrongestPeaks (
   for (int i = 0; i < NUM_INIT_PTS; i++)
   {
     Eigen::Vector3f old_center;
-    Eigen::Vector3f curr_center;
-    curr_center (0) = votes_->points[votes_->points.size () * i / NUM_INIT_PTS].x;
-    curr_center (1) = votes_->points[votes_->points.size () * i / NUM_INIT_PTS].y;
-    curr_center (2) = votes_->points[votes_->points.size () * i / NUM_INIT_PTS].z;
+    const auto idx = votes_->size() * i / NUM_INIT_PTS;
+    Eigen::Vector3f curr_center = (*votes_)[idx].getVector3fMap();
 
     do
     {
@@ -231,8 +229,8 @@ pcl::features::ISMVoteList<PointT>::validateTree ()
     if (tree_ == nullptr)
       tree_.reset (new pcl::KdTreeFLANN<pcl::InterestPoint>);
     tree_->setInputCloud (votes_);
-    k_ind_.resize ( votes_->points.size (), -1 );
-    k_sqr_dist_.resize ( votes_->points.size (), 0.0f );
+    k_ind_.resize ( votes_->size (), -1 );
+    k_sqr_dist_.resize ( votes_->size (), 0.0f );
     tree_is_valid_ = true;
   }
 }
@@ -254,8 +252,8 @@ pcl::features::ISMVoteList<PointT>::shiftMean (const Eigen::Vector3f& snap_pt, c
 
   for (std::size_t j = 0; j < n_pts; j++)
   {
-    double kernel = votes_->points[k_ind_[j]].strength * std::exp (-k_sqr_dist_[j] / (in_sigma_dist * in_sigma_dist));
-    Eigen::Vector3f vote_vec (votes_->points[k_ind_[j]].x, votes_->points[k_ind_[j]].y, votes_->points[k_ind_[j]].z);
+    double kernel = (*votes_)[k_ind_[j]].strength * std::exp (-k_sqr_dist_[j] / (in_sigma_dist * in_sigma_dist));
+    Eigen::Vector3f vote_vec ((*votes_)[k_ind_[j]].x, (*votes_)[k_ind_[j]].y, (*votes_)[k_ind_[j]].z);
     wgh_sum += vote_vec * static_cast<float> (kernel);
     denom += kernel;
   }
@@ -284,7 +282,7 @@ pcl::features::ISMVoteList<PointT>::getDensityAtPoint (
   std::size_t num_of_pts = tree_->radiusSearch (pt, 3 * sigma_dist, k_ind_, k_sqr_dist_);
 
   for (std::size_t j = 0; j < num_of_pts; j++)
-    sum_vote += votes_->points[k_ind_[j]].strength * std::exp (-k_sqr_dist_[j] / (sigma_dist * sigma_dist));
+    sum_vote += (*votes_)[k_ind_[j]].strength * std::exp (-k_sqr_dist_[j] / (sigma_dist * sigma_dist));
 
   return (sum_vote);
 }
@@ -293,7 +291,7 @@ pcl::features::ISMVoteList<PointT>::getDensityAtPoint (
 template <typename PointT> unsigned int
 pcl::features::ISMVoteList<PointT>::getNumberOfVotes ()
 {
-  return (static_cast<unsigned int> (votes_->points.size ()));
+  return (static_cast<unsigned int> (votes_->size ()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -776,7 +774,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::findObject
   {
     Eigen::VectorXf curr_descriptor (FeatureSize);
     for (int i_dim = 0; i_dim < FeatureSize; i_dim++)
-      curr_descriptor (i_dim) = feature_cloud->points[i_point].histogram[i_dim];
+      curr_descriptor (i_dim) = (*feature_cloud)[i_point].histogram[i_dim];
 
     float descriptor_sum = curr_descriptor.sum ();
     if (descriptor_sum < std::numeric_limits<float>::epsilon ())
@@ -810,7 +808,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::findObject
 
     const unsigned int n_words = static_cast<unsigned int> (model->clusters_[min_dist_idx].size ());
     //compute coord system transform
-    Eigen::Matrix3f transform = alignYCoordWithNormal (sampled_normal_cloud->points[i_point]);
+    Eigen::Matrix3f transform = alignYCoordWithNormal ((*sampled_normal_cloud)[i_point]);
     for (unsigned int i_word = 0; i_word < n_words; i_word++)
     {
       unsigned int index = model->clusters_[min_dist_idx][i_word];
@@ -826,7 +824,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::findObject
       applyTransform (direction, transform.transpose ());
 
       pcl::InterestPoint vote;
-      Eigen::Vector3f vote_pos = sampled_point_cloud->points[i_point].getVector3fMap () + direction;
+      Eigen::Vector3f vote_pos = (*sampled_point_cloud)[i_point].getVector3fMap () + direction;
       vote.x = vote_pos[0];
       vote.y = vote_pos[1];
       vote.z = vote_pos[2];
@@ -835,7 +833,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::findObject
       float power = statistical_weight * learned_weight;
       vote.strength = power;
       if (vote.strength > std::numeric_limits<float>::epsilon ())
-        out_votes->addVote (vote, sampled_point_cloud->points[i_point], i_class);
+        out_votes->addVote (vote, (*sampled_point_cloud)[i_point], i_class);
     }
   }//next point
 
@@ -860,7 +858,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
   {
     //compute the center of the training object
     Eigen::Vector3f models_center (0.0f, 0.0f, 0.0f);
-    const std::size_t num_of_points =  training_clouds_[i_cloud]->points.size ();
+    const auto num_of_points =  training_clouds_[i_cloud]->size ();
     for (auto point_j = training_clouds_[i_cloud]->begin (); point_j != training_clouds_[i_cloud]->end (); point_j++)
       models_center += point_j->getVector3fMap ();
     models_center /= static_cast<float> (num_of_points);
@@ -883,14 +881,14 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
     int point_index = 0;
     for (auto point_i = sampled_point_cloud->points.cbegin (); point_i != sampled_point_cloud->points.cend (); point_i++, point_index++)
     {
-      float descriptor_sum = Eigen::VectorXf::Map (feature_cloud->points[point_index].histogram, FeatureSize).sum ();
+      float descriptor_sum = Eigen::VectorXf::Map ((*feature_cloud)[point_index].histogram, FeatureSize).sum ();
       if (descriptor_sum < std::numeric_limits<float>::epsilon ())
         continue;
 
       histograms.insert ( histograms.end (), feature_cloud->begin () + point_index, feature_cloud->begin () + point_index + 1 );
 
       int dist = static_cast<int> (std::distance (sampled_point_cloud->points.cbegin (), point_i));
-      Eigen::Matrix3f new_basis = alignYCoordWithNormal (sampled_normal_cloud->points[dist]);
+      Eigen::Matrix3f new_basis = alignYCoordWithNormal ((*sampled_normal_cloud)[dist]);
       Eigen::Vector3f zero;
       zero (0) = 0.0;
       zero (1) = 0.0;
@@ -899,7 +897,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
       applyTransform (new_dir, new_basis);
 
       PointT point (new_dir[0], new_dir[1], new_dir[2]);
-      LocationInfo info (static_cast<unsigned int> (i_cloud), point, *point_i, sampled_normal_cloud->points[dist]);
+      LocationInfo info (static_cast<unsigned int> (i_cloud), point, *point_i, (*sampled_normal_cloud)[dist]);
       locations.insert(locations.end (), info);
     }
   }//next training cloud
@@ -957,16 +955,16 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::calculateS
   for (unsigned int i_object = 0; i_object < number_of_objects; i_object++)
   {
     float max_distance = 0.0f;
-    unsigned int number_of_points = static_cast<unsigned int> (training_clouds_[i_object]->points.size ());
+    const auto number_of_points = training_clouds_[i_object]->size ();
     for (unsigned int i_point = 0; i_point < number_of_points - 1; i_point++)
       for (unsigned int j_point = i_point + 1; j_point < number_of_points; j_point++)
       {
-        float curr_distance = 0.0f;
-        curr_distance += training_clouds_[i_object]->points[i_point].x * training_clouds_[i_object]->points[j_point].x;
-        curr_distance += training_clouds_[i_object]->points[i_point].y * training_clouds_[i_object]->points[j_point].y;
-        curr_distance += training_clouds_[i_object]->points[i_point].z * training_clouds_[i_object]->points[j_point].z;
-        if (curr_distance > max_distance)
-          max_distance = curr_distance;
+         float curr_distance = 0.0f;
+         curr_distance += (*training_clouds_[i_object])[i_point].x * (*training_clouds_[i_object])[j_point].x;
+         curr_distance += (*training_clouds_[i_object])[i_point].y * (*training_clouds_[i_object])[j_point].y;
+         curr_distance += (*training_clouds_[i_object])[i_point].z * (*training_clouds_[i_object])[j_point].z;
+         if (curr_distance > max_distance)
+           max_distance = curr_distance;
       }
     max_distance = static_cast<float> (sqrt (max_distance));
     unsigned int i_class = training_classes_[i_object];
@@ -1134,20 +1132,20 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::simplifyCl
   //extract indices of points from source cloud which are closest to grid points
   const float max_value = std::numeric_limits<float>::max ();
 
-  const std::size_t num_source_points = in_point_cloud->points.size ();
-  const std::size_t num_sample_points = temp_cloud.points.size ();
+  const auto num_source_points = in_point_cloud->size ();
+  const auto num_sample_points = temp_cloud.size ();
 
   std::vector<float> dist_to_grid_center (num_sample_points, max_value);
   std::vector<int> sampling_indices (num_sample_points, -1);
 
   for (std::size_t i_point = 0; i_point < num_source_points; i_point++)
   {
-    int index = grid.getCentroidIndex (in_point_cloud->points[i_point]);
+    int index = grid.getCentroidIndex ((*in_point_cloud)[i_point]);
     if (index == -1)
       continue;
 
-    PointT pt_1 = in_point_cloud->points[i_point];
-    PointT pt_2 = temp_cloud.points[index];
+    PointT pt_1 = (*in_point_cloud)[i_point];
+    PointT pt_2 = temp_cloud[index];
 
     float distance = (pt_1.x - pt_2.x) * (pt_1.x - pt_2.x) + (pt_1.y - pt_2.y) * (pt_1.y - pt_2.y) + (pt_1.z - pt_2.z) * (pt_1.z - pt_2.z);
     if (distance < dist_to_grid_center[index])

@@ -450,10 +450,10 @@ namespace pcl
       POISSON_THROW_EXCEPTION (pcl::poisson::PoissonBadArgumentException, "B-spline up-sampling not supported for degree " << Degree);
     }
     template<>
-    void BSplineElements< 1 >::upSample( BSplineElements< 1 >& high ) const;
+    void PCL_EXPORTS BSplineElements< 1 >::upSample( BSplineElements< 1 >& high ) const;
 
     template<>
-    void BSplineElements< 2 >::upSample( BSplineElements< 2 >& high ) const;
+    void PCL_EXPORTS BSplineElements< 2 >::upSample( BSplineElements< 2 >& high ) const;
 
     template< int Degree >
     void BSplineElements< Degree >::differentiate( BSplineElements< Degree-1 >& d ) const

@@ -360,7 +360,7 @@ pcl::RealSenseGrabber::run ()
         xyz_cloud->header.stamp = timestamp;
         xyz_cloud->is_dense = false;
         for (int i = 0; i < SIZE; i++)
-          convertPoint (vertices[i], xyz_cloud->points[i]);
+          convertPoint (vertices[i], (*xyz_cloud)[i]);
       }
 
       if (need_xyzrgba_)
@@ -377,7 +377,7 @@ pcl::RealSenseGrabber::run ()
           pcl::copyPointCloud (*xyz_cloud, *xyzrgba_cloud);
           for (int i = 0; i < HEIGHT; i++)
           {
-            pcl::PointXYZRGBA* cloud_row = &xyzrgba_cloud->points[i * WIDTH];
+            pcl::PointXYZRGBA* cloud_row = &(*xyzrgba_cloud)[i * WIDTH];
             std::uint32_t* color_row = &d[i * data.pitches[0] / sizeof (std::uint32_t)];
             for (int j = 0; j < WIDTH; j++)
               memcpy (&cloud_row[j].rgba, &color_row[j], sizeof (std::uint32_t));
@@ -391,7 +391,7 @@ pcl::RealSenseGrabber::run ()
           for (int i = 0; i < HEIGHT; i++)
           {
             PXCPoint3DF32* vertices_row = &vertices[i * WIDTH];
-            pcl::PointXYZRGBA* cloud_row = &xyzrgba_cloud->points[i * WIDTH];
+            pcl::PointXYZRGBA* cloud_row = &(*xyzrgba_cloud)[i * WIDTH];
             std::uint32_t* color_row = &d[i * data.pitches[0] / sizeof (std::uint32_t)];
             for (int j = 0; j < WIDTH; j++)
             {

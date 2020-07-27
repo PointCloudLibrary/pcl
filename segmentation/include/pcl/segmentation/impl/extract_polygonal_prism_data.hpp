@@ -85,13 +85,13 @@ pcl::isPointIn2DPolygon (const PointT &point, const pcl::PointCloud<PointT> &pol
   k2 = (k0 + 2) % 3;
   // Project the convex hull
   pcl::PointCloud<PointT> xy_polygon;
-  xy_polygon.points.resize (polygon.points.size ());
-  for (std::size_t i = 0; i < polygon.points.size (); ++i)
+  xy_polygon.points.resize (polygon.size ());
+  for (std::size_t i = 0; i < polygon.size (); ++i)
   {
-    Eigen::Vector4f pt (polygon.points[i].x, polygon.points[i].y, polygon.points[i].z, 0);
-    xy_polygon.points[i].x = pt[k1];
-    xy_polygon.points[i].y = pt[k2];
-    xy_polygon.points[i].z = 0;
+    Eigen::Vector4f pt (polygon[i].x, polygon[i].y, polygon[i].z, 0);
+    xy_polygon[i].x = pt[k1];
+    xy_polygon[i].y = pt[k2];
+    xy_polygon[i].z = 0;
   }
   PointT xy_point;
   xy_point.z = 0;
@@ -109,14 +109,14 @@ pcl::isXYPointIn2DXYPolygon (const PointT &point, const pcl::PointCloud<PointT> 
   bool in_poly = false;
   double x1, x2, y1, y2;
 
-  int nr_poly_points = static_cast<int> (polygon.points.size ());
+  const auto nr_poly_points = polygon.size ();
   // start with the last point to make the check last point<->first point the first one
-  double xold = polygon.points[nr_poly_points - 1].x;
-  double yold = polygon.points[nr_poly_points - 1].y;
-  for (int i = 0; i < nr_poly_points; i++)
+  double xold = polygon[nr_poly_points - 1].x;
+  double yold = polygon[nr_poly_points - 1].y;
+  for (std::size_t i = 0; i < nr_poly_points; i++)
   {
-    double xnew = polygon.points[i].x;
-    double ynew = polygon.points[i].y;
+    double xnew = polygon[i].x;
+    double ynew = polygon[i].y;
     if (xnew > xold)
     {
       x1 = xold;
@@ -155,9 +155,11 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
     return;
   }
 
-  if (static_cast<int> (planar_hull_->points.size ()) < min_pts_hull_)
+  if (static_cast<int> (planar_hull_->size ()) < min_pts_hull_)
   {
-    PCL_ERROR ("[pcl::%s::segment] Not enough points (%lu) in the hull!\n", getClassName ().c_str (), planar_hull_->points.size ());
+    PCL_ERROR("[pcl::%s::segment] Not enough points (%zu) in the hull!\n",
+              getClassName().c_str(),
+              static_cast<std::size_t>(planar_hull_->size()));
     output.indices.clear ();
     return;
   }
@@ -185,7 +187,7 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   // Need to flip the plane normal towards the viewpoint
   Eigen::Vector4f vp (vpx_, vpy_, vpz_, 0);
   // See if we need to flip any plane normals
-  vp -= planar_hull_->points[0].getVector4fMap ();
+  vp -= (*planar_hull_)[0].getVector4fMap ();
   vp[3] = 0;
   // Dot product between the (viewpoint - point) and the plane normal
   float cos_theta = vp.dot (model_coefficients);
@@ -195,7 +197,7 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
     model_coefficients *= -1;
     model_coefficients[3] = 0;
     // Hessian form (D = nc . p_plane (centroid here) + p)
-    model_coefficients[3] = -1 * (model_coefficients.dot (planar_hull_->points[0].getVector4fMap ()));
+    model_coefficients[3] = -1 * (model_coefficients.dot ((*planar_hull_)[0].getVector4fMap ()));
   }
 
   // Project all points
@@ -212,13 +214,13 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   k2 = (k0 + 2) % 3;
   // Project the convex hull
   pcl::PointCloud<PointT> polygon;
-  polygon.points.resize (planar_hull_->points.size ());
-  for (std::size_t i = 0; i < planar_hull_->points.size (); ++i)
+  polygon.points.resize (planar_hull_->size ());
+  for (std::size_t i = 0; i < planar_hull_->size (); ++i)
   {
-    Eigen::Vector4f pt (planar_hull_->points[i].x, planar_hull_->points[i].y, planar_hull_->points[i].z, 0);
-    polygon.points[i].x = pt[k1];
-    polygon.points[i].y = pt[k2];
-    polygon.points[i].z = 0;
+    Eigen::Vector4f pt ((*planar_hull_)[i].x, (*planar_hull_)[i].y, (*planar_hull_)[i].z, 0);
+    polygon[i].x = pt[k1];
+    polygon[i].y = pt[k2];
+    polygon[i].z = 0;
   }
 
   PointT pt_xy;
@@ -226,17 +228,17 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
 
   output.indices.resize (indices_->size ());
   int l = 0;
-  for (std::size_t i = 0; i < projected_points.points.size (); ++i)
+  for (std::size_t i = 0; i < projected_points.size (); ++i)
   {
     // Check the distance to the user imposed limits from the table planar model
-    double distance = pointToPlaneDistanceSigned (input_->points[(*indices_)[i]], model_coefficients);
+    double distance = pointToPlaneDistanceSigned ((*input_)[(*indices_)[i]], model_coefficients);
     if (distance < height_limit_min_ || distance > height_limit_max_)
       continue;
 
     // Check what points are inside the hull
-    Eigen::Vector4f pt (projected_points.points[i].x,
-                         projected_points.points[i].y,
-                         projected_points.points[i].z, 0);
+    Eigen::Vector4f pt (projected_points[i].x,
+                         projected_points[i].y,
+                         projected_points[i].z, 0);
     pt_xy.x = pt[k1];
     pt_xy.y = pt[k2];
 

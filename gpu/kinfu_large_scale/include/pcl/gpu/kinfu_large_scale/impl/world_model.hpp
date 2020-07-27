@@ -45,15 +45,17 @@ template <typename PointT>
 void 
 pcl::kinfuLS::WorldModel<PointT>::addSlice ( PointCloudPtr new_cloud)
 {
-  PCL_DEBUG ("Adding new cloud. Current world contains %d points.\n", world_->points.size ());
+  PCL_DEBUG("Adding new cloud. Current world contains %zu points.\n",
+            static_cast<std::size_t>(world_->size()));
 
-  PCL_DEBUG ("New slice contains %d points.\n", new_cloud->points.size ());
+  PCL_DEBUG("New slice contains %zu points.\n",
+            static_cast<std::size_t>(new_cloud->size()));
 
   *world_ += *new_cloud;
 
-  PCL_DEBUG ("World now contains  %d points.\n", world_->points.size ());
+  PCL_DEBUG("World now contains  %zu points.\n",
+            static_cast<std::size_t>(world_->size()));
 }
-
 
 template <typename PointT>
 void 
@@ -139,15 +141,16 @@ pcl::kinfuLS::WorldModel<PointT>::getWorldAsCubes (const double size, std::vecto
 	return;
   }
 
-  PCL_INFO ("Getting world as cubes. World contains %d points.\n", world_->points.size ());
+  PCL_INFO("Getting world as cubes. World contains %zu points.\n",
+           static_cast<std::size_t>(world_->size()));
 
   // remove nans from world cloud
   world_->is_dense = false;
   std::vector<int> indices;
   pcl::removeNaNFromPointCloud ( *world_, *world_, indices);
-	
-  PCL_INFO ("World contains %d points after nan removal.\n", world_->points.size ());
-  
+
+  PCL_INFO("World contains %zu points after nan removal.\n",
+           static_cast<std::size_t>(world_->size()));
 
   // check cube size value
   double cubeSide = size;
@@ -247,7 +250,6 @@ pcl::kinfuLS::WorldModel<PointT>::getWorldAsCubes (const double size, std::vecto
   }*/
 
   std::cout << "returning " << cubes.size() << " cubes" << std::endl;
-
 }
 
 template <typename PointT>
@@ -260,7 +262,7 @@ pcl::kinfuLS::WorldModel<PointT>::setIndicesAsNans (PointCloudPtr cloud, Indices
   
   for (int rii = 0; rii < static_cast<int> (indices->size ()); ++rii)  // rii = removed indices iterator
   {
-    std::uint8_t* pt_data = reinterpret_cast<std::uint8_t*> (&cloud->points[(*indices)[rii]]);
+    std::uint8_t* pt_data = reinterpret_cast<std::uint8_t*> (&(*cloud)[(*indices)[rii]]);
     for (const auto &field : fields)
       memcpy (pt_data + field.offset, &my_nan, sizeof (float));
   }

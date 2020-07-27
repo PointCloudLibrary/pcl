@@ -60,7 +60,7 @@ main(int, char** argv)
     PCL_ERROR ("Couldn't read file");
     return -1;
   }
-  std::cout << "points: " << cloud_xyz->points.size () <<std::endl;
+  std::cout << "points: " << cloud_xyz->size () <<std::endl;
   
   // Parameters for sift computation
   const float min_scale = 0.01f;
@@ -79,11 +79,11 @@ main(int, char** argv)
   ne.compute(*cloud_normals);
 
   // Copy the xyz info from cloud_xyz and add it to cloud_normals as the xyz field in PointNormals estimation is zero
-  for(std::size_t i = 0; i<cloud_normals->points.size(); ++i)
+  for(std::size_t i = 0; i<cloud_normals->size(); ++i)
   {
-    cloud_normals->points[i].x = cloud_xyz->points[i].x;
-    cloud_normals->points[i].y = cloud_xyz->points[i].y;
-    cloud_normals->points[i].z = cloud_xyz->points[i].z;
+    (*cloud_normals)[i].x = (*cloud_xyz)[i].x;
+    (*cloud_normals)[i].y = (*cloud_xyz)[i].y;
+    (*cloud_normals)[i].z = (*cloud_xyz)[i].z;
   }
 
   // Estimate the sift interest points using normals values from xyz as the Intensity variants
@@ -96,13 +96,13 @@ main(int, char** argv)
   sift.setInputCloud(cloud_normals);
   sift.compute(result);
 
-  std::cout << "No of SIFT points in the result are " << result.points.size () << std::endl;
+  std::cout << "No of SIFT points in the result are " << result.size () << std::endl;
 
 /*
   // Copying the pointwithscale to pointxyz so as visualize the cloud
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_temp (new pcl::PointCloud<pcl::PointXYZ>);
   copyPointCloud(result, *cloud_temp);
-  std::cout << "SIFT points in the cloud_temp are " << cloud_temp->points.size () << std::endl;
+  std::cout << "SIFT points in the cloud_temp are " << cloud_temp->size () << std::endl;
   
   
   // Visualization of keypoints along with the original cloud

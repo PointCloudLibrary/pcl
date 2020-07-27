@@ -196,9 +196,9 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::convertTsdfVectors (const Po
   shared(cloud, output) 	
 	for(int i = 0; i < (int) cloud.points.size (); ++i)
 	{
-	  int x = cloud.points[i].x;
-	  int y = cloud.points[i].y;
-	  int z = cloud.points[i].z;
+	  int x = cloud[i].x;
+	  int y = cloud[i].y;
+	  int z = cloud[i].z;
 	  
 	  if(x > 0  && x < voxels_x_ && y > 0 && y < voxels_y_ && z > 0 && z < voxels_z_)
 	  {
@@ -206,7 +206,7 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::convertTsdfVectors (const Po
 	  int dst_index = x + voxels_x_ * y + voxels_y_ * voxels_x_ * z;
 	        
 	    short2& elem = *reinterpret_cast<short2*> (&output[dst_index]);
-	    elem.x = static_cast<short> (cloud.points[i].intensity * DIVISOR);
+	    elem.x = static_cast<short> (cloud[i].intensity * DIVISOR);
 	    elem.y = static_cast<short> (1);   
 	  } 
   }
@@ -223,7 +223,7 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::convertTrianglesToMesh (cons
   }
 
   pcl::PointCloud<pcl::PointXYZ> cloud;
-  cloud.width  = (int)triangles.size ();
+  cloud.width  = triangles.size ();
   cloud.height = 1;
   triangles.download (cloud.points);
 

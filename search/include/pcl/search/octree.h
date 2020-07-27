@@ -249,7 +249,7 @@ namespace pcl
         approxNearestSearch (const PointCloudConstPtr &cloud, index_t query_index, index_t &result_index,
                              float &sqr_distance)
         {
-          return (tree_->approxNearestSearch (cloud->points[query_index], result_index, sqr_distance));
+          return (tree_->approxNearestSearch ((*cloud)[query_index], result_index, sqr_distance));
         }
 
         /** \brief Search for approximate nearest neighbor at the query point.

@@ -225,7 +225,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::prepareForSegmentation ()
   if (normal_flag_)
   {
     // if user forgot to pass normals or the sizes of point and normal cloud are different
-    if ( !normals_ || input_->points.size () != normals_->points.size () )
+    if ( !normals_ || input_->size () != normals_->size () )
       return (false);
   }
 
@@ -275,8 +275,8 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findPointNeighbours ()
   std::vector<int> neighbours;
   std::vector<float> distances;
 
-  point_neighbours_.resize (input_->points.size (), neighbours);
-  point_distances_.resize (input_->points.size (), distances);
+  point_neighbours_.resize (input_->size (), neighbours);
+  point_distances_.resize (input_->size (), distances);
 
   for (int i_point = 0; i_point < point_number; i_point++)
   {
@@ -379,9 +379,9 @@ pcl::RegionGrowingRGB<PointT, NormalT>::applyRegionMergingAlgorithm ()
   {
     int point_index = (*indices_)[i_point];
     int segment_index = point_labels_[point_index];
-    segment_color[segment_index][0] += input_->points[point_index].r;
-    segment_color[segment_index][1] += input_->points[point_index].g;
-    segment_color[segment_index][2] += input_->points[point_index].b;
+    segment_color[segment_index][0] += (*input_)[point_index].r;
+    segment_color[segment_index][1] += (*input_)[point_index].g;
+    segment_color[segment_index][2] += (*input_)[point_index].b;
   }
   for (int i_seg = 0; i_seg < number_of_segments_; i_seg++)
   {
@@ -617,12 +617,12 @@ pcl::RegionGrowingRGB<PointT, NormalT>::validatePoint (int initial_seed, int poi
   point_color.resize (3, 0);
   std::vector<unsigned int> nghbr_color;
   nghbr_color.resize (3, 0);
-  point_color[0] = input_->points[point].r;
-  point_color[1] = input_->points[point].g;
-  point_color[2] = input_->points[point].b;
-  nghbr_color[0] = input_->points[nghbr].r;
-  nghbr_color[1] = input_->points[nghbr].g;
-  nghbr_color[2] = input_->points[nghbr].b;
+  point_color[0] = (*input_)[point].r;
+  point_color[1] = (*input_)[point].g;
+  point_color[2] = (*input_)[point].b;
+  nghbr_color[0] = (*input_)[nghbr].r;
+  nghbr_color[1] = (*input_)[nghbr].g;
+  nghbr_color[2] = (*input_)[nghbr].b;
   float difference = calculateColorimetricalDifference (point_color, nghbr_color);
   if (difference > color_p2p_threshold_)
     return (false);
@@ -633,24 +633,24 @@ pcl::RegionGrowingRGB<PointT, NormalT>::validatePoint (int initial_seed, int poi
   if (normal_flag_)
   {
     float data[4];
-    data[0] = input_->points[point].data[0];
-    data[1] = input_->points[point].data[1];
-    data[2] = input_->points[point].data[2];
-    data[3] = input_->points[point].data[3];
+    data[0] = (*input_)[point].data[0];
+    data[1] = (*input_)[point].data[1];
+    data[2] = (*input_)[point].data[2];
+    data[3] = (*input_)[point].data[3];
 
     Eigen::Map<Eigen::Vector3f> initial_point (static_cast<float*> (data));
-    Eigen::Map<Eigen::Vector3f> initial_normal (static_cast<float*> (normals_->points[point].normal));
+    Eigen::Map<Eigen::Vector3f> initial_normal (static_cast<float*> ((*normals_)[point].normal));
     if (smooth_mode_flag_ == true)
     {
-      Eigen::Map<Eigen::Vector3f> nghbr_normal (static_cast<float*> (normals_->points[nghbr].normal));
+      Eigen::Map<Eigen::Vector3f> nghbr_normal (static_cast<float*> ((*normals_)[nghbr].normal));
       float dot_product = std::abs (nghbr_normal.dot (initial_normal));
       if (dot_product < cosine_threshold)
         return (false);
     }
     else
     {
-      Eigen::Map<Eigen::Vector3f> nghbr_normal (static_cast<float*> (normals_->points[nghbr].normal));
-      Eigen::Map<Eigen::Vector3f> initial_seed_normal (static_cast<float*> (normals_->points[initial_seed].normal));
+      Eigen::Map<Eigen::Vector3f> nghbr_normal (static_cast<float*> ((*normals_)[nghbr].normal));
+      Eigen::Map<Eigen::Vector3f> initial_seed_normal (static_cast<float*> ((*normals_)[initial_seed].normal));
       float dot_product = std::abs (nghbr_normal.dot (initial_seed_normal));
       if (dot_product < cosine_threshold)
         return (false);
@@ -658,25 +658,25 @@ pcl::RegionGrowingRGB<PointT, NormalT>::validatePoint (int initial_seed, int poi
   }
 
   // check the curvature if needed
-  if (curvature_flag_ && normals_->points[nghbr].curvature > curvature_threshold_)
+  if (curvature_flag_ && (*normals_)[nghbr].curvature > curvature_threshold_)
     is_a_seed = false;
 
   // check the residual if needed
   if (residual_flag_)
   {
     float data_p[4];
-    data_p[0] = input_->points[point].data[0];
-    data_p[1] = input_->points[point].data[1];
-    data_p[2] = input_->points[point].data[2];
-    data_p[3] = input_->points[point].data[3];
+    data_p[0] = (*input_)[point].data[0];
+    data_p[1] = (*input_)[point].data[1];
+    data_p[2] = (*input_)[point].data[2];
+    data_p[3] = (*input_)[point].data[3];
     float data_n[4];
-    data_n[0] = input_->points[nghbr].data[0];
-    data_n[1] = input_->points[nghbr].data[1];
-    data_n[2] = input_->points[nghbr].data[2];
-    data_n[3] = input_->points[nghbr].data[3];
+    data_n[0] = (*input_)[nghbr].data[0];
+    data_n[1] = (*input_)[nghbr].data[1];
+    data_n[2] = (*input_)[nghbr].data[2];
+    data_n[3] = (*input_)[nghbr].data[3];
     Eigen::Map<Eigen::Vector3f> nghbr_point (static_cast<float*> (data_n));
     Eigen::Map<Eigen::Vector3f> initial_point (static_cast<float*> (data_p));
-    Eigen::Map<Eigen::Vector3f> initial_normal (static_cast<float*> (normals_->points[point].normal));
+    Eigen::Map<Eigen::Vector3f> initial_normal (static_cast<float*> ((*normals_)[point].normal));
     float residual = std::abs (initial_normal.dot (initial_point - nghbr_point));
     if (residual > residual_threshold_)
       is_a_seed = false;

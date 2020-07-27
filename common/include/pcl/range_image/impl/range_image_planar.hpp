@@ -55,7 +55,7 @@ RangeImagePlanar::createFromPointCloudWithFixedSize (const PointCloudType& point
                                                      CoordinateFrame coordinate_frame, float noise_level,
                                                      float min_range)
 {
-  //std::cout << "Starting to create range image from "<<point_cloud.points.size ()<<" points.\n";
+  //std::cout << "Starting to create range image from "<<point_cloud.size ()<<" points.\n";
 
   width = di_width;
   height = di_height;

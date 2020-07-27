@@ -53,7 +53,6 @@
 #define CLUST_TOL_SHS   0.05
 #define DELTA_HUE_SHS   5
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::gpu::people;
 
@@ -160,16 +159,16 @@ pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<PointTC>::Const
 
   const float qnan = std::numeric_limits<float>::quiet_NaN();
 
-  for(std::size_t i = 0; i < cloud->points.size(); ++i)
+  for(std::size_t i = 0; i < cloud->size(); ++i)
   {
-    cloud_host_.points[i].x = cloud->points[i].x;
-    cloud_host_.points[i].y = cloud->points[i].y;
-    cloud_host_.points[i].z = cloud->points[i].z;
+    cloud_host_[i].x = (*cloud)[i].x;
+    cloud_host_[i].y = (*cloud)[i].y;
+    cloud_host_[i].z = (*cloud)[i].z;
 
-    bool valid = isFinite(cloud_host_.points[i]);
+    bool valid = isFinite(cloud_host_[i]);
 
-    hue_host_.points[i] = !valid ? qnan : device::computeHue(cloud->points[i].rgba);
-    depth_host_.points[i] = !valid ? 0 : static_cast<unsigned short>(cloud_host_.points[i].z * 1000); //m -> mm
+    hue_host_[i] = !valid ? qnan : device::computeHue((*cloud)[i].rgba);
+    depth_host_[i] = !valid ? 0 : static_cast<unsigned short>(cloud_host_[i].z * 1000); //m -> mm
   }
   cloud_device_.upload(cloud_host_.points, cloud_host_.width);
   hue_device_.upload(hue_host_.points, hue_host_.width);
@@ -199,7 +198,7 @@ pcl::gpu::people::PeopleDetector::process ()
     std::fill(flowermat_host_.points.begin(), flowermat_host_.points.end(), 0);
     {
       //ScopeTime time("shs");    
-      shs5(cloud_host_, seed, &flowermat_host_.points[0]);
+      shs5(cloud_host_, seed, &flowermat_host_[0]);
     }
     
     int cols = cloud_device_.cols();
@@ -247,17 +246,17 @@ pcl::gpu::people::PeopleDetector::processProb (const pcl::PointCloud<PointTC>::C
 
   const float qnan = std::numeric_limits<float>::quiet_NaN();
 
-  for(std::size_t i = 0; i < cloud->points.size(); ++i)
+  for(std::size_t i = 0; i < cloud->size(); ++i)
   {
-    cloud_host_color_.points[i].x  = cloud_host_.points[i].x = cloud->points[i].x;
-    cloud_host_color_.points[i].y  = cloud_host_.points[i].y = cloud->points[i].y;
-    cloud_host_color_.points[i].z  = cloud_host_.points[i].z = cloud->points[i].z;
-    cloud_host_color_.points[i].rgba = cloud->points[i].rgba;
+    cloud_host_color_[i].x  = cloud_host_[i].x = (*cloud)[i].x;
+    cloud_host_color_[i].y  = cloud_host_[i].y = (*cloud)[i].y;
+    cloud_host_color_[i].z  = cloud_host_[i].z = (*cloud)[i].z;
+    cloud_host_color_[i].rgba = (*cloud)[i].rgba;
 
-    bool valid = isFinite(cloud_host_.points[i]);
+    bool valid = isFinite(cloud_host_[i]);
 
-    hue_host_.points[i] = !valid ? qnan : device::computeHue(cloud->points[i].rgba);
-    depth_host_.points[i] = !valid ? 0 : static_cast<unsigned short>(cloud_host_.points[i].z * 1000); //m -> mm
+    hue_host_[i] = !valid ? qnan : device::computeHue((*cloud)[i].rgba);
+    depth_host_[i] = !valid ? 0 : static_cast<unsigned short>(cloud_host_[i].z * 1000); //m -> mm
   }
   cloud_device_.upload(cloud_host_.points, cloud_host_.width);
   hue_device_.upload(hue_host_.points, hue_host_.width);
@@ -338,7 +337,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
     std::fill(flowermat_host_.points.begin(), flowermat_host_.points.end(), 0);
     {
       //ScopeTime time("shs");
-      shs5(cloud_host_, seed, &flowermat_host_.points[0]);
+      shs5(cloud_host_, seed, &flowermat_host_[0]);
     }
 
     int cols = cloud_device_.cols();
@@ -479,7 +478,7 @@ pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT> &cloud, con
   pcl::device::Intr intr(fx_, fy_, cx_, cy_);
   intr.setDefaultPPIfIncorrect(cloud.width, cloud.height);
   
-  const float *hue = &hue_host_.points[0];
+  const float *hue = &hue_host_[0];
   double squared_radius = CLUST_TOL_SHS * CLUST_TOL_SHS;
 
   std::vector< std::vector<int> > storage(100);
@@ -512,7 +511,7 @@ pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT> &cloud, con
     while (sq_idx < (int)seed_queue.size ())
     {
       int index = seed_queue[sq_idx];
-      const PointT& q = cloud.points[index];
+      const PointT& q = cloud[index];
 
       if(!pcl::isFinite (q))
         continue;
@@ -532,7 +531,7 @@ pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT> &cloud, con
           if (mask[idx])
             continue;
 
-          if (sqnorm(cloud.points[idx], q) <= squared_radius)
+          if (sqnorm(cloud[idx], q) <= squared_radius)
           {
             float h_l = hue[idx];
 

@@ -39,7 +39,6 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
@@ -51,10 +50,10 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const string &filename, PointCloud<PointXYZ> &cloud)
+loadCloud (const std::string &filename, PointCloud<PointXYZ> &cloud)
 {
-  ifstream fs;
-  fs.open (filename.c_str (), ios::binary);
+  std::ifstream fs;
+  fs.open (filename.c_str (), std::ios::binary);
   if (!fs.is_open () || fs.fail ())
   {
     PCL_ERROR ("Could not open file '%s'! Error : %s\n", filename.c_str (), strerror (errno)); 
@@ -62,12 +61,12 @@ loadCloud (const string &filename, PointCloud<PointXYZ> &cloud)
     return (false);
   }
   
-  string line;
-  std::vector<string> st;
+  std::string line;
+  std::vector<std::string> st;
 
   while (!fs.eof ())
   {
-    getline (fs, line);
+    std::getline (fs, line);
     // Ignore empty lines
     if (line.empty())
       continue;
@@ -83,7 +82,7 @@ loadCloud (const string &filename, PointCloud<PointXYZ> &cloud)
   }
   fs.close ();
 
-  cloud.width = std::uint32_t (cloud.size ()); cloud.height = 1; cloud.is_dense = true;
+  cloud.width = cloud.size (); cloud.height = 1; cloud.is_dense = true;
   return (true);
 }
 

@@ -35,10 +35,10 @@
  */
 
 #include <iostream> 
-#include <sstream> 
 #include <pcl/test/gtest.h>
 #include <pcl/features/narf.h>
 #include <pcl/common/eigen.h>
+#include <pcl/common/angles.h> // for deg2rad
 
 using namespace pcl;
 

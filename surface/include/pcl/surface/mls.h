@@ -48,7 +48,6 @@
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/search/pcl_search.h>
-#include <pcl/common/common.h>
 
 #include <pcl/surface/boost.h>
 #include <pcl/surface/eigen.h>

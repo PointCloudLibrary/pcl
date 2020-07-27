@@ -247,8 +247,6 @@ openni_wrapper::OpenNIDriver::createVirtualDevice (const std::string& path, bool
 openni_wrapper::OpenNIDevice::Ptr
 openni_wrapper::OpenNIDriver::getDeviceByIndex (unsigned index) const
 {
-  using namespace std;
-
   if (index >= device_context_.size ())
     THROW_OPENNI_EXCEPTION ("Device index out of range. Only %d devices connected but device %d requested.", device_context_.size (), index);
   auto device = device_context_[index].device.lock ();

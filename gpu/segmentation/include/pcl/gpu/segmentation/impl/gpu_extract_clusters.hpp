@@ -52,12 +52,12 @@ pcl::gpu::extractEuclideanClusters (const pcl::PointCloud<pcl::PointXYZ>::Ptr  &
 
   // Create a bool vector of processed point indices, and initialize it to false
   // cloud is a DeviceArray<PointType>
-  std::vector<bool> processed (host_cloud_->points.size (), false);
+  std::vector<bool> processed (host_cloud_->size (), false);
 
   int max_answers;
 
-  if(max_pts_per_cluster > host_cloud_->points.size())
-    max_answers = host_cloud_->points.size();
+  if(max_pts_per_cluster > host_cloud_->size())
+    max_answers = host_cloud_->size();
   else
     max_answers = max_pts_per_cluster;
   std::cout << "Max_answers: " << max_answers << std::endl;
@@ -69,7 +69,7 @@ pcl::gpu::extractEuclideanClusters (const pcl::PointCloud<pcl::PointXYZ>::Ptr  &
   queries_device_buffer.create(max_answers);
 
   // Process all points in the cloud
-  for (std::size_t i = 0; i < host_cloud_->points.size (); ++i)
+  for (std::size_t i = 0; i < host_cloud_->size (); ++i)
   {
     // if we already processed this point continue with the next one
     if (processed[i])
@@ -82,7 +82,7 @@ pcl::gpu::extractEuclideanClusters (const pcl::PointCloud<pcl::PointXYZ>::Ptr  &
     // Create the query queue on the host
 	pcl::PointCloud<pcl::PointXYZ>::VectorType queries_host;
     // Push the starting point in the vector
-    queries_host.push_back (host_cloud_->points[i]);
+    queries_host.push_back ((*host_cloud_)[i]);
     // Clear vector
     r.indices.clear();
     // Push the starting point in
@@ -123,7 +123,7 @@ pcl::gpu::extractEuclideanClusters (const pcl::PointCloud<pcl::PointXYZ>::Ptr  &
           if(processed[data[i]])
             continue;
           processed[data[i]] = true;
-          queries_host.push_back (host_cloud_->points[data[i]]);
+          queries_host.push_back ((*host_cloud_)[data[i]]);
           found_points++;
           r.indices.push_back(data[i]);
         }
@@ -153,7 +153,7 @@ pcl::gpu::extractEuclideanClusters (const pcl::PointCloud<pcl::PointXYZ>::Ptr  &
             if(processed[data[qp_r + qp * max_answers]])
               continue;
             processed[data[qp_r + qp * max_answers]] = true;
-            queries_host.push_back (host_cloud_->points[data[qp_r + qp * max_answers]]);
+            queries_host.push_back ((*host_cloud_)[data[qp_r + qp * max_answers]]);
             found_points++;
             r.indices.push_back(data[qp_r + qp * max_answers]);
           }
@@ -193,7 +193,7 @@ pcl::gpu::EuclideanClusterExtraction::extract (std::vector<pcl::PointIndices> &c
     tree_->build();
   }
 /*
-  if(tree_->cloud_.size() != host_cloud.points.size ())
+  if(tree_->cloud_.size() != host_cloud.size ())
   {
     PCL_ERROR("[pcl::gpu::EuclideanClusterExtraction] size of host cloud and device cloud don't match!\n");
     return;

@@ -144,15 +144,15 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::initCompute ()
 template <typename PointInT, typename PointOutT, typename PointRFT> void
 pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (std::size_t index, /*float rf[9],*/ std::vector<float> &desc)
 {
-  pcl::Vector3fMapConst origin = input_->points[(*indices_)[index]].getVector3fMap ();
+  pcl::Vector3fMapConst origin = (*input_)[(*indices_)[index]].getVector3fMap ();
 
-  const Eigen::Vector3f x_axis (frames_->points[index].x_axis[0],
-                                frames_->points[index].x_axis[1],
-                                frames_->points[index].x_axis[2]);
-  //const Eigen::Vector3f& y_axis = frames_->points[index].y_axis.getNormalVector3fMap ();
-  const Eigen::Vector3f normal (frames_->points[index].z_axis[0],
-                                frames_->points[index].z_axis[1],
-                                frames_->points[index].z_axis[2]);
+  const Eigen::Vector3f x_axis ((*frames_)[index].x_axis[0],
+                                (*frames_)[index].x_axis[1],
+                                (*frames_)[index].x_axis[2]);
+  //const Eigen::Vector3f& y_axis = (*frames_)[index].y_axis.getNormalVector3fMap ();
+  const Eigen::Vector3f normal ((*frames_)[index].z_axis[0],
+                                (*frames_)[index].z_axis[1],
+                                (*frames_)[index].z_axis[2]);
 
   // Find every point within specified search_radius_
   std::vector<int> nn_indices;
@@ -164,7 +164,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
     if (pcl::utils::equal(nn_dists[ne], 0.0f))
       continue;
     // Get neighbours coordinates
-    Eigen::Vector3f neighbour = surface_->points[nn_indices[ne]].getVector3fMap ();
+    Eigen::Vector3f neighbour = (*surface_)[nn_indices[ne]].getVector3fMap ();
 
     // ----- Compute current neighbour polar coordinates -----
 
@@ -239,23 +239,23 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
         !std::isfinite (current_frame.y_axis[0]) ||
         !std::isfinite (current_frame.z_axis[0])  )
     {
-      std::fill (output.points[point_index].descriptor, output.points[point_index].descriptor + descriptor_length_,
+      std::fill (output[point_index].descriptor, output[point_index].descriptor + descriptor_length_,
                  std::numeric_limits<float>::quiet_NaN ());
-      std::fill (output.points[point_index].rf, output.points[point_index].rf + 9, 0);
+      std::fill (output[point_index].rf, output[point_index].rf + 9, 0);
       output.is_dense = false;
       continue;
     }
 
     for (int d = 0; d < 3; ++d)
     {
-      output.points[point_index].rf[0 + d] = current_frame.x_axis[d];
-      output.points[point_index].rf[3 + d] = current_frame.y_axis[d];
-      output.points[point_index].rf[6 + d] = current_frame.z_axis[d];
+      output[point_index].rf[0 + d] = current_frame.x_axis[d];
+      output[point_index].rf[3 + d] = current_frame.y_axis[d];
+      output[point_index].rf[6 + d] = current_frame.z_axis[d];
     }
 
     std::vector<float> descriptor (descriptor_length_);
     computePointDescriptor (point_index, descriptor);
-    std::copy (descriptor.begin (), descriptor.end (), output.points[point_index].descriptor);
+    std::copy (descriptor.begin (), descriptor.end (), output[point_index].descriptor);
   }
 }
 

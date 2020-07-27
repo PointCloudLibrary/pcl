@@ -40,7 +40,6 @@
 #pragma once
 
 #include <pcl/filters/median_filter.h>
-#include <pcl/common/io.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 
 template <typename PointT> void

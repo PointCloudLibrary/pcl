@@ -132,7 +132,7 @@ pcl::ProgressiveMorphologicalFilter<PointT>::extract (std::vector<int>& ground)
     std::vector<int> pt_indices;
     for (std::size_t p_idx = 0; p_idx < ground.size (); ++p_idx)
     {
-      float diff = cloud->points[p_idx].z - cloud_f->points[p_idx].z;
+      float diff = (*cloud)[p_idx].z - (*cloud_f)[p_idx].z;
       if (diff < height_thresholds[i])
         pt_indices.push_back (ground[p_idx]);
     }

@@ -131,7 +131,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation (P
 
     if (delta_p_norm == 0 || std::isnan(delta_p_norm))
     {
-      trans_probability_ = score / static_cast<double> (input_->points.size ());
+      trans_probability_ = score / static_cast<double> (input_->size ());
       converged_ = delta_p_norm == delta_p_norm;
       return;
     }
@@ -171,7 +171,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation (P
 
   // Store transformation probability.  The realtive differences within each scan registration are accurate
   // but the normalization constants need to be modified for it to be globally accurate
-  trans_probability_ = score / static_cast<double> (input_->points.size ());
+  trans_probability_ = score / static_cast<double> (input_->size ());
 }
 
 
@@ -199,9 +199,9 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeDerivatives (Eige
   computeAngleDerivatives (p);
 
   // Update gradient and hessian for each point, line 17 in Algorithm 2 [Magnusson 2009]
-  for (std::size_t idx = 0; idx < input_->points.size (); idx++)
+  for (std::size_t idx = 0; idx < input_->size (); idx++)
   {
-    x_trans_pt = trans_cloud.points[idx];
+    x_trans_pt = trans_cloud[idx];
 
     // Find nieghbors (Radius search has been experimentally faster than direct neighbor checking.
     std::vector<TargetGridLeafConstPtr> neighborhood;
@@ -211,7 +211,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeDerivatives (Eige
     for (typename std::vector<TargetGridLeafConstPtr>::iterator neighborhood_it = neighborhood.begin (); neighborhood_it != neighborhood.end (); ++neighborhood_it)
     {
       cell = *neighborhood_it;
-      x_pt = input_->points[idx];
+      x_pt = (*input_)[idx];
       x = Eigen::Vector3d (x_pt.x, x_pt.y, x_pt.z);
 
       x_trans = Eigen::Vector3d (x_trans_pt.x, x_trans_pt.y, x_trans_pt.z);
@@ -414,9 +414,9 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeHessian (Eigen::M
   // Precompute Angular Derivatives unessisary because only used after regular derivative calculation
 
   // Update hessian for each point, line 17 in Algorithm 2 [Magnusson 2009]
-  for (std::size_t idx = 0; idx < input_->points.size (); idx++)
+  for (std::size_t idx = 0; idx < input_->size (); idx++)
   {
-    x_trans_pt = trans_cloud.points[idx];
+    x_trans_pt = trans_cloud[idx];
 
     // Find nieghbors (Radius search has been experimentally faster than direct neighbor checking.
     std::vector<TargetGridLeafConstPtr> neighborhood;
@@ -428,7 +428,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeHessian (Eigen::M
       cell = *neighborhood_it;
 
       {
-        x_pt = input_->points[idx];
+        x_pt = (*input_)[idx];
         x = Eigen::Vector3d (x_pt.x, x_pt.y, x_pt.z);
 
         x_trans = Eigen::Vector3d (x_trans_pt.x, x_trans_pt.y, x_trans_pt.z);
@@ -636,7 +636,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT (con
   double g_u = auxilaryFunction_dPsiMT (d_phi_0, d_phi_0, mu);
 
   // Check used to allow More-Thuente step length calculation to be skipped by making step_min == step_max
-  bool interval_converged = (step_max - step_min) > 0, open_interval = true;
+  bool interval_converged = (step_max - step_min) < 0, open_interval = true;
 
   double a_t = step_init;
   a_t = std::min (a_t, step_max);

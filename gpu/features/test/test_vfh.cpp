@@ -43,7 +43,6 @@
 
 #include "data_source.hpp"
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 
@@ -55,7 +54,7 @@ TEST(PCL_FeaturesGPU, vfh1)
     source.estimateNormals();
     source.generateIndices(3);
                    
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
     
     //uploading data to GPU
@@ -101,7 +100,7 @@ TEST(PCL_FeaturesGPU, vfh1)
     }
 
     VFHSignature308& gpu = downloaded[0];
-    VFHSignature308& cpu = vfh.points[0];
+    VFHSignature308& cpu = vfh[0];
         
     std::size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
         
@@ -127,7 +126,7 @@ TEST(PCL_FeaturesGPU, vfh_norm_bins_false)
     source.estimateNormals();
     source.generateIndices(3);
                    
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
     
     //uploading data to GPU
@@ -168,7 +167,7 @@ TEST(PCL_FeaturesGPU, vfh_norm_bins_false)
     fe.compute (vfh);
 
     VFHSignature308& gpu = downloaded[0];
-    VFHSignature308& cpu = vfh.points[0];
+    VFHSignature308& cpu = vfh[0];
         
     std::size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
         
@@ -194,7 +193,7 @@ TEST(PCL_FeaturesGPU, vfh_norm_distance_true)
     source.estimateNormals();
     source.generateIndices(3);
                    
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
     
     //uploading data to GPU
@@ -235,7 +234,7 @@ TEST(PCL_FeaturesGPU, vfh_norm_distance_true)
     fe.compute (vfh);
 
     VFHSignature308& gpu = downloaded[0];
-    VFHSignature308& cpu = vfh.points[0];
+    VFHSignature308& cpu = vfh[0];
         
     std::size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
         
@@ -262,7 +261,7 @@ TEST(PCL_FeaturesGPU, vfh_fill_size_component_true)
     source.estimateNormals();
     source.generateIndices(3);
                    
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
     
     //uploading data to GPU
@@ -303,7 +302,7 @@ TEST(PCL_FeaturesGPU, vfh_fill_size_component_true)
     fe.compute (vfh);
 
     VFHSignature308& gpu = downloaded[0];
-    VFHSignature308& cpu = vfh.points[0];
+    VFHSignature308& cpu = vfh[0];
         
     std::size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
         

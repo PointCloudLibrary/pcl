@@ -51,7 +51,6 @@ using namespace pcl;
 using namespace pcl::console;
 using namespace pcl::io;
 using namespace pcl::simulation;
-using namespace std;
 
 std::uint16_t t_gamma[2048];
 

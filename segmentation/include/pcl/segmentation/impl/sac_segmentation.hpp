@@ -354,7 +354,7 @@ pcl::SACSegmentationFromNormals<PointT, PointNT>::initSACModel (const int model_
     return (false);
   }
   // Check if input is synced with the normals
-  if (input_->points.size () != normals_->points.size ())
+  if (input_->size () != normals_->size ())
   {
     PCL_ERROR ("[pcl::%s::initSACModel] The number of points in the input point cloud differs than the number of points in the normals!\n", getClassName ().c_str ());
     return (false);

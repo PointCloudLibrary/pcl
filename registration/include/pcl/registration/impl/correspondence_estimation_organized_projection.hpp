@@ -87,9 +87,9 @@ CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::d
 
   for (std::vector<int>::const_iterator src_it = indices_->begin (); src_it != indices_->end (); ++src_it)
   {
-    if (isFinite (input_->points[*src_it]))
+    if (isFinite ((*input_)[*src_it]))
     {
-      Eigen::Vector4f p_src (src_to_tgt_transformation_ * input_->points[*src_it].getVector4fMap ());
+      Eigen::Vector4f p_src (src_to_tgt_transformation_ * (*input_)[*src_it].getVector4fMap ());
       Eigen::Vector3f p_src3 (p_src[0], p_src[1], p_src[2]);
       Eigen::Vector3f uv (projection_matrix_ * p_src3);
 

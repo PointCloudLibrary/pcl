@@ -59,8 +59,7 @@ void
 pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
                                        boost::interprocess::file_lock &lock)
 {
-  pcl::utils::ignore(file_name);
-  pcl::utils::ignore(lock);
+  pcl::utils::ignore(file_name, lock);
 #ifndef _WIN32
 #ifndef NO_MANDATORY_LOCKING
   // Attempt to lock the file.
@@ -89,8 +88,7 @@ void
 pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
                                          boost::interprocess::file_lock &lock)
 {
-  pcl::utils::ignore(file_name);
-  pcl::utils::ignore(lock);
+  pcl::utils::ignore(file_name, lock);
 #ifndef _WIN32
 #ifndef NO_MANDATORY_LOCKING
   namespace fs = boost::filesystem;

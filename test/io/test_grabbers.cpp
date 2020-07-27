@@ -9,15 +9,14 @@
 #include <thread>
 #include <vector>
 
-using namespace std;
 using namespace std::chrono_literals;
 
 using PointT = pcl::PointXYZRGBA;
 using CloudT = pcl::PointCloud<PointT>;
 
-string tiff_dir_;
-string pclzf_dir_;
-string pcd_dir_;
+std::string tiff_dir_;
+std::string pclzf_dir_;
+std::string pcd_dir_;
 std::vector<CloudT::ConstPtr> pcds_;
 std::vector<std::string> pcd_files_;
 

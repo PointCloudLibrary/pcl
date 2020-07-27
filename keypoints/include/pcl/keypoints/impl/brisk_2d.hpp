@@ -85,7 +85,7 @@ BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCloudOut
   pcl::copyPointCloud (output_temp, output);
 
   // we do not change the denseness
-  output.width = int (output.points.size ());
+  output.width = output.size ();
   output.height = 1;
   output.is_dense = false;      // set to false to be sure
 
