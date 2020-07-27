@@ -197,7 +197,7 @@ namespace
 void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float radius, std::vector<int>& out, int max_nn) const
 {            
     out.clear();  
-    
+
     float3 center = make_float3(query.x, query.y, query.z);
 
     OctreeIteratorHost iterator;
