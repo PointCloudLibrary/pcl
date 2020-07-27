@@ -1,49 +1,19 @@
 /*
- * Software License Agreement (BSD License)
+ * SPDX-License-Identifier: BSD-3-Clause
  *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2012-, Open Perception, Inc.
- *
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of the copyright holder(s) nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id: test_filters.cpp 7683 2012-10-23 02:49:03Z rusu $
+ * Point Cloud Library (PCL) - www.pointclouds.org
+ * Copyright (c) 2010-2011, Willow Garage, Inc.
+ * Copyright (c) 2012-, Open Perception, Inc.
  *
  */
 
 #include <random>
+#include <algorithm>
 
 #include <pcl/test/gtest.h>
 #include <pcl/pcl_tests.h>
 
 #include <pcl/point_types.h>
-#include <pcl/surface/convex_hull.h>
 #include <pcl/common/common.h>
 #include <pcl/filters/crop_hull.h>
 
@@ -144,7 +114,7 @@ class PCLCropHullTestFixture : public ::testing::Test
       pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ>);
       for (pcl::PointXYZ const & baseOffset : baseOffsetList_)
       {
-        pcl::copyPointCloud(*CropHullTestTraits::getInputCloud(), *input_cloud);
+        pcl::copyPointCloud(*CropHullTestTraits::getHullCloud(), *input_cloud);
         for (pcl::PointXYZ & p : *input_cloud) {
           p.getVector3fMap() += baseOffset.getVector3fMap();
         }
@@ -154,7 +124,9 @@ class PCLCropHullTestFixture : public ::testing::Test
           return p;
         };
         auto outside_point_generator = [this, &baseOffset] () {
-          pcl::PointXYZ p(rd_(gen_) + 2., rd_(gen_) + 2., rd_(gen_) + 2.);
+          std::array<float, 3> pt;
+          std::generate(pt.begin(), pt.end(), [this] {return rd_(gen_) + 2. * (getRandomBool() ? -1. : 1.);});
+          pcl::PointXYZ p(pt[0], pt[1], pt[2]);
           p.getVector3fMap() += baseOffset.getVector3fMap();
           return p;
         };
@@ -172,14 +144,8 @@ class PCLCropHullTestFixture : public ::testing::Test
     {
       //pcl::CropHull<pcl::PointXYZ> crop_hull_filter(true);
       pcl::CropHull<pcl::PointXYZ> crop_hull_filter;
-      pcl::ConvexHull<pcl::PointXYZ> convex_hull;
-      convex_hull.setDimension(3);
-      convex_hull.setInputCloud(input_cloud);
-      pcl::PointCloud<pcl::PointXYZ>::Ptr hull_cloud_ptr(new pcl::PointCloud<pcl::PointXYZ>);
-      std::vector<pcl::Vertices> hull_polygons;
-      convex_hull.reconstruct(*hull_cloud_ptr, hull_polygons);
-      crop_hull_filter.setHullIndices(hull_polygons);
-      crop_hull_filter.setHullCloud(hull_cloud_ptr);
+      crop_hull_filter.setHullCloud(input_cloud->makeShared());
+      crop_hull_filter.setHullIndices(CropHullTestTraits::getHullPolygons());
       crop_hull_filter.setDim(CropHullTestTraits::getDim());
       return crop_hull_filter;
     }
@@ -193,7 +159,10 @@ class PCLCropHullTestFixture : public ::testing::Test
 struct CropHullTestTraits2d
 {
   static pcl::PointCloud<pcl::PointXYZ>::ConstPtr
-  getInputCloud();
+  getHullCloud();
+
+  static std::vector<pcl::Vertices>
+  getHullPolygons();
 
   static int
   getDim();
@@ -203,15 +172,34 @@ struct CropHullTestTraits2d
 struct CropHullTestTraits3d
 {
   static pcl::PointCloud<pcl::PointXYZ>::ConstPtr
-  getInputCloud();
+  getHullCloud();
+
+  static std::vector<pcl::Vertices>
+  getHullPolygons();
 
   static int
   getDim();
 };
 
 
+static std::vector<std::vector<uint32_t>> cube_elements = {
+  {0, 2, 1}, // l
+  {1, 2, 3}, // l
+  {3, 2, 6}, // f
+  {6, 2, 4}, // bt
+  {4, 2, 0}, // bt
+  {3, 7, 1}, // t
+  {1, 7, 5}, // t
+  {5, 7, 4}, // r
+  {4, 7, 6}, // r
+  {6, 7, 3}, // f
+  {5, 1, 4}, // back
+  {4, 1, 0}  // back
+};
+
+
 pcl::PointCloud<pcl::PointXYZ>::ConstPtr
-CropHullTestTraits2d::getInputCloud ()
+CropHullTestTraits2d::getHullCloud ()
 {
   static pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ>);
   if (input_cloud->empty()) {
@@ -223,6 +211,16 @@ CropHullTestTraits2d::getInputCloud ()
   return input_cloud;
 }
 
+std::vector<pcl::Vertices>
+CropHullTestTraits2d::getHullPolygons ()
+{
+  std::vector<pcl::Vertices> polygons(12);
+  for (size_t i = 0; i < 12; ++i) {
+    polygons[i].vertices = cube_elements[i];
+  }
+  return polygons;
+}
+
 int
 CropHullTestTraits2d::getDim ()
 {
@@ -231,7 +229,7 @@ CropHullTestTraits2d::getDim ()
 
 
 pcl::PointCloud<pcl::PointXYZ>::ConstPtr
-CropHullTestTraits3d::getInputCloud ()
+CropHullTestTraits3d::getHullCloud ()
 {
   static pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ>);
   if (input_cloud->empty()) {
@@ -241,6 +239,16 @@ CropHullTestTraits3d::getInputCloud ()
           input_cloud->emplace_back(i, j, k);
   }
   return input_cloud;
+}
+
+std::vector<pcl::Vertices>
+CropHullTestTraits3d::getHullPolygons ()
+{
+  std::vector<pcl::Vertices> polygons(12);
+  for (size_t i = 0; i < 12; ++i) {
+    polygons[i].vertices = cube_elements[i];
+  }
+  return polygons;
 }
 
 int

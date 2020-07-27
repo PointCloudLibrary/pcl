@@ -1,7 +1,7 @@
 set(SUBSYS_NAME tests_filters)
 set(SUBSYS_DESC "Point cloud library filters module unit tests")
 PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS filters)
-set(OPT_DEPS io features segmentation surface)
+set(OPT_DEPS io features segmentation)
 
 set(DEFAULT ON)
 set(build TRUE)
@@ -33,10 +33,9 @@ PCL_ADD_TEST(filters_uniform_sampling test_uniform_sampling
              FILES test_uniform_sampling.cpp
              LINK_WITH pcl_gtest pcl_common pcl_filters)
 
-
 PCL_ADD_TEST(filters_convolution test_convolution
-        FILES test_convolution.cpp
-        LINK_WITH pcl_gtest pcl_filters)
+             FILES test_convolution.cpp
+             LINK_WITH pcl_gtest pcl_filters)
 
 PCL_ADD_TEST(filters_crop_hull test_crop_hull
              FILES test_crop_hull.cpp
