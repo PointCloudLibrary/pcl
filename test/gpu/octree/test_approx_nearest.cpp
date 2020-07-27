@@ -56,93 +56,95 @@
 #include <pcl/gpu/octree/octree.hpp>
 #include <pcl/gpu/containers/device_array.h>
 
-#include "data_source.hpp"
-
 using namespace pcl::gpu;
 
 //TEST(PCL_OctreeGPU, DISABLED_approxNearesSearch)
 TEST(PCL_OctreeGPU, approxNearesSearch)
-{   
-    DataGenerator data;
-    data.data_size = 871000;
-    data.tests_num = 10000;
-    data.cube_size = 1024.f;
-    data.max_radius    = data.cube_size/30.f;
-    data.shared_radius = data.cube_size/30.f;
-    data.printParams();
+{
+    //generate custom pointcloud
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
-    const float host_octree_resolution = 25.f;
+    // Fill in cloud data
+    cloud->width    = 10000;
+    cloud->height   = 1;
+    cloud->is_dense = false;
+    cloud->points.resize (cloud->width * cloud->height);
 
-    //generate
-    data();
-        
-    //prepare device cloud
-    pcl::gpu::Octree::PointCloud cloud_device;
-    cloud_device.upload(data.points);
+    float x_cords[cloud->size()] = {-1, -1, -1, 1, -1, 1, 1, 1, -0.9, -0.4};
+    float y_cords[cloud->size()] = {-1, -1, 1, -1, 1, -1, 1, 1, -0.2, -0.6};
+    float z_cords[cloud->size()] = {-1, 1, -1, -1, 1, 1, -1, 1, -0.75, -0.75};
 
+    for (pcl::index_t i = 0; i < cloud->size (); ++i)
+    {
+        (*cloud)[i].x = x_cords[i%10];
+        (*cloud)[i].y = y_cords[i%10];
+        (*cloud)[i].z = z_cords[i%10];
+    }
 
+    std::vector<pcl::PointXYZ> queries;
+    queries.push_back(pcl::PointXYZ(-0.4, -0.2, -0.75));     //should be different across CPU and GPU for smaller clouds
+    queries.push_back(pcl::PointXYZ(-0.6, -0.2, -0.75));     //should be same across CPU and GPU
+    queries.push_back(pcl::PointXYZ(1.1, 1.1, 1.1));         //out of range query
+
+<<<<<<< HEAD:test/gpu/octree/test_approx_nearest.cpp
     //prepare host cloud
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host(new pcl::PointCloud<pcl::PointXYZ>);	
     cloud_host->width = data.points.size();
     cloud_host->height = 1;
     cloud_host->points.resize (cloud_host->width * cloud_host->height);    
     std::transform(data.points.begin(), data.points.end(), cloud_host->points.begin(), DataGenerator::ConvPoint<pcl::PointXYZ>());
+=======
+    //prepare device cloud
+    pcl::gpu::Octree::PointCloud cloud_device;
+    cloud_device.upload(cloud->points);
+>>>>>>> add new traversal for  gpuApproxNearestSearch & modify tests:gpu/octree/test/test_approx_nearest.cpp
 
-    //gpu build 
-    pcl::gpu::Octree octree_device;                
-    octree_device.setCloud(cloud_device);	    
+    //gpu build
+    pcl::gpu::Octree octree_device;
+    octree_device.setCloud(cloud_device);
     octree_device.build();
-    
+
     //build host octree
+    float host_octree_resolution = 0.05;
     pcl::octree::OctreePointCloudSearch<pcl::PointXYZ> octree_host(host_octree_resolution);
-    octree_host.setInputCloud (cloud_host);    
+    octree_host.setInputCloud (cloud);
     octree_host.addPointsFromInputCloud();
-           
+
     //upload queries
     pcl::gpu::Octree::Queries queries_device;
-    queries_device.upload(data.queries);
-    
-        
+    queries_device.upload(queries);
+    //pcl::gpu::Octree::ResultSqrDists distances_device(queries.size());
+
     //prepare output buffers on device
-    pcl::gpu::NeighborIndices result_device(data.tests_num, 1);
-    std::vector<int> result_host_pcl(data.tests_num);
-    std::vector<int> result_host_gpu(data.tests_num);
-    std::vector<float> dists_pcl(data.tests_num);
-    std::vector<float> dists_gpu(data.tests_num);
-    
+    pcl::gpu::NeighborIndices result_device(queries.size(), 1);
+    std::vector<int> result_host_pcl(queries.size());
+    std::vector<int> result_host_gpu(queries.size());
+    std::vector<float> dists_pcl(queries.size());
+    std::vector<float> dists_gpu(queries.size());
+
     //search GPU shared
     octree_device.approxNearestSearch(queries_device, result_device);
-
     std::vector<int> downloaded;
+    std::vector<float>distances;
     result_device.data.download(downloaded);
-                
-    for(std::size_t i = 0; i < data.tests_num; ++i)
+    //distances_device.download(dists_gpu_direct);
+
+    for(size_t i = 0; i < queries.size(); ++i)
     {
-        octree_host.approxNearestSearch(data.queries[i], result_host_pcl[i], dists_pcl[i]);
-        octree_device.approxNearestSearchHost(data.queries[i], result_host_gpu[i], dists_gpu[i]);
+        octree_host.approxNearestSearch(queries[i], result_host_pcl[i], dists_pcl[i]);
+        octree_device.approxNearestSearchHost(queries[i], result_host_gpu[i], dists_gpu[i]);
     }
 
-    ASSERT_EQ ( ( downloaded == result_host_gpu ), true );
+    ASSERT_EQ ((downloaded == result_host_gpu), true);
 
+    //find inconsistencies with gpu and cpu cuda impementation
     int count_gpu_better = 0;
     int count_pcl_better = 0;
-    float diff_pcl_better = 0;
-    for(std::size_t i = 0; i < data.tests_num; ++i)
+    int count_different = 0;
+    for(size_t i = 0; i < queries.size(); ++i)
     {
-        float diff = dists_pcl[i] - dists_gpu[i];
-        bool gpu_better = diff > 0;
-
-        ++(gpu_better ? count_gpu_better : count_pcl_better);
-
-        if (!gpu_better)
-            diff_pcl_better +=std::abs(diff);
+        ASSERT_EQ ((dists_pcl[i] == dists_gpu[i]), true);
     }
-
-    diff_pcl_better /=count_pcl_better;
-
-    std::cout << "count_gpu_better: " << count_gpu_better << std::endl;
-    std::cout << "count_pcl_better: " << count_pcl_better << std::endl;
-    std::cout << "avg_diff_pcl_better: " << diff_pcl_better << std::endl;    
 
 }
 

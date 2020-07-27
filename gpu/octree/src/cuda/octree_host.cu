@@ -100,6 +100,57 @@ namespace
         return count;
     } 
 
+    int nearestVoxelTraversal(float3 query, int level, int mask, float3 minp, float3 maxp, int& x, int& y, int& z)
+    {
+        //identify closest voxel
+        float closest_distance = std::numeric_limits<float>::max();
+        int closest_index = 0, closest_x = 0, closest_y = 0, closest_z = 0;
+
+        for (int i = 0; i < 8; ++i)
+        {
+            if ((mask & (1<<i)) == 0)   //no child
+                continue;
+
+            //calculate  x,y,z offset for voxel
+            int x_cord = i & 1;
+            int y_cord = (i>>1) & 1;
+            int z_cord = (i>>2) & 1;
+
+            int x_child, y_child, z_child;
+            x_child = x*2 + x_cord;
+            y_child = y*2 + y_cord;
+            z_child = z*2 + z_cord;
+
+            //find center of child cell
+            float3 voxel_center;
+            voxel_center.x = minp.x + (maxp.x - minp.x) * (2*x_child + 1) / (2 * 1<<(level + 1));
+            voxel_center.y = minp.y + (maxp.y - minp.y) * (2*y_child + 1) / (2 * 1<<(level + 1));
+            voxel_center.z = minp.z + (maxp.z - minp.z) * (2*z_child + 1) / (2 * 1<<(level + 1));
+
+            //compute distance to centroid
+            float dx = (voxel_center.x - query.x);
+            float dy = (voxel_center.y - query.y);
+            float dz = (voxel_center.z - query.z);
+            float distance_to_query = dx * dx + dy * dy + dz * dz;
+
+            //compare distance
+            if (distance_to_query < closest_distance)
+            {
+                closest_distance = distance_to_query;
+                closest_index = i;
+                closest_x = x_child;
+                closest_y = y_child;
+                closest_z = z_child;
+            }
+        }
+
+        x = closest_x;
+        y = closest_y;
+        z = closest_z;
+
+        return  (1<<closest_index);
+    }
+
     struct OctreeIteratorHost
     {        
         const static int MAX_LEVELS_PLUS_ROOT = 11;
@@ -146,7 +197,7 @@ namespace
 void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float radius, std::vector<int>& out, int max_nn) const
 {            
     out.clear();  
-
+    
     float3 center = make_float3(query.x, query.y, query.z);
 
     OctreeIteratorHost iterator;
@@ -227,30 +278,50 @@ void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, i
     float3 maxp = octreeGlobal.maxp;
 
     int node_idx = 0;
+    int code = CalcMorton(minp, maxp)(query);
+    int level = 0;
 
-    bool out_of_root = query.x < minp.x || query.y < minp.y ||  query.z < minp.z || query.x > maxp.x || query.y > maxp.y ||  query.z > maxp.z;
+    bool centroid_traversal = false;
+    int mask_pos;
+    int x, y, z;
 
-    if(!out_of_root)        
+    for(;;)
     {
-        int code = CalcMorton(minp, maxp)(query);
-        int level = 0;
+        int node = host_octree.nodes[node_idx];
+        int mask = node & 0xFF;
 
-        for(;;)
-        {            
-            int mask_pos = 1 << Morton::extractLevelCode(code, level);
+        float3 query_point;
+        query_point.x = query.x;
+        query_point.y = query.y;
+        query_point.z = query.z;
 
-            int node = host_octree.nodes[node_idx];
-            int mask = node & 0xFF;
+        if(getBitsNum(mask) == 0)  // leaf
+            break;
 
-            if(getBitsNum(mask) == 0)  // leaf
-                break;
+        if (!centroid_traversal)    // no empty voxel encountered yet, performing morton code based traversal
+        {
+            mask_pos = 1 << Morton::extractLevelCode(code, level);
 
             if ( (mask & mask_pos) == 0) // no child
-                break;
+            {
 
-            node_idx = (node >> 8) + getBitsNum(mask & (mask_pos - 1));
-            ++level;
+                //find current cell
+                Morton::decomposeCode(code, x, y, z);
+
+                x >>= (Morton::levels - level);
+                y >>= (Morton::levels - level);
+                z >>= (Morton::levels - level);
+
+                centroid_traversal = true;  //switch to nearest-centroid based traversal
+                mask_pos = nearestVoxelTraversal(query_point, level, mask, minp, maxp, x, y, z);
+            }
         }
+
+        else
+            mask_pos = nearestVoxelTraversal(query_point, level, mask, minp, maxp, x, y, z);
+
+        node_idx = (node >> 8) + getBitsNum(mask & (mask_pos - 1));
+        ++level;
     }
 
     int beg = host_octree.begs[node_idx];
@@ -275,7 +346,7 @@ void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, i
             sqr_dist = d2;
             out_index = i;
         }
-    }  
+    }
 
     out_index = host_octree.indices[out_index];
 }
