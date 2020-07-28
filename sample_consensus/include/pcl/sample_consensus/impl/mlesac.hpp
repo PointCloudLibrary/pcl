@@ -41,6 +41,7 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_MLESAC_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_MLESAC_H_
 
+#include <pcl/common/common.h> // for getMinMax3D
 #include <pcl/sample_consensus/mlesac.h>
 #include <pcl/point_types.h>
 
@@ -70,9 +71,10 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
 
   // Compute the bounding box diagonal: V = sqrt (sum (max(pointCloud) - min(pointCloud)^2))
   Eigen::Vector4f min_pt, max_pt;
-  getMinMax (sac_model_->getInputCloud (), sac_model_->getIndices (), min_pt, max_pt);
+  getMinMax3D (*(sac_model_->getInputCloud ()), *(sac_model_->getIndices ()), min_pt, max_pt);
   max_pt -= min_pt;
-  double v = sqrt (max_pt.dot (max_pt));
+  max_pt[3] = 0.0f;
+  const double v = sqrt (max_pt.dot (max_pt));
 
   int n_inliers_count = 0;
   std::size_t indices_size;
