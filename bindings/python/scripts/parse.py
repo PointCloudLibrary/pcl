@@ -122,8 +122,11 @@ def generate_parsed_info(node):
     parsed_info["depth"] = depth
     parsed_info["line"] = cursor.location.line
     parsed_info["column"] = cursor.location.column
-    parsed_info["kind"] = cursor.kind.name
-    parsed_info["name"] = cursor.spelling
+    if cursor.is_anonymous():
+        parsed_info["kind"] = "ANONYMOUS_" + cursor.kind.name
+    else:
+        parsed_info["kind"] = cursor.kind.name
+        parsed_info["name"] = cursor.spelling
     if cursor.type.kind.spelling != "Invalid":
         parsed_info["element_type"] = cursor.type.kind.spelling
     if cursor.access_specifier.name != "INVALID":
