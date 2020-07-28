@@ -217,8 +217,8 @@ TEST (SampleConsensusModelPlane, RMSAC)
   // Create the RMSAC object
   RandomizedMEstimatorSampleConsensus<PointXYZ> sac (model, 0.03);
 
-  sac.setFractionNrPretest (10.0);
-  ASSERT_EQ (10.0, sac.getFractionNrPretest ());
+  sac.setFractionNrPretest (0.2);
+  ASSERT_EQ (0.2, sac.getFractionNrPretest ());
 
   verifyPlaneSac (model, sac, 600, 1.0f, 1.0f, 0.01f);
 }
