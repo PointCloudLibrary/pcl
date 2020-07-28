@@ -45,17 +45,10 @@ def test_anonymous_decls(tmp_path):
     parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
 
     union_decl = parsed_info["members"][0]
-
-    assert union_decl["kind"] == "UNION_DECL"
-    assert union_decl["name"] == ""
-
     struct_decl = union_decl["members"][0]
-
-    assert struct_decl["kind"] == "STRUCT_DECL"
-    assert struct_decl["name"] == ""
-
     enum_decl = struct_decl["members"][0]
 
-    assert enum_decl["kind"] == "ENUM_DECL"
-    assert enum_decl["name"] == ""
+    assert union_decl["kind"] == "ANONYMOUS_UNION_DECL"
+    assert struct_decl["kind"] == "ANONYMOUS_STRUCT_DECL"
+    assert enum_decl["kind"] == "ANONYMOUS_ENUM_DECL"
 
