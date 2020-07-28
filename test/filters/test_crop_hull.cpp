@@ -9,6 +9,7 @@
 
 #include <random>
 #include <algorithm>
+#include <array>
 
 #include <pcl/test/gtest.h>
 #include <pcl/pcl_tests.h>
