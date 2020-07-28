@@ -58,7 +58,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
 
   iterations_ = 0;
   double d_best_penalty = std::numeric_limits<double>::max();
-  double k = 1.0;
+  double k = std::numeric_limits<double>::max();
 
   Indices selection;
   Eigen::VectorXf model_coefficients;
@@ -76,7 +76,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   max_pt[3] = 0.0f;
   const double v = sqrt (max_pt.dot (max_pt));
 
-  int n_inliers_count = 0;
+  std::size_t n_inliers_count = 0;
   std::size_t indices_size;
   unsigned skipped_count = 0;
   // suppress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
@@ -198,7 +198,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   inliers_.resize (n_inliers_count);
 
   if (debug_verbosity_level > 0)
-    PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Model: %lu size, %d inliers.\n", model_.size (), n_inliers_count);
+    PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Model: %lu size, %lu inliers.\n", model_.size (), n_inliers_count);
 
   return (true);
 }

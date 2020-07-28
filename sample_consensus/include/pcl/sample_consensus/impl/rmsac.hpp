@@ -56,14 +56,14 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
 
   iterations_ = 0;
   double d_best_penalty = std::numeric_limits<double>::max();
-  double k = 1.0;
+  double k = std::numeric_limits<double>::max();
 
   Indices selection;
   Eigen::VectorXf model_coefficients;
   std::vector<double> distances;
   std::set<index_t> indices_subset;
 
-  int n_inliers_count = 0;
+  std::size_t n_inliers_count = 0;
   unsigned skipped_count = 0;
   // suppress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
   const unsigned max_skip = max_iterations_ * 10;
@@ -73,19 +73,32 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
   PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] Using %lu points for RMSAC pre-test.\n", fraction_nr_points);
 
   // Iterate
-  while (iterations_ < k && skipped_count < max_skip)
+  while (iterations_ < k)
   {
     // Get X samples which satisfy the model criteria
     sac_model_->getSamples (iterations_, selection);
 
-    if (selection.empty ()) break;
+    if (selection.empty ())
+    {
+      PCL_ERROR ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] No samples could be selected!\n");
+      break;
+    }
 
     // Search for inliers in the point cloud for the current plane model M
     if (!sac_model_->computeModelCoefficients (selection, model_coefficients))
     {
       //iterations_++;
       ++ skipped_count;
-      continue;
+      if (skipped_count < max_skip)
+      {
+        PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] The function computeModelCoefficients failed, so continue with next iteration.\n");
+        continue;
+      }
+      else
+      {
+        PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] The function computeModelCoefficients failed, and RMSAC reached the maximum number of trials.\n");
+        break;
+      }
     }
 
     // RMSAC addon: verify a random fraction of the data
@@ -94,19 +107,16 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
 
     if (!sac_model_->doSamplesVerifyModel (indices_subset, model_coefficients, threshold_))
     {
-      // Unfortunately we cannot "continue" after the first iteration, because k might not be set, while iterations gets incremented
-      if (k != 1.0)
-      {
-        ++iterations_;
-        continue;
-      }
+      ++iterations_;
+      PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] The function doSamplesVerifyModel failed, so continue with next iteration.\n");
+      continue;
     }
 
     double d_cur_penalty = 0;
     // Iterate through the 3d points and calculate the distances from them to the model
     sac_model_->getDistancesToModel (model_coefficients, distances);
 
-    if (distances.empty () && k > 1.0)
+    if (distances.empty ())
       continue;
 
     for (const double &distance : distances)
@@ -141,7 +151,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
     if (iterations_ > max_iterations_)
     {
       if (debug_verbosity_level > 0)
-        PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] MSAC reached the maximum number of trials.\n");
+        PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] RMSAC reached the maximum number of trials.\n");
       break;
     }
   }
@@ -173,7 +183,7 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
   inliers_.resize (n_inliers_count);
 
   if (debug_verbosity_level > 0)
-    PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] Model: %lu size, %d inliers.\n", model_.size (), n_inliers_count);
+    PCL_DEBUG ("[pcl::RandomizedMEstimatorSampleConsensus::computeModel] Model: %lu size, %lu inliers.\n", model_.size (), n_inliers_count);
 
   return (true);
 }

@@ -56,19 +56,19 @@ pcl::MEstimatorSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
 
   iterations_ = 0;
   double d_best_penalty = std::numeric_limits<double>::max();
-  double k = 1.0;
+  double k = std::numeric_limits<double>::max();
 
   Indices selection;
   Eigen::VectorXf model_coefficients;
   std::vector<double> distances;
 
-  int n_inliers_count = 0;
+  std::size_t n_inliers_count = 0;
   unsigned skipped_count = 0;
   // suppress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
   const unsigned max_skip = max_iterations_ * 10;
   
   // Iterate
-  while (iterations_ < k && skipped_count < max_skip)
+  while (iterations_ < k)
   {
     // Get X samples which satisfy the model criteria
     sac_model_->getSamples (iterations_, selection);
@@ -80,7 +80,16 @@ pcl::MEstimatorSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
     {
       //iterations_++;
       ++ skipped_count;
-      continue;
+      if (skipped_count < max_skip)
+      {
+        PCL_DEBUG ("[pcl::MEstimatorSampleConsensus::computeModel] The function computeModelCoefficients failed, so continue with next iteration.\n");
+        continue;
+      }
+      else
+      {
+        PCL_DEBUG ("[pcl::MEstimatorSampleConsensus::computeModel] The function computeModelCoefficients failed, and MSAC reached the maximum number of trials.\n");
+        break;
+      }
      }
 
     double d_cur_penalty = 0;
@@ -155,7 +164,7 @@ pcl::MEstimatorSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
   inliers_.resize (n_inliers_count);
 
   if (debug_verbosity_level > 0)
-    PCL_DEBUG ("[pcl::MEstimatorSampleConsensus::computeModel] Model: %lu size, %d inliers.\n", model_.size (), n_inliers_count);
+    PCL_DEBUG ("[pcl::MEstimatorSampleConsensus::computeModel] Model: %lu size, %lu inliers.\n", model_.size (), n_inliers_count);
 
   return (true);
 }
