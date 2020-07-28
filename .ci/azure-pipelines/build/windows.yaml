@@ -22,6 +22,7 @@ steps:
       mkdir %BUILD_DIR% && cd %BUILD_DIR%
       cmake $(Build.SourcesDirectory) ^
         -G"%GENERATOR%" ^
+        -DPCL_ONLY_CORE_POINT_TYPES=ON ^
         -DCMAKE_BUILD_TYPE="MinSizeRel" ^
         -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake ^
         -DVCPKG_APPLOCAL_DEPS=ON ^
