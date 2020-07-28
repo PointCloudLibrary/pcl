@@ -292,7 +292,8 @@ TYPED_TEST (PCLCropHullTestFixture, test_cloud_filtering)
       pcl::PointCloud<pcl::PointXYZ> filteredCloud;
       crop_hull_filter.filter(filteredCloud);
       ASSERT_EQ (test_data.inside_cloud_->size(), filteredCloud.size());
-      for (pcl::index_t i = 0; i < test_data.inside_cloud_->size(); ++i)
+      pcl::index_t cloud_size = test_data.inside_cloud_->size();
+      for (pcl::index_t i = 0; i < cloud_size; ++i)
       {
         EXPECT_XYZ_NEAR(test_data.inside_cloud_->at(i), filteredCloud[i], 1e-5);
       }
