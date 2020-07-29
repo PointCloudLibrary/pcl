@@ -122,20 +122,22 @@ stages:
     displayName: Build MSVC
     dependsOn: formatting
     jobs:
-      - job: vs2017
-        displayName: Windows VS2017 Build
+      - job: msvs
+        displayName: Windows Build
         pool:
-          vmImage: 'vs2017-win2016'
+          vmImage: '$(VMWINIMAGE)'
         strategy:
           matrix:
             x86:
+              VMWINIMAGE: 'vs2017-win2016'
               PLATFORM: 'x86'
               ARCHITECTURE: 'x86'
-              GENERATOR: 'Visual Studio 15 2017'
+              GENERATOR: '"Visual Studio 15 2017"'
             x64:
+              VMWINIMAGE: 'windows-2019'
               PLATFORM: 'x64'
               ARCHITECTURE: 'x86_amd64'
-              GENERATOR: 'Visual Studio 15 2017 Win64'
+              GENERATOR: '"Visual Studio 16 2019" -A x64'
         timeoutInMinutes: 0
         variables:
           BUILD_DIR: '$(Agent.WorkFolder)\build'
