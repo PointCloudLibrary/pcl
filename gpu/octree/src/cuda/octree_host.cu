@@ -296,8 +296,10 @@ void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, i
         query_point.z = query.z;
 
         if(getBitsNum(mask) == 0)  // leaf
+        {
+            //printf ("node %d\n", node_idx);
             break;
-
+        }
         if (!centroid_traversal)    // no empty voxel encountered yet, performing morton code based traversal
         {
             mask_pos = 1 << Morton::extractLevelCode(code, level);

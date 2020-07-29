@@ -106,37 +106,111 @@ namespace pcl { namespace device { namespace appnearest_search
 	private:
 
 		__device__ __forceinline__ int findNode()
-		{                                             
+		{
 			float3 minp = batch.octree.minp;
 			float3 maxp = batch.octree.maxp;
-
-			if(query.x < minp.x || query.y < minp.y ||  query.z < minp.z)
-				return 0;
-
-			if(query.x > maxp.x || query.y > maxp.y ||  query.z > maxp.z)
-				return 0;
 
 			int node_idx = 0;
 			int code = CalcMorton(minp, maxp)(query);
 			int level = 0;
 
+			bool centroid_traversal = false;
+			int mask_pos;
+			int x, y, z;
+
 			for(;;)
 			{
-				int mask_pos = 1 << Morton::extractLevelCode(code, level);
-
 				int node = batch.octree.nodes[node_idx];
 				int mask = node & 0xFF;
 
-				if(__popc(mask) == 0)  // leaf
-					return node_idx; 
+				float3 query_point;
+				query_point.x = query.x;
+				query_point.y = query.y;
+				query_point.z = query.z;
 
-				if ( (mask & mask_pos) == 0) // no child
-					return node_idx;                         
+				if(__popc(mask) == 0)  // leaf
+				{
+					//printf ("node x %d\n", node_idx);
+					return node_idx;
+				}
+
+				if (!centroid_traversal)    // no empty voxel encountered yet, performing morton code based traversal
+				{
+					mask_pos = 1 << Morton::extractLevelCode(code, level);
+
+					if ( (mask & mask_pos) == 0) // no child
+					{
+
+						//find current cell
+						Morton::decomposeCode(code, x, y, z);
+
+						x >>= (Morton::levels - level);
+						y >>= (Morton::levels - level);
+						z >>= (Morton::levels - level);
+
+						centroid_traversal = true;  //switch to nearest-centroid based traversal
+						mask_pos = nearestVoxelTraversal(query_point, level, mask, minp, maxp, x, y, z);
+					}
+				}
+
+				else
+					mask_pos = nearestVoxelTraversal(query_point, level, mask, minp, maxp, x, y, z);
 
 				node_idx = (node >> 8) + __popc(mask & (mask_pos - 1));
 				++level;
 			}
 		};
+
+		__device__ int nearestVoxelTraversal(float3 query, int level, int mask, float3 minp, float3 maxp, int& x, int& y, int& z)
+		{
+			//identify closest voxel
+			float closest_distance = std::numeric_limits<float>::max();
+			int closest_index = 0, closest_x = 0, closest_y = 0, closest_z = 0;
+
+			for (int i = 0; i < 8; ++i)
+			{
+				if ((mask & (1<<i)) == 0)   //no child
+					continue;
+
+				//calculate  x,y,z offset for voxel
+				int x_cord = i & 1;
+				int y_cord = (i>>1) & 1;
+				int z_cord = (i>>2) & 1;
+
+				int x_child, y_child, z_child;
+				x_child = x*2 + x_cord;
+				y_child = y*2 + y_cord;
+				z_child = z*2 + z_cord;
+
+				//find center of child cell
+				float3 voxel_center;
+				voxel_center.x = minp.x + (maxp.x - minp.x) * (2*x_child + 1) / (2 * 1<<(level + 1));
+				voxel_center.y = minp.y + (maxp.y - minp.y) * (2*y_child + 1) / (2 * 1<<(level + 1));
+				voxel_center.z = minp.z + (maxp.z - minp.z) * (2*z_child + 1) / (2 * 1<<(level + 1));
+
+				//compute distance to centroid
+				float dx = (voxel_center.x - query.x);
+				float dy = (voxel_center.y - query.y);
+				float dz = (voxel_center.z - query.z);
+				float distance_to_query = dx * dx + dy * dy + dz * dz;
+
+				//compare distance
+				if (distance_to_query < closest_distance)
+				{
+					closest_distance = distance_to_query;
+					closest_index = i;
+					closest_x = x_child;
+					closest_y = y_child;
+					closest_z = z_child;
+				}
+			}
+
+			x = closest_x;
+			y = closest_y;
+			z = closest_z;
+
+			return  (1<<closest_index);
+		}
 
 		__device__ __forceinline__ void processNode(int node_idx)
 		{   
@@ -180,7 +254,7 @@ namespace pcl { namespace device { namespace appnearest_search
 					*warp_buffer_float = query.z;
 				active_query.z = *warp_buffer_float;                            
 
-				int offset = NearestWarpKernel<KernelPolicy::CTA_SIZE>(batch.points + beg, batch.points_step, end - beg, active_query);                    
+				int offset = NearestWarpKernel<KernelPolicy::CTA_SIZE>(beg, batch.points_step, end - beg, active_query);                    
 
 				if (active_lane == laneId)
 					result_idx = beg + offset;
@@ -188,7 +262,7 @@ namespace pcl { namespace device { namespace appnearest_search
 		}
 
         template<int CTA_SIZE>
-		__device__ __forceinline__ int NearestWarpKernel(const float* points, int points_step, int length, const float3& active_query)
+		__device__ __forceinline__ int NearestWarpKernel(int beg, int points_step, int length, const float3& active_query)
 		{                        						
             __shared__ volatile float dist2[CTA_SIZE];
             __shared__ volatile int   index[CTA_SIZE];
@@ -199,9 +273,9 @@ namespace pcl { namespace device { namespace appnearest_search
 			//serial step
             for (int idx = Warp::laneId(); idx < length; idx += Warp::STRIDE)
 			{
-				float dx = points[idx                  ] - active_query.x;
-				float dy = points[idx + points_step    ] - active_query.y;
-				float dz = points[idx + points_step * 2] - active_query.z;
+				float dx = batch.points[beg + idx                  ] - active_query.x;
+				float dy = batch.points[beg + idx + points_step    ] - active_query.y;
+				float dz = batch.points[beg + idx + points_step * 2] - active_query.z;
 
 				float d2 = dx * dx + dy * dy + dz * dz;
 
