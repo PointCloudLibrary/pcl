@@ -123,6 +123,8 @@ def generate_parsed_info(node):
     parsed_info["line"] = cursor.location.line
     parsed_info["column"] = cursor.location.column
     parsed_info["kind"] = cursor.kind.name
+    if cursor.is_anonymous():
+        parsed_info["kind"] = "ANONYMOUS_" + parsed_info["kind"]
     parsed_info["name"] = cursor.spelling
     if cursor.type.kind.spelling != "Invalid":
         parsed_info["element_type"] = cursor.type.kind.spelling
