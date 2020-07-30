@@ -60,6 +60,14 @@ namespace pcl
         {
             uint3 index;
             std::uint8_t mask_pos;
+
+            ChildNode(){}
+
+            ChildNode(uint3 i, uint8_t mp)
+            {
+                index = i;
+                mask_pos = mp;
+            }
         };
     }
 }
@@ -147,11 +155,8 @@ namespace
                 closest.z = child.z;
             }
         }
-        ChildNode child_node;
-        child_node.index = make_uint3(closest.x, closest.y, closest.z);
-        child_node.mask_pos = (1<<closest_index);
 
-        return child_node;
+        return ChildNode(make_uint3(closest.x, closest.y, closest.z), (1<<closest_index));
     }
 
     struct OctreeIteratorHost
