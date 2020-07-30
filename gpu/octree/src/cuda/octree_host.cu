@@ -40,6 +40,7 @@
 #include "internal.hpp"
 #include "utils/boxutils.hpp"
 
+#include <assert.h>
 #include<algorithm>
 #include<limits>
 
@@ -54,6 +55,12 @@ namespace pcl
         {
             data[threadIdx.x + blockDim.x * blockIdx.x] = threadIdx.x;
         }
+
+        struct ChildNode
+        {
+            uint3 index;
+            std::uint8_t mask_pos;
+        };
     }
 }
 
@@ -100,55 +107,51 @@ namespace
         return count;
     } 
 
-    int nearestVoxelTraversal(float3 query, int level, int mask, float3 minp, float3 maxp, int& x, int& y, int& z)
+    ChildNode nearestVoxel(const OctreeImpl::PointType& query, const unsigned& level, const std::uint8_t& mask, const float3& minp, const float3& maxp, const uint3& index)
     {
+        assert(mask != 0);
         //identify closest voxel
         float closest_distance = std::numeric_limits<float>::max();
-        int closest_index = 0, closest_x = 0, closest_y = 0, closest_z = 0;
+        unsigned closest_index = 0;
+        uint3 closest = make_uint3(0,0,0);
+        const unsigned voxel_width = 1 << (level + 2);
 
-        for (int i = 0; i < 8; ++i)
+        for (unsigned i = 0; i < 8; ++i)
         {
             if ((mask & (1<<i)) == 0)   //no child
                 continue;
 
-            //calculate  x,y,z offset for voxel
-            int x_cord = i & 1;
-            int y_cord = (i>>1) & 1;
-            int z_cord = (i>>2) & 1;
-
-            int x_child, y_child, z_child;
-            x_child = x*2 + x_cord;
-            y_child = y*2 + y_cord;
-            z_child = z*2 + z_cord;
+            uint3 child;
+            child.x = (index.x << 1) + (i & 1);
+            child.y = (index.y << 1) + ((i>>1) & 1);
+            child.z = (index.z << 1) + ((i>>2) & 1);
 
             //find center of child cell
             float3 voxel_center;
-            voxel_center.x = minp.x + (maxp.x - minp.x) * (2*x_child + 1) / (2 * 1<<(level + 1));
-            voxel_center.y = minp.y + (maxp.y - minp.y) * (2*y_child + 1) / (2 * 1<<(level + 1));
-            voxel_center.z = minp.z + (maxp.z - minp.z) * (2*z_child + 1) / (2 * 1<<(level + 1));
+            voxel_center.x = minp.x + (maxp.x - minp.x) * (2*child.x + 1) / voxel_width;
+            voxel_center.y = minp.y + (maxp.y - minp.y) * (2*child.y + 1) / voxel_width;
+            voxel_center.z = minp.z + (maxp.z - minp.z) * (2*child.z + 1) / voxel_width;
 
             //compute distance to centroid
-            float dx = (voxel_center.x - query.x);
-            float dy = (voxel_center.y - query.y);
-            float dz = (voxel_center.z - query.z);
-            float distance_to_query = dx * dx + dy * dy + dz * dz;
+            const float3 dist = make_float3((voxel_center.x - query.x), (voxel_center.y - query.y), (voxel_center.z - query.z));
+
+            float distance_to_query = dist.x * dist.x + dist.y * dist.y + dist.z * dist.z;
 
             //compare distance
             if (distance_to_query < closest_distance)
             {
                 closest_distance = distance_to_query;
                 closest_index = i;
-                closest_x = x_child;
-                closest_y = y_child;
-                closest_z = z_child;
+                closest.x = child.x;
+                closest.y = child.y;
+                closest.z = child.z;
             }
         }
+        ChildNode child_node;
+        child_node.index = make_uint3(closest.x, closest.y, closest.z);
+        child_node.mask_pos = (1<<closest_index);
 
-        x = closest_x;
-        y = closest_y;
-        z = closest_z;
-
-        return  (1<<closest_index);
+        return child_node;
     }
 
     struct OctreeIteratorHost
@@ -274,55 +277,43 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
 
 void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, int& out_index, float& sqr_dist) const
 {
-    float3 minp = octreeGlobal.minp;
-    float3 maxp = octreeGlobal.maxp;
+    const float3& minp = octreeGlobal.minp;
+    const float3& maxp = octreeGlobal.maxp;
 
-    int node_idx = 0;
-    int code = CalcMorton(minp, maxp)(query);
-    int level = 0;
+    size_t node_idx = 0;
+    const auto code = CalcMorton(minp, maxp)(query);
+    unsigned level = 0;
 
-    bool centroid_traversal = false;
-    int mask_pos;
-    int x, y, z;
+    bool voxel_traversal = false;
+    uint3 full_index = Morton::decomposeCode(code);
 
-    for(;;)
+    while(true)
     {
-        int node = host_octree.nodes[node_idx];
-        int mask = node & 0xFF;
+        const auto node = host_octree.nodes[node_idx];
+        const std::uint8_t mask = node & 0xFF;
 
-        float3 query_point;
-        query_point.x = query.x;
-        query_point.y = query.y;
-        query_point.z = query.z;
-
-        if(getBitsNum(mask) == 0)  // leaf
-        {
-            //printf ("node %d\n", node_idx);
+        if(!mask)  // leaf
             break;
-        }
-        if (!centroid_traversal)    // no empty voxel encountered yet, performing morton code based traversal
+
+        ChildNode child_node;
+        if (!voxel_traversal)    // no empty voxel encountered yet, performing morton code based traversal
         {
-            mask_pos = 1 << Morton::extractLevelCode(code, level);
+            child_node.mask_pos = 1 << Morton::extractLevelCode(code, level);
 
-            if ( (mask & mask_pos) == 0) // no child
+            if (!(mask & child_node.mask_pos)) // child doesn't exist
             {
+                full_index.x >>= (Morton::levels - level);
+                full_index.y >>= (Morton::levels - level);
+                full_index.z >>= (Morton::levels - level);
 
-                //find current cell
-                Morton::decomposeCode(code, x, y, z);
-
-                x >>= (Morton::levels - level);
-                y >>= (Morton::levels - level);
-                z >>= (Morton::levels - level);
-
-                centroid_traversal = true;  //switch to nearest-centroid based traversal
-                mask_pos = nearestVoxelTraversal(query_point, level, mask, minp, maxp, x, y, z);
+                voxel_traversal = true;  //switch to nearest-centroid based traversal
+                child_node = nearestVoxel(query, level, mask, minp, maxp, full_index);
             }
         }
-
         else
-            mask_pos = nearestVoxelTraversal(query_point, level, mask, minp, maxp, x, y, z);
+        child_node = nearestVoxel(query, level, mask, minp, maxp, child_node.index);
 
-        node_idx = (node >> 8) + getBitsNum(mask & (mask_pos - 1));
+        node_idx = (node >> 8) + getBitsNum(mask & (child_node.mask_pos - 1));
         ++level;
     }
 

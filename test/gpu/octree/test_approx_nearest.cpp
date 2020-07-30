@@ -70,6 +70,7 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
     cloud->is_dense = false;
     cloud->points.resize (cloud->width * cloud->height);
 
+
     float x_cords[cloud->size()] = {-1, -1, -1, 1, -1, 1, 1, 1, -0.9, -0.4};
     float y_cords[cloud->size()] = {-1, -1, 1, -1, 1, -1, 1, 1, -0.2, -0.6};
     float z_cords[cloud->size()] = {-1, 1, -1, -1, 1, 1, -1, 1, -0.75, -0.75};
@@ -82,7 +83,9 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
     }
 
     std::vector<pcl::PointXYZ> queries;
-    queries.push_back(pcl::PointXYZ(-0.4, -0.2, -0.75));     //should be different across CPU and GPU for smaller clouds
+    //While the GPU implementation has a fixed depth of 10 levels, octree depth in the CPU implementation can vary based on
+    //the leaf size set by the user, which can affect the results. Therefore results would only tally if depths match.
+    queries.push_back(pcl::PointXYZ(-0.4, -0.2, -0.75));     //should be different across CPU and GPU if different traversal methods are used
     queries.push_back(pcl::PointXYZ(-0.6, -0.2, -0.75));     //should be same across CPU and GPU
     queries.push_back(pcl::PointXYZ(1.1, 1.1, 1.1));         //out of range query
 

@@ -88,6 +88,17 @@ namespace pcl
                 cell_z = compactBits(code, 2);        
             }
 
+            __device__ __host__ __forceinline__
+                static uint3 decomposeCode(code_t code)
+            {
+                uint3 cell;
+
+                cell.x = compactBits(code, 0);
+                cell.y = compactBits(code, 1);
+                cell.z = compactBits(code, 2);
+                return cell;
+            }
+
             __host__ __device__ __forceinline__ 
                 static code_t extractLevelCode(code_t code, int level) 
             {
