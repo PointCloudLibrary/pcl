@@ -137,59 +137,13 @@ def test_parm_decl(tmp_path):
     assert parm_decl["name"] == "aFunctionParameter"
 
 
-def test_return_type_composition(tmp_path):
+def test_parsed_info_structure(tmp_path):
     file_contents = ""
     parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
 
     assert type(parsed_info) is dict
     assert type(parsed_info["members"]) is list
     assert len(parsed_info["members"]) == 0
-
-
-def test_translation_unit(tmp_path):
-    file_contents = ""
-    parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
-
-    assert parsed_info["kind"] == "TRANSLATION_UNIT"
-    assert parsed_info["depth"] == 0
-    assert parsed_info["line"] == 0
-    assert parsed_info["column"] == 0
-    assert parsed_info["name"] == str(tmp_path / "file.hpp")
-
-
-def test_namespace(tmp_path):
-    file_contents = "namespace a_namespace {}"
-    parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
-
-    namespace = parsed_info["members"][0]
-
-    assert namespace["kind"] == "NAMESPACE"
-    assert namespace["name"] == "a_namespace"
-
-
-def test_namespace_ref(tmp_path):
-    file_contents = """
-    #include <ostream>
-    std::ostream anOstream;
-    """
-    parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
-
-    var_decl = parsed_info["members"][0]
-    namespace_ref = var_decl["members"][0]
-
-    assert namespace_ref["kind"] == "NAMESPACE_REF"
-    assert namespace_ref["name"] == "std"
-
-
-def test_var_decl(tmp_path):
-    file_contents = "int anInt = 1;"
-    parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
-
-    var_decl = parsed_info["members"][0]
-
-    assert var_decl["kind"] == "VAR_DECL"
-    assert var_decl["element_type"] == "Int"
-    assert var_decl["name"] == "anInt"
 
 
 def test_call_expr(tmp_path):
@@ -206,4 +160,6 @@ def test_call_expr(tmp_path):
 
     assert call_expr["kind"] == "CALL_EXPR"
     assert call_expr["name"] == "aFunction"
+
+    assert var_decl["name"] == "anInt"
 
