@@ -157,7 +157,7 @@ def test_struct_decl(tmp_path):
     assert struct_decl["name"] == "AStruct"
 
 
-def test_cxx_base_specifier(tmp_path):
+def test_public_inheritance(tmp_path):
     file_contents = """
     struct BaseStruct {};
     struct DerivedStruct: public BaseStruct {};
@@ -172,7 +172,7 @@ def test_cxx_base_specifier(tmp_path):
     assert cxx_base_specifier["name"] == "struct BaseStruct"
 
 
-def test_cxx_method(tmp_path):
+def test_member_function(tmp_path):
     file_contents = """
     struct AStruct {
         void aMethod() {}
@@ -190,23 +190,24 @@ def test_cxx_method(tmp_path):
 
 def test_type_ref(tmp_path):
     file_contents = """
-    struct AStruct { 
-        int aClassMember;
-        void aMethod(AStruct& aClassMember) {}
+    struct SomeUsefulType {};
+
+    class AClass {
+        void aMethod(SomeUsefulType aParameter) {};
     };
     """
     parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
 
-    struct_decl = parsed_info["members"][0]
-    cxx_method = struct_decl["members"][1]
-    l_value_ref = cxx_method["members"][0]
-    type_ref = l_value_ref["members"][0]
+    class_decl = parsed_info["members"][1]
+    cxx_method = class_decl["members"][0]
+    parm_decl = cxx_method["members"][0]
+    type_ref = parm_decl["members"][0]
 
     assert type_ref["kind"] == "TYPE_REF"
-    assert type_ref["name"] == "struct AStruct"
+    assert type_ref["name"] == "struct SomeUsefulType"
 
 
-def test_constructor(tmp_path):
+def test_simple_constructor(tmp_path):
     file_contents = """
     struct AStruct {
         AStruct() {}
@@ -225,7 +226,7 @@ def test_constructor(tmp_path):
 def test_parm_decl(tmp_path):
     file_contents = """
     struct AStruct {
-        AStruct(int aFunctionArgument) {}
+        AStruct(int aFunctionParameter) {}
     };
     """
     parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
@@ -236,14 +237,14 @@ def test_parm_decl(tmp_path):
 
     assert parm_decl["kind"] == "PARM_DECL"
     assert parm_decl["element_type"] == "Int"
-    assert parm_decl["name"] == "aFunctionArgument"
+    assert parm_decl["name"] == "aFunctionParameter"
 
 
 def test_unexposed_expr(tmp_path):
     file_contents = """
-    struct AStruct {
+    class SimpleClassWithConstructor {
         int aClassMember;
-        AStruct(int aFunctionArgument) : aClassMember(aFunctionArgument) {}
+        SimpleClassWithConstructor(int aConstructorParameter) : aClassMember(aConstructorParameter) {};
     };
     """
     parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
@@ -253,7 +254,7 @@ def test_unexposed_expr(tmp_path):
     unexposed_expr = constructor["members"][2]
 
     assert unexposed_expr["kind"] == "UNEXPOSED_EXPR"
-    assert unexposed_expr["name"] == "aFunctionArgument"
+    assert unexposed_expr["name"] == "aConstructorParameter"
 
 
 # @TODO: Not sure how to reproduce. Maybe later.
@@ -264,8 +265,8 @@ def test_decl_ref_expr(tmp_path):
     file_contents = """
     struct AStruct {
         int firstMember, secondMember;
-        AStruct(int firstFunctionArgument, int secondFunctionArgument)
-        : firstMember(secondFunctionArgument), secondMember(firstFunctionArgument)
+        AStruct(int firstFunctionParameter, int secondFunctionParameter)
+        : firstMember(secondFunctionParameter), secondMember(firstFunctionParameter)
         {}
     };
     """
@@ -280,16 +281,16 @@ def test_decl_ref_expr(tmp_path):
 
     assert decl_ref_expr_1["kind"] == "DECL_REF_EXPR"
     assert decl_ref_expr_2["kind"] == "DECL_REF_EXPR"
-    assert decl_ref_expr_1["name"] == "secondFunctionArgument"
-    assert decl_ref_expr_2["name"] == "firstFunctionArgument"
+    assert decl_ref_expr_1["name"] == "secondFunctionParameter"
+    assert decl_ref_expr_2["name"] == "firstFunctionParameter"
 
 
 def test_member_ref(tmp_path):
     file_contents = """
     struct AStruct {
         int firstMember, secondMember;
-        AStruct(int firstFunctionArgument, int secondFunctionArgument)
-        : firstMember(secondFunctionArgument), secondMember(firstFunctionArgument)
+        AStruct(int firstFunctionParameter, int secondFunctionParameter)
+        : firstMember(secondFunctionParameter), secondMember(firstFunctionParameter)
         {}
     };
     """
