@@ -223,23 +223,6 @@ def test_simple_constructor(tmp_path):
     assert constructor["name"] == "AStruct"
 
 
-def test_parm_decl(tmp_path):
-    file_contents = """
-    struct AStruct {
-        AStruct(int aFunctionParameter) {}
-    };
-    """
-    parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
-
-    struct_decl = parsed_info["members"][0]
-    constructor = struct_decl["members"][0]
-    parm_decl = constructor["members"][0]
-
-    assert parm_decl["kind"] == "PARM_DECL"
-    assert parm_decl["element_type"] == "Int"
-    assert parm_decl["name"] == "aFunctionParameter"
-
-
 def test_unexposed_expr(tmp_path):
     file_contents = """
     class SimpleClassWithConstructor {
