@@ -135,3 +135,31 @@ def test_parm_decl(tmp_path):
     assert parm_decl["kind"] == "PARM_DECL"
     assert parm_decl["element_type"] == "Int"
     assert parm_decl["name"] == "aFunctionParameter"
+
+
+def test_parsed_info_structure(tmp_path):
+    file_contents = ""
+    parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
+
+    assert type(parsed_info) is dict
+    assert type(parsed_info["members"]) is list
+    assert len(parsed_info["members"]) == 0
+
+
+def test_call_expr(tmp_path):
+    file_contents = """
+    int aFunction() {
+        return 1;
+    }
+    int anInt = aFunction();
+    """
+    parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
+
+    var_decl = parsed_info["members"][1]
+    call_expr = var_decl["members"][0]
+
+    assert call_expr["kind"] == "CALL_EXPR"
+    assert call_expr["name"] == "aFunction"
+
+    assert var_decl["name"] == "anInt"
+
