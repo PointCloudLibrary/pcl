@@ -20,9 +20,9 @@ enable_testing()
 
 if(MSVC)
   # VS needs -C config to run correct
-  add_custom_target(tests "${CMAKE_CTEST_COMMAND}" -C $<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release> -V -T Test VERBATIM)
+  add_custom_target(tests "${CMAKE_CTEST_COMMAND}" -C $<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release> -E gpu_octree -V -T Test VERBATIM)
 else()
-  add_custom_target(tests "${CMAKE_CTEST_COMMAND}" -V -T Test VERBATIM)
+  add_custom_target(tests "${CMAKE_CTEST_COMMAND}" -E gpu_octree -V -T Test VERBATIM)
 endif()
 
 set_target_properties(tests PROPERTIES FOLDER "Tests")
