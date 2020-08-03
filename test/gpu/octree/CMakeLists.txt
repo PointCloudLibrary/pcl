@@ -4,7 +4,7 @@ set(SUBSYS_DEPS common octree gpu_containers gpu_octree gpu_utils)
 
 set(DEFAULT ON)
 set(build TRUE)
-set(REASON "Disabled by default")
+set(REASON "")
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
