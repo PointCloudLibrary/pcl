@@ -18,8 +18,6 @@ add_library(pcl_gtest STATIC ${GTEST_SRC_DIR}/src/gtest-all.cc)
 
 enable_testing()
 
-set(PCL_CTEST_ARGUMENTS)
-
 # VS needs -C config to run correct
 if(MSVC)
   set(PCL_CTEST_ARGUMENTS ${PCL_CTEST_ARGUMENTS} -C $<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>)
