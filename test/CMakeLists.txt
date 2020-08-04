@@ -18,14 +18,19 @@ add_library(pcl_gtest STATIC ${GTEST_SRC_DIR}/src/gtest-all.cc)
 
 enable_testing()
 
+set(PCL_CTEST_COMMAND "${CMAKE_CTEST_COMMAND}")
+
+# VS needs -C config to run correct
 if(MSVC)
-  # VS needs -C config to run correct
-  # tests from gpu module excluded since CI does not have access to GPU hardware
-  add_custom_target(tests "${CMAKE_CTEST_COMMAND}" -C $<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release> $<PCL_DISABLE_GPU_TESTS:-E gpu> -V -T Test VERBATIM)
-else()
-  # tests from gpu module excluded since CI does not have access to GPU hardware
-  add_custom_target(tests "${CMAKE_CTEST_COMMAND}" $<PCL_DISABLE_GPU_TESTS:-E gpu> -V -T Test VERBATIM)
+  set(PCL_CTEST_COMMAND "${PCL_CTEST_COMMAND} -C $<$<CONFIG:Debug>:Debug>$<$<CONFIG:Release>:Release>")
 endif()
+
+# Enables you to disable GPU tests. Used on CI as it has no access to GPU hardware
+if(PCL_DISABLE_GPU_TESTS)
+  set(PCL_CTEST_COMMAND "${PCL_CTEST_COMMAND} -E gpu")
+endif()
+
+add_custom_target(tests "${PCL_CTEST_COMMAND}" -V -T Test VERBATIM)
 
 set_target_properties(tests PROPERTIES FOLDER "Tests")
 
