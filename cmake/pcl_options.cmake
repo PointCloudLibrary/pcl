@@ -80,3 +80,4 @@ endif()
 # Set whether gpu tests should be run
 # (Used to prevent gpu tests from executing in CI where GPU hardware is unavailable)
 option(PCL_DISABLE_GPU_TESTS "Disable running GPU tests. If disabled, tests will still be built." OFF)
+
