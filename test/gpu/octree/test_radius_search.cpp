@@ -225,3 +225,12 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     ASSERT_GT(avg_size3, 5);
 }
 
+/* ---[ */
+int
+main (int argc, char** argv)
+{
+  testing::InitGoogleTest (&argc, argv);
+  return (RUN_ALL_TESTS ());
+}
+/* ]--- */
+
