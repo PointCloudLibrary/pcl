@@ -65,7 +65,8 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
     // Fill in cloud data
-    cloud->width    = 10000;
+    const pcl::index_t point_size = 10000;
+    cloud->width    = point_size;
     cloud->height   = 1;
     cloud->is_dense = false;
     cloud->points.resize (cloud->width * cloud->height);
@@ -88,11 +89,11 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
     the final two point are positioned such that point 'x' is father from query point 'q' than 'y',
     but the voxel containing 'x' is closer to  'q' than the voxel containing 'y'
     */
-    const float x_cords[cloud->size()] = {-1, -1, -1, 1, -1, 1, 1, 1, -0.9, -0.4};
-    const float y_cords[cloud->size()] = {-1, -1, 1, -1, 1, -1, 1, 1, -0.2, -0.6};
-    const float z_cords[cloud->size()] = {-1, 1, -1, -1, 1, 1, -1, 1, -0.75, -0.75};
+    const float x_cords[point_size] = {-1, -1, -1, 1, -1, 1, 1, 1, -0.9, -0.4};
+    const float y_cords[point_size] = {-1, -1, 1, -1, 1, -1, 1, 1, -0.2, -0.6};
+    const float z_cords[point_size] = {-1, 1, -1, -1, 1, 1, -1, 1, -0.75, -0.75};
 
-    for (pcl::index_t i = 0; i < cloud->size (); ++i)
+    for (std::size_t i = 0; i < cloud->size (); ++i)
     {
         (*cloud)[i].x = x_cords[i%10];
         (*cloud)[i].y = y_cords[i%10];
@@ -149,9 +150,9 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
     ASSERT_EQ ((downloaded == result_host_gpu), true);
 
     //find inconsistencies with gpu and cpu cuda impementation
-    int count_gpu_better = 0;
-    int count_pcl_better = 0;
-    int count_different = 0;
+    //int count_gpu_better = 0;
+    //int count_pcl_better = 0;
+    //int count_different = 0;
     for(size_t i = 0; i < queries.size(); ++i)
     {
         ASSERT_EQ ((dists_pcl[i] == dists_gpu[i]), true);
