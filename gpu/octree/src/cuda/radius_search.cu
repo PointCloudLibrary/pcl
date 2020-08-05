@@ -261,12 +261,20 @@ namespace pcl
                     {                                        
                         float3 active_query;
                         float active_radius;
+                        float radius2;
 
                         //broadcast warp_radius
                         if (active_lane == laneId)
                             storage.per_warp_buffer[warpId] = __float_as_int(radius);
                         active_radius = __int_as_float(storage.per_warp_buffer[warpId]);
-                        
+
+                        radius2 = batch.bradcastRadius2((float*)&storage.per_warp_buffer[warpId], (active_lane == laneId), active_radius);                            
+
+                        //broadcast radius2
+                        if (active_lane == laneId)
+                            storage.per_warp_buffer[warpId] = __float_as_int(radius2);
+                        radius2 = __int_as_float(storage.per_warp_buffer[warpId]);
+
                         //broadcast warp_query
                         if (active_lane == laneId)
                             storage.per_warp_buffer[warpId] = __float_as_int(query.x);
@@ -278,11 +286,9 @@ namespace pcl
 
                         if (active_lane == laneId)
                             storage.per_warp_buffer[warpId] = __float_as_int(query.z);
-                        active_query.z = __int_as_float(storage.per_warp_buffer[warpId]);                            
+                        active_query.z = __int_as_float(storage.per_warp_buffer[warpId]);
 
-                        float radius2 = batch.bradcastRadius2((float*)&storage.per_warp_buffer[warpId], (active_lane == laneId), active_radius);                            
-
-                        length = TestWarpKernel(beg, active_query, radius2, length, out, length_left);                    
+                        length = TestWarpKernel(beg, active_query, radius2, length, out, length_left);
                     }
                     else
                     {                            
