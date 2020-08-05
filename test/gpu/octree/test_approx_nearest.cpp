@@ -70,10 +70,27 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
     cloud->is_dense = false;
     cloud->points.resize (cloud->width * cloud->height);
 
-
-    float x_cords[cloud->size()] = {-1, -1, -1, 1, -1, 1, 1, 1, -0.9, -0.4};
-    float y_cords[cloud->size()] = {-1, -1, 1, -1, 1, -1, 1, 1, -0.2, -0.6};
-    float z_cords[cloud->size()] = {-1, 1, -1, -1, 1, 1, -1, 1, -0.75, -0.75};
+    /*
+    //the test points create an octree with bounds (-1, -1, -1) and (1, 1, 1).
+    ------------------------------------
+    |                |                 |
+    |                |                 |
+    |                |                 |
+    |                |                 |
+    |                |                 |
+    |----------------------------------|
+    | x     | q      |                 |
+    |       |        |                 |
+    |-------|--------|                 |
+    |       | y      |                 |
+    |       |        |                 |
+    ------------------------------------
+    the final two point are positioned such that point 'x' is father from query point 'q' than 'y',
+    but the voxel containing 'x' is closer to  'q' than the voxel containing 'y'
+    */
+    const float x_cords[cloud->size()] = {-1, -1, -1, 1, -1, 1, 1, 1, -0.9, -0.4};
+    const float y_cords[cloud->size()] = {-1, -1, 1, -1, 1, -1, 1, 1, -0.2, -0.6};
+    const float z_cords[cloud->size()] = {-1, 1, -1, -1, 1, 1, -1, 1, -0.75, -0.75};
 
     for (pcl::index_t i = 0; i < cloud->size (); ++i)
     {

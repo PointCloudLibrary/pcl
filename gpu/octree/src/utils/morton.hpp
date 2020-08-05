@@ -91,12 +91,7 @@ namespace pcl
             __device__ __host__ __forceinline__
                 static uint3 decomposeCode(code_t code)
             {
-                uint3 cell;
-
-                cell.x = compactBits(code, 0);
-                cell.y = compactBits(code, 1);
-                cell.z = compactBits(code, 2);
-                return cell;
+                return make_uint3 (compactBits(code, 0), compactBits(code, 1), compactBits(code, 2));
             }
 
             __host__ __device__ __forceinline__ 
@@ -128,9 +123,9 @@ namespace pcl
 
             __device__ __host__ __forceinline__ Morton::code_t operator()(const float3& p) const
             {			
-                int cellx = min((int)std::floor(depth_mult * min(1.f, max(0.f, (p.x - minp_.x)/dims_.x))), depth_mult - 1);
-                int celly = min((int)std::floor(depth_mult * min(1.f, max(0.f, (p.y - minp_.y)/dims_.y))), depth_mult - 1);
-                int cellz = min((int)std::floor(depth_mult * min(1.f, max(0.f, (p.z - minp_.z)/dims_.z))), depth_mult - 1);
+                const int cellx = min((int)std::floor(depth_mult * min(1.f, max(0.f, (p.x - minp_.x)/dims_.x))), depth_mult - 1);
+                const int celly = min((int)std::floor(depth_mult * min(1.f, max(0.f, (p.y - minp_.y)/dims_.y))), depth_mult - 1);
+                const int cellz = min((int)std::floor(depth_mult * min(1.f, max(0.f, (p.z - minp_.z)/dims_.z))), depth_mult - 1);
 
                 return Morton::createCode(cellx, celly, cellz);
             }	
