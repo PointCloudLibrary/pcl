@@ -106,18 +106,9 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
     queries.push_back(pcl::PointXYZ(-0.6, -0.2, -0.75));     //should be same across CPU and GPU
     queries.push_back(pcl::PointXYZ(1.1, 1.1, 1.1));         //out of range query
 
-<<<<<<< HEAD:test/gpu/octree/test_approx_nearest.cpp
-    //prepare host cloud
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host(new pcl::PointCloud<pcl::PointXYZ>);	
-    cloud_host->width = data.points.size();
-    cloud_host->height = 1;
-    cloud_host->points.resize (cloud_host->width * cloud_host->height);    
-    std::transform(data.points.begin(), data.points.end(), cloud_host->points.begin(), DataGenerator::ConvPoint<pcl::PointXYZ>());
-=======
     //prepare device cloud
     pcl::gpu::Octree::PointCloud cloud_device;
     cloud_device.upload(cloud->points);
->>>>>>> add new traversal for  gpuApproxNearestSearch & modify tests:gpu/octree/test/test_approx_nearest.cpp
 
     //gpu build
     pcl::gpu::Octree octree_device;
