@@ -210,7 +210,7 @@ namespace pcl { namespace device { namespace knn_search
                 float active_query_index = *warp_buffer;                            
 
                 float dist;
-                int offset = NearestWarpKernel<KernelPolicy::CTA_SIZE>(beg, batch.points_step, end - beg, active_query, dist);
+                const int offset = NearestWarpKernel<KernelPolicy::CTA_SIZE>(beg, batch.points_step, end - beg, active_query, dist);
                 
                 if (active_lane == laneId)
                     if (min_distance > dist)
@@ -222,7 +222,7 @@ namespace pcl { namespace device { namespace knn_search
         }
 
         template<int CTA_SIZE>
-		__device__ __forceinline__ int NearestWarpKernel(int beg, int points_step, int length, const float3& active_query, float& dist)
+		__device__ __forceinline__ int NearestWarpKernel(const int beg, const int points_step, const int length, const float3& active_query, float& dist)
 		{                        						
 			int index = 0;
 			float dist2 = std::numeric_limits<float>::max();
@@ -230,11 +230,11 @@ namespace pcl { namespace device { namespace knn_search
 			//serial step
             for (int idx = Warp::laneId(); idx < length; idx += Warp::STRIDE)
 			{
-				float dx = batch.points[beg + idx                  ] - active_query.x;
-				float dy = batch.points[beg + idx + points_step    ] - active_query.y;
-				float dz = batch.points[beg + idx + points_step * 2] - active_query.z;
+				const float dx = batch.points[beg + idx                  ] - active_query.x;
+				const float dy = batch.points[beg + idx + points_step    ] - active_query.y;
+				const float dz = batch.points[beg + idx + points_step * 2] - active_query.z;
 
-				float d2 = dx * dx + dy * dy + dz * dz;
+				const float d2 = dx * dx + dy * dy + dz * dz;
 
 				if (dist2 > d2)
 				{
@@ -244,10 +244,10 @@ namespace pcl { namespace device { namespace knn_search
 			}
 
 			//find minimum distance among warp threads
-			unsigned int FULL_MASK = 0xFFFFFFFF; //define as const static
-			//Tie bit offset to warp size
-			//static assert that warp size doesn't exceed num of bits of (unsigned int)
-			for (unsigned int bit_offset = 16; bit_offset > 0; bit_offset /=2)
+            constexpr unsigned FULL_MASK = 0xFFFFFFFF;
+            static_assert(sizeof(KernelPolicy::WARP_SIZE) <= sizeof(unsigned int));
+
+			for (unsigned int bit_offset = KernelPolicy::WARP_SIZE/2; bit_offset > 0; bit_offset /=2)
 			{
 				float next = __shfl_down_sync(FULL_MASK, dist2, bit_offset);
 				int next_index = __shfl_down_sync(FULL_MASK, index, bit_offset);
