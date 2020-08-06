@@ -172,10 +172,36 @@ set(kissfft_srcs
 )
 
 set(executor_incs
-  include/pcl/experimental/executor/type_trait.h
-  include/pcl/experimental/executor/property.h
   include/pcl/experimental/executor/executor.h
+  include/pcl/experimental/executor/property.h
+  include/pcl/experimental/executor/type_trait.h
 )
+
+set(executor_default_incs_impl
+  include/pcl/experimental/executor/default/cuda_executor.hpp
+  include/pcl/experimental/executor/default/omp_executor.hpp
+  include/pcl/experimental/executor/default/inline_executor.hpp
+  include/pcl/experimental/executor/default/sse_executor.hpp
+)
+
+set(executor_property_incs_impl
+  include/pcl/experimental/executor/property/base_property.hpp
+  include/pcl/experimental/executor/property/allocator.hpp
+  include/pcl/experimental/executor/property/blocking.hpp
+)
+
+set(executor_trait_incs_impl
+  include/pcl/experimental/executor/trait/common_traits.hpp
+  include/pcl/experimental/executor/trait/can_prefer.hpp
+  include/pcl/experimental/executor/trait/can_query.hpp
+  include/pcl/experimental/executor/trait/can_require.hpp
+  include/pcl/experimental/executor/trait/is_executor.hpp
+  include/pcl/experimental/executor/trait/is_executor_available.hpp
+  include/pcl/experimental/executor/trait/is_instance_of_base.hpp
+  include/pcl/experimental/executor/trait/index.hpp
+  include/pcl/experimental/executor/trait/shape.hpp
+)
+
 
 set(executor_srcs
   include/pcl/experimental/executor/blocking.cpp
@@ -203,4 +229,7 @@ PCL_ADD_INCLUDES("${SUBSYS_NAME}" impl ${impl_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" console ${tools_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" range_image ${range_image_incs})
 PCL_ADD_INCLUDES("${SUBSYS_NAME}" range_image/impl ${range_image_incs_impl})
-PCL_ADD_INCLUDES("${SUBSYS_NAME}" execution ${executor_incs})
+PCL_ADD_INCLUDES("${SUBSYS_NAME}" experimental/executor ${executor_incs})
+PCL_ADD_INCLUDES("${SUBSYS_NAME}" experimental/executor/default ${executor_default_incs_impl})
+PCL_ADD_INCLUDES("${SUBSYS_NAME}" experimental/executor/property ${executor_property_incs_impl})
+PCL_ADD_INCLUDES("${SUBSYS_NAME}" experimental/executor/trait ${executor_trait_incs_impl})

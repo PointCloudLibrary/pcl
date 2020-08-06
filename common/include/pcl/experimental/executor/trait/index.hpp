@@ -18,9 +18,8 @@ struct executor_index {
 
 template <typename Executor>
 struct executor_index<Executor,
-                      executor::void_t<typename decltype(
-                          std::declval<const Executor>())::shape_type>> {
-  using type = typename decltype(std::declval<const Executor>())::index_type;
+                      executor::void_t<typename Executor::index_type>> {
+  using type = typename Executor::index_type;
 };
 
 template <class Executor>

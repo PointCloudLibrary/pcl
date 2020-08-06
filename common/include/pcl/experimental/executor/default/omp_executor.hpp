@@ -36,6 +36,20 @@ struct omp_executor {
     int idx;
   };
 
+  std::size_t max_threads;
+
+  omp_executor() {
+#ifdef _OPENMP
+    this->max_threads = omp_get_max_threads();
+#endif
+  }
+
+  omp_executor(std::size_t max_threads): max_threads(max_threads) {
+#ifdef _OPENMP
+    if (!this->max_threads) this->max_threads = omp_get_max_threads();
+#endif
+  }
+
   template <typename Executor, instance_of_base<Executor, omp_executor> = 0>
   friend bool operator==(const omp_executor& lhs,
                          const Executor& rhs) noexcept {
@@ -56,9 +70,12 @@ struct omp_executor {
   template <typename F>
   void bulk_execute(F&& f, const shape_type n) const {
 #ifdef _OPENMP
-    index_type index{n, omp_get_thread_num()};
-  #pragma omp parallel num_threads(n)
-    f(index);
+    const auto num_threads = n ? std::min(max_threads, n): max_threads;
+  #pragma omp parallel num_threads(num_threads)
+    {
+      index_type index{num_threads, omp_get_thread_num()};
+      f(index);
+    }
 #endif
   }
 
