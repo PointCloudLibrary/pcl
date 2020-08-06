@@ -9,55 +9,31 @@
 
 #pragma once
 
-#ifdef _OPENMP
-  #include <omp.h>
-#endif
-
+#include <pcl/common/utils.h>
 #include <pcl/experimental/executor/property.h>
 #include <pcl/experimental/executor/type_trait.h>
 
 namespace executor {
 
 template <typename Blocking, typename ProtoAllocator>
-struct omp_executor;
+struct inline_executor;
 
-#ifdef _OPENMP
 template <>
-struct is_executor_available<omp_executor> : std::true_type {};
-#endif
+struct is_executor_available<inline_executor> : std::true_type {};
 
 template <typename Blocking = blocking_t::always_t,
           typename ProtoAllocator = std::allocator<void>>
-struct omp_executor {
+struct inline_executor {
   using shape_type = std::size_t;
 
-  using index_type = struct {
-    std::size_t max;
-    int idx;
-  };
-
-  std::size_t max_threads;
-
-  omp_executor() {
-#ifdef _OPENMP
-    this->max_threads = omp_get_max_threads();
-#endif
-  }
-
-  omp_executor(std::size_t max_threads): max_threads(max_threads) {
-#ifdef _OPENMP
-    if (!this->max_threads) this->max_threads = omp_get_max_threads();
-#endif
-  }
-
-  template <typename Executor, instance_of_base<Executor, omp_executor> = 0>
-  friend bool operator==(const omp_executor& lhs,
+  template <typename Executor, instance_of_base<Executor, inline_executor> = 0>
+  friend bool operator==(const inline_executor& lhs,
                          const Executor& rhs) noexcept {
-    return std::is_same<omp_executor, Executor>::value;
+    return std::is_same<inline_executor, Executor>::value;
   }
 
-  template <typename Executor, instance_of_base<Executor, omp_executor> = 0>
-  friend bool operator!=(const omp_executor& lhs,
+  template <typename Executor, instance_of_base<Executor, inline_executor> = 0>
+  friend bool operator!=(const inline_executor& lhs,
                          const Executor& rhs) noexcept {
     return !operator==(lhs, rhs);
   }
@@ -67,26 +43,20 @@ struct omp_executor {
     f();
   }
 
-  template <typename F>
-  void bulk_execute(F&& f, const shape_type n) const {
-#ifdef _OPENMP
-    const auto num_threads = n ? std::min(max_threads, n): max_threads;
-  #pragma omp parallel num_threads(num_threads)
-    {
-      index_type index{num_threads, omp_get_thread_num()};
-      f(index);
-    }
-#endif
+  template <typename F, typename... Args>
+  void bulk_execute(F&& f, const std::size_t n) const {
+    pcl::utils::ignore(n);
+    f(0);
   }
 
-  static constexpr auto query(const blocking_t&) noexcept { return Blocking{}; }
+  static constexpr auto query(const blocking_t&) noexcept { return Blocking(); }
 
-  omp_executor<blocking_t::always_t, ProtoAllocator> require(
+  inline_executor<blocking_t::always_t, ProtoAllocator> require(
       const blocking_t::always_t&) const {
     return {};
   }
 
-  static constexpr auto name() { return "omp"; }
+  static constexpr auto name() { return "inline"; }
 };
 
 }  // namespace executor
