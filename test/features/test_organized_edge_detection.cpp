@@ -15,11 +15,11 @@
 namespace {
 class OrganizedPlaneDetectionTestFixture : public ::testing::Test {
 protected:
-  static constexpr int INNER_SQUARE_EDGE_LENGTH = 50;
-  static constexpr int OUTER_SQUARE_EDGE_LENGTH = INNER_SQUARE_EDGE_LENGTH * 2;
-  static constexpr float SYNTHETIC_CLOUD_BASE_DEPTH = 2.0;
-  static constexpr float SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY = .02f;
-  static constexpr float SYNTHETIC_CLOUD_RESOLUTION = 0.01f;
+  const int INNER_SQUARE_EDGE_LENGTH = 50;
+  const int OUTER_SQUARE_EDGE_LENGTH = INNER_SQUARE_EDGE_LENGTH * 2;
+  const float SYNTHETIC_CLOUD_BASE_DEPTH = 2.0;
+  const float SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY = .02f;
+  const float SYNTHETIC_CLOUD_RESOLUTION = 0.01f;
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_;
   std::set<pcl::index_t> outer_perimeter_;
@@ -44,12 +44,12 @@ private:
     // arbitrary and useful for visualizing the cloud.  The discontinuity of the
     // generated cloud must be greater than the threshold set when running the
     // organized edge detection algorithm.
-    constexpr auto outer_square_ctr = OUTER_SQUARE_EDGE_LENGTH / 2;
-    constexpr auto inner_square_ctr = INNER_SQUARE_EDGE_LENGTH / 2;
-    constexpr auto left_col = outer_square_ctr - inner_square_ctr;
-    constexpr auto right_col = outer_square_ctr + inner_square_ctr;
-    constexpr auto top_row = outer_square_ctr - inner_square_ctr;
-    constexpr auto bottom_row = outer_square_ctr + inner_square_ctr;
+    const auto outer_square_ctr = OUTER_SQUARE_EDGE_LENGTH / 2;
+    const auto inner_square_ctr = INNER_SQUARE_EDGE_LENGTH / 2;
+    const auto left_col = outer_square_ctr - inner_square_ctr;
+    const auto right_col = outer_square_ctr + inner_square_ctr;
+    const auto top_row = outer_square_ctr - inner_square_ctr;
+    const auto bottom_row = outer_square_ctr + inner_square_ctr;
 
     for (auto row = 0; row < OUTER_SQUARE_EDGE_LENGTH; ++row) {
       for (auto col = 0; col < OUTER_SQUARE_EDGE_LENGTH; ++col) {
@@ -115,7 +115,7 @@ TEST_F(OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
   // multiplied by the actual depth value of the point. Therefore:
   // abs(SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY) must be greater than
   // DEPTH_DISCONTINUITY_THRESHOLD * abs(SYNTHETIC_CLOUD_BASE_DEPTH)
-  constexpr auto DEPTH_DISCONTINUITY_THRESHOLD =
+  const auto DEPTH_DISCONTINUITY_THRESHOLD =
       SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY / (SYNTHETIC_CLOUD_BASE_DEPTH * 1.1f);
 
   auto oed = pcl::OrganizedEdgeBase<pcl::PointXYZ, pcl::Label>();
