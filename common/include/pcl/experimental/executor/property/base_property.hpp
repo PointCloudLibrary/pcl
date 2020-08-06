@@ -11,8 +11,6 @@
 
 #include <pcl/experimental/executor/trait/is_executor.hpp>
 #include <functional>
-#include <iostream>
-#include <string>
 
 namespace executor {
 
@@ -31,7 +29,7 @@ struct basic_executor_property {
   // Part of Proposal P0443R13: 2.2.11 & 2.2.12
   template <class Executor>
   static constexpr auto static_query() {
-    return executor::remove_cv_ref_t<Executor>::query(Derived());
+    return std::remove_reference_t<Executor>::query(Derived{});
   }
 
   template <typename T>
@@ -39,11 +37,11 @@ struct basic_executor_property {
 
   // static constexpr Type static_query_v = static_query<Executor>() doesn't
   // work due to Clang complaining about `invalid operands to binary expression`
-  template <class Executor,
-            class Type = decltype(executor::remove_cv_ref_t<Executor>::query(
-                *static_cast<Derived*>(0)))>
+  template <typename Executor,
+            typename Type = decltype(std::remove_reference_t<Executor>::query(
+                std::declval<Derived>()))>
   static constexpr Type static_query_v =
-      executor::remove_cv_ref_t<Executor>::query(Derived());
+      std::remove_reference_t<Executor>::query(Derived{});
 };
 
 }  // namespace executor

@@ -20,7 +20,8 @@ template <typename Executor, typename Property,
               Property::template is_applicable_property_v<Executor> &&
                   Property::is_preferable && can_require_v<Executor, Property>,
               int> = 0>
-constexpr auto prefer(Executor&& ex, const Property& p) noexcept {
+constexpr decltype(auto) prefer(const Executor& ex,
+                                const Property& p) noexcept {
   return ex.require(p);
 }
 
@@ -29,8 +30,9 @@ template <typename Executor, typename Property,
               Property::template is_applicable_property_v<Executor> &&
                   Property::is_preferable && !can_require_v<Executor, Property>,
               int> = 0>
-constexpr auto prefer(Executor&& ex, const Property& p) noexcept {
-  return std::forward<Executor>(ex);
+constexpr decltype(auto) prefer(const Executor& ex,
+                                const Property& p) noexcept {
+  return ex;
 }
 
 // Part of Proposal P1393R0
@@ -39,9 +41,8 @@ struct can_prefer : std::false_type {};
 
 template <typename Executor, typename Property>
 struct can_prefer<Executor, Property,
-                  void_t<decltype(prefer(
-                      std::declval<executor::remove_cv_ref_t<Executor>>(),
-                      std::declval<executor::remove_cv_ref_t<Property>>()))>>
+                  void_t<decltype(prefer(std::declval<Executor>(),
+                                         std::declval<Property>()))>>
     : std::true_type {};
 
 template <typename Executor, typename Property>

@@ -11,4 +11,3 @@
 
 #include <pcl/experimental/executor/property/allocator.hpp>
 #include <pcl/experimental/executor/property/blocking.hpp>
-#include <pcl/experimental/executor/property/shape.hpp>

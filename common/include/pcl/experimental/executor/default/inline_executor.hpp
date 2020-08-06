@@ -9,7 +9,8 @@
 
 #pragma once
 
-#include <pcl/experimental/executor/default/base_executor.hpp>
+#include <pcl/experimental/executor/property.h>
+#include <pcl/experimental/executor/type_trait.h>
 
 namespace executor {
 
@@ -24,13 +25,13 @@ template <typename Blocking = blocking_t::always_t,
 struct inline_executor {
   using shape_type = std::size_t;
 
-  template <typename Executor, instance_of_base<inline_executor, Executor> = 0>
+  template <typename Executor, instance_of_base<Executor, inline_executor> = 0>
   friend bool operator==(const inline_executor& lhs,
                          const Executor& rhs) noexcept {
     return std::is_same<inline_executor, Executor>::value;
   }
 
-  template <typename Executor, instance_of_base<inline_executor, Executor> = 0>
+  template <typename Executor, instance_of_base<Executor, inline_executor> = 0>
   friend bool operator!=(const inline_executor& lhs,
                          const Executor& rhs) noexcept {
     return !operator==(lhs, rhs);
@@ -42,13 +43,11 @@ struct inline_executor {
   }
 
   template <typename F, typename... Args>
-  void bulk_execute(F&& f, Args&&... args, std::size_t n) const {
-    for (std::size_t i = 0; i < n; ++i) {
-      f(std::forward<Args>(args)..., i);
-    }
+  void bulk_execute(F&& f, const std::size_t n) const {
+    f(0);
   }
 
-  static constexpr auto query(blocking_t) noexcept { return Blocking{}; }
+  static constexpr auto query(const blocking_t&) noexcept { return Blocking(); }
 
   inline_executor<blocking_t::always_t, ProtoAllocator> require(
       const blocking_t::always_t&) const {

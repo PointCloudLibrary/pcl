@@ -14,18 +14,21 @@
 
 namespace executor {
 
-template <template <typename...> class Type, typename Executor>
-struct is_instance_of_base : std::false_type {};
+template <typename Executor, template <typename...> class Type>
+struct is_instance_of_base_impl : std::false_type {};
 
 template <template <typename...> class Type, typename... Args>
-struct is_instance_of_base<Type, Type<Args...>> : std::true_type {};
+struct is_instance_of_base_impl<Type<Args...>, Type> : std::true_type {};
 
-template <template <typename...> class Type, typename Executor>
+template <typename Executor, template <typename...> class... Type>
+using is_instance_of_base = executor::disjunction<is_instance_of_base_impl<Executor, Type>...>;
+
+template <typename Executor, template <typename...> class... Type>
 constexpr bool is_instance_of_base_v =
-    is_instance_of_base<Type, Executor>::value;
+    is_instance_of_base<Executor, Type...>::value;
 
-template <template <typename...> class Type, typename Executor>
+template <typename Executor, template <typename...> class... Type>
 using instance_of_base =
-    std::enable_if_t<is_instance_of_base_v<Type, Executor>, int>;
+    std::enable_if_t<is_instance_of_base_v<Executor, Type...>, int>;
 
 }  // namespace executor

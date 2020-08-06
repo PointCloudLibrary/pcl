@@ -13,7 +13,8 @@
   #include <omp.h>
 #endif
 
-#include <pcl/experimental/executor/default/base_executor.hpp>
+#include <pcl/experimental/executor/property.h>
+#include <pcl/experimental/executor/type_trait.h>
 
 namespace executor {
 
@@ -30,13 +31,18 @@ template <typename Blocking = blocking_t::always_t,
 struct omp_executor {
   using shape_type = std::size_t;
 
-  template <typename Executor, instance_of_base<omp_executor, Executor> = 0>
+  using index_type = struct {
+    std::size_t max;
+    int idx;
+  };
+
+  template <typename Executor, instance_of_base<Executor, omp_executor> = 0>
   friend bool operator==(const omp_executor& lhs,
                          const Executor& rhs) noexcept {
     return std::is_same<omp_executor, Executor>::value;
   }
 
-  template <typename Executor, instance_of_base<omp_executor, Executor> = 0>
+  template <typename Executor, instance_of_base<Executor, omp_executor> = 0>
   friend bool operator!=(const omp_executor& lhs,
                          const Executor& rhs) noexcept {
     return !operator==(lhs, rhs);
@@ -44,18 +50,19 @@ struct omp_executor {
 
   template <typename F>
   void execute(F&& f) const {
-    std::forward<F>(f)();
+    f();
   }
 
   template <typename F>
-  void bulk_execute(F&& f, shape_type n) const {
+  void bulk_execute(F&& f, const shape_type n) const {
 #ifdef _OPENMP
-  #pragma omp parallel for num_threads(n)
-    for (int i = 0; i < n; ++i) std::forward<F>(f)(omp_get_thread_num());
+    index_type index{n, omp_get_thread_num()};
+  #pragma omp parallel num_threads(n)
+    f(index);
 #endif
   }
 
-  static constexpr auto query(blocking_t) noexcept { return Blocking{}; }
+  static constexpr auto query(const blocking_t&) noexcept { return Blocking{}; }
 
   omp_executor<blocking_t::always_t, ProtoAllocator> require(
       const blocking_t::always_t&) const {

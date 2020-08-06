@@ -13,9 +13,8 @@
 #include <pcl/experimental/executor/default/inline_executor.hpp>
 #include <pcl/experimental/executor/default/omp_executor.hpp>
 #include <pcl/experimental/executor/default/sse_executor.hpp>
-#include <pcl/experimental/executor/trait/can_prefer.hpp>
-#include <pcl/experimental/executor/trait/can_query.hpp>
-#include <pcl/experimental/executor/trait/can_require.hpp>
+#include <pcl/experimental/executor/property.h>
+#include <pcl/experimental/executor/type_trait.h>
 
 namespace executor {
 using best_fit = executor::inline_executor<>;

@@ -9,17 +9,17 @@
 
 #pragma once
 
-#include <pcl/experimental/executor/property/base_property.hpp>
-
 namespace executor {
 
-// Part of Proposal P0443R13: 2.3.1, Needs to be customized to add support for
-// CUDA executors
-template <class Executor>
-struct executor_shape
-    : basic_executor_property<executor_shape<Executor>, true, true> {
-  template <unsigned _s0 = 0, unsigned... _sizes>
+template <typename Executor, typename = void>
+struct executor_shape {
   using type = std::size_t;
+};  // namespace executor
+
+template <typename Executor>
+struct executor_shape<Executor,
+                      executor::void_t<typename Executor::shape_type>> {
+  using type = typename Executor::shape_type;
 };
 
 template <class Executor>
