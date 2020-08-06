@@ -107,7 +107,8 @@
   (pcl::SHOT1344)               \
   (pcl::PointUV)                \
   (pcl::ReferenceFrame)         \
-  (pcl::PointDEM)
+  (pcl::PointDEM)               \
+  (pcl::SCurVSignature210)
 
 // Define all point types that include RGB data
 #define PCL_RGB_POINT_TYPES     \
@@ -168,7 +169,8 @@
   (pcl::GRSDSignature21)        \
   (pcl::ESFSignature640)        \
   (pcl::BRISKSignature512)      \
-  (pcl::Narf36)
+  (pcl::Narf36)                 \
+  (pcl::SCurVSignature210)
 
 namespace pcl
 {
@@ -1835,6 +1837,18 @@ namespace pcl
     }
     return (os);
   }
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const SCurVSignature210& p);
+  /** \brief A point structure representing the Shape Curvature Values (SCurV).
+    * \ingroup common
+    */
+  struct SCurVSignature210
+  {
+    float histogram[210];
+    static int descriptorSize () { return 210; }
+
+    friend std::ostream& operator << (std::ostream& os, const SCurVSignature210& p);
+  };
 } // namespace pcl
 
 // Register point structs and wrappers
@@ -2180,6 +2194,10 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::_PointDEM,
     (float, height_variance, height_variance)
 )
 POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointDEM, pcl::_PointDEM)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::SCurVSignature210,
+    (float[210], histogram, scurv)
+)
 
 namespace pcl
 {

@@ -343,6 +343,11 @@ namespace pcl
     * \ingroup common
     */
   struct PointDEM;
+
+  /** \brief Members: float scurv[210]
+    * \ingroup common
+    */
+  struct SCurVSignature210;
 } // namespace pcl
 /** @} */
 

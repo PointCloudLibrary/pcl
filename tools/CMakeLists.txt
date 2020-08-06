@@ -120,6 +120,9 @@ target_link_libraries(pcl_pcd_change_viewpoint pcl_common pcl_io)
 PCL_ADD_EXECUTABLE(pcl_concatenate_points_pcd COMPONENT ${SUBSYS_NAME} SOURCES concatenate_points_pcd.cpp)
 target_link_libraries(pcl_concatenate_points_pcd pcl_common pcl_io)
 
+PCL_ADD_EXECUTABLE (pcl_scurv_estimation COMPONENT ${SUBSYS_NAME} SOURCES scurv_estimation.cpp)
+target_link_libraries(pcl_scurv_estimation pcl_common pcl_io pcl_features pcl_kdtree)
+
 PCL_ADD_EXECUTABLE(pcl_poisson_reconstruction COMPONENT ${SUBSYS_NAME} SOURCES poisson_reconstruction.cpp)
 target_link_libraries(pcl_poisson_reconstruction pcl_common pcl_io pcl_surface)
 
