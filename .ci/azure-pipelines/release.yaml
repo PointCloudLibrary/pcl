@@ -159,10 +159,10 @@ stages:
     - checkout: none
     - script: |
         cat > $(CHANGELOG) <<EOF
-        <Insert Summary Here>
+        ## Insert Summary Here
 
-        For an exhustive list of newly added features, deprecations and other changes
-        in PCL $(VERSION), please see [CHANGES.md](https://github.com/PointCloudLibrary/pcl/blob/master/CHANGES.md). <Remember to edit the URL>
+        For an exhaustive list of newly added features, deprecations and other changes
+        in PCL $(VERSION), please see [CHANGES.md](https://github.com/PointCloudLibrary/pcl/blob/master/CHANGES.md). **Remember to edit the URL**
         EOF
       displayName: 'Generate Changelog'
     - task: PublishBuildArtifacts@1
