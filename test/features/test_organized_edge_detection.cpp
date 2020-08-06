@@ -15,15 +15,15 @@
 namespace {
 class OrganizedPlaneDetectionTestFixture : public ::testing::Test {
 protected:
-  constexpr int INNER_SQUARE_EDGE_LENGTH = 50;
-  constexpr int OUTER_SQUARE_EDGE_LENGTH = INNER_SQUARE_EDGE_LENGTH * 2;
-  constexpr float SYNTHETIC_CLOUD_BASE_DEPTH = 2.0;
-  constexpr float SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY = .02f;
-  constexpr float SYNTHETIC_CLOUD_RESOLUTION = 0.01f;
+  static constexpr int INNER_SQUARE_EDGE_LENGTH = 50;
+  static constexpr int OUTER_SQUARE_EDGE_LENGTH = INNER_SQUARE_EDGE_LENGTH * 2;
+  static constexpr float SYNTHETIC_CLOUD_BASE_DEPTH = 2.0;
+  static constexpr float SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY = .02f;
+  static constexpr float SYNTHETIC_CLOUD_RESOLUTION = 0.01f;
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_;
-  std::set<index_t> outer_perimeter_;
-  std::set<index_t> inner_perimeter_;
+  std::set<pcl::index_t> outer_perimeter_;
+  std::set<pcl::index_t> inner_perimeter_;
 
   void
   SetUp() override
@@ -128,12 +128,12 @@ TEST_F(OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
   oed.setMaxSearchNeighbors(MAX_SEARCH_NEIGHBORS);
   oed.compute(labels, label_indices);
 
-  const auto occluding_indices =
-      std::set<index_t>(label_indices[1].indices.begin(), label_indices[1].indices.end());
+  const auto occluding_indices = std::set<pcl::index_t>(
+      label_indices[1].indices.begin(), label_indices[1].indices.end());
   EXPECT_EQ(occluding_indices, outer_perimeter_);
 
-  const auto occluded_indices =
-      std::set<index_t>(label_indices[2].indices.begin(), label_indices[2].indices.end());
+  const auto occluded_indices = std::set<pcl::index_t>(label_indices[2].indices.begin(),
+                                                       label_indices[2].indices.end());
   EXPECT_EQ(occluded_indices, inner_perimeter_);
 }
 
