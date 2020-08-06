@@ -94,7 +94,7 @@ namespace pcl
       compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const;
 
       /** \brief Set the tolerance in meters for the relative difference in depth values between neighboring points.
-        * e.g. If a point has a depth (z) value of 2.0 meters, a neighboring point is discontinuous if its depth differs by > 2.0 * th_depth_discon_. */
+        * e.g. If a point has a depth (z) value of 2.0 meters, a neighboring point is discontinuous if its depth differs by > 2.0 * th. */
       inline void
       setDepthDisconThreshold (const float th)
       {
@@ -102,7 +102,7 @@ namespace pcl
       }
 
       /** \brief Get the tolerance in meters for the relative difference in depth values between neighboring points.
-        * e.g. If a point has a depth (z) value of 2.0 meters, a neighboring point is discontinuous if its depth differs by > 2.0 * th_depth_discon_. */
+        * e.g. If a point has a depth (z) value of 2.0 meters, a neighboring point is discontinuous if its depth differs by > 2.0 * th. */
       inline float
       getDepthDisconThreshold () const
       {
@@ -169,7 +169,7 @@ namespace pcl
 
       /** \brief The tolerance in meters for the relative difference in depth values between neighboring points
         * (The default value is set for .02 meters and is adapted with respect to depth value linearly.
-        * e.g. If a point has a depth (z) value of 2.0 meters, a neighboring point is discontinuous if its depth differs by > 2.0 * th_depth_discon_. */
+        * e.g. If a point has a depth (z) value of 2.0 meters, a neighboring point is discontinuous if its depth differs by > 2.0 * th. */
       float th_depth_discon_;
 
       /** \brief The max search distance for deciding occluding and occluded edges */
