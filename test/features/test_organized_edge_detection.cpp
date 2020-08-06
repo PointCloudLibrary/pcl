@@ -22,8 +22,8 @@ protected:
   const float SYNTHETIC_CLOUD_RESOLUTION = 0.01f;
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_;
-  std::set<int> outer_perimeter_;
-  std::set<int> inner_perimeter_;
+  std::set<index_t> outer_perimeter_;
+  std::set<index_t> inner_perimeter_;
 
   void
   SetUp() override
@@ -37,8 +37,6 @@ private:
   {
     auto organized_test_cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>>(
         OUTER_SQUARE_EDGE_LENGTH, OUTER_SQUARE_EDGE_LENGTH);
-
-    auto occluded = std::set<int>{};
 
     // Draw a smaller square in front of a larger square both centered on the
     // view axis to generate synthetic occluding and occluded edges based on depth
@@ -131,11 +129,11 @@ TEST_F(OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
   oed.compute(labels, label_indices);
 
   auto occluding_indices =
-      std::set<int>(label_indices[1].indices.begin(), label_indices[1].indices.end());
+      std::set<index_t>(label_indices[1].indices.begin(), label_indices[1].indices.end());
   EXPECT_EQ(occluding_indices, outer_perimeter_);
 
   auto occluded_indices =
-      std::set<int>(label_indices[2].indices.begin(), label_indices[2].indices.end());
+      std::set<index_t>(label_indices[2].indices.begin(), label_indices[2].indices.end());
   EXPECT_EQ(occluded_indices, inner_perimeter_);
 }
 
