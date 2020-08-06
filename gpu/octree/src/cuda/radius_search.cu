@@ -258,35 +258,16 @@ namespace pcl
                     int test = __any_sync(0xFFFFFFFF, active_lane == laneId && (leaf & KernelPolicy::CHECK_FLAG));
 
                     if (test)
-                    {                                        
-                        float3 active_query;
-                        float active_radius;
-                        float radius2;
-
+                    {
                         //broadcast warp_radius
-                        if (active_lane == laneId)
-                            storage.per_warp_buffer[warpId] = __float_as_int(radius);
-                        active_radius = __int_as_float(storage.per_warp_buffer[warpId]);
-
-                        radius2 = batch.bradcastRadius2((float*)&storage.per_warp_buffer[warpId], (active_lane == laneId), active_radius);                            
-
-                        //broadcast radius2
-                        if (active_lane == laneId)
-                            storage.per_warp_buffer[warpId] = __float_as_int(radius2);
-                        radius2 = __int_as_float(storage.per_warp_buffer[warpId]);
+                        const float radius2 = __shfl_sync(0xFFFFFFFF, radius * radius, active_lane);
 
                         //broadcast warp_query
-                        if (active_lane == laneId)
-                            storage.per_warp_buffer[warpId] = __float_as_int(query.x);
-                        active_query.x = __int_as_float(storage.per_warp_buffer[warpId]);
-
-                        if (active_lane == laneId)
-                            storage.per_warp_buffer[warpId] = __float_as_int(query.y);
-                        active_query.y = __int_as_float(storage.per_warp_buffer[warpId]);
-
-                        if (active_lane == laneId)
-                            storage.per_warp_buffer[warpId] = __float_as_int(query.z);
-                        active_query.z = __int_as_float(storage.per_warp_buffer[warpId]);
+                        const float3 active_query = make_float3(
+                            __shfl_sync(0xFFFFFFFF, query.x, active_lane),
+                            __shfl_sync(0xFFFFFFFF, query.y, active_lane),
+                            __shfl_sync(0xFFFFFFFF, query.z, active_lane)
+                        );
 
                         length = TestWarpKernel(beg, active_query, radius2, length, out, length_left);
                     }
