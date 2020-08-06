@@ -13,6 +13,7 @@
 #include <pcl/type_traits.h> // for is_invocable
 
 namespace pcl {
+namespace experimental {
 template <typename PointT, typename Function>
 constexpr static bool is_functor_for_filter_v =
     pcl::is_invocable_r_v<bool,
@@ -95,4 +96,5 @@ public:
     }
   }
 };
+} // namespace experimental
 } // namespace pcl

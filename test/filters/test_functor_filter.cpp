@@ -8,11 +8,12 @@
  */
 
 #include <pcl/common/generate.h>
-#include <pcl/filters/functor_filter.h>
+#include <pcl/filters/experimental/functor_filter.h>
 #include <pcl/test/gtest.h>
 #include <pcl/point_types.h>
 
 using namespace pcl;
+using namespace pcl::experimental;
 
 TEST(FunctorFilterTrait, CheckCompatibility)
 {
