@@ -15,11 +15,11 @@
 namespace {
 class OrganizedPlaneDetectionTestFixture : public ::testing::Test {
 protected:
-  const int INNER_SQUARE_EDGE_LENGTH = 50;
-  const int OUTER_SQUARE_EDGE_LENGTH = INNER_SQUARE_EDGE_LENGTH * 2;
-  const float SYNTHETIC_CLOUD_BASE_DEPTH = 2.0;
-  const float SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY = .02f;
-  const float SYNTHETIC_CLOUD_RESOLUTION = 0.01f;
+  constexpr int INNER_SQUARE_EDGE_LENGTH = 50;
+  constexpr int OUTER_SQUARE_EDGE_LENGTH = INNER_SQUARE_EDGE_LENGTH * 2;
+  constexpr float SYNTHETIC_CLOUD_BASE_DEPTH = 2.0;
+  constexpr float SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY = .02f;
+  constexpr float SYNTHETIC_CLOUD_RESOLUTION = 0.01f;
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_;
   std::set<index_t> outer_perimeter_;
@@ -44,17 +44,17 @@ private:
     // arbitrary and useful for visualizing the cloud.  The discontinuity of the
     // generated cloud must be greater than the threshold set when running the
     // organized edge detection algorithm.
-    const auto outer_square_ctr = OUTER_SQUARE_EDGE_LENGTH / 2;
-    const auto inner_square_ctr = INNER_SQUARE_EDGE_LENGTH / 2;
-    const auto left_col = outer_square_ctr - inner_square_ctr;
-    const auto right_col = outer_square_ctr + inner_square_ctr;
-    const auto top_row = outer_square_ctr - inner_square_ctr;
-    const auto bottom_row = outer_square_ctr + inner_square_ctr;
+    constexpr auto outer_square_ctr = OUTER_SQUARE_EDGE_LENGTH / 2;
+    constexpr auto inner_square_ctr = INNER_SQUARE_EDGE_LENGTH / 2;
+    constexpr auto left_col = outer_square_ctr - inner_square_ctr;
+    constexpr auto right_col = outer_square_ctr + inner_square_ctr;
+    constexpr auto top_row = outer_square_ctr - inner_square_ctr;
+    constexpr auto bottom_row = outer_square_ctr + inner_square_ctr;
 
     for (auto row = 0; row < OUTER_SQUARE_EDGE_LENGTH; ++row) {
       for (auto col = 0; col < OUTER_SQUARE_EDGE_LENGTH; ++col) {
-        float x = col - outer_square_ctr;
-        float y = row - inner_square_ctr;
+        const float x = col - outer_square_ctr;
+        const float y = row - inner_square_ctr;
 
         auto depth = SYNTHETIC_CLOUD_BASE_DEPTH;
 
@@ -106,7 +106,7 @@ this and similar bugs.
 */
 TEST_F(OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
 {
-  const auto MAX_SEARCH_NEIGHBORS = 8;
+  constexpr auto MAX_SEARCH_NEIGHBORS = 8;
 
   // The depth discontinuity check to determine whether an edge exists is linearly
   // dependent on the depth of the points in the cloud (not a fixed distance).  The
@@ -115,7 +115,7 @@ TEST_F(OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
   // multiplied by the actual depth value of the point. Therefore:
   // abs(SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY) must be greater than
   // DEPTH_DISCONTINUITY_THRESHOLD * abs(SYNTHETIC_CLOUD_BASE_DEPTH)
-  const auto DEPTH_DISCONTINUITY_THRESHOLD =
+  constexpr auto DEPTH_DISCONTINUITY_THRESHOLD =
       SYNTHETIC_CLOUD_DEPTH_DISCONTINUITY / (SYNTHETIC_CLOUD_BASE_DEPTH * 1.1f);
 
   auto oed = pcl::OrganizedEdgeBase<pcl::PointXYZ, pcl::Label>();
@@ -128,11 +128,11 @@ TEST_F(OrganizedPlaneDetectionTestFixture, OccludedAndOccludingEdges)
   oed.setMaxSearchNeighbors(MAX_SEARCH_NEIGHBORS);
   oed.compute(labels, label_indices);
 
-  auto occluding_indices =
+  const auto occluding_indices =
       std::set<index_t>(label_indices[1].indices.begin(), label_indices[1].indices.end());
   EXPECT_EQ(occluding_indices, outer_perimeter_);
 
-  auto occluded_indices =
+  const auto occluded_indices =
       std::set<index_t>(label_indices[2].indices.begin(), label_indices[2].indices.end());
   EXPECT_EQ(occluded_indices, inner_perimeter_);
 }
