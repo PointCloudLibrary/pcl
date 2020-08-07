@@ -66,7 +66,7 @@ namespace pcl
             PtrSz<PointType> queries;
             __device__ __forceinline__ float3 fetch(const int query_index) const
             {
-                const PointType q = queries.data[query_index];
+                const PointType& q = queries.data[query_index];
                 return make_float3(q.x, q.y, q.z);
             }
         };
@@ -77,7 +77,7 @@ namespace pcl
             const int* queries_indices;
             __device__ __forceinline__ float3 fetch(const int query_index) const
             {
-                const PointType q = queries[queries_indices[query_index]];
+                const PointType& q = queries[queries_indices[query_index]];
                 return make_float3(q.x, q.y, q.z);
             }
         };
