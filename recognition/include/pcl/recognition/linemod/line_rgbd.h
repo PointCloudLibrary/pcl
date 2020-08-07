@@ -192,6 +192,8 @@ namespace pcl
 
         surface_normal_mod_.setInputCloud (cloud);
         surface_normal_mod_.processInputData ();
+        // surface_normal_mod_.compute.... (cloud);
+        // surface_normal_mod_.filterQuantizedSurfaceNormals ();
         // surface_normal_mod_.processInputDataFromFiltered ();
       }
 
@@ -210,9 +212,9 @@ namespace pcl
         cloud_rgb_ = cloud;
 
         color_gradient_mod_.setInputCloud (cloud);
-        // color_gradient_mod_.computeMaxGradientsSobel (cloud);
-        // color_gradient_mod_.filterQuantizedGradients ();
         color_gradient_mod_.processInputData ();
+        // color_gradient_mod_.computeMaxColorGradientsSobel (cloud);
+        // color_gradient_mod_.filterQuantizedColorGradients ();
         // color_gradient_mod_.processInputDataFromFiltered ();
       }
 

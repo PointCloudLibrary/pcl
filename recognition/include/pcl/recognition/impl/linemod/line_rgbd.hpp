@@ -343,9 +343,9 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createTemplate (
     color_gradient_mod->setGradientMagnitudeThreshold (colorGradientMagnitudeThreshold);
     color_gradient_mod->setGradientMagnitudeThresholdForFeatureExtraction (colorGradientMagnitudeThresholdFeatureExtraction);
     color_gradient_mod->setInputCloud (pColors);
-    // color_gradient_mod->computeMaxGradientsSobel (pColors);
-    // color_gradient_mod->filterQuantizedGradients ();
     color_gradient_mod->processInputData ();
+    // color_gradient_mod->computeMaxColorGradientsSobel (pColors);
+    // color_gradient_mod->filterQuantizedColorGradients ();
     // color_gradient_mod->processInputDataFromFiltered ();
 
     modalities.push_back (color_gradient_mod);
@@ -357,6 +357,8 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createTemplate (
     surface_normal_mod->setMinDistanceToBorder (surfaceNormalMinDistanceToBorder);
     surface_normal_mod->setInputCloud (pPoints);
     surface_normal_mod->processInputData ();
+    // surface_normal_mod->compute.... (pPoints);
+    // surface_normal_mod->filterQuantizedSurfaceNormals ();
     // surface_normal_mod->processInputDataFromFiltered ();
 
     modalities.push_back (surface_normal_mod);
