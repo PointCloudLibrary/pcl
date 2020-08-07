@@ -267,7 +267,11 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createTemplate (
   SparseQuantizedMultiModTemplate &linemod_template,
   BoundingBoxXYZ & bb,
   pcl::PointCloud<pcl::PointXYZRGBA> & template_point_cloud,
-  const size_t nr_features_per_modality) const
+  const size_t nr_features_per_modality,
+  const float colorGradientMagnitudeThreshold,
+  const float colorGradientMagnitudeThresholdFeatureExtraction,
+  const float surfaceNormalFeatureDistanceThreshold,
+  const float surfaceNormalMinDistanceToBorder) const
 {
   // Compute 3D bounding boxes from the template point clouds
   {
@@ -336,15 +340,25 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createTemplate (
   {
     typename pcl::PointCloud<PointRGBT>::Ptr pColors(&template_point_cloud);
     pcl::ColorGradientModality<PointRGBT>* color_gradient_mod = new pcl::ColorGradientModality<PointRGBT>();
+    color_gradient_mod->setGradientMagnitudeThreshold (colorGradientMagnitudeThreshold);
+    color_gradient_mod->setGradientMagnitudeThresholdForFeatureExtraction (colorGradientMagnitudeThresholdFeatureExtraction);
     color_gradient_mod->setInputCloud (pColors);
+    // color_gradient_mod->computeMaxGradientsSobel (pColors);
+    // color_gradient_mod->filterQuantizedGradients ();
     color_gradient_mod->processInputData ();
+    // color_gradient_mod->processInputDataFromFiltered ();
+
     modalities.push_back (color_gradient_mod);
   }
   {
     typename pcl::PointCloud<PointXYZT>::Ptr pPoints(&template_point_cloud);
     pcl::SurfaceNormalModality<PointXYZT>* surface_normal_mod = new pcl::SurfaceNormalModality<PointXYZT>();
+    surface_normal_mod->setFeatureDistanceThreshold (surfaceNormalFeatureDistanceThreshold);
+    surface_normal_mod->setMinDistanceToBorder (surfaceNormalMinDistanceToBorder);
     surface_normal_mod->setInputCloud (pPoints);
     surface_normal_mod->processInputData ();
+    // surface_normal_mod->processInputDataFromFiltered ();
+
     modalities.push_back (surface_normal_mod);
   }
 

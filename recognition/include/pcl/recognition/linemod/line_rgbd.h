@@ -170,6 +170,18 @@ namespace pcl
         clustering_threshold_ = threshold;
       }
 
+      inline void
+      setSurfaceNormalFeatureDistanceThreshold(const float surfaceNormalFeatureDistanceThreshold = 2.0f)
+      {
+        surface_normal_mod_.setFeatureDistanceThreshold (surfaceNormalFeatureDistanceThreshold);
+      }
+
+      inline void
+      setSurfaceNormalMinDistanceToBorder(const float surfaceNormalMinDistanceToBorder = 2.0f)
+      {
+        surface_normal_mod_.setMinDistanceToBorder (surfaceNormalMinDistanceToBorder);
+      }
+
       /** \brief Sets the input cloud with xyz point coordinates. The cloud has to be organized. 
         * \param[in] cloud The input cloud with xyz point coordinates.
         */
@@ -180,6 +192,13 @@ namespace pcl
 
         surface_normal_mod_.setInputCloud (cloud);
         surface_normal_mod_.processInputData ();
+        // surface_normal_mod_.processInputDataFromFiltered ();
+      }
+
+      inline void
+      setColorGradientMagnitudeThreshold(const float colorGradientMagnitudeThreshold = 10.0f)
+      {
+        color_gradient_mod_.setGradientMagnitudeThreshold (colorGradientMagnitudeThreshold);
       }
 
       /** \brief Sets the input cloud with rgb values. The cloud has to be organized. 
@@ -191,7 +210,10 @@ namespace pcl
         cloud_rgb_ = cloud;
 
         color_gradient_mod_.setInputCloud (cloud);
+        // color_gradient_mod_.computeMaxGradientsSobel (cloud);
+        // color_gradient_mod_.filterQuantizedGradients ();
         color_gradient_mod_.processInputData ();
+        // color_gradient_mod_.processInputDataFromFiltered ();
       }
 
       /** \brief Creates a template from the specified data and adds it to the matching queue. 
@@ -219,7 +241,11 @@ namespace pcl
         SparseQuantizedMultiModTemplate &linemod_template,
         BoundingBoxXYZ & bb,
         pcl::PointCloud<pcl::PointXYZRGBA> & cloud,
-        const size_t nr_features_per_modality = 63) const;
+        const size_t nr_features_per_modality = 63,
+        const float colorGradientMagnitudeThreshold = 10.0f,
+        const float colorGradientMagnitudeThresholdFeatureExtraction = 55.0f,
+        const float surfaceNormalFeatureDistanceThreshold = 2.0f,
+        const float surfaceNormalMinDistanceToBorder = 2.0f) const;
 
       /** \brief Applies the detection process and fills the supplied vector with the detection instances. 
         * \param[out] detections The storage for the detection instances.

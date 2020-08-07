@@ -333,6 +333,18 @@ namespace pcl
       /** \brief Destructor. */
       virtual ~SurfaceNormalModality ();
 
+      inline void
+      setFeatureDistanceThreshold (const float threshold)
+      {
+        feature_distance_threshold_ = threshold;
+      }
+
+      inline void
+      setMinDistanceToBorder (const float distance)
+      {
+        min_distance_to_border_ = distance;
+      }
+
       /** \brief Sets the spreading size.
         * \param[in] spreading_size the spreading size.
         */
