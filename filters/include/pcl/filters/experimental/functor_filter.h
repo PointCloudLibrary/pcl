@@ -16,18 +16,16 @@ namespace pcl {
 namespace experimental {
 template <typename PointT, typename Function>
 constexpr static bool is_functor_for_filter_v =
-    pcl::is_invocable_r_v<bool,
-                          Function,
-                          const pcl::remove_cvref_t<pcl::PointCloud<PointT>>&,
-                          pcl::index_t>;
+    pcl::is_invocable_r_v<bool, Function, const pcl::PointCloud<PointT>&, pcl::index_t>;
 
 /**
  * \brief Filter point clouds and indices based on a functor passed in the ctor
  * \ingroup filters
  */
 template <typename PointT, typename Functor>
-class FunctorFilter : public FilterIndices<PointT> {
-  using Base = FilterIndices<PointT>;
+class FunctorFilter : public FilterIndices<PointT, FunctorFilter<PointT, Functor>> {
+  using Self = FunctorFilter<PointT, Functor>;
+  using Base = FilterIndices<PointT, Self>;
   using PCLBase = pcl::PCLBase<PointT>;
 
 public:
@@ -54,7 +52,7 @@ public:
    * extract the indices of points being removed (default = false).
    */
   FunctorFilter(FunctorT functor, bool extract_removed_indices = false)
-  : Base(extract_removed_indices), functor_(std::move(functor))
+      : Base(extract_removed_indices), functor_(std::move(functor))
   {
     filter_name_ = "functor_filter";
   }
@@ -78,21 +76,43 @@ public:
   void
   applyFilter(Indices& indices) override
   {
+    auto filter = [&](auto exec) {
+      applyFilter(exec, indices);
+    };
+
+    executor::enable_exec_on_desc_priority(filter, executor::default_omp_executor{}, executor::default_inline_executor{});
+  }
+
+  template <typename Executor, typename executor::InstanceOfAny<Executor, executor::inline_executor, executor::omp_executor> = 0>
+  void
+  applyFilter (const Executor &exec, Indices& indices)
+  {
     indices.clear();
-    indices.reserve(input_->size());
+    indices.reserve(indices_->size());
+    std::vector<std::uint8_t> keep(indices_->size(), 0);
+
     if (extract_removed_indices_) {
       removed_indices_->clear();
-      removed_indices_->reserve(input_->size());
+      removed_indices_->reserve(indices_->size());
     }
 
-    for (const auto index : *indices_) {
-      // functor returns true for points that should be selected
-      if (negative_ != functor_(*input_, index)) {
-        indices.push_back(index);
+    auto cond_filtering = [&](auto idx) {
+      if (negative_ != functor_(*input_, (*indices_)[idx])) {
+        keep[idx] = true;
       }
-      else if (extract_removed_indices_) {
-        removed_indices_->push_back(index);
-      }
+    };
+
+    exec.bulk_execute(cond_filtering, indices_->size());
+    extractMarkedIndices(indices, keep);
+  }
+
+private:
+  void extractMarkedIndices(Indices& indices, const std::vector<std::uint8_t>& keep) {
+    for (uindex_t i = 0; i < keep.size(); ++i) {
+      if (keep[i])
+        indices.push_back((*indices_)[i]);
+      else if (extract_removed_indices_)
+        removed_indices_->push_back((*indices_)[i]);
     }
   }
 };
