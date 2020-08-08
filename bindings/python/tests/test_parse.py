@@ -237,6 +237,10 @@ def test_unexposed_expr(tmp_path):
 
     struct_decl = parsed_info["members"][0]
     constructor = struct_decl["members"][1]
+    member_ref = constructor["members"][1]
+
+    assert member_ref["name"] == "aClassMember"
+
     unexposed_expr = constructor["members"][2]
 
     assert unexposed_expr["kind"] == "UNEXPOSED_EXPR"
