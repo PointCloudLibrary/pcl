@@ -208,7 +208,11 @@ def parse_file(source, compilation_database_path=None):
     )
 
     # Parse the given source code file by running clang and generating the AST before loading
-    source_ast = index.parse(path=source, args=compilation_commands)
+    source_ast = index.parse(
+        path=source,
+        args=compilation_commands,
+        options=clang.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
+    )
 
     # Dictionary to hold a node's information
     root_node = {
