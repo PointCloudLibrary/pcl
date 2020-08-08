@@ -34,7 +34,9 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
+#include <assert.h>
 #include <limits>
+#include <tuple>
 
 #include "internal.hpp"
 #include "pcl/gpu/utils/device/warp.hpp"
@@ -45,9 +47,51 @@
 
 
 namespace pcl { namespace device { namespace appnearest_search
-{   
+{
     using PointType = OctreeImpl::PointType;
-	
+
+	__host__ __device__  std::pair<uint3, std::uint8_t> nearestVoxel(const float3 query, const unsigned& level, const std::uint8_t& mask, const float3& minp, const float3& maxp, const uint3& index)
+	{
+		assert(mask != 0);
+		//identify closest voxel
+		float closest_distance = std::numeric_limits<float>::max();
+		unsigned closest_index = 0;
+		uint3 closest = make_uint3(0,0,0);
+
+		for (unsigned i = 0; i < 8; ++i)
+		{
+			if ((mask & (1<<i)) == 0)   //no child
+				continue;
+
+			const uint3 child = make_uint3(
+				(index.x << 1) + (i & 1),
+				(index.y << 1) + ((i>>1) & 1),
+				(index.z << 1) + ((i>>2) & 1));
+
+			//find center of child cell
+			const unsigned voxel_width = 1 << (level + 2);
+			const float3 voxel_center = make_float3(
+				minp.x + (maxp.x - minp.x) * (2*child.x + 1) / voxel_width,
+				minp.y + (maxp.y - minp.y) * (2*child.y + 1) / voxel_width,
+				minp.z + (maxp.z - minp.z) * (2*child.z + 1) / voxel_width);
+
+			//compute distance to centroid
+			const float3 dist = make_float3(voxel_center.x - query.x, voxel_center.y - query.y, voxel_center.z - query.z);
+
+			const float distance_to_query = dist.x * dist.x + dist.y * dist.y + dist.z * dist.z;
+
+			//compare distance
+			if (distance_to_query < closest_distance)
+			{
+				closest_distance = distance_to_query;
+				closest_index = i;
+				closest = child;
+			}
+		}
+
+		return std::pair<uint3, std::uint8_t>(closest, 1<<closest_index);
+	}
+
 	struct Batch
 	{   
 		const PointType* queries;
@@ -107,110 +151,54 @@ namespace pcl { namespace device { namespace appnearest_search
 
 		__device__ __forceinline__ int findNode()
 		{
-			float3 minp = batch.octree.minp;
-			float3 maxp = batch.octree.maxp;
+			const float3& minp = batch.octree.minp;
+			const float3& maxp = batch.octree.maxp;
 
-			int node_idx = 0;
-			int code = CalcMorton(minp, maxp)(query);
-			int level = 0;
+			size_t node_idx = 0;
+			const auto code = CalcMorton(minp, maxp)(query);
+			unsigned level = 0;
 
-			bool centroid_traversal = false;
-			int mask_pos;
-			int x, y, z;
+			bool voxel_traversal = false;
+			uint3 index = Morton::decomposeCode(code);
+			std::uint8_t mask_pos;
 
-			for(;;)
+			while(true)
 			{
-				int node = batch.octree.nodes[node_idx];
-				int mask = node & 0xFF;
+				const auto node = batch.octree.nodes[node_idx];
+				const std::uint8_t mask = node & 0xFF;
 
-				float3 query_point;
-				query_point.x = query.x;
-				query_point.y = query.y;
-				query_point.z = query.z;
-
-				if(__popc(mask) == 0)  // leaf
-				{
-					//printf ("node x %d\n", node_idx);
+				if(!mask)  // leaf
 					return node_idx;
-				}
 
-				if (!centroid_traversal)    // no empty voxel encountered yet, performing morton code based traversal
-				{
-					mask_pos = 1 << Morton::extractLevelCode(code, level);
-
-					if ( (mask & mask_pos) == 0) // no child
+					if (voxel_traversal)    // empty voxel already encountered, performing nearest-centroid based traversal
 					{
-
-						//find current cell
-						Morton::decomposeCode(code, x, y, z);
-
-						x >>= (Morton::levels - level);
-						y >>= (Morton::levels - level);
-						z >>= (Morton::levels - level);
-
-						centroid_traversal = true;  //switch to nearest-centroid based traversal
-						mask_pos = nearestVoxelTraversal(query_point, level, mask, minp, maxp, x, y, z);
+						auto nearest_voxel = nearestVoxel(query, level, mask, minp, maxp, index);
+						index = nearest_voxel.first;
+						mask_pos = nearest_voxel.second;
 					}
-				}
+					else
+					{
+						mask_pos = 1 << Morton::extractLevelCode(code, level);
 
-				else
-					mask_pos = nearestVoxelTraversal(query_point, level, mask, minp, maxp, x, y, z);
+						if (!(mask & mask_pos)) // child doesn't exist
+						{
+							const auto remaining_depth = Morton::levels - level;
+							index.x >>= remaining_depth;
+							index.y >>= remaining_depth;
+							index.z >>= remaining_depth;
+
+							voxel_traversal = true;
+							auto nearest_voxel = nearestVoxel(query, level, mask, minp, maxp, index);
+							index = nearest_voxel.first;
+							mask_pos = nearest_voxel.second;
+						}
+					}
 
 				node_idx = (node >> 8) + __popc(mask & (mask_pos - 1));
 				++level;
 			}
 		};
 
-		__device__ int nearestVoxelTraversal(float3 query, int level, int mask, float3 minp, float3 maxp, int& x, int& y, int& z)
-		{
-			//identify closest voxel
-			float closest_distance = std::numeric_limits<float>::max();
-			int closest_index = 0, closest_x = 0, closest_y = 0, closest_z = 0;
-
-			for (int i = 0; i < 8; ++i)
-			{
-				if ((mask & (1<<i)) == 0)   //no child
-					continue;
-
-				//calculate  x,y,z offset for voxel
-				int x_cord = i & 1;
-				int y_cord = (i>>1) & 1;
-				int z_cord = (i>>2) & 1;
-
-				int x_child, y_child, z_child;
-				x_child = x*2 + x_cord;
-				y_child = y*2 + y_cord;
-				z_child = z*2 + z_cord;
-
-				//find center of child cell
-				float3 voxel_center;
-				voxel_center.x = minp.x + (maxp.x - minp.x) * (2*x_child + 1) / (2 * 1<<(level + 1));
-				voxel_center.y = minp.y + (maxp.y - minp.y) * (2*y_child + 1) / (2 * 1<<(level + 1));
-				voxel_center.z = minp.z + (maxp.z - minp.z) * (2*z_child + 1) / (2 * 1<<(level + 1));
-
-				//compute distance to centroid
-				float dx = (voxel_center.x - query.x);
-				float dy = (voxel_center.y - query.y);
-				float dz = (voxel_center.z - query.z);
-				float distance_to_query = dx * dx + dy * dy + dz * dz;
-
-				//compare distance
-				if (distance_to_query < closest_distance)
-				{
-					closest_distance = distance_to_query;
-					closest_index = i;
-					closest_x = x_child;
-					closest_y = y_child;
-					closest_z = z_child;
-				}
-			}
-
-			x = closest_x;
-			y = closest_y;
-			z = closest_z;
-
-			return  (1<<closest_index);
-		}
 
 		__device__ __forceinline__ void processNode(int node_idx)
 		{   

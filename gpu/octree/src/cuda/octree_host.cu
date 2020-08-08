@@ -39,8 +39,8 @@
 
 #include "internal.hpp"
 #include "utils/boxutils.hpp"
+#include "approx_nsearch.hpp"
 
-#include <assert.h>
 #include<algorithm>
 #include<limits>
 #include <tuple>
@@ -101,50 +101,6 @@ namespace
         }
         return count;
     } 
-
-    std::pair<uint3, std::uint8_t> nearestVoxel(const OctreeImpl::PointType& query, const unsigned& level, const std::uint8_t& mask, const float3& minp, const float3& maxp, const uint3& index)
-    {
-        assert(mask != 0);
-        //identify closest voxel
-        float closest_distance = std::numeric_limits<float>::max();
-        unsigned closest_index = 0;
-        uint3 closest = make_uint3(0,0,0);
-        const unsigned voxel_width = 1 << (level + 2);
-
-        for (unsigned i = 0; i < 8; ++i)
-        {
-            if ((mask & (1<<i)) == 0)   //no child
-                continue;
-
-            const uint3 child = make_uint3(
-                (index.x << 1) + (i & 1), 
-                (index.y << 1) + ((i>>1) & 1), 
-                (index.z << 1) + ((i>>2) & 1));
-
-            //find center of child cell
-            const float3 voxel_center = make_float3(
-                minp.x + (maxp.x - minp.x) * (2*child.x + 1) / voxel_width,
-                minp.y + (maxp.y - minp.y) * (2*child.y + 1) / voxel_width,
-                minp.z + (maxp.z - minp.z) * (2*child.z + 1) / voxel_width);
-
-            //compute distance to centroid
-            const float3 dist = make_float3(voxel_center.x - query.x, voxel_center.y - query.y, voxel_center.z - query.z);
-
-            float distance_to_query = dist.x * dist.x + dist.y * dist.y + dist.z * dist.z;
-
-            //compare distance
-            if (distance_to_query < closest_distance)
-            {
-                closest_distance = distance_to_query;
-                closest_index = i;
-                closest.x = child.x;
-                closest.y = child.y;
-                closest.z = child.z;
-            }
-        }
-
-        return std::pair<uint3, std::uint8_t>(closest, 1<<closest_index);
-    }
 
     struct OctreeIteratorHost
     {        
@@ -271,6 +227,7 @@ void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, i
 {
     const float3& minp = octreeGlobal.minp;
     const float3& maxp = octreeGlobal.maxp;
+    float3 query_point = make_float3(query.x, query.y, query.z);
 
     size_t node_idx = 0;
     const auto code = CalcMorton(minp, maxp)(query);
@@ -289,7 +246,7 @@ void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, i
             break;
 
         if (voxel_traversal)    // empty voxel already encountered, performing nearest-centroid based traversal
-            std::tie(index, mask_pos) = nearestVoxel(query, level, mask, minp, maxp, index);
+            std::tie(index, mask_pos) = pcl::device::appnearest_search::nearestVoxel(query_point, level, mask, minp, maxp, index);
 
         else
         {
@@ -303,7 +260,7 @@ void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, i
                 index.z >>= remaining_depth;
 
                 voxel_traversal = true;
-                std::tie(index, mask_pos) = nearestVoxel(query, level, mask, minp, maxp, index);
+                std::tie(index, mask_pos) = pcl::device::appnearest_search::nearestVoxel(query_point, level, mask, minp, maxp, index);
             }
         }
 
