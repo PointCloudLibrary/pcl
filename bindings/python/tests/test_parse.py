@@ -201,6 +201,9 @@ def test_type_ref(tmp_path):
     class_decl = parsed_info["members"][1]
     cxx_method = class_decl["members"][0]
     parm_decl = cxx_method["members"][0]
+
+    assert parm_decl["name"] == "aParameter"
+
     type_ref = parm_decl["members"][0]
 
     assert type_ref["kind"] == "TYPE_REF"
