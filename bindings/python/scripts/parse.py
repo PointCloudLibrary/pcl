@@ -115,9 +115,7 @@ def generate_parsed_info(node):
     # Get cursor's children and recursively add their info to a dictionary, as members of the parent
     for child_node in valid_children(node):
         child_parsed_info = generate_parsed_info(child_node)
-        # If both child and parent's info is not empty (opening check for dictionary population), add child's info to parent's members
-        if child_parsed_info and parsed_info:
-            parsed_info["members"].append(child_parsed_info)
+        parsed_info["members"].append(child_parsed_info)
 
     return parsed_info
 
