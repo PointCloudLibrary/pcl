@@ -5,32 +5,6 @@ from context import scripts
 import scripts.utils as utils
 
 
-def is_node_in_this_file(node):
-    """
-    Checks if the node in the AST is a valid node:
-        - Check 1: The cursor's location should have file attribute (cursor.location.file -> not NoneType)
-        - Check 2: The cursor should belong to the file (cursor.location.file.name -> filename)
-    
-    Arguments:
-        - node (dict):
-            - The node in the AST
-            - Keys:
-                - cursor : The cursor pointing to the node
-                - filename : The file's name to check the node against
-                - depth: The depth of the node (root=0)
-        
-    Returns:
-        - True/False (bool)
-    """
-
-    cursor = node["cursor"]
-    filename = node["filename"]
-
-    if cursor.location.file is not None:
-        return cursor.location.file.name == filename
-    return False
-
-
 def valid_children(node):
     """
     A generator function for yielding valid children nodes
@@ -56,7 +30,7 @@ def valid_children(node):
     for child in cursor.get_children():
         child_node = {"cursor": child, "filename": filename, "depth": depth + 1}
         # Check if the child belongs to the file
-        if is_node_in_this_file(child_node):
+        if child.location.file is not None and child.location.file.name == filename:
             yield (child_node)
 
 
