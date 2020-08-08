@@ -211,8 +211,7 @@ namespace pcl
 
                 while(mask)
                 {                
-                    unsigned int laneId = Warp::laneId();
-                    unsigned int warpId = Warp::id();            
+                    const unsigned int laneId = Warp::laneId();
 
                     int active_lane = __ffs(mask) - 1; //[0..31]
 
