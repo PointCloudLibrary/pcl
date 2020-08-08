@@ -172,7 +172,7 @@ namespace pcl { namespace device { namespace appnearest_search
 
 					if (voxel_traversal)    // empty voxel already encountered, performing nearest-centroid based traversal
 					{
-						auto nearest_voxel = nearestVoxel(query, level, mask, minp, maxp, index);
+						const auto nearest_voxel = nearestVoxel(query, level, mask, minp, maxp, index);
 						index = nearest_voxel.first;
 						mask_pos = nearest_voxel.second;
 					}
@@ -188,7 +188,7 @@ namespace pcl { namespace device { namespace appnearest_search
 							index.z >>= remaining_depth;
 
 							voxel_traversal = true;
-							auto nearest_voxel = nearestVoxel(query, level, mask, minp, maxp, index);
+							const auto nearest_voxel = nearestVoxel(query, level, mask, minp, maxp, index);
 							index = nearest_voxel.first;
 							mask_pos = nearest_voxel.second;
 						}
