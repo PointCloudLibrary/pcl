@@ -179,7 +179,13 @@ def parse_file(source, compilation_database_path=None):
         compilation_database_path=compilation_database_path, filename=source,
     )
 
-    # Parse the given source code file by running clang and generating the AST before loading
+    """
+    - Parse the given source code file by running clang and generating the AST before loading
+    - option `PARSE_DETAILED_PROCESSING_RECORD`:
+        - Indicates that the parser should construct a detailed preprocessing record, 
+          including all macro definitions and instantiations.
+        - Required to get the `INCLUSION_DIRECTIVE`s.
+    """
     source_ast = index.parse(
         path=source,
         args=compilation_commands,
