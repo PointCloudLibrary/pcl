@@ -186,9 +186,10 @@ namespace pcl
         * \param[in] cloud The input cloud with xyz point coordinates.
         */
       inline void
-      setInputCloud (const typename pcl::PointCloud<PointXYZT>::ConstPtr & cloud)
+      setInputCloud (const typename pcl::PointCloud<PointXYZT>::ConstPtr & cloud, bool computeModality = true)
       {
         cloud_xyz_ = cloud;
+        if (!computeModality) return;
 
         surface_normal_mod_.setInputCloud (cloud);
         surface_normal_mod_.processInputData ();
@@ -207,9 +208,10 @@ namespace pcl
         * \param[in] cloud The input cloud with rgb values.
         */
       inline void
-      setInputColors (const typename pcl::PointCloud<PointRGBT>::ConstPtr & cloud)
+      setInputColors (const typename pcl::PointCloud<PointRGBT>::ConstPtr & cloud, bool computeModality = true)
       {
         cloud_rgb_ = cloud;
+        if (!computeModality) return;
 
         color_gradient_mod_.setInputCloud (cloud);
         color_gradient_mod_.processInputData ();
@@ -235,25 +237,33 @@ namespace pcl
         const size_t nr_features_per_modality = 63);
 
       void
+      computeAABB (
+        BoundingBoxXYZ & bb,
+        PointXYZT & center,
+        const pcl::PointCloud<pcl::PointXYZRGBA> & cloud) const;
+
+      void
+      subtractMean (
+        pcl::PointCloud<pcl::PointXYZRGBA> & cloud,
+        const PointXYZT & center) const;
+
+      void
       createTemplate (
-        const size_t object_id,
-        const MaskMap & mask_xyz,
-        const MaskMap & mask_rgb,
+        const std::vector<pcl::QuantizableModality*> modalities,
+        const std::vector<MaskMap*> masks,
         const RegionXY & region,
         SparseQuantizedMultiModTemplate &linemod_template,
-        BoundingBoxXYZ & bb,
-        pcl::PointCloud<pcl::PointXYZRGBA> & cloud,
-        const size_t nr_features_per_modality = 63,
-        const float colorGradientMagnitudeThreshold = 10.0f,
-        const float colorGradientMagnitudeThresholdFeatureExtraction = 55.0f,
-        const float surfaceNormalFeatureDistanceThreshold = 2.0f,
-        const float surfaceNormalMinDistanceToBorder = 2.0f) const;
+        const size_t nr_features_per_modality) const;
 
       /** \brief Applies the detection process and fills the supplied vector with the detection instances. 
         * \param[out] detections The storage for the detection instances.
         */
       void 
       detect (std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections);
+
+      void 
+      detect (std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections,
+              const std::vector<pcl::QuantizableModality*> & modalities);
 
       /** \brief Applies the detection process in a semi-scale-invariant manner. This is done by acutally
         *        scaling the template to different sizes.

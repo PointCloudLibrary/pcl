@@ -246,128 +246,127 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
   // add point cloud
   pcl::copyPointCloud (cloud, template_point_clouds_[templateIndex]);
 
-  SparseQuantizedMultiModTemplate linemod_template;
-  createTemplate(object_id, mask_xyz, mask_rgb, region, linemod_template, bounding_boxes_[templateIndex], template_point_clouds_[templateIndex], nr_features_per_modality);
-
-  // add template to template storage
-  linemod_.addTemplate(linemod_template);
-
   // add object_id
   object_ids_.push_back (object_id);
+
+  PointXYZT mean;
+  computeAABB (bounding_boxes_[templateIndex], mean, cloud);
+  subtractMean (cloud, mean);
+
+  // add template to template storage
+  SparseQuantizedMultiModTemplate linemod_template;
+  linemod_.addTemplate(linemod_template);
+
+  std::vector<pcl::QuantizableModality*> modalities;
+  std::vector<MaskMap*> masks;
+  {
+    typename pcl::PointCloud<PointRGBT>::Ptr pColors(&cloud);
+    pcl::ColorGradientModality<PointRGBT>* color_gradient_mod = new pcl::ColorGradientModality<PointRGBT>();
+    color_gradient_mod->setInputCloud (pColors);
+    color_gradient_mod->processInputData ();
+
+    modalities.push_back (color_gradient_mod);
+    masks.push_back (const_cast<MaskMap*> (&mask_rgb));
+  }
+  {
+    typename pcl::PointCloud<PointXYZT>::Ptr pPoints(&cloud);
+    pcl::SurfaceNormalModality<PointXYZT>* surface_normal_mod = new pcl::SurfaceNormalModality<PointXYZT>();
+    surface_normal_mod->setInputCloud (pPoints);
+    surface_normal_mod->processInputData ();
+
+    modalities.push_back (surface_normal_mod);
+    masks.push_back (const_cast<MaskMap*> (&mask_rgb));
+  }
+
+  createTemplate (modalities, masks, region, linemod_template, nr_features_per_modality);
 
   return static_cast<int> (templateIndex);
 }
 
+
+template <typename PointXYZT, typename PointRGBT> void
+pcl::LineRGBD<PointXYZT, PointRGBT>::computeAABB (
+  BoundingBoxXYZ & bb,
+  PointXYZT & center,
+  const pcl::PointCloud<pcl::PointXYZRGBA> & template_point_cloud) const
+{
+  bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
+  bb.width = bb.height = bb.depth = 0.0f;
+
+  center.x = 0.0f;
+  center.y = 0.0f;
+  center.z = 0.0f;
+  float min_x = std::numeric_limits<float>::max ();
+  float min_y = std::numeric_limits<float>::max ();
+  float min_z = std::numeric_limits<float>::max ();
+  float max_x = -std::numeric_limits<float>::max ();
+  float max_y = -std::numeric_limits<float>::max ();
+  float max_z = -std::numeric_limits<float>::max ();
+  size_t counter = 0;
+  for (size_t j = 0; j < template_point_cloud.size (); ++j)
+  {
+    const PointXYZRGBA & p = template_point_cloud.points[j];
+
+    if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
+      continue;
+
+    min_x = std::min (min_x, p.x);
+    min_y = std::min (min_y, p.y);
+    min_z = std::min (min_z, p.z);
+    max_x = std::max (max_x, p.x);
+    max_y = std::max (max_y, p.y);
+    max_z = std::max (max_z, p.z);
+
+    center.x += p.x;
+    center.y += p.y;
+    center.z += p.z;
+
+    ++counter;
+  }
+
+  center.x /= static_cast<float> (counter);
+  center.y /= static_cast<float> (counter);
+  center.z /= static_cast<float> (counter);
+
+  bb.width  = max_x - min_x;
+  bb.height = max_y - min_y;
+  bb.depth  = max_z - min_z;
+
+  bb.x = (min_x + bb.width / 2.0f) - center.x - bb.width / 2.0f;
+  bb.y = (min_y + bb.height / 2.0f) - center.y - bb.height / 2.0f;
+  bb.z = (min_z + bb.depth / 2.0f) - center.z - bb.depth / 2.0f;
+}
+
+
+template <typename PointXYZT, typename PointRGBT> void
+pcl::LineRGBD<PointXYZT, PointRGBT>::subtractMean (
+  pcl::PointCloud<pcl::PointXYZRGBA> & template_point_cloud,
+  const PointXYZT & center) const
+{
+  for (size_t j = 0; j < template_point_cloud.size (); ++j)
+  {
+    PointXYZRGBA p = template_point_cloud.points[j];
+
+    if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
+      continue;
+
+    p.x -= center.x;
+    p.y -= center.y;
+    p.z -= center.z;
+
+    template_point_cloud.points[j] = p;
+  }
+}
+
+
 template <typename PointXYZT, typename PointRGBT> void
 pcl::LineRGBD<PointXYZT, PointRGBT>::createTemplate (
-  const size_t object_id,
-  const MaskMap & mask_xyz,
-  const MaskMap & mask_rgb,
+  const std::vector<pcl::QuantizableModality*> modalities,
+  const std::vector<MaskMap*> masks,
   const RegionXY & region,
   SparseQuantizedMultiModTemplate &linemod_template,
-  BoundingBoxXYZ & bb,
-  pcl::PointCloud<pcl::PointXYZRGBA> & template_point_cloud,
-  const size_t nr_features_per_modality,
-  const float colorGradientMagnitudeThreshold,
-  const float colorGradientMagnitudeThresholdFeatureExtraction,
-  const float surfaceNormalFeatureDistanceThreshold,
-  const float surfaceNormalMinDistanceToBorder) const
+  const size_t nr_features_per_modality) const
 {
-  // Compute 3D bounding boxes from the template point clouds
-  {
-    bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
-    bb.width = bb.height = bb.depth = 0.0f;
-
-    float center_x = 0.0f;
-    float center_y = 0.0f;
-    float center_z = 0.0f;
-    float min_x = std::numeric_limits<float>::max ();
-    float min_y = std::numeric_limits<float>::max ();
-    float min_z = std::numeric_limits<float>::max ();
-    float max_x = -std::numeric_limits<float>::max ();
-    float max_y = -std::numeric_limits<float>::max ();
-    float max_z = -std::numeric_limits<float>::max ();
-    size_t counter = 0;
-    for (size_t j = 0; j < template_point_cloud.size (); ++j)
-    {
-      const PointXYZRGBA & p = template_point_cloud.points[j];
-
-      if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
-        continue;
-
-      min_x = std::min (min_x, p.x);
-      min_y = std::min (min_y, p.y);
-      min_z = std::min (min_z, p.z);
-      max_x = std::max (max_x, p.x);
-      max_y = std::max (max_y, p.y);
-      max_z = std::max (max_z, p.z);
-
-      center_x += p.x;
-      center_y += p.y;
-      center_z += p.z;
-
-      ++counter;
-    }
-
-    center_x /= static_cast<float> (counter);
-    center_y /= static_cast<float> (counter);
-    center_z /= static_cast<float> (counter);
-
-    bb.width  = max_x - min_x;
-    bb.height = max_y - min_y;
-    bb.depth  = max_z - min_z;
-
-    bb.x = (min_x + bb.width / 2.0f) - center_x - bb.width / 2.0f;
-    bb.y = (min_y + bb.height / 2.0f) - center_y - bb.height / 2.0f;
-    bb.z = (min_z + bb.depth / 2.0f) - center_z - bb.depth / 2.0f;
-
-    for (size_t j = 0; j < template_point_cloud.size (); ++j)
-    {
-      PointXYZRGBA p = template_point_cloud.points[j];
-
-      if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
-        continue;
-
-      p.x -= center_x;
-      p.y -= center_y;
-      p.z -= center_z;
-
-      template_point_cloud.points[j] = p;
-    }
-  }
-
-  std::vector<pcl::QuantizableModality*> modalities;
-  {
-    typename pcl::PointCloud<PointRGBT>::Ptr pColors(&template_point_cloud);
-    pcl::ColorGradientModality<PointRGBT>* color_gradient_mod = new pcl::ColorGradientModality<PointRGBT>();
-    color_gradient_mod->setGradientMagnitudeThreshold (colorGradientMagnitudeThreshold);
-    color_gradient_mod->setGradientMagnitudeThresholdForFeatureExtraction (colorGradientMagnitudeThresholdFeatureExtraction);
-    color_gradient_mod->setInputCloud (pColors);
-    color_gradient_mod->processInputData ();
-    // color_gradient_mod->computeMaxColorGradientsSobel (pColors);
-    // color_gradient_mod->filterQuantizedColorGradients ();
-    // color_gradient_mod->processInputDataFromFiltered ();
-
-    modalities.push_back (color_gradient_mod);
-  }
-  {
-    typename pcl::PointCloud<PointXYZT>::Ptr pPoints(&template_point_cloud);
-    pcl::SurfaceNormalModality<PointXYZT>* surface_normal_mod = new pcl::SurfaceNormalModality<PointXYZT>();
-    surface_normal_mod->setFeatureDistanceThreshold (surfaceNormalFeatureDistanceThreshold);
-    surface_normal_mod->setMinDistanceToBorder (surfaceNormalMinDistanceToBorder);
-    surface_normal_mod->setInputCloud (pPoints);
-    surface_normal_mod->processInputData ();
-    // surface_normal_mod->compute.... (pPoints);
-    // surface_normal_mod->filterQuantizedSurfaceNormals ();
-    // surface_normal_mod->processInputDataFromFiltered ();
-
-    modalities.push_back (surface_normal_mod);
-  }
-
-  std::vector<MaskMap*> masks;
-  masks.push_back (const_cast<MaskMap*> (&mask_rgb));
-  masks.push_back (const_cast<MaskMap*> (&mask_xyz));
-
   linemod_.createTemplate (modalities, masks, region, linemod_template, nr_features_per_modality);
 }
 
@@ -456,7 +455,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModT
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointXYZT, typename PointRGBT> void 
+template <typename PointXYZT, typename PointRGBT> void
 pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
     std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections)
 {
@@ -464,6 +463,14 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
   modalities.push_back (&color_gradient_mod_);
   modalities.push_back (&surface_normal_mod_);
 
+  detect (detections, modalities);
+}
+
+template <typename PointXYZT, typename PointRGBT> void
+pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
+    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections,
+    const std::vector<pcl::QuantizableModality*> & modalities)
+{
   std::vector<pcl::LINEMODDetection> linemod_detections;
   linemod_.detectTemplates (modalities, linemod_detections);
 
