@@ -10,6 +10,7 @@
 #include <random>
 #include <algorithm>
 #include <array>
+#include <tuple>
 
 #include <pcl/test/gtest.h>
 #include <pcl/pcl_tests.h>
@@ -22,13 +23,6 @@
 namespace
 {
 
-bool
-getRandomBool ()
-{
-  static std::default_random_engine gen;
-  static std::uniform_int_distribution<> int_distr(0, 1);
-  return int_distr(gen);
-}
 
 struct TestData
 {
@@ -76,7 +70,7 @@ createTestDataSuite(
     inside_indices_for_inside_cloud.push_back(i);
     inside_cloud->push_back(inside_point_generator());
     outside_cloud->push_back(outside_point_generator());
-    if (getRandomBool()) {
+    if (i % 2) {
       inside_indices_for_mixed_cloud.push_back(i);
       mixed_cloud->push_back(inside_point_generator());
     }
@@ -91,13 +85,14 @@ createTestDataSuite(
 }
 
 
-template <class CropHullTestTraits>
+template <class TupleType>
 class PCLCropHullTestFixture : public ::testing::Test
 {
   public:
+    using CropHullTestTraits = typename std::tuple_element<0, TupleType>::type;
+    using RandomGeneratorType =  typename std::tuple_element<1, TupleType>::type;
+
     PCLCropHullTestFixture()
-      : gen_(12345u),
-        rd_(0.0f, 1.0f)
     {
       baseOffsetList_.emplace_back(0, 0, 0);
       baseOffsetList_.emplace_back(5, 1, 10);
@@ -120,13 +115,17 @@ class PCLCropHullTestFixture : public ::testing::Test
           p.getVector3fMap() += baseOffset.getVector3fMap();
         }
         auto inside_point_generator = [this, &baseOffset] () {
-          pcl::PointXYZ p(rd_(gen_), rd_(gen_), rd_(gen_));
+          pcl::PointXYZ p(rg_(), rg_(), rg_());
           p.getVector3fMap() += baseOffset.getVector3fMap();
           return p;
         };
         auto outside_point_generator = [this, &baseOffset] () {
           std::array<float, 3> pt;
-          std::generate(pt.begin(), pt.end(), [this] {return rd_(gen_) + 2. * (getRandomBool() ? -1. : 1.);});
+          std::generate(pt.begin(), pt.end(),
+              [this] {
+                float v = rg_();
+                return v + std::copysign(0.51, v);
+              });
           pcl::PointXYZ p(pt[0], pt[1], pt[2]);
           p.getVector3fMap() += baseOffset.getVector3fMap();
           return p;
@@ -151,8 +150,7 @@ class PCLCropHullTestFixture : public ::testing::Test
       return crop_hull_filter;
     }
 
-    mutable std::mt19937 gen_;
-    mutable std::uniform_real_distribution<float> rd_;
+    RandomGeneratorType rg_;
     pcl::PointCloud<pcl::PointXYZ> baseOffsetList_;
 };
 
@@ -183,6 +181,23 @@ struct CropHullTestTraits3d
 };
 
 
+template <size_t seed> struct RandomGenerator
+{
+  public:
+    RandomGenerator()
+      : gen_(seed), rd_(-0.5f, 0.5f)
+    {}
+
+    float operator()() {
+      return rd_(gen_);
+    }
+
+  private:
+    std::mt19937 gen_;
+    std::uniform_real_distribution<float> rd_;
+};
+
+
 static std::vector<std::vector<uint32_t>> cube_elements = {
   {0, 2, 1}, // l
   {1, 2, 3}, // l
@@ -204,8 +219,8 @@ CropHullTestTraits2d::getHullCloud ()
 {
   static pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ>);
   if (input_cloud->empty()) {
-    for (const float i: {0.f, 1.f})
-      for (const float j: {0.f, 1.f})
+    for (const float i: {-0.5f, 0.5f})
+      for (const float j: {-0.5f, .5f})
         for (const float k: {0.f, -0.1f})
           input_cloud->emplace_back(i, j, k);
   }
@@ -234,9 +249,9 @@ CropHullTestTraits3d::getHullCloud ()
 {
   static pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ>);
   if (input_cloud->empty()) {
-    for (const float i: {0.f, 1.f})
-      for (const float j: {0.f, 1.f})
-        for (const float k: {0.f, 1.f})
+    for (const float i: {-0.5f, 0.5f})
+      for (const float j: {-0.5f, 0.5f})
+        for (const float k: {-0.5f, 0.5f})
           input_cloud->emplace_back(i, j, k);
   }
   return input_cloud;
@@ -259,7 +274,24 @@ CropHullTestTraits3d::getDim ()
 }
 
 } // end of anonymous namespace
-using CropHullTestTypes = ::testing::Types<CropHullTestTraits2d, CropHullTestTraits3d>;
+using CropHullTestTraits2dList = std::tuple<
+  std::tuple<CropHullTestTraits2d, RandomGenerator<0>>,
+  std::tuple<CropHullTestTraits2d, RandomGenerator<123>>,
+  std::tuple<CropHullTestTraits2d, RandomGenerator<456>>
+  >;
+using CropHullTestTraits3dList = std::tuple<
+  std::tuple<CropHullTestTraits3d, RandomGenerator<0>>,
+  std::tuple<CropHullTestTraits3d, RandomGenerator<123>>,
+  std::tuple<CropHullTestTraits3d, RandomGenerator<456>>
+  >;
+using CropHullTestTypes = ::testing::Types<
+  std::tuple_element<0, CropHullTestTraits2dList>::type,
+  std::tuple_element<1, CropHullTestTraits2dList>::type,
+  std::tuple_element<2, CropHullTestTraits2dList>::type,
+  std::tuple_element<0, CropHullTestTraits3dList>::type,
+  std::tuple_element<1, CropHullTestTraits3dList>::type,
+  std::tuple_element<2, CropHullTestTraits3dList>::type
+  >;
 TYPED_TEST_SUITE(PCLCropHullTestFixture, CropHullTestTypes);
 
 
@@ -305,8 +337,17 @@ TYPED_TEST (PCLCropHullTestFixture, test_cloud_filtering)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // this test will pass only for 2d case //
-using PCLCropHullTestFixture2d = PCLCropHullTestFixture<CropHullTestTraits2d>;
-TEST_F (PCLCropHullTestFixture2d, test_crop_inside)
+template <class T>
+struct PCLCropHullTestFixture2dCrutch : PCLCropHullTestFixture<T>
+{};
+using CropHullTestTraits2dTypes = ::testing::Types<
+  std::tuple_element<0, CropHullTestTraits2dList>::type,
+  std::tuple_element<1, CropHullTestTraits2dList>::type,
+  std::tuple_element<2, CropHullTestTraits2dList>::type
+  >;
+TYPED_TEST_SUITE(PCLCropHullTestFixture2dCrutch, CropHullTestTraits2dTypes);
+
+TYPED_TEST (PCLCropHullTestFixture2dCrutch, test_crop_inside)
 {
   for (auto & entry : this->data_)
   {
