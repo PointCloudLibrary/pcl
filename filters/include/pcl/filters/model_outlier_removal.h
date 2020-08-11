@@ -67,8 +67,11 @@ namespace pcl
   template <typename PointT>
   class ModelOutlierRemoval : public FilterIndices<PointT>
   {
+    using Self = ModelOutlierRemoval<PointT>;
+    using Base = FilterIndices<PointT>;
+
     protected:
-      using PointCloud = typename FilterIndices<PointT>::PointCloud;
+      using PointCloud = typename Base::PointCloud;
       using PointCloudPtr = typename PointCloud::Ptr;
       using PointCloudConstPtr = typename PointCloud::ConstPtr;
       using SampleConsensusModelPtr = typename SampleConsensusModel<PointT>::Ptr;
@@ -82,7 +85,7 @@ namespace pcl
        */
       inline
       ModelOutlierRemoval (bool extract_removed_indices = false) :
-          FilterIndices<PointT> (extract_removed_indices)
+          Base(extract_removed_indices)
       {
         thresh_ = 0;
         normals_distance_weight_ = 0;
@@ -191,13 +194,13 @@ namespace pcl
     protected:
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
-      using Filter<PointT>::filter_name_;
-      using Filter<PointT>::getClassName;
-      using FilterIndices<PointT>::negative_;
-      using FilterIndices<PointT>::keep_organized_;
-      using FilterIndices<PointT>::user_filter_value_;
-      using FilterIndices<PointT>::extract_removed_indices_;
-      using FilterIndices<PointT>::removed_indices_;
+      using Filter<PointT, Base>::filter_name_;
+      using Filter<PointT, Base>::getClassName;
+      using Base::negative_;
+      using Base::keep_organized_;
+      using Base::user_filter_value_;
+      using Base::extract_removed_indices_;
+      using Base::removed_indices_;
 
       /** \brief Filtered results are indexed by an indices array.
        * \param[out] indices The resultant indices.

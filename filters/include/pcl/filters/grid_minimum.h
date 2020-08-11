@@ -60,13 +60,16 @@ namespace pcl
   template <typename PointT>
   class GridMinimum: public FilterIndices<PointT>
   {
-    protected:
-      using Filter<PointT>::filter_name_;
-      using Filter<PointT>::getClassName;
-      using Filter<PointT>::input_;
-      using Filter<PointT>::indices_;
+    using Self = GridMinimum<PointT>;
+    using Base = FilterIndices<PointT>;
 
-      using PointCloud = typename FilterIndices<PointT>::PointCloud;
+    protected:
+      using Filter<PointT, Base>::filter_name_;
+      using Filter<PointT, Base>::getClassName;
+      using Filter<PointT, Base>::input_;
+      using Filter<PointT, Base>::indices_;
+
+      using PointCloud = typename Base::PointCloud;
 
     public:
       /** \brief Empty constructor. */

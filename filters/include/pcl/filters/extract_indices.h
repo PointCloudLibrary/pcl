@@ -68,22 +68,25 @@ namespace pcl
   template<typename PointT>
   class ExtractIndices : public FilterIndices<PointT>
   {
+    using Self = ExtractIndices<PointT>;
+    using Base = FilterIndices<PointT>;
+
     protected:
-      using PointCloud = typename FilterIndices<PointT>::PointCloud;
+      using PointCloud = typename Base::PointCloud;
       using PointCloudPtr = typename PointCloud::Ptr;
       using PointCloudConstPtr = typename PointCloud::ConstPtr;
       using FieldList = typename pcl::traits::fieldList<PointT>::type;
 
     public:
 
-      using Ptr = shared_ptr<ExtractIndices<PointT> >;
-      using ConstPtr = shared_ptr<const ExtractIndices<PointT> >;
+      using Ptr = shared_ptr<Self>;
+      using ConstPtr = shared_ptr<const Self>;
 
       /** \brief Constructor.
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
         */
       ExtractIndices (bool extract_removed_indices = false) :
-        FilterIndices<PointT>::FilterIndices (extract_removed_indices)
+        Base(extract_removed_indices)
       {
         use_indices_ = true;
         filter_name_ = "ExtractIndices";
@@ -104,13 +107,13 @@ namespace pcl
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
       using PCLBase<PointT>::use_indices_;
-      using Filter<PointT>::filter_name_;
-      using Filter<PointT>::getClassName;
-      using FilterIndices<PointT>::negative_;
-      using FilterIndices<PointT>::keep_organized_;
-      using FilterIndices<PointT>::user_filter_value_;
-      using FilterIndices<PointT>::extract_removed_indices_;
-      using FilterIndices<PointT>::removed_indices_;
+      using Filter<PointT, Base>::filter_name_;
+      using Filter<PointT, Base>::getClassName;
+      using Base::negative_;
+      using Base::keep_organized_;
+      using Base::user_filter_value_;
+      using Base::extract_removed_indices_;
+      using Base::removed_indices_;
 
       /** \brief Filtered results are stored in a separate point cloud.
         * \param[out] output The resultant point cloud.

@@ -75,20 +75,23 @@ namespace pcl
   template <typename PointT>
   class FrustumCulling : public FilterIndices<PointT>
   {
-    using PointCloud = typename Filter<PointT>::PointCloud;
+    using Self = FrustumCulling<PointT>;
+    using Base = FilterIndices<PointT>;
+
+    using PointCloud = typename Filter<PointT, Base>::PointCloud;
     using PointCloudPtr = typename PointCloud::Ptr;
     using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
 
-      using Ptr = shared_ptr<FrustumCulling<PointT> >;
-      using ConstPtr = shared_ptr<const FrustumCulling<PointT> >;
+      using Ptr = shared_ptr<Self>;
+      using ConstPtr = shared_ptr<const Self>;
 
 
-      using Filter<PointT>::getClassName;
+      using Filter<PointT, Base>::getClassName;
 
       FrustumCulling (bool extract_removed_indices = false) 
-        : FilterIndices<PointT> (extract_removed_indices)
+        : Base (extract_removed_indices)
         , camera_pose_ (Eigen::Matrix4f::Identity ())
         , hfov_ (60.0f)
         , vfov_ (60.0f)
@@ -196,12 +199,12 @@ namespace pcl
     protected:
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
-      using Filter<PointT>::filter_name_;
-      using FilterIndices<PointT>::negative_;
-      using FilterIndices<PointT>::keep_organized_;
-      using FilterIndices<PointT>::user_filter_value_;
-      using FilterIndices<PointT>::extract_removed_indices_;
-      using FilterIndices<PointT>::removed_indices_;
+      using Filter<PointT, Base>::filter_name_;
+      using Base::negative_;
+      using Base::keep_organized_;
+      using Base::user_filter_value_;
+      using Base::extract_removed_indices_;
+      using Base::removed_indices_;
 
       /** \brief Sample of point indices
         * \param[out] indices the resultant point cloud indices

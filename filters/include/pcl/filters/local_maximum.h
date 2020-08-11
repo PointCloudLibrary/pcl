@@ -59,14 +59,17 @@ namespace pcl
   template <typename PointT>
   class LocalMaximum: public FilterIndices<PointT>
   {
+    using Self = LocalMaximum<PointT>;
+    using Base = FilterIndices<PointT>;
+
     protected:
-      using PointCloud = typename FilterIndices<PointT>::PointCloud;
+      using PointCloud = typename Base::PointCloud;
       using SearcherPtr = typename pcl::search::Search<PointT>::Ptr;
 
     public:
       /** \brief Empty constructor. */
       LocalMaximum (bool extract_removed_indices = false) :
-        FilterIndices<PointT>::FilterIndices (extract_removed_indices),
+        Base(extract_removed_indices),
         searcher_ (),
         radius_ (1)
       {
@@ -88,11 +91,11 @@ namespace pcl
     protected:
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
-      using Filter<PointT>::filter_name_;
-      using Filter<PointT>::getClassName;
-      using FilterIndices<PointT>::negative_;
-      using FilterIndices<PointT>::extract_removed_indices_;
-      using FilterIndices<PointT>::removed_indices_;
+      using Filter<PointT, Base>::filter_name_;
+      using Filter<PointT, Base>::getClassName;
+      using Base::negative_;
+      using Base::extract_removed_indices_;
+      using Base::removed_indices_;
 
       /** \brief Downsample a Point Cloud by eliminating points that are locally maximal in z
         * \param[out] output the resultant point cloud message
