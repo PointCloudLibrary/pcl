@@ -8,50 +8,55 @@ class bind:
         self.linelist = []
         self._skipped = []
         self.inclusion_list = []
+        pybind_handle = self.skip  # handled by pybind11
+        other_function_handle = self.skip  # handled in another kind's function
+        unnecessary_kind = self.skip  # unnecessary kind
+        unsure = self.skip  # unsure as to needed or not
         self.kind_functions = {
-            "TRANSLATION_UNIT": self.skip,
+            "TRANSLATION_UNIT": unnecessary_kind,
             "NAMESPACE": self.handle_namespace,
-            "NAMESPACE_REF": self.skip,
+            "NAMESPACE_REF": other_function_handle,  # in (handle_constructor)
             "STRUCT_DECL": self.handle_struct_decl,
-            "CXX_BASE_SPECIFIER": self.skip,
-            "CXX_METHOD": self.skip,
-            "VAR_DECL": self.skip,
-            "TYPE_REF": self.skip,
+            "CXX_BASE_SPECIFIER": other_function_handle,  # in (handle_struct_decl)
+            "CXX_METHOD": other_function_handle,  # in (handle_struct_decl)
+            "VAR_DECL": pybind_handle,
+            "TYPE_REF": other_function_handle,  # in (handle_constructor)
             "CONSTRUCTOR": self.handle_constructor,
-            "PARM_DECL": self.skip,
-            "CALL_EXPR": self.skip,
-            "UNEXPOSED_EXPR": self.skip,
-            "MEMBER_REF_EXPR": self.skip,
-            "DECL_REF_EXPR": self.skip,
-            "FIELD_DECL": self.skip,
-            "MEMBER_REF": self.skip,
+            "PARM_DECL": other_function_handle,  # in (handle_constructor)
+            "CALL_EXPR": pybind_handle,
+            "UNEXPOSED_EXPR": unsure,
+            "MEMBER_REF_EXPR": unsure,
+            "DECL_REF_EXPR": unsure,
+            "FIELD_DECL": other_function_handle,  # in (handle_struct_decl)
+            "MEMBER_REF": pybind_handle,
             "CLASS_TEMPLATE": self.skip,  # self.handle_class_template
-            "TEMPLATE_NON_TYPE_PARAMETER": self.skip,
-            "FUNCTION_TEMPLATE": self.skip,
-            "ANONYMOUS_UNION_DECL": self.skip,
-            "ALIGNED_ATTR": self.skip,
-            "INTEGER_LITERAL": self.skip,
-            "ANONYMOUS_STRUCT_DECL": self.skip,
-            "COMPOUND_STMT": self.skip,
-            "FLOATING_LITERAL": self.skip,
-            "BINARY_OPERATOR": self.skip,
-            "ARRAY_SUBSCRIPT_EXPR": self.skip,
-            "CXX_THROW_EXPR": self.skip,
-            "FRIEND_DECL": self.skip,
-            "FUNCTION_DECL": self.skip,
-            "INIT_LIST_EXPR": self.skip,
-            "RETURN_STMT": self.skip,
-            "OVERLOADED_DECL_REF": self.skip,
-            "UNARY_OPERATOR": self.skip,
-            "IF_STMT": self.skip,
-            "OBJ_BOOL_LITERAL_EXPR": self.skip,
+            "TEMPLATE_NON_TYPE_PARAMETER": other_function_handle,  # in (handle_class_template)
+            "FUNCTION_TEMPLATE": self.skip,  # to be added later
+            "ANONYMOUS_UNION_DECL": other_function_handle,  # in (handle_struct_decl) via get_fields_from_anonymous
+            "ALIGNED_ATTR": unnecessary_kind,
+            "INTEGER_LITERAL": unsure,
+            "ANONYMOUS_STRUCT_DECL": other_function_handle,  # in (handle_struct_decl) via get_fields_from_anonymous
+            "COMPOUND_STMT": unnecessary_kind,
+            "FLOATING_LITERAL": unsure,
+            "BINARY_OPERATOR": unnecessary_kind,
+            "ARRAY_SUBSCRIPT_EXPR": pybind_handle,
+            "CXX_THROW_EXPR": pybind_handle,
+            "FRIEND_DECL": unsure,
+            "FUNCTION_DECL": unsure,
+            "INIT_LIST_EXPR": unnecessary_kind,
+            "RETURN_STMT": pybind_handle,
+            "OVERLOADED_DECL_REF": unsure,
+            "UNARY_OPERATOR": unnecessary_kind,
+            "IF_STMT": unnecessary_kind,
+            "OBJ_BOOL_LITERAL_EXPR": unsure,
             "INCLUSION_DIRECTIVE": self.handle_inclusion_directive,
-            "MACRO_DEFINITION": self.skip,
-            "MACRO_INSTANTIATION": self.skip,
+            "MACRO_DEFINITION": unsure,
+            "MACRO_INSTANTIATION": unsure,
         }
 
         self.handle_node(root)
 
+    # TODO: Not used, maybe remove
     def get_prev_depth_node(self):
         for prev_item in reversed(self._state_stack):
             if prev_item["depth"] == self.depth - 1:
@@ -125,7 +130,7 @@ class bind:
             self.linelist.append(f'py::class_<{self.name}>(m, "{self.name}")')
 
         # TODO: Merge this and next block via a design updation
-        # handle anonymous
+        # handle anonymous structs, etc. as field declarations
         for sub_item in self.members:
             fields = self.get_fields_from_anonymous(sub_item)
             for field in fields:
@@ -140,6 +145,8 @@ class bind:
                     )
 
         for sub_item in self.members:
+
+            # handle field declarations
             if sub_item["kind"] == "FIELD_DECL":
                 if sub_item["element_type"] == "ConstantArray":
                     self.linelist.append(
@@ -150,6 +157,7 @@ class bind:
                         f'.def_readwrite("{sub_item["name"]}", &{self.name}::{sub_item["name"]})'
                     )
 
+            # handle class methods
             if sub_item["kind"] == "CXX_METHOD":
                 # TODO: Add template args, currently blank
                 if sub_item["name"] not in ("PCL_DEPRECATED"):
@@ -159,6 +167,8 @@ class bind:
 
     def handle_constructor(self):
         argument_type_list = []
+
+        # generate argument type list
         for sub_item in self.members:
             if sub_item["kind"] == "PARM_DECL":
                 if sub_item["element_type"] == "LValueReference":
@@ -185,10 +195,13 @@ class bind:
                 else:
                     argument_type_list.append(f'{sub_item["element_type"]}')
         argument_type_list = ",".join(argument_type_list)
+
         self.linelist.append(f".def(py::init<{argument_type_list}>())")
 
     def handle_class_template(self):
         flag = False
+
+        # TODO: Use list based method, like in handle_struct_decl
         for sub_item in self.members:
             if sub_item["kind"] == "TEMPLATE_NON_TYPE_PARAMETER":
                 self.linelist.append(
