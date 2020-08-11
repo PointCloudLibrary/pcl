@@ -232,7 +232,7 @@ namespace pcl { namespace device { namespace knn_search
 
           // find minimum distance among warp threads
           constexpr unsigned FULL_MASK = 0xFFFFFFFF;
-          static_assert(KernelPolicy::WARP_SIZE <= 8*sizeof(unsigned int));
+          static_assert(KernelPolicy::WARP_SIZE <= 8*sizeof(unsigned int), "WARP_SIZE exceeds size of bit_offset.");
 
           for (unsigned int bit_offset = KernelPolicy::WARP_SIZE / 2; bit_offset > 0;
                bit_offset /= 2) {
