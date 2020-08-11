@@ -463,13 +463,13 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
   modalities.push_back (&color_gradient_mod_);
   modalities.push_back (&surface_normal_mod_);
 
-  detect (detections, modalities);
+  detect (modalities, detections);
 }
 
 template <typename PointXYZT, typename PointRGBT> void
 pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
-    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections,
-    const std::vector<pcl::QuantizableModality*> & modalities)
+    const std::vector<pcl::QuantizableModality*> & modalities,
+    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections)
 {
   std::vector<pcl::LINEMODDetection> linemod_detections;
   linemod_.detectTemplates (modalities, linemod_detections);

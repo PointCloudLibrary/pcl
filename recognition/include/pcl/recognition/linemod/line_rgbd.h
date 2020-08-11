@@ -262,8 +262,8 @@ namespace pcl
       detect (std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections);
 
       void 
-      detect (std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections,
-              const std::vector<pcl::QuantizableModality*> & modalities);
+      detect (const std::vector<pcl::QuantizableModality*> & modalities,
+              std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections);
 
       /** \brief Applies the detection process in a semi-scale-invariant manner. This is done by acutally
         *        scaling the template to different sizes.
