@@ -149,10 +149,12 @@ class bind:
                         f'.def_readwrite("{sub_item["name"]}", &{self.name}::{sub_item["name"]})'
                     )
 
-            # if sub_item["kind"] == "CXX_METHOD":
-            #     self.linelist.append(
-            #         f'.def("{sub_item["name"]}", &{self.name}::{sub_item["name"]})'
-            #     )
+            if sub_item["kind"] == "CXX_METHOD":
+                # TODO: Add template args, currently blank
+                if sub_item["name"] not in ("PCL_DEPRECATED"):
+                    self.linelist.append(
+                        f'.def("{sub_item["name"]}", py::overload_cast<>(&{self.name}::{sub_item["name"]}))'
+                    )
 
     def handle_constructor(self):
         argument_type_list = []
