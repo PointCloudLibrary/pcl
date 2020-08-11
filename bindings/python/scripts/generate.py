@@ -7,6 +7,7 @@ class bind:
         self._state_stack = []
         self.linelist = []
         self._skipped = []
+        self.inclusion_list = []
         self.kind_functions = {
             "TRANSLATION_UNIT": self.skip,
             "NAMESPACE": self.handle_namespace,
@@ -44,6 +45,9 @@ class bind:
             "UNARY_OPERATOR": self.skip,
             "IF_STMT": self.skip,
             "OBJ_BOOL_LITERAL_EXPR": self.skip,
+            "INCLUSION_DIRECTIVE": self.handle_inclusion_directive,
+            "MACRO_DEFINITION": self.skip,
+            "MACRO_INSTANTIATION": self.skip,
         }
 
         self.handle_node(root)
@@ -207,6 +211,11 @@ class bind:
             )
         else:
             self.linelist.append(f'py::class_<{self.name}>(m, "{self.name}")')
+
+    def handle_inclusion_directive(self):
+        # blacklist = ["pcl/memory.h", "pcl/pcl_macros.h",]
+        if self.name.startswith("pcl"):
+            self.inclusion_list.append(self.name)
 
     def handle_final(self, filename, module_name):
         final = []
