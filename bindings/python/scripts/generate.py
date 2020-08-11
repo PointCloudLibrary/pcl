@@ -158,14 +158,12 @@ class bind:
 
     def handle_constructor(self):
         argument_type_list = []
-        parameter_decl_list = []
         for sub_item in self.members:
             if sub_item["kind"] == "PARM_DECL":
-                parameter_decl_list.append(sub_item["name"])
                 if sub_item["element_type"] == "LValueReference":
                     for sub_sub_item in sub_item["members"]:
                         if sub_sub_item["kind"] == "TYPE_REF":
-                            # @TODO
+                            # @TODO: Make more robust
                             type_ref = (
                                 sub_sub_item["name"]
                                 .replace("struct ", "")
@@ -185,11 +183,8 @@ class bind:
                     argument_type_list.append(f'{sub_item["element_type"].lower()}')
                 else:
                     argument_type_list.append(f'{sub_item["element_type"]}')
-        parameter_decl_list = ",".join([decl + "_a" for decl in parameter_decl_list])
         argument_type_list = ",".join(argument_type_list)
-        self.linelist.append(
-            f".def(py::init<{argument_type_list}>())"  # , {parameter_decl_list})"
-        )
+        self.linelist.append(f".def(py::init<{argument_type_list}>())")
 
     def handle_class_template(self):
         flag = False
