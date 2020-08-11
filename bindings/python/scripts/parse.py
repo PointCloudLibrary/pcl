@@ -30,7 +30,7 @@ def valid_children(node):
     for child in cursor.get_children():
         child_node = {"cursor": child, "filename": filename, "depth": depth + 1}
         # Check if the child belongs to the file
-        if child.location.file is not None and child.location.file.name == filename:
+        if child.location.file and child.location.file.name == filename:
             yield (child_node)
 
 
