@@ -108,7 +108,7 @@ class bind:
     def get_fields_from_anonymous(self, item):
         fields = []
         for sub_item in item["members"]:
-            if sub_item["kind"] in ["ANONYMOUS_UNION_DECL", "ANONYMOUS_STRUCT_DECL"]:
+            if sub_item["kind"] in ("ANONYMOUS_UNION_DECL", "ANONYMOUS_STRUCT_DECL"):
                 for field in self.get_fields_from_anonymous(sub_item):
                     fields.append(field)
             if sub_item["kind"] == "FIELD_DECL":
@@ -190,7 +190,7 @@ class bind:
                             argument_type_list.append(
                                 f'{namespace_ref}{sub_sub_item["name"]}'
                             )
-                elif sub_item["element_type"] in ["Float", "Int"]:
+                elif sub_item["element_type"] in ("Float", "Int"):
                     argument_type_list.append(f'{sub_item["element_type"].lower()}')
                 else:
                     argument_type_list.append(f'{sub_item["element_type"]}')
