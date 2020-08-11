@@ -124,12 +124,13 @@ class bind:
         else:
             self.linelist.append(f'py::class_<{self.name}>(m, "{self.name}")')
 
-
+        # TODO: Merge this and next block via a design updation
         # handle anonymous
         for sub_item in self.members:
             fields = self.get_fields_from_anonymous(sub_item)
             for field in fields:
                 if field["element_type"] == "ConstantArray":
+                    # TODO: FIX: readwrite, not readonly
                     self.linelist.append(
                         f'.def_property_readonly("{field["name"]}", []({self.name}& obj) {{return obj.{field["name"]}; }})'  # float[ ' + f'obj.{sub_item["name"]}' + '.size()];} )'
                     )
@@ -210,14 +211,20 @@ class bind:
             self.linelist.append(f'py::class_<{self.name}>(m, "{self.name}")')
 
     def handle_inclusion_directive(self):
+        # TODO: update blacklist
         # blacklist = ["pcl/memory.h", "pcl/pcl_macros.h",]
         if self.name.startswith("pcl"):
             self.inclusion_list.append(self.name)
 
     def handle_final(self, filename, module_name):
         final = []
+        # TODO: Inclusion list path fix needed
+        # TODO: Currently commented, to be written later
+        # for inclusion in self.inclusion_list:
+        #     final.append(f"#include <{inclusion}>")
         final.append(f"#include <{filename}>")
         final.append("#include <pybind11/pybind11.h>")
+        # TODO: Maybe needed later
         # final.append("#include<pybind11/stl.h>")
         # final.append("#include<pybind11/stl_bind.h>")
         final.append("namespace py = pybind11;")
@@ -245,13 +252,13 @@ def main():
         header_info = utils.read_json(filename=source)
         if header_info:
             bind_object = bind(header_info)
+            # TODO: Remove hardcoded filename
             lines_to_write = bind_object.handle_final(
                 filename="pcl/point_types.h", module_name="pcl"
             )
-            print(bind_object._skipped)
             output_filepath = utils.get_output_path(
                 source=source,
-                output_dir=utils.join_path(args.pybind11_output_path, "pybind11"),
+                output_dir=utils.join_path(args.pybind11_output_path, "pybind11-gen"),
                 split_from="json",
                 extension=".cpp",
             )
