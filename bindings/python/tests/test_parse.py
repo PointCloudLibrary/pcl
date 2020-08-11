@@ -310,6 +310,12 @@ def test_class_template(tmp_path):
     assert class_template["kind"] == "CLASS_TEMPLATE"
     assert class_template["name"] == "AStruct"
 
+    template_type_parameter = class_template["members"][0]
+
+    assert template_type_parameter["kind"] == "TEMPLATE_TYPE_PARAMETER"
+    assert template_type_parameter["name"] == "T"
+    assert template_type_parameter["access_specifier"] == "PUBLIC"
+
 
 def test_template_non_type_parameter(tmp_path):
     file_contents = """
@@ -319,6 +325,10 @@ def test_template_non_type_parameter(tmp_path):
     parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
 
     class_template = parsed_info["members"][0]
+
+    assert class_template["kind"] == "CLASS_TEMPLATE"
+    assert class_template["name"] == "AStruct"
+
     template_non_type_parameter = class_template["members"][0]
 
     assert template_non_type_parameter["kind"] == "TEMPLATE_NON_TYPE_PARAMETER"
@@ -339,11 +349,20 @@ def test_function_template(tmp_path):
     assert function_template["result_type"] == "void"
     assert function_template["name"] == "aFunction"
 
+    template_type_parameter = function_template["members"][0]
+
+    assert template_type_parameter["kind"] == "TEMPLATE_TYPE_PARAMETER"
+    assert template_type_parameter["name"] == "T"
+    assert template_type_parameter["access_specifier"] == "PUBLIC"
+
 
 def test_template_type_parameter(tmp_path):
     file_contents = """
     template <typename T>
     struct AStruct {};
+
+    template <typename P>
+    void aFunction() {}
     """
     parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
 
@@ -353,3 +372,10 @@ def test_template_type_parameter(tmp_path):
     assert template_type_parameter["kind"] == "TEMPLATE_TYPE_PARAMETER"
     assert template_type_parameter["element_type"] == "Unexposed"
     assert template_type_parameter["name"] == "T"
+
+    function_template = parsed_info["members"][1]
+    template_type_parameter = function_template["members"][0]
+
+    assert template_type_parameter["kind"] == "TEMPLATE_TYPE_PARAMETER"
+    assert template_type_parameter["element_type"] == "Unexposed"
+    assert template_type_parameter["name"] == "P"
