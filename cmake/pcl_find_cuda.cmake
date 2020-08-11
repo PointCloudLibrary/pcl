@@ -6,7 +6,7 @@ if(MSVC)
 endif()
 
 set(CUDA_FIND_QUIETLY TRUE)
-find_package(CUDA 7.5)
+find_package(CUDA 9.0)
 
 if(CUDA_FOUND)
   message(STATUS "Found CUDA Toolkit v${CUDA_VERSION_STRING}")
@@ -24,16 +24,12 @@ if(CUDA_FOUND)
 
   # Find a complete list for CUDA compute capabilities at http://developer.nvidia.com/cuda-gpus
 
-  if(NOT ${CUDA_VERSION_STRING} VERSION_LESS "10.0")
+  if(NOT ${CUDA_VERSION_STRING} VERSION_LESS "11.0")
+    set(__cuda_arch_bin "5.2 5.3 6.0 6.1 7.0 7.2 7.5")
+  elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "10.0")
     set(__cuda_arch_bin "3.0 3.5 5.0 5.2 5.3 6.0 6.1 7.0 7.2 7.5")
-  elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "9.1")
-    set(__cuda_arch_bin "3.0 3.5 5.0 5.2 5.3 6.0 6.1 7.0 7.2")
   elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "9.0")
-    set(__cuda_arch_bin "3.0 3.5 5.0 5.2 5.3 6.0 6.1 7.0")
-  elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "8.0")
-    set(__cuda_arch_bin "2.0 2.1(2.0) 3.0 3.5 5.0 5.2 5.3 6.0 6.1")
-  else()
-    set(__cuda_arch_bin "2.0 2.1(2.0) 3.0 3.5 5.0 5.2")
+    set(__cuda_arch_bin "3.0 3.5 5.0 5.2 5.3 6.0 6.1 7.0 7.2")
   endif()
 
   set(CUDA_ARCH_BIN ${__cuda_arch_bin} CACHE STRING "Specify 'real' GPU architectures to build binaries for, BIN(PTX) format is supported")
