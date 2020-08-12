@@ -91,13 +91,13 @@ namespace pcl { namespace device { namespace knn_search
         int query_index;        
         float3 query;  
         
-        float min_distance;
+        float min_distance, min_distance2;
         int min_idx;
 
         OctreeIterator iterator;     
 
         __device__ __forceinline__ Warp_knnSearch(const Batch& batch_arg, const int query_index_arg)
-            : batch(batch_arg), query_index(query_index_arg), min_distance(std::numeric_limits<float>::max()), min_idx(0), iterator(batch.octree) { }
+            : batch(batch_arg), query_index(query_index_arg), min_distance(std::numeric_limits<float>::max()), min_distance2(std::numeric_limits<float>::max()), min_idx(0), iterator(batch.octree) { }
 
         __device__ __forceinline__ void launch(bool active)
         {              
@@ -123,7 +123,7 @@ namespace pcl { namespace device { namespace knn_search
             if (query_index != -1)
             {
                 batch.output[query_index] = batch.indices[min_idx];
-                batch.sqr_distances[query_index] = min_distance*min_distance;
+                batch.sqr_distances[query_index] = min_distance2;
 
                 if (batch.sizes)
                     batch.sizes[query_index]  = 1;
@@ -199,10 +199,11 @@ namespace pcl { namespace device { namespace knn_search
                 const auto nearestPoint = NearestWarpKernel<KernelPolicy::CTA_SIZE>(beg, batch.points_step, end - beg, active_query);
 
                 if (active_lane == laneId)
-                    if (min_distance > nearestPoint.second)
+                    if (min_distance2 > nearestPoint.second)
                     {
-                       min_distance = nearestPoint.second;
+                       min_distance2 = nearestPoint.second;
                        min_idx = beg + nearestPoint.first;
+                       min_distance = sqrt(nearestPoint.second);
                     }
             }
         }
@@ -249,9 +250,9 @@ namespace pcl { namespace device { namespace knn_search
 
           // retrieve index and distance
           index = __shfl_sync(FULL_MASK, index, 0);
-          const float dist = sqrt(__shfl_sync(FULL_MASK, dist2, 0));
+          dist2 = __shfl_sync(FULL_MASK, dist2, 0);
 
-          return std::make_pair(index, dist);
+          return std::make_pair(index, dist2);
         }
     };
     
