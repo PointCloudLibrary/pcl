@@ -170,7 +170,7 @@ void pcl::gpu::Octree::approxNearestSearch(const Queries& queries, NeighborIndic
     static_cast<OctreeImpl*>(impl)->approxNearestSearch(q, results);
 }
 
-void pcl::gpu::Octree::nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results) const
+void pcl::gpu::Octree::nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results, ResultSqrDists& sqr_distances) const
 {    
     if (k != 1)
         throw pcl::PCLException("OctreeGPU::knnSearch is supported only for k == 1", __FILE__, "", __LINE__);
@@ -180,7 +180,7 @@ void pcl::gpu::Octree::nearestKSearchBatch(const Queries& queries, int k, Neighb
 
 	const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
 
-    static_cast<OctreeImpl*>(impl)->nearestKSearchBatch(q, k, results);
+    static_cast<OctreeImpl*>(impl)->nearestKSearchBatch(q, k, results, sqr_distances);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////

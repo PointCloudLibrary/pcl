@@ -99,7 +99,7 @@ namespace pcl
 
             void approxNearestSearch(const Queries& queries, NeighborIndices& results) const;
             
-            void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results) const;
+            void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results, BatchResultSqrDists& sqr_distances) const;
             
             //just reference 
             PointCloud points;

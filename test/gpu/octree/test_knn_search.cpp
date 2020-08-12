@@ -114,6 +114,8 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
             
     //prepare output buffers on device
     pcl::gpu::NeighborIndices result_device(data.tests_num, k);    
+    pcl::gpu::Octree::ResultSqrDists result_sqr_distances;
+    result_sqr_distances.create(data.tests_num * k);
 
     //prepare output buffers on host
     std::vector<std::vector<  int> > result_host(data.tests_num);   
@@ -127,12 +129,15 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
     //search GPU shared
     {
         pcl::ScopeTime time("1nn-gpu");
-        octree_device.nearestKSearchBatch(queries_device, k, result_device);
+        octree_device.nearestKSearchBatch(queries_device, k, result_device, result_sqr_distances);
     }
 
     std::vector<int> downloaded, downloaded_cur;
     result_device.data.download(downloaded);
-                 
+
+    std::vector<float> downloaded_sqr_dists, downloaded_sqr_dists_cur;
+    result_sqr_distances.download(downloaded_sqr_dists);
+
     {
         pcl::ScopeTime time("1nn-cpu");
         for(std::size_t i = 0; i < data.tests_num; ++i)
@@ -149,8 +154,12 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
         int beg = i * k;
         int end = beg + k;
 
+        const std::vector<float>::iterator beg_dist2 = downloaded_sqr_dists.begin() + beg;
+        const std::vector<float>::iterator end_dist2 = downloaded_sqr_dists.begin() + end;
+
         downloaded_cur.assign(downloaded.begin() + beg, downloaded.begin() + end);
-        
+        downloaded_sqr_dists_cur.assign(beg_dist2, end_dist2);
+
         std::vector<PriorityPair> pairs_host;
         std::vector<PriorityPair> pairs_gpu;
         for(int n = 0; n < k; ++n)
@@ -162,9 +171,7 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
 
             PriorityPair gpu;
             gpu.index = downloaded_cur[n];
-
-            float dist = (data.queries[i].getVector3fMap() - data.points[gpu.index].getVector3fMap()).norm();
-            gpu.dist2 = dist * dist;
+            gpu.dist2 = downloaded_sqr_dists_cur[n];
             pairs_gpu.push_back(gpu);
         }
         

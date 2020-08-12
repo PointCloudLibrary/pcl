@@ -150,8 +150,9 @@ namespace pcl
               * \param[in] queries array of centers
               * \param[in] k number of neighbors (only k == 1 is supported)
               * \param[out] results array of results
+              * \param[out] sqr_distances square distances to results (must be resized to (k * num of queries) a priori!)
               */
-            void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results) const;
+            void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results, ResultSqrDists& sqr_distances) const;
 
             /** \brief Desroys octree and release all resources */
             void clear();            
