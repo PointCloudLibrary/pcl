@@ -86,7 +86,12 @@ def test_namespace_ref(tmp_path):
     """
     parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
 
-    var_decl = parsed_info["members"][0]
+    inclusion_directive = parsed_info["members"][0]
+
+    assert inclusion_directive["kind"] == "INCLUSION_DIRECTIVE"
+    assert inclusion_directive["name"] == "ostream"
+
+    var_decl = parsed_info["members"][1]
     namespace_ref = var_decl["members"][0]
 
     assert namespace_ref["kind"] == "NAMESPACE_REF"

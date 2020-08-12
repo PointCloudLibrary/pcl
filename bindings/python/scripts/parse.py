@@ -5,32 +5,6 @@ from context import scripts
 import scripts.utils as utils
 
 
-def is_node_in_this_file(node):
-    """
-    Checks if the node in the AST is a valid node:
-        - Check 1: The cursor's location should have file attribute (cursor.location.file -> not NoneType)
-        - Check 2: The cursor should belong to the file (cursor.location.file.name -> filename)
-    
-    Arguments:
-        - node (dict):
-            - The node in the AST
-            - Keys:
-                - cursor : The cursor pointing to the node
-                - filename : The file's name to check the node against
-                - depth: The depth of the node (root=0)
-        
-    Returns:
-        - True/False (bool)
-    """
-
-    cursor = node["cursor"]
-    filename = node["filename"]
-
-    if cursor.location.file is not None:
-        return cursor.location.file.name == filename
-    return False
-
-
 def valid_children(node):
     """
     A generator function for yielding valid children nodes
@@ -56,7 +30,7 @@ def valid_children(node):
     for child in cursor.get_children():
         child_node = {"cursor": child, "filename": filename, "depth": depth + 1}
         # Check if the child belongs to the file
-        if is_node_in_this_file(child_node):
+        if child.location.file and child.location.file.name == filename:
             yield (child_node)
 
 
@@ -141,9 +115,7 @@ def generate_parsed_info(node):
     # Get cursor's children and recursively add their info to a dictionary, as members of the parent
     for child_node in valid_children(node):
         child_parsed_info = generate_parsed_info(child_node)
-        # If both child and parent's info is not empty (opening check for dictionary population), add child's info to parent's members
-        if child_parsed_info and parsed_info:
-            parsed_info["members"].append(child_parsed_info)
+        parsed_info["members"].append(child_parsed_info)
 
     return parsed_info
 
@@ -207,8 +179,18 @@ def parse_file(source, compilation_database_path=None):
         compilation_database_path=compilation_database_path, filename=source,
     )
 
-    # Parse the given source code file by running clang and generating the AST before loading
-    source_ast = index.parse(path=source, args=compilation_commands)
+    """
+    - Parse the given source code file by running clang and generating the AST before loading
+    - option `PARSE_DETAILED_PROCESSING_RECORD`:
+        - Indicates that the parser should construct a detailed preprocessing record, 
+          including all macro definitions and instantiations.
+        - Required to get the `INCLUSION_DIRECTIVE`s.
+    """
+    source_ast = index.parse(
+        path=source,
+        args=compilation_commands,
+        options=clang.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
+    )
 
     # Dictionary to hold a node's information
     root_node = {
