@@ -23,7 +23,13 @@ if(CUDA_FOUND)
   # To add support of older GPU for kinfu, I would embed PTX 11 and 12 into so-file. GPU with sm_13 will run PTX 12 code (no difference for kinfu)
 
   # Find a complete list for CUDA compute capabilities at http://developer.nvidia.com/cuda-gpus
-
+  
+  # For a list showing CUDA toolkit version support for compute capabilities see: https://en.wikipedia.org/wiki/CUDA
+  # or the nvidia release notes ie: 
+  # https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#cuda-general-new-features
+  # or
+  # https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html#deprecated-features
+  
   if(NOT ${CUDA_VERSION_STRING} VERSION_LESS "11.0")
     set(__cuda_arch_bin "5.2 5.3 6.0 6.1 7.0 7.2 7.5")
   elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "10.0")
