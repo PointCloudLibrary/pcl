@@ -38,8 +38,8 @@
 #include "pcl/gpu/utils/safe_call.hpp"
 
 #include "internal.hpp"
+#include "utils/approx_nearest_utils.hpp"
 #include "utils/boxutils.hpp"
-#include "approx_nsearch.hpp"
 
 #include<algorithm>
 #include<limits>
@@ -90,18 +90,6 @@ void pcl::device::OctreeImpl::internalDownload()
 
 namespace 
 {
-    int getBitsNum(int integer)
-    {
-        int count = 0;
-        while(integer > 0)
-        {
-            if (integer & 1)
-                ++count;
-            integer>>=1;
-        }
-        return count;
-    } 
-
     struct OctreeIteratorHost
     {        
         const static int MAX_LEVELS_PLUS_ROOT = 11;
@@ -229,44 +217,7 @@ void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, i
     const float3& maxp = octreeGlobal.maxp;
     float3 query_point = make_float3(query.x, query.y, query.z);
 
-    size_t node_idx = 0;
-    const auto code = CalcMorton(minp, maxp)(query);
-    unsigned level = 0;
-
-    bool voxel_traversal = false;
-    uint3 index = Morton::decomposeCode(code);
-    std::uint8_t mask_pos;
-
-    while(true)
-    {
-        const auto node = host_octree.nodes[node_idx];
-        const std::uint8_t mask = node & 0xFF;
-
-        if(!mask)  // leaf
-            break;
-
-        if (voxel_traversal)    // empty voxel already encountered, performing nearest-centroid based traversal
-            std::tie(index, mask_pos) = pcl::device::appnearest_search::nearestVoxel(query_point, level, mask, minp, maxp, index);
-
-        else
-        {
-            mask_pos = 1 << Morton::extractLevelCode(code, level);
-
-            if (!(mask & mask_pos)) // child doesn't exist
-            {
-                const auto remaining_depth = Morton::levels - level;
-                index.x >>= remaining_depth;
-                index.y >>= remaining_depth;
-                index.z >>= remaining_depth;
-
-                voxel_traversal = true;
-                std::tie(index, mask_pos) = pcl::device::appnearest_search::nearestVoxel(query_point, level, mask, minp, maxp, index);
-            }
-        }
-
-        node_idx = (node >> 8) + getBitsNum(mask & (mask_pos - 1));
-        ++level;
-    }
+    const int node_idx = pcl::device::findNode(minp, maxp, query_point, host_octree.nodes);
 
     int beg = host_octree.begs[node_idx];
     int end = host_octree.ends[node_idx];

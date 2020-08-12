@@ -44,53 +44,14 @@
 #include "utils/copygen.hpp"
 #include "utils/boxutils.hpp"
 #include "utils/scan_block.hpp"
+#include "utils/approx_nearest_utils.hpp"
 
 
 namespace pcl { namespace device { namespace appnearest_search
 {
     using PointType = OctreeImpl::PointType;
 
-	__host__ __device__  std::pair<uint3, std::uint8_t> nearestVoxel(const float3 query, const unsigned& level, const std::uint8_t& mask, const float3& minp, const float3& maxp, const uint3& index)
-	{
-		assert(mask != 0);
-		//identify closest voxel
-		float closest_distance = std::numeric_limits<float>::max();
-		unsigned closest_index = 0;
-		uint3 closest = make_uint3(0,0,0);
 
-		for (unsigned i = 0; i < 8; ++i)
-		{
-			if ((mask & (1<<i)) == 0)   //no child
-				continue;
-
-			const uint3 child = make_uint3(
-				(index.x << 1) + (i & 1),
-				(index.y << 1) + ((i>>1) & 1),
-				(index.z << 1) + ((i>>2) & 1));
-
-			//find center of child cell
-			const unsigned voxel_width = 1 << (level + 2);
-			const float3 voxel_center = make_float3(
-				minp.x + (maxp.x - minp.x) * (2*child.x + 1) / voxel_width,
-				minp.y + (maxp.y - minp.y) * (2*child.y + 1) / voxel_width,
-				minp.z + (maxp.z - minp.z) * (2*child.z + 1) / voxel_width);
-
-			//compute distance to centroid
-			const float3 dist = make_float3(voxel_center.x - query.x, voxel_center.y - query.y, voxel_center.z - query.z);
-
-			const float distance_to_query = dist.x * dist.x + dist.y * dist.y + dist.z * dist.z;
-
-			//compare distance
-			if (distance_to_query < closest_distance)
-			{
-				closest_distance = distance_to_query;
-				closest_index = i;
-				closest = child;
-			}
-		}
-
-		return std::pair<uint3, std::uint8_t>(closest, 1<<closest_index);
-	}
 
 	struct Batch
 	{   
@@ -138,8 +99,11 @@ namespace pcl { namespace device { namespace appnearest_search
 				PointType q = batch.queries[query_index];
 				query = make_float3(q.x, q.y, q.z);                        
 
-				node_idx = findNode();
-			}           
+				const float3& minp = batch.octree.minp;
+				const float3& maxp = batch.octree.maxp;
+
+				node_idx = pcl::device::findNode(minp ,maxp, query, batch.octree.nodes);
+			}
 
 			processNode(node_idx);                    
 
@@ -148,57 +112,6 @@ namespace pcl { namespace device { namespace appnearest_search
 		}    
 
 	private:
-
-		__device__ __forceinline__ int findNode()
-		{
-			const float3& minp = batch.octree.minp;
-			const float3& maxp = batch.octree.maxp;
-
-			size_t node_idx = 0;
-			const auto code = CalcMorton(minp, maxp)(query);
-			unsigned level = 0;
-
-			bool voxel_traversal = false;
-			uint3 index = Morton::decomposeCode(code);
-			std::uint8_t mask_pos;
-
-			while(true)
-			{
-				const auto node = batch.octree.nodes[node_idx];
-				const std::uint8_t mask = node & 0xFF;
-
-				if(!mask)  // leaf
-					return node_idx;
-
-					if (voxel_traversal)    // empty voxel already encountered, performing nearest-centroid based traversal
-					{
-						const auto nearest_voxel = nearestVoxel(query, level, mask, minp, maxp, index);
-						index = nearest_voxel.first;
-						mask_pos = nearest_voxel.second;
-					}
-					else
-					{
-						mask_pos = 1 << Morton::extractLevelCode(code, level);
-
-						if (!(mask & mask_pos)) // child doesn't exist
-						{
-							const auto remaining_depth = Morton::levels - level;
-							index.x >>= remaining_depth;
-							index.y >>= remaining_depth;
-							index.z >>= remaining_depth;
-
-							voxel_traversal = true;
-							const auto nearest_voxel = nearestVoxel(query, level, mask, minp, maxp, index);
-							index = nearest_voxel.first;
-							mask_pos = nearest_voxel.second;
-						}
-					}
-
-				node_idx = (node >> 8) + __popc(mask & (mask_pos - 1));
-				++level;
-			}
-		};
-
 
 		__device__ __forceinline__ void processNode(int node_idx)
 		{   
