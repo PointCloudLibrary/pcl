@@ -44,6 +44,7 @@
 #include <cstdlib>
 #include <cassert>
 #include <cstring> // for memcpy
+#include <iterator> // for back_inserter
 
 
 // user defined I/O callback methods for libPNG
