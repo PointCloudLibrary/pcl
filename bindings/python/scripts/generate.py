@@ -57,6 +57,14 @@ class bind:
         self.handle_node(root)
 
     def skip(self):
+        """
+        Used to keep track of skipped elements, for debugging purposes.
+
+        Skipped elements can be:
+            - elements which are not handled in their own function, or
+            - elements which are not handled at all (skipped).
+        """
+
         self._skipped.append(
             {
                 "line": self.item["line"],
@@ -67,6 +75,10 @@ class bind:
         )
 
     def close(self):
+        """
+        Used for adding ending characters (braces, semicolons, etc.) when state's scope ends.
+        """
+
         if self._state_stack[-1]["kind"] == "NAMESPACE":
             self.linelist.append("}")
         if self._state_stack[-1]["kind"] == "STRUCT_DECL":
@@ -75,6 +87,22 @@ class bind:
             self.linelist.append(";")
 
     def handle_node(self, item):
+        """
+        Function for handling a node (any type).
+
+        - Not to be called explicitly, it is called when a class' object is initialised.
+        - Begins with the root i.e., TRANSLATION_UNIT and then recursively works through the AST.
+        - Function pipeline:
+          >>>
+          |  1. Initialisations of member variables like item, kind, name, etc.
+          |  2. Push the item's info to the state stack.
+          |  3. Call the designated function for the item.
+          |  4. If the designated function was not to skip the item's handling, recursively call its members' functions.
+          <<<
+            5. Close the scope, if applicable.
+            6. Pop the item's info from the stack.
+        """
+
         self.item = item
         self.kind = self.item["kind"]
         self.name = self.item["name"] if "name" in self.item else ""
@@ -96,9 +124,23 @@ class bind:
         self._state_stack.pop()
 
     def handle_namespace(self):
+        """
+        Handles `CursorKind.NAMESPACE`
+        """
+
         self.linelist.append(f"namespace {self.name}" + "{")
 
     def get_fields_from_anonymous(self, item):
+        """
+        Helper function to extract fields from anonymous types.
+
+        Parameters:
+            - item (dict): the anonymous type item from which to extract fields
+        
+        Returns:
+            - fields (list): A list of items of kind `CursorKind.FIELD_DECL`
+        """
+
         fields = []
         for sub_item in item["members"]:
             if sub_item["kind"] in ("ANONYMOUS_UNION_DECL", "ANONYMOUS_STRUCT_DECL"):
