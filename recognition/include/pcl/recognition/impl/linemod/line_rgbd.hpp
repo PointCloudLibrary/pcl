@@ -261,20 +261,18 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
   std::vector<MaskMap*> masks;
   {
     typename pcl::PointCloud<PointRGBT>::Ptr pColors(&cloud);
-    pcl::ColorGradientModality<PointRGBT>* color_gradient_mod = new pcl::ColorGradientModality<PointRGBT>();
-    color_gradient_mod->setInputCloud (pColors);
-    color_gradient_mod->processInputData ();
+    color_gradient_mod_.setInputCloud (pColors);
+    color_gradient_mod_.processInputData ();
 
-    modalities.push_back (color_gradient_mod);
+    modalities.push_back (&color_gradient_mod_);
     masks.push_back (const_cast<MaskMap*> (&mask_rgb));
   }
   {
     typename pcl::PointCloud<PointXYZT>::Ptr pPoints(&cloud);
-    pcl::SurfaceNormalModality<PointXYZT>* surface_normal_mod = new pcl::SurfaceNormalModality<PointXYZT>();
-    surface_normal_mod->setInputCloud (pPoints);
-    surface_normal_mod->processInputData ();
+    surface_normal_mod_.setInputCloud (pPoints);
+    surface_normal_mod_.processInputData ();
 
-    modalities.push_back (surface_normal_mod);
+    modalities.push_back (&surface_normal_mod_);
     masks.push_back (const_cast<MaskMap*> (&mask_rgb));
   }
 
