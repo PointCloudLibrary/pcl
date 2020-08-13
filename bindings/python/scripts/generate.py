@@ -56,13 +56,6 @@ class bind:
 
         self.handle_node(root)
 
-    # TODO: Not used, maybe remove
-    def get_prev_depth_node(self):
-        for prev_item in reversed(self._state_stack):
-            if prev_item["depth"] == self.depth - 1:
-                return prev_item
-        return
-
     def skip(self):
         self._skipped.append(
             {
