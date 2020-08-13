@@ -104,21 +104,23 @@ stages:
       vmImage: 'ubuntu-latest'
     variables:
       PUBLISH_LOCATION: '$(Build.ArtifactStagingDirectory)'
+      SOURCE_LOCATION: '$(Build.SourcesDirectory)'
     steps:
     - checkout: self
       # find the commit hash on a quick non-forced update too
       fetchDepth: 10
+      path: 'pcl'
     - task: Bash@3
       displayName: "Remove git files"
       inputs:
         targetType: 'inline'
         script: 'rm -fr ./.git'
-        workingDirectory: '$(Build.SourcesDirectory)'
+        workingDirectory: '$(SOURCE_LOCATION)'
         failOnStderr: true
     - task: ArchiveFiles@2
       displayName: "Create release archive (.tar.gz)"
       inputs:
-        rootFolderOrFile: '$(Build.SourcesDirectory)'
+        rootFolderOrFile: '$(SOURCE_LOCATION)'
         includeRootFolder: true
         archiveType: 'tar'
         archiveFile: '$(PUBLISH_LOCATION)/source.tar.gz'
@@ -127,7 +129,7 @@ stages:
     - task: ArchiveFiles@2
       displayName: "Create release archive (.zip)"
       inputs:
-        rootFolderOrFile: '$(Build.SourcesDirectory)'
+        rootFolderOrFile: '$(SOURCE_LOCATION)'
         includeRootFolder: true
         archiveType: 'zip'
         archiveFile: '$(PUBLISH_LOCATION)/source.zip'
