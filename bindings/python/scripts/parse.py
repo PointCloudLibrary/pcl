@@ -9,7 +9,7 @@ def valid_children(node):
     """
     A generator function for yielding valid children nodes
 
-    Arguments:
+    Parameters:
         - node (dict):
             - The node in the AST
             - Keys:
@@ -38,7 +38,7 @@ def print_ast(node):
     """
     Prints the AST by recursively traversing the AST
 
-    Arguments:
+    Parameters:
         - node (dict):
             - The node in the AST
             - Keys:
@@ -72,7 +72,7 @@ def generate_parsed_info(node):
     """
     Generates parsed information by recursively traversing the AST
 
-    Arguments:
+    Parameters:
         - node (dict):
             - The node in the AST
             - Keys:
@@ -124,7 +124,7 @@ def get_compilation_commands(compilation_database_path, filename):
     """
     Returns the compilation commands extracted from the compilation database
 
-    Arguments:
+    Parameters:
         - compilation_database_path: The path to `compile_commands.json`
         - filename: The file's name to get its compilation commands
 
@@ -163,7 +163,7 @@ def parse_file(source, compilation_database_path=None):
     """
     Returns the parsed_info for a file
 
-    Arguments:
+    Parameters:
         - source: Source to parse
         - compilation_database_path: The path to `compile_commands.json`
 
