@@ -8,46 +8,46 @@ class bind:
         self.linelist = []
         self._skipped = []
         self.inclusion_list = []
-        pybind_handle = self.skip  # handled by pybind11
-        other_function_handle = self.skip  # handled in another kind's function
-        unnecessary_kind = self.skip  # unnecessary kind
+        handled_by_pybind = self.skip  # handled by pybind11
+        handled_elsewhere = self.skip  # handled in another kind's function
+        no_need_to_handle = self.skip  # unnecessary kind
         unsure = self.skip  # unsure as to needed or not
         self.kind_functions = {
-            "TRANSLATION_UNIT": unnecessary_kind,
+            "TRANSLATION_UNIT": no_need_to_handle,
             "NAMESPACE": self.handle_namespace,
-            "NAMESPACE_REF": other_function_handle,  # in (handle_constructor)
+            "NAMESPACE_REF": handled_elsewhere,  # in (handle_constructor)
             "STRUCT_DECL": self.handle_struct_decl,
-            "CXX_BASE_SPECIFIER": other_function_handle,  # in (handle_struct_decl)
-            "CXX_METHOD": other_function_handle,  # in (handle_struct_decl)
-            "VAR_DECL": pybind_handle,
-            "TYPE_REF": other_function_handle,  # in (handle_constructor)
+            "CXX_BASE_SPECIFIER": handled_elsewhere,  # in (handle_struct_decl)
+            "CXX_METHOD": handled_elsewhere,  # in (handle_struct_decl)
+            "VAR_DECL": handled_by_pybind,
+            "TYPE_REF": handled_elsewhere,  # in (handle_constructor)
             "CONSTRUCTOR": self.handle_constructor,
-            "PARM_DECL": other_function_handle,  # in (handle_constructor)
-            "CALL_EXPR": pybind_handle,
+            "PARM_DECL": handled_elsewhere,  # in (handle_constructor)
+            "CALL_EXPR": handled_by_pybind,
             "UNEXPOSED_EXPR": unsure,
             "MEMBER_REF_EXPR": unsure,
             "DECL_REF_EXPR": unsure,
-            "FIELD_DECL": other_function_handle,  # in (handle_struct_decl)
-            "MEMBER_REF": pybind_handle,
+            "FIELD_DECL": handled_elsewhere,  # in (handle_struct_decl)
+            "MEMBER_REF": handled_by_pybind,
             "CLASS_TEMPLATE": self.skip,  # self.handle_class_template
-            "TEMPLATE_NON_TYPE_PARAMETER": other_function_handle,  # in (handle_class_template)
+            "TEMPLATE_NON_TYPE_PARAMETER": handled_elsewhere,  # in (handle_class_template)
             "FUNCTION_TEMPLATE": self.skip,  # to be added later
-            "ANONYMOUS_UNION_DECL": other_function_handle,  # in (handle_struct_decl) via get_fields_from_anonymous
-            "ALIGNED_ATTR": unnecessary_kind,
+            "ANONYMOUS_UNION_DECL": handled_elsewhere,  # in (handle_struct_decl) via get_fields_from_anonymous
+            "ALIGNED_ATTR": no_need_to_handle,
             "INTEGER_LITERAL": unsure,
-            "ANONYMOUS_STRUCT_DECL": other_function_handle,  # in (handle_struct_decl) via get_fields_from_anonymous
-            "COMPOUND_STMT": unnecessary_kind,
+            "ANONYMOUS_STRUCT_DECL": handled_elsewhere,  # in (handle_struct_decl) via get_fields_from_anonymous
+            "COMPOUND_STMT": no_need_to_handle,
             "FLOATING_LITERAL": unsure,
-            "BINARY_OPERATOR": unnecessary_kind,
-            "ARRAY_SUBSCRIPT_EXPR": pybind_handle,
-            "CXX_THROW_EXPR": pybind_handle,
+            "BINARY_OPERATOR": no_need_to_handle,
+            "ARRAY_SUBSCRIPT_EXPR": handled_by_pybind,
+            "CXX_THROW_EXPR": handled_by_pybind,
             "FRIEND_DECL": unsure,
             "FUNCTION_DECL": unsure,
-            "INIT_LIST_EXPR": unnecessary_kind,
-            "RETURN_STMT": pybind_handle,
+            "INIT_LIST_EXPR": no_need_to_handle,
+            "RETURN_STMT": handled_by_pybind,
             "OVERLOADED_DECL_REF": unsure,
-            "UNARY_OPERATOR": unnecessary_kind,
-            "IF_STMT": unnecessary_kind,
+            "UNARY_OPERATOR": no_need_to_handle,
+            "IF_STMT": no_need_to_handle,
             "OBJ_BOOL_LITERAL_EXPR": unsure,
             "INCLUSION_DIRECTIVE": self.handle_inclusion_directive,
             "MACRO_DEFINITION": unsure,
