@@ -76,7 +76,7 @@ pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
     return;
   }
 
-  std::vector<std::uint32_t> remaining_vertices (n_vertices);
+  Indices remaining_vertices (n_vertices);
   if (area (vertices.vertices) > 0) // clockwise?
     remaining_vertices = vertices.vertices;
   else
@@ -112,7 +112,7 @@ pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 float
-pcl::EarClipping::area (const std::vector<std::uint32_t>& vertices)
+pcl::EarClipping::area (const Indices& vertices)
 {
     //if the polygon is projected onto the xy-plane, the area of the polygon is determined
     //by the trapeze formula of Gauss. However this fails, if the projection is one 'line'.
@@ -146,10 +146,9 @@ pcl::EarClipping::area (const std::vector<std::uint32_t>& vertices)
     return area * 0.5f; 
 }
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::EarClipping::isEar (int u, int v, int w, const std::vector<std::uint32_t>& vertices)
+pcl::EarClipping::isEar (int u, int v, int w, const Indices& vertices)
 {
   Eigen::Vector3f p_u, p_v, p_w;
   p_u = (*points_)[vertices[u]].getVector3fMap();
