@@ -165,7 +165,13 @@ namespace pcl
       }
 
       inline void
-      setClusteringThreshold (const size_t threshold = 1)
+      setClusteringThreshold2D (const size_t threshold = 0)
+      {
+        linemod_.setClusteringThreshold (threshold);
+      }
+
+      inline void
+      setClusteringThreshold3D (const size_t threshold = 1)
       {
         clustering_threshold_ = threshold;
       }

@@ -47,12 +47,14 @@
 #endif
 
 #include <fstream>
+#include <map>
 
 //#define LINEMOD_USE_SEPARATE_ENERGY_MAPS
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::LINEMOD::LINEMOD () 
   : template_threshold_ (0.75f)
+  , clustering_threshold_ (0)  // 0 for disabled
   , use_non_max_suppression_ (false)
   , average_detections_ (false)
   , templates_ ()
@@ -134,8 +136,79 @@ pcl::LINEMOD::addTemplate (const SparseQuantizedMultiModTemplate & linemod_templ
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & detections) const
+pcl::LINEMOD::removeOverlappingDetections (const std::vector<LINEMODDetection> & detections, std::vector<LINEMODDetection> & clustered_detections) const
 {
+  // check if clustering is disabled
+  if (clustering_threshold_ == 0) {
+    clustered_detections = detections;
+    return;
+  }
+
+  // compute overlap between each detection
+  const size_t nr_detections = detections.size ();
+
+  typedef std::tuple<size_t, size_t> ClusteringKey;
+  std::map<ClusteringKey, std::vector<size_t>> clusters;
+  for (size_t detection_id = 0; detection_id < nr_detections; ++detection_id)
+  {
+    const ClusteringKey key = {
+      detections[detection_id].x / clustering_threshold_,
+      detections[detection_id].y / clustering_threshold_,
+    };
+
+    clusters[key].push_back(detection_id);
+  }
+
+  size_t cluster_id;
+  std::map<ClusteringKey, std::vector<size_t>>::iterator it;
+  for (cluster_id = 0, it = clusters.begin(); it != clusters.end(); ++cluster_id, ++it)
+  {
+    const std::vector<size_t> & cluster = it->second;
+    float weight_sum = 0.0f;
+
+    float best_score = 0.0f;
+    size_t best_detection_id = 0;
+
+    float average_region_x = 0.0f;
+    float average_region_y = 0.0f;
+
+    const size_t elements_in_cluster = cluster.size ();
+    for (size_t cluster_index = 0; cluster_index < elements_in_cluster; ++cluster_index)
+    {
+      const size_t detection_id = cluster[cluster_index];
+
+      const float weight = detections[detection_id].score;
+
+      if (weight > best_score)
+      {
+        best_score = weight;
+        best_detection_id = detection_id;
+      }
+
+      const LINEMODDetection & d = detections[detection_id];
+      weight_sum += weight;
+
+      average_region_x += float (detections[detection_id].x) * weight;
+      average_region_y += float (detections[detection_id].y) * weight;
+    }
+
+    const float inv_weight_sum = 1.0f / weight_sum;
+    LINEMODDetection detection;
+    detection.template_id = detections[best_detection_id].template_id;
+    detection.score = best_score;
+    detection.x = int (average_region_x * inv_weight_sum);
+    detection.y = int (average_region_y * inv_weight_sum);
+
+    clustered_detections.push_back (detection);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & _detections) const
+{
+  std::vector<LINEMODDetection> detections;
+
   // create energy maps
   std::vector<EnergyMaps> modality_energy_maps;
   const size_t nr_modalities = modalities.size();
@@ -381,12 +454,16 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
     for (size_t bin_index = 0; bin_index < modality_linearized_maps[modality_index].size (); ++bin_index)
       modality_linearized_maps[modality_index][bin_index].releaseAll ();
   }
+
+  removeOverlappingDetections (detections, _detections);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & detections) const
+pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & _detections) const
 {
+  std::vector<LINEMODDetection> detections;
+
   // create energy maps
   std::vector<EnergyMaps> modality_energy_maps;
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
@@ -847,6 +924,8 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
 #endif
     }
   }
+
+  removeOverlappingDetections (detections, _detections);
 }
 
 #include <time.h>
@@ -859,11 +938,13 @@ return (size_t)tp.tv_sec*1000000000 + tp.tv_nsec;
 void
 pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
     const std::vector<QuantizableModality*> & modalities,
-    std::vector<LINEMODDetection> & detections,
+    std::vector<LINEMODDetection> & _detections,
     const float min_scale,
     const float max_scale,
     const float scale_multiplier) const
 {
+  std::vector<LINEMODDetection> detections;
+
   // create energy maps
   std::vector<EnergyMaps> modality_energy_maps;
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
@@ -1453,6 +1534,9 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 #endif
     }
   }
+
+  removeOverlappingDetections (detections, _detections);
+
   // printf("4 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 }

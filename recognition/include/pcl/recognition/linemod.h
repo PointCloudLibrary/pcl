@@ -364,6 +364,10 @@ namespace pcl
       int
       addTemplate (const SparseQuantizedMultiModTemplate & linemod_template);
 
+      void
+      removeOverlappingDetections (const std::vector<LINEMODDetection> & detections,
+                                   std::vector<LINEMODDetection> & clustered_detections) const;
+
       /** \brief Detects the stored templates in the supplied modality data.
         * \param[in] modalities the modalities that will be used for detection.
         * \param[out] detections the destination for the detections.
@@ -402,6 +406,12 @@ namespace pcl
       setDetectionThreshold (float threshold)
       {
         template_threshold_ = threshold;
+      }
+
+      inline void
+      setClusteringThreshold (const size_t threshold = 0)
+      {
+        clustering_threshold_ = threshold;
       }
 
       /** \brief Enables/disables non-maximum suppression.
@@ -485,6 +495,7 @@ namespace pcl
     private:
       /** template response threshold */
       float template_threshold_;
+      size_t clustering_threshold_;
       /** states whether non-max-suppression on detections is enabled or not */
       bool use_non_max_suppression_;
       /** states whether to return an averaged detection */
