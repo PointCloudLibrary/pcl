@@ -182,7 +182,7 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
  
   // Iterate over each point and perform the appropriate memcpys
   int point_offset = 0;
-  for (std::size_t cp = 0; cp < cloud_out.width * cloud_out.height; ++cp)
+  for (index_t cp = 0; cp < cloud_out.width * cloud_out.height; ++cp)
   {
     memcpy (&cloud_out.data[point_offset], &cloud2.data[cp * cloud2.point_step], cloud2.point_step);
     int field_offset = cloud2.point_step;
@@ -277,7 +277,7 @@ pcl::concatenatePointCloud (const pcl::PCLPointCloud2 &cloud1,
     cloud_out.data.resize (nrpts + (cloud2.width * cloud2.height) * cloud_out.point_step);
 
     // Copy the second cloud
-    for (std::size_t cp = 0; cp < cloud2.width * cloud2.height; ++cp)
+    for (index_t cp = 0; cp < cloud2.width * cloud2.height; ++cp)
     {
       int i = 0;
       for (std::size_t j = 0; j < fields2.size (); ++j)
