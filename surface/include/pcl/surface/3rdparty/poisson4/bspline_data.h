@@ -129,7 +129,7 @@ namespace pcl
         void upSample( BSplineElements& high ) const;
         void differentiate( BSplineElements< Degree-1 >& d ) const;
 
-        void print( FILE* fp=stdout ) const
+        void print( FILE* ) const
         {
           for( int i=0 ; i<this->size() ; i++ )
           {

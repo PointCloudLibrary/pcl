@@ -13,6 +13,7 @@
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/memory.h> // for pcl::make_shared
+#include <pcl/types.h>  // for pcl::index_t
 
 namespace pcl {
 namespace rec_3d_framework {
@@ -187,7 +188,7 @@ public:
       // check nans before computing normals
       {
         pcl::ScopeTime t("check nans...");
-        std::size_t j = 0;
+        pcl::index_t j = 0;
         for (const auto& point : *out) {
           if (!isXYZFinite(point))
             continue;
@@ -196,7 +197,7 @@ public:
           j++;
         }
 
-        if (j != static_cast<int>(out->size())) {
+        if (j != static_cast<pcl::index_t>(out->size())) {
           PCL_ERROR("Contain nans...");
         }
 
