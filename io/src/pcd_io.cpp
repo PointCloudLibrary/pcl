@@ -461,7 +461,7 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
           total += cloud.fields[d].count; // jump over this many elements in the string token
           continue;
         }
-        for (unsigned int c = 0; c < cloud.fields[d].count; ++c)
+        for (uindex_t c = 0; c < cloud.fields[d].count; ++c)
         {
           switch (cloud.fields[d].datatype)
           {
@@ -619,7 +619,7 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
   {
     for (unsigned int d = 0; d < static_cast<unsigned int> (cloud.fields.size ()); ++d)
     {
-      for (std::uint32_t c = 0; c < cloud.fields[d].count; ++c)
+      for (uindex_t c = 0; c < cloud.fields[d].count; ++c)
       {
         switch (cloud.fields[d].datatype)
         {
