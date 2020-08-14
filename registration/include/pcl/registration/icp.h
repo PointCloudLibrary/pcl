@@ -152,6 +152,19 @@ namespace pcl
         convergence_criteria_.reset(new pcl::registration::DefaultConvergenceCriteria<Scalar> (nr_iterations_, transformation_, *correspondences_));
       };
 
+      /**
+       * \brief Due to `convergence_criteria_` holding references to the class members,
+       * it is tricky to correctly implement its copy and move operations correctly. This
+       * can result in subtle bugs and to prevent them, these operations for ICP have
+       * been disabled.
+       *
+       * \todo: remove deleted ctors and assignments operations after resolving the issue
+       */
+      IterativeClosestPoint(const IterativeClosestPoint&) = delete;
+      IterativeClosestPoint(IterativeClosestPoint&&) = delete;
+      IterativeClosestPoint& operator=(const IterativeClosestPoint&) = delete;
+      IterativeClosestPoint& operator=(IterativeClosestPoint&&) = delete;
+
       /** \brief Empty destructor */
       ~IterativeClosestPoint () {}
 
