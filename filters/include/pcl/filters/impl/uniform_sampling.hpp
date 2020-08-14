@@ -111,9 +111,11 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
       continue;
     }
 
+	// Compute the voxel center
+	Eigen::Vector4f voxel_center((ijk[0] + 0.5) * leaf_size_[0], (ijk[1] + 0.5) * leaf_size_[1], (ijk[2] + 0.5) * leaf_size_[2], 1);
     // Check to see if this point is closer to the leaf center than the previous one we saved
-    float diff_cur   = ((*input_)[(*indices_)[cp]].getVector4fMap () - ijk.cast<float> ()).squaredNorm ();
-    float diff_prev  = ((*input_)[leaf.idx].getVector4fMap ()        - ijk.cast<float> ()).squaredNorm ();
+    float diff_cur   = ((*input_)[(*indices_)[cp]].getVector4fMap () - voxel_center).squaredNorm ();
+    float diff_prev  = ((*input_)[leaf.idx].getVector4fMap ()        - voxel_center).squaredNorm ();
 
     // If current point is closer, copy its index instead
     if (diff_cur < diff_prev)
