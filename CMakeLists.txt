@@ -459,7 +459,7 @@ if(WITH_OPENGL)
 endif()
 
 # Boost (required)
-include("${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake")
+find_package(Boost REQUIRED)
 
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")

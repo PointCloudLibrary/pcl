@@ -1,4 +1,3 @@
-
 set(PCL_SUBSYSTEMS_MODULES ${PCL_SUBSYSTEMS})
 list(REMOVE_ITEM PCL_SUBSYSTEMS_MODULES tools cuda_apps global_tests proctor examples)
 
@@ -78,11 +77,8 @@ endforeach()
 
 #Boost modules
 set(PCLCONFIG_AVAILABLE_BOOST_MODULES "system filesystem date_time iostreams")
-if(Boost_SERIALIZATION_FOUND)
+if(BOOST_SERIALIZATION_FOUND)
   set(PCLCONFIG_AVAILABLE_BOOST_MODULES "${PCLCONFIG_AVAILABLE_BOOST_MODULES} serialization")
-endif()
-if(Boost_CHRONO_FOUND)
-  set(PCLCONFIG_AVAILABLE_BOOST_MODULES "${PCLCONFIG_AVAILABLE_BOOST_MODULES} chrono")
 endif()
 
 configure_file("${PCL_SOURCE_DIR}/PCLConfig.cmake.in"
