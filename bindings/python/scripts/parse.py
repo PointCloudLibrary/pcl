@@ -125,6 +125,7 @@ def generate_parsed_info(node):
         "kind_is_unexposed": cursor.kind.is_unexposed,
     }
 
+    # check for deleted ctor analogous to `is_default_constructor` unavailable
     cursor_checks = {
         "is_definition": cursor.is_definition,
         "is_const_method": cursor.is_const_method,
