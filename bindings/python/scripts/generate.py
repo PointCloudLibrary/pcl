@@ -272,9 +272,8 @@ class bind:
         #     final.append(f"#include <{inclusion}>")
         final.append(f"#include <{filename}>")
         final.append("#include <pybind11/pybind11.h>")
-        # TODO: Maybe needed later
-        # final.append("#include<pybind11/stl.h>")
-        # final.append("#include<pybind11/stl_bind.h>")
+        final.append("#include<pybind11/stl.h>")
+        final.append("#include<pybind11/stl_bind.h>")
         final.append("namespace py = pybind11;")
         final.append("using namespace py::literals;")
         for i in range(len(self.linelist)):
