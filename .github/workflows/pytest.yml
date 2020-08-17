@@ -1,21 +1,6 @@
 name: Pytest CI
 
-on:
-  push:
-    branches:
-      # - master
-      # - devel/python_bindings
-      # - devel/refactor_pybind11
-      - devel/test_parse
-      # - fix/correct_parse
-  pull_request:
-    branches:
-      # - master
-      - devel/python_bindings
-      # - devel/refactor_pybind11
-      # - devel/test_parse
-      - fix/correct_parse
-  workflow_dispatch:
+on: [push, pull_request]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
