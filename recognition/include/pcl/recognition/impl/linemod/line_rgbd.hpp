@@ -577,6 +577,17 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
   modalities.push_back (&color_gradient_mod_);
   modalities.push_back (&surface_normal_mod_);
 
+  detectSemiScaleInvariant (modalities, detections, min_scale, max_scale, scale_multiplier);
+}
+
+template <typename PointXYZT, typename PointRGBT> void
+pcl::LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
+    const std::vector<pcl::QuantizableModality*> & modalities,
+    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections,
+    const float min_scale,
+    const float max_scale,
+    const float scale_multiplier)
+{
   std::vector<pcl::LINEMODDetection> linemod_detections;
   linemod_.detectTemplatesSemiScaleInvariant (modalities, linemod_detections, min_scale, max_scale, scale_multiplier);
 
