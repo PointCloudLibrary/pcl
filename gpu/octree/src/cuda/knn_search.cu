@@ -91,7 +91,8 @@ namespace pcl { namespace device { namespace knn_search
         int query_index;        
         float3 query;  
         
-        float min_distance, min_distance_squared;
+        float min_distance;
+        float min_distance_squared;
         int min_idx;
 
         OctreeIterator iterator;     

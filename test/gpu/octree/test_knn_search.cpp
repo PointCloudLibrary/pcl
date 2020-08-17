@@ -114,8 +114,7 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
             
     //prepare output buffers on device
     pcl::gpu::NeighborIndices result_device(data.tests_num, k);    
-    pcl::gpu::Octree::ResultSqrDists result_sqr_distances;
-    result_sqr_distances.create(data.tests_num * k);
+    pcl::gpu::Octree::ResultSqrDists result_sqr_distances(data.tests_num * k);
 
     //prepare output buffers on host
     std::vector<std::vector<  int> > result_host(data.tests_num);   
@@ -132,10 +131,10 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
         octree_device.nearestKSearchBatch(queries_device, k, result_device, result_sqr_distances);
     }
 
-    std::vector<int> downloaded, downloaded_cur;
+    std::vector<int> downloaded;
     result_device.data.download(downloaded);
 
-    std::vector<float> downloaded_sqr_dists, downloaded_sqr_dists_cur;
+    std::vector<float> downloaded_sqr_dists;
     result_sqr_distances.download(downloaded_sqr_dists);
 
     {
@@ -154,11 +153,11 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
         int beg = i * k;
         int end = beg + k;
 
-        const std::vector<float>::iterator beg_dist2 = downloaded_sqr_dists.begin() + beg;
-        const std::vector<float>::iterator end_dist2 = downloaded_sqr_dists.begin() + end;
+        const auto beg_dist2 = downloaded_sqr_dists.cbegin() + beg;
+        const auto end_dist2 = downloaded_sqr_dists.cbegin() + end;
 
-        downloaded_cur.assign(downloaded.begin() + beg, downloaded.begin() + end);
-        downloaded_sqr_dists_cur.assign(beg_dist2, end_dist2);
+        const std::vector<int> downloaded_cur (downloaded.cbegin() + beg, downloaded.cbegin() + end);
+        const std::vector<float> downloaded_sqr_dists_cur (beg_dist2, end_dist2);
 
         std::vector<PriorityPair> pairs_host;
         std::vector<PriorityPair> pairs_gpu;
