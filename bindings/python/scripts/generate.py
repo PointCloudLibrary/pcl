@@ -148,7 +148,7 @@ class bind:
             if sub_item["kind"] == "FIELD_DECL":
                 fields.append(sub_item)
             # recurse
-            if sub_item["kind"] in ("ANONYMOUS_UNION_DECL", "ANONYMOUS_STRUCT_DECL"):
+            elif sub_item["kind"] in ("ANONYMOUS_UNION_DECL", "ANONYMOUS_STRUCT_DECL"):
                 fields += bind.get_fields_from_anonymous(sub_item)
         return fields
 
