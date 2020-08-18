@@ -130,7 +130,8 @@ class bind:
 
         self.linelist.append(f"namespace {self.name}" + "{")
 
-    def get_fields_from_anonymous(self, item):
+    @staticmethod
+    def get_fields_from_anonymous(item):
         """
         Helper function to extract fields from anonymous types.
 
@@ -144,7 +145,7 @@ class bind:
         fields = []
         for sub_item in item["members"]:
             if sub_item["kind"] in ("ANONYMOUS_UNION_DECL", "ANONYMOUS_STRUCT_DECL"):
-                for field in self.get_fields_from_anonymous(sub_item):
+                for field in bind.get_fields_from_anonymous(sub_item):
                     fields.append(field)
             if sub_item["kind"] == "FIELD_DECL":
                 fields.append(sub_item)
