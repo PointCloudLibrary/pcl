@@ -216,6 +216,20 @@ namespace pcl
       inline bool
       getManifold () { return manifold_; }
 
+      /** \brief Set the number of threads to use.
+       * \param[in] threads the number of threads
+       */
+      void
+      setThreads(int threads);
+      
+
+      /** \brief Get the number of threads*/
+      inline int
+      getThreads()
+      {
+        return threads_;
+      }
+
     protected:
       /** \brief Class get name method. */
       std::string
@@ -243,6 +257,7 @@ namespace pcl
       bool show_residual_;
       int min_iterations_;
       float solver_accuracy_;
+      int threads_;
 
       template<int Degree> void
       execute (poisson::CoredVectorMeshData &mesh,
