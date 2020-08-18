@@ -299,9 +299,10 @@ def generate(source):
     header_info = utils.read_json(filename=source)
     if header_info:
         bind_object = bind(header_info)
-        # TODO: Remove hardcoded filename
+        # Extract filename from header_info (TRANSLATION_UNIT's name contains the filepath)
+        filename = header_info["name"].split("/")[-1]
         lines_to_write = bind_object.handle_final(
-            filename="pcl/point_types.h", module_name="pcl"
+            filename=f"pcl/{filename}", module_name="pcl"
         )
         return lines_to_write
     else:
