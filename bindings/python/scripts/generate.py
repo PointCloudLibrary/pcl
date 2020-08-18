@@ -292,29 +292,32 @@ class bind:
         return final
 
 
+def generate(source):
+    header_info = utils.read_json(filename=source)
+    if header_info:
+        bind_object = bind(header_info)
+        # TODO: Remove hardcoded filename
+        lines_to_write = bind_object.handle_final(
+            filename="pcl/point_types.h", module_name="pcl"
+        )
+        return lines_to_write
+    else:
+        raise Exception("Empty json")
+
+
 def main():
     args = utils.parse_arguments(script="generate")
 
     for source in args.files:
         source = utils.get_realpath(path=source)
-
-        header_info = utils.read_json(filename=source)
-        if header_info:
-            bind_object = bind(header_info)
-            # TODO: Remove hardcoded filename
-            lines_to_write = bind_object.handle_final(
-                filename="pcl/point_types.h", module_name="pcl"
-            )
-            output_filepath = utils.get_output_path(
-                source=source,
-                output_dir=utils.join_path(args.pybind11_output_path, "pybind11-gen"),
-                split_from="json",
-                extension=".cpp",
-            )
-            utils.write_to_file(filename=output_filepath, linelist=lines_to_write)
-
-        else:
-            raise Exception("Empty json")
+        lines_to_write = generate(source)
+        output_filepath = utils.get_output_path(
+            source=source,
+            output_dir=utils.join_path(args.pybind11_output_path, "pybind11-gen"),
+            split_from="json",
+            extension=".cpp",
+        )
+        utils.write_to_file(filename=output_filepath, linelist=lines_to_write)
 
 
 if __name__ == "__main__":
