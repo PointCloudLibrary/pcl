@@ -74,7 +74,7 @@ class bind:
             }
         )
 
-    def close(self):
+    def end_scope(self):
         """
         Used for adding ending characters (braces, semicolons, etc.) when state's scope ends.
         """
@@ -99,7 +99,7 @@ class bind:
           |  3. Call the designated function for the item.
           |  4. If the designated function was not to skip the item's handling, recursively call its members' functions.
           <<<
-            5. Close the scope, if applicable.
+            5. End the scope, if applicable.
             6. Pop the item's info from the stack.
         """
 
@@ -119,7 +119,7 @@ class bind:
             for sub_item in self.members:
                 self.handle_node(sub_item)
 
-        self.close()
+        self.end_scope()
 
         self._state_stack.pop()
 
