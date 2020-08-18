@@ -325,7 +325,7 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const pcl::PointIndices 
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    for (const int &index : indices.indices)
+    for (const auto &index : indices.indices)
     {
       pcl::Array4fMapConst pt = cloud[index].getArray4fMap ();
       min_p = min_p.min (pt);
@@ -335,7 +335,7 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const pcl::PointIndices 
   // NaN or Inf values could exist => check for them
   else
   {
-    for (const int &index : indices.indices)
+    for (const auto &index : indices.indices)
     {
       // Check if the point is invalid
       if (!std::isfinite (cloud[index].x) || 
@@ -362,7 +362,7 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    for (const int &index : indices)
+    for (const auto &index : indices)
     {
       pcl::Array4fMapConst pt = cloud[index].getArray4fMap ();
       min_pt = min_pt.array ().min (pt);
@@ -372,7 +372,7 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
   // NaN or Inf values could exist => check for them
   else
   {
-    for (const int &index : indices)
+    for (const auto &index : indices)
     {
       // Check if the point is invalid
       if (!std::isfinite (cloud[index].x) || 
