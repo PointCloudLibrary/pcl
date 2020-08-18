@@ -14,20 +14,15 @@
 
 #include <limits>
 #include <tuple>
+#include <bitset>
 
 namespace pcl {
 namespace device {
 
 __device__ __host__ __forceinline__ int
-getBitsNum(int integer)
+getBitsNum(const int integer)
 {
-  int count = 0;
-  while (integer > 0) {
-    if (integer & 1)
-      ++count;
-    integer >>= 1;
-  }
-  return count;
+  return std::bitset<8*sizeof(integer)> (integer).count();
 }
 
 __host__ __device__ __forceinline__ std::pair<uint3, std::uint8_t>
@@ -53,11 +48,11 @@ nearestVoxel(const float3 query,
                                    (index.z << 1) + ((i >> 2) & 1));
 
     // find center of child cell
-    const unsigned voxels_per_side = 1 << (level + 2);
+    const unsigned voxel_width_scale_factor = 1 << (level + 2);
     const float3 voxel_center =
-        make_float3(minp.x + (maxp.x - minp.x) * (2 * child.x + 1) / voxels_per_side,
-                    minp.y + (maxp.y - minp.y) * (2 * child.y + 1) / voxels_per_side,
-                    minp.z + (maxp.z - minp.z) * (2 * child.z + 1) / voxels_per_side);
+        make_float3(minp.x + (maxp.x - minp.x) * (2 * child.x + 1) / voxel_width_scale_factor,
+                    minp.y + (maxp.y - minp.y) * (2 * child.y + 1) / voxel_width_scale_factor,
+                    minp.z + (maxp.z - minp.z) * (2 * child.z + 1) / voxel_width_scale_factor);
 
     // compute distance to centroid
     const float3 dist = make_float3(
@@ -73,7 +68,7 @@ nearestVoxel(const float3 query,
     }
   }
 
-  return std::pair<uint3, std::uint8_t>(closest, 1 << closest_index);
+  return {closest, 1 << closest_index};
 }
 
 #pragma hd_warning_disable

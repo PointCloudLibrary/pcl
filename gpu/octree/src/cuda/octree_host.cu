@@ -215,7 +215,7 @@ void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, i
 {
     const float3& minp = octreeGlobal.minp;
     const float3& maxp = octreeGlobal.maxp;
-    float3 query_point = make_float3(query.x, query.y, query.z);
+    const float3 query_point = make_float3(query.x, query.y, query.z);
 
     const int node_idx = pcl::device::findNode(minp, maxp, query_point, host_octree.nodes);
 
