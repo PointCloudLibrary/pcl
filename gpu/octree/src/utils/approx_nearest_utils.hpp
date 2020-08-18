@@ -19,10 +19,14 @@
 namespace pcl {
 namespace device {
 
-__device__ __host__ __forceinline__ int
-getBitsNum(const int integer)
+__device__ __host__ __forceinline__ unsigned
+getBitsNum(const unsigned integer)
 {
-  return std::bitset<8*sizeof(integer)> (integer).count();
+  #ifdef __CUDA_ARCH__
+    return __popc(integer);
+  #else
+    return std::bitset<8*sizeof(integer)> (integer).count();
+  #endif
 }
 
 __host__ __device__ __forceinline__ std::pair<uint3, std::uint8_t>
@@ -114,12 +118,7 @@ findNode(const float3 minp, const float3 maxp, const float3 query, const T nodes
         mask_pos = nearest_voxel.second;
       }
     }
-    #ifndef __CUDA_ARCH__ // use cpu function for bit count
-      node_idx = (node >> 8) + getBitsNum(mask & (mask_pos - 1));
-    #else // use cuda function for bit count
-      node_idx = (node >> 8) + __popc(mask & (mask_pos - 1));
-#endif
-
+    node_idx = (node >> 8) + getBitsNum(mask & (mask_pos - 1));
     ++level;
   }
 }

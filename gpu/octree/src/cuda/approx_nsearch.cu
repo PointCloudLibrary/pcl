@@ -126,76 +126,76 @@ namespace pcl { namespace device { namespace appnearest_search
 				const int active_lane = __ffs(mask) - 1; //[0..31]
 				mask &= ~(1 << active_lane);
 
-                //broadcast beg and end
-                int fbeg, fend;
-                if (active_lane == laneId)
-                {
-                    fbeg = batch.octree.begs[node_idx];
-                    fend = batch.octree.ends[node_idx];
-                }
-                const int beg = __shfl_sync(0xFFFFFFFF, fbeg, active_lane);
-                const int end = __shfl_sync(0xFFFFFFFF, fend, active_lane);
+				//broadcast beg and end
+				int fbeg, fend;
+				if (active_lane == laneId)
+				{
+					fbeg = batch.octree.begs[node_idx];
+					fend = batch.octree.ends[node_idx];
+				}
+				const int beg = __shfl_sync(0xFFFFFFFF, fbeg, active_lane);
+				const int end = __shfl_sync(0xFFFFFFFF, fend, active_lane);
 
-                //broadcast warp_query
-                const float3 active_query = make_float3(
-                    __shfl_sync(0xFFFFFFFF, query.x, active_lane),
-                    __shfl_sync(0xFFFFFFFF, query.y, active_lane),
-                    __shfl_sync(0xFFFFFFFF, query.z, active_lane)
-                );
+				//broadcast warp_query
+				const float3 active_query = make_float3(
+					__shfl_sync(0xFFFFFFFF, query.x, active_lane),
+					__shfl_sync(0xFFFFFFFF, query.y, active_lane),
+					__shfl_sync(0xFFFFFFFF, query.z, active_lane)
+				);
 
-                const auto nearestPoint = NearestWarpKernel<KernelPolicy::CTA_SIZE>(beg, batch.points_step, end - beg, active_query);
+				const auto nearestPoint = NearestWarpKernel<KernelPolicy::CTA_SIZE>(beg, batch.points_step, end - beg, active_query);
 
 				if (active_lane == laneId)
 					result_idx = beg + nearestPoint.first;
 			}
 		}
 
-        template <int CTA_SIZE>
-        __device__  std::pair<int, float>
-        NearestWarpKernel(const int beg,
-                          const int field_step,
-                          const int length,
-                          const float3& active_query)
+		template <int CTA_SIZE>
+		__device__  std::pair<int, float>
+		NearestWarpKernel(const int beg,
+							const int field_step,
+							const int length,
+							const float3& active_query)
 
-        {
-          int index = 0;
-          float dist2 = std::numeric_limits<float>::max();
+		{
+			int index = 0;
+			float dist2 = std::numeric_limits<float>::max();
 
-          // serial step
-          for (int idx = Warp::laneId(); idx < length; idx += Warp::STRIDE) {
-            const float dx = batch.points[beg + idx] - active_query.x;
-            const float dy = batch.points[beg + idx + field_step] - active_query.y;
-            const float dz = batch.points[beg + idx + field_step * 2] - active_query.z;
+			// serial step
+			for (int idx = Warp::laneId(); idx < length; idx += Warp::STRIDE) {
+			const float dx = batch.points[beg + idx] - active_query.x;
+			const float dy = batch.points[beg + idx + field_step] - active_query.y;
+			const float dz = batch.points[beg + idx + field_step * 2] - active_query.z;
 
-            const float d2 = dx * dx + dy * dy + dz * dz;
+			const float d2 = dx * dx + dy * dy + dz * dz;
 
-            if (dist2 > d2) {
-              dist2 = d2;
-              index = idx;
-            }
-          }
+			if (dist2 > d2) {
+				dist2 = d2;
+				index = idx;
+			}
+			}
 
-          // find minimum distance among warp threads
-          constexpr unsigned FULL_MASK = 0xFFFFFFFF;
-          static_assert(KernelPolicy::WARP_SIZE <= 8*sizeof(unsigned int));
+			// find minimum distance among warp threads
+			constexpr unsigned FULL_MASK = 0xFFFFFFFF;
+			static_assert(KernelPolicy::WARP_SIZE <= 8*sizeof(FULL_MASK), "WARP_SIZE exceeds size of bit_offset.");
 
-          for (unsigned int bit_offset = KernelPolicy::WARP_SIZE / 2; bit_offset > 0;
-               bit_offset /= 2) {
-            const float next = __shfl_down_sync(FULL_MASK, dist2, bit_offset);
-            const int next_index = __shfl_down_sync(FULL_MASK, index, bit_offset);
+			for (unsigned int bit_offset = KernelPolicy::WARP_SIZE / 2; bit_offset > 0;
+				bit_offset /= 2) {
+			const float next = __shfl_down_sync(FULL_MASK, dist2, bit_offset);
+			const int next_index = __shfl_down_sync(FULL_MASK, index, bit_offset);
 
-            if (dist2 > next) {
-              dist2 = next;
-              index = next_index;
-            }
-          }
+			if (dist2 > next) {
+				dist2 = next;
+				index = next_index;
+			}
+			}
 
-          // retrieve index and distance
-          index = __shfl_sync(FULL_MASK, index, 0);
-          const float dist = sqrt(__shfl_sync(FULL_MASK, dist2, 0));
+			// retrieve index and distance
+			index = __shfl_sync(FULL_MASK, index, 0);
+			const float dist = sqrt(__shfl_sync(FULL_MASK, dist2, 0));
 
-          return {index, dist};
-        }
+			return {index, dist};
+		}
 	};
 	
 	__global__ void KernelAN(const Batch batch) 
