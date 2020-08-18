@@ -3,6 +3,14 @@ import scripts.utils as utils
 
 
 class bind:
+    pybind_linelist = [
+        "#include <pybind11/pybind11.h>",
+        "#include<pybind11/stl.h>",
+        "#include<pybind11/stl_bind.h>",
+        "namespace py = pybind11;",
+        "using namespace py::literals;",
+    ]
+
     def __init__(self, root):
         self._state_stack = []
         self.linelist = []
@@ -267,17 +275,12 @@ class bind:
             self.inclusion_list.append(self.name)
 
     def handle_final(self, filename, module_name):
-        final = []
+        final = [f"#include <{filename}>"]
         # TODO: Inclusion list path fix needed
         # TODO: Currently commented, to be written later
         # for inclusion in self.inclusion_list:
         #     final.append(f"#include <{inclusion}>")
-        final.append(f"#include <{filename}>")
-        final.append("#include <pybind11/pybind11.h>")
-        final.append("#include<pybind11/stl.h>")
-        final.append("#include<pybind11/stl_bind.h>")
-        final.append("namespace py = pybind11;")
-        final.append("using namespace py::literals;")
+        final += self.pybind_linelist
         for i in range(len(self.linelist)):
             if self.linelist[i].startswith("namespace"):
                 continue
