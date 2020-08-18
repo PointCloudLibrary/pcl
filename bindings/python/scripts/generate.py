@@ -105,7 +105,7 @@ class bind:
 
         self.item = item
         self.kind = self.item["kind"]
-        self.name = self.item["name"] if "name" in self.item else ""
+        self.name = self.item["name"]
         self.members = self.item["members"]
         self.depth = self.item["depth"]
 
