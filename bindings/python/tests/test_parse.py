@@ -19,7 +19,7 @@ def create_compilation_database(tmp_path, filepath):
 
 
 def get_parsed_info(tmp_path, file_contents):
-    source_path = tmp_path / "file.hpp"
+    source_path = tmp_path / "file.cpp"
 
     with open(source_path, "w") as f:
         f.write(str(file_contents))
@@ -66,7 +66,7 @@ def test_translation_unit(tmp_path):
 
     assert parsed_info["kind"] == "TRANSLATION_UNIT"
     assert parsed_info["depth"] == 0
-    assert parsed_info["name"] == str(tmp_path / "file.hpp")
+    assert parsed_info["name"] == str(tmp_path / "file.cpp")
 
 
 def test_namespace(tmp_path):
