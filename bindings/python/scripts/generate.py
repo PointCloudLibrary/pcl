@@ -144,11 +144,12 @@ class bind:
 
         fields = []
         for sub_item in item["members"]:
-            if sub_item["kind"] in ("ANONYMOUS_UNION_DECL", "ANONYMOUS_STRUCT_DECL"):
-                for field in bind.get_fields_from_anonymous(sub_item):
-                    fields.append(field)
+            # base condition
             if sub_item["kind"] == "FIELD_DECL":
                 fields.append(sub_item)
+            # recurse
+            if sub_item["kind"] in ("ANONYMOUS_UNION_DECL", "ANONYMOUS_STRUCT_DECL"):
+                fields += bind.get_fields_from_anonymous(sub_item)
         return fields
 
     def handle_struct_decl(self):
