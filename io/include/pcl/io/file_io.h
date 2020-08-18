@@ -234,7 +234,7 @@ namespace pcl
   template <typename Type> inline
   std::enable_if_t<std::is_floating_point<Type>::value>
   copyValueString (const pcl::PCLPointCloud2 &cloud,
-                   const unsigned int point_index, 
+                   const pcl::index_t point_index, 
                    const int point_size, 
                    const unsigned int field_idx, 
                    const unsigned int fields_count, 
@@ -251,7 +251,7 @@ namespace pcl
   template <typename Type> inline
   std::enable_if_t<std::is_integral<Type>::value>
   copyValueString (const pcl::PCLPointCloud2 &cloud,
-                   const unsigned int point_index, 
+                   const pcl::index_t point_index, 
                    const int point_size, 
                    const unsigned int field_idx, 
                    const unsigned int fields_count, 
@@ -264,7 +264,7 @@ namespace pcl
 
   template <> inline void
   copyValueString<std::int8_t> (const pcl::PCLPointCloud2 &cloud,
-                           const unsigned int point_index, 
+                           const pcl::index_t point_index, 
                            const int point_size, 
                            const unsigned int field_idx, 
                            const unsigned int fields_count, 
@@ -278,7 +278,7 @@ namespace pcl
 
   template <> inline void
   copyValueString<std::uint8_t> (const pcl::PCLPointCloud2 &cloud,
-                            const unsigned int point_index, 
+                            const pcl::index_t point_index, 
                             const int point_size, 
                             const unsigned int field_idx, 
                             const unsigned int fields_count, 
@@ -303,7 +303,7 @@ namespace pcl
   template <typename Type> inline
   std::enable_if_t<std::is_floating_point<Type>::value, bool>
   isValueFinite (const pcl::PCLPointCloud2 &cloud,
-                 const unsigned int point_index, 
+                 const pcl::index_t point_index, 
                  const int point_size, 
                  const unsigned int field_idx, 
                  const unsigned int fields_count)
@@ -316,7 +316,7 @@ namespace pcl
   template <typename Type> inline
   std::enable_if_t<std::is_integral<Type>::value, bool>
   isValueFinite (const pcl::PCLPointCloud2& /* cloud */,
-                 const unsigned int /* point_index */,
+                 const pcl::index_t /* point_index */,
                  const int /* point_size */,
                  const unsigned int /* field_idx */,
                  const unsigned int /* fields_count */)
@@ -337,7 +337,7 @@ namespace pcl
     */
   template <typename Type> inline void
   copyStringValue (const std::string &st, pcl::PCLPointCloud2 &cloud,
-                   unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
+                   pcl::index_t point_index, unsigned int field_idx, unsigned int fields_count)
   {
     Type value;
     if (boost::iequals(st, "nan"))
@@ -360,7 +360,7 @@ namespace pcl
 
   template <> inline void
   copyStringValue<std::int8_t> (const std::string &st, pcl::PCLPointCloud2 &cloud,
-                           unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
+                           pcl::index_t point_index, unsigned int field_idx, unsigned int fields_count)
   {
     std::int8_t value;
     if (boost::iequals(st, "nan"))
@@ -386,7 +386,7 @@ namespace pcl
 
   template <> inline void
   copyStringValue<std::uint8_t> (const std::string &st, pcl::PCLPointCloud2 &cloud,
-                           unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
+                           pcl::index_t point_index, unsigned int field_idx, unsigned int fields_count)
   {
     std::uint8_t value;
     if (boost::iequals(st, "nan"))
