@@ -4,17 +4,6 @@ import scripts.utils as utils
 import test_parse
 
 
-# @TODO: make a list in generate.py and use here
-initial_lines = """
-#include <pcl/point_types.h>
-#include <pybind11/pybind11.h>
-#include<pybind11/stl.h>
-#include<pybind11/stl_bind.h>
-namespace py = pybind11;
-using namespace py::literals;
-"""
-
-
 def get_character_only_string(word):
     """
     Returns extracted characters from a word by excluding whitespaces (' '), newlines ('\n') and tabs ('\t').
@@ -67,18 +56,41 @@ def get_binded_code(tmp_path, cpp_code_block):
     return get_character_only_string(binded_code)
 
 
+def get_expected_string(expected_module_code):
+    """
+    Returns expected output string after combining inclusions and pybind11 linelist.
+
+    Parameters:
+        - expected_module_code (str): Module code to be combined.
+
+    Returns:
+        - expected_output (str): The stripped off, combined code.
+    """
+
+    file_inclusion = "#include <pcl/file.cpp>"
+
+    # Get pybind11 linelist in the form of a string
+    pybind_linelist = generate.bind.pybind_linelist
+    pybind_linelist = "".join(pybind_linelist)
+
+    expected_output = get_character_only_string(
+        file_inclusion + pybind_linelist + expected_module_code
+    )
+
+    return expected_output
+
+
 def test_case1(tmp_path):
     cpp_code_block = "struct AStruct {};"
     output = get_binded_code(tmp_path=tmp_path, cpp_code_block=cpp_code_block)
 
-    expected_output = """
+    expected_module_code = """
     PYBIND11_MODULE(pcl, m){
         py::class_<AStruct>(m, "AStruct");
     }
     """
-    expected_output = get_character_only_string(initial_lines + expected_output)
 
-    assert output == expected_output
+    assert output == get_expected_string(expected_module_code=expected_module_code)
 
 
 def test_case2(tmp_path):
@@ -89,12 +101,11 @@ def test_case2(tmp_path):
     """
     output = get_binded_code(tmp_path=tmp_path, cpp_code_block=cpp_code_block)
 
-    expected_output = """
+    expected_module_code = """
     PYBIND11_MODULE(pcl, m){
         py::class_<AStruct>(m, "AStruct")
         .def_readwrite("aMember", &AStruct::aMember);
     }
     """
-    expected_output = get_character_only_string(initial_lines + expected_output)
 
-    assert output == expected_output
+    assert output == get_expected_string(expected_module_code=expected_module_code)
