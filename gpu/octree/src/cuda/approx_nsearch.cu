@@ -153,9 +153,9 @@ namespace pcl { namespace device { namespace appnearest_search
 		template <int CTA_SIZE>
 		__device__  std::pair<int, float>
 		NearestWarpKernel(const int beg,
-							const int field_step,
-							const int length,
-							const float3& active_query)
+					const int field_step,
+					const int length,
+					const float3& active_query)
 
 		{
 			int index = 0;
