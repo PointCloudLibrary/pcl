@@ -437,8 +437,6 @@ namespace pcl
       virtual void
       processInputDataFromFiltered ();
 
-  protected:
-
       /** \brief Computes the surface normals from the input cloud. */
       void
       computeSurfaceNormals ();
@@ -458,6 +456,8 @@ namespace pcl
       /** \brief Filters the quantized surface normals. */
       void
       filterQuantizedSurfaceNormals ();
+
+  protected:
 
       /** \brief Computes a distance map from the supplied input mask. 
         * \param[in] input the mask for which a distance map will be computed.
