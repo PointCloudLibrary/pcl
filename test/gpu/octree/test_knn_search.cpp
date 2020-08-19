@@ -111,10 +111,6 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
     //upload queries
     pcl::gpu::Octree::Queries queries_device;
     queries_device.upload(data.queries);
-            
-    //prepare output buffers on device
-    pcl::gpu::NeighborIndices result_device;
-    pcl::gpu::Octree::ResultSqrDists result_sqr_distances;
 
     //prepare output buffers on host
     std::vector<std::vector<  int> > result_host(data.tests_num);   
@@ -124,7 +120,11 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
         result_host[i].reserve(k);
         dists_host[i].reserve(k);
     }
-        
+
+    //prepare output buffers on device
+    pcl::gpu::NeighborIndices result_device;
+    pcl::gpu::Octree::ResultSqrDists result_sqr_distances;
+
     //search GPU shared
     {
         pcl::ScopeTime time("1nn-gpu");

@@ -146,7 +146,7 @@ namespace pcl
               */
             void approxNearestSearch(const Queries& queries, NeighborIndices& result) const;
 
-             /** \brief Batch exact k-nearest search on GPU for k == 1 only!
+            /** \brief Batch exact k-nearest search on GPU for k == 1 only!
               * \param[in] queries array of centers
               * \param[in] k number of neighbors (only k == 1 is supported)
               * \param[out] results array of results
@@ -158,7 +158,7 @@ namespace pcl
               * \param[in] queries array of centers
               * \param[in] k number of neighbors (only k == 1 is supported)
               * \param[out] results array of results
-              * \param[out] sqr_distances square distances to results (must be resized to (k * num of queries) a priori!)
+              * \param[out] sqr_distances square distances to results
               */
             void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results, ResultSqrDists& sqr_distances) const;
 
