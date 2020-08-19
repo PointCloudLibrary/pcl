@@ -133,7 +133,7 @@ public:
 
     for (std::size_t i = 0; i < cvfh_signatures.size(); i++) {
       pcl::PointCloud<FeatureT> vfh_signature;
-      vfh_signature.points.resize(1);
+      vfh_signature.resize(1);
       vfh_signature.width = vfh_signature.height = 1;
       for (int d = 0; d < 308; ++d)
         vfh_signature[0].histogram[d] = cvfh_signatures[i].histogram[d];

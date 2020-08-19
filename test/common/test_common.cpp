@@ -186,7 +186,7 @@ TEST (PCL, PointCloud)
   for (std::uint32_t i = 0; i < cloud.width*cloud.height; ++i)
   {
     float j = static_cast<float> (i);
-    cloud.points.emplace_back(3.0f * j + 0.0f, 3.0f * j + 1.0f, 3.0f * j + 2.0f);
+    cloud.emplace_back(3.0f * j + 0.0f, 3.0f * j + 1.0f, 3.0f * j + 2.0f);
   }
 
   Eigen::MatrixXf mat_xyz1 = cloud.getMatrixXfMap ();
@@ -537,7 +537,7 @@ TEST (PCL, GetMaxDistance)
   const Eigen::Vector4f pivot_pt (Eigen::Vector4f::Zero ());
 
   // populate cloud
-  cloud.points.resize (3);
+  cloud.resize (3);
   cloud[0].data[0] = 4.f; cloud[0].data[1] = 3.f;
   cloud[0].data[2] = 0.f; cloud[0].data[3] = 0.f;
   cloud[1].data[0] = 0.f; cloud[1].data[1] = 0.f;

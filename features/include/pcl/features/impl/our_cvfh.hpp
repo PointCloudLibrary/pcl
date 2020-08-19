@@ -53,7 +53,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &ou
   if (!Feature<PointInT, PointOutT>::initCompute ())
   {
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   // Resize the output dataset
@@ -61,7 +61,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &ou
   // we risk at pre-allocating too much memory which could lead to bad_alloc
   // (see http://dev.pointclouds.org/issues/657)
   output.width = output.height = 1;
-  output.points.resize (1);
+  output.resize (1);
 
   // Perform the actual feature computation
   computeFeature (output);
@@ -515,7 +515,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
 
       //copy to the cvfh signature
       PointCloudOut vfh_signature;
-      vfh_signature.points.resize (1);
+      vfh_signature.resize (1);
       vfh_signature.width = vfh_signature.height = 1;
       for (int d = 0; d < 308; ++d)
         vfh_signature[0].histogram[d] = output[i].histogram[d];
@@ -535,7 +535,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
     }
   }
 
-  if (!ourcvfh_output.points.empty ())
+  if (!ourcvfh_output.empty ())
   {
     ourcvfh_output.height = 1;
   }
@@ -554,14 +554,14 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   {
     PCL_ERROR ("[pcl::%s::computeFeature] No input dataset containing normals was given!\n", getClassName ().c_str ());
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   if (normals_->size () != surface_->size ())
   {
     PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!\n", getClassName ().c_str ());
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -700,7 +700,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     }
 
     //compute modified VFH for all dominant clusters and add them to the list!
-    output.points.resize (dominant_normals_.size ());
+    output.resize (dominant_normals_.size ());
     output.width = dominant_normals_.size ();
 
     for (std::size_t i = 0; i < dominant_normals_.size (); ++i)
@@ -734,7 +734,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     pcl::PointCloud<pcl::VFHSignature308> vfh_signature;
     vfh.compute (vfh_signature);
 
-    output.points.resize (1);
+    output.resize (1);
     output.width = 1;
 
     output[0] = vfh_signature[0];

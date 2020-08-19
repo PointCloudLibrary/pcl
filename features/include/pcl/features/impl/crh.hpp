@@ -55,7 +55,7 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   {
     PCL_ERROR ("[pcl::%s::computeFeature] No input dataset containing normals was given!\n", getClassName ().c_str ());
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -63,7 +63,7 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   {
     PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!\n", getClassName ().c_str ());
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -83,7 +83,7 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   Eigen::Affine3f transformPC (Eigen::AngleAxisf (static_cast<float> (rotation), axis));
 
   pcl::PointCloud<pcl::PointNormal> grid;
-  grid.points.resize (indices_->size ());
+  grid.resize (indices_->size ());
 
   for (std::size_t i = 0; i < indices_->size (); i++)
   {
@@ -119,7 +119,7 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
       data.i /= freq_data[0].r;
   }
 
-  output.points.resize (1);
+  output.resize (1);
   output.width = output.height = 1;
 
   output[0].histogram[0] = freq_data[0].r; //dc

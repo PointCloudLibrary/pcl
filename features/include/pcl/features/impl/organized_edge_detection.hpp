@@ -53,7 +53,7 @@ pcl::OrganizedEdgeBase<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& labe
 {
   pcl::Label invalid_pt;
   invalid_pt.label = unsigned (0);
-  labels.points.resize (input_->size (), invalid_pt);
+  labels.resize (input_->size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;
   
@@ -227,7 +227,7 @@ pcl::OrganizedEdgeFromRGB<PointT, PointLT>::compute (pcl::PointCloud<PointLT>& l
 {
   pcl::Label invalid_pt;
   invalid_pt.label = unsigned (0);
-  labels.points.resize (input_->size (), invalid_pt);
+  labels.resize (input_->size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;
 
@@ -275,7 +275,7 @@ pcl::OrganizedEdgeFromNormals<PointT, PointNT, PointLT>::compute (pcl::PointClou
 {
   pcl::Label invalid_pt;
   invalid_pt.label = unsigned (0);
-  labels.points.resize (input_->size (), invalid_pt);
+  labels.resize (input_->size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;
   
@@ -333,7 +333,7 @@ pcl::OrganizedEdgeFromRGBNormals<PointT, PointNT, PointLT>::compute (pcl::PointC
 {
   pcl::Label invalid_pt;
   invalid_pt.label = unsigned (0);
-  labels.points.resize (input_->size (), invalid_pt);
+  labels.resize (input_->size (), invalid_pt);
   labels.width = input_->width;
   labels.height = input_->height;
   

@@ -229,11 +229,11 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     cloud_out.is_dense = cloud_in.is_dense;
     cloud_out.width    = cloud_in.width;
     cloud_out.height   = cloud_in.height;
-    cloud_out.points.reserve (cloud_in.size ());
+    cloud_out.reserve (cloud_in.size ());
     if (copy_all_fields)
-      cloud_out.points.assign (cloud_in.points.begin (), cloud_in.points.end ());
+      cloud_out.assign (cloud_in.begin (), cloud_in.end ());
     else
-      cloud_out.points.resize (cloud_in.size ());
+      cloud_out.resize (cloud_in.size ());
     cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
     cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
   }
@@ -274,7 +274,7 @@ transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = static_cast<int> (npts);
   cloud_out.height   = 1;
-  cloud_out.points.resize (npts);
+  cloud_out.resize (npts);
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
 
@@ -321,11 +321,11 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
     cloud_out.width    = cloud_in.width;
     cloud_out.height   = cloud_in.height;
     cloud_out.is_dense = cloud_in.is_dense;
-    cloud_out.points.reserve (cloud_out.size ());
+    cloud_out.reserve (cloud_out.size ());
     if (copy_all_fields)
-      cloud_out.points.assign (cloud_in.points.begin (), cloud_in.points.end ());
+      cloud_out.assign (cloud_in.begin (), cloud_in.end ());
     else
-      cloud_out.points.resize (cloud_in.size ());
+      cloud_out.resize (cloud_in.size ());
     cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
     cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
   }
@@ -369,7 +369,7 @@ transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = static_cast<int> (npts);
   cloud_out.height   = 1;
-  cloud_out.points.resize (npts);
+  cloud_out.resize (npts);
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
 

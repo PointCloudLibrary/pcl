@@ -58,7 +58,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
   std::vector<float> k_sqr_distances;
 
   tree_->setInputCloud (input_);
-  output.points.resize (indices_->size ());
+  output.resize (indices_->size ());
 
   for (std::size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {

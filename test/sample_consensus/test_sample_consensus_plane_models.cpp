@@ -247,7 +247,7 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
   // Use a custom point cloud for these tests until we need something better
   PointCloud<PointXYZ> cloud;
   PointCloud<Normal> normals;
-  cloud.points.resize (10);
+  cloud.resize (10);
   normals.resize (10);
 
   for (std::size_t idx = 0; idx < cloud.size (); ++idx)

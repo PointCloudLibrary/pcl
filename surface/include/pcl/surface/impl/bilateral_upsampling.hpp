@@ -53,7 +53,7 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::process (pcl::PointCloud<PointOut
   if (!initCompute ())
   {
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 

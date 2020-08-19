@@ -250,7 +250,7 @@ TEST (PCL, IntensitySpinEstimation)
       p.intensity = std::exp (-(powf (x - 3.0f, 2.0f) + powf (y + 2.0f, 2.0f)) / (2.0f * 25.0f)) + std::exp (-(powf (x + 5.0f, 2.0f) + powf (y - 5.0f, 2.0f))
                                                                                  / (2.0f * 4.0f));
 
-      cloud_xyzi.points.push_back (p);
+      cloud_xyzi.push_back (p);
     }
   }
   cloud_xyzi.width = cloud_xyzi.size ();

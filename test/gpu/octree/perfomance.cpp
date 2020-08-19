@@ -98,10 +98,10 @@ TEST(PCL_OctreeGPU, performance)
 
     //prepare host cloud
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host(new pcl::PointCloud<pcl::PointXYZ>);	
-    cloud_host->width = data.points.size();
+    cloud_host->width = data.size();
     cloud_host->height = 1;
     cloud_host->points.resize (cloud_host->width * cloud_host->height);    
-    std::transform(data.points.begin(), data.points.end(), cloud_host->points.begin(), DataGenerator::ConvPoint<pcl::PointXYZ>());
+    std::transform(data.begin(), data.end(), cloud_host->points.begin(), DataGenerator::ConvPoint<pcl::PointXYZ>());
 
     float host_octree_resolution = 25.f;    
     
@@ -133,7 +133,7 @@ TEST(PCL_OctreeGPU, performance)
     cv::Octree octree_opencv;
     const static int opencv_octree_points_per_leaf = 32;    
     std::vector<cv::Point3f> opencv_points(data.size());
-    std::transform(data.points.begin(), data.points.end(), opencv_points.begin(), DataGenerator::ConvPoint<cv::Point3f>());
+    std::transform(data.begin(), data.end(), opencv_points.begin(), DataGenerator::ConvPoint<cv::Point3f>());
         
     {        
         ScopeTime t("opencv-build");	        

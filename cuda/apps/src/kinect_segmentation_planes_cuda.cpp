@@ -123,7 +123,7 @@ class Segmentation
     {
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (new pcl::PointCloud<pcl::PointXYZRGB>);
       PointCloudAOS<Host> data_host;
-      data_host.points.resize (cloud->points.size());
+      data_host.resize (cloud->points.size());
       for (std::size_t i = 0; i < cloud->points.size (); ++i)
       {
         PointXYZRGB pt;

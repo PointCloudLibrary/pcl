@@ -23,7 +23,7 @@ int main (int argc, char** argv)
     {
       pcl::PointXYZ p;
       p.x = w; p.y = h; p.z = 1;
-      cloud.points.push_back(p);
+      cloud.push_back(p);
     }
   }
 
@@ -90,7 +90,7 @@ int main (int argc, char** argv)
 
       for (std::size_t j = 0; j < sizes[i] ; ++j)
       {
-        cloud_result.points.push_back(cloud[data[j + i * max_answers]]);
+        cloud_result.push_back(cloud[data[j + i * max_answers]]);
         std::cout << "INFO: data : " << j << " " << j + i * max_answers << " data " << data[j+ i * max_answers] << std::endl;
       }
       std::stringstream ss;

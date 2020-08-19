@@ -558,7 +558,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (std::size_t idx,
     cloud_color.width = dims[0];
     cloud_color.height = dims[1];
     cloud_color.is_dense = false;
-    cloud_color.points.resize (depth_image->GetNumberOfPoints ());
+    cloud_color.resize (depth_image->GetNumberOfPoints ());
 
     for (int y = 0; y < dims[1]; ++y)
     {
@@ -596,7 +596,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (std::size_t idx,
     cloud.width = dims[0];
     cloud.height = dims[1];
     cloud.is_dense = false;
-    cloud.points.resize (depth_image->GetNumberOfPoints ());
+    cloud.resize (depth_image->GetNumberOfPoints ());
     for (int y = 0; y < dims[1]; ++y)
     {
       for (int x = 0; x < dims[0]; ++x, ++depth_pixel)

@@ -565,7 +565,7 @@ pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>&           
 
   cloud_out.width = input_gray.width;
   cloud_out.height = input_gray.height;
-  cloud_out.points.resize (input_gray.size ());
+  cloud_out.resize (input_gray.size ());
 
   PCL_ASSERT_ERROR_PRINT_RETURN(!gpu_allocator.isCounting(),"retcode=NCV_NULL_PTR", NCV_NULL_PTR);
 

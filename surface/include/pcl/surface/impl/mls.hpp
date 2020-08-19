@@ -76,7 +76,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
   // Copy the header
   output.header = input_->header;
   output.width = output.height = 0;
-  output.points.clear ();
+  output.clear ();
 
   if (search_radius_ <= 0 || sqr_gauss_param_ <= 0)
   {

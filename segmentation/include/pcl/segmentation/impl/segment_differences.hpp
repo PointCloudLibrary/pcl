@@ -93,7 +93,7 @@ pcl::SegmentDifferences<PointT>::segment (PointCloud &output)
   if (!initCompute ()) 
   {
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 

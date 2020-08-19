@@ -368,7 +368,7 @@ main (int argc, char** argv)
             pt.z = static_cast<float> (-right[2]*x[1] + up[2]*x[2] + viewray[2]*x[0] + eye[2]);
             pt.vp_x = pt.vp_y = pt.vp_z = 0.0f;
           }
-          cloud.points.push_back (pt);
+          cloud.push_back (pt);
         }
         else
           if (organized)
@@ -378,7 +378,7 @@ main (int argc, char** argv)
             pt.vp_x = static_cast<float> (eye[0]);
             pt.vp_y = static_cast<float> (eye[1]);
             pt.vp_z = static_cast<float> (eye[2]);
-            cloud.points.push_back (pt);
+            cloud.push_back (pt);
           }
       } // Horizontal
     } // Vertical

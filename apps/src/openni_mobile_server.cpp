@@ -62,7 +62,7 @@ CopyPointCloudToBuffers(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& clou
 {
   const std::size_t nr_points = cloud->points.size();
 
-  cloud_buffers.points.resize(nr_points * 3);
+  cloud_buffers.resize(nr_points * 3);
   cloud_buffers.rgb.resize(nr_points * 3);
 
   const pcl::PointXYZ bounds_min(-0.9f, -0.8f, 1.0f);
@@ -93,7 +93,7 @@ CopyPointCloudToBuffers(const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr& clou
     j++;
   }
 
-  cloud_buffers.points.resize(j * 3);
+  cloud_buffers.resize(j * 3);
   cloud_buffers.rgb.resize(j * 3);
 }
 

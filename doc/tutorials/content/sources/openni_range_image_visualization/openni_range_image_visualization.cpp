@@ -126,7 +126,7 @@ int main (int argc, char** argv)
       range_image_planar.setDepthImage (depth_map, width, height, center_x, center_y,
                                         focal_length_x, focal_length_y, desired_angular_resolution);
       depth_image_mutex.unlock ();
-      got_new_range_image = !range_image_planar.points.empty ();
+      got_new_range_image = !range_image_planar.empty ();
     }
     
     if (!got_new_range_image)

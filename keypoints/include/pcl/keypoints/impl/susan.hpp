@@ -412,8 +412,8 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
   }
   else
   {
-    output.points.clear ();
-    output.points.reserve (response->size());
+    output.clear ();
+    output.reserve (response->size());
     
     for (int idx = 0; idx < static_cast<int> (response->size ()); ++idx)
     {
@@ -438,7 +438,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
       }
       if (is_minima)
       {
-        output.points.push_back ((*response)[idx]);
+        output.push_back ((*response)[idx]);
         keypoints_indices_->indices.push_back (idx);
       }
     }

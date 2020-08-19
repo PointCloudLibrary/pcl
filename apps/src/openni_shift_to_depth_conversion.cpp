@@ -156,8 +156,8 @@ protected:
     std::size_t cloud_size = width_arg * height_arg;
 
     // Reset point cloud
-    cloud_arg.points.clear();
-    cloud_arg.points.reserve(cloud_size);
+    cloud_arg.clear();
+    cloud_arg.reserve(cloud_size);
 
     // Define point cloud parameters
     cloud_arg.width = static_cast<std::uint32_t>(width_arg);
@@ -198,7 +198,7 @@ protected:
         }
 
         // Add point to cloud
-        cloud_arg.points.push_back(newPoint);
+        cloud_arg.push_back(newPoint);
         // Increment point iterator
         ++i;
       }

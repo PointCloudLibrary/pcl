@@ -671,14 +671,14 @@ RangeImageBorderExtractor::blurSurfaceChanges ()
 void
 RangeImageBorderExtractor::computeFeature (PointCloudOut& output)
 {
-  output.points.clear();
+  output.clear();
 
   if (indices_)
   {
     std::cerr << __PRETTY_FUNCTION__
               << ": Sorry, usage of indices for the extraction is not supported for range image border extraction (yet).\n\n";
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -688,7 +688,7 @@ RangeImageBorderExtractor::computeFeature (PointCloudOut& output)
               << ": RangeImage is not set. Sorry, the border extraction works on range images, not on normal point clouds."
               << " Use setRangeImage(...).\n\n";
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   output = getBorderDescriptions ();

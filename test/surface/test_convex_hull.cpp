@@ -188,7 +188,7 @@ TEST (PCL, ConvexHull_LTable)
 {
   //construct dataset
   pcl::PointCloud<pcl::PointXYZ> cloud_out_ltable;
-  cloud_out_ltable.points.resize (100);
+  cloud_out_ltable.resize (100);
 
   int npoints = 0;
   for (std::size_t i = 0; i < 8; i++)
@@ -239,7 +239,7 @@ TEST (PCL, ConvexHull_LTable)
   cloud_out_ltable[npoints].z = 0.f;
   npoints++;
 
-  cloud_out_ltable.points.resize (npoints);
+  cloud_out_ltable.resize (npoints);
 
   pcl::PointCloud<pcl::PointXYZ> hull;
   std::vector<pcl::Vertices> polygons;

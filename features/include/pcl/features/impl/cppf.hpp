@@ -110,7 +110,7 @@ pcl::CPPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
         output.is_dense = false;
       }
 
-      output.points.push_back (p);
+      output.push_back (p);
     }
   }
   // overwrite the sizes done by Feature::initCompute ()

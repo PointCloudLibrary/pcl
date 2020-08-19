@@ -630,7 +630,7 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
 {
   //std::cout << __PRETTY_FUNCTION__ << " called.\n";
   
-  output.points.clear();
+  output.clear();
   
   if (range_image_==nullptr)
   {
@@ -638,7 +638,7 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
               << ": RangeImage is not set. Sorry, the NARF descriptor calculation works on range images, not on normal point clouds."
               << " Use setRangeImage(...).\n\n";
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   if (parameters_.support_size <= 0.0f)
@@ -646,7 +646,7 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
     std::cerr << __PRETTY_FUNCTION__
               << ": support size is not set. Use getParameters().support_size = ...\n\n";
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   std::vector<Narf*> feature_list;
@@ -673,7 +673,7 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
   }
   
   // Copy to NARF36 struct
-  output.points.resize(feature_list.size());
+  output.resize(feature_list.size());
   for (std::size_t i = 0; i < feature_list.size(); ++i)
   {
     feature_list[i]->copyToNarf36(output[i]);

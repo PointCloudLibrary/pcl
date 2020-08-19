@@ -17,15 +17,15 @@ int
   // Fill in the cloud data
   cloud_a.width  = 5;
   cloud_a.height = cloud_b.height = n_cloud_b.height = 1;
-    cloud_a.points.resize (cloud_a.width * cloud_a.height);
+    cloud_a.resize (cloud_a.width * cloud_a.height);
   if (strcmp(argv[1], "-p") == 0)
   {
     cloud_b.width  = 3;
-    cloud_b.points.resize (cloud_b.width * cloud_b.height);
+    cloud_b.resize (cloud_b.width * cloud_b.height);
   }
   else{
     n_cloud_b.width = 5;
-    n_cloud_b.points.resize (n_cloud_b.width * n_cloud_b.height);
+    n_cloud_b.resize (n_cloud_b.width * n_cloud_b.height);
   }
 
   for (std::size_t i = 0; i < cloud_a.size (); ++i)

@@ -55,7 +55,7 @@ TEST (SampleConsensusModelLine, RANSAC)
 {
   // Use a custom point cloud for these tests until we need something better
   PointCloud<PointXYZ> cloud;
-  cloud.points.resize (10);
+  cloud.resize (10);
 
   cloud[0].getVector3fMap () <<  1.0f,  2.00f,  3.00f;
   cloud[1].getVector3fMap () <<  4.0f,  5.00f,  6.00f;
@@ -110,7 +110,7 @@ TEST (SampleConsensusModelLine, RANSAC)
 TEST (SampleConsensusModelLine, OnGroundPlane)
 {
   PointCloud<PointXYZ> cloud;
-  cloud.points.resize (10);
+  cloud.resize (10);
 
   // All the points are on the ground plane (z=0).
   // The line is parallel to the x axis, so all the inlier points have the same z and y coordinates.
