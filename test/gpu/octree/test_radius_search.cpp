@@ -103,24 +103,34 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
         host_search1[i].reserve(max_answers);
         host_search2[i].reserve(max_answers);
     }    
-    
+
+    pcl::gpu::Octree::ResultSqrDists result_sqr_distances1;
+    pcl::gpu::Octree::ResultSqrDists result_sqr_distances2;
+    pcl::gpu::Octree::ResultSqrDists result_sqr_distances3;
+
     //search GPU shared
-    octree_device.radiusSearch(queries_device, data.shared_radius, max_answers, result_device1);
+    octree_device.radiusSearch(queries_device, data.shared_radius, max_answers, result_device1, result_sqr_distances1);
 
     //search GPU individual
-    octree_device.radiusSearch(queries_device,    radiuses_device, max_answers, result_device2);
+    octree_device.radiusSearch(queries_device,    radiuses_device, max_answers, result_device2, result_sqr_distances2);
 
     //search GPU shared with indices
     pcl::gpu::Octree::Indices indices;
     indices.upload(data.indices);
-    octree_device.radiusSearch(queries_device, indices, data.shared_radius, max_answers, result_device3);
+    octree_device.radiusSearch(queries_device, indices, data.shared_radius, max_answers, result_device3, result_sqr_distances3);
 
     //search CPU
     octree_device.internalDownload();
+
+    std::vector< std::vector<float> > host_sqr_distances1(data.tests_num);
+    std::vector< std::vector<float> > host_sqr_distances2(data.tests_num);
+
     for(std::size_t i = 0; i < data.tests_num; ++i)
     {
-        octree_device.radiusSearchHost(data.queries[i], data.shared_radius, host_search1[i], max_answers);
-        octree_device.radiusSearchHost(data.queries[i], data.radiuses[i],   host_search2[i], max_answers);
+        host_sqr_distances1[i].reserve(max_answers);
+        host_sqr_distances2[i].reserve(max_answers);
+        octree_device.radiusSearchHost(data.queries[i], data.shared_radius, host_search1[i], host_sqr_distances1[i], max_answers);
+        octree_device.radiusSearchHost(data.queries[i], data.radiuses[i],   host_search2[i], host_sqr_distances2[i], max_answers);
     }
     
     //download results
@@ -135,6 +145,11 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     result_device1.data.download(downloaded_buffer1);
     result_device2.data.download(downloaded_buffer2);
     result_device3.data.download(downloaded_buffer3);
+
+    std::vector<float> sqr_distances1, sqr_distances2, sqr_distances3;
+    result_sqr_distances1.download(sqr_distances1);
+    result_sqr_distances2.download(sqr_distances2);
+    result_sqr_distances3.download(sqr_distances3);
         
     //data.bruteForceSearch();
 
@@ -142,18 +157,31 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     for(std::size_t i = 0; i < data.tests_num; ++i)
     {        
         std::vector<int>& results_host = host_search1[i];        
-        
+        std::vector<float>& sqr_dist_host = host_sqr_distances1[i];
+
         int beg = i * max_answers;
         int end = beg + sizes1[i];
 
+        const auto beg_dist2 = sqr_distances1.cbegin() + beg;
+        const auto end_dist2 = sqr_distances1.cbegin() + end;
+
         results_batch.assign(downloaded_buffer1.begin() + beg, downloaded_buffer1.begin() + end);
+        std::vector<float> sqr_distances_batch (beg_dist2, end_dist2);
 
         std::sort(results_batch.begin(), results_batch.end());
         std::sort(results_host.begin(), results_host.end());
 
         if ((int)results_batch.size() == max_answers && results_batch.size() < results_host.size() && max_answers)
+        {
             results_host.resize(max_answers);
-        
+            sqr_dist_host.resize(max_answers);
+        }
+        const float sqr_radius = data.shared_radius * data.shared_radius;
+        for (std::size_t j = 0; j < sqr_dist_host.size(); j++)
+        {
+            ASSERT_LT (sqr_distances_batch[j], sqr_radius);
+            ASSERT_NEAR ( sqr_distances_batch[j], sqr_dist_host[j], 0.001);
+        }
         ASSERT_EQ ( ( results_batch == results_host ), true );       
        
         //vector<int>& results_bf = data.bfresutls[i];

@@ -133,7 +133,7 @@ namespace
 
 }
 
-void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float radius, std::vector<int>& out, int max_nn) const
+void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, const float radius, std::vector<int>& out, std::vector<float>& sqr_distances, const int max_nn, const bool find_dist) const
 {            
     out.clear();  
 
@@ -166,6 +166,23 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
             end = beg + std::min<int>((int)out.size() + end - beg, max_nn) - (int)out.size();
 
             out.insert(out.end(), host_octree.indices.begin() + beg, host_octree.indices.begin() + end);
+
+            if (find_dist)
+            {
+                for (std::size_t j = beg; j <  end; ++j)
+                {
+                    const float point_x = host_octree.points_sorted[j                                     ];
+                    const float point_y = host_octree.points_sorted[j + host_octree.points_sorted_step    ];
+                    const float point_z = host_octree.points_sorted[j + host_octree.points_sorted_step * 2];
+
+                    const float dx = (point_x - center.x);
+                    const float dy = (point_y - center.y);
+                    const float dz = (point_z - center.z);
+
+                    const float srq_dist = dx * dx + dy * dy + dz * dz;
+                    sqr_distances.push_back(srq_dist);
+                }
+            }
             if (out.size() == (std::size_t)max_nn)
                 return;
 
@@ -197,7 +214,10 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
                 float dist2 = dx * dx + dy * dy + dz * dz;
 
                 if (dist2 < radius * radius)
+                {
                     out.push_back(index);
+                    sqr_distances.push_back(dist2);
+                }
 
                 if (out.size() == (std::size_t)max_nn)
                     return;
