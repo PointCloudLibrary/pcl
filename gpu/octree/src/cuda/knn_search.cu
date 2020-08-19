@@ -68,6 +68,7 @@ namespace pcl { namespace device { namespace knn_search
         int queries_num;                
         mutable int* output;                        
         mutable int* sizes;
+        mutable float* sqr_distances;
     };
 
     struct KernelPolicy
@@ -91,12 +92,13 @@ namespace pcl { namespace device { namespace knn_search
         float3 query;  
         
         float min_distance;
+        float min_distance_squared;
         int min_idx;
 
         OctreeIterator iterator;     
 
         __device__ __forceinline__ Warp_knnSearch(const Batch& batch_arg, const int query_index_arg)
-            : batch(batch_arg), query_index(query_index_arg), min_distance(std::numeric_limits<float>::max()), min_idx(0), iterator(batch.octree) { }
+            : batch(batch_arg), query_index(query_index_arg), min_distance(std::numeric_limits<float>::max()), min_distance_squared(std::numeric_limits<float>::max()), min_idx(0), iterator(batch.octree) { }
 
         __device__ __forceinline__ void launch(bool active)
         {              
@@ -121,7 +123,8 @@ namespace pcl { namespace device { namespace knn_search
             }
             if (query_index != -1)
             {
-				batch.output[query_index] = batch.indices[min_idx];
+                batch.output[query_index] = batch.indices[min_idx];
+                batch.sqr_distances[query_index] = min_distance_squared;
 
                 if (batch.sizes)
                     batch.sizes[query_index]  = 1;
@@ -197,10 +200,11 @@ namespace pcl { namespace device { namespace knn_search
                 const auto nearestPoint = NearestWarpKernel<KernelPolicy::CTA_SIZE>(beg, batch.points_step, end - beg, active_query);
 
                 if (active_lane == laneId)
-                    if (min_distance > nearestPoint.second)
+                    if (min_distance_squared > nearestPoint.second)
                     {
-                       min_distance = nearestPoint.second;
+                        min_distance_squared = nearestPoint.second;
                        min_idx = beg + nearestPoint.first;
+                       min_distance = sqrt(nearestPoint.second);
                     }
             }
         }
@@ -214,7 +218,7 @@ namespace pcl { namespace device { namespace knn_search
 
         {
           int index = 0;
-          float dist2 = std::numeric_limits<float>::max();
+          float dist_squared = std::numeric_limits<float>::max();
 
           // serial step
           for (int idx = Warp::laneId(); idx < length; idx += Warp::STRIDE) {
@@ -224,8 +228,8 @@ namespace pcl { namespace device { namespace knn_search
 
             const float d2 = dx * dx + dy * dy + dz * dz;
 
-            if (dist2 > d2) {
-              dist2 = d2;
+            if (dist_squared > d2) {
+                dist_squared = d2;
               index = idx;
             }
           }
@@ -236,20 +240,20 @@ namespace pcl { namespace device { namespace knn_search
 
           for (unsigned int bit_offset = KernelPolicy::WARP_SIZE / 2; bit_offset > 0;
                bit_offset /= 2) {
-            const float next = __shfl_down_sync(FULL_MASK, dist2, bit_offset);
+            const float next = __shfl_down_sync(FULL_MASK, dist_squared, bit_offset);
             const int next_index = __shfl_down_sync(FULL_MASK, index, bit_offset);
 
-            if (dist2 > next) {
-              dist2 = next;
+            if (dist_squared > next) {
+                dist_squared = next;
               index = next_index;
             }
           }
 
           // retrieve index and distance
           index = __shfl_sync(FULL_MASK, index, 0);
-          const float dist = sqrt(__shfl_sync(FULL_MASK, dist2, 0));
+          dist_squared = __shfl_sync(FULL_MASK, dist_squared, 0);
 
-          return std::make_pair(index, dist);
+          return {index, dist_squared};
         }
     };
     
@@ -269,7 +273,7 @@ namespace pcl { namespace device { namespace knn_search
 } } }
 
 
-void pcl::device::OctreeImpl::nearestKSearchBatch(const Queries& queries, int /*k*/, NeighborIndices& results) const
+void pcl::device::OctreeImpl::nearestKSearchBatch(const Queries& queries, int /*k*/, NeighborIndices& results, BatchResultSqrDists& sqr_distances) const
 {              
     using BatchType = pcl::device::knn_search::Batch;
 
@@ -282,6 +286,7 @@ void pcl::device::OctreeImpl::nearestKSearchBatch(const Queries& queries, int /*
     
     batch.output = results.data;
     batch.sizes  = results.sizes;
+    batch.sqr_distances = sqr_distances;
     
     batch.points = points_sorted;
     batch.points_step = points_sorted.step()/points_sorted.elem_size;

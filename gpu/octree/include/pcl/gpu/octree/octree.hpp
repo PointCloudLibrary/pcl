@@ -151,7 +151,16 @@ namespace pcl
               * \param[in] k number of neighbors (only k == 1 is supported)
               * \param[out] results array of results
               */
+            PCL_DEPRECATED(1, 14, "use nearestKSearchBatch() which returns square distances instead")
             void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results) const;
+
+            /** \brief Batch exact k-nearest search on GPU for k == 1 only!
+              * \param[in] queries array of centers
+              * \param[in] k number of neighbors (only k == 1 is supported)
+              * \param[out] results array of results
+              * \param[out] sqr_distances square distances to results
+              */
+            void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results, ResultSqrDists& sqr_distances) const;
 
             /** \brief Desroys octree and release all resources */
             void clear();            
