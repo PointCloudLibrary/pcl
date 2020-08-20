@@ -115,9 +115,9 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
 
   ASSERT_EQ(downloaded, result_host_gpu);
 
-  const std::vector<float> expected_sqr_dists = {pcl::squaredEuclideanDistance(coords[8], queries[0]),
-                                                 pcl::squaredEuclideanDistance(coords[8], queries[1]),
-                                                 pcl::squaredEuclideanDistance(coords[7], queries[2]) };
+  const std::array<float, 3> expected_sqr_dists {pcl::squaredEuclideanDistance(coords[8], queries[0]),
+                                                  pcl::squaredEuclideanDistance(coords[8], queries[1]),
+                                                  pcl::squaredEuclideanDistance(coords[7], queries[2]) };
 
   for (size_t i = 0; i < queries.size(); ++i) {
     ASSERT_EQ(dists_pcl[i], dists_gpu[i]);
