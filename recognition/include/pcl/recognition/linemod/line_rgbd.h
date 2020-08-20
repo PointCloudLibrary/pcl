@@ -97,7 +97,7 @@ namespace pcl
       /** \brief Constructor */
       LineRGBD ()
         : intersection_volume_threshold_ (1.0f)
-        , clustering_threshold_ (1)
+        , clustering_threshold_ (0)
         , linemod_ ()
         , color_gradient_mod_ ()
         , surface_normal_mod_ ()
@@ -171,7 +171,7 @@ namespace pcl
       }
 
       inline void
-      setClusteringThreshold3D (const size_t threshold = 1)
+      setClusteringThreshold3D (const size_t threshold = 0)
       {
         clustering_threshold_ = threshold;
       }

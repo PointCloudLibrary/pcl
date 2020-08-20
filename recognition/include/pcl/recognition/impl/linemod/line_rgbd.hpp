@@ -895,6 +895,11 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections ()
 template <typename PointXYZT, typename PointRGBT> void 
 pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
 {
+  // check if clustering is disabled
+  if (clustering_threshold_ == 0) {
+    return;
+  }
+
   // compute overlap between each detection
   const size_t nr_detections = detections_.size ();
 
