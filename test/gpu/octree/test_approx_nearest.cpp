@@ -11,6 +11,7 @@
 #include <pcl/gpu/octree/octree.hpp>
 #include <pcl/octree/octree_search.h>
 #include <pcl/point_cloud.h>
+#include <pcl/common/distances.h>
 
 #include <gtest/gtest.h>
 
@@ -37,7 +38,7 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
   |       | y      |                 |
   |       |        |                 |
   ------------------------------------
-  the final two point are positioned such that point 'x' is father from query point 'q'
+  the final two point are positioned such that point 'x' is farther from query point 'q'
   than 'y', but the voxel containing 'x' is closer to  'q' than the voxel containing 'y'
   */
 
@@ -114,9 +115,14 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
 
   ASSERT_EQ(downloaded, result_host_gpu);
 
+  const std::vector<float> expected_sqr_dists = {pcl::squaredEuclideanDistance(coords[8], queries[0]),
+                                                 pcl::squaredEuclideanDistance(coords[8], queries[1]),
+                                                 pcl::squaredEuclideanDistance(coords[7], queries[2]) };
+
   for (size_t i = 0; i < queries.size(); ++i) {
     ASSERT_EQ(dists_pcl[i], dists_gpu[i]);
     ASSERT_NEAR(dists_gpu[i], dists_device_downloaded[i], 0.001);
+    ASSERT_NEAR(dists_device_downloaded[i], expected_sqr_dists[i], 0.001);
   }
 }
 
