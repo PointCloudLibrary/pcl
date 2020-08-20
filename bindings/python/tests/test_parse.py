@@ -404,9 +404,11 @@ def test_default_delete_constructor(tmp_path):
     assert default_constructor["kind"] == "CONSTRUCTOR"
     assert default_constructor["name"] == "aClass"
     assert default_constructor["result_type"] == "void"
+    assert default_constructor["is_default_constructor"]
 
     delete_constructor = class_decl["members"][1]
 
     assert delete_constructor["kind"] == "CONSTRUCTOR"
     assert delete_constructor["name"] == "aClass"
     assert delete_constructor["result_type"] == "void"
+    # no check available for deleted ctor analogous to `is_default_constructor`
