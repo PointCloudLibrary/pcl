@@ -59,13 +59,13 @@ init ()
   cloud.height = 1;
 
   srand (static_cast<unsigned int> (time (nullptr)));
-  // Randomly create a new point cloud
-  for (std::size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
-    cloud_big.emplace_back(static_cast<float>(1024 * rand() / (RAND_MAX + 1.0)),
-                           static_cast<float>(1024 * rand() / (RAND_MAX + 1.0)),
-                           static_cast<float>(1024 * rand() / (RAND_MAX + 1.0)));
   cloud_big.width = 640;
   cloud_big.height = 480;
+  // Randomly create a new point cloud, use points.emplace_back
+  for (std::size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
+    cloud_big.points.emplace_back(static_cast<float>(1024 * rand() / (RAND_MAX + 1.0)),
+                                  static_cast<float>(1024 * rand() / (RAND_MAX + 1.0)),
+                                  static_cast<float>(1024 * rand() / (RAND_MAX + 1.0)));
 }
 
 /* Test for KdTree nearestKSearch */TEST (PCL, KdTree_nearestKSearch)
