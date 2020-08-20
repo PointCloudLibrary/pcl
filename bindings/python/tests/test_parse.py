@@ -384,3 +384,31 @@ def test_template_type_parameter(tmp_path):
     assert template_type_parameter["kind"] == "TEMPLATE_TYPE_PARAMETER"
     assert template_type_parameter["element_type"] == "Unexposed"
     assert template_type_parameter["name"] == "P"
+
+
+def test_default_delete_constructor(tmp_path):
+    file_contents = """
+    class aClass {
+        aClass() = default;
+
+        // disable the copy constructor
+        aClass(double) = delete;
+    };
+    """
+    parsed_info = get_parsed_info(tmp_path=tmp_path, file_contents=file_contents)
+
+    class_decl = parsed_info["members"][0]
+
+    default_constructor = class_decl["members"][0]
+
+    assert default_constructor["kind"] == "CONSTRUCTOR"
+    assert default_constructor["name"] == "aClass"
+    assert default_constructor["result_type"] == "void"
+    assert default_constructor["is_default_constructor"]
+
+    delete_constructor = class_decl["members"][1]
+
+    assert delete_constructor["kind"] == "CONSTRUCTOR"
+    assert delete_constructor["name"] == "aClass"
+    assert delete_constructor["result_type"] == "void"
+    # no check available for deleted ctor analogous to `is_default_constructor`

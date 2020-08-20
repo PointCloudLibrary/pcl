@@ -110,6 +110,55 @@ def generate_parsed_info(node):
         parsed_info["brief_comment"] = cursor.brief_comment
     if cursor.raw_comment:
         parsed_info["raw_comment"] = cursor.raw_comment
+
+    # add result of various kinds of checks available in cindex.py
+
+    cursorkind_checks = {
+        "kind_is_declaration": cursor.kind.is_declaration,
+        "kind_is_reference": cursor.kind.is_reference,
+        "kind_is_expression": cursor.kind.is_expression,
+        "kind_is_statement": cursor.kind.is_statement,
+        "kind_is_attribute": cursor.kind.is_attribute,
+        "kind_is_invalid": cursor.kind.is_invalid,
+        "kind_is_translation_unit": cursor.kind.is_translation_unit,
+        "kind_is_preprocessing": cursor.kind.is_preprocessing,
+        "kind_is_unexposed": cursor.kind.is_unexposed,
+    }
+
+    # check for deleted ctor analogous to `is_default_constructor` unavailable
+    cursor_checks = {
+        "is_definition": cursor.is_definition,
+        "is_const_method": cursor.is_const_method,
+        "is_converting_constructor": cursor.is_converting_constructor,
+        "is_copy_constructor": cursor.is_copy_constructor,
+        "is_default_constructor": cursor.is_default_constructor,
+        "is_move_constructor": cursor.is_move_constructor,
+        "is_default_method": cursor.is_default_method,
+        "is_mutable_field": cursor.is_mutable_field,
+        "is_pure_virtual_method": cursor.is_pure_virtual_method,
+        "is_static_method": cursor.is_static_method,
+        "is_virtual_method": cursor.is_virtual_method,
+        "is_abstract_record": cursor.is_abstract_record,
+        "is_scoped_enum": cursor.is_scoped_enum,
+        "is_anonymous": cursor.is_anonymous,
+        "is_bitfield": cursor.is_bitfield,
+    }
+
+    type_checks = {
+        "type_is_const_qualified": cursor.type.is_const_qualified,
+        "type_is_volatile_qualified": cursor.type.is_volatile_qualified,
+        "type_is_restrict_qualified": cursor.type.is_restrict_qualified,
+        "type_is_pod": cursor.type.is_pod,
+    }
+
+    for checks in (cursorkind_checks, cursor_checks, type_checks):
+        for check, check_call in checks.items():
+            parsed_info[check] = check_call()
+
+    # special case handling for `cursor.type.is_function_variadic()`
+    if cursor.type.kind.spelling == "FunctionProto":
+        parsed_info["type_is_function_variadic"] = cursor.type.is_function_variadic()
+
     parsed_info["members"] = []
 
     # Get cursor's children and recursively add their info to a dictionary, as members of the parent
