@@ -60,6 +60,22 @@ class bind:
             "INCLUSION_DIRECTIVE": self.handle_inclusion_directive,
             "MACRO_DEFINITION": unsure,
             "MACRO_INSTANTIATION": unsure,
+            "TEMPLATE_REF": unsure,  # check for usage in pcl_base.cpp; might need to add in cxx_methods
+            "CXX_NULL_PTR_LITERAL_EXPR": no_need_to_handle,
+            "STRING_LITERAL": no_need_to_handle,
+            "FOR_STMT": handled_by_pybind,
+            "DECL_STMT": unsure,  # handled_by_pybind
+            "SWITCH_STMT": handled_by_pybind,
+            "CASE_STMT": handled_by_pybind,
+            "DEFAULT_STMT": handled_by_pybind,
+            "VARIABLE_REF": handled_by_pybind,
+            "CXX_STATIC_CAST_EXPR": no_need_to_handle,
+            "OBJC_STRING_LITERAL": no_need_to_handle,
+            "PAREN_EXPR": handled_by_pybind,
+            "CXX_DELETE_EXPR": handled_by_pybind,
+            "CXX_TRY_STMT": handled_by_pybind,
+            "CXX_CATCH_STMT": handled_by_pybind,
+            "CLASS_DECL": self.handle_struct_decl,
         }
 
         self.handle_node(root)
@@ -161,6 +177,14 @@ class bind:
         return fields
 
     def handle_struct_decl(self):
+        class_name = self.name
+        for sub_item in self.members:
+            if sub_item["kind"] == "TYPE_REF":
+                # TODO: Will this case only apply to templates?
+                # @TODO: Make more robust
+                type_ref = sub_item["name"].replace("struct ", "").replace("pcl::", "")
+                class_name = f"{self.name}<{type_ref}>"
+
         cxx_base_specifier_list = [
             sub_item["name"]
             for sub_item in self.members
@@ -168,11 +192,12 @@ class bind:
         ]
         if cxx_base_specifier_list:
             cxx_base_specifier_list = ",".join(cxx_base_specifier_list)
+            cxx_base_specifier_list = cxx_base_specifier_list.replace("struct ", "").replace("pcl::", "")
             self.linelist.append(
-                f'py::class_<{self.name}, {cxx_base_specifier_list.replace("struct ", "").replace("pcl::", "")}>(m, "{self.name}")'
+                f'py::class_<{class_name}, {cxx_base_specifier_list}>(m, "{self.name}")'
             )
         else:
-            self.linelist.append(f'py::class_<{self.name}>(m, "{self.name}")')
+            self.linelist.append(f'py::class_<{class_name}>(m, "{self.name}")')
 
         # TODO: Merge this and next block via a design updation
         # handle anonymous structs, etc. as field declarations
