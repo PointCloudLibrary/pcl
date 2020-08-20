@@ -352,31 +352,6 @@ namespace pcl
       inline int
       getPolynomialOrder () const { return (order_); }
 
-      /** \brief Sets whether the surface and normal are approximated using a polynomial, or only via tangent estimation.
-        * \param[in] polynomial_fit set to true for polynomial fit
-        */
-      PCL_DEPRECATED(1, 12, "use setPolynomialOrder() instead")
-      inline void
-      setPolynomialFit (bool polynomial_fit)
-      {
-        if (polynomial_fit)
-        {
-          if (order_ < 2)
-          {
-            order_ = 2;
-          }
-        }
-        else
-        {
-          order_ = 0;
-        }
-      }
-
-      /** \brief Get the polynomial_fit value (true if the surface and normal are approximated using a polynomial). */
-      PCL_DEPRECATED(1, 12, "use getPolynomialOrder() instead")
-      inline bool
-      getPolynomialFit () const { return (order_ > 1); }
-
       /** \brief Set the sphere radius that is to be used for determining the k-nearest neighbors used for fitting.
         * \param[in] radius the sphere radius that is to contain all k-nearest neighbors
         * \note Calling this method resets the squared Gaussian parameter to radius * radius !
@@ -743,9 +718,6 @@ namespace pcl
       std::string
       getClassName () const { return ("MovingLeastSquares"); }
   };
-
-  template <typename PointInT, typename PointOutT>
-  using MovingLeastSquaresOMP PCL_DEPRECATED(1, 12, "use MovingLeastSquares instead, it supports OpenMP now") = MovingLeastSquares<PointInT, PointOutT>;
 }
 
 #ifdef PCL_NO_PRECOMPILE
