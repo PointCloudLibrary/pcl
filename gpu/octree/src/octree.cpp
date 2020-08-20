@@ -163,11 +163,18 @@ void pcl::gpu::Octree::radiusSearch(const Queries& queries, const Indices& indic
 
 void pcl::gpu::Octree::approxNearestSearch(const Queries& queries, NeighborIndices& results) const
 {
+    ResultSqrDists sqr_distance;
+    approxNearestSearch(queries, results, sqr_distance);
+}
+
+void pcl::gpu::Octree::approxNearestSearch(const Queries& queries, NeighborIndices& results, ResultSqrDists& sqr_distance) const
+{
     assert(queries.size() > 0);    
     results.create(static_cast<int> (queries.size()), 1);
+    sqr_distance.create(queries.size());
     
     const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
-    static_cast<OctreeImpl*>(impl)->approxNearestSearch(q, results);
+    static_cast<OctreeImpl*>(impl)->approxNearestSearch(q, results, sqr_distance);
 }
 
 void pcl::gpu::Octree::nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results) const
