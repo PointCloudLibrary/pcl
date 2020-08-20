@@ -432,6 +432,7 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
   std::string line;
   std::vector<std::string> st;
   std::istringstream is;
+  is.imbue (std::locale::classic ());
 
   try
   {

@@ -339,7 +339,6 @@ namespace pcl
       else
       {
         is.str(st);
-        is.imbue (std::locale::classic ());
         if (!(is >> value))
           value = static_cast<Type> (atof (st.c_str ()));
       }
@@ -364,7 +363,6 @@ namespace pcl
       {
         int val;
         is.str(st);
-        is.imbue (std::locale::classic ());
         //is >> val;  -- unfortunately this fails on older GCC versions and CLANG on MacOS
         if (!(is >> val))
           val = static_cast<int> (atof (st.c_str ()));
@@ -391,7 +389,6 @@ namespace pcl
       {
         int val;
         is.str(st);
-        is.imbue (std::locale::classic ());
         //is >> val;  -- unfortunately this fails on older GCC versions and CLANG on MacOS
         if (!(is >> val))
           val = static_cast<int> (atof (st.c_str ()));
@@ -419,7 +416,9 @@ namespace pcl
   copyStringValue (const std::string &st, pcl::PCLPointCloud2 &cloud,
                    pcl::index_t point_index, unsigned int field_idx, unsigned int fields_count)
   {
-    detail::copyStringValue<Type> (st, cloud,point_index, field_idx, fields_count, std::istringstream{});
+    std::istringstream is;
+    is.imbue (std::locale::classic ());
+    detail::copyStringValue<Type> (st, cloud,point_index, field_idx, fields_count, is);
   }
   template <typename Type> inline void
   copyStringValue (const std::string &st, pcl::PCLPointCloud2 &cloud,
