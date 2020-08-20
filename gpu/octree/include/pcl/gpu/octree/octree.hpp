@@ -103,17 +103,17 @@ namespace pcl
             /** \brief Performs search of all points within given radius on CPU. It call \a internalDownload if necessary
               * \param[in] center center of sphere
               * \param[in] radius radius of sphere
-              * \param[out] out indices of points within given sphere
               * \param[in] max_nn maximum number of results returned
+              * \param[out] out indices of points within given sphere
               */
             void radiusSearchHost(const PointType& center, float radius, std::vector<int>& out, int max_nn = INT_MAX);
 
             /** \brief Performs search of all points within given radius on CPU. It call \a internalDownload if necessary
               * \param[in] center center of sphere
               * \param[in] radius radius of sphere
-              * \param[out] out indices of points within given sphere
               * \param[in] max_nn maximum number of results returned
               * \param[in] sqr_distances corresponding squared distances to query point
+              * \param[out] out indices of points within given sphere
               */
             void radiusSearchHost(const PointType& center, const float radius, std::vector<int>& out,  std::vector<float>& sqr_distances, const int max_nn = INT_MAX);
 
