@@ -133,7 +133,7 @@ TEST(PCL_OctreeGPU, performance)
     cv::Octree octree_opencv;
     const static int opencv_octree_points_per_leaf = 32;    
     std::vector<cv::Point3f> opencv_points(data.size());
-    std::transform(data.begin(), data.end(), opencv_points.begin(), DataGenerator::ConvPoint<cv::Point3f>());
+    std::transform(data.cbegin(), data.cend(), opencv_points.begin(), DataGenerator::ConvPoint<cv::Point3f>());
         
     {        
         ScopeTime t("opencv-build");	        
