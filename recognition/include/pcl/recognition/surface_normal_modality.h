@@ -441,6 +441,13 @@ namespace pcl
       void
       computeSurfaceNormals ();
 
+      void
+      setSurfaceNormals (const pcl::PointCloud<pcl::Normal>& surface_normals)
+      {
+        // pcl::copyPointCloud (surface_normals, surface_normals_);
+        surface_normals_ = surface_normals;
+      }
+
       /** \brief Computes and quantizes the surface normals. */
       void
       computeAndQuantizeSurfaceNormals ();
@@ -1377,8 +1384,8 @@ pcl::SurfaceNormalModality<PointInT>::extractAllFeatures (
 template <typename PointInT> void
 pcl::SurfaceNormalModality<PointInT>::quantizeSurfaceNormals ()
 {
-  const size_t width = input_->width;
-  const size_t height = input_->height;
+  const size_t width = surface_normals_.width;
+  const size_t height = surface_normals_.height;
 
   quantized_surface_normals_.resize (width, height);
 
@@ -1418,8 +1425,8 @@ pcl::SurfaceNormalModality<PointInT>::quantizeSurfaceNormals ()
 template <typename PointInT> void
 pcl::SurfaceNormalModality<PointInT>::filterQuantizedSurfaceNormals ()
 {
-  const int width = input_->width;
-  const int height = input_->height;
+  const int width = surface_normals_.width;
+  const int height = surface_normals_.height;
 
   filtered_quantized_surface_normals_.resize (width, height);
 
