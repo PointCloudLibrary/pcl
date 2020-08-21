@@ -194,10 +194,10 @@ class bind:
             cxx_base_specifier_list = ",".join(cxx_base_specifier_list)
             cxx_base_specifier_list = cxx_base_specifier_list.replace("struct ", "").replace("pcl::", "")
             self.linelist.append(
-                f'py::class_<{class_name}, {cxx_base_specifier_list}>(m, "{self.name}")'
+                f'py::class_<{class_name}, {cxx_base_specifier_list}>(m, "{class_name}")'
             )
         else:
-            self.linelist.append(f'py::class_<{class_name}>(m, "{self.name}")')
+            self.linelist.append(f'py::class_<{class_name}>(m, "{class_name}")')
 
         # TODO: Merge this and next block via a design updation
         # handle anonymous structs, etc. as field declarations
