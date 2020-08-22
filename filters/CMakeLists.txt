@@ -28,6 +28,7 @@ set(srcs
   src/sampling_surface_normal.cpp
   src/statistical_outlier_removal.cpp
   src/voxel_grid.cpp
+  src/voxel_grid_large.cpp
   src/approximate_voxel_grid.cpp
   src/bilateral.cpp
   src/fast_bilateral.cpp
@@ -68,6 +69,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/sampling_surface_normal.h"
   "include/pcl/${SUBSYS_NAME}/statistical_outlier_removal.h"
   "include/pcl/${SUBSYS_NAME}/voxel_grid.h"
+  "include/pcl/${SUBSYS_NAME}/voxel_grid_large.h"
   "include/pcl/${SUBSYS_NAME}/approximate_voxel_grid.h"
   "include/pcl/${SUBSYS_NAME}/bilateral.h"
   "include/pcl/${SUBSYS_NAME}/fast_bilateral.h"
@@ -106,6 +108,7 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/sampling_surface_normal.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/statistical_outlier_removal.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/voxel_grid.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/voxel_grid_large.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/approximate_voxel_grid.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/bilateral.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/fast_bilateral.hpp"
