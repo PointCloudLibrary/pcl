@@ -204,10 +204,10 @@ namespace pcl
     else
     {
       // If not, memcpy each group of contiguous fields separately
-      for (std::uint32_t row = 0; row < msg.height; ++row)
+      for (index_t row = 0; row < msg.height; ++row)
       {
         const std::uint8_t* row_data = &msg.data[row * msg.row_step];
-        for (std::uint32_t col = 0; col < msg.width; ++col)
+        for (index_t col = 0; col < msg.width; ++col)
         {
           const std::uint8_t* msg_data = row_data + col * msg.point_step;
           for (const detail::FieldMapping& mapping : field_map)
