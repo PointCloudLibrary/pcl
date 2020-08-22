@@ -549,11 +549,10 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
 
   // refine detections along depth
   refineDetectionsAlongDepth ();
+  applyProjectiveDepthICPOnDetections();
 
   // remove overlaps
   removeOverlappingDetections ();
-
-  // applyProjectiveDepthICPOnDetections();
 
   // sort the detections
   std::sort(detections_.begin(), detections_.end(), [](const typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & a,
@@ -665,8 +664,8 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
   }
 
   // refine detections along depth
-  //refineDetectionsAlongDepth ();
-  //applyProjectiveDepthICPOnDetections();
+  refineDetectionsAlongDepth ();
+  applyProjectiveDepthICPOnDetections();
 
   // remove overlaps
   removeOverlappingDetections ();
