@@ -63,6 +63,7 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #include <pcl/gpu/containers/initialization.h>
 
 #include <pcl/common/time.h>
+#include <pcl/common/transforms.h> // for transformPoint
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/image_viewer.h>

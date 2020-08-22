@@ -35,7 +35,6 @@
  */
 
 #include <pcl/common/time.h>
-#include <pcl/console/parse.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/point_cloud.h>
@@ -43,11 +42,7 @@
 
 #include <boost/asio.hpp>
 
-#include <cstdio>
-#include <cstdlib>
 #include <iostream>
-#include <sstream>
-#include <string>
 #include <thread>
 #include <vector>
 

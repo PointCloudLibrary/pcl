@@ -45,14 +45,14 @@
 #include <climits>
 #include <memory>
 #include <set>
+#include <boost/random/mersenne_twister.hpp> // for mt19937
+#include <boost/random/uniform_int.hpp> // for uniform_int
+#include <boost/random/variate_generator.hpp> // for variate_generator
 
 #include <pcl/memory.h>
-#include <pcl/pcl_macros.h>
-#include <pcl/pcl_base.h>
 #include <pcl/console/print.h>
 #include <pcl/point_cloud.h>
 #include <pcl/types.h> // for index_t, Indices
-#include <pcl/sample_consensus/boost.h>
 #include <pcl/sample_consensus/model_types.h>
 
 #include <pcl/search/search.h>

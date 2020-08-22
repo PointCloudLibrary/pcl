@@ -37,7 +37,7 @@
 
 #pragma once
 
-#include <pcl/pcl_macros.h>
+#include <pcl/pcl_exports.h> // for PCL_EXPORTS
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/filters/filter.h>
 

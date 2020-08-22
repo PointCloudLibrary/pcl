@@ -41,9 +41,6 @@
 
 #include <pcl/pcl_base.h>
 #include <pcl/common/io.h>
-#include <pcl/conversions.h>
-#include <pcl/filters/boost.h>
-#include <cfloat>
 #include <pcl/PointIndices.h>
 
 namespace pcl

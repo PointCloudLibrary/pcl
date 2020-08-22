@@ -42,7 +42,6 @@
 #define PCL_FEATURES_IMPL_CPPF_H_
 
 #include <pcl/features/cppf.h>
-#include <pcl/features/pfh.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>

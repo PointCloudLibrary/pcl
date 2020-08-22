@@ -44,6 +44,7 @@
 #include <pcl/sample_consensus/sac_model_line.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/concatenate.h>
+#include <pcl/common/eigen.h> // for eigen33
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool

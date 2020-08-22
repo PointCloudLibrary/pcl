@@ -39,6 +39,7 @@
 
 #pragma once
 
+#include <cfloat> // for FLT_MIN, FLT_MAX
 #include <pcl/pcl_macros.h>
 #include <pcl/filters/filter_indices.h>
 

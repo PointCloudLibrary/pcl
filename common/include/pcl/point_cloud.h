@@ -51,7 +51,6 @@
 #include <pcl/type_traits.h>
 #include <pcl/types.h>
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 

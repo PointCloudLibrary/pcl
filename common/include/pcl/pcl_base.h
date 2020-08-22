@@ -46,9 +46,6 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
-#include <Eigen/StdVector>
-#include <Eigen/Core>
-
 // Point Cloud message includes. Needed everywhere.
 #include <pcl/point_cloud.h>
 #include <pcl/PointIndices.h>

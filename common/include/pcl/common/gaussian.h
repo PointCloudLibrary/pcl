@@ -39,8 +39,9 @@
 
 #pragma once
 
-#include <pcl/common/eigen.h>
 #include <pcl/point_cloud.h>
+
+#include <Eigen/Core> // for VectorXf
 
 #include <functional>
 
