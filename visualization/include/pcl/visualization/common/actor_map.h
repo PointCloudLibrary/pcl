@@ -37,14 +37,12 @@
 
 #pragma once
 
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/PCLPointCloud2.h>
 
 #include <vtkLODActor.h>
 #include <vtkSmartPointer.h>
 
-#include <map>
 #include <unordered_map>
 #include <vector>
 

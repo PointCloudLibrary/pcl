@@ -36,6 +36,7 @@
 #pragma once
 
 #include <pcl/keypoints/keypoint.h>
+#include <pcl/octree/octree_search.h> // for OctreePointCloudSearch
 
 namespace pcl
 {

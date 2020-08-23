@@ -42,6 +42,7 @@
 #include <pcl/search/organized.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
+#include <pcl/common/projection_matrix.h> // for getCameraMatrixFromProjectionMatrix, ...
 #include <pcl/common/time.h>
 #include <Eigen/Eigenvalues>
 

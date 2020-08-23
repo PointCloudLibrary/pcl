@@ -37,6 +37,8 @@
 
 #include <pcl/surface/on_nurbs/sequential_fitter.h>
 
+#include <Eigen/Geometry> // for cross
+
 using namespace pcl;
 using namespace on_nurbs;
 using namespace Eigen;

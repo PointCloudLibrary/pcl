@@ -38,8 +38,11 @@
 #ifndef PCL_SURFACE_IMPL_SURFEL_SMOOTHING_H_
 #define PCL_SURFACE_IMPL_SURFEL_SMOOTHING_H_
 
+#include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/search/kdtree.h> // for KdTree
 #include <pcl/surface/surfel_smoothing.h>
 #include <pcl/common/distances.h>
+#include <pcl/console/print.h> // for PCL_ERROR, PCL_DEBUG
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> bool

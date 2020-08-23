@@ -42,6 +42,7 @@
 #endif
 
 // PCL includes
+#include <pcl/pcl_base.h> // for UNAVAILABLE
 #include <pcl/point_cloud.h>
 #include <pcl/common/io.h>
 // VTK includes

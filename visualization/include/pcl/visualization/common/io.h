@@ -39,7 +39,6 @@
 #pragma once
 
 #include <pcl/visualization/common/actor_map.h>
-#include <pcl/console/print.h>
 
 class vtkPolyData;
 

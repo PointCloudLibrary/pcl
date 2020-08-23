@@ -44,7 +44,7 @@
 // PCL includes
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
-#include <pcl/common/io.h>
+#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
 #include <pcl/visualization/common/common.h>
 // VTK includes
 #include <vtkSmartPointer.h>

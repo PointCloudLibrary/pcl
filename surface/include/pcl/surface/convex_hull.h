@@ -46,7 +46,6 @@
 
 // PCL includes
 #include <pcl/surface/reconstruction.h>
-#include <pcl/ModelCoefficients.h>
 #include <pcl/PolygonMesh.h>
 
 namespace pcl

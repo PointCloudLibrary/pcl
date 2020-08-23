@@ -61,7 +61,6 @@
 #include <Eigen/Geometry>
 #include <Eigen/SVD>
 #include <Eigen/LU>
-#include <Eigen/Dense>
 #include <Eigen/Eigenvalues>
 
 namespace pcl

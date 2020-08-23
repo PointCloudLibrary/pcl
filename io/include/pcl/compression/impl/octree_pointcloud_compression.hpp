@@ -38,14 +38,12 @@
 #ifndef OCTREE_COMPRESSION_HPP
 #define OCTREE_COMPRESSION_HPP
 
+#include <pcl/common/io.h> // for getFieldIndex
 #include <pcl/compression/entropy_range_coder.h>
 
-#include <iterator>
 #include <iostream>
 #include <vector>
 #include <cstring>
-#include <iostream>
-#include <cstdio>
 
 namespace pcl
 {

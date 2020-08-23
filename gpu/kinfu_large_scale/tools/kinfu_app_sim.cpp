@@ -96,7 +96,6 @@
 #endif
 using ScopeTimeT = pcl::ScopeTime;
 
-#include <Eigen/Dense>
 #include <cmath>
 #include <iostream>
 #ifdef _WIN32

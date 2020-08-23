@@ -40,7 +40,6 @@
 #include <pcl/memory.h>
 #include "openni.h"
 #include "openni_exception.h"
-#include <pcl/io/boost.h>
 
 namespace openni_wrapper
 {

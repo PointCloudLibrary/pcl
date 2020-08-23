@@ -54,9 +54,6 @@ namespace flann
 
 namespace pcl
 {
-  // Forward declarations
-  template <typename T> class PointRepresentation;
-
   /** \brief KdTreeFLANN is a generic type of 3D spatial locator using kD-tree structures. The class is making use of
     * the FLANN (Fast Library for Approximate Nearest Neighbor) project by Marius Muja and David Lowe.
     *

@@ -43,7 +43,6 @@
 #include <numeric>
 #include <string>
 
-#include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>
 #include <pcl/conversions.h>
 #include <pcl/exceptions.h>

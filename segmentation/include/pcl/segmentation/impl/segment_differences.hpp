@@ -41,6 +41,8 @@
 
 #include <pcl/common/io.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
+#include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/search/kdtree.h> // for KdTree
 
 
 //////////////////////////////////////////////////////////////////////////

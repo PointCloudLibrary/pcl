@@ -43,16 +43,10 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 
-#include <pcl/common/eigen.h>
-#include <pcl/common/common.h>
-#include <pcl/common/io.h>
-
 #include <pcl/compression/libpng_wrapper.h>
 #include <pcl/compression/organized_pointcloud_conversion.h>
 
-#include <string>
 #include <vector>
-#include <limits>
 #include <cassert>
 
 namespace pcl

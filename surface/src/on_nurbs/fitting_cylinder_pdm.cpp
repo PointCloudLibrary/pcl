@@ -38,6 +38,9 @@
 #include <stdexcept>
 #include <pcl/surface/on_nurbs/fitting_cylinder_pdm.h>
 #include <pcl/pcl_macros.h>
+#include <Eigen/Cholesky> // for ldlt
+#include <Eigen/Geometry> // for cross
+#include <Eigen/LU> // for inverse
 
 using namespace pcl;
 using namespace on_nurbs;

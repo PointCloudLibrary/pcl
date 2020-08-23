@@ -40,6 +40,9 @@
 #define PCL_SEGMENTATION_IMPL_SEEDED_HUE_SEGMENTATION_H_
 
 #include <pcl/segmentation/seeded_hue_segmentation.h>
+#include <pcl/console/print.h> // for PCL_ERROR
+#include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void

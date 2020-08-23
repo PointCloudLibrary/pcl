@@ -98,7 +98,6 @@ using ScopeTimeT = pcl::ScopeTime;
 
 #include "../src/internal.h"
 
-#include <Eigen/Dense>
 #include <cmath>
 #include <iostream>
 #include <pcl/memory.h>

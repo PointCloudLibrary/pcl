@@ -38,6 +38,8 @@
 #define PCL_SEGMENTATION_IMPL_CONDITIONAL_EUCLIDEAN_CLUSTERING_HPP_
 
 #include <pcl/segmentation/conditional_euclidean_clustering.h>
+#include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/search/kdtree.h> // for KdTree
 
 template<typename PointT> void
 pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clusters)
