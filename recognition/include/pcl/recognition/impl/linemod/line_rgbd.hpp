@@ -721,8 +721,13 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections (
       }
     }
 
-    // apply ransac on matches
     const size_t nr_matches = depth_matches.size ();
+    if (nr_matches == 0) {
+      PCL_DEBUG ("[pcl::LineRGBD::applyProjectiveDepthICPOnDetections] Detection #%u cannot be refined as corresponding pointcloud is empty\n", detection_index);
+      continue;
+    }
+
+    // apply ransac on matches
     const size_t nr_iterations = 100; // todo: should be a parameter...
     const float inlier_threshold = 0.01f; // 5cm // todo: should be a parameter...
     size_t best_nr_inliers = 0;
