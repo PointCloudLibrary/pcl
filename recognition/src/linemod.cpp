@@ -48,6 +48,7 @@
 
 #include <fstream>
 #include <map>
+#include <algorithm>
 
 //#define LINEMOD_USE_SEPARATE_ENERGY_MAPS
 
@@ -136,16 +137,18 @@ pcl::LINEMOD::addTemplate (const SparseQuantizedMultiModTemplate & linemod_templ
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::LINEMOD::removeOverlappingDetections (const std::vector<LINEMODDetection> & detections, std::vector<LINEMODDetection> & clustered_detections) const
+pcl::LINEMOD::removeOverlappingDetections (std::vector<LINEMODDetection> & detections) const
 {
   // check if clustering is disabled
   if (clustering_threshold_ == 0) {
-    clustered_detections = detections;
     return;
   }
 
   // compute overlap between each detection
   const size_t nr_detections = detections.size ();
+
+  // compute detection representatives for every cluster
+  std::vector<LINEMODDetection> clustered_detections;
 
   typedef std::tuple<size_t, size_t> ClusteringKey;
   std::map<ClusteringKey, std::vector<size_t>> clusters;
@@ -201,14 +204,22 @@ pcl::LINEMOD::removeOverlappingDetections (const std::vector<LINEMODDetection> &
 
     clustered_detections.push_back (detection);
   }
+  detections = clustered_detections;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::LINEMOD::sortDetections (
+    std::vector<LINEMODDetection> & detections) const
+{
+  std::sort(detections.begin(), detections.end(), [](const LINEMODDetection & a,
+                                                     const LINEMODDetection & b) -> bool { return a.score > b.score; });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & _detections) const
+pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & detections) const
 {
-  std::vector<LINEMODDetection> detections;
-
   // create energy maps
   std::vector<EnergyMaps> modality_energy_maps;
   const size_t nr_modalities = modalities.size();
@@ -454,16 +465,12 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
     for (size_t bin_index = 0; bin_index < modality_linearized_maps[modality_index].size (); ++bin_index)
       modality_linearized_maps[modality_index][bin_index].releaseAll ();
   }
-
-  removeOverlappingDetections (detections, _detections);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & _detections) const
+pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalities, std::vector<LINEMODDetection> & detections) const
 {
-  std::vector<LINEMODDetection> detections;
-
   // create energy maps
   std::vector<EnergyMaps> modality_energy_maps;
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
@@ -924,8 +931,6 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
 #endif
     }
   }
-
-  removeOverlappingDetections (detections, _detections);
 }
 
 #include <time.h>
@@ -938,13 +943,11 @@ return (size_t)tp.tv_sec*1000000000 + tp.tv_nsec;
 void
 pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
     const std::vector<QuantizableModality*> & modalities,
-    std::vector<LINEMODDetection> & _detections,
+    std::vector<LINEMODDetection> & detections,
     const float min_scale,
     const float max_scale,
     const float scale_multiplier) const
 {
-  std::vector<LINEMODDetection> detections;
-
   // create energy maps
   std::vector<EnergyMaps> modality_energy_maps;
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
@@ -1534,11 +1537,6 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 #endif
     }
   }
-
-  removeOverlappingDetections (detections, _detections);
-
-  // printf("4 %f\n", 1000.0*(getTickCount()-start)/1e9);
-  start = getTickCount();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

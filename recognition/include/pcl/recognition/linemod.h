@@ -365,8 +365,10 @@ namespace pcl
       addTemplate (const SparseQuantizedMultiModTemplate & linemod_template);
 
       void
-      removeOverlappingDetections (const std::vector<LINEMODDetection> & detections,
-                                   std::vector<LINEMODDetection> & clustered_detections) const;
+      removeOverlappingDetections (std::vector<LINEMODDetection> & detections) const;
+
+      void
+      sortDetections (std::vector<LINEMODDetection> & detections) const;
 
       /** \brief Detects the stored templates in the supplied modality data.
         * \param[in] modalities the modalities that will be used for detection.

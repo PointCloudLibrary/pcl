@@ -465,138 +465,15 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
 }
 
 template <typename PointXYZT, typename PointRGBT> void
-pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
-    const std::vector<pcl::QuantizableModality*> & modalities,
-    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections)
+pcl::LineRGBD<PointXYZT, PointRGBT>::ConvertDetectionsTo3D (
+    const std::vector<pcl::LINEMODDetection> & linemod_detections,
+    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections) const
 {
-  std::vector<pcl::LINEMODDetection> linemod_detections;
-  linemod_.detectTemplates (modalities, linemod_detections);
-
-  detections_.clear ();
-  detections_.reserve (linemod_detections.size ());
-  detections.clear ();
-  detections.reserve (linemod_detections.size ());
-
-  #pragma omp parallel for
-  for (size_t detection_id = 0; detection_id < linemod_detections.size (); ++detection_id)
-  {
-    pcl::LINEMODDetection & linemod_detection = linemod_detections[detection_id];
-
-    typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection detection;
-    detection.template_id = linemod_detection.template_id;
-    detection.object_id = object_ids_[linemod_detection.template_id];
-    detection.detection_id = detection_id;
-    detection.response = linemod_detection.score;
-
-    // compute bounding box:
-    // we assume that the bounding boxes of the templates are relative to the center of mass 
-    // of the template points; so we also compute the center of mass of the points
-    // covered by the 
-
-    const pcl::SparseQuantizedMultiModTemplate & linemod_template = 
-      linemod_.getTemplate (linemod_detection.template_id);
-
-    const size_t start_x = std::max (linemod_detection.x, 0);
-    const size_t start_y = std::max (linemod_detection.y, 0);
-    const size_t end_x = std::min (static_cast<size_t> (start_x + linemod_template.region.width),
-                                   static_cast<size_t> (cloud_xyz_->width));
-    const size_t end_y = std::min (static_cast<size_t> (start_y + linemod_template.region.height),
-                                   static_cast<size_t> (cloud_xyz_->height));
-
-    detection.region.x = linemod_detection.x;
-    detection.region.y = linemod_detection.y;
-    detection.region.width  = linemod_template.region.width;
-    detection.region.height = linemod_template.region.height;
-
-    //std::cerr << "detection region: " << linemod_detection.x << ", "
-    //  << linemod_detection.y << ", "
-    //  << linemod_template.region.width << ", "
-    //  << linemod_template.region.height << std::endl;
-
-    float center_x = 0.0f;
-    float center_y = 0.0f;
-    float center_z = 0.0f;
-    size_t counter = 0;
-    for (size_t row_index = start_y; row_index < end_y; ++row_index)
-    {
-      for (size_t col_index = start_x; col_index < end_x; ++col_index)
-      {
-        const PointXYZT & point = (*cloud_xyz_) (col_index, row_index);
-
-        if (pcl_isfinite (point.x) && pcl_isfinite (point.y) && pcl_isfinite (point.z))
-        {
-          center_x += point.x;
-          center_y += point.y;
-          center_z += point.z;
-          ++counter;
-        }
-      }
-    }
-    const float inv_counter = 1.0f / static_cast<float> (counter);
-    center_x *= inv_counter;
-    center_y *= inv_counter;
-    center_z *= inv_counter;
-
-    pcl::BoundingBoxXYZ template_bounding_box = bounding_boxes_[detection.template_id];
-
-    detection.bounding_box = template_bounding_box;
-    detection.bounding_box.x += center_x;
-    detection.bounding_box.y += center_y;
-    detection.bounding_box.z += center_z;
-
-    detections_.push_back (detection);
-  }
-
-  // refine detections along depth
-  refineDetectionsAlongDepth ();
-  applyProjectiveDepthICPOnDetections();
-
-  // remove overlaps
-  removeOverlappingDetections ();
-
-  // sort the detections
-  std::sort(detections_.begin(), detections_.end(), [](const typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & a,
-                                                       const typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & b) -> bool { return a.response > b.response; });
-
-  for (size_t detection_index = 0; detection_index < detections_.size (); ++detection_index)
-  {
-    detections.push_back (detections_[detection_index]);
-  }
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointXYZT, typename PointRGBT> void 
-pcl::LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
-    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections,
-    const float min_scale,
-    const float max_scale,
-    const float scale_multiplier)
-{
-  std::vector<pcl::QuantizableModality*> modalities;
-  modalities.push_back (&color_gradient_mod_);
-  modalities.push_back (&surface_normal_mod_);
-
-  detectSemiScaleInvariant (modalities, detections, min_scale, max_scale, scale_multiplier);
-}
-
-template <typename PointXYZT, typename PointRGBT> void
-pcl::LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
-    const std::vector<pcl::QuantizableModality*> & modalities,
-    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections,
-    const float min_scale,
-    const float max_scale,
-    const float scale_multiplier)
-{
-  std::vector<pcl::LINEMODDetection> linemod_detections;
-  linemod_.detectTemplatesSemiScaleInvariant (modalities, linemod_detections, min_scale, max_scale, scale_multiplier);
-
-  detections_.clear ();
-  detections_.reserve (linemod_detections.size ());
   detections.clear ();
   detections.reserve (linemod_detections.size ());
   for (size_t detection_id = 0; detection_id < linemod_detections.size (); ++detection_id)
   {
-    pcl::LINEMODDetection & linemod_detection = linemod_detections[detection_id];
+    const pcl::LINEMODDetection & linemod_detection = linemod_detections[detection_id];
 
     typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection detection;
     detection.template_id = linemod_detection.template_id;
@@ -660,82 +537,84 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
     detection.bounding_box.y += center_y;
     detection.bounding_box.z += center_z;
 
-    detections_.push_back (detection);
+    detections.push_back (detection);
   }
+}
+
+template <typename PointXYZT, typename PointRGBT> void
+pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
+    const std::vector<pcl::QuantizableModality*> & modalities,
+    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections)
+{
+  std::vector<pcl::LINEMODDetection> linemod_detections;
+  linemod_.detectTemplates (modalities, linemod_detections);
+  linemod_.removeOverlappingDetections(linemod_detections);
+  linemod_.sortDetections(linemod_detections);
+
+  ConvertDetectionsTo3D(linemod_detections, detections);
 
   // refine detections along depth
-  refineDetectionsAlongDepth ();
-  applyProjectiveDepthICPOnDetections();
+  refineDetectionsAlongDepth (detections);
+  applyProjectiveDepthICPOnDetections(detections);
 
   // remove overlaps
-  removeOverlappingDetections ();
+  removeOverlappingDetections (detections);
 
   // sort the detections
-  std::sort(detections_.begin(), detections_.end(), [](const typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & a,
-                                                       const typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & b) -> bool { return a.response > b.response; });
-
-  for (size_t detection_index = 0; detection_index < detections_.size (); ++detection_index)
-  {
-    detections.push_back (detections_[detection_index]);
-  }
+  sortDetections (detections);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointXYZT, typename PointRGBT> void 
-pcl::LineRGBD<PointXYZT, PointRGBT>::computeTransformedTemplatePoints (
-    const size_t detection_id, pcl::PointCloud<pcl::PointXYZRGBA> &cloud)
+pcl::LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
+    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections,
+    const float min_scale,
+    const float max_scale,
+    const float scale_multiplier)
 {
-  if (detection_id >= detections_.size ())
-    PCL_ERROR ("ERROR pcl::LineRGBD::computeTransformedTemplatePoints - detection_id is out of bounds\n");
+  std::vector<pcl::QuantizableModality*> modalities;
+  modalities.push_back (&color_gradient_mod_);
+  modalities.push_back (&surface_normal_mod_);
 
-  const size_t template_id = detections_[detection_id].template_id;
-  const pcl::PointCloud<pcl::PointXYZRGBA> & template_point_cloud = template_point_clouds_[template_id];
+  detectSemiScaleInvariant (modalities, detections, min_scale, max_scale, scale_multiplier);
+}
 
-  const pcl::BoundingBoxXYZ & template_bounding_box = bounding_boxes_[template_id];
-  const pcl::BoundingBoxXYZ & detection_bounding_box = detections_[detection_id].bounding_box;
+template <typename PointXYZT, typename PointRGBT> void
+pcl::LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
+    const std::vector<pcl::QuantizableModality*> & modalities,
+    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections,
+    const float min_scale,
+    const float max_scale,
+    const float scale_multiplier)
+{
+  std::vector<pcl::LINEMODDetection> linemod_detections;
+  linemod_.detectTemplatesSemiScaleInvariant (modalities, linemod_detections, min_scale, max_scale, scale_multiplier);
+  linemod_.removeOverlappingDetections(linemod_detections);
+  linemod_.sortDetections(linemod_detections);
 
-  //std::cerr << "detection: " 
-  //  << detection_bounding_box.x << ", "
-  //  << detection_bounding_box.y << ", "
-  //  << detection_bounding_box.z << std::endl;
-  //std::cerr << "template: " 
-  //  << template_bounding_box.x << ", "
-  //  << template_bounding_box.y << ", "
-  //  << template_bounding_box.z << std::endl;
-  const float translation_x = detection_bounding_box.x - template_bounding_box.x;
-  const float translation_y = detection_bounding_box.y - template_bounding_box.y;
-  const float translation_z = detection_bounding_box.z - template_bounding_box.z;
+  ConvertDetectionsTo3D(linemod_detections, detections);
 
-  //std::cerr << "translation: " 
-  //  << translation_x << ", "
-  //  << translation_y << ", "
-  //  << translation_z << std::endl;
+  // refine detections along depth
+  refineDetectionsAlongDepth (detections);
+  applyProjectiveDepthICPOnDetections(detections);
 
-  const size_t nr_points = template_point_cloud.size ();
-  cloud.resize (nr_points);
-  cloud.width = template_point_cloud.width;
-  cloud.height = template_point_cloud.height;
-  for (size_t point_index = 0; point_index < nr_points; ++point_index)
-  {
-    pcl::PointXYZRGBA point = template_point_cloud.points[point_index];
+  // remove overlaps
+  removeOverlappingDetections (detections);
 
-    point.x += translation_x;
-    point.y += translation_y;
-    point.z += translation_z;
-
-    cloud.points[point_index] = point;
-  }
+  // sort the detections
+  sortDetections (detections);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointXYZT, typename PointRGBT> void 
-pcl::LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
+pcl::LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth (
+    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections) const
 {
-  const size_t nr_detections = detections_.size ();
+  const size_t nr_detections = detections.size ();
   #pragma omp parallel for
   for (size_t detection_index = 0; detection_index < nr_detections; ++detection_index)
   {
-    typename LineRGBD<PointXYZT, PointRGBT>::Detection & detection = detections_[detection_index];
+    typename LineRGBD<PointXYZT, PointRGBT>::Detection & detection = detections[detection_index];
 
     // find depth with most valid points
     const size_t start_x = std::max (detection.region.x, 0);
@@ -810,16 +689,17 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::refineDetectionsAlongDepth ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointXYZT, typename PointRGBT> void 
-pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections ()
+pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections (
+    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections) const
 {
-  const size_t nr_detections = detections_.size ();
+  const size_t nr_detections = detections.size ();
   #pragma omp parallel for
   for (size_t detection_index = 0; detection_index < nr_detections; ++detection_index)
   {
-    typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & detection = detections_[detection_index];
+    typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & detection = detections[detection_index];
 
     const size_t template_id = detection.template_id;
-    pcl::PointCloud<pcl::PointXYZRGBA> & point_cloud = template_point_clouds_[template_id];
+    const pcl::PointCloud<pcl::PointXYZRGBA> & point_cloud = template_point_clouds_[template_id];
 
     const size_t start_x = detection.region.x;
     const size_t start_y = detection.region.y;
@@ -891,8 +771,9 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointXYZT, typename PointRGBT> void 
-pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
+template <typename PointXYZT, typename PointRGBT> void
+pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections (
+    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections) const
 {
   // check if clustering is disabled
   if (clustering_threshold_ == 0) {
@@ -900,7 +781,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
   }
 
   // compute overlap between each detection
-  const size_t nr_detections = detections_.size ();
+  const size_t nr_detections = detections.size ();
 
   // compute detection representatives for every cluster
   std::vector<typename LineRGBD<PointXYZT, PointRGBT>::Detection> clustered_detections;
@@ -911,16 +792,16 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
   {
     for (size_t detection_index_2 = detection_index_1+1; detection_index_2 < nr_detections; ++detection_index_2)
     {
-      const float bounding_box_volume = detections_[detection_index_1].bounding_box.width
-                                      * detections_[detection_index_1].bounding_box.height
-                                      * detections_[detection_index_1].bounding_box.depth;
+      const float bounding_box_volume = detections[detection_index_1].bounding_box.width
+                                      * detections[detection_index_1].bounding_box.height
+                                      * detections[detection_index_1].bounding_box.depth;
 
-      if (detections_[detection_index_1].object_id != detections_[detection_index_2].object_id)
+      if (detections[detection_index_1].object_id != detections[detection_index_2].object_id)
         overlaps (detection_index_1, detection_index_2) = 0.0f;
       else
         overlaps (detection_index_1, detection_index_2) = computeBoundingBoxIntersectionVolume (
-          detections_[detection_index_1].bounding_box, 
-          detections_[detection_index_2].bounding_box) / bounding_box_volume;
+          detections[detection_index_1].bounding_box,
+          detections[detection_index_2].bounding_box) / bounding_box_volume;
     }
   }
 
@@ -970,11 +851,11 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
   for (size_t detection_id = 0; detection_id < nr_detections; ++detection_id)
   {
     const ClusteringKey key = {
-      detections_[detection_id].object_id,
-      detections_[detection_id].region.x / clustering_threshold_,
-      detections_[detection_id].region.y / clustering_threshold_,
-      detections_[detection_id].region.width / clustering_threshold_,
-      detections_[detection_id].region.height / clustering_threshold_
+      detections[detection_id].object_id,
+      detections[detection_id].region.x / clustering_threshold_,
+      detections[detection_id].region.y / clustering_threshold_,
+      detections[detection_id].region.width / clustering_threshold_,
+      detections[detection_id].region.height / clustering_threshold_
     };
 
     clusters[key].push_back(detection_id);
@@ -1001,7 +882,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
     {
       const size_t detection_id = cluster[cluster_index];
 
-      const float weight = detections_[detection_id].response;
+      const float weight = detections[detection_id].response;
 
       if (weight > best_response)
       {
@@ -1009,7 +890,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
         best_detection_id = detection_id;
       }
 
-      const Detection & d = detections_[detection_id];
+      const Detection & d = detections[detection_id];
       const float p_center_x = d.bounding_box.x + d.bounding_box.width / 2.0f;
       const float p_center_y = d.bounding_box.y + d.bounding_box.height / 2.0f;
       const float p_center_z = d.bounding_box.z + d.bounding_box.depth / 2.0f;
@@ -1019,20 +900,20 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
       average_center_z += p_center_z * weight;
       weight_sum += weight;
 
-      average_region_x += float (detections_[detection_id].region.x) * weight;
-      average_region_y += float (detections_[detection_id].region.y) * weight;
+      average_region_x += float (detections[detection_id].region.x) * weight;
+      average_region_y += float (detections[detection_id].region.y) * weight;
     }
 
     typename LineRGBD<PointXYZT, PointRGBT>::Detection detection;
-    detection.template_id = detections_[best_detection_id].template_id;
-    detection.object_id = detections_[best_detection_id].object_id;
+    detection.template_id = detections[best_detection_id].template_id;
+    detection.object_id = detections[best_detection_id].object_id;
     detection.detection_id = cluster_id;
     detection.response = best_response;
 
     const float inv_weight_sum = 1.0f / weight_sum;
-    const float best_detection_bb_width  = detections_[best_detection_id].bounding_box.width;
-    const float best_detection_bb_height = detections_[best_detection_id].bounding_box.height;
-    const float best_detection_bb_depth  = detections_[best_detection_id].bounding_box.depth;
+    const float best_detection_bb_width  = detections[best_detection_id].bounding_box.width;
+    const float best_detection_bb_height = detections[best_detection_id].bounding_box.height;
+    const float best_detection_bb_depth  = detections[best_detection_id].bounding_box.depth;
 
     detection.bounding_box.x = average_center_x * inv_weight_sum - best_detection_bb_width/2.0f;
     detection.bounding_box.y = average_center_y * inv_weight_sum - best_detection_bb_height/2.0f;
@@ -1043,13 +924,22 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections ()
 
     detection.region.x = int (average_region_x * inv_weight_sum);
     detection.region.y = int (average_region_y * inv_weight_sum);
-    detection.region.width = detections_[best_detection_id].region.width;
-    detection.region.height = detections_[best_detection_id].region.height;
+    detection.region.width = detections[best_detection_id].region.width;
+    detection.region.height = detections[best_detection_id].region.height;
 
     clustered_detections.push_back (detection);
   }
 
-  detections_ = clustered_detections;
+  detections = clustered_detections;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointXYZT, typename PointRGBT> void
+pcl::LineRGBD<PointXYZT, PointRGBT>::sortDetections (
+    std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections) const
+{
+  std::sort(detections.begin(), detections.end(), [](const typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & a,
+                                                     const typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & b) -> bool { return a.response > b.response; });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
