@@ -3,7 +3,7 @@ import scripts.utils as utils
 
 
 class bind:
-    pybind_linelist = [
+    initial_pybind_lines = [
         "#include <pybind11/pybind11.h>",
         "#include <pybind11/stl.h>",
         "#include <pybind11/stl_bind.h>",
@@ -220,6 +220,9 @@ class bind:
         else:
             self._linelist.append(f'py::class_<{class_name}>(m, "{class_name}")')
 
+        # default constructor
+        self.linelist.append(".def(py::init<>())")
+
         # TODO: Merge this and next block via a design updation
         # handle anonymous structs, etc. as field declarations
         for sub_item in self.members:
@@ -345,9 +348,9 @@ class bind:
         # TODO: Currently commented, to be written later
         # for inclusion in self._inclusion_list:
         #     final.append(f"#include <{inclusion}>")
-        final += self.pybind_linelist
-        for i in range(len(self._linelist)):
-            if self._linelist[i].startswith("namespace"):
+        final += self.initial_pybind_lines
+        for i in range(len(self.linelist)):
+            if self.linelist[i].startswith("namespace"):
                 continue
             else:
                 self._linelist[i] = "".join(
@@ -378,7 +381,7 @@ def generate(source):
         # Extract filename from header_info (TRANSLATION_UNIT's name contains the filepath)
         filename = header_info["name"].split("/")[-1]
         lines_to_write = bind_object.handle_final(
-            filename=f"pcl/{filename}", module_name="pcl"
+            filename=f"{filename}", module_name="pcl"
         )
         return lines_to_write
     else:
