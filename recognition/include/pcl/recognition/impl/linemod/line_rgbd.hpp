@@ -555,7 +555,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
 
   // refine detections along depth
   refineDetectionsAlongDepth (detections);
-  applyProjectiveDepthICPOnDetections(detections);
+  // applyProjectiveDepthICPOnDetections(detections);
 
   // remove overlaps
   removeOverlappingDetections (detections);
@@ -596,7 +596,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
 
   // refine detections along depth
   refineDetectionsAlongDepth (detections);
-  applyProjectiveDepthICPOnDetections(detections);
+  // applyProjectiveDepthICPOnDetections(detections);
 
   // remove overlaps
   removeOverlappingDetections (detections);
