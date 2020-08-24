@@ -3,7 +3,14 @@ import scripts.utils as utils
 
 
 class bind:
-    initial_pybind_lines = [
+    """
+    Class containing functions for generating bindings from AST info.
+    
+    How to use:
+        - to_be_filled_after_updation
+    """
+
+    _initial_pybind_lines = [
         "#include <pybind11/pybind11.h>",
         "#include <pybind11/stl.h>",
         "#include <pybind11/stl_bind.h>",
@@ -352,7 +359,7 @@ class bind:
         # TODO: Currently commented, to be written later
         # for inclusion in self._inclusion_list:
         #     final.append(f"#include <{inclusion}>")
-        final += self.initial_pybind_lines
+        final += self._initial_pybind_lines
         for i in range(len(self._linelist)):
             if self._linelist[i].startswith("namespace"):
                 continue
