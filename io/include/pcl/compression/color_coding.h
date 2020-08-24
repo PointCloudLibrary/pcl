@@ -155,7 +155,7 @@ public:
    * \param inputCloud_arg input point cloud
    * */
   void
-  encodeAverageOfPoints (const typename std::vector<int>& indexVector_arg, unsigned char rgba_offset_arg, PointCloudConstPtr inputCloud_arg)
+  encodeAverageOfPoints (const Indices& indexVector_arg, unsigned char rgba_offset_arg, PointCloudConstPtr inputCloud_arg)
   {
     unsigned int avgRed = 0;
     unsigned int avgGreen = 0;
@@ -202,7 +202,7 @@ public:
    * \param inputCloud_arg input point cloud
    * */
   void
-  encodePoints (const typename std::vector<int>& indexVector_arg, unsigned char rgba_offset_arg, PointCloudConstPtr inputCloud_arg)
+  encodePoints (const Indices& indexVector_arg, unsigned char rgba_offset_arg, PointCloudConstPtr inputCloud_arg)
   {
     unsigned int avgRed;
     unsigned int avgGreen;

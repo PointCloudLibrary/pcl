@@ -90,14 +90,14 @@ public:
    * indices.
    */
   void
-  addPointIndex(const int&)
+  addPointIndex(const index_t&)
   {}
 
   /** \brief Empty getPointIndex implementation as this leaf node does not store any
    * point indices.
    */
   void
-  getPointIndex(int&) const
+  getPointIndex(index_t&) const
   {}
 
   /** \brief Empty getPointIndices implementation as this leaf node does not store any
@@ -148,7 +148,7 @@ public:
   /** \brief Empty getPointIndex implementation as this leaf node does not store any
    * point indices.
    */
-  int
+  index_t
   getPointIndex() const
   {
     assert("getPointIndex: undefined point index");
@@ -197,7 +197,7 @@ public:
    * \param[in] data_arg index to be stored within leaf node.
    */
   void
-  addPointIndex(int data_arg)
+  addPointIndex(index_t data_arg)
   {
     data_ = data_arg;
   }
@@ -206,7 +206,7 @@ public:
    * point index
    * \return index stored within container.
    */
-  int
+  index_t
   getPointIndex() const
   {
     return data_;
@@ -242,7 +242,7 @@ public:
 
 protected:
   /** \brief Point index stored in octree. */
-  int data_;
+  index_t data_;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -276,7 +276,7 @@ public:
    * \param[in] data_arg index to be stored within leaf node.
    */
   void
-  addPointIndex(int data_arg)
+  addPointIndex(index_t data_arg)
   {
     leafDataTVector_.push_back(data_arg);
   }
@@ -285,7 +285,7 @@ public:
    * point indices.
    * \return index stored within container.
    */
-  int
+  index_t
   getPointIndex() const
   {
     return leafDataTVector_.back();

@@ -126,7 +126,7 @@ class PointCoding
       * \param inputCloud_arg input point cloud
       */
     void
-    encodePoints (const typename std::vector<int>& indexVector_arg, const double* referencePoint_arg,
+    encodePoints (const Indices& indexVector_arg, const double* referencePoint_arg,
                   PointCloudConstPtr inputCloud_arg)
     {
       std::size_t len = indexVector_arg.size ();
