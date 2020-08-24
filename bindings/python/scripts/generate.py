@@ -296,7 +296,9 @@ class bind:
                     parameter_type_list.append(f'{sub_item["element_type"]}')
         parameter_type_list = ",".join(parameter_type_list)
 
-        self._linelist.append(f".def(py::init<{parameter_type_list}>())")
+        # default ctor `.def(py::init<>())` already inserted while handling struct/class decl
+        if argument_type_list:
+            self.linelist.append(f".def(py::init<{argument_type_list}>())")
 
     # TODO: Remove, maybe
     def handle_class_template(self):
