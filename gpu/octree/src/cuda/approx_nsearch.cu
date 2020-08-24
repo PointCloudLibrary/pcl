@@ -61,6 +61,7 @@ struct Batch {
 
   int queries_num;
   mutable int* output;
+  mutable float* sqr_distance;
 };
 
 struct KernelPolicy {
@@ -80,6 +81,7 @@ public:
   int query_index;
   float3 query;
   int result_idx;
+  float sqr_dist;
 
   __device__ __forceinline__
   Warp_appNearestSearch(const Batch& batch_arg, int query_index_arg)
@@ -103,7 +105,10 @@ public:
     processNode(node_idx);
 
     if (active)
+    {
       batch.output[query_index] = batch.indices[result_idx];
+      batch.sqr_distance[query_index] = sqr_dist;
+    }
   }
 
 private:
@@ -139,7 +144,10 @@ private:
           beg, batch.points_step, end - beg, active_query);
 
       if (active_lane == laneId)
+      {
         result_idx = beg + nearestPoint.first;
+        sqr_dist = nearestPoint.second;
+      }
     }
   }
 
@@ -152,7 +160,7 @@ private:
 
   {
     int index = 0;
-    float dist2 = std::numeric_limits<float>::max();
+    float dist_squared = std::numeric_limits<float>::max();
 
     // serial step
     for (int idx = Warp::laneId(); idx < length; idx += Warp::STRIDE) {
@@ -162,8 +170,8 @@ private:
 
       const float d2 = dx * dx + dy * dy + dz * dz;
 
-      if (dist2 > d2) {
-        dist2 = d2;
+      if (dist_squared > d2) {
+        dist_squared = d2;
         index = idx;
       }
     }
@@ -175,20 +183,20 @@ private:
 
     for (unsigned int bit_offset = KernelPolicy::WARP_SIZE / 2; bit_offset > 0;
          bit_offset /= 2) {
-      const float next = __shfl_down_sync(FULL_MASK, dist2, bit_offset);
+      const float next = __shfl_down_sync(FULL_MASK, dist_squared, bit_offset);
       const int next_index = __shfl_down_sync(FULL_MASK, index, bit_offset);
 
-      if (dist2 > next) {
-        dist2 = next;
+      if (dist_squared > next) {
+        dist_squared = next;
         index = next_index;
       }
     }
 
     // retrieve index and distance
     index = __shfl_sync(FULL_MASK, index, 0);
-    const float dist = sqrt(__shfl_sync(FULL_MASK, dist2, 0));
+    dist_squared = __shfl_sync(FULL_MASK, dist_squared, 0);
 
-    return {index, dist};
+    return {index, dist_squared};
   }
 };
 
@@ -212,7 +220,8 @@ KernelAN(const Batch batch)
 
 void
 pcl::device::OctreeImpl::approxNearestSearch(const Queries& queries,
-                                             NeighborIndices& results) const
+                                             NeighborIndices& results,
+                                             BatchResultSqrDists& sqr_distance) const
 {
   using BatchType = pcl::device::appnearest_search::Batch;
 
@@ -222,6 +231,7 @@ pcl::device::OctreeImpl::approxNearestSearch(const Queries& queries,
 
   batch.queries_num = (int)queries.size();
   batch.output = results.data;
+  batch.sqr_distance = sqr_distance;
 
   batch.points = points_sorted;
   batch.points_step = (int)points_sorted.elem_step();

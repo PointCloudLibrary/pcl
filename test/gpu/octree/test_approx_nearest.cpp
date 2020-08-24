@@ -11,6 +11,7 @@
 #include <pcl/gpu/octree/octree.hpp>
 #include <pcl/octree/octree_search.h>
 #include <pcl/point_cloud.h>
+#include <pcl/common/distances.h>
 
 #include <gtest/gtest.h>
 
@@ -37,7 +38,7 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
   |       | y      |                 |
   |       |        |                 |
   ------------------------------------
-  the final two point are positioned such that point 'x' is father from query point 'q'
+  the final two point are positioned such that point 'x' is farther from query point 'q'
   than 'y', but the voxel containing 'x' is closer to  'q' than the voxel containing 'y'
   */
 
@@ -91,7 +92,6 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
   // upload queries
   pcl::gpu::Octree::Queries queries_device;
   queries_device.upload(queries);
-  // pcl::gpu::Octree::ResultSqrDists distances_device(queries.size());
 
   // prepare output buffers on device
   pcl::gpu::NeighborIndices result_device(queries.size(), 1);
@@ -99,11 +99,14 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
   std::vector<int> result_host_gpu(queries.size());
   std::vector<float> dists_pcl(queries.size());
   std::vector<float> dists_gpu(queries.size());
+  pcl::gpu::Octree::ResultSqrDists dists_device;
 
   // search GPU shared
-  octree_device.approxNearestSearch(queries_device, result_device);
+  octree_device.approxNearestSearch(queries_device, result_device, dists_device);
   std::vector<int> downloaded;
+  std::vector<float> dists_device_downloaded;
   result_device.data.download(downloaded);
+  dists_device.download(dists_device_downloaded);
 
   for (size_t i = 0; i < queries.size(); ++i) {
     octree_host.approxNearestSearch(queries[i], result_host_pcl[i], dists_pcl[i]);
@@ -112,13 +115,14 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
 
   ASSERT_EQ(downloaded, result_host_gpu);
 
-  // find inconsistencies with gpu and cpu cuda impementation
-  // int count_gpu_better = 0;
-  // int count_pcl_better = 0;
-  // int count_different = 0;
+  const std::array<float, 3> expected_sqr_dists {pcl::squaredEuclideanDistance(coords[8], queries[0]),
+                                                  pcl::squaredEuclideanDistance(coords[8], queries[1]),
+                                                  pcl::squaredEuclideanDistance(coords[7], queries[2]) };
+
   for (size_t i = 0; i < queries.size(); ++i) {
     ASSERT_EQ(dists_pcl[i], dists_gpu[i]);
-    ASSERT_EQ(dists_pcl[i], dists_gpu[i]);
+    ASSERT_NEAR(dists_gpu[i], dists_device_downloaded[i], 0.001);
+    ASSERT_NEAR(dists_device_downloaded[i], expected_sqr_dists[i], 0.001);
   }
 }
 
