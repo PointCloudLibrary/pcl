@@ -3,7 +3,7 @@ import scripts.utils as utils
 
 
 class bind:
-    pybind_linelist = [
+    initial_pybind_lines = [
         "#include <pybind11/pybind11.h>",
         "#include <pybind11/stl.h>",
         "#include <pybind11/stl_bind.h>",
@@ -220,6 +220,9 @@ class bind:
         else:
             self._linelist.append(f'py::class_<{class_name}>(m, "{class_name}")')
 
+        # default constructor
+        self.linelist.append(".def(py::init<>())")
+
         # TODO: Merge this and next block via a design updation
         # handle anonymous structs, etc. as field declarations
         for sub_item in self.members:
@@ -293,7 +296,9 @@ class bind:
                     parameter_type_list.append(f'{sub_item["element_type"]}')
         parameter_type_list = ",".join(parameter_type_list)
 
-        self._linelist.append(f".def(py::init<{parameter_type_list}>())")
+        # default ctor `.def(py::init<>())` already inserted while handling struct/class decl
+        if argument_type_list:
+            self.linelist.append(f".def(py::init<{argument_type_list}>())")
 
     # TODO: Remove, maybe
     def handle_class_template(self):
@@ -345,9 +350,9 @@ class bind:
         # TODO: Currently commented, to be written later
         # for inclusion in self._inclusion_list:
         #     final.append(f"#include <{inclusion}>")
-        final += self.pybind_linelist
-        for i in range(len(self._linelist)):
-            if self._linelist[i].startswith("namespace"):
+        final += self.initial_pybind_lines
+        for i in range(len(self.linelist)):
+            if self.linelist[i].startswith("namespace"):
                 continue
             else:
                 self._linelist[i] = "".join(
@@ -378,7 +383,7 @@ def generate(source):
         # Extract filename from header_info (TRANSLATION_UNIT's name contains the filepath)
         filename = header_info["name"].split("/")[-1]
         lines_to_write = bind_object.handle_final(
-            filename=f"pcl/{filename}", module_name="pcl"
+            filename=f"{filename}", module_name="pcl"
         )
         return lines_to_write
     else:

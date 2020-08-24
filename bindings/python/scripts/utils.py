@@ -56,9 +56,9 @@ def get_output_path(source, output_dir, split_from, extension):
     return output_path
 
 
-def dump_json(filepath, info):
+def dump_json(filepath, info, indent=2, separators=None):
     with open(filepath, "w") as f:
-        json.dump(info, f, indent=2)
+        json.dump(info, f, indent=indent, separators=separators)
 
 
 def read_json(filename):
