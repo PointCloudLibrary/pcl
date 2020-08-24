@@ -14,7 +14,7 @@ def remove_whitespace(string):
     Returns: The stripped off string.
     """
 
-    return str([x for x in string if not x.isspace()])
+    return "".join([x for x in string if not x.isspace()])
 
 
 def generate_bindings(cpp_code_block, tmp_path):
