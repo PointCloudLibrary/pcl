@@ -5,17 +5,17 @@ import scripts.utils as utils
 class bind:
     pybind_linelist = [
         "#include <pybind11/pybind11.h>",
-        "#include<pybind11/stl.h>",
-        "#include<pybind11/stl_bind.h>",
+        "#include <pybind11/stl.h>",
+        "#include <pybind11/stl_bind.h>",
         "namespace py = pybind11;",
         "using namespace py::literals;",
-    ]
+    ]  # initial pybind lines to be written to binded file
 
     def __init__(self, root):
-        self._state_stack = []
-        self.linelist = []
-        self._skipped = []
-        self.inclusion_list = []
+        self._state_stack = []  # stack to keep track of the state (node kind)
+        self._linelist = []  # list of lines to be written to the binding file
+        self._skipped = []  # list of skipped items, to be used for debugging purposes
+        self._inclusion_list = []  # list of all inclusion directives (included files)
         handled_by_pybind = self.skip  # handled by pybind11
         handled_elsewhere = self.skip  # handled in another kind's function
         no_need_to_handle = self.skip  # unnecessary kind
@@ -23,59 +23,65 @@ class bind:
         self.kind_functions = {
             "TRANSLATION_UNIT": no_need_to_handle,
             "NAMESPACE": self.handle_namespace,
-            "NAMESPACE_REF": handled_elsewhere,  # in (handle_constructor)
-            "STRUCT_DECL": self.handle_struct_decl,
             "CXX_BASE_SPECIFIER": handled_elsewhere,  # in (handle_struct_decl)
             "CXX_METHOD": handled_elsewhere,  # in (handle_struct_decl)
-            "VAR_DECL": handled_by_pybind,
-            "TYPE_REF": handled_elsewhere,  # in (handle_constructor)
             "CONSTRUCTOR": self.handle_constructor,
+            "INCLUSION_DIRECTIVE": self.handle_inclusion_directive,
+            # DECLs
+            "STRUCT_DECL": self.handle_struct_decl,
+            "CLASS_DECL": self.handle_struct_decl,
+            "VAR_DECL": handled_by_pybind,
             "PARM_DECL": handled_elsewhere,  # in (handle_constructor)
+            "FIELD_DECL": handled_elsewhere,  # in (handle_struct_decl)
+            "ANONYMOUS_UNION_DECL": handled_elsewhere,  # in (handle_struct_decl) via get_fields_from_anonymous
+            "ANONYMOUS_STRUCT_DECL": handled_elsewhere,  # in (handle_struct_decl) via get_fields_from_anonymous
+            "FRIEND_DECL": unsure,
+            "FUNCTION_DECL": unsure,
+            # EXPRs
             "CALL_EXPR": handled_by_pybind,
             "UNEXPOSED_EXPR": unsure,
             "MEMBER_REF_EXPR": unsure,
             "DECL_REF_EXPR": unsure,
-            "FIELD_DECL": handled_elsewhere,  # in (handle_struct_decl)
-            "MEMBER_REF": handled_by_pybind,
-            "CLASS_TEMPLATE": self.skip,  # self.handle_class_template
-            "TEMPLATE_NON_TYPE_PARAMETER": handled_elsewhere,  # in (handle_class_template)
-            "FUNCTION_TEMPLATE": self.skip,  # to be added later
-            "ANONYMOUS_UNION_DECL": handled_elsewhere,  # in (handle_struct_decl) via get_fields_from_anonymous
-            "ALIGNED_ATTR": no_need_to_handle,
-            "INTEGER_LITERAL": unsure,
-            "ANONYMOUS_STRUCT_DECL": handled_elsewhere,  # in (handle_struct_decl) via get_fields_from_anonymous
-            "COMPOUND_STMT": no_need_to_handle,
-            "FLOATING_LITERAL": unsure,
-            "BINARY_OPERATOR": no_need_to_handle,
             "ARRAY_SUBSCRIPT_EXPR": handled_by_pybind,
             "CXX_THROW_EXPR": handled_by_pybind,
-            "FRIEND_DECL": unsure,
-            "FUNCTION_DECL": unsure,
             "INIT_LIST_EXPR": no_need_to_handle,
-            "RETURN_STMT": handled_by_pybind,
-            "OVERLOADED_DECL_REF": unsure,
-            "UNARY_OPERATOR": no_need_to_handle,
-            "IF_STMT": no_need_to_handle,
             "OBJ_BOOL_LITERAL_EXPR": unsure,
-            "INCLUSION_DIRECTIVE": self.handle_inclusion_directive,
+            "CXX_NULL_PTR_LITERAL_EXPR": no_need_to_handle,
+            "CXX_STATIC_CAST_EXPR": no_need_to_handle,
+            "PAREN_EXPR": handled_by_pybind,
+            "CXX_DELETE_EXPR": handled_by_pybind,
+            # LITERALs
+            "INTEGER_LITERAL": unsure,
+            "FLOATING_LITERAL": unsure,
+            "STRING_LITERAL": no_need_to_handle,
+            "OBJC_STRING_LITERAL": no_need_to_handle,
+            "ALIGNED_ATTR": no_need_to_handle,
+            "BINARY_OPERATOR": no_need_to_handle,
+            "UNARY_OPERATOR": no_need_to_handle,
             "MACRO_DEFINITION": unsure,
             "MACRO_INSTANTIATION": unsure,
+            # REFs
+            "NAMESPACE_REF": handled_elsewhere,  # in (handle_constructor)
+            "TYPE_REF": handled_elsewhere,  # in (handle_constructor)
+            "MEMBER_REF": handled_by_pybind,
+            "OVERLOADED_DECL_REF": unsure,
             "TEMPLATE_REF": unsure,  # check for usage in pcl_base.cpp; might need to add in cxx_methods
-            "CXX_NULL_PTR_LITERAL_EXPR": no_need_to_handle,
-            "STRING_LITERAL": no_need_to_handle,
+            "VARIABLE_REF": handled_by_pybind,
+            # STMTs
+            "COMPOUND_STMT": no_need_to_handle,
+            "RETURN_STMT": handled_by_pybind,
+            "IF_STMT": no_need_to_handle,
             "FOR_STMT": handled_by_pybind,
             "DECL_STMT": unsure,  # handled_by_pybind
             "SWITCH_STMT": handled_by_pybind,
             "CASE_STMT": handled_by_pybind,
             "DEFAULT_STMT": handled_by_pybind,
-            "VARIABLE_REF": handled_by_pybind,
-            "CXX_STATIC_CAST_EXPR": no_need_to_handle,
-            "OBJC_STRING_LITERAL": no_need_to_handle,
-            "PAREN_EXPR": handled_by_pybind,
-            "CXX_DELETE_EXPR": handled_by_pybind,
             "CXX_TRY_STMT": handled_by_pybind,
             "CXX_CATCH_STMT": handled_by_pybind,
-            "CLASS_DECL": self.handle_struct_decl,
+            # TEMPLATE related
+            "CLASS_TEMPLATE": self.skip,  # self.handle_class_template
+            "TEMPLATE_NON_TYPE_PARAMETER": handled_elsewhere,  # in (handle_class_template)
+            "FUNCTION_TEMPLATE": self.skip,  # to be added later
         }
 
         self.handle_node(root)
@@ -104,11 +110,33 @@ class bind:
         """
 
         if self._state_stack[-1]["kind"] == "NAMESPACE":
-            self.linelist.append("}")
-        if self._state_stack[-1]["kind"] == "STRUCT_DECL":
-            self.linelist.append(";")
+            self._linelist.append("}")
+        if self._state_stack[-1]["kind"] == "STRUCT_DECL" or "CLASS_DECL":
+            self._linelist.append(";")
         if self._state_stack[-1]["kind"] == "CLASS_TEMPLATE":
-            self.linelist.append(";")
+            self._linelist.append(";")
+
+    @staticmethod
+    def get_fields_from_anonymous(item):
+        """
+        Helper function to extract fields from anonymous types.
+
+        Parameters:
+            - item (dict): the anonymous type item from which to extract fields
+        
+        Returns:
+            - fields (list): A list of items of kind `CursorKind.FIELD_DECL`
+        """
+
+        fields = []
+        for sub_item in item["members"]:
+            # base condition
+            if sub_item["kind"] == "FIELD_DECL":
+                fields.append(sub_item)
+            # recurse
+            elif sub_item["kind"] in ("ANONYMOUS_UNION_DECL", "ANONYMOUS_STRUCT_DECL"):
+                fields += bind.get_fields_from_anonymous(sub_item)
+        return fields
 
     def handle_node(self, item):
         """
@@ -152,31 +180,22 @@ class bind:
         Handles `CursorKind.NAMESPACE`
         """
 
-        self.linelist.append(f"namespace {self.name}" + "{")
-
-    @staticmethod
-    def get_fields_from_anonymous(item):
-        """
-        Helper function to extract fields from anonymous types.
-
-        Parameters:
-            - item (dict): the anonymous type item from which to extract fields
-        
-        Returns:
-            - fields (list): A list of items of kind `CursorKind.FIELD_DECL`
-        """
-
-        fields = []
-        for sub_item in item["members"]:
-            # base condition
-            if sub_item["kind"] == "FIELD_DECL":
-                fields.append(sub_item)
-            # recurse
-            elif sub_item["kind"] in ("ANONYMOUS_UNION_DECL", "ANONYMOUS_STRUCT_DECL"):
-                fields += bind.get_fields_from_anonymous(sub_item)
-        return fields
+        # TODO: Try `namespace::_` pattern 'cause this is not very robust
+        self._linelist.append(f"namespace {self.name}" + "{")
 
     def handle_struct_decl(self):
+        """
+        Handles `CursorKind.STRUCT_DECL` and `CursorKind.CLASS_DECL`
+
+        - Functions performed:
+            1. Define struct/class declaration:
+                1.1. Handles type references for templated classes.
+                1.2. Handles base specifiers (parent classes).
+            2. Handles anonymous field declarations (extract fields and declare as members).
+            3. Handles field declarations.
+            4. Handles class methods.
+        """
+
         class_name = self.name
         for sub_item in self.members:
             if sub_item["kind"] == "TYPE_REF":
@@ -192,12 +211,14 @@ class bind:
         ]
         if cxx_base_specifier_list:
             cxx_base_specifier_list = ",".join(cxx_base_specifier_list)
-            cxx_base_specifier_list = cxx_base_specifier_list.replace("struct ", "").replace("pcl::", "")
-            self.linelist.append(
+            cxx_base_specifier_list = cxx_base_specifier_list.replace(
+                "struct ", ""
+            ).replace("pcl::", "")
+            self._linelist.append(
                 f'py::class_<{class_name}, {cxx_base_specifier_list}>(m, "{class_name}")'
             )
         else:
-            self.linelist.append(f'py::class_<{class_name}>(m, "{class_name}")')
+            self._linelist.append(f'py::class_<{class_name}>(m, "{class_name}")')
 
         # TODO: Merge this and next block via a design updation
         # handle anonymous structs, etc. as field declarations
@@ -206,11 +227,11 @@ class bind:
             for field in fields:
                 if field["element_type"] == "ConstantArray":
                     # TODO: FIX: readwrite, not readonly
-                    self.linelist.append(
+                    self._linelist.append(
                         f'.def_property_readonly("{field["name"]}", []({self.name}& obj) {{return obj.{field["name"]}; }})'  # float[ ' + f'obj.{sub_item["name"]}' + '.size()];} )'
                     )
                 else:
-                    self.linelist.append(
+                    self._linelist.append(
                         f'.def_readwrite("{field["name"]}", &{self.name}::{field["name"]})'
                     )
 
@@ -219,11 +240,11 @@ class bind:
             # handle field declarations
             if sub_item["kind"] == "FIELD_DECL":
                 if sub_item["element_type"] == "ConstantArray":
-                    self.linelist.append(
+                    self._linelist.append(
                         f'.def_property_readonly("{sub_item["name"]}", []({self.name}& obj) {{return obj.{sub_item["name"]}; }})'  # float[ ' + f'obj.{sub_item["name"]}' + '.size()];} )'
                     )
                 else:
-                    self.linelist.append(
+                    self._linelist.append(
                         f'.def_readwrite("{sub_item["name"]}", &{self.name}::{sub_item["name"]})'
                     )
 
@@ -231,14 +252,20 @@ class bind:
             if sub_item["kind"] == "CXX_METHOD":
                 # TODO: Add template args, currently blank
                 if sub_item["name"] not in ("PCL_DEPRECATED"):
-                    self.linelist.append(
+                    self._linelist.append(
                         f'.def("{sub_item["name"]}", py::overload_cast<>(&{self.name}::{sub_item["name"]}))'
                     )
 
     def handle_constructor(self):
-        argument_type_list = []
+        """
+        Handles `CursorKind.CONSTRUCTOR`
 
-        # generate argument type list
+        - Bind the constructor by developing a parameter list.
+        """
+
+        parameter_type_list = []
+
+        # generate parameter type list
         for sub_item in self.members:
             if sub_item["kind"] == "PARM_DECL":
                 if sub_item["element_type"] == "LValueReference":
@@ -250,36 +277,37 @@ class bind:
                                 .replace("struct ", "")
                                 .replace("pcl::", "")
                             )
-                            argument_type_list.append(f"{type_ref} &")
+                            parameter_type_list.append(f"{type_ref} &")
                 elif sub_item["element_type"] == "Elaborated":
                     namespace_ref = ""
                     for sub_sub_item in sub_item["members"]:
                         if sub_sub_item["kind"] == "NAMESPACE_REF":
                             namespace_ref += f'{sub_sub_item["name"]}::'
                         if sub_sub_item["kind"] == "TYPE_REF":
-                            argument_type_list.append(
+                            parameter_type_list.append(
                                 f'{namespace_ref}{sub_sub_item["name"]}'
                             )
                 elif sub_item["element_type"] in ("Float", "Int"):
-                    argument_type_list.append(f'{sub_item["element_type"].lower()}')
+                    parameter_type_list.append(f'{sub_item["element_type"].lower()}')
                 else:
-                    argument_type_list.append(f'{sub_item["element_type"]}')
-        argument_type_list = ",".join(argument_type_list)
+                    parameter_type_list.append(f'{sub_item["element_type"]}')
+        parameter_type_list = ",".join(parameter_type_list)
 
-        self.linelist.append(f".def(py::init<{argument_type_list}>())")
+        self._linelist.append(f".def(py::init<{parameter_type_list}>())")
 
+    # TODO: Remove, maybe
     def handle_class_template(self):
         flag = False
 
         # TODO: Use list based method, like in handle_struct_decl
         for sub_item in self.members:
             if sub_item["kind"] == "TEMPLATE_NON_TYPE_PARAMETER":
-                self.linelist.append(
+                self._linelist.append(
                     f'template< {sub_item["element_type"].lower()} {sub_item["name"]} >'
                 )
                 flag = True
         if not flag:
-            self.linelist.append(f"template<>")
+            self._linelist.append(f"template<>")
         cxx_base_specifier_list = [
             sub_item["name"]
             for sub_item in self.members
@@ -287,40 +315,63 @@ class bind:
         ]
         if cxx_base_specifier_list:
             cxx_base_specifier_list = ",".join(cxx_base_specifier_list)
-            self.linelist.append(
+            self._linelist.append(
                 f'py::class_<{self.name, cxx_base_specifier_list}>(m, "{self.name}")'
             )
         else:
-            self.linelist.append(f'py::class_<{self.name}>(m, "{self.name}")')
+            self._linelist.append(f'py::class_<{self.name}>(m, "{self.name}")')
 
     def handle_inclusion_directive(self):
+        """
+        Handle `CursorKind.INCLUSION_DIRECTIVE`
+        """
+
+        # TODO: develop
+        pass
+
         # TODO: update blacklist
         # blacklist = ["pcl/memory.h", "pcl/pcl_macros.h",]
-        if self.name.startswith("pcl"):
-            self.inclusion_list.append(self.name)
+        # if self.name.startswith("pcl"):
+        #     self._inclusion_list.append(self.name)
 
+    # TODO: Remove filename and module_name from this function, maybe combine with fn generate
     def handle_final(self, filename, module_name):
+        """
+        Combine to-be-binded lines generated by different functions and class members.
+        """
+
         final = [f"#include <{filename}>"]
         # TODO: Inclusion list path fix needed
         # TODO: Currently commented, to be written later
-        # for inclusion in self.inclusion_list:
+        # for inclusion in self._inclusion_list:
         #     final.append(f"#include <{inclusion}>")
         final += self.pybind_linelist
-        for i in range(len(self.linelist)):
-            if self.linelist[i].startswith("namespace"):
+        for i in range(len(self._linelist)):
+            if self._linelist[i].startswith("namespace"):
                 continue
             else:
-                self.linelist[i] = "".join(
-                    (f"PYBIND11_MODULE({module_name}, m)", "{", self.linelist[i])
+                self._linelist[i] = "".join(
+                    (f"PYBIND11_MODULE({module_name}, m)", "{", self._linelist[i])
                 )
                 break
-        for line in self.linelist:
+        for line in self._linelist:
             final.append(line)
         final.append("}")
         return final
 
 
 def generate(source):
+    """
+    The main function which handles generation of bindings.
+
+    Parameters:
+        - source (str): File name
+    
+    Returns:
+        - lines_to_write (str): Lines to write in the binded file.
+        - Or, will raise an exception if JSON cannot be read.
+    """
+
     header_info = utils.read_json(filename=source)
     if header_info:
         bind_object = bind(header_info)
