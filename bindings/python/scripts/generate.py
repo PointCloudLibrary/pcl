@@ -137,6 +137,9 @@ class bind:
             - fields (list): A list of items of kind `CursorKind.FIELD_DECL`
         """
 
+        # Nested types are not allowed inside anonymous types.
+        # See https://stackoverflow.com/questions/17637392/anonymous-union-can-only-have-non-static-data-members-gcc-c
+
         fields = []
         for sub_item in item["members"]:
             # base condition
@@ -213,21 +216,18 @@ class bind:
                 type_ref = sub_item["name"].replace("struct ", "").replace("pcl::", "")
                 class_name = f"{self.name}<{type_ref}>"
 
-        cxx_base_specifier_list = [
+        base_class_list = [
             sub_item["name"]
             for sub_item in self.members
             if sub_item["kind"] == "CXX_BASE_SPECIFIER"
         ]
-        if cxx_base_specifier_list:
-            cxx_base_specifier_list = ",".join(cxx_base_specifier_list)
-            cxx_base_specifier_list = cxx_base_specifier_list.replace(
-                "struct ", ""
-            ).replace("pcl::", "")
-            self._linelist.append(
-                f'py::class_<{class_name}, {cxx_base_specifier_list}>(m, "{class_name}")'
-            )
-        else:
-            self._linelist.append(f'py::class_<{class_name}>(m, "{class_name}")')
+
+        base_class_list_string = [
+            str(cls).replace("struct ", "").replace("pcl::", "")
+            for cls in base_class_list
+        ]
+        struct_details = ",".join([class_name] + base_class_list_string)
+        self._linelist.append(f'py::class_<{struct_details}>(m, "{class_name}")')
 
         # default constructor
         self._linelist.append(".def(py::init<>())")
@@ -261,7 +261,7 @@ class bind:
                     )
 
             # handle class methods
-            if sub_item["kind"] == "CXX_METHOD":
+            elif sub_item["kind"] == "CXX_METHOD":
                 # TODO: Add template args, currently blank
                 if sub_item["name"] not in ("PCL_DEPRECATED"):
                     self._linelist.append(
@@ -322,15 +322,15 @@ class bind:
                 flag = True
         if not flag:
             self._linelist.append(f"template<>")
-        cxx_base_specifier_list = [
+        base_class_list = [
             sub_item["name"]
             for sub_item in self.members
             if sub_item["kind"] == "CXX_BASE_SPECIFIER"
         ]
-        if cxx_base_specifier_list:
-            cxx_base_specifier_list = ",".join(cxx_base_specifier_list)
+        if base_class_list:
+            base_class_list = ",".join(base_class_list)
             self._linelist.append(
-                f'py::class_<{self.name, cxx_base_specifier_list}>(m, "{self.name}")'
+                f'py::class_<{self.name, base_class_list}>(m, "{self.name}")'
             )
         else:
             self._linelist.append(f'py::class_<{self.name}>(m, "{self.name}")')
