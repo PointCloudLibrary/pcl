@@ -58,8 +58,8 @@ class OctreePointCloudSearch
 : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT> {
 public:
   // public typedefs
-  using IndicesPtr = shared_ptr<std::vector<int>>;
-  using IndicesConstPtr = shared_ptr<const std::vector<int>>;
+  using IndicesPtr = shared_ptr<Indices>;
+  using IndicesConstPtr = shared_ptr<const Indices>;
 
   using PointCloud = pcl::PointCloud<PointT>;
   using PointCloudPtr = typename PointCloud::Ptr;
@@ -91,7 +91,7 @@ public:
    * \return "true" if leaf node exist; "false" otherwise
    */
   bool
-  voxelSearch(const PointT& point, std::vector<int>& point_idx_data);
+  voxelSearch(const PointT& point, Indices& point_idx_data);
 
   /** \brief Search for neighbors within a voxel at given point referenced by a point
    * index
@@ -100,7 +100,7 @@ public:
    * \return "true" if leaf node exist; "false" otherwise
    */
   bool
-  voxelSearch(const int index, std::vector<int>& point_idx_data);
+  voxelSearch(const int index, Indices& point_idx_data);
 
   /** \brief Search for k-nearest neighbors at the query point.
    * \param[in] cloud the point cloud data
@@ -116,7 +116,7 @@ public:
   nearestKSearch(const PointCloud& cloud,
                  int index,
                  int k,
-                 std::vector<int>& k_indices,
+                 Indices& k_indices,
                  std::vector<float>& k_sqr_distances)
   {
     return (nearestKSearch(cloud[index], k, k_indices, k_sqr_distances));
@@ -134,7 +134,7 @@ public:
   int
   nearestKSearch(const PointT& p_q,
                  int k,
-                 std::vector<int>& k_indices,
+                 Indices& k_indices,
                  std::vector<float>& k_sqr_distances);
 
   /** \brief Search for k-nearest neighbors at query point
@@ -151,7 +151,7 @@ public:
   int
   nearestKSearch(int index,
                  int k,
-                 std::vector<int>& k_indices,
+                 Indices& k_indices,
                  std::vector<float>& k_sqr_distances);
 
   /** \brief Search for approx. nearest neighbor at the query point.
@@ -203,7 +203,7 @@ public:
   radiusSearch(const PointCloud& cloud,
                int index,
                double radius,
-               std::vector<int>& k_indices,
+               Indices& k_indices,
                std::vector<float>& k_sqr_distances,
                unsigned int max_nn = 0)
   {
@@ -222,7 +222,7 @@ public:
   int
   radiusSearch(const PointT& p_q,
                const double radius,
-               std::vector<int>& k_indices,
+               Indices& k_indices,
                std::vector<float>& k_sqr_distances,
                unsigned int max_nn = 0) const;
 
@@ -240,7 +240,7 @@ public:
   int
   radiusSearch(int index,
                const double radius,
-               std::vector<int>& k_indices,
+               Indices& k_indices,
                std::vector<float>& k_sqr_distances,
                unsigned int max_nn = 0) const;
 
@@ -270,7 +270,7 @@ public:
   int
   getIntersectedVoxelIndices(Eigen::Vector3f origin,
                              Eigen::Vector3f direction,
-                             std::vector<int>& k_indices,
+                             Indices& k_indices,
                              int max_voxel_count = 0) const;
 
   /** \brief Search for points within rectangular search area
@@ -283,7 +283,7 @@ public:
   int
   boxSearch(const Eigen::Vector3f& min_pt,
             const Eigen::Vector3f& max_pt,
-            std::vector<int>& k_indices) const;
+            Indices& k_indices) const;
 
 protected:
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -389,7 +389,7 @@ protected:
                                     const BranchNode* node,
                                     const OctreeKey& key,
                                     unsigned int tree_depth,
-                                    std::vector<int>& k_indices,
+                                    Indices& k_indices,
                                     std::vector<float>& k_sqr_distances,
                                     unsigned int max_nn) const;
 
@@ -477,7 +477,7 @@ protected:
                      const BranchNode* node,
                      const OctreeKey& key,
                      unsigned int tree_depth,
-                     std::vector<int>& k_indices) const;
+                     Indices& k_indices) const;
 
   /** \brief Recursively search the tree for all intersected leaf nodes and return a
    * vector of indices. This algorithm is based off the paper An Efficient Parametric
@@ -506,7 +506,7 @@ protected:
                                       unsigned char a,
                                       const OctreeNode* node,
                                       const OctreeKey& key,
-                                      std::vector<int>& k_indices,
+                                      Indices& k_indices,
                                       int max_voxel_count) const;
 
   /** \brief Initialize raytracing algorithm

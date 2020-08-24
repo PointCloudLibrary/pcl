@@ -82,8 +82,8 @@ public:
   OctreePointCloud(const double resolution_arg);
 
   // public typedefs
-  using IndicesPtr = shared_ptr<std::vector<int>>;
-  using IndicesConstPtr = shared_ptr<const std::vector<int>>;
+  using IndicesPtr = shared_ptr<Indices>;
+  using IndicesConstPtr = shared_ptr<const Indices>;
 
   using PointCloud = pcl::PointCloud<PointT>;
   using PointCloudPtr = typename PointCloud::Ptr;

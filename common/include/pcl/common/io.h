@@ -347,7 +347,7 @@ namespace pcl
     * \note Assumes unique indices.
     * \ingroup common
     */
-  template <typename PointT, typename IndicesVectorAllocator = std::allocator<int>> void
+  template <typename PointT, typename IndicesVectorAllocator = std::allocator<index_t>> void
   copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                   const IndicesAllocator< IndicesVectorAllocator> &indices,
                   pcl::PointCloud<PointT> &cloud_out);
@@ -392,7 +392,7 @@ namespace pcl
     * \note Assumes unique indices.
     * \ingroup common
     */
-  template <typename PointInT, typename PointOutT, typename IndicesVectorAllocator = std::allocator<int>> void
+  template <typename PointInT, typename PointOutT, typename IndicesVectorAllocator = std::allocator<index_t>> void
   copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
                   const IndicesAllocator<IndicesVectorAllocator> &indices,
                   pcl::PointCloud<PointOutT> &cloud_out);

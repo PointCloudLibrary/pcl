@@ -612,7 +612,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     std::size_t leaf_obj_count = (*leaf_node)->getSize();
 
     // copy leaf data
-    std::vector<int> leafIndices;
+    Indices leafIndices;
     leafIndices.reserve(leaf_obj_count);
 
     (*leaf_node)->getPointIndices(leafIndices);

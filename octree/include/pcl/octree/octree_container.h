@@ -38,6 +38,8 @@
 
 #pragma once
 
+#include <pcl/types.h>
+
 #include <cassert>
 #include <cstddef>
 #include <vector>
@@ -102,7 +104,7 @@ public:
    * data. \
    */
   void
-  getPointIndices(std::vector<int>&) const
+  getPointIndices(Indices&) const
   {}
 };
 
@@ -157,7 +159,7 @@ public:
    * data.
    */
   void
-  getPointIndices(std::vector<int>&) const
+  getPointIndices(Indices&) const
   {}
 };
 
@@ -216,7 +218,7 @@ public:
    * data vector
    */
   void
-  getPointIndices(std::vector<int>& data_vector_arg) const
+  getPointIndices(Indices& data_vector_arg) const
   {
     if (data_ >= 0)
       data_vector_arg.push_back(data_);
@@ -295,7 +297,7 @@ public:
    * within data vector
    */
   void
-  getPointIndices(std::vector<int>& data_vector_arg) const
+  getPointIndices(Indices& data_vector_arg) const
   {
     data_vector_arg.insert(
         data_vector_arg.end(), leafDataTVector_.begin(), leafDataTVector_.end());
@@ -305,7 +307,7 @@ public:
    * of point indices.
    * \return reference to vector of point indices to be stored within data vector
    */
-  std::vector<int>&
+  Indices&
   getPointIndicesVector()
   {
     return leafDataTVector_;
@@ -329,7 +331,7 @@ public:
 
 protected:
   /** \brief Leaf node DataT vector. */
-  std::vector<int> leafDataTVector_;
+  Indices leafDataTVector_;
 };
 
 } // namespace octree

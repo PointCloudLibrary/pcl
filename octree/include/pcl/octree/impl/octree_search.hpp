@@ -48,7 +48,7 @@ namespace octree {
 template <typename PointT, typename LeafContainerT, typename BranchContainerT>
 bool
 OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::voxelSearch(
-    const PointT& point, std::vector<int>& point_idx_data)
+    const PointT& point, Indices& point_idx_data)
 {
   assert(isFinite(point) &&
          "Invalid (NaN, Inf) point coordinates given to nearestKSearch!");
@@ -71,7 +71,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::voxelSearch(
 template <typename PointT, typename LeafContainerT, typename BranchContainerT>
 bool
 OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::voxelSearch(
-    const int index, std::vector<int>& point_idx_data)
+    const int index, Indices& point_idx_data)
 {
   const PointT search_point = this->getPointByIndex(index);
   return (this->voxelSearch(search_point, point_idx_data));
@@ -80,10 +80,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::voxelSearch(
 template <typename PointT, typename LeafContainerT, typename BranchContainerT>
 int
 OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::nearestKSearch(
-    const PointT& p_q,
-    int k,
-    std::vector<int>& k_indices,
-    std::vector<float>& k_sqr_distances)
+    const PointT& p_q, int k, Indices& k_indices, std::vector<float>& k_sqr_distances)
 {
   assert(this->leaf_count_ > 0);
   assert(isFinite(p_q) &&
@@ -123,7 +120,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::nearestKSearch
 template <typename PointT, typename LeafContainerT, typename BranchContainerT>
 int
 OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::nearestKSearch(
-    int index, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
+    int index, int k, Indices& k_indices, std::vector<float>& k_sqr_distances)
 {
   const PointT search_point = this->getPointByIndex(index);
   return (nearestKSearch(search_point, k, k_indices, k_sqr_distances));
@@ -162,7 +159,7 @@ int
 OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::radiusSearch(
     const PointT& p_q,
     const double radius,
-    std::vector<int>& k_indices,
+    Indices& k_indices,
     std::vector<float>& k_sqr_distances,
     unsigned int max_nn) const
 {
@@ -191,7 +188,7 @@ int
 OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::radiusSearch(
     int index,
     const double radius,
-    std::vector<int>& k_indices,
+    Indices& k_indices,
     std::vector<float>& k_sqr_distances,
     unsigned int max_nn) const
 {
@@ -205,7 +202,7 @@ int
 OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::boxSearch(
     const Eigen::Vector3f& min_pt,
     const Eigen::Vector3f& max_pt,
-    std::vector<int>& k_indices) const
+    Indices& k_indices) const
 {
 
   OctreeKey key;
@@ -290,7 +287,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
     }
     else {
       // we reached leaf node level
-      std::vector<int> decoded_point_vector;
+      Indices decoded_point_vector;
 
       const LeafNode* child_leaf = static_cast<const LeafNode*>(child_node);
 
@@ -338,7 +335,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
                                       const BranchNode* node,
                                       const OctreeKey& key,
                                       unsigned int tree_depth,
-                                      std::vector<int>& k_indices,
+                                      Indices& k_indices,
                                       std::vector<float>& k_sqr_distances,
                                       unsigned int max_nn) const
 {
@@ -389,7 +386,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
       else {
         // we reached leaf node level
         const LeafNode* child_leaf = static_cast<const LeafNode*>(child_node);
-        std::vector<int> decoded_point_vector;
+        Indices decoded_point_vector;
 
         // decode leaf node into decoded_point_vector
         (*child_leaf)->getPointIndices(decoded_point_vector);
@@ -479,7 +476,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
   }
   else {
     // we reached leaf node level
-    std::vector<int> decoded_point_vector;
+    Indices decoded_point_vector;
 
     const LeafNode* child_leaf = static_cast<const LeafNode*>(child_node);
 
@@ -522,7 +519,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::boxSearchRecur
     const BranchNode* node,
     const OctreeKey& key,
     unsigned int tree_depth,
-    std::vector<int>& k_indices) const
+    Indices& k_indices) const
 {
   // iterate over all children
   for (unsigned char child_idx = 0; child_idx < 8; child_idx++) {
@@ -563,7 +560,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::boxSearchRecur
       }
       else {
         // we reached leaf node level
-        std::vector<int> decoded_point_vector;
+        Indices decoded_point_vector;
 
         const LeafNode* child_leaf = static_cast<const LeafNode*>(child_node);
 
@@ -630,7 +627,7 @@ int
 OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
     getIntersectedVoxelIndices(Eigen::Vector3f origin,
                                Eigen::Vector3f direction,
-                               std::vector<int>& k_indices,
+                               Indices& k_indices,
                                int max_voxel_count) const
 {
   OctreeKey key;
@@ -867,7 +864,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
                                         unsigned char a,
                                         const OctreeNode* node,
                                         const OctreeKey& key,
-                                        std::vector<int>& k_indices,
+                                        Indices& k_indices,
                                         int max_voxel_count) const
 {
   if (max_x < 0.0 || max_y < 0.0 || max_z < 0.0)
