@@ -65,7 +65,7 @@ def get_expected_string(expected_module_code):
     file_include = "#include <file.cpp>"
 
     # Get pybind11's intial lines in the form of a string
-    initial_pybind_lines = "".join(generate.bind.initial_pybind_lines)
+    initial_pybind_lines = "".join(generate.bind._initial_pybind_lines)
 
     expected_output = remove_whitespace(
         file_include + initial_pybind_lines + expected_module_code
