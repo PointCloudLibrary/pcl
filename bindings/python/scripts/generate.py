@@ -111,9 +111,11 @@ class bind:
 
         if self._state_stack[-1]["kind"] == "NAMESPACE":
             self._linelist.append("}")
-        if self._state_stack[-1]["kind"] == "STRUCT_DECL" or "CLASS_DECL":
+        elif self._state_stack[-1]["kind"] == "STRUCT_DECL":
             self._linelist.append(";")
-        if self._state_stack[-1]["kind"] == "CLASS_TEMPLATE":
+        elif self._state_stack[-1]["kind"] == "STRUCT_DECL":
+            self._linelist.append(";")
+        elif self._state_stack[-1]["kind"] == "CLASS_TEMPLATE":
             self._linelist.append(";")
 
     @staticmethod
@@ -221,7 +223,7 @@ class bind:
             self._linelist.append(f'py::class_<{class_name}>(m, "{class_name}")')
 
         # default constructor
-        self.linelist.append(".def(py::init<>())")
+        self._linelist.append(".def(py::init<>())")
 
         # TODO: Merge this and next block via a design updation
         # handle anonymous structs, etc. as field declarations
@@ -297,8 +299,8 @@ class bind:
         parameter_type_list = ",".join(parameter_type_list)
 
         # default ctor `.def(py::init<>())` already inserted while handling struct/class decl
-        if argument_type_list:
-            self.linelist.append(f".def(py::init<{argument_type_list}>())")
+        if parameter_type_list:
+            self._linelist.append(f".def(py::init<{parameter_type_list}>())")
 
     # TODO: Remove, maybe
     def handle_class_template(self):
@@ -351,8 +353,8 @@ class bind:
         # for inclusion in self._inclusion_list:
         #     final.append(f"#include <{inclusion}>")
         final += self.initial_pybind_lines
-        for i in range(len(self.linelist)):
-            if self.linelist[i].startswith("namespace"):
+        for i in range(len(self._linelist)):
+            if self._linelist[i].startswith("namespace"):
                 continue
             else:
                 self._linelist[i] = "".join(
