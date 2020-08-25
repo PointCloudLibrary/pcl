@@ -4,7 +4,7 @@
 Using GPU Octree search functions
 ====================================================
 
-The GPU Octree sub-module provides  parallelized search operations using a CUDA Octree implementation. In this tutorial, we will learn how to utilize octrees to perform search queries on unorganized point clouds. In order to utilize GPU Octree functions, you must first build PCL with GPU support enabled, by following `these instructions <https://pcl-tutorials.readthedocs.io/en/latest/gpu_install.html#gpu-install>`_.
+The GPU Octree sub-module provides  parallelized search operations using a CUDA Octree implementation. In this tutorial, we will learn how to utilize octrees to perform search queries on unorganized point clouds. In order to utilize GPU Octree functions, you must first build PCL with GPU support enabled, by following :ref:`gpu_install`.
 
 
 When to use the GPU Octree module
@@ -15,7 +15,7 @@ The primary aim of the GPU octree module is to allow parallelized search functio
 This module primarily provides implementations for the following three search methods.
 
 - Radius search
-- K Nearest Neighbors Search (currently restricted to k=1 only)
+- K Nearest Neighbors Search
 - Approximate Nearest Neighbors Search
 
 In contrast to the their CPU counterparts, all of these functions accept a vector of queries rather than a single query. Apart from this, there are some minor differences between the CPU and GPU implementations, and these will be highlighted throughout this tutorial.
@@ -70,6 +70,10 @@ The K nearest neighbor algorithm is designed to identify a given (k) number of n
 
 .. note::
 
+    The K Nearest neighbours algorithm is a work in progress and currently only supports k = 1.
+
+.. note::
+
     The GPU K nearest neighbor algorithm differs from it's CPU counterpart in implementation. Specifically, the CPU algorithm will only find approximate nearest neighbors, where the user can set the upper bound of the error allowed. In contrast, the GPU algorithm finds the absolute nearest neighbor.
 
 In order to perform K nearest search, we must prepare output buffers on the device to store the results of the search queries. Specifically, we need two separate buffers to store the resulting nearest neighbor indices and the corresponding squared distances between the search point and nearest neighbors. Note that these buffers will be automatically resized to `k * number of queries` size, in order to hold all the results.
@@ -88,7 +92,7 @@ Radius search returns neighbors within a given radius to the query point. The us
 
 Neighbors are returned as a `pcl::gpu::NeighborIndices` object, which contains all result indices packed into a one dimensional vector called `data`, as well as an additional vector called `sizes` which contains the number of results found for each individual query. These sizes can can be used to split the resulting indices as well as square distances by query.
 
-Radius search can be conducted with a single radius for all queries or, individual radii may be specified for each query, by passing a `pcl::gpu::Octree::Radiuses` object of the same size as the queries object to the radius search method. In this tutorial we will specify individual radii for each of our ten queries.
+Radius search can be conducted with a single radius for all queries or, an individual radius may be specified for each query, by passing a `pcl::gpu::Octree::Radiuses` object of the same size as the queries object to the radius search method. In this tutorial we will specify an individual radius for each of our ten queries.
 
 .. literalinclude:: sources/gpu_octree/gpu_octree.cpp
     :language: cpp
