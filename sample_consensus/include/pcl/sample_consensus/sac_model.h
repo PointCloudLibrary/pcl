@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <cfloat>
 #include <ctime>
 #include <climits>
 #include <memory>

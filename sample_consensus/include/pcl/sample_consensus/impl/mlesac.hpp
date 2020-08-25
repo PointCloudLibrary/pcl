@@ -43,6 +43,7 @@
 
 #include <pcl/sample_consensus/mlesac.h>
 #include <pcl/point_types.h>
+#include <cfloat> // for FLT_MAX
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool

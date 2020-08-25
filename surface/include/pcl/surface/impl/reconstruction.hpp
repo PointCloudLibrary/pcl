@@ -40,7 +40,8 @@
 #ifndef PCL_SURFACE_RECONSTRUCTION_IMPL_H_
 #define PCL_SURFACE_RECONSTRUCTION_IMPL_H_
 
-#include <pcl/search/pcl_search.h>
+#include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/search/organized.h> // for OrganizedNeighbor
 
 
 namespace pcl

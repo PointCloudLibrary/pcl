@@ -40,7 +40,6 @@
 #pragma once
 
 #include <pcl/point_cloud.h>
-#include <pcl/visualization/eigen.h>
 
 template <typename T> class vtkSmartPointer;
 class vtkDataSet;

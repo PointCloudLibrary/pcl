@@ -35,7 +35,6 @@
 *
 */
 
-#include <pcl/io/eigen.h>
 #include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/io_exception.h>

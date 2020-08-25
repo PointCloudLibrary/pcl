@@ -40,7 +40,6 @@
 #pragma once
 
 // PCL
-#include <pcl/common/io.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>

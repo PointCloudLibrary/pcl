@@ -42,6 +42,7 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/common/colors.h>
+#include <pcl/common/io.h> // for getFieldIndex
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 
 

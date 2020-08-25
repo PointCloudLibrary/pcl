@@ -46,7 +46,7 @@
 
 #include <fstream>
 
-
+#include <Eigen/Geometry> // for cross
 
 namespace pcl
 {

@@ -40,7 +40,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/conversions.h>
-#include <pcl/io/boost.h>
 #include <pcl/PolygonMesh.h>
 
 namespace pcl

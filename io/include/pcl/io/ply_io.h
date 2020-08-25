@@ -41,7 +41,6 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/io/boost.h>
 #include <pcl/io/file_io.h>
 #include <pcl/io/ply/ply_parser.h>
 #include <pcl/PolygonMesh.h>

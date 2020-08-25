@@ -7,8 +7,6 @@
 #include <pcl/tracking/tracking.h>
 #include <pcl/memory.h>
 
-#include <Eigen/Dense>
-
 namespace pcl {
 namespace tracking {
 /** \brief @b ParticleFilterTracker tracks the PointCloud which is given by

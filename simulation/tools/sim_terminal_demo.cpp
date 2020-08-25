@@ -13,8 +13,6 @@
 #include <pcl/common/time.h> // for getTime
 #include <pcl/memory.h>
 
-#include <Eigen/Dense>
-
 #include "simulation_io.hpp"
 
 #include <cmath>

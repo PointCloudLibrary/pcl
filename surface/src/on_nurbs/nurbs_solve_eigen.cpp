@@ -38,6 +38,8 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <Eigen/SVD> // for jacobiSvd
+
 #include <pcl/surface/on_nurbs/nurbs_solve.h>
 
 using namespace pcl;

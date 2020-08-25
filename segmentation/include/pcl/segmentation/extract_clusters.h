@@ -39,9 +39,11 @@
 
 #pragma once
 
+#include <pcl/console/print.h> // for PCL_ERROR
 #include <pcl/pcl_base.h>
 
-#include <pcl/search/pcl_search.h>
+#include <pcl/search/search.h> // for Search
+#include <pcl/search/kdtree.h> // for KdTree
 
 namespace pcl
 {

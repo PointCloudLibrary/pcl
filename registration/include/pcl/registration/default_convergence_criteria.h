@@ -41,7 +41,6 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/registration/eigen.h>
 #include <pcl/correspondence.h>
 #include <pcl/registration/convergence_criteria.h>
 

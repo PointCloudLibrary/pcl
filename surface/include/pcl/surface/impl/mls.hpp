@@ -42,14 +42,15 @@
 
 #include <pcl/type_traits.h>
 #include <pcl/surface/mls.h>
-#include <pcl/common/io.h>
 #include <pcl/common/common.h> // for getMinMax3D
 #include <pcl/common/copy_point.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
-#include <pcl/common/geometry.h>
 #include <pcl/search/kdtree.h> // for KdTree
 #include <pcl/search/organized.h> // for OrganizedNeighbor
+
+#include <Eigen/Geometry> // for cross
+#include <Eigen/LU> // for inverse
 
 #ifdef _OPENMP
 #include <omp.h>

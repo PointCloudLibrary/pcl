@@ -41,7 +41,7 @@
 #include <boost/graph/graph_concepts.hpp>
 #include <boost/concept/assert.hpp>
 
-#include <Eigen/Dense>
+#include <Eigen/Core> // for Matrix
 
 namespace pcl
 {

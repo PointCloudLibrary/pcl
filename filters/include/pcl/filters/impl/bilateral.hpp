@@ -41,6 +41,8 @@
 #define PCL_FILTERS_BILATERAL_IMPL_H_
 
 #include <pcl/filters/bilateral.h>
+#include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/search/kdtree.h> // for KdTree
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> double

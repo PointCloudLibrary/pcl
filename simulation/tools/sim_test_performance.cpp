@@ -22,8 +22,6 @@
 #include <pcl/pcl_config.h>
 #include <pcl/point_types.h>
 
-#include <Eigen/Dense>
-
 #include <GL/glew.h>
 
 #ifdef OPENGL_IS_A_FRAMEWORK

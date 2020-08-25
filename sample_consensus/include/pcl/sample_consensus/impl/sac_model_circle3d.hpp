@@ -39,6 +39,8 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CIRCLE_3D_HPP_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CIRCLE_3D_HPP_
 
+#include <cfloat> // for DBL_MAX
+
 #include <pcl/sample_consensus/eigen.h>
 #include <pcl/sample_consensus/sac_model_circle3d.h>
 #include <pcl/common/concatenate.h>

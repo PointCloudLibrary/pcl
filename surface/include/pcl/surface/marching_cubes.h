@@ -37,7 +37,6 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/surface/boost.h>
 #include <pcl/surface/reconstruction.h>
 
 namespace pcl

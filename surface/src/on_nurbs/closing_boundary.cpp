@@ -36,6 +36,7 @@
  */
 
 #include <pcl/surface/on_nurbs/closing_boundary.h>
+#include <Eigen/Geometry> // for cross
 
 using namespace pcl;
 using namespace on_nurbs;

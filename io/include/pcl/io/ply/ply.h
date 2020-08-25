@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <pcl/io/boost.h>
 #include <pcl/io/ply/byte_order.h>
 
 /** \file ply.h contains standard typedefs and generic type traits
