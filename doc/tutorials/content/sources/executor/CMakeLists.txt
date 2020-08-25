@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 project(executor)
 
-find_package(PCL 1.12 REQUIRED)
+find_package(PCL 1.12 COMPONENTS filters visualization REQUIRED)
 
 include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})

@@ -34,7 +34,7 @@ point is generated with x,y & z co-ordinates in between the range -20 & 20.
 
 .. literalinclude:: sources/executor/executor.cpp
    :language: cpp
-   :lines: 8-11
+   :lines: 8-12
 
 Then, we create two executors. The first one `simple_executor` is of type `inline_executor`
 which runs code sequentially on the CPU. The second one `parallel_executor` is of type
@@ -44,7 +44,7 @@ will be used.
 
 .. literalinclude:: sources/executor/executor.cpp
    :language: cpp
-   :lines: 13-15
+   :lines: 14-17
 
 
 We then create two FunctorFilter instances. The first filter `radius_filter` is used to filter out
@@ -53,7 +53,7 @@ The second filter `positive_y_filter` filters out all points having negative y c
 
 .. literalinclude:: sources/executor/executor.cpp
    :language: cpp
-   :lines: 17-33
+   :lines: 19-42
 
 Finally, we call `filter` and with the respective executors. For `radius_filter` we pass the
 `parallel_executor` which will spawn 4 threads and and spilt the filtering of points between them.
@@ -62,13 +62,13 @@ manner.
 
 .. literalinclude:: sources/executor/executor.cpp
    :language: cpp
-   :lines: 35-36
+   :lines: 44-46
 
 We can then  the final filtered cloud using `CloudViewer`.
 
 .. literalinclude:: sources/executor/executor.cpp
    :language: cpp
-   :lines: 38-40
+   :lines: 48-53
 
 Compiling and running the program
 ---------------------------------
