@@ -1,10 +1,10 @@
-name: Pytest CI
+name: Pytest
 
-on: [push, pull_request]
+on: [push]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  pytest:
+  Pytest:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     strategy:
@@ -30,18 +30,6 @@ jobs:
       - name: Install pytest
         run: pip install pytest
 
-      # # Get cache
-      # - name: Cache pip
-      #   uses: actions/cache@v2
-      #   with:
-      #     # This path is specific to Ubuntu
-      #     path: ~/.cache/pip
-      #     # Look to see if there is a cache hit for the corresponding requirements file
-      #     key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-pip-
-      #       ${{ runner.os }}-
-
       # Install clang and it's python inteface via apt
       - name: Add llvm keys
         run: |
@@ -61,6 +49,17 @@ jobs:
 
       # Test with pytest
       - name: Test with pytest
-        run: |
-          cd bindings/python
-          pytest --verbose
+        run: cd ${_PYTHON_BINDINGS_PATH} && pytest --junitxml=${GITHUB_WORKSPACE}/result_${{ matrix.python-version }}.xml
+        env:
+          _PYTHON_BINDINGS_PATH: bindings/python
+
+      # Artifacts
+      - name: Upload pytest test results
+        uses: actions/upload-artifact@v2
+        with:
+          # We are in ${GITHUB_WORKSPACE}
+          # ${GITHUB_SHA} won't work: use ${{ github.sha }}
+          name: pytest_py${{ matrix.python-version }}-${{ github.sha }}
+          path: result_${{ matrix.python-version }}.xml
+        # Use always() to always run this step to publish test results when there are test failures
+        if: ${{ always() }}
