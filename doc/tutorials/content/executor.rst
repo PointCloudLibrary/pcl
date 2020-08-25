@@ -3,10 +3,11 @@
 Using Executors
 --------------------------------------------------
 
-Executors allows control over the properties as well as the execution
-context over which a function will run. Therefore allowing various parts
-of the code running in different contexts. In this tutorial we will learn how
-to manually create and pass executors to to a FunctorFilter.
+Executors allows control over the where and how a piece of program executes
+i.e. provides a standard way for a programmer to control exectuion.
+This allows for fine control over the execution over different portions of a program
+in a standard and universal manner.
+In this tutorial we will learn how to manually create and pass executors to to a FunctorFilter.
 
 .. note::
    Not all functions support executors. Check the Code API for more info on which
@@ -28,9 +29,9 @@ The explanation
 Now, let's break down the code piece by piece.
 
 In the following lines, we create a Point Cloud structure, then fill the
-input cloud using `CloudGenerator`. The generator uniformly fills the
-input cloud with a point cloud having width & height as 200 (using 128 as the seed value). Each
-point is generated with x,y & z co-ordinates in between the range -20 & 20.
+input cloud using `CloudGenerator`. The generator uses 128 as seed value to uniformly fill
+the input cloud with a point cloud having width & height as 200. Each point is generated
+with x,y & z co-ordinates in range [-20, 20].
 
 .. literalinclude:: sources/executor/executor.cpp
    :language: cpp
@@ -56,9 +57,9 @@ The second filter `positive_y_filter` filters out all points having negative y c
    :lines: 19-42
 
 Finally, we call `filter` and with the respective executors. For `radius_filter` we pass the
-`parallel_executor` which will spawn 4 threads and and spilt the filtering of points between them.
-For `positive_y_filter` we pass the `simple_executor` which will simply filter the points in a sequential
-manner.
+`parallel_executor` which will create 4 OMP contexts and and spilt the filtering of points between them.
+For `positive_y_filter` we pass the `simple_executor` which will simply filter the points in the existing
+thread.
 
 .. literalinclude:: sources/executor/executor.cpp
    :language: cpp
