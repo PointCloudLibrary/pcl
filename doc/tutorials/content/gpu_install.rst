@@ -49,7 +49,7 @@ Installing Eigen
 --------------- 
 
 You will also need Eigen v3.3.7+, since the previous versions are incompatible with the latest CUDA versions. 
-If you are on Ubuntu 29+, then there is no issue since Eigen 3.3.7 is shipped by default. 
+If you are on Ubuntu 20 or newer, then there is no issue since Eigen 3.3.7 is shipped by default. 
 On older versions Eigen v3.3.7 will need to be installed manually::
 
 $ wget -qO- https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.gz | tar xz 
