@@ -63,14 +63,13 @@ namespace pcl
         capable_ = true;
       }
             
-      bool 
-      getColor (vtkSmartPointer<vtkDataArray> &scalars) const override
+      vtkSmartPointer<vtkDataArray>
+      getColor () const override
       {
         if (!capable_)
-          return (false);
+          return nullptr;
       
-        if (!scalars)
-          scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+        auto scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
         scalars->SetNumberOfComponents (3);
         
         vtkIdType nr_points = static_cast<vtkIdType>(cloud_->size ());
@@ -88,7 +87,7 @@ namespace pcl
             colors[idx + 1] = (*rgb_)[cp].g;
             colors[idx + 2] = (*rgb_)[cp].b;
           }
-        return (true);
+        return scalars;
       }
     
     private:

@@ -128,18 +128,17 @@ namespace pcl
         }
               
         /** \brief Obtain the actual color for the input dataset as vtk scalars.
-          * \param[out] scalars the output scalars containing the color for the dataset
-          * \return true if the operation was successful (the handler is capable and 
-          * the input cloud was given as a valid pointer), false otherwise
+          * \return Array of scalars if the operation was successful (the handler is capable and 
+          * the input cloud was given as a valid pointer), nullptr otherwise
           */
-        bool
-        getColor (vtkSmartPointer<vtkDataArray> &scalars) const override
+        vtkSmartPointer<vtkDataArray>
+        getColor () const override
         {
           if (!capable_ || !cloud_)
-            return (false);
+            return nullptr;
          
-          if (!scalars)
-            scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+          auto scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+  
           scalars->SetNumberOfComponents (3);
             
           vtkIdType nr_points = vtkIdType (cloud_->size ());
@@ -157,7 +156,7 @@ namespace pcl
               colors[idx + 1] = (*rgb_)[cp].g;
               colors[idx + 2] = (*rgb_)[cp].b;
             }
-          return (true);
+          return scalars;
         }
 
       private:
