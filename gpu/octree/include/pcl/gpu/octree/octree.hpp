@@ -103,19 +103,19 @@ namespace pcl
             /** \brief Performs search of all points within given radius on CPU. It call \a internalDownload if necessary
               * \param[in] center center of sphere
               * \param[in] radius radius of sphere
-              * \param[in] max_nn maximum number of results returned
               * \param[out] out indices of points within given sphere
+              * \param[in] max_nn maximum number of results returned
               */
             void radiusSearchHost(const PointType& center, float radius, std::vector<int>& out, int max_nn = INT_MAX);
 
             /** \brief Performs search of all points within given radius on CPU. It call \a internalDownload if necessary
               * \param[in] center center of sphere
               * \param[in] radius radius of sphere
-              * \param[in] max_nn maximum number of results returned
-              * \param[in] sqr_distances corresponding squared distances to query point
               * \param[out] out indices of points within given sphere
+              * \param[out] sqr_distances corresponding squared distances to query point
+              * \param[in] max_nn maximum number of results returned
               */
-            void radiusSearchHost(const PointType& center, const float radius, std::vector<int>& out,  std::vector<float>& sqr_distances, const int max_nn = INT_MAX);
+            void radiusSearchHost(const PointType& center, const float radius, std::vector<int>& out, std::vector<float>& sqr_distances, const int max_nn = INT_MAX);
 
             /** \brief Performs approximate nearest neighbor search on CPU. It call \a internalDownload if necessary
               * \param[in]  query 3D point for which neighbour is be fetched             
@@ -134,7 +134,7 @@ namespace pcl
 
             /** \brief Performs batch radius search on GPU
               * \param[in] centers array of centers 
-              * \param[in] radiuses array of radiuses
+              * \param[in] radiuses array of radiuses (should be same size as queries)
               * \param[in] max_results max number of returned points for each query
               * \param[out] result results packed to single array
               */
@@ -160,7 +160,7 @@ namespace pcl
 
             /** \brief Performs batch radius search on GPU
               * \param[in] centers array of centers
-              * \param[in] radiuses array of radiuses
+              * \param[in] radiuses array of radiuses (should be same size as queries)
               * \param[in] max_results max number of returned points for each query
               * \param[out] result results packed to single array
               * \param[out] sqr_distances corresponding squared distances to query point

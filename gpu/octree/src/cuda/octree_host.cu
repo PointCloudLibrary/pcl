@@ -206,12 +206,11 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, const flo
 
             for(int j = beg; j < end; ++j)
             {
-                const int index = host_octree.indices[j];
                 const float dist2 = getSqrDistance(j);
 
                 if (dist2 < radius * radius)
                 {
-                    out.push_back(index);
+                    out.push_back(host_octree.indices[j]);
                     sqr_distances.push_back(dist2);
                 }
 

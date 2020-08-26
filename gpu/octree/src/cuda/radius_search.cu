@@ -43,6 +43,8 @@
 
 #include "octree_iterator.hpp"
 
+#include <assert.h> //assertions
+
 namespace pcl 
 {
     namespace device
@@ -239,8 +241,9 @@ namespace pcl
 
                     int length = end - beg;
 
-                    int *out = batch.output + active_query_index * batch.max_results + active_found_count;
-                    float *sqr_dist = batch.sqr_distances + active_query_index * batch.max_results + active_found_count;
+                    const int result_offset = active_query_index * batch.max_results + active_found_count;
+                    int *out = batch.output + result_offset;
+                    float *sqr_dist = batch.sqr_distances + result_offset;
                     const int length_left = batch.max_results - active_found_count;
 
                     const int test = __any_sync(0xFFFFFFFF, active_lane == laneId && (leaf & KernelPolicy::CHECK_FLAG));
@@ -276,6 +279,8 @@ namespace pcl
                             squareDistancesKernel(beg, active_query, length, sqr_dist);
                             sqr_dist += length;
                         }
+                        else
+                            Warp::fill(sqr_dist, sqr_dist + length, NAN);
                     }
 
                     if (active_lane == laneId)
@@ -293,7 +298,7 @@ namespace pcl
                 for(;;)
                 {                
                     int take = 0;
-                    float d2 = 0.f;
+                    float d2 = NAN;
 
                     if (idx < length)
                     {                                                                                                            
@@ -336,16 +341,12 @@ namespace pcl
 
             __device__ void squareDistancesKernel(const int beg, const float3& active_query, const int length, float* sqr_dist)
             {
-                for (unsigned int idx = Warp::laneId(); __all_sync(0xFFFFFFFF, idx < length + Warp::STRIDE); idx += Warp::STRIDE)
+                for (unsigned int idx = Warp::laneId(); idx < length; idx += Warp::STRIDE)
                 {
-                    if (idx < length)
-                    {
-                        const float dx = batch.points.ptr(0)[beg + idx] - active_query.x;
-                        const float dy = batch.points.ptr(1)[beg + idx] - active_query.y;
-                        const float dz = batch.points.ptr(2)[beg + idx] - active_query.z;
-
-                        sqr_dist[idx] = dx * dx + dy * dy + dz * dz;
-                    }
+                    const float dx = batch.points.ptr(0)[beg + idx] - active_query.x;
+                    const float dy = batch.points.ptr(1)[beg + idx] - active_query.y;
+                    const float dz = batch.points.ptr(2)[beg + idx] - active_query.z;
+                    sqr_dist[idx] = dx * dx + dy * dy + dz * dz;
                 }
             }
         };
@@ -367,8 +368,14 @@ namespace pcl
 }
 
 template<typename BatchType>
-void pcl::device::OctreeImpl::radiusSearchEx(BatchType& batch, const Queries& queries, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const bool compute_all_distances)
+void pcl::device::OctreeImpl::radiusSearchEx(BatchType& batch, const Queries& queries, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const bool compute_all_distances, const int max_results)
 {
+
+    assert(queries.size() > 0);
+    results.create(static_cast<int> (queries.size()), max_results);
+    results.sizes.create(queries.size());
+    sqr_distances.create(queries.size() * max_results);
+
     batch.indices = indices;
     batch.octree = octreeGlobal;
 
@@ -392,36 +399,38 @@ void pcl::device::OctreeImpl::radiusSearchEx(BatchType& batch, const Queries& qu
 }
 
 
-void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const float radius, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const bool compute_all_distances)
+void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const float radius, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const bool compute_all_distances, const int max_results)
 {        
     using BatchType = Batch<SharedRadius, DirectQuery>;
 
     BatchType batch;
     batch.radius = radius;
     batch.queries = queries;
-    radiusSearchEx(batch, queries, results, sqr_distances, compute_all_distances);
+    radiusSearchEx(batch, queries, results, sqr_distances, compute_all_distances ,max_results);
 }
 
-void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Radiuses& radiuses, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const bool compute_all_distances)
+void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Radiuses& radiuses, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const bool compute_all_distances, const int max_results)
 {
     using BatchType = Batch<IndividualRadius, DirectQuery>;
+
+    assert(queries.size() == radiuses.size());
 
     BatchType batch;
     batch.radiuses = radiuses;
     batch.queries = queries;
-    radiusSearchEx(batch, queries, results, sqr_distances, compute_all_distances);
+    radiusSearchEx(batch, queries, results, sqr_distances, compute_all_distances, max_results);
 }
 
-void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Indices& indices, const float radius, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const bool compute_all_distances)
+void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Indices& indices, const float radius, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const bool compute_all_distances, const int max_results)
 {
     using BatchType = Batch<SharedRadius, IndicesQuery>;
 
     BatchType batch;
     batch.radius = radius;
-    
+
     batch.queries = queries;
     batch.queries_indices = indices;
     batch.queries.size = indices.size();
 
-    radiusSearchEx(batch, queries, results, sqr_distances, compute_all_distances);
+    radiusSearchEx(batch, queries, results, sqr_distances, compute_all_distances, max_results);
 }
