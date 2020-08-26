@@ -44,6 +44,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
+#include <pcl/console/print.h> // for PCL_ERROR
 #include <pcl/search/search.h>
 #include <pcl/search/kdtree.h>
 

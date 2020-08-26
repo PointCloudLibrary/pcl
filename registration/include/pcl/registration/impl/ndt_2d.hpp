@@ -45,6 +45,7 @@
 
 #include <cmath>
 #include <memory>
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver, EigenSolver
 
 namespace pcl
 {

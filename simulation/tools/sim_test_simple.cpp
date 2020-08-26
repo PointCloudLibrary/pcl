@@ -17,10 +17,7 @@
  */
 
 #include <pcl/common/common.h>
-#include <pcl/common/transforms.h>
-#include <pcl/console/parse.h>
 #include <pcl/console/print.h>
-#include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/range_image/range_image_planar.h> // RangeImage
@@ -28,7 +25,6 @@
 #include <pcl/simulation/model.h>
 #include <pcl/simulation/range_likelihood.h>
 #include <pcl/simulation/scene.h>
-#include <pcl/surface/gp3.h>
 #include <pcl/visualization/cloud_viewer.h> // Pop-up viewer
 #include <pcl/memory.h>
 #include <pcl/pcl_config.h>

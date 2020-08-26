@@ -41,6 +41,7 @@
 #include <pcl/common/common.h>
 #include <pcl/common/random.h>
 #include <cmath>
+#include <ctime> // for time
 #include <algorithm>
 #include <list>
 

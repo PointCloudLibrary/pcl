@@ -44,6 +44,7 @@
 #include <pcl/features/our_cvfh.h>
 #include <pcl/features/vfh.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/common/io.h> // for copyPointCloud
 #include <pcl/common/transforms.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

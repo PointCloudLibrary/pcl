@@ -38,6 +38,7 @@
 
 #include <iostream>
 #include <pcl/test/gtest.h>
+#include <pcl/common/io.h> // for copyPointCloud
 #include <pcl/common/distances.h>
 #include <pcl/common/time.h>
 #include <pcl/search/pcl_search.h>

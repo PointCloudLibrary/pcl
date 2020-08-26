@@ -42,7 +42,6 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>
-#include <pcl/common/io.h>
 #include <pcl/common/copy_point.h>
 
 namespace pcl

@@ -42,6 +42,7 @@
 #define PCL_SURFACE_ORGANIZED_FAST_MESH_HPP_
 
 #include <pcl/surface/organized_fast_mesh.h>
+#include <pcl/common/io.h> // for getFieldIndex
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void

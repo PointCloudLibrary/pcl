@@ -41,7 +41,7 @@
 
 #pragma once
 
-#include <pcl/conversions.h>
+#include <pcl/point_cloud.h> // for PointCloud
 #include <pcl/pcl_exports.h> // for PCL_EXPORTS
 
 namespace pcl

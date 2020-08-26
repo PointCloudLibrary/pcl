@@ -37,7 +37,9 @@
 
 #pragma once
 
-#include <pcl/pcl_base.h>
+#include <pcl/point_cloud.h> // for PointCloud
+#include <pcl/PointIndices.h> // for PointIndices
+#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
 
 /**
   * \file pcl/common/common.h

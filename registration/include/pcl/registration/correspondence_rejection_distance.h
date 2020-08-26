@@ -42,6 +42,7 @@
 
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/memory.h>  // for static_pointer_cast
+#include <pcl/conversions.h> // for fromPCLPointCloud2
 
 
 namespace pcl

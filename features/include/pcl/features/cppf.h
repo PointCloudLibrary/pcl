@@ -40,7 +40,6 @@
 #pragma once
 
 #include <pcl/features/feature.h>
-#include <pcl/features/boost.h>
 
 namespace pcl
 {

@@ -5,12 +5,9 @@
  *
  */
 
-#include <pcl/common/common.h>
 #include <pcl/common/transforms.h>
-#include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/console/time.h>
-#include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/simulation/camera.h>

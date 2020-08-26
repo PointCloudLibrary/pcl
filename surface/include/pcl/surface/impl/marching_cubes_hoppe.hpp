@@ -37,7 +37,6 @@
 #define PCL_SURFACE_IMPL_MARCHING_CUBES_HOPPE_H_
 
 #include <pcl/surface/marching_cubes_hoppe.h>
-#include <pcl/common/vector_average.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>

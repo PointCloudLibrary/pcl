@@ -43,7 +43,6 @@
 #include <pcl/registration/correspondence_types.h>
 #include <pcl/registration/correspondence_sorting.h>
 #include <pcl/console/print.h>
-#include <pcl/common/transforms.h>
 #include <pcl/point_cloud.h>
 #include <pcl/search/kdtree.h>
 

@@ -41,7 +41,7 @@
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_DQ_HPP_
 
 #include <pcl/common/eigen.h>
-
+#include <Eigen/Eigenvalues> // for EigenSolver
 
 namespace pcl
 {

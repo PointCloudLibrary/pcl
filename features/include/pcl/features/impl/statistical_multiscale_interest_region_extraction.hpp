@@ -43,6 +43,7 @@
 #include <pcl/features/statistical_multiscale_interest_region_extraction.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/common/distances.h>
+#include <pcl/console/print.h> // for PCL_INFO, PCL_ERROR
 #include <pcl/features/boost.h>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/johnson_all_pairs_shortest.hpp>

@@ -40,6 +40,7 @@
 #define PCL_FEATURES_IMPL_GASD_H_
 
 #include <pcl/features/gasd.h>
+#include <pcl/common/common.h> // for getMinMax3D
 #include <pcl/common/transforms.h>
 
 #include <vector>

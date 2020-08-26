@@ -1,7 +1,6 @@
 #pragma once
 
 #include <pcl/search/octree.h>
-#include <pcl/search/search.h>
 #include <pcl/tracking/nearest_pair_point_cloud_coherence.h>
 
 namespace pcl {

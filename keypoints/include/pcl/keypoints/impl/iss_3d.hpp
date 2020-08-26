@@ -38,6 +38,7 @@
 #ifndef PCL_ISS_KEYPOINT3D_IMPL_H_
 #define PCL_ISS_KEYPOINT3D_IMPL_H_
 
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver
 #include <pcl/features/boundary.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/integral_image_normal.h>

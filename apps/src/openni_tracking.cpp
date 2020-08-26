@@ -39,8 +39,6 @@
 #include <pcl/common/time.h>
 #include <pcl/common/transforms.h>
 #include <pcl/console/parse.h>
-#include <pcl/features/integral_image_normal.h>
-#include <pcl/features/normal_3d.h>
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/filters/approximate_voxel_grid.h>
 #include <pcl/filters/extract_indices.h>
@@ -51,7 +49,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
-#include <pcl/search/pcl_search.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/segmentation/sac_segmentation.h>

@@ -45,6 +45,7 @@
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/features/pfh_tools.h>
 
+#include <set> // for std::set
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> bool
