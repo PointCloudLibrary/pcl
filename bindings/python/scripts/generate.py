@@ -36,7 +36,7 @@ class bind:
             "CXX_METHOD": handled_elsewhere,  # in (handle_struct_decl)
             "CONSTRUCTOR": self.handle_constructor,
             "INCLUSION_DIRECTIVE": self.handle_inclusion_directive,
-            # DECLs
+            # DECLs: Declaration Kinds
             "STRUCT_DECL": self.handle_struct_decl,
             "CLASS_DECL": self.handle_struct_decl,
             "VAR_DECL": handled_by_pybind,
@@ -46,7 +46,7 @@ class bind:
             "ANONYMOUS_STRUCT_DECL": handled_elsewhere,  # in (handle_struct_decl) via get_fields_from_anonymous
             "FRIEND_DECL": unsure,
             "FUNCTION_DECL": unsure,
-            # EXPRs
+            # EXPRs: An expression that refers to a member of a struct, union, class, Objective-C class, etc.
             "CALL_EXPR": handled_by_pybind,
             "UNEXPOSED_EXPR": unsure,
             "MEMBER_REF_EXPR": unsure,
@@ -69,14 +69,14 @@ class bind:
             "UNARY_OPERATOR": no_need_to_handle,
             "MACRO_DEFINITION": unsure,
             "MACRO_INSTANTIATION": unsure,
-            # REFs
+            # REFs: A reference to a type declaration.
             "NAMESPACE_REF": handled_elsewhere,  # in (handle_constructor)
             "TYPE_REF": handled_elsewhere,  # in (handle_constructor)
             "MEMBER_REF": handled_by_pybind,
             "OVERLOADED_DECL_REF": unsure,
             "TEMPLATE_REF": unsure,  # check for usage in pcl_base.cpp; might need to add in cxx_methods
             "VARIABLE_REF": handled_by_pybind,
-            # STMTs
+            # STMTs: A statement.
             "COMPOUND_STMT": no_need_to_handle,
             "RETURN_STMT": handled_by_pybind,
             "IF_STMT": no_need_to_handle,
@@ -87,7 +87,7 @@ class bind:
             "DEFAULT_STMT": handled_by_pybind,
             "CXX_TRY_STMT": handled_by_pybind,
             "CXX_CATCH_STMT": handled_by_pybind,
-            # TEMPLATE related
+            # TEMPLATEs: A reference to a class template, function template, template parameter, or class template partial specialization.
             "CLASS_TEMPLATE": no_need_to_handle,
             "TEMPLATE_NON_TYPE_PARAMETER": no_need_to_handle,
             "FUNCTION_TEMPLATE": no_need_to_handle,
