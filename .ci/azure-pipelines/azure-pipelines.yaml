@@ -123,17 +123,17 @@ stages:
     dependsOn: formatting
     jobs:
       - job: msvs
-        displayName: Windows Build
+        displayName: Windows
         pool:
           vmImage: '$(VMWINIMAGE)'
         strategy:
           matrix:
-            x86:
+            VS2017-x86:
               VMWINIMAGE: 'vs2017-win2016'
               PLATFORM: 'x86'
               ARCHITECTURE: 'x86'
               GENERATOR: '"Visual Studio 15 2017"'
-            x64:
+            VS2019-x64:
               VMWINIMAGE: 'windows-2019'
               PLATFORM: 'x64'
               ARCHITECTURE: 'x86_amd64'
