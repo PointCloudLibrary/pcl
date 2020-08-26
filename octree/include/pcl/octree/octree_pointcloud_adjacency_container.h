@@ -170,7 +170,7 @@ protected:
 
   /** \brief Sets the number of points contributing to this leaf */
   void
-  setPointCounter(int points_arg)
+  setPointCounter(uindex_t points_arg)
   {
     num_points_ = points_arg;
   }
@@ -218,7 +218,7 @@ protected:
   }
 
 private:
-  int num_points_;
+  uindex_t num_points_;
   NeighborListT neighbors_;
   DataT data_;
 };

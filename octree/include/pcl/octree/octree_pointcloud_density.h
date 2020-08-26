@@ -76,11 +76,7 @@ public:
 
   /** \brief Read input data. Only an internal counter is increased.
    */
-  void
-  addPointIndex(int)
-  {
-    point_counter_++;
-  }
+  void addPointIndex(index_t) { point_counter_++; }
 
   /** \brief Return point counter.
    * \return Amount of points
@@ -99,7 +95,7 @@ public:
   }
 
 private:
-  unsigned int point_counter_;
+  uindex_t point_counter_;
 };
 
 /** \brief @b Octree pointcloud density class
@@ -136,7 +132,7 @@ public:
   unsigned int
   getVoxelDensityAtPoint(const PointT& point_arg) const
   {
-    unsigned int point_count = 0;
+    uindex_t point_count = 0;
 
     OctreePointCloudDensityContainer* leaf = this->findLeafAtPoint(point_arg);
 

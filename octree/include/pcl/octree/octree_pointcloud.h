@@ -200,7 +200,7 @@ public:
    * setInputCloud)
    */
   void
-  addPointFromCloud(const int point_idx_arg, IndicesPtr indices_arg);
+  addPointFromCloud(index_t point_idx_arg, IndicesPtr indices_arg);
 
   /** \brief Add point simultaneously to octree and input point cloud.
    *  \param[in] point_arg point to be added
@@ -258,14 +258,14 @@ public:
    * \return "true" if voxel exist; "false" otherwise
    */
   bool
-  isVoxelOccupiedAtPoint(const int& point_idx_arg) const;
+  isVoxelOccupiedAtPoint(const index_t& point_idx_arg) const;
 
   /** \brief Get a PointT vector of centers of all occupied voxels.
    * \param[out] voxel_center_list_arg results are written to this vector of PointT
    * elements
    * \return number of occupied voxels
    */
-  int
+  uindex_t
   getOccupiedVoxelCenters(AlignedPointTVector& voxel_center_list_arg) const;
 
   /** \brief Get a PointT vector of centers of voxels intersected by a line segment.
@@ -295,7 +295,7 @@ public:
    *  \param[in] point_idx_arg index of point addressing the voxel to be deleted.
    */
   void
-  deleteVoxelAtPoint(const int& point_idx_arg);
+  deleteVoxelAtPoint(const index_t& point_idx_arg);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Bounding box methods
@@ -428,7 +428,7 @@ protected:
    * \a setInputCloud to be added
    */
   virtual void
-  addPointIdx(const int point_idx_arg);
+  addPointIdx(index_t point_idx_arg);
 
   /** \brief Add point at index from input pointcloud dataset to octree
    * \param[in] leaf_node to be expanded
@@ -448,7 +448,7 @@ protected:
    * \return PointT from input pointcloud dataset
    */
   const PointT&
-  getPointByIndex(const unsigned int index_arg) const;
+  getPointByIndex(index_t index_arg) const;
 
   /** \brief Find octree leaf node at a given point
    * \param[in] point_arg query point
@@ -520,7 +520,7 @@ protected:
    * are assignable
    */
   virtual bool
-  genOctreeKeyForDataT(const int& data_arg, OctreeKey& key_arg) const;
+  genOctreeKeyForDataT(const index_t& data_arg, OctreeKey& key_arg) const;
 
   /** \brief Generate a point at center of leaf node voxel
    * \param[in] key_arg octree key addressing a leaf node.
@@ -560,7 +560,7 @@ protected:
    * elements
    * \return number of voxels found
    */
-  int
+  uindex_t
   getOccupiedVoxelCentersRecursive(const BranchNode* node_arg,
                                    const OctreeKey& key_arg,
                                    AlignedPointTVector& voxel_center_list_arg) const;
