@@ -1,8 +1,6 @@
 from context import scripts
 import scripts.utils as utils
 
-import collections
-
 
 class bind:
     """
