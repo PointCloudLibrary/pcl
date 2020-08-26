@@ -86,9 +86,9 @@ class bind:
             "CXX_TRY_STMT": handled_by_pybind,
             "CXX_CATCH_STMT": handled_by_pybind,
             # TEMPLATE related
-            "CLASS_TEMPLATE": self.skip,  # self.handle_class_template
-            "TEMPLATE_NON_TYPE_PARAMETER": handled_elsewhere,  # in (handle_class_template)
-            "FUNCTION_TEMPLATE": self.skip,  # to be added later
+            "CLASS_TEMPLATE": no_need_to_handle,
+            "TEMPLATE_NON_TYPE_PARAMETER": no_need_to_handle,
+            "FUNCTION_TEMPLATE": no_need_to_handle,
         }
 
         self.handle_node(root)
@@ -308,32 +308,6 @@ class bind:
         # default ctor `.def(py::init<>())` already inserted while handling struct/class decl
         if parameter_type_list:
             self._linelist.append(f".def(py::init<{parameter_type_list}>())")
-
-    # TODO: Remove, maybe
-    def handle_class_template(self):
-        flag = False
-
-        # TODO: Use list based method, like in handle_struct_decl
-        for sub_item in self.members:
-            if sub_item["kind"] == "TEMPLATE_NON_TYPE_PARAMETER":
-                self._linelist.append(
-                    f'template< {sub_item["element_type"].lower()} {sub_item["name"]} >'
-                )
-                flag = True
-        if not flag:
-            self._linelist.append(f"template<>")
-        base_class_list = [
-            sub_item["name"]
-            for sub_item in self.members
-            if sub_item["kind"] == "CXX_BASE_SPECIFIER"
-        ]
-        if base_class_list:
-            base_class_list = ",".join(base_class_list)
-            self._linelist.append(
-                f'py::class_<{self.name, base_class_list}>(m, "{self.name}")'
-            )
-        else:
-            self._linelist.append(f'py::class_<{self.name}>(m, "{self.name}")')
 
     def handle_inclusion_directive(self):
         """
