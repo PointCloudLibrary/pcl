@@ -318,8 +318,6 @@ class bind:
         # TODO: develop
         pass
 
-        # TODO: update blacklist
-        # blacklist = ["pcl/memory.h", "pcl/pcl_macros.h",]
         # if self.name.startswith("pcl"):
         #     self._inclusion_list.append(self.name)
 
