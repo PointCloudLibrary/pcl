@@ -324,16 +324,17 @@ class bind:
         #     self._inclusion_list.append(self.name)
 
 
-def generate(source, module_name):
+def generate(module_name, parsed_info=None, source=None):
     """
     The main function which handles generation of bindings.
 
     Parameters:
+        - module_name (str): Generated python module's name.
+        - parsed_info (dict): Parsed info about a C++ source file.
         - source (str): File name
     
     Returns:
         - lines_to_write (str): Lines to write in the binded file.
-        - Or, will raise an exception if JSON cannot be read.
     """
 
     def combine_lines(bind_object):
@@ -364,14 +365,24 @@ def generate(source, module_name):
         lines_to_write.append("}")
         return lines_to_write
 
-    header_info = utils.read_json(filename=source)
-    if header_info:
-        bind_object = bind(root=header_info, module_name=module_name)
-        # Extract filename from header_info (TRANSLATION_UNIT's name contains the filepath)
-        filename = header_info["name"].split("/")[-1]
+    # Argument checks and `parsed_info` value initialisation
+    if parsed_info and source:  # Both args passed, choose parsed_info.
+        print("Both parsed_info and source arguments provided, choosing parsed_info.")
+    elif source:  # If source passed, read JSON.
+        parsed_info = utils.read_json(filename=source)
+    elif parsed_info:  # If parsed_info passed, just use that further on.
+        pass
+    else:  # Both args are None.
+        raise Exception("Provide either parsed_info or source")
+
+    # If parsed_info is not empty
+    if parsed_info:
+        bind_object = bind(root=parsed_info, module_name=module_name)
+        # Extract filename from parsed_info (TRANSLATION_UNIT's name contains the filepath)
+        filename = parsed_info["name"].split("/")[-1]
         return combine_lines(bind_object)
     else:
-        raise Exception("Empty json")
+        raise Exception("Empty dict: parsed_info")
 
 
 def main():
