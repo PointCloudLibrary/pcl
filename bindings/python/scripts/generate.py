@@ -351,7 +351,7 @@ def generate(module_name: str, parsed_info: dict = None, source: str = None) -> 
         # for inclusion in self._inclusion_list:
         #     lines_to_write.append(f"#include <{inclusion}>")
         lines_to_write += bind_object._initial_pybind_lines
-        for i in range(len(bind_object._linelist)):
+        for i, _ in enumerate(bind_object._linelist):
             if bind_object._linelist[i].startswith("namespace"):
                 continue
             else:
