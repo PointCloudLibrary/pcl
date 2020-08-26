@@ -17,7 +17,7 @@ def remove_whitespace(string):
     return "".join([x for x in string if not x.isspace()])
 
 
-def generate_bindings(cpp_code_block, tmp_path):
+def generate_bindings(cpp_code_block, module_name, tmp_path):
     """
     Returns binded code for a cpp code block
     - Steps:
@@ -40,10 +40,12 @@ def generate_bindings(cpp_code_block, tmp_path):
 
     # JSON dump the parsed info
     json_path = tmp_path / "file.json"
-    utils.dump_json(filepath=json_path, info=parsed_info, indent=None, separators=(',', ':'))
+    utils.dump_json(
+        filepath=json_path, info=parsed_info, indent=None, separators=(",", ":")
+    )
 
     # Get the binded code
-    binded_code = generate.generate(source=json_path)
+    binded_code = generate.generate(source=json_path, module_name=module_name)
 
     # List to string
     binded_code = "".join(binded_code)
@@ -76,7 +78,9 @@ def get_expected_string(expected_module_code):
 
 def test_case1(tmp_path):
     cpp_code_block = "struct AStruct {};"
-    output = generate_bindings(tmp_path=tmp_path, cpp_code_block=cpp_code_block)
+    output = generate_bindings(
+        tmp_path=tmp_path, cpp_code_block=cpp_code_block, module_name="pcl"
+    )
 
     expected_module_code = """
     PYBIND11_MODULE(pcl, m){
@@ -94,7 +98,9 @@ def test_case2(tmp_path):
         int aMember;
     };
     """
-    output = generate_bindings(tmp_path=tmp_path, cpp_code_block=cpp_code_block)
+    output = generate_bindings(
+        tmp_path=tmp_path, cpp_code_block=cpp_code_block, module_name="pcl"
+    )
 
     expected_module_code = """
     PYBIND11_MODULE(pcl, m){
