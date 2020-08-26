@@ -1,6 +1,5 @@
 from context import scripts
 import scripts.generate as generate
-import scripts.utils as utils
 import test_parse
 
 
@@ -22,7 +21,7 @@ def generate_bindings(cpp_code_block, module_name, tmp_path):
     Returns binded code for a cpp code block
     - Steps:
         1. Get parsed info for the cpp code block (via get_parsed_info in test_parse.py).
-        2. Generate bindings for the parsed info (via generate in generate.py).
+        2. Generate bindings for the parsed_info (via generate in generate.py).
         3. Convert the list to a string and then return the stripped off string.
 
     Parameters:
@@ -37,16 +36,8 @@ def generate_bindings(cpp_code_block, module_name, tmp_path):
     parsed_info = test_parse.get_parsed_info(
         tmp_path=tmp_path, file_contents=cpp_code_block
     )
-
-    # JSON dump the parsed info
-    json_path = tmp_path / "file.json"
-    utils.dump_json(
-        filepath=json_path, info=parsed_info, indent=None, separators=(",", ":")
-    )
-
     # Get the binded code
-    binded_code = generate.generate(source=json_path, module_name=module_name)
-
+    binded_code = generate.generate(module_name=module_name, parsed_info=parsed_info)
     # List to string
     binded_code = "".join(binded_code)
 
