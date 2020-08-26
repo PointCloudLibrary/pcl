@@ -138,7 +138,7 @@ compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
-    for (const int& index : indices)
+    for (const auto& index : indices)
     {
       centroid[0] += cloud[index].x;
       centroid[1] += cloud[index].y;
@@ -150,7 +150,7 @@ compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
   }
   // NaN or Inf values could exist => check for them
     unsigned cp = 0;
-  for (const int& index : indices)
+  for (const auto& index : indices)
   {
     // Check if the point is invalid
     if (!isFinite (cloud [index]))
@@ -300,7 +300,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   {
     point_count = 0;
     // For each point in the cloud
-    for (const int &index : indices)
+    for (const auto &index : indices)
     {
       // Check if the point is invalid
       if (!isFinite (cloud[index]))
@@ -430,7 +430,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   if (cloud.is_dense)
   {
     point_count = static_cast<unsigned int> (indices.size ());
-    for (const int &index : indices)
+    for (const auto &index : indices)
     {
       //const PointT& point = cloud[*iIt];
       accu [0] += cloud[index].x * cloud[index].x;
@@ -444,7 +444,7 @@ computeCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   else
   {
     point_count = 0;
-    for (const int &index : indices)
+    for (const auto &index : indices)
     {
       if (!isFinite (cloud[index]))
         continue;
@@ -558,7 +558,7 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   if (cloud.is_dense)
   {
     point_count = indices.size ();
-    for (const int &index : indices)
+    for (const auto &index : indices)
     {
       //const PointT& point = cloud[*iIt];
       accu [0] += cloud[index].x * cloud[index].x;
@@ -575,7 +575,7 @@ computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   else
   {
     point_count = 0;
-    for (const int &index : indices)
+    for (const auto &index : indices)
     {
       if (!isFinite (cloud[index]))
         continue;
@@ -904,10 +904,10 @@ computeCentroid (const pcl::PointCloud<PointInT>& cloud,
   pcl::CentroidPoint<PointInT> cp;
 
   if (cloud.is_dense)
-    for (const int &index : indices)
+    for (const auto &index : indices)
       cp.add (cloud[index]);
   else
-    for (const int &index : indices)
+    for (const auto &index : indices)
       if (pcl::isFinite (cloud[index]))
         cp.add (cloud[index]);
 

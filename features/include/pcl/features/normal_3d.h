@@ -207,7 +207,7 @@ namespace pcl
   {
     Eigen::Vector3f normal_mean = Eigen::Vector3f::Zero ();
 
-    for (const int &normal_index : normal_indices)
+    for (const auto &normal_index : normal_indices)
     {
       const PointNT& cur_pt = normal_cloud[normal_index];
 

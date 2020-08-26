@@ -459,7 +459,7 @@ namespace pcl
 
         // Find leaves corresponding to neighbors
         k_leaves.reserve (k);
-        for (const int &k_index : k_indices)
+        for (const auto &k_index : k_indices)
         {
           auto voxel = leaves_.find(voxel_centroids_leaf_indices_[k_index]);
           if (voxel == leaves_.end()) {
@@ -518,7 +518,7 @@ namespace pcl
 
         // Find leaves corresponding to neighbors
         k_leaves.reserve (k);
-        for (const int &k_index : k_indices)
+        for (const auto &k_index : k_indices)
         {
           const auto voxel = leaves_.find(voxel_centroids_leaf_indices_[k_index]);
           if(voxel == leaves_.end()) {
