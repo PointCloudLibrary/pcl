@@ -1,6 +1,8 @@
 from context import scripts
 import scripts.utils as utils
 
+import collections
+
 
 class bind:
     """
@@ -116,14 +118,14 @@ class bind:
         Used for adding ending characters (braces, semicolons, etc.) when state's scope ends.
         """
 
-        if self._state_stack[-1]["kind"] == "NAMESPACE":
-            self._linelist.append("}")
-        elif self._state_stack[-1]["kind"] == "STRUCT_DECL":
-            self._linelist.append(";")
-        elif self._state_stack[-1]["kind"] == "STRUCT_DECL":
-            self._linelist.append(";")
-        elif self._state_stack[-1]["kind"] == "CLASS_TEMPLATE":
-            self._linelist.append(";")
+        kind = self._state_stack[-1]["kind"]
+        end_token = {}
+
+        end_token["NAMESPACE"] = "}"
+        end_token["CLASS_TEMPLATE"] = ";"
+        end_token["STRUCT_DECL"] = ";"
+
+        self._linelist.append(end_token.get(kind, ""))
 
     @staticmethod
     def get_fields_from_anonymous(item):
