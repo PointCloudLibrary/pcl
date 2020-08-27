@@ -42,11 +42,11 @@ First, create a file, let’s say, gpu_octree_search.cpp and place the following
 The Explanation
 ===============
 
-Initially, we define and instantiate a PointCloud structure and fill it with random points. We also create some random queries.
+Initially, we define and instantiate a PointCloud structure and fill it with uniformly distributed points using `pcl::common::CloudGenerator`. We also create some queries.
 
 .. literalinclude:: sources/gpu_octree/gpu_octree.cpp
     :language: cpp
-    :lines: 22-45
+    :lines: 95-105
 
 
 Building an octree
@@ -58,23 +58,21 @@ Note that unlike in the CPU octree implementation, the user cannot set the resol
 
 .. literalinclude:: sources/gpu_octree/gpu_octree.cpp
     :language: cpp
-    :lines: 47-58
+    :lines: 107-118
 
-After building the octree, we we can move on to the different search queries.
+After building the octree, we can move on to the different search queries.
 
 K Nearest Neighbors search
 ---------------------------
 
-The K nearest neighbor algorithm is designed to identify a given (k) number of nearest neighbors to a query point. However, the GPU KNN search algorithm is currently restricted to k=1 only.
-
 
 .. note::
 
-    The K Nearest neighbours algorithm is a work in progress and currently only supports k = 1.
+    The K nearest neighbor algorithm is designed to identify a given (k) number of nearest neighbors to a query point. However, the GPU KNN search algorithm is currently restricted to k=1 only.
 
 .. note::
 
-    The GPU K nearest neighbor algorithm differs from it's CPU counterpart in implementation. Specifically, the CPU algorithm will only find approximate nearest neighbors, where the user can set the upper bound of the error allowed. In contrast, the GPU algorithm finds the absolute nearest neighbor.
+    The GPU K nearest neighbor algorithm differs from it's CPU counterpart in implementation. Specifically, the CPU algorithm will only find approximate nearest neighbors, where the user can set the upper bound of the error allowed. In contrast, the GPU algorithm finds the absolute nearest neighbor. Unless it is necessary to find the absolute nearest neighbor, users can utilize approximate nearest search instead, as both functions offer similar functionality until support is added for K>1.
 
 In order to perform K nearest search, we must prepare output buffers on the device to store the results of the search queries. Specifically, we need two separate buffers to store the resulting nearest neighbor indices and the corresponding squared distances between the search point and nearest neighbors. Note that these buffers will be automatically resized to `k * number of queries` size, in order to hold all the results.
 
@@ -83,7 +81,7 @@ Now, we can perform the K nearest neighbors search on GPU. After performing the 
 
 .. literalinclude:: sources/gpu_octree/gpu_octree.cpp
     :language: cpp
-    :lines: 62-98
+    :lines: 21-40
 
 Radius Search
 -------------
@@ -96,7 +94,7 @@ Radius search can be conducted with a single radius for all queries or, an indiv
 
 .. literalinclude:: sources/gpu_octree/gpu_octree.cpp
     :language: cpp
-    :lines: 103-151
+    :lines: 42-70
 
 
 Approximate Nearest Search
@@ -108,7 +106,7 @@ Please note that the approximate nearest neighbor method may be deprecated in th
 
 .. literalinclude:: sources/gpu_octree/gpu_octree.cpp
     :language: cpp
-    :lines: 156-179
+    :lines: 73-90
 
 Compiling and running the program
 =================================
@@ -217,7 +215,7 @@ You will see something similar to::
         71.6224 502.673 441.761 (squared distance 2996.11)
 
 
-The following visualizations demonstrate the above three search methods in action. Note that some parameters are different from above, to highlight the functionality of the search methods.
+The following visualizations demonstrate the above three search methods in action. Note that some parameters are different from above, to highlight the functionality of the search methods. The query points are shown in red, while the results are shown in white.
 The first image depicts the initial cloud populated with random data.
 
 .. image:: images/gpu/octree/gpu_full.png
@@ -233,7 +231,7 @@ Radius search results are shown below.
 .. image:: images/gpu/octree/gpu_radius.png
   :width: 838
 
-The final image depicts results of approximate nearest search.
+The final image depicts results of approximate nearest search. The results shown in green are the actual nearest neighbors for points where the approximate nearest point diverges from the actual nearest point.
 
 .. image:: images/gpu/octree/gpu_approx.png
   :width: 838
