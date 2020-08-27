@@ -225,7 +225,8 @@ namespace pcl
         */
       int 
       createAndAddTemplate (
-        pcl::PointCloud<pcl::PointXYZRGBA> & cloud,
+        typename pcl::PointCloud<PointXYZT> & pointCloud,
+        typename pcl::PointCloud<PointRGBT> & colorCloud,
         const size_t object_id,
         const MaskMap & mask_xyz,
         const MaskMap & mask_rgb,
@@ -236,11 +237,11 @@ namespace pcl
       computeAABB (
         BoundingBoxXYZ & bb,
         PointXYZT & center,
-        const pcl::PointCloud<pcl::PointXYZRGBA> & cloud) const;
+        const typename pcl::PointCloud<PointXYZT> & cloud) const;
 
       void
       subtractMean (
-        pcl::PointCloud<pcl::PointXYZRGBA> & cloud,
+        typename pcl::PointCloud<PointXYZT> & cloud,
         const PointXYZT & center) const;
 
       void
@@ -292,7 +293,7 @@ namespace pcl
       computeTransformedTemplatePoints (const size_t detection_id,
                                         pcl::PointCloud<pcl::PointXYZRGBA> & cloud);
 
-      inline pcl::PointCloud<pcl::PointXYZRGBA> &
+      inline typename pcl::PointCloud<PointXYZT> &
       getTemplateCloud (const int template_id)
       {
         return (template_point_clouds_[template_id]);
@@ -370,7 +371,7 @@ namespace pcl
       typename pcl::PointCloud<PointRGBT>::ConstPtr cloud_rgb_;
 
       /** \brief Point clouds corresponding to the templates. */
-      pcl::PointCloud<pcl::PointXYZRGBA>::CloudVectorType template_point_clouds_;
+      typename pcl::PointCloud<PointXYZT>::CloudVectorType template_point_clouds_;
       /** \brief Bounding boxes corresonding to the templates. */
       std::vector<pcl::BoundingBoxXYZ> bounding_boxes_;
       /** \brief Object IDs corresponding to the templates. */

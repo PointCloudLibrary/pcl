@@ -179,7 +179,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
     size_t counter = 0;
     for (size_t j = 0; j < template_point_cloud.size (); ++j)
     {
-      const PointXYZRGBA & p = template_point_cloud.points[j];
+      const PointXYZT & p = template_point_cloud.points[j];
 
       if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
         continue;
@@ -212,7 +212,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
 
     for (size_t j = 0; j < template_point_cloud.size (); ++j)
     {
-      PointXYZRGBA p = template_point_cloud.points[j];
+      PointXYZT p = template_point_cloud.points[j];
 
       if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
         continue;
@@ -231,7 +231,8 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointXYZT, typename PointRGBT> int
 pcl::LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
-  pcl::PointCloud<pcl::PointXYZRGBA> & cloud,
+  typename pcl::PointCloud<PointXYZT> & pointCloud,
+  typename pcl::PointCloud<PointRGBT> & colorCloud,
   const size_t object_id,
   const MaskMap & mask_xyz,
   const MaskMap & mask_rgb,
@@ -244,14 +245,14 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
   bounding_boxes_.resize (templateIndex + 1);
 
   // add point cloud
-  pcl::copyPointCloud (cloud, template_point_clouds_[templateIndex]);
+  pcl::copyPointCloud (pointCloud, template_point_clouds_[templateIndex]);
 
   // add object_id
   object_ids_.push_back (object_id);
 
   PointXYZT mean;
-  computeAABB (bounding_boxes_[templateIndex], mean, cloud);
-  subtractMean (cloud, mean);
+  computeAABB (bounding_boxes_[templateIndex], mean, pointCloud);
+  subtractMean (pointCloud, mean);
 
   // add template to template storage
   SparseQuantizedMultiModTemplate linemod_template;
@@ -260,7 +261,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
   std::vector<pcl::QuantizableModality*> modalities;
   std::vector<MaskMap*> masks;
   {
-    typename pcl::PointCloud<PointRGBT>::Ptr pColors(&cloud);
+    typename pcl::PointCloud<PointRGBT>::Ptr pColors(&colorCloud);
     color_gradient_mod_.setInputCloud (pColors);
     color_gradient_mod_.processInputData ();
 
@@ -268,7 +269,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
     masks.push_back (const_cast<MaskMap*> (&mask_rgb));
   }
   {
-    typename pcl::PointCloud<PointXYZT>::Ptr pPoints(&cloud);
+    typename pcl::PointCloud<PointXYZT>::Ptr pPoints(&pointCloud);
     surface_normal_mod_.setInputCloud (pPoints);
     surface_normal_mod_.processInputData ();
 
@@ -286,7 +287,7 @@ template <typename PointXYZT, typename PointRGBT> void
 pcl::LineRGBD<PointXYZT, PointRGBT>::computeAABB (
   BoundingBoxXYZ & bb,
   PointXYZT & center,
-  const pcl::PointCloud<pcl::PointXYZRGBA> & template_point_cloud) const
+  const typename pcl::PointCloud<PointXYZT> & template_point_cloud) const
 {
   bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
   bb.width = bb.height = bb.depth = 0.0f;
@@ -303,7 +304,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeAABB (
   size_t counter = 0;
   for (size_t j = 0; j < template_point_cloud.size (); ++j)
   {
-    const PointXYZRGBA & p = template_point_cloud.points[j];
+    const PointXYZT & p = template_point_cloud.points[j];
 
     if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
       continue;
@@ -338,12 +339,12 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeAABB (
 
 template <typename PointXYZT, typename PointRGBT> void
 pcl::LineRGBD<PointXYZT, PointRGBT>::subtractMean (
-  pcl::PointCloud<pcl::PointXYZRGBA> & template_point_cloud,
+  typename pcl::PointCloud<PointXYZT> & template_point_cloud,
   const PointXYZT & center) const
 {
   for (size_t j = 0; j < template_point_cloud.size (); ++j)
   {
-    PointXYZRGBA p = template_point_cloud.points[j];
+    PointXYZT p = template_point_cloud.points[j];
 
     if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
       continue;
@@ -403,7 +404,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModT
     size_t counter = 0;
     for (size_t j = 0; j < template_point_cloud.size (); ++j)
     {
-      const PointXYZRGBA & p = template_point_cloud.points[j];
+      const PointXYZT & p = template_point_cloud.points[j];
 
       if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
         continue;
@@ -436,7 +437,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModT
 
     for (size_t j = 0; j < template_point_cloud.size (); ++j)
     {
-      PointXYZRGBA p = template_point_cloud.points[j];
+      PointXYZT p = template_point_cloud.points[j];
 
       if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
         continue;
