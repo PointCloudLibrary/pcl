@@ -16,7 +16,7 @@ This module primarily provides implementations for the following three search me
 
 - Radius search
 - K Nearest Neighbors Search
-- Approximate Nearest Neighbors Search
+- Approximate Nearest Neighbor Search
 
 In contrast to the their CPU counterparts, all of these functions accept a vector of queries rather than a single query. Apart from this, there are some minor differences between the CPU and GPU implementations, and these will be highlighted throughout this tutorial.
 
@@ -68,11 +68,11 @@ K Nearest Neighbors search
 
 .. note::
 
-    The K nearest neighbor algorithm is designed to identify a given (k) number of nearest neighbors to a query point. However, the GPU KNN search algorithm is currently restricted to k=1 only.
+    The K nearest neighbor algorithm is designed to identify a given (k) number of nearest neighbors to a query point. However, the GPU KNN search algorithm is currently restricted to k=1 only. This restriction will be lifted in a future release.
 
 .. note::
 
-    The GPU K nearest neighbor algorithm differs from it's CPU counterpart in implementation. Specifically, the CPU algorithm will only find approximate nearest neighbors, where the user can set the upper bound of the error allowed. In contrast, the GPU algorithm finds the absolute nearest neighbor. Unless it is necessary to find the absolute nearest neighbor, users can utilize approximate nearest search instead, as both functions offer similar functionality until support is added for K>1.
+    The GPU K nearest neighbor algorithm differs from it's CPU counterpart in implementation. Specifically, the CPU algorithm will only find approximate nearest neighbors, where the user can set the upper bound of the error allowed. In contrast, the GPU algorithm finds the absolute nearest neighbor. For K = 1, if an approximation will suffice, users can utilize approximate nearest search instead.
 
 In order to perform K nearest search, we must prepare output buffers on the device to store the results of the search queries. Specifically, we need two separate buffers to store the resulting nearest neighbor indices and the corresponding squared distances between the search point and nearest neighbors. Note that these buffers will be automatically resized to `k * number of queries` size, in order to hold all the results.
 
