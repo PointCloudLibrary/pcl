@@ -441,13 +441,6 @@ namespace pcl
       void
       computeSurfaceNormals ();
 
-      void
-      setSurfaceNormals (const pcl::PointCloud<pcl::Normal>& surface_normals)
-      {
-        // pcl::copyPointCloud (surface_normals, surface_normals_);
-        surface_normals_ = surface_normals;
-      }
-
       /** \brief Computes and quantizes the surface normals. */
       void
       computeAndQuantizeSurfaceNormals ();
