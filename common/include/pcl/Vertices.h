@@ -4,7 +4,6 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/types.h>
 
-#include <string>
 #include <ostream>
 
 namespace pcl

@@ -40,6 +40,8 @@
 #ifndef PCL_MOMENT_OF_INERTIA_ESTIMATION_HPP_
 #define PCL_MOMENT_OF_INERTIA_ESTIMATION_HPP_
 
+#include <Eigen/Eigenvalues> // for EigenSolver
+
 #include <pcl/features/moment_of_inertia_estimation.h>
 #include <pcl/features/feature.h>
 

@@ -45,6 +45,7 @@
 #include <pcl/common/distances.h>
 #include <pcl/common/transforms.h>
 #include <vector>
+#include <ctime> // for time
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void

@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <numeric> // for partial_sum
 #include <pcl/features/usc.h>
 #include <pcl/features/shot_lrf.h>
 #include <pcl/common/angles.h>

@@ -38,6 +38,7 @@
 #ifndef PCL_SUSAN_IMPL_HPP_
 #define PCL_SUSAN_IMPL_HPP_
 
+#include <pcl/common/io.h> // for getFieldIndex
 #include <pcl/keypoints/susan.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/integral_image_normal.h>

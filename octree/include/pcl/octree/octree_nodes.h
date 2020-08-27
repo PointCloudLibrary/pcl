@@ -45,7 +45,6 @@
 #include <Eigen/Core>
 
 #include <cassert>
-#include <cstddef>
 
 namespace pcl {
 namespace octree {

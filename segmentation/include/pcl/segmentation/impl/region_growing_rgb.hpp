@@ -40,6 +40,7 @@
 #ifndef PCL_SEGMENTATION_REGION_GROWING_RGB_HPP_
 #define PCL_SEGMENTATION_REGION_GROWING_RGB_HPP_
 
+#include <pcl/console/print.h> // for PCL_ERROR
 #include <pcl/segmentation/region_growing_rgb.h>
 #include <pcl/search/search.h>
 #include <pcl/search/kdtree.h>

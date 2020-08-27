@@ -37,6 +37,8 @@
  *
  */
 
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver
+
 #include <pcl/test/gtest.h>
 #include <pcl/pcl_tests.h>
 #include <pcl/common/common.h>

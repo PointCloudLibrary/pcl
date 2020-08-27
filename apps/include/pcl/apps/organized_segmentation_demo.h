@@ -40,7 +40,6 @@
 #include <pcl/common/time.h>
 #include <pcl/common/transforms.h>
 #include <pcl/features/integral_image_normal.h>
-#include <pcl/filters/voxel_grid.h>
 #include <pcl/io/oni_grabber.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_grabber.h>

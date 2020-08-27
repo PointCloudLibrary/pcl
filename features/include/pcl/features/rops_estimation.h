@@ -41,6 +41,7 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/Vertices.h> // for Vertices
 #include <pcl/features/feature.h>
 #include <set>
 

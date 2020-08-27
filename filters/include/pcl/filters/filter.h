@@ -40,7 +40,7 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
-#include <pcl/common/io.h>
+#include <pcl/common/io.h> // for copyPointCloud
 #include <pcl/PointIndices.h>
 
 namespace pcl

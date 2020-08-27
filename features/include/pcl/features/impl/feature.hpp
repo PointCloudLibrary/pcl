@@ -41,7 +41,8 @@
 #ifndef PCL_FEATURES_IMPL_FEATURE_H_
 #define PCL_FEATURES_IMPL_FEATURE_H_
 
-#include <pcl/search/pcl_search.h>
+#include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/search/organized.h> // for OrganizedNeighbor
 
 
 namespace pcl

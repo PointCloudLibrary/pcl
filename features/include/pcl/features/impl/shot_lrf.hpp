@@ -40,6 +40,7 @@
 #ifndef PCL_FEATURES_IMPL_SHOT_LRF_H_
 #define PCL_FEATURES_IMPL_SHOT_LRF_H_
 
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver
 #include <utility>
 #include <pcl/features/shot_lrf.h>
 

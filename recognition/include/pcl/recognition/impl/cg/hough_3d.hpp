@@ -40,6 +40,7 @@
 #ifndef PCL_RECOGNITION_HOUGH_3D_IMPL_H_
 #define PCL_RECOGNITION_HOUGH_3D_IMPL_H_
 
+#include <pcl/common/io.h> // for copyPointCloud
 #include <pcl/recognition/cg/hough_3d.h>
 #include <pcl/registration/correspondence_types.h>
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>

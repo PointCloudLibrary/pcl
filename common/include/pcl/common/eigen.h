@@ -52,16 +52,11 @@
 #  pragma disable_warn
 #endif
 
-#include <cmath>
 #include <pcl/ModelCoefficients.h>
 
 #include <Eigen/StdVector>
-#include <Eigen/Core>
-#include <Eigen/Eigenvalues>
 #include <Eigen/Geometry>
-#include <Eigen/SVD>
 #include <Eigen/LU>
-#include <Eigen/Eigenvalues>
 
 namespace pcl
 {

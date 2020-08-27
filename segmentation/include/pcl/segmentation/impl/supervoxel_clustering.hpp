@@ -41,6 +41,7 @@
 #define PCL_SEGMENTATION_SUPERVOXEL_CLUSTERING_HPP_
 
 #include <pcl/segmentation/supervoxel_clustering.h>
+#include <pcl/common/io.h> // for copyPointCloud
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>

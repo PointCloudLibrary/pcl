@@ -42,7 +42,6 @@
 // C++
 #include <mutex>
 #include <random>
-#include <vector>
 
 #include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/octree_abstract_node_container.h>

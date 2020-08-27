@@ -43,6 +43,8 @@
 #include <pcl/features/rops_estimation.h>
 
 #include <array>
+#include <numeric> // for accumulate
+#include <Eigen/Eigenvalues> // for EigenSolver
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>

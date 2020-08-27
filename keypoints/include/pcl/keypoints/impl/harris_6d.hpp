@@ -38,6 +38,7 @@
 #ifndef PCL_HARRIS_KEYPOINT_6D_IMPL_H_
 #define PCL_HARRIS_KEYPOINT_6D_IMPL_H_
 
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver
 #include <pcl/keypoints/harris_6d.h>
 #include <pcl/common/io.h>
 #include <pcl/features/normal_3d.h>

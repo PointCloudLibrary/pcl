@@ -41,7 +41,6 @@
 #include <pcl/pcl_config.h> // for PCL_NO_PRECOMPILE
 #include <pcl/point_types.h>
 #include <pcl/filters/filter_indices.h>
-#include <pcl/common/transforms.h>
 
 namespace pcl
 {

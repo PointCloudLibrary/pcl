@@ -46,7 +46,7 @@
 #include <pcl/common/utils.h>
 
 #include <cmath>
-
+#include <numeric> // for partial_sum
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> bool
