@@ -3,10 +3,15 @@
 Executor Design
 ------------------------------
 
-In this document we
+In this document we discuss about executors which are part of C++ standard committee proposals
+and their relevance, design as well as implementation in PCL.
 
 Why do we need executors?
 =================================
+
+.. note::
+   All of the content from the this section has been taken as is from the proposal
+   `P0761R2 <https://wg21.link/P0761R2>`_ by Hoberock et al. with minor modifications where appropriate.
 
 Execution is a fundamental concern of C++ programmers. Every piece of every program executes somehow
 and somewhere. For example, the iterations of a for loop execute in sequence on the current thread, while a
@@ -119,9 +124,293 @@ functions for creating execution agents from a callable function object. The exe
 bound to the executor’s context, and hence to one or more of the resources that context represents.
 
 Why does PCL need executors?
------------------------------------------------
+=================================
+
+PCL has a a diverse collections of modules with various algorithms. Many of these implementations of algorithms
+have a diverse set of algorithms targeting various facilities such as SIMD, OpenMP, GPU (CUDA) etc.
+Since each facility has a different set of API's and interface, so they have separate implementations,
+some of them are in the form of separate classes:.
+Some of the problems with the current scenario are:
+
+1. **Divergent Implementation**
+The distinct implementations of algorithms leads to disparity in the codebase over time. Since the more popular
+implementation get bug fixes, new features and undergoes refactoring while the other implementations remain
+untouched.
+Example: The parallelized version of an algorithm might be more popular so it will get bug fixes overtime while
+those bugs continue to persist in the serial implementations of that algorithm.
+
+2. **Non Uniform API**
+The API for one of the implementations for a specific facility might undergo some changes to accommodate
+the some of the new features utilizing some of the tools provide by the facilities optimizations or
+to adapt to the interface provided by the facilities.
+Example: Parallel implementations expose API's to allow configuring the degree of parallelism which is completely
+absent from sequential implementations.
+
+3. **Inextensible Design**
+The current design doesn't support using new facilities like thread pools, multi-gpu support or nesting
+facilities. To add support for these facilities completely new implementations will have to be written
+for every algorithm.
+Example: It isn't possible to run vectorized code (SIMD) while running a parallel implementation which
+uses OpenMP.
+
+4. **Code Duplication**
+Even if different facilities might require slightly different implementations, a lot of the code can
+be shared. Having different implementations just leads to a majority of the code base being duplicated
+and only some of the code gets modified inorder to adapt to the interface provided by the facility.
+Example: Most of OpenMP code is quite similar to the sequential implementation with only some additions.
+So having separate classed for OpenMP implementations is quite redundant.
+
+5. **Maintenance Overhead**
+Maintaining several implementations of the same algorithm is a labour and time intensive task.
+Porting changes from one implementation to another and propagating bug fixes to all the implementations
+is time consuming. Lack of time to propagate the changes will lead to divergent implementations as mentioned
+above.
+
+Design Considerations
+=================================
+
+The executor design proposal for C++, aims to build a generalized and extensible framework surrounding
+executors. This is necessary since it needs to support a wide rage of uses cases so as to attempt to cater
+everyone's needs, in order for it to be accepted into the standard library.
+
+In PCL, the need for executors is limited to certain features and there is no need for the entire feature set
+as mentioned in the proposal. Concepts such asynchronous operations and task based parallelism are not present
+or needed in PCL at the moment so creating a design which incorporates all those features would be unnecessary.
+The main use cases in PCL are:
+
+1. Provide a uniform API for executing existing algorithms on different facilities giving users the freedom
+   to switch between facilities with ease.
+
+2. Reducing code duplication and trying to avoid completely different implementations of the same algorithm
+
+3. Provide a simple and easy to use mechanism to customize the execution context which users can also access
+
+4. Expose some of the underlying features offered by the the various facilities in a standardized manner
+
+5. Provide a mechanism to automatically choose the best facility to run an algorithm in case the user does
+   not explicitly specify which facility to use
+
+6. Be extensible enough to allows users to specify their own executors or customize the ones provided by PCL
+7. Ensure as little overhead as possible, if possible make everything compile time. This is also ensure all
+   errors are caught at compile time, providing guarantee at compile time that an executor would work.
+
+8. Last but not the least be forward compatible with the upcoming executor design so that PCL is compatible with
+   them when they become a part of the standard specification.
+
+Accepted Design
+=================================
+
+The currently implemented design draws heavy influence from some of the current implementations which are being
+developed in light of the proposal which are:
+
+* `executors-impl <https://github.com/executors/executors-impl>`_
+
+* `cudex <https://github.com/jaredhoberock/cudex>`_
+
+The two main elements of this design are namely executors themselves and  executor properties.
 
 
+**Executor Design**
+
+So as per the proposal the technical definition of an executor is:
+An Executor should be a CopyConstructible and EqualityComparable type that provides a function named
+execute that eagerly submits work on a single execution agent created for it by the executor.
+
+There are two available execution functions in any executor:
+
+1. `execute`
+It takes a nullary callable (a callable which takes no arguments and returns void) and executes
+the callable on a single execution agent exactly once.
+
+2. `bulk_execute`
+It takes a callable (which returns void but takes an index parameter as argument) and a shape which
+corresponds to the number of invocations of the callable. This function generates execution agents
+equal to the number of invocations in bulk and then each execution agent invokes the callable once.
+The index of the execution agent is passed as argument to the callable, so that the callable
+knows the invocation index.
+
+The difference between simply calling execute repeatedly and bulk_execute is that bulk_execute
+leverages the facilities API to generate execution agents in bulk which is more efficient then creating
+them one by one.
+
+How these executors call the callable internally is dependent on the implementation of each executor
+and some aspects of the execution can be customized through properties.
+
+The index passed in bulk execute can be used to internally partition certain parts of the code to only run
+on on specific indexes.
+Example: It can be used to split the iteration of a loop between the execution agents.
+
+**Shape and Index**
+
+The shape and index will vary depending on the facilities, so a mechanism has been provided to customize
+their types. By default in they are `std::size_t`.
+
+The shape or index can be specified by a type or an alias for a type inside the executor with the names
+`shape_type` and `executor_type`. There also exists type traits namely `executor_shape` and `executor_index`
+to access the type the executors shape or index.
+
+**Executor Properties**
+Executor properties are objects associated with an executor. They are used to customize various aspects
+of the executor related to execution and are also used to provide guarantees.
+The properties which are implemented in PCL currently are:
+
+* Blocking
+
+This specifies whether or not execution inside an execution function should wait/block till all
+execution agents are done executing. There are 3 mutually exclusive blocking properties
+`blocking.always`, `blocking.never` and `blocking.possibly` their role can determined by their names
+itself. The default is `blocking.always`.
+
+* Allocators
+
+It specified the allocator,to associate with an executor. A user may use this
+property to suggest the use the specified preferred allocator when allocating storage necessary
+for execution. The default is the specialization `allocator_t<void>` which indicates to
+use the default allocator available in the system.
+
+As of now only these 2 properties are supported in PCL but even they are not fully supported by
+the provided executors.
+
+It is compulsory for a property to define a default property, which indicates the the property
+value even if an executor doesn't explicitly support that property.
+
+**Property Customization Mechanism**
+
+Properties of an executor are specified using the template parameters of an executor class template.
+A user may introduce a new property to an executor by defining a property type and
+specializing either the `require` or `prefer` and `query` member functions inside the executor.
+
+The properties of an executor can strongly or weakly associate properties which are supported by an
+executor by call to the require or prefer customization points. This operation might produce a new
+executor of a different type. You can also query whether an executor supports a specific property
+or not by a call to the query customization point.
+
+
+**Customizing Executors**
+
+Users are free to create their own executors or customize existing ones by inheriting the ones provided
+by PCL. Users can even create their own custom properties add support for them in executors.
+
+As of now only derived executors will work on PCL functions which support the base executor,
+using your executor without deriving is not supported in PCL functions. Since this is an advanced
+feature and is user dependent, PCL code cannot provide any guarantee that custom executors will work as
+expected for PCL functions. Make sure to look and understand the code for the function in which
+you are using a custom executor and determine whether the executor will provide the expected results.
+
+**Implementation**
+
+Below we show a simplified version of the inline executor. Look at the Code API for more details.
+
+.. code-block:: cpp
+
+   // Properties are specified as template parameters
+   template <typename Blocking = blocking_t::always_t, typename ProtoAllocator = std::allocator<void>>
+   struct inline_executor {
+
+      // Shape and index are specified to the custom PCL type uindex_t
+      using shape_type = uindex_t ;
+      using index_type = uindex_t ;
+
+
+      // execute invokes the callable exactly once
+      template <typename F>
+      void execute(F&& f) const {
+        f();
+      }
+
+      // bulk_execute invokes the callable n times and passes the index of execution agent
+      // In case of inline_executor each execution agent is mapped to the same thread is invoked sequentially
+      template <typename F, typename... Args>
+      void bulk_execute(F&& f, const shape_type& n) const {
+        for (shape_type index = 0; index <  n; ++index)
+          f(index);
+      }
+
+      // The query customization point being specialized to show that the executor supports
+      // the blocking.always property
+      static constexpr auto query(const blocking_t&) noexcept {
+        return blocking_t::always;
+      }
+
+      // The require customization point being specialized to allow strongly associating the executor with
+      // the blocking.always property
+      inline_executor<blocking_t::always_t, ProtoAllocator> require(const blocking_t::always_t&) const {
+        return {};
+      }
+    };
+
+
+Best Fit Executor
+=================================
+
+In most scenarios users of PCL do not care much about performance and simply want their code to run
+fast without any additional steps performed from their side. For this reason their was a need for
+mechanism called best fit, which automatically selects best possible executor and its customizes its
+property in order to give the user good performance out of the box based on their system configurations
+and the function they are calling.
+
+The mechanism works be choosing an executor based on the availability of an executor (depends on
+hardware/software of a system) and the priority of executors specified in function by PCL
+maintainers & contributors which will give good performance. The executor properties can also be
+customized on for a better fit for certain scenarios. Besides this runtime checks are also be specified
+and on the basis of these runtime checks the executors are further filtered to selected most appropriate
+one. The two supported mechanisms in PCL currently are `enable_exec_with_priority` and
+`enable_exec_on_desc_priority`. You can read more about them in the code API.
+
+Alternative Designs Considered
+=================================
+
+There has been a lot of deliberation and discussion regarding all the design aspects of executors in PCL.
+The design has gone through multiple iterations before a consensus was reached. Some of the major alternate
+design proposals that were rejected were:
+
+* Tag Dispatching
+
+This was was one of the initial design considerations. It seemed like an attractive choice due to simplicity,
+could choose the allowed overload resolution to choose the best option at compile time by allowing
+tags to be inherited. These tags would serve as placeholders till executors were standardized.
+They lacked all the features of executors and offered no customization. Once executors were even standardized
+large parts of the codebase would need to be refactored to support executors.
+
+* Base Executor
+
+The idea was to have single base executor from which all executors would derive from. This would allow
+all the common cod to be shared among all the executors. The base executors has a CRTP based design which
+is used to access the properties of the derived executor. It also allowed simplification in many areas
+such as being able to reference any derived executor. Basic properties of all executors like
+copy constructors, overloaded equality operators.
+The CRTP mechanism had some restrictions in the sense that there was still a need for templates and
+their were concerns regarding explicitly passing all the properties to the base class using CRTP as
+it was felt to be unnecessary. Having inheritance also introduces runtime polymorphism which was against
+one of the design consideration i.e. have everything compile time and avoid any overhead.
+The base executor besides a few common functionality didn't do much and was discarded.
+
+* Overload Mechanism
+
+In this design, the supported executor properties specified as templated parameters were inherited from.
+With this design executors would not need to provide the `require` or `prefer` and `query` member functions
+inside the executor for each property it wants to allows association with and support customizing.
+This design was not fully explore, so the potential drawbacks are not know completely. A snippet
+is available `here <https://godbolt.org/z/zhKM6e>`_. It was decided to not go with this design forward
+due to the potential complications, minimal support of properties for executors in PCL and deviation
+from the property customization mechanism design implemented in other implementations of the executor design
+proposal mentioned above in the document. Once more properties to be used w.r.t PCL are made available and
+use cases for these properties comes up. This design can be considered and looked at.
+and
+
+* Unified Shape with Compile Time Support
+Since each executor could have a different shape type, a unified shape type would provide a more uniform
+API. The compile time support for shapes would also bring performance benefits. The compile time aspect
+was ditched since in most scenarios the value of the shape was determined at runtime and rarely at compile
+time. The unified shape was also deemed unnecessary since for most executors `std::size_t` or and `int` was
+sufficient and only a custom shape was needed for GPU (CUDA) code for which tje shape could explicitly
+specified.
+
+Conclusion
+=================================
+Executors in PCL a very new concept and will mature as more functions are supported and is more widely used.
+The design will also go though more changes and iterations as more feedback from the community is received
+and the C++ executor proposal itself evolves.
 
 References
 ----------
