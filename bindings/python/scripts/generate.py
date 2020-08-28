@@ -148,7 +148,7 @@ class bind:
                 fields.append(sub_item)
             # recurse
             elif sub_item["kind"] in ("ANONYMOUS_UNION_DECL", "ANONYMOUS_STRUCT_DECL"):
-                fields += get_fields_from_anonymous(item=sub_item)
+                fields += bind.get_fields_from_anonymous(item=sub_item)
         return fields
 
     def handle_node(self, item: dict) -> None:
