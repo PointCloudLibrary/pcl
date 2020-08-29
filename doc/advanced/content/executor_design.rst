@@ -3,7 +3,7 @@
 Executor Design
 ------------------------------
 
-In this document we discuss about executors (which are part of C++ standard committee proposals)
+In this document we discuss about executors (which are part of C++ standard committee proposals),
 their design, implementation and relevance in PCL.
 
 Why do we need executors?
@@ -190,7 +190,7 @@ The main use cases in PCL are:
 
 6. Be extensible enough to allows users to specify their own executors or customize the ones provided by PCL
 
-7. Minimize runtime overhead by exploiting compile time resolution whenever appropriate. This is also ensure all
+7. Minimize runtime overhead by exploiting compile time resolution whenever appropriate. This is also ensures
    errors are caught at compile time, providing guarantee an executor would work if the code compiles successfully.
 
 8. Last but not the least be forward compatible with the upcoming executor design so that PCL is compatible with
@@ -199,8 +199,7 @@ The main use cases in PCL are:
 Accepted Design
 =================================
 
-The implemented design in PCL draws heavy influence from some of the implementations which are being
-developed in light of the proposal which are:
+The implemented design in PCL draws heavy influence from the following in-development implementations:
 
 * `executors-impl <https://github.com/executors/executors-impl>`_
 
@@ -346,17 +345,17 @@ Best Fit Executor
 =================================
 
 In most scenarios users of PCL do not care much about performance and simply want their code to run
-fast without any additional steps performed from their side. For this reason their was a need for
-mechanism called best fit, which automatically selects best possible executor and its customizes its
+fast without any additional steps performed from their side. For this reason there was a need for a
+mechanism called best fit, which automatically selects the best possible executor and customizes its
 property in order to give the user good performance out of the box based on their system configurations
 and the function they are calling.
 
-The mechanism works be choosing an executor based on the availability of an executor (depends on
-hardware/software of a system) and the priority of executors specified in function by PCL
-maintainers & contributors which will give good performance. The executor properties can also be
-customized on for a better fit for certain scenarios. Besides this runtime checks are also be specified
-and on the basis of these runtime checks the executors are further filtered to selected most appropriate
-one. The two supported mechanisms in PCL currently are `enable_exec_with_priority` and
+The mechanism works by choosing an executor based on its availability (depends on
+hardware/software of a system) and its priority specified in function by PCL
+maintainers & contributors which will give good performance.Executor properties can also be customized
+to better fit certain scenarios. Besides this runtime checks are also be specified and on the basis
+of these runtime checks the executors are further filtered to selected most appropriate
+one. The two supported mechanisms in PCL currently there are `enable_exec_with_priority` and
 `enable_exec_on_desc_priority`. You can read more about them in the code API.
 
 Alternative Designs Considered
@@ -368,17 +367,17 @@ design proposals that were rejected were:
 
 * Tag Dispatching
 
-This was was one of the initial design considerations. It seemed like an attractive choice due to simplicity,
-could choose the allowed overload resolution to choose the best option at compile time by allowing
+This was was one of the initial design considerations. It seemed like an attractive choice due to its simplicity,
+allowing overload resolution to choose the best options at compile time. This was achieved by allowing
 tags to be inherited. These tags would serve as placeholders till executors were standardized.
 They lacked all the features of executors and offered no customization. Once executors were even standardized
 large parts of the codebase would need to be refactored to support executors.
 
 * Base Executor
 
-The idea was to have single base executor from which all executors would derive from. This would allow
-all the common cod to be shared among all the executors. The base executors has a CRTP based design which
-is used to access the properties of the derived executor. It also allowed simplification in many areas
+The idea was to have a single base executor from which all executors would derive from. This would have allowed
+all the common code to be shared among all the executors. The base executor had a CRTP based design which
+was used to access the properties of the derived executor. It also allowed simplification in many areas
 such as being able to reference any derived executor. Basic properties of all executors like
 copy constructors, overloaded equality operators.
 The CRTP mechanism had some restrictions in the sense that there was still a need for templates and
