@@ -42,7 +42,7 @@ which is used inside our custom executor's definition.
 
 .. literalinclude:: sources/custom_executor/custom_executor.cpp
    :language: cpp
-   :lines: 7-9
+   :lines: 10-12
 
 We mark the executor as available, by creating a specialization of `omp_benchmark_executor`
 which inherits from `std::true_type`. This acts as an indicator that the system supports the
@@ -51,7 +51,7 @@ indicate the presence of certain features like `_OPENMP` is used for OpenMP.
 
 .. literalinclude:: sources/custom_executor/custom_executor.cpp
    :language: cpp
-   :lines: 11-15
+   :lines: 14-18
 
 Here, we define the structure for our custom executor, which we had forward declared earlier.
 It is templated with the two properties it supports, which are `blocking_t` and `allocator_t`.
@@ -60,7 +60,7 @@ us to use our custom executor wherever the OpenMP executor provided in PCL is su
 
 .. literalinclude:: sources/custom_executor/custom_executor.cpp
    :language: cpp
-   :lines: 17-20
+   :lines: 20-23
 
 We need to introduce the base struct, i.e., `omp_executor` members into
 our current struct. You can read more on why this is needed over
@@ -68,36 +68,30 @@ our current struct. You can read more on why this is needed over
 
 .. literalinclude:: sources/custom_executor/custom_executor.cpp
    :language: cpp
-   :lines: 21-26
+   :lines: 24-29
 
 Our custom executor's special feature is the ability to time functions executed
-by `bulk_execute`, so we need to override the function. We also perform checks on the executor's availability and limit the number of threads to the max limit defined in the executor.
+by `bulk_execute`, so we need to override the function. We also perform checks on the executor's
+availability.
 
 .. literalinclude:: sources/custom_executor/custom_executor.cpp
    :language: cpp
-   :lines: 28-34
+   :lines: 31-37
 
 This is where we define what happens before and after we invoke our callable.
-We measure the time before and after the thread executes the code. We enclose all our code
+We measure the time before and after all the thread executes the code. We enclose all our code
 in a parallel region with the specified maximum number of threads.
 
 .. literalinclude:: sources/custom_executor/custom_executor.cpp
    :language: cpp
-   :lines: 36-40
+   :lines: 39-43
 
-We then measure the time at the beginning of execution in each thread.
-The callable is invoked in a loop which is automatically parallelized using OpenMP.
-
-.. literalinclude:: sources/custom_executor/custom_executor.cpp
-   :language: cpp
-   :lines: 41-55
-
-We measure the time after all the threads have finished executing and print
-the difference from the initially measured time.
+We then measure the time taken by each thread. The callable is invoked in a loop which is
+automatically parallelized using OpenMP.
 
 .. literalinclude:: sources/custom_executor/custom_executor.cpp
    :language: cpp
-   :lines: 57-61
+   :lines: 44-51
 
 In the following lines, we create a Point Cloud structure for the input and output point clouds,
 then fill the input cloud using `CloudGenerator`. The generator uses 128 as a seed value to uniformly
@@ -106,14 +100,14 @@ with x,y & z coordinates in the range [-20, 20].
 
 .. literalinclude:: sources/custom_executor/custom_executor.cpp
    :language: cpp
-   :lines: 69-75
+   :lines: 59-65
 
 We then create a FunctorFilter called `positive_filter` that filters out
 any points which have negative coordinates.
 
 .. literalinclude:: sources/custom_executor/custom_executor.cpp
    :language: cpp
-   :lines: 77-86
+   :lines: 67-76
 
 Finally, we create an instance of our custom executor `omp_benchmark_executor` and limit
 the max number of threads to four. Then we call the `filter` function of `positive_filter` with
@@ -122,7 +116,7 @@ second time.
 
 .. literalinclude:: sources/custom_executor/custom_executor.cpp
    :language: cpp
-   :lines: 88-95
+   :lines: 78-85
 
 .. note::
    Not all code inside the functor filter is executed by the executor. So it does not measure the
@@ -151,13 +145,13 @@ on your system configuration):
 .. code-block:: bash
 
    Filtering using 4 Threads
-   Time taken by Thread: 1 is 3907073 ns
-   Time taken by Thread: 2 is 4320151 ns
-   Time taken by Thread: 0 is 4468897 ns
-   Time taken by Thread: 3 is 5835186 ns
-   Total time taken: 5963942 ns
+   Time taken by thread 0: took 2.97464ms.
+   Time taken by thread 3: took 4.24397ms.
+   Time taken by thread 2: took 4.26735ms.
+   Time taken by thread 1: took 5.19864ms.
+   Total time taken: took 5.44704ms.
 
-   Filtering using 4 Threads
-   Time taken by Thread: 0 is 9608443 ns
-   Total time taken: 9612182 ns
+   Filtering using 1 Thread
+   Time taken by thread 0: took 9.38748ms.
+   Total time taken: took 9.39384ms.
 
