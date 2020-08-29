@@ -123,6 +123,7 @@ class bind:
         end_token["NAMESPACE"] = "}"
         end_token["CLASS_TEMPLATE"] = ";"
         end_token["STRUCT_DECL"] = ";"
+        end_token["CLASS_DECL"] = ";"
 
         self._linelist.append(end_token.get(kind, ""))
 
@@ -211,13 +212,15 @@ class bind:
         
         # TODO: Extract functions, too much nesting
 
-        class_name = self.name
+        template_class_name = None
+        template_class_name_python = None
         for sub_item in self.members:
             if sub_item["kind"] == "TYPE_REF":
                 # TODO: Will this case only apply to templates?
                 # @TODO: Make more robust
                 type_ref = sub_item["name"].replace("struct ", "").replace("pcl::", "")
-                class_name = f"{self.name}<{type_ref}>"
+                template_class_name = f"{self.name}<{type_ref}>"
+                template_class_name_python = f"{self.name}_{type_ref}"
 
         base_class_list = [
             sub_item["name"]
@@ -229,8 +232,15 @@ class bind:
             str(cls).replace("struct ", "").replace("pcl::", "")
             for cls in base_class_list
         ]
-        struct_details = ",".join([class_name] + base_class_list_string)
-        self._linelist.append(f'py::class_<{struct_details}>(m, "{class_name}")')
+
+        if template_class_name:
+            struct_details = ",".join([template_class_name] + base_class_list_string)
+            self._linelist.append(
+                f'py::class_<{struct_details}>(m, "{template_class_name_python}")'
+            )
+        else:
+            struct_details = ",".join([self.name] + base_class_list_string)
+            self._linelist.append(f'py::class_<{struct_details}>(m, "{self.name}")')
 
         # default constructor
         self._linelist.append(".def(py::init<>())")
@@ -384,7 +394,7 @@ def generate(module_name: str, parsed_info: dict = None, source: str = None) -> 
     if parsed_info:
         bind_object = bind(root=parsed_info, module_name=module_name)
         # Extract filename from parsed_info (TRANSLATION_UNIT's name contains the filepath)
-        filename = parsed_info["name"].split("/")[-1]
+        filename = "pcl" + parsed_info["name"].rsplit("pcl")[-1]
         return combine_lines()
     else:
         raise Exception("Empty dict: parsed_info")
