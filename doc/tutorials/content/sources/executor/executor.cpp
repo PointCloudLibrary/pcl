@@ -2,8 +2,8 @@
 #include <pcl/filters/functor_filter.h>
 #include <pcl/visualization/cloud_viewer.h>
 
-int int
-main(int argc, char* argv[])
+int
+main()
 {
   // Fill the cloud with randomly generated points
   auto cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
@@ -56,5 +56,5 @@ main(int argc, char* argv[])
     viewer->spinOnce(100);
   }
 
-  retrun 0;
+  return 0;
 }
