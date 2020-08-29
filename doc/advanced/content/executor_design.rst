@@ -127,9 +127,9 @@ Why does PCL need executors?
 =================================
 
 PCL has a a diverse collections of modules with various algorithms. Many of these implementations target
-a diverse set of facilities such as SIMD, OpenMP, GPU (CUDA) etc. Since each facility has a unique set
+a diverse set of facilities such as SIMD, OpenMP, GPU etc. Since each facility has a unique set
 of interfaces which are often coupled with low level implementation details, so some of them are required
-to have separate implementations i.e. separate classes:.
+to have separate implementations i.e. separate classes.
 The current implementation suffers from a few drawbacks such as:
 
 1. **Divergent Implementation**
@@ -142,7 +142,7 @@ those bugs continue to persist in the sequential implementation of that algorith
 2. **Non Uniform API**
 The API for one of the implementations might undergoes changes to accommodate interface peculiarities or facility
 specific optimizations.
-Example: Parallel implementations expose API's to allow configuring the degree of parallelism which is completely
+Example: Parallel implementations expose APIs to allow configuring the degree of parallelism which is completely
 absent from sequential implementations.
 
 3. **Inextensible Design**
@@ -182,7 +182,7 @@ The main use cases in PCL are:
 
 2. Reducing code duplication by trying to avoid completely different implementations of the same algorithm
 
-3. Provide a simple and easy to use mechanism to customize the execution context which users can also access.
+3. Provide a simple and easy to use mechanism to customize the execution context, which users can also access.
 
 4. Expose some of the underlying features offered by the various facilities in a standardized manner.
 
@@ -231,6 +231,8 @@ knows the invocation index.
 The difference between simply calling execute repeatedly and bulk_execute is that bulk_execute
 leverages the API of the facility to generate execution agents in bulk which is more efficient then creating
 them one by one.
+Example: In CPU-GPU code if we call `execute` over a point cloud 10 times then it will call `memcpy` from
+CPU to GPU 10 times and then copy result back 10 times, but bulk execute will do these actions once.
 
 How these executors call the callable internally is dependent on the implementation of each executor
 and some aspects of the execution can be customized through properties.
@@ -381,8 +383,9 @@ such as being able to reference any derived executor. Basic properties of all ex
 copy constructors, overloaded equality operators.
 The CRTP mechanism had some restrictions in the sense that there was still a need for templates and
 their were concerns regarding explicitly passing all the properties to the base class using CRTP as
-it was felt to be unnecessary. Having inheritance also introduces runtime polymorphism which was against
-one of the design consideration i.e. have everything compile time and avoid any overhead.
+it was felt to be unnecessary. Having inheritance also introduces runtime polymorphism as the derived executor
+would override some of the base executors method, and the call to the overridden function is resolved at run time.
+This was opposition to one of the design consideration i.e. have everything compile time and avoid any overhead.
 The base executor didn't add a lot besides allowing code sharing of a few common functionality and thus
 it was discarded.
 
@@ -400,7 +403,7 @@ use cases for these properties comes up. This design can be considered and looke
 
 * Unified Shape with Compile Time Support
 
-Since each executor could have a different shape type, a unified shape type would provide a more uniform
+Each executor can have a different shape type, a unified shape type would provide a more uniform
 API. The compile time support for shapes would also bring performance benefits. The compile time aspect
 was ditched since in most scenarios the value of the shape was determined at runtime and rarely at compile
 time. The unified shape was also deemed unnecessary since for most executors `std::size_t` or `int` was
@@ -409,8 +412,8 @@ sufficient and only a custom shape was needed for GPU for which the shape could 
 Conclusion
 =================================
 
-Executors in PCL is a very new concept and will mature as they are more widely used across PCL.
-The design will also go though more changes and iterations as feedback from the community is received
+Executors in PCL are a very new concept and will mature as they are more widely used across PCL.
+The design will also go though changes and iterations as feedback from the community is received
 and the C++ executor proposal itself evolves.
 
 References
