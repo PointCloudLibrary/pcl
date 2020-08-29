@@ -120,9 +120,6 @@ void pcl::gpu::Octree::radiusSearchHost(const PointType& center, const float rad
     if (!static_cast<OctreeImpl*>(impl)->host_octree.downloaded)
         internalDownload();
 
-    out.reserve(max_nn);
-    sqr_distances.reserve(max_nn);
-
     const OctreeImpl::PointType query = make_float4(center.x, center.y, center.z, NAN);
 
     static_cast<OctreeImpl*>(impl)->radiusSearchHost(query, radius, out, sqr_distances, max_nn, true);
@@ -143,38 +140,39 @@ void pcl::gpu::Octree::radiusSearch(const Queries& queries, float radius, int ma
 {
     pcl::gpu::Octree::ResultSqrDists sqr_distances;
     const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
-    static_cast<OctreeImpl*>(impl)->radiusSearch(q, radius, results, sqr_distances, false, max_results);}
+    static_cast<OctreeImpl*>(impl)->radiusSearch(q, radius, results, sqr_distances, max_results, false);
+}
 
 void pcl::gpu::Octree::radiusSearch(const Queries& queries, const Radiuses& radiuses, int max_results, NeighborIndices& results) const
 {
     pcl::gpu::Octree::ResultSqrDists sqr_distances;
     const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
-    static_cast<OctreeImpl*>(impl)->radiusSearch(q, radiuses, results, sqr_distances, false, max_results);
+    static_cast<OctreeImpl*>(impl)->radiusSearch(q, radiuses, results, sqr_distances, max_results, false);
 }
 
 void pcl::gpu::Octree::radiusSearch(const Queries& queries, const Indices& indices, float radius, int max_results, NeighborIndices& results) const
 {
     pcl::gpu::Octree::ResultSqrDists sqr_distances;
     const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
-    static_cast<OctreeImpl*>(impl)->radiusSearch(q, radius, results, sqr_distances, false, max_results);
+    static_cast<OctreeImpl*>(impl)->radiusSearch(q, radius, results, sqr_distances, max_results, false);
 }
 
 void pcl::gpu::Octree::radiusSearch(const Queries& queries, const float radius, const int max_results, NeighborIndices& results, ResultSqrDists& sqr_distances) const
 {
     const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
-    static_cast<OctreeImpl*>(impl)->radiusSearch(q, radius, results, sqr_distances, true, max_results);
+    static_cast<OctreeImpl*>(impl)->radiusSearch(q, radius, results, sqr_distances, max_results, true);
 }
 
 void pcl::gpu::Octree::radiusSearch(const Queries& queries, const Radiuses& radiuses, const int max_results, NeighborIndices& results, ResultSqrDists& sqr_distances) const
 {
     const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
-    static_cast<OctreeImpl*>(impl)->radiusSearch(q, radiuses, results, sqr_distances, true, max_results);
+    static_cast<OctreeImpl*>(impl)->radiusSearch(q, radiuses, results, sqr_distances, max_results, true);
 }
 
 void pcl::gpu::Octree::radiusSearch(const Queries& queries, const Indices& indices, const float radius, const int max_results, NeighborIndices& results, ResultSqrDists& sqr_distances) const
 {
     const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
-    static_cast<OctreeImpl*>(impl)->radiusSearch(q, indices, radius, results, sqr_distances, true, max_results);
+    static_cast<OctreeImpl*>(impl)->radiusSearch(q, indices, radius, results, sqr_distances, max_results, true);
 }
 
 void pcl::gpu::Octree::approxNearestSearch(const Queries& queries, NeighborIndices& results) const

@@ -241,7 +241,7 @@ namespace pcl
 
                     int length = end - beg;
 
-                    const int result_offset = active_query_index * batch.max_results + active_found_count;
+                    const std::ptrdiff_t result_offset = active_query_index * batch.max_results + active_found_count;
                     int *out = batch.output + result_offset;
                     float *sqr_dist = batch.sqr_distances + result_offset;
                     const int length_left = batch.max_results - active_found_count;
@@ -277,10 +277,10 @@ namespace pcl
                             );
 
                             squareDistancesKernel(beg, active_query, length, sqr_dist);
-                            sqr_dist += length;
                         }
                         else
                             Warp::fill(sqr_dist, sqr_dist + length, NAN);
+                        sqr_dist += length;
                     }
 
                     if (active_lane == laneId)
@@ -368,11 +368,11 @@ namespace pcl
 }
 
 template<typename BatchType>
-void pcl::device::OctreeImpl::radiusSearchEx(BatchType& batch, const Queries& queries, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const bool compute_all_distances, const int max_results)
+void pcl::device::OctreeImpl::radiusSearchEx(BatchType& batch, const Queries& queries, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const int max_results, const bool compute_all_distances)
 {
 
     assert(queries.size() > 0);
-    results.create(static_cast<int> (queries.size()), max_results);
+    results.create(queries.size(), max_results);
     results.sizes.create(queries.size());
     sqr_distances.create(queries.size() * max_results);
 
@@ -399,17 +399,17 @@ void pcl::device::OctreeImpl::radiusSearchEx(BatchType& batch, const Queries& qu
 }
 
 
-void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const float radius, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const bool compute_all_distances, const int max_results)
+void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const float radius, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const int max_results, const bool compute_all_distances)
 {        
     using BatchType = Batch<SharedRadius, DirectQuery>;
 
     BatchType batch;
     batch.radius = radius;
     batch.queries = queries;
-    radiusSearchEx(batch, queries, results, sqr_distances, compute_all_distances ,max_results);
+    radiusSearchEx(batch, queries, results, sqr_distances, max_results, compute_all_distances);
 }
 
-void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Radiuses& radiuses, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const bool compute_all_distances, const int max_results)
+void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Radiuses& radiuses, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const int max_results, const bool compute_all_distances)
 {
     using BatchType = Batch<IndividualRadius, DirectQuery>;
 
@@ -418,10 +418,10 @@ void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Radiuse
     BatchType batch;
     batch.radiuses = radiuses;
     batch.queries = queries;
-    radiusSearchEx(batch, queries, results, sqr_distances, compute_all_distances, max_results);
+    radiusSearchEx(batch, queries, results, sqr_distances, max_results, compute_all_distances);
 }
 
-void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Indices& indices, const float radius, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const bool compute_all_distances, const int max_results)
+void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Indices& indices, const float radius, NeighborIndices& results, BatchResultSqrDists& sqr_distances, const int max_results, const bool compute_all_distances)
 {
     using BatchType = Batch<SharedRadius, IndicesQuery>;
 
@@ -432,5 +432,5 @@ void pcl::device::OctreeImpl::radiusSearch(const Queries& queries, const Indices
     batch.queries_indices = indices;
     batch.queries.size = indices.size();
 
-    radiusSearchEx(batch, queries, results, sqr_distances, compute_all_distances, max_results);
+    radiusSearchEx(batch, queries, results, sqr_distances, max_results, compute_all_distances);
 }
