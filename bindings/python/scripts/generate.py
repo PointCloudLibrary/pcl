@@ -208,6 +208,8 @@ class bind:
             3. Handles field declarations.
             4. Handles class methods.
         """
+        
+        # TODO: Extract functions, too much nesting
 
         class_name = self.name
         for sub_item in self.members:
@@ -275,6 +277,8 @@ class bind:
 
         - Bind the constructor by developing a parameter list.
         """
+
+        # TODO: Extract functions, too much nesting
 
         parameter_type_list = []
 
