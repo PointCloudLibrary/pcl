@@ -99,7 +99,8 @@ pcl::VoxelGridLarge<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   std::int64_t dy = static_cast<std::int64_t>((max_p[1] - min_p[1]) * inverse_leaf_size_[1])+1;
   std::int64_t dz = static_cast<std::int64_t>((max_p[2] - min_p[2]) * inverse_leaf_size_[2])+1;
 
-  if( (dx*dy*dz) > static_cast<std::int64_t>(std::numeric_limits<std::int32_t>::max()) )
+  if ((dx > std::numeric_limits<std::int64_t>::max() / dy) ||
+      ((dz > std::numeric_limits<std::int64_t>::max() / (dx * dy))))
   {
     PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.", getClassName().c_str());
     //output.width = output.height = 0;
