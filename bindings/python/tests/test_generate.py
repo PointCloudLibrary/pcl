@@ -67,7 +67,7 @@ def get_expected_string(expected_module_code):
     return expected_output
 
 
-def test_case1(tmp_path):
+def test_struct_without_members(tmp_path):
     cpp_code_block = "struct AStruct {};"
     output = generate_bindings(
         tmp_path=tmp_path, cpp_code_block=cpp_code_block, module_name="pcl"
@@ -83,7 +83,7 @@ def test_case1(tmp_path):
     assert output == get_expected_string(expected_module_code=expected_module_code)
 
 
-def test_case2(tmp_path):
+def test_struct_with_members(tmp_path):
     cpp_code_block = """
     struct AStruct {
         int aMember;
