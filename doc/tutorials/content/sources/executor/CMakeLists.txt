@@ -1,12 +1,8 @@
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(executor)
 
-find_package(PCL 1.12 COMPONENTS filters visualization REQUIRED)
-
-include_directories(${PCL_INCLUDE_DIRS})
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
+find_package(PCL 1.11.1.99 COMPONENTS common filters visualization REQUIRED)
 
 add_executable (executor executor.cpp)
 target_link_libraries (executor ${PCL_LIBRARIES})
