@@ -43,6 +43,8 @@
 #include <pcl/filters/filter.h>
 #include <map>
 
+using Vector4int64_t = Eigen::Matrix<std::int64_t, 4, 1>;
+
 namespace pcl
 {
   /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
