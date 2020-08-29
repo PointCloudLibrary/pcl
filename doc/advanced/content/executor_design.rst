@@ -126,28 +126,28 @@ bound to the executor’s context, and hence to one or more of the resources tha
 Why does PCL need executors?
 =================================
 
-PCL has a a diverse collections of modules with various algorithms. Many of these algorithms implementations
-are targeting various facilities such as SIMD, OpenMP, GPU (CUDA) etc. Since each facility has a unique set
+PCL has a a diverse collections of modules with various algorithms. Many of these implementations target
+a diverse set of facilities such as SIMD, OpenMP, GPU (CUDA) etc. Since each facility has a unique set
 of interfaces which are often coupled with low level implementation details, so some of them are required
 to have separate implementations i.e. separate classes:.
-Some of the problems with the current scenario are:
+The current implementation suffers from a few drawbacks such as:
 
 1. **Divergent Implementation**
 The distinct implementations of algorithms leads to disparity in the codebase over time. The more popular
 implementation gets bug fixes, new features and undergoes refactoring while the other implementations remain
 untouched.
 Example: The parallelized version of an algorithm might be more popular so it will get bug fixes overtime while
-those bugs continue to persist in the serial implementations of that algorithm.
+those bugs continue to persist in the sequential implementation of that algorithm.
 
 2. **Non Uniform API**
-The API for one of the implementations targeting a specific facility often undergoes changes to accommodate
-interface peculiarities or facility specific optimizations.
+The API for one of the implementations might undergoes changes to accommodate interface peculiarities or facility
+specific optimizations.
 Example: Parallel implementations expose API's to allow configuring the degree of parallelism which is completely
 absent from sequential implementations.
 
 3. **Inextensible Design**
 The current design doesn't support using new facilities like thread pools, multi-gpu support or nesting
-facilities. To add support for these facilities completely new implementations will have to be written
+them with one other. To add support for these facilities, completely new implementations will have to be written
 for every algorithm.
 Example: It isn't possible to run vectorized code (SIMD) while running a parallel implementation which
 uses OpenMP.
@@ -157,7 +157,7 @@ Even if different facilities might require slightly different implementations, a
 be shared. Having different implementations just leads to a majority of the code base being duplicated
 and only some of the code gets modified in order to adapt to the interface provided by the facility.
 Example: Most OpenMP code is quite similar to the sequential implementation with only some additions.
-So having separate classed for OpenMP implementations is quite redundant.
+So having separate classed for OpenMP classes is quite redundant.
 
 5. **Maintenance Overhead**
 Maintaining several implementations of the same algorithm is a labour and time intensive task.
@@ -229,7 +229,7 @@ The index of the execution agent is passed as argument to the callable, so that 
 knows the invocation index.
 
 The difference between simply calling execute repeatedly and bulk_execute is that bulk_execute
-leverages the facilities API to generate execution agents in bulk which is more efficient then creating
+leverages the API of the facility to generate execution agents in bulk which is more efficient then creating
 them one by one.
 
 How these executors call the callable internally is dependent on the implementation of each executor
@@ -241,8 +241,8 @@ Example: It can be used to split the iteration of a loop between the execution a
 
 **Shape and Index**
 
-The shape and index will vary depending on the facilities, so a mechanism has been provided to customize
-their types. By default in they are `std::size_t`.
+The shape and index type will vary depending on the facilities, so a mechanism has been provided to customize
+their types. By default it is `std::size_t`.
 
 The shape or index can be specified by a type or an alias for a type inside the executor with the names
 `shape_type` and `index_type`. There also exists type traits namely `executor_shape` and `executor_index`
