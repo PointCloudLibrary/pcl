@@ -120,7 +120,7 @@ pcl::VoxelGridLarge<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   div_b_ = max_b_ - min_b_ + Eigen::Vector4i::Ones ();
   div_b_[3] = 0;
 
-  std::vector<cloud_point_index_idx> index_vector;
+  std::vector<cloud_point_index_idx_large> index_vector;
   index_vector.reserve (nr_points);
 
   // Create the first xyz_offset, and set up the division multiplier
@@ -251,7 +251,7 @@ pcl::VoxelGridLarge<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 
   // Second pass: sort the index_vector vector using value representing target cell as index
   // in effect all points belonging to the same output cell will be next to each other
-  auto rightshift_func = [](const cloud_point_index_idx &x, const unsigned offset) { return x.idx >> offset; };
+  auto rightshift_func = [](const cloud_point_index_idx_large &x, const unsigned offset) { return x.idx >> offset; };
   boost::sort::spreadsort::integer_sort(index_vector.begin(), index_vector.end(), rightshift_func);
 
   // Third pass: count output cells
