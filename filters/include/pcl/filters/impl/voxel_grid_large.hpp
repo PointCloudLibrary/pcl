@@ -259,7 +259,7 @@ pcl::VoxelGridLarge<PointT>::applyFilter (PointCloud &output)
   div_b_[3] = 0;
 
   // Set up the division multiplier
-  divb_mul_ = Eigen::Vector4i (1, div_b_[0], div_b_[0] * div_b_[1], 0);
+  divb_mul_ = Vector4int64_t (1, div_b_[0], div_b_[0] * div_b_[1], 0);
 
   // Storage for mapping leaf and pointcloud indexes
   std::vector<cloud_point_index_idx_large> index_vector;
@@ -309,8 +309,8 @@ pcl::VoxelGridLarge<PointT>::applyFilter (PointCloud &output)
       int ijk2 = static_cast<int> (std::floor ((*input_)[*it].z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
 
       // Compute the centroid leaf index
-      int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.emplace_back(static_cast<unsigned int> (idx), *it);
+      std::int64_t idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
+      index_vector.emplace_back(static_cast<std::uint64_t> (idx), *it);
     }
   }
   // No distance filtering, process all data
@@ -333,8 +333,8 @@ pcl::VoxelGridLarge<PointT>::applyFilter (PointCloud &output)
       int ijk2 = static_cast<int> (std::floor ((*input_)[*it].z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
 
       // Compute the centroid leaf index
-      int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.emplace_back(static_cast<unsigned int> (idx), *it);
+      std::int64_t idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
+      index_vector.emplace_back(static_cast<std::uint64_t> (idx), *it);
     }
   }
 

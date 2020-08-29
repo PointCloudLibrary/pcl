@@ -128,7 +128,7 @@ pcl::VoxelGridLarge<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
                            input_->fields[y_idx_].offset,
                            input_->fields[z_idx_].offset,
                            0);
-  divb_mul_ = Eigen::Vector4i (1, div_b_[0], div_b_[0] * div_b_[1], 0);
+  divb_mul_ = Vector4int64_t (1, div_b_[0], div_b_[0] * div_b_[1], 0);
   Eigen::Vector4f pt  = Eigen::Vector4f::Zero ();
 
   int centroid_size = 4;
@@ -213,8 +213,8 @@ pcl::VoxelGridLarge<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       int ijk1 = static_cast<int> (std::floor (pt[1] * inverse_leaf_size_[1]) - min_b_[1]);
       int ijk2 = static_cast<int> (std::floor (pt[2] * inverse_leaf_size_[2]) - min_b_[2]);
       // Compute the centroid leaf index
-      int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.emplace_back(idx, static_cast<unsigned int> (cp));
+      std::int64_t idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
+      index_vector.emplace_back(static_cast<std::uint64_t> (idx), static_cast<unsigned int> (cp));
 
       xyz_offset += input_->point_step;
     }
@@ -243,8 +243,8 @@ pcl::VoxelGridLarge<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       int ijk1 = static_cast<int> (std::floor (pt[1] * inverse_leaf_size_[1]) - min_b_[1]);
       int ijk2 = static_cast<int> (std::floor (pt[2] * inverse_leaf_size_[2]) - min_b_[2]);
       // Compute the centroid leaf index
-      int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.emplace_back(idx, static_cast<unsigned int> (cp));
+      std::int64_t idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
+      index_vector.emplace_back(static_cast<std::uint64_t> (idx), static_cast<unsigned int> (cp));
       xyz_offset += input_->point_step;
     }
   }
