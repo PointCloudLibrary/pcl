@@ -57,6 +57,64 @@
 
 using namespace pcl::gpu;
 
+void
+verifyResults(std::vector<std::vector<int>>& host_search,
+                std::vector<std::vector<float>>& host_sqr_distances,
+                const NeighborIndices& device_results,
+                const Octree::ResultSqrDists& device_sqr_distances,
+                const std::vector<float>& radiuses,
+                const int max_answers,
+                const std::size_t query_size,
+                const int step)
+{
+    //download results
+    std::vector<int> sizes;
+    device_results.sizes.download(sizes);
+
+    std::vector<int> downloaded_buffer;
+    device_results.data.download(downloaded_buffer);
+
+    std::vector<float> downloaded_sqr_distances;
+    device_sqr_distances.download(downloaded_sqr_distances);
+
+    //verification
+    for(std::size_t i = 0; i < query_size; i+=step)
+    {
+        std::vector<int>& results_host = host_search[i];
+        std::vector<float>& sqr_dist_host = host_sqr_distances[i];
+
+        const int beg = i/step * max_answers;
+        const int end = beg + sizes[i/step];
+
+        const auto beg_dist2 = downloaded_sqr_distances.cbegin() + beg;
+        const auto end_dist2 = downloaded_sqr_distances.cbegin() + end;
+
+        std::vector<int> results_batch (downloaded_buffer.cbegin() + beg, downloaded_buffer.cbegin() + end);
+        const std::vector<float> sqr_distances_batch (beg_dist2, end_dist2);
+
+        std::sort(results_batch.begin(), results_batch.end());
+        std::sort(results_host.begin(), results_host.end());
+
+        if (results_batch.size() == max_answers && results_batch.size() < results_host.size() && max_answers)
+        {
+            results_host.resize(max_answers);
+            sqr_dist_host.resize(max_answers);
+        }
+        const float sqr_radius = radiuses[i] * radiuses[i];
+        for (std::size_t j = 0; j < sqr_dist_host.size(); j++)
+        {
+            ASSERT_LT (sqr_distances_batch[j], sqr_radius);
+            ASSERT_NEAR (sqr_distances_batch[j], sqr_dist_host[j], 0.001);
+        }
+        ASSERT_EQ ((results_batch == results_host), true);
+    }
+
+    const float avg_size = std::accumulate(sizes.begin(), sizes.end(), 0) * (1.f/sizes.size());
+    std::cout << "avg_result_size = " << avg_size << "\n";
+
+    ASSERT_GT(avg_size, 5);
+}
+
 //TEST(PCL_OctreeGPU, DISABLED_batchRadiusSearch)
 TEST(PCL_OctreeGPU, batchRadiusSearch)
 {   
@@ -125,142 +183,17 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
         octree_device.radiusSearchHost(data.queries[i], data.shared_radius, host_search_shared[i], host_sqr_distances_shared[i], max_answers);
         octree_device.radiusSearchHost(data.queries[i], data.radiuses[i],   host_search_individual[i], host_sqr_distances_individual[i], max_answers);
     }
-    
-    //download results
-    std::vector<int> sizes_shared;
-    std::vector<int> sizes_individual;
-    std::vector<int> sizes_shared_indices;
-    result_device_shared.sizes.download(sizes_shared);
-    result_device_individual.sizes.download(sizes_individual);
-    result_device_shared_indices.sizes.download(sizes_shared_indices);
 
-    std::vector<int> downloaded_buffer_shared, downloaded_buffer_individual, downloaded_buffer_shared_indices;
-    result_device_shared.data.download(downloaded_buffer_shared);
-    result_device_individual.data.download(downloaded_buffer_individual);
-    result_device_shared_indices.data.download(downloaded_buffer_shared_indices);
+    //verify results
+    const std::vector<float> radiuses (data.tests_num, data.shared_radius);
+    std::cout << "shared radius test : ";
+    verifyResults(host_search_shared, host_sqr_distances_shared, result_device_shared, result_sqr_distances_shared, radiuses, max_answers, data.tests_num, 1);
 
-    std::vector<float> sqr_distances_shared, sqr_distances_individual, sqr_distances_shared_indices;
-    result_sqr_distances_shared.download(sqr_distances_shared);
-    result_sqr_distances_individual.download(sqr_distances_individual);
-    result_sqr_distances_shared_indices.download(sqr_distances_shared_indices);
-        
-    //data.bruteForceSearch();
+    std::cout << "individual radius test : ";
+    verifyResults(host_search_individual, host_sqr_distances_individual, result_device_individual, result_sqr_distances_individual, data.radiuses, max_answers, data.tests_num, 1);
 
-    //verify results    
-    for(std::size_t i = 0; i < data.tests_num; ++i)
-    {        
-        std::vector<int>& results_host = host_search_shared[i];
-        std::vector<float>& sqr_dist_host = host_sqr_distances_shared[i];
-
-        const int beg = i * max_answers;
-        const int end = beg + sizes_shared[i];
-
-        const auto beg_dist2 = sqr_distances_shared.cbegin() + beg;
-        const auto end_dist2 = sqr_distances_shared.cbegin() + end;
-
-        std::vector<int> results_batch (downloaded_buffer_shared.cbegin() + beg, downloaded_buffer_shared.cbegin() + end);
-        const std::vector<float> sqr_distances_batch (beg_dist2, end_dist2);
-
-        std::sort(results_batch.begin(), results_batch.end());
-        std::sort(results_host.begin(), results_host.end());
-
-        if ((int)results_batch.size() == max_answers && results_batch.size() < results_host.size() && max_answers)
-        {
-            results_host.resize(max_answers);
-            sqr_dist_host.resize(max_answers);
-        }
-        const float sqr_radius = data.shared_radius * data.shared_radius;
-        for (std::size_t j = 0; j < sqr_dist_host.size(); j++)
-        {
-            ASSERT_LT (sqr_distances_batch[j], sqr_radius);
-            ASSERT_NEAR ( sqr_distances_batch[j], sqr_dist_host[j], 0.001);
-        }
-        ASSERT_EQ ( ( results_batch == results_host ), true );       
-    }    
-
-    const float avg_size_shared = std::accumulate(sizes_shared.begin(), sizes_shared.end(), 0) * (1.f/sizes_shared.size());
-
-    std::cout << "avg_result_size_shared = " << avg_size_shared << "\n";
-    ASSERT_GT(avg_size_shared, 5);
-
-
-    //verify results    
-    for(std::size_t i = 0; i < data.tests_num; ++i)
-    {        
-        std::vector<int>& results_host = host_search_individual[i];
-        std::vector<float>& sqr_dist_host = host_sqr_distances_individual[i];
-
-        const int beg = i * max_answers;
-        const int end = beg + sizes_individual[i];
-
-        const auto beg_dist2 = sqr_distances_individual.cbegin() + beg;
-        const auto end_dist2 = sqr_distances_individual.cbegin() + end;
-
-        std::vector<int> results_batch (downloaded_buffer_individual.begin() + beg, downloaded_buffer_individual.begin() + end);
-        const std::vector<float> sqr_distances_batch (beg_dist2, end_dist2);
-
-        std::sort(results_batch.begin(), results_batch.end());
-        std::sort(results_host.begin(), results_host.end());
-
-        if ((int)results_batch.size() == max_answers && results_batch.size() < results_host.size() && max_answers)
-        {
-            results_host.resize(max_answers);
-            sqr_dist_host.resize(max_answers);
-        }
-
-        const float sqr_radius = data.radiuses[i] * data.radiuses[i];
-        for (std::size_t j = 0; j < sqr_dist_host.size(); j++)
-        {
-            ASSERT_LT (sqr_distances_batch[j], sqr_radius);
-            ASSERT_NEAR (sqr_distances_batch[j], sqr_dist_host[j], 0.001);
-        }
-        ASSERT_EQ ( ( results_batch == results_host ), true );       
-    }    
-
-    const float avg_size_individual = std::accumulate(sizes_individual.begin(), sizes_individual.end(), 0) * (1.f/sizes_individual.size());
-
-    std::cout << "avg_result_size_individual = " << avg_size_individual << "\n";
-    ASSERT_GT(avg_size_individual, 5);
-
-
-    //verify results    
-    for(std::size_t i = 0; i < data.tests_num; i+=2)
-    {                
-        std::vector<int>& results_host = host_search_shared[i];
-        std::vector<float>& sqr_dist_host = host_sqr_distances_shared[i];
-
-        const int beg = i/2 * max_answers;
-        const int end = beg + sizes_shared_indices[i/2];
-
-        const auto beg_dist2 = sqr_distances_shared_indices.cbegin() + beg;
-        const auto end_dist2 = sqr_distances_shared_indices.cbegin() + end;
-
-        std::vector<int> results_batch (downloaded_buffer_shared_indices.begin() + beg, downloaded_buffer_shared_indices.begin() + end);
-        const std::vector<float> sqr_distances_batch (beg_dist2, end_dist2);
-
-        std::sort(results_batch.begin(), results_batch.end());
-        std::sort(results_host.begin(), results_host.end());
-
-        if ((int)results_batch.size() == max_answers && results_batch.size() < results_host.size() && max_answers)
-        {
-            results_host.resize(max_answers);
-            sqr_dist_host.resize(max_answers);
-        }
-
-        ASSERT_EQ ( ( results_batch == results_host ), true );       
-
-        const float sqr_radius = data.shared_radius * data.shared_radius;
-        for (std::size_t j = 0; j < sqr_dist_host.size(); j++)
-        {
-            ASSERT_LT (sqr_distances_batch[j], sqr_radius);
-            ASSERT_NEAR (sqr_distances_batch[j], sqr_dist_host[j], 0.001);
-        }
-    }
-
-    const float avg_size_shared_indices = std::accumulate(sizes_shared_indices.begin(), sizes_shared_indices.end(), 0) * (1.f/sizes_shared_indices.size());
-
-    std::cout << "avg_result_size_shared_indices = " << avg_size_shared_indices << "\n";
-    ASSERT_GT(avg_size_shared_indices, 5);
+    std::cout << "shared radius with indices test : ";
+    verifyResults(host_search_shared, host_sqr_distances_shared, result_device_shared_indices, result_sqr_distances_shared_indices, radiuses, max_answers, data.tests_num, 2);
 }
 
 /* ---[ */
