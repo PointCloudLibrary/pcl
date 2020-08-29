@@ -3,6 +3,18 @@ import scripts.generate as generate
 import test_parse
 
 
+"""
+TODO
+Big areas of missing tests:
+- function
+- templated and instantiated function
+- templated and instantiated class
+- anonymous struct
+- enum
+
+"""
+
+
 def remove_whitespace(string):
     """
     Removes whitespace from the string.
