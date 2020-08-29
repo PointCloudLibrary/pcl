@@ -60,7 +60,7 @@ For example, an OpenMP parallel for loop is synchronous because the spawning thr
 is complete due to an implicit barrier at the end of the parallel region by default. In contrast, the execution
 of GPU kernels is typically asynchronous; kernel launches return immediately, and the launching thread
 continues its execution without waiting for the kernel's execution to complete. Work submitted to a thread
-pool may or may not block the submitting thread. The correct code must account for these synchronization
+pool may or may not block the submitting thread. Correct code must account for these synchronization
 differences or suffer data races. To minimize the possibility of races, these differences should be exposed by
 library interfaces.
 
@@ -114,7 +114,7 @@ Typical examples of an execution context are a thread pool or a runtime environm
 
 It is a unit of execution of a specific execution context that is mapped to a single invocation
 of a callable function on an execution resource. An execution agent can have different semantics that
-is derived from the execution context.
+are derived from the execution context.
 Typical examples of an execution agent are a CPU thread or GPU execution unit.
 
 **Executor**
@@ -139,7 +139,7 @@ untouched.
 Example: The parallelized version of an algorithm might be more popular so it will get bug fixes overtime while
 those bugs continue to persist in the sequential implementation of that algorithm.
 
-2. ** Non-Uniform API**
+2. **Non-Uniform API**
 The API for one of the implementations might undergo changes to accommodate interface peculiarities or facility
 specific optimizations.
 Example: Parallel implementations expose APIs to allow configuring the degree of parallelism which is completely
@@ -352,14 +352,14 @@ hardware/software of a system) and its priority specified in function by PCL
 maintainers & contributors, which will give a good performance. Executor properties can also be customized
 to better fit certain scenarios. Besides these runtime checks are also specified, and on the basis
 of these runtime checks, the executors are further filtered to select the most appropriate
-one. The two supported mechanisms in PCL currently there are `enable_exec_with_priority` and
+one. The two mechanisms for best fit in PCL currently are `enable_exec_with_priority` and
 `enable_exec_on_desc_priority`. You can read more about them in the code API.
 
 Alternative Designs Considered
 =================================
 
 There has been a lot of deliberation and discussion regarding all the design aspects of executors in PCL.
-The design had gone through multiple iterations before a consensus was reached. Some of the major alternate
+The design went through multiple iterations before a consensus was reached. Some of the major alternate
 design proposals that were rejected were:
 
 * Tag Dispatching
@@ -374,15 +374,15 @@ large parts of the codebase would need to be refactored to support executors.
 
 The idea was to have a single base executor from which all executors would derive from. This would have allowed
 all the common code to be shared among all the executors. The base executor had a CRTP based design that
-was used to access the properties of the derived executor. It also allowed simplification in many areas, such as being able to reference any derived executor. Basic properties of all executors like
-copy constructors, overloaded equality operators.
-The CRTP mechanism had some restrictions in the sense that there was still a need for templates, and
-there were concerns regarding explicitly passing all the properties to the base class using CRTP as
-it was felt to be unnecessary. Having inheritance also introduces runtime polymorphism as the derived executor
-would override some of the base executors' method, and the call to the overridden function is resolved at run time.
-This is opposed to one of the design consideration i.e., have everything compile-time and avoid any overhead.
-The base executor didn't add a lot besides allowing code sharing of a few common functionalities and thus
-it was discarded.
+was used to access the properties of the derived executor. It also allowed simplifications in many areas, such as
+being able to reference any derived executor. Basic properties of all executors like
+copy constructors, overloaded equality operators. The CRTP mechanism had some restrictions in the sense that
+there was still a need for templates, and there were concerns regarding explicitly passing all the properties
+to the base class using CRTP as it was felt to be unnecessary. Having inheritance also introduces runtime polymorphism
+as the derived executor would override some of the base executors' method, and the call to the overridden function is
+resolved at run time. This is opposed to one of the design consideration i.e., have everything compile-time and avoid
+any overhead. The base executor didn't add a lot besides allowing code sharing of a few common functionalities and
+thus it was discarded.
 
 * Property Inheritance
 
@@ -391,10 +391,10 @@ for the executor class). With this design, executors would not need to provide t
 and `query` member functions inside the executor for each property it wants to allow association with and
 support customizing. This design was not fully explored, so the potential drawbacks are not known completely.
 A snippet is available `here <https://godbolt.org/z/zhKM6e>`_. It was decided not to go forward with this design
-due to the potential complications, minimal support of properties for executors in PCL, and deviation
-from the property customization mechanism design implemented in other implementations of the executor design
-proposal mentioned above in the document. Once more properties to be used, w.r.t PCL is made available, and
-use cases for these properties come up. This design can be considered and looked at a future stage.
+due to minimal support of properties for executors in PCL at the current stage. The other factor was
+that this design deviated from the property customization mechanism design implemented in other implementations
+of the executor proposal mentioned above in the document. Once more properties that can be used with
+executors in PCL are made available then this design can be re-considered.
 
 * Unified Shape with Compile Time Support
 
