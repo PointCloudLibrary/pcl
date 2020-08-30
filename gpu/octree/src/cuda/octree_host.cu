@@ -137,6 +137,7 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, const flo
     out.reserve(max_nn);
     sqr_distances.reserve(max_nn);
     out.clear();
+    sqr_distances.clear();
 
     const float3 center = make_float3(query.x, query.y, query.z);
 
