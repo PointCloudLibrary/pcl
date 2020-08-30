@@ -33,7 +33,7 @@ struct omp_benchmark_executor : public omp_executor<Blocking, ProtoAllocator> {
   bulk_execute(F&& f, const shape_type& n) const
   {
     // Throw static assert failure if executor is not available
-    static_assert(is_executor_available_v<omp_executor>,
+    static_assert(is_executor_available_v<omp_benchmark_executor>,
                   "OpenMP benchmark executor unavailable");
 
     // Measure total time taken by all threads
