@@ -76,8 +76,9 @@ pcl::MedianFilter<PointT>::applyFilter (PointCloud &output)
           continue;
 
         // The output depth will be the median of all the depths in the window
-        partial_sort (vals.begin (), vals.begin () + vals.size () / 2 + 1, vals.end ());
-        float new_depth = vals[vals.size () / 2];
+        auto middle_it = vals.begin () + vals.size () / 2;
+        std::nth_element (vals.begin (), middle_it, vals.end ());
+        float new_depth = *middle_it;
         // Do not allow points to move more than the set max_allowed_movement_
         if (std::abs (new_depth - (*input_)(x, y).z) < max_allowed_movement_)
           output (x, y).z = new_depth;
