@@ -413,4 +413,12 @@ and the C++ executor proposal itself evolves.
 
 References
 ----------
-- `Executors Design Document P0761R1 <http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p0761r2.pdf>`_
+1. `Executors Design Document P0761R1 <https://wg21.link/P0761R2>`_
+2. `A Unified Executors Proposal for C++ P0443R13 <http://wg21.link/P0443R13>`_
+3. `The Compromise Executors Proposal: A lazy simplification of P0443 <http://wg21.link/P1194R0>`_
+4. `A Compromise Executor Design Sketch <http://wg21.link/P1660R0>`_
+5. `History of Executor Properties <http://wg21.link/P2033R0>`_
+6. `A General Property Customization Mechanism <http://wg21.link/P1393R0>`_
+7. `executors-impl <https://github.com/executors/executors-impl>`_
+8. `cudex <https://github.com/jaredhoberock/cudex>`_
+9. `PCL RFC 0003: Unified API for Algorithms <https://github.com/PointCloudLibrary/pcl/wiki/PCL-RFC-0003:-Unified-API-for-Algorithms>`_
