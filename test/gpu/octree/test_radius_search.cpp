@@ -137,6 +137,28 @@ protected:
     radiuses_device.upload(data.radiuses);
 
     result_device.create(queries_device.size(), max_answers);
+
+    host_search_shared.resize(data.tests_num);
+    host_sqr_distances_shared.resize(data.tests_num);
+    host_search_individual.resize(data.tests_num);
+    host_sqr_distances_individual.resize(data.tests_num);
+
+    // host search
+    octree_device.internalDownload();
+
+    for (std::size_t i = 0; i < data.tests_num; ++i)
+      octree_device.radiusSearchHost(data.queries[i],
+                                    data.shared_radius,
+                                    host_search_shared[i],
+                                    host_sqr_distances_shared[i],
+                                    max_answers);
+
+    for (std::size_t i = 0; i < data.tests_num; ++i)
+      octree_device.radiusSearchHost(data.queries[i],
+                                    data.radiuses[i],
+                                    host_search_individual[i],
+                                    host_sqr_distances_individual[i],
+                                    max_answers);
   }
 
   DataGenerator data;
@@ -147,6 +169,12 @@ protected:
   pcl::gpu::Octree::Radiuses radiuses_device;
   pcl::gpu::Octree::ResultSqrDists result_sqr_distances;
   pcl::gpu::NeighborIndices result_device;
+
+  // prepare output buffers on host
+  std::vector<std::vector<int>> host_search_shared;
+  std::vector<std::vector<float>> host_sqr_distances_shared;
+  std::vector<std::vector<int>> host_search_individual;
+  std::vector<std::vector<float>> host_sqr_distances_individual;
 };
 
 TEST_F(PCL_OctreeGPUTest, shared_radius)
@@ -156,19 +184,6 @@ TEST_F(PCL_OctreeGPUTest, shared_radius)
                              max_answers,
                              result_device,
                              result_sqr_distances);
-
-  // prepare output buffers on host
-  std::vector<std::vector<int>> host_search_shared(data.tests_num);
-  std::vector<std::vector<float>> host_sqr_distances_shared(data.tests_num);
-
-  // host search
-  octree_device.internalDownload();
-  for (std::size_t i = 0; i < data.tests_num; ++i)
-    octree_device.radiusSearchHost(data.queries[i],
-                                   data.shared_radius,
-                                   host_search_shared[i],
-                                   host_sqr_distances_shared[i],
-                                   max_answers);
 
   // verify results
   const std::vector<float> radiuses(data.tests_num, data.shared_radius);
@@ -189,10 +204,6 @@ TEST_F(PCL_OctreeGPUTest, individual_radius)
                              max_answers,
                              result_device,
                              result_sqr_distances);
-
-  // prepare output buffers on host
-  std::vector<std::vector<int>> host_search_individual(data.tests_num);
-  std::vector<std::vector<float>> host_sqr_distances_individual(data.tests_num);
 
   // host search
   octree_device.internalDownload();
@@ -224,19 +235,6 @@ TEST_F(PCL_OctreeGPUTest, shared_radius_indices)
                              max_answers,
                              result_device,
                              result_sqr_distances);
-
-  // prepare output buffers on host
-  std::vector<std::vector<int>> host_search_shared(data.tests_num);
-  std::vector<std::vector<float>> host_sqr_distances_shared(data.tests_num);
-
-  // host search
-  octree_device.internalDownload();
-  for (std::size_t i = 0; i < data.tests_num; ++i)
-    octree_device.radiusSearchHost(data.queries[i],
-                                   data.shared_radius,
-                                   host_search_shared[i],
-                                   host_sqr_distances_shared[i],
-                                   max_answers);
 
   // verify results
   const std::vector<float> radiuses(data.tests_num, data.shared_radius);
