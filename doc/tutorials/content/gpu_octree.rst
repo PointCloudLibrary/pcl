@@ -30,6 +30,46 @@ In contrast to the their CPU counterparts, all of these functions accept a vecto
 
 The following table shows a sample comparison between the performance of the CPU and GPU implementations.
 
+.. list-table:: Title
+   :widths: 25 25 50 25
+   :header-rows: 1
+
+   * - Method
+     - Time (points = 100 000, queries = 1000)
+     - Time (points = 1 000 000, queries = 1000)
+     - Time (points = 1 000 000, queries = 10 000)
+   * - GPU Radius Search
+     - 3661 us
+     - 11344 us
+     - 41206 us
+   * - CPU based Radius Search (from GPU module)
+     - 37419 us
+     - 123103 us
+     - 601452 us
+   * - CPU based Radius Search (from octree module)
+     - 168071 us
+     - 524477 us
+     - 2064714 us
+   * - GPU Approximate Nearest Search
+     - 39.4 us
+     - 89.3 us
+     - 515 us
+   * - CPU based Approximate Nearest Search (from GPU module)
+     - 2956 us
+     - 32036 us
+     - 118819 us
+   * - CPU based Approximate Nearest Search (from octree module)
+     - 3168 us
+     - 9320 us
+     - 53260 us
+   * - GPU K Nearest Neighbour Search (k=1)
+     - 11093 us
+     - 105937 us
+     - 295371 us
+   * - CPU based K Nearest Neighbour Search (from octree module) (k=1)
+     - 20744 us
+     - 58194 us
+     - 282274 us
 
 The code
 ========
@@ -72,7 +112,7 @@ K Nearest Neighbors search
 
 .. note::
 
-    The GPU K nearest neighbor algorithm differs from it's CPU counterpart in implementation. Specifically, the CPU algorithm will only find approximate nearest neighbors, where the user can set the upper bound of the error allowed. In contrast, the GPU algorithm finds the absolute nearest neighbor. For K = 1, if an approximation will suffice, users can utilize approximate nearest search instead.
+    The GPU K nearest neighbor algorithm differs from it's CPU counterpart in implementation. Specifically, the CPU algorithm will only find approximate nearest neighbors, where the user can set the upper bound of the error allowed. In contrast, the GPU algorithm finds the absolute nearest neighbor. For K = 1, if an approximation will suffice, users should utilize the more efficient approximate nearest search method instead.
 
 In order to perform K nearest search, we must prepare output buffers on the device to store the results of the search queries. Specifically, we need two separate buffers to store the resulting nearest neighbor indices and the corresponding squared distances between the search point and nearest neighbors. Note that these buffers will be automatically resized to `k * number of queries` size, in order to hold all the results.
 
