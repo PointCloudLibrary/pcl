@@ -205,15 +205,6 @@ TEST_F(PCL_OctreeGPUTest, individual_radius)
                              result_device,
                              result_sqr_distances);
 
-  // host search
-  octree_device.internalDownload();
-  for (std::size_t i = 0; i < data.tests_num; ++i)
-    octree_device.radiusSearchHost(data.queries[i],
-                                   data.radiuses[i],
-                                   host_search_individual[i],
-                                   host_sqr_distances_individual[i],
-                                   max_answers);
-
   // verify results
   verifyResults(host_search_individual,
                 host_sqr_distances_individual,
