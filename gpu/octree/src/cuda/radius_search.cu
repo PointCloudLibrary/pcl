@@ -246,9 +246,9 @@ namespace pcl
                     float *sqr_dist = batch.sqr_distances + result_offset;
                     const int length_left = batch.max_results - active_found_count;
 
-                    const int test = __any_sync(0xFFFFFFFF, active_lane == laneId && (leaf & KernelPolicy::CHECK_FLAG));
+                    const int investigate_leaf = __any_sync(0xFFFFFFFF, active_lane == laneId && (leaf & KernelPolicy::CHECK_FLAG));
 
-                    if (test)
+                    if (investigate_leaf)
                     {
                         //broadcast warp_radius
                         const float radius2 = __shfl_sync(0xFFFFFFFF, radius * radius, active_lane);
