@@ -29,6 +29,7 @@ DAMAGE.
 #include "factor.h"
 
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 ////////////////////////
