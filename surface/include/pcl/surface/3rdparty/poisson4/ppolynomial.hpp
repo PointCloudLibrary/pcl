@@ -29,7 +29,7 @@ DAMAGE.
 #include "factor.h"
 
 #include <cstdio>
-#include <cstdlib>
+#include <cstdlib>  // for malloc, needed by gcc-5
 #include <cstring>
 
 ////////////////////////
