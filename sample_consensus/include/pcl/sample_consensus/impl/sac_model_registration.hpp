@@ -83,7 +83,14 @@ pcl::SampleConsensusModelRegistration<PointT>::computeModelCoefficients (const I
   Indices indices_tgt (3);
   for (int i = 0; i < 3; ++i)
   {
-    indices_tgt[i] = correspondences_.at (samples[i]);
+    const auto it = correspondences_.find (samples[i]);
+    if (it == correspondences_.cend ())
+    {
+      PCL_ERROR ("[pcl::SampleConsensusModelRegistration::computeModelCoefficients] Element with key %i is not in map (map contains %lu elements).\n",
+                 samples[i], correspondences_.size ());
+      return (false);
+    }
+    indices_tgt[i] = it->second;
   }
 
   estimateRigidTransformationSVD (*input_, samples, *target_, indices_tgt, model_coefficients);
@@ -264,7 +271,15 @@ pcl::SampleConsensusModelRegistration<PointT>::optimizeModelCoefficients (const 
   for (std::size_t i = 0; i < inliers.size (); ++i)
   {
     indices_src[i] = inliers[i];
-    indices_tgt[i] = correspondences_.at (indices_src[i]);
+    const auto it = correspondences_.find (indices_src[i]);
+    if (it == correspondences_.cend ())
+    {
+      PCL_ERROR ("[pcl::SampleConsensusModelRegistration::optimizeModelCoefficients] Element with key %i is not in map (map contains %lu elements).\n",
+                 indices_src[i], correspondences_.size ());
+      optimized_coefficients = model_coefficients;
+      return;
+    }
+    indices_tgt[i] = it->second;
   }
 
   estimateRigidTransformationSVD (*input_, indices_src, *target_, indices_tgt, optimized_coefficients);

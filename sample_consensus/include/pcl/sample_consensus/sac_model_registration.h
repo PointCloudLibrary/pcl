@@ -307,10 +307,30 @@ namespace pcl
       void
       computeOriginalIndexMapping ()
       {
-        if (!indices_tgt_ || !indices_ || indices_->empty () || indices_->size () != indices_tgt_->size ())
+        if (!indices_tgt_)
+        {
+          PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] Cannot compute mapping: indices_tgt_ is null.\n");
           return;
+        }
+        if (!indices_)
+        {
+          PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] Cannot compute mapping: indices_ is null.\n");
+          return;
+        }
+        if (indices_->empty ())
+        {
+          PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] Cannot compute mapping: indices_ is empty.\n");
+          return;
+        }
+        if (indices_->size () != indices_tgt_->size ())
+        {
+          PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] Cannot compute mapping: indices_ and indices_tgt_ are not the same size (%zu vs %zu).\n",
+                     indices_->size (), indices_tgt_->size ());
+          return;
+        }
         for (std::size_t i = 0; i < indices_->size (); ++i)
           correspondences_[(*indices_)[i]] = (*indices_tgt_)[i];
+        PCL_DEBUG ("[pcl::SampleConsensusModelRegistration::computeOriginalIndexMapping] Successfully computed mapping.\n");
       }
 
       /** \brief A boost shared pointer to the target point cloud data array. */
