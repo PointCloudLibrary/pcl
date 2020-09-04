@@ -42,6 +42,6 @@
 #if defined __GNUC__
 #  pragma GCC system_header 
 #endif
-PCL_DEPRECATED_HEADER(1, 12, "")
+PCL_DEPRECATED_HEADER(1, 15, "")
 
 #include <Eigen/SVD>
