@@ -49,6 +49,7 @@
 #include <pcl/common/eigen.h>
 #include <pcl/common/centroid.h>
 #include <map>
+#include <numeric> // for std::iota
 
 namespace pcl
 {
@@ -130,13 +131,10 @@ namespace pcl
       setInputTarget (const PointCloudConstPtr &target)
       {
         target_ = target;
-        indices_tgt_.reset (new Indices);
         // Cache the size and fill the target indices
-        int target_size = static_cast<int> (target->size ());
-        indices_tgt_->resize (target_size);
-
-        for (int i = 0; i < target_size; ++i)
-          (*indices_tgt_)[i] = i;
+        const index_t target_size = static_cast<index_t> (target->size ());
+        indices_tgt_.reset (new Indices (target_size));
+        std::iota (indices_tgt_->begin (), indices_tgt_->end (), 0);
         computeOriginalIndexMapping ();
       }
 
@@ -340,7 +338,7 @@ namespace pcl
       IndicesPtr indices_tgt_;
 
       /** \brief Given the index in the original point cloud, give the matching original index in the target cloud */
-      std::map<int, int> correspondences_;
+      std::map<index_t, index_t> correspondences_;
 
       /** \brief Internal distance threshold used for the sample selection step. */
       double sample_dist_thresh_;
