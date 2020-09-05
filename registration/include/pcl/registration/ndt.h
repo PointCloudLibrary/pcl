@@ -46,9 +46,27 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
-#include <unsupported/Eigen/NonLinearOptimization>
-
 namespace pcl {
+/**
+ * \brief Method to find neighbor voxels around a point
+ * \note This offers a tradeoff between stability and registration speed.
+ *       DIRECT1 uses the voxel, which the point fell into (up to 1 voxel per point).
+ *       This makes registration extremely fast but a bit unstable in particular
+ *       when the initial guess is not accurate.
+ *       DIRECT7 uses the voxel at the point and its facing voxels (up to 7 voxels per point).
+ *       This strikes a good balance between registration stability and speed in a typical use case.
+ *       DIRECT27 uses the voxel at the point and its 3x3x3 neighboring voxels (up to 27 voxels per point).
+ *       KDTREE uses a kdtree search (radius = voxel resolution) to find neighbor voxels.
+ *       With this method, the registration result will be identical to the result of the
+ *       implementation before PCL1.11.1.
+ */
+enum class NeighborSearchMethod {
+  KDTREE,
+  DIRECT27,
+  DIRECT7,
+  DIRECT1
+};
+
 /** \brief A 3D Normal Distribution Transform registration implementation for point
  * cloud data. \note For more information please see <b>Magnusson, M. (2009). The
  * Three-Dimensional Normal-Distributions Transform — an Efﬁcient Representation for
@@ -212,6 +230,27 @@ public:
     trans = _affine.matrix();
   }
 
+  /**
+    * \brief Set the method for neighboring voxel search
+    * \param[in] method neighboring voxel search method
+    */
+  void setNeighborSearchMethod(NeighborSearchMethod method) {
+    search_method_ = method;
+  }
+
+  /** \brief Set the number of threads to use.
+   * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+   */
+  void setNumberOfThreads(unsigned int nr_threads = 0) {
+#ifdef _OPENMP
+    num_threads_ = nr_threads ? nr_threads : omp_get_num_procs();
+#else
+    PCL_DEBUG("OpenMP is not available. Keeping number of threads unchanged at 1");
+    num_threads_ = 1;
+#endif
+  }
+
+
 protected:
   using Registration<PointSource, PointTarget>::reg_name_;
   using Registration<PointSource, PointTarget>::getClassName;
@@ -282,11 +321,28 @@ protected:
    * \param[in] compute_hessian flag to calculate hessian, unnessissary for step
    * calculation.
    */
+  PCL_DEPRECATED(1, 15, "Thread-unsafe `updateDerivatives` is deprecated")
   double
   updateDerivatives(Eigen::Matrix<double, 6, 1>& score_gradient,
                     Eigen::Matrix<double, 6, 6>& hessian,
                     const Eigen::Vector3d& x_trans,
                     const Eigen::Matrix3d& c_inv,
+                    bool compute_hessian = true);
+
+  /** \brief Compute individual point contirbutions to derivatives of probability function w.r.t. the transformation vector.
+    * \note Equation 6.10, 6.12 and 6.13 [Magnusson 2009].
+    * \param[in,out] score_gradient the gradient vector of the probability function w.r.t. the transformation vector
+    * \param[in,out] hessian the hessian matrix of the probability function w.r.t. the transformation vector
+    * \param[in] x_trans transformed point minus mean of occupied covariance voxel
+    * \param[in] c_inv covariance of occupied covariance voxel
+    * \param[in] compute_hessian flag to calculate hessian, unnessissary for step calculation.
+    */
+  double
+  updateDerivatives(Eigen::Matrix<double, 6, 1> &score_gradient,
+                    Eigen::Matrix<double, 6, 6> &hessian,
+                    const Eigen::Matrix<double, 4, 6>& point_gradient,
+                    const Eigen::Matrix<double, 24, 6>& point_hessian,
+                    const Eigen::Vector4d &x_trans, const Eigen::Matrix4d &c_inv,
                     bool compute_hessian = true) const;
 
   /** \brief Precompute anglular components of derivatives.
@@ -305,8 +361,17 @@ protected:
    * \param[in] compute_hessian flag to calculate hessian, unnessissary for step
    * calculation.
    */
+  PCL_DEPRECATED(1, 15, "Thread-unsafe `computePointDerivatives` is deprecated")
   void
   computePointDerivatives(const Eigen::Vector3d& x, bool compute_hessian = true);
+
+  /** \brief Compute point derivatives.
+    * \note Equation 6.18-21 [Magnusson 2009].
+    * \param[in] x point from the input cloud
+    * \param[in] compute_hessian flag to calculate hessian, unnessissary for step calculation.
+    */
+  void
+  computePointDerivatives (const Eigen::Vector4d &x, Eigen::Matrix<double, 4, 6>& point_gradient, Eigen::Matrix<double, 24, 6>& point_hessian, bool compute_hessian = true) const;
 
   /** \brief Compute hessian of probability function w.r.t. the transformation vector.
    * \note Equation 6.13 [Magnusson 2009].
@@ -315,7 +380,7 @@ protected:
    */
   void
   computeHessian(Eigen::Matrix<double, 6, 6>& hessian,
-                 const PointCloudSource& trans_cloud);
+                 const PointCloudSource& trans_cloud) const;
 
   /** \brief Compute hessian of probability function w.r.t. the transformation vector.
    * \note Equation 6.13 [Magnusson 2009].
@@ -327,7 +392,7 @@ protected:
   void
   computeHessian(Eigen::Matrix<double, 6, 6>& hessian,
                  const PointCloudSource& trans_cloud,
-                 const Eigen::Matrix<double, 6, 1>& transform)
+                 const Eigen::Matrix<double, 6, 1>& transform) const
   {
     pcl::utils::ignore(transform);
     computeHessian(hessian, trans_cloud);
@@ -339,10 +404,24 @@ protected:
    * transformation vector \param[in] x_trans transformed point minus mean of occupied
    * covariance voxel \param[in] c_inv covariance of occupied covariance voxel
    */
+  PCL_DEPRECATED(1, 15, "Thread-unsafe `updateHessian` is deprecated")
   void
   updateHessian(Eigen::Matrix<double, 6, 6>& hessian,
                 const Eigen::Vector3d& x_trans,
-                const Eigen::Matrix3d& c_inv) const;
+                const Eigen::Matrix3d& c_inv);
+
+  /** \brief Compute individual point contirbutions to hessian of probability function w.r.t. the transformation vector.
+    * \note Equation 6.13 [Magnusson 2009].
+    * \param[in,out] hessian the hessian matrix of the probability function w.r.t. the transformation vector
+    * \param[in] x_trans transformed point minus mean of occupied covariance voxel
+    * \param[in] c_inv covariance of occupied covariance voxel
+    */
+  void
+  updateHessian(Eigen::Matrix<double, 6, 6> &hessian,
+                const Eigen::Matrix<double, 4, 6>& point_jacobian,
+                const Eigen::Matrix<double, 24, 6>& point_hessian,
+                const Eigen::Vector4d &x_trans,
+                const Eigen::Matrix4d &c_inv) const;
 
   /** \brief Compute line search step length and update transform and probability
    * derivatives using More-Thuente method. \note Search Algorithm [More, Thuente 1994]
@@ -503,11 +582,19 @@ protected:
 
   /** \brief The first order derivative of the transformation of a point w.r.t. the
    * transform vector, \f$ J_E \f$ in Equation 6.18 [Magnusson 2009]. */
+  PCL_DEPRECATED(1, 15, "Parameter `point_jacobian_` is no longer used")
   Eigen::Matrix<double, 3, 6> point_jacobian_;
 
   /** \brief The second order derivative of the transformation of a point w.r.t. the
    * transform vector, \f$ H_E \f$ in Equation 6.20 [Magnusson 2009]. */
+  PCL_DEPRECATED(1, 15, "Parameter `point_hessian_` is no longer used")
   Eigen::Matrix<double, 18, 6> point_hessian_;
+
+  /** \brief The number of threads the scheduler should use. */
+  unsigned int num_threads_;
+
+  /** \brief The method to find neighboring voxels */
+  NeighborSearchMethod search_method_;
 
 public:
   PCL_MAKE_ALIGNED_OPERATOR_NEW

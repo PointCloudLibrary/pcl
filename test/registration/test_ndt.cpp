@@ -46,53 +46,50 @@
 
 using namespace pcl;
 using namespace pcl::io;
- 
-PointCloud<PointXYZ> cloud_source, cloud_target;
- 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, NormalDistributionsTransform)
-{
-  using PointT = PointNormal;
-  PointCloud<PointT>::Ptr src (new PointCloud<PointT>);
-  copyPointCloud (cloud_source, *src);
-  PointCloud<PointT>::Ptr tgt (new PointCloud<PointT>);
-  copyPointCloud (cloud_target, *tgt);
-  PointCloud<PointT> output;
 
-  NormalDistributionsTransform<PointT, PointT> reg;
+PointCloud<PointXYZ>::Ptr cloud_source, cloud_target;
+
+class NormalDistributionsTransformTest : public testing::TestWithParam<NeighborSearchMethod> {};
+
+TEST_P(NormalDistributionsTransformTest, RegistrationTest) {
+  NormalDistributionsTransform<PointXYZ, PointXYZ> reg;
+  reg.setNeighborSearchMethod (GetParam());
   reg.setStepSize (0.05);
   reg.setResolution (0.025f);
-  reg.setInputSource (src);
-  reg.setInputTarget (tgt);
+  reg.setInputSource (cloud_source);
+  reg.setInputTarget (cloud_target);
   reg.setMaximumIterations (50);
   reg.setTransformationEpsilon (1e-8);
-  // Register
+
+  // Registration test
+  PointCloud<PointXYZ> output;
   reg.align (output);
-  EXPECT_EQ (output.size (), cloud_source.size ());
+  EXPECT_EQ (output.size(), cloud_source->size());
   EXPECT_LT (reg.getFitnessScore (), 0.001);
+  Eigen::Matrix4f transform = reg.getFinalTransformation();
 
-  // Check again, for all possible caching schemes
-  for (int iter = 0; iter < 4; iter++)
-  {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
-    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
-    // Ensure that, when force_cache is not set, we are robust to the wrong input
-    if (force_cache)
-      tree->setInputCloud (tgt);
-    reg.setSearchMethodTarget (tree, force_cache);
-
-    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
-    if (force_cache_reciprocal)
-      tree_recip->setInputCloud (src);
-    reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
-
-    // Register
-    reg.align (output);
-    EXPECT_EQ (output.size (), cloud_source.size ());
-    EXPECT_LT (reg.getFitnessScore (), 0.001);
-  }
+  // Check if the single thread result is consistent
+  reg.setNumberOfThreads(4);
+  reg.align(output);
+  EXPECT_LT((reg.getFinalTransformation() - transform).array().abs().maxCoeff(), 1e-6);
 }
+
+INSTANTIATE_TEST_SUITE_P(PCL, NormalDistributionsTransformTest,
+  testing::Values(
+    NeighborSearchMethod::KDTREE,
+    NeighborSearchMethod::DIRECT1,
+    NeighborSearchMethod::DIRECT7,
+    NeighborSearchMethod::DIRECT27
+  ),
+  [](const auto& info) -> std::string {
+    switch(info.param) {
+      case NeighborSearchMethod::KDTREE: return "KDTREE";
+      case NeighborSearchMethod::DIRECT1: return "DIRECT1";
+      case NeighborSearchMethod::DIRECT7: return "DIRECT7";
+      case NeighborSearchMethod::DIRECT27: return "DIRECT27";
+    }
+  }
+);
 
 int
 main (int argc, char** argv)
@@ -103,12 +100,15 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  if (loadPCDFile (argv[1], cloud_source) < 0)
+  cloud_source.reset(new PointCloud<PointXYZ>);
+  cloud_target.reset(new PointCloud<PointXYZ>);
+
+  if (loadPCDFile (argv[1], *cloud_source) < 0)
   {
     std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
-  if (loadPCDFile (argv[2], cloud_target) < 0)
+  if (loadPCDFile (argv[2], *cloud_target) < 0)
   {
     std::cerr << "Failed to read test file. Please download `bun4.pcd` and pass its path to the test." << std::endl;
     return (-1);
