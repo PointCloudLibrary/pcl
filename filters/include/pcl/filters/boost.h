@@ -43,6 +43,7 @@
 #ifdef __GNUC__
 #pragma GCC system_header 
 #endif
+PCL_DEPRECATED_HEADER(1, 15, "")
 
 // Marking all Boost headers as system headers to remove warnings
 #include <boost/random.hpp>
