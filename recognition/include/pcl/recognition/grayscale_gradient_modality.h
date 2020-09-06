@@ -218,13 +218,13 @@ namespace pcl
         * \param[in] cloud the cloud for which the gradients are computed.
         */
       void
-      computeMaxGradients (const typename pcl::PointCloud<pcl::Intensity8u>::ConstPtr & cloud);
+      computeMaxGradients (const typename pcl::PointCloud<PointInT>::ConstPtr & cloud);
 
       /** \brief Computes the max-RGB gradients for the specified cloud using sobel.
         * \param[in] cloud the cloud for which the gradients are computed.
         */
       void
-      computeMaxGradientsSobel (const typename pcl::PointCloud<pcl::Intensity8u>::ConstPtr & cloud);
+      computeMaxGradientsSobel (const typename pcl::PointCloud<PointInT>::ConstPtr & cloud);
   
       /** \brief Filters the quantized gradients. */
       void
@@ -247,7 +247,7 @@ namespace pcl
       bool variable_feature_nr_;
 
       /** \brief Stores a smoothed verion of the input cloud. */
-      pcl::PointCloud<pcl::Intensity8u>::Ptr smoothed_input_;
+      typename pcl::PointCloud<PointInT>::Ptr smoothed_input_;
 
       /** \brief Defines which feature selection method is used. */
       FeatureSelectionMethod feature_selection_method_;
@@ -279,7 +279,7 @@ template <typename PointInT>
 pcl::GrayscaleGradientModality<PointInT>::
 GrayscaleGradientModality ()
   : variable_feature_nr_ (false)
-  , smoothed_input_ (new pcl::PointCloud<pcl::Intensity8u> ())
+  , smoothed_input_ (new pcl::PointCloud<PointInT> ())
   , feature_selection_method_ (DISTANCE_MAGNITUDE_SCORE)
   , gradient_magnitude_threshold_ (10.0f)
   , gradient_magnitude_threshold_feature_extraction_ (55.0f)
@@ -780,7 +780,7 @@ extractAllFeatures (const MaskMap & mask, const size_t, const size_t modality_in
 template <typename PointInT>
 void
 pcl::GrayscaleGradientModality<PointInT>::
-computeMaxGradients (const typename pcl::PointCloud<pcl::Intensity8u>::ConstPtr & cloud)
+computeMaxGradients (const typename pcl::PointCloud<PointInT>::ConstPtr & cloud)
 {
   const int width = cloud->width;
   const int height = cloud->height;
@@ -858,7 +858,7 @@ quantizedAngleFromXY(float x, float y) {
 template <typename PointInT>
 void
 pcl::GrayscaleGradientModality<PointInT>::
-computeMaxGradientsSobel (const typename pcl::PointCloud<pcl::Intensity8u>::ConstPtr & cloud)
+computeMaxGradientsSobel (const typename pcl::PointCloud<PointInT>::ConstPtr & cloud)
 {
   const int width = cloud->width;
   const int height = cloud->height;

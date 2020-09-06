@@ -477,7 +477,7 @@ namespace pcl
       float min_distance_to_border_;
 
       /** \brief Look-up-table for quantizing surface normals. */
-      QuantizedNormalLookUpTable normal_lookup_;
+      // QuantizedNormalLookUpTable normal_lookup_;
 
       /** \brief The spreading size. */
       size_t spreading_size_;
@@ -505,7 +505,7 @@ SurfaceNormalModality ()
   : variable_feature_nr_ (false)
   , feature_distance_threshold_ (2.0f)
   , min_distance_to_border_ (2.0f)
-  , normal_lookup_ ()
+  // , normal_lookup_ ()
   , spreading_size_ (8)
   , surface_normals_ ()
   , quantized_surface_normals_ ()
