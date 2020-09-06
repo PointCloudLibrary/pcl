@@ -246,7 +246,7 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
   voxelizeData ();
 
   // preallocate memory assuming a hull. suppose 6 point per voxel
-  double size_reserve = std::min((double) intermediate_cloud.max_size (),
+  double size_reserve = std::min((double) intermediate_cloud.points.max_size (),
       2.0 * 6.0 * (double) (res_y_*res_z_ + res_x_*res_z_ + res_x_*res_y_));
   intermediate_cloud.reserve ((std::size_t) size_reserve);
 
