@@ -34,12 +34,11 @@
  */
 
 #include <pcl/common/time.h>
-#include <pcl/console/parse.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/surface/organized_fast_mesh.h>
-#include <pcl/visualization/cloud_viewer.h>
+#include <pcl/visualization/pcl_visualizer.h> // for PCLVisualizer
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -48,7 +47,6 @@
 
 using namespace pcl;
 using namespace pcl::visualization;
-using namespace std;
 using namespace std::chrono_literals;
 
 // clang-format off

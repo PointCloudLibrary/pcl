@@ -39,9 +39,9 @@
 
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/surface/boost.h>
 #include <pcl/surface/reconstruction.h>
 
+#include <boost/dynamic_bitset/dynamic_bitset.hpp> // for dynamic_bitset
 #include <unordered_map>
 
 namespace pcl

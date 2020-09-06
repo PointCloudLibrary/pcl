@@ -34,13 +34,9 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cstddef>
-#include <iostream>
 #include <cmath>
-#include <set>
-#include <pcl/common/eigen.h>
+#include <pcl/common/time.h> // for MEASURE_FUNCTION_TIME
 #include <pcl/range_image/range_image.h>
-#include <pcl/common/transformation_from_correspondences.h>
 
 namespace pcl 
 {
@@ -257,7 +253,7 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
         currentPoint = unobserved_point;
         continue;
       }
-      currentPoint = oldRangeImage.points[oldY*oldRangeImage.width + oldX];
+      currentPoint = oldRangeImage[oldY*oldRangeImage.width + oldX];
     }
   }
 }
@@ -836,7 +832,7 @@ RangeImage::extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data,
       vp_z_offset = point_cloud_data.fields[vp_z_idx].offset,
       distance_offset = point_cloud_data.fields[distance_idx].offset;
   
-  for (std::size_t point_idx = 0; point_idx < point_cloud_data.width*point_cloud_data.height; ++point_idx)
+  for (index_t point_idx = 0; point_idx < point_cloud_data.width*point_cloud_data.height; ++point_idx)
   {
     float x = *reinterpret_cast<const float*> (data+x_offset), 
           y = *reinterpret_cast<const float*> (data+y_offset), 
@@ -855,7 +851,7 @@ RangeImage::extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data,
       far_ranges.points.push_back (point);
     }
   }
-  far_ranges.width= static_cast<std::uint32_t> (far_ranges.points.size ());  far_ranges.height = 1;
+  far_ranges.width= far_ranges.size ();  far_ranges.height = 1;
   far_ranges.is_dense = false;
 }
 

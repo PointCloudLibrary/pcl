@@ -42,6 +42,7 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_NORMAL_PLANE_H_
 
 #include <pcl/sample_consensus/sac_model_normal_plane.h>
+#include <pcl/common/common.h> // for getAngle3D
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
@@ -74,8 +75,8 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::selectWithinDistance (
   // Iterate through the 3d points and calculate the distances from them to the plane
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    const PointT  &pt = input_->points[(*indices_)[i]];
-    const PointNT &nt = normals_->points[(*indices_)[i]];
+    const PointT  &pt = (*input_)[(*indices_)[i]];
+    const PointNT &nt = (*normals_)[(*indices_)[i]];
     // Calculate the distance from the point to the plane normal as the dot product
     // D = (P-A).N/|N|
     Eigen::Vector4f p (pt.x, pt.y, pt.z, 0.0f);
@@ -123,8 +124,8 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::countWithinDistance (
   // Iterate through the 3d points and calculate the distances from them to the plane
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    const PointT  &pt = input_->points[(*indices_)[i]];
-    const PointNT &nt = normals_->points[(*indices_)[i]];
+    const PointT  &pt = (*input_)[(*indices_)[i]];
+    const PointNT &nt = (*normals_)[(*indices_)[i]];
     // Calculate the distance from the point to the plane normal as the dot product
     // D = (P-A).N/|N|
     Eigen::Vector4f p (pt.x, pt.y, pt.z, 0.0f);
@@ -171,8 +172,8 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::getDistancesToModel (
   // Iterate through the 3d points and calculate the distances from them to the plane
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    const PointT  &pt = input_->points[(*indices_)[i]];
-    const PointNT &nt = normals_->points[(*indices_)[i]];
+    const PointT  &pt = (*input_)[(*indices_)[i]];
+    const PointNT &nt = (*normals_)[(*indices_)[i]];
     // Calculate the distance from the point to the plane normal as the dot product
     // D = (P-A).N/|N|
     Eigen::Vector4f p (pt.x, pt.y, pt.z, 0.0f);

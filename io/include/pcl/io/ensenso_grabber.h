@@ -42,7 +42,6 @@
 
 #include <pcl/common/time.h>
 #include <pcl/common/io.h>
-#include <pcl/io/eigen.h>
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
 #include <pcl/io/boost.h>

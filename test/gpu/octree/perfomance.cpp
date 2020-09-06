@@ -61,7 +61,6 @@
 #include "data_source.hpp"
 
 using namespace pcl::gpu;
-using namespace std;
 
 using pcl::ScopeTime;
 
@@ -133,7 +132,7 @@ TEST(PCL_OctreeGPU, performance)
 #ifdef HAVE_OPENCV
     cv::Octree octree_opencv;
     const static int opencv_octree_points_per_leaf = 32;    
-    std::vector<cv::Point3f> opencv_points(data.points.size());
+    std::vector<cv::Point3f> opencv_points(data.size());
     std::transform(data.points.begin(), data.points.end(), opencv_points.begin(), DataGenerator::ConvPoint<cv::Point3f>());
         
     {        
@@ -252,3 +251,13 @@ TEST(PCL_OctreeGPU, performance)
             octree_host.nearestKSearch(data.queries[i], k, indeces, pointRadiusSquaredDistance);
     }*/
 }
+
+/* ---[ */
+int
+main (int argc, char** argv)
+{
+  testing::InitGoogleTest (&argc, argv);
+  return (RUN_ALL_TESTS ());
+}
+/* ]--- */
+

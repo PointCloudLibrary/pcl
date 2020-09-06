@@ -207,10 +207,10 @@ pcl::Kmeans::cluster (std::vector<PointIndices> &clusters)
 
 // create input data
 /*
-    for (std::size_t i = 0; i < input_->points.size (); i++)
+    for (std::size_t i = 0; i < input_->size (); i++)
     {
       DataPoint data (3);
-      data[0] = input_->points[i].data[0];
+      data[0] = (*input_)[i].data[0];
 
 
 
@@ -221,18 +221,18 @@ pcl::Kmeans::cluster (std::vector<PointIndices> &clusters)
 std::cout << "x index: " << x_index << std::endl;
 
 float x = 0.0;
-memcpy (&x, &input_->points[0] + fields[x_index].offset, sizeof(float));
+memcpy (&x, &(*input_)[0] + fields[x_index].offset, sizeof(float));
 
 std::cout << "xxx: " << x << std::endl;
 */
 
-// memcpy (&x, reinterpret_cast<float*> (&input_->points[0]) + x_index, sizeof (float));
+// memcpy (&x, reinterpret_cast<float*> (&(*input_)[0]) + x_index, sizeof (float));
 
 // int rgba_index = 1;
 
 // pcl::RGB rgb;
 // memcpy (&rgb, reinterpret_cast<const char*>
-// (&input_->points[index_vector[i].cloud_point_index]) + rgba_index, sizeof (RGB));
+// (&(*input_)[index_vector[i].cloud_point_index]) + rgba_index, sizeof (RGB));
 
 /*
 }
@@ -276,7 +276,7 @@ if (user_index == -1)
   for (std::size_t i = 0; i < fields[vfh_idx].count; ++i)
   {
 
-    //vfh.second[i] = point.points[0].histogram[i];
+    //vfh.second[i] = point[0].histogram[i];
 
   }
 */

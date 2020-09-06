@@ -60,31 +60,31 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   // Initialize output container - overwrite the sizes done by Feature::initCompute ()
-  output.points.resize (indices_->size () * input_->points.size ());
+  output.points.resize (indices_->size () * input_->size ());
   output.height = 1;
-  output.width = static_cast<std::uint32_t> (output.points.size ());
+  output.width = output.size ();
   output.is_dense = true;
 
   // Compute point pair features for every pair of points in the cloud
   for (std::size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {
     std::size_t i = (*indices_)[index_i];
-    for (std::size_t j = 0 ; j < input_->points.size (); ++j)
+    for (std::size_t j = 0 ; j < input_->size (); ++j)
     {
       PointOutT p;
       if (i != j)
       {
         if (//pcl::computePPFPairFeature
-            pcl::computePairFeatures (input_->points[i].getVector4fMap (),
-                                      normals_->points[i].getNormalVector4fMap (),
-                                      input_->points[j].getVector4fMap (),
-                                      normals_->points[j].getNormalVector4fMap (),
+            pcl::computePairFeatures ((*input_)[i].getVector4fMap (),
+                                      (*normals_)[i].getNormalVector4fMap (),
+                                      (*input_)[j].getVector4fMap (),
+                                      (*normals_)[j].getNormalVector4fMap (),
                                       p.f1, p.f2, p.f3, p.f4))
         {
           // Calculate alpha_m angle
-          Eigen::Vector3f model_reference_point = input_->points[i].getVector3fMap (),
-                          model_reference_normal = normals_->points[i].getNormalVector3fMap (),
-                          model_point = input_->points[j].getVector3fMap ();
+          Eigen::Vector3f model_reference_point = (*input_)[i].getVector3fMap (),
+                          model_reference_normal = (*normals_)[i].getNormalVector3fMap (),
+                          model_point = (*input_)[j].getVector3fMap ();
           float rotation_angle = std::acos (model_reference_normal.dot (Eigen::Vector3f::UnitX ()));
           bool parallel_to_x = (model_reference_normal.y() == 0.0f && model_reference_normal.z() == 0.0f);
           Eigen::Vector3f rotation_axis = (parallel_to_x)?(Eigen::Vector3f::UnitY ()):(model_reference_normal.cross (Eigen::Vector3f::UnitX ()). normalized());
@@ -112,7 +112,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
         output.is_dense = false;
       }
 
-      output.points[index_i*input_->points.size () + j] = p;
+      output[index_i*input_->size () + j] = p;
     }
   }
 }

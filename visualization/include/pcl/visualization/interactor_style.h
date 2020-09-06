@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <pcl/console/print.h>
 #include <pcl/visualization/common/actor_map.h>
 #include <pcl/visualization/common/ren_win_interact_map.h>
 #include <pcl/visualization/keyboard_event.h>

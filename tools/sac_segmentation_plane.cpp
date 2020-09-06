@@ -44,7 +44,6 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
@@ -73,7 +72,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const string &filename, pcl::PCLPointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -162,7 +161,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
 }
 
 void
-saveCloud (const string &filename, const pcl::PCLPointCloud2 &output)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -176,9 +175,9 @@ saveCloud (const string &filename, const pcl::PCLPointCloud2 &output)
 }
 
 int
-batchProcess (const std::vector<string> &pcd_files, string &output_dir, int max_it, double thresh, bool negative)
+batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir, int max_it, double thresh, bool negative)
 {
-  std::vector<string> st;
+  std::vector<std::string> st;
   for (const auto &pcd_file : pcd_files)
   {
     // Load the first file
@@ -191,12 +190,12 @@ batchProcess (const std::vector<string> &pcd_files, string &output_dir, int max_
     compute (cloud, output, max_it, thresh, negative);
 
     // Prepare output file name
-    string filename = pcd_file;
+    std::string filename = pcd_file;
     boost::trim (filename);
     boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
     
     // Save into the second file
-    stringstream ss;
+    std::stringstream ss;
     ss << output_dir << "/" << st.at (st.size () - 1);
     saveCloud (ss.str (), output);
   }
@@ -234,7 +233,7 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-max_it", max_it);
   parse_argument (argc, argv, "-thresh", thresh);
   parse_argument (argc, argv, "-neg", negative);
-  string input_dir, output_dir;
+  std::string input_dir, output_dir;
   if (parse_argument (argc, argv, "-input_dir", input_dir) != -1)
   {
     PCL_INFO ("Input directory given as %s. Batch process mode on.\n", input_dir.c_str ());
@@ -281,7 +280,7 @@ main (int argc, char** argv)
   {
     if (!input_dir.empty() && boost::filesystem::exists (input_dir))
     {
-      std::vector<string> pcd_files;
+      std::vector<std::string> pcd_files;
       boost::filesystem::directory_iterator end_itr;
       for (boost::filesystem::directory_iterator itr (input_dir); itr != end_itr; ++itr)
       {

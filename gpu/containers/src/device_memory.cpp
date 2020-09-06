@@ -37,7 +37,7 @@
 #include <pcl/gpu/containers/device_memory.h>
 #include <pcl/gpu/utils/safe_call.hpp>
 
-#include "cuda_runtime_api.h"
+#include <cuda_runtime_api.h>
 #include <cassert>
 
 #define HAVE_CUDA

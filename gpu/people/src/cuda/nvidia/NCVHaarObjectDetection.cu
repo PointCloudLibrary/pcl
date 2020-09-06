@@ -1380,7 +1380,7 @@ NCVStatus ncvApplyHaarClassifierCascade_device(NCVMatrix<Ncv32u> &d_integralImag
     }
     else
     {
-        for (Ncv32u i=0; i<std::max(numDetGold, numDetections) && bPass; i++)
+        for (Ncv32u i=0; i<max(numDetGold, numDetections) && bPass; i++)
         {
             if (h_pixelMask.ptr[i] != h_pixelMask_d.ptr[i])
             {
@@ -1572,7 +1572,7 @@ NCVStatus ncvDetectObjectsMultiScale_device(NCVMatrix<Ncv8u> &d_srcImg,
     ncvAssertReturnNcvStat(nppStat);
     nppStat = nppiStSqrIntegralGetSize_8u64u(NcvSize32u(d_srcImg.width(), d_srcImg.height()), &szTmpBufSqIntegral, devProp);
     ncvAssertReturnNcvStat(nppStat);
-    NCVVectorAlloc<Ncv8u> d_tmpIIbuf(gpuAllocator, std::max(szTmpBufIntegral, szTmpBufSqIntegral));
+    NCVVectorAlloc<Ncv8u> d_tmpIIbuf(gpuAllocator, max(szTmpBufIntegral, szTmpBufSqIntegral));
     ncvAssertReturn(d_tmpIIbuf.isMemAllocated(), NCV_ALLOCATOR_BAD_ALLOC);
 
     NCV_SKIP_COND_BEGIN

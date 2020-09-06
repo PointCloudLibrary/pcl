@@ -47,7 +47,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 struct KeypointT
 {
@@ -78,9 +77,9 @@ TEST (PCL, SIFTKeypoint)
   sift_detector.setInputCloud (cloud_xyzi);
   sift_detector.compute (keypoints);
 
-  ASSERT_EQ (keypoints.width, keypoints.points.size ());
+  ASSERT_EQ (keypoints.width, keypoints.size ());
   ASSERT_EQ (keypoints.height, 1);
-  EXPECT_EQ (keypoints.points.size (), static_cast<std::size_t> (169));
+  EXPECT_EQ (keypoints.size (), static_cast<std::size_t> (169));
   EXPECT_EQ (keypoints.header, cloud_xyzi->header);
   EXPECT_EQ (keypoints.sensor_origin_ (0), cloud_xyzi->sensor_origin_ (0));
   EXPECT_EQ (keypoints.sensor_origin_ (1), cloud_xyzi->sensor_origin_ (1));
@@ -96,7 +95,7 @@ TEST (PCL, SIFTKeypoint)
   sift_detector.setMinimumContrast (0.06f);
   sift_detector.compute (keypoints);
 
-  ASSERT_EQ (keypoints.width, keypoints.points.size ());
+  ASSERT_EQ (keypoints.width, keypoints.size ());
   ASSERT_EQ (keypoints.height, 1);
 
   // Compare to previously validated output
@@ -111,13 +110,13 @@ TEST (PCL, SIFTKeypoint)
       {-0.1002f, -0.1002f,  1.9933f,  0.3175f}
     };
 
-  ASSERT_EQ (keypoints.points.size (), correct_nr_keypoints);
+  ASSERT_EQ (keypoints.size (), correct_nr_keypoints);
   for (std::size_t i = 0; i < correct_nr_keypoints; ++i)
   {
-    EXPECT_NEAR (keypoints.points[i].x, correct_keypoints[i][0], 1e-4);
-    EXPECT_NEAR (keypoints.points[i].y, correct_keypoints[i][1], 1e-4);
-    EXPECT_NEAR (keypoints.points[i].z, correct_keypoints[i][2], 1e-4);
-    EXPECT_NEAR (keypoints.points[i].scale, correct_keypoints[i][3], 1e-4);
+    EXPECT_NEAR (keypoints[i].x, correct_keypoints[i][0], 1e-4);
+    EXPECT_NEAR (keypoints[i].y, correct_keypoints[i][1], 1e-4);
+    EXPECT_NEAR (keypoints[i].z, correct_keypoints[i][2], 1e-4);
+    EXPECT_NEAR (keypoints[i].scale, correct_keypoints[i][3], 1e-4);
   }
 
 }
@@ -158,7 +157,7 @@ TEST (PCL, SIFTKeypoint_radiusSearch)
   tree.radiusSearch (i_point, max_radius, nn_indices, nn_dist);
 
   // Are they all unique?
-  set<int> unique_indices;
+  std::set<int> unique_indices;
   for (const int &nn_index : nn_indices)
   {
     unique_indices.insert (nn_index);

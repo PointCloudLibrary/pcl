@@ -56,7 +56,6 @@
 #include <thread>
 
 using namespace pcl;
-using namespace std;
 using namespace std::chrono_literals;
 
 using PointT = PointXYZRGBA;
@@ -103,10 +102,10 @@ public:
   }
 
   /////////////////////////////////////////////////////////////////////////
-  string
+  std::string
   getStrBool(bool state)
   {
-    stringstream ss;
+    std::stringstream ss;
     ss << state;
     return ss.str();
   }
@@ -183,11 +182,11 @@ public:
     std::size_t j = 0;
     for (std::size_t i = 0; i < keypoints->size(); ++i) {
       PointT pt =
-          bilinearInterpolation(cloud, keypoints->points[i].x, keypoints->points[i].y);
+          bilinearInterpolation(cloud, (*keypoints)[i].x, (*keypoints)[i].y);
 
-      keypoints3d.points[j].x = pt.x;
-      keypoints3d.points[j].y = pt.y;
-      keypoints3d.points[j].z = pt.z;
+      keypoints3d[j].x = pt.x;
+      keypoints3d[j].y = pt.y;
+      keypoints3d[j].z = pt.z;
       ++j;
     }
 
@@ -245,8 +244,8 @@ public:
 
         image_viewer_.removeLayer(getStrBool(keypts));
         for (std::size_t i = 0; i < keypoints->size(); ++i) {
-          int u = int(keypoints->points[i].x);
-          int v = int(keypoints->points[i].y);
+          int u = int((*keypoints)[i].x);
+          int v = int((*keypoints)[i].y);
           image_viewer_.markPoint(u,
                                   v,
                                   visualization::red_color,
@@ -294,7 +293,7 @@ private:
 int
 main(int, char**)
 {
-  string device_id("#1");
+  std::string device_id("#1");
   OpenNIGrabber grabber(device_id);
   BRISKDemo openni_viewer(grabber);
 

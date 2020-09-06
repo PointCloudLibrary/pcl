@@ -43,7 +43,7 @@
 
 #include <pcl/features/gfpfh.h>
 #include <pcl/octree/octree_search.h>
-#include <pcl/common/eigen.h>
+#include <Eigen/Core> // for Vector3f
 
 #include <algorithm>
 #include <fstream>
@@ -130,7 +130,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
   output.width = 1;
   output.height = 1;
   output.points.resize (1);
-  std::copy (gfpfh_histogram.cbegin (), gfpfh_histogram.cend (), output.points[0].histogram);
+  std::copy (gfpfh_histogram.cbegin (), gfpfh_histogram.cend (), output[0].histogram);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -256,7 +256,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const std:
   std::vector<std::uint32_t> counts (getNumberOfClasses () + 1, 0);
   for (const int &nn_index : indices)
   {
-    std::uint32_t label = labels_->points[nn_index].label;
+    std::uint32_t label = (*labels_)[nn_index].label;
     counts[label] += 1;
   }
 

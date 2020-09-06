@@ -159,20 +159,20 @@ uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, std::size_t n_samples, 
     Eigen::Vector3f n (0, 0, 0);
     Eigen::Vector3f c (0, 0, 0);
     randPSurface (polydata, &cumulativeAreas, totalArea, p, calc_normal, n, calc_color, c);
-    cloud_out.points[i].x = p[0];
-    cloud_out.points[i].y = p[1];
-    cloud_out.points[i].z = p[2];
+    cloud_out[i].x = p[0];
+    cloud_out[i].y = p[1];
+    cloud_out[i].z = p[2];
     if (calc_normal)
     {
-      cloud_out.points[i].normal_x = n[0];
-      cloud_out.points[i].normal_y = n[1];
-      cloud_out.points[i].normal_z = n[2];
+      cloud_out[i].normal_x = n[0];
+      cloud_out[i].normal_y = n[1];
+      cloud_out[i].normal_z = n[2];
     }
     if (calc_color)
     {
-      cloud_out.points[i].r = static_cast<std::uint8_t>(c[0]);
-      cloud_out.points[i].g = static_cast<std::uint8_t>(c[1]);
-      cloud_out.points[i].b = static_cast<std::uint8_t>(c[2]);
+      cloud_out[i].r = static_cast<std::uint8_t>(c[0]);
+      cloud_out[i].g = static_cast<std::uint8_t>(c[1]);
+      cloud_out[i].b = static_cast<std::uint8_t>(c[2]);
     }
   }
 }

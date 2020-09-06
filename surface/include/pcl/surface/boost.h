@@ -42,5 +42,6 @@
 #if defined __GNUC__
 #  pragma GCC system_header
 #endif
+PCL_DEPRECATED_HEADER(1, 15, "")
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>

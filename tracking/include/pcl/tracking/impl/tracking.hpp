@@ -6,8 +6,6 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
-#include <ctime>
-
 namespace pcl {
 namespace tracking {
 struct _ParticleXYZRPY {

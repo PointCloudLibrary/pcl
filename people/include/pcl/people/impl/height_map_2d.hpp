@@ -87,7 +87,7 @@ pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& c
 
   for(std::vector<int>::const_iterator pit = cluster.getIndices().indices.begin(); pit != cluster.getIndices().indices.end(); ++pit)
   {
-    PointT* p = &cloud_->points[*pit];
+    PointT* p = &(*cloud_)[*pit];
     int index;
     if (!vertical_)    // camera horizontal
       index = int((p->x - cluster.getMin()(0)) / bin_size_);
@@ -211,7 +211,7 @@ pcl::people::HeightMap2D<PointT>::filterMaxima ()
     {
       bool good_maximum = true;
 
-      PointT* p_current = &cloud_->points[maxima_cloud_indices_[i]];  // pointcloud point referring to the current maximum
+      PointT* p_current = &(*cloud_)[maxima_cloud_indices_[i]];  // pointcloud point referring to the current maximum
       Eigen::Vector3f p_current_eigen(p_current->x, p_current->y, p_current->z);  // conversion to eigen
       float t = p_current_eigen.dot(ground_coeffs_.head(3)) / std::pow(sqrt_ground_coeffs_, 2); // height from the ground
       p_current_eigen -= ground_coeffs_.head(3) * t;       // projection of the point on the groundplane
@@ -219,7 +219,7 @@ pcl::people::HeightMap2D<PointT>::filterMaxima ()
       int j = i-1;
       while ((j >= 0) && (good_maximum))
       {
-        PointT* p_previous = &cloud_->points[maxima_cloud_indices_[j]];         // pointcloud point referring to an already validated maximum
+        PointT* p_previous = &(*cloud_)[maxima_cloud_indices_[j]];         // pointcloud point referring to an already validated maximum
         Eigen::Vector3f p_previous_eigen(p_previous->x, p_previous->y, p_previous->z);  // conversion to eigen
         float t = p_previous_eigen.dot(ground_coeffs_.head(3)) / std::pow(sqrt_ground_coeffs_, 2); // height from the ground
         p_previous_eigen -= ground_coeffs_.head(3) * t;         // projection of the point on the groundplane

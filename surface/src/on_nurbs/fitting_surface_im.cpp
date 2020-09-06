@@ -38,6 +38,7 @@
 #include <pcl/surface/on_nurbs/fitting_surface_im.h>
 #include <pcl/pcl_macros.h>
 
+#include <Eigen/Cholesky> // for ldlt
 #include <stdexcept>
 
 using namespace pcl;

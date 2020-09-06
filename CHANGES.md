@@ -1,5 +1,92 @@
 # ChangeList
 
+## = 1.11.1 (13.08.2020) =
+
+Apart from the usual serving of bug-fixes and speed improvements, PCL 1.11.1 brings in
+better support for CUDA, more uniform behavior in code as well as cmake, and an
+experimental feature: `functor_filter`.
+
+### Notable changes
+
+**New features** *added to PCL*
+
+* **[ci]** Add support for CUDA in CI [[#4101](https://github.com/PointCloudLibrary/pcl/pull/4101)]
+* **[common]** Add always-unsigned index type `uindex_t` dependent on `index_t` [[#4205](https://github.com/PointCloudLibrary/pcl/pull/4205)]
+* **[filters]** Add a filter accepting a functor to reduce boiler plate code for simple filters [[#3890](https://github.com/PointCloudLibrary/pcl/pull/3890)]
+
+### Changes grouped by module
+
+#### CMake:
+
+* Update `pcl_find_boost` to allow compilation with Boost 1.73 and 1.72 [[#4080](https://github.com/PointCloudLibrary/pcl/pull/4080)]
+* Fix NSIS Template for NSIS3 [[#4093](https://github.com/PointCloudLibrary/pcl/pull/4093)]
+* Add option to choose `pcl::index_t` while compiling [[#4166](https://github.com/PointCloudLibrary/pcl/pull/4166)]
+* Fix name warnings for PCAP, libusb and Ensenso. [[#4182](https://github.com/PointCloudLibrary/pcl/pull/4182)]
+* Fixes compile error on MSVC by disabling Whole Program Optimization [[#4197](https://github.com/PointCloudLibrary/pcl/pull/4197)]
+
+#### libpcl_common:
+
+* Remove use of dynamic allocation in `GaussianKernel::convolve{Rows,Cols}` [[#4092](https://github.com/PointCloudLibrary/pcl/pull/4092)]
+* Replace usage of `std::vector<int>` with `Indices` [[#3989](https://github.com/PointCloudLibrary/pcl/pull/3989)]
+* Update `PointCloud` to conform to requirements of `ReversibleContainer` [[#3980](https://github.com/PointCloudLibrary/pcl/pull/3980)]
+* **[new feature]** Add always-unsigned index type `uindex_t` dependent on `index_t` [[#4205](https://github.com/PointCloudLibrary/pcl/pull/4205)]
+* Adding `data` member function to `PointCloud` [[#4216](https://github.com/PointCloudLibrary/pcl/pull/4216)]
+* Switch `int` to `index_t` for field index variables in `pclBase`, add `pcl::UNAVAILABLE` for same [[#4211](https://github.com/PointCloudLibrary/pcl/pull/4211)]
+* Added `resize` with 2 arguments to `PointCloud` [[#4225](https://github.com/PointCloudLibrary/pcl/pull/4225)]
+* Adding `max_size` to PointCloud [[#4254](https://github.com/PointCloudLibrary/pcl/pull/4254)]
+* Support multiple arguments in `pcl::utils::ignore()` [[#4269](https://github.com/PointCloudLibrary/pcl/pull/4269)]
+
+#### libpcl_features:
+
+* Fix feature histogram constructor bug [[#4234](https://github.com/PointCloudLibrary/pcl/pull/4234)]
+* Fix regression in Organized Edge Detection (introduced in PCL 1.10.1) [[#4311](https://github.com/PointCloudLibrary/pcl/pull/4311)]
+
+#### libpcl_filters:
+
+* reduce computations involved in iterating over the pointcloud for `FastBilateral{OMP}` [[#4134](https://github.com/PointCloudLibrary/pcl/pull/4134)]
+* **[new feature]** Add a filter accepting a functor to reduce boiler plate code for simple filters [[#3890](https://github.com/PointCloudLibrary/pcl/pull/3890)]
+* Refatoring VoxelGridCovariance to make it multi-thread safe (and more) [[#4251](https://github.com/PointCloudLibrary/pcl/pull/4251)]
+
+#### libpcl_gpu:
+
+* Replace volatile shared memory with shfl_sync in KNNSearch [[#4306](https://github.com/PointCloudLibrary/pcl/pull/4306)]
+* Fix octree radiusSearch [[#4146](https://github.com/PointCloudLibrary/pcl/pull/4146)]
+
+#### libpcl_io:
+
+* Better conversion of depth data + focal length into X,Y,Z point data [[#4128](https://github.com/PointCloudLibrary/pcl/pull/4128)]
+* Add iterator include for  back_iterator to support VS2019 [[#4319](https://github.com/PointCloudLibrary/pcl/pull/4319)]
+
+#### libpcl_outofcore:
+
+* Fix compile issue in OutofcoreOctreeBase::setLODFilter after switching from boost::shared_ptr to std::shared_ptr [[#4081](https://github.com/PointCloudLibrary/pcl/pull/4081)]
+
+#### libpcl_registration:
+
+* Fix bug in NDT step interval convergence criteria [[#4181](https://github.com/PointCloudLibrary/pcl/pull/4181)]
+
+#### libpcl_segmentation:
+
+* Clean FLANN includes [[#4025](https://github.com/PointCloudLibrary/pcl/pull/4025)]
+* Update angle between 2 planes to be the smallest angle between them [[#4161](https://github.com/PointCloudLibrary/pcl/pull/4161)]
+
+#### libpcl_simulation:
+
+* Don't prefix in shaders. [[#4209](https://github.com/PointCloudLibrary/pcl/pull/4209)]
+
+#### libpcl_visualization:
+
+* Fix error: misplaced deprecation attributes in `vtkVertexBufferObject{,Mapper}` [[#4079](https://github.com/PointCloudLibrary/pcl/pull/4079)]
+
+#### PCL Docs:
+
+* Fix typo in FPFH documentation, $$p_k$$ was used instead of $$p_i$$ [[#4112](https://github.com/PointCloudLibrary/pcl/pull/4112)]
+* Fix typos in PFH estimation tutorial [[#4111](https://github.com/PointCloudLibrary/pcl/pull/4111)]
+
+#### CI:
+
+* **[new feature]** Add support for CUDA in CI [[#4101](https://github.com/PointCloudLibrary/pcl/pull/4101)]
+
 ## = 1.11.0 (11.05.2020) =
 
 Starting with PCL 1.11, PCL uses `std::shared_ptr` and `std::weak_ptr` instead of the
@@ -3062,7 +3149,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 * added new templated methods for `nearestKSearch` and `radiusSearch` for situations when PointT is different than the one the KdTree object was created with (e.g., KdTree<PointT1> vs nearestKSearch (PointT2 &p...)
 * added two new methods for `getApproximateIndices` where given a reference cloud of point type T1 we're trying to find the corresponding indices in a different cloud of point type T2
 * refactorized a lot of code in search and octree to make it look more consistent with the rest of the API
-* fixed a bug in octree_search which was semantically doing something bad: for each `radiusSearch`/`nearestKSearch`/`approxNearestSearch` call with a PointCloudConstPtr, the octree was getting recreated. Changed the API to be consistent with the rest of PCL (including pcl_search and pcl_kdtree) where we pass in a PointCloud instead of a PointCloudConstPtr which simply calls searchMethod (cloud.points[i], ...)
+* fixed a bug in octree_search which was semantically doing something bad: for each `radiusSearch`/`nearestKSearch`/`approxNearestSearch` call with a PointCloudConstPtr, the octree was getting recreated. Changed the API to be consistent with the rest of PCL (including pcl_search and pcl_kdtree) where we pass in a PointCloud instead of a PointCloudConstPtr which simply calls searchMethod (cloud[i], ...)
 * minor code optimizations
 * renamed organized_neighbor.h header in pcl_search (unreleased, therefore API changes OK!) to organized.h
 * disabled the auto-search tuning as it wasn't really working. must clean this up further
@@ -3117,7 +3204,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 * added unit test for `getIntersectedVoxelCentersRecursive`
 * added method `getIntersectedVoxelIndices` for getting indices of intersected voxels and updated unit test
 * refactorized a lot of code in search and octree to make it look more consistent with the rest of the API
-* fixed a bug in octree_search which was semantically doing something bad: for each `radiusSearch`/`nearestKSearch`/`approxNearestSearch` call with a PointCloudConstPtr, the octree was getting recreated. Changed the API to be consistent with the rest of PCL (including pcl_search and pcl_kdtree) where we pass in a PointCloud instead of a PointCloudConstPtr which simply calls searchMethod (cloud.points[i], ...)
+* fixed a bug in octree_search which was semantically doing something bad: for each `radiusSearch`/`nearestKSearch`/`approxNearestSearch` call with a PointCloudConstPtr, the octree was getting recreated. Changed the API to be consistent with the rest of PCL (including pcl_search and pcl_kdtree) where we pass in a PointCloud instead of a PointCloudConstPtr which simply calls searchMethod (cloud[i], ...)
 * minor code optimizations
 * renamed organized_neighbor.h header in pcl_search (unreleased, therefore API changes OK!) to organized.h
 * disabled the auto-search tuning as it wasn't really working. must clean this up further

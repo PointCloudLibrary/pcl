@@ -44,14 +44,12 @@
 #include <pcl/io/vtk_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/surface/concave_hull.h>
-#include <pcl/common/common.h>
-#include <pcl/sample_consensus/sac_model_plane.h>
+#include <pcl/sample_consensus/model_types.h> // for SACMODEL_PLANE
 #include <pcl/filters/project_inliers.h>
 
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
@@ -82,7 +80,7 @@ TEST (PCL, ConcaveHull_bunny)
   concave_hull.setVoronoiCenters (voronoi_centers);
   concave_hull.reconstruct (alpha_shape, polygons_alpha);
 
-  EXPECT_EQ (alpha_shape.points.size (), 21);
+  EXPECT_EQ (alpha_shape.size (), 21);
 
   pcl::PointCloud<pcl::PointXYZ> alpha_shape1;
   pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers1 (new pcl::PointCloud<pcl::PointXYZ>);
@@ -94,7 +92,7 @@ TEST (PCL, ConcaveHull_bunny)
   concave_hull1.setVoronoiCenters (voronoi_centers1);
   concave_hull1.reconstruct (alpha_shape1, polygons_alpha1);
 
-  EXPECT_EQ (alpha_shape1.points.size (), 20);
+  EXPECT_EQ (alpha_shape1.size (), 20);
 
   pcl::PointCloud<pcl::PointXYZ> alpha_shape2;
   pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers2 (new pcl::PointCloud<pcl::PointXYZ>);
@@ -105,7 +103,7 @@ TEST (PCL, ConcaveHull_bunny)
   concave_hull2.setVoronoiCenters (voronoi_centers2);
   concave_hull2.reconstruct (alpha_shape2, polygons_alpha2);
 
-  EXPECT_EQ (alpha_shape2.points.size (), 81);
+  EXPECT_EQ (alpha_shape2.size (), 81);
 
   //PolygonMesh concave;
   //toPCLPointCloud2 (alpha_shape2, concave.cloud);
@@ -172,7 +170,7 @@ TEST (PCL, ConcaveHull_4points)
   cloud_4->push_back (p);
 
   cloud_4->height = 1;
-  cloud_4->width = std::uint32_t (cloud_4->size ());
+  cloud_4->width = cloud_4->size ();
 
   ConcaveHull<PointXYZ> concave_hull;
   concave_hull.setInputCloud (cloud_4);
@@ -215,9 +213,9 @@ TEST (PCL, ConcaveHull_LTable)
   {
     for (std::size_t j = 0; j <= 2; j++)
     {
-      cloud_out_ltable.points[npoints].x = float (i) * 0.5f;
-      cloud_out_ltable.points[npoints].y = -float (j) * 0.5f;
-      cloud_out_ltable.points[npoints].z = 0.f;
+      cloud_out_ltable[npoints].x = float (i) * 0.5f;
+      cloud_out_ltable[npoints].y = -float (j) * 0.5f;
+      cloud_out_ltable[npoints].z = 0.f;
       npoints++;
     }
   }
@@ -226,9 +224,9 @@ TEST (PCL, ConcaveHull_LTable)
   {
     for(std::size_t j = 3; j < 8; j++)
     {
-      cloud_out_ltable.points[npoints].x = float (i) * 0.5f;
-      cloud_out_ltable.points[npoints].y = -float (j) * 0.5f;
-      cloud_out_ltable.points[npoints].z = 0.f;
+      cloud_out_ltable[npoints].x = float (i) * 0.5f;
+      cloud_out_ltable[npoints].y = -float (j) * 0.5f;
+      cloud_out_ltable[npoints].z = 0.f;
       npoints++;
     }
   }
@@ -247,7 +245,7 @@ TEST (PCL, ConcaveHull_LTable)
   concave_hull.setVoronoiCenters (voronoi_centers);
   concave_hull.reconstruct (alpha_shape, polygons_alpha);
 
-  EXPECT_EQ (alpha_shape.points.size (), 27);
+  EXPECT_EQ (alpha_shape.size (), 27);
 
   pcl::PointCloud<pcl::PointXYZ> alpha_shape1;
   pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers1 (new pcl::PointCloud<pcl::PointXYZ>);
@@ -259,7 +257,7 @@ TEST (PCL, ConcaveHull_LTable)
   concave_hull1.setVoronoiCenters (voronoi_centers1);
   concave_hull1.reconstruct (alpha_shape1, polygons_alpha1);
 
-  EXPECT_EQ (alpha_shape1.points.size (), 23);
+  EXPECT_EQ (alpha_shape1.size (), 23);
 
   pcl::PointCloud<pcl::PointXYZ> alpha_shape2;
   pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers2 (new pcl::PointCloud<pcl::PointXYZ>);
@@ -270,7 +268,7 @@ TEST (PCL, ConcaveHull_LTable)
   concave_hull2.setVoronoiCenters (voronoi_centers2);
   concave_hull2.reconstruct (alpha_shape2, polygons_alpha2);
 
-  EXPECT_EQ (alpha_shape2.points.size (), 19);
+  EXPECT_EQ (alpha_shape2.size (), 19);
 }
 
 /* ---[ */

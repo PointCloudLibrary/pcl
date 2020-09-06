@@ -42,6 +42,8 @@
 #include <pcl/ml/svm_wrapper.h>
 
 #include <cassert>
+#include <cmath>   // for isfinite
+#include <cstring> // for strrchr
 #include <fstream>
 
 char*

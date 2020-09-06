@@ -38,6 +38,8 @@
 
 #include <iostream>
 #include <map>
+#include <pcl/common/norms.h> // for L1_Norm
+#include <pcl/common/eigen.h>
 
 namespace pcl {
 

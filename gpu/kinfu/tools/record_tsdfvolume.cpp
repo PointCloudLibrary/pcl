@@ -54,15 +54,14 @@
 #include "tsdf_volume.h"
 #include "tsdf_volume.hpp"
 
-using namespace std;
 namespace pc = pcl::console;
 
 using PointT = pcl::PointXYZ;
 using VoxelT = float;
 using WeightT = short;
 
-string cloud_file  = "cloud.pcd";
-string volume_file = "tsdf_volume.dat";
+std::string cloud_file  = "cloud.pcd";
+std::string volume_file = "tsdf_volume.dat";
 
 double min_trunc_dist = 30.0f;
 
@@ -77,8 +76,8 @@ class DeviceVolume
 {
 public:
 
-  using Ptr = shared_ptr<DeviceVolume>;
-  using ConstPtr = shared_ptr<const DeviceVolume>;
+  using Ptr = std::shared_ptr<DeviceVolume>;
+  using ConstPtr = std::shared_ptr<const DeviceVolume>;
 
   /** \brief Constructor
    * param[in] volume_size size of the volume in mm
@@ -93,7 +92,7 @@ public:
 
     // truncation distance
     Eigen::Vector3f voxel_size = volume_size.array() / volume_res.array().cast<float>();
-    trunc_dist_ = max ((float)min_trunc_dist, 2.1f * max (voxel_size[0], max (voxel_size[1], voxel_size[2])));
+    trunc_dist_ = std::max ((float)min_trunc_dist, 2.1f * std::max (voxel_size[0], std::max (voxel_size[1], voxel_size[2])));
   };
 
   /** \brief Creates the TSDF volume on the GPU
@@ -209,7 +208,7 @@ DeviceVolume::getCloud (pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud)
 
   // write into point cloud structure
   device_cloud_buffer.download (cloud->points);
-  cloud->width = (int)cloud->points.size ();
+  cloud->width = cloud->size ();
   cloud->height = 1;
 
   return true;
@@ -452,7 +451,7 @@ main (int argc, char* argv[])
 
 
   // integrate depth in device volume
-  pc::print_highlight ("Converting depth map to volume ... "); std::cout << flush;
+  pc::print_highlight ("Converting depth map to volume ... "); std::cout << std::flush;
   device_volume->createFromDepth (depth, intr);
 
   // get volume from device
@@ -465,7 +464,7 @@ main (int argc, char* argv[])
 
 
   // generating TSDF cloud
-  pc::print_highlight ("Generating tsdf volume cloud ... "); std::cout << flush;
+  pc::print_highlight ("Generating tsdf volume cloud ... "); std::cout << std::flush;
   pcl::PointCloud<pcl::PointXYZI>::Ptr tsdf_cloud (new pcl::PointCloud<pcl::PointXYZI>);
   volume->convertToTsdfCloud (tsdf_cloud);
   pc::print_info ("done [%d points]\n", tsdf_cloud->size());
@@ -475,7 +474,7 @@ main (int argc, char* argv[])
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_volume (new pcl::PointCloud<pcl::PointXYZ>);
   if (extract_cloud_volume)
   {
-    pc::print_highlight ("Generating cloud from volume ... "); std::cout << flush;
+    pc::print_highlight ("Generating cloud from volume ... "); std::cout << std::flush;
     if (!device_volume->getCloud (cloud_volume))
     {
       pc::print_error ("Cloudn't get cloud from device volume!\n");
@@ -506,7 +505,7 @@ main (int argc, char* argv[])
     pc::print_error ("Cloudn't save the volume to file %s.\n", volume_file.c_str());
 
   // TSDF point cloud
-  string tsdf_cloud_file (pcl::getFilenameWithoutExtension(volume_file) + "_cloud.pcd");
+  std::string tsdf_cloud_file (pcl::getFilenameWithoutExtension(volume_file) + "_cloud.pcd");
   pc::print_info ("Saving volume cloud to "); pc::print_value ("%s", tsdf_cloud_file.c_str()); pc::print_info (" ... ");
   if (pcl::io::savePCDFile (tsdf_cloud_file, *tsdf_cloud, true) < 0)
   {
@@ -519,7 +518,7 @@ main (int argc, char* argv[])
   // point cloud from volume
   if (extract_cloud_volume)
   {
-    string cloud_volume_file (pcl::getFilenameWithoutExtension(cloud_file) + "_from_volume.pcd");
+    std::string cloud_volume_file (pcl::getFilenameWithoutExtension(cloud_file) + "_from_volume.pcd");
     pc::print_info ("Saving cloud from volume to "); pc::print_value ("%s", cloud_volume_file.c_str()); pc::print_info (" ... ");
     if (pcl::io::savePCDFile (cloud_volume_file, *cloud_volume, true) < 0)
     {

@@ -38,10 +38,6 @@
 #include <pcl/pcl_config.h>
 #include <pcl/io/image_ir.h>
 
-#include <sstream>
-#include <limits>
-#include <iostream>
-
 #include <pcl/io/io_exception.h>
 
 using pcl::io::FrameWrapper;

@@ -109,7 +109,7 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
   pcl::IndicesPtr indices (new std::vector<int>);
   for (std::size_t i = 0; i < input->size (); ++i)
   {
-    const float z = input->points[i].z;
+    const float z = (*input)[i].z;
     if (min_depth < z && z < max_depth)
     {
       foreground_mask[i] = true;
@@ -142,7 +142,7 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
   {
     if (foreground_mask[i])
     {
-      const pcl::PointXYZRGBA & p = input->points[i];
+      const pcl::PointXYZRGBA & p = (*input)[i];
       float d = std::abs (c[0]*p.x + c[1]*p.y + c[2]*p.z + c[3]);
       foreground_mask[i] = (d < max_height);
     }
@@ -212,7 +212,7 @@ compute (const PointCloudXYZRGBA::ConstPtr & input, float min_depth, float max_d
   {
     if (!foreground_mask[i])
     {
-      pcl::PointXYZRGBA & p = template_cloud.points[i];
+      pcl::PointXYZRGBA & p = template_cloud[i];
       p.x = p.y = p.z = std::numeric_limits<float>::quiet_NaN ();
     }
   }

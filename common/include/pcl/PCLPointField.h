@@ -2,6 +2,7 @@
 
 #include <pcl/memory.h>       // for shared_ptr
 #include <pcl/type_traits.h>  // for asEnum_v
+#include <pcl/types.h>        // for index_t
 
 #include <string>   // for string
 #include <ostream>  // for ostream
@@ -12,9 +13,9 @@ namespace pcl
   {
     std::string name;
 
-    std::uint32_t offset = 0;
+    uindex_t offset = 0;
     std::uint8_t datatype = 0;
-    std::uint32_t count = 0;
+    uindex_t count = 0;
 
     enum PointFieldTypes { INT8 = traits::asEnum_v<std::int8_t>,
                            UINT8 = traits::asEnum_v<std::uint8_t>,

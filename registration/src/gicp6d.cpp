@@ -180,7 +180,6 @@ namespace pcl
   GeneralizedIterativeClosestPoint6D::computeTransformation (PointCloudSource& output, const Eigen::Matrix4f& guess)
   {
     using namespace pcl;
-    using namespace std;
 
     IterativeClosestPoint<PointSource, PointTarget>::initComputeReciprocal ();
 

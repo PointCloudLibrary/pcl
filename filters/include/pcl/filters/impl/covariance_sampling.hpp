@@ -41,9 +41,9 @@
 #ifndef PCL_FILTERS_IMPL_COVARIANCE_SAMPLING_H_
 #define PCL_FILTERS_IMPL_COVARIANCE_SAMPLING_H_
 
-#include <pcl/common/eigen.h>
 #include <pcl/filters/covariance_sampling.h>
 #include <list>
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename PointNT> bool
@@ -202,7 +202,7 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled
   }
 
   // Remap the sampled_indices to the input_ cloud
-  for (int &sampled_index : sampled_indices)
+  for (auto &sampled_index : sampled_indices)
     sampled_index = (*indices_)[candidate_indices[sampled_index]];
 }
 
@@ -217,7 +217,7 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (Cloud &output)
   output.resize (sampled_indices.size ());
   output.header = input_->header;
   output.height = 1;
-  output.width = std::uint32_t (output.size ());
+  output.width = output.size ();
   output.is_dense = true;
   for (std::size_t i = 0; i < sampled_indices.size (); ++i)
     output[i] = (*input_)[sampled_indices[i]];

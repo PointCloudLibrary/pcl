@@ -429,12 +429,16 @@ main (int argc, char** argv)
     }
     else
     {
-      cloud.width = static_cast<std::uint32_t> (cloud.points.size ());
+      cloud.width = cloud.size ();
       cloud.height = 1;
     }
 
     pcl::PCDWriter writer;
-    PCL_INFO ("Wrote %lu points (%d x %d) to %s\n", cloud.points.size (), cloud.width, cloud.height, fname.c_str ());
+    PCL_INFO("Wrote %zu points (%d x %d) to %s\n",
+             static_cast<std::size_t>(cloud.size()),
+             cloud.width,
+             cloud.height,
+             fname.c_str());
     writer.writeBinaryCompressed (fname, cloud);
   } // sphere
   return (0);

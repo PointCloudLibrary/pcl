@@ -39,6 +39,7 @@
 #define PCL_SEGMENTATION_IMPL_EXTRACT_CLUSTERS_H_
 
 #include <pcl/segmentation/extract_clusters.h>
+#include <pcl/search/organized.h> // for OrganizedNeighbor
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -48,20 +49,23 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
                                unsigned int min_pts_per_cluster,
                                unsigned int max_pts_per_cluster)
 {
-  if (tree->getInputCloud ()->points.size () != cloud.points.size ())
+  if (tree->getInputCloud ()->size () != cloud.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
+    PCL_ERROR("[pcl::extractEuclideanClusters] Tree built for a different point cloud "
+              "dataset (%zu) than the input cloud (%zu)!\n",
+              static_cast<std::size_t>(tree->getInputCloud()->size()),
+              static_cast<std::size_t>(cloud.size()));
     return;
   }
   // Check if the tree is sorted -- if it is we don't need to check the first element
   int nn_start_idx = tree->getSortedResults () ? 1 : 0;
   // Create a bool vector of processed point indices, and initialize it to false
-  std::vector<bool> processed (cloud.points.size (), false);
+  std::vector<bool> processed (cloud.size (), false);
 
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
-  for (int i = 0; i < static_cast<int> (cloud.points.size ()); ++i)
+  for (int i = 0; i < static_cast<int> (cloud.size ()); ++i)
   {
     if (processed[i])
       continue;
@@ -124,21 +128,25 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 {
   // \note If the tree was created over <cloud, indices>, we guarantee a 1-1 mapping between what the tree returns
   //and indices[i]
-  if (tree->getInputCloud ()->points.size () != cloud.points.size ())
-  {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
+  if (tree->getInputCloud()->size() != cloud.size()) {
+    PCL_ERROR("[pcl::extractEuclideanClusters] Tree built for a different point cloud "
+              "dataset (%zu) than the input cloud (%zu)!\n",
+              static_cast<std::size_t>(tree->getInputCloud()->size()),
+              static_cast<std::size_t>(cloud.size()));
     return;
   }
-  if (tree->getIndices ()->size () != indices.size ())
-  {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of indices (%lu) than the input set (%lu)!\n", tree->getIndices ()->size (), indices.size ());
+  if (tree->getIndices()->size() != indices.size()) {
+    PCL_ERROR("[pcl::extractEuclideanClusters] Tree built for a different set of "
+              "indices (%zu) than the input set (%zu)!\n",
+              static_cast<std::size_t>(tree->getIndices()->size()),
+              indices.size());
     return;
   }
   // Check if the tree is sorted -- if it is we don't need to check the first element
   int nn_start_idx = tree->getSortedResults () ? 1 : 0;
 
   // Create a bool vector of processed point indices, and initialize it to false
-  std::vector<bool> processed (cloud.points.size (), false);
+  std::vector<bool> processed (cloud.size (), false);
 
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
@@ -157,7 +165,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
     while (sq_idx < static_cast<int> (seed_queue.size ()))
     {
       // Search for sq_idx
-      int ret = tree->radiusSearch (cloud.points[seed_queue[sq_idx]], tolerance, nn_indices, nn_distances);
+      int ret = tree->radiusSearch (cloud[seed_queue[sq_idx]], tolerance, nn_indices, nn_distances);
       if( ret == -1)
       {
         PCL_ERROR("[pcl::extractEuclideanClusters] Received error code -1 from radiusSearch\n");

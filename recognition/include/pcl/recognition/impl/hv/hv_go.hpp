@@ -50,24 +50,24 @@ inline void extractEuclideanClustersSmooth(const typename pcl::PointCloud<PointT
     unsigned int min_pts_per_cluster, unsigned int max_pts_per_cluster = (std::numeric_limits<int>::max) ())
 {
 
-  if (tree->getInputCloud ()->points.size () != cloud.points.size ())
+  if (tree->getInputCloud ()->size () != cloud.size ())
   {
     PCL_ERROR("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset\n");
     return;
   }
-  if (cloud.points.size () != normals.points.size ())
+  if (cloud.size () != normals.size ())
   {
     PCL_ERROR("[pcl::extractEuclideanClusters] Number of points in the input point cloud different than normals!\n");
     return;
   }
 
   // Create a bool vector of processed point indices, and initialize it to false
-  std::vector<bool> processed (cloud.points.size (), false);
+  std::vector<bool> processed (cloud.size (), false);
 
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
-  int size = static_cast<int> (cloud.points.size ());
+  int size = static_cast<int> (cloud.size ());
   for (int i = 0; i < size; ++i)
   {
     if (processed[i])
@@ -82,7 +82,7 @@ inline void extractEuclideanClustersSmooth(const typename pcl::PointCloud<PointT
     while (sq_idx < static_cast<int> (seed_queue.size ()))
     {
 
-      if (normals.points[seed_queue[sq_idx]].curvature > curvature_threshold)
+      if (normals[seed_queue[sq_idx]].curvature > curvature_threshold)
       {
         sq_idx++;
         continue;
@@ -100,7 +100,7 @@ inline void extractEuclideanClustersSmooth(const typename pcl::PointCloud<PointT
         if (processed[nn_indices[j]]) // Has this point been processed before ?
           continue;
 
-        if (normals.points[nn_indices[j]].curvature > curvature_threshold)
+        if (normals[nn_indices[j]].curvature > curvature_threshold)
         {
           continue;
         }
@@ -108,9 +108,9 @@ inline void extractEuclideanClustersSmooth(const typename pcl::PointCloud<PointT
         //processed[nn_indices[j]] = true;
         // [-1;1]
 
-        double dot_p = normals.points[seed_queue[sq_idx]].normal[0] * normals.points[nn_indices[j]].normal[0]
-            + normals.points[seed_queue[sq_idx]].normal[1] * normals.points[nn_indices[j]].normal[1]
-            + normals.points[seed_queue[sq_idx]].normal[2] * normals.points[nn_indices[j]].normal[2];
+        double dot_p = normals[seed_queue[sq_idx]].normal[0] * normals[nn_indices[j]].normal[0]
+            + normals[seed_queue[sq_idx]].normal[1] * normals[nn_indices[j]].normal[1]
+            + normals[seed_queue[sq_idx]].normal[2] * normals[nn_indices[j]].normal[2];
 
         if (std::abs (std::acos (dot_p)) < eps_angle)
         {
@@ -215,14 +215,14 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
 
   //check nans...
   int j = 0;
-  for (std::size_t i = 0; i < scene_normals_->points.size (); ++i)
+  for (std::size_t i = 0; i < scene_normals_->size (); ++i)
   {
-    if (!std::isfinite (scene_normals_->points[i].normal_x) || !std::isfinite (scene_normals_->points[i].normal_y)
-        || !std::isfinite (scene_normals_->points[i].normal_z))
+    if (!std::isfinite ((*scene_normals_)[i].normal_x) || !std::isfinite ((*scene_normals_)[i].normal_y)
+        || !std::isfinite ((*scene_normals_)[i].normal_z))
       continue;
 
-    scene_normals_->points[j] = scene_normals_->points[i];
-    scene_cloud_downsampled_->points[j] = scene_cloud_downsampled_->points[i];
+    (*scene_normals_)[j] = (*scene_normals_)[i];
+    (*scene_cloud_downsampled_)[j] = (*scene_cloud_downsampled_)[i];
 
     j++;
   }
@@ -235,9 +235,9 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
   scene_cloud_downsampled_->width = j;
   scene_cloud_downsampled_->height = 1;
 
-  explained_by_RM_.resize (scene_cloud_downsampled_->points.size (), 0);
-  explained_by_RM_distance_weighted.resize (scene_cloud_downsampled_->points.size (), 0.f);
-  unexplained_by_RM_neighboorhods.resize (scene_cloud_downsampled_->points.size (), 0.f);
+  explained_by_RM_.resize (scene_cloud_downsampled_->size (), 0);
+  explained_by_RM_distance_weighted.resize (scene_cloud_downsampled_->size (), 0.f);
+  unexplained_by_RM_neighboorhods.resize (scene_cloud_downsampled_->size (), 0.f);
 
   //compute segmentation of the scene if detect_clutter_
   if (detect_clutter_)
@@ -255,16 +255,16 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
         clusters, eps_angle_threshold, curvature_threshold, min_points);
 
     clusters_cloud_.reset (new pcl::PointCloud<pcl::PointXYZI>);
-    clusters_cloud_->points.resize (scene_cloud_downsampled_->points.size ());
+    clusters_cloud_->points.resize (scene_cloud_downsampled_->size ());
     clusters_cloud_->width = scene_cloud_downsampled_->width;
     clusters_cloud_->height = 1;
 
-    for (std::size_t i = 0; i < scene_cloud_downsampled_->points.size (); i++)
+    for (std::size_t i = 0; i < scene_cloud_downsampled_->size (); i++)
     {
       pcl::PointXYZI p;
-      p.getVector3fMap () = scene_cloud_downsampled_->points[i].getVector3fMap ();
+      p.getVector3fMap () = (*scene_cloud_downsampled_)[i].getVector3fMap ();
       p.intensity = 0.f;
-      clusters_cloud_->points[i] = p;
+      (*clusters_cloud_)[i] = p;
     }
 
     float intens_incr = 100.f / static_cast<float> (clusters.size ());
@@ -273,7 +273,7 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
     {
       for (const auto &vertex : cluster.indices)
       {
-        clusters_cloud_->points[vertex].intensity = intens;
+        (*clusters_cloud_)[vertex].intensity = intens;
       }
 
       intens += intens_incr;
@@ -340,14 +340,13 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
     std::map<int, bool> banned;
     std::map<int, bool>::iterator banned_it;
 
-    for (std::size_t j = 0; j < complete_models_[indices_[i]]->points.size (); j++)
+    for (const auto& point: *complete_models_[indices_[i]])
     {
-      int pos_x, pos_y, pos_z;
-      pos_x = static_cast<int> (std::floor ((complete_models_[indices_[i]]->points[j].x - min_pt_all.x) / res_occupancy_grid_));
-      pos_y = static_cast<int> (std::floor ((complete_models_[indices_[i]]->points[j].y - min_pt_all.y) / res_occupancy_grid_));
-      pos_z = static_cast<int> (std::floor ((complete_models_[indices_[i]]->points[j].z - min_pt_all.z) / res_occupancy_grid_));
+      const int pos_x = static_cast<int> (std::floor ((point.x - min_pt_all.x) / res_occupancy_grid_));
+      const int pos_y = static_cast<int> (std::floor ((point.y - min_pt_all.y) / res_occupancy_grid_));
+      const int pos_z = static_cast<int> (std::floor ((point.z - min_pt_all.z) / res_occupancy_grid_));
 
-      int idx = pos_z * size_x * size_y + pos_y * size_x + pos_x;
+      const int idx = pos_z * size_x * size_y + pos_y * size_x + pos_x;
       banned_it = banned.find (idx);
       if (banned_it == banned.end ())
       {
@@ -512,13 +511,12 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
   {
     //check nans...
     int j = 0;
-    for (std::size_t i = 0; i < recog_model->cloud_->points.size (); ++i)
+    for (auto& point: *(recog_model->cloud_))
     {
-      if (!std::isfinite (recog_model->cloud_->points[i].x) || !std::isfinite (recog_model->cloud_->points[i].y)
-          || !std::isfinite (recog_model->cloud_->points[i].z))
+      if (!isXYZFinite (point))
         continue;
 
-      recog_model->cloud_->points[j] = recog_model->cloud_->points[i];
+      (*recog_model->cloud_)[j] = point;
       j++;
     }
 
@@ -545,14 +543,13 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
 
   //check nans...
   int j = 0;
-  for (std::size_t i = 0; i < recog_model->normals_->points.size (); ++i)
+  for (std::size_t i = 0; i < recog_model->normals_->size (); ++i)
   {
-    if (!std::isfinite (recog_model->normals_->points[i].normal_x) || !std::isfinite (recog_model->normals_->points[i].normal_y)
-        || !std::isfinite (recog_model->normals_->points[i].normal_z))
+    if (isNormalFinite((*recog_model->normals_)[i]))
       continue;
 
-    recog_model->normals_->points[j] = recog_model->normals_->points[i];
-    recog_model->cloud_->points[j] = recog_model->cloud_->points[i];
+    (*recog_model->normals_)[j] = (*recog_model->normals_)[i];
+    (*recog_model->cloud_)[j] = (*recog_model->cloud_)[i];
     j++;
   }
 
@@ -573,13 +570,13 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
 
   std::map<int, std::shared_ptr<std::vector<std::pair<int, float>>>> model_explains_scene_points; //which point i from the scene is explained by a points j_k with dist d_k from the model
 
-  outliers_weight.resize (recog_model->cloud_->points.size ());
-  recog_model->outlier_indices_.resize (recog_model->cloud_->points.size ());
+  outliers_weight.resize (recog_model->cloud_->size ());
+  recog_model->outlier_indices_.resize (recog_model->cloud_->size ());
 
   std::size_t o = 0;
-  for (std::size_t i = 0; i < recog_model->cloud_->points.size (); i++)
+  for (std::size_t i = 0; i < recog_model->cloud_->size (); i++)
   {
-    if (!scene_downsampled_tree_->radiusSearch (recog_model->cloud_->points[i], inliers_threshold_, nn_indices, nn_distances, std::numeric_limits<int>::max ()))
+    if (!scene_downsampled_tree_->radiusSearch ((*recog_model->cloud_)[i], inliers_threshold_, nn_indices, nn_distances, std::numeric_limits<int>::max ()))
     {
       //outlier
       outliers_weight[o] = regularizer_;
@@ -634,8 +631,9 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
 
     //it->first is index to scene point
     //using normals to weight inliers
-    Eigen::Vector3f scene_p_normal = scene_normals_->points[it->first].getNormalVector3fMap ();
-    Eigen::Vector3f model_p_normal = recog_model->normals_->points[it->second->at (closest).first].getNormalVector3fMap ();
+    Eigen::Vector3f scene_p_normal = (*scene_normals_)[it->first].getNormalVector3fMap ();
+    Eigen::Vector3f model_p_normal =
+        (*recog_model->normals_)[it->second->at(closest).first].getNormalVector3fMap();
     float dotp = scene_p_normal.dot (model_p_normal) * 1.f; //[-1,1] from antiparallel trough perpendicular to parallel
 
     if (dotp < 0.f)
@@ -666,7 +664,7 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(Recogn
     std::vector < std::pair<int, int> > neighborhood_indices; //first is indices to scene point and second is indices to explained_ scene points
     for (int i = 0; i < static_cast<int> (recog_model->explained_.size ()); i++)
     {
-      if (scene_downsampled_tree_->radiusSearch (scene_cloud_downsampled_->points[recog_model->explained_[i]], radius_neighborhood_GO_, nn_indices,
+      if (scene_downsampled_tree_->radiusSearch ((*scene_cloud_downsampled_)[recog_model->explained_[i]], radius_neighborhood_GO_, nn_indices,
           nn_distances, std::numeric_limits<int>::max ()))
       {
         for (std::size_t k = 0; k < nn_distances.size (); k++)
@@ -707,9 +705,9 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(Recogn
         //recog_model->unexplained_in_neighborhood.push_back(neighborhood_indices[i]);
         recog_model->unexplained_in_neighborhood[p] = neighborhood_index.first;
 
-        if (clusters_cloud_->points[recog_model->explained_[neighborhood_index.second]].intensity != 0.f
-            && (clusters_cloud_->points[recog_model->explained_[neighborhood_index.second]].intensity
-                == clusters_cloud_->points[neighborhood_index.first].intensity))
+        if ((*clusters_cloud_)[recog_model->explained_[neighborhood_index.second]].intensity != 0.f
+            && ((*clusters_cloud_)[recog_model->explained_[neighborhood_index.second]].intensity
+                == (*clusters_cloud_)[neighborhood_index.first].intensity))
         {
 
           recog_model->unexplained_in_neighborhood_weights[p] = clutter_regularizer_;
@@ -719,13 +717,13 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::computeClutterCue(Recogn
           //neighborhood_indices[i].first gives the index to the scene point and second to the explained scene point by the model causing this...
           //calculate weight of this clutter point based on the distance of the scene point and the model point causing it
           float d = static_cast<float> (pow (
-              (scene_cloud_downsampled_->points[recog_model->explained_[neighborhood_index.second]].getVector3fMap ()
-                  - scene_cloud_downsampled_->points[neighborhood_index.first].getVector3fMap ()).norm (), 2));
+              ((*scene_cloud_downsampled_)[recog_model->explained_[neighborhood_index.second]].getVector3fMap ()
+                  - (*scene_cloud_downsampled_)[neighborhood_index.first].getVector3fMap ()).norm (), 2));
           float d_weight = -(d / rn_sqr) + 1; //points that are close have a strong weight*/
 
           //using normals to weight clutter points
-          Eigen::Vector3f scene_p_normal = scene_normals_->points[neighborhood_index.first].getNormalVector3fMap ();
-          Eigen::Vector3f model_p_normal = scene_normals_->points[recog_model->explained_[neighborhood_index.second]].getNormalVector3fMap ();
+          Eigen::Vector3f scene_p_normal = (*scene_normals_)[neighborhood_index.first].getNormalVector3fMap ();
+          Eigen::Vector3f model_p_normal = (*scene_normals_)[recog_model->explained_[neighborhood_index.second]].getNormalVector3fMap ();
           float dotp = scene_p_normal.dot (model_p_normal); //[-1,1] from antiparallel trough perpendicular to parallel
 
           if (dotp < 0)

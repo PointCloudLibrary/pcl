@@ -37,6 +37,7 @@
 
 #include <pcl/surface/on_nurbs/fitting_curve_2d_asdm.h>
 #include <stdexcept>
+#include <Eigen/Geometry> // for cross
 
 using namespace pcl;
 using namespace on_nurbs;

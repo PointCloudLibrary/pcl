@@ -64,7 +64,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 PointCloud<PointXYZ> cloud_source, cloud_target, cloud_reg;
 PointCloud<PointXYZRGBA> cloud_with_color;
@@ -119,10 +118,10 @@ TEST (PCL, findFeatureCorrespondences)
       feature3.points.push_back (f);
     }
   }
-  feature0.width = static_cast<std::uint32_t> (feature0.points.size ());
-  feature1.width = static_cast<std::uint32_t> (feature1.points.size ());
-  feature2.width = static_cast<std::uint32_t> (feature2.points.size ());
-  feature3.width = static_cast<std::uint32_t> (feature3.points.size ());
+  feature0.width = feature0.size ();
+  feature1.width = feature1.size ();
+  feature2.width = feature2.size ();
+  feature3.width = feature3.size ();
 
   KdTreeFLANN<FeatureT> tree;
 
@@ -209,7 +208,7 @@ TEST (PCL, IterativeClosestPoint)
 
   // Register
   reg.align (cloud_reg);
-  EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (cloud_reg.size (), cloud_source.size ());
 
   Eigen::Matrix4f transformation = reg.getFinalTransformation ();
   EXPECT_NEAR (transformation (0, 0), 0.8806,  1e-3);
@@ -383,7 +382,7 @@ TEST (PCL, IterativeClosestPointNonLinear)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (output.size (), cloud_source.size ());
   // We get different results on 32 vs 64-bit systems.  To address this, we've removed the explicit output test
   // on the transformation matrix.  Instead, we're testing to make sure the algorithm converges to a sufficiently
   // low error by checking the fitness score.
@@ -430,7 +429,7 @@ TEST (PCL, IterativeClosestPointNonLinear)
 
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_EQ (output.size (), cloud_source.size ());
     EXPECT_LT (reg.getFitnessScore (), 0.001);
   }
 
@@ -470,7 +469,7 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (output.size (), cloud_source.size ());
   EXPECT_LT (reg.getFitnessScore (), 0.005);
 
   // Check again, for all possible caching schemes
@@ -491,7 +490,7 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
 
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_EQ (output.size (), cloud_source.size ());
     EXPECT_LT (reg.getFitnessScore (), 0.005);
   }
 
@@ -543,7 +542,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (output.size (), cloud_source.size ());
   EXPECT_LT (reg.getFitnessScore (), 0.0001);
 
   // Check again, for all possible caching schemes
@@ -564,7 +563,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
 
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_EQ (output.size (), cloud_source.size ());
     EXPECT_LT (reg.getFitnessScore (), 0.001);
   }
 
@@ -582,7 +581,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
   reg_guess.setMaximumIterations (50);
   reg_guess.setTransformationEpsilon (1e-8);
   reg_guess.align (output, transform.matrix ());
-  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (output.size (), cloud_source.size ());
   EXPECT_LT (reg.getFitnessScore (), 0.0001);
 }
 
@@ -616,7 +615,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (src->points.size ()));
+  EXPECT_EQ (output.size (), src->size ());
   EXPECT_LT (reg.getFitnessScore (), 0.003);
 
   // Check again, for all possible caching schemes
@@ -637,7 +636,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
 
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (src->points.size ()));
+    EXPECT_EQ (output.size (), src->size ());
     EXPECT_LT (reg.getFitnessScore (), 0.003);
   }
 }
@@ -675,7 +674,7 @@ TEST (PCL, PyramidFeatureHistogram)
   ppf_estimator.compute (*ppf_signature_target);
 
 
-  std::vector<pair<float, float> > dim_range_input, dim_range_target;
+  std::vector<std::pair<float, float> > dim_range_input, dim_range_target;
   for (std::size_t i = 0; i < 3; ++i) dim_range_input.emplace_back(static_cast<float> (-M_PI), static_cast<float> (M_PI));
   dim_range_input.emplace_back(0.0f, 1.0f);
   for (std::size_t i = 0; i < 3; ++i) dim_range_target.emplace_back(static_cast<float> (-M_PI) * 10.0f, static_cast<float> (M_PI) * 10.0f);
@@ -697,7 +696,7 @@ TEST (PCL, PyramidFeatureHistogram)
   float similarity_value = PyramidFeatureHistogram<PPFSignature>::comparePyramidFeatureHistograms (pyramid_source, pyramid_target);
   EXPECT_NEAR (similarity_value, 0.74101555347442627, 1e-4);
 
-  std::vector<pair<float, float> > dim_range_target2;
+  std::vector<std::pair<float, float> > dim_range_target2;
   for (std::size_t i = 0; i < 3; ++i) dim_range_target2.emplace_back(static_cast<float> (-M_PI) * 5.0f, static_cast<float> (M_PI) * 5.0f);
     dim_range_target2.emplace_back(0.0f, 20.0f);
 
@@ -711,7 +710,7 @@ TEST (PCL, PyramidFeatureHistogram)
   EXPECT_NEAR (similarity_value2, 0.80097091197967529, 1e-4);
 
 
-  std::vector<pair<float, float> > dim_range_target3;
+  std::vector<std::pair<float, float> > dim_range_target3;
   for (std::size_t i = 0; i < 3; ++i) dim_range_target3.emplace_back(static_cast<float> (-M_PI) * 2.0f, static_cast<float> (M_PI) * 2.0f);
   dim_range_target3.emplace_back(0.0f, 10.0f);
 
@@ -837,9 +836,9 @@ main (int argc, char** argv)
   return (RUN_ALL_TESTS ());
 
   // Tranpose the cloud_model
-  /*for (std::size_t i = 0; i < cloud_model.points.size (); ++i)
+  /*for (std::size_t i = 0; i < cloud_model.size (); ++i)
   {
-  //  cloud_model.points[i].z += 1;
+  //  cloud_model[i].z += 1;
   }*/
 }
 /* ]--- */

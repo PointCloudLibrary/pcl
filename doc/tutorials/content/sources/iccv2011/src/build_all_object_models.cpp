@@ -86,7 +86,7 @@ main (int argc, char ** argv)
   }
 
   ObjectRecognitionParameters params;
-  ifstream params_stream;
+  std::ifstream params_stream;
 
   //Parse filter parameters
   std::string filter_parameters_file;

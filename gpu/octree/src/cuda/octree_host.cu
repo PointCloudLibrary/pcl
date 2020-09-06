@@ -38,14 +38,15 @@
 #include "pcl/gpu/utils/safe_call.hpp"
 
 #include "internal.hpp"
+#include "utils/approx_nearest_utils.hpp"
 #include "utils/boxutils.hpp"
 
 #include<algorithm>
 #include<limits>
+#include <tuple>
 
 using namespace pcl::gpu;
 using namespace pcl::device;
-using namespace std;
 
 namespace pcl
 {
@@ -89,18 +90,6 @@ void pcl::device::OctreeImpl::internalDownload()
 
 namespace 
 {
-    int getBitsNum(int integer)
-    {
-        int count = 0;
-        while(integer > 0)
-        {
-            if (integer & 1)
-                ++count;
-            integer>>=1;
-        }
-        return count;
-    } 
-
     struct OctreeIteratorHost
     {        
         const static int MAX_LEVELS_PLUS_ROOT = 11;
@@ -174,7 +163,7 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
             int beg = host_octree.begs[node_idx];
             int end = host_octree.ends[node_idx];
 
-            end = beg + min<int>((int)out.size() + end - beg, max_nn) - (int)out.size();
+            end = beg + std::min<int>((int)out.size() + end - beg, max_nn) - (int)out.size();
 
             out.insert(out.end(), host_octree.indices.begin() + beg, host_octree.indices.begin() + end);
             if (out.size() == (std::size_t)max_nn)
@@ -224,35 +213,11 @@ void pcl::device::OctreeImpl::radiusSearchHost(const PointType& query, float rad
 
 void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, int& out_index, float& sqr_dist) const
 {
-    float3 minp = octreeGlobal.minp;
-    float3 maxp = octreeGlobal.maxp;
+    const float3& minp = octreeGlobal.minp;
+    const float3& maxp = octreeGlobal.maxp;
+    const float3 query_point = make_float3(query.x, query.y, query.z);
 
-    int node_idx = 0;
-
-    bool out_of_root = query.x < minp.x || query.y < minp.y ||  query.z < minp.z || query.x > maxp.x || query.y > maxp.y ||  query.z > maxp.z;
-
-    if(!out_of_root)        
-    {
-        int code = CalcMorton(minp, maxp)(query);
-        int level = 0;
-
-        for(;;)
-        {            
-            int mask_pos = 1 << Morton::extractLevelCode(code, level);
-
-            int node = host_octree.nodes[node_idx];
-            int mask = node & 0xFF;
-
-            if(getBitsNum(mask) == 0)  // leaf
-                break;
-
-            if ( (mask & mask_pos) == 0) // no child
-                break;
-
-            node_idx = (node >> 8) + getBitsNum(mask & (mask_pos - 1));
-            ++level;
-        }
-    }
+    const int node_idx = pcl::device::findNode(minp, maxp, query_point, host_octree.nodes);
 
     int beg = host_octree.begs[node_idx];
     int end = host_octree.ends[node_idx];
@@ -276,7 +241,7 @@ void  pcl::device::OctreeImpl::approxNearestSearchHost(const PointType& query, i
             sqr_dist = d2;
             out_index = i;
         }
-    }  
+    }
 
     out_index = host_octree.indices[out_index];
 }

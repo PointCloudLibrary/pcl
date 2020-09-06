@@ -61,8 +61,8 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeIntensitySpinImage (
   float max_intensity = -std::numeric_limits<float>::max ();
   for (int idx = 0; idx < k; ++idx)
   {
-    min_intensity = (std::min) (min_intensity, cloud.points[indices[idx]].intensity);
-    max_intensity = (std::max) (max_intensity, cloud.points[indices[idx]].intensity);
+    min_intensity = (std::min) (min_intensity, cloud[indices[idx]].intensity);
+    max_intensity = (std::max) (max_intensity, cloud[indices[idx]].intensity);
   }
 
   float constant = 1.0f / (2.0f * sigma_ * sigma_);
@@ -74,7 +74,7 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeIntensitySpinImage (
     const float eps = std::numeric_limits<float>::epsilon ();
     float d = static_cast<float> (nr_distance_bins) * std::sqrt (squared_distances[idx]) / (radius + eps);
     float i = static_cast<float> (nr_intensity_bins) * 
-              (cloud.points[indices[idx]].intensity - min_intensity) / (max_intensity - min_intensity + eps);
+              (cloud[indices[idx]].intensity - min_intensity) / (max_intensity - min_intensity + eps);
 
     if (sigma == 0)
     {
@@ -139,8 +139,8 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
 
   Eigen::MatrixXf intensity_spin_image (nr_intensity_bins_, nr_distance_bins_);
   // Allocate enough space to hold the radiusSearch results
-  std::vector<int> nn_indices (surface_->points.size ());
-  std::vector<float> nn_dist_sqr (surface_->points.size ());
+  std::vector<int> nn_indices (surface_->size ());
+  std::vector<float> nn_dist_sqr (surface_->size ());
  
   output.is_dense = true;
   // Iterating over the entire index vector
@@ -152,7 +152,7 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
     if (k == 0)
     {
       for (int bin = 0; bin < nr_intensity_bins_ * nr_distance_bins_; ++bin)
-        output.points[idx].histogram[bin] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].histogram[bin] = std::numeric_limits<float>::quiet_NaN ();
       output.is_dense = false;
       continue;
     }
@@ -164,7 +164,7 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
     std::size_t bin = 0;
     for (Eigen::Index bin_j = 0; bin_j < intensity_spin_image.cols (); ++bin_j)
       for (Eigen::Index bin_i = 0; bin_i < intensity_spin_image.rows (); ++bin_i)
-        output.points[idx].histogram[bin++] = intensity_spin_image (bin_i, bin_j);
+        output[idx].histogram[bin++] = intensity_spin_image (bin_i, bin_j);
   }
 }
 

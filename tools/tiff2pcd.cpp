@@ -42,7 +42,6 @@
 #include <iostream>
 #include <boost/filesystem.hpp>
 
-#include <pcl/pcl_base.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/console/parse.h>

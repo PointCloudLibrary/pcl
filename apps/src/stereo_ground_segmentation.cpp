@@ -33,12 +33,11 @@
  *
  */
 
+#include <pcl/common/centroid.h> // for computeMeanAndCovarianceMatrix
 #include <pcl/common/distances.h>
 #include <pcl/common/intersections.h>
 #include <pcl/common/time.h>
 #include <pcl/features/integral_image_normal.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/io/io.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
@@ -272,15 +271,15 @@ public:
       if (region_index.indices.size() > 1000) {
 
         for (std::size_t j = 0; j < region_index.indices.size(); j++) {
-          pcl::PointXYZ ground_pt(cloud->points[region_index.indices[j]].x,
-                                  cloud->points[region_index.indices[j]].y,
-                                  cloud->points[region_index.indices[j]].z);
+          pcl::PointXYZ ground_pt((*cloud)[region_index.indices[j]].x,
+                                  (*cloud)[region_index.indices[j]].y,
+                                  (*cloud)[region_index.indices[j]].z);
           ground_cloud->points.push_back(ground_pt);
-          ground_image->points[region_index.indices[j]].g = static_cast<std::uint8_t>(
-              (cloud->points[region_index.indices[j]].g + 255) / 2);
-          label_image->points[region_index.indices[j]].r = 0;
-          label_image->points[region_index.indices[j]].g = 255;
-          label_image->points[region_index.indices[j]].b = 0;
+          (*ground_image)[region_index.indices[j]].g = static_cast<std::uint8_t>(
+              ((*cloud)[region_index.indices[j]].g + 255) / 2);
+          (*label_image)[region_index.indices[j]].r = 0;
+          (*label_image)[region_index.indices[j]].g = 255;
+          (*label_image)[region_index.indices[j]].b = 0;
         }
 
         // Compute plane info
@@ -354,19 +353,19 @@ public:
       if (region_index.indices.size() > 1000) {
         for (std::size_t j = 0; j < region_index.indices.size(); j++) {
           // Check to see if it has already been labeled
-          if (ground_image->points[region_index.indices[j]].g ==
-              ground_image->points[region_index.indices[j]].b) {
-            pcl::PointXYZ ground_pt(cloud->points[region_index.indices[j]].x,
-                                    cloud->points[region_index.indices[j]].y,
-                                    cloud->points[region_index.indices[j]].z);
+          if ((*ground_image)[region_index.indices[j]].g ==
+              (*ground_image)[region_index.indices[j]].b) {
+            pcl::PointXYZ ground_pt((*cloud)[region_index.indices[j]].x,
+                                    (*cloud)[region_index.indices[j]].y,
+                                    (*cloud)[region_index.indices[j]].z);
             ground_cloud->points.push_back(ground_pt);
-            ground_image->points[region_index.indices[j]].r = static_cast<std::uint8_t>(
-                (cloud->points[region_index.indices[j]].r + 255) / 2);
-            ground_image->points[region_index.indices[j]].g = static_cast<std::uint8_t>(
-                (cloud->points[region_index.indices[j]].g + 255) / 2);
-            label_image->points[region_index.indices[j]].r = 128;
-            label_image->points[region_index.indices[j]].g = 128;
-            label_image->points[region_index.indices[j]].b = 0;
+            (*ground_image)[region_index.indices[j]].r = static_cast<std::uint8_t>(
+                ((*cloud)[region_index.indices[j]].r + 255) / 2);
+            (*ground_image)[region_index.indices[j]].g = static_cast<std::uint8_t>(
+                ((*cloud)[region_index.indices[j]].g + 255) / 2);
+            (*label_image)[region_index.indices[j]].r = 128;
+            (*label_image)[region_index.indices[j]].g = 128;
+            (*label_image)[region_index.indices[j]].b = 0;
           }
         }
       }
@@ -432,10 +431,10 @@ public:
             if ((ptp_dist > 0.5) && (ptp_dist < 3.0)) {
 
               for (std::size_t j = 0; j < euclidean_label_index.indices.size(); j++) {
-                ground_image->points[euclidean_label_index.indices[j]].r = 255;
-                label_image->points[euclidean_label_index.indices[j]].r = 255;
-                label_image->points[euclidean_label_index.indices[j]].g = 0;
-                label_image->points[euclidean_label_index.indices[j]].b = 0;
+                (*ground_image)[euclidean_label_index.indices[j]].r = 255;
+                (*label_image)[euclidean_label_index.indices[j]].r = 255;
+                (*label_image)[euclidean_label_index.indices[j]].g = 0;
+                (*label_image)[euclidean_label_index.indices[j]].b = 0;
               }
             }
           }
@@ -444,13 +443,13 @@ public:
     }
 
     // note the NAN points in the image as well
-    for (std::size_t i = 0; i < cloud->points.size(); i++) {
-      if (!pcl::isFinite(cloud->points[i])) {
-        ground_image->points[i].b =
-            static_cast<std::uint8_t>((cloud->points[i].b + 255) / 2);
-        label_image->points[i].r = 0;
-        label_image->points[i].g = 0;
-        label_image->points[i].b = 255;
+    for (std::size_t i = 0; i < cloud->size(); i++) {
+      if (!pcl::isFinite((*cloud)[i])) {
+        (*ground_image)[i].b =
+            static_cast<std::uint8_t>(((*cloud)[i].b + 255) / 2);
+        (*label_image)[i].r = 0;
+        (*label_image)[i].g = 0;
+        (*label_image)[i].b = 255;
       }
     }
 
@@ -494,7 +493,7 @@ public:
         if (!viewer->updatePointCloud(prev_ground_image, "cloud"))
           viewer->addPointCloud(prev_ground_image, "cloud");
 
-        if (prev_normal_cloud->points.size() > 1000 && display_normals) {
+        if (prev_normal_cloud->size() > 1000 && display_normals) {
           viewer->removePointCloud("normals");
           viewer->addPointCloudNormals<PointT, pcl::Normal>(
               prev_ground_image, prev_normal_cloud, 10, 0.15f, "normals");
@@ -502,7 +501,7 @@ public:
               pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "normals");
         }
 
-        if (prev_cloud->points.size() > 1000) {
+        if (prev_cloud->size() > 1000) {
           image_viewer->addRGBImage<PointT>(prev_ground_image, "rgb_image", 0.3);
         }
 

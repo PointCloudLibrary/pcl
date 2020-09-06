@@ -39,17 +39,10 @@
  */
 
 #include <pcl/test/gtest.h>
-#include <pcl/PCLPointCloud2.h>
 #include <pcl/type_traits.h>
 #include <pcl/point_types.h>
-#include <pcl/common/io.h>
-#include <pcl/console/print.h>
 #include <pcl/io/ply_io.h>
-#include <pcl/io/ascii_io.h>
 #include <pcl/io/vtk_lib_io.h>
-#include <fstream>
-#include <locale>
-#include <stdexcept>
 
 std::string mesh_file_vtk_;
 

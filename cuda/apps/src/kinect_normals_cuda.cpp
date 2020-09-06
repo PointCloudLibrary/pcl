@@ -106,12 +106,12 @@ class NormalEstimation
       for (std::size_t i = 0; i < cloud->points.size (); ++i)
       {
         PointXYZRGB pt;
-        pt.x = cloud->points[i].x;
-        pt.y = cloud->points[i].y;
-        pt.z = cloud->points[i].z;
+        pt.x = (*cloud)[i].x;
+        pt.y = (*cloud)[i].y;
+        pt.z = (*cloud)[i].z;
         // Pack RGB into a float
-        pt.rgb = *(float*)(&cloud->points[i].rgb);
-        data_host.points[i] = pt;
+        pt.rgb = *(float*)(&(*cloud)[i].rgb);
+        data_host[i] = pt;
       }
       data_host.width = cloud->width;
       data_host.height = cloud->height;

@@ -41,11 +41,9 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/brisk_2d.h>
 #include <pcl/features/brisk_2d.h>
-#include <set>
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 using PointT = PointXYZRGBA;
 using KeyPointT = PointWithScale;

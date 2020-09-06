@@ -41,6 +41,7 @@
 #pragma once
 
 #include <pcl/registration/correspondence_rejection.h>
+#include <pcl/conversions.h> // for fromPCLPointCloud2
 #include <pcl/memory.h>  // for static_pointer_cast
 #include <pcl/point_cloud.h>
 

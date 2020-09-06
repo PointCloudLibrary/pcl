@@ -260,7 +260,7 @@ pcl::gpu::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, bool connect
     }
   }
 #undef FETCH
-  cloud.width  = (int)cloud.points.size ();
+  cloud.width  = cloud.size ();
   cloud.height = 1;
 }
 

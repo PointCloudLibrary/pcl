@@ -61,15 +61,15 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
   int nr_gradient_bins = static_cast<int> (rift_descriptor.cols ());
 
   // Get the center point
-  pcl::Vector3fMapConst p0 = cloud.points[p_idx].getVector3fMap ();
+  pcl::Vector3fMapConst p0 = cloud[p_idx].getVector3fMap ();
 
   // Compute the RIFT descriptor
   rift_descriptor.setZero ();
   for (std::size_t idx = 0; idx < indices.size (); ++idx)
   {
     // Compute the gradient magnitude and orientation (relative to the center point)
-    pcl::Vector3fMapConst point = cloud.points[indices[idx]].getVector3fMap ();
-    Eigen::Map<const Eigen::Vector3f> gradient_vector (& (gradient.points[indices[idx]].gradient[0]));
+    pcl::Vector3fMapConst point = cloud[indices[idx]].getVector3fMap ();
+    Eigen::Map<const Eigen::Vector3f> gradient_vector (& (gradient[indices[idx]].gradient[0]));
 
     float gradient_magnitude = gradient_vector.norm ();
     float gradient_angle_from_center = std::acos (gradient_vector.dot ((point - p0).normalized ()) / gradient_magnitude);
@@ -148,7 +148,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
     output.points.clear ();
     return;
   }
-  if (gradient_->points.size () != surface_->points.size ())
+  if (gradient_->size () != surface_->size ())
   {
     PCL_ERROR ("[pcl::%s::computeFeature] ", getClassName ().c_str ());
     PCL_ERROR ("The number of points in the input dataset differs from the number of points in the gradient!\n");
@@ -171,7 +171,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
     computeRIFT (*surface_, *gradient_, (*indices_)[idx], static_cast<float> (search_radius_), nn_indices, nn_dist_sqr, rift_descriptor);
 
     // Default layout is column major, copy elementwise
-    std::copy_n (rift_descriptor.data (), rift_descriptor.size (), output.points[idx].histogram);
+    std::copy_n (rift_descriptor.data (), rift_descriptor.size (), output[idx].histogram);
   }
 }
 

@@ -40,19 +40,18 @@
 
 #pragma once
 
-#include <cfloat>
 #include <ctime>
 #include <climits>
 #include <memory>
 #include <set>
+#include <boost/random/mersenne_twister.hpp> // for mt19937
+#include <boost/random/uniform_int.hpp> // for uniform_int
+#include <boost/random/variate_generator.hpp> // for variate_generator
 
 #include <pcl/memory.h>
-#include <pcl/pcl_macros.h>
-#include <pcl/pcl_base.h>
 #include <pcl/console/print.h>
 #include <pcl/point_cloud.h>
 #include <pcl/types.h> // for index_t, Indices
-#include <pcl/sample_consensus/boost.h>
 #include <pcl/sample_consensus/model_types.h>
 
 #include <pcl/search/search.h>
@@ -145,9 +144,12 @@ namespace pcl
         else
           rng_alg_.seed (12345u);
 
-        if (indices_->size () > input_->points.size ())
+        if (indices_->size () > input_->size ())
         {
-          PCL_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %lu while the input PointCloud has size %lu!\n", indices_->size (), input_->points.size ());
+          PCL_ERROR("[pcl::SampleConsensusModel] Invalid index vector given with size "
+                    "%zu while the input PointCloud has size %zu!\n",
+                    indices_->size(),
+                    static_cast<std::size_t>(input_->size()));
           indices_->clear ();
         }
         shuffled_indices_ = *indices_;
@@ -300,8 +302,8 @@ namespace pcl
         if (indices_->empty ())
         {
           // Prepare a set of indices to be used (entire cloud)
-          indices_->resize (cloud->points.size ());
-          for (std::size_t i = 0; i < cloud->points.size (); ++i) 
+          indices_->resize (cloud->size ());
+          for (std::size_t i = 0; i < cloud->size (); ++i) 
             (*indices_)[i] = static_cast<index_t> (i);
         }
         shuffled_indices_ = *indices_;

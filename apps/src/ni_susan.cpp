@@ -42,9 +42,6 @@
 #include <pcl/apps/timer.h>
 #include <pcl/common/angles.h>
 #include <pcl/common/common.h>
-#include <pcl/console/parse.h>
-#include <pcl/console/print.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/susan.h>
@@ -55,7 +52,6 @@
 #include <thread>
 
 using namespace pcl;
-using namespace std;
 using namespace std::chrono_literals;
 
 using PointT = PointXYZRGBA;
@@ -101,10 +97,10 @@ public:
   }
 
   /////////////////////////////////////////////////////////////////////////
-  string
+  std::string
   getStrBool(bool state)
   {
-    stringstream ss;
+    std::stringstream ss;
     ss << state;
     return ss.str();
   }
@@ -152,8 +148,8 @@ public:
         if (keypoints && !keypoints->empty()) {
           image_viewer_.removeLayer(getStrBool(keypts));
           for (std::size_t i = 0; i < keypoints->size(); ++i) {
-            int u = int(keypoints->points[i].label % cloud->width);
-            int v = cloud->height - int(keypoints->points[i].label / cloud->width);
+            int u = int((*keypoints)[i].label % cloud->width);
+            int v = cloud->height - int((*keypoints)[i].label / cloud->width);
             image_viewer_.markPoint(u,
                                     v,
                                     visualization::red_color,
@@ -200,7 +196,7 @@ private:
 int
 main(int, char**)
 {
-  string device_id("#1");
+  std::string device_id("#1");
   OpenNIGrabber grabber(device_id);
   SUSANDemo openni_viewer(grabber);
 

@@ -16,7 +16,7 @@ namespace pcl
     template <typename PointT, typename PointNT> inline void
     computeApproximateNormals(const pcl::PointCloud<PointT>& cloud, const std::vector<pcl::Vertices>& polygons, pcl::PointCloud<PointNT>& normals)
     {
-      const auto nr_points = cloud.points.size();
+      const auto nr_points = cloud.size();
 
       normals.header = cloud.header;
       normals.width = cloud.width;
@@ -34,20 +34,20 @@ namespace pcl
         if (polygon.vertices.size() < 3) continue;
 
         // compute normal for triangle
-        Eigen::Vector3f vec_a_b = cloud.points[polygon.vertices[0]].getVector3fMap() - cloud.points[polygon.vertices[1]].getVector3fMap();
-        Eigen::Vector3f vec_a_c = cloud.points[polygon.vertices[0]].getVector3fMap() - cloud.points[polygon.vertices[2]].getVector3fMap();
+        Eigen::Vector3f vec_a_b = cloud[polygon.vertices[0]].getVector3fMap() - cloud[polygon.vertices[1]].getVector3fMap();
+        Eigen::Vector3f vec_a_c = cloud[polygon.vertices[0]].getVector3fMap() - cloud[polygon.vertices[2]].getVector3fMap();
         Eigen::Vector3f normal = vec_a_b.cross(vec_a_c);
-        pcl::flipNormalTowardsViewpoint(cloud.points[polygon.vertices[0]], 0.0f, 0.0f, 0.0f, normal(0), normal(1), normal(2));
+        pcl::flipNormalTowardsViewpoint(cloud[polygon.vertices[0]], 0.0f, 0.0f, 0.0f, normal(0), normal(1), normal(2));
 
         // add normal to all points in polygon
         for (const auto& vertex: polygon.vertices)
-          normals.points[vertex].getNormalVector3fMap() += normal;
+          normals[vertex].getNormalVector3fMap() += normal;
       }
 
       for (std::size_t i = 0; i < nr_points; ++i)
       {
-        normals.points[i].getNormalVector3fMap().normalize();
-        pcl::flipNormalTowardsViewpoint(cloud.points[i], 0.0f, 0.0f, 0.0f, normals.points[i].normal_x, normals.points[i].normal_y, normals.points[i].normal_z);
+        normals[i].getNormalVector3fMap().normalize();
+        pcl::flipNormalTowardsViewpoint(cloud[i], 0.0f, 0.0f, 0.0f, normals[i].normal_x, normals[i].normal_y, normals[i].normal_z);
       }
     }
 
@@ -65,9 +65,9 @@ namespace pcl
                                   std::vector<Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> >& covariances,
                                   double epsilon = 0.001)
     {
-      assert(cloud.points.size() == normals.points.size());
+      assert(cloud.size() == normals.size());
 
-      const auto nr_points = cloud.points.size();
+      const auto nr_points = cloud.size();
       covariances.clear ();
       covariances.reserve (nr_points);
       for (const auto& point: normals.points)

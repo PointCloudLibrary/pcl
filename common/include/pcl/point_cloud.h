@@ -51,7 +51,6 @@
 #include <pcl/type_traits.h>
 #include <pcl/types.h>
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -212,7 +211,7 @@ namespace pcl
         // Copy the obvious
         assert (indices.size () <= pc.size ());
         for (std::size_t i = 0; i < indices.size (); i++)
-          points[i] = pc.points[indices[i]];
+          points[i] = pc[indices[i]];
       }
 
       /** \brief Allocate constructor from point cloud subset
@@ -260,7 +259,7 @@ namespace pcl
         // This causes a drastic performance hit. Prefer not to use reserve with libstdc++ (default on clang)
         cloud1.points.insert (cloud1.points.end (), cloud2.points.begin (), cloud2.points.end ());
 
-        cloud1.width    = static_cast<std::uint32_t>(cloud1.points.size ());
+        cloud1.width    = cloud1.size ();
         cloud1.height   = 1;
         cloud1.is_dense = cloud1.is_dense && cloud2.is_dense;
         return true;
@@ -352,9 +351,9 @@ namespace pcl
       getMatrixXfMap (int dim, int stride, int offset)
       {
         if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
-          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(&points[0])+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(&points[0])+offset, size (), dim, Eigen::OuterStride<> (stride)));
         else
-          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(&points[0])+offset, dim, points.size (), Eigen::OuterStride<> (stride)));
+          return (Eigen::Map<Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(&points[0])+offset, dim, size (), Eigen::OuterStride<> (stride)));
       }
 
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.
@@ -375,9 +374,9 @@ namespace pcl
       getMatrixXfMap (int dim, int stride, int offset) const
       {
         if (Eigen::MatrixXf::Flags & Eigen::RowMajorBit)
-          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(const_cast<PointT*>(&points[0]))+offset, points.size (), dim, Eigen::OuterStride<> (stride)));
+          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(const_cast<PointT*>(&points[0]))+offset, size (), dim, Eigen::OuterStride<> (stride)));
         else
-          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(const_cast<PointT*>(&points[0]))+offset, dim, points.size (), Eigen::OuterStride<> (stride)));
+          return (Eigen::Map<const Eigen::MatrixXf, Eigen::Aligned, Eigen::OuterStride<> >(reinterpret_cast<float*>(const_cast<PointT*>(&points[0]))+offset, dim, size (), Eigen::OuterStride<> (stride)));
       }
 
       /**
@@ -456,19 +455,52 @@ namespace pcl
       inline const_reverse_iterator crend () const noexcept { return (points.crend ()); }
 
       //capacity
-      inline std::size_t size () const { return (points.size ()); }
+      inline std::size_t size () const { return points.size (); }
+      index_t max_size() const noexcept { return static_cast<index_t>(points.max_size()); }
       inline void reserve (std::size_t n) { points.reserve (n); }
       inline bool empty () const { return points.empty (); }
+      PointT* data() noexcept { return points.data(); }
+      const PointT* data() const noexcept { return points.data(); }
 
-      /** \brief Resize the cloud
-        * \param[in] n the new cloud size
-        */
-      inline void resize (std::size_t n)
+      /**
+       * \brief Resizes the container to contain `count` elements
+       * \details
+       * * If the current size is greater than `count`, the pointcloud is reduced to its
+       * first `count` elements
+       * * If the current size is less than `count`, additional default-inserted points
+       * are appended
+       * \note This potentially breaks the organized structure of the cloud by setting
+       * the height to 1 IFF `width * height != count`!
+       * \param[in] count new size of the point cloud
+       */
+      inline void
+      resize(std::size_t count)
       {
-        points.resize (n);
-        if (width * height != n)
-        {
-          width = static_cast<std::uint32_t> (n);
+        points.resize(count);
+        if (width * height != count) {
+          width = static_cast<std::uint32_t>(count);
+          height = 1;
+        }
+      }
+
+      /**
+       * \brief Resizes the container to contain count elements
+       * \details
+       * * If the current size is greater than `count`, the pointcloud is reduced to its
+       * first `count` elements
+       * * If the current size is less than `count`, additional copies of `value` are
+       * appended
+       * \note This potentially breaks the organized structure of the cloud by setting
+       * the height to 1 IFF `width * height != count`!
+       * \param[in] count new size of the point cloud
+       * \param[in] value the value to initialize the new points with
+       */
+      void
+      resize(index_t count, const PointT& value)
+      {
+        points.resize(count, value);
+        if (width * height != count) {
+          width = count;
           height = 1;
         }
       }
@@ -483,6 +515,48 @@ namespace pcl
       inline const PointT& back () const { return (points.back ()); }
       inline PointT& back () { return (points.back ()); }
 
+      /**
+       * \brief Replaces the points with `count` copies of `value`
+       * \note This breaks the organized structure of the cloud by setting the height to
+       * 1!
+       */
+      void
+      assign(index_t count, const PointT& value)
+      {
+        points.assign(count, value);
+        width = static_cast<std::uint32_t>(size());
+        height = 1;
+      }
+
+      /**
+       * \brief Replaces the points with copies of those in the range `[first, last)`
+       * \details The behavior is undefined if either argument is an iterator into
+       * `*this`
+       * \note This breaks the organized structure of the cloud by setting the height to
+       * 1!
+       */
+      template <class InputIt>
+      void
+      assign(InputIt first, InputIt last)
+      {
+        points.assign(std::move(first), std::move(last));
+        width = static_cast<std::uint32_t>(size());
+        height = 1;
+      }
+
+      /**
+       * \brief Replaces the points with the elements from the initializer list `ilist`
+       * \note This breaks the organized structure of the cloud by setting the height to
+       * 1!
+       */
+      void
+      assign(std::initializer_list<PointT> ilist)
+      {
+        points.assign(std::move(ilist));
+        width = static_cast<std::uint32_t>(size());
+        height = 1;
+      }
+
       /** \brief Insert a new point in the cloud, at the end of the container.
         * \note This breaks the organized structure of the cloud by setting the height to 1!
         * \param[in] pt the point to insert
@@ -491,7 +565,7 @@ namespace pcl
       push_back (const PointT& pt)
       {
         points.push_back (pt);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = size ();
         height = 1;
       }
 
@@ -504,7 +578,7 @@ namespace pcl
       emplace_back (Args&& ...args)
       {
         points.emplace_back (std::forward<Args> (args)...);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = size ();
         height = 1;
         return points.back();
       }
@@ -519,7 +593,7 @@ namespace pcl
       insert (iterator position, const PointT& pt)
       {
         iterator it = points.insert (position, pt);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = size ();
         height = 1;
         return (it);
       }
@@ -534,7 +608,7 @@ namespace pcl
       insert (iterator position, std::size_t n, const PointT& pt)
       {
         points.insert (position, n, pt);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = size ();
         height = 1;
       }
 
@@ -548,7 +622,7 @@ namespace pcl
       insert (iterator position, InputIterator first, InputIterator last)
       {
         points.insert (position, first, last);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = size ();
         height = 1;
       }
 
@@ -562,7 +636,7 @@ namespace pcl
       emplace (iterator position, Args&& ...args)
       {
         iterator it = points.emplace (position, std::forward<Args> (args)...);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = size ();
         height = 1;
         return (it);
       }
@@ -576,7 +650,7 @@ namespace pcl
       erase (iterator position)
       {
         iterator it = points.erase (position);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = size ();
         height = 1;
         return (it);
       }
@@ -591,7 +665,7 @@ namespace pcl
       erase (iterator first, iterator last)
       {
         iterator it = points.erase (first, last);
-        width = static_cast<std::uint32_t> (points.size ());
+        width = size ();
         height = 1;
         return (it);
       }
@@ -653,7 +727,7 @@ namespace pcl
   operator << (std::ostream& s, const pcl::PointCloud<PointT> &p)
   {
     s << "header: " << p.header << std::endl;
-    s << "points[]: " << p.points.size () << std::endl;
+    s << "points[]: " << p.size () << std::endl;
     s << "width: " << p.width << std::endl;
     s << "height: " << p.height << std::endl;
     s << "is_dense: " << p.is_dense << std::endl;

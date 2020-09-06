@@ -22,7 +22,6 @@
 #endif
 
 using namespace pcl;
-using namespace std;
 
 using PointT = pcl::PointXYZRGB;
 using PointNT = pcl::PointNormal;
@@ -52,10 +51,10 @@ int main (int argc, char *argv[])
   }
 
   ///The file to read from.
-  string infile = argv[1];
+  std::string infile = argv[1];
 
   ///The file to output to.
-  string outfile = argv[2];
+  std::string outfile = argv[2];
 
   // Load cloud in blob format
   pcl::PCLPointCloud2 blob;
@@ -188,7 +187,7 @@ int main (int argc, char *argv[])
   doncloud = doncloud_filtered;
 
   // Save filtered output
-  std::cout << "Filtered Pointcloud: " << doncloud->points.size () << " data points." << std::endl;
+  std::cout << "Filtered Pointcloud: " << doncloud->size () << " data points." << std::endl;
   std::stringstream ss;
   ss << outfile.substr(0,outfile.length()-4) << "_threshold_"<< threshold << "_.pcd";
   writer.write<PointOutT> (ss.str (), *doncloud, false);
@@ -214,14 +213,14 @@ int main (int argc, char *argv[])
   {
     pcl::PointCloud<PointOutT>::Ptr cloud_cluster_don (new pcl::PointCloud<PointOutT>);
     for (const int &index : it->indices){
-      cloud_cluster_don->points.push_back (doncloud->points[index]);
+      cloud_cluster_don->points.push_back ((*doncloud)[index]);
     }
 
-    cloud_cluster_don->width = int (cloud_cluster_don->points.size ());
+    cloud_cluster_don->width = cloud_cluster_don->size ();
     cloud_cluster_don->height = 1;
     cloud_cluster_don->is_dense = true;
 
-    std::cout << "PointCloud representing the Cluster: " << cloud_cluster_don->points.size () << " data points." << std::endl;
+    std::cout << "PointCloud representing the Cluster: " << cloud_cluster_don->size () << " data points." << std::endl;
     std::stringstream ss;
     ss << outfile.substr(0,outfile.length()-4) << "_threshold_"<< threshold << "_cluster_" << j << ".pcd";
     writer.write<PointOutT> (ss.str (), *cloud_cluster_don, false);

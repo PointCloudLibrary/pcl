@@ -56,7 +56,7 @@ main (int, char** argv)
     PCL_ERROR ("Couldn't read file");
     return (-1);
   }
-  std::cout << "Loaded " << cloud->points.size () << " points." << std::endl;
+  std::cout << "Loaded " << cloud->size () << " points." << std::endl;
 
   // Compute the normals
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimation;
@@ -87,11 +87,11 @@ main (int, char** argv)
 
   // Actually compute the shape contexts
   shape_context.compute (*shape_context_features);
-  std::cout << "3DSC output points.size (): " << shape_context_features->points.size () << std::endl;
+  std::cout << "3DSC output size (): " << shape_context_features->size () << std::endl;
 
   // Display and retrieve the shape context descriptor vector for the 0th point.
-  std::cout << shape_context_features->points[0] << std::endl;
-  //float* first_descriptor = shape_context_features->points[0].descriptor; // 1980 elements
+  std::cout << (*shape_context_features)[0] << std::endl;
+  //float* first_descriptor = (*shape_context_features)[0].descriptor; // 1980 elements
 
   return 0;
 }

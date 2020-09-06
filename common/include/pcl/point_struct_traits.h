@@ -56,7 +56,7 @@
 
 #include <cstddef>  // for std::size_t, offsetof
 #include <cstdint>  // for std::int8_t, std::uint8_t, std::int16_t, std::uint16_t, std::int32_t, std::uint32_t
-#include <type_traits>  // for std::is_same, std::std::remove_all_extents_t
+#include <type_traits>  // for std::is_same, std::remove_all_extents_t
 
 namespace pcl
 {

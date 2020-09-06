@@ -38,8 +38,10 @@
 #pragma once
 
 #include <pcl/common/projection_matrix.h>
+#include <pcl/console/print.h> // for PCL_ERROR
 #include <pcl/cloud_iterator.h>
 
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver
 
 namespace pcl
 {

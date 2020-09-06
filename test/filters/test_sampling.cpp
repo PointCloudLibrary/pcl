@@ -48,7 +48,6 @@
 
 
 #include <pcl/common/transforms.h>
-#include <pcl/common/eigen.h>
 
 using namespace pcl;
 
@@ -172,9 +171,9 @@ TEST (RandomSample, Filters)
     // Check that indices are sorted
     EXPECT_LT (indices[i], indices[i+1]);
     // Compare original points with sampled indices against sampled points
-    EXPECT_NEAR (cloud_walls->points[indices[i]].x, cloud_out.points[i].x, 1e-4);
-    EXPECT_NEAR (cloud_walls->points[indices[i]].y, cloud_out.points[i].y, 1e-4);
-    EXPECT_NEAR (cloud_walls->points[indices[i]].z, cloud_out.points[i].z, 1e-4);
+    EXPECT_NEAR ((*cloud_walls)[indices[i]].x, cloud_out[i].x, 1e-4);
+    EXPECT_NEAR ((*cloud_walls)[indices[i]].y, cloud_out[i].y, 1e-4);
+    EXPECT_NEAR ((*cloud_walls)[indices[i]].z, cloud_out[i].z, 1e-4);
   }
 
   IndicesConstPtr removed = sample.getRemovedIndices ();
@@ -238,9 +237,9 @@ TEST (RandomSample, Filters)
     // Check that indices are sorted
     EXPECT_LT (indices2[i], indices2[i+1]);
     // Compare original points with sampled indices against sampled points
-    EXPECT_NEAR (cloud_walls->points[indices2[i]].x, cloud_out.points[i].x, 1e-4);
-    EXPECT_NEAR (cloud_walls->points[indices2[i]].y, cloud_out.points[i].y, 1e-4);
-    EXPECT_NEAR (cloud_walls->points[indices2[i]].z, cloud_out.points[i].z, 1e-4);
+    EXPECT_NEAR ((*cloud_walls)[indices2[i]].x, cloud_out[i].x, 1e-4);
+    EXPECT_NEAR ((*cloud_walls)[indices2[i]].y, cloud_out[i].y, 1e-4);
+    EXPECT_NEAR ((*cloud_walls)[indices2[i]].z, cloud_out[i].z, 1e-4);
   }
 }
 

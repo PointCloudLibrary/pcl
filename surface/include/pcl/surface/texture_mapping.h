@@ -44,6 +44,7 @@
 #include <pcl/surface/reconstruction.h>
 #include <pcl/common/transforms.h>
 #include <pcl/TextureMesh.h>
+#include <pcl/octree/octree_search.h> // for OctreePointCloudSearch
 
 
 namespace pcl

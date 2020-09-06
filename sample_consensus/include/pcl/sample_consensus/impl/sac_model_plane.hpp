@@ -45,7 +45,6 @@
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/concatenate.h>
-#include <pcl/point_types.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
@@ -57,9 +56,9 @@ pcl::SampleConsensusModelPlane<PointT>::isSampleGood (const Indices &samples) co
     return (false);
   }
   // Get the values at the two points
-  pcl::Array4fMapConst p0 = input_->points[samples[0]].getArray4fMap ();
-  pcl::Array4fMapConst p1 = input_->points[samples[1]].getArray4fMap ();
-  pcl::Array4fMapConst p2 = input_->points[samples[2]].getArray4fMap ();
+  pcl::Array4fMapConst p0 = (*input_)[samples[0]].getArray4fMap ();
+  pcl::Array4fMapConst p1 = (*input_)[samples[1]].getArray4fMap ();
+  pcl::Array4fMapConst p2 = (*input_)[samples[2]].getArray4fMap ();
 
   Eigen::Array4f dy1dy2 = (p1-p0) / (p2-p0);
 
@@ -78,9 +77,9 @@ pcl::SampleConsensusModelPlane<PointT>::computeModelCoefficients (
     return (false);
   }
 
-  pcl::Array4fMapConst p0 = input_->points[samples[0]].getArray4fMap ();
-  pcl::Array4fMapConst p1 = input_->points[samples[1]].getArray4fMap ();
-  pcl::Array4fMapConst p2 = input_->points[samples[2]].getArray4fMap ();
+  pcl::Array4fMapConst p0 = (*input_)[samples[0]].getArray4fMap ();
+  pcl::Array4fMapConst p1 = (*input_)[samples[1]].getArray4fMap ();
+  pcl::Array4fMapConst p2 = (*input_)[samples[2]].getArray4fMap ();
 
   // Compute the segment values (in 3d) between p1 and p0
   Eigen::Array4f p1p0 = p1 - p0;
@@ -130,13 +129,13 @@ pcl::SampleConsensusModelPlane<PointT>::getDistancesToModel (
   {
     // Calculate the distance from the point to the plane normal as the dot product
     // D = (P-A).N/|N|
-    /*distances[i] = std::abs (model_coefficients[0] * input_->points[(*indices_)[i]].x +
-                         model_coefficients[1] * input_->points[(*indices_)[i]].y +
-                         model_coefficients[2] * input_->points[(*indices_)[i]].z +
+    /*distances[i] = std::abs (model_coefficients[0] * (*input_)[(*indices_)[i]].x +
+                         model_coefficients[1] * (*input_)[(*indices_)[i]].y +
+                         model_coefficients[2] * (*input_)[(*indices_)[i]].z +
                          model_coefficients[3]);*/
-    Eigen::Vector4f pt (input_->points[(*indices_)[i]].x,
-                        input_->points[(*indices_)[i]].y,
-                        input_->points[(*indices_)[i]].z,
+    Eigen::Vector4f pt ((*input_)[(*indices_)[i]].x,
+                        (*input_)[(*indices_)[i]].y,
+                        (*input_)[(*indices_)[i]].z,
                         1.0f);
     distances[i] = std::abs (model_coefficients.dot (pt));
   }
@@ -164,9 +163,9 @@ pcl::SampleConsensusModelPlane<PointT>::selectWithinDistance (
   {
     // Calculate the distance from the point to the plane normal as the dot product
     // D = (P-A).N/|N|
-    Eigen::Vector4f pt (input_->points[(*indices_)[i]].x,
-                        input_->points[(*indices_)[i]].y,
-                        input_->points[(*indices_)[i]].z,
+    Eigen::Vector4f pt ((*input_)[(*indices_)[i]].x,
+                        (*input_)[(*indices_)[i]].y,
+                        (*input_)[(*indices_)[i]].z,
                         1.0f);
     
     float distance = std::abs (model_coefficients.dot (pt));
@@ -199,9 +198,9 @@ pcl::SampleConsensusModelPlane<PointT>::countWithinDistance (
   {
     // Calculate the distance from the point to the plane normal as the dot product
     // D = (P-A).N/|N|
-    Eigen::Vector4f pt (input_->points[(*indices_)[i]].x,
-                        input_->points[(*indices_)[i]].y,
-                        input_->points[(*indices_)[i]].z,
+    Eigen::Vector4f pt ((*input_)[(*indices_)[i]].x,
+                        (*input_)[(*indices_)[i]].y,
+                        (*input_)[(*indices_)[i]].z,
                         1.0f);
     if (std::abs (model_coefficients.dot (pt)) < threshold)
     {
@@ -289,28 +288,28 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
   if (copy_data_fields)
   {
     // Allocate enough space and copy the basics
-    projected_points.points.resize (input_->points.size ());
+    projected_points.points.resize (input_->size ());
     projected_points.width    = input_->width;
     projected_points.height   = input_->height;
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
     // Iterate over each point
-    for (std::size_t i = 0; i < input_->points.size (); ++i)
+    for (std::size_t i = 0; i < input_->size (); ++i)
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[i], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> ((*input_)[i], projected_points[i]));
 
     // Iterate through the 3d points and calculate the distances from them to the plane
     for (const auto &inlier : inliers)
     {
       // Calculate the distance from the point to the plane
-      Eigen::Vector4f p (input_->points[inlier].x,
-                         input_->points[inlier].y,
-                         input_->points[inlier].z,
+      Eigen::Vector4f p ((*input_)[inlier].x,
+                         (*input_)[inlier].y,
+                         (*input_)[inlier].z,
                          1);
       // use normalized coefficients to calculate the scalar projection
       float distance_to_plane = tmp_mc.dot (p);
 
-      pcl::Vector4fMap pp = projected_points.points[inlier].getVector4fMap ();
+      pcl::Vector4fMap pp = projected_points[inlier].getVector4fMap ();
       pp.matrix () = p - mc * distance_to_plane;        // mc[3] = 0, therefore the 3rd coordinate is safe
     }
   }
@@ -318,7 +317,7 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
   {
     // Allocate enough space and copy the basics
     projected_points.points.resize (inliers.size ());
-    projected_points.width    = static_cast<std::uint32_t> (inliers.size ());
+    projected_points.width    = inliers.size ();
     projected_points.height   = 1;
 
     using FieldList = typename pcl::traits::fieldList<PointT>::type;
@@ -326,21 +325,21 @@ pcl::SampleConsensusModelPlane<PointT>::projectPoints (
     for (std::size_t i = 0; i < inliers.size (); ++i)
     {
       // Iterate over each dimension
-      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (input_->points[inliers[i]], projected_points.points[i]));
+      pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> ((*input_)[inliers[i]], projected_points[i]));
     }
 
     // Iterate through the 3d points and calculate the distances from them to the plane
     for (std::size_t i = 0; i < inliers.size (); ++i)
     {
       // Calculate the distance from the point to the plane
-      Eigen::Vector4f p (input_->points[inliers[i]].x,
-                         input_->points[inliers[i]].y,
-                         input_->points[inliers[i]].z,
+      Eigen::Vector4f p ((*input_)[inliers[i]].x,
+                         (*input_)[inliers[i]].y,
+                         (*input_)[inliers[i]].z,
                          1.0f);
       // use normalized coefficients to calculate the scalar projection
       float distance_to_plane = tmp_mc.dot (p);
 
-      pcl::Vector4fMap pp = projected_points.points[i].getVector4fMap ();
+      pcl::Vector4fMap pp = projected_points[i].getVector4fMap ();
       pp.matrix () = p - mc * distance_to_plane;        // mc[3] = 0, therefore the 3rd coordinate is safe
     }
   }
@@ -360,9 +359,9 @@ pcl::SampleConsensusModelPlane<PointT>::doSamplesVerifyModel (
 
   for (const auto &index : indices)
   {
-    Eigen::Vector4f pt (input_->points[index].x,
-                        input_->points[index].y,
-                        input_->points[index].z,
+    Eigen::Vector4f pt ((*input_)[index].x,
+                        (*input_)[index].y,
+                        (*input_)[index].z,
                         1.0f);
     if (std::abs (model_coefficients.dot (pt)) > threshold)
     {

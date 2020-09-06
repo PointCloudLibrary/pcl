@@ -41,7 +41,8 @@
 #define PCL_FILTERS_IMPL_STATISTICAL_OUTLIER_REMOVAL_H_
 
 #include <pcl/filters/statistical_outlier_removal.h>
-#include <pcl/common/io.h>
+#include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/search/kdtree.h> // for KdTree
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -69,9 +70,9 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &in
   int valid_distances = 0;
   for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
   {
-    if (!std::isfinite (input_->points[(*indices_)[iii]].x) ||
-        !std::isfinite (input_->points[(*indices_)[iii]].y) ||
-        !std::isfinite (input_->points[(*indices_)[iii]].z))
+    if (!std::isfinite ((*input_)[(*indices_)[iii]].x) ||
+        !std::isfinite ((*input_)[(*indices_)[iii]].y) ||
+        !std::isfinite ((*input_)[(*indices_)[iii]].z))
     {
       distances[iii] = 0.0;
       continue;

@@ -40,8 +40,6 @@
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/memory.h>
-#include <pcl/pcl_config.h>
-#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -630,10 +628,10 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (std::size_t idx,
 
   return (true);
 #else
-    PCL_ERROR ("[pcl::ImageGrabber::loadNextCloudVTK] Attempted to read image files, but PCL was not built with VTK [no -DPCL_BUILT_WITH_VTK]. \n");
-    return (false);
+  pcl::utils::ignore(idx, blob, origin, orientation);
+  PCL_ERROR ("[pcl::ImageGrabber::loadNextCloudVTK] Attempted to read image files, but PCL was not built with VTK [no -DPCL_BUILT_WITH_VTK]. \n");
+  return false;
 #endif //PCL_BUILT_WITH_VTK
-
 }
 
 bool

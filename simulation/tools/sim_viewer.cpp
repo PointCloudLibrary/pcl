@@ -38,11 +38,11 @@
  */
 
 #include <pcl/common/common.h>
+#include <pcl/common/time.h> // for getTime
 #include <pcl/common/transforms.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/console/time.h>
-#include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/range_image/range_image_planar.h> // RangeImage
@@ -50,7 +50,6 @@
 #include <pcl/simulation/model.h>
 #include <pcl/simulation/range_likelihood.h>
 #include <pcl/simulation/scene.h>
-#include <pcl/surface/gp3.h>
 #include <pcl/visualization/cloud_viewer.h> // Pop-up viewer
 #include <pcl/visualization/histogram_visualizer.h>
 #include <pcl/visualization/keyboard_event.h>
@@ -61,7 +60,6 @@
 #include <pcl/pcl_config.h>
 #include <pcl/point_types.h>
 
-#include <Eigen/Dense>
 #include <Eigen/Geometry>
 
 #include <vtkPolyDataReader.h>
@@ -87,8 +85,6 @@ using namespace pcl;
 using namespace pcl::console;
 using namespace pcl::io;
 using namespace pcl::simulation;
-
-using namespace std;
 
 using ColorHandler = pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2>;
 using ColorHandlerPtr = ColorHandler::Ptr;

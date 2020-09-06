@@ -39,6 +39,8 @@
 
 #include <pcl/recognition/hv/occlusion_reasoning.h>
 
+#include <algorithm>
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 template<typename ModelT, typename SceneT>
 pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::ZBuffering (int resx, int resy, float f) :
@@ -80,13 +82,13 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::filter (typename pcl::Poin
   cx = static_cast<float> (cx_) / 2.f - 0.5f;
   cy = static_cast<float> (cy_) / 2.f - 0.5f;
 
-  indices_to_keep.resize (model->points.size ());
+  indices_to_keep.resize (model->size ());
   int keep = 0;
-  for (std::size_t i = 0; i < model->points.size (); i++)
+  for (std::size_t i = 0; i < model->size (); i++)
   {
-    float x = model->points[i].x;
-    float y = model->points[i].y;
-    float z = model->points[i].z;
+    float x = (*model)[i].x;
+    float y = (*model)[i].y;
+    float z = (*model)[i].z;
     int u = static_cast<int> (f_ * x / z + cx);
     int v = static_cast<int> (f_ * y / z + cy);
 
@@ -121,15 +123,15 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::computeDepthMap (typename 
     max_u = max_v = std::numeric_limits<float>::max () * -1;
     min_u = min_v = std::numeric_limits<float>::max ();
 
-    for (std::size_t i = 0; i < scene->points.size (); i++)
+    for (const auto& point: *scene)
     {
-      float b_x = scene->points[i].x / scene->points[i].z;
+      float b_x = point.x / point.z;
       if (b_x > max_u)
         max_u = b_x;
       if (b_x < min_u)
         min_u = b_x;
 
-      float b_y = scene->points[i].y / scene->points[i].z;
+      float b_y = point.y / point.z;
       if (b_y > max_v)
         max_v = b_y;
       if (b_y < min_v)
@@ -141,16 +143,15 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::computeDepthMap (typename 
   }
 
   depth_ = new float[cx_ * cy_];
-  for (int i = 0; i < (cx_ * cy_); i++)
-    depth_[i] = std::numeric_limits<float>::quiet_NaN ();
+  std::fill_n(depth_, cx * cy, std::numeric_limits<float>::quiet_NaN());
 
-  for (std::size_t i = 0; i < scene->points.size (); i++)
+  for (const auto& point: *scene)
   {
-    float x = scene->points[i].x;
-    float y = scene->points[i].y;
-    float z = scene->points[i].z;
-    int u = static_cast<int> (f_ * x / z + cx);
-    int v = static_cast<int> (f_ * y / z + cy);
+    const float& x = point.x;
+    const float& y = point.y;
+    const float& z = point.z;
+    const int u = static_cast<int> (f_ * x / z + cx);
+    const int v = static_cast<int> (f_ * y / z + cy);
 
     if (u >= cx_ || v >= cy_ || u < 0 || v < 0)
       continue;

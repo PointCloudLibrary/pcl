@@ -98,7 +98,7 @@ struct OrganizedConversion<PointT, false>
                       typename std::vector<std::uint16_t>& disparityData_arg,
                       typename std::vector<std::uint8_t>&)
   {
-    std::size_t cloud_size = cloud_arg.points.size ();
+    const auto cloud_size = cloud_arg.size ();
 
     // Clear image data
     disparityData_arg.clear ();
@@ -108,7 +108,7 @@ struct OrganizedConversion<PointT, false>
     for (std::size_t i = 0; i < cloud_size; ++i)
     {
       // Get point from cloud
-      const PointT& point = cloud_arg.points[i];
+      const PointT& point = cloud_arg[i];
 
       if (pcl::isFinite (point))
       {
@@ -278,7 +278,7 @@ struct OrganizedConversion<PointT, true>
                       typename std::vector<std::uint16_t>& disparityData_arg,
                       typename std::vector<std::uint8_t>& rgbData_arg)
   {
-    std::size_t cloud_size = cloud_arg.points.size ();
+    const auto cloud_size = cloud_arg.size ();
 
     // Reset output vectors
     disparityData_arg.clear ();
@@ -296,7 +296,7 @@ struct OrganizedConversion<PointT, true>
 
     for (std::size_t i = 0; i < cloud_size; ++i)
     {
-      const PointT& point = cloud_arg.points[i];
+      const PointT& point = cloud_arg[i];
 
       if (pcl::isFinite (point))
       {

@@ -35,6 +35,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <pcl/ModelCoefficients.h>
 #include <pcl/visualization/common/shapes.h>
 #include <pcl/common/angles.h>
 #include <vtkLineSource.h>

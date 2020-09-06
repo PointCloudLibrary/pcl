@@ -40,9 +40,11 @@
 
 #pragma once
 
-#include <pcl/sample_consensus/boost.h>
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/pcl_base.h>
+
+#include <boost/random/mersenne_twister.hpp> // for mt19937
+#include <boost/random/uniform_01.hpp> // for uniform_01
 
 #include <ctime>
 #include <memory>

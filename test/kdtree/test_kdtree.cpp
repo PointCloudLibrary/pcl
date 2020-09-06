@@ -49,11 +49,10 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
+#include <algorithm>
 #include <iostream>  // For debug
 #include <map>
 
-
-using namespace std;
 using namespace pcl;
 
 boost::property_tree::ptree xml_property_tree;
@@ -76,7 +75,7 @@ init ()
     for (float y = -0.5f; y <= 0.5f; y += resolution)
       for (float x = -0.5f; x <= 0.5f; x += resolution)
         cloud.points.emplace_back(x, y, z);
-  cloud.width  = static_cast<std::uint32_t> (cloud.points.size ());
+  cloud.width  = cloud.size ();
   cloud.height = 1;
 
   cloud_big.width  = 640;
@@ -96,9 +95,9 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   kdtree.setInputCloud (cloud.makeShared ());
   MyPoint test_point(0.0f, 0.0f, 0.0f);
   double max_dist = 0.15;
-  set<int> brute_force_result;
-  for (std::size_t i=0; i < cloud.points.size(); ++i)
-    if (euclideanDistance(cloud.points[i], test_point) < max_dist)
+  std::set<int> brute_force_result;
+  for (std::size_t i=0; i < cloud.size(); ++i)
+    if (euclideanDistance(cloud[i], test_point) < max_dist)
       brute_force_result.insert(i);
   std::vector<int> k_indices;
   std::vector<float> k_distances;
@@ -108,11 +107,11 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   
   for (const int &k_index : k_indices)
   {
-    set<int>::iterator brute_force_result_it = brute_force_result.find (k_index);
+    std::set<int>::iterator brute_force_result_it = brute_force_result.find (k_index);
     bool ok = brute_force_result_it != brute_force_result.end ();
     //if (!ok)  std::cerr << k_indices[i] << " is not correct...\n";
     //else      std::cerr << k_indices[i] << " is correct...\n";
-    EXPECT_EQ (ok, true);
+    EXPECT_TRUE (ok);
     if (ok)
       brute_force_result.erase (brute_force_result_it);
   }
@@ -121,7 +120,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   
   bool error = !brute_force_result.empty ();
   //if (error)  std::cerr << "Missed too many neighbors!\n";
-  EXPECT_EQ (error, false);
+  EXPECT_FALSE (error);
 
   {
     KdTreeFLANN<MyPoint> kdtree;
@@ -165,17 +164,17 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   kdtree.setInputCloud (cloud.makeShared ());
   MyPoint test_point (0.01f, 0.01f, 0.01f);
   unsigned int no_of_neighbors = 20;
-  multimap<float, int> sorted_brute_force_result;
-  for (std::size_t i = 0; i < cloud.points.size (); ++i)
+  std::multimap<float, int> sorted_brute_force_result;
+  for (std::size_t i = 0; i < cloud.size (); ++i)
   {
-    float distance = euclideanDistance (cloud.points[i], test_point);
-    sorted_brute_force_result.insert (make_pair (distance, static_cast<int> (i)));
+    float distance = euclideanDistance (cloud[i], test_point);
+    sorted_brute_force_result.insert (std::make_pair (distance, static_cast<int> (i)));
   }
   float max_dist = 0.0f;
   unsigned int counter = 0;
-  for (multimap<float, int>::iterator it = sorted_brute_force_result.begin (); it != sorted_brute_force_result.end () && counter < no_of_neighbors; ++it)
+  for (std::multimap<float, int>::iterator it = sorted_brute_force_result.begin (); it != sorted_brute_force_result.end () && counter < no_of_neighbors; ++it)
   {
-    max_dist = max (max_dist, it->first);
+    max_dist = std::max (max_dist, it->first);
     ++counter;
   }
 
@@ -190,13 +189,13 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   // Check if all found neighbors have distance smaller than max_dist
   for (const int &k_index : k_indices)
   {
-    const MyPoint& point = cloud.points[k_index];
+    const MyPoint& point = cloud[k_index];
     bool ok = euclideanDistance (test_point, point) <= max_dist;
     if (!ok)
       ok = (std::abs (euclideanDistance (test_point, point)) - max_dist) <= 1e-6;
     //if (!ok)  std::cerr << k_index << " is not correct...\n";
     //else      std::cerr << k_index << " is correct...\n";
-    EXPECT_EQ (ok, true);
+    EXPECT_TRUE (ok);
   }
 
   ScopeTime scopeTime ("FLANN nearestKSearch");

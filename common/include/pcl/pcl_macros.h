@@ -59,10 +59,7 @@
   #define _USE_MATH_DEFINES
 #endif
 #include <cmath>
-#include <cstdarg>
-#include <cstdio>
 #include <cstdlib>
-#include <cstdint>
 #include <iostream>
 
 // We need to check for GCC version, because GCC releases before 9 were implementing an
@@ -76,6 +73,7 @@
 
 #include <pcl/pcl_config.h>
 
+#include <boost/preprocessor/arithmetic/add.hpp>
 #include <boost/preprocessor/comparison/equal.hpp>
 #include <boost/preprocessor/comparison/less.hpp>
 #include <boost/preprocessor/control/if.hpp>
@@ -126,15 +124,23 @@
 
 /**
  * \brief Tests for Minor < PCL_MINOR_VERSION
+ * \details When PCL VERSION is of format `34.12.99`, this macro behaves as if it is
+ * already `34.13.0`, and allows for smoother transition for maintainers
  */
 #define _PCL_COMPAT_MINOR_VERSION(Minor, IfPass, IfFail)                                \
-  BOOST_PP_IF(BOOST_PP_LESS(PCL_MINOR_VERSION, Minor), IfPass, IfFail)
+  BOOST_PP_IF(BOOST_PP_EQUAL(PCL_REVISION_VERSION, 99),                                 \
+    BOOST_PP_IF(BOOST_PP_LESS(BOOST_PP_ADD(PCL_MINOR_VERSION, 1), Minor), IfPass, IfFail),           \
+    BOOST_PP_IF(BOOST_PP_LESS(PCL_MINOR_VERSION, Minor), IfPass, IfFail))
 
 /**
  * \brief Tests for Major == PCL_MAJOR_VERSION
+ * \details When PCL VERSION is of format `34.99.12`, this macro behaves as if it is
+ * already `35.0.0`, and allows for smoother transition for maintainers
  */
 #define _PCL_COMPAT_MAJOR_VERSION(Major, IfPass, IfFail)                                \
-  BOOST_PP_IF(BOOST_PP_EQUAL(PCL_MAJOR_VERSION, Major), IfPass, IfFail)
+  BOOST_PP_IF(BOOST_PP_EQUAL(PCL_MINOR_VERSION, 99),                                    \
+    BOOST_PP_IF(BOOST_PP_EQUAL(BOOST_PP_ADD(PCL_MAJOR_VERSION, 1), Major), IfPass, IfFail),          \
+    BOOST_PP_IF(BOOST_PP_EQUAL(PCL_MAJOR_VERSION, Major), IfPass, IfFail))
 
 /**
  * \brief macro for compatibility across compilers and help remove old deprecated

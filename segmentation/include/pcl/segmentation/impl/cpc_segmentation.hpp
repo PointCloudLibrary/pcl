@@ -149,7 +149,7 @@ pcl::CPCSegmentation<PointT>::applyCuttingPlane (std::uint32_t depth_levels_left
     weights.resize (seg_to_edge_points.second->size ());
     for (std::size_t cp = 0; cp < seg_to_edge_points.second->size (); ++cp)
     {
-      float& cur_weight = seg_to_edge_points.second->points[cp].intensity;
+      float& cur_weight = (*seg_to_edge_points.second)[cp].intensity;
       cur_weight = cur_weight < concavity_tolerance_threshold_ ? 0 : 1;
       weights[cp] = cur_weight;
     }

@@ -62,7 +62,7 @@ main (int argc, char ** argv)
   pcl::console::print_info ("Loaded %s (%lu points)\n", argv[1], input->size ());    
   
   ObjectRecognitionParameters params;
-  ifstream params_stream;
+  std::ifstream params_stream;
 
   //Parse filter parameters
   std::string filter_parameters_file;

@@ -97,9 +97,9 @@ namespace pcl
 
             void radiusSearch(const Queries& queries, const Indices& indices, float radius, NeighborIndices& results);
 
-            void approxNearestSearch(const Queries& queries, NeighborIndices& results) const;
+            void approxNearestSearch(const Queries& queries, NeighborIndices& results, BatchResultSqrDists& sqr_distance) const;
             
-            void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results) const;
+            void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results, BatchResultSqrDists& sqr_distances) const;
             
             //just reference 
             PointCloud points;

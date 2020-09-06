@@ -35,7 +35,6 @@
  *
  */
 
-#include <fcntl.h>
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
 #include <pcl/io/ply_io.h>
@@ -44,8 +43,6 @@
 #include <cstdlib>
 #include <fstream>
 #include <functional>
-#include <map>
-#include <sstream>
 #include <string>
 #include <tuple>
 

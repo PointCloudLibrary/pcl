@@ -37,10 +37,7 @@
 
 #pragma once
 
-#include <cstdio>
-#include <cstring>
 #include <iostream>
-#include <iterator>
 #include <vector>
 
 namespace pcl
@@ -48,8 +45,6 @@ namespace pcl
 
 namespace octree
 {
-
-using namespace std;
 
 /** \brief @b ColorCoding class
  *  \note This class encodes 8-bit color information for octree-based point cloud compression.
@@ -172,7 +167,7 @@ public:
     {
       // get color information from points
       const int& idx = indexVector_arg[i];
-      const char* idxPointPtr = reinterpret_cast<const char*> (&inputCloud_arg->points[idx]);
+      const char* idxPointPtr = reinterpret_cast<const char*> (&(*inputCloud_arg)[idx]);
       const int& colorInt = *reinterpret_cast<const int*> (idxPointPtr+rgba_offset_arg);
 
       // add color information
@@ -222,7 +217,7 @@ public:
     {
       // get color information from point
       const int& idx = indexVector_arg[i];
-      const char* idxPointPtr = reinterpret_cast<const char*> (&inputCloud_arg->points[idx]);
+      const char* idxPointPtr = reinterpret_cast<const char*> (&(*inputCloud_arg)[idx]);
       const int& colorInt = *reinterpret_cast<const int*> (idxPointPtr+rgba_offset_arg);
 
       // add color information
@@ -247,7 +242,7 @@ public:
       for (std::size_t i = 0; i < len; i++)
       {
         const int& idx = indexVector_arg[i];
-        const char* idxPointPtr = reinterpret_cast<const char*> (&inputCloud_arg->points[idx]);
+        const char* idxPointPtr = reinterpret_cast<const char*> (&(*inputCloud_arg)[idx]);
         const int& colorInt = *reinterpret_cast<const int*> (idxPointPtr+rgba_offset_arg);
 
         // extract color components and do XOR encoding with predicted average color
@@ -330,7 +325,7 @@ public:
         colorInt = (avgRed << 0) | (avgGreen << 8) | (avgBlue << 16);
       }
 
-      char* idxPointPtr = reinterpret_cast<char*> (&outputCloud_arg->points[beginIdx_arg + i]);
+      char* idxPointPtr = reinterpret_cast<char*> (&(*outputCloud_arg)[beginIdx_arg + i]);
       int& pointColor = *reinterpret_cast<int*> (idxPointPtr+rgba_offset_arg);
       // assign color to point from point cloud
       pointColor=colorInt;
@@ -354,7 +349,7 @@ public:
     // iterate over points
     for (std::size_t i = 0; i < pointCount; i++)
     {
-      char* idxPointPtr = reinterpret_cast<char*> (&outputCloud_arg->points[beginIdx_arg + i]);
+      char* idxPointPtr = reinterpret_cast<char*> (&(*outputCloud_arg)[beginIdx_arg + i]);
       int& pointColor = *reinterpret_cast<int*> (idxPointPtr+rgba_offset_arg);
       // assign color to point from point cloud
       pointColor = defaultColor_;

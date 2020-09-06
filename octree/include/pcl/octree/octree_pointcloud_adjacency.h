@@ -43,9 +43,6 @@
 #include <pcl/octree/octree_pointcloud.h>
 #include <pcl/octree/octree_pointcloud_adjacency_container.h>
 
-#include <list>
-#include <set>
-
 namespace pcl {
 
 namespace octree {

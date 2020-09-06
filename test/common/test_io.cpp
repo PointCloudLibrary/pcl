@@ -41,7 +41,6 @@
 #include <pcl/common/io.h>
 
 using namespace pcl;
-using namespace std;
 
 using CloudXYZRGBA = PointCloud<PointXYZRGBA>;
 using CloudXYZRGB = PointCloud<PointXYZRGB>;

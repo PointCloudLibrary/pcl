@@ -8,6 +8,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/features/range_image_border_extractor.h>
 #include <pcl/console/parse.h>
+#include <pcl/common/file_io.h> // for getFilenameWithoutExtension
 
 typedef pcl::PointXYZ PointType;
 
@@ -100,7 +101,7 @@ main (int argc, char** argv)
         point_cloud.points.push_back (point);
       }
     }
-    point_cloud.width = (int) point_cloud.points.size ();  point_cloud.height = 1;
+    point_cloud.width = point_cloud.size ();  point_cloud.height = 1;
   }
   
   // -----------------------------------------------
@@ -149,12 +150,12 @@ main (int argc, char** argv)
   {
     for (int x=0; x< (int)range_image.width; ++x)
     {
-      if (border_descriptions.points[y*range_image.width + x].traits[pcl::BORDER_TRAIT__OBSTACLE_BORDER])
-        border_points.points.push_back (range_image.points[y*range_image.width + x]);
-      if (border_descriptions.points[y*range_image.width + x].traits[pcl::BORDER_TRAIT__VEIL_POINT])
-        veil_points.points.push_back (range_image.points[y*range_image.width + x]);
-      if (border_descriptions.points[y*range_image.width + x].traits[pcl::BORDER_TRAIT__SHADOW_BORDER])
-        shadow_points.points.push_back (range_image.points[y*range_image.width + x]);
+      if (border_descriptions[y*range_image.width + x].traits[pcl::BORDER_TRAIT__OBSTACLE_BORDER])
+        border_points.points.push_back (range_image[y*range_image.width + x]);
+      if (border_descriptions[y*range_image.width + x].traits[pcl::BORDER_TRAIT__VEIL_POINT])
+        veil_points.points.push_back (range_image[y*range_image.width + x]);
+      if (border_descriptions[y*range_image.width + x].traits[pcl::BORDER_TRAIT__SHADOW_BORDER])
+        shadow_points.points.push_back (range_image[y*range_image.width + x]);
     }
   }
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointWithRange> border_points_color_handler (border_points_ptr, 0, 255, 0);

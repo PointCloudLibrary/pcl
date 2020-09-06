@@ -41,7 +41,6 @@
 #include <pcl/common/time.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/PCLPointCloud2.h>
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/pcl_macros.h>

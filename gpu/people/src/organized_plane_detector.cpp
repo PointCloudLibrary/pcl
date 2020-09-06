@@ -112,7 +112,7 @@ pcl::gpu::people::OrganizedPlaneDetector::process(const PointCloud<PointTC>::Con
   {
     for(const int &index : inlier_index.indices)                           // iterate over all the indices in that plane
     {
-      P_l_host_.points[index].probs[pcl::gpu::people::Background] = 1.f;   // set background at max
+      P_l_host_[index].probs[pcl::gpu::people::Background] = 1.f;   // set background at max
     }
   }
 }
@@ -153,16 +153,16 @@ int
 pcl::gpu::people::OrganizedPlaneDetector::copyHostLabelProbability(HostLabelProbability& src,
                                                                    HostLabelProbability& dst)
 {
-  if(src.points.size() != dst.points.size())
+  if(src.size() != dst.size())
   {
     PCL_ERROR("[pcl::gpu::people::OrganizedPlaneDetector::copyHostLabelProbability] : (E) : Sizes don't match\n");
     return -1;
   }
-  for(std::size_t hist = 0; hist < src.points.size(); hist++)
+  for(std::size_t hist = 0; hist < src.size(); hist++)
   {
     for(int label = 0; label < pcl::gpu::people::NUM_LABELS; label++)
     {
-      dst.points[hist].probs[label] = src.points[hist].probs[label];
+      dst[hist].probs[label] = src[hist].probs[label];
     }
   }
   return 1;
@@ -172,17 +172,17 @@ int
 pcl::gpu::people::OrganizedPlaneDetector::copyAndClearHostLabelProbability(HostLabelProbability& src,
                                                                            HostLabelProbability& dst)
 {
-  if(src.points.size() != dst.points.size())
+  if(src.size() != dst.size())
   {
     PCL_ERROR("[pcl::gpu::people::OrganizedPlaneDetector::copyHostLabelProbability] : (E) : Sizes don't match\n");
     return -1;
   }
-  for(std::size_t hist = 0; hist < src.points.size(); hist++)
+  for(std::size_t hist = 0; hist < src.size(); hist++)
   {
     for(int label = 0; label < pcl::gpu::people::NUM_LABELS; label++)
     {
-      dst.points[hist].probs[label] = src.points[hist].probs[label];
-      src.points[hist].probs[label] = 0.f;
+      dst[hist].probs[label] = src[hist].probs[label];
+      src[hist].probs[label] = 0.f;
     }
   }
   return 1;

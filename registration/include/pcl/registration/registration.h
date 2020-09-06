@@ -46,7 +46,6 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/search/kdtree.h>
-#include <pcl/registration/boost.h>
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/registration/correspondence_rejection.h>

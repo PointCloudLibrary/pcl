@@ -39,7 +39,6 @@
 #define PCL_IO_IMPL_BUFFERS_HPP
 
 #include <iostream>
-#include <cstring>
 
 #include <pcl/pcl_macros.h>
 

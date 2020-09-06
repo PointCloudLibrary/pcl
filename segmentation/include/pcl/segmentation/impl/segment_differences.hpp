@@ -41,6 +41,8 @@
 
 #include <pcl/common/io.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
+#include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/search/kdtree.h> // for KdTree
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -59,15 +61,15 @@ pcl::getPointCloudDifference (
   std::vector<int> src_indices;
 
   // Iterate through the source data set
-  for (int i = 0; i < static_cast<int> (src.points.size ()); ++i)
+  for (int i = 0; i < static_cast<int> (src.size ()); ++i)
   {
     // Ignore invalid points in the inpout cloud
-    if (!isFinite (src.points[i]))
+    if (!isFinite (src[i]))
       continue;
     // Search for the closest point in the target data set (number of neighbors to find = 1)
-    if (!tree->nearestKSearch (src.points[i], 1, nn_indices, nn_distances))
+    if (!tree->nearestKSearch (src[i], 1, nn_indices, nn_distances))
     {
-      PCL_WARN ("No neighbor found for point %lu (%f %f %f)!\n", i, src.points[i].x, src.points[i].y, src.points[i].z);
+      PCL_WARN ("No neighbor found for point %lu (%f %f %f)!\n", i, src[i].x, src[i].y, src[i].z);
       continue;
     }
     // Add points without a corresponding point in the target cloud to the output cloud

@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <pcl/registration/eigen.h>
 #include <vector>
 
 namespace pcl

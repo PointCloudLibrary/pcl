@@ -43,12 +43,10 @@
 #define __PCL_IO_RANGECODING__HPP
 
 #include <pcl/compression/entropy_range_coder.h>
-#include <map>
 #include <iostream>
 #include <vector>
 #include <cstring>
 #include <algorithm>
-#include <cstdio>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 unsigned long

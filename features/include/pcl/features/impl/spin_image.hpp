@@ -42,7 +42,6 @@
 #define PCL_FEATURES_IMPL_SPIN_IMAGE_H_
 
 #include <limits>
-#include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/exceptions.h>
 #include <pcl/features/spin_image.h>
@@ -70,18 +69,18 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
   assert (image_width_ > 0);
   assert (support_angle_cos_ <= 1.0 && support_angle_cos_ >= 0.0); // may be permit negative cosine?
 
-  const Eigen::Vector3f origin_point (input_->points[index].getVector3fMap ());
+  const Eigen::Vector3f origin_point ((*input_)[index].getVector3fMap ());
 
   Eigen::Vector3f origin_normal;
   origin_normal = 
     input_normals_ ? 
-      input_normals_->points[index].getNormalVector3fMap () :
+      (*input_normals_)[index].getNormalVector3fMap () :
       Eigen::Vector3f (); // just a placeholder; should never be used!
 
   const Eigen::Vector3f rotation_axis = use_custom_axis_ ? 
     rotation_axis_.getNormalVector3fMap () : 
     use_custom_axes_cloud_ ?
-      rotation_axes_cloud_->points[index].getNormalVector3fMap () :
+      (*rotation_axes_cloud_)[index].getNormalVector3fMap () :
       origin_normal;  
 
   Eigen::ArrayXXd m_matrix (Eigen::ArrayXXd::Zero (image_width_+1, 2*image_width_+1));
@@ -115,7 +114,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
     double cos_between_normals = -2.0; // should be initialized if used
     if (support_angle_cos_ > 0.0 || is_angular_) // not bogus
     {
-      cos_between_normals = origin_normal.dot (input_normals_->points[nn_indices[i_neigh]].getNormalVector3fMap ());
+      cos_between_normals = origin_normal.dot ((*input_normals_)[nn_indices[i_neigh]].getNormalVector3fMap ());
       if (std::abs (cos_between_normals) > (1.0 + 10*std::numeric_limits<float>::epsilon ())) // should be okay for numeric stability
       {      
         PCL_ERROR ("[pcl::%s::computeSiForPoint] Normal for the point %d and/or the point %d are not normalized, dot ptoduct is %f.\n", 
@@ -138,7 +137,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeSiForPoint (int i
     
     // now compute the coordinate in cylindric coordinate system associated with the origin point
     const Eigen::Vector3f direction (
-      surface_->points[nn_indices[i_neigh]].getVector3fMap () - origin_point);
+      (*surface_)[nn_indices[i_neigh]].getVector3fMap () - origin_point);
     const double direction_norm = direction.norm ();
     if (std::abs(direction_norm) < 10*std::numeric_limits<double>::epsilon ())  
       continue;  // ignore the point itself; it does not contribute really
@@ -252,7 +251,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::initCompute ()
   }
 
   // Check if the size of normals is the same as the size of the surface
-  if (input_normals_->points.size () != input_->points.size ())
+  if (input_normals_->size () != input_->size ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] ", getClassName ().c_str ());
     PCL_ERROR ("The number of points in the input dataset differs from ");
@@ -331,7 +330,7 @@ pcl::SpinImageEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointClo
     {
       for (Eigen::Index iCol = 0; iCol < res.cols () ; iCol++)
       {
-        output.points[i_input].histogram[ iRow*res.cols () + iCol ] = static_cast<float> (res (iRow, iCol));
+        output[i_input].histogram[ iRow*res.cols () + iCol ] = static_cast<float> (res (iRow, iCol));
       }
     }   
   } 

@@ -49,7 +49,6 @@
 #include <algorithm>
 #include <queue>
 #include <vector>
-#include <pcl/common/projection_matrix.h>
 
 namespace pcl
 {

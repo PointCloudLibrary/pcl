@@ -51,7 +51,7 @@ template<typename ModelT, typename SceneT>
       mask_[i] = false;
 
     // initialize explained_by_RM
-    points_explained_by_rm_.resize (scene_cloud_downsampled_->points.size ());
+    points_explained_by_rm_.resize (scene_cloud_downsampled_->size ());
 
     // initialize model
     for (std::size_t m = 0; m < visible_models_.size (); m++)
@@ -71,9 +71,9 @@ template<typename ModelT, typename SceneT>
       std::vector<int> nn_indices;
       std::vector<float> nn_distances;
 
-      for (std::size_t i = 0; i < recog_model->cloud_->points.size (); i++)
+      for (std::size_t i = 0; i < recog_model->cloud_->size (); i++)
       {
-        if (!scene_downsampled_tree_->radiusSearch (recog_model->cloud_->points[i], inliers_threshold_, nn_indices, nn_distances,
+        if (!scene_downsampled_tree_->radiusSearch ((*recog_model->cloud_)[i], inliers_threshold_, nn_indices, nn_distances,
                                                     std::numeric_limits<int>::max ()))
         {
           outliers.push_back (static_cast<int> (i));

@@ -53,7 +53,7 @@ namespace pcl
     * the centroid and 128 binning subdivisions for the viewpoint component, which results in a
     * 308-byte array of float values. These are stored in a pcl::VFHSignature308 point type.
     * A major difference between the PFH/FPFH descriptors and VFH, is that for a given point cloud dataset, only a
-    * single VFH descriptor will be estimated (vfhs->points.size() should be 1), while the resultant PFH/FPFH data
+    * single VFH descriptor will be estimated (vfhs->size() should be 1), while the resultant PFH/FPFH data
     * will have the same number of entries as the number of points in the cloud.
     *
     * \note If you use this code in any academic work, please cite:

@@ -44,7 +44,6 @@
 #include <pcl/visualization/common/io.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/visualization/eigen.h>
 #include <pcl/memory.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,9 +61,9 @@ pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src,
   {
     double p[3];
     src->GetPoint (i, p);
-    cloud.points[i].x = static_cast<float> (p[0]); 
-    cloud.points[i].y = static_cast<float> (p[1]); 
-    cloud.points[i].z = static_cast<float> (p[2]);
+    cloud[i].x = static_cast<float> (p[0]); 
+    cloud[i].y = static_cast<float> (p[1]); 
+    cloud[i].z = static_cast<float> (p[2]);
   }
 
   // Compute a kd-tree for tgt

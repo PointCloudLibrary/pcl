@@ -42,7 +42,6 @@
 #include <pcl/features/rift.h>
 
 using namespace pcl;
-using namespace std;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, RIFTEstimation)
@@ -65,17 +64,17 @@ TEST (PCL, RIFTEstimation)
       cloud_xyzi.points.push_back (p);
     }
   }
-  cloud_xyzi.width = static_cast<std::uint32_t> (cloud_xyzi.points.size ());
+  cloud_xyzi.width = cloud_xyzi.size ();
 
   // Generate the intensity gradient data
   PointCloud<IntensityGradient> gradient;
   gradient.height = 1;
-  gradient.width = static_cast<std::uint32_t> (cloud_xyzi.points.size ());
+  gradient.width = cloud_xyzi.size ();
   gradient.is_dense = true;
   gradient.points.resize (gradient.width);
-  for (std::size_t i = 0; i < cloud_xyzi.points.size (); ++i)
+  for (std::size_t i = 0; i < cloud_xyzi.size (); ++i)
   {
-    const PointXYZI &p = cloud_xyzi.points[i];
+    const PointXYZI &p = cloud_xyzi[i];
 
     // Compute the surface normal analytically.
     float nx = p.x;
@@ -97,9 +96,9 @@ TEST (PCL, RIFTEstimation)
     float gy = (-ny * nx) * tmpx + (1 - ny * ny) * tmpy + (-ny * nz) * tmpz;
     float gz = (-nz * nx) * tmpx + (-nz * ny) * tmpy + (1 - nz * nz) * tmpz;
 
-    gradient.points[i].gradient[0] = gx;
-    gradient.points[i].gradient[1] = gy;
-    gradient.points[i].gradient[2] = gz;
+    gradient[i].gradient[0] = gx;
+    gradient[i].gradient[1] = gy;
+    gradient[i].gradient[2] = gz;
   }
 
   // Compute the RIFT features
@@ -117,7 +116,7 @@ TEST (PCL, RIFTEstimation)
   rift_est.compute (rift_output);
 
   // Compare to independently verified values
-  const RIFTDescriptor &rift = rift_output.points[220];
+  const RIFTDescriptor &rift = rift_output[220];
   float correct_rift_feature_values[32];
 
   unsigned major, minor, patch;

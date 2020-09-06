@@ -41,7 +41,6 @@
 #include <pcl/io/pcd_io.h>
 #include <vector>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::console;
 

@@ -43,10 +43,7 @@
 #include <pcl/point_types.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/sample_consensus/ransac.h>
-#include <pcl/filters/extract_indices.h>
-#include <pcl/segmentation/extract_clusters.h>
 #include <pcl/kdtree/kdtree.h>
-#include <pcl/filters/voxel_grid.h>
 #include <pcl/people/person_cluster.h>
 #include <pcl/people/head_based_subcluster.h>
 #include <pcl/people/person_classifier.h>

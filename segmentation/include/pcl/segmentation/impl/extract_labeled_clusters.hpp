@@ -49,19 +49,22 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
                                       unsigned int max_pts_per_cluster,
                                       unsigned int)
 {
-  if (tree->getInputCloud ()->points.size () != cloud.points.size ())
+  if (tree->getInputCloud ()->size () != cloud.size ())
   {
-    PCL_ERROR ("[pcl::extractLabeledEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
+    PCL_ERROR("[pcl::extractLabeledEuclideanClusters] Tree built for a different point "
+              "cloud dataset (%zu) than the input cloud (%zu)!\n",
+              static_cast<std::size_t>(tree->getInputCloud()->size()),
+              static_cast<std::size_t>(cloud.size()));
     return;
   }
   // Create a bool vector of processed point indices, and initialize it to false
-  std::vector<bool> processed (cloud.points.size (), false);
+  std::vector<bool> processed (cloud.size (), false);
 
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
 
   // Process all points in the indices vector
-  for (int i = 0; i < static_cast<int> (cloud.points.size ()); ++i)
+  for (int i = 0; i < static_cast<int> (cloud.size ()); ++i)
   {
     if (processed[i])
       continue;
@@ -88,7 +91,7 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
       {
         if (processed[nn_indices[j]])                             // Has this point been processed before ?
           continue;
-        if (cloud.points[i].label == cloud.points[nn_indices[j]].label)
+        if (cloud[i].label == cloud[nn_indices[j]].label)
         {
           // Perform a simple Euclidean clustering
           seed_queue.push_back (nn_indices[j]);
@@ -111,7 +114,7 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
       r.indices.erase (std::unique (r.indices.begin (), r.indices.end ()), r.indices.end ());
 
       r.header = cloud.header;
-      labeled_clusters[cloud.points[i].label].push_back (r);   // We could avoid a copy by working directly in the vector
+      labeled_clusters[cloud[i].label].push_back (r);   // We could avoid a copy by working directly in the vector
     }
   }
 }

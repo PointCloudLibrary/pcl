@@ -35,9 +35,7 @@
  *
  */
 
-#include <cstddef>
 #include <iostream>
-#include <pcl/common/eigen.h>
 #include <pcl/common/poses_from_matches.h>
 #include <pcl/common/transformation_from_correspondences.h>
 

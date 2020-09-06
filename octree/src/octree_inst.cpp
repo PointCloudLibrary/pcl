@@ -55,7 +55,6 @@ template class PCL_EXPORTS pcl::octree::OctreeBase<pcl::octree::OctreeContainerE
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
 PCL_INSTANTIATE(OctreePointCloudSingleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES)
