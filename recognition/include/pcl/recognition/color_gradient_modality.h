@@ -230,6 +230,14 @@ namespace pcl
       void
       filterQuantizedColorGradients ();
 
+      void clearIntermediateData(bool clearInput = false) {
+        if (clearInput) {
+          input_ = typename pcl::PointCloud<PointInT>::Ptr(new pcl::PointCloud<PointInT>());
+        }
+        color_gradients_ = pcl::PointCloud<float>();
+        quantized_color_gradients_ = pcl::QuantizedMap();
+      }
+
     protected:
 
       /** \brief Erodes a mask.

@@ -457,6 +457,16 @@ namespace pcl
       void
       filterQuantizedSurfaceNormals ();
 
+      void clearIntermediateData(bool clearInput = false) {
+        if (clearInput) {
+          input_ = typename pcl::PointCloud<PointInT>::Ptr(new pcl::PointCloud<PointInT>());
+        }
+        // normal_lookup_ = QuantizedNormalLookUpTable();
+        surface_normals_ = pcl::PointCloud<pcl::Normal>();
+        quantized_surface_normals_ = pcl::QuantizedMap();
+        surface_normal_orientations_ = pcl::LINEMOD_OrientationMap();
+      }
+
   protected:
 
       /** \brief Computes a distance map from the supplied input mask. 

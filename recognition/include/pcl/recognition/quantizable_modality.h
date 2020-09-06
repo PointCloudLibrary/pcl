@@ -66,6 +66,10 @@ namespace pcl
       virtual QuantizedMap &
       getSpreadedQuantizedMap () = 0;
 
+      /** \brief Cleans up the intermediate data. */
+      virtual void
+      clearIntermediateData (bool clearInput = false) = 0;
+
       /** \brief Extracts features from this modality within the specified mask.
         * \param[in] mask defines the areas where features are searched in. 
         * \param[in] nr_features defines the number of features to be extracted 
