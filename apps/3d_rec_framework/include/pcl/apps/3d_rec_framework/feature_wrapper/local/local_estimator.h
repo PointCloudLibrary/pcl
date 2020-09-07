@@ -97,7 +97,7 @@ private:
     neighborhood_dist_.reset(new std::vector<std::vector<float>>);
     neighborhood_dist_->resize(keypoints_cloud->size());
 
-    filtered_keypoints.points.resize(keypoints_cloud->size());
+    filtered_keypoints.resize(keypoints_cloud->size());
     int good = 0;
 
     for (std::size_t i = 0; i < keypoints_cloud->size(); i++) {

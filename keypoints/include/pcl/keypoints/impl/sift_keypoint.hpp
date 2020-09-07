@@ -109,7 +109,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
   scale_idx_ = pcl::getFieldIndex<PointOutT> ("scale", out_fields_);
 
   // Make sure the output cloud is empty
-  output.points.clear ();
+  output.clear ();
 
   // Create a local copy of the input cloud that will be resized for each octave
   typename pcl::PointCloud<PointInT>::Ptr cloud (new pcl::PointCloud<PointInT> (*input_));
@@ -170,7 +170,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
   std::vector<int> extrema_indices, extrema_scales;
   findScaleSpaceExtrema (input, tree, diff_of_gauss, extrema_indices, extrema_scales);
 
-  output.points.reserve (output.size () + extrema_indices.size ());
+  output.reserve (output.size () + extrema_indices.size ());
   // Save scale?
   if (scale_idx_ != -1)
   {
@@ -185,7 +185,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
       keypoint.z = input[keypoint_index].z;
       memcpy (reinterpret_cast<char*> (&keypoint) + out_fields_[scale_idx_].offset,
               &scales[extrema_scales[i_keypoint]], sizeof (float));
-      output.points.push_back (keypoint); 
+      output.push_back (keypoint); 
     }
   }
   else
@@ -198,7 +198,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
       keypoint.y = input[keypoint_index].y;
       keypoint.z = input[keypoint_index].z;
 
-      output.points.push_back (keypoint); 
+      output.push_back (keypoint); 
     }
   }
 }

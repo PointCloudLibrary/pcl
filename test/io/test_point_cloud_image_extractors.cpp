@@ -54,7 +54,7 @@ TEST (PCL, PointCloudImageExtractorFromNormalField)
   cloud.width = 2;
   cloud.height = 2;
   cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
   for (auto &point : cloud.points)
   {
     point.normal_x = -1.0;
@@ -92,7 +92,7 @@ TEST (PCL, PointCloudImageExtractorFromRGBField)
   cloud.width = 2;
   cloud.height = 2;
   cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
   for (auto &point : cloud.points)
   {
     point.r =   0;
@@ -130,7 +130,7 @@ TEST (PCL, PointCloudImageExtractorFromRGBAField)
   cloud.width = 2;
   cloud.height = 2;
   cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
   for (auto &point : cloud.points)
   {
     point.r =   0;
@@ -169,7 +169,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldMono)
   cloud.width = 2;
   cloud.height = 2;
   cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
   for (std::size_t i = 0; i < cloud.size (); i++)
     cloud[i].label = i;
 
@@ -196,7 +196,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldRGB)
   cloud.width = 2;
   cloud.height = 2;
   cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
   for (std::size_t i = 0; i < cloud.size (); i++)
     cloud[i].label = i % 2;
 
@@ -234,7 +234,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldGlasbey)
   cloud.width = 2;
   cloud.height = 2;
   cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
   for (std::size_t i = 0; i < cloud.size (); i++)
     cloud[i].label = i % 2;
 
@@ -271,7 +271,7 @@ TEST (PCL, PointCloudImageExtractorFromZField)
   cloud.width = 2;
   cloud.height = 2;
   cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
   for (std::size_t i = 0; i < cloud.size (); i++)
     cloud[i].z = 1.0 + i;
 
@@ -298,7 +298,7 @@ TEST (PCL, PointCloudImageExtractorFromCurvatureField)
   cloud.width = 2;
   cloud.height = 2;
   cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
 
   cloud[0].curvature = 1.0;
   cloud[1].curvature = 2.0;
@@ -330,7 +330,7 @@ TEST (PCL, PointCloudImageExtractorFromIntensityField)
   cloud.width = 2;
   cloud.height = 2;
   cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
 
   cloud[0].intensity = 10.0;
   cloud[1].intensity = 23.3;
@@ -360,7 +360,7 @@ TEST (PCL, PointCloudImageExtractorBadInput)
   cloud.width = 2;
   cloud.height = 2;
   cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
 
   pcl::PCLImage image;
   {
@@ -397,7 +397,7 @@ TEST (PCL, PointCloudImageExtractorBlackNaNs)
   cloud.width = 2;
   cloud.height = 2;
   cloud.is_dense = false;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
 
   cloud[0].curvature = 1.0;
   cloud[1].curvature = 2.0;

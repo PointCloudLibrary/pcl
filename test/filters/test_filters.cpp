@@ -238,7 +238,7 @@ TEST (ExtractIndices, Filters)
   eie.filter (result);
   EXPECT_EQ (result.size (), 0);
 
-  empty.points.resize (10);
+  empty.resize (10);
   empty.width = 10; empty.height = 1;
   eie.setInputCloud (empty.makeShared ());
   for (int i = 0; i < 10; ++i)
@@ -253,7 +253,7 @@ TEST (ExtractIndices, Filters)
 
   /*
   PointCloud<PointXYZ> sc, scf;
-  sc.points.resize (5); sc.width = 5; sc.height = 1; sc.is_dense = true;
+  sc.resize (5); sc.width = 5; sc.height = 1; sc.is_dense = true;
   for (int i = 0; i < 5; i++)
   {
     sc[i].x = sc[i].z = 0;
@@ -897,7 +897,7 @@ TEST (VoxelGrid_RGB, Filters)
     pt.r = col_r[i];
     pt.g = col_g[i];
     pt.b = col_b[i];
-    cloud_rgb_.points.push_back (pt);
+    cloud_rgb_.push_back (pt);
   }
 
   toPCLPointCloud2 (cloud_rgb_, cloud_rgb_blob_);
@@ -991,7 +991,7 @@ TEST (VoxelGrid_RGBA, Filters)
     pt.y = 0.0f;
     pt.z = 0.0f;
     pt.rgba = *reinterpret_cast<std::uint32_t*> (&rgba);
-    cloud_rgba_.points.push_back (pt);
+    cloud_rgba_.push_back (pt);
   }
 
   toPCLPointCloud2 (cloud_rgba_, cloud_rgba_blob_);
@@ -1188,7 +1188,7 @@ TEST (VoxelGrid_XYZNormal, Filters)
       for (unsigned xIdx = 0; xIdx < 2; ++xIdx, ++idx)
       {
         PointNormal& voxel = ground_truth [xIdx][yIdx][zIdx];
-        PointNormal& point = output.points [idx];
+        PointNormal& point = output[idx];
         // check for point equalities
         EXPECT_EQ (voxel.x, point.x);
         EXPECT_EQ (voxel.y, point.y);
@@ -1224,7 +1224,7 @@ TEST (VoxelGrid_XYZNormal, Filters)
       for (unsigned xIdx = 0; xIdx < 2; ++xIdx, ++idx)
       {
         PointNormal& voxel = ground_truth [xIdx][yIdx][zIdx];
-        PointNormal& point = output.points [idx];
+        PointNormal& point = output[idx];
         // check for point equalities
         EXPECT_EQ (voxel.x, point.x);
         EXPECT_EQ (voxel.y, point.y);
@@ -1344,7 +1344,7 @@ TEST (ProjectInliers, Filters)
   proj.setModelCoefficients (coefficients);
   proj.filter (output);
 
-  for (const auto &point : output.points)
+  for (const auto &point : output)
     EXPECT_NEAR (point.z, 0.0, 1e-4);
 
   // Test the pcl::PCLPointCloud2 method
@@ -1359,7 +1359,7 @@ TEST (ProjectInliers, Filters)
 
   fromPCLPointCloud2 (output_blob, output);
 
-  for (const auto &point : output.points)
+  for (const auto &point : output)
     EXPECT_NEAR (point.z, 0.0, 1e-4);
 }
 
@@ -1589,7 +1589,7 @@ TEST (ConditionalRemoval, Filters)
   condrem.filter (output);
 
   int num_not_nan = 0;
-  for (const auto &point : output.points)
+  for (const auto &point : output)
   {
     if (std::isfinite (point.x) &&
         std::isfinite (point.y) &&
@@ -1626,7 +1626,7 @@ TEST (ConditionalRemoval, Filters)
   condrem_.filter (output);
 
   num_not_nan = 0;
-  for (const auto &point : output.points)
+  for (const auto &point : output)
   {
     if (std::isfinite (point.x) &&
         std::isfinite (point.y) &&
@@ -1694,7 +1694,7 @@ TEST (ConditionalRemovalSetIndices, Filters)
   EXPECT_EQ ((*cloud)[cloud->size () - 1].z, output[output.size () - 1].z);
 
   int num_not_nan = 0;
-  for (const auto &point : output.points)
+  for (const auto &point : output)
   {
     if (std::isfinite (point.x) &&
         std::isfinite (point.y) &&
@@ -1744,7 +1744,7 @@ TEST (ConditionalRemovalSetIndices, Filters)
   EXPECT_EQ ((*cloud)[cloud->size () - 1].z, output[output.size () - 1].z);
 
   num_not_nan = 0;
-  for (const auto &point : output.points)
+  for (const auto &point : output)
   {
     if (std::isfinite (point.x) &&
         std::isfinite (point.y) &&
@@ -1775,7 +1775,7 @@ TEST (SamplingSurfaceNormal, Filters)
       pt.x = i;
       pt.y = j;
       pt.z = 1;
-      incloud->points.push_back (pt);
+      incloud->push_back (pt);
     }
   }
   incloud->height = 1;
@@ -1787,7 +1787,7 @@ TEST (SamplingSurfaceNormal, Filters)
   ssn_filter.filter (outcloud);
 
   // All the sampled points should have normals along the direction of Z axis
-  for (const auto &point : outcloud.points)
+  for (const auto &point : outcloud)
   {
     EXPECT_NEAR (point.normal[0], 0, 1e-3);
     EXPECT_NEAR (point.normal[1], 0, 1e-3);
@@ -1810,7 +1810,7 @@ TEST (ShadowPoints, Filters)
 
   // Adding a shadow point
   PointXYZ pt (.0f, .0f, .1f);
-  input->points.push_back (pt);
+  input->push_back (pt);
 
   input->height = 1;
   input->width = input->size ();
@@ -1875,7 +1875,7 @@ TEST (FrustumCulling, Filters)
         pt.x = float (i);
         pt.y = float (j);
         pt.z = float (k);
-        input->points.push_back (pt);
+        input->push_back (pt);
       }
     }
   }

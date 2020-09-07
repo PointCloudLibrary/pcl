@@ -225,7 +225,7 @@ template <typename PointT, typename Dist> void
 pcl::KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud)
 {
   // No point in doing anything if the array is empty
-  if (cloud.points.empty ())
+  if (cloud.empty ())
   {
     cloud_.reset ();
     return;
@@ -259,7 +259,7 @@ template <typename PointT, typename Dist> void
 pcl::KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud, const std::vector<int> &indices)
 {
   // No point in doing anything if the array is empty
-  if (cloud.points.empty ())
+  if (cloud.empty ())
   {
     cloud_.reset ();
     return;

@@ -99,7 +99,7 @@ TYPED_TEST(SacTest, InfiniteLoop)
 
   const unsigned point_count = 100;
   PointCloud<PointXYZ> cloud;
-  cloud.points.resize (point_count);
+  cloud.resize (point_count);
   for (unsigned idx = 0; idx < point_count; ++idx)
   {
     cloud[idx].x = static_cast<float> (idx);

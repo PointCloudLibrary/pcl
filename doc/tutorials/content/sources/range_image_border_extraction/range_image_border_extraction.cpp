@@ -98,7 +98,7 @@ main (int argc, char** argv)
       for (float y=-0.5f; y<=0.5f; y+=0.01f)
       {
         PointType point;  point.x = x;  point.y = y;  point.z = 2.0f - y;
-        point_cloud.points.push_back (point);
+        point_cloud.push_back (point);
       }
     }
     point_cloud.width = point_cloud.size ();  point_cloud.height = 1;
@@ -151,11 +151,11 @@ main (int argc, char** argv)
     for (int x=0; x< (int)range_image.width; ++x)
     {
       if (border_descriptions[y*range_image.width + x].traits[pcl::BORDER_TRAIT__OBSTACLE_BORDER])
-        border_points.points.push_back (range_image[y*range_image.width + x]);
+        border_points.push_back (range_image[y*range_image.width + x]);
       if (border_descriptions[y*range_image.width + x].traits[pcl::BORDER_TRAIT__VEIL_POINT])
-        veil_points.points.push_back (range_image[y*range_image.width + x]);
+        veil_points.push_back (range_image[y*range_image.width + x]);
       if (border_descriptions[y*range_image.width + x].traits[pcl::BORDER_TRAIT__SHADOW_BORDER])
-        shadow_points.points.push_back (range_image[y*range_image.width + x]);
+        shadow_points.push_back (range_image[y*range_image.width + x]);
     }
   }
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointWithRange> border_points_color_handler (border_points_ptr, 0, 255, 0);

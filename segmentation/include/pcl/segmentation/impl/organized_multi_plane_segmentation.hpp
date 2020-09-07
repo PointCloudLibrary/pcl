@@ -212,7 +212,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   {
     boundary_cloud.resize (0);
     pcl::OrganizedConnectedComponentSegmentation<PointT,PointLT>::findLabeledRegionBoundary (inlier_indices[i].indices[0], labels, boundary_indices[i]);
-    boundary_cloud.points.resize (boundary_indices[i].indices.size ());
+    boundary_cloud.resize (boundary_indices[i].indices.size ());
     for (std::size_t j = 0; j < boundary_indices[i].indices.size (); j++)
       boundary_cloud[j] = (*input_)[boundary_indices[i].indices[j]];
     
@@ -251,7 +251,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
     boundary_cloud.resize (0);
     int max_inlier_idx = static_cast<int> (inlier_indices[i].indices.size ()) - 1;
     pcl::OrganizedConnectedComponentSegmentation<PointT,PointLT>::findLabeledRegionBoundary (inlier_indices[i].indices[max_inlier_idx], labels, boundary_indices[i]);
-    boundary_cloud.points.resize (boundary_indices[i].indices.size ());
+    boundary_cloud.resize (boundary_indices[i].indices.size ());
     for (std::size_t j = 0; j < boundary_indices[i].indices.size (); j++)
       boundary_cloud[j] = (*input_)[boundary_indices[i].indices[j]];
     
@@ -295,7 +295,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
     boundary_cloud.resize (0);
     int max_inlier_idx = static_cast<int> (inlier_indices[i].indices.size ()) - 1;
     pcl::OrganizedConnectedComponentSegmentation<PointT,PointLT>::findLabeledRegionBoundary (inlier_indices[i].indices[max_inlier_idx], labels, boundary_indices[i]);
-    boundary_cloud.points.resize (boundary_indices[i].indices.size ());
+    boundary_cloud.resize (boundary_indices[i].indices.size ());
     for (std::size_t j = 0; j < boundary_indices[i].indices.size (); j++)
       boundary_cloud[j] = (*input_)[boundary_indices[i].indices[j]];
 
@@ -306,7 +306,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
                                              model_coefficients[i].values[3]);
 
     Eigen::Vector3f vp (0.0, 0.0, 0.0);
-    if (project_points_ && !boundary_cloud.points.empty ())
+    if (project_points_ && !boundary_cloud.empty ())
       boundary_cloud = projectToPlaneFromViewpoint (boundary_cloud, model, centroid, vp);
 
     regions[i] = PlanarRegion<PointT> (centroid,

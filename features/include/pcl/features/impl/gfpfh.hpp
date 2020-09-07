@@ -55,7 +55,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &outp
   if (!Feature<PointInT, PointOutT>::initCompute ())
   {
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   // Copy the header
@@ -67,7 +67,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &outp
   // (see http://dev.pointclouds.org/issues/657)
   output.width = output.height = 1;
   output.is_dense = input_->is_dense;
-  output.points.resize (1);
+  output.resize (1);
 
   // Perform the actual feature computation
   computeFeature (output);
@@ -129,7 +129,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
   output.clear ();
   output.width = 1;
   output.height = 1;
-  output.points.resize (1);
+  output.resize (1);
   std::copy (gfpfh_histogram.cbegin (), gfpfh_histogram.cend (), output[0].histogram);
 }
 

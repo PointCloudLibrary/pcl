@@ -174,7 +174,7 @@ computeMaxColorGradients ()
   const int width = input_->width;
   const int height = input_->height;
 
-  color_gradients_.points.resize (width*height);
+  color_gradients_.resize (width*height);
   color_gradients_.width = width;
   color_gradients_.height = height;
 

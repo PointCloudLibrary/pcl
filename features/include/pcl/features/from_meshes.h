@@ -21,7 +21,7 @@ namespace pcl
       normals.header = cloud.header;
       normals.width = cloud.width;
       normals.height = cloud.height;
-      normals.points.resize(nr_points);
+      normals.resize(nr_points);
 
       for (auto& point: normals.points)
         point.getNormalVector3fMap() = Eigen::Vector3f::Zero();

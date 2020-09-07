@@ -271,8 +271,8 @@ TEST (PCL, ConcatenatePoints)
   cloud_a.width  = 5;
   cloud_b.width  = 3;
   cloud_a.height = cloud_b.height = 1;
-  cloud_a.points.resize (cloud_a.width * cloud_a.height);
-  cloud_b.points.resize (cloud_b.width * cloud_b.height);
+  cloud_a.resize (cloud_a.width * cloud_a.height);
+  cloud_b.resize (cloud_b.width * cloud_b.height);
 
   for (auto &point : cloud_a.points)
   {
@@ -319,8 +319,8 @@ TEST (PCL, ConcatenateFields)
   // Fill in the cloud data
   cloud_a.width  = cloud_b.width  = 5;
   cloud_a.height = cloud_b.height = 1;
-  cloud_a.points.resize (cloud_a.width * cloud_a.height);
-  cloud_b.points.resize (cloud_b.width * cloud_b.height);
+  cloud_a.resize (cloud_a.width * cloud_a.height);
+  cloud_b.resize (cloud_b.width * cloud_b.height);
 
   for (auto& point: cloud_a)
   {
@@ -360,7 +360,7 @@ TEST (PCL, IO)
 
   cloud.width  = 640;
   cloud.height = 480;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
   srand (static_cast<unsigned int> (time (nullptr)));
@@ -670,7 +670,7 @@ TEST (PCL, PCDReaderWriter)
 
   cloud.width  = 640;
   cloud.height = 480;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
   srand (static_cast<unsigned int> (time (nullptr)));
@@ -735,7 +735,7 @@ TEST (PCL, PCDReaderWriter)
 TEST (PCL, PCDReaderWriterASCIIColorPrecision)
 {
   PointCloud<PointXYZRGB> cloud;
-  cloud.points.reserve (256 / 4 * 256 / 4 * 256 / 4 * 256 / 16);
+  cloud.reserve (256 / 4 * 256 / 4 * 256 / 4 * 256 / 16);
   for (std::size_t r_i = 0; r_i < 256; r_i += 5)
     for (std::size_t g_i = 0; g_i < 256; g_i += 5)
       for (std::size_t b_i = 0; b_i < 256; b_i += 5)
@@ -785,7 +785,7 @@ TEST (PCL, ASCIIRead)
 
   cloud.width  = 300;
   cloud.height = 1;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
 
@@ -937,7 +937,7 @@ TEST (PCL, ExtendedIO)
 {
   PointCloud<PointXYZFPFH33> cloud;
   cloud.width = 2; cloud.height = 1;
-  cloud.points.resize (2);
+  cloud.resize (2);
 
   cloud[0].x = cloud[0].y = cloud[0].z = 1;
   cloud[1].x = cloud[1].y = cloud[1].z = 2;
@@ -948,7 +948,7 @@ TEST (PCL, ExtendedIO)
   }
 
   savePCDFile ("v.pcd", cloud);
-  cloud.points.clear ();
+  cloud.clear ();
   loadPCDFile ("v.pcd", cloud);
 
   EXPECT_EQ (cloud.width, 2);
@@ -972,7 +972,7 @@ TEST (PCL, ExtendedIO)
 TEST (PCL, EigenConversions)
 {
   PointCloud<PointXYZ> cloud;
-  cloud.points.resize (5);
+  cloud.resize (5);
 
   for (std::size_t i = 0; i < cloud.size (); ++i)
     cloud[i].x = cloud[i].y = cloud[i].z = static_cast<float> (i);
@@ -1024,8 +1024,8 @@ TEST (PCL, CopyPointCloud)
   // Fill in the cloud data
   cloud_a.width  = cloud_b.width  = 3;
   cloud_a.height = cloud_b.height = 1;
-  cloud_a.points.resize (cloud_a.width * cloud_a.height);
-  cloud_b.points.resize (cloud_b.width * cloud_b.height);
+  cloud_a.resize (cloud_a.width * cloud_a.height);
+  cloud_b.resize (cloud_b.width * cloud_b.height);
 
   for (std::size_t i = 0; i < cloud_a.size (); ++i)
   {
@@ -1063,7 +1063,7 @@ TEST (PCL, LZF)
   PointCloud<PointXYZ> cloud, cloud2;
   cloud.width  = 640;
   cloud.height = 480;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
   srand (static_cast<unsigned int> (time (nullptr)));
@@ -1121,7 +1121,7 @@ TEST (PCL, LZFExtended)
   PointCloud<PointXYZRGBNormal> cloud, cloud2;
   cloud.width  = 640;
   cloud.height = 480;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
   srand (static_cast<unsigned int> (time (nullptr)));
@@ -1174,7 +1174,7 @@ TEST (PCL, LZFInMem)
   PointCloud<PointXYZRGBNormal> cloud;
   cloud.width  = 640;
   cloud.height = 480;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
 
   srand (static_cast<unsigned int> (time (nullptr)));
@@ -1245,7 +1245,7 @@ TEST (PCL, Locale)
     PointCloud<PointXYZ> cloud, cloud2;
     cloud.width  = 640;
     cloud.height = 480;
-    cloud.points.resize (cloud.width * cloud.height);
+    cloud.resize (cloud.width * cloud.height);
     cloud.is_dense = true;
 
     srand (static_cast<unsigned int> (time (nullptr)));

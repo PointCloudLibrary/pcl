@@ -128,9 +128,9 @@ copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   cloud_out.is_dense = cloud_in.is_dense;
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
-  cloud_out.points.resize (cloud_in.size ());
+  cloud_out.resize (cloud_in.size ());
 
-  if (cloud_in.points.empty ())
+  if (cloud_in.empty ())
     return;
 
   if (isSamePointType<PointInT, PointOutT> ())
@@ -156,7 +156,7 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   }
 
   // Allocate enough space and copy the basics
-  cloud_out.points.resize (indices.size ());
+  cloud_out.resize (indices.size ());
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = indices.size ();
   cloud_out.height   = 1;
@@ -176,7 +176,7 @@ copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
                 pcl::PointCloud<PointOutT> &cloud_out)
 {
   // Allocate enough space and copy the basics
-  cloud_out.points.resize (indices.size ());
+  cloud_out.resize (indices.size ());
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = indices.size ();
   cloud_out.height   = 1;
@@ -203,7 +203,7 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   }
 
   // Allocate enough space and copy the basics
-  cloud_out.points.resize (indices.indices.size ());
+  cloud_out.resize (indices.indices.size ());
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = indices.indices.size ();
   cloud_out.height   = 1;
@@ -243,7 +243,7 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   }
 
   // Allocate enough space and copy the basics
-  cloud_out.points.resize (nr_p);
+  cloud_out.resize (nr_p);
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = nr_p;
   cloud_out.height   = 1;
@@ -282,7 +282,7 @@ copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   }
 
   // Allocate enough space and copy the basics
-  cloud_out.points.resize (nr_p);
+  cloud_out.resize (nr_p);
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = nr_p;
   cloud_out.height   = 1;
@@ -319,7 +319,7 @@ concatenateFields (const pcl::PointCloud<PointIn1T> &cloud1_in,
   }
 
   // Resize the output dataset
-  cloud_out.points.resize (cloud1_in.size ());
+  cloud_out.resize (cloud1_in.size ());
   cloud_out.header   = cloud1_in.header;
   cloud_out.width    = cloud1_in.width;
   cloud_out.height   = cloud1_in.height;

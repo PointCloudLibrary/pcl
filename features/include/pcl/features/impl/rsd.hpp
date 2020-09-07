@@ -252,7 +252,7 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   {
     PCL_ERROR ("[pcl::%s::computeFeature] A search radius needs to be set!\n", getClassName ().c_str ());
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 

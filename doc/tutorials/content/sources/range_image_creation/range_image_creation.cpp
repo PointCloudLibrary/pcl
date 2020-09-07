@@ -10,7 +10,7 @@ int main (int argc, char** argv) {
       point.x = 2.0f - y;
       point.y = y;
       point.z = z;
-      pointCloud.points.push_back(point);
+      pointCloud.push_back(point);
     }
   }
   pointCloud.width = pointCloud.size();

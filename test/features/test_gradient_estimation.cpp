@@ -61,7 +61,7 @@ TEST (PCL, IntensityGradientEstimation)
       p.z = 0.1f * powf (x, 2.0f) + 0.5f * y + 1.0f;
       p.intensity = 0.1f * powf (x, 3.0f) + 0.2f * powf (y, 2.0f) + 1.0f * p.z + 20000.0f;
 
-      cloud_xyzi.points.push_back (p);
+      cloud_xyzi.push_back (p);
     }
   }
   cloud_xyzi.width = cloud_xyzi.size ();

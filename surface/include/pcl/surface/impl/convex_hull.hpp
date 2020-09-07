@@ -95,7 +95,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   }
     
   pcl::PointCloud<PointInT> normal_calc_cloud;
-  normal_calc_cloud.points.resize (3);
+  normal_calc_cloud.resize (3);
   normal_calc_cloud[0] = p0;
   normal_calc_cloud[1] = p1;
   normal_calc_cloud[2] = p2;
@@ -195,7 +195,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   {
     PCL_ERROR ("[pcl::%s::performReconstrution2D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%lu)!\n", getClassName ().c_str (), indices_->size ());
 
-    hull.points.resize (0);
+    hull.resize (0);
     hull.width = hull.height = 0;
     polygons.resize (0);
 
@@ -214,7 +214,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   }
 
   int num_vertices = qh num_vertices;
-  hull.points.resize (num_vertices);
+  hull.resize (num_vertices);
   memset (&hull.points[0], hull.size (), sizeof (PointInT));
 
   vertexT * vertex;
@@ -337,7 +337,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
               getClassName().c_str(),
               static_cast<std::size_t>(input_->size()));
 
-    hull.points.resize (0);
+    hull.resize (0);
     hull.width = hull.height = 0;
     polygons.resize (0);
 
@@ -353,7 +353,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   int num_facets = qh num_facets;
 
   int num_vertices = qh num_vertices;
-  hull.points.resize (num_vertices);
+  hull.resize (num_vertices);
 
   vertexT * vertex;
   int i = 0;
@@ -441,7 +441,7 @@ pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points)
   points.header = input_->header;
   if (!initCompute () || input_->points.empty () || indices_->empty ())
   {
-    points.points.clear ();
+    points.clear ();
     return;
   }
 
@@ -484,7 +484,7 @@ pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points, std::vector<pcl::Ver
   points.header = input_->header;
   if (!initCompute () || input_->points.empty () || indices_->empty ())
   {
-    points.points.clear ();
+    points.clear ();
     return;
   }
 

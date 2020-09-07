@@ -138,7 +138,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
 {
   if (triangles_.empty ())
   {
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -147,8 +147,8 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
   //feature size = number_of_rotations * number_of_axis_to_rotate_around * number_of_projections * number_of_central_moments
   unsigned int feature_size = number_of_rotations_ * 3 * 3 * 5;
   const auto number_of_points = indices_->size ();
-  output.points.clear ();
-  output.points.reserve (number_of_points);
+  output.clear ();
+  output.reserve (number_of_points);
 
   for (const auto& idx: *indices_)
   {
@@ -205,9 +205,9 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
     else
       invert_norm = 1.0f / norm;
 
-    output.points.emplace_back ();
+    output.emplace_back ();
     for (std::size_t i_dim = 0; i_dim < feature_size; i_dim++)
-      output.points.back().histogram[i_dim] = feature[i_dim] * invert_norm;
+      output.back().histogram[i_dim] = feature[i_dim] * invert_norm;
   }
 }
 
@@ -391,8 +391,8 @@ template <typename PointInT, typename PointOutT> void
 pcl::ROPSEstimation <PointInT, PointOutT>::transformCloud (const PointInT& point, const Eigen::Matrix3f& matrix, const std::vector <int>& local_points, PointCloudIn& transformed_cloud) const
 {
   const auto number_of_points = local_points.size ();
-  transformed_cloud.points.clear ();
-  transformed_cloud.points.reserve (number_of_points);
+  transformed_cloud.clear ();
+  transformed_cloud.reserve (number_of_points);
 
   for (const auto& idx: local_points)
   {
@@ -406,7 +406,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::transformCloud (const PointInT& point
     new_point.x = transformed_point (0);
     new_point.y = transformed_point (1);
     new_point.z = transformed_point (2);
-    transformed_cloud.points.emplace_back (new_point);
+    transformed_cloud.emplace_back (new_point);
   }
 }
 
@@ -430,8 +430,8 @@ pcl::ROPSEstimation <PointInT, PointOutT>::rotateCloud (const PointInT& axis, co
   rotated_cloud.header = cloud.header;
   rotated_cloud.width = number_of_points;
   rotated_cloud.height = 1;
-  rotated_cloud.points.clear ();
-  rotated_cloud.points.reserve (number_of_points);
+  rotated_cloud.clear ();
+  rotated_cloud.reserve (number_of_points);
 
   min (0) = std::numeric_limits <float>::max ();
   min (1) = std::numeric_limits <float>::max ();
@@ -449,7 +449,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::rotateCloud (const PointInT& axis, co
     rotated_point.x = point (0);
     rotated_point.y = point (1);
     rotated_point.z = point (2);
-    rotated_cloud.points.emplace_back (rotated_point);
+    rotated_cloud.emplace_back (rotated_point);
 
     for (int i = 0; i < 3; ++i)
     {

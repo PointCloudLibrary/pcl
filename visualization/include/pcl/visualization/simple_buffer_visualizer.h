@@ -160,7 +160,7 @@ namespace pcl
         void
         initValuesAndVisualization ()
         {
-          cloud_.points.resize(1);
+          cloud_.resize(1);
           
           PCL_WARN("Setting buffer size to %d entries.\n", nb_values_);
           values_.resize(nb_values_);

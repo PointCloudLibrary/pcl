@@ -103,19 +103,19 @@ TEST (PCL, findFeatureCorrespondences)
       FeatureT f;
       f.histogram[0] = x;
       f.histogram[1] = y;
-      feature0.points.push_back (f);
+      feature0.push_back (f);
 
       f.histogram[0] = x;
       f.histogram[1] = y - 2.5f;
-      feature1.points.push_back (f);
+      feature1.push_back (f);
 
       f.histogram[0] = x - 2.0f;
       f.histogram[1] = y + 1.5f;
-      feature2.points.push_back (f);
+      feature2.push_back (f);
 
       f.histogram[0] = x + 2.0f;
       f.histogram[1] = y + 1.5f;
-      feature3.points.push_back (f);
+      feature3.push_back (f);
     }
   }
   feature0.width = feature0.size ();

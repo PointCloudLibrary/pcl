@@ -196,7 +196,7 @@ Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   if (!initCompute ())
   {
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -204,8 +204,8 @@ Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   output.header = input_->header;
 
   // Resize the output dataset
-  if (output.points.size () != indices_->size ())
-    output.points.resize (indices_->size ());
+  if (output.size () != indices_->size ())
+    output.resize (indices_->size ());
 
   // Check if the output will be computed for all points or only a subset
   // If the input width or height are not set, set output width as size

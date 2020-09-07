@@ -160,8 +160,8 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, boo
   std::vector<int> volume_host;
   volume_.download (volume_host, cols);
 
-  cloud.points.clear ();
-  cloud.points.reserve (10000);
+  cloud.clear ();
+  cloud.reserve (10000);
 
   constexpr int DIVISOR = pcl::device::kinfuLS::DIVISOR; // SHRT_MAX;
 
@@ -207,7 +207,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, boo
                 xyz.y = point (1);
                 xyz.z = point (2);
 
-                cloud.points.push_back (xyz);
+                cloud.push_back (xyz);
               }
             }
           dz = 0;
@@ -231,7 +231,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, boo
                 xyz.y = point (1);
                 xyz.z = point (2);
 
-                cloud.points.push_back (xyz);
+                cloud.push_back (xyz);
               }
             }
         }
@@ -263,7 +263,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, boo
               xyz.y = point (1);
               xyz.z = point (2);
 
-              cloud.points.push_back (xyz);
+              cloud.push_back (xyz);
             }
           }
         } /* if (connected26) */

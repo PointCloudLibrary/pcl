@@ -400,7 +400,7 @@ TEST(PCL_FeaturesGPU, normals_nan_gpu)
     const std::size_t N = 5;
 
     PointCloud<PointXYZ> cloud;
-    cloud.points.assign(N, {0.0, 0.0, 0.0});
+    cloud.assign(N, {0.0, 0.0, 0.0});
 
     const float radius_search = 2.0F;
     const int max_results = 500;

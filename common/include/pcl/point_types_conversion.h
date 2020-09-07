@@ -254,7 +254,7 @@ namespace pcl
     {
       Intensity p;
       PointRGBtoI (point, p);
-      out.points.push_back (p);
+      out.push_back (p);
     }
   }
 
@@ -272,7 +272,7 @@ namespace pcl
     {
       Intensity8u p;
       PointRGBtoI (point, p);
-      out.points.push_back (p);
+      out.push_back (p);
     }
   }
 
@@ -290,7 +290,7 @@ namespace pcl
     {
       Intensity32u p;
       PointRGBtoI (point, p);
-      out.points.push_back (p);
+      out.push_back (p);
     }
   }
 
@@ -308,7 +308,7 @@ namespace pcl
     {
       PointXYZHSV p;
       PointXYZRGBtoXYZHSV (point, p);
-      out.points.push_back (p);
+      out.push_back (p);
     }
   }
 
@@ -326,7 +326,7 @@ namespace pcl
     {
       PointXYZHSV p;
       PointXYZRGBAtoXYZHSV (point, p);
-      out.points.push_back (p);
+      out.push_back (p);
     }
   }
 
@@ -344,7 +344,7 @@ namespace pcl
     {
       PointXYZI p;
       PointXYZRGBtoXYZI (point, p);
-      out.points.push_back (p);
+      out.push_back (p);
     }
   }
 
@@ -386,7 +386,7 @@ namespace pcl
         pt.g = image.at (u, v).g;
         pt.b = image.at (u, v).b;
 
-        out.points.push_back (pt);
+        out.push_back (pt);
       }
     }
     out.width = width_;

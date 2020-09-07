@@ -742,12 +742,12 @@ TEST_F (OutofcoreTest, PointCloud2_Insertion)
 
   pcl::PointCloud<pcl::PointXYZ> point_cloud;
 
-  point_cloud.points.reserve (numPts);
+  point_cloud.reserve (numPts);
   point_cloud.width = static_cast<std::uint32_t> (numPts);
   point_cloud.height = 1;
 
   for (std::size_t i=0; i < numPts; i++)
-    point_cloud.points.emplace_back(static_cast<float>(rand () % 10), static_cast<float>(rand () % 10), static_cast<float>(rand () % 10));
+    point_cloud.emplace_back(static_cast<float>(rand () % 10), static_cast<float>(rand () % 10), static_cast<float>(rand () % 10));
 
 
   pcl::PCLPointCloud2::Ptr input_cloud (new pcl::PCLPointCloud2 ());

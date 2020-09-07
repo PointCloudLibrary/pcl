@@ -115,7 +115,7 @@ pcl::kinfuLS::WorldModel<PointT>::getExistingData(const double previous_origin_x
   // apply filter
   condrem.filter (existing_slice);  
  
-  if(!existing_slice.points.empty ())
+  if(!existing_slice.empty ())
   {
 	//transform the slice in new cube coordinates
 	Eigen::Affine3f transformation; 

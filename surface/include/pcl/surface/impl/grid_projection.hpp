@@ -730,7 +730,7 @@ pcl::GridProjection<PointNT>::performReconstruction (pcl::PolygonMesh &output)
   cloud.height = 1;
   cloud.is_dense = true;
 
-  cloud.points.resize (surface_.size ());
+  cloud.resize (surface_.size ());
   // Copy the data from surface_ to cloud
   for (std::size_t i = 0; i < cloud.size (); ++i)
   {

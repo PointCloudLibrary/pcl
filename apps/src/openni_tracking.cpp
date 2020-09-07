@@ -442,7 +442,7 @@ public:
       point.y = (*cloud)[i].y;
       point.z = (*cloud)[i].z;
       point.rgba = (*cloud)[i].rgba;
-      result.points.push_back(point);
+      result.push_back(point);
     }
   }
 
@@ -473,7 +473,7 @@ public:
       if (!(std::abs(point.x) < 0.01 && std::abs(point.y) < 0.01 &&
             std::abs(point.z) < 0.01) &&
           !std::isnan(point.x) && !std::isnan(point.y) && !std::isnan(point.z))
-        result.points.push_back(point);
+        result.push_back(point);
     }
 
     result.width = result.size();
@@ -490,7 +490,7 @@ public:
     pcl::PointIndices segmented_indices = cluster_indices[segment_index];
     for (const int& index : segmented_indices.indices) {
       PointType point = (*cloud)[index];
-      result.points.push_back(point);
+      result.push_back(point);
     }
     result.width = result.size();
     result.height = 1;

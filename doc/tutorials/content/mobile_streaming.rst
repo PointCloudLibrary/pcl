@@ -166,7 +166,7 @@ that lie outside of the predefined bounding box or contain NaN values.
     {
       const std::size_t nr_points = cloud->size ();
 
-      cloud_buffers.points.resize (nr_points*3);
+      cloud_buffers.resize (nr_points*3);
       cloud_buffers.rgb.resize (nr_points*3);
 
       const pcl::PointXYZ  bounds_min (-0.9, -0.8, 1.0);
@@ -204,7 +204,7 @@ that lie outside of the predefined bounding box or contain NaN values.
         j++;
       }
 
-      cloud_buffers.points.resize (j * 3);
+      cloud_buffers.resize (j * 3);
       cloud_buffers.rgb.resize (j * 3);
     }
 

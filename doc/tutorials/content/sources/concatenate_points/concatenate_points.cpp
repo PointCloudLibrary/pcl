@@ -11,8 +11,8 @@ int
   cloud_a.width  = 5;
   cloud_b.width  = 3;
   cloud_a.height = cloud_b.height = 1;
-  cloud_a.points.resize (cloud_a.width * cloud_a.height);
-  cloud_b.points.resize (cloud_b.width * cloud_b.height);
+  cloud_a.resize (cloud_a.width * cloud_a.height);
+  cloud_b.resize (cloud_b.width * cloud_b.height);
 
   for (std::size_t i = 0; i < cloud_a.size (); ++i)
   {

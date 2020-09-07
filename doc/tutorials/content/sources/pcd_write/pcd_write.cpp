@@ -11,7 +11,7 @@ int
   cloud.width    = 5;
   cloud.height   = 1;
   cloud.is_dense = false;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
 
   for (auto& point: cloud)
   {

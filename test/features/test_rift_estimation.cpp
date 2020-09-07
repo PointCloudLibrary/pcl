@@ -61,7 +61,7 @@ TEST (PCL, RIFTEstimation)
       p.intensity = std::exp ((-powf (x - 3.0f, 2.0f) + powf (y + 2.0f, 2.0f)) / (2.0f * 25.0f)) + std::exp ((-powf (x + 5.0f, 2.0f) + powf (y - 5.0f, 2.0f))
                                                                                  / (2.0f * 4.0f));
 
-      cloud_xyzi.points.push_back (p);
+      cloud_xyzi.push_back (p);
     }
   }
   cloud_xyzi.width = cloud_xyzi.size ();
@@ -71,7 +71,7 @@ TEST (PCL, RIFTEstimation)
   gradient.height = 1;
   gradient.width = cloud_xyzi.size ();
   gradient.is_dense = true;
-  gradient.points.resize (gradient.width);
+  gradient.resize (gradient.width);
   for (std::size_t i = 0; i < cloud_xyzi.size (); ++i)
   {
     const PointXYZI &p = cloud_xyzi[i];

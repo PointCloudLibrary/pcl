@@ -50,7 +50,7 @@ const std::size_t size = 10 * 480;
 
 TEST (PointCloud, size)
 {
-  EXPECT_EQ(cloud.points.size (), cloud.size ());
+  EXPECT_EQ(cloud.size (), cloud.size ());
 }
 
 TEST (PointCloud, sq_brackets_wrapper)
@@ -63,19 +63,19 @@ TEST (PointCloud, sq_brackets_wrapper)
 TEST (PointCloud, at)
 {
   for (std::uint32_t i = 0; i < size; ++i)
-    EXPECT_EQ_VECTORS (cloud.points.at (i).getVector3fMap (),
+    EXPECT_EQ_VECTORS (cloud.at (i).getVector3fMap (),
                        cloud.at (i).getVector3fMap ());
 }
 
 TEST (PointCloud, front)
 {
-  EXPECT_EQ_VECTORS (cloud.points.front ().getVector3fMap (),
+  EXPECT_EQ_VECTORS (cloud.front ().getVector3fMap (),
                      cloud.front ().getVector3fMap ());
 }
 
 TEST (PointCloud, back)
 {
-  EXPECT_EQ_VECTORS (cloud.points.back ().getVector3fMap (),
+  EXPECT_EQ_VECTORS (cloud.back ().getVector3fMap (),
                      cloud.back ().getVector3fMap ());
 }
 
@@ -105,11 +105,11 @@ TEST (PointCloud, constructor_with_allocation_valued)
 TEST (PointCloud, iterators)
 {
   EXPECT_EQ_VECTORS (cloud.begin ()->getVector3fMap (),
-                     cloud.points.begin ()->getVector3fMap ());
+                     cloud.begin ()->getVector3fMap ());
   EXPECT_EQ_VECTORS ((--cloud.end ())->getVector3fMap (),
-                     (--cloud.points.end ())->getVector3fMap ());
+                     (--cloud.end ())->getVector3fMap ());
   PointCloud<PointXYZ>::const_iterator pit = cloud.begin ();
-  PointCloud<PointXYZ>::VectorType::const_iterator pit2 = cloud.points.begin ();
+  PointCloud<PointXYZ>::VectorType::const_iterator pit2 = cloud.begin ();
   for (; pit < cloud.end (); ++pit2, ++pit)
     EXPECT_EQ_VECTORS (pit->getVector3fMap (), pit2->getVector3fMap ());
 }
@@ -137,7 +137,7 @@ main (int argc, char** argv)
   cloud.width = 10;
   cloud.height = 480;
   for (std::uint32_t i = 0; i < size; ++i)
-    cloud.points.emplace_back(3.0f * static_cast<float>(i) + 0, 3.0f * static_cast<float> (i) + 1, 3.0f * static_cast<float> (i) + 2);
+    cloud.emplace_back(3.0f * static_cast<float>(i) + 0, 3.0f * static_cast<float> (i) + 1, 3.0f * static_cast<float> (i) + 2);
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

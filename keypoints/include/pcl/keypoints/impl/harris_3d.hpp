@@ -273,8 +273,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
   }
   else
   {
-    output.points.clear ();
-    output.points.reserve (response->size());
+    output.clear ();
+    output.reserve (response->size());
 
 #pragma omp parallel for \
   default(none) \
@@ -302,7 +302,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
       if (is_maxima)
 #pragma omp critical
       {
-        output.points.push_back ((*response)[idx]);
+        output.push_back ((*response)[idx]);
         keypoints_indices_->indices.push_back (idx);
       }
     }
@@ -448,7 +448,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseCurvature (PointClo
     point.y = (*input_)[idx].y;
     point.z = (*input_)[idx].z;
     point.intensity = (*normals_)[idx].curvature;
-    output.points.push_back(point);
+    output.push_back(point);
   }
   // does not change the order
   output.height = input_->height;

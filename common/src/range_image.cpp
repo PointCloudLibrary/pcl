@@ -349,8 +349,8 @@ RangeImage::getHalfImage (RangeImage& half_image) const
   half_image.width  = width/2;
   half_image.height = height/2;
   half_image.is_dense = is_dense;
-  half_image.points.clear ();
-  half_image.points.resize (half_image.width*half_image.height);
+  half_image.clear ();
+  half_image.resize (half_image.width*half_image.height);
   
   int src_start_x = 2*half_image.image_offset_x_ - image_offset_x_,
       src_start_y = 2*half_image.image_offset_y_ - image_offset_y_;
@@ -393,8 +393,8 @@ RangeImage::getSubImage (int sub_image_image_offset_x, int sub_image_image_offse
   sub_image.width = sub_image_width;
   sub_image.height = sub_image_height;
   sub_image.is_dense = is_dense;
-  sub_image.points.clear ();
-  sub_image.points.resize (sub_image.width*sub_image.height);
+  sub_image.clear ();
+  sub_image.resize (sub_image.width*sub_image.height);
   
   int src_start_x = combine_pixels*sub_image.image_offset_x_ - image_offset_x_,
       src_start_y = combine_pixels*sub_image.image_offset_y_ - image_offset_y_;
@@ -848,7 +848,7 @@ RangeImage::extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data,
       PointWithViewpoint point;
       point.x=distance; point.y=y; point.z=z;
       point.vp_x=vp_x; point.vp_y=vp_y; point.vp_z=vp_z;
-      far_ranges.points.push_back (point);
+      far_ranges.push_back (point);
     }
   }
   far_ranges.width= far_ranges.size ();  far_ranges.height = 1;

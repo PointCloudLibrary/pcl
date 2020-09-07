@@ -508,7 +508,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::compute (PointCloudOut &output)
   if (!Feature<PointInT, PointOutT>::initCompute ())
   {
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   // Copy the header
@@ -520,7 +520,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::compute (PointCloudOut &output)
   // (see http://dev.pointclouds.org/issues/657)
   output.width = output.height = 1;
   output.is_dense = input_->is_dense;
-  output.points.resize (1);
+  output.resize (1);
 
   // Perform the actual feature computation
   computeFeature (output);
@@ -541,7 +541,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
   this->cleanup9 (local_cloud_);
 
   // We only output _1_ signature
-  output.points.resize (1);
+  output.resize (1);
   output.width = 1;
   output.height = 1;
 

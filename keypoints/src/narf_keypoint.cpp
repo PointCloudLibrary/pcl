@@ -877,7 +877,7 @@ NarfKeypoint::getRangeImage ()
 void 
 NarfKeypoint::detectKeypoints (NarfKeypoint::PointCloudOut& output)
 {
-  output.points.clear ();
+  output.clear ();
   
   if (indices_)
   {
@@ -911,7 +911,7 @@ NarfKeypoint::detectKeypoints (NarfKeypoint::PointCloudOut& output)
   {
     if (!is_interest_point_image_[index])
       continue;
-    output.points.push_back (index);
+    output.push_back (index);
   }
 }
 

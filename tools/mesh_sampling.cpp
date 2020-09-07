@@ -149,7 +149,7 @@ uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, std::size_t n_samples, 
     cumulativeAreas[cellId] = totalArea;
   }
 
-  cloud_out.points.resize (n_samples);
+  cloud_out.resize (n_samples);
   cloud_out.width = static_cast<std::uint32_t> (n_samples);
   cloud_out.height = 1;
 

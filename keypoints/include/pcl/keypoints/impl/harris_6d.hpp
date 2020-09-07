@@ -223,8 +223,8 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
   }
   else
   {
-    output.points.clear ();
-    output.points.reserve (response->size());
+    output.clear ();
+    output.reserve (response->size());
 
 #pragma omp parallel for \
   default(none) \
@@ -249,7 +249,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
       if (is_maxima)
         #pragma omp critical
       {
-        output.points.push_back ((*response)[idx]);
+        output.push_back ((*response)[idx]);
         keypoints_indices_->indices.push_back (idx);
       }
     }
@@ -347,7 +347,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
     pointOut.z = pointIn.z;
 
     #pragma omp critical
-    output.points.push_back(pointOut);
+    output.push_back(pointOut);
   }
   output.height = input_->height;
   output.width = input_->width;
