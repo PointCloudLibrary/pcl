@@ -457,9 +457,9 @@ namespace pcl
       void
       filterQuantizedSurfaceNormals ();
 
-      void clearIntermediateData(bool clearInput = false) {
-        if (clearInput) {
-          input_ = typename pcl::PointCloud<PointInT>::Ptr(new pcl::PointCloud<PointInT>());
+      void clearIntermediateData(bool resetInput = false) {
+        if (resetInput) {
+          input_.reset();
         }
         // normal_lookup_ = QuantizedNormalLookUpTable();
         surface_normals_ = pcl::PointCloud<pcl::Normal>();

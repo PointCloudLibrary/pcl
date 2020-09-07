@@ -230,11 +230,11 @@ namespace pcl
       void
       filterQuantizedGradients ();
 
-      void clearIntermediateData(bool clearInput = false) {
-        if (clearInput) {
-          input_ = typename pcl::PointCloud<PointInT>::Ptr(new pcl::PointCloud<PointInT>());
+      void clearIntermediateData(bool resetInput = false) {
+        if (resetInput) {
+          input_.reset();
         }
-        smoothed_input_ = typename pcl::PointCloud<PointInT>::Ptr(new pcl::PointCloud<PointInT>());
+        smoothed_input_.reset();
         quantized_gradients_ = pcl::QuantizedMap();
       }
 
