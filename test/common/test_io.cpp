@@ -129,13 +129,14 @@ TEST (PCL, copyPointCloud)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-// Ignore unknown pragma warning on MSVC (4996)
+// Ignore deprecation warnings on MSVC and GNU C Compiler
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable: 4068)
-#endif
+#pragma warning(disable: 4996)
+#elif defined __GNUC__
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #pragma GCC diagnostic push
+#endif
 TEST (PCL, concatenatePointCloud)
 {
   CloudXYZRGBA cloud_xyz_rgba;
@@ -320,9 +321,10 @@ TEST (PCL, concatenatePointCloud)
     EXPECT_EQ (cloud_all[cloud_xyz_rgb.size () + i].rgba, 0);
   }
 }
-#pragma GCC diagnostic pop
 #ifdef _MSC_VER
 #pragma warning(pop)
+#elif defined __GNUC__
+#pragma GCC diagnostic pop
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////
