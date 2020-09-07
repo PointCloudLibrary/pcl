@@ -812,6 +812,7 @@ namespace pcl
           normal[0] = (*input_)[cnt].normal_x;
           normal[1] = (*input_)[cnt].normal_y;
           normal[2] = (*input_)[cnt].normal_z;
+          cnt++;
 
           for( i=0 ; i<DIMENSION ; i++ ) position[i] = ( position[i]-center[i] ) / scale;
           myCenter[0] = myCenter[1] = myCenter[2] = Real(0.5);
@@ -838,7 +839,6 @@ namespace pcl
             d++;
           }
           NonLinearUpdateWeightContribution( temp , position , weight );
-          cnt++;
         }
       }
 
