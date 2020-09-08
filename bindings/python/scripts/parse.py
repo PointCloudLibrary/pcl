@@ -7,7 +7,7 @@ import scripts.utils as utils
 
 def valid_children(node):
     """
-    A generator function for yielding valid children nodes
+    A generator function yielding valid children nodes
 
     Parameters:
         - node (dict):
@@ -36,7 +36,7 @@ def valid_children(node):
 
 def print_ast(node):
     """
-    Prints the AST by recursively traversing the AST
+    Prints the AST by recursively traversing it
 
     Parameters:
         - node (dict):
