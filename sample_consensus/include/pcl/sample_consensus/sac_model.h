@@ -391,7 +391,7 @@ namespace pcl
         * \param[in] function A function that gets model coefficients and returns whether the model is acceptable or not.
         */
       inline void
-      setIsModelValidUserDefined(std::function<bool(const Eigen::VectorXf &)> function)
+      setModelConstraints (std::function<bool(const Eigen::VectorXf &)> function)
       {
         is_model_valid_user_defined_ = std::move (function);
       }
