@@ -14,7 +14,7 @@ steps:
       vcpkg.exe install eigen3 flann gtest qhull --triplet %PLATFORM%-windows && vcpkg.exe list
     displayName: 'Install C++ Dependencies Via Vcpkg'
   - script: |
-      c: && mkdir %BUILD_DIR% && cd %BUILD_DIR%
+      mkdir %BUILD_DIR% && cd %BUILD_DIR%
       cmake $(Build.SourcesDirectory) ^
         -G"%GENERATOR%" ^
         -DCMAKE_BUILD_TYPE="MinSizeRel" ^
@@ -27,16 +27,19 @@ steps:
         -DBUILD_tools=OFF ^
         -DBUILD_surface_on_nurbs=ON
     displayName: 'CMake Configuration'
+    workingDirectory: 'c:'
   - script: |
-      c: && cd %BUILD_DIR% && cmake --build . --config %CONFIGURATION%
+      cd %BUILD_DIR% && cmake --build . --config %CONFIGURATION%
     displayName: 'Build Library'
+    workingDirectory: 'c:'
   - script: |
-      c: && cd %BUILD_DIR% && cmake --build . --target tests --config %CONFIGURATION%
-    displayName: 'Run Unit Tests'  
+      cd %BUILD_DIR% && cmake --build . --target tests --config %CONFIGURATION%
+    displayName: 'Run Unit Tests'
+    workingDirectory: 'c:'
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'CTest'
       testResultsFiles: '**/Test*.xml'
-      searchFolder: 'c:\build'
+      searchFolder: '%BUILD_DIR%'
     condition: succeededOrFailed()
 
