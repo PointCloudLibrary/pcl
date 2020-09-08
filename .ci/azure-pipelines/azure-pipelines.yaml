@@ -138,7 +138,7 @@ stages:
               GENERATOR: 'Visual Studio 15 2017 Win64'
         timeoutInMinutes: 0
         variables:
-          BUILD_DIR: '$(Agent.WorkFolder)\build'
+          BUILD_DIR: 'c:\build'
           CONFIGURATION: 'Release'
           VCPKG_ROOT: 'C:\vcpkg'
         steps:
