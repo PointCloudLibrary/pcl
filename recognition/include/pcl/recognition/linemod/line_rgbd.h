@@ -129,7 +129,7 @@ namespace pcl
       loadTemplates (const std::string &file_name, size_t object_id = 0);
 
       bool
-      addTemplate (const SparseQuantizedMultiModTemplate & sqmmt, pcl::PointCloud<pcl::PointXYZRGBA> & cloud, size_t object_id = 0);
+      addTemplate (const SparseQuantizedMultiModTemplate & sqmmt, typename pcl::PointCloud<PointXYZT> & cloud, size_t object_id = 0);
 
       /** \brief Sets the threshold on the magnitude of color gradients. Color gradients with a magnitude below 
         *        this threshold are not considered in the detection process.
@@ -291,7 +291,7 @@ namespace pcl
         */
       void
       computeTransformedTemplatePoints (const size_t detection_id,
-                                        pcl::PointCloud<pcl::PointXYZRGBA> & cloud);
+                                        pcl::PointCloud<PointXYZT> & cloud);
 
       inline typename pcl::PointCloud<PointXYZT> &
       getTemplateCloud (const int template_id)

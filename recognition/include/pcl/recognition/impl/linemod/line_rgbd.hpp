@@ -162,7 +162,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
   bounding_boxes_.resize (template_point_clouds_.size ());
   for (size_t i = 0; i < template_point_clouds_.size (); ++i)
   {
-    PointCloud<PointXYZRGBA> & template_point_cloud = template_point_clouds_[i];
+    PointCloud<PointXYZT> & template_point_cloud = template_point_clouds_[i];
     BoundingBoxXYZ & bb = bounding_boxes_[i];
     bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
     bb.width = bb.height = bb.depth = 0.0f;
@@ -372,7 +372,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createTemplate (
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointXYZT, typename PointRGBT> bool
-pcl::LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModTemplate & sqmmt, pcl::PointCloud<pcl::PointXYZRGBA> & cloud, size_t object_id)
+pcl::LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModTemplate & sqmmt, typename pcl::PointCloud<PointXYZT> & cloud, size_t object_id)
 {
   // add point cloud
   template_point_clouds_.resize (template_point_clouds_.size () + 1);
@@ -387,7 +387,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModT
   {
     const size_t i = template_point_clouds_.size () - 1;
 
-    PointCloud<PointXYZRGBA> & template_point_cloud = template_point_clouds_[i];
+    PointCloud<PointXYZT> & template_point_cloud = template_point_clouds_[i];
     BoundingBoxXYZ & bb = bounding_boxes_[i];
     bb.x = bb.y = bb.z = std::numeric_limits<float>::max ();
     bb.width = bb.height = bb.depth = 0.0f;
@@ -700,7 +700,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections (
     typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection & detection = detections[detection_index];
 
     const size_t template_id = detection.template_id;
-    const pcl::PointCloud<pcl::PointXYZRGBA> & point_cloud = template_point_clouds_[template_id];
+    const pcl::PointCloud<PointXYZT> & point_cloud = template_point_clouds_[template_id];
 
     const size_t start_x = detection.region.x;
     const size_t start_y = detection.region.y;
@@ -712,7 +712,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections (
     {
       for (size_t col_index = 0; col_index < pc_width; ++col_index)
       {
-        const pcl::PointXYZRGBA & point_template = point_cloud (col_index, row_index);
+        const PointXYZT & point_template = point_cloud (col_index, row_index);
         const PointXYZT & point_input = (*cloud_xyz_) (col_index + start_x, row_index + start_y);
 
         if (!pcl_isfinite (point_template.z) || !pcl_isfinite (point_input.z))
