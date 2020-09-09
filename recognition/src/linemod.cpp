@@ -137,57 +137,63 @@ pcl::LINEMOD::addTemplate (const SparseQuantizedMultiModTemplate & linemod_templ
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::LINEMOD::groupAndSortOverlappingDetections (const std::vector<LINEMODDetection> & detections, std::vector<std::vector<LINEMODDetection>>& grouped_detections) const
+pcl::LINEMOD::groupAndSortOverlappingDetections (
+    std::vector<LINEMODDetection> & detections,
+    std::vector<std::vector<LINEMODDetection>>& grouped_detections,
+    const size_t clustering_threshold,
+    const size_t grouping_threshold) const
 {
-  // check if clustering is disabled
-  if (clustering_threshold_ == 0) {
-    return;
-  }
+  removeOverlappingDetections(detections, clustering_threshold, true);
 
-  typedef std::tuple<size_t, size_t> ClusteringKey;
-  std::map<ClusteringKey, std::vector<LINEMODDetection>> clusters;
+  typedef std::tuple<size_t, size_t> GroupingKey;
+  std::map<GroupingKey, std::vector<LINEMODDetection>> groups;
   const size_t nr_detections = detections.size ();
   // compute overlap between each detection
   for (size_t detection_id = 0; detection_id < nr_detections; ++detection_id)
   {
-    const ClusteringKey key = {
-      detections[detection_id].x / clustering_threshold_,
-      detections[detection_id].y / clustering_threshold_,
+    const GroupingKey key = {
+      detections[detection_id].x / grouping_threshold,
+      detections[detection_id].y / grouping_threshold,
     };
 
-    clusters[key].push_back(detections[detection_id]);
+    groups[key].push_back(detections[detection_id]);
   }
-  grouped_detections.resize(clusters.size());
+  grouped_detections.resize(groups.size());
 
-  size_t cluster_id;
-  std::map<ClusteringKey, std::vector<LINEMODDetection>>::iterator it;
-  for (cluster_id = 0, it = clusters.begin(); it != clusters.end(); ++cluster_id, ++it)
+  size_t group_id;
+  std::map<GroupingKey, std::vector<LINEMODDetection>>::iterator it;
+  for (group_id = 0, it = groups.begin(); it != groups.end(); ++group_id, ++it)
   {
     std::vector<LINEMODDetection>& detections_group = it->second;
     sortDetections(detections_group);
-    grouped_detections[cluster_id] = detections_group;
+    grouped_detections[group_id] = detections_group;
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::LINEMOD::removeOverlappingDetections (std::vector<LINEMODDetection> & detections) const
+pcl::LINEMOD::removeOverlappingDetections (
+    std::vector<LINEMODDetection> & detections,
+    const size_t clustering_threshold,
+    const bool noOverlapBetweenDifferentTemplates) const
 {
   // check if clustering is disabled
-  if (clustering_threshold_ == 0) {
+  if (clustering_threshold == 0) {
     return;
   }
 
   // compute overlap between each detection
   const size_t nr_detections = detections.size ();
 
-  typedef std::tuple<size_t, size_t> ClusteringKey;
+  typedef std::tuple<size_t, size_t, size_t> ClusteringKey;
   std::map<ClusteringKey, std::vector<size_t>> clusters;
   for (size_t detection_id = 0; detection_id < nr_detections; ++detection_id)
   {
     const ClusteringKey key = {
-      detections[detection_id].x / clustering_threshold_,
-      detections[detection_id].y / clustering_threshold_,
+      detections[detection_id].x / clustering_threshold,
+      detections[detection_id].y / clustering_threshold,
+      //TODO: Utilize a map of ZYX angles instead
+      noOverlapBetweenDifferentTemplates ? detections[detection_id].template_id : 0,
     };
 
     clusters[key].push_back(detection_id);
