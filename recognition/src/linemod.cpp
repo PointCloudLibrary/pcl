@@ -137,6 +137,40 @@ pcl::LINEMOD::addTemplate (const SparseQuantizedMultiModTemplate & linemod_templ
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::LINEMOD::groupAndSortOverlappingDetections (const std::vector<LINEMODDetection> & detections, std::vector<std::vector<LINEMODDetection>>& grouped_detections) const
+{
+  // check if clustering is disabled
+  if (clustering_threshold_ == 0) {
+    return;
+  }
+
+  typedef std::tuple<size_t, size_t> ClusteringKey;
+  std::map<ClusteringKey, std::vector<LINEMODDetection>> clusters;
+  const size_t nr_detections = detections.size ();
+  // compute overlap between each detection
+  for (size_t detection_id = 0; detection_id < nr_detections; ++detection_id)
+  {
+    const ClusteringKey key = {
+      detections[detection_id].x / clustering_threshold_,
+      detections[detection_id].y / clustering_threshold_,
+    };
+
+    clusters[key].push_back(detections[detection_id]);
+  }
+  grouped_detections.resize(clusters.size());
+
+  size_t cluster_id;
+  std::map<ClusteringKey, std::vector<LINEMODDetection>>::iterator it;
+  for (cluster_id = 0, it = clusters.begin(); it != clusters.end(); ++cluster_id, ++it)
+  {
+    std::vector<LINEMODDetection>& detections_group = it->second;
+    sortDetections(detections_group);
+    grouped_detections[cluster_id] = detections_group;
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::LINEMOD::removeOverlappingDetections (std::vector<LINEMODDetection> & detections) const
 {
   // check if clustering is disabled
@@ -146,9 +180,6 @@ pcl::LINEMOD::removeOverlappingDetections (std::vector<LINEMODDetection> & detec
 
   // compute overlap between each detection
   const size_t nr_detections = detections.size ();
-
-  // compute detection representatives for every cluster
-  std::vector<LINEMODDetection> clustered_detections;
 
   typedef std::tuple<size_t, size_t> ClusteringKey;
   std::map<ClusteringKey, std::vector<size_t>> clusters;
@@ -162,6 +193,8 @@ pcl::LINEMOD::removeOverlappingDetections (std::vector<LINEMODDetection> & detec
     clusters[key].push_back(detection_id);
   }
 
+  // compute detection representatives for every cluster
+  std::vector<LINEMODDetection> clustered_detections;
   size_t cluster_id;
   std::map<ClusteringKey, std::vector<size_t>>::iterator it;
   for (cluster_id = 0, it = clusters.begin(); it != clusters.end(); ++cluster_id, ++it)
