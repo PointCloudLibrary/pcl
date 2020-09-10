@@ -89,6 +89,7 @@ namespace pcl
         , samples_radius_ (0.)
         , samples_radius_search_ ()
         , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
+        , custom_model_constraints_ ([](auto){return true;})
       {
         // Create a random number generator object
         if (random)
@@ -111,6 +112,7 @@ namespace pcl
         , samples_radius_ (0.)
         , samples_radius_search_ ()
         , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
+        , custom_model_constraints_ ([](auto){return true;})
       {
         if (random)
           rng_alg_.seed (static_cast<unsigned> (std::time (nullptr)));
@@ -139,6 +141,7 @@ namespace pcl
         , samples_radius_ (0.)
         , samples_radius_search_ ()
         , rng_dist_ (new boost::uniform_int<> (0, std::numeric_limits<int>::max ()))
+        , custom_model_constraints_ ([](auto){return true;})
       {
         if (random)
           rng_alg_.seed (static_cast<unsigned> (std::time(nullptr)));
@@ -393,7 +396,12 @@ namespace pcl
       inline void
       setModelConstraints (std::function<bool(const Eigen::VectorXf &)> function)
       {
-        is_model_valid_user_defined_ = std::move (function);
+        if (!function)
+        {
+          PCL_ERROR ("[pcl::SampleConsensusModel::setModelConstraints] The given function is empty (i.e. does not contain a callable target)!\n");
+          return;
+        }
+        custom_model_constraints_ = std::move (function);
       }
 
       /** \brief Set the maximum distance allowed when drawing random samples
@@ -521,7 +529,7 @@ namespace pcl
           PCL_ERROR ("[pcl::%s::isModelValid] Invalid number of model coefficients given (is %lu, should be %lu)!\n", getClassName ().c_str (), model_coefficients.size (), model_size_);
           return (false);
         }
-        if (is_model_valid_user_defined_ && !is_model_valid_user_defined_(model_coefficients))
+        if (!custom_model_constraints_(model_coefficients))
         {
           PCL_DEBUG ("[pcl::%s::isModelValid] The user defined isModelValid function returned false.\n", getClassName ().c_str ());
           return (false);
@@ -588,7 +596,7 @@ namespace pcl
       }
 
       /** \brief A user defined function that takes model coefficients and returns whether the model is acceptable or not. */
-      std::function<bool(const Eigen::VectorXf &)> is_model_valid_user_defined_;
+      std::function<bool(const Eigen::VectorXf &)> custom_model_constraints_;
     public:
       PCL_MAKE_ALIGNED_OPERATOR_NEW
  };
