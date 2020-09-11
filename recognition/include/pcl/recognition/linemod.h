@@ -365,9 +365,8 @@ namespace pcl
       addTemplate (const SparseQuantizedMultiModTemplate & linemod_template);
 
       void
-      groupAndSortOverlappingDetections (std::vector<LINEMODDetection> & detections,
+      groupAndSortOverlappingDetections (const std::vector<LINEMODDetection> & detections,
                                          std::vector<std::vector<LINEMODDetection>>& grouped_detections,
-                                         const size_t clustering_threshold,
                                          const size_t grouping_threshold) const;
 
       void

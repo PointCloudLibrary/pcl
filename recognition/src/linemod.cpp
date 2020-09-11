@@ -138,13 +138,10 @@ pcl::LINEMOD::addTemplate (const SparseQuantizedMultiModTemplate & linemod_templ
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::LINEMOD::groupAndSortOverlappingDetections (
-    std::vector<LINEMODDetection> & detections,
+    const std::vector<LINEMODDetection> & detections,
     std::vector<std::vector<LINEMODDetection>>& grouped_detections,
-    const size_t clustering_threshold,
     const size_t grouping_threshold) const
 {
-  removeOverlappingDetections(detections, clustering_threshold, true);
-
   typedef std::tuple<size_t, size_t> GroupingKey;
   std::map<GroupingKey, std::vector<LINEMODDetection>> groups;
   const size_t nr_detections = detections.size ();
@@ -168,6 +165,8 @@ pcl::LINEMOD::groupAndSortOverlappingDetections (
     sortDetections(detections_group);
     grouped_detections[group_id] = detections_group;
   }
+  std::sort(grouped_detections.begin(), grouped_detections.end(), [](const std::vector<LINEMODDetection> & a,
+                                                                     const std::vector<LINEMODDetection> & b) -> bool { return a[0].score > b[0].score; });
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
