@@ -772,7 +772,7 @@ transformPlane (const Eigen::Matrix<Scalar, 4, 1> &plane_in,
 
 
 template <typename Scalar> void
-transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
+transformPlane (const pcl::ModelCoefficients::ConstPtr plane_in,
                       pcl::ModelCoefficients::Ptr plane_out,
                 const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
 {
