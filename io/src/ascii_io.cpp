@@ -228,6 +228,7 @@ pcl::ASCIIReader::typeSize (int type)
   switch (type)
   {
     case pcl::PCLPointField::BOOL:
+        return sizeof(bool);
     case pcl::PCLPointField::INT8:
     case pcl::PCLPointField::UINT8:
       return 1;

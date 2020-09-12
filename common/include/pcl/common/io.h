@@ -121,6 +121,7 @@ namespace pcl
     switch (datatype)
     {
       case pcl::PCLPointField::BOOL:
+          return sizeof(bool);
       case pcl::PCLPointField::INT8:
       case pcl::PCLPointField::UINT8:
         return (1);

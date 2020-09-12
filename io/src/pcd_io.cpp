@@ -1143,8 +1143,8 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
         }
 #undef COPY_VALUE
 
-        if (d < cloud.fields.size() - 1 ||
-            c < static_cast<int>(cloud.fields[d].count) - 1)
+        if ((d < cloud.fields.size() - 1) ||
+            (c < static_cast<int>(cloud.fields[d].count) - 1))
           stream << " ";
       }
     }
