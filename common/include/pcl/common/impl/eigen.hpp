@@ -780,7 +780,7 @@ transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
   Eigen::Matrix < Scalar, 4, 1 > v_plane_in (values.data ());
   pcl::transformPlane (v_plane_in, v_plane_in, transformation);
   plane_out->values.resize (4);
-  std::copy_n(v_plane_in.data (), 4, plane_in->values.begin ());
+  std::copy_n(v_plane_in.data (), 4, plane_out->values.begin ());
 }
 
 
