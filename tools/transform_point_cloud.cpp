@@ -198,7 +198,12 @@ scaleInPlace (pcl::PCLPointCloud2 &cloud, double* multiplier)
   int y_idx = pcl::getFieldIndex (cloud, "y");
   int z_idx = pcl::getFieldIndex (cloud, "z");
   Eigen::Array3i xyz_offset (cloud.fields[x_idx].offset, cloud.fields[y_idx].offset, cloud.fields[z_idx].offset);
- 
+
+  if (cloud.fields[x_idx].datatype == pcl::PCLPointField::BOOL) {
+    PCL_WARN("Datatype of point was deduced as boolean. Please check, there might be "
+             "an error somewhere");
+  }
+
   for (uindex_t cp = 0; cp < cloud.width * cloud.height; ++cp)
   {
     // Assume all 3 fields are the same (XYZ)
