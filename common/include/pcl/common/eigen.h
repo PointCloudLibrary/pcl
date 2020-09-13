@@ -543,12 +543,12 @@ namespace pcl
   * \warning ModelCoefficients stores floats only !
   */
   template<typename Scalar> void
-  transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
+  transformPlane (const pcl::ModelCoefficients::ConstPtr plane_in,
                         pcl::ModelCoefficients::Ptr plane_out,
                   const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation);
 
   inline void
-  transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
+  transformPlane (const pcl::ModelCoefficients::ConstPtr plane_in,
                         pcl::ModelCoefficients::Ptr plane_out,
                   const Eigen::Transform<double, 3, Eigen::Affine> &transformation)
   {
@@ -556,7 +556,7 @@ namespace pcl
   }
 
   inline void
-  transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
+  transformPlane (const pcl::ModelCoefficients::ConstPtr plane_in,
                         pcl::ModelCoefficients::Ptr plane_out,
                   const Eigen::Transform<float, 3, Eigen::Affine> &transformation)
   {
