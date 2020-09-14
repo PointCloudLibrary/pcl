@@ -42,6 +42,7 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_NORMAL_PLANE_H_
 
 #include <pcl/sample_consensus/sac_model_normal_plane.h>
+#include <pcl/sample_consensus/impl/sac_model_plane.hpp> // for dist4, dist8
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
