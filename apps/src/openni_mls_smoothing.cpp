@@ -41,6 +41,7 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/search/kdtree.h> // for KdTree
 
 #include <mutex>
 

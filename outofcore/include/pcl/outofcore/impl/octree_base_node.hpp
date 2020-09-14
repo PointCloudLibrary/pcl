@@ -1471,9 +1471,8 @@ namespace pcl
               //concatenate those points into the returned dst_blob
               PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Concatenating point cloud in place\n", __FUNCTION__);
               std::uint64_t orig_points_in_destination = dst_blob->width*dst_blob->height;
-              pcl::utils::ignore(orig_points_in_destination);
               int res = pcl::concatenate (*dst_blob, *tmp_blob_within_bb, *dst_blob);
-              pcl::utils::ignore(res);
+              pcl::utils::ignore(orig_points_in_destination, res);
               assert (res == 1);
               assert (dst_blob->width*dst_blob->height == indices.size () + orig_points_in_destination);
 

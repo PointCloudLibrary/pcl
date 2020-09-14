@@ -23,11 +23,11 @@ main (int argc, char** argv)
   cloudA->height = 1;
   cloudA->points.resize (cloudA->width * cloudA->height);
 
-  for (std::size_t i = 0; i < cloudA->points.size (); ++i)
+  for (std::size_t i = 0; i < cloudA->size (); ++i)
   {
-    cloudA->points[i].x = 64.0f * rand () / (RAND_MAX + 1.0f);
-    cloudA->points[i].y = 64.0f * rand () / (RAND_MAX + 1.0f);
-    cloudA->points[i].z = 64.0f * rand () / (RAND_MAX + 1.0f);
+    (*cloudA)[i].x = 64.0f * rand () / (RAND_MAX + 1.0f);
+    (*cloudA)[i].y = 64.0f * rand () / (RAND_MAX + 1.0f);
+    (*cloudA)[i].z = 64.0f * rand () / (RAND_MAX + 1.0f);
   }
 
   // Add points from cloudA to octree
@@ -44,11 +44,11 @@ main (int argc, char** argv)
   cloudB->height = 1;
   cloudB->points.resize (cloudB->width * cloudB->height);
 
-  for (std::size_t i = 0; i < cloudB->points.size (); ++i)
+  for (std::size_t i = 0; i < cloudB->size (); ++i)
   {
-    cloudB->points[i].x = 64.0f * rand () / (RAND_MAX + 1.0f);
-    cloudB->points[i].y = 64.0f * rand () / (RAND_MAX + 1.0f);
-    cloudB->points[i].z = 64.0f * rand () / (RAND_MAX + 1.0f);
+    (*cloudB)[i].x = 64.0f * rand () / (RAND_MAX + 1.0f);
+    (*cloudB)[i].y = 64.0f * rand () / (RAND_MAX + 1.0f);
+    (*cloudB)[i].z = 64.0f * rand () / (RAND_MAX + 1.0f);
   }
 
   // Add points from cloudB to octree
@@ -64,8 +64,8 @@ main (int argc, char** argv)
   std::cout << "Output from getPointIndicesFromNewVoxels:" << std::endl;
   for (std::size_t i = 0; i < newPointIdxVector.size (); ++i)
     std::cout << i << "# Index:" << newPointIdxVector[i]
-              << "  Point:" << cloudB->points[newPointIdxVector[i]].x << " "
-              << cloudB->points[newPointIdxVector[i]].y << " "
-              << cloudB->points[newPointIdxVector[i]].z << std::endl;
+              << "  Point:" << (*cloudB)[newPointIdxVector[i]].x << " "
+              << (*cloudB)[newPointIdxVector[i]].y << " "
+              << (*cloudB)[newPointIdxVector[i]].z << std::endl;
 
 }

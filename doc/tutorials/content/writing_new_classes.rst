@@ -128,17 +128,17 @@ and save the results to disk.
         {
           float id = k_indices.at (n_id);
           float dist = sqrt (k_distances.at (n_id));
-          float intensity_dist = std::abs (cloud->points[point_id].intensity - cloud->points[id].intensity);
+          float intensity_dist = std::abs ((*cloud)[point_id].intensity - (*cloud)[id].intensity);
 
           float w_a = G (dist, sigma_s);
           float w_b = G (intensity_dist, sigma_r);
           float weight = w_a * w_b;
 
-          BF += weight * cloud->points[id].intensity;
+          BF += weight * (*cloud)[id].intensity;
           W += weight;
         }
 
-        outcloud.points[point_id].intensity = BF / W;
+        outcloud[point_id].intensity = BF / W;
       }
 
       // Save filtered output
@@ -328,7 +328,7 @@ defined in the *point_types.h* file (see
 :pcl:`PCL_XYZ_POINT_TYPES<PCL_XYZ_POINT_TYPES>` for more information).
 
 By looking closer at the code presented in :ref:`bilateral_filter_example`, we
-notice constructs such as `cloud->points[point_id].intensity`. This indicates
+notice constructs such as `(*cloud)[point_id].intensity`. This indicates
 that our filter expects the presence of an **intensity** field in the point
 type. Because of this, using **PCL_XYZ_POINT_TYPES** won't work, as not all the
 types defined there have intensity data present. In fact, it's easy to notice
@@ -607,11 +607,11 @@ There're two methods that we need to implement here, namely `applyFilter` and
       {
         double id = indices[n_id];
         double dist = std::sqrt (distances[n_id]);
-        double intensity_dist = std::abs (input_->points[pid].intensity - input_->points[id].intensity);
+        double intensity_dist = std::abs ((*input_)[pid].intensity - (*input_)[id].intensity);
 
         double weight = kernel (dist, sigma_s_) * kernel (intensity_dist, sigma_r_);
 
-        BF += weight * input_->points[id].intensity;
+        BF += weight * (*input_)[id].intensity;
         W += weight;
       }
       return (BF / W);
@@ -627,11 +627,11 @@ There're two methods that we need to implement here, namely `applyFilter` and
 
       output = *input_;
 
-      for (std::size_t point_id = 0; point_id < input_->points.size (); ++point_id)
+      for (std::size_t point_id = 0; point_id < input_->size (); ++point_id)
       {
         tree_->radiusSearch (point_id, sigma_s_ * 2, k_indices, k_distances);
 
-        output.points[point_id].intensity = computePointWeight (point_id, k_indices, k_distances);
+        output[point_id].intensity = computePointWeight (point_id, k_indices, k_distances);
       }
       
     }
@@ -728,11 +728,11 @@ The implementation file header thus becomes:
       {
         double id = indices[n_id];
         double dist = std::sqrt (distances[n_id]);
-        double intensity_dist = std::abs (input_->points[pid].intensity - input_->points[id].intensity);
+        double intensity_dist = std::abs ((*input_)[pid].intensity - (*input_)[id].intensity);
 
         double weight = kernel (dist, sigma_s_) * kernel (intensity_dist, sigma_r_);
 
-        BF += weight * input_->points[id].intensity;
+        BF += weight * (*input_)[id].intensity;
         W += weight;
       }
       return (BF / W);
@@ -760,11 +760,11 @@ The implementation file header thus becomes:
 
       output = *input_;
 
-      for (std::size_t point_id = 0; point_id < input_->points.size (); ++point_id)
+      for (std::size_t point_id = 0; point_id < input_->size (); ++point_id)
       {
         tree_->radiusSearch (point_id, sigma_s_ * 2, k_indices, k_distances);
 
-        output.points[point_id].intensity = computePointWeight (point_id, k_indices, k_distances);
+        output[point_id].intensity = computePointWeight (point_id, k_indices, k_distances);
       }
     }
      
@@ -843,11 +843,11 @@ The implementation file header thus becomes:
       {
         double id = indices[n_id];
         double dist = std::sqrt (distances[n_id]);
-        double intensity_dist = std::abs (input_->points[pid].intensity - input_->points[id].intensity);
+        double intensity_dist = std::abs ((*input_)[pid].intensity - (*input_)[id].intensity);
 
         double weight = kernel (dist, sigma_s_) * kernel (intensity_dist, sigma_r_);
 
-        BF += weight * input_->points[id].intensity;
+        BF += weight * (*input_)[id].intensity;
         W += weight;
       }
       return (BF / W);
@@ -879,7 +879,7 @@ The implementation file header thus becomes:
       {
         tree_->radiusSearch ((*indices_)[i], sigma_s_ * 2, k_indices, k_distances);
 
-        output.points[(*indices_)[i]].intensity = computePointWeight ((*indices_)[i], k_indices, k_distances);
+        output[(*indices_)[i]].intensity = computePointWeight ((*indices_)[i], k_indices, k_distances);
       }
     }
      
@@ -1195,14 +1195,14 @@ And the *bilateral.hpp* likes:
       {
         double id = indices[n_id];
         // Compute the difference in intensity
-        double intensity_dist = std::abs (input_->points[pid].intensity - input_->points[id].intensity);
+        double intensity_dist = std::abs ((*input_)[pid].intensity - (*input_)[id].intensity);
 
         // Compute the Gaussian intensity weights both in Euclidean and in intensity space
         double dist = std::sqrt (distances[n_id]);
         double weight = kernel (dist, sigma_s_) * kernel (intensity_dist, sigma_r_);
 
         // Calculate the bilateral filter response
-        BF += weight * input_->points[id].intensity;
+        BF += weight * (*input_)[id].intensity;
         W += weight;
       }
       return (BF / W);
@@ -1243,7 +1243,7 @@ And the *bilateral.hpp* likes:
         tree_->radiusSearch ((*indices_)[i], sigma_s_ * 2, k_indices, k_distances);
 
         // Overwrite the intensity value with the computed average
-        output.points[(*indices_)[i]].intensity = computePointWeight ((*indices_)[i], k_indices, k_distances);
+        output[(*indices_)[i]].intensity = computePointWeight ((*indices_)[i], k_indices, k_distances);
       }
     }
      

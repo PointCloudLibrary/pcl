@@ -34,6 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <cstdlib> // for abs
+
 #include <pcl/io/debayer.h>
 
 #define AVG(a,b) static_cast<unsigned char>((int(a) + int(b)) >> 1)

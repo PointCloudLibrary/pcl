@@ -37,8 +37,6 @@
 
 #pragma once
 
-#include <cmath>
-#include <cstdlib>
 #include <pcl/common/eigen.h>
 #include <pcl/point_types.h>
 

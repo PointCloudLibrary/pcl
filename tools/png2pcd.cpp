@@ -297,7 +297,7 @@ main (int argc, char** argv)
           mono_cloud.width = dimensions[0];
           mono_cloud.height = dimensions[1]; // This indicates that the point cloud is organized
           mono_cloud.is_dense = true;
-          mono_cloud.points.resize (mono_cloud.width * mono_cloud.height);
+          mono_cloud.resize (mono_cloud.width * mono_cloud.height);
 
           for (int y = 0; y < dimensions[1]; y++)
           {
@@ -321,7 +321,7 @@ main (int argc, char** argv)
         mono_cloud_u8.width = dimensions[0];
         mono_cloud_u8.height = dimensions[1]; // This indicates that the point cloud is organized
         mono_cloud_u8.is_dense = true;
-        mono_cloud_u8.points.resize (mono_cloud_u8.width * mono_cloud_u8.height);
+        mono_cloud_u8.resize (mono_cloud_u8.width * mono_cloud_u8.height);
 
         for (int y = 0; y < dimensions[1]; y++)
         {
@@ -377,7 +377,7 @@ main (int argc, char** argv)
         color_cloud.width = dimensions[0];
         color_cloud.height = dimensions[1]; // This indicates that the point cloud is organized
         color_cloud.is_dense = true;
-        color_cloud.points.resize (color_cloud.width * color_cloud.height);
+        color_cloud.resize (color_cloud.width * color_cloud.height);
 
         for (int y = 0; y < dimensions[1]; y++)
         {
@@ -447,7 +447,7 @@ main (int argc, char** argv)
         color_cloud.width = dimensions[0];
         color_cloud.height = dimensions[1]; // This indicates that the point cloud is organized
         color_cloud.is_dense = true;
-        color_cloud.points.resize (color_cloud.width * color_cloud.height);
+        color_cloud.resize (color_cloud.width * color_cloud.height);
 
         for (int y = 0; y < dimensions[1]; y++)
         {
@@ -499,7 +499,7 @@ main (int argc, char** argv)
       cloud.width = dimensions[0];
       cloud.height = dimensions[1]; // This indicates that the point cloud is organized
       cloud.is_dense = false;
-      cloud.points.resize (cloud.width * cloud.height);
+      cloud.resize (cloud.width * cloud.height);
 
       for (int y = 0; y < dimensions[1]; y++)
       {
@@ -552,7 +552,7 @@ main (int argc, char** argv)
       cloud.width = dimensions[0];
       cloud.height = dimensions[1]; // This indicates that the point cloud is organized
       cloud.is_dense = true;
-      cloud.points.resize (cloud.width * cloud.height);
+      cloud.resize (cloud.width * cloud.height);
 
       for (int y = 0; y < dimensions[1]; y++)
       {
@@ -635,7 +635,7 @@ main (int argc, char** argv)
       cloud.width = dimensions[0];
       cloud.height = dimensions[1]; // This indicates that the point cloud is organized
       cloud.is_dense = false;
-      cloud.points.resize (cloud.width * cloud.height);
+      cloud.resize (cloud.width * cloud.height);
 
       for (int y = 0; y < dimensions[1]; y++)
       {
@@ -691,7 +691,7 @@ main (int argc, char** argv)
           cloud.width = dimensions[0];
           cloud.height = dimensions[1]; // This indicates that the point cloud is organized
           cloud.is_dense = true;
-          cloud.points.resize (cloud.width * cloud.height);
+          cloud.resize (cloud.width * cloud.height);
 
           for (int y = 0; y < dimensions[1]; y++)
           {
@@ -730,7 +730,7 @@ main (int argc, char** argv)
           cloud8u.width = dimensions[0];
           cloud8u.height = dimensions[1]; // This indicates that the point cloud is organized
           cloud8u.is_dense = true;
-          cloud8u.points.resize (cloud8u.width * cloud8u.height);
+          cloud8u.resize (cloud8u.width * cloud8u.height);
 
           for (int y = 0; y < dimensions[1]; y++)
           {

@@ -45,11 +45,9 @@
 #include <pcl/search/octree.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
-#include <pcl/common/time.h>
 
 
 using namespace pcl;
-using namespace std;
 
 /** \brief if set to value other than 0 -> fine grained output */
 #define DEBUG_OUT 1
@@ -138,7 +136,7 @@ std::vector<int> organized_sparse_query_indices;
   * @param name name of the search method that returned these distances
   * @return true if indices are unique, false otherwise
   */
-bool testUniqueness (const std::vector<int>& indices, const string& name)
+bool testUniqueness (const std::vector<int>& indices, const std::string& name)
 {
   bool uniqueness = true;
   for (unsigned idx1 = 1; idx1 < indices.size () && uniqueness; ++idx1)
@@ -166,7 +164,7 @@ bool testUniqueness (const std::vector<int>& indices, const string& name)
   * \param name name of the search method that returned these distances
   * \return true if distances in weak ascending order, false otherwise
   */
-bool testOrder (const std::vector<float>& distances, const string& name)
+bool testOrder (const std::vector<float>& distances, const std::string& name)
 {
   bool ordered = true;
   for (std::size_t idx1 = 1; idx1 < distances.size (); ++idx1)
@@ -193,7 +191,7 @@ bool testOrder (const std::vector<float>& distances, const string& name)
  * @return true if result is valid, false otherwise
  */
 template<typename PointT> bool
-testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, const std::vector<bool>& indices_mask, const std::vector<bool>& nan_mask, const std::vector<int>& indices, const std::vector<int>& /*input_indices*/, const string& name)
+testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, const std::vector<bool>& indices_mask, const std::vector<bool>& nan_mask, const std::vector<int>& indices, const std::vector<int>& /*input_indices*/, const std::string& name)
 {
   bool validness = true;
   for (const int &index : indices)
@@ -235,8 +233,8 @@ testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, con
   * \param eps threshold for comparing the distances
   * \return true if both sets are the same, false otherwise
   */
-bool compareResults (const std::vector<int>& indices1, const::vector<float>& distances1, const std::string& name1,
-                     const std::vector<int>& indices2, const::vector<float>& distances2, const std::string& name2, float eps)
+bool compareResults (const std::vector<int>& indices1, const std::vector<float>& distances1, const std::string& name1,
+                     const std::vector<int>& indices2, const std::vector<float>& distances2, const std::string& name2, float eps)
 {
   bool equal = true;
   if (indices1.size () != indices2.size ())
@@ -331,7 +329,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<se
         default(none)
       for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
       {
-        search_methods [sIdx]->nearestKSearch (point_cloud->points[query_index], knn, indices [sIdx], distances [sIdx]);
+        search_methods [sIdx]->nearestKSearch ((*point_cloud)[query_index], knn, indices [sIdx], distances [sIdx]);
         passed [sIdx] = passed [sIdx] && testUniqueness (indices [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testOrder (distances [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testResultValidity<PointT>(point_cloud, indices_mask, nan_mask, indices [sIdx], input_indices, search_methods [sIdx]->getName ());
@@ -410,7 +408,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector
         shared(distances, indices, indices_mask, input_indices, nan_mask, passed, point_cloud, radius, query_index, search_methods)
       for (int sIdx = 0; sIdx < static_cast<int> (search_methods.size ()); ++sIdx)
       {
-        search_methods [sIdx]->radiusSearch (point_cloud->points[query_index], radius, indices [sIdx], distances [sIdx], 0);
+        search_methods [sIdx]->radiusSearch ((*point_cloud)[query_index], radius, indices [sIdx], distances [sIdx], 0);
         passed [sIdx] = passed [sIdx] && testUniqueness (indices [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testOrder (distances [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testResultValidity<PointT>(point_cloud, indices_mask, nan_mask, indices [sIdx], input_indices, search_methods [sIdx]->getName ());

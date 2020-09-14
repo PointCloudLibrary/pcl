@@ -75,7 +75,7 @@ TEST (RegionGrowingRGBTest, Segment)
 
   std::vector <pcl::PointIndices> clusters;
   rg.extract (clusters);
-  int num_of_segments = static_cast<int> (clusters.size ());
+  const auto num_of_segments = clusters.size ();
   EXPECT_NE (0, num_of_segments);
 }
 
@@ -88,7 +88,7 @@ TEST (RegionGrowingTest, Segment)
 
   std::vector <pcl::PointIndices> clusters;
   rg.extract (clusters);
-  int num_of_segments = static_cast<int> (clusters.size ());
+  const auto num_of_segments = clusters.size ();
   EXPECT_NE (0, num_of_segments);
 }
 
@@ -100,7 +100,7 @@ TEST (RegionGrowingTest, SegmentWithoutCloud)
 
   std::vector <pcl::PointIndices> clusters;
   rg.extract (clusters);
-  int num_of_segments = static_cast<int> (clusters.size ());
+  const auto num_of_segments = clusters.size ();
   EXPECT_EQ (0, num_of_segments);
 }
 
@@ -112,7 +112,7 @@ TEST (RegionGrowingTest, SegmentWithoutNormals)
 
   std::vector <pcl::PointIndices> clusters;
   rg.extract (clusters);
-  int num_of_segments = static_cast<int> (clusters.size ());
+  const auto num_of_segments = clusters.size ();
   EXPECT_EQ (0, num_of_segments);
 }
 
@@ -128,7 +128,7 @@ TEST (RegionGrowingTest, SegmentEmptyCloud)
 
   std::vector <pcl::PointIndices> clusters;
   rg.extract (clusters);
-  int num_of_segments = static_cast<int> (clusters.size ());
+  const auto num_of_segments = clusters.size ();
   EXPECT_EQ (0, num_of_segments);
 }
 
@@ -139,20 +139,20 @@ TEST (RegionGrowingTest, SegmentWithDifferentNormalAndCloudSize)
   rg.setInputCloud (another_cloud_);
   rg.setInputNormals (normals_);
 
-  int first_cloud_size = static_cast<int> (cloud_->points.size ());
-  int second_cloud_size = static_cast<int> (another_cloud_->points.size ());
+  const auto first_cloud_size = cloud_->size ();
+  const auto second_cloud_size = another_cloud_->size ();
   ASSERT_NE (first_cloud_size, second_cloud_size);
 
   std::vector <pcl::PointIndices> clusters;
   rg.extract (clusters);
-  int num_of_segments = static_cast<int> (clusters.size ());
+  auto num_of_segments = clusters.size ();
   EXPECT_EQ (0, num_of_segments);
 
   rg.setInputCloud (cloud_);
   rg.setInputNormals (another_normals_);
 
   rg.extract (clusters);
-  num_of_segments = static_cast<int> (clusters.size ());
+  num_of_segments = clusters.size ();
   EXPECT_EQ (0, num_of_segments);
 }
 
@@ -167,7 +167,7 @@ TEST (RegionGrowingTest, SegmentWithWrongThresholdParameters)
 
   std::vector <pcl::PointIndices> clusters;
   rg.extract (clusters);
-  int num_of_segments = static_cast<int> (clusters.size ());
+  auto num_of_segments = clusters.size ();
   EXPECT_EQ (0, num_of_segments);
 
   rg.setNumberOfNeighbours (30);
@@ -175,14 +175,14 @@ TEST (RegionGrowingTest, SegmentWithWrongThresholdParameters)
   rg.setResidualThreshold (-10.0);
 
   rg.extract (clusters);
-  num_of_segments = static_cast<int> (clusters.size ());
+  num_of_segments = clusters.size ();
   EXPECT_EQ (0, num_of_segments);
 
   rg.setCurvatureTestFlag (true);
   rg.setCurvatureThreshold (-10.0f);
 
   rg.extract (clusters);
-  num_of_segments = static_cast<int> (clusters.size ());
+  num_of_segments = clusters.size ();
   EXPECT_EQ (0, num_of_segments);
 }
 
@@ -232,7 +232,7 @@ TEST (MinCutSegmentationTest, Segment)
 
   std::vector <pcl::PointIndices> clusters;
   mcSeg.extract (clusters);
-  int num_of_segments = static_cast<int> (clusters.size ());
+  const auto num_of_segments = clusters.size ();
   EXPECT_EQ (2, num_of_segments);
 }
 
@@ -245,7 +245,7 @@ TEST (MinCutSegmentationTest, SegmentWithoutForegroundPoints)
 
   std::vector <pcl::PointIndices> clusters;
   mcSeg.extract (clusters);
-  int num_of_segments = static_cast<int> (clusters.size ());
+  const auto num_of_segments = clusters.size ();
   EXPECT_EQ (0, num_of_segments);
 }
 
@@ -256,7 +256,7 @@ TEST (MinCutSegmentationTest, SegmentWithoutCloud)
 
   std::vector <pcl::PointIndices> clusters;
   mcSeg.extract (clusters);
-  int num_of_segments = static_cast<int> (clusters.size ());
+  const auto num_of_segments = clusters.size ();
   EXPECT_EQ (0, num_of_segments);
 }
 
@@ -269,7 +269,7 @@ TEST (MinCutSegmentationTest, SegmentEmptyCloud)
 
   std::vector <pcl::PointIndices> clusters;
   mcSeg.extract (clusters);
-  int num_of_segments = static_cast<int> (clusters.size ());
+  const auto num_of_segments = clusters.size ();
   EXPECT_EQ (0, num_of_segments);
 }
 
@@ -330,7 +330,7 @@ TEST (MinCutSegmentationTest, SegmentWithWrongParameters)
 
   std::vector <pcl::PointIndices> clusters;
   mcSeg.extract (clusters);
-  int num_of_segments = static_cast<int> (clusters.size ());
+  const auto num_of_segments = clusters.size ();
   EXPECT_EQ (2, num_of_segments);
 }
 
@@ -347,19 +347,19 @@ TEST (SegmentDifferences, Segmentation)
   PointCloud<PointXYZ> output;
   sd.segment (output);
 
-  EXPECT_EQ (static_cast<int> (output.points.size ()), 0);
+  EXPECT_EQ (output.size (), 0);
   
   // Set a different target
   sd.setTargetCloud (cloud_t_);
   sd.segment (output);
-  EXPECT_EQ (static_cast<int> (output.points.size ()), 126);
+  EXPECT_EQ (output.size (), 126);
   //savePCDFile ("./test/0-t.pcd", output);
 
   // Reverse
   sd.setInputCloud (cloud_t_);
   sd.setTargetCloud (cloud_);
   sd.segment (output);
-  EXPECT_EQ (static_cast<int> (output.points.size ()), 127);
+  EXPECT_EQ (output.size (), 127);
   //savePCDFile ("./test/t-0.pcd", output);
 }
 
@@ -369,10 +369,10 @@ TEST (ExtractPolygonalPrism, Segmentation)
   PointCloud<PointXYZ>::Ptr hull (new PointCloud<PointXYZ>);
   hull->points.resize (5);
 
-  for (std::size_t i = 0; i < hull->points.size (); ++i)
+  for (std::size_t i = 0; i < hull->size (); ++i)
   {
-    hull->points[i].x = hull->points[i].y = static_cast<float> (i);
-    hull->points[i].z = 0.0f;
+    (*hull)[i].x = (*hull)[i].y = static_cast<float> (i);
+    (*hull)[i].z = 0.0f;
   }
 
   ExtractPolygonalPrismData<PointXYZ> ex;
@@ -382,7 +382,7 @@ TEST (ExtractPolygonalPrism, Segmentation)
   PointIndices output;
   ex.segment (output);
 
-  EXPECT_EQ (static_cast<int> (output.indices.size ()), 0);
+  EXPECT_EQ (output.indices.size (), 0);
 }
 
 /* ---[ */
@@ -420,8 +420,8 @@ main (int argc, char** argv)
 
   // Tranpose the cloud
   cloud_t = cloud;
-  for (std::size_t i = 0; i < cloud.points.size (); ++i)
-    cloud_t.points[i].x += 0.01f;
+  for (auto& point: cloud_t)
+    point.x += 0.01f;
 
   cloud_   = cloud.makeShared ();
   cloud_t_ = cloud_t.makeShared ();

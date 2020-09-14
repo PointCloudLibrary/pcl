@@ -41,10 +41,7 @@
 #include <pcl/compression/octree_pointcloud_compression.h>
 #include <pcl/compression/compression_profiles.h>
 
-#include <string>
 #include <exception>
-
-using namespace std;
 
 int total_runs = 0;
 
@@ -177,7 +174,7 @@ TEST(PCL, OctreeDeCompressionFile)
     pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB>* PointCloudDecoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB>();
 
     // iterate over various voxel sizes
-    for (int i = 0; i < sizeof(voxel_sizes)/sizeof(voxel_sizes[0]); i++) {
+    for (std::size_t i = 0; i < sizeof(voxel_sizes)/sizeof(voxel_sizes[0]); i++) {
       pcl::octree::OctreePointCloud<pcl::PointXYZRGB> octree(voxel_sizes[i]);
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr octree_out(new pcl::PointCloud<pcl::PointXYZRGB>());
       octree.setInputCloud((*input_cloud_ptr).makeShared());

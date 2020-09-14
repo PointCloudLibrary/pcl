@@ -39,7 +39,6 @@
 #pragma once
 
 #include <mutex>
-#include <string>
 #include <vector>
 
 #include <pcl/outofcore/boost.h>

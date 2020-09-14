@@ -38,8 +38,6 @@
 #pragma once
 
 #include <pcl/filters/filter_indices.h>
-#include <ctime>
-#include <climits>
 
 namespace pcl
 {

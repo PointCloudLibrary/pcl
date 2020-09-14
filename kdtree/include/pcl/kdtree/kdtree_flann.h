@@ -54,9 +54,6 @@ namespace flann
 
 namespace pcl
 {
-  // Forward declarations
-  template <typename T> class PointRepresentation;
-
   /** \brief KdTreeFLANN is a generic type of 3D spatial locator using kD-tree structures. The class is making use of
     * the FLANN (Fast Library for Approximate Nearest Neighbor) project by Marius Muja and David Lowe.
     *
@@ -146,7 +143,7 @@ namespace pcl
       /** \brief Search for k-nearest neighbors for the given query point.
         * 
         * \attention This method does not do any bounds checking for the input index
-        * (i.e., index >= cloud.points.size () || index < 0), and assumes valid (i.e., finite) data.
+        * (i.e., index >= cloud.size () || index < 0), and assumes valid (i.e., finite) data.
         * 
         * \param[in] point a given \a valid (i.e., finite) query point
         * \param[in] k the number of neighbors to search for
@@ -164,7 +161,7 @@ namespace pcl
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
         * 
         * \attention This method does not do any bounds checking for the input index
-        * (i.e., index >= cloud.points.size () || index < 0), and assumes valid (i.e., finite) data.
+        * (i.e., index >= cloud.size () || index < 0), and assumes valid (i.e., finite) data.
         * 
         * \param[in] point a given \a valid (i.e., finite) query point
         * \param[in] radius the radius of the sphere bounding all of p_q's neighbors

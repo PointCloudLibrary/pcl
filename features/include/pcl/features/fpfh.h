@@ -41,7 +41,6 @@
 #pragma once
 
 #include <pcl/features/feature.h>
-#include <set>
 
 namespace pcl
 {

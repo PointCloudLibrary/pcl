@@ -38,6 +38,8 @@
 #include <stdexcept>
 #include <pcl/surface/on_nurbs/fitting_sphere_pdm.h>
 #include <pcl/pcl_macros.h>
+#include <Eigen/Cholesky> // for ldlt
+#include <Eigen/Geometry> // for cross
 
 using namespace pcl;
 using namespace on_nurbs;

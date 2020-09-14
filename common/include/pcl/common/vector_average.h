@@ -37,9 +37,10 @@
 
 #pragma once
 
+#include <Eigen/Core> // for Matrix
+
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/common/eigen.h>
 
 namespace pcl 
 {

@@ -46,7 +46,6 @@
 #include<cassert>
 
 using namespace pcl::device;
-using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////
 //////////////// Octree Host Interface implementation ////////////////////////////////
@@ -164,24 +163,38 @@ void pcl::gpu::Octree::radiusSearch(const Queries& queries, const Indices& indic
 
 void pcl::gpu::Octree::approxNearestSearch(const Queries& queries, NeighborIndices& results) const
 {
+    ResultSqrDists sqr_distance;
+    approxNearestSearch(queries, results, sqr_distance);
+}
+
+void pcl::gpu::Octree::approxNearestSearch(const Queries& queries, NeighborIndices& results, ResultSqrDists& sqr_distance) const
+{
     assert(queries.size() > 0);    
     results.create(static_cast<int> (queries.size()), 1);
+    sqr_distance.create(queries.size());
     
     const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
-    static_cast<OctreeImpl*>(impl)->approxNearestSearch(q, results);
+    static_cast<OctreeImpl*>(impl)->approxNearestSearch(q, results, sqr_distance);
 }
 
 void pcl::gpu::Octree::nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results) const
+{
+    ResultSqrDists sqr_distances;
+    nearestKSearchBatch(queries, k, results, sqr_distances);
+}
+
+void pcl::gpu::Octree::nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results, ResultSqrDists& sqr_distances) const
 {    
     if (k != 1)
         throw pcl::PCLException("OctreeGPU::knnSearch is supported only for k == 1", __FILE__, "", __LINE__);
     
     assert(queries.size() > 0);
     results.create(static_cast<int> (queries.size()), k);	    
+    sqr_distances.create(queries.size() * k);
 
 	const OctreeImpl::Queries& q = (const OctreeImpl::Queries&)queries;
 
-    static_cast<OctreeImpl*>(impl)->nearestKSearchBatch(q, k, results);
+    static_cast<OctreeImpl*>(impl)->nearestKSearchBatch(q, k, results, sqr_distances);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////

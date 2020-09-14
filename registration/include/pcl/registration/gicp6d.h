@@ -39,7 +39,7 @@
 #pragma once
 
 #include <pcl/memory.h>
-#include <pcl/pcl_macros.h>
+#include <pcl/pcl_exports.h> // for PCL_EXPORTS
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>

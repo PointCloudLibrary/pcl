@@ -56,7 +56,7 @@ main (int, char** argv)
     PCL_ERROR ("Couldn't read file");
     return (-1);
   }
-  std::cout << "Loaded " << cloud->points.size () << " points." << std::endl;
+  std::cout << "Loaded " << cloud->size () << " points." << std::endl;
 
   // Compute the normals
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimation;
@@ -81,10 +81,10 @@ main (int, char** argv)
 
   // Actually compute the spin images
   spin_image_descriptor.compute (*spin_images);
-  std::cout << "SI output points.size (): " << spin_images->points.size () << std::endl;
+  std::cout << "SI output size (): " << spin_images->size () << std::endl;
 
   // Display and retrieve the spin image descriptor vector for the first point.
-  pcl::Histogram<153> first_descriptor = spin_images->points[0];
+  pcl::Histogram<153> first_descriptor = (*spin_images)[0];
   std::cout << first_descriptor << std::endl;
 
   return 0;

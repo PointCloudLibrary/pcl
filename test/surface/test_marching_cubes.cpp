@@ -51,7 +51,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
@@ -76,9 +75,9 @@ TEST (PCL, MarchingCubesTest)
   std::vector<Vertices> vertices;
   hoppe.reconstruct (points, vertices);
 
-  EXPECT_NEAR (points.points[points.size()/2].x, -0.037143, 1e-3);
-  EXPECT_NEAR (points.points[points.size()/2].y,  0.098213, 1e-3);
-  EXPECT_NEAR (points.points[points.size()/2].z, -0.044911, 1e-3);
+  EXPECT_NEAR (points[points.size()/2].x, -0.037143, 1e-3);
+  EXPECT_NEAR (points[points.size()/2].y,  0.098213, 1e-3);
+  EXPECT_NEAR (points[points.size()/2].z, -0.044911, 1e-3);
   EXPECT_EQ (vertices[vertices.size ()/2].vertices[0], 11202);
   EXPECT_EQ (vertices[vertices.size ()/2].vertices[1], 11203);
   EXPECT_EQ (vertices[vertices.size ()/2].vertices[2], 11204);
@@ -92,9 +91,9 @@ TEST (PCL, MarchingCubesTest)
   rbf.setOffSurfaceDisplacement (0.02f);
   rbf.reconstruct (points, vertices);
 
-  EXPECT_NEAR (points.points[points.size()/2].x, -0.025630, 1e-3);
-  EXPECT_NEAR (points.points[points.size()/2].y,  0.135228, 1e-3);
-  EXPECT_NEAR (points.points[points.size()/2].z,  0.035766, 1e-3);
+  EXPECT_NEAR (points[points.size()/2].x, -0.025630, 1e-3);
+  EXPECT_NEAR (points[points.size()/2].y,  0.135228, 1e-3);
+  EXPECT_NEAR (points[points.size()/2].z,  0.035766, 1e-3);
   EXPECT_EQ (vertices[vertices.size ()/2].vertices[0], 4275);
   EXPECT_EQ (vertices[vertices.size ()/2].vertices[1], 4276);
   EXPECT_EQ (vertices[vertices.size ()/2].vertices[2], 4277);

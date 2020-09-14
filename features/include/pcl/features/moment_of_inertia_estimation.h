@@ -40,10 +40,9 @@
 #pragma once
 
 #include <vector>
-#include <cmath>
-#include <pcl/features/feature.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
+#include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>
 
 namespace pcl

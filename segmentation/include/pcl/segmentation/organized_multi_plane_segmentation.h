@@ -295,8 +295,7 @@ namespace pcl
               PointCloudLPtr& labels,
               std::vector<pcl::PointIndices>& label_indices)
       {
-        pcl::utils::ignore(centroids);
-        pcl::utils::ignore(covariances);
+        pcl::utils::ignore(centroids, covariances);
         refine(model_coefficients, inlier_indices, labels, label_indices);
       }
 

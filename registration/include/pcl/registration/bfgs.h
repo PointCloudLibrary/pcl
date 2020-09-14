@@ -4,7 +4,7 @@
 #  pragma GCC system_header 
 #endif
 
-#include <pcl/registration/eigen.h>
+#include <unsupported/Eigen/Polynomials> // for PolynomialSolver, PolynomialSolverBase
 
 namespace Eigen
 {

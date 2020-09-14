@@ -206,7 +206,7 @@ pcl::people::HeadBasedSubclustering<PointT>::createSubClusters (pcl::people::Per
   // Project maxima on the ground plane:
   for(int i = 0; i < maxima_number; i++)                              // for every maximum
   {
-    PointT* current_point = &cloud_->points[maxima_cloud_indices[i]]; // current maximum point cloud point
+    PointT* current_point = &(*cloud_)[maxima_cloud_indices[i]]; // current maximum point cloud point
     Eigen::Vector3f p_current_eigen(current_point->x, current_point->y, current_point->z);  // conversion to eigen
     float t = p_current_eigen.dot(head_ground_coeffs) / normalize_factor;       // height from the ground
     maxima_projected.col(i).matrix () = p_current_eigen - head_ground_coeffs * t;         // projection of the point on the groundplane
@@ -216,7 +216,7 @@ pcl::people::HeadBasedSubclustering<PointT>::createSubClusters (pcl::people::Per
   // Associate cluster points to one of the maximum:
   for(std::vector<int>::const_iterator points_iterator = cluster.getIndices().indices.begin(); points_iterator != cluster.getIndices().indices.end(); ++points_iterator)
   {
-    PointT* current_point = &cloud_->points[*points_iterator];        // current point cloud point
+    PointT* current_point = &(*cloud_)[*points_iterator];        // current point cloud point
     Eigen::Vector3f p_current_eigen(current_point->x, current_point->y, current_point->z);  // conversion to eigen
     float t = p_current_eigen.dot(head_ground_coeffs) / normalize_factor;       // height from the ground
     p_current_eigen -= head_ground_coeffs * t;       // projection of the point on the groundplane

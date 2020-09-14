@@ -40,6 +40,8 @@
 #include <pcl/surface/on_nurbs/fitting_curve_2d_apdm.h>
 #include <pcl/conversions.h>
 
+#include <Eigen/Geometry> // for cross
+
 using namespace pcl;
 using namespace on_nurbs;
 

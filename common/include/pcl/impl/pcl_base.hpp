@@ -80,7 +80,7 @@ pcl::PCLBase<PointT>::setIndices (const IndicesPtr &indices)
 template <typename PointT> void
 pcl::PCLBase<PointT>::setIndices (const IndicesConstPtr &indices)
 {
-  indices_.reset (new std::vector<int> (*indices));
+  indices_.reset (new Indices (*indices));
   fake_indices_ = false;
   use_indices_  = true;
 }
@@ -89,7 +89,7 @@ pcl::PCLBase<PointT>::setIndices (const IndicesConstPtr &indices)
 template <typename PointT> void
 pcl::PCLBase<PointT>::setIndices (const PointIndicesConstPtr &indices)
 {
-  indices_.reset (new std::vector<int> (indices->indices));
+  indices_.reset (new Indices (indices->indices));
   fake_indices_ = false;
   use_indices_  = true;
 }
@@ -124,7 +124,7 @@ pcl::PCLBase<PointT>::setIndices (std::size_t row_start, std::size_t col_start, 
     return;
   }
 
-  indices_.reset (new std::vector<int>);
+  indices_.reset (new Indices);
   indices_->reserve (nb_cols * nb_rows);
   for(std::size_t i = row_start; i < row_end; i++)
     for(std::size_t j = col_start; j < col_end; j++)
@@ -145,20 +145,20 @@ pcl::PCLBase<PointT>::initCompute ()
   if (!indices_)
   {
     fake_indices_ = true;
-    indices_.reset (new std::vector<int>);
+    indices_.reset (new Indices);
   }
 
   // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
-  if (fake_indices_ && indices_->size () != input_->points.size ())
+  if (fake_indices_ && indices_->size () != input_->size ())
   {
     const auto indices_size = indices_->size ();
     try
     {
-      indices_->resize (input_->points.size ());
+      indices_->resize (input_->size ());
     }
     catch (const std::bad_alloc&)
     {
-      PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", input_->points.size ());
+      PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", input_->size ());
     }
     for (auto i = indices_size; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
   }

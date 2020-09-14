@@ -49,7 +49,6 @@
 #include <pcl/recognition/cg/geometric_consistency.h>
 #include <pcl/common/eigen.h>
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::io;
 

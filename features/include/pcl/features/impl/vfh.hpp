@@ -50,7 +50,7 @@
 template<typename PointInT, typename PointNT, typename PointOutT> bool
 pcl::VFHEstimation<PointInT, PointNT, PointOutT>::initCompute ()
 {
-  if (input_->points.size () < 2 || (surface_ && surface_->points.size () < 2))
+  if (input_->size () < 2 || (surface_ && surface_->size () < 2))
   {
     PCL_ERROR ("[pcl::VFHEstimation::initCompute] Input dataset must have at least 2 points!\n");
     return (false);
@@ -67,7 +67,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &output
   if (!initCompute ())
   {
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   // Copy the header
@@ -79,7 +79,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &output
   // (see http://dev.pointclouds.org/issues/657)
   output.width = output.height = 1;
   output.is_dense = input_->is_dense;
-  output.points.resize (1);
+  output.resize (1);
 
   // Perform the actual feature computation
   computeFeature (output);
@@ -130,11 +130,11 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (con
     hist_incr_size_component = hist_incr;
 
   // Iterate over all the points in the neighborhood
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
     // Compute the pair P to NNi
-    if (!computePairFeatures (centroid_p, centroid_n, cloud.points[index].getVector4fMap (),
-                              normals.points[index].getNormalVector4fMap (), pfh_tuple[0], pfh_tuple[1],
+    if (!computePairFeatures (centroid_p, centroid_n, cloud[index].getVector4fMap (),
+                              normals[index].getNormalVector4fMap (), pfh_tuple[0], pfh_tuple[1],
                               pfh_tuple[2], pfh_tuple[3]))
       continue;
 
@@ -184,7 +184,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     {
       for (const auto& index: *indices_)
       {
-        normal_centroid.noalias () += normals_->points[index].getNormalVector4fMap ();
+        normal_centroid.noalias () += (*normals_)[index].getNormalVector4fMap ();
       }
       cp = indices_->size();
     }
@@ -193,11 +193,11 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     {
       for (const auto& index: *indices_)
       {
-        if (!std::isfinite (normals_->points[index].normal[0]) ||
-            !std::isfinite (normals_->points[index].normal[1]) ||
-            !std::isfinite (normals_->points[index].normal[2]))
+        if (!std::isfinite ((*normals_)[index].normal[0]) ||
+            !std::isfinite ((*normals_)[index].normal[1]) ||
+            !std::isfinite ((*normals_)[index].normal[2]))
           continue;
-        normal_centroid.noalias () += normals_->points[index].getNormalVector4fMap ();
+        normal_centroid.noalias () += (*normals_)[index].getNormalVector4fMap ();
         cp++;
       }
     }
@@ -221,9 +221,9 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   for (const auto& index: *indices_)
   {
-    Eigen::Vector4f normal (normals_->points[index].normal[0],
-                            normals_->points[index].normal[1],
-                            normals_->points[index].normal[2], 0);
+    Eigen::Vector4f normal ((*normals_)[index].normal[0],
+                            (*normals_)[index].normal[1],
+                            (*normals_)[index].normal[2], 0);
     // Normalize
     double alpha = (normal.dot (d_vp_p) + 1.0) * 0.5;
     std::size_t fi = static_cast<std::size_t> (std::floor (alpha * hist_vp_.size ()));
@@ -234,12 +234,12 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   }
 
   // We only output _1_ signature
-  output.points.resize (1);
+  output.resize (1);
   output.width = 1;
   output.height = 1;
 
   // Estimate the FPFH at nn_indices[0] using the entire cloud and copy the resultant signature
-  auto outPtr = std::begin (output.points[0].histogram);
+  auto outPtr = std::begin (output[0].histogram);
 
   for (int i = 0; i < 4; ++i)
   {

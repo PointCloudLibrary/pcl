@@ -43,7 +43,6 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
-#include "boost.h"
 
 using namespace pcl;
 using namespace pcl::io;
@@ -88,7 +87,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   fromPCLPointCloud2 (*input, *xyz_cloud);
 
   PointCloud<PointXYZ>::Ptr xyz_cloud_filtered (new PointCloud<PointXYZ> ());
-  xyz_cloud_filtered->points.resize (xyz_cloud->points.size ());
+  xyz_cloud_filtered->points.resize (xyz_cloud->size ());
   xyz_cloud_filtered->header = xyz_cloud->header;
   xyz_cloud_filtered->width = xyz_cloud->width;
   xyz_cloud_filtered->height = xyz_cloud->height;
@@ -98,11 +97,11 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   std::mt19937 rng(rd());
   std::normal_distribution<float> nd (0.0f, standard_deviation);
 
-  for (std::size_t point_i = 0; point_i < xyz_cloud->points.size (); ++point_i)
+  for (std::size_t point_i = 0; point_i < xyz_cloud->size (); ++point_i)
   {
-    xyz_cloud_filtered->points[point_i].x = xyz_cloud->points[point_i].x + nd (rng);
-    xyz_cloud_filtered->points[point_i].y = xyz_cloud->points[point_i].y + nd (rng);
-    xyz_cloud_filtered->points[point_i].z = xyz_cloud->points[point_i].z + nd (rng);
+    (*xyz_cloud_filtered)[point_i].x = (*xyz_cloud)[point_i].x + nd (rng);
+    (*xyz_cloud_filtered)[point_i].y = (*xyz_cloud)[point_i].y + nd (rng);
+    (*xyz_cloud_filtered)[point_i].z = (*xyz_cloud)[point_i].z + nd (rng);
   }
 
   pcl::PCLPointCloud2 input_xyz_filtered;

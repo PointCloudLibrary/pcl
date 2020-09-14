@@ -66,26 +66,29 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
 {
 
   // <cloud_src,cloud_src> is the source dataset
-  if (cloud_src.points.size () != cloud_tgt.points.size ())
+  if (cloud_src.size () != cloud_tgt.size ())
   {
     PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] ");
-    PCL_ERROR ("Number or points in source (%lu) differs than target (%lu)!\n", 
-               cloud_src.points.size (), cloud_tgt.points.size ());
+    PCL_ERROR("Number or points in source (%zu) differs than target (%zu)!\n",
+              static_cast<std::size_t>(cloud_src.size()),
+              static_cast<std::size_t>(cloud_tgt.size()));
     return;
   }
-  if (cloud_src.points.size () < 4)     // need at least 4 samples
+  if (cloud_src.size () < 4)     // need at least 4 samples
   {
     PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] ");
-    PCL_ERROR ("Need at least 4 points to estimate a transform! Source and target have %lu points!\n", 
-               cloud_src.points.size ());
+    PCL_ERROR("Need at least 4 points to estimate a transform! Source and target have "
+              "%zu points!\n",
+              static_cast<std::size_t>(cloud_src.size()));
     return;
   }
 
   if (correspondence_weights_.size () != cloud_src.size ())
   {
     PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] ");
-    PCL_ERROR ("Number of weights (%lu) differs than number of points (%lu)!\n",
-               correspondence_weights_.size (), cloud_src.points.size ());
+    PCL_ERROR("Number of weights (%zu) differs than number of points (%zu)!\n",
+              correspondence_weights_.size(),
+              static_cast<std::size_t>(cloud_src.size()));
     return;
   }
 
@@ -97,7 +100,7 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
   tmp_src_ = &cloud_src;
   tmp_tgt_ = &cloud_tgt;
 
-  OptimizationFunctor functor (static_cast<int> (cloud_src.points.size ()), this);
+  OptimizationFunctor functor (static_cast<int> (cloud_src.size ()), this);
   Eigen::NumericalDiff<OptimizationFunctor> num_diff (functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, MatScalar> lm (num_diff);
   int info = lm.minimize (x);
@@ -126,17 +129,22 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     Matrix4 &transformation_matrix) const
 {
-  if (indices_src.size () != cloud_tgt.points.size ())
+  if (indices_src.size () != cloud_tgt.size ())
   {
-    PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", indices_src.size (), cloud_tgt.points.size ());
+    PCL_ERROR("[pcl::registration::TransformationEstimationPointToPlaneWeighted::"
+              "estimateRigidTransformation] Number or points in source (%zu) differs "
+              "than target (%zu)!\n",
+              indices_src.size(),
+              static_cast<std::size_t>(cloud_tgt.size()));
     return;
   }
 
   if (correspondence_weights_.size () != indices_src.size ())
   {
     PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] ");
-    PCL_ERROR ("Number of weights (%lu) differs than number of points (%lu)!\n",
-               correspondence_weights_.size (), indices_src.size ());
+    PCL_ERROR("Number of weights (%zu) differs than number of points (%zu)!\n",
+              correspondence_weights_.size(),
+              indices_src.size());
     return;
   }
 
@@ -144,10 +152,10 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
   // <cloud_src,cloud_src> is the source dataset
   transformation_matrix.setIdentity ();
 
-  const int nr_correspondences = static_cast<const int> (cloud_tgt.points.size ());
+  const auto nr_correspondences = cloud_tgt.size ();
   std::vector<int> indices_tgt;
   indices_tgt.resize(nr_correspondences);
-  for (int i = 0; i < nr_correspondences; ++i)
+  for (std::size_t i = 0; i < nr_correspondences; ++i)
     indices_tgt[i] = i;
 
   estimateRigidTransformation(cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
@@ -257,8 +265,8 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
   // Transform each source point and compute its distance to the corresponding target point
   for (int i = 0; i < values (); ++i)
   {
-    const PointSource & p_src = src_points.points[i];
-    const PointTarget & p_tgt = tgt_points.points[i];
+    const PointSource & p_src = src_points[i];
+    const PointTarget & p_tgt = tgt_points[i];
 
     // Transform the source point based on the current warp parameters
     Vector4 p_src_warped;
@@ -286,8 +294,8 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
   // Transform each source point and compute its distance to the corresponding target point
   for (int i = 0; i < values (); ++i)
   {
-    const PointSource & p_src = src_points.points[src_indices[i]];
-    const PointTarget & p_tgt = tgt_points.points[tgt_indices[i]];
+    const PointSource & p_src = src_points[src_indices[i]];
+    const PointTarget & p_tgt = tgt_points[tgt_indices[i]];
 
     // Transform the source point based on the current warp parameters
     Vector4 p_src_warped;

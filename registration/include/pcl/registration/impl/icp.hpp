@@ -41,7 +41,6 @@
 #ifndef PCL_REGISTRATION_IMPL_ICP_HPP_
 #define PCL_REGISTRATION_IMPL_ICP_HPP_
 
-#include <pcl/registration/boost.h>
 #include <pcl/correspondence.h>
 
 

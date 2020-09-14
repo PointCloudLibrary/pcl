@@ -55,7 +55,6 @@
 
 #include "data_source.hpp"
 
-using namespace std;
 using namespace pcl::gpu;
 
 //TEST(PCL_OctreeGPU, DISABLED_batchRadiusSearch)
@@ -225,4 +224,13 @@ TEST(PCL_OctreeGPU, batchRadiusSearch)
     std::cout << "avg_result_size3 = " << avg_size3 << std::endl;
     ASSERT_GT(avg_size3, 5);
 }
+
+/* ---[ */
+int
+main (int argc, char** argv)
+{
+  testing::InitGoogleTest (&argc, argv);
+  return (RUN_ALL_TESTS ());
+}
+/* ]--- */
 

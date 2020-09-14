@@ -74,11 +74,13 @@ template <typename PointSource, typename PointTarget, typename FeatureT> void
 SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamples (
     const PointCloudSource &cloud, int nr_samples, std::vector<int> &sample_indices)
 {
-  if (nr_samples > static_cast<int> (cloud.points.size ()))
+  if (nr_samples > static_cast<int> (cloud.size ()))
   {
     PCL_ERROR ("[pcl::%s::selectSamples] ", getClassName ().c_str ());
-    PCL_ERROR ("The number of samples (%d) must not be greater than the number of points (%lu)!\n",
-               nr_samples, cloud.points.size ());
+    PCL_ERROR("The number of samples (%d) must not be greater than the number of "
+              "points (%zu)!\n",
+              nr_samples,
+              static_cast<std::size_t>(cloud.size()));
     return;
   }
 
@@ -89,7 +91,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamples (
   for (int i = 0; i < nr_samples; i++)
   {
     // Select a random number
-    sample_indices[i] = getRandomIndex (static_cast<int> (cloud.points.size ()) - i);
+    sample_indices[i] = getRandomIndex (static_cast<int> (cloud.size ()) - i);
 
     // Run trough list of numbers, starting at the lowest, to avoid duplicates
     for (int j = 0; j < i; j++)
@@ -310,12 +312,12 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness (std
   transformPointCloud (*input_, input_transformed, final_transformation_);
 
   // For each point in the source dataset
-  for (std::size_t i = 0; i < input_transformed.points.size (); ++i)
+  for (std::size_t i = 0; i < input_transformed.size (); ++i)
   {
     // Find its nearest neighbor in the target
     std::vector<int> nn_indices (1);
     std::vector<float> nn_dists (1);
-    tree_->nearestKSearch (input_transformed.points[i], 1, nn_indices, nn_dists);
+    tree_->nearestKSearch (input_transformed[i], 1, nn_indices, nn_dists);
 
     // Check if point is an inlier
     if (nn_dists[0] < max_range)

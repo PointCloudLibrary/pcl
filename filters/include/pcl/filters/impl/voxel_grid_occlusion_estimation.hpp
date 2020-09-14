@@ -39,7 +39,6 @@
 #ifndef PCL_FILTERS_IMPL_VOXEL_GRID_OCCLUSION_ESTIMATION_H_
 #define PCL_FILTERS_IMPL_VOXEL_GRID_OCCLUSION_ESTIMATION_H_
 
-#include <pcl/common/common.h>
 #include <pcl/filters/voxel_grid_occlusion_estimation.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

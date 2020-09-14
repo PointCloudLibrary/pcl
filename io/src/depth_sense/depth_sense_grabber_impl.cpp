@@ -220,7 +220,7 @@ pcl::io::depth_sense::DepthSenseGrabberImpl::onDepthDataReceived (DepthSense::De
       int col = static_cast<int> (uv.u * COLOR_WIDTH);
       int pixel = row * COLOR_WIDTH + col;
       if (pixel >=0 && pixel < COLOR_WIDTH * COLOR_HEIGHT)
-        memcpy (&xyzrgba_cloud->points[i].rgba, &color_data_[pixel * 3], 3);
+        memcpy (&(*xyzrgba_cloud)[i].rgba, &color_data_[pixel * 3], 3);
     }
 
     point_cloud_rgba_signal_->operator () (xyzrgba_cloud);
@@ -250,16 +250,16 @@ pcl::io::depth_sense::DepthSenseGrabberImpl::computeXYZ (PointCloud<Point>& clou
       point.depth = (*depth_buffer_)[i];
       if (std::isnan (point.depth))
       {
-        cloud.points[i].x = nan;
-        cloud.points[i].y = nan;
-        cloud.points[i].z = nan;
+        cloud[i].x = nan;
+        cloud[i].y = nan;
+        cloud[i].z = nan;
       }
       else
       {
         projection_->get3DCoordinates (&point, &vertex, 1);
-        cloud.points[i].x = vertex.x;
-        cloud.points[i].y = vertex.y;
-        cloud.points[i].z = vertex.z;
+        cloud[i].x = vertex.x;
+        cloud[i].y = vertex.y;
+        cloud[i].z = vertex.z;
       }
       point.point.x += 1;
       ++i;

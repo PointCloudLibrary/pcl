@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <pcl/registration/boost.h>
 #include <pcl/registration/registration.h>
 #include <pcl/features/ppf.h>
 

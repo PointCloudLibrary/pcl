@@ -131,8 +131,8 @@ namespace pcl
           float w = (float)((float)n_best_inliers_count / (float)sac_model_->getIndices ()->size ());
     //      float p_no_outliers = 1.0 - pow (w, (float)selection.size ());
           float p_no_outliers = 1.0f - pow (w, (float)1);
-          p_no_outliers = (std::max) (std::numeric_limits<float>::epsilon (), p_no_outliers);       // Avoid division by -Inf
-          p_no_outliers = (std::min) (1.0f - std::numeric_limits<float>::epsilon (), p_no_outliers);   // Avoid division by 0.
+          p_no_outliers = max(std::numeric_limits<float>::epsilon (), p_no_outliers);       // Avoid division by -Inf
+          p_no_outliers = min(1.0f - std::numeric_limits<float>::epsilon (), p_no_outliers);   // Avoid division by 0.
           if (p_no_outliers == 1.0f)
             k++;
           else

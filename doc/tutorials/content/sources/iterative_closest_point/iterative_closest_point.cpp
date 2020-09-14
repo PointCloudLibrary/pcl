@@ -17,18 +17,18 @@ int
     point.z = 1024 * rand() / (RAND_MAX + 1.0f);
   }
   
-  std::cout << "Saved " << cloud_in->points.size () << " data points to input:" << std::endl;
+  std::cout << "Saved " << cloud_in->size () << " data points to input:" << std::endl;
       
   for (auto& point : *cloud_in)
     std::cout << point << std::endl;
       
   *cloud_out = *cloud_in;
   
-  std::cout << "size:" << cloud_out->points.size() << std::endl;
+  std::cout << "size:" << cloud_out->size() << std::endl;
   for (auto& point : *cloud_out)
     point.x += 0.7f;
 
-  std::cout << "Transformed " << cloud_in->points.size () << " data points:" << std::endl;
+  std::cout << "Transformed " << cloud_in->size () << " data points:" << std::endl;
       
   for (auto& point : *cloud_out)
     std::cout << point << std::endl;

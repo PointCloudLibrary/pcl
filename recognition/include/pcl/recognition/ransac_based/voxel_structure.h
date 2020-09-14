@@ -38,8 +38,6 @@
 
 #pragma once
 
-#include <cstdlib>
-
 namespace pcl
 {
   namespace recognition

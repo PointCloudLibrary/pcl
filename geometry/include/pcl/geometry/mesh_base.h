@@ -40,8 +40,6 @@
 
 #pragma once
 
-#include <pcl/geometry/boost.h>
-#include <pcl/geometry/eigen.h>
 #include <pcl/geometry/mesh_circulators.h>
 #include <pcl/geometry/mesh_indices.h>
 #include <pcl/geometry/mesh_elements.h>

@@ -38,7 +38,6 @@
  */
 
 #include <pcl/common/angles.h>
-#include <pcl/common/common.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/console/time.h>
@@ -64,7 +63,6 @@
 
 using namespace pcl;
 using namespace pcl::console;
-using namespace std;
 using namespace std::chrono_literals;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,9 +178,9 @@ public:
     exppd.setInputCloud(cloud);
     exppd.setIndices(indices_but_the_plane);
     exppd.setInputPlanarHull(plane_hull);
-    exppd.setViewPoint(cloud->points[picked_idx].x,
-                       cloud->points[picked_idx].y,
-                       cloud->points[picked_idx].z);
+    exppd.setViewPoint((*cloud)[picked_idx].x,
+                       (*cloud)[picked_idx].y,
+                       (*cloud)[picked_idx].z);
     exppd.setHeightLimits(0.001, 0.5); // up to half a meter
     exppd.segment(*points_above_plane);
 
@@ -202,7 +200,7 @@ public:
           new PointCloud<Label>(cloud->width, cloud->height, l));
       // Mask the objects that we want to split into clusters
       for (const int& index : points_above_plane->indices)
-        scene->points[index].label = 1;
+        (*scene)[index].label = 1;
       euclidean_cluster_comparator->setLabels(scene);
 
       typename EuclideanClusterComparator<PointT, Label>::ExcludeLabelSetPtr
@@ -457,7 +455,7 @@ public:
                picked_pt.z);
 
     // Add a sphere to it in the PCLVisualizer window
-    stringstream ss;
+    std::stringstream ss;
     ss << "sphere_" << idx;
     cloud_viewer_->addSphere(picked_pt, 0.01, 1.0, 0.0, 0.0, ss.str());
 
@@ -577,7 +575,7 @@ public:
         for (std::uint32_t i = 0; i < cloud_->width * cloud_->height; ++i) {
           RGB rgb;
           memcpy(&rgb,
-                 reinterpret_cast<unsigned char*>(&cloud_->points[i]) + poff,
+                 reinterpret_cast<unsigned char*>(&(*cloud_)[i]) + poff,
                  sizeof(rgb));
 
           rgb_data_[i * 3 + 0] = rgb.r;

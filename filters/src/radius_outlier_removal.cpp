@@ -47,7 +47,7 @@ void
 pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
   // If fields x/y/z are not present, we cannot filter
-  if (x_idx_ == -1 || y_idx_ == -1 || z_idx_ == -1)
+  if (x_idx_ == UNAVAILABLE|| y_idx_ == UNAVAILABLE || z_idx_ == UNAVAILABLE)
   {
     PCL_ERROR ("[pcl::%s::applyFilter] Input dataset doesn't have x-y-z coordinates!\n", getClassName ().c_str ());
     output.width = output.height = 0;

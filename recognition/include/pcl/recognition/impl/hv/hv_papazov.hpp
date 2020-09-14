@@ -56,8 +56,8 @@ template<typename ModelT, typename SceneT>
       mask_[i] = true;
 
     // initialize explained_by_RM
-    explained_by_RM_.resize (scene_cloud_downsampled_->points.size ());
-    points_explained_by_rm_.resize (scene_cloud_downsampled_->points.size ());
+    explained_by_RM_.resize (scene_cloud_downsampled_->size ());
+    points_explained_by_rm_.resize (scene_cloud_downsampled_->size ());
 
     // initialize model
     for (std::size_t m = 0; m < complete_models_.size (); m++)
@@ -83,9 +83,9 @@ template<typename ModelT, typename SceneT>
       std::vector<int> nn_indices;
       std::vector<float> nn_distances;
 
-      for (std::size_t i = 0; i < recog_model->cloud_->points.size (); i++)
+      for (std::size_t i = 0; i < recog_model->cloud_->size (); i++)
       {
-        if (!scene_downsampled_tree_->radiusSearch (recog_model->cloud_->points[i], inliers_threshold_, nn_indices, nn_distances,
+        if (!scene_downsampled_tree_->radiusSearch ((*recog_model->cloud_)[i], inliers_threshold_, nn_indices, nn_distances,
                                                     std::numeric_limits<int>::max ()))
         {
           outliers.push_back (static_cast<int> (i));
@@ -104,9 +104,9 @@ template<typename ModelT, typename SceneT>
 
       recog_model->bad_information_ = static_cast<int> (outliers.size ());
 
-      if ((static_cast<float> (recog_model->bad_information_) / static_cast<float> (recog_model->complete_cloud_->points.size ()))
+      if ((static_cast<float> (recog_model->bad_information_) / static_cast<float> (recog_model->complete_cloud_->size ()))
           <= penalty_threshold_ && (static_cast<float> (explained_indices.size ())
-          / static_cast<float> (recog_model->complete_cloud_->points.size ())) >= support_threshold_)
+          / static_cast<float> (recog_model->complete_cloud_->size ())) >= support_threshold_)
       {
         recog_model->explained_ = explained_indices;
         recognition_models_.push_back (recog_model);
@@ -208,8 +208,8 @@ template<typename ModelT, typename SceneT>
 
           // check if number of points is big enough to create a conflict
           bool add_conflict = false;
-          add_conflict = ((n_conflicts / static_cast<float> (recognition_models_[i]->complete_cloud_->points.size ())) > conflict_threshold_size_)
-              || ((n_conflicts / static_cast<float> (recognition_models_[j]->complete_cloud_->points.size ())) > conflict_threshold_size_);
+          add_conflict = ((n_conflicts / static_cast<float> (recognition_models_[i]->complete_cloud_->size ())) > conflict_threshold_size_)
+              || ((n_conflicts / static_cast<float> (recognition_models_[j]->complete_cloud_->size ())) > conflict_threshold_size_);
 
           if (add_conflict)
           {

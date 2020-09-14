@@ -35,7 +35,6 @@
  */
 
 #include <pcl/test/gtest.h>
-#include <pcl/common/common.h>
 #include <pcl/common/intersections.h>
 #include <pcl/pcl_tests.h>
 

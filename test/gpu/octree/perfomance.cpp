@@ -61,7 +61,6 @@
 #include "data_source.hpp"
 
 using namespace pcl::gpu;
-using namespace std;
 
 using pcl::ScopeTime;
 
@@ -101,8 +100,8 @@ TEST(PCL_OctreeGPU, performance)
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host(new pcl::PointCloud<pcl::PointXYZ>);	
     cloud_host->width = data.points.size();
     cloud_host->height = 1;
-    cloud_host->points.resize (cloud_host->width * cloud_host->height);    
-    std::transform(data.points.begin(), data.points.end(), cloud_host->points.begin(), DataGenerator::ConvPoint<pcl::PointXYZ>());
+    cloud_host->resize (cloud_host->width * cloud_host->height);    
+    std::transform(data.points.cbegin(), data.points.cend(), cloud_host->begin(), DataGenerator::ConvPoint<pcl::PointXYZ>());
 
     float host_octree_resolution = 25.f;    
     
@@ -133,8 +132,8 @@ TEST(PCL_OctreeGPU, performance)
 #ifdef HAVE_OPENCV
     cv::Octree octree_opencv;
     const static int opencv_octree_points_per_leaf = 32;    
-    std::vector<cv::Point3f> opencv_points(data.points.size());
-    std::transform(data.points.begin(), data.points.end(), opencv_points.begin(), DataGenerator::ConvPoint<cv::Point3f>());
+    std::vector<cv::Point3f> opencv_points(data.size());
+    std::transform(data.cbegin(), data.cend(), opencv_points.begin(), DataGenerator::ConvPoint<cv::Point3f>());
         
     {        
         ScopeTime t("opencv-build");	        
@@ -252,3 +251,13 @@ TEST(PCL_OctreeGPU, performance)
             octree_host.nearestKSearch(data.queries[i], k, indeces, pointRadiusSquaredDistance);
     }*/
 }
+
+/* ---[ */
+int
+main (int argc, char** argv)
+{
+  testing::InitGoogleTest (&argc, argv);
+  return (RUN_ALL_TESTS ());
+}
+/* ]--- */
+

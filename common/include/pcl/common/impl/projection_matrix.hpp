@@ -38,8 +38,10 @@
 #pragma once
 
 #include <pcl/common/projection_matrix.h>
+#include <pcl/console/print.h> // for PCL_ERROR
 #include <pcl/cloud_iterator.h>
 
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver
 
 namespace pcl
 {
@@ -81,7 +83,7 @@ template <typename PointT> double
 estimateProjectionMatrix (
     typename pcl::PointCloud<PointT>::ConstPtr cloud,
     Eigen::Matrix<float, 3, 4, Eigen::RowMajor>& projection_matrix,
-    const std::vector<int>& indices)
+    const Indices& indices)
 {
   // internally we calculate with double but store the result into float matrices.
   using Scalar = double;

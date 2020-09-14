@@ -42,16 +42,14 @@
 #include <functional>
 #include <map>
 #include <random>
+#include <Eigen/Core> // for Vector3i, Vector3d, ...
 
 // PCL includes
 #include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/search/pcl_search.h>
-#include <pcl/common/common.h>
+#include <pcl/search/search.h> // for Search
 
-#include <pcl/surface/boost.h>
-#include <pcl/surface/eigen.h>
 #include <pcl/surface/processing.h>
 
 namespace pcl

@@ -42,8 +42,6 @@
 
 // PCL includes
 #include <pcl/memory.h>  // for dynamic_pointer_cast, pcl::make_shared, shared_ptr
-#include <pcl/sample_consensus/ransac.h>
-#include <pcl/sample_consensus/sac_model_registration.h>
 #include <pcl/registration/registration.h>
 #include <pcl/registration/transformation_estimation_svd.h>
 #include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
@@ -153,6 +151,19 @@ namespace pcl
         correspondence_estimation_.reset (new pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>);
         convergence_criteria_.reset(new pcl::registration::DefaultConvergenceCriteria<Scalar> (nr_iterations_, transformation_, *correspondences_));
       };
+
+      /**
+       * \brief Due to `convergence_criteria_` holding references to the class members,
+       * it is tricky to correctly implement its copy and move operations correctly. This
+       * can result in subtle bugs and to prevent them, these operations for ICP have
+       * been disabled.
+       *
+       * \todo: remove deleted ctors and assignments operations after resolving the issue
+       */
+      IterativeClosestPoint(const IterativeClosestPoint&) = delete;
+      IterativeClosestPoint(IterativeClosestPoint&&) = delete;
+      IterativeClosestPoint& operator=(const IterativeClosestPoint&) = delete;
+      IterativeClosestPoint& operator=(IterativeClosestPoint&&) = delete;
 
       /** \brief Empty destructor */
       ~IterativeClosestPoint () {}

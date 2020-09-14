@@ -35,7 +35,6 @@
 *
 */
 
-#include <pcl/io/eigen.h>
 #include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/io_exception.h>
@@ -287,7 +286,7 @@ namespace pcl
     cloud->width = sp.width ();
     cloud->height = sp.height ();
     cloud->is_dense = false;
-    cloud->points.resize ( points.size () );
+    cloud->points.resize ( size () );
 
     const auto cloud_vertices_ptr = points.get_vertices ();
     const auto cloud_texture_ptr = points.get_texture_coordinates ();
@@ -295,11 +294,11 @@ namespace pcl
 #pragma omp parallel for \
   default(none) \
   shared(cloud, cloud_vertices_ptr, mapColorFunc)
-    for (int index = 0; index < cloud->points.size (); ++index)
+    for (int index = 0; index < cloud->size (); ++index)
     {
       const auto ptr = cloud_vertices_ptr + index;
       const auto uvptr = cloud_texture_ptr + index;
-      auto& p = cloud->points[index];
+      auto& p = (*cloud)[index];
 
       p.x = ptr->x;
       p.y = ptr->y;

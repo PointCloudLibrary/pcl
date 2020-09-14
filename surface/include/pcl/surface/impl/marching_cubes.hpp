@@ -224,8 +224,7 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
   {
     PCL_ERROR ("[pcl::%s::performReconstruction] Invalid iso level %f! Please use a number between 0 and 1.\n", 
         getClassName ().c_str (), iso_level_);
-    points.width = points.height = 0;
-    points.points.clear ();
+    points.clear ();
     polygons.clear ();
     return;
   }

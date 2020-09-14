@@ -153,7 +153,7 @@ public:
     extract_indices_filter_.setIndices(feature_indices_);
     extract_indices_filter_.filter(*feature_locations_);
 
-    PCL_INFO("Persistent feature locations %d\n", feature_locations_->points.size());
+    PCL_INFO("Persistent feature locations %zu\n", static_cast<std::size_t>(feature_locations_->size()));
 
     cloud_ = cloud;
 

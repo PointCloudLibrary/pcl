@@ -42,9 +42,9 @@
 
 namespace pcl
 {
-  /** \brief OrganizedEdgeBase, OrganizedEdgeFromRGB, OrganizedEdgeFromNormals, 
-    * and OrganizedEdgeFromRGBNormals find 3D edges from an organized point 
-    * cloud data. Given an organized point cloud, they will output a PointCloud 
+  /** \brief OrganizedEdgeBase, OrganizedEdgeFromRGB, OrganizedEdgeFromNormals,
+    * and OrganizedEdgeFromRGBNormals find 3D edges from an organized point
+    * cloud data. Given an organized point cloud, they will output a PointCloud
     * of edge labels and a vector of PointIndices.
     * OrganizedEdgeBase accepts PCL_XYZ_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, and EDGELABEL_OCCLUDED.
     * OrganizedEdgeFromRGB accepts PCL_RGB_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, EDGELABEL_OCCLUDED, and EDGELABEL_RGB_CANNY.
@@ -59,7 +59,7 @@ namespace pcl
     using PointCloud = pcl::PointCloud<PointT>;
     using PointCloudPtr = typename PointCloud::Ptr;
     using PointCloudConstPtr = typename PointCloud::ConstPtr;
-      
+
     using PointCloudL = pcl::PointCloud<PointLT>;
     using PointCloudLPtr = typename PointCloudL::Ptr;
     using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
@@ -81,7 +81,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedEdgeBase */
-      
+
       ~OrganizedEdgeBase ()
       {
       }
@@ -92,15 +92,17 @@ namespace pcl
         */
       void
       compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const;
-      
-      /** \brief Set the tolerance in meters for difference in depth values between neighboring points. */
+
+      /** \brief Set the tolerance in meters for the relative difference in depth values between neighboring points.
+        * e.g. If a point has a depth (z) value of 2.0 meters, a neighboring point is discontinuous if its depth differs by > 2.0 * th. */
       inline void
       setDepthDisconThreshold (const float th)
       {
         th_depth_discon_ = th;
       }
 
-      /** \brief Get the tolerance in meters for difference in depth values between neighboring points. */
+      /** \brief Get the tolerance in meters for the relative difference in depth values between neighboring points.
+        * e.g. If a point has a depth (z) value of 2.0 meters, a neighboring point is discontinuous if its depth differs by > 2.0 * th. */
       inline float
       getDepthDisconThreshold () const
       {
@@ -134,7 +136,7 @@ namespace pcl
       {
         return detecting_edge_types_;
       }
-      
+
       enum {EDGELABEL_NAN_BOUNDARY=1, EDGELABEL_OCCLUDING=2, EDGELABEL_OCCLUDED=4, EDGELABEL_HIGH_CURVATURE=8, EDGELABEL_RGB_CANNY=16};
       static const int num_of_edgetype_ = 5;
 
@@ -144,14 +146,14 @@ namespace pcl
         */
       void
       extractEdges (pcl::PointCloud<PointLT>& labels) const;
-      
+
       /** \brief Assign point indices for each edge label
         * \param[out] labels a PointCloud of edge labels
         * \param[out] label_indices a vector of PointIndices corresponding to each edge label
         */
       void
       assignLabelIndices (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const;
-      
+
       struct Neighbor
       {
         Neighbor (int dx, int dy, int didx)
@@ -159,16 +161,15 @@ namespace pcl
         , d_y (dy)
         , d_index (didx)
         {}
-        
+
         int d_x;
         int d_y;
         int d_index; // = dy * width + dx: pre-calculated
       };
 
-      /** \brief The tolerance in meters for difference in depth values between neighboring points 
-        * (The value is set for 1 meter and is adapted with respect to depth value linearly. 
-        * (e.g. 2.0*th_depth_discon_ in 2 meter depth)) 
-        */
+      /** \brief The tolerance in meters for the relative difference in depth values between neighboring points
+        * (The default value is set for .02 meters and is adapted with respect to depth value linearly.
+        * e.g. If a point has a depth (z) value of 2.0 meters, a neighboring point is discontinuous if its depth differs by > 2.0 * th. */
       float th_depth_discon_;
 
       /** \brief The max search distance for deciding occluding and occluded edges */
@@ -184,7 +185,7 @@ namespace pcl
     using PointCloud = pcl::PointCloud<PointT>;
     using PointCloudPtr = typename PointCloud::Ptr;
     using PointCloudConstPtr = typename PointCloud::ConstPtr;
-      
+
     using PointCloudL = pcl::PointCloud<PointLT>;
     using PointCloudLPtr = typename PointCloudL::Ptr;
     using PointCloudLConstPtr = typename PointCloudL::ConstPtr;
@@ -210,7 +211,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedEdgeFromRGB */
-      
+
       ~OrganizedEdgeFromRGB ()
       {
       }
@@ -221,7 +222,7 @@ namespace pcl
         */
       void
       compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const;
-      
+
       /** \brief Set the low threshold value for RGB Canny edge detection */
       inline void
       setRGBCannyLowThreshold (const float th)
@@ -270,7 +271,7 @@ namespace pcl
     using PointCloud = pcl::PointCloud<PointT>;
     using PointCloudPtr = typename PointCloud::Ptr;
     using PointCloudConstPtr = typename PointCloud::ConstPtr;
-      
+
     using PointCloudN = pcl::PointCloud<PointNT>;
     using PointCloudNPtr = typename PointCloudN::Ptr;
     using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
@@ -291,7 +292,7 @@ namespace pcl
       using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_HIGH_CURVATURE;
 
       /** \brief Constructor for OrganizedEdgeFromNormals */
-      OrganizedEdgeFromNormals () 
+      OrganizedEdgeFromNormals ()
         : OrganizedEdgeBase<PointT, PointLT> ()
         , normals_ ()
         , th_hc_canny_low_ (0.4f)
@@ -301,7 +302,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedEdgeFromNormals */
-      
+
       ~OrganizedEdgeFromNormals ()
       {
       }
@@ -317,7 +318,7 @@ namespace pcl
         * \param[in] normals the input normal cloud
         */
       inline void
-      setInputNormals (const PointCloudNConstPtr &normals) 
+      setInputNormals (const PointCloudNConstPtr &normals)
       {
         normals_ = normals;
       }
@@ -356,7 +357,7 @@ namespace pcl
       {
         return (th_hc_canny_high_);
       }
-      
+
     protected:
       /** \brief Perform the 3D edge detection (edges from depth discontinuities and high curvature regions)
         * \param[out] labels a PointCloud of edge labels
@@ -380,7 +381,7 @@ namespace pcl
     using PointCloud = pcl::PointCloud<PointT>;
     using PointCloudPtr = typename PointCloud::Ptr;
     using PointCloudConstPtr = typename PointCloud::ConstPtr;
-      
+
     using PointCloudN = pcl::PointCloud<PointNT>;
     using PointCloudNPtr = typename PointCloudN::Ptr;
     using PointCloudNConstPtr = typename PointCloudN::ConstPtr;
@@ -400,9 +401,9 @@ namespace pcl
       using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_OCCLUDED;
       using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_HIGH_CURVATURE;
       using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_RGB_CANNY;
-      
+
       /** \brief Constructor for OrganizedEdgeFromRGBNormals */
-      OrganizedEdgeFromRGBNormals () 
+      OrganizedEdgeFromRGBNormals ()
         : OrganizedEdgeFromRGB<PointT, PointLT> ()
         , OrganizedEdgeFromNormals<PointT, PointNT, PointLT> ()
       {
@@ -410,7 +411,7 @@ namespace pcl
       }
 
       /** \brief Destructor for OrganizedEdgeFromRGBNormals */
-      
+
       ~OrganizedEdgeFromRGBNormals ()
       {
       }

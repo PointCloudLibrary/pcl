@@ -41,7 +41,6 @@
 #pragma once
 
 #include <pcl/sample_consensus/sac_model_plane.h>
-#include <pcl/common/common.h>
 
 namespace pcl
 {

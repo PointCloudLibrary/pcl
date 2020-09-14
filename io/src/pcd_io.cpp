@@ -52,15 +52,12 @@
 #include <cstring>
 #include <cerrno>
 
-#include <boost/version.hpp>
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
                                        boost::interprocess::file_lock &lock)
 {
-  pcl::utils::ignore(file_name);
-  pcl::utils::ignore(lock);
+  pcl::utils::ignore(file_name, lock);
 #ifndef _WIN32
 #ifndef NO_MANDATORY_LOCKING
   // Attempt to lock the file.
@@ -89,8 +86,7 @@ void
 pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
                                          boost::interprocess::file_lock &lock)
 {
-  pcl::utils::ignore(file_name);
-  pcl::utils::ignore(lock);
+  pcl::utils::ignore(file_name, lock);
 #ifndef _WIN32
 #ifndef NO_MANDATORY_LOCKING
   namespace fs = boost::filesystem;
@@ -365,7 +361,7 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
     }
   }
 
-  if (cloud.width * cloud.height != nr_points)
+  if (static_cast<uindex_t>(cloud.width * cloud.height) != nr_points)
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] HEIGHT (%d) x WIDTH (%d) != number of points (%d)\n", cloud.height, cloud.width, nr_points);
     return (-1);
@@ -465,7 +461,7 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
           total += cloud.fields[d].count; // jump over this many elements in the string token
           continue;
         }
-        for (unsigned int c = 0; c < cloud.fields[d].count; ++c)
+        for (uindex_t c = 0; c < cloud.fields[d].count; ++c)
         {
           switch (cloud.fields[d].datatype)
           {
@@ -601,7 +597,7 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
       toff += fields_sizes[i] * cloud.width * cloud.height;
     }
     // Copy it to the cloud
-    for (std::size_t i = 0; i < cloud.width * cloud.height; ++i)
+    for (index_t i = 0; i < cloud.width * cloud.height; ++i)
     {
       for (std::size_t j = 0; j < pters.size (); ++j)
       {
@@ -619,11 +615,11 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
   // Extra checks (not needed for ASCII)
   int point_size = static_cast<int> (cloud.data.size () / (cloud.height * cloud.width));
   // Once copied, we need to go over each field and check if it has NaN/Inf values and assign cloud.is_dense to true or false
-  for (std::uint32_t i = 0; i < cloud.width * cloud.height; ++i)
+  for (index_t i = 0; i < cloud.width * cloud.height; ++i)
   {
     for (unsigned int d = 0; d < static_cast<unsigned int> (cloud.fields.size ()); ++d)
     {
-      for (std::uint32_t c = 0; c < cloud.fields[d].count; ++c)
+      for (uindex_t c = 0; c < cloud.fields[d].count; ++c)
       {
         switch (cloud.fields[d].datatype)
         {
@@ -976,7 +972,7 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
     fsize += field.count * getFieldSize (field.datatype);
 
   // The size of the fields cannot be larger than point_step
-  if (fsize > cloud.point_step)
+  if (fsize > static_cast<uindex_t>(cloud.point_step))
   {
     PCL_ERROR ("[pcl::PCDWriter::generateHeaderBinary] The size of the fields (%d) is larger than point_step (%d)! Something is wrong here...\n", fsize, cloud.point_step);
     return ("");
@@ -984,7 +980,7 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
 
   std::stringstream field_names, field_types, field_sizes, field_counts;
   // Check if the size of the fields is smaller than the size of the point step
-  unsigned int toffset = 0;
+  std::size_t toffset = 0;
   for (std::size_t i = 0; i < cloud.fields.size (); ++i)
   {
     // If field offsets do not match, then we need to create fake fields
@@ -1018,7 +1014,7 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
     field_counts << " " << count;
   }
   // Check extra padding
-  if (toffset < cloud.point_step)
+  if (toffset < static_cast<uindex_t>(cloud.point_step))
   {
     field_names << " _";  // By convention, _ is an invalid field name
     field_sizes << " 1";  // Make size = 1
@@ -1058,7 +1054,7 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (std::ostream &os,
     fsize += field.count * getFieldSize (field.datatype);
 
   // The size of the fields cannot be larger than point_step
-  if (fsize > cloud.point_step)
+  if (fsize > static_cast<uindex_t>(cloud.point_step))
   {
     PCL_ERROR ("[pcl::PCDWriter::generateHeaderBinaryCompressed] The size of the fields (%d) is larger than point_step (%d)! Something is wrong here...\n", fsize, cloud.point_step);
     return (-1);
@@ -1405,7 +1401,7 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
   }
 
   // Go over all the points, and copy the data in the appropriate places
-  for (std::size_t i = 0; i < cloud.width * cloud.height; ++i)
+  for (index_t i = 0; i < cloud.width * cloud.height; ++i)
   {
     for (std::size_t j = 0; j < pters.size (); ++j)
     {

@@ -56,7 +56,7 @@ main (int, char** argv)
     return -1;
   }
 
-  std::cout << "points: " << cloud->points.size () << std::endl;
+  std::cout << "points: " << cloud->size () << std::endl;
 
   // Create the normal estimation class, and pass the input dataset to it
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimation;
@@ -76,7 +76,7 @@ main (int, char** argv)
   // Compute the features
   normal_estimation.compute (*cloud_normals);
 
-  // cloud_normals->points.size () should have the same size as the input cloud->points.size ()
-  std::cout << "cloud_normals->points.size (): " << cloud_normals->points.size () << std::endl;
+  // cloud_normals->size () should have the same size as the input cloud->size ()
+  std::cout << "cloud_normals->size (): " << cloud_normals->size () << std::endl;
   return 0;
 }

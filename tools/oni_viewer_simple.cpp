@@ -47,7 +47,6 @@
 #include <pcl/common/time_trigger.h>
 
 #include <mutex>
-#include <vector>
 
 #define SHOW_FPS 1
 #if SHOW_FPS

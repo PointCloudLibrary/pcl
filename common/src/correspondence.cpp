@@ -36,6 +36,7 @@
  *
  */
 
+#include <pcl/types.h>
 #include <pcl/correspondence.h>
 #include <algorithm>
 #include <iterator>
@@ -44,7 +45,7 @@
 void
 pcl::getRejectedQueryIndices (const pcl::Correspondences &correspondences_before,
                               const pcl::Correspondences &correspondences_after,
-                              std::vector<int>& indices,
+                              Indices& indices,
                               bool presorting_required)
 {
   indices.clear();
@@ -62,11 +63,11 @@ pcl::getRejectedQueryIndices (const pcl::Correspondences &correspondences_before
     return;
   }
 
-  std::vector<int> indices_before (nr_correspondences_before);
+  Indices indices_before (nr_correspondences_before);
   for (std::size_t i = 0; i < nr_correspondences_before; ++i)
     indices_before[i] = correspondences_before[i].index_query;
 
-  std::vector<int> indices_after (nr_correspondences_after);
+  Indices indices_after (nr_correspondences_after);
   for (std::size_t i = 0; i < nr_correspondences_after; ++i)
     indices_after[i] = correspondences_after[i].index_query;
 

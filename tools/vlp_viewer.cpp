@@ -48,16 +48,12 @@
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/console/parse.h>
 #include <pcl/visualization/boost.h>
-#include <pcl/visualization/mouse_event.h>
 
 #include <boost/algorithm/string.hpp>
 
 #include <mutex>
-#include <vector>
 #include <string>
-#include <typeinfo>
 
-using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;

@@ -45,20 +45,15 @@
 
 #include <boost/asio.hpp>
 
-#include <cstdio>
-#include <cstdlib>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <thread>
-#include <vector>
 
 using boost::asio::ip::tcp;
 
 using namespace pcl;
 using namespace pcl::io;
 
-using namespace std;
 using namespace std::chrono_literals;
 
 // clang-format off
@@ -388,7 +383,7 @@ main(int argc, char** argv)
     if (bEnDecode) {
       // ENCODING
       ofstream compressedPCFile;
-      compressedPCFile.open(fileName.c_str(), ios::out | ios::trunc | ios::binary);
+      compressedPCFile.open(fileName.c_str(), std::ios::out | std::ios::trunc | std::ios::binary);
 
       if (!bShowInputCloud) {
         EventHelper v(compressedPCFile, octreeCoder, field_name, min_v, max_v);
@@ -401,10 +396,10 @@ main(int argc, char** argv)
     }
     else {
       // DECODING
-      ifstream compressedPCFile;
-      compressedPCFile.open(fileName.c_str(), ios::in | ios::binary);
+      std::ifstream compressedPCFile;
+      compressedPCFile.open(fileName.c_str(), std::ios::in | std::ios::binary);
       compressedPCFile.seekg(0);
-      compressedPCFile.unsetf(ios_base::skipws);
+      compressedPCFile.unsetf(std::ios_base::skipws);
 
       pcl::visualization::CloudViewer viewer("PCL Compression Viewer");
 

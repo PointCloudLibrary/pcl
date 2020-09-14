@@ -27,7 +27,6 @@ DAMAGE.
 */
 
 #include <stdlib.h>
-#include <math.h>
 #include <algorithm>
 
 #include "poisson_exceptions.h"

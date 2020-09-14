@@ -41,7 +41,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
-#include <pcl/common/common_headers.h>
+#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
+#include <pcl/common/angles.h> // for deg2rad
 #include <pcl/common/vector_average.h>
 #include <typeinfo>
 
@@ -816,7 +817,7 @@ namespace pcl
   {
     os << "header: " << std::endl;
     os << r.header;
-    os << "points[]: " << r.points.size () << std::endl;
+    os << "points[]: " << r.size () << std::endl;
     os << "width: " << r.width << std::endl;
     os << "height: " << r.height << std::endl;
     os << "sensor_origin_: "

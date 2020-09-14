@@ -37,8 +37,9 @@
 
 #pragma once
 
-#include <pcl/pcl_base.h>
-#include <cfloat>
+#include <pcl/point_cloud.h> // for PointCloud
+#include <pcl/PointIndices.h> // for PointIndices
+#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
 
 /**
   * \file pcl/common/common.h
@@ -149,7 +150,7 @@ namespace pcl
     */
   template <typename PointT> inline void 
   getPointsInBox (const pcl::PointCloud<PointT> &cloud, Eigen::Vector4f &min_pt,
-                  Eigen::Vector4f &max_pt, std::vector<int> &indices);
+                  Eigen::Vector4f &max_pt, Indices &indices);
 
   /** \brief Get the point at maximum distance from a given point and a given pointcloud
     * \param cloud the point cloud data message
@@ -168,7 +169,7 @@ namespace pcl
     * \ingroup common
     */
   template<typename PointT> inline void
-  getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices, 
+  getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
                   const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt);
 
   /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions in a given pointcloud
@@ -198,7 +199,7 @@ namespace pcl
     * \ingroup common
     */
   template <typename PointT> inline void 
-  getMinMax3D (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices, 
+  getMinMax3D (const pcl::PointCloud<PointT> &cloud, const Indices &indices,
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt);
 
   /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions in a given pointcloud
@@ -209,7 +210,7 @@ namespace pcl
     * \ingroup common
     */
   template <typename PointT> inline void 
-  getMinMax3D (const pcl::PointCloud<PointT> &cloud, const pcl::PointIndices &indices, 
+  getMinMax3D (const pcl::PointCloud<PointT> &cloud, const pcl::PointIndices &indices,
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt);
 
   /** \brief Compute the radius of a circumscribed circle for a triangle formed of three points pa, pb, and pc

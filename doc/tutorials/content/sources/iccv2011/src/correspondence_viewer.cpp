@@ -116,8 +116,8 @@ visualize_correspondences (const PointCloudPtr points1, const PointCloudPtr keyp
     }
 
     // Get the pair of points
-    const PointT & p_left = keypoints_left->points[i];
-    const PointT & p_right = keypoints_right->points[correspondences[i]];
+    const PointT & p_left = (*keypoints_left)[i];
+    const PointT & p_right = (*keypoints_right)[correspondences[i]];
 
     // Generate a random (bright) color
     double r = (rand() % 100);

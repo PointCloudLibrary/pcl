@@ -254,7 +254,7 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     int element_stride = sizeof(pcl::PointXYZ) / sizeof(float);
     int row_stride = element_stride * cloud->width;
-    const float *data = reinterpret_cast<const float*> (&cloud->points[0]);
+    const float *data = reinterpret_cast<const float*> (&(*cloud)[0]);
     integral_image_depth->setInput (data + 2, cloud->width, cloud->height, element_stride, row_stride);
 
     //Compute normals and normal integral images
@@ -282,15 +282,15 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
     if (USE_NORMALS_)
     {
       integral_image_normal_x.reset (new pcl::IntegralImage2D<float, 1> (false));
-      const float *data_nx = reinterpret_cast<const float*> (&normals->points[0]);
+      const float *data_nx = reinterpret_cast<const float*> (&(*normals)[0]);
       integral_image_normal_x->setInput (data_nx, normals->width, normals->height, element_stride_normal, row_stride_normal);
 
       integral_image_normal_y.reset (new pcl::IntegralImage2D<float, 1> (false));
-      const float *data_ny = reinterpret_cast<const float*> (&normals->points[0]);
+      const float *data_ny = reinterpret_cast<const float*> (&(*normals)[0]);
       integral_image_normal_y->setInput (data_ny + 1, normals->width, normals->height, element_stride_normal, row_stride_normal);
 
       integral_image_normal_z.reset (new pcl::IntegralImage2D<float, 1> (false));
-      const float *data_nz = reinterpret_cast<const float*> (&normals->points[0]);
+      const float *data_nz = reinterpret_cast<const float*> (&(*normals)[0]);
       integral_image_normal_z->setInput (data_nz + 2, normals->width, normals->height, element_stride_normal, row_stride_normal);
     }
 
@@ -328,20 +328,20 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
     pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_intensity(new pcl::PointCloud<pcl::PointXYZI>);
     cloud_intensity->width = cloud->width;
     cloud_intensity->height = cloud->height;
-    cloud_intensity->points.resize(cloud->points.size());
+    cloud_intensity->points.resize(cloud->size());
     cloud_intensity->is_dense = cloud->is_dense;
 
-    for (int jjj = 0; jjj < static_cast<int>(cloud->points.size()); jjj++)
+    for (int jjj = 0; jjj < static_cast<int>(cloud->size()); jjj++)
     {
-      cloud_intensity->points[jjj].getVector4fMap() = cloud->points[jjj].getVector4fMap();
-      cloud_intensity->points[jjj].intensity = 0.f;
+      (*cloud_intensity)[jjj].getVector4fMap() = (*cloud)[jjj].getVector4fMap();
+      (*cloud_intensity)[jjj].intensity = 0.f;
       int row, col;
       col = jjj % cloud->width;
       row = jjj / cloud->width;
       //std::cout << row << " " << col << std::endl;
       if (check_inside(col, row, min_col, max_col, min_row, max_row))
       {
-        cloud_intensity->points[jjj].intensity = 1.f;
+        (*cloud_intensity)[jjj].intensity = 1.f;
       }
     }
 

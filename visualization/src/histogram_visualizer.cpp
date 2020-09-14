@@ -38,7 +38,7 @@
 
 #include <thread>
 
-#include <pcl/common/common_headers.h>
+#include <pcl/common/time.h> // for DO_EVERY
 #include <pcl/visualization/common/common.h>
 #include <vtkRenderWindowInteractor.h>
 #include <pcl/visualization/histogram_visualizer.h>
@@ -304,7 +304,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
 
   // Parse the cloud data and store it in the array
   double xy[2];
-  for (unsigned int d = 0; d < cloud.fields[field_idx].count; ++d)
+  for (uindex_t d = 0; d < cloud.fields[field_idx].count; ++d)
   {
     xy[0] = d;
     float data;
@@ -361,7 +361,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
 
   // Parse the cloud data and store it in the array
   double xy[2];
-  for (unsigned int d = 0; d < cloud.fields[field_idx].count; ++d)
+  for (uindex_t d = 0; d < cloud.fields[field_idx].count; ++d)
   {
     xy[0] = d;
     float data;
@@ -405,7 +405,7 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
 
   // Parse the cloud data and store it in the array
   double xy[2];
-  for (unsigned int d = 0; d < cloud.fields[field_idx].count; ++d)
+  for (uindex_t d = 0; d < cloud.fields[field_idx].count; ++d)
   {
     xy[0] = d;
     float data;
@@ -456,7 +456,7 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
 
   // Parse the cloud data and store it in the array
   double xy[2];
-  for (unsigned int d = 0; d < cloud.fields[field_idx].count; ++d)
+  for (uindex_t d = 0; d < cloud.fields[field_idx].count; ++d)
   {
     xy[0] = d;
     float data;

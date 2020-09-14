@@ -37,8 +37,10 @@
 
 #pragma once
 
+#include <pcl/common/eigen.h> // for computeRoots, eigen33
 #include <pcl/common/vector_average.h>
 
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver
 
 namespace pcl
 {

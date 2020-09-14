@@ -7,7 +7,6 @@
 #include<utility>
 #include<cmath>  //for std::abs()
 
-using namespace std;
 using namespace pcl::visualization;
 
 void

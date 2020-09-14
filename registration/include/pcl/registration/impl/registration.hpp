@@ -130,10 +130,10 @@ Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max_rang
 
   // For each point in the source dataset
   int nr = 0;
-  for (std::size_t i = 0; i < input_transformed.points.size (); ++i)
+  for (const auto& point: input_transformed)
   {
     // Find its nearest neighbor in the target
-    tree_->nearestKSearch (input_transformed.points[i], 1, nn_indices, nn_dists);
+    tree_->nearestKSearch (point, 1, nn_indices, nn_dists);
 
     // Deal with occlusions (incomplete targets)
     if (nn_dists[0] <= max_range)
@@ -165,14 +165,13 @@ Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &output,
     return;
 
   // Resize the output dataset
-  if (output.points.size () != indices_->size ())
-    output.points.resize (indices_->size ());
+  output.resize (indices_->size ());
   // Copy the header
   output.header   = input_->header;
   // Check if the output will be computed for all points or only a subset
-  if (indices_->size () != input_->points.size ())
+  if (indices_->size () != input_->size ())
   {
-    output.width    = static_cast<std::uint32_t> (indices_->size ());
+    output.width    = indices_->size ();
     output.height   = 1;
   }
   else
@@ -184,7 +183,7 @@ Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &output,
 
   // Copy the point data to output
   for (std::size_t i = 0; i < indices_->size (); ++i)
-    output.points[i] = input_->points[(*indices_)[i]];
+    output[i] = (*input_)[(*indices_)[i]];
 
   // Set the internal point representation of choice unless otherwise noted
   if (point_representation_ && !force_no_recompute_) 
@@ -197,7 +196,7 @@ Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &output,
   // Right before we estimate the transformation, we set all the point.data[3] values to 1 to aid the rigid 
   // transformation
   for (std::size_t i = 0; i < indices_->size (); ++i)
-    output.points[i].data[3] = 1.0;
+    output[i].data[3] = 1.0;
 
   computeTransformation (output, guess);
 

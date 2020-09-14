@@ -12,7 +12,6 @@
 #include <thread>
 
 using namespace pcl;
-using namespace std;
 using namespace std::chrono_literals;
 
 const Eigen::Vector4f subsampling_leaf_size(0.02f, 0.02f, 0.02f, 0.0f);
@@ -40,9 +39,9 @@ subsampleAndCalculateNormals(const PointCloud<PointXYZ>::Ptr& cloud)
   concatenateFields(
       *cloud_subsampled, *cloud_subsampled_normals, *cloud_subsampled_with_normals);
 
-  PCL_INFO("Cloud dimensions before / after subsampling: %u / %u\n",
-           cloud->points.size(),
-           cloud_subsampled->points.size());
+  PCL_INFO("Cloud dimensions before / after subsampling: %zu / %zu\n",
+           static_cast<std::size_t>(cloud->size()),
+           static_cast<std::size_t>(cloud_subsampled->size()));
   return cloud_subsampled_with_normals;
 }
 
@@ -63,7 +62,7 @@ main(int argc, char** argv)
 
   PCL_INFO("Reading models ...\n");
   std::vector<PointCloud<PointXYZ>::Ptr> cloud_models;
-  ifstream pcd_file_list(argv[1]);
+  std::ifstream pcd_file_list(argv[1]);
   while (!pcd_file_list.eof()) {
     char str[512];
     pcd_file_list.getline(str, 512);
@@ -83,11 +82,12 @@ main(int argc, char** argv)
   extract.setNegative(true);
   pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients());
   pcl::PointIndices::Ptr inliers(new pcl::PointIndices());
-  unsigned nr_points = unsigned(cloud_scene->points.size());
-  while (cloud_scene->points.size() > 0.3 * nr_points) {
+  const auto nr_points = cloud_scene->size();
+  while (cloud_scene->size() > 0.3 * nr_points) {
     seg.setInputCloud(cloud_scene);
     seg.segment(*inliers, *coefficients);
-    PCL_INFO("Plane inliers: %u\n", inliers->indices.size());
+    PCL_INFO("Plane inliers: %zu\n",
+             static_cast<std::size_t>(inliers->indices.size()));
     if (inliers->indices.size() < 50000)
       break;
 
@@ -149,7 +149,7 @@ main(int argc, char** argv)
     pcl::transformPointCloud(
         *cloud_models[model_i], *cloud_output, final_transformation);
 
-    stringstream ss;
+    std::stringstream ss;
     ss << "model_" << model_i;
     visualization::PointCloudColorHandlerRandom<PointXYZ> random_color(
         cloud_output->makeShared());
