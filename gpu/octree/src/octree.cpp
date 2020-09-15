@@ -69,8 +69,8 @@ pcl::gpu::Octree::Octree() : cloud_(nullptr), impl(nullptr)
     if (bin < 0 || ptx < 0)
     {
         pcl::gpu::error(R"(cudaFuncGetAttributes() returned a value < 0.
-                This is likely a build configuration error.
-                Ensure that the proper compute capability is specified in the CUDA_ARCH_BIN cmake variable when building for your GPU.)",
+This is likely a build configuration error.
+Ensure that the proper compute capability is specified in the CUDA_ARCH_BIN cmake variable when building for your GPU.)",
             __FILE__, __LINE__);
     }
 
