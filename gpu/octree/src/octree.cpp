@@ -66,6 +66,14 @@ pcl::gpu::Octree::Octree() : cloud_(nullptr), impl(nullptr)
     int bin, ptx;
     OctreeImpl::get_gpu_arch_compiled_for(bin, ptx);
 
+    if (bin < 0 || ptx < 0)
+    {
+        pcl::gpu::error(R"(cudaFuncGetAttributes() returned a value < 0.
+This is likely a build configuration error.
+Ensure that the proper compute capability is specified in the CUDA_ARCH_BIN cmake variable when building for your GPU.)",
+            __FILE__, __LINE__);
+    }
+
     if (bin < 20 && ptx < 20)
         pcl::gpu::error("This must be compiled for compute capability >= 2.0", __FILE__, __LINE__);    
 
