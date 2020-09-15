@@ -97,7 +97,7 @@ pcl::RandomSample<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 
 ///////////////////////////////////////////////////////////////////////////////
 void
-pcl::RandomSample<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
+pcl::RandomSample<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
 {
   // Note: this function does not have to access input_ at all
   std::size_t N = indices_->size ();

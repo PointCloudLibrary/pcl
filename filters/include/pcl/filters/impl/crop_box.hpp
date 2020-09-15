@@ -48,7 +48,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
-pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
+pcl::CropBox<PointT>::applyFilter (Indices &indices)
 {
   indices.resize (input_->size ());
   removed_indices_->resize (input_->size ());

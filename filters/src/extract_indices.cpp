@@ -144,7 +144,7 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
+pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
 {
   if (indices_->size () > static_cast<uindex_t>(input_->width * input_->height))
   {

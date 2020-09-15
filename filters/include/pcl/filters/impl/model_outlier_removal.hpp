@@ -142,7 +142,7 @@ pcl::ModelOutlierRemoval<PointT>::initSACModel (pcl::SacModel model_type)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
+pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
 {
   //The arrays to be used
   indices.resize (indices_->size ());

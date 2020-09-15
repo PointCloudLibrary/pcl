@@ -154,7 +154,7 @@ pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &out
 }
 
 void
-pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
+pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
 {
   if (search_radius_ == 0.0)
   {

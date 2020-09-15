@@ -77,7 +77,7 @@ pcl::GridMinimum<PointT>::applyFilter (PointCloud &output)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
+pcl::GridMinimum<PointT>::applyFilterIndices (Indices &indices)
 {
   indices.resize (indices_->size ());
   int oii = 0;

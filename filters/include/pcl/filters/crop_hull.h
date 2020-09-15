@@ -140,7 +140,7 @@ namespace pcl
         * \param[out] indices the indices of the set of points that passed the filter.
         */
       void        
-      applyFilter (std::vector<int> &indices) override;
+      applyFilter (Indices &indices) override;
 
     private:  
       /** \brief Return the size of the hull point cloud in line with coordinate axes.
@@ -167,7 +167,7 @@ namespace pcl
         *                     2D polygon filter.
         */
       template<unsigned PlaneDim1, unsigned PlaneDim2> void
-      applyFilter2D (std::vector<int> &indices);
+      applyFilter2D (Indices &indices);
 
        /** \brief Apply the three-dimensional hull filter.
          * Polygon-ray crossings are used for three rays cast from each point
@@ -189,7 +189,7 @@ namespace pcl
         *                     polygon hull filter.
         */
       void
-      applyFilter3D (std::vector<int> &indices);
+      applyFilter3D (Indices &indices);
 
       /** \brief Test an individual point against a 2D polygon.
         * PlaneDim1 and PlaneDim2 specify the x/y/z coordinate axes to use.

@@ -46,7 +46,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
+pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
 {
   if (search_radius_ == 0.0)
   {

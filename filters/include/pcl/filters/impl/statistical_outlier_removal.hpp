@@ -46,7 +46,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
+pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
 {
   // Initialize the search class
   if (!searcher_)

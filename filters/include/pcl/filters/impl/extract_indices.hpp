@@ -114,7 +114,7 @@ pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::ExtractIndices<PointT>::applyFilterIndices (std::vector<int> &indices)
+pcl::ExtractIndices<PointT>::applyFilterIndices (Indices &indices)
 {
   if (indices_->size () > input_->size ())
   {

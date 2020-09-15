@@ -274,7 +274,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 }
 
 void
-pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
+pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
 {
   // If input is not present, we cannot filter
   if (!input_)

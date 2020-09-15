@@ -71,7 +71,7 @@ pcl::LocalMaximum<PointT>::applyFilter (PointCloud &output)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::LocalMaximum<PointT>::applyFilterIndices (std::vector<int> &indices)
+pcl::LocalMaximum<PointT>::applyFilterIndices (Indices &indices)
 {
   typename PointCloud::Ptr cloud_projected (new PointCloud);
 
