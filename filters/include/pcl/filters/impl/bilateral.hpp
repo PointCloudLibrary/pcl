@@ -92,7 +92,7 @@ pcl::BilateralFilter<PointT>::applyFilter (PointCloud &output)
   }
   tree_->setInputCloud (input_);
 
-  std::vector<int> k_indices;
+  Indices k_indices;
   std::vector<float> k_distances;
 
   // Copy the input data into the output

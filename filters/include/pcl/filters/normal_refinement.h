@@ -157,13 +157,13 @@ namespace pcl
     * 
     * // Search parameters
     * const int k = 5;
-    * std::vector<std::vector<int> > k_indices;
+    * std::vector<Indices > k_indices;
     * std::vector<std::vector<float> > k_sqr_distances;
     * 
     * // Run search
     * pcl::search::KdTree<pcl::PointXYZRGB> search;
     * search.setInputCloud (cloud.makeShared ());
-    * search.nearestKSearch (cloud, std::vector<int> (), k, k_indices, k_sqr_distances);
+    * search.nearestKSearch (cloud, Indices (), k, k_indices, k_sqr_distances);
     * 
     * // Use search results for normal estimation
     * pcl::NormalEstimation<PointT, NormalT> ne;
@@ -288,7 +288,7 @@ namespace pcl
       
     private:
       /** \brief indices of neighboring points */
-      std::vector< std::vector<int> > k_indices_;
+      std::vector< Indices > k_indices_;
       
       /** \brief squared distances to the neighboring points */
       std::vector< std::vector<float> > k_sqr_distances_;

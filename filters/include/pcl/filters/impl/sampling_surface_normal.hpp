@@ -48,7 +48,7 @@
 template<typename PointT> void
 pcl::SamplingSurfaceNormal<PointT>::applyFilter (PointCloud &output)
 {
-  std::vector <int> indices;
+  Indices indices;
   std::size_t npts = input_->size ();
   for (std::size_t i = 0; i < npts; i++)
     indices.push_back (i);

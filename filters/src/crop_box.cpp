@@ -43,7 +43,7 @@
 void
 pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
-  std::vector<int> indices;
+  Indices indices;
   if (keep_organized_)
   {
     bool temp = extract_removed_indices_;

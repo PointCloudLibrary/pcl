@@ -59,7 +59,7 @@ pcl::StatisticalOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
   searcher_->setInputCloud (input_);
 
   // The arrays to be used
-  std::vector<int> nn_indices (mean_k_);
+  Indices nn_indices (mean_k_);
   std::vector<float> nn_dists (mean_k_);
   std::vector<float> distances (indices_->size ());
   indices.resize (indices_->size ());

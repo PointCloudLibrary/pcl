@@ -204,7 +204,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double&
   tree_->setInputCloud (cloud);
 
   // Allocate enough space to hold the results
-  std::vector<int> nn_indices (mean_k_);
+  Indices nn_indices (mean_k_);
   std::vector<float> nn_dists (mean_k_);
 
   distances.resize (indices_->size ());

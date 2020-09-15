@@ -46,7 +46,7 @@
 template <typename PointT> void
 pcl::ExtractIndices<PointT>::filterDirectly (PointCloudPtr &cloud)
 {
-  std::vector<int> indices;
+  Indices indices;
   bool temp = extract_removed_indices_;
   extract_removed_indices_ = true;
   this->setInputCloud (cloud);
@@ -77,7 +77,7 @@ pcl::ExtractIndices<PointT>::filterDirectly (PointCloudPtr &cloud)
 template <typename PointT> void
 pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
 {
-  std::vector<int> indices;
+  Indices indices;
   if (keep_organized_)
   {
     bool temp = extract_removed_indices_;
@@ -131,12 +131,12 @@ pcl::ExtractIndices<PointT>::applyFilterIndices (Indices &indices)
     if (extract_removed_indices_)
     {
       // Set up the full indices set
-      std::vector<int> full_indices (input_->size ());
+      Indices full_indices (input_->size ());
       for (int fii = 0; fii < static_cast<int> (full_indices.size ()); ++fii)  // fii = full indices iterator
         full_indices[fii] = fii;
 
       // Set up the sorted input indices
-      std::vector<int> sorted_input_indices = *indices_;
+      Indices sorted_input_indices = *indices_;
       std::sort (sorted_input_indices.begin (), sorted_input_indices.end ());
 
       // Store the difference in removed_indices
@@ -147,12 +147,12 @@ pcl::ExtractIndices<PointT>::applyFilterIndices (Indices &indices)
   else  // Inverted functionality
   {
     // Set up the full indices set
-    std::vector<int> full_indices (input_->size ());
+    Indices full_indices (input_->size ());
     for (int fii = 0; fii < static_cast<int> (full_indices.size ()); ++fii)  // fii = full indices iterator
       full_indices[fii] = fii;
 
     // Set up the sorted input indices
-    std::vector<int> sorted_input_indices = *indices_;
+    Indices sorted_input_indices = *indices_;
     std::sort (sorted_input_indices.begin (), sorted_input_indices.end ());
 
     // Store the difference in indices

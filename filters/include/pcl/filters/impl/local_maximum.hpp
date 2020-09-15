@@ -62,7 +62,7 @@ pcl::LocalMaximum<PointT>::applyFilter (PointCloud &output)
     return;
   }
 
-  std::vector<int> indices;
+  Indices indices;
 
   output.is_dense = true;
   applyFilterIndices (indices);
@@ -129,7 +129,7 @@ pcl::LocalMaximum<PointT>::applyFilterIndices (Indices &indices)
     point_is_visited[(*indices_)[iii]] = true;
 
     // Perform the radius search in the projected cloud
-    std::vector<int> radius_indices;
+    Indices radius_indices;
     std::vector<float> radius_dists;
     PointT p = (*cloud_projected)[(*indices_)[iii]];
     if (searcher_->radiusSearch (p, radius_, radius_indices, radius_dists) == 0)

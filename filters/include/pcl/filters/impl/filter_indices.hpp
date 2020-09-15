@@ -76,7 +76,7 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 template<typename PointT> void
 pcl::FilterIndices<PointT>::applyFilter (PointCloud &output)
 {
-  std::vector<int> indices;
+  Indices indices;
   if (keep_organized_)
   {
     if (!extract_removed_indices_)

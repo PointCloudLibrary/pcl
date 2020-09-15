@@ -68,7 +68,7 @@ pcl::GridMinimum<PointT>::applyFilter (PointCloud &output)
     return;
   }
 
-  std::vector<int> indices;
+  Indices indices;
 
   output.is_dense = true;
   applyFilterIndices (indices);

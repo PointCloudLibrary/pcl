@@ -238,7 +238,7 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::convolve (PointCloudO
   output.width = surface_->width;
   output.height = surface_->height;
   output.is_dense = surface_->is_dense;
-  std::vector<int> nn_indices;
+  Indices nn_indices;
   std::vector<float> nn_distances;
 
 #pragma omp parallel for \

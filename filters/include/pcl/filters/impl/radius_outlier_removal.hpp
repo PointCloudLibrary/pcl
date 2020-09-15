@@ -67,7 +67,7 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (Indices &indices)
   searcher_->setInputCloud (input_);
 
   // The arrays to be used
-  std::vector<int> nn_indices (indices_->size ());
+  Indices nn_indices (indices_->size ());
   std::vector<float> nn_dists (indices_->size ());
   indices.resize (indices_->size ());
   removed_indices_->resize (indices_->size ());

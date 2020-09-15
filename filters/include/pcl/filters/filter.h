@@ -93,7 +93,7 @@ namespace pcl
         * separate list. Default: false.
         */
       Filter (bool extract_removed_indices = false) :
-        removed_indices_ (new std::vector<int>),
+        removed_indices_ (new Indices),
         extract_removed_indices_ (extract_removed_indices)
       {
       }
@@ -198,7 +198,7 @@ namespace pcl
         * separate list. Default: false.
         */
       Filter (bool extract_removed_indices = false) :
-        removed_indices_ (new std::vector<int>),
+        removed_indices_ (new Indices),
         extract_removed_indices_ (extract_removed_indices)
       {
       }
