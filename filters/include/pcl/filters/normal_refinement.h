@@ -54,8 +54,8 @@ namespace pcl
    */
   template <typename NormalT> inline std::vector<float>
   assignNormalWeights (const PointCloud<NormalT>& cloud,
-                       int index,
-                       const std::vector<int>& k_indices,
+                       index_t index,
+                       const Indices& k_indices,
                        const std::vector<float>& k_sqr_distances)
   {
     pcl::utils::ignore(cloud, index);
@@ -82,7 +82,7 @@ namespace pcl
   template <typename NormalT> inline bool
   refineNormal (const PointCloud<NormalT>& cloud,
                 int index,
-                const std::vector<int>& k_indices,
+                const Indices& k_indices,
                 const std::vector<float>& k_sqr_distances,
                 NormalT& point)
   {
@@ -212,7 +212,7 @@ namespace pcl
        * @param k_indices indices of neighboring points
        * @param k_sqr_distances squared distances to the neighboring points
        */
-      NormalRefinement (const std::vector< std::vector<int> >& k_indices, const std::vector< std::vector<float> >& k_sqr_distances) :
+      NormalRefinement (const std::vector< Indices >& k_indices, const std::vector< std::vector<float> >& k_sqr_distances) :
         Filter<NormalT>::Filter ()
       {
         filter_name_ = "NormalRefinement";
@@ -226,7 +226,7 @@ namespace pcl
        * @param k_sqr_distances squared distances to the neighboring points
        */
       inline void
-      setCorrespondences (const std::vector< std::vector<int> >& k_indices, const std::vector< std::vector<float> >& k_sqr_distances)
+      setCorrespondences (const std::vector< Indices >& k_indices, const std::vector< std::vector<float> >& k_sqr_distances)
       {
         k_indices_ = k_indices;
         k_sqr_distances_ = k_sqr_distances;
@@ -237,7 +237,7 @@ namespace pcl
        * @param k_sqr_distances squared distances to the neighboring points
        */
       inline void
-      getCorrespondences (std::vector< std::vector<int> >& k_indices, std::vector< std::vector<float> >& k_sqr_distances)
+      getCorrespondences (std::vector< Indices >& k_indices, std::vector< std::vector<float> >& k_sqr_distances)
       {
         k_indices.assign (k_indices_.begin (), k_indices_.end ());
         k_sqr_distances.assign (k_sqr_distances_.begin (), k_sqr_distances_.end ());

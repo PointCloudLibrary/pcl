@@ -47,7 +47,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> double
 pcl::BilateralFilter<PointT>::computePointWeight (const int pid, 
-                                                  const std::vector<int> &indices,
+                                                  const Indices &indices,
                                                   const std::vector<float> &distances)
 {
   double BF = 0, W = 0;

@@ -191,7 +191,7 @@ namespace pcl
       void 
       partition (const PointCloud& cloud, const int first, const int last, 
                  const Vector min_values, const Vector max_values, 
-                 std::vector<int>& indices, PointCloud& outcloud);
+                 Indices& indices, PointCloud& outcloud);
 
       /** \brief Randomly sample the points in each grid.
         * \param[in] data 
@@ -202,7 +202,7 @@ namespace pcl
         */
       void 
       samplePartition (const PointCloud& data, const int first, const int last, 
-                       std::vector<int>& indices, PointCloud& outcloud);
+                       Indices& indices, PointCloud& outcloud);
 
       /** \brief Returns the threshold for splitting in a given dimension.
         * \param[in] cloud the input cloud

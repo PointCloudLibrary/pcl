@@ -102,7 +102,7 @@ pcl::filters::GaussianKernel<PointInT, PointOutT>::initCompute ()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointOutT> PointOutT
-pcl::filters::GaussianKernel<PointInT, PointOutT>::operator() (const std::vector<int>& indices,
+pcl::filters::GaussianKernel<PointInT, PointOutT>::operator() (const Indices& indices,
                                                                const std::vector<float>& distances)
 {
   using namespace pcl::common;
@@ -131,7 +131,7 @@ pcl::filters::GaussianKernel<PointInT, PointOutT>::operator() (const std::vector
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointOutT> PointOutT
-pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator() (const std::vector<int>& indices, const std::vector<float>& distances)
+pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator() (const Indices& indices, const std::vector<float>& distances)
 {
   using namespace pcl::common;
   PointOutT result;

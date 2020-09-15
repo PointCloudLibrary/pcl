@@ -177,7 +177,7 @@ pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D (std::vector<PointT, Eigen::ali
 
 // /ToDo: write fast version using eigen map and single matrix vector multiplication, that uses advantages of eigens SSE operations.
 template<typename PointT> void
-pcl::PlaneClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cloud_in, std::vector<int>& clipped, const std::vector<int>& indices) const
+pcl::PlaneClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cloud_in, Indices& clipped, const Indices& indices) const
 {
   if (indices.empty ())
   {

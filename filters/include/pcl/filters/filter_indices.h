@@ -58,7 +58,7 @@ namespace pcl
     * \ingroup filters
     */
   template<typename PointT> void
-  removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, std::vector<int> &index);
+  removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, Indices &index);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b FilterIndices represents the base class for filters that are about binary point removal.
