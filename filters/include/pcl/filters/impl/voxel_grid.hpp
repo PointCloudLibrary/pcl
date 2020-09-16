@@ -276,17 +276,15 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     // First pass: go over all points and insert them into the index_vector vector
     // with calculated idx. Points with the same idx value will contribute to the
     // same point of resulting CloudPoint
-    for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
+    for (const auto& index : (*indices_))
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!std::isfinite ((*input_)[*it].x) || 
-            !std::isfinite ((*input_)[*it].y) || 
-            !std::isfinite ((*input_)[*it].z))
+        if (!isXYZFinite ((*input_)[index]))
           continue;
 
       // Get the distance value
-      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*input_)[*it]);
+      const std::uint8_t* pt_data = reinterpret_cast<const std::uint8_t*> (&(*input_)[index]);
       float distance_value = 0;
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
@@ -303,13 +301,13 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
           continue;
       }
       
-      int ijk0 = static_cast<int> (std::floor ((*input_)[*it].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
-      int ijk1 = static_cast<int> (std::floor ((*input_)[*it].y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
-      int ijk2 = static_cast<int> (std::floor ((*input_)[*it].z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
+      int ijk0 = static_cast<int> (std::floor ((*input_)[index].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
+      int ijk1 = static_cast<int> (std::floor ((*input_)[index].y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
+      int ijk2 = static_cast<int> (std::floor ((*input_)[index].z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
 
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.emplace_back(static_cast<unsigned int> (idx), *it);
+      index_vector.emplace_back(static_cast<unsigned int> (idx), index);
     }
   }
   // No distance filtering, process all data
@@ -318,22 +316,20 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     // First pass: go over all points and insert them into the index_vector vector
     // with calculated idx. Points with the same idx value will contribute to the
     // same point of resulting CloudPoint
-    for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
+    for (const auto& index : (*indices_))
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!std::isfinite ((*input_)[*it].x) || 
-            !std::isfinite ((*input_)[*it].y) || 
-            !std::isfinite ((*input_)[*it].z))
+        if (!isXYZFinite ((*input_)[index]))
           continue;
 
-      int ijk0 = static_cast<int> (std::floor ((*input_)[*it].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
-      int ijk1 = static_cast<int> (std::floor ((*input_)[*it].y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
-      int ijk2 = static_cast<int> (std::floor ((*input_)[*it].z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
+      int ijk0 = static_cast<int> (std::floor ((*input_)[index].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
+      int ijk1 = static_cast<int> (std::floor ((*input_)[index].y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
+      int ijk2 = static_cast<int> (std::floor ((*input_)[index].z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
 
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
-      index_vector.emplace_back(static_cast<unsigned int> (idx), *it);
+      index_vector.emplace_back(static_cast<unsigned int> (idx), index);
     }
   }
 

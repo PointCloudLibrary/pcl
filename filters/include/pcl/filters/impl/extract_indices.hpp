@@ -55,9 +55,9 @@ pcl::ExtractIndices<PointT>::filterDirectly (PointCloudPtr &cloud)
 
   std::vector<pcl::PCLPointField> fields;
   pcl::for_each_type<FieldList> (pcl::detail::FieldAdder<PointT> (fields));
-  for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
+  for (const auto& rii : (*removed_indices_)) // rii = removed indices iterator
   {
-    std::size_t pt_index = (std::size_t) (*removed_indices_)[rii];
+    uindex_t pt_index = (uindex_t) rii;
     if (pt_index >= input_->size ())
     {
       PCL_ERROR ("[pcl::%s::filterDirectly] The index exceeds the size of the input. Do nothing.\n",
@@ -132,7 +132,7 @@ pcl::ExtractIndices<PointT>::applyFilterIndices (Indices &indices)
     {
       // Set up the full indices set
       Indices full_indices (input_->size ());
-      for (int fii = 0; fii < static_cast<int> (full_indices.size ()); ++fii)  // fii = full indices iterator
+      for (index_t fii = 0; fii < static_cast<index_t> (full_indices.size ()); ++fii)  // fii = full indices iterator
         full_indices[fii] = fii;
 
       // Set up the sorted input indices
@@ -148,7 +148,7 @@ pcl::ExtractIndices<PointT>::applyFilterIndices (Indices &indices)
   {
     // Set up the full indices set
     Indices full_indices (input_->size ());
-    for (int fii = 0; fii < static_cast<int> (full_indices.size ()); ++fii)  // fii = full indices iterator
+    for (index_t fii = 0; fii < static_cast<index_t> (full_indices.size ()); ++fii)  // fii = full indices iterator
       full_indices[fii] = fii;
 
     // Set up the sorted input indices

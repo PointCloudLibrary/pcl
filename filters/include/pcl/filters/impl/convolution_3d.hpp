@@ -110,7 +110,7 @@ pcl::filters::GaussianKernel<PointInT, PointOutT>::operator() (const Indices& in
   float total_weight = 0;
   std::vector<float>::const_iterator dist_it = distances.begin ();
 
-  for (std::vector<int>::const_iterator idx_it = indices.begin ();
+  for (Indices::const_iterator idx_it = indices.begin ();
        idx_it != indices.end ();
        ++idx_it, ++dist_it)
   {
@@ -139,7 +139,7 @@ pcl::filters::GaussianKernelRGB<PointInT, PointOutT>::operator() (const Indices&
   float r = 0, g = 0, b = 0;
   std::vector<float>::const_iterator dist_it = distances.begin ();
 
-  for (std::vector<int>::const_iterator idx_it = indices.begin ();
+  for (Indices::const_iterator idx_it = indices.begin ();
        idx_it != indices.end ();
        ++idx_it, ++dist_it)
   {

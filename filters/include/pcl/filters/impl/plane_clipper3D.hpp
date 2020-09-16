@@ -219,9 +219,9 @@ pcl::PlaneClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cl
   }
   else
   {
-    for (std::vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
-      if (clipPoint3D (cloud_in[*iIt]))
-        clipped.push_back (*iIt);
+    for (const auto& index : indices)
+      if (clipPoint3D (cloud_in[index]))
+        clipped.push_back (index);
   }
 }
 #endif //PCL_FILTERS_IMPL_PLANE_CLIPPER3D_HPP

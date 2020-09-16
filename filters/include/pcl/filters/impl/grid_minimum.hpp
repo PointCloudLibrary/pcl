@@ -44,6 +44,7 @@
 
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
+#include <pcl/common/point_tests.h> // for isXYZFinite
 #include <pcl/filters/grid_minimum.h>
 
 struct point_index_idx
@@ -117,21 +118,19 @@ pcl::GridMinimum<PointT>::applyFilterIndices (Indices &indices)
   // First pass: go over all points and insert them into the index_vector vector
   // with calculated idx. Points with the same idx value will contribute to the
   // same point of resulting CloudPoint
-  for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
+  for (const auto& index : (*indices_))
   {
     if (!input_->is_dense)
       // Check if the point is invalid
-      if (!std::isfinite ((*input_)[*it].x) ||
-          !std::isfinite ((*input_)[*it].y) ||
-          !std::isfinite ((*input_)[*it].z))
+      if (!isXYZFinite ((*input_)[index]))
         continue;
 
-    int ijk0 = static_cast<int> (std::floor ((*input_)[*it].x * inverse_resolution_) - static_cast<float> (min_b[0]));
-    int ijk1 = static_cast<int> (std::floor ((*input_)[*it].y * inverse_resolution_) - static_cast<float> (min_b[1]));
+    int ijk0 = static_cast<int> (std::floor ((*input_)[index].x * inverse_resolution_) - static_cast<float> (min_b[0]));
+    int ijk1 = static_cast<int> (std::floor ((*input_)[index].y * inverse_resolution_) - static_cast<float> (min_b[1]));
 
     // Compute the grid cell index
     int idx = ijk0 * divb_mul[0] + ijk1 * divb_mul[1];
-    index_vector.emplace_back(static_cast<unsigned int> (idx), *it);
+    index_vector.emplace_back(static_cast<unsigned int> (idx), index);
   }
   
   // Second pass: sort the index_vector vector using value representing target cell as index

@@ -59,7 +59,7 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     {
       // Prepare a vector holding all indices
       Indices all_indices (input_->width * input_->height);
-      for (int i = 0; i < static_cast<int>(all_indices.size ()); ++i)
+      for (index_t i = 0; i < static_cast<index_t>(all_indices.size ()); ++i)
         all_indices[i] = i;
 
       Indices indices = *indices_;
@@ -114,7 +114,7 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   {
     // Prepare a vector holding all indices
     Indices all_indices (input_->width * input_->height);
-    for (int i = 0; i < static_cast<int>(all_indices.size ()); ++i)
+    for (index_t i = 0; i < static_cast<index_t>(all_indices.size ()); ++i)
       all_indices[i] = i;
 
     Indices indices = *indices_;
@@ -162,7 +162,7 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
     {
       // Set up the full indices set
       Indices full_indices (input_->width * input_->height);
-      for (int fii = 0; fii < static_cast<int> (full_indices.size ()); ++fii)  // fii = full indices iterator
+      for (index_t fii = 0; fii < static_cast<index_t> (full_indices.size ()); ++fii)  // fii = full indices iterator
         full_indices[fii] = fii;
 
       // Set up the sorted input indices
@@ -178,7 +178,7 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (Indices &indices)
   {
     // Set up the full indices set
     Indices full_indices (input_->width * input_->height);
-    for (int fii = 0; fii < static_cast<int> (full_indices.size ()); ++fii)  // fii = full indices iterator
+    for (index_t fii = 0; fii < static_cast<index_t> (full_indices.size ()); ++fii)  // fii = full indices iterator
       full_indices[fii] = fii;
 
     // Set up the sorted input indices
