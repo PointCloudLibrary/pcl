@@ -60,7 +60,7 @@ pcl::IntensityGradientEstimation <PointInT, PointNT, PointOutT, IntensitySelecto
   Eigen::Matrix3f A = Eigen::Matrix3f::Zero ();
   Eigen::Vector3f b = Eigen::Vector3f::Zero ();
 
-  for (const int &nn_index : indices)
+  for (const auto &nn_index : indices)
   {
     PointInT p = cloud[nn_index];
     if (!std::isfinite (p.x) ||
@@ -172,7 +172,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
       float mean_intensity = 0;
       // Initialize to 0
       centroid.setZero ();
-      for (const int &nn_index : nn_indices)
+      for (const auto &nn_index : nn_indices)
       {
         centroid += (*surface_)[nn_index].getVector3fMap ();
         mean_intensity += intensity_ ((*surface_)[nn_index]);
@@ -212,7 +212,7 @@ pcl::IntensityGradientEstimation<PointInT, PointNT, PointOutT, IntensitySelector
       // Initialize to 0
       centroid.setZero ();
       unsigned cp = 0;
-      for (const int &nn_index : nn_indices)
+      for (const auto &nn_index : nn_indices)
       {
         // Check if the point is invalid
         if (!isFinite ((*surface_) [nn_index]))

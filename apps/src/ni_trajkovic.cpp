@@ -170,7 +170,7 @@ public:
           image_viewer_.removeLayer(getStrBool(keypts));
           std::vector<int> uv;
           uv.reserve(keypoints_indices_->indices.size() * 2);
-          for (const int& index : keypoints_indices_->indices) {
+          for (const auto& index : keypoints_indices_->indices) {
             int u(index % cloud->width);
             int v(index / cloud->width);
             image_viewer_.markPoint(u,

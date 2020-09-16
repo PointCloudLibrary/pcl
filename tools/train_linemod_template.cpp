@@ -133,7 +133,7 @@ maskForegroundPoints (const PointCloudXYZRGBA::ConstPtr & input,
   seg.segment (*inliers, *coefficients);
 
   // Mask off the plane inliers
-  for (const int &index : inliers->indices)
+  for (const auto &index : inliers->indices)
     foreground_mask[index] = false;
 
   // Mask off any foreground points that are too high above the detected plane

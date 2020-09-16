@@ -61,7 +61,7 @@ DenoiseCommand::execute ()
   filter.filter(temp_cloud);
   // back up the removed indices.
   pcl::IndicesConstPtr indices_ptr = filter.getRemovedIndices();
-  for(const int &it : *indices_ptr)
+  for(const auto &it : *indices_ptr)
     removed_indices_.addIndex(static_cast<unsigned int>(it));
   // back up the removed points.
   removed_points_.set(cloud_ptr_, removed_indices_);

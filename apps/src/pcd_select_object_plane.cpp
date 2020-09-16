@@ -199,7 +199,7 @@ public:
       PointCloud<Label>::Ptr scene(
           new PointCloud<Label>(cloud->width, cloud->height, l));
       // Mask the objects that we want to split into clusters
-      for (const int& index : points_above_plane->indices)
+      for (const auto& index : points_above_plane->indices)
         (*scene)[index].label = 1;
       euclidean_cluster_comparator->setLabels(scene);
 

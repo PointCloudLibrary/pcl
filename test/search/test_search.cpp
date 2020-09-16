@@ -194,7 +194,7 @@ template<typename PointT> bool
 testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, const std::vector<bool>& indices_mask, const std::vector<bool>& nan_mask, const std::vector<int>& indices, const std::vector<int>& /*input_indices*/, const std::string& name)
 {
   bool validness = true;
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
     if (!indices_mask [index])
     {
