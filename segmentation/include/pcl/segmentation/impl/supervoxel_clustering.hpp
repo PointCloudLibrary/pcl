@@ -341,7 +341,7 @@ pcl::SupervoxelClustering<PointT>::makeSupervoxels (std::map<std::uint32_t,typen
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::SupervoxelClustering<PointT>::createSupervoxelHelpers (std::vector<int> &seed_indices)
+pcl::SupervoxelClustering<PointT>::createSupervoxelHelpers (Indices &seed_indices)
 {
   
   supervoxel_helpers_.clear ();
@@ -363,7 +363,7 @@ pcl::SupervoxelClustering<PointT>::createSupervoxelHelpers (std::vector<int> &se
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (std::vector<int> &seed_indices)
+pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (Indices &seed_indices)
 {
   //TODO THIS IS BAD - SEEDING SHOULD BE BETTER
   //TODO Switch to assigning leaves! Don't use Octree!

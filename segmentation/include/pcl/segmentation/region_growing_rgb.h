@@ -175,7 +175,7 @@ namespace pcl
         * \param cluster
         */
       void
-      getSegmentFromPoint (int index, pcl::PointIndices& cluster) override;
+      getSegmentFromPoint (index_t index, pcl::PointIndices& cluster) override;
 
     protected:
 
@@ -204,7 +204,7 @@ namespace pcl
         * \param[out] dist the array of distances to the corresponding neighbours
         */
       void
-      findRegionsKNN (int index, int nghbr_number, std::vector<int>& nghbrs, std::vector<float>& dist);
+      findRegionsKNN (index_t index, int nghbr_number, Indices& nghbrs, std::vector<float>& dist);
 
       /** \brief This function implements the merging algorithm described in the article
         * "Color-based segmentation of point clouds"
@@ -246,7 +246,7 @@ namespace pcl
         * \param[out] is_a_seed this value is set to true if the point with index 'nghbr' can serve as the seed
         */
       bool
-      validatePoint (int initial_seed, int point, int nghbr, bool& is_a_seed) const override;
+      validatePoint (index_t initial_seed, index_t point, index_t nghbr, bool& is_a_seed) const override;
 
     protected:
 

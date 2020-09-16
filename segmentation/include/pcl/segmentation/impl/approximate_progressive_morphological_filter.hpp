@@ -69,7 +69,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::~ApproximateProgressiveM
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int>& ground)
+pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (Indices& ground)
 {
   bool segmentation_is_possible = initCompute ();
   if (!segmentation_is_possible)

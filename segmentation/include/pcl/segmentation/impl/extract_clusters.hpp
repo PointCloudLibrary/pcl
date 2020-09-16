@@ -120,7 +120,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 /** @todo: fix the return value, make sure the exit is not needed anymore*/
 template <typename PointT> void
 pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
-                               const std::vector<int> &indices,
+                               const Indices &indices,
                                const typename search::Search<PointT>::Ptr &tree,
                                float tolerance, std::vector<PointIndices> &clusters,
                                unsigned int min_pts_per_cluster,
