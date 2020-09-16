@@ -64,7 +64,7 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
   std::vector<float> nn_distances;
 
   // Process all points in the indices vector
-  for (int i = 0; i < static_cast<int> (cloud.size ()); ++i)
+  for (index_t i = 0; i < static_cast<index_t> (cloud.size ()); ++i)
   {
     if (processed[i])
       continue;

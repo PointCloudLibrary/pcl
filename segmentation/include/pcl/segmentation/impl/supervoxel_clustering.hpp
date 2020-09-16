@@ -404,13 +404,12 @@ pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (Indices &seed_i
   // This is 1/20th of the number of voxels which fit in a planar slice through search volume
   // Area of planar slice / area of voxel side. (Note: This is smaller than the value mentioned in the original paper)
   float min_points = 0.05f * (search_radius)*(search_radius) * 3.1415926536f  / (resolution_*resolution_);
-  for (const int &index_orig : seed_indices_orig)
+  for (const auto &index_orig : seed_indices_orig)
   {
     int num = voxel_kdtree_->radiusSearch (index_orig, search_radius , neighbors, sqr_distances);
-    int min_index = index_orig;
     if ( num > min_points)
     {
-      seed_indices.push_back (min_index);
+      seed_indices.push_back (index_orig);
     }
     
   }

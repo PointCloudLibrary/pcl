@@ -151,7 +151,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
   Indices nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
     if (processed[index])
       continue;
