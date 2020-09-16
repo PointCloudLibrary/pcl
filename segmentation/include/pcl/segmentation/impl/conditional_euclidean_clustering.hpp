@@ -67,7 +67,7 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
   searcher_->setInputCloud (input_, indices_);
 
   // Temp variables used by search class
-  std::vector<int> nn_indices;
+  Indices nn_indices;
   std::vector<float> nn_distances;
 
   // Create a bool vector of processed point indices, and initialize it to false
@@ -82,7 +82,7 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
       continue;
 
     // Set up a new growing cluster
-    std::vector<int> current_cluster;
+    Indices current_cluster;
     int cii = 0;  // cii = cluster indices iterator
 
     // Add the point to the cluster

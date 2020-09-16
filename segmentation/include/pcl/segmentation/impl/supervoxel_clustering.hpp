@@ -116,7 +116,7 @@ pcl::SupervoxelClustering<PointT>::extract (std::map<std::uint32_t,typename Supe
   
   //double t_prep = timer_.getTime ();
   //std::cout << "Placing Seeds" << std::endl;
-  std::vector<int> seed_indices;
+  Indices seed_indices;
   selectInitialSupervoxelSeeds (seed_indices);
   //std::cout << "Creating helpers "<<std::endl;
   createSupervoxelHelpers (seed_indices);
@@ -260,7 +260,7 @@ pcl::SupervoxelClustering<PointT>::computeVoxelData ()
     {
       VoxelData& new_voxel_data = (*leaf_itr)->getData ();
       //For every point, get its neighbors, build an index vector, compute normal
-      std::vector<int> indices;
+      Indices indices;
       indices.reserve (81); 
       //Push this point
       indices.push_back (new_voxel_data.idx_);
@@ -429,7 +429,7 @@ pcl::SupervoxelClustering<PointT>::reseedSupervoxels ()
     sv_itr->removeAllLeaves ();
   }
   
-  std::vector<int> closest_index;
+  Indices closest_index;
   std::vector<float> distance;
   //Now go through each supervoxel, find voxel closest to its center, add it in
   for (typename HelperListT::iterator sv_itr = supervoxel_helpers_.begin (); sv_itr != supervoxel_helpers_.end (); ++sv_itr)
@@ -837,7 +837,7 @@ pcl::SupervoxelClustering<PointT>::SupervoxelHelper::refineNormals ()
   for (auto leaf_itr = leaves_.cbegin (); leaf_itr != leaves_.cend (); ++leaf_itr)
   {
     VoxelData& voxel_data = (*leaf_itr)->getData ();
-    std::vector<int> indices;
+    Indices indices;
     indices.reserve (81); 
     //Push this point
     indices.push_back (voxel_data.idx_);

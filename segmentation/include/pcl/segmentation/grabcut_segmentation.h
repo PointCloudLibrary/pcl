@@ -402,7 +402,7 @@ namespace pcl
         NLinks () : nb_links (0), indices (0), dists (0), weights (0) {}
 
         int nb_links;
-        std::vector<int> indices;
+        Indices indices;
         std::vector<float> dists;
         std::vector<float> weights;
       };

@@ -416,7 +416,7 @@ pcl::UnaryClassifier<PointT>::segment (pcl::PointCloud<pcl::PointXYZRGBL>::Ptr &
     computeFPFH (tmp_cloud, input_cloud_features, normal_radius_search_, fpfh_radius_search_);
 
     // query the distances from the input data features to all trained features
-    std::vector<int> indices;
+    Indices indices;
     std::vector<float> distance;
     queryFeatureDistances (trained_features_, input_cloud_features, indices, distance);
 

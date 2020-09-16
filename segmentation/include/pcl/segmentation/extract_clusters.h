@@ -124,7 +124,7 @@ namespace pcl
     // Create a bool vector of processed point indices, and initialize it to false
     std::vector<bool> processed (cloud.size (), false);
 
-    std::vector<int> nn_indices;
+    Indices nn_indices;
     std::vector<float> nn_distances;
     // Process all points in the indices vector
     for (std::size_t i = 0; i < cloud.size (); ++i)
@@ -132,9 +132,9 @@ namespace pcl
       if (processed[i])
         continue;
 
-      std::vector<unsigned int> seed_queue;
+      Indices seed_queue;
       int sq_idx = 0;
-      seed_queue.push_back (static_cast<int> (i));
+      seed_queue.push_back (static_cast<index_t> (i));
 
       processed[i] = true;
 
@@ -235,7 +235,7 @@ namespace pcl
     // Create a bool vector of processed point indices, and initialize it to false
     std::vector<bool> processed (cloud.size (), false);
 
-    std::vector<int> nn_indices;
+    Indices nn_indices;
     std::vector<float> nn_distances;
     // Process all points in the indices vector
     for (std::size_t i = 0; i < indices.size (); ++i)
@@ -243,7 +243,7 @@ namespace pcl
       if (processed[indices[i]])
         continue;
 
-      std::vector<int> seed_queue;
+      Indices seed_queue;
       int sq_idx = 0;
       seed_queue.push_back (indices[i]);
 

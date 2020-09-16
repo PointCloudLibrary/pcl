@@ -60,7 +60,7 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.size (), false);
 
-  std::vector<int> nn_indices;
+  Indices nn_indices;
   std::vector<float> nn_distances;
 
   // Process all points in the indices vector
@@ -69,7 +69,7 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
     if (processed[i])
       continue;
 
-    std::vector<int> seed_queue;
+    Indices seed_queue;
     int sq_idx = 0;
     seed_queue.push_back (i);
 

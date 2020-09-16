@@ -54,11 +54,11 @@ pcl::getPointCloudDifference (
     pcl::PointCloud<PointT> &output)
 {
   // We're interested in a single nearest neighbor only
-  std::vector<int> nn_indices (1);
+  Indices nn_indices (1);
   std::vector<float> nn_distances (1);
 
   // The input cloud indices that do not have a neighbor in the target cloud
-  std::vector<int> src_indices;
+  Indices src_indices;
 
   // Iterate through the source data set
   for (int i = 0; i < static_cast<int> (src.size ()); ++i)

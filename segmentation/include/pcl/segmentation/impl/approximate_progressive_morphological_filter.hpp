@@ -229,7 +229,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (Indices& ground
 
     // Find indices of the points whose difference between the source and
     // filtered point clouds is less than the current height threshold.
-    std::vector<int> pt_indices;
+    Indices pt_indices;
     for (std::size_t p_idx = 0; p_idx < ground.size (); ++p_idx)
     {
       PointT p = (*cloud)[p_idx];
