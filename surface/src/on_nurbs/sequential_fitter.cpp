@@ -610,7 +610,7 @@ SequentialFitter::PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, con
 {
   std::size_t numPoints = 0;
 
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
 
     pcl::PointXYZRGB &pt = pcl_cloud->at (index);

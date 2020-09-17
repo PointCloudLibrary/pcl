@@ -212,7 +212,7 @@ int main (int argc, char *argv[])
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
   {
     pcl::PointCloud<PointOutT>::Ptr cloud_cluster_don (new pcl::PointCloud<PointOutT>);
-    for (const int &index : it->indices){
+    for (const auto &index : it->indices){
       cloud_cluster_don->points.push_back ((*doncloud)[index]);
     }
 

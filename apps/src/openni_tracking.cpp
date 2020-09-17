@@ -488,7 +488,7 @@ public:
                         Cloud& result)
   {
     pcl::PointIndices segmented_indices = cluster_indices[segment_index];
-    for (const int& index : segmented_indices.indices) {
+    for (const auto& index : segmented_indices.indices) {
       PointType point = (*cloud)[index];
       result.push_back(point);
     }
