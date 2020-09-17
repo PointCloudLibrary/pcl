@@ -210,6 +210,7 @@ pcl::LINEMOD::removeOverlappingDetections (
     float best_score = 0.0f;
     size_t best_detection_id = 0;
 
+    float average_scale = 0.0f;
     float average_region_x = 0.0f;
     float average_region_y = 0.0f;
 
@@ -229,6 +230,7 @@ pcl::LINEMOD::removeOverlappingDetections (
       const LINEMODDetection & d = detections[detection_id];
       weight_sum += weight;
 
+      average_scale += detections[detection_id].scale * weight;
       average_region_x += float (detections[detection_id].x) * weight;
       average_region_y += float (detections[detection_id].y) * weight;
     }
@@ -237,6 +239,7 @@ pcl::LINEMOD::removeOverlappingDetections (
     LINEMODDetection detection;
     detection.template_id = detections[best_detection_id].template_id;
     detection.score = best_score;
+    detection.scale = average_scale * inv_weight_sum;
     detection.x = int (average_region_x * inv_weight_sum);
     detection.y = int (average_region_y * inv_weight_sum);
 
