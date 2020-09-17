@@ -58,58 +58,83 @@ namespace pcl
     * \ingroup filters
     */
   template<typename PointT> void
-  removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, std::vector<int> &index);
+  removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in, Indices &index);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b FilterIndices represents the base class for filters that are about binary point removal.
     * <br>
-    * All derived classes have to implement the \a filter (PointCloud &output) and the \a filter (std::vector<int> &indices) methods.
+    * All derived classes have to implement the \a filter (PointCloud &output) and the \a filter (Indices &indices) methods.
     * Ideally they also make use of the \a negative_, \a keep_organized_ and \a extract_removed_indices_ systems.
     * The distinguishment between the \a negative_ and \a extract_removed_indices_ systems only makes sense if the class automatically
     * filters non-finite entries in the filtering methods (recommended).
+    * \warning PCLPointCloud2 is not currently supported by executors
     * \author Justin Rosen
     * \ingroup filters
     */
-  template<typename PointT>
-  class FilterIndices : public Filter<PointT>
+  template<typename PointT, typename DerivedFilter = void>
+  class FilterIndices : public Filter<PointT, FilterIndices<PointT, DerivedFilter>>
   {
-    public:
-      using Filter<PointT>::extract_removed_indices_;
+    using Self = FilterIndices<PointT, DerivedFilter>;
+    using Base = Filter<PointT, Self>;
+    friend Base; // Alows the base class to call protected/private methods of this class
+                 // i.e. applyFilter overloaded for executor
+
+  public:
       using PointCloud = pcl::PointCloud<PointT>;
 
-      using Ptr = shared_ptr<FilterIndices<PointT> >;
-      using ConstPtr = shared_ptr<const FilterIndices<PointT> >;
+      using Ptr = shared_ptr<Self>;
+      using ConstPtr = shared_ptr<const Self>;
 
 
       /** \brief Constructor.
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
         */
       FilterIndices (bool extract_removed_indices = false) :
-          Filter<PointT> (extract_removed_indices),
+          Base (extract_removed_indices),
           negative_ (false),
           keep_organized_ (false),
           user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
       {
       }
 
-      using Filter<PointT>::filter;
+      using Base::filter;
 
       /** \brief Calls the filtering method and returns the filtered point cloud indices.
         * \param[out] indices the resultant filtered point cloud indices
         */
       void
-      filter (std::vector<int> &indices)
+      filter (Indices &indices)
       {
-        if (!initCompute ())
-          return;
+        auto filterCloud = [this](Indices& indices) {
+          applyFilter (indices);
+        };
 
-        // Apply the actual filter
-        applyFilter (indices);
-
-        deinitCompute ();
+        filterImpl(filterCloud, indices);
       }
 
-      /** \brief Set whether the regular conditions for points filtering should apply, or the inverted conditions.
+      /** \brief Calls the filtering method with specified executor and returns the filtered point cloud indices.
+        * \param[int] exec the executor to run the filter using
+        * \param[out] indices the resultant filtered point cloud indices
+        */
+      template <typename Executor>
+      void
+      filter (const Executor &exec, Indices &indices)
+      {
+        static_assert(pcl::is_invocable_v<
+                          decltype(&DerivedFilter::template applyFilter<Executor>),
+                          DerivedFilter&,
+                          Executor const&,
+                          Indices&>,
+                      "An executor overload for applyFilter doesn't exist.");
+
+        auto filterCloud = [exec, this](Indices& indices) {
+          static_cast<DerivedFilter&>(*this).applyFilter(exec, indices);
+        };
+
+        filterImpl(filterCloud, indices);
+      }
+
+    /** \brief Set whether the regular conditions for points filtering should apply, or the inverted conditions.
         * \param[in] negative false = normal filter behavior (default), true = inverted behavior.
         */
       inline void
@@ -158,13 +183,13 @@ namespace pcl
       }
 
     protected:
+      using Base::initCompute;
+      using Base::deinitCompute;
+      using Base::input_;
+      using Base::removed_indices_;
+      using Base::extract_removed_indices_;
 
-      using Filter<PointT>::initCompute;
-      using Filter<PointT>::deinitCompute;
-      using Filter<PointT>::input_;
-      using Filter<PointT>::removed_indices_;
-
-      /** \brief False = normal filter behavior (default), true = inverted behavior. */
+    /** \brief False = normal filter behavior (default), true = inverted behavior. */
       bool negative_;
 
       /** \brief False = remove points (default), true = redefine points, keep structure. */
@@ -173,22 +198,68 @@ namespace pcl
       /** \brief The user given value that the filtered point dimensions should be set to (default = NaN). */
       float user_filter_value_;
 
+    /** \brief implementation of filter method
+      *  Added to ensure no code duplication is present between the with and without
+      * execuotor filter method
+      *
+      * \param[int] filterIndices the callable which calls the filter method
+      * \param[out] output the resultant filtered point cloud
+      */
+      template <typename Callable>
+      void
+      filterImpl (Callable &filterCloud, Indices &indices)
+      {
+        if (!initCompute ())
+          return;
+
+        // Apply the actual filter
+        filterCloud(indices);
+
+        deinitCompute ();
+      }
+
       /** \brief Abstract filter method for point cloud indices. */
       virtual void
-      applyFilter (std::vector<int> &indices) = 0;
+      applyFilter (Indices &indices) = 0;
 
       /** \brief Abstract filter method for point cloud. */
       void
       applyFilter (PointCloud &output) override;
-  };
+
+    /** \brief overloaded filter method with specified executor.
+      *
+      * The implementation needs to set output.{points, width, height, is_dense}.
+      *
+      * \param[int] exec the executor to run the filter using
+      * \param[out] output the resultant filtered point cloud
+      */
+      template <typename Executor>
+      void
+      applyFilter (const Executor &exec, PointCloud &output);
+
+    /** \brief implementation of applyFilter method
+     *  Added to ensure no code duplication is present between the with and without
+     * execuotor applyFilter method
+     *
+     * \param[int] filterIndices the callable which calls the applyFilter method
+     * \param[out] output the resultant filtered point cloud
+     */
+      template <typename Callable>
+      void
+      applyFilterImpl (Callable &filterIndices, PointCloud &output);
+    };
+
+  template <typename PointT>
+  using FilterIndicesLegacy = FilterIndices<PointT>;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b FilterIndices represents the base class for filters that are about binary point removal.
     * <br>
-    * All derived classes have to implement the \a filter (PointCloud &output) and the \a filter (std::vector<int> &indices) methods.
+    * All derived classes have to implement the \a filter (PointCloud &output) and the \a filter (Indices &indices) methods.
     * Ideally they also make use of the \a negative_, \a keep_organized_ and \a extract_removed_indices_ systems.
     * The distinguishment between the \a negative_ and \a extract_removed_indices_ systems only makes sense if the class automatically
     * filters non-finite entries in the filtering methods (recommended).
+    * \warning PCLPointCloud2 is not currently supported by executors
     * \author Justin Rosen
     * \ingroup filters
     */
@@ -215,7 +286,7 @@ namespace pcl
         * \param[out] indices the resultant filtered point cloud indices
         */
       void
-      filter (std::vector<int> &indices);
+      filter (Indices &indices);
 
       /** \brief Set whether the regular conditions for points filtering should apply, or the inverted conditions.
         * \param[in] negative false = normal filter behavior (default), true = inverted behavior.
@@ -278,7 +349,7 @@ namespace pcl
 
       /** \brief Abstract filter method for point cloud indices. */
       virtual void
-      applyFilter (std::vector<int> &indices) = 0;
+      applyFilter (Indices &indices) = 0;
 
       /** \brief Abstract filter method for point cloud. */
       void
@@ -286,6 +357,4 @@ namespace pcl
   };
 }
 
-#ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/filter_indices.hpp>
-#endif

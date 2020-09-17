@@ -51,18 +51,21 @@ namespace pcl
   template<typename PointT>
   class CropHull: public FilterIndices<PointT>
   {
-    using Filter<PointT>::filter_name_;
-    using Filter<PointT>::indices_;
-    using Filter<PointT>::input_;
+    using Self = CropHull<PointT>;
+    using Base = FilterIndices<PointT>;
+
+    using Filter<PointT, Base>::filter_name_;
+    using Filter<PointT, Base>::indices_;
+    using Filter<PointT, Base>::input_;
     
-    using PointCloud = typename Filter<PointT>::PointCloud;
+    using PointCloud = typename Filter<PointT, Base>::PointCloud;
     using PointCloudPtr = typename PointCloud::Ptr;
     using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
     public:
 
-      using Ptr = shared_ptr<CropHull<PointT> >;
-      using ConstPtr = shared_ptr<const CropHull<PointT> >;
+      using Ptr = shared_ptr<Self>;
+      using ConstPtr = shared_ptr<const Self>;
 
       /** \brief Empty Constructor. */
       CropHull () :
