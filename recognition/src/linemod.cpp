@@ -210,6 +210,7 @@ pcl::LINEMOD::removeOverlappingDetections (
     float best_score = 0.0f;
     size_t best_detection_id = 0;
 
+    float average_score = 0.0f;
     float average_scale = 0.0f;
     float average_region_x = 0.0f;
     float average_region_y = 0.0f;
@@ -219,17 +220,18 @@ pcl::LINEMOD::removeOverlappingDetections (
     {
       const size_t detection_id = cluster[cluster_index];
 
-      const float weight = detections[detection_id].score;
+      const float weight = detections[detection_id].score * detections[detection_id].score;
 
-      if (weight > best_score)
+      if (detections[detection_id].score > best_score)
       {
-        best_score = weight;
+        best_score = detections[detection_id].score;
         best_detection_id = detection_id;
       }
 
       const LINEMODDetection & d = detections[detection_id];
       weight_sum += weight;
 
+      average_score += detections[detection_id].score * weight;
       average_scale += detections[detection_id].scale * weight;
       average_region_x += float (detections[detection_id].x) * weight;
       average_region_y += float (detections[detection_id].y) * weight;
@@ -238,7 +240,7 @@ pcl::LINEMOD::removeOverlappingDetections (
     const float inv_weight_sum = 1.0f / weight_sum;
     LINEMODDetection detection;
     detection.template_id = detections[best_detection_id].template_id;
-    detection.score = best_score;
+    detection.score = average_score * inv_weight_sum;
     detection.scale = average_scale * inv_weight_sum;
     detection.x = int (average_region_x * inv_weight_sum);
     detection.y = int (average_region_y * inv_weight_sum);
