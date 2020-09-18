@@ -127,7 +127,7 @@ public:
   /** \brief Abstract get size of container (number of DataT objects)
    * \return number of DataT elements in leaf node container.
    */
-  std::size_t
+  index_t
   getSize() const override
   {
     return 0;
@@ -220,24 +220,24 @@ public:
   void
   getPointIndices(Indices& data_vector_arg) const
   {
-    if (data_ >= 0)
+    if (data_ != static_cast<index_t>(-1))
       data_vector_arg.push_back(data_);
   }
 
   /** \brief Get size of container (number of DataT objects)
    * \return number of DataT elements in leaf node container.
    */
-  std::size_t
+  index_t
   getSize() const override
   {
-    return data_ < 0 ? 0 : 1;
+    return data_ != static_cast<index_t>(-1) ? 0 : 1;
   }
 
   /** \brief Reset leaf node memory to zero. */
   void
   reset() override
   {
-    data_ = -1;
+    data_ = static_cast<index_t>(-1);
   }
 
 protected:
@@ -316,10 +316,10 @@ public:
   /** \brief Get size of container (number of indices)
    * \return number of point indices in container.
    */
-  std::size_t
+  index_t
   getSize() const override
   {
-    return leafDataTVector_.size();
+    return static_cast<index_t>(leafDataTVector_.size());
   }
 
   /** \brief Reset leaf node. Clear DataT vector.*/

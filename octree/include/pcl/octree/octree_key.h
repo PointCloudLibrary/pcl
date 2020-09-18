@@ -140,17 +140,17 @@ public:
 
   /* \brief maximum depth that can be addressed */
   static const unsigned char maxDepth =
-      static_cast<unsigned char>(sizeof(std::uint32_t) * 8);
+      static_cast<unsigned char>(sizeof(uindex_t) * 8);
 
   // Indices addressing a voxel at (X, Y, Z)
 
   union {
     struct {
-      std::uint32_t x;
-      std::uint32_t y;
-      std::uint32_t z;
+      uindex_t x;
+      uindex_t y;
+      uindex_t z;
     };
-    std::uint32_t key_[3];
+    uindex_t key_[3];
   };
 };
 } // namespace octree
