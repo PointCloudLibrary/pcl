@@ -227,6 +227,34 @@ namespace pcl
       bool
       isSampleGood(const Indices &samples) const override;
 
+      /** This implementation uses no SIMD instructions. It is not intended for normal use.
+        * See countWithinDistance which automatically uses the fastest implementation.
+        */
+      std::size_t
+      countWithinDistanceStandard (const Eigen::VectorXf &model_coefficients,
+                                   const double threshold,
+                                   std::size_t i = 0) const;
+
+#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
+      /** This implementation uses SSE, SSE2, and SSE4.1 instructions. It is not intended for normal use.
+        * See countWithinDistance which automatically uses the fastest implementation.
+        */
+      std::size_t
+      countWithinDistanceSSE (const Eigen::VectorXf &model_coefficients,
+                              const double threshold,
+                              std::size_t i = 0) const;
+#endif
+
+#if defined (__AVX__) && defined (__AVX2__)
+      /** This implementation uses AVX and AVX2 instructions. It is not intended for normal use.
+        * See countWithinDistance which automatically uses the fastest implementation.
+        */
+      std::size_t
+      countWithinDistanceAVX (const Eigen::VectorXf &model_coefficients,
+                              const double threshold,
+                              std::size_t i = 0) const;
+#endif
+
     private:
       struct OptimizationFunctor : pcl::Functor<float>
       {
@@ -261,6 +289,14 @@ namespace pcl
         const pcl::SampleConsensusModelSphere<PointT> *model_;
         const Indices &indices_;
       };
+
+#ifdef __AVX__
+      inline __m256 sqr_dist8 (const std::size_t i, const __m256 a_vec, const __m256 b_vec, const __m256 c_vec) const;
+#endif
+
+#ifdef __SSE__
+      inline __m128 sqr_dist4 (const std::size_t i, const __m128 a_vec, const __m128 b_vec, const __m128 c_vec) const;
+#endif
    };
 }
 

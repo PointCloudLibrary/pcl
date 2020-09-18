@@ -110,6 +110,36 @@ pcl::SampleConsensusModelPlane<PointT>::computeModelCoefficients (
   return (true);
 }
 
+#define AT(POS) ((*input_)[(*indices_)[(POS)]])
+
+#ifdef __AVX__
+// This function computes the distances of 8 points to the plane
+template <typename PointT> inline __m256 pcl::SampleConsensusModelPlane<PointT>::dist8 (const std::size_t i, const __m256 &a_vec, const __m256 &b_vec, const __m256 &c_vec, const __m256 &d_vec, const __m256 &abs_help) const
+{
+  // The andnot-function realizes an abs-operation: the sign bit is removed
+  return _mm256_andnot_ps (abs_help,
+        _mm256_add_ps (_mm256_add_ps (_mm256_mul_ps (a_vec, _mm256_set_ps (AT(i  ).x, AT(i+1).x, AT(i+2).x, AT(i+3).x, AT(i+4).x, AT(i+5).x, AT(i+6).x, AT(i+7).x)),
+                                      _mm256_mul_ps (b_vec, _mm256_set_ps (AT(i  ).y, AT(i+1).y, AT(i+2).y, AT(i+3).y, AT(i+4).y, AT(i+5).y, AT(i+6).y, AT(i+7).y))),
+                       _mm256_add_ps (_mm256_mul_ps (c_vec, _mm256_set_ps (AT(i  ).z, AT(i+1).z, AT(i+2).z, AT(i+3).z, AT(i+4).z, AT(i+5).z, AT(i+6).z, AT(i+7).z)),
+                                      d_vec))); // TODO this could be replaced by three fmadd-instructions (if available), but the speed gain would probably be minimal
+}
+#endif // ifdef __AVX__
+
+#ifdef __SSE__
+// This function computes the distances of 4 points to the plane
+template <typename PointT> inline __m128 pcl::SampleConsensusModelPlane<PointT>::dist4 (const std::size_t i, const __m128 &a_vec, const __m128 &b_vec, const __m128 &c_vec, const __m128 &d_vec, const __m128 &abs_help) const
+{
+  // The andnot-function realizes an abs-operation: the sign bit is removed
+  return _mm_andnot_ps (abs_help,
+        _mm_add_ps (_mm_add_ps (_mm_mul_ps (a_vec, _mm_set_ps (AT(i  ).x, AT(i+1).x, AT(i+2).x, AT(i+3).x)),
+                                _mm_mul_ps (b_vec, _mm_set_ps (AT(i  ).y, AT(i+1).y, AT(i+2).y, AT(i+3).y))),
+                    _mm_add_ps (_mm_mul_ps (c_vec, _mm_set_ps (AT(i  ).z, AT(i+1).z, AT(i+2).z, AT(i+3).z)),
+                                d_vec))); // TODO this could be replaced by three fmadd-instructions (if available), but the speed gain would probably be minimal
+}
+#endif // ifdef __SSE__
+
+#undef AT
+
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::SampleConsensusModelPlane<PointT>::getDistancesToModel (
@@ -190,11 +220,23 @@ pcl::SampleConsensusModelPlane<PointT>::countWithinDistance (
     PCL_ERROR ("[pcl::SampleConsensusModelPlane::countWithinDistance] Given model is invalid!\n");
     return (0);
   }
+#if defined (__AVX__) && defined (__AVX2__)
+  return countWithinDistanceAVX (model_coefficients, threshold);
+#elif defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
+  return countWithinDistanceSSE (model_coefficients, threshold);
+#else
+  return countWithinDistanceStandard (model_coefficients, threshold);
+#endif
+}
 
+//////////////////////////////////////////////////////////////////////////
+template <typename PointT> std::size_t
+pcl::SampleConsensusModelPlane<PointT>::countWithinDistanceStandard (
+      const Eigen::VectorXf &model_coefficients, const double threshold, std::size_t i) const
+{
   std::size_t nr_p = 0;
-
   // Iterate through the 3d points and calculate the distances from them to the plane
-  for (std::size_t i = 0; i < indices_->size (); ++i)
+  for (; i < indices_->size (); ++i)
   {
     // Calculate the distance from the point to the plane normal as the dot product
     // D = (P-A).N/|N|
@@ -209,6 +251,84 @@ pcl::SampleConsensusModelPlane<PointT>::countWithinDistance (
   }
   return (nr_p);
 }
+
+//////////////////////////////////////////////////////////////////////////
+#if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
+template <typename PointT> std::size_t
+pcl::SampleConsensusModelPlane<PointT>::countWithinDistanceSSE (
+      const Eigen::VectorXf &model_coefficients, const double threshold, std::size_t i) const
+{
+  std::size_t nr_p = 0;
+  const __m128 a_vec = _mm_set1_ps (model_coefficients[0]);
+  const __m128 b_vec = _mm_set1_ps (model_coefficients[1]);
+  const __m128 c_vec = _mm_set1_ps (model_coefficients[2]);
+  const __m128 d_vec = _mm_set1_ps (model_coefficients[3]);
+  const __m128 threshold_vec = _mm_set1_ps (threshold);
+  const __m128 abs_help = _mm_set1_ps (-0.0F); // -0.0F (negative zero) means that all bits are 0, only the sign bit is 1
+  __m128i res = _mm_set1_epi32(0); // This corresponds to nr_p: 4 32bit integers that, summed together, hold the number of inliers
+  for (; (i + 4) <= indices_->size (); i += 4)
+  {
+    const __m128 mask = _mm_cmplt_ps (dist4 (i, a_vec, b_vec, c_vec, d_vec, abs_help), threshold_vec); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
+    res = _mm_add_epi32 (res, _mm_and_si128 (_mm_set1_epi32 (1), _mm_castps_si128 (mask))); // The latter part creates a vector with ones (as 32bit integers) where the points are inliers
+    //const int res = _mm_movemask_ps (mask);
+    //if (res & 1) nr_p++;
+    //if (res & 2) nr_p++;
+    //if (res & 4) nr_p++;
+    //if (res & 8) nr_p++;
+  }
+  nr_p += _mm_extract_epi32 (res, 0);
+  nr_p += _mm_extract_epi32 (res, 1);
+  nr_p += _mm_extract_epi32 (res, 2);
+  nr_p += _mm_extract_epi32 (res, 3);
+
+  // Process the remaining points (at most 3)
+  nr_p += countWithinDistanceStandard(model_coefficients, threshold, i);
+  return (nr_p);
+}
+#endif
+
+//////////////////////////////////////////////////////////////////////////
+#if defined (__AVX__) && defined (__AVX2__)
+template <typename PointT> std::size_t
+pcl::SampleConsensusModelPlane<PointT>::countWithinDistanceAVX (
+      const Eigen::VectorXf &model_coefficients, const double threshold, std::size_t i) const
+{
+  std::size_t nr_p = 0;
+  const __m256 a_vec = _mm256_set1_ps (model_coefficients[0]);
+  const __m256 b_vec = _mm256_set1_ps (model_coefficients[1]);
+  const __m256 c_vec = _mm256_set1_ps (model_coefficients[2]);
+  const __m256 d_vec = _mm256_set1_ps (model_coefficients[3]);
+  const __m256 threshold_vec = _mm256_set1_ps (threshold);
+  const __m256 abs_help = _mm256_set1_ps (-0.0F); // -0.0F (negative zero) means that all bits are 0, only the sign bit is 1
+  __m256i res = _mm256_set1_epi32(0); // This corresponds to nr_p: 8 32bit integers that, summed together, hold the number of inliers
+  for (; (i + 8) <= indices_->size (); i += 8)
+  {
+    const __m256 mask = _mm256_cmp_ps (dist8 (i, a_vec, b_vec, c_vec, d_vec, abs_help), threshold_vec, _CMP_LT_OQ); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
+    res = _mm256_add_epi32 (res, _mm256_and_si256 (_mm256_set1_epi32 (1), _mm256_castps_si256 (mask))); // The latter part creates a vector with ones (as 32bit integers) where the points are inliers
+    //const int res = _mm256_movemask_ps (mask);
+    //if (res &   1) nr_p++;
+    //if (res &   2) nr_p++;
+    //if (res &   4) nr_p++;
+    //if (res &   8) nr_p++;
+    //if (res &  16) nr_p++;
+    //if (res &  32) nr_p++;
+    //if (res &  64) nr_p++;
+    //if (res & 128) nr_p++;
+  }
+  nr_p += _mm256_extract_epi32 (res, 0);
+  nr_p += _mm256_extract_epi32 (res, 1);
+  nr_p += _mm256_extract_epi32 (res, 2);
+  nr_p += _mm256_extract_epi32 (res, 3);
+  nr_p += _mm256_extract_epi32 (res, 4);
+  nr_p += _mm256_extract_epi32 (res, 5);
+  nr_p += _mm256_extract_epi32 (res, 6);
+  nr_p += _mm256_extract_epi32 (res, 7);
+
+  // Process the remaining points (at most 7)
+  nr_p += countWithinDistanceStandard(model_coefficients, threshold, i);
+  return (nr_p);
+}
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
