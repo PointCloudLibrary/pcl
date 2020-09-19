@@ -365,7 +365,7 @@ public:
    * \return squared diameter
    */
   double
-  getVoxelSquaredDiameter(unsigned int tree_depth_arg) const;
+  getVoxelSquaredDiameter(uindex_t tree_depth_arg) const;
 
   /** \brief Calculates the squared diameter of a voxel at leaf depth
    * \return squared diameter
@@ -381,7 +381,7 @@ public:
    * \return squared voxel cube side length
    */
   double
-  getVoxelSquaredSideLen(unsigned int tree_depth_arg) const;
+  getVoxelSquaredSideLen(uindex_t tree_depth_arg) const;
 
   /** \brief Calculates the squared voxel cube side length at leaf level
    * \return squared voxel cube side length
@@ -536,7 +536,7 @@ protected:
    */
   void
   genVoxelCenterFromOctreeKey(const OctreeKey& key_arg,
-                              unsigned int tree_depth_arg,
+                              uindex_t tree_depth_arg,
                               PointT& point_arg) const;
 
   /** \brief Generate bounds of an octree voxel using octree key and tree depth
@@ -548,7 +548,7 @@ protected:
    */
   void
   genVoxelBoundsFromOctreeKey(const OctreeKey& key_arg,
-                              unsigned int tree_depth_arg,
+                              uindex_t tree_depth_arg,
                               Eigen::Vector3f& min_pt,
                               Eigen::Vector3f& max_pt) const;
 

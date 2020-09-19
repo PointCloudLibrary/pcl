@@ -859,7 +859,7 @@ template <typename PointT,
 void
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
     genVoxelCenterFromOctreeKey(const OctreeKey& key_arg,
-                                unsigned int tree_depth_arg,
+                                uindex_t tree_depth_arg,
                                 PointT& point_arg) const
 {
   // generate point for voxel center defined by treedepth (bitLen) and key
@@ -888,7 +888,7 @@ template <typename PointT,
 void
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
     genVoxelBoundsFromOctreeKey(const OctreeKey& key_arg,
-                                unsigned int tree_depth_arg,
+                                uindex_t tree_depth_arg,
                                 Eigen::Vector3f& min_pt,
                                 Eigen::Vector3f& max_pt) const
 {
@@ -920,7 +920,7 @@ template <typename PointT,
           typename OctreeT>
 double
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
-    getVoxelSquaredSideLen(unsigned int tree_depth_arg) const
+    getVoxelSquaredSideLen(uindex_t tree_depth_arg) const
 {
   double side_len;
 
@@ -941,7 +941,7 @@ template <typename PointT,
           typename OctreeT>
 double
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
-    getVoxelSquaredDiameter(unsigned int tree_depth_arg) const
+    getVoxelSquaredDiameter(uindex_t tree_depth_arg) const
 {
   // return the squared side length of the voxel cube as a function of the octree depth
   return (getVoxelSquaredSideLen(tree_depth_arg) * 3);

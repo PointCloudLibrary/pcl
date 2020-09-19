@@ -129,7 +129,7 @@ public:
    * \param[in] point_arg: a point addressing a voxel \return amount of points
    * that fall within leaf node voxel
    */
-  unsigned int
+  uindex_t
   getVoxelDensityAtPoint(const PointT& point_arg) const
   {
     uindex_t point_count = 0;

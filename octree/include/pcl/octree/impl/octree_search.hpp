@@ -226,7 +226,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
         uindex_t K,
         const BranchNode* node,
         const OctreeKey& key,
-        unsigned int tree_depth,
+        uindex_t tree_depth,
         const double squared_search_radius,
         std::vector<prioPointQueueEntry>& point_candidates) const
 {
@@ -337,7 +337,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
                                       const double radiusSquared,
                                       const BranchNode* node,
                                       const OctreeKey& key,
-                                      unsigned int tree_depth,
+                                      uindex_t tree_depth,
                                       Indices& k_indices,
                                       std::vector<float>& k_sqr_distances,
                                       uindex_t max_nn) const
@@ -423,7 +423,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
     approxNearestSearchRecursive(const PointT& point,
                                  const BranchNode* node,
                                  const OctreeKey& key,
-                                 unsigned int tree_depth,
+                                 uindex_t tree_depth,
                                  index_t& result_index,
                                  float& sqr_distance)
 {
@@ -521,7 +521,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::boxSearchRecur
     const Eigen::Vector3f& max_pt,
     const BranchNode* node,
     const OctreeKey& key,
-    unsigned int tree_depth,
+    uindex_t tree_depth,
     Indices& k_indices) const
 {
   // iterate over all children
