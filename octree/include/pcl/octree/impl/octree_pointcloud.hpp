@@ -278,14 +278,14 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
   const float step_size = static_cast<float>(resolution_) * precision;
   // Ensure we get at least one step for the first voxel.
-  const int nsteps = std::max(1, static_cast<int>(norm / step_size));
+  const auto nsteps = std::max<std::size_t>(1, norm / step_size);
 
   OctreeKey prev_key;
 
   bool bkeyDefined = false;
 
   // Walk along the line segment with small steps.
-  for (int i = 0; i < nsteps; ++i) {
+  for (std::size_t i = 0; i < nsteps; ++i) {
     Eigen::Vector3f p = origin + (direction * step_size * static_cast<float>(i));
 
     PointT octree_p;
@@ -668,7 +668,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
   LeafNode* leaf_node;
   BranchNode* parent_branch_of_leaf_node;
-  unsigned int depth_mask = this->createLeafRecursive(
+  auto depth_mask = this->createLeafRecursive(
       key, this->depth_mask_, this->root_node_, leaf_node, parent_branch_of_leaf_node);
 
   if (this->dynamic_depth_enabled_ && depth_mask) {
@@ -716,36 +716,28 @@ void
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
     getKeyBitSize()
 {
-  unsigned int max_voxels;
-
-  unsigned int max_key_x;
-  unsigned int max_key_y;
-  unsigned int max_key_z;
-
-  double octree_side_len;
-
   const float minValue = std::numeric_limits<float>::epsilon();
 
   // find maximum key values for x, y, z
-  max_key_x =
-      static_cast<unsigned int>(std::ceil((max_x_ - min_x_ - minValue) / resolution_));
-  max_key_y =
-      static_cast<unsigned int>(std::ceil((max_y_ - min_y_ - minValue) / resolution_));
-  max_key_z =
-      static_cast<unsigned int>(std::ceil((max_z_ - min_z_ - minValue) / resolution_));
+  const auto max_key_x =
+      static_cast<uindex_t>(std::ceil((max_x_ - min_x_ - minValue) / resolution_));
+  const auto max_key_y =
+      static_cast<uindex_t>(std::ceil((max_y_ - min_y_ - minValue) / resolution_));
+  const auto max_key_z =
+      static_cast<uindex_t>(std::ceil((max_z_ - min_z_ - minValue) / resolution_));
 
   // find maximum amount of keys
-  max_voxels = std::max(std::max(std::max(max_key_x, max_key_y), max_key_z),
-                        static_cast<unsigned int>(2));
+  const auto max_voxels =
+      std::max<uindex_t>(std::max(std::max(max_key_x, max_key_y), max_key_z), 2);
 
   // tree depth == amount of bits of max_voxels
-  this->octree_depth_ =
-      std::max((std::min(static_cast<unsigned int>(OctreeKey::maxDepth),
-                         static_cast<unsigned int>(
-                             std::ceil(std::log2(max_voxels) - minValue)))),
-               static_cast<unsigned int>(0));
+  this->octree_depth_ = std::max<uindex_t>(
+      std::min<uindex_t>(OctreeKey::maxDepth,
+                         std::ceil(std::log2(max_voxels) - minValue)),
+      0);
 
-  octree_side_len = static_cast<double>(1 << this->octree_depth_) * resolution_;
+  const auto octree_side_len =
+      static_cast<double>(1 << this->octree_depth_) * resolution_;
 
   if (this->leaf_count_ == 0) {
     double octree_oversize_x;
@@ -793,12 +785,9 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     genOctreeKeyforPoint(const PointT& point_arg, OctreeKey& key_arg) const
 {
   // calculate integer key for point coordinates
-  key_arg.x =
-      static_cast<unsigned int>((point_arg.x - this->min_x_) / this->resolution_);
-  key_arg.y =
-      static_cast<unsigned int>((point_arg.y - this->min_y_) / this->resolution_);
-  key_arg.z =
-      static_cast<unsigned int>((point_arg.z - this->min_z_) / this->resolution_);
+  key_arg.x = static_cast<uindex_t>((point_arg.x - this->min_x_) / this->resolution_);
+  key_arg.y = static_cast<uindex_t>((point_arg.y - this->min_y_) / this->resolution_);
+  key_arg.z = static_cast<uindex_t>((point_arg.z - this->min_z_) / this->resolution_);
 
   assert(key_arg.x <= this->max_key_.x);
   assert(key_arg.y <= this->max_key_.y);
