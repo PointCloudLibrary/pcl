@@ -10,10 +10,10 @@
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/shot_local_estimator_omp.h>
 #include <pcl/apps/3d_rec_framework/pc_source/mesh_source.h>
 #include <pcl/apps/3d_rec_framework/pipeline/local_recognizer.h>
+#include <pcl/common/transforms.h> // for transformPointCloud
 #include <pcl/console/parse.h>
 #include <pcl/recognition/cg/correspondence_grouping.h>
 #include <pcl/recognition/cg/geometric_consistency.h>
-#include <pcl/recognition/cg/hough_3d.h>
 #include <pcl/recognition/hv/greedy_verification.h>
 #include <pcl/recognition/hv/hv_go.h>
 #include <pcl/recognition/hv/hv_papazov.h>

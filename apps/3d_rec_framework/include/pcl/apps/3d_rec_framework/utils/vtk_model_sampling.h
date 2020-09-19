@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <pcl/common/common.h>
-
 #include <vtkCellArray.h>
 #include <vtkPLYReader.h>
 #include <vtkPolyData.h>

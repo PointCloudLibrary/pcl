@@ -39,11 +39,7 @@
 #include <pcl/common/time.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/io/io.h>
-#include <pcl/io/openni_grabber.h>
-#include <pcl/io/pcd_grabber.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/io/ply_io.h>
-#include <pcl/io/png_io.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/segmentation/euclidean_cluster_comparator.h>
 #include <pcl/segmentation/ground_plane_comparator.h>

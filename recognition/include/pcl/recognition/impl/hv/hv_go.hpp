@@ -38,6 +38,7 @@
 #define PCL_RECOGNITION_IMPL_HV_GO_HPP_
 
 #include <pcl/recognition/hv/hv_go.h>
+#include <pcl/common/common.h> // for getMinMax3D
 #include <pcl/common/time.h>
 #include <pcl/point_types.h>
 

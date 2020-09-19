@@ -39,6 +39,8 @@
 
 #pragma once
 
+#include <list> // for std::list
+
 namespace pcl {
 
 namespace octree {

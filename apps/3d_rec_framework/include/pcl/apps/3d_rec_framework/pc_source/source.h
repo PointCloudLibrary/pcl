@@ -8,9 +8,7 @@
 #pragma once
 
 #include <pcl/apps/3d_rec_framework/utils/persistence_utils.h>
-#include <pcl/common/transforms.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/io/pcd_io.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>

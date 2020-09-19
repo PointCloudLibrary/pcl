@@ -9,7 +9,6 @@
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/local/local_estimator.h>
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>
-#include <pcl/common/common.h>
 #include <pcl/recognition/cg/correspondence_grouping.h>
 #include <pcl/recognition/hv/hypotheses_verification.h>
 #include <pcl/visualization/pcl_visualizer.h>

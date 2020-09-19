@@ -40,7 +40,6 @@
 #define SHOW_FPS 1
 
 #include <pcl/apps/timer.h>
-#include <pcl/common/common.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/io/openni_grabber.h>

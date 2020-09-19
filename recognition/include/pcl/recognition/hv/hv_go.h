@@ -19,7 +19,6 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/recognition/hv/hypotheses_verification.h>
-#include <pcl/common/common.h>
 #include <pcl/recognition/3rdparty/metslib/mets.hh>
 #include <pcl/features/normal_3d.h>
 

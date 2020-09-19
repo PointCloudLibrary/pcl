@@ -39,6 +39,7 @@
  */
 
 #include <pcl/apps/manual_registration.h>
+#include <pcl/io/pcd_io.h> // for loadPCDFile
 
 #include <QApplication>
 #include <QEvent>

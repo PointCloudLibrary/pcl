@@ -41,13 +41,10 @@
 #include <pcl/common/angles.h>
 #include <pcl/common/common.h>
 #include <pcl/common/time.h>
-#include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/features/integral_image_normal.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/geometry/polygon_operations.h>
 #include <pcl/io/openni_grabber.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/search/organized.h>
 #include <pcl/segmentation/edge_aware_plane_comparator.h>
