@@ -605,7 +605,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     expandLeafNode(LeafNode* leaf_node,
                    BranchNode* parent_branch,
                    unsigned char child_idx,
-                   unsigned int depth_mask)
+                   uindex_t depth_mask)
 {
 
   if (depth_mask) {

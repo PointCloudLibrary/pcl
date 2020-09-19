@@ -55,9 +55,7 @@ public:
   OctreeKey() : x(0), y(0), z(0) {}
 
   /** \brief Constructor for key initialization. */
-  OctreeKey(unsigned int keyX, unsigned int keyY, unsigned int keyZ)
-  : x(keyX), y(keyY), z(keyZ)
-  {}
+  OctreeKey(uindex_t keyX, uindex_t keyY, uindex_t keyZ) : x(keyX), y(keyY), z(keyZ) {}
 
   /** \brief Copy constructor. */
   OctreeKey(const OctreeKey& source) { std::memcpy(key_, source.key_, sizeof(key_)); }
@@ -131,7 +129,7 @@ public:
    *  \return child node index
    * */
   inline unsigned char
-  getChildIdxWithDepthMask(unsigned int depthMask) const
+  getChildIdxWithDepthMask(uindex_t depthMask) const
   {
     return static_cast<unsigned char>(((!!(this->x & depthMask)) << 2) |
                                       ((!!(this->y & depthMask)) << 1) |

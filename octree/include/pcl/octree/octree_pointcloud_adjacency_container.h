@@ -94,7 +94,7 @@ public:
   }
 
   /** \brief Gets the number of points contributing to this leaf */
-  int
+  uindex_t
   getPointCounter() const
   {
     return num_points_;
@@ -122,7 +122,7 @@ public:
   index_t
   getSize() const override
   {
-    return num_points_;
+    return static_cast<index_t>(num_points_);
   }
 
 protected:

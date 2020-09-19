@@ -76,12 +76,12 @@ public:
 
   /** \brief Read input data. Only an internal counter is increased.
    */
-  void addPointIndex(index_t) { point_counter_++; }
+  void addPointIndex(uindex_t) { point_counter_++; }
 
   /** \brief Return point counter.
    * \return Amount of points
    */
-  unsigned int
+  uindex_t
   getPointCounter()
   {
     return (point_counter_);
