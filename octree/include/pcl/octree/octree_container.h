@@ -76,7 +76,7 @@ public:
   /** \brief Pure abstract method to get size of container (number of indices)
    * \return number of points/indices stored in leaf node container.
    */
-  virtual std::size_t
+  virtual index_t
   getSize() const
   {
     return 0u;

@@ -119,7 +119,7 @@ public:
   /** \brief  virtual method to get size of container
    * \return number of points added to leaf node container.
    */
-  std::size_t
+  index_t
   getSize() const override
   {
     return num_points_;

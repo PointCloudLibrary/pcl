@@ -82,8 +82,13 @@ public:
 
   /** \brief Empty constructor.
    */
-  explicit OctreeIteratorBase(uindex_t max_depth_arg = 0)
-  : octree_(0), current_state_(0), max_octree_depth_(max_depth_arg)
+  OctreeIteratorBase() : OctreeIteratorBase(nullptr, 0u) {}
+
+  /** \brief Constructor.
+   * \param[in] max_depth_arg Depth limitation during traversal
+   */
+  explicit OctreeIteratorBase(uindex_t max_depth_arg)
+  : octree_(nullptr), current_state_(nullptr), max_octree_depth_(max_depth_arg)
   {
     this->reset();
   }
@@ -93,7 +98,14 @@ public:
    * root node.
    * \param[in] max_depth_arg Depth limitation during traversal
    */
-  explicit OctreeIteratorBase(OctreeT* octree_arg, uindex_t max_depth_arg = 0)
+  OctreeIteratorBase(OctreeT* octree_arg) : OctreeIteratorBase(octree_arg, 0u) {}
+
+  /** \brief Constructor.
+   * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its
+   * root node.
+   * \param[in] max_depth_arg Depth limitation during traversal
+   */
+  explicit OctreeIteratorBase(OctreeT* octree_arg, uindex_t max_depth_arg)
   : octree_(octree_arg), current_state_(0), max_octree_depth_(max_depth_arg)
   {
     this->reset();

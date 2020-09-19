@@ -183,7 +183,7 @@ public:
   /** \brief Get the maximum depth of the octree.
    *  \return depth_arg: maximum depth of octree
    * */
-  inline unsigned int
+  inline uindex_t
   getTreeDepth() const
   {
     return this->octree_depth_;
@@ -440,7 +440,7 @@ protected:
   expandLeafNode(LeafNode* leaf_node,
                  BranchNode* parent_branch,
                  unsigned char child_idx,
-                 unsigned int depth_mask);
+                 uindex_t depth_mask);
 
   /** \brief Get point at index from input pointcloud dataset
    * \param[in] index_arg index representing the point in the dataset given by \a
