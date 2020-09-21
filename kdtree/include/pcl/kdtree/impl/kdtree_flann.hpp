@@ -151,6 +151,14 @@ pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, int k,
                            k_indices_mat, k_distances_mat,
                            k, param_k_);
 
+  const size_t& max_index = identity_mapping_ ? total_nr_points_ : index_mapping_.size();
+  k_indices.erase(std::remove_if(k_indices.begin(), k_indices.end(),
+                                 [max_index](int idx) {
+                                   return idx < 0 || idx >= max_index;
+                                 }),
+                  k_indices.end());
+  k = static_cast<int>(k_indices.size());
+
   // Do mapping to original point cloud
   if (!identity_mapping_) 
   {
