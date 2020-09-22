@@ -75,6 +75,7 @@ init ()
     for (float y = -0.5f; y <= 0.5f; y += resolution)
       for (float x = -0.5f; x <= 0.5f; x += resolution)
         cloud.emplace_back(x, y, z);
+  cloud.emplace_back(std::numeric_limits<float>::infinity(), 0, 0);
   cloud.width  = cloud.size ();
   cloud.height = 1;
 
@@ -163,6 +164,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   KdTreeFLANN<MyPoint> kdtree;
   kdtree.setInputCloud (cloud.makeShared ());
   MyPoint test_point (0.01f, 0.01f, 0.01f);
+  MyPoint inf_test_point (std::numeric_limits<float>::infinity(), 0.f, 0.f);
   unsigned int no_of_neighbors = 20;
   std::multimap<float, int> sorted_brute_force_result;
   for (std::size_t i = 0; i < cloud.size (); ++i)
@@ -182,6 +184,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   k_indices.resize (no_of_neighbors);
   std::vector<float> k_distances;
   k_distances.resize (no_of_neighbors);
+  kdtree.nearestKSearch (inf_test_point, no_of_neighbors, k_indices, k_distances);
   kdtree.nearestKSearch (test_point, no_of_neighbors, k_indices, k_distances);
   //if (k_indices.size() != no_of_neighbors)  std::cerr << "Found "<<k_indices.size()<<" instead of "<<no_of_neighbors<<" neighbors.\n";
   EXPECT_EQ (k_indices.size (), no_of_neighbors);
