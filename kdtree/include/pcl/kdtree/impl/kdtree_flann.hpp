@@ -152,10 +152,10 @@ pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, int k,
                            k, param_k_);
 
   // Filter out invalid indices, which can occur when infinite or NaN values are in the cloud
-  const size_t& max_index = identity_mapping_ ? total_nr_points_ : index_mapping_.size();
+  const index_t& max_index = identity_mapping_ ? total_nr_points_ : index_mapping_.size();
   auto it = std::remove_if(k_indices.begin(), k_indices.end(),
-                                 [max_index](index_t idx) {
-                                   return idx < 0 || static_cast<size_t>(idx) >= max_index;
+                                 [max_index](auto idx) {
+                                   return idx < 0 || idx >= max_index;
                                  });
   k_indices.erase(it, k_indices.end());
   // Update k if any indices were removed
