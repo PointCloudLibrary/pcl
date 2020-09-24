@@ -179,6 +179,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::selectWithinDistance (
   inliers.clear ();
   inliers.reserve (indices_->size ());
 
+  const auto squared_threshold = threshold * threshold;
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
@@ -203,7 +204,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::selectWithinDistance (
     Eigen::Vector3d K = C + r * helper_vectorP_projC.normalized ();
     Eigen::Vector3d distanceVector =  P - K;
 
-    if (distanceVector.norm () < threshold)
+    if (distanceVector.squaredNorm () < squared_threshold)
     {
       // Returns the indices of the points whose distances are smaller than the threshold
       inliers.push_back ((*indices_)[i]);
@@ -221,6 +222,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::countWithinDistance (
     return (0);
   std::size_t nr_p = 0;
 
+  const auto squared_threshold = threshold * threshold;
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
@@ -246,7 +248,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::countWithinDistance (
     Eigen::Vector3d K = C + r * helper_vectorP_projC.normalized ();
     Eigen::Vector3d distanceVector =  P - K;
 
-    if (distanceVector.norm () < threshold)
+    if (distanceVector.squaredNorm () < squared_threshold)
       nr_p++;
   }
   return (nr_p);
@@ -404,6 +406,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::doSamplesVerifyModel (
     return (false);
   }
 
+  const auto squared_threshold = threshold * threshold;
   for (const auto &index : indices)
   {
     // Calculate the distance from the point to the sphere as the difference between
@@ -429,7 +432,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::doSamplesVerifyModel (
     Eigen::Vector3d K = C + r * helper_vectorP_projC.normalized ();
     Eigen::Vector3d distanceVector =  P - K;
 
-    if (distanceVector.norm () > threshold)
+    if (distanceVector.squaredNorm () > squared_threshold)
       return (false);
   }
   return (true);
