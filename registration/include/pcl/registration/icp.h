@@ -93,6 +93,9 @@ namespace pcl
   template <typename PointSource, typename PointTarget, typename Scalar = float>
   class IterativeClosestPoint : public Registration<PointSource, PointTarget, Scalar>
   {
+    using Self = IterativeClosestPoint<PointSource, PointTarget, Scalar>;
+    using Base = Registration<PointSource, PointTarget, Scalar>;
+
     public:
       using PointCloudSource = typename Registration<PointSource, PointTarget, Scalar>::PointCloudSource;
       using PointCloudSourcePtr = typename PointCloudSource::Ptr;
@@ -105,8 +108,8 @@ namespace pcl
       using PointIndicesPtr = PointIndices::Ptr;
       using PointIndicesConstPtr = PointIndices::ConstPtr;
 
-      using Ptr = shared_ptr<IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
-      using ConstPtr = shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
+      using Ptr = shared_ptr<Self>;
+      using ConstPtr = shared_ptr<const Self>;
 
       using Registration<PointSource, PointTarget, Scalar>::reg_name_;
       using Registration<PointSource, PointTarget, Scalar>::getClassName;
@@ -321,6 +324,9 @@ namespace pcl
   template <typename PointSource, typename PointTarget, typename Scalar = float>
   class IterativeClosestPointWithNormals : public IterativeClosestPoint<PointSource, PointTarget, Scalar>
   {
+    using Self = IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>;
+    using Base = IterativeClosestPoint<PointSource, PointTarget, Scalar>;
+    
     public:
       using PointCloudSource = typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::PointCloudSource;
       using PointCloudTarget = typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::PointCloudTarget;
@@ -330,8 +336,8 @@ namespace pcl
       using IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformation_estimation_;
       using IterativeClosestPoint<PointSource, PointTarget, Scalar>::correspondence_rejectors_;
 
-      using Ptr = shared_ptr<IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar> >;
-      using ConstPtr = shared_ptr<const IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar> >;
+      using Ptr = shared_ptr<Self>;
+      using ConstPtr = shared_ptr<const Self>;
 
       /** \brief Empty constructor. */
       IterativeClosestPointWithNormals ()
