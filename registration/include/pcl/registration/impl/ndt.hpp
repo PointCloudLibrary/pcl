@@ -473,8 +473,12 @@ NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelectionMT (d
                                                                                double a_u, double f_u, double g_u,
                                                                                double a_t, double f_t, double g_t) const
 {
+  if(a_t == a_l && a_t == a_u) {
+    return a_t;
+  }
+
   // Case 1 in Trial Value Selection [More, Thuente 1994]
-  if (f_t > f_l)
+  if (f_t > f_l && a_t != a_l)
   {
     // Calculate the minimizer of the cubic that interpolates f_l, f_t, g_l and g_t
     // Equation 2.4.52 [Sun, Yuan 2006]
@@ -494,7 +498,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelectionMT (d
     return 0.5 * (a_q + a_c);
   }
   // Case 2 in Trial Value Selection [More, Thuente 1994]
-  if (g_t * g_l < 0)
+  if (g_t * g_l < 0 && a_t != a_l)
   {
     // Calculate the minimizer of the cubic that interpolates f_l, f_t, g_l and g_t
     // Equation 2.4.52 [Sun, Yuan 2006]
@@ -514,7 +518,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelectionMT (d
     return a_s;
   }
   // Case 3 in Trial Value Selection [More, Thuente 1994]
-  if (std::fabs (g_t) <= std::fabs (g_l))
+  if (std::fabs (g_t) <= std::fabs (g_l) && a_t != a_l)
   {
     // Calculate the minimizer of the cubic that interpolates f_l, f_t, g_l and g_t
     // Equation 2.4.52 [Sun, Yuan 2006]
