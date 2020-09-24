@@ -605,6 +605,7 @@ namespace pcl
 
   /** \brief @b SampleConsensusModelFromNormals represents the base model class
     * for models that require the use of surface normals for estimation.
+    * \ingroup sample_consensus
     */
   template <typename PointT, typename PointNT>
   class SampleConsensusModelFromNormals //: public SampleConsensusModel<PointT>
