@@ -1,47 +1,19 @@
 /*
- * Software License Agreement (BSD License)
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception
  *
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of the copyright holder(s) nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id$
- *
+ *  All rights reserved
  */
 
 #pragma once
 
 #include <cfloat> // for FLT_MIN, FLT_MAX
 #include <pcl/pcl_macros.h>
-#include <pcl/filters/filter_indices.h>
+#include <pcl/common/point_tests.h>
+#include <pcl/filters/functor_filter.h>
 
 namespace pcl
 {
@@ -98,8 +70,9 @@ namespace pcl
       PassThrough (bool extract_removed_indices = false) :
         FilterIndices<PointT> (extract_removed_indices),
         filter_field_name_ (""),
-        filter_limit_min_ (FLT_MIN),
-        filter_limit_max_ (FLT_MAX)
+        filter_limit_min_ (std::numeric_limits<float>::min()),
+        filter_limit_max_ (std::numeric_limits<float>::max()),
+        distance_idx_(-1)
       {
         filter_name_ = "PassThrough";
       }
@@ -112,6 +85,9 @@ namespace pcl
       setFilterFieldName (const std::string &field_name)
       {
         filter_field_name_ = field_name;
+        distance_idx_ = pcl::getFieldIndex<PointT> (filter_field_name_, fields_);
+        if (distance_idx_ == -1)
+          PCL_WARN ("[pcl::%s::applyFilter] Unable to find field name in point type.\n", getClassName ().c_str ());
       }
 
       /** \brief Retrieve the name of the field to be used for filtering data.
@@ -179,7 +155,9 @@ namespace pcl
         return (negative_);
       }
 
-    protected:
+    bool condition(const PointCloud& cloud, index_t idx);
+
+  protected:
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
       using Filter<PointT>::filter_name_;
@@ -194,16 +172,17 @@ namespace pcl
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (std::vector<int> &indices) override
-      {
-        applyFilterIndices (indices);
-      }
+      applyFilter (Indices &indices) override;
 
       /** \brief Filtered results are indexed by an indices array.
         * \param[out] indices The resultant indices.
         */
+      PCL_DEPRECATED(1, 13, "use inherited applyFilter(Indices &) instead")
       void
-      applyFilterIndices (std::vector<int> &indices);
+      applyFilterIndices (Indices &indices)
+      {
+        applyFilter(indices);
+      }
 
     private:
       /** \brief The name of the field that will be used for filtering. */
@@ -214,6 +193,10 @@ namespace pcl
 
       /** \brief The maximum allowed field value (default = FLT_MIN). */
       float filter_limit_max_;
+
+      std::vector<pcl::PCLPointField> fields_;
+
+      int distance_idx_;
   };
 
   ////////////////////////////////////////////////////////////////////////////////////////////
