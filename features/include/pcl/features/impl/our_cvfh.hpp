@@ -45,6 +45,7 @@
 #include <pcl/features/vfh.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/common/io.h> // for copyPointCloud
+#include <pcl/common/common.h> // for getMaxDistance
 #include <pcl/common/transforms.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -7,7 +7,8 @@
 
 #pragma once
 
-#include <pcl/common/common.h>
+#include <pcl/point_cloud.h> // for PointCloud
+#include <pcl/point_types.h> // for PointXYZ
 
 #include <vtkPolyData.h>
 #include <vtkSmartPointer.h>

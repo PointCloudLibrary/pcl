@@ -42,6 +42,8 @@
 #define PCL_IMPLICIT_SHAPE_MODEL_HPP_
 
 #include "../implicit_shape_model.h"
+#include <pcl/filters/voxel_grid.h> // for VoxelGrid
+#include <pcl/filters/extract_indices.h> // for ExtractIndices
 
 #include <pcl/memory.h>  // for dynamic_pointer_cast
 

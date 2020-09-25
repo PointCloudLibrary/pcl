@@ -36,8 +36,6 @@
 
 #pragma once
 
-#include <pcl/common/common.h>
-#include <pcl/common/transforms.h>
 #include <pcl/common/io.h>
 
 namespace pcl

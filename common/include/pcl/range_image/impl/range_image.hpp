@@ -43,7 +43,7 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/common/distances.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
-
+#include <pcl/common/vector_average.h> // for VectorAverage3f
 
 namespace pcl
 {

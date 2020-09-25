@@ -36,7 +36,6 @@
 #include <pcl/console/parse.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/geometry/polygon_operations.h>
-#include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/segmentation/organized_multi_plane_segmentation.h>

@@ -39,7 +39,6 @@
 #include <pcl/pcl_macros.h>
 #include "pcl/recognition/hv/occlusion_reasoning.h"
 #include "pcl/recognition/impl/hv/occlusion_reasoning.hpp"
-#include <pcl/common/common.h>
 #include <pcl/search/kdtree.h>
 #include <pcl/filters/voxel_grid.h>
 

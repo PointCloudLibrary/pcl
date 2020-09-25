@@ -35,16 +35,12 @@
 
 #include <pcl/common/time.h>
 #include <pcl/features/integral_image_normal.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/filters/extract_indices.h>
-#include <pcl/io/io.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/segmentation/organized_multi_plane_segmentation.h>
 #include <pcl/segmentation/planar_region.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/ModelCoefficients.h>
 
 #include <mutex>
 

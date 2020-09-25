@@ -1,7 +1,7 @@
 #include <pcl/apps/organized_segmentation_demo.h>
 #include <pcl/common/angles.h>
+#include <pcl/io/openni_grabber.h> // for OpenNIGrabber
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
-#include <pcl/surface/convex_hull.h>
 #include <pcl/memory.h> // for pcl::dynamic_pointer_cast
 
 #include <boost/signals2/connection.hpp> // for boost::signals2::connection

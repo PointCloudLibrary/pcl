@@ -9,7 +9,6 @@
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/global/global_estimator.h>
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>
-#include <pcl/common/common.h>
 
 #include <flann/flann.hpp>
 

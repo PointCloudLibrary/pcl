@@ -8,7 +8,6 @@
 #include <pcl/apps/face_detection/openni_frame_source.h>
 #include <pcl/common/time.h>
 #include <pcl/console/parse.h>
-#include <pcl/features/integral_image_normal.h>
 #include <pcl/recognition/face_detection/rf_face_detector_trainer.h>
 // clang-format off
 #include <pcl/apps/face_detection/face_detection_apps_utils.h>

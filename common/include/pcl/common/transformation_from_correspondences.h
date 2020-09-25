@@ -36,7 +36,8 @@
 
 #pragma once
 
-#include <pcl/common/eigen.h>
+#include <Eigen/Core> // for Vector3f, Matrix
+#include <Eigen/Geometry> // for Affine3f
 
 namespace pcl 
 {

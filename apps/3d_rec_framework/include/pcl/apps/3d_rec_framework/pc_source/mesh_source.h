@@ -10,7 +10,6 @@
 #include <pcl/apps/3d_rec_framework/pc_source/source.h>
 #include <pcl/apps/3d_rec_framework/utils/vtk_model_sampling.h>
 #include <pcl/apps/render_views_tesselated_sphere.h>
-#include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 
 #include <vtkTransformPolyDataFilter.h>

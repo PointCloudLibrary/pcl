@@ -38,7 +38,6 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/recognition/hv/hypotheses_verification.h>
-#include <pcl/common/common.h>
 
 #include <memory>
 
