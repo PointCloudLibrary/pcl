@@ -200,26 +200,25 @@ pcl::SampleConsensusModelSphere<PointT>::selectWithinDistance (
   inliers.reserve (indices_->size ());
   error_sqr_dists_.reserve (indices_->size ());
 
+  const float sqr_inner_radius = (model_coefficients[3] <= threshold ? 0.0f : (model_coefficients[3] - threshold) * (model_coefficients[3] - threshold));
+  const float sqr_outer_radius = (model_coefficients[3] + threshold) * (model_coefficients[3] + threshold);
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
-    double distance = std::abs (std::sqrt (
-                          ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
-                          ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
-
-                          ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
-                          ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) +
-
-                          ( (*input_)[(*indices_)[i]].z - model_coefficients[2] ) *
-                          ( (*input_)[(*indices_)[i]].z - model_coefficients[2] )
-                          ) - model_coefficients[3]);
-    // Calculate the distance from the point to the sphere as the difference between
-    // dist(point,sphere_origin) and sphere_radius
-    if (distance < threshold)
+    // To avoid sqrt computation: consider one larger sphere (radius + threshold) and one smaller sphere (radius - threshold).
+    // Valid if point is in larger sphere, but not in smaller sphere.
+    const float sqr_dist = ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
+                           ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
+                           ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
+                           ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) +
+                           ( (*input_)[(*indices_)[i]].z - model_coefficients[2] ) *
+                           ( (*input_)[(*indices_)[i]].z - model_coefficients[2] );
+    if ((sqr_dist <= sqr_outer_radius) && (sqr_dist >= sqr_inner_radius))
     {
       // Returns the indices of the points whose distances are smaller than the threshold
       inliers.push_back ((*indices_)[i]);
-      error_sqr_dists_.push_back (static_cast<double> (distance));
+      // Only compute exact distance if necessary (if point is inlier)
+      error_sqr_dists_.push_back (static_cast<double> (std::abs (std::sqrt (sqr_dist) - model_coefficients[3])));
     }
   }
 }
@@ -248,21 +247,20 @@ pcl::SampleConsensusModelSphere<PointT>::countWithinDistanceStandard (
       const Eigen::VectorXf &model_coefficients, const double threshold, std::size_t i) const
 {
   std::size_t nr_p = 0;
+  const float sqr_inner_radius = (model_coefficients[3] <= threshold ? 0.0f : (model_coefficients[3] - threshold) * (model_coefficients[3] - threshold));
+  const float sqr_outer_radius = (model_coefficients[3] + threshold) * (model_coefficients[3] + threshold);
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (; i < indices_->size (); ++i)
   {
-    // Calculate the distance from the point to the sphere as the difference between
-    // dist(point,sphere_origin) and sphere_radius
-    if (std::abs (std::sqrt (
-                        ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
-                        ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
-
-                        ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
-                        ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) +
-
-                        ( (*input_)[(*indices_)[i]].z - model_coefficients[2] ) *
-                        ( (*input_)[(*indices_)[i]].z - model_coefficients[2] )
-                        ) - model_coefficients[3]) < threshold)
+    // To avoid sqrt computation: consider one larger sphere (radius + threshold) and one smaller sphere (radius - threshold).
+    // Valid if point is in larger sphere, but not in smaller sphere.
+    const float sqr_dist = ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
+                           ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
+                           ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
+                           ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) +
+                           ( (*input_)[(*indices_)[i]].z - model_coefficients[2] ) *
+                           ( (*input_)[(*indices_)[i]].z - model_coefficients[2] );
+    if ((sqr_dist <= sqr_outer_radius) && (sqr_dist >= sqr_inner_radius))
       nr_p++;
   }
   return (nr_p);
@@ -279,13 +277,13 @@ pcl::SampleConsensusModelSphere<PointT>::countWithinDistanceSSE (
   const __m128 b_vec = _mm_set1_ps (model_coefficients[1]);
   const __m128 c_vec = _mm_set1_ps (model_coefficients[2]);
   // To avoid sqrt computation: consider one larger sphere (radius + threshold) and one smaller sphere (radius - threshold). Valid if point is in larger sphere, but not in smaller sphere.
-  const __m128 sqr_inner_sphere = _mm_set1_ps ((model_coefficients[3] <= threshold ? 0.0 : (model_coefficients[3]-threshold)*(model_coefficients[3]-threshold)));
-  const __m128 sqr_outer_sphere = _mm_set1_ps ((model_coefficients[3]+threshold)*(model_coefficients[3]+threshold));
+  const __m128 sqr_inner_radius = _mm_set1_ps ((model_coefficients[3] <= threshold ? 0.0 : (model_coefficients[3]-threshold)*(model_coefficients[3]-threshold)));
+  const __m128 sqr_outer_radius = _mm_set1_ps ((model_coefficients[3]+threshold)*(model_coefficients[3]+threshold));
   __m128i res = _mm_set1_epi32(0); // This corresponds to nr_p: 4 32bit integers that, summed together, hold the number of inliers
   for (; (i + 4) <= indices_->size (); i += 4)
   {
     const __m128 sqr_dist = sqr_dist4 (i, a_vec, b_vec, c_vec);
-    const __m128 mask = _mm_and_ps (_mm_cmplt_ps (sqr_inner_sphere, sqr_dist), _mm_cmplt_ps (sqr_dist, sqr_outer_sphere)); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
+    const __m128 mask = _mm_and_ps (_mm_cmplt_ps (sqr_inner_radius, sqr_dist), _mm_cmplt_ps (sqr_dist, sqr_outer_radius)); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
     res = _mm_add_epi32 (res, _mm_and_si128 (_mm_set1_epi32 (1), _mm_castps_si128 (mask))); // The latter part creates a vector with ones (as 32bit integers) where the points are inliers
     //const int res = _mm_movemask_ps (mask);
     //if (res & 1) nr_p++;
@@ -315,13 +313,13 @@ pcl::SampleConsensusModelSphere<PointT>::countWithinDistanceAVX (
   const __m256 b_vec = _mm256_set1_ps (model_coefficients[1]);
   const __m256 c_vec = _mm256_set1_ps (model_coefficients[2]);
   // To avoid sqrt computation: consider one larger sphere (radius + threshold) and one smaller sphere (radius - threshold). Valid if point is in larger sphere, but not in smaller sphere.
-  const __m256 sqr_inner_sphere = _mm256_set1_ps ((model_coefficients[3] <= threshold ? 0.0 : (model_coefficients[3]-threshold)*(model_coefficients[3]-threshold)));
-  const __m256 sqr_outer_sphere = _mm256_set1_ps ((model_coefficients[3]+threshold)*(model_coefficients[3]+threshold));
+  const __m256 sqr_inner_radius = _mm256_set1_ps ((model_coefficients[3] <= threshold ? 0.0 : (model_coefficients[3]-threshold)*(model_coefficients[3]-threshold)));
+  const __m256 sqr_outer_radius = _mm256_set1_ps ((model_coefficients[3]+threshold)*(model_coefficients[3]+threshold));
   __m256i res = _mm256_set1_epi32(0); // This corresponds to nr_p: 8 32bit integers that, summed together, hold the number of inliers
   for (; (i + 8) <= indices_->size (); i += 8)
   {
     const __m256 sqr_dist = sqr_dist8 (i, a_vec, b_vec, c_vec);
-    const __m256 mask = _mm256_and_ps (_mm256_cmp_ps (sqr_inner_sphere, sqr_dist, _CMP_LT_OQ), _mm256_cmp_ps (sqr_dist, sqr_outer_sphere, _CMP_LT_OQ)); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
+    const __m256 mask = _mm256_and_ps (_mm256_cmp_ps (sqr_inner_radius, sqr_dist, _CMP_LT_OQ), _mm256_cmp_ps (sqr_dist, sqr_outer_radius, _CMP_LT_OQ)); // The mask contains 1 bits if the corresponding points are inliers, else 0 bits
     res = _mm256_add_epi32 (res, _mm256_and_si256 (_mm256_set1_epi32 (1), _mm256_castps_si256 (mask))); // The latter part creates a vector with ones (as 32bit integers) where the points are inliers
     //const int res = _mm256_movemask_ps (mask);
     //if (res &   1) nr_p++;
@@ -414,18 +412,19 @@ pcl::SampleConsensusModelSphere<PointT>::doSamplesVerifyModel (
     return (false);
   }
 
+  const float sqr_inner_radius = (model_coefficients[3] <= threshold ? 0.0f : (model_coefficients[3] - threshold) * (model_coefficients[3] - threshold));
+  const float sqr_outer_radius = (model_coefficients[3] + threshold) * (model_coefficients[3] + threshold);
   for (const auto &index : indices)
   {
-    // Calculate the distance from the point to the sphere as the difference between
-    //dist(point,sphere_origin) and sphere_radius
-    if (std::abs (sqrt (
-                    ( (*input_)[index].x - model_coefficients[0] ) *
-                    ( (*input_)[index].x - model_coefficients[0] ) +
-                    ( (*input_)[index].y - model_coefficients[1] ) *
-                    ( (*input_)[index].y - model_coefficients[1] ) +
-                    ( (*input_)[index].z - model_coefficients[2] ) *
-                    ( (*input_)[index].z - model_coefficients[2] )
-                   ) - model_coefficients[3]) > threshold)
+    // To avoid sqrt computation: consider one larger sphere (radius + threshold) and one smaller sphere (radius - threshold).
+    // Valid if point is in larger sphere, but not in smaller sphere.
+    const float sqr_dist = ( (*input_)[index].x - model_coefficients[0] ) *
+                           ( (*input_)[index].x - model_coefficients[0] ) +
+                           ( (*input_)[index].y - model_coefficients[1] ) *
+                           ( (*input_)[index].y - model_coefficients[1] ) +
+                           ( (*input_)[index].z - model_coefficients[2] ) *
+                           ( (*input_)[index].z - model_coefficients[2] );
+    if ((sqr_dist > sqr_outer_radius) || (sqr_dist < sqr_inner_radius))
     {
       return (false);
     }
