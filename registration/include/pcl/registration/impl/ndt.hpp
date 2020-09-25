@@ -477,83 +477,117 @@ NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelectionMT (d
     return a_t;
   }
 
-  // Case 1 in Trial Value Selection [More, Thuente 1994]
-  if (f_t > f_l && a_t != a_l)
+  // Endpoints condition check [More, Thuente 1994], p.299 - 300
+  enum class EndpointsCondition { Case1, Case2, Case3, Case4 };
+  EndpointsCondition condition;
+
+  if(a_t == a_l)
   {
-    // Calculate the minimizer of the cubic that interpolates f_l, f_t, g_l and g_t
-    // Equation 2.4.52 [Sun, Yuan 2006]
-    const double z = 3 * (f_t - f_l) / (a_t - a_l) - g_t - g_l;
-    const double w = std::sqrt (z * z - g_t * g_l);
-    // Equation 2.4.56 [Sun, Yuan 2006]
-    const double a_c = a_l + (a_t - a_l) * (w - g_l - z) / (g_t - g_l + 2 * w);
-
-    // Calculate the minimizer of the quadratic that interpolates f_l, f_t and g_l
-    // Equation 2.4.2 [Sun, Yuan 2006]
-    const double a_q = a_l - 0.5 * (a_l - a_t) * g_l / (g_l - (f_l - f_t) / (a_l - a_t));
-
-    if (std::fabs (a_c - a_l) < std::fabs (a_q - a_l))
-    {
-      return a_c;
-    }
-    return 0.5 * (a_q + a_c);
+    condition = EndpointsCondition::Case4;
   }
-  // Case 2 in Trial Value Selection [More, Thuente 1994]
-  if (g_t * g_l < 0 && a_t != a_l)
+  else if(f_t > f_l)
   {
-    // Calculate the minimizer of the cubic that interpolates f_l, f_t, g_l and g_t
-    // Equation 2.4.52 [Sun, Yuan 2006]
-    const double z = 3 * (f_t - f_l) / (a_t - a_l) - g_t - g_l;
-    const double w = std::sqrt (z * z - g_t * g_l);
-    // Equation 2.4.56 [Sun, Yuan 2006]
-    const double a_c = a_l + (a_t - a_l) * (w - g_l - z) / (g_t - g_l + 2 * w);
-
-    // Calculate the minimizer of the quadratic that interpolates f_l, g_l and g_t
-    // Equation 2.4.5 [Sun, Yuan 2006]
-    const double a_s = a_l - (a_l - a_t) / (g_l - g_t) * g_l;
-
-    if (std::fabs (a_c - a_t) >= std::fabs (a_s - a_t))
-    {
-      return a_c;
-    }
-    return a_s;
+    condition = EndpointsCondition::Case1;
   }
-  // Case 3 in Trial Value Selection [More, Thuente 1994]
-  if (std::fabs (g_t) <= std::fabs (g_l) && a_t != a_l)
+  else if(g_t * g_l < 0)
   {
-    // Calculate the minimizer of the cubic that interpolates f_l, f_t, g_l and g_t
-    // Equation 2.4.52 [Sun, Yuan 2006]
-    const double z = 3 * (f_t - f_l) / (a_t - a_l) - g_t - g_l;
-    const double w = std::sqrt (z * z - g_t * g_l);
-    const double a_c = a_l + (a_t - a_l) * (w - g_l - z) / (g_t - g_l + 2 * w);
-
-    // Calculate the minimizer of the quadratic that interpolates g_l and g_t
-    // Equation 2.4.5 [Sun, Yuan 2006]
-    const double a_s = a_l - (a_l - a_t) / (g_l - g_t) * g_l;
-
-    double a_t_next;
-
-    if (std::fabs (a_c - a_t) < std::fabs (a_s - a_t))
-    {
-      a_t_next = a_c;
-    }
-    else
-    {
-      a_t_next = a_s;
-    }
-
-    if (a_t > a_l)
-    {
-      return std::min (a_t + 0.66 * (a_u - a_t), a_t_next);
-    }
-    return std::max (a_t + 0.66 * (a_u - a_t), a_t_next);
+    condition = EndpointsCondition::Case2;
   }
-  // Case 4 in Trial Value Selection [More, Thuente 1994]
-  // Calculate the minimizer of the cubic that interpolates f_u, f_t, g_u and g_t
-  // Equation 2.4.52 [Sun, Yuan 2006]
-  const double z = 3 * (f_t - f_u) / (a_t - a_u) - g_t - g_u;
-  const double w = std::sqrt (z * z - g_t * g_u);
-  // Equation 2.4.56 [Sun, Yuan 2006]
-  return a_u + (a_t - a_u) * (w - g_u - z) / (g_t - g_u + 2 * w);
+  else if(std::fabs(g_t) <= std::fabs(g_l))
+  {
+    condition = EndpointsCondition::Case3;
+  }
+  else
+  {
+    condition = EndpointsCondition::Case4;
+  }
+
+  switch(condition) {
+    // Case 1 in Trial Value Selection [More, Thuente 1994]
+    case EndpointsCondition::Case1:
+    {
+      // Calculate the minimizer of the cubic that interpolates f_l, f_t, g_l and g_t
+      // Equation 2.4.52 [Sun, Yuan 2006]
+      const double z = 3 * (f_t - f_l) / (a_t - a_l) - g_t - g_l;
+      const double w = std::sqrt (z * z - g_t * g_l);
+      // Equation 2.4.56 [Sun, Yuan 2006]
+      const double a_c = a_l + (a_t - a_l) * (w - g_l - z) / (g_t - g_l + 2 * w);
+
+      // Calculate the minimizer of the quadratic that interpolates f_l, f_t and g_l
+      // Equation 2.4.2 [Sun, Yuan 2006]
+      const double a_q = a_l - 0.5 * (a_l - a_t) * g_l / (g_l - (f_l - f_t) / (a_l - a_t));
+
+      if (std::fabs (a_c - a_l) < std::fabs (a_q - a_l))
+      {
+        return a_c;
+      }
+      return 0.5 * (a_q + a_c);
+    }
+
+    // Case 2 in Trial Value Selection [More, Thuente 1994]
+    case EndpointsCondition::Case2:
+    {
+      // Calculate the minimizer of the cubic that interpolates f_l, f_t, g_l and g_t
+      // Equation 2.4.52 [Sun, Yuan 2006]
+      const double z = 3 * (f_t - f_l) / (a_t - a_l) - g_t - g_l;
+      const double w = std::sqrt (z * z - g_t * g_l);
+      // Equation 2.4.56 [Sun, Yuan 2006]
+      const double a_c = a_l + (a_t - a_l) * (w - g_l - z) / (g_t - g_l + 2 * w);
+
+      // Calculate the minimizer of the quadratic that interpolates f_l, g_l and g_t
+      // Equation 2.4.5 [Sun, Yuan 2006]
+      const double a_s = a_l - (a_l - a_t) / (g_l - g_t) * g_l;
+
+      if (std::fabs (a_c - a_t) >= std::fabs (a_s - a_t))
+      {
+        return a_c;
+      }
+      return a_s;
+    }
+
+    // Case 3 in Trial Value Selection [More, Thuente 1994]
+    case EndpointsCondition::Case3:
+    {
+      // Calculate the minimizer of the cubic that interpolates f_l, f_t, g_l and g_t
+      // Equation 2.4.52 [Sun, Yuan 2006]
+      const double z = 3 * (f_t - f_l) / (a_t - a_l) - g_t - g_l;
+      const double w = std::sqrt (z * z - g_t * g_l);
+      const double a_c = a_l + (a_t - a_l) * (w - g_l - z) / (g_t - g_l + 2 * w);
+
+      // Calculate the minimizer of the quadratic that interpolates g_l and g_t
+      // Equation 2.4.5 [Sun, Yuan 2006]
+      const double a_s = a_l - (a_l - a_t) / (g_l - g_t) * g_l;
+
+      double a_t_next;
+
+      if (std::fabs (a_c - a_t) < std::fabs (a_s - a_t))
+      {
+        a_t_next = a_c;
+      }
+      else
+      {
+        a_t_next = a_s;
+      }
+
+      if (a_t > a_l)
+      {
+        return std::min (a_t + 0.66 * (a_u - a_t), a_t_next);
+      }
+      return std::max (a_t + 0.66 * (a_u - a_t), a_t_next);
+    }
+
+    // Case 4 in Trial Value Selection [More, Thuente 1994]
+    default:
+    case EndpointsCondition::Case4:
+    {
+      // Calculate the minimizer of the cubic that interpolates f_u, f_t, g_u and g_t
+      // Equation 2.4.52 [Sun, Yuan 2006]
+      const double z = 3 * (f_t - f_u) / (a_t - a_u) - g_t - g_u;
+      const double w = std::sqrt (z * z - g_t * g_u);
+      // Equation 2.4.56 [Sun, Yuan 2006]
+      return a_u + (a_t - a_u) * (w - g_u - z) / (g_t - g_u + 2 * w);
+    }
+  }
 }
 
 template<typename PointSource, typename PointTarget> double
