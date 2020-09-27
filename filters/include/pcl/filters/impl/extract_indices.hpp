@@ -41,6 +41,7 @@
 #define PCL_FILTERS_IMPL_EXTRACT_INDICES_HPP_
 
 #include <pcl/filters/extract_indices.h>
+#include <numeric> // for std::iota
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -132,8 +133,7 @@ pcl::ExtractIndices<PointT>::applyFilterIndices (Indices &indices)
     {
       // Set up the full indices set
       Indices full_indices (input_->size ());
-      for (index_t fii = 0; fii < static_cast<index_t> (full_indices.size ()); ++fii)  // fii = full indices iterator
-        full_indices[fii] = fii;
+      std::iota (full_indices.begin (), full_indices.end (), static_cast<index_t> (0));
 
       // Set up the sorted input indices
       Indices sorted_input_indices = *indices_;
@@ -148,8 +148,7 @@ pcl::ExtractIndices<PointT>::applyFilterIndices (Indices &indices)
   {
     // Set up the full indices set
     Indices full_indices (input_->size ());
-    for (index_t fii = 0; fii < static_cast<index_t> (full_indices.size ()); ++fii)  // fii = full indices iterator
-      full_indices[fii] = fii;
+    std::iota (full_indices.begin (), full_indices.end (), static_cast<index_t> (0));
 
     // Set up the sorted input indices
     Indices sorted_input_indices = *indices_;
