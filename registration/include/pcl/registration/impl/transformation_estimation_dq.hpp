@@ -41,6 +41,10 @@
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_DQ_HPP_
 
 #include <pcl/common/eigen.h>
+PCL_DEPRECATED_HEADER(1,
+                      15,
+                      "TransformationEstimationDQ has been renamed to "
+                      "TransformationEstimationDualQuaternion.");
 
 
 namespace pcl
