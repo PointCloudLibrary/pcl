@@ -91,7 +91,7 @@ namespace pcl
   /** \brief GeneralizedIterativeClosestPoint6D integrates L*a*b* color space information into the
    * Generalized Iterative Closest Point (GICP) algorithm.
    *
-   * The suggested input is PointXYZRGBA.
+   * The suggested input is PointXYZRGB.
    *
    * \note If you use this code in any academic work, please cite:
    *
@@ -103,10 +103,10 @@ namespace pcl
    * \author Martin Holzkothen, Michael Korn
    * \ingroup registration
    */
-  class PCL_EXPORTS GeneralizedIterativeClosestPoint6D : public GeneralizedIterativeClosestPoint<PointXYZRGBA, PointXYZRGBA>
+  class PCL_EXPORTS GeneralizedIterativeClosestPoint6D : public GeneralizedIterativeClosestPoint<PointXYZRGB, PointXYZRGB>
   {
-    using PointSource = PointXYZRGBA;
-    using PointTarget = PointXYZRGBA;
+    using PointSource = PointXYZRGB;
+    using PointTarget = PointXYZRGB;
 
     public:
 

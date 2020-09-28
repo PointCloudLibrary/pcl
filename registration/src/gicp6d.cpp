@@ -111,9 +111,9 @@ namespace pcl
     return colorLab;
   }
 
-  // convert a PointXYZRGBA cloud to a PointXYZLAB cloud
+  // convert a PointXYZRGB cloud to a PointXYZLAB cloud
   void
-  convertRGBAToLAB (const PointCloud<pcl::PointXYZRGBA>& in, PointCloud<PointXYZLAB>& out)
+  convertRGBToLAB (const PointCloud<pcl::PointXYZRGB>& in, PointCloud<PointXYZLAB>& out)
   {
     out.resize (in.size ());
 
@@ -146,7 +146,7 @@ namespace pcl
     GeneralizedIterativeClosestPoint<PointSource, PointTarget>::setInputSource (cloud);
 
     // in addition, convert colors of the cloud to CIELAB
-    convertRGBAToLAB (*cloud, *cloud_lab_);
+    convertRGBToLAB (*cloud, *cloud_lab_);
   }
 
   void
@@ -157,7 +157,7 @@ namespace pcl
         target);
 
     // in addition, convert colors of the cloud to CIELAB...
-    convertRGBAToLAB (*target, *target_lab_);
+    convertRGBToLAB (*target, *target_lab_);
 
     // ...and build 6d-tree
     target_tree_lab_.setInputCloud (target_lab_);
