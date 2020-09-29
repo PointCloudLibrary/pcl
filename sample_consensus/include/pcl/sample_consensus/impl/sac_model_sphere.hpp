@@ -165,21 +165,13 @@ pcl::SampleConsensusModelSphere<PointT>::getDistancesToModel (
   }
   distances.resize (indices_->size ());
 
+  const Eigen::Vector3f center (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     // Calculate the distance from the point to the sphere as the difference between
     //dist(point,sphere_origin) and sphere_radius
-    distances[i] = std::abs (std::sqrt (
-                               ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
-                               ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
-
-                               ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
-                               ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) +
-
-                               ( (*input_)[(*indices_)[i]].z - model_coefficients[2] ) *
-                               ( (*input_)[(*indices_)[i]].z - model_coefficients[2] )
-                               ) - model_coefficients[3]);
+    distances[i] = std::abs (((*input_)[(*indices_)[i]].getVector3fMap () - center).norm () - model_coefficients[3]);
   }
 }
 
@@ -202,17 +194,13 @@ pcl::SampleConsensusModelSphere<PointT>::selectWithinDistance (
 
   const float sqr_inner_radius = (model_coefficients[3] <= threshold ? 0.0f : (model_coefficients[3] - threshold) * (model_coefficients[3] - threshold));
   const float sqr_outer_radius = (model_coefficients[3] + threshold) * (model_coefficients[3] + threshold);
+  const Eigen::Vector3f center (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (std::size_t i = 0; i < indices_->size (); ++i)
   {
     // To avoid sqrt computation: consider one larger sphere (radius + threshold) and one smaller sphere (radius - threshold).
     // Valid if point is in larger sphere, but not in smaller sphere.
-    const float sqr_dist = ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
-                           ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
-                           ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
-                           ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) +
-                           ( (*input_)[(*indices_)[i]].z - model_coefficients[2] ) *
-                           ( (*input_)[(*indices_)[i]].z - model_coefficients[2] );
+    const float sqr_dist = ((*input_)[(*indices_)[i]].getVector3fMap () - center).squaredNorm ();
     if ((sqr_dist <= sqr_outer_radius) && (sqr_dist >= sqr_inner_radius))
     {
       // Returns the indices of the points whose distances are smaller than the threshold
@@ -249,17 +237,13 @@ pcl::SampleConsensusModelSphere<PointT>::countWithinDistanceStandard (
   std::size_t nr_p = 0;
   const float sqr_inner_radius = (model_coefficients[3] <= threshold ? 0.0f : (model_coefficients[3] - threshold) * (model_coefficients[3] - threshold));
   const float sqr_outer_radius = (model_coefficients[3] + threshold) * (model_coefficients[3] + threshold);
+  const Eigen::Vector3f center (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (; i < indices_->size (); ++i)
   {
     // To avoid sqrt computation: consider one larger sphere (radius + threshold) and one smaller sphere (radius - threshold).
     // Valid if point is in larger sphere, but not in smaller sphere.
-    const float sqr_dist = ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) *
-                           ( (*input_)[(*indices_)[i]].x - model_coefficients[0] ) +
-                           ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) *
-                           ( (*input_)[(*indices_)[i]].y - model_coefficients[1] ) +
-                           ( (*input_)[(*indices_)[i]].z - model_coefficients[2] ) *
-                           ( (*input_)[(*indices_)[i]].z - model_coefficients[2] );
+    const float sqr_dist = ((*input_)[(*indices_)[i]].getVector3fMap () - center).squaredNorm ();
     if ((sqr_dist <= sqr_outer_radius) && (sqr_dist >= sqr_inner_radius))
       nr_p++;
   }
@@ -414,16 +398,12 @@ pcl::SampleConsensusModelSphere<PointT>::doSamplesVerifyModel (
 
   const float sqr_inner_radius = (model_coefficients[3] <= threshold ? 0.0f : (model_coefficients[3] - threshold) * (model_coefficients[3] - threshold));
   const float sqr_outer_radius = (model_coefficients[3] + threshold) * (model_coefficients[3] + threshold);
+  const Eigen::Vector3f center (model_coefficients[0], model_coefficients[1], model_coefficients[2]);
   for (const auto &index : indices)
   {
     // To avoid sqrt computation: consider one larger sphere (radius + threshold) and one smaller sphere (radius - threshold).
     // Valid if point is in larger sphere, but not in smaller sphere.
-    const float sqr_dist = ( (*input_)[index].x - model_coefficients[0] ) *
-                           ( (*input_)[index].x - model_coefficients[0] ) +
-                           ( (*input_)[index].y - model_coefficients[1] ) *
-                           ( (*input_)[index].y - model_coefficients[1] ) +
-                           ( (*input_)[index].z - model_coefficients[2] ) *
-                           ( (*input_)[index].z - model_coefficients[2] );
+    const float sqr_dist = ((*input_)[index].getVector3fMap () - center).squaredNorm ();
     if ((sqr_dist > sqr_outer_radius) || (sqr_dist < sqr_inner_radius))
     {
       return (false);
