@@ -401,17 +401,17 @@ namespace pcl
   }
   } // namespace detail
 
-  /** \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...) from a string
-    * 
-    * Uses aoti/atof to do the conversion.
-    * Checks if the st is "nan" and converts it accordingly.
-    *
-    * \param[in] st the string containing the value to convert and copy
-    * \param[out] cloud the cloud to copy it to
-    * \param[in] point_index the index of the point
-    * \param[in] field_idx the index of the dimension/field
-    * \param[in] fields_count the current fields count
-    */
+  /**
+   * \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...) from a string
+   * \details Uses `istringstream` to do the conversion in classic locale
+   * Checks if the st is "nan" and converts it accordingly.
+   *
+   * \param[in] st the string containing the value to convert and copy
+   * \param[out] cloud the cloud to copy it to
+   * \param[in] point_index the index of the point
+   * \param[in] field_idx the index of the dimension/field
+   * \param[in] fields_count the current fields count
+   */
   template <typename Type> inline void
   copyStringValue (const std::string &st, pcl::PCLPointCloud2 &cloud,
                    pcl::index_t point_index, unsigned int field_idx, unsigned int fields_count)
@@ -420,6 +420,18 @@ namespace pcl
     is.imbue (std::locale::classic ());
     detail::copyStringValue<Type> (st, cloud,point_index, field_idx, fields_count, is);
   }
+/**
+ * \brief Copy one single value of type T (uchar, char, uint, int, float, double, ...) from a string
+ * \details Uses the provided `istringstream` to do the conversion, respecting its locale settings
+ * Checks if the st is "nan" and converts it accordingly.
+ *
+ * \param[in] st the string containing the value to convert and copy
+ * \param[out] cloud the cloud to copy it to
+ * \param[in] point_index the index of the point
+ * \param[in] field_idx the index of the dimension/field
+ * \param[in] fields_count the current fields count
+ * \param[in,out] is input string stream for helping to convert st into cloud
+ */
   template <typename Type> inline void
   copyStringValue (const std::string &st, pcl::PCLPointCloud2 &cloud,
                    pcl::index_t point_index, unsigned int field_idx, unsigned int fields_count,
