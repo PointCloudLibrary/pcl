@@ -89,7 +89,7 @@ public:
   , tmp_idx_src_(src.tmp_idx_src_)
   , tmp_idx_tgt_(src.tmp_idx_tgt_)
   , warp_point_(src.warp_point_)
-  , reg_coeff_(VectorX::Zero()){};
+  , reg_coeff_(src.reg_coeff_){};
 
   /** \brief Copy operator.
    * \param[in] src the TransformationEstimationLM object to copy into this
@@ -167,6 +167,19 @@ public:
   {
     warp_point_ = warp_fcn;
   }
+
+        /** \brief Set regularization coefficients. Defaults to all 0s (no regularization).
+         *  \param[in] regularization_coeffs the regularization coefficients (tx, ty, tz, qx, qy, qz for rigid 6-DoF
+         *  transform)
+         */
+        void
+        setRegularizationCoefficients(const VectorX &regularization_coeffs)
+        {
+          assert(regularization_coeffs.rows() == warp_point_.nr_dims() &&
+              "Regularization coefficient vector must have same dimension as transformation");
+          PCL_WARN("Setting regularization_coeffs for %p\n", (void*)this);
+          reg_coeff_ = regularization_coeffs;
+        }
 
 protected:
   /** \brief Compute the distance between a source point and its corresponding target
