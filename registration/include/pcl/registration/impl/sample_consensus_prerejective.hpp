@@ -75,7 +75,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::setTargetFeatur
 template <typename PointSource, typename PointTarget, typename FeatureT>
 void
 SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamples(
-    const PointCloudSource& cloud, int nr_samples, std::vector<int>& sample_indices)
+    const PointCloudSource& cloud, int nr_samples, std::vector<int>& sample_indices) const
 {
   if (nr_samples > static_cast<int>(cloud.size())) {
     PCL_ERROR("[pcl::%s::selectSamples] ", getClassName().c_str());
@@ -120,7 +120,7 @@ void
 SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::findSimilarFeatures(
     const std::vector<int>& sample_indices,
     std::vector<std::vector<int>>& similar_features,
-    std::vector<int>& corresponding_indices)
+    std::vector<int>& corresponding_indices) const
 {
   // Allocate results
   corresponding_indices.resize(sample_indices.size());
@@ -223,14 +223,13 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
 
   // Temporaries
   std::vector<int> inliers;
-  float inlier_fraction;
-  float error;
-
+  
   // If guess is not the Identity matrix we check it
   if (!guess.isApprox(Eigen::Matrix4f::Identity(), 0.01f)) {
-    getFitness(inliers, error);
-    inlier_fraction =
-        static_cast<float>(inliers.size()) / static_cast<float>(input_->size());
+    float error;
+    getFitness(guess, inliers, error);
+    const float inlier_fraction = 
+        static_cast<float> (inliers.size ()) / static_cast<float> (input_->size ());
 
     if (inlier_fraction >= inlier_fraction_ && error < lowest_error) {
       inliers_ = inliers;
@@ -241,13 +240,21 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
 
   // Feature correspondence cache
   std::vector<std::vector<int>> similar_features(input_->size());
+  std::vector<float> nn_distances(k_correspondences_);
+  #pragma omp parallel for num_threads(num_threads_) firstprivate(nn_distances)
+  for(int i = 0; i < static_cast<int>(input_->size()); ++i) {
+    nn_distances.clear();
+    feature_tree_->nearestKSearch(*input_features_, i, k_correspondences_, similar_features[i], nn_distances);
+  }
+
+  // Temporary containers
+  std::vector<int> sample_indices(nr_samples_);
+  std::vector<int> corresponding_indices(nr_samples_);
 
   // Start
-  for (int i = 0; i < max_iterations_; ++i) {
-    // Temporary containers
-    std::vector<int> sample_indices;
-    std::vector<int> corresponding_indices;
-
+  #pragma omp parallel for num_threads(num_threads_) shared(similar_features) firstprivate(inliers, sample_indices, corresponding_indices)
+  for (int i = 0; i < max_iterations_; ++i)
+  {
     // Draw nr_samples_ random samples
     selectSamples(*input_, nr_samples_, sample_indices);
 
@@ -261,32 +268,30 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
       continue;
     }
 
-    // Estimate the transform from the correspondences, write to transformation_
+    // Estimate the transform from the correspondences, write to transformation
+    Eigen::Matrix4f transformation;
     transformation_estimation_->estimateRigidTransformation(
-        *input_, sample_indices, *target_, corresponding_indices, transformation_);
+    	*input_, sample_indices, *target_, corresponding_indices, transformation);
 
-    // Take a backup of previous result
-    const Matrix4 final_transformation_prev = final_transformation_;
-
-    // Set final result to current transformation
-    final_transformation_ = transformation_;
-
-    // Transform the input and compute the error (uses input_ and final_transformation_)
-    getFitness(inliers, error);
-
-    // Restore previous result
-    final_transformation_ = final_transformation_prev;
+    // Transform the input and compute the error (uses input_ and transformation)
+    float error;
+    getFitness(transformation, inliers, error);
 
     // If the new fit is better, update results
-    inlier_fraction =
-        static_cast<float>(inliers.size()) / static_cast<float>(input_->size());
+    const float inlier_fraction =
+        static_cast<float> (inliers.size ()) / static_cast<float> (input_->size ());
 
     // Update result if pose hypothesis is better
-    if (inlier_fraction >= inlier_fraction_ && error < lowest_error) {
-      inliers_ = inliers;
-      lowest_error = error;
-      converged_ = true;
-      final_transformation_ = transformation_;
+    #pragma omp critical
+    {
+      if (inlier_fraction >= inlier_fraction_ && error < lowest_error)
+      {
+        inliers_ = inliers;
+        lowest_error = error;
+        converged_ = true;
+        transformation_ = transformation;
+        final_transformation_ = transformation;
+      }
     }
   }
 
@@ -305,7 +310,16 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
 template <typename PointSource, typename PointTarget, typename FeatureT>
 void
 SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
-    std::vector<int>& inliers, float& fitness_score)
+    std::vector<int>& inliers, float& fitness_score) const
+{
+  getFitness(final_transformation_, inliers, fitness_score);
+}
+
+
+template <typename PointSource, typename PointTarget, typename FeatureT>
+void
+SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
+    const Eigen::Matrix4f& transformation, std::vector<int>& inliers, float& fitness_score) const
 {
   // Initialize variables
   inliers.clear();
@@ -315,10 +329,10 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
   // Use squared distance for comparison with NN search results
   const float max_range = corr_dist_threshold_ * corr_dist_threshold_;
 
-  // Transform the input dataset using the final transformation
+  // Transform the input dataset using the transformation
   PointCloudSource input_transformed;
-  input_transformed.resize(input_->size());
-  transformPointCloud(*input_, input_transformed, final_transformation_);
+  input_transformed.resize(input_->size ());
+  transformPointCloud(*input_, input_transformed, transformation);
 
   // For each point in the source dataset
   for (std::size_t i = 0; i < input_transformed.size(); ++i) {
