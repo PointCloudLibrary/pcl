@@ -23,7 +23,7 @@ In this video, the algorithm is applied to the frontal scan of the stanford bunn
 
 .. raw:: html
 
-  <iframe title="Trimmed B-spline surface fitting" width="480" height="390" src="http://www.youtube.com/embed/trH2kWELvyw?rel=0" frameborder="0" allowfullscreen></iframe>
+  <iframe title="Trimmed B-spline surface fitting" width="480" height="390" src="https://www.youtube.com/embed/trH2kWELvyw?rel=0" frameborder="0" allowfullscreen></iframe>
 
 
 Theoretical background

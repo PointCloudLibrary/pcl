@@ -245,6 +245,6 @@ The following video shows the the output of the demo.
 
 .. raw:: html
     
-    <iframe width="480" height="270" src="http://www.youtube.com/embed/2Xgd67nkwzs" frameborder="0" allowfullscreen></iframe>
+    <iframe width="480" height="270" src="https://www.youtube.com/embed/2Xgd67nkwzs" frameborder="0" allowfullscreen></iframe>
 
     

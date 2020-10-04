@@ -9,7 +9,7 @@ local neighborhoods. An example of the method's output can be seen here:
 
 .. raw:: html
 
-  <iframe title="Surface Triangulation and Point Cloud Classification" width="480" height="390" src="http://www.youtube.com/embed/VALTnZCyWc0?rel=0" frameborder="0" allowfullscreen></iframe>
+  <iframe title="Surface Triangulation and Point Cloud Classification" width="480" height="390" src="https://www.youtube.com/embed/VALTnZCyWc0?rel=0" frameborder="0" allowfullscreen></iframe>
 
 Background: algorithm and parameters
 ------------------------------------
