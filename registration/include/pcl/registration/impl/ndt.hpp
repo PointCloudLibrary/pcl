@@ -503,7 +503,6 @@ NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelectionMT (d
   }
 
   switch(condition) {
-    // Case 1 in Trial Value Selection [More, Thuente 1994]
     case EndpointsCondition::Case1:
     {
       // Calculate the minimizer of the cubic that interpolates f_l, f_t, g_l and g_t
@@ -524,7 +523,6 @@ NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelectionMT (d
       return 0.5 * (a_q + a_c);
     }
 
-    // Case 2 in Trial Value Selection [More, Thuente 1994]
     case EndpointsCondition::Case2:
     {
       // Calculate the minimizer of the cubic that interpolates f_l, f_t, g_l and g_t
@@ -545,7 +543,6 @@ NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelectionMT (d
       return a_s;
     }
 
-    // Case 3 in Trial Value Selection [More, Thuente 1994]
     case EndpointsCondition::Case3:
     {
       // Calculate the minimizer of the cubic that interpolates f_l, f_t, g_l and g_t
@@ -576,7 +573,6 @@ NormalDistributionsTransform<PointSource, PointTarget>::trialValueSelectionMT (d
       return std::max (a_t + 0.66 * (a_u - a_t), a_t_next);
     }
 
-    // Case 4 in Trial Value Selection [More, Thuente 1994]
     default:
     case EndpointsCondition::Case4:
     {
