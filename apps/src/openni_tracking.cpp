@@ -39,8 +39,6 @@
 #include <pcl/common/time.h>
 #include <pcl/common/transforms.h>
 #include <pcl/console/parse.h>
-#include <pcl/features/integral_image_normal.h>
-#include <pcl/features/normal_3d.h>
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/filters/approximate_voxel_grid.h>
 #include <pcl/filters/extract_indices.h>
@@ -48,10 +46,8 @@
 #include <pcl/filters/project_inliers.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/openni_grabber.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
-#include <pcl/search/pcl_search.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/segmentation/sac_segmentation.h>
@@ -276,13 +272,13 @@ public:
         // clang-format off
         // draw some texts
         viz.removeShape("N");
-        viz.addText((boost::format("number of Reference PointClouds: %d") %
-                     tracker_->getReferenceCloud()->points.size()).str(),
+        viz.addText((boost::format("number of Reference PointClouds: %1%") %
+                     tracker_->getReferenceCloud()->size()).str(),
                     10, 20, 20, 1.0, 1.0, 1.0, "N");
 
         viz.removeShape("M");
-        viz.addText((boost::format("number of Measured PointClouds:  %d") %
-                     cloud_pass_downsampled_->points.size()).str(),
+        viz.addText((boost::format("number of Measured PointClouds:  %1%") %
+                     cloud_pass_downsampled_->size()).str(),
                     10, 40, 20, 1.0, 1.0, 1.0, "M");
 
         viz.removeShape("tracking");
@@ -298,8 +294,8 @@ public:
                     10, 100, 20, 1.0, 1.0, 1.0, "computation");
 
         viz.removeShape("particles");
-        viz.addText((boost::format("particles:     %d") %
-                     tracker_->getParticles()->points.size()).str(),
+        viz.addText((boost::format("particles:     %1%") %
+                     tracker_->getParticles()->size()).str(),
                     10, 120, 20, 1.0, 1.0, 1.0, "particles");
         // clang-format on
       }
@@ -439,13 +435,13 @@ public:
     result.width = cloud->width;
     result.height = cloud->height;
     result.is_dense = cloud->is_dense;
-    for (std::size_t i = 0; i < cloud->points.size(); i++) {
+    for (std::size_t i = 0; i < cloud->size(); i++) {
       RefPointType point;
-      point.x = cloud->points[i].x;
-      point.y = cloud->points[i].y;
-      point.z = cloud->points[i].z;
-      point.rgba = cloud->points[i].rgba;
-      result.points.push_back(point);
+      point.x = (*cloud)[i].x;
+      point.y = (*cloud)[i].y;
+      point.z = (*cloud)[i].z;
+      point.rgba = (*cloud)[i].rgba;
+      result.push_back(point);
     }
   }
 
@@ -472,15 +468,14 @@ public:
   void
   removeZeroPoints(const CloudConstPtr& cloud, Cloud& result)
   {
-    for (std::size_t i = 0; i < cloud->points.size(); i++) {
-      PointType point = cloud->points[i];
+    for (const auto& point: *cloud) {
       if (!(std::abs(point.x) < 0.01 && std::abs(point.y) < 0.01 &&
             std::abs(point.z) < 0.01) &&
           !std::isnan(point.x) && !std::isnan(point.y) && !std::isnan(point.z))
-        result.points.push_back(point);
+        result.push_back(point);
     }
 
-    result.width = static_cast<std::uint32_t>(result.points.size());
+    result.width = result.size();
     result.height = 1;
     result.is_dense = true;
   }
@@ -492,11 +487,11 @@ public:
                         Cloud& result)
   {
     pcl::PointIndices segmented_indices = cluster_indices[segment_index];
-    for (const int& index : segmented_indices.indices) {
-      PointType point = cloud->points[index];
-      result.points.push_back(point);
+    for (const auto& index : segmented_indices.indices) {
+      PointType point = (*cloud)[index];
+      result.push_back(point);
     }
-    result.width = std::uint32_t(result.points.size());
+    result.width = result.size();
     result.height = 1;
     result.is_dense = true;
   }
@@ -584,7 +579,7 @@ public:
           tracker_->setReferenceCloud(transed_ref_downsampled);
           tracker_->setTrans(trans);
           reference_ = transed_ref;
-          tracker_->setMinIndices(int(ref_cloud->points.size()) / 2);
+          tracker_->setMinIndices(ref_cloud->size() / 2);
         }
         else {
           PCL_WARN("euclidean segmentation failed\n");

@@ -63,7 +63,7 @@ namespace pcl
         for (int y = leftY; (y <= rightY) && (nnn < max_nn_arg); y++)
         {
           int idx = y * input_->width + x;
-          const PointT& point = input_->points[idx];
+          const PointT& point = (*input_)[idx];
 
           const double point_dist_x = point.x - p_q_arg.x;
           const double point_dist_y = point.y - p_q_arg.y;
@@ -209,7 +209,7 @@ namespace pcl
         if ((x >= 0) && (y >= 0) && (x < (int)input_->width) && (y < (int)input_->height))
         {
           idx = y * (int)input_->width + x;
-          const PointT& point = input_->points[idx];
+          const PointT& point = (*input_)[idx];
 
           if ((point.x == point.x) && // check for NaNs
               (point.y == point.y) &&
@@ -279,7 +279,7 @@ namespace pcl
           if ((x >= 0) && (y >= 0) && (x < (int)input_->width) && (y < (int)input_->height))
           {
             idx = y * (int)input_->width + x;
-            const PointT& point = input_->points[idx];
+            const PointT& point = (*input_)[idx];
 
             if ((point.x == point.x) && // check for NaNs
                 (point.y == point.y) && (point.z == point.z))
@@ -343,10 +343,10 @@ namespace pcl
         for (int x = 0; x < (int)input_->width; x++)
         {
           std::size_t i = y * input_->width + x;
-          if ((input_->points[i].x == input_->points[i].x) && // check for NaNs
-              (input_->points[i].y == input_->points[i].y) && (input_->points[i].z == input_->points[i].z))
+          if (((*input_)[i].x == (*input_)[i].x) && // check for NaNs
+              ((*input_)[i].y == (*input_)[i].y) && ((*input_)[i].z == (*input_)[i].z))
           {
-            const PointT& point = input_->points[i];
+            const PointT& point = (*input_)[i];
             if ((double)(x - input_->width / 2) * (double)(y - input_->height / 2) * point.z != 0)
             {
               // estimate the focal length for point.x and point.y

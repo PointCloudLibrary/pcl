@@ -46,8 +46,6 @@
 
 #include <pcl/cuda/segmentation/mssegmentation.h>
 
-using namespace std;
-
 // Auxiliray stuff
 namespace pcl
 {

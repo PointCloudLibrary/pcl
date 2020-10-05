@@ -45,7 +45,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
@@ -88,23 +87,23 @@ TEST (PCL, BoundaryEstimation)
   // isBoundaryPoint (indices)
   bool pt = false;
   pt = b.isBoundaryPoint (cloud, 0, indices, u, v, float (M_PI) / 2.0);
-  EXPECT_EQ (pt, false);
+  EXPECT_FALSE (pt);
   pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) / 3, indices, u, v, float (M_PI) / 2.0);
-  EXPECT_EQ (pt, false);
+  EXPECT_FALSE (pt);
   pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) / 2, indices, u, v, float (M_PI) / 2.0);
-  EXPECT_EQ (pt, false);
+  EXPECT_FALSE (pt);
   pt = b.isBoundaryPoint (cloud, static_cast<int> (indices.size ()) - 1, indices, u, v, float (M_PI) / 2.0);
-  EXPECT_EQ (pt, true);
+  EXPECT_TRUE (pt);
 
   // isBoundaryPoint (points)
-  pt = b.isBoundaryPoint (cloud, cloud.points[0], indices, u, v, float (M_PI) / 2.0);
-  EXPECT_EQ (pt, false);
-  pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () / 3], indices, u, v, float (M_PI) / 2.0);
-  EXPECT_EQ (pt, false);
-  pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () / 2], indices, u, v, float (M_PI) / 2.0);
-  EXPECT_EQ (pt, false);
-  pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () - 1], indices, u, v, float (M_PI) / 2.0);
-  EXPECT_EQ (pt, true);
+  pt = b.isBoundaryPoint (cloud, cloud[0], indices, u, v, float (M_PI) / 2.0);
+  EXPECT_FALSE (pt);
+  pt = b.isBoundaryPoint (cloud, cloud[indices.size () / 3], indices, u, v, float (M_PI) / 2.0);
+  EXPECT_FALSE (pt);
+  pt = b.isBoundaryPoint (cloud, cloud[indices.size () / 2], indices, u, v, float (M_PI) / 2.0);
+  EXPECT_FALSE (pt);
+  pt = b.isBoundaryPoint (cloud, cloud[indices.size () - 1], indices, u, v, float (M_PI) / 2.0);
+  EXPECT_TRUE (pt);
 
   // Object
   PointCloud<Boundary>::Ptr bps (new PointCloud<Boundary> ());
@@ -117,16 +116,16 @@ TEST (PCL, BoundaryEstimation)
 
   // estimate
   b.compute (*bps);
-  EXPECT_EQ (bps->points.size (), indices.size ());
+  EXPECT_EQ (bps->size (), indices.size ());
 
-  pt = bps->points[0].boundary_point;
-  EXPECT_EQ (pt, false);
-  pt = bps->points[indices.size () / 3].boundary_point;
-  EXPECT_EQ (pt, false);
-  pt = bps->points[indices.size () / 2].boundary_point;
-  EXPECT_EQ (pt, false);
-  pt = bps->points[indices.size () - 1].boundary_point;
-  EXPECT_EQ (pt, true);
+  pt = (*bps)[0].boundary_point;
+  EXPECT_FALSE (pt);
+  pt = (*bps)[indices.size () / 3].boundary_point;
+  EXPECT_FALSE (pt);
+  pt = (*bps)[indices.size () / 2].boundary_point;
+  EXPECT_FALSE (pt);
+  pt = (*bps)[indices.size () - 1].boundary_point;
+  EXPECT_TRUE (pt);
 }
 
 /* ---[ */
@@ -145,7 +144,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  indices.resize (cloud.points.size ());
+  indices.resize (cloud.size ());
   for (std::size_t i = 0; i < indices.size (); ++i)
     indices[i] = static_cast<int> (i);
 

@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <pcl/registration/eigen.h>
 #include <pcl/registration/warp_point_rigid.h>
 
 namespace pcl

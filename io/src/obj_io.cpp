@@ -37,7 +37,6 @@
  */
 #include <pcl/io/obj_io.h>
 #include <fstream>
-#include <iostream>
 #include <pcl/common/io.h>
 #include <pcl/io/boost.h>
 #include <pcl/console/time.h>
@@ -537,8 +536,8 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   std::vector<std::string> st;
   try
   {
-    std::size_t point_idx = 0;
-    std::size_t normal_idx = 0;
+    index_t point_idx = 0;
+    index_t normal_idx = 0;
 
     while (!fs.eof ())
     {

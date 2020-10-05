@@ -64,3 +64,20 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 option(BUILD_tools "Useful PCL-based command line tools" ON)
 
 option(WITH_DOCS "Build doxygen documentation" OFF)
+
+# set index size
+set(PCL_INDEX_SIZE -1 CACHE STRING "Set index size. Available options are: 8 16 32 64. A negative value indicates default size (32 for PCL >= 1.12, 8*sizeof(int) i.e., the number of bits in int, otherwise)")
+set_property(CACHE PCL_INDEX_SIZE PROPERTY STRINGS -1 8 16 32 64)
+
+# Set whether indices are signed or unsigned
+set(PCL_INDEX_SIGNED true CACHE BOOL "Set whether indices need to be signed or unsigned. Signed by default.")
+if (PCL_INDEX_SIGNED)
+  set(PCL_INDEX_SIGNED_STR "true")
+else()
+  set (PCL_INDEX_SIGNED_STR "false")
+endif()
+
+# Set whether gpu tests should be run
+# (Used to prevent gpu tests from executing in CI where GPU hardware is unavailable)
+option(PCL_DISABLE_GPU_TESTS "Disable running GPU tests. If disabled, tests will still be built." OFF)
+

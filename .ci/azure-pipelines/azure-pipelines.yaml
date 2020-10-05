@@ -67,7 +67,7 @@ stages:
         variables:
           BUILD_DIR: '$(Agent.WorkFolder)/build'
           GOOGLE_TEST_DIR: '$(Agent.WorkFolder)/googletest'
-          CMAKE_CXX_FLAGS: '-Wall -Wextra -Werror -Wabi'
+          CMAKE_CXX_FLAGS: '-Wall -Wextra -Wabi -Werror -Wno-error=deprecated-declarations'
         steps:
           - template: build/macos.yaml
       - job: ubuntu
@@ -94,6 +94,29 @@ stages:
           CMAKE_CXX_FLAGS: '-Wall -Wextra'
         steps:
           - template: build/ubuntu.yaml
+      - job: ubuntu_indices
+        displayName: Ubuntu Indices
+        # Test 64 bit & unsigned indices
+        dependsOn: osx
+        condition: succeededOrFailed()
+        pool:
+          vmImage: 'Ubuntu 16.04'
+        strategy:
+          matrix:
+            18.04 Clang:
+              CONTAINER: env1804
+              CC: clang
+              CXX: clang++
+              INDEX_SIGNED: OFF
+              INDEX_SIZE: 64
+              CMAKE_ARGS: ''
+        container: $[ variables['CONTAINER'] ]
+        timeoutInMinutes: 0
+        variables:
+          BUILD_DIR: '$(Agent.BuildDirectory)/build'
+          CMAKE_CXX_FLAGS: '-Wall -Wextra'
+        steps:
+          - template: build/ubuntu_indices.yaml
 
   - stage: build_msvc
     displayName: Build MSVC
@@ -115,7 +138,7 @@ stages:
               GENERATOR: 'Visual Studio 15 2017 Win64'
         timeoutInMinutes: 0
         variables:
-          BUILD_DIR: '$(Agent.WorkFolder)\build'
+          BUILD_DIR: 'c:\build'
           CONFIGURATION: 'Release'
           VCPKG_ROOT: 'C:\vcpkg'
         steps:

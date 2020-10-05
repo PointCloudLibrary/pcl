@@ -115,10 +115,10 @@ pcl::modeler::CloudMesh::save(const std::vector<const CloudMesh*>& cloud_meshes,
   CloudMesh cloud_mesh;
   for (const auto& mesh : cloud_meshes) {
     if (filename.rfind(".obj") == (filename.length() - 4)) {
-      std::size_t delta = cloud_mesh.cloud_->size();
+      index_t delta = cloud_mesh.cloud_->size();
       for (auto polygon : mesh->polygons_) {
-        for (unsigned int& vertice : polygon.vertices)
-          vertice += static_cast<unsigned int>(delta);
+        for (index_t& vertice : polygon.vertices)
+          vertice += delta;
         cloud_mesh.polygons_.push_back(polygon);
       }
     }
@@ -163,13 +163,13 @@ pcl::modeler::CloudMesh::updateVtkPoints()
 
   // If the dataset has no invalid values, just copy all of them
   if (cloud_->is_dense) {
-    vtkIdType nr_points = cloud_->points.size();
+    vtkIdType nr_points = cloud_->size();
     data->SetNumberOfValues(3 * nr_points);
 
     for (vtkIdType i = 0; i < nr_points; ++i) {
-      data->SetValue(i * 3 + 0, cloud_->points[i].x);
-      data->SetValue(i * 3 + 1, cloud_->points[i].y);
-      data->SetValue(i * 3 + 2, cloud_->points[i].z);
+      data->SetValue(i * 3 + 0, (*cloud_)[i].x);
+      data->SetValue(i * 3 + 1, (*cloud_)[i].y);
+      data->SetValue(i * 3 + 2, (*cloud_)[i].z);
     }
   }
   // Need to check for NaNs, Infs, ec
@@ -181,9 +181,9 @@ pcl::modeler::CloudMesh::updateVtkPoints()
 
     for (vtkIdType i = 0, i_end = indices->size(); i < i_end; ++i) {
       vtkIdType idx = (*indices)[i];
-      data->SetValue(i * 3 + 0, cloud_->points[idx].x);
-      data->SetValue(i * 3 + 1, cloud_->points[idx].y);
-      data->SetValue(i * 3 + 2, cloud_->points[idx].z);
+      data->SetValue(i * 3 + 0, (*cloud_)[idx].x);
+      data->SetValue(i * 3 + 1, (*cloud_)[idx].y);
+      data->SetValue(i * 3 + 2, (*cloud_)[idx].z);
     }
   }
   data->Squeeze();

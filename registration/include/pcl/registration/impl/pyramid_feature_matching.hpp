@@ -168,7 +168,7 @@ PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
 
 
   nr_dimensions = dimension_range_target_.size ();
-  nr_features = input_->points.size ();
+  nr_features = input_->size ();
   float D = 0.0f;
   for (std::vector<std::pair<float, float> >::iterator range_it = dimension_range_target_.begin (); range_it != dimension_range_target_.end (); ++range_it)
   {
@@ -275,10 +275,10 @@ PyramidFeatureHistogram<PointFeature>::compute ()
   if (!initializeHistogram ())
     return;
 
-  for (std::size_t feature_i = 0; feature_i < input_->points.size (); ++feature_i)
+  for (const auto& point: *input_)
   {
     std::vector<float> feature_vector;
-    convertFeatureToVector (input_->points[feature_i], feature_vector);
+    convertFeatureToVector (point, feature_vector);
     addFeature (feature_vector);
   }
 

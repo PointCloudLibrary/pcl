@@ -44,7 +44,6 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -153,7 +152,7 @@ public:
     extract_indices_filter_.setIndices(feature_indices_);
     extract_indices_filter_.filter(*feature_locations_);
 
-    PCL_INFO("Persistent feature locations %d\n", feature_locations_->points.size());
+    PCL_INFO("Persistent feature locations %zu\n", static_cast<std::size_t>(feature_locations_->size()));
 
     cloud_ = cloud;
 

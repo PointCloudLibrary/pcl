@@ -39,9 +39,8 @@
 
 #pragma once
 
-#include <pcl/filters/boost.h>
 #include <pcl/filters/filter.h>
-#include <map>
+#include <cfloat> // for FLT_MAX
 
 namespace pcl
 {

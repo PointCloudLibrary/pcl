@@ -41,8 +41,6 @@
 #pragma once
 
 #include <pcl/features/feature.h>
-#include <pcl/search/pcl_search.h>
-#include <pcl/common/common.h>
 
 namespace pcl
 {

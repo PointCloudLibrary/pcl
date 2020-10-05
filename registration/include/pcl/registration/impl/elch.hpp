@@ -46,7 +46,6 @@
 #include <tuple>
 
 #include <pcl/common/transforms.h>
-#include <pcl/registration/eigen.h>
 #include <pcl/registration/boost.h>
 #include <pcl/registration/registration.h>
 

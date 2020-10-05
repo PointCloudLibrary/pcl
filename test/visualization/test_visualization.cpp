@@ -48,7 +48,6 @@
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::visualization;
-using namespace std;
 
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
@@ -69,7 +68,7 @@ TEST(PCL, PCLVisualizer_updatePointCloud)
   pcl::common::CloudGenerator<pcl::PointXYZRGB, pcl::common::UniformGenerator<float> > generator;
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>());
-  int result = generator.fill(3, 1, *cloud);
+  generator.fill(3, 1, *cloud);
 
   // Setup a basic viewport window
   pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));

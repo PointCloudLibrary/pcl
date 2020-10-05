@@ -41,13 +41,10 @@
 #include <pcl/common/angles.h>
 #include <pcl/common/common.h>
 #include <pcl/common/time.h>
-#include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/features/integral_image_normal.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/geometry/polygon_operations.h>
 #include <pcl/io/openni_grabber.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/search/organized.h>
 #include <pcl/segmentation/edge_aware_plane_comparator.h>
@@ -65,7 +62,6 @@
 #include <thread>
 
 using namespace pcl;
-using namespace std;
 using namespace std::chrono_literals;
 
 using PointT = PointXYZRGBA;
@@ -229,8 +225,8 @@ public:
 
     // Remove the plane indices from the data
     PointIndices::Ptr everything_but_the_plane(new PointIndices);
-    if (indices_fullset_.size() != cloud->points.size()) {
-      indices_fullset_.resize(cloud->points.size());
+    if (indices_fullset_.size() != cloud->size()) {
+      indices_fullset_.resize(cloud->size());
       for (int p_it = 0; p_it < static_cast<int>(indices_fullset_.size()); ++p_it)
         indices_fullset_[p_it] = p_it;
     }
@@ -263,8 +259,8 @@ public:
     l.label = 0;
     PointCloud<Label>::Ptr scene(new PointCloud<Label>(cloud->width, cloud->height, l));
     // Mask the objects that we want to split into clusters
-    for (const int& index : points_above_plane->indices)
-      scene->points[index].label = 1;
+    for (const auto& index : points_above_plane->indices)
+      (*scene)[index].label = 1;
     euclidean_cluster_comparator->setLabels(scene);
 
     OrganizedConnectedComponentSegmentation<PointT, Label> euclidean_segmentation(
@@ -333,11 +329,11 @@ public:
                           labels,
                           label_indices,
                           boundary_indices);
-    PCL_DEBUG("Number of planar regions detected: %lu for a cloud of %lu points and "
-              "%lu normals.\n",
-              regions.size(),
-              search_.getInputCloud()->points.size(),
-              normal_cloud->points.size());
+    PCL_DEBUG("Number of planar regions detected: %zu for a cloud of %zu points and "
+              "%zu normals.\n",
+              static_cast<std::size_t>(regions.size()),
+              static_cast<std::size_t>(search_.getInputCloud()->size()),
+              static_cast<std::size_t>(normal_cloud->size()));
 
     double max_dist = std::numeric_limits<double>::max();
     // Compute the distances from all the planar regions to the picked point, and select
@@ -400,7 +396,7 @@ public:
     event.getPoint(picked_pt.x, picked_pt.y, picked_pt.z);
 
     // Add a sphere to it in the PCLVisualizer window
-    stringstream ss;
+    std::stringstream ss;
     ss << "sphere_" << idx;
     cloud_viewer_.addSphere(picked_pt, 0.01, 1.0, 0.0, 0.0, ss.str());
 
@@ -449,9 +445,9 @@ public:
 
     PlanarRegion<PointT> refined_region;
     pcl::approximatePolygon(region, refined_region, 0.01, false, true);
-    PCL_INFO("Planar region: %lu points initial, %lu points after refinement.\n",
-             region.getContour().size(),
-             refined_region.getContour().size());
+    PCL_INFO("Planar region: %zu points initial, %zu points after refinement.\n",
+             static_cast<std::size_t>(region.getContour().size()),
+             static_cast<std::size_t>(refined_region.getContour().size()));
     cloud_viewer_.addPolygon(refined_region, 0.0, 0.0, 1.0, "refined_region");
     cloud_viewer_.setShapeRenderingProperties(
         visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "refined_region");
@@ -477,7 +473,7 @@ public:
     // Compute the min/max of the object
     PointT min_pt, max_pt;
     getMinMax3D(*object, min_pt, max_pt);
-    stringstream ss2;
+    std::stringstream ss2;
     ss2 << "cube_" << idx;
     // Visualize the bounding box in 3D...
     cloud_viewer_.addCube(min_pt.x,
@@ -587,7 +583,7 @@ private:
 int
 main(int, char**)
 {
-  string device_id("#1");
+  std::string device_id("#1");
   OpenNIGrabber grabber(device_id);
   NILinemod openni_viewer(grabber);
 

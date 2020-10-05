@@ -58,6 +58,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/extract_indices.h"
   "include/pcl/${SUBSYS_NAME}/filter.h"
   "include/pcl/${SUBSYS_NAME}/filter_indices.h"
+  "include/pcl/${SUBSYS_NAME}/experimental/functor_filter.h"
   "include/pcl/${SUBSYS_NAME}/passthrough.h"
   "include/pcl/${SUBSYS_NAME}/shadowpoints.h"
   "include/pcl/${SUBSYS_NAME}/project_inliers.h"

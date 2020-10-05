@@ -47,7 +47,6 @@
 #include <pcl/common/centroid.h>
 
 #include <pcl/filters/filter.h>
-#include "boost.h"
 
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
@@ -215,7 +214,7 @@ private:
     //remove NaN Points
     std::vector<int> nanIndexes;
     pcl::removeNaNFromPointCloud(*cloud, *cloud, nanIndexes);
-    std::cout << "Loaded " << cloud->points.size() << " points" << std::endl;
+    std::cout << "Loaded " << cloud->size() << " points" << std::endl;
 
     //create octree structure
     octree.setInputCloud(cloud);
@@ -250,8 +249,10 @@ private:
     viz.addText (level, 0, 30, 1.0, 0.0, 0.0, "level_t1");
 
     viz.removeShape ("level_t2");
-    sprintf (level, "Voxel size: %.4fm [%lu voxels]", std::sqrt (octree.getVoxelSquaredSideLen (displayedDepth)),
-             cloudVoxel->points.size ());
+    sprintf(level,
+            "Voxel size: %.4fm [%zu voxels]",
+            std::sqrt(octree.getVoxelSquaredSideLen(displayedDepth)),
+            static_cast<std::size_t>(cloudVoxel->size()));
     viz.addText (level, 0, 15, 1.0, 0.0, 0.0, "level_t2");
   }
 
@@ -417,8 +418,10 @@ private:
     }
 
     double end = pcl::getTime ();
-    printf("%lu pts, %.4gs. %.4gs./pt. =====\n", displayCloud->points.size (), end - start,
-           (end - start) / static_cast<double> (displayCloud->points.size ()));
+    printf("%zu pts, %.4gs. %.4gs./pt. =====\n",
+           static_cast<std::size_t>(displayCloud->size()),
+           end - start,
+           (end - start) / static_cast<double>(displayCloud->size()));
 
     update();
   }

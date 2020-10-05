@@ -41,6 +41,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/test/gtest.h>
+#include <fstream> // for ofstream
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PLYReaderWriter)
@@ -301,7 +302,7 @@ TYPED_TEST (PLYPointCloudTest, LoadPLYFileColoredASCIIIntoPointCloud)
   // cloud has proper structure
   EXPECT_EQ (cloud_rgb.height, 1);
   EXPECT_EQ (cloud_rgb.width, 4);
-  EXPECT_EQ (cloud_rgb.points.size(), 4);
+  EXPECT_EQ (cloud_rgb.size(), 4);
   EXPECT_TRUE (cloud_rgb.is_dense);
 
   // scope cloud data

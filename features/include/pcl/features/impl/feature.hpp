@@ -41,7 +41,8 @@
 #ifndef PCL_FEATURES_IMPL_FEATURE_H_
 #define PCL_FEATURES_IMPL_FEATURE_H_
 
-#include <pcl/search/pcl_search.h>
+#include <pcl/search/kdtree.h> // for KdTree
+#include <pcl/search/organized.h> // for OrganizedNeighbor
 
 
 namespace pcl
@@ -195,7 +196,7 @@ Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   if (!initCompute ())
   {
     output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -203,14 +204,14 @@ Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   output.header = input_->header;
 
   // Resize the output dataset
-  if (output.points.size () != indices_->size ())
-    output.points.resize (indices_->size ());
+  if (output.size () != indices_->size ())
+    output.resize (indices_->size ());
 
   // Check if the output will be computed for all points or only a subset
   // If the input width or height are not set, set output width as size
   if (indices_->size () != input_->points.size () || input_->width * input_->height == 0)
   {
-    output.width = static_cast<std::uint32_t> (indices_->size ());
+    output.width = indices_->size ();
     output.height = 1;
   }
   else
@@ -248,8 +249,10 @@ FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ()
   if (normals_->points.size () != surface_->points.size ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] ", getClassName ().c_str ());
-    PCL_ERROR ("The number of points in the input dataset (%u) differs from ", surface_->points.size ());
-    PCL_ERROR ("the number of points in the dataset containing the normals (%u)!\n", normals_->points.size ());
+    PCL_ERROR("The number of points in the input dataset (%zu) differs from ",
+              static_cast<std::size_t>(surface_->points.size()));
+    PCL_ERROR("the number of points in the dataset containing the normals (%zu)!\n",
+              static_cast<std::size_t>(normals_->points.size()));
     Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }

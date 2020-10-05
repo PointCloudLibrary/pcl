@@ -41,7 +41,6 @@
 #pragma once
 
 #include <pcl/memory.h>
-#include <pcl/pcl_macros.h>
 #include <pcl/registration/registration.h>
 #include <pcl/registration/transformation_estimation_svd.h>
 

@@ -42,10 +42,7 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
-#include <Eigen/Core>
-
 #include <cassert>
-#include <cstddef>
 
 namespace pcl {
 namespace octree {

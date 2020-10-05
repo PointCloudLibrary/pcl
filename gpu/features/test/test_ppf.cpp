@@ -45,7 +45,6 @@
 
 #include "data_source.hpp"
 
-using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 
@@ -57,7 +56,7 @@ TEST(PCL_FeaturesGPU, ppf)
     source.generateIndices();
     source.estimateNormals();
                    
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
@@ -96,7 +95,7 @@ TEST(PCL_FeaturesGPU, ppf)
     for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         PPFSignature& gpu = downloaded[i];
-        PPFSignature& cpu = ppfs.points[i];        
+        PPFSignature& cpu = ppfs[i];        
 
         ASSERT_NEAR(gpu.f1, cpu.f1, 0.01f);
         ASSERT_NEAR(gpu.f2, cpu.f2, 0.01f);
@@ -116,7 +115,7 @@ TEST(PCL_FeaturesGPU, ppfrgb)
     source.generateIndices();
     source.estimateNormals();
                    
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
@@ -147,9 +146,8 @@ TEST(PCL_FeaturesGPU, ppfrgb)
     
     PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB>());
     cloud_XYZRGB->points.clear();
-    for(std::size_t i = 0; i < source.cloud->points.size(); ++i)               
+    for (const auto& p: *source.cloud)
     {
-        const PointXYZ& p = source.cloud->points[i];        
         int color = *(int*)&p.data[3];
         int r =  color        & 0xFF;
         int g = (color >>  8) & 0xFF;
@@ -159,7 +157,7 @@ TEST(PCL_FeaturesGPU, ppfrgb)
         o.x = p.x; o.y = p.y; o.z = p.z; o.r = r; o.g = g; o.b = b;        
         cloud_XYZRGB->points.push_back(o);
     }
-    cloud_XYZRGB->width = cloud_XYZRGB->points.size();
+    cloud_XYZRGB->width = cloud_XYZRGB->size();
     cloud_XYZRGB->height = 1;
 
 
@@ -173,7 +171,7 @@ TEST(PCL_FeaturesGPU, ppfrgb)
     for(std::size_t i = 207025; i < downloaded.size(); ++i)
     {
         PPFRGBSignature& gpu = downloaded[i];
-        PPFRGBSignature& cpu = ppfs.points[i];        
+        PPFRGBSignature& cpu = ppfs[i];        
 
         ASSERT_NEAR(gpu.f1, cpu.f1, 0.01f);
         ASSERT_NEAR(gpu.f2, cpu.f2, 0.01f);
@@ -204,7 +202,7 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
 
     source.estimateNormals();
                    
-    std::vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
@@ -237,9 +235,8 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
     
     PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB>());
     cloud_XYZRGB->points.clear();
-    for(std::size_t i = 0; i < source.cloud->points.size(); ++i)               
+    for (const auto& p: *source.cloud)
     {
-        const PointXYZ& p = source.cloud->points[i];        
         int color = *(int*)&p.data[3];
         int r =  color        & 0xFF;
         int g = (color >>  8) & 0xFF;
@@ -249,7 +246,7 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
         o.x = p.x; o.y = p.y; o.z = p.z; o.r = r; o.g = g; o.b = b;        
         cloud_XYZRGB->points.push_back(o);
     }
-    cloud_XYZRGB->width = cloud_XYZRGB->points.size();
+    cloud_XYZRGB->width = cloud_XYZRGB->size();
     cloud_XYZRGB->height = 1;
 
 
@@ -264,7 +261,7 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
     for(std::size_t i = 0; i < downloaded.size(); ++i)
     {
         PPFRGBSignature& gpu = downloaded[i];
-        PPFRGBSignature& cpu = ppfs.points[i];        
+        PPFRGBSignature& cpu = ppfs[i];        
 
         ASSERT_NEAR(gpu.f1, cpu.f1, 0.01f);
         ASSERT_NEAR(gpu.f2, cpu.f2, 0.01f);

@@ -47,11 +47,9 @@
 #include <pcl/filters/crop_box.h>
 #include <pcl/filters/extract_indices.h>
 
-#include <pcl/common/transforms.h>
 #include <pcl/common/eigen.h>
 
 using namespace pcl;
-using namespace std;
 using namespace Eigen;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

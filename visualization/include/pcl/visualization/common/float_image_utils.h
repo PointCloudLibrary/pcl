@@ -37,8 +37,6 @@
 #include <pcl/pcl_config.h>
 #include <pcl/pcl_macros.h>
 
-#include <iostream>
-#include <cmath>
 #include <limits>
 
 namespace pcl

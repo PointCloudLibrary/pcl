@@ -38,8 +38,6 @@
 #pragma once
 
 #undef Success
-#include <Eigen/Dense>
-
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/surface/on_nurbs/sparse_mat.h>

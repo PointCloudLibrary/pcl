@@ -355,7 +355,7 @@ int main (int argc, char** argv)
     showCloudsLeft(source, target);
 
     PointCloud::Ptr temp (new PointCloud);
-    PCL_INFO ("Aligning %s (%d) with %s (%d).\n", data[i-1].f_name.c_str (), source->points.size (), data[i].f_name.c_str (), target->points.size ());
+    PCL_INFO ("Aligning %s (%zu) with %s (%zu).\n", data[i-1].f_name.c_str (), static_cast<std::size_t>(source->size ()), data[i].f_name.c_str (), static_cast<std::size_t>(target->size ()));
     pairAlign (source, target, temp, pairTransform, true);
 
     //transform current pair into the global transform

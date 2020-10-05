@@ -39,7 +39,7 @@
 
 // PCL includes
 #include <pcl/pcl_base.h>
-#include <pcl/search/pcl_search.h>
+#include <pcl/search/search.h> // for Search
 #include <pcl/pcl_config.h>
 
 #include <functional>

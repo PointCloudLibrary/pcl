@@ -38,6 +38,8 @@
 
 #pragma once
 
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver
+
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/pca.h>

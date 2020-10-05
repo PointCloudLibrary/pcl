@@ -42,6 +42,9 @@
 #define PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_HPP_
 
 #include <pcl/people/ground_based_people_detection_app.h>
+#include <pcl/filters/extract_indices.h> // for ExtractIndices
+#include <pcl/segmentation/extract_clusters.h> // for EuclideanClusterExtraction
+#include <pcl/filters/voxel_grid.h> // for VoxelGrid
 
 template <typename PointT>
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::GroundBasedPeopleDetectionApp ()

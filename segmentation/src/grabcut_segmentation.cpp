@@ -39,7 +39,6 @@
 
 #include <pcl/segmentation/grabcut_segmentation.h>
 
-#include <cstdlib>
 #include <cassert>
 #include <vector>
 #include <map>

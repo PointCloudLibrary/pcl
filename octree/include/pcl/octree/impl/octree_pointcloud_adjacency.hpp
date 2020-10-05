@@ -37,7 +37,6 @@
 
 #pragma once
 
-#include <pcl/common/geometry.h>
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 #include <pcl/console/print.h>
 
@@ -75,7 +74,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
         maxZ = -std::numeric_limits<float>::max();
 
   for (std::size_t i = 0; i < input_->size(); ++i) {
-    PointT temp(input_->points[i]);
+    PointT temp((*input_)[i]);
     if (transform_func_) // Search for point with
       transform_func_(temp);
     if (!pcl::isFinite(
@@ -158,9 +157,9 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
 {
   OctreeKey key;
 
-  assert(pointIdx_arg < static_cast<int>(this->input_->points.size()));
+  assert(pointIdx_arg < static_cast<int>(this->input_->size()));
 
-  const PointT& point = this->input_->points[pointIdx_arg];
+  const PointT& point = (*this->input_)[pointIdx_arg];
   if (!pcl::isFinite(point))
     return;
 

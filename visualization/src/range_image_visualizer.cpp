@@ -81,7 +81,7 @@ pcl::visualization::RangeImageVisualizer::visualizeBorders (
   {
     for (std::size_t x=0; x<range_image.width; ++x)
     {
-      const pcl::BorderDescription& border_description = border_descriptions.points[y*range_image.width + x];
+      const pcl::BorderDescription& border_description = border_descriptions[y*range_image.width + x];
       const pcl::BorderTraits& border_traits = border_description.traits;
       if (border_traits[pcl::BORDER_TRAIT__OBSTACLE_BORDER])
       {

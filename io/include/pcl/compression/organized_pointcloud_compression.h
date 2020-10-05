@@ -41,11 +41,6 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 
-#include <pcl/common/boost.h>
-#include <pcl/common/eigen.h>
-#include <pcl/common/common.h>
-#include <pcl/common/io.h>
-
 #include <pcl/io/openni_camera/openni_shift_to_depth_conversion.h>
 
 #include <vector>

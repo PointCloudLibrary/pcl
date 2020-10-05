@@ -51,7 +51,7 @@ pcl::PPFHashMapSearch::setInputFeatureCloud (PointCloud<PPFSignature>::ConstPtr 
 {
   // Discretize the feature cloud and insert it in the hash map
   feature_hash_map_->clear ();
-  unsigned int n = static_cast<unsigned int> (std::sqrt (static_cast<float> (feature_cloud->points.size ())));
+  unsigned int n = static_cast<unsigned int> (std::sqrt (static_cast<float> (feature_cloud->size ())));
   int d1, d2, d3, d4;
   max_dist_ = -1.0;
   alpha_m_.resize (n);
@@ -60,15 +60,15 @@ pcl::PPFHashMapSearch::setInputFeatureCloud (PointCloud<PPFSignature>::ConstPtr 
     std::vector <float> alpha_m_row (n);
     for (std::size_t j = 0; j < n; ++j)
     {
-      d1 = static_cast<int> (std::floor (feature_cloud->points[i*n+j].f1 / angle_discretization_step_));
-      d2 = static_cast<int> (std::floor (feature_cloud->points[i*n+j].f2 / angle_discretization_step_));
-      d3 = static_cast<int> (std::floor (feature_cloud->points[i*n+j].f3 / angle_discretization_step_));
-      d4 = static_cast<int> (std::floor (feature_cloud->points[i*n+j].f4 / distance_discretization_step_));
+      d1 = static_cast<int> (std::floor ((*feature_cloud)[i*n+j].f1 / angle_discretization_step_));
+      d2 = static_cast<int> (std::floor ((*feature_cloud)[i*n+j].f2 / angle_discretization_step_));
+      d3 = static_cast<int> (std::floor ((*feature_cloud)[i*n+j].f3 / angle_discretization_step_));
+      d4 = static_cast<int> (std::floor ((*feature_cloud)[i*n+j].f4 / distance_discretization_step_));
       feature_hash_map_->insert (std::pair<HashKeyStruct, std::pair<std::size_t, std::size_t> > (HashKeyStruct (d1, d2, d3, d4), std::pair<std::size_t, std::size_t> (i, j)));
-      alpha_m_row [j] = feature_cloud->points[i*n + j].alpha_m;
+      alpha_m_row [j] = (*feature_cloud)[i*n + j].alpha_m;
 
-      if (max_dist_ < feature_cloud->points[i*n + j].f4)
-        max_dist_ = feature_cloud->points[i*n + j].f4;
+      if (max_dist_ < (*feature_cloud)[i*n + j].f4)
+        max_dist_ = (*feature_cloud)[i*n + j].f4;
     }
     alpha_m_[i] = alpha_m_row;
   }

@@ -46,9 +46,9 @@ pcl::PCLBase<pcl::PCLPointCloud2>::PCLBase ()
   : use_indices_ (false)
   , fake_indices_ (false)
   , field_sizes_ (0)
-  , x_idx_ (-1)
-  , y_idx_ (-1)
-  , z_idx_ (-1)
+  , x_idx_ (UNAVAILABLE)
+  , y_idx_ (UNAVAILABLE)
+  , z_idx_ (UNAVAILABLE)
   , x_field_name_ ("x")
   , y_field_name_ ("y")
   , z_field_name_ ("z")
@@ -126,7 +126,7 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
   }
 
   // If we have a set of fake indices, but they do not match the number of points in the cloud, update them
-  if (fake_indices_ && indices_->size () != (input_->width * input_->height))
+  if (fake_indices_ && indices_->size () != static_cast<uindex_t>((input_->width * input_->height)))
   {
     const auto indices_size = indices_->size ();
     try

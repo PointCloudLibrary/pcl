@@ -19,9 +19,9 @@ RUN sed -i "s/^# deb-src/deb-src/" /etc/apt/sources.list \
  && apt install -y \
     libeigen3-dev \
     libflann-dev \
+    libqhull-dev \
     python-pip \
     ros-${flavor}-tf2-eigen \
- && apt build-dep pcl -y \
  && pip install -U pip \
  && pip install catkin_tools \
  && cd ${workspace}/src \
@@ -34,6 +34,7 @@ COPY package.xml ${workspace}/src/pcl/
 
 RUN cd ${workspace} \
  && . "/opt/ros/${flavor}/setup.sh" \
- && catkin config --install \
+ && catkin config --install --link-devel \
  && catkin build -j2 libpcl-all-dev --cmake-args -DWITH_OPENGL:BOOL=OFF \
- && catkin build
+ && rm -fr build/libpcl-all-dev \
+ && catkin build --start-with pcl_msgs

@@ -46,7 +46,6 @@
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/print.h>
-#include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
 #include <vtkVersion.h>
@@ -64,7 +63,6 @@
 #include <list>
 #include <thread>
 
-using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace io;
@@ -100,7 +98,7 @@ class CallbackParameters
     PCLVisualizer& viz_;
     PointCloud<PointXYZ>& scene_points_;
     PointCloud<Normal>& scene_normals_;
-    list<vtkActor*> actors_;
+    std::list<vtkActor*> actors_;
 };
 
 //===========================================================================================================================================
@@ -112,7 +110,7 @@ main (int argc, char** argv)
 
   const int num_params = 3;
   float parameters[num_params] = {40.0f/*pair width*/, 5.0f/*voxel size*/, 15.0f/*max co-planarity angle*/};
-  string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle"};
+  std::string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle"};
 
   // Read the user input if any
   for ( int i = 0 ; i < argc-1 && i < num_params ; ++i )
@@ -143,14 +141,14 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle)
   objrec.setMaxCoplanarityAngleDegrees (max_coplanarity_angle);
 
   // The models to be loaded
-  list<string> model_names;
+  std::list<std::string> model_names;
   model_names.emplace_back("tum_amicelli_box");
   model_names.emplace_back("tum_rusk_box");
   model_names.emplace_back("tum_soda_bottle");
 
-  list<PointCloud<PointXYZ>::Ptr> model_points_list;
-  list<PointCloud<Normal>::Ptr> model_normals_list;
-  list<vtkSmartPointer<vtkPolyData> > vtk_models_list;
+  std::list<PointCloud<PointXYZ>::Ptr> model_points_list;
+  std::list<PointCloud<Normal>::Ptr> model_normals_list;
+  std::list<vtkSmartPointer<vtkPolyData> > vtk_models_list;
 
   // Load the models and add them to the recognizer
   for (const auto &model_name : model_names)
@@ -165,7 +163,7 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle)
     vtk_models_list.push_back (vtk_model);
 
     // Compose the file
-    string file_name = string("../../test/") + model_name + string (".vtk");
+    std::string file_name = std::string("../../test/") + model_name + std::string (".vtk");
 
     // Get the points and normals from the input model
     if ( !vtk2PointCloud (file_name.c_str (), *model_points, *model_normals, vtk_model) )
@@ -248,7 +246,7 @@ update (CallbackParameters* params)
   params->actors_.clear ();
 
   // This will be the output of the recognition
-  list<ObjRecRANSAC::Output> rec_output;
+  std::list<ObjRecRANSAC::Output> rec_output;
 
   // For convenience
   ObjRecRANSAC& objrec = params->objrec_;
@@ -258,7 +256,7 @@ update (CallbackParameters* params)
   int i = 0;
 
   // Show the hypotheses
-  for ( list<ObjRecRANSAC::Output>::iterator it = rec_output.begin () ; it != rec_output.end () ; ++it, ++i )
+  for ( std::list<ObjRecRANSAC::Output>::iterator it = rec_output.begin () ; it != rec_output.end () ; ++it, ++i )
   {
     std::cout << it->object_name_ << " has a confidence value of " << it->match_confidence_ << std::endl;
 
@@ -355,13 +353,13 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
   {
     if ( static_cast<int> (id) == inliers->indices[i] )
     {
-      plane_points.points[i] = all_points->points[id];
+      plane_points[i] = (*all_points)[id];
       ++i;
     }
     else
     {
-      non_plane_points.points[j] = all_points->points[id];
-      non_plane_normals.points[j] = all_normals->points[id];
+      non_plane_points[j] = (*all_points)[id];
+      non_plane_normals[j] = (*all_normals)[id];
       ++j;
     }
     ++id;
@@ -370,8 +368,8 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
   // Just copy the rest of the non-plane points
   for ( std::size_t id = inliers->indices.size (); id < all_points->size () ; ++id, ++j )
   {
-    non_plane_points.points[j] = all_points->points[id];
-    non_plane_normals.points[j] = all_normals->points[id];
+    non_plane_points[j] = (*all_points)[id];
+    non_plane_normals[j] = (*all_normals)[id];
   }
 
   return true;

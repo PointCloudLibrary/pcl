@@ -403,7 +403,7 @@ main (int argc, char ** argv)
         {
           viewer->removePointCloud (ss.str ());
           viewer->addPointCloudNormals<PointT,Normal> ((sv_itr->second)->voxels_,(sv_itr->second)->normals_,10,0.02f,ss.str ());
-        //  std::cout << (sv_itr->second)->normals_->points[0]<<"\n";
+        //  std::cout << (sv_itr->second)->normals_[0]<<"\n";
           
         }
           

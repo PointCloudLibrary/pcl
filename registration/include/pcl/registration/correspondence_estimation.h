@@ -43,7 +43,7 @@
 #include <string>
 
 #include <pcl/pcl_base.h>
-#include <pcl/common/transforms.h>
+#include <pcl/common/io.h> // for getFields
 #include <pcl/search/kdtree.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>

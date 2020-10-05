@@ -79,17 +79,17 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 {
   if (indices_) {
     for (const int& index : *indices_) {
-      assert((index >= 0) && (index < static_cast<int>(input_->points.size())));
+      assert((index >= 0) && (index < static_cast<int>(input_->size())));
 
-      if (isFinite(input_->points[index])) {
+      if (isFinite((*input_)[index])) {
         // add points to octree
         this->addPointIdx(index);
       }
     }
   }
   else {
-    for (std::size_t i = 0; i < input_->points.size(); i++) {
-      if (isFinite(input_->points[i])) {
+    for (std::size_t i = 0; i < input_->size(); i++) {
+      if (isFinite((*input_)[i])) {
         // add points to octree
         this->addPointIdx(static_cast<unsigned int>(i));
       }
@@ -124,7 +124,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
   cloud_arg->push_back(point_arg);
 
-  this->addPointIdx(static_cast<const int>(cloud_arg->points.size()) - 1);
+  this->addPointIdx(static_cast<const int>(cloud_arg->size()) - 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -143,8 +143,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
   cloud_arg->push_back(point_arg);
 
-  this->addPointFromCloud(static_cast<const int>(cloud_arg->points.size()) - 1,
-                          indices_arg);
+  this->addPointFromCloud(static_cast<const int>(cloud_arg->size()) - 1, indices_arg);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -179,7 +178,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     isVoxelOccupiedAtPoint(const int& point_idx_arg) const
 {
   // retrieve point from input cloud
-  const PointT& point = this->input_->points[point_idx_arg];
+  const PointT& point = (*this->input_)[point_idx_arg];
 
   // search for voxel at point in octree
   return (this->isVoxelOccupiedAtPoint(point));
@@ -237,7 +236,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     deleteVoxelAtPoint(const int& point_idx_arg)
 {
   // retrieve point from input cloud
-  const PointT& point = this->input_->points[point_idx_arg];
+  const PointT& point = (*this->input_)[point_idx_arg];
 
   // delete leaf at point
   this->deleteVoxelAtPoint(point);
@@ -631,7 +630,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
     for (const int& leafIndex : leafIndices) {
 
-      const PointT& point_from_index = input_->points[leafIndex];
+      const PointT& point_from_index = (*input_)[leafIndex];
       // generate key
       genOctreeKeyforPoint(point_from_index, new_index_key);
 
@@ -656,9 +655,9 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 {
   OctreeKey key;
 
-  assert(point_idx_arg < static_cast<int>(input_->points.size()));
+  assert(point_idx_arg < static_cast<int>(input_->size()));
 
-  const PointT& point = input_->points[point_idx_arg];
+  const PointT& point = (*input_)[point_idx_arg];
 
   // make sure bounding box is big enough
   adoptBoundingBoxToPoint(point);
@@ -703,8 +702,8 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     getPointByIndex(const unsigned int index_arg) const
 {
   // retrieve point from input cloud
-  assert(index_arg < static_cast<unsigned int>(input_->points.size()));
-  return (this->input_->points[index_arg]);
+  assert(index_arg < static_cast<unsigned int>(input_->size()));
+  return ((*this->input_)[index_arg]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

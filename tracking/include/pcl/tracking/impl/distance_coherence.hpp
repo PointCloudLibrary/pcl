@@ -3,8 +3,6 @@
 
 #include <pcl/tracking/distance_coherence.h>
 
-#include <Eigen/Dense>
-
 namespace pcl {
 namespace tracking {
 template <typename PointInT>

@@ -82,17 +82,17 @@ drawParticles (pcl::visualization::PCLVisualizer& viz)
 {
   ParticleFilter::PointCloudStatePtr particles = tracker_->getParticles ();
   if (particles && new_cloud_)
-    {
+  {
       //Set pointCloud with particle's points
       pcl::PointCloud<pcl::PointXYZ>::Ptr particle_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-      for (std::size_t i = 0; i < particles->points.size (); i++)
+    for (const auto& particle: *particles)
 	{
 	  pcl::PointXYZ point;
           
-	  point.x = particles->points[i].x;
-	  point.y = particles->points[i].y;
-	  point.z = particles->points[i].z;
-	  particle_cloud->points.push_back (point);
+	  point.x = particle.x;
+	  point.y = particle.y;
+	  point.z = particle.z;
+	  particle_cloud->push_back (point);
 	}
 
       //Draw red particles 

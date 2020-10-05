@@ -10,7 +10,7 @@ the **filtering** section.
 
 .. raw:: html
 
-   <iframe title="Planar model segmentation" width="480" height="390" src="http://www.youtube.com/embed/ZTK7NR1Xx4c?rel=0" frameborder="0" allowfullscreen></iframe>
+   <iframe title="Planar model segmentation" width="480" height="390" src="https://www.youtube.com/embed/ZTK7NR1Xx4c?rel=0" frameborder="0" allowfullscreen></iframe>
 
 The code
 --------

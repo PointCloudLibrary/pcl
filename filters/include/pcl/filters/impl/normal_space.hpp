@@ -39,7 +39,6 @@
 #define PCL_FILTERS_IMPL_NORMAL_SPACE_SAMPLE_H_
 
 #include <pcl/filters/normal_space.h>
-#include <pcl/common/io.h>
 
 #include <vector>
 #include <list>
@@ -140,7 +139,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
   }
 
   // Maintaining flags to check if a point is sampled
-  boost::dynamic_bitset<> is_sampled_flag (input_normals_->points.size ());
+  boost::dynamic_bitset<> is_sampled_flag (input_normals_->size ());
   // Maintaining flags to check if all points in the bin are sampled
   boost::dynamic_bitset<> bin_empty_flag (normals_hg.size ());
   unsigned int i = 0;

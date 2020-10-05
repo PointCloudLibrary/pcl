@@ -44,7 +44,6 @@
 
 using namespace pcl;
 using namespace pcl::io;
-using namespace std;
 
 using KdTreePtr = search::KdTree<PointXYZ>::Ptr;
 
@@ -83,7 +82,7 @@ TEST (PCL, MomentInvariantsEstimation)
 
   // estimate
   mi.compute (*moments);
-  EXPECT_EQ (moments->points.size (), indices.size ());
+  EXPECT_EQ (moments->size (), indices.size ());
 
   for (const auto &point : moments->points)
   {
@@ -109,7 +108,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  indices.resize (cloud.points.size ());
+  indices.resize (cloud.size ());
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
     indices[i] = i;
 

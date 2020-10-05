@@ -36,7 +36,7 @@
  */
 
 #include <pcl/stereo/stereo_grabber.h>
-#include <pcl/point_cloud.h>
+#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
 #include <pcl/point_types.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////

@@ -43,7 +43,6 @@
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>
-#include <pcl/registration/boost.h>
 
 #include <unordered_map>
 
@@ -227,8 +226,8 @@ namespace pcl
             {
               if (!source_features_ || !target_features_)
                 return (false);
-              return (source_features_->points.size () > 0 && 
-                      target_features_->points.size () > 0);
+              return (source_features_->size () > 0 && 
+                      target_features_->size () > 0);
             }
 
             /** \brief Provide a boost shared pointer to a PointRepresentation to be used when comparing features
@@ -252,8 +251,8 @@ namespace pcl
                 feature_representation_.reset (new DefaultFeatureRepresentation<FeatureT>);
 
               // Get the source and the target feature from the list
-              const FeatureT &feat_src = source_features_->points[index];
-              const FeatureT &feat_tgt = target_features_->points[index];
+              const FeatureT &feat_src = (*source_features_)[index];
+              const FeatureT &feat_tgt = (*target_features_)[index];
 
               // Check if the representations are valid
               if (!feature_representation_->isValid (feat_src) || !feature_representation_->isValid (feat_tgt))

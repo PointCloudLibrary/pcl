@@ -39,6 +39,8 @@
 #include <stdexcept>
 #include <map>
 #include <algorithm>
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver
+#include <Eigen/Geometry> // for cross
 #include <pcl/surface/on_nurbs/nurbs_tools.h>
 
 using namespace pcl;

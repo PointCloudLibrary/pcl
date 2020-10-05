@@ -37,6 +37,8 @@
 
 #include <pcl/surface/on_nurbs/sequential_fitter.h>
 
+#include <Eigen/Geometry> // for cross
+
 using namespace pcl;
 using namespace on_nurbs;
 using namespace Eigen;
@@ -608,7 +610,7 @@ SequentialFitter::PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, con
 {
   std::size_t numPoints = 0;
 
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
 
     pcl::PointXYZRGB &pt = pcl_cloud->at (index);

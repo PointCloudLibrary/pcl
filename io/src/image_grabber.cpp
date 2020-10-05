@@ -40,8 +40,6 @@
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/memory.h>
-#include <pcl/pcl_config.h>
-#include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -560,7 +558,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (std::size_t idx,
     cloud_color.width = dims[0];
     cloud_color.height = dims[1];
     cloud_color.is_dense = false;
-    cloud_color.points.resize (depth_image->GetNumberOfPoints ());
+    cloud_color.resize (depth_image->GetNumberOfPoints ());
 
     for (int y = 0; y < dims[1]; ++y)
     {
@@ -598,7 +596,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (std::size_t idx,
     cloud.width = dims[0];
     cloud.height = dims[1];
     cloud.is_dense = false;
-    cloud.points.resize (depth_image->GetNumberOfPoints ());
+    cloud.resize (depth_image->GetNumberOfPoints ());
     for (int y = 0; y < dims[1]; ++y)
     {
       for (int x = 0; x < dims[0]; ++x, ++depth_pixel)
@@ -630,10 +628,10 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (std::size_t idx,
 
   return (true);
 #else
-    PCL_ERROR ("[pcl::ImageGrabber::loadNextCloudVTK] Attempted to read image files, but PCL was not built with VTK [no -DPCL_BUILT_WITH_VTK]. \n");
-    return (false);
+  pcl::utils::ignore(idx, blob, origin, orientation);
+  PCL_ERROR ("[pcl::ImageGrabber::loadNextCloudVTK] Attempted to read image files, but PCL was not built with VTK [no -DPCL_BUILT_WITH_VTK]. \n");
+  return false;
 #endif //PCL_BUILT_WITH_VTK
-
 }
 
 bool

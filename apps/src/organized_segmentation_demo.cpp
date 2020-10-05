@@ -1,7 +1,7 @@
 #include <pcl/apps/organized_segmentation_demo.h>
 #include <pcl/common/angles.h>
+#include <pcl/io/openni_grabber.h> // for OpenNIGrabber
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
-#include <pcl/surface/convex_hull.h>
 #include <pcl/memory.h> // for pcl::dynamic_pointer_cast
 
 #include <boost/signals2/connection.hpp> // for boost::signals2::connection
@@ -80,16 +80,16 @@ displayCurvature(pcl::PointCloud<PointT>& cloud,
                  const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   pcl::PointCloud<pcl::PointXYZRGBA> curvature_cloud = cloud;
-  for (std::size_t i = 0; i < cloud.points.size(); i++) {
-    if (normals.points[i].curvature < 0.04) {
-      curvature_cloud.points[i].r = 0;
-      curvature_cloud.points[i].g = 255;
-      curvature_cloud.points[i].b = 0;
+  for (std::size_t i = 0; i < cloud.size(); i++) {
+    if (normals[i].curvature < 0.04) {
+      curvature_cloud[i].r = 0;
+      curvature_cloud[i].g = 255;
+      curvature_cloud[i].b = 0;
     }
     else {
-      curvature_cloud.points[i].r = 255;
-      curvature_cloud.points[i].g = 0;
-      curvature_cloud.points[i].b = 0;
+      curvature_cloud[i].r = 255;
+      curvature_cloud[i].g = 0;
+      curvature_cloud[i].b = 0;
     }
   }
 
@@ -103,16 +103,16 @@ displayDistanceMap(pcl::PointCloud<PointT>& cloud,
                    const pcl::visualization::PCLVisualizer::Ptr& viewer)
 {
   pcl::PointCloud<pcl::PointXYZRGBA> distance_map_cloud = cloud;
-  for (std::size_t i = 0; i < cloud.points.size(); i++) {
+  for (std::size_t i = 0; i < cloud.size(); i++) {
     if (distance_map[i] < 5.0) {
-      distance_map_cloud.points[i].r = 255;
-      distance_map_cloud.points[i].g = 0;
-      distance_map_cloud.points[i].b = 0;
+      distance_map_cloud[i].r = 255;
+      distance_map_cloud[i].g = 0;
+      distance_map_cloud[i].b = 0;
     }
     else {
-      distance_map_cloud.points[i].r = 0;
-      distance_map_cloud.points[i].g = 255;
-      distance_map_cloud.points[i].b = 0;
+      distance_map_cloud[i].r = 0;
+      distance_map_cloud[i].g = 255;
+      distance_map_cloud[i].b = 0;
     }
   }
 

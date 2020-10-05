@@ -181,9 +181,9 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
     {
       // Copy into the resultant cloud
       for (Eigen::Index d = 0; d < shot.size (); ++d)
-        output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
       for (int d = 0; d < 9; ++d)
-        output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
 
       output.is_dense = false;
       continue;
@@ -194,12 +194,12 @@ pcl::SHOTEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (
 
     // Copy into the resultant cloud
     for (Eigen::Index d = 0; d < shot.size (); ++d)
-      output.points[idx].descriptor[d] = shot[d];
+      output[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 3; ++d)
     {
-      output.points[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
-      output.points[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
-      output.points[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
+      output[idx].rf[d + 0] = (*frames_)[idx].x_axis[d];
+      output[idx].rf[d + 3] = (*frames_)[idx].y_axis[d];
+      output[idx].rf[d + 6] = (*frames_)[idx].z_axis[d];
     }
   }
 }
@@ -268,9 +268,9 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
     {
       // Copy into the resultant cloud
       for (Eigen::Index d = 0; d < shot.size (); ++d)
-        output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
       for (int d = 0; d < 9; ++d)
-        output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
 
       output.is_dense = false;
       continue;
@@ -281,12 +281,12 @@ pcl::SHOTColorEstimationOMP<PointInT, PointNT, PointOutT, PointRFT>::computeFeat
 
     // Copy into the resultant cloud
     for (Eigen::Index d = 0; d < shot.size (); ++d)
-      output.points[idx].descriptor[d] = shot[d];
+      output[idx].descriptor[d] = shot[d];
     for (int d = 0; d < 3; ++d)
     {
-      output.points[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
-      output.points[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
-      output.points[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
+      output[idx].rf[d + 0] = (*frames_)[idx].x_axis[d];
+      output[idx].rf[d + 3] = (*frames_)[idx].y_axis[d];
+      output[idx].rf[d + 6] = (*frames_)[idx].z_axis[d];
     }
   }
 }

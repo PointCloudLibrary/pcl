@@ -51,10 +51,8 @@
 #include <vtkTable.h>
 
 #include <fstream>
-#include <sstream>
 
 #include <pcl/visualization/pcl_plotter.h>
-#include <pcl/common/common_headers.h>
 
 #define VTK_CREATE(type, name) \
   vtkSmartPointer<type> name = vtkSmartPointer<type>::New()
@@ -243,16 +241,15 @@ pcl::visualization::PCLPlotter::addPlotData (
     char const *filename,
     int type)
 {
-  using namespace std;
-  ifstream fin(filename);
+  std::ifstream fin(filename);
   
   //getting the no of column
-  string line;
+  std::string line;
   getline (fin, line);
-  stringstream ss(line);
+  std::stringstream ss(line);
   
-  std::vector<string> pnames;       //plot names
-  string xname, temp;         //plot name of X axis
+  std::vector<std::string> pnames;       //plot names
+  std::string xname, temp;         //plot name of X axis
   
   //checking X axis name
   ss >> xname;

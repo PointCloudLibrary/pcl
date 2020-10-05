@@ -41,7 +41,7 @@
 #define EIGEN_II_METHOD 1
 
 #include <pcl/features/linear_least_squares_normal.h>
-#include <pcl/common/time.h>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
 pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::~LinearLeastSquaresNormalEstimation ()
@@ -63,9 +63,9 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
 
   const int index = y * width + x;
 
-  const float px = input_->points[index].x;
-  const float py = input_->points[index].y;
-  const float pz = input_->points[index].z;
+  const float px = (*input_)[index].x;
+  const float py = (*input_)[index].y;
+  const float pz = (*input_)[index].z;
 
   if (std::isnan (px)) 
   {
@@ -97,9 +97,9 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computePointNormal
 
       const int index2 = v * width + u;
 
-      const float qx = input_->points[index2].x;
-      const float qy = input_->points[index2].y;
-      const float qz = input_->points[index2].z;
+      const float qx = (*input_)[index2].x;
+      const float qy = (*input_)[index2].y;
+      const float qz = (*input_)[index2].z;
 
       if (std::isnan (qx)) continue;
 
@@ -178,9 +178,9 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
     {
       const int index = y * width + x;
 
-      const float px = input_->points[index].x;
-      const float py = input_->points[index].y;
-      const float pz = input_->points[index].z;
+      const float px = (*input_)[index].x;
+      const float py = (*input_)[index].y;
+      const float pz = (*input_)[index].z;
 
       if (std::isnan(px)) continue;
 
@@ -208,9 +208,9 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
 
           const int index2 = v * width + u;
 
-          const float qx = input_->points[index2].x;
-          const float qy = input_->points[index2].y;
-          const float qz = input_->points[index2].z;
+          const float qx = (*input_)[index2].x;
+          const float qy = (*input_)[index2].y;
+          const float qz = (*input_)[index2].z;
 
           if (std::isnan(qx)) continue;
 
@@ -245,19 +245,19 @@ pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::computeFeature (Po
 
       if (length <= 0.0f)
       {
-        output.points[index].normal_x = bad_point;
-        output.points[index].normal_y = bad_point;
-        output.points[index].normal_z = bad_point;
-        output.points[index].curvature = bad_point;
+        output[index].normal_x = bad_point;
+        output[index].normal_y = bad_point;
+        output[index].normal_z = bad_point;
+        output[index].curvature = bad_point;
       }
       else
       {
         const float normInv = 1.0f / std::sqrt (length);
 
-        output.points[index].normal_x = nx * normInv;
-        output.points[index].normal_y = ny * normInv;
-        output.points[index].normal_z = nz * normInv;
-        output.points[index].curvature = bad_point;
+        output[index].normal_x = nx * normInv;
+        output[index].normal_y = ny * normInv;
+        output[index].normal_z = nz * normInv;
+        output[index].curvature = bad_point;
       }
     }
   }

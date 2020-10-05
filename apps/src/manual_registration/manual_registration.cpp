@@ -39,6 +39,7 @@
  */
 
 #include <pcl/apps/manual_registration.h>
+#include <pcl/io/pcd_io.h> // for loadPCDFile
 
 #include <QApplication>
 #include <QEvent>
@@ -50,7 +51,6 @@
 #include <vtkRendererCollection.h>
 
 using namespace pcl;
-using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 ManualRegistration::ManualRegistration()
@@ -156,10 +156,11 @@ void
 ManualRegistration::confirmSrcPointPressed()
 {
   if (src_point_selected_) {
-    src_pc_.points.push_back(src_point_);
-    PCL_INFO("Selected %d source points\n", src_pc_.points.size());
+    src_pc_.push_back(src_point_);
+    PCL_INFO("Selected %zu source points\n",
+             static_cast<std::size_t>(src_pc_.size()));
     src_point_selected_ = false;
-    src_pc_.width = src_pc_.points.size();
+    src_pc_.width = src_pc_.size();
   }
   else {
     PCL_INFO("Please select a point in the source window first\n");
@@ -170,10 +171,11 @@ void
 ManualRegistration::confirmDstPointPressed()
 {
   if (dst_point_selected_) {
-    dst_pc_.points.push_back(dst_point_);
-    PCL_INFO("Selected %d destination points\n", dst_pc_.points.size());
+    dst_pc_.push_back(dst_point_);
+    PCL_INFO("Selected %zu destination points\n",
+             static_cast<std::size_t>(dst_pc_.size()));
     dst_point_selected_ = false;
-    dst_pc_.width = dst_pc_.points.size();
+    dst_pc_.width = dst_pc_.size();
   }
   else {
     PCL_INFO("Please select a point in the destination window first\n");
@@ -183,7 +185,7 @@ ManualRegistration::confirmDstPointPressed()
 void
 ManualRegistration::calculatePressed()
 {
-  if (dst_pc_.points.size() != src_pc_.points.size()) {
+  if (dst_pc_.size() != src_pc_.size()) {
     PCL_INFO("You haven't selected an equal amount of points, please do so\n");
     return;
   }
@@ -197,8 +199,8 @@ ManualRegistration::clearPressed()
 {
   dst_point_selected_ = false;
   src_point_selected_ = false;
-  src_pc_.points.clear();
-  dst_pc_.points.clear();
+  src_pc_.clear();
+  dst_pc_.clear();
   src_pc_.height = 1;
   src_pc_.width = 0;
   dst_pc_.height = 1;

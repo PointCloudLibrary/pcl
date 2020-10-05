@@ -36,7 +36,6 @@
  */
 
 #include <pcl/apps/openni_passthrough.h>
-#include <pcl/console/parse.h>
 
 #include <QApplication>
 #include <QEvent>

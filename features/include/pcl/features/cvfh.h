@@ -42,8 +42,7 @@
 
 #include <pcl/features/feature.h>
 #include <pcl/features/vfh.h>
-#include <pcl/search/pcl_search.h>
-#include <pcl/common/common.h>
+#include <pcl/search/search.h> // for Search
 
 namespace pcl
 {

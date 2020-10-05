@@ -76,7 +76,7 @@ pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
     return;
   }
 
-  std::vector<std::uint32_t> remaining_vertices (n_vertices);
+  Indices remaining_vertices (n_vertices);
   if (area (vertices.vertices) > 0) // clockwise?
     remaining_vertices = vertices.vertices;
   else
@@ -112,7 +112,7 @@ pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 float
-pcl::EarClipping::area (const std::vector<std::uint32_t>& vertices)
+pcl::EarClipping::area (const Indices& vertices)
 {
     //if the polygon is projected onto the xy-plane, the area of the polygon is determined
     //by the trapeze formula of Gauss. However this fails, if the projection is one 'line'.
@@ -129,15 +129,15 @@ pcl::EarClipping::area (const std::vector<std::uint32_t>& vertices)
     {
         for (int prev = n - 1, cur = 0; cur < n; prev = cur++)
         {
-            prev_p = points_->points[vertices[prev]].getVector3fMap();
-            cur_p = points_->points[vertices[cur]].getVector3fMap();
+            prev_p = (*points_)[vertices[prev]].getVector3fMap();
+            cur_p = (*points_)[vertices[cur]].getVector3fMap();
 
             total += prev_p.cross( cur_p );
         }
 
         //unit_normal is unit normal vector of plane defined by the first three points
-        prev_p = points_->points[vertices[1]].getVector3fMap() - points_->points[vertices[0]].getVector3fMap();
-        cur_p = points_->points[vertices[2]].getVector3fMap() - points_->points[vertices[0]].getVector3fMap();
+        prev_p = (*points_)[vertices[1]].getVector3fMap() - (*points_)[vertices[0]].getVector3fMap();
+        cur_p = (*points_)[vertices[2]].getVector3fMap() - (*points_)[vertices[0]].getVector3fMap();
         unit_normal = (prev_p.cross(cur_p)).normalized();
 
         area = total.dot( unit_normal );
@@ -146,15 +146,14 @@ pcl::EarClipping::area (const std::vector<std::uint32_t>& vertices)
     return area * 0.5f; 
 }
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::EarClipping::isEar (int u, int v, int w, const std::vector<std::uint32_t>& vertices)
+pcl::EarClipping::isEar (int u, int v, int w, const Indices& vertices)
 {
   Eigen::Vector3f p_u, p_v, p_w;
-  p_u = points_->points[vertices[u]].getVector3fMap();
-  p_v = points_->points[vertices[v]].getVector3fMap();
-  p_w = points_->points[vertices[w]].getVector3fMap();
+  p_u = (*points_)[vertices[u]].getVector3fMap();
+  p_v = (*points_)[vertices[v]].getVector3fMap();
+  p_w = (*points_)[vertices[w]].getVector3fMap();
 
   const float eps = 1e-15f;
   Eigen::Vector3f p_uv, p_uw;
@@ -171,7 +170,7 @@ pcl::EarClipping::isEar (int u, int v, int w, const std::vector<std::uint32_t>& 
   {
     if ((k == u) || (k == v) || (k == w))
       continue;
-    p = points_->points[vertices[k]].getVector3fMap();
+    p = (*points_)[vertices[k]].getVector3fMap();
 
     if (isInsideTriangle (p_u, p_v, p_w, p))
       return (false);

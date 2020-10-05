@@ -9,7 +9,7 @@ has been presented on ICRA2012 and IROS2012 and an official reference for a jour
 
   .. raw:: html
 
-     <iframe width="560" height="315" src="http://www.youtube.com/embed/Wd4OM8wOO1E?rel=0" frameborder="0" allowfullscreen></iframe>
+     <iframe width="560" height="315" src="https://www.youtube.com/embed/Wd4OM8wOO1E?rel=0" frameborder="0" allowfullscreen></iframe>
 
 This shows how to detect people with an Primesense device, the full version 
 working on oni and pcd files can be found in the git master.

@@ -37,7 +37,7 @@
 
 #pragma once
 
-#include <pcl/conversions.h>
+#include <pcl/point_cloud.h> // for PointCloud
 #include <pcl/point_types.h>
 
 #include <algorithm>

@@ -41,7 +41,6 @@
 
 #pragma once
 
-#include <pcl/filters/boost.h>
 #include <pcl/filters/filter.h>
 #include <pcl/filters/filter_indices.h>
 

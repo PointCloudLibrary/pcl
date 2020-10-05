@@ -39,7 +39,6 @@
 #include<iostream>
 
 using namespace pcl::gpu;
-using namespace std;
 
 const float Evaluation::fx = 525.0f;
 const float Evaluation::fy = 525.0f;
@@ -81,8 +80,8 @@ Evaluation::Evaluation(const std::string& folder) : folder_(folder), visualizati
       folder_.push_back('/');
 
   std::cout << "Initializing evaluation from folder: " << folder_ << std::endl;
-  string depth_file = folder_ + "depth.txt";
-  string rgb_file = folder_ + "rgb.txt";
+  std::string depth_file = folder_ + "depth.txt";
+  std::string rgb_file = folder_ + "rgb.txt";
   
   readFile(depth_file, depth_stamps_and_filenames_);
   readFile(rgb_file, rgb_stamps_and_filenames_);
@@ -90,8 +89,8 @@ Evaluation::Evaluation(const std::string& folder) : folder_(folder), visualizati
 
 void Evaluation::setMatchFile(const std::string& file)
 {
-  string full = folder_ + file;
-  ifstream iff(full.c_str());  
+  std::string full = folder_ + file;
+  std::ifstream iff(full.c_str());
   if(!iff)
   {
     std::cout << "Can't read " << file << std::endl;
@@ -107,12 +106,12 @@ void Evaluation::setMatchFile(const std::string& file)
   }  
 }
 
-void Evaluation::readFile(const string& file, std::vector< pair<double,string> >& output)
+void Evaluation::readFile(const std::string& file, std::vector< std::pair<double,string> >& output)
 {
   char buffer[4096];
-  std::vector< pair<double,string> > tmp;
+  std::vector< std::pair<double,string> > tmp;
   
-  ifstream iff(file.c_str());
+  std::ifstream iff(file.c_str());
   if(!iff)
   {
     std::cout << "Can't read " << file << std::endl;
@@ -127,9 +126,9 @@ void Evaluation::readFile(const string& file, std::vector< pair<double,string> >
   // each line consists of the timestamp and the filename of the depth image
   while (!iff.eof())
   {
-    double time; string name;
+    double time; std::string name;
     iff >> time >> name;
-    tmp.push_back(make_pair(time, name));
+    tmp.push_back(std::make_pair(time, name));
   }
   tmp.swap(output);
 }
@@ -142,7 +141,7 @@ bool Evaluation::grab (double stamp, PtrStepSz<const RGB>& rgb24)
   if ( i>= total)
       return false;
   
-  string file = folder_ + (accociations_.empty() ? rgb_stamps_and_filenames_[i].second : accociations_[i].name2);
+  std::string file = folder_ + (accociations_.empty() ? rgb_stamps_and_filenames_[i].second : accociations_[i].name2);
 
   cv::Mat bgr = cv::imread(file);
   if(bgr.empty())
@@ -171,7 +170,7 @@ bool Evaluation::grab (double stamp, PtrStepSz<const unsigned short>& depth)
   if ( i>= total)
       return false;
 
-  string file = folder_ + (accociations_.empty() ? depth_stamps_and_filenames_[i].second : accociations_[i].name1);
+  std::string file = folder_ + (accociations_.empty() ? depth_stamps_and_filenames_[i].second : accociations_[i].name1);
   
   cv::Mat d_img = cv::imread(file, CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR);
   if(d_img.empty())
@@ -214,8 +213,8 @@ bool Evaluation::grab (double stamp, PtrStepSz<const unsigned short>& depth, Ptr
   if ( i>= accociations_.size())
       return false;
 
-  string depth_file = folder_ + accociations_[i].name1;
-  string color_file = folder_ + accociations_[i].name2;
+  std::string depth_file = folder_ + accociations_[i].name1;
+  std::string color_file = folder_ + accociations_[i].name2;
 
   cv::Mat d_img = cv::imread(depth_file, CV_LOAD_IMAGE_ANYDEPTH | CV_LOAD_IMAGE_ANYCOLOR);
   if(d_img.empty())

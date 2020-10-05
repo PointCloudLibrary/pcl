@@ -41,7 +41,6 @@
 #include <iostream>
 #include <vector>
 #include <utility>
-#include <cfloat>
 
 #include <pcl/visualization/common/common.h>
 #include <pcl/point_types.h>

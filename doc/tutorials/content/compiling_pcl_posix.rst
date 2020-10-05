@@ -110,7 +110,7 @@ The following code libraries enable certain additional features for the PCL libr
 +---------------------------------------------------------------+-----------------+-------------------+-------------------+
 | .. image:: images/posix_building_pcl/openni_logo.png          | OpenNI          | 1.3               | pcl_io            |
 +---------------------------------------------------------------+-----------------+-------------------+-------------------+
-| .. image:: images/posix_building_pcl/cuda_logo.png            | CUDA            | 4.0               | pcl_*             |
+| .. image:: images/posix_building_pcl/cuda_logo.png            | CUDA            | 9.2               | pcl_*             |
 +---------------------------------------------------------------+-----------------+-------------------+-------------------+
 
 Troubleshooting

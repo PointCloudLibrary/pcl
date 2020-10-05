@@ -39,7 +39,6 @@
 #define PCL_SEARCH_KDTREE_IMPL_HPP_
 
 #include <pcl/search/kdtree.h>
-#include <pcl/search/impl/search.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, class Tree>

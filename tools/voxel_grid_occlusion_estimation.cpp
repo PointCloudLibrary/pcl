@@ -205,7 +205,7 @@ int main (int argc, char** argv)
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", (int)occluded_voxels.size ()); print_info (" occluded voxels]\n");
   
   CloudT::Ptr occ_centroids (new CloudT);
-  occ_centroids->width = static_cast<int> (occluded_voxels.size ());
+  occ_centroids->width = occluded_voxels.size ();
   occ_centroids->height = 1;
   occ_centroids->is_dense = false;
   occ_centroids->points.resize (occluded_voxels.size ());
@@ -216,27 +216,27 @@ int main (int argc, char** argv)
     point.x = xyz[0];
     point.y = xyz[1];
     point.z = xyz[2];
-    occ_centroids->points[i] = point;
+    (*occ_centroids)[i] = point;
   }
 
   CloudT::Ptr cloud_centroids (new CloudT);
-  cloud_centroids->width = static_cast<int> (input_cloud->points.size ());
+  cloud_centroids->width = input_cloud->size ();
   cloud_centroids->height = 1;
   cloud_centroids->is_dense = false;
-  cloud_centroids->points.resize (input_cloud->points.size ());
+  cloud_centroids->points.resize (input_cloud->size ());
 
-  for (std::size_t i = 0; i < input_cloud->points.size (); ++i)
+  for (std::size_t i = 0; i < input_cloud->size (); ++i)
   {
-    float x = input_cloud->points[i].x;
-    float y = input_cloud->points[i].y;
-    float z = input_cloud->points[i].z;
+    float x = (*input_cloud)[i].x;
+    float y = (*input_cloud)[i].y;
+    float z = (*input_cloud)[i].z;
     Eigen::Vector3i c = vg.getGridCoordinates (x, y, z);
     Eigen::Vector4f xyz = vg.getCentroidCoordinate (c);
     PointT point;
     point.x = xyz[0];
     point.y = xyz[1];
     point.z = xyz[2];
-    cloud_centroids->points[i] = point;
+    (*cloud_centroids)[i] = point;
   }
 
   // visualization

@@ -8,16 +8,11 @@ steps:
   - script: |
       echo ##vso[task.prependpath]%BOOST_ROOT_1_69_0%\lib
     displayName: 'Include Boost Libraries In System PATH'
-  - script: |
-      set
-    displayName: 'Print Environment Variables'
+  - pwsh: Get-PSDrive
+    displayName: "Check free space"
   - script: |
       vcpkg.exe install eigen3 flann gtest qhull --triplet %PLATFORM%-windows && vcpkg.exe list
     displayName: 'Install C++ Dependencies Via Vcpkg'
-  - script: |
-      rmdir %VCPKG_ROOT%\downloads /S /Q
-      rmdir %VCPKG_ROOT%\packages /S /Q
-    displayName: 'Free Up Space'
   - script: |
       mkdir %BUILD_DIR% && cd %BUILD_DIR%
       cmake $(Build.SourcesDirectory) ^
@@ -32,14 +27,19 @@ steps:
         -DBUILD_tools=OFF ^
         -DBUILD_surface_on_nurbs=ON
     displayName: 'CMake Configuration'
-  - script: cd %BUILD_DIR% && cmake --build . --config %CONFIGURATION%
+    workingDirectory: 'c:'
+  - script: |
+      cd %BUILD_DIR% && cmake --build . --config %CONFIGURATION%
     displayName: 'Build Library'
-  - script: cd %BUILD_DIR% && cmake --build . --target tests --config %CONFIGURATION%
+    workingDirectory: 'c:'
+  - script: |
+      cd %BUILD_DIR% && cmake --build . --target tests --config %CONFIGURATION%
     displayName: 'Run Unit Tests'
+    workingDirectory: 'c:'
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'CTest'
       testResultsFiles: '**/Test*.xml'
-      searchFolder: '$(Agent.WorkFolder)\build'
+      searchFolder: '%BUILD_DIR%'
     condition: succeededOrFailed()
 

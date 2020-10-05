@@ -50,9 +50,9 @@ main (int argc, char** argv)
   // Create the filtering object
   pcl::ExtractIndices<pcl::PointXYZ> extract;
 
-  int i = 0, nr_points = (int) cloud_filtered->points.size ();
+  int i = 0, nr_points = (int) cloud_filtered->size ();
   // While 30% of the original cloud is still there
-  while (cloud_filtered->points.size () > 0.3 * nr_points)
+  while (cloud_filtered->size () > 0.3 * nr_points)
   {
     // Segment the largest planar component from the remaining cloud
     seg.setInputCloud (cloud_filtered);

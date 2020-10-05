@@ -36,8 +36,6 @@
 
 #pragma once
 
-#include <pcl/common/common.h>
-#include <pcl/common/transforms.h>
 #include <pcl/common/io.h>
 
 namespace pcl
@@ -79,14 +77,14 @@ namespace pcl
       typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
 
       std::vector<int> indices_to_keep;
-      indices_to_keep.resize (to_be_filtered->points.size ());
+      indices_to_keep.resize (to_be_filtered->size ());
 
       int keep = 0;
-      for (std::size_t i = 0; i < to_be_filtered->points.size (); i++)
+      for (std::size_t i = 0; i < to_be_filtered->size (); i++)
       {
-        float x = to_be_filtered->points[i].x;
-        float y = to_be_filtered->points[i].y;
-        float z = to_be_filtered->points[i].z;
+        float x = (*to_be_filtered)[i].x;
+        float y = (*to_be_filtered)[i].y;
+        float z = (*to_be_filtered)[i].z;
         int u = static_cast<int> (f * x / z + cx);
         int v = static_cast<int> (f * y / z + cy);
 
@@ -123,14 +121,14 @@ namespace pcl
       typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
 
       std::vector<int> indices_to_keep;
-      indices_to_keep.resize (to_be_filtered->points.size ());
+      indices_to_keep.resize (to_be_filtered->size ());
 
       int keep = 0;
-      for (std::size_t i = 0; i < to_be_filtered->points.size (); i++)
+      for (std::size_t i = 0; i < to_be_filtered->size (); i++)
       {
-        float x = to_be_filtered->points[i].x;
-        float y = to_be_filtered->points[i].y;
-        float z = to_be_filtered->points[i].z;
+        float x = (*to_be_filtered)[i].x;
+        float y = (*to_be_filtered)[i].y;
+        float z = (*to_be_filtered)[i].z;
         int u = static_cast<int> (f * x / z + cx);
         int v = static_cast<int> (f * y / z + cy);
 
@@ -170,14 +168,14 @@ namespace pcl
       typename pcl::PointCloud<ModelT>::Ptr filtered (new pcl::PointCloud<ModelT> ());
 
       std::vector<int> indices_to_keep;
-      indices_to_keep.resize (to_be_filtered->points.size ());
+      indices_to_keep.resize (to_be_filtered->size ());
 
       int keep = 0;
-      for (std::size_t i = 0; i < to_be_filtered->points.size (); i++)
+      for (std::size_t i = 0; i < to_be_filtered->size (); i++)
       {
-        float x = to_be_filtered->points[i].x;
-        float y = to_be_filtered->points[i].y;
-        float z = to_be_filtered->points[i].z;
+        float x = (*to_be_filtered)[i].x;
+        float y = (*to_be_filtered)[i].y;
+        float z = (*to_be_filtered)[i].z;
         int u = static_cast<int> (f * x / z + cx);
         int v = static_cast<int> (f * y / z + cy);
 

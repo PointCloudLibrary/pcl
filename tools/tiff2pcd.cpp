@@ -42,7 +42,6 @@
 #include <iostream>
 #include <boost/filesystem.hpp>
 
-#include <pcl/pcl_base.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/console/parse.h>
@@ -128,8 +127,8 @@ void processAndSave( vtkSmartPointer<vtkImageData>  depth_data,
       color_point.b = xyzrgba_point.b = static_cast<std::uint8_t> (rgb_data->GetScalarComponentAsFloat(u,v,0,2));
       xyzrgba_point.a = 0;
 
-      pc_image.points.push_back(color_point);
-      pc_depth.points.push_back(depth_point);
+      pc_image.push_back(color_point);
+      pc_depth.push_back(depth_point);
 
       float d =  depth_data->GetScalarComponentAsFloat(u,v,0,0);
       depth_point.intensity = d;
@@ -144,7 +143,7 @@ void processAndSave( vtkSmartPointer<vtkImageData>  depth_data,
       {
         xyzrgba_point.z = xyzrgba_point.x = xyzrgba_point.y = bad_point;
       }
-      pc_xyzrgba.points.push_back(xyzrgba_point);
+      pc_xyzrgba.push_back(xyzrgba_point);
 
     } // for u
   } // for v

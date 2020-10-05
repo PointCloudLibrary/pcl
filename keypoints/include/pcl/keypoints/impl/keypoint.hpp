@@ -39,6 +39,10 @@
 #ifndef PCL_KEYPOINT_IMPL_H_
 #define PCL_KEYPOINT_IMPL_H_
 
+#include <pcl/console/print.h> // for PCL_ERROR
+
+#include <pcl/search/organized.h> // for OrganizedNeighbor
+#include <pcl/search/kdtree.h> // for KdTree
 
 namespace pcl
 {

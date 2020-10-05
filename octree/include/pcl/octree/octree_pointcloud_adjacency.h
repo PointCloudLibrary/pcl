@@ -39,12 +39,10 @@
 
 #pragma once
 
-#include <pcl/octree/boost.h>
 #include <pcl/octree/octree_pointcloud.h>
 #include <pcl/octree/octree_pointcloud_adjacency_container.h>
 
-#include <list>
-#include <set>
+#include <boost/graph/adjacency_list.hpp> // for adjacency_list
 
 namespace pcl {
 

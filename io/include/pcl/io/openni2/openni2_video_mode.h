@@ -31,7 +31,6 @@
 
 #pragma once
 
-#include <cstddef>
 #include <ostream>
 
 #include <OpenNI.h>

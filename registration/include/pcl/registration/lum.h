@@ -43,7 +43,6 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/pcl_base.h>
-#include <pcl/registration/eigen.h>
 #include <pcl/registration/boost.h>
 #include <pcl/common/transforms.h>
 #include <pcl/correspondence.h>

@@ -37,8 +37,9 @@
 
 #pragma once
 
-#include <pcl/pcl_base.h>
-#include <cfloat>
+#include <pcl/point_cloud.h> // for PointCloud
+#include <pcl/PointIndices.h> // for PointIndices
+#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
 
 /**
   * \file pcl/common/common.h
@@ -69,6 +70,67 @@ namespace pcl
   inline double
   getAngle3D (const Eigen::Vector3f &v1, const Eigen::Vector3f &v2, const bool in_degree = false);
 
+#ifdef __SSE__
+  /** \brief Compute the approximate arccosine of four values at once using SSE instructions.
+    *
+    * The approximation used is \f$ (1.59121552+x*(-0.15461442+x*0.05354897))*\sqrt{0.89286965-0.89282669*x}+0.06681017+x*(-0.09402311+x*0.02708663) \f$.
+    * The average error is 0.00012 rad. This approximation is more accurate than other approximations of acos, but also uses a few more operations.
+    * \param x four floats, each should be in [0; 1]. They must not be greater than 1 since acos is undefined there.
+    *          They should not be less than 0 because there the approximation is less precise
+    * \return the four arccosines, each in [0; pi/2]
+    * \ingroup common
+    */
+  inline __m128
+  acos_SSE (const __m128 &x);
+
+  /** \brief Similar to getAngle3D, but four times in parallel using SSE instructions.
+    *
+    * This behaves like \f$ min(getAngle3D(dot_product), \pi-getAngle3D(dot_product)) \f$.
+    * All vectors must be normalized (length is 1.0).
+    * Since an approximate acos is used, the results may be slightly imprecise.
+    * \param[in] the x components of the first four vectors
+    * \param[in] the y components of the first four vectors
+    * \param[in] the z components of the first four vectors
+    * \param[in] the x components of the second four vectors
+    * \param[in] the y components of the second four vectors
+    * \param[in] the z components of the second four vectors
+    * \return the four angles in radians in [0; pi/2]
+    * \ingroup common
+    */
+  inline __m128
+  getAcuteAngle3DSSE (const __m128 &x1, const __m128 &y1, const __m128 &z1, const __m128 &x2, const __m128 &y2, const __m128 &z2);
+#endif // ifdef __SSE__
+
+#ifdef __AVX__
+  /** \brief Compute the approximate arccosine of eight values at once using AVX instructions.
+    *
+    * The approximation used is \f$ (1.59121552+x*(-0.15461442+x*0.05354897))*\sqrt{0.89286965-0.89282669*x}+0.06681017+x*(-0.09402311+x*0.02708663) \f$.
+    * The average error is 0.00012 rad. This approximation is more accurate than other approximations of acos, but also uses a few more operations.
+    * \param x eight floats, each should be in [0; 1]. They must not be greater than 1 since acos is undefined there.
+    *          They should not be less than 0 because there the approximation is less precise
+    * \return the eight arccosines, each in [0; pi/2]
+    * \ingroup common
+    */
+  inline __m256
+  acos_AVX (const __m256 &x);
+
+  /** \brief Similar to getAngle3D, but eight times in parallel using AVX instructions.
+    *
+    * This behaves like \f$ min(getAngle3D(dot_product), \pi-getAngle3D(dot_product)) \f$.
+    * All vectors must be normalized (length is 1.0).
+    * Since an approximate acos is used, the results may be slightly imprecise.
+    * \param[in] the x components of the first eight vectors
+    * \param[in] the y components of the first eight vectors
+    * \param[in] the z components of the first eight vectors
+    * \param[in] the x components of the second eight vectors
+    * \param[in] the y components of the second eight vectors
+    * \param[in] the z components of the second eight vectors
+    * \return the eight angles in radians in [0; pi/2]
+    * \ingroup common
+    */
+  inline __m256
+  getAcuteAngle3DAVX (const __m256 &x1, const __m256 &y1, const __m256 &z1, const __m256 &x2, const __m256 &y2, const __m256 &z2);
+#endif // ifdef __AVX__
 
   /** \brief Compute both the mean and the standard deviation of an array of values
     * \param values the array of values

@@ -26,7 +26,7 @@ directly compute the surface normals at each point in the cloud.
 
 .. raw:: html
 
-  <iframe width="425" height="349" src="http://www.youtube.com/embed/x1FSssJrfik" frameborder="0" allowfullscreen></iframe>
+  <iframe width="425" height="349" src="https://www.youtube.com/embed/x1FSssJrfik" frameborder="0" allowfullscreen></iframe>
 
 Theoretical primer
 ------------------
@@ -203,7 +203,7 @@ points in the input dataset.
      // Compute the features
      ne.compute (*cloud_normals);
 
-     // cloud_normals->points.size () should have the same size as the input cloud->points.size ()*
+     // cloud_normals->size () should have the same size as the input cloud->size ()*
    }
 
 The actual **compute** call from the **NormalEstimation** class does nothing internally but::

@@ -188,7 +188,7 @@ namespace pcl
         pcl::PointCloud<pcl::Histogram<nbins_> > input_ftt_negate (input_ftt);
 
         for (int i = 2; i < (nbins_); i += 2)
-          input_ftt_negate.points[0].histogram[i] = -input_ftt_negate.points[0].histogram[i];
+          input_ftt_negate[0].histogram[i] = -input_ftt_negate[0].histogram[i];
 
         int nr_bins_after_padding = 180;
         int peak_distance = 5;
@@ -199,16 +199,16 @@ namespace pcl
           multAB[i].r = multAB[i].i = 0.f;
 
         int k = 0;
-        multAB[k].r = input_ftt_negate.points[0].histogram[0] * target_ftt.points[0].histogram[0];
+        multAB[k].r = input_ftt_negate[0].histogram[0] * target_ftt[0].histogram[0];
         k++;
 
         float a, b, c, d;
         for (int i = 1; i < cutoff; i += 2, k++)
         {
-          a = input_ftt_negate.points[0].histogram[i];
-          b = input_ftt_negate.points[0].histogram[i + 1];
-          c = target_ftt.points[0].histogram[i];
-          d = target_ftt.points[0].histogram[i + 1];
+          a = input_ftt_negate[0].histogram[i];
+          b = input_ftt_negate[0].histogram[i + 1];
+          c = target_ftt[0].histogram[i];
+          d = target_ftt[0].histogram[i + 1];
           multAB[k].r = a * c - b * d;
           multAB[k].i = b * c + a * d;
 
@@ -218,7 +218,7 @@ namespace pcl
           multAB[k].i /= tmp;
         }
 
-        multAB[nbins_ - 1].r = input_ftt_negate.points[0].histogram[nbins_ - 1] * target_ftt.points[0].histogram[nbins_ - 1];
+        multAB[nbins_ - 1].r = input_ftt_negate[0].histogram[nbins_ - 1] * target_ftt[0].histogram[nbins_ - 1];
 
         kiss_fft_cfg mycfg = kiss_fft_alloc (nr_bins_after_padding, 1, nullptr, nullptr);
         kiss_fft_cpx * invAB = new kiss_fft_cpx[nr_bins_after_padding];

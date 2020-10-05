@@ -167,7 +167,7 @@ public:
                       int& result_index,
                       float& sqr_distance)
   {
-    return (approxNearestSearch(cloud.points[query_index], result_index, sqr_distance));
+    return (approxNearestSearch(cloud[query_index], result_index, sqr_distance));
   }
 
   /** \brief Search for approx. nearest neighbor at the query point.
@@ -207,8 +207,7 @@ public:
                std::vector<float>& k_sqr_distances,
                unsigned int max_nn = 0)
   {
-    return (
-        radiusSearch(cloud.points[index], radius, k_indices, k_sqr_distances, max_nn));
+    return (radiusSearch(cloud[index], radius, k_indices, k_sqr_distances, max_nn));
   }
 
   /** \brief Search for all neighbors of query point that are within a given radius.

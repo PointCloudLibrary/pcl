@@ -8,6 +8,7 @@
 #include <pcl/range_image/range_image.h>
 #include <pcl/features/narf.h>
 #include <pcl/console/parse.h>
+#include <pcl/common/file_io.h> // for getFilenameWithoutExtension
 
 float angular_resolution = 0.5f;
 int rotation_invariant = 0;
@@ -118,14 +119,14 @@ main (int argc, char** argv)
   // Extract NARF features:
   std::cout << "Now extracting NARFs in every image point.\n";
   std::vector<std::vector<pcl::Narf*> > narfs;
-  narfs.resize (range_image.points.size ());
+  narfs.resize (range_image.size ());
   int last_percentage=-1;
   for (unsigned int y=0; y<range_image.height; ++y)
   {
     for (unsigned int x=0; x<range_image.width; ++x)
     {
-      int index = y*range_image.width+x;
-      int percentage = (int) ((100*index) / range_image.points.size ());
+      const auto index = y*range_image.width+x;
+      const auto percentage = ((100*index) / range_image.size ());
       if (percentage > last_percentage)
       {
         std::cout << percentage<<"% "<<std::flush;
@@ -219,8 +220,8 @@ main (int argc, char** argv)
       continue;
     
     //descriptor_distances_widget.show (false);
-    float* descriptor_distance_image = new float[range_image.points.size ()];
-    for (unsigned int point_index=0; point_index<range_image.points.size (); ++point_index)
+    float* descriptor_distance_image = new float[range_image.size ()];
+    for (unsigned int point_index=0; point_index<range_image.size (); ++point_index)
     {
       float& descriptor_distance = descriptor_distance_image[point_index];
       descriptor_distance = std::numeric_limits<float>::infinity ();

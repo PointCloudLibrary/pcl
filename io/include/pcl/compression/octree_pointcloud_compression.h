@@ -37,8 +37,6 @@
 
 #pragma once
 
-#include <pcl/common/common.h>
-#include <pcl/common/io.h>
 #include <pcl/octree/octree2buf_base.h>
 #include <pcl/octree/octree_pointcloud.h>
 #include "entropy_range_coder.h"
@@ -47,10 +45,7 @@
 
 #include "compression_profiles.h"
 
-#include <cstdio>
-#include <cstring>
 #include <iostream>
-#include <iterator>
 #include <vector>
 
 using namespace pcl::octree;

@@ -35,7 +35,6 @@
  *	
  */
 
-#include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
 #include <pcl/io/openni_grabber.h>
@@ -55,7 +54,6 @@
 #include <thread>
 #include <memory>
 
-using namespace std;
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::console;
@@ -269,9 +267,9 @@ class Writer
       FPS_CALC_WRITER ("data write   ", buf_);
       nr_frames_total++;
       
-      stringstream ss1, ss2, ss3;
+      std::stringstream ss1, ss2, ss3;
 
-      string time_string = boost::posix_time::to_iso_string (frame->time);
+      std::string time_string = boost::posix_time::to_iso_string (frame->time);
       // Save RGB data
       ss1 << "frame_" << time_string << "_rgb.pclzf";
       switch (frame->image->getEncoding ())
@@ -463,8 +461,8 @@ class Viewer
     void 
     receiveAndView ()
     {
-      string mouseMsg2D ("Mouse coordinates in image viewer");
-      string keyMsg2D ("Key event for image viewer");
+      std::string mouseMsg2D ("Mouse coordinates in image viewer");
+      std::string keyMsg2D ("Key event for image viewer");
 
       image_viewer_->registerMouseCallback (&Viewer::mouse_callback, *this, static_cast<void*> (&mouseMsg2D));
       image_viewer_->registerKeyboardCallback(&Viewer::keyboard_callback, *this, static_cast<void*> (&keyMsg2D));
@@ -681,7 +679,7 @@ main (int argc, char ** argv)
   else
     print_highlight ("Using default buffer size of %d frames.\n", buff_size);
 
-  string device_id;
+  std::string device_id;
   OpenNIGrabber::Mode image_mode = OpenNIGrabber::OpenNI_Default_Mode;
   OpenNIGrabber::Mode depth_mode = OpenNIGrabber::OpenNI_Default_Mode;
   
@@ -699,13 +697,13 @@ main (int argc, char ** argv)
       {
         OpenNIGrabber grabber (argv[2]);
         auto device = grabber.getDevice ();
-        std::vector<pair<int, XnMapOutputMode> > modes;
+        std::vector<std::pair<int, XnMapOutputMode> > modes;
 
         if (device->hasImageStream ())
         {
           std::cout << std::endl << "Supported image modes for device: " << device->getVendorName () << " , " << device->getProductName () << std::endl;
           modes = grabber.getAvailableImageModes ();
-          for (vector<pair<int, XnMapOutputMode> >::const_iterator it = modes.begin (); it != modes.end (); ++it)
+          for (std::vector<std::pair<int, XnMapOutputMode> >::const_iterator it = modes.begin (); it != modes.end (); ++it)
           {
             std::cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
           }
@@ -713,7 +711,7 @@ main (int argc, char ** argv)
         {
           std::cout << std::endl << "Supported depth modes for device: " << device->getVendorName () << " , " << device->getProductName () << std::endl;
           modes = grabber.getAvailableDepthModes ();
-          for (vector<pair<int, XnMapOutputMode> >::const_iterator it = modes.begin (); it != modes.end (); ++it)
+          for (std::vector<std::pair<int, XnMapOutputMode> >::const_iterator it = modes.begin (); it != modes.end (); ++it)
           {
             std::cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << std::endl;
           }

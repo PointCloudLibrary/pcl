@@ -44,6 +44,7 @@
 #include <pcl/point_types.h>
 #include <pcl/keypoints/keypoint.h>
 #include <pcl/common/intensity.h>
+#include <pcl/common/io.h> // for copyPointCloud
 
 namespace pcl
 {

@@ -41,8 +41,6 @@
 #ifndef PCL_INTEGRAL_IMAGE2D_IMPL_H_
 #define PCL_INTEGRAL_IMAGE2D_IMPL_H_
 
-#include <cstddef>
-
 
 namespace pcl
 {

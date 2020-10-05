@@ -57,7 +57,7 @@ main (int, char** argv)
     return (-1);
   }
 
-  std::cout << "Loaded " << cloud->points.size () << " points." << std::endl;
+  std::cout << "Loaded " << cloud->size () << " points." << std::endl;
 
   // Compute the normals
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimation;
@@ -89,10 +89,10 @@ main (int, char** argv)
   pcl::PointCloud<pcl::PrincipalCurvatures>::Ptr principal_curvatures (new pcl::PointCloud<pcl::PrincipalCurvatures> ());
   principal_curvatures_estimation.compute (*principal_curvatures);
 
-  std::cout << "output points.size (): " << principal_curvatures->points.size () << std::endl;
+  std::cout << "output size (): " << principal_curvatures->size () << std::endl;
 
   // Display and retrieve the shape context descriptor vector for the 0th point.
-  pcl::PrincipalCurvatures descriptor = principal_curvatures->points[0];
+  pcl::PrincipalCurvatures descriptor = (*principal_curvatures)[0];
   std::cout << descriptor << std::endl;
 
   return 0;

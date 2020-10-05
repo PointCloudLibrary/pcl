@@ -59,7 +59,7 @@ main (int argc, char ** argv)
   pcl::io::loadPCDFile (argv[1], *query);
   pcl::console::print_info ("Loaded %s (%lu points)\n", argv[1], query->size ());    
 
-  ifstream input_stream;
+  std::ifstream input_stream;
   ObjectRecognitionParameters params;
 
   // Parse the exemplar files

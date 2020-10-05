@@ -62,7 +62,6 @@ namespace pc = pcl::console;
 using namespace pcl::visualization;
 using namespace pcl::gpu;
 using namespace pcl;
-using namespace std;
 
 struct SampledScopeTime : public StopWatch
 {
@@ -85,7 +84,7 @@ struct SampledScopeTime : public StopWatch
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-string 
+std::string
 make_name(int counter, const char* suffix)
 {
   char buf[4096];
@@ -125,13 +124,13 @@ class PeoplePCDApp
       depth_view_.setPosition (650, 0);
 
       cmap_device_.create(ROWS, COLS);
-      cmap_host_.points.resize(COLS * ROWS);
+      cmap_host_.resize(COLS * ROWS);
       depth_device_.create(ROWS, COLS);
       image_device_.create(ROWS, COLS);
 
-      depth_host_.points.resize(COLS * ROWS);
+      depth_host_.resize(COLS * ROWS);
 
-      rgba_host_.points.resize(COLS * ROWS);
+      rgba_host_.resize(COLS * ROWS);
       rgb_host_.resize(COLS * ROWS * 3);
 
       people::uploadColorMap(color_map_);
@@ -147,7 +146,7 @@ class PeoplePCDApp
       int c;
       cmap_host_.width = cmap_device_.cols();
       cmap_host_.height = cmap_device_.rows();
-      cmap_host_.points.resize(cmap_host_.width * cmap_host_.height);
+      cmap_host_.resize(cmap_host_.width * cmap_host_.height);
       cmap_device_.download(cmap_host_.points, c);
 
       final_view_.showRGBImage<pcl::RGB>(cmap_host_);
@@ -157,11 +156,11 @@ class PeoplePCDApp
       {
         depth_host_.width = people_detector_.depth_device1_.cols();
         depth_host_.height = people_detector_.depth_device1_.rows();
-        depth_host_.points.resize(depth_host_.width * depth_host_.height);
+        depth_host_.resize(depth_host_.width * depth_host_.height);
         people_detector_.depth_device1_.download(depth_host_.points, c);
       }
 
-      depth_view_.showShortImage(&depth_host_.points[0], depth_host_.width, depth_host_.height, 0, 5000, true);
+      depth_view_.showShortImage(&depth_host_[0], depth_host_.width, depth_host_.height, 0, 5000, true);
       depth_view_.spinOnce(1, true);
 
       if (write)
@@ -204,10 +203,10 @@ class PeoplePCDApp
         const unsigned short *data = depth_wrapper->getDepthMetaData().Data();
         depth_device_.upload(data, s, h, w);
 
-        depth_host_.points.resize(w *h);
+        depth_host_.resize(w *h);
         depth_host_.width = w;
         depth_host_.height = h;
-        std::copy(data, data + w * h, &depth_host_.points[0]);
+        std::copy(data, data + w * h, &depth_host_[0]);
 
         //getting image
         w = image_wrapper->getWidth();
@@ -219,18 +218,18 @@ class PeoplePCDApp
         image_wrapper->fillRGB(w, h, (unsigned char*)&rgb_host_[0]);
 
         // convert to rgba, TODO image_wrapper should be updated to support rgba directly
-        rgba_host_.points.resize(w * h);
+        rgba_host_.resize(w * h);
         rgba_host_.width = w;
         rgba_host_.height = h;
         for(int i = 0; i < rgba_host_.size(); ++i)
         {
           const unsigned char *pixel = &rgb_host_[i * 3];
-          RGB& rgba = rgba_host_.points[i];
+          RGB& rgba = rgba_host_[i];
           rgba.r = pixel[0];
           rgba.g = pixel[1];
           rgba.b = pixel[2];
         }
-        image_device_.upload(&rgba_host_.points[0], s, h, w);
+        image_device_.upload(&rgba_host_[0], s, h, w);
       }
       data_ready_cond_.notify_one();
     }
@@ -329,7 +328,7 @@ int main(int argc, char** argv)
   pcl::Grabber::Ptr capture (new pcl::OpenNIGrabber());
 
   //selecting tree files
-  std::vector<string> tree_files;
+  std::vector<std::string> tree_files;
   tree_files.push_back("Data/forest1/tree_20.txt");
   tree_files.push_back("Data/forest2/tree_20.txt");
   tree_files.push_back("Data/forest3/tree_20.txt");

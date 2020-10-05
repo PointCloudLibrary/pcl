@@ -40,7 +40,8 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_base.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/search/pcl_search.h>
+#include <pcl/console/print.h> // for PCL_WARN
+#include <pcl/search/search.h> // for Search
 
 #include <functional>
 

@@ -36,11 +36,11 @@
  */
 
 #include <pcl/surface/simplification_remove_unused_vertices.h>
+#include <pcl/PolygonMesh.h>
 
 #include <cstring>
 #include <vector>
 #include <iostream>
-#include <cstdio>
 
 void
 pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMesh& input, pcl::PolygonMesh& output, std::vector<int>& indices)
@@ -79,7 +79,7 @@ pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMes
   output.cloud.point_step = input.cloud.point_step;
   output.cloud.is_bigendian = input.cloud.is_bigendian;
   output.cloud.height = 1; // cloud is no longer organized
-  output.cloud.width = static_cast<int> (indices.size ());
+  output.cloud.width = indices.size ();
   output.cloud.row_step = output.cloud.point_step * output.cloud.width;
   output.cloud.data.resize (output.cloud.width * output.cloud.height * output.cloud.point_step);
   output.cloud.is_dense = false;

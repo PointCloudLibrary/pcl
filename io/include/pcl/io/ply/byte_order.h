@@ -41,7 +41,6 @@
 
 #include <boost/predef/other/endian.h>
 
-#include <algorithm>
 #include <cstddef>
 
 namespace pcl

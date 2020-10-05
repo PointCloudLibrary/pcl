@@ -14,7 +14,7 @@ operations are applied to the input dataset (in order):
 
 .. raw:: html
 
-   <iframe title="Cylinder model segmentation" width="480" height="390" src="http://www.youtube.com/embed/SjbEDEGAeTk?rel=0" frameborder="0" allowfullscreen></iframe>
+   <iframe title="Cylinder model segmentation" width="480" height="390" src="https://www.youtube.com/embed/SjbEDEGAeTk?rel=0" frameborder="0" allowfullscreen></iframe>
 
 .. note:: 
    The cylindrical model is not perfect due to the presence of noise in the data.

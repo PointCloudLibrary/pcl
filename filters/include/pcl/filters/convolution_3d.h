@@ -40,8 +40,6 @@
 #pragma once
 
 #include <pcl/pcl_base.h>
-#include <pcl/filters/boost.h>
-#include <pcl/search/pcl_search.h>
 
 namespace pcl
 {

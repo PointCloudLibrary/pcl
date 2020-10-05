@@ -14,7 +14,7 @@ This section describes the TSDF Cloud, which is the expected output of KinFu Lar
 
   .. raw:: html
   
-     <iframe width="420" height="315" src="http://www.youtube.com/embed/AjjSZufyprU" frameborder="0" allowfullscreen></iframe>
+     <iframe width="420" height="315" src="https://www.youtube.com/embed/AjjSZufyprU" frameborder="0" allowfullscreen></iframe>
 
 You may be wondering: *"What is the difference between a TSDF cloud and a normal point cloud?"* Well, a TSDF cloud *is* a point cloud. However, the TSDF cloud makes use of how the data is stored within GPU at KinFu runtime. 
 
@@ -62,7 +62,7 @@ Since we used the *-et* option, you will also find a folder called KinFuSnapshot
 
   .. raw:: html
   
-    <iframe width="420" height="315" src="http://www.youtube.com/embed/rF1N-EEIJao" frameborder="0" allowfullscreen></iframe>
+    <iframe width="420" height="315" src="https://www.youtube.com/embed/rF1N-EEIJao" frameborder="0" allowfullscreen></iframe>
 
 The next part of this tutorial will demonstrate how to get a mesh from the TSDF cloud.
 
@@ -85,7 +85,7 @@ where *world.pcd* is the world model we obtained from KinFu Large Scale. The fol
 
   .. raw:: html
   
-    <iframe width="420" height="315" src="http://www.youtube.com/embed/XMJ-ikSZAOE" frameborder="0" allowfullscreen></iframe>
+    <iframe width="420" height="315" src="https://www.youtube.com/embed/XMJ-ikSZAOE" frameborder="0" allowfullscreen></iframe>
 
 The next part of this tutorial will demonstrate how to generate the texture for the mesh we have just created.
 
@@ -104,7 +104,7 @@ The following video shows the process in detail. It also shows the final output 
 
   .. raw:: html
   
-     <iframe width="420" height="315" src="http://www.youtube.com/embed/7S7Jj-4cKHs" frameborder="0" allowfullscreen></iframe>
+     <iframe width="420" height="315" src="https://www.youtube.com/embed/7S7Jj-4cKHs" frameborder="0" allowfullscreen></iframe>
 
 Output
 -------

@@ -40,13 +40,9 @@
 
 #pragma once
 
-#include <map>
 #include <iostream>
 #include <vector>
-#include <string>
 #include <cmath>
-#include <algorithm>
-#include <cstdio>
 #include <cstdint>
 
 #include <pcl/pcl_macros.h>

@@ -65,6 +65,10 @@
 #include <vtkPointPicker.h>
 #include <vtkAreaPicker.h>
 
+#include <boost/algorithm/string/classification.hpp> // for is_any_of
+#include <boost/algorithm/string/split.hpp> // for split
+#include <boost/filesystem.hpp> // for exists
+
 #if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
 #endif
