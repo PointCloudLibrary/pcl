@@ -9,7 +9,7 @@ the video below:
 
 .. raw:: html
 
-   <iframe title="Smoothing and normal estimation based on polynomial reconstruction" width="480" height="390" src="http://www.youtube.com/embed/FqHroDuo_I8?rel=0" frameborder="0" allowfullscreen></iframe>
+   <iframe title="Smoothing and normal estimation based on polynomial reconstruction" width="480" height="390" src="https://www.youtube.com/embed/FqHroDuo_I8?rel=0" frameborder="0" allowfullscreen></iframe>
 
 
 Some of the data irregularities (caused by small distance measurement errors)
@@ -40,7 +40,7 @@ defined on a robustly computed reference plane.
 
 .. raw:: html
 
-   <iframe title="Removing noisy data through resampling" width="480" height="390" src="http://www.youtube.com/embed/N5AgC0KEcw0?rel=0" frameborder="0" allowfullscreen></iframe>
+   <iframe title="Removing noisy data through resampling" width="480" height="390" src="https://www.youtube.com/embed/N5AgC0KEcw0?rel=0" frameborder="0" allowfullscreen></iframe>
 
 The code
 --------
