@@ -177,7 +177,6 @@ public:
         {
           assert(regularization_coeffs.rows() == warp_point_.nr_dims() &&
               "Regularization coefficient vector must have same dimension as transformation");
-          PCL_WARN("Setting regularization_coeffs for %p\n", (void*)this);
           reg_coeff_ = regularization_coeffs;
         }
 
