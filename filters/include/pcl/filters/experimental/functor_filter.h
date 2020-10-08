@@ -96,5 +96,12 @@ public:
     }
   }
 };
+
+template <class PointT>
+using SimpleFilterFunction =
+    std::function<bool(const pcl::PointCloud<PointT>&, pcl::index_t)>;
+
+template <class PointT>
+using FunctionFilter = FunctorFilter<PointT, SimpleFilterFunction<PointT>>;
 } // namespace experimental
 } // namespace pcl
