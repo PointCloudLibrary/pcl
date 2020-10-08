@@ -219,7 +219,7 @@ namespace pcl
       int dim_;
 
       /** \brief The total size of the data (either equal to the number of points in the input cloud or to the number of indices - if passed). */
-      int total_nr_points_;
+      uindex_t total_nr_points_;
 
       /** \brief The KdTree search parameters for K-nearest neighbors. */
       ::flann::SearchParams param_k_;

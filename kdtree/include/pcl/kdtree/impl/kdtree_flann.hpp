@@ -113,7 +113,7 @@ pcl::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cloud, 
   {
     convertCloudToArray (*input_);
   }
-  total_nr_points_ = static_cast<int> (index_mapping_.size ());
+  total_nr_points_ = static_cast<uindex_t> (index_mapping_.size ());
   if (total_nr_points_ == 0)
   {
     PCL_ERROR ("[pcl::KdTreeFLANN::setInputCloud] Cannot create a KDTree with an empty input cloud!\n");
@@ -178,14 +178,14 @@ pcl::KdTreeFLANN<PointT, Dist>::radiusSearch (const PointT &point, double radius
   point_representation_->vectorize (static_cast<PointT> (point), query);
 
   // Has max_nn been set properly?
-  if (max_nn == 0 || max_nn > static_cast<unsigned int> (total_nr_points_))
+  if (max_nn == 0 || max_nn > total_nr_points_)
     max_nn = total_nr_points_;
 
   std::vector<std::vector<int> > indices(1);
   std::vector<std::vector<float> > dists(1);
 
   ::flann::SearchParams params (param_radius_);
-  if (max_nn == static_cast<unsigned int>(total_nr_points_))
+  if (max_nn == total_nr_points_)
     params.max_neighbors = -1;  // return all neighbors in radius
   else
     params.max_neighbors = max_nn;
