@@ -129,7 +129,7 @@ pcl::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cloud, 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Dist> int
-pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, int k,
+pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, unsigned int k,
                                                 std::vector<int> &k_indices,
                                                 std::vector<float> &k_distances) const
 {
@@ -140,6 +140,9 @@ pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, int k,
 
   k_indices.resize (k);
   k_distances.resize (k);
+
+  if (k==0)
+    return 0;
 
   std::vector<float> query (dim_);
   point_representation_->vectorize (static_cast<PointT> (point), query);

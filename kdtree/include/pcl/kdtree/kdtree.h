@@ -132,7 +132,7 @@ namespace pcl
         * \return number of neighbors found
         */
       virtual int
-      nearestKSearch (const PointT &p_q, int k,
+      nearestKSearch (const PointT &p_q, unsigned int k,
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const = 0;
 
       /** \brief Search for k-nearest neighbors for the given query point.
@@ -152,7 +152,7 @@ namespace pcl
         * \exception asserts in debug mode if the index is not between 0 and the maximum number of points
         */
       virtual int
-      nearestKSearch (const PointCloud &cloud, int index, int k,
+      nearestKSearch (const PointCloud &cloud, int index, unsigned int k,
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
       {
         assert (index >= 0 && index < static_cast<int> (cloud.size ()) && "Out-of-bounds error in nearestKSearch!");
@@ -169,7 +169,7 @@ namespace pcl
         * \return number of neighbors found
         */
       template <typename PointTDiff> inline int
-      nearestKSearchT (const PointTDiff &point, int k,
+      nearestKSearchT (const PointTDiff &point, unsigned int k,
                        std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
       {
         PointT p;
@@ -195,7 +195,7 @@ namespace pcl
         * \exception asserts in debug mode if the index is not between 0 and the maximum number of points
         */
       virtual int
-      nearestKSearch (int index, int k,
+      nearestKSearch (int index, unsigned int k,
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
       {
         if (indices_ == nullptr)

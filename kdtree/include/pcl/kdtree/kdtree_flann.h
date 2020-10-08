@@ -155,7 +155,7 @@ namespace pcl
         * \exception asserts in debug mode if the index is not between 0 and the maximum number of points
         */
       int
-      nearestKSearch (const PointT &point, int k,
+      nearestKSearch (const PointT &point, unsigned int k,
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const override;
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
