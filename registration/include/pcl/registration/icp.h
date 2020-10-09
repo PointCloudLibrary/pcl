@@ -328,13 +328,13 @@ namespace pcl
     using Base = IterativeClosestPoint<PointSource, PointTarget, Scalar>;
     
     public:
-      using PointCloudSource = typename Self::PointCloudSource;
-      using PointCloudTarget = typename Self::PointCloudTarget;
-      using Matrix4 = typename Self::Matrix4;
+      using PointCloudSource = typename Base::PointCloudSource;
+      using PointCloudTarget = typename Base::PointCloudTarget;
+      using Matrix4 = typename Base::Matrix4;
 
-      using Self::reg_name_;
-      using Self::transformation_estimation_;
-      using Self::correspondence_rejectors_;
+      using Base::reg_name_;
+      using Base::transformation_estimation_;
+      using Base::correspondence_rejectors_;
 
       using Ptr = shared_ptr<Self>;
       using ConstPtr = shared_ptr<const Self>;
