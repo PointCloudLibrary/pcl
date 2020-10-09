@@ -431,6 +431,8 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
   unsigned int idx = 0;
   std::string line;
   std::vector<std::string> st;
+  std::istringstream is;
+  is.imbue (std::locale::classic ());
 
   try
   {
@@ -468,49 +470,49 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
             case pcl::PCLPointField::INT8:
             {
               copyStringValue<pcl::traits::asType<pcl::PCLPointField::INT8>::type> (
-                  st.at (total + c), cloud, idx, d, c);
+                  st.at (total + c), cloud, idx, d, c, is);
               break;
             }
             case pcl::PCLPointField::UINT8:
             {
               copyStringValue<pcl::traits::asType<pcl::PCLPointField::UINT8>::type> (
-                  st.at (total + c), cloud, idx, d, c);
+                  st.at (total + c), cloud, idx, d, c, is);
               break;
             }
             case pcl::PCLPointField::INT16:
             {
               copyStringValue<pcl::traits::asType<pcl::PCLPointField::INT16>::type> (
-                  st.at (total + c), cloud, idx, d, c);
+                  st.at (total + c), cloud, idx, d, c, is);
               break;
             }
             case pcl::PCLPointField::UINT16:
             {
               copyStringValue<pcl::traits::asType<pcl::PCLPointField::UINT16>::type> (
-                  st.at (total + c), cloud, idx, d, c);
+                  st.at (total + c), cloud, idx, d, c, is);
               break;
             }
             case pcl::PCLPointField::INT32:
             {
               copyStringValue<pcl::traits::asType<pcl::PCLPointField::INT32>::type> (
-                  st.at (total + c), cloud, idx, d, c);
+                  st.at (total + c), cloud, idx, d, c, is);
               break;
             }
             case pcl::PCLPointField::UINT32:
             {
               copyStringValue<pcl::traits::asType<pcl::PCLPointField::UINT32>::type> (
-                  st.at (total + c), cloud, idx, d, c);
+                  st.at (total + c), cloud, idx, d, c, is);
               break;
             }
             case pcl::PCLPointField::FLOAT32:
             {
               copyStringValue<pcl::traits::asType<pcl::PCLPointField::FLOAT32>::type> (
-                  st.at (total + c), cloud, idx, d, c);
+                  st.at (total + c), cloud, idx, d, c, is);
               break;
             }
             case pcl::PCLPointField::FLOAT64:
             {
               copyStringValue<pcl::traits::asType<pcl::PCLPointField::FLOAT64>::type> (
-                  st.at (total + c), cloud, idx, d, c);
+                  st.at (total + c), cloud, idx, d, c, is);
               break;
             }
             default:
