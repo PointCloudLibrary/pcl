@@ -279,7 +279,7 @@ public:
    * octree_resolution x precision
    * \return number of intersected voxels
    */
-  index_t
+  uindex_t
   getApproxIntersectedVoxelCentersBySegment(const Eigen::Vector3f& origin,
                                             const Eigen::Vector3f& end,
                                             AlignedPointTVector& voxel_center_list,

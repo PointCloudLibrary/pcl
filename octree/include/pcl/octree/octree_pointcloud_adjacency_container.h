@@ -119,10 +119,10 @@ public:
   /** \brief  virtual method to get size of container
    * \return number of points added to leaf node container.
    */
-  index_t
+  uindex_t
   getSize() const override
   {
-    return static_cast<index_t>(num_points_);
+    return num_points_;
   }
 
 protected:

@@ -76,7 +76,7 @@ public:
   /** \brief Pure abstract method to get size of container (number of indices)
    * \return number of points/indices stored in leaf node container.
    */
-  virtual index_t
+  virtual uindex_t
   getSize() const
   {
     return 0u;
@@ -127,7 +127,7 @@ public:
   /** \brief Abstract get size of container (number of DataT objects)
    * \return number of DataT elements in leaf node container.
    */
-  index_t
+  uindex_t
   getSize() const override
   {
     return 0;
@@ -225,7 +225,7 @@ public:
   /** \brief Get size of container (number of DataT objects)
    * \return number of DataT elements in leaf node container.
    */
-  index_t
+  uindex_t
   getSize() const override
   {
     return data_ != static_cast<index_t>(-1) ? 0 : 1;
@@ -314,10 +314,10 @@ public:
   /** \brief Get size of container (number of indices)
    * \return number of point indices in container.
    */
-  index_t
+  uindex_t
   getSize() const override
   {
-    return static_cast<index_t>(leafDataTVector_.size());
+    return static_cast<uindex_t>(leafDataTVector_.size());
   }
 
   /** \brief Reset leaf node. Clear DataT vector.*/

@@ -288,13 +288,13 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   direction.normalize();
   float precision = 1.0f;
   const float step_size = static_cast<const float>(resolution_) * precision;
-  const auto nsteps = std::max<uindex_t>(1, norm / step_size);
+  const auto nsteps = std::max<std::size_t>(1, norm / step_size);
 
   OctreeKey prev_key = key;
   // Walk along the line segment with small steps.
   Eigen::Vector3f p = leaf_centroid;
   PointT octree_p;
-  for (uindex_t i = 0; i < nsteps; ++i) {
+  for (std::size_t i = 0; i < nsteps; ++i) {
     // Start at the leaf voxel, and move back towards sensor.
     p += (direction * step_size);
 

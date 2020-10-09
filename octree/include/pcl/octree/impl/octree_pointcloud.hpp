@@ -265,7 +265,7 @@ template <typename PointT,
           typename LeafContainerT,
           typename BranchContainerT,
           typename OctreeT>
-pcl::index_t
+pcl::uindex_t
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
     getApproxIntersectedVoxelCentersBySegment(const Eigen::Vector3f& origin,
                                               const Eigen::Vector3f& end,
@@ -320,7 +320,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     voxel_center_list.push_back(center);
   }
 
-  return (static_cast<index_t>(voxel_center_list.size()));
+  return (static_cast<uindex_t>(voxel_center_list.size()));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

@@ -107,12 +107,12 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::nearestKSearch
   getKNearestNeighborRecursive(
       p_q, k, this->root_node_, key, 1, smallest_dist, point_candidates);
 
-  index_t result_count = static_cast<index_t>(point_candidates.size());
+  const auto result_count = static_cast<uindex_t>(point_candidates.size());
 
   k_indices.resize(result_count);
   k_sqr_distances.resize(result_count);
 
-  for (index_t i = 0; i < result_count; ++i) {
+  for (uindex_t i = 0; i < result_count; ++i) {
     k_indices[i] = point_candidates[i].point_idx_;
     k_sqr_distances[i] = point_candidates[i].point_distance_;
   }
