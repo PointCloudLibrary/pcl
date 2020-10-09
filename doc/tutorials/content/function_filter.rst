@@ -23,30 +23,32 @@ The explanation
 
 Now, let's break down the code piece by piece.
 
-In the following Lines, we define the PointCloud structures, fill in the input cloud, and display it's content to screen.
+In the following lines, we define the PointCloud structures, fill in the input cloud, and display its content to screen.
 
-.. literalinclude:: sources/conditional_removal/conditional_removal.cpp
+.. literalinclude:: sources/function_filter/sphere_removal.cpp
+   :language: cpp
    :language: cpp
    :lines: 10-21
 
 Then, we create the condition which a given point must satisfy so that it remains in our PointCloud. To do this we create a `std::function` which accepts a PointCloud by const reference and an index, and returns true only if the point lies inside a sphere. This is then used to build the filter
 
-.. literalinclude:: sources/conditional_removal/conditional_removal.cpp
+.. literalinclude:: sources/function_filter/sphere_removal.cpp
    :language: cpp
-   :lines: 23-40
+   :language: cpp
+   :lines: 23-34
 
 This last bit of code just applies the filter to our original PointCloud, and removes all of the points that do not satisfy the conditions we specified. Then it outputs all of the points remaining in the PointCloud.
 
-.. literalinclude:: sources/conditional_removal/conditional_removal.cpp
+.. literalinclude:: sources/function_filter/sphere_removal.cpp
    :language: cpp
-   :lines: 42-48
+   :lines: 36-42
 
 Compiling and running the program
 ---------------------------------
 
 Add the following lines to your CMakeLists.txt file:
 
-.. literalinclude:: sources/conditional_removal/CMakeLists.txt
+.. literalinclude:: sources/function_filter/CMakeLists.txt
    :language: cmake
    :linenos:
 
@@ -76,4 +78,3 @@ You will see something similar to::
       1.08544 -1.01664 -1.13041
       1.1199 0.9951 -1.13308
       1.44268 -1.44434 -0.391739
-

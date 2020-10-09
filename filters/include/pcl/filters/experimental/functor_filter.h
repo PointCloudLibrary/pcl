@@ -16,11 +16,9 @@ namespace pcl {
 namespace experimental {
 template <typename PointT, typename Function>
 constexpr static bool is_functor_for_filter_v =
-    pcl::is_invocable_r_v<bool,
-                          Function,
-                          const pcl::remove_cvref_t<pcl::PointCloud<PointT>>&,
-                          pcl::index_t>;
+    is_invocable_r_v<bool, Function, const PointCloud<PointT>&, index_t>;
 
+namespace advanced {
 /**
  * \brief Filter point clouds and indices based on a functor passed in the ctor
  * \ingroup filters
@@ -28,7 +26,7 @@ constexpr static bool is_functor_for_filter_v =
 template <typename PointT, typename Functor>
 class FunctorFilter : public FilterIndices<PointT> {
   using Base = FilterIndices<PointT>;
-  using PCLBase = pcl::PCLBase<PointT>;
+  using PCL_Base = PCLBase<PointT>;
 
 public:
   using FunctorT = Functor;
@@ -42,8 +40,8 @@ protected:
   using Base::filter_name_;
   using Base::negative_;
   using Base::removed_indices_;
-  using PCLBase::indices_;
-  using PCLBase::input_;
+  using PCL_Base::indices_;
+  using PCL_Base::input_;
 
   // need to hold a value because functors can only be copy or move constructed
   FunctorT functor_;
@@ -79,10 +77,10 @@ public:
   applyFilter(Indices& indices) override
   {
     indices.clear();
-    indices.reserve(input_->size());
+    indices.reserve(indices_->size());
     if (extract_removed_indices_) {
       removed_indices_->clear();
-      removed_indices_->reserve(input_->size());
+      removed_indices_->reserve(indices_->size());
     }
 
     for (const auto index : *indices_) {
@@ -96,12 +94,12 @@ public:
     }
   }
 };
+} // namespace advanced
 
 template <class PointT>
-using SimpleFilterFunction =
-    std::function<bool(const pcl::PointCloud<PointT>&, pcl::index_t)>;
+using SimpleFilterFunction = std::function<bool(const PointCloud<PointT>&, index_t)>;
 
 template <class PointT>
-using FunctionFilter = FunctorFilter<PointT, SimpleFilterFunction<PointT>>;
+using FunctionFilter = advanced::FunctorFilter<PointT, SimpleFilterFunction<PointT>>;
 } // namespace experimental
 } // namespace pcl

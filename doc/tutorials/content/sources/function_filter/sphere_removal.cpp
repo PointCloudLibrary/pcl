@@ -21,22 +21,16 @@ main(int argc, char** argv)
     std::cerr << "    " << pt.x << " " << pt.y << " " << pt.z << std::endl;
 
   // Setup a condition to reject points inside a filter
-  Eigen::Vector3f center{0, 0, 2};
-  float radius = 2;
+  const Eigen::Vector3f center{0, 0, 2};
+  const float radius = 2;
 
   pcl::experimental::SimpleFilterFunction<pcl::PointXYZ> filter;
   filter = [=](const XYZCloud& cloud, pcl::index_t idx) {
-    if ((cloud[idx].getVector3fMap() - center).norm() < radius) {
-      // point is inside the sphere -> let's remove it
-      return false;
-    }
-    else {
-      return true;
-    }
+    return ((cloud[idx].getVector3fMap() - center).norm() >= radius);
   };
 
   // build the filter
-  pcl::experimental::FunctionFilter<pcl::PointXYZ> func_filter (filter);
+  pcl::experimental::FunctionFilter<pcl::PointXYZ> func_filter(filter);
   func_filter.setInputCloud(cloud);
 
   // apply filter
