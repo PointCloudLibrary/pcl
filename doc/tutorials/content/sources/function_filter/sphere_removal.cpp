@@ -24,7 +24,7 @@ main(int argc, char** argv)
   const Eigen::Vector3f center{0, 0, 2};
   const float radius = 2;
 
-  pcl::experimental::SimpleFilterFunction<pcl::PointXYZ> filter;
+  pcl::experimental::FilterFunction<pcl::PointXYZ> filter;
   filter = [=](const XYZCloud& cloud, pcl::index_t idx) {
     return ((cloud[idx].getVector3fMap() - center).norm() >= radius);
   };
