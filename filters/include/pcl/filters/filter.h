@@ -42,6 +42,7 @@
 #include <pcl/pcl_base.h>
 #include <pcl/common/io.h> // for copyPointCloud
 #include <pcl/PointIndices.h>
+#include <pcl/experimental/executor/executor.h>
 
 namespace pcl
 {
@@ -56,7 +57,7 @@ namespace pcl
   template<typename PointT> void
   removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                            pcl::PointCloud<PointT> &cloud_out,
-                           std::vector<int> &index);
+                           Indices &index);
 
   /** \brief Removes points that have their normals invalid (i.e., equal to NaN)
     * \param[in] cloud_in the input point cloud
@@ -69,19 +70,23 @@ namespace pcl
   template<typename PointT> void
   removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                                   pcl::PointCloud<PointT> &cloud_out,
-                                  std::vector<int> &index);
+                                  Indices &index);
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Filter represents the base filter class. All filters must inherit from this interface.
+    * \warning PCLPointCloud2 is not currently supported by executors
     * \author Radu B. Rusu
     * \ingroup filters
     */
-  template<typename PointT>
+  template<typename PointT, typename DerivedFilter = void>
   class Filter : public PCLBase<PointT>
   {
+    using Self = Filter<PointT, DerivedFilter>;
+    using Base = PCLBase<PointT>;
+
     public:
-      using Ptr = shared_ptr<Filter<PointT> >;
-      using ConstPtr = shared_ptr<const Filter<PointT> >;
+      using Ptr = shared_ptr<Self>;
+      using ConstPtr = shared_ptr<const Self>;
 
 
       using PointCloud = pcl::PointCloud<PointT>;
@@ -93,7 +98,7 @@ namespace pcl
         * separate list. Default: false.
         */
       Filter (bool extract_removed_indices = false) :
-        removed_indices_ (new std::vector<int>),
+        removed_indices_ (new Indices),
         extract_removed_indices_ (extract_removed_indices)
       {
       }
@@ -120,27 +125,36 @@ namespace pcl
       inline void
       filter (PointCloud &output)
       {
-        if (!initCompute ())
-          return;
+        auto filterCloud = [this](PointCloud& output) {
+          applyFilter(output);
+        };
 
-        if (input_.get () == &output)  // cloud_in = cloud_out
-        {
-          PointCloud output_temp;
-          applyFilter (output_temp);
-          output_temp.header = input_->header;
-          output_temp.sensor_origin_ = input_->sensor_origin_;
-          output_temp.sensor_orientation_ = input_->sensor_orientation_;
-          pcl::copyPointCloud (output_temp, output);
-        }
-        else
-        {
-          output.header = input_->header;
-          output.sensor_origin_ = input_->sensor_origin_;
-          output.sensor_orientation_ = input_->sensor_orientation_;
-          applyFilter (output);
-        }
+        filterImpl(filterCloud, output);
+      }
 
-        deinitCompute ();
+      /** \brief filter method with specified executor.
+       *
+       * The implementation needs to set output.{points, width, height, is_dense}.
+       *
+       * \param[int] exec the executor to run the filter using
+       * \param[out] output the resultant filtered point cloud
+       */
+      template <typename Executor>
+      inline void
+      filter(const Executor& exec, PointCloud& output)
+      {
+        static_assert(pcl::is_invocable_v<
+                          decltype(&DerivedFilter::template applyFilter<Executor>),
+                          DerivedFilter&,
+                          Executor const&,
+                          PointCloud&>,
+                      "An executor overload for applyFilter doesn't exist.");
+
+        auto filterCloud = [exec, this](PointCloud& output) {
+          static_cast<DerivedFilter&>(*this).applyFilter(exec, output);
+        };
+
+        filterImpl(filterCloud, output);
       }
 
     protected:
@@ -169,6 +183,40 @@ namespace pcl
       virtual void
       applyFilter (PointCloud &output) = 0;
 
+    /** \brief implementation of filter method
+      * Added to ensure no code duplication is present in the filter method
+      * overloads, with and without the executor
+      *
+      * \param[int] filterIndices the callable which calls the filter method
+      * \param[out] output the resultant filtered point cloud
+      */
+      template <typename Callable>
+      void
+      filterImpl (Callable &filterCloud, PointCloud &output)
+      {
+        if (!initCompute ())
+          return;
+
+        if (input_.get () == &output)  // cloud_in = cloud_out
+        {
+          PointCloud output_temp;
+          filterCloud(output_temp);
+          output_temp.header = input_->header;
+          output_temp.sensor_origin_ = input_->sensor_origin_;
+          output_temp.sensor_orientation_ = input_->sensor_orientation_;
+          pcl::copyPointCloud (output_temp, output);
+        }
+        else
+        {
+          output.header = input_->header;
+          output.sensor_origin_ = input_->sensor_origin_;
+          output.sensor_orientation_ = input_->sensor_orientation_;
+          filterCloud(output);
+        }
+
+        deinitCompute ();
+      }
+
       /** \brief Get a string representation of the name of this class. */
       inline const std::string&
       getClassName () const
@@ -177,8 +225,12 @@ namespace pcl
       }
   };
 
+  template <typename PointT>
+  using FilterLegacy = Filter<PointT>;
+
   ////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Filter represents the base filter class. All filters must inherit from this interface.
+    * \warning PCLPointCloud2 is not currently supported by executors
     * \author Radu B. Rusu
     * \ingroup filters
     */
@@ -198,7 +250,7 @@ namespace pcl
         * separate list. Default: false.
         */
       Filter (bool extract_removed_indices = false) :
-        removed_indices_ (new std::vector<int>),
+        removed_indices_ (new Indices),
         extract_removed_indices_ (extract_removed_indices)
       {
       }
@@ -254,6 +306,4 @@ namespace pcl
   };
 }
 
-#ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/filter.hpp>
-#endif

@@ -79,23 +79,26 @@ namespace pcl
   template<typename PointT>
   class StatisticalOutlierRemoval : public FilterIndices<PointT>
   {
+    using Self = StatisticalOutlierRemoval<PointT>;
+    using Base = FilterIndices<PointT>;
+
     protected:
-      using PointCloud = typename FilterIndices<PointT>::PointCloud;
+      using PointCloud = typename FilterIndices<PointT, Base>::PointCloud;
       using PointCloudPtr = typename PointCloud::Ptr;
       using PointCloudConstPtr = typename PointCloud::ConstPtr;
       using SearcherPtr = typename pcl::search::Search<PointT>::Ptr;
 
     public:
 
-      using Ptr = shared_ptr<StatisticalOutlierRemoval<PointT> >;
-      using ConstPtr = shared_ptr<const StatisticalOutlierRemoval<PointT> >;
+      using Ptr = shared_ptr<Self>;
+      using ConstPtr = shared_ptr<const Self>;
 
 
       /** \brief Constructor.
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
         */
       StatisticalOutlierRemoval (bool extract_removed_indices = false) :
-        FilterIndices<PointT> (extract_removed_indices),
+        Base(extract_removed_indices),
         searcher_ (),
         mean_k_ (1),
         std_mul_ (0.0)
@@ -145,13 +148,13 @@ namespace pcl
     protected:
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
-      using Filter<PointT>::filter_name_;
-      using Filter<PointT>::getClassName;
-      using FilterIndices<PointT>::negative_;
-      using FilterIndices<PointT>::keep_organized_;
-      using FilterIndices<PointT>::user_filter_value_;
-      using FilterIndices<PointT>::extract_removed_indices_;
-      using FilterIndices<PointT>::removed_indices_;
+      using Filter<PointT, Base>::filter_name_;
+      using Filter<PointT, Base>::getClassName;
+      using Base::negative_;
+      using Base::keep_organized_;
+      using Base::user_filter_value_;
+      using Base::extract_removed_indices_;
+      using Base::removed_indices_;
 
       /** \brief Filtered results are indexed by an indices array.
         * \param[out] indices The resultant indices.

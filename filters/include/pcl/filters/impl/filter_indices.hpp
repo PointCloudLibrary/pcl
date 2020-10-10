@@ -42,7 +42,7 @@
 
 template <typename PointT> void
 pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
-                              std::vector<int> &index)
+                              Indices &index)
 {
   // Reserve enough space for the indices
   index.resize (cloud_in.size ());
@@ -73,10 +73,40 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   }
 }
 
-template<typename PointT> void
-pcl::FilterIndices<PointT>::applyFilter (PointCloud &output)
+template<typename PointT, typename DerivedFilter>
+inline void
+pcl::FilterIndices<PointT, DerivedFilter>::applyFilter (PointCloud &output)
 {
-  std::vector<int> indices;
+  auto filterIndices = [this](pcl::Indices& indices){
+    applyFilter (indices);
+  };
+
+  applyFilterImpl(filterIndices, output);
+}
+
+template<typename PointT, typename DerivedFilter>
+template <typename Executor> void
+pcl::FilterIndices<PointT, DerivedFilter>::applyFilter (const Executor &exec, PointCloud &output)
+{
+  static_assert(
+      pcl::is_invocable_v<decltype(&DerivedFilter::template applyFilter<Executor>),
+                          DerivedFilter&,
+                          Executor const&,
+                          pcl::Indices&>,
+      "An executor overload for applyFilter doesn't exist.");
+
+  auto filterIndices = [this, exec](pcl::Indices& indices) {
+    static_cast<DerivedFilter&>(*this).applyFilter(exec, indices);
+  };
+
+  applyFilterImpl(filterIndices, output);
+}
+
+template<typename PointT, typename DerivedFilter>
+template <typename Callable>
+void
+pcl::FilterIndices<PointT, DerivedFilter>::applyFilterImpl (Callable &filterIndices, PointCloud &output) {
+  pcl::Indices indices;
   if (keep_organized_)
   {
     if (!extract_removed_indices_)
@@ -84,7 +114,8 @@ pcl::FilterIndices<PointT>::applyFilter (PointCloud &output)
       PCL_WARN ("[pcl::FilterIndices<PointT>::applyFilter] extract_removed_indices_ was set to 'true' to keep the point cloud organized.\n");
       extract_removed_indices_ = true;
     }
-    applyFilter (indices);
+
+    filterIndices(indices);
 
     output = *input_;
 
@@ -101,14 +132,15 @@ pcl::FilterIndices<PointT>::applyFilter (PointCloud &output)
   else
   {
     output.is_dense = true;
-    applyFilter (indices);
+    filterIndices(indices);
     pcl::copyPointCloud (*input_, indices, output);
   }
 }
 
-
-#define PCL_INSTANTIATE_removeNanFromPointCloud(T) template PCL_EXPORTS void pcl::removeNaNFromPointCloud<T>(const pcl::PointCloud<T>&, std::vector<int>&);
+#ifndef PCL_NO_PRECOMPILE
+#define PCL_INSTANTIATE_removeNanFromPointCloud(T) template PCL_EXPORTS void pcl::removeNaNFromPointCloud<T>(const pcl::PointCloud<T>&, Indices&);
 #define PCL_INSTANTIATE_FilterIndices(T) template class PCL_EXPORTS  pcl::FilterIndices<T>;
+#endif
 
 #endif    // PCL_FILTERS_IMPL_FILTER_INDICES_H_
 
