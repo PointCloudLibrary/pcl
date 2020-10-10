@@ -55,15 +55,6 @@ pcl::MaskMap::resize(const std::size_t width, const std::size_t height)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::MaskMap::getDifferenceMask(const MaskMap& mask0,
-                                const MaskMap& mask1,
-                                MaskMap& diff_mask)
-{
-  diff_mask = getDifferenceMask(mask0, mask1);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 pcl::MaskMap
 pcl::MaskMap::getDifferenceMask(const MaskMap& mask0, const MaskMap& mask1)
 {

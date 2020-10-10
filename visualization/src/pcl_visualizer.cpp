@@ -1927,16 +1927,6 @@ pcl::visualization::PCLVisualizer::getCameraFile () const
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-PCL_DEPRECATED(1, 12, "This method can safely not be called anymore as we're just re-rendering all scenes now.")
-void
-pcl::visualization::PCLVisualizer::updateCamera ()
-{
-  rens_->InitTraversal ();
-  // Update the camera parameters
-  win_->Render ();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::updateShapePose (const std::string &id, const Eigen::Affine3f& pose)
 {

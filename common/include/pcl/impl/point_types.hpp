@@ -1164,14 +1164,6 @@ namespace pcl
 
     inline PointWithViewpoint (): PointWithViewpoint (0.f, 0.f, 0.f) {}
 
-    PCL_DEPRECATED(1, 12, "Use ctor accepting all position (x, y, z) data")
-    inline PointWithViewpoint (float _x, float _y = 0.f):
-      PointWithViewpoint (_x, _y, 0.f) {}
-
-    PCL_DEPRECATED(1, 12, "Use ctor accepting all viewpoint (vp_x, vp_y, vp_z) data")
-    inline PointWithViewpoint (float _x, float _y, float _z, float _vp_x, float _vp_y = 0.f):
-      PointWithViewpoint (_x, _y, _z, _vp_x, _vp_y, 0.f) {}
-
     inline PointWithViewpoint (float _x, float _y, float _z): PointWithViewpoint (_x, _y, _z, 0.f, 0.f, 0.f) {}
 
     inline PointWithViewpoint (float _x, float _y, float _z, float _vp_x, float _vp_y, float _vp_z)

@@ -105,22 +105,6 @@ namespace pcl
         /** \brief Provide a source point cloud dataset (must contain XYZ data!), used to compute the correspondence distance.  
           * \param[in] input a cloud containing XYZ data
           */
-        template <typename PointT>
-        PCL_DEPRECATED(1, 12, "pcl::registration::CorrespondenceRejectorSurfaceNormal::setInputCloud is deprecated. Please use setInputSource instead")
-        inline void 
-        setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr &input)
-        {
-          if (!data_container_)
-          {
-            PCL_ERROR ("[pcl::registration::%s::setInputCloud] Initialize the data container object by calling intializeDataContainer () before using this function.\n", getClassName ().c_str ());
-            return;
-          }
-          static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (input);
-        }
-
-        /** \brief Provide a source point cloud dataset (must contain XYZ data!), used to compute the correspondence distance.  
-          * \param[in] input a cloud containing XYZ data
-          */
         template <typename PointT> inline void 
         setInputSource (const typename pcl::PointCloud<PointT>::ConstPtr &input)
         {

@@ -69,18 +69,6 @@ namespace pcl
   }
 
   /** \brief Get the index of a specified field (i.e., dimension/channel)
-    * \param[in] cloud the point cloud message
-    * \param[in] field_name the string defining the field name
-    * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
-    * \ingroup common
-    */
-  template <typename PointT>
-  PCL_DEPRECATED(1, 12, "use getFieldIndex<PointT> (field_name, fields) instead")
-  inline int
-  getFieldIndex (const pcl::PointCloud<PointT> &cloud, const std::string &field_name, 
-                 std::vector<pcl::PCLPointField> &fields);
-
-  /** \brief Get the index of a specified field (i.e., dimension/channel)
     * \tparam PointT datatype for which fields is being queries
     * \param[in] field_name the string defining the field name
     * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
@@ -98,26 +86,6 @@ namespace pcl
   template <typename PointT> inline int
   getFieldIndex (const std::string &field_name,
                  const std::vector<pcl::PCLPointField> &fields);
-
-  /** \brief Get the list of available fields (i.e., dimension/channel)
-    * \param[in] cloud the point cloud message
-    * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
-    * \ingroup common
-    */
-  template <typename PointT>
-  PCL_DEPRECATED(1, 12, "use getFields<PointT> () with return value instead")
-  inline void
-  getFields (const pcl::PointCloud<PointT> &cloud, std::vector<pcl::PCLPointField> &fields);
-
-  /** \brief Get the list of available fields (i.e., dimension/channel)
-    * \tparam PointT datatype whose details are requested
-    * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
-    * \ingroup common
-    */
-  template <typename PointT>
-  PCL_DEPRECATED(1, 12, "use getFields<PointT> () with return value instead")
-  inline void
-  getFields (std::vector<pcl::PCLPointField> &fields);
 
   /** \brief Get the list of available fields (i.e., dimension/channel)
     * \tparam PointT datatype whose details are requested

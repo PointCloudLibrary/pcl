@@ -77,10 +77,6 @@ public:
     return (data_.data());
   }
 
-  PCL_DEPRECATED(1, 12, "Use new version diff getDifferenceMask(mask0, mask1)")
-  static void
-  getDifferenceMask(const MaskMap& mask0, const MaskMap& mask1, MaskMap& diff_mask);
-
   PCL_NODISCARD
   static MaskMap
   getDifferenceMask(const MaskMap& mask0, const MaskMap& mask1);

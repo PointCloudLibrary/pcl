@@ -219,20 +219,6 @@
 #endif
 #endif // defined _WIN32
 
-
-template<typename T>
-PCL_DEPRECATED(1, 12, "use std::isnan instead of pcl_isnan")
-bool pcl_isnan (T&& x) { return std::isnan (std::forward<T> (x)); }
-
-template<typename T>
-PCL_DEPRECATED(1, 12, "use std::isfinite instead of pcl_isfinite")
-bool pcl_isfinite (T&& x) { return std::isfinite (std::forward<T> (x)); }
-
-template<typename T>
-PCL_DEPRECATED(1, 12, "use std::isinf instead of pcl_isinf")
-bool pcl_isinf (T&& x) { return std::isinf (std::forward<T> (x)); }
-
-
 #ifndef DEG2RAD
 #define DEG2RAD(x) ((x)*0.017453293)
 #endif
