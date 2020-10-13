@@ -44,6 +44,18 @@ namespace pcl
 {
 
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
+Registration<PointSource, PointTarget, Scalar>::setInputSource (const PointCloudSourceConstPtr &cloud)
+{
+  if (cloud->points.empty ())
+  {
+    PCL_ERROR ("[pcl::%s::setInputSource] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
+    return;
+  }
+  source_cloud_updated_ = true;
+  PCLBase<PointSource>::setInputCloud (cloud);
+}
+
+template <typename PointSource, typename PointTarget, typename Scalar> inline void
 Registration<PointSource, PointTarget, Scalar>::setInputTarget (const PointCloudTargetConstPtr &cloud)
 {
   if (cloud->points.empty ())
