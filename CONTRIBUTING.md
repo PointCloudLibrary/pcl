@@ -24,7 +24,7 @@ restrictions:
   * [Discord Server](https://discord.gg/JFFMAXS) for live chat with
   other members of the PCL community and casual discussions
 
-<!-- 
+<!--
   * Mailing list: The [PCL Google Group](https://groups.google.com/forum/#!forum/point-cloud-library)
 -->
 
@@ -42,7 +42,7 @@ commits.
 **Please ask first** before embarking on any significant pull request (e.g.
 implementing features, refactoring code), otherwise you risk spending a lot of
 time working on something that the project's developers might not want to merge
-into the project. Please read the [tutorial on writing a new PCL class](http://pointclouds.org/documentation/tutorials/writing_new_classes.php#writing-new-classes) if you want to contribute a
+into the project. Please read the [tutorial on writing a new PCL class](https://pcl.readthedocs.io/projects/tutorials/en/latest/writing_new_classes.html) if you want to contribute a
 brand new feature.
 
 If you are new to Git, GitHub, or contributing to an open-source project, you
@@ -55,7 +55,7 @@ may want to consult the [step-by-step guide on preparing and submitting a pull r
 Please use the following checklist to make sure that your contribution is well
 prepared for merging into PCL:
 
-1. Source code adheres to the coding conventions described in [PCL Style Guide](http://pointclouds.org/documentation/advanced/pcl_style_guide.php).
+1. Source code adheres to the coding conventions described in [PCL Style Guide](http://pcl.readthedocs.io/projects/advanced/en/latest/pcl_style_guide.html).
    But if you modify existing code, do not change/fix style in the lines that
    are not related to your contribution.
 
