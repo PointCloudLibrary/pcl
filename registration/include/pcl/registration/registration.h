@@ -187,11 +187,7 @@ namespace pcl
         * \param[in] cloud the input point cloud source
         */
       virtual void
-      setInputSource (const PointCloudSourceConstPtr &cloud)
-      {
-        source_cloud_updated_ = true;
-        PCLBase<PointSource>::setInputCloud (cloud);
-      }
+      setInputSource (const PointCloudSourceConstPtr &cloud);
 
       /** \brief Get a pointer to the input point cloud dataset target. */
       inline PointCloudSourceConstPtr const
