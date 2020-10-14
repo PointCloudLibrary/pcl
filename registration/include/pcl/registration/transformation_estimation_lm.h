@@ -88,7 +88,8 @@ public:
   , tmp_tgt_(src.tmp_tgt_)
   , tmp_idx_src_(src.tmp_idx_src_)
   , tmp_idx_tgt_(src.tmp_idx_tgt_)
-  , warp_point_(src.warp_point_){};
+  , warp_point_(src.warp_point_)
+  , reg_coeff_(VectorX::Zero()){};
 
   /** \brief Copy operator.
    * \param[in] src the TransformationEstimationLM object to copy into this
@@ -215,6 +216,9 @@ protected:
   /** \brief The parameterized function used to warp the source to the target. */
   typename pcl::registration::WarpPointRigid<PointSource, PointTarget, MatScalar>::Ptr
       warp_point_;
+
+        /** \brief L2 regularization coefficients. */
+        VectorX reg_coeff_;
 
   /** Base functor all the models that need non linear optimization must
    * define their own one and implement operator() (const Eigen::VectorXd& x,
