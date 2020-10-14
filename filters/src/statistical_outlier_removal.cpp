@@ -135,7 +135,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (std::vector<int>& indices)
+pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (Indices& indices)
 {
   // If fields x/y/z are not present, we cannot filter
   if (x_idx_ == UNAVAILABLE || y_idx_ == UNAVAILABLE || z_idx_ == UNAVAILABLE)
@@ -204,7 +204,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double&
   tree_->setInputCloud (cloud);
 
   // Allocate enough space to hold the results
-  std::vector<int> nn_indices (mean_k_);
+  Indices nn_indices (mean_k_);
   std::vector<float> nn_dists (mean_k_);
 
   distances.resize (indices_->size ());

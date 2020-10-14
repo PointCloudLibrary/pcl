@@ -454,7 +454,7 @@ namespace pcl
         }
 
         // Find k-nearest neighbors in the occupied voxel centroid cloud
-        std::vector<int> k_indices;
+        Indices k_indices;
         k = kdtree_.nearestKSearch (point, k, k_indices, k_sqr_distances);
 
         // Find leaves corresponding to neighbors
@@ -513,7 +513,7 @@ namespace pcl
         }
 
         // Find neighbors within radius in the occupied voxel centroid cloud
-        std::vector<int> k_indices;
+        Indices k_indices;
         const int k = kdtree_.radiusSearch (point, radius, k_indices, k_sqr_distances, max_nn);
 
         // Find leaves corresponding to neighbors

@@ -194,7 +194,7 @@ namespace pcl
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilter (std::vector<int> &indices) override
+      applyFilter (Indices &indices) override
       {
         applyFilterIndices (indices);
       }
@@ -203,7 +203,7 @@ namespace pcl
         * \param[out] indices The resultant indices.
         */
       void
-      applyFilterIndices (std::vector<int> &indices);
+      applyFilterIndices (Indices &indices);
 
     private:
       /** \brief The name of the field that will be used for filtering. */
@@ -285,7 +285,7 @@ namespace pcl
       applyFilter (PCLPointCloud2 &output) override;
 
       void
-      applyFilter (std::vector<int> &indices) override;
+      applyFilter (Indices &indices) override;
 
     private:
       /** \brief The desired user filter field name. */

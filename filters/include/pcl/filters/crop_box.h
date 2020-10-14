@@ -175,7 +175,7 @@ namespace pcl
         * \param[out] indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices) override;
+      applyFilter (Indices &indices) override;
     private:
       /** \brief The minimum point of the box. */
       Eigen::Vector4f min_pt_;
@@ -316,7 +316,7 @@ namespace pcl
         * \param indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices) override;
+      applyFilter (Indices &indices) override;
 
       /** \brief The minimum point of the box. */
       Eigen::Vector4f min_pt_;

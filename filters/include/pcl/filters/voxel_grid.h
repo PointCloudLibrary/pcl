@@ -156,7 +156,7 @@ namespace pcl
     */
   template <typename PointT> void
   getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
-               const std::vector<int> &indices,
+               const Indices &indices,
                const std::string &distance_field_name, float min_distance, float max_distance,
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
 

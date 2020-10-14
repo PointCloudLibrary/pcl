@@ -44,7 +44,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::PassThrough<PointT>::applyFilterIndices (std::vector<int> &indices)
+pcl::PassThrough<PointT>::applyFilterIndices (Indices &indices)
 {
   // The arrays to be used
   indices.resize (indices_->size ());

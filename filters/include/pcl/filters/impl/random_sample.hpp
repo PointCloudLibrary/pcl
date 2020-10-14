@@ -45,7 +45,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT>
 void
-pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
+pcl::RandomSample<PointT>::applyFilter (Indices &indices)
 {
   std::size_t N = indices_->size ();  
   std::size_t sample_size = negative_ ? N - sample_ : sample_;

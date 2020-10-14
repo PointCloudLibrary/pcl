@@ -152,7 +152,7 @@ namespace pcl
         * \param[out] indices the resultant point cloud indices
         */
       void
-      applyFilter (std::vector<int> &indices) override;
+      applyFilter (Indices &indices) override;
 
       static bool
       sort_dot_list_function (std::pair<int, double> a,

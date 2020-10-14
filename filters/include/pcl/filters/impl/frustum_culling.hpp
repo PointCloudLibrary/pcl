@@ -43,7 +43,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::FrustumCulling<PointT>::applyFilter (std::vector<int> &indices)
+pcl::FrustumCulling<PointT>::applyFilter (Indices &indices)
 {
   Eigen::Vector4f pl_n; // near plane 
   Eigen::Vector4f pl_f; // far plane
