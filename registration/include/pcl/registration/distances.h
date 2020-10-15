@@ -40,10 +40,12 @@
 
 #pragma once
 
-#include <algorithm>
 #include <Eigen/Core>
-#include <vector>
+
 #include <string.h>
+
+#include <algorithm>
+#include <vector>
 
 namespace pcl {
 namespace distances {

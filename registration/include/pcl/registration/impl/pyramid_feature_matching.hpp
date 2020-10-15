@@ -42,8 +42,8 @@
 #pragma once
 
 #include <pcl/console/print.h>
-#include <pcl/pcl_macros.h>
 #include <pcl/registration/pyramid_feature_matching.h>
+#include <pcl/pcl_macros.h>
 
 namespace pcl {
 

@@ -4,8 +4,9 @@
 #pragma GCC system_header
 #endif
 
-#include <unsupported/Eigen/Polynomials> // for PolynomialSolver, PolynomialSolverBase
 #include <pcl/pcl_macros.h>
+
+#include <unsupported/Eigen/Polynomials> // for PolynomialSolver, PolynomialSolverBase
 
 namespace Eigen {
 template <typename _Scalar>

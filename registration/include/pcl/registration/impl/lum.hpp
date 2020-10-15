@@ -40,8 +40,9 @@
 
 #pragma once
 
-#include <tuple>
 #include <pcl/registration/lum.h>
+
+#include <tuple>
 
 namespace pcl {
 
