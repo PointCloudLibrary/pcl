@@ -41,48 +41,53 @@
 #ifndef PCL_REGISTRATION_IMPL_PAIRWISE_GRAPH_REGISTRATION_HPP_
 #define PCL_REGISTRATION_IMPL_PAIRWISE_GRAPH_REGISTRATION_HPP_
 
+namespace pcl {
 
-namespace pcl
+template <typename GraphT, typename PointT>
+void
+PairwiseGraphRegistration<GraphT, PointT>::computeRegistration()
 {
-
-template <typename GraphT, typename PointT> void
-PairwiseGraphRegistration<GraphT, PointT>::computeRegistration ()
-{
-  if (!registration_method_)
-  {
-    PCL_ERROR ("[pcl::PairwiseGraphRegistration::computeRegistration] No registration method set!\n");
+  if (!registration_method_) {
+    PCL_ERROR("[pcl::PairwiseGraphRegistration::computeRegistration] No registration "
+              "method set!\n");
     return;
   }
 
-  typename std::vector<GraphHandlerVertex>::iterator last_vx_it = last_vertices_.begin ();
-  if (last_aligned_vertex_ == boost::graph_traits<GraphT>::null_vertex ())
-  {
+  typename std::vector<GraphHandlerVertex>::iterator last_vx_it =
+      last_vertices_.begin();
+  if (last_aligned_vertex_ == boost::graph_traits<GraphT>::null_vertex()) {
     last_aligned_vertex_ = *last_vx_it;
     ++last_vx_it;
   }
 
   pcl::PointCloud<PointT> fake_cloud;
-  registration_method_->setInputTarget (boost::get_cloud<PointT> (last_aligned_vertex_, *(graph_handler_->getGraph ())));
-  for(; last_vx_it < last_vertices_.end (); ++last_vx_it)
-  {
-    registration_method_->setInputCloud (boost::get_cloud<PointT> (*last_vx_it, *(graph_handler_->getGraph ())));
+  registration_method_->setInputTarget(
+      boost::get_cloud<PointT>(last_aligned_vertex_, *(graph_handler_->getGraph())));
+  for (; last_vx_it < last_vertices_.end(); ++last_vx_it) {
+    registration_method_->setInputCloud(
+        boost::get_cloud<PointT>(*last_vx_it, *(graph_handler_->getGraph())));
 
-    const Eigen::Matrix4f last_aligned_vertex_pose = boost::get_pose (last_aligned_vertex_, *(graph_handler_->getGraph ()));
-    if (!incremental_)
-    {
-      const Eigen::Matrix4f guess = last_aligned_vertex_pose.transpose () * boost::get_pose (*last_vx_it, *(graph_handler_->getGraph ()));
-      registration_method_->align (fake_cloud, guess);
-    } else
-      registration_method_->align (fake_cloud);
+    const Eigen::Matrix4f last_aligned_vertex_pose =
+        boost::get_pose(last_aligned_vertex_, *(graph_handler_->getGraph()));
+    if (!incremental_) {
+      const Eigen::Matrix4f guess =
+          last_aligned_vertex_pose.transpose() *
+          boost::get_pose(*last_vx_it, *(graph_handler_->getGraph()));
+      registration_method_->align(fake_cloud, guess);
+    }
+    else
+      registration_method_->align(fake_cloud);
 
-    const Eigen::Matrix4f global_ref_final_tr = last_aligned_vertex_pose * registration_method_->getFinalTransformation ();
-    boost::set_estimate<PointT> (*last_vx_it, global_ref_final_tr, *(graph_handler_->getGraph ()));
+    const Eigen::Matrix4f global_ref_final_tr =
+        last_aligned_vertex_pose * registration_method_->getFinalTransformation();
+    boost::set_estimate<PointT>(
+        *last_vx_it, global_ref_final_tr, *(graph_handler_->getGraph()));
     last_aligned_vertex_ = *last_vx_it;
-    registration_method_->setInputTarget (boost::get_cloud<PointT> (last_aligned_vertex_, *(graph_handler_->getGraph ())));
+    registration_method_->setInputTarget(
+        boost::get_cloud<PointT>(last_aligned_vertex_, *(graph_handler_->getGraph())));
   }
 }
 
 } // namespace pcl
 
-#endif //PCL_REGISTRATION_IMPL_PAIRWISE_GRAPH_REGISTRATION_HPP_
-
+#endif // PCL_REGISTRATION_IMPL_PAIRWISE_GRAPH_REGISTRATION_HPP_
