@@ -38,8 +38,8 @@
  *
  */
 
-#ifndef PCL_REGISTRATION_NDT_IMPL_H_
-#define PCL_REGISTRATION_NDT_IMPL_H_
+#pragma once
+#include <pcl/registration/ndt.h>
 
 namespace pcl {
 
@@ -774,5 +774,3 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeStepLengthMT(
 }
 
 } // namespace pcl
-
-#endif // PCL_REGISTRATION_NDT_IMPL_H_

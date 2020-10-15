@@ -5,6 +5,7 @@
 #endif
 
 #include <unsupported/Eigen/Polynomials> // for PolynomialSolver, PolynomialSolverBase
+#include <pcl/pcl_macros.h>
 
 namespace Eigen {
 template <typename _Scalar>
