@@ -37,46 +37,49 @@
  */
 
 #include <pcl/registration/correspondence_rejection_organized_boundary.h>
-#include <pcl/memory.h>  // for static_pointer_cast
-
+#include <pcl/memory.h> // for static_pointer_cast
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::registration::CorrespondenceRejectionOrganizedBoundary::getRemainingCorrespondences (const pcl::Correspondences& original_correspondences,
-                                                                                          pcl::Correspondences& remaining_correspondences)
+pcl::registration::CorrespondenceRejectionOrganizedBoundary::
+    getRemainingCorrespondences(const pcl::Correspondences& original_correspondences,
+                                pcl::Correspondences& remaining_correspondences)
 {
-  pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud = static_pointer_cast<pcl::registration::DataContainer<pcl::PointXYZ, pcl::PointNormal> >(data_container_)->getInputTarget ();
+  pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud =
+      static_pointer_cast<
+          pcl::registration::DataContainer<pcl::PointXYZ, pcl::PointNormal>>(
+          data_container_)
+          ->getInputTarget();
 
-  if (!cloud->isOrganized ())
-  {
-    PCL_ERROR ("[pcl::registration::CorrespondenceRejectionOrganizedBoundary::getRemainingCorrespondences] The target cloud is not organized.\n");
-    remaining_correspondences.clear ();
+  if (!cloud->isOrganized()) {
+    PCL_ERROR("[pcl::registration::CorrespondenceRejectionOrganizedBoundary::"
+              "getRemainingCorrespondences] The target cloud is not organized.\n");
+    remaining_correspondences.clear();
     return;
   }
 
-  remaining_correspondences.reserve (original_correspondences.size ());
-  for (const auto &original_correspondence : original_correspondences)
-  {
+  remaining_correspondences.reserve(original_correspondences.size());
+  for (const auto& original_correspondence : original_correspondences) {
     /// Count how many NaNs bound the target point
     int x = original_correspondence.index_match % cloud->width;
     int y = original_correspondence.index_match / cloud->width;
 
     int nan_count_tgt = 0;
-    for (int x_d = -window_size_/2; x_d <= window_size_/2; ++x_d)
-      for (int y_d = -window_size_/2; y_d <= window_size_/2; ++y_d)
-        if (x + x_d >= 0 && x + x_d < static_cast<int> (cloud->width) &&
-            y + y_d >= 0 && y + y_d < static_cast<int> (cloud->height))
-        {
-          if (!std::isfinite ((*cloud)(x + x_d, y + y_d).z) ||
-              std::fabs ((*cloud)(x, y).z - (*cloud)(x + x_d, y + y_d).z) > depth_step_threshold_)
-            nan_count_tgt ++;
+    for (int x_d = -window_size_ / 2; x_d <= window_size_ / 2; ++x_d)
+      for (int y_d = -window_size_ / 2; y_d <= window_size_ / 2; ++y_d)
+        if (x + x_d >= 0 && x + x_d < static_cast<int>(cloud->width) && y + y_d >= 0 &&
+            y + y_d < static_cast<int>(cloud->height)) {
+          if (!std::isfinite((*cloud)(x + x_d, y + y_d).z) ||
+              std::fabs((*cloud)(x, y).z - (*cloud)(x + x_d, y + y_d).z) >
+                  depth_step_threshold_)
+            nan_count_tgt++;
         }
 
     if (nan_count_tgt >= boundary_nans_threshold_)
       continue;
 
-
-    /// The correspondence passes both tests, add it to the filtered set of correspondences
-    remaining_correspondences.push_back (original_correspondence);
+    /// The correspondence passes both tests, add it to the filtered set of
+    /// correspondences
+    remaining_correspondences.push_back(original_correspondence);
   }
 }
