@@ -262,6 +262,6 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
 } // namespace pcl
 
 //#define PCL_INSTANTIATE_CorrespondenceEstimation(T,U) template class PCL_EXPORTS
-//pcl::registration::CorrespondenceEstimation<T,U>;
+// pcl::registration::CorrespondenceEstimation<T,U>;
 
 #endif /* PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_ */
