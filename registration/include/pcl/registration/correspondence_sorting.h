@@ -41,102 +41,91 @@
 #pragma once
 
 #if defined __GNUC__
-#  pragma GCC system_header
+#pragma GCC system_header
 #endif
 
 #include <pcl/registration/correspondence_types.h>
 
-namespace pcl
-{
-  namespace registration
+namespace pcl {
+namespace registration {
+/** @b sortCorrespondencesByQueryIndex : a functor for sorting correspondences by query
+ * index \author Dirk Holz \ingroup registration
+ */
+struct sortCorrespondencesByQueryIndex {
+  using first_argument_type = pcl::Correspondence;
+  using second_argument_type = pcl::Correspondence;
+  using result_type = bool;
+  bool
+  operator()(pcl::Correspondence a, pcl::Correspondence b)
   {
-    /** @b sortCorrespondencesByQueryIndex : a functor for sorting correspondences by query index
-      * \author Dirk Holz
-      * \ingroup registration
-      */
-    struct sortCorrespondencesByQueryIndex
-    {
-      using first_argument_type = pcl::Correspondence;
-      using second_argument_type = pcl::Correspondence;
-      using result_type = bool;
-      bool
-      operator()( pcl::Correspondence a, pcl::Correspondence b)
-      {
-        return (a.index_query < b.index_query);
-      }
-    };
-
-    /** @b sortCorrespondencesByMatchIndex : a functor for sorting correspondences by match index
-      * \author Dirk Holz
-      * \ingroup registration
-      */
-    struct sortCorrespondencesByMatchIndex
-    {
-      using first_argument_type = pcl::Correspondence;
-      using second_argument_type = pcl::Correspondence;
-      using result_type = bool;
-      bool 
-      operator()( pcl::Correspondence a, pcl::Correspondence b)
-      {
-        return (a.index_match < b.index_match);
-      }
-    };
-
-    /** @b sortCorrespondencesByDistance : a functor for sorting correspondences by distance
-      * \author Dirk Holz
-      * \ingroup registration
-      */
-    struct sortCorrespondencesByDistance
-    {
-      using first_argument_type = pcl::Correspondence;
-      using second_argument_type = pcl::Correspondence;
-      using result_type = bool;
-      bool 
-      operator()( pcl::Correspondence a, pcl::Correspondence b)
-      {
-        return (a.distance < b.distance);
-      }
-    };
-
-    /** @b sortCorrespondencesByQueryIndexAndDistance : a functor for sorting correspondences by query index _and_ distance
-      * \author Dirk Holz
-      * \ingroup registration
-      */
-    struct sortCorrespondencesByQueryIndexAndDistance
-    {
-      using first_argument_type = pcl::Correspondence;
-      using second_argument_type = pcl::Correspondence;
-      using result_type = bool;
-      inline bool 
-      operator()( pcl::Correspondence a, pcl::Correspondence b)
-      {
-        if (a.index_query < b.index_query)
-          return (true);
-        else if ( (a.index_query == b.index_query) && (a.distance < b.distance) )
-          return (true);
-        return (false);
-      }
-    };
-
-    /** @b sortCorrespondencesByMatchIndexAndDistance : a functor for sorting correspondences by match index _and_ distance
-      * \author Dirk Holz
-      * \ingroup registration
-      */
-    struct sortCorrespondencesByMatchIndexAndDistance
-    {
-      using first_argument_type = pcl::Correspondence;
-      using second_argument_type = pcl::Correspondence;
-      using result_type = bool;
-      inline bool 
-      operator()( pcl::Correspondence a, pcl::Correspondence b)
-      {
-        if (a.index_match < b.index_match)
-          return (true);
-        else if ( (a.index_match == b.index_match) && (a.distance < b.distance) )
-          return (true);
-        return (false);
-      }
-    };
-
+    return (a.index_query < b.index_query);
   }
-}
+};
+
+/** @b sortCorrespondencesByMatchIndex : a functor for sorting correspondences by match
+ * index \author Dirk Holz \ingroup registration
+ */
+struct sortCorrespondencesByMatchIndex {
+  using first_argument_type = pcl::Correspondence;
+  using second_argument_type = pcl::Correspondence;
+  using result_type = bool;
+  bool
+  operator()(pcl::Correspondence a, pcl::Correspondence b)
+  {
+    return (a.index_match < b.index_match);
+  }
+};
+
+/** @b sortCorrespondencesByDistance : a functor for sorting correspondences by distance
+ * \author Dirk Holz
+ * \ingroup registration
+ */
+struct sortCorrespondencesByDistance {
+  using first_argument_type = pcl::Correspondence;
+  using second_argument_type = pcl::Correspondence;
+  using result_type = bool;
+  bool
+  operator()(pcl::Correspondence a, pcl::Correspondence b)
+  {
+    return (a.distance < b.distance);
+  }
+};
+
+/** @b sortCorrespondencesByQueryIndexAndDistance : a functor for sorting
+ * correspondences by query index _and_ distance \author Dirk Holz \ingroup registration
+ */
+struct sortCorrespondencesByQueryIndexAndDistance {
+  using first_argument_type = pcl::Correspondence;
+  using second_argument_type = pcl::Correspondence;
+  using result_type = bool;
+  inline bool
+  operator()(pcl::Correspondence a, pcl::Correspondence b)
+  {
+    if (a.index_query < b.index_query)
+      return (true);
+    else if ((a.index_query == b.index_query) && (a.distance < b.distance))
+      return (true);
+    return (false);
+  }
+};
+
+/** @b sortCorrespondencesByMatchIndexAndDistance : a functor for sorting
+ * correspondences by match index _and_ distance \author Dirk Holz \ingroup registration
+ */
+struct sortCorrespondencesByMatchIndexAndDistance {
+  using first_argument_type = pcl::Correspondence;
+  using second_argument_type = pcl::Correspondence;
+  using result_type = bool;
+  inline bool
+  operator()(pcl::Correspondence a, pcl::Correspondence b)
+  {
+    if (a.index_match < b.index_match)
+      return (true);
+    else if ((a.index_match == b.index_match) && (a.distance < b.distance))
+      return (true);
+    return (false);
+  }
+};
+
+} // namespace registration
+} // namespace pcl
