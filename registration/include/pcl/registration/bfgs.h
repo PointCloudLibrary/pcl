@@ -1,4 +1,5 @@
 #pragma once
+#include <pcl/pcl_macros.h>
 
 #if defined __GNUC__
 #pragma GCC system_header
