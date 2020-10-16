@@ -61,7 +61,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   double k = 1.0;
 
   Indices selection;
-  Eigen::VectorXf model_coefficients;
+  Eigen::VectorXf model_coefficients (sac_model_->getModelSize ());
   std::vector<double> distances;
 
   // Compute sigma - remember to set threshold_ correctly !
