@@ -50,7 +50,7 @@ namespace pcl
       m_N = 0;
       m_pV = 0;
       Resize(V.m_N);
-      memcpy( m_pV, V.m_pV, m_N*sizeof(T) );
+      std::copy_n(V.m_pV, m_N, m_pV);
     }
     template<class T>
     Vector<T>::Vector( std::size_t N )
@@ -76,7 +76,7 @@ namespace pcl
     Vector<T>::Vector( std::size_t N, T* pV )
     {
       Resize(N);
-      memcpy( m_pV, pV, N*sizeof(T) );
+      std::copy_n(pV, N, m_pV);
     }
     template<class T>
     Vector<T>::~Vector(){Resize(0);}
@@ -84,7 +84,7 @@ namespace pcl
     Vector<T>& Vector<T>::operator = (const Vector& V)
     {
       Resize(V.m_N);
-      memcpy( m_pV, V.m_pV, m_N*sizeof(T) );
+      std::copy_n(V.m_pV, m_N, m_pV);
       return *this;
     }
     template<class T>
@@ -296,7 +296,7 @@ namespace pcl
       m_N = 0;
       m_pV = 0;
       Resize(V.m_N);
-      memcpy( m_pV, V.m_pV, m_N*sizeof(T)*Dim );
+      std::copy_n(V.m_pV, m_N * Dim, m_pV);
     }
     template<class T,int Dim>
     NVector<T,Dim>::NVector( std::size_t N )
@@ -314,13 +314,13 @@ namespace pcl
         m_N = N;
         if(N){m_pV = new T[Dim*N];}
       }
-      memset( m_pV, 0, N*sizeof(T)*Dim );
+      std::fill_n(m_pV, N * Dim, 0);
     }
     template<class T,int Dim>
     NVector<T,Dim>::NVector( std::size_t N, T* pV )
     {
       Resize(N);
-      memcpy( m_pV, pV, N*sizeof(T)*Dim );
+      std::copy_n(pV, N * Dim, m_pV);
     }
     template<class T,int Dim>
     NVector<T,Dim>::~NVector(){Resize(0);}
@@ -328,7 +328,7 @@ namespace pcl
     NVector<T,Dim>& NVector<T,Dim>::operator = (const NVector& V)
     {
       Resize(V.m_N);
-      memcpy( m_pV, V.m_pV, m_N*sizeof(T)*Dim );
+      std::copy_n(V.m_pV, m_N * Dim, m_pV);
       return *this;
     }
     template<class T,int Dim>

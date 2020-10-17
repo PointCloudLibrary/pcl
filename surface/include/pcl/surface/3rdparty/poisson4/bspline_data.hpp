@@ -179,27 +179,24 @@ namespace pcl
       int fullSize = functionCount*functionCount;
       if( flags & VV_DOT_FLAG )
       {
-        vvDotTable = new Real[size];
-        memset( vvDotTable , 0 , sizeof(Real)*size );
+        vvDotTable = new Real[size]{};
       }
       if( flags & DV_DOT_FLAG )
       {
-        dvDotTable = new Real[fullSize];
-        memset( dvDotTable , 0 , sizeof(Real)*fullSize );
+        dvDotTable = new Real[fullSize]{};
       }
       if( flags & DD_DOT_FLAG )
       {
-        ddDotTable = new Real[size];
-        memset( ddDotTable , 0 , sizeof(Real)*size );
+        ddDotTable = new Real[size]{};
       }
-      double vvIntegrals[Degree+1][Degree+1];
-      double vdIntegrals[Degree+1][Degree  ];
-      double dvIntegrals[Degree  ][Degree+1];
-      double ddIntegrals[Degree  ][Degree  ];
-      int vvSums[Degree+1][Degree+1];
-      int vdSums[Degree+1][Degree  ];
-      int dvSums[Degree  ][Degree+1];
-      int ddSums[Degree  ][Degree  ];
+      double vvIntegrals[Degree+1][Degree+1]{};
+      double vdIntegrals[Degree+1][Degree  ]{};
+      double dvIntegrals[Degree  ][Degree+1]{};
+      double ddIntegrals[Degree  ][Degree  ]{};
+      int vvSums[Degree+1][Degree+1]{};
+      int vdSums[Degree+1][Degree  ]{};
+      int dvSums[Degree  ][Degree+1]{};
+      int ddSums[Degree  ][Degree  ]{};
       SetBSplineElementIntegrals< Degree   , Degree   >( vvIntegrals );
       SetBSplineElementIntegrals< Degree   , Degree-1 >( vdIntegrals );
       SetBSplineElementIntegrals< Degree-1 , Degree   >( dvIntegrals );
@@ -239,10 +236,6 @@ namespace pcl
               int idx = SymmetricIndex( ii , jj );
               int idx1 = Index( ii , jj ) , idx2 = Index( jj , ii );
 
-              memset( vvSums , 0 , sizeof( int ) * ( Degree+1 ) * ( Degree+1 ) );
-              memset( vdSums , 0 , sizeof( int ) * ( Degree+1 ) * ( Degree   ) );
-              memset( dvSums , 0 , sizeof( int ) * ( Degree   ) * ( Degree+1 ) );
-              memset( ddSums , 0 , sizeof( int ) * ( Degree   ) * ( Degree   ) );
               for( int i=start2 ; i<end2 ; i++ )
               {
                 for( int j=0 ; j<=Degree ; j++ ) for( int k=0 ; k<=Degree ; k++ ) vvSums[j][k] +=  b1[i][j] *  b2[i][k];

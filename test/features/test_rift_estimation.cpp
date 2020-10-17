@@ -127,7 +127,7 @@ TEST (PCL, RIFTEstimation)
                             0.0076f, 0.0218f, 0.0463f, 0.0030f, 0.0087f, 0.0288f, 0.0920f, 0.0472f,
                             0.0211f, 0.0420f, 0.0726f, 0.0669f, 0.0090f, 0.0901f, 0.1274f, 0.2185f,
                             0.0147f, 0.1222f, 0.3568f, 0.4348f, 0.0149f, 0.0806f, 0.2787f, 0.6864f};
-    std::copy (data, data + 32, correct_rift_feature_values);
+    std::copy_n (data, 32, correct_rift_feature_values);
   }
   else
   {
@@ -135,7 +135,7 @@ TEST (PCL, RIFTEstimation)
                             0.0076f, 0.0218f, 0.0463f, 0.0030f, 0.0087f, 0.0288f, 0.0920f, 0.0472f,
                             0.0076f, 0.0420f, 0.0726f, 0.0669f, 0.0090f, 0.0901f, 0.1274f, 0.2185f,
                             0.0147f, 0.1222f, 0.3568f, 0.4348f, 0.0149f, 0.0806f, 0.2787f, 0.6864f};
-    std::copy (data, data + 32, correct_rift_feature_values);
+    std::copy_n (data, 32, correct_rift_feature_values);
   }
   for (int i = 0; i < 32; ++i)
     EXPECT_NEAR (rift.histogram[i], correct_rift_feature_values[i], 1e-4);

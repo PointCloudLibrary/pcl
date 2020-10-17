@@ -112,7 +112,7 @@ HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::computeSecondMomentMatrix (st
   int y = static_cast<int> (index / input_->width);
   // indices        0   1   2
   // coefficients: ixix  ixiy  iyiy
-  memset (coefficients, 0, sizeof (float) * 3);
+  std::fill_n(coefficients, 3, 0);
 
   int endx = std::min (width, x + half_window_width_);
   int endy = std::min (height, y + half_window_height_);

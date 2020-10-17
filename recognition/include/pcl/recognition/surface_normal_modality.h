@@ -725,9 +725,8 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
   const int width = input_->width;
   const int height = input_->height;
 
-  unsigned short * lp_depth = new unsigned short[width*height];
-  unsigned char * lp_normals = new unsigned char[width*height];
-  memset (lp_normals, 0, width*height);
+  unsigned short * lp_depth = new unsigned short[width*height]{};
+  unsigned char * lp_normals = new unsigned char[width*height]{};
 
   surface_normal_orientations_.resize (width, height, 0.0f);
 
@@ -933,8 +932,7 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
   }
   /*cvSmooth(m_dep[0], m_dep[0], CV_MEDIAN, 5, 5);*/
 
-  unsigned char map[255];
-  memset(map, 0, 255);
+  unsigned char map[255]{};
 
   map[0x1<<0] = 0;
   map[0x1<<1] = 1;
@@ -983,8 +981,7 @@ pcl::SurfaceNormalModality<PointInT>::extractFeatures (const MaskMap & mask,
   for (auto &mask_map : mask_maps)
     mask_map.resize (width, height);
 
-  unsigned char map[255];
-  memset(map, 0, 255);
+  unsigned char map[255]{};
 
   map[0x1<<0] = 0;
   map[0x1<<1] = 1;
@@ -1254,8 +1251,7 @@ pcl::SurfaceNormalModality<PointInT>::extractAllFeatures (
   for (auto &mask_map : mask_maps)
     mask_map.resize (width, height);
 
-  unsigned char map[255];
-  memset(map, 0, 255);
+  unsigned char map[255]{};
 
   map[0x1<<0] = 0;
   map[0x1<<1] = 1;

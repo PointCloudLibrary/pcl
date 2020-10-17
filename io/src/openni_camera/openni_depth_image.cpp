@@ -59,7 +59,7 @@ namespace openni_wrapper
     // special case no sclaing, no padding => memcopy!
     if (width == depth_md_->XRes () && height == depth_md_->YRes () && (line_step == width * sizeof (unsigned short)))
     {
-      memcpy (depth_buffer, depth_md_->Data (), depth_md_->DataSize ());
+      std::copy_n(depth_md_->Data(), depth_md_->DataSize(), depth_buffer);
       return;
     }
 
