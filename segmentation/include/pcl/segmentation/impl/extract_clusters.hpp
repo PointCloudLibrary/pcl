@@ -62,7 +62,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.size (), false);
 
-  std::vector<int> nn_indices;
+  Indices nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
   for (int i = 0; i < static_cast<int> (cloud.size ()); ++i)
@@ -70,7 +70,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
     if (processed[i])
       continue;
 
-    std::vector<int> seed_queue;
+    Indices seed_queue;
     int sq_idx = 0;
     seed_queue.push_back (i);
 
@@ -120,7 +120,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
 /** @todo: fix the return value, make sure the exit is not needed anymore*/
 template <typename PointT> void
 pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
-                               const std::vector<int> &indices,
+                               const Indices &indices,
                                const typename search::Search<PointT>::Ptr &tree,
                                float tolerance, std::vector<PointIndices> &clusters,
                                unsigned int min_pts_per_cluster,
@@ -148,15 +148,15 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.size (), false);
 
-  std::vector<int> nn_indices;
+  Indices nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
-  for (const int &index : indices)
+  for (const auto &index : indices)
   {
     if (processed[index])
       continue;
 
-    std::vector<int> seed_queue;
+    Indices seed_queue;
     int sq_idx = 0;
     seed_queue.push_back (index);
 

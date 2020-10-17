@@ -322,13 +322,13 @@ namespace pcl
        *  \param[out] seed_indices The selected leaf indices
        */
       void
-      selectInitialSupervoxelSeeds (std::vector<int> &seed_indices);
+      selectInitialSupervoxelSeeds (Indices &seed_indices);
 
       /** \brief This method creates the internal supervoxel helpers based on the provided seed points
        *  \param[in] seed_indices Indices of the leaves to use as seeds
        */
       void
-      createSupervoxelHelpers (std::vector<int> &seed_indices);
+      createSupervoxelHelpers (Indices &seed_indices);
 
       /** \brief This performs the superpixel evolution */
       void

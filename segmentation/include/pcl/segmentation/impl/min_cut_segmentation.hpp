@@ -490,8 +490,6 @@ pcl::MinCutSegmentation<PointT>::recalculateUnaryPotentials ()
 template <typename PointT> bool
 pcl::MinCutSegmentation<PointT>::recalculateBinaryPotentials ()
 {
-  int number_of_points = static_cast<int> (indices_->size ());
-
   VertexIterator vertex_iter;
   VertexIterator vertex_end;
   OutEdgeIterator edge_iter;
@@ -500,7 +498,7 @@ pcl::MinCutSegmentation<PointT>::recalculateBinaryPotentials ()
   std::vector< std::set<VertexDescriptor> > edge_marker;
   std::set<VertexDescriptor> out_edges_marker;
   edge_marker.clear ();
-  edge_marker.resize (number_of_points + 2, out_edges_marker);
+  edge_marker.resize (indices_->size () + 2, out_edges_marker);
 
   for (boost::tie (vertex_iter, vertex_end) = boost::vertices (*graph_); vertex_iter != vertex_end; vertex_iter++)
   {
@@ -571,11 +569,10 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
   {
     int num_of_pts_in_first_cluster = static_cast<int> (clusters_[0].indices.size ());
     int num_of_pts_in_second_cluster = static_cast<int> (clusters_[1].indices.size ());
-    int number_of_points = num_of_pts_in_first_cluster + num_of_pts_in_second_cluster;
     colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
     unsigned char foreground_color[3] = {255, 255, 255};
     unsigned char background_color[3] = {255, 0, 0};
-    colored_cloud->width = number_of_points;
+    colored_cloud->width = (num_of_pts_in_first_cluster + num_of_pts_in_second_cluster);
     colored_cloud->height = 1;
     colored_cloud->is_dense = input_->is_dense;
 

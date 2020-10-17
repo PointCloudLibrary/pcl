@@ -68,7 +68,7 @@ pcl::ProgressiveMorphologicalFilter<PointT>::~ProgressiveMorphologicalFilter ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::ProgressiveMorphologicalFilter<PointT>::extract (std::vector<int>& ground)
+pcl::ProgressiveMorphologicalFilter<PointT>::extract (Indices& ground)
 {
   bool segmentation_is_possible = initCompute ();
   if (!segmentation_is_possible)
@@ -129,7 +129,7 @@ pcl::ProgressiveMorphologicalFilter<PointT>::extract (std::vector<int>& ground)
 
     // Find indices of the points whose difference between the source and
     // filtered point clouds is less than the current height threshold.
-    std::vector<int> pt_indices;
+    Indices pt_indices;
     for (std::size_t p_idx = 0; p_idx < ground.size (); ++p_idx)
     {
       float diff = (*cloud)[p_idx].z - (*cloud_f)[p_idx].z;

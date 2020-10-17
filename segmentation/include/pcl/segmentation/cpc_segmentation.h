@@ -249,8 +249,8 @@ namespace pcl
             // Maximum number of trials before we give up.
             max_iterations_ = 10000;
             use_directed_weights_ = false;
-            model_pt_indices_.reset (new std::vector<int>);
-            full_cloud_pt_indices_.reset (new std::vector<int> (* (sac_model_->getIndices ())));
+            model_pt_indices_.reset (new Indices);
+            full_cloud_pt_indices_.reset (new Indices (* (sac_model_->getIndices ())));
             point_cloud_ptr_ = sac_model_->getInputCloud ();
           }
 
