@@ -190,8 +190,8 @@ namespace pcl
   operator << (std::ostream& os, const PointXYZRGBNormal& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - "<< p.rgb << " - " << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - "
-      << static_cast<int>(p.r) << ", "
-      << static_cast<int>(p.g) << ", "
+      << static_cast<int>(p.r) << ","
+      << static_cast<int>(p.g) << ","
       << static_cast<int>(p.b) << " - "
       << p.curvature << ")";
     return (os);

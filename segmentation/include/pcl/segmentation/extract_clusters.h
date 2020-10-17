@@ -182,6 +182,11 @@ namespace pcl
         r.header = cloud.header;
         clusters.push_back (r);   // We could avoid a copy by working directly in the vector
       }
+      else
+      {
+        PCL_DEBUG("[pcl::extractEuclideanClusters] This cluster has %zu points, which is not between %u and %u points, so it is not a final cluster\n",
+                  seed_queue.size (), min_pts_per_cluster, max_pts_per_cluster);
+      }
     }
   }
 
@@ -293,6 +298,11 @@ namespace pcl
 
         r.header = cloud.header;
         clusters.push_back (r);
+      }
+      else
+      {
+        PCL_DEBUG("[pcl::extractEuclideanClusters] This cluster has %zu points, which is not between %u and %u points, so it is not a final cluster\n",
+                  seed_queue.size (), min_pts_per_cluster, max_pts_per_cluster);
       }
     }
   }
