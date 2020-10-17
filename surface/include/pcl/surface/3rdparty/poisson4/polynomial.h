@@ -39,7 +39,7 @@ namespace pcl
     template< int Degree >
     class Polynomial{
       public:
-        double coefficients[Degree+1];
+        double coefficients[Degree+1]{};
 
         Polynomial(void);
         template<int Degree2>

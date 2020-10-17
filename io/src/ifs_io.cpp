@@ -212,7 +212,7 @@ pcl::IFSReader::read (const std::string &file_name,
   }
 
   // Copy the data
-  memcpy (&cloud.data[0], mapped_file.data () + data_idx, cloud.data.size ());
+  std::copy_n(mapped_file.data() + data_idx, cloud.data.size(), cloud.data.begin());
 
   mapped_file.close ();
 
@@ -263,7 +263,8 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
   }
 
   // Copy the data
-  memcpy (&mesh.cloud.data[0], mapped_file.data () + data_idx, mesh.cloud.data.size ());
+  std::copy_n(mapped_file.data () + data_idx, mesh.cloud.data.size(),
+              mesh.cloud.data.begin());
 
   mapped_file.close ();
 
@@ -394,10 +395,10 @@ pcl::IFSWriter::write (const std::string &file_name, const pcl::PCLPointCloud2 &
   }
 
   // copy header
-  memcpy (sink.data (), &header[0], data_idx);
+  std::copy_n(header.begin(), data_idx, sink.data());
 
   // Copy the data
-  memcpy (sink.data () + data_idx, &cloud.data[0], cloud.data.size ());
+  std::copy(cloud.data.cbegin(), cloud.data.cend(), sink.data() + data_idx);
 
   sink.close ();
 

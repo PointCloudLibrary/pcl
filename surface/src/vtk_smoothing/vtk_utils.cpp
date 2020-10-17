@@ -212,9 +212,9 @@ pcl::VTKUtils::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyDa
     Eigen::Array4i xyz_offset (mesh.cloud.fields[idx_x].offset, mesh.cloud.fields[idx_y].offset, mesh.cloud.fields[idx_z].offset, 0);
     for (vtkIdType cp = 0; cp < nr_points; ++cp, xyz_offset += mesh.cloud.point_step)
     {
-      memcpy(&pt[0], &mesh.cloud.data[xyz_offset[0]], sizeof(float));
-      memcpy(&pt[1], &mesh.cloud.data[xyz_offset[1]], sizeof(float));
-      memcpy(&pt[2], &mesh.cloud.data[xyz_offset[2]], sizeof(float));
+      std::copy_n(&mesh.cloud.data[xyz_offset[0]], sizeof(float), &pt[0]);
+      std::copy_n(&mesh.cloud.data[xyz_offset[1]], sizeof(float), &pt[1]);
+      std::copy_n(&mesh.cloud.data[xyz_offset[2]], sizeof(float), &pt[2]);
       vtk_mesh_points->InsertPoint(cp, pt[0], pt[1], pt[2]);
     }
   }
@@ -242,7 +242,8 @@ pcl::VTKUtils::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyDa
     int offset = (idx_rgb != -1) ? mesh.cloud.fields[idx_rgb].offset : mesh.cloud.fields[idx_rgba].offset;
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
-      memcpy (&rgb, &mesh.cloud.data[cp * mesh.cloud.point_step + offset], sizeof (pcl::RGB));
+      std::copy_n(mesh.cloud.data.cbegin() + cp * mesh.cloud.point_step + offset, sizeof(pcl::RGB),
+                  reinterpret_cast<unsigned char*>(&rgb));
       const unsigned char color[3] = {rgb.r, rgb.g, rgb.b};
       colors->InsertNextTupleValue (color);
     }
@@ -257,9 +258,12 @@ pcl::VTKUtils::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyDa
     float nx = 0.0f, ny = 0.0f, nz = 0.0f;
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
-      memcpy (&nx, &mesh.cloud.data[cp*mesh.cloud.point_step+mesh.cloud.fields[idx_normal_x].offset], sizeof(float));
-      memcpy (&ny, &mesh.cloud.data[cp*mesh.cloud.point_step+mesh.cloud.fields[idx_normal_y].offset], sizeof(float));
-      memcpy (&nz, &mesh.cloud.data[cp*mesh.cloud.point_step+mesh.cloud.fields[idx_normal_z].offset], sizeof(float));
+      std::copy_n(&mesh.cloud.data[cp*mesh.cloud.point_step+mesh.cloud.fields[idx_normal_x].offset],
+                  sizeof(float), &nx);
+      std::copy_n(&mesh.cloud.data[cp*mesh.cloud.point_step+mesh.cloud.fields[idx_normal_y].offset],
+                  sizeof(float), &ny);
+      std::copy_n(&mesh.cloud.data[cp*mesh.cloud.point_step+mesh.cloud.fields[idx_normal_z].offset],
+                  sizeof(float), &nz);
       const float normal[3] = {nx, ny, nz};
       normals->InsertNextTupleValue (normal);
     }

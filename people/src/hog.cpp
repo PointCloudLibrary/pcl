@@ -103,7 +103,7 @@ pcl::people::HOG::gradMag( float *I, int h, int w, int d, float *M, float *O ) c
     _Gx[y] = pcl::sse_xor( _Gx[y], pcl::sse_and(_Gy[y], pcl::sse_set(-0.f)) );
   };
 
-  memcpy( M+x*h, M2, h*sizeof(float) );
+  std::copy_n(M2, h, M + x * h);
   // compute and store gradient orientation (O) via table lookup
   if(O!=nullptr) for( y=0; y<h; y++ ) O[x*h+y] = acost[(int)Gx[y]];
   }
@@ -158,7 +158,7 @@ pcl::people::HOG::gradMag( float *I, int h, int w, int d, float *M, float *O ) c
     Gx[y] = -Gx[y];
   }
   
-  memcpy( M+x*h, M2, h*sizeof(float) );
+  std::copy_n(M2, h, M + x * h);
   // compute and store gradient orientation (O) via table lookup
   if(O!=0) for( y=0; y<h; y++ ) O[x*h+y] = acost[(int)Gx[y]];
   }

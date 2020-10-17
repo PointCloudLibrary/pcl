@@ -156,9 +156,9 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const
     coefficients [7] = zz / float(count);
   }
   else
-    memset (coefficients, 0, sizeof (float) * 8);
+    std::fill_n(coefficients, 8, 0);
 #else
-  memset (coefficients, 0, sizeof (float) * 8);
+  std::fill_n(coefficients, 8, 0);
   for (const auto& index : neighbors)
   {
     if (std::isfinite ((*normals_)[index].normal_x))

@@ -73,6 +73,7 @@ pcl::CovarianceSampling<PointT, PointNT>::initCompute ()
     scaled_points_[p_i] = (*input_)[(*indices_)[p_i]].getVector3fMap () - centroid;
     average_norm += scaled_points_[p_i].norm ();
   }
+
   average_norm /= double (scaled_points_.size ());
   for (std::size_t p_i = 0; p_i < scaled_points_.size (); ++p_i)
     scaled_points_[p_i] /= float (average_norm);

@@ -37,6 +37,8 @@
 
 #include <pcl/common/projection_matrix.h>
 
+#include <algorithm>
+
 //////////////////////////////////////////////////////////////////////////////
 void 
 pcl::getCameraMatrixFromProjectionMatrix (
@@ -49,7 +51,7 @@ pcl::getCameraMatrixFromProjectionMatrix (
   
   Eigen::Matrix3f cam = KR_KRT / KR_KRT.coeff (8);
 
-  memset (&(camera_matrix.coeffRef (0)), 0, sizeof (Eigen::Matrix3f::Scalar) * 9);
+  std::fill_n(&(camera_matrix.coeffRef (0)), 9, 0);
   camera_matrix.coeffRef (8) = 1.0;
   
   if (camera_matrix.Flags & Eigen::RowMajorBit)

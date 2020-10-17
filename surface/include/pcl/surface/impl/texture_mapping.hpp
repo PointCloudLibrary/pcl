@@ -168,9 +168,9 @@ pcl::TextureMapping<PointInT>::mapTexture2Mesh (pcl::TextureMesh &tex_mesh)
       for (std::size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
       {
         std::size_t idx = tex_mesh.tex_polygons[m][i].vertices[j];
-        memcpy (&x, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[0].offset], sizeof(float));
-        memcpy (&y, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[1].offset], sizeof(float));
-        memcpy (&z, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[2].offset], sizeof(float));
+        x = tex_mesh.cloud.data.at(idx * point_size + tex_mesh.cloud.fields[0].offset);
+        y = tex_mesh.cloud.data.at(idx * point_size + tex_mesh.cloud.fields[1].offset);
+        z = tex_mesh.cloud.data.at(idx * point_size + tex_mesh.cloud.fields[2].offset);
         facet[j][0] = x;
         facet[j][1] = y;
         facet[j][2] = z;
@@ -210,9 +210,12 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh)
 
   for (int i = 0; i < nr_points; ++i)
   {
-    memcpy (&x_, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[0].offset], sizeof(float));
-    memcpy (&y_, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[1].offset], sizeof(float));
-    memcpy (&z_, &tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[2].offset], sizeof(float));
+    std::copy_n(&tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[0].offset],
+                sizeof(float), &x_);
+    std::copy_n(&tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[1].offset],
+                sizeof(float), &y_);
+    std::copy_n(&tex_mesh.cloud.data[i * point_size + tex_mesh.cloud.fields[2].offset],
+                sizeof(float), &z_);
     // x
     if (x_ <= x_lowest)
       x_lowest = x_;
@@ -255,9 +258,12 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh)
       for (std::size_t j = 0; j < tex_mesh.tex_polygons[m][i].vertices.size (); ++j)
       {
         std::size_t idx = tex_mesh.tex_polygons[m][i].vertices[j];
-        memcpy (&x_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[0].offset], sizeof(float));
-        memcpy (&y_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[1].offset], sizeof(float));
-        memcpy (&z_, &tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[2].offset], sizeof(float));
+        std::copy_n(&tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[0].offset],
+                    sizeof(float), &x_);
+        std::copy_n(&tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[1].offset],
+                    sizeof(float), &y_);
+        std::copy_n(&tex_mesh.cloud.data[idx * point_size + tex_mesh.cloud.fields[2].offset],
+                    sizeof(float), &z_);
 
         // calculate uv coordinates
         tmp_VT[0] = (x_ + x_offset) / x_range;

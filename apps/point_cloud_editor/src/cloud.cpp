@@ -109,12 +109,11 @@ Cloud::Cloud (const Cloud &copy)
   select_translate_y_(copy.select_translate_y_),
   select_translate_z_(copy.select_translate_z_)
 {
-  std::copy(copy.center_xyz_, copy.center_xyz_+XYZ_SIZE, center_xyz_);
-  std::copy(copy.cloud_matrix_, copy.cloud_matrix_+MATRIX_SIZE, cloud_matrix_);
-  std::copy(copy.select_matrix_, copy.select_matrix_+MATRIX_SIZE,
-            select_matrix_);
-  std::copy(copy.color_, copy.color_+RGB, color_);
-  std::copy(copy.highlight_color_, copy.highlight_color_+RGB, highlight_color_);
+  std::copy_n(copy.center_xyz_, XYZ_SIZE, center_xyz_);
+  std::copy_n(copy.cloud_matrix_, MATRIX_SIZE, cloud_matrix_);
+  std::copy_n(copy.select_matrix_, MATRIX_SIZE, select_matrix_);
+  std::copy_n(copy.color_, RGB, color_);
+  std::copy_n(copy.highlight_color_, RGB, highlight_color_);
 }
 
 Cloud&
@@ -127,14 +126,12 @@ Cloud::operator= (const Cloud &cloud)
   display_scale_ = cloud.display_scale_;
   point_size_ = cloud.point_size_;
   selected_point_size_ = cloud.selected_point_size_;
-  std::copy(cloud.center_xyz_, cloud.center_xyz_+XYZ_SIZE, center_xyz_);
-  std::copy(cloud.cloud_matrix_, cloud.cloud_matrix_+MATRIX_SIZE,
-            cloud_matrix_);
-  std::copy(cloud.select_matrix_, cloud.select_matrix_+MATRIX_SIZE,
-            select_matrix_);
+  std::copy_n(cloud.center_xyz_, XYZ_SIZE, center_xyz_);
+  std::copy_n(cloud.cloud_matrix_, MATRIX_SIZE, cloud_matrix_);
+  std::copy_n(cloud.select_matrix_, MATRIX_SIZE, select_matrix_);
   partitioned_indices_ = cloud.partitioned_indices_;
-  std::copy(cloud.color_, cloud.color_+RGB, color_);
-  std::copy(cloud.highlight_color_,cloud.highlight_color_+RGB,highlight_color_);
+  std::copy_n(cloud.color_, RGB, color_);
+  std::copy_n(cloud.highlight_color_, RGB, highlight_color_);
   select_translate_x_ = cloud.select_translate_x_;
   select_translate_y_ = cloud.select_translate_y_;
   select_translate_z_ = cloud.select_translate_z_;
@@ -158,7 +155,7 @@ Cloud::operator[] (unsigned int index) const
 void
 Cloud::loadMatrix (const float *matrix)
 {
-  std::copy(matrix, matrix+MATRIX_SIZE, cloud_matrix_);
+  std::copy_n(matrix, MATRIX_SIZE, cloud_matrix_);
 }
 
 void
@@ -170,7 +167,7 @@ Cloud::multMatrix (const float *matrix)
 void
 Cloud::setSelectionRotation (const float* matrix)
 {
-  std::copy(matrix, matrix+MATRIX_SIZE, select_matrix_);
+  std::copy_n(matrix, MATRIX_SIZE, select_matrix_);
 }
 
 void
@@ -459,8 +456,8 @@ Cloud::updateCloudMembers ()
   std::fill_n(min_xyz_, XYZ_SIZE, 0.0f);
   std::fill_n(max_xyz_, XYZ_SIZE, 0.0f);
   float *pt = &(cloud_[0].data[X]);
-  std::copy(pt, pt+XYZ_SIZE, max_xyz_);
-  std::copy(max_xyz_, max_xyz_+XYZ_SIZE, min_xyz_);
+  std::copy_n(pt, XYZ_SIZE, max_xyz_);
+  std::copy_n(max_xyz_, XYZ_SIZE, min_xyz_);
   for (std::size_t i = 1; i < cloud_.size(); ++i)
   {
     for (unsigned int j = 0; j < XYZ_SIZE; ++j)

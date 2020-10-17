@@ -206,7 +206,7 @@ class PeoplePCDApp
         depth_host_.resize(w *h);
         depth_host_.width = w;
         depth_host_.height = h;
-        std::copy(data, data + w * h, &depth_host_[0]);
+        std::copy_n(data, w * h, &depth_host_[0]);
 
         //getting image
         w = image_wrapper->getWidth();

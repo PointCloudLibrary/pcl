@@ -259,7 +259,7 @@ computeDominantQuantizedGradients ()
   constexpr float divisor = 180.0f / (num_gradient_bins - 1.0f);
 
   unsigned char * peak_pointer = dominant_quantized_color_gradients_.getData ();
-  memset (peak_pointer, 0, output_width*output_height);
+  std::fill_n(peak_pointer, output_width*output_height, 0);
   
   for (std::size_t row_bin_index = 0; row_bin_index < output_height; ++row_bin_index)
   {

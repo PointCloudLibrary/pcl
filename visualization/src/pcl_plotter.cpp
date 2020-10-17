@@ -53,6 +53,7 @@
 #include <vtkPlot.h>
 #include <vtkTable.h>
 
+#include <algorithm>
 #include <fstream>
 #include <limits>
 
@@ -106,9 +107,9 @@ pcl::visualization::PCLPlotter::addPlotData (
   //creating a permanent copy of the arrays
   double *permanent_X = new double[size];
   double *permanent_Y = new double[size];
-  memcpy(permanent_X, array_X, size*sizeof(double));
-  memcpy(permanent_Y, array_Y, size*sizeof(double));
-  
+  std::copy_n(array_X, size, permanent_X);
+  std::copy_n(array_Y, size, permanent_Y);
+
   //transforming data to be fed to the vtkChartXY
   VTK_CREATE (vtkTable, table);
 

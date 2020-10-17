@@ -117,7 +117,7 @@ Narf::deepCopy (const Narf& other)
     delete[] surface_patch_;
     surface_patch_ = new float[surface_patch_pixel_size_*surface_patch_pixel_size_];
   }
-  memcpy(surface_patch_, other.surface_patch_, sizeof(*surface_patch_)*surface_patch_pixel_size_*surface_patch_pixel_size_);
+  std::copy_n(other.surface_patch_, surface_patch_pixel_size_*surface_patch_pixel_size_, surface_patch_);
   surface_patch_world_size_ = other.surface_patch_world_size_;
   surface_patch_rotation_ = other.surface_patch_rotation_;
   
@@ -127,7 +127,7 @@ Narf::deepCopy (const Narf& other)
     delete[] descriptor_;
     descriptor_ = new float[descriptor_size_];
   }
-  memcpy(descriptor_, other.descriptor_, sizeof(*descriptor_)*descriptor_size_);
+  std::copy_n(other.descriptor_, descriptor_size_, descriptor_);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////

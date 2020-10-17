@@ -64,7 +64,7 @@ multMatrix(const float* left, const float* right, float* result)
       r[i * MATRIX_SIZE_DIM + j] = sum;
     }
   }
-  std::copy(r, r+MATRIX_SIZE, result);
+  std::copy_n(r, MATRIX_SIZE, result);
 }
 
 

@@ -57,7 +57,7 @@ void ImageRGB24::fillRGB (unsigned width, unsigned height, unsigned char* rgb_bu
     unsigned line_size = width * 3;
     if (rgb_line_step == 0 || rgb_line_step == line_size)
     {
-      memcpy (rgb_buffer, image_md_->Data(), image_md_->DataSize());
+      std::copy_n(image_md_->Data(), image_md_->DataSize(), rgb_buffer);
     }
     else // line by line
     {
@@ -65,7 +65,7 @@ void ImageRGB24::fillRGB (unsigned width, unsigned height, unsigned char* rgb_bu
       const unsigned char* src_line = static_cast<const unsigned char*> (image_md_->Data());
       for (unsigned yIdx = 0; yIdx < height; ++yIdx, rgb_line += rgb_line_step, src_line += line_size)
       {
-        memcpy (rgb_line, src_line, line_size);
+        std::copy_n(src_line, line_size, rgb_line);
       }
     }
   }

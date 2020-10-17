@@ -3808,8 +3808,7 @@ namespace pcl
       fData.set( depth );
       fData.setValueTables( fData.VALUE_FLAG );
       res = 1<<depth;
-      Real* values = new float[ res * res * res ];
-      memset( values , 0 , sizeof( float ) * res  * res * res );
+      Real* values = new float[ res * res * res ]{};
 
       for( TreeOctNode* n=tree.nextNode() ; n ; n=tree.nextNode( n ) )
       {
@@ -3850,8 +3849,7 @@ namespace pcl
     {
       if( depth<=0 || depth>tree.maxDepth() ) depth = tree.maxDepth();
       res = 1<<tree.maxDepth();
-      Real* values = new float[ res * res * res ];
-      memset( values , 0 , sizeof( float ) * res  * res * res );
+      Real* values = new float[ res * res * res ]{};
 
       for( TreeOctNode* n=tree.nextNode() ; n ; n=tree.nextNode( n ) )
       {

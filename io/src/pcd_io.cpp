@@ -1444,7 +1444,7 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
 
   os.imbue (std::locale::classic ());
   os << "DATA binary_compressed\n";
-  std::copy (temp_buf.begin (), temp_buf.end (), std::ostream_iterator<char> (os));
+  std::copy (temp_buf.cbegin (), temp_buf.cend (), std::ostream_iterator<char> (os));
   os.flush ();
 
   return (os ? 0 : -1);

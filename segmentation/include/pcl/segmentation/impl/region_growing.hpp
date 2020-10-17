@@ -580,8 +580,9 @@ pcl::RegionGrowing<PointT, NormalT>::getSegmentFromPoint (pcl::index_t index, pc
 
   // first of all we need to find out if this point belongs to cloud
   bool point_was_found = false;
-  for (const auto& point : (*indices_))
-    if (point == index)
+  int number_of_points = static_cast <int> (indices_->size ());
+  for (int point = 0; point < number_of_points; point++)
+    if ( (*indices_)[point] == index)
     {
       point_was_found = true;
       break;
@@ -661,10 +662,12 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloud ()
     }
 
     int next_color = 0;
-    for (const auto& i_segment : clusters_)
+    for (auto i_segment = clusters_.cbegin (); i_segment != clusters_.cend (); i_segment++)
     {
-      for (const auto& index : (i_segment.indices))
+      for (auto i_point = i_segment->indices.cbegin (); i_point != i_segment->indices.cend (); i_point++)
       {
+        int index;
+        index = *i_point;
         (*colored_cloud)[index].r = colors[3 * next_color];
         (*colored_cloud)[index].g = colors[3 * next_color + 1];
         (*colored_cloud)[index].b = colors[3 * next_color + 2];
@@ -712,10 +715,11 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
     }
 
     int next_color = 0;
-    for (const auto& i_segment : clusters_)
+    for (auto i_segment = clusters_.cbegin (); i_segment != clusters_.cend (); i_segment++)
     {
-      for (const auto& index : (i_segment.indices))
+      for (auto i_point = i_segment->indices.cbegin (); i_point != i_segment->indices.cend (); i_point++)
       {
+        int index = *i_point;
         (*colored_cloud)[index].r = colors[3 * next_color];
         (*colored_cloud)[index].g = colors[3 * next_color + 1];
         (*colored_cloud)[index].b = colors[3 * next_color + 2];
