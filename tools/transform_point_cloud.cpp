@@ -185,9 +185,9 @@ template <typename T> void
 multiply (pcl::PCLPointCloud2 &cloud, int field_offset, double multiplier)
 {
   T val;
-  std::copy_n(&cloud.data[field_offset], sizeof(T), &val);
+  memcpy (&val, &cloud.data[field_offset], sizeof (T));
   val = static_cast<T> (val * static_cast<T> (multiplier));
-  std::copy_n(&val, sizeof(T), &cloud.data[field_offset]);
+  memcpy (&cloud.data[field_offset], &val, sizeof (T));
 }
 
 void
