@@ -117,14 +117,14 @@ pcl::SACSegmentation<PointT>::segment (PointIndices &inliers, ModelCoefficients 
     Eigen::VectorXf coeff_refined (model_->getModelSize ());
     model_->optimizeModelCoefficients (inliers.indices, coeff, coeff_refined);
     model_coefficients.values.resize (coeff_refined.size ());
-    model_coefficients.values.assign(coeff_refined[0], coeff_refined[coeff_refined.size() - 1]);
+    memcpy (&model_coefficients.values[0], &coeff_refined[0], coeff_refined.size () * sizeof (float));
     // Refine inliers
     model_->selectWithinDistance (coeff_refined, threshold_, inliers.indices);
   }
   else
   {
     model_coefficients.values.resize (coeff.size ());
-    model_coefficients.values.assign(coeff[0], coeff[coeff.size() - 1]);
+    memcpy (&model_coefficients.values[0], &coeff[0], coeff.size () * sizeof (float));
   }
 
   deinitCompute ();

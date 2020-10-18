@@ -54,9 +54,6 @@
 #include <boost/foreach.hpp>
 #endif
 
-#include <algorithm>
-#include <iterator>
-
 namespace pcl
 {
   namespace detail
@@ -195,13 +192,12 @@ namespace pcl
       // Should usually be able to copy all rows at once
       if (msg.row_step == cloud_row_step)
       {
-        std::copy(msg.data.cbegin(), msg.data.cend(), cloud_data);
+        memcpy (cloud_data, msg_data, msg.data.size ());
       }
       else
       {
-        for (std::uint32_t i = 0; i < msg.height; ++i, cloud_data += cloud_row_step, msg_data += msg.row_step) {
-          std::copy_n(msg_data, cloud_row_step, cloud_data);
-        }
+        for (std::uint32_t i = 0; i < msg.height; ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
+          memcpy (cloud_data, msg_data, cloud_row_step);
       }
 
     }
@@ -216,8 +212,7 @@ namespace pcl
           const std::uint8_t* msg_data = row_data + col * msg.point_step;
           for (const detail::FieldMapping& mapping : field_map)
           {
-            std::copy_n(msg_data + mapping.serialized_offset, mapping.size,
-                        cloud_data + mapping.struct_offset);
+            memcpy (cloud_data + mapping.struct_offset, msg_data + mapping.serialized_offset, mapping.size);
           }
           cloud_data += sizeof (PointT);
         }
@@ -306,7 +301,7 @@ namespace pcl
       for (std::size_t x = 0; x < cloud.width; x++)
       {
         std::uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
-        std::copy_n(&cloud(x, y).rgb, 3, pixel);
+        memcpy (pixel, &cloud (x, y).rgb, 3 * sizeof(std::uint8_t));
       }
     }
   }
@@ -346,7 +341,7 @@ namespace pcl
       for (std::size_t x = 0; x < cloud.width; x++, rgb_offset += point_step)
       {
         std::uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
-        std::copy_n(&cloud.data[rgb_offset], 3, pixel);
+        memcpy (pixel, &(cloud.data[rgb_offset]), 3 * sizeof (std::uint8_t));
       }
     }
   }
