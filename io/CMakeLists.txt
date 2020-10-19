@@ -224,7 +224,6 @@ set(srcs
   src/hdl_grabber.cpp
   src/vlp_grabber.cpp
   src/robot_eye_grabber.cpp
-  src/file_io.cpp
   src/auto_io.cpp
   src/io_exception.cpp
   ${VTK_IO_SOURCE}
