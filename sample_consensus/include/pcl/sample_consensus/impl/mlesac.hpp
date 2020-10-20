@@ -107,7 +107,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
       continue;
     }
     
-    // Use Expectiation-Maximization to find out the right value for d_cur_penalty
+    // Use Expectation-Maximization to find out the right value for d_cur_penalty
     // ---[ Initial estimate for the gamma mixing parameter = 1/2
     double gamma = 0.5;
     double p_outlier_prob = 0;
