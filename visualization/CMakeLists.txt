@@ -85,6 +85,7 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/vtk.h"
   "include/pcl/${SUBSYS_NAME}/simple_buffer_visualizer.h"
   "include/pcl/${SUBSYS_NAME}/pcl_plotter.h"
+  "include/pcl/${SUBSYS_NAME}/qvtk_compatibility.h"
 )
 
 set(common_incs
