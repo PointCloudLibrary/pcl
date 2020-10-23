@@ -25,7 +25,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING 
 ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
 */
-
+#include <algorithm>
 #include <unordered_map>
 
 #include "poisson_exceptions.h"
@@ -2484,8 +2484,8 @@ namespace pcl
       coarseRootData.cornerNormals    = new Point3D< Real >[ coarseRootData.cCount ];
       coarseRootData.cornerValuesSet  = new            char[ coarseRootData.cCount ];
       coarseRootData.cornerNormalsSet = new            char[ coarseRootData.cCount ];
-      memset( coarseRootData.cornerValuesSet  , 0 , sizeof( char ) * coarseRootData.cCount );
-      memset( coarseRootData.cornerNormalsSet , 0 , sizeof( char ) * coarseRootData.cCount );
+      std::fill_n(coarseRootData.cornerValuesSet, coarseRootData.cCount, '\0');
+      std::fill_n(coarseRootData.cornerNormalsSet, coarseRootData.cCount, '\0');
       MemoryUsage();
 
       std::vector< TreeOctNode::ConstNeighborKey3 > nKeys( threads );
@@ -2503,9 +2503,9 @@ namespace pcl
 
         _sNodes.setCornerTable( rootData , _sNodes.treeNodes[i] , threads );
         _sNodes.setEdgeTable  ( rootData , _sNodes.treeNodes[i] , threads );
-        memset( rootData.cornerValuesSet  , 0 , sizeof( char ) * rootData.cCount );
-        memset( rootData.cornerNormalsSet , 0 , sizeof( char ) * rootData.cCount );
-        memset( rootData.edgesSet         , 0 , sizeof( char ) * rootData.eCount );
+        std::fill_n(rootData.cornerValuesSet, rootData.cCount, '\0');
+        std::fill_n(rootData.cornerNormalsSet, rootData.cCount, '\0');
+        std::fill_n(rootData.edgesSet, rootData.eCount, '\0');
         interiorPoints = new std::vector< Point3D< float > >();
         for( int d=maxDepth ; d>sDepth ; d-- )
         {

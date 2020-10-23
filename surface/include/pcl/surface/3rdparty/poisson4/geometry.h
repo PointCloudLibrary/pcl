@@ -49,8 +49,8 @@ namespace pcl
     template< class Real >
     struct Point3D
     {
-        Real coords[3];
-        Point3D( void ) { coords[0] = coords[1] = coords[2] = Real(0); }
+        Real coords[3]{};
+        Point3D( void ) = default;
         inline       Real& operator[] ( int i )       { return coords[i]; }
         inline const Real& operator[] ( int i ) const { return coords[i]; }
         inline Point3D& operator += ( Point3D p ){ coords[0] += p.coords[0] , coords[1] += p.coords[1] , coords[2] += p.coords[2] ; return *this; }

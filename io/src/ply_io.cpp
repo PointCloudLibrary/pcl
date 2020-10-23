@@ -39,6 +39,7 @@
 #include <pcl/common/io.h>
 #include <pcl/io/ply_io.h>
 
+#include <algorithm>
 #include <cstdlib>
 #include <fstream>
 #include <functional>
@@ -593,9 +594,10 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
           else if (field.datatype == ::pcl::PCLPointField::FLOAT64)
             memcpy (&data[r * cloud_->point_step + field.offset],
                     reinterpret_cast<const char*> (&d_nan), sizeof (double));
-          else
-            memset (&data[r * cloud_->point_step + field.offset], 0,
-                    pcl::getFieldSize (field.datatype) * field.count);
+          else {
+            std::fill_n(&data[r * cloud_->point_step + field.offset],
+                        pcl::getFieldSize (field.datatype) * field.count, 0);
+          }
       }
       else
         memcpy (&data[r* cloud_->point_step], &cloud_->data[(*range_grid_)[r][0] * cloud_->point_step], cloud_->point_step);
@@ -661,8 +663,10 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
             memcpy (&data[r * cloud_->point_step + field.offset],
                     reinterpret_cast<const char*> (&d_nan), sizeof (double));
           else
-            memset (&data[r * cloud_->point_step + field.offset], 0,
-                    pcl::getFieldSize (field.datatype) * field.count);
+          {
+            std::fill_n(&data[r * cloud_->point_step + field.offset],
+                        pcl::getFieldSize (field.datatype) * field.count, 0);
+          }
       }
       else
         memcpy (&data[r* cloud_->point_step], &cloud_->data[(*range_grid_)[r][0] * cloud_->point_step], cloud_->point_step);
