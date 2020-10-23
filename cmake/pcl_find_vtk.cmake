@@ -60,7 +60,7 @@ set(NON_PREFIX_PCL_VTK_COMPONENTS
   IOPLY
   RenderingAnnotation
   RenderingCore
-  #RenderingContext2D made optionel as its for 2D rendering only and not default on MacOS
+  RenderingContext2D
   RenderingLOD
   RenderingFreeType
   ViewsCore
@@ -81,7 +81,7 @@ else()
   set(VTK_RENDERING_BACKEND_OPENGL_VERSION "2")
 endif()
 
-list(APPEND NON_PREFIX_PCL_VTK_COMPONENTS Rendering${VTK_RENDERING_BACKEND} RenderingContext${VTK_RENDERING_BACKEND})
+list(APPEND NON_PREFIX_PCL_VTK_COMPONENTS Rendering${VTK_RENDERING_BACKEND})
 
 #Append vtk to components if version is <9.0
 if(VTK_VERSION VERSION_LESS 9.0)

@@ -49,7 +49,6 @@
 #include <vtkPointData.h>
 #include <vtkVertexGlyphFilter.h>
 #include <vtkPlanes.h>
-#include <vtkXYPlotActor.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 

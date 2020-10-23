@@ -11,6 +11,7 @@
 
 #if HAVE_QVTK
 #include <vtkVersion.h>
+#include <vtkRenderWindow.h>
 
 #if VTK_MAJOR_VERSION > 8
   #include <QVTKOpenGLNativeWidget.h>
@@ -21,27 +22,27 @@
 #endif // VTK_MAJOR_VERSION > 8
 
 
-inline auto PCL_EXPORTS getInteractorCompat(PCLQVTKWidget* qvtk) {
+inline auto PCL_EXPORTS getInteractorCompat(PCLQVTKWidget& qvtk) {
 #if VTK_MAJOR_VERSION > 8
-  return qvtk->interactor();
+  return qvtk.interactor();
 #else
-  return qvtk->GetInteractor();
+  return qvtk.GetInteractor();
 #endif // VTK_MAJOR_VERSION > 8
 }
 
-inline auto PCL_EXPORTS getRenderWindowCompat(PCLQVTKWidget* qvtk) {
+inline auto PCL_EXPORTS getRenderWindowCompat(PCLQVTKWidget& qvtk) {
 #if VTK_MAJOR_VERSION > 8
-  return qvtk->renderWindow();
+  return qvtk.renderWindow();
 #else
-  return qvtk->GetRenderWindow();
+  return qvtk.GetRenderWindow();
 #endif // VTK_MAJOR_VERSION > 8
 }
 
-inline auto PCL_EXPORTS setRenderWindowCompat(PCLQVTKWidget* qvtk, vtkRenderWindow* window) {
+inline auto PCL_EXPORTS setRenderWindowCompat(PCLQVTKWidget& qvtk, vtkRenderWindow& window) {
 #if VTK_MAJOR_VERSION > 8
-  return qvtk->setRenderWindow(window);
+  return qvtk.setRenderWindow(&window);
 #else
-  return qvtk->SetRenderWindow(window);
+  return qvtk.SetRenderWindow(&window);
 #endif // VTK_MAJOR_VERSION > 8
 }
 

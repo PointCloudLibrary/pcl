@@ -42,6 +42,7 @@
 
 #include <vtkLODActor.h>
 #include <vtkSmartPointer.h>
+#include <vtkIdTypeArray.h>
 
 #include <unordered_map>
 #include <vector>
