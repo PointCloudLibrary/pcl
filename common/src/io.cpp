@@ -198,8 +198,9 @@ pcl::concatenateFields (const pcl::PCLPointCloud2 &cloud1,
       field_offset +=  local_data_size;
 
       //make sure that we add padding when its needed
-      if (padding_size > 0)
-        memset (&cloud_out.data[point_offset + field_offset], 0, padding_size);
+      if (padding_size > 0) {
+        std::fill_n(&cloud_out.data[point_offset + field_offset], padding_size, 0);
+      }
       field_offset += padding_size;
     }
     point_offset += field_offset;
