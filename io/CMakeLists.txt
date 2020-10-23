@@ -329,10 +329,24 @@ endif()
 set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
 add_definitions(${VTK_DEFINES})
+
 PCL_ADD_LIBRARY(${LIB_NAME} COMPONENT ${SUBSYS_NAME} SOURCES ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
+
 target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-link_directories(${VTK_LINK_DIRECTORIES})
-target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply ${VTK_LIBRARIES})
+
+target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply)
+if(VTK_FOUND)
+  if(${VTK_VERSION} VERSION_LESS 9.0)
+    link_directories(${VTK_LINK_DIRECTORIES})
+    target_link_libraries("${LIB_NAME}" ${VTK_LIBRARIES})
+  else()
+    target_link_libraries("${LIB_NAME}" 
+                          VTK::IOImage
+                          VTK::IOGeometry
+                          VTK::IOPLY)
+  endif()
+endif()
+
 if(PNG_FOUND)
   target_link_libraries("${LIB_NAME}" ${PNG_LIBRARIES})
 endif()
@@ -347,6 +361,9 @@ endif()
 
 if(WITH_OPENNI)
   target_link_libraries("${LIB_NAME}" ${OPENNI_LIBRARIES})
+  if(VTK_FOUND AND (NOT ${VTK_VERSION} VERSION_LESS 9.0))
+    target_link_libraries("${LIB_NAME}" VTK::FiltersCore VTK::FiltersGeneral)
+  endif()
 endif()
 
 if(WITH_FZAPI)
