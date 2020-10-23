@@ -44,7 +44,6 @@
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
 #include <cfloat>
-//#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/image_viewer.h>
