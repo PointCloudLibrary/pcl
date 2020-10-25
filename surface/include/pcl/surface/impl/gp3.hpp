@@ -116,11 +116,11 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
   if (!input_->is_dense)
   {
     // Skip invalid points from the indices list
-    for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
-      if (!std::isfinite ((*input_)[*it].x) ||
-          !std::isfinite ((*input_)[*it].y) ||
-          !std::isfinite ((*input_)[*it].z))
-        state_[*it] = NONE;
+    for (const auto& it : (*indices_))
+      if (!std::isfinite ((*input_)[it].x) ||
+          !std::isfinite ((*input_)[it].y) ||
+          !std::isfinite ((*input_)[it].z))
+        state_[it] = NONE;
   }
 
   // Saving coordinates and point to index mapping
@@ -878,7 +878,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
           else
             angle_so_far = 0;
         }
-        for (const int &it : to_erase)
+        for (const auto &it : to_erase)
         {
           for (std::vector<int>::iterator iter = angleIdx.begin(); iter != angleIdx.end(); ++iter)
             if (it == *iter)

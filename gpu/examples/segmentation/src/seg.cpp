@@ -52,8 +52,8 @@ main (int argc, char** argv)
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
-    for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
-      cloud_cluster->push_back ((*cloud_filtered)[*pit]); //*
+    for (const auto& pit : (it->indices))
+      cloud_cluster->push_back ((*cloud_filtered)[pit]); //*
     cloud_cluster->width = cloud_cluster->size ();
     cloud_cluster->height = 1;
     cloud_cluster->is_dense = true;
@@ -97,8 +97,8 @@ main (int argc, char** argv)
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices_gpu.begin (); it != cluster_indices_gpu.end (); ++it)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster_gpu (new pcl::PointCloud<pcl::PointXYZ>);
-    for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
-      cloud_cluster_gpu->push_back ((*cloud_filtered)[*pit]); //*
+    for (const auto& pit : (it->indices))
+      cloud_cluster_gpu->push_back ((*cloud_filtered)[pit]); //*
     cloud_cluster_gpu->width = cloud_cluster_gpu->size ();
     cloud_cluster_gpu->height = 1;
     cloud_cluster_gpu->is_dense = true;

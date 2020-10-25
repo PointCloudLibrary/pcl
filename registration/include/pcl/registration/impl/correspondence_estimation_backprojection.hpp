@@ -85,9 +85,9 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
   {
     PointTarget pt;
     // Iterate over the input set of source indices
-    for (std::vector<int>::const_iterator idx_i = indices_->begin (); idx_i != indices_->end (); ++idx_i)
+    for (const auto& idx_i : (*indices_))
     {
-      tree_->nearestKSearch ((*input_)[*idx_i], k_, nn_indices, nn_dists);
+      tree_->nearestKSearch ((*input_)[idx_i], k_, nn_indices, nn_dists);
 
       // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
       float min_dist = std::numeric_limits<float>::max ();
@@ -95,9 +95,9 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
       // Find the best correspondence
       for (std::size_t j = 0; j < nn_indices.size (); j++)
       {
-        float cos_angle = (*source_normals_)[*idx_i].normal_x * (*target_normals_)[nn_indices[j]].normal_x +
-                          (*source_normals_)[*idx_i].normal_y * (*target_normals_)[nn_indices[j]].normal_y +
-                          (*source_normals_)[*idx_i].normal_z * (*target_normals_)[nn_indices[j]].normal_z ;
+        float cos_angle = (*source_normals_)[idx_i].normal_x * (*target_normals_)[nn_indices[j]].normal_x +
+                          (*source_normals_)[idx_i].normal_y * (*target_normals_)[nn_indices[j]].normal_y +
+                          (*source_normals_)[idx_i].normal_z * (*target_normals_)[nn_indices[j]].normal_z ;
         float dist = nn_dists[j] * (2.0f - cos_angle * cos_angle);
 
         if (dist < min_dist)
@@ -109,7 +109,7 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
       if (min_dist > max_distance)
         continue;
 
-      corr.index_query = *idx_i;
+      corr.index_query = idx_i;
       corr.index_match = nn_indices[min_index];
       corr.distance = nn_dists[min_index];//min_dist;
       correspondences[nr_valid_correspondences++] = corr;
@@ -120,9 +120,9 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
     PointTarget pt;
 
     // Iterate over the input set of source indices
-    for (std::vector<int>::const_iterator idx_i = indices_->begin (); idx_i != indices_->end (); ++idx_i)
+    for (const auto& idx_i : (*indices_))
     {
-      tree_->nearestKSearch ((*input_)[*idx_i], k_, nn_indices, nn_dists);
+      tree_->nearestKSearch ((*input_)[idx_i], k_, nn_indices, nn_dists);
 
       // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
       float min_dist = std::numeric_limits<float>::max ();
@@ -132,11 +132,11 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
       {
         PointSource pt_src;
         // Copy the source data to a target PointTarget format so we can search in the tree
-        copyPoint ((*input_)[*idx_i], pt_src);
+        copyPoint ((*input_)[idx_i], pt_src);
 
-        float cos_angle = (*source_normals_)[*idx_i].normal_x * (*target_normals_)[nn_indices[j]].normal_x +
-                          (*source_normals_)[*idx_i].normal_y * (*target_normals_)[nn_indices[j]].normal_y +
-                          (*source_normals_)[*idx_i].normal_z * (*target_normals_)[nn_indices[j]].normal_z ;
+        float cos_angle = (*source_normals_)[idx_i].normal_x * (*target_normals_)[nn_indices[j]].normal_x +
+                          (*source_normals_)[idx_i].normal_y * (*target_normals_)[nn_indices[j]].normal_y +
+                          (*source_normals_)[idx_i].normal_z * (*target_normals_)[nn_indices[j]].normal_z ;
         float dist = nn_dists[j] * (2.0f - cos_angle * cos_angle);
 
         if (dist < min_dist)
@@ -148,7 +148,7 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
       if (min_dist > max_distance)
         continue;
 
-      corr.index_query = *idx_i;
+      corr.index_query = idx_i;
       corr.index_match = nn_indices[min_index];
       corr.distance = nn_dists[min_index];//min_dist;
       correspondences[nr_valid_correspondences++] = corr;
@@ -189,9 +189,9 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
   {
     PointTarget pt;
     // Iterate over the input set of source indices
-    for (std::vector<int>::const_iterator idx_i = indices_->begin (); idx_i != indices_->end (); ++idx_i)
+    for (const auto& idx_i : (*indices_))
     {
-      tree_->nearestKSearch ((*input_)[*idx_i], k_, nn_indices, nn_dists);
+      tree_->nearestKSearch ((*input_)[idx_i], k_, nn_indices, nn_dists);
 
       // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
       float min_dist = std::numeric_limits<float>::max ();
@@ -199,9 +199,9 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
       // Find the best correspondence
       for (std::size_t j = 0; j < nn_indices.size (); j++)
       {
-        float cos_angle = (*source_normals_)[*idx_i].normal_x * (*target_normals_)[nn_indices[j]].normal_x +
-                          (*source_normals_)[*idx_i].normal_y * (*target_normals_)[nn_indices[j]].normal_y +
-                          (*source_normals_)[*idx_i].normal_z * (*target_normals_)[nn_indices[j]].normal_z ;
+        float cos_angle = (*source_normals_)[idx_i].normal_x * (*target_normals_)[nn_indices[j]].normal_x +
+                          (*source_normals_)[idx_i].normal_y * (*target_normals_)[nn_indices[j]].normal_y +
+                          (*source_normals_)[idx_i].normal_z * (*target_normals_)[nn_indices[j]].normal_z ;
         float dist = nn_dists[j] * (2.0f - cos_angle * cos_angle);
 
         if (dist < min_dist)
@@ -217,10 +217,10 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
       target_idx = nn_indices[min_index];
       tree_reciprocal_->nearestKSearch ((*target_)[target_idx], 1, index_reciprocal, distance_reciprocal);
 
-      if (*idx_i != index_reciprocal[0])
+      if (idx_i != index_reciprocal[0])
         continue;
 
-      corr.index_query = *idx_i;
+      corr.index_query = idx_i;
       corr.index_match = nn_indices[min_index];
       corr.distance = nn_dists[min_index];//min_dist;
       correspondences[nr_valid_correspondences++] = corr;
@@ -231,9 +231,9 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
     PointTarget pt;
 
     // Iterate over the input set of source indices
-    for (std::vector<int>::const_iterator idx_i = indices_->begin (); idx_i != indices_->end (); ++idx_i)
+    for (const auto& idx_i : (*indices_))
     {
-      tree_->nearestKSearch ((*input_)[*idx_i], k_, nn_indices, nn_dists);
+      tree_->nearestKSearch ((*input_)[idx_i], k_, nn_indices, nn_dists);
 
       // Among the K nearest neighbours find the one with minimum perpendicular distance to the normal
       float min_dist = std::numeric_limits<float>::max ();
@@ -243,11 +243,11 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
       {
         PointSource pt_src;
         // Copy the source data to a target PointTarget format so we can search in the tree
-        copyPoint ((*input_)[*idx_i], pt_src);
+        copyPoint ((*input_)[idx_i], pt_src);
 
-        float cos_angle = (*source_normals_)[*idx_i].normal_x * (*target_normals_)[nn_indices[j]].normal_x +
-                          (*source_normals_)[*idx_i].normal_y * (*target_normals_)[nn_indices[j]].normal_y +
-                          (*source_normals_)[*idx_i].normal_z * (*target_normals_)[nn_indices[j]].normal_z ;
+        float cos_angle = (*source_normals_)[idx_i].normal_x * (*target_normals_)[nn_indices[j]].normal_x +
+                          (*source_normals_)[idx_i].normal_y * (*target_normals_)[nn_indices[j]].normal_y +
+                          (*source_normals_)[idx_i].normal_z * (*target_normals_)[nn_indices[j]].normal_z ;
         float dist = nn_dists[j] * (2.0f - cos_angle * cos_angle);
 
         if (dist < min_dist)
@@ -263,10 +263,10 @@ CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar
       target_idx = nn_indices[min_index];
       tree_reciprocal_->nearestKSearch ((*target_)[target_idx], 1, index_reciprocal, distance_reciprocal);
 
-      if (*idx_i != index_reciprocal[0])
+      if (idx_i != index_reciprocal[0])
         continue;
 
-      corr.index_query = *idx_i;
+      corr.index_query = idx_i;
       corr.index_match = nn_indices[min_index];
       corr.distance = nn_dists[min_index];//min_dist;
       correspondences[nr_valid_correspondences++] = corr;

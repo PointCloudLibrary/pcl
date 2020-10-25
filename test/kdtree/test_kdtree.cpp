@@ -105,7 +105,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   
   //std::cout << k_indices.size()<<"=="<<brute_force_result.size()<<"?\n";
   
-  for (const int &k_index : k_indices)
+  for (const auto &k_index : k_indices)
   {
     std::set<int>::iterator brute_force_result_it = brute_force_result.find (k_index);
     bool ok = brute_force_result_it != brute_force_result.end ();

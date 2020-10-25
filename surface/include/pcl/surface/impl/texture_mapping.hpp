@@ -849,7 +849,7 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
               if (kdtree.radiusSearch (center, radius, idxNeighbors, neighborsSquaredDistance) > 0 )
               {
                 // for each neighbor
-                for (const int &idxNeighbor : idxNeighbors)
+                for (const auto &idxNeighbor : idxNeighbors)
                 {
                   if (std::max ((*camera_cloud)[mesh.tex_polygons[idx_pcam][idx_face].vertices[0]].z,
                                 std::max ((*camera_cloud)[mesh.tex_polygons[idx_pcam][idx_face].vertices[1]].z, 

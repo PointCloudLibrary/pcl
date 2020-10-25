@@ -137,13 +137,13 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
   if (isSamePointType<PointSource, PointTarget> ())
   {
     // Iterate over the input set of source indices
-    for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
+    for (const auto& idx : (*indices_))
     {
-      tree_->nearestKSearch ((*input_)[*idx], 1, index, distance);
+      tree_->nearestKSearch ((*input_)[idx], 1, index, distance);
       if (distance[0] > max_dist_sqr)
         continue;
 
-      corr.index_query = *idx;
+      corr.index_query = idx;
       corr.index_match = index[0];
       corr.distance = distance[0];
       correspondences[nr_valid_correspondences++] = corr;
@@ -154,16 +154,16 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
     PointTarget pt;
 
     // Iterate over the input set of source indices
-    for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
+    for (const auto& idx : (*indices_))
     {
       // Copy the source data to a target PointTarget format so we can search in the tree
-      copyPoint ((*input_)[*idx], pt);
+      copyPoint ((*input_)[idx], pt);
 
       tree_->nearestKSearch (pt, 1, index, distance);
       if (distance[0] > max_dist_sqr)
         continue;
 
-      corr.index_query = *idx;
+      corr.index_query = idx;
       corr.index_match = index[0];
       corr.distance = distance[0];
       correspondences[nr_valid_correspondences++] = corr;
@@ -201,19 +201,19 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineReciprocalC
   if (isSamePointType<PointSource, PointTarget> ())
   {
     // Iterate over the input set of source indices
-    for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
+    for (const auto& idx : (*indices_))
     {
-      tree_->nearestKSearch ((*input_)[*idx], 1, index, distance);
+      tree_->nearestKSearch ((*input_)[idx], 1, index, distance);
       if (distance[0] > max_dist_sqr)
         continue;
 
       target_idx = index[0];
 
       tree_reciprocal_->nearestKSearch ((*target_)[target_idx], 1, index_reciprocal, distance_reciprocal);
-      if (distance_reciprocal[0] > max_dist_sqr || *idx != index_reciprocal[0])
+      if (distance_reciprocal[0] > max_dist_sqr || idx != index_reciprocal[0])
         continue;
 
-      corr.index_query = *idx;
+      corr.index_query = idx;
       corr.index_match = index[0];
       corr.distance = distance[0];
       correspondences[nr_valid_correspondences++] = corr;
@@ -225,10 +225,10 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineReciprocalC
     PointSource pt_tgt;
 
     // Iterate over the input set of source indices
-    for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
+    for (const auto& idx : (*indices_))
     {
       // Copy the source data to a target PointTarget format so we can search in the tree
-      copyPoint ((*input_)[*idx], pt_src);
+      copyPoint ((*input_)[idx], pt_src);
 
       tree_->nearestKSearch (pt_src, 1, index, distance);
       if (distance[0] > max_dist_sqr)
@@ -240,10 +240,10 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineReciprocalC
       copyPoint ((*target_)[target_idx], pt_tgt);
 
       tree_reciprocal_->nearestKSearch (pt_tgt, 1, index_reciprocal, distance_reciprocal);
-      if (distance_reciprocal[0] > max_dist_sqr || *idx != index_reciprocal[0])
+      if (distance_reciprocal[0] > max_dist_sqr || idx != index_reciprocal[0])
         continue;
 
-      corr.index_query = *idx;
+      corr.index_query = idx;
       corr.index_match = index[0];
       corr.distance = distance[0];
       correspondences[nr_valid_correspondences++] = corr;

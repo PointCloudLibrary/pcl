@@ -162,17 +162,17 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const
     memset (coefficients, 0, sizeof (float) * 8);
 #else
   memset (coefficients, 0, sizeof (float) * 8);
-  for (std::vector<int>::const_iterator iIt = neighbors.begin(); iIt != neighbors.end(); ++iIt)
+  for (const auto& iIt : neighbors)
   {
-    if (std::isfinite ((*normals_)[*iIt].normal_x))
+    if (std::isfinite ((*normals_)[iIt].normal_x))
     {
-      coefficients[0] += (*normals_)[*iIt].normal_x * (*normals_)[*iIt].normal_x;
-      coefficients[1] += (*normals_)[*iIt].normal_x * (*normals_)[*iIt].normal_y;
-      coefficients[2] += (*normals_)[*iIt].normal_x * (*normals_)[*iIt].normal_z;
+      coefficients[0] += (*normals_)[iIt].normal_x * (*normals_)[iIt].normal_x;
+      coefficients[1] += (*normals_)[iIt].normal_x * (*normals_)[iIt].normal_y;
+      coefficients[2] += (*normals_)[iIt].normal_x * (*normals_)[iIt].normal_z;
 
-      coefficients[5] += (*normals_)[*iIt].normal_y * (*normals_)[*iIt].normal_y;
-      coefficients[6] += (*normals_)[*iIt].normal_y * (*normals_)[*iIt].normal_z;
-      coefficients[7] += (*normals_)[*iIt].normal_z * (*normals_)[*iIt].normal_z;
+      coefficients[5] += (*normals_)[iIt].normal_y * (*normals_)[iIt].normal_y;
+      coefficients[6] += (*normals_)[iIt].normal_y * (*normals_)[iIt].normal_z;
+      coefficients[7] += (*normals_)[iIt].normal_z * (*normals_)[iIt].normal_z;
 
       ++count;
     }
@@ -291,9 +291,9 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
       std::vector<float> nn_dists;
       tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
       bool is_maxima = true;
-      for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
+      for (const auto& iIt : nn_indices)
       {
-        if ((*response)[idx].intensity < (*response)[*iIt].intensity)
+        if ((*response)[idx].intensity < (*response)[iIt].intensity)
         {
           is_maxima = false;
           break;
@@ -528,14 +528,14 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
       std::vector<int> nn_indices;
       std::vector<float> nn_dists;
       tree_->radiusSearch (corner, search_radius_, nn_indices, nn_dists);
-      for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
+      for (const auto& iIt : nn_indices)
       {
-        if (!std::isfinite ((*normals_)[*iIt].normal_x))
+        if (!std::isfinite ((*normals_)[iIt].normal_x))
           continue;
 
-        nnT = (*normals_)[*iIt].getNormalVector3fMap () * (*normals_)[*iIt].getNormalVector3fMap ().transpose();
+        nnT = (*normals_)[iIt].getNormalVector3fMap () * (*normals_)[iIt].getNormalVector3fMap ().transpose();
         NNT += nnT;
-        NNTp += nnT * (*surface_)[*iIt].getVector3fMap ();
+        NNTp += nnT * (*surface_)[iIt].getVector3fMap ();
       }
       if (invert3x3SymMatrix (NNT, NNTInv) != 0)
         corners[cIdx].getVector3fMap () = NNTInv * NNTp;
