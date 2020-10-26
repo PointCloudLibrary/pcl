@@ -428,10 +428,10 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
       std::vector<float> nn_dists;
       tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
       bool is_minima = true;
-      for (const auto& nn_it : nn_indices)
+      for (const auto& nn_index : nn_indices)
       {
-//        if (intensity > (*response)[nn_it].intensity)
-        if (intensity > intensity_out_ ((*response)[nn_it]))
+//        if (intensity > (*response)[nn_index].intensity)
+        if (intensity > intensity_out_ ((*response)[nn_index]))
         {
           is_minima = false;
           break;

@@ -238,9 +238,9 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
       std::vector<float> nn_dists;
       tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
       bool is_maxima = true;
-      for (const auto& iIt : nn_indices)
+      for (const auto& index : nn_indices)
       {
-        if ((*response)[idx].intensity < (*response)[iIt].intensity)
+        if ((*response)[idx].intensity < (*response)[index].intensity)
         {
           is_maxima = false;
           break;
@@ -379,10 +379,10 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
       std::vector<int> nn_indices;
       std::vector<float> nn_dists;      
       search.radiusSearch (corner, search_radius_, nn_indices, nn_dists);
-      for (const auto& iIt : nn_indices)
+      for (const auto& index : nn_indices)
       {
-        normal = reinterpret_cast<const Eigen::Vector3f*> (&((*normals_)[iIt].normal_x));
-        point = reinterpret_cast<const Eigen::Vector3f*> (&((*surface_)[iIt].x));
+        normal = reinterpret_cast<const Eigen::Vector3f*> (&((*normals_)[index].normal_x));
+        point = reinterpret_cast<const Eigen::Vector3f*> (&((*surface_)[index].x));
         nnT = (*normal) * (normal->transpose());
         NNT += nnT;
         NNTp += nnT * (*point);
