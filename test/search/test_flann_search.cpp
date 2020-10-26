@@ -105,7 +105,7 @@ TEST (PCL, FlannSearch_nearestKSearch)
   EXPECT_EQ (k_indices.size (), no_of_neighbors);
 
   // Check if all found neighbors have distance smaller than max_dist
-  for (const int &k_index : k_indices)
+  for (const auto &k_index : k_indices)
   {
     const PointXYZ& point = cloud[k_index];
     bool ok = euclideanDistance (test_point, point) <= max_dist;

@@ -254,7 +254,7 @@ template <typename PointInT, typename PointNT, typename PointOutT> std::uint32_t
 pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const std::vector<int>& indices)
 {
   std::vector<std::uint32_t> counts (getNumberOfClasses () + 1, 0);
-  for (const int &nn_index : indices)
+  for (const auto &nn_index : indices)
   {
     std::uint32_t label = (*labels_)[nn_index].label;
     counts[label] += 1;
