@@ -49,10 +49,10 @@ main (int argc, char** argv)
   printf("CPU Time taken: %.2fs\n", (double)(clock() - tStart)/CLOCKS_PER_SEC);
 
   int j = 0;
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
+  for (const pcl::PointIndices& it: cluster_indices)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
-    for (const auto& pit : (it->indices))
+    for (const auto& pit : (it.indices))
       cloud_cluster->push_back ((*cloud_filtered)[pit]); //*
     cloud_cluster->width = cloud_cluster->size ();
     cloud_cluster->height = 1;
@@ -94,10 +94,10 @@ main (int argc, char** argv)
   std::cout << "INFO: stopped with the GPU version" << std::endl;
 
   j = 0;
-  for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices_gpu.begin (); it != cluster_indices_gpu.end (); ++it)
+  for (const pcl::PointIndices& it : cluster_indices_gpu)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster_gpu (new pcl::PointCloud<pcl::PointXYZ>);
-    for (const auto& pit : (it->indices))
+    for (const auto& pit : (it.indices))
       cloud_cluster_gpu->push_back ((*cloud_filtered)[pit]); //*
     cloud_cluster_gpu->width = cloud_cluster_gpu->size ();
     cloud_cluster_gpu->height = 1;
