@@ -40,9 +40,11 @@
 
 #pragma once
 
-#include <algorithm>
 #include <Eigen/Core>
+
 #include <string.h>
+
+#include <algorithm>
 #include <vector>
 
 namespace pcl {
