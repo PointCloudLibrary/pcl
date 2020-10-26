@@ -1488,6 +1488,7 @@ pcl::SurfaceNormalModality<PointInT>::filterQuantizedSurfaceNormals ()
 
 
   // filter data
+  #pragma omp parallel for
   for (int row_index = 2; row_index < height-2; ++row_index)
   {
     for (int col_index = 2; col_index < width-2; ++col_index)
