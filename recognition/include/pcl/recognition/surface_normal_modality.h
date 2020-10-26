@@ -1489,72 +1489,24 @@ pcl::SurfaceNormalModality<PointInT>::filterQuantizedSurfaceNormals ()
 
   // filter data
   #pragma omp parallel for
-  for (int row_index = 2; row_index < height-2; ++row_index)
+  for (size_t row_index = 1; row_index < height-1; ++row_index)
   {
-    for (int col_index = 2; col_index < width-2; ++col_index)
+    for (size_t col_index = 1; col_index < width-1; ++col_index)
     {
       unsigned char histogram[9] = {0,0,0,0,0,0,0,0,0};
 
-      //{
-      //  unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index-1)*width+col_index-1;
-      //  ++histogram[dataPtr[0]];
-      //  ++histogram[dataPtr[1]];
-      //  ++histogram[dataPtr[2]];
-      //}
-      //{
-      //  unsigned char * dataPtr = quantized_surface_normals_.getData () + row_index*width+col_index-1;
-      //  ++histogram[dataPtr[0]];
-      //  ++histogram[dataPtr[1]];
-      //  ++histogram[dataPtr[2]];
-      //}
-      //{
-      //  unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index+1)*width+col_index-1;
-      //  ++histogram[dataPtr[0]];
-      //  ++histogram[dataPtr[1]];
-      //  ++histogram[dataPtr[2]];
-      //}
-
-      {
-        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index-2)*width+col_index-2;
-        ++histogram[dataPtr[0]];
-        ++histogram[dataPtr[1]];
-        ++histogram[dataPtr[2]];
-        ++histogram[dataPtr[3]];
-        ++histogram[dataPtr[4]];
-      }
-      {
-        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index-1)*width+col_index-2;
-        ++histogram[dataPtr[0]];
-        ++histogram[dataPtr[1]];
-        ++histogram[dataPtr[2]];
-        ++histogram[dataPtr[3]];
-        ++histogram[dataPtr[4]];
-      }
-      {
-        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index)*width+col_index-2;
-        ++histogram[dataPtr[0]];
-        ++histogram[dataPtr[1]];
-        ++histogram[dataPtr[2]];
-        ++histogram[dataPtr[3]];
-        ++histogram[dataPtr[4]];
-      }
-      {
-        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index+1)*width+col_index-2;
-        ++histogram[dataPtr[0]];
-        ++histogram[dataPtr[1]];
-        ++histogram[dataPtr[2]];
-        ++histogram[dataPtr[3]];
-        ++histogram[dataPtr[4]];
-      }
-      {
-        unsigned char * dataPtr = quantized_surface_normals_.getData () + (row_index+2)*width+col_index-2;
-        ++histogram[dataPtr[0]];
-        ++histogram[dataPtr[1]];
-        ++histogram[dataPtr[2]];
-        ++histogram[dataPtr[3]];
-        ++histogram[dataPtr[4]];
-      }
-
+      const unsigned char * data_ptr = quantized_surface_normals_.getData () + (row_index-1)*width+col_index-1;
+      ++histogram[data_ptr[0]];
+      ++histogram[data_ptr[1]];
+      ++histogram[data_ptr[2]];
+      data_ptr += width;
+      ++histogram[data_ptr[0]];
+      ++histogram[data_ptr[1]];
+      ++histogram[data_ptr[2]];
+      data_ptr += width;
+      ++histogram[data_ptr[0]];
+      ++histogram[data_ptr[1]];
+      ++histogram[data_ptr[2]];
 
       unsigned char max_hist_value = 0;
       int max_hist_index = -1;
@@ -1568,7 +1520,7 @@ pcl::SurfaceNormalModality<PointInT>::filterQuantizedSurfaceNormals ()
       if (max_hist_value < histogram[7]) {max_hist_index = 6; max_hist_value = histogram[7];}
       if (max_hist_value < histogram[8]) {max_hist_index = 7; max_hist_value = histogram[8];}
 
-      if (max_hist_index != -1 && max_hist_value >= 1)
+      if (max_hist_index != -1 && max_hist_value >= 5)
       {
         filtered_quantized_surface_normals_ (col_index, row_index) = static_cast<unsigned char> (0x1 << max_hist_index);
       }
