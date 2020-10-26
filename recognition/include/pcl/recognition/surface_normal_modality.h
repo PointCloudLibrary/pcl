@@ -1520,7 +1520,7 @@ pcl::SurfaceNormalModality<PointInT>::filterQuantizedSurfaceNormals ()
       if (max_hist_value < histogram[7]) {max_hist_index = 6; max_hist_value = histogram[7];}
       if (max_hist_value < histogram[8]) {max_hist_index = 7; max_hist_value = histogram[8];}
 
-      if (max_hist_index != -1 && max_hist_value >= 5)
+      if (max_hist_index != -1 && max_hist_value >= 4)
       {
         filtered_quantized_surface_normals_ (col_index, row_index) = static_cast<unsigned char> (0x1 << max_hist_index);
       }
