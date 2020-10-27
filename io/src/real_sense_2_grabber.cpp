@@ -286,15 +286,21 @@ namespace pcl
     cloud->width = sp.width ();
     cloud->height = sp.height ();
     cloud->is_dense = false;
-    cloud->points.resize ( size () );
+    cloud->resize ( points.size () );
 
     const auto cloud_vertices_ptr = points.get_vertices ();
     const auto cloud_texture_ptr = points.get_texture_coordinates ();
 
+#if OPENMP_LEGACY_CONST_DATA_SHARING_RULE
 #pragma omp parallel for \
   default(none) \
-  shared(cloud, cloud_vertices_ptr, mapColorFunc)
-    for (int index = 0; index < cloud->size (); ++index)
+  shared(cloud, mapColorFunc)
+#else
+#pragma omp parallel for \
+  default(none) \
+  shared(cloud, cloud_texture_ptr, cloud_vertices_ptr, mapColorFunc)
+#endif
+    for (std::size_t index = 0; index < cloud->size (); ++index)
     {
       const auto ptr = cloud_vertices_ptr + index;
       const auto uvptr = cloud_texture_ptr + index;
