@@ -64,7 +64,7 @@ A more elaborate description of the different lines of code:
  - Clusters that make up less than 0.1% of the cloud's total points are considered too small.
  - Clusters that make up more than 20% of the cloud's total points are considered too large.
  - The resulting clusters are stored in the ``pcl::IndicesClusters`` format, which is an array of indices-arrays, indexing points of the input point cloud.
- - Too small clusters or too large clusters are not passed to the main output but can instead be retrieved in separate ``pcl::IndicesClusters`` data containers, but only is the class was initialized with TRUE.
+ - Too small clusters or too large clusters are not passed to the main output but can instead be retrieved in separate ``pcl::IndicesClusters`` data containers, but only if the class was initialized with TRUE.
 
 Lines 12-49 show some examples of condition functions:
 
