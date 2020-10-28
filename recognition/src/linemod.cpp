@@ -679,6 +679,15 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
     const size_t mem_height = height / step_size;
     const size_t mem_size = mem_width * mem_height;
 
+#ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
+    unsigned short * score_sums_1 = new unsigned short[mem_size];
+    unsigned short * score_sums_2 = new unsigned short[mem_size];
+    unsigned short * score_sums_3 = new unsigned short[mem_size];
+    memset (score_sums_1, 0, mem_size*sizeof (score_sums_1[0]));
+    memset (score_sums_2, 0, mem_size*sizeof (score_sums_2[0]));
+    memset (score_sums_3, 0, mem_size*sizeof (score_sums_3[0]));
+#endif
+
 #ifdef __SSE2__
     unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
     unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
@@ -763,19 +772,10 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
         
       memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
     }
-#else
+#else  // #ifdef __SSE2__
     unsigned short * score_sums = new unsigned short[mem_size];
     //unsigned char * score_sums = new unsigned char[mem_size];
     memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
-
-#ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
-    unsigned short * score_sums_1 = new unsigned short[mem_size];
-    unsigned short * score_sums_2 = new unsigned short[mem_size];
-    unsigned short * score_sums_3 = new unsigned short[mem_size];
-    memset (score_sums_1, 0, mem_size*sizeof (score_sums_1[0]));
-    memset (score_sums_2, 0, mem_size*sizeof (score_sums_2[0]));
-    memset (score_sums_3, 0, mem_size*sizeof (score_sums_3[0]));
-#endif
 
     int max_score = 0;
     for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
@@ -813,7 +813,7 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
         }
       }
     }
-#endif
+#endif  // #ifdef __SSE2__
 
     const float inv_max_score = 1.0f / float (max_score);
 
@@ -1036,7 +1036,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
       unsigned char *energy_map_bin = energy_maps (bin_index);
 
       size_t index = 0;
-#if defined(__AVX2__) && !LINEMOD_USE_SEPARATE_ENERGY_MAPS
+#if defined(__AVX2__) && !defined(LINEMOD_USE_SEPARATE_ENERGY_MAPS)
       const __m256i __val0 = _mm256_set1_epi8(val0);
       const __m256i __val1 = _mm256_set1_epi8(val1);
       const __m256i __val2 = _mm256_set1_epi8(val2);
@@ -1189,6 +1189,12 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
   #pragma omp parallel
   {
     // Thread local storage
+    #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
+      unsigned short * score_sums_1 = new unsigned short[mem_size];
+      unsigned short * score_sums_2 = new unsigned short[mem_size];
+      unsigned short * score_sums_3 = new unsigned short[mem_size];
+    #endif
+
     #if defined(__AVX2__)
       unsigned short * score_sums;
       unsigned char * tmp_score_sums;
@@ -1199,12 +1205,6 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
       unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
     #else
       unsigned short * score_sums = new unsigned short[mem_size];
-
-    #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
-      unsigned short * score_sums_1 = new unsigned short[mem_size];
-      unsigned short * score_sums_2 = new unsigned short[mem_size];
-      unsigned short * score_sums_3 = new unsigned short[mem_size];
-    #endif
     #endif
 
     #pragma omp for
@@ -1251,7 +1251,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 
           ++copy_back_counter;
 
-          if (copy_back_counter > 63) // only valid if each feature has only one bit set..
+          if (copy_back_counter > 31) // only valid if each feature has only one bit set..
           {
             copy_back_counter = 0;
 
@@ -1380,6 +1380,15 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
         {
           const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
 
+          std::vector<LinearizedMaps> &linearized_map_modality = modality_linearized_maps[feature.modality_index];
+  #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
+          std::vector<LinearizedMaps> &linearized_map_modality1 = modality_linearized_maps_1[feature.modality_index];
+          std::vector<LinearizedMaps> &linearized_map_modality2 = modality_linearized_maps_2[feature.modality_index];
+          std::vector<LinearizedMaps> &linearized_map_modality3 = modality_linearized_maps_3[feature.modality_index];
+  #endif
+          const size_t map_x = size_t (float (feature.x) * scale);
+          const size_t map_y = size_t (float (feature.y) * scale);
+
           //feature.modality_index;
           for (size_t bin_index = 0; bin_index < 8; ++bin_index)
           {
@@ -1388,10 +1397,10 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
   #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
               ++max_score;
 
-              unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
-              unsigned char * data_1 = modality_linearized_maps_1[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
-              unsigned char * data_2 = modality_linearized_maps_2[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
-              unsigned char * data_3 = modality_linearized_maps_3[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
+              unsigned char * data = linearized_map_modality[bin_index].getOffsetMap(map_x, map_y);
+              unsigned char * data_1 = linearized_map_modality1[bin_index].getOffsetMap(map_x, map_y);
+              unsigned char * data_2 = linearized_map_modality2[bin_index].getOffsetMap(map_x, map_y);
+              unsigned char * data_3 = linearized_map_modality3[bin_index].getOffsetMap(map_x, map_y);
               for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
               {
                 score_sums[mem_index] += data[mem_index];
@@ -1402,7 +1411,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
   #else
               max_score += 4;
 
-              unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (static_cast<size_t> (feature.x*scale), static_cast<size_t> (feature.y*scale));
+              unsigned char * data = linearized_map_modality[bin_index].getOffsetMap(map_x, map_y);
               for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
               {
                 score_sums[mem_index] += data[mem_index];
