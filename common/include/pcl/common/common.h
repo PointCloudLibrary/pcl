@@ -173,18 +173,18 @@ namespace pcl
                   const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt);
 
   /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions in a given pointcloud
-    * \param cloud the point cloud data message
-    * \param min_pt the resultant minimum bounds
-    * \param max_pt the resultant maximum bounds
+    * \param[in] cloud the point cloud data message
+    * \param[out] min_pt the resultant minimum bounds
+    * \param[out] max_pt the resultant maximum bounds
     * \ingroup common
     */
   template <typename PointT> inline void 
   getMinMax3D (const pcl::PointCloud<PointT> &cloud, PointT &min_pt, PointT &max_pt);
   
   /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions in a given pointcloud
-    * \param cloud the point cloud data message
-    * \param min_pt the resultant minimum bounds
-    * \param max_pt the resultant maximum bounds
+    * \param[in] cloud the point cloud data message
+    * \param[out] min_pt the resultant minimum bounds
+    * \param[out] max_pt the resultant maximum bounds
     * \ingroup common
     */
   template <typename PointT> inline void 
@@ -192,10 +192,10 @@ namespace pcl
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt);
 
   /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions in a given pointcloud
-    * \param cloud the point cloud data message
-    * \param indices the vector of point indices to use from \a cloud
-    * \param min_pt the resultant minimum bounds
-    * \param max_pt the resultant maximum bounds
+    * \param[in] cloud the point cloud data message
+    * \param[in] indices the vector of point indices to use from \a cloud
+    * \param[out] min_pt the resultant minimum bounds
+    * \param[out] max_pt the resultant maximum bounds
     * \ingroup common
     */
   template <typename PointT> inline void 
@@ -203,10 +203,10 @@ namespace pcl
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt);
 
   /** \brief Get the minimum and maximum values on each of the 3 (x-y-z) dimensions in a given pointcloud
-    * \param cloud the point cloud data message
-    * \param indices the vector of point indices to use from \a cloud
-    * \param min_pt the resultant minimum bounds
-    * \param max_pt the resultant maximum bounds
+    * \param[in] cloud the point cloud data message
+    * \param[in] indices the vector of point indices to use from \a cloud
+    * \param[out] min_pt the resultant minimum bounds
+    * \param[out] max_pt the resultant maximum bounds
     * \ingroup common
     */
   template <typename PointT> inline void 

@@ -57,6 +57,7 @@ namespace pcl
     * "Segmentation of point clouds using smoothness constraint"
     * by T. Rabbania, F. A. van den Heuvelb, G. Vosselmanc.
     * In addition to residual test, the possibility to test curvature is added.
+    * \ingroup segmentation
     */
   template <typename PointT, typename NormalT>
   class PCL_EXPORTS RegionGrowing : public pcl::PCLBase<PointT>
