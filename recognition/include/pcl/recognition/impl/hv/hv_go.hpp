@@ -174,7 +174,7 @@ mets::gol_type pcl::GlobalHypothesesVerification<ModelT, SceneT>::evaluateSoluti
   setPreviousBadInfo (bad_info);
 
   int n_active_hyp = 0;
-  for(const bool &i : active) {
+  for(const bool i : active) {
     if(i)
       n_active_hyp++;
   }
