@@ -51,7 +51,7 @@ int
 
   if (inliers->indices.size () == 0)
   {
-    PCL_ERROR ("Could not estimate a planar model for the given dataset.");
+    PCL_ERROR ("Could not estimate a planar model for the given dataset.\n");
     return (-1);
   }
 

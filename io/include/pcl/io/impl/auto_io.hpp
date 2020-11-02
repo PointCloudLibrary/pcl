@@ -65,7 +65,7 @@ namespace pcl
         result = pcl::io::loadIFSFile (file_name, cloud);
       else
       {
-        PCL_ERROR ("[pcl::io::load] Don't know how to handle file with extension %s", extension.c_str ());
+        PCL_ERROR ("[pcl::io::load] Don't know how to handle file with extension %s\n", extension.c_str ());
         result = -1;
       }
       return (result);
@@ -85,7 +85,7 @@ namespace pcl
         result = pcl::io::saveIFSFile (file_name, cloud);
       else
       {
-        PCL_ERROR ("[pcl::io::save] Don't know how to handle file with extension %s", extension.c_str ());
+        PCL_ERROR ("[pcl::io::save] Don't know how to handle file with extension %s\n", extension.c_str ());
         result = -1;
       }
       return (result);

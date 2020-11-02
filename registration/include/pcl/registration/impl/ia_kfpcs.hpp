@@ -60,7 +60,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::initCompute()
   // due to sparse keypoint cloud, do not normalize delta with estimated point density
   if (normalize_delta_) {
     PCL_WARN("[%s::initCompute] Delta should be set according to keypoint precision! "
-             "Normalization according to point cloud density is ignored.",
+             "Normalization according to point cloud density is ignored.\n",
              reg_name_.c_str());
     normalize_delta_ = false;
   }

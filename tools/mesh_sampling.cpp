@@ -124,7 +124,7 @@ randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, dou
     {
       static bool printed_once = false;
       if (!printed_once)
-        PCL_WARN ("Mesh has no vertex colors, or vertex colors are not RGB!");
+        PCL_WARN ("Mesh has no vertex colors, or vertex colors are not RGB!\n");
       printed_once = true;
     }
   }

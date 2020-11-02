@@ -807,7 +807,7 @@ pcl::PLYWriter::generateHeader (const pcl::PCLPointCloud2 &cloud,
         case pcl::PCLPointField::FLOAT64 : oss << " double "; break;
         default :
         {
-          PCL_ERROR ("[pcl::PLYWriter::generateHeader] unknown data field type!");
+          PCL_ERROR ("[pcl::PLYWriter::generateHeader] unknown data field type!\n");
           return ("");
         }
       }

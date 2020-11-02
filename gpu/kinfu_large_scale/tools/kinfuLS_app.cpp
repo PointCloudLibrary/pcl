@@ -1034,7 +1034,7 @@ struct KinFuLSApp
         c = capture_.registerCallback (func2);
       }
       #else
-      PCL_ERROR ("OpenNI2 is disabled in this PCL. Please build PCL with OpenNI2 feature.");
+      PCL_ERROR ("OpenNI2 is disabled in this PCL. Please build PCL with OpenNI2 feature.\n");
       #endif
     }
     else
@@ -1065,7 +1065,7 @@ struct KinFuLSApp
         c = capture_.registerCallback (func2);
       }
       #else
-      PCL_ERROR ("OpenNI is disabled in this PCL. Please build PCL with OpenNI feature.");
+      PCL_ERROR ("OpenNI is disabled in this PCL. Please build PCL with OpenNI feature.\n");
       #endif
     }
 

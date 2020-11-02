@@ -89,7 +89,7 @@ GrabCut<PointT>::initCompute ()
   using namespace pcl::segmentation::grabcut;
   if (!pcl::PCLBase<PointT>::initCompute ())
   {
-    PCL_ERROR ("[pcl::GrabCut::initCompute ()] Init failed!");
+    PCL_ERROR ("[pcl::GrabCut::initCompute ()] Init failed!\n");
     return (false);
   }
 
@@ -97,7 +97,7 @@ GrabCut<PointT>::initCompute ()
   if ((pcl::getFieldIndex<PointT> ("rgb", in_fields_) == -1) &&
       (pcl::getFieldIndex<PointT> ("rgba", in_fields_) == -1))
   {
-    PCL_ERROR ("[pcl::GrabCut::initCompute ()] No RGB data available, aborting!");
+    PCL_ERROR ("[pcl::GrabCut::initCompute ()] No RGB data available, aborting!\n");
     return (false);
   }
 

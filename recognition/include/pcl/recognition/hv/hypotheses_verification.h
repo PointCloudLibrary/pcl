@@ -231,7 +231,7 @@ namespace pcl
         //we need to reason about occlusions before setting the model
         if (scene_cloud_ == nullptr)
         {
-          PCL_ERROR("setSceneCloud should be called before adding the model if reasoning about occlusions...");
+          PCL_ERROR("setSceneCloud should be called before adding the model if reasoning about occlusions...\n");
         }
 
         if (!occlusion_cloud_->isOrganized ())

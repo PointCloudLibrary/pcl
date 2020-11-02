@@ -1067,7 +1067,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         if(CurrentRenderer)
           CurrentRenderer->ResetCamera ();
         else
-          PCL_WARN ("no current renderer on the interactor style.");
+          PCL_WARN ("no current renderer on the interactor style.\n");
 
         CurrentRenderer->Render ();
         break;

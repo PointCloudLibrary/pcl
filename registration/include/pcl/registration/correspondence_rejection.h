@@ -140,7 +140,7 @@ namespace pcl
         virtual void
         setSourcePoints (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
         {
-          PCL_WARN ("[pcl::registration::%s::setSourcePoints] This class does not require an input source cloud", getClassName ().c_str ());
+          PCL_WARN ("[pcl::registration::%s::setSourcePoints] This class does not require an input source cloud\n", getClassName ().c_str ());
         }
         
         /** \brief See if this rejector requires source normals */
@@ -152,7 +152,7 @@ namespace pcl
         virtual void
         setSourceNormals (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
         { 
-          PCL_WARN ("[pcl::registration::%s::setSourceNormals] This class does not require input source normals", getClassName ().c_str ());
+          PCL_WARN ("[pcl::registration::%s::setSourceNormals] This class does not require input source normals\n", getClassName ().c_str ());
         }
         /** \brief See if this rejector requires a target cloud */
         virtual bool
@@ -163,7 +163,7 @@ namespace pcl
         virtual void
         setTargetPoints (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
         {
-          PCL_WARN ("[pcl::registration::%s::setTargetPoints] This class does not require an input target cloud", getClassName ().c_str ());
+          PCL_WARN ("[pcl::registration::%s::setTargetPoints] This class does not require an input target cloud\n", getClassName ().c_str ());
         }
         
         /** \brief See if this rejector requires target normals */
@@ -175,7 +175,7 @@ namespace pcl
         virtual void
         setTargetNormals (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
         {
-          PCL_WARN ("[pcl::registration::%s::setTargetNormals] This class does not require input target normals", getClassName ().c_str ());
+          PCL_WARN ("[pcl::registration::%s::setTargetNormals] This class does not require input target normals\n", getClassName ().c_str ());
         }
 
       protected:

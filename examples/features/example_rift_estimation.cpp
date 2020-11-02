@@ -55,7 +55,7 @@ main (int, char** argv)
 
   if (pcl::io::loadPCDFile<pcl::PointXYZI> (filename, *cloud) == -1) // load the file
   {
-    PCL_ERROR ("Couldn't read file");
+    PCL_ERROR ("Couldn't read file\n");
     return -1;
   }
 
