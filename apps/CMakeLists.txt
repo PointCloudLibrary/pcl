@@ -28,7 +28,7 @@ target_link_libraries(pcl_pyramid_surface_matching pcl_common pcl_io pcl_feature
 PCL_ADD_EXECUTABLE(pcl_statistical_multiscale_interest_region_extraction_example COMPONENT ${SUBSYS_NAME} SOURCES src/statistical_multiscale_interest_region_extraction_example.cpp)
 target_link_libraries(pcl_statistical_multiscale_interest_region_extraction_example pcl_common pcl_io pcl_features pcl_filters)
 
-if(LIBUSB_1_FOUND)
+if(LIBUSB_FOUND)
   PCL_ADD_EXECUTABLE(pcl_dinast_grabber COMPONENT ${SUBSYS_NAME} SOURCES src/dinast_grabber_example.cpp)
   target_link_libraries(pcl_dinast_grabber pcl_common pcl_visualization pcl_io)
 endif()

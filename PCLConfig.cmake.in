@@ -255,17 +255,7 @@ macro(find_VTK)
 endmacro()
 
 macro(find_libusb)
-  if(NOT WIN32)
-    find_path(LIBUSB_1_INCLUDE_DIR
-      NAMES libusb-1.0/libusb.h
-      PATHS /usr/include /usr/local/include /opt/local/include /sw/include
-      PATH_SUFFIXES libusb-1.0)
-
-    find_library(LIBUSB_1_LIBRARY
-      NAMES usb-1.0
-      PATHS /usr/lib /usr/local/lib /opt/local/lib /sw/lib)
-    find_package_handle_standard_args(libusb-1.0 LIBUSB_1_LIBRARY LIBUSB_1_INCLUDE_DIR)
-  endif()
+  find_package(libusb)
 endmacro()
 
 macro(find_glew)
@@ -310,7 +300,7 @@ macro(find_external_library _component _lib _is_optional)
     find_rssdk2()
   elseif("${_lib}" STREQUAL "vtk")
     find_VTK()
-  elseif("${_lib}" STREQUAL "libusb-1.0")
+  elseif("${_lib}" STREQUAL "libusb")
     find_libusb()
   elseif("${_lib}" STREQUAL "glew")
     find_glew()
