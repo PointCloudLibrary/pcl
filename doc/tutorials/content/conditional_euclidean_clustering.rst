@@ -44,7 +44,7 @@ Since the Conditional Euclidean Clustering class is for more advanced users, I w
  - ``pcl::console::TicToc`` is used for easy output of timing results.
  - :ref:`voxelgrid` is being used (lines 66-73) to downsample the cloud and give a more equalized point density.
  - :ref:`normal_estimation` is being used (lines 75-83)  to estimate normals which will be appended to the point information;
-   The Conditional Euclidean Clustering class will be templated with ``pcl::PoitnXYZINormal``, containing x, y, z, intensity, normal and curvature information to use in the condition function.
+   The Conditional Euclidean Clustering class will be templated with ``pcl::PointXYZINormal``, containing x, y, z, intensity, normal and curvature information to use in the condition function.
 
 Lines 85-95 set up the Conditional Euclidean Clustering class for use:
 
