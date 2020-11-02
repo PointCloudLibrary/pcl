@@ -93,46 +93,49 @@ namespace pcl
   template <typename PointSource, typename PointTarget, typename Scalar = float>
   class IterativeClosestPoint : public Registration<PointSource, PointTarget, Scalar>
   {
+    using Self = IterativeClosestPoint<PointSource, PointTarget, Scalar>;
+    using Base = Registration<PointSource, PointTarget, Scalar>;
+
     public:
-      using PointCloudSource = typename Registration<PointSource, PointTarget, Scalar>::PointCloudSource;
+      using PointCloudSource = typename Base::PointCloudSource;
       using PointCloudSourcePtr = typename PointCloudSource::Ptr;
       using PointCloudSourceConstPtr = typename PointCloudSource::ConstPtr;
 
-      using PointCloudTarget = typename Registration<PointSource, PointTarget, Scalar>::PointCloudTarget;
+      using PointCloudTarget = typename Base::PointCloudTarget;
       using PointCloudTargetPtr = typename PointCloudTarget::Ptr;
       using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
       using PointIndicesPtr = PointIndices::Ptr;
       using PointIndicesConstPtr = PointIndices::ConstPtr;
 
-      using Ptr = shared_ptr<IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
-      using ConstPtr = shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
+      using Ptr = shared_ptr<Self>;
+      using ConstPtr = shared_ptr<const Self>;
 
-      using Registration<PointSource, PointTarget, Scalar>::reg_name_;
-      using Registration<PointSource, PointTarget, Scalar>::getClassName;
-      using Registration<PointSource, PointTarget, Scalar>::input_;
-      using Registration<PointSource, PointTarget, Scalar>::indices_;
-      using Registration<PointSource, PointTarget, Scalar>::target_;
-      using Registration<PointSource, PointTarget, Scalar>::nr_iterations_;
-      using Registration<PointSource, PointTarget, Scalar>::max_iterations_;
-      using Registration<PointSource, PointTarget, Scalar>::previous_transformation_;
-      using Registration<PointSource, PointTarget, Scalar>::final_transformation_;
-      using Registration<PointSource, PointTarget, Scalar>::transformation_;
-      using Registration<PointSource, PointTarget, Scalar>::transformation_epsilon_;
-      using Registration<PointSource, PointTarget, Scalar>::transformation_rotation_epsilon_;
-      using Registration<PointSource, PointTarget, Scalar>::converged_;
-      using Registration<PointSource, PointTarget, Scalar>::corr_dist_threshold_;
-      using Registration<PointSource, PointTarget, Scalar>::inlier_threshold_;
-      using Registration<PointSource, PointTarget, Scalar>::min_number_correspondences_;
-      using Registration<PointSource, PointTarget, Scalar>::update_visualizer_;
-      using Registration<PointSource, PointTarget, Scalar>::euclidean_fitness_epsilon_;
-      using Registration<PointSource, PointTarget, Scalar>::correspondences_;
-      using Registration<PointSource, PointTarget, Scalar>::transformation_estimation_;
-      using Registration<PointSource, PointTarget, Scalar>::correspondence_estimation_;
-      using Registration<PointSource, PointTarget, Scalar>::correspondence_rejectors_;
+      using Base::reg_name_;
+      using Base::getClassName;
+      using Base::input_;
+      using Base::indices_;
+      using Base::target_;
+      using Base::nr_iterations_;
+      using Base::max_iterations_;
+      using Base::previous_transformation_;
+      using Base::final_transformation_;
+      using Base::transformation_;
+      using Base::transformation_epsilon_;
+      using Base::transformation_rotation_epsilon_;
+      using Base::converged_;
+      using Base::corr_dist_threshold_;
+      using Base::inlier_threshold_;
+      using Base::min_number_correspondences_;
+      using Base::update_visualizer_;
+      using Base::euclidean_fitness_epsilon_;
+      using Base::correspondences_;
+      using Base::transformation_estimation_;
+      using Base::correspondence_estimation_;
+      using Base::correspondence_rejectors_;
 
       typename pcl::registration::DefaultConvergenceCriteria<Scalar>::Ptr convergence_criteria_;
-      using Matrix4 = typename Registration<PointSource, PointTarget, Scalar>::Matrix4;
+      using Matrix4 = typename Base::Matrix4;
 
       /** \brief Empty constructor. */
       IterativeClosestPoint () 
@@ -190,7 +193,7 @@ namespace pcl
       void
       setInputSource (const PointCloudSourceConstPtr &cloud) override
       {
-        Registration<PointSource, PointTarget, Scalar>::setInputSource (cloud);
+        Base::setInputSource (cloud);
         const auto fields = pcl::getFields<PointSource> ();
         source_has_normals_ = false;
         for (const auto &field : fields)
@@ -224,7 +227,7 @@ namespace pcl
       void
       setInputTarget (const PointCloudTargetConstPtr &cloud) override
       {
-        Registration<PointSource, PointTarget, Scalar>::setInputTarget (cloud);
+        Base::setInputTarget (cloud);
         const auto fields = pcl::getFields<PointSource> ();
         target_has_normals_ = false;
         for (const auto &field : fields)
@@ -321,17 +324,20 @@ namespace pcl
   template <typename PointSource, typename PointTarget, typename Scalar = float>
   class IterativeClosestPointWithNormals : public IterativeClosestPoint<PointSource, PointTarget, Scalar>
   {
+    using Self = IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>;
+    using Base = IterativeClosestPoint<PointSource, PointTarget, Scalar>;
+    
     public:
-      using PointCloudSource = typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::PointCloudSource;
-      using PointCloudTarget = typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::PointCloudTarget;
-      using Matrix4 = typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::Matrix4;
+      using PointCloudSource = typename Base::PointCloudSource;
+      using PointCloudTarget = typename Base::PointCloudTarget;
+      using Matrix4 = typename Base::Matrix4;
 
-      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::reg_name_;
-      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::transformation_estimation_;
-      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::correspondence_rejectors_;
+      using Base::reg_name_;
+      using Base::transformation_estimation_;
+      using Base::correspondence_rejectors_;
 
-      using Ptr = shared_ptr<IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
-      using ConstPtr = shared_ptr<const IterativeClosestPoint<PointSource, PointTarget, Scalar> >;
+      using Ptr = shared_ptr<Self>;
+      using ConstPtr = shared_ptr<const Self>;
 
       /** \brief Empty constructor. */
       IterativeClosestPointWithNormals ()
