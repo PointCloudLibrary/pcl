@@ -194,7 +194,7 @@ pcl::registration::
   {
     PCL_ERROR("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] ");
     PCL_ERROR("Need at least 4 points to estimate a transform! Source and target have "
-              "%lu points!",
+              "%lu points!\n",
               indices_src.size());
     return;
   }

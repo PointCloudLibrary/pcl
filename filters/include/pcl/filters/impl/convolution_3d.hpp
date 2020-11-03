@@ -204,14 +204,14 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::initCompute ()
   // Do a fast check to see if the search parameters are well defined
   if (search_radius_ <= 0.0)
   {
-    PCL_ERROR ("[pcl::filters::Convlution3D::initCompute] search radius (%f) must be > 0",
+    PCL_ERROR ("[pcl::filters::Convlution3D::initCompute] search radius (%f) must be > 0\n",
                search_radius_);
     return (false);
   }
   // Make sure the provided kernel implements the required interface
   if (dynamic_cast<ConvolvingKernel<PointInT, PointOutT>* > (&kernel_) == 0)
   {
-    PCL_ERROR ("[pcl::filters::Convlution3D::initCompute] init failed");
+    PCL_ERROR ("[pcl::filters::Convlution3D::initCompute] init failed : ");
     PCL_ERROR ("kernel_ must implement ConvolvingKernel interface\n!");
     return (false);
   }

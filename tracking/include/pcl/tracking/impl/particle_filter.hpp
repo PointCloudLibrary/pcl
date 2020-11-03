@@ -320,7 +320,7 @@ ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithNormal(
   }
 #else
   PCL_WARN("[pcl::%s::computeTransformedPointCloudWithoutNormal] "
-           "use_normal_ == true is not supported in this Point Type.",
+           "use_normal_ == true is not supported in this Point Type.\n",
            getClassName().c_str());
 #endif
 }

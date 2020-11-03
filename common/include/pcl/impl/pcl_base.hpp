@@ -100,27 +100,27 @@ pcl::PCLBase<PointT>::setIndices (std::size_t row_start, std::size_t col_start, 
 {
   if ((nb_rows > input_->height) || (row_start > input_->height))
   {
-    PCL_ERROR ("[PCLBase::setIndices] cloud is only %d height", input_->height);
+    PCL_ERROR ("[PCLBase::setIndices] cloud is only %d height\n", input_->height);
     return;
   }
 
   if ((nb_cols > input_->width) || (col_start > input_->width))
   {
-    PCL_ERROR ("[PCLBase::setIndices] cloud is only %d width", input_->width);
+    PCL_ERROR ("[PCLBase::setIndices] cloud is only %d width\n", input_->width);
     return;
   }
 
   std::size_t row_end = row_start + nb_rows;
   if (row_end > input_->height)
   {
-    PCL_ERROR ("[PCLBase::setIndices] %d is out of rows range %d", row_end, input_->height);
+    PCL_ERROR ("[PCLBase::setIndices] %d is out of rows range %d\n", row_end, input_->height);
     return;
   }
 
   std::size_t col_end = col_start + nb_cols;
   if (col_end > input_->width)
   {
-    PCL_ERROR ("[PCLBase::setIndices] %d is out of columns range %d", col_end, input_->width);
+    PCL_ERROR ("[PCLBase::setIndices] %d is out of columns range %d\n", col_end, input_->width);
     return;
   }
 

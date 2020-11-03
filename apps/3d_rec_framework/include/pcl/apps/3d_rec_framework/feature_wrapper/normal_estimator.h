@@ -198,7 +198,7 @@ public:
         }
 
         if (j != static_cast<pcl::index_t>(out->size())) {
-          PCL_ERROR("Contain nans...");
+          PCL_ERROR("Contain nans...\n");
         }
 
         out->points.resize(j);

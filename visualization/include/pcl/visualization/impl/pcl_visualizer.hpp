@@ -651,7 +651,7 @@ pcl::visualization::PCLVisualizer::addText3D (
   // If there is no custom viewport and the viewport number is not 0, exit
   if (rens_->GetNumberOfItems () <= viewport)
   {
-    PCL_ERROR ("[addText3D] The viewport [%d] doesn't exist (id <%s>)! ",
+    PCL_ERROR ("[addText3D] The viewport [%d] doesn't exist (id <%s>)! \n",
                viewport,
                tid.c_str ());
     return false;
@@ -664,7 +664,7 @@ pcl::visualization::PCLVisualizer::addText3D (
     const std::string uid = tid + std::string (i, '*');
     if (contains (uid))
     {
-      PCL_ERROR ( "[addText3D] The id <%s> already exists in viewport [%d]! "
+      PCL_ERROR ( "[addText3D] The id <%s> already exists in viewport [%d]! \n"
                   "Please choose a different id and retry.\n",
                   tid.c_str (),
                   i);
@@ -738,7 +738,7 @@ pcl::visualization::PCLVisualizer::addText3D (
   // If there is no custom viewport and the viewport number is not 0, exit
   if (rens_->GetNumberOfItems () <= viewport)
   {
-    PCL_ERROR ("[addText3D] The viewport [%d] doesn't exist (id <%s>)! ",
+    PCL_ERROR ("[addText3D] The viewport [%d] doesn't exist (id <%s>)!\n",
                viewport,
                tid.c_str ());
     return false;

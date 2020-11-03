@@ -147,7 +147,7 @@ namespace pcl
         virtual void
         setSourceNormals (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
         {
-          PCL_WARN ("[pcl::registration::%s::setSourceNormals] This class does not require input source normals", getClassName ().c_str ());
+          PCL_WARN ("[pcl::registration::%s::setSourceNormals] This class does not require input source normals\n", getClassName ().c_str ());
         }
         
         /** \brief See if this rejector requires target normals */
@@ -159,7 +159,7 @@ namespace pcl
         virtual void
         setTargetNormals (pcl::PCLPointCloud2::ConstPtr /*cloud2*/)
         {
-          PCL_WARN ("[pcl::registration::%s::setTargetNormals] This class does not require input target normals", getClassName ().c_str ());
+          PCL_WARN ("[pcl::registration::%s::setTargetNormals] This class does not require input target normals\n", getClassName ().c_str ());
         }
 
         /** \brief Provide a pointer to the vector of indices that represent the 

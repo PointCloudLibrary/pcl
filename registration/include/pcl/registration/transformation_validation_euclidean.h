@@ -206,7 +206,7 @@ namespace pcl
         {
           if (std::isnan (threshold_))
           {
-            PCL_ERROR ("[pcl::TransformationValidationEuclidean::isValid] Threshold not set! Please use setThreshold () before continuing.");
+            PCL_ERROR ("[pcl::TransformationValidationEuclidean::isValid] Threshold not set! Please use setThreshold () before continuing.\n");
             return (false);
           }
 
