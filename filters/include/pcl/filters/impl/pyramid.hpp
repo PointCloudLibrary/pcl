@@ -53,13 +53,13 @@ Pyramid<PointT>::initCompute ()
 {
   if (!input_->isOrganized ())
   {
-    PCL_ERROR ("[pcl::fileters::%s::initCompute] Number of levels should be at least 2!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::fileters::%s::initCompute] Number of levels should be at least 2!\n", getClassName ().c_str ());
     return (false);
   }
 
   if (levels_ < 2)
   {
-    PCL_ERROR ("[pcl::fileters::%s::initCompute] Number of levels should be at least 2!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::fileters::%s::initCompute] Number of levels should be at least 2!\n", getClassName ().c_str ());
     return (false);
   }
 
@@ -69,7 +69,7 @@ Pyramid<PointT>::initCompute ()
 
   if (levels_ > 4)
   {
-    PCL_ERROR ("[pcl::fileters::%s::initCompute] Number of levels should not exceed 4!", getClassName ().c_str ());
+    PCL_ERROR ("[pcl::fileters::%s::initCompute] Number of levels should not exceed 4!\n", getClassName ().c_str ());
     return (false);
   }
 

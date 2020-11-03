@@ -335,7 +335,7 @@ pcl::visualization::PCLVisualizer::setupInteractor (
 void pcl::visualization::PCLVisualizer::setupRenderer (vtkSmartPointer<vtkRenderer> ren)
 {
   if (!ren)
-    PCL_ERROR ("Passed pointer to renderer is null");
+    PCL_ERROR ("Passed pointer to renderer is null\n");
 
   ren->AddObserver (vtkCommand::EndEvent, update_fps_);
   // Add it to the list of renderers
@@ -346,7 +346,7 @@ void pcl::visualization::PCLVisualizer::setupRenderer (vtkSmartPointer<vtkRender
 void pcl::visualization::PCLVisualizer::setupFPSCallback (const vtkSmartPointer<vtkRenderer>& ren)
 {
   if (!ren)
-    PCL_ERROR ("Passed pointer to renderer is null");
+    PCL_ERROR ("Passed pointer to renderer is null\n");
   // FPS callback
   vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New ();
   update_fps_->actor = txt;
@@ -360,7 +360,7 @@ void pcl::visualization::PCLVisualizer::setupFPSCallback (const vtkSmartPointer<
 void pcl::visualization::PCLVisualizer::setupRenderWindow (const std::string& name)
 {
   if (!win_)
-    PCL_ERROR ("Pointer to render window is null");
+    PCL_ERROR ("Pointer to render window is null\n");
 
   // This is temporary measures for disable display of deprecated warnings
   #if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
@@ -383,7 +383,7 @@ void pcl::visualization::PCLVisualizer::setupRenderWindow (const std::string& na
 void pcl::visualization::PCLVisualizer::setupStyle ()
 {
   if (!style_)
-    PCL_ERROR ("Pointer to style is null");
+    PCL_ERROR ("Pointer to style is null\n");
 
   // Set rend erer window in case no interactor is created
   style_->setRenderWindow (win_);
@@ -401,7 +401,7 @@ void pcl::visualization::PCLVisualizer::setupStyle ()
 void pcl::visualization::PCLVisualizer::setDefaultWindowSizeAndPos ()
 {
   if (!win_)
-    PCL_ERROR ("Pointer to render window is null");
+    PCL_ERROR ("Pointer to render window is null\n");
   int scr_size_x = win_->GetScreenSize ()[0];
   int scr_size_y = win_->GetScreenSize ()[1];
   win_->SetSize (scr_size_x / 2, scr_size_y / 2);
@@ -855,7 +855,7 @@ pcl::visualization::PCLVisualizer::removeText3D (const std::string &id, int view
   // If there is no custom viewport and the viewport number is not 0, exit
   if (rens_->GetNumberOfItems () <= viewport)
   {
-    PCL_ERROR ("[removeText3D] The viewport [%d] doesn't exist (id <%s>)! ",
+    PCL_ERROR ("[removeText3D] The viewport [%d] doesn't exist (id <%s>)!\n",
                viewport,
                id.c_str ());
     return false;

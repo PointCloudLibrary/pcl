@@ -433,7 +433,7 @@ int main(int argc, char** argv)
   tree_files.resize(num_trees);
   if (num_trees == 0 || num_trees > 4)
   {
-    PCL_ERROR("[Main] : Invalid number of trees");
+    PCL_ERROR("[Main] : Invalid number of trees\n");
     print_help();
     return -1;
   }

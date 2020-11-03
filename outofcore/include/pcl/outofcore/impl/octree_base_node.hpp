@@ -864,7 +864,7 @@ namespace pcl
       //if already has 8 children, return
       if (children_[idx] || (num_children_ == 8))
       {
-        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeBaseNode::createChild] Not allowed to create a 9th child of %s",this->node_metadata_->getMetadataFilename ().c_str ());
+        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeBaseNode::createChild] Not allowed to create a 9th child of %s\n",this->node_metadata_->getMetadataFilename ().c_str ());
         return;
       }
 
@@ -1999,7 +1999,7 @@ namespace pcl
 
         if(!this->pointInBoundingBox (local_pt))
         {
-          PCL_ERROR ("pcl::outofcore::OutofcoreOctreeBaseNode::%s] Point %2.lf %.2lf %.2lf not in bounding box", __FUNCTION__, local_pt.x, local_pt.y, local_pt.z);
+          PCL_ERROR ("pcl::outofcore::OutofcoreOctreeBaseNode::%s] Point %2.lf %.2lf %.2lf not in bounding box\n", __FUNCTION__, local_pt.x, local_pt.y, local_pt.z);
         }
         
         assert (this->pointInBoundingBox (local_pt) == true);

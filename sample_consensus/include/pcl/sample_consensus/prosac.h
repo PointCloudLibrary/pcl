@@ -45,7 +45,7 @@
 
 namespace pcl
 {
-  /** \brief @b RandomSampleConsensus represents an implementation of the RANSAC (RAndom SAmple Consensus) algorithm, as
+  /** \brief @b ProgressiveSampleConsensus represents an implementation of the PROSAC (PROgressive SAmple Consensus) algorithm, as
     * described in: "Matching with PROSAC – Progressive Sample Consensus", Chum, O. and Matas, J.G., CVPR, I: 220-226
     * 2005.
     * \author Vincent Rabaud

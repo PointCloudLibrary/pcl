@@ -88,7 +88,7 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>          &cloud,
     {
       int ret = tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances, std::numeric_limits<int>::max());
       if(ret == -1)
-        PCL_ERROR("[pcl::seededHueSegmentation] radiusSearch returned error code -1");
+        PCL_ERROR("[pcl::seededHueSegmentation] radiusSearch returned error code -1\n");
       // Search for sq_idx
       if (!ret)
       {
@@ -166,7 +166,7 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>            &cloud,
     {
       int ret = tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances, std::numeric_limits<int>::max());
       if(ret == -1)
-        PCL_ERROR("[pcl::seededHueSegmentation] radiusSearch returned error code -1");
+        PCL_ERROR("[pcl::seededHueSegmentation] radiusSearch returned error code -1\n");
       // Search for sq_idx
       if (!ret)
       {

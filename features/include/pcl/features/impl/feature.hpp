@@ -69,7 +69,7 @@ solvePlaneParameters (const Eigen::Matrix3f &covariance_matrix,
 //  for (int i = 0; i < 9; ++i)
 //    if (!std::isfinite (covariance_matrix.coeff (i)))
 //    {
-//      //PCL_WARN ("[pcl::solvePlaneParameteres] Covariance matrix has NaN/Inf values!\n");
+//      //PCL_WARN ("[pcl::solvePlaneParameters] Covariance matrix has NaN/Inf values!\n");
 //      nx = ny = nz = curvature = std::numeric_limits<float>::quiet_NaN ();
 //      return;
 //    }

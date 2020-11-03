@@ -131,7 +131,7 @@ namespace pcl
       void
       setInputSource (const PointCloudSourceConstPtr& /*cloud*/) override
       {
-        PCL_WARN ("[pcl::%s::setInputSource] Warning; JointIterativeClosestPoint expects multiple clouds. Please use addInputSource.", 
+        PCL_WARN ("[pcl::%s::setInputSource] Warning; JointIterativeClosestPoint expects multiple clouds. Please use addInputSource.\n", 
             getClassName ().c_str ());
         return;
       }
@@ -155,7 +155,7 @@ namespace pcl
       void
       setInputTarget (const PointCloudTargetConstPtr& /*cloud*/) override
       {
-        PCL_WARN ("[pcl::%s::setInputTarget] Warning; JointIterativeClosestPoint expects multiple clouds. Please use addInputTarget.", 
+        PCL_WARN ("[pcl::%s::setInputTarget] Warning; JointIterativeClosestPoint expects multiple clouds. Please use addInputTarget.\n", 
             getClassName ().c_str ());
         return;
       }

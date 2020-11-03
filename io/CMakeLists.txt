@@ -160,8 +160,7 @@ if(WITH_RSSDK)
   )
 endif()
 
-# RSSDK2 is restricted to Windows until it is functional under other OSs
-if(WIN32 AND WITH_RSSDK2)
+if(WITH_RSSDK2)
   set(RSSDK2_GRABBER_INCLUDES
       include/pcl/io/real_sense_2_grabber.h
   )
@@ -373,8 +372,7 @@ if(WITH_RSSDK)
   target_link_libraries(${LIB_NAME} ${RSSDK_LIBRARIES})
 endif()
 
-# RSSDK2 is restricted to Windows until it is functional under other OSs
-if(WIN32 AND WITH_RSSDK2)
+if(WITH_RSSDK2)
   target_link_libraries(${LIB_NAME} ${RSSDK2_LIBRARIES})
 endif()
 

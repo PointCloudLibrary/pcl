@@ -50,6 +50,7 @@ namespace pcl
     * Description can be found in the article
     * "Color-based segmentation of point clouds"
     * by Qingming Zhan, Yubin Liang, Yinghui Xiao
+    * \ingroup segmentation
     */
   template <typename PointT, typename NormalT = pcl::Normal>
   class PCL_EXPORTS RegionGrowingRGB : public RegionGrowing<PointT, NormalT>

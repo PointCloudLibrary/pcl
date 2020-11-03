@@ -303,7 +303,7 @@ pcl::visualization::PCLPlotter::addFeatureHistogram (
   int field_idx = pcl::getFieldIndex (cloud, field_name);
   if (field_idx == -1)
   {
-    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!", field_name.c_str ());
+    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!\n", field_name.c_str ());
     return (false);
   }
 
@@ -343,7 +343,7 @@ pcl::visualization::PCLPlotter::addFeatureHistogram (
   int field_idx = pcl::getFieldIndex (cloud, field_name);
   if (field_idx == -1)
   {
-    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!", field_name.c_str ());
+    PCL_ERROR ("[addFeatureHistogram] Invalid field (%s) given!\n", field_name.c_str ());
     return (false);
   }
 

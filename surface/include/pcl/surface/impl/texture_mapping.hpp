@@ -321,7 +321,7 @@ pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &te
     {
       Eigen::Vector2f tmp_VT;
       // for each point of this face
-      for (const unsigned int &vertex : tex_polygon.vertices)
+      for (const auto &vertex : tex_polygon.vertices)
       {
         // get point
         PointInT pt = (*camera_transformed_cloud)[vertex];
@@ -495,7 +495,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const pcl::TextureMesh &tex
       std::vector<int>::iterator it;
 
       // iterate over face's vertex
-      for (const unsigned int &vertex : tex_mesh.tex_polygons[polygons][faces].vertices)
+      for (const auto &vertex : tex_mesh.tex_polygons[polygons][faces].vertices)
       {
         it = find (occluded.begin (), occluded.end (), vertex);
 

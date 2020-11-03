@@ -113,7 +113,7 @@ namespace pcl
       for (const auto &polygon : face_vertex_mesh.polygons)
       {
         vi.clear ();
-        for (const unsigned int &vertex : polygon.vertices)
+        for (const auto &vertex : polygon.vertices)
         {
           vi.emplace_back (vertex);
         }

@@ -105,13 +105,13 @@ PyramidalKLTTracker<PointInT, IntensityT>::initCompute()
 
   if (!input_->isOrganized()) {
     PCL_ERROR(
-        "[pcl::tracking::%s::initCompute] Need an organized point cloud to proceed!",
+        "[pcl::tracking::%s::initCompute] Need an organized point cloud to proceed!\n",
         tracker_name_.c_str());
     return (false);
   }
 
   if (!keypoints_ || keypoints_->empty()) {
-    PCL_ERROR("[pcl::tracking::%s::initCompute] No keypoints aborting!",
+    PCL_ERROR("[pcl::tracking::%s::initCompute] No keypoints aborting!\n",
               tracker_name_.c_str());
     return (false);
   }
@@ -144,14 +144,14 @@ PyramidalKLTTracker<PointInT, IntensityT>::initCompute()
 
     if (nb_levels_ < 2) {
       PCL_ERROR("[pcl::tracking::%s::initCompute] Number of pyramid levels should be "
-                "at least 2!",
+                "at least 2!\n",
                 tracker_name_.c_str());
       return (false);
     }
 
     if (nb_levels_ > 5) {
       PCL_ERROR("[pcl::tracking::%s::initCompute] Number of pyramid levels should not "
-                "exceed 5!",
+                "exceed 5!\n",
                 tracker_name_.c_str());
       return (false);
     }

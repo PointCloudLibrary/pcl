@@ -80,7 +80,7 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
       // Search for sq_idx
       int ret = tree->radiusSearch (seed_queue[sq_idx], tolerance, nn_indices, nn_distances, std::numeric_limits<int>::max());
       if(ret == -1)
-        PCL_ERROR("radiusSearch on tree came back with error -1");
+        PCL_ERROR("radiusSearch on tree came back with error -1\n");
       if (!ret)
       {
         sq_idx++;
