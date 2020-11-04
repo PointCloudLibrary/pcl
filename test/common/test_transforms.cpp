@@ -279,6 +279,19 @@ TEST (PCL, Matrix4Affine3Transform)
   EXPECT_NEAR (pt.z, ct[0].z, 1e-4);
 }
 
+// test if organized point cloud is still organized after transformPointCloud
+TEST (PCL, OrganizedTransform)
+{
+  pcl::PointCloud<PointXYZ> cloud_a, cloud_b;
+  cloud_a.resize (12);
+  cloud_a.width=4;
+  cloud_a.height=3;
+  const Eigen::Matrix4f transform=Eigen::Matrix4f::Identity();
+  pcl::transformPointCloud (cloud_a, cloud_b, transform);
+  ASSERT_EQ (cloud_a.width, cloud_b.width);
+  ASSERT_EQ (cloud_a.height, cloud_b.height);
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
