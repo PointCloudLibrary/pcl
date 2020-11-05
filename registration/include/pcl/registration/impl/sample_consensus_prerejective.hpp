@@ -241,7 +241,11 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
   // Feature correspondence cache
   std::vector<std::vector<int>> similar_features(input_->size());
   std::vector<float> nn_distances(k_correspondences_);
-  #pragma omp parallel for num_threads(num_threads_) firstprivate(nn_distances)
+  #pragma omp parallel for \
+    default(none) \
+    shared(k_correspondences_, similar_features) \
+    firstprivate(nn_distances) \
+    num_threads(num_threads_)
   for(int i = 0; i < static_cast<int>(input_->size()); ++i) {
     nn_distances.clear();
     feature_tree_->nearestKSearch(*input_features_, i, k_correspondences_, similar_features[i], nn_distances);
@@ -252,7 +256,11 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
   std::vector<int> corresponding_indices(nr_samples_);
 
   // Start
-  #pragma omp parallel for num_threads(num_threads_) shared(similar_features) firstprivate(inliers, sample_indices, corresponding_indices)
+#pragma omp parallel for \
+  default(none) \
+  shared(lowest_error, num_rejections, similar_features) \
+  firstprivate(inliers, sample_indices, corresponding_indices) \
+  num_threads(num_threads_)
   for (int i = 0; i < max_iterations_; ++i)
   {
     // Draw nr_samples_ random samples
