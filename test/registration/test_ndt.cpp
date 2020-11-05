@@ -80,15 +80,7 @@ INSTANTIATE_TEST_SUITE_P(PCL, NormalDistributionsTransformTest,
     NeighborSearchMethod::DIRECT1,
     NeighborSearchMethod::DIRECT7,
     NeighborSearchMethod::DIRECT27
-  ),
-  [](const auto& info) -> std::string {
-    switch(info.param) {
-      case NeighborSearchMethod::KDTREE: return "KDTREE";
-      case NeighborSearchMethod::DIRECT1: return "DIRECT1";
-      case NeighborSearchMethod::DIRECT7: return "DIRECT7";
-      case NeighborSearchMethod::DIRECT27: return "DIRECT27";
-    }
-  }
+  )
 );
 
 int
