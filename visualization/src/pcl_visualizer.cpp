@@ -3400,8 +3400,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
     // add a texture coordinates array per texture
     vtkSmartPointer<vtkFloatArray> coordinates = vtkSmartPointer<vtkFloatArray>::New ();
     coordinates->SetNumberOfComponents (2);
-    std::stringstream ss; ss << "TCoords" << tex_id;
-    std::string this_coordinates_name = ss.str ();
+    const std::string this_coordinates_name = "TCoords" + std::to_string(tex_id);
     coordinates->SetName (this_coordinates_name.c_str ());
 
     for (std::size_t t = 0; t < mesh.tex_coordinates.size (); ++t)
