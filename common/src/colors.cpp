@@ -38,6 +38,8 @@
 #include <pcl/point_types.h>
 #include <pcl/common/colors.h>
 
+#include <array>
+
 /// Glasbey lookup table
 static constexpr std::array<unsigned char, 256 * 3> GLASBEY_LUT =
 {
