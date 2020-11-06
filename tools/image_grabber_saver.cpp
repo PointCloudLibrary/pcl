@@ -67,9 +67,8 @@ struct EventHelper
   void 
   cloud_cb (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & cloud)
   {
-    std::stringstream ss;
-    ss << out_folder << "/" << grabber->getPrevDepthFileName() << ".pcd";
-    pcl::io::savePCDFileASCII (ss.str(), *cloud);
+    const std::string filepath = out_folder + '/' + grabber->getPrevDepthFileName() + ".pcd";
+    pcl::io::savePCDFileASCII (filepath, *cloud);
   }
 };
 

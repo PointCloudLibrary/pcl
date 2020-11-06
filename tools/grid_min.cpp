@@ -133,9 +133,8 @@ batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir
     boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
     
     // Save into the second file
-    std::stringstream ss;
-    ss << output_dir << "/" << st.at (st.size () - 1);
-    saveCloud (ss.str (), output);
+    const std::string filepath = output_dir + '/' + st.at (st.size () - 1);
+    saveCloud (filepath, output);
   }
   return (0);
 }
