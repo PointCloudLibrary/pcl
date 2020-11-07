@@ -157,10 +157,7 @@ namespace pcl
       inline std::string
       getIndexedName (std::string &root_name, std::size_t &id)
       {
-        std::stringstream id_stream_;
-        id_stream_ << id;
-        std::string indexed_name_ = root_name + id_stream_.str ();
-        return indexed_name_;
+        return root_name + std::to_string(id);
       }
 
       /** \brief The registration viewer. */

@@ -137,10 +137,9 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
     // Copy the indices and save the file
     pcl::PCLPointCloud2 cloud_out;
     pcl::copyPointCloud (cloud, indices, cloud_out);
-    std::stringstream ss;
-    ss << out_file << i++ << ".pcd";
-    pcl::console::print_debug ("  Save: %s ... ", ss.str ().c_str ());
-    if (pcl::io::savePCDFile (ss.str (), cloud_out, Eigen::Vector4f::Zero (),
+    const std::string out_filename = out_file + std::to_string(i++) + ".pcd";
+    pcl::console::print_debug ("  Save: %s ... ", out_filename.c_str ());
+    if (pcl::io::savePCDFile (out_filename, cloud_out, Eigen::Vector4f::Zero (),
                               Eigen::Quaternionf::Identity (), true) == -1)
     {
       pcl::console::print_error (stdout, "[failed]\n");

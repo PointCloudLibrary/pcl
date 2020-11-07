@@ -143,10 +143,9 @@ RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
     std::size_t correspondences_new_size = cloud_intermediate_indices_.size ();
 
 
-    std::stringstream stream_;
-    stream_ << "Random -> correspondences " << correspondences_new_size;
+    const std::string correspondences_text = "Random -> correspondences " + std::to_string(correspondences_new_size);
     viewer_->removeShape ("correspondences_size", 0);
-    viewer_->addText (stream_.str(), 10, 70, 0.0, 1.0, 0.0, "correspondences_size", v2);
+    viewer_->addText (correspondences_text, 10, 70, 0.0, 1.0, 0.0, "correspondences_size", v2);
 
     // Display entire set of correspondece lines if no maximum displayed correspondences is set
     if( ( 0 < maximum_displayed_correspondences_ ) &&
