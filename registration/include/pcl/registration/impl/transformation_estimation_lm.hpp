@@ -250,7 +250,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
   estimator_->warp_point_->setParam(x);
 
   // Calculate regularization costs
-  double reg_cost = x.cwiseProduct(x).dot(estimator_->reg_coeff_);
+  const double reg_cost = x.cwiseProduct(x).dot(estimator_->reg_coeff_);
 
   // Transform each source point and compute its distance to the corresponding target
   // point
@@ -283,7 +283,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
   estimator_->warp_point_->setParam(x);
 
   // Calculate regularization costs
-  double reg_cost = x.dot(estimator_->reg_coeff_ * x);
+  const double reg_cost = x.cwiseProduct(x).dot(estimator_->reg_coeff_);
 
   // Transform each source point and compute its distance to the corresponding target
   // point

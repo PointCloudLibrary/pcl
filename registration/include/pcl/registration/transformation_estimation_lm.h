@@ -175,8 +175,11 @@ public:
         void
         setRegularizationCoefficients(const VectorX &regularization_coeffs)
         {
-          assert(regularization_coeffs.rows() == warp_point_.nr_dims() &&
-              "Regularization coefficient vector must have same dimension as transformation");
+          if (regularization_coeffs.rows() != warp_point_.nr_dims())
+          {
+              PCL_WARN("Regularization coefficient vector must have same dimension as transformation.\n");
+              return;
+          }
           reg_coeff_ = regularization_coeffs;
         }
 
