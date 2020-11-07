@@ -60,14 +60,12 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   unsigned left, right, top, bottom;
   //unsigned x, y, idx;
   float squared_distance;
-  double squared_radius;
+  const float squared_radius = radius * radius;
 
   k_indices.clear ();
   k_sqr_distances.clear ();
 
-  squared_radius = radius * radius;
-
-  this->getProjectedRadiusSearchBox (query, static_cast<float> (squared_radius), left, right, top, bottom);
+  this->getProjectedRadiusSearchBox (query, squared_radius, left, right, top, bottom);
 
   // iterate over search box
   if (max_nn == 0 || max_nn >= static_cast<unsigned int> (input_->size ()))
