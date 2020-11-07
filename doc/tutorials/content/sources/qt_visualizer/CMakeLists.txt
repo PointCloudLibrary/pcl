@@ -27,3 +27,8 @@ set(project_SOURCES main.cpp pclviewer.cpp)
 add_executable(${PROJECT_NAME} ${project_SOURCES})
 
 target_link_libraries(${PROJECT_NAME} ${PCL_LIBRARIES} Qt5::Widgets)
+
+#TODO: Update when CMAKE 3.10 is available
+if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+  target_link_libraries(${PROJECT_NAME} VTK::GUISupportQt)
+endif()

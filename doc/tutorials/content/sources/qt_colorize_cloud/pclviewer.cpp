@@ -1,6 +1,8 @@
 #include "pclviewer.h"
 #include "ui_pclviewer.h"
 
+#include <vtkGenericOpenGLRenderWindow.h>
+
 PCLViewer::PCLViewer (QWidget *parent) :
     QMainWindow (parent),
     filtering_axis_ (1),  // = y
@@ -24,11 +26,18 @@ PCLViewer::PCLViewer (QWidget *parent) :
   }
 
   // Set up the QVTK window
-  viewer_.reset (new pcl::visualization::PCLVisualizer ("viewer", false));
-  viewer_->setBackgroundColor (0.1, 0.1, 0.1);
-  ui->qvtkWidget->SetRenderWindow (viewer_->getRenderWindow ());
-  viewer_->setupInteractor (ui->qvtkWidget->GetInteractor (), ui->qvtkWidget->GetRenderWindow ());
-  ui->qvtkWidget->update ();
+#if VTK_MAJOR_VERSION > 8
+  auto renderer = vtkSmartPointer<vtkRenderer>::New();
+  auto renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+  renderWindow->AddRenderer(renderer);
+  viewer_.reset(new pcl::visualization::PCLVisualizer(renderer, renderWindow, "viewer", false));
+  ui->qvtkWidget->setRenderWindow(viewer_->getRenderWindow());
+  viewer_->setupInteractor(ui->qvtkWidget->interactor(), ui->qvtkWidget->renderWindow());
+#else
+  viewer_.reset(new pcl::visualization::PCLVisualizer("viewer", false));
+  ui->qvtkWidget->SetRenderWindow(viewer_->getRenderWindow());
+  viewer_->setupInteractor(ui->qvtkWidget->GetInteractor(), ui->qvtkWidget->GetRenderWindow());
+#endif
 
   // Connect "Load" and "Save" buttons and their functions
   connect (ui->pushButton_load, SIGNAL(clicked ()), this, SLOT(loadFileButtonPressed ()));
@@ -47,14 +56,26 @@ PCLViewer::PCLViewer (QWidget *parent) :
 
   // Color the randomly generated cloud
   colorCloudDistances ();
+  viewer_->setBackgroundColor (0.1, 0.1, 0.1);
   viewer_->addPointCloud (cloud_, "cloud");
   viewer_->resetCamera ();
-  ui->qvtkWidget->update ();
+
+  refreshView();
 }
 
 PCLViewer::~PCLViewer ()
 {
   delete ui;
+}
+
+void
+PCLViewer::refreshView()
+{
+#if VTK_MAJOR_VERSION > 8
+  ui->qvtkWidget->renderWindow()->Render();
+#else
+  ui->qvtkWidget->update();
+#endif
 }
 
 void
@@ -94,7 +115,8 @@ PCLViewer::loadFileButtonPressed ()
   colorCloudDistances ();
   viewer_->updatePointCloud (cloud_, "cloud");
   viewer_->resetCamera ();
-  ui->qvtkWidget->update ();
+
+  refreshView();
 }
 
 void
@@ -148,7 +170,8 @@ PCLViewer::axisChosen ()
 
   colorCloudDistances ();
   viewer_->updatePointCloud (cloud_, "cloud");
-  ui->qvtkWidget->update ();
+
+  refreshView();
 }
 
 void
@@ -183,7 +206,8 @@ PCLViewer::lookUpTableChosen ()
 
   colorCloudDistances ();
   viewer_->updatePointCloud (cloud_, "cloud");
-  ui->qvtkWidget->update ();
+
+  refreshView();
 }
 
 void
