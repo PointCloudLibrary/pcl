@@ -140,9 +140,8 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
   unsigned top = 0;
   unsigned bottom = input_->height - 1;
 
-  std::priority_queue <Entry> results;
-  //std::vector<Entry> k_results;
-  //k_results.reserve (k);
+  std::vector <Entry> results; // sorted from smallest to largest distance
+  results.reserve (k);
   // add point laying on the projection of the query point.
   if (xBegin >= 0 && 
       xBegin < static_cast<int> (input_->width) && 
@@ -240,7 +239,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
       }
       // stop here means that the k-nearest neighbor changed -> recalculate bounding box of ellipse.
       if (stop)
-        getProjectedRadiusSearchBox (query, results.top ().distance, left, right, top, bottom);
+        getProjectedRadiusSearchBox (query, results.back ().distance, left, right, top, bottom);
       
     }
     // now we use it as stop flag -> if bounding box is completely within the already examined search box were done!
@@ -252,18 +251,18 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
   } while (!stop);
 
   
-  k_indices.resize (results.size ());
-  k_sqr_distances.resize (results.size ());
-  std::size_t idx = results.size () - 1;
-  while (!results.empty ())
+  const auto results_size = results.size ();
+  k_indices.resize (results_size);
+  k_sqr_distances.resize (results_size);
+  std::size_t idx = 0;
+  for(const auto& result : results)
   {
-    k_indices [idx] = results.top ().index;
-    k_sqr_distances [idx] = results.top ().distance;
-    results.pop ();
-    --idx;
+    k_indices [idx] = result.index;
+    k_sqr_distances [idx] = result.distance;
+    ++idx;
   }
   
-  return (static_cast<int> (k_indices.size ()));
+  return (static_cast<int> (results_size));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

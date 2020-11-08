@@ -211,7 +211,7 @@ namespace pcl
           * \return whether the top element changed or not.
           */
         inline bool 
-        testPoint (const PointT& query, unsigned k, std::priority_queue<Entry>& queue, index_t index) const
+        testPoint (const PointT& query, unsigned k, std::vector<Entry>& queue, index_t index) const
         {
           const PointT& point = input_->points [index];
           if (mask_ [index] && std::isfinite (point.x))
@@ -221,15 +221,20 @@ namespace pcl
             float dist_y = point.y - query.y;
             float dist_z = point.z - query.z;
             float squared_distance = dist_x * dist_x + dist_y * dist_y + dist_z * dist_z;
-            if (queue.size () < k)
+            const auto queue_size = queue.size ();
+            if (queue_size < k)
             {
-              queue.push (Entry (index, squared_distance));
-              return queue.size () == k;
+              queue.emplace (std::upper_bound (queue.begin(), queue.end(), squared_distance,
+                                               [](float dist, const Entry& ent){ return dist<ent.distance; }),
+                             index, squared_distance);
+              return (queue_size + 1) == k;
             }
-            if (queue.top ().distance > squared_distance)
+            if (queue.back ().distance > squared_distance)
             {
-              queue.pop ();
-              queue.push (Entry (index, squared_distance));
+              queue.pop_back ();
+              queue.emplace (std::upper_bound (queue.begin(), queue.end(), squared_distance,
+                                               [](float dist, const Entry& ent){ return dist<ent.distance; }),
+                             index, squared_distance);
               return true; // top element has changed!
             }
           }
