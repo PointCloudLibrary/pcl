@@ -9,7 +9,6 @@ if(NOT VTK_FOUND)
 else()
   set(DEFAULT TRUE)
   set(REASON)
-  include("${VTK_USE_FILE}")
 endif()
 
 # OpenNI found?
