@@ -36,10 +36,10 @@
  *
  */
 
-#include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/registration/pyramid_feature_matching.h>
+// Must come after its header
 #include <pcl/registration/impl/pyramid_feature_matching.hpp>
-
+#include <pcl/point_types.h>
 
 PCL_INSTANTIATE_PRODUCT(PyramidFeatureHistogram, (PCL_FEATURE_POINT_TYPES))

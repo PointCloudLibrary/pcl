@@ -41,38 +41,40 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::registration::CorrespondenceRejectorFeatures::getRemainingCorrespondences (
+pcl::registration::CorrespondenceRejectorFeatures::getRemainingCorrespondences(
     const pcl::Correspondences& original_correspondences,
     pcl::Correspondences& remaining_correspondences)
 {
   unsigned int number_valid_correspondences = 0;
-  remaining_correspondences.resize (original_correspondences.size ());
+  remaining_correspondences.resize(original_correspondences.size());
   // For each set of features, go over each correspondence from input_correspondences_
-  for (std::size_t i = 0; i < input_correspondences_->size (); ++i)
-  {
+  for (std::size_t i = 0; i < input_correspondences_->size(); ++i) {
     // Go over the map of features
-    for (FeaturesMap::const_iterator it = features_map_.begin (); it != features_map_.end (); ++it)
-    {
+    for (FeaturesMap::const_iterator it = features_map_.begin();
+         it != features_map_.end();
+         ++it) {
       // Check if the score in feature space is above the given threshold
-      // (assume that the number of feature correspondenecs is the same as the number of point correspondences)
-      if (!it->second->isCorrespondenceValid (static_cast<int> (i)))
+      // (assume that the number of feature correspondenecs is the same as the number of
+      // point correspondences)
+      if (!it->second->isCorrespondenceValid(static_cast<int>(i)))
         break;
 
-      remaining_correspondences[number_valid_correspondences] = original_correspondences[i];
+      remaining_correspondences[number_valid_correspondences] =
+          original_correspondences[i];
       ++number_valid_correspondences;
     }
   }
-  remaining_correspondences.resize (number_valid_correspondences);
+  remaining_correspondences.resize(number_valid_correspondences);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 inline bool
-pcl::registration::CorrespondenceRejectorFeatures::hasValidFeatures ()
+pcl::registration::CorrespondenceRejectorFeatures::hasValidFeatures()
 {
-  if (features_map_.empty ())
+  if (features_map_.empty())
     return (false);
-  for (const auto &feature : features_map_)
-    if (!feature.second->isValid ())
+  for (const auto& feature : features_map_)
+    if (!feature.second->isValid())
       return (false);
   return (true);
 }

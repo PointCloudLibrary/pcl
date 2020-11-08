@@ -43,31 +43,31 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 
-namespace pcl
-{
-  namespace registration
-  {
-    /** \brief @b NullMeasurement struct
-      * \author Nicola Fioraio
-      * \ingroup registration
-      */
-    struct NullMeasurement
-    {};
+namespace pcl {
+namespace registration {
+/** \brief @b NullMeasurement struct
+ * \author Nicola Fioraio
+ * \ingroup registration
+ */
+struct NullMeasurement {};
 
-    /** \brief @b PoseMeasurement struct
-      * \author Nicola Fioraio
-      * \ingroup registration
-      */
-    template <typename VertexT, typename InformationT>
-    struct PoseMeasurement
-    {
-      VertexT v_start, v_end;
-      Eigen::Matrix4f relative_transformation;
-      InformationT information_matrix;
-      PCL_MAKE_ALIGNED_OPERATOR_NEW
+/** \brief @b PoseMeasurement struct
+ * \author Nicola Fioraio
+ * \ingroup registration
+ */
+template <typename VertexT, typename InformationT>
+struct PoseMeasurement {
+  VertexT v_start, v_end;
+  Eigen::Matrix4f relative_transformation;
+  InformationT information_matrix;
+  PCL_MAKE_ALIGNED_OPERATOR_NEW
 
-      PoseMeasurement (const VertexT& v_s, const VertexT& v_e, const Eigen::Matrix4f& tr, const InformationT& mtx)
-        : v_start (v_s), v_end (v_e), relative_transformation (tr), information_matrix (mtx) {}
-    };
-  }
-}
+  PoseMeasurement(const VertexT& v_s,
+                  const VertexT& v_e,
+                  const Eigen::Matrix4f& tr,
+                  const InformationT& mtx)
+  : v_start(v_s), v_end(v_e), relative_transformation(tr), information_matrix(mtx)
+  {}
+};
+} // namespace registration
+} // namespace pcl
