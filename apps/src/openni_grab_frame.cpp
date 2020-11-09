@@ -157,9 +157,9 @@ public:
   saveCloud()
   {
     FPS_CALC("I/O");
-    std::string time = boost::posix_time::to_iso_string(
+    const std::string time = boost::posix_time::to_iso_string(
               boost::posix_time::microsec_clock::local_time());
-    std::string filepath = dir_name_ + '/' + file_name_ + '_' + time + ".pcd";
+    const std::string filepath = dir_name_ + '/' + file_name_ + '_' + time + ".pcd";
 
     if (format_ & 1) {
       writer_.writeBinary<PointType>(filepath, *cloud_);

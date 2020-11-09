@@ -396,7 +396,7 @@ public:
     event.getPoint(picked_pt.x, picked_pt.y, picked_pt.z);
 
     // Add a sphere to it in the PCLVisualizer window
-    std::string sphere_name = "sphere_" + std::to_string(idx);
+    const std::string sphere_name = "sphere_" + std::to_string(idx);
     cloud_viewer_.addSphere(picked_pt, 0.01, 1.0, 0.0, 0.0, sphere_name);
 
     // Check to see if we have access to the actual cloud data. Use the previously built
@@ -472,7 +472,7 @@ public:
     // Compute the min/max of the object
     PointT min_pt, max_pt;
     getMinMax3D(*object, min_pt, max_pt);
-    std::string cube_name = "cube_" + std::to_string(idx);
+    const std::string cube_name = "cube_" + std::to_string(idx);
     // Visualize the bounding box in 3D...
     cloud_viewer_.addCube(min_pt.x,
                           max_pt.x,

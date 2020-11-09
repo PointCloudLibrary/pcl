@@ -78,7 +78,7 @@ segmentAndClassify(
     }
 
     for (std::size_t i = 0; i < previous_categories_size; i++) {
-      std::string cluster_text = "cluster_" + std::to_string(i) + "_text";
+      const std::string cluster_text = "cluster_" + std::to_string(i) + "_text";
       vis.removeText3D(cluster_text);
     }
 
@@ -86,7 +86,7 @@ segmentAndClassify(
     float dist_ = 0.03f;
 
     for (std::size_t i = 0; i < clusters.size(); i++) {
-      std::string cluster_name = "cluster_" + std::to_string(i);
+      const std::string cluster_name = "cluster_" + std::to_string(i);
       pcl::visualization::PointCloudColorHandlerRandom<pcl::PointXYZ> random_handler(
           clusters[i]);
       vis.addPointCloud<pcl::PointXYZ>(clusters[i], random_handler, cluster_name);
@@ -114,7 +114,7 @@ segmentAndClassify(
         prob_str.precision(1);
         prob_str << categories[kk] << " [" << conf[kk] << "]";
 
-        std::string cluster_text =
+        const std::string cluster_text =
             "cluster_" + std::to_string(previous_categories_size) + "_text";
         vis.addText3D(prob_str.str(), pos, text_scale, 1, 0, 1, cluster_text, 0);
         previous_categories_size++;

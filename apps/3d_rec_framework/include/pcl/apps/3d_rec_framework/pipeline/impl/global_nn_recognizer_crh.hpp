@@ -34,8 +34,9 @@ pcl::rec_3d_framework::GlobalNNCRHRecognizer<Distance, PointInT, FeatureT>::getP
     }
   }
 
-  std::string path = source_->getModelDescriptorDir(model, training_dir_, descr_name_);
-  std::string dir = path + "/pose_" + std::to_string(view_id) + ".txt";
+  const std::string path =
+      source_->getModelDescriptorDir(model, training_dir_, descr_name_);
+  const std::string dir = path + "/pose_" + std::to_string(view_id) + ".txt";
 
   PersistenceUtils::readMatrixFromFile(dir, pose_matrix);
 }
@@ -47,9 +48,10 @@ pcl::rec_3d_framework::GlobalNNCRHRecognizer<Distance, PointInT, FeatureT>::getC
 {
 
   hist.reset(new CRHPointCloud);
-  std::string path = source_->getModelDescriptorDir(model, training_dir_, descr_name_);
-  std::string dir = path + "/centroid_" + std::to_string(view_id) + '_' +
-                    std::to_string(d_id) + ".pcd";
+  const std::string path =
+      source_->getModelDescriptorDir(model, training_dir_, descr_name_);
+  const std::string dir = path + "/centroid_" + std::to_string(view_id) + '_' +
+                          std::to_string(d_id) + ".pcd";
 
   pcl::io::loadPCDFile(dir, *hist);
 }
@@ -59,9 +61,10 @@ void
 pcl::rec_3d_framework::GlobalNNCRHRecognizer<Distance, PointInT, FeatureT>::getCentroid(
     ModelT& model, int view_id, int d_id, Eigen::Vector3f& centroid)
 {
-  std::string path = source_->getModelDescriptorDir(model, training_dir_, descr_name_);
-  std::string dir = path + "/centroid_" + std::to_string(view_id) + '_' +
-                    std::to_string(d_id) + ".txt";
+  const std::string path =
+      source_->getModelDescriptorDir(model, training_dir_, descr_name_);
+  const std::string dir = path + "/centroid_" + std::to_string(view_id) + '_' +
+                          std::to_string(d_id) + ".txt";
 
   PersistenceUtils::getCentroidFromFile(dir, centroid);
 }
@@ -72,8 +75,9 @@ pcl::rec_3d_framework::GlobalNNCRHRecognizer<Distance, PointInT, FeatureT>::getV
     ModelT& model, int view_id, PointInTPtr& view)
 {
   view.reset(new pcl::PointCloud<PointInT>);
-  std::string path = source_->getModelDescriptorDir(model, training_dir_, descr_name_);
-  std::string dir = path + "/view_" + std::to_string(view_id) + ".pcd";
+  const std::string path =
+      source_->getModelDescriptorDir(model, training_dir_, descr_name_);
+  const std::string dir = path + "/view_" + std::to_string(view_id) + ".pcd";
   pcl::io::loadPCDFile(dir, *view);
 }
 
@@ -120,7 +124,7 @@ pcl::rec_3d_framework::GlobalNNCRHRecognizer<Distance, PointInT, FeatureT>::
 
         if (use_cache_) {
 
-          std::string dir_pose =
+          const std::string dir_pose =
               path + "/pose_" + std::to_string(descr_model.view_id) + ".txt";
 
           Eigen::Matrix4f pose_matrix;
@@ -413,13 +417,14 @@ pcl::rec_3d_framework::GlobalNNCRHRecognizer<Distance, PointInT, FeatureT>::init
         if (!bf::exists(desc_dir))
           bf::create_directory(desc_dir);
 
-        std::string path_view = path + "/view_" + std::to_string(v) + ".pcd";
+        const std::string path_view = path + "/view_" + std::to_string(v) + ".pcd";
         pcl::io::savePCDFileBinary(path_view, *processed);
 
-        std::string path_pose = path + "/pose_" + std::to_string(v) + ".txt";
+        const std::string path_pose = path + "/pose_" + std::to_string(v) + ".txt";
         PersistenceUtils::writeMatrixToFile(path_pose, models->at(i).poses_->at(v));
 
-        std::string path_entropy = path + "/entropy_" + std::to_string(v) + ".txt";
+        const std::string path_entropy =
+            path + "/entropy_" + std::to_string(v) + ".txt";
         PersistenceUtils::writeFloatToFile(path_entropy,
                                            models->at(i).self_occlusions_->at(v));
 
@@ -428,16 +433,17 @@ pcl::rec_3d_framework::GlobalNNCRHRecognizer<Distance, PointInT, FeatureT>::init
 
         // save signatures and centroids to disk
         for (std::size_t j = 0; j < signatures.size(); j++) {
-          std::string path_centroid = path + "/centroid_" + std::to_string(v) + '_' +
-                                      std::to_string(j) + ".txt";
+          const std::string path_centroid = path + "/centroid_" + std::to_string(v) +
+                                            '_' + std::to_string(j) + ".txt";
           Eigen::Vector3f centroid(centroids[j][0], centroids[j][1], centroids[j][2]);
           PersistenceUtils::writeCentroidToFile(path_centroid, centroid);
 
-          std::string path_descriptor = path + "/descriptor_" + std::to_string(v) +
-                                        '_' + std::to_string(j) + ".pcd";
+          const std::string path_descriptor = path + "/descriptor_" +
+                                              std::to_string(v) + '_' +
+                                              std::to_string(j) + ".pcd";
           pcl::io::savePCDFileBinary(path_descriptor, signatures[j]);
 
-          std::string path_roll =
+          const std::string path_roll =
               path + "/crh_" + std::to_string(v) + '_' + std::to_string(j) + ".pcd";
           pcl::io::savePCDFileBinary(path_roll, *crh_histograms[j]);
         }

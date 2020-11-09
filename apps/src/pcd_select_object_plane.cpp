@@ -455,7 +455,7 @@ public:
                picked_pt.z);
 
     // Add a sphere to it in the PCLVisualizer window
-    std::string sphere_name = "sphere_" + std::to_string(idx);
+    const std::string sphere_name = "sphere_" + std::to_string(idx);
     cloud_viewer_->addSphere(picked_pt, 0.01, 1.0, 0.0, 0.0, sphere_name);
 
     // Because VTK/OpenGL stores data without NaN, we lose the 1-1 correspondence, so we

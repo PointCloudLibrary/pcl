@@ -91,7 +91,7 @@ protected:
                             std::string& id,
                             std::string& classname)
   {
-    bf::path path = filename;
+    const bf::path path = filename;
     classname = path.parent_path().string() + '/';
     id = path.stem().string();
   }
@@ -212,7 +212,7 @@ public:
   modelAlreadyTrained(ModelT m, std::string& base_dir, std::string& descr_name)
   {
     auto dir = getModelDescriptorDir(m, base_dir, descr_name);
-    bf::path desc_dir = dir;
+    const bf::path desc_dir = dir;
     std::cout << dir << std::endl;
     return bf::exists(desc_dir);
   }

@@ -101,7 +101,7 @@ public:
   loadOrGenerate(std::string& dir, std::string& model_path, ModelT& model)
   {
     const std::string pathmodel = dir + '/' + model.class_ + '/' + model.id_;
-    bf::path trained_dir = pathmodel;
+    const bf::path trained_dir = pathmodel;
 
     model.views_.reset(new std::vector<typename pcl::PointCloud<PointInT>::Ptr>);
     model.poses_.reset(

@@ -105,7 +105,7 @@ recognizeAndVisualize(
         if ((std::size_t)scene != i)
           continue;
 
-      std::string file = ply_files_dir.string() + files[i];
+      const std::string file = ply_files_dir.string() + files[i];
 
       typename pcl::PointCloud<PointT>::Ptr scene(new pcl::PointCloud<PointT>());
       pcl::io::loadPCDFile(file, *scene);
@@ -117,7 +117,7 @@ recognizeAndVisualize(
         local.recognize();
       }
 
-      std::string scene_name = "Scene " + std::to_string(i + 1);
+      const std::string scene_name = "Scene " + std::to_string(i + 1);
       vis.addPointCloud<PointT>(scene, "scene_cloud");
       vis.addText(scene_name, 1, 30, 24, 1, 0, 0, "scene_text");
 
@@ -126,7 +126,7 @@ recognizeAndVisualize(
       auto transforms = local.getTransforms();
 
       for (std::size_t j = 0; j < models->size(); j++) {
-        std::string name = "cloud_" + std::to_string(j);
+        const std::string name = "cloud_" + std::to_string(j);
 
         ConstPointInTPtr model_cloud = models->at(j).getAssembled(0.0025f);
         typename pcl::PointCloud<PointT>::Ptr model_aligned(
@@ -167,7 +167,7 @@ recognizeAndVisualize(
       vis.removePointCloud("scene_cloud");
       vis.removeShape("scene_text");
       for (std::size_t j = 0; j < models->size(); j++) {
-        std::string name = "cloud_" + std::to_string(j);
+        const std::string name = "cloud_" + std::to_string(j);
         vis.removePointCloud(name);
       }
     }
@@ -181,7 +181,7 @@ recognizeAndVisualize(
     local.initialize();
 
     for (std::size_t i = 0; i < files.size(); i++) {
-      std::string file = ply_files_dir.string() + files[i];
+      const std::string file = ply_files_dir.string() + files[i];
 
       typename pcl::PointCloud<PointT>::Ptr scene(new pcl::PointCloud<PointT>());
       pcl::io::loadPCDFile(file, *scene);
@@ -189,7 +189,7 @@ recognizeAndVisualize(
       local.setInputCloud(scene);
       local.recognize();
 
-      std::string scene_name = "Scene " + std::to_string(i + 1);
+      const std::string scene_name = "Scene " + std::to_string(i + 1);
       vis.addPointCloud<PointT>(scene, "scene_cloud");
       vis.addText(scene_name, 1, 30, 24, 1, 0, 0, "scene_text");
 
@@ -198,7 +198,7 @@ recognizeAndVisualize(
       auto transforms = local.getTransforms();
 
       for (std::size_t j = 0; j < models->size(); j++) {
-        std::string name = "cloud_" + std::to_string(j);
+        const std::string name = "cloud_" + std::to_string(j);
 
         ConstPointInTPtr model_cloud = models->at(j).getAssembled(0.0025f);
         typename pcl::PointCloud<PointT>::Ptr model_aligned(
@@ -215,7 +215,7 @@ recognizeAndVisualize(
       vis.removePointCloud("scene_cloud");
       vis.removeShape("scene_text");
       for (std::size_t j = 0; j < models->size(); j++) {
-        std::string name = "cloud_" + std::to_string(j);
+        const std::string name = "cloud_" + std::to_string(j);
         vis.removePointCloud(name);
       }
     }

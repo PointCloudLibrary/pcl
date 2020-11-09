@@ -149,7 +149,7 @@ public:
           0, image->getWidth() - 1, 0, image->getHeight() - 1, 0, 0);
       importer_->SetDataExtentToWholeExtent();
 
-      std::string rgb_frame_filename = "frame_" + time + "_rgb.tiff";
+      const std::string rgb_frame_filename = "frame_" + time + "_rgb.tiff";
       importer_->SetImportVoidPointer(const_cast<void*>(data), 1);
       importer_->Update();
       flipper_->SetInputConnection(importer_->GetOutputPort());
@@ -159,7 +159,7 @@ public:
       writer_->Write();
     }
     if (depth_image) {
-      std::string depth_frame_filename = "frame_" + time + "_depth.tiff";
+      const std::string depth_frame_filename = "frame_" + time + "_depth.tiff";
 
       depth_importer_->SetWholeExtent(
           0, depth_image->getWidth() - 1, 0, depth_image->getHeight() - 1, 0, 0);
@@ -237,7 +237,7 @@ public:
               0, image->getWidth() - 1, 0, image->getHeight() - 1, 0, 0);
           importer_->SetDataExtentToWholeExtent();
 
-          std::string rgb_frame_filename = "frame_" + time + "_rgb.tiff";
+          const std::string rgb_frame_filename = "frame_" + time + "_rgb.tiff";
           importer_->SetImportVoidPointer(const_cast<void*>(data), 1);
           importer_->Update();
           flipper_->SetInputConnection(importer_->GetOutputPort());
@@ -264,7 +264,7 @@ public:
         depth_image_viewer_.addRGBImage(
             depth_data, depth_image->getWidth(), depth_image->getHeight());
         if (continuous_ || trigger_) {
-          std::string depth_frame_filename = "frame_" + time + "_depth.tiff";
+          const std::string depth_frame_filename = "frame_" + time + "_depth.tiff";
 
           depth_importer_->SetWholeExtent(
               0, depth_image->getWidth() - 1, 0, depth_image->getHeight() - 1, 0, 0);

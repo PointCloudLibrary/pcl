@@ -39,10 +39,11 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
         if (use_cache_) {
           std::string path =
               source_->getModelDescriptorDir(models->at(i), training_dir_, descr_name_);
-          std::string dir_keypoints = path + "/keypoint_indices_" +
-                                      std::to_string(descr_model.view_id) + ".pcd";
+          const std::string dir_keypoints = path + "/keypoint_indices_" +
+                                            std::to_string(descr_model.view_id) +
+                                            ".pcd";
 
-          std::string dir_pose =
+          const std::string dir_pose =
               path + "/pose_" + std::to_string(descr_model.view_id) + ".txt";
 
           Eigen::Matrix4f pose_matrix;
@@ -153,24 +154,25 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
           if (!bf::exists(desc_dir))
             bf::create_directory(desc_dir);
 
-          std::string path_view = path = "/view_" + std::to_string(v) + ".pcd";
+          const std::string path_view = path = "/view_" + std::to_string(v) + ".pcd";
           pcl::io::savePCDFileBinary(path_view, *processed);
 
-          std::string path_pose = path + "/pose_" + std::to_string(v) + ".txt";
+          const std::string path_pose = path + "/pose_" + std::to_string(v) + ".txt";
           PersistenceUtils::writeMatrixToFile(path_pose, models->at(i).poses_->at(v));
 
           if (v < models->at(i).self_occlusions_->size()) {
-            std::string path_entropy = path + "/entropy_" + std::to_string(v) + ".txt";
+            const std::string path_entropy =
+                path + "/entropy_" + std::to_string(v) + ".txt";
             PersistenceUtils::writeFloatToFile(path_entropy,
                                                models->at(i).self_occlusions_->at(v));
           }
 
           // save keypoints and signatures to disk
-          std::string keypoints_sstr =
+          const std::string keypoints_sstr =
               path + "/keypoint_indices_" + std::to_string(v) + ".pcd";
           pcl::io::savePCDFileBinary(keypoints_sstr, *keypoints_pointcloud);
 
-          std::string path_descriptor =
+          const std::string path_descriptor =
               path + "/descriptor_" + std::to_string(v) + ".pcd";
           pcl::io::savePCDFileBinary(path_descriptor, *signatures);
         }
@@ -469,8 +471,9 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::g
     }
   }
 
-  std::string path = source_->getModelDescriptorDir(model, training_dir_, descr_name_);
-  std::string dir = path + "/pose_" + std::to_string(view_id) + ".txt";
+  const std::string path =
+      source_->getModelDescriptorDir(model, training_dir_, descr_name_);
+  const std::string dir = path + "/pose_" + std::to_string(view_id) + ".txt";
 
   PersistenceUtils::readMatrixFromFile(dir, pose_matrix);
 }
@@ -494,8 +497,10 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
     }
   }
 
-  std::string path = source_->getModelDescriptorDir(model, training_dir_, descr_name_);
-  std::string dir = path + "/keypoint_indices_" + std::to_string(view_id) + ".pcd";
+  const std::string path =
+      source_->getModelDescriptorDir(model, training_dir_, descr_name_);
+  const std::string dir =
+      path + "/keypoint_indices_" + std::to_string(view_id) + ".pcd";
 
   pcl::io::loadPCDFile(dir, *keypoints_cloud);
 }
