@@ -73,7 +73,7 @@ segmentAndClassify(
       std::string cluster_name = "cluster_" + std::to_string(i);
       vis.removePointCloud(cluster_name);
 
-      cluster_name =+ "_ply_model_";
+      cluster_name = +"_ply_model_";
       vis.removeShape(cluster_name);
     }
 
@@ -114,7 +114,8 @@ segmentAndClassify(
         prob_str.precision(1);
         prob_str << categories[kk] << " [" << conf[kk] << "]";
 
-        std::string cluster_text = "cluster_" + std::to_string(previous_categories_size) + "_text";
+        std::string cluster_text =
+            "cluster_" + std::to_string(previous_categories_size) + "_text";
         vis.addText3D(prob_str.str(), pos, text_scale, 1, 0, 1, cluster_text, 0);
         previous_categories_size++;
       }

@@ -204,7 +204,7 @@ public:
           std::cout << pose << std::endl;
         }
 
-        const std::string path_pose = direc +  "/pose_" + std::to_string(i) + ".txt";
+        const std::string path_pose = direc + "/pose_" + std::to_string(i) + ".txt";
         pcl::rec_3d_framework::PersistenceUtils::writeMatrixToFile(path_pose, pose);
       }
 

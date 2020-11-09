@@ -39,10 +39,11 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
         if (use_cache_) {
           std::string path =
               source_->getModelDescriptorDir(models->at(i), training_dir_, descr_name_);
-          std::string dir_keypoints = path + "/keypoint_indices_" + std::to_string(descr_model.view_id)
-                        + ".pcd";
+          std::string dir_keypoints = path + "/keypoint_indices_" +
+                                      std::to_string(descr_model.view_id) + ".pcd";
 
-          std::string dir_pose = path + "/pose_" + std::to_string(descr_model.view_id) + ".txt";
+          std::string dir_pose =
+              path + "/pose_" + std::to_string(descr_model.view_id) + ".txt";
 
           Eigen::Matrix4f pose_matrix;
           PersistenceUtils::readMatrixFromFile(dir_pose, pose_matrix);
@@ -156,8 +157,7 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
           pcl::io::savePCDFileBinary(path_view, *processed);
 
           std::string path_pose = path + "/pose_" + std::to_string(v) + ".txt";
-          PersistenceUtils::writeMatrixToFile(path_pose,
-                                              models->at(i).poses_->at(v));
+          PersistenceUtils::writeMatrixToFile(path_pose, models->at(i).poses_->at(v));
 
           if (v < models->at(i).self_occlusions_->size()) {
             std::string path_entropy = path + "/entropy_" + std::to_string(v) + ".txt";
@@ -166,10 +166,12 @@ pcl::rec_3d_framework::LocalRecognitionPipeline<Distance, PointInT, FeatureT>::
           }
 
           // save keypoints and signatures to disk
-          std::string keypoints_sstr = path + "/keypoint_indices_" + std::to_string(v) + ".pcd";
+          std::string keypoints_sstr =
+              path + "/keypoint_indices_" + std::to_string(v) + ".pcd";
           pcl::io::savePCDFileBinary(keypoints_sstr, *keypoints_pointcloud);
 
-          std::string path_descriptor = path + "/descriptor_" + std::to_string(v) + ".pcd";
+          std::string path_descriptor =
+              path + "/descriptor_" + std::to_string(v) + ".pcd";
           pcl::io::savePCDFileBinary(path_descriptor, *signatures);
         }
       }

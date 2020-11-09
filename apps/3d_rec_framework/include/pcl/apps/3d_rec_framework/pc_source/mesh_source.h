@@ -80,7 +80,7 @@ public:
   void
   loadOrGenerate(std::string& dir, std::string& model_path, ModelT& model)
   {
-    const std::string pathmodel = dir + '/' + model.class_ + '/' + model.id_; 
+    const std::string pathmodel = dir + '/' + model.class_ + '/' + model.id_;
     bf::path trained_dir = pathmodel;
 
     model.views_.reset(new std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>);
@@ -206,7 +206,8 @@ public:
         pcl::rec_3d_framework::PersistenceUtils::writeMatrixToFile(path_pose,
                                                                    model.poses_->at(i));
 
-        const std::string path_entropy = direc + "/entropy_" + std::to_string(i) + ".txt";
+        const std::string path_entropy =
+            direc + "/entropy_" + std::to_string(i) + ".txt";
         pcl::rec_3d_framework::PersistenceUtils::writeFloatToFile(
             path_entropy, model.self_occlusions_->at(i));
       }
