@@ -73,7 +73,7 @@ segmentAndClassify(
       std::string cluster_name = "cluster_" + std::to_string(i);
       vis.removePointCloud(cluster_name);
 
-      cluster_name = +"_ply_model_";
+      cluster_name += "_ply_model_";
       vis.removeShape(cluster_name);
     }
 
