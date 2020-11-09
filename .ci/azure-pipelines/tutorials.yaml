@@ -3,7 +3,7 @@ jobs:
     displayName: Building Tutorials
     pool:
       vmImage: 'Ubuntu 16.04'
-    container: env1604
+    container: env1804
     timeoutInMinutes: 0
     variables:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'
@@ -28,7 +28,11 @@ jobs:
             -DBUILD_examples=OFF \
             -DBUILD_outofcore=OFF \
             -DBUILD_stereo=OFF \
-            -DBUILD_simulation=OFF
+            -DBUILD_simulation=OFF \
+            -DBUILD_GPU=ON \
+            -DBUILD_gpu_tracking=ON \
+            -DBUILD_gpu_surface=ON \
+            -DBUILD_gpu_people=ON
         displayName: 'CMake Configuration'
       - script: |
           cd $BUILD_DIR
