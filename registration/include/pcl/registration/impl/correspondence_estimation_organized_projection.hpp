@@ -83,12 +83,10 @@ CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::
   correspondences.resize(indices_->size());
   std::size_t c_index = 0;
 
-  for (std::vector<int>::const_iterator src_it = indices_->begin();
-       src_it != indices_->end();
-       ++src_it) {
-    if (isFinite((*input_)[*src_it])) {
+  for (const auto& src_idx : (*indices_)) {
+    if (isFinite((*input_)[src_idx])) {
       Eigen::Vector4f p_src(src_to_tgt_transformation_ *
-                            (*input_)[*src_it].getVector4fMap());
+                            (*input_)[src_idx].getVector4fMap());
       Eigen::Vector3f p_src3(p_src[0], p_src[1], p_src[2]);
       Eigen::Vector3f uv(projection_matrix_ * p_src3);
 
@@ -111,7 +109,7 @@ CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::
         double dist = (p_src3 - pt_tgt.getVector3fMap()).norm();
         if (dist < max_distance)
           correspondences[c_index++] = pcl::Correspondence(
-              *src_it, v * target_->width + u, static_cast<float>(dist));
+              src_idx, v * target_->width + u, static_cast<float>(dist));
       }
     }
   }

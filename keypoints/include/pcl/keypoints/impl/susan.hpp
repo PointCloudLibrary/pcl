@@ -125,15 +125,15 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setNumberOfThreads
 //   //xx xy xz yy yz zz
 //   std::vector<float> coefficients(6);
 //   memset (&coefficients[0], 0, sizeof (float) * 6);
-//   for (std::vector<int>::const_iterator index = neighbors.begin(); index != neighbors.end(); ++index)
+//   for (const auto& index : neighbors)
 //   {
-//     if (std::isfinite ((*normals_)[*index].normal_x))
+//     if (std::isfinite ((*normals_)[index].normal_x))
 //     {
-//       Eigen::Vector3f diff = (*normals_)[*index].getNormal3fMap () - nucleus_normal.getNormal3fMap ();
+//       Eigen::Vector3f diff = (*normals_)[index].getNormal3fMap () - nucleus_normal.getNormal3fMap ();
 //       float c = diff.norm () / t;
 //       c = -1 * pow (c, 6.0);
 //       c = std::exp (c);
-//       Eigen::Vector3f xyz = (*surface_)[*index].getVector3fMap ();
+//       Eigen::Vector3f xyz = (*surface_)[index].getVector3fMap ();
 //       centroid += c * xyz;
 //       area += c;
 //       coefficients[0] += c * (x0 - xyz.x) * (x0 - xyz.x);
@@ -327,17 +327,17 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
     Eigen::Vector3f centroid = Eigen::Vector3f::Zero ();
     // Exclude nucleus from the usan
     std::vector<int> usan; usan.reserve (nn_indices.size () - 1);
-    for (std::vector<int>::const_iterator index = nn_indices.begin(); index != nn_indices.end(); ++index)
+    for (const auto& index : nn_indices)
     {
-      if ((*index != point_index) && std::isfinite ((*normals_)[*index].normal_x))
+      if ((index != point_index) && std::isfinite ((*normals_)[index].normal_x))
       {
         // if the point fulfill condition
-        if ((std::abs (nucleus_intensity - intensity_ ((*input_)[*index])) <= intensity_threshold_) ||
-            (1 - nucleus_normal.dot ((*normals_)[*index].getNormalVector3fMap ()) <= angular_threshold_))
+        if ((std::abs (nucleus_intensity - intensity_ ((*input_)[index])) <= intensity_threshold_) ||
+            (1 - nucleus_normal.dot ((*normals_)[index].getNormalVector3fMap ()) <= angular_threshold_))
         {
           ++area;
-          centroid += (*input_)[*index].getVector3fMap ();
-          usan.push_back (*index);
+          centroid += (*input_)[index].getVector3fMap ();
+          usan.push_back (index);
         }
       }
     }
@@ -428,10 +428,10 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
       std::vector<float> nn_dists;
       tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
       bool is_minima = true;
-      for (std::vector<int>::const_iterator nn_it = nn_indices.begin(); nn_it != nn_indices.end(); ++nn_it)
+      for (const auto& nn_index : nn_indices)
       {
-//        if (intensity > (*response)[*nn_it].intensity)
-        if (intensity > intensity_out_ ((*response)[*nn_it]))
+//        if (intensity > (*response)[nn_index].intensity)
+        if (intensity > intensity_out_ ((*response)[nn_index]))
         {
           is_minima = false;
           break;
