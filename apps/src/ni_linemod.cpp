@@ -396,9 +396,8 @@ public:
     event.getPoint(picked_pt.x, picked_pt.y, picked_pt.z);
 
     // Add a sphere to it in the PCLVisualizer window
-    std::stringstream ss;
-    ss << "sphere_" << idx;
-    cloud_viewer_.addSphere(picked_pt, 0.01, 1.0, 0.0, 0.0, ss.str());
+    std::string sphere_name = "sphere_" + std::to_string(idx);
+    cloud_viewer_.addSphere(picked_pt, 0.01, 1.0, 0.0, 0.0, sphere_name);
 
     // Check to see if we have access to the actual cloud data. Use the previously built
     // search object.
@@ -473,8 +472,7 @@ public:
     // Compute the min/max of the object
     PointT min_pt, max_pt;
     getMinMax3D(*object, min_pt, max_pt);
-    std::stringstream ss2;
-    ss2 << "cube_" << idx;
+    std::string cube_name = "cube_" + std::to_string(idx);
     // Visualize the bounding box in 3D...
     cloud_viewer_.addCube(min_pt.x,
                           max_pt.x,
@@ -485,9 +483,9 @@ public:
                           0.0,
                           1.0,
                           0.0,
-                          ss2.str());
+                          cube_name);
     cloud_viewer_.setShapeRenderingProperties(
-        visualization::PCL_VISUALIZER_LINE_WIDTH, 10, ss2.str());
+        visualization::PCL_VISUALIZER_LINE_WIDTH, 10, cube_name);
 
     // ...and 2D
     image_viewer_.addRectangle(search_.getInputCloud(), *object);
