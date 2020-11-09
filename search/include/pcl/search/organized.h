@@ -222,19 +222,19 @@ namespace pcl
             float dist_z = point.z - query.z;
             float squared_distance = dist_x * dist_x + dist_y * dist_y + dist_z * dist_z;
             const auto queue_size = queue.size ();
+            const auto insert_into_queue = [&]{ queue.emplace (
+                                                std::upper_bound (queue.begin(), queue.end(), squared_distance,
+                                                [](float dist, const Entry& ent){ return dist<ent.distance; }),
+                                                               index, squared_distance); };
             if (queue_size < k)
             {
-              queue.emplace (std::upper_bound (queue.begin(), queue.end(), squared_distance,
-                                               [](float dist, const Entry& ent){ return dist<ent.distance; }),
-                             index, squared_distance);
+              insert_into_queue ();
               return (queue_size + 1) == k;
             }
             if (queue.back ().distance > squared_distance)
             {
               queue.pop_back ();
-              queue.emplace (std::upper_bound (queue.begin(), queue.end(), squared_distance,
-                                               [](float dist, const Entry& ent){ return dist<ent.distance; }),
-                             index, squared_distance);
+              insert_into_queue ();
               return true; // top element has changed!
             }
           }
