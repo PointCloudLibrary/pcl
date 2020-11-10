@@ -135,14 +135,14 @@ namespace pcl
     inline PolynomialPartialDerivative
     getPolynomialPartialDerivative (const double u, const double v) const;
 
-    /** \brief Calculate the principle curvatures using the polynomial surface.
+    /** \brief Calculate the principal curvatures using the polynomial surface.
       * \param[in] u The u-coordinate of the point in local MLS frame.
       * \param[in] v The v-coordinate of the point in local MLS frame.
-      * \return The principle curvature [k1, k2] at the provided ub coordinates.
-      * \note If an error occurs the MLS_MINIMUM_PRINCIPLE_CURVATURE is returned.
+      * \return The principal curvature [k1, k2] at the provided ub coordinates.
+      * \note If an error occurs the MLS_MINIMUM_PRINCIPAL_CURVATURE is returned.
       */
     inline Eigen::Vector2f
-    calculatePrincipleCurvatures (const double u, const double v) const;
+    calculatePrincipalCurvatures (const double u, const double v) const;
 
     /** \brief Project a point orthogonal to the polynomial surface.
       * \param[in] u The u-coordinate of the point in local MLS frame.
