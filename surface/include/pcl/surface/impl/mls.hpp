@@ -534,7 +534,7 @@ pcl::MLSResult::getPolynomialPartialDerivative (const double u, const double v) 
 }
 
 Eigen::Vector2f
-pcl::MLSResult::calculatePrincipleCurvatures (const double u, const double v) const
+pcl::MLSResult::calculatePrincipalCurvatures (const double u, const double v) const
 {
   Eigen::Vector2f k (1e-5, 1e-5);
 
@@ -559,7 +559,7 @@ pcl::MLSResult::calculatePrincipleCurvatures (const double u, const double v) co
   }
   else
   {
-    PCL_ERROR ("No Polynomial fit data, unable to calculate the principle curvatures!\n");
+    PCL_ERROR ("No Polynomial fit data, unable to calculate the principal curvatures!\n");
   }
 
   return (k);
