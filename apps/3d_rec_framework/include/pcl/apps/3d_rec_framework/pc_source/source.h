@@ -211,10 +211,7 @@ public:
   bool
   modelAlreadyTrained(ModelT m, std::string& base_dir, std::string& descr_name)
   {
-    auto dir = getModelDescriptorDir(m, base_dir, descr_name);
-    const bf::path desc_dir = dir;
-    std::cout << dir << std::endl;
-    return bf::exists(desc_dir);
+    return bf::exists(getModelDescriptorDir(m, base_dir, descr_name));
   }
 
   std::string
