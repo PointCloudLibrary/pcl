@@ -565,6 +565,12 @@ pcl::MLSResult::calculatePrincipalCurvatures (const double u, const double v) co
   return (k);
 }
 
+Eigen::Vector2f
+pcl::MLSResult::calculatePrincipleCurvatures (const double u, const double v) const
+{
+  return calculatePrincipalCurvatures(u, v);
+}
+
 pcl::MLSResult::MLSProjectionResults
 pcl::MLSResult::projectPointOrthogonalToPolynomialSurface (const double u, const double v, const double w) const
 {
