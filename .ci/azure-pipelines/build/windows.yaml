@@ -11,7 +11,7 @@ steps:
   - pwsh: Get-PSDrive
     displayName: "Check free space"
   - script: |
-      vcpkg.exe install eigen3 flann gtest qhull --triplet %PLATFORM%-windows && vcpkg.exe list
+      vcpkg.exe install eigen3 flann gtest qhull benchmark --triplet %PLATFORM%-windows && vcpkg.exe list
     displayName: 'Install C++ Dependencies Via Vcpkg'
   - script: |
       mkdir %BUILD_DIR% && cd %BUILD_DIR%
@@ -24,6 +24,7 @@ steps:
         -DPCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32=ON ^
         -DPCL_BUILD_WITH_QHULL_DYNAMIC_LINKING_WIN32=ON ^
         -DBUILD_global_tests=ON ^
+        -DBUILD_benchmarks=ON ^
         -DBUILD_tools=OFF ^
         -DBUILD_surface_on_nurbs=ON
     displayName: 'CMake Configuration'
