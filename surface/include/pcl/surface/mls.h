@@ -82,7 +82,7 @@ namespace pcl
       MLSProjectionResults () : u (0), v (0) {}
 
       double u;               /**< \brief The u-coordinate of the projected point in local MLS frame. */
-      double v;               /**< \brief The u-coordinate of the projected point in local MLS frame. */
+      double v;               /**< \brief The v-coordinate of the projected point in local MLS frame. */
       Eigen::Vector3d point;  /**< \brief The projected point. */
       Eigen::Vector3d normal; /**< \brief The projected point's normal. */
       PCL_MAKE_ALIGNED_OPERATOR_NEW
@@ -102,7 +102,7 @@ namespace pcl
                const float a_curvature,
                const int a_order);
 
-    /** \brief Given a point calculate it's 3D location in the MLS frame.
+    /** \brief Given a point calculate its 3D location in the MLS frame.
       * \param[in] pt The point
       * \param[out] u The u-coordinate of the point in local MLS frame.
       * \param[out] v The v-coordinate of the point in local MLS frame.
@@ -111,7 +111,7 @@ namespace pcl
     inline void
     getMLSCoordinates (const Eigen::Vector3d &pt, double &u, double &v, double &w) const;
 
-    /** \brief Given a point calculate it's 2D location in the MLS frame.
+    /** \brief Given a point calculate its 2D location in the MLS frame.
       * \param[in] pt The point
       * \param[out] u The u-coordinate of the point in local MLS frame.
       * \param[out] v The v-coordinate of the point in local MLS frame.
@@ -122,7 +122,7 @@ namespace pcl
     /** \brief Calculate the polynomial
       * \param[in] u The u-coordinate of the point in local MLS frame.
       * \param[in] v The v-coordinate of the point in local MLS frame.
-      * \return The polynomial value at the provide uv coordinates.
+      * \return The polynomial value at the provided uv coordinates.
       */
     inline double
     getPolynomialValue (const double u, const double v) const;
@@ -130,7 +130,7 @@ namespace pcl
     /** \brief Calculate the polynomial's first and second partial derivatives.
       * \param[in] u The u-coordinate of the point in local MLS frame.
       * \param[in] v The v-coordinate of the point in local MLS frame.
-      * \return The polynomial partial derivatives at the provide uv coordinates.
+      * \return The polynomial partial derivatives at the provided uv coordinates.
       */
     inline PolynomialPartialDerivative
     getPolynomialPartialDerivative (const double u, const double v) const;
@@ -138,8 +138,8 @@ namespace pcl
     /** \brief Calculate the principal curvatures using the polynomial surface.
       * \param[in] u The u-coordinate of the point in local MLS frame.
       * \param[in] v The v-coordinate of the point in local MLS frame.
-      * \return The principal curvature [k1, k2] at the provided ub coordinates.
-      * \note If an error occurs the MLS_MINIMUM_PRINCIPAL_CURVATURE is returned.
+      * \return The principle curvature [k1, k2] at the provided uv coordinates.
+      * \note If an error occurs the MLS_MINIMUM_PRINCIPLE_CURVATURE is returned.
       */
     inline Eigen::Vector2f
     calculatePrincipalCurvatures (const double u, const double v) const;
@@ -188,7 +188,7 @@ namespace pcl
      * \param[in] pt The point to be project.
      * \param[in] method The projection method to be used.
      * \param[in] required_neighbors The minimum number of neighbors required.
-     * \note If required_neighbors then any number of neighbors is allowed.
+     * \note If required_neighbors is 0 then any number of neighbors is allowed.
      * \note If required_neighbors is not satisfied it projects to the mls plane.
      * \return The MLSProjectionResults for the input data.
      */
@@ -199,7 +199,7 @@ namespace pcl
      * \brief Project the query point used to generate the mls surface about using the specified method.
      * \param[in] method The projection method to be used.
      * \param[in] required_neighbors The minimum number of neighbors required.
-     * \note If required_neighbors then any number of neighbors is allowed.
+     * \note If required_neighbors is 0 then any number of neighbors is allowed.
      * \note If required_neighbors is not satisfied it projects to the mls plane.
      * \return The MLSProjectionResults for the input data.
      */
@@ -470,8 +470,8 @@ namespace pcl
 
       /** \brief Set whether the mls results should be stored for each point in the input cloud
         * \param[in] cache_mls_results True if the mls results should be stored, otherwise false.
-        * \note The cache_mls_results_ is forced to true when using upsampling method VOXEL_GRID_DILATION or DISTINCT_CLOUD.
-        * \note If memory consumption is a concern set to false when not using upsampling method VOXEL_GRID_DILATION or DISTINCT_CLOUD.
+        * \note The cache_mls_results_ is forced to be true when using upsampling method VOXEL_GRID_DILATION or DISTINCT_CLOUD.
+        * \note If memory consumption is a concern, then set it to false when not using upsampling method VOXEL_GRID_DILATION or DISTINCT_CLOUD.
         */
       inline void
       setCacheMLSResults (bool cache_mls_results) { cache_mls_results_ = cache_mls_results; }
@@ -494,7 +494,7 @@ namespace pcl
 
       /** \brief Get the MLSResults for input cloud
         * \note The results are only stored if setCacheMLSResults(true) was called or when using the upsampling method DISTINCT_CLOUD or VOXEL_GRID_DILATION.
-        * \note This vector is align with the input cloud indices, so use getCorrespondingIndices to get the correct results when using output cloud indices.
+        * \note This vector is aligned with the input cloud indices, so use getCorrespondingIndices to get the correct results when using output cloud indices.
         */
       inline const std::vector<MLSResult>&
       getMLSResults () const { return (mls_results_); }
@@ -564,7 +564,7 @@ namespace pcl
       int desired_num_points_in_radius_;
 
       /** \brief True if the mls results for the input cloud should be stored
-        * \note This is forced to true when using upsampling methods VOXEL_GRID_DILATION or DISTINCT_CLOUD.
+        * \note This is forced to be true when using upsampling methods VOXEL_GRID_DILATION or DISTINCT_CLOUD.
         */
       bool cache_mls_results_;
 
@@ -649,10 +649,10 @@ namespace pcl
       /** \brief Collects for each point in output the corrseponding point in the input. */
       PointIndicesPtr corresponding_input_indices_;
 
-      /** \brief Search for the closest nearest neighbors of a given point using a radius search
+      /** \brief Search for the nearest neighbors of a given point using a radius search
         * \param[in] index the index of the query point
-        * \param[out] indices the resultant vector of indices representing the k-nearest neighbors
-        * \param[out] sqr_distances the resultant squared distances from the query point to the k-nearest neighbors
+        * \param[out] indices the resultant vector of indices representing the neighbors within search_radius_
+        * \param[out] sqr_distances the resultant squared distances from the query point to the neighbors within search_radius_
         */
       inline int
       searchForNeighbors (int index, std::vector<int> &indices, std::vector<float> &sqr_distances) const
@@ -663,7 +663,7 @@ namespace pcl
       /** \brief Smooth a given point and its neighborghood using Moving Least Squares.
         * \param[in] index the index of the query point in the input cloud
         * \param[in] nn_indices the set of nearest neighbors indices for pt
-        * \param[out] projected_points the set of points projected points around the query point
+        * \param[out] projected_points the set of projected points around the query point
         * (in the case of upsampling method NONE, only the query point projected to its own fitted surface will be returned,
         * in the case of the other upsampling methods, multiple points will be returned)
         * \param[out] projected_points_normals the normals corresponding to the projected points
@@ -680,7 +680,7 @@ namespace pcl
                              MLSResult &mls_result) const;
 
 
-      /** \brief This is a helper function for add projected points
+      /** \brief This is a helper function for adding projected points
         * \param[in] index the index of the query point in the input cloud
         * \param[in] point the projected point to be added
         * \param[in] normal the projected point's normal to be added

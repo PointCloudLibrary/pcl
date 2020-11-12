@@ -541,7 +541,7 @@ pcl::MLSResult::calculatePrincipalCurvatures (const double u, const double v) co
   // Note: this use the Monge Patch to derive the Gaussian curvature and Mean Curvature found here http://mathworld.wolfram.com/MongePatch.html
   // Then:
   //      k1 = H + sqrt(H^2 - K)
-  //      k1 = H - sqrt(H^2 - K)
+  //      k2 = H - sqrt(H^2 - K)
   if (order > 1 && c_vec.size () >= (order + 1) * (order + 2) / 2 && std::isfinite (c_vec[0]))
   {
     const PolynomialPartialDerivative d = getPolynomialPartialDerivative (u, v);
@@ -807,7 +807,7 @@ pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
       }
 
       // Go through neighbors, transform them in the local coordinate system,
-      // save height and the evaluation of the polynome's terms
+      // save height and the evaluation of the polynomial's terms
       for (std::size_t ni = 0; ni < static_cast<std::size_t>(num_neighbors); ++ni)
       {
         // Transforming coordinates
