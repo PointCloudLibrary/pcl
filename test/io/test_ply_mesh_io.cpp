@@ -279,6 +279,38 @@ TEST (PCL, PLYPolygonMeshColoredIO)
   remove ("test_mesh_rgba_binary.ply");
 }
 
+
+TEST (PCL, PLYPolygonMeshUintIndices)
+{
+  std::ofstream fs;
+  fs.open ("mesh_uint_indices.ply");
+  fs <<
+    "ply\n"
+    "format ascii 1.0\n"
+    "element vertex 3\n"
+    "property float x\n"
+    "property float y\n"
+    "property float z\n"
+    "element face 1\n"
+    "property list uchar uint vertex_indices\n"
+    "end_header\n"
+    "0.0 0.0 0.0\n"
+    "1.0 0.0 0.0\n"
+    "1.0 1.1 0.0\n"
+    "3 2 0 1\n";
+  fs.close();
+  pcl::PolygonMesh mesh;
+  int const res = pcl::io::loadPLYFile("mesh_uint_indices.ply", mesh);
+  EXPECT_NE (res, -1);
+  EXPECT_EQ (mesh.cloud.width, 3);
+  EXPECT_EQ (mesh.cloud.height, 1);
+  EXPECT_EQ (mesh.polygons.size(), 1);
+  EXPECT_EQ (mesh.polygons.front().vertices.size(), 3);
+
+  remove("mesh_uint_indices.ply");
+}
+
+
 /* ---[ */
 int
   main (int argc, char** argv)
