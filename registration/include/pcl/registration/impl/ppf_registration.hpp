@@ -121,7 +121,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
     //    for(std::size_t i = 0; i < target_->size (); ++i)
     {
       // size_t scene_point_index = i;
-      if (scene_reference_index != scene_point_index) {
+      if (scene_reference_index != static_cast<std::size_t>(scene_point_index)) {
         if (/*pcl::computePPFPairFeature*/ pcl::computePairFeatures(
             (*target_)[scene_reference_index].getVector4fMap(),
             (*target_)[scene_reference_index].getNormalVector4fMap(),

@@ -43,7 +43,7 @@ stages:
         timeoutInMinutes: 0
         variables:
           BUILD_DIR: '$(Agent.BuildDirectory)/build'
-          CMAKE_CXX_FLAGS: '-Wall -Wextra'
+          CMAKE_CXX_FLAGS: '-Wall -Wextra -Wnoexcept-type'
         steps:
           - template: build/ubuntu.yaml
 

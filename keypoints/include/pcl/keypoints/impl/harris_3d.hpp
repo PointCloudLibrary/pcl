@@ -508,7 +508,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
   Eigen::Matrix3f NNT;
   Eigen::Matrix3f NNTInv;
   Eigen::Vector3f NNTp;
-  float diff;
+  float diff = 0.;
   const unsigned max_iterations = 10;
 #pragma omp parallel for \
   default(none) \
