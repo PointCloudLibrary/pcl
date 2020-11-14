@@ -27,8 +27,8 @@ stages:
           vmImage: 'Ubuntu 20.04'
         strategy:
           matrix:
-            16.04 GCC:
-              CONTAINER: env1604
+            18.04 GCC:
+              CONTAINER: env1804
               CC: gcc
               CXX: g++
               BUILD_GPU: OFF
