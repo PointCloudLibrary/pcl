@@ -69,11 +69,11 @@ pcl::extractLabeledEuclideanClusters(
     unsigned int min_pts_per_cluster,
     unsigned int max_pts_per_cluster)
 {
-  if (tree->getInputCloud()->points.size() != cloud.points.size()) {
+  if (tree->getInputCloud()->size() != cloud.size()) {
     PCL_ERROR("[pcl::extractLabeledEuclideanClusters] Tree built for a different point "
               "cloud dataset (%lu) than the input cloud (%lu)!\n",
-              tree->getInputCloud()->points.size(),
-              cloud.points.size());
+              tree->getInputCloud()->size(),
+              cloud.size());
     return;
   }
   // Create a bool vector of processed point indices, and initialize it to false
@@ -83,8 +83,7 @@ pcl::extractLabeledEuclideanClusters(
   std::vector<float> nn_distances;
 
   // Process all points in the indices vector
-  for (index_t i = 0; i < static_cast<index_t> (cloud.size ()); ++i)
-  {
+  for (index_t i = 0; i < static_cast<index_t>(cloud.size()); ++i) {
     if (processed[i])
       continue;
 
@@ -149,7 +148,7 @@ void
 pcl::LabeledEuclideanClusterExtraction<PointT>::extract(
     std::vector<std::vector<PointIndices>>& labeled_clusters)
 {
-  if (!initCompute() || (input_ && input_->points.empty()) ||
+  if (!initCompute() || (input_ && input_->empty()) ||
       (indices_ && indices_->empty())) {
     labeled_clusters.clear();
     return;

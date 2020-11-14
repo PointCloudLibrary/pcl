@@ -35,20 +35,26 @@
 
 #pragma once
 
-#include <pcl/search/pcl_search.h>
+#include <pcl/search/search.h>
 #include <pcl/pcl_base.h>
 
 namespace pcl {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Decompose a region of space into clusters based on the Euclidean distance
- * between points \param[in] cloud the point cloud message \param[in] tree the spatial
- * locator (e.g., kd-tree) used for nearest neighbors searching \note the tree has to be
- * created as a spatial locator on \a cloud \param[in] tolerance the spatial cluster
- * tolerance as a measure in L2 Euclidean space \param[out] labeled_clusters the
- * resultant clusters containing point indices (as a vector of PointIndices) \param[in]
- * min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
+ * between points
+ * \param[in] cloud the point cloud message
+ * \param[in] tree the spatial locator (e.g., kd-tree) used for nearest neighbors
+ * searching
+ * \note the tree has to be created as a spatial locator on \a cloud
+ * \param[in] tolerance the spatial cluster tolerance as a measure in L2 Euclidean space
+ * \param[out] labeled_clusters the resultant clusters containing point indices (as a
+ * vector of PointIndices)
+ * \param[in] min_pts_per_cluster minimum number of points that a cluster may contain
+ * (default: 1)
  * \param[in] max_pts_per_cluster maximum number of points that a cluster may contain
- * (default: max int) \param[in] max_label \ingroup segmentation
+ * (default: max int)
+ * \param[in] max_label
+ * \ingroup segmentation
  */
 template <typename PointT>
 PCL_DEPRECATED(1, 14, "Use of max_label is deprecated")
