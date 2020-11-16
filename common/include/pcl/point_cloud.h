@@ -672,7 +672,7 @@ namespace pcl
       inline iterator
       insert (iterator position, const PointT& pt)
       {
-        iterator it = points.insert (position, pt);
+        iterator it = points.insert (std::move(position), pt);
         width = size ();
         height = 1;
         return (it);
@@ -687,7 +687,7 @@ namespace pcl
       inline iterator
       transient_insert (iterator position, const PointT& pt)
       {
-        iterator it = points.insert (position, pt);
+        iterator it = points.insert (std::move(position), pt);
         return (it);
       }
 
@@ -700,7 +700,7 @@ namespace pcl
       inline void
       insert (iterator position, std::size_t n, const PointT& pt)
       {
-        points.insert (position, n, pt);
+        points.insert (std::move(position), n, pt);
         width = size ();
         height = 1;
       }
@@ -714,7 +714,7 @@ namespace pcl
       inline void
       transient_insert (iterator position, std::size_t n, const PointT& pt)
       {
-        points.insert (position, n, pt);
+        points.insert (std::move(position), n, pt);
       }
 
       /** \brief Insert a new range of points in the cloud, at a certain position.
@@ -726,7 +726,7 @@ namespace pcl
       template <class InputIterator> inline void
       insert (iterator position, InputIterator first, InputIterator last)
       {
-        points.insert (position, first, last);
+        points.insert (std::move(position), std::move(first), std::move(last));
         width = size ();
         height = 1;
       }
@@ -740,7 +740,7 @@ namespace pcl
       template <class InputIterator> inline void
       transient_insert (iterator position, InputIterator first, InputIterator last)
       {
-        points.insert (position, first, last);
+        points.insert (std::move(position), std::move(first), std::move(last));
       }
 
       /** \brief Emplace a new point in the cloud, given an iterator.
@@ -752,7 +752,7 @@ namespace pcl
       template <class... Args> inline iterator
       emplace (iterator position, Args&& ...args)
       {
-        iterator it = points.emplace (position, std::forward<Args> (args)...);
+        iterator it = points.emplace (std::move(position), std::forward<Args> (args)...);
         width = size ();
         height = 1;
         return (it);
@@ -767,7 +767,7 @@ namespace pcl
       template <class... Args> inline iterator
       transient_emplace (iterator position, Args&& ...args)
       {
-        iterator it = points.emplace (position, std::forward<Args> (args)...);
+        iterator it = points.emplace (std::move(position), std::forward<Args> (args)...);
         return (it);
       }
 
@@ -779,7 +779,7 @@ namespace pcl
       inline iterator
       erase (iterator position)
       {
-        iterator it = points.erase (position);
+        iterator it = points.erase (std::move(position));
         width = size ();
         height = 1;
         return (it);
@@ -793,7 +793,7 @@ namespace pcl
       inline iterator
       transient_erase (iterator position)
       {
-        iterator it = points.erase (position);
+        iterator it = points.erase (std::move(position));
         return (it);
       }
 
@@ -806,7 +806,7 @@ namespace pcl
       inline iterator
       erase (iterator first, iterator last)
       {
-        iterator it = points.erase (first, last);
+        iterator it = points.erase (std::move(first), std::move(last));
         width = size ();
         height = 1;
         return (it);
@@ -821,7 +821,7 @@ namespace pcl
       inline iterator
       transient_erase (iterator first, iterator last)
       {
-        iterator it = points.erase (first, last);
+        iterator it = points.erase (std::move(first), std::move(last));
         return (it);
       }
 
