@@ -37,6 +37,9 @@ steps:
   - script: |
       cd $BUILD_DIR && cmake --build . -- tests
     displayName: 'Run Unit Tests'
+  - script: |
+      cd $BUILD_DIR && cmake --build . -- run_benchmarks
+    displayName: 'Run Benchmarks'
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: 'CTest'
