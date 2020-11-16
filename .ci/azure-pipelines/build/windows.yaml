@@ -3,10 +3,10 @@ steps:
     # find the commit hash on a quick non-forced update too
     fetchDepth: 10
   - script: |
-      echo ##vso[task.setvariable variable=BOOST_ROOT]%BOOST_ROOT_1_69_0%
+      echo ##vso[task.setvariable variable=BOOST_ROOT]%BOOST_ROOT_1_72_0%
     displayName: 'Set BOOST_ROOT Environment Variable'
   - script: |
-      echo ##vso[task.prependpath]%BOOST_ROOT_1_69_0%\lib
+      echo ##vso[task.prependpath]%BOOST_ROOT_1_72_0%\lib
     displayName: 'Include Boost Libraries In System PATH'
   - pwsh: Get-PSDrive
     displayName: "Check free space"
