@@ -564,9 +564,9 @@ namespace pcl
        * \note This breaks the organized structure of the cloud by setting the height to
        * 1!
        */
-      template <class InputIt>
+      template <class InputIterator>
       void
-      assign(InputIt first, InputIt last)
+      assign(InputIterator first, InputIterator last)
       {
         points.assign(std::move(first), std::move(last));
         width = static_cast<std::uint32_t>(size());
@@ -580,9 +580,9 @@ namespace pcl
        * \note This calculates the height based on size and width provided
        * \param[in] new_width new width of the point cloud
        */
-      template <class InputIt>
+      template <class InputIterator>
       void
-      assign(InputIt first, InputIt last, index_t new_width)
+      assign(InputIterator first, InputIterator last, index_t new_width)
       {
         points.assign(std::move(first), std::move(last));
         width = new_width;
