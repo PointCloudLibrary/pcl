@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
     std::cerr << "No test file given. Please download `table_scene_mug_stereo_textured.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
-  benchmark::RegisterBenchmark("BM_NormalEstimation", BM_NormalEstimation, argv[1]);
+  benchmark::RegisterBenchmark("BM_NormalEstimation", BM_NormalEstimation, argv[1])->Unit(benchmark::kMillisecond);
   benchmark::Initialize(&argc, argv);
   benchmark::RunSpecifiedBenchmarks();
 }
