@@ -133,7 +133,7 @@ public:
     transformation_estimation_.reset(
         new pcl::registration::TransformationEstimationSVD<PointSource, PointTarget>);
 
-    setNumberOfThreads(1);
+    num_threads_ = 1;
   };
 
   /** \brief Destructor */
@@ -255,7 +255,9 @@ public:
 #ifdef _OPENMP
     num_threads_ = nr_threads ? nr_threads : omp_get_num_procs();
 #else
-    PCL_DEBUG("OpenMP is not available. Keeping number of threads unchanged at 1");
+    if (num_threads_ != 1) {
+      PCL_WARN("OpenMP is not available. Keeping number of threads unchanged at 1");
+    }
     num_threads_ = 1;
 #endif
   }

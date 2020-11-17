@@ -124,7 +124,6 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::findSimilarFeat
 {
   // Allocate results
   corresponding_indices.resize(sample_indices.size());
-  std::vector<float> nn_distances(k_correspondences_);
 
   // Loop over the sampled features
   for (std::size_t i = 0; i < sample_indices.size(); ++i) {
@@ -133,12 +132,14 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::findSimilarFeat
 
     // Find the k nearest feature neighbors to the sampled input feature if they are not
     // in the cache already
-    if (similar_features[idx].empty())
+    if (similar_features[idx].empty()) {
+      std::vector<float> nn_distances(k_correspondences_);
       feature_tree_->nearestKSearch(*input_features_,
                                     idx,
                                     k_correspondences_,
                                     similar_features[idx],
                                     nn_distances);
+    }
 
     // Select one at random and add it to corresponding_indices
     if (k_correspondences_ == 1)
@@ -289,18 +290,21 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
     const float inlier_fraction =
         static_cast<float> (inliers.size ()) / static_cast<float> (input_->size ());
 
-    // Update result if pose hypothesis is better
-    #pragma omp critical
-    {
-      if (inlier_fraction >= inlier_fraction_ && error < lowest_error)
+    if (inlier_fraction >= inlier_fraction_) {
+      #pragma omp critical
       {
-        inliers_ = inliers;
-        lowest_error = error;
-        converged_ = true;
-        transformation_ = transformation;
-        final_transformation_ = transformation;
+        // Update result if pose hypothesis is better
+        if (error < lowest_error)
+        {
+          inliers_ = inliers;
+          lowest_error = error;
+          converged_ = true;
+          transformation_ = transformation;
+          final_transformation_ = transformation;
+        }
       }
     }
+
   }
 
   // Apply the final transformation
