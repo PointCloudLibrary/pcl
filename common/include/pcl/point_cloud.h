@@ -577,7 +577,8 @@ namespace pcl
        * \brief Replaces the points with copies of those in the range `[first, last)`
        * \details The behavior is undefined if either argument is an iterator into
        * `*this`
-       * \note This calculates the height based on size and width provided
+       * \note This calculates the height based on size and width provided. This means
+       * the assignment happens even if the size is not perfectly divisible by width
        * \param[in] new_width new width of the point cloud
        */
       template <class InputIterator>
@@ -587,6 +588,14 @@ namespace pcl
         points.assign(std::move(first), std::move(last));
         width = new_width;
         height = size() / width;
+        if (width * height != size()) {
+          PCL_WARN("Mismatch in assignment. Requested width (%zu) doesn't divide "
+                   "provided size (%zu) cleanly. Setting height to 1",
+                   static_cast<std::size>(width),
+                   static_cast<std::size>(size()));
+          width = size();
+          height = 1;
+        }
       }
 
       /**
@@ -604,7 +613,8 @@ namespace pcl
 
       /**
        * \brief Replaces the points with the elements from the initializer list `ilist`
-       * \note This calculates the height based on size and width provided
+       * \note This calculates the height based on size and width provided. This means
+       * the assignment happens even if the size is not perfectly divisible by width
        * \param[in] new_width new width of the point cloud
        */
       void
@@ -613,6 +623,14 @@ namespace pcl
         points.assign(std::move(ilist));
         width = new_width;
         height = size() / width;
+        if (width * height != size()) {
+          PCL_WARN("Mismatch in assignment. Requested width (%zu) doesn't divide "
+                   "provided size (%zu) cleanly. Setting height to 1",
+                   static_cast<std::size>(width),
+                   static_cast<std::size>(size()));
+          width = size();
+          height = 1;
+        }
       }
 
       /** \brief Insert a new point in the cloud, at the end of the container.
