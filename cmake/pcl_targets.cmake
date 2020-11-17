@@ -418,7 +418,7 @@ endmacro()
 # ARGN :
 #    ARGUMENTS Arguments for benchmark executable
 #    LINK_WITH link benchmark executable with libraries
-macro(PCL_ADD_BENCHMARK _name)
+function(PCL_ADD_BENCHMARK _name)
   set(options)
   set(oneValueArgs)
   set(multiValueArgs ARGUMENTS LINK_WITH)
@@ -448,7 +448,7 @@ macro(PCL_ADD_BENCHMARK _name)
   set_target_properties(run_benchmark_${_name} PROPERTIES FOLDER "Benchmarks")
   
   add_dependencies(run_benchmarks run_benchmark_${_name})
-endmacro()
+endfunction()
 
 ###############################################################################
 # Add an example target.
