@@ -433,7 +433,7 @@ function(PCL_ADD_BENCHMARK _name)
   if(MSVC)
     #Requires CMAKE version 3.13.0
     if(CMAKE_VERSION VERSION_LESS "3.13.0" AND (NOT ArgumentWarningShown))
-      message(WARNING "Arguments for unit test projects are not added - this requires at least CMake 3.13. Can be added manually in \"Project settings -> Debugging -> Command arguments\"")
+      message(WARNING "Arguments for benchmark projects are not added - this requires at least CMake 3.13. Can be added manually in \"Project settings -> Debugging -> Command arguments\"")
       set (ArgumentWarningShown TRUE PARENT_SCOPE)
     else()
       #Only add if there are arguments to test
