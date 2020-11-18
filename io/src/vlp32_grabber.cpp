@@ -36,7 +36,7 @@
  *
  */
 
-#include "pointcloud_grabber/vlp32_grabber.h"
+#include <pcl/io/vlp32_grabber.h>
 
 using boost::asio::ip::udp;
 
