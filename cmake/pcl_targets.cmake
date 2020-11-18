@@ -414,17 +414,17 @@ endmacro()
 ###############################################################################
 # Add a benchmark target.
 # _name The benchmark name.
-# _exename The exe name.
 # ARGN :
+#    FILES the source files for the benchmark
 #    ARGUMENTS Arguments for benchmark executable
 #    LINK_WITH link benchmark executable with libraries
 function(PCL_ADD_BENCHMARK _name)
   set(options)
   set(oneValueArgs)
-  set(multiValueArgs ARGUMENTS LINK_WITH)
+  set(multiValueArgs FILES ARGUMENTS LINK_WITH)
   cmake_parse_arguments(PCL_ADD_BENCHMARK "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-  add_executable(benchmark_${_name} ${_name}.cpp)
+  add_executable(benchmark_${_name} ${PCL_ADD_BENCHMARK_FILES})
   set_target_properties(benchmark_${_name} PROPERTIES FOLDER "Benchmarks")
   target_link_libraries(benchmark_${_name} benchmark::benchmark ${PCL_ADD_BENCHMARK_LINK_WITH})
   set_target_properties(benchmark_${_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
