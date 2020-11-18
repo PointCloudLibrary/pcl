@@ -98,6 +98,7 @@ public:
   , source_cloud_updated_(true)
   , force_no_recompute_(false)
   , force_no_recompute_reciprocal_(false)
+  , num_threads_(1)
   {}
 
   /** \brief Empty destructor */
@@ -135,6 +136,20 @@ public:
   getInputTarget()
   {
     return (target_);
+  }
+
+  /** \brief Set the number of threads to use.
+   * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+   */
+  void setNumberOfThreads(int nr_threads) {
+#ifdef _OPENMP
+    num_threads_ = nr_threads ? nr_threads : omp_get_num_procs();
+#else
+    if (num_threads_ != 1) {
+      PCL_WARN("OpenMP is not available. Keeping number of threads unchanged at 1");
+    }
+    num_threads_ = 1;
+#endif
   }
 
   /** \brief See if this rejector requires source normals */
@@ -348,6 +363,8 @@ protected:
   /** \brief A flag which, if set, means the tree operating on the source cloud
    * will never be recomputed*/
   bool force_no_recompute_reciprocal_;
+
+  int num_threads_;
 };
 
 /** \brief @b CorrespondenceEstimation represents the base class for
@@ -447,6 +464,9 @@ public:
     Ptr copy(new CorrespondenceEstimation<PointSource, PointTarget, Scalar>(*this));
     return (copy);
   }
+
+protected:
+  using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::num_threads_;
 };
 } // namespace registration
 } // namespace pcl
