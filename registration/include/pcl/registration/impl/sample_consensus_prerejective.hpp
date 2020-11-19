@@ -258,8 +258,9 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
   // Start
 #pragma omp parallel for \
   default(none) \
-  shared(lowest_error, num_rejections, similar_features) \
+  shared(lowest_error, similar_features) \
   firstprivate(inliers, sample_indices, corresponding_indices) \
+  reduction(+: num_rejections) \
   num_threads(num_threads_)
   for (int i = 0; i < max_iterations_; ++i)
   {
@@ -272,7 +273,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
     // Apply prerejection
     if (!correspondence_rejector_poly_->thresholdPolygon(sample_indices,
                                                          corresponding_indices)) {
-      ++num_rejections;
+      num_rejections += 1;
       continue;
     }
 
