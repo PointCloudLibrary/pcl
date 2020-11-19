@@ -311,21 +311,21 @@ protected:
     * \param inliers indices of source point cloud inliers
     * \param fitness_score output fitness score as RMSE 
     */
-  PCL_DEPRECATED(1, 15, "Please use `getFitness(final_transformation_, inliers, fitness_score)` instead")
+  PCL_DEPRECATED(1, 15, "Please use `getFitness(final_transformation_, inliers)` instead")
   void 
   getFitness (std::vector<int>& inliers, float& fitness_score) const;
 
   /** \brief Obtain the fitness of a transformation
     * The following metrics are calculated, based on
-    * \b final_transformation_ and \b corr_dist_threshold_:
+    * \b final_transformation and \b corr_dist_threshold_:
     *   - Inliers: the number of transformed points which are closer than threshold to NN
     *   - Error score: the MSE of the inliers  
     * \param transformation transformation to be evaluated
     * \param inliers indices of source point cloud inliers
-    * \param fitness_score output fitness score as RMSE 
+    * \return fitness_score fitness score as RMSE
     */
-  void 
-  getFitness (const Eigen::Matrix4f& transformation, std::vector<int>& inliers, float& fitness_score) const;
+  float
+  getFitness (const Eigen::Matrix4f& transformation, std::vector<int>& inliers) const;
 
   /** \brief The source point cloud's feature descriptors. */
   FeatureCloudConstPtr input_features_;

@@ -227,8 +227,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
   
   // If guess is not the Identity matrix we check it
   if (!guess.isApprox(Eigen::Matrix4f::Identity(), 0.01f)) {
-    float error;
-    getFitness(guess, inliers, error);
+    float error = getFitness(guess, inliers);
     const float inlier_fraction = 
         static_cast<float> (inliers.size ()) / static_cast<float> (input_->size ());
 
@@ -283,8 +282,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
     	*input_, sample_indices, *target_, corresponding_indices, transformation);
 
     // Transform the input and compute the error (uses input_ and transformation)
-    float error;
-    getFitness(transformation, inliers, error);
+    float error = getFitness(transformation, inliers);
 
     // If the new fit is better, update results
     const float inlier_fraction =
@@ -324,19 +322,19 @@ void
 SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
     std::vector<int>& inliers, float& fitness_score) const
 {
-  getFitness(final_transformation_, inliers, fitness_score);
+  fitness_score = getFitness(final_transformation_, inliers);
 }
 
 
 template <typename PointSource, typename PointTarget, typename FeatureT>
-void
+float
 SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
-    const Eigen::Matrix4f& transformation, std::vector<int>& inliers, float& fitness_score) const
+    const Eigen::Matrix4f& transformation, std::vector<int>& inliers) const
 {
   // Initialize variables
   inliers.clear();
   inliers.reserve(input_->size());
-  fitness_score = 0.0f;
+  float fitness_score = 0.0f;
 
   // Use squared distance for comparison with NN search results
   const float max_range = corr_dist_threshold_ * corr_dist_threshold_;
@@ -368,6 +366,8 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness(
     fitness_score /= static_cast<float>(inliers.size());
   else
     fitness_score = std::numeric_limits<float>::max();
+
+  return fitness_score;
 }
 
 } // namespace pcl
