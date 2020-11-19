@@ -158,7 +158,7 @@ pcl::VLP32Grabber::toPointClouds (HDLDataPacket *dataPacket)
 
                     sweep_counter++;
 
-                    VLP32Grabber::fireCurrentSweep ();
+                    HDLGrabber::fireCurrentSweep ();
                 }
                 current_sweep_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ> ());
                 current_sweep_xyzrgba_.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
