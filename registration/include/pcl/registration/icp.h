@@ -271,7 +271,7 @@ public:
   /** \brief Set the number of threads to use.
    * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
    */
-  void setNumberOfThreads(int nr_threads) {
+  void setNumberOfThreads(unsigned int nr_threads) {
     correspondence_estimation_->setNumberOfThreads(nr_threads);
   }
 
