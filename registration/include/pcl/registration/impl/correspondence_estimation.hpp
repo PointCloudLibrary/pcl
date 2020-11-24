@@ -151,7 +151,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
       corr.index_query = idx;
       corr.index_match = index[0];
       corr.distance = distance[0];
-      per_thread_correspondences[omp_get_thread_num()].push_back(corr);
+      per_thread_correspondences[omp_get_thread_num()].emplace_back(std::move(corr));
     }
   }
   else {
@@ -175,32 +175,32 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
       corr.index_query = idx;
       corr.index_match = index[0];
       corr.distance = distance[0];
-      per_thread_correspondences[omp_get_thread_num()].push_back(corr);
+      per_thread_correspondences[omp_get_thread_num()].emplace_back(std::move(corr));
     }
   }
 
   if (num_threads_ == 1) {
-    correspondences.swap(per_thread_correspondences.front());
+    correspondences = std::move(per_thread_correspondences.front());
   }
   else {
-    int nr_correspondences = std::accumulate(
+    const unsigned int nr_correspondences = std::accumulate(
         per_thread_correspondences.begin(),
         per_thread_correspondences.end(),
-        0,
+        static_cast<unsigned int>(0),
         [](const auto sum, const auto& corr) { return sum + corr.size(); });
     correspondences.resize(nr_correspondences);
 
     // Merge per-thread correspondences while keeping them ordered
     auto insert_loc = correspondences.begin();
     for (const auto& corrs : per_thread_correspondences) {
-      std::copy(corrs.begin(), corrs.end(), insert_loc);
+      const auto new_insert_loc = std::move(corrs.begin(), corrs.end(), insert_loc);
       std::inplace_merge(correspondences.begin(),
                          insert_loc,
                          insert_loc + corrs.size(),
                          [](const auto& lhs, const auto& rhs) {
                            return lhs.index_query < rhs.index_query;
                          });
-      insert_loc = insert_loc + corrs.size();
+      insert_loc = new_insert_loc;
     }
   }
 
@@ -247,7 +247,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
       if (distance[0] > max_dist_sqr)
         continue;
 
-      int target_idx = index[0];
+      const auto target_idx = index[0];
 
       tree_reciprocal_->nearestKSearch(
           (*target_)[target_idx], 1, index_reciprocal, distance_reciprocal);
@@ -258,7 +258,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
       corr.index_query = idx;
       corr.index_match = index[0];
       corr.distance = distance[0];
-      per_thread_correspondences[omp_get_thread_num()].push_back(corr);
+      per_thread_correspondences[omp_get_thread_num()].emplace_back(std::move(corr));
     }
   }
   else {
@@ -278,7 +278,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
       if (distance[0] > max_dist_sqr)
         continue;
 
-      int target_idx = index[0];
+      const auto target_idx = index[0];
 
       // Copy the target data to a target PointSource format so we can search in the
       // tree_reciprocal
@@ -294,32 +294,32 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
       corr.index_query = idx;
       corr.index_match = index[0];
       corr.distance = distance[0];
-      per_thread_correspondences[omp_get_thread_num()].push_back(corr);
+      per_thread_correspondences[omp_get_thread_num()].emplace_back(std::move(corr));
     }
   }
 
   if (num_threads_ == 1) {
-    correspondences.swap(per_thread_correspondences.front());
+    correspondences = std::move(per_thread_correspondences.front());
   }
   else {
-    int nr_correspondences = std::accumulate(
+    const unsigned int nr_correspondences = std::accumulate(
         per_thread_correspondences.begin(),
         per_thread_correspondences.end(),
-        0,
+        static_cast<unsigned int>(0),
         [](const auto sum, const auto& corr) { return sum + corr.size(); });
     correspondences.resize(nr_correspondences);
 
     // Merge per-thread correspondences while keeping them ordered
     auto insert_loc = correspondences.begin();
     for (const auto& corrs : per_thread_correspondences) {
-      std::copy(corrs.begin(), corrs.end(), insert_loc);
+      const auto new_insert_loc = std::move(corrs.begin(), corrs.end(), insert_loc);
       std::inplace_merge(correspondences.begin(),
                          insert_loc,
                          insert_loc + corrs.size(),
                          [](const auto& lhs, const auto& rhs) {
                            return lhs.index_query < rhs.index_query;
                          });
-      insert_loc = insert_loc + corrs.size();
+      insert_loc = new_insert_loc;
     }
   }
 
