@@ -240,7 +240,9 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
 
   // Feature correspondence cache
   std::vector<std::vector<int>> similar_features(input_->size());
-  std::vector<float> nn_distances(k_correspondences_);
+  std::vector<float> nn_distances;
+  nn_distances.reserve(k_correspondences_);
+
   #pragma omp parallel for \
     default(none) \
     shared(k_correspondences_, similar_features) \

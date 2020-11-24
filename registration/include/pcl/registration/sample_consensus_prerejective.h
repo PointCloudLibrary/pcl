@@ -249,9 +249,10 @@ public:
   }
 
   /** \brief Set the number of threads to use.
-    * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
-    */
-  void setNumberOfThreads(unsigned int nr_threads = 0) {
+   * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+   */
+  void
+  setNumberOfThreads(unsigned int nr_threads = 0) {
 #ifdef _OPENMP
     num_threads_ = nr_threads ? nr_threads : omp_get_num_procs();
 #else
@@ -309,7 +310,7 @@ protected:
     *   - Inliers: the number of transformed points which are closer than threshold to NN
     *   - Error score: the MSE of the inliers  
     * \param inliers indices of source point cloud inliers
-    * \param fitness_score output fitness score as RMSE 
+    * \param fitness_score output fitness_score output fitness score as the MSE of the inliers 
     */
   PCL_DEPRECATED(1, 15, "Please use `getFitness(final_transformation_, inliers)` instead")
   void 
@@ -317,12 +318,12 @@ protected:
 
   /** \brief Obtain the fitness of a transformation
     * The following metrics are calculated, based on
-    * \b final_transformation and \b corr_dist_threshold_:
+    * \b transformation and \b corr_dist_threshold_:
     *   - Inliers: the number of transformed points which are closer than threshold to NN
     *   - Error score: the MSE of the inliers  
     * \param transformation transformation to be evaluated
     * \param inliers indices of source point cloud inliers
-    * \return fitness_score fitness score as RMSE
+    * \return fitness_score fitness_score output fitness score as the MSE of the inliers 
     */
   float
   getFitness (const Eigen::Matrix4f& transformation, std::vector<int>& inliers) const;
@@ -354,7 +355,7 @@ protected:
   std::vector<int> inliers_;
 
   /** \brief The number of threads the scheduler should use. */
-  int num_threads_;
+  unsigned int num_threads_;
 };
 } // namespace pcl
 
