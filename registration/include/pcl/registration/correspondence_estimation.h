@@ -139,9 +139,12 @@ public:
   }
 
   /** \brief Set the number of threads to use.
-   * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+   * \param nr_threads the number of hardware threads to use (0 sets the value back to
+   * automatic)
    */
-  void setNumberOfThreads(unsigned int nr_threads) {
+  void
+  setNumberOfThreads(unsigned int nr_threads)
+  {
 #ifdef _OPENMP
     num_threads_ = nr_threads ? nr_threads : omp_get_num_procs();
 #else

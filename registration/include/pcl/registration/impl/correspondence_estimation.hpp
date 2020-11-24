@@ -41,9 +41,10 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_
 
-#include <atomic>
 #include <pcl/common/copy_point.h>
 #include <pcl/common/io.h>
+
+#include <atomic>
 
 namespace pcl {
 
@@ -128,7 +129,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
   std::vector<int> index(1);
   std::vector<float> distance(1);
   std::vector<pcl::Correspondences> per_thread_correspondences(num_threads_);
-  for(auto& corrs: per_thread_correspondences) {
+  for (auto& corrs : per_thread_correspondences) {
     corrs.reserve(2 * indices_->size() / num_threads_);
   }
 
@@ -136,12 +137,10 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
   // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
   // macro!
   if (isSamePointType<PointSource, PointTarget>()) {
-    // Iterate over the input set of source indices
-    #pragma omp parallel for \
-      default(none) \
-      shared(tree_, indices_, max_dist_sqr, per_thread_correspondences) \
-      firstprivate(index, distance) \
-      num_threads(num_threads_)
+// Iterate over the input set of source indices
+#pragma omp parallel for default(none)                                                 \
+    shared(tree_, indices_, max_dist_sqr, per_thread_correspondences)                  \
+        firstprivate(index, distance) num_threads(num_threads_)
     for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
       const auto& idx = (*indices_)[i];
       tree_->nearestKSearch((*input_)[idx], 1, index, distance);
@@ -156,13 +155,11 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
     }
   }
   else {
-    // Iterate over the input set of source indices
-    #pragma omp parallel for \
-      default(none) \
-      shared(tree_, indices_, max_dist_sqr, per_thread_correspondences) \
-      firstprivate(index, distance) \
-      num_threads(num_threads_)
-    for (int i = 0; i < static_cast<int>(indices_->size()); i++ ) {
+// Iterate over the input set of source indices
+#pragma omp parallel for default(none)                                                 \
+    shared(tree_, indices_, max_dist_sqr, per_thread_correspondences)                  \
+        firstprivate(index, distance) num_threads(num_threads_)
+    for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
       const auto& idx = (*indices_)[i];
 
       // Copy the source data to a target PointTarget format so we can search in the
@@ -182,27 +179,27 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
     }
   }
 
-  if(num_threads_ == 1) {
+  if (num_threads_ == 1) {
     correspondences.swap(per_thread_correspondences.front());
-  } else {
+  }
+  else {
     int nr_correspondences = std::accumulate(
-      per_thread_correspondences.begin(),
-      per_thread_correspondences.end(),
-      0,
-      [](const auto sum, const auto& corr) { return sum + corr.size(); }
-    );
+        per_thread_correspondences.begin(),
+        per_thread_correspondences.end(),
+        0,
+        [](const auto sum, const auto& corr) { return sum + corr.size(); });
     correspondences.resize(nr_correspondences);
 
     // Merge per-thread correspondences while keeping them ordered
     auto insert_loc = correspondences.begin();
-    for(const auto& corrs : per_thread_correspondences) {
+    for (const auto& corrs : per_thread_correspondences) {
       std::copy(corrs.begin(), corrs.end(), insert_loc);
-      std::inplace_merge(
-        correspondences.begin(),
-        insert_loc,
-        insert_loc + corrs.size(),
-        [](const auto& lhs, const auto& rhs) { return lhs.index_query < rhs.index_query; }
-      );
+      std::inplace_merge(correspondences.begin(),
+                         insert_loc,
+                         insert_loc + corrs.size(),
+                         [](const auto& lhs, const auto& rhs) {
+                           return lhs.index_query < rhs.index_query;
+                         });
       insert_loc = insert_loc + corrs.size();
     }
   }
@@ -231,7 +228,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
   std::vector<int> index_reciprocal(1);
   std::vector<float> distance_reciprocal(1);
   std::vector<pcl::Correspondences> per_thread_correspondences(num_threads_);
-  for(auto& corrs: per_thread_correspondences) {
+  for (auto& corrs : per_thread_correspondences) {
     corrs.reserve(2 * indices_->size() / num_threads_);
   }
 
@@ -239,13 +236,12 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
   // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
   // macro!
   if (isSamePointType<PointSource, PointTarget>()) {
-    // Iterate over the input set of source indices
-    #pragma omp parallel for \
-      default(none) \
-      shared(tree_, tree_reciprocal_, indices_, max_dist_sqr, per_thread_correspondences) \
-      firstprivate(index, distance, index_reciprocal, distance_reciprocal) \
-      num_threads(num_threads_)
-    for (int i = 0; i < static_cast<int>(indices_->size()); i++ ) {
+// Iterate over the input set of source indices
+#pragma omp parallel for default(none) shared(                                         \
+    tree_, tree_reciprocal_, indices_, max_dist_sqr, per_thread_correspondences)       \
+    firstprivate(index, distance, index_reciprocal, distance_reciprocal)               \
+        num_threads(num_threads_)
+    for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
       const auto& idx = (*indices_)[i];
       tree_->nearestKSearch((*input_)[idx], 1, index, distance);
       if (distance[0] > max_dist_sqr)
@@ -266,13 +262,12 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
     }
   }
   else {
-    // Iterate over the input set of source indices
-    #pragma omp parallel for \
-      default(none) \
-      shared(tree_, tree_reciprocal_, indices_, max_dist_sqr, per_thread_correspondences) \
-      firstprivate(index, distance, index_reciprocal, distance_reciprocal) \
-      num_threads(num_threads_)
-    for (int i = 0; i < static_cast<int>(indices_->size()); i++ ) {
+// Iterate over the input set of source indices
+#pragma omp parallel for default(none) shared(                                         \
+    tree_, tree_reciprocal_, indices_, max_dist_sqr, per_thread_correspondences)       \
+    firstprivate(index, distance, index_reciprocal, distance_reciprocal)               \
+        num_threads(num_threads_)
+    for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
       const auto& idx = (*indices_)[i];
       // Copy the source data to a target PointTarget format so we can search in the
       // tree
@@ -303,27 +298,27 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
     }
   }
 
-  if(num_threads_ == 1) {
+  if (num_threads_ == 1) {
     correspondences.swap(per_thread_correspondences.front());
-  } else {
+  }
+  else {
     int nr_correspondences = std::accumulate(
-      per_thread_correspondences.begin(),
-      per_thread_correspondences.end(),
-      0,
-      [](const auto sum, const auto& corr) { return sum + corr.size(); }
-    );
+        per_thread_correspondences.begin(),
+        per_thread_correspondences.end(),
+        0,
+        [](const auto sum, const auto& corr) { return sum + corr.size(); });
     correspondences.resize(nr_correspondences);
 
     // Merge per-thread correspondences while keeping them ordered
     auto insert_loc = correspondences.begin();
-    for(const auto& corrs : per_thread_correspondences) {
+    for (const auto& corrs : per_thread_correspondences) {
       std::copy(corrs.begin(), corrs.end(), insert_loc);
-      std::inplace_merge(
-        correspondences.begin(),
-        insert_loc,
-        insert_loc + corrs.size(),
-        [](const auto& lhs, const auto& rhs) { return lhs.index_query < rhs.index_query; }
-      );
+      std::inplace_merge(correspondences.begin(),
+                         insert_loc,
+                         insert_loc + corrs.size(),
+                         [](const auto& lhs, const auto& rhs) {
+                           return lhs.index_query < rhs.index_query;
+                         });
       insert_loc = insert_loc + corrs.size();
     }
   }
