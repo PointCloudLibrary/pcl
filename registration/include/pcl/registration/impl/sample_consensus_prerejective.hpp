@@ -229,7 +229,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
 
   // If guess is not the Identity matrix we check it
   if (!guess.isApprox(Eigen::Matrix4f::Identity(), 0.01f)) {
-    float error = getFitness(guess, inliers);
+    const float error = getFitness(guess, inliers);
     const float inlier_fraction =
         static_cast<float>(inliers.size()) / static_cast<float>(input_->size());
 
@@ -284,7 +284,7 @@ SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTransfor
         *input_, sample_indices, *target_, corresponding_indices, transformation);
 
     // Transform the input and compute the error (uses input_ and transformation)
-    float error = getFitness(transformation, inliers);
+    const float error = getFitness(transformation, inliers);
 
     // If the new fit is better, update results
     const float inlier_fraction =
