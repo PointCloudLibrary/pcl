@@ -302,7 +302,7 @@ pcl::device::estimateCombined (const Mat33& Rcurr, const float3& tcurr,
   grid.y = divUp (rows, block.y);
 
   mbuf.create (TranformReduction::TOTAL);
-  if (gbuf.rows () != TranformReduction::TOTAL || gbuf.cols () < (int)(grid.x * grid.y))
+  if (gbuf.rows () != TranformReduction::TOTAL || gbuf.cols () < grid.x * grid.y)
     gbuf.create (TranformReduction::TOTAL, grid.x * grid.y);
 
   cs.gbuf = gbuf;

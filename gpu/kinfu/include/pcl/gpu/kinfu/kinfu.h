@@ -80,6 +80,13 @@ namespace pcl
           * \param[in] rows height of depth image
           * \param[in] cols width of depth image
           */
+        PCL_DEPRECATED(1, 13, "Use KinfuTracker(std::size_t rows, std::size_t cols) instead.")
+        KinfuTracker (int rows = 480, int cols = 640);
+
+        /** \brief Constructor
+          * \param[in] rows height of depth image
+          * \param[in] cols width of depth image
+          */
         KinfuTracker (int rows = 480, int cols = 640);
 
         /** \brief Sets Depth camera intrinsics
@@ -135,11 +142,11 @@ namespace pcl
         initColorIntegration(int max_weight = -1);
 
         /** \brief Returns cols passed to ctor */
-        int
+        std::size_t
         cols ();
 
         /** \brief Returns rows passed to ctor */
-        int
+        std::size_t
         rows ();
 
         /** \brief Processes next frame.
@@ -215,9 +222,9 @@ namespace pcl
         using Vector3f = Eigen::Vector3f;
 
         /** \brief Height of input depth image. */
-        int rows_;
+        std::size_t rows_;
         /** \brief Width of input depth image. */
-        int cols_;
+        std::size_t cols_;
         /** \brief Frame counter */
         int global_time_;
 
@@ -288,8 +295,16 @@ namespace pcl
           * \param[in] rows_arg
           * \param[in] cols_arg          
           */
+        PCL_DEPRECATED(1, 13, "Use KinfuTracker::allocateBuffers(std::size_t rows, std::size_t cols) instead.")
         void
         allocateBufffers (int rows_arg, int cols_arg);
+
+        /** \brief Allocates all GPU internal buffers.
+          * \param[in] rows
+          * \param[in] cols
+          */
+        void
+        allocateBuffers (std::size_t rows, std::size_t cols);
 
         /** \brief Performs the tracker reset to initial  state. It's used if case of camera tracking fail.
           */

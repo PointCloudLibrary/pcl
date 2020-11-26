@@ -81,13 +81,17 @@ template<class T> template<class A> inline void DeviceArray<T>::download(std::ve
 /////////////////////  Inline implementations of DeviceArray2D ////////////////////////////////////////////
 
 template<class T> inline DeviceArray2D<T>::DeviceArray2D() {}
-template<class T> inline DeviceArray2D<T>::DeviceArray2D(int rows, int cols) : DeviceMemory2D(rows, cols * elem_size) {}
-template<class T> inline DeviceArray2D<T>::DeviceArray2D(int rows, int cols, void *data, std::size_t stepBytes) : DeviceMemory2D(rows, cols * elem_size, data, stepBytes) {}
+template<class T> inline DeviceArray2D<T>::DeviceArray2D(int rows, int cols) : DeviceMemory2D(static_cast<std::size_t>(rows), static_cast<std::size_t>(cols) * elem_size) {}
+template<class T> inline DeviceArray2D<T>::DeviceArray2D(std::size_t rows, std::size_t cols) : DeviceMemory2D(rows, cols * elem_size) {}
+template<class T> inline DeviceArray2D<T>::DeviceArray2D(int rows, int cols, void *data, std::size_t stepBytes) : DeviceMemory2D(static_cast<std::size_t>(rows), static_cast<std::size_t>(cols) * elem_size, data, stepBytes) {}
+template<class T> inline DeviceArray2D<T>::DeviceArray2D(std::size_t rows, std::size_t cols, void *data, std::size_t stepBytes) : DeviceMemory2D(rows, cols * elem_size, data, stepBytes) {}
 template<class T> inline DeviceArray2D<T>::DeviceArray2D(const DeviceArray2D& other) : DeviceMemory2D(other) {}
 template<class T> inline DeviceArray2D<T>& DeviceArray2D<T>::operator=(const DeviceArray2D& other)
 { DeviceMemory2D::operator=(other); return *this; }
 
 template<class T> inline void DeviceArray2D<T>::create(int rows, int cols)
+{ DeviceMemory2D::create(static_cast<std::size_t>(rows), static_cast<std::size_t>(cols) * elem_size); }
+template<class T> inline void DeviceArray2D<T>::create(std::size_t rows, std::size_t cols)
 { DeviceMemory2D::create(rows, cols * elem_size); }
 template<class T> inline void DeviceArray2D<T>::release()
 { DeviceMemory2D::release(); }
@@ -107,14 +111,16 @@ template<class T> template<class A> inline void DeviceArray2D<T>::download(std::
 
 template<class T> void  DeviceArray2D<T>::swap(DeviceArray2D& other_arg) { DeviceMemory2D::swap(other_arg); }
 
-template<class T> inline       T* DeviceArray2D<T>::ptr(int y)       { return DeviceMemory2D::ptr<T>(y); }
-template<class T> inline const T* DeviceArray2D<T>::ptr(int y) const { return DeviceMemory2D::ptr<T>(y); }
+template<class T> inline       T* DeviceArray2D<T>::ptr(int y)       { return DeviceMemory2D::ptr<T>(static_cast<std::size_t>(y)); }
+template<class T> inline       T* DeviceArray2D<T>::ptr(std::size_t index)       { return DeviceMemory2D::ptr<T>(index); }
+template<class T> inline const T* DeviceArray2D<T>::ptr(int y) const { return DeviceMemory2D::ptr<T>(static_cast<std::size_t>(y)); }
+template<class T> inline const T* DeviceArray2D<T>::ptr(std::size_t index) const { return DeviceMemory2D::ptr<T>(index); }
 
 template<class T> inline DeviceArray2D<T>::operator T*() { return ptr(); }
 template<class T> inline DeviceArray2D<T>::operator const T*() const { return ptr(); }
 
-template<class T> inline int DeviceArray2D<T>::cols() const { return DeviceMemory2D::colsBytes()/elem_size; }
-template<class T> inline int DeviceArray2D<T>::rows() const { return DeviceMemory2D::rows(); }
+template<class T> inline std::size_t DeviceArray2D<T>::cols() const { return DeviceMemory2D::colsBytes()/elem_size; }
+template<class T> inline std::size_t DeviceArray2D<T>::rows() const { return DeviceMemory2D::rows(); }
 
 template<class T> inline std::size_t DeviceArray2D<T>::elem_step() const { return DeviceMemory2D::step()/elem_size; }
 

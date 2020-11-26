@@ -109,7 +109,7 @@ pcl::gpu::PseudoConvexHull3D::reconstruct (const Cloud &cloud, DeviceArray2D<int
   }
     
   int ecount;
-  int fcount = fs.facet_count;
+  std::size_t fcount = fs.facet_count;
   fs.empty_count.download(&ecount);
   
   vertexes.create(3, fcount + ecount);

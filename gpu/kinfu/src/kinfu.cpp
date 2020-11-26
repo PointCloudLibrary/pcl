@@ -70,7 +70,11 @@ namespace pcl
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(cols), global_time_(0), max_icp_distance_(0), integration_metric_threshold_(0.f), disable_icp_(false)
+pcl::gpu::KinfuTracker::KinfuTracker(int rows, int cols) : KinfuTracker(static_cast<std::size_t>(rows), static_cast<std::size_t>(cols))
+{
+}
+
+pcl::gpu::KinfuTracker::KinfuTracker (std::size_t rows, std::size_t cols) : rows_(rows), cols_(cols), global_time_(0), max_icp_distance_(0), integration_metric_threshold_(0.f), disable_icp_(false)
 {
   const Vector3f volume_size = Vector3f::Constant (VOLUME_SIZE);
   const Vector3i volume_resolution(VOLUME_X, VOLUME_Y, VOLUME_Z);
@@ -93,7 +97,7 @@ pcl::gpu::KinfuTracker::KinfuTracker (int rows, int cols) : rows_(rows), cols_(c
   setIcpCorespFilteringParams (default_distThres, default_angleThres);
   tsdf_volume_->setTsdfTruncDist (default_tranc_dist);
 
-  allocateBufffers (rows, cols);
+  allocateBuffers (rows, cols);
 
   rmats_.reserve (30000);
   tvecs_.reserve (30000);
@@ -153,14 +157,14 @@ pcl::gpu::KinfuTracker::setIcpCorespFilteringParams (float distThreshold, float 
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int
+std::size_t
 pcl::gpu::KinfuTracker::cols ()
 {
   return (cols_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int
+std::size_t
 pcl::gpu::KinfuTracker::rows ()
 {
   return (rows_);
@@ -188,7 +192,13 @@ pcl::gpu::KinfuTracker::reset()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::gpu::KinfuTracker::allocateBufffers (int rows, int cols)
+pcl::gpu::KinfuTracker::allocateBufffers(int rows_arg, int cols_arg)
+{
+  allocateBuffers(rows_arg, cols_arg);
+}
+
+void
+pcl::gpu::KinfuTracker::allocateBuffers(std::size_t rows, std::size_t cols)
 {    
   depths_curr_.resize (LEVELS);
   vmaps_g_curr_.resize (LEVELS);
@@ -202,10 +212,10 @@ pcl::gpu::KinfuTracker::allocateBufffers (int rows, int cols)
 
   coresps_.resize (LEVELS);
 
-  for (int i = 0; i < LEVELS; ++i)
+  for (std::size_t i = 0; i < LEVELS; ++i)
   {
-    int pyr_rows = rows >> i;
-    int pyr_cols = cols >> i;
+    std::size_t pyr_rows = rows >> i;
+	std::size_t pyr_cols = cols >> i;
 
     depths_curr_[i].create (pyr_rows, pyr_cols);
 

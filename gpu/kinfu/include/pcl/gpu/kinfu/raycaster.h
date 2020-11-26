@@ -63,7 +63,8 @@ namespace pcl
       using Depth = DeviceArray2D<unsigned short>;     
 
       /** \brief Image with height */ 
-      const int cols, rows;      
+      const std::size_t cols_;
+      const std::size_t rows_;
       
       /** \brief Constructor 
         * \param[in] rows image rows
@@ -73,8 +74,18 @@ namespace pcl
         * \param[in] cx principal point x
         * \param[in] cy principal point y
         */
+      PCL_DEPRECATED(1, 13, "Use RayCaster(std::size_t rows, std::size_t cols, float fx, float fy, float cx, float cy) instead.")
       RayCaster(int rows = 480, int cols = 640, float fx = 525.f, float fy = 525.f, float cx = -1, float cy = -1);
-      ~RayCaster();
+
+      /** \brief Constructor 
+        * \param[in] rows image rows
+        * \param[in] cols image cols
+        * \param[in] fx focal x
+        * \param[in] fy focal y
+        * \param[in] cx principal point x
+        * \param[in] cy principal point y
+        */
+      RayCaster(std::size_t rows = 480, std::size_t cols = 640, float fx = 525.f, float fy = 525.f, float cx = -1, float cy = -1);
 
       /** \brief Sets camera intrinsics */ 
       void

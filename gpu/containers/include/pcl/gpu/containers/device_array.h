@@ -166,7 +166,14 @@ namespace pcl
               * \param rows number of rows to allocate
               * \param cols number of elements in each row
               * */
+            PCL_DEPRECATED(1, 13, "Use DeviceArray2D(std::size_t rows, std::size_t cols) instead.")
             DeviceArray2D(int rows, int cols);
+
+            /** \brief Allocates internal buffer in GPU memory
+              * \param rows number of rows to allocate
+              * \param cols number of elements in each row
+              * */
+            DeviceArray2D(std::size_t rows, std::size_t cols);
 
              /** \brief Initializes with user allocated buffer. Reference counting is disabled in this case.
               * \param rows number of rows
@@ -174,7 +181,16 @@ namespace pcl
               * \param data pointer to buffer
               * \param stepBytes stride between two consecutive rows in bytes
               * */
+            PCL_DEPRECATED(1, 13, "Use DeviceArray2D(std::size_t rows, std::size_t cols, void *data, std::size_t stepBytes) instead.")
             DeviceArray2D(int rows, int cols, void *data, std::size_t stepBytes);
+
+             /** \brief Initializes with user allocated buffer. Reference counting is disabled in this case.
+              * \param rows number of rows
+              * \param cols number of elements in each row
+              * \param data pointer to buffer
+              * \param stepBytes stride between two consecutive rows in bytes
+              * */
+            DeviceArray2D(std::size_t rows, std::size_t cols, void *data, std::size_t stepBytes);
 
             /** \brief Copy constructor. Just increments reference counter. */
             DeviceArray2D(const DeviceArray2D& other);
@@ -186,7 +202,14 @@ namespace pcl
                * \param rows number of rows to allocate
                * \param cols number of elements in each row
                * */
+            PCL_DEPRECATED(1, 13, "Use DeviceArray2D::create(std::size_t rows, std::size_t cols) instead.")
             void create(int rows, int cols);
+
+            /** \brief Allocates internal buffer in GPU memory. If internal buffer was created before the function recreates it with new size. If new and old sizes are equal it does nothing.
+               * \param rows number of rows to allocate
+               * \param cols number of elements in each row
+               * */
+            void create(std::size_t rows, std::size_t cols);
 
             /** \brief Decrements reference counter and releases internal buffer if needed. */
             void release();
@@ -232,12 +255,24 @@ namespace pcl
             /** \brief Returns pointer to given row in internal buffer. 
               * \param y row index   
               * */
-            T* ptr(int y = 0);             
+            PCL_DEPRECATED(1, 13, "Use T* DeviceArray2D::ptr(std::size_t index = 0) instead.")
+            T* ptr(int y);
+
+            /** \brief Returns pointer to given row in internal buffer. 
+              * \param y row index   
+              * */
+            T* ptr(std::size_t index = 0);
 
             /** \brief Returns const pointer to given row in internal buffer. 
               * \param y row index   
               * */
-            const T* ptr(int y = 0) const;            
+            PCL_DEPRECATED(1, 13, "Use const T* DeviceArray2D::ptr(std::size_t index = 0) const instead.")
+            const T* ptr(int y) const;
+
+            /** \brief Returns const pointer to given row in internal buffer. 
+              * \param y row index   
+              * */
+            const T* ptr(std::size_t index = 0) const;
             
             //using DeviceMemory2D::ptr;            
 
@@ -248,10 +283,10 @@ namespace pcl
             operator const T*() const;                        
             
             /** \brief Returns number of elements in each row. */
-            int cols() const;
+            std::size_t cols() const;
 
             /** \brief Returns number of rows. */
-            int rows() const;
+            std::size_t rows() const;
 
             /** \brief Returns step in elements. */
             std::size_t elem_step() const;

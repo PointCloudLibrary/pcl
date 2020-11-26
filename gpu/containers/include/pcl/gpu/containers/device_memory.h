@@ -36,8 +36,9 @@
 
 #pragma once
 
-#include <pcl/pcl_exports.h>
 #include <pcl/gpu/containers/kernel_containers.h>
+#include <pcl/pcl_exports.h>
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
@@ -152,8 +153,14 @@ namespace pcl
               * \param rows_arg number of rows to allocate
               * \param colsBytes_arg width of the buffer in bytes
               * */
+            PCL_DEPRECATED(1, 13, "Use DeviceMemory2D(std::size_t rows, std::size_t colsBytes) instead.")
             DeviceMemory2D(int rows_arg, int colsBytes_arg);
 
+            /** \brief Allocates internal buffer in GPU memory
+              * \param rows number of rows to allocate
+              * \param colsBytes width of the buffer in bytes
+              * */
+            DeviceMemory2D(std::size_t rows, std::size_t colsBytes);
 
             /** \brief Initializes with user allocated buffer. Reference counting is disabled in this case.
               * \param rows_arg number of rows
@@ -161,7 +168,16 @@ namespace pcl
               * \param data_arg pointer to buffer
               * \param step_arg stride between two consecutive rows in bytes
               * */
+            PCL_DEPRECATED(1, 13, "Use DeviceMemory2D(std::size_t rows, std::size_t colsBytes, void *data, std::size_t step) instead.")
             DeviceMemory2D(int rows_arg, int colsBytes_arg, void *data_arg, std::size_t step_arg);
+
+            /** \brief Initializes with user allocated buffer. Reference counting is disabled in this case.
+              * \param rows number of rows
+              * \param colsBytes width of the buffer in bytes
+              * \param data pointer to buffer
+              * \param step stride between two consecutive rows in bytes
+              * */
+            DeviceMemory2D(std::size_t rows, std::size_t colsBytes, void *data, std::size_t step);
 
             /** \brief Copy constructor. Just increments reference counter. */
             DeviceMemory2D(const DeviceMemory2D& other_arg);
@@ -173,7 +189,14 @@ namespace pcl
                * \param rows_arg number of rows to allocate
                * \param colsBytes_arg width of the buffer in bytes
                * */
+            PCL_DEPRECATED(1, 13, "Use DeviceMemory2D::create(std::size_t rows, std::size_t colsBytes) instead.")
             void create(int rows_arg, int colsBytes_arg);
+
+            /** \brief Allocates internal buffer in GPU memory. If internal buffer was created before the function recreates it with new size. If new and old sizes are equal it does nothing.
+               * \param rows number of rows to allocate
+               * \param colsBytes width of the buffer in bytes
+               * */
+            void create(std::size_t rows, std::size_t colsBytes);
 
             /** \brief Decrements reference counter and releases internal buffer if needed. */
             void release();
@@ -189,7 +212,16 @@ namespace pcl
               * \param rows_arg number of rows to upload
               * \param colsBytes_arg width of host buffer in bytes
               * */
+            PCL_DEPRECATED(1, 13, "Use DeviceMemory2D::upload(std::size_t rows, std::size_t colsBytes) instead.")
             void upload(const void *host_ptr_arg, std::size_t host_step_arg, int rows_arg, int colsBytes_arg);
+
+            /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to ensure that intenal buffer size is enough.
+              * \param host_ptr pointer to host buffer to upload               
+              * \param host_step stride between two consecutive rows in bytes for host buffer
+              * \param rows number of rows to upload
+              * \param colsBytes width of host buffer in bytes
+              * */
+            void upload(const void *host_ptr, std::size_t host_step, std::size_t rows, std::size_t colsBytes);
 
             /** \brief Downloads data from internal buffer to CPU memory. User is responsible for correct host buffer size.
               * \param host_ptr_arg pointer to host buffer to download               
@@ -202,15 +234,30 @@ namespace pcl
               * */
             void swap(DeviceMemory2D& other_arg);
             
+
             /** \brief Returns pointer to given row in internal buffer. 
               * \param y_arg row index   
               * */
-            template<class T> T* ptr(int y_arg = 0);
+            template<class T>
+            PCL_DEPRECATED(1, 13, "Use T* DeviceMemory2D::ptr(std::size_t index = 0) instead.")
+            T* ptr(int y_arg);
+
+            /** \brief Returns pointer to given row in internal buffer. 
+              * \param index row index
+              * */
+            template<class T> T* ptr(std::size_t index = 0);
 
             /** \brief Returns constant pointer to given row in internal buffer. 
               * \param y_arg row index   
               * */
-            template<class T> const T* ptr(int y_arg = 0) const;
+            template<class T>
+            PCL_DEPRECATED(1, 13, "Use const T* DeviceMemory2D::ptr(std::size_t index = 0) const instead.")
+            const T* ptr(int y_arg) const;
+
+            /** \brief Returns constant pointer to given row in internal buffer. 
+              * \param index row index
+              * */
+            template<class T> const T* ptr(std::size_t index = 0) const;
 
              /** \brief Conversion to PtrStep for passing to kernel functions. */
             template <class U> operator PtrStep<U>() const;            
@@ -222,10 +269,10 @@ namespace pcl
             bool empty() const;
 
             /** \brief Returns number of bytes in each row. */
-            int colsBytes() const;
+            std::size_t colsBytes() const;
 
             /** \brief Returns number of rows. */
-            int rows() const;
+            std::size_t rows() const;
 
             /** \brief Returns stride between two consecutive rows in bytes for internal buffer. Step is stored always and everywhere in bytes!!! */
             std::size_t step() const;
@@ -237,10 +284,10 @@ namespace pcl
             std::size_t step_;
 
             /** \brief Width of the buffer in bytes. */
-            int colsBytes_;
+            std::size_t colsBytes_;
 
             /** \brief Number of rows. */
-            int rows_;
+            std::size_t rows_;
 
             /** \brief Pointer to reference counter in CPU memory. */
             int* refcount_;
