@@ -626,8 +626,8 @@ namespace pcl
         if (width * height != size()) {
           PCL_WARN("Mismatch in assignment. Requested width (%zu) doesn't divide "
                    "provided size (%zu) cleanly. Setting height to 1",
-                   static_cast<std::size>(width),
-                   static_cast<std::size>(size()));
+                   static_cast<std::size_t>(width),
+                   static_cast<std::size_t>(size()));
           width = size();
           height = 1;
         }
