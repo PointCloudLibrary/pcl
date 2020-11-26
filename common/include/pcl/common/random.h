@@ -68,14 +68,46 @@ namespace pcl
       using type = std::normal_distribution<T>;
     };
 
+    template <typename RandomEngineT = std::mt19937>
+    class RandomBase {
+    public:
+      using SeedT = typename RandomEngineT::result_type;
+
+      RandomBase(SeedT seed = std::random_device{}()) : seed_(seed), rng_(seed) {}
+
+      inline SeedT
+      getSeed() const
+      {
+        return seed_;
+      }
+
+      inline void
+      setSeed(SeedT seed)
+      {
+        seed_ = seed;
+        resetEngine();
+      }
+
+      inline void
+      resetEngine()
+      {
+        rng_.seed(seed_);
+      }
+
+    protected:
+      SeedT seed_;
+
+      RandomEngineT rng_;
+    };
+
     /** \brief UniformGenerator class generates a random number from range [min, max] at each run picked
-      * according to a uniform distribution i.e eaach number within [min, max] has almost the same 
+      * according to a uniform distribution i.e eaach number within [min, max] has almost the same
       * probability of being drawn.
       *
       * \author Nizar Sallem
       */
     template<typename T>
-    class UniformGenerator 
+    class UniformGenerator : public RandomBase<std::mt19937>
     {
       public:
         struct Parameters
@@ -96,7 +128,7 @@ namespace pcl
           * \param max: included higher bound
           * \param seed: seeding value
           */
-        UniformGenerator(T min = 0, T max = 1, std::uint32_t seed = -1);
+        UniformGenerator(T min = 0, T max = 1, SeedT seed = -1);
 
         /** Constructor
           * \param parameters uniform distribution parameters and generator seed
@@ -106,15 +138,15 @@ namespace pcl
         /** Change seed value
           * \param[in] seed new generator seed value
           */
-        void 
-        setSeed (std::uint32_t seed);
+        void
+        setSeed (SeedT seed);
 
         /** Set the uniform number generator parameters
           * \param[in] min minimum allowed value
           * \param[in] max maximum allowed value
           * \param[in] seed random number generator seed (applied if != -1)
           */
-        void 
+        void
         setParameters (T min, T max, std::uint32_t seed = -1);
 
         /** Set generator parameters
@@ -125,18 +157,16 @@ namespace pcl
 
         /// \return uniform distribution parameters and generator seed
         const Parameters&
-        getParameters () { return (parameters_); }
+        getParameters () const { return (parameters_); }
 
         /// \return a randomly generated number in the interval [min, max]
-        inline T 
+        inline T
         run () { return (distribution_ (rng_)); }
 
       private:
         using DistributionType = typename uniform_distribution<T>::type;
         /// parameters
         Parameters parameters_;
-        /// random number generator
-        std::mt19937 rng_;
         /// uniform distribution
         DistributionType distribution_;
     };
@@ -147,7 +177,7 @@ namespace pcl
       * \author Nizar Sallem
       */
     template<typename T>
-    class NormalGenerator 
+    class NormalGenerator : public RandomBase<std::mt19937>
     {
       public:
         struct Parameters
@@ -168,7 +198,7 @@ namespace pcl
           * \param[in] sigma normal variation
           * \param[in] seed seeding value
           */
-        NormalGenerator(T mean = 0, T sigma = 1, std::uint32_t seed = -1);
+        NormalGenerator(T mean = 0, T sigma = 1, SeedT seed = -1);
 
         /** Constructor
           * \param parameters normal distribution parameters and seed
@@ -178,15 +208,15 @@ namespace pcl
         /** Change seed value
           * \param[in] seed new seed value
           */
-        void 
-        setSeed (std::uint32_t seed);
+        void
+        setSeed (SeedT seed);
 
         /** Set the normal number generator parameters
           * \param[in] mean mean of the normal distribution
           * \param[in] sigma standard variation of the normal distribution
           * \param[in] seed random number generator seed (applied if != -1)
           */
-        void 
+        void
         setParameters (T mean, T sigma, std::uint32_t seed = -1);
 
         /** Set generator parameters
@@ -197,17 +227,15 @@ namespace pcl
 
         /// \return normal distribution parameters and generator seed
         const Parameters&
-        getParameters () { return (parameters_); }
+        getParameters () const { return (parameters_); }
 
         /// \return a randomly generated number in the normal distribution (mean, sigma)
-        inline T 
+        inline T
         run () { return (distribution_ (rng_)); }
 
         using DistributionType = typename normal_distribution<T>::type;
         /// parameters
         Parameters parameters_;
-        /// random number generator
-        std::mt19937 rng_;
         /// normal distribution
         DistributionType distribution_;
     };
