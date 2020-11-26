@@ -80,7 +80,6 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/don.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/feature.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/fpfh.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/fpfh_omp.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/gasd.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/gfpfh.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/integral_image2D.hpp"

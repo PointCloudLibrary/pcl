@@ -1,40 +1,9 @@
 /*
- * Software License Agreement (BSD License)
+ * SPDX-License-Identifier: BSD-3-Clause
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
- *
- *  All rights reserved.
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of the copyright holder(s) nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id$
  *
  */
 
@@ -187,7 +156,8 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeSPFHSignatures (std::v
   std::vector<int> nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
-  std::set<int> spfh_indices;
+  std::set<int> spfh_indices_set;
+  std::vector<int> spfh_indices_vec;
   spfh_hist_lookup.resize (surface_->size ());
 
   // Build a list of (unique) indices for which we will need to compute SPFH signatures
@@ -200,26 +170,37 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeSPFHSignatures (std::v
       if (this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists) == 0)
         continue;
 
-      spfh_indices.insert (nn_indices.begin (), nn_indices.end ());
+      spfh_indices_set.insert (nn_indices.begin (), nn_indices.end ());
     }
+    spfh_indices_vec.resize (spfh_indices_set.size ());
+    std::copy (spfh_indices_set.cbegin (), spfh_indices_set.cend (), spfh_indices_vec.begin ());
   }
   else
   {
     // Special case: When a feature must be computed at every point, there is no need for a neighborhood search
-    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
-      spfh_indices.insert (static_cast<int> (idx));
+    spfh_indices_vec.resize (indices_->size ());
+    std::iota(spfh_indices_vec.begin (), spfh_indices_vec.end (),
+              static_cast<decltype(spfh_indices_vec)::value_type>(0));
   }
 
   // Initialize the arrays that will store the SPFH signatures
-  std::size_t data_size = spfh_indices.size ();
+  const auto data_size = spfh_indices_vec.size ();
   hist_f1.setZero (data_size, nr_bins_f1_);
   hist_f2.setZero (data_size, nr_bins_f2_);
   hist_f3.setZero (data_size, nr_bins_f3_);
 
   // Compute SPFH signatures for every point that needs them
-  std::size_t i = 0;
-  for (const auto& p_idx: spfh_indices)
+#pragma omp parallel for \
+  default(none) \
+  shared(spfh_hist_lookup, spfh_indices_vec, hist_f1, hist_f2, hist_f3) \
+  firstprivate(nn_indices, nn_dists) \
+  num_threads(threads_) \
+  if (threads_ != -1)
+  for (std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t> (spfh_indices_vec.size ()); ++i)
   {
+    // Get the next point index
+    int p_idx = spfh_indices_vec[i];
+
     // Find the neighborhood around p_idx
     if (this->searchForNeighbors (*surface_, p_idx, search_parameter_, nn_indices, nn_dists) == 0)
       continue;
@@ -229,7 +210,6 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeSPFHSignatures (std::v
 
     // Populate a lookup table for converting a point index to its corresponding row in the spfh_hist_* matrices
     spfh_hist_lookup[p_idx] = i;
-    i++;
   }
 }
 
@@ -246,59 +226,32 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   computeSPFHSignatures (spfh_hist_lookup, hist_f1_, hist_f2_, hist_f3_);
 
   output.is_dense = true;
-  // Save a few cycles by not checking every point for NaN/Inf values if the cloud is set to dense
-  if (input_->is_dense)
-  {
-    // Iterate over the entire index vector
-    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
-    {
-      if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
-      {
-        for (Eigen::Index d = 0; d < fpfh_histogram_.size (); ++d)
-          output[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
 
-        output.is_dense = false;
+  // Iterate over the entire index vector
+  for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+  {
+    if (input_->is_dense || isFinite ((*input_)[(*indices_)[idx]])) {
+      if (this->searchForNeighbors(
+              (*indices_)[idx], search_parameter_, nn_indices, nn_dists)) {
+        // ... and remap the nn_indices values so that they represent row indices in the spfh_hist_* matrices
+        // instead of indices into surface_->points
+        for (auto &nn_index : nn_indices)
+          nn_index = spfh_hist_lookup[nn_index];
+
+        // Compute the FPFH signature (i.e. compute a weighted combination of local SPFH signatures) ...
+        weightPointSPFHSignature (hist_f1_, hist_f2_, hist_f3_, nn_indices, nn_dists, fpfh_histogram_);
+
+        // ...and copy it into the output cloud
+        std::copy_n(fpfh_histogram_.data (), fpfh_histogram_.size (), output[idx].histogram);
         continue;
       }
-
-      // ... and remap the nn_indices values so that they represent row indices in the spfh_hist_* matrices
-      // instead of indices into surface_->points
-      for (auto &nn_index : nn_indices)
-        nn_index = spfh_hist_lookup[nn_index];
-
-      // Compute the FPFH signature (i.e. compute a weighted combination of local SPFH signatures) ...
-      weightPointSPFHSignature (hist_f1_, hist_f2_, hist_f3_, nn_indices, nn_dists, fpfh_histogram_);
-
-      // ...and copy it into the output cloud
-      std::copy_n(fpfh_histogram_.data (), fpfh_histogram_.size (), output[idx].histogram);
     }
-  }
-  else
-  {
-    // Iterate over the entire index vector
-    for (std::size_t idx = 0; idx < indices_->size (); ++idx)
-    {
-      if (!isFinite ((*input_)[(*indices_)[idx]]) ||
-          this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
-      {
-        for (Eigen::Index d = 0; d < fpfh_histogram_.size (); ++d)
-          output[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
 
-        output.is_dense = false;
-        continue;
-      }
+    for (Eigen::Index d = 0; d < fpfh_histogram_.size(); ++d)
+      output[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN();
 
-      // ... and remap the nn_indices values so that they represent row indices in the spfh_hist_* matrices
-      // instead of indices into surface_->points
-      for (auto &nn_index : nn_indices)
-        nn_index = spfh_hist_lookup[nn_index];
-
-      // Compute the FPFH signature (i.e. compute a weighted combination of local SPFH signatures) ...
-      weightPointSPFHSignature (hist_f1_, hist_f2_, hist_f3_, nn_indices, nn_dists, fpfh_histogram_);
-
-      // ...and copy it into the output cloud
-      std::copy_n(fpfh_histogram_.data (), fpfh_histogram_.size (), output[idx].histogram);
-    }
+    if (output.is_dense)
+      output.is_dense = false;
   }
 }
 
