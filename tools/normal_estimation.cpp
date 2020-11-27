@@ -147,15 +147,11 @@ batchProcess (const std::vector<std::string> &pcd_files, std::string &output_dir
     compute (cloud, output, k, radius);
 
     // Prepare output file name
-    std::string filename = pcd_files[i];
-    boost::trim (filename);
-    std::vector<std::string> st;
-    boost::split (st, filename, boost::is_any_of ("/\\"), boost::token_compress_on);
+    std::string filename = boost::filesystem::path(pcd_files[i]).filename().string();
     
     // Save into the second file
-    std::stringstream ss;
-    ss << output_dir << "/" << st.at (st.size () - 1);
-    saveCloud (ss.str (), output, translation, rotation);
+    const std::string filepath = output_dir + '/' + filename;
+    saveCloud (filepath, output, translation, rotation);
   }
   return (0);
 }
