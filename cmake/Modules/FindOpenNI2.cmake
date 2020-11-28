@@ -25,9 +25,7 @@ if(NOT WIN32)
                PATH_SUFFIXES lib)
 
   include(FindPackageHandleStandardArgs)
-  set(FPHSA_NAME_MISMATCHED 1) # Suppress warnings, see https://cmake.org/cmake/help/v3.17/module/FindPackageHandleStandardArgs.html
   find_package_handle_standard_args(USB_10 DEFAULT_MSG USB_10_LIBRARY USB_10_INCLUDE_DIR)
-  unset(FPHSA_NAME_MISMATCHED)
 
   if(NOT USB_10_FOUND)
     message(STATUS "OpenNI 2 disabled because libusb-1.0 not found.")
