@@ -148,7 +148,7 @@ namespace pcl
       * \param[in] u The u-coordinate of the point in local MLS frame.
       * \param[in] v The v-coordinate of the point in local MLS frame.
       * \return The principal curvature [k1, k2] at the provided ub coordinates.
-      * \note If an error occurs the MLS_MINIMUM_PRINCIPAL_CURVATURE is returned.
+      * \note If an error occurs then 1e-5 is returned.
       */
     PCL_DEPRECATED(1, 14, "use calculatePrincipalCurvatures() instead")
     inline Eigen::Vector2f
