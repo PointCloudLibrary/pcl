@@ -84,7 +84,7 @@ namespace pcl
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the euclidean distance between points, and the normal
-    * angular deviation
+    * angular deviation between points
     * \param cloud the point cloud message
     * \param normals the point cloud message containing normal information
     * \param tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching
@@ -188,7 +188,7 @@ namespace pcl
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the euclidean distance between points, and the normal
-    * angular deviation
+    * angular deviation between points
     * \param cloud the point cloud message
     * \param normals the point cloud message containing normal information
     * \param indices a list of point indices to use from \a cloud
