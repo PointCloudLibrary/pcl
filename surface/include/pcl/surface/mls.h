@@ -139,7 +139,7 @@ namespace pcl
       * \param[in] u The u-coordinate of the point in local MLS frame.
       * \param[in] v The v-coordinate of the point in local MLS frame.
       * \return The principle curvature [k1, k2] at the provided uv coordinates.
-      * \note If an error occurs the MLS_MINIMUM_PRINCIPLE_CURVATURE is returned.
+      * \note If an error occurs then 1e-5 is returned.
       */
     inline Eigen::Vector2f
     calculatePrincipalCurvatures (const double u, const double v) const;
