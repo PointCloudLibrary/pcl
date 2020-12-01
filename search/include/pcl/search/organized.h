@@ -39,7 +39,7 @@
 
 #pragma once
 
-#include <pcl/memory.h>
+#define PCL_MAKE_ALIGNED_OPERATOR_NEW EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -67,10 +67,13 @@ namespace pcl
         using PointCloud = pcl::PointCloud<PointT>;
         using PointCloudPtr = typename PointCloud::Ptr;
 
+        using index_t = int;
+        using Indices = std::vector<index_t>;
+        using IndicesConstPtr = typename boost::shared_ptr<const Indices >;
         using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
-        using Ptr = shared_ptr<pcl::search::OrganizedNeighbor<PointT> >;
-        using ConstPtr = shared_ptr<const pcl::search::OrganizedNeighbor<PointT> >;
+        using Ptr = boost::shared_ptr<pcl::search::OrganizedNeighbor<PointT> >;
+        using ConstPtr = boost::shared_ptr<const pcl::search::OrganizedNeighbor<PointT> >;
 
         using pcl::search::Search<PointT>::indices_;
         using pcl::search::Search<PointT>::sorted_results_;
