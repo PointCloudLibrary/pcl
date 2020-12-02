@@ -84,7 +84,10 @@ namespace pcl
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the euclidean distance between points, and the normal
-    * angular deviation between points
+    * angular deviation between points. Each point added to the cluster is origin to another radius search. Each point
+    * within radius range will be compared to the origin in respect to normal angle and euclidean distance. If both
+    * are under their respecitve threshhold the point will be added to the cluster. Generally speaking the cluster 
+    * algorithm will not stop on smooth surfaces but on surfaces with sharp edges.
     * \param cloud the point cloud message
     * \param normals the point cloud message containing normal information
     * \param tree the spatial locator (e.g., kd-tree) used for nearest neighbors searching
@@ -188,7 +191,10 @@ namespace pcl
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief Decompose a region of space into clusters based on the euclidean distance between points, and the normal
-    * angular deviation between points
+    * angular deviation between points. Each point added to the cluster is origin to another radius search. Each point
+    * within radius range will be compared to the origin in respect to normal angle and euclidean distance. If both
+    * are under their respecitve threshhold the point will be added to the cluster. Generally speaking the cluster 
+    * algorithm will not stop on smooth surfaces but on surfaces with sharp edges.
     * \param cloud the point cloud message
     * \param normals the point cloud message containing normal information
     * \param indices a list of point indices to use from \a cloud
@@ -196,7 +202,7 @@ namespace pcl
     * \note the tree has to be created as a spatial locator on \a cloud
     * \param tolerance the spatial cluster tolerance as a measure in the L2 Euclidean space
     * \param clusters the resultant clusters containing point indices (as PointIndices)
-    * \param eps_angle the maximum allowed difference between normals in degrees for cluster/region growing
+    * \param eps_angle the maximum allowed difference between normals in radians for cluster/region growing
     * \param min_pts_per_cluster minimum number of points that a cluster may contain (default: 1)
     * \param max_pts_per_cluster maximum number of points that a cluster may contain (default: max int)
     * \ingroup segmentation
