@@ -1694,6 +1694,21 @@ namespace pcl
         addCube (float x_min, float x_max, float y_min, float y_max, float z_min, float z_max,
                  double r = 1.0, double g = 1.0, double b = 1.0, const std::string &id = "cube", int viewport = 0);
 
+        /** \brief Add an ellipsoid from a set of given model coefficients
+          * \param[in] translation a translation to apply to the ellipsoid from 0,0,0
+          * \param[in] rotation a quaternion-based rotation to apply to the ellipsoid
+          * \param[in] radius_x the ellipsoid's radius along its local x-axis
+          * \param[in] radius_y the ellipsoid's radius along its local y-axis
+          * \param[in] radius_z the ellipsoid's radius along its local z-axis
+          * \param[in] id the ellipsoid id/name (default: "ellipsoid")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
+          */
+        bool
+        addEllipsoid (const Eigen::Vector3f &translation, const Eigen::Quaternionf &rotation,
+                      double radius_x, double radius_y, double radius_z,
+                      const std::string &id = "ellipsoid",
+                      int viewport = 0);
+
         /** \brief Changes the visual representation for all actors to surface representation. */
         void
         setRepresentationToSurfaceForAllActors ();

@@ -280,6 +280,19 @@ namespace pcl
     createCube (double x_min, double x_max,
                 double y_min, double y_max,
                 double z_min, double z_max);
+
+    /** \brief Create an ellipsoid shape from a set of model coefficients.
+      *
+      * \param[in] translation a translation to apply to the ellipsoid from 0,0,0
+      * \param[in] rotation a quaternion-based rotation to apply to the ellipsoid
+      * \param[in] radius_x the ellipsoid's radius along its local x-axis
+      * \param[in] radius_y the ellipsoid's radius along its local y-axis
+      * \param[in] radius_z the ellipsoid's radius along its local z-axis
+      * \ingroup visualization
+      */
+    PCL_EXPORTS vtkSmartPointer<vtkDataSet> 
+    createEllipsoid (const Eigen::Vector3f &translation, const Eigen::Quaternionf &rotation,
+                     double radius_x, double radius_y, double radius_z);
     
     /** \brief Allocate a new unstructured grid smartpointer. For internal use only.
       * \param[out] polydata the resultant unstructured grid. 
