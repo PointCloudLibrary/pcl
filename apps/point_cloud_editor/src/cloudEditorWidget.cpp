@@ -490,7 +490,7 @@ CloudEditorWidget::resizeGL (int width, int height)
 void
 CloudEditorWidget::mousePressEvent (QMouseEvent *event)
 {
-  auto ratio = QApplication::desktop()->devicePixelRatio();
+  auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
   tool_ptr_ -> start(event -> x()*ratio, event -> y()*ratio,
@@ -501,7 +501,7 @@ CloudEditorWidget::mousePressEvent (QMouseEvent *event)
 void
 CloudEditorWidget::mouseMoveEvent (QMouseEvent *event)
 {
-  auto ratio = QApplication::desktop()->devicePixelRatio();
+  auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
   tool_ptr_ -> update(event -> x()*ratio, event -> y()*ratio,
@@ -512,7 +512,7 @@ CloudEditorWidget::mouseMoveEvent (QMouseEvent *event)
 void
 CloudEditorWidget::mouseReleaseEvent (QMouseEvent *event)
 {
-  auto ratio = QApplication::desktop()->devicePixelRatio();
+  auto ratio = this->devicePixelRatio();
   if (!tool_ptr_)
     return;
   tool_ptr_ -> end(event -> x()*ratio, event -> y()*ratio,
