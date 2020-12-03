@@ -281,7 +281,7 @@ namespace pcl
                 double y_min, double y_max,
                 double z_min, double z_max);
 
-    /** \brief Create an ellipsoid shape from a set of model coefficients.
+    /** \brief Create an ellipsoid shape from the given parameters.
       *
       * \param[in] translation a translation to apply to the ellipsoid from 0,0,0
       * \param[in] rotation a quaternion-based rotation to apply to the ellipsoid
