@@ -1695,6 +1695,20 @@ namespace pcl
                  double r = 1.0, double g = 1.0, double b = 1.0, const std::string &id = "cube", int viewport = 0);
 
         /** \brief Add an ellipsoid from the given parameters
+          * \param[in] transform a transformation to apply to the ellipsoid from 0,0,0
+          * \param[in] radius_x the ellipsoid's radius along its local x-axis
+          * \param[in] radius_y the ellipsoid's radius along its local y-axis
+          * \param[in] radius_z the ellipsoid's radius along its local z-axis
+          * \param[in] id the ellipsoid id/name (default: "ellipsoid")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
+          */
+        bool
+        addEllipsoid (const Eigen::Isometry3f &transform,
+                      double radius_x, double radius_y, double radius_z,
+                      const std::string &id = "ellipsoid",
+                      int viewport = 0);
+
+        /** \brief Add an ellipsoid from the given parameters
           * \param[in] translation a translation to apply to the ellipsoid from 0,0,0
           * \param[in] rotation a quaternion-based rotation to apply to the ellipsoid
           * \param[in] radius_x the ellipsoid's radius along its local x-axis

@@ -2465,6 +2465,18 @@ pcl::visualization::PCLVisualizer::addEllipsoid (
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
+pcl::visualization::PCLVisualizer::addEllipsoid (
+  const Eigen::Isometry3f &transform,
+  double radius_x, double radius_y, double radius_z,
+  const std::string &id, int viewport)
+{
+  const Eigen::Vector3f translation (transform.translation ());
+  const Eigen::Quaternionf rotation (transform.rotation ());
+  return addEllipsoid(translation, rotation, radius_x, radius_y, radius_z, id, viewport);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+bool
 pcl::visualization::PCLVisualizer::addSphere (const pcl::ModelCoefficients &coefficients,
                                              const std::string &id, int viewport)
 {
