@@ -150,7 +150,7 @@ namespace pcl
       * \return The principal curvature [k1, k2] at the provided ub coordinates.
       * \note If an error occurs then 1e-5 is returned.
       */
-    PCL_DEPRECATED(1, 14, "use calculatePrincipalCurvatures() instead")
+    PCL_DEPRECATED(1, 15, "use calculatePrincipalCurvatures() instead")
     inline Eigen::Vector2f
     calculatePrincipleCurvatures (const double u, const double v) const;
 
