@@ -4030,7 +4030,11 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   vtkSmartPointer<vtkPolyData> polydata;
   vtkSmartPointer<vtkIdTypeArray> initcells;
   // Convert the PointCloud to VTK PolyData
+//#ifdef VTK_CELL_ARRAY_V2
+//  convertPointCloudToVTKPolyDataV2(geometry_handler, polydata, initcells);
+//#else
   convertPointCloudToVTKPolyData (geometry_handler, polydata, initcells);
+//#endif
   // use the given geometry handler
 
   // Get the colors from the handler

@@ -2160,6 +2160,29 @@ namespace pcl
                                         vtkSmartPointer<vtkIdTypeArray> &initcells);
 
         /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
+          * \param[in] cloud the input PCL PointCloud dataset
+          * \param[out] polydata the resultant polydata containing the cloud
+          * \param[out] initcells a list of cell indices used for the conversion. This can be set once and then passed
+          * around to speed up the conversion.
+          */
+        template <typename PointT> void
+          convertPointCloudToVTKPolyDataV2(const typename pcl::PointCloud<PointT>::ConstPtr& cloud,
+            vtkSmartPointer<vtkPolyData>& polydata,
+            vtkSmartPointer<vtkIdTypeArray>& initcells);
+
+        /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
+          * \param[in] geometry_handler the geometry handler object used to extract the XYZ data
+          * \param[out] polydata the resultant polydata containing the cloud
+          * \param[out] initcells a list of cell indices used for the conversion. This can be set once and then passed
+          * around to speed up the conversion.
+          */
+        template <typename PointT> void
+        convertPointCloudToVTKPolyDataV2(
+            const pcl::visualization::PointCloudGeometryHandler<PointT>& geometry_handler,
+            vtkSmartPointer<vtkPolyData>& polydata,
+            vtkSmartPointer<vtkIdTypeArray>& initcells);
+
+        /** \brief Converts a PCL templated PointCloud object to a vtk polydata object.
           * \param[in] geometry_handler the geometry handler object used to extract the XYZ data
           * \param[out] polydata the resultant polydata containing the cloud
           * \param[out] initcells a list of cell indices used for the conversion. This can be set once and then passed
