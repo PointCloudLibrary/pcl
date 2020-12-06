@@ -439,7 +439,7 @@ pcl::copyPointCloud (
 void 
 pcl::copyPointCloud (
     const pcl::PCLPointCloud2 &cloud_in,
-    const IndicesAllocator< Eigen::aligned_allocator<int> > &indices,
+    const IndicesAllocator< Eigen::aligned_allocator<pcl::index_t> > &indices,
     pcl::PCLPointCloud2 &cloud_out)
 {
   cloud_out.header       = cloud_in.header;
