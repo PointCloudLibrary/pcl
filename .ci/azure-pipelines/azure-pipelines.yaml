@@ -38,7 +38,8 @@ stages:
               CC: gcc
               CXX: g++
               BUILD_GPU: OFF
-              CMAKE_ARGS: ''
+              # surface is not ready for re-entrant QHull
+              CMAKE_ARGS: '-DBUILD_tests_surface=OFF'
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
         variables:
