@@ -292,6 +292,7 @@ namespace pcl
     }
 
     // ensor_msgs::image_encodings::BGR8;
+    msg.header = cloud.header;
     msg.encoding = "bgr8";
     msg.step = msg.width * sizeof (std::uint8_t) * 3;
     msg.data.resize (msg.step * msg.height);
@@ -330,6 +331,7 @@ namespace pcl
     int point_step = cloud.point_step;
 
     // pcl::image_encodings::BGR8;
+    msg.header = cloud.header;
     msg.encoding = "bgr8";
     msg.step = static_cast<std::uint32_t>(msg.width * sizeof (std::uint8_t) * 3);
     msg.data.resize (msg.step * msg.height);
