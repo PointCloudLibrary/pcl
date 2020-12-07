@@ -485,7 +485,7 @@ protected:
   float delta_;
 
   /** \brief Score threshold to stop calculation with success.
-   * If not set by the user it is equal to the approximated overlap
+   * If not set by the user it dpends on the size of the approximated overlap
    */
   float score_threshold_;
 
