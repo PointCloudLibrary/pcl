@@ -1489,24 +1489,42 @@ pcl::SurfaceNormalModality<PointInT>::filterQuantizedSurfaceNormals ()
 
   // filter data
   #pragma omp parallel for
-  for (size_t row_index = 1; row_index < height-1; ++row_index)
+  for (size_t row_index = 2; row_index < height-2; ++row_index)
   {
-    for (size_t col_index = 1; col_index < width-1; ++col_index)
+    for (size_t col_index = 2; col_index < width-2; ++col_index)
     {
       unsigned char histogram[9] = {0,0,0,0,0,0,0,0,0};
 
-      const unsigned char * data_ptr = quantized_surface_normals_.getData () + (row_index-1)*width+col_index-1;
+      const unsigned char * data_ptr = quantized_surface_normals_.getData () + (row_index-2)*width+col_index-2;
       ++histogram[data_ptr[0]];
       ++histogram[data_ptr[1]];
       ++histogram[data_ptr[2]];
+      ++histogram[data_ptr[3]];
+      ++histogram[data_ptr[4]];
       data_ptr += width;
       ++histogram[data_ptr[0]];
       ++histogram[data_ptr[1]];
       ++histogram[data_ptr[2]];
+      ++histogram[data_ptr[3]];
+      ++histogram[data_ptr[4]];
       data_ptr += width;
       ++histogram[data_ptr[0]];
       ++histogram[data_ptr[1]];
       ++histogram[data_ptr[2]];
+      ++histogram[data_ptr[3]];
+      ++histogram[data_ptr[4]];
+      data_ptr += width;
+      ++histogram[data_ptr[0]];
+      ++histogram[data_ptr[1]];
+      ++histogram[data_ptr[2]];
+      ++histogram[data_ptr[3]];
+      ++histogram[data_ptr[4]];
+      data_ptr += width;
+      ++histogram[data_ptr[0]];
+      ++histogram[data_ptr[1]];
+      ++histogram[data_ptr[2]];
+      ++histogram[data_ptr[3]];
+      ++histogram[data_ptr[4]];
 
       unsigned char max_hist_value = 0;
       int max_hist_index = -1;
