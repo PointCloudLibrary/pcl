@@ -311,7 +311,7 @@ vtkSmartPointer<vtkDataSet>
 pcl::visualization::createEllipsoid (const Eigen::Vector3f &translation, const Eigen::Quaternionf &rotation,
                                      double radius_x, double radius_y, double radius_z)
 {
-  vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New ();
+  const vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New ();
   t->Identity ();
   t->Translate (translation.x (), translation.y (), translation.z ());
 
