@@ -53,3 +53,5 @@ $CXX $CXXFLAGS $LIB_FUZZING_ENGINE read_fuzzer.o \
         ../../build/lib/libpcl_io.a ../../build/lib/libpcl_io_ply.a \
         ../../build/lib/libpcl_common.a \
         /usr/local/lib/libboost_filesystem.a -o $OUT/read_fuzzer -lm
+
+zip $OUT/read_fuzzer_seed_corpus.zip $SRC/pcl/test/cube.ply
