@@ -1,3 +1,4 @@
+#!/bin/bash -eu
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -46,7 +47,7 @@ $CXX $CXXFLAGS -DPCLAPI_EXPORTS \
         -I/src/pcl/dssdk/include \
         -I/src/pcl/io/include -isystem /usr/include/eigen3 \
         -O2 -g -DNDEBUG -fPIC -std=c++14 \
-        -o read_fuzzer.o -c read_fuzzer.cc
+        -o read_fuzzer.o -c read_fuzzer.cpp
 
 $CXX $CXXFLAGS $LIB_FUZZING_ENGINE read_fuzzer.o \
         ../../build/lib/libpcl_io.a ../../build/lib/libpcl_io_ply.a \
