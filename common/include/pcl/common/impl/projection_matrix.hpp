@@ -124,7 +124,7 @@ estimateProjectionMatrix (
     } // while
   }
   const Scalar cloud_norm = std::pow(std::pow(max_x - min_x, 2) + std::pow(max_y - min_y, 2) + std::pow(max_z - min_z, 2), 0.5);
-  // NOTE: scale_factor is choosed such that MSE=residual/indices.size() exceeds eps=1e-4 on pointclouds with a projection error of 0.5px or more
+  // NOTE: scale_factor is experimentally choosen such that MSE=residual/indices.size() exceeds eps=1e-4 on pointclouds with a projection error of 0.5px or more
   const Scalar scale_factor = 50.0 / cloud_norm;
 
   pcl::ConstCloudIterator <PointT> pointIt (*cloud, indices);
