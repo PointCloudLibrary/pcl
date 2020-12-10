@@ -62,13 +62,13 @@ pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output)
   if (alpha_ <= 0)
   {
     PCL_ERROR ("[pcl::%s::reconstruct] Alpha parameter must be set to a positive number!\n", getClassName ().c_str ());
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
   if (!initCompute ())
   {
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -91,13 +91,13 @@ pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output, std::vector<pcl::Ve
   if (alpha_ <= 0)
   {
     PCL_ERROR ("[pcl::%s::reconstruct] Alpha parameter must be set to a positive number!\n", getClassName ().c_str ());
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
   if (!initCompute ())
   {
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -230,7 +230,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
         PCL_ERROR ("[pcl::%s::performReconstruction] ERROR: point cloud contains NaN values, consider running pcl::PassThrough filter first to remove NaNs!\n", getClassName ().c_str ());
     }
 
-    alpha_shape.points.resize (0);
+    alpha_shape.resize (0);
     alpha_shape.width = alpha_shape.height = 0;
     polygons.resize (0);
 
@@ -244,7 +244,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   qh_setvoronoi_all (qh);
 
   int num_vertices = qh->num_vertices;
-  alpha_shape.points.resize (num_vertices);
+  alpha_shape.resize (num_vertices);
 
   vertexT *vertex;
   // Max vertex id
@@ -382,7 +382,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       }
     }
 
-    alpha_shape.points.resize (vertices);
+    alpha_shape.resize (vertices);
     alpha_shape.width = alpha_shape.size ();
     alpha_shape.height = 1;
   }
@@ -476,10 +476,10 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       }
     }
 
-    alpha_shape.points.resize (vertices);
+    alpha_shape.resize (vertices);
 
     PointCloud alpha_shape_sorted;
-    alpha_shape_sorted.points.resize (vertices);
+    alpha_shape_sorted.resize (vertices);
 
     // iterate over edges until they are empty!
     std::map<int, std::vector<int> >::iterator curr = edges.begin ();
@@ -494,7 +494,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     {
       alpha_shape_sorted[sorted_idx] = alpha_shape[(*curr).first];
       // check where we can go from (*curr).first
-      for (const int &i : (*curr).second)
+      for (const auto &i : (*curr).second)
       {
         if (!used[i])
         {
