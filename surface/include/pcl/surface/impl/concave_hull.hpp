@@ -194,12 +194,10 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       points[i * dim_ + 2] = static_cast<coordT> (cloud_transformed[i].z);
   }
 
-  static FILE* null = fopen("/dev/null", "w");
-
   qhT qh_qh;
   qhT* qh = &qh_qh;
   QHULL_LIB_CHECK
-  qh_zero(qh, null);
+  qh_zero(qh, errfile);
 
   // Compute concave hull
   exitcode = qh_new_qhull (qh, dim_, static_cast<int> (cloud_transformed.size ()), points, ismalloc, flags, outfile, errfile);
