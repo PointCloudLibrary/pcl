@@ -9,7 +9,7 @@
 # If QHULL_USE_STATIC is specified then look for static libraries ONLY else
 # look for shared ones
 
-set(QHULL_MAJOR_VERSION 6)
+set(QHULL_MAJOR_VERSION 8)
 
 if(QHULL_USE_STATIC)
   set(QHULL_RELEASE_NAME qhullstatic)
