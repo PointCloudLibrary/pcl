@@ -35,146 +35,181 @@
  *
  */
 
-#ifndef __PCL_ORGANIZED_PROJECTION_MATRIX_HPP__
-#define __PCL_ORGANIZED_PROJECTION_MATRIX_HPP__
+#pragma once
 
+#include <pcl/common/projection_matrix.h>
+#include <pcl/console/print.h> // for PCL_ERROR
 #include <pcl/cloud_iterator.h>
 
-///////////////////////////////////////////////////////////////////////////////////////////
+#include <Eigen/Eigenvalues> // for SelfAdjointEigenSolver
+
 namespace pcl
 {
-  namespace common
+
+namespace common
+{
+
+namespace internal
+{
+
+template <typename MatrixT> void
+makeSymmetric (MatrixT& matrix, bool use_upper_triangular = true)
+{
+  if (use_upper_triangular && (MatrixT::Flags & Eigen::RowMajorBit))
   {
-    namespace internal
-    {
-      template <typename MatrixT> void
-      makeSymmetric (MatrixT& matrix, bool use_upper_triangular = true)
-      {
-        if (use_upper_triangular && (MatrixT::Flags & Eigen::RowMajorBit))
-        {
-          matrix.coeffRef (4) = matrix.coeff (1);
-          matrix.coeffRef (8) = matrix.coeff (2);
-          matrix.coeffRef (9) = matrix.coeff (6);
-          matrix.coeffRef (12) = matrix.coeff (3);
-          matrix.coeffRef (13) = matrix.coeff (7);
-          matrix.coeffRef (14) = matrix.coeff (11);
-        }
-        else
-        {
-          matrix.coeffRef (1) = matrix.coeff (4);
-          matrix.coeffRef (2) = matrix.coeff (8);
-          matrix.coeffRef (6) = matrix.coeff (9);
-          matrix.coeffRef (3) = matrix.coeff (12);
-          matrix.coeffRef (7) = matrix.coeff (13);
-          matrix.coeffRef (11) = matrix.coeff (14);
-        }
-      }
-    }
+    matrix.coeffRef (4) = matrix.coeff (1);
+    matrix.coeffRef (8) = matrix.coeff (2);
+    matrix.coeffRef (9) = matrix.coeff (6);
+    matrix.coeffRef (12) = matrix.coeff (3);
+    matrix.coeffRef (13) = matrix.coeff (7);
+    matrix.coeffRef (14) = matrix.coeff (11);
+  }
+  else
+  {
+    matrix.coeffRef (1) = matrix.coeff (4);
+    matrix.coeffRef (2) = matrix.coeff (8);
+    matrix.coeffRef (6) = matrix.coeff (9);
+    matrix.coeffRef (3) = matrix.coeff (12);
+    matrix.coeffRef (7) = matrix.coeff (13);
+    matrix.coeffRef (11) = matrix.coeff (14);
   }
 }
 
-//////////////////////////////////////////////////////////////////////////////
-template <typename PointT> double 
-pcl::estimateProjectionMatrix (
-    typename pcl::PointCloud<PointT>::ConstPtr cloud, 
-    Eigen::Matrix<float, 3, 4, Eigen::RowMajor>& projection_matrix, 
-    const std::vector<int>& indices)
+} // namespace internal
+} // namespace common
+
+
+template <typename PointT> double
+estimateProjectionMatrix (
+    typename pcl::PointCloud<PointT>::ConstPtr cloud,
+    Eigen::Matrix<float, 3, 4, Eigen::RowMajor>& projection_matrix,
+    const Indices& indices)
 {
   // internally we calculate with double but store the result into float matrices.
-  typedef double Scalar;
+  using Scalar = double;
   projection_matrix.setZero ();
   if (cloud->height == 1 || cloud->width == 1)
   {
     PCL_ERROR ("[pcl::estimateProjectionMatrix] Input dataset is not organized!\n");
     return (-1.0);
   }
-  
+
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> A = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> B = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> C = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
   Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor> D = Eigen::Matrix<Scalar, 4, 4, Eigen::RowMajor>::Zero ();
 
+  Scalar min_x = std::numeric_limits<Scalar>::max ();
+  Scalar min_y = std::numeric_limits<Scalar>::max ();
+  Scalar min_z = std::numeric_limits<Scalar>::max ();
+  Scalar max_x = -std::numeric_limits<Scalar>::max ();
+  Scalar max_y = -std::numeric_limits<Scalar>::max ();
+  Scalar max_z = -std::numeric_limits<Scalar>::max ();
+  size_t valid_points_count = 0;
+  {
+    pcl::ConstCloudIterator <PointT> pointIt (*cloud, indices);
+    while (pointIt)
+    {
+      const PointT &point = *pointIt;
+      pointIt++;
+
+      if (!std::isfinite (point.x)) continue;
+      min_x = std::min<Scalar> (min_x, point.x);
+      min_y = std::min<Scalar> (min_y, point.y);
+      min_z = std::min<Scalar> (min_z, point.z);
+      max_x = std::max<Scalar> (max_x, point.x);
+      max_y = std::max<Scalar> (max_y, point.y);
+      max_z = std::max<Scalar> (max_z, point.z);
+      valid_points_count += 1;
+    } // while
+  }
+  const Scalar cloud_norm = std::pow(std::pow(max_x - min_x, 2) + std::pow(max_y - min_y, 2) + std::pow(max_z - min_z, 2), 0.5);
+  // NOTE: scale_factor is experimentally choosen such that MSE=residual/indices.size() exceeds eps=1e-4 on pointclouds with a projection error of 0.5px or more
+  const Scalar scale_factor = 50.0 / cloud_norm;
+
   pcl::ConstCloudIterator <PointT> pointIt (*cloud, indices);
-  
+
   while (pointIt)
   {
-    unsigned yIdx = pointIt.getCurrentPointIndex () / cloud->width;
-    unsigned xIdx = pointIt.getCurrentPointIndex () % cloud->width;
-    
-    const PointT& point = *pointIt;
-    if (pcl_isfinite (point.x))
+    if (std::isfinite (pointIt->x))
     {
-      Scalar xx = point.x * point.x;
-      Scalar xy = point.x * point.y;
-      Scalar xz = point.x * point.z;
-      Scalar yy = point.y * point.y;
-      Scalar yz = point.y * point.z;
-      Scalar zz = point.z * point.z;
-      Scalar xx_yy = xIdx * xIdx + yIdx * yIdx;
+      const Scalar x = pointIt->x * scale_factor;
+      const Scalar y = pointIt->y * scale_factor;
+      const Scalar z = pointIt->z * scale_factor;
+      const Scalar xx = x * x;
+      const Scalar xy = x * y;
+      const Scalar xz = x * z;
+      const Scalar yy = y * y;
+      const Scalar yz = y * z;
+      const Scalar zz = z * z;
+
+      const Scalar yIdx = static_cast<Scalar>(pointIt.getCurrentPointIndex () / cloud->width);
+      const Scalar xIdx = static_cast<Scalar>(pointIt.getCurrentPointIndex () % cloud->width);
+      const Scalar xxIdx_yyIdx = xIdx * xIdx + yIdx * yIdx;
 
       A.coeffRef (0) += xx;
       A.coeffRef (1) += xy;
       A.coeffRef (2) += xz;
-      A.coeffRef (3) += point.x;
+      A.coeffRef (3) += x;
 
       A.coeffRef (5) += yy;
       A.coeffRef (6) += yz;
-      A.coeffRef (7) += point.y;
+      A.coeffRef (7) += y;
 
       A.coeffRef (10) += zz;
-      A.coeffRef (11) += point.z;
+      A.coeffRef (11) += z;
       A.coeffRef (15) += 1.0;
 
       B.coeffRef (0) -= xx * xIdx;
       B.coeffRef (1) -= xy * xIdx;
       B.coeffRef (2) -= xz * xIdx;
-      B.coeffRef (3) -= point.x * static_cast<double>(xIdx);
+      B.coeffRef (3) -= x * xIdx;
 
       B.coeffRef (5) -= yy * xIdx;
       B.coeffRef (6) -= yz * xIdx;
-      B.coeffRef (7) -= point.y * static_cast<double>(xIdx);
+      B.coeffRef (7) -= y * xIdx;
 
       B.coeffRef (10) -= zz * xIdx;
-      B.coeffRef (11) -= point.z * static_cast<double>(xIdx);
+      B.coeffRef (11) -= z * xIdx;
 
       B.coeffRef (15) -= xIdx;
 
       C.coeffRef (0) -= xx * yIdx;
       C.coeffRef (1) -= xy * yIdx;
       C.coeffRef (2) -= xz * yIdx;
-      C.coeffRef (3) -= point.x * static_cast<double>(yIdx);
+      C.coeffRef (3) -= x * yIdx;
 
       C.coeffRef (5) -= yy * yIdx;
       C.coeffRef (6) -= yz * yIdx;
-      C.coeffRef (7) -= point.y * static_cast<double>(yIdx);
+      C.coeffRef (7) -= y * yIdx;
 
       C.coeffRef (10) -= zz * yIdx;
-      C.coeffRef (11) -= point.z * static_cast<double>(yIdx);
+      C.coeffRef (11) -= z * yIdx;
 
       C.coeffRef (15) -= yIdx;
 
-      D.coeffRef (0) += xx * xx_yy;
-      D.coeffRef (1) += xy * xx_yy;
-      D.coeffRef (2) += xz * xx_yy;
-      D.coeffRef (3) += point.x * xx_yy;
+      D.coeffRef (0) += xx * xxIdx_yyIdx;
+      D.coeffRef (1) += xy * xxIdx_yyIdx;
+      D.coeffRef (2) += xz * xxIdx_yyIdx;
+      D.coeffRef (3) += x * xxIdx_yyIdx;
 
-      D.coeffRef (5) += yy * xx_yy;
-      D.coeffRef (6) += yz * xx_yy;
-      D.coeffRef (7) += point.y * xx_yy;
+      D.coeffRef (5) += yy * xxIdx_yyIdx;
+      D.coeffRef (6) += yz * xxIdx_yyIdx;
+      D.coeffRef (7) += y * xxIdx_yyIdx;
 
-      D.coeffRef (10) += zz * xx_yy;
-      D.coeffRef (11) += point.z * xx_yy;
+      D.coeffRef (10) += zz * xxIdx_yyIdx;
+      D.coeffRef (11) += z * xxIdx_yyIdx;
 
-      D.coeffRef (15) += xx_yy;
+      D.coeffRef (15) += xxIdx_yyIdx;
     }
-    
+
     ++pointIt;
-  } // while  
-  
-  pcl::common::internal::makeSymmetric (A);
-  pcl::common::internal::makeSymmetric (B);
-  pcl::common::internal::makeSymmetric (C);
-  pcl::common::internal::makeSymmetric (D);
+  } // while
+
+  common::internal::makeSymmetric (A);
+  common::internal::makeSymmetric (B);
+  common::internal::makeSymmetric (C);
+  common::internal::makeSymmetric (D);
 
   Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor> X = Eigen::Matrix<Scalar, 12, 12, Eigen::RowMajor>::Zero ();
   X.topLeftCorner<4,4> ().matrix () = A;
@@ -190,21 +225,22 @@ pcl::estimateProjectionMatrix (
 
   // check whether the residual MSE is low. If its high, the cloud was not captured from a projective device.
   Eigen::Matrix<Scalar, 1, 1> residual_sqr = eigen_vectors.col (0).transpose () * X *  eigen_vectors.col (0);
-  
-  double residual = residual_sqr.coeff (0);
+
+  double residual = (residual_sqr.coeff (0) * indices.size()) / valid_points_count;
+  const Scalar scale_factor_inv = 1.0 / scale_factor;
 
   projection_matrix.coeffRef (0) = static_cast <float> (eigen_vectors.coeff (0));
   projection_matrix.coeffRef (1) = static_cast <float> (eigen_vectors.coeff (12));
   projection_matrix.coeffRef (2) = static_cast <float> (eigen_vectors.coeff (24));
-  projection_matrix.coeffRef (3) = static_cast <float> (eigen_vectors.coeff (36));
+  projection_matrix.coeffRef (3) = static_cast <float> (eigen_vectors.coeff (36) * scale_factor_inv);
   projection_matrix.coeffRef (4) = static_cast <float> (eigen_vectors.coeff (48));
   projection_matrix.coeffRef (5) = static_cast <float> (eigen_vectors.coeff (60));
   projection_matrix.coeffRef (6) = static_cast <float> (eigen_vectors.coeff (72));
-  projection_matrix.coeffRef (7) = static_cast <float> (eigen_vectors.coeff (84));
+  projection_matrix.coeffRef (7) = static_cast <float> (eigen_vectors.coeff (84) * scale_factor_inv);
   projection_matrix.coeffRef (8) = static_cast <float> (eigen_vectors.coeff (96));
   projection_matrix.coeffRef (9) = static_cast <float> (eigen_vectors.coeff (108));
   projection_matrix.coeffRef (10) = static_cast <float> (eigen_vectors.coeff (120));
-  projection_matrix.coeffRef (11) = static_cast <float> (eigen_vectors.coeff (132));
+  projection_matrix.coeffRef (11) = static_cast <float> (eigen_vectors.coeff (132) * scale_factor_inv);
 
   if (projection_matrix.coeff (0) < 0)
     projection_matrix *= -1.0;
@@ -212,4 +248,5 @@ pcl::estimateProjectionMatrix (
   return (residual);
 }
 
-#endif
+} // namespace pcl
+
