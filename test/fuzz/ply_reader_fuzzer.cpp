@@ -6,7 +6,7 @@
 #include <pcl/point_types.h>
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-	pcl::PCLPointCloud2 cloud_blob, cloud_blob2;
+	pcl::PCLPointCloud2 cloud_blob;
 	pcl::PLYReader reader;
   	char filename[256];
 	sprintf(filename, "/tmp/libfuzzer.%d", getpid());
@@ -17,7 +17,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 	fwrite(data, size, 1, fp);
 	fclose(fp);
 
-	reader.read (filename, cloud_blob2);	
+	reader.read (filename, cloud_blob);	
 	unlink(filename);
 	return 0;
 }
