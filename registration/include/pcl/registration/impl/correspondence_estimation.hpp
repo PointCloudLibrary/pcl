@@ -44,8 +44,6 @@
 #include <pcl/common/copy_point.h>
 #include <pcl/common/io.h>
 
-#include <atomic>
-
 namespace pcl {
 
 namespace registration {
@@ -137,10 +135,10 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
   // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
   // macro!
   if (isSamePointType<PointSource, PointTarget>()) {
-// Iterate over the input set of source indices
 #pragma omp parallel for default(none)                                                 \
     shared(tree_, indices_, max_dist_sqr, per_thread_correspondences)                  \
         firstprivate(index, distance) num_threads(num_threads_)
+    // Iterate over the input set of source indices
     for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
       const auto& idx = (*indices_)[i];
       tree_->nearestKSearch((*input_)[idx], 1, index, distance);
@@ -155,10 +153,10 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
     }
   }
   else {
-// Iterate over the input set of source indices
 #pragma omp parallel for default(none)                                                 \
     shared(tree_, indices_, max_dist_sqr, per_thread_correspondences)                  \
         firstprivate(index, distance) num_threads(num_threads_)
+    // Iterate over the input set of source indices
     for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
       const auto& idx = (*indices_)[i];
 
@@ -236,11 +234,11 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
   // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
   // macro!
   if (isSamePointType<PointSource, PointTarget>()) {
-// Iterate over the input set of source indices
 #pragma omp parallel for default(none) shared(                                         \
     tree_, tree_reciprocal_, indices_, max_dist_sqr, per_thread_correspondences)       \
     firstprivate(index, distance, index_reciprocal, distance_reciprocal)               \
         num_threads(num_threads_)
+    // Iterate over the input set of source indices
     for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
       const auto& idx = (*indices_)[i];
       tree_->nearestKSearch((*input_)[idx], 1, index, distance);
@@ -262,11 +260,11 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
     }
   }
   else {
-// Iterate over the input set of source indices
 #pragma omp parallel for default(none) shared(                                         \
     tree_, tree_reciprocal_, indices_, max_dist_sqr, per_thread_correspondences)       \
     firstprivate(index, distance, index_reciprocal, distance_reciprocal)               \
         num_threads(num_threads_)
+    // Iterate over the input set of source indices
     for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
       const auto& idx = (*indices_)[i];
       // Copy the source data to a target PointTarget format so we can search in the
