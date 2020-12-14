@@ -23,7 +23,7 @@ set(Boost_ADDITIONAL_VERSIONS
 set(Boost_NO_BOOST_CMAKE ON)
 
 # Optional boost modules
-find_package(Boost 1.55.0 QUIET COMPONENTS serialization mpi)
+find_package(Boost 1.55.0 QUIET OPTIONAL_COMPONENTS serialization mpi)
 if(Boost_SERIALIZATION_FOUND)
   set(BOOST_SERIALIZATION_FOUND TRUE)
 endif()
