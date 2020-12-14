@@ -226,9 +226,7 @@ public:
   setSearchMethodTarget(const KdTreePtr& tree, bool force_no_recompute = false)
   {
     tree_ = tree;
-    if (force_no_recompute) {
-      force_no_recompute_ = true;
-    }
+    force_no_recompute_ = force_no_recompute;
     // Since we just set a new tree, we need to check for updates
     target_cloud_updated_ = true;
   }
@@ -253,9 +251,7 @@ public:
                         bool force_no_recompute = false)
   {
     tree_reciprocal_ = tree;
-    if (force_no_recompute) {
-      force_no_recompute_reciprocal_ = true;
-    }
+    force_no_recompute_reciprocal_ = force_no_recompute;
     // Since we just set a new tree, we need to check for updates
     source_cloud_updated_ = true;
   }
