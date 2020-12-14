@@ -149,12 +149,11 @@ main(int argc, char** argv)
     pcl::transformPointCloud(
         *cloud_models[model_i], *cloud_output, final_transformation);
 
-    std::stringstream ss;
-    ss << "model_" << model_i;
+    const std::string mode_name = "model_" + std::to_string(model_i);
     visualization::PointCloudColorHandlerRandom<PointXYZ> random_color(
         cloud_output->makeShared());
-    viewer.addPointCloud(cloud_output, random_color, ss.str());
-    PCL_INFO("Showing model %s\n", ss.str().c_str());
+    viewer.addPointCloud(cloud_output, random_color, mode_name);
+    PCL_INFO("Showing model %s\n", mode_name.c_str());
   }
 
   PCL_INFO("All models have been registered!\n");

@@ -186,7 +186,6 @@ namespace pcl
     *     Towards 3D Point Cloud Based Object Maps for Household Environments
     *     Robotics and Autonomous Systems Journal (Special Issue on Semantic Knowledge), 2008.
     *
-    * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */

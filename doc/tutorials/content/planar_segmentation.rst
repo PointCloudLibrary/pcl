@@ -36,7 +36,7 @@ Lines:
 
 .. important::
 
-  Please visit http://docs.pointclouds.org/trunk/a02954.html
+  Please visit https://pointclouds.org/documentation/group__sample__consensus.html
   for more information on various other implemented Sample Consensus models and
   robust estimators.
 
