@@ -22,15 +22,14 @@ set(Boost_ADDITIONAL_VERSIONS
 # Disable the config mode of find_package(Boost)
 set(Boost_NO_BOOST_CMAKE ON)
 
-# Optional boost modules
-find_package(Boost 1.55.0 QUIET OPTIONAL_COMPONENTS serialization mpi)
+set(BOOST_REQUIRED_MODULES filesystem date_time iostreams system)
+find_package(Boost 1.55.0 REQUIRED 
+    COMPONENTS ${BOOST_REQUIRED_MODULES}
+    OPTIONAL_COMPONENTS serialization mpi
+)
 if(Boost_SERIALIZATION_FOUND)
   set(BOOST_SERIALIZATION_FOUND TRUE)
 endif()
-
-# Required boost modules
-set(BOOST_REQUIRED_MODULES filesystem date_time iostreams system)
-find_package(Boost 1.55.0 REQUIRED COMPONENTS ${BOOST_REQUIRED_MODULES})
 
 if(Boost_FOUND)
   set(BOOST_FOUND TRUE)
