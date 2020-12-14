@@ -136,8 +136,8 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
   // macro!
   if (isSamePointType<PointSource, PointTarget>()) {
 #pragma omp parallel for default(none)                                                 \
-    shared(tree_, indices_, max_dist_sqr, per_thread_correspondences)                  \
-        firstprivate(index, distance) num_threads(num_threads_)
+    shared(max_dist_sqr, per_thread_correspondences) firstprivate(index, distance)     \
+        num_threads(num_threads_)
     // Iterate over the input set of source indices
     for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
       const auto& idx = (*indices_)[i];
@@ -154,8 +154,8 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
   }
   else {
 #pragma omp parallel for default(none)                                                 \
-    shared(tree_, indices_, max_dist_sqr, per_thread_correspondences)                  \
-        firstprivate(index, distance) num_threads(num_threads_)
+    shared(max_dist_sqr, per_thread_correspondences) firstprivate(index, distance)     \
+        num_threads(num_threads_)
     // Iterate over the input set of source indices
     for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
       const auto& idx = (*indices_)[i];
@@ -234,10 +234,10 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
   // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT
   // macro!
   if (isSamePointType<PointSource, PointTarget>()) {
-#pragma omp parallel for default(none) shared(                                         \
-    tree_, tree_reciprocal_, indices_, max_dist_sqr, per_thread_correspondences)       \
-    firstprivate(index, distance, index_reciprocal, distance_reciprocal)               \
-        num_threads(num_threads_)
+#pragma omp parallel for default(none)                                                 \
+    shared(max_dist_sqr, per_thread_correspondences)                                   \
+        firstprivate(index, distance, index_reciprocal, distance_reciprocal)           \
+            num_threads(num_threads_)
     // Iterate over the input set of source indices
     for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
       const auto& idx = (*indices_)[i];
@@ -260,10 +260,10 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
     }
   }
   else {
-#pragma omp parallel for default(none) shared(                                         \
-    tree_, tree_reciprocal_, indices_, max_dist_sqr, per_thread_correspondences)       \
-    firstprivate(index, distance, index_reciprocal, distance_reciprocal)               \
-        num_threads(num_threads_)
+#pragma omp parallel for default(none)                                                 \
+    shared(max_dist_sqr, per_thread_correspondences)                                   \
+        firstprivate(index, distance, index_reciprocal, distance_reciprocal)           \
+            num_threads(num_threads_)
     // Iterate over the input set of source indices
     for (int i = 0; i < static_cast<int>(indices_->size()); i++) {
       const auto& idx = (*indices_)[i];
