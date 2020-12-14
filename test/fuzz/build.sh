@@ -47,11 +47,11 @@ $CXX $CXXFLAGS -DPCLAPI_EXPORTS \
         -I/src/pcl/dssdk/include \
         -I/src/pcl/io/include -isystem /usr/include/eigen3 \
         -O2 -g -DNDEBUG -fPIC -std=c++14 \
-        -o read_fuzzer.o -c read_fuzzer.cpp
+        -o ply_reader_fuzzer.o -c ply_reader_fuzzer.cpp
 
-$CXX $CXXFLAGS $LIB_FUZZING_ENGINE read_fuzzer.o \
+$CXX $CXXFLAGS $LIB_FUZZING_ENGINE ply_reader_fuzzer.o \
         ../../build/lib/libpcl_io.a ../../build/lib/libpcl_io_ply.a \
         ../../build/lib/libpcl_common.a \
-        /usr/local/lib/libboost_filesystem.a -o $OUT/read_fuzzer -lm
+        /usr/local/lib/libboost_filesystem.a -o $OUT/ply_reader_fuzzer -lm
 
-zip $OUT/read_fuzzer_seed_corpus.zip $SRC/pcl/test/cube.ply
+zip $OUT/ply_reader_fuzzer_seed_corpus.zip $SRC/pcl/test/cube.ply
