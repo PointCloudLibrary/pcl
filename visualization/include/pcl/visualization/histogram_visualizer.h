@@ -116,7 +116,7 @@ namespace pcl
         template <typename PointT> bool 
         addFeatureHistogram (const pcl::PointCloud<PointT> &cloud, 
                              const std::string &field_name, 
-                             const int index,
+                             const pcl::index_t index,
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
 
         /** \brief Add a histogram feature to screen as a separate window.
@@ -130,7 +130,7 @@ namespace pcl
         bool 
         addFeatureHistogram (const pcl::PCLPointCloud2 &cloud,
                              const std::string &field_name, 
-                             const int index,
+                             const pcl::index_t index,
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
         
         /** \brief Update a histogram feature that is already on screen, with a cloud containing a single histogram.
@@ -161,7 +161,7 @@ namespace pcl
           */
         template <typename PointT> bool 
         updateFeatureHistogram (const pcl::PointCloud<PointT> &cloud, const std::string &field_name,
-        			                   const int index, const std::string &id = "cloud");
+        			                   const pcl::index_t index, const std::string &id = "cloud");
         
                              
         /** \brief Update a histogram feature that is already on screen, with a cloud containing a single histogram.
@@ -172,7 +172,7 @@ namespace pcl
           */
         bool 
         updateFeatureHistogram (const pcl::PCLPointCloud2 &cloud,
-                                const std::string &field_name, const int index,
+                                const std::string &field_name, const pcl::index_t index,
                                 const std::string &id = "cloud");         
 
 
