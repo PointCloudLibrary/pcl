@@ -98,10 +98,48 @@ namespace pcl
       StatisticalOutlierRemoval (bool extract_removed_indices = false) :
         FilterIndices<PointT>::FilterIndices (extract_removed_indices),
         searcher_ (),
+        dist_mean_(-1),
+        dist_stddev_(-1),
         mean_k_ (1),
         std_mul_ (0.0)
       {
         filter_name_ = "StatisticalOutlierRemoval";
+      }
+
+      /** \brief Set the mean distance manually instead of estimating it internally.
+        * \param[in] dist_mean The mean distance.
+        */
+      inline void
+      setDistanceMean (double dist_mean)
+      {
+        dist_mean_ = dist_mean;
+      }
+
+      /** \brief Get the mean distance (csn be estimated or manually set).
+        * \return The mean distance.
+        */
+      inline int
+      getDistanceMean ()
+      {
+        return (dist_mean_);
+      }
+
+      /** \brief Set the distances' standard deviation manually instead of estimating it internally.
+        * \param[in] dist_stddev the distances' standard deviation.
+        */
+      inline void
+      setDistanceStddev (double dist_stddev)
+      {
+        dist_stddev_ = dist_stddev;
+      }
+
+      /** \brief Get the distances' standard deviation (csn be estimated or manually set).
+        * \return the distances' standard deviation.
+        */
+      inline int
+      getDistanceStddev ()
+      {
+        return (dist_stddev_);
       }
 
       /** \brief Set the number of nearest neighbors to use for mean distance estimation.
@@ -179,6 +217,12 @@ namespace pcl
       /** \brief A pointer to the spatial search object. */
       SearcherPtr searcher_;
 
+      /** \brief The mean distance. */
+      double dist_mean_;
+
+      /** \brief The distances' standard deviation. */
+      double dist_stddev_;
+
       /** \brief The number of points to use for mean distance estimation. */
       int mean_k_;
 
@@ -216,10 +260,47 @@ namespace pcl
     public:
       /** \brief Empty constructor. */
       StatisticalOutlierRemoval (bool extract_removed_indices = false) :
-        Filter<pcl::PCLPointCloud2>::Filter (extract_removed_indices), mean_k_ (2),
+        Filter<pcl::PCLPointCloud2>::Filter (extract_removed_indices),
+        dist_mean_(-1), dist_stddev_(-1), mean_k_ (2),
         std_mul_ (0.0), tree_ (), negative_ (false)
       {
         filter_name_ = "StatisticalOutlierRemoval";
+      }
+
+      /** \brief Set the mean distance manually instead of estimating it internally.
+        * \param[in] dist_mean The mean distance.
+        */
+      inline void
+      setDistanceMean (double dist_mean)
+      {
+        dist_mean_ = dist_mean;
+      }
+
+      /** \brief Get the mean distance (csn be estimated or manually set).
+        * \return The mean distance.
+        */
+      inline int
+      getDistanceMean ()
+      {
+        return (dist_mean_);
+      }
+
+      /** \brief Set the distances' standard deviation manually instead of estimating it internally.
+        * \param[in] dist_stddev the distances' standard deviation.
+        */
+      inline void
+      setDistanceStddev (double dist_stddev)
+      {
+        dist_stddev_ = dist_stddev;
+      }
+
+      /** \brief Get the distances' standard deviation (csn be estimated or manually set).
+        * \return the distances' standard deviation.
+        */
+      inline int
+      getDistanceStddev ()
+      {
+        return (dist_stddev_);
       }
 
       /** \brief Set the number of points (k) to use for mean distance estimation
@@ -277,6 +358,12 @@ namespace pcl
       }
 
     protected:
+      /** \brief The mean distance. */
+      double dist_mean_;
+
+      /** \brief The distances' standard deviation. */
+      double dist_stddev_;
+
       /** \brief The number of points to use for mean distance estimation. */
       int mean_k_;
 
