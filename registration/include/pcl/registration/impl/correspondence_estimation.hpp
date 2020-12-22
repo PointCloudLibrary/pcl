@@ -149,7 +149,14 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
       corr.index_query = idx;
       corr.index_match = index[0];
       corr.distance = distance[0];
-      per_thread_correspondences[omp_get_thread_num()].emplace_back(std::move(corr));
+
+#ifdef _OPENMP
+      const int thread_num = omp_get_thread_num();
+#else
+      const int thread_num = 0;
+#endif
+
+      per_thread_correspondences[thread_num].emplace_back(std::move(corr));
     }
   }
   else {
@@ -173,7 +180,14 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
       corr.index_query = idx;
       corr.index_match = index[0];
       corr.distance = distance[0];
-      per_thread_correspondences[omp_get_thread_num()].emplace_back(std::move(corr));
+
+#ifdef _OPENMP
+      const int thread_num = omp_get_thread_num();
+#else
+      const int thread_num = 0;
+#endif
+
+      per_thread_correspondences[thread_num].emplace_back(std::move(corr));
     }
   }
 
@@ -256,7 +270,14 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
       corr.index_query = idx;
       corr.index_match = index[0];
       corr.distance = distance[0];
-      per_thread_correspondences[omp_get_thread_num()].emplace_back(std::move(corr));
+
+#ifdef _OPENMP
+      const int thread_num = omp_get_thread_num();
+#else
+      const int thread_num = 0;
+#endif
+
+      per_thread_correspondences[thread_num].emplace_back(std::move(corr));
     }
   }
   else {
@@ -292,7 +313,14 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
       corr.index_query = idx;
       corr.index_match = index[0];
       corr.distance = distance[0];
-      per_thread_correspondences[omp_get_thread_num()].emplace_back(std::move(corr));
+
+#ifdef _OPENMP
+      const int thread_num = omp_get_thread_num();
+#else
+      const int thread_num = 0;
+#endif
+
+      per_thread_correspondences[thread_num].emplace_back(std::move(corr));
     }
   }
 
