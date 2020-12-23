@@ -193,7 +193,7 @@ public:
 
     for (unsigned char i = 0; i < 8; ++i)
       if (source.child_node_array_[i])
-        child_node_array_[i] = source.child_node_array_[i]->deepCopy();
+        child_node_array_[i].reset(source.child_node_array_[i]->deepCopy());
   }
 
   /** \brief Copy operator. */
@@ -223,7 +223,7 @@ public:
    *  \param child_idx_arg: index to child node
    *  \return OctreeNode pointer
    * */
-  inline OctreeNode*&
+  inline std::unique_ptr<OctreeNode>&
   operator[](unsigned char child_idx_arg)
   {
     assert(child_idx_arg < 8);
@@ -238,7 +238,7 @@ public:
   getChildPtr(unsigned char child_idx_arg) const
   {
     assert(child_idx_arg < 8);
-    return child_node_array_[child_idx_arg];
+    return child_node_array_[child_idx_arg].get();
   }
 
   /** \brief Get pointer to child
@@ -248,7 +248,7 @@ public:
   setChildPtr(OctreeNode* child, unsigned char index)
   {
     assert(index < 8);
-    child_node_array_[index] = child;
+    child_node_array_[index].reset(child);
   }
 
   /** \brief Check if branch is pointing to a particular child node
@@ -258,7 +258,7 @@ public:
   inline bool
   hasChild(unsigned char child_idx_arg) const
   {
-    return (child_node_array_[child_idx_arg] != nullptr);
+    return (child_node_array_[child_idx_arg].get() != nullptr);
   }
 
   /** \brief Check if branch can be pruned
@@ -268,14 +268,14 @@ public:
    **/
   /*    inline bool isPrunable () const
       {
-        const OctreeNode* firstChild = child_node_array_[0];
+        const OctreeNode* firstChild = child_node_array_[0].get();
         if (!firstChild || firstChild->getNodeType()==BRANCH_NODE)
           return false;
 
         bool prunable = true;
         for (unsigned char i = 1; i < 8 && prunable; ++i)
         {
-          const OctreeNode* child = child_node_array_[i];
+          const OctreeNode* child = child_node_array_[i].get();
           if ( (!child) ||
                (child->getNodeType()==BRANCH_NODE) ||
                ((*static_cast<const OctreeContainerBase*>(child)) == (*static_cast<const
@@ -357,7 +357,7 @@ public:
   }
 
 protected:
-  std::array<OctreeNode*, 8> child_node_array_;
+  std::array<std::unique_ptr<OctreeNode>, 8> child_node_array_;
 
   ContainerT container_;
 };

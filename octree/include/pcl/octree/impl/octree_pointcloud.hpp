@@ -256,7 +256,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
   voxel_center_list_arg.clear();
 
-  return getOccupiedVoxelCentersRecursive(this->root_node_, key, voxel_center_list_arg);
+  return getOccupiedVoxelCentersRecursive(this->root_node_.get(), key, voxel_center_list_arg);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -544,9 +544,9 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
         newRootBranch = new BranchNode();
         this->branch_count_++;
 
-        this->setBranchChildPtr(*newRootBranch, child_idx, this->root_node_);
+        this->setBranchChildPtr(*newRootBranch, child_idx, this->root_node_.get());
 
-        this->root_node_ = newRootBranch;
+        this->root_node_.reset(newRootBranch);
 
         octreeSideLen = static_cast<double>(1 << this->octree_depth_) * resolution_;
 
@@ -668,7 +668,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   LeafNode* leaf_node;
   BranchNode* parent_branch_of_leaf_node;
   unsigned int depth_mask = this->createLeafRecursive(
-      key, this->depth_mask_, this->root_node_, leaf_node, parent_branch_of_leaf_node);
+      key, this->depth_mask_, this->root_node_.get(), leaf_node, parent_branch_of_leaf_node);
 
   if (this->dynamic_depth_enabled_ && depth_mask) {
     // get amount of objects in leaf container
@@ -682,7 +682,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
       depth_mask = this->createLeafRecursive(key,
                                              this->depth_mask_,
-                                             this->root_node_,
+                                             this->root_node_.get(),
                                              leaf_node,
                                              parent_branch_of_leaf_node);
       leaf_obj_count = (*leaf_node)->getSize();

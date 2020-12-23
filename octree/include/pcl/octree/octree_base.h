@@ -81,7 +81,7 @@ protected:
   std::size_t branch_count_;
 
   /** \brief Pointer to root branch node of octree   **/
-  BranchNode* root_node_;
+  std::unique_ptr<BranchNode> root_node_;
 
   /** \brief Depth mask based on octree depth   **/
   unsigned int depth_mask_;
@@ -236,9 +236,8 @@ public:
   {
     leaf_count_ = source.leaf_count_;
     branch_count_ = source.branch_count_;
-    delete root_node_;
 
-    root_node_ = new (BranchNode)(*(source.root_node_));
+    root_node_.reset(new (BranchNode)(*(source.root_node_)));
     depth_mask_ = source.depth_mask_;
     max_key_ = source.max_key_;
     octree_depth_ = source.octree_depth_;
@@ -390,7 +389,7 @@ protected:
     LeafNode* leaf_node = nullptr;
     BranchNode* leaf_node_parent;
 
-    createLeafRecursive(key_arg, depth_mask_, root_node_, leaf_node, leaf_node_parent);
+    createLeafRecursive(key_arg, depth_mask_, root_node_.get(), leaf_node, leaf_node_parent);
 
     LeafContainerT* ret = leaf_node->getContainerPtr();
 
@@ -405,7 +404,7 @@ protected:
   findLeaf(const OctreeKey& key_arg) const
   {
     LeafContainerT* result = nullptr;
-    findLeafRecursive(key_arg, depth_mask_, root_node_, result);
+    findLeafRecursive(key_arg, depth_mask_, root_node_.get(), result);
     return result;
   }
 
@@ -426,7 +425,7 @@ protected:
   removeLeaf(const OctreeKey& key_arg)
   {
     if (key_arg <= max_key_)
-      deleteLeafRecursive(key_arg, depth_mask_, root_node_);
+      deleteLeafRecursive(key_arg, depth_mask_, root_node_.get());
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -437,7 +436,7 @@ protected:
   OctreeNode*
   getRootNode() const
   {
-    return this->root_node_;
+    return this->root_node_.get();
   }
 
   /** \brief Check if branch is pointing to a particular child node
@@ -473,7 +472,7 @@ protected:
                     unsigned char child_idx_arg,
                     OctreeNode* new_child_arg)
   {
-    branch_arg[child_idx_arg] = new_child_arg;
+    branch_arg[child_idx_arg].reset(new_child_arg);
   }
 
   /** \brief Generate bit pattern reflecting the existence of child node pointers
@@ -503,27 +502,26 @@ protected:
   deleteBranchChild(BranchNode& branch_arg, unsigned char child_idx_arg)
   {
     if (branch_arg.hasChild(child_idx_arg)) {
-      OctreeNode* branch_child = branch_arg[child_idx_arg];
+      OctreeNode* branch_child = branch_arg[child_idx_arg].get();
 
       switch (branch_child->getNodeType()) {
       case BRANCH_NODE: {
         // free child branch recursively
         deleteBranch(*static_cast<BranchNode*>(branch_child));
         // delete branch node
-        delete branch_child;
+        branch_arg[child_idx_arg].reset();
       } break;
 
       case LEAF_NODE: {
         // delete leaf node
-        delete branch_child;
+        branch_arg[child_idx_arg].reset();
         break;
       }
       default:
         break;
       }
 
-      // set branch child pointer to 0
-      branch_arg[child_idx_arg] = nullptr;
+      branch_arg[child_idx_arg].reset();
     }
   }
 
@@ -546,10 +544,9 @@ protected:
   BranchNode*
   createBranchChild(BranchNode& branch_arg, unsigned char child_idx_arg)
   {
-    BranchNode* new_branch_child = new BranchNode();
-    branch_arg[child_idx_arg] = static_cast<OctreeNode*>(new_branch_child);
+    branch_arg[child_idx_arg].reset(static_cast<OctreeNode*>(new BranchNode()));
 
-    return new_branch_child;
+    return static_cast<BranchNode*>(branch_arg[child_idx_arg].get());
   }
 
   /** \brief Create and add a new leaf child to a branch class
@@ -560,10 +557,9 @@ protected:
   LeafNode*
   createLeafChild(BranchNode& branch_arg, unsigned char child_idx_arg)
   {
-    LeafNode* new_leaf_child = new LeafNode();
-    branch_arg[child_idx_arg] = static_cast<OctreeNode*>(new_leaf_child);
+    branch_arg[child_idx_arg].reset(static_cast<OctreeNode*>(new LeafNode()));
 
-    return new_leaf_child;
+    return static_cast<LeafNode*>(branch_arg[child_idx_arg].get());
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

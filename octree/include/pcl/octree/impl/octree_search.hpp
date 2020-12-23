@@ -105,7 +105,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::nearestKSearch
   double smallest_dist = std::numeric_limits<double>::max();
 
   getKNearestNeighborRecursive(
-      p_q, k, this->root_node_, key, 1, smallest_dist, point_candidates);
+      p_q, k, this->root_node_.get(), key, 1, smallest_dist, point_candidates);
 
   unsigned int result_count = static_cast<unsigned int>(point_candidates.size());
 
@@ -142,7 +142,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::approxNearestS
   key.x = key.y = key.z = 0;
 
   approxNearestSearchRecursive(
-      p_q, this->root_node_, key, 1, result_index, sqr_distance);
+      p_q, this->root_node_.get(), key, 1, result_index, sqr_distance);
 
   return;
 }
@@ -176,7 +176,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::radiusSearch(
 
   getNeighborsWithinRadiusRecursive(p_q,
                                     radius * radius,
-                                    this->root_node_,
+                                    this->root_node_.get(),
                                     key,
                                     1,
                                     k_indices,
@@ -213,7 +213,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::boxSearch(
 
   k_indices.clear();
 
-  boxSearchRecursive(min_pt, max_pt, this->root_node_, key, 1, k_indices);
+  boxSearchRecursive(min_pt, max_pt, this->root_node_.get(), key, 1, k_indices);
 
   return (static_cast<int>(k_indices.size()));
 }
@@ -617,7 +617,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
                                                max_y,
                                                max_z,
                                                a,
-                                               this->root_node_,
+                                               this->root_node_.get(),
                                                key,
                                                voxel_center_list,
                                                max_voxel_count);
@@ -652,7 +652,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
                                                max_y,
                                                max_z,
                                                a,
-                                               this->root_node_,
+                                               this->root_node_.get(),
                                                key,
                                                k_indices,
                                                max_voxel_count);

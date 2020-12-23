@@ -72,7 +72,7 @@ public:
     for (unsigned char b = 0; b < 2; ++b)
       for (unsigned char i = 0; i < 8; ++i)
         if (source_arg.child_node_array_[b][i])
-          child_node_array_[b][i] = source_arg.child_node_array_[b][i]->deepCopy();
+          child_node_array_[b][i].reset(source_arg.child_node_array_[b][i]->deepCopy());
 
     return (*this);
   }
@@ -96,7 +96,7 @@ public:
   getChildPtr(unsigned char buffer_arg, unsigned char index_arg) const
   {
     assert((buffer_arg < 2) && (index_arg < 8));
-    return child_node_array_[buffer_arg][index_arg];
+    return child_node_array_[buffer_arg][index_arg].get();
   }
 
   /** \brief Set child pointer in current branch node
@@ -110,7 +110,7 @@ public:
               OctreeNode* newNode_arg)
   {
     assert((buffer_arg < 2) && (index_arg < 8));
-    child_node_array_[buffer_arg][index_arg] = newNode_arg;
+    child_node_array_[buffer_arg][index_arg].reset(newNode_arg);
   }
 
   /** \brief Check if branch is pointing to a particular child node
@@ -198,7 +198,7 @@ public:
 protected:
   ContainerT container_;
 
-  std::array<std::array<OctreeNode*, 8>, 2> child_node_array_;
+  std::array<std::array<std::unique_ptr<OctreeNode>, 8>, 2> child_node_array_;
 };
 
 /** \brief @b Octree double buffer class
@@ -341,7 +341,7 @@ public:
   {
     leaf_count_ = source.leaf_count_;
     branch_count_ = source.branch_count_;
-    root_node_ = new (BranchNode)(*(source.root_node_));
+    root_node_.reset(new (BranchNode)(*(source.root_node_)));
     depth_mask_ = source.depth_mask_;
     max_key_ = source.max_key_;
     buffer_selector_ = source.buffer_selector_;
@@ -438,7 +438,7 @@ public:
   inline void
   deletePreviousBuffer()
   {
-    treeCleanUpRecursive(root_node_);
+    treeCleanUpRecursive(root_node_.get());
   }
 
   /** \brief Delete the octree structure in the current buffer. */
@@ -446,7 +446,7 @@ public:
   deleteCurrentBuffer()
   {
     buffer_selector_ = !buffer_selector_;
-    treeCleanUpRecursive(root_node_);
+    treeCleanUpRecursive(root_node_.get());
     leaf_count_ = 0;
   }
 
@@ -531,7 +531,7 @@ protected:
   OctreeNode*
   getRootNode() const
   {
-    return (this->root_node_);
+    return (this->root_node_.get());
   }
 
   /** \brief Find leaf node
@@ -543,7 +543,7 @@ protected:
   findLeaf(const OctreeKey& key_arg) const
   {
     LeafContainerT* result = nullptr;
-    findLeafRecursive(key_arg, depth_mask_, root_node_, result);
+    findLeafRecursive(key_arg, depth_mask_, root_node_.get(), result);
     return result;
   }
 
@@ -560,7 +560,7 @@ protected:
     BranchNode* leaf_node_parent;
 
     createLeafRecursive(
-        key_arg, depth_mask_, root_node_, leaf_node, leaf_node_parent, false);
+        key_arg, depth_mask_, root_node_.get(), leaf_node, leaf_node_parent, false);
 
     LeafContainerT* ret = leaf_node->getContainerPtr();
 
@@ -584,7 +584,7 @@ protected:
   removeLeaf(const OctreeKey& key_arg)
   {
     if (key_arg <= max_key_) {
-      deleteLeafRecursive(key_arg, depth_mask_, root_node_);
+      deleteLeafRecursive(key_arg, depth_mask_, root_node_.get());
 
       // we changed the octree structure -> dirty
       tree_dirty_flag_ = true;
@@ -728,13 +728,12 @@ protected:
         deleteBranch(*static_cast<BranchNode*>(branchChild));
 
         // delete unused branch
-        delete (branchChild);
+        branch_arg.setChildPtr(buffer_selector_arg, child_idx_arg, nullptr);
         break;
       }
 
       case LEAF_NODE: {
-        // push unused leaf to branch pool
-        delete (branchChild);
+        branch_arg.setChildPtr(buffer_selector_arg, child_idx_arg, nullptr);
         break;
       }
       default:
@@ -976,7 +975,7 @@ protected:
   std::size_t branch_count_;
 
   /** \brief Pointer to root branch node of octree   **/
-  BranchNode* root_node_;
+  std::unique_ptr<BranchNode> root_node_;
 
   /** \brief Depth mask based on octree depth   **/
   unsigned int depth_mask_;

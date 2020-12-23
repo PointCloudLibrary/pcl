@@ -60,7 +60,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::~Octree2BufBase()
 {
   // deallocate tree structure
   deleteTree();
-  delete (root_node_);
+  root_node_.reset();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -179,7 +179,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::switchBuffers()
 {
   if (tree_dirty_flag_) {
     // make sure that all unused branch nodes from previous buffer are deleted
-    treeCleanUpRecursive(root_node_);
+    treeCleanUpRecursive(root_node_.get());
   }
 
   // switch butter selector
@@ -209,7 +209,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTree(
   binary_tree_out_arg.reserve(this->branch_count_);
 
   serializeTreeRecursive(
-      root_node_, new_key, &binary_tree_out_arg, nullptr, do_XOR_encoding_arg, false);
+      root_node_.get(), new_key, &binary_tree_out_arg, nullptr, do_XOR_encoding_arg, false);
 
   // serializeTreeRecursive cleans-up unused octree nodes in previous octree
   tree_dirty_flag_ = false;
@@ -232,7 +232,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTree(
   leaf_container_vector_arg.reserve(leaf_count_);
   binary_tree_out_arg.reserve(this->branch_count_);
 
-  serializeTreeRecursive(root_node_,
+  serializeTreeRecursive(root_node_.get(),
                          new_key,
                          &binary_tree_out_arg,
                          &leaf_container_vector_arg,
@@ -257,7 +257,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeLeafs(
   leaf_container_vector_arg.reserve(leaf_count_);
 
   serializeTreeRecursive(
-      root_node_, new_key, nullptr, &leaf_container_vector_arg, false, false);
+      root_node_.get(), new_key, nullptr, &leaf_container_vector_arg, false, false);
 
   // serializeLeafsRecursive cleans-up unused octree nodes in previous octree
   tree_dirty_flag_ = false;
@@ -278,7 +278,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTree(
   std::vector<char>::const_iterator binary_tree_in_it = binary_tree_in_arg.begin();
   std::vector<char>::const_iterator binary_tree_in_it_end = binary_tree_in_arg.end();
 
-  deserializeTreeRecursive(root_node_,
+  deserializeTreeRecursive(root_node_.get(),
                            depth_mask_,
                            new_key,
                            binary_tree_in_it,
@@ -317,7 +317,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTree(
   std::vector<char>::const_iterator binary_tree_in_it = binary_tree_in_arg.begin();
   std::vector<char>::const_iterator binary_tree_in_it_end = binary_tree_in_arg.end();
 
-  deserializeTreeRecursive(root_node_,
+  deserializeTreeRecursive(root_node_.get(),
                            depth_mask_,
                            new_key,
                            binary_tree_in_it,
@@ -344,7 +344,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeNewLeafs(
   leaf_container_vector_arg.reserve(leaf_count_);
 
   serializeTreeRecursive(
-      root_node_, new_key, nullptr, &leaf_container_vector_arg, false, true);
+      root_node_.get(), new_key, nullptr, &leaf_container_vector_arg, false, true);
 
   // serializeLeafsRecursive cleans-up unused octree nodes in previous octree buffer
   tree_dirty_flag_ = false;

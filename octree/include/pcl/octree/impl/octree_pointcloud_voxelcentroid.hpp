@@ -82,7 +82,7 @@ pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafContainerT, BranchContain
   voxel_centroid_list_arg.clear();
   voxel_centroid_list_arg.reserve(this->leaf_count_);
 
-  getVoxelCentroidsRecursive(this->root_node_, new_key, voxel_centroid_list_arg);
+  getVoxelCentroidsRecursive(this->root_node_.get(), new_key, voxel_centroid_list_arg);
 
   // return size of centroid vector
   return (voxel_centroid_list_arg.size());
