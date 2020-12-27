@@ -36,10 +36,12 @@
  * $Id$
  *
  */
-#pragma once
-#include <pcl/pcl_config.h>
 
+#include <pcl/pcl_config.h>
 #ifdef HAVE_QHULL
+
+#ifndef PCL_SURFACE_IMPL_CONVEX_HULL_H_
+#define PCL_SURFACE_IMPL_CONVEX_HULL_H_
 
 #include <pcl/surface/convex_hull.h>
 #include <pcl/common/common.h>
@@ -50,7 +52,6 @@
 #include <cstdlib>
 #include <pcl/surface/qhull.h>
 
-#include <algorithm>
 //////////////////////////////////////////////////////////////////////////
 template <typename PointInT> void
 pcl::ConvexHull<PointInT>::calculateInputDimension ()
@@ -214,12 +215,14 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
 
   int num_vertices = qh num_vertices;
   hull.resize (num_vertices);
+  memset (&hull.points[0], hull.size (), sizeof (PointInT));
 
   vertexT * vertex;
   int i = 0;
 
-  std::vector<std::pair<int, Eigen::Vector4f>, Eigen::aligned_allocator<std::pair<int, Eigen::Vector4f>>>
-      idx_points (hull.size(), {hull.size(), Eigen::Vector4f()});
+  std::vector<std::pair<int, Eigen::Vector4f>, Eigen::aligned_allocator<std::pair<int, Eigen::Vector4f> > > idx_points (num_vertices);
+  idx_points.resize (hull.size ());
+  memset (&idx_points[0], hull.size (), sizeof (std::pair<int, Eigen::Vector4f>));
 
   FORALLvertices
   {
@@ -503,4 +506,5 @@ pcl::ConvexHull<PointInT>::getHullPointIndices (pcl::PointIndices &hull_point_in
 
 #define PCL_INSTANTIATE_ConvexHull(T) template class PCL_EXPORTS pcl::ConvexHull<T>;
 
+#endif    // PCL_SURFACE_IMPL_CONVEX_HULL_H_
 #endif
