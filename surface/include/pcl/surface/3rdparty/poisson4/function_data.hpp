@@ -135,15 +135,18 @@ namespace pcl
       size = ( res*res + res )>>1;
       if( flags & DOT_FLAG )
       {
-        dotTable = new Real[size]{};
+        dotTable = new Real[size];
+        memset( dotTable , 0 , sizeof(Real)*size );
       }
       if( flags & D_DOT_FLAG )
       {
-        dDotTable = new Real[size]{};
+        dDotTable = new Real[size];
+        memset( dDotTable , 0 , sizeof(Real)*size );
       }
       if( flags & D2_DOT_FLAG )
       {
-        d2DotTable = new Real[size]{};
+        d2DotTable = new Real[size];
+        memset( d2DotTable , 0 , sizeof(Real)*size );
       }
       double t1 , t2;
       t1 = baseFunction.polys[0].start;

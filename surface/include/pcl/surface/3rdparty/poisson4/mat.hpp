@@ -107,8 +107,11 @@ namespace pcl
       bestTriangulation=NULL;
       midPoint=NULL;
       std::size_t eCount=vertices.size();
-      bestTriangulation=new Real[eCount*eCount]{-1};
-      midPoint=new int[eCount*eCount]{-1};
+      bestTriangulation=new Real[eCount*eCount];
+      midPoint=new int[eCount*eCount];
+      for(std::size_t i=0;i<eCount*eCount;i++)
+        bestTriangulation[i]=-1;
+      memset(midPoint,-1,sizeof(int)*eCount*eCount);
       GetArea(0,1,vertices);
       triangles.clear();
       GetTriangulation(0,1,vertices,triangles);
@@ -121,8 +124,11 @@ namespace pcl
       bestTriangulation=NULL;
       midPoint=NULL;
       int eCount=vertices.size();
-      bestTriangulation=new double[eCount*eCount]{-1};
-      midPoint=new int[eCount*eCount]{-1};
+      bestTriangulation=new double[eCount*eCount];
+      midPoint=new int[eCount*eCount];
+      for(int i=0;i<eCount*eCount;i++)
+        bestTriangulation[i]=-1;
+      memset(midPoint,-1,sizeof(int)*eCount*eCount);
       return GetArea(0,1,vertices);
     }
     template<class Real>
