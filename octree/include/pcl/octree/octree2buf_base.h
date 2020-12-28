@@ -67,7 +67,7 @@ public:
   inline BufferedBranchNode&
   operator=(const BufferedBranchNode& source_arg)
   {
-    child_node_array_ = {};
+    reset();
 
     for (unsigned char b = 0; b < 2; ++b)
       for (unsigned char i = 0; i < 8; ++i)
@@ -77,8 +77,10 @@ public:
     return (*this);
   }
 
-  /** \brief Empty constructor. */
-  ~BufferedBranchNode() {}
+  /** \brief Empty destructor. */
+  ~BufferedBranchNode() {
+    reset();
+  }
 
   /** \brief Method to perform a deep copy of the octree */
   BufferedBranchNode*
@@ -249,12 +251,12 @@ public:
 
   // Octree leaf node iterators
   // The previous deprecated names
-  // LeafNodeIterator and ConstLeafNodeIterator are deprecated.
-  // Please use LeafNodeDepthFirstIterator and ConstLeafNodeDepthFirstIterator instead.
+  PCL_DEPRECATED(1, 15, "Please use LeafNodeDepthFirstIterator instead.");
   using LeafNodeIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
+  PCL_DEPRECATED(1, 15, "Please use ConstLeafNodeDepthFirstIterator instead.");
   using ConstLeafNodeIterator = const OctreeLeafNodeDepthFirstIterator<OctreeT>;
 
-  // The currently valide names
+  // The currently valid names
   using LeafNodeDepthFirstIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
   using ConstLeafNodeDepthFirstIterator =
       const OctreeLeafNodeDepthFirstIterator<OctreeT>;
@@ -720,29 +722,28 @@ protected:
   {
     if (branch_arg.hasChild(buffer_selector_arg, child_idx_arg)) {
       OctreeNode* branchChild =
-          branch_arg.getChildPtr(buffer_selector_arg, child_idx_arg);
+        branch_arg.getChildPtr(buffer_selector_arg, child_idx_arg);
 
       switch (branchChild->getNodeType()) {
-      case BRANCH_NODE: {
-        // free child branch recursively
-        deleteBranch(*static_cast<BranchNode*>(branchChild));
-
-        // delete unused branch
-        branch_arg.setChildPtr(buffer_selector_arg, child_idx_arg, nullptr);
-        break;
+        case BRANCH_NODE:
+          {
+            // free child branch recursively
+            deleteBranch(*reinterpret_cast<BranchNode*>(branchChild));
+            break;
+          }
+        case LEAF_NODE:
+          {
+            break;
+          }
+        default:
+          {
+            break;
+          }
       }
-
-      case LEAF_NODE: {
-        branch_arg.setChildPtr(buffer_selector_arg, child_idx_arg, nullptr);
-        break;
-      }
-      default:
-        break;
-      }
-
-      // set branch child pointer to 0
-      branch_arg.setChildPtr(buffer_selector_arg, child_idx_arg, nullptr);
     }
+
+    // set branch child pointer to 0
+    branch_arg.setChildPtr(buffer_selector_arg, child_idx_arg, nullptr);
   }
 
   /** \brief Delete child node and all its subchilds from octree in current buffer
@@ -790,7 +791,7 @@ protected:
     BranchNode* new_branch_child = new BranchNode();
 
     branch_arg.setChildPtr(
-        buffer_selector_, child_idx_arg, static_cast<OctreeNode*>(new_branch_child));
+        buffer_selector_, child_idx_arg, reinterpret_cast<OctreeNode*>(new_branch_child));
 
     return new_branch_child;
   }

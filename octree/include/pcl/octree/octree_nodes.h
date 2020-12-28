@@ -189,22 +189,22 @@ public:
   /** \brief Empty constructor. */
   OctreeBranchNode(const OctreeBranchNode& source) : OctreeNode()
   {
-    child_node_array_ = {};
-
     for (unsigned char i = 0; i < 8; ++i)
       if (source.child_node_array_[i])
         child_node_array_[i].reset(source.child_node_array_[i]->deepCopy());
+      else
+        child_node_array_[i].reset();
   }
 
   /** \brief Copy operator. */
   inline OctreeBranchNode&
   operator=(const OctreeBranchNode& source)
   {
-    child_node_array_ = {};
-
     for (unsigned char i = 0; i < 8; ++i)
       if (source.child_node_array_[i])
-        child_node_array_[i] = source.child_node_array_[i]->deepCopy();
+        child_node_array_[i].reset(source.child_node_array_[i]->deepCopy());
+      else
+        child_node_array_[i].reset();
     return (*this);
   }
 
@@ -217,7 +217,9 @@ public:
 
   /** \brief Empty deconstructor. */
 
-  ~OctreeBranchNode() {}
+  ~OctreeBranchNode() {
+    reset();
+  }
 
   /** \brief Access operator.
    *  \param child_idx_arg: index to child node

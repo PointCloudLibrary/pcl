@@ -244,7 +244,7 @@ public:
 
       // current node is a branch node
       const BranchNode* current_branch =
-          static_cast<const BranchNode*>(current_state_->node_);
+          reinterpret_cast<const BranchNode*>(current_state_->node_);
 
       // get child configuration bit pattern
       ret = octree_->getBranchBitPattern(*current_branch);
@@ -263,7 +263,7 @@ public:
     assert(current_state_ != 0);
     assert(this->isLeafNode());
 
-    LeafNode* leaf_node = static_cast<LeafNode*>(current_state_->node_);
+    LeafNode* leaf_node = reinterpret_cast<LeafNode*>(current_state_->node_);
 
     return leaf_node->getContainer();
   }
@@ -278,7 +278,7 @@ public:
     assert(current_state_ != 0);
     assert(this->isLeafNode());
 
-    LeafNode* leaf_node = static_cast<LeafNode*>(current_state_->node_);
+    LeafNode* leaf_node = reinterpret_cast<LeafNode*>(current_state_->node_);
 
     return leaf_node->getContainer();
   }
@@ -293,7 +293,7 @@ public:
     assert(current_state_ != 0);
     assert(this->isBranchNode());
 
-    BranchNode* branch_node = static_cast<BranchNode*>(current_state_->node_);
+    BranchNode* branch_node = reinterpret_cast<BranchNode*>(current_state_->node_);
 
     return branch_node->getContainer();
   }
@@ -308,7 +308,7 @@ public:
     assert(current_state_ != 0);
     assert(this->isBranchNode());
 
-    BranchNode* branch_node = static_cast<BranchNode*>(current_state_->node_);
+    BranchNode* branch_node = reinterpret_cast<BranchNode*>(current_state_->node_);
 
     return branch_node->getContainer();
   }

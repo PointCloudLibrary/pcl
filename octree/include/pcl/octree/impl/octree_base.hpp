@@ -239,6 +239,9 @@ OctreeBase<LeafContainerT, BranchContainerT>::deserializeTree(
   std::vector<char>::const_iterator binary_tree_out_it = binary_tree_out_arg.begin();
   std::vector<char>::const_iterator binary_tree_out_it_end = binary_tree_out_arg.end();
 
+  if (!root_node_.get())
+    root_node_.reset(new BranchNode());
+
   deserializeTreeRecursive(root_node_.get(),
                            depth_mask_,
                            new_key,

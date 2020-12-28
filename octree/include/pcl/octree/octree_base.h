@@ -122,9 +122,9 @@ public:
 
   // Octree leaf node iterators
   // The previous deprecated names
-  // LeafNodeIterator and ConstLeafNodeIterator are deprecated.
-  // Please use LeafNodeDepthFirstIterator and ConstLeafNodeDepthFirstIterator instead.
+  PCL_DEPRECATED(1, 15, "Please use LeafNodeDepthFirstIterator instead.");
   using LeafNodeIterator = OctreeLeafNodeDepthFirstIterator<OctreeT>;
+  PCL_DEPRECATED(1, 15, "Please use ConstLeafNodeDepthFirstIterator instead.");
   using ConstLeafNodeIterator = const OctreeLeafNodeDepthFirstIterator<OctreeT>;
 
   // The currently valide names
@@ -507,7 +507,7 @@ protected:
       switch (branch_child->getNodeType()) {
       case BRANCH_NODE: {
         // free child branch recursively
-        deleteBranch(*static_cast<BranchNode*>(branch_child));
+        deleteBranch(*reinterpret_cast<BranchNode*>(branch_child));
         // delete branch node
         branch_arg[child_idx_arg].reset();
       } break;
@@ -544,9 +544,9 @@ protected:
   BranchNode*
   createBranchChild(BranchNode& branch_arg, unsigned char child_idx_arg)
   {
-    branch_arg[child_idx_arg].reset(static_cast<OctreeNode*>(new BranchNode()));
+    branch_arg[child_idx_arg].reset(reinterpret_cast<OctreeNode*>(new BranchNode()));
 
-    return static_cast<BranchNode*>(branch_arg[child_idx_arg].get());
+    return reinterpret_cast<BranchNode*>(branch_arg[child_idx_arg].get());
   }
 
   /** \brief Create and add a new leaf child to a branch class
@@ -557,9 +557,9 @@ protected:
   LeafNode*
   createLeafChild(BranchNode& branch_arg, unsigned char child_idx_arg)
   {
-    branch_arg[child_idx_arg].reset(static_cast<OctreeNode*>(new LeafNode()));
+    branch_arg[child_idx_arg].reset(reinterpret_cast<OctreeNode*>(new LeafNode()));
 
-    return static_cast<LeafNode*>(branch_arg[child_idx_arg].get());
+    return reinterpret_cast<LeafNode*>(branch_arg[child_idx_arg].get());
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
