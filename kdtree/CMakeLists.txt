@@ -12,6 +12,9 @@ if(NOT build)
   return()
 endif()
 
+### ---[ Generate compile_commands.json for clang-tidy
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(srcs
   src/kdtree_flann.cpp
 )

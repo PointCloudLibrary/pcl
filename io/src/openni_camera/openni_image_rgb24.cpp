@@ -12,8 +12,7 @@ ImageRGB24::ImageRGB24 (pcl::shared_ptr<xn::ImageMetaData> image_meta_data) noex
 }
 
 ImageRGB24::~ImageRGB24 () noexcept
-{
-}
+= default;
 
 void ImageRGB24::fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step) const
 {

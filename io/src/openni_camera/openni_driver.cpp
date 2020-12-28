@@ -557,12 +557,7 @@ openni_wrapper::OpenNIDriver::DeviceContext::DeviceContext (const xn::NodeInfo& 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 openni_wrapper::OpenNIDriver::DeviceContext::DeviceContext (const DeviceContext& other)
-: device_node (other.device_node)
-, image_node (other.image_node)
-, depth_node (other.depth_node)
-, ir_node (other.ir_node)
-, device (other.device)
-{
-}
+ 
+= default;
 
 #endif
