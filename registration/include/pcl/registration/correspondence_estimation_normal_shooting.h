@@ -126,7 +126,7 @@ public:
   }
 
   /** \brief Empty destructor */
-        ~CorrespondenceEstimationNormalShooting () override = default;
+  ~CorrespondenceEstimationNormalShooting() override = default;
 
   /** \brief Set the normals computed on the source point cloud
    * \param[in] normals the normals computed for the source cloud

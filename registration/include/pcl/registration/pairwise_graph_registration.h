@@ -59,7 +59,7 @@ public:
   using GraphHandlerVertex = typename pcl::registration::GraphHandler<GraphT>::Vertex;
 
   /** \brief Empty destructor */
-      ~PairwiseGraphRegistration () override = default;
+  ~PairwiseGraphRegistration() override = default;
 
   /** \brief Empty constructor */
   PairwiseGraphRegistration() : registration_method_(), incremental_(true) {}

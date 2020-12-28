@@ -85,7 +85,7 @@ public:
   MetaRegistration();
 
   /** \brief Empty destructor */
-        virtual ~MetaRegistration () = default;
+  virtual ~MetaRegistration() = default;
 
   /** \brief Register new point cloud
    * \note You have to set a valid registration object with \ref setRegistration before

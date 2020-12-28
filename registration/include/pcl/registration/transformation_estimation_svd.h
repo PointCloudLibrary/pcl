@@ -68,7 +68,8 @@ public:
    * \param[in] use_umeyama Toggles whether or not to use 3rd party software*/
   TransformationEstimationSVD(bool use_umeyama = true) : use_umeyama_(use_umeyama) {}
 
-        ~TransformationEstimationSVD () override = default;;
+  ~TransformationEstimationSVD() override = default;
+  ;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using SVD. \param[in] cloud_src the source point cloud dataset

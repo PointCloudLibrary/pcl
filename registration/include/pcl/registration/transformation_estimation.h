@@ -63,8 +63,10 @@ class TransformationEstimation {
 public:
   using Matrix4 = Eigen::Matrix<Scalar, 4, 4>;
 
-        TransformationEstimation () = default;;
-        virtual ~TransformationEstimation () = default;;
+  TransformationEstimation() = default;
+  ;
+  virtual ~TransformationEstimation() = default;
+  ;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud. \param[in] cloud_src the source point cloud dataset \param[in]

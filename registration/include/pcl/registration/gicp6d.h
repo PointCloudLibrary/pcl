@@ -171,9 +171,7 @@ protected:
       trivial_ = false;
     }
 
-          
-          ~MyPointRepresentation ()
-          override = default;
+    ~MyPointRepresentation() override = default;
 
     inline Ptr
     makeShared() const

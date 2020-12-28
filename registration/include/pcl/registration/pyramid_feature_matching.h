@@ -192,26 +192,24 @@ private:
 
   /** \brief Structure for representing a single pyramid histogram level */
   struct PyramidFeatureHistogramLevel {
-      {
-        PyramidFeatureHistogramLevel () 
-        = default;
-
-    PyramidFeatureHistogramLevel(std::vector<std::size_t>& a_bins_per_dimension,
-                                 std::vector<float>& a_bin_step)
-    : bins_per_dimension(a_bins_per_dimension), bin_step(a_bin_step)
     {
-      initializeHistogramLevel();
-    }
+      PyramidFeatureHistogramLevel() = default;
 
-    void
-    initializeHistogramLevel();
+      PyramidFeatureHistogramLevel(std::vector<std::size_t> & a_bins_per_dimension,
+                                   std::vector<float> & a_bin_step)
+      : bins_per_dimension(a_bins_per_dimension), bin_step(a_bin_step)
+      {
+        initializeHistogramLevel();
+      }
 
-    std::vector<unsigned int> hist;
-    std::vector<std::size_t> bins_per_dimension;
-    std::vector<float> bin_step;
+      void initializeHistogramLevel();
+
+      std::vector<unsigned int> hist;
+      std::vector<std::size_t> bins_per_dimension;
+      std::vector<float> bin_step;
+    };
+    std::vector<PyramidFeatureHistogramLevel> hist_levels;
   };
-  std::vector<PyramidFeatureHistogramLevel> hist_levels;
-};
 } // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE

@@ -99,7 +99,7 @@ public:
 
   class HuberPenalty : public ErrorFunctor {
   private:
-          HuberPenalty () = default;
+    HuberPenalty() = default;
 
   public:
     HuberPenalty(float threshold) : threshold_(threshold) {}
@@ -117,10 +117,10 @@ public:
 
   class TruncatedError : public ErrorFunctor {
   private:
-          TruncatedError () = default;
+    TruncatedError() = default;
 
   public:
-          ~TruncatedError () = default;
+    ~TruncatedError() = default;
 
     TruncatedError(float threshold) : threshold_(threshold) {}
     float

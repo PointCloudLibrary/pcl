@@ -74,7 +74,7 @@ public:
   }
 
   /** \brief Destructor. */
-        ~CorrespondenceRejectorTrimmed () override = default;
+  ~CorrespondenceRejectorTrimmed() override = default;
 
   /** \brief Set the expected ratio of overlap between point clouds (in
    * terms of correspondences).

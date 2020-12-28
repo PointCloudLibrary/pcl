@@ -115,7 +115,8 @@ public:
   }
 
   /** \brief Destructor. */
-        virtual ~TransformationEstimationPointToPlaneWeighted () = default;;
+  virtual ~TransformationEstimationPointToPlaneWeighted() = default;
+  ;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using LM. \param[in] cloud_src the source point cloud dataset
@@ -236,7 +237,7 @@ protected:
     Functor(int m_data_points) : m_data_points_(m_data_points) {}
 
     /** \brief Destructor. */
-          virtual ~Functor () = default;
+    virtual ~Functor() = default;
 
     /** \brief Get the number of values. */
     int
@@ -282,7 +283,7 @@ protected:
     }
 
     /** \brief Destructor. */
-          virtual ~OptimizationFunctor () = default;
+    virtual ~OptimizationFunctor() = default;
 
     /** Fill fvec from x. For the current state vector x fill the f values
      * \param[in] x state vector
@@ -330,7 +331,7 @@ protected:
     }
 
     /** \brief Destructor. */
-          virtual ~OptimizationFunctorWithIndices () = default;
+    virtual ~OptimizationFunctorWithIndices() = default;
 
     /** Fill fvec from x. For the current state vector x fill the f values
      * \param[in] x state vector

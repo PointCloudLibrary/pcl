@@ -81,7 +81,7 @@ public:
   }
 
   /** \brief Empty destructor. */
-        ~CorrespondenceRejectorSampleConsensus () override = default;
+  ~CorrespondenceRejectorSampleConsensus() override = default;
 
   /** \brief Get a list of valid correspondences after rejection from the original set
    * of correspondences. \param[in] original_correspondences the set of initial

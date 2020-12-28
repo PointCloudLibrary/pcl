@@ -80,8 +80,10 @@ public:
   using PointCloudTargetPtr = typename PointCloudTarget::Ptr;
   using PointCloudTargetConstPtr = typename PointCloudTarget::ConstPtr;
 
-        TransformationValidation () = default;;
-        virtual ~TransformationValidation () = default;;
+  TransformationValidation() = default;
+  ;
+  virtual ~TransformationValidation() = default;
+  ;
 
   /** \brief Validate the given transformation with respect to the input cloud data, and
    * return a score. Pure virtual.

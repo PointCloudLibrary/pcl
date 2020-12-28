@@ -66,9 +66,9 @@ public:
   using Ptr = shared_ptr<ConvergenceCriteria>;
   using ConstPtr = shared_ptr<const ConvergenceCriteria>;
 
-        /** \brief Empty constructor. */
+  /** \brief Empty constructor. */
   /** \brief Empty destructor. */
-        virtual ~ConvergenceCriteria () = default;
+  virtual ~ConvergenceCriteria() = default;
 
   /** \brief Check if convergence has been reached. Pure virtual. */
   virtual bool
