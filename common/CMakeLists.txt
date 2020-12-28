@@ -12,6 +12,9 @@ if(NOT build)
   return()
 endif()
 
+### ---[ Generate compile_commands.json for clang-tidy
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(range_image_incs
   include/pcl/range_image/bearing_angle_image.h
   include/pcl/range_image/range_image.h

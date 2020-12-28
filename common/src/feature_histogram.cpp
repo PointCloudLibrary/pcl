@@ -65,9 +65,7 @@ pcl::FeatureHistogram::FeatureHistogram (std::size_t const number_of_bins,
 }
 
 pcl::FeatureHistogram::~FeatureHistogram ()
-{
-  
-}
+= default;
 
 float
 pcl::FeatureHistogram::getThresholdMin () const
