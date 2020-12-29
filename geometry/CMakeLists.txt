@@ -12,6 +12,9 @@ if(NOT build)
   return()
 endif()
 
+### ---[ Generate compile_commands.json for clang-tidy
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(incs
   "include/pcl/${SUBSYS_NAME}/boost.h"
   "include/pcl/${SUBSYS_NAME}/eigen.h"
