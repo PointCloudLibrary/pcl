@@ -126,7 +126,7 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
   for (std::size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {
     int i = (*indices_)[index_i];
-    std::vector<int> nn_indices;
+    pcl::Indices nn_indices;
     std::vector<float> nn_distances;
     tree_->radiusSearch (i, static_cast<float> (search_radius_), nn_indices, nn_distances);
 

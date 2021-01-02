@@ -157,7 +157,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::planeFitt
 template<typename PointInT, typename PointNT, typename PointOutT> void
 pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::normalDisambiguation (
                                                                                              pcl::PointCloud<PointNT> const &normal_cloud,
-                                                                                             std::vector<int> const &normal_indices,
+                                                                                             pcl::Indices const &normal_indices,
                                                                                              Eigen::Vector3f &normal)
 {
   Eigen::Vector3f normal_mean;
@@ -186,7 +186,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
   //find Z axis
 
   //extract support points for Rz radius
-  std::vector<int> neighbours_indices;
+  pcl::Indices neighbours_indices;
   std::vector<float> neighbours_distances;
   std::size_t n_neighbours = this->searchForNeighbors (index, search_parameter_, neighbours_indices, neighbours_distances);
 
