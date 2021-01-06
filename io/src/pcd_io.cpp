@@ -453,7 +453,8 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
 
       if (st.size () != elems_per_line) // If this is not checked, an exception might occur when accessing st
       {
-        PCL_WARN ("[pcl::PCDReader::readBodyASCII] Possibly misformed PCD file: line has %zu elements, but should have %u!\n", st.size (), elems_per_line);
+        PCL_WARN ("[pcl::PCDReader::readBodyASCII] Possibly misformed PCD file: line has %zu elements, but should have %u! (point %u)\n",
+                  st.size (), elems_per_line, idx+1);
         ++idx; // Skip this line/point, but read all others
         continue;
       }
