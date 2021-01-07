@@ -171,8 +171,8 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void
-pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
-                                                                     const std::vector<int> &nn_indices,
+pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (index_t index,
+                                                                     const Indices &nn_indices,
                                                                      PointCloudOut &projected_points,
                                                                      NormalCloud &projected_points_normals,
                                                                      PointIndices &corresponding_input_indices,
@@ -305,7 +305,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
   {
     // Allocate enough space to hold the results of nearest neighbor searches
     // \note resize is irrelevant for a radiusSearch ().
-    std::vector<int> nn_indices;
+    Indices nn_indices;
     std::vector<float> nn_sqr_dists;
 
     // Get the initial estimates of point positions and their neighborhoods
@@ -381,7 +381,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
 
       // Get 3D position of point
       //Eigen::Vector3f pos = (*distinct_cloud_)[dp_i].getVector3fMap ();
-      std::vector<int> nn_indices;
+      Indices nn_indices;
       std::vector<float> nn_dists;
       tree_->nearestKSearch ((*distinct_cloud_)[dp_i], 1, nn_indices, nn_dists);
       int input_index = nn_indices.front ();
@@ -418,7 +418,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
       p.y = pos[1];
       p.z = pos[2];
 
-      std::vector<int> nn_indices;
+      Indices nn_indices;
       std::vector<float> nn_dists;
       tree_->nearestKSearch (p, 1, nn_indices, nn_dists);
       int input_index = nn_indices.front ();
@@ -721,7 +721,7 @@ pcl::MLSResult::projectQueryPoint (ProjectionMethod method, int required_neighbo
 template <typename PointT> void
 pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
                                    int index,
-                                   const std::vector<int> &nn_indices,
+                                   const Indices &nn_indices,
                                    double search_radius,
                                    int polynomial_order,
                                    std::function<double(const double)> weight_func)

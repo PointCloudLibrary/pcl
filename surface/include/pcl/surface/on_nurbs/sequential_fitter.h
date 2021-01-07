@@ -217,7 +217,7 @@ namespace pcl
 
         /** \brief Convert point-cloud */
         static unsigned
-        PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, const std::vector<int> &indices, vector_vec3d &cloud);
+        PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, const pcl::Indices &indices, vector_vec3d &cloud);
 
       public:
         PCL_MAKE_ALIGNED_OPERATOR_NEW

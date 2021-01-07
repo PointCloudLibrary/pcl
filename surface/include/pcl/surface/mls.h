@@ -205,8 +205,8 @@ namespace pcl
       */
     template <typename PointT> void
     computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
-                       int index,
-                       const std::vector<int> &nn_indices,
+                       index_t index,
+                       const Indices &nn_indices,
                        double search_radius,
                        int polynomial_order = 2,
                        std::function<double(const double)> weight_func = {});
@@ -273,7 +273,7 @@ namespace pcl
       using PointCloudInPtr = typename PointCloudIn::Ptr;
       using PointCloudInConstPtr = typename PointCloudIn::ConstPtr;
 
-      using SearchMethod = std::function<int (int, double, std::vector<int> &, std::vector<float> &)>;
+      using SearchMethod = std::function<int (index_t, double, Indices &, std::vector<float> &)>;
 
       enum UpsamplingMethod
       {
@@ -331,7 +331,7 @@ namespace pcl
       {
         tree_ = tree;
         // Declare the search locator definition
-        search_method_ = [this] (int index, double radius, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
+        search_method_ = [this] (index_t index, double radius, Indices& k_indices, std::vector<float>& k_sqr_distances)
         {
           return tree_->radiusSearch (index, radius, k_indices, k_sqr_distances, 0);
         };
@@ -645,7 +645,7 @@ namespace pcl
         * \param[out] sqr_distances the resultant squared distances from the query point to the neighbors within search_radius_
         */
       inline int
-      searchForNeighbors (int index, std::vector<int> &indices, std::vector<float> &sqr_distances) const
+      searchForNeighbors (index_t index, Indices &indices, std::vector<float> &sqr_distances) const
       {
         return (search_method_ (index, search_radius_, indices, sqr_distances));
       }
@@ -662,8 +662,8 @@ namespace pcl
         * (used only in the case of VOXEL_GRID_DILATION or DISTINCT_CLOUD upsampling)
         */
       void
-      computeMLSPointNormal (int index,
-                             const std::vector<int> &nn_indices,
+      computeMLSPointNormal (index_t index,
+                             const Indices &nn_indices,
                              PointCloudOut &projected_points,
                              NormalCloud &projected_points_normals,
                              PointIndices &corresponding_input_indices,

@@ -605,7 +605,7 @@ SequentialFitter::grow (float max_dist, float max_angle, unsigned min_length, un
 }
 
 unsigned
-SequentialFitter::PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, const std::vector<int> &indices,
+SequentialFitter::PCL2ON (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud, const pcl::Indices &indices,
                           vector_vec3d &on_cloud)
 {
   std::size_t numPoints = 0;
