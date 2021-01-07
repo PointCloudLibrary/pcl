@@ -427,7 +427,6 @@ pcl::GridProjection<PointNT>::getMagAtPoint (const Eigen::Vector4f &p,
                                              const pcl::Indices &pt_union_indices)
 {
   std::vector <double> pt_union_dist (pt_union_indices.size ());
-  std::vector <double> pt_union_weight (pt_union_indices.size ());
   double sum = 0.0;
   for (std::size_t i = 0; i < pt_union_indices.size (); ++i)
   {

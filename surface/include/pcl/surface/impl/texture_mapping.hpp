@@ -492,14 +492,11 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const pcl::TextureMesh &tex
     {
       // check if all the face's points are visible
       bool faceIsVisible = true;
-      std::vector<int>::iterator it;
 
       // iterate over face's vertex
       for (const auto &vertex : tex_mesh.tex_polygons[polygons][faces].vertices)
       {
-        it = find (occluded.begin (), occluded.end (), vertex);
-
-        if (it == occluded.end ())
+        if (find (occluded.begin (), occluded.end (), vertex) == occluded.end ())
         {
           // point is not in the occluded vector
           // PCL_INFO ("  VISIBLE!\n");
