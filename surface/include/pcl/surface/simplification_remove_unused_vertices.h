@@ -40,7 +40,7 @@
 #include <vector> // for vector
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/types.h> // for Indices
+#include <pcl/types.h> // for pcl::Indices
 
 namespace pcl
 {
@@ -66,7 +66,7 @@ namespace pcl
         inline void
         simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output)
         {
-          Indices indices;
+          pcl::Indices indices;
           simplify (input, output, indices);
         }
 
@@ -76,7 +76,7 @@ namespace pcl
           * \param[out] indices the resultant vector of indices
           */
         void
-        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output, Indices& indices);
+        simplify (const pcl::PolygonMesh& input, pcl::PolygonMesh& output, pcl::Indices& indices);
 
     };
   }
