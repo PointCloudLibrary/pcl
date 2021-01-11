@@ -39,6 +39,7 @@
 #include <suitesparse/umfpack.h>
 #include <iostream>
 #include <stdio.h>
+#include <time.h>
 #include <stdexcept>
 
 #include <pcl/surface/on_nurbs/nurbs_solve.h>
