@@ -2152,7 +2152,7 @@ TEST (NormalRefinement, Filters)
 
   // Input without NaN
   pcl::PointCloud<pcl::PointXYZRGB> cloud_organized_nonan;
-  std::vector<int> dummy;
+  pcl::Indices dummy;
   pcl::removeNaNFromPointCloud<pcl::PointXYZRGB> (*cloud_organized, cloud_organized_nonan, dummy);
 
   // Viewpoint

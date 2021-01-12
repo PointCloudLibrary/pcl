@@ -159,7 +159,7 @@ TEST (CropBox, Filters)
   cropBoxFilter.setMax (max_pt);
 
   // Indices
-  std::vector<int> indices;
+  pcl::Indices indices;
   cropBoxFilter.filter (indices);
 
   // Cloud
@@ -483,7 +483,7 @@ TEST (CropBox, Filters)
   cropBoxFilter2.setMax (max_pt);
 
   // Indices
-  std::vector<int> indices2;
+  pcl::Indices indices2;
   cropBoxFilter2.filter (indices2);
 
   // Cloud
