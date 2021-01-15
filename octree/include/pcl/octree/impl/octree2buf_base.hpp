@@ -374,7 +374,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
 
   if (depth_mask_arg > 1) {
     // we have not reached maximum tree depth
-    BranchNode* child_branch;
+    const std::shared_ptr<BranchNode>& child_branch;
     bool doNodeReset;
 
     doNodeReset = false;
@@ -387,7 +387,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
         OctreeNode* child_node = branch_arg->getChildPtr(!buffer_selector_, child_idx);
 
         if (child_node->getNodeType() == BRANCH_NODE) {
-          child_branch = static_cast<BranchNode*>(child_node);
+          child_branch = child_node;
           branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
         }
         else {
@@ -408,8 +408,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
     }
     // required branch node already exists - use it
     else
-      child_branch = static_cast<BranchNode*>(
-          branch_arg->getChildPtr(buffer_selector_, child_idx));
+      child_branch = branch_arg->getChildPtr(buffer_selector_, child_idx);
 
     // recursively proceed with indexed child branch
     return createLeafRecursive(key_arg,
@@ -421,7 +420,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
   }
 
   // branch childs are leaf nodes
-  LeafNode* child_leaf;
+  std::shared_ptr<LeafNode>& child_leaf;
   if (!branch_arg->hasChild(buffer_selector_, child_idx)) {
     // leaf node at child_idx does not exist
 
@@ -430,7 +429,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
 
       OctreeNode* child_node = branch_arg->getChildPtr(!buffer_selector_, child_idx);
       if (child_node->getNodeType() == LEAF_NODE) {
-        child_leaf = static_cast<LeafNode*>(child_node);
+        child_leaf = child_node;
         branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
       }
       else {

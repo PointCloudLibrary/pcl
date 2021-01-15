@@ -83,10 +83,10 @@ public:
   }
 
   /** \brief Method to perform a deep copy of the octree */
-  BufferedBranchNode*
+  std::shared_ptr<BufferedBranchNode>
   deepCopy() const override
   {
-    return new BufferedBranchNode(*this);
+    return std::make_shared<BufferedBranchNode>(*this);
   }
 
   /** \brief Get child pointer in current branch node
@@ -94,11 +94,11 @@ public:
    *  \param index_arg: index of child in node
    *  \return pointer to child node
    */
-  inline OctreeNode*
+  inline std::shared_ptr<OctreeNode>
   getChildPtr(unsigned char buffer_arg, unsigned char index_arg) const
   {
     assert((buffer_arg < 2) && (index_arg < 8));
-    return child_node_array_[buffer_arg][index_arg].get();
+    return child_node_array_[buffer_arg][index_arg];
   }
 
   /** \brief Set child pointer in current branch node
@@ -109,10 +109,10 @@ public:
   inline void
   setChildPtr(unsigned char buffer_arg,
               unsigned char index_arg,
-              OctreeNode* newNode_arg)
+              std::shared_ptr<OctreeNode> newNode_arg)
   {
     assert((buffer_arg < 2) && (index_arg < 8));
-    child_node_array_[buffer_arg][index_arg].reset(newNode_arg);
+    child_node_array_[buffer_arg][index_arg] = newNode_arg;
   }
 
   /** \brief Check if branch is pointing to a particular child node
@@ -124,7 +124,7 @@ public:
   hasChild(unsigned char buffer_arg, unsigned char index_arg) const
   {
     assert((buffer_arg < 2) && (index_arg < 8));
-    return (child_node_array_[buffer_arg][index_arg] != nullptr);
+    return (child_node_array_[buffer_arg][index_arg].get() != nullptr);
   }
 
   /** \brief Get the type of octree node. Returns LEAVE_NODE type */
@@ -200,7 +200,7 @@ public:
 protected:
   ContainerT container_;
 
-  std::array<std::array<std::unique_ptr<OctreeNode>, 8>, 2> child_node_array_;
+  std::array<std::array<std::shared_ptr<OctreeNode>, 8>, 2> child_node_array_;
 };
 
 /** \brief @b Octree double buffer class
@@ -381,7 +381,7 @@ public:
    *  \param idx_z_arg: index of leaf node in the Z axis.
    *  \return pointer to new leaf node container.
    */
-  LeafContainerT*
+  std::shared_ptr<LeafContainerT>
   createLeaf(unsigned int idx_x_arg, unsigned int idx_y_arg, unsigned int idx_z_arg);
 
   /** \brief Find leaf node at (idx_x_arg, idx_y_arg, idx_z_arg).
@@ -391,7 +391,7 @@ public:
    *  \param idx_z_arg: index of leaf node in the Z axis.
    *  \return pointer to leaf node container if found, null pointer otherwise.
    */
-  LeafContainerT*
+  std::shared_ptr<LeafContainerT>
   findLeaf(unsigned int idx_x_arg, unsigned int idx_y_arg, unsigned int idx_z_arg);
 
   /** \brief Check for the existence of leaf node at (idx_x_arg, idx_y_arg, idx_z_arg).
@@ -448,7 +448,7 @@ public:
   deleteCurrentBuffer()
   {
     buffer_selector_ = !buffer_selector_;
-    treeCleanUpRecursive(root_node_.get());
+    treeCleanUpRecursive(root_node_);
     leaf_count_ = 0;
   }
 
@@ -480,7 +480,7 @@ public:
    **/
   void
   serializeTree(std::vector<char>& binary_tree_out_arg,
-                std::vector<LeafContainerT*>& leaf_container_vector_arg,
+                std::vector<std::shared_ptr<LeafContainerT>>& leaf_container_vector_arg,
                 bool do_XOR_encoding_arg = false);
 
   /** \brief Outputs a vector of all DataT elements that are stored within the octree
@@ -489,7 +489,7 @@ public:
    * in the octree
    */
   void
-  serializeLeafs(std::vector<LeafContainerT*>& leaf_container_vector_arg);
+  serializeLeafs(std::vector<std::shared_ptr<LeafContainerT>>& leaf_container_vector_arg);
 
   /** \brief Outputs a vector of all DataT elements from leaf nodes, that do not exist
    * in the previous octree buffer.
@@ -497,7 +497,7 @@ public:
    * in the octree
    */
   void
-  serializeNewLeafs(std::vector<LeafContainerT*>& leaf_container_vector_arg);
+  serializeNewLeafs(std::vector<std::shared_ptr<LeafContainerT>>& leaf_container_vector_arg);
 
   /** \brief Deserialize a binary octree description vector and create a corresponding
    * octree structure. Leaf nodes are initialized with getDataTByKey(..).
@@ -521,7 +521,7 @@ public:
    */
   void
   deserializeTree(std::vector<char>& binary_tree_in_arg,
-                  std::vector<LeafContainerT*>& leaf_container_vector_arg,
+                  std::vector<std::shared_ptr<LeafContainerT>>& leaf_container_vector_arg,
                   bool do_XOR_decoding_arg = false);
 
 protected:
@@ -530,10 +530,10 @@ protected:
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /** \brief Retrieve root node */
-  OctreeNode*
+  std::shared_ptr<OctreeNode>
   getRootNode() const
   {
-    return (this->root_node_.get());
+    return (this->root_node_);
   }
 
   /** \brief Find leaf node
@@ -541,10 +541,10 @@ protected:
    *  \return pointer to leaf container. If leaf node is not found, this pointer returns
    * 0.
    */
-  inline LeafContainerT*
+  inline std::shared_ptr<LeafContainerT>
   findLeaf(const OctreeKey& key_arg) const
   {
-    LeafContainerT* result = nullptr;
+    std::shared_ptr<LeafContainerT> result;
     findLeafRecursive(key_arg, depth_mask_, root_node_.get(), result);
     return result;
   }
@@ -555,7 +555,7 @@ protected:
    * \param key_arg: octree key addressing a leaf node.
    * \return pointer to an existing or created leaf container.
    */
-  inline LeafContainerT*
+  inline std::shared_ptr<LeafContainerT>
   createLeaf(const OctreeKey& key_arg)
   {
     LeafNode* leaf_node;
@@ -614,7 +614,7 @@ protected:
    * \param child_idx_arg: index to child node
    * \return pointer to octree child node class
    */
-  inline OctreeNode*
+  inline std::shared_ptr<OctreeNode>
   getBranchChildPtr(const BranchNode& branch_arg, unsigned char child_idx_arg) const
   {
     return branch_arg.getChildPtr(buffer_selector_, child_idx_arg);
@@ -628,7 +628,7 @@ protected:
   inline void
   setBranchChildPtr(BranchNode& branch_arg,
                     unsigned char child_idx_arg,
-                    OctreeNode* new_child_arg)
+                    std::shared_ptr<OctreeNode> new_child_arg)
   {
     branch_arg.setChildPtr(buffer_selector_, child_idx_arg, new_child_arg);
   }
@@ -646,7 +646,7 @@ protected:
     // create bit pattern
     node_bits = 0;
     for (unsigned char i = 0; i < 8; i++) {
-      const OctreeNode* child = branch_arg.getChildPtr(buffer_selector_, i);
+      const std::shared_ptr<OctreeNode>& child = branch_arg.getChildPtr(buffer_selector_, i);
       node_bits |= static_cast<char>((!!child) << i);
     }
 
@@ -668,7 +668,7 @@ protected:
     // create bit pattern
     node_bits = 0;
     for (unsigned char i = 0; i < 8; i++) {
-      const OctreeNode* child = branch_arg.getChildPtr(bufferSelector_arg, i);
+      const std::shared_ptr<OctreeNode>& child = branch_arg.getChildPtr(bufferSelector_arg, i);
       node_bits |= static_cast<char>((!!child) << i);
     }
 
@@ -689,8 +689,8 @@ protected:
     node_bits[0] = node_bits[1] = 0;
 
     for (unsigned char i = 0; i < 8; i++) {
-      const OctreeNode* childA = branch_arg.getChildPtr(0, i);
-      const OctreeNode* childB = branch_arg.getChildPtr(1, i);
+      const std::shared_ptr<OctreeNode>& childA = branch_arg.getChildPtr(0, i);
+      const std::shared_ptr<OctreeNode>& childB = branch_arg.getChildPtr(1, i);
 
       node_bits[0] |= static_cast<char>((!!childA) << i);
       node_bits[1] |= static_cast<char>((!!childB) << i);
@@ -721,14 +721,14 @@ protected:
                     unsigned char child_idx_arg)
   {
     if (branch_arg.hasChild(buffer_selector_arg, child_idx_arg)) {
-      OctreeNode* branchChild =
+      std::shared_ptr<OctreeNode>& branchChild =
         branch_arg.getChildPtr(buffer_selector_arg, child_idx_arg);
 
       switch (branchChild->getNodeType()) {
         case BRANCH_NODE:
           {
             // free child branch recursively
-            deleteBranch(*reinterpret_cast<BranchNode*>(branchChild));
+            deleteBranch(branchChild);
             break;
           }
         case LEAF_NODE:
@@ -785,13 +785,13 @@ protected:
    *  \param child_idx_arg: index to child node
    *  \return pointer of new branch child to this reference
    */
-  inline BranchNode*
+  inline std::shared_ptr<BranchNode>
   createBranchChild(BranchNode& branch_arg, unsigned char child_idx_arg)
   {
-    BranchNode* new_branch_child = new BranchNode();
+    auto new_branch_child = std::make_shared<BranchNode>();
 
     branch_arg.setChildPtr(
-        buffer_selector_, child_idx_arg, reinterpret_cast<OctreeNode*>(new_branch_child));
+        buffer_selector_, child_idx_arg, new_branch_child);
 
     return new_branch_child;
   }
@@ -801,10 +801,10 @@ protected:
    *  \param child_idx_arg: index to child node
    *  \return pointer of new leaf child to this reference
    */
-  inline LeafNode*
+  inline std::shared_ptr<LeafNode>
   createLeafChild(BranchNode& branch_arg, unsigned char child_idx_arg)
   {
-    LeafNode* new_leaf_child = new LeafNode();
+    auto new_leaf_child = std::make_shared<LeafNode>();
 
     branch_arg.setChildPtr(buffer_selector_, child_idx_arg, new_leaf_child);
 
