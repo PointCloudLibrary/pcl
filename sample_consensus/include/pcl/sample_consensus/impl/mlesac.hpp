@@ -66,6 +66,8 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
 
   // Compute sigma - remember to set threshold_ correctly !
   sigma_ = computeMedianAbsoluteDeviation (sac_model_->getInputCloud (), sac_model_->getIndices (), threshold_);
+  const double dist_scaling_factor = -1.0 / (2.0 * sigma_ * sigma_); // Precompute since this does not change
+  const double normalization_factor = 1.0 / (sqrt (2 * M_PI) * sigma_);
   if (debug_verbosity_level > 1)
     PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Estimated sigma value: %f.\n", sigma_);
 
@@ -116,10 +118,10 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
     std::vector<double> p_inlier_prob (indices_size);
     for (int j = 0; j < iterations_EM_; ++j)
     {
+      const double weighted_normalization_factor = gamma * normalization_factor;
       // Likelihood of a datum given that it is an inlier
       for (std::size_t i = 0; i < indices_size; ++i)
-        p_inlier_prob[i] = gamma * std::exp (- (distances[i] * distances[i] ) / 2 * (sigma_ * sigma_) ) /
-                           (sqrt (2 * M_PI) * sigma_);
+        p_inlier_prob[i] = weighted_normalization_factor * std::exp ( dist_scaling_factor * distances[i] * distances[i] );
 
       // Likelihood of a datum given that it is an outlier
       p_outlier_prob = (1 - gamma) / v;
