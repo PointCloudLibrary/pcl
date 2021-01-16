@@ -560,6 +560,29 @@ TEST (PCL, GetMaxDistance)
   test::EXPECT_EQ_VECTORS (max_exp_pt, max_pt);
 }
 
+TEST (PCL, computeMedian)
+{
+  std::vector<float> vector1{4.0f, 2.0f, 1.0f, 5.0f, 3.0f, 6.0f};
+  const auto median1 = computeMedian (vector1.begin (), vector1.end ());
+  EXPECT_EQ(median1, 3.5f);
+
+  std::vector<double> vector2{1.0, 25.0, 9.0, 4.0, 16.0};
+  const auto median2 = computeMedian (vector2.begin (), vector2.end (), static_cast<double(*)(double)>(std::sqrt));
+  EXPECT_EQ(median2, 3.0);
+
+  std::vector<double> vector3{1.0, 2.0, 6.0, 5.0, 4.0, 3.0};
+  const auto median3 = computeMedian (vector3.begin (), vector3.end (), [](const double& x){ return x+1.0; });
+  EXPECT_EQ(median3, 4.5);
+
+  std::vector<int> vector4{-1, 1, 2, 9, 15, 16};
+  const auto median4 = computeMedian (vector4.begin (), vector4.end ());
+  EXPECT_EQ(median4, 5);
+
+  std::vector<int> vector5{-1, 1, 2, 9, 15, 16};
+  const auto median5 = computeMedian (vector5.begin (), vector5.end (), [](const int& x){ return static_cast<double>(x); });
+  EXPECT_EQ(median5, 5.5);
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
