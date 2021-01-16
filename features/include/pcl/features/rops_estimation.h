@@ -137,7 +137,7 @@ namespace pcl
         * \param[out] local_points stores the indices of the points that belong to the local surface
         */
       void
-      getLocalSurface (const PointInT& point, std::set <unsigned int>& local_triangles, std::vector <int>& local_points) const;
+      getLocalSurface (const PointInT& point, std::set <unsigned int>& local_triangles, pcl::Indices& local_points) const;
 
       /** \brief This method computes LRF (Local Reference Frame) matrix for the given point.
         * \param[in] point point for which the LRF is computed
@@ -167,7 +167,7 @@ namespace pcl
         * \param[out] transformed_cloud stores the transformed cloud
         */
       void
-      transformCloud (const PointInT& point, const Eigen::Matrix3f& matrix, const std::vector <int>& local_points, PointCloudIn& transformed_cloud) const;
+      transformCloud (const PointInT& point, const Eigen::Matrix3f& matrix, const pcl::Indices& local_points, PointCloudIn& transformed_cloud) const;
 
       /** \brief This method rotates the cloud around the given axis and computes AABB of the rotated cloud.
         * \param[in] axis axis around which cloud must be rotated

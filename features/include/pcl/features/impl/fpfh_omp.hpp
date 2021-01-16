@@ -73,7 +73,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   if (surface_ != input_ ||
       indices_->size () != surface_->size ())
   { 
-    std::vector<int> nn_indices (k_); // \note These resizes are irrelevant for a radiusSearch ().
+    pcl::Indices nn_indices (k_); // \note These resizes are irrelevant for a radiusSearch ().
     std::vector<float> nn_dists (k_); 
 
     std::set<int> spfh_indices_set;
@@ -103,7 +103,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   hist_f2_.setZero (data_size, nr_bins_f2_);
   hist_f3_.setZero (data_size, nr_bins_f3_);
 
-  std::vector<int> nn_indices (k_); // \note These resizes are irrelevant for a radiusSearch ().
+  pcl::Indices nn_indices (k_); // \note These resizes are irrelevant for a radiusSearch ().
   std::vector<float> nn_dists (k_); 
 
   // Compute SPFH signatures for every point that needs them

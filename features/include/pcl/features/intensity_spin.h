@@ -92,7 +92,7 @@ namespace pcl
       void 
       computeIntensitySpinImage (const PointCloudIn &cloud, 
                                  float radius, float sigma, int k, 
-                                 const std::vector<int> &indices, 
+                                 const pcl::Indices &indices, 
                                  const std::vector<float> &squared_distances, 
                                  Eigen::MatrixXf &intensity_spin_image);
 
