@@ -345,9 +345,7 @@ TYPED_TEST (TestQuadMesh, NineQuads)
   ASSERT_EQ (9, faces.size ());
   for (std::size_t i=0; i<order_vec.size (); ++i)
   {
-    std::stringstream ss;
-    ss << "Configuration " << i;
-    SCOPED_TRACE (ss.str ());
+    SCOPED_TRACE ("Configuration " + std::to_string(i));
 
     const std::vector <int> order = order_vec [i];
 
