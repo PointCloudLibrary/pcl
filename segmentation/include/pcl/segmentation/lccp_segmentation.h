@@ -37,7 +37,6 @@
 
 #pragma once
 
-#include <pcl/pcl_base.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/segmentation/supervoxel_clustering.h>

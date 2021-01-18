@@ -41,7 +41,6 @@
 
 // PCL
 #include <pcl/common/point_tests.h> // for pcl::isFinite
-#include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/type_traits.h>
 

@@ -40,7 +40,6 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/types.h> // for pcl::Indices
-#include <vector>
 
 #include <vtkCommand.h>
 class vtkRenderWindowInteractor;

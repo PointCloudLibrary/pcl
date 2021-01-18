@@ -1,4 +1,5 @@
 #include <pcl/simulation/model.h>
+#include <pcl/conversions.h> // for fromPCLPointCloud2
 using namespace pcl::simulation;
 
 pcl::simulation::TriangleMeshModel::TriangleMeshModel(pcl::PolygonMesh::Ptr plg)

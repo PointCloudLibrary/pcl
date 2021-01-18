@@ -47,7 +47,6 @@
 #include <pcl/segmentation/lccp_segmentation.h>
 #include <pcl/sample_consensus/sac.h>
 
-#include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/segmentation/extract_clusters.h>
 
 #define PCL_INSTANTIATE_CPCSegmentation(T) template class PCL_EXPORTS pcl::CPCSegmentation<T>;

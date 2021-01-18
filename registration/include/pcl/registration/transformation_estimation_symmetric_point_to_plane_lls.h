@@ -38,7 +38,6 @@
 #pragma once
 
 #include <pcl/registration/transformation_estimation.h>
-#include <pcl/registration/warp_point_rigid.h>
 #include <pcl/cloud_iterator.h>
 
 namespace pcl {

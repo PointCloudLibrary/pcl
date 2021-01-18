@@ -39,6 +39,7 @@
 #pragma once
 
 #include <pcl/features/pfh.h>
+#include <pcl/features/pfh_tools.h> // for computePairFeatures
 
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 
