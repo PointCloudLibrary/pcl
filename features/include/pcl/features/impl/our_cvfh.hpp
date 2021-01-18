@@ -101,7 +101,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSm
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.size (), false);
 
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
   for (std::size_t i = 0; i < cloud.size (); ++i)
@@ -166,8 +166,8 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSm
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> void
 pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::filterNormalsWithHighCurvature (const pcl::PointCloud<PointNT> & cloud,
-                                                                                        std::vector<int> &indices_to_use,
-                                                                                        std::vector<int> &indices_out, std::vector<int> &indices_in,
+                                                                                        pcl::Indices &indices_to_use,
+                                                                                        pcl::Indices &indices_out, pcl::Indices &indices_in,
                                                                                         float threshold)
 {
   indices_out.resize (cloud.size ());
@@ -573,8 +573,8 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   dominant_normals_.clear ();
 
   // ---[ Step 0: remove normals with high curvature
-  std::vector<int> indices_out;
-  std::vector<int> indices_in;
+  pcl::Indices indices_out;
+  pcl::Indices indices_in;
   filterNormalsWithHighCurvature (*normals_, *indices_, indices_out, indices_in, curv_threshold_);
 
   pcl::PointCloud<pcl::PointNormal>::Ptr normals_filtered_cloud (new pcl::PointCloud<pcl::PointNormal> ());
@@ -582,7 +582,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   normals_filtered_cloud->height = 1;
   normals_filtered_cloud->points.resize (normals_filtered_cloud->width);
 
-  std::vector<int> indices_from_nfc_to_indices;
+  pcl::Indices indices_from_nfc_to_indices;
   indices_from_nfc_to_indices.resize (indices_in.size ());
 
   for (std::size_t i = 0; i < indices_in.size (); ++i)

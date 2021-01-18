@@ -153,12 +153,11 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::
         flann_models_.push_back(descr_model);
 
         if (use_cache_) {
-
-          std::stringstream dir_pose;
-          dir_pose << path << "/pose_" << descr_model.view_id << ".txt";
+          const std::string dir_pose =
+              path + "/pose_" + std::to_string(descr_model.view_id) + ".txt";
 
           Eigen::Matrix4f pose_matrix;
-          PersistenceUtils::readMatrixFromFile(dir_pose.str(), pose_matrix);
+          PersistenceUtils::readMatrixFromFile(dir_pose, pose_matrix);
 
           std::pair<std::string, int> pair_model_view =
               std::make_pair(models->at(i).id_, descr_model.view_id);

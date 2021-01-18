@@ -177,7 +177,7 @@ namespace pcl
         */
       void 
       computePointPFHSignature (const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals, 
-                                const std::vector<int> &indices, int nr_split, Eigen::VectorXf &pfh_histogram);
+                                const pcl::Indices &indices, int nr_split, Eigen::VectorXf &pfh_histogram);
 
     protected:
       /** \brief Estimate the Point Feature Histograms (PFH) descriptors at a set of points given by

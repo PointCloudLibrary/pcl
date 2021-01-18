@@ -139,7 +139,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   Eigen::Map<Eigen::Vector3f> normal (rf + 6);
 
   // Find every point within specified search_radius_
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_dists;
   const std::size_t neighb_cnt = searchForNeighbors ((*indices_)[index], search_radius_, nn_indices, nn_dists);
   if (neighb_cnt == 0)
@@ -218,7 +218,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
     const auto l = std::distance(phi_divisions_.cbegin (), std::prev(phi_min));
 
     // Local point density = number of points in a sphere of radius "point_density_radius_" around the current neighbour
-    std::vector<int> neighbour_indices;
+    pcl::Indices neighbour_indices;
     std::vector<float> neighbour_distances;
     int point_density = searchForNeighbors (*surface_, nn_indices[ne], point_density_radius_, neighbour_indices, neighbour_distances);
     // point_density is NOT always bigger than 0 (on error, searchForNeighbors returns 0), so we must check for that
