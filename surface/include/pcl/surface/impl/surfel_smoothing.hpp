@@ -92,7 +92,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothCloudIteration (PointCloudInPtr &ou
   output_normals = NormalCloudPtr (new NormalCloud);
   output_normals->points.resize (interm_cloud_->size ());
 
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_distances;
 
   std::vector<float> diffs (interm_cloud_->size ());
@@ -171,7 +171,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothPoint (std::size_t &point_index,
   float error_residual = error_residual_threshold_ + 1;
   float last_error_residual = error_residual + 100.0f;
 
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_distances;
 
   int big_iterations = 0;
@@ -289,7 +289,7 @@ pcl::SurfelSmoothing<PointT, PointNT>::extractSalientFeaturesBetweenScales (Poin
     diffs[i] = (*cloud2_normals)[i].getNormalVector4fMap ().dot ((*cloud2)[i].getVector4fMap () - 
                                                                       (*interm_cloud_)[i].getVector4fMap ());
 
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_distances;
 
   output_features->resize (cloud2->size ());
