@@ -123,6 +123,7 @@ namespace pcl
                 static_cast<std::size_t>(normals.size()));
       return;
     }
+    const double cos_eps_angle = std::cos (eps_angle); // compute this once instead of acos many times (faster)
 
     // Create a bool vector of processed point indices, and initialize it to false
     std::vector<bool> processed (cloud.size (), false);
@@ -160,7 +161,7 @@ namespace pcl
           double dot_p = normals[seed_queue[sq_idx]].normal[0] * normals[nn_indices[j]].normal[0] +
                          normals[seed_queue[sq_idx]].normal[1] * normals[nn_indices[j]].normal[1] +
                          normals[seed_queue[sq_idx]].normal[2] * normals[nn_indices[j]].normal[2];
-          if ( std::acos (std::abs (dot_p)) < eps_angle )
+          if ( std::abs (dot_p) > cos_eps_angle )
           {
             processed[nn_indices[j]] = true;
             seed_queue.push_back (nn_indices[j]);
@@ -238,6 +239,7 @@ namespace pcl
                 static_cast<std::size_t>(normals.size()));
       return;
     }
+    const double cos_eps_angle = std::cos (eps_angle); // compute this once instead of acos many times (faster)
     // Create a bool vector of processed point indices, and initialize it to false
     std::vector<bool> processed (cloud.size (), false);
 
@@ -274,7 +276,7 @@ namespace pcl
           double dot_p = normals[seed_queue[sq_idx]].normal[0] * normals[nn_indices[j]].normal[0] +
                          normals[seed_queue[sq_idx]].normal[1] * normals[nn_indices[j]].normal[1] +
                          normals[seed_queue[sq_idx]].normal[2] * normals[nn_indices[j]].normal[2];
-          if ( std::acos (std::abs (dot_p)) < eps_angle )
+          if ( std::abs (dot_p) > cos_eps_angle )
           {
             processed[nn_indices[j]] = true;
             seed_queue.push_back (nn_indices[j]);
