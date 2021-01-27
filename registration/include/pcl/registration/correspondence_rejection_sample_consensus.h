@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <pcl/common/transforms.h>
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/memory.h>
 

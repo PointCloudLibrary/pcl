@@ -4,6 +4,7 @@
 #include <pcl/features/pfh.h>
 #include <pcl/features/pfhrgb.h>
 #include <pcl/features/shot_omp.h>
+#include <pcl/filters/extract_indices.h> // for ExtractIndices
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/harris_3d.h>
 #include <pcl/keypoints/sift_keypoint.h>
@@ -17,7 +18,6 @@
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/surface/gp3.h>
-#include <pcl/surface/grid_projection.h>
 #include <pcl/surface/marching_cubes_hoppe.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/ModelCoefficients.h>

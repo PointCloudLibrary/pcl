@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/conversions.h> // for FieldAdder
 #include <pcl/common/concatenate.h>
 #include <pcl/common/copy_point.h>
 #include <pcl/common/io.h>

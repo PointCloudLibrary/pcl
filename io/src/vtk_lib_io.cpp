@@ -35,6 +35,7 @@
  *
  */
 
+#include <pcl/io/pcd_io.h> // for loadPCDFile, savePCDFile
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/io/impl/vtk_lib_io.hpp>
 #include <pcl/PCLPointCloud2.h>

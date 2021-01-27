@@ -1,5 +1,5 @@
 #include <iostream>
-#include <pcl/io/pcd_io.h>
+#include <pcl/common/io.h> // for concatenateFields
 #include <pcl/point_types.h>
 
 int

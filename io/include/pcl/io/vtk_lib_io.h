@@ -46,7 +46,6 @@
 #include <pcl/TextureMesh.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/conversions.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/range_image/range_image_planar.h>
 
 // Ignore warnings in the above headers

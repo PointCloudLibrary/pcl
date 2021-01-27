@@ -40,8 +40,6 @@
 #ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_HPP_
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_HPP_
 
-#include <pcl/registration/distances.h>
-#include <pcl/registration/warp_point_rigid.h>
 #include <pcl/registration/warp_point_rigid_6d.h>
 
 #include <unsupported/Eigen/NonLinearOptimization>

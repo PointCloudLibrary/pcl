@@ -40,7 +40,6 @@
 #ifndef PCL_FEATURES_IMPL_SHOT_LRF_OMP_H_
 #define PCL_FEATURES_IMPL_SHOT_LRF_OMP_H_
 
-#include <utility>
 #include <pcl/features/shot_lrf_omp.h>
 #include <pcl/features/shot_lrf.h>
 

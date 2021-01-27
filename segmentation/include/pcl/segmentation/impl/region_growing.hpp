@@ -49,7 +49,6 @@
 #include <pcl/search/kdtree.h>
 
 #include <queue>
-#include <list>
 #include <cmath>
 #include <ctime>
 
