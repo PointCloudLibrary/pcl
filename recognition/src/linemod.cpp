@@ -188,11 +188,12 @@ pcl::LINEMOD::removeOverlappingDetections (
   std::map<ClusteringKey, std::vector<size_t>> clusters;
   for (size_t detection_id = 0; detection_id < nr_detections; ++detection_id)
   {
+    const LINEMODDetection& d = detections[detection_id];
     const ClusteringKey key = {
-      detections[detection_id].x / clustering_threshold,
-      detections[detection_id].y / clustering_threshold,
+      d.x / clustering_threshold,
+      d.y / clustering_threshold,
       //TODO: Utilize a map of ZYX angles instead
-      noOverlapBetweenDifferentTemplates ? detections[detection_id].template_id : 0,
+      noOverlapBetweenDifferentTemplates ? d.template_id : 0,
     };
 
     clusters[key].push_back(detection_id);
@@ -219,22 +220,22 @@ pcl::LINEMOD::removeOverlappingDetections (
     for (size_t cluster_index = 0; cluster_index < elements_in_cluster; ++cluster_index)
     {
       const size_t detection_id = cluster[cluster_index];
+      const LINEMODDetection& d = detections[detection_id];
 
-      const float weight = detections[detection_id].score * detections[detection_id].score;
+      const float weight = d.score * d.score;
 
-      if (detections[detection_id].score > best_score)
+      if (d.score > best_score)
       {
-        best_score = detections[detection_id].score;
+        best_score = d.score;
         best_detection_id = detection_id;
       }
 
-      const LINEMODDetection & d = detections[detection_id];
       weight_sum += weight;
 
-      average_score += detections[detection_id].score * weight;
-      average_scale += detections[detection_id].scale * weight;
-      average_region_x += float (detections[detection_id].x) * weight;
-      average_region_y += float (detections[detection_id].y) * weight;
+      average_score += d.score * weight;
+      average_scale += d.scale * weight;
+      average_region_x += static_cast<float>(d.x) * weight;
+      average_region_y += static_cast<float>(d.y) * weight;
     }
 
     const float inv_weight_sum = 1.0f / weight_sum;
