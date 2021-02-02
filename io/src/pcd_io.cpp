@@ -425,7 +425,7 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
   // Get the number of points the cloud should have
   unsigned int nr_points = cloud.width * cloud.height;
   // The number of elements each line/point should have
-  const unsigned int elems_per_line = std::accumulate (cloud.fields.begin (), cloud.fields.end (), 0u,
+  const unsigned int elems_per_line = std::accumulate (cloud.fields.cbegin (), cloud.fields.cend (), 0u,
                                                        [](const auto& i, const auto& field){ return (i + field.count); });
   PCL_DEBUG ("[pcl::PCDReader::readBodyASCII] Will check that each line in the PCD file has %u elements.\n", elems_per_line);
 
@@ -451,10 +451,10 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
       boost::trim (line);
       boost::split (st, line, boost::is_any_of ("\t\r "), boost::token_compress_on);
 
-      if (st.size () != elems_per_line) // If this is not checked, an exception might occur when accessing st
+      if (st.size () != elems_per_line) // If this is not checked, an exception might occur while accessing st
       {
-        PCL_WARN ("[pcl::PCDReader::readBodyASCII] Possibly misformed PCD file: line has %zu elements, but should have %u! (point %u)\n",
-                  st.size (), elems_per_line, idx+1);
+        PCL_WARN ("[pcl::PCDReader::readBodyASCII] Possibly malformed PCD file: point number %u has %zu elements, but should have %u\n",
+                  idx+1, st.size (), elems_per_line);
         ++idx; // Skip this line/point, but read all others
         continue;
       }
