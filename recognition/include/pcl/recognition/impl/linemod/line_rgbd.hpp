@@ -549,7 +549,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
 {
   std::vector<pcl::LINEMODDetection> linemod_detections;
   linemod_.detectTemplates (modalities, linemod_detections);
-  linemod_.removeOverlappingDetections(linemod_detections, clustering_threshold_2d_);
+  linemod_.removeOverlappingDetections(linemod_detections, translation_clustering_threshold_2d_, rotation_clustering_threshold_);
   linemod_.sortDetections(linemod_detections);
 
   ConvertDetectionsTo3D(linemod_detections, detections);
@@ -559,7 +559,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
   // applyProjectiveDepthICPOnDetections(detections);
 
   // remove overlaps
-  removeOverlappingDetections (detections, clustering_threshold_3d_);
+  removeOverlappingDetections (detections, translation_clustering_threshold_3d_);
 
   // sort the detections
   sortDetections (detections);
@@ -590,7 +590,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
 {
   std::vector<pcl::LINEMODDetection> linemod_detections;
   linemod_.detectTemplatesSemiScaleInvariant (modalities, linemod_detections, min_scale, max_scale, scale_multiplier);
-  linemod_.removeOverlappingDetections(linemod_detections, clustering_threshold_2d_);
+  linemod_.removeOverlappingDetections(linemod_detections, translation_clustering_threshold_2d_, rotation_clustering_threshold_);
   linemod_.sortDetections(linemod_detections);
 
   ConvertDetectionsTo3D(linemod_detections, detections);
@@ -600,7 +600,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
   // applyProjectiveDepthICPOnDetections(detections);
 
   // remove overlaps
-  removeOverlappingDetections (detections, clustering_threshold_3d_);
+  removeOverlappingDetections (detections, translation_clustering_threshold_3d_);
 
   // sort the detections
   sortDetections (detections);
@@ -780,11 +780,11 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::applyProjectiveDepthICPOnDetections (
 template <typename PointXYZT, typename PointRGBT> void
 pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections (
     std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections,
-    const size_t clustering_threshold,
+    const size_t translation_clustering_threshold,
     const bool noOverlapBetweenDifferentTemplates) const
 {
   // check if clustering is disabled
-  if (clustering_threshold == 0) {
+  if (translation_clustering_threshold == 0) {
     return;
   }
 
@@ -860,10 +860,10 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::removeOverlappingDetections (
   {
     const ClusteringKey key = {
       detections[detection_id].object_id,
-      detections[detection_id].region.x / clustering_threshold,
-      detections[detection_id].region.y / clustering_threshold,
-      detections[detection_id].region.width / clustering_threshold,
-      detections[detection_id].region.height / clustering_threshold,
+      detections[detection_id].region.x / translation_clustering_threshold,
+      detections[detection_id].region.y / translation_clustering_threshold,
+      detections[detection_id].region.width / translation_clustering_threshold,
+      detections[detection_id].region.height / translation_clustering_threshold,
       //TODO: Utilize a map of ZYX angles instead
       noOverlapBetweenDifferentTemplates ? detections[detection_id].template_id : 0,
     };

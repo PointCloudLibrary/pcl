@@ -97,8 +97,9 @@ namespace pcl
       /** \brief Constructor */
       LineRGBD ()
         : intersection_volume_threshold_ (1.0f)
-        , clustering_threshold_2d_ (0)
-        , clustering_threshold_3d_ (0)
+        , translation_clustering_threshold_2d_ (0)
+        , translation_clustering_threshold_3d_ (0)
+        , rotation_clustering_threshold_ (0)
         , linemod_ ()
         , color_gradient_mod_ ()
         , surface_normal_mod_ ()
@@ -162,15 +163,11 @@ namespace pcl
       }
 
       inline void
-      setClusteringThreshold2D (const size_t threshold = 0)
+      setClusteringThresholds (const size_t translation_threshold_2d = 0, const size_t translation_threshold_3d = 0, const float rotation_threshold = 0)
       {
-        clustering_threshold_2d_ = threshold;
-      }
-
-      inline void
-      setClusteringThreshold3D (const size_t threshold = 0)
-      {
-        clustering_threshold_3d_ = threshold;
+        translation_clustering_threshold_2d_ = translation_threshold_2d;
+        translation_clustering_threshold_3d_ = translation_threshold_3d;
+        rotation_clustering_threshold_ = rotation_threshold;
       }
 
       inline void
@@ -342,7 +339,7 @@ namespace pcl
       void
       removeOverlappingDetections (
         std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections,
-        const size_t clustering_threshold,
+        const size_t translation_clustering_threshold,
         const bool noOverlapBetweenDifferentTemplates = false) const;
 
       void
@@ -365,8 +362,9 @@ namespace pcl
 
       /** \brief Intersection volume threshold. */
       float intersection_volume_threshold_;
-      size_t clustering_threshold_2d_;
-      size_t clustering_threshold_3d_;
+      size_t translation_clustering_threshold_2d_;
+      size_t translation_clustering_threshold_3d_;
+      float rotation_clustering_threshold_;
 
       /** \brief LINEMOD instance. */
       pcl::LINEMOD linemod_;

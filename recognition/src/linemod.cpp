@@ -37,6 +37,7 @@
 
 //#define __SSE2__
 
+#include <pcl/console/print.h>
 #include <pcl/recognition/linemod.h>
 
 #if __AVX2__
@@ -55,7 +56,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::LINEMOD::LINEMOD () 
   : template_threshold_ (0.75f)
-  , clustering_threshold_ (0)  // 0 for disabled
+  , translation_clustering_threshold_ (0)  // 0 for disabled
+  , rotation_clustering_threshold_ (0)  // 0 for disabled
   , use_non_max_suppression_ (false)
   , average_detections_ (false)
   , templates_ ()
@@ -173,12 +175,60 @@ pcl::LINEMOD::groupAndSortOverlappingDetections (
 void
 pcl::LINEMOD::removeOverlappingDetections (
     std::vector<LINEMODDetection> & detections,
-    const size_t clustering_threshold,
-    const bool noOverlapBetweenDifferentTemplates) const
+    size_t translation_clustering_threshold,
+    float rotation_clustering_threshold) const
 {
   // check if clustering is disabled
-  if (clustering_threshold == 0) {
+  if (translation_clustering_threshold == 0 && rotation_clustering_threshold == 0.f) {
     return;
+  }
+
+  if (translation_clustering_threshold == 0) {
+    translation_clustering_threshold = 1;
+  }
+  if (rotation_clustering_threshold == 0.f) {
+    rotation_clustering_threshold = std::numeric_limits<float>::epsilon();
+  }
+
+  typedef std::tuple<int, int, int> TemplatesClusteringKey;
+  std::map<TemplatesClusteringKey, std::vector<size_t>> templateClusters;
+  const size_t n_templates = templates_.size ();
+  for (size_t template_index = 0; template_index < n_templates; ++template_index)
+  {
+    const pcl::SparseQuantizedMultiModTemplate& template_ = templates_[template_index];
+    const TemplatesClusteringKey key = {
+      static_cast<int>(template_.rx / rotation_clustering_threshold),
+      static_cast<int>(template_.ry / rotation_clustering_threshold),
+      static_cast<int>(template_.rz / rotation_clustering_threshold),
+    };
+
+    templateClusters[key].push_back(template_index);
+  }
+
+  std::map<size_t, size_t> clusteredTemplates;
+  if (templateClusters.size() <= 1) {
+    PCL_ERROR ("[removeOverlappingDetections] All %u templates got grouped into %u cluster(s). Either rotation threshold=%.4f is too large, or template rotations are not set properly.\n"
+               "Making each template in its own cluster for now...\n", n_templates, templateClusters.size(), rotation_clustering_threshold);
+    for (size_t template_index = 0; template_index < n_templates; ++template_index)
+    {
+      clusteredTemplates[template_index] = template_index;
+    }
+  }
+  else
+  {
+    PCL_INFO ("[removeOverlappingDetections] Grouping %u templates into %u clusters\n", n_templates, templateClusters.size());
+    size_t cluster_id;
+    std::map<TemplatesClusteringKey, std::vector<size_t>>::iterator tempIt;
+    for (cluster_id = 0, tempIt = templateClusters.begin(); tempIt != templateClusters.end(); ++cluster_id, ++tempIt)
+    {
+      const std::vector<size_t>& cluster = tempIt->second;
+      const size_t elements_in_cluster = cluster.size ();
+      for (size_t cluster_index = 0; cluster_index < elements_in_cluster; ++cluster_index)
+      {
+        const size_t template_index = cluster[cluster_index];
+        clusteredTemplates[template_index] = cluster_id;
+      }
+    }
   }
 
   // compute overlap between each detection
@@ -190,10 +240,9 @@ pcl::LINEMOD::removeOverlappingDetections (
   {
     const LINEMODDetection& d = detections[detection_id];
     const ClusteringKey key = {
-      d.x / clustering_threshold,
-      d.y / clustering_threshold,
-      //TODO: Utilize a map of ZYX angles instead
-      noOverlapBetweenDifferentTemplates ? d.template_id : 0,
+      d.x / translation_clustering_threshold,
+      d.y / translation_clustering_threshold,
+      clusteredTemplates[d.template_id],
     };
 
     clusters[key].push_back(detection_id);
@@ -205,14 +254,14 @@ pcl::LINEMOD::removeOverlappingDetections (
   std::map<ClusteringKey, std::vector<size_t>>::iterator it;
   for (cluster_id = 0, it = clusters.begin(); it != clusters.end(); ++cluster_id, ++it)
   {
-    const std::vector<size_t> & cluster = it->second;
+    const std::vector<size_t>& cluster = it->second;
     float weight_sum = 0.0f;
-
-    float best_score = 0.0f;
-    size_t best_detection_id = 0;
 
     float average_score = 0.0f;
     float average_scale = 0.0f;
+    float average_rx = 0.0f;
+    float average_ry = 0.0f;
+    float average_rz = 0.0f;
     float average_region_x = 0.0f;
     float average_region_y = 0.0f;
 
@@ -221,26 +270,48 @@ pcl::LINEMOD::removeOverlappingDetections (
     {
       const size_t detection_id = cluster[cluster_index];
       const LINEMODDetection& d = detections[detection_id];
+      const pcl::SparseQuantizedMultiModTemplate& template_ = templates_[d.template_id];
 
       const float weight = d.score * d.score;
-
-      if (d.score > best_score)
-      {
-        best_score = d.score;
-        best_detection_id = detection_id;
-      }
 
       weight_sum += weight;
 
       average_score += d.score * weight;
       average_scale += d.scale * weight;
+      average_rx += template_.rx * weight;
+      average_ry += template_.ry * weight;
+      average_rz += template_.rz * weight;
       average_region_x += static_cast<float>(d.x) * weight;
       average_region_y += static_cast<float>(d.y) * weight;
     }
 
     const float inv_weight_sum = 1.0f / weight_sum;
+
+    average_rx *= inv_weight_sum;
+    average_ry *= inv_weight_sum;
+    average_rz *= inv_weight_sum;
+
+    float min_dist2 = std::numeric_limits<float>::max ();
+    size_t best_template_id = detections[cluster[0]].template_id;
+    for (size_t template_index = 0; template_index < n_templates; ++template_index)
+    {
+      // Skip templates that does not belong to the same cluster
+      // This is also important to protect wrong ID assignment in case all rotations are not set, thus ended up to have the same distance
+      if (clusteredTemplates[best_template_id] != clusteredTemplates[template_index]) {
+        continue;
+      }
+
+      const pcl::SparseQuantizedMultiModTemplate& template_ = templates_[template_index];
+      const float dist2 = std::pow(template_.rx - average_rx, 2) + std::pow(template_.ry - average_ry, 2) + std::pow(template_.rz - average_rz, 2);
+      if (dist2 < min_dist2)
+      {
+        min_dist2 = dist2;
+        best_template_id = template_index;
+      }
+    }
+
     LINEMODDetection detection;
-    detection.template_id = detections[best_detection_id].template_id;
+    detection.template_id = best_template_id;
     detection.score = average_score * inv_weight_sum;
     detection.scale = average_scale * inv_weight_sum;
     detection.x = int (average_region_x * inv_weight_sum);

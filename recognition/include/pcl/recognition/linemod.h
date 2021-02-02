@@ -371,8 +371,8 @@ namespace pcl
 
       void
       removeOverlappingDetections (std::vector<LINEMODDetection> & detections,
-                                   const size_t clustering_threshold,
-                                   const bool noOverlapBetweenDifferentTemplates = false) const;
+                                   size_t translation_clustering_threshold,
+                                   float rotation_clustering_threshold) const;
 
       void
       sortDetections (std::vector<LINEMODDetection> & detections) const;
@@ -418,9 +418,10 @@ namespace pcl
       }
 
       inline void
-      setClusteringThreshold (const size_t threshold = 0)
+      setClusteringThresholds (const size_t translation_threshold = 0, const float rotation_threshold = 0)
       {
-        clustering_threshold_ = threshold;
+        translation_clustering_threshold_ = translation_threshold;
+        rotation_clustering_threshold_ = rotation_threshold;
       }
 
       /** \brief Enables/disables non-maximum suppression.
@@ -504,7 +505,8 @@ namespace pcl
     private:
       /** template response threshold */
       float template_threshold_;
-      size_t clustering_threshold_;
+      size_t translation_clustering_threshold_;
+      float rotation_clustering_threshold_;
       /** states whether non-max-suppression on detections is enabled or not */
       bool use_non_max_suppression_;
       /** states whether to return an averaged detection */
