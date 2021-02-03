@@ -50,6 +50,7 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/type_traits.h>
 #include <pcl/types.h>
+#include <pcl/console/print.h>
 
 #include <utility>
 #include <vector>
