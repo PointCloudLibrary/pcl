@@ -42,6 +42,7 @@
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
+#include <pcl/filters/filter.h> // for removeNaNFromPointCloud
 
 #include <pcl/segmentation/unary_classifier.h>
 

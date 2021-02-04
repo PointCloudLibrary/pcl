@@ -47,9 +47,6 @@
 #include <pcl/features/fpfh.h>
 #include <pcl/features/normal_3d.h>
 
-#include <pcl/filters/filter_indices.h>
-#include <pcl/segmentation/extract_clusters.h>
-
 #include <pcl/ml/kmeans.h>
 
 namespace pcl

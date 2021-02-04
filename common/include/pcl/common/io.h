@@ -43,9 +43,8 @@
 #include <numeric>
 #include <string>
 
+#include <pcl/point_cloud.h>
 #include <pcl/PointIndices.h>
-#include <pcl/conversions.h>
-#include <pcl/exceptions.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/PolygonMesh.h>
 #include <locale>

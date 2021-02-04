@@ -1809,7 +1809,7 @@ namespace pcl
           * \param[in] view_z the z component of the view point of the camera
           * \param[in] up_x the x component of the view up direction of the camera
           * \param[in] up_y the y component of the view up direction of the camera
-          * \param[in] up_z the y component of the view up direction of the camera
+          * \param[in] up_z the z component of the view up direction of the camera
           * \param[in] viewport the viewport to modify camera of (0 modifies all cameras)
           */
         void

@@ -94,7 +94,7 @@ TEST (PCL, FlannSearch_nearestKSearch)
     ++counter;
   }
 
-  std::vector<int> k_indices;
+  pcl::Indices k_indices;
   k_indices.resize (no_of_neighbors);
   std::vector<float> k_distances;
   k_distances.resize (no_of_neighbors);
@@ -146,12 +146,12 @@ TEST (PCL, FlannSearch_differentPointT)
   std::vector< std::vector< int > > indices;
   FlannSearch.nearestKSearchT (cloud_rgb, std::vector<int> (),no_of_neighbors,indices,dists);
 
-  std::vector<int> k_indices;
+  pcl::Indices k_indices;
   k_indices.resize (no_of_neighbors);
   std::vector<float> k_distances;
   k_distances.resize (no_of_neighbors);
 
-  //vector<int> k_indices_t;
+  //pcl::Indices k_indices_t;
   //k_indices_t.resize (no_of_neighbors);
   //vector<float> k_distances_t;
   //k_distances_t.resize (no_of_neighbors);
@@ -187,7 +187,7 @@ TEST (PCL, FlannSearch_multipointKnnSearch)
   std::vector< std::vector< int > > indices;
   FlannSearch.nearestKSearch (cloud_big, std::vector<int>(),no_of_neighbors,indices,dists);
 
-  std::vector<int> k_indices;
+  pcl::Indices k_indices;
   k_indices.resize (no_of_neighbors);
   std::vector<float> k_distances;
   k_distances.resize (no_of_neighbors);
@@ -225,7 +225,7 @@ TEST (PCL, FlannSearch_knnByIndex)
   }
   flann_search.nearestKSearch (cloud_big, query_indices,no_of_neighbors,indices,dists);
 
-  std::vector<int> k_indices;
+  pcl::Indices k_indices;
   k_indices.resize (no_of_neighbors);
   std::vector<float> k_distances;
   k_distances.resize (no_of_neighbors);
@@ -256,7 +256,7 @@ TEST (PCL, FlannSearch_compareToKdTreeFlann)
 {
 
   int no_of_neighbors=3;
-  std::vector<int> k_indices;
+  pcl::Indices k_indices;
   k_indices.resize (no_of_neighbors);
   std::vector<float> k_distances;
   k_distances.resize (no_of_neighbors);
@@ -289,9 +289,9 @@ TEST (PCL, FlannSearch_compareToKdTreeFlann)
       kdtree_search->nearestKSearch (point, no_of_neighbors, k_indices, k_distances);
   }
 
-  std::vector<std::vector<int> > indices_flann;
+  std::vector<pcl::Indices> indices_flann;
   std::vector<std::vector<float> > dists_flann;
-  std::vector<std::vector<int> > indices_tree;
+  std::vector<pcl::Indices> indices_tree;
   std::vector<std::vector<float> > dists_tree;
   indices_flann.resize (cloud_big.size ());
   dists_flann.resize (cloud_big.size ());
@@ -332,7 +332,7 @@ TEST (PCL, FlannSearch_compareToKdTreeFlann)
   }
 
 
-  std::vector<int> query_indices;
+  pcl::Indices query_indices;
   for (std::size_t i = 0; i<cloud_big.size (); i+=2)
     query_indices.push_back (int (i));
 

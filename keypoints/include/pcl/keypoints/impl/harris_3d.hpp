@@ -40,11 +40,8 @@
 
 #include <pcl/keypoints/harris_3d.h>
 #include <pcl/common/io.h>
-#include <pcl/filters/passthrough.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/integral_image_normal.h>
-#include <pcl/common/time.h>
 #include <pcl/common/centroid.h>
 #ifdef __SSE__
 #include <xmmintrin.h>

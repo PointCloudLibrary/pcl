@@ -193,7 +193,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::initCompute ()
 template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
 pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::createBinDistanceShape (
     int index,
-    const std::vector<int> &indices,
+    const pcl::Indices &indices,
     std::vector<double> &bin_distance_shape)
 {
   bin_distance_shape.resize (indices.size ());
@@ -253,7 +253,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::normalizeHistog
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
 pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSingleChannel (
-    const std::vector<int> &indices,
+    const pcl::Indices &indices,
     const std::vector<float> &sqr_dists,
     const int index,
     std::vector<double> &binDistance,
@@ -428,7 +428,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSing
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
 pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::interpolateDoubleChannel (
-  const std::vector<int> &indices,
+  const pcl::Indices &indices,
   const std::vector<float> &sqr_dists,
   const int index,
   std::vector<double> &binDistanceShape,
@@ -644,7 +644,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::interpolateDou
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
 pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSHOT (
-  const int index, const std::vector<int> &indices, const std::vector<float> &sqr_dists, Eigen::VectorXf &shot)
+  const int index, const pcl::Indices &indices, const std::vector<float> &sqr_dists, Eigen::VectorXf &shot)
 {
   // Clear the resultant shot
   shot.setZero ();
@@ -729,7 +729,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSH
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT, typename PointRFT> void
 pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSHOT (
-  const int index, const std::vector<int> &indices, const std::vector<float> &sqr_dists, Eigen::VectorXf &shot)
+  const int index, const pcl::Indices &indices, const std::vector<float> &sqr_dists, Eigen::VectorXf &shot)
 {
   //Skip the current feature if the number of its neighbors is not sufficient for its description
   if (indices.size () < 5)
@@ -773,7 +773,7 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
 
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
+  pcl::Indices nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
   output.is_dense = true;
@@ -845,7 +845,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
 
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
+  pcl::Indices nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
   output.is_dense = true;

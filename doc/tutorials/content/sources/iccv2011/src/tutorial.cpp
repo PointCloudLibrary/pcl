@@ -26,6 +26,7 @@
 #include <pcl/features/pfhrgb.h>
 #include <pcl/features/3dsc.h>
 #include <pcl/features/shot_omp.h>
+#include <pcl/filters/extract_indices.h> // for ExtractIndices
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <pcl/registration/transformation_estimation_svd.h>

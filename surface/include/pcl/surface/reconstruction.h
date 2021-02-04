@@ -41,7 +41,6 @@
 
 #include <pcl/pcl_base.h>
 #include <pcl/PolygonMesh.h>
-#include <pcl/conversions.h>
 #include <pcl/search/search.h> // for Search
 
 namespace pcl

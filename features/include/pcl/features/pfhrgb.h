@@ -40,7 +40,6 @@
 #pragma once
 
 #include <pcl/features/feature.h>
-#include <pcl/features/pfh_tools.h>
 
 namespace pcl
 {
@@ -72,7 +71,7 @@ namespace pcl
 
       void
       computePointPFHRGBSignature (const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
-                                   const std::vector<int> &indices, int nr_split, Eigen::VectorXf &pfhrgb_histogram);
+                                   const pcl::Indices &indices, int nr_split, Eigen::VectorXf &pfhrgb_histogram);
 
     protected:
       void

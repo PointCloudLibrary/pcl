@@ -187,9 +187,9 @@ RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
 template<typename PointSource, typename PointTarget> void
 RegistrationVisualizer<PointSource, PointTarget>::updateIntermediateCloud (
     const pcl::PointCloud<PointSource> &cloud_src,
-    const std::vector<int> &indices_src,
+    const pcl::Indices &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
-    const std::vector<int> &indices_tgt)
+    const pcl::Indices &indices_tgt)
 {
   // Lock local buffers
   visualizer_updating_mutex_.lock ();

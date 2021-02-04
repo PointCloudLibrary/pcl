@@ -601,7 +601,7 @@ Narf::loadBinary (const std::string& filename)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-NarfDescriptor::NarfDescriptor (const RangeImage* range_image, const std::vector<int>* indices) : 
+NarfDescriptor::NarfDescriptor (const RangeImage* range_image, const pcl::Indices* indices) : 
   range_image_ ()
 {
   setRangeImage (range_image, indices);
@@ -614,12 +614,12 @@ NarfDescriptor::~NarfDescriptor ()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void 
-NarfDescriptor::setRangeImage (const RangeImage* range_image, const std::vector<int>* indices)
+NarfDescriptor::setRangeImage (const RangeImage* range_image, const pcl::Indices* indices)
 {
   range_image_ = range_image;
   if (indices != nullptr)
   {
-    IndicesPtr indicesptr (new std::vector<int> (*indices));
+    IndicesPtr indicesptr (new pcl::Indices (*indices));
     setIndices (indicesptr);
   }
 }

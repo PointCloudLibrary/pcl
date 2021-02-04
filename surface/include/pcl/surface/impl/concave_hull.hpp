@@ -564,7 +564,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     pcl::KdTreeFLANN<PointInT> tree (true);
     tree.setInputCloud (input_, indices_);
 
-    std::vector<int> neighbor;
+    pcl::Indices neighbor;
     std::vector<float> distances;
     neighbor.resize (1);
     distances.resize (1);

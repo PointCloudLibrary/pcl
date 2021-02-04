@@ -39,8 +39,6 @@
 #ifndef PCL_OCTREE_BASE_HPP
 #define PCL_OCTREE_BASE_HPP
 
-#include <pcl/impl/instantiate.hpp>
-
 #include <vector>
 
 namespace pcl {

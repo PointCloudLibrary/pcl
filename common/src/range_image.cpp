@@ -35,6 +35,7 @@
  */
 
 #include <cmath>
+#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
 #include <pcl/common/time.h> // for MEASURE_FUNCTION_TIME
 #include <pcl/range_image/range_image.h>
 

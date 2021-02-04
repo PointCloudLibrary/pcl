@@ -36,7 +36,7 @@
  */
 
 #include <pcl/surface/on_nurbs/sparse_mat.h>
-#include <cstdio>
+#include <cstdio> // for printf
 
 using namespace pcl;
 using namespace on_nurbs;
