@@ -381,6 +381,7 @@ if(WITH_VTK AND NOT ANDROID)
     vtkFiltersModeling
     vtkImagingCore
     vtkImagingSources
+    vtkInteractionImage
     vtkInteractionStyle
     vtkInteractionWidgets
     vtkIOCore
