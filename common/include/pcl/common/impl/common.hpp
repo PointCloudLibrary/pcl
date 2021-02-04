@@ -294,35 +294,8 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Indices &indice
 template <typename PointT> inline void
 pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, PointT &min_pt, PointT &max_pt)
 {
-  Eigen::Array4f min_p, max_p;
-  min_p.setConstant (FLT_MAX);
-  max_p.setConstant (-FLT_MAX);
-
-  // If the data is dense, we don't need to check for NaN
-  if (cloud.is_dense)
-  {
-    for (const auto& point: cloud.points)
-    {
-      const auto pt = point.getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
-    }
-  }
-  // NaN or Inf values could exist => check for them
-  else
-  {
-    for (const auto& point: cloud.points)
-    {
-      // Check if the point is invalid
-      if (!std::isfinite (point.x) ||
-          !std::isfinite (point.y) ||
-          !std::isfinite (point.z))
-        continue;
-      const auto pt = point.getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
-    }
-  }
+  Eigen::Vector4f min_p, max_p;
+  pcl::getMinMax3D (cloud, min_p, max_p);
   min_pt.x = min_p[0]; min_pt.y = min_p[1]; min_pt.z = min_p[2];
   max_pt.x = max_p[0]; max_pt.y = max_p[1]; max_pt.z = max_p[2];
 }
@@ -370,37 +343,7 @@ template <typename PointT> inline void
 pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const pcl::PointIndices &indices,
                   Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt)
 {
-  Eigen::Array4f min_p, max_p;
-  min_p.setConstant (FLT_MAX);
-  max_p.setConstant (-FLT_MAX);
-
-  // If the data is dense, we don't need to check for NaN
-  if (cloud.is_dense)
-  {
-    for (const auto &index : indices.indices)
-    {
-      pcl::Array4fMapConst pt = cloud[index].getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
-    }
-  }
-  // NaN or Inf values could exist => check for them
-  else
-  {
-    for (const auto &index : indices.indices)
-    {
-      // Check if the point is invalid
-      if (!std::isfinite (cloud[index].x) || 
-          !std::isfinite (cloud[index].y) || 
-          !std::isfinite (cloud[index].z))
-        continue;
-      pcl::Array4fMapConst pt = cloud[index].getArray4fMap ();
-      min_p = min_p.min (pt);
-      max_p = max_p.max (pt);
-    }
-  }
-  min_pt = min_p;
-  max_pt = max_p;
+  pcl::getMinMax3D (cloud, indices.indices, min_pt, max_pt);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
