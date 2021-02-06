@@ -537,7 +537,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
         corners[cIdx].getVector3fMap () = NNTInv * NNTp;
 
       const auto diff = (corners[cIdx].getVector3fMap () - corner.getVector3fMap()).squaredNorm ();
-      if (diff > 1e-6) {
+      if (diff <= 1e-6) {
         break;
       }
     } while (++iterations < max_iterations);
@@ -546,4 +546,3 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
 
 #define PCL_INSTANTIATE_HarrisKeypoint3D(T,U,N) template class PCL_EXPORTS pcl::HarrisKeypoint3D<T,U,N>;
 #endif // #ifndef PCL_HARRIS_KEYPOINT_3D_IMPL_H_
-
