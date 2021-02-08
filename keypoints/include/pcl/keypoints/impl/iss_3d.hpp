@@ -175,9 +175,9 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getScatterMatrix (const int& c
   double cov[9];
   memset(cov, 0, sizeof(double) * 9);
 
-  for (int n_idx = 0; n_idx < n_neighbors; n_idx++)
+  for (const auto& n_idx : nn_indices)
   {
-    const PointInT& n_point = (*input_)[nn_indices[n_idx]];
+    const PointInT& n_point = (*input_)[n_idx];
 
     double neigh_point[3];
     memset(neigh_point, 0, sizeof(double) * 3);
@@ -316,7 +316,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 
       this->searchForNeighbors (static_cast<int> (index), border_radius_, nn_indices, nn_distances);
 
-      for (const int &nn_index : nn_indices)
+      for (const auto &nn_index : nn_indices)
       {
         if (edge_points_[nn_index])
         {
@@ -422,8 +422,8 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
       {
         bool is_max = true;
 
-        for (int j = 0 ; j < n_neighbors; j++)
-          if (third_eigen_value_[index] < third_eigen_value_[nn_indices[j]])
+        for (const auto& j : nn_indices)
+          if (third_eigen_value_[index] < third_eigen_value_[j])
             is_max = false;
         if (is_max)
           feat_max[index] = true;
