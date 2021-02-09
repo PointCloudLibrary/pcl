@@ -117,7 +117,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const
 
   float zz = 0;
 
-  for (const int &neighbor : neighbors)
+  for (const auto &neighbor : neighbors)
   {
     if (std::isfinite ((*normals_)[neighbor].normal_x))
     {

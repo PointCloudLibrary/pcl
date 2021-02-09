@@ -368,17 +368,14 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findRegionsKNN (int index, int nghbr_num
 template <typename PointT, typename NormalT> void
 pcl::RegionGrowingRGB<PointT, NormalT>::applyRegionMergingAlgorithm ()
 {
-  int number_of_points = static_cast<int> (indices_->size ());
-
   // calculate color of each segment
   std::vector< std::vector<unsigned int> > segment_color;
   std::vector<unsigned int> color;
   color.resize (3, 0);
   segment_color.resize (number_of_segments_, color);
 
-  for (int i_point = 0; i_point < number_of_points; i_point++)
+  for (const auto& point_index : (*indices_))
   {
-    int point_index = (*indices_)[i_point];
     int segment_index = point_labels_[point_index];
     segment_color[segment_index][0] += (*input_)[point_index].r;
     segment_color[segment_index][1] += (*input_)[point_index].g;
@@ -701,9 +698,8 @@ pcl::RegionGrowingRGB<PointT, NormalT>::getSegmentFromPoint (int index, pcl::Poi
 
   // first of all we need to find out if this point belongs to cloud
   bool point_was_found = false;
-  int number_of_points = static_cast <int> (indices_->size ());
-  for (int point = 0; point < number_of_points; point++)
-    if ( (*indices_)[point] == index)
+  for (const auto& point : (*indices_))
+    if (point == index)
     {
       point_was_found = true;
       break;

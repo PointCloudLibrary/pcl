@@ -95,17 +95,17 @@ main (int argc, char** argv)
   std::cerr << ">> Done: " << tt.toc () << " ms\n";
 
   // Using the intensity channel for lazy visualization of the output
-  for (int i = 0; i < small_clusters->size (); ++i)
-    for (int j = 0; j < (*small_clusters)[i].indices.size (); ++j)
-      (*cloud_out)[(*small_clusters)[i].indices[j]].intensity = -2.0;
-  for (int i = 0; i < large_clusters->size (); ++i)
-    for (int j = 0; j < (*large_clusters)[i].indices.size (); ++j)
-      (*cloud_out)[(*large_clusters)[i].indices[j]].intensity = +10.0;
-  for (int i = 0; i < clusters->size (); ++i)
+  for (const auto& small_cluster : (*small_clusters))
+    for (const auto& j : small_cluster.indices)
+      (*cloud_out)[j].intensity = -2.0;
+  for (const auto& large_cluster : (*large_clusters))
+    for (const auto& j : large_cluster.indices)
+      (*cloud_out)[j].intensity = +10.0;
+  for (const auto& cluster : (*clusters))
   {
     int label = rand () % 8;
-    for (int j = 0; j < (*clusters)[i].indices.size (); ++j)
-      (*cloud_out)[(*clusters)[i].indices[j]].intensity = label;
+    for (const auto& j : cluster.indices)
+      (*cloud_out)[j].intensity = label;
   }
 
   // Save the output point cloud
