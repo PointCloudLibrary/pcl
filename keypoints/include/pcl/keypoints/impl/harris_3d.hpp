@@ -505,12 +505,11 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
   Eigen::Matrix3f NNT;
   Eigen::Matrix3f NNTInv;
   Eigen::Vector3f NNTp;
-  float diff;
   const unsigned max_iterations = 10;
 #pragma omp parallel for \
   default(none) \
   shared(corners) \
-  firstprivate(nnT, NNT, NNTInv, NNTp, diff) \
+  firstprivate(nnT, NNT, NNTInv, NNTp) \
   num_threads(threads_)
   for (int cIdx = 0; cIdx < static_cast<int> (corners.size ()); ++cIdx)
   {
@@ -537,11 +536,13 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
       if (invert3x3SymMatrix (NNT, NNTInv) != 0)
         corners[cIdx].getVector3fMap () = NNTInv * NNTp;
 
-      diff = (corners[cIdx].getVector3fMap () - corner.getVector3fMap()).squaredNorm ();
-    } while (diff > 1e-6 && ++iterations < max_iterations);
+      const auto diff = (corners[cIdx].getVector3fMap () - corner.getVector3fMap()).squaredNorm ();
+      if (diff <= 1e-6) {
+        break;
+      }
+    } while (++iterations < max_iterations);
   }
 }
 
 #define PCL_INSTANTIATE_HarrisKeypoint3D(T,U,N) template class PCL_EXPORTS pcl::HarrisKeypoint3D<T,U,N>;
 #endif // #ifndef PCL_HARRIS_KEYPOINT_3D_IMPL_H_
-

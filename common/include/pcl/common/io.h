@@ -321,7 +321,7 @@ namespace pcl
     */
   PCL_EXPORTS void
   copyPointCloud (const pcl::PCLPointCloud2 &cloud_in,
-                  const IndicesAllocator< Eigen::aligned_allocator<int> > &indices,
+                  const IndicesAllocator< Eigen::aligned_allocator<index_t> > &indices,
                   pcl::PCLPointCloud2 &cloud_out);
 
   /** \brief Copy fields and point cloud data from \a cloud_in to \a cloud_out

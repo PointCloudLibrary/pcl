@@ -41,6 +41,7 @@
 #include <pcl/pcl_tests.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
+#include <pcl/common/utils.h>
 
 #include <pcl/sample_consensus/msac.h>
 #include <pcl/sample_consensus/lmeds.h>
@@ -430,6 +431,7 @@ TEST (SampleConsensusModelNormalPlane, SIMD_countWithinDistance) // Test if all 
 
     // The number of inliers is usually somewhere between 0 and 100
     const auto res_standard = model.countWithinDistanceStandard (model_coefficients, threshold); // Standard
+    pcl::utils::ignore(res_standard);
 #if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
     const auto res_sse      = model.countWithinDistanceSSE (model_coefficients, threshold); // SSE
     EXPECT_LE ((res_standard > res_sse ? res_standard - res_sse : res_sse - res_standard), 2u) << "seed=" << seed << ", i=" << i
