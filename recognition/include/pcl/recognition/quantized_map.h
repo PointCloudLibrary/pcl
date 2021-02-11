@@ -39,6 +39,7 @@
 
 #include <vector>
 #include <pcl/pcl_macros.h>
+#include <pcl/exceptions.h>
 
 namespace pcl
 {
@@ -121,20 +122,28 @@ namespace pcl
         }
       }
 
-      void 
+      void
       deserialize (std::istream & stream)
       {
         int width;
         int height;
 
         stream.read (reinterpret_cast<char*> (&width), sizeof (width));
-        stream.read (reinterpret_cast<char*> (&height), sizeof (height));
-
+        PCL_CHECK_IO_STREAM(stream, "width");
         width_ = static_cast<std::size_t> (width);
+
+        stream.read (reinterpret_cast<char*> (&height), sizeof (height));
+        PCL_CHECK_IO_STREAM(stream, "height");
         height_ = static_cast<std::size_t> (height);
 
         int num_of_elements;
         stream.read (reinterpret_cast<char*> (&num_of_elements), sizeof (num_of_elements));
+        PCL_CHECK_IO_STREAM(stream, "num_of_elements");
+
+        if (num_of_elements < 0)
+        {
+          PCL_THROW_EXCEPTION (pcl::BadValueException, "Error! Number of elements specfied in the file is negative!");
+        }
         data_.resize (num_of_elements);
         for (int element_index = 0; element_index < num_of_elements; ++element_index)
         {
@@ -146,7 +155,7 @@ namespace pcl
     //private:
       std::vector<unsigned char> data_;
       std::size_t width_;
-      std::size_t height_;  
-    
+      std::size_t height_;
+
   };
 }
