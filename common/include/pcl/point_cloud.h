@@ -435,11 +435,11 @@ namespace pcl
 
       //capacity
       inline std::size_t size () const { return points.size (); }
-      index_t max_size() const noexcept { return static_cast<index_t>(points.max_size()); }
+      inline index_t max_size() const noexcept { return static_cast<index_t>(points.max_size()); }
       inline void reserve (std::size_t n) { points.reserve (n); }
       inline bool empty () const { return points.empty (); }
-      PointT* data() noexcept { return points.data(); }
-      const PointT* data() const noexcept { return points.data(); }
+      inline PointT* data() noexcept { return points.data(); }
+      inline const PointT* data() const noexcept { return points.data(); }
 
       /**
        * \brief Resizes the container to contain `count` elements
@@ -492,7 +492,7 @@ namespace pcl
        * \param[in] count new size of the point cloud
        * \param[in] value the value to initialize the new points with
        */
-      void
+      inline void
       resize(index_t count, const PointT& value)
       {
         points.resize(count, value);
@@ -513,7 +513,7 @@ namespace pcl
        * \param[in] new_height new height of the point cloud
        * \param[in] value the value to initialize the new points with
        */
-      void
+      inline void
       resize(index_t new_width, index_t new_height, const PointT& value)
       {
         points.resize(new_width * new_height, value);
@@ -537,7 +537,7 @@ namespace pcl
        * 1!
        * \param[in] count new size of the point cloud
        */
-      void
+      inline void
       assign(index_t count, const PointT& value)
       {
         points.assign(count, value);
@@ -550,7 +550,7 @@ namespace pcl
        * \param[in] new_width new width of the point cloud
        * \param[in] new_height new height of the point cloud
        */
-      void
+      inline void
       assign(index_t new_width, index_t new_height, const PointT& value)
       {
         points.assign(new_width * new_height, value);
@@ -566,7 +566,7 @@ namespace pcl
        * 1!
        */
       template <class InputIterator>
-      void
+      inline void
       assign(InputIterator first, InputIterator last)
       {
         points.assign(std::move(first), std::move(last));
@@ -583,7 +583,7 @@ namespace pcl
        * \param[in] new_width new width of the point cloud
        */
       template <class InputIterator>
-      void
+      inline void
       assign(InputIterator first, InputIterator last, index_t new_width)
       {
         points.assign(std::move(first), std::move(last));
@@ -605,7 +605,7 @@ namespace pcl
        * 1!
        */
       void
-      assign(std::initializer_list<PointT> ilist)
+      inline assign(std::initializer_list<PointT> ilist)
       {
         points.assign(std::move(ilist));
         width = static_cast<std::uint32_t>(size());
@@ -619,7 +619,7 @@ namespace pcl
        * \param[in] new_width new width of the point cloud
        */
       void
-      assign(std::initializer_list<PointT> ilist, index_t new_width)
+      inline assign(std::initializer_list<PointT> ilist, index_t new_width)
       {
         points.assign(std::move(ilist));
         width = new_width;
