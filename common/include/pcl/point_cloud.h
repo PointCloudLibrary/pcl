@@ -50,7 +50,7 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/type_traits.h>
 #include <pcl/types.h>
-#include <pcl/console/print.h>
+#include <pcl/console/print.h>  // for PCL_WARN
 
 #include <utility>
 #include <vector>
@@ -465,15 +465,15 @@ namespace pcl
       /**
        * \brief Resizes the container to contain `new_width * new_height` elements
        * \details
-       * * If the current size is greater than requested, the pointcloud is reduced to its
-       * first requested elements
-       * * If the current size is less than requested, additional default-inserted points
-       * are appended
+       * * If the current size is greater then the requested size, the pointcloud
+       * is reduced to its first requested elements
+       * * If the current size is less then the requested size, additional
+       * default-inserted points are appended
        * \param[in] new_width new width of the point cloud
        * \param[in] new_height new height of the point cloud
        */
       inline void
-      resize(index_t new_width, index_t new_height)
+      resize(uindex_t new_width, uindex_t new_height)
       {
         points.resize(new_width * new_height);
         width = new_width;
@@ -505,10 +505,10 @@ namespace pcl
       /**
        * \brief Resizes the container to contain count elements
        * \details
-       * * If the current size is greater than requested, the pointcloud is reduced to its
-       * first requested elements
-       * * If the current size is less than requested, additional default-inserted points
-       * are appended
+       * * If the current size is greater then the requested size, the pointcloud
+       * is reduced to its first requested elements
+       * * If the current size is less then the requested size, additional
+       * default-inserted points are appended
        * \param[in] new_width new width of the point cloud
        * \param[in] new_height new height of the point cloud
        * \param[in] value the value to initialize the new points with
