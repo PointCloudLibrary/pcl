@@ -409,20 +409,11 @@ void pcl::people::PersonCluster<PointT>::drawTBoundingBox (pcl::visualization::P
     coeffs.values.push_back (0.5);
   }
 
-  std::stringstream bbox_name;
-  bbox_name << "bbox_person_" << person_number;
-  viewer.removeShape (bbox_name.str());
-  viewer.addCube (coeffs, bbox_name.str());
-  viewer.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 1.0, 0.0, bbox_name.str());
-  viewer.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 2, bbox_name.str());
-
-  //      std::stringstream confid;
-  //      confid << person_confidence_;
-  //      PointT position;
-  //      position.x = tcenter_[0]- 0.2;
-  //      position.y = ttop_[1];
-  //      position.z = tcenter_[2];
-  //      viewer.addText3D(confid.str().substr(0, 4), position, 0.1);
+  const std::string bbox_name = "bbox_person_" + std::to_string(person_number);
+  viewer.removeShape (bbox_name);
+  viewer.addCube (coeffs, bbox_name);
+  viewer.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 1.0, 0.0, bbox_name);
+  viewer.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 2, bbox_name);
 }
 
 template <typename PointT>
