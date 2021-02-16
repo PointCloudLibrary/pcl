@@ -185,9 +185,7 @@ pcl::TextureMapping<PointInT>::mapTexture2Mesh (pcl::TextureMesh &tex_mesh)
     }// end faces
 
     // texture materials
-    std::stringstream tex_name;
-    tex_name << "material_" << m;
-    tex_name >> tex_material_.tex_name;
+    tex_material_.tex_name = "material_" + std::to_string(m);
     tex_material_.tex_file = tex_files_[m];
     tex_mesh.tex_materials.push_back (tex_material_);
 
@@ -271,9 +269,7 @@ pcl::TextureMapping<PointInT>::mapTexture2MeshUV (pcl::TextureMesh &tex_mesh)
     }// end faces
 
     // texture materials
-    std::stringstream tex_name;
-    tex_name << "material_" << m;
-    tex_name >> tex_material_.tex_name;
+    tex_material_.tex_name = "material_" + std::to_string(m);
     tex_material_.tex_file = tex_files_[m];
     tex_mesh.tex_materials.push_back (tex_material_);
 
@@ -333,9 +329,7 @@ pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &te
     }// end faces
 
     // texture materials
-    std::stringstream tex_name;
-    tex_name << "material_" << m;
-    tex_name >> tex_material_.tex_name;
+    tex_material_.tex_name = "material_" + std::to_string(m);
     tex_material_.tex_file = current_cam.texture_file;
     tex_mesh.tex_materials.push_back (tex_material_);
 
