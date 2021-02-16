@@ -10,8 +10,6 @@ if(NOT VTK_FOUND)
 else()
   set(DEFAULT TRUE)
   set(REASON)
-  set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
-  include("${VTK_USE_FILE}")
 endif()
 
 # QT5 Found?
@@ -24,7 +22,7 @@ elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
 endif()
 
 # QVTK?
-if(NOT QVTK_FOUND)
+if(NOT HAVE_QVTK)
   set(DEFAULT AUTO_OFF)
   set(REASON "VTK was not built with Qt support.")
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
@@ -37,8 +35,8 @@ if(${DEFAULT} STREQUAL "TRUE")
   set(DEFAULT FALSE)
 endif()
 
-PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS vtk)
+PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")
+PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSUBSYS_DEPS} EXT_DEPS vtk)
 
 PCL_ADD_DOC("${SUBSUBSYS_NAME}")
 
@@ -140,6 +138,10 @@ set_source_files_properties(${srcs} PROPERTIES OBJECT_DEPENDS "${ui_srcs}")
 set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
 PCL_ADD_EXECUTABLE(${EXE_NAME} COMPONENT ${SUBSUBSYS_NAME} SOURCES ${ui_srcs} ${moc_srcs} ${resource_srcs} ${srcs} ${incs} ${impl_incs})
 target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search Qt5::Widgets)
+#TODO: Update when CMAKE 3.10 is available
+if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+  target_link_libraries("${EXE_NAME}" VTK::GUISupportQt)
+endif()
 
 # Put the ui in the windows project file
 if(("${CMAKE_BUILD_TOOL}" MATCHES "msdev") OR("${CMAKE_BUILD_TOOL}" MATCHES "devenv"))

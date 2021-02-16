@@ -14,7 +14,6 @@ if(NOT VTK_FOUND)
 else()
   set(DEFAULT TRUE)
   set(REASON)
-  include("${VTK_USE_FILE}")
 endif()
 
 # QT5 Found?
@@ -27,7 +26,7 @@ elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
 endif()
 
 # QVTK?
-if(NOT QVTK_FOUND)
+if(NOT HAVE_QVTK)
   set(DEFAULT AUTO_OFF)
   set(REASON "Cloud composer requires QVTK")
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
@@ -41,7 +40,7 @@ if("${DEFAULT}" STREQUAL "TRUE")
 endif()
 
 PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSUBSYS_DEPS})
+PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSUBSYS_DEPS} EXT_DEPS vtk)
 
 PCL_ADD_DOC(${SUBSUBSYS_NAME})
 
@@ -92,7 +91,14 @@ set(PCL_LIB_TYPE_ORIGIN ${PCL_LIB_TYPE})
 set(PCL_LIB_TYPE STATIC)
 QT5_WRAP_CPP(INTERFACE_HEADERS_MOC ${INTERFACE_HEADERS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 PCL_ADD_LIBRARY(pcl_cc_tool_interface COMPONENT ${SUBSUBSYS_NAME} SOURCES ${INTERFACE_HEADERS} ${INTERFACE_SOURCES} ${INTERFACE_HEADERS_MOC})
-target_link_libraries(pcl_cc_tool_interface pcl_common pcl_filters pcl_search pcl_visualization ${VTK_LIBRARIES} Qt5::Widgets)
+
+set(vtk_libs ${VTK_LIBRARIES})
+#TODO: Update when CMAKE 3.10 is available
+if (NOT (${VTK_VERSION} VERSION_LESS 9.0))
+  set(vtk_libs VTK::GUISupportQt)
+endif()
+target_link_libraries(pcl_cc_tool_interface pcl_common pcl_filters pcl_search pcl_visualization Qt5::Widgets ${vtk_libs})
+
 set(PCL_LIB_TYPE ${PCL_LIB_TYPE_ORIGIN})
 
 if(APPLE)

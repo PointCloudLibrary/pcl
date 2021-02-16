@@ -54,7 +54,12 @@
 #include <pcl/memory.h>  // for pcl::make_shared
 #include <pcl/point_types.h>
 #include <pcl/console/parse.h>
-#include <pcl/visualization/vtk.h>
+
+#include <vtkGeneralTransform.h>
+#include <vtkPlatonicSolidSource.h>
+#include <vtkLoopSubdivisionFilter.h>
+#include <vtkCellLocator.h>
+#include <vtkMath.h>
 
 #include <boost/algorithm/string.hpp>  // for boost::is_any_of, boost::split, boost::token_compress_on, boost::trim
 #include <boost/filesystem.hpp>  // for boost::filesystem::create_directories, boost::filesystem::exists, boost::filesystem::extension, boost::filesystem::path

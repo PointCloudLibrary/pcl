@@ -7,4 +7,11 @@
  *  All rights reserved
  */
 
-PCL_DEPRECATED_HEADER(1, 14, "Use required vtk includes instead.")
+#include <vtkCellArray.h>
+
+#ifdef VTK_CELL_ARRAY_V2
+  using vtkCellPtsPtr = vtkIdType const*;
+#else
+  using vtkCellPtsPtr = vtkIdType*;
+#endif
+
