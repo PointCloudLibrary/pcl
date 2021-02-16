@@ -1,4 +1,5 @@
 #include <pcl/simulation/model.h>
+#include <pcl/conversions.h> // for fromPCLPointCloud2
 using namespace pcl::simulation;
 
 pcl::simulation::TriangleMeshModel::TriangleMeshModel(pcl::PolygonMesh::Ptr plg)
@@ -21,7 +22,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel(pcl::PolygonMesh::Ptr plg)
 
     Eigen::Vector4f tmp;
     for (const auto& polygon : plg->polygons) {
-      for (const unsigned int& point : polygon.vertices) {
+      for (const auto& point : polygon.vertices) {
         tmp = newcloud[point].getVector4fMap();
         vertices.push_back(Vertex(Eigen::Vector3f(tmp(0), tmp(1), tmp(2)),
                                   Eigen::Vector3f(newcloud[point].r / 255.0f,
@@ -36,7 +37,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel(pcl::PolygonMesh::Ptr plg)
     pcl::fromPCLPointCloud2(plg->cloud, newcloud);
     Eigen::Vector4f tmp;
     for (const auto& polygon : plg->polygons) {
-      for (const unsigned int& point : polygon.vertices) {
+      for (const auto& point : polygon.vertices) {
         tmp = newcloud[point].getVector4fMap();
         vertices.push_back(Vertex(Eigen::Vector3f(tmp(0), tmp(1), tmp(2)),
                                   Eigen::Vector3f(1.0, 1.0, 1.0)));

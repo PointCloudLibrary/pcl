@@ -41,6 +41,7 @@
 #include <pcl/pcl_tests.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
+#include <pcl/common/utils.h>
 
 #include <pcl/sample_consensus/msac.h>
 #include <pcl/sample_consensus/lmeds.h>
@@ -61,7 +62,7 @@ using SampleConsensusModelNormalParallelPlanePtr = SampleConsensusModelNormalPar
 
 PointCloud<PointXYZ>::Ptr cloud_ (new PointCloud<PointXYZ> ());
 PointCloud<Normal>::Ptr normals_ (new PointCloud<Normal> ());
-std::vector<int> indices_;
+pcl::Indices indices_;
 float plane_coeffs_[] = {-0.8964f, -0.5868f, -1.208f};
 
 template <typename ModelType, typename SacType>
@@ -76,11 +77,11 @@ void verifyPlaneSac (ModelType& model,
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> sample;
+  pcl::Indices sample;
   sac.getModel (sample);
   EXPECT_EQ (3, sample.size ());
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_LT (inlier_number, inliers.size ());
 
@@ -276,7 +277,7 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
     RandomSampleConsensus<PointXYZ> sac (model, 0.03);
     sac.computeModel();
 
-    std::vector<int> inliers;
+    pcl::Indices inliers;
     sac.getInliers (inliers);
     ASSERT_EQ (cloud.size (), inliers.size ());
   }
@@ -287,7 +288,7 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
     RandomSampleConsensus<PointXYZ> sac (model, 0.03);
     sac.computeModel ();
 
-    std::vector<int> inliers;
+    pcl::Indices inliers;
     sac.getInliers (inliers);
     ASSERT_EQ (cloud.size (), inliers.size ());
   }
@@ -298,7 +299,7 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
     RandomSampleConsensus<PointXYZ> sac (model, 0.03);
     sac.computeModel ();
 
-    std::vector<int> inliers;
+    pcl::Indices inliers;
     sac.getInliers (inliers);
     ASSERT_EQ (0, inliers.size ());
   }
@@ -327,7 +328,7 @@ TEST (SampleConsensusModelPlane, SIMD_countWithinDistance) // Test if all countW
   {
     // Generate a cloud with 1000 random points
     PointCloud<PointXYZ> cloud;
-    std::vector<int> indices;
+    pcl::Indices indices;
     cloud.resize (1000);
     for (std::size_t idx = 0; idx < cloud.size (); ++idx)
     {
@@ -392,7 +393,7 @@ TEST (SampleConsensusModelNormalPlane, SIMD_countWithinDistance) // Test if all 
     // Generate a cloud with 10000 random points
     PointCloud<PointXYZ> cloud;
     PointCloud<Normal> normal_cloud;
-    std::vector<int> indices;
+    pcl::Indices indices;
     cloud.resize (10000);
     normal_cloud.resize (10000);
     for (std::size_t idx = 0; idx < cloud.size (); ++idx)
@@ -430,6 +431,7 @@ TEST (SampleConsensusModelNormalPlane, SIMD_countWithinDistance) // Test if all 
 
     // The number of inliers is usually somewhere between 0 and 100
     const auto res_standard = model.countWithinDistanceStandard (model_coefficients, threshold); // Standard
+    pcl::utils::ignore(res_standard);
 #if defined (__SSE__) && defined (__SSE2__) && defined (__SSE4_1__)
     const auto res_sse      = model.countWithinDistanceSSE (model_coefficients, threshold); // SSE
     EXPECT_LE ((res_standard > res_sse ? res_standard - res_sse : res_sse - res_standard), 2u) << "seed=" << seed << ", i=" << i

@@ -38,8 +38,6 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/registration/ndt_2d.h>
-#include <pcl/registration/transformation_estimation_lm.h>
-#include <pcl/registration/warp_point_rigid_3d.h>
 
 #include <string>
 #include <iostream>

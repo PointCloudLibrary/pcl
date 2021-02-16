@@ -662,6 +662,8 @@ endmacro()
 ###############################################################################
 # Write a report on the build/not-build status of the subsystems
 macro(PCL_WRITE_STATUS_REPORT)
+  message(STATUS "PCL build with following flags:")
+  message(STATUS "${CMAKE_CXX_FLAGS}")
   message(STATUS "The following subsystems will be built:")
   foreach(_ss ${PCL_SUBSYSTEMS})
     PCL_GET_SUBSYS_STATUS(_status ${_ss})

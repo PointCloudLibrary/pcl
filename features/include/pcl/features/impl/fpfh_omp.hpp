@@ -158,7 +158,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
     // ... and remap the nn_indices values so that they represent row indices in the spfh_hist_* matrices 
     // instead of indices into surface_->points
-    for (int &nn_index : nn_indices)
+    for (auto &nn_index : nn_indices)
       nn_index = spfh_hist_lookup[nn_index];
 
     // Compute the FPFH signature (i.e. compute a weighted combination of local SPFH signatures) ...

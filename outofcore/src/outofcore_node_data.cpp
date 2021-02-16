@@ -46,7 +46,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <memory>
 
 namespace pcl

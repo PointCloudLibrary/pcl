@@ -69,7 +69,6 @@ using namespace Eigen;
 
 PCLPointCloud2::Ptr cloud_blob (new PCLPointCloud2);
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
-std::vector<int> indices_;
 
 PointCloud<PointXYZRGB>::Ptr cloud_organized (new PointCloud<PointXYZRGB>);
 
@@ -2152,7 +2151,7 @@ TEST (NormalRefinement, Filters)
 
   // Input without NaN
   pcl::PointCloud<pcl::PointXYZRGB> cloud_organized_nonan;
-  std::vector<int> dummy;
+  pcl::Indices dummy;
   pcl::removeNaNFromPointCloud<pcl::PointXYZRGB> (*cloud_organized, cloud_organized_nonan, dummy);
 
   // Viewpoint
@@ -2334,10 +2333,6 @@ main (int argc, char** argv)
   // Load a standard PCD file from disk
   loadPCDFile (file_name, *cloud_blob);
   fromPCLPointCloud2 (*cloud_blob, *cloud);
-
-  indices_.resize (cloud->size ());
-  for (index_t i = 0; i < static_cast<index_t>(indices_.size ()); ++i)
-    indices_[i] = i;
 
 
   loadPCDFile (argv[2], *cloud_organized);

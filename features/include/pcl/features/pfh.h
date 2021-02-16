@@ -42,8 +42,8 @@
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
-#include <pcl/features/pfh_tools.h>
 #include <map>
+#include <queue> // for std::queue
 
 namespace pcl
 {

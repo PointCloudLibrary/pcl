@@ -83,7 +83,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   // create octree
   pcl::search::Octree<PointXYZ> octree(0.1);
 
-  std::vector<int> k_indices;
+  pcl::Indices k_indices;
   std::vector<float> k_sqr_distances;
 
   std::vector<int> k_indices_bruteforce;
@@ -259,7 +259,7 @@ TEST (PCL, Octree_RadiusSearch_GPU)
   radiuses.push_back(radius);
   radiuses.push_back(radius);
   radiuses.push_back(radius);
-  std::vector<std::vector<int> > k_indices;
+  std::vector<pcl::Indices > k_indices;
   std::vector<std::vector<float> > k_distances;
   int max_nn = -1;
 

@@ -35,6 +35,7 @@
  *
  */
 
+#include <pcl/io/pcd_io.h> // for loadPCDFile, savePCDFile
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/io/impl/vtk_lib_io.hpp>
 #include <pcl/PCLPointCloud2.h>
@@ -240,6 +241,11 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
   mesh.cloud.width = mesh.cloud.height = 0;
   mesh.cloud.is_dense = true;
 
+  if (poly_data->GetPoints () == nullptr)
+  {
+    PCL_ERROR ("[pcl::io::vtk2mesh] Given vtkPolyData is misformed (contains nullpointer instead of points).\n");
+    return (0);
+  }
   vtkSmartPointer<vtkPoints> mesh_points = poly_data->GetPoints ();
   vtkIdType nr_points = mesh_points->GetNumberOfPoints ();
   vtkIdType nr_polygons = poly_data->GetNumberOfPolys ();

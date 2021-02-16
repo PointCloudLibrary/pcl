@@ -41,7 +41,6 @@
 #pragma once
 
 // PCL includes
-#include <pcl/common/transforms.h>
 #include <pcl/registration/correspondence_estimation.h>
 #include <pcl/registration/correspondence_rejection.h>
 #include <pcl/registration/transformation_estimation.h>

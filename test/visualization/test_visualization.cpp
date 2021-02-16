@@ -60,10 +60,29 @@ PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree3;
 search::KdTree<PointNormal>::Ptr tree4;
 
+// Test that updatepointcloud works when adding points.
+////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, PCLVisualizer_updatePointCloudAddPoint)
+{
+  pcl::common::CloudGenerator<pcl::PointXYZ, pcl::common::UniformGenerator<float> > generator;
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
+  generator.fill(3, 1, *cloud);
+
+  // Setup a basic viewport window
+  pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer("3D Viewer"));
+  viewer->addPointCloud<pcl::PointXYZ>(cloud);
+
+  cloud->push_back(pcl::PointXYZ());
+
+  viewer->updatePointCloud(cloud);
+  viewer->spinOnce(100);
+}
+
 // Test that updatepointcloud works when removing points. Ie. modifying vtk data structure to reflect modified pointcloud
 // See #4001 and #3452 for previously undetected error.
 ////////////////////////////////////////////////////////////////////////////////
-TEST(PCL, PCLVisualizer_updatePointCloud)
+TEST(PCL, PCLVisualizer_updatePointCloudRemovePoint)
 {
   pcl::common::CloudGenerator<pcl::PointXYZRGB, pcl::common::UniformGenerator<float> > generator;
 

@@ -275,6 +275,8 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
 
   // Set the cells and the vertices
   vertices->SetCells (nr_points, cells);
+  // Set the cell count explicitly as the array doesn't get modified enough so the above method updates accordingly. See #4001 and #3452
+  vertices->SetNumberOfCells(nr_points);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1550,45 +1552,8 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   vtkSmartPointer<vtkPolyData> polydata = reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ();
   if (!polydata)
     return (false);
-  vtkSmartPointer<vtkCellArray> vertices = polydata->GetVerts ();
-  vtkSmartPointer<vtkPoints> points      = polydata->GetPoints ();
-  // Copy the new point array in
-  vtkIdType nr_points = cloud->size ();
-  points->SetNumberOfPoints (nr_points);
 
-  // Get a pointer to the beginning of the data array
-  float *data = (static_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
-
-  vtkIdType pts = 0;
-  // If the dataset is dense (no NaNs)
-  if (cloud->is_dense)
-  {
-    for (vtkIdType i = 0; i < nr_points; ++i, pts += 3)
-      std::copy (&(*cloud)[i].x, &(*cloud)[i].x + 3, &data[pts]);
-  }
-  else
-  {
-    vtkIdType j = 0;    // true point index
-    for (vtkIdType i = 0; i < nr_points; ++i)
-    {
-      // Check if the point is invalid
-      if (!isFinite ((*cloud)[i]))
-        continue;
-      std::copy (&(*cloud)[i].x, &(*cloud)[i].x + 3, &data[pts]);
-      pts += 3;
-      j++;
-    }
-    nr_points = j;
-    points->SetNumberOfPoints (nr_points);
-  }
-
-  vtkSmartPointer<vtkIdTypeArray> cells = vertices->GetData ();
-  updateCells (cells, am_it->second.cells, nr_points);
-
-  // Set the cells and the vertices
-  vertices->SetCells (nr_points, cells);
-  // Set the cell count explicitly as the array doesn't get modified enough so the above method updates accordingly. See #4001 and #3452
-  vertices->SetNumberOfCells(nr_points);
+  convertPointCloudToVTKPolyData<PointT>(cloud, polydata, am_it->second.cells);
 
   // Get the colors from the handler
   bool has_colors = false;

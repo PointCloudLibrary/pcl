@@ -531,6 +531,56 @@ TEST (PCL, HasField)
   EXPECT_FALSE ((pcl::traits::has_label<pcl::Normal>::value));
 }
 
+TEST (PCL, GetMinMax3D)
+{
+  pcl::PointCloud<pcl::PointXYZ> cloud;
+  cloud.emplace_back ( 0.0f,      0.0f,  0.0f);
+  cloud.emplace_back (10.0f, -10000.0f,  1.0f);
+  cloud.emplace_back ( 5.0f,      5.0f,  0.0f);
+  cloud.emplace_back (-5.0f,      0.0f, -0.5f);
+
+  pcl::PointXYZ min_pt, max_pt;
+  Eigen::Vector4f min_vec, max_vec;
+
+  pcl::getMinMax3D (cloud, min_pt, max_pt);
+  EXPECT_EQ (min_pt.x, -5.0f);
+  EXPECT_EQ (min_pt.y, -10000.0f);
+  EXPECT_EQ (min_pt.z, -0.5f);
+  EXPECT_EQ (max_pt.x, 10.0f);
+  EXPECT_EQ (max_pt.y, 5.0f);
+  EXPECT_EQ (max_pt.z, 1.0f);
+
+  pcl::getMinMax3D (cloud, min_vec, max_vec);
+  EXPECT_EQ (min_vec.x (), -5.0f);
+  EXPECT_EQ (min_vec.y (), -10000.0f);
+  EXPECT_EQ (min_vec.z (), -0.5f);
+  EXPECT_EQ (max_vec.x (), 10.0f);
+  EXPECT_EQ (max_vec.y (), 5.0f);
+  EXPECT_EQ (max_vec.z (), 1.0f);
+
+  pcl::PointIndices pindices;
+  pindices.indices.push_back (0);
+  pindices.indices.push_back (2);
+  pcl::getMinMax3D (cloud, pindices, min_vec, max_vec);
+  EXPECT_EQ (min_vec.x (), 0.0f);
+  EXPECT_EQ (min_vec.y (), 0.0f);
+  EXPECT_EQ (min_vec.z (), 0.0f);
+  EXPECT_EQ (max_vec.x (), 5.0f);
+  EXPECT_EQ (max_vec.y (), 5.0f);
+  EXPECT_EQ (max_vec.z (), 0.0f);
+
+  pcl::Indices indices;
+  indices.push_back (1);
+  indices.push_back (3);
+  pcl::getMinMax3D (cloud, indices, min_vec, max_vec);
+  EXPECT_EQ (min_vec.x (), -5.0f);
+  EXPECT_EQ (min_vec.y (), -10000.0f);
+  EXPECT_EQ (min_vec.z (), -0.5f);
+  EXPECT_EQ (max_vec.x (), 10.0f);
+  EXPECT_EQ (max_vec.y (), 0.0f);
+  EXPECT_EQ (max_vec.z (), 1.0f);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GetMaxDistance)
 {

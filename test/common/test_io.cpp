@@ -106,7 +106,7 @@ TEST (PCL, copyPointCloud)
     EXPECT_EQ (cloud_xyz_rgba[i].rgba, cloud_xyz_rgb_normal[i].rgba);
   }
 
-  IndicesAllocator< Eigen::aligned_allocator<int> > indices_aligned;
+  IndicesAllocator< Eigen::aligned_allocator<pcl::index_t> > indices_aligned;
   indices_aligned.push_back (1); indices_aligned.push_back (2); indices_aligned.push_back (3); 
   pcl::copyPointCloud (cloud_xyz_rgba, indices_aligned, cloud_xyz_rgb_normal);
   ASSERT_EQ (int (cloud_xyz_rgb_normal.size ()), 3);

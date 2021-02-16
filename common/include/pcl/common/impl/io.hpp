@@ -40,6 +40,7 @@
 
 #pragma once
 
+#include <pcl/conversions.h> // for FieldAdder
 #include <pcl/common/concatenate.h>
 #include <pcl/common/copy_point.h>
 #include <pcl/common/io.h>
@@ -195,25 +196,7 @@ copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                 const pcl::PointIndices &indices,
                      pcl::PointCloud<PointT> &cloud_out)
 {
-  // Do we want to copy everything?
-  if (indices.indices.size () == cloud_in.size ())
-  {
-    cloud_out = cloud_in;
-    return;
-  }
-
-  // Allocate enough space and copy the basics
-  cloud_out.resize (indices.indices.size ());
-  cloud_out.header   = cloud_in.header;
-  cloud_out.width    = indices.indices.size ();
-  cloud_out.height   = 1;
-  cloud_out.is_dense = cloud_in.is_dense;
-  cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
-  cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
-
-  // Iterate over each point
-  for (std::size_t i = 0; i < indices.indices.size (); ++i)
-    cloud_out[i] = cloud_in[indices.indices[i]];
+  copyPointCloud (cloud_in, indices.indices, cloud_out);
 }
 
 

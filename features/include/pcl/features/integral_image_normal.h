@@ -41,7 +41,6 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 #include <pcl/features/feature.h>
 #include <pcl/features/integral_image2D.h>
 

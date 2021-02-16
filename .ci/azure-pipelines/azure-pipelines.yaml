@@ -2,12 +2,12 @@ resources:
   containers:
     - container: fmt
       image: pointcloudlibrary/fmt
-    - container: env1604
-      image: pointcloudlibrary/env:16.04
     - container: env1804
       image: pointcloudlibrary/env:18.04
     - container: env2004
       image: pointcloudlibrary/env:20.04
+    - container: env2010
+      image: pointcloudlibrary/env:20.10
     - container: doc
       image: pointcloudlibrary/doc
 
@@ -27,23 +27,24 @@ stages:
           vmImage: 'Ubuntu 20.04'
         strategy:
           matrix:
-            16.04 GCC:
-              CONTAINER: env1604
+            18.04 GCC:  # oldest LTS
+              CONTAINER: env1804
               CC: gcc
               CXX: g++
-              BUILD_GPU: OFF
+              BUILD_GPU: ON
               CMAKE_ARGS: '-DPCL_WARNINGS_ARE_ERRORS=ON'
-            20.04 GCC:
-              CONTAINER: env2004
+            20.10 GCC:  # latest Ubuntu
+              CONTAINER: env2010
               CC: gcc
               CXX: g++
               BUILD_GPU: OFF
-              CMAKE_ARGS: ''
+              # surface is not ready for re-entrant QHull
+              CMAKE_ARGS: '-DBUILD_tests_surface=OFF'
         container: $[ variables['CONTAINER'] ]
         timeoutInMinutes: 0
         variables:
           BUILD_DIR: '$(Agent.BuildDirectory)/build'
-          CMAKE_CXX_FLAGS: '-Wall -Wextra'
+          CMAKE_CXX_FLAGS: '-Wall -Wextra -Wnoexcept-type'
         steps:
           - template: build/ubuntu.yaml
 
@@ -75,14 +76,15 @@ stages:
         # Placement of Ubuntu Clang job after macOS ensures an extra parallel job doesn't need to be created.
         # Total time per run remains same since macOS is quicker so it finishes earlier, and remaining time is used by this job
         # Therefore, number of parallel jobs and total run time of entire pipeline remains unchanged even after addition of this job
+        # The version of Ubuntu is chosen to cover more versions than covered by GCC based CI
         dependsOn: osx
         condition: succeededOrFailed()
         pool:
           vmImage: 'Ubuntu 20.04'
         strategy:
           matrix:
-            18.04 Clang:
-              CONTAINER: env1804
+            20.04 Clang:
+              CONTAINER: env2004
               CC: clang
               CXX: clang++
               BUILD_GPU: ON
@@ -103,8 +105,8 @@ stages:
           vmImage: 'Ubuntu 20.04'
         strategy:
           matrix:
-            18.04 Clang:
-              CONTAINER: env1804
+            20.04 Clang:
+              CONTAINER: env2004
               CC: clang
               CXX: clang++
               INDEX_SIGNED: OFF
@@ -155,4 +157,4 @@ stages:
     dependsOn: build_gcc
     jobs:
       - template: tutorials.yaml
-      
+

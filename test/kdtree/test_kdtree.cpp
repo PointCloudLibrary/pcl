@@ -99,7 +99,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   for (std::size_t i=0; i < cloud.size(); ++i)
     if (euclideanDistance(cloud[i], test_point) < max_dist)
       brute_force_result.insert(i);
-  std::vector<int> k_indices;
+  pcl::Indices k_indices;
   std::vector<float> k_distances;
   kdtree.radiusSearch (test_point, max_dist, k_indices, k_distances, 100);
   
@@ -178,7 +178,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
     ++counter;
   }
 
-  std::vector<int> k_indices;
+  pcl::Indices k_indices;
   k_indices.resize (no_of_neighbors);
   std::vector<float> k_distances;
   k_distances.resize (no_of_neighbors);
@@ -187,7 +187,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   EXPECT_EQ (k_indices.size (), no_of_neighbors);
 
   // Check if all found neighbors have distance smaller than max_dist
-  for (const int &k_index : k_indices)
+  for (const auto &k_index : k_indices)
   {
     const MyPoint& point = cloud[k_index];
     bool ok = euclideanDistance (test_point, point) <= max_dist;
@@ -243,7 +243,7 @@ TEST (PCL, KdTreeFLANN_setPointRepresentation)
   
   // Find k nearest neighbors
   const int k = 10;
-  std::vector<int> k_indices (k);
+  pcl::Indices k_indices (k);
   std::vector<float> k_distances (k);
   kdtree.nearestKSearch (p, k, k_indices, k_distances);
   for (int i = 0; i < k; ++i)
@@ -294,11 +294,11 @@ TEST (PCL, KdTreeFLANN_32_vs_64_bit)
   KdTreeFLANN<PointXYZ> tree;
   tree.setInputCloud (cloud_in);
 
-  std::vector<std::vector<int> > nn_indices_vector;
+  std::vector<pcl::Indices > nn_indices_vector;
   for (std::size_t i = 0; i < cloud_in->size (); ++i)
     if (isFinite ((*cloud_in)[i]))
     {
-      std::vector<int> nn_indices;
+      pcl::Indices nn_indices;
       std::vector<float> nn_dists;
       tree.radiusSearch ((*cloud_in)[i], 0.02, nn_indices, nn_dists);
 

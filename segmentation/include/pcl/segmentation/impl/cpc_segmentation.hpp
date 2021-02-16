@@ -38,6 +38,7 @@
 #ifndef PCL_SEGMENTATION_IMPL_CPC_SEGMENTATION_HPP_
 #define PCL_SEGMENTATION_IMPL_CPC_SEGMENTATION_HPP_
 
+#include <pcl/sample_consensus/sac_model_plane.h> // for SampleConsensusModelPlane
 #include <pcl/segmentation/cpc_segmentation.h>
 
 template <typename PointT>

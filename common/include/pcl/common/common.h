@@ -39,7 +39,7 @@
 
 #include <pcl/point_cloud.h> // for PointCloud
 #include <pcl/PointIndices.h> // for PointIndices
-#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
+namespace pcl { struct PCLPointCloud2; }
 
 /**
   * \file pcl/common/common.h

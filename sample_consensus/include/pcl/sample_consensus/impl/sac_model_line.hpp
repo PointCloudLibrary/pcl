@@ -221,7 +221,12 @@ pcl::SampleConsensusModelLine<PointT>::optimizeModelCoefficients (
 
   // Compute the 3x3 covariance matrix
   Eigen::Vector4f centroid;
-  compute3DCentroid (*input_, inliers, centroid);
+  if (0 == compute3DCentroid (*input_, inliers, centroid))
+  {
+    PCL_WARN ("[pcl::SampleConsensusModelLine::optimizeModelCoefficients] compute3DCentroid failed (returned 0) because there are no valid inliers.\n");
+    optimized_coefficients = model_coefficients;
+    return;
+  }
   Eigen::Matrix3f covariance_matrix;
   computeCovarianceMatrix (*input_, inliers, centroid, covariance_matrix);
   optimized_coefficients[0] = centroid[0];

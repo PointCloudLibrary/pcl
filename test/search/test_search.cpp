@@ -294,7 +294,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<se
   if (!input_indices.empty ())
   {
     indices_mask.assign (point_cloud->size (), false);
-    for (const int &input_index : input_indices)
+    for (const auto &input_index : input_indices)
       indices_mask [input_index] = true;
   }
   
@@ -322,7 +322,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<se
   for (unsigned knn = 1; knn <= 512; knn <<= 3)
   {
     // find nn for each point in the cloud
-    for (const int &query_index : query_indices)
+    for (const auto &query_index : query_indices)
     {
       #pragma omp parallel for \
         shared(indices, input_indices, indices_mask, distances, knn, nan_mask, passed, point_cloud, query_index, search_methods) \
@@ -372,7 +372,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector
   if (!input_indices.empty ())
   {
     indices_mask.assign (point_cloud->size (), false);
-    for (const int &input_index : input_indices)
+    for (const auto &input_index : input_indices)
       indices_mask [input_index] = true;
   }
   
@@ -401,7 +401,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector
   {
     //std::cout << radius << std::endl;
     // find nn for each point in the cloud
-    for (const int &query_index : query_indices)
+    for (const auto &query_index : query_indices)
     {
       #pragma omp parallel for \
         default(none) \

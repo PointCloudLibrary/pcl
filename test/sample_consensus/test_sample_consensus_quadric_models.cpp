@@ -84,11 +84,11 @@ TEST (SampleConsensusModelSphere, RANSAC)
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> sample;
+  pcl::Indices sample;
   sac.getModel (sample);
   EXPECT_EQ (4, sample.size ());
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_EQ (9, inliers.size ());
 
@@ -130,7 +130,7 @@ TEST (SampleConsensusModelSphere, SIMD_countWithinDistance) // Test if all count
   {
     // Generate a cloud with 1000 random points
     PointCloud<PointXYZ> cloud;
-    std::vector<int> indices;
+    pcl::Indices indices;
     cloud.resize (1000);
     for (std::size_t idx = 0; idx < cloud.size (); ++idx)
     {
@@ -244,11 +244,11 @@ TEST (SampleConsensusModelNormalSphere, RANSAC)
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> sample;
+  pcl::Indices sample;
   sac.getModel (sample);
   EXPECT_EQ (4, sample.size ());
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_EQ (27, inliers.size ());
 
@@ -353,11 +353,11 @@ TEST (SampleConsensusModelCone, RANSAC)
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> sample;
+  pcl::Indices sample;
   sac.getModel (sample);
   EXPECT_EQ (3, sample.size ());
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_EQ (31, inliers.size ());
 
@@ -437,11 +437,11 @@ TEST (SampleConsensusModelCylinder, RANSAC)
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> sample;
+  pcl::Indices sample;
   sac.getModel (sample);
   EXPECT_EQ (2, sample.size ());
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_EQ (20, inliers.size ());
 
@@ -496,11 +496,11 @@ TEST (SampleConsensusModelCircle2D, RANSAC)
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> sample;
+  pcl::Indices sample;
   sac.getModel (sample);
   EXPECT_EQ (3, sample.size ());
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_EQ (17, inliers.size ());
 
@@ -542,7 +542,7 @@ TEST (SampleConsensusModelCircle2D, SIMD_countWithinDistance) // Test if all cou
   {
     // Generate a cloud with 1000 random points
     PointCloud<PointXYZ> cloud;
-    std::vector<int> indices;
+    pcl::Indices indices;
     cloud.resize (1000);
     for (std::size_t idx = 0; idx < cloud.size (); ++idx)
     {
@@ -619,11 +619,11 @@ TEST (SampleConsensusModelCircle3D, RANSAC)
   bool result = sac.computeModel ();
   ASSERT_TRUE (result);
 
-  std::vector<int> sample;
+  pcl::Indices sample;
   sac.getModel (sample);
   EXPECT_EQ (3, sample.size ());
 
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   EXPECT_EQ (18, inliers.size ());
 

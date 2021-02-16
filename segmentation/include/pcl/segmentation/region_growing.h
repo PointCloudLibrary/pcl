@@ -45,9 +45,6 @@
 #include <pcl/search/search.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <list>
-#include <cmath>
-#include <ctime>
 
 namespace pcl
 {

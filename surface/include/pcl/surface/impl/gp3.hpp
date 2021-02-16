@@ -83,7 +83,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
     nnn_ = static_cast<int> (indices_->size ());
 
   // Variables to hold the results of nearest neighbor searches
-  std::vector<int> nnIdx (nnn_);
+  pcl::Indices nnIdx (nnn_);
   std::vector<float> sqrDists (nnn_);
 
   // current number of connected components

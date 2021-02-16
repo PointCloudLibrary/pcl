@@ -1,6 +1,6 @@
 #include <iostream>
-#include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
+#include <pcl/common/io.h> // for concatenateFields
 
 int
   main (int argc, char** argv)
