@@ -115,7 +115,7 @@ macro(find_boost)
   set(BOOST_LIBRARY_DIRS "${Boost_LIBRARY_DIRS}")
   set(BOOST_LIBRARIES ${Boost_LIBRARIES})
   if(WIN32 AND NOT MINGW)
-    set(BOOST_DEFINITIONS ${BOOST_DEFINITIONS} -DBOOST_ALL_NO_LIB)
+    string(APPEND BOOST_DEFINITIONS -DBOOST_ALL_NO_LIB)
   endif()
 endmacro()
 
@@ -127,7 +127,6 @@ macro(find_eigen)
     get_filename_component(EIGEN_ROOT "@EIGEN_INCLUDE_DIRS@" ABSOLUTE)
   endif()
   find_package(Eigen 3.1)
-  set(EIGEN_DEFINITIONS ${EIGEN_DEFINITIONS})
 endmacro()
 
 #remove this as soon as qhull is shipped with FindQhull.cmake
