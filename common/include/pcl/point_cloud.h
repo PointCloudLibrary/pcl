@@ -465,7 +465,7 @@ namespace pcl
       /**
        * \brief Resizes the container to contain `new_width * new_height` elements
        * \details
-       * * If the current size is greater then the requested size, the pointcloud
+       * * If the current size is greater than the requested size, the pointcloud
        * is reduced to its first requested elements
        * * If the current size is less then the requested size, additional
        * default-inserted points are appended
@@ -647,7 +647,7 @@ namespace pcl
       }
 
       /** \brief Insert a new point in the cloud, at the end of the container.
-        * \note This assumes the user would correct the details later on!
+        * \note This assumes the user would correct the width and height later on!
         * \param[in] pt the point to insert
         */
       inline void
@@ -671,7 +671,7 @@ namespace pcl
       }
 
       /** \brief Emplace a new point in the cloud, at the end of the container.
-        * \note This assumes the user would correct the details later on!
+        * \note This assumes the user would correct the width and height later on!
         * \param[in] args the parameters to forward to the point to construct
         * \return reference to the emplaced point
         */
@@ -698,7 +698,7 @@ namespace pcl
       }
 
       /** \brief Insert a new point in the cloud, given an iterator.
-        * \note This assumes the user would correct the details later on!
+        * \note This assumes the user would correct the width and height later on!
         * \param[in] position where to insert the point
         * \param[in] pt the point to insert
         * \return returns the new position iterator
@@ -725,7 +725,7 @@ namespace pcl
       }
 
       /** \brief Insert a new point in the cloud N times, given an iterator.
-        * \note This assumes the user would correct the details later on!
+        * \note This assumes the user would correct the width and height later on!
         * \param[in] position where to insert the point
         * \param[in] n the number of times to insert the point
         * \param[in] pt the point to insert
@@ -751,7 +751,7 @@ namespace pcl
       }
 
       /** \brief Insert a new range of points in the cloud, at a certain position.
-        * \note This assumes the user would correct the details later on!
+        * \note This assumes the user would correct the width and height later on!
         * \param[in] position where to insert the data
         * \param[in] first where to start inserting the points from
         * \param[in] last where to stop inserting the points from
@@ -778,7 +778,7 @@ namespace pcl
       }
 
       /** \brief Emplace a new point in the cloud, given an iterator.
-        * \note This assumes the user would correct the details later on!
+        * \note This assumes the user would correct the width and height later on!
         * \param[in] position iterator before which the point will be emplaced
         * \param[in] args the parameters to forward to the point to construct
         * \return returns the new position iterator
@@ -805,7 +805,7 @@ namespace pcl
       }
 
       /** \brief Erase a point in the cloud.
-        * \note This assumes the user would correct the details later on!
+        * \note This assumes the user would correct the width and height later on!
         * \param[in] position what data point to erase
         * \return returns the new position iterator
         */
@@ -832,7 +832,7 @@ namespace pcl
       }
 
       /** \brief Erase a set of points given by a (first, last) iterator pair
-        * \note This assumes the user would correct the details later on!
+        * \note This assumes the user would correct the width and height later on!
         * \param[in] first where to start erasing points from
         * \param[in] last where to stop erasing points from
         * \return returns the new position iterator
