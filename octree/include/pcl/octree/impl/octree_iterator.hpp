@@ -257,7 +257,8 @@ OctreeBreadthFirstIterator<OctreeT>::operator++()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename OctreeT>
-OctreeFixedDepthIterator<OctreeT>::OctreeFixedDepthIterator() : fixed_depth_(0u)
+OctreeFixedDepthIterator<OctreeT>::OctreeFixedDepthIterator()
+: OctreeBreadthFirstIterator<OctreeT>(nullptr, 0), fixed_depth_(0u)
 {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////

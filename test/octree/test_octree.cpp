@@ -797,7 +797,7 @@ TEST (PCL, Octree_Pointcloud_Test)
       auto current = pointIdxVec.cbegin ();
       while (current != pointIdxVec.cend ())
       {
-        if (*current == static_cast<int> (i))
+        if (*current == static_cast<pcl::index_t> (i))
         {
           bIdxFound = true;
           break;
@@ -1325,7 +1325,7 @@ TEST(PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
 
     // brute force search
     double BFdistance = std::numeric_limits<double>::max ();
-    int BFindex = 0;
+    pcl::index_t BFindex = 0;
 
     for (std::size_t i = 0; i < cloudIn->size (); i++)
     {
@@ -1335,7 +1335,7 @@ TEST(PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
 
       if (pointDist < BFdistance)
       {
-        BFindex = static_cast<int> (i);
+        BFindex = static_cast<pcl::index_t> (i);
         BFdistance = pointDist;
       }
 
