@@ -63,10 +63,10 @@ jobs:
         displayName: 'Generate diff for the documentation'
       - task: PublishPipelineArtifact@1
         inputs:
-          targetPath: $DIFF_PATH
+          targetPath: $(DIFF_PATH)
           artifactName: 'documentation_diff'
           artifactType: 'pipeline'
-        displayName: 'Generate diff for the documentation'
+        displayName: 'Create an artifact of the diff'
       - script: |
           git add --all
           git commit --amend --reset-author -m 'Documentation for commit $(Build.SourceVersion)' -q
