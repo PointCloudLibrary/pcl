@@ -8,6 +8,7 @@ jobs:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'
       DOC_DIR: '$(Agent.BuildDirectory)/documentation'
       CHANGELOG: '$(Agent.TempDirectory)/changelog'
+      DIFF_PATH: '$(Agent.BuildDirectory)/doc.patch'
     steps:
       - checkout: self
         # find the commit hash on a quick non-forced update too
@@ -48,6 +49,16 @@ jobs:
           cp -r $BUILD_DIR/doc/advanced/html/* advanced
           cp -r $BUILD_DIR/doc/doxygen/html/* .
           cp $CHANGELOG.html .
+          git diff > $DIFF_PATH
+          cat $DIFF_PATH
+        displayName: 'Generate diff for the documentation'
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: $DIFF_PATH
+          artifactName: 'documentation_diff'
+          artifactType: 'pipeline'
+        displayName: 'Generate diff for the documentation'
+      - script: |
           git add --all
           git commit --amend --reset-author -m 'Documentation for commit $(Build.SourceVersion)' -q
           git push --force
