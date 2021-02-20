@@ -345,61 +345,72 @@ TEST (PCL, PointCloud)
 
   cloud.push_back (PointXYZ (3, 4, 5));
   EXPECT_EQ (cloud.width, 16);
-  EXPECT_EQ (cloud.height, 1);
+  EXPECT_FALSE (cloud.isOrganized ());
+
+  pointVec.resize (80*80, PointXYZ (1, 1, 1));
+  cloud.assign (pointVec.begin(), pointVec.end(), 80);
+  EXPECT_TRUE (cloud.isOrganized ());
+  cloud.push_back (PointXYZ (3, 4, 5));
+  EXPECT_EQ (cloud.width, (80*80) + 1);
+  EXPECT_FALSE (cloud.isOrganized ());
 
   pointVec.resize (640*480, PointXYZ (1, 1, 1));
   cloud.assign (pointVec.begin(), pointVec.end(), 640);
   cloud.transient_push_back (PointXYZ(2, 2, 2));
   EXPECT_EQ (cloud.width, 640);
+  EXPECT_EQ (cloud.size(), (640*480) + 1);
   EXPECT_TRUE (cloud.isOrganized ());
 
   auto& new_pointXYZ = cloud.transient_emplace_back (3, 3, 3);
   EXPECT_TRUE (cloud.isOrganized ());
+  EXPECT_EQ (cloud.width, 640);
+  EXPECT_EQ (cloud.size(), (640*480) + 2);
   EXPECT_EQ (&new_pointXYZ, &cloud.back ());
 
   cloud.transient_insert (cloud.end (), PointXYZ (1, 1, 1));
   EXPECT_TRUE (cloud.isOrganized ());
+  EXPECT_EQ (cloud.size(), (640*480) + 3);
   EXPECT_EQ (cloud.width, 640);
 
   cloud.transient_insert (cloud.end (), 10, PointXYZ (1, 1, 1));
   EXPECT_TRUE (cloud.isOrganized ());
+  EXPECT_EQ (cloud.size(), (640*480) + 13);
   EXPECT_EQ (cloud.width, 640);
 
   cloud.transient_emplace (cloud.end (), 4, 4, 4);
   EXPECT_TRUE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 640);
+  EXPECT_EQ (cloud.size(), (640*480) + 14);
 
   cloud.transient_erase (cloud.end () - 1);
   EXPECT_TRUE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 640);
+  EXPECT_EQ (cloud.size(), (640*480) + 13);
 
   cloud.transient_erase (cloud.begin (), cloud.end ());
   EXPECT_TRUE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 640);
+  EXPECT_EQ (cloud.size(), 0);
 
   pointVec.resize (640*480, PointXYZ (1, 1, 1));
   cloud.assign (pointVec.begin(), pointVec.end(), 640);
   PointCloud<PointXYZ> new_cloud;
   PointCloud<PointXYZ>::concatenate (new_cloud, cloud);
   EXPECT_FALSE (new_cloud.isOrganized ());
-  EXPECT_EQ (new_cloud.height, 1);
   EXPECT_EQ (new_cloud.width, 640*480);
 
   PointCloud<PointXYZ> cloud_out;
   PointCloud<PointXYZ>::concatenate (new_cloud, cloud, cloud_out);
   EXPECT_FALSE (cloud_out.isOrganized ());
-  EXPECT_EQ (cloud_out.height, 1);
   EXPECT_EQ (cloud_out.width, 640*480*2);
 
   cloud_out = cloud + new_cloud;
   EXPECT_FALSE (cloud_out.isOrganized ());
-  EXPECT_EQ (cloud_out.height, 1);
   EXPECT_EQ (cloud_out.width, 640*480*2);
 
   PointCloud<PointXYZ> new_cloud1;
   new_cloud1 += cloud;
   EXPECT_FALSE (new_cloud1.isOrganized ());
-  EXPECT_EQ (new_cloud1.height, 1);
   EXPECT_EQ (new_cloud1.width, 640*480);
 
   EXPECT_THROW({new_cloud1.at (5, 5);}, UnorganizedPointCloudException);
