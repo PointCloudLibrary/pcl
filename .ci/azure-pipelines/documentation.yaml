@@ -42,6 +42,7 @@ jobs:
       - script: |
           git config --global user.email "documentation@pointclouds.org"
           git config --global user.name "PointCloudLibrary (via Azure Pipelines)"
+          mkdir -p ~/.ssh
           echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
         displayName: 'Set user details for git'
       - script: |
