@@ -58,9 +58,17 @@ jobs:
           cp -r $BUILD_DIR/doc/advanced/html/* advanced
           cp -r $BUILD_DIR/doc/doxygen/html/* .
           cp $CHANGELOG.html .
-          git diff > $DIFF_PATH
+        displayName: 'Move documentation to repo'
+      - script: |
+          # Replace these shenanigans with -I option available from Git 2.30
+          git diff > full.patch
+          git diff -G "Pages generated on" > matching.patch
+          # Ignore the last-updated-on style diff
+          diff full.patch matching.patch > $DIFF_PATH
+        displayName: 'Generate diff'
+      - script: |
           cat $DIFF_PATH
-        displayName: 'Generate diff for the documentation'
+        displayName: 'Show diff'
       - task: PublishPipelineArtifact@1
         inputs:
           targetPath: $(DIFF_PATH)
