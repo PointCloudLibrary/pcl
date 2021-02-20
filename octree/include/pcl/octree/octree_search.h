@@ -100,7 +100,7 @@ public:
    * \return "true" if leaf node exist; "false" otherwise
    */
   bool
-  voxelSearch(const index_t index, Indices& point_idx_data);
+  voxelSearch(uindex_t index, Indices& point_idx_data);
 
   /** \brief Search for k-nearest neighbors at the query point.
    * \param[in] cloud the point cloud data
@@ -114,7 +114,7 @@ public:
    */
   inline uindex_t
   nearestKSearch(const PointCloud& cloud,
-                 index_t index,
+                 uindex_t index,
                  uindex_t k,
                  Indices& k_indices,
                  std::vector<float>& k_sqr_distances)
@@ -149,7 +149,7 @@ public:
    * \return number of neighbors found
    */
   uindex_t
-  nearestKSearch(index_t index,
+  nearestKSearch(uindex_t index,
                  uindex_t k,
                  Indices& k_indices,
                  std::vector<float>& k_sqr_distances);
@@ -163,7 +163,7 @@ public:
    */
   inline void
   approxNearestSearch(const PointCloud& cloud,
-                      index_t query_index,
+                      uindex_t query_index,
                       index_t& result_index,
                       float& sqr_distance)
   {
@@ -187,7 +187,7 @@ public:
    * \return number of neighbors found
    */
   void
-  approxNearestSearch(index_t query_index, index_t& result_index, float& sqr_distance);
+  approxNearestSearch(uindex_t query_index, index_t& result_index, float& sqr_distance);
 
   /** \brief Search for all neighbors of query point that are within a given radius.
    * \param[in] cloud the point cloud data
@@ -201,7 +201,7 @@ public:
    */
   uindex_t
   radiusSearch(const PointCloud& cloud,
-               index_t index,
+               uindex_t index,
                double radius,
                Indices& k_indices,
                std::vector<float>& k_sqr_distances,
@@ -238,7 +238,7 @@ public:
    * \return number of neighbors found in radius
    */
   uindex_t
-  radiusSearch(index_t index,
+  radiusSearch(uindex_t index,
                const double radius,
                Indices& k_indices,
                std::vector<float>& k_sqr_distances,
@@ -341,7 +341,7 @@ protected:
      * \param[in] point_idx index for a dataset point given by \a setInputCloud
      * \param[in] point_distance distance of query point to voxel center
      */
-    prioPointQueueEntry(index_t point_idx, float point_distance)
+    prioPointQueueEntry(uindex_t point_idx, float point_distance)
     : point_idx_(point_idx), point_distance_(point_distance)
     {}
 
@@ -355,7 +355,7 @@ protected:
     }
 
     /** \brief Index representing a point in the dataset given by \a setInputCloud. */
-    index_t point_idx_;
+    uindex_t point_idx_;
 
     /** \brief Distance to query point. */
     float point_distance_;

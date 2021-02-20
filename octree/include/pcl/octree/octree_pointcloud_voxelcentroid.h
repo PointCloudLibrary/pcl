@@ -156,7 +156,7 @@ public:
    * \param pointIdx_arg
    */
   void
-  addPointIdx(const index_t pointIdx_arg) override
+  addPointIdx(const uindex_t pointIdx_arg) override
   {
     OctreeKey key;
 

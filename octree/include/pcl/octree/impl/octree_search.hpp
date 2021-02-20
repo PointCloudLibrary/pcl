@@ -71,7 +71,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::voxelSearch(
 template <typename PointT, typename LeafContainerT, typename BranchContainerT>
 bool
 OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::voxelSearch(
-    const index_t index, Indices& point_idx_data)
+    const uindex_t index, Indices& point_idx_data)
 {
   const PointT search_point = this->getPointByIndex(index);
   return (this->voxelSearch(search_point, point_idx_data));
@@ -123,7 +123,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::nearestKSearch
 template <typename PointT, typename LeafContainerT, typename BranchContainerT>
 uindex_t
 OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::nearestKSearch(
-    index_t index, uindex_t k, Indices& k_indices, std::vector<float>& k_sqr_distances)
+    uindex_t index, uindex_t k, Indices& k_indices, std::vector<float>& k_sqr_distances)
 {
   const PointT search_point = this->getPointByIndex(index);
   return (nearestKSearch(search_point, k, k_indices, k_sqr_distances));
@@ -150,7 +150,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::approxNearestS
 template <typename PointT, typename LeafContainerT, typename BranchContainerT>
 void
 OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::approxNearestSearch(
-    index_t query_index, index_t& result_index, float& sqr_distance)
+    uindex_t query_index, index_t& result_index, float& sqr_distance)
 {
   const PointT search_point = this->getPointByIndex(query_index);
 
@@ -189,7 +189,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::radiusSearch(
 template <typename PointT, typename LeafContainerT, typename BranchContainerT>
 uindex_t
 OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::radiusSearch(
-    index_t index,
+    uindex_t index,
     const double radius,
     Indices& k_indices,
     std::vector<float>& k_sqr_distances,

@@ -200,7 +200,7 @@ public:
    * setInputCloud)
    */
   void
-  addPointFromCloud(index_t point_idx_arg, IndicesPtr indices_arg);
+  addPointFromCloud(uindex_t point_idx_arg, IndicesPtr indices_arg);
 
   /** \brief Add point simultaneously to octree and input point cloud.
    *  \param[in] point_arg point to be added
@@ -428,7 +428,7 @@ protected:
    * \a setInputCloud to be added
    */
   virtual void
-  addPointIdx(index_t point_idx_arg);
+  addPointIdx(uindex_t point_idx_arg);
 
   /** \brief Add point at index from input pointcloud dataset to octree
    * \param[in] leaf_node to be expanded
@@ -448,7 +448,7 @@ protected:
    * \return PointT from input pointcloud dataset
    */
   const PointT&
-  getPointByIndex(index_t index_arg) const;
+  getPointByIndex(uindex_t index_arg) const;
 
   /** \brief Find octree leaf node at a given point
    * \param[in] point_arg query point

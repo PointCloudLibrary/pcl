@@ -105,7 +105,7 @@ template <typename PointT,
           typename OctreeT>
 void
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
-    addPointFromCloud(const index_t point_idx_arg, IndicesPtr indices_arg)
+    addPointFromCloud(const uindex_t point_idx_arg, IndicesPtr indices_arg)
 {
   this->addPointIdx(point_idx_arg);
   if (indices_arg)
@@ -652,7 +652,7 @@ template <typename PointT,
           typename OctreeT>
 void
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
-    addPointIdx(const index_t point_idx_arg)
+    addPointIdx(const uindex_t point_idx_arg)
 {
   OctreeKey key;
 
@@ -700,7 +700,7 @@ template <typename PointT,
           typename OctreeT>
 const PointT&
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::
-    getPointByIndex(const index_t index_arg) const
+    getPointByIndex(const uindex_t index_arg) const
 {
   // retrieve point from input cloud
   assert(index_arg < input_->size());
