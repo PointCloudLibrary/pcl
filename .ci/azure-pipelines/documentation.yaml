@@ -52,7 +52,7 @@ jobs:
       - script: |
           git clone https://github.com/PointCloudLibrary/documentation.git $DOC_DIR
         displayName: 'Clone via HTTPS (if SSH failed)'
-        condition: failed()
+        continueOnError: true  # allow git clone to fail
       - script: |
           cd $DOC_DIR
           cp -r $BUILD_DIR/doc/tutorials/html/* tutorials
