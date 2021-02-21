@@ -48,6 +48,7 @@ jobs:
       - script: |
           git clone git@github.com:PointCloudLibrary/documentation.git $DOC_DIR
         displayName: 'Clone via SSH'
+        continueOnError: true  # allow future steps to run despite failure
       - script: |
           git clone https://github.com/PointCloudLibrary/documentation.git $DOC_DIR
         displayName: 'Clone via HTTPS (if SSH failed)'
