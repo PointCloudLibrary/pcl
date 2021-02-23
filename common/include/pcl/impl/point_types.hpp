@@ -191,11 +191,11 @@ namespace pcl
 
 #define PCL_ADD_UNION_POINT4D \
   union EIGEN_ALIGN16 { \
-    float data[4]; \
+    double data[4]; \
     struct { \
-      float x; \
-      float y; \
-      float z; \
+      double x; \
+      double y; \
+      double z; \
     }; \
   };
 
