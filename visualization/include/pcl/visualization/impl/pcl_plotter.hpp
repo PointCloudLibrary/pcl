@@ -69,7 +69,7 @@ template <typename PointT> bool
 PCLPlotter::addFeatureHistogram (
     const pcl::PointCloud<PointT> &cloud,
     const std::string &field_name,
-    const int index,
+    const pcl::index_t index,
     const std::string &id, int win_width, int win_height)
 {
   if (index < 0 || index >= cloud.size ())
