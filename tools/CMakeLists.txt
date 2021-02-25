@@ -60,6 +60,9 @@ target_link_libraries (pcl_spin_estimation pcl_common pcl_io pcl_features pcl_kd
 PCL_ADD_EXECUTABLE(pcl_voxel_grid COMPONENT ${SUBSYS_NAME} SOURCES voxel_grid.cpp)
 target_link_libraries (pcl_voxel_grid pcl_common pcl_io pcl_filters)
 
+PCL_ADD_EXECUTABLE(pcl_voxel_grid_large COMPONENT ${SUBSYS_NAME} SOURCES voxel_grid_large.cpp)
+target_link_libraries (pcl_voxel_grid_large pcl_common pcl_io pcl_filters)
+
 PCL_ADD_EXECUTABLE(pcl_passthrough_filter COMPONENT ${SUBSYS_NAME} SOURCES passthrough_filter.cpp)
 target_link_libraries (pcl_passthrough_filter pcl_common pcl_io pcl_filters)
 
