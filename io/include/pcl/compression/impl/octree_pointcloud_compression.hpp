@@ -524,7 +524,7 @@ namespace pcl
         for (std::size_t i = 0; i < pointCount; i++)
           output_->points.push_back (newPoint);
 
-        // calculcate position of lower voxel corner
+        // calculate position of lower voxel corner
         double lowerVoxelCorner[3];
         lowerVoxelCorner[0] = static_cast<double> (key_arg.x) * this->resolution_ + this->min_x_;
         lowerVoxelCorner[1] = static_cast<double> (key_arg.y) * this->resolution_ + this->min_y_;

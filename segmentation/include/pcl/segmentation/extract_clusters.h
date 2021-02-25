@@ -186,6 +186,11 @@ namespace pcl
         r.header = cloud.header;
         clusters.push_back (r);   // We could avoid a copy by working directly in the vector
       }
+      else
+      {
+        PCL_DEBUG("[pcl::extractEuclideanClusters] This cluster has %zu points, which is not between %u and %u points, so it is not a final cluster\n",
+                  seed_queue.size (), min_pts_per_cluster, max_pts_per_cluster);
+      }
     }
   }
 
@@ -301,6 +306,11 @@ namespace pcl
         r.header = cloud.header;
         clusters.push_back (r);
       }
+      else
+      {
+        PCL_DEBUG("[pcl::extractEuclideanClusters] This cluster has %zu points, which is not between %u and %u points, so it is not a final cluster\n",
+                  seed_queue.size (), min_pts_per_cluster, max_pts_per_cluster);
+      }
     }
   }
 
@@ -332,7 +342,7 @@ namespace pcl
       EuclideanClusterExtraction () : tree_ (), 
                                       cluster_tolerance_ (0),
                                       min_pts_per_cluster_ (1), 
-                                      max_pts_per_cluster_ (std::numeric_limits<int>::max ())
+                                      max_pts_per_cluster_ (std::numeric_limits<pcl::uindex_t>::max ())
       {};
 
       /** \brief Provide a pointer to the search object.
@@ -373,13 +383,13 @@ namespace pcl
         * \param[in] min_cluster_size the minimum cluster size
         */
       inline void 
-      setMinClusterSize (int min_cluster_size) 
+      setMinClusterSize (pcl::uindex_t min_cluster_size)
       { 
         min_pts_per_cluster_ = min_cluster_size; 
       }
 
       /** \brief Get the minimum number of points that a cluster needs to contain in order to be considered valid. */
-      inline int 
+      inline pcl::uindex_t
       getMinClusterSize () const 
       { 
         return (min_pts_per_cluster_); 
@@ -389,13 +399,13 @@ namespace pcl
         * \param[in] max_cluster_size the maximum cluster size
         */
       inline void 
-      setMaxClusterSize (int max_cluster_size) 
+      setMaxClusterSize (pcl::uindex_t max_cluster_size)
       { 
         max_pts_per_cluster_ = max_cluster_size; 
       }
 
       /** \brief Get the maximum number of points that a cluster needs to contain in order to be considered valid. */
-      inline int 
+      inline pcl::uindex_t
       getMaxClusterSize () const 
       { 
         return (max_pts_per_cluster_); 
@@ -421,10 +431,10 @@ namespace pcl
       double cluster_tolerance_;
 
       /** \brief The minimum number of points that a cluster needs to contain in order to be considered valid (default = 1). */
-      int min_pts_per_cluster_;
+      pcl::uindex_t min_pts_per_cluster_;
 
       /** \brief The maximum number of points that a cluster needs to contain in order to be considered valid (default = MAXINT). */
-      int max_pts_per_cluster_;
+      pcl::uindex_t max_pts_per_cluster_;
 
       /** \brief Class getName method. */
       virtual std::string getClassName () const { return ("EuclideanClusterExtraction"); }

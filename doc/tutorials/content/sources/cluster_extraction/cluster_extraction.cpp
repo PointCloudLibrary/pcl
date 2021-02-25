@@ -4,7 +4,7 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/kdtree/kdtree.h>
+#include <pcl/search/kdtree.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/segmentation/sac_segmentation.h>
@@ -12,7 +12,7 @@
 
 
 int 
-main (int argc, char** argv)
+main ()
 {
   // Read in the cloud data
   pcl::PCDReader reader;
@@ -40,7 +40,7 @@ main (int argc, char** argv)
   seg.setMaxIterations (100);
   seg.setDistanceThreshold (0.02);
 
-  int i=0, nr_points = (int) cloud_filtered->size ();
+  int nr_points = (int) cloud_filtered->size ();
   while (cloud_filtered->size () > 0.3 * nr_points)
   {
     // Segment the largest planar component from the remaining cloud

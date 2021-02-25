@@ -61,7 +61,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   double k = 1.0;
 
   Indices selection;
-  Eigen::VectorXf model_coefficients;
+  Eigen::VectorXf model_coefficients (sac_model_->getModelSize ());
   std::vector<double> distances;
 
   // Compute sigma - remember to set threshold_ correctly !
@@ -109,7 +109,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
       continue;
     }
     
-    // Use Expectiation-Maximization to find out the right value for d_cur_penalty
+    // Use Expectation-Maximization to find out the right value for d_cur_penalty
     // ---[ Initial estimate for the gamma mixing parameter = 1/2
     double gamma = 0.5;
     double p_outlier_prob = 0;

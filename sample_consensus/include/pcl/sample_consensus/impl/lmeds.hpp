@@ -59,7 +59,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
   double d_best_penalty = std::numeric_limits<double>::max();
 
   Indices selection;
-  Eigen::VectorXf model_coefficients;
+  Eigen::VectorXf model_coefficients (sac_model_->getModelSize ());
   std::vector<double> distances;
 
   unsigned skipped_count = 0;
