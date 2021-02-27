@@ -126,7 +126,7 @@ namespace pcl
       void detectKeypoints (PointCloudOut &output);
       void responseTomasi (PointCloudOut &output) const;
       void refineCorners (PointCloudOut &corners) const;
-      void calculateCombinedCovar (const std::vector<int>& neighbors, float* coefficients) const;
+      void calculateCombinedCovar (const pcl::Indices& neighbors, float* coefficients) const;
     private:
       float threshold_;
       bool refine_;

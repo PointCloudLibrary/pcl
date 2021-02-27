@@ -586,7 +586,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
 template <typename PointT> int
 pcl::PCDWriter::writeBinary (const std::string &file_name, 
                              const pcl::PointCloud<PointT> &cloud, 
-                             const std::vector<int> &indices)
+                             const pcl::Indices &indices)
 {
   if (cloud.empty () || indices.empty ())
   {
@@ -714,7 +714,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 template <typename PointT> int
 pcl::PCDWriter::writeASCII (const std::string &file_name, 
                             const pcl::PointCloud<PointT> &cloud, 
-                            const std::vector<int> &indices,
+                            const pcl::Indices &indices,
                             const int precision)
 {
   if (cloud.empty () || indices.empty ())
