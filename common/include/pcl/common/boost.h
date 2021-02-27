@@ -41,6 +41,7 @@
 #ifdef __GNUC__
 #pragma GCC system_header 
 #endif
+PCL_DEPRECATED_HEADER(1, 15, "")
 
 #ifndef Q_MOC_RUN
 // Marking all Boost headers as system headers to remove warnings
