@@ -37,6 +37,13 @@
 
 #pragma once
 
+#ifdef __SSE__
+#include <xmmintrin.h> // for __m128
+#endif // ifdef __SSE__
+#ifdef __AVX__
+#include <immintrin.h> // for __m256
+#endif // ifdef __AVX__
+
 #include <pcl/point_cloud.h> // for PointCloud
 #include <pcl/PointIndices.h> // for PointIndices
 namespace pcl { struct PCLPointCloud2; }
