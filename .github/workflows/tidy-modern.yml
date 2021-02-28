@@ -1,0 +1,36 @@
+name: tidy-modern
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tidy:
+    runs-on: ubuntu-latest
+    container:
+      image: pointcloudlibrary/env:18.04
+    
+    steps:
+    - name: Install git
+      run: |
+          add-apt-repository ppa:git-core/ppa
+          apt-get update
+          apt-get install -y git
+          `which git` --version
+
+    - uses: actions/checkout@v2
+
+    - name: Run clang-tidy
+      run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          ./llvm.sh 10
+          apt-get update
+          apt-get install -y clang-tidy-10 clang-tools-10 python-pip
+          pip install pyyaml
+          cmake .
+          ./.github/workflows/clang-tidy-modern.sh
+          git diff > tidy.patch
+          cat tidy.patch
+          [ ! -s formatting.patch ]
+
