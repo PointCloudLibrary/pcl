@@ -133,6 +133,7 @@ namespace pcl
         * \param[out] min_p the resultant minimum bounding box coordinates
         * \param[out] max_p the resultant maximum bounding box coordinates
         */
+      PCL_DEPRECATED(1, 12, "use getMinMax3D from pcl/common/common.h instead.")
       void 
       getMinMax (const PointCloudConstPtr &cloud, 
                  const IndicesPtr &indices,
