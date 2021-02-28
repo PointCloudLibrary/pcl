@@ -85,7 +85,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      virtual ~HarrisKeypoint6D () {}
+      virtual ~HarrisKeypoint6D () = default;
 
       /**
        * @brief set the radius for normal estimation and non maxima supression.

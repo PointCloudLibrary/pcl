@@ -111,7 +111,7 @@ namespace pcl
 
       /** \brief Destructor that frees memory. */
 
-      ~MinCutSegmentation ();
+      ~MinCutSegmentation () override;
 
       /** \brief This method simply sets the input point cloud.
         * \param[in] cloud the const boost shared pointer to a PointCloud

@@ -88,7 +88,7 @@ public:
   DigitalElevationMapBuilder();
 
   /** \brief Empty destructor. */
-  ~DigitalElevationMapBuilder();
+  ~DigitalElevationMapBuilder() override;
 
   /** \brief Set resolution of the DEM.
    * \param[in] resolution_column the column resolution.

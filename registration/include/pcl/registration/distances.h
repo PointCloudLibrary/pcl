@@ -42,9 +42,8 @@
 
 #include <Eigen/Core>
 
-#include <string.h>
-
 #include <algorithm>
+#include <cstring>
 #include <vector>
 
 namespace pcl {

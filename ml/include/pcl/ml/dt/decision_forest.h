@@ -51,10 +51,10 @@ class PCL_EXPORTS DecisionForest : public std::vector<pcl::DecisionTree<NodeType
 
 public:
   /** Constructor. */
-  DecisionForest() {}
+  DecisionForest() = default;
 
   /** Destructor. */
-  virtual ~DecisionForest() {}
+  virtual ~DecisionForest() = default;
 
   /** Serializes the decision tree.
    *

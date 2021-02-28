@@ -56,7 +56,7 @@ namespace pcl
   {
     public:
       ASCIIReader ();
-      ~ASCIIReader ();
+      ~ASCIIReader () override;
       using FileReader::read;
 
       /* Load only the meta information (number of points, their types, etc),

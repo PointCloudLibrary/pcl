@@ -82,7 +82,7 @@ public:
   OctreePointCloudAdjacencyContainer() : OctreeContainerBase() { this->reset(); }
 
   /** \brief Empty class deconstructor. */
-  ~OctreePointCloudAdjacencyContainer() {}
+  ~OctreePointCloudAdjacencyContainer() override = default;
 
   /** \brief Returns the number of neighbors this leaf has
    *  \returns number of neighbors

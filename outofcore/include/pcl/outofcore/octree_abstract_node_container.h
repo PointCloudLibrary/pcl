@@ -61,7 +61,7 @@ namespace pcl
         OutofcoreAbstractNodeContainer (const boost::filesystem::path&) {}
 
         virtual 
-        ~OutofcoreAbstractNodeContainer () {}        
+        ~OutofcoreAbstractNodeContainer () = default;        
 
         virtual void
         insertRange (const PointT* start, const std::uint64_t count)=0;

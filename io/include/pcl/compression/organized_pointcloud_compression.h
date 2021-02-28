@@ -61,13 +61,11 @@ namespace pcl
 
         /** \brief Empty Constructor. */
         OrganizedPointCloudCompression ()
-        {
-        }
+        = default;
 
         /** \brief Empty deconstructor. */
         virtual ~OrganizedPointCloudCompression ()
-        {
-        }
+        = default;
 
         /** \brief Encode point cloud to output stream
          * \param[in] cloud_arg:  point cloud to be compressed

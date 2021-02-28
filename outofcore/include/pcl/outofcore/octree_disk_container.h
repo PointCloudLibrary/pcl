@@ -94,7 +94,7 @@ namespace pcl
         OutofcoreOctreeDiskContainer (const boost::filesystem::path &dir);
 
         /** \brief flushes write buffer, then frees memory */
-        ~OutofcoreOctreeDiskContainer ();
+        ~OutofcoreOctreeDiskContainer () override;
 
         /** \brief provides random access to points based on a linear index
          */

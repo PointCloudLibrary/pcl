@@ -302,14 +302,14 @@ public:
   get_QD() const = 0;
   virtual void
   swap_index(int i, int j) const = 0;
-  virtual ~QMatrix() {}
+  virtual ~QMatrix() = default;
 };
 
 class Kernel : public QMatrix {
 
 public:
   Kernel(int l, svm_node* const* x, const svm_parameter& param);
-  ~Kernel();
+  ~Kernel() override;
 
   static double
   k_function(const svm_node* x, const svm_node* y, const svm_parameter& param);
@@ -520,9 +520,9 @@ Kernel::k_function(const svm_node* x, const svm_node* y, const svm_parameter& pa
 class Solver {
 
 public:
-  Solver(){};
+  Solver()= default;;
 
-  virtual ~Solver(){};
+  virtual ~Solver()= default;;
 
   struct SolutionInfo {
     double obj;
@@ -1173,7 +1173,7 @@ Solver::calculate_rho()
 class Solver_NU : public Solver {
 
 public:
-  Solver_NU() {}
+  Solver_NU() = default;
 
   void
   Solve(int l,
@@ -1477,7 +1477,7 @@ public:
     swap(QD[i], QD[j]);
   }
 
-  ~SVC_Q()
+  ~SVC_Q() override
   {
     delete[] y;
     delete cache;
@@ -1531,7 +1531,7 @@ public:
     swap(QD[i], QD[j]);
   }
 
-  ~ONE_CLASS_Q()
+  ~ONE_CLASS_Q() override
   {
     delete cache;
     delete[] QD;
@@ -1607,7 +1607,7 @@ public:
     return QD;
   }
 
-  ~SVR_Q()
+  ~SVR_Q() override
   {
     delete cache;
     delete[] sign;

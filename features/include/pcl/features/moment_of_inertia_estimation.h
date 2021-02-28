@@ -107,7 +107,7 @@ namespace pcl
 
       /** \brief Virtual destructor which frees the memory. */
       
-      ~MomentOfInertiaEstimation ();
+      ~MomentOfInertiaEstimation () override;
 
       /** \brief This method allows to set the angle step. It is used for the rotation
         * of the axis which is used for moment of inertia/eccentricity calculation.

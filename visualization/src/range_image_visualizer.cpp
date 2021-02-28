@@ -41,8 +41,7 @@ pcl::visualization::RangeImageVisualizer::RangeImageVisualizer (const std::strin
 }
 
 pcl::visualization::RangeImageVisualizer::~RangeImageVisualizer ()
-{
-}
+= default;
 
 // void 
 // pcl::visualization::RangeImageVisualizer::setRangeImage (const pcl::RangeImage& range_image, float min_value, float max_value, bool grayscale)

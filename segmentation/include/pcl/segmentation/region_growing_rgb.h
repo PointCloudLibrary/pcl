@@ -88,7 +88,7 @@ namespace pcl
 
       /** \brief Destructor that frees memory. */
       
-      ~RegionGrowingRGB ();
+      ~RegionGrowingRGB () override;
 
       /** \brief Returns the color threshold value used for testing if points belong to the same region. */
       float

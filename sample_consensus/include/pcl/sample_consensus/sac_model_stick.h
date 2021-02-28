@@ -107,7 +107,7 @@ namespace pcl
       }
       
       /** \brief Empty destructor */
-      ~SampleConsensusModelStick () {}
+      ~SampleConsensusModelStick () override = default;
 
       /** \brief Check whether the given index samples can form a valid stick model, compute the model coefficients from
         * these samples and store them internally in model_coefficients_. The stick coefficients are represented by a

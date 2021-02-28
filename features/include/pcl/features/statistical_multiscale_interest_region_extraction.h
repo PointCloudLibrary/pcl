@@ -71,7 +71,7 @@ namespace pcl
 
       /** \brief Empty constructor */
       StatisticalMultiscaleInterestRegionExtraction ()
-      {};
+      = default;;
 
       /** \brief Method that generates the underlying nearest neighbor graph based on the
        * input point cloud

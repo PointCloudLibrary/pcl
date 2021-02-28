@@ -136,7 +136,7 @@ namespace pcl
       }
 
       /** \brief Destructor **/
-      ~IntegralImageNormalEstimation ();
+      ~IntegralImageNormalEstimation () override;
 
       /** \brief Set the regions size which is considered for normal estimation.
         * \param[in] width the width of the search rectangle

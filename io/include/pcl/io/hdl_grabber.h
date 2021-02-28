@@ -112,7 +112,7 @@ namespace pcl
 
       /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
       
-      ~HDLGrabber () noexcept;
+      ~HDLGrabber () noexcept override;
 
       /** \brief Starts processing the Velodyne packets, either from the network or PCAP file. */
       void

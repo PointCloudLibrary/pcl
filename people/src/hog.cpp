@@ -64,7 +64,7 @@ pcl::people::HOG::HOG ()
 }  
 
 /** \brief Destructor. */
-pcl::people::HOG::~HOG () {}
+pcl::people::HOG::~HOG () = default;
 
 void 
 pcl::people::HOG::gradMag( float *I, int h, int w, int d, float *M, float *O ) const

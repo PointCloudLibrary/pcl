@@ -66,7 +66,7 @@ public:
   WarpPointRigid3D() : WarpPointRigid<PointSourceT, PointTargetT, Scalar>(3) {}
 
   /** \brief Empty destructor */
-  ~WarpPointRigid3D() {}
+  ~WarpPointRigid3D() override = default;
 
   /** \brief Set warp parameters.
    * \param[in] p warp parameters (tx ty rz)

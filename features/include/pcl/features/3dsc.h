@@ -118,7 +118,7 @@ namespace pcl
           rng_.seed (12345u);
       }
 
-      ~ShapeContext3DEstimation() {}
+      ~ShapeContext3DEstimation() override = default;
 
       //inline void
       //setAzimuthBins (std::size_t bins) { azimuth_bins_ = bins; }

@@ -65,7 +65,7 @@ template <class FeatureType,
           class NodeType>
 DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     ~DecisionTreeTrainer()
-{}
+= default;
 
 template <class FeatureType,
           class DataSet,

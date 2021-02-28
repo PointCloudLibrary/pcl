@@ -123,8 +123,7 @@ namespace pcl
 
       /** \brief Destructor. */
       ~TextureMapping ()
-      {
-      }
+      = default;
 
       /** \brief Set mesh scale control
         * \param[in] f

@@ -55,7 +55,7 @@ namespace pcl
       PlanarPolygonFusion () : regions_ () {}
      
       /** \brief Destructor */
-      virtual ~PlanarPolygonFusion () {}
+      virtual ~PlanarPolygonFusion () = default;
 
       /** \brief Reset the state (clean the list of planar models). */
       void 

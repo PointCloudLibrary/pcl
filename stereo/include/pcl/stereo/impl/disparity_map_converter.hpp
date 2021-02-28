@@ -60,7 +60,7 @@ pcl::DisparityMapConverter<PointT>::DisparityMapConverter()
 
 template <typename PointT>
 pcl::DisparityMapConverter<PointT>::~DisparityMapConverter()
-{}
+= default;
 
 template <typename PointT>
 inline void

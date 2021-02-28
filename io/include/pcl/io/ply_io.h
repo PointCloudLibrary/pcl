@@ -125,7 +125,7 @@ namespace pcl
         return (*this);
       }
 
-      ~PLYReader () { delete range_grid_; }
+      ~PLYReader () override { delete range_grid_; }
       /** \brief Read a point cloud data header from a PLY file.
         *
         * Load only the meta information (number of points, their types, etc),
@@ -547,10 +547,10 @@ namespace pcl
   {
     public:
       ///Constructor
-      PLYWriter () {};
+      PLYWriter () = default;;
 
       ///Destructor
-      ~PLYWriter () {};
+      ~PLYWriter () override = default;;
 
       /** \brief Generate the header of a PLY v.7 file format
         * \param[in] cloud the point cloud data message

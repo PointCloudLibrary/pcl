@@ -56,7 +56,7 @@ template <class FeatureType,
           class NodeType>
 DecisionForestTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
     ~DecisionForestTrainer()
-{}
+= default;
 
 template <class FeatureType,
           class DataSet,

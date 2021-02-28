@@ -55,8 +55,7 @@ OpenNIException::OpenNIException (const std::string& function_name, const std::s
 }
 
 OpenNIException::~OpenNIException () noexcept
-{
-}
+= default;
 
 OpenNIException& OpenNIException::operator = (const OpenNIException& exception) noexcept
 {

@@ -80,7 +80,7 @@ namespace openni_wrapper
     /**
      * @brief virtual Destructor that never throws an exception
      */
-    ~OpenNIException () noexcept;
+    ~OpenNIException () noexcept override;
 
     /**
      * @brief Assignment operator to allow copying the message of another exception variable.

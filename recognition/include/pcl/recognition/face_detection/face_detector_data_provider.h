@@ -123,9 +123,7 @@ namespace pcl
         }
 
         virtual ~FaceDetectorDataProvider()
-        {
-
-        }
+        = default;
 
         void setPatchesPerImage(int n)
         {

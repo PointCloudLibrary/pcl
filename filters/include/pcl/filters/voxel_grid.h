@@ -210,9 +210,8 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~VoxelGrid ()
-      {
-      }
+      ~VoxelGrid () override
+      = default;
 
       /** \brief Set the voxel grid leaf size.
         * \param[in] leaf_size the voxel grid leaf size
@@ -536,9 +535,8 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~VoxelGrid ()
-      {
-      }
+      ~VoxelGrid () override
+      = default;
 
       /** \brief Set the voxel grid leaf size.
         * \param[in] leaf_size the voxel grid leaf size

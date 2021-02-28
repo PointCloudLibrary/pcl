@@ -72,8 +72,7 @@ public:
   /** \brief Empty class constructor. */
   virtual
   ~ColorCoding ()
-  {
-  }
+  = default;
 
   /** \brief Define color bit depth of encoded color information.
     * \param bitDepth_arg: amounts of bits for representing one color component

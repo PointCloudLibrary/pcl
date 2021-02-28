@@ -64,7 +64,7 @@ namespace pcl
   {
     public:
       typedef shared_ptr<BilateralUpsampling<PointInT, PointOutT> > Ptr;
-      typedef shared_ptr<const BilateralUpsampling<PointInT, PointOutT> > ConstPtr;
+      using ConstPtr = shared_ptr<const BilateralUpsampling<PointInT, PointOutT> >;
 
       using PCLBase<PointInT>::input_;
       using PCLBase<PointInT>::indices_;

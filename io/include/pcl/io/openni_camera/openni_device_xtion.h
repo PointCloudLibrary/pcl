@@ -61,7 +61,7 @@ namespace openni_wrapper
     friend class OpenNIDriver;
   public:
     DeviceXtionPro (xn::Context& context, const xn::NodeInfo& device_node, const xn::NodeInfo& depth_node, const xn::NodeInfo& ir_node);
-    ~DeviceXtionPro () noexcept;
+    ~DeviceXtionPro () noexcept override;
     //virtual void setImageOutputMode (const XnMapOutputMode& output_mode);
 
   protected:

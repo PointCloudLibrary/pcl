@@ -72,7 +72,7 @@ namespace pcl
 
       /** \brief Virtual destructor. */
       
-      ~ROPSEstimation ();
+      ~ROPSEstimation () override;
 
       /** \brief Allows to set the number of partition bins that is used for distribution matrix calculation.
         * \param[in] number_of_bins number of partition bins

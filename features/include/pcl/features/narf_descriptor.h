@@ -72,7 +72,7 @@ namespace pcl
       /** Constructor */
       NarfDescriptor (const RangeImage* range_image=nullptr, const pcl::Indices* indices=nullptr);
       /** Destructor */
-      ~NarfDescriptor();
+      ~NarfDescriptor() override;
       
       // =====METHODS=====
       //! Set input data

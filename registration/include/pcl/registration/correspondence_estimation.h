@@ -101,7 +101,7 @@ public:
   {}
 
   /** \brief Empty destructor */
-  ~CorrespondenceEstimationBase() {}
+  ~CorrespondenceEstimationBase() override = default;
 
   /** \brief Provide a pointer to the input source
    * (e.g., the point cloud that we want to align to the target)
@@ -411,7 +411,7 @@ public:
   CorrespondenceEstimation() { corr_name_ = "CorrespondenceEstimation"; }
 
   /** \brief Empty destructor */
-  ~CorrespondenceEstimation() {}
+  ~CorrespondenceEstimation() override = default;
 
   /** \brief Determine the correspondences between input and target cloud.
    * \param[out] correspondences the found correspondences (index of query point, index

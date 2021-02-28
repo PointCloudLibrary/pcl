@@ -90,8 +90,7 @@ namespace pcl
         /** Destructor. */
         virtual
         ~Search ()
-        {
-        }
+        = default;
 
         /** \brief Returns the search method name
           */

@@ -66,7 +66,7 @@ namespace openni_wrapper
     using ConstPtr = pcl::shared_ptr<const DeviceONI>;
 
     DeviceONI (xn::Context& context, const std::string& file_name, bool repeat = false, bool streaming = true);
-    ~DeviceONI () noexcept;
+    ~DeviceONI () noexcept override;
 
     void startImageStream () override;
     void stopImageStream () override;
