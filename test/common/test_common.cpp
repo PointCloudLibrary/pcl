@@ -192,18 +192,18 @@ struct pointCloudTest : public testing::Test {
     PointCloud<PointXYZ> cloud;
 };
 
-TEST_F (pointCloudTest, pointCloud_is_organized)
+TEST_F (pointCloudTest, is_organized)
 {
   EXPECT_TRUE (cloud.isOrganized ());
 }
 
-TEST_F (pointCloudTest, pointCloud_not_organized)
+TEST_F (pointCloudTest, not_organized)
 {
   cloud.height = 1;
   EXPECT_FALSE (cloud.isOrganized ());
 }
 
-TEST_F (pointCloudTest, pointCloud_getMatrixXfMap)
+TEST_F (pointCloudTest, getMatrixXfMap)
 {
   cloud.width = 10;
   for (std::uint32_t i = 0; i < cloud.width*cloud.height; ++i)
@@ -276,28 +276,28 @@ TEST_F (pointCloudTest, pointCloud_getMatrixXfMap)
 #endif
 }
 
-TEST_F (pointCloudTest, pointCloud_clear)
+TEST_F (pointCloudTest, clear)
 {
   cloud.clear ();
   EXPECT_EQ (cloud.width, 0);
   EXPECT_EQ (cloud.height, 0);
 }
 
-TEST_F (pointCloudTest, pointCloud_insert_1)
+TEST_F (pointCloudTest, insert)
 {
   cloud.insert (cloud.end (), PointXYZ (1, 1, 1));
   EXPECT_FALSE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 1);
 }
 
-TEST_F (pointCloudTest, pointCloud_insert_2)
+TEST_F (pointCloudTest, insert_with_height)
 {
   cloud.insert (cloud.end (), 5, PointXYZ (1, 1, 1));
   EXPECT_FALSE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 5);
 }
 
-TEST_F (pointCloudTest, pointCloud_erase_1)
+TEST_F (pointCloudTest, erase_at_position)
 {
   cloud.insert (cloud.end (), 5, PointXYZ (1, 1, 1));
   cloud.erase (cloud.end () - 1);
@@ -306,7 +306,7 @@ TEST_F (pointCloudTest, pointCloud_erase_1)
 
 }
 
-TEST_F (pointCloudTest, pointCloud_erase_2)
+TEST_F (pointCloudTest, erase_with_iterator)
 {
   cloud.insert (cloud.end (), 5, PointXYZ (1, 1, 1));
   cloud.erase (cloud.begin (), cloud.end ());
@@ -314,14 +314,14 @@ TEST_F (pointCloudTest, pointCloud_erase_2)
   EXPECT_EQ (cloud.width, 0);
 }
 
-TEST_F (pointCloudTest, pointCloud_emplace)
+TEST_F (pointCloudTest, emplace)
 {
   cloud.emplace (cloud.end (), 1, 1, 1);
   EXPECT_FALSE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 1);
 }
 
-TEST_F (pointCloudTest, pointCloud_emplace_back)
+TEST_F (pointCloudTest, emplace_back)
 {
   auto& new_point = cloud.emplace_back (1, 1, 1);
   EXPECT_FALSE (cloud.isOrganized ());
@@ -329,14 +329,14 @@ TEST_F (pointCloudTest, pointCloud_emplace_back)
   EXPECT_EQ (&new_point, &cloud.back ());
 }
 
-TEST_F (pointCloudTest, pointCloud_resize_1)
+TEST_F (pointCloudTest, resize_with_count_elements)
 {
   cloud.resize (640*360);
   EXPECT_FALSE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 640*360);
 }
 
-TEST_F (pointCloudTest, pointCloud_resize_2)
+TEST_F (pointCloudTest, resize_with_new_width_and_height)
 {
   cloud.resize (640, 480);
   EXPECT_TRUE (cloud.isOrganized ());
@@ -344,35 +344,35 @@ TEST_F (pointCloudTest, pointCloud_resize_2)
   EXPECT_EQ (cloud.height, 480);
 }
 
-TEST_F (pointCloudTest, pointCloud_resize_3)
+TEST_F (pointCloudTest, resize_with_initialized_count_elements)
 {
   cloud.resize (640*360, PointXYZ (1, 1, 1));
   EXPECT_FALSE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 640*360);
 }
 
-TEST_F (pointCloudTest, pointCloud_resize_4)
+TEST_F (pointCloudTest, resize_with_initialized_count_and_new_width_and_height)
 {
   cloud.resize (640, 480, PointXYZ (1, 1, 1));
   EXPECT_TRUE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 640);
 }
 
-TEST_F (pointCloudTest, pointCloud_assign_1)
+TEST_F (pointCloudTest, assign_with_copies)
 {
   cloud.assign (640*360, PointXYZ (1, 1, 1));
   EXPECT_FALSE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 640*360);
 }
 
-TEST_F (pointCloudTest, pointCloud_assign_2)
+TEST_F (pointCloudTest, assign_with_new_width_and_height_copies)
 {
   cloud.assign(640, 480, PointXYZ (1, 1, 1));
   EXPECT_TRUE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 640);
 }
 
-TEST_F (pointCloudTest, pointCloud_assign_3)
+TEST_F (pointCloudTest, assign_with_copies_in_range)
 {
   std::vector<PointXYZ> pointVec;
   pointVec.resize (640*360, PointXYZ (2, 3, 4));
@@ -381,7 +381,7 @@ TEST_F (pointCloudTest, pointCloud_assign_3)
   EXPECT_EQ (cloud.width, 640*360);
 }
 
-TEST_F (pointCloudTest, pointCloud_assign_4)
+TEST_F (pointCloudTest, assign_with_copies_in_range_and_new_width)
 {
   std::vector<PointXYZ> pointVec;
   pointVec.resize (640*360, PointXYZ (2, 3, 4));
@@ -390,7 +390,7 @@ TEST_F (pointCloudTest, pointCloud_assign_4)
   EXPECT_EQ (cloud.width, 640);
 }
 
-TEST_F (pointCloudTest, pointCloud_assign_5)
+TEST_F (pointCloudTest, assign_mismatch_size_and_width_height)
 {
   std::vector<PointXYZ> pointVec;
   pointVec.resize (640*480, PointXYZ (7, 7, 7));
@@ -399,35 +399,35 @@ TEST_F (pointCloudTest, pointCloud_assign_5)
   EXPECT_EQ (cloud.width, 640*480);
 }
 
-TEST_F (pointCloudTest, pointCloud_assign_initializer_list_1)
+TEST_F (pointCloudTest, assign_initializer_list)
 {
   cloud.assign ({PointXYZ (3, 4, 5), PointXYZ (3, 4, 5), PointXYZ (3, 4, 5)});
   EXPECT_FALSE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 3);
 }
 
-TEST_F (pointCloudTest, pointCloud_assign_initializer_list_2)
+TEST_F (pointCloudTest, assign_initializer_list_with_new_width)
 {
   cloud.assign ({PointXYZ (3, 4, 5), PointXYZ (3, 4, 5), PointXYZ (3, 4, 5), PointXYZ (3, 4, 5)}, 2);
   EXPECT_TRUE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 2);
 }
 
-TEST_F (pointCloudTest, pointCloud_assign_initializer_list_3)
+TEST_F (pointCloudTest, assign_initializer_list_with_unorganized_cloud)
 {
   cloud.assign ({PointXYZ (3, 4, 5), PointXYZ (3, 4, 5), PointXYZ (3, 4, 5)}, 6);
   EXPECT_FALSE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 3);
 }
 
-TEST_F (pointCloudTest, pointCloud_pushback_1)
+TEST_F (pointCloudTest, push_back_to_unorganized_cloud)
 {
   cloud.push_back (PointXYZ (3, 4, 5));
   EXPECT_FALSE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 1);
 }
 
-TEST_F (pointCloudTest, pointCloud_pushback_2)
+TEST_F (pointCloudTest, push_back_to_organized_cloud)
 {
   set_cloud(80*80, PointXYZ (1, 1, 1), 80);
   EXPECT_TRUE (cloud.isOrganized ());
@@ -435,7 +435,7 @@ TEST_F (pointCloudTest, pointCloud_pushback_2)
   EXPECT_EQ (cloud.width, (80*80) + 1);
 }
 
-TEST_F (pointCloudTest, pointCloud_transient_pushback)
+TEST_F (pointCloudTest, transient_push_back)
 {
   set_cloud (640*480, PointXYZ (1, 1, 1), 640);
   cloud.transient_push_back (PointXYZ(2, 2, 2));
@@ -444,7 +444,7 @@ TEST_F (pointCloudTest, pointCloud_transient_pushback)
   EXPECT_EQ (cloud.size(), (640*480) + 1);
 }
 
-TEST_F (pointCloudTest, pointCloud_transient_emplaceback)
+TEST_F (pointCloudTest, transient_emplace_back)
 {
   set_cloud (640*480, PointXYZ (1, 1, 1), 640);
   auto& new_pointXYZ = cloud.transient_emplace_back (3, 3, 3);
@@ -454,7 +454,7 @@ TEST_F (pointCloudTest, pointCloud_transient_emplaceback)
   EXPECT_EQ (&new_pointXYZ, &cloud.back ());
 }
 
-TEST_F (pointCloudTest, pointCloud_transient_insert_1)
+TEST_F (pointCloudTest, transient_insert_one_element)
 {
   set_cloud (640*480, PointXYZ (1, 1, 1), 640);
   cloud.transient_insert (cloud.end (), PointXYZ (1, 1, 1));
@@ -463,7 +463,7 @@ TEST_F (pointCloudTest, pointCloud_transient_insert_1)
   EXPECT_EQ (cloud.width, 640);
 }
 
-TEST_F (pointCloudTest, pointCloud_transient_insert_2)
+TEST_F (pointCloudTest, transient_insert_with_n_elements)
 {
   set_cloud (640*480, PointXYZ (1, 1, 1), 640);
   cloud.transient_insert (cloud.end (), 10, PointXYZ (1, 1, 1));
@@ -472,7 +472,7 @@ TEST_F (pointCloudTest, pointCloud_transient_insert_2)
   EXPECT_EQ (cloud.width, 640);
 }
 
-TEST_F (pointCloudTest, pointCloud_transient_emplace)
+TEST_F (pointCloudTest, transient_emplace)
 {
   set_cloud (640*480, PointXYZ (1, 1, 1), 640);
   cloud.transient_emplace (cloud.end (), 4, 4, 4);
@@ -481,7 +481,7 @@ TEST_F (pointCloudTest, pointCloud_transient_emplace)
   EXPECT_EQ (cloud.size(), (640*480) + 1);
 }
 
-TEST_F (pointCloudTest, pointCloud_transient_erase_1)
+TEST_F (pointCloudTest, transient_erase_at_position)
 {
   set_cloud (640*480, PointXYZ (1, 1, 1), 640);
   cloud.transient_erase (cloud.end () - 1);
@@ -490,7 +490,7 @@ TEST_F (pointCloudTest, pointCloud_transient_erase_1)
   EXPECT_EQ (cloud.size(), (640*480) - 1);
 }
 
-TEST_F (pointCloudTest, pointCloud_transient_erase_2)
+TEST_F (pointCloudTest, transient_erase_with_iterator)
 {
   set_cloud (640*480, PointXYZ (1, 1, 1), 640);
   cloud.transient_erase (cloud.begin (), cloud.end ());
@@ -499,7 +499,7 @@ TEST_F (pointCloudTest, pointCloud_transient_erase_2)
   EXPECT_EQ (cloud.size(), 0);
 }
 
-TEST_F (pointCloudTest, pointCloud_unorganized_concatenate_1)
+TEST_F (pointCloudTest, unorganized_concatenate)
 {
   set_cloud (640*480, PointXYZ (1, 1, 1), 640);
   PointCloud<PointXYZ> new_unorganized_cloud;
@@ -508,7 +508,7 @@ TEST_F (pointCloudTest, pointCloud_unorganized_concatenate_1)
   EXPECT_EQ (new_unorganized_cloud.width, 640*480);
 }
 
-TEST_F (pointCloudTest, pointCloud_unorganized_concatenate_2)
+TEST_F (pointCloudTest, unorganized_concatenate_with_argument_return)
 {
   set_cloud (640*480, PointXYZ (1, 1, 1), 640);
   PointCloud<PointXYZ> new_unorganized_cloud;
@@ -519,7 +519,7 @@ TEST_F (pointCloudTest, pointCloud_unorganized_concatenate_2)
   EXPECT_EQ (unorganized_cloud_out.width, 640*480*2);
 }
 
-TEST_F (pointCloudTest, pointCloud_unorganized_concatenate_3)
+TEST_F (pointCloudTest, unorganized_concatenate_with_assignment_return)
 {
   set_cloud (640*480, PointXYZ (1, 1, 1), 640);
   PointCloud<PointXYZ> unorganized_cloud;
@@ -529,7 +529,7 @@ TEST_F (pointCloudTest, pointCloud_unorganized_concatenate_3)
   EXPECT_EQ (unorganized_cloud_out.width, 640*480*2);
 }
 
-TEST_F (pointCloudTest, pointCloud_unorganized_concatenate_4)
+TEST_F (pointCloudTest, unorganized_concatenate_with_plus_operator)
 {
   set_cloud (640*480, PointXYZ (1, 1, 1), 640);
   PointCloud<PointXYZ> unorganized_cloud;
@@ -538,7 +538,7 @@ TEST_F (pointCloudTest, pointCloud_unorganized_concatenate_4)
   EXPECT_EQ (unorganized_cloud.width, 640*480);
 }
 
-TEST_F (pointCloudTest, pointCloud_at_with_throw)
+TEST_F (pointCloudTest, at_with_throw)
 {
   set_cloud (640*480, PointXYZ (1, 1, 1), 640);
   PointCloud<PointXYZ> unorganized_cloud;
@@ -546,14 +546,14 @@ TEST_F (pointCloudTest, pointCloud_at_with_throw)
   EXPECT_THROW({unorganized_cloud.at (5, 5);}, UnorganizedPointCloudException);
 }
 
-TEST_F (pointCloudTest, pointCloud_at_no_throw)
+TEST_F (pointCloudTest, at_no_throw)
 {
   set_cloud (640*480, PointXYZ (1, 1, 1), 640);
   const auto& point_at = cloud.at (cloud.width - 1, cloud.height - 1);
   EXPECT_EQ(&point_at, &cloud.back());
 }
 
-TEST_F (pointCloudTest, pointCloud_organized_concatenate)
+TEST_F (pointCloudTest, organized_concatenate)
 {
   cloud.resize (640, 480, PointXYZ (1, 1, 1));
   PointCloud<PointXYZ> organized_cloud1 = cloud;
