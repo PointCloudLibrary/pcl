@@ -107,7 +107,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   sac.setMaxIterations (max_iterations);
   bool res = sac.computeModel ();
   
-  std::vector<int> inliers;
+  pcl::Indices inliers;
   sac.getInliers (inliers);
   Eigen::VectorXf coefficients;
   sac.getModelCoefficients (coefficients);

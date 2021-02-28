@@ -74,7 +74,7 @@ main (int argc, char** av)
   // Remove the nans
   cloud_ptr->is_dense = false;
   cloud_no_nans->is_dense = false;
-  std::vector<int> indices;
+  pcl::Indices indices;
   pcl::removeNaNFromPointCloud (*cloud_ptr, *cloud_no_nans, indices);
   pcl::console::print_highlight("Removed nans from %zu to %zu\n",
                                 static_cast<std::size_t>(cloud_ptr->size()),

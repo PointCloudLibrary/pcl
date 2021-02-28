@@ -125,11 +125,11 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudI
 
     if (pcl::isFinite(current_point))
     {
-      std::vector<int> nn_indices;
+      pcl::Indices nn_indices;
       std::vector<float> nn_distances;
       int n_neighbors;
 
-      this->searchForNeighbors (static_cast<int> (index), border_radius, nn_indices, nn_distances);
+      this->searchForNeighbors (index, border_radius, nn_indices, nn_distances);
 
       n_neighbors = static_cast<int> (nn_indices.size ());
 
@@ -161,7 +161,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getScatterMatrix (const int& c
 
   cov_m = Eigen::Matrix3d::Zero ();
 
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_distances;
   int n_neighbors;
 
@@ -311,10 +311,10 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 
     if ((border_radius_ > 0.0) && (pcl::isFinite(current_point)))
     {
-      std::vector<int> nn_indices;
+      pcl::Indices nn_indices;
       std::vector<float> nn_distances;
 
-      this->searchForNeighbors (static_cast<int> (index), border_radius_, nn_indices, nn_distances);
+      this->searchForNeighbors (index, border_radius_, nn_indices, nn_distances);
 
       for (const auto &nn_index : nn_indices)
       {
@@ -410,11 +410,11 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 
     if ((third_eigen_value_[index] > 0.0) && (pcl::isFinite(current_point)))
     {
-      std::vector<int> nn_indices;
+      pcl::Indices nn_indices;
       std::vector<float> nn_distances;
       int n_neighbors;
 
-      this->searchForNeighbors (static_cast<int> (index), non_max_radius_, nn_indices, nn_distances);
+      this->searchForNeighbors (index, non_max_radius_, nn_indices, nn_distances);
 
       n_neighbors = static_cast<int> (nn_indices.size ());
 
