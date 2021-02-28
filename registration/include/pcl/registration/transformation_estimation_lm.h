@@ -104,7 +104,7 @@ public:
   }
 
   /** \brief Destructor. */
-  ~TransformationEstimationLM() override= default;;
+  ~TransformationEstimationLM() override = default;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using LM. \param[in] cloud_src the source point cloud dataset

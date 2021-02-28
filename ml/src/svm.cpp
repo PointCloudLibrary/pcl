@@ -520,9 +520,9 @@ Kernel::k_function(const svm_node* x, const svm_node* y, const svm_parameter& pa
 class Solver {
 
 public:
-  Solver()= default;;
+  Solver() = default;
 
-  virtual ~Solver()= default;;
+  virtual ~Solver() = default;
 
   struct SolutionInfo {
     double obj;

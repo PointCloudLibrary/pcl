@@ -61,8 +61,7 @@ template <class FeatureType,
           class ExampleIndex,
           class NodeType>
 pcl::DecisionForestEvaluator<FeatureType, DataSet, LabelType, ExampleIndex, NodeType>::
-    ~DecisionForestEvaluator()
-= default;
+    ~DecisionForestEvaluator() = default;
 
 template <class FeatureType,
           class DataSet,
