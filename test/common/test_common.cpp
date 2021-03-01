@@ -279,6 +279,7 @@ TEST_F (pointCloudTest, getMatrixXfMap)
 TEST_F (pointCloudTest, clear)
 {
   cloud.insert (cloud.end (), PointXYZ (1, 1, 1));
+  EXPECT_EQ (cloud.size(), 1);
   cloud.clear ();
   EXPECT_EQ (cloud.width, 0);
   EXPECT_EQ (cloud.height, 0);
