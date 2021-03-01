@@ -65,8 +65,9 @@ jobs:
           git diff > full.patch
           git diff -G "Pages generated on" > matching.patch
           # Ignore the last-updated-on style diff
-          diff full.patch matching.patch > $DIFF_PATH
+          diff full.patch matching.patch > "$DIFF_PATH"
           ls *.patch
+          cat "$DIFF_PATH"
         displayName: 'Generate diff'
       - script: |
           cat $DIFF_PATH
