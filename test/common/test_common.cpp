@@ -175,12 +175,8 @@ TEST (PCL, Eigen)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 struct pointCloudTest : public testing::Test {
   protected:
-    virtual void SetUp() {
-      cloud.width = 640;
-      cloud.height = 480;
-    }
-
-    // add Teardown() if needed.
+    // virtual void SetUp() {}
+    // virtual void Teardown() {}
 
     void set_cloud(size_t size, const PointXYZ& point, int32_t width) {
       std::vector<PointXYZ> pointVec;
@@ -194,17 +190,21 @@ struct pointCloudTest : public testing::Test {
 
 TEST_F (pointCloudTest, is_organized)
 {
+  cloud.width = 640;
+  cloud.height = 480;
   EXPECT_TRUE (cloud.isOrganized ());
 }
 
 TEST_F (pointCloudTest, not_organized)
 {
+  cloud.width = 640;
   cloud.height = 1;
   EXPECT_FALSE (cloud.isOrganized ());
 }
 
 TEST_F (pointCloudTest, getMatrixXfMap)
 {
+  cloud.height = 1;
   cloud.width = 10;
   for (std::uint32_t i = 0; i < cloud.width*cloud.height; ++i)
   {
@@ -278,6 +278,7 @@ TEST_F (pointCloudTest, getMatrixXfMap)
 
 TEST_F (pointCloudTest, clear)
 {
+  cloud.insert (cloud.end (), PointXYZ (1, 1, 1));
   cloud.clear ();
   EXPECT_EQ (cloud.width, 0);
   EXPECT_EQ (cloud.height, 0);
@@ -303,7 +304,6 @@ TEST_F (pointCloudTest, erase_at_position)
   cloud.erase (cloud.end () - 1);
   EXPECT_FALSE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 4);
-
 }
 
 TEST_F (pointCloudTest, erase_with_iterator)
