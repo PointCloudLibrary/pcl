@@ -80,15 +80,15 @@ pcl::PCLBase<pcl::PCLPointCloud2>::setInputCloud (const PCLPointCloud2ConstPtr &
       case pcl::PCLPointField::INT8:
       case pcl::PCLPointField::UINT8: return 1;
 
-      case pcl::PCLPointField::INT16:
+      case pcl::PCLPointField::INT16: PCL_FALLTHROUGH
       case pcl::PCLPointField::UINT16: return 2;
 
-      case pcl::PCLPointField::INT32:
-      case pcl::PCLPointField::UINT32:
+      case pcl::PCLPointField::INT32: PCL_FALLTHROUGH
+      case pcl::PCLPointField::UINT32: PCL_FALLTHROUGH
       case pcl::PCLPointField::FLOAT32: return 4;
 
-      case pcl::PCLPointField::INT64:
-      case pcl::PCLPointField::UINT64:
+      case pcl::PCLPointField::INT64: PCL_FALLTHROUGH
+      case pcl::PCLPointField::UINT64: PCL_FALLTHROUGH
       case pcl::PCLPointField::FLOAT64: return 8;
 
       default:

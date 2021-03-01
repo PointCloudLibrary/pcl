@@ -122,21 +122,22 @@ namespace pcl
     {
       case pcl::PCLPointField::BOOL:
           return sizeof(bool);
-      case pcl::PCLPointField::INT8:
+
+      case pcl::PCLPointField::INT8: PCL_FALLTHROUGH
       case pcl::PCLPointField::UINT8:
         return (1);
 
-      case pcl::PCLPointField::INT16:
+      case pcl::PCLPointField::INT16: PCL_FALLTHROUGH
       case pcl::PCLPointField::UINT16:
         return (2);
 
-      case pcl::PCLPointField::INT32:
-      case pcl::PCLPointField::UINT32:
+      case pcl::PCLPointField::INT32: PCL_FALLTHROUGH
+      case pcl::PCLPointField::UINT32: PCL_FALLTHROUGH
       case pcl::PCLPointField::FLOAT32:
         return (4);
 
-      case pcl::PCLPointField::INT64:
-      case pcl::PCLPointField::UINT64:
+      case pcl::PCLPointField::INT64: PCL_FALLTHROUGH
+      case pcl::PCLPointField::UINT64: PCL_FALLTHROUGH
       case pcl::PCLPointField::FLOAT64:
         return (8);
 
@@ -213,19 +214,19 @@ namespace pcl
       case pcl::PCLPointField::BOOL:
         return 'B';
 
-      case pcl::PCLPointField::INT8:
-      case pcl::PCLPointField::INT16:
-      case pcl::PCLPointField::INT32:
+      case pcl::PCLPointField::INT8: PCL_FALLTHROUGH
+      case pcl::PCLPointField::INT16: PCL_FALLTHROUGH
+      case pcl::PCLPointField::INT32: PCL_FALLTHROUGH
       case pcl::PCLPointField::INT64:
         return ('I');
 
-      case pcl::PCLPointField::UINT8:
-      case pcl::PCLPointField::UINT16:
-      case pcl::PCLPointField::UINT32:
+      case pcl::PCLPointField::UINT8: PCL_FALLTHROUGH
+      case pcl::PCLPointField::UINT16: PCL_FALLTHROUGH
+      case pcl::PCLPointField::UINT32: PCL_FALLTHROUGH
       case pcl::PCLPointField::UINT64:
         return ('U');
 
-      case pcl::PCLPointField::FLOAT32:
+      case pcl::PCLPointField::FLOAT32: PCL_FALLTHROUGH
       case pcl::PCLPointField::FLOAT64:
         return ('F');
 
