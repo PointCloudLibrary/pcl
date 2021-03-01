@@ -76,8 +76,9 @@ pcl::PCLBase<pcl::PCLPointCloud2>::setInputCloud (const PCLPointCloud2ConstPtr &
   {
     switch (datatype)
     {
-      case pcl::PCLPointField::BOOL:
-      case pcl::PCLPointField::INT8:
+      case pcl::PCLPointField::BOOL: return sizeof(bool);
+
+      case pcl::PCLPointField::INT8: PCL_FALLTHROUGH
       case pcl::PCLPointField::UINT8: return 1;
 
       case pcl::PCLPointField::INT16: PCL_FALLTHROUGH

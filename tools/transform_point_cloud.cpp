@@ -189,6 +189,19 @@ multiply (pcl::PCLPointCloud2 &cloud, int field_offset, double multiplier)
   val = static_cast<T> (val * static_cast<T> (multiplier));
   memcpy (&cloud.data[field_offset], &val, sizeof (T));
 }
+template <> void
+multiply<bool> (pcl::PCLPointCloud2 &cloud, int field_offset, double multiplier)
+{
+  if (multiplier != static_cast<bool>(multiplier)) {
+    PCL_WARN("Invalid value for scaling a boolean: %f. Only 0 or 1 is valid", multiplier);
+    return;
+  }
+
+  bool val;
+  memcpy (&val, &cloud.data[field_offset], sizeof (bool));
+  val = val && static_cast<bool> (multiplier);
+  memcpy (&cloud.data[field_offset], &val, sizeof (bool));
+}
 
 void
 scaleInPlace (pcl::PCLPointCloud2 &cloud, double* multiplier)
@@ -210,11 +223,12 @@ scaleInPlace (pcl::PCLPointCloud2 &cloud, double* multiplier)
     assert ((cloud.fields[x_idx].datatype == cloud.fields[y_idx].datatype));
     assert ((cloud.fields[x_idx].datatype == cloud.fields[z_idx].datatype));
 #define MULTIPLY(CASE_LABEL)                                                           \
-  case CASE_LABEL:                                                                     \
+  case CASE_LABEL: {                                                                   \
     for (int i = 0; i < 3; ++i)                                                        \
       multiply<pcl::traits::asType_t<CASE_LABEL>>(                                     \
           cloud, xyz_offset[i], multiplier[i]);                                        \
-    break;
+    break;                                                                             \
+  }
     switch (cloud.fields[x_idx].datatype)
     {
       MULTIPLY(pcl::PCLPointField::BOOL)

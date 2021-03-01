@@ -163,11 +163,19 @@ namespace pcl
   getFieldType (const int size, char type)
   {
     type = std::toupper (type, std::locale::classic ());
+
+    // extra logic for bool because it's size is undefined
+    if (type == 'B') {
+      if (size == sizeof(bool)) {
+        return pcl::PCLPointField::BOOL;
+      } else {
+        return -1;
+      }
+    }
+
     switch (size)
     {
       case 1:
-        if (type == 'B')
-          return (pcl::PCLPointField::BOOL);
         if (type == 'I')
           return (pcl::PCLPointField::INT8);
         if (type == 'U')
