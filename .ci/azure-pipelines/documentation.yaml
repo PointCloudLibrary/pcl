@@ -8,6 +8,7 @@ jobs:
       BUILD_DIR: '$(Agent.BuildDirectory)/build'
       DOC_DIR: '$(Agent.BuildDirectory)/documentation'
       CHANGELOG: '$(Agent.TempDirectory)/changelog'
+      DIFF_PATH: '$(Agent.BuildDirectory)/doc.patch'
     steps:
       - checkout: self
         # find the commit hash on a quick non-forced update too
@@ -41,15 +42,49 @@ jobs:
       - script: |
           git config --global user.email "documentation@pointclouds.org"
           git config --global user.name "PointCloudLibrary (via Azure Pipelines)"
+          mkdir -p ~/.ssh
           echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+        displayName: 'Set user details for git'
+      - script: |
           git clone git@github.com:PointCloudLibrary/documentation.git $DOC_DIR
+        displayName: 'Clone via SSH'
+        continueOnError: true  # allow future steps to run despite failure
+      - script: |
+          git clone https://github.com/PointCloudLibrary/documentation.git $DOC_DIR
+        displayName: 'Clone via HTTPS (if SSH failed)'
+        continueOnError: true  # allow git clone to fail
+      - script: |
           cd $DOC_DIR
           cp -r $BUILD_DIR/doc/tutorials/html/* tutorials
           cp -r $BUILD_DIR/doc/advanced/html/* advanced
           cp -r $BUILD_DIR/doc/doxygen/html/* .
           cp $CHANGELOG.html .
+        displayName: 'Move documentation to repo'
+      - script: |
+          # Replace these shenanigans with -I option available from Git 2.30
+          git diff > full.patch
+          git diff -G "Pages generated on" > matching.patch
+          # Ignore the last-updated-on style diff
+          diff full.patch matching.patch > "$DIFF_PATH"
+          ls *.patch
+          cat "$DIFF_PATH"
+        displayName: 'Generate diff'
+      - script: |
+          cat $DIFF_PATH
+        displayName: 'Show diff'
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: $(DIFF_PATH)
+          artifactName: 'documentation_diff'
+          artifactType: 'pipeline'
+        displayName: 'Create an artifact of the diff'
+      - script: |
           git add --all
           git commit --amend --reset-author -m 'Documentation for commit $(Build.SourceVersion)' -q
           git push --force
         displayName: 'Push Generated Documentation To GitHub'
-        condition: and(eq(variables['Build.Repository.Name'], 'PointCloudLibrary/pcl'), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+        condition: |
+          and(
+            eq(variables['Build.Repository.Name'], 'PointCloudLibrary/pcl'),
+            eq(variables['Build.SourceBranch'], 'refs/heads/master')
+          )
