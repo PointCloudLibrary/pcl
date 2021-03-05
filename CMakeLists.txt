@@ -13,6 +13,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(PCL_CXX_COMPILE_FEATURES cxx_std_14)
 
+set(CMAKE_CUDA_STANDARD 14 CACHE STRING "The target CUDA/C++ standard. PCL requires CUDA/C++ 14 or higher.")
+set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
 
 # In case the user does not setup CMAKE_BUILD_TYPE, assume it's RelWithDebInfo
@@ -125,10 +128,8 @@ endif()
 if(CMAKE_COMPILER_IS_MSVC)
   add_definitions("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DPCL_ONLY_CORE_POINT_TYPES ${SSE_DEFINITIONS}")
   
-  add_compile_options(/bigobj)
-  
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
-    string(APPEND CMAKE_CXX_FLAGS " /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS} ${AVX_FLAGS}")
+    string(APPEND CMAKE_CXX_FLAGS " /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS} ${AVX_FLAGS} /bigobj")
 
     # Add extra code generation/link optimizations
     if(CMAKE_MSVC_CODE_LINK_OPTIMIZATION AND (NOT BUILD_CUDA) AND (NOT BUILD_GPU))
@@ -136,6 +137,8 @@ if(CMAKE_COMPILER_IS_MSVC)
       string(APPEND CMAKE_SHARED_LINKER_FLAGS_RELEASE " /LTCG /OPT:REF")
       string(APPEND CMAKE_EXE_LINKER_FLAGS_RELEASE " /LTCG")
     else()
+	  set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Xcompiler=/bigobj")
+	  
       message("Global optimizations /GL has been turned off, as it doesn't work with nvcc/thrust")
     endif()
     # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
@@ -386,6 +389,17 @@ if(WITH_QT)
     #Set Cmake Auto features to skip .hh files
     if(POLICY CMP0100)
       cmake_policy(SET CMP0100 OLD)
+    endif()
+    
+    #If building CUDA required libraries
+    #Change Qt5::Core fixed -fPIC flags to conditionally only CXX
+    #TODO: To be removed when QT is >5.14.1
+    if(BUILD_CUDA OR BUILD_GPU)
+      if(Qt5Widgets_VERSION VERSION_LESS 5.14.1)
+        get_property(core_options TARGET Qt5::Core PROPERTY INTERFACE_COMPILE_OPTIONS)
+        string(REPLACE "-fPIC" "$<IF:$<COMPILE_LANGUAGE:CXX>,-fPIC,>"  new_core_options ${core_options})
+        set_property(TARGET Qt5::Core PROPERTY INTERFACE_COMPILE_OPTIONS ${new_core_options})
+      endif()
     endif()
     
     get_property(core_def TARGET Qt5::Core PROPERTY INTERFACE_COMPILE_DEFINITIONS)
