@@ -70,7 +70,7 @@ namespace pcl {
  * \code
  * IterativeClosestPoint<PointXYZ, PointXYZ> icp;
  * // Set the input source and target
- * icp.setInputCloud (cloud_source);
+ * icp.setInputSource (cloud_source);
  * icp.setInputTarget (cloud_target);
  *
  * // Set the max correspondence distance to 5cm (e.g., correspondences with higher
