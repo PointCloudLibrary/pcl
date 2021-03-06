@@ -177,14 +177,6 @@ struct pointCloudTest : public testing::Test {
   protected:
     // virtual void SetUp() {}
     // virtual void Teardown() {}
-
-    void set_cloud(size_t size, const PointXYZ& point, int32_t width) {
-      std::vector<PointXYZ> pointVec;
-      pointVec.resize (size, point);
-      cloud.assign (pointVec.begin(), pointVec.end(), width);
-      EXPECT_TRUE (cloud.isOrganized ());
-    }
-
     PointCloud<PointXYZ> cloud;
 };
 
@@ -430,7 +422,7 @@ TEST_F (pointCloudTest, push_back_to_unorganized_cloud)
 
 TEST_F (pointCloudTest, push_back_to_organized_cloud)
 {
-  set_cloud(80*80, PointXYZ (1, 1, 1), 80);
+  cloud.resize (80, 80, PointXYZ (1, 1, 1));
   EXPECT_TRUE (cloud.isOrganized ());
   cloud.push_back (PointXYZ (3, 4, 5));
   EXPECT_EQ (cloud.width, (80*80) + 1);
@@ -438,7 +430,7 @@ TEST_F (pointCloudTest, push_back_to_organized_cloud)
 
 TEST_F (pointCloudTest, transient_push_back)
 {
-  set_cloud (640*480, PointXYZ (1, 1, 1), 640);
+  cloud.resize (640, 480, PointXYZ (1, 1, 1));
   cloud.transient_push_back (PointXYZ(2, 2, 2));
   EXPECT_TRUE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 640);
@@ -447,7 +439,7 @@ TEST_F (pointCloudTest, transient_push_back)
 
 TEST_F (pointCloudTest, transient_emplace_back)
 {
-  set_cloud (640*480, PointXYZ (1, 1, 1), 640);
+  cloud.resize (640, 480, PointXYZ (1, 1, 1));
   auto& new_pointXYZ = cloud.transient_emplace_back (3, 3, 3);
   EXPECT_TRUE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 640);
@@ -457,7 +449,7 @@ TEST_F (pointCloudTest, transient_emplace_back)
 
 TEST_F (pointCloudTest, transient_insert_one_element)
 {
-  set_cloud (640*480, PointXYZ (1, 1, 1), 640);
+  cloud.resize (640, 480, PointXYZ (1, 1, 1));
   cloud.transient_insert (cloud.end (), PointXYZ (1, 1, 1));
   EXPECT_TRUE (cloud.isOrganized ());
   EXPECT_EQ (cloud.size(), (640*480) + 1);
@@ -466,7 +458,7 @@ TEST_F (pointCloudTest, transient_insert_one_element)
 
 TEST_F (pointCloudTest, transient_insert_with_n_elements)
 {
-  set_cloud (640*480, PointXYZ (1, 1, 1), 640);
+  cloud.resize (640, 480, PointXYZ (1, 1, 1));
   cloud.transient_insert (cloud.end (), 10, PointXYZ (1, 1, 1));
   EXPECT_TRUE (cloud.isOrganized ());
   EXPECT_EQ (cloud.size(), (640*480) + 10);
@@ -475,7 +467,7 @@ TEST_F (pointCloudTest, transient_insert_with_n_elements)
 
 TEST_F (pointCloudTest, transient_emplace)
 {
-  set_cloud (640*480, PointXYZ (1, 1, 1), 640);
+  cloud.resize (640, 480, PointXYZ (1, 1, 1));
   cloud.transient_emplace (cloud.end (), 4, 4, 4);
   EXPECT_TRUE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 640);
@@ -484,7 +476,7 @@ TEST_F (pointCloudTest, transient_emplace)
 
 TEST_F (pointCloudTest, transient_erase_at_position)
 {
-  set_cloud (640*480, PointXYZ (1, 1, 1), 640);
+  cloud.resize (640, 480, PointXYZ (1, 1, 1));
   cloud.transient_erase (cloud.end () - 1);
   EXPECT_TRUE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 640);
@@ -493,7 +485,7 @@ TEST_F (pointCloudTest, transient_erase_at_position)
 
 TEST_F (pointCloudTest, transient_erase_with_iterator)
 {
-  set_cloud (640*480, PointXYZ (1, 1, 1), 640);
+  cloud.resize (640, 480, PointXYZ (1, 1, 1));
   cloud.transient_erase (cloud.begin (), cloud.end ());
   EXPECT_TRUE (cloud.isOrganized ());
   EXPECT_EQ (cloud.width, 640);
@@ -502,7 +494,7 @@ TEST_F (pointCloudTest, transient_erase_with_iterator)
 
 TEST_F (pointCloudTest, unorganized_concatenate)
 {
-  set_cloud (640*480, PointXYZ (1, 1, 1), 640);
+  cloud.resize (640, 480, PointXYZ (1, 1, 1));
   PointCloud<PointXYZ> new_unorganized_cloud;
   PointCloud<PointXYZ>::concatenate (new_unorganized_cloud, cloud);
   EXPECT_FALSE (new_unorganized_cloud.isOrganized ());
@@ -511,7 +503,7 @@ TEST_F (pointCloudTest, unorganized_concatenate)
 
 TEST_F (pointCloudTest, unorganized_concatenate_with_argument_return)
 {
-  set_cloud (640*480, PointXYZ (1, 1, 1), 640);
+  cloud.resize (640, 480, PointXYZ (1, 1, 1));
   PointCloud<PointXYZ> new_unorganized_cloud;
   PointCloud<PointXYZ>::concatenate (new_unorganized_cloud, cloud);
   PointCloud<PointXYZ> unorganized_cloud_out;
@@ -522,7 +514,7 @@ TEST_F (pointCloudTest, unorganized_concatenate_with_argument_return)
 
 TEST_F (pointCloudTest, unorganized_concatenate_with_assignment_return)
 {
-  set_cloud (640*480, PointXYZ (1, 1, 1), 640);
+  cloud.resize (640, 480, PointXYZ (1, 1, 1));
   PointCloud<PointXYZ> unorganized_cloud;
   PointCloud<PointXYZ>::concatenate (unorganized_cloud, cloud);
   PointCloud<PointXYZ> unorganized_cloud_out = cloud + unorganized_cloud;
@@ -532,7 +524,7 @@ TEST_F (pointCloudTest, unorganized_concatenate_with_assignment_return)
 
 TEST_F (pointCloudTest, unorganized_concatenate_with_plus_operator)
 {
-  set_cloud (640*480, PointXYZ (1, 1, 1), 640);
+  cloud.resize (640, 480, PointXYZ (1, 1, 1));
   PointCloud<PointXYZ> unorganized_cloud;
   unorganized_cloud += cloud;
   EXPECT_FALSE (unorganized_cloud.isOrganized ());
@@ -541,7 +533,7 @@ TEST_F (pointCloudTest, unorganized_concatenate_with_plus_operator)
 
 TEST_F (pointCloudTest, at_with_throw)
 {
-  set_cloud (640*480, PointXYZ (1, 1, 1), 640);
+  cloud.resize (640, 480, PointXYZ (1, 1, 1));
   PointCloud<PointXYZ> unorganized_cloud;
   unorganized_cloud += cloud;
   EXPECT_THROW({unorganized_cloud.at (5, 5);}, UnorganizedPointCloudException);
@@ -549,7 +541,7 @@ TEST_F (pointCloudTest, at_with_throw)
 
 TEST_F (pointCloudTest, at_no_throw)
 {
-  set_cloud (640*480, PointXYZ (1, 1, 1), 640);
+  cloud.resize (640, 480, PointXYZ (1, 1, 1));
   const auto& point_at = cloud.at (cloud.width - 1, cloud.height - 1);
   EXPECT_EQ(&point_at, &cloud.back());
 }
@@ -562,8 +554,10 @@ TEST_F (pointCloudTest, organized_concatenate)
   EXPECT_TRUE (organized_cloud1.isOrganized ());
   EXPECT_TRUE (organized_cloud2.isOrganized ());
   PointCloud<PointXYZ> organized_cloud_out = organized_cloud1 + organized_cloud2;
+  size_t total_size = organized_cloud1.size() + organized_cloud2.size();
   EXPECT_FALSE (organized_cloud_out.isOrganized ());
-  EXPECT_EQ (organized_cloud_out.width, 614400);
+  EXPECT_EQ(total_size, 614400);
+  EXPECT_EQ (organized_cloud_out.width, total_size);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
