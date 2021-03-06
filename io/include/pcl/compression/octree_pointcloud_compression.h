@@ -192,12 +192,40 @@ namespace pcl
         void
         encodePointCloud (const PointCloudConstPtr &cloud_arg, std::ostream& compressed_tree_data_out_arg);
 
+        /** \brief Encode point cloud to output stream
+         * \param cloud_arg:  point cloud to be compressed
+         * \param compressed_tree_data_out_arg:  binary output stream containing
+         * compressed data
+         * \param fields vector of field types in the point cloud, useful while
+         * encoding the same point cloud type in a loop
+         */
+        void
+        encodePointCloud(const PointCloudConstPtr& cloud_arg,
+                         std::ostream& compressed_tree_data_out_arg,
+                         const std::vector<pcl::PCLPointField>& fields);
+
         /** \brief Decode point cloud from input stream
           * \param compressed_tree_data_in_arg: binary input stream containing compressed data
           * \param cloud_arg: reference to decoded point cloud
           */
         void
         decodePointCloud (std::istream& compressed_tree_data_in_arg, PointCloudPtr &cloud_arg);
+
+      private:
+        /**
+         * \brief Implements the core encoding logic used by `encodePointCloud`
+         * \param cloud_arg:  point cloud to be compressed
+         * \param compressed_tree_data_out_arg:  binary output stream containing
+         * compressed data
+         * \param previous_tree_depth tree depth in previous iteration
+         * \param fields vector of field types in the point cloud, useful while
+         * encoding the same point cloud type in a loop
+         */
+        void
+        encodePointCloudImpl(const PointCloudConstPtr& cloud_arg,
+                             std::ostream& compressed_tree_data_out_arg,
+                             unsigned char previous_tree_depth,
+                             const std::vector<pcl::PCLPointField>& fields);
 
       protected:
 

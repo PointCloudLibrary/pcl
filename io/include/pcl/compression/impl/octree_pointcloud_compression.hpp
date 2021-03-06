@@ -49,28 +49,64 @@ namespace pcl
 {
   namespace io
   {
+    /**
+     * @brief Dummy to extract common functionality between 2 implementations
+     * @return depth of the cloud-tree, before performing any operations on it
+     */
+    template <typename OctreeCompressionCloud, typename PointCloudConstPtr>
+    unsigned char prepareForEncoding(OctreeCompressionCloud& cloud, const PointCloudConstPtr& cloud_arg) {
+      const unsigned char recent_tree_depth =
+          static_cast<unsigned char> (cloud.getTreeDepth ());
+
+      // initialize octree
+      cloud.setInputCloud (cloud_arg);
+
+      // add point to octree
+      cloud.addPointsFromInputCloud ();
+
+      return recent_tree_depth;
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void OctreePointCloudCompression<
         PointT, LeafT, BranchT, OctreeT>::encodePointCloud (
         const PointCloudConstPtr &cloud_arg,
         std::ostream& compressed_tree_data_out_arg)
     {
-      unsigned char recent_tree_depth =
-          static_cast<unsigned char> (this->getTreeDepth ());
+      const unsigned char recent_tree_depth = prepareForEncoding(*this, cloud_arg);
 
-      // initialize octree
-      this->setInputCloud (cloud_arg);
+      if (this->leaf_count_>0) {
+        const auto fields = pcl::getFields<PointT> ();
+        encodePointCloudImpl(cloud_arg, compressed_tree_data_out_arg, recent_tree_depth, fields);
+      }
+      else {
+        encodePointCloudImpl(cloud_arg, compressed_tree_data_out_arg, recent_tree_depth, {});
+      }
+    }
 
-      // add point to octree
-      this->addPointsFromInputCloud ();
+    template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void OctreePointCloudCompression<
+        PointT, LeafT, BranchT, OctreeT>::encodePointCloud (
+        const PointCloudConstPtr &cloud_arg,
+        std::ostream& compressed_tree_data_out_arg,
+        const std::vector<pcl::PCLPointField>& fields)
+    {
+      const unsigned char recent_tree_depth = prepareForEncoding(*this, cloud_arg);
+      encodePointCloudImpl(cloud_arg, compressed_tree_data_out_arg, recent_tree_depth, fields);
+    }
 
+    template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void OctreePointCloudCompression<
+        PointT, LeafT, BranchT, OctreeT>::encodePointCloudImpl (
+        const PointCloudConstPtr &cloud_arg,
+        std::ostream& compressed_tree_data_out_arg,
+        const unsigned char recent_tree_depth,
+        const std::vector<pcl::PCLPointField>& fields)
+    {
       // make sure cloud contains points
       if (this->leaf_count_>0) {
 
 
         // color field analysis
         cloud_with_color_ = false;
-        std::vector<pcl::PCLPointField> fields;
         int rgba_index = -1;
         rgba_index = pcl::getFieldIndex<PointT> ("rgb", fields);
         if (rgba_index == -1)
