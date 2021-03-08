@@ -220,7 +220,7 @@ ParticleFilterTracker<PointInT, StateT>::testChangeDetection(
 {
   change_detector_->setInputCloud(input);
   change_detector_->addPointsFromInputCloud();
-  std::vector<int> newPointIdxVector;
+  pcl::Indices newPointIdxVector;
   change_detector_->getPointIndicesFromNewVoxels(newPointIdxVector,
                                                  change_detector_filter_);
   change_detector_->switchBuffers();
@@ -250,7 +250,7 @@ ParticleFilterTracker<PointInT, StateT>::weight()
   }
   else {
     for (std::size_t i = 0; i < particles_->size(); i++) {
-      IndicesPtr indices(new std::vector<int>);
+      IndicesPtr indices(new pcl::Indices);
       computeTransformedPointCloudWithNormal(
           (*particles_)[i], *indices, *transed_reference_vector_[i]);
     }
@@ -261,7 +261,7 @@ ParticleFilterTracker<PointInT, StateT>::weight()
     coherence_->setTargetCloud(coherence_input);
     coherence_->initCompute();
     for (std::size_t i = 0; i < particles_->size(); i++) {
-      IndicesPtr indices(new std::vector<int>);
+      IndicesPtr indices(new pcl::Indices);
       coherence_->compute(
           transed_reference_vector_[i], indices, (*particles_)[i].weight);
     }
@@ -273,7 +273,7 @@ ParticleFilterTracker<PointInT, StateT>::weight()
 template <typename PointInT, typename StateT>
 void
 ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloud(
-    const StateT& hypothesis, std::vector<int>& indices, PointCloudIn& cloud)
+    const StateT& hypothesis, pcl::Indices& indices, PointCloudIn& cloud)
 {
   if (use_normal_)
     computeTransformedPointCloudWithNormal(hypothesis, indices, cloud);
@@ -296,9 +296,9 @@ template <typename PointInT, typename StateT>
 void
 ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithNormal(
 #ifdef PCL_TRACKING_NORMAL_SUPPORTED
-    const StateT& hypothesis, std::vector<int>& indices, PointCloudIn& cloud)
+    const StateT& hypothesis, pcl::Indices& indices, PointCloudIn& cloud)
 #else
-    const StateT&, std::vector<int>&, PointCloudIn&)
+    const StateT&, pcl::Indices&, PointCloudIn&)
 #endif
 {
 #ifdef PCL_TRACKING_NORMAL_SUPPORTED

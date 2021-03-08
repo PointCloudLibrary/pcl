@@ -103,10 +103,10 @@ std::uniform_int_distribution<unsigned> rand_uint(0, 10);
 std::uniform_real_distribution<float> rand_float (0.0f, 1.0f);
 
 /** \brief used by the *_VIEW_* tests to use only a subset of points from the point cloud*/
-std::vector<int> unorganized_input_indices;
+pcl::Indices unorganized_input_indices;
 
 /** \brief used by the *_VIEW_* tests to use only a subset of points from the point cloud*/
-std::vector<int> organized_input_indices;
+pcl::Indices organized_input_indices;
 
 /** \brief instance of brute force search method to be tested*/
 pcl::search::BruteForce<pcl::PointXYZ> brute_force;
@@ -136,7 +136,7 @@ std::vector<int> organized_sparse_query_indices;
   * @param name name of the search method that returned these distances
   * @return true if indices are unique, false otherwise
   */
-bool testUniqueness (const std::vector<int>& indices, const std::string& name)
+bool testUniqueness (const pcl::Indices& indices, const std::string& name)
 {
   bool uniqueness = true;
   for (unsigned idx1 = 1; idx1 < indices.size () && uniqueness; ++idx1)
@@ -191,7 +191,7 @@ bool testOrder (const std::vector<float>& distances, const std::string& name)
  * @return true if result is valid, false otherwise
  */
 template<typename PointT> bool
-testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, const std::vector<bool>& indices_mask, const std::vector<bool>& nan_mask, const std::vector<int>& indices, const std::vector<int>& /*input_indices*/, const std::string& name)
+testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, const std::vector<bool>& indices_mask, const std::vector<bool>& nan_mask, const pcl::Indices& indices, const pcl::Indices& /*input_indices*/, const std::string& name)
 {
   bool validness = true;
   for (const auto &index : indices)
@@ -282,9 +282,9 @@ bool compareResults (const std::vector<int>& indices1, const std::vector<float>&
   */
 template<typename PointT> void
 testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<search::Search<PointT>*> search_methods,
-                const std::vector<int>& query_indices, const std::vector<int>& input_indices = std::vector<int> () )
+                const pcl::Indices& query_indices, const pcl::Indices& input_indices = pcl::Indices () )
 {
-  std::vector< std::vector<int> >indices (search_methods.size ());
+  std::vector< pcl::Indices >indices (search_methods.size ());
   std::vector< std::vector<float> >distances (search_methods.size ());
   std::vector<bool> passed (search_methods.size (), true);
   
@@ -361,9 +361,9 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<se
   */
 template<typename PointT> void
 testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, std::vector<search::Search<PointT>*> search_methods, 
-                   const std::vector<int>& query_indices, const std::vector<int>& input_indices = std::vector<int> ())
+                   const pcl::Indices& query_indices, const pcl::Indices& input_indices = pcl::Indices   ())
 {
-  std::vector< std::vector<int> >indices (search_methods.size ());
+  std::vector< pcl::Indices >indices (search_methods.size ());
   std::vector< std::vector<float> >distances (search_methods.size ());
   std::vector<bool> passed (search_methods.size (), true);
   std::vector<bool> indices_mask (point_cloud->size (), true);
@@ -558,7 +558,7 @@ void createQueryIndices (std::vector<int>& query_indices, PointCloud<PointXYZ>::
   * \param indices 
   * \param max_index highest accented index usually given by cloud->size () - 1
   */
-void createIndices (std::vector<int>& indices, unsigned max_index)
+void createIndices (pcl::Indices& indices, unsigned max_index)
 {
   // ~10% of the input cloud
   for (unsigned idx = 0; idx <= max_index; ++idx)

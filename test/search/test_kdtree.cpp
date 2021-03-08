@@ -137,8 +137,8 @@ TEST (PCL, KdTree_differentPointT)
   copyPointCloud (cloud_big, cloud_rgb);
 
   std::vector< std::vector< float > > dists;
-  std::vector< std::vector< int > > indices;
-  kdtree.nearestKSearchT (cloud_rgb, std::vector<int> (),no_of_neighbors,indices,dists);
+  std::vector< pcl::Indices > indices;
+  kdtree.nearestKSearchT (cloud_rgb, pcl::Indices (),no_of_neighbors,indices,dists);
 
   pcl::Indices k_indices;
   k_indices.resize (no_of_neighbors);
@@ -175,8 +175,8 @@ TEST (PCL, KdTree_multipointKnnSearch)
   kdtree.setInputCloud (cloud_big.makeShared ());
 
   std::vector< std::vector< float > > dists;
-  std::vector< std::vector< int > > indices;
-  kdtree.nearestKSearch (cloud_big, std::vector<int> (),no_of_neighbors,indices,dists);
+  std::vector< pcl::Indices > indices;
+  kdtree.nearestKSearch (cloud_big, pcl::Indices (),no_of_neighbors,indices,dists);
 
   pcl::Indices k_indices;
   k_indices.resize (no_of_neighbors);

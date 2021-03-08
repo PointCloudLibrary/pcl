@@ -342,7 +342,7 @@ pcl::MinCutSegmentation<PointT>::buildGraph ()
     addEdge (point_index, static_cast<int> (sink_), sink_weight);
   }
 
-  std::vector<int> neighbours;
+  pcl::Indices neighbours;
   std::vector<float> distances;
   search_->setInputCloud (input_, indices_);
   for (std::size_t i_point = 0; i_point < number_of_indices; i_point++)

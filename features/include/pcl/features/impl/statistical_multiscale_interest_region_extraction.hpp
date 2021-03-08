@@ -235,7 +235,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::extractExtrema (std:
           (is_max[scale_i - 1][point_i] && is_max[scale_i][point_i] && is_max[scale_i + 1][point_i]))
         {
         // add the point to the result vector
-        IndicesPtr region (new std::vector<int>);
+        IndicesPtr region (new pcl::Indices);
         region->push_back (static_cast<int> (point_i));
 
         // and also add its scale-sized geodesic neighborhood
