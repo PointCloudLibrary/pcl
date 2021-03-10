@@ -56,8 +56,7 @@ namespace pcl
       {
       }
 
-      ~DefaultIterator ()
-      = default;
+      ~DefaultIterator () = default;
 
       void operator ++ ()
       {
@@ -195,8 +194,7 @@ namespace pcl
       {
       }
 
-      ~DefaultConstIterator () override
-      = default;
+      ~DefaultConstIterator () override = default;
 
       void operator ++ () override
       {

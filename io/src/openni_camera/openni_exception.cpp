@@ -54,8 +54,7 @@ OpenNIException::OpenNIException (const std::string& function_name, const std::s
   message_long_ = sstream.str();
 }
 
-OpenNIException::~OpenNIException () noexcept
-= default;
+OpenNIException::~OpenNIException () noexcept = default;
 
 OpenNIException& OpenNIException::operator = (const OpenNIException& exception) noexcept
 {

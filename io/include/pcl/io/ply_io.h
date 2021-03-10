@@ -547,10 +547,10 @@ namespace pcl
   {
     public:
       ///Constructor
-      PLYWriter () = default;;
+      PLYWriter () = default;
 
       ///Destructor
-      ~PLYWriter () override = default;;
+      ~PLYWriter () override = default;
 
       /** \brief Generate the header of a PLY v.7 file format
         * \param[in] cloud the point cloud data message

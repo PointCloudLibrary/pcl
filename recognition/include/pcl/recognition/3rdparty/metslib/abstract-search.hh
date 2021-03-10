@@ -335,8 +335,7 @@ namespace mets {
 
 }
 
-inline mets::solution_recorder::~solution_recorder() 
-= default;
+inline mets::solution_recorder::~solution_recorder()  = default;
 
 inline bool
 mets::best_ever_solution::accept(const mets::feasible_solution& sol)

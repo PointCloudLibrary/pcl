@@ -79,7 +79,7 @@ namespace mets {
   class clonable {
   public:
     virtual 
-    ~clonable() = default;;
+    ~clonable() = default;
     virtual clonable* 
     clone() const = 0;
   };
@@ -88,7 +88,7 @@ namespace mets {
   class hashable {
   public:
     virtual 
-    ~hashable() = default;;
+    ~hashable() = default;
     virtual std::size_t 
     hash() const = 0;
   };
@@ -97,7 +97,7 @@ namespace mets {
   class copyable {
   public:
     virtual 
-    ~copyable() = default;;
+    ~copyable() = default;
     virtual void 
     copy_from(const copyable&) = 0;
   };
@@ -312,7 +312,7 @@ namespace mets {
 
     virtual 
     ~move() 
-    = default;; 
+    = default; 
 
     ///
     /// @brief Evaluate the cost after the move.

@@ -556,8 +556,6 @@ openni_wrapper::OpenNIDriver::DeviceContext::DeviceContext (const xn::NodeInfo& 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-openni_wrapper::OpenNIDriver::DeviceContext::DeviceContext (const DeviceContext& other)
- 
-= default;
+openni_wrapper::OpenNIDriver::DeviceContext::DeviceContext (const DeviceContext& other) = default;
 
 #endif

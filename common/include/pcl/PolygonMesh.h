@@ -13,8 +13,7 @@ namespace pcl
 {
   struct PolygonMesh
   {
-    PolygonMesh ()
-    = default;
+    PolygonMesh () = default;
 
     ::pcl::PCLHeader  header;
 

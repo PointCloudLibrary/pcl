@@ -44,8 +44,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
-pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::~LinearLeastSquaresNormalEstimation ()
-= default;
+pcl::LinearLeastSquaresNormalEstimation<PointInT, PointOutT>::~LinearLeastSquaresNormalEstimation () = default;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT> void

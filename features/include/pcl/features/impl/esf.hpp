@@ -342,7 +342,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::lci (
     int err_2 = dz2 - l;
     for (int i = 1; i<l; i++)
     {
-      voxelcount++;;
+      voxelcount++;
       voxel_in +=  static_cast<int>(lut_[act_voxel[0]][act_voxel[1]][act_voxel[2]] == 1);
       if (err_1 > 0)
       {
