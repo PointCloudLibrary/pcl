@@ -36,8 +36,10 @@ if(CUDA_FOUND)
     foreach(ver ${CUDA_ARCH_BIN})
       set(CMAKE_CUDA_ARCHITECTURES "${ver}-real;${ver}-virtual;${CMAKE_CUDA_ARCHITECTURES}")
     endforeach()
-    set(CMAKE_CUDA_ARCHITECTURES "${CMAKE_CUDA_ARCHITECTURES}")
     message(STATUS "CMAKE_CUDA_ARCHITECTURES: ${CMAKE_CUDA_ARCHITECTURES}")
+    
+    #Add empty project as its not required with newer CMake
+    add_library(pcl_cuda INTERFACE)
   else()
     # Generate SASS
     foreach(ver ${CUDA_ARCH_BIN})
@@ -46,6 +48,10 @@ if(CUDA_FOUND)
     # Generate PTX for last architecture
     list(GET CUDA_ARCH_BIN -1 ver)
     set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -gencode arch=compute_${ver},code=compute_${ver}")
-    message(STATUS "CUDA GEN_CODE: ${ver}")
+    message(STATUS "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
+    
+    add_library(pcl_cuda INTERFACE)
+    target_include_directories(pcl_cuda INTERFACE ${CUDA_TOOLKIT_INCLUDE})
+    
   endif ()
 endif()
