@@ -209,7 +209,7 @@ public:
    * \ref similarity_threshold_
    */
   inline bool
-  thresholdPolygon(const pcl::Correspondences& corr, const std::vector<int>& idx)
+  thresholdPolygon(const pcl::Correspondences& corr, const std::vector<int>& idx) const
   {
     if (cardinality_ ==
         2) // Special case: when two points are considered, we only have one edge
@@ -241,7 +241,7 @@ public:
    */
   inline bool
   thresholdPolygon(const std::vector<int>& source_indices,
-                   const std::vector<int>& target_indices)
+                   const std::vector<int>& target_indices) const
   {
     // Convert indices to correspondences and an index vector pointing to each element
     pcl::Correspondences corr(cardinality_);
@@ -301,7 +301,7 @@ protected:
    * \return squared Euclidean distance
    */
   inline float
-  computeSquaredDistance(const SourceT& p1, const TargetT& p2)
+  computeSquaredDistance(const SourceT& p1, const TargetT& p2) const
   {
     const float dx = p2.x - p1.x;
     const float dy = p2.y - p1.y;
@@ -323,7 +323,7 @@ protected:
                       int index_query_2,
                       int index_match_1,
                       int index_match_2,
-                      float simsq)
+                      float simsq) const
   {
     // Distance between source points
     const float dist_src =
