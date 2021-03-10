@@ -19,12 +19,10 @@ include_directories(SYSTEM ${VTK_INCLUDE_DIRS})
 if(HAVE_OPENNI)
   PCL_ADD_EXECUTABLE(pcl_people_app COMPONENT ${SUBSYS_NAME} SOURCES people_app.cpp)
   target_link_libraries (pcl_people_app pcl_common pcl_gpu_people pcl_io pcl_visualization ${Boost_LIBRARIES})
-  target_include_directories(pcl_people_app PRIVATE ${CUDA_TOOLKIT_INCLUDE})
 endif()
 
 PCL_ADD_EXECUTABLE(pcl_people_pcd_prob COMPONENT ${SUBSYS_NAME} SOURCES people_pcd_prob.cpp)
 target_link_libraries (pcl_people_pcd_prob pcl_common pcl_kdtree pcl_gpu_people pcl_io pcl_visualization)
-target_include_directories(pcl_people_pcd_prob PRIVATE ${CUDA_TOOLKIT_INCLUDE})
 
 #PCL_ADD_EXECUTABLE(people_pcd_folder COMPONENT ${SUBSYS_NAME} SOURCES people_pcd_folder.cpp)
 #target_link_libraries (people_pcd_folder pcl_common pcl_kdtree pcl_gpu_people pcl_io pcl_visualization)
