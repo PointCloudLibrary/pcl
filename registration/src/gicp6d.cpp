@@ -36,6 +36,7 @@
  *
  */
 
+#include <pcl/common/colors.h> // for RGB2sRGB_LUT, XYZ2LAB_LUT
 #include <pcl/registration/gicp6d.h>
 #include <pcl/memory.h> // for pcl::make_shared
 
@@ -47,59 +48,28 @@ RGB2Lab(const Eigen::Vector3i& colorRGB)
   // for sRGB   -> CIEXYZ see http://www.easyrgb.com/index.php?X=MATH&H=02#text2
   // for CIEXYZ -> CIELAB see http://www.easyrgb.com/index.php?X=MATH&H=07#text7
 
-  double R, G, B, X, Y, Z;
+  const auto& sRGB_LUT = RGB2sRGB_LUT<double, 8>();
+  const auto& XYZ_LUT = XYZ2LAB_LUT<float, 4000>();
 
-  // map sRGB values to [0, 1]
-  R = colorRGB[0] / 255.0;
-  G = colorRGB[1] / 255.0;
-  B = colorRGB[2] / 255.0;
+  const double R = sRGB_LUT[colorRGB[0]];
+  const double G = sRGB_LUT[colorRGB[1]];
+  const double B = sRGB_LUT[colorRGB[2]];
 
-  // linearize sRGB values
-  if (R > 0.04045)
-    R = pow((R + 0.055) / 1.055, 2.4);
-  else
-    R /= 12.92;
+  // linear sRGB -> CIEXYZ, D65 illuminant, observer at 2 degrees
+  double X = R * 0.4124 + G * 0.3576 + B * 0.1805;
+  double Y = R * 0.2126 + G * 0.7152 + B * 0.0722;
+  double Z = R * 0.0193 + G * 0.1192 + B * 0.9505;
 
-  if (G > 0.04045)
-    G = pow((G + 0.055) / 1.055, 2.4);
-  else
-    G /= 12.92;
-
-  if (B > 0.04045)
-    B = pow((B + 0.055) / 1.055, 2.4);
-  else
-    B /= 12.92;
-
-  // postponed:
-  //    R *= 100.0;
-  //    G *= 100.0;
-  //    B *= 100.0;
-
-  // linear sRGB -> CIEXYZ
-  X = R * 0.4124 + G * 0.3576 + B * 0.1805;
-  Y = R * 0.2126 + G * 0.7152 + B * 0.0722;
-  Z = R * 0.0193 + G * 0.1192 + B * 0.9505;
-
-  // *= 100.0 including:
-  X /= 0.95047; // 95.047;
-  //    Y /= 1;//100.000;
-  Z /= 1.08883; // 108.883;
+  // normalize X, Y, Z with tristimulus values for Xn, Yn, Zn
+  // and scale for using the LUT with 4000 steps
+  X = (X / 0.95047) * 4000;
+  Y = (Y / 1) * 4000;
+  Z = (Z / 1.08883) * 4000;
 
   // CIEXYZ -> CIELAB
-  if (X > 0.008856)
-    X = pow(X, 1.0 / 3.0);
-  else
-    X = 7.787 * X + 16.0 / 116.0;
-
-  if (Y > 0.008856)
-    Y = pow(Y, 1.0 / 3.0);
-  else
-    Y = 7.787 * Y + 16.0 / 116.0;
-
-  if (Z > 0.008856)
-    Z = pow(Z, 1.0 / 3.0);
-  else
-    Z = 7.787 * Z + 16.0 / 116.0;
+  X = XYZ_LUT[static_cast<std::uint16_t>(X)];
+  Y = XYZ_LUT[static_cast<std::uint16_t>(Y)];
+  Z = XYZ_LUT[static_cast<std::uint16_t>(Z)];
 
   Eigen::Vector3f colorLab;
   colorLab[0] = static_cast<float>(116.0 * Y - 16.0);
