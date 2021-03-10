@@ -143,8 +143,8 @@ TEST (PCL, FlannSearch_differentPointT)
 
 
   std::vector< std::vector< float > > dists;
-  std::vector< std::vector< int > > indices;
-  FlannSearch.nearestKSearchT (cloud_rgb, std::vector<int> (),no_of_neighbors,indices,dists);
+  std::vector< pcl::Indices > indices;
+  FlannSearch.nearestKSearchT (cloud_rgb, pcl::Indices (),no_of_neighbors,indices,dists);
 
   pcl::Indices k_indices;
   k_indices.resize (no_of_neighbors);
@@ -184,8 +184,8 @@ TEST (PCL, FlannSearch_multipointKnnSearch)
   FlannSearch.setInputCloud (cloud_big.makeShared ());
 
   std::vector< std::vector< float > > dists;
-  std::vector< std::vector< int > > indices;
-  FlannSearch.nearestKSearch (cloud_big, std::vector<int>(),no_of_neighbors,indices,dists);
+  std::vector< pcl::Indices > indices;
+  FlannSearch.nearestKSearch (cloud_big, pcl::Indices(),no_of_neighbors,indices,dists);
 
   pcl::Indices k_indices;
   k_indices.resize (no_of_neighbors);

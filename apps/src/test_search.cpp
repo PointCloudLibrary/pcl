@@ -55,9 +55,9 @@ main(int argc, char** argv)
   query.y = 0.5;
   query.z = 0.5;
 
-  std::vector<int> kd_indices;
+  pcl::Indices kd_indices;
   std::vector<float> kd_distances;
-  std::vector<int> bf_indices;
+  pcl::Indices bf_indices;
   std::vector<float> bf_distances;
 
   double start, stop;

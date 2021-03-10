@@ -2161,7 +2161,7 @@ TEST (NormalRefinement, Filters)
 
   // Search parameters
   const int k = 5;
-  std::vector<std::vector<int> > k_indices;
+  std::vector<pcl::Indices> k_indices;
   std::vector<std::vector<float> > k_sqr_distances;
 
   // Estimated and refined normal containers
@@ -2175,7 +2175,7 @@ TEST (NormalRefinement, Filters)
   // Search for neighbors
   pcl::search::KdTree<pcl::PointXYZRGB> kdtree;
   kdtree.setInputCloud (cloud_organized_nonan.makeShared ());
-  kdtree.nearestKSearch (cloud_organized_nonan, std::vector<int> (), k, k_indices, k_sqr_distances);
+  kdtree.nearestKSearch (cloud_organized_nonan, pcl::Indices (), k, k_indices, k_sqr_distances);
 
   /*
    * Estimate normals
@@ -2225,7 +2225,7 @@ TEST (NormalRefinement, Filters)
   seg.segment (*inliers, *coefficients);
 
   // Read out SAC model
-  const std::vector<int>& idx_table = inliers->indices;
+  const auto& idx_table = inliers->indices;
   float a = coefficients->values[0];
   float b = coefficients->values[1];
   float c = coefficients->values[2];
@@ -2255,7 +2255,7 @@ TEST (NormalRefinement, Filters)
   int num_nans = 0;
 
   // Loop
-  for (const int &idx : idx_table)
+  for (const auto &idx : idx_table)
   {
     float tmp;
 

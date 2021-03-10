@@ -435,7 +435,7 @@ protected:
    **/
   void
   computeTransformedPointCloud(const StateT& hypothesis,
-                               std::vector<int>& indices,
+                               pcl::Indices& indices,
                                PointCloudIn& cloud);
 
   /** \brief Compute a reference pointcloud transformed to the pose that hypothesis
@@ -447,7 +447,7 @@ protected:
    **/
   void
   computeTransformedPointCloudWithNormal(const StateT& hypothesis,
-                                         std::vector<int>& indices,
+                                         pcl::Indices& indices,
                                          PointCloudIn& cloud);
 
   /** \brief Compute a reference pointcloud transformed to the pose that hypothesis
