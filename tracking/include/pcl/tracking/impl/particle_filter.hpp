@@ -293,15 +293,11 @@ ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithoutNorm
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename StateT>
+template <typename PointT, pcl::traits::HasNormal<PointT>>
 void
 ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithNormal(
-#ifdef PCL_TRACKING_NORMAL_SUPPORTED
     const StateT& hypothesis, pcl::Indices& indices, PointCloudIn& cloud)
-#else
-    const StateT&, pcl::Indices&, PointCloudIn&)
-#endif
 {
-#ifdef PCL_TRACKING_NORMAL_SUPPORTED
   const Eigen::Affine3f trans = toEigenMatrix(hypothesis);
   // destructively assigns to cloud
   pcl::transformPointCloudWithNormals<PointInT>(*ref_, cloud, trans);
@@ -318,11 +314,17 @@ ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithNormal(
     if (theta > occlusion_angle_thr_)
       indices.push_back(i);
   }
-#else
+}
+
+template <typename PointInT, typename StateT>
+template <typename PointT, pcl::traits::HasNoNormal<PointT>>
+void
+ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithNormal(
+    const StateT&, pcl::Indices&, PointCloudIn&)
+{
   PCL_WARN("[pcl::%s::computeTransformedPointCloudWithoutNormal] "
            "use_normal_ == true is not supported in this Point Type.\n",
            getClassName().c_str());
-#endif
 }
 
 template <typename PointInT, typename StateT>

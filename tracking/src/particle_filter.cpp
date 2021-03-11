@@ -40,7 +40,6 @@
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
-#define PCL_TRACKING_NORMAL_SUPPORTED
 
 // clang-format off
 PCL_INSTANTIATE_PRODUCT(ParticleFilterTracker,
@@ -53,9 +52,6 @@ PCL_INSTANTIATE_PRODUCT(ParticleFilterOMPTracker,
                          (pcl::PointXYZINormal)
                          (pcl::PointXYZRGBNormal))
                         (PCL_STATE_POINT_TYPES))
-// clang-format on
-#undef PCL_TRACKING_NORMAL_SUPPORTED
-// clang-format off
 PCL_INSTANTIATE_PRODUCT(ParticleFilterTracker,
                         ((pcl::PointXYZ)
                          (pcl::PointXYZI)
