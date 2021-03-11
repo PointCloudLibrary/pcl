@@ -55,9 +55,9 @@ namespace pcl
         using ConstPtr = shared_ptr<const SimplificationRemoveUnusedVertices>;
 
         /** \brief Constructor. */
-        SimplificationRemoveUnusedVertices () = default;;
+        SimplificationRemoveUnusedVertices () = default;
         /** \brief Destructor. */
-        ~SimplificationRemoveUnusedVertices () = default;;
+        ~SimplificationRemoveUnusedVertices () = default;
 
         /** \brief Simply a polygonal mesh.
           * \param[in] input the input mesh

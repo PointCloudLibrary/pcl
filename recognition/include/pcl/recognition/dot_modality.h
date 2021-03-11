@@ -48,7 +48,7 @@ namespace pcl
   {
     public:
 
-      virtual ~DOTModality () = default;;
+      virtual ~DOTModality () = default;
 
       //virtual QuantizedMap &
       //getDominantQuantizedMap () = 0;

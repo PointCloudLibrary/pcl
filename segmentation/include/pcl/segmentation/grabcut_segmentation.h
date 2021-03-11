@@ -336,7 +336,7 @@ namespace pcl
         , initialized_ (false)
       {}
       /// Destructor
-      ~GrabCut () = default;;
+      ~GrabCut () = default;
       // /// Set input cloud
       void
       setInputCloud (const PointCloudConstPtr& cloud) override;

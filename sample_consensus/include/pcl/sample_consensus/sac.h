@@ -63,7 +63,7 @@ namespace pcl
 
     private:
       /** \brief Constructor for base SAC. */
-      SampleConsensus () = default;;
+      SampleConsensus () = default;
 
     public:
       using Ptr = shared_ptr<SampleConsensus<T> >;
@@ -130,7 +130,7 @@ namespace pcl
       }
 
       /** \brief Destructor for base SAC. */
-      virtual ~SampleConsensus () = default;;
+      virtual ~SampleConsensus () = default;
 
       /** \brief Set the distance to model threshold.
         * \param[in] threshold distance to model threshold

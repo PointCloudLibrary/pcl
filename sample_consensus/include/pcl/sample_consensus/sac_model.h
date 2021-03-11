@@ -162,7 +162,7 @@ namespace pcl
        };
 
       /** \brief Destructor for base SampleConsensusModel. */
-      virtual ~SampleConsensusModel () = default;;
+      virtual ~SampleConsensusModel () = default;
 
       /** \brief Get a set of random data samples and return them as point
         * indices.

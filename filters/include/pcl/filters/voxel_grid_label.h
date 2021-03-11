@@ -58,7 +58,7 @@ namespace pcl
       /** \brief Constructor.
        * Sets \ref leaf_size_ to 0.
        */
-      VoxelGridLabel () = default;;
+      VoxelGridLabel () = default;
 
     protected:
 

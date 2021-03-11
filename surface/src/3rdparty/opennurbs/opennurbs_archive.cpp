@@ -2608,7 +2608,7 @@ ON_BinaryArchive::ReadSize(std::size_t* sz)
 bool ON_BinaryArchive::WriteBigSize(std::size_t sz)
 {
   ON__UINT64 u = (ON__UINT64)sz;
-  return WriteInt64(1,(ON__INT64*)&u);;
+  return WriteInt64(1,(ON__INT64*)&u);
 }
 
 bool ON_BinaryArchive::ReadBigSize( std::size_t* sz )
