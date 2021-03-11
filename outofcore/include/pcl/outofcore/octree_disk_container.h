@@ -228,7 +228,7 @@ namespace pcl
             FILE* fxyz = fopen (path.string ().c_str (), "we");
 
             FILE* f = fopen (disk_storage_filename_.c_str (), "rbe");
-            assert (f != NULL);
+            assert (f != nullptr);
 
             std::uint64_t num = size ();
             PointT p;
