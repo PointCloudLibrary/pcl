@@ -136,8 +136,7 @@ namespace mets {
   public:
     /// @brief Virtual dtor.
     virtual
-    ~feasible_solution() 
-    = default;
+    ~feasible_solution() = default;
 
   };
 
@@ -311,8 +310,7 @@ namespace mets {
   public:
 
     virtual 
-    ~move() 
-    = default; 
+    ~move() = default;
 
     ///
     /// @brief Evaluate the cost after the move.
@@ -514,8 +512,7 @@ namespace mets {
     { }
 
     /// @brief Virtual destructor
-    virtual ~move_manager() 
-    = default;
+    virtual ~move_manager() = default;
 
     /// @brief Selects a different set of moves at each iteration.
     virtual void 

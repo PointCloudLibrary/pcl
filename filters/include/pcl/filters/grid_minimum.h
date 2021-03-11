@@ -77,8 +77,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~GridMinimum () override
-      = default;
+      ~GridMinimum () override = default;
 
       /** \brief Set the grid resolution.
         * \param[in] resolution the grid resolution
