@@ -114,7 +114,7 @@ compute (ConstCloudPtr &input, Cloud &output, int max_window_size, float slope, 
 
   print_highlight (stderr, "Computing ");
 
-  std::vector<int> ground;
+  pcl::Indices ground;
 
   if (approximate)
   {

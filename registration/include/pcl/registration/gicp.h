@@ -404,7 +404,7 @@ protected:
    */
   inline bool
   searchForNeighbors(const PointSource& query,
-                     std::vector<int>& index,
+                     pcl::Indices& index,
                      std::vector<float>& distance)
   {
     int k = tree_->nearestKSearch(query, 1, index, distance);

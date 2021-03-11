@@ -167,7 +167,7 @@ GeneralizedIterativeClosestPoint6D::setInputTarget(
 
 bool
 GeneralizedIterativeClosestPoint6D::searchForNeighbors(const PointXYZLAB& query,
-                                                       std::vector<int>& index,
+                                                       pcl::Indices& index,
                                                        std::vector<float>& distance)
 {
   int k = target_tree_lab_.nearestKSearch(query, 1, index, distance);
@@ -208,7 +208,7 @@ GeneralizedIterativeClosestPoint6D::computeTransformation(PointCloudSource& outp
   nr_iterations_ = 0;
   converged_ = false;
   double dist_threshold = corr_dist_threshold_ * corr_dist_threshold_;
-  std::vector<int> nn_indices(1);
+  pcl::Indices nn_indices(1);
   std::vector<float> nn_dists(1);
 
   while (!converged_) {

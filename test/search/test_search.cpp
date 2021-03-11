@@ -127,9 +127,9 @@ std::vector<search::Search<PointXYZ>* > unorganized_search_methods;
 std::vector<search::Search<PointXYZ>* > organized_search_methods;
 
 /** \brief lists of indices to be used as query points for various search methods and different cloud types*/
-std::vector<int> unorganized_dense_cloud_query_indices;
-std::vector<int> unorganized_sparse_cloud_query_indices;
-std::vector<int> organized_sparse_query_indices;
+pcl::Indices unorganized_dense_cloud_query_indices;
+pcl::Indices unorganized_sparse_cloud_query_indices;
+pcl::Indices organized_sparse_query_indices;
 
 /** \briet test whether the result of a search contains unique point ids or not
   * @param indices resulting indices from a search
@@ -233,8 +233,8 @@ testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, con
   * \param eps threshold for comparing the distances
   * \return true if both sets are the same, false otherwise
   */
-bool compareResults (const std::vector<int>& indices1, const std::vector<float>& distances1, const std::string& name1,
-                     const std::vector<int>& indices2, const std::vector<float>& distances2, const std::string& name2, float eps)
+bool compareResults (const pcl::Indices& indices1, const std::vector<float>& distances1, const std::string& name1,
+                     const pcl::Indices& indices2, const std::vector<float>& distances2, const std::string& name2, float eps)
 {
   bool equal = true;
   if (indices1.size () != indices2.size ())
@@ -475,7 +475,7 @@ TEST (PCL, unorganized_dense_cloud_Complete_Radius)
 // Test search on unorganized point clouds in a grid
 TEST (PCL, unorganized_grid_cloud_Complete_Radius)
 {
-  std::vector<int> query_indices;
+  pcl::Indices query_indices;
   query_indices.reserve (query_count);
   
   unsigned skip = static_cast<unsigned> (unorganized_grid_cloud->size ()) / query_count;
@@ -543,7 +543,7 @@ TEST (PCL, Organized_Sparse_View_Radius)
   * \param cloud input cloud required to check for nans and to get number of points
   * \param[in] query_count maximum number of query points
   */
-void createQueryIndices (std::vector<int>& query_indices, PointCloud<PointXYZ>::ConstPtr point_cloud, unsigned query_count)
+void createQueryIndices (pcl::Indices& query_indices, PointCloud<PointXYZ>::ConstPtr point_cloud, unsigned query_count)
 {
   query_indices.clear ();
   query_indices.reserve (query_count);

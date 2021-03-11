@@ -739,7 +739,7 @@ namespace pcl
       pcl::PCLPointCloud2::Ptr downsampled_cloud ( new pcl::PCLPointCloud2 () );
 
       //create destination for indices
-      pcl::IndicesPtr downsampled_cloud_indices ( new std::vector< int > () );
+      pcl::IndicesPtr downsampled_cloud_indices ( new pcl::Indices () );
       random_sampler.filter (*downsampled_cloud_indices);
 
       //extract the "random subset", size by setSampleSize
