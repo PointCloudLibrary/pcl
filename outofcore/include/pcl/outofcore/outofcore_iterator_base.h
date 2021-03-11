@@ -79,8 +79,7 @@ namespace pcl
         }
         
         virtual
-        ~OutofcoreIteratorBase ()
-        = default;
+        ~OutofcoreIteratorBase () = default;
 
         OutofcoreIteratorBase (const OutofcoreIteratorBase& src)
           : octree_ (src.octree_), currentNode_ (src.currentNode_)

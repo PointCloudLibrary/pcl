@@ -579,8 +579,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~AgastKeypoint2DBase () override
-      = default;
+      ~AgastKeypoint2DBase () override = default;
 
       /** \brief Sets the threshold for corner detection.
         * \param[in] threshold the threshold used for corner detection.
@@ -738,8 +737,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~AgastKeypoint2D ()
-      = default;
+      ~AgastKeypoint2D () = default;
 
     protected:
       /** \brief Detects the keypoints.
@@ -788,8 +786,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      ~AgastKeypoint2D () override
-      = default;
+      ~AgastKeypoint2D () override = default;
 
     protected:
       /** \brief Detects the keypoints.
