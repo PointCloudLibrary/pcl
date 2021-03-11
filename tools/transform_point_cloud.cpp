@@ -199,7 +199,7 @@ scaleInPlace (pcl::PCLPointCloud2 &cloud, double* multiplier)
   int z_idx = pcl::getFieldIndex (cloud, "z");
   Eigen::Array3i xyz_offset (cloud.fields[x_idx].offset, cloud.fields[y_idx].offset, cloud.fields[z_idx].offset);
  
-  for (index_t cp = 0; cp < cloud.width * cloud.height; ++cp)
+  for (uindex_t cp = 0; cp < cloud.width * cloud.height; ++cp)
   {
     // Assume all 3 fields are the same (XYZ)
     assert ((cloud.fields[x_idx].datatype == cloud.fields[y_idx].datatype));

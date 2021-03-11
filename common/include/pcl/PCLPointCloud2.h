@@ -17,15 +17,15 @@ namespace pcl
   {
     ::pcl::PCLHeader header;
 
-    index_t height = 0;
-    index_t width = 0;
+    uindex_t height = 0;
+    uindex_t width = 0;
 
     std::vector<::pcl::PCLPointField>  fields;
 
     static_assert(BOOST_ENDIAN_BIG_BYTE || BOOST_ENDIAN_LITTLE_BYTE, "unable to determine system endianness");
     std::uint8_t is_bigendian = BOOST_ENDIAN_BIG_BYTE;
-    index_t point_step = 0;
-    index_t row_step = 0;
+    uindex_t point_step = 0;
+    uindex_t row_step = 0;
 
     std::vector<std::uint8_t> data;
 
