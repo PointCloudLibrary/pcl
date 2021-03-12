@@ -95,7 +95,7 @@ namespace pcl
         {
         }
 
-        ~Hypothesis () override= default;
+        ~Hypothesis () override = default;
 
         const Hypothesis&
         operator =(const Hypothesis& src)
