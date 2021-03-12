@@ -58,8 +58,7 @@ namespace mets {
 
     /// @brief Virtual destructor.
     virtual 
-    ~termination_criteria_chain() 
-    = default;
+    ~termination_criteria_chain() = default;
 
     /// @brief Alternate function that decides if we shoud terminate the
     /// search process

@@ -120,8 +120,7 @@ namespace pcl
               }
             }
 
-            virtual ~Model ()
-            = default;
+            virtual ~Model () = default;
 
             inline const std::string&
             getObjectName () const

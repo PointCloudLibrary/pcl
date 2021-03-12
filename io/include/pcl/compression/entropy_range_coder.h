@@ -68,13 +68,11 @@ namespace pcl
   public:
 
     /** \brief Empty constructor. */
-    AdaptiveRangeCoder ()
-    = default;
+    AdaptiveRangeCoder () = default;
 
     /** \brief Empty deconstructor. */
     virtual
-    ~AdaptiveRangeCoder ()
-    = default;
+    ~AdaptiveRangeCoder () = default;
 
     /** \brief Encode char vector to output stream
      * \param inputByteVector_arg input vector
@@ -121,8 +119,7 @@ namespace pcl
 
       /** \brief Empty deconstructor. */
       virtual
-      ~StaticRangeCoder ()
-      = default;
+      ~StaticRangeCoder () = default;
 
       /** \brief Encode integer vector to output stream
         * \param[in] inputIntVector_arg input vector

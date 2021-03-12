@@ -72,8 +72,7 @@ namespace pcl
         : new_to_old_energy_ratio_ (0.99f)
         {}
 
-        ~TrimmedICP () override
-        = default;
+        ~TrimmedICP () override = default;
 
         /** \brief Call this method before calling align().
           *

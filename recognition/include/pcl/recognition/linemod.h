@@ -60,8 +60,7 @@ namespace pcl
       }
 
       /** \brief Destructor. */
-      virtual ~EnergyMaps () 
-      = default;
+      virtual ~EnergyMaps () = default;
 
       /** \brief Returns the width of the energy maps. */
       inline std::size_t 
@@ -204,8 +203,7 @@ namespace pcl
       }
       
       /** \brief Destructor. */
-      virtual ~LinearizedMaps () 
-      = default;
+      virtual ~LinearizedMaps () = default;
 
       /** \brief Returns the width of the linearized map. */
       inline std::size_t 

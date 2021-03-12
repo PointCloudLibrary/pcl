@@ -76,8 +76,7 @@ namespace pcl
         res_ = 0.005f;
       }
 
-      virtual ~RFFaceDetectorTrainer()
-      = default;
+      virtual ~RFFaceDetectorTrainer() = default;
 
       /*
        * Common parameters

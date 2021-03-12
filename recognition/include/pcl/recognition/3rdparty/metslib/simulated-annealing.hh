@@ -50,13 +50,10 @@ namespace mets {
   {
   public:
     /// @brief Constructor
-    abstract_cooling_schedule() 
-    = default;
+    abstract_cooling_schedule() = default;
 
     /// @brief Virtual destructor
-    virtual
-    ~abstract_cooling_schedule() 
-    = default;
+    virtual ~abstract_cooling_schedule() = default;
 
     /// @brief The function that updates the SA temperature.
     ///
