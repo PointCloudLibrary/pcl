@@ -27,13 +27,11 @@ In the following lines, we define the PointCloud structures, fill in the input c
 
 .. literalinclude:: sources/function_filter/sphere_removal.cpp
    :language: cpp
-   :language: cpp
    :lines: 10-21
 
 Then, we create the condition which a given point must satisfy so that it remains in our PointCloud. To do this we create a `std::function` which accepts a PointCloud by const reference and an index, and returns true only if the point lies inside a sphere. This is then used to build the filter
 
 .. literalinclude:: sources/function_filter/sphere_removal.cpp
-   :language: cpp
    :language: cpp
    :lines: 23-34
 
