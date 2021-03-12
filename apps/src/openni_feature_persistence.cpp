@@ -131,7 +131,7 @@ public:
     cloud_subsampled_.reset(new typename pcl::PointCloud<PointType>());
     normals_.reset(new pcl::PointCloud<pcl::Normal>());
     features_.reset(new pcl::PointCloud<pcl::FPFHSignature33>());
-    feature_indices_.reset(new std::vector<int>());
+    feature_indices_.reset(new pcl::Indices());
     feature_locations_.reset(new typename pcl::PointCloud<PointType>());
 
     // Subsample input cloud

@@ -230,7 +230,7 @@ public:
       for (int p_it = 0; p_it < static_cast<int>(indices_fullset_.size()); ++p_it)
         indices_fullset_[p_it] = p_it;
     }
-    std::vector<int> indices_subset = plane_indices->indices;
+    pcl::Indices indices_subset = plane_indices->indices;
     std::sort(indices_subset.begin(), indices_subset.end());
     set_difference(indices_fullset_.begin(),
                    indices_fullset_.end(),
@@ -385,7 +385,7 @@ public:
     if (idx == -1)
       return;
 
-    std::vector<int> indices(1);
+    pcl::Indices indices(1);
     std::vector<float> distances(1);
 
     // Use mutices to make sure we get the right cloud

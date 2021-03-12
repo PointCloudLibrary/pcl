@@ -139,7 +139,7 @@ protected:
    */
   inline bool
   searchForNeighbors(const PointXYZLAB& query,
-                     std::vector<int>& index,
+                     pcl::Indices& index,
                      std::vector<float>& distance);
 
 protected:

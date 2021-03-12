@@ -166,7 +166,7 @@ float
 SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::computeErrorMetric(
     const PointCloudSource& cloud, float)
 {
-  std::vector<int> nn_index(1);
+  pcl::Indices nn_index(1);
   std::vector<float> nn_distance(1);
 
   const ErrorFunctor& compute_error = *error_functor_;

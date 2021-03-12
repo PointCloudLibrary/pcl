@@ -217,8 +217,8 @@ TEST (PCL, FlannSearch_knnByIndex)
   flann_search.setInputCloud (cloud_big.makeShared ());
 
   std::vector< std::vector< float > > dists;
-  std::vector< std::vector< int > > indices;
-  std::vector< int > query_indices;
+  std::vector< pcl::Indices > indices;
+  pcl::Indices query_indices;
   for (std::size_t i = 0; i<cloud_big.size (); i+=2)
   {
     query_indices.push_back (int (i));
@@ -307,11 +307,11 @@ TEST (PCL, FlannSearch_compareToKdTreeFlann)
 
   {
     ScopeTime scopeTime ("FLANN multi nearestKSearch");
-    flann_search->nearestKSearch (cloud_big, std::vector<int> (), no_of_neighbors, indices_flann,dists_flann);
+    flann_search->nearestKSearch (cloud_big, pcl::Indices (), no_of_neighbors, indices_flann,dists_flann);
   }
   {
     ScopeTime scopeTime ("kd tree multi nearestKSearch");
-    kdtree_search->nearestKSearch (cloud_big, std::vector<int> (), no_of_neighbors, indices_tree,dists_tree);
+    kdtree_search->nearestKSearch (cloud_big, pcl::Indices (), no_of_neighbors, indices_tree,dists_tree);
   }
 
   ASSERT_EQ (indices_flann.size (), dists_flann.size ());

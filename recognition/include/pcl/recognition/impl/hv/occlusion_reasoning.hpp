@@ -67,7 +67,7 @@ template<typename ModelT, typename SceneT> void
 pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::filter (typename pcl::PointCloud<ModelT>::ConstPtr & model,
                                                               typename pcl::PointCloud<ModelT>::Ptr & filtered, float thres)
 {
-  std::vector<int> indices_to_keep;
+  pcl::Indices indices_to_keep;
   filter(model, indices_to_keep, thres);
   pcl::copyPointCloud (*model, indices_to_keep, *filtered);
 }
@@ -75,7 +75,7 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::filter (typename pcl::Poin
 ///////////////////////////////////////////////////////////////////////////////////////////
 template<typename ModelT, typename SceneT> void
 pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::filter (typename pcl::PointCloud<ModelT>::ConstPtr & model,
-                                                                      std::vector<int> & indices_to_keep, float thres)
+                                                                      pcl::Indices & indices_to_keep, float thres)
 {
 
   float cx, cy;
