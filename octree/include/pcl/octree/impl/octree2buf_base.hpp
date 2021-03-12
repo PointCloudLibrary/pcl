@@ -431,6 +431,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
       OctreeNode* child_node = branch_arg->getChildPtr(!buffer_selector_, child_idx);
       if (child_node->getNodeType() == LEAF_NODE) {
         child_leaf = static_cast<LeafNode*>(child_node);
+        child_leaf->getContainer() = LeafContainer(); // Clear contents of leaf
         branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
       }
       else {
