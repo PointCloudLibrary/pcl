@@ -304,13 +304,10 @@ if(NOT PCL_SHARED_LIBS OR ((WIN32 AND NOT MINGW) AND NOT PCL_BUILD_WITH_FLANN_DY
 endif()
 find_package(FLANN 1.7.0 REQUIRED)
 
-# libusb-1.0
+# libusb
 option(WITH_LIBUSB "Build USB RGBD-Camera drivers" TRUE)
 if(WITH_LIBUSB)
-  find_package(libusb-1.0)
-  if(LIBUSB_1_FOUND)
-    include_directories(SYSTEM "${LIBUSB_1_INCLUDE_DIR}")
-  endif()
+  find_package(libusb)
 endif()
 
 # Dependencies for different grabbers

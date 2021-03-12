@@ -11,30 +11,6 @@
 #  OPENNI_DEFINITIONS          Compiler flags for OpenNI
 
 find_package(PkgConfig QUIET)
-
-# Find LibUSB
-if(NOT WIN32)
-  pkg_check_modules(PC_USB_10 libusb-1.0)
-  find_path(USB_10_INCLUDE_DIR libusb-1.0/libusb.h
-            HINTS ${PC_USB_10_INCLUDEDIR} ${PC_USB_10_INCLUDE_DIRS} "${USB_10_ROOT}" "$ENV{USB_10_ROOT}"
-            PATH_SUFFIXES libusb-1.0)
-
-  find_library(USB_10_LIBRARY
-               NAMES usb-1.0
-               HINTS ${PC_USB_10_LIBDIR} ${PC_USB_10_LIBRARY_DIRS} "${USB_10_ROOT}" "$ENV{USB_10_ROOT}"
-               PATH_SUFFIXES lib)
-
-  include(FindPackageHandleStandardArgs)
-  find_package_handle_standard_args(USB_10 DEFAULT_MSG USB_10_LIBRARY USB_10_INCLUDE_DIR)
-
-  if(NOT USB_10_FOUND)
-    message(STATUS "OpenNI disabled because libusb-1.0 not found.")
-    return()
-  else()
-    include_directories(SYSTEM ${USB_10_INCLUDE_DIR})
-  endif()
-endif()
-
 pkg_check_modules(PC_OPENNI QUIET libopenni)
 
 set(OPENNI_DEFINITIONS ${PC_OPENNI_CFLAGS_OTHER})
@@ -76,7 +52,8 @@ if(OPENNI_INCLUDE_DIR AND OPENNI_LIBRARY)
 
   # Libraries
   if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    set(OPENNI_LIBRARIES ${OPENNI_LIBRARY} ${LIBUSB_1_LIBRARIES})
+    find_package(libusb REQUIRED)
+    set(OPENNI_LIBRARIES ${OPENNI_LIBRARY} libusb::libusb)
   else()
     set(OPENNI_LIBRARIES ${OPENNI_LIBRARY})
   endif()

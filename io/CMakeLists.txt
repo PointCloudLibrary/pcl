@@ -7,7 +7,7 @@ PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
   PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk rssdk2 pcap png vtk)
 else()
-  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb-1.0)
+  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb)
 endif()
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
@@ -169,7 +169,7 @@ if(WITH_RSSDK2)
   )
 endif()
 
-if(LIBUSB_1_FOUND)
+if(LIBUSB_FOUND)
   set(DINAST_GRABBER_INCLUDES
     include/pcl/io/dinast_grabber.h
   )
@@ -351,8 +351,8 @@ if(PNG_FOUND)
   target_link_libraries("${LIB_NAME}" ${PNG_LIBRARIES})
 endif()
 
-if(LIBUSB_1_FOUND)
-  target_link_libraries("${LIB_NAME}" ${LIBUSB_1_LIBRARIES})
+if(LIBUSB_FOUND)
+  target_link_libraries("${LIB_NAME}" libusb::libusb)
 endif()
 
 if(WITH_OPENNI2)
