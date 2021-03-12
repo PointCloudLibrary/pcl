@@ -60,12 +60,10 @@ namespace pcl
         using PointCloudConstPtr = typename PointCloud::ConstPtr;
 
         /** \brief Empty Constructor. */
-        OrganizedPointCloudCompression ()
-        = default;
+        OrganizedPointCloudCompression () = default;
 
         /** \brief Empty deconstructor. */
-        virtual ~OrganizedPointCloudCompression ()
-        = default;
+        virtual ~OrganizedPointCloudCompression () = default;
 
         /** \brief Encode point cloud to output stream
          * \param[in] cloud_arg:  point cloud to be compressed

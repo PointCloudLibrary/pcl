@@ -68,8 +68,7 @@ namespace mets {
 
     /// @brief Virtual destructor.
     virtual 
-    ~aspiration_criteria_chain() 
-    = default; 
+    ~aspiration_criteria_chain() = default;
 
     /// @brief A method to reset this aspiration criteria chain to its
     /// original state.
@@ -129,8 +128,7 @@ namespace mets {
 
     /// @brief Virtual destructor
     virtual 
-    ~tabu_list_chain() 
-    = default; 
+    ~tabu_list_chain() = default;
 
     ///
     /// @brief Make a move tabu when starting from a certain solution.

@@ -119,8 +119,7 @@ namespace pcl
 
         /** \brief Empty deconstructor. */
         
-        ~OctreePointCloudCompression () override
-        = default;
+        ~OctreePointCloudCompression () override = default;
 
         /** \brief Initialize globals */
         void initialization () {

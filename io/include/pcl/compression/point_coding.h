@@ -68,8 +68,7 @@ class PointCoding
 
     /** \brief Empty class constructor. */
     virtual
-    ~PointCoding ()
-    = default;
+    ~PointCoding () = default;
 
     /** \brief Define precision of point information
       * \param precision_arg: precision

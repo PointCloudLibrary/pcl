@@ -110,8 +110,7 @@ namespace mets {
 
     /// @brief Virtual destructor.
     
-    ~abstract_search() override 
-    = default;;
+    ~abstract_search() override = default;
 
     enum {
       /// @brief We just made a move.
@@ -254,8 +253,7 @@ namespace mets {
 
     /// @brief Virtual destructor
     virtual 
-    ~search_listener() 
-    = default;
+    ~search_listener() = default;
 
     /// @brief This is the callback method called by searches
     /// when a move, an improvement or something else happens

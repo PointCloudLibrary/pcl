@@ -59,8 +59,7 @@ namespace pcl
 
     public:
       /** \brief Empty constructor for PlanarRegion. */
-      PlanarRegion ()
-      = default;
+      PlanarRegion () = default;
 
       /** \brief Constructor for Planar region from a Region3D and a PlanarPolygon. 
         * \param[in] region a Region3D for the input data
