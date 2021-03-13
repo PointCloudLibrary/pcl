@@ -45,15 +45,8 @@
 PCL_INSTANTIATE_PRODUCT(ParticleFilterTracker,
                         ((pcl::PointNormal)
                          (pcl::PointXYZINormal)
-                         (pcl::PointXYZRGBNormal))
-                        (PCL_STATE_POINT_TYPES))
-PCL_INSTANTIATE_PRODUCT(ParticleFilterOMPTracker,
-                        ((pcl::PointNormal)
-                         (pcl::PointXYZINormal)
-                         (pcl::PointXYZRGBNormal))
-                        (PCL_STATE_POINT_TYPES))
-PCL_INSTANTIATE_PRODUCT(ParticleFilterTracker,
-                        ((pcl::PointXYZ)
+                         (pcl::PointXYZRGBNormal)
+                         (pcl::PointXYZ)
                          (pcl::PointXYZI)
                          (pcl::PointXYZRGBA)
                          (pcl::PointXYZRGB)
@@ -62,8 +55,12 @@ PCL_INSTANTIATE_PRODUCT(ParticleFilterTracker,
                          (pcl::PointWithViewpoint)
                          (pcl::PointWithScale))
                         (PCL_STATE_POINT_TYPES))
+
 PCL_INSTANTIATE_PRODUCT(ParticleFilterOMPTracker,
-                        ((pcl::PointXYZ)
+                        ((pcl::PointNormal)
+                         (pcl::PointXYZINormal)
+                         (pcl::PointXYZRGBNormal)
+                         (pcl::PointXYZ)
                          (pcl::PointXYZI)
                          (pcl::PointXYZRGBA)
                          (pcl::PointXYZRGB)

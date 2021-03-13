@@ -317,17 +317,6 @@ ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithNormal(
 }
 
 template <typename PointInT, typename StateT>
-template <typename PointT, pcl::traits::HasNoNormal<PointT>>
-void
-ParticleFilterTracker<PointInT, StateT>::computeTransformedPointCloudWithNormal(
-    const StateT&, pcl::Indices&, PointCloudIn&)
-{
-  PCL_WARN("[pcl::%s::computeTransformedPointCloudWithoutNormal] "
-           "use_normal_ == true is not supported in this Point Type.\n",
-           getClassName().c_str());
-}
-
-template <typename PointInT, typename StateT>
 void
 ParticleFilterTracker<PointInT, StateT>::resample()
 {

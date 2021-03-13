@@ -459,7 +459,12 @@ protected:
                                          PointCloudIn& cloud);
   template <typename PointT = PointInT, traits::HasNoNormal<PointT> = true>
   void
-  computeTransformedPointCloudWithNormal(const StateT&, pcl::Indices&, PointCloudIn&);
+  computeTransformedPointCloudWithNormal(const StateT&, pcl::Indices&, PointCloudIn&)
+  {
+    PCL_WARN("[pcl::%s::computeTransformedPointCloudWithoutNormal] "
+            "use_normal_ == true is not supported in this Point Type.\n",
+            getClassName().c_str());
+  }
 #endif
 
   /** \brief Compute a reference pointcloud transformed to the pose that hypothesis
