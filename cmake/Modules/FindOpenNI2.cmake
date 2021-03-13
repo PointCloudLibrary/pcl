@@ -55,12 +55,24 @@ if(OPENNI2_INCLUDE_DIR AND OPENNI2_LIBRARY)
 
 endif()
 
+if(EXISTS "${OPENNI2_INCLUDE_DIR}/OniVersion.h")
+  file(STRINGS "${OPENNI2_INCLUDE_DIR}/OniVersion.h" _contents REGEX "^#define[ \t]+ONI_VERSION_[A-Z]+[ \t]+[0-9]+")
+  if(_contents)
+    string(REGEX REPLACE ".*#define[ \t]+ONI_VERSION_MAJOR[ \t]+([0-9]+).*" "\\1" OPENNI2_VERSION_MAJOR "${_contents}")
+    string(REGEX REPLACE ".*#define[ \t]+ONI_VERSION_MINOR[ \t]+([0-9]+).*" "\\1" OPENNI2_VERSION_MINOR "${_contents}")
+    string(REGEX REPLACE ".*#define[ \t]+ONI_VERSION_MAINTENANCE[ \t]+([0-9]+).*" "\\1" OPENNI2_VERSION_PATCH "${_contents}")
+    string(REGEX REPLACE ".*#define[ \t]+ONI_VERSION_BUILD[ \t]+([0-9]+).*" "\\1" OPENNI2_VERSION_BUILD "${_contents}")
+    set(OPENNI2_VERSION "${OPENNI2_VERSION_MAJOR}.${OPENNI2_VERSION_MINOR}.${OPENNI2_VERSION_PATCH}.${OPENNI2_VERSION_BUILD}")
+  endif()
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(OpenNI2
   FOUND_VAR OPENNI2_FOUND
   REQUIRED_VARS OPENNI2_LIBRARIES OPENNI2_INCLUDE_DIRS
+  VERSION_VAR OPENNI2_VERSION
 )
 
 if(OPENNI2_FOUND)
-  message(STATUS "OpenNI2 found (include: ${OPENNI2_INCLUDE_DIRS}, lib: ${OPENNI2_LIBRARIES})")
+  message(STATUS "OpenNI2 found (version: ${OPENNI2_VERSION}, include: ${OPENNI2_INCLUDE_DIRS}, lib: ${OPENNI2_LIBRARIES})")
 endif()
