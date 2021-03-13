@@ -38,20 +38,20 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/dense_quantized_multi_mod_template.h"
   "include/pcl/${SUBSYS_NAME}/sparse_quantized_multi_mod_template.h"
   "include/pcl/${SUBSYS_NAME}/surface_normal_modality.h"
-  "include/pcl/${SUBSYS_NAME}/linemod/line_rgbd.h"
+  "include/pcl/${SUBSYS_NAME}/line_rgbd.h"
   "include/pcl/${SUBSYS_NAME}/implicit_shape_model.h"
-  "include/pcl/${SUBSYS_NAME}/ransac_based/auxiliary.h"
-  "include/pcl/${SUBSYS_NAME}/ransac_based/hypothesis.h"
-  "include/pcl/${SUBSYS_NAME}/ransac_based/model_library.h"
-  "include/pcl/${SUBSYS_NAME}/ransac_based/rigid_transform_space.h"
-  "include/pcl/${SUBSYS_NAME}/ransac_based/obj_rec_ransac.h"
-  "include/pcl/${SUBSYS_NAME}/ransac_based/orr_graph.h"
-  "include/pcl/${SUBSYS_NAME}/ransac_based/orr_octree_zprojection.h"
-  "include/pcl/${SUBSYS_NAME}/ransac_based/trimmed_icp.h"
-  "include/pcl/${SUBSYS_NAME}/ransac_based/orr_octree.h"
-  "include/pcl/${SUBSYS_NAME}/ransac_based/simple_octree.h"
-  "include/pcl/${SUBSYS_NAME}/ransac_based/voxel_structure.h"
-  "include/pcl/${SUBSYS_NAME}/ransac_based/bvh.h"
+  "include/pcl/${SUBSYS_NAME}/auxiliary.h"
+  "include/pcl/${SUBSYS_NAME}/hypothesis.h"
+  "include/pcl/${SUBSYS_NAME}/model_library.h"
+  "include/pcl/${SUBSYS_NAME}/rigid_transform_space.h"
+  "include/pcl/${SUBSYS_NAME}/obj_rec_ransac.h"
+  "include/pcl/${SUBSYS_NAME}/orr_graph.h"
+  "include/pcl/${SUBSYS_NAME}/orr_octree_zprojection.h"
+  "include/pcl/${SUBSYS_NAME}/trimmed_icp.h"
+  "include/pcl/${SUBSYS_NAME}/orr_octree.h"
+  "include/pcl/${SUBSYS_NAME}/simple_octree.h"
+  "include/pcl/${SUBSYS_NAME}/voxel_structure.h"
+  "include/pcl/${SUBSYS_NAME}/bvh.h"
 )
 
 set(ransac_based_incs
@@ -91,9 +91,9 @@ set(cg_incs
 )
 
 set(impl_incs
-  "include/pcl/${SUBSYS_NAME}/impl/linemod/line_rgbd.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/ransac_based/simple_octree.hpp"
-  "include/pcl/${SUBSYS_NAME}/impl/ransac_based/voxel_structure.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/line_rgbd.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/simple_octree.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/voxel_structure.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/implicit_shape_model.hpp"
 )
 
