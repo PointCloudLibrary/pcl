@@ -462,8 +462,8 @@ protected:
   computeTransformedPointCloudWithNormal(const StateT&, pcl::Indices&, PointCloudIn&)
   {
     PCL_WARN("[pcl::%s::computeTransformedPointCloudWithoutNormal] "
-            "use_normal_ == true is not supported in this Point Type.\n",
-            getClassName().c_str());
+             "use_normal_ == true is not supported in this Point Type.\n",
+             getClassName().c_str());
   }
 #endif
 
