@@ -40,6 +40,6 @@ steps:
     inputs:
       testResultsFormat: 'CTest'
       testResultsFiles: '**/Test*.xml'
-      searchFolder: '%BUILD_DIR%'
+      searchFolder: '$(BUILD_DIR)'
     condition: succeededOrFailed()
 
