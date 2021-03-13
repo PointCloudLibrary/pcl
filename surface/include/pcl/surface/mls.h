@@ -261,7 +261,7 @@ namespace pcl
   class MovingLeastSquares : public CloudSurfaceProcessing<PointInT, PointOutT>
   {
     public:
-      typedef shared_ptr<MovingLeastSquares<PointInT, PointOutT> > Ptr;
+      using Ptr = shared_ptr<MovingLeastSquares<PointInT, PointOutT> >;
       using ConstPtr = shared_ptr<const MovingLeastSquares<PointInT, PointOutT> >;
 
       using PCLBase<PointInT>::input_;

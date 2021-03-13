@@ -69,7 +69,7 @@ namespace pcl
               state_(UNDEF)
             {}
 
-            virtual ~Node ()= default;
+            virtual ~Node () = default;
 
             inline const std::set<Node*>&
             getNeighbors () const
@@ -124,7 +124,7 @@ namespace pcl
         };
 
       public:
-        ORRGraph ()= default;
+        ORRGraph () = default;
         virtual ~ORRGraph (){ this->clear ();}
 
         inline void

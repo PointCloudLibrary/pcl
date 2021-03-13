@@ -104,7 +104,7 @@ namespace pcl
             {
               memcpy(this->rigid_transform_, rigid_transform, 12*sizeof (float));
             }
-            virtual ~Output ()= default;
+            virtual ~Output () = default;
 
           public:
             std::string object_name_;
@@ -121,7 +121,7 @@ namespace pcl
               {
               }
 
-              virtual ~OrientedPointPair ()= default;
+              virtual ~OrientedPointPair () = default;
 
             public:
               const float *p1_, *n1_, *p2_, *n2_;
@@ -130,8 +130,8 @@ namespace pcl
         class HypothesisCreator
         {
           public:
-            HypothesisCreator ()= default;
-            virtual ~HypothesisCreator ()= default;
+            HypothesisCreator () = default;
+            virtual ~HypothesisCreator () = default;
 
             Hypothesis* create (const SimpleOctree<Hypothesis, HypothesisCreator, float>::Node* ) const { return new Hypothesis ();}
         };
