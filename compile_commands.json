@@ -1,4 +1,7 @@
 [
 {
+  "directory": "/home/norm/Projects/pcl/common",
+  "command": "/usr/bin/c++  -DPCLAPI_EXPORTS -Dqh_QHpointer -DvtkDomainsChemistry_AUTOINIT=\"1(vtkDomainsChemistryOpenGL2)\" -DvtkIOExport_AUTOINIT=\"1(vtkIOExportOpenGL2)\" -DvtkRenderingContext2D_AUTOINIT=\"1(vtkRenderingContextOpenGL2)\" -DvtkRenderingCore_AUTOINIT=\"3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL2)\" -DvtkRenderingOpenGL2_AUTOINIT=\"1(vtkRenderingGL2PSOpenGL2)\" -DvtkRenderingVolume_AUTOINIT=\"1(vtkRenderingVolumeOpenGL2)\" -I/usr/local/include/vtk-8.1 -I/home/norm/Projects/pcl/include -I/home/norm/Projects/pcl/common/include -isystem /usr/include/eigen3 -isystem /usr/include/ni -isystem /opt/ensenso/development/c/include -isystem /usr/local/include/metslib-0.5 -isystem /usr/local/lib/metslib-0.5/include   -Wabi=11 -Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion -march=native -msse4.2 -mfpmath=sse -fopenmp  -g -fPIC   -fopenmp -std=c++14 -o CMakeFiles/pcl_common.dir/src/point_types.cpp.o -c /home/norm/Projects/pcl/common/src/point_types.cpp",
+  "file": "/home/norm/Projects/pcl/common/src/point_types.cpp"
 }
 ]
