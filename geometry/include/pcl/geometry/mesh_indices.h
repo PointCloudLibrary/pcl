@@ -50,34 +50,32 @@
 
 namespace pcl {
 namespace detail {
-/** \brief Index used to access elements in the half-edge mesh. It is basically just a
- * wrapper around an integer with a few added methods.
- * \author Martin Saelzle
- * \ingroup detail
+/** \brief Index used to access elements in the half-edge mesh. It is basically
+ * just a wrapper around an integer with a few added methods. \author Martin
+ * Saelzle \ingroup geometry
  */
-template <class MeshIndexT> 
+template <class MeshIndexTag>
 class MeshIndex;
 
-template <class MeshIndexT> 
-std::istream& 
-operator>>(std::istream& is, pcl::detail::MeshIndex<MeshIndexT>&);
+template <class MeshIndexTag>
+std::istream&
+operator>>(std::istream& is, MeshIndex<MeshIndexTag>&);
 
-template <class MeshIndexT>
+template <class MeshIndexTag>
 class MeshIndex
 : boost::totally_ordered<
-      pcl::detail::MeshIndex<MeshIndexT> // < > <= >= == !=
-      ,
-      boost::unit_steppable<pcl::detail::MeshIndex<MeshIndexT> // ++ -- (pre and post)
-                            ,
-                            boost::additive<pcl::detail::MeshIndex<MeshIndexT> // += + -= -
+      MeshIndex<MeshIndexTag>,                       // < > <= >= == !=
+      boost::unit_steppable<MeshIndex<MeshIndexTag>, // ++ -- (pre and post)
+                            boost::additive<MeshIndex<MeshIndexTag> // += +
+                                                                    // -= -
                                             >>> {
 
 public:
   using Base = boost::totally_ordered<
-      pcl::detail::MeshIndex<MeshIndexT>,
-      boost::unit_steppable<pcl::detail::MeshIndex<MeshIndexT>,
-                            boost::additive<pcl::detail::MeshIndex<MeshIndexT>>>>;
-  using Self = pcl::detail::MeshIndex<MeshIndexT>;
+      MeshIndex<MeshIndexTag>,
+      boost::unit_steppable<MeshIndex<MeshIndexTag>,
+                            boost::additive<MeshIndex<MeshIndexTag>>>>;
+  using Self = MeshIndex<MeshIndexTag>;
 
   /** \brief Constructor. Initializes with an invalid index. */
   MeshIndex() : index_(-1) {}
@@ -165,35 +163,33 @@ private:
   /** \brief Stored index. */
   int index_;
 
-  friend std::istream&
-  operator>> <MeshIndexT>(std::istream& is, pcl::detail::MeshIndex<MeshIndexT>& index);
+  friend std::istream& operator>>
+      <MeshIndexTag>(std::istream& is, MeshIndex<MeshIndexTag>& index);
 };
 
 /** \brief ostream operator. */
-template<class MeshIndexT>
+template <class MeshIndexTag>
 inline std::ostream&
-operator<<(std::ostream& os, const pcl::detail::MeshIndex<MeshIndexT>& index)
+operator<<(std::ostream& os, const MeshIndex<MeshIndexTag>& index)
 {
   return (os << index.get());
 }
 
 /** \brief istream operator. */
-template<class MeshIndexT>
+template <class MeshIndexTag>
 inline std::istream&
-operator>>(std::istream& is, pcl::detail::MeshIndex<MeshIndexT>& index)
+operator>>(std::istream& is, MeshIndex<MeshIndexTag>& index)
 {
   return (is >> index.index_);
 }
 
-using VertexIndex = MeshIndex<struct VertexIndexT>;
-using HalfEdgeIndex = MeshIndex<struct HalfEdgeIndexT>;
-using EdgeIndex = MeshIndex<struct EdgeIndexT>;
-using FaceIndex = MeshIndex<struct FaceIndexT>;
+using VertexIndex = MeshIndex<struct VertexIndexTag>;
+using HalfEdgeIndex = MeshIndex<struct HalfEdgeIndexTag>;
+using EdgeIndex = MeshIndex<struct EdgeIndexTag>;
+using FaceIndex = MeshIndex<struct FaceIndexTag>;
 
 } // End namespace detail
 } // End namespace pcl
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Conversions
@@ -202,7 +198,7 @@ using FaceIndex = MeshIndex<struct FaceIndexT>;
 namespace pcl {
 namespace detail {
 /** \brief Convert the given half-edge index to an edge index. */
-inline pcl::detail::EdgeIndex
+inline EdgeIndex
 toEdgeIndex(const HalfEdgeIndex& index)
 {
   return (index.isValid() ? EdgeIndex(index.get() / 2) : EdgeIndex());
@@ -210,10 +206,10 @@ toEdgeIndex(const HalfEdgeIndex& index)
 
 /** \brief Convert the given edge index to a half-edge index.
  * \param index
- * \param[in] get_first The first half-edge of the edge is returned if this variable is
- * true; elsewise the second.
+ * \param[in] get_first The first half-edge of the edge is returned if this
+ * variable is true; elsewise the second.
  */
-inline pcl::detail::HalfEdgeIndex
+inline HalfEdgeIndex
 toHalfEdgeIndex(const EdgeIndex& index, const bool get_first = true)
 {
   return (index.isValid()
