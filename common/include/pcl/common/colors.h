@@ -97,15 +97,16 @@ namespace pcl
    * www.srgb.com, www.color.org/srgb.html
    */
   template <typename T, std::uint8_t bits = 8>
-  inline std::array<T, 1 << bits>
+  PCL_EXPORTS inline std::array<T, 1 << bits>
   RGB2sRGB_LUT() noexcept
   {
     static_assert(std::is_floating_point<T>::value, "LUT value must be a floating point");
 
-    constexpr std::size_t size = 1 << bits;
+    constexpr const std::size_t size = 1 << bits;
 
-    static const std::array<T, size> sRGB_LUT = [&]() {
-      std::array<T, size> LUT;
+    static const auto sRGB_LUT = [&]() {
+      // MSVC wouldn't take `size` here instead of the expression
+      std::array<T, 1 << bits> LUT;
       for (std::size_t i = 0; i < size; ++i) {
         T f = static_cast<T>(i) / static_cast<T>(size - 1);
         if (f > 0.04045) {
@@ -142,17 +143,15 @@ namespace pcl
    * Reference: Billmeyer and Saltzman’s Principles of Color Technology
    */
   template <typename T, std::size_t discretizations = 4000>
-  inline const std::array<T, discretizations>&
+  PCL_EXPORTS inline const std::array<T, discretizations>&
   XYZ2LAB_LUT() noexcept
   {
     static_assert(std::is_floating_point<T>::value, "LUT value must be a floating point");
 
-    constexpr std::size_t size = discretizations;
-
-    static const std::array<T, size> f_LUT = [&]() {
-      std::array<T, size> LUT;
-      for (std::size_t i = 0; i < size; ++i) {
-        T f = static_cast<T>(i) / static_cast<T>(size);
+    static const auto f_LUT = [&]() {
+      std::array<T, discretizations> LUT;
+      for (std::size_t i = 0; i < discretizations; ++i) {
+        T f = static_cast<T>(i) / static_cast<T>(discretizations);
         if (f > static_cast<T>(0.008856)) {
           // f^(1/3)
           LUT[i] = static_cast<T>(std::pow(f, (static_cast<T>(1) / static_cast<T>(3))));
