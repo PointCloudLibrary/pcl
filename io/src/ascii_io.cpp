@@ -35,6 +35,7 @@
  *
  */
 
+#include <pcl/common/io.h>  // for getFieldSize
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/io/ascii_io.h>
 #include <istream>
@@ -225,25 +226,6 @@ pcl::ASCIIReader::parse (
 std::uint32_t
 pcl::ASCIIReader::typeSize (int type)
 {
-  switch (type)
-  {
-    case pcl::PCLPointField::BOOL:
-        return sizeof(bool);
-    case pcl::PCLPointField::INT8: PCL_FALLTHROUGH
-    case pcl::PCLPointField::UINT8:
-      return 1;
-    case pcl::PCLPointField::INT16: PCL_FALLTHROUGH
-    case pcl::PCLPointField::UINT16:
-      return 2;
-    case pcl::PCLPointField::INT32: PCL_FALLTHROUGH
-    case pcl::PCLPointField::UINT32: PCL_FALLTHROUGH
-    case pcl::PCLPointField::FLOAT32:
-      return 4;
-    case pcl::PCLPointField::INT64: PCL_FALLTHROUGH
-    case pcl::PCLPointField::UINT64: PCL_FALLTHROUGH
-    case pcl::PCLPointField::FLOAT64:
-      return 8;
-  }
-  return (0);
+  return getFieldSize(type);
 }
 
