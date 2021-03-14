@@ -168,16 +168,16 @@ TEST (PCL, AllTypesPCDFile)
   fs.open ("all_types.pcd");
   fs << "# .PCD v0.7 - Point Cloud Data file format\n"
         "VERSION 0.7\n"
-        "FIELDS a1 a2 a3 a4 a5 a6 a7 a8\n"
-        "SIZE    1  1  2  2  4  4  4  8\n"
-        "TYPE    I  U  I  U  I  U  F  F\n"
-        "COUNT   1  2  1  2  1  2  1  2\n"
+        "FIELDS a1 a2 a3 a4 a5 a6 a7 a8 a9 a10\n"
+        "SIZE    1  1  2  2  4  4  4  8  8   8\n"
+        "TYPE    I  U  I  U  I  U  F  F  I   U\n"
+        "COUNT   1  2  1  2  1  2  1  2  1   2\n"
         "WIDTH 1\n"
         "HEIGHT 1\n"
         "VIEWPOINT 0 0 0 1 0 0 0\n"
         "POINTS 1\n"
         "DATA ascii\n"
-        "-50 250 251 -250 2500 2501 -250000 250000 250001 250.05 -250.05 -251.05";
+        "-50 250 251 -250 2500 2501 -250000 250000 250001 250.05 -250.05 -251.05 -5000000000 10000000000 10000000001";
   fs.close ();
 
   pcl::PCLPointCloud2 blob;
@@ -185,10 +185,14 @@ TEST (PCL, AllTypesPCDFile)
   EXPECT_NE (res, -1);
   EXPECT_EQ (blob.width, 1);
   EXPECT_EQ (blob.height, 1);
-  EXPECT_EQ (blob.data.size (), 1 + 1 * 2 + 2 * 1 + 2 * 2 + 4 * 1 + 4 * 2 + 4 * 1 + 8 * 2);
+  EXPECT_EQ (blob.data.size (), 1 * 1 + 1 * 2 + // {,u}int8_t
+                                2 * 1 + 2 * 2 + // {,u}in16_t
+                                4 * 1 + 4 * 2 + // {,u}int32_t
+                                4 * 1 + 8 * 2 + // f32, f64
+                                8 * 1 + 8 * 2); // {,u}int64_t
   EXPECT_TRUE (blob.is_dense);
 
-  EXPECT_EQ (blob.fields.size (), 8);
+  EXPECT_EQ (blob.fields.size (), 10);
   // Check fields
   EXPECT_EQ (blob.fields[0].name, "a1");
   EXPECT_EQ (blob.fields[1].name, "a2");
@@ -198,15 +202,19 @@ TEST (PCL, AllTypesPCDFile)
   EXPECT_EQ (blob.fields[5].name, "a6");
   EXPECT_EQ (blob.fields[6].name, "a7");
   EXPECT_EQ (blob.fields[7].name, "a8");
+  EXPECT_EQ (blob.fields[8].name, "a9");
+  EXPECT_EQ (blob.fields[9].name, "a10");
 
   EXPECT_EQ (blob.fields[0].offset, 0);
-  EXPECT_EQ (blob.fields[1].offset, 1);
-  EXPECT_EQ (blob.fields[2].offset, 1 + 1 * 2);
-  EXPECT_EQ (blob.fields[3].offset, 1 + 1 * 2 + 2 * 1);
-  EXPECT_EQ (blob.fields[4].offset, 1 + 1 * 2 + 2 * 1 + 2 * 2);
-  EXPECT_EQ (blob.fields[5].offset, 1 + 1 * 2 + 2 * 1 + 2 * 2 + 4 * 1);
-  EXPECT_EQ (blob.fields[6].offset, 1 + 1 * 2 + 2 * 1 + 2 * 2 + 4 * 1 + 4 * 2);
-  EXPECT_EQ (blob.fields[7].offset, 1 + 1 * 2 + 2 * 1 + 2 * 2 + 4 * 1 + 4 * 2 + 4 * 1);
+  EXPECT_EQ (blob.fields[1].offset, blob.fields[0].offset + 1);      // 1 int8_t
+  EXPECT_EQ (blob.fields[2].offset, blob.fields[1].offset + 1 * 2);  // 2 uint8_t
+  EXPECT_EQ (blob.fields[3].offset, blob.fields[2].offset + 2 * 1);  // 1 int16_t
+  EXPECT_EQ (blob.fields[4].offset, blob.fields[3].offset + 2 * 2);  // 2 uint16_t
+  EXPECT_EQ (blob.fields[5].offset, blob.fields[4].offset + 4 * 1);  // 1 int32_t
+  EXPECT_EQ (blob.fields[6].offset, blob.fields[5].offset + 4 * 2);  // 2 uint32_t
+  EXPECT_EQ (blob.fields[7].offset, blob.fields[6].offset + 4 * 1);  // 1 float
+  EXPECT_EQ (blob.fields[8].offset, blob.fields[7].offset + 8 * 2);  // 2 doubles
+  EXPECT_EQ (blob.fields[9].offset, blob.fields[8].offset + 8 * 1);  // 1 int64_t
 
   EXPECT_EQ (blob.fields[0].count, 1);
   EXPECT_EQ (blob.fields[1].count, 2);
@@ -216,6 +224,8 @@ TEST (PCL, AllTypesPCDFile)
   EXPECT_EQ (blob.fields[5].count, 2);
   EXPECT_EQ (blob.fields[6].count, 1);
   EXPECT_EQ (blob.fields[7].count, 2);
+  EXPECT_EQ (blob.fields[8].count, 1);
+  EXPECT_EQ (blob.fields[9].count, 2);
 
   EXPECT_EQ (blob.fields[0].datatype, pcl::PCLPointField::INT8);
   EXPECT_EQ (blob.fields[1].datatype, pcl::PCLPointField::UINT8);
@@ -225,6 +235,8 @@ TEST (PCL, AllTypesPCDFile)
   EXPECT_EQ (blob.fields[5].datatype, pcl::PCLPointField::UINT32);
   EXPECT_EQ (blob.fields[6].datatype, pcl::PCLPointField::FLOAT32);
   EXPECT_EQ (blob.fields[7].datatype, pcl::PCLPointField::FLOAT64);
+  EXPECT_EQ (blob.fields[8].datatype, pcl::PCLPointField::INT64);
+  EXPECT_EQ (blob.fields[9].datatype, pcl::PCLPointField::UINT64);
 
   std::int8_t b1;
   std::uint8_t b2;
@@ -234,30 +246,43 @@ TEST (PCL, AllTypesPCDFile)
   std::uint32_t b6;
   float b7;
   double b8;
+  std::int64_t b9;
+  std::uint64_t b10;
+
   memcpy (&b1, &blob.data[blob.fields[0].offset], sizeof (std::int8_t));
   EXPECT_FLOAT_EQ (b1, -50);
   memcpy (&b2, &blob.data[blob.fields[1].offset], sizeof (std::uint8_t));
   EXPECT_FLOAT_EQ (b2, 250);
   memcpy (&b2, &blob.data[blob.fields[1].offset + sizeof (std::uint8_t)], sizeof (std::uint8_t));
   EXPECT_FLOAT_EQ (b2, 251);
+
   memcpy (&b3, &blob.data[blob.fields[2].offset], sizeof (std::int16_t));
   EXPECT_FLOAT_EQ (b3, -250);
   memcpy (&b4, &blob.data[blob.fields[3].offset], sizeof (std::uint16_t));
   EXPECT_FLOAT_EQ (b4, 2500);
   memcpy (&b4, &blob.data[blob.fields[3].offset + sizeof (std::uint16_t)], sizeof (std::uint16_t));
   EXPECT_FLOAT_EQ (b4, 2501);
+
   memcpy (&b5, &blob.data[blob.fields[4].offset], sizeof (std::int32_t));
   EXPECT_FLOAT_EQ (float (b5), float (-250000));
   memcpy (&b6, &blob.data[blob.fields[5].offset], sizeof (std::uint32_t));
   EXPECT_FLOAT_EQ (float (b6), float (250000));
   memcpy (&b6, &blob.data[blob.fields[5].offset + sizeof (std::uint32_t)], sizeof (std::uint32_t));
   EXPECT_FLOAT_EQ (float (b6), float (250001));
+
   memcpy (&b7, &blob.data[blob.fields[6].offset], sizeof (float));
   EXPECT_FLOAT_EQ (b7, 250.05f);
   memcpy (&b8, &blob.data[blob.fields[7].offset], sizeof (double));
   EXPECT_FLOAT_EQ (float (b8), -250.05f);
   memcpy (&b8, &blob.data[blob.fields[7].offset + sizeof (double)], sizeof (double));
   EXPECT_FLOAT_EQ (float (b8), -251.05f);
+
+  memcpy (&b9, &blob.data[blob.fields[8].offset], sizeof (std::int64_t));
+  EXPECT_EQ (b9, -5000000000);
+  memcpy (&b10, &blob.data[blob.fields[9].offset], sizeof (std::uint64_t));
+  EXPECT_EQ (b10, 10000000000);
+  memcpy (&b10, &blob.data[blob.fields[9].offset + sizeof (std::uint64_t)], sizeof (std::uint64_t));
+  EXPECT_EQ (b10, 10000000001);
 
   remove ("all_types.pcd");
 }
