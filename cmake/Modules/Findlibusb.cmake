@@ -66,7 +66,7 @@ find_package_handle_standard_args(libusb DEFAULT_MSG libusb_LIBRARIES libusb_INC
 
 mark_as_advanced(libusb_INCLUDE_DIRS libusb_LIBRARIES)
 
-if(LIBUSB_FOUND)
+if(libusb_FOUND)
   add_library(libusb::libusb UNKNOWN IMPORTED)
   set_target_properties(libusb::libusb PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${libusb_INCLUDE_DIR}")
   set_target_properties(libusb::libusb PROPERTIES IMPORTED_LOCATION "${libusb_LIBRARIES}")
