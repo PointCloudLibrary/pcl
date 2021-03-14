@@ -220,7 +220,7 @@ namespace pcl
     switch (type)
     {
       case pcl::PCLPointField::BOOL:
-        return 'B';
+        return ('B');
 
       case pcl::PCLPointField::INT8: PCL_FALLTHROUGH
       case pcl::PCLPointField::INT16: PCL_FALLTHROUGH
