@@ -75,8 +75,8 @@ namespace pcl
       using PointCloud = typename KdTree<PointT>::PointCloud;
       using PointCloudConstPtr = typename KdTree<PointT>::PointCloudConstPtr;
 
-      using IndicesPtr = shared_ptr<std::vector<int> >;
-      using IndicesConstPtr = shared_ptr<const std::vector<int> >;
+      using IndicesPtr = shared_ptr<Indices >;
+      using IndicesConstPtr = shared_ptr<const Indices >;
 
       using FLANNIndex = ::flann::Index<Dist>;
 
@@ -154,9 +154,9 @@ namespace pcl
         *
         * \exception asserts in debug mode if the index is not between 0 and the maximum number of points
         */
-      int
+      int 
       nearestKSearch (const PointT &point, unsigned int k,
-                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const override;
+                      Indices &k_indices, std::vector<float> &k_sqr_distances) const override;
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
         *
@@ -175,7 +175,7 @@ namespace pcl
         * \exception asserts in debug mode if the index is not between 0 and the maximum number of points
         */
       int
-      radiusSearch (const PointT &point, double radius, std::vector<int> &k_indices,
+      radiusSearch (const PointT &point, double radius, Indices &k_indices,
                     std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const override;
 
     private:
@@ -196,7 +196,7 @@ namespace pcl
         * \param[in] indices the point cloud indices
        */
       void
-      convertCloudToArray (const PointCloud &cloud, const std::vector<int> &indices);
+      convertCloudToArray (const PointCloud &cloud, const Indices &indices);
 
     private:
       /** \brief Class getName method. */
