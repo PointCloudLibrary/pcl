@@ -91,8 +91,8 @@ extractLabeledEuclideanClusters(
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /** \brief @b LabeledEuclideanClusterExtraction represents a segmentation class for
- * cluster extraction in an Euclidean sense, with label info. \author Koen Buys \ingroup
- * segmentation
+ * cluster extraction in an Euclidean sense, with label info. \author Koen Buys
+ * \ingroup segmentation
  */
 template <typename PointT>
 class LabeledEuclideanClusterExtraction : public PCLBase<PointT> {

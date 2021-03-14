@@ -59,7 +59,7 @@ You can find the input file at *pcl/test/bunny.pcd*.
 .. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :linenos:
-   :lines: 1-220
+   :lines: 1-219
 
 
 The explanation

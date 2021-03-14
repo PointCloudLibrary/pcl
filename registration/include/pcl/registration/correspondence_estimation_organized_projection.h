@@ -54,6 +54,7 @@ namespace registration {
  * the source) and the target point cloud must be given in the camera coordinate frame.
  * Any other transformation is specified by the src_to_tgt_transformation_ variable.
  * \author Alex Ichim
+ * \ingroup registration
  */
 template <typename PointSource, typename PointTarget, typename Scalar = float>
 class CorrespondenceEstimationOrganizedProjection

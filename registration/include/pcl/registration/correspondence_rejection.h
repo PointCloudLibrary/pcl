@@ -205,8 +205,8 @@ protected:
 };
 
 /** @b DataContainerInterface provides a generic interface for computing correspondence
- * scores between correspondent points in the input and target clouds \ingroup
- * registration
+ * scores between correspondent points in the input and target clouds
+ * \ingroup registration
  */
 class DataContainerInterface {
 public:
