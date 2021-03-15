@@ -320,7 +320,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     for (const auto it : cloudNWRSearch)
     {
       auto const pointDist = geometry::distance((*cloudIn)[it], searchPoint);
-      ASSERT_EQ ( (pointDist <= searchRadius) , true);
+      ASSERT_LE (pointDist, searchRadius);
     }
 
 
@@ -328,7 +328,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     for (const auto it : cloudSearchBruteforce)
     {
       const auto pointDist = geometry::distance((*cloudIn)[it], searchPoint);
-      ASSERT_EQ ( (pointDist <= searchRadius) , true);
+      ASSERT_LE (pointDist, searchRadius);
     }
 
     ASSERT_EQ (cloudNWRRadius.size() , cloudSearchBruteforce.size ());
@@ -336,7 +336,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     // check if result limitation works
     organizedNeighborSearch.radiusSearch (searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, 5);
 
-    ASSERT_EQ (cloudNWRRadius.size () <= 5, true);
+    ASSERT_LE (cloudNWRRadius.size (), 5);
   }
 }
 
@@ -523,7 +523,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     for (const auto it : cloudNWRSearch)
     {
       double pointDist = geometry::distance((*cloudIn)[it], searchPoint);
-      ASSERT_EQ ( (pointDist <= searchRadius) , true);
+      ASSERT_LE (pointDist, searchRadius);
     }
 
 
@@ -531,7 +531,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     for (const auto it : cloudSearchBruteforce)
     {
       double pointDist = geometry::distance((*cloudIn)[it], searchPoint);
-      ASSERT_EQ ( (pointDist <= searchRadius) , true);
+      ASSERT_LE (pointDist, searchRadius);
     }
 
     ASSERT_EQ (cloudNWRRadius.size() , cloudSearchBruteforce.size ());
@@ -539,7 +539,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     // check if result limitation works
     organizedNeighborSearch.radiusSearch (searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, 5);
 
-    ASSERT_EQ (cloudNWRRadius.size () <= 5, true);
+    ASSERT_LE (cloudNWRRadius.size (), 5);
   }
 }
 

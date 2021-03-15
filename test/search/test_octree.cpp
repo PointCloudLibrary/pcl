@@ -225,7 +225,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
     }
   }
   // we should have found the absolute nearest neighbor at least once
-  //ASSERT_EQ ( (bestMatchCount > 0) , true);
+  //ASSERT_GT (bestMatchCount, 0);
 }
 #endif
 #if 0
@@ -336,12 +336,12 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
           ((*cloudIn)[current].z-searchPoint.z) * ((*cloudIn)[current].z-searchPoint.z)
       );
 
-      ASSERT_EQ ( (pointDist<=searchRadius) , true);
+      ASSERT_LE (pointDist, searchRadius);
     }
 
     // check if result limitation works
     octree->radiusSearch(searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, 5);
-    ASSERT_EQ ( cloudNWRRadius.size() <= 5, true);
+    ASSERT_LE (cloudNWRRadius.size(), 5);
   }
 }
 

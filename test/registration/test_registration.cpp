@@ -184,7 +184,7 @@ TEST(PCL, ICP_translated)
   icp.align(Final);
 
   // Check that we have sucessfully converged
-  ASSERT_EQ(icp.hasConverged(), true);
+  ASSERT_TRUE(icp.hasConverged());
 
   // Test that the fitness score is below acceptable threshold
   EXPECT_LT(icp.getFitnessScore(), 1e-6);
