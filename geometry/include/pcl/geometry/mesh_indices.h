@@ -190,8 +190,20 @@ namespace geometry {
  * Saelzle \ingroup geometry
  */
 using VertexIndex = pcl::detail::MeshIndex<struct VertexIndexTag>;
+/** \brief Index used to access elements in the half-edge mesh. It is basically
+ * just a wrapper around an integer with a few added methods. \author Martin
+ * Saelzle \ingroup geometry
+ */
 using HalfEdgeIndex = pcl::detail::MeshIndex<struct HalfEdgeIndexTag>;
+/** \brief Index used to access elements in the half-edge mesh. It is basically
+ * just a wrapper around an integer with a few added methods. \author Martin
+ * Saelzle \ingroup geometry
+ */
 using EdgeIndex = pcl::detail::MeshIndex<struct EdgeIndexTag>;
+/** \brief Index used to access elements in the half-edge mesh. It is basically
+ * just a wrapper around an integer with a few added methods. \author Martin
+ * Saelzle \ingroup geometry
+ */
 using FaceIndex = pcl::detail::MeshIndex<struct FaceIndexTag>;
 
 } // End namespace geometry
