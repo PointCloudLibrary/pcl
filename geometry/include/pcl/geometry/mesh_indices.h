@@ -50,10 +50,7 @@
 
 namespace pcl {
 namespace detail {
-/** \brief Index used to access elements in the half-edge mesh. It is basically
- * just a wrapper around an integer with a few added methods. \author Martin
- * Saelzle \ingroup geometry
- */
+
 template <class MeshIndexTag>
 class MeshIndex;
 
@@ -183,12 +180,21 @@ operator>>(std::istream& is, MeshIndex<MeshIndexTag>& index)
   return (is >> index.index_);
 }
 
-using VertexIndex = MeshIndex<struct VertexIndexTag>;
-using HalfEdgeIndex = MeshIndex<struct HalfEdgeIndexTag>;
-using EdgeIndex = MeshIndex<struct EdgeIndexTag>;
-using FaceIndex = MeshIndex<struct FaceIndexTag>;
-
 } // End namespace detail
+} // End namespace pcl
+
+namespace pcl {
+namespace geometry {
+/** \brief Index used to access elements in the half-edge mesh. It is basically
+ * just a wrapper around an integer with a few added methods. \author Martin
+ * Saelzle \ingroup geometry
+ */
+using VertexIndex = pcl::detail::MeshIndex<struct VertexIndexTag>;
+using HalfEdgeIndex = pcl::detail::MeshIndex<struct HalfEdgeIndexTag>;
+using EdgeIndex = pcl::detail::MeshIndex<struct EdgeIndexTag>;
+using FaceIndex = pcl::detail::MeshIndex<struct FaceIndexTag>;
+
+} // End namespace geometry
 } // End namespace pcl
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -196,7 +202,7 @@ using FaceIndex = MeshIndex<struct FaceIndexTag>;
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace pcl {
-namespace detail {
+namespace geometry {
 /** \brief Convert the given half-edge index to an edge index. */
 inline EdgeIndex
 toEdgeIndex(const HalfEdgeIndex& index)
@@ -216,5 +222,5 @@ toHalfEdgeIndex(const EdgeIndex& index, const bool get_first = true)
               ? HalfEdgeIndex(index.get() * 2 + static_cast<int>(!get_first))
               : HalfEdgeIndex());
 }
-} // End namespace detail
+} // End namespace geometry
 } // End namespace pcl
