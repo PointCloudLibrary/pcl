@@ -61,10 +61,10 @@ operator>>(std::istream& is, MeshIndex<IndexTagT>&);
 template <class IndexTagT>
 class MeshIndex
 : boost::totally_ordered<
-      MeshIndex<IndexTagT>,                       // < > <= >= == !=
-      boost::unit_steppable<MeshIndex<IndexTagT>, // ++ -- (pre and post)
+      MeshIndex<IndexTagT>,                                      // < > <= >= == !=
+      boost::unit_steppable<MeshIndex<IndexTagT>,                // ++ -- (pre and post)
                             boost::additive<MeshIndex<IndexTagT> // += +
-                                                                    // -= -
+                                                                 // -= -
                                             >>> {
 
 public:
