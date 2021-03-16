@@ -225,7 +225,7 @@ TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClou
   }
 
   // Non maximas suppression
-  std::vector<int> indices = *indices_;
+  pcl::Indices indices = *indices_;
   std::sort (indices.begin (), indices.end (), [this] (int p1, int p2) { return greaterCornernessAtIndices (p1, p2); });
 
   output.clear ();

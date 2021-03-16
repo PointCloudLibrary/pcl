@@ -61,7 +61,7 @@ main (int, char**)
 
   std::cout << "size: " << cloud->size () << std::endl;
 
-  std::vector<int> indices;
+  pcl::Indices indices;
   pcl::removeNaNFromPointCloud(*cloud, *output_cloud, indices);
   std::cout << "size: " << output_cloud->size () << std::endl;
 

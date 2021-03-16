@@ -38,6 +38,8 @@
 
 #pragma once
 
+#include <pcl/types.h>
+
 #include <cassert>
 #include <cstddef>
 #include <vector>
@@ -74,7 +76,7 @@ public:
   /** \brief Pure abstract method to get size of container (number of indices)
    * \return number of points/indices stored in leaf node container.
    */
-  virtual std::size_t
+  virtual uindex_t
   getSize() const
   {
     return 0u;
@@ -88,21 +90,21 @@ public:
    * indices.
    */
   void
-  addPointIndex(const int&)
+  addPointIndex(const index_t&)
   {}
 
   /** \brief Empty getPointIndex implementation as this leaf node does not store any
    * point indices.
    */
   void
-  getPointIndex(int&) const
+  getPointIndex(index_t&) const
   {}
 
   /** \brief Empty getPointIndices implementation as this leaf node does not store any
    * data. \
    */
   void
-  getPointIndices(std::vector<int>&) const
+  getPointIndices(Indices&) const
   {}
 };
 
@@ -125,7 +127,7 @@ public:
   /** \brief Abstract get size of container (number of DataT objects)
    * \return number of DataT elements in leaf node container.
    */
-  std::size_t
+  uindex_t
   getSize() const override
   {
     return 0;
@@ -139,14 +141,12 @@ public:
   /** \brief Empty addPointIndex implementation. This leaf node does not store any point
    * indices.
    */
-  void
-  addPointIndex(int)
-  {}
+  void addPointIndex(index_t) {}
 
   /** \brief Empty getPointIndex implementation as this leaf node does not store any
    * point indices.
    */
-  int
+  index_t
   getPointIndex() const
   {
     assert("getPointIndex: undefined point index");
@@ -157,7 +157,7 @@ public:
    * data.
    */
   void
-  getPointIndices(std::vector<int>&) const
+  getPointIndices(Indices&) const
   {}
 };
 
@@ -195,7 +195,7 @@ public:
    * \param[in] data_arg index to be stored within leaf node.
    */
   void
-  addPointIndex(int data_arg)
+  addPointIndex(index_t data_arg)
   {
     data_ = data_arg;
   }
@@ -204,7 +204,7 @@ public:
    * point index
    * \return index stored within container.
    */
-  int
+  index_t
   getPointIndex() const
   {
     return data_;
@@ -216,31 +216,31 @@ public:
    * data vector
    */
   void
-  getPointIndices(std::vector<int>& data_vector_arg) const
+  getPointIndices(Indices& data_vector_arg) const
   {
-    if (data_ >= 0)
+    if (data_ != static_cast<index_t>(-1))
       data_vector_arg.push_back(data_);
   }
 
   /** \brief Get size of container (number of DataT objects)
    * \return number of DataT elements in leaf node container.
    */
-  std::size_t
+  uindex_t
   getSize() const override
   {
-    return data_ < 0 ? 0 : 1;
+    return data_ != static_cast<index_t>(-1) ? 0 : 1;
   }
 
   /** \brief Reset leaf node memory to zero. */
   void
   reset() override
   {
-    data_ = -1;
+    data_ = static_cast<index_t>(-1);
   }
 
 protected:
   /** \brief Point index stored in octree. */
-  int data_;
+  index_t data_;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -274,7 +274,7 @@ public:
    * \param[in] data_arg index to be stored within leaf node.
    */
   void
-  addPointIndex(int data_arg)
+  addPointIndex(index_t data_arg)
   {
     leafDataTVector_.push_back(data_arg);
   }
@@ -283,7 +283,7 @@ public:
    * point indices.
    * \return index stored within container.
    */
-  int
+  index_t
   getPointIndex() const
   {
     return leafDataTVector_.back();
@@ -295,7 +295,7 @@ public:
    * within data vector
    */
   void
-  getPointIndices(std::vector<int>& data_vector_arg) const
+  getPointIndices(Indices& data_vector_arg) const
   {
     data_vector_arg.insert(
         data_vector_arg.end(), leafDataTVector_.begin(), leafDataTVector_.end());
@@ -305,7 +305,7 @@ public:
    * of point indices.
    * \return reference to vector of point indices to be stored within data vector
    */
-  std::vector<int>&
+  Indices&
   getPointIndicesVector()
   {
     return leafDataTVector_;
@@ -314,10 +314,10 @@ public:
   /** \brief Get size of container (number of indices)
    * \return number of point indices in container.
    */
-  std::size_t
+  uindex_t
   getSize() const override
   {
-    return leafDataTVector_.size();
+    return static_cast<uindex_t>(leafDataTVector_.size());
   }
 
   /** \brief Reset leaf node. Clear DataT vector.*/
@@ -329,7 +329,7 @@ public:
 
 protected:
   /** \brief Leaf node DataT vector. */
-  std::vector<int> leafDataTVector_;
+  Indices leafDataTVector_;
 };
 
 } // namespace octree

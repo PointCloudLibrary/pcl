@@ -42,7 +42,7 @@
 #include <pcl/console/print.h>
 
 #include <pcl/pcl_macros.h>
-#include <pcl/common/io.h>
+#include <pcl/exceptions.h> // for PCL_THROW_EXCEPTION, PCLException
 
 #include <iostream>
 #include <fstream>

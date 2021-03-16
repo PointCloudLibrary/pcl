@@ -59,7 +59,7 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
   double k = std::numeric_limits<double>::max();
 
   Indices selection;
-  Eigen::VectorXf model_coefficients;
+  Eigen::VectorXf model_coefficients (sac_model_->getModelSize ());
   std::set<index_t> indices_subset;
 
   const double log_probability  = std::log (1.0 - probability_);

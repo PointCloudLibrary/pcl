@@ -63,7 +63,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePairFeatures (
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (
     const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
-    int p_idx, int row, const pcl::Indices &indices,
+    pcl::index_t p_idx, int row, const pcl::Indices &indices,
     Eigen::MatrixXf &hist_f1, Eigen::MatrixXf &hist_f2, Eigen::MatrixXf &hist_f3)
 {
   Eigen::Vector4f pfh_tuple;
@@ -109,7 +109,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePointSPFHSignature (
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::weightPointSPFHSignature (
     const Eigen::MatrixXf &hist_f1, const Eigen::MatrixXf &hist_f2, const Eigen::MatrixXf &hist_f3,
-    const std::vector<int> &indices, const std::vector<float> &dists, Eigen::VectorXf &fpfh_histogram)
+    const pcl::Indices &indices, const std::vector<float> &dists, Eigen::VectorXf &fpfh_histogram)
 {
   assert (indices.size () == dists.size ());
   // @TODO: use arrays

@@ -50,7 +50,7 @@
 template <typename PointInT, typename PointNT, typename PointOutT> bool
 pcl::BoundaryEstimation<PointInT, PointNT, PointOutT>::isBoundaryPoint (
       const pcl::PointCloud<PointInT> &cloud, int q_idx, 
-      const std::vector<int> &indices, 
+      const pcl::Indices &indices, 
       const Eigen::Vector4f &u, const Eigen::Vector4f &v, 
       const float angle_threshold)
 {

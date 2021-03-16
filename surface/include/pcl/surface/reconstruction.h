@@ -53,6 +53,7 @@ namespace pcl
     *  - \b reconstruct(&PolygonMesh): creates a PolygonMesh object from the input data
     *
     * \author Radu B. Rusu, Michael Dixon, Alexandru E. Ichim
+    * \ingroup surface
     */
   template <typename PointInT>
   class PCLSurfaceBase: public PCLBase<PointInT>

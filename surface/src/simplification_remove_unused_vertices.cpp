@@ -43,7 +43,7 @@
 #include <iostream>
 
 void
-pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMesh& input, pcl::PolygonMesh& output, std::vector<int>& indices)
+pcl::surface::SimplificationRemoveUnusedVertices::simplify(const pcl::PolygonMesh& input, pcl::PolygonMesh& output, pcl::Indices& indices)
 {
   if (input.polygons.empty ())
     return;

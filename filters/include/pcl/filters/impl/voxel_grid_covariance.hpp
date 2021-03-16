@@ -82,7 +82,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
 
   if((dx*dy*dz) > std::numeric_limits<std::int32_t>::max())
   {
-    PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.", getClassName().c_str());
+    PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.\n", getClassName().c_str());
     output.clear();
     return;
   }

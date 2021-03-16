@@ -113,6 +113,11 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
       r.header = cloud.header;
       clusters.push_back (r);   // We could avoid a copy by working directly in the vector
     }
+    else
+    {
+      PCL_DEBUG("[pcl::extractEuclideanClusters] This cluster has %zu points, which is not between %u and %u points, so it is not a final cluster\n",
+                seed_queue.size (), min_pts_per_cluster, max_pts_per_cluster);
+    }
   }
 }
 
@@ -207,6 +212,11 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
       r.header = cloud.header;
       clusters.push_back (r);   // We could avoid a copy by working directly in the vector
     }
+    else
+    {
+      PCL_DEBUG("[pcl::extractEuclideanClusters] This cluster has %zu points, which is not between %u and %u points, so it is not a final cluster\n",
+                seed_queue.size (), min_pts_per_cluster, max_pts_per_cluster);
+    }
   }
 }
 
@@ -249,6 +259,6 @@ pcl::EuclideanClusterExtraction<PointT>::extract (std::vector<PointIndices> &clu
 
 #define PCL_INSTANTIATE_EuclideanClusterExtraction(T) template class PCL_EXPORTS pcl::EuclideanClusterExtraction<T>;
 #define PCL_INSTANTIATE_extractEuclideanClusters(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
-#define PCL_INSTANTIATE_extractEuclideanClusters_indices(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const std::vector<int> &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
+#define PCL_INSTANTIATE_extractEuclideanClusters_indices(T) template void PCL_EXPORTS pcl::extractEuclideanClusters<T>(const pcl::PointCloud<T> &, const pcl::Indices &, const typename pcl::search::Search<T>::Ptr &, float , std::vector<pcl::PointIndices> &, unsigned int, unsigned int);
 
 #endif        // PCL_EXTRACT_CLUSTERS_IMPL_H_

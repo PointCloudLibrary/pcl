@@ -260,5 +260,3 @@ private:
 };
 } // namespace registration
 } // namespace pcl
-
-#include <pcl/registration/impl/correspondence_rejection_var_trimmed.hpp>

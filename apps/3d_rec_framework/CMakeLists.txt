@@ -111,10 +111,6 @@ target_link_libraries("${LIB_NAME}" pcl_apps pcl_common pcl_io pcl_filters pcl_v
 
 if(WITH_OPENNI)
   target_link_libraries("${LIB_NAME}" ${OPENNI_LIBRARIES})
-  if(NOT WIN32)
-    find_package(libusb-1.0 REQUIRED)
-    target_link_libraries("${LIB_NAME}" ${LIBUSB_1_LIBRARIES})
-  endif()
 endif()
 
 PCL_MAKE_PKGCONFIG(${LIB_NAME} COMPONENT ${SUBSUBSYS_NAME} DESC ${SUBSUBSYS_DESC})

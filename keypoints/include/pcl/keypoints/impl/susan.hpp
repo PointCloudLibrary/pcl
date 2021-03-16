@@ -112,7 +112,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::setNumberOfThreads
 // template <typename PointInT, typename PointOutT, typename NormalT, typename IntensityT> void
 // pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::USAN (const PointInT& nucleus,
 //                                                                     const NormalT& nucleus_normal,
-//                                                                     const std::vector<int>& neighbors, 
+//                                                                     const pcl::Indices& neighbors, 
 //                                                                     const float& t,
 //                                                                     float& response,
 //                                                                     Eigen::Vector3f& centroid) const
@@ -309,8 +309,8 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
   // Check if the output has a "label" field
   label_idx_ = pcl::getFieldIndex<PointOutT> ("label", out_fields_);
 
-  const int input_size = static_cast<int> (input_->size ());
-  for (int point_index = 0; point_index < input_size; ++point_index)
+  const auto input_size = static_cast<pcl::index_t> (input_->size ());
+  for (pcl::index_t point_index = 0; point_index < input_size; ++point_index)
   {
     const PointInT& point_in = input_->points [point_index];
     const NormalT& normal_in = normals_->points [point_index];
@@ -320,7 +320,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
     Eigen::Vector3f nucleus = point_in.getVector3fMap ();
     Eigen::Vector3f nucleus_normal = normals_->points [point_index].getNormalVector3fMap ();
     float nucleus_intensity = intensity_ (point_in);
-    std::vector<int> nn_indices;
+    pcl::Indices nn_indices;
     std::vector<float> nn_dists;
     tree_->radiusSearch (point_in, search_radius_, nn_indices, nn_dists);
     float area = 0;
@@ -416,7 +416,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
     output.clear ();
     output.reserve (response->size());
     
-    for (int idx = 0; idx < static_cast<int> (response->size ()); ++idx)
+    for (pcl::index_t idx = 0; idx < static_cast<pcl::index_t> (response->size ()); ++idx)
     {
       const PointOutT& point_in = response->points [idx];
       const NormalT& normal_in = normals_->points [idx];
@@ -424,7 +424,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
       const float intensity = intensity_out_ ((*response)[idx]);
       if (!isFinite (point_in) || !isFinite (normal_in) || (intensity == 0))
         continue;
-      std::vector<int> nn_indices;
+      pcl::Indices nn_indices;
       std::vector<float> nn_dists;
       tree_->radiusSearch (idx, search_radius_, nn_indices, nn_dists);
       bool is_minima = true;

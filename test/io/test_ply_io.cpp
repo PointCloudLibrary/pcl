@@ -499,7 +499,7 @@ TEST_F (PLYTest, NoEndofLine)
   pcl::PLYReader Reader;
   Reader.read(PLYTest::mesh_file_ply_, cloud);
 
-  ASSERT_EQ (cloud.empty(), false);
+  ASSERT_FALSE (cloud.empty());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -529,7 +529,7 @@ TEST_F (PLYTest, CommentAtTheEnd)
   pcl::PLYReader Reader;
   Reader.read(PLYTest::mesh_file_ply_, cloud);
 
-  ASSERT_EQ (cloud.empty(), false);
+  ASSERT_FALSE (cloud.empty());
 }
 
 /* ---[ */

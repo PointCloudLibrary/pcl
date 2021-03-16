@@ -144,7 +144,7 @@ namespace pcl
         pcl::KdTreeFLANN<pcl::InterestPoint>::Ptr tree_;
 
         /** \brief Stores neighbours indices. */
-        std::vector<int> k_ind_;
+        pcl::Indices k_ind_;
 
         /** \brief Stores square distances to the corresponding neighbours. */
         std::vector<float> k_sqr_dist_;
