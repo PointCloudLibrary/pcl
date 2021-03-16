@@ -51,28 +51,28 @@
 namespace pcl {
 namespace detail {
 
-template <class MeshIndexTag>
+template <class IndexTagT>
 class MeshIndex;
 
-template <class MeshIndexTag>
+template <class IndexTagT>
 std::istream&
-operator>>(std::istream& is, MeshIndex<MeshIndexTag>&);
+operator>>(std::istream& is, MeshIndex<IndexTagT>&);
 
-template <class MeshIndexTag>
+template <class IndexTagT>
 class MeshIndex
 : boost::totally_ordered<
-      MeshIndex<MeshIndexTag>,                       // < > <= >= == !=
-      boost::unit_steppable<MeshIndex<MeshIndexTag>, // ++ -- (pre and post)
-                            boost::additive<MeshIndex<MeshIndexTag> // += +
+      MeshIndex<IndexTagT>,                       // < > <= >= == !=
+      boost::unit_steppable<MeshIndex<IndexTagT>, // ++ -- (pre and post)
+                            boost::additive<MeshIndex<IndexTagT> // += +
                                                                     // -= -
                                             >>> {
 
 public:
   using Base = boost::totally_ordered<
-      MeshIndex<MeshIndexTag>,
-      boost::unit_steppable<MeshIndex<MeshIndexTag>,
-                            boost::additive<MeshIndex<MeshIndexTag>>>>;
-  using Self = MeshIndex<MeshIndexTag>;
+      MeshIndex<IndexTagT>,
+      boost::unit_steppable<MeshIndex<IndexTagT>,
+                            boost::additive<MeshIndex<IndexTagT>>>>;
+  using Self = MeshIndex<IndexTagT>;
 
   /** \brief Constructor. Initializes with an invalid index. */
   MeshIndex() : index_(-1) {}
@@ -161,21 +161,21 @@ private:
   int index_;
 
   friend std::istream& operator>>
-      <MeshIndexTag>(std::istream& is, MeshIndex<MeshIndexTag>& index);
+      <IndexTagT>(std::istream& is, MeshIndex<IndexTagT>& index);
 };
 
 /** \brief ostream operator. */
-template <class MeshIndexTag>
+template <class IndexTagT>
 inline std::ostream&
-operator<<(std::ostream& os, const MeshIndex<MeshIndexTag>& index)
+operator<<(std::ostream& os, const MeshIndex<IndexTagT>& index)
 {
   return (os << index.get());
 }
 
 /** \brief istream operator. */
-template <class MeshIndexTag>
+template <class IndexTagT>
 inline std::istream&
-operator>>(std::istream& is, MeshIndex<MeshIndexTag>& index)
+operator>>(std::istream& is, MeshIndex<IndexTagT>& index)
 {
   return (is >> index.index_);
 }
@@ -185,24 +185,28 @@ operator>>(std::istream& is, MeshIndex<MeshIndexTag>& index)
 
 namespace pcl {
 namespace geometry {
-/** \brief Index used to access elements in the half-edge mesh. It is basically
- * just a wrapper around an integer with a few added methods. \author Martin
- * Saelzle \ingroup geometry
+/** \brief Index used to access elements in the half-edge mesh. It is basically just a
+ * wrapper around an integer with a few added methods.
+ * \author Martin Saelzle
+ * \ingroup geometry
  */
 using VertexIndex = pcl::detail::MeshIndex<struct VertexIndexTag>;
-/** \brief Index used to access elements in the half-edge mesh. It is basically
- * just a wrapper around an integer with a few added methods. \author Martin
- * Saelzle \ingroup geometry
+/** \brief Index used to access elements in the half-edge mesh. It is basically just a
+ * wrapper around an integer with a few added methods.
+ * \author Martin Saelzle
+ * \ingroup geometry
  */
 using HalfEdgeIndex = pcl::detail::MeshIndex<struct HalfEdgeIndexTag>;
-/** \brief Index used to access elements in the half-edge mesh. It is basically
- * just a wrapper around an integer with a few added methods. \author Martin
- * Saelzle \ingroup geometry
+/** \brief Index used to access elements in the half-edge mesh. It is basically just a
+ * wrapper around an integer with a few added methods.
+ * \author Martin Saelzle
+ * \ingroup geometry
  */
 using EdgeIndex = pcl::detail::MeshIndex<struct EdgeIndexTag>;
-/** \brief Index used to access elements in the half-edge mesh. It is basically
- * just a wrapper around an integer with a few added methods. \author Martin
- * Saelzle \ingroup geometry
+/** \brief Index used to access elements in the half-edge mesh. It is basically just a
+ * wrapper around an integer with a few added methods.
+ * \author Martin Saelzle
+ * \ingroup geometry
  */
 using FaceIndex = pcl::detail::MeshIndex<struct FaceIndexTag>;
 
