@@ -900,7 +900,7 @@ TEST (PCL, Octree_Pointcloud_Iterator_Test)
   for (auto bfIt = octreeA.breadth_begin(); bfIt != octreeA.breadth_end(); ++bfIt)
   {
     // tree depth of visited nodes must grow
-    ASSERT_TRUE (bfIt.getCurrentOctreeDepth () >= lastDepth);
+    ASSERT_GE (bfIt.getCurrentOctreeDepth (), lastDepth);
     lastDepth = bfIt.getCurrentOctreeDepth ();
 
     if (bfIt.isBranchNode ())
@@ -1018,7 +1018,7 @@ TEST (PCL, Octree_Pointcloud_Change_Detector_Test)
   // all point indices found should have an index of >= 1000
   for (std::size_t i = 0; i < 1000; i++)
   {
-    ASSERT_TRUE (newPointIdxVector[i] >= 1000);
+    ASSERT_GE (newPointIdxVector[i], 1000);
   }
 }
 
@@ -1358,7 +1358,7 @@ TEST(PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
   }
 
   // we should have found the absolute nearest neighbor at least once
-  ASSERT_TRUE (bestMatchCount > 0);
+  ASSERT_GT (bestMatchCount, 0);
 }
 
 TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
@@ -1432,7 +1432,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
               + ((*cloudIn)[*current].y - searchPoint.y) * ((*cloudIn)[*current].y - searchPoint.y)
               + ((*cloudIn)[*current].z - searchPoint.z) * ((*cloudIn)[*current].z - searchPoint.z));
 
-      ASSERT_TRUE (pointDist <= searchRadius);
+      ASSERT_LE (pointDist, searchRadius);
 
       ++current;
     }
@@ -1440,7 +1440,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     // check if result limitation works
     octree.radiusSearch (searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, 5);
 
-    ASSERT_TRUE (cloudNWRRadius.size () <= 5);
+    ASSERT_LE (cloudNWRRadius.size (), 5);
 
   }
 

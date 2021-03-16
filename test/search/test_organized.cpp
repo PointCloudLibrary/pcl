@@ -252,7 +252,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
           ((*cloudIn)[current].z-searchPoint.z) * ((*cloudIn)[current].z-searchPoint.z)
       );
 
-      ASSERT_EQ ( (pointDist<=searchRadius) , true);
+      ASSERT_LE (pointDist, searchRadius);
     }
 
 
@@ -265,7 +265,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
           ((*cloudIn)[current].z-searchPoint.z) * ((*cloudIn)[current].z-searchPoint.z)
       );
 
-      ASSERT_EQ ( (pointDist<=searchRadius) , true);
+      ASSERT_LE (pointDist, searchRadius);
     }
 
     ASSERT_EQ (cloudNWRRadius.size() , cloudSearchBruteforce.size ());
@@ -273,7 +273,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
     // check if result limitation works
     organizedNeighborSearch.radiusSearch (searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, 5);
 
-    ASSERT_EQ (cloudNWRRadius.size () <= 5, true);
+    ASSERT_LE (cloudNWRRadius.size (), 5);
   }
 }
 

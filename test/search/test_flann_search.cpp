@@ -165,8 +165,8 @@ TEST (PCL, FlannSearch_differentPointT)
     for (std::size_t j = 0; j< no_of_neighbors; j++)
     {
       EXPECT_TRUE (k_indices[j] == indices[i][j] || k_distances[j] == dists[i][j]);
-      //EXPECT_TRUE (k_indices[j] == k_indices_t[j]);
-      //EXPECT_TRUE (k_distances[j] == k_distances_t[j]);
+      //EXPECT_EQ (k_indices[j], k_indices_t[j]);
+      //EXPECT_EQ (k_distances[j], k_distances_t[j]);
     }
 
   }
