@@ -47,34 +47,39 @@ RGB2Lab(const Eigen::Vector3i& colorRGB)
 {
   // for sRGB   -> CIEXYZ see http://www.easyrgb.com/index.php?X=MATH&H=02#text2
   // for CIEXYZ -> CIELAB see http://www.easyrgb.com/index.php?X=MATH&H=07#text7
+  // an overview at: https://www.comp.nus.edu.sg/~leowwk/papers/colordiff.pdf
 
   const auto& sRGB_LUT = RGB2sRGB_LUT<double, 8>();
-  const auto& XYZ_LUT = XYZ2LAB_LUT<float, 4000>();
 
   const double R = sRGB_LUT[colorRGB[0]];
   const double G = sRGB_LUT[colorRGB[1]];
   const double B = sRGB_LUT[colorRGB[2]];
 
   // linear sRGB -> CIEXYZ, D65 illuminant, observer at 2 degrees
-  double X = R * 0.4124 + G * 0.3576 + B * 0.1805;
-  double Y = R * 0.2126 + G * 0.7152 + B * 0.0722;
-  double Z = R * 0.0193 + G * 0.1192 + B * 0.9505;
+  const double X = R * 0.4124 + G * 0.3576 + B * 0.1805;
+  const double Y = R * 0.2126 + G * 0.7152 + B * 0.0722;
+  const double Z = R * 0.0193 + G * 0.1192 + B * 0.9505;
 
   // normalize X, Y, Z with tristimulus values for Xn, Yn, Zn
-  // and scale for using the LUT with 4000 steps
-  X = (X / 0.95047) * 4000;
-  Y = (Y / 1) * 4000;
-  Z = (Z / 1.08883) * 4000;
+  float f[3] = {static_cast<float>(X), static_cast<float>(Y), static_cast<float>(Z)};
+  f[0] /= 0.95047;
+  f[1] /= 1;
+  f[2] /= 1.08883;
 
   // CIEXYZ -> CIELAB
-  X = XYZ_LUT[static_cast<std::uint16_t>(X)];
-  Y = XYZ_LUT[static_cast<std::uint16_t>(Y)];
-  Z = XYZ_LUT[static_cast<std::uint16_t>(Z)];
+  for (int i = 0; i < 3; ++i) {
+    if (f[i] > 0.008856) {
+      f[i] = std::pow(f[i], 1.0 / 3.0);
+    }
+    else {
+      f[i] = 7.787 * f[i] + 16.0 / 116.0;
+    }
+  }
 
   Eigen::Vector3f colorLab;
-  colorLab[0] = static_cast<float>(116.0 * Y - 16.0);
-  colorLab[1] = static_cast<float>(500.0 * (X - Y));
-  colorLab[2] = static_cast<float>(200.0 * (Y - Z));
+  colorLab[0] = 116.0f * f[1] - 16.0f;
+  colorLab[1] = 500.0f * (f[0] - f[1]);
+  colorLab[2] = 200.0f * (f[1] - f[2]);
 
   return colorLab;
 }
