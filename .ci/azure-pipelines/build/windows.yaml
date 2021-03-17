@@ -5,7 +5,7 @@ steps:
   - pwsh: Get-PSDrive
     displayName: "Check free space"
   - script: |
-      vcpkg.exe install eigen3 flann gtest qhull boost-date-time boost-filesystem boost-iostreams --triplet %PLATFORM%-windows && vcpkg.exe list
+      vcpkg.exe install eigen3 flann gtest qhull boost-date-time boost-filesystem boost-iostreams boost-property-tree --triplet %PLATFORM%-windows && vcpkg.exe list
     displayName: 'Install C++ Dependencies Via Vcpkg'
   - script: |
       mkdir %BUILD_DIR% && cd %BUILD_DIR%
