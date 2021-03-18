@@ -101,9 +101,9 @@ public:
    * cloud_tgt
    */
   using UpdateVisualizerCallbackSignature = void(const pcl::PointCloud<PointSource>&,
-                                                 const std::vector<int>&,
+                                                 const pcl::Indices&,
                                                  const pcl::PointCloud<PointTarget>&,
-                                                 const std::vector<int>&);
+                                                 const pcl::Indices&);
 
   /** \brief Empty constructor. */
   Registration()
@@ -670,7 +670,7 @@ protected:
   inline bool
   searchForNeighbors(const PointCloudSource& cloud,
                      int index,
-                     std::vector<int>& indices,
+                     pcl::Indices& indices,
                      std::vector<float>& distances)
   {
     int k = tree_->nearestKSearch(cloud, index, 1, indices, distances);

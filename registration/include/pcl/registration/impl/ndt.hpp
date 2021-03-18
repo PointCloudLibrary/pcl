@@ -151,7 +151,7 @@ NormalDistributionsTransform<PointSource, PointTarget>::computeTransformation(
 
     // Update Visualizer (untested)
     if (update_visualizer_)
-      update_visualizer_(output, std::vector<int>(), *target_, std::vector<int>());
+      update_visualizer_(output, pcl::Indices(), *target_, pcl::Indices());
 
     const double cos_angle =
         0.5 * transformation_.template block<3, 3>(0, 0).trace() - 1;
