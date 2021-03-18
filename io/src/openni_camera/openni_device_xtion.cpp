@@ -118,7 +118,7 @@ openni_wrapper::DeviceXtionPro::enumAvailableModes () noexcept
 openni_wrapper::Image::Ptr 
 openni_wrapper::DeviceXtionPro::getCurrentImage (pcl::shared_ptr<xn::ImageMetaData> image_data) const throw ()
 {
-  return (boost::shared_ptr<openni_wrapper::Image> (new ImageYUV422 (image_data)));
+  return (openni_wrapper::Image::Ptr (new ImageYUV422 (image_data)));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
