@@ -6,15 +6,13 @@ FROM mcr.microsoft.com/windows/servercore:ltsc2019
 ARG platform
 
 # Download channel for fixed install.
-ARG CHANNEL_URL=https://aka.ms/vs/16/release/channel
-ADD ${CHANNEL_URL} C:\TEMP\VisualStudio.chman
-
-COPY $platform'-windows-rel.cmake' 'c:\temp\'$platform'-windows-rel.cmake'
+ARG CHANNEL_BASE_URL=https://aka.ms/vs/16/release
+ADD ${CHANNEL_BASE_URL}/channel C:\TEMP\VisualStudio.chman
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 # Download and install Build Tools for Visual Studio 2019 for native desktop
-RUN wget 'https://aka.ms/vs/16/release/vs_buildtools.exe' -OutFile 'C:\TEMP\vs_buildtools.exe'; `
+RUN wget $Env:CHANNEL_BASE_URL/vs_buildtools.exe -OutFile 'C:\TEMP\vs_buildtools.exe'; `
     Start-Process -FilePath C:\TEMP\vs_buildtools.exe -ArgumentList `
     "--quiet",                                                      `
     "--norestart",                                                  `
@@ -31,18 +29,18 @@ RUN wget 'https://aka.ms/vs/16/release/vs_buildtools.exe' -OutFile 'C:\TEMP\vs_b
     "--includeRecommended"                                          `
     -Wait -PassThru;                                                `
     del c:\temp\vs_buildtools.exe;                                  
-    
+
 RUN iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'));        `
     choco install cmake git --installargs 'ADD_CMAKE_TO_PATH=System' -y --no-progress
 
-RUN git clone https://github.com/microsoft/vcpkg.git;               ` 
-    copy c:\temp\$Env:platform-windows-rel.cmake c:\vcpkg\triplets\$Env:platform-windows-rel.cmake;      `
-    cd .\vcpkg;                                                `                                        `
-    .\bootstrap-vcpkg.bat;                                            `
-    .\vcpkg integrate install;                                        
+RUN git clone https://github.com/microsoft/vcpkg.git --depth=1;
+
+# To explicit set VCPKG to only build Release version of the libraries.
+COPY $platform'-windows-rel.cmake' 'c:\vcpkg\triplets\'$platform'-windows-rel.cmake'
 
 RUN cd .\vcpkg;                                                `
-    .\vcpkg install boost qhull flann gtest eigen3 vtk[qt,opengl] --triplet $Env:platform-windows-rel;             `
+    .\bootstrap-vcpkg.bat;                                            `
+    .\vcpkg install boost flann eigen3 qhull vtk[qt,opengl] gtest --triplet $Env:platform-windows-rel;             `
     Remove-Item -path c:\vcpkg\downloads -recurse -force; `
     Remove-Item -path c:\vcpkg\packages -recurse -force;  `
     Remove-Item -path c:\vcpkg\buildtrees -recurse -force; 
