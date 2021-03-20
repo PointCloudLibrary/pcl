@@ -65,49 +65,42 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBA)
       // iterate over runs
       for (int test_idx = 0; test_idx < NUMBER_OF_TEST_RUNS; test_idx++, total_runs++)
       {
-        try
+        int point_count;
+        do { // empty point cloud hangs decoder
+          point_count = MAX_POINTS * rand() / RAND_MAX;
+        } while (point_count < 1);
+        // create shared pointcloud instances
+        pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>());
+        // assign input point clouds to octree
+        // create random point cloud
+        for (int point = 0; point < point_count; point++)
         {
-          int point_count;
-          do { // empty point cloud hangs decoder
-            point_count = MAX_POINTS * rand() / RAND_MAX;
-          } while (point_count < 1);
-          // create shared pointcloud instances
-          pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>());
-          // assign input point clouds to octree
-          // create random point cloud
-          for (int point = 0; point < point_count; point++)
-          {
-            // generate a random point
-            pcl::PointXYZRGBA new_point;
-            new_point.x = static_cast<float> (MAX_XYZ * rand() / RAND_MAX);
-            new_point.y = static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
-            new_point.z = static_cast<float> (MAX_XYZ * rand() / RAND_MAX);
-            new_point.r = static_cast<int> (MAX_COLOR * rand() / RAND_MAX);
-            new_point.g = static_cast<int> (MAX_COLOR * rand() / RAND_MAX);
-            new_point.b = static_cast<int> (MAX_COLOR * rand() / RAND_MAX);
-            new_point.a = static_cast<int> (MAX_COLOR * rand() / RAND_MAX);
-            // OctreePointCloudPointVector can store all points..
-            cloud->push_back(new_point);
-          }
-          EXPECT_EQ(cloud->height, 1);
+          // generate a random point
+          pcl::PointXYZRGBA new_point;
+          new_point.x = static_cast<float> (MAX_XYZ * rand() / RAND_MAX);
+          new_point.y = static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
+          new_point.z = static_cast<float> (MAX_XYZ * rand() / RAND_MAX);
+          new_point.r = static_cast<int> (MAX_COLOR * rand() / RAND_MAX);
+          new_point.g = static_cast<int> (MAX_COLOR * rand() / RAND_MAX);
+          new_point.b = static_cast<int> (MAX_COLOR * rand() / RAND_MAX);
+          new_point.a = static_cast<int> (MAX_COLOR * rand() / RAND_MAX);
+          // OctreePointCloudPointVector can store all points..
+          cloud->push_back(new_point);
+        }
+        EXPECT_EQ(cloud->height, 1);
 
 //          std::cout << "Run: " << total_runs << " compression profile:" << compression_profile << " point_count: " << point_count;
-          std::stringstream compressed_data;
-          pointcloud_encoder.encodePointCloud(cloud, compressed_data);
-          pointcloud_decoder.decodePointCloud(compressed_data, cloud_out);
-          if (pcl::io::compressionProfiles_[compression_profile].doVoxelGridDownSampling) {
-            EXPECT_GT(cloud_out->width, 0);
-            EXPECT_LE(cloud_out->width, cloud->width) << "cloud width after encoding and decoding greater than before. Profile: " << compression_profile;
-          }
-          else {
-            EXPECT_EQ(cloud_out->width, cloud->width) << "cloud width after encoding and decoding not the same. Profile: " << compression_profile;
-          }
-          EXPECT_EQ(cloud_out->height, 1) << "cloud height after encoding and decoding should be 1 (as before). Profile: " << compression_profile;
+        std::stringstream compressed_data;
+        pointcloud_encoder.encodePointCloud(cloud, compressed_data);
+        pointcloud_decoder.decodePointCloud(compressed_data, cloud_out);
+        if (pcl::io::compressionProfiles_[compression_profile].doVoxelGridDownSampling) {
+          EXPECT_GT(cloud_out->width, 0);
+          EXPECT_LE(cloud_out->width, cloud->width) << "cloud width after encoding and decoding greater than before. Profile: " << compression_profile;
         }
-        catch (std::exception& e)
-        {
-          std::cout << e.what() << std::endl;
+        else {
+          EXPECT_EQ(cloud_out->width, cloud->width) << "cloud width after encoding and decoding not the same. Profile: " << compression_profile;
         }
+        EXPECT_EQ(cloud_out->height, 1) << "cloud height after encoding and decoding should be 1 (as before). Profile: " << compression_profile;
       } // runs
     } // compression profiles
   } // small clouds, large clouds
@@ -147,23 +140,16 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZ)
         EXPECT_EQ(cloud->height, 1);
   //      std::cout << "Run: " << total_runs << " compression profile:" << compression_profile << " point_count: " << point_count;
         std::stringstream compressed_data;
-        try
-        { // decodePointCloud() throws exceptions on errors
-          pointcloud_encoder.encodePointCloud(cloud, compressed_data);
-          pointcloud_decoder.decodePointCloud(compressed_data, cloud_out);
-          if (pcl::io::compressionProfiles_[compression_profile].doVoxelGridDownSampling) {
-            EXPECT_GT(cloud_out->width, 0);
-            EXPECT_LE(cloud_out->width, cloud->width) << "cloud width after encoding and decoding greater than before. Profile: " << compression_profile;
-          }
-          else {
-            EXPECT_EQ(cloud_out->width, cloud->width) << "cloud width after encoding and decoding not the same. Profile: " << compression_profile;
-          }
-          EXPECT_EQ(cloud_out->height, 1) << "cloud height after encoding and decoding should be 1 (as before). Profile: " << compression_profile;
+        pointcloud_encoder.encodePointCloud(cloud, compressed_data);
+        pointcloud_decoder.decodePointCloud(compressed_data, cloud_out);
+        if (pcl::io::compressionProfiles_[compression_profile].doVoxelGridDownSampling) {
+          EXPECT_GT(cloud_out->width, 0);
+          EXPECT_LE(cloud_out->width, cloud->width) << "cloud width after encoding and decoding greater than before. Profile: " << compression_profile;
         }
-        catch (std::exception& e)
-        {
-          std::cout << e.what() << std::endl;
+        else {
+          EXPECT_EQ(cloud_out->width, cloud->width) << "cloud width after encoding and decoding not the same. Profile: " << compression_profile;
         }
+        EXPECT_EQ(cloud_out->height, 1) << "cloud height after encoding and decoding should be 1 (as before). Profile: " << compression_profile;
       } // runs
     } // compression profiles
   } // small clouds, large clouds
@@ -209,26 +195,19 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBASameCloud)
     // iterate over runs
     for (int test_idx = 0; test_idx < NUMBER_OF_TEST_RUNS; test_idx++, total_runs++)
     {
-      try
-      {
 //          std::cout << "Run: " << total_runs << " compression profile:" << compression_profile << " point_count: " << point_count;
-        std::stringstream compressed_data;
-        pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZRGBA>());
-        pointcloud_encoder.encodePointCloud(cloud, compressed_data);
-        pointcloud_decoder.decodePointCloud(compressed_data, cloud_out);
-        if (pcl::io::compressionProfiles_[compression_profile].doVoxelGridDownSampling) {
-          EXPECT_GT(cloud_out->width, 0);
-          EXPECT_LE(cloud_out->width, cloud->width) << "cloud width after encoding and decoding greater than before. Profile: " << compression_profile;
-        }
-        else {
-          EXPECT_EQ(cloud_out->width, cloud->width) << "cloud width after encoding and decoding not the same. Profile: " << compression_profile;
-        }
-        EXPECT_EQ(cloud_out->height, 1) << "cloud height after encoding and decoding should be 1 (as before). Profile: " << compression_profile;
+      std::stringstream compressed_data;
+      pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZRGBA>());
+      pointcloud_encoder.encodePointCloud(cloud, compressed_data);
+      pointcloud_decoder.decodePointCloud(compressed_data, cloud_out);
+      if (pcl::io::compressionProfiles_[compression_profile].doVoxelGridDownSampling) {
+        EXPECT_GT(cloud_out->width, 0);
+        EXPECT_LE(cloud_out->width, cloud->width) << "cloud width after encoding and decoding greater than before. Profile: " << compression_profile;
       }
-      catch (std::exception& e)
-      {
-        std::cout << e.what() << std::endl;
+      else {
+        EXPECT_EQ(cloud_out->width, cloud->width) << "cloud width after encoding and decoding not the same. Profile: " << compression_profile;
       }
+      EXPECT_EQ(cloud_out->height, 1) << "cloud height after encoding and decoding should be 1 (as before). Profile: " << compression_profile;
     } // runs
   } // compression profiles
 } // TEST
