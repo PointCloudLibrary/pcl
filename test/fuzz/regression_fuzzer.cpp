@@ -56,11 +56,12 @@ main(int argc, char** argv)
     if (fs::is_regular_file(itr->status()) &&
         boost::algorithm::to_upper_copy(fs::extension(itr->path())) == ".PLY") {
       corpus_filenames.push_back(itr->path().string());
-      std::cout << "adding: " << corpus_filenames.back() << "\n";
     }
   }
+  std::cout << "Total PLY files found: " << corpus_filenames.size() << "\n";
 
   for (const auto& name : corpus_filenames) {
+    std::cout << "Running: " << name << "\n";
     test_ply_reader(name);
   }
 
