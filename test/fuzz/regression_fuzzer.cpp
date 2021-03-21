@@ -19,24 +19,11 @@
 void
 test_ply_reader(const std::string& filename);
 
-/*
-extern "C" int
-LLVMFuzzerTestOneInput(const unsigned char* data, size_t size);
-
-__attribute__((weak)) extern "C" int
-LLVMFuzzerInitialize(int* argc, char*** argv);
-*/
-
 namespace fs = boost::filesystem;
 
 int
 main(int argc, char** argv)
 {
-  /*
-  if (LLVMFuzzerInitialize) {
-    LLVMFuzzerInitialize(&argc, &argv);
-  }
-  */
 
   if (argc < 2) {
     std::cerr << "No folder for corpus was provided. Please add the path to corpus "
@@ -65,22 +52,5 @@ main(int argc, char** argv)
     test_ply_reader(name);
   }
 
-  /*
-  for (int i = 1; i < argc; i++) {
-    fprintf(stderr, "Running: %s\n", argv[i]);
-    FILE* f = fopen(argv[i], "r");
-    assert(f);
-    fseek(f, 0, SEEK_END);
-    size_t len = ftell(f);
-    fseek(f, 0, SEEK_SET);
-    unsigned char* buf = (unsigned char*)malloc(len);
-    size_t n_read = fread(buf, 1, len, f);
-    fclose(f);
-    assert(n_read == len);
-    LLVMFuzzerTestOneInput(buf, len);
-    free(buf);
-    fprintf(stderr, "Done:    %s: (%zd bytes)\n", argv[i], n_read);
-  }
-  */
   return 0;
 }
