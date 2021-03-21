@@ -144,13 +144,14 @@ public:
    * Code example:
    *
    * \code
-   * TransformationEstimationPointToPlaneLLS<PointXYZ, PointXYZ>::Ptr trans_lls (new
-   * TransformationEstimationPointToPlaneLLS<PointXYZ, PointXYZ>);
+   * TransformationEstimationPointToPlaneLLS<PointXYZ, PointXYZ>::Ptr trans_lls
+   *   (new TransformationEstimationPointToPlaneLLS<PointXYZ, PointXYZ>);
    * icp.setTransformationEstimation (trans_lls);
    * // or...
-   * TransformationEstimationSVD<PointXYZ, PointXYZ>::Ptr trans_svd (new
-   * TransformationEstimationSVD<PointXYZ, PointXYZ>); icp.setTransformationEstimation
-   * (trans_svd); \endcode
+   * TransformationEstimationSVD<PointXYZ, PointXYZ>::Ptr trans_svd
+   *   (new TransformationEstimationSVD<PointXYZ, PointXYZ>);
+   * icp.setTransformationEstimation (trans_svd);
+   * \endcode
    */
   void
   setTransformationEstimation(const TransformationEstimationPtr& te)
@@ -166,13 +167,14 @@ public:
    * Code example:
    *
    * \code
-   * CorrespondenceEstimation<PointXYZ, PointXYZ>::Ptr ce (new
-   * CorrespondenceEstimation<PointXYZ, PointXYZ>); ce->setInputSource (source);
+   * CorrespondenceEstimation<PointXYZ, PointXYZ>::Ptr
+   *   ce (new CorrespondenceEstimation<PointXYZ, PointXYZ>);
+   * ce->setInputSource (source);
    * ce->setInputTarget (target);
    * icp.setCorrespondenceEstimation (ce);
    * // or...
    * CorrespondenceEstimationNormalShooting<PointNormal, PointNormal, PointNormal>::Ptr
-   * cens (new CorrespondenceEstimationNormalShooting<PointNormal, PointNormal>);
+   *   cens (new CorrespondenceEstimationNormalShooting<PointNormal, PointNormal>);
    * ce->setInputSource (source);
    * ce->setInputTarget (target);
    * ce->setSourceNormals (source);

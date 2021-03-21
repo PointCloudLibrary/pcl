@@ -47,8 +47,8 @@
 namespace pcl {
 /** \brief @b SampleConsensusInitialAlignment is an implementation of the initial
  * alignment algorithm described in section IV of "Fast Point Feature Histograms (FPFH)
- * for 3D Registration," Rusu et al. \author Michael Dixon, Radu B. Rusu \ingroup
- * registration
+ * for 3D Registration," Rusu et al. \author Michael Dixon, Radu B. Rusu
+ * \ingroup registration
  */
 template <typename PointSource, typename PointTarget, typename FeatureT>
 class SampleConsensusInitialAlignment : public Registration<PointSource, PointTarget> {
