@@ -483,7 +483,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
 
     const LeafNode* child_leaf = static_cast<const LeafNode*>(child_node);
 
-    double smallest_squared_dist = std::numeric_limits<double>::max();
+    float smallest_squared_dist = std::numeric_limits<float>::max();
 
     // decode leaf node into decoded_point_vector
     (**child_leaf).getPointIndices(decoded_point_vector);
@@ -493,7 +493,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
       const PointT& candidate_point = this->getPointByIndex(index);
 
       // calculate point distance to search point
-      double squared_dist = pointSquaredDist(candidate_point, point);
+      float squared_dist = pointSquaredDist(candidate_point, point);
 
       // check if a closer match is found
       if (squared_dist >= smallest_squared_dist)
@@ -501,7 +501,7 @@ OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::
 
       result_index = index;
       smallest_squared_dist = squared_dist;
-      sqr_distance = static_cast<float>(squared_dist);
+      sqr_distance = squared_dist;
     }
   }
 }
