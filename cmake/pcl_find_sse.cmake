@@ -77,7 +77,7 @@ function(PCL_CHECK_FOR_SSE)
     HAVE_SSE4_2_EXTENSIONS)
         
   if(HAVE_SSE4_2_EXTENSIONS)
-    set( SSE_LEVEL 4.2)
+    set(SSE_LEVEL 4.2)
   endif()
 
   if(SSE_LEVEL LESS 4.2)
