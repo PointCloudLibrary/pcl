@@ -43,23 +43,18 @@
 #include <pcl/common/time.h> //fps calculations
 
 #if SHOW_FPS
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
+auto fps_calc = [](std::string what) {
+  static unsigned count = 0;
+  static double last = pcl::getTime();
+  double now = pcl::getTime();
+  ++count;
+  if (now - last >= 1.0) {
+    std::cout << "Average framerate(" << what
+              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
+    count = 0;
+    last = now;
+  }
+};
 #else
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-  } while (false)
+auto fps_calc = [](std::string /*what*/) {};
 #endif

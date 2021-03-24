@@ -35,18 +35,17 @@
  *
  */
 
-#include <ui_openni_passthrough.h>
-
 #include <pcl/apps/openni_passthrough.h>
 
 #include <QApplication>
 #include <QEvent>
 #include <QMutexLocker>
 #include <QObject>
+#include <ui_openni_passthrough.h>
 
+#include <vtkGenericOpenGLRenderWindow.h>
 #include <vtkRenderWindow.h>
 #include <vtkRendererCollection.h>
-#include <vtkGenericOpenGLRenderWindow.h>
 
 #include <thread>
 
@@ -64,7 +63,7 @@ OpenNIPassthrough::OpenNIPassthrough(pcl::OpenNIGrabber& grabber)
   ui_->setupUi(this);
 
   this->setWindowTitle("PCL OpenNI PassThrough Viewer");
-    //Create the QVTKWidget
+  // Create the QVTKWidget
 #if VTK_MAJOR_VERSION > 8
   auto renderer = vtkSmartPointer<vtkRenderer>::New();
   auto renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
@@ -73,11 +72,13 @@ OpenNIPassthrough::OpenNIPassthrough(pcl::OpenNIGrabber& grabber)
 #else
   vis_.reset(new pcl::visualization::PCLVisualizer("", false));
 #endif // VTK_MAJOR_VERSION > 8
-  setRenderWindowCompat(*(ui_->qvtk_widget),*(vis_->getRenderWindow()));
-  vis_->setupInteractor(getInteractorCompat(*(ui_->qvtk_widget)), getRenderWindowCompat(*(ui_->qvtk_widget)));
-  
-  vis_->getInteractorStyle()->setKeyboardModifier(pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
-  
+  setRenderWindowCompat(*(ui_->qvtk_widget), *(vis_->getRenderWindow()));
+  vis_->setupInteractor(getInteractorCompat(*(ui_->qvtk_widget)),
+                        getRenderWindowCompat(*(ui_->qvtk_widget)));
+
+  vis_->getInteractorStyle()->setKeyboardModifier(
+      pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
+
   refreshView();
 
   // Start the OpenNI data acquision
@@ -105,7 +106,7 @@ void
 OpenNIPassthrough::cloud_cb(const CloudConstPtr& cloud)
 {
   QMutexLocker locker(&mtx_);
-  FPS_CALC("computation");
+  fps_calc("computation");
 
   // Computation goes here
   cloud_pass_.reset(new Cloud);
@@ -132,7 +133,7 @@ OpenNIPassthrough::timeoutSlot()
     vis_->addPointCloud(temp_cloud, "cloud_pass");
     vis_->resetCameraViewpoint("cloud_pass");
   }
-  FPS_CALC("visualization");
+  fps_calc("visualization");
   ui_->qvtk_widget->update();
 }
 

@@ -54,21 +54,18 @@ using ColorHandler = pcl::visualization::PointCloudColorHandler<pcl::PCLPointClo
 using ColorHandlerPtr = ColorHandler::Ptr;
 using ColorHandlerConstPtr = ColorHandler::ConstPtr;
 
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
+auto fps_calc = [](std::string what) {
+  static unsigned count = 0;
+  static double last = pcl::getTime();
+  double now = pcl::getTime();
+  ++count;
+  if (now - last >= 1.0) {
+    std::cout << "Average framerate(" << what
+              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
+    count = 0;
+    last = now;
+  }
+};
 
 class OpenNIIntegralImageNormalEstimation {
 public:
@@ -97,7 +94,7 @@ public:
   {
     std::lock_guard<std::mutex> lock(mtx_);
     // lock while we set our cloud;
-    FPS_CALC("computation");
+    fps_calc("computation");
 
     cloud_.reset(new pcl::PointCloud<pcl::PointXYZRGBNormal>);
 

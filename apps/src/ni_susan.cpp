@@ -72,7 +72,7 @@ public:
   void
   cloud_callback(const CloudConstPtr& cloud)
   {
-    FPS_CALC("cloud callback");
+    fps_calc("cloud callback");
     std::lock_guard<std::mutex> lock(cloud_mutex_);
     cloud_ = cloud;
 

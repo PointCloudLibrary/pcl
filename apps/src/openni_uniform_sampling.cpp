@@ -47,21 +47,18 @@
 
 using namespace std::chrono_literals;
 
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
+auto fps_calc = [](std::string what) {
+  static unsigned count = 0;
+  static double last = pcl::getTime();
+  double now = pcl::getTime();
+  ++count;
+  if (now - last >= 1.0) {
+    std::cout << "Average framerate(" << what
+              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
+    count = 0;
+    last = now;
+  }
+};
 
 class OpenNIUniformSampling {
 public:
@@ -79,7 +76,7 @@ public:
   cloud_cb_(const CloudConstPtr& cloud)
   {
     std::lock_guard<std::mutex> lock(mtx_);
-    FPS_CALC("computation");
+    fps_calc("computation");
 
     cloud_.reset(new Cloud);
     keypoints_.reset(new pcl::PointCloud<pcl::PointXYZ>);
@@ -101,7 +98,7 @@ public:
       return;
     }
 
-    FPS_CALC("visualization");
+    fps_calc("visualization");
     viz.removePointCloud("raw");
     pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> color_handler(
         cloud_);

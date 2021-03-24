@@ -53,21 +53,18 @@
 
 using namespace std::chrono_literals;
 
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
+auto fps_calc = [](std::string what) {
+  static unsigned count = 0;
+  static double last = pcl::getTime();
+  double now = pcl::getTime();
+  ++count;
+  if (now - last >= 1.0) {
+    std::cout << "Average framerate(" << what
+              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
+    count = 0;
+    last = now;
+  }
+};
 
 const float default_subsampling_leaf_size = 0.02f;
 const float default_normal_search_radius = 0.041f;
@@ -125,7 +122,7 @@ public:
   {
     std::lock_guard<std::mutex> lock(mtx_);
     // lock while we set our cloud;
-    FPS_CALC("computation");
+    fps_calc("computation");
 
     // Create temporary clouds
     cloud_subsampled_.reset(new typename pcl::PointCloud<PointType>());
@@ -152,7 +149,8 @@ public:
     extract_indices_filter_.setIndices(feature_indices_);
     extract_indices_filter_.filter(*feature_locations_);
 
-    PCL_INFO("Persistent feature locations %zu\n", static_cast<std::size_t>(feature_locations_->size()));
+    PCL_INFO("Persistent feature locations %zu\n",
+             static_cast<std::size_t>(feature_locations_->size()));
 
     cloud_ = cloud;
 

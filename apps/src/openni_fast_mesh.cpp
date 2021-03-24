@@ -48,20 +48,17 @@ using namespace pcl;
 using namespace pcl::visualization;
 using namespace std::chrono_literals;
 
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    if (++count == 100) {                                                              \
-      double now = pcl::getTime();                                                     \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
+auto fps_calc = [](std::string what) {
+  static unsigned count = 0;
+  static double last = pcl::getTime();
+  if (++count == 100) {
+    double now = pcl::getTime();
+    std::cout << "Average framerate(" << what
+              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
+    count = 0;
+    last = now;
+  }
+};
 
 template <typename PointType>
 class OpenNIFastMesh {
@@ -80,7 +77,7 @@ public:
   cloud_cb(const CloudConstPtr& cloud)
   {
     // Computation goes here
-    FPS_CALC("computation");
+    fps_calc("computation");
 
     // Prepare input
     ofm.setInputCloud(cloud);
@@ -130,7 +127,7 @@ public:
         view->resetCameraViewpoint("surface");
       }
 
-      FPS_CALC("visualization");
+      fps_calc("visualization");
       view->spinOnce(1);
     }
 

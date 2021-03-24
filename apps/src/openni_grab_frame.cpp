@@ -52,25 +52,20 @@ using namespace std::chrono_literals;
 
 #define SHOW_FPS 1
 #if SHOW_FPS
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
+auto fps_calc = [](std::string what) {
+  static unsigned count = 0;
+  static double last = pcl::getTime();
+  double now = pcl::getTime();
+  ++count;
+  if (now - last >= 1.0) {
+    std::cout << "Average framerate(" << what
+              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
+    count = 0;
+    last = now;
+  }
+};
 #else
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-  } while (false)
+auto fps_calc = [](std::string /*what*/) {};
 #endif
 
 using namespace pcl::console;
@@ -156,9 +151,9 @@ public:
   void
   saveCloud()
   {
-    FPS_CALC("I/O");
+    fps_calc("I/O");
     const std::string time = boost::posix_time::to_iso_string(
-              boost::posix_time::microsec_clock::local_time());
+        boost::posix_time::microsec_clock::local_time());
     const std::string filepath = dir_name_ + '/' + file_name_ + '_' + time + ".pcd";
 
     if (format_ & 1) {

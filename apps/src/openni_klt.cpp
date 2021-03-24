@@ -48,25 +48,20 @@
 
 #define SHOW_FPS 1
 #if SHOW_FPS
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
+auto fps_calc = [](std::string what) {
+  static unsigned count = 0;
+  static double last = pcl::getTime();
+  double now = pcl::getTime();
+  ++count;
+  if (now - last >= 1.0) {
+    std::cout << "Average framerate(" << what
+              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
+    count = 0;
+    last = now;
+  }
+};
 #else
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-  } while (false)
+auto fps_calc = [](std::string /*what*/) {};
 #endif
 
 void
@@ -135,7 +130,7 @@ public:
   void
   cloud_callback(const CloudConstPtr& cloud)
   {
-    FPS_CALC("cloud callback");
+    fps_calc("cloud callback");
     std::lock_guard<std::mutex> lock(cloud_mutex_);
     cloud_ = cloud;
     // Compute Tomasi keypoints
@@ -151,7 +146,7 @@ public:
   void
   image_callback(const openni_wrapper::Image::Ptr& image)
   {
-    FPS_CALC("image callback");
+    fps_calc("image callback");
     std::lock_guard<std::mutex> lock(image_mutex_);
     image_ = image;
 

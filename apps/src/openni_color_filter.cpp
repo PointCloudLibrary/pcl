@@ -45,21 +45,18 @@
 
 #include <mutex>
 
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-    }                                                                                  \
-  } while (false)
-// clang-format on
+auto fps_calc = [](std::string what) {
+  static unsigned count = 0;
+  static double last = pcl::getTime();
+  double now = pcl::getTime();
+  ++count;
+  if (now - last >= 1.0) {
+    std::cout << "Average framerate(" << what
+              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
+    count = 0;
+    last = now;
+  }
+};
 
 template <typename PointType>
 class OpenNIPassthrough {
@@ -118,7 +115,7 @@ public:
   cloud_cb_(const CloudConstPtr& cloud)
   {
     std::lock_guard<std::mutex> lock(mtx_);
-    FPS_CALC("computation");
+    fps_calc("computation");
 
     cloud_color_.reset(new Cloud);
     // Computation goes here
@@ -137,7 +134,7 @@ public:
       if (cloud_color_) {
         std::lock_guard<std::mutex> lock(mtx_);
 
-        FPS_CALC("visualization");
+        fps_calc("visualization");
         CloudPtr temp_cloud;
         temp_cloud.swap(cloud_color_); // here we set cloud_ to null, so that
         viewer.showCloud(temp_cloud);

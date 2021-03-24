@@ -37,32 +37,29 @@
 #include <pcl/console/parse.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
+#include <pcl/search/kdtree.h> // for KdTree
 #include <pcl/surface/mls.h>
 #include <pcl/visualization/keyboard_event.h> // for KeyboardEvent
 #include <pcl/visualization/pcl_visualizer.h> // for PCLVisualizer
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/search/kdtree.h> // for KdTree
 
 #include <mutex>
 
-// clang-format off
-#define FPS_CALC(_WHAT_)                                                               \
-  do {                                                                                 \
-    static unsigned count = 0;                                                         \
-    static double last = pcl::getTime();                                               \
-    double now = pcl::getTime();                                                       \
-    ++count;                                                                           \
-    if (now - last >= 1.0) {                                                           \
-      std::cout << "Average framerate(" << _WHAT_ << "): "                             \
-                << double(count) / double(now - last) << " Hz" << std::endl;           \
-      count = 0;                                                                       \
-      last = now;                                                                      \
-      if (*stop_computing_)                                                            \
-        std::cout << "Press 's' to start computing!\n";                                \
-    }                                                                                  \
-  } while (false)
-// clang-format on
+auto fps_calc = [](std::string what, std::shared_ptr<bool>& stop_computing) {
+  static unsigned count = 0;
+  static double last = pcl::getTime();
+  double now = pcl::getTime();
+  ++count;
+  if (now - last >= 1.0) {
+    std::cout << "Average framerate(" << what
+              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
+    count = 0;
+    last = now;
+    if (*stop_computing)
+      std::cout << "Press 's' to start computing!\n";
+  }
+};
 
 int default_polynomial_order = 0;
 double default_search_radius = 0.0, default_sqr_gauss_param = 0.0;
@@ -120,7 +117,7 @@ public:
   void
   cloud_cb_(const CloudConstPtr& cloud)
   {
-    FPS_CALC("computation");
+    fps_calc("computation", stop_computing_);
 
     mtx_.lock();
     if (!*stop_computing_) {
@@ -147,7 +144,7 @@ public:
     interface.start();
 
     while (!viewer.wasStopped()) {
-      FPS_CALC("visualization");
+      fps_calc("visualization", stop_computing_);
       viewer.spinOnce();
 
       if (cloud_ && mtx_.try_lock()) {
