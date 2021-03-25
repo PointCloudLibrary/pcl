@@ -3,14 +3,15 @@
 FROM mcr.microsoft.com/windows/servercore:ltsc2019
 
 # Use "--build-arg platform=x64" for 64 bit or x86 for 32 bit.
-ARG platform
+ARG PLATFORM
 
 # Use to set specific commit to checkout
-ARG vcpkgcommit
+ARG VCPKGCOMMIT
 
 # Download channel for fixed install.
 ARG CHANNEL_BASE_URL=https://aka.ms/vs/16/release
-ADD ${CHANNEL_BASE_URL}/channel C:\TEMP\VisualStudio.chman
+
+ADD $CHANNEL_BASE_URL/channel C:\TEMP\VisualStudio.chman
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
@@ -36,13 +37,13 @@ RUN wget $Env:CHANNEL_BASE_URL/vs_buildtools.exe -OutFile 'C:\TEMP\vs_buildtools
 RUN iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'));        `
     choco install cmake git --installargs 'ADD_CMAKE_TO_PATH=System' -y --no-progress
 
-RUN git clone https://github.com/microsoft/vcpkg.git; cd vcpkg; git checkout $Env:vcpkgcommit;
+RUN git clone https://github.com/microsoft/vcpkg.git; cd vcpkg; git checkout $Env:VCPKGCOMMIT;
 
 # To explicit set VCPKG to only build Release version of the libraries.
-COPY $platform'-windows-rel.cmake' 'c:\vcpkg\triplets\'$platform'-windows-rel.cmake'
+COPY $PLATFORM'-windows-rel.cmake' 'c:\vcpkg\triplets\'$PLATFORM'-windows-rel.cmake'
 
 RUN cd .\vcpkg;                                                `
     .\bootstrap-vcpkg.bat;                                            `
-    .\vcpkg install boost flann eigen3 qhull vtk[qt,opengl] gtest --triplet $Env:platform-windows-rel --clean-after-build;             
+    .\vcpkg install boost flann eigen3 qhull vtk[qt,opengl] gtest --triplet $Env:PLATFORM-windows-rel --clean-after-build;             
 
-RUN setx path "C:\BuildTools\VC\Tools\MSVC\14.27.29110\bin\Host$Env:platform\$Env:platform;"
+RUN setx path "C:\BuildTools\VC\Tools\MSVC\14.27.29110\bin\Host$Env:PLATFORM\$Env:PLATFORM;"
