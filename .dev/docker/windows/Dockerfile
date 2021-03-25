@@ -36,7 +36,7 @@ RUN wget $Env:CHANNEL_BASE_URL/vs_buildtools.exe -OutFile 'C:\TEMP\vs_buildtools
 RUN iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'));        `
     choco install cmake git --installargs 'ADD_CMAKE_TO_PATH=System' -y --no-progress
 
-RUN git clone https://github.com/microsoft/vcpkg.git; cd vcpkg; git checkout $Env:commit;
+RUN git clone https://github.com/microsoft/vcpkg.git; cd vcpkg; git checkout $Env:vcpkgcommit;
 
 # To explicit set VCPKG to only build Release version of the libraries.
 COPY $platform'-windows-rel.cmake' 'c:\vcpkg\triplets\'$platform'-windows-rel.cmake'
