@@ -113,7 +113,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
         rotation_sg);
 
     // For every other point in the scene => now have pair (s_r, s_i) fixed
-    std::vector<int> indices;
+    pcl::Indices indices;
     std::vector<float> distances;
     scene_search_tree_->radiusSearch((*target_)[scene_reference_index],
                                      search_method_->getModelDiameter() / 2,

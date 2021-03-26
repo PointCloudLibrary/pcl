@@ -65,7 +65,7 @@ inline void extractEuclideanClustersSmooth(const typename pcl::PointCloud<PointT
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.size (), false);
 
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
   int size = static_cast<int> (cloud.size ());

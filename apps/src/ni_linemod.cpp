@@ -208,7 +208,7 @@ public:
    * \param[out] object the segmented resultant object
    */
   void
-  segmentObject(int picked_idx,
+  segmentObject(pcl::index_t picked_idx,
                 const CloudConstPtr& cloud,
                 const PointIndices::Ptr& plane_indices,
                 const PointIndices::Ptr& plane_boundary_indices,
@@ -293,7 +293,7 @@ public:
   /////////////////////////////////////////////////////////////////////////
   void
   segment(const PointT& picked_point,
-          int picked_idx,
+          pcl::index_t picked_idx,
           PlanarRegion<PointT>& region,
           PointIndices&,
           CloudPtr& object)
