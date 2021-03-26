@@ -186,10 +186,11 @@ public:
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using an iterative non-linear Levenberg-Marquardt approach. \param[in]
    * cloud_src the source point cloud dataset \param[in] indices_src the vector of
-   * indices describing the points of interest in \a cloud_src \param[in] cloud_tgt the
-   * target point cloud dataset \param[in] indices_tgt the vector of indices describing
-   * the correspondences of the interest points from \a indices_src \param[out]
-   * transformation_matrix the resultant transformation matrix
+   * indices describing the points of interest in \a cloud_src
+   * \param[in] cloud_tgt the target point cloud dataset
+   * \param[in] indices_tgt the vector of indices describing
+   * the correspondences of the interest points from \a indices_src
+   * \param[out] transformation_matrix the resultant transformation matrix
    */
   void
   estimateRigidTransformationBFGS(const PointCloudSource& cloud_src,
@@ -275,7 +276,7 @@ public:
   }
 
   /** \brief Set the minimal translation gradient threshold for early optimization stop
-   * \param[in] translation gradient threshold in meters
+   * \param[in] tolerance translation gradient threshold in meters
    */
   void
   setTranslationGradientTolerance(double tolerance)
@@ -293,7 +294,7 @@ public:
   }
 
   /** \brief Set the minimal rotation gradient threshold for early optimization stop
-   * \param[in] rotation gradient threshold in radians
+   * \param[in] tolerance rotation gradient threshold in radians
    */
   void
   setRotationGradientTolerance(double tolerance)

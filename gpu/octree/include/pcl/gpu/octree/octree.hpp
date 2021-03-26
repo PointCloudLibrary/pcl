@@ -150,7 +150,7 @@ namespace pcl
             /** \brief Batch approximate nearest search on GPU
               * \param[in] queries array of centers
               * \param[out] result array of results ( one index for each query )
-              * \param[out] sqr_distances corresponding square distances to results from query point
+              * \param[out] sqr_distance corresponding square distances to results from query point
               */
             void approxNearestSearch(const Queries& queries, NeighborIndices& result, ResultSqrDists& sqr_distance) const;
 

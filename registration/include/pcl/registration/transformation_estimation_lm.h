@@ -119,8 +119,9 @@ public:
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using LM. \param[in] cloud_src the source point cloud dataset
    * \param[in] indices_src the vector of indices describing the points of interest in
-   * \a cloud_src \param[in] cloud_tgt the target point cloud dataset \param[out]
-   * transformation_matrix the resultant transformation matrix
+   * \a cloud_src
+   * \param[in] cloud_tgt the target point cloud dataset
+   * \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
   estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
@@ -131,10 +132,11 @@ public:
   /** \brief Estimate a rigid rotation transformation between a source and a target
    * point cloud using LM. \param[in] cloud_src the source point cloud dataset
    * \param[in] indices_src the vector of indices describing the points of interest in
-   * \a cloud_src \param[in] cloud_tgt the target point cloud dataset \param[in]
-   * indices_tgt the vector of indices describing the correspondences of the interest
-   * points from \a indices_src \param[out] transformation_matrix the resultant
-   * transformation matrix
+   * \a cloud_src
+   * \param[in] cloud_tgt the target point cloud dataset
+   * \param[in] indices_tgt the vector of indices describing the correspondences of the
+   * interest points from \a indices_src
+   * \param[out] transformation_matrix the resultant transformation matrix
    */
   inline void
   estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
