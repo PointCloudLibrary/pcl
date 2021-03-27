@@ -47,10 +47,10 @@
 #define SHOW_FPS 1
 
 #if SHOW_FPS
-auto fps_calc = [](std::string what, int at_iter_num) {
+auto fps_calc = [](std::string what, unsigned which_iter) {
   static unsigned count = 0;
   static double last = pcl::getTime();
-  if (!at_iter_num) {
+  if (!which_iter) {
     double now = pcl::getTime();
     ++count;
     if (now - last >= 1.0) {
@@ -61,7 +61,7 @@ auto fps_calc = [](std::string what, int at_iter_num) {
     }
   }
   else {
-    if (++count == at_iter_num) {
+    if (++count == which_iter) {
       double now = pcl::getTime();
       std::cout << "Average framerate(" << what
                 << "): " << double(count) / double(now - last) << " Hz" << std::endl;
@@ -86,7 +86,7 @@ auto fps_calc_with_stop = [](std::string what, std::shared_ptr<bool>& stop_compu
   }
 };
 
-auto fps_calc_begin_end = [](std::string what, int at_iter_num) {
+auto fps_calc_begin_end = [](std::string what, unsigned which_iter) {
   static double duration = 0;
   static double start_time = 0;
 
@@ -96,7 +96,7 @@ auto fps_calc_begin_end = [](std::string what, int at_iter_num) {
   else {
     double end_time = pcl::getTime();
     static unsigned count = 0;
-    if (++count == at_iter_num) {
+    if (++count == which_iter) {
       std::cout << "Average framerate(" << what
                 << "): " << double(count) / double(duration) << " Hz" << std::endl;
       count = 0;
@@ -109,8 +109,8 @@ auto fps_calc_begin_end = [](std::string what, int at_iter_num) {
 };
 
 #else
-auto fps_calc = [](std::string /*what*/, int /*at_iter_num*/) {};
+auto fps_calc = [](std::string /*what*/, unsigned /*which_iter*/) {};
 auto fps_calc_with_stop = [](std::string /*what*/,
                              std::shared_ptr<bool>& /*stop_computing*/) {};
-auto fps_calc_begin_end = [](std::string /*what*/, int /*at_iter_num*/) {};
+auto fps_calc_begin_end = [](std::string /*what*/, unsigned /*which_iter*/) {};
 #endif
