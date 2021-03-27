@@ -38,25 +38,12 @@
 #pragma once
 
 #include <pcl/apps/openni_passthrough_qt.h>
-#include <pcl/common/time.h>
+#include <pcl/apps/timer.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-
-auto fps_calc = [](std::string what) {
-  static unsigned count = 0;
-  static double last = pcl::getTime();
-  double now = pcl::getTime();
-  ++count;
-  if (now - last >= 1.0) {
-    std::cout << "Average framerate(" << what
-              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
-    count = 0;
-    last = now;
-  }
-};
 
 namespace Ui {
 class MainWindow;

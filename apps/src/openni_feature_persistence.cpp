@@ -35,7 +35,7 @@
  *
  */
 
-#include <pcl/common/time.h>
+#include <pcl/apps/timer.h>
 #include <pcl/console/parse.h>
 #include <pcl/features/fpfh_omp.h>
 #include <pcl/features/multiscale_feature_persistence.h>
@@ -52,19 +52,6 @@
 #include <thread>
 
 using namespace std::chrono_literals;
-
-auto fps_calc = [](std::string what) {
-  static unsigned count = 0;
-  static double last = pcl::getTime();
-  double now = pcl::getTime();
-  ++count;
-  if (now - last >= 1.0) {
-    std::cout << "Average framerate(" << what
-              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
-    count = 0;
-    last = now;
-  }
-};
 
 const float default_subsampling_leaf_size = 0.02f;
 const float default_normal_search_radius = 0.041f;
@@ -122,7 +109,7 @@ public:
   {
     std::lock_guard<std::mutex> lock(mtx_);
     // lock while we set our cloud;
-    fps_calc("computation");
+    fps_calc("computation", 0);
 
     // Create temporary clouds
     cloud_subsampled_.reset(new typename pcl::PointCloud<PointType>());

@@ -33,7 +33,7 @@
  *
  */
 
-#include <pcl/common/time.h>
+#include <pcl/apps/timer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/surface/organized_fast_mesh.h>
@@ -47,18 +47,6 @@
 using namespace pcl;
 using namespace pcl::visualization;
 using namespace std::chrono_literals;
-
-auto fps_calc = [](std::string what) {
-  static unsigned count = 0;
-  static double last = pcl::getTime();
-  if (++count == 100) {
-    double now = pcl::getTime();
-    std::cout << "Average framerate(" << what
-              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
-    count = 0;
-    last = now;
-  }
-};
 
 template <typename PointType>
 class OpenNIFastMesh {
@@ -77,7 +65,7 @@ public:
   cloud_cb(const CloudConstPtr& cloud)
   {
     // Computation goes here
-    fps_calc("computation");
+    fps_calc("computation", 100);
 
     // Prepare input
     ofm.setInputCloud(cloud);
@@ -127,7 +115,7 @@ public:
         view->resetCameraViewpoint("surface");
       }
 
-      fps_calc("visualization");
+      fps_calc("visualization", 100);
       view->spinOnce(1);
     }
 

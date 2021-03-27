@@ -37,7 +37,7 @@
 #pragma once
 
 #include <pcl/apps/organized_segmentation_demo_qt.h>
-#include <pcl/common/time.h>
+#include <pcl/apps/timer.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/io/grabber.h> // for Grabber
 #include <pcl/segmentation/edge_aware_plane_comparator.h>
@@ -53,19 +53,6 @@
 #include <pcl/point_types.h>
 
 using PointT = pcl::PointXYZRGBA;
-
-auto fps_calc = [](std::string what) {
-  static unsigned count = 0;
-  static double last = pcl::getTime();
-  double now = pcl::getTime();
-  ++count;
-  if (now - last >= 1.0) {
-    std::cout << "Average framerate(" << what
-              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
-    count = 0;
-    last = now;
-  }
-};
 
 namespace Ui {
 class MainWindow;

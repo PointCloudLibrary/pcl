@@ -34,7 +34,7 @@
  * Author: Julius Kammerl (julius@kammerl.de)
  */
 
-#include <pcl/common/time.h>
+#include <pcl/apps/timer.h>
 #include <pcl/compression/octree_pointcloud_compression.h>
 #include <pcl/console/parse.h>
 #include <pcl/filters/passthrough.h>
@@ -99,19 +99,6 @@ char usage[] = "\n"
   "      ./pcl_openni_octree_compression -x -p highC -t -f pc_compressed.pcc \n"
   "\n";
 // clang-format on
-
-auto fps_calc = [](std::string what) {
-  static unsigned count = 0;
-  static double last = pcl::getTime();
-  double now = pcl::getTime();
-  ++count;
-  if (now - last >= 1.0) {
-    std::cout << "Average framerate(" << what
-              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
-    count = 0;
-    last = now;
-  }
-};
 
 void
 print_usage(const std::string& msg)
@@ -454,7 +441,7 @@ main(int argc, char** argv)
             "Decoded Point Cloud - PCL Compression Viewer");
 
         while (!socketStream.fail()) {
-          fps_calc("drawing");
+          fps_calc("drawing", 0);
           PointCloud<PointXYZRGBA>::Ptr cloudOut(new PointCloud<PointXYZRGBA>());
           octreeCoder->decodePointCloud(socketStream, cloudOut);
           viewer.showCloud(cloudOut);

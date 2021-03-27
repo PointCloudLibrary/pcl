@@ -33,7 +33,7 @@
  *
  */
 
-#include <pcl/common/time.h>
+#include <pcl/apps/timer.h>
 #include <pcl/console/parse.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/io/openni_camera/openni_driver.h>
@@ -43,19 +43,6 @@
 #include <pcl/point_types.h>
 
 #include <mutex>
-
-auto fps_calc = [](std::string what) {
-  static unsigned count = 0;
-  static double last = pcl::getTime();
-  double now = pcl::getTime();
-  ++count;
-  if (now - last >= 1.0) {
-    std::cout << "Average framerate(" << what
-              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
-    count = 0;
-    last = now;
-  }
-};
 
 template <typename PointType>
 class OpenNIVoxelGrid {
@@ -119,7 +106,7 @@ public:
 
     while (!viewer.wasStopped()) {
       if (cloud_) {
-        fps_calc("drawing");
+        fps_calc("drawing", 0);
         // the call to get() sets the cloud_ to null;
         viewer.showCloud(get());
       }

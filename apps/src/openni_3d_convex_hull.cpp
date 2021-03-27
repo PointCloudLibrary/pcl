@@ -33,7 +33,7 @@
  *
  */
 
-#include <pcl/common/time.h>
+#include <pcl/apps/timer.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_grabber.h>
@@ -48,18 +48,6 @@
 using namespace std::chrono_literals;
 using namespace pcl;
 using namespace pcl::visualization;
-
-auto fps_calc = [](std::string what) {
-  static unsigned count = 0;
-  static double last = pcl::getTime();
-  if (++count == 100) {
-    double now = pcl::getTime();
-    std::cout << "Average framerate(" << what
-              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
-    count = 0;
-    last = now;
-  }
-};
 
 template <typename PointType>
 class OpenNI3DConvexHull {
@@ -79,7 +67,7 @@ public:
   cloud_cb(const CloudConstPtr& cloud)
   {
     std::lock_guard<std::mutex> lock(mtx_);
-    fps_calc("computation");
+    fps_calc("computation", 100);
 
     cloud_pass_.reset(new Cloud);
     // Computation goes here
@@ -106,7 +94,7 @@ public:
 
     {
       std::lock_guard<std::mutex> lock(mtx_);
-      fps_calc("visualization");
+      fps_calc("visualization", 100);
       CloudPtr temp_cloud;
       temp_cloud.swap(cloud_pass_);
 

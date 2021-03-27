@@ -42,8 +42,36 @@
 #define MEASURE_FUNCTION_TIME
 #include <pcl/common/time.h> //fps calculations
 
+#include <memory>
+
+#define SHOW_FPS 1
+
 #if SHOW_FPS
-auto fps_calc = [](std::string what) {
+auto fps_calc = [](std::string what, int at_iter_num) {
+  static unsigned count = 0;
+  static double last = pcl::getTime();
+  if (!at_iter_num) {
+    double now = pcl::getTime();
+    ++count;
+    if (now - last >= 1.0) {
+      std::cout << "Average framerate(" << what
+                << "): " << double(count) / double(now - last) << " Hz" << std::endl;
+      count = 0;
+      last = now;
+    }
+  }
+  else {
+    if (++count == at_iter_num) {
+      double now = pcl::getTime();
+      std::cout << "Average framerate(" << what
+                << "): " << double(count) / double(now - last) << " Hz" << std::endl;
+      count = 0;
+      last = now;
+    }
+  }
+};
+
+auto fps_calc_with_stop = [](std::string what, std::shared_ptr<bool>& stop_computing) {
   static unsigned count = 0;
   static double last = pcl::getTime();
   double now = pcl::getTime();
@@ -53,8 +81,36 @@ auto fps_calc = [](std::string what) {
               << "): " << double(count) / double(now - last) << " Hz" << std::endl;
     count = 0;
     last = now;
+    if (*stop_computing)
+      std::cout << "Press 's' to start computing!\n";
   }
 };
+
+auto fps_calc_begin_end = [](std::string what, int at_iter_num) {
+  static double duration = 0;
+  static double start_time = 0;
+
+  if (what == "begin") {
+    start_time = pcl::getTime();
+  }
+  else {
+    double end_time = pcl::getTime();
+    static unsigned count = 0;
+    if (++count == at_iter_num) {
+      std::cout << "Average framerate(" << what
+                << "): " << double(count) / double(duration) << " Hz" << std::endl;
+      count = 0;
+      duration = 0.0;
+    }
+    else {
+      duration += end_time - start_time;
+    }
+  }
+};
+
 #else
-auto fps_calc = [](std::string /*what*/) {};
+auto fps_calc = [](std::string /*what*/, int /*at_iter_num*/) {};
+auto fps_calc_with_stop = [](std::string /*what*/,
+                             std::shared_ptr<bool>& /*stop_computing*/) {};
+auto fps_calc_begin_end = [](std::string /*what*/, int /*at_iter_num*/) {};
 #endif

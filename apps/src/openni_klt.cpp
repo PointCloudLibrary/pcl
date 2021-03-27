@@ -33,8 +33,7 @@
  *
  */
 
-#define MEASURE_FUNCTION_TIME
-#include <pcl/common/time.h> //fps calculations
+#include <pcl/apps/timer.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/print.h>
 #include <pcl/io/openni_grabber.h>
@@ -45,24 +44,6 @@
 #include <pcl/visualization/image_viewer.h>
 
 #include <mutex>
-
-#define SHOW_FPS 1
-#if SHOW_FPS
-auto fps_calc = [](std::string what) {
-  static unsigned count = 0;
-  static double last = pcl::getTime();
-  double now = pcl::getTime();
-  ++count;
-  if (now - last >= 1.0) {
-    std::cout << "Average framerate(" << what
-              << "): " << double(count) / double(now - last) << " Hz" << std::endl;
-    count = 0;
-    last = now;
-  }
-};
-#else
-auto fps_calc = [](std::string /*what*/) {};
-#endif
 
 void
 printHelp(int, char** argv)
@@ -130,7 +111,7 @@ public:
   void
   cloud_callback(const CloudConstPtr& cloud)
   {
-    fps_calc("cloud callback");
+    fps_calc("cloud callback", 0);
     std::lock_guard<std::mutex> lock(cloud_mutex_);
     cloud_ = cloud;
     // Compute Tomasi keypoints
@@ -146,7 +127,7 @@ public:
   void
   image_callback(const openni_wrapper::Image::Ptr& image)
   {
-    fps_calc("image callback");
+    fps_calc("image callback", 0);
     std::lock_guard<std::mutex> lock(image_mutex_);
     image_ = image;
 
