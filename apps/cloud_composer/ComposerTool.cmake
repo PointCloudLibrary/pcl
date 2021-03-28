@@ -16,7 +16,7 @@ function(define_composer_tool TOOL_NAME TOOL_SOURCES TOOL_HEADERS DEPS)
   endif()
   add_definitions(${QT_DEFINITIONS})
   add_definitions(-DQT_PLUGIN)
-  add_definitions(-DQT_NO_DEBUG)
+  target_compile_definitions(${TOOL_TARGET} PUBLIC $<$<CONFIG:Release>:-DQT_NO_DEBUG>)
   add_definitions(-DQT_SHARED)
 
   target_link_libraries(${TOOL_TARGET} pcl_cc_tool_interface pcl_common pcl_io ${DEPS} Qt5::Widgets)
