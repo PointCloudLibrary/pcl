@@ -65,10 +65,8 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBA)
       // iterate over runs
       for (int test_idx = 0; test_idx < NUMBER_OF_TEST_RUNS; test_idx++, total_runs++)
       {
-        int point_count;
-        do { // empty point cloud hangs decoder
-          point_count = MAX_POINTS * rand() / RAND_MAX;
-        } while (point_count < 1);
+        // empty point cloud hangs decoder
+        const int point_count = 1 + (MAX_POINTS - 1) * rand() / RAND_MAX;
         // create shared pointcloud instances
         pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>());
         // assign input point clouds to octree
@@ -121,10 +119,8 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZ)
       // loop over runs
       for (int test_idx = 0; test_idx < NUMBER_OF_TEST_RUNS; test_idx++, total_runs++)
       {
-        int point_count;
-        do { // empty point cloud hangs decoder
-          point_count = MAX_POINTS * rand() / RAND_MAX;
-        } while (point_count < 1);
+        // empty point cloud hangs decoder
+        const int point_count = 1 + (MAX_POINTS - 1) * rand() / RAND_MAX;
         // create shared pointcloud instances
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
         // assign input point clouds to octree
@@ -168,10 +164,8 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBASameCloud)
     pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> pointcloud_encoder((pcl::io::compression_Profiles_e) compression_profile, false);
     pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> pointcloud_decoder;
 
-    int point_count;
-    do { // empty point cloud hangs decoder
-      point_count = MAX_POINTS * rand() / RAND_MAX;
-    } while (point_count < 1);
+    // empty point cloud hangs decoder
+    const int point_count = 1 + (MAX_POINTS - 1) * rand() / RAND_MAX;
     // create shared pointcloud instances
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>());
     // assign input point clouds to octree
