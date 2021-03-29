@@ -95,7 +95,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::computeFeaturesAtA
   {
     FeatureCloudPtr feature_cloud (new FeatureCloud ());
     computeFeatureAtScale (scale_values_[scale_i], feature_cloud);
-    features_at_scale_[scale_i] = feature_cloud;
+    features_at_scale_.push_back(feature_cloud);
 
     // Vectorize each feature and insert it into the vectorized feature storage
     std::vector<std::vector<float> > feature_cloud_vectorized;
@@ -171,7 +171,6 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::extractUniqueFeatu
     // Calculate standard deviation within the scale
     float standard_dev = 0.0;
     std::vector<float> diff_vector (features_at_scale_vectorized_[scale_i].size ());
-    diff_vector.clear();
 
     for (const auto& feature: features_at_scale_vectorized_[scale_i])
     {
