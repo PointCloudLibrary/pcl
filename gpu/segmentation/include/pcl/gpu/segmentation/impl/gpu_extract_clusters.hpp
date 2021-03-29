@@ -51,6 +51,7 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
 
   // Create a bool vector of processed point indices, and initialize it to false
   // cloud is a DeviceArray<PointType>
+  PCL_DEBUG("[pcl::gpu::extractEuclideanClusters]\n");
   std::vector<bool> processed (host_cloud_->size (), false);
 
   int max_answers;
@@ -59,13 +60,16 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
     max_answers = host_cloud_->size();
   else
     max_answers = max_pts_per_cluster;
-  std::cout << "Max_answers: " << max_answers << std::endl;
+  PCL_DEBUG("Max_answers: %i\n", max_answers);
 
   // to store the current cluster
   pcl::PointIndices r;
 
   DeviceArray<PointXYZ> queries_device_buffer;
   queries_device_buffer.create(max_answers);
+
+  // Host buffer for results
+  std::vector<int> sizes, data;
 
   // Process all points in the cloud
   for (std::size_t i = 0; i < host_cloud_->size (); ++i)
@@ -98,17 +102,12 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
     pcl::gpu::NeighborIndices result_device;
 
     // once the area stop growing, stop also iterating.
-    std::vector<int> sizes, data;
-    sizes.reserve(host_cloud_->size());
-    data.reserve(host_cloud_->size());
     do
     {
-      // Host buffer for results
-
       // if the number of queries is not high enough implement search on Host here
-      if(queries_host.size () <= 10) ///@todo: adjust this to a variable number settable with method
+      if(queries_host.size () <= 100) ///@todo: adjust this to a variable number settable with method
       {
-        std::cout << " CPU: ";
+        PCL_DEBUG(" CPU: ");
         for(std::size_t p = 0; p < queries_host.size (); p++)
         {
           // Execute the radiusSearch on the host
@@ -143,7 +142,8 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
       // If number of queries is high enough do it here
       else
       {
-        std::cout << " GPU: ";
+        PCL_DEBUG(" GPU: ");
+        std::cout << "GPU " << std::endl;
         // Copy buffer
         queries_device = DeviceArray<PointXYZ>(queries_device_buffer.ptr(),queries_host.size());
         // Move queries to GPU
@@ -174,8 +174,10 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
           }
         }
       }
-      std::cout << " data.size: " << data.size() << " foundpoints: " << found_points << " previous: " << previous_found_points;
-      std::cout << " new points: " << found_points - previous_found_points << " next queries size: " << queries_host.size() << std::endl;
+      PCL_DEBUG(" data.size: %i, foundpoints: %i, previous: %i", data.size() ,
+              found_points, previous_found_points);
+      PCL_DEBUG(" new points: %i, next queries size: %i\n", found_points - previous_found_points,
+             queries_host.size());
     }
     while (previous_found_points < found_points);
     // If this queue is satisfactory, add to the clusters
