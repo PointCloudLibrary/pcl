@@ -42,10 +42,10 @@ int main(int argc, char** argv) {
     std::cerr << "No test files given. Please download `table_scene_mug_stereo_textured.pcd` and `milk_cartoon_all_small_clorox.pcd`, and pass their paths to the test." << std::endl;
     return (-1);
   }
-  benchmark::RegisterBenchmark("BM_NormalEstimation_mug", BM_NormalEstimation, argv[1])->Arg(50)->Arg(100)->Unit(benchmark::kMillisecond);
-  benchmark::RegisterBenchmark("BM_NormalEstimation_milk", BM_NormalEstimation, argv[2])->Arg(50)->Arg(100)->Unit(benchmark::kMillisecond);
+  benchmark::RegisterBenchmark("BM_NormalEstimation_mug", &BM_NormalEstimation, argv[1])->Arg(50)->Arg(100)->Unit(benchmark::kMillisecond);
+  benchmark::RegisterBenchmark("BM_NormalEstimation_milk", &BM_NormalEstimation, argv[2])->Arg(50)->Arg(100)->Unit(benchmark::kMillisecond);
 #ifdef _OPENMP
-  benchmark::RegisterBenchmark("BM_NormalEstimationOMP", BM_NormalEstimationOMP, argv[1])->Unit(benchmark::kMillisecond);
+  benchmark::RegisterBenchmark("BM_NormalEstimationOMP", &BM_NormalEstimationOMP, argv[1])->Unit(benchmark::kMillisecond);
 #endif
   benchmark::Initialize(&argc, argv);
   benchmark::RunSpecifiedBenchmarks();
