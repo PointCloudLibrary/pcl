@@ -147,7 +147,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::calculateMeanFeatu
                      feature.cbegin (), mean_feature_.begin (), std::plus<>{});
   }
 
-  const float factor = std::min<float>(1, normalization_factor);
+  const float factor = std::max<float>(1, normalization_factor);
   std::transform(mean_feature_.cbegin(),
                  mean_feature_.cend(),
                  mean_feature_.begin(),
