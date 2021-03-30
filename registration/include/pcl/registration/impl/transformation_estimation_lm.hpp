@@ -40,8 +40,6 @@
 #ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_HPP_
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_HPP_
 
-#include <pcl/registration/distances.h>
-#include <pcl/registration/warp_point_rigid.h>
 #include <pcl/registration/warp_point_rigid_6d.h>
 
 #include <unsupported/Eigen/NonLinearOptimization>
@@ -124,7 +122,7 @@ template <typename PointSource, typename PointTarget, typename MatScalar>
 void
 pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScalar>::
     estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const std::vector<int>& indices_src,
+                                const pcl::Indices& indices_src,
                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
                                 Matrix4& transformation_matrix) const
 {
@@ -141,7 +139,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
   transformation_matrix.setIdentity();
 
   const auto nr_correspondences = cloud_tgt.size();
-  std::vector<int> indices_tgt;
+  pcl::Indices indices_tgt;
   indices_tgt.resize(nr_correspondences);
   for (std::size_t i = 0; i < nr_correspondences; ++i)
     indices_tgt[i] = i;
@@ -155,9 +153,9 @@ template <typename PointSource, typename PointTarget, typename MatScalar>
 inline void
 pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScalar>::
     estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                                const std::vector<int>& indices_src,
+                                const pcl::Indices& indices_src,
                                 const pcl::PointCloud<PointTarget>& cloud_tgt,
-                                const std::vector<int>& indices_tgt,
+                                const pcl::Indices& indices_tgt,
                                 Matrix4& transformation_matrix) const
 {
   if (indices_src.size() != indices_tgt.size()) {
@@ -227,8 +225,8 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
                                 Matrix4& transformation_matrix) const
 {
   const auto nr_correspondences = correspondences.size();
-  std::vector<int> indices_src(nr_correspondences);
-  std::vector<int> indices_tgt(nr_correspondences);
+  pcl::Indices indices_src(nr_correspondences);
+  pcl::Indices indices_tgt(nr_correspondences);
   for (std::size_t i = 0; i < nr_correspondences; ++i) {
     indices_src[i] = correspondences[i].index_query;
     indices_tgt[i] = correspondences[i].index_match;
@@ -274,8 +272,8 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
 {
   const PointCloud<PointSource>& src_points = *estimator_->tmp_src_;
   const PointCloud<PointTarget>& tgt_points = *estimator_->tmp_tgt_;
-  const std::vector<int>& src_indices = *estimator_->tmp_idx_src_;
-  const std::vector<int>& tgt_indices = *estimator_->tmp_idx_tgt_;
+  const pcl::Indices& src_indices = *estimator_->tmp_idx_src_;
+  const pcl::Indices& tgt_indices = *estimator_->tmp_idx_tgt_;
 
   // Initialize the warp function with the given parameters
   estimator_->warp_point_->setParam(x);

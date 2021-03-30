@@ -95,14 +95,14 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
 
   // Find minima and maxima in differences inside the input cloud
   typename pcl::search::Search<PointT>::Ptr input_tree = cloud_trees_.back ();
-  for (int point_i = 0; point_i < static_cast<int> (input_->size ()); ++point_i)
+  for (pcl::index_t point_i = 0; point_i < static_cast<pcl::index_t> (input_->size ()); ++point_i)
   {
-    std::vector<int> nn_indices;
+    pcl::Indices nn_indices;
     std::vector<float> nn_distances;
     input_tree->radiusSearch (point_i, input_scale_ * neighborhood_constant_, nn_indices, nn_distances);
 
     bool is_min = true, is_max = true;
-    for (const int &nn_index : nn_indices)
+    for (const auto &nn_index : nn_indices)
       if (nn_index != point_i)
       {
         if (diffs[input_index_][point_i] < diffs[input_index_][nn_index])
@@ -126,7 +126,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
         cloud_trees_[cloud_i]->radiusSearch (point_i, scales_[scale_i].first * neighborhood_constant_, nn_indices, nn_distances);
 
         bool is_min_other_scale = true, is_max_other_scale = true;
-        for (const int &nn_index : nn_indices)
+        for (const auto &nn_index : nn_indices)
           if (nn_index != point_i)
           {
             if (diffs[input_index_][point_i] < diffs[cloud_i][nn_index])

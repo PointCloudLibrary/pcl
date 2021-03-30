@@ -63,7 +63,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovariances(
   }
 
   Eigen::Vector3d mean;
-  std::vector<int> nn_indecies;
+  pcl::Indices nn_indecies;
   nn_indecies.reserve(k_correspondences_);
   std::vector<float> nn_dist_sq;
   nn_dist_sq.reserve(k_correspondences_);
@@ -413,7 +413,7 @@ GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransformatio
   nr_iterations_ = 0;
   converged_ = false;
   double dist_threshold = corr_dist_threshold_ * corr_dist_threshold_;
-  std::vector<int> nn_indices(1);
+  pcl::Indices nn_indices(1);
   std::vector<float> nn_dists(1);
 
   pcl::transformPointCloud(output, output, guess);

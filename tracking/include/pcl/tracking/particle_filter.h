@@ -6,6 +6,7 @@
 #include <pcl/tracking/tracker.h>
 #include <pcl/tracking/tracking.h>
 #include <pcl/memory.h>
+#include <pcl/point_types.h>
 
 namespace pcl {
 namespace tracking {
@@ -435,9 +436,10 @@ protected:
    **/
   void
   computeTransformedPointCloud(const StateT& hypothesis,
-                               std::vector<int>& indices,
+                               pcl::Indices& indices,
                                PointCloudIn& cloud);
 
+#ifdef DOXYGEN_ONLY
   /** \brief Compute a reference pointcloud transformed to the pose that hypothesis
    * represents and calculate indices taking occlusion into account.
    * \param[in] hypothesis a particle which represents a hypothesis.
@@ -447,8 +449,23 @@ protected:
    **/
   void
   computeTransformedPointCloudWithNormal(const StateT& hypothesis,
-                                         std::vector<int>& indices,
+                                         pcl::Indices& indices,
                                          PointCloudIn& cloud);
+#else
+  template <typename PointT = PointInT, traits::HasNormal<PointT> = true>
+  void
+  computeTransformedPointCloudWithNormal(const StateT& hypothesis,
+                                         pcl::Indices& indices,
+                                         PointCloudIn& cloud);
+  template <typename PointT = PointInT, traits::HasNoNormal<PointT> = true>
+  void
+  computeTransformedPointCloudWithNormal(const StateT&, pcl::Indices&, PointCloudIn&)
+  {
+    PCL_WARN("[pcl::%s::computeTransformedPointCloudWithoutNormal] "
+             "use_normal_ == true is not supported in this Point Type.\n",
+             getClassName().c_str());
+  }
+#endif
 
   /** \brief Compute a reference pointcloud transformed to the pose that hypothesis
    * represents and calculate indices without taking occlusion into account.

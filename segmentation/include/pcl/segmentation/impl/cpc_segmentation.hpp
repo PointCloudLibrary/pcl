@@ -38,6 +38,7 @@
 #ifndef PCL_SEGMENTATION_IMPL_CPC_SEGMENTATION_HPP_
 #define PCL_SEGMENTATION_IMPL_CPC_SEGMENTATION_HPP_
 
+#include <pcl/sample_consensus/sac_model_plane.h> // for SampleConsensusModelPlane
 #include <pcl/segmentation/cpc_segmentation.h>
 
 template <typename PointT>
@@ -294,7 +295,7 @@ pcl::CPCSegmentation<PointT>::WeightedRandomSampleConsensus::computeModel (int)
   iterations_ = 0;
   best_score_ = -std::numeric_limits<double>::max ();
 
-  std::vector<int> selection;
+  pcl::Indices selection;
   Eigen::VectorXf model_coefficients;
 
   unsigned skipped_count = 0;

@@ -40,10 +40,17 @@
 #include <QDebug>
 
 #include <pcl/apps/cloud_composer/items/cloud_composer_item.h>
+
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/search/kdtree.h>
+#include <pcl/visualization/point_cloud_geometry_handlers.h>
+#include <pcl/visualization/point_cloud_color_handlers.h>
+#include <pcl/visualization/pcl_visualizer.h>
+
 
 //Typedefs to make things sane
 using GeometryHandler = pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2>;

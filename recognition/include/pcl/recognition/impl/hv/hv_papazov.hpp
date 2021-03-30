@@ -80,7 +80,7 @@ template<typename ModelT, typename SceneT>
 
       std::vector<int> explained_indices;
       std::vector<int> outliers;
-      std::vector<int> nn_indices;
+      pcl::Indices nn_indices;
       std::vector<float> nn_distances;
 
       for (std::size_t i = 0; i < recog_model->cloud_->size (); i++)

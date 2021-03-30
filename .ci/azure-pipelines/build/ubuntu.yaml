@@ -1,4 +1,6 @@
 steps:
+  - script: (nohup Xvfb :99 -screen 0 1280x1024x24 -nolisten tcp -nolisten unix &)
+    displayName: "Start Xvfb for DISPLAY=$(DISPLAY)"
   - checkout: self
     # find the commit hash on a quick non-forced update too
     fetchDepth: 10

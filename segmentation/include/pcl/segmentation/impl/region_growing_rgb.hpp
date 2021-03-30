@@ -273,7 +273,7 @@ template <typename PointT, typename NormalT> void
 pcl::RegionGrowingRGB<PointT, NormalT>::findPointNeighbours ()
 {
   int point_number = static_cast<int> (indices_->size ());
-  std::vector<int> neighbours;
+  pcl::Indices neighbours;
   std::vector<float> distances;
 
   point_neighbours_.resize (input_->size (), neighbours);
@@ -294,14 +294,14 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findPointNeighbours ()
 template <typename PointT, typename NormalT> void
 pcl::RegionGrowingRGB<PointT, NormalT>::findSegmentNeighbours ()
 {
-  std::vector<int> neighbours;
+  pcl::Indices neighbours;
   std::vector<float> distances;
   segment_neighbours_.resize (number_of_segments_, neighbours);
   segment_distances_.resize (number_of_segments_, distances);
 
   for (int i_seg = 0; i_seg < number_of_segments_; i_seg++)
   {
-    std::vector<int> nghbrs;
+    pcl::Indices nghbrs;
     std::vector<float> dist;
     findRegionsKNN (i_seg, region_neighbour_number_, nghbrs, dist);
     segment_neighbours_[i_seg].swap (nghbrs);
@@ -311,7 +311,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findSegmentNeighbours ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT,typename NormalT> void
-pcl::RegionGrowingRGB<PointT, NormalT>::findRegionsKNN (int index, int nghbr_number, std::vector<int>& nghbrs, std::vector<float>& dist)
+pcl::RegionGrowingRGB<PointT, NormalT>::findRegionsKNN (pcl::index_t index, int nghbr_number, pcl::Indices& nghbrs, std::vector<float>& dist)
 {
   std::vector<float> distances;
   float max_dist = std::numeric_limits<float>::max ();
@@ -368,17 +368,14 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findRegionsKNN (int index, int nghbr_num
 template <typename PointT, typename NormalT> void
 pcl::RegionGrowingRGB<PointT, NormalT>::applyRegionMergingAlgorithm ()
 {
-  int number_of_points = static_cast<int> (indices_->size ());
-
   // calculate color of each segment
   std::vector< std::vector<unsigned int> > segment_color;
   std::vector<unsigned int> color;
   color.resize (3, 0);
   segment_color.resize (number_of_segments_, color);
 
-  for (int i_point = 0; i_point < number_of_points; i_point++)
+  for (const auto& point_index : (*indices_))
   {
-    int point_index = (*indices_)[i_point];
     int segment_index = point_labels_[point_index];
     segment_color[segment_index][0] += (*input_)[point_index].r;
     segment_color[segment_index][1] += (*input_)[point_index].g;
@@ -609,7 +606,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::assembleRegions (std::vector<unsigned in
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT> bool
-pcl::RegionGrowingRGB<PointT, NormalT>::validatePoint (int initial_seed, int point, int nghbr, bool& is_a_seed) const
+pcl::RegionGrowingRGB<PointT, NormalT>::validatePoint (pcl::index_t initial_seed, pcl::index_t point, pcl::index_t nghbr, bool& is_a_seed) const
 {
   is_a_seed = true;
 
@@ -688,7 +685,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::validatePoint (int initial_seed, int poi
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT> void
-pcl::RegionGrowingRGB<PointT, NormalT>::getSegmentFromPoint (int index, pcl::PointIndices& cluster)
+pcl::RegionGrowingRGB<PointT, NormalT>::getSegmentFromPoint (pcl::index_t index, pcl::PointIndices& cluster)
 {
   cluster.indices.clear ();
 
@@ -701,9 +698,8 @@ pcl::RegionGrowingRGB<PointT, NormalT>::getSegmentFromPoint (int index, pcl::Poi
 
   // first of all we need to find out if this point belongs to cloud
   bool point_was_found = false;
-  int number_of_points = static_cast <int> (indices_->size ());
-  for (int point = 0; point < number_of_points; point++)
-    if ( (*indices_)[point] == index)
+  for (const auto& point : (*indices_))
+    if (point == index)
     {
       point_was_found = true;
       break;

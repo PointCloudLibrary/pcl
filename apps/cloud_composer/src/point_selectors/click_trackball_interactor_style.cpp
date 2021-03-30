@@ -4,6 +4,10 @@
 
 #include <QDebug>
 
+
+#include <vtkObjectFactory.h> // For vtkStandardNewMacro
+#include <vtkTransform.h>
+
 namespace pcl
 {
   namespace cloud_composer

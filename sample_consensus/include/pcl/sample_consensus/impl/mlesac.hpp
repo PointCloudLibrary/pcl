@@ -42,8 +42,8 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_MLESAC_H_
 
 #include <pcl/sample_consensus/mlesac.h>
-#include <pcl/point_types.h>
 #include <cfloat> // for FLT_MAX
+#include <pcl/common/common.h> // for computeMedian
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
@@ -61,11 +61,13 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
   double k = 1.0;
 
   Indices selection;
-  Eigen::VectorXf model_coefficients;
+  Eigen::VectorXf model_coefficients (sac_model_->getModelSize ());
   std::vector<double> distances;
 
   // Compute sigma - remember to set threshold_ correctly !
   sigma_ = computeMedianAbsoluteDeviation (sac_model_->getInputCloud (), sac_model_->getIndices (), threshold_);
+  const double dist_scaling_factor = -1.0 / (2.0 * sigma_ * sigma_); // Precompute since this does not change
+  const double normalization_factor = 1.0 / (sqrt (2 * M_PI) * sigma_);
   if (debug_verbosity_level > 1)
     PCL_DEBUG ("[pcl::MaximumLikelihoodSampleConsensus::computeModel] Estimated sigma value: %f.\n", sigma_);
 
@@ -107,7 +109,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
       continue;
     }
     
-    // Use Expectiation-Maximization to find out the right value for d_cur_penalty
+    // Use Expectation-Maximization to find out the right value for d_cur_penalty
     // ---[ Initial estimate for the gamma mixing parameter = 1/2
     double gamma = 0.5;
     double p_outlier_prob = 0;
@@ -116,10 +118,10 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
     std::vector<double> p_inlier_prob (indices_size);
     for (int j = 0; j < iterations_EM_; ++j)
     {
+      const double weighted_normalization_factor = gamma * normalization_factor;
       // Likelihood of a datum given that it is an inlier
       for (std::size_t i = 0; i < indices_size; ++i)
-        p_inlier_prob[i] = gamma * std::exp (- (distances[i] * distances[i] ) / 2 * (sigma_ * sigma_) ) /
-                           (sqrt (2 * M_PI) * sigma_);
+        p_inlier_prob[i] = weighted_normalization_factor * std::exp ( dist_scaling_factor * distances[i] * distances[i] );
 
       // Likelihood of a datum given that it is an outlier
       p_outlier_prob = (1 - gamma) / v;
@@ -223,15 +225,7 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedianAbsoluteDeviation (
     distances[i] = ptdiff.dot (ptdiff);
   }
 
-  std::sort (distances.begin (), distances.end ());
-
-  double result;
-  std::size_t mid = indices->size () / 2;
-  // Do we have a "middle" point or should we "estimate" one ?
-  if (indices->size () % 2 == 0)
-    result = (sqrt (distances[mid-1]) + sqrt (distances[mid])) / 2;
-  else
-    result = sqrt (distances[mid]);
+  const double result = pcl::computeMedian (distances.begin (), distances.end (), static_cast<double(*)(double)>(std::sqrt));
   return (sigma * result);
 }
 
@@ -276,23 +270,10 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeMedian (
     y[i] = (*cloud)[(*indices)[i]].y;
     z[i] = (*cloud)[(*indices)[i]].z;
   }
-  std::sort (x.begin (), x.end ());
-  std::sort (y.begin (), y.end ());
-  std::sort (z.begin (), z.end ());
 
-  std::size_t mid = indices->size () / 2;
-  if (indices->size () % 2 == 0)
-  {
-    median[0] = (x[mid-1] + x[mid]) / 2;
-    median[1] = (y[mid-1] + y[mid]) / 2;
-    median[2] = (z[mid-1] + z[mid]) / 2;
-  }
-  else
-  {
-    median[0] = x[mid];
-    median[1] = y[mid];
-    median[2] = z[mid];
-  }
+  median[0] = pcl::computeMedian (x.begin(), x.end());
+  median[1] = pcl::computeMedian (y.begin(), y.end());
+  median[2] = pcl::computeMedian (z.begin(), z.end());
   median[3] = 0;
 }
 

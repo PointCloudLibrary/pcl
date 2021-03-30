@@ -202,9 +202,7 @@ public:
   std::string
   getStrBool(bool state)
   {
-    std::stringstream ss;
-    ss << state;
-    return ss.str();
+    return state ? "1" : "0";
   }
 
   /////////////////////////////////////////////////////////////////////////

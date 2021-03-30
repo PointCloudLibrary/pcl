@@ -30,7 +30,7 @@ class PreProcessorAndNormalEstimator {
     KdTreeInPtr tree = pcl::make_shared<pcl::KdTreeFLANN<PointInT>>(false);
     tree->setInputCloud(input);
 
-    std::vector<int> nn_indices(9);
+    pcl::Indices nn_indices(9);
     std::vector<float> nn_distances(9);
     std::vector<int> src_indices;
 

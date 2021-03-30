@@ -536,8 +536,8 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
   std::vector<std::string> st;
   try
   {
-    index_t point_idx = 0;
-    index_t normal_idx = 0;
+    uindex_t point_idx = 0;
+    uindex_t normal_idx = 0;
 
     while (!fs.eof ())
     {

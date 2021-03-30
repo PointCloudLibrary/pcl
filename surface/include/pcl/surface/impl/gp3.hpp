@@ -83,7 +83,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
     nnn_ = static_cast<int> (indices_->size ());
 
   // Variables to hold the results of nearest neighbor searches
-  std::vector<int> nnIdx (nnn_);
+  pcl::Indices nnIdx (nnn_);
   std::vector<float> sqrDists (nnn_);
 
   // current number of connected components
@@ -116,11 +116,11 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
   if (!input_->is_dense)
   {
     // Skip invalid points from the indices list
-    for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
-      if (!std::isfinite ((*input_)[*it].x) ||
-          !std::isfinite ((*input_)[*it].y) ||
-          !std::isfinite ((*input_)[*it].z))
-        state_[*it] = NONE;
+    for (const auto& idx : (*indices_))
+      if (!std::isfinite ((*input_)[idx].x) ||
+          !std::isfinite ((*input_)[idx].y) ||
+          !std::isfinite ((*input_)[idx].z))
+        state_[idx] = NONE;
   }
 
   // Saving coordinates and point to index mapping
@@ -878,10 +878,10 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
           else
             angle_so_far = 0;
         }
-        for (const int &it : to_erase)
+        for (const auto &idx : to_erase)
         {
           for (std::vector<int>::iterator iter = angleIdx.begin(); iter != angleIdx.end(); ++iter)
-            if (it == *iter)
+            if (idx == *iter)
             {
               angleIdx.erase(iter);
               break;

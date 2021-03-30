@@ -184,7 +184,7 @@ TEST(PCL, ICP_translated)
   icp.align(Final);
 
   // Check that we have sucessfully converged
-  ASSERT_EQ(icp.hasConverged(), true);
+  ASSERT_TRUE(icp.hasConverged());
 
   // Test that the fitness score is below acceptable threshold
   EXPECT_LT(icp.getFitnessScore(), 1e-6);
@@ -475,8 +475,8 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
   {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
+    bool force_cache = static_cast<bool> (iter/2);
+    bool force_cache_reciprocal = static_cast<bool> (iter%2);
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
@@ -548,8 +548,8 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
   {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
+    bool force_cache = static_cast<bool> (iter/2);
+    bool force_cache_reciprocal = static_cast<bool> (iter%2);
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)
@@ -621,8 +621,8 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
   {
-    bool force_cache = (bool) iter/2;
-    bool force_cache_reciprocal = (bool) iter%2;
+    bool force_cache = static_cast<bool> (iter/2);
+    bool force_cache_reciprocal = static_cast<bool> (iter%2);
     pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
     // Ensure that, when force_cache is not set, we are robust to the wrong input
     if (force_cache)

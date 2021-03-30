@@ -198,7 +198,7 @@ pcl::modeler::CloudMesh::updateVtkPolygons()
   if (cloud_->is_dense) {
     for (const auto& polygon : polygons_) {
       vtk_polygons_->InsertNextCell(polygon.vertices.size());
-      for (const unsigned int& vertex : polygon.vertices)
+      for (const auto& vertex : polygon.vertices)
         vtk_polygons_->InsertCellPoint(vertex);
     }
   }
@@ -208,7 +208,7 @@ pcl::modeler::CloudMesh::updateVtkPolygons()
 
     for (const auto& polygon : polygons_) {
       vtk_polygons_->InsertNextCell(polygon.vertices.size());
-      for (const unsigned int& vertex : polygon.vertices)
+      for (const auto& vertex : polygon.vertices)
         vtk_polygons_->InsertCellPoint((*indices)[vertex]);
     }
   }

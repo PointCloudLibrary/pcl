@@ -178,7 +178,6 @@ namespace pcl
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b RadiusOutlierRemoval is a simple filter that removes outliers if the number of neighbors in a certain
     * search radius is smaller than a given K.
-    * \note setFilterFieldName (), setFilterLimits (), and setFilterLimitNegative () are ignored.
     * \author Radu Bogdan Rusu
     * \ingroup filters
     */

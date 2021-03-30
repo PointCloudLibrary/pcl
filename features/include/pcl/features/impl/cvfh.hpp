@@ -100,7 +100,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSmoot
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.size (), false);
 
-  std::vector<int> nn_indices;
+  pcl::Indices nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
   for (std::size_t i = 0; i < cloud.size (); ++i)
@@ -159,9 +159,9 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSmoot
 template<typename PointInT, typename PointNT, typename PointOutT> void
 pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::filterNormalsWithHighCurvature (
     const pcl::PointCloud<PointNT> & cloud,
-    std::vector<int> &indices_to_use,
-    std::vector<int> &indices_out,
-    std::vector<int> &indices_in,
+    pcl::Indices &indices_to_use,
+    pcl::Indices &indices_out,
+    pcl::Indices &indices_in,
     float threshold)
 {
   indices_out.resize (cloud.size ());
@@ -211,8 +211,8 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   centroids_dominant_orientations_.clear ();
 
   // ---[ Step 0: remove normals with high curvature
-  std::vector<int> indices_out;
-  std::vector<int> indices_in;
+  pcl::Indices indices_out;
+  pcl::Indices indices_in;
   filterNormalsWithHighCurvature (*normals_, *indices_, indices_out, indices_in, curv_threshold_);
 
   pcl::PointCloud<pcl::PointNormal>::Ptr normals_filtered_cloud (new pcl::PointCloud<pcl::PointNormal> ());

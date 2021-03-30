@@ -179,7 +179,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Nearest_K_Neighbour_Search_Kinec
   // create organized search
   search::OrganizedNeighbor<PointXYZ> organizedNeighborSearch;
 
-  std::vector<int> k_indices;
+  pcl::Indices k_indices;
   std::vector<float> k_sqr_distances;
 
   std::vector<int> k_indices_bruteforce;
@@ -308,7 +308,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
       }
     }
 
-    std::vector<int> cloudNWRSearch;
+    pcl::Indices cloudNWRSearch;
     std::vector<float> cloudNWRRadius;
 
     organizedNeighborSearch.setInputCloud (cloudIn);
@@ -320,7 +320,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     for (const auto it : cloudNWRSearch)
     {
       auto const pointDist = geometry::distance((*cloudIn)[it], searchPoint);
-      ASSERT_EQ ( (pointDist <= searchRadius) , true);
+      ASSERT_LE (pointDist, searchRadius);
     }
 
 
@@ -328,7 +328,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     for (const auto it : cloudSearchBruteforce)
     {
       const auto pointDist = geometry::distance((*cloudIn)[it], searchPoint);
-      ASSERT_EQ ( (pointDist <= searchRadius) , true);
+      ASSERT_LE (pointDist, searchRadius);
     }
 
     ASSERT_EQ (cloudNWRRadius.size() , cloudSearchBruteforce.size ());
@@ -336,7 +336,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
     // check if result limitation works
     organizedNeighborSearch.radiusSearch (searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, 5);
 
-    ASSERT_EQ (cloudNWRRadius.size () <= 5, true);
+    ASSERT_LE (cloudNWRRadius.size (), 5);
   }
 }
 
@@ -405,7 +405,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
       }
     }
 
-    std::vector<int> cloudNWRSearch;
+    pcl::Indices cloudNWRSearch;
     std::vector<float> cloudNWRRadius;
 
     double check_time = getTime();
@@ -462,10 +462,10 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     double searchRadius = 1.0 * (test_id*1.0/10*1.0);
     double sum_time = 0, sum_time2 = 0;
 
-    std::vector<int> cloudNWRSearch;
+    pcl::Indices cloudNWRSearch;
     std::vector<float> cloudNWRRadius;
 
-    std::vector<int> cloudNWRSearch2;
+    pcl::Indices cloudNWRSearch2;
     std::vector<float> cloudNWRRadius2;
 
     for (int iter = 0; iter < 100; iter++)
@@ -523,7 +523,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     for (const auto it : cloudNWRSearch)
     {
       double pointDist = geometry::distance((*cloudIn)[it], searchPoint);
-      ASSERT_EQ ( (pointDist <= searchRadius) , true);
+      ASSERT_LE (pointDist, searchRadius);
     }
 
 
@@ -531,7 +531,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     for (const auto it : cloudSearchBruteforce)
     {
       double pointDist = geometry::distance((*cloudIn)[it], searchPoint);
-      ASSERT_EQ ( (pointDist <= searchRadius) , true);
+      ASSERT_LE (pointDist, searchRadius);
     }
 
     ASSERT_EQ (cloudNWRRadius.size() , cloudSearchBruteforce.size ());
@@ -539,7 +539,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
     // check if result limitation works
     organizedNeighborSearch.radiusSearch (searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, 5);
 
-    ASSERT_EQ (cloudNWRRadius.size () <= 5, true);
+    ASSERT_LE (cloudNWRRadius.size (), 5);
   }
 }
 

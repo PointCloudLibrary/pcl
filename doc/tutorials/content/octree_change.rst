@@ -23,7 +23,7 @@ The explanation
 
 Now, let's discuss the code in detail.
 
-We fist instantiate the OctreePointCloudChangeDetector class and define its voxel resolution. 
+We first instantiate the OctreePointCloudChangeDetector class and define its voxel resolution. 
 
 .. literalinclude:: sources/octree_change_detection/octree_change_detection.cpp
    :language: cpp

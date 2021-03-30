@@ -487,7 +487,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     {
       alpha_shape_sorted[sorted_idx] = alpha_shape[(*curr).first];
       // check where we can go from (*curr).first
-      for (const int &i : (*curr).second)
+      for (const auto &i : (*curr).second)
       {
         if (!used[i])
         {
@@ -564,7 +564,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     pcl::KdTreeFLANN<PointInT> tree (true);
     tree.setInputCloud (input_, indices_);
 
-    std::vector<int> neighbor;
+    pcl::Indices neighbor;
     std::vector<float> distances;
     neighbor.resize (1);
     distances.resize (1);

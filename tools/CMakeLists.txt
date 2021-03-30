@@ -200,12 +200,20 @@ else()
 
   PCL_ADD_EXECUTABLE(pcl_obj2pcd COMPONENT ${SUBSYS_NAME} SOURCES obj2pcd.cpp)
   target_link_libraries(pcl_obj2pcd pcl_common pcl_io)
+  #TODO: Update when CMAKE 3.10 is available
+  if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+    target_link_libraries(pcl_obj2pcd VTK::FiltersCore)
+  endif()
 
   PCL_ADD_EXECUTABLE(pcl_obj2ply COMPONENT ${SUBSYS_NAME} SOURCES obj2ply.cpp)
   target_link_libraries(pcl_obj2ply pcl_common pcl_io)
 
   PCL_ADD_EXECUTABLE(pcl_vtk2pcd COMPONENT ${SUBSYS_NAME} SOURCES vtk2pcd.cpp)
   target_link_libraries(pcl_vtk2pcd pcl_common pcl_io)
+  #TODO: Update when CMAKE 3.10 is available
+  if(NOT (${VTK_VERSION} VERSION_LESS 9.0))
+    target_link_libraries(pcl_vtk2pcd VTK::FiltersCore)
+  endif()
 
   if(BUILD_visualization)
     PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_model_opps COMPONENT ${SUBSYS_NAME} SOURCES obj_rec_ransac_model_opps.cpp)

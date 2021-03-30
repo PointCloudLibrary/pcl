@@ -48,7 +48,7 @@ template <typename PointInT, typename PointOutT> void
 pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeIntensitySpinImage (
       const PointCloudIn &cloud, float radius, float sigma, 
       int k,
-      const std::vector<int> &indices, 
+      const pcl::Indices &indices, 
       const std::vector<float> &squared_distances, 
       Eigen::MatrixXf &intensity_spin_image)
 {
@@ -139,7 +139,7 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
 
   Eigen::MatrixXf intensity_spin_image (nr_intensity_bins_, nr_distance_bins_);
   // Allocate enough space to hold the radiusSearch results
-  std::vector<int> nn_indices (surface_->size ());
+  pcl::Indices nn_indices (surface_->size ());
   std::vector<float> nn_dist_sqr (surface_->size ());
  
   output.is_dense = true;

@@ -22,8 +22,10 @@ mark_as_advanced(PCL_SHARED_LIBS)
 option(PCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32 "Build against a dynamically linked Boost on Win32 platforms." OFF)
 mark_as_advanced(PCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32)
 
-# Build with dynamic linking for FLANN (advanced users)
-option(PCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32 "Build against a dynamically linked FLANN on Win32 platforms." OFF)
+# Build with shared/static linking for FLANN (advanced users)
+set(PCL_FLANN_REQUIRED_TYPE "DONTCARE" CACHE STRING "Select build type to use (STATIC/SHARED).")
+set_property(CACHE PCL_FLANN_REQUIRED_TYPE PROPERTY STRINGS DONTCARE SHARED STATIC)
+
 mark_as_advanced(PCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32)
 
 # Build with dynamic linking for QHull (advanced users)

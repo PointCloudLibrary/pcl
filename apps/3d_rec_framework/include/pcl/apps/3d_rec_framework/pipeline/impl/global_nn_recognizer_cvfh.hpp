@@ -34,11 +34,11 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::get
     }
   }
 
-  std::stringstream dir;
-  std::string path = source_->getModelDescriptorDir(model, training_dir_, descr_name_);
-  dir << path << "/pose_" << view_id << ".txt";
+  const std::string path =
+      source_->getModelDescriptorDir(model, training_dir_, descr_name_);
+  const std::string dir = path + "/pose_" + std::to_string(view_id) + ".txt";
 
-  PersistenceUtils::readMatrixFromFile(dir.str(), pose_matrix);
+  PersistenceUtils::readMatrixFromFile(dir, pose_matrix);
 }
 
 template <template <class> class Distance, typename PointInT, typename FeatureT>
@@ -46,15 +46,14 @@ bool
 pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::
     getRollPose(ModelT& model, int view_id, int d_id, Eigen::Matrix4f& pose_matrix)
 {
+  const std::string path =
+      source_->getModelDescriptorDir(model, training_dir_, descr_name_);
+  const std::string dir = path + "/roll_trans_" + std::to_string(view_id) + '_' +
+                          std::to_string(d_id) + ".txt";
 
-  std::stringstream dir;
-  std::string path = source_->getModelDescriptorDir(model, training_dir_, descr_name_);
-
-  dir << path << "/roll_trans_" << view_id << "_" << d_id << ".txt";
-
-  bf::path file_path = dir.str();
+  const bf::path file_path = dir;
   if (bf::exists(file_path)) {
-    PersistenceUtils::readMatrixFromFile(dir.str(), pose_matrix);
+    PersistenceUtils::readMatrixFromFile(dir, pose_matrix);
     return true;
   }
   return false;
@@ -65,11 +64,12 @@ void
 pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::
     getCentroid(ModelT& model, int view_id, int d_id, Eigen::Vector3f& centroid)
 {
-  std::stringstream dir;
-  std::string path = source_->getModelDescriptorDir(model, training_dir_, descr_name_);
-  dir << path << "/centroid_" << view_id << "_" << d_id << ".txt";
+  const std::string path =
+      source_->getModelDescriptorDir(model, training_dir_, descr_name_);
+  const std::string dir = path + "/centroid_" + std::to_string(view_id) + '_' +
+                          std::to_string(d_id) + ".txt";
 
-  PersistenceUtils::getCentroidFromFile(dir.str(), centroid);
+  PersistenceUtils::getCentroidFromFile(dir, centroid);
 }
 
 template <template <class> class Distance, typename PointInT, typename FeatureT>
@@ -78,10 +78,9 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::get
     ModelT& model, int view_id, PointInTPtr& view)
 {
   view.reset(new pcl::PointCloud<PointInT>);
-  std::stringstream dir;
   std::string path = source_->getModelDescriptorDir(model, training_dir_, descr_name_);
-  dir << path << "/view_" << view_id << ".pcd";
-  pcl::io::loadPCDFile(dir.str(), *view);
+  std::string dir = path + "/view_" + std::to_string(view_id) + ".pcd";
+  pcl::io::loadPCDFile(dir, *view);
 }
 
 template <template <class> class Distance, typename PointInT, typename FeatureT>
@@ -154,12 +153,11 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::
         flann_models_.push_back(descr_model);
 
         if (use_cache_) {
-
-          std::stringstream dir_pose;
-          dir_pose << path << "/pose_" << descr_model.view_id << ".txt";
+          const std::string dir_pose =
+              path + "/pose_" + std::to_string(descr_model.view_id) + ".txt";
 
           Eigen::Matrix4f pose_matrix;
-          PersistenceUtils::readMatrixFromFile(dir_pose.str(), pose_matrix);
+          PersistenceUtils::readMatrixFromFile(dir_pose, pose_matrix);
 
           std::pair<std::string, int> pair_model_view =
               std::make_pair(models->at(i).id_, descr_model.view_id);
@@ -617,36 +615,34 @@ pcl::rec_3d_framework::GlobalNNCVFHRecognizer<Distance, PointInT, FeatureT>::ini
         if (!bf::exists(desc_dir))
           bf::create_directory(desc_dir);
 
-        std::stringstream path_view;
-        path_view << path << "/view_" << v << ".pcd";
-        pcl::io::savePCDFileBinary(path_view.str(), *processed);
+        const std::string path_view = path + "/view_" + std::to_string(v) + ".pcd";
+        pcl::io::savePCDFileBinary(path_view, *processed);
 
-        std::stringstream path_pose;
-        path_pose << path << "/pose_" << v << ".txt";
-        PersistenceUtils::writeMatrixToFile(path_pose.str(),
-                                            models->at(i).poses_->at(v));
+        const std::string path_pose = path + "/pose_" + std::to_string(v) + ".txt";
+        PersistenceUtils::writeMatrixToFile(path_pose, models->at(i).poses_->at(v));
 
-        std::stringstream path_entropy;
-        path_entropy << path << "/entropy_" << v << ".txt";
-        PersistenceUtils::writeFloatToFile(path_entropy.str(),
+        const std::string path_entropy =
+            path + "/entropy_" + std::to_string(v) + ".txt";
+        PersistenceUtils::writeFloatToFile(path_entropy,
                                            models->at(i).self_occlusions_->at(v));
 
         // save signatures and centroids to disk
         for (std::size_t j = 0; j < signatures.size(); j++) {
           if (valid_trans[j]) {
-            std::stringstream path_centroid;
-            path_centroid << path << "/centroid_" << v << "_" << j << ".txt";
+            const std::string path_centroid = path + "/centroid_" + std::to_string(v) +
+                                              '_' + std::to_string(j) + ".txt";
             Eigen::Vector3f centroid(centroids[j][0], centroids[j][1], centroids[j][2]);
-            PersistenceUtils::writeCentroidToFile(path_centroid.str(), centroid);
+            PersistenceUtils::writeCentroidToFile(path_centroid, centroid);
 
-            std::stringstream path_descriptor;
-            path_descriptor << path << "/descriptor_" << v << "_" << j << ".pcd";
-            pcl::io::savePCDFileBinary(path_descriptor.str(), signatures[j]);
+            const std::string path_descriptor = path + "/descriptor_" +
+                                                std::to_string(v) + '_' +
+                                                std::to_string(j) + ".pcd";
+            pcl::io::savePCDFileBinary(path_descriptor, signatures[j]);
 
             // save roll transform
-            std::stringstream path_pose;
-            path_pose << path << "/roll_trans_" << v << "_" << j << ".txt";
-            PersistenceUtils::writeMatrixToFile(path_pose.str(), transforms[j]);
+            const std::string path_pose = path + "/roll_trans_" + std::to_string(v) +
+                                          '_' + std::to_string(j) + ".txt";
+            PersistenceUtils::writeMatrixToFile(path_pose, transforms[j]);
           }
         }
       }

@@ -73,7 +73,7 @@
 /// the origin.
 // XXX - handle shifting upon setting of a Cloud3D
 // XXX - add functions for retrieving an unshifted Cloud3D
-// XXX - add functions for retrieveing unshifted points by index
+// XXX - add functions for retrieving unshifted points by index
 // XXX - mark access functions below as returning shifted values
 class Cloud : public Statistics
 {
@@ -256,7 +256,7 @@ class Cloud : public Statistics
     void
     drawWithHighlightColor () const;
 
-    /// @brief Sets the axis along which the displyed points should have the
+    /// @brief Sets the axis along which the displayed points should have the
     /// color ramp applied.
     /// @param a The axis id describing which direction the ramp should be
     /// applied.
@@ -384,17 +384,17 @@ class Cloud : public Statistics
     static const float DEFAULT_POINT_DISPLAY_SIZE_;
     /// Default Highlight Point Size
     static const float DEFAULT_POINT_HIGHLIGHT_SIZE_;
-    /// Default Point Color - Red componenet
+    /// Default Point Color - Red component
     static const float DEFAULT_POINT_DISPLAY_COLOR_RED_;
-    /// Default Point Color - Green componenet
+    /// Default Point Color - Green component
     static const float DEFAULT_POINT_DISPLAY_COLOR_GREEN_;
-    /// Default Point Color - Blue componenet
+    /// Default Point Color - Blue component
     static const float DEFAULT_POINT_DISPLAY_COLOR_BLUE_;
-    /// Default Point Highlight Color - Red componenet
+    /// Default Point Highlight Color - Red component
     static const float DEFAULT_POINT_HIGHLIGHT_COLOR_RED_;
-    /// Default Point Highlight Color - Green componenet
+    /// Default Point Highlight Color - Green component
     static const float DEFAULT_POINT_HIGHLIGHT_COLOR_GREEN_;
-    /// Default Point Highlight Color - Blue componenet
+    /// Default Point Highlight Color - Blue component
     static const float DEFAULT_POINT_HIGHLIGHT_COLOR_BLUE_;
 
   private:

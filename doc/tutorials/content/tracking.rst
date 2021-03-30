@@ -4,7 +4,7 @@ Tracking object in real time
 ----------------------------
 This tutorial explains 6D object tracking and show example code(tracking_sample.cpp) using pcl::tracking libraries. Implementing this example code, you can see the segment track the target object even if you move tracked object or your sensor device. In example, first, you should initialize tracker and you have to pass target object's point cloud to tracker so that tracker should know what to track. So, before this tutorial, you need to make segmented model with PCD file beforehand. Setting the model to tracker, it starts tracking the object.
 
-Following figure shows how  looks like when trakcing works successfully.
+Following figure shows how  looks like when tracking works successfully.
 
 .. figure:: images/tracking/mergePicture.png
   :height: 600

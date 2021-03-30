@@ -108,7 +108,7 @@ main(int argc, char** argv)
   feature_persistence.setDistanceMetric(pcl::CS);
 
   PointCloud<FPFHSignature33>::Ptr output_features(new PointCloud<FPFHSignature33>());
-  auto output_indices = pcl::make_shared<std::vector<int>>();
+  auto output_indices = pcl::make_shared<pcl::Indices>();
   feature_persistence.determinePersistentFeatures(*output_features, output_indices);
 
   PCL_INFO("persistent features cloud size: %zu\n",

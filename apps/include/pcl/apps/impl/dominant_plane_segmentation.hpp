@@ -33,9 +33,7 @@
  *
  */
 
-#include <pcl/common/time.h>
 #include <pcl/filters/extract_indices.h> // for ExtractIndices
-#include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/memory.h> // for pcl::make_shared
 
 template <typename PointType>
@@ -302,7 +300,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast(
     binary_cloud->points.resize(input_->size());
     binary_cloud->is_dense = input_->is_dense;
 
-    for (const int& idx : cloud_object_indices.indices) {
+    for (const auto& idx : cloud_object_indices.indices) {
       (*binary_cloud)[idx].getVector4fMap() = (*input_)[idx].getVector4fMap();
       (*binary_cloud)[idx].intensity = 1.0;
     }

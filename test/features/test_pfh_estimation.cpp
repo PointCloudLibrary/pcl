@@ -56,7 +56,7 @@ using KdTreePtr = pcl::search::KdTree<PointT>::Ptr;
 using pcl::PointCloud;
 
 static PointCloud<PointT>::Ptr cloud (new PointCloud<PointT> ());
-static std::vector<int> indices;
+static pcl::Indices indices;
 static KdTreePtr tree;
 
 ///////////////////////////////////////////////////////////////////////////////////

@@ -146,7 +146,7 @@ Feature<PointInT, PointOutT>::initCompute ()
       search_parameter_ = search_radius_;
       // Declare the search locator definition
       search_method_surface_ = [this] (const PointCloudIn &cloud, int index, double radius,
-                                       std::vector<int> &k_indices, std::vector<float> &k_distances)
+                                       pcl::Indices &k_indices, std::vector<float> &k_distances)
       {
         return tree_->radiusSearch (cloud, index, radius, k_indices, k_distances, 0);
       };
@@ -158,7 +158,7 @@ Feature<PointInT, PointOutT>::initCompute ()
     {
       search_parameter_ = k_;
       // Declare the search locator definition
-      search_method_surface_ = [this] (const PointCloudIn &cloud, int index, int k, std::vector<int> &k_indices,
+      search_method_surface_ = [this] (const PointCloudIn &cloud, int index, int k, pcl::Indices &k_indices,
                                        std::vector<float> &k_distances)
       {
         return tree_->nearestKSearch (cloud, index, k, k_indices, k_distances);

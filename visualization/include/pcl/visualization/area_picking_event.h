@@ -40,8 +40,6 @@
 
 #include <pcl/pcl_macros.h>
 
-#include <vector>
-
 namespace pcl
 {
   namespace visualization
@@ -50,7 +48,7 @@ namespace pcl
     class PCL_EXPORTS AreaPickingEvent
     {
       public:
-        AreaPickingEvent (int nb_points, const std::vector<int>& indices)
+        AreaPickingEvent (int nb_points, const pcl::Indices& indices)
           : nb_points_ (nb_points)
           , indices_ (indices)
         {}
@@ -60,7 +58,7 @@ namespace pcl
           * \return true, if the area selected by the user contains points, false otherwise
           */
         inline bool
-        getPointsIndices (std::vector<int>& indices) const
+        getPointsIndices (pcl::Indices& indices) const
         {
           if (nb_points_ <= 0)
             return (false);
@@ -70,7 +68,7 @@ namespace pcl
 
       private:
         int nb_points_;
-        std::vector<int> indices_;
+        pcl::Indices indices_;
     };
   } //namespace visualization
 } //namespace pcl

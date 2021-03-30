@@ -85,9 +85,9 @@ pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& c
     buckets_.resize(std::size_t((cluster.getMax()(1) - cluster.getMin()(1)) / bin_size_) + 1, 0);
   buckets_cloud_indices_.resize(buckets_.size(), 0);
 
-  for(std::vector<int>::const_iterator pit = cluster.getIndices().indices.begin(); pit != cluster.getIndices().indices.end(); ++pit)
+  for(const auto& cluster_idx : cluster.getIndices().indices)
   {
-    PointT* p = &(*cloud_)[*pit];
+    PointT* p = &(*cloud_)[cluster_idx];
     int index;
     if (!vertical_)    // camera horizontal
       index = int((p->x - cluster.getMin()(0)) / bin_size_);
@@ -103,7 +103,7 @@ pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& c
       if ((heightp * 60) > buckets_[index])   // compare the height of the new point with the existing one
       {
         buckets_[index] = heightp * 60;   // maximum height
-        buckets_cloud_indices_[index] = *pit;     // point cloud index of the point with maximum height
+        buckets_cloud_indices_[index] = cluster_idx;     // point cloud index of the point with maximum height
       }
     }
   }

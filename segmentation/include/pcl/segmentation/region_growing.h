@@ -45,9 +45,6 @@
 #include <pcl/search/search.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <list>
-#include <cmath>
-#include <ctime>
 
 namespace pcl
 {
@@ -215,7 +212,7 @@ namespace pcl
         * \param[out] cluster cluster to which the point belongs.
         */
       virtual void
-      getSegmentFromPoint (int index, pcl::PointIndices& cluster);
+      getSegmentFromPoint (pcl::index_t index, pcl::PointIndices& cluster);
 
       /** \brief If the cloud was successfully segmented, then function
         * returns colored cloud. Otherwise it returns an empty pointer.
@@ -271,7 +268,7 @@ namespace pcl
         * \param[out] is_a_seed this value is set to true if the point with index 'nghbr' can serve as the seed
         */
       virtual bool
-      validatePoint (int initial_seed, int point, int nghbr, bool& is_a_seed) const;
+      validatePoint (pcl::index_t initial_seed, pcl::index_t point, pcl::index_t nghbr, bool& is_a_seed) const;
 
       /** \brief This function simply assembles the regions from list of point labels.
         * Each cluster is an array of point indices.
@@ -315,7 +312,7 @@ namespace pcl
       NormalPtr normals_;
 
       /** \brief Contains neighbours of each point. */
-      std::vector<std::vector<int> > point_neighbours_;
+      std::vector<pcl::Indices> point_neighbours_;
 
       /** \brief Point labels that tells to which segment each point belongs. */
       std::vector<int> point_labels_;

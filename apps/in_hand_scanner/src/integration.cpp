@@ -219,7 +219,7 @@ pcl::ihs::Integration::merge (const CloudXYZRGBNormalConstPtr& cloud_data,
     xyz_model->push_back (PointXYZ (pt.x, pt.y, pt.z));
   }
   kd_tree_->setInputCloud (xyz_model);
-  std::vector <int>   index (1);
+  pcl::Indices   index (1);
   std::vector <float> squared_distance (1);
 
   mesh_model->reserveVertices (mesh_model->sizeVertices () + cloud_data->size ());

@@ -110,21 +110,21 @@ We create a ``instances`` list to store the "coarse" transformations :
 
 .. literalinclude:: sources/global_hypothesis_verification/global_hypothesis_verification.cpp
    :language: c++
-   :lines: 389-399
+   :lines: 387-397
 
 
 then, we run ICP on the ``instances`` wrt. the ``scene`` to obtain the ``registered_instances``: 
 
 .. literalinclude:: sources/global_hypothesis_verification/global_hypothesis_verification.cpp
    :language: c++
-   :lines: 401-431
+   :lines: 399-429
 
 Hypotheses Verification
 ***********************
 
 .. literalinclude:: sources/global_hypothesis_verification/global_hypothesis_verification.cpp
    :language: c++
-   :lines: 433-466
+   :lines: 431-465
 
 ``GlobalHypothesesVerification`` takes as input a list of ``registered_instances`` and a ``scene`` so we can ``verify()`` them
 to get a ``hypotheses_mask``: this is a `bool` array where ``hypotheses_mask[i]`` is ``TRUE`` if ``registered_instances[i]`` is a
@@ -142,7 +142,7 @@ Each ``registered_instances[i]`` will be displayed with two optional colors: ``s
 
 .. literalinclude:: sources/global_hypothesis_verification/global_hypothesis_verification.cpp
    :language: c++
-   :lines: 468-525
+   :lines: 467-524
 
 
 Compiling and running the program

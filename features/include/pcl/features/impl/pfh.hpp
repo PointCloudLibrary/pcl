@@ -39,6 +39,7 @@
 #pragma once
 
 #include <pcl/features/pfh.h>
+#include <pcl/features/pfh_tools.h> // for computePairFeatures
 
 #include <pcl/common/point_tests.h> // for pcl::isFinite
 
@@ -59,7 +60,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePairFeatures (
 template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
       const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
-      const std::vector<int> &indices, int nr_split, Eigen::VectorXf &pfh_histogram)
+      const pcl::Indices &indices, int nr_split, Eigen::VectorXf &pfh_histogram)
 {
   int h_index, h_p;
 
@@ -174,7 +175,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   // Allocate enough space to hold the results
   // \note This resize is irrelevant for a radiusSearch ().
-  std::vector<int> nn_indices (k_);
+  pcl::Indices nn_indices (k_);
   std::vector<float> nn_dists (k_);
 
   output.is_dense = true;

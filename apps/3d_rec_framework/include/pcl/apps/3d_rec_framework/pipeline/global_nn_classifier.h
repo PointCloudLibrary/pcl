@@ -33,7 +33,7 @@ public:
   classify() = 0;
 
   virtual void
-  setIndices(std::vector<int>& indices) = 0;
+  setIndices(pcl::Indices& indices) = 0;
 
   virtual void
   setInputCloud(const PointInTPtr& cloud) = 0;
@@ -91,7 +91,7 @@ protected:
   flann::Index<DistT>* flann_index_;
   std::vector<flann_model> flann_models_;
 
-  std::vector<int> indices_;
+  pcl::Indices indices_;
 
   // load features from disk and create flann structure
   void
@@ -185,7 +185,7 @@ public:
   }
 
   void
-  setIndices(std::vector<int>& indices) override
+  setIndices(pcl::Indices& indices) override
   {
     indices_ = indices;
   }

@@ -83,7 +83,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   // create octree
   pcl::search::Octree<PointXYZ> octree(0.1);
 
-  std::vector<int> k_indices;
+  pcl::Indices k_indices;
   std::vector<float> k_sqr_distances;
 
   std::vector<int> k_indices_bruteforce;
@@ -225,7 +225,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
     }
   }
   // we should have found the absolute nearest neighbor at least once
-  //ASSERT_EQ ( (bestMatchCount > 0) , true);
+  //ASSERT_GT (bestMatchCount, 0);
 }
 #endif
 #if 0
@@ -259,7 +259,7 @@ TEST (PCL, Octree_RadiusSearch_GPU)
   radiuses.push_back(radius);
   radiuses.push_back(radius);
   radiuses.push_back(radius);
-  std::vector<std::vector<int> > k_indices;
+  std::vector<pcl::Indices > k_indices;
   std::vector<std::vector<float> > k_distances;
   int max_nn = -1;
 
@@ -318,7 +318,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
       }
     }
 
-    std::vector<int> cloudNWRSearch;
+    pcl::Indices cloudNWRSearch;
     std::vector<float> cloudNWRRadius;
 
     // execute octree radius search
@@ -328,23 +328,20 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
     ASSERT_EQ ( cloudNWRRadius.size() , cloudSearchBruteforce.size());
 
     // check if result from octree radius search can be also found in bruteforce search
-    std::vector<int>::const_iterator current = cloudNWRSearch.begin();
-    while (current != cloudNWRSearch.end())
+    for (const auto& current : cloudNWRSearch)
     {
       pointDist = sqrt (
-          ((*cloudIn)[*current].x-searchPoint.x) * ((*cloudIn)[*current].x-searchPoint.x) +
-          ((*cloudIn)[*current].y-searchPoint.y) * ((*cloudIn)[*current].y-searchPoint.y) +
-          ((*cloudIn)[*current].z-searchPoint.z) * ((*cloudIn)[*current].z-searchPoint.z)
+          ((*cloudIn)[current].x-searchPoint.x) * ((*cloudIn)[current].x-searchPoint.x) +
+          ((*cloudIn)[current].y-searchPoint.y) * ((*cloudIn)[current].y-searchPoint.y) +
+          ((*cloudIn)[current].z-searchPoint.z) * ((*cloudIn)[current].z-searchPoint.z)
       );
 
-      ASSERT_EQ ( (pointDist<=searchRadius) , true);
-
-      ++current;
+      ASSERT_LE (pointDist, searchRadius);
     }
 
     // check if result limitation works
     octree->radiusSearch(searchPoint, searchRadius, cloudNWRSearch, cloudNWRRadius, 5);
-    ASSERT_EQ ( cloudNWRRadius.size() <= 5, true);
+    ASSERT_LE (cloudNWRRadius.size(), 5);
   }
 }
 

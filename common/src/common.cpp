@@ -39,6 +39,7 @@
 
 #include <limits>
 
+#include <pcl/PCLPointCloud2.h> // for PCLPointCloud2
 #include <pcl/common/common.h>
 #include <pcl/console/print.h>
 

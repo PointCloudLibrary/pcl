@@ -68,7 +68,7 @@ getCorDistMeanStd(const pcl::Correspondences& correspondences,
 }
 
 inline void
-getQueryIndices(const pcl::Correspondences& correspondences, std::vector<int>& indices)
+getQueryIndices(const pcl::Correspondences& correspondences, pcl::Indices& indices)
 {
   indices.resize(correspondences.size());
   for (std::size_t i = 0; i < correspondences.size(); ++i)
@@ -76,7 +76,7 @@ getQueryIndices(const pcl::Correspondences& correspondences, std::vector<int>& i
 }
 
 inline void
-getMatchIndices(const pcl::Correspondences& correspondences, std::vector<int>& indices)
+getMatchIndices(const pcl::Correspondences& correspondences, pcl::Indices& indices)
 {
   indices.resize(correspondences.size());
   for (std::size_t i = 0; i < correspondences.size(); ++i)

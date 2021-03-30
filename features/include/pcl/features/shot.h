@@ -113,7 +113,7 @@ namespace pcl
          */
       virtual void
       computePointSHOT (const int index,
-                        const std::vector<int> &indices,
+                        const pcl::Indices &indices,
                         const std::vector<float> &sqr_dists,
                         Eigen::VectorXf &shot) = 0;
 
@@ -141,7 +141,7 @@ namespace pcl
         * \param[out] shot the resultant SHOT histogram
         */
       void
-      interpolateSingleChannel (const std::vector<int> &indices,
+      interpolateSingleChannel (const pcl::Indices &indices,
                                 const std::vector<float> &sqr_dists,
                                 const int index,
                                 std::vector<double> &binDistance,
@@ -162,7 +162,7 @@ namespace pcl
         * \param[out] bin_distance_shape the resultant histogram
         */
       void
-      createBinDistanceShape (int index, const std::vector<int> &indices,
+      createBinDistanceShape (int index, const pcl::Indices &indices,
                               std::vector<double> &bin_distance_shape);
 
       /** \brief The number of bins in each shape histogram. */
@@ -261,7 +261,7 @@ namespace pcl
         */
       void
       computePointSHOT (const int index,
-                        const std::vector<int> &indices,
+                        const pcl::Indices &indices,
                         const std::vector<float> &sqr_dists,
                         Eigen::VectorXf &shot) override;
     protected:
@@ -347,7 +347,7 @@ namespace pcl
         */
       void
       computePointSHOT (const int index,
-                        const std::vector<int> &indices,
+                        const pcl::Indices &indices,
                         const std::vector<float> &sqr_dists,
                         Eigen::VectorXf &shot) override;
     protected:
@@ -370,7 +370,7 @@ namespace pcl
         * \param[out] shot the resultant SHOT histogram
         */
       void
-      interpolateDoubleChannel (const std::vector<int> &indices,
+      interpolateDoubleChannel (const pcl::Indices &indices,
                                 const std::vector<float> &sqr_dists,
                                 const int index,
                                 std::vector<double> &binDistanceShape,

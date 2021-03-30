@@ -42,27 +42,24 @@
 
 #include <pcl/registration/graph_handler.h>
 
-namespace pcl
-{
-  namespace registration
-  {
-    /** \brief @b GraphOptimizer class; derive and specialize for each graph type
-      * \author Nicola Fioraio
-      * \ingroup registration
-      */
-    template <typename GraphT>
-    class GraphOptimizer
-    {
-      public:
-        /** \brief Optimize the given graph
-          * \param inout_graph the graph
-          * \return false if the optimization has not been performed
-          */
-        virtual inline bool
-        optimize(GraphHandler<GraphT>& inout_graph) = 0;
-      
-      /** \brief Empty destructor */
-      virtual ~GraphOptimizer () {}
-    };
-  }
-}
+namespace pcl {
+namespace registration {
+/** \brief @b GraphOptimizer class; derive and specialize for each graph type
+ * \author Nicola Fioraio
+ * \ingroup registration
+ */
+template <typename GraphT>
+class GraphOptimizer {
+public:
+  /** \brief Optimize the given graph
+   * \param inout_graph the graph
+   * \return false if the optimization has not been performed
+   */
+  virtual inline bool
+  optimize(GraphHandler<GraphT>& inout_graph) = 0;
+
+  /** \brief Empty destructor */
+  virtual ~GraphOptimizer() {}
+};
+} // namespace registration
+} // namespace pcl

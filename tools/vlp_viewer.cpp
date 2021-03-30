@@ -39,7 +39,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/common/time.h> //fps calculations
-#include <pcl/io/pcd_io.h>
 #include <pcl/io/hdl_grabber.h>
 #include <pcl/io/vlp_grabber.h>
 #include <pcl/visualization/point_cloud_color_handlers.h>
