@@ -74,6 +74,8 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
   // Process all points in the cloud
   for (std::size_t i = 0; i < host_cloud_->size (); ++i)
   {
+    sizes.clear();
+    data.clear();
     // if we already processed this point continue with the next one
     if (processed[i])
       continue;
@@ -118,7 +120,6 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
         // Clear queries list
         queries_host.clear();
 
-        //std::unique(data.begin(), data.end());
         if(data.size () == 1)
           continue;
 
@@ -143,7 +144,6 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
       else
       {
         PCL_DEBUG(" GPU: ");
-        std::cout << "GPU " << std::endl;
         // Copy buffer
         queries_device = DeviceArray<PointXYZ>(queries_device_buffer.ptr(),queries_host.size());
         // Move queries to GPU
