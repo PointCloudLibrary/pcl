@@ -171,6 +171,8 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::extractUniqueFeatu
   {
     // Calculate standard deviation within the scale
     float standard_dev = 0.0;
+    diff_vector.reserve(features_at_scale_vectorized_[scale_i].size ());
+    diff_vector.clear();
 
     for (const auto& feature: features_at_scale_vectorized_[scale_i])
     {
@@ -194,7 +196,6 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::extractUniqueFeatu
     }
     unique_features_indices_.emplace_back (std::move(indices_per_scale));
     unique_features_table_.emplace_back (std::move(indices_table_per_scale));
-    diff_vector.clear();
   }
 }
 
