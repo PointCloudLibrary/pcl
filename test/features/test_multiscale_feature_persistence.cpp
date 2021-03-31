@@ -200,13 +200,13 @@ TEST(PCL, DetermineConsistentFeatures)
   feature_persistence.determinePersistentFeatures(*output_features, output_indices);
   EXPECT_EQ(output_indices->size(), 27);
 
-  for (int point_idx = 0; point_idx < output_features->points.size(); ++point_idx) {
+  for (size_t point_idx = 0; point_idx < output_features->points.size(); ++point_idx) {
     EXPECT_EQ(output_indices->at(point_idx), gt_output_indices[point_idx]);
     const auto& point = output_features->points[point_idx];
     const auto& gt_point = gt_output_features[point_idx];
     for (int feature_idx = 0; feature_idx < FPFHSignature::descriptorSize();
          ++feature_idx) {
-      EXPECT_NEAR(point.histogram[feature_idx], gt_point[feature_idx], 0.01f);
+      EXPECT_NEAR(point.histogram[feature_idx], gt_point[feature_idx], 1e-4);
     }
   }
 }
