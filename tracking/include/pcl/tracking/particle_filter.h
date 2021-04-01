@@ -287,14 +287,34 @@ public:
     return alpha_;
   }
 
+#ifdef DOXYGEN_ONLY
   /** \brief Set the value of use_normal_.
    * \param[in] use_normal the value of use_normal_.
-   */
+   **/
   inline void
   setUseNormal(bool use_normal)
   {
     use_normal_ = use_normal;
   }
+#else
+  template <typename PointT = PointInT, traits::HasNormal<PointT> = true>
+  inline void
+  setUseNormal(bool use_normal)
+  {
+    use_normal_ = use_normal;
+  }
+
+  template <typename PointT = PointInT, traits::HasNoNormal<PointT> = true>
+  inline void
+  setUseNormal(bool use_normal)
+  {
+    PCL_WARN("[pcl::%s::setUseNormal] "
+             "use_normal_ == true is not supported in this Point Type.\n",
+             getClassName().c_str());
+    use_normal_ = false;
+  }
+
+#endif
 
   /** \brief Get the value of use_normal_. */
   inline bool
@@ -461,7 +481,7 @@ protected:
   void
   computeTransformedPointCloudWithNormal(const StateT&, pcl::Indices&, PointCloudIn&)
   {
-    PCL_WARN("[pcl::%s::computeTransformedPointCloudWithoutNormal] "
+    PCL_WARN("[pcl::%s::computeTransformedPointCloudWithNormal] "
              "use_normal_ == true is not supported in this Point Type.\n",
              getClassName().c_str());
   }
