@@ -246,7 +246,7 @@ pcl::visualization::context_items::Markers::setPointColors (unsigned char r, uns
 void
 pcl::visualization::context_items::Markers::setPointColors (unsigned char rgb[3])
 {
-  memcpy (point_colors, rgb, 3 * sizeof (unsigned char));
+  std::copy_n(rgb, 3, point_colors);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

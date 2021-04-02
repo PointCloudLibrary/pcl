@@ -40,6 +40,7 @@
 #include <pcl/io/ply_io.h>
 #include <pcl/io/boost.h>
 
+#include <algorithm>
 #include <cstdlib>
 #include <fstream>
 #include <functional>
@@ -403,14 +404,14 @@ pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
 {
   a_ = std::uint32_t (alpha);
   // get anscient rgb value and store it in rgba
-  memcpy (&rgba_, 
-          &cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_], 
+  memcpy (&rgba_,
+          &cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_],
           sizeof (pcl::io::ply::float32));
   // append alpha
   rgba_ |= a_ << 24;
   // put rgba back
-  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_], 
-          &rgba_, 
+  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_],
+          &rgba_,
           sizeof (std::uint32_t));
 }
 
@@ -618,9 +619,10 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
           else if (field.datatype == ::pcl::PCLPointField::FLOAT64)
             memcpy (&data[r * cloud_->point_step + field.offset],
                     reinterpret_cast<const char*> (&d_nan), sizeof (double));
-          else
-            memset (&data[r * cloud_->point_step + field.offset], 0,
-                    pcl::getFieldSize (field.datatype) * field.count);
+          else {
+            std::fill_n(&data[r * cloud_->point_step + field.offset],
+                        pcl::getFieldSize (field.datatype) * field.count, 0);
+          }
       }
       else
         memcpy (&data[r* cloud_->point_step], &cloud_->data[(*range_grid_)[r][0] * cloud_->point_step], cloud_->point_step);
@@ -686,8 +688,10 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
             memcpy (&data[r * cloud_->point_step + field.offset],
                     reinterpret_cast<const char*> (&d_nan), sizeof (double));
           else
-            memset (&data[r * cloud_->point_step + field.offset], 0,
-                    pcl::getFieldSize (field.datatype) * field.count);
+          {
+            std::fill_n(&data[r * cloud_->point_step + field.offset],
+                        pcl::getFieldSize (field.datatype) * field.count, 0);
+          }
       }
       else
         memcpy (&data[r* cloud_->point_step], &cloud_->data[(*range_grid_)[r][0] * cloud_->point_step], cloud_->point_step);

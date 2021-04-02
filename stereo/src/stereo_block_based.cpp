@@ -55,13 +55,11 @@ pcl::BlockBasedStereoMatching::compute_impl(unsigned char* ref_img,
 
   int sad_max = std::numeric_limits<int>::max();
 
-  int* acc = new int[max_disp_];
-  memset(acc, 0, sizeof(int) * max_disp_);
+  int* acc = new int[max_disp_]{};
 
   int** v = new int*[width_];
   for (int d = 0; d < width_; d++) {
-    v[d] = new int[max_disp_];
-    memset(v[d], 0, sizeof(int) * max_disp_);
+    v[d] = new int[max_disp_]{};
   }
 
   // First row

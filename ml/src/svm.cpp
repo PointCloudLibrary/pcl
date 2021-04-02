@@ -42,12 +42,14 @@
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/ml/svm.h>
 
+#include <algorithm>
 #include <climits>
 #include <cmath>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+
 int libsvm_version = LIBSVM_VERSION;
 using Qfloat = float;
 using schar = signed char;
@@ -83,8 +85,7 @@ static inline void
 clone(T*& dst, S* src, int n)
 {
   dst = new T[n];
-  memcpy(
-      reinterpret_cast<void*>(dst), reinterpret_cast<const void*>(src), sizeof(T) * n);
+  std::copy_n(src, n, dst);
 }
 
 static inline double

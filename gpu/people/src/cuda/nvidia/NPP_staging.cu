@@ -39,10 +39,10 @@
  */
 
 
+#include <algorithm>
 #include <vector>
 #include <cuda_runtime.h>
 #include "NPP_staging.hpp"
-
 
 texture<Ncv8u,  1, cudaReadModeElementType> tex8u;
 texture<Ncv32u, 1, cudaReadModeElementType> tex32u;
@@ -565,7 +565,7 @@ NCVStatus nppiStIntegral_8u32u_C1R_host(Ncv8u *h_src, Ncv32u srcStep,
     Ncv32u WidthII = roiSize.width + 1;
     Ncv32u HeightII = roiSize.height + 1;
 
-    memset(h_dst, 0, WidthII * sizeof(Ncv32u));
+    std::fill_n(h_dst, WidthII, 0);
     for (Ncv32u i=1; i<HeightII; i++)
     {
         h_dst[i * dstStep] = 0;
@@ -599,7 +599,7 @@ NCVStatus nppiStIntegral_32f32f_C1R_host(Ncv32f *h_src, Ncv32u srcStep,
     Ncv32u WidthII = roiSize.width + 1;
     Ncv32u HeightII = roiSize.height + 1;
 
-    memset(h_dst, 0, WidthII * sizeof(Ncv32u));
+    std::fill_n(h_dst, WidthII, 0);
     for (Ncv32u i=1; i<HeightII; i++)
     {
         h_dst[i * dstStep] = 0.0f;
@@ -631,7 +631,7 @@ NCVStatus nppiStSqrIntegral_8u64u_C1R_host(Ncv8u *h_src, Ncv32u srcStep,
     Ncv32u WidthII = roiSize.width + 1;
     Ncv32u HeightII = roiSize.height + 1;
 
-    memset(h_dst, 0, WidthII * sizeof(Ncv64u));
+    std::fill_n(h_dst, WidthII, 0);
     for (Ncv32u i=1; i<HeightII; i++)
     {
         h_dst[i * dstStep] = 0;

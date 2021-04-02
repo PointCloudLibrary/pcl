@@ -240,9 +240,9 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
         !std::isfinite (current_frame.y_axis[0]) ||
         !std::isfinite (current_frame.z_axis[0])  )
     {
-      std::fill (output[point_index].descriptor, output[point_index].descriptor + descriptor_length_,
-                 std::numeric_limits<float>::quiet_NaN ());
-      std::fill (output[point_index].rf, output[point_index].rf + 9, 0);
+      std::fill_n (output[point_index].descriptor, descriptor_length_,
+                   std::numeric_limits<float>::quiet_NaN ());
+      std::fill_n (output[point_index].rf, 9, 0);
       output.is_dense = false;
       continue;
     }
@@ -256,7 +256,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointClo
 
     std::vector<float> descriptor (descriptor_length_);
     computePointDescriptor (point_index, descriptor);
-    std::copy (descriptor.begin (), descriptor.end (), output[point_index].descriptor);
+    std::copy (descriptor.cbegin (), descriptor.cend (), output[point_index].descriptor);
   }
 }
 

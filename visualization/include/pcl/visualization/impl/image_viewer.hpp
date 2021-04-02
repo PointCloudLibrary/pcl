@@ -399,7 +399,7 @@ pcl::visualization::ImageViewer::showCorrespondences (
     }
     else
     {
-      memcpy (&data_[j], 0, source_img.width * 3);
+      std::fill_n(&data_[j], source_img.width * 3, 0);
       j += source_img.width * 3;
     }
 
@@ -415,7 +415,7 @@ pcl::visualization::ImageViewer::showCorrespondences (
     }
     else
     {
-      memcpy (&data_[j], 0, target_img.width * 3);
+      std::fill_n(&data_[j], target_img.width * 3, 0);
       j += target_img.width * 3;
     }
   }

@@ -208,7 +208,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::extract (std::vector <pcl::PointIndices>
   }
 
   clusters.reserve (clusters_.size ());
-  std::copy (clusters_.begin (), clusters_.end (), std::back_inserter (clusters));
+  std::copy (clusters_.cbegin (), clusters_.cend (), std::back_inserter (clusters));
 
   deinitCompute ();
 }
@@ -745,7 +745,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::getSegmentFromPoint (pcl::index_t index,
           segment_was_found = true;
           cluster.indices.clear ();
           cluster.indices.reserve (i_segment->indices.size ());
-          std::copy (i_segment->indices.begin (), i_segment->indices.end (), std::back_inserter (cluster.indices));
+          std::copy (i_segment->indices.cbegin (), i_segment->indices.cend (), std::back_inserter (cluster.indices));
           break;
         }
       }

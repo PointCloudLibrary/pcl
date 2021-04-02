@@ -281,7 +281,7 @@ class Segmentation
               typename Storage<int>::type region_mask;
               markInliers<Storage> (data, region_mask, planes);
               thrust::host_vector<int> regions_host;
-              std::copy (regions_host.begin (), regions_host.end(), std::ostream_iterator<int>(std::cerr, " "));
+              std::copy (regions_host.cbegin (), regions_host.cend(), std::ostream_iterator<int>(std::cerr, " "));
               {
                 ScopeTimeCPU t ("retrieving inliers");
                 planes = sac.getAllInliers ();
