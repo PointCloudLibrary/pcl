@@ -283,15 +283,14 @@ namespace pcl
 
     /** \brief Create an ellipsoid shape from the given parameters.
       *
-      * \param[in] translation a translation to apply to the ellipsoid from 0,0,0
-      * \param[in] rotation a quaternion-based rotation to apply to the ellipsoid
+      * \param[in] transform a transformation to apply to the ellipsoid from 0,0,0
       * \param[in] radius_x the ellipsoid's radius along its local x-axis
       * \param[in] radius_y the ellipsoid's radius along its local y-axis
       * \param[in] radius_z the ellipsoid's radius along its local z-axis
       * \ingroup visualization
       */
     PCL_EXPORTS vtkSmartPointer<vtkDataSet> 
-    createEllipsoid (const Eigen::Vector3f &translation, const Eigen::Quaternionf &rotation,
+    createEllipsoid (const Eigen::Isometry3d &transform,
                      double radius_x, double radius_y, double radius_z);
     
     /** \brief Allocate a new unstructured grid smartpointer. For internal use only.

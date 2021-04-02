@@ -308,15 +308,12 @@ pcl::visualization::createLine (const Eigen::Vector4f &pt1, const Eigen::Vector4
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 vtkSmartPointer<vtkDataSet>
-pcl::visualization::createEllipsoid (const Eigen::Vector3f &translation, const Eigen::Quaternionf &rotation,
+pcl::visualization::createEllipsoid (const Eigen::Isometry3d &transform,
                                      double radius_x, double radius_y, double radius_z)
 {
   const vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New ();
-  t->Identity ();
-  t->Translate (translation.x (), translation.y (), translation.z ());
-
-  Eigen::AngleAxisf a (rotation);
-  t->RotateWXYZ (pcl::rad2deg (a.angle ()), a.axis ()[0], a.axis ()[1], a.axis ()[2]);
+  const Eigen::Matrix4d trMatrix = transform.matrix ().transpose (); // Eigen is col-major while vtk is row-major, so transpose it.
+  t->SetMatrix (trMatrix.data ());
 
   vtkSmartPointer<vtkParametricEllipsoid> ellipsoid = vtkSmartPointer<vtkParametricEllipsoid>::New ();
   ellipsoid->SetXRadius (radius_x);

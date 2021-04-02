@@ -2438,7 +2438,7 @@ pcl::visualization::PCLVisualizer::addCube (float x_min, float x_max,
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::addEllipsoid (
-  const Eigen::Vector3f &translation, const Eigen::Quaternionf &rotation,
+  const Eigen::Isometry3d &transform,
   double radius_x, double radius_y, double radius_z,
   const std::string &id, int viewport)
 {
@@ -2450,7 +2450,7 @@ pcl::visualization::PCLVisualizer::addEllipsoid (
     return (false);
   }
 
-  vtkSmartPointer<vtkDataSet> data = createEllipsoid (translation, rotation, radius_x, radius_y, radius_z);
+  vtkSmartPointer<vtkDataSet> data = createEllipsoid (transform, radius_x, radius_y, radius_z);
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
@@ -2461,18 +2461,6 @@ pcl::visualization::PCLVisualizer::addEllipsoid (
   // Save the pointer/ID pair to the global actor map
   (*shape_actor_map_)[id] = actor;
   return (true);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////
-bool
-pcl::visualization::PCLVisualizer::addEllipsoid (
-  const Eigen::Isometry3f &transform,
-  double radius_x, double radius_y, double radius_z,
-  const std::string &id, int viewport)
-{
-  const Eigen::Vector3f translation (transform.translation ());
-  const Eigen::Quaternionf rotation (transform.rotation ());
-  return addEllipsoid(translation, rotation, radius_x, radius_y, radius_z, id, viewport);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
