@@ -254,10 +254,8 @@ namespace pcl
 
   /** \brief Concatenate two pcl::PCLPointCloud2
     *
-    * \warning This function subtly differs from the deprecated concatenatePointCloud()
-    * The difference is that this function will concatenate IFF the non-skip fields
-    * are in the correct order and same in number. The deprecated function skipped
-    * fields even if both clouds didn't agree on the number of output fields
+    * \warning This function will concatenate IFF the non-skip fields are in the correct
+    * order and same in number.
     * \param[in] cloud1 the first input point cloud dataset
     * \param[in] cloud2 the second input point cloud dataset
     * \param[out] cloud_out the resultant output point cloud dataset
@@ -286,19 +284,6 @@ namespace pcl
   {
     return pcl::PolygonMesh::concatenate(mesh1, mesh2, mesh_out);
   }
-
-  /** \brief Concatenate two pcl::PCLPointCloud2
-    * \param[in] cloud1 the first input point cloud dataset
-    * \param[in] cloud2 the second input point cloud dataset
-    * \param[out] cloud_out the resultant output point cloud dataset
-    * \return true if successful, false otherwise (e.g., name/number of fields differs)
-    * \ingroup common
-    */
-  PCL_DEPRECATED(1, 12, "use pcl::concatenate() instead, but beware of subtle difference in behavior (see documentation)")
-  PCL_EXPORTS bool
-  concatenatePointCloud (const pcl::PCLPointCloud2 &cloud1,
-                         const pcl::PCLPointCloud2 &cloud2,
-                         pcl::PCLPointCloud2 &cloud_out);
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param[in] cloud_in the input point cloud dataset
