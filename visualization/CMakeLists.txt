@@ -168,6 +168,7 @@ else()
   target_link_libraries("${LIB_NAME}"
                         VTK::ChartsCore
                         VTK::CommonColor
+                        VTK::CommonComputationalGeometry
                         VTK::CommonDataModel
                         VTK::FiltersExtraction
                         VTK::FiltersGeometry
