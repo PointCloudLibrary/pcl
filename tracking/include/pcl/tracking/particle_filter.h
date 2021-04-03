@@ -293,7 +293,7 @@ public:
   inline void
   setUseNormal(bool use_normal)
   {
-    if (traits::has_normal_v<PointInT>) {
+    if (traits::has_normal_v<PointInT> || !use_normal) {
       use_normal_ = use_normal;
       return;
     }
