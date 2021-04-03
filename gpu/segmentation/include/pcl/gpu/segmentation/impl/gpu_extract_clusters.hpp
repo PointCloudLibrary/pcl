@@ -39,6 +39,23 @@
 #pragma once
 #include <pcl/common/copy_point.h>
 #include <pcl/gpu/segmentation/gpu_extract_clusters.h>
+#include <cuda_runtime_api.h>
+#include <cuda.h>
+std::vector<int> economical_download(const pcl::gpu::NeighborIndices& indices,
+        std::vector<int>& sizes, int max_answers) {
+    indices.sizes.download(sizes);
+    std::vector<int> results;
+    for (std::size_t qp = 0; qp < sizes.size(); qp++) {
+        int begin = qp * max_answers;
+        const int* pdata = indices.data.ptr() + begin;
+        std::vector<int> tmp(sizes[qp]);
+        std::size_t bytes = (sizes[qp]) * sizeof(int);
+        cudaMemcpy(&tmp[0], pdata, bytes, cudaMemcpyDeviceToHost);
+        cudaDeviceSynchronize();
+        results.insert(results.end(), tmp.begin(), tmp.end());
+    }
+    return results;
+}
 
 template <typename PointT> void
 pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr  &host_cloud_,
@@ -107,7 +124,7 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
     do
     {
       // if the number of queries is not high enough implement search on Host here
-      if(queries_host.size () <= 100) ///@todo: adjust this to a variable number settable with method
+      if(queries_host.size () <= 0) ///@todo: adjust this to a variable number settable with method
       {
         PCL_DEBUG(" CPU: ");
         for(std::size_t p = 0; p < queries_host.size (); p++)
@@ -151,28 +168,35 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
         // Execute search
         tree->radiusSearch(queries_device, tolerance, max_answers, result_device);
         // Copy results from GPU to Host
-        result_device.sizes.download (sizes);
-        result_device.data.download (data);
+        //result_device.sizes.download (sizes);
+        //result_device.data.download (data);
+        std::vector<int> indices = economical_download(result_device, sizes, max_answers);
         // Store the previously found number of points
         previous_found_points = found_points;
         // Clear queries list
         queries_host.clear();
-        for(std::size_t qp = 0; qp < sizes.size (); qp++)
-        {
-          for(int qp_r = 0; qp_r < sizes[qp]; qp_r++)
-          {
-            if(processed[data[qp_r + qp * max_answers]])
-              continue;
-            processed[data[qp_r + qp * max_answers]] = true;
-            // Buffer in a new PointXYZ type
+        for (int idx : indices) {
+            if (processed[idx])
+                continue;
+            processed[idx] = true;
             PointXYZ p;
-            pcl::copyPoint((*host_cloud_)[data[qp_r + qp * max_answers]], p);
-
-            queries_host.push_back (p);
+            pcl::copyPoint((*host_cloud_)[idx], p);
+            queries_host.push_back(p);
             found_points++;
-            r.indices.push_back(data[qp_r + qp * max_answers]);
-          }
+            r.indices.push_back(idx);
         }
+        //for(std::size_t qp = 0; qp < sizes.size (); qp++)
+        //{
+          //for(int qp_r = 0; qp_r < sizes[qp]; qp_r++)
+          //{
+            //if(processed[data[qp_r + qp * max_answers]])
+              //continue;
+            //processed[data[qp_r + qp * max_answers]] = true;
+            //queries_host.push_back ((*host_cloud_)[data[qp_r + qp * max_answers]]);
+            //found_points++;
+            //r.indices.push_back(data[qp_r + qp * max_answers]);
+          //}
+        //}
       }
       PCL_DEBUG(" data.size: %i, foundpoints: %i, previous: %i", data.size() ,
               found_points, previous_found_points);
