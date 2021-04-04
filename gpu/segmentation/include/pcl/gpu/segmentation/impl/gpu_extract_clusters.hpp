@@ -124,13 +124,16 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
     do
     {
       // if the number of queries is not high enough implement search on Host here
-      if(queries_host.size () <= 0) ///@todo: adjust this to a variable number settable with method
+      if(queries_host.size () <= 10) ///@todo: adjust this to a variable number settable with method
       {
         PCL_DEBUG(" CPU: ");
+        data.clear();
         for(std::size_t p = 0; p < queries_host.size (); p++)
         {
           // Execute the radiusSearch on the host
-          tree->radiusSearchHost(queries_host[p], tolerance, data, max_answers);
+          std::vector<int> tmp;
+          tree->radiusSearchHost(queries_host[p], tolerance, tmp, max_answers);
+          std::copy(tmp.begin(), tmp.end(), std::back_inserter(data));
         }
         // Store the previously found number of points
         previous_found_points = found_points;
