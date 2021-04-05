@@ -1,3 +1,19 @@
+trigger:
+  paths:
+    exclude:
+    - doc
+    - README.md
+    - CHANGES.md
+    - CONTRIBUTING.md
+
+pr:
+  paths:
+    exclude:
+    - doc
+    - README.md
+    - CHANGES.md
+    - CONTRIBUTING.md
+
 resources:
   containers:
     - container: fmt
