@@ -41,15 +41,16 @@
 #include <pcl/gpu/segmentation/gpu_extract_clusters.h>
 #include <cuda_runtime_api.h>
 #include <cuda.h>
-std::vector<int> economical_download(const pcl::gpu::NeighborIndices& indices,
-        std::vector<int>& sizes, int max_answers) {
+
+pcl::Indices economical_download(const pcl::gpu::NeighborIndices& indices,
+        pcl::Indices& sizes, int max_answers) {
     indices.sizes.download(sizes);
-    std::vector<int> results;
+    pcl::Indices results, tmp;
     for (std::size_t qp = 0; qp < sizes.size(); qp++) {
-        int begin = qp * max_answers;
-        const int* pdata = indices.data.ptr() + begin;
-        std::vector<int> tmp(sizes[qp]);
-        std::size_t bytes = (sizes[qp]) * sizeof(int);
+        const int begin = qp * max_answers;
+        const int* const pdata = indices.data.ptr() + begin;
+        tmp.resize(sizes[qp]);
+        const std::size_t bytes = (sizes[qp]) * sizeof(int);
         cudaMemcpy(&tmp[0], pdata, bytes, cudaMemcpyDeviceToHost);
         cudaDeviceSynchronize();
         results.insert(results.end(), tmp.begin(), tmp.end());
@@ -86,7 +87,7 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
   queries_device_buffer.create(max_answers);
 
   // Host buffer for results
-  std::vector<int> sizes, data;
+  pcl::Indices sizes, data, cpu_tmp;
 
   // Process all points in the cloud
   for (std::size_t i = 0; i < host_cloud_->size (); ++i)
@@ -131,9 +132,9 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
         for(std::size_t p = 0; p < queries_host.size (); p++)
         {
           // Execute the radiusSearch on the host
-          std::vector<int> tmp;
-          tree->radiusSearchHost(queries_host[p], tolerance, tmp, max_answers);
-          std::copy(tmp.begin(), tmp.end(), std::back_inserter(data));
+          cpu_tmp.clear();
+          tree->radiusSearchHost(queries_host[p], tolerance, cpu_tmp, max_answers);
+          std::copy(cpu_tmp.begin(), cpu_tmp.end(), std::back_inserter(data));
         }
         // Store the previously found number of points
         previous_found_points = found_points;
@@ -171,9 +172,7 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
         // Execute search
         tree->radiusSearch(queries_device, tolerance, max_answers, result_device);
         // Copy results from GPU to Host
-        //result_device.sizes.download (sizes);
-        //result_device.data.download (data);
-        std::vector<int> indices = economical_download(result_device, sizes, max_answers);
+        pcl::Indices indices = economical_download(result_device, sizes, max_answers);
         // Store the previously found number of points
         previous_found_points = found_points;
         // Clear queries list
@@ -188,18 +187,6 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
             found_points++;
             r.indices.push_back(idx);
         }
-        //for(std::size_t qp = 0; qp < sizes.size (); qp++)
-        //{
-          //for(int qp_r = 0; qp_r < sizes[qp]; qp_r++)
-          //{
-            //if(processed[data[qp_r + qp * max_answers]])
-              //continue;
-            //processed[data[qp_r + qp * max_answers]] = true;
-            //queries_host.push_back ((*host_cloud_)[data[qp_r + qp * max_answers]]);
-            //found_points++;
-            //r.indices.push_back(data[qp_r + qp * max_answers]);
-          //}
-        //}
       }
       PCL_DEBUG(" data.size: %i, foundpoints: %i, previous: %i", data.size() ,
               found_points, previous_found_points);
