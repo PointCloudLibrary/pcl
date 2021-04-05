@@ -29,8 +29,8 @@ function(PCL_CHECK_FOR_AVX)
 
 # Setting the /arch defines __AVX(2)__, see here https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
 # AVX2 extends and includes AVX.
-# Setting them,enables the compiler to use AVX instructions as well as code guarded with the defines.
-# TODO added AVX512 variations if used.
+# Setting these defines allows the compiler to use AVX instructions as well as code guarded with the defines.
+# TODO: Add AVX512 variant if needed.
   if(MSVC)
     if(HAVE_AVX2)
       set(AVX_FLAGS "/arch:AVX2" PARENT_SCOPE)
