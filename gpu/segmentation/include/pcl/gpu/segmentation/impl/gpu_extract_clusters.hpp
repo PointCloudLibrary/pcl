@@ -42,21 +42,26 @@
 #include <cuda_runtime_api.h>
 #include <cuda.h>
 
-pcl::Indices economical_download(const pcl::gpu::NeighborIndices& indices,
-        pcl::Indices& sizes, int max_answers) {
-    indices.sizes.download(sizes);
-    pcl::Indices results, tmp;
-    for (std::size_t qp = 0; qp < sizes.size(); qp++) {
-        const int begin = qp * max_answers;
-        const int* const pdata = indices.data.ptr() + begin;
-        tmp.resize(sizes[qp]);
-        const std::size_t bytes = (sizes[qp]) * sizeof(int);
+namespace pcl {
+namespace detail {
+
+// Downloads only the neccssary cluster indices from the device to the host.
+void economical_download(const pcl::gpu::NeighborIndices& source_indices,
+        const pcl::Indices& buffer_indices, std::size_t buffer_size,
+        pcl::Indices& downloaded_indices) {
+    std::vector<int> tmp;
+    for (std::size_t qp = 0; qp < buffer_indices.size(); qp++) {
+        std::size_t begin = qp * buffer_size;
+        const int* const pdata = source_indices.data.ptr() + begin;
+        tmp.resize(buffer_indices[qp]);
+        const std::size_t bytes = (buffer_indices[qp]) * sizeof(int);
         cudaMemcpy(&tmp[0], pdata, bytes, cudaMemcpyDeviceToHost);
         cudaDeviceSynchronize();
-        results.insert(results.end(), tmp.begin(), tmp.end());
+        downloaded_indices.insert(downloaded_indices.end(), tmp.begin(), tmp.end());
     }
-    return results;
 }
+} // ns detail
+} // ns pcl
 
 template <typename PointT> void
 pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr  &host_cloud_,
@@ -87,7 +92,7 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
   queries_device_buffer.create(max_answers);
 
   // Host buffer for results
-  pcl::Indices sizes, data, cpu_tmp;
+  pcl::Indices sizes, data, cpu_tmp, gpu_indices;
 
   // Process all points in the cloud
   for (std::size_t i = 0; i < host_cloud_->size (); ++i)
@@ -172,12 +177,14 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
         // Execute search
         tree->radiusSearch(queries_device, tolerance, max_answers, result_device);
         // Copy results from GPU to Host
-        pcl::Indices indices = economical_download(result_device, sizes, max_answers);
+        result_device.sizes.download(sizes);
+        gpu_indices.clear();
+        pcl::detail::economical_download(result_device, sizes, max_answers, gpu_indices);
         // Store the previously found number of points
         previous_found_points = found_points;
         // Clear queries list
         queries_host.clear();
-        for (int idx : indices) {
+        for (int idx : gpu_indices) {
             if (processed[idx])
                 continue;
             processed[idx] = true;
