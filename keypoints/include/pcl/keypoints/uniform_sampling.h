@@ -39,8 +39,6 @@
 
 #pragma once
 
-#ifdef __DEPRECATED
-PCL_DEPRECATED_HEADER(1, 12, "UniformSampling is not a Keypoint anymore, use <pcl/filters/uniform_sampling.h> instead.")
-#endif
+PCL_DEPRECATED_HEADER(1, 15, "UniformSampling is not a Keypoint anymore, use <pcl/filters/uniform_sampling.h> instead.")
 
 #include <pcl/filters/uniform_sampling.h>
