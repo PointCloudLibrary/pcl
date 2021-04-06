@@ -1,0 +1,41 @@
+trigger:
+  paths:
+    include:
+    - doc
+    - README.md
+    - CHANGES.md
+    - CONTRIBUTING.md
+
+pr:
+  paths:
+    include:
+    - doc
+    - README.md
+    - CHANGES.md
+    - CONTRIBUTING.md
+
+resources:
+  pipelines:
+    - pipeline: Build
+      source: Build-CI
+      trigger:
+        stages:
+        - build_gcc
+  containers:
+    - container: doc # for documentation.yaml
+      image: pointcloudlibrary/doc
+    - container: env1804 # for tutorials.yaml
+      image: pointcloudlibrary/env:18.04
+
+stages:
+  - stage: documentation
+    displayName: Documentation
+    jobs:
+      - template: documentation.yaml
+
+  - stage: tutorials
+    displayName: Tutorials
+    # triggered only by build_gcc stage
+    condition: eq(variables['Build.Reason'], 'ResourceTrigger')
+    jobs:
+      - template: tutorials.yaml

@@ -24,8 +24,6 @@ resources:
       image: pointcloudlibrary/env:20.04
     - container: env2010
       image: pointcloudlibrary/env:20.10
-    - container: doc
-      image: pointcloudlibrary/doc
 
 stages:
   - stage: formatting
@@ -163,16 +161,3 @@ stages:
           VCPKG_ROOT: 'C:\vcpkg'
         steps:
           - template: build/windows.yaml
-
-  - stage: documentation
-    displayName: Documentation
-    dependsOn: []
-    jobs:
-      - template: documentation.yaml
-
-  - stage: tutorials
-    displayName: Tutorials
-    dependsOn: build_gcc
-    jobs:
-      - template: tutorials.yaml
-
