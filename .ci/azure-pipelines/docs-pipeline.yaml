@@ -16,8 +16,8 @@ pr:
 
 resources:
   pipelines:
-    - pipeline: Build
-      source: Build-CI
+    - pipeline: Build-CI
+      source: Build
       trigger:
         stages:
         - build_gcc
