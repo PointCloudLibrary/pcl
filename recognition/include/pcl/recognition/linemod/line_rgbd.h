@@ -257,7 +257,7 @@ namespace pcl
         const size_t nr_features_per_modality) const;
 
       void
-      ConvertDetectionsTo3D (
+      convertDetectionsTo3D (
         const std::vector<pcl::LINEMODDetection> & linemod_detections,
         std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections) const;
 
@@ -286,16 +286,6 @@ namespace pcl
                                 float min_scale = 0.6944444f,
                                 float max_scale = 1.44f,
                                 float scale_multiplier = 1.2f);
-
-      /** \brief Computes and returns the point cloud of the specified detection. This is the template point 
-        *        cloud transformed to the detection coordinates. The detection ID refers to the last call of 
-        *        the method detect (...).
-        * \param[in] detection_id The ID of the detection (according to the last call of the method detect (...)).
-        * \param[out] cloud The storage for the transformed points.
-        */
-      void
-      computeTransformedTemplatePoints (const size_t detection_id,
-                                        pcl::PointCloud<PointXYZT> & cloud);
 
       inline typename pcl::PointCloud<PointXYZT> &
       getTemplateCloud (const int template_id)

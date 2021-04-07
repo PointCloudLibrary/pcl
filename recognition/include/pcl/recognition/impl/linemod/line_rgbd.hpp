@@ -466,7 +466,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
 }
 
 template <typename PointXYZT, typename PointRGBT> void
-pcl::LineRGBD<PointXYZT, PointRGBT>::ConvertDetectionsTo3D (
+pcl::LineRGBD<PointXYZT, PointRGBT>::convertDetectionsTo3D (
     const std::vector<pcl::LINEMODDetection> & linemod_detections,
     std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections) const
 {
@@ -552,7 +552,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detect (
   linemod_.removeOverlappingDetections(linemod_detections, translation_clustering_threshold_2d_, rotation_clustering_threshold_);
   linemod_.sortDetections(linemod_detections);
 
-  ConvertDetectionsTo3D(linemod_detections, detections);
+  convertDetectionsTo3D(linemod_detections, detections);
 
   // refine detections along depth
   refineDetectionsAlongDepth (detections);
@@ -593,7 +593,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::detectSemiScaleInvariant (
   linemod_.removeOverlappingDetections(linemod_detections, translation_clustering_threshold_2d_, rotation_clustering_threshold_);
   linemod_.sortDetections(linemod_detections);
 
-  ConvertDetectionsTo3D(linemod_detections, detections);
+  convertDetectionsTo3D(linemod_detections, detections);
 
   // refine detections along depth
   refineDetectionsAlongDepth (detections);
