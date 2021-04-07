@@ -22,12 +22,23 @@ resources:
         stages:
         - build_gcc
   containers:
+    - container: fmt # for formatting.yaml
+      image: pointcloudlibrary/fmt
     - container: doc # for documentation.yaml
       image: pointcloudlibrary/doc
     - container: env1804 # for tutorials.yaml
       image: pointcloudlibrary/env:18.04
 
 stages:
+  - stage: formatting
+    displayName: Formatting
+    # if docs pipeline triggered by build_gcc stage,
+    # the formatting stage has already run, thus it
+    # won't run for a second time here.
+    condition: not(eq(variables['Build.Reason'], 'ResourceTrigger'))
+    jobs:
+      - template: formatting.yaml
+
   - stage: documentation
     displayName: Documentation
     jobs:
@@ -35,7 +46,5 @@ stages:
 
   - stage: tutorials
     displayName: Tutorials
-    # triggered only by build_gcc stage
-    condition: eq(variables['Build.Reason'], 'ResourceTrigger')
     jobs:
       - template: tutorials.yaml
