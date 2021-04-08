@@ -99,9 +99,10 @@ if(CMAKE_COMPILER_IS_GNUCXX)
       string(APPEND CMAKE_CXX_FLAGS " -Wabi")
     endif()
     string(APPEND CMAKE_CXX_FLAGS " -Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS_STR}")
-    if(PCL_WARNINGS_ARE_ERRORS)
-      string(APPEND CMAKE_CXX_FLAGS " -Werror")
-    endif()
+  endif()
+
+  if(PCL_WARNINGS_ARE_ERRORS)
+    string(APPEND CMAKE_CXX_FLAGS " -Werror")
   endif()
 
   if("${CMAKE_SHARED_LINKER_FLAGS}" STREQUAL "" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")
