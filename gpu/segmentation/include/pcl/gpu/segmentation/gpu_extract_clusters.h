@@ -80,8 +80,7 @@ namespace pcl
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /** \brief Empty constructor. */
-        EuclideanClusterExtraction ()
-        {};
+        EuclideanClusterExtraction () = default;
 
         /** \brief the destructor */
 /*        ~EuclideanClusterExtraction ()
