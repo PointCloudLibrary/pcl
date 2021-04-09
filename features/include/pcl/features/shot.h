@@ -42,6 +42,8 @@
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
 
+#include <array>  // for sRGB_LUT, sXYZ_LUT
+
 namespace pcl
 {
   /** \brief SHOTEstimation estimates the Signature of Histograms of OrienTations (SHOT) descriptor for
@@ -98,7 +100,6 @@ namespace pcl
       {
         feature_name_ = "SHOTEstimation";
       };
-      
 
     public:
 
@@ -400,8 +401,8 @@ namespace pcl
       static void
       RGB2CIELAB (unsigned char R, unsigned char G, unsigned char B, float &L, float &A, float &B2);
 
-      static float sRGB_LUT[256];
-      static float sXYZ_LUT[4000];
+      static std::array<float, 256> sRGB_LUT;
+      static std::array<float, 4000> sXYZ_LUT;
   };
 }
 
