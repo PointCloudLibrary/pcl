@@ -223,7 +223,7 @@ function(PCL_CHECK_FOR_SSE)
       # platforms.
       list(APPEND SSE_FLAGS "-ffloat-store")
     endif()
-  elseif(MSVC AND NOT CMAKE_CL_64)
+  elseif(MSVC AND NOT CMAKE_SIZEOF_VOID_P)
     if(SSE_LEVEL GREATER_EQUAL 2.0)
       set( SSE_FLAGS "/arch:SSE2")
     elseif(SSE_LEVEL GREATER_EQUAL 1.0)
