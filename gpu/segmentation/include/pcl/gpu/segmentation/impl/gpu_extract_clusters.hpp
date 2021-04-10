@@ -60,8 +60,8 @@ void economical_download(const pcl::gpu::NeighborIndices& source_indices,
         downloaded_indices.insert(downloaded_indices.end(), tmp.begin(), tmp.end());
     }
 }
-} // ns detail
-} // ns pcl
+} // namespace detail
+} // namespace pcl
 
 template <typename PointT> void
 pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr  &host_cloud_,
@@ -92,13 +92,10 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
   queries_device_buffer.create(max_answers);
 
   // Host buffer for results
-  pcl::Indices sizes, data, cpu_tmp, gpu_indices;
-
+  pcl::Indices sizes, data, cpu_tmp;
   // Process all points in the cloud
   for (std::size_t i = 0; i < host_cloud_->size (); ++i)
   {
-    sizes.clear();
-    data.clear();
     // if we already processed this point continue with the next one
     if (processed[i])
       continue;
@@ -129,11 +126,12 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
     // once the area stop growing, stop also iterating.
     do
     {
+      data.clear();
       // if the number of queries is not high enough implement search on Host here
       if(queries_host.size () <= 10) ///@todo: adjust this to a variable number settable with method
       {
         PCL_DEBUG(" CPU: ");
-        data.clear();
+        //data.clear();
         for(std::size_t p = 0; p < queries_host.size (); p++)
         {
           // Execute the radiusSearch on the host
@@ -141,35 +139,12 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
           tree->radiusSearchHost(queries_host[p], tolerance, cpu_tmp, max_answers);
           std::copy(cpu_tmp.begin(), cpu_tmp.end(), std::back_inserter(data));
         }
-        // Store the previously found number of points
-        previous_found_points = found_points;
-        // Clear queries list
-        queries_host.clear();
-
-        if(data.size () == 1)
-          continue;
-
-        // Process the results
-        for(std::size_t i = 0; i < data.size (); i++)
-        {
-          if(processed[data[i]])
-            continue;
-          processed[data[i]] = true;
-          
-          // Buffer in a new PointXYZ type
-          PointXYZ p;
-          pcl::copyPoint((*host_cloud_)[data[i]], p);
-
-          queries_host.push_back (p);
-          found_points++;
-          r.indices.push_back(data[i]);
-        }
       }
-
       // If number of queries is high enough do it here
       else
       {
         PCL_DEBUG(" GPU: ");
+        sizes.clear();
         // Copy buffer
         queries_device = DeviceArray<PointXYZ>(queries_device_buffer.ptr(),queries_host.size());
         // Move queries to GPU
@@ -178,22 +153,27 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
         tree->radiusSearch(queries_device, tolerance, max_answers, result_device);
         // Copy results from GPU to Host
         result_device.sizes.download(sizes);
-        gpu_indices.clear();
-        pcl::detail::economical_download(result_device, sizes, max_answers, gpu_indices);
-        // Store the previously found number of points
-        previous_found_points = found_points;
-        // Clear queries list
-        queries_host.clear();
-        for (int idx : gpu_indices) {
-            if (processed[idx])
-                continue;
-            processed[idx] = true;
-            PointXYZ p;
-            pcl::copyPoint((*host_cloud_)[idx], p);
-            queries_host.push_back(p);
-            found_points++;
-            r.indices.push_back(idx);
-        }
+        pcl::detail::economical_download(result_device, sizes, max_answers, data);
+      }
+      // Store the previously found number of points
+      previous_found_points = found_points;
+      // Clear queries list
+      queries_host.clear();
+
+      if(data.size () == 1)
+        continue;
+
+      // Process the results
+      for(int idx : data)
+        {
+        if(processed[idx])
+          continue;
+        processed[idx] = true;
+        PointXYZ p;
+        pcl::copyPoint((*host_cloud_)[idx], p);
+        queries_host.push_back (p);
+        found_points++;
+        r.indices.push_back(idx);
       }
       PCL_DEBUG(" data.size: %i, foundpoints: %i, previous: %i", data.size() ,
               found_points, previous_found_points);
