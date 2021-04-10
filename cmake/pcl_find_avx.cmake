@@ -6,6 +6,8 @@ function(PCL_CHECK_FOR_AVX)
   include(CheckCXXSourceRuns)
   
   if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+    # Setting -march & -mtune just as required flags for check_cxx_source_runs,
+    # and CMAKE_REQUIRED_FLAGS will be restored after test runs.
     set(CMAKE_REQUIRED_FLAGS "-march=native -mtune=native")
   endif()
 
