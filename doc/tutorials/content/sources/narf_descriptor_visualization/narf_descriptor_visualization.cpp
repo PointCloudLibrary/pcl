@@ -120,7 +120,7 @@ main (int argc, char** argv)
   std::cout << "Now extracting NARFs in every image point.\n";
   std::vector<std::vector<pcl::Narf*> > narfs;
   narfs.resize (range_image.size ());
-  int last_percentage=-1;
+  unsigned int last_percentage=0;
   for (unsigned int y=0; y<range_image.height; ++y)
   {
     for (unsigned int x=0; x<range_image.width; ++x)

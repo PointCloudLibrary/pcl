@@ -52,7 +52,7 @@ main ()
   std::cout << "First cluster has " << clusters[0].indices.size () << " points." << std::endl;
   std::cout << "These are the indices of the points of the initial" <<
     std::endl << "cloud that belong to the first cluster:" << std::endl;
-  int counter = 0;
+  std::size_t counter = 0;
   while (counter < clusters[0].indices.size ())
   {
     std::cout << clusters[0].indices[counter] << ", ";
