@@ -2,9 +2,6 @@ trigger:
   paths:
     include:
     - doc
-    - README.md
-    - CHANGES.md
-    - CONTRIBUTING.md
 
 pr:
   paths:
