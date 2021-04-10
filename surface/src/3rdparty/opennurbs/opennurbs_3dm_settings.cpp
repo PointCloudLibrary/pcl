@@ -731,8 +731,6 @@ void ON_3dmAnnotationSettings::Dump( ON_TextLog& ) const
 
 void ON_3dmAnnotationSettings::Default()
 {
-  memset(this,0,sizeof(*this));
-
   m_dimscale = 1.0;       // model size / plotted size
   m_textheight = 1.0;
   m_dimexe = 1.0;
@@ -756,6 +754,8 @@ void ON_3dmAnnotationSettings::Default()
   m_world_view_hatch_scale = 1.0f;
   m_bEnableAnnotationScaling = 1;
   m_bEnableHatchScaling = 1;
+
+  memset(m_reserved, 0, sizeof(m_reserved));
 }
 
 double ON_3dmAnnotationSettings::WorldViewTextScale() const

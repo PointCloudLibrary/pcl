@@ -129,7 +129,7 @@ template <typename PointT> static void
 copyPointCloudMemcpy (const pcl::PointCloud<PointT> &cloud_in,
                 pcl::PointCloud<PointT> &cloud_out)
 {
-  memcpy (&cloud_out[0], &cloud_in[0], cloud_in.size () * sizeof (PointT));
+  std::copy (&cloud_in[0], (&cloud_in[0]) + cloud_in.size (), &cloud_out[0]);
 }
 
 
