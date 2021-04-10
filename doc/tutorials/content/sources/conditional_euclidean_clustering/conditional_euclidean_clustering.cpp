@@ -10,7 +10,7 @@ typedef pcl::PointXYZI PointTypeIO;
 typedef pcl::PointXYZINormal PointTypeFull;
 
 bool
-enforceIntensitySimilarity (const PointTypeFull& point_a, const PointTypeFull& point_b, float squared_distance)
+enforceIntensitySimilarity (const PointTypeFull& point_a, const PointTypeFull& point_b, float /*squared_distance*/)
 {
   if (std::abs (point_a.intensity - point_b.intensity) < 5.0f)
     return (true);
@@ -19,7 +19,7 @@ enforceIntensitySimilarity (const PointTypeFull& point_a, const PointTypeFull& p
 }
 
 bool
-enforceNormalOrIntensitySimilarity (const PointTypeFull& point_a, const PointTypeFull& point_b, float squared_distance)
+enforceNormalOrIntensitySimilarity (const PointTypeFull& point_a, const PointTypeFull& point_b, float /*squared_distance*/)
 {
   Eigen::Map<const Eigen::Vector3f> point_a_normal = point_a.getNormalVector3fMap (), point_b_normal = point_b.getNormalVector3fMap ();
   if (std::abs (point_a.intensity - point_b.intensity) < 5.0f)
