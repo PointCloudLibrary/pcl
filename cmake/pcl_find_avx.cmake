@@ -5,6 +5,10 @@ function(PCL_CHECK_FOR_AVX)
 
   include(CheckCXXSourceRuns)
   
+  if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+    set(CMAKE_REQUIRED_FLAGS "-march=native -mtune=native")
+  endif()
+
   check_cxx_source_runs("    
     #include <immintrin.h>
     int main()
@@ -25,6 +29,16 @@ function(PCL_CHECK_FOR_AVX)
         return 0;
       }"
     HAVE_AVX)
+  endif()
+
+  set(CMAKE_REQUIRED_FLAGS)
+
+  if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+    if(HAVE_AVX2)
+      set(AVX_FLAGS "-mavx2" PARENT_SCOPE)
+    elseif(HAVE_AVX)
+      set(AVX_FLAGS "-mavx" PARENT_SCOPE)
+    endif()
   endif()
 
 # Setting the /arch defines __AVX(2)__, see here https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
