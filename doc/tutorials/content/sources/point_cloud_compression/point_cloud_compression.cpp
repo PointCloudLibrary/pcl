@@ -90,7 +90,7 @@ public:
 };
 
 int
-main (int argc, char **argv)
+main ()
 {
   SimpleOpenNIViewer v;
   v.run ();

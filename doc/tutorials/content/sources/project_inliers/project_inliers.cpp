@@ -5,7 +5,7 @@
 #include <pcl/filters/project_inliers.h>
 
 int
- main (int argc, char** argv)
+ main ()
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_projected (new pcl::PointCloud<pcl::PointXYZ>);

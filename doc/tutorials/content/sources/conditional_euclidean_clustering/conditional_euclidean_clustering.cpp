@@ -49,7 +49,7 @@ customRegionGrowing (const PointTypeFull& point_a, const PointTypeFull& point_b,
 }
 
 int
-main (int argc, char** argv)
+main ()
 {
   // Data containers used
   pcl::PointCloud<PointTypeIO>::Ptr cloud_in (new pcl::PointCloud<PointTypeIO>), cloud_out (new pcl::PointCloud<PointTypeIO>);

@@ -10,7 +10,7 @@
 #include <pcl/segmentation/region_growing.h>
 
 int
-main (int argc, char** argv)
+main ()
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   if ( pcl::io::loadPCDFile <pcl::PointXYZ> ("region_growing_tutorial.pcd", *cloud) == -1)

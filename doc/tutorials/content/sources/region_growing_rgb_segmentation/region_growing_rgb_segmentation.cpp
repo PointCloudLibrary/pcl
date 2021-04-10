@@ -13,7 +13,7 @@
 using namespace std::chrono_literals;
 
 int
-main (int argc, char** argv)
+main ()
 {
   pcl::search::Search <pcl::PointXYZRGB>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZRGB>);
 
