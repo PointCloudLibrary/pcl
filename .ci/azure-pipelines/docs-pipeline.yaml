@@ -7,9 +7,6 @@ pr:
   paths:
     include:
     - doc
-    - README.md
-    - CHANGES.md
-    - CONTRIBUTING.md
 
 resources:
   pipelines:
@@ -38,10 +35,12 @@ stages:
 
   - stage: documentation
     displayName: Documentation
+    condition: in(dependencies.formatting.result, 'Succeeded', 'SucceededWithIssues', 'Skipped')
     jobs:
       - template: documentation.yaml
 
   - stage: tutorials
     displayName: Tutorials
+    condition: in(dependencies.documentation.result, 'Succeeded', 'SucceededWithIssues')
     jobs:
       - template: tutorials.yaml
