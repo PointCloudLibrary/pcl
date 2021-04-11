@@ -164,8 +164,8 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
         continue;
 
       // Process the results
-      for(int idx : data)
-        {
+      for(auto idx : data)
+      {  
         if(processed[idx])
           continue;
         processed[idx] = true;
