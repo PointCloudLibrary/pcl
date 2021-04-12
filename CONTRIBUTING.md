@@ -117,7 +117,7 @@ of each `.h` and `.cpp` file:
  * SPDX-License-Identifier: BSD-3-Clause
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2021-, Open Perception
+ *  Copyright (c) 2021-, Open Perception Inc.
  *
  *  All rights reserved
  */
