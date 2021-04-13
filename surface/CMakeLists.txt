@@ -49,6 +49,8 @@ endif()
 
 set(BUILD_surface_on_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds using openNURBS")
 if(BUILD_surface_on_nurbs)
+  # Add the exclusive rules for -Werror only for 3rd party OpenNURBS compile
+  add_compile_options(-Wno-error=deprecated-declarations -Wno-error=class-memaccess -Wno-error=deprecated-copy -Wno-error=uninitialized -Wno-error=parentheses)
   include(src/3rdparty/opennurbs/openNURBS.cmake)
   include(src/on_nurbs/on_nurbs.cmake)
 endif()

@@ -60,6 +60,15 @@ class Selection : public Statistics
         registerStats();
     }
 
+    /// @brief Copy constructor.
+    /// @param selection a const reference to a selection object whose
+    /// properties will be copied.
+    Selection (const Selection& selection)
+      : Statistics(selection)
+    {
+      *this = selection;
+    }
+
     /// @brief Equal operator
     /// @param selection a const reference to a selection object whose
     /// properties will be copied.
