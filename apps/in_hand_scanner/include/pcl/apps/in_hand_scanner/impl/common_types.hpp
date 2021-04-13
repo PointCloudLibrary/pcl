@@ -80,32 +80,26 @@ namespace pcl
         this->directions = 0;
       }
 
-      inline PointIHS& operator=(const PointIHS& other)
-      {
-        if (this != &other) {
-          this->x       = other.x;
-          this->y       = other.y;
-          this->z       = other.z;
-          this->data[3] = other.data[3];
-
-          this->normal_x  = other.normal_x;
-          this->normal_y  = other.normal_y;
-          this->normal_z  = other.normal_z;
-          this->data_n[3] = other.data_n[3];
-
-          this->rgba = other.rgba;
-
-          this->weight     = other.weight;
-          this->age        = other.age;
-          this->directions = other.directions;
-        }
-        return *this;
-      }
-
       inline PointIHS (const PointIHS& other)
       {
-        *this = other; // Call copy assignment for copy constructor
+        this->x       = other.x;
+        this->y       = other.y;
+        this->z       = other.z;
+        this->data[3] = other.data[3];
+
+        this->normal_x  = other.normal_x;
+        this->normal_y  = other.normal_y;
+        this->normal_z  = other.normal_z;
+        this->data_n[3] = other.data_n[3];
+
+        this->rgba = other.rgba;
+
+        this->weight     = other.weight;
+        this->age        = other.age;
+        this->directions = other.directions;
       }
+
+      inline PointIHS& operator=(const PointIHS& other) = default;
 
       inline PointIHS (const pcl::PointXYZRGBNormal& other, const float weight)
       {

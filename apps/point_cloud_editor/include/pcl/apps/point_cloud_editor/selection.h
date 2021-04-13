@@ -63,11 +63,7 @@ class Selection : public Statistics
     /// @brief Copy constructor.
     /// @param selection a const reference to a selection object whose
     /// properties will be copied.
-    Selection (const Selection& selection)
-      : Statistics(selection)
-    {
-      *this = selection;
-    }
+    Selection (const Selection& selection) = default;
 
     /// @brief Equal operator
     /// @param selection a const reference to a selection object whose
