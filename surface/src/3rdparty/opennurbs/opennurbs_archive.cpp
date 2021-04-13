@@ -4194,14 +4194,7 @@ CUserDataHeaderInfo::CUserDataHeaderInfo()
 
 void CUserDataHeaderInfo::Initialize()
 {
-  m_classid = {};
-  m_itemid = {};
-  m_appid = {};
-  m_3dm_version = 0;
-  m_3dm_opennurbs_version = 0;
-  m_copycount = 0;
-  m_bLastSavedAsGoo = false;
-  m_xform.Zero();
+  memset(this,0,sizeof(*this));
 }
 
 static
