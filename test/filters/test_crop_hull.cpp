@@ -198,7 +198,7 @@ template <size_t seed> struct RandomGenerator
 };
 
 
-static std::vector<std::vector<uint32_t>> cube_elements = {
+static std::vector<std::vector<pcl::index_t>> cube_elements = {
   {0, 2, 1}, // l
   {1, 2, 3}, // l
   {3, 2, 6}, // f
