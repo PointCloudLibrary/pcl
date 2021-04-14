@@ -51,6 +51,36 @@ char* pcd_file;
 #define MAX_COLOR 255
 #define NUMBER_OF_TEST_RUNS 3
 
+template<typename PointT> inline PointT generateRandomPoint(const float MAX_XYZ);
+
+template<> inline pcl::PointXYZRGBA generateRandomPoint(const float MAX_XYZ) {
+  return pcl::PointXYZRGBA(static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
+                           static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
+                           static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
+                           static_cast<int> (MAX_COLOR * rand() / RAND_MAX),
+                           static_cast<int> (MAX_COLOR * rand() / RAND_MAX),
+                           static_cast<int> (MAX_COLOR * rand() / RAND_MAX),
+                           static_cast<int> (MAX_COLOR * rand() / RAND_MAX));
+}
+
+template<> inline pcl::PointXYZ generateRandomPoint(const float MAX_XYZ) {
+  return pcl::PointXYZ(static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
+                       static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
+                       static_cast<float> (MAX_XYZ * rand() / RAND_MAX));
+}
+
+template<typename PointT> inline
+typename pcl::PointCloud<PointT>::Ptr generateRandomCloud(const float MAX_XYZ) {
+  // empty point cloud hangs decoder
+  const unsigned int point_count = 1 + (MAX_POINTS - 1) * rand() / RAND_MAX;
+  // create shared pointcloud instances
+  typename pcl::PointCloud<PointT>::Ptr cloud(new pcl::PointCloud<PointT>());
+  for (unsigned int point = 0; point < point_count; point++) {
+    cloud->push_back(generateRandomPoint<PointT>(MAX_XYZ));
+  }
+  return cloud;
+}
+
 TEST (PCL, OctreeDeCompressionRandomPointXYZRGBA)
 {
   srand(static_cast<unsigned int> (time(NULL)));
@@ -65,26 +95,7 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBA)
       // iterate over runs
       for (int test_idx = 0; test_idx < NUMBER_OF_TEST_RUNS; test_idx++, total_runs++)
       {
-        // empty point cloud hangs decoder
-        const int point_count = 1 + (MAX_POINTS - 1) * rand() / RAND_MAX;
-        // create shared pointcloud instances
-        pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>());
-        // assign input point clouds to octree
-        // create random point cloud
-        for (int point = 0; point < point_count; point++)
-        {
-          // generate a random point
-          pcl::PointXYZRGBA new_point;
-          new_point.x = static_cast<float> (MAX_XYZ * rand() / RAND_MAX);
-          new_point.y = static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
-          new_point.z = static_cast<float> (MAX_XYZ * rand() / RAND_MAX);
-          new_point.r = static_cast<int> (MAX_COLOR * rand() / RAND_MAX);
-          new_point.g = static_cast<int> (MAX_COLOR * rand() / RAND_MAX);
-          new_point.b = static_cast<int> (MAX_COLOR * rand() / RAND_MAX);
-          new_point.a = static_cast<int> (MAX_COLOR * rand() / RAND_MAX);
-          // OctreePointCloudPointVector can store all points..
-          cloud->push_back(new_point);
-        }
+        auto cloud = generateRandomCloud<pcl::PointXYZRGBA>(MAX_XYZ);
         EXPECT_EQ(cloud->height, 1);
 
 //          std::cout << "Run: " << total_runs << " compression profile:" << compression_profile << " point_count: " << point_count;
@@ -119,20 +130,7 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZ)
       // loop over runs
       for (int test_idx = 0; test_idx < NUMBER_OF_TEST_RUNS; test_idx++, total_runs++)
       {
-        // empty point cloud hangs decoder
-        const int point_count = 1 + (MAX_POINTS - 1) * rand() / RAND_MAX;
-        // create shared pointcloud instances
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
-        // assign input point clouds to octree
-        // create random point cloud
-        for (int point = 0; point < point_count; point++)
-        {
-          // generate a random point
-          pcl::PointXYZ new_point(static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
-                                 static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
-                                 static_cast<float> (MAX_XYZ * rand() / RAND_MAX));
-          cloud->push_back(new_point);
-        }
+        auto cloud = generateRandomCloud<pcl::PointXYZ>(MAX_XYZ);
         EXPECT_EQ(cloud->height, 1);
   //      std::cout << "Run: " << total_runs << " compression profile:" << compression_profile << " point_count: " << point_count;
         std::stringstream compressed_data;
@@ -164,26 +162,7 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBASameCloud)
     pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> pointcloud_encoder((pcl::io::compression_Profiles_e) compression_profile, false);
     pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> pointcloud_decoder;
 
-    // empty point cloud hangs decoder
-    const int point_count = 1 + (MAX_POINTS - 1) * rand() / RAND_MAX;
-    // create shared pointcloud instances
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGBA>());
-    // assign input point clouds to octree
-    // create random point cloud
-    for (int point = 0; point < point_count; point++)
-    {
-      // generate a random point
-      pcl::PointXYZRGBA new_point;
-      new_point.x = static_cast<float> (MAX_XYZ * rand() / RAND_MAX);
-      new_point.y = static_cast<float> (MAX_XYZ * rand() / RAND_MAX),
-      new_point.z = static_cast<float> (MAX_XYZ * rand() / RAND_MAX);
-      new_point.r = static_cast<int> (MAX_COLOR * rand() / RAND_MAX);
-      new_point.g = static_cast<int> (MAX_COLOR * rand() / RAND_MAX);
-      new_point.b = static_cast<int> (MAX_COLOR * rand() / RAND_MAX);
-      new_point.a = static_cast<int> (MAX_COLOR * rand() / RAND_MAX);
-      // OctreePointCloudPointVector can store all points..
-      cloud->push_back(new_point);
-    }
+    auto cloud = generateRandomCloud<pcl::PointXYZRGBA>(MAX_XYZ);
     EXPECT_EQ(cloud->height, 1);
 
     // iterate over runs
