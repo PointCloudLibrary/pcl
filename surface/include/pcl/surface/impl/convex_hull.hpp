@@ -222,8 +222,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   vertexT * vertex;
   int i = 0;
 
-  std::vector<std::pair<int, Eigen::Vector4f>, Eigen::aligned_allocator<std::pair<int, Eigen::Vector4f> > > idx_points (num_vertices);
-  idx_points.resize (hull.size ());
+  AlignedVector<std::pair<int, Eigen::Vector4f>> idx_points (num_vertices);
 
   FORALLvertices
   {
