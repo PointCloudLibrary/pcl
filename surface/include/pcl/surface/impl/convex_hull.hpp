@@ -216,7 +216,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   int num_vertices = qh num_vertices;
 
   hull.clear();
-  hull.resize(num_vertices);
+  hull.resize(num_vertices, PointInT{});
 
   vertexT * vertex;
   int i = 0;

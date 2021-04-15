@@ -49,7 +49,7 @@
 
 #include <cstdint>
 
-#include <Eigen/StdVector>
+#include <Eigen/Core>
 
 namespace pcl
 {
