@@ -181,14 +181,16 @@ parse_argument (int argc, const char * const * argv, const char * str, T &val) n
 int
 pcl::console::parse_argument (int argc, const char * const * argv, const char * str, double &val)
 {
-  return parse_generic(strtod, argc, argv, str, val);
+  const auto strtod_l = [](const char *str, char **str_end){ return strtod(str, str_end); };
+  return parse_generic(strtod_l, argc, argv, str, val);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 int
 pcl::console::parse_argument (int argc, const char * const * argv, const char * str, float &val)
 {
-  return parse_generic(strtof, argc, argv, str, val);
+  const auto strtof_l = [](const char *str, char **str_end){ return strtof(str, str_end); };
+  return parse_generic(strtof_l, argc, argv, str, val);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
