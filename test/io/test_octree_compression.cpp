@@ -81,7 +81,13 @@ typename pcl::PointCloud<PointT>::Ptr generateRandomCloud(const float MAX_XYZ) {
   return cloud;
 }
 
-TEST (PCL, OctreeDeCompressionRandomPointXYZRGBA)
+template<typename PointT>
+class OctreeDeCompressionTest : public testing::Test {};
+
+using TestTypes = ::testing::Types<pcl::PointXYZ, pcl::PointXYZRGBA>;
+TYPED_TEST_SUITE(OctreeDeCompressionTest, TestTypes);
+
+TYPED_TEST (OctreeDeCompressionTest, RandomClouds)
 {
   srand(static_cast<unsigned int> (time(NULL)));
   for (const double MAX_XYZ : {1.0, 1024.0}) { // Small clouds, large clouds
@@ -89,50 +95,16 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBA)
     for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
       compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile) {
       // instantiate point cloud compression encoder/decoder
-      pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> pointcloud_encoder((pcl::io::compression_Profiles_e) compression_profile, false);
-      pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA> pointcloud_decoder;
-      pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZRGBA>());
+      pcl::io::OctreePointCloudCompression<TypeParam> pointcloud_encoder((pcl::io::compression_Profiles_e) compression_profile, false);
+      pcl::io::OctreePointCloudCompression<TypeParam> pointcloud_decoder;
+      typename pcl::PointCloud<TypeParam>::Ptr cloud_out(new pcl::PointCloud<TypeParam>());
       // iterate over runs
       for (int test_idx = 0; test_idx < NUMBER_OF_TEST_RUNS; test_idx++, total_runs++)
       {
-        auto cloud = generateRandomCloud<pcl::PointXYZRGBA>(MAX_XYZ);
+        auto cloud = generateRandomCloud<TypeParam>(MAX_XYZ);
         EXPECT_EQ(cloud->height, 1);
 
 //          std::cout << "Run: " << total_runs << " compression profile:" << compression_profile << " point_count: " << point_count;
-        std::stringstream compressed_data;
-        pointcloud_encoder.encodePointCloud(cloud, compressed_data);
-        pointcloud_decoder.decodePointCloud(compressed_data, cloud_out);
-        if (pcl::io::compressionProfiles_[compression_profile].doVoxelGridDownSampling) {
-          EXPECT_GT(cloud_out->width, 0);
-          EXPECT_LE(cloud_out->width, cloud->width) << "cloud width after encoding and decoding greater than before. Profile: " << compression_profile;
-        }
-        else {
-          EXPECT_EQ(cloud_out->width, cloud->width) << "cloud width after encoding and decoding not the same. Profile: " << compression_profile;
-        }
-        EXPECT_EQ(cloud_out->height, 1) << "cloud height after encoding and decoding should be 1 (as before). Profile: " << compression_profile;
-      } // runs
-    } // compression profiles
-  } // small clouds, large clouds
-} // TEST
-
-TEST (PCL, OctreeDeCompressionRandomPointXYZ)
-{
-  srand(static_cast<unsigned int> (time(NULL)));
-  for (const double MAX_XYZ : {1.0, 1024.0}) { // Small clouds, large clouds
-    // iterate over all pre-defined compression profiles
-    for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
-          compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile)
-    {
-      // instantiate point cloud compression encoder/decoder
-      pcl::io::OctreePointCloudCompression<pcl::PointXYZ> pointcloud_encoder((pcl::io::compression_Profiles_e) compression_profile, false);
-      pcl::io::OctreePointCloudCompression<pcl::PointXYZ> pointcloud_decoder;
-      pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZ>());
-      // loop over runs
-      for (int test_idx = 0; test_idx < NUMBER_OF_TEST_RUNS; test_idx++, total_runs++)
-      {
-        auto cloud = generateRandomCloud<pcl::PointXYZ>(MAX_XYZ);
-        EXPECT_EQ(cloud->height, 1);
-  //      std::cout << "Run: " << total_runs << " compression profile:" << compression_profile << " point_count: " << point_count;
         std::stringstream compressed_data;
         pointcloud_encoder.encodePointCloud(cloud, compressed_data);
         pointcloud_decoder.decodePointCloud(compressed_data, cloud_out);
