@@ -41,8 +41,6 @@
 #define PCL_FEATURES_IMPL_PPF_H_
 
 #include <pcl/features/ppf.h>
-#include <pcl/features/pfh.h>
-#include <pcl/features/pfh_tools.h> // for computePairFeatures
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT>
@@ -75,8 +73,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
       PointOutT p;
       if (i != j)
       {
-        if (//pcl::computePPFPairFeature
-            pcl::computePairFeatures ((*input_)[i].getVector4fMap (),
+        if (pcl::computePPFPairFeature((*input_)[i].getVector4fMap (),
                                       (*normals_)[i].getNormalVector4fMap (),
                                       (*input_)[j].getVector4fMap (),
                                       (*normals_)[j].getNormalVector4fMap (),
