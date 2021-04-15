@@ -536,6 +536,7 @@ namespace pcl
        * \note This breaks the organized structure of the cloud by setting the height to
        * 1!
        * \param[in] count new size of the point cloud
+       * \param[in] value value each point of the cloud should have
        */
       inline void
       assign(index_t count, const PointT& value)
@@ -549,6 +550,7 @@ namespace pcl
        * \brief Replaces the points with `new_width * new_height` copies of `value`
        * \param[in] new_width new width of the point cloud
        * \param[in] new_height new height of the point cloud
+       * \param[in] value value each point of the cloud should have
        */
       inline void
       assign(index_t new_width, index_t new_height, const PointT& value)
@@ -580,6 +582,7 @@ namespace pcl
        * `*this`
        * \note This calculates the height based on size and width provided. This means
        * the assignment happens even if the size is not perfectly divisible by width
+       * \param[in] first, last the range from which the points are copied
        * \param[in] new_width new width of the point cloud
        */
       template <class InputIterator>
@@ -616,6 +619,7 @@ namespace pcl
        * \brief Replaces the points with the elements from the initializer list `ilist`
        * \note This calculates the height based on size and width provided. This means
        * the assignment happens even if the size is not perfectly divisible by width
+       * \param[in] ilist initializer list from which the points are copied
        * \param[in] new_width new width of the point cloud
        */
       void
