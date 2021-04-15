@@ -123,14 +123,14 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation(
       // size_t scene_point_index = i;
       if (scene_reference_index != scene_point_index) {
         if (pcl::computePPFPairFeature(
-            (*target_)[scene_reference_index].getVector4fMap(),
-            (*target_)[scene_reference_index].getNormalVector4fMap(),
-            (*target_)[scene_point_index].getVector4fMap(),
-            (*target_)[scene_point_index].getNormalVector4fMap(),
-            f1,
-            f2,
-            f3,
-            f4)) {
+          (*target_)[scene_reference_index].getVector4fMap(),
+          (*target_)[scene_reference_index].getNormalVector4fMap(),
+          (*target_)[scene_point_index].getVector4fMap(),
+          (*target_)[scene_point_index].getNormalVector4fMap(),
+          f1,
+          f2,
+          f3,
+          f4)) {
           std::vector<std::pair<std::size_t, std::size_t>> nearest_indices;
           search_method_->nearestNeighborSearch(f1, f2, f3, f4, nearest_indices);
 
