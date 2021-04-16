@@ -181,6 +181,8 @@ parse_argument (int argc, const char * const * argv, const char * str, T &val) n
 int
 pcl::console::parse_argument (int argc, const char * const * argv, const char * str, double &val)
 {
+  // added lambda wrapper for `strtod` to handle noexcept-type warning in GCC 7,
+  // refer to: https://stackoverflow.com/questions/46798456/handling-gccs-noexcept-type-warning
   const auto strtod_l = [](const char *str, char **str_end){ return strtod(str, str_end); };
   return parse_generic(strtod_l, argc, argv, str, val);
 }
@@ -189,6 +191,8 @@ pcl::console::parse_argument (int argc, const char * const * argv, const char * 
 int
 pcl::console::parse_argument (int argc, const char * const * argv, const char * str, float &val)
 {
+  // added lambda wrapper for `strtof` to handle noexcept-type warning in GCC 7,
+  // refer to: https://stackoverflow.com/questions/46798456/handling-gccs-noexcept-type-warning
   const auto strtof_l = [](const char *str, char **str_end){ return strtof(str, str_end); };
   return parse_generic(strtof_l, argc, argv, str, val);
 }
