@@ -218,17 +218,25 @@ namespace pcl
         * \param[in] cloud the cloud for which the gradients are computed.
         */
       void
-      computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & cloud);
+      computeMaxColorGradients (const typename pcl::PointCloud<PointInT>::ConstPtr & cloud);
 
       /** \brief Computes the max-RGB gradients for the specified cloud using sobel.
         * \param[in] cloud the cloud for which the gradients are computed.
         */
       void
-      computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & cloud);
+      computeMaxColorGradientsSobel (const typename pcl::PointCloud<PointInT>::ConstPtr & cloud);
   
       /** \brief Filters the quantized gradients. */
       void
       filterQuantizedColorGradients ();
+
+      void clearIntermediateData(bool resetInput = false) {
+        if (resetInput) {
+          input_.reset();
+        }
+        color_gradients_ = pcl::PointCloud<float>();
+        quantized_color_gradients_ = pcl::QuantizedMap();
+      }
 
     protected:
 
@@ -247,7 +255,7 @@ namespace pcl
       bool variable_feature_nr_;
 
       /** \brief Stores a smoothed verion of the input cloud. */
-	    pcl::PointCloud<pcl::RGB>::Ptr smoothed_input_;
+      typename pcl::PointCloud<PointInT>::Ptr smoothed_input_;
 
       /** \brief Defines which feature selection method is used. */
       FeatureSelectionMethod feature_selection_method_;
@@ -279,7 +287,7 @@ template <typename PointInT>
 pcl::ColorGradientModality<PointInT>::
 ColorGradientModality ()
   : variable_feature_nr_ (false)
-  , smoothed_input_ (new pcl::PointCloud<pcl::RGB> ())
+  , smoothed_input_ (new pcl::PointCloud<PointInT> ())
   , feature_selection_method_ (DISTANCE_MAGNITUDE_SCORE)
   , gradient_magnitude_threshold_ (10.0f)
   , gradient_magnitude_threshold_feature_extraction_ (55.0f)
@@ -365,17 +373,17 @@ processInputData ()
   computeGaussianKernel (kernel_size, 0.0f, kernel_values);
 
   // smooth input
-	pcl::filters::Convolution<pcl::RGB, pcl::RGB> convolution;
-	Eigen::ArrayXf gaussian_kernel(kernel_size);
-	//gaussian_kernel << 1.f/16, 1.f/8, 3.f/16, 2.f/8, 3.f/16, 1.f/8, 1.f/16;
-	//gaussian_kernel << 16.f/1600.f,  32.f/1600.f,  64.f/1600.f, 128.f/1600.f, 256.f/1600.f, 128.f/1600.f,  64.f/1600.f,  32.f/1600.f,  16.f/1600.f;
+  pcl::filters::Convolution<PointInT, PointInT> convolution;
+  Eigen::ArrayXf gaussian_kernel(kernel_size);
+  //gaussian_kernel << 1.f/16, 1.f/8, 3.f/16, 2.f/8, 3.f/16, 1.f/8, 1.f/16;
+  //gaussian_kernel << 16.f/1600.f,  32.f/1600.f,  64.f/1600.f, 128.f/1600.f, 256.f/1600.f, 128.f/1600.f,  64.f/1600.f,  32.f/1600.f,  16.f/1600.f;
   gaussian_kernel << kernel_values[0], kernel_values[1], kernel_values[2], kernel_values[3], kernel_values[4], kernel_values[5], kernel_values[6];
 
-  printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 
-  pcl::PointCloud<pcl::RGB>::Ptr rgb_input_ (new pcl::PointCloud<pcl::RGB>());
-  
+  typename pcl::PointCloud<PointInT>::Ptr rgb_input_ (new pcl::PointCloud<PointInT>());
+
   const uint32_t width = input_->width;
   const uint32_t height = input_->height;
 
@@ -393,27 +401,27 @@ processInputData ()
     }
   }
 
-  printf("2 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("2 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 
-	convolution.setInputCloud (rgb_input_);
-	convolution.setKernel (gaussian_kernel);
+  convolution.setInputCloud (rgb_input_);
+  convolution.setKernel (gaussian_kernel);
 
   convolution.convolve (*smoothed_input_);
 
-  printf("3 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("3 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 
   // extract color gradients
   computeMaxColorGradientsSobel (smoothed_input_);
 
-  printf("4 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("4 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 
   // filter quantized gradients to get only dominants one + thresholding
   filterQuantizedColorGradients ();
 
-  printf("6 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("6 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 
   // spread filtered quantized gradients
@@ -422,7 +430,7 @@ processInputData ()
                                          spreaded_filtered_quantized_color_gradients_, 
                                          spreading_size_);
 
-  printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  // printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 }
 
@@ -905,7 +913,7 @@ extractAllFeatures (const MaskMap & mask, const size_t, const size_t modality_in
 template <typename PointInT>
 void
 pcl::ColorGradientModality<PointInT>::
-computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & cloud)
+computeMaxColorGradients (const typename pcl::PointCloud<PointInT>::ConstPtr & cloud)
 {
   const int width = cloud->width;
   const int height = cloud->height;
@@ -1017,7 +1025,7 @@ quantizedAngleFromXY(float x, float y) {
 template <typename PointInT>
 void
 pcl::ColorGradientModality<PointInT>::
-computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & cloud)
+computeMaxColorGradientsSobel (const typename pcl::PointCloud<PointInT>::ConstPtr & cloud)
 {
   const int width = cloud->width;
   const int height = cloud->height;

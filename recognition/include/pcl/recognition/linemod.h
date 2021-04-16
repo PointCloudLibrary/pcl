@@ -356,13 +356,26 @@ namespace pcl
                       const std::vector<MaskMap*> & masks,
                       const RegionXY & region,
                       SparseQuantizedMultiModTemplate & linemod_template,
-                      size_t nr_features_per_modality = 63);
+                      size_t nr_features_per_modality = 63) const;
 
       /** \brief Adds the specified template to the matching queue.
         * \param[in] linemod_template the template to add.
         */
       int
       addTemplate (const SparseQuantizedMultiModTemplate & linemod_template);
+
+      void
+      groupAndSortOverlappingDetections (const std::vector<LINEMODDetection> & detections,
+                                         std::vector<std::vector<LINEMODDetection>>& grouped_detections,
+                                         const size_t grouping_threshold) const;
+
+      void
+      removeOverlappingDetections (std::vector<LINEMODDetection> & detections,
+                                   size_t translation_clustering_threshold,
+                                   float rotation_clustering_threshold) const;
+
+      void
+      sortDetections (std::vector<LINEMODDetection> & detections) const;
 
       /** \brief Detects the stored templates in the supplied modality data.
         * \param[in] modalities the modalities that will be used for detection.
@@ -402,6 +415,13 @@ namespace pcl
       setDetectionThreshold (float threshold)
       {
         template_threshold_ = threshold;
+      }
+
+      inline void
+      setClusteringThresholds (const size_t translation_threshold = 0, const float rotation_threshold = 0)
+      {
+        translation_clustering_threshold_ = translation_threshold;
+        rotation_clustering_threshold_ = rotation_threshold;
       }
 
       /** \brief Enables/disables non-maximum suppression.
@@ -475,7 +495,7 @@ namespace pcl
         return (templates_[template_id]);
       }
 
-      void
+      inline void
       resizeTemplates (size_t n)
       {
         return templates_.resize(n);
@@ -485,6 +505,8 @@ namespace pcl
     private:
       /** template response threshold */
       float template_threshold_;
+      size_t translation_clustering_threshold_;
+      float rotation_clustering_threshold_;
       /** states whether non-max-suppression on detections is enabled or not */
       bool use_non_max_suppression_;
       /** states whether to return an averaged detection */
