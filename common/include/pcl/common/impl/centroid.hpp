@@ -589,16 +589,14 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   centroid[0] = accu[6]; centroid[1] = accu[7]; centroid[2] = accu[8];
   centroid[3] = 1;
 
-
   if (cloud.is_dense)
   {
-    point_count = indices.size ();
     for (std::vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
     {
       //const PointT& point = cloud[*iIt];
-      double xm = cloud[*iIt].x - accu[6];
-      double ym = cloud[*iIt].y - accu[7];
-      double zm = cloud[*iIt].z - accu[8];
+      const double xm = cloud[*iIt].x - accu[6];
+      const double ym = cloud[*iIt].y - accu[7];
+      const double zm = cloud[*iIt].z - accu[8];
       accu [0] += xm * xm;
       accu [1] += xm * ym;
       accu [2] += xm * zm;
@@ -609,16 +607,14 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   }
   else
   {
-    point_count = 0;
     for (std::vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
     {
       if (!isFinite (cloud[*iIt]))
         continue;
 
-      ++point_count;
-      double xm = cloud[*iIt].x - accu[6];
-      double ym = cloud[*iIt].y - accu[7];
-      double zm = cloud[*iIt].z - accu[8];
+      const double xm = cloud[*iIt].x - accu[6];
+      const double ym = cloud[*iIt].y - accu[7];
+      const double zm = cloud[*iIt].z - accu[8];
       accu [0] += xm * xm;
       accu [1] += xm * ym;
       accu [2] += xm * zm;
@@ -628,7 +624,7 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
     }
   }
 
-  accu /= static_cast<Scalar> (point_count);
+  accu /= static_cast<Scalar> (point_count);  // ignore (divide again) 6, 7, 8 entries
   covariance_matrix.coeffRef (0) = accu [0];
   covariance_matrix.coeffRef (1) = accu [1];
   covariance_matrix.coeffRef (2) = accu [2];
