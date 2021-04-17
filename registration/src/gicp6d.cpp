@@ -60,7 +60,8 @@ GeneralizedIterativeClosestPoint6D::setInputSource(
   GeneralizedIterativeClosestPoint<PointSource, PointTarget>::setInputSource(cloud);
 
   // in addition, convert colors of the cloud to CIELAB
-  for (std::size_t point_idx = 0; point_idx < cloud->points.size (); ++point_idx) {
+  cloud_lab_->resize( cloud->size () );
+  for (std::size_t point_idx = 0; point_idx < cloud->size (); ++point_idx) {
     PointXYZRGBAtoXYZLAB((*cloud)[point_idx], (*cloud_lab_)[point_idx]);
   }
 }
@@ -73,7 +74,8 @@ GeneralizedIterativeClosestPoint6D::setInputTarget(
   GeneralizedIterativeClosestPoint<PointSource, PointTarget>::setInputTarget(target);
 
   // in addition, convert colors of the cloud to CIELAB...
-  for (std::size_t point_idx = 0; point_idx < target->points.size (); ++point_idx) {
+  target_lab_->resize( target->size () );
+  for (std::size_t point_idx = 0; point_idx < target->size (); ++point_idx) {
     PointXYZRGBAtoXYZLAB((*target)[point_idx], (*target_lab_)[point_idx]);
   }
 
