@@ -51,7 +51,7 @@
 # endif
 # include <io.h>
 # include <windows.h>
-# include <BaseTsd.h>
+# include <basetsd.h>
 using ssize_t = SSIZE_T;
 #else
 # include <unistd.h>
