@@ -41,67 +41,6 @@
 #include <pcl/memory.h> // for pcl::make_shared
 
 namespace pcl {
-// convert sRGB to CIELAB
-Eigen::Vector3f
-RGB2Lab(const Eigen::Vector3i& colorRGB)
-{
-  // for sRGB   -> CIEXYZ see http://www.easyrgb.com/index.php?X=MATH&H=02#text2
-  // for CIEXYZ -> CIELAB see http://www.easyrgb.com/index.php?X=MATH&H=07#text7
-  // an overview at: https://www.comp.nus.edu.sg/~leowwk/papers/colordiff.pdf
-
-  const auto& sRGB_LUT = RGB2sRGB_LUT<double, 8>();
-
-  const double R = sRGB_LUT[colorRGB[0]];
-  const double G = sRGB_LUT[colorRGB[1]];
-  const double B = sRGB_LUT[colorRGB[2]];
-
-  // linear sRGB -> CIEXYZ, D65 illuminant, observer at 2 degrees
-  const double X = R * 0.4124 + G * 0.3576 + B * 0.1805;
-  const double Y = R * 0.2126 + G * 0.7152 + B * 0.0722;
-  const double Z = R * 0.0193 + G * 0.1192 + B * 0.9505;
-
-  // normalize X, Y, Z with tristimulus values for Xn, Yn, Zn
-  float f[3] = {static_cast<float>(X), static_cast<float>(Y), static_cast<float>(Z)};
-  f[0] /= 0.95047;
-  f[1] /= 1;
-  f[2] /= 1.08883;
-
-  // CIEXYZ -> CIELAB
-  for (int i = 0; i < 3; ++i) {
-    if (f[i] > 0.008856) {
-      f[i] = std::pow(f[i], 1.0 / 3.0);
-    }
-    else {
-      f[i] = 7.787 * f[i] + 16.0 / 116.0;
-    }
-  }
-
-  Eigen::Vector3f colorLab;
-  colorLab[0] = 116.0f * f[1] - 16.0f;
-  colorLab[1] = 500.0f * (f[0] - f[1]);
-  colorLab[2] = 200.0f * (f[1] - f[2]);
-
-  return colorLab;
-}
-
-// convert a PointXYZRGBA cloud to a PointXYZLAB cloud
-void
-convertRGBAToLAB(const PointCloud<pcl::PointXYZRGBA>& in, PointCloud<PointXYZLAB>& out)
-{
-  out.resize(in.size());
-
-  for (std::size_t i = 0; i < in.size(); ++i) {
-    out[i].x = in[i].x;
-    out[i].y = in[i].y;
-    out[i].z = in[i].z;
-    out[i].data[3] = 1.0; // important for homogeneous coordinates
-
-    Eigen::Vector3f lab = RGB2Lab(in[i].getRGBVector3i());
-    out[i].L = lab[0];
-    out[i].a = lab[1];
-    out[i].b = lab[2];
-  }
-}
 
 GeneralizedIterativeClosestPoint6D::GeneralizedIterativeClosestPoint6D(float lab_weight)
 : cloud_lab_(new pcl::PointCloud<PointXYZLAB>)
@@ -121,7 +60,9 @@ GeneralizedIterativeClosestPoint6D::setInputSource(
   GeneralizedIterativeClosestPoint<PointSource, PointTarget>::setInputSource(cloud);
 
   // in addition, convert colors of the cloud to CIELAB
-  convertRGBAToLAB(*cloud, *cloud_lab_);
+  for (std::size_t point_idx = 0; point_idx < cloud->points.size (); ++point_idx) {
+    PointXYZRGBAtoXYZLAB((*cloud)[point_idx], (*cloud_lab_)[point_idx]);
+  }
 }
 
 void
@@ -132,7 +73,9 @@ GeneralizedIterativeClosestPoint6D::setInputTarget(
   GeneralizedIterativeClosestPoint<PointSource, PointTarget>::setInputTarget(target);
 
   // in addition, convert colors of the cloud to CIELAB...
-  convertRGBAToLAB(*target, *target_lab_);
+  for (std::size_t point_idx = 0; point_idx < target->points.size (); ++point_idx) {
+    PointXYZRGBAtoXYZLAB((*target)[point_idx], (*target_lab_)[point_idx]);
+  }
 
   // ...and build 6d-tree
   target_tree_lab_.setInputCloud(target_lab_);

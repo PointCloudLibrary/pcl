@@ -131,6 +131,13 @@ namespace pcl
   }
 
   std::ostream& 
+  operator << (std::ostream& os, const PointXYZLAB& p)
+  {
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.L << " , " <<  p.a << " , " << p.b << ")";
+    return (os);
+  }
+
+  std::ostream& 
   operator << (std::ostream& os, const PointXYZHSV& p)
   {
     os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.h << " , " <<  p.s << " , " << p.v << ")";
