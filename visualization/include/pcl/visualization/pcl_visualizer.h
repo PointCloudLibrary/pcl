@@ -80,7 +80,7 @@ namespace pcl
   {
     namespace details
     {
-      vtkIdType fillCells(std::vector<int>& lookup, const std::vector<pcl::Vertices>& vertices, vtkSmartPointer<vtkCellArray> cell_array, int max_size_of_polygon);
+      PCL_EXPORTS vtkIdType fillCells(std::vector<int>& lookup, const std::vector<pcl::Vertices>& vertices, vtkSmartPointer<vtkCellArray> cell_array, int max_size_of_polygon);
     }
 
     /** \brief PCL Visualizer main class.
