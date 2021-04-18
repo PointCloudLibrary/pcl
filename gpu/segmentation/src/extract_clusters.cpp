@@ -40,9 +40,31 @@
 //#include <pcl/gpu/segmentation/gpu_extract_labeled_clusters.h>
 #include <pcl/gpu/segmentation/impl/gpu_extract_clusters.hpp>
 #include <pcl/gpu/segmentation/impl/gpu_extract_labeled_clusters.hpp>
+#include <pcl/gpu/segmentation/impl/gpu_extract_clusters.hpp>
+#include <cuda_runtime_api.h>
+#include <cuda.h>
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(extractEuclideanClusters, PCL_XYZ_POINT_TYPES);
 PCL_INSTANTIATE(EuclideanClusterExtraction, PCL_XYZ_POINT_TYPES);
 PCL_INSTANTIATE(extractLabeledEuclideanClusters, PCL_XYZL_POINT_TYPES);
 PCL_INSTANTIATE(EuclideanLabeledClusterExtraction, PCL_XYZL_POINT_TYPES);
+
+void
+pcl::gpu::EuclideanClusterExtraction::economical_download(
+    const pcl::gpu::NeighborIndices& source_indices,
+    const pcl::Indices& buffer_indices,
+    std::size_t buffer_size,
+    pcl::Indices& downloaded_indices)
+{
+  std::vector<int> tmp;
+  for (std::size_t qp = 0; qp < buffer_indices.size(); qp++) {
+    std::size_t begin = qp * buffer_size;
+    const int* const pdata = source_indices.data.ptr() + begin;
+    tmp.resize(buffer_indices[qp]);
+    const std::size_t bytes = (buffer_indices[qp]) * sizeof(int);
+    cudaMemcpy(&tmp[0], pdata, bytes, cudaMemcpyDeviceToHost);
+    cudaDeviceSynchronize();
+    downloaded_indices.insert(downloaded_indices.end(), tmp.begin(), tmp.end());
+  }
+}

@@ -153,7 +153,8 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
         tree->radiusSearch(queries_device, tolerance, max_answers, result_device);
         // Copy results from GPU to Host
         result_device.sizes.download(sizes);
-        pcl::detail::economical_download(result_device, sizes, max_answers, data);
+        pcl::detail::economical_download(
+            result_device, sizes, max_answers, data);
       }
       // Store the previously found number of points
       previous_found_points = found_points;
