@@ -114,8 +114,8 @@ namespace pcl
     OpenNIRGB DebayerBilinear<Storage>::operator () (int index) const
     {
     	// get position
-    	unsigned xIdx = index % width;
-    	unsigned yIdx = index / width;
+    	unsigned int xIdx = index % width;
+    	unsigned int yIdx = index / width;
     	
     	OpenNIRGB result;
       
