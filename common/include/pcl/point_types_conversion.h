@@ -136,12 +136,13 @@ namespace pcl
     if (out.h < 0.f) out.h += 360.f;
   }
 
-  /** \brief Convert a XYZRGBA point type to a XYZLAB
-    * \param[in] in the input XYZRGBA point
+  /** \brief Convert a XYZRGB-based point type to a XYZLAB
+    * \param[in] in the input XYZRGB(XYZRGBA, XYZRGBL, etc.) point
     * \param[out] out the output XYZLAB point
     */
+  template <typename PointXYZRGBTypes>
   inline void
-  PointXYZRGBAtoXYZLAB (const PointXYZRGBA& in,
+  PointXYZRGBtoXYZLAB (const PointXYZRGBTypes& in,
                         PointXYZLAB&        out)
   {
     out.x = in.x;
