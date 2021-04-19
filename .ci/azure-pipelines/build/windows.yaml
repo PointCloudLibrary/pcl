@@ -2,16 +2,15 @@ steps:
   - checkout: self
     # find the commit hash on a quick non-forced update too
     fetchDepth: 10
-  - script: |
-      echo ##vso[task.setvariable variable=BOOST_ROOT]%BOOST_ROOT_1_72_0%
-    displayName: 'Set BOOST_ROOT Environment Variable'
-  - script: |
-      echo ##vso[task.prependpath]%BOOST_ROOT_1_72_0%\lib
-    displayName: 'Include Boost Libraries In System PATH'
   - pwsh: Get-PSDrive
     displayName: "Check free space"
   - script: |
-      vcpkg.exe install eigen3 flann gtest qhull --triplet %PLATFORM%-windows && vcpkg.exe list
+      vcpkg.exe install eigen3 flann gtest qhull ^
+      boost-date-time boost-filesystem boost-iostreams ^
+      boost-property-tree boost-graph boost-interprocess ^
+      boost-signals2 boost-sort boost-multi-array boost-asio ^
+      boost-ptr-container ^
+      --triplet %PLATFORM%-windows && vcpkg.exe list
     displayName: 'Install C++ Dependencies Via Vcpkg'
   - script: |
       mkdir %BUILD_DIR% && cd %BUILD_DIR%
@@ -40,6 +39,6 @@ steps:
     inputs:
       testResultsFormat: 'CTest'
       testResultsFiles: '**/Test*.xml'
-      searchFolder: '%BUILD_DIR%'
+      searchFolder: '$(BUILD_DIR)'
     condition: succeededOrFailed()
 

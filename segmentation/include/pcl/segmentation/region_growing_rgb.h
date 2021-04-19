@@ -267,7 +267,7 @@ namespace pcl
       std::vector< std::vector<float> > point_distances_;
 
       /** \brief Stores the neighboures for the corresponding segments. */
-      std::vector< std::vector<int> > segment_neighbours_;
+      std::vector< pcl::Indices > segment_neighbours_;
 
       /** \brief Stores distances for the segment neighbours from segment_neighbours_ */
       std::vector< std::vector<float> > segment_distances_;

@@ -95,3 +95,5 @@
 /* Version of OpenGL used by VTK as rendering backend */
 #define VTK_RENDERING_BACKEND_OPENGL_VERSION ${VTK_RENDERING_BACKEND_OPENGL_VERSION}
 
+#cmakedefine HAVE_QVTK 1
+

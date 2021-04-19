@@ -100,6 +100,9 @@ public:
   DstPointPickCallback(const pcl::visualization::PointPickingEvent& event, void*);
 
 protected:
+  void
+  refreshView();
+
   pcl::visualization::PCLVisualizer::Ptr vis_src_;
   pcl::visualization::PCLVisualizer::Ptr vis_dst_;
 

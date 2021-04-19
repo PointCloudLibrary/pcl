@@ -149,7 +149,7 @@ public:
    * \param[out] object the segmented resultant object
    */
   void
-  segmentObject(int picked_idx,
+  segmentObject(pcl::index_t picked_idx,
                 const typename PointCloud<PointT>::ConstPtr& cloud,
                 const PointIndices::Ptr& plane_indices,
                 PointCloud<PointT>& object)
@@ -258,7 +258,7 @@ public:
   /////////////////////////////////////////////////////////////////////////
   void
   segment(const PointT& picked_point,
-          int picked_idx,
+          pcl::index_t picked_idx,
           PlanarRegion<PointT>& region,
           typename PointCloud<PointT>::Ptr& object)
   {
@@ -441,7 +441,7 @@ public:
     if (idx == -1)
       return;
 
-    std::vector<int> indices(1);
+    pcl::Indices indices(1);
     std::vector<float> distances(1);
 
     // Get the point that was picked

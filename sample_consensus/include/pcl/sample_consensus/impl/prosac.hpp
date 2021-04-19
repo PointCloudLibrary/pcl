@@ -84,7 +84,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
 
   Indices inliers;
   Indices selection;
-  Eigen::VectorXf model_coefficients;
+  Eigen::VectorXf model_coefficients (sac_model_->getModelSize ());
 
   // We will increase the pool so the indices_ vector can only contain m elements at first
   Indices index_pool;

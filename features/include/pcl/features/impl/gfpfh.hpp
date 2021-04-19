@@ -103,7 +103,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
       std::vector<int> histogram;
       for (std::size_t k = 0; k < intersected_cells.size (); ++k)
       {
-        std::vector<int> indices;
+        pcl::Indices indices;
         octree.voxelSearch (intersected_cells[k], indices);
         int label = emptyLabel ();
         if (!indices.empty ())
@@ -251,7 +251,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeHIKDistance (const st
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointNT, typename PointOutT> std::uint32_t
-pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const std::vector<int>& indices)
+pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const pcl::Indices& indices)
 {
   std::vector<std::uint32_t> counts (getNumberOfClasses () + 1, 0);
   for (const auto &nn_index : indices)

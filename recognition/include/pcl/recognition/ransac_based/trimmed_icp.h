@@ -113,7 +113,7 @@ namespace pcl
 
           // Some variables for the closest point search
           pcl::PointXYZ transformed_source_point;
-          std::vector<int> target_index (1);
+          pcl::Indices target_index (1);
           std::vector<float> sqr_dist_to_target (1);
           float old_energy, energy = std::numeric_limits<float>::max ();
 

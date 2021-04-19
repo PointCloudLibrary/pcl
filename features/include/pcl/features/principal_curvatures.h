@@ -40,7 +40,6 @@
 
 #pragma once
 
-#include <pcl/features/eigen.h>
 #include <pcl/features/feature.h>
 
 namespace pcl

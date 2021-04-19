@@ -50,6 +50,7 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/type_traits.h>
 #include <pcl/types.h>
+#include <pcl/console/print.h>  // for PCL_WARN
 
 #include <utility>
 #include <vector>
@@ -434,11 +435,11 @@ namespace pcl
 
       //capacity
       inline std::size_t size () const { return points.size (); }
-      index_t max_size() const noexcept { return static_cast<index_t>(points.max_size()); }
+      inline index_t max_size() const noexcept { return static_cast<index_t>(points.max_size()); }
       inline void reserve (std::size_t n) { points.reserve (n); }
       inline bool empty () const { return points.empty (); }
-      PointT* data() noexcept { return points.data(); }
-      const PointT* data() const noexcept { return points.data(); }
+      inline PointT* data() noexcept { return points.data(); }
+      inline const PointT* data() const noexcept { return points.data(); }
 
       /**
        * \brief Resizes the container to contain `count` elements
@@ -462,6 +463,24 @@ namespace pcl
       }
 
       /**
+       * \brief Resizes the container to contain `new_width * new_height` elements
+       * \details
+       * * If the current size is greater than the requested size, the pointcloud
+       * is reduced to its first requested elements
+       * * If the current size is less then the requested size, additional
+       * default-inserted points are appended
+       * \param[in] new_width new width of the point cloud
+       * \param[in] new_height new height of the point cloud
+       */
+      inline void
+      resize(uindex_t new_width, uindex_t new_height)
+      {
+        points.resize(new_width * new_height);
+        width = new_width;
+        height = new_height;
+      }
+
+      /**
        * \brief Resizes the container to contain count elements
        * \details
        * * If the current size is greater than `count`, the pointcloud is reduced to its
@@ -473,7 +492,7 @@ namespace pcl
        * \param[in] count new size of the point cloud
        * \param[in] value the value to initialize the new points with
        */
-      void
+      inline void
       resize(index_t count, const PointT& value)
       {
         points.resize(count, value);
@@ -481,6 +500,25 @@ namespace pcl
           width = count;
           height = 1;
         }
+      }
+
+      /**
+       * \brief Resizes the container to contain count elements
+       * \details
+       * * If the current size is greater then the requested size, the pointcloud
+       * is reduced to its first requested elements
+       * * If the current size is less then the requested size, additional
+       * default-inserted points are appended
+       * \param[in] new_width new width of the point cloud
+       * \param[in] new_height new height of the point cloud
+       * \param[in] value the value to initialize the new points with
+       */
+      inline void
+      resize(index_t new_width, index_t new_height, const PointT& value)
+      {
+        points.resize(new_width * new_height, value);
+        width = new_width;
+        height = new_height;
       }
 
       //element access
@@ -497,13 +535,29 @@ namespace pcl
        * \brief Replaces the points with `count` copies of `value`
        * \note This breaks the organized structure of the cloud by setting the height to
        * 1!
+       * \param[in] count new size of the point cloud
+       * \param[in] value value each point of the cloud should have
        */
-      void
+      inline void
       assign(index_t count, const PointT& value)
       {
         points.assign(count, value);
         width = static_cast<std::uint32_t>(size());
         height = 1;
+      }
+
+      /**
+       * \brief Replaces the points with `new_width * new_height` copies of `value`
+       * \param[in] new_width new width of the point cloud
+       * \param[in] new_height new height of the point cloud
+       * \param[in] value value each point of the cloud should have
+       */
+      inline void
+      assign(index_t new_width, index_t new_height, const PointT& value)
+      {
+        points.assign(new_width * new_height, value);
+        width = new_width;
+        height = new_height;
       }
 
       /**
@@ -513,13 +567,39 @@ namespace pcl
        * \note This breaks the organized structure of the cloud by setting the height to
        * 1!
        */
-      template <class InputIt>
-      void
-      assign(InputIt first, InputIt last)
+      template <class InputIterator>
+      inline void
+      assign(InputIterator first, InputIterator last)
       {
         points.assign(std::move(first), std::move(last));
         width = static_cast<std::uint32_t>(size());
         height = 1;
+      }
+
+      /**
+       * \brief Replaces the points with copies of those in the range `[first, last)`
+       * \details The behavior is undefined if either argument is an iterator into
+       * `*this`
+       * \note This calculates the height based on size and width provided. This means
+       * the assignment happens even if the size is not perfectly divisible by width
+       * \param[in] first, last the range from which the points are copied
+       * \param[in] new_width new width of the point cloud
+       */
+      template <class InputIterator>
+      inline void
+      assign(InputIterator first, InputIterator last, index_t new_width)
+      {
+        points.assign(std::move(first), std::move(last));
+        width = new_width;
+        height = size() / width;
+        if (width * height != size()) {
+          PCL_WARN("Mismatch in assignment. Requested width (%zu) doesn't divide "
+                   "provided size (%zu) cleanly. Setting height to 1\n",
+                   static_cast<std::size_t>(width),
+                   static_cast<std::size_t>(size()));
+          width = size();
+          height = 1;
+        }
       }
 
       /**
@@ -528,11 +608,34 @@ namespace pcl
        * 1!
        */
       void
-      assign(std::initializer_list<PointT> ilist)
+      inline assign(std::initializer_list<PointT> ilist)
       {
         points.assign(std::move(ilist));
         width = static_cast<std::uint32_t>(size());
         height = 1;
+      }
+
+      /**
+       * \brief Replaces the points with the elements from the initializer list `ilist`
+       * \note This calculates the height based on size and width provided. This means
+       * the assignment happens even if the size is not perfectly divisible by width
+       * \param[in] ilist initializer list from which the points are copied
+       * \param[in] new_width new width of the point cloud
+       */
+      void
+      inline assign(std::initializer_list<PointT> ilist, index_t new_width)
+      {
+        points.assign(std::move(ilist));
+        width = new_width;
+        height = size() / width;
+        if (width * height != size()) {
+          PCL_WARN("Mismatch in assignment. Requested width (%zu) doesn't divide "
+                   "provided size (%zu) cleanly. Setting height to 1\n",
+                   static_cast<std::size_t>(width),
+                   static_cast<std::size_t>(size()));
+          width = size();
+          height = 1;
+        }
       }
 
       /** \brief Insert a new point in the cloud, at the end of the container.
@@ -545,6 +648,16 @@ namespace pcl
         points.push_back (pt);
         width = size ();
         height = 1;
+      }
+
+      /** \brief Insert a new point in the cloud, at the end of the container.
+        * \note This assumes the user would correct the width and height later on!
+        * \param[in] pt the point to insert
+        */
+      inline void
+      transient_push_back (const PointT& pt)
+      {
+        points.push_back (pt);
       }
 
       /** \brief Emplace a new point in the cloud, at the end of the container.
@@ -561,6 +674,18 @@ namespace pcl
         return points.back();
       }
 
+      /** \brief Emplace a new point in the cloud, at the end of the container.
+        * \note This assumes the user would correct the width and height later on!
+        * \param[in] args the parameters to forward to the point to construct
+        * \return reference to the emplaced point
+        */
+      template <class... Args> inline reference
+      transient_emplace_back (Args&& ...args)
+      {
+        points.emplace_back (std::forward<Args> (args)...);
+        return points.back();
+      }
+
       /** \brief Insert a new point in the cloud, given an iterator.
         * \note This breaks the organized structure of the cloud by setting the height to 1!
         * \param[in] position where to insert the point
@@ -570,9 +695,22 @@ namespace pcl
       inline iterator
       insert (iterator position, const PointT& pt)
       {
-        iterator it = points.insert (position, pt);
+        iterator it = points.insert (std::move(position), pt);
         width = size ();
         height = 1;
+        return (it);
+      }
+
+      /** \brief Insert a new point in the cloud, given an iterator.
+        * \note This assumes the user would correct the width and height later on!
+        * \param[in] position where to insert the point
+        * \param[in] pt the point to insert
+        * \return returns the new position iterator
+        */
+      inline iterator
+      transient_insert (iterator position, const PointT& pt)
+      {
+        iterator it = points.insert (std::move(position), pt);
         return (it);
       }
 
@@ -585,9 +723,21 @@ namespace pcl
       inline void
       insert (iterator position, std::size_t n, const PointT& pt)
       {
-        points.insert (position, n, pt);
+        points.insert (std::move(position), n, pt);
         width = size ();
         height = 1;
+      }
+
+      /** \brief Insert a new point in the cloud N times, given an iterator.
+        * \note This assumes the user would correct the width and height later on!
+        * \param[in] position where to insert the point
+        * \param[in] n the number of times to insert the point
+        * \param[in] pt the point to insert
+        */
+      inline void
+      transient_insert (iterator position, std::size_t n, const PointT& pt)
+      {
+        points.insert (std::move(position), n, pt);
       }
 
       /** \brief Insert a new range of points in the cloud, at a certain position.
@@ -599,9 +749,21 @@ namespace pcl
       template <class InputIterator> inline void
       insert (iterator position, InputIterator first, InputIterator last)
       {
-        points.insert (position, first, last);
+        points.insert (std::move(position), std::move(first), std::move(last));
         width = size ();
         height = 1;
+      }
+
+      /** \brief Insert a new range of points in the cloud, at a certain position.
+        * \note This assumes the user would correct the width and height later on!
+        * \param[in] position where to insert the data
+        * \param[in] first where to start inserting the points from
+        * \param[in] last where to stop inserting the points from
+        */
+      template <class InputIterator> inline void
+      transient_insert (iterator position, InputIterator first, InputIterator last)
+      {
+        points.insert (std::move(position), std::move(first), std::move(last));
       }
 
       /** \brief Emplace a new point in the cloud, given an iterator.
@@ -613,9 +775,22 @@ namespace pcl
       template <class... Args> inline iterator
       emplace (iterator position, Args&& ...args)
       {
-        iterator it = points.emplace (position, std::forward<Args> (args)...);
+        iterator it = points.emplace (std::move(position), std::forward<Args> (args)...);
         width = size ();
         height = 1;
+        return (it);
+      }
+
+      /** \brief Emplace a new point in the cloud, given an iterator.
+        * \note This assumes the user would correct the width and height later on!
+        * \param[in] position iterator before which the point will be emplaced
+        * \param[in] args the parameters to forward to the point to construct
+        * \return returns the new position iterator
+        */
+      template <class... Args> inline iterator
+      transient_emplace (iterator position, Args&& ...args)
+      {
+        iterator it = points.emplace (std::move(position), std::forward<Args> (args)...);
         return (it);
       }
 
@@ -627,9 +802,21 @@ namespace pcl
       inline iterator
       erase (iterator position)
       {
-        iterator it = points.erase (position);
+        iterator it = points.erase (std::move(position));
         width = size ();
         height = 1;
+        return (it);
+      }
+
+      /** \brief Erase a point in the cloud.
+        * \note This assumes the user would correct the width and height later on!
+        * \param[in] position what data point to erase
+        * \return returns the new position iterator
+        */
+      inline iterator
+      transient_erase (iterator position)
+      {
+        iterator it = points.erase (std::move(position));
         return (it);
       }
 
@@ -642,9 +829,22 @@ namespace pcl
       inline iterator
       erase (iterator first, iterator last)
       {
-        iterator it = points.erase (first, last);
+        iterator it = points.erase (std::move(first), std::move(last));
         width = size ();
         height = 1;
+        return (it);
+      }
+
+      /** \brief Erase a set of points given by a (first, last) iterator pair
+        * \note This assumes the user would correct the width and height later on!
+        * \param[in] first where to start erasing points from
+        * \param[in] last where to stop erasing points from
+        * \return returns the new position iterator
+        */
+      inline iterator
+      transient_erase (iterator first, iterator last)
+      {
+        iterator it = points.erase (std::move(first), std::move(last));
         return (it);
       }
 

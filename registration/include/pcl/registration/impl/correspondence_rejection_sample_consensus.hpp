@@ -74,8 +74,8 @@ CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences(
     inlier_indices_.clear();
 
   int nr_correspondences = static_cast<int>(original_correspondences.size());
-  std::vector<int> source_indices(nr_correspondences);
-  std::vector<int> target_indices(nr_correspondences);
+  pcl::Indices source_indices(nr_correspondences);
+  pcl::Indices target_indices(nr_correspondences);
 
   // Copy the query-match indices
   for (std::size_t i = 0; i < original_correspondences.size(); ++i) {
@@ -110,7 +110,7 @@ CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCorrespondences(
       return;
     }
 
-    std::vector<int> inliers;
+    pcl::Indices inliers;
     sac.getInliers(inliers);
 
     if (inliers.size() < 3) {

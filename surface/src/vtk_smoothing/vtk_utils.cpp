@@ -48,6 +48,7 @@
 #include <vtkPolyData.h>
 #include <vtkPointData.h>
 #include <vtkFloatArray.h>
+#include <vtkUnsignedCharArray.h>
 
 // Support for VTK 7.1 upwards
 #ifdef vtkGenericDataArray_h
@@ -154,7 +155,11 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
   }
 
   mesh.polygons.resize (nr_polygons);
+#ifdef VTK_CELL_ARRAY_V2
+  vtkIdType const *cell_points;
+#else
   vtkIdType* cell_points;
+#endif
   vtkIdType nr_cell_points;
   vtkCellArray * mesh_polygons = poly_data->GetPolys ();
   mesh_polygons->InitTraversal ();

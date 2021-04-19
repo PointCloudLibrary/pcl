@@ -180,8 +180,8 @@ namespace pcl
 
         using PointCloud = pcl::PointCloud<PointT>;
 
-        using IndicesPtr = shared_ptr<std::vector<int> >;
-        using IndicesConstPtr = shared_ptr<const std::vector<int> >;
+        using IndicesPtr = shared_ptr<pcl::Indices>;
+        using IndicesConstPtr = shared_ptr<const pcl::Indices>;
 
         using PointCloudPtr = typename PointCloud::Ptr;
         using PointCloudConstPtr = typename PointCloud::ConstPtr;

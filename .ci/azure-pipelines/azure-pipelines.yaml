@@ -45,6 +45,7 @@ stages:
         variables:
           BUILD_DIR: '$(Agent.BuildDirectory)/build'
           CMAKE_CXX_FLAGS: '-Wall -Wextra -Wnoexcept-type'
+          DISPLAY: :99.0 # Checked for in CMake
         steps:
           - template: build/ubuntu.yaml
 
@@ -94,6 +95,7 @@ stages:
         variables:
           BUILD_DIR: '$(Agent.BuildDirectory)/build'
           CMAKE_CXX_FLAGS: '-Wall -Wextra'
+          DISPLAY: :99.0 # Checked for in CMake
         steps:
           - template: build/ubuntu.yaml
       - job: ubuntu_indices

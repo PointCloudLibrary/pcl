@@ -42,6 +42,7 @@
 #include <pcl/common/io.h>
 #include <pcl/filters/impl/voxel_grid.hpp>
 #include <boost/sort/spreadsort/integer_sort.hpp>
+#include <array>
 
 using Array4size_t = Eigen::Array<std::size_t, 4, 1>;
 
@@ -229,7 +230,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 
   if( (dx*dy*dz) > static_cast<std::int64_t>(std::numeric_limits<std::int32_t>::max()) )
   {
-    PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.", getClassName().c_str());
+    PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.\n", getClassName().c_str());
     //output.width = output.height = 0;
     //output.data.clear();
     //return;
@@ -385,12 +386,22 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   // we need to skip all the same, adjacenent idx values
   std::size_t total = 0;
   std::size_t index = 0;
+  // first_and_last_indices_vector[i] represents the index in index_vector of the first point in
+  // index_vector belonging to the voxel which corresponds to the i-th output point,
+  // and of the first point not belonging to.
+  std::vector<std::pair<index_t, index_t> > first_and_last_indices_vector;
+  // Worst case size
+  first_and_last_indices_vector.reserve (index_vector.size ());
   while (index < index_vector.size ()) 
   {
     std::size_t i = index + 1;
     while (i < index_vector.size () && index_vector[i].idx == index_vector[index].idx) 
       ++i;
-    ++total;
+    if ((i - index) >= min_points_per_voxel_)
+    {
+      ++total;
+      first_and_last_indices_vector.emplace_back(index, i);
+    }
     index = i;
   }
 
@@ -436,93 +447,66 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     xyz_offset = Array4size_t (0, 4, 8, 12);
 
   index=0;
-  Eigen::VectorXf centroid = Eigen::VectorXf::Zero (centroid_size);
   Eigen::VectorXf temporary = Eigen::VectorXf::Zero (centroid_size);
+  const std::array<index_t, 3> field_indices {x_idx_, y_idx_, z_idx_};
 
-  for (std::size_t cp = 0; cp < index_vector.size ();)
+  for (const auto &cp : first_and_last_indices_vector)
   {
-    std::size_t point_offset = index_vector[cp].cloud_point_index * input_->point_step;
-    // Do we need to process all the fields?
-    if (!downsample_all_data_) 
+    // calculate centroid - sum values from all input points, that have the same idx value in index_vector array
+    index_t first_index = cp.first;
+    index_t last_index = cp.second;
+
+    // index is centroid final position in resulting PointCloud
+    if (save_leaf_layout_)
+      leaf_layout_[index_vector[first_index].idx] = index;
+
+    //Limit downsampling to coords
+    if (!downsample_all_data_)
     {
-      memcpy (&pt[0], &input_->data[point_offset+input_->fields[x_idx_].offset], sizeof (float));
-      memcpy (&pt[1], &input_->data[point_offset+input_->fields[y_idx_].offset], sizeof (float));
-      memcpy (&pt[2], &input_->data[point_offset+input_->fields[z_idx_].offset], sizeof (float));
-      centroid[0] = pt[0];
-      centroid[1] = pt[1];
-      centroid[2] = pt[2];
-      centroid[3] = 0;
+      Eigen::Vector4f centroid (Eigen::Vector4f::Zero ());
+
+      for (index_t li = first_index; li < last_index; ++li)
+      {
+        std::size_t point_offset = index_vector[li].cloud_point_index * input_->point_step;
+        for (uint8_t ind=0; ind<3; ++ind)
+        {
+          memcpy (&pt[ind], &input_->data[point_offset+input_->fields[field_indices[ind]].offset], sizeof (float));
+        }
+        centroid += pt;
+      }
+
+      centroid /= static_cast<float> (last_index - first_index);
+      for (uint8_t ind=0; ind<3; ++ind)
+      {
+        memcpy (&output.data[xyz_offset[ind]], &centroid[ind], sizeof (float));
+      }
+      xyz_offset += output.point_step;
     }
     else
     {
-      // ---[ RGB special case
-      // fill extra r/g/b centroid field
-      if (rgba_index >= 0)
-      {
-        pcl::RGB rgb;
-        memcpy (&rgb, &input_->data[point_offset + input_->fields[rgba_index].offset], sizeof (RGB));
-        centroid[centroid_size-4] = rgb.r;
-        centroid[centroid_size-3] = rgb.g;
-        centroid[centroid_size-2] = rgb.b;
-        centroid[centroid_size-1] = rgb.a;
-      }
-      // Copy all the fields
-      for (std::size_t d = 0; d < input_->fields.size (); ++d)
-        memcpy (&centroid[d], &input_->data[point_offset + input_->fields[d].offset], field_sizes_[d]);
-    }
 
-    std::size_t i = cp + 1;
-    while (i < index_vector.size () && index_vector[i].idx == index_vector[cp].idx) 
-    {
-      std::size_t point_offset = index_vector[i].cloud_point_index * input_->point_step;
-      if (!downsample_all_data_) 
-      {
-        memcpy (&pt[0], &input_->data[point_offset+input_->fields[x_idx_].offset], sizeof (float));
-        memcpy (&pt[1], &input_->data[point_offset+input_->fields[y_idx_].offset], sizeof (float));
-        memcpy (&pt[2], &input_->data[point_offset+input_->fields[z_idx_].offset], sizeof (float));
-        centroid[0] += pt[0];
-        centroid[1] += pt[1];
-        centroid[2] += pt[2];
-      }
-      else
-      {
+      Eigen::VectorXf centroid = Eigen::VectorXf::Zero (centroid_size);
+      // fill in the accumulator with leaf points
+      for (index_t li = first_index; li < last_index; ++li) {
+        std::size_t point_offset = index_vector[li].cloud_point_index * input_->point_step;
         // ---[ RGB special case
         // fill extra r/g/b centroid field
         if (rgba_index >= 0)
         {
-          pcl::RGB rgb;
-          memcpy (&rgb, &input_->data[point_offset + input_->fields[rgba_index].offset], sizeof (RGB));
-          temporary[centroid_size-4] = rgb.r;
-          temporary[centroid_size-3] = rgb.g;
-          temporary[centroid_size-2] = rgb.b;
-          temporary[centroid_size-1] = rgb.a;
+            pcl::RGB rgb;
+            memcpy (&rgb, &input_->data[point_offset + input_->fields[rgba_index].offset], sizeof (RGB));
+            temporary[centroid_size-4] = rgb.r;
+            temporary[centroid_size-3] = rgb.g;
+            temporary[centroid_size-2] = rgb.b;
+            temporary[centroid_size-1] = rgb.a;
         }
         // Copy all the fields
         for (std::size_t d = 0; d < input_->fields.size (); ++d)
           memcpy (&temporary[d], &input_->data[point_offset + input_->fields[d].offset], field_sizes_[d]);
         centroid += temporary;
       }
-      ++i;
-    }
-
-	  // Save leaf layout information for fast access to cells relative to current position
-    if (save_leaf_layout_)
-      leaf_layout_[index_vector[cp].idx] = static_cast<int> (index);
-
-    // Normalize the centroid
-    centroid /= static_cast<float> (i - cp);
-
-    // Do we need to process all the fields?
-    if (!downsample_all_data_)
-    {
-      // Copy the data
-      memcpy (&output.data[xyz_offset[0]], &centroid[0], sizeof (float));
-      memcpy (&output.data[xyz_offset[1]], &centroid[1], sizeof (float));
-      memcpy (&output.data[xyz_offset[2]], &centroid[2], sizeof (float));
-      xyz_offset += output.point_step;
-    }
-    else
-    {
+      centroid /= static_cast<float> (last_index - first_index);
+      
       std::size_t point_offset = index * output.point_step;
       // Copy all the fields
       for (std::size_t d = 0; d < output.fields.size (); ++d)
@@ -537,7 +521,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
         memcpy (&output.data[point_offset + output.fields[rgba_index].offset], &rgb, sizeof (float));
       }
     }
-    cp = i;
+     
     ++index;
   }
 }

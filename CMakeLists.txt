@@ -90,17 +90,23 @@ if(PCL_ENABLE_SSE AND "${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}"
   PCL_CHECK_FOR_SSE()
 endif()
 
+# check for AVX flags for windows
+if(PCL_ENABLE_AVX AND "${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
+  include("${PCL_SOURCE_DIR}/cmake/pcl_find_avx.cmake")
+  PCL_CHECK_FOR_AVX()
+endif()
+
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
     if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabi=11")
+      string(APPEND CMAKE_CXX_FLAGS " -Wabi=11")
     else()
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabi")
+      string(APPEND CMAKE_CXX_FLAGS " -Wabi")
     endif()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS_STR}")
+    string(APPEND CMAKE_CXX_FLAGS " -Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS}")
     if(PCL_WARNINGS_ARE_ERRORS)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+      string(APPEND CMAKE_CXX_FLAGS " -Werror")
     endif()
   endif()
 
@@ -110,10 +116,10 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
   if(WIN32)
     if(PCL_SHARED_LIBS)
-      set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--export-all-symbols -Wl,--enable-auto-import")
+      string(APPEND CMAKE_SHARED_LINKER_FLAGS " -Wl,--export-all-symbols -Wl,--enable-auto-import")
       if(MINGW)
         add_definitions("-DBOOST_THREAD_USE_LIB")
-        set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--allow-multiple-definition")
+        string(APPEND CMAKE_SHARED_LINKER_FLAGS " -Wl,--allow-multiple-definition")
       endif()
     else()
       add_definitions("-DBOOST_LIB_DIAGNOSTIC -DBOOST_THREAD_USE_LIB")
@@ -127,20 +133,20 @@ if(CMAKE_COMPILER_IS_MSVC)
   add_compile_options(/bigobj)
   
   if("${CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS_DEFAULT}")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS_STR}")
+    string(APPEND CMAKE_CXX_FLAGS " /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS} ${AVX_FLAGS}")
 
     # Add extra code generation/link optimizations
     if(CMAKE_MSVC_CODE_LINK_OPTIMIZATION AND (NOT BUILD_CUDA) AND (NOT BUILD_GPU))
-      set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")
-      set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG /OPT:REF")
-      set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
+      string(APPEND CMAKE_CXX_FLAGS_RELEASE " /GL")
+      string(APPEND CMAKE_SHARED_LINKER_FLAGS_RELEASE " /LTCG /OPT:REF")
+      string(APPEND CMAKE_EXE_LINKER_FLAGS_RELEASE " /LTCG")
     else()
       message("Global optimizations /GL has been turned off, as it doesn't work with nvcc/thrust")
     endif()
     # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
 
     if(PCL_WARNINGS_ARE_ERRORS)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX")
+      string(APPEND CMAKE_CXX_FLAGS " /WX")
     endif()
 
     include(ProcessorCount)
@@ -150,11 +156,11 @@ if(CMAKE_COMPILER_IS_MSVC)
       # Usage of COMPILE_LANGUAGE generator expression for MSVC in add_compile_options requires at least CMake 3.11, see https://gitlab.kitware.com/cmake/cmake/issues/17435	  
       if(MSVC_MP EQUAL 0)
         # MSVC_MP is 0 in case the information cannot be determined by ProcessorCount => fallback
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+        string(APPEND CMAKE_C_FLAGS " /MP")
+        string(APPEND CMAKE_CXX_FLAGS " /MP")
       elseif(MSVC_MP GREATER 1)
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP${MSVC_MP}")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP${MSVC_MP}")
+        string(APPEND CMAKE_C_FLAGS " /MP${MSVC_MP}")
+        string(APPEND CMAKE_CXX_FLAGS " /MP${MSVC_MP}")
       endif()      
     else()      
       if(MSVC_MP EQUAL 0)
@@ -168,8 +174,8 @@ if(CMAKE_COMPILER_IS_MSVC)
   endif()
 
   if(CMAKE_GENERATOR STREQUAL "Ninja")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /FS")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /FS")
+    string(APPEND CMAKE_C_FLAGS " /FS")
+    string(APPEND CMAKE_CXX_FLAGS " /FS")
   endif()
 endif()
 
@@ -189,7 +195,7 @@ if(CMAKE_COMPILER_IS_CLANG)
   if("${CMAKE_CXX_FLAGS}" STREQUAL "")
     set(CMAKE_CXX_FLAGS "-ftemplate-depth=1024 -Qunused-arguments -Wno-invalid-offsetof ${SSE_FLAGS_STR}") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
     if(APPLE AND WITH_CUDA AND CUDA_FOUND)
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
+      string(APPEND CMAKE_CXX_FLAGS " -stdlib=libstdc++")
     endif()
   endif()
   set(CLANG_LIBRARIES "stdc++")
@@ -263,8 +269,8 @@ if(WITH_OPENMP)
   find_package(OpenMP COMPONENTS C CXX)
 endif()
 if(OpenMP_FOUND)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+  string(APPEND CMAKE_C_FLAGS " ${OpenMP_C_FLAGS}")
+  string(APPEND CMAKE_CXX_FLAGS " ${OpenMP_CXX_FLAGS}")
   if(${CMAKE_VERSION} VERSION_LESS "3.7")
     message(STATUS "Found OpenMP")
   else()
@@ -281,8 +287,8 @@ if(OpenMP_FOUND)
       set(OPENMP_DLL VCOMP140)
     endif()
     if(OPENMP_DLL)
-      set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} /DELAYLOAD:${OPENMP_DLL}D.dll")
-      set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DELAYLOAD:${OPENMP_DLL}.dll")
+      string(APPEND CMAKE_SHARED_LINKER_FLAGS_DEBUG " /DELAYLOAD:${OPENMP_DLL}D.dll")
+      string(APPEND CMAKE_SHARED_LINKER_FLAGS_RELEASE " /DELAYLOAD:${OPENMP_DLL}.dll")
     else()
       message(WARNING "Delay loading flag for OpenMP DLL is invalid.")
     endif()
@@ -299,18 +305,15 @@ find_package(Eigen 3.1 REQUIRED)
 include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
 
 # FLANN (required)
-if(NOT PCL_SHARED_LIBS OR ((WIN32 AND NOT MINGW) AND NOT PCL_BUILD_WITH_FLANN_DYNAMIC_LINKING_WIN32))
-  set(FLANN_USE_STATIC ON)
-endif()
 find_package(FLANN 1.7.0 REQUIRED)
+if(NOT (${FLANN_LIBRARY_TYPE} MATCHES ${PCL_FLANN_REQUIRED_TYPE}) AND NOT (${PCL_FLANN_REQUIRED_TYPE} MATCHES "DONTCARE"))
+  message(FATAL_ERROR "Flann was selected with ${PCL_FLANN_REQUIRED_TYPE} but found as ${FLANN_LIBRARY_TYPE}")
+endif()
 
-# libusb-1.0
+# libusb
 option(WITH_LIBUSB "Build USB RGBD-Camera drivers" TRUE)
 if(WITH_LIBUSB)
-  find_package(libusb-1.0)
-  if(LIBUSB_1_FOUND)
-    include_directories(SYSTEM "${LIBUSB_1_INCLUDE_DIR}")
-  endif()
+  find_package(libusb)
 endif()
 
 # Dependencies for different grabbers
@@ -366,81 +369,15 @@ endif()
 option(WITH_QT "Build QT Front-End" TRUE)
 if(WITH_QT)
   find_package(Qt5 COMPONENTS Concurrent OpenGL Widgets QUIET)
+  if(Qt5_FOUND)
+    message(STATUS "Found Qt5 version: ${Qt5_VERSION}")
+  endif()
 endif()
 
 # Find VTK
 option(WITH_VTK "Build VTK-Visualizations" TRUE)
 if(WITH_VTK AND NOT ANDROID)
-  set(PCL_VTK_COMPONENTS
-    vtkChartsCore
-    vtkCommonCore
-    vtkCommonDataModel
-    vtkCommonExecutionModel
-    vtkFiltersCore
-    vtkFiltersExtraction
-    vtkFiltersModeling
-    vtkImagingCore
-    vtkImagingSources
-    vtkInteractionStyle
-    vtkInteractionWidgets
-    vtkIOCore
-    vtkIOGeometry
-    vtkIOImage
-    vtkIOLegacy
-    vtkIOPLY
-    vtkRenderingAnnotation
-    vtkRenderingLOD
-    vtkViewsContext2D
-  )
-  find_package(VTK COMPONENTS ${PCL_VTK_COMPONENTS})
-  if(VTK_FOUND AND ("${VTK_VERSION}" VERSION_LESS 6.2))
-    message(WARNING "The minimum required version of VTK is 6.2, but found ${VTK_VERSION}")
-    set(VTK_FOUND FALSE)
-  endif()
-
-  if(VTK_FOUND)
-    if(NOT DEFINED VTK_RENDERING_BACKEND)
-      # On old VTK versions this variable does not exist. In this case it is
-      # safe to assume OpenGL backend
-      set(VTK_RENDERING_BACKEND "OpenGL")
-    endif()
-    list(APPEND PCL_VTK_COMPONENTS vtkRenderingContext${VTK_RENDERING_BACKEND})
-
-    if(WITH_QT)
-      if(";${VTK_MODULES_ENABLED};" MATCHES ";vtkGUISupportQt;" AND ";${VTK_MODULES_ENABLED};" MATCHES ";vtkRenderingQt;")
-        set(QVTK_FOUND ON)
-        list(APPEND PCL_VTK_COMPONENTS vtkRenderingQt vtkGUISupportQt)
-      else()
-        unset(QVTK_FOUND)
-      endif()
-    endif()
-
-    find_package(VTK COMPONENTS ${PCL_VTK_COMPONENTS})
-
-    message(STATUS "VTK_MAJOR_VERSION ${VTK_MAJOR_VERSION}, rendering backend: ${VTK_RENDERING_BACKEND}")
-    if(PCL_SHARED_LIBS OR (NOT (PCL_SHARED_LIBS) AND NOT (VTK_BUILD_SHARED_LIBS)))
-      if(VTK_USE_FILE)
-        include(${VTK_USE_FILE})
-      endif()
-      message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, libs: ${VTK_LIBRARIES}")
-      if(APPLE)
-        option(VTK_USE_COCOA "Use Cocoa for VTK render windows" ON)
-        mark_as_advanced(VTK_USE_COCOA)
-      endif()
-      if(${VTK_RENDERING_BACKEND} STREQUAL "OpenGL")
-        set(VTK_RENDERING_BACKEND_OPENGL_VERSION "1")
-        message(DEPRECATION "The rendering backend OpenGL is deprecated and not available anymore since VTK 8.2."
-                            "Please switch to the OpenGL2 backend instead, which is available since VTK 6.2."
-                            "Support of the deprecated backend will be dropped with PCL 1.13.")
-      elseif(${VTK_RENDERING_BACKEND} STREQUAL "OpenGL2")
-        set(VTK_RENDERING_BACKEND_OPENGL_VERSION "2")
-      endif()
-    else()
-      set(VTK_FOUND OFF)
-      message("Warning: You are to build PCL in STATIC but VTK is SHARED!")
-      message("Warning: VTK disabled!")
-    endif()
-  endif()
+  include("${PCL_SOURCE_DIR}/cmake/pcl_find_vtk.cmake")
 else()
   set(VTK_FOUND OFF)
 endif()

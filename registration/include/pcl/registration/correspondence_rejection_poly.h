@@ -240,8 +240,8 @@ public:
    * all edge length ratios are larger than or equal to \ref similarity_threshold_
    */
   inline bool
-  thresholdPolygon(const std::vector<int>& source_indices,
-                   const std::vector<int>& target_indices)
+  thresholdPolygon(const pcl::Indices& source_indices,
+                   const pcl::Indices& target_indices)
   {
     // Convert indices to correspondences and an index vector pointing to each element
     pcl::Correspondences corr(cardinality_);

@@ -49,6 +49,7 @@
 #include <vtkCamera.h>
 #include <vtkRenderWindow.h>
 #include <vtkRendererCollection.h>
+#include <vtkGenericOpenGLRenderWindow.h>
 
 using namespace pcl;
 
@@ -67,29 +68,46 @@ ManualRegistration::ManualRegistration()
   this->setWindowTitle("PCL Manual Registration");
 
   // Set up the source window
+#if VTK_MAJOR_VERSION > 8
+  auto renderer_src = vtkSmartPointer<vtkRenderer>::New();
+  auto renderWindow_src = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+  renderWindow_src->AddRenderer(renderer_src);
+  vis_src_.reset(new pcl::visualization::PCLVisualizer(renderer_src, renderWindow_src, "", false));
+#else
   vis_src_.reset(new pcl::visualization::PCLVisualizer("", false));
-  ui_->qvtk_widget_src->SetRenderWindow(vis_src_->getRenderWindow());
-  vis_src_->setupInteractor(ui_->qvtk_widget_src->GetInteractor(),
-                            ui_->qvtk_widget_src->GetRenderWindow());
+#endif // VTK_MAJOR_VERSION > 8
+  setRenderWindowCompat(*(ui_->qvtk_widget_src),*(vis_src_->getRenderWindow()));
+  vis_src_->setupInteractor(getInteractorCompat(*(ui_->qvtk_widget_src)),
+                            getRenderWindowCompat(*(ui_->qvtk_widget_src)));
+
   vis_src_->getInteractorStyle()->setKeyboardModifier(
       pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
-  ui_->qvtk_widget_src->update();
 
   vis_src_->registerPointPickingCallback(&ManualRegistration::SourcePointPickCallback,
                                          *this);
 
   // Set up the destination window
+#if VTK_MAJOR_VERSION > 8
+  auto renderer_dst = vtkSmartPointer<vtkRenderer>::New();
+  auto renderWindow_dst = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+  renderWindow_dst->AddRenderer(renderer_dst);
+  vis_dst_.reset(new pcl::visualization::PCLVisualizer(renderer_dst, renderWindow_dst, "", false));
+#else
   vis_dst_.reset(new pcl::visualization::PCLVisualizer("", false));
-  ui_->qvtk_widget_dst->SetRenderWindow(vis_dst_->getRenderWindow());
-  vis_dst_->setupInteractor(ui_->qvtk_widget_dst->GetInteractor(),
-                            ui_->qvtk_widget_dst->GetRenderWindow());
+#endif // VTK_MAJOR_VERSION > 8
+  setRenderWindowCompat(*(ui_->qvtk_widget_dst), *(vis_dst_->getRenderWindow()));
+  vis_dst_->setupInteractor(getInteractorCompat(*(ui_->qvtk_widget_dst)),
+                            getRenderWindowCompat(*(ui_->qvtk_widget_dst)));
+
+
   vis_dst_->getInteractorStyle()->setKeyboardModifier(
-      pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
-  ui_->qvtk_widget_dst->update();
+    pcl::visualization::INTERACTOR_KB_MOD_SHIFT);
 
   vis_dst_->registerPointPickingCallback(&ManualRegistration::DstPointPickCallback,
                                          *this);
-
+  // Render view
+  refreshView();
+  
   // Connect all buttons
   connect(ui_->confirmSrcPointButton,
           SIGNAL(clicked()),
@@ -237,8 +255,8 @@ ManualRegistration::orthoChanged(int state)
         ->GetActiveCamera()
         ->SetParallelProjection(1);
   }
-  ui_->qvtk_widget_src->update();
-  ui_->qvtk_widget_dst->update();
+
+  refreshView();
 }
 
 // TODO
@@ -275,8 +293,17 @@ ManualRegistration::timeoutSlot()
     }
     cloud_dst_modified_ = false;
   }
-  ui_->qvtk_widget_src->update();
+  refreshView();
+}
+
+void
+ManualRegistration::refreshView()
+{
+#if VTK_MAJOR_VERSION > 8
+  ui_->qvtk_widget_dst->renderWindow()->Render();
+#else
   ui_->qvtk_widget_dst->update();
+#endif // VTK_MAJOR_VERSION > 8
 }
 
 void

@@ -107,7 +107,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
 
   pcl::PointIndices::Ptr removed_indices (new PointIndices),
                          indices (new PointIndices);
-  std::vector<int> valid_indices;
+  pcl::Indices valid_indices;
   if (keep_organized)
   {
     xyz_cloud = xyz_cloud_pre;

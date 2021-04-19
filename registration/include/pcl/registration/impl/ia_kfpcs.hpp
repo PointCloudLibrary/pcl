@@ -48,7 +48,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
 , upper_trl_boundary_(-1.f)
 , lambda_(0.5f)
 , use_trl_score_(false)
-, indices_validation_(new std::vector<int>)
+, indices_validation_(new pcl::Indices)
 {
   reg_name_ = "pcl::registration::KFPCSInitialAlignment";
 }
@@ -105,8 +105,8 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::initCompute()
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar>
 void
 KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::handleMatches(
-    const std::vector<int>& base_indices,
-    std::vector<std::vector<int>>& matches,
+    const pcl::Indices& base_indices,
+    std::vector<pcl::Indices>& matches,
     MatchingCandidates& candidates)
 {
   candidates.clear();
@@ -151,7 +151,7 @@ KFPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
   float score_a = 0.f, score_b = 0.f;
 
   // residual costs based on mse
-  std::vector<int> ids;
+  pcl::Indices ids;
   std::vector<float> dists_sqr;
   for (PointCloudSourceIterator it = source_transformed.begin(),
                                 it_e = source_transformed.end();

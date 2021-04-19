@@ -41,8 +41,9 @@
 #include <map>
 #include <string>
 
+#include <vtkXYPlotActor.h>
+
 template <typename T> class vtkSmartPointer;
-class vtkXYPlotActor;
 class vtkRenderer;
 class vtkRenderWindow;
 class vtkRenderWindowInteractor;

@@ -212,7 +212,7 @@ private:
     }
 
     //remove NaN Points
-    std::vector<int> nanIndexes;
+    pcl::Indices nanIndexes;
     pcl::removeNaNFromPointCloud(*cloud, *cloud, nanIndexes);
     std::cout << "Loaded " << cloud->size() << " points" << std::endl;
 

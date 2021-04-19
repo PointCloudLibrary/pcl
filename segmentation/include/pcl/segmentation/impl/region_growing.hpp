@@ -343,7 +343,7 @@ template <typename PointT, typename NormalT> void
 pcl::RegionGrowing<PointT, NormalT>::findPointNeighbours ()
 {
   int point_number = static_cast<int> (indices_->size ());
-  std::vector<int> neighbours;
+  pcl::Indices neighbours;
   std::vector<float> distances;
 
   point_neighbours_.resize (input_->size (), neighbours);
@@ -480,7 +480,7 @@ pcl::RegionGrowing<PointT, NormalT>::growRegion (int initial_seed, int segment_n
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT> bool
-pcl::RegionGrowing<PointT, NormalT>::validatePoint (int initial_seed, int point, int nghbr, bool& is_a_seed) const
+pcl::RegionGrowing<PointT, NormalT>::validatePoint (pcl::index_t initial_seed, pcl::index_t point, pcl::index_t nghbr, bool& is_a_seed) const
 {
   is_a_seed = true;
 
@@ -567,7 +567,7 @@ pcl::RegionGrowing<PointT, NormalT>::assembleRegions ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename NormalT> void
-pcl::RegionGrowing<PointT, NormalT>::getSegmentFromPoint (int index, pcl::PointIndices& cluster)
+pcl::RegionGrowing<PointT, NormalT>::getSegmentFromPoint (pcl::index_t index, pcl::PointIndices& cluster)
 {
   cluster.indices.clear ();
 

@@ -124,7 +124,7 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::determineCorresponde
 
   correspondences.resize(indices_->size());
 
-  std::vector<int> index(1);
+  pcl::Indices index(1);
   std::vector<float> distance(1);
   pcl::Correspondence corr;
   unsigned int nr_valid_correspondences = 0;
@@ -184,9 +184,9 @@ CorrespondenceEstimation<PointSource, PointTarget, Scalar>::
   double max_dist_sqr = max_distance * max_distance;
 
   correspondences.resize(indices_->size());
-  std::vector<int> index(1);
+  pcl::Indices index(1);
   std::vector<float> distance(1);
-  std::vector<int> index_reciprocal(1);
+  pcl::Indices index_reciprocal(1);
   std::vector<float> distance_reciprocal(1);
   pcl::Correspondence corr;
   unsigned int nr_valid_correspondences = 0;

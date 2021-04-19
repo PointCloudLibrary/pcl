@@ -42,6 +42,7 @@
 #define PCL_SAMPLE_CONSENSUS_IMPL_LMEDS_H_
 
 #include <pcl/sample_consensus/lmeds.h>
+#include <pcl/common/common.h> // for computeMedian
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
@@ -58,7 +59,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
   double d_best_penalty = std::numeric_limits<double>::max();
 
   Indices selection;
-  Eigen::VectorXf model_coefficients;
+  Eigen::VectorXf model_coefficients (sac_model_->getModelSize ());
   std::vector<double> distances;
 
   unsigned skipped_count = 0;
@@ -73,6 +74,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
 
     if (selection.empty ())
     {
+      PCL_ERROR ("[pcl::LeastMedianSquares::computeModel] No samples could be selected!\n");
       break;
     }
 
@@ -81,6 +83,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
     {
       //iterations_++;
       ++skipped_count;
+      PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] The function computeModelCoefficients failed, so continue with next iteration.\n");
       continue;
     }
 
@@ -102,7 +105,6 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
     const auto nr_valid_dists = std::distance (distances.begin (), new_end);
 
     // d_cur_penalty = median (distances)
-    const std::size_t mid = nr_valid_dists / 2;
     PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] There are %lu valid distances remaining after removing NaN values.\n", nr_valid_dists);
     if (nr_valid_dists == 0)
     {
@@ -110,23 +112,7 @@ pcl::LeastMedianSquares<PointT>::computeModel (int debug_verbosity_level)
       ++skipped_count;
       continue;
     }
-
-    // Do we have a "middle" point or should we "estimate" one ?
-    if ((nr_valid_dists % 2) == 0)
-    {
-      // Looking at two values instead of one probably doesn't matter because they are mostly barely different, but let's do it for accuracy's sake
-      std::nth_element (distances.begin (), distances.begin () + (mid - 1), new_end);
-      const double tmp = distances[mid-1];
-      const double tmp2 = *(std::min_element (distances.begin () + mid, new_end));
-      d_cur_penalty = (sqrt (tmp) + sqrt (tmp2)) / 2.0;
-      PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] Computing median with two values (%g and %g) because number of distances is even.\n", tmp, distances[mid]);
-    }
-    else
-    {
-      std::nth_element (distances.begin (), distances.begin () + mid, new_end);
-      d_cur_penalty = sqrt (distances[mid]);
-      PCL_DEBUG ("[pcl::LeastMedianSquares::computeModel] Computing median with one value (%g) because number of distances is odd.\n", distances[mid]);
-    }
+    d_cur_penalty = pcl::computeMedian (distances.begin (), new_end, static_cast<double(*)(double)>(std::sqrt));
 
     // Better match ?
     if (d_cur_penalty < d_best_penalty)

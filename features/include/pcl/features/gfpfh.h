@@ -133,7 +133,7 @@ namespace pcl
 
       /** \brief Return the dominant label of a set of points. */
       std::uint32_t
-      getDominantLabel (const std::vector<int>& indices);
+      getDominantLabel (const pcl::Indices& indices);
 
       /** \brief Compute the fixed-length histograms of transitions. */
       void computeTransitionHistograms (const std::vector< std::vector<int> >& label_histograms,

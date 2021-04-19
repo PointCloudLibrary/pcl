@@ -123,6 +123,8 @@ pcl::SampleConsensusModelSphere<PointT>::computeModelCoefficients (
                                      model_coefficients[1] * model_coefficients[1] +
                                      model_coefficients[2] * model_coefficients[2] - m15 / m11);
 
+  PCL_DEBUG ("[pcl::SampleConsensusModelSphere::computeModelCoefficients] Model is (%g,%g,%g,%g)\n",
+             model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3]);
   return (true);
 }
 

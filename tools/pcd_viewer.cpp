@@ -44,7 +44,6 @@
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
 #include <cfloat>
-//#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/image_viewer.h>
@@ -169,7 +168,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
     search.setInputCloud (xyzcloud);
   }
   // Return the correct index in the cloud instead of the index on the screen
-  std::vector<int> indices (1);
+  pcl::Indices indices (1);
   std::vector<float> distances (1);
 
   // Because VTK/OpenGL stores data without NaN, we lose the 1-1 correspondence, so we must search for the real point

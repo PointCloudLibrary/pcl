@@ -273,7 +273,7 @@ pcl::UnaryClassifier<PointT>::kmeansClustering (pcl::PointCloud<pcl::FPFHSignatu
 template <typename PointT> void
 pcl::UnaryClassifier<PointT>::queryFeatureDistances (std::vector<pcl::PointCloud<pcl::FPFHSignature33>::Ptr> &trained_features,
                                                      pcl::PointCloud<pcl::FPFHSignature33>::Ptr query_features,
-                                                     std::vector<int> &indi,
+                                                     pcl::Indices &indi,
                                                      std::vector<float> &dist)
 {
   // estimate the total number of row's needed
@@ -328,7 +328,7 @@ pcl::UnaryClassifier<PointT>::queryFeatureDistances (std::vector<pcl::PointCloud
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::UnaryClassifier<PointT>::assignLabels (std::vector<int> &indi,
+pcl::UnaryClassifier<PointT>::assignLabels (pcl::Indices &indi,
                                             std::vector<float> &dist,
                                             int n_feature_means,
                                             float feature_threshold,
