@@ -140,7 +140,7 @@ namespace pcl
     * \param[in] in the input XYZRGB(XYZRGBA, XYZRGBL, etc.) point
     * \param[out] out the output XYZLAB point
     */
-  template <typename PointXYZRGBTypes>
+  template <typename PointT, HasColor<PointT> = true>
   inline void
   PointXYZRGBtoXYZLAB (const PointXYZRGBTypes& in,
                         PointXYZLAB&        out)
