@@ -48,6 +48,18 @@
 
 namespace pcl
 {
+namespace detail {
+/** brief Fast data download from the device to host
+ * param source_indices gpu memory buffer from which to download
+ * param buffer_indices indices denoting positions to download
+ * param buffer_size length of a memory buffer
+ * param downloaded_indices memory buffer of the downloaded indices */
+void
+economical_download(const pcl::gpu::NeighborIndices& source_indices,
+                    const pcl::Indices& buffer_indices,
+                    std::size_t buffer_size,
+                    pcl::Indices& downloaded_indices);
+} // namespace detail
   namespace gpu
   {
     template <typename PointT> void
@@ -131,16 +143,6 @@ namespace pcl
           */
         void extract (std::vector<pcl::PointIndices> &clusters);
 
-        /** brief Fast data download from the device to host
-         * param source_indices gpu memory buffer from which to download
-         * param buffer_indices indices denoting positions to download
-         * param buffer_size length of a memory buffer
-         * param downloaded_indices memory buffer of the downloaded indices */
-        static void
-        economical_download(const pcl::gpu::NeighborIndices& source_indices,
-                            const pcl::Indices& buffer_indices,
-                            std::size_t buffer_size,
-                            pcl::Indices& downloaded_indices);
 
       protected:
         /** \brief the input cloud on the GPU */
