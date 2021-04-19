@@ -108,7 +108,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   endif()
 
   if(PCL_WARNINGS_ARE_ERRORS)
-    string(APPEND CMAKE_CXX_FLAGS " -Werror")
+    string(APPEND CMAKE_CXX_FLAGS " -Werror -fno-strict-aliasing")
   endif()
 
   if("${CMAKE_SHARED_LINKER_FLAGS}" STREQUAL "" AND NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin")

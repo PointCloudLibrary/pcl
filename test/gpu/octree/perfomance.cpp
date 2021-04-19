@@ -223,8 +223,9 @@ TEST(PCL_OctreeGPU, performance)
     std::cout << "======  Approx nearest search =====" << std::endl;
 
     {
-        ScopeTime up("gpu-approx-nearest-batch-all");	        
-        octree_device.approxNearestSearch(queries_device, result_device);                        
+        ScopeTime up("gpu-approx-nearest-batch-all");	       
+        pcl::gpu::Octree::ResultSqrDists sqr_distance;
+        octree_device.approxNearestSearch(queries_device, result_device, sqr_distance);
     }
 
     {        
