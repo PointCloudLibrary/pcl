@@ -263,7 +263,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
     estimator_->warp_point_->warpPoint(p_src, p_src_warped);
 
     // Estimate the distance (cost function)
-    fvec[i] = estimator_->computeDistance (p_src_warped, p_tgt) + reg_cost;
+    fvec[i] = estimator_->computeDistance(p_src_warped, p_tgt) + reg_cost;
   }
   return (0);
 }
@@ -296,7 +296,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
     estimator_->warp_point_->warpPoint(p_src, p_src_warped);
 
     // Estimate the distance (cost function)
-    fvec[i] = estimator_->computeDistance (p_src_warped, p_tgt) + reg_cost;
+    fvec[i] = estimator_->computeDistance(p_src_warped, p_tgt) + reg_cost;
   }
   return (0);
 }
