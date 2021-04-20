@@ -127,7 +127,7 @@ public:
     return (child_node_array_[buffer_arg][index_arg].get() != nullptr);
   }
 
-  /** \brief Get the type of octree node. Returns LEAVE_NODE type */
+  /** \brief Get the type of octree node. Returns BRANCH_NODE type */
   node_type_t
   getNodeType() const override
   {
@@ -206,7 +206,7 @@ protected:
 /** \brief @b Octree double buffer class
  *
  * This octree implementation keeps two separate octree structures in memory
- * which allows for differentially comparison of the octree structures (change
+ * which allows for differential comparison of the octree structures (change
  * detection, differential encoding).
  * \note The tree depth defines the maximum amount of octree voxels / leaf nodes (should
  * be initially defined).
@@ -448,7 +448,7 @@ public:
   deleteCurrentBuffer()
   {
     buffer_selector_ = !buffer_selector_;
-    treeCleanUpRecursive(root_node_);
+    treeCleanUpRecursive(root_node_.get());
     leaf_count_ = 0;
   }
 
@@ -533,7 +533,7 @@ protected:
   std::shared_ptr<OctreeNode>
   getRootNode() const
   {
-    return (this->root_node_);
+    return root_node_;
   }
 
   /** \brief Find leaf node
@@ -710,7 +710,7 @@ protected:
     return (getBranchXORBitPattern(branch_arg) > 0);
   }
 
-  /** \brief Delete child node and all its subchilds from octree in specific buffer
+  /** \brief Delete child node and all its subchildren from octree in specific buffer
    *  \param branch_arg: reference to octree branch class
    *  \param buffer_selector_arg: buffer selector
    *  \param child_idx_arg: index to child node
@@ -746,7 +746,7 @@ protected:
     branch_arg.setChildPtr(buffer_selector_arg, child_idx_arg, nullptr);
   }
 
-  /** \brief Delete child node and all its subchilds from octree in current buffer
+  /** \brief Delete child node and all its subchildren from octree in current buffer
    *  \param branch_arg: reference to octree branch class
    *  \param child_idx_arg: index to child node
    */
@@ -756,7 +756,7 @@ protected:
     deleteBranchChild(branch_arg, buffer_selector_, child_idx_arg);
   }
 
-  /** \brief Delete branch and all its subchilds from octree (both buffers)
+  /** \brief Delete branch and all its subchildren from octree (both buffers)
    *  \param branch_arg: reference to octree branch class
    */
   inline void
@@ -815,8 +815,7 @@ protected:
   // Recursive octree methods
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /** \brief Create a leaf node at octree key. If leaf node does already exist, it is
-   * returned.
+  /** \brief Create a leaf node at octree key. If leaf node already exists, it is returned.
    * \param key_arg: reference to an octree key
    * \param depth_mask_arg: depth mask used for octree key analysis and for branch depth
    * indicator
@@ -830,8 +829,8 @@ protected:
   createLeafRecursive(const OctreeKey& key_arg,
                       unsigned int depth_mask_arg,
                       BranchNode* branch_arg,
-                      LeafNode*& return_leaf_arg,
-                      BranchNode*& parent_of_leaf_arg,
+                      std::shared_ptr<LeafNode>& return_leaf_arg,
+                      std::shared_ptr<BranchNode>& parent_of_leaf_arg,
                       bool branch_reset_arg = false);
 
   /** \brief Recursively search for a given leaf node and return a pointer.
@@ -846,14 +845,14 @@ protected:
   findLeafRecursive(const OctreeKey& key_arg,
                     unsigned int depth_mask_arg,
                     BranchNode* branch_arg,
-                    LeafContainerT*& result_arg) const;
+                    std::shared_ptr<LeafContainerT>& result_arg) const;
 
   /** \brief Recursively search and delete leaf node
    *  \param key_arg: reference to an octree key
    *  \param depth_mask_arg: depth mask used for octree key analysis and branch depth
    *  indicator
    *  \param branch_arg: current branch node
-   *  \return "true" if branch does not contain any childs; "false" otherwise. This
+   *  \return "true" if branch does not contain any children; "false" otherwise. This
    *  indicates if current branch can be deleted.
    **/
   bool
@@ -879,7 +878,7 @@ protected:
       BranchNode* branch_arg,
       OctreeKey& key_arg,
       std::vector<char>* binary_tree_out_arg,
-      typename std::vector<LeafContainerT*>* leaf_container_vector_arg,
+      typename std::vector<std::shared_ptr<LeafContainerT>>* leaf_container_vector_arg,
       bool do_XOR_encoding_arg = false,
       bool new_leafs_filter_arg = false);
 
@@ -906,9 +905,9 @@ protected:
       OctreeKey& key_arg,
       typename std::vector<char>::const_iterator& binary_tree_in_it_arg,
       typename std::vector<char>::const_iterator& binary_tree_in_it_end_arg,
-      typename std::vector<LeafContainerT*>::const_iterator*
+      typename std::vector<std::shared_ptr<LeafContainerT>>::const_iterator*
           leaf_container_vector_it_arg,
-      typename std::vector<LeafContainerT*>::const_iterator*
+      typename std::vector<std::shared_ptr<LeafContainerT>>::const_iterator*
           leaf_container_vector_it_end_arg,
       bool branch_reset_arg = false,
       bool do_XOR_decoding_arg = false);
@@ -976,7 +975,7 @@ protected:
   std::size_t branch_count_;
 
   /** \brief Pointer to root branch node of octree   **/
-  std::unique_ptr<BranchNode> root_node_;
+  std::shared_ptr<BranchNode> root_node_;
 
   /** \brief Depth mask based on octree depth   **/
   unsigned int depth_mask_;

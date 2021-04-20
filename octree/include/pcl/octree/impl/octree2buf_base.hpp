@@ -102,7 +102,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::setTreeDepth(unsigned int dept
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
-LeafContainerT*
+std::shared_ptr<LeafContainerT>
 Octree2BufBase<LeafContainerT, BranchContainerT>::findLeaf(unsigned int idx_x_arg,
                                                            unsigned int idx_y_arg,
                                                            unsigned int idx_z_arg)
@@ -116,7 +116,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::findLeaf(unsigned int idx_x_ar
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename LeafContainerT, typename BranchContainerT>
-LeafContainerT*
+std::shared_ptr<LeafContainerT>
 Octree2BufBase<LeafContainerT, BranchContainerT>::createLeaf(unsigned int idx_x_arg,
                                                              unsigned int idx_y_arg,
                                                              unsigned int idx_z_arg)
@@ -220,7 +220,7 @@ template <typename LeafContainerT, typename BranchContainerT>
 void
 Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTree(
     std::vector<char>& binary_tree_out_arg,
-    std::vector<LeafContainerT*>& leaf_container_vector_arg,
+    std::vector<std::shared_ptr<LeafContainerT>>& leaf_container_vector_arg,
     bool do_XOR_encoding_arg)
 {
   OctreeKey new_key;
@@ -247,7 +247,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTree(
 template <typename LeafContainerT, typename BranchContainerT>
 void
 Octree2BufBase<LeafContainerT, BranchContainerT>::serializeLeafs(
-    std::vector<LeafContainerT*>& leaf_container_vector_arg)
+    std::vector<std::shared_ptr<LeafContainerT>>& leaf_container_vector_arg)
 {
   OctreeKey new_key;
 
@@ -297,17 +297,17 @@ template <typename LeafContainerT, typename BranchContainerT>
 void
 Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTree(
     std::vector<char>& binary_tree_in_arg,
-    std::vector<LeafContainerT*>& leaf_container_vector_arg,
+    std::vector<std::shared_ptr<LeafContainerT>>& leaf_container_vector_arg,
     bool do_XOR_decoding_arg)
 {
   OctreeKey new_key;
 
   // set data iterator to first element
-  typename std::vector<LeafContainerT*>::const_iterator leaf_container_vector_it =
+  typename std::vector<std::shared_ptr<LeafContainerT>>::const_iterator leaf_container_vector_it =
       leaf_container_vector_arg.begin();
 
   // set data iterator to last element
-  typename std::vector<LeafContainerT*>::const_iterator leaf_container_vector_it_end =
+  typename std::vector<std::shared_ptr<LeafContainerT>>::const_iterator leaf_container_vector_it_end =
       leaf_container_vector_arg.end();
 
   // we will rebuild an octree -> reset leafCount
@@ -335,7 +335,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTree(
 template <typename LeafContainerT, typename BranchContainerT>
 void
 Octree2BufBase<LeafContainerT, BranchContainerT>::serializeNewLeafs(
-    std::vector<LeafContainerT*>& leaf_container_vector_arg)
+    std::vector<std::shared_ptr<LeafContainerT>>& leaf_container_vector_arg)
 {
   OctreeKey new_key;
 
@@ -357,8 +357,8 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
     const OctreeKey& key_arg,
     unsigned int depth_mask_arg,
     BranchNode* branch_arg,
-    LeafNode*& return_leaf_arg,
-    BranchNode*& parent_of_leaf_arg,
+    std::shared_ptr<LeafNode>& return_leaf_arg,
+    std::shared_ptr<BranchNode>& parent_of_leaf_arg,
     bool branch_reset_arg)
 {
   // branch reset -> this branch has been taken from previous buffer
@@ -452,7 +452,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::createLeafRecursive(
   else {
     // leaf node already exist
     return_leaf_arg =
-        static_cast<LeafNode*>(branch_arg->getChildPtr(buffer_selector_, child_idx));
+        static_cast<std::shared_ptr<LeafNode>>(branch_arg->getChildPtr(buffer_selector_, child_idx));
     parent_of_leaf_arg = branch_arg;
   }
 
@@ -466,7 +466,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::findLeafRecursive(
     const OctreeKey& key_arg,
     unsigned int depth_mask_arg,
     BranchNode* branch_arg,
-    LeafContainerT*& result_arg) const
+    std::shared_ptr<LeafContainerT>& result_arg) const
 {
   // return leaf node
   unsigned char child_idx;
@@ -476,7 +476,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::findLeafRecursive(
 
   if (depth_mask_arg > 1) {
     // we have not reached maximum tree depth
-    BranchNode* child_branch;
+    std::shared_ptr<BranchNode> child_branch;
     child_branch =
         static_cast<BranchNode*>(branch_arg->getChildPtr(buffer_selector_, child_idx));
 
@@ -511,7 +511,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deleteLeafRecursive(
 
   if (depth_mask_arg > 1) {
     // we have not reached maximum tree depth
-    BranchNode* child_branch;
+    std::shared_ptr<BranchNode> child_branch;
 
     // next branch child on our path through the tree
     child_branch =
@@ -554,7 +554,7 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::serializeTreeRecursive(
     BranchNode* branch_arg,
     OctreeKey& key_arg,
     std::vector<char>* binary_tree_out_arg,
-    typename std::vector<LeafContainerT*>* leaf_container_vector_arg,
+    typename std::vector<std::shared_ptr<LeafContainerT>>* leaf_container_vector_arg,
     bool do_XOR_encoding_arg,
     bool new_leafs_filter_arg)
 {
@@ -645,8 +645,8 @@ Octree2BufBase<LeafContainerT, BranchContainerT>::deserializeTreeRecursive(
     OctreeKey& key_arg,
     typename std::vector<char>::const_iterator& binaryTreeIT_arg,
     typename std::vector<char>::const_iterator& binaryTreeIT_End_arg,
-    typename std::vector<LeafContainerT*>::const_iterator* dataVectorIterator_arg,
-    typename std::vector<LeafContainerT*>::const_iterator* dataVectorEndIterator_arg,
+    typename std::vector<std::shared_ptr<LeafContainerT>>::const_iterator* dataVectorIterator_arg,
+    typename std::vector<std::shared_ptr<LeafContainerT>>::const_iterator* dataVectorEndIterator_arg,
     bool branch_reset_arg,
     bool do_XOR_decoding_arg)
 {

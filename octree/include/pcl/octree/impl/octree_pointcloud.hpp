@@ -665,8 +665,8 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   // generate key
   genOctreeKeyforPoint(point, key);
 
-  LeafNode* leaf_node;
-  BranchNode* parent_branch_of_leaf_node;
+  std::shared_ptr<LeafNode> leaf_node;
+  std::shared_ptr<BranchNode> parent_branch_of_leaf_node;
   unsigned int depth_mask = this->createLeafRecursive(
       key, this->depth_mask_, this->root_node_.get(), leaf_node, parent_branch_of_leaf_node);
 
@@ -678,7 +678,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
       // index to branch child
       unsigned char child_idx = key.getChildIdxWithDepthMask(depth_mask * 2);
 
-      expandLeafNode(leaf_node, parent_branch_of_leaf_node, child_idx, depth_mask);
+      expandLeafNode(leaf_node.get(), parent_branch_of_leaf_node.get(), child_idx, depth_mask);
 
       depth_mask = this->createLeafRecursive(key,
                                              this->depth_mask_,
