@@ -6,7 +6,7 @@ Benchmarking 3D
 This document introduces benchmarking concepts for 3D algorithms. By
 *benchmarking* here we refer to the possibility of testing different
 computational pipelines in an **easy manner**. The goal is to test their
-reproductibility with respect to a particular problem of general interest.
+reproducibility with respect to a particular problem of general interest.
 
 Benchmarking Object Recognition
 -------------------------------
