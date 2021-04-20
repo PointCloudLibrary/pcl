@@ -29,7 +29,7 @@ stages:
     # if docs pipeline triggered by build_gcc stage,
     # the formatting stage has already run, thus it
     # won't run for a second time here.
-    condition: ne(variables['Build.Reason'], 'ResourceTrigger'))
+    condition: ne(variables['Build.Reason'], 'ResourceTrigger')
     jobs:
       - template: formatting.yaml
 
