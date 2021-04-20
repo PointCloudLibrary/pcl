@@ -5,7 +5,7 @@
 #include <pcl/surface/gp3.h>
 
 int
-main (int argc, char** argv)
+main ()
 {
   // Load input file into a PointCloud<T> with an appropriate type
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
