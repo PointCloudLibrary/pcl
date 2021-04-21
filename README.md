@@ -28,12 +28,15 @@ Continuous integration
 [ci-windows-x64]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20MSVC&jobName=Windows%20VS2017%20Build&configuration=Windows%20VS2017%20Build%20x64&label=Windows%20VS2017%20x64
 [ci-macos-10.14]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=macOS&configuration=macOS%20Mojave%2010.14&label=macOS%20Mojave%2010.14
 [ci-macos-10.15]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/9?branchName=master&stageName=Build%20Clang&jobName=macOS&configuration=macOS%20Catalina%2010.15&label=macOS%20Catalina%2010.15
+[ci-docs]: https://dev.azure.com/PointCloudLibrary/pcl/_apis/build/status/Documentation?branchName=master
+[ci-latest-docs]: https://dev.azure.com/PointCloudLibrary/pcl/_build/latest?definitionId=14&branchName=master
 
 Build Platform           | Status
 ------------------------ | ------------------------------------------------------------------------------------------------- |
 Ubuntu                   | [![Status][ci-ubuntu-18.04]][ci-latest-build] <br> [![Status][ci-ubuntu-20.04]][ci-latest-build]                              <br> [![Status][ci-ubuntu-20.10]][ci-latest-build]                                                |
 Windows                  | [![Status][ci-windows-x86]][ci-latest-build]  <br> [![Status][ci-windows-x64]][ci-latest-build]   |
 macOS                    | [![Status][ci-macos-10.14]][ci-latest-build]  <br> [![Status][ci-macos-10.15]][ci-latest-build]   |
+Documentation            | [![Status][ci-docs]][ci-latest-docs] |
 
 Community
 ---------
