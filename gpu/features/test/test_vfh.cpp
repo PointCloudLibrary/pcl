@@ -34,288 +34,298 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#include "gtest/gtest.h"
-
-#include <pcl/point_types.h>
+#include <pcl/common/time.h>
 #include <pcl/features/vfh.h>
 #include <pcl/gpu/features/features.hpp>
-#include <pcl/common/time.h>
+#include <pcl/point_types.h>
 
 #include "data_source.hpp"
+#include "gtest/gtest.h"
 
 using namespace pcl;
 using namespace pcl::gpu;
 
-//TEST(PCL_FeaturesGPU, DISABLED_vfh1)
+// TEST(PCL_FeaturesGPU, DISABLED_vfh1)
 TEST(PCL_FeaturesGPU, vfh1)
-{   
-    DataSource source;
-    
-    source.estimateNormals();
-    source.generateIndices(3);
-                   
-    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
-    
-    //uploading data to GPU
+{
+  DataSource source;
 
-    //////////////////////////////////////////////////////////////////////////////////////////////  
+  source.estimateNormals();
+  source.generateIndices(3);
 
-    pcl::gpu::VFHEstimation::PointCloud cloud_gpu;
-    cloud_gpu.upload(source.cloud->points);
+  std::vector<PointXYZ> normals_for_gpu(source.normals->size());
+  std::transform(source.normals->points.begin(),
+                 source.normals->points.end(),
+                 normals_for_gpu.begin(),
+                 DataSource::Normal2PointXYZ());
 
-    pcl::gpu::VFHEstimation::Normals normals_gpu;
-    normals_gpu.upload(normals_for_gpu);             
+  // uploading data to GPU
 
-    pcl::gpu::VFHEstimation::Indices indices_gpu;
-    indices_gpu.upload(*source.indices);
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
-    gpu::VFHEstimation pc_gpu;    
-    pc_gpu.setSearchSurface(cloud_gpu);
-    pc_gpu.setInputNormals(normals_gpu);
-    pc_gpu.setIndices(indices_gpu);
-    pc_gpu.setRadiusSearch(source.radius, source.max_elements);
+  pcl::gpu::VFHEstimation::PointCloud cloud_gpu;
+  cloud_gpu.upload(source.cloud->points);
 
-    DeviceArray<VFHSignature308> vfh_features;
-    
-    {
-        //ScopeTime up("gpu");
-        pc_gpu.compute(vfh_features);
-    }
+  pcl::gpu::VFHEstimation::Normals normals_gpu;
+  normals_gpu.upload(normals_for_gpu);
 
-    std::vector<VFHSignature308> downloaded;
-    vfh_features.download(downloaded);
+  pcl::gpu::VFHEstimation::Indices indices_gpu;
+  indices_gpu.upload(*source.indices);
 
-    pcl::VFHEstimation<PointXYZ, Normal, VFHSignature308> fe;
-    fe.setInputCloud (source.cloud);
-    fe.setInputNormals (source.normals);
-    fe.setIndices(source.indices);
-    fe.setRadiusSearch(source.radius);
-    fe.setKSearch(0);
+  gpu::VFHEstimation pc_gpu;
+  pc_gpu.setSearchSurface(cloud_gpu);
+  pc_gpu.setInputNormals(normals_gpu);
+  pc_gpu.setIndices(indices_gpu);
+  pc_gpu.setRadiusSearch(source.radius, source.max_elements);
 
-    PointCloud<VFHSignature308> vfh;
-    {
-        //ScopeTime up("cpu");
-        fe.compute (vfh);
-    }
+  DeviceArray<VFHSignature308> vfh_features;
 
-    VFHSignature308& gpu = downloaded[0];
-    VFHSignature308& cpu = vfh[0];
-        
-    std::size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
-        
-    float norm = 0, norm_diff = 0;
-    for(std::size_t j = 0; j < FSize; ++j)
-    {
-        norm_diff += (gpu.histogram[j] - cpu.histogram[j]) * (gpu.histogram[j] - cpu.histogram[j]);
-        norm += cpu.histogram[j] * cpu.histogram[j];
+  {
+    // ScopeTime up("gpu");
+    pc_gpu.compute(vfh_features);
+  }
 
-        //ASSERT_NEAR(gpu.histogram[j], cpu.histogram[j], 0.03f);
-    }
-    if (norm != 0)
-        ASSERT_LE(norm_diff/norm, 0.01f/FSize);
-    else
-        FAIL();
+  std::vector<VFHSignature308> downloaded;
+  vfh_features.download(downloaded);
+
+  pcl::VFHEstimation<PointXYZ, Normal, VFHSignature308> fe;
+  fe.setInputCloud(source.cloud);
+  fe.setInputNormals(source.normals);
+  fe.setIndices(source.indices);
+  fe.setRadiusSearch(source.radius);
+  fe.setKSearch(0);
+
+  PointCloud<VFHSignature308> vfh;
+  {
+    // ScopeTime up("cpu");
+    fe.compute(vfh);
+  }
+
+  VFHSignature308& gpu = downloaded[0];
+  VFHSignature308& cpu = vfh[0];
+
+  std::size_t FSize = sizeof(VFHSignature308) / sizeof(gpu.histogram[0]);
+
+  float norm = 0, norm_diff = 0;
+  for (std::size_t j = 0; j < FSize; ++j) {
+    norm_diff +=
+        (gpu.histogram[j] - cpu.histogram[j]) * (gpu.histogram[j] - cpu.histogram[j]);
+    norm += cpu.histogram[j] * cpu.histogram[j];
+
+    // ASSERT_NEAR(gpu.histogram[j], cpu.histogram[j], 0.03f);
+  }
+  if (norm != 0)
+    ASSERT_LE(norm_diff / norm, 0.01f / FSize);
+  else
+    FAIL();
 }
 
-//TEST(PCL_FeaturesGPU, DISABLED_vfh_norm_bins_false)
+// TEST(PCL_FeaturesGPU, DISABLED_vfh_norm_bins_false)
 TEST(PCL_FeaturesGPU, vfh_norm_bins_false)
-{   
-    DataSource source;
-    
-    source.estimateNormals();
-    source.generateIndices(3);
-                   
-    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
-    
-    //uploading data to GPU
+{
+  DataSource source;
 
-    //////////////////////////////////////////////////////////////////////////////////////////////  
+  source.estimateNormals();
+  source.generateIndices(3);
 
-    pcl::gpu::VFHEstimation::PointCloud cloud_gpu;
-    cloud_gpu.upload(source.cloud->points);
+  std::vector<PointXYZ> normals_for_gpu(source.normals->size());
+  std::transform(source.normals->points.begin(),
+                 source.normals->points.end(),
+                 normals_for_gpu.begin(),
+                 DataSource::Normal2PointXYZ());
 
-    pcl::gpu::VFHEstimation::Normals normals_gpu;
-    normals_gpu.upload(normals_for_gpu);             
+  // uploading data to GPU
 
-    pcl::gpu::VFHEstimation::Indices indices_gpu;
-    indices_gpu.upload(*source.indices);
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
-    gpu::VFHEstimation pc_gpu;    
-    pc_gpu.setNormalizeBins(false);
-    pc_gpu.setSearchSurface(cloud_gpu);
-    pc_gpu.setInputNormals(normals_gpu);
-    pc_gpu.setIndices(indices_gpu);
-    pc_gpu.setRadiusSearch(source.radius, source.max_elements);
+  pcl::gpu::VFHEstimation::PointCloud cloud_gpu;
+  cloud_gpu.upload(source.cloud->points);
 
-    DeviceArray<VFHSignature308> vfh_features;
-    pc_gpu.compute(vfh_features);
+  pcl::gpu::VFHEstimation::Normals normals_gpu;
+  normals_gpu.upload(normals_for_gpu);
 
-    std::vector<VFHSignature308> downloaded;
-    vfh_features.download(downloaded);
+  pcl::gpu::VFHEstimation::Indices indices_gpu;
+  indices_gpu.upload(*source.indices);
 
-    pcl::VFHEstimation<PointXYZ, Normal, VFHSignature308> fe;
-    fe.setNormalizeBins(false);
-    fe.setInputCloud (source.cloud);
-    fe.setInputNormals (source.normals);
-    fe.setIndices(source.indices);
-    fe.setRadiusSearch(source.radius);
-    fe.setKSearch(0);
+  gpu::VFHEstimation pc_gpu;
+  pc_gpu.setNormalizeBins(false);
+  pc_gpu.setSearchSurface(cloud_gpu);
+  pc_gpu.setInputNormals(normals_gpu);
+  pc_gpu.setIndices(indices_gpu);
+  pc_gpu.setRadiusSearch(source.radius, source.max_elements);
 
-    PointCloud<VFHSignature308> vfh;
-    fe.compute (vfh);
+  DeviceArray<VFHSignature308> vfh_features;
+  pc_gpu.compute(vfh_features);
 
-    VFHSignature308& gpu = downloaded[0];
-    VFHSignature308& cpu = vfh[0];
-        
-    std::size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
-        
-    float norm = 0, norm_diff = 0;
-    for(std::size_t j = 0; j < FSize; ++j)
-    {
-        norm_diff += (gpu.histogram[j] - cpu.histogram[j]) * (gpu.histogram[j] - cpu.histogram[j]);
-        norm += cpu.histogram[j] * cpu.histogram[j];
+  std::vector<VFHSignature308> downloaded;
+  vfh_features.download(downloaded);
 
-        //ASSERT_NEAR(gpu.histogram[j], cpu.histogram[j], 0.03f);
-    }
-    if (norm != 0)
-        ASSERT_LE(norm_diff/norm, 0.01f/FSize);
-    else
-        FAIL();
+  pcl::VFHEstimation<PointXYZ, Normal, VFHSignature308> fe;
+  fe.setNormalizeBins(false);
+  fe.setInputCloud(source.cloud);
+  fe.setInputNormals(source.normals);
+  fe.setIndices(source.indices);
+  fe.setRadiusSearch(source.radius);
+  fe.setKSearch(0);
+
+  PointCloud<VFHSignature308> vfh;
+  fe.compute(vfh);
+
+  VFHSignature308& gpu = downloaded[0];
+  VFHSignature308& cpu = vfh[0];
+
+  std::size_t FSize = sizeof(VFHSignature308) / sizeof(gpu.histogram[0]);
+
+  float norm = 0, norm_diff = 0;
+  for (std::size_t j = 0; j < FSize; ++j) {
+    norm_diff +=
+        (gpu.histogram[j] - cpu.histogram[j]) * (gpu.histogram[j] - cpu.histogram[j]);
+    norm += cpu.histogram[j] * cpu.histogram[j];
+
+    // ASSERT_NEAR(gpu.histogram[j], cpu.histogram[j], 0.03f);
+  }
+  if (norm != 0)
+    ASSERT_LE(norm_diff / norm, 0.01f / FSize);
+  else
+    FAIL();
 }
 
-//TEST(PCL_FeaturesGPU, DISABLED_vfh_norm_distance_true)
+// TEST(PCL_FeaturesGPU, DISABLED_vfh_norm_distance_true)
 TEST(PCL_FeaturesGPU, vfh_norm_distance_true)
-{   
-    DataSource source;
-    
-    source.estimateNormals();
-    source.generateIndices(3);
-                   
-    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
-    
-    //uploading data to GPU
+{
+  DataSource source;
 
-    //////////////////////////////////////////////////////////////////////////////////////////////  
+  source.estimateNormals();
+  source.generateIndices(3);
 
-    pcl::gpu::VFHEstimation::PointCloud cloud_gpu;
-    cloud_gpu.upload(source.cloud->points);
+  std::vector<PointXYZ> normals_for_gpu(source.normals->size());
+  std::transform(source.normals->points.begin(),
+                 source.normals->points.end(),
+                 normals_for_gpu.begin(),
+                 DataSource::Normal2PointXYZ());
 
-    pcl::gpu::VFHEstimation::Normals normals_gpu;
-    normals_gpu.upload(normals_for_gpu);             
+  // uploading data to GPU
 
-    pcl::gpu::VFHEstimation::Indices indices_gpu;
-    indices_gpu.upload(*source.indices);
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
-    gpu::VFHEstimation pc_gpu;    
-    pc_gpu.setNormalizeDistance(true);
-    pc_gpu.setSearchSurface(cloud_gpu);
-    pc_gpu.setInputNormals(normals_gpu);
-    pc_gpu.setIndices(indices_gpu);
-    pc_gpu.setRadiusSearch(source.radius, source.max_elements);
+  pcl::gpu::VFHEstimation::PointCloud cloud_gpu;
+  cloud_gpu.upload(source.cloud->points);
 
-    DeviceArray<VFHSignature308> vfh_features;
-    pc_gpu.compute(vfh_features);
+  pcl::gpu::VFHEstimation::Normals normals_gpu;
+  normals_gpu.upload(normals_for_gpu);
 
-    std::vector<VFHSignature308> downloaded;
-    vfh_features.download(downloaded);
+  pcl::gpu::VFHEstimation::Indices indices_gpu;
+  indices_gpu.upload(*source.indices);
 
-    pcl::VFHEstimation<PointXYZ, Normal, VFHSignature308> fe;
-    fe.setNormalizeDistance(true);
-    fe.setInputCloud (source.cloud);
-    fe.setInputNormals (source.normals);
-    fe.setIndices(source.indices);
-    fe.setRadiusSearch(source.radius);
-    fe.setKSearch(0);
+  gpu::VFHEstimation pc_gpu;
+  pc_gpu.setNormalizeDistance(true);
+  pc_gpu.setSearchSurface(cloud_gpu);
+  pc_gpu.setInputNormals(normals_gpu);
+  pc_gpu.setIndices(indices_gpu);
+  pc_gpu.setRadiusSearch(source.radius, source.max_elements);
 
-    PointCloud<VFHSignature308> vfh;
-    fe.compute (vfh);
+  DeviceArray<VFHSignature308> vfh_features;
+  pc_gpu.compute(vfh_features);
 
-    VFHSignature308& gpu = downloaded[0];
-    VFHSignature308& cpu = vfh[0];
-        
-    std::size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
-        
-    float norm = 0, norm_diff = 0;
-    for(std::size_t j = 0; j < FSize; ++j)
-    {
-        norm_diff += (gpu.histogram[j] - cpu.histogram[j]) * (gpu.histogram[j] - cpu.histogram[j]);
-        norm += cpu.histogram[j] * cpu.histogram[j];
+  std::vector<VFHSignature308> downloaded;
+  vfh_features.download(downloaded);
 
-        //ASSERT_NEAR(gpu.histogram[j], cpu.histogram[j], 0.03f);
-    }
-    if (norm != 0)
-        ASSERT_LE(norm_diff/norm, 0.01f/FSize);
-    else
-        FAIL();
+  pcl::VFHEstimation<PointXYZ, Normal, VFHSignature308> fe;
+  fe.setNormalizeDistance(true);
+  fe.setInputCloud(source.cloud);
+  fe.setInputNormals(source.normals);
+  fe.setIndices(source.indices);
+  fe.setRadiusSearch(source.radius);
+  fe.setKSearch(0);
+
+  PointCloud<VFHSignature308> vfh;
+  fe.compute(vfh);
+
+  VFHSignature308& gpu = downloaded[0];
+  VFHSignature308& cpu = vfh[0];
+
+  std::size_t FSize = sizeof(VFHSignature308) / sizeof(gpu.histogram[0]);
+
+  float norm = 0, norm_diff = 0;
+  for (std::size_t j = 0; j < FSize; ++j) {
+    norm_diff +=
+        (gpu.histogram[j] - cpu.histogram[j]) * (gpu.histogram[j] - cpu.histogram[j]);
+    norm += cpu.histogram[j] * cpu.histogram[j];
+
+    // ASSERT_NEAR(gpu.histogram[j], cpu.histogram[j], 0.03f);
+  }
+  if (norm != 0)
+    ASSERT_LE(norm_diff / norm, 0.01f / FSize);
+  else
+    FAIL();
 }
 
-
-//TEST(PCL_FeaturesGPU, DISABLED_vfh_fill_size_component_true)
+// TEST(PCL_FeaturesGPU, DISABLED_vfh_fill_size_component_true)
 TEST(PCL_FeaturesGPU, vfh_fill_size_component_true)
-{   
-    DataSource source;
-    
-    source.estimateNormals();
-    source.generateIndices(3);
-                   
-    std::vector<PointXYZ> normals_for_gpu(source.normals->size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
-    
-    //uploading data to GPU
+{
+  DataSource source;
 
-    //////////////////////////////////////////////////////////////////////////////////////////////  
+  source.estimateNormals();
+  source.generateIndices(3);
 
-    pcl::gpu::VFHEstimation::PointCloud cloud_gpu;
-    cloud_gpu.upload(source.cloud->points);
+  std::vector<PointXYZ> normals_for_gpu(source.normals->size());
+  std::transform(source.normals->points.begin(),
+                 source.normals->points.end(),
+                 normals_for_gpu.begin(),
+                 DataSource::Normal2PointXYZ());
 
-    pcl::gpu::VFHEstimation::Normals normals_gpu;
-    normals_gpu.upload(normals_for_gpu);             
+  // uploading data to GPU
 
-    pcl::gpu::VFHEstimation::Indices indices_gpu;
-    indices_gpu.upload(*source.indices);
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
-    gpu::VFHEstimation pc_gpu;    
-    pc_gpu.setFillSizeComponent(true);
-    pc_gpu.setSearchSurface(cloud_gpu);
-    pc_gpu.setInputNormals(normals_gpu);
-    pc_gpu.setIndices(indices_gpu);
-    pc_gpu.setRadiusSearch(source.radius, source.max_elements);
+  pcl::gpu::VFHEstimation::PointCloud cloud_gpu;
+  cloud_gpu.upload(source.cloud->points);
 
-    DeviceArray<VFHSignature308> vfh_features;
-    pc_gpu.compute(vfh_features);
+  pcl::gpu::VFHEstimation::Normals normals_gpu;
+  normals_gpu.upload(normals_for_gpu);
 
-    std::vector<VFHSignature308> downloaded;
-    vfh_features.download(downloaded);
+  pcl::gpu::VFHEstimation::Indices indices_gpu;
+  indices_gpu.upload(*source.indices);
 
-    pcl::VFHEstimation<PointXYZ, Normal, VFHSignature308> fe;
-    fe.setFillSizeComponent(true);
-    fe.setInputCloud (source.cloud);
-    fe.setInputNormals (source.normals);
-    fe.setIndices(source.indices);
-    fe.setRadiusSearch(source.radius);
-    fe.setKSearch(0);
+  gpu::VFHEstimation pc_gpu;
+  pc_gpu.setFillSizeComponent(true);
+  pc_gpu.setSearchSurface(cloud_gpu);
+  pc_gpu.setInputNormals(normals_gpu);
+  pc_gpu.setIndices(indices_gpu);
+  pc_gpu.setRadiusSearch(source.radius, source.max_elements);
 
-    PointCloud<VFHSignature308> vfh;
-    fe.compute (vfh);
+  DeviceArray<VFHSignature308> vfh_features;
+  pc_gpu.compute(vfh_features);
 
-    VFHSignature308& gpu = downloaded[0];
-    VFHSignature308& cpu = vfh[0];
-        
-    std::size_t FSize = sizeof(VFHSignature308)/sizeof(gpu.histogram[0]);                                
-        
-    float norm = 0, norm_diff = 0;
-    for(std::size_t j = 0; j < FSize; ++j)
-    {
-        norm_diff += (gpu.histogram[j] - cpu.histogram[j]) * (gpu.histogram[j] - cpu.histogram[j]);
-        norm += cpu.histogram[j] * cpu.histogram[j];
+  std::vector<VFHSignature308> downloaded;
+  vfh_features.download(downloaded);
 
-        //ASSERT_NEAR(gpu.histogram[j], cpu.histogram[j], 0.03f);
-    }
-    if (norm != 0)
-        ASSERT_LE(norm_diff/norm, 0.01f/FSize);
-    else
-        FAIL();
+  pcl::VFHEstimation<PointXYZ, Normal, VFHSignature308> fe;
+  fe.setFillSizeComponent(true);
+  fe.setInputCloud(source.cloud);
+  fe.setInputNormals(source.normals);
+  fe.setIndices(source.indices);
+  fe.setRadiusSearch(source.radius);
+  fe.setKSearch(0);
+
+  PointCloud<VFHSignature308> vfh;
+  fe.compute(vfh);
+
+  VFHSignature308& gpu = downloaded[0];
+  VFHSignature308& cpu = vfh[0];
+
+  std::size_t FSize = sizeof(VFHSignature308) / sizeof(gpu.histogram[0]);
+
+  float norm = 0, norm_diff = 0;
+  for (std::size_t j = 0; j < FSize; ++j) {
+    norm_diff +=
+        (gpu.histogram[j] - cpu.histogram[j]) * (gpu.histogram[j] - cpu.histogram[j]);
+    norm += cpu.histogram[j] * cpu.histogram[j];
+
+    // ASSERT_NEAR(gpu.histogram[j], cpu.histogram[j], 0.03f);
+  }
+  if (norm != 0)
+    ASSERT_LE(norm_diff / norm, 0.01f / FSize);
+  else
+    FAIL();
 }

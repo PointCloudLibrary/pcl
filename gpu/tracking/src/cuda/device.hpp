@@ -3,17 +3,15 @@
 
 #include "internal.h"
 
-namespace pcl
+namespace pcl {
+namespace device {
+__device__ __forceinline__ float
+getSampleNormal(const float mean, const float cov, curandState* rng_state)
 {
-	namespace device
-	{
-		__device__ __forceinline__ float
-			getSampleNormal (const float mean, const float cov, curandState* rng_state)
-		{
-			float rn = curand_normal(rng_state);
-			return (rn*cov + mean);
-		}
-	}
+  float rn = curand_normal(rng_state);
+  return (rn * cov + mean);
 }
+} // namespace device
+} // namespace pcl
 
 #endif // PCL_GPU_TRACKING_DEVICE_HPP_

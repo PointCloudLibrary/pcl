@@ -41,107 +41,138 @@
 #include <pcl/gpu/octree/device_format.hpp>
 #include <pcl/gpu/utils/safe_call.hpp>
 
-namespace pcl
-{
-    namespace device
-    {   
-        struct OctreeGlobal
-        {             
-            int *nodes;
-            int *codes;
-            int *begs;
-            int *ends;
+namespace pcl {
+namespace device {
+struct OctreeGlobal {
+  int* nodes;
+  int* codes;
+  int* begs;
+  int* ends;
 
-            int *nodes_num;
+  int* nodes_num;
 
-            int *parent;
+  int* parent;
 
-            OctreeGlobal() : nodes(nullptr), codes(nullptr), begs(nullptr), ends(nullptr), nodes_num(nullptr), parent(nullptr) {}
-        };
+  OctreeGlobal()
+  : nodes(nullptr)
+  , codes(nullptr)
+  , begs(nullptr)
+  , ends(nullptr)
+  , nodes_num(nullptr)
+  , parent(nullptr)
+  {}
+};
 
-        struct OctreeGlobalWithBox : public OctreeGlobal
-        {    
-            float3 minp, maxp;    
-        };
+struct OctreeGlobalWithBox : public OctreeGlobal {
+  float3 minp, maxp;
+};
 
+class OctreeImpl {
+public:
+  using PointType = float4;
+  using PointArray = DeviceArray<PointType>;
 
-        class OctreeImpl
-        {
-        public:
-            using PointType = float4;
-            using PointArray = DeviceArray<PointType>;
+  using PointCloud = PointArray;
+  using Queries = PointArray;
 
-            using PointCloud = PointArray;
-            using Queries = PointArray;
-                       
-            using Radiuses = DeviceArray<float>;
-            using BatchResult = DeviceArray<int>;            
-            using BatchResultSizes = DeviceArray<int>;
-            using BatchResultSqrDists = DeviceArray<float>;
-            using Indices = DeviceArray<int>;
+  using Radiuses = DeviceArray<float>;
+  using BatchResult = DeviceArray<int>;
+  using BatchResultSizes = DeviceArray<int>;
+  using BatchResultSqrDists = DeviceArray<float>;
+  using Indices = DeviceArray<int>;
 
-            using NeighborIndices = pcl::gpu::NeighborIndices;
+  using NeighborIndices = pcl::gpu::NeighborIndices;
 
-            static void get_gpu_arch_compiled_for(int& bin, int& ptr);
+  static void
+  get_gpu_arch_compiled_for(int& bin, int& ptr);
 
-            OctreeImpl() {};
-            ~OctreeImpl() {};
+  OctreeImpl(){};
+  ~OctreeImpl(){};
 
-            void setCloud(const PointCloud& input_points);           
-            void build();
-            void radiusSearchHost(const PointType& center, float radius, std::vector<int>& out, int max_nn) const;
-            void approxNearestSearchHost(const PointType& query, int& out_index, float& sqr_dist) const;
-            
-            void radiusSearch(const Queries& queries, float radius, NeighborIndices& results);
-            void radiusSearch(const Queries& queries, const Radiuses& radiuses, NeighborIndices& results);
+  void
+  setCloud(const PointCloud& input_points);
+  void
+  build();
+  void
+  radiusSearchHost(const PointType& center,
+                   float radius,
+                   std::vector<int>& out,
+                   int max_nn) const;
+  void
+  approxNearestSearchHost(const PointType& query,
+                          int& out_index,
+                          float& sqr_dist) const;
 
-            void radiusSearch(const Queries& queries, const Indices& indices, float radius, NeighborIndices& results);
+  void
+  radiusSearch(const Queries& queries, float radius, NeighborIndices& results);
+  void
+  radiusSearch(const Queries& queries,
+               const Radiuses& radiuses,
+               NeighborIndices& results);
 
-            void approxNearestSearch(const Queries& queries, NeighborIndices& results, BatchResultSqrDists& sqr_distance) const;
-            
-            void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results, BatchResultSqrDists& sqr_distances) const;
-            
-            //just reference 
-            PointCloud points;
+  void
+  radiusSearch(const Queries& queries,
+               const Indices& indices,
+               float radius,
+               NeighborIndices& results);
 
-            // data
-            DeviceArray2D<float> points_sorted;
-            DeviceArray<int> codes;
-            DeviceArray<int> indices;
-                        
-            OctreeGlobalWithBox octreeGlobal;    
+  void
+  approxNearestSearch(const Queries& queries,
+                      NeighborIndices& results,
+                      BatchResultSqrDists& sqr_distance) const;
 
-            //storage
-            DeviceArray2D<int> storage;            
+  void
+  nearestKSearchBatch(const Queries& queries,
+                      int k,
+                      NeighborIndices& results,
+                      BatchResultSqrDists& sqr_distances) const;
 
-            struct OctreeDataHost
-            {
-                std::vector<int> nodes;
-                std::vector<int> codes;	
+  // just reference
+  PointCloud points;
 
-                std::vector<int> begs;
-                std::vector<int> ends;	
-                
+  // data
+  DeviceArray2D<float> points_sorted;
+  DeviceArray<int> codes;
+  DeviceArray<int> indices;
 
-                std::vector<int> indices;	
-                
-                std::vector<float> points_sorted;
-                int points_sorted_step;
+  OctreeGlobalWithBox octreeGlobal;
 
-                int downloaded;
+  // storage
+  DeviceArray2D<int> storage;
 
-            } host_octree;
+  struct OctreeDataHost {
+    std::vector<int> nodes;
+    std::vector<int> codes;
 
-                        
-            void internalDownload(); 
-        private:
-            template<typename BatchType>
-            void radiusSearchEx(BatchType& batch, const Queries& queries, NeighborIndices& results);
-        };
+    std::vector<int> begs;
+    std::vector<int> ends;
 
-        void bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud, const OctreeImpl::PointType& query, float radius, DeviceArray<int>& result, DeviceArray<int>& buffer);
+    std::vector<int> indices;
 
-    }
-}
+    std::vector<float> points_sorted;
+    int points_sorted_step;
+
+    int downloaded;
+
+  } host_octree;
+
+  void
+  internalDownload();
+
+private:
+  template <typename BatchType>
+  void
+  radiusSearchEx(BatchType& batch, const Queries& queries, NeighborIndices& results);
+};
+
+void
+bruteForceRadiusSearch(const OctreeImpl::PointCloud& cloud,
+                       const OctreeImpl::PointType& query,
+                       float radius,
+                       DeviceArray<int>& result,
+                       DeviceArray<int>& buffer);
+
+} // namespace device
+} // namespace pcl
 
 #endif /* PCL_GPU_OCTREE_INTERNAL_HPP_ */

@@ -36,137 +36,140 @@
 
 #pragma once
 
+#include <pcl/common/transforms.h>
+#include <pcl/features/integral_image_normal.h>
+#include <pcl/gpu/people/label_common.h>
+#include <pcl/segmentation/organized_multi_plane_segmentation.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_exports.h>
-#include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-
-#include <pcl/features/integral_image_normal.h>
-#include <pcl/segmentation/organized_multi_plane_segmentation.h>
-#include <pcl/common/transforms.h>
-#include <pcl/gpu/people/label_common.h>
+#include <pcl/point_types.h>
 
 #include <string>
 #include <vector>
 
-namespace pcl
-{
-  namespace gpu
+namespace pcl {
+namespace gpu {
+namespace people {
+class OrganizedPlaneDetector {
+public:
+  using Ptr = shared_ptr<OrganizedPlaneDetector>;
+  using ConstPtr = shared_ptr<const OrganizedPlaneDetector>;
+
+  using PointTC = pcl::PointXYZRGBA;
+  using PointT = pcl::PointXYZ;
+
+  using HostLabelProbability = pcl::PointCloud<pcl::device::prob_histogram>;
+
+  // using Labels = DeviceArray2D<unsigned char>;
+  // using Depth = DeviceArray2D<unsigned short>;
+  // using Image = DeviceArray2D<pcl::RGB>;
+
+  HostLabelProbability P_l_host_; // This is a HOST histogram!
+  HostLabelProbability P_l_host_prev_;
+
+  pcl::device::LabelProbability P_l_dev_; // This is a DEVICE histogram!
+  pcl::device::LabelProbability P_l_dev_prev_;
+
+protected:
+  pcl::IntegralImageNormalEstimation<PointTC, pcl::Normal> ne_;
+  pcl::OrganizedMultiPlaneSegmentation<PointTC, pcl::Normal, pcl::Label> mps_;
+
+  float ne_NormalSmoothingSize_;
+  float ne_MaxDepthChangeFactor_;
+
+  int mps_MinInliers_;
+  double mps_AngularThreshold_;
+  double mps_DistanceThreshold_;
+  bool mps_use_planar_refinement_;
+
+public:
+  /** \brief This is the constructor **/
+  OrganizedPlaneDetector(int rows = 480, int cols = 640);
+
+  /** \brief Process step, this wraps Organized Plane Segmentation code **/
+  void
+  process(const PointCloud<PointTC>::ConstPtr& cloud);
+
+  double
+  getMpsAngularThreshold() const
   {
-    namespace people
-    {
-      class OrganizedPlaneDetector
-      {
-        public:
-          using Ptr = shared_ptr<OrganizedPlaneDetector>;
-          using ConstPtr = shared_ptr<const OrganizedPlaneDetector>;
+    return mps_AngularThreshold_;
+  }
 
-          using PointTC = pcl::PointXYZRGBA;
-          using PointT = pcl::PointXYZ;
+  void
+  setMpsAngularThreshold(double mpsAngularThreshold)
+  {
+    mps_AngularThreshold_ = mpsAngularThreshold;
+    mps_.setAngularThreshold(mps_AngularThreshold_);
+  }
 
-          using HostLabelProbability = pcl::PointCloud<pcl::device::prob_histogram>;
+  double
+  getMpsDistanceThreshold() const
+  {
+    return mps_DistanceThreshold_;
+  }
 
-          //using Labels = DeviceArray2D<unsigned char>;
-          //using Depth = DeviceArray2D<unsigned short>;
-          //using Image = DeviceArray2D<pcl::RGB>;
+  void
+  setMpsDistanceThreshold(double mpsDistanceThreshold)
+  {
+    mps_DistanceThreshold_ = mpsDistanceThreshold;
+    mps_.setDistanceThreshold(mps_DistanceThreshold_);
+  }
 
-          HostLabelProbability                 P_l_host_;         // This is a HOST histogram!
-          HostLabelProbability                 P_l_host_prev_;
+  int
+  getMpsMinInliers() const
+  {
+    return mps_MinInliers_;
+  }
 
-          pcl::device::LabelProbability                     P_l_dev_;         // This is a DEVICE histogram!
-          pcl::device::LabelProbability                     P_l_dev_prev_;
+  void
+  setMpsMinInliers(int mpsMinInliers)
+  {
+    mps_MinInliers_ = mpsMinInliers;
+    mps_.setMinInliers(mps_MinInliers_);
+  }
 
-        protected:
-          pcl::IntegralImageNormalEstimation<PointTC, pcl::Normal>               ne_;
-          pcl::OrganizedMultiPlaneSegmentation<PointTC, pcl::Normal, pcl::Label> mps_;
+  float
+  getNeMaxDepthChangeFactor() const
+  {
+    return ne_MaxDepthChangeFactor_;
+  }
 
-          float   ne_NormalSmoothingSize_;
-          float   ne_MaxDepthChangeFactor_;
+  void
+  setNeMaxDepthChangeFactor(float neMaxDepthChangeFactor)
+  {
+    ne_MaxDepthChangeFactor_ = neMaxDepthChangeFactor;
+    ne_.setMaxDepthChangeFactor(ne_MaxDepthChangeFactor_);
+  }
 
-          int     mps_MinInliers_;
-          double  mps_AngularThreshold_;
-          double  mps_DistanceThreshold_;
-          bool    mps_use_planar_refinement_;
+  float
+  getNeNormalSmoothingSize() const
+  {
+    return ne_NormalSmoothingSize_;
+  }
 
-        public:
-          /** \brief This is the constructor **/
-          OrganizedPlaneDetector (int rows = 480, int cols = 640);
+  void
+  setNeNormalSmoothingSize(float neNormalSmoothingSize)
+  {
+    ne_NormalSmoothingSize_ = neNormalSmoothingSize;
+    ne_.setNormalSmoothingSize(ne_NormalSmoothingSize_);
+  }
 
-          /** \brief Process step, this wraps Organized Plane Segmentation code **/
-          void process (const PointCloud<PointTC>::ConstPtr &cloud);
+  void
+  emptyHostLabelProbability(HostLabelProbability& histogram);
 
-          double getMpsAngularThreshold () const
-          {
-            return mps_AngularThreshold_;
-          }
+  int
+  copyHostLabelProbability(HostLabelProbability& src, HostLabelProbability& dst);
 
-          void setMpsAngularThreshold (double mpsAngularThreshold)
-          {
-            mps_AngularThreshold_ = mpsAngularThreshold;
-            mps_.setAngularThreshold (mps_AngularThreshold_);
-          }
-
-          double getMpsDistanceThreshold () const
-          {
-            return mps_DistanceThreshold_;
-          }
-
-          void setMpsDistanceThreshold (double mpsDistanceThreshold)
-          {
-            mps_DistanceThreshold_ = mpsDistanceThreshold;
-            mps_.setDistanceThreshold (mps_DistanceThreshold_);
-          }
-
-          int getMpsMinInliers () const
-          {
-            return mps_MinInliers_;
-          }
-
-          void setMpsMinInliers (int mpsMinInliers)
-          {
-            mps_MinInliers_ = mpsMinInliers;
-            mps_.setMinInliers (mps_MinInliers_);
-
-
-          }
-
-          float getNeMaxDepthChangeFactor () const
-          {
-            return ne_MaxDepthChangeFactor_;
-          }
-
-          void setNeMaxDepthChangeFactor (float neMaxDepthChangeFactor)
-          {
-            ne_MaxDepthChangeFactor_ = neMaxDepthChangeFactor;
-            ne_.setMaxDepthChangeFactor (ne_MaxDepthChangeFactor_);
-          }
-
-          float getNeNormalSmoothingSize () const
-          {
-            return ne_NormalSmoothingSize_;
-          }
-
-          void setNeNormalSmoothingSize (float neNormalSmoothingSize)
-          {
-            ne_NormalSmoothingSize_ = neNormalSmoothingSize;
-            ne_.setNormalSmoothingSize (ne_NormalSmoothingSize_);
-          }
-
-          void
-          emptyHostLabelProbability(HostLabelProbability& histogram);
-
-          int
-          copyHostLabelProbability(HostLabelProbability& src,
+  int
+  copyAndClearHostLabelProbability(HostLabelProbability& src,
                                    HostLabelProbability& dst);
 
-          int
-          copyAndClearHostLabelProbability(HostLabelProbability& src,
-                                           HostLabelProbability& dst);
-
-        private:
-          void allocate_buffers(int rows = 480, int cols = 640);
-
-      };
-    }
-  }
-}
+private:
+  void
+  allocate_buffers(int rows = 480, int cols = 640);
+};
+} // namespace people
+} // namespace gpu
+} // namespace pcl

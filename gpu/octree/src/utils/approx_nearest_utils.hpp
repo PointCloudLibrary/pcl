@@ -12,9 +12,9 @@
 #include "morton.hpp"
 #include <assert.h>
 
+#include <bitset>
 #include <limits>
 #include <tuple>
-#include <bitset>
 
 namespace pcl {
 namespace device {
@@ -22,11 +22,11 @@ namespace device {
 __device__ __host__ __forceinline__ unsigned
 getBitsNum(const unsigned integer)
 {
-  #ifdef __CUDA_ARCH__
-    return __popc(integer);
-  #else
-    return std::bitset<8*sizeof(integer)> (integer).count();
-  #endif
+#ifdef __CUDA_ARCH__
+  return __popc(integer);
+#else
+  return std::bitset<8 * sizeof(integer)>(integer).count();
+#endif
 }
 
 __host__ __device__ __forceinline__ std::pair<uint3, std::uint8_t>
@@ -53,10 +53,10 @@ nearestVoxel(const float3 query,
 
     // find center of child cell
     const unsigned voxel_width_scale_factor = 1 << (level + 2);
-    const float3 voxel_center =
-        make_float3(minp.x + (maxp.x - minp.x) * (2 * child.x + 1) / voxel_width_scale_factor,
-                    minp.y + (maxp.y - minp.y) * (2 * child.y + 1) / voxel_width_scale_factor,
-                    minp.z + (maxp.z - minp.z) * (2 * child.z + 1) / voxel_width_scale_factor);
+    const float3 voxel_center = make_float3(
+        minp.x + (maxp.x - minp.x) * (2 * child.x + 1) / voxel_width_scale_factor,
+        minp.y + (maxp.y - minp.y) * (2 * child.y + 1) / voxel_width_scale_factor,
+        minp.z + (maxp.z - minp.z) * (2 * child.z + 1) / voxel_width_scale_factor);
 
     // compute distance to centroid
     const float3 dist = make_float3(

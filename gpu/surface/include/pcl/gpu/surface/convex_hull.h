@@ -37,40 +37,34 @@
 
 #pragma once
 
+#include <pcl/gpu/containers/device_array.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
-#include <pcl/gpu/containers/device_array.h>
 
 #include <memory>
 
-namespace pcl
-{
-  namespace gpu
-  {
-	class PCL_EXPORTS PseudoConvexHull3D
-	{
-	public:
+namespace pcl {
+namespace gpu {
+class PCL_EXPORTS PseudoConvexHull3D {
+public:
+  using PointType = pcl::PointXYZ;
+  using Cloud = pcl::gpu::DeviceArray<PointType>;
 
-	  using PointType = pcl::PointXYZ;
-	  using Cloud = pcl::gpu::DeviceArray<PointType>;
-      
+  PseudoConvexHull3D(std::size_t buffer_size);
+  ~PseudoConvexHull3D();
 
-	  PseudoConvexHull3D(std::size_t buffer_size);
-      ~PseudoConvexHull3D();
-	        
-	  void
-      reconstruct (const Cloud &points, Cloud &output);
+  void
+  reconstruct(const Cloud& points, Cloud& output);
 
-      void 
-      reduce(const Cloud &points, Cloud &output);
+  void
+  reduce(const Cloud& points, Cloud& output);
 
-	private:
-      
-      struct Impl;
-      std::shared_ptr<Impl> impl_;
+private:
+  struct Impl;
+  std::shared_ptr<Impl> impl_;
 
-      void
-      reconstruct (const Cloud &points, DeviceArray2D<int>& vertexes);  
-	};
-  }
-}
+  void
+  reconstruct(const Cloud& points, DeviceArray2D<int>& vertexes);
+};
+} // namespace gpu
+} // namespace pcl

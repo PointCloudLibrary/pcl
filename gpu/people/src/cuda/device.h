@@ -42,35 +42,35 @@
 
 #include <cuda_runtime.h>
 
-namespace pcl
+namespace pcl {
+namespace device {
+template <typename Point>
+__device__ __forceinline__ float
+sqnorm(const Point& p1, const Point& p2)
 {
-  namespace device
-  {
-    template<typename Point> 
-    __device__ __forceinline__ float sqnorm(const Point& p1, const Point& p2) 
-    { 
-        float dx = (p1.x - p2.x);
-        float dy = (p1.y - p2.y);
-        float dz = (p1.z - p2.z);
-        return dx * dx + dy * dy + dz * dz; 
-    }
-
-    __device__ __forceinline__ float3 computePoint(unsigned short depth, int x, int y, const Intr& intr)
-    {                  
-       float z = depth * 0.001f; // mm -> meters
-       float3 result;
-       
-       result.x = z * (x - intr.cx) / intr.fx;
-       result.y = z * (y - intr.cy) / intr.fy;
-       result.z = z;
-       
-       return result;
-    }
-    
-    __device__ __forceinline__ bool 
-    isFinite(const float3& p)
-    {
-      return isfinite(p.x) && isfinite(p.y) && isfinite(p.z);
-    }
-  }
+  float dx = (p1.x - p2.x);
+  float dy = (p1.y - p2.y);
+  float dz = (p1.z - p2.z);
+  return dx * dx + dy * dy + dz * dz;
 }
+
+__device__ __forceinline__ float3
+computePoint(unsigned short depth, int x, int y, const Intr& intr)
+{
+  float z = depth * 0.001f; // mm -> meters
+  float3 result;
+
+  result.x = z * (x - intr.cx) / intr.fx;
+  result.y = z * (y - intr.cy) / intr.fy;
+  result.z = z;
+
+  return result;
+}
+
+__device__ __forceinline__ bool
+isFinite(const float3& p)
+{
+  return isfinite(p.x) && isfinite(p.y) && isfinite(p.z);
+}
+} // namespace device
+} // namespace pcl

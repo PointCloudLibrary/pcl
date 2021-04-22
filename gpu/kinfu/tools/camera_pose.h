@@ -39,11 +39,12 @@
 
 #pragma once
 
+#include <pcl/memory.h>
+
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-#include <fstream>
 
-#include <pcl/memory.h>
+#include <fstream>
 
 /**
  * @brief The CameraPoseProcessor class is an interface to extract
@@ -51,17 +52,16 @@
  * Use the CameraPoseWriter implementation if writing the camera
  * pose to a file is all you need, or provide an alternative implementation.
  */
-class CameraPoseProcessor
-{
-  public:
-    using Ptr = pcl::shared_ptr<CameraPoseProcessor>;
-    using ConstPtr = pcl::shared_ptr<const CameraPoseProcessor>;
+class CameraPoseProcessor {
+public:
+  using Ptr = pcl::shared_ptr<CameraPoseProcessor>;
+  using ConstPtr = pcl::shared_ptr<const CameraPoseProcessor>;
 
-    virtual ~CameraPoseProcessor () {}
+  virtual ~CameraPoseProcessor() {}
 
-    /// process the camera pose, this method is called at every frame.
-    virtual void
-    processPose (const Eigen::Affine3f &pose)=0;
+  /// process the camera pose, this method is called at every frame.
+  virtual void
+  processPose(const Eigen::Affine3f& pose) = 0;
 };
 
 /**
@@ -69,42 +69,38 @@ class CameraPoseProcessor
  * the KinfuTracker to a file on disk.
  *
  */
-class CameraPoseWriter : public CameraPoseProcessor
-{
+class CameraPoseWriter : public CameraPoseProcessor {
   std::string output_filename_;
   std::ofstream out_stream_;
-  public:
-    /**
-       * @param output_filename name of file to write
-       */
-    CameraPoseWriter (const std::string &output_filename) :
-      output_filename_ (output_filename)
-    {
-      out_stream_.open (output_filename_.c_str () );
-    }
 
-    ~CameraPoseWriter ()
-    {
-      if (out_stream_.is_open ())
-      {
-        out_stream_.close ();
-        std::cout << "wrote camera poses to file " << output_filename_ << std::endl;
-      }
-    }
+public:
+  /**
+   * @param output_filename name of file to write
+   */
+  CameraPoseWriter(const std::string& output_filename)
+  : output_filename_(output_filename)
+  {
+    out_stream_.open(output_filename_.c_str());
+  }
 
-    void
-    processPose (const Eigen::Affine3f &pose) override
-    {
-      if (out_stream_.good ())
-      {
-        // convert 3x4 affine transformation to quaternion and write to file
-        Eigen::Quaternionf q (pose.rotation ());
-        Eigen::Vector3f t (pose.translation ());
-        // write translation , quaternion in a row
-        out_stream_ << t[0] << "," << t[1] << "," << t[2]
-                    << "," << q.w () << "," << q.x ()
-                    << "," << q.y ()<< ","  << q.z () << std::endl;
-      }
+  ~CameraPoseWriter()
+  {
+    if (out_stream_.is_open()) {
+      out_stream_.close();
+      std::cout << "wrote camera poses to file " << output_filename_ << std::endl;
     }
+  }
 
+  void
+  processPose(const Eigen::Affine3f& pose) override
+  {
+    if (out_stream_.good()) {
+      // convert 3x4 affine transformation to quaternion and write to file
+      Eigen::Quaternionf q(pose.rotation());
+      Eigen::Vector3f t(pose.translation());
+      // write translation , quaternion in a row
+      out_stream_ << t[0] << "," << t[1] << "," << t[2] << "," << q.w() << "," << q.x()
+                  << "," << q.y() << "," << q.z() << std::endl;
+    }
+  }
 };

@@ -36,10 +36,8 @@
  *  Author: Raphael Favier, Technical University Eindhoven, (r.mysurname <aT> tue.nl)
  */
 
- #include <pcl/gpu/kinfu_large_scale/world_model.h>
- #include <pcl/gpu/kinfu_large_scale/impl/world_model.hpp>
- #include <pcl/impl/instantiate.hpp>
-
-
+#include <pcl/gpu/kinfu_large_scale/impl/world_model.hpp>
+#include <pcl/gpu/kinfu_large_scale/world_model.h>
+#include <pcl/impl/instantiate.hpp>
 
 PCL_INSTANTIATE(WorldModel, (pcl::PointXYZ)(pcl::PointXYZI));

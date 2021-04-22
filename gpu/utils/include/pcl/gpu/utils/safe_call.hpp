@@ -37,33 +37,38 @@
 #ifndef __PCL_CUDA_SAFE_CALL_HPP__
 #define __PCL_CUDA_SAFE_CALL_HPP__
 
-#include <cuda_runtime_api.h>
 #include <pcl/gpu/containers/initialization.h>
 
+#include <cuda_runtime_api.h>
+
 #if defined(__GNUC__)
-    #define cudaSafeCall(expr)  pcl::gpu::___cudaSafeCall(expr, __FILE__, __LINE__, __func__)
+#define cudaSafeCall(expr) pcl::gpu::___cudaSafeCall(expr, __FILE__, __LINE__, __func__)
 #else /* defined(__CUDACC__) || defined(__MSVC__) */
-    #define cudaSafeCall(expr)  pcl::gpu::___cudaSafeCall(expr, __FILE__, __LINE__)    
+#define cudaSafeCall(expr) pcl::gpu::___cudaSafeCall(expr, __FILE__, __LINE__)
 #endif
 
-namespace pcl
+namespace pcl {
+namespace gpu {
+static inline void
+___cudaSafeCall(cudaError_t err,
+                const char* file,
+                const int line,
+                const char* func = "")
 {
-    namespace gpu
-    {
-        static inline void ___cudaSafeCall(cudaError_t err, const char *file, const int line, const char *func = "")
-        {
-            if (cudaSuccess != err)
-                error(cudaGetErrorString(err), file, line, func);
-        }        
-
-        static inline int divUp(int total, int grain) { return (total + grain - 1) / grain; }
-    }
-
-    namespace device
-    {
-        using pcl::gpu::divUp;        
-    }
+  if (cudaSuccess != err)
+    error(cudaGetErrorString(err), file, line, func);
 }
 
+static inline int
+divUp(int total, int grain)
+{
+  return (total + grain - 1) / grain;
+}
+} // namespace gpu
+
+namespace device {
+using pcl::gpu::divUp;
+}
+} // namespace pcl
 
 #endif /* __PCL_CUDA_SAFE_CALL_HPP__ */

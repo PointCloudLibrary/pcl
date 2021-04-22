@@ -39,142 +39,154 @@
 #pragma once
 
 #include <pcl/common/impl/common.hpp>
+#include <pcl/filters/conditional_removal.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/filter_indices.h>
-#include <pcl/filters/conditional_removal.h>
-#include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/point_types.h>
 //#include <pcl/gpu/kinfu_large_scale/tsdf_buffer.h>
 //#include <boost/graph/buffer_concepts.hpp>
 
+namespace pcl {
+namespace kinfuLS {
+/** \brief WorldModel maintains a 3D point cloud that can be queried and updated via
+ * helper functions.\n The world is represented as a point cloud.\n When new points are
+ * added to the world, we replace old ones by the newest ones. This is achieved by
+ * setting old points to nan (for speed) \author Raphael Favier
+ */
+template <typename PointT>
+class WorldModel {
+public:
+  using Ptr = shared_ptr<WorldModel<PointT>>;
+  using ConstPtr = shared_ptr<const WorldModel<PointT>>;
 
-namespace pcl
-{
-  namespace kinfuLS
+  using PointCloud = pcl::PointCloud<PointT>;
+  using PointCloudPtr = typename PointCloud::Ptr;
+  using PointCloudConstPtr = typename PointCloud::ConstPtr;
+
+  using ConditionAndPtr = typename pcl::ConditionAnd<PointT>::Ptr;
+  using ConditionOrPtr = typename pcl::ConditionOr<PointT>::Ptr;
+  using FieldComparisonConstPtr = typename pcl::FieldComparison<PointT>::ConstPtr;
+
+  using FieldList = typename pcl::traits::fieldList<PointT>::type;
+
+  /** \brief Default constructor for the WorldModel.
+   */
+  WorldModel() : world_(new PointCloud) { world_->is_dense = false; }
+
+  /** \brief Clear the world.
+   */
+  void
+  reset()
   {
-    /** \brief WorldModel maintains a 3D point cloud that can be queried and updated via helper functions.\n
-      * The world is represented as a point cloud.\n
-      * When new points are added to the world, we replace old ones by the newest ones.
-      * This is achieved by setting old points to nan (for speed)
-      * \author Raphael Favier
-      */
-    template <typename PointT>
-    class WorldModel
-    {
-      public:
-
-        using Ptr = shared_ptr<WorldModel<PointT> >;
-        using ConstPtr = shared_ptr<const WorldModel<PointT> >;
-
-        using PointCloud = pcl::PointCloud<PointT>;
-        using PointCloudPtr = typename PointCloud::Ptr;
-        using PointCloudConstPtr = typename PointCloud::ConstPtr;
-
-        using ConditionAndPtr = typename pcl::ConditionAnd<PointT>::Ptr;
-        using ConditionOrPtr = typename pcl::ConditionOr<PointT>::Ptr;
-        using FieldComparisonConstPtr = typename pcl::FieldComparison<PointT>::ConstPtr;
-        
-        using FieldList = typename pcl::traits::fieldList<PointT>::type;
-
-        /** \brief Default constructor for the WorldModel.
-          */
-        WorldModel() : 
-          world_ (new PointCloud)
-        {
-          world_->is_dense = false;
-        }
-        
-        /** \brief Clear the world.
-          */
-        void reset()
-        {
-          if(!world_->points.empty ())
-          {
-            PCL_WARN("Clearing world model\n");
-            world_->points.clear ();
-          }
-        }
-
-        /** \brief Append a new point cloud (slice) to the world.
-          * \param[in] new_cloud the point cloud to add to the world
-          */
-        void addSlice (const PointCloudPtr new_cloud);
-
-
-        /** \brief Retrieve existing data from the world model, after a shift
-          * \param[in] previous_origin_x global origin of the cube on X axis, before the shift
-          * \param[in] previous_origin_y global origin of the cube on Y axis, before the shift
-          * \param[in] previous_origin_z global origin of the cube on Z axis, before the shift
-          * \param[in] offset_x shift on X, in indices
-          * \param[in] offset_y shift on Y, in indices
-          * \param[in] offset_z shift on Z, in indices
-          * \param[in] volume_x size of the cube, X axis, in indices
-          * \param[in] volume_y size of the cube, Y axis, in indices
-          * \param[in] volume_z size of the cube, Z axis, in indices
-          * \param[out] existing_slice the extracted point cloud representing the slice
-          */
-        void getExistingData(const double previous_origin_x, const double previous_origin_y, const double previous_origin_z,
-                            const double offset_x, const double offset_y, const double offset_z,
-                            const double volume_x, const double volume_y, const double volume_z, pcl::PointCloud<PointT> &existing_slice);
-        
-        /** \brief Give nan values to the slice of the world 
-          * \param[in] origin_x global origin of the cube on X axis, before the shift
-          * \param[in] origin_y global origin of the cube on Y axis, before the shift
-          * \param[in] origin_z global origin of the cube on Z axis, before the shift
-          * \param[in] offset_x shift on X, in indices
-          * \param[in] offset_y shift on Y, in indices
-          * \param[in] offset_z shift on Z, in indices
-          * \param[in] size_x size of the cube, X axis, in indices
-          * \param[in] size_y size of the cube, Y axis, in indices
-          * \param[in] size_z size of the cube, Z axis, in indices
-          */                    
-        void setSliceAsNans (const double origin_x, const double origin_y, const double origin_z,
-                            const double offset_x, const double offset_y, const double offset_z,
-                            const int size_x, const int size_y, const int size_z);            
-
-        /** \brief Remove points with nan values from the world.
-          */
-        void cleanWorldFromNans () 
-        { 
-          world_->is_dense = false;
-          std::vector<int> indices; 
-          pcl::removeNaNFromPointCloud (*world_, *world_, indices);
-        }
-
-        /** \brief Returns the world as a point cloud.
-          */
-        PointCloudPtr getWorld () 
-        { 
-          return (world_); 
-        }
-        
-        /** \brief Returns the number of points contained in the world.
-          */      
-        std::size_t getWorldSize () 
-        { 
-          return (world_->size () );
-        }
-
-        /** \brief Returns the world as two vectors of cubes of size "size" (pointclouds) and transforms
-          * \param[in] size the size of a 3D cube.
-          * \param[out] cubes a vector of point clouds representing each cube (in their original world coordinates). 
-          * \param[out] transforms a vector containing the xyz position of each cube in world coordinates.
-          * \param[in] overlap optional overlap (in percent) between each cube (useful to create overlapped meshes).
-          */
-        void getWorldAsCubes (double size, std::vector<PointCloudPtr> &cubes, std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > &transforms, double overlap = 0.0);
-        
-        
-      private:
-
-        /** \brief cloud containing our world */
-        PointCloudPtr world_;
-
-        /** \brief set the points which index is in the indices vector to nan 
-          * \param[in] cloud the cloud that contains the point to be set to nan
-          * \param[in] indices the vector of indices to set to nan
-          */
-        inline void setIndicesAsNans (PointCloudPtr cloud, IndicesConstPtr indices);
-        
-    };
+    if (!world_->points.empty()) {
+      PCL_WARN("Clearing world model\n");
+      world_->points.clear();
+    }
   }
-}
+
+  /** \brief Append a new point cloud (slice) to the world.
+   * \param[in] new_cloud the point cloud to add to the world
+   */
+  void
+  addSlice(const PointCloudPtr new_cloud);
+
+  /** \brief Retrieve existing data from the world model, after a shift
+   * \param[in] previous_origin_x global origin of the cube on X axis, before the shift
+   * \param[in] previous_origin_y global origin of the cube on Y axis, before the shift
+   * \param[in] previous_origin_z global origin of the cube on Z axis, before the shift
+   * \param[in] offset_x shift on X, in indices
+   * \param[in] offset_y shift on Y, in indices
+   * \param[in] offset_z shift on Z, in indices
+   * \param[in] volume_x size of the cube, X axis, in indices
+   * \param[in] volume_y size of the cube, Y axis, in indices
+   * \param[in] volume_z size of the cube, Z axis, in indices
+   * \param[out] existing_slice the extracted point cloud representing the slice
+   */
+  void
+  getExistingData(const double previous_origin_x,
+                  const double previous_origin_y,
+                  const double previous_origin_z,
+                  const double offset_x,
+                  const double offset_y,
+                  const double offset_z,
+                  const double volume_x,
+                  const double volume_y,
+                  const double volume_z,
+                  pcl::PointCloud<PointT>& existing_slice);
+
+  /** \brief Give nan values to the slice of the world
+   * \param[in] origin_x global origin of the cube on X axis, before the shift
+   * \param[in] origin_y global origin of the cube on Y axis, before the shift
+   * \param[in] origin_z global origin of the cube on Z axis, before the shift
+   * \param[in] offset_x shift on X, in indices
+   * \param[in] offset_y shift on Y, in indices
+   * \param[in] offset_z shift on Z, in indices
+   * \param[in] size_x size of the cube, X axis, in indices
+   * \param[in] size_y size of the cube, Y axis, in indices
+   * \param[in] size_z size of the cube, Z axis, in indices
+   */
+  void
+  setSliceAsNans(const double origin_x,
+                 const double origin_y,
+                 const double origin_z,
+                 const double offset_x,
+                 const double offset_y,
+                 const double offset_z,
+                 const int size_x,
+                 const int size_y,
+                 const int size_z);
+
+  /** \brief Remove points with nan values from the world.
+   */
+  void
+  cleanWorldFromNans()
+  {
+    world_->is_dense = false;
+    std::vector<int> indices;
+    pcl::removeNaNFromPointCloud(*world_, *world_, indices);
+  }
+
+  /** \brief Returns the world as a point cloud.
+   */
+  PointCloudPtr
+  getWorld()
+  {
+    return (world_);
+  }
+
+  /** \brief Returns the number of points contained in the world.
+   */
+  std::size_t
+  getWorldSize()
+  {
+    return (world_->size());
+  }
+
+  /** \brief Returns the world as two vectors of cubes of size "size" (pointclouds) and
+   * transforms \param[in] size the size of a 3D cube. \param[out] cubes a vector of
+   * point clouds representing each cube (in their original world coordinates).
+   * \param[out] transforms a vector containing the xyz position of each cube in world
+   * coordinates. \param[in] overlap optional overlap (in percent) between each cube
+   * (useful to create overlapped meshes).
+   */
+  void
+  getWorldAsCubes(double size,
+                  std::vector<PointCloudPtr>& cubes,
+                  std::vector<Eigen::Vector3f,
+                              Eigen::aligned_allocator<Eigen::Vector3f>>& transforms,
+                  double overlap = 0.0);
+
+private:
+  /** \brief cloud containing our world */
+  PointCloudPtr world_;
+
+  /** \brief set the points which index is in the indices vector to nan
+   * \param[in] cloud the cloud that contains the point to be set to nan
+   * \param[in] indices the vector of indices to set to nan
+   */
+  inline void
+  setIndicesAsNans(PointCloudPtr cloud, IndicesConstPtr indices);
+};
+} // namespace kinfuLS
+} // namespace pcl

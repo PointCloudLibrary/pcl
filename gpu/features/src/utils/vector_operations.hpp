@@ -40,41 +40,45 @@
 #include <pcl/gpu/features/device/rodrigues.hpp>
 #include <pcl/gpu/utils/device/vector_math.hpp>
 
-namespace pcl
+namespace pcl {
+namespace device {
+__forceinline__ __device__ __host__ float3
+operator/(const float3& vec, float val)
 {
-    namespace device
-    {       
-         __forceinline__ __device__ __host__ float3 operator/(const float3& vec, float val)
-        {
-            return make_float3(vec.x/val, vec.y/val, vec.z/val);
-        }
-
-        __device__ __host__ __forceinline__ float3& operator/=(float3& v, const float& value)
-        {
-            v.x /= value;
-            v.y /= value;
-            v.z /= value;
-            return v;
-        }
-             
-        __device__ __host__ __forceinline__ float norm(const float3& v1, const float3& v2)
-        {
-            float dx = v1.x - v2.x;
-            float dy = v1.y - v2.y;
-            float dz = v1.z - v2.z;
-            return sqrtf(dx*dx + dy*dy + dz*dz);
-        }
-        
-        template<typename T> __device__ __forceinline__ float3 tr(const T& v)
-        {
-            return make_float3(v.x, v.y, v.z);
-        }
-
-        inline __host__ __device__ float3 normalize(const float3& v)
-        {
-            return v * inverse_norm(v);
-        }
-    }
+  return make_float3(vec.x / val, vec.y / val, vec.z / val);
 }
+
+__device__ __host__ __forceinline__ float3&
+operator/=(float3& v, const float& value)
+{
+  v.x /= value;
+  v.y /= value;
+  v.z /= value;
+  return v;
+}
+
+__device__ __host__ __forceinline__ float
+norm(const float3& v1, const float3& v2)
+{
+  float dx = v1.x - v2.x;
+  float dy = v1.y - v2.y;
+  float dz = v1.z - v2.z;
+  return sqrtf(dx * dx + dy * dy + dz * dz);
+}
+
+template <typename T>
+__device__ __forceinline__ float3
+tr(const T& v)
+{
+  return make_float3(v.x, v.y, v.z);
+}
+
+inline __host__ __device__ float3
+normalize(const float3& v)
+{
+  return v * inverse_norm(v);
+}
+} // namespace device
+} // namespace pcl
 
 #endif /* PCL_GPU_FEATURS_DEVICE_VECTOR_OPERATIONS_HPP_ */

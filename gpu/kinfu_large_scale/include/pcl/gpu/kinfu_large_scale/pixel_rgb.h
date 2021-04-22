@@ -39,18 +39,14 @@
 
 //#include <boost/graph/buffer_concepts.hpp>
 
-namespace pcl
-{
-  namespace gpu
-  {
-    namespace kinfuLS
-    {
-      /** \brief Input/output pixel format for KinfuTracker */
-        
-      struct PixelRGB
-      {
-        unsigned char r, g, b;
-      };
-    }
-  }
-}
+namespace pcl {
+namespace gpu {
+namespace kinfuLS {
+/** \brief Input/output pixel format for KinfuTracker */
+
+struct PixelRGB {
+  unsigned char r, g, b;
+};
+} // namespace kinfuLS
+} // namespace gpu
+} // namespace pcl

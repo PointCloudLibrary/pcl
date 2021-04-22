@@ -33,71 +33,72 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  Author: Francisco, Technical University Eindhoven, (f.j.mysurname.soriano <At > tue.nl)
+ *  Author: Francisco, Technical University Eindhoven, (f.j.mysurname.soriano <At >
+ * tue.nl)
  */
 
 #pragma once
 
-#include <iostream>
-#include <fstream>
-#include <cstdio>
+#include <pcl/gpu/containers/device_array.h>
+#include <pcl/gpu/containers/kernel_containers.h>
+#include <pcl/gpu/kinfu_large_scale/pixel_rgb.h>
+#include <pcl/pcl_exports.h>
+
+#include <boost/filesystem.hpp>
+
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 
-#include <pcl/pcl_exports.h>
-#include <pcl/gpu/containers/device_array.h>
-#include <pcl/gpu/containers/kernel_containers.h>
-#include <pcl/gpu/kinfu_large_scale/pixel_rgb.h> 
-#include <boost/filesystem.hpp> 
+#include <cstdio>
+#include <fstream>
+#include <iostream>
 //#include <boost/graph/buffer_concepts.hpp>
 
+#include <pcl/console/print.h>
 #include <pcl/io/png_io.h>
 
-#include <pcl/console/print.h>
+namespace pcl {
+namespace kinfuLS {
+/** \brief Screenshot Manager saves a screenshot with the corresponding camera pose from
+ * Kinfu. Please create a folder named "KinFuSnapshots" in the folder where you call
+ * kinfu. \author Francisco Heredia
+ */
+class PCL_EXPORTS ScreenshotManager {
+public:
+  using PixelRGB = pcl::gpu::kinfuLS::PixelRGB;
 
+  /** Constructor */
+  ScreenshotManager();
 
-namespace pcl
-{
-  namespace kinfuLS
-  {
-      /** \brief Screenshot Manager saves a screenshot with the corresponding camera pose from Kinfu. Please create a folder named "KinFuSnapshots" in the folder where you call kinfu.
-        * \author Francisco Heredia
-        */
-      class PCL_EXPORTS ScreenshotManager
-      {
-        public:
+  /** Destructor */
+  ~ScreenshotManager() {}
 
-          using PixelRGB = pcl::gpu::kinfuLS::PixelRGB;
+  /** \brief Sets Depth camera intrinsics
+   * \param[in] focal focal length x
+   * \param height
+   * \param width
+   */
+  void
+  setCameraIntrinsics(float focal = 575.816f,
+                      float height = 480.0f,
+                      float width = 640.0f);
 
-          /** Constructor */
-          ScreenshotManager();
+  /**Save Screenshot*/
+  void
+  saveImage(const Eigen::Affine3f& camPose, pcl::gpu::PtrStepSz<const PixelRGB> rgb24);
 
-          /** Destructor */
-          ~ScreenshotManager(){}
-          
-          /** \brief Sets Depth camera intrinsics
-            * \param[in] focal focal length x 
-            * \param height
-            * \param width
-            */
-          void
-          setCameraIntrinsics (float focal = 575.816f, float height = 480.0f, float width = 640.0f);
+private:
+  /**Write camera pose to file*/
+  void
+  writePose(const std::string& filename_pose,
+            const Eigen::Vector3f& teVecs,
+            const Eigen::Matrix<float, 3, 3, Eigen::RowMajor>& erreMats) const;
 
-          /**Save Screenshot*/
-          void
-          saveImage(const Eigen::Affine3f &camPose, pcl::gpu::PtrStepSz<const PixelRGB> rgb24);
+  /**Counter of the number of screenshots taken*/
+  int screenshot_counter;
 
-        private:
-
-          /**Write camera pose to file*/
-          void 
-          writePose(const std::string &filename_pose, const Eigen::Vector3f &teVecs, const Eigen::Matrix<float, 3, 3, Eigen::RowMajor> &erreMats) const;
-
-          /**Counter of the number of screenshots taken*/
-          int screenshot_counter;
-          
-          /** \brief Intrinsic parameters of depth camera. */
-          float focal_, height_, width_;
-    };
-  }
-}
+  /** \brief Intrinsic parameters of depth camera. */
+  float focal_, height_, width_;
+};
+} // namespace kinfuLS
+} // namespace pcl

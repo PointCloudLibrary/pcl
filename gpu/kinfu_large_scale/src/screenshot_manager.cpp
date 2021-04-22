@@ -33,89 +33,94 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  Author: Francisco Heredia, Technical University Eindhoven, (f.j.mysurname.soriano < aT > tue.nl)
+ *  Author: Francisco Heredia, Technical University Eindhoven, (f.j.mysurname.soriano <
+ * aT > tue.nl)
  */
-
-
 
 #ifndef PCL_SCREENSHOT_MANAGER_CPP_
 #define PCL_SCREENSHOT_MANAGER_CPP_
 #include <pcl/gpu/kinfu_large_scale/screenshot_manager.h>
 
-namespace pcl
+namespace pcl {
+namespace kinfuLS {
+ScreenshotManager::ScreenshotManager()
 {
-  namespace kinfuLS
-  {
-      ScreenshotManager::ScreenshotManager()
-      {
-        boost::filesystem::path p ("KinFuSnapshots"); 
-        boost::filesystem::create_directory (p);
-        screenshot_counter = 0;
-        setCameraIntrinsics();
-      }
+  boost::filesystem::path p("KinFuSnapshots");
+  boost::filesystem::create_directory(p);
+  screenshot_counter = 0;
+  setCameraIntrinsics();
+}
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      void
-      ScreenshotManager::saveImage(const Eigen::Affine3f &camPose, pcl::gpu::PtrStepSz<const PixelRGB> rgb24)
-      {
+void
+ScreenshotManager::saveImage(const Eigen::Affine3f& camPose,
+                             pcl::gpu::PtrStepSz<const PixelRGB> rgb24)
+{
 
-        PCL_WARN ("[o] [o] [o] [o] Saving screenshot [o] [o] [o] [o]\n");
+  PCL_WARN("[o] [o] [o] [o] Saving screenshot [o] [o] [o] [o]\n");
 
-        std::string file_extension_image = ".png";
-        std::string file_extension_pose = ".txt";
-        std::string filename_image = "KinFuSnapshots/";
-        std::string filename_pose = "KinFuSnapshots/";
+  std::string file_extension_image = ".png";
+  std::string file_extension_pose = ".txt";
+  std::string filename_image = "KinFuSnapshots/";
+  std::string filename_pose = "KinFuSnapshots/";
 
-        // Get Pose
-        Eigen::Matrix<float, 3, 3, Eigen::RowMajor> erreMats = camPose.linear ();
-                    Eigen::Vector3f teVecs = camPose.translation ();
+  // Get Pose
+  Eigen::Matrix<float, 3, 3, Eigen::RowMajor> erreMats = camPose.linear();
+  Eigen::Vector3f teVecs = camPose.translation();
 
-                    // Create filenames
-                    filename_pose += std::to_string(screenshot_counter) + file_extension_pose;
-                    filename_image += std::to_string(screenshot_counter) + file_extension_image;
+  // Create filenames
+  filename_pose += std::to_string(screenshot_counter) + file_extension_pose;
+  filename_image += std::to_string(screenshot_counter) + file_extension_image;
 
-                    // Write files
-                    writePose (filename_pose, teVecs, erreMats);
-          
-        // Save Image
-        pcl::io::saveRgbPNGFile (filename_image, (unsigned char*)rgb24.data, 640,480);
-          
-        screenshot_counter++;
-      }
-      
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      
-      void
-      ScreenshotManager::setCameraIntrinsics (float focal, float height, float width)
-      {
-        focal_ = focal;
-        height_ = height;
-        width_ = width;
-      }
+  // Write files
+  writePose(filename_pose, teVecs, erreMats);
 
-      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      
-      void 
-      ScreenshotManager::writePose(const std::string &filename_pose, const Eigen::Vector3f &teVecs, const Eigen::Matrix<float, 3, 3, Eigen::RowMajor> &erreMats) const
-      {
-          std::ofstream poseFile;
-          poseFile.open (filename_pose.c_str());
+  // Save Image
+  pcl::io::saveRgbPNGFile(filename_image, (unsigned char*)rgb24.data, 640, 480);
 
-          if (poseFile.is_open())
-          {
-            poseFile << "TVector" << std::endl << teVecs << std::endl << std::endl 
-                    << "RMatrix" << std::endl << erreMats << std::endl << std::endl 
-                    << "Camera Intrinsics: focal height width" << std::endl << focal_ << " " << height_ << " " << width_ << std::endl << std::endl;
-            poseFile.close ();
-          }
-          else
-          {
-            PCL_WARN ("Unable to open/create output file for camera pose!\n");
-          }
-        }  
+  screenshot_counter++;
+}
 
-  } // namespace kinfuLS
-} //namespace pcl
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+ScreenshotManager::setCameraIntrinsics(float focal, float height, float width)
+{
+  focal_ = focal;
+  height_ = height;
+  width_ = width;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+ScreenshotManager::writePose(
+    const std::string& filename_pose,
+    const Eigen::Vector3f& teVecs,
+    const Eigen::Matrix<float, 3, 3, Eigen::RowMajor>& erreMats) const
+{
+  std::ofstream poseFile;
+  poseFile.open(filename_pose.c_str());
+
+  if (poseFile.is_open()) {
+    poseFile << "TVector" << std::endl
+             << teVecs << std::endl
+             << std::endl
+             << "RMatrix" << std::endl
+             << erreMats << std::endl
+             << std::endl
+             << "Camera Intrinsics: focal height width" << std::endl
+             << focal_ << " " << height_ << " " << width_ << std::endl
+             << std::endl;
+    poseFile.close();
+  }
+  else {
+    PCL_WARN("Unable to open/create output file for camera pose!\n");
+  }
+}
+
+} // namespace kinfuLS
+} // namespace pcl
 
 #endif // PCL_SCREENSHOT_MANAGER_CPP_

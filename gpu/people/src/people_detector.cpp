@@ -1,100 +1,104 @@
 /*
-* Software License Agreement (BSD License)
-*
-*  Copyright (c) 2011, Willow Garage, Inc.
-*  All rights reserved.
-*
-*  Redistribution and use in source and binary forms, with or without
-*  modification, are permitted provided that the following conditions
-*  are met:
-*
-*   * Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
-*   * Redistributions in binary form must reproduce the above
-*     copyright notice, this list of conditions and the following
-*     disclaimer in the documentation and/or other materials provided
-*     with the distribution.
-*   * Neither the name of Willow Garage, Inc. nor the names of its
-*     contributors may be used to endorse or promote products derived
-*     from this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-*  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-*  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-*  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-*  POSSIBILITY OF SUCH DAMAGE.
-* 
-* @author: Koen Buys, Anatoly Baksheev
-*/
+ * Software License Agreement (BSD License)
+ *
+ *  Copyright (c) 2011, Willow Garage, Inc.
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @author: Koen Buys, Anatoly Baksheev
+ */
 
-#include <pcl/gpu/people/people_detector.h>
 #include <pcl/gpu/people/label_common.h>
+#include <pcl/gpu/people/people_detector.h>
 
 //#include <pcl/gpu/people/conversions.h>
 //#include <pcl/gpu/people/label_conversion.h>
 //#include <pcl/gpu/people/label_segment.h>
-#include <pcl/gpu/people/label_tree.h>
-#include <pcl/gpu/people/probability_processor.h>
-#include <pcl/gpu/people/organized_plane_detector.h>
+#include <pcl/common/time.h>
 #include <pcl/console/print.h>
+#include <pcl/gpu/people/label_tree.h>
+#include <pcl/gpu/people/organized_plane_detector.h>
+#include <pcl/gpu/people/probability_processor.h>
+
 #include "internal.h"
 
-#include <pcl/common/time.h>
-
-#define AREA_THRES      200 // for euclidean clusterization 1 
-#define AREA_THRES2     100 // for euclidean clusterization 2 
-#define CLUST_TOL_SHS   0.05
-#define DELTA_HUE_SHS   5
+#define AREA_THRES 200  // for euclidean clusterization 1
+#define AREA_THRES2 100 // for euclidean clusterization 2
+#define CLUST_TOL_SHS 0.05
+#define DELTA_HUE_SHS 5
 
 using namespace pcl;
 using namespace pcl::gpu::people;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pcl::gpu::people::PeopleDetector::PeopleDetector() 
-    : fx_(525.f), fy_(525.f), cx_(319.5f), cy_(239.5f), delta_hue_tolerance_(5)
+pcl::gpu::people::PeopleDetector::PeopleDetector()
+: fx_(525.f), fy_(525.f), cx_(319.5f), cy_(239.5f), delta_hue_tolerance_(5)
 {
-  PCL_DEBUG ("[pcl::gpu::people::PeopleDetector] : (D) : Constructor called\n");
+  PCL_DEBUG("[pcl::gpu::people::PeopleDetector] : (D) : Constructor called\n");
 
   // Create a new organized plane detector
-  org_plane_detector_ = OrganizedPlaneDetector::Ptr (new OrganizedPlaneDetector());
+  org_plane_detector_ = OrganizedPlaneDetector::Ptr(new OrganizedPlaneDetector());
 
   // Create a new probability_processor
-  probability_processor_ = ProbabilityProcessor::Ptr (new ProbabilityProcessor());
+  probability_processor_ = ProbabilityProcessor::Ptr(new ProbabilityProcessor());
 
   // Create a new person attribs
-  person_attribs_ = PersonAttribs::Ptr (new PersonAttribs());
+  person_attribs_ = PersonAttribs::Ptr(new PersonAttribs());
 
-  // Just created, indicates first time callback (allows for tracking features to start from second frame)
+  // Just created, indicates first time callback (allows for tracking features to start
+  // from second frame)
   first_iteration_ = true;
 
   // allocation buffers with default sizes
-  // if input size is other than the defaults, 
+  // if input size is other than the defaults,
   // then the buffers will be reallocated at processing time.
   // This cause only penalty for first frame ( one reallocation of each buffer )
   allocate_buffers();
 }
 
 void
-pcl::gpu::people::PeopleDetector::setIntrinsics (float fx, float fy, float cx, float cy)
+pcl::gpu::people::PeopleDetector::setIntrinsics(float fx, float fy, float cx, float cy)
 {
-  fx_ = fx; fy_ = fy; cx_ = cx; cy_ = cy;
+  fx_ = fx;
+  fy_ = fy;
+  cx_ = cx;
+  cy_ = cy;
 }
 
 /** @brief This function prepares the needed buffers on both host and device **/
 void
 pcl::gpu::people::PeopleDetector::allocate_buffers(int rows, int cols)
-{ 
-  device::Dilatation::prepareRect5x5Kernel(kernelRect5x5_);  
+{
+  device::Dilatation::prepareRect5x5Kernel(kernelRect5x5_);
 
-  cloud_host_.width  = cols;
+  cloud_host_.width = cols;
   cloud_host_.height = rows;
   cloud_host_.resize(cols * rows);
   cloud_host_.is_dense = false;
@@ -104,21 +108,21 @@ pcl::gpu::people::PeopleDetector::allocate_buffers(int rows, int cols)
   cloud_host_color_.resize(cols * rows);
   cloud_host_color_.is_dense = false;
 
-  hue_host_.width  = cols;
+  hue_host_.width = cols;
   hue_host_.height = rows;
   hue_host_.resize(cols * rows);
   hue_host_.is_dense = false;
 
-  depth_host_.width  = cols;
+  depth_host_.width = cols;
   depth_host_.height = rows;
   depth_host_.resize(cols * rows);
   depth_host_.is_dense = false;
 
-  flowermat_host_.width  = cols;
+  flowermat_host_.width = cols;
   flowermat_host_.height = rows;
   flowermat_host_.resize(cols * rows);
   flowermat_host_.is_dense = false;
-  
+
   cloud_device_.create(rows, cols);
   hue_device_.create(rows, cols);
 
@@ -130,7 +134,7 @@ pcl::gpu::people::PeopleDetector::allocate_buffers(int rows, int cols)
 
 int
 pcl::gpu::people::PeopleDetector::process(const Depth& depth, const Image& rgba)
-{ 
+{
   int cols;
   allocate_buffers(depth.rows(), depth.cols());
 
@@ -138,29 +142,29 @@ pcl::gpu::people::PeopleDetector::process(const Depth& depth, const Image& rgba)
 
   const device::Image& i = (const device::Image&)rgba;
   device::computeHueWithNans(i, depth_device1_, hue_device_);
-  //TODO Hope this is temporary and after porting to GPU the download will be deleted  
+  // TODO Hope this is temporary and after porting to GPU the download will be deleted
   hue_device_.download(hue_host_.points, cols);
-      
+
   device::Intr intr(fx_, fy_, cx_, cy_);
   intr.setDefaultPPIfIncorrect(depth.cols(), depth.rows());
 
   device::Cloud& c = (device::Cloud&)cloud_device_;
-  device::computeCloud(depth, intr, c);  
-  cloud_device_.download(cloud_host_.points, cols);    
-    
+  device::computeCloud(depth, intr, c);
+  cloud_device_.download(cloud_host_.points, cols);
+
   // uses cloud device, cloud host, depth device, hue device and other buffers
   return process();
 }
 
 int
-pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<PointTC>::ConstPtr &cloud)
+pcl::gpu::people::PeopleDetector::process(
+    const pcl::PointCloud<PointTC>::ConstPtr& cloud)
 {
   allocate_buffers(cloud->height, cloud->width);
 
   const float qnan = std::numeric_limits<float>::quiet_NaN();
 
-  for(std::size_t i = 0; i < cloud->size(); ++i)
-  {
+  for (std::size_t i = 0; i < cloud->size(); ++i) {
     cloud_host_[i].x = (*cloud)[i].x;
     cloud_host_[i].y = (*cloud)[i].y;
     cloud_host_[i].z = (*cloud)[i].z;
@@ -168,7 +172,8 @@ pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<PointTC>::Const
     bool valid = isFinite(cloud_host_[i]);
 
     hue_host_[i] = !valid ? qnan : device::computeHue((*cloud)[i].rgba);
-    depth_host_[i] = !valid ? 0 : static_cast<unsigned short>(cloud_host_[i].z * 1000); //m -> mm
+    depth_host_[i] =
+        !valid ? 0 : static_cast<unsigned short>(cloud_host_[i].z * 1000); // m -> mm
   }
   cloud_device_.upload(cloud_host_.points, cloud_host_.width);
   hue_device_.upload(hue_host_.points, hue_host_.width);
@@ -179,43 +184,42 @@ pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<PointTC>::Const
 }
 
 int
-pcl::gpu::people::PeopleDetector::process ()
-{  
+pcl::gpu::people::PeopleDetector::process()
+{
   rdf_detector_->process(depth_device1_, cloud_host_, AREA_THRES);
 
   const RDFBodyPartsDetector::BlobMatrix& sorted = rdf_detector_->getBlobMatrix();
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // if we found a neck display the tree, and continue with processing
-  if(!sorted[Neck].empty ())
-  {
+  if (!sorted[Neck].empty()) {
     int c = 0;
     Tree2 t;
     buildTree(sorted, cloud_host_, Neck, c, t);
-    
+
     const std::vector<int>& seed = t.indices.indices;
-        
+
     std::fill(flowermat_host_.begin(), flowermat_host_.end(), 0);
     {
-      //ScopeTime time("shs");    
+      // ScopeTime time("shs");
       shs5(cloud_host_, seed, &flowermat_host_[0]);
     }
-    
+
     int cols = cloud_device_.cols();
     fg_mask_.upload(flowermat_host_.points, cols);
     device::Dilatation::invoke(fg_mask_, kernelRect5x5_, fg_mask_grown_);
 
     device::prepareForeGroundDepth(depth_device1_, fg_mask_grown_, depth_device2_);
 
-    //// //////////////////////////////////////////////////////////////////////////////////////////////// //
-    //// The second label evaluation    
-        
-    rdf_detector_->process(depth_device2_, cloud_host_, AREA_THRES2);    
+    ////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    ///// / The second label evaluation
+
+    rdf_detector_->process(depth_device2_, cloud_host_, AREA_THRES2);
     const RDFBodyPartsDetector::BlobMatrix& sorted2 = rdf_detector_->getBlobMatrix();
 
-    //brief Test if the second tree is build up correctly
-    if(!sorted2[Neck].empty ())
-    {      
+    // brief Test if the second tree is build up correctly
+    if (!sorted2[Neck].empty()) {
       Tree2 t2;
       buildTree(sorted2, cloud_host_, Neck, c, t2);
       /*int par = 0;
@@ -229,34 +233,36 @@ pcl::gpu::people::PeopleDetector::process ()
         else
            std::cerr << "0;";
       }*/
-      //static int counter = 0; // TODO move this logging to PeopleApp
-      //std::cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << std::endl;
+      // static int counter = 0; // TODO move this logging to PeopleApp
+      // std::cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" <<
+      // t2.norm_dist_error << ";" << counter++ << ";" << std::endl;
       return 2;
     }
     return 1;
-    //output: Tree2 and PointCloud<XYZRGBL> 
+    // output: Tree2 and PointCloud<XYZRGBL>
   }
   return 0;
 }
 
 int
-pcl::gpu::people::PeopleDetector::processProb (const pcl::PointCloud<PointTC>::ConstPtr &cloud)
+pcl::gpu::people::PeopleDetector::processProb(
+    const pcl::PointCloud<PointTC>::ConstPtr& cloud)
 {
   allocate_buffers(cloud->height, cloud->width);
 
   const float qnan = std::numeric_limits<float>::quiet_NaN();
 
-  for(std::size_t i = 0; i < cloud->size(); ++i)
-  {
-    cloud_host_color_[i].x  = cloud_host_[i].x = (*cloud)[i].x;
-    cloud_host_color_[i].y  = cloud_host_[i].y = (*cloud)[i].y;
-    cloud_host_color_[i].z  = cloud_host_[i].z = (*cloud)[i].z;
+  for (std::size_t i = 0; i < cloud->size(); ++i) {
+    cloud_host_color_[i].x = cloud_host_[i].x = (*cloud)[i].x;
+    cloud_host_color_[i].y = cloud_host_[i].y = (*cloud)[i].y;
+    cloud_host_color_[i].z = cloud_host_[i].z = (*cloud)[i].z;
     cloud_host_color_[i].rgba = (*cloud)[i].rgba;
 
     bool valid = isFinite(cloud_host_[i]);
 
     hue_host_[i] = !valid ? qnan : device::computeHue((*cloud)[i].rgba);
-    depth_host_[i] = !valid ? 0 : static_cast<unsigned short>(cloud_host_[i].z * 1000); //m -> mm
+    depth_host_[i] =
+        !valid ? 0 : static_cast<unsigned short>(cloud_host_[i].z * 1000); // m -> mm
   }
   cloud_device_.upload(cloud_host_.points, cloud_host_.width);
   hue_device_.upload(hue_host_.points, hue_host_.width);
@@ -267,27 +273,26 @@ pcl::gpu::people::PeopleDetector::processProb (const pcl::PointCloud<PointTC>::C
 }
 
 int
-pcl::gpu::people::PeopleDetector::processProb ()
-{  
+pcl::gpu::people::PeopleDetector::processProb()
+{
   PCL_DEBUG("[pcl::gpu::people::PeopleDetector::processProb] : (D) : called\n");
 
   // First iteration no tracking can take place
-  if(first_iteration_)
-  {
-    //Process input pointcloud with RDF
+  if (first_iteration_) {
+    // Process input pointcloud with RDF
     rdf_detector_->processProb(depth_device1_);
 
-    probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
+    probability_processor_->SelectLabel(
+        depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
   }
   // Join probabilities from previous result
-  else
-  {
+  else {
     // Backup P_l_1_ value in P_l_prev_1_;
     rdf_detector_->P_l_prev_1_.swap(rdf_detector_->P_l_1_);
     // Backup P_l_2_ value in P_l_prev_2_;
     rdf_detector_->P_l_prev_2_.swap(rdf_detector_->P_l_2_);
 
-    //Process input pointcloud with RDF
+    // Process input pointcloud with RDF
     rdf_detector_->processProb(depth_device1_);
 
     // Create Gaussian Kernel for this iteration, in order to smooth P_l_2_
@@ -300,18 +305,30 @@ pcl::gpu::people::PeopleDetector::processProb ()
 
     // Output kernel for verification
     PCL_DEBUG("[pcl::gpu::people::PeopleDetector::processProb] : (D) : kernel:\n");
-    for(int i = 0; i < kernel_size; i++)
+    for (int i = 0; i < kernel_size; i++)
       PCL_DEBUG("\t Entry %d \t: %lf\n", i, kernel_ptr_host[i]);
 
-    if(probability_processor_->GaussianBlur(depth_device1_,rdf_detector_->P_l_2_, kernel_device, rdf_detector_->P_l_Gaus_Temp_ ,rdf_detector_->P_l_Gaus_) != 1)
-      PCL_ERROR("[pcl::gpu::people::PeopleDetector::processProb] : (E) : Gaussian Blur failed\n");
+    if (probability_processor_->GaussianBlur(depth_device1_,
+                                             rdf_detector_->P_l_2_,
+                                             kernel_device,
+                                             rdf_detector_->P_l_Gaus_Temp_,
+                                             rdf_detector_->P_l_Gaus_) != 1)
+      PCL_ERROR("[pcl::gpu::people::PeopleDetector::processProb] : (E) : Gaussian Blur "
+                "failed\n");
 
     // merge with prior probabilities at this line
-    probability_processor_->CombineProb(depth_device1_, rdf_detector_->P_l_Gaus_, 0.5, rdf_detector_->P_l_, 0.5, rdf_detector_->P_l_Gaus_Temp_);
-    PCL_DEBUG("[pcl::gpu::people::PeopleDetector::processProb] : (D) : CombineProb called\n");
+    probability_processor_->CombineProb(depth_device1_,
+                                        rdf_detector_->P_l_Gaus_,
+                                        0.5,
+                                        rdf_detector_->P_l_,
+                                        0.5,
+                                        rdf_detector_->P_l_Gaus_Temp_);
+    PCL_DEBUG(
+        "[pcl::gpu::people::PeopleDetector::processProb] : (D) : CombineProb called\n");
 
     // get labels
-    probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_Gaus_Temp_);
+    probability_processor_->SelectLabel(
+        depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_Gaus_Temp_);
   }
 
   // This executes the connected components
@@ -326,8 +343,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // if we found a neck display the tree, and continue with processing
-  if(!sorted[Neck].empty ())
-  {
+  if (!sorted[Neck].empty()) {
     int c = 0;
     Tree2 t;
     buildTree(sorted, cloud_host_, Neck, c, t, person_attribs_);
@@ -336,7 +352,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
 
     std::fill(flowermat_host_.begin(), flowermat_host_.end(), 0);
     {
-      //ScopeTime time("shs");
+      // ScopeTime time("shs");
       shs5(cloud_host_, seed, &flowermat_host_[0]);
     }
 
@@ -346,14 +362,16 @@ pcl::gpu::people::PeopleDetector::processProb ()
 
     device::prepareForeGroundDepth(depth_device1_, fg_mask_grown_, depth_device2_);
 
-    //// //////////////////////////////////////////////////////////////////////////////////////////////// //
-    //// The second label evaluation
+    ////
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    ///// / The second label evaluation
 
     rdf_detector_->processProb(depth_device2_);
     // TODO: merge with prior probabilities at this line
 
     // get labels
-    probability_processor_->SelectLabel(depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
+    probability_processor_->SelectLabel(
+        depth_device1_, rdf_detector_->labels_, rdf_detector_->P_l_);
     // This executes the connected components
     rdf_detector_->processSmooth(depth_device2_, cloud_host_, AREA_THRES2);
     // This creates the blobmatrix
@@ -364,31 +382,29 @@ pcl::gpu::people::PeopleDetector::processProb ()
 
     const RDFBodyPartsDetector::BlobMatrix& sorted2 = rdf_detector_->getBlobMatrix();
 
-    //brief Test if the second tree is build up correctly
-    if(!sorted2[Neck].empty ())
-    {
+    // brief Test if the second tree is build up correctly
+    if (!sorted2[Neck].empty()) {
       Tree2 t2;
       buildTree(sorted2, cloud_host_, Neck, c, t2, person_attribs_);
-      //int par = 0;
-      for(const int &node_type : t2.parts_lid)
-      {
-        if(node_type == NO_CHILD)
-        {
+      // int par = 0;
+      for (const int& node_type : t2.parts_lid) {
+        if (node_type == NO_CHILD) {
           std::cerr << "1;";
-          //par++;
+          // par++;
         }
         else
-           std::cerr << "0;";
+          std::cerr << "0;";
       }
       std::cerr << std::endl;
-      //static int counter = 0; // TODO move this logging to PeopleApp
-      //std::cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" << t2.norm_dist_error << ";" << counter++ << ";" << std::endl;
+      // static int counter = 0; // TODO move this logging to PeopleApp
+      // std::cerr << t2.nr_parts << ";" << par << ";" << t2.total_dist_error << ";" <<
+      // t2.norm_dist_error << ";" << counter++ << ";" << std::endl;
       first_iteration_ = false;
       return 2;
     }
     first_iteration_ = false;
     return 1;
-    //output: Tree2 and PointCloud<XYZRGBL>
+    // output: Tree2 and PointCloud<XYZRGBL>
   }
   first_iteration_ = false;
   return 0;
@@ -396,100 +412,102 @@ pcl::gpu::people::PeopleDetector::processProb ()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace 
+namespace {
+void
+getProjectedRadiusSearchBox(int rows,
+                            int cols,
+                            const pcl::device::Intr& intr,
+                            const pcl::PointXYZ& point,
+                            float squared_radius,
+                            int& minX,
+                            int& maxX,
+                            int& minY,
+                            int& maxY)
 {
-  void 
-  getProjectedRadiusSearchBox (int rows, int cols, const pcl::device::Intr& intr, const pcl::PointXYZ& point, float squared_radius, 
-                                  int &minX, int &maxX, int &minY, int &maxY)
-  {  
-    int min, max;
+  int min, max;
 
-    float3 q;
-    q.x = intr.fx * point.x + intr.cx * point.z;
-    q.y = intr.fy * point.y + intr.cy * point.z;
-    q.z = point.z;
+  float3 q;
+  q.x = intr.fx * point.x + intr.cx * point.z;
+  q.y = intr.fy * point.y + intr.cy * point.z;
+  q.z = point.z;
 
-    // http://www.wolframalpha.com/input/?i=%7B%7Ba%2C+0%2C+b%7D%2C+%7B0%2C+c%2C+d%7D%2C+%7B0%2C+0%2C+1%7D%7D+*+%7B%7Ba%2C+0%2C+0%7D%2C+%7B0%2C+c%2C+0%7D%2C+%7Bb%2C+d%2C+1%7D%7D
+  // http://www.wolframalpha.com/input/?i=%7B%7Ba%2C+0%2C+b%7D%2C+%7B0%2C+c%2C+d%7D%2C+%7B0%2C+0%2C+1%7D%7D+*+%7B%7Ba%2C+0%2C+0%7D%2C+%7B0%2C+c%2C+0%7D%2C+%7Bb%2C+d%2C+1%7D%7D
 
-    float coeff8 = 1;                                   //K_KT_.coeff (8);
-    float coeff7 = intr.cy;                             //K_KT_.coeff (7);
-    float coeff4 = intr.fy * intr.fy + intr.cy*intr.cy; //K_KT_.coeff (4);
+  float coeff8 = 1;                                     // K_KT_.coeff (8);
+  float coeff7 = intr.cy;                               // K_KT_.coeff (7);
+  float coeff4 = intr.fy * intr.fy + intr.cy * intr.cy; // K_KT_.coeff (4);
 
-    float coeff6 = intr.cx;                             //K_KT_.coeff (6);
-    float coeff0 = intr.fx * intr.fx + intr.cx*intr.cx; //K_KT_.coeff (0);
+  float coeff6 = intr.cx;                               // K_KT_.coeff (6);
+  float coeff0 = intr.fx * intr.fx + intr.cx * intr.cx; // K_KT_.coeff (0);
 
-    float a = squared_radius * coeff8 - q.z * q.z;
-    float b = squared_radius * coeff7 - q.y * q.z;
-    float c = squared_radius * coeff4 - q.y * q.y;
-    
-    // a and c are multiplied by two already => - 4ac -> - ac
-    float det = b * b - a * c;
-  
-    if (det < 0)
-    {
-      minY = 0;
-      maxY = rows - 1;
-    }
-    else
-    {
-      float y1 = (b - sqrt (det)) / a;
-      float y2 = (b + sqrt (det)) / a;
+  float a = squared_radius * coeff8 - q.z * q.z;
+  float b = squared_radius * coeff7 - q.y * q.z;
+  float c = squared_radius * coeff4 - q.y * q.y;
 
-      min = (int)std::min(std::floor(y1), std::floor(y2));
-      max = (int)std::max( std::ceil(y1),  std::ceil(y2));
-      minY = std::min (rows - 1, std::max (0, min));
-      maxY = std::max (std::min (rows - 1, max), 0);
-    }
+  // a and c are multiplied by two already => - 4ac -> - ac
+  float det = b * b - a * c;
 
-    b = squared_radius * coeff6 - q.x * q.z;
-    c = squared_radius * coeff0 - q.x * q.x;
-
-    det = b * b - a * c;
-    if (det < 0)
-    {
-      minX = 0;
-      maxX = cols - 1;
-    }
-    else
-    {
-      float x1 = (b - sqrt (det)) / a;
-      float x2 = (b + sqrt (det)) / a;
- 
-      min = (int)std::min (std::floor(x1), std::floor(x2));
-      max = (int)std::max ( std::ceil(x1),  std::ceil(x2));
-      minX = std::min (cols- 1, std::max (0, min));
-      maxX = std::max (std::min (cols - 1, max), 0);
-    }
+  if (det < 0) {
+    minY = 0;
+    maxY = rows - 1;
   }
- 
-  float 
-  sqnorm(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2)
-  {
-    float dx = (p1.x - p2.x);
-    float dy = (p1.y - p2.y);
-    float dz = (p1.z - p2.z);
-    return dx*dx + dy*dy + dz*dz;    
+  else {
+    float y1 = (b - sqrt(det)) / a;
+    float y2 = (b + sqrt(det)) / a;
+
+    min = (int)std::min(std::floor(y1), std::floor(y2));
+    max = (int)std::max(std::ceil(y1), std::ceil(y2));
+    minY = std::min(rows - 1, std::max(0, min));
+    maxY = std::max(std::min(rows - 1, max), 0);
+  }
+
+  b = squared_radius * coeff6 - q.x * q.z;
+  c = squared_radius * coeff0 - q.x * q.x;
+
+  det = b * b - a * c;
+  if (det < 0) {
+    minX = 0;
+    maxX = cols - 1;
+  }
+  else {
+    float x1 = (b - sqrt(det)) / a;
+    float x2 = (b + sqrt(det)) / a;
+
+    min = (int)std::min(std::floor(x1), std::floor(x2));
+    max = (int)std::max(std::ceil(x1), std::ceil(x2));
+    minX = std::min(cols - 1, std::max(0, min));
+    maxX = std::max(std::min(cols - 1, max), 0);
   }
 }
 
-void 
-pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT> &cloud, const std::vector<int>& indices, unsigned char *mask)
+float
+sqnorm(const pcl::PointXYZ& p1, const pcl::PointXYZ& p2)
+{
+  float dx = (p1.x - p2.x);
+  float dy = (p1.y - p2.y);
+  float dz = (p1.z - p2.z);
+  return dx * dx + dy * dy + dz * dz;
+}
+} // namespace
+
+void
+pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT>& cloud,
+                                       const std::vector<int>& indices,
+                                       unsigned char* mask)
 {
   pcl::device::Intr intr(fx_, fy_, cx_, cy_);
   intr.setDefaultPPIfIncorrect(cloud.width, cloud.height);
-  
-  const float *hue = &hue_host_[0];
+
+  const float* hue = &hue_host_[0];
   double squared_radius = CLUST_TOL_SHS * CLUST_TOL_SHS;
 
-  std::vector< std::vector<int> > storage(100);
+  std::vector<std::vector<int>> storage(100);
 
   // Process all points in the indices vector
-  int total = static_cast<int> (indices.size ());
-#pragma omp parallel for \
-  default(none) \
-  shared(cloud, intr, hue, indices, mask, squared_radius, storage, total)
-  for (int k = 0; k < total; ++k)
-  {
+  int total = static_cast<int>(indices.size());
+#pragma omp parallel for default(none)                                                 \
+    shared(cloud, intr, hue, indices, mask, squared_radius, storage, total)
+  for (int k = 0; k < total; ++k) {
     int i = indices[k];
     if (mask[i])
       continue;
@@ -504,47 +522,43 @@ pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT> &cloud, con
     seed_queue.clear();
     seed_queue.reserve(cloud.size());
     int sq_idx = 0;
-    seed_queue.push_back (i);
+    seed_queue.push_back(i);
 
-    float h = hue[i];    
+    float h = hue[i];
 
-    while (sq_idx < (int)seed_queue.size ())
-    {
+    while (sq_idx < (int)seed_queue.size()) {
       int index = seed_queue[sq_idx];
       const PointT& q = cloud[index];
 
-      if(!pcl::isFinite (q))
+      if (!pcl::isFinite(q))
         continue;
 
-      // search window                  
+      // search window
       int left, right, top, bottom;
-      getProjectedRadiusSearchBox(cloud.height, cloud.width, intr, q, squared_radius, left, right, top, bottom);
-        
-      int yEnd  = (bottom + 1) * cloud.width + right + 1;
-      int idx  = top * cloud.width + left;
+      getProjectedRadiusSearchBox(
+          cloud.height, cloud.width, intr, q, squared_radius, left, right, top, bottom);
+
+      int yEnd = (bottom + 1) * cloud.width + right + 1;
+      int idx = top * cloud.width + left;
       int skip = cloud.width - right + left - 1;
       int xEnd = idx - left + right + 1;
 
-      for (; xEnd < yEnd; idx += 2*skip, xEnd += 2*cloud.width)
-        for (; idx < xEnd; idx += 2)
-        {
+      for (; xEnd < yEnd; idx += 2 * skip, xEnd += 2 * cloud.width)
+        for (; idx < xEnd; idx += 2) {
           if (mask[idx])
             continue;
 
-          if (sqnorm(cloud[idx], q) <= squared_radius)
-          {
+          if (sqnorm(cloud[idx], q) <= squared_radius) {
             float h_l = hue[idx];
 
-            if (std::abs(h_l - h) < DELTA_HUE_SHS)
-            {                   
-              seed_queue.push_back (idx);
+            if (std::abs(h_l - h) < DELTA_HUE_SHS) {
+              seed_queue.push_back(idx);
               mask[idx] = 255;
             }
           }
         }
-      
+
       sq_idx++;
-    }        
+    }
   }
 }
-

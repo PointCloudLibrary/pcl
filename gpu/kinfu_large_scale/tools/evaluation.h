@@ -38,69 +38,74 @@
 
 #include <pcl/gpu/containers/kernel_containers.h>
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
-
 #include <pcl/memory.h>
 
 #include <memory>
 #include <string>
 
 /** \brief  class for  RGB-D SLAM Dataset and Benchmark
-  * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
-  */
-class Evaluation
-{
+ * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
+ */
+class Evaluation {
 public:
-  using Ptr = pcl::shared_ptr<Evaluation>; 
+  using Ptr = pcl::shared_ptr<Evaluation>;
   using ConstPtr = pcl::shared_ptr<const Evaluation>;
   using RGB = pcl::gpu::kinfuLS::PixelRGB;
 
   Evaluation(const std::string& folder);
 
   /** \brief Sets file with matches between depth and rgb */
-  void setMatchFile(const std::string& file);
+  void
+  setMatchFile(const std::string& file);
 
-  /** \brief Reads rgb frame from the folder   
-    * \param stamp index of frame to read (stamps are not implemented)
-    * \param rgb24
-    */
-  bool grab (double stamp, pcl::gpu::PtrStepSz<const RGB>& rgb24);
+  /** \brief Reads rgb frame from the folder
+   * \param stamp index of frame to read (stamps are not implemented)
+   * \param rgb24
+   */
+  bool
+  grab(double stamp, pcl::gpu::PtrStepSz<const RGB>& rgb24);
 
   /** \brief Reads depth frame from the folder
-    * \param stamp index of frame to read (stamps are not implemented)
-    * \param depth
-    */
-  bool grab (double stamp, pcl::gpu::PtrStepSz<const unsigned short>& depth);
+   * \param stamp index of frame to read (stamps are not implemented)
+   * \param depth
+   */
+  bool
+  grab(double stamp, pcl::gpu::PtrStepSz<const unsigned short>& depth);
 
-  /** \brief Reads depth & rgb frame from the folder. Before calling this folder please call 'setMatchFile', or an error will be returned otherwise.
-    * \param stamp index of accociated frame pair (stamps are not implemented)
-    * \param depth
-    * \param rgb24
-    */
-  bool grab (double stamp, pcl::gpu::PtrStepSz<const unsigned short>& depth, pcl::gpu::PtrStepSz<const RGB>& rgb24);
+  /** \brief Reads depth & rgb frame from the folder. Before calling this folder please
+   * call 'setMatchFile', or an error will be returned otherwise. \param stamp index of
+   * accociated frame pair (stamps are not implemented) \param depth \param rgb24
+   */
+  bool
+  grab(double stamp,
+       pcl::gpu::PtrStepSz<const unsigned short>& depth,
+       pcl::gpu::PtrStepSz<const RGB>& rgb24);
 
   const static float fx, fy, cx, cy;
 
-
-  void saveAllPoses(const pcl::gpu::kinfuLS::KinfuTracker& kinfu, int frame_number = -1, const std::string& logfile = "kinfu_poses.txt") const;
+  void
+  saveAllPoses(const pcl::gpu::kinfuLS::KinfuTracker& kinfu,
+               int frame_number = -1,
+               const std::string& logfile = "kinfu_poses.txt") const;
 
 private:
   std::string folder_;
   bool visualization_;
 
-  std::vector< std::pair<double, std::string> > rgb_stamps_and_filenames_;
-  std::vector< std::pair<double, std::string> > depth_stamps_and_filenames_;
+  std::vector<std::pair<double, std::string>> rgb_stamps_and_filenames_;
+  std::vector<std::pair<double, std::string>> depth_stamps_and_filenames_;
 
-  struct Association
-  {
+  struct Association {
     double time1, time2;
     std::string name1, name2;
   };
 
-  std::vector< Association > accociations_;
+  std::vector<Association> accociations_;
 
-  void readFile(const std::string& file, std::vector< std::pair<double, std::string> >& output);
+  void
+  readFile(const std::string& file,
+           std::vector<std::pair<double, std::string>>& output);
 
   struct Impl;
   std::shared_ptr<Impl> impl_;
 };
-

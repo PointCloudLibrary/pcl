@@ -37,64 +37,63 @@
 
 #pragma once
 
+#include <pcl/gpu/containers/device_array.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/gpu/containers/device_array.h>
+
 #include <Eigen/Core>
 
-namespace pcl
-{
-  namespace gpu
-  {
-    class TsdfVolume;
-      
-    /** \brief MarchingCubes implements MarchingCubes functionality for TSDF volume on GPU
-      * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
-      */
-    class PCL_EXPORTS MarchingCubes
-    {
-    public:
+namespace pcl {
+namespace gpu {
+class TsdfVolume;
 
-      /** \brief Default size for triangles buffer */
-      enum
-      { 
-        POINTS_PER_TRIANGLE = 3,
-        DEFAULT_TRIANGLES_BUFFER_SIZE = 2 * 1000 * 1000 * POINTS_PER_TRIANGLE      
-      };
-    
-      /** \brief Point type. */
-      using PointType = pcl::PointXYZ;
-      
-      /** \brief Smart pointer. */
-      using Ptr = shared_ptr<MarchingCubes>;
-      using ConstPtr = shared_ptr<const MarchingCubes>;
+/** \brief MarchingCubes implements MarchingCubes functionality for TSDF volume on GPU
+ * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
+ */
+class PCL_EXPORTS MarchingCubes {
+public:
+  /** \brief Default size for triangles buffer */
+  enum {
+    POINTS_PER_TRIANGLE = 3,
+    DEFAULT_TRIANGLES_BUFFER_SIZE = 2 * 1000 * 1000 * POINTS_PER_TRIANGLE
+  };
 
-      /** \brief Default constructor */
-      MarchingCubes();
-      
-      /** \brief Destructor */
-      ~MarchingCubes();
-      
-      /** \brief Runs marching cubes triangulation.
-          * \param[in] tsdf
-          * \param[in] triangles_buffer Buffer for triangles. Its size determines max extracted triangles. If empty, it will be allocated with default size to be used.          
-          * \return Array with triangles. Each 3 consequent points belong to a single triangle. The returned array points to 'triangles_buffer' data.
-          */
-      DeviceArray<PointType> 
-      run(const TsdfVolume& tsdf, DeviceArray<PointType>& triangles_buffer);
+  /** \brief Point type. */
+  using PointType = pcl::PointXYZ;
 
-    private:             
-      /** \brief Edge table for marching cubes  */
-      DeviceArray<int> edgeTable_;
-      
-      /** \brief Number of vertices table for marching cubes  */
-      DeviceArray<int> numVertsTable_;
-      
-      /** \brief Triangles table for marching cubes  */
-      DeviceArray<int> triTable_;     
-      
-      /** \brief Temporary buffer used by marching cubes (first row stores occupied voxel id, second number of vertices, third points offsets */
-      DeviceArray2D<int> occupied_voxels_buffer_;
-    };
-  }
-}
+  /** \brief Smart pointer. */
+  using Ptr = shared_ptr<MarchingCubes>;
+  using ConstPtr = shared_ptr<const MarchingCubes>;
+
+  /** \brief Default constructor */
+  MarchingCubes();
+
+  /** \brief Destructor */
+  ~MarchingCubes();
+
+  /** \brief Runs marching cubes triangulation.
+   * \param[in] tsdf
+   * \param[in] triangles_buffer Buffer for triangles. Its size determines max extracted
+   * triangles. If empty, it will be allocated with default size to be used. \return
+   * Array with triangles. Each 3 consequent points belong to a single triangle. The
+   * returned array points to 'triangles_buffer' data.
+   */
+  DeviceArray<PointType>
+  run(const TsdfVolume& tsdf, DeviceArray<PointType>& triangles_buffer);
+
+private:
+  /** \brief Edge table for marching cubes  */
+  DeviceArray<int> edgeTable_;
+
+  /** \brief Number of vertices table for marching cubes  */
+  DeviceArray<int> numVertsTable_;
+
+  /** \brief Triangles table for marching cubes  */
+  DeviceArray<int> triTable_;
+
+  /** \brief Temporary buffer used by marching cubes (first row stores occupied voxel
+   * id, second number of vertices, third points offsets */
+  DeviceArray2D<int> occupied_voxels_buffer_;
+};
+} // namespace gpu
+} // namespace pcl

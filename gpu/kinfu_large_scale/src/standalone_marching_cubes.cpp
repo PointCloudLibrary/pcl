@@ -1,4 +1,4 @@
- /*
+/*
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
@@ -35,9 +35,9 @@
  *
  */
 
-#include <pcl/point_types.h>
-#include <pcl/impl/instantiate.hpp>
-#include <pcl/gpu/kinfu_large_scale/standalone_marching_cubes.h>
 #include <pcl/gpu/kinfu_large_scale/impl/standalone_marching_cubes.hpp>
+#include <pcl/gpu/kinfu_large_scale/standalone_marching_cubes.h>
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
 
 //~ PCL_INSTANTIATE(StandaloneMarchingCubes, (pcl::PointXYZI));

@@ -39,54 +39,56 @@
 
 #pragma once
 
+#include <pcl/gpu/containers/device_array.h>
+#include <pcl/gpu/people/tree.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/gpu/people/tree.h>
-#include <pcl/gpu/containers/device_array.h>
 
-namespace pcl
+namespace pcl {
+namespace gpu {
+namespace people {
+
+/** @brief gives a label and returns the color out of the colormap */
+pcl::RGB
+getLColor(unsigned char l);
+
+/** @brief gives a label and returns the color out of the colormap */
+pcl::RGB
+getLColor(pcl::Label l);
+
+void
+colorLMap(int W, int H, const trees::Label* l, unsigned char* c);
+void
+colorLMap(const PointCloud<pcl::Label>& cloud_in, PointCloud<pcl::RGB>& colormap_out);
+
+extern const unsigned char LUT_COLOR_LABEL[];
+extern const int LUT_COLOR_LABEL_LENGTH;
+
+PCL_EXPORTS void
+uploadColorMap(DeviceArray<pcl::RGB>& color_map);
+PCL_EXPORTS void
+colorizeLabels(const DeviceArray<pcl::RGB>& color_map,
+               const DeviceArray2D<unsigned char>& labels,
+               DeviceArray2D<pcl::RGB>& color_labels);
+
+PCL_EXPORTS void
+colorizeMixedLabels(const DeviceArray<RGB>& color_map,
+                    const DeviceArray2D<unsigned char>& labels,
+                    const DeviceArray2D<RGB>& image,
+                    DeviceArray2D<RGB>& color_labels);
+
+inline void
+colorFG(int W, int H, const unsigned char* labels, unsigned char* c)
 {
-  namespace gpu
-  {
-    namespace people
-    {         
+  int numPix = W * H;
+  for (int pi = 0; pi < numPix; ++pi)
+    if (labels[pi] != 0) {
+      c[3 * pi + 0] = 0xFF;
+      c[3 * pi + 1] = 0x00;
+      c[3 * pi + 2] = 0x00;
+    }
+}
 
-      /** @brief gives a label and returns the color out of the colormap */         
-      pcl::RGB getLColor(unsigned char l);
-
-        /** @brief gives a label and returns the color out of the colormap */         
-      pcl::RGB getLColor (pcl::Label l);
-        
-      void colorLMap(int W, int H, const trees::Label* l, unsigned char* c);       
-      void colorLMap(const PointCloud<pcl::Label>& cloud_in, PointCloud<pcl::RGB>& colormap_out);             
-      
- 
-      extern const unsigned char LUT_COLOR_LABEL[];
-      extern const int LUT_COLOR_LABEL_LENGTH;
-      
-      PCL_EXPORTS void uploadColorMap(DeviceArray<pcl::RGB>& color_map);      
-      PCL_EXPORTS void colorizeLabels(const DeviceArray<pcl::RGB>& color_map, const DeviceArray2D<unsigned char>& labels, DeviceArray2D<pcl::RGB>& color_labels);
-
-
-
-      PCL_EXPORTS void colorizeMixedLabels(const DeviceArray<RGB>& color_map, const DeviceArray2D<unsigned char>& labels, 
-                                           const DeviceArray2D<RGB>& image, DeviceArray2D<RGB>& color_labels);
-
-
-      inline void colorFG ( int W, int H, const unsigned char* labels, unsigned char* c )
-      {
-        int numPix = W*H;
-        for(int pi = 0; pi < numPix; ++pi)           
-          if(labels[pi] !=0 ) 
-          {
-            c[3*pi+0] = 0xFF;
-            c[3*pi+1] = 0x00;
-            c[3*pi+2] = 0x00;
-          }          
-      }
-
-
-
-    } // end namespace people
-  } // end namespace gpu
+} // end namespace people
+} // end namespace gpu
 } // end namespace pcl
