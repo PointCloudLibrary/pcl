@@ -31,8 +31,8 @@ steps:
     # Repeat the build for out-of-memory errors that sometimes resolve themself
     script: |
       cd %BUILD_DIR%
-      cmake --build . --config %CONFIGURATION% || `
-      cmake --build . --config %CONFIGURATION% || `
+      cmake --build . --config %CONFIGURATION% || ^
+      cmake --build . --config %CONFIGURATION% || ^
       cmake --build . --config %CONFIGURATION%
     workingDirectory: 'c:'
   - displayName: 'Run Unit Tests'
@@ -40,8 +40,8 @@ steps:
     # Slightly increases runtime since all passed tests are also run
     script: |
       cd %BUILD_DIR%
-      cmake --build . --target tests --config %CONFIGURATION% || `
-      cmake --build . --target tests --config %CONFIGURATION% || `
+      cmake --build . --target tests --config %CONFIGURATION% || ^
+      cmake --build . --target tests --config %CONFIGURATION% || ^
       cmake --build . --target tests --config %CONFIGURATION%
     workingDirectory: 'c:'
   - task: PublishTestResults@2
