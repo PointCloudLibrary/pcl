@@ -40,7 +40,7 @@ public:
   FpsCounterDetails* details_;
 
   void
-  calculate_fps(const unsigned& ticks, const double& elapsed_time)
+  calculateFps(const unsigned& ticks, const double& elapsed_time)
   {
     details_->fps_ = double(ticks) / double(elapsed_time);
   };
@@ -80,16 +80,16 @@ public:
     details_->count_++;
 
     if (details_->counter_type_ != 2)
-      calculate_fps(details_->count_, time_now - details_->last_reset_);
+      calculateFps(details_->count_, time_now - details_->last_reset_);
     else
-      calculate_fps(details_->count_ - 1, details_->duration_);
+      calculateFps(details_->count_ - 1, details_->duration_);
 
-    if (reset_condition(time_now)) {
+    if (resetCondition(time_now)) {
       print_counter_details();
-      reset_fps_counter(time_now);
+      resetFpsCounter(time_now);
     }
     else {
-      update_elapsed_time(time_now);
+      updateElapsedTime(time_now);
     }
   };
 
@@ -97,7 +97,7 @@ private:
   std::function<void()> print_counter_details;
 
   bool
-  reset_condition(const double& now)
+  resetCondition(const double& now)
   {
     if (details_->counter_type_ == 0)
       return (now - details_->last_reset_) >= 1.0;
@@ -106,7 +106,7 @@ private:
   };
 
   void
-  reset_fps_counter(const double& now)
+  resetFpsCounter(const double& now)
   {
     details_->count_ = 0;
     details_->last_reset_ = now;
@@ -114,7 +114,7 @@ private:
   };
 
   void
-  update_elapsed_time(const double& now)
+  updateElapsedTime(const double& now)
   {
     details_->duration_ += now - details_->start_time_;
   };
