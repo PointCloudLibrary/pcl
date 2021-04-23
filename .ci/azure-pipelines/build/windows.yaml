@@ -27,13 +27,22 @@ steps:
         -DBUILD_surface_on_nurbs=ON
     displayName: 'CMake Configuration'
     workingDirectory: 'c:'
-  - script: |
-      cd %BUILD_DIR% && cmake --build . --config %CONFIGURATION%
-    displayName: 'Build Library'
+  - displayName: 'Build Library'
+    # Repeat the build for out-of-memory errors that sometimes resolve themself
+    script: |
+      cd %BUILD_DIR%
+      cmake --build . --config %CONFIGURATION% || `
+      cmake --build . --config %CONFIGURATION% || `
+      cmake --build . --config %CONFIGURATION%
     workingDirectory: 'c:'
-  - script: |
-      cd %BUILD_DIR% && cmake --build . --target tests --config %CONFIGURATION%
-    displayName: 'Run Unit Tests'
+  - displayName: 'Run Unit Tests'
+    # Repeat for flaky tests
+    # Slightly increases runtime since all passed tests are also run
+    script: |
+      cd %BUILD_DIR%
+      cmake --build . --target tests --config %CONFIGURATION% || `
+      cmake --build . --target tests --config %CONFIGURATION% || `
+      cmake --build . --target tests --config %CONFIGURATION%
     workingDirectory: 'c:'
   - task: PublishTestResults@2
     inputs:
