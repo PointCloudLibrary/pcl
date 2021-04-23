@@ -36,9 +36,9 @@
  *
  */
 
-#include <pcl/common/colors.h> // for RGB2sRGB_LUT, XYZ2LAB_LUT
 #include <pcl/registration/gicp6d.h>
 #include <pcl/memory.h> // for pcl::make_shared
+#include <pcl/point_types_conversion.h> // for PointXYZRGBtoXYZLAB
 
 namespace pcl {
 

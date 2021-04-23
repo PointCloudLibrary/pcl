@@ -45,7 +45,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>
 #include <pcl/point_types.h>
-#include <pcl/point_types_conversion.h>
 
 namespace pcl {
 /** \brief GeneralizedIterativeClosestPoint6D integrates L*a*b* color space information

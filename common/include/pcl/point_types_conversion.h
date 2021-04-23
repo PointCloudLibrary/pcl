@@ -43,7 +43,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <pcl/common/colors.h>
+#include <pcl/common/colors.h> // for RGB2sRGB_LUT
 
 namespace pcl
 {
@@ -143,7 +143,7 @@ namespace pcl
   template <typename PointT, traits::HasColor<PointT> = true>
   inline void
   PointXYZRGBtoXYZLAB (const PointT& in,
-                        PointXYZLAB&        out)
+                       PointXYZLAB&  out)
   {
     out.x = in.x;
     out.y = in.y;
@@ -151,17 +151,15 @@ namespace pcl
     out.data[3] = 1.0; // important for homogeneous coordinates
 
     // convert sRGB to CIELAB
-    const Eigen::Vector3i colorRGB = in.getRGBVector3i();
-
     // for sRGB   -> CIEXYZ see http://www.easyrgb.com/index.php?X=MATH&H=02#text2
     // for CIEXYZ -> CIELAB see http://www.easyrgb.com/index.php?X=MATH&H=07#text7
     // an overview at: https://www.comp.nus.edu.sg/~leowwk/papers/colordiff.pdf
 
     const auto& sRGB_LUT = RGB2sRGB_LUT<double, 8>();
 
-    const double R = sRGB_LUT[colorRGB[0]];
-    const double G = sRGB_LUT[colorRGB[1]];
-    const double B = sRGB_LUT[colorRGB[2]];
+    const double R = sRGB_LUT[in.r];
+    const double G = sRGB_LUT[in.g];
+    const double B = sRGB_LUT[in.b];
 
     // linear sRGB -> CIEXYZ, D65 illuminant, observer at 2 degrees
     const double X = R * 0.4124 + G * 0.3576 + B * 0.1805;
