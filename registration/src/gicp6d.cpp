@@ -37,7 +37,7 @@
  */
 
 #include <pcl/registration/gicp6d.h>
-#include <pcl/memory.h> // for pcl::make_shared
+#include <pcl/memory.h>                 // for pcl::make_shared
 #include <pcl/point_types_conversion.h> // for PointXYZRGBtoXYZLAB
 
 namespace pcl {
