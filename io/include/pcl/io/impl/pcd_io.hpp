@@ -53,60 +53,6 @@
 #include <pcl/io/lzf.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> std::string
-pcl::PCDWriter::generateHeader (const pcl::PointCloud<PointT> &cloud, const int nr_points)
-{
-  std::ostringstream oss;
-  oss.imbue (std::locale::classic ());
-
-  oss << "# .PCD v0.7 - Point Cloud Data file format"
-         "\nVERSION 0.7"
-         "\nFIELDS";
-
-  const auto fields = pcl::getFields<PointT> ();
- 
-  std::stringstream field_names, field_types, field_sizes, field_counts;
-  for (const auto &field : fields)
-  {
-    if (field.name == "_")
-      continue;
-    // Add the regular dimension
-    field_names << " " << field.name;
-    field_sizes << " " << pcl::getFieldSize (field.datatype);
-    if ("rgb" == field.name)
-      field_types << " " << "U";
-    else
-      field_types << " " << pcl::getFieldType (field.datatype);
-    int count = std::abs (static_cast<int> (field.count));
-    if (count == 0) count = 1;  // check for 0 counts (coming from older converter code)
-    field_counts << " " << count;
-  }
-  oss << field_names.str ();
-  oss << "\nSIZE" << field_sizes.str () 
-      << "\nTYPE" << field_types.str () 
-      << "\nCOUNT" << field_counts.str ();
-  // If the user passes in a number of points value, use that instead
-  if (nr_points != std::numeric_limits<int>::max ())
-    oss << "\nWIDTH " << nr_points << "\nHEIGHT " << 1 << "\n";
-  else
-    oss << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
-
-  oss << "VIEWPOINT " << cloud.sensor_origin_[0] << " " << cloud.sensor_origin_[1] << " " << cloud.sensor_origin_[2] << " " << 
-                         cloud.sensor_orientation_.w () << " " << 
-                         cloud.sensor_orientation_.x () << " " << 
-                         cloud.sensor_orientation_.y () << " " << 
-                         cloud.sensor_orientation_.z () << "\n";
-  
-  // If the user passes in a number of points value, use that instead
-  if (nr_points != std::numeric_limits<int>::max ())
-    oss << "POINTS " << nr_points << "\n";
-  else
-    oss << "POINTS " << cloud.size () << "\n";
-
-  return (oss.str ());
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::PCDWriter::writeBinary (const std::string &file_name, 
                              const pcl::PointCloud<PointT> &cloud)

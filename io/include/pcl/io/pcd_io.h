@@ -42,6 +42,7 @@
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
+#include <pcl/common/io.h> // for getFields
 #include <pcl/io/file_io.h>
 
 namespace pcl
@@ -366,7 +367,13 @@ namespace pcl
         */
       template <typename PointT> static std::string
       generateHeader (const pcl::PointCloud<PointT> &cloud,
-                      const int nr_points = std::numeric_limits<int>::max ());
+                      const int nr_points = std::numeric_limits<int>::max ())
+      {
+        if (nr_points != std::numeric_limits<int>::max ())
+          return generateHeader (pcl::getFields<PointT> (), cloud.sensor_origin_, cloud.sensor_orientation_, nr_points, 1);
+        else
+          return generateHeader (pcl::getFields<PointT> (), cloud.sensor_origin_, cloud.sensor_orientation_, cloud.width, cloud.height);
+      }
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in ASCII format
         * \param[in] file_name the output file name
@@ -601,6 +608,12 @@ namespace pcl
                                boost::interprocess::file_lock &lock);
 
     private:
+      static std::string
+      generateHeader (const std::vector<pcl::PCLPointField>& fields,
+                      const Eigen::Vector4f& sensor_origin,
+                      const Eigen::Quaternionf& sensor_orientation,
+                      const std::size_t& width, const std::size_t& height);
+
       /** \brief Set to true if msync() should be called before munmap(). Prevents data loss on NFS systems. */
       bool map_synchronization_;
   };

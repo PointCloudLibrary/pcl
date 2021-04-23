@@ -1113,6 +1113,52 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (const pcl::PCLPointCloud2 &cloud
   return oss.str ();
 }
 
+std::string
+pcl::PCDWriter::generateHeader (const std::vector<pcl::PCLPointField>& fields,
+                                const Eigen::Vector4f& sensor_origin,
+                                const Eigen::Quaternionf& sensor_orientation,
+                                const std::size_t& width, const std::size_t& height)
+{
+  std::ostringstream oss;
+  oss.imbue (std::locale::classic ());
+
+  oss << "# .PCD v0.7 - Point Cloud Data file format"
+         "\nVERSION 0.7"
+         "\nFIELDS";
+
+  std::stringstream field_names, field_types, field_sizes, field_counts;
+  for (const auto &field : fields)
+  {
+    if (field.name == "_")
+      continue;
+    // Add the regular dimension
+    field_names << " " << field.name;
+    field_sizes << " " << pcl::getFieldSize (field.datatype);
+    if ("rgb" == field.name)
+      field_types << " " << "U";
+    else
+      field_types << " " << pcl::getFieldType (field.datatype);
+    int count = std::abs (static_cast<int> (field.count));
+    if (count == 0) count = 1;  // check for 0 counts (coming from older converter code)
+    field_counts << " " << count;
+  }
+  oss << field_names.str ();
+  oss << "\nSIZE" << field_sizes.str ()
+      << "\nTYPE" << field_types.str ()
+      << "\nCOUNT" << field_counts.str ();
+  oss << "\nWIDTH " << width << "\nHEIGHT " << height << "\n";
+
+  oss << "VIEWPOINT " << sensor_origin[0] << " " << sensor_origin[1] << " " << sensor_origin[2] << " " <<
+                         sensor_orientation.w () << " " <<
+                         sensor_orientation.x () << " " <<
+                         sensor_orientation.y () << " " <<
+                         sensor_orientation.z () << "\n";
+
+  oss << "POINTS " << width * height << "\n";
+
+  return (oss.str ());
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
