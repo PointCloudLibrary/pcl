@@ -447,7 +447,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
   }
 
   std::ofstream fs;
-  fs.open (file_name.c_str ());      // Open file
+  fs.open (file_name.c_str (), std::ios::binary);      // Open file
   
   if (!fs.is_open () || fs.fail ())
   {
@@ -730,7 +730,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
   }
 
   std::ofstream fs;
-  fs.open (file_name.c_str ());      // Open file
+  fs.open (file_name.c_str (), std::ios::binary);      // Open file
   if (!fs.is_open () || fs.fail ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Could not open file for writing!");
