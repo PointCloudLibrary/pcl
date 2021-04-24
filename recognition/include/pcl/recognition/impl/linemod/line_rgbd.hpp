@@ -39,6 +39,7 @@
 #define PCL_RECOGNITION_LINEMOD_LINE_RGBD_IMPL_HPP_
 
 //#include <pcl/recognition/linemod/line_rgbd.h>
+#include <pcl/io/low_level_io.h> // for raw_read, raw_open, raw_lseek, raw_close
 #include <pcl/io/pcd_io.h>
 #include <fcntl.h>
 #include <pcl/point_cloud.h>
