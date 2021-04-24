@@ -517,7 +517,16 @@ namespace pcl
         */
       template <typename PointT> int
       writeBinaryCompressed (const std::string &file_name,
-                             const pcl::PointCloud<PointT> &cloud);
+                             const pcl::PointCloud<PointT> &cloud)
+      {
+        return writeBinaryCompressed (file_name, pcl::getFields<PointT> (),
+                                      generateHeader (pcl::getFields<PointT> (),
+                                                      cloud.sensor_origin_,
+                                                      cloud.sensor_orientation_,
+                                                      cloud.width, cloud.height),
+                                      reinterpret_cast<const char*> (&cloud[0]),
+                                      sizeof (PointT), cloud.size());
+      }
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in BINARY format
         * \param[in] file_name the output file name
@@ -669,6 +678,22 @@ namespace pcl
                    const std::size_t& point_size,
                    const pcl::Indices& indices,
                    const std::size_t& nr_points);
+
+      /** \brief Save a cloud or parts of it to a compressed binary PCD file.
+        * \param[in] file_name the output file name
+        * \param[in] fields_in the fields of a point, as returned by getFields
+        * \param[in] header the header of the PCD file, created by generateHeader
+        * \param[in] cloud_base_ptr a pointer to the start of the cloud (to the first point)
+        * \param[in] point_size the size of a point in bytes (e.g. as reported by sizeof)
+        * \param[in] nr_points how many points should be written to the file (size of the cloud)
+        */
+      int
+      writeBinaryCompressed (const std::string &file_name,
+                             const std::vector<pcl::PCLPointField>& fields_in,
+                             const std::string& header,
+                             const char* cloud_base_ptr,
+                             const std::size_t& point_size,
+                             const std::size_t& nr_points);
 
       /** \brief Save a cloud or parts of it to an ASCII PCD file.
         * \param[in] file_name the output file name
@@ -875,5 +900,3 @@ namespace pcl
 
   }
 }
-
-#include <pcl/io/impl/pcd_io.hpp>

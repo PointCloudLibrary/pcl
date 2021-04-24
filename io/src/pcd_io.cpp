@@ -1924,3 +1924,199 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
   return (0);
 }
 
+int
+pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
+                                       const std::vector<pcl::PCLPointField>& fields_in,
+                                       const std::string& header,
+                                       const char* cloud_base_ptr,
+                                       const std::size_t& point_size,
+                                       const std::size_t& nr_points)
+{
+  if (nr_points == 0)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Input point cloud has no data!");
+    return (-1);
+  }
+  int data_idx = 0;
+  std::ostringstream oss;
+  oss << header << "DATA binary_compressed\n";
+  oss.flush ();
+  data_idx = static_cast<int> (oss.tellp ());
+
+#ifdef _WIN32
+  HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+  if (h_native_file == INVALID_HANDLE_VALUE)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during CreateFile!");
+    return (-1);
+  }
+#else
+  int fd = io::raw_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+  if (fd < 0)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during open!");
+    return (-1);
+  }
+#endif
+
+  // Mandatory lock file
+  boost::interprocess::file_lock file_lock;
+  setLockingPermissions (file_name, file_lock);
+
+  auto fields = fields_in;
+  std::size_t fsize = 0;
+  std::size_t data_size = 0;
+  std::size_t nri = 0;
+  std::vector<int> fields_sizes (fields.size ());
+  // Compute the total size of the fields
+  for (const auto &field : fields)
+  {
+    if (field.name == "_")
+      continue;
+
+    fields_sizes[nri] = field.count * pcl::getFieldSize (field.datatype);
+    fsize += fields_sizes[nri];
+    fields[nri] = field;
+    ++nri;
+  }
+  fields_sizes.resize (nri);
+  fields.resize (nri);
+
+  // Compute the size of data
+  data_size = nr_points * fsize;
+
+  // If the data is to large the two 32 bit integers used to store the
+  // compressed and uncompressed size will overflow.
+  if (data_size * 3 / 2 > std::numeric_limits<std::uint32_t>::max ())
+  {
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] The input data exceeds the maximum size for compressed version 0.7 pcds of %l bytes.\n",
+               static_cast<std::size_t> (std::numeric_limits<std::uint32_t>::max ()) * 2 / 3);
+    return (-2);
+  }
+
+  //////////////////////////////////////////////////////////////////////
+  // Empty array holding only the valid data
+  // data_size = nr_points * point_size
+  //           = nr_points * (sizeof_field_1 + sizeof_field_2 + ... sizeof_field_n)
+  //           = sizeof_field_1 * nr_points + sizeof_field_2 * nr_points + ... sizeof_field_n * nr_points
+  char *only_valid_data = static_cast<char*> (malloc (data_size));
+
+  // Convert the XYZRGBXYZRGB structure to XXYYZZRGBRGB to aid compression. For
+  // this, we need a vector of fields.size () (4 in this case), which points to
+  // each individual plane:
+  //   pters[0] = &only_valid_data[offset_of_plane_x];
+  //   pters[1] = &only_valid_data[offset_of_plane_y];
+  //   pters[2] = &only_valid_data[offset_of_plane_z];
+  //   pters[3] = &only_valid_data[offset_of_plane_RGB];
+  //
+  std::vector<char*> pters (fields.size ());
+  std::size_t toff = 0;
+  for (std::size_t i = 0; i < pters.size (); ++i)
+  {
+    pters[i] = &only_valid_data[toff];
+    toff += static_cast<std::size_t>(fields_sizes[i]) * nr_points;
+  }
+
+  // Go over all the points, and copy the data in the appropriate places
+  const char* cloud_end_ptr = cloud_base_ptr + nr_points * point_size;
+  for (const char* addr = cloud_base_ptr; addr < cloud_end_ptr; addr += point_size)
+  {
+    for (std::size_t j = 0; j < fields.size (); ++j)
+    {
+      memcpy (pters[j], addr + fields[j].offset, fields_sizes[j]);
+      // Increment the pointer
+      pters[j] += fields_sizes[j];
+    }
+  }
+
+  char* temp_buf = static_cast<char*> (malloc (static_cast<std::size_t> (static_cast<float> (data_size) * 1.5f + 8.0f)));
+  // Compress the valid data
+  unsigned int compressed_size = pcl::lzfCompress (only_valid_data,
+                                                   static_cast<std::uint32_t> (data_size),
+                                                   &temp_buf[8],
+                                                   static_cast<std::uint32_t> (static_cast<float>(data_size) * 1.5f));
+  unsigned int compressed_final_size = 0;
+  // Was the compression successful?
+  if (compressed_size)
+  {
+    char *header = &temp_buf[0];
+    memcpy (&header[0], &compressed_size, sizeof (unsigned int));
+    memcpy (&header[4], &data_size, sizeof (unsigned int));
+    data_size = compressed_size + 8;
+    compressed_final_size = static_cast<std::uint32_t> (data_size) + data_idx;
+  }
+  else
+  {
+#ifndef _WIN32
+    io::raw_close (fd);
+#endif
+    resetLockingPermissions (file_name, file_lock);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during compression!");
+    return (-1);
+  }
+
+  // Prepare the map
+#ifdef _WIN32
+  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, compressed_final_size, NULL);
+  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, compressed_final_size));
+  CloseHandle (fm);
+
+#else
+  // Allocate disk space for the entire file to prevent bus errors.
+  if (io::raw_fallocate (fd, compressed_final_size) != 0)
+  {
+    io::raw_close (fd);
+    resetLockingPermissions (file_name, file_lock);
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] posix_fallocate errno: %d strerror: %s\n", errno, strerror (errno));
+
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during posix_fallocate ()!");
+    return (-1);
+  }
+
+  char *map = static_cast<char*> (::mmap (nullptr, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0));
+  if (map == reinterpret_cast<char*> (-1)) //MAP_FAILED)
+  {
+    io::raw_close (fd);
+    resetLockingPermissions (file_name, file_lock);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during mmap ()!");
+    return (-1);
+  }
+#endif
+
+  // Copy the header
+  memcpy (&map[0], oss.str ().c_str (), data_idx);
+  // Copy the compressed data
+  memcpy (&map[data_idx], temp_buf, data_size);
+
+#ifndef _WIN32
+  // If the user set the synchronization flag on, call msync
+  if (map_synchronization_)
+    msync (map, compressed_final_size, MS_SYNC);
+#endif
+
+  // Unmap the pages of memory
+#ifdef _WIN32
+    UnmapViewOfFile (map);
+#else
+  if (::munmap (map, (compressed_final_size)) == -1)
+  {
+    io::raw_close (fd);
+    resetLockingPermissions (file_name, file_lock);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during munmap ()!");
+    return (-1);
+  }
+#endif
+
+  // Close file
+#ifdef _WIN32
+  CloseHandle (h_native_file);
+#else
+  io::raw_close (fd);
+#endif
+  resetLockingPermissions (file_name, file_lock);
+
+  free (only_valid_data);
+  free (temp_buf);
+  return (0);
+}
+
