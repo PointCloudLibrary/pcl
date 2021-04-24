@@ -37,91 +37,85 @@
 
 #pragma once
 
-#include <pcl/gpu/containers/device_array.h>
-
+#include <cstdint>
 #include <cuda_runtime.h>
 
-#include <cstdint>
+#include <pcl/gpu/containers/device_array.h>
 
-namespace pcl {
-namespace device {
-using PointType = float4;
-using Cloud = pcl::gpu::DeviceArray<PointType>;
+namespace pcl
+{
+  namespace device
+  {
+	  using PointType = float4;
+	  using Cloud = pcl::gpu::DeviceArray<PointType>;
 
-using FacetsDists = DeviceArray<std::uint64_t>;
-using Perm = DeviceArray<int>;
+	  using FacetsDists = DeviceArray<std::uint64_t>;
+	  using Perm = DeviceArray<int>;
 
-struct InitalSimplex {
-  float3 x1, x2, x3, x4;
-  int i1, i2, i3, i4;
+	  struct InitalSimplex
+	  {
+		  float3 x1, x2, x3, x4;
+		  int i1, i2, i3, i4;
 
-  float4 p1, p2, p3, p4;
-};
+		  float4 p1, p2, p3, p4;
+	  };
 
-struct FacetStream {
-public:
-  FacetStream(std::size_t buffer_size);
+	  struct FacetStream
+	  {	
+	  public:
+		  FacetStream(std::size_t buffer_size);
 
-  // indeces: in each col indeces of vertexes for single facet
-  DeviceArray2D<int> verts_inds;
+          // indeces: in each col indeces of vertexes for single facet
+		  DeviceArray2D<int>  verts_inds;		  
 
-  DeviceArray<int> head_points;
-  std::size_t facet_count;
+		  DeviceArray<int> head_points;		  
+		  std::size_t facet_count;
 
-  DeviceArray2D<int> empty_facets;
-  DeviceArray<int> empty_count;
+		  DeviceArray2D<int>  empty_facets;
+		  DeviceArray<int> empty_count;
+		  
+		  DeviceArray<int>  scan_buffer;
 
-  DeviceArray<int> scan_buffer;
+		  void setInitialFacets(const InitalSimplex& simplex);
 
-  void
-  setInitialFacets(const InitalSimplex& simplex);
+		  void compactFacets();
 
-  void
-  compactFacets();
+		  bool canSplit() const;
+		  void splitFacets();
+	  private:
+		  
+          //for compation (double buffering)
+		  DeviceArray2D<int>  verts_inds2;
+		  DeviceArray<float4> facet_planes2;
+		  DeviceArray<int> head_points2;		  
+	  };	
+	 
+	  struct PointStream
+	  {
+	  public:
+		  PointStream(const Cloud& cloud);
+		  
+		  const Cloud cloud;
+		  FacetsDists facets_dists;
+		  Perm perm;
 
-  bool
-  canSplit() const;
-  void
-  splitFacets();
+		  std::size_t cloud_size;
 
-private:
-  // for compation (double buffering)
-  DeviceArray2D<int> verts_inds2;
-  DeviceArray<float4> facet_planes2;
-  DeviceArray<int> head_points2;
-};
+		  InitalSimplex simplex;
+		  float cloud_diag;
 
-struct PointStream {
-public:
-  PointStream(const Cloud& cloud);
+		  void computeInitalSimplex();
 
-  const Cloud cloud;
-  FacetsDists facets_dists;
-  Perm perm;
+		  void initalClassify();
+		  
 
-  std::size_t cloud_size;
+		  int searchFacetHeads(std::size_t facet_count, DeviceArray<int>& head_points);
 
-  InitalSimplex simplex;
-  float cloud_diag;
+		  void classify(FacetStream& fs);	  		  
+	  };	 	  	
 
-  void
-  computeInitalSimplex();
 
-  void
-  initalClassify();
-
-  int
-  searchFacetHeads(std::size_t facet_count, DeviceArray<int>& head_points);
-
-  void
-  classify(FacetStream& fs);
-};
-
-std::size_t
-remove_duplicates(DeviceArray<int>& indeces);
-void
-pack_hull(const DeviceArray<PointType>& points,
-          const DeviceArray<int>& indeces,
-          DeviceArray<PointType>& output);
-} // namespace device
-} // namespace pcl
+	  std::size_t remove_duplicates(DeviceArray<int>& indeces);
+	  void pack_hull(const DeviceArray<PointType>& points, const DeviceArray<int>& indeces, DeviceArray<PointType>& output);
+  }
+}

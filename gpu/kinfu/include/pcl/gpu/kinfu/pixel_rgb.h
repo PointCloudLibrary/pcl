@@ -37,12 +37,15 @@
 
 #pragma once
 
-namespace pcl {
-namespace gpu {
-/** \brief Input/output pixel format for KinfuTracker */
-
-struct PixelRGB {
-  unsigned char r, g, b;
-};
-} // namespace gpu
-} // namespace pcl
+namespace pcl
+{
+  namespace gpu
+  {
+    /** \brief Input/output pixel format for KinfuTracker */
+      
+    struct PixelRGB
+    {
+      unsigned char r, g, b;
+    };
+  }
+}

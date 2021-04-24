@@ -38,15 +38,15 @@
  * Ported to PCL by Koen Buys : Attention Work in progress!
  */
 
+
 #ifndef _ncvpyramid_hpp_
 #define _ncvpyramid_hpp_
 
-#include "NCV.hpp"
-
 #include <memory>
 #include <vector>
+#include "NCV.hpp"
 
-#if 0 // def _WIN32
+#if 0 //def _WIN32
 
 template <class T>
 class NCV_EXPORTS NCVMatrixStack

@@ -37,76 +37,79 @@
 
 #pragma once
 
-#include <pcl/gpu/containers/device_array.h>
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/point_cloud.h>
+#include <pcl/gpu/containers/device_array.h>
 #include <pcl/point_types.h>
-
+#include <pcl/point_cloud.h>
 #include <Eigen/Core>
 
-namespace pcl {
-namespace gpu {
-namespace kinfuLS {
-class TsdfVolume;
 
-/**
- * \brief ColorVolume class
- * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
- */
-class PCL_EXPORTS ColorVolume {
-public:
-  using PointType = PointXYZ;
-  using Ptr = shared_ptr<ColorVolume>;
-  using ConstPtr = shared_ptr<const ColorVolume>;
+namespace pcl
+{
+  namespace gpu
+  {
+    namespace kinfuLS
+    {
+      class TsdfVolume;
 
-  /**
-   * \brief Constructor
-   * \param[in] tsdf tsdf volume to get parameters from
-   * \param[in] max_weight max weight for running average. Can be less than 255.
-   * Negative means default.
-   */
-  ColorVolume(const TsdfVolume& tsdf, int max_weight = -1);
+      /**
+       * \brief ColorVolume class
+       * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
+       */
+      class PCL_EXPORTS ColorVolume
+      {
+      public:
+        using PointType = PointXYZ;
+        using Ptr = shared_ptr<ColorVolume>;
+        using ConstPtr = shared_ptr<const ColorVolume>;
 
-  /** \brief Destructor */
-  ~ColorVolume();
+        /**
+         * \brief Constructor
+         * \param[in] tsdf tsdf volume to get parameters from
+         * \param[in] max_weight max weight for running average. Can be less than 255. Negative means default.
+         */
+        ColorVolume(const TsdfVolume& tsdf, int max_weight = -1);
 
-  /** \brief Resets color volume to uninitialized state */
-  void
-  reset();
+        /** \brief Destructor */
+        ~ColorVolume();
 
-  /** \brief Returns running average length */
-  int
-  getMaxWeight() const;
+        /** \brief Resets color volume to uninitialized state */
+        void
+        reset();
 
-  /** \brief Returns container with color volume in GPU memory */
-  DeviceArray2D<int>
-  data() const;
+        /** \brief Returns running average length */
+        int
+        getMaxWeight() const;
 
-  /**
-   * \brief Computes colors from color volume
-   * \param[in] cloud Points for which colors are to be computed.
-   * \param[out] colors output array for colors
-   */
-  void
-  fetchColors(const DeviceArray<PointType>& cloud, DeviceArray<RGB>& colors) const;
+        /** \brief Returns container with color volume in GPU memory */
+        DeviceArray2D<int>
+        data() const;
 
-private:
-  /** \brief Volume resolution */
-  Eigen::Vector3i resolution_;
+        /**
+         * \brief Computes colors from color volume
+         * \param[in] cloud Points for which colors are to be computed.
+         * \param[out] colors output array for colors
+         */
+        void
+        fetchColors (const DeviceArray<PointType>& cloud, DeviceArray<RGB>& colors) const; 
 
-  /** \brief Volume size in meters */
-  Eigen::Vector3f volume_size_;
+      private:
+        /** \brief Volume resolution */
+        Eigen::Vector3i resolution_;
 
-  /** \brief Length of running average */
-  int max_weight_;
+        /** \brief Volume size in meters */
+        Eigen::Vector3f volume_size_;
 
-  /** \brief color volume data */
-  DeviceArray2D<int> color_volume_;
+        /** \brief Length of running average */
+        int max_weight_;
 
-public:
-  PCL_MAKE_ALIGNED_OPERATOR_NEW
-};
-} // namespace kinfuLS
-} // namespace gpu
-} // namespace pcl
+        /** \brief color volume data */
+        DeviceArray2D<int> color_volume_;
+
+      public:
+        PCL_MAKE_ALIGNED_OPERATOR_NEW
+      };
+    }
+  }
+}

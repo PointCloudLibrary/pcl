@@ -37,22 +37,27 @@
 
 #pragma once
 
-#include <pcl/io/pcd_io.h>
+#include <iostream>
+
 #include <pcl/memory.h>
 #include <pcl/pcl_macros.h>
 #include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
 
-#include <iostream>
-
-struct EIGEN_ALIGN16 PointIntensity {
+struct EIGEN_ALIGN16 PointIntensity
+{
 
   PCL_MAKE_ALIGNED_OPERATOR_NEW;
-  union {
-    struct {
+  union
+  {
+    struct
+    {
       float intensity;
     };
     float data[4];
   };
 };
 
-POINT_CLOUD_REGISTER_POINT_STRUCT(PointIntensity, (float, intensity, intensity))
+POINT_CLOUD_REGISTER_POINT_STRUCT(
+    PointIntensity,
+    (float, intensity, intensity) )
