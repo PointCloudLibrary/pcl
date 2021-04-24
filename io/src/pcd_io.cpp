@@ -1279,6 +1279,173 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
   return (0);
 }
 
+int
+pcl::PCDWriter::writeASCII (const std::string &file_name,
+                            const std::vector<pcl::PCLPointField>& fields,
+                            const std::string& header,
+                            const char* cloud_base_ptr,
+                            const std::size_t& point_size,
+                            const pcl::Indices &indices,
+                            const std::size_t& nr_points,
+                            const int precision)
+{
+  if (nr_points == 0)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Input point cloud has no data!");
+    return (-1);
+  }
+
+  std::ofstream fs;
+  fs.open (file_name.c_str ());      // Open file
+
+  if (!fs.is_open () || fs.fail ())
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Could not open file for writing!");
+    return (-1);
+  }
+
+  // Mandatory lock file
+  boost::interprocess::file_lock file_lock;
+  setLockingPermissions (file_name, file_lock);
+
+  fs.precision (precision);
+  fs.imbue (std::locale::classic ());
+
+  // Write the header information
+  fs << header << "DATA ascii\n";
+
+  std::ostringstream stream;
+  stream.precision (precision);
+  stream.imbue (std::locale::classic ());
+  auto write_point = [&fields, &stream, &fs](const char* addr){
+    for (std::size_t d = 0; d < fields.size (); ++d)
+    {
+      // Ignore invalid padded dimensions that are inherited from binary data
+      if (fields[d].name == "_")
+        continue;
+
+      int count = fields[d].count;
+      if (count == 0)
+        count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
+
+      for (int c = 0; c < count; ++c)
+      {
+        switch (fields[d].datatype)
+        {
+          case pcl::PCLPointField::INT8:
+          {
+            std::int8_t value;
+            memcpy (&value, addr + fields[d].offset + c * sizeof (std::int8_t), sizeof (std::int8_t));
+            stream << boost::numeric_cast<std::int32_t>(value);
+            break;
+          }
+          case pcl::PCLPointField::UINT8:
+          {
+            std::uint8_t value;
+            memcpy (&value, addr + fields[d].offset + c * sizeof (std::uint8_t), sizeof (std::uint8_t));
+            stream << boost::numeric_cast<std::uint32_t>(value);
+            break;
+          }
+          case pcl::PCLPointField::INT16:
+          {
+            std::int16_t value;
+            memcpy (&value, addr + fields[d].offset + c * sizeof (std::int16_t), sizeof (std::int16_t));
+            stream << boost::numeric_cast<std::int16_t>(value);
+            break;
+          }
+          case pcl::PCLPointField::UINT16:
+          {
+            std::uint16_t value;
+            memcpy (&value, addr + fields[d].offset + c * sizeof (std::uint16_t), sizeof (std::uint16_t));
+            stream << boost::numeric_cast<std::uint16_t>(value);
+            break;
+          }
+          case pcl::PCLPointField::INT32:
+          {
+            std::int32_t value;
+            memcpy (&value, addr + fields[d].offset + c * sizeof (std::int32_t), sizeof (std::int32_t));
+            stream << boost::numeric_cast<std::int32_t>(value);
+            break;
+          }
+          case pcl::PCLPointField::UINT32:
+          {
+            std::uint32_t value;
+            memcpy (&value, addr + fields[d].offset + c * sizeof (std::uint32_t), sizeof (std::uint32_t));
+            stream << boost::numeric_cast<std::uint32_t>(value);
+            break;
+          }
+          case pcl::PCLPointField::FLOAT32:
+          {
+            /*
+             * Despite the float type, store the rgb field as uint32
+             * because several fully opaque color values are mapped to
+             * nan.
+             */
+            if ("rgb" == fields[d].name)
+            {
+              std::uint32_t value;
+              memcpy (&value, addr + fields[d].offset + c * sizeof (float), sizeof (float));
+              stream << boost::numeric_cast<std::uint32_t>(value);
+            }
+            else
+            {
+              float value;
+              memcpy (&value, addr + fields[d].offset + c * sizeof (float), sizeof (float));
+              if (std::isnan (value))
+                stream << "nan";
+              else
+                stream << boost::numeric_cast<float>(value);
+            }
+            break;
+          }
+          case pcl::PCLPointField::FLOAT64:
+          {
+            double value;
+            memcpy (&value, addr + fields[d].offset + c * sizeof (double), sizeof (double));
+            if (std::isnan (value))
+              stream << "nan";
+            else
+              stream << boost::numeric_cast<double>(value);
+            break;
+          }
+          default:
+            PCL_WARN ("[pcl::PCDWriter::writeASCII] Incorrect field data type specified (%d)!\n", fields[d].datatype);
+            break;
+        }
+
+        if (d < fields.size () - 1 || c < static_cast<int> (fields[d].count - 1))
+          stream << " ";
+      }
+    }
+    // Copy the stream, trim it, and write it to disk
+    std::string result = stream.str ();
+    boost::trim (result);
+    stream.str ("");
+    fs << result << "\n";
+  };
+  if (indices.empty ())
+  {
+    // Save whole cloud
+    const char* cloud_end_ptr = cloud_base_ptr + nr_points * point_size;
+    for (const char* addr = cloud_base_ptr; addr < cloud_end_ptr; addr += point_size)
+    {
+      write_point(addr);
+    }
+  }
+  else
+  {
+    // Save only some points, given by indices
+    for (const auto &index : indices)
+    {
+      const char* addr = cloud_base_ptr + point_size * index;
+      write_point(addr);
+    }
+  }
+  fs.close ();              // Close file
+  resetLockingPermissions (file_name, file_lock);
+  return (0);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
