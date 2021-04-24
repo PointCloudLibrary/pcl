@@ -496,7 +496,16 @@ namespace pcl
         */
       template <typename PointT> int
       writeBinary (const std::string &file_name,
-                   const pcl::PointCloud<PointT> &cloud);
+                   const pcl::PointCloud<PointT> &cloud)
+      {
+        return writeBinary (file_name, pcl::getFields<PointT> (),
+                            generateHeader (pcl::getFields<PointT> (),
+                                            cloud.sensor_origin_,
+                                            cloud.sensor_orientation_,
+                                            cloud.width, cloud.height),
+                            reinterpret_cast<const char*> (&cloud[0]), sizeof (PointT),
+                            pcl::Indices(), cloud.size());
+      }
 
       /** \brief Save point cloud data to a binary comprssed PCD file
         * \param[in] file_name the output file name
@@ -518,7 +527,16 @@ namespace pcl
       template <typename PointT> int
       writeBinary (const std::string &file_name,
                    const pcl::PointCloud<PointT> &cloud,
-                   const pcl::Indices &indices);
+                   const pcl::Indices &indices)
+      {
+        return writeBinary(file_name, pcl::getFields<PointT> (),
+                           generateHeader (pcl::getFields<PointT> (),
+                                           cloud.sensor_origin_,
+                                           cloud.sensor_orientation_,
+                                           indices.size (), 1),
+                           reinterpret_cast<const char*> (&cloud[0]), sizeof (PointT),
+                           indices, indices.size ());
+      }
 
       /** \brief Save point cloud data to a PCD file containing n-D points, in ASCII format
         * \param[in] file_name the output file name
@@ -613,6 +631,26 @@ namespace pcl
                       const Eigen::Vector4f& sensor_origin,
                       const Eigen::Quaternionf& sensor_orientation,
                       const std::size_t& width, const std::size_t& height);
+
+      /** \brief Save a cloud or parts of it to a binary PCD file.
+        * \param[in] file_name the output file name
+        * \param[in] fields_in the fields of a point, as returned by getFields
+        * \param[in] header the header of the PCD file, created by generateHeader
+        * \param[in] cloud_base_ptr a pointer to the start of the cloud (to the first point)
+        * \param[in] point_size the size of a point in bytes (e.g. as reported by sizeof)
+        * \param[in] indices the indices of the points that should be written to the
+        * file. This may be empty, then all points in the cloud are written to the file
+        * \param[in] nr_points how many points should be written to the file. If indices is
+        * empty, this must be the size of the whole cloud. Else, this must be the number of indices
+        */
+      int
+      writeBinary (const std::string &file_name,
+                   const std::vector<pcl::PCLPointField>& fields_in,
+                   const std::string& header,
+                   const char* cloud_base_ptr,
+                   const std::size_t& point_size,
+                   const pcl::Indices& indices,
+                   const std::size_t& nr_points);
 
       /** \brief Set to true if msync() should be called before munmap(). Prevents data loss on NFS systems. */
       bool map_synchronization_;

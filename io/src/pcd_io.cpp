@@ -1390,6 +1390,160 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
   return (0);
 }
 
+int
+pcl::PCDWriter::writeBinary (const std::string &file_name,
+                             const std::vector<pcl::PCLPointField>& fields_in,
+                             const std::string& header,
+                             const char* cloud_base_ptr,
+                             const std::size_t& point_size,
+                             const pcl::Indices& indices,
+                             const std::size_t& nr_points)
+{
+  if (nr_points == 0)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Input point cloud has no data!");
+    return (-1);
+  }
+  int data_idx = 0;
+  std::ostringstream oss;
+  oss << header << "DATA binary\n";
+  oss.flush ();
+  data_idx = static_cast<int> (oss.tellp ());
+
+#ifdef _WIN32
+  HANDLE h_native_file = CreateFileA (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+  if (h_native_file == INVALID_HANDLE_VALUE)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during CreateFile!");
+    return (-1);
+  }
+#else
+  int fd = io::raw_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+  if (fd < 0)
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during open!");
+    return (-1);
+  }
+#endif
+  // Mandatory lock file
+  boost::interprocess::file_lock file_lock;
+  setLockingPermissions (file_name, file_lock);
+
+  auto fields = fields_in;
+  std::vector<int> fields_sizes;
+  std::size_t fsize = 0;
+  std::size_t data_size = 0;
+  std::size_t nri = 0;
+  // Compute the total size of the fields
+  for (const auto &field : fields)
+  {
+    if (field.name == "_")
+      continue;
+
+    int fs = field.count * getFieldSize (field.datatype);
+    fsize += fs;
+    fields_sizes.push_back (fs);
+    fields[nri++] = field;
+  }
+  fields.resize (nri);
+
+  data_size = nr_points * fsize;
+
+  // Prepare the map
+#ifdef _WIN32
+  HANDLE fm = CreateFileMappingA (h_native_file, NULL, PAGE_READWRITE, 0, (DWORD) (data_idx + data_size), NULL);
+  if (fm == NULL)
+  {
+      throw pcl::IOException("[pcl::PCDWriter::writeBinary] Error during memory map creation ()!");
+      return (-1);
+  }
+  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + data_size));
+  CloseHandle (fm);
+
+#else
+  // Allocate disk space for the entire file to prevent bus errors.
+  if (io::raw_fallocate (fd, data_idx + data_size) != 0)
+  {
+    io::raw_close (fd);
+    resetLockingPermissions (file_name, file_lock);
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] posix_fallocate errno: %d strerror: %s\n", errno, strerror (errno));
+
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during posix_fallocate ()!");
+    return (-1);
+  }
+
+  char *map = static_cast<char*> (::mmap (nullptr, data_idx + data_size, PROT_WRITE, MAP_SHARED, fd, 0));
+  if (map == reinterpret_cast<char*> (-1)) //MAP_FAILED)
+  {
+    io::raw_close (fd);
+    resetLockingPermissions (file_name, file_lock);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during mmap ()!");
+    return (-1);
+  }
+#endif
+
+  // Copy the header
+  memcpy (&map[0], oss.str ().c_str (), data_idx);
+
+  char *out = &map[0] + data_idx;
+  // Copy the data
+  if (indices.empty ())
+  {
+    // Save whole cloud
+    const char* cloud_end_ptr = cloud_base_ptr + nr_points * point_size;
+    for (const char* addr = cloud_base_ptr; addr < cloud_end_ptr; addr += point_size)
+    {
+      int nrj = 0;
+      for (const auto &field : fields)
+      {
+        memcpy (out, addr + field.offset, fields_sizes[nrj]);
+        out += fields_sizes[nrj++];
+      }
+    }
+  }
+  else
+  {
+    // Save only some points, given by indices
+    for (const auto &index : indices)
+    {
+      const char* addr = cloud_base_ptr + point_size * index;
+      int nrj = 0;
+      for (const auto &field : fields)
+      {
+        memcpy (out, addr + field.offset, fields_sizes[nrj]);
+        out += fields_sizes[nrj++];
+      }
+    }
+  }
+
+#ifndef _WIN32
+  // If the user set the synchronization flag on, call msync
+  if (map_synchronization_)
+    msync (map, data_idx + data_size, MS_SYNC);
+#endif
+
+  // Unmap the pages of memory
+#ifdef _WIN32
+    UnmapViewOfFile (map);
+#else
+  if (::munmap (map, (data_idx + data_size)) == -1)
+  {
+    io::raw_close (fd);
+    resetLockingPermissions (file_name, file_lock);
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during munmap ()!");
+    return (-1);
+  }
+#endif
+  // Close file
+#ifdef _WIN32
+  CloseHandle (h_native_file);
+#else
+  io::raw_close (fd);
+#endif
+  resetLockingPermissions (file_name, file_lock);
+  return (0);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointCloud2 &cloud,
