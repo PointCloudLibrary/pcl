@@ -38,8 +38,10 @@
 #include <pcl/io/obj_io.h>
 #include <fstream>
 #include <pcl/common/io.h>
-#include <pcl/io/boost.h>
 #include <pcl/console/time.h>
+#include <boost/lexical_cast.hpp> // for lexical_cast
+#include <boost/filesystem.hpp> // for exists
+#include <boost/algorithm/string.hpp> // for split
 
 pcl::MTLReader::MTLReader ()
 {

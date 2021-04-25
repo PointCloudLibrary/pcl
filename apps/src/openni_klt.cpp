@@ -41,9 +41,9 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/harris_2d.h>
 #include <pcl/tracking/pyramidal_klt.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/image_viewer.h>
 
+#include <boost/date_time/posix_time/posix_time.hpp> // for to_iso_string, local_time
 #include <mutex>
 
 #define SHOW_FPS 1

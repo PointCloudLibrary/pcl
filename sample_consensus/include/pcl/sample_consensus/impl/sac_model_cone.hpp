@@ -39,7 +39,7 @@
 #ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CONE_H_
 #define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_CONE_H_
 
-#include <pcl/sample_consensus/eigen.h>
+#include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
 #include <pcl/sample_consensus/sac_model_cone.h>
 #include <pcl/common/common.h> // for getAngle3D
 #include <pcl/common/concatenate.h>

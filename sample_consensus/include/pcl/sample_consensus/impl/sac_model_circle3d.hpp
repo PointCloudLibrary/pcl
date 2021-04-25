@@ -41,7 +41,7 @@
 
 #include <cfloat> // for DBL_MAX
 
-#include <pcl/sample_consensus/eigen.h>
+#include <unsupported/Eigen/NonLinearOptimization> // for LevenbergMarquardt
 #include <pcl/sample_consensus/sac_model_circle3d.h>
 #include <pcl/common/concatenate.h>
 

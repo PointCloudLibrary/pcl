@@ -7,6 +7,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp> // for split, is_any_of
 namespace bf = boost::filesystem;
 
 inline void

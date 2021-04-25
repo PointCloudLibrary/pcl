@@ -41,7 +41,6 @@
 #include <fcntl.h>
 #include <string>
 #include <cstdlib>
-#include <pcl/io/boost.h>
 #include <pcl/common/utils.h> // pcl::utils::ignore
 #include <pcl/common/io.h>
 #include <pcl/io/low_level_io.h>
@@ -51,6 +50,8 @@
 
 #include <cstring>
 #include <cerrno>
+#include <boost/filesystem.hpp> // for permissions
+#include <boost/algorithm/string.hpp> // for split
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void

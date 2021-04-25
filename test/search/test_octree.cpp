@@ -40,7 +40,7 @@
 #include <pcl/common/time.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/search/pcl_search.h>
+#include <pcl/search/octree.h> // for pcl::search::Octree
 
 using namespace pcl;
 using namespace octree;

@@ -44,7 +44,6 @@
 #ifdef HAVE_OPENNI
 
 #include <pcl/point_cloud.h>
-#include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/openni_camera/openni_driver.h>
 #include <pcl/io/openni_camera/openni_device_oni.h>
