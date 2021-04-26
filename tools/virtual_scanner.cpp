@@ -252,6 +252,9 @@ main (int argc, char** argv)
   int sid = -1;
   for (int i = 0; i < number_of_points; i++)
   {
+    // Clear cloud for next view scan
+    cloud.clear();
+
     sphere->GetPoint (i, eye);
     if (std::abs(eye[0]) < EPS) eye[0] = 0;
     if (std::abs(eye[1]) < EPS) eye[1] = 0;
