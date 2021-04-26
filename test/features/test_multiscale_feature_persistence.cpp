@@ -7,177 +7,176 @@
  *  All rights reserved
  */
 
+#include <pcl/common/norms.h>
 #include <pcl/features/fpfh.h>
 #include <pcl/features/multiscale_feature_persistence.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/test/gtest.h>
 #include <pcl/point_cloud.h>
 
 using PointT = pcl::PointXYZ;
 using PointCloudT = pcl::PointCloud<PointT>;
-using PointCloudNormal = pcl::PointCloud<pcl::Normal>;
 using FPFHSignature = pcl::FPFHSignature33;
-using PointCloudFeature = pcl::PointCloud<FPFHSignature>;
-
 PointCloudT::Ptr cloud;
-const Eigen::Vector4f subsampling_leaf_size(0.01f, 0.01f, 0.01f, 0.0f);
-const float normal_estimation_search_radius = 0.05f;
-
-void
-subsampleAndCalculateNormals(PointCloudT::Ptr& cloud,
-                             PointCloudT::Ptr& cloud_subsampled,
-                             PointCloudNormal::Ptr& cloud_subsampled_normals)
-{
-  cloud_subsampled = PointCloudT::Ptr(new PointCloudT());
-  pcl::VoxelGrid<PointT> subsampling_filter;
-  subsampling_filter.setInputCloud(cloud);
-  subsampling_filter.setLeafSize(subsampling_leaf_size);
-  subsampling_filter.filter(*cloud_subsampled);
-
-  cloud_subsampled_normals = PointCloudNormal::Ptr(new PointCloudNormal());
-  pcl::NormalEstimation<PointT, pcl::Normal> normal_estimation_filter;
-  normal_estimation_filter.setInputCloud(cloud_subsampled);
-  pcl::search::KdTree<PointT>::Ptr search_tree(new pcl::search::KdTree<PointT>);
-  normal_estimation_filter.setSearchMethod(search_tree);
-  normal_estimation_filter.setRadiusSearch(normal_estimation_search_radius);
-  normal_estimation_filter.compute(*cloud_subsampled_normals);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-TEST(PCL, DetermineConsistentFeatures)
+TEST(PCL, DistanceBetweenFeatures)
 {
-  pcl::MultiscaleFeaturePersistence<PointT, FPFHSignature> feature_persistence;
-  PointCloudFeature::Ptr output_features(new PointCloudFeature());
-  auto output_indices = pcl::make_shared<pcl::Indices>();
+  pcl::detail::MultiscaleFeaturePersistenceTest<PointT, FPFHSignature> test_distance;
+  std::vector<float> a{101, -11, 24, 3, 18, 27, 65};
+  std::vector<float> b{89, 29, 24, 1008, -57, 106, 85};
 
-  const float gt_output_features[27][33] = {
-      {0, 0, 0,       0,       0,        100,     0,       0,       0, 0, 0,
-       0, 0, 0,       0,       0.408169, 85.7398, 10.3308, 3.52122, 0, 0, 0,
-       0, 0, 23.9626, 29.6761, 27.0757,  3.11305, 5.43367, 10.7389, 0, 0, 0},
-      {0, 0, 0,       0,       0,      100,     0,       0,       0, 0, 0,
-       0, 0, 0,       0,       0,      70.8214, 5.89744, 23.2811, 0, 0, 0,
-       0, 0, 20.8214, 23.9332, 2.4597, 23.2811, 23.6071, 5.89744, 0, 0, 0},
-      {0, 0, 0,       0,       0,       100,     0,       0,       0, 0, 0,
-       0, 0, 0,       0,       3.60031, 66.6484, 8.67291, 21.0784, 0, 0, 0,
-       0, 0, 13.8488, 13.8488, 17.968,  20.4249, 24.5831, 9.32638, 0, 0, 0},
-      {0,       0,        0,       0,       4.70533, 88.1828, 7.11186, 0,       0,
-       0,       0,        0,       0,       0,       0,       1.95028, 53.6036, 1.6717,
-       4.37546, 0.817529, 37.5814, 0,       0,       1.02352, 1.35795, 6.66472, 18.6587,
-       11.647,  26.8912,  27.3757, 1.47872, 3.5287,  1.3739},
-      {0,       0,       0,        0,       0.605387, 99.3946, 0,
-       0,       0,       0,        0,       0,        0,       0,
-       4.77742, 39.5865, 35.3368,  19.0977, 1.20156,  0,       0,
-       0,       0,       0.658105, 4.99191, 22.3883,  18.0404, 8.44501,
-       3.07399, 4.32509, 15.2844,  16.3155, 6.47731},
-      {0,       0,       0,       0,       14.837,  78.5993, 6.56364, 0,       0,
-       0,       0,       0,       0,       0,       2.19842, 15.8933, 18.4357, 41.8781,
-       11.9318, 1.70603, 7.95676, 0,       0,       1.65455, 2.752,   3.91164, 24.7348,
-       7.42696, 13.4733, 16.0626, 12.5205, 14.1836, 3.28003},
-      {0,       0,       0,        0,       4.22143,  95.3754,  0.403222,
-       0,       0,       0,        0,       0,        0,        0,
-       1.176,   37.0574, 35.8172,  17.7436, 0.826528, 0.239069, 7.14017,
-       0,       0,       0.403222, 5.45272, 15.526,   15.2772,  8.60978,
-       3.89588, 5.48677, 9.90773,  21.8822, 13.5585},
-      {0,        0,       0,       0,       9.69826,  88.4992,  1.80255,
-       0,        0,       0,       0,       0,        0,        0,
-       0.686038, 19.5698, 35.0578, 11.1379, 0.936046, 0.391773, 32.2206,
-       0,        0,       1.69964, 3.60651, 3.55828,  21.7155,  3.76102,
-       4.34089,  17.9839, 9.71725, 19.8585, 13.7586},
-      {0,        0,       0,       0,       8.13041,  89.8249,  2.04466,
-       0,        0,       0,       0,       0,        0,        0,
-       0.570385, 21.9487, 35.0296, 9.5727,  0.717108, 0.337256, 31.8243,
-       0,        0,       1.84835, 3.03275, 7.60577,  15.6637,  13.7929,
-       10.2215,  13.4343, 2.75174, 18.9798, 12.6693},
-      {0,       0,       0,       0,       2.23767, 97.6162,  0.146125,
-       0,       0,       0,       0,       0,       0,        0,
-       2.03409, 38.1643, 36.0216, 20.0808, 1.79313, 0.111934, 1.79412,
-       0,       0,       1.07664, 1.84207, 18.1883, 13.8026,  12.8604,
-       2.06537, 3.72738, 9.75049, 23.6166, 13.0701},
-      {0,       0,       0,       0,       1.94179, 98.0582,   0,
-       0,       0,       0,       0,       0,       0,         0,
-       2.67209, 40.5256, 27.9669, 24.9425, 2.21885, 0.0951404, 1.57891,
-       0,       0,       1.72444, 14.6981, 7.70923, 22.4565,   5.35895,
-       5.86537, 7.73914, 8.17847, 14.2164, 12.0534},
-      {0, 0,      0,        0,       60.6515, 39.3485, 0,     0, 0, 0, 0,        0, 0,
-       0, 11.346, 21.5938,  43.9709, 23.0893, 0,       0,     0, 0, 0, 0.721846, 0, 0,
-       0, 1.2147, 0.887928, 20.1842, 18.1468, 39.9526, 18.892},
-      {0, 0, 0, 0,       59.2965, 40.7035, 0,       0,       0,      0,       0,
-       0, 0, 0, 7.21215, 19.2253, 52.7256, 20.8369, 0,       0,      0,       0,
-       0, 0, 0, 0,       0,       5.80513, 1.24504, 15.8787, 25.505, 34.3453, 17.2208},
-      {0, 0, 0, 0,       56.421, 43.579,  0,       0,       0,       0,       0,
-       0, 0, 0, 7.43699, 24.655, 47.9592, 19.9489, 0,       0,       0,       0,
-       0, 0, 0, 0,       0,      2.20281, 2.46741, 24.4398, 17.8244, 39.8236, 13.242},
-      {0, 0, 0,       0,      56.7789, 43.2211, 0,       0,       0,      0, 0, 0,
-       0, 0, 11.6001, 22.861, 47.6905, 17.8484, 0,       0,       0,      0, 0, 1.00471,
-       0, 0, 0,       1.7485, 1.95555, 13.8623, 11.9821, 42.1631, 27.2837},
-      {0, 0, 0, 0,       56.8728, 43.1272, 0,       0,        0,       0,      0,
-       0, 0, 0, 6.01596, 26.1097, 49.8964, 17.7679, 0.210063, 0,       0,      0,
-       0, 0, 0, 0,       0,       2.53109, 5.06131, 19.2648,  25.4152, 36.075, 11.6525},
-      {0, 0, 0,       0,       51.8106, 48.1894, 0,        0,       0,      0, 0, 0,
-       0, 0, 5.59972, 19.2943, 54.1986, 20.6518, 0.255575, 0,       0,      0, 0, 0,
-       0, 0, 0,       6.78113, 7.8062,  15.5474, 31.9517,  25.3035, 12.6101},
-      {0, 0, 0, 0, 0.858694, 99.1413, 0,       0,       0,       0, 0,
-       0, 0, 0, 0, 0.188111, 99.8119, 0,       0,       0,       0, 0,
-       0, 0, 0, 0, 0,        6.26467, 82.2678, 10.3244, 1.14313, 0, 0},
-      {0, 0, 0, 0, 4.95132, 95.0487, 0, 0, 0, 0, 0,       0,      0,       0, 0, 0, 100,
-       0, 0, 0, 0, 0,       0,       0, 0, 0, 0, 5.61338, 81.416, 12.9706, 0, 0, 0},
-      {0, 0, 0, 0, 6.45045, 93.5496, 0,       0,       0, 0, 0,
-       0, 0, 0, 0, 0,       100,     0,       0,       0, 0, 0,
-       0, 0, 0, 0, 0,       5.79338, 80.1302, 14.0764, 0, 0, 0},
-      {0, 0, 0, 0, 3.19265, 96.8073, 0,       0,       0,        0, 0,
-       0, 0, 0, 0, 0,       100,     0,       0,       0,        0, 0,
-       0, 0, 0, 0, 0,       7.14492, 77.4834, 14.8963, 0.475413, 0, 0},
-      {0, 0, 0, 0, 2.91857, 97.0814, 0,       0,       0,        0, 0,
-       0, 0, 0, 0, 0,       100,     0,       0,       0,        0, 0,
-       0, 0, 0, 0, 0,       6.15287, 83.1738, 10.5024, 0.170916, 0, 0},
-      {0, 0, 0, 0, 2.7342, 97.2658, 0,       0,       0,       0, 0,
-       0, 0, 0, 0, 0,      100,     0,       0,       0,       0, 0,
-       0, 0, 0, 0, 0,      5.28806, 83.1876, 10.1264, 1.39793, 0, 0},
-      {0, 0, 0, 0, 8.13745, 91.8625, 0,       0,       0, 0, 0,
-       0, 0, 0, 0, 0,       100,     0,       0,       0, 0, 0,
-       0, 0, 0, 0, 0,       2.63515, 88.9699, 8.39498, 0, 0, 0},
-      {0, 0, 0, 0, 9.74746, 90.2525, 0,       0,       0,        0, 0,
-       0, 0, 0, 0, 0,       100,     0,       0,       0,        0, 0,
-       0, 0, 0, 0, 0,       6.45207, 80.3423, 12.6033, 0.602394, 0, 0},
-      {0, 0, 0, 0, 10.3765, 89.6235, 0, 0, 0, 0, 0,       0,       0,      0, 0, 0, 100,
-       0, 0, 0, 0, 0,       0,       0, 0, 0, 0, 5.73981, 82.4882, 11.772, 0, 0, 0},
-      {0, 0, 0, 0, 9.47275, 90.5273, 0,       0,       0,        0, 0,
-       0, 0, 0, 0, 0,       100,     0,       0,       0,        0, 0,
-       0, 0, 0, 0, 0,       5.58698, 79.8493, 14.2933, 0.270383, 0, 0}};
+  // L1
 
-  const size_t gt_output_indices[27] = {0,   1,   3,   11,  25,  28,  29,  30,  31,
-                                        43,  44,  74,  77,  79,  112, 115, 117, 154,
-                                        222, 231, 232, 243, 244, 278, 282, 283, 287};
+  test_distance.distance_metric_ = pcl::L1;
+  EXPECT_EQ(test_distance.distanceBetweenFeatures(a, b), pcl::L1_Norm(a, b, a.size()));
 
-  std::vector<float> scale_values;
-  for (float x = 2.0f; x < 3.6f; x += 0.35f)
-    scale_values.push_back(x / 100.0f);
-  feature_persistence.setScalesVector(scale_values);
-  feature_persistence.setAlpha(1.3f);
-  PointCloudT ::Ptr cloud_subsampled;
-  PointCloudNormal ::Ptr cloud_subsampled_normals;
-  subsampleAndCalculateNormals(cloud, cloud_subsampled, cloud_subsampled_normals);
-  pcl::FPFHEstimation<PointT, pcl::Normal, FPFHSignature>::Ptr fpfh_estimation(
-      new pcl::FPFHEstimation<PointT, pcl::Normal, FPFHSignature>());
-  fpfh_estimation->setInputCloud(cloud_subsampled);
-  fpfh_estimation->setInputNormals(cloud_subsampled_normals);
-  pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>());
-  fpfh_estimation->setSearchMethod(tree);
-  feature_persistence.setFeatureEstimator(fpfh_estimation);
-  feature_persistence.setDistanceMetric(pcl::CS);
-  feature_persistence.determinePersistentFeatures(*output_features, output_indices);
-  EXPECT_EQ(output_indices->size(), 27);
+  // L2_SQR
 
-  for (size_t point_idx = 0; point_idx < output_features->points.size(); ++point_idx) {
-    EXPECT_EQ(output_indices->at(point_idx), gt_output_indices[point_idx]);
-    const auto& point = output_features->points[point_idx];
-    const auto& gt_point = gt_output_features[point_idx];
-    for (int feature_idx = 0; feature_idx < FPFHSignature::descriptorSize();
-         ++feature_idx) {
-      EXPECT_NEAR(point.histogram[feature_idx], gt_point[feature_idx], 1e-4);
+  test_distance.distance_metric_ = pcl::L2_SQR;
+  EXPECT_EQ(test_distance.distanceBetweenFeatures(a, b),
+            pcl::L2_Norm_SQR(a, b, a.size()));
+
+  // L2
+  test_distance.distance_metric_ = pcl::L2;
+  EXPECT_EQ(test_distance.distanceBetweenFeatures(a, b), pcl::L2_Norm(a, b, a.size()));
+
+  // LINF
+  test_distance.distance_metric_ = pcl::LINF;
+  EXPECT_EQ(test_distance.distanceBetweenFeatures(a, b),
+            pcl::Linf_Norm(a, b, a.size()));
+
+  // JM
+  // test_distance.distance_metric_ = pcl::JM;
+  // EXPECT_EQ(test_distance.distanceBetweenFeatures(a, b), pcl::JM_Norm(a, b,
+  // a.size()));
+
+  // B
+  test_distance.distance_metric_ = pcl::B;
+  EXPECT_EQ(test_distance.distanceBetweenFeatures(a, b), pcl::B_Norm(a, b, a.size()));
+
+  // SUBLINEAR
+  test_distance.distance_metric_ = pcl::SUBLINEAR;
+  EXPECT_EQ(test_distance.distanceBetweenFeatures(a, b),
+            pcl::Sublinear_Norm(a, b, a.size()));
+
+  // CS
+  test_distance.distance_metric_ = pcl::CS;
+  EXPECT_EQ(test_distance.distanceBetweenFeatures(a, b), pcl::CS_Norm(a, b, a.size()));
+
+  // DIV
+  test_distance.distance_metric_ = pcl::DIV;
+  EXPECT_EQ(test_distance.distanceBetweenFeatures(a, b), pcl::Div_Norm(a, b, a.size()));
+
+  // KL
+  test_distance.distance_metric_ = pcl::KL;
+  EXPECT_EQ(test_distance.distanceBetweenFeatures(a, b), pcl::KL_Norm(a, b, a.size()));
+
+  // HIK
+  test_distance.distance_metric_ = pcl::HIK;
+  EXPECT_EQ(test_distance.distanceBetweenFeatures(a, b), pcl::HIK_Norm(a, b, a.size()));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, CalculateMeanFeature)
+{
+  pcl::detail::MultiscaleFeaturePersistenceTest<PointT, FPFHSignature> test_mean;
+  test_mean.features_at_scale_vectorized_ = {{{1, 2, 3, 4, 5}, {6, 2, 9, 4, 21}},
+                                             {{19, 22, 93, 4, -57}, {6, 2, 4, 7, 8}},
+                                             {{11, 2, 78, 35, 89}, {2, 3, 7, 7, 14}}};
+  test_mean.mean_feature_.resize(5);
+  test_mean.calculateMeanFeature();
+
+  std::vector<float> gt_mean{7.5f, 5.5f, 32.3333f, 10.1666f, 13.3333f};
+  for (auto gt_it = gt_mean.begin(), result_it = gt_mean.begin();
+       gt_it != gt_mean.end();
+       ++gt_it, ++result_it) {
+    EXPECT_FLOAT_EQ(*gt_it, *result_it);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST(PCL, ExtractUniqueFeatures)
+{
+  pcl::detail::MultiscaleFeaturePersistenceTest<PointT, FPFHSignature>
+      test_unique_feature_extraction;
+  test_unique_feature_extraction.features_at_scale_vectorized_ = {
+      {{1, 2, 3, 4, 5}, {6, 2, 9, 4, 21}},
+      {{19, 22, 93, 4, -57}, {6, 2, 4, 7, 8}},
+      {{11, 2, 78, 35, 89}, {2, 3, 7, 7, 14}}};
+  test_unique_feature_extraction.mean_feature_.resize(5);
+  test_unique_feature_extraction.calculateMeanFeature();
+  test_unique_feature_extraction.distance_metric_ = pcl::L1;
+  test_unique_feature_extraction.scale_values_ = {1, 2, 3};
+
+  std::vector<std::list<std::size_t>> gt_unique_features_indices_;
+  std::vector<std::vector<bool>> gt_unique_features_table_;
+  // alpha is 0.5
+  gt_unique_features_indices_ = {{0, 1}, {0}, {0}};
+  gt_unique_features_table_ = {{true, true}, {true, false}, {true, false}};
+  test_unique_feature_extraction.alpha_ = 0.5f;
+  test_unique_feature_extraction.extractUniqueFeatures();
+  for (size_t scale_i = 0; scale_i < gt_unique_features_table_.size(); ++scale_i) {
+    for (auto gt_it = gt_unique_features_indices_[scale_i].begin(),
+              res_it = test_unique_feature_extraction.unique_features_indices_[scale_i]
+                           .begin();
+         gt_it != gt_unique_features_indices_[scale_i].end();
+         ++gt_it, ++res_it) {
+      EXPECT_EQ(*gt_it, *res_it);
+    }
+    for (auto
+             gt_it = gt_unique_features_table_[scale_i].begin(),
+             res_it =
+                 test_unique_feature_extraction.unique_features_table_[scale_i].begin();
+         gt_it != gt_unique_features_table_[scale_i].end();
+         ++gt_it, ++res_it) {
+      EXPECT_EQ(*gt_it, *res_it);
+    }
+  }
+
+  // alpha is 1
+  gt_unique_features_indices_ = {{0}, {0}, {0}};
+  gt_unique_features_table_ = {{true, false}, {true, false}, {true, false}};
+  test_unique_feature_extraction.alpha_ = 1;
+  test_unique_feature_extraction.extractUniqueFeatures();
+  for (size_t scale_i = 0; scale_i < gt_unique_features_table_.size(); ++scale_i) {
+    for (auto gt_it = gt_unique_features_indices_[scale_i].begin(),
+              res_it = test_unique_feature_extraction.unique_features_indices_[scale_i]
+                           .begin();
+         gt_it != gt_unique_features_indices_[scale_i].end();
+         ++gt_it, ++res_it) {
+      EXPECT_EQ(*gt_it, *res_it);
+    }
+    for (auto
+             gt_it = gt_unique_features_table_[scale_i].begin(),
+             res_it =
+                 test_unique_feature_extraction.unique_features_table_[scale_i].begin();
+         gt_it != gt_unique_features_table_[scale_i].end();
+         ++gt_it, ++res_it) {
+      EXPECT_EQ(*gt_it, *res_it);
+    }
+  }
+
+  // alpha is 2
+  gt_unique_features_indices_ = {{}, {}, {}};
+  gt_unique_features_table_ = {{false, false}, {false, false}, {false, false}};
+  test_unique_feature_extraction.alpha_ = 2;
+  test_unique_feature_extraction.extractUniqueFeatures();
+  for (size_t scale_i = 0; scale_i < gt_unique_features_table_.size(); ++scale_i) {
+    for (auto gt_it = gt_unique_features_indices_[scale_i].begin(),
+              res_it = test_unique_feature_extraction.unique_features_indices_[scale_i]
+                           .begin();
+         gt_it != gt_unique_features_indices_[scale_i].end();
+         ++gt_it, ++res_it) {
+      EXPECT_EQ(*gt_it, *res_it);
+    }
+    for (auto
+             gt_it = gt_unique_features_table_[scale_i].begin(),
+             res_it =
+                 test_unique_feature_extraction.unique_features_table_[scale_i].begin();
+         gt_it != gt_unique_features_table_[scale_i].end();
+         ++gt_it, ++res_it) {
+      EXPECT_EQ(*gt_it, *res_it);
     }
   }
 }
@@ -186,21 +185,6 @@ TEST(PCL, DetermineConsistentFeatures)
 int
 main(int argc, char** argv)
 {
-  if (argc < 2) {
-    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to "
-                 "the test."
-              << std::endl;
-    return (-1);
-  }
-
-  cloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
-
-  if (pcl::io::loadPCDFile<pcl::PointXYZ>(argv[1], *cloud) < 0) {
-    std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its "
-                 "path to the test."
-              << std::endl;
-    return (-1);
-  }
   testing::InitGoogleTest(&argc, argv);
   return (RUN_ALL_TESTS());
 }
