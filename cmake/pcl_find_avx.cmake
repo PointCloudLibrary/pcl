@@ -36,7 +36,7 @@ function(PCL_CHECK_FOR_AVX)
   set(CMAKE_REQUIRED_FLAGS)
 
 # Setting the -mavx/-mavx2 defines __AVX(2)__, see here https://stackoverflow.com/a/28939692
-# So there's no need to assign AVX_DEFINITIONS with the preprocessor symbols as code guards.
+# and this allows the compiler to use the codes for AVX behind code guards.
   if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
     if(HAVE_AVX2)
       set(AVX_FLAGS "-mavx2" PARENT_SCOPE)
