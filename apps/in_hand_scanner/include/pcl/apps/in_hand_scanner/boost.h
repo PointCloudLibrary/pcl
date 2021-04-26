@@ -43,6 +43,6 @@
 #ifdef __GNUC__
 #  pragma GCC system_header
 #endif
-
+PCL_DEPRECATED_HEADER(1, 15, "Please include the needed boost headers directly.")
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/signals2/connection.hpp>
