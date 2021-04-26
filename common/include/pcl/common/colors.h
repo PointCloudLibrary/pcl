@@ -41,6 +41,7 @@
 #include <pcl/point_types.h>
 
 #include <type_traits>  // for is_floating_point
+#include <array>        // for std::array especially in Clang Darwin and MSVC
 
 namespace pcl
 {
