@@ -1061,7 +1061,7 @@ class look like:
 
           /** \brief Compute the intensity average for a single point
             * \param[in] pid the point index to compute the weight for
-            * \param[in] indices the set of nearest neighor indices 
+            * \param[in] indices the set of nearest neighbor indices 
             * \param[in] distances the set of nearest neighbor distances
             * \return the intensity average at a given point index
             */

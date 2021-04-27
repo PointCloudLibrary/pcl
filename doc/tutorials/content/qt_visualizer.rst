@@ -52,7 +52,7 @@ Use relative paths like this is better than absolute paths; this project should 
 We specify in the general section that we want to build in the folder ``../build`` (this is a relative path from the ``.pro`` file).
 
 The first step of the building is to call ``cmake`` (from the ``build`` folder) with argument ``../src``; this is gonna create all files in the
-``build`` folder without modifying anything in the ``src`` foler; thus keeping it clean.
+``build`` folder without modifying anything in the ``src`` folder; thus keeping it clean.
 
 Then we just have to compile our program; the argument ``-j2`` allow to specify how many thread of your CPU you want to use for compilation. The more thread you use
 the faster the compilation will be (especially on big projects); but if you take all threads from the CPU your OS will likely be unresponsive during 
