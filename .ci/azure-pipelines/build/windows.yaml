@@ -38,7 +38,6 @@ steps:
   - script: |
       cd %BUILD_DIR%
       cmake --build . --target tests --config %CONFIGURATION% || ^
-      cmake --build . --target tests --config %CONFIGURATION% || ^
       cmake --build . --target tests --config %CONFIGURATION%
     workingDirectory: 'c:'
     # Repeat for flaky tests
