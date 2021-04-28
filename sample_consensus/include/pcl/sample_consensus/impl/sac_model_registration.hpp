@@ -55,9 +55,15 @@ pcl::SampleConsensusModelRegistration<PointT>::isSampleGood (const Indices &samp
   using namespace pcl::common;
   using namespace pcl::traits;
 
-  PointT p10 = (*input_)[samples[1]] - (*input_)[samples[0]];
-  PointT p20 = (*input_)[samples[2]] - (*input_)[samples[0]];
-  PointT p21 = (*input_)[samples[2]] - (*input_)[samples[1]];
+  auto diff10 = (*input_)[samples[1]] - (*input_)[samples[0]];
+  PointT p10;
+  pcl::copyPoint(diff10, p10);
+  auto diff20 = (*input_)[samples[2]] - (*input_)[samples[0]];
+  PointT p20;
+  pcl::copyPoint(diff20, p20);
+  auto diff21 = (*input_)[samples[2]] - (*input_)[samples[1]];
+  PointT p21;
+  pcl::copyPoint(diff21, p21);
 
   return ((p10.x * p10.x + p10.y * p10.y + p10.z * p10.z) > sample_dist_thresh_ && 
           (p20.x * p20.x + p20.y * p20.y + p20.z * p20.z) > sample_dist_thresh_ && 
