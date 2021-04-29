@@ -36,8 +36,7 @@
  *
  */
 
-#ifndef PCL_GPU_SEGMENTATION_IMPL_EXTRACT_LABELED_CLUSTERS_H_
-#define PCL_GPU_SEGMENTATION_IMPL_EXTRACT_LABELED_CLUSTERS_H_
+#pragma once
 
 #include <pcl/gpu/segmentation/gpu_extract_labeled_clusters.h>
 
@@ -176,4 +175,3 @@ pcl::gpu::EuclideanLabeledClusterExtraction<PointT>::extract (std::vector<PointI
 
 #define PCL_INSTANTIATE_extractLabeledEuclideanClusters(T) template void PCL_EXPORTS pcl::gpu::extractLabeledEuclideanClusters<T> (const typename pcl::PointCloud<T>::Ptr  &, const pcl::gpu::Octree::Ptr &,float, std::vector<PointIndices> &, unsigned int, unsigned int);
 #define PCL_INSTANTIATE_EuclideanLabeledClusterExtraction(T) template class PCL_EXPORTS pcl::gpu::EuclideanLabeledClusterExtraction<T>;
-#endif //PCL_GPU_SEGMENTATION_IMPL_EXTRACT_LABELED_CLUSTERS_H_
