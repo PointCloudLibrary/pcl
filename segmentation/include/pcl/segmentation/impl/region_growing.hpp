@@ -611,8 +611,8 @@ pcl::RegionGrowing<PointT, NormalT>::getSegmentFromPoint (pcl::index_t index, pc
     // to which this point belongs
     for (const auto& i_segment : clusters_)
     {
-      const auto it = std::find (i_segment.indices.cbegin (), i_segment_indices.cend (), index);
-      if (it != i_segment_indices.cend())
+      const auto it = std::find (i_segment.indices.cbegin (), i_segment.indices.cend (), index);
+      if (it != i_segment.indices.cend())
       {
         // if segment was found
         cluster.indices.clear ();
