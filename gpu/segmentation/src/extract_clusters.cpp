@@ -37,12 +37,8 @@
 
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
-//#include <pcl/gpu/segmentation/gpu_extract_labeled_clusters.h>
-#include <pcl/gpu/segmentation/impl/gpu_extract_clusters.hpp>
 #include <pcl/gpu/segmentation/impl/gpu_extract_labeled_clusters.hpp>
 #include <pcl/gpu/segmentation/impl/gpu_extract_clusters.hpp>
-#include <cuda_runtime_api.h>
-#include <cuda.h>
 
 // Instantiations of specific point types
 PCL_INSTANTIATE(extractEuclideanClusters, PCL_XYZ_POINT_TYPES);
@@ -59,11 +55,9 @@ pcl::detail::economical_download(const pcl::gpu::NeighborIndices& source_indices
   std::vector<int> tmp;
   for (std::size_t qp = 0; qp < buffer_indices.size(); qp++) {
     std::size_t begin = qp * buffer_size;
-    const int* const pdata = source_indices.data.ptr() + begin;
+    std::size_t end = begin + buffer_indices[qp];
     tmp.resize(buffer_indices[qp]);
-    const std::size_t bytes = (buffer_indices[qp]) * sizeof(int);
-    cudaMemcpy(&tmp[0], pdata, bytes, cudaMemcpyDeviceToHost);
-    cudaDeviceSynchronize();
+    source_indices.data.download(&tmp[0], begin, end);
     downloaded_indices.insert(downloaded_indices.end(), tmp.begin(), tmp.end());
   }
 }
