@@ -528,8 +528,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findRegionNeighbours (std::vector< std::
 
   for (int i_reg = 0; i_reg < region_number; i_reg++)
   {
-    int segment_num = static_cast<int> (regions_in[i_reg].size ());
-    neighbours_out[i_reg].reserve (segment_num * region_neighbour_number_);
+    neighbours_out[i_reg].reserve (regions_in[i_reg].size () * region_neighbour_number_);
     for (const auto& curr_segment : regions_in[i_reg])
     {
       int nghbr_number = static_cast<int> (segment_neighbours_[curr_segment].size ());

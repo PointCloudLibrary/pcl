@@ -251,16 +251,16 @@ namespace pcl
     Indices nn_indices;
     std::vector<float> nn_distances;
     // Process all points in the indices vector
-    for (const auto& point : indices)
+    for (const auto& point_idx : indices)
     {
-      if (processed[point])
+      if (processed[point_idx])
         continue;
 
       Indices seed_queue;
       int sq_idx = 0;
-      seed_queue.push_back (point);
+      seed_queue.push_back (point_idx);
 
-      processed[point] = true;
+      processed[point_idx] = true;
 
       while (sq_idx < static_cast<int> (seed_queue.size ()))
       {

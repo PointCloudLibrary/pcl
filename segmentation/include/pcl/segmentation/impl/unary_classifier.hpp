@@ -178,11 +178,11 @@ pcl::UnaryClassifier<PointT>::getCloudWithLabel (typename pcl::PointCloud<PointT
 
   if (label_idx != -1)
   {
-    for (auto& point : (*in))
+    for (const auto& point : (*in))
     {
       // get the 'label' field                                                                       
       std::uint32_t label;
-      memcpy (&label, reinterpret_cast<char*> (&point) + fields[label_idx].offset, sizeof(std::uint32_t));
+      memcpy (&label, reinterpret_cast<const char*> (&point) + fields[label_idx].offset, sizeof(std::uint32_t));
 
       if (static_cast<int> (label) == label_num)
       {
