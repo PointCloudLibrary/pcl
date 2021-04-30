@@ -108,6 +108,14 @@ public:
   void
   download(void* host_ptr_arg) const;
 
+  /** \brief Downloads data from internal buffer to CPU memory.
+   * \param host_ptr_arg pointer to buffer to download
+   * \param begin pointer to buffer location
+   * \param nbytes number of bytes to download from begin
+   * */
+  void
+  download(void* host_ptr, void* begin, std::size_t nbytes) const;
+
   /** \brief Performs swap of data pointed with another device memory.
    * \param other_arg device memory to swap with
    * */

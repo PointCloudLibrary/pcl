@@ -113,6 +113,17 @@ public:
   void
   download(T* host_ptr) const;
 
+  /** \brief Downloads data from internal buffer to CPU memory.
+   * Returns false if device_offset < device_begin_offset
+   * \param device_begin_offset begin download location
+   * \param device_end_offset end download location
+   * \param host_ptr pointer to buffer to download
+   * */
+  bool
+  download(std::size_t device_begin_offset,
+           std::size_t device_end_offset,
+           T* host_ptr) const;
+
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
    * ensure that intenal buffer size is enough.
    * \param data host vector to upload from

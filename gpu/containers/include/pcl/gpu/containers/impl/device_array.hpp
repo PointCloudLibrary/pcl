@@ -104,6 +104,22 @@ DeviceArray<T>::download(T* host_ptr) const
 }
 
 template <class T>
+inline bool
+DeviceArray<T>::download(std::size_t device_begin_offset,
+                         std::size_t device_end_offset,
+                         T* host_ptr) const
+{
+  if (device_end_offset < device_begin_offset) {
+    return false;
+  }
+  T* begin = device_begin_offset * elem_size;
+  T* end = device_end_offset * elem_size;
+  std::size_t bytes = end - begin;
+  DeviceMemory::download(host_ptr, begin, bytes);
+  return true;
+}
+
+template <class T>
 void
 DeviceArray<T>::swap(DeviceArray& other_arg)
 {

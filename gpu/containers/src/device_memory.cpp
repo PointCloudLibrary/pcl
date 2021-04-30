@@ -290,6 +290,15 @@ pcl::gpu::DeviceMemory::download(void* host_ptr_arg) const
 }
 
 void
+pcl::gpu::DeviceMemory::download(void* host_ptr_arg,
+                                 void* begin,
+                                 std::size_t bytes) const
+{
+  cudaSafeCall(cudaMemcpy(host_ptr_arg, begin, bytes, cudaMemcpyDeviceToHost));
+  cudaSafeCall(cudaDeviceSynchronize());
+}
+
+void
 pcl::gpu::DeviceMemory::swap(DeviceMemory& other_arg)
 {
   std::swap(data_, other_arg.data_);
