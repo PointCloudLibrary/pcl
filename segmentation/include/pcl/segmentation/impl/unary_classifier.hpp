@@ -191,7 +191,7 @@ pcl::UnaryClassifier<PointT>::getCloudWithLabel (typename pcl::PointCloud<PointT
         tmp.x = point.x;
         tmp.y = point.y;
         tmp.z = point.z;
-        out->points.push_back (tmp);
+        out->push_back (tmp);
       }
     }
     out->width = out->size ();
