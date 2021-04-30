@@ -50,12 +50,24 @@ stages:
               for ENTRY in "${DOCS_LISTS[@]}"; do
                 DIFF_EXCLUDE="':(exclude)${ENTRY}' ${DIFF_EXCLUDE}"
               done
-              cd $(Build.SourcesDirectory)
+
+              # Check the CI build reason: Pull Request or Git Push
+              BUILD_REASON=$(Build.Reason)
+              if [ "${BUILD_REASON}" -eq "PullRequest" ]; then
+                MERGE_BASE_PAIR="HEAD origin/master"
+              else
+                MERGE_BASE_PAIR="HEAD HEAD~1"
+              fi
+
+              # Initiate HasCodeChanges variable
               echo "##vso[task.setvariable variable=HasCodeChanges;isOutput=true]false"
+
               # Show full git diff results
-              git diff $(git merge-base HEAD origin/test-CI-features)
+              cd $(Build.SourcesDirectory)
+              git diff $(git merge-base ${MERGE_BASE_PAIR})
+
               # Set HasCodeChanges to true, if there's still file changed when excluding those docs
-              git diff --quiet $(git merge-base HEAD origin/test-CI-features) -- ${DIFF_EXCLUDE} || \
+              git diff --quiet $(git merge-base ${MERGE_BASE_PAIR}) -- ${DIFF_EXCLUDE} || \
               echo "##vso[task.setvariable variable=HasCodeChanges;isOutput=true]true"
             name: GitResult
             displayName: Show Git Diff Result
