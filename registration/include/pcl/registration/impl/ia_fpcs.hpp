@@ -178,7 +178,10 @@ pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scala
     num_threads(nr_threads_)
   {
 #ifdef _OPENMP
-    std::srand(static_cast<unsigned int>(std::time(NULL)) ^ omp_get_thread_num());
+    const unsigned int seed =
+        static_cast<unsigned int>(std::time(NULL)) ^ omp_get_thread_num();
+    std::srand(seed);
+    PCL_DEBUG("[%s::computeTransformation] Using seed=%u\n", reg_name_.c_str(), seed);
 #pragma omp for schedule(dynamic)
 #endif
     for (int i = 0; i < max_iterations_; i++) {
@@ -236,7 +239,9 @@ bool
 pcl::registration::FPCSInitialAlignment<PointSource, PointTarget, NormalT, Scalar>::
     initCompute()
 {
-  std::srand(static_cast<unsigned int>(std::time(nullptr)));
+  const unsigned int seed = std::time(nullptr);
+  std::srand(seed);
+  PCL_DEBUG("[%s::initCompute] Using seed=%u\n", reg_name_.c_str(), seed);
 
   // basic pcl initialization
   if (!pcl::PCLBase<PointSource>::initCompute())
