@@ -101,6 +101,7 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
     do
     {
       // Host buffer for results
+      std::vector<int> sizes, data;
 
       // if the number of queries is not high enough implement search on Host here
       if(queries_host.size () <= 10) ///@todo: adjust this to a variable number settable with method
