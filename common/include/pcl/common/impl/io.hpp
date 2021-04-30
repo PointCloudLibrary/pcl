@@ -119,16 +119,20 @@ getFieldsList (const pcl::PointCloud<PointT> &)
 
 
 template <typename PointInT, typename PointOutT> static void
-copyPointCloudMemcpy (const pcl::PointCloud<PointInT> &,
-                pcl::PointCloud<PointOutT> &)
+copyPointCloudMemcpy (const pcl::PointCloud<PointInT> &cloud_in,
+                      pcl::PointCloud<PointOutT> &cloud_out)
 {
+  // Iterate over each point, if the point types of two clouds are different
+  for (std::size_t i = 0; i < cloud_in.size (); ++i)
+    copyPoint (cloud_in[i], cloud_out[i]);
 }
 
 
 template <typename PointT> static void
 copyPointCloudMemcpy (const pcl::PointCloud<PointT> &cloud_in,
-                pcl::PointCloud<PointT> &cloud_out)
+                      pcl::PointCloud<PointT> &cloud_out)
 {
+  // Use std::copy directly, if the point types of two clouds are same
   std::copy (&cloud_in[0], (&cloud_in[0]) + cloud_in.size (), &cloud_out[0]);
 }
 
@@ -146,16 +150,8 @@ copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
   cloud_out.resize (cloud_in.size ());
 
-  if (cloud_in.empty ())
-    return;
-
-  if (isSamePointType<PointInT, PointOutT> ())
-    // Copy the whole memory block
+  if (!cloud_in.empty ())
     copyPointCloudMemcpy (cloud_in, cloud_out);
-  else
-    // Iterate over each point
-    for (std::size_t i = 0; i < cloud_in.size (); ++i)
-      copyPoint (cloud_in[i], cloud_out[i]);
 }
 
 
