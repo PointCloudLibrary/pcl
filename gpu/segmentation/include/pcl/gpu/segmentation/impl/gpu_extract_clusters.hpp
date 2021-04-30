@@ -98,9 +98,6 @@ pcl::gpu::extractEuclideanClusters (const typename pcl::PointCloud<PointT>::Ptr 
     pcl::gpu::NeighborIndices result_device;
 
     // once the area stop growing, stop also iterating.
-    std::vector<int> sizes, data;
-    sizes.reserve(host_cloud_->size());
-    data.reserve(host_cloud_->size());
     do
     {
       // Host buffer for results
