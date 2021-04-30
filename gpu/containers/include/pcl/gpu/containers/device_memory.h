@@ -114,7 +114,7 @@ public:
    * \param nbytes number of bytes to download from begin
    * */
   void
-  download(void* host_ptr, void* begin, std::size_t nbytes) const;
+  download(void* host_ptr, const void* const begin, std::size_t nbytes) const;
 
   /** \brief Performs swap of data pointed with another device memory.
    * \param other_arg device memory to swap with

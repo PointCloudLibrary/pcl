@@ -291,7 +291,7 @@ pcl::gpu::DeviceMemory::download(void* host_ptr_arg) const
 
 void
 pcl::gpu::DeviceMemory::download(void* host_ptr_arg,
-                                 void* begin,
+                                 const void* const begin,
                                  std::size_t bytes) const
 {
   cudaSafeCall(cudaMemcpy(host_ptr_arg, begin, bytes, cudaMemcpyDeviceToHost));
