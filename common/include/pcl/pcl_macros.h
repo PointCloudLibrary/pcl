@@ -439,7 +439,7 @@ aligned_free (void* ptr)
   #define PCL_NODISCARD
 #endif
 
-#if (__cplusplus >= 201703L) || (defined(_MSC_VER) && (_MSC_VER >= 1910) && (_MSVC_LANG >= 201703L))
+#ifdef __cpp_if_constexpr
   #define PCL_IF_CONSTEXPR(x) if constexpr(x)
 #else
   #define PCL_IF_CONSTEXPR(x) if (x)
