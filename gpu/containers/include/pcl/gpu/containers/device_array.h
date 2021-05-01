@@ -68,7 +68,9 @@ public:
   DeviceArray(std::size_t size);
 
   /** \brief Initializes with user allocated buffer. Reference counting is disabled in
-   * this case. \param ptr pointer to buffer \param size elements number
+   * this case.
+   * \param ptr pointer to buffer
+   * \param size elements number
    * */
   DeviceArray(T* ptr, std::size_t size);
 
@@ -81,7 +83,8 @@ public:
 
   /** \brief Allocates internal buffer in GPU memory. If internal buffer was created
    * before the function recreates it with new size. If new and old sizes are equal it
-   * does nothing. \param size elements number
+   * does nothing.
+   * \param size elements number
    * */
   void
   create(std::size_t size);
@@ -97,8 +100,9 @@ public:
   copyTo(DeviceArray& other) const;
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
-   * ensure that intenal buffer size is enough. \param host_ptr pointer to buffer to
-   * upload \param size elements number
+   * ensure that intenal buffer size is enough.
+   * \param host_ptr pointer to buffer to upload
+   * \param size elements number
    * */
   void
   upload(const T* host_ptr, std::size_t size);
@@ -110,7 +114,8 @@ public:
   download(T* host_ptr) const;
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
-   * ensure that intenal buffer size is enough. \param data host vector to upload from
+   * ensure that intenal buffer size is enough.
+   * \param data host vector to upload from
    * */
   template <class A>
   void
@@ -176,7 +181,9 @@ public:
   DeviceArray2D(int rows, int cols);
 
   /** \brief Initializes with user allocated buffer. Reference counting is disabled in
-   * this case. \param rows number of rows \param cols number of elements in each row
+   * this case.
+   * \param rows number of rows
+   * \param cols number of elements in each row
    * \param data pointer to buffer
    * \param stepBytes stride between two consecutive rows in bytes
    * */
@@ -191,8 +198,9 @@ public:
 
   /** \brief Allocates internal buffer in GPU memory. If internal buffer was created
    * before the function recreates it with new size. If new and old sizes are equal it
-   * does nothing. \param rows number of rows to allocate \param cols number of elements
-   * in each row
+   * does nothing.
+   * \param rows number of rows to allocate
+   * \param cols number of elements in each row
    * */
   void
   create(int rows, int cols);
@@ -208,17 +216,19 @@ public:
   copyTo(DeviceArray2D& other) const;
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
-   * ensure that intenal buffer size is enough. \param host_ptr pointer to host buffer
-   * to upload \param host_step stride between two consecutive rows in bytes for host
-   * buffer \param rows number of rows to upload \param cols number of elements in each
-   * row
+   * ensure that intenal buffer size is enough.
+   * \param host_ptr pointer to host buffer to upload
+   * \param host_step stride between two consecutive rows in bytes for host buffer
+   * \param rows number of rows to upload
+   * \param cols number of elements in each row
    * */
   void
   upload(const void* host_ptr, std::size_t host_step, int rows, int cols);
 
   /** \brief Downloads data from internal buffer to CPU memory. User is responsible for
-   * correct host buffer size. \param host_ptr pointer to host buffer to download \param
-   * host_step stride between two consecutive rows in bytes for host buffer
+   * correct host buffer size.
+   * \param host_ptr pointer to host buffer to download
+   * \param host_step stride between two consecutive rows in bytes for host buffer
    * */
   void
   download(void* host_ptr, std::size_t host_step) const;
@@ -230,7 +240,8 @@ public:
   swap(DeviceArray2D& other_arg);
 
   /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to
-   * ensure that intenal buffer size is enough. \param data host vector to upload from
+   * ensure that intenal buffer size is enough.
+   * \param data host vector to upload from
    * \param cols stride in elements between two consecutive rows for host buffer
    * */
   template <class A>
