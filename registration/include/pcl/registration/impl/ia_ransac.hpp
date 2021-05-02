@@ -172,10 +172,10 @@ SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::computeErro
   const ErrorFunctor& compute_error = *error_functor_;
   float error = 0;
 
-  for (int i = 0; i < static_cast<int>(cloud.size()); ++i) {
-    // Find the distance between cloud[i] and its nearest neighbor in the target point
+  for (const auto& point : cloud) {
+    // Find the distance between point and its nearest neighbor in the target point
     // cloud
-    tree_->nearestKSearch(cloud, i, 1, nn_index, nn_distance);
+    tree_->nearestKSearch(point, 1, nn_index, nn_distance);
 
     // Compute the error
     error += compute_error(nn_distance[0]);

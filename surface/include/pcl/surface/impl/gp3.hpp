@@ -188,7 +188,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         angles_[i].index = nnIdx[i];
         if (
             (state_[nnIdx[i]] == COMPLETED) || (state_[nnIdx[i]] == BOUNDARY)
-            || (state_[nnIdx[i]] == NONE) || (nnIdx[i] == -1) /// NOTE: discarding NaN points and those that are not in indices_
+            || (state_[nnIdx[i]] == NONE) || (nnIdx[i] == UNAVAILABLE) /// NOTE: discarding NaN points and those that are not in indices_
             || (sqrDists[i] > sqr_dist_threshold)
            )
           angles_[i].visible = false;
@@ -364,7 +364,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
         angles_[i].nnIndex = i;
         if (
             (state_[nnIdx[i]] == COMPLETED) || (state_[nnIdx[i]] == BOUNDARY)
-            || (state_[nnIdx[i]] == NONE) || (nnIdx[i] == -1) /// NOTE: discarding NaN points and those that are not in indices_
+            || (state_[nnIdx[i]] == NONE) || (nnIdx[i] == UNAVAILABLE) /// NOTE: discarding NaN points and those that are not in indices_
             || (sqrDists[i] > sqr_dist_threshold)
            )
           angles_[i].visible = false;

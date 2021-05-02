@@ -115,14 +115,19 @@ TEST(PCL_OctreeGPU, hostRadiusSearch)
         
         //search host
         std::vector<float> dists;
-        std::vector<int> results_host;                
+        pcl::Indices results_host;
         octree_host.radiusSearch(pcl::PointXYZ(data.queries[i].x, data.queries[i].y, data.queries[i].z), data.radiuses[i], results_host, dists);                        
         
         std::sort(results_host_gpu.begin(), results_host_gpu.end());
         std::sort(results_host.begin(), results_host.end());
 
-        ASSERT_EQ ( (results_host_gpu == results_host     ), true );
-        ASSERT_EQ ( (results_host_gpu == data.bfresutls[i]), true );                
+        ASSERT_EQ (results_host_gpu.size(), results_host.size());
+        ASSERT_EQ (results_host_gpu.size(), data.bfresutls[i].size());
+        for(std::size_t j = 0; j < results_host_gpu.size(); ++j)
+        {
+            ASSERT_EQ (results_host_gpu[j], results_host[j]);
+            ASSERT_EQ (results_host_gpu[j], data.bfresutls[i][j]);
+        }
         sizes.push_back(results_host.size());      
     }    
 

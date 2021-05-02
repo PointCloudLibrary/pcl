@@ -474,7 +474,7 @@ pcl::io::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData>& p
     colors->SetName ("Colors");
     pcl::RGB rgb;
     int offset = (idx_rgb != -1) ? mesh.cloud.fields[idx_rgb].offset : mesh.cloud.fields[idx_rgba].offset;
-    for (vtkIdType cp = 0; cp < nr_points; ++cp)
+    for (pcl::uindex_t cp = 0; cp < nr_points; ++cp)
     {
       memcpy (&rgb, &mesh.cloud.data[cp * mesh.cloud.point_step + offset], sizeof (RGB));
       const unsigned char color[3] = {rgb.r, rgb.g, rgb.b};
@@ -489,7 +489,7 @@ pcl::io::mesh2vtk (const pcl::PolygonMesh& mesh, vtkSmartPointer<vtkPolyData>& p
     vtkSmartPointer<vtkFloatArray> normals = vtkSmartPointer<vtkFloatArray>::New ();
     normals->SetNumberOfComponents (3);
     float nx = 0.0f, ny = 0.0f, nz = 0.0f;
-    for (vtkIdType cp = 0; cp < nr_points; ++cp)
+    for (pcl::uindex_t cp = 0; cp < nr_points; ++cp)
     {
       memcpy (&nx, &mesh.cloud.data[cp*mesh.cloud.point_step+mesh.cloud.fields[idx_normal_x].offset], sizeof (float));
       memcpy (&ny, &mesh.cloud.data[cp*mesh.cloud.point_step+mesh.cloud.fields[idx_normal_y].offset], sizeof (float));

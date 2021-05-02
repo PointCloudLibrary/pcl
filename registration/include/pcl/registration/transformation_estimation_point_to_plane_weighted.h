@@ -138,7 +138,7 @@ public:
    */
   inline void
   estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const std::vector<int>& indices_src,
+                              const pcl::Indices& indices_src,
                               const pcl::PointCloud<PointTarget>& cloud_tgt,
                               Matrix4& transformation_matrix) const;
 
@@ -154,9 +154,9 @@ public:
    */
   void
   estimateRigidTransformation(const pcl::PointCloud<PointSource>& cloud_src,
-                              const std::vector<int>& indices_src,
+                              const pcl::Indices& indices_src,
                               const pcl::PointCloud<PointTarget>& cloud_tgt,
-                              const std::vector<int>& indices_tgt,
+                              const pcl::Indices& indices_tgt,
                               Matrix4& transformation_matrix) const;
 
   /** \brief Estimate a rigid rotation transformation between a source and a target
@@ -207,10 +207,10 @@ protected:
   mutable const PointCloudTarget* tmp_tgt_;
 
   /** \brief Temporary pointer to the source dataset indices. */
-  mutable const std::vector<int>* tmp_idx_src_;
+  mutable const pcl::Indices* tmp_idx_src_;
 
   /** \brief Temporary pointer to the target dataset indices. */
-  mutable const std::vector<int>* tmp_idx_tgt_;
+  mutable const pcl::Indices* tmp_idx_tgt_;
 
   /** \brief The parameterized function used to warp the source to the target. */
   typename pcl::registration::WarpPointRigid<PointSource, PointTarget, MatScalar>::Ptr

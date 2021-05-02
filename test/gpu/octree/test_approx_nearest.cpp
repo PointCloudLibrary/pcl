@@ -96,7 +96,7 @@ TEST(PCL_OctreeGPU, approxNearesSearch)
 
   // prepare output buffers on device
   pcl::gpu::NeighborIndices result_device(queries.size(), 1);
-  std::vector<int> result_host_pcl(queries.size());
+  pcl::Indices result_host_pcl(queries.size());
   std::vector<int> result_host_gpu(queries.size());
   std::vector<float> dists_pcl(queries.size());
   std::vector<float> dists_gpu(queries.size());

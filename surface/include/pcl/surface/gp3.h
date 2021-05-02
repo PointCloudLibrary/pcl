@@ -278,11 +278,11 @@ namespace pcl
 
 
       /** \brief Get the sfn list. */
-      inline std::vector<int>
+      inline pcl::Indices
       getSFN () const { return (sfn_); }
 
       /** \brief Get the ffn list. */
-      inline std::vector<int>
+      inline pcl::Indices
       getFFN () const { return (ffn_); }
 
     protected:
@@ -345,9 +345,9 @@ namespace pcl
       /** \brief List of sources **/
       std::vector<int> source_;
       /** \brief List of fringe neighbors in one direction **/
-      std::vector<int> ffn_;
+      pcl::Indices ffn_;
       /** \brief List of fringe neighbors in other direction **/
-      std::vector<int> sfn_;
+      pcl::Indices sfn_;
       /** \brief Connected component labels for each point **/
       std::vector<int> part_;
       /** \brief Points on the outer edge from which the mesh has to be grown **/

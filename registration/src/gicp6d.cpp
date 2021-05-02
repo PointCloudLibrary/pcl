@@ -133,8 +133,8 @@ GeneralizedIterativeClosestPoint6D::computeTransformation(PointCloudSource& outp
 
   while (!converged_) {
     std::size_t cnt = 0;
-    std::vector<int> source_indices(indices_->size());
-    std::vector<int> target_indices(indices_->size());
+    pcl::Indices source_indices(indices_->size());
+    pcl::Indices target_indices(indices_->size());
 
     // guess corresponds to base_t and transformation_ to t
     Eigen::Matrix4d transform_R = Eigen::Matrix4d::Zero();
