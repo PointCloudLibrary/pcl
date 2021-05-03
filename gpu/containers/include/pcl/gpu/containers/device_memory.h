@@ -109,9 +109,10 @@ public:
   download(void* host_ptr_arg) const;
 
   /** \brief Downloads data from internal buffer to CPU memory.
+   * Returns true if download successfull
    * \param host_ptr_arg pointer to buffer to download
-   * \param begin pointer to buffer location
-   * \param nbytes number of bytes to download from begin
+   * \param device_begin_byte_offset first byte position to download
+   * \param device_end_byte_offset last byte position to download
    * */
   bool
   download(void* host_ptr,

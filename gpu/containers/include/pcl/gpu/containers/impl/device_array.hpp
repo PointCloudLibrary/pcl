@@ -109,15 +109,9 @@ DeviceArray<T>::download(T* host_ptr,
                          std::size_t device_begin_offset,
                          std::size_t device_end_offset) const
 {
-  //if (device_end_offset < device_begin_offset) {
-    //return false;
-  //}
-  //const T* begin = ptr() + device_begin_offset;
-  std::size_t device_begin_byte_offset = device_begin_offset * sizeof(T);
-  std::size_t device_end_byte_offset = device_end_offset * sizeof(T);
-  //std::size_t bytes = (device_end_offset - device_begin_offset) * elem_size;
-  return DeviceMemory::download(host_ptr, device_begin_byte_offset, device_end_byte_offset);
-  //return true;
+  std::size_t begin_byte_offset = device_begin_offset * sizeof(T);
+  std::size_t end_byte_offset = device_end_offset * sizeof(T);
+  return DeviceMemory::download(host_ptr, begin_byte_offset, end_byte_offset);
 }
 
 template <class T>
