@@ -41,22 +41,25 @@ namespace pcl {
 
 namespace gpu {
 
-/////////////////////  Inline implementations of DeviceArray
-///////////////////////////////////////////////
+////////////////////  Inline implementations of DeviceArray //////////////////
 
 template <class T>
 inline DeviceArray<T>::DeviceArray()
 {}
+
 template <class T>
 inline DeviceArray<T>::DeviceArray(std::size_t size) : DeviceMemory(size * elem_size)
 {}
+
 template <class T>
 inline DeviceArray<T>::DeviceArray(T* ptr, std::size_t size)
 : DeviceMemory(ptr, size * elem_size)
 {}
+
 template <class T>
 inline DeviceArray<T>::DeviceArray(const DeviceArray& other) : DeviceMemory(other)
 {}
+
 template <class T>
 inline DeviceArray<T>&
 DeviceArray<T>::operator=(const DeviceArray& other)
@@ -71,6 +74,7 @@ DeviceArray<T>::create(std::size_t size)
 {
   DeviceMemory::create(size * elem_size);
 }
+
 template <class T>
 inline void
 DeviceArray<T>::release()
@@ -84,12 +88,14 @@ DeviceArray<T>::copyTo(DeviceArray& other) const
 {
   DeviceMemory::copyTo(other);
 }
+
 template <class T>
 inline void
 DeviceArray<T>::upload(const T* host_ptr, std::size_t size)
 {
   DeviceMemory::upload(host_ptr, size * elem_size);
 }
+
 template <class T>
 inline void
 DeviceArray<T>::download(T* host_ptr) const
@@ -109,11 +115,13 @@ inline DeviceArray<T>::operator T*()
 {
   return ptr();
 }
+
 template <class T>
 inline DeviceArray<T>::operator const T*() const
 {
   return ptr();
 }
+
 template <class T>
 inline std::size_t
 DeviceArray<T>::size() const
@@ -127,6 +135,7 @@ DeviceArray<T>::ptr()
 {
   return DeviceMemory::ptr<T>();
 }
+
 template <class T>
 inline const T*
 DeviceArray<T>::ptr() const
@@ -141,6 +150,7 @@ DeviceArray<T>::upload(const std::vector<T, A>& data)
 {
   upload(&data[0], data.size());
 }
+
 template <class T>
 template <class A>
 inline void
@@ -151,16 +161,17 @@ DeviceArray<T>::download(std::vector<T, A>& data) const
     download(&data[0]);
 }
 
-/////////////////////  Inline implementations of DeviceArray2D
-///////////////////////////////////////////////
+///////////////////  Inline implementations of DeviceArray2D //////////////////
 
 template <class T>
 inline DeviceArray2D<T>::DeviceArray2D()
 {}
+
 template <class T>
 inline DeviceArray2D<T>::DeviceArray2D(int rows, int cols)
 : DeviceMemory2D(rows, cols * elem_size)
 {}
+
 template <class T>
 inline DeviceArray2D<T>::DeviceArray2D(int rows,
                                        int cols,
@@ -168,10 +179,12 @@ inline DeviceArray2D<T>::DeviceArray2D(int rows,
                                        std::size_t stepBytes)
 : DeviceMemory2D(rows, cols * elem_size, data, stepBytes)
 {}
+
 template <class T>
 inline DeviceArray2D<T>::DeviceArray2D(const DeviceArray2D& other)
 : DeviceMemory2D(other)
 {}
+
 template <class T>
 inline DeviceArray2D<T>&
 DeviceArray2D<T>::operator=(const DeviceArray2D& other)
@@ -186,6 +199,7 @@ DeviceArray2D<T>::create(int rows, int cols)
 {
   DeviceMemory2D::create(rows, cols * elem_size);
 }
+
 template <class T>
 inline void
 DeviceArray2D<T>::release()
@@ -199,6 +213,7 @@ DeviceArray2D<T>::copyTo(DeviceArray2D& other) const
 {
   DeviceMemory2D::copyTo(other);
 }
+
 template <class T>
 inline void
 DeviceArray2D<T>::upload(const void* host_ptr,
@@ -208,6 +223,7 @@ DeviceArray2D<T>::upload(const void* host_ptr,
 {
   DeviceMemory2D::upload(host_ptr, host_step, rows, cols * elem_size);
 }
+
 template <class T>
 inline void
 DeviceArray2D<T>::download(void* host_ptr, std::size_t host_step) const
@@ -247,6 +263,7 @@ DeviceArray2D<T>::ptr(int y)
 {
   return DeviceMemory2D::ptr<T>(y);
 }
+
 template <class T>
 inline const T*
 DeviceArray2D<T>::ptr(int y) const
@@ -259,6 +276,7 @@ inline DeviceArray2D<T>::operator T*()
 {
   return ptr();
 }
+
 template <class T>
 inline DeviceArray2D<T>::operator const T*() const
 {
@@ -271,6 +289,7 @@ DeviceArray2D<T>::cols() const
 {
   return DeviceMemory2D::colsBytes() / elem_size;
 }
+
 template <class T>
 inline int
 DeviceArray2D<T>::rows() const

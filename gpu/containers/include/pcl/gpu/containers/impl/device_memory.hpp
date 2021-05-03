@@ -41,8 +41,7 @@ namespace pcl {
 
 namespace gpu {
 
-/////////////////////  Inline implementations of DeviceMemory
-///////////////////////////////////////////////
+////////////////////  Inline implementations of DeviceMemory //////////////////
 template <class T>
 inline T*
 DeviceMemory::ptr()
@@ -66,8 +65,7 @@ inline DeviceMemory::operator PtrSz<U>() const
   return result;
 }
 
-/////////////////////  Inline implementations of DeviceMemory2D
-///////////////////////////////////////////////
+////////////////////  Inline implementations of DeviceMemory2D ////////////////
 template <class T>
 T*
 DeviceMemory2D::ptr(int y_arg)
