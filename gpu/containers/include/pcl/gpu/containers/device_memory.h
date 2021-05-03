@@ -113,8 +113,10 @@ public:
    * \param begin pointer to buffer location
    * \param nbytes number of bytes to download from begin
    * */
-  void
-  download(void* host_ptr, const void* const begin, std::size_t nbytes) const;
+  bool
+  download(void* host_ptr,
+           std::size_t device_begin_byte_offset,
+           std::size_t device_end_byte_offset) const;
 
   /** \brief Performs swap of data pointed with another device memory.
    * \param other_arg device memory to swap with
