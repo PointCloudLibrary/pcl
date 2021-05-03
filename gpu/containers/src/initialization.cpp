@@ -52,26 +52,31 @@ throw_nogpu()
 {
   throw "PCL 2.0 exception";
 }
+
 int
 pcl::gpu::getCudaEnabledDeviceCount()
 {
   return 0;
 }
+
 void
 pcl::gpu::setDevice(int /*device*/)
 {
   throw_nogpu();
 }
+
 std::string
 pcl::gpu::getDeviceName(int /*device*/)
 {
   throw_nogpu();
 }
+
 void
 pcl::gpu::printCudaDeviceInfo(int /*device*/)
 {
   throw_nogpu();
 }
+
 void
 pcl::gpu::printShortCudaDeviceInfo(int /*device*/)
 {
