@@ -28,6 +28,37 @@ stages:
 
   - stage: tutorials
     displayName: Tutorials
-    dependsOn: documentation
+    dependsOn: []
     jobs:
+      - job: TutorialsDiff
+        displayName: Tutorial Source Code Diff
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+          - script: | 
+              # Specify tutorial source code path
+              DIFF_SPECIFY_PATH="doc/tutorials/content/sources"
+
+              # Check the CI build reason: Pull Request or Git Push
+              BUILD_REASON=$(Build.Reason)
+              if [ "${BUILD_REASON}" -eq "PullRequest" ]; then
+                MERGE_BASE_PAIR="HEAD origin/master"
+              else
+                MERGE_BASE_PAIR="HEAD HEAD~1"
+              fi
+
+              # Initiate HasTutorialCodeChanges variable
+              echo "##vso[task.setvariable variable=HasTutorialCodeChanges;isOutput=true]false"
+
+              # Show git diff results of specified path
+              cd $(Build.SourcesDirectory)
+              git diff $(git merge-base ${MERGE_BASE_PAIR}) -- ${DIFF_SPECIFY_PATH}
+
+              # Set HasTutorialCodeChanges to true, if there are tutorial source codes changed. 
+              git diff --quiet $(git merge-base ${MERGE_BASE_PAIR}) -- ${DIFF_SPECIFY_PATH} || \
+              echo "##vso[task.setvariable variable=HasTutorialCodeChanges;isOutput=true]true"
+            name: GitResult
+            displayName: Show Git Diff Result
+    
       - template: tutorials.yaml

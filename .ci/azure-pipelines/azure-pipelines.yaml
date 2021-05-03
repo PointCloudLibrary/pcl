@@ -38,7 +38,7 @@ stages:
   - stage: diff
     displayName: Code Changes Diff
     jobs:
-      - job: codeDiff
+      - job: CodeDiff
         displayName: Code Diff
         pool:
           vmImage: 'ubuntu-latest'
