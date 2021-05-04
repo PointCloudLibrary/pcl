@@ -442,3 +442,9 @@ aligned_free(void* ptr)
 #else
   #define PCL_NODISCARD
 #endif
+
+#ifdef __cpp_if_constexpr
+  #define PCL_IF_CONSTEXPR(x) if constexpr(x)
+#else
+  #define PCL_IF_CONSTEXPR(x) if (x)
+#endif

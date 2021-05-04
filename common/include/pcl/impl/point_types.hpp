@@ -1307,7 +1307,7 @@ namespace pcl
   struct PFHSignature125
   {
     float histogram[125] = {0.f};
-    static int descriptorSize () { return 125; }
+    static constexpr int descriptorSize () { return 125; }
 
     inline PFHSignature125 () = default;
 
@@ -1321,7 +1321,7 @@ namespace pcl
   struct PFHRGBSignature250
   {
     float histogram[250] = {0.f};
-    static int descriptorSize () { return 250; }
+    static constexpr int descriptorSize () { return 250; }
 
     inline PFHRGBSignature250 () = default;
 
@@ -1408,7 +1408,7 @@ namespace pcl
   {
     float descriptor[1980] = {0.f};
     float rf[9] = {0.f};
-    static int descriptorSize () { return 1980; }
+    static constexpr int descriptorSize () { return 1980; }
 
     inline ShapeContext1980 () = default;
 
@@ -1423,7 +1423,7 @@ namespace pcl
   {
     float descriptor[1960] = {0.f};
     float rf[9] = {0.f};
-    static int descriptorSize () { return 1960; }
+    static constexpr int descriptorSize () { return 1960; }
 
     inline UniqueShapeContext1960 () = default;
 
@@ -1438,7 +1438,7 @@ namespace pcl
   {
     float descriptor[352] = {0.f};
     float rf[9] = {0.f};
-    static int descriptorSize () { return 352; }
+    static constexpr int descriptorSize () { return 352; }
 
     inline SHOT352 () = default;
 
@@ -1454,7 +1454,7 @@ namespace pcl
   {
     float descriptor[1344] = {0.f};
     float rf[9] = {0.f};
-    static int descriptorSize () { return 1344; }
+    static constexpr int descriptorSize () { return 1344; }
 
     inline SHOT1344 () = default;
 
@@ -1519,7 +1519,7 @@ namespace pcl
   struct FPFHSignature33
   {
     float histogram[33] = {0.f};
-    static int descriptorSize () { return 33; }
+    static constexpr int descriptorSize () { return 33; }
 
     inline FPFHSignature33 () = default;
 
@@ -1533,7 +1533,7 @@ namespace pcl
   struct VFHSignature308
   {
     float histogram[308] = {0.f};
-    static int descriptorSize () { return 308; }
+    static constexpr int descriptorSize () { return 308; }
 
     inline VFHSignature308 () = default;
 
@@ -1547,7 +1547,7 @@ namespace pcl
   struct GRSDSignature21
   {
     float histogram[21] = {0.f};
-    static int descriptorSize () { return 21; }
+    static constexpr int descriptorSize () { return 21; }
 
     inline GRSDSignature21 () = default;
 
@@ -1563,7 +1563,7 @@ namespace pcl
     float scale = 0.f;
     float orientation = 0.f;
     unsigned char descriptor[64] = {0};
-    static int descriptorSize () { return 64; }
+    static constexpr int descriptorSize () { return 64; }
 
     inline BRISKSignature512 () = default;
 
@@ -1579,7 +1579,7 @@ namespace pcl
   struct ESFSignature640
   {
     float histogram[640] = {0.f};
-    static int descriptorSize () { return 640; }
+    static constexpr int descriptorSize () { return 640; }
 
     inline ESFSignature640 () = default;
 
@@ -1593,7 +1593,7 @@ namespace pcl
   struct GASDSignature512
   {
     float histogram[512] = {0.f};
-    static int descriptorSize() { return 512; }
+    static constexpr int descriptorSize() { return 512; }
 
     inline GASDSignature512 () = default;
 
@@ -1607,7 +1607,7 @@ namespace pcl
   struct GASDSignature984
   {
     float histogram[984] = {0.f};
-    static int descriptorSize() { return 984; }
+    static constexpr int descriptorSize() { return 984; }
 
     inline GASDSignature984 () = default;
 
@@ -1621,7 +1621,7 @@ namespace pcl
   struct GASDSignature7992
   {
     float histogram[7992] = {0.f};
-    static int descriptorSize() { return 7992; }
+    static constexpr int descriptorSize() { return 7992; }
 
     inline GASDSignature7992 () = default;
 
@@ -1635,7 +1635,7 @@ namespace pcl
   struct GFPFHSignature16
   {
     float histogram[16] = {0.f};
-    static int descriptorSize () { return 16; }
+    static constexpr int descriptorSize () { return 16; }
 
     inline GFPFHSignature16 () = default;
 
@@ -1650,7 +1650,7 @@ namespace pcl
   {
     float x = 0.f, y = 0.f, z = 0.f, roll = 0.f, pitch = 0.f, yaw = 0.f;
     float descriptor[36] = {0.f};
-    static int descriptorSize () { return 36; }
+    static constexpr int descriptorSize () { return 36; }
 
     inline Narf36 () = default;
 
@@ -1712,7 +1712,7 @@ namespace pcl
   struct Histogram
   {
     float histogram[N];
-    static int descriptorSize () { return N; }
+    static constexpr int descriptorSize () { return N; }
   };
 
   struct EIGEN_ALIGN16 _PointWithScale
@@ -1861,7 +1861,7 @@ namespace pcl
   operator << (std::ostream& os, const Histogram<N>& p)
   {
     // make constexpr
-    if (N > 0)
+    PCL_IF_CONSTEXPR(N > 0)
     {
         os << "(" << p.histogram[0];
         std::for_each(p.histogram + 1, std::end(p.histogram),
