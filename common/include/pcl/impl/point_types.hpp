@@ -714,6 +714,12 @@ namespace pcl
   */
   struct PointXYZLAB : public _PointXYZLAB
   {
+    inline PointXYZLAB (const _PointXYZLAB &p)
+    {
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
+      L = p.L; a = p.a; b = p.b;
+    }
+
     inline PointXYZLAB()
     {
       x = y = z = 0.0f;
