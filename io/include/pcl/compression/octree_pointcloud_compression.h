@@ -124,35 +124,7 @@ namespace pcl
         }
 
         /** \brief Initialize globals */
-        void initialization () {
-          if (selected_profile_ != MANUAL_CONFIGURATION)
-          {
-            // apply selected compression profile
-
-            // retrieve profile settings
-            const configurationProfile_t selectedProfile = compressionProfiles_[selected_profile_];
-
-            // apply profile settings
-            i_frame_rate_ = selectedProfile.iFrameRate;
-            do_voxel_grid_enDecoding_ = selectedProfile.doVoxelGridDownSampling;
-            this->setResolution (selectedProfile.octreeResolution);
-            point_coder_.setPrecision (static_cast<float> (selectedProfile.pointResolution));
-            do_color_encoding_ = selectedProfile.doColorEncoding;
-            color_coder_.setBitDepth (selectedProfile.colorBitResolution);
-
-          }
-          else 
-          {
-            // configure point & color coder
-            point_coder_.setPrecision (static_cast<float> (point_resolution_));
-            color_coder_.setBitDepth (color_bit_resolution_);
-          }
-
-          if (point_coder_.getPrecision () == this->getResolution ())
-            //disable differential point colding
-            do_voxel_grid_enDecoding_ = true;
-
-        }
+        void initialization ();
 
         /** \brief Add point at index from input pointcloud dataset to octree
          * \param[in] pointIdx_arg the index representing the point in the dataset given by \a setInputCloud to be added
@@ -192,40 +164,12 @@ namespace pcl
         void
         encodePointCloud (const PointCloudConstPtr &cloud_arg, std::ostream& compressed_tree_data_out_arg);
 
-        /** \brief Encode point cloud to output stream
-         * \param cloud_arg:  point cloud to be compressed
-         * \param compressed_tree_data_out_arg:  binary output stream containing
-         * compressed data
-         * \param fields vector of field types in the point cloud, useful while
-         * encoding the same point cloud type in a loop
-         */
-        void
-        encodePointCloud(const PointCloudConstPtr& cloud_arg,
-                         std::ostream& compressed_tree_data_out_arg,
-                         const std::vector<pcl::PCLPointField>& fields);
-
         /** \brief Decode point cloud from input stream
           * \param compressed_tree_data_in_arg: binary input stream containing compressed data
           * \param cloud_arg: reference to decoded point cloud
           */
         void
         decodePointCloud (std::istream& compressed_tree_data_in_arg, PointCloudPtr &cloud_arg);
-
-      private:
-        /**
-         * \brief Implements the core encoding logic used by `encodePointCloud`
-         * \param cloud_arg:  point cloud to be compressed
-         * \param compressed_tree_data_out_arg:  binary output stream containing
-         * compressed data
-         * \param previous_tree_depth tree depth in previous iteration
-         * \param fields vector of field types in the point cloud, useful while
-         * encoding the same point cloud type in a loop
-         */
-        void
-        encodePointCloudImpl(const PointCloudConstPtr& cloud_arg,
-                             std::ostream& compressed_tree_data_out_arg,
-                             unsigned char previous_tree_depth,
-                             const std::vector<pcl::PCLPointField>& fields);
 
       protected:
 
